@@ -14,6 +14,7 @@ table below.
 | 1 | 2026-09-28T08:04:40 | 2026-09-28T08:35:41 | 0 | 0 | Survey and contract (`units/convex-mesh-gap-contract.md`); no row written or moved. Bundles generated for the four units; `DecompileSupplement.java` run headless over the union of the 34 earlier RVAs and the 43 rows Ghidra never made functions (77 requested, 77 `ok`, the 34 earlier entries byte-identical, a second run byte-identical), so every one of the 174 rows has a decompile. 127 not-started rows, 76,115 B (with 001537, AddTriangle, adopted from the ConvexHull.cpp gap), split into sub-units A..N and tasks 2a..2m, none above 12 KB. Found: two translation units the census missed (`ContactBoxMeshICE.cpp`, 001772 line 1706; `ContactMeshHeightfield.cpp`, 001865 line 328; `core\Articulation.cpp` elsewhere) because `work_units.py` keys file strings by Ghidra entries that start early; the per-unit NxMath pi block in .rdata as a translation-unit boundary marker; TriangleMesh +0x04 is a second vtable (0x101085d4, 12-slot polygon interface, slot 11 = 002249); no row has vendored ICE source (Adjacencies, MeshBuilder2, Valencies, support maps are full-ICE classes), so `vendored_match.py` does not apply; about 12 KB of out-of-range prerequisites (EdgeList.cpp, the ConvexHull.cpp hull, the TriangleMesh polygon interface, 000875, 001909, the dispatcher 002348) gate the mesh-shaped sub-units. Tool tests (753) pass; validator exits 0. No product, test or gate file changed, so gates 2-7 are unaffected and were not run. |
 | 2a | 2026-09-28T08:51:30 | 2026-09-28T09:40:40 | 15 | 8,468 | Box distance kernels (001670, 001674..001688 incl. 001686) in the new `Physics/src/Distance.cpp`; matrix B 001751, 001774, 001785, 001789, 001791 and matrix A 001753. All exact against the oracle under both control words (point_box, line_box, segment_box, box_capsule, capsule_capsule, contact_box_capsule, three compound families; 23 lines registered, phase 3 floor 126). Defects: Face as one function spilled wide values (16 segment_box words under 0x0f7f; fixed by splitting its leaves); the contract's compound entries test the compound's own world bounds, not children (corrected); 001753's indirect call is the box's slot 5 (000949); Case00's pnt[i1] typo reproduced; the oracle's 16-slot manifold overflow in 001753 pre-flighted (21 pairs skipped). All 24 traced functions hit. See `## Task 2a`. |
 | 2b | 2026-09-28T09:53:44 | 2026-09-28T11:01:37 | 8 | 9,919 | Triangle distance kernels 001672, 001692, 001694 in `Physics/src/Distance.cpp`; 001708 and 001730/001732 in `Geometry.cpp`; 001760 in the new `ContactBoxMeshICE.cpp` and 001855 in the new `ContactMeshHeightfield.cpp`. BOX slot 7 (000951) written from its listing and wired to 001730 (still `discovered`). All exact under 0x027f (point_triangle, line_line, segment_triangle, ray_inflated_tris, aabb_slab, triangle_plane, segment_triangle_edges; 14 lines registered, phase 3 floor 140); under 0x0f7f 001694 differs on 14 words inherited from 001690, 001760 on 51 and 001855 on 32 from the square root's qword operand. ray_inflated_tris gates the fans whose two Triangle::Inflates (005185) agree, the rest under ceilings. Defects: 001672 and 001694 spilled wide values until split into leaves; a Triangle object gave 001708 an unwind frame; contract roles of 001692/001708/001855 corrected; the harness's generators shift oracle digests when its inlining changes. All 34 traced functions hit. 2a review minors fixed in their own commit. See `## Task 2b`. |
+| 2b review | 2026-09-28T11:18:00 | 2026-09-28T11:32:34 | 0 | 0 | No row added; 001760 (x87 block), 001672 (first-edge leaf) and the Task 2b families (bit-written raw draws, mixed exponents, 001712 pre-flight) reworked after the review. Under 0x0f7f: 001672, 001692, 001708, 001730, 001760 exact; 001694 31 (all 001690's), 001855 215, pinned. The 14 Task 2b lines re-registered; all 122 collision lines reproduce. 35 traced functions hit. See `## Task 2b`, **Review**. |
 
 ## Task 2a: box distance kernels and the entries that reach them
 
@@ -115,49 +116,68 @@ oracle's 000951) passes. 000951 stays `discovered`: it is a Phase 5 row, compile
 `/arch:IA32`, and this task does not own it.
 
 **Differential** (`NxPhysicsCollisionTests`, oracle rows by RVA against the linked candidate, both
-control words, oracle digests registered):
+control words, oracle digests registered). As registered after the Task 2b review (see **Review**
+below): every family draws a third raw words (`nxPickBits`, written as bits), a third aimed and a
+third of mixed exponents (`nxMixedBits`, magnitudes 2^-27..2^72).
 
 | family | rows | checks | 0x027f | 0x0f7f |
 |---|---|---:|---:|---:|
 | point_triangle | 001672 | 2,160,000 | 0 | 0 |
 | line_line | 001692 | 2,880,000 | 0 | 0 |
-| segment_triangle | 001694 (and 001690, 001672) | 2,640,000 | 0 | 14 |
+| segment_triangle | 001694 (and 001690, 001672) | 2,640,000 | 0 | 31 |
 | ray_inflated_tris | 001708 (and 005185, 001712) | 600,000 | 0 | 0 |
 | aabb_slab | 001730/001732 | 1,080,000 | 0 | 0 |
-| triangle_plane | 001760 | 1,920,000 | 0 | 51 |
-| segment_triangle_edges | 001855 | 2,040,000 | 0 | 32 |
+| triangle_plane | 001760 | 1,920,000 | 0 | 0 |
+| segment_triangle_edges | 001855 | 2,040,000 | 0 | 215 |
 
 Everything is exact under the CRT word. The 0x0f7f counts are registered in each family's coverage
 line (so a change fails the gate), as for phys_fn_001690:
-- *segment_triangle, 14:* all inherited from phys_fn_001690's own 0x0f7f divergence. Measured by a
-  throwaway build that bound the oracle's 001690 into the candidate's 001694: 0. 001694's own code is
-  exact under both words.
-- *triangle_plane, 51, and segment_triangle_edges, 32:* the square roots. Each row takes `fsqrt` of a
-  sum over a wide operand inline; the reconstruction reaches `fsqrt` through `X87Sqrt.h`, whose
-  `double` arguments travel as qwords, so the wide operand is cut from 64 to 53 bits on the way in, and
-  MSVC keeps the same values in 8-byte slots across the call. Only raw draws of extreme magnitude move.
-  (001855 written as leaves that recompute the wide values after the call measured 99-100 instead of
-  32, because MSVC folds the recomputation into the spilled copy; the single function is kept.)
+- *segment_triangle, 31:* all inherited from phys_fn_001690's own 0x0f7f divergence. Measured on the
+  same draws by a throwaway build that bound the oracle's 001690 into the candidate's 001694: 0.
+  001694's own code (and the 001672 it calls) is exact under both words.
+- *segment_triangle_edges, 215:* the wide intermediates themselves -- the normal's x and z and the
+  direction's x and z, which the listing keeps in st(n) -- are cut to 53 bits twice: as the operands
+  of each square root, which reach `X87Sqrt.h` through qwords, and in their reuse after the root,
+  where MSVC reloads them from 8-byte slots to scale them by 1/root. (Written as leaves that
+  recompute them after the call, the count rose, because MSVC folds the recomputation into the
+  spilled copy.) The x87-block remedy used for 001760 would be two blocks of about 131 instructions
+  here and is not judged proportionate; the count is pinned.
 - *ray_inflated_tris:* 001708 calls Triangle::Inflate (phys_fn_005185), a vendored row held at
   `discovered` because its candidate differs from the oracle's in the last bits
-  (evidence/vendored-correspondence.md). Each side reaches its own, so the family pre-flights every
-  fan through both Inflates: the 38,982 fans on which they agree are compared exactly and gate (0 and
-  0); the 21,018 on which they differ are counted apart (914 and 981 differing words) under ceilings
-  the harness enforces (`kInflateDivergentFanCeiling`, `kInflateDivergentWordCeiling`).
+  (evidence/vendored-correspondence.md), and NxRayTriIntersect (phys_fn_001712), whose candidate
+  differs from the oracle's on some NaN inputs (the bit-written draws now reach signalling NaNs).
+  Each side reaches its own, so the family pre-flights every fan through both callees under the word
+  it is driven under: the fans on which both agree are compared exactly and gate (0 and 0); the others
+  (28,725 + 75 under 0x027f, 41,198 + 31 under 0x0f7f) are counted apart, with 1,051 and 1,603
+  differing words, under ceilings the harness enforces (`kCalleeDivergentFanCeiling`,
+  `kCalleeDivergentWordCeiling`).
 
 14 oracle-side lines were registered; the phase 3 coverage floor goes from 126 to 140.
 
 **Coverage.** point_triangle reaches every leaf (vertex0/1/2, both edges, the open regions, and the
-determinant-zero FLT_MAX interior, 4,990); segment_triangle reaches the parallel branch and r at the
-start, the end and between (26,553 / 8,442 / 16,914); aabb_slab every face and the miss, with 22,419
-direction components inside (-FLT_EPSILON, FLT_EPSILON) and 11,103 exactly on it;
-segment_triangle_edges every exit (one side or parallel 7,574, t < 0 13,139, outside the edge 32,830,
-on the edge 6,457).
+determinant-zero FLT_MAX interior, 3,998); segment_triangle reaches the parallel branch and r at the
+start, the end and between (22,940 / 10,039 / 11,602); aabb_slab every face and the miss, with 15,029
+direction components inside (-FLT_EPSILON, FLT_EPSILON) and 7,445 exactly on it;
+segment_triangle_edges every exit (one side or parallel 16,188, t < 0 12,710, outside the edge
+25,249, on the edge 5,853). About 20,000 draws of each family are mixed-exponent.
+
+**Review.** The first registration of these families (commit 53ebe9c) overclaimed: its draws never
+mixed exponents, and it drew raw words through nxPick, whose float return value quiets a signalling
+NaN or not depending on how the compiler inlined the call site. It measured 001694 at 14 words of
+0x0f7f divergence "all 001690's", 001760 at 51 and 001855 at 32. The review's mixed-exponent
+differential found 001672's own setup divergent under 0x0f7f (MSVC held the first edge in three qword
+slots; about 3 words per million calls, and nearly all of 001694's own), and 001760 reproducible in
+x87 assembly. Commit 1c0431d moved 001672's first edge into a leaf of its own, wrote 001760's normal
+and normalisation (0x0003c163..0x0003c21b) as one x87 `__asm` block transcribed from the listing
+(recorded in `X87Sqrt.h` as the per-site precedent; d stays C++), made the families' draws as above,
+and extended ray_inflated_tris's pre-flight to 001712. The counts above are that measurement; only
+this task's own 14 lines were re-registered, and all 122 registered collision lines reproduce.
 
 **Defects found.**
 - *Candidate, register lifetime:* 001672 written as one function differed on 2,483 words under
   0x0f7f (the first edge, c and t spilled to qwords); written as the listing's leaves, forming c and t
-  from the stored floats where they are used, 0. 001694 with its setup and interior in one function
+  from the stored floats where they are used, 0 -- and, with mixed-exponent draws, 0 only once the
+  first edge had a leaf of its own (the review). 001694 with its setup and interior in one function
   each differed on 84 words of its own; with the determinant, the solve and s/t split into leaves and
   the interior reading local copies, 0 of its own.
 - *Candidate, unwind frame:* 001708 first held its stack triangle as an `IceMaths::Triangle`, whose
@@ -187,9 +207,9 @@ the registered line unchanged), and the note above says what the candidate does 
 manifold.
 
 **Trace.** `evidence/convex-mesh-gap-trace-2b.txt`: one-shot cdb breakpoints on the seven candidate
-functions and the 27 leaves 001672 and 001694 are split into, in `NxPhysicsCollisionTests.exe`
-(sha256 af838ebe..., addresses from its linker map); all 34 hit in one full run that ended
-`collision=pass`. 001732 has no address of its own (it is the loop of `NxRayAABBSlab`).
+functions and the 28 leaves 001672 and 001694 are split into, in `NxPhysicsCollisionTests.exe`
+(sha256 796dc67c..., the build of commit 1c0431d, addresses from its linker map); all 35 hit in one
+full run that ended `collision=pass`. 001732 has no address of its own (it is the loop of `NxRayAABBSlab`).
 
 **Ledger.** Phase 2: 001672, 001730, 001732 leave `homeless_shared_code`; phase 3: 001692, 001708,
 001760, 001855 leave `not_reconstructed_in_phase`; phase 4: 001694 leaves `not_reconstructed_in_phase`.

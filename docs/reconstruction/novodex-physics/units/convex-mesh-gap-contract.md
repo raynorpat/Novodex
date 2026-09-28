@@ -486,7 +486,10 @@ Totals: 21 rows; dynamically_gated 9,708 B, discovered 584 B
   into the box frame and back as the ray origin, R^T swept as its direction, and |tFar| written on
   a hit. The shape-vtable slot 7 comparison stays green; 000951 stays `discovered` (Phase 5).
   001708's Triangle::Inflate is the vendored 005185, which differs from the oracle's in the last
-  bits, so `ray_inflated_tris` gates only fans on which both sides' Inflates agree.
+  bits, and its NxRayTriIntersect (001712) differs on some NaN inputs, so `ray_inflated_tris` gates
+  only fans on which both callees agree between the two sides. 000951's promotion recipe (review):
+  move it into an x87 translation unit and add a direct oracle family (thiscall 0x00020b20, random
+  poses and sweeps, both control words).
 
 ### G. Box/box and box/capsule - `Physics/src/ContactGeneration.cpp` and `NarrowPhase.cpp` (existing)
 

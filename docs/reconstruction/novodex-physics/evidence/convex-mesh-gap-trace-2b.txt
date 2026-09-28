@@ -11,22 +11,22 @@ Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
 Command:   cdb -cf <script> build\Release\NxPhysicsCollisionTests.exe
            D:\FlamingEnt__\Unreal_3\Binaries 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
            (the script is the bp lines below, then `g` and `q`)
-Recorded:  2026-09-28, on the build of the Task 2b rows and differential (commits 9a0ece8 and
-           53ebe9c).
+Recorded:  2026-09-28, on the build of the Task 2b rows and differential (commit 1c0431d, the Task 2b
+           review's rows and families).
 Binary:    build\Release\NxPhysicsCollisionTests.exe
-           sha256=af838ebea62312dd8811cea690eb8ccf592013e51518e012e9b43300e9d2bcfb
+           sha256=796dc67c0d58887e8e1b2a534f4caa1cdf8c4c2e3411a3814ad5280ae0fd23bc
 Oracle:    D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
            sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c (the pin; the
            harness re-hashes it and refuses to run otherwise)
 Offsets:   module-relative, from build\Release\NxPhysicsCollisionTests.map of that build (the exe
            has no PDB). One one-shot breakpoint (`bp /1`) per candidate function carrying one of
-           this task's stable IDs, plus the out-of-line leaves the source splits 001672 (17) and
+           this task's stable IDs, plus the out-of-line leaves the source splits 001672 (18) and
            001694 (10) into (Physics/src/Distance.cpp). 001732 is the continuation of 001730 in the
            oracle and the loop of NxRayAABBSlab here: it has no separate address, and every call of
            001730 runs it.
 
-Result: every one of the 34 breakpoints was hit, so all seven functions (eight rows with 001732)
-and all 27 leaves executed in the run; the harness then closed with
+Result: every one of the 35 breakpoints was hit, so all seven functions (eight rows with 001732)
+and all 28 leaves executed in the run; the harness then closed with
 `collision matrix_wrong=0 index_wrong=0 mismatches=0` and `collision=pass`. The first hit of each
 comes from the row's own family, in the harness's order (point_triangle, line_line,
 segment_triangle, ray_inflated_tris, aabb_slab, triangle_plane, segment_triangle_edges); every
@@ -35,73 +35,75 @@ point/triangle leaf is first hit under point_triangle.
 (One HIT line is printed by cdb in the middle of a program line the CRT had buffered; it is
 kept here on its own line, unedited.)
 
-0:000> bp /1 NxPhysicsCollisionTests+0x22830 ".echo HIT 001672 NxPointTriangleSquareDistance +0x22830; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x22470 ".echo HIT 001692 NxLineLineClosestPoints +0x22470; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x22a80 ".echo HIT 001694 NxSegmentTriangleSquareDistance +0x22a80; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x25180 ".echo HIT 001708 NxRayInflatedTriangleFan +0x25180; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x25010 ".echo HIT 001730 NxRayAABBSlab +0x25010; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x28330 ".echo HIT 001760 NxTrianglePlane +0x28330; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x28430 ".echo HIT 001855 NxSegmentTriangleEdge +0x28430; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x23cf0 ".echo HIT 001672 nxPointTriangleEdge0 +0x23cf0; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x23d20 ".echo HIT 001672 nxPointTriangleEdge0Quotient +0x23d20; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x23d70 ".echo HIT 001672 nxPointTriangleEdge1 +0x23d70; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x23dc0 ".echo HIT 001672 nxPointTriangleEdge1Quotient +0x23dc0; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x23e10 ".echo HIT 001672 nxPointTriangleInteriorFromS +0x23e10; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x23ea0 ".echo HIT 001672 nxPointTriangleInteriorNarrow +0x23ea0; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x23f20 ".echo HIT 001672 nxPointTriangleRegion0 +0x23f20; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x23fb0 ".echo HIT 001672 nxPointTriangleRegion1 +0x23fb0; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x24030 ".echo HIT 001672 nxPointTriangleRegion2 +0x24030; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x240c0 ".echo HIT 001672 nxPointTriangleRegion2Quotient +0x240c0; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x24110 ".echo HIT 001672 nxPointTriangleRegion6 +0x24110; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x241a0 ".echo HIT 001672 nxPointTriangleRegion6Quotient +0x241a0; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x24210 ".echo HIT 001672 nxPointTriangleRegion +0x24210; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x242d0 ".echo HIT 001672 nxPointTriangleTerms +0x242d0; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x24410 ".echo HIT 001672 nxPointTriangleVertex0 +0x24410; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x24450 ".echo HIT 001672 nxPointTriangleVertex1 +0x24450; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x244a0 ".echo HIT 001672 nxPointTriangleVertex2 +0x244a0; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x24810 ".echo HIT 001694 nxSegmentTriangleDeterminant +0x24810; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x24860 ".echo HIT 001694 nxSegmentTriangleInterior +0x24860; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x24960 ".echo HIT 001694 nxSegmentTriangleRegion +0x24960; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x24a30 ".echo HIT 001694 nxSegmentTriangleST +0x24a30; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x24aa0 ".echo HIT 001694 nxSegmentTriangleSolve +0x24aa0; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x24b40 ".echo HIT 001694 nxSegmentTriangleTerms +0x24b40; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x244f0 ".echo HIT 001694 nxSegTriEdge0 +0x244f0; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x245b0 ".echo HIT 001694 nxSegTriEdge1 +0x245b0; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x24670 ".echo HIT 001694 nxSegTriEdge2 +0x24670; gc"
-0:000> bp /1 NxPhysicsCollisionTests+0x24740 ".echo HIT 001694 nxSegTriEnd +0x24740; gc"
-HIT 001672 NxPointTriangleSquareDistance +0x22830
-HIT 001672 nxPointTriangleTerms +0x242d0
-HIT 001672 nxPointTriangleRegion +0x24210
-HIT 001672 nxPointTriangleRegion6 +0x24110
-HIT 001672 nxPointTriangleVertex1 +0x24450
-HIT 001672 nxPointTriangleRegion1 +0x23fb0
-HIT 001672 nxPointTriangleInteriorFromS +0x23e10
-HIT 001672 nxPointTriangleRegion0 +0x23f20
-HIT 001672 nxPointTriangleInteriorNarrow +0x23ea0
-HIT 001672 nxPointTriangleEdge1 +0x23d70
-HIT 001672 nxPointTriangleVertex0 +0x24410
-HIT 001672 nxPointTriangleEdge0 +0x23cf0
-HIT 001672 nxPointTriangleVertex2 +0x244a0
-HIT 001672 nxPointTriangleEdge1Quotient +0x23dc0
-HIT 001672 nxPointTriangleRegion2 +0x24030
-HIT 001672 nxPointTriangleEdge0Quotient +0x23d20
-HIT 001672 nxPointTriangleRegion2Quotient +0x240c0
-HIT 001672 nxPointTriangleRegion6Quotient +0x241a0
-HIT 001692 NxLineLineClosestPoints +0x22470
-HIT 001694 NxSegmentTriangleSquareDistance +0x22a80
-HIT 001694 nxSegmentTriangleTerms +0x24b40
-HIT 001694 nxSegmentTriangleSolve +0x24aa0
-HIT 001694 nxSegmentTriangleDeterminant +0x24810
-HIT 001694 nxSegTriEdge1 +0x245b0
-HIT 001694 nxSegTriEdge2 +0x24670
-HIT 001694 nxSegmentTriangleST +0x24a30
-HIT 001694 nxSegmentTriangleRegion +0x24960
-HIT 001694 nxSegTriEnd +0x24740
-HIT 001694 nxSegTriEdge0 +0x244f0
-HIT 001694 nxSegmentTriangleInterior +0x24860
-HIT 001708 NxRayInflatedTriangleFan +0x25180
-HIT 001730 NxRayAABBSlab +0x25010
-HIT 001760 NxTrianglePlane +0x28330
-HIT 001855 NxSegmentTriangleEdge +0x28430
+0:000> bp /1 NxPhysicsCollisionTests+0x22c70 ".echo HIT 001672 NxPointTriangleSquareDistance +0x22c70; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x228b0 ".echo HIT 001692 NxLineLineClosestPoints +0x228b0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x22ec0 ".echo HIT 001694 NxSegmentTriangleSquareDistance +0x22ec0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x25590 ".echo HIT 001708 NxRayInflatedTriangleFan +0x25590; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x25420 ".echo HIT 001730 NxRayAABBSlab +0x25420; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x28740 ".echo HIT 001760 NxTrianglePlane +0x28740; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x28820 ".echo HIT 001855 NxSegmentTriangleEdge +0x28820; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24130 ".echo HIT 001672 nxPointTriangleEdge0 +0x24130; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24160 ".echo HIT 001672 nxPointTriangleEdge0Quotient +0x24160; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x241b0 ".echo HIT 001672 nxPointTriangleEdge1 +0x241b0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24200 ".echo HIT 001672 nxPointTriangleEdge1Quotient +0x24200; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24250 ".echo HIT 001672 nxPointTriangleFirstEdge +0x24250; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x242b0 ".echo HIT 001672 nxPointTriangleInteriorFromS +0x242b0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24340 ".echo HIT 001672 nxPointTriangleInteriorNarrow +0x24340; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x243c0 ".echo HIT 001672 nxPointTriangleRegion0 +0x243c0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24450 ".echo HIT 001672 nxPointTriangleRegion1 +0x24450; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x244d0 ".echo HIT 001672 nxPointTriangleRegion2 +0x244d0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24560 ".echo HIT 001672 nxPointTriangleRegion2Quotient +0x24560; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x245b0 ".echo HIT 001672 nxPointTriangleRegion6 +0x245b0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24640 ".echo HIT 001672 nxPointTriangleRegion6Quotient +0x24640; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x246b0 ".echo HIT 001672 nxPointTriangleRegion +0x246b0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24770 ".echo HIT 001672 nxPointTriangleTerms +0x24770; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24820 ".echo HIT 001672 nxPointTriangleVertex0 +0x24820; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24860 ".echo HIT 001672 nxPointTriangleVertex1 +0x24860; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x248b0 ".echo HIT 001672 nxPointTriangleVertex2 +0x248b0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24c20 ".echo HIT 001694 nxSegmentTriangleDeterminant +0x24c20; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24c70 ".echo HIT 001694 nxSegmentTriangleInterior +0x24c70; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24d70 ".echo HIT 001694 nxSegmentTriangleRegion +0x24d70; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24e40 ".echo HIT 001694 nxSegmentTriangleST +0x24e40; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24eb0 ".echo HIT 001694 nxSegmentTriangleSolve +0x24eb0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24f50 ".echo HIT 001694 nxSegmentTriangleTerms +0x24f50; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24900 ".echo HIT 001694 nxSegTriEdge0 +0x24900; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x249c0 ".echo HIT 001694 nxSegTriEdge1 +0x249c0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24a80 ".echo HIT 001694 nxSegTriEdge2 +0x24a80; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x24b50 ".echo HIT 001694 nxSegTriEnd +0x24b50; gc"
+HIT 001672 NxPointTriangleSquareDistance +0x22c70
+HIT 001672 nxPointTriangleTerms +0x24770
+HIT 001672 nxPointTriangleFirstEdge +0x24250
+HIT 001672 nxPointTriangleRegion +0x246b0
+HIT 001672 nxPointTriangleRegion6 +0x245b0
+HIT 001672 nxPointTriangleVertex1 +0x24860
+HIT 001672 nxPointTriangleRegion1 +0x24450
+HIT 001672 nxPointTriangleInteriorFromS +0x242b0
+HIT 001672 nxPointTriangleRegion0 +0x243c0
+HIT 001672 nxPointTriangleInteriorNarrow +0x24340
+HIT 001672 nxPointTriangleRegion2 +0x244d0
+HIT 001672 nxPointTriangleVertex2 +0x248b0
+HIT 001672 nxPointTriangleVertex0 +0x24820
+HIT 001672 nxPointTriangleEdge1 +0x241b0
+HIT 001672 nxPointTriangleEdge0 +0x24130
+HIT 001672 nxPointTriangleEdge0Quotient +0x24160
+HIT 001672 nxPointTriangleRegion2Quotient +0x24560
+HIT 001672 nxPointTriangleRegion6Quotient +0x24640
+HIT 001672 nxPointTriangleEdge1Quotient +0x24200
+HIT 001692 NxLineLineClosestPoints +0x228b0
+HIT 001694 NxSegmentTriangleSquareDistance +0x22ec0
+HIT 001694 nxSegmentTriangleTerms +0x24f50
+HIT 001694 nxSegmentTriangleSolve +0x24eb0
+HIT 001694 nxSegmentTriangleDeterminant +0x24c20
+HIT 001694 nxSegTriEdge1 +0x249c0
+HIT 001694 nxSegTriEdge2 +0x24a80
+HIT 001694 nxSegmentTriangleST +0x24e40
+HIT 001694 nxSegmentTriangleRegion +0x24d70
+HIT 001694 nxSegTriEnd +0x24b50
+HIT 001694 nxSegmentTriangleInterior +0x24c70
+HIT 001694 nxSegTriEdge0 +0x24900
+HIT 001708 NxRayInflatedTriangleFan +0x25590
+HIT 001730 NxRayAABBSlab +0x25420
+HIT 001760 NxTrianglePlane +0x28740
+HIT 001855 NxSegmentTriangleEdge +0x28820
   | collision matrix_wrong=0 index_wrong=0 mismatches=0
   | collision=pass
