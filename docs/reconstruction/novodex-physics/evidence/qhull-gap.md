@@ -53,7 +53,8 @@ Each family is a pair: a discrete tape and a float tape, like `qhull_hull` and
 | `qhull_random` | 9 | `QJ`, `QJ0.001`, `Qr`, `R0.001`: qhull's own random numbers without the rotation |
 | `qhull_direct` | 12 | direct calls into 33 out-of-line printers and helpers on each side's finished hull (below) |
 | `qhull_exact_output`, `qhull_exact_other` | 76, 62 | the 138 runs above whose discrete AND float tapes compare exactly, run again as families of their own (below) |
-| `qhull_paths` | 11 | DIVERGENT: the runs whose search path differs (below) |
+| `qhull_paths` | 10 | DIVERGENT: the runs whose search path differs (below) |
+| `qhull_paths_t4` | 1 | DIVERGENT: the cube at trace level 4, which shows how the search differs (below) |
 | `qhull_rotation` | 6 | DIVERGENT: `QRn`, as `qhull_hull_rotated` |
 
 **Direct calls.** The test exe's compiler inlines 40 qhull groups into their only callers, and
@@ -79,6 +80,9 @@ need a merge in progress.
 So the 138 runs whose two tapes both match (`NXQHGAP_RUNS=1` lists each run's result) run again
 as `qhull_exact_output` and `qhull_exact_other`, whose both tapes are registered whole. The
 selection is by measurement and is deterministic; a run that stopped matching fails them.
+One setting, `{2, "QG-0 Pg"}` (the lattice, good facets from point 0, print good facets), is in
+both `qhull_options` and `qhull_merge2`, so it runs twice in `qhull_exact_other`: 138 runs, 137
+distinct settings.
 
 ### Output capture
 
@@ -157,8 +161,9 @@ prints the same oracle digests.
 | `qhull_exact_output` and its `_x87` | 55,168 and 24,566 |
 | `qhull_exact_other` and its `_x87` | 37,571 and 18,072 |
 
-**Divergent, registered to the oracle digest and held by `kDivergentCeilings`: 14 families.**
-Each ceiling is today's measurement.
+**Divergent, registered to the oracle digest and held by `kDivergentCeilings`: 16 families.**
+Each ceiling is today's measurement. The four `qhull_paths` families are also held to their exact
+`length_delta` (`kLengthCeilings`: 0, 0, 9 and 2).
 
 | Family | Words differing | Discrete | Worst double ulp | `beyond` | `inf_words` | `beyond_abs` |
 |---|---:|---:|---:|---:|---:|---:|
@@ -172,13 +177,21 @@ Each ceiling is today's measurement.
 | `qhull_merge_x87` | 2,376 | 0 | 2.8e15 | 26 | 0 | 3.26e-13 |
 | `qhull_random_x87` | 317 | 0 | 3.2e15 | 14 | 0 | 1.39e-14 |
 | `qhull_direct_x87` | 1,062 | 0 | inf | 43 | 7 | 2.22e-16 |
-| `qhull_paths` | 3,212 | 3,204 | – | 0 | 0 | 0 |
-| `qhull_paths_x87` | 644 | 1 | inf | 348 | 85 | inf |
+| `qhull_paths` | 10 | 10 | – | 0 | 0 | 0 |
+| `qhull_paths_x87` | 186 | 0 | 1.6e15 | 14 | 0 | 2.0e-15 |
+| `qhull_paths_t4` | 3,202 | 3,194 | – | 0 | 0 | 0 |
+| `qhull_paths_t4_x87` | 458 | 1 | inf | 334 | 85 | inf |
 | `qhull_rotation` | 268 | 268 | – | 0 | 0 | 0 |
 | `qhull_rotation_x87` | 2,001 | 0 | inf | 547 | 20 | 2 |
 
 I checked the ceilings in both directions. Lowering `qhull_output_x87`'s `beyond` to 42 and
-`qhull_paths`' discrete to 3,202 failed exactly those two families.
+(before the T4 split) `qhull_paths`' discrete to 3,202 failed exactly those two families, and
+recording `qhull_paths_t4`'s `length_delta` as 8 failed it.
+
+`qhull_paths_t4_x87`'s `beyond_abs` is `inf`, so that one cap holds nothing: after the T4 trace's
+extra line every later number is compared against a different one, including the `inf` the trace
+prints for an unset distance. Its words, discrete, `beyond`, `inf_words` and `length_delta` caps
+hold it.
 
 **Attribution.**
 
@@ -187,24 +200,39 @@ I checked the ceilings in both directions. Lowering `qhull_output_x87`'s `beyond
   reproduced (`qh_distplane` and the rest of the summation-order unit).
   - Every word more than 4 ulp apart is either a value of magnitude below 1 differing by at most
     3.3e-13, or a value next to zero.
-  - The `inf` words are distances next to zero of opposite sign, for example trace's
-    `dist= 0` against `dist=-2.775558e-17`, and direct's 1.1e-16 against -1.1e-16.
-- **`qhull_paths`: the hull is the same on both sides; how it was searched is not.** Eleven runs:
+  - The largest, `qhull_merge_x87`'s 3.26e-13, is run 11 (the eight tight clusters, `C-0.0001`):
+    the ratio `qh_printsummary` prints as ` (%.1fx)` after "Maximum distance of point above
+    facet" (`qhull.c:1379`, `outerplane/(qh ONEmerge + qh DISTround)`). The oracle passes
+    0.53661773568130933 and the candidate 0.53661773568098348, a relative difference of 6e-13 in
+    a quotient of two roundoff-sized quantities; both print `0.5`. (`NXQHGAP_FLOAT_MIN=1e-13`
+    lists such words with their format.)
+  - The `inf` words are next to zero with opposite signs: trace's `dist= 0` against
+    `dist=-2.775558e-17`, and direct's 1.1e-16 against -1.1e-16. Some may also be a print
+    artefact rather than a value difference: the 2003 CRT prints a negative zero as ` 0`, so a
+    trace `det= 0` on the oracle against `det=-0` on the candidate parses to +0 against -0, which
+    the tape counts as a sign change, whatever the oracle's value was.
+- **`qhull_paths`: the hull is the same on both sides; how it was searched is not.** Ten runs:
   - the 4-d lattice with `s`, `C-0`, `Qx` and `Qv`;
   - `d Qbb` and `d Qt` over the 2-d square;
   - `C0.01` over the sphere and over the box;
-  - `Qr` and `QR-5 Qr` over the lattice;
-  - `T4` over the cube.
+  - `Qr` and `QR-5 Qr` over the lattice.
 
-  In the first ten, the only differing discrete word is a counter that `qh_printsummary` prints:
-  `Number of distance tests for qhull`.
-  - The `T4` trace shows why. At `qh_findbest: neighbors of f7, bestdist -1.2`, the candidate
-    finds a neighbour further than `bestdist` by a last bit, moves to `f5`, and prints one more
-    trace line. The oracle does not. Both then partition the point into `f6`.
-  - So a last-bit distance against a tie at `bestdist` sends one side's directed search one
-    facet further (the `qh_distplane` class). That changes a count, not the result.
-  - The `T4` run is last in the family because its tape is 9 words longer. The words after the
-    first difference are misalignment.
+  In each, the only differing discrete word is one counter that `qh_printsummary` prints,
+  `Number of distance tests for qhull`: `discrete=10`, `length_delta=0`, and the doubles within
+  2.0e-15.
+- **`qhull_paths_t4`: the cube at `T4`** shows the mechanism. At
+  `qh_findbest: neighbors of f7, bestdist -1.2`, the candidate finds a neighbour further than
+  `bestdist` by a last bit, moves to `f5`, and prints one more trace line. The oracle does not.
+  Both then partition the point into `f6`. So a last-bit distance against a tie at `bestdist`
+  sends one side's directed search one facet further (the `qh_distplane` class): a count
+  changes, not the result. The candidate's tape is 9 words longer, and the words after that line
+  are misalignment.
+- **The ten `qhull_paths` runs are attributed to that mechanism by analogy, and it was shown on
+  one of them.** A one-off run of the lattice with `Qr T4` (not registered) prints, in the
+  oracle, `qh_findbest: neighbors of f9, bestdist 1.1e-16` where the candidate prints
+  `bestdist 0`; the candidate then visits `f6` twice more (`bestdist -0.76`, `-0.38`), which the
+  oracle does not. That is the same last-bit tie, in `qhull_paths`' `Qr` run's input. The other
+  nine runs are not traced at level 4.
 - **`qhull_rotation`**: `QRn` rotates the input by qhull's own random matrix. The oracle
   evaluates its Gram-Schmidt with a reciprocal (`0x0005f3d2`, left stock in the overlay, see
   `MODIFICATIONS.md`), and then the merges differ, as in `qhull_hull_rotated`.
@@ -220,7 +248,7 @@ The binaries are:
 | Binary | sha256 |
 |---|---|
 | Candidate DLL (unchanged) | `f9075db446078439c34e9616c71235da522f8e483ad49504d2aedb003ba303ef` |
-| `NxPhysicsThirdPartyTests.exe` | `b054fdc3dc271fc37224998cbd8069b2dce358d2ef5a7736d68e148780433793` |
+| `NxPhysicsThirdPartyTests.exe` | `07a435eb308d2d03e7343fcc7f06c9a5243d0a108165f18b75ec3f6fe61e80e4` |
 
 Identity again finds every traced body the same code as the candidate DLL's, except the
 `AABBTreeBuilder` deleting destructor. 18 qhull groups that were absent from the exe are now
@@ -322,6 +350,18 @@ Over all 331 qhull groups, the `outcome` column goes from 9 exact / 171 discrete
 
 **What this does not settle.**
 
+- **The exact class rests on the `qhull_exact_*` reruns, next to divergent families.** Of the
+  87 held-back groups that read `exact`, 86 are exact only through the runs repeated as
+  `qhull_exact_output` / `qhull_exact_other` (`qh_setequal` is also exact in `qh_set`). Over all
+  qhull groups it is 231 of 240. Every one of the 86 also ran in ceilinged divergent families,
+  which `vendored_coverage.csv`'s `differential` column lists per group.
+- **The controller's rule for Task 2.**
+  - A group's `exact` class counts only if its proof lists, and attributes, every divergent
+    family the group also ran in. This applies to arm (i) and to the DIFF-equivalent arm.
+  - A group that is itself a named divergence source can be promoted at most as outcome-exact,
+    with its bounds stated, and never on the exact arm. That covers `qh_distplane`, and any
+    group owning `sum_grouping.csv` sites that a divergent family's attribution implicates.
+
 - No row changes state in this task. Promotion, including the DIFF-equivalent arm, is the next
   task's.
 - An `exact` execution of a DIFF group is evidence for its outputs on these inputs. The arm also
@@ -334,10 +374,10 @@ Over all 331 qhull groups, the `outcome` column goes from 9 exact / 171 discrete
 
 The registrations are in `tools/gate_targets.ps1`:
 
-- 30 lines: the 28 families, then the totals pair (`driven=` / `oracle digest=`);
+- 32 lines: the 30 families, then the totals pair (`driven=` / `oracle digest=`);
 - the exact families are registered whole, the divergent ones up to `oracle=`;
 - no existing line was edited;
-- the Phase 4 floor goes from 135 to 165, and `test_gate_targets.py MINIMUM` matches it.
+- the Phase 4 floor goes from 135 to 167, and `test_gate_targets.py MINIMUM` matches it.
 
 The gate results are in the Timing row below.
 
