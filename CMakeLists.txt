@@ -483,6 +483,12 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# tree stops building. Round 75 measured why it matters: linking the Foundation makes the loader
 	# resolve it as an import before any harness code runs, so the PAIR's copy is never the one loaded.
 	target_link_libraries(NxPhysicsAssetTests NxOpcode bcrypt)
+	# A linker map, so the vendored-correspondence execution trace can resolve the vendored
+	# functions linked into this exe by name (evidence/vendored-trace-*.txt). /MAP writes a
+	# file beside the exe and changes nothing in it.
+	if(MSVC)
+		target_link_options(NxPhysicsAssetTests PRIVATE /MAP)
+	endif()
 
 	# The vendored third-party differential. Same shape as the two above: it
 	# holds the pinned oracle in its own process and calls qhull and OPCODE rows
@@ -497,8 +503,13 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# -- and that pulls PhysicsInternal.cpp in with it, the same way
 	# NxPhysicsInternalTests does.
 	add_executable(NxPhysicsThirdPartyTests tests/PhysicsThirdPartyTests.cpp
+		tests/PhysicsThirdPartyQhull.c
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/NovodexBoxPruning.cpp)
+	# The hull family's C half reads qhull's own structs, so it and only it sees the
+	# merged tree's headers (their fprintf redirection stays out of the C++ harness).
+	set_source_files_properties(tests/PhysicsThirdPartyQhull.c PROPERTIES
+		INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/External/qhull-tree")
 	target_include_directories(NxPhysicsThirdPartyTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
 		Physics/src/opcode)
@@ -509,6 +520,9 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# and a second one naming the same files would silently override it.
 	if(MSVC)
 		target_compile_options(NxPhysicsThirdPartyTests PRIVATE /arch:IA32 /GR- /wd4996)
+		# The map the vendored-correspondence trace resolves breakpoints from; see
+		# NxPhysicsAssetTests above.
+		target_link_options(NxPhysicsThirdPartyTests PRIVATE /MAP)
 	endif()
 
 	# A static-proof gate, not a differential: it links the private translation

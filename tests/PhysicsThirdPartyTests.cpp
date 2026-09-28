@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "Opcode.h"
 
@@ -297,8 +298,11 @@ static void nxReport(const char* name, const char* rva, const char* owner, const
 		{
 		if(gOracleTape.count != gCandidateTape.count || gOracleTape.overflow != gCandidateTape.overflow)
 			{
+			// A divergent family's tapes may differ in length -- a boundary query
+			// that one side answers with a hit and the other without -- and that
+			// is part of what it measures; anywhere else it fails the run.
 			mismatches = 1;
-			fatal = 1;
+			fatal = ulpTolerance == kDivergent ? 0 : 1;
 			fprintf(stderr, "MISMATCH %s word count oracle=%u candidate=%u\n",
 				name, gOracleTape.count, gCandidateTape.count);
 			}
@@ -1592,6 +1596,2148 @@ static void nxDriveRadixSetRankBuffers(const NxOracleRows& o, bool selfOnly)
 	}
 
 //////////////////////////////////////////////////////////////////////////////
+// VENDORED CORRESPONDENCE, TASK 4. Execution evidence for the vendored rows the
+// families above never reach: OPCODE's model build, every collider over every
+// tree kind, the vanilla AABBTree, SweepAndPrune and the ICE maths, and qhull's
+// hull construction. Before these families existed, a cdb trace of this harness
+// and the asset harness found 40 of the 562 matched groups executing
+// (evidence/vendored-correspondence.md, Task 4); the promotion policy needs
+// execution with a compared outcome for every group with x87 code.
+//
+// Same rules as above. Every input is built once and handed to both sides; the
+// oracle side runs at the recorded RVAs on objects the oracle's own
+// constructors initialise; every output word the oracle produced goes on the
+// oracle tape, and the candidate's on the other. Pointers never go on a tape:
+// a link inside a node array is taped as the index it points at.
+//
+// What the harness does to an oracle object is limited to what the oracle
+// reads: inline setters (field writes, no code), the NovodeX field at
+// RayCollider+0x88 that no setter writes (poked on both sides identically, the
+// way the prunable families poke), and the NovodeX-layout cache images the
+// volume colliders read (see NxOracleVolumeCache). Containers the oracle filled
+// are released through the oracle's own Container destructor, never the
+// candidate's, because the two sides allocate from different heaps.
+
+// OPCODE, oracle RVAs. Each is the `rva` of a mapped row in opcode_map.csv.
+static const unsigned kOpcModelCtor			= 0x000e90a0;	// phys_fn_005362
+static const unsigned kOpcModelDtor			= 0x000e90e0;	// phys_fn_005366
+static const unsigned kOpcModelBuild		= 0x000e9100;	// phys_fn_005368
+static const unsigned kOpcBaseModelRefit	= 0x000e9410;	// phys_fn_005378
+static const unsigned kOpcTriBuilderCtor	= 0x000e9060;	// phys_fn_005360
+static const unsigned kOpcTreeCtor			= 0x000f1060;	// phys_fn_005519
+static const unsigned kOpcTreeBuild			= 0x000f10c0;	// phys_fn_005523
+static const unsigned kOpcTreeDtor			= 0x000f1500;	// phys_fn_005529
+static const unsigned kOpcTreeRefit2		= 0x000f11b0;	// phys_fn_005525
+static const unsigned kOpcRayCtor			= 0x000b5720;
+static const unsigned kOpcRayDtor			= 0x000b5760;
+static const unsigned kOpcRayValidate		= 0x000b5770;	// phys_fn_004903
+static const unsigned kOpcRayCollideModel	= 0x000ba6f0;	// phys_fn_004932
+static const unsigned kOpcRayCollideTree	= 0x000ba880;	// phys_fn_004934
+static const unsigned kOpcSphereCtor		= 0x000de7e0;
+static const unsigned kOpcSphereDtor		= 0x000de800;
+static const unsigned kOpcSphereCollideModel= 0x000e1360;	// phys_fn_005105
+static const unsigned kOpcSphereCollideTree	= 0x000e14d0;	// phys_fn_005107
+static const unsigned kOpcOBBCtor			= 0x000d4d00;
+static const unsigned kOpcOBBDtor			= 0x000d4d20;
+static const unsigned kOpcOBBCollide		= 0x000de0d0;	// phys_fn_005067
+static const unsigned kOpcAABBCtor			= 0x000e9b80;
+static const unsigned kOpcAABBDtor			= 0x000e9ba0;
+static const unsigned kOpcAABBCollideModel	= 0x000ef0d0;	// phys_fn_005434
+static const unsigned kOpcAABBCollideTree	= 0x000ef230;	// phys_fn_005436
+static const unsigned kOpcLSSCtor			= 0x000d3490;
+static const unsigned kOpcLSSDtor			= 0x000d34b0;
+static const unsigned kOpcLSSCollide		= 0x000d4b90;	// phys_fn_005027
+static const unsigned kOpcPlanesCtor		= 0x000e1510;
+static const unsigned kOpcPlanesDtor		= 0x000e2b30;
+static const unsigned kOpcPlanesCollide		= 0x000e2b60;	// phys_fn_005138
+static const unsigned kOpcTreeColliderCtor	= 0x000bb510;
+static const unsigned kOpcTreeColliderDtor	= 0x000bb550;
+static const unsigned kOpcTreeColliderBVT	= 0x000d13c0;	// phys_fn_004986
+static const unsigned kOpcSapCtor			= 0x000e7180;
+static const unsigned kOpcSapDtor			= 0x000e71b0;
+static const unsigned kOpcSapInit			= 0x000e6ca0;	// phys_fn_005283
+static const unsigned kOpcSapUpdate			= 0x000e6760;
+static const unsigned kOpcSapGetPairs		= 0x000e6750;
+static const unsigned kIceAABBAdd			= 0x000e2d20;	// phys_fn_005141
+static const unsigned kIceAABBMakeCube		= 0x000e2e50;
+static const unsigned kIceAABBIsInside		= 0x000e2f70;
+static const unsigned kIceAABBComputePoints	= 0x000e2fd0;
+static const unsigned kIcePlaneSet			= 0x000e31c0;
+static const unsigned kIceTriArea			= 0x000e3ed0;
+static const unsigned kIceTriNormal			= 0x000e3f50;
+static const unsigned kIceTriCenter			= 0x000e4020;
+static const unsigned kIceTriInflate		= 0x000e4090;
+static const unsigned kIceITriReplace		= 0x000e4160;
+static const unsigned kIceITriFindEdge		= 0x000e41a0;
+static const unsigned kIceInvertPR			= 0x000e4200;
+static const unsigned kIceM4CoFactor		= 0x000e42a0;
+static const unsigned kIceM4Determinant		= 0x000e43a0;
+static const unsigned kIceM4Invert			= 0x000e4400;
+static const unsigned kIceOBBPlanes			= 0x000e4580;
+static const unsigned kIceOBBPoints			= 0x000e48e0;
+static const unsigned kIceOBBEdgeNormal		= 0x000e4cb0;
+static const unsigned kIceOBBIsInside		= 0x000e4d30;
+
+// qhull, oracle RVAs: the calls phys_fn_003236 (0x0007d420) makes, in order,
+// and the state the NovodeX host hooks hang off.
+static const unsigned kQhInitA				= 0x000626c0;	// global.c:397
+static const unsigned kQhInitflags			= 0x000626f0;	// global.c:540
+static const unsigned kQhInitB				= 0x000660a0;	// global.c:444
+static const unsigned kQhQhull				= 0x0007d180;	// qhull.c:58, phys_fn_003234
+static const unsigned kQhCheckOutput		= 0x0007a2a0;	// poly2.c:250
+static const unsigned kQhProduceOutput		= 0x0006d800;	// io.c:35
+static const unsigned kQhState				= 0x00124678;	// qh_qh (vendored_data_map.csv)
+static const unsigned kQhHostGlobal			= 0x00125080;	// the host object pointer
+static const unsigned kOracleIob			= 0x00122600;	// stdin, stdout, stderr at +0/+0x20/+0x40
+
+typedef void*	(__thiscall* NxCtorFn)(void*);
+typedef void	(__thiscall* NxDtorFn)(void*);
+typedef bool	(__thiscall* NxModelBuildFn)(void*, const OPCODECREATE*);
+typedef bool	(__thiscall* NxBoolThisFn)(void*);
+typedef bool	(__thiscall* NxTreeBuildFn)(void*, void*);
+typedef const char* (__thiscall* NxMessageFn)(void*);
+typedef bool	(__thiscall* NxRayModelFn)(void*, const Ray*, const void*, const Matrix4x4*, udword*);
+typedef bool	(__thiscall* NxRayTreeFn)(void*, const Ray*, const void*, void*);
+typedef bool	(__thiscall* NxSphereModelFn)(void*, void*, const Sphere*, const void*, const Matrix4x4*, const Matrix4x4*);
+typedef bool	(__thiscall* NxSphereTreeFn)(void*, void*, const Sphere*, const void*);
+typedef bool	(__thiscall* NxOBBModelFn)(void*, void*, const OBB*, const void*, const Matrix4x4*, const Matrix4x4*);
+typedef bool	(__thiscall* NxAABBModelFn)(void*, void*, const CollisionAABB*, const void*);
+typedef bool	(__thiscall* NxLSSModelFn)(void*, void*, const LSS*, const void*, const Matrix4x4*, const Matrix4x4*);
+typedef bool	(__thiscall* NxPlanesModelFn)(void*, void*, const Plane*, udword, const void*, const Matrix4x4*);
+typedef bool	(__thiscall* NxBVTFn)(void*, void*, const Matrix4x4*, const Matrix4x4*);
+typedef bool	(__thiscall* NxSapInitFn)(void*, udword, const AABB**, const bool*);
+typedef bool	(__thiscall* NxSapUpdateFn)(void*, udword, const AABB*);
+typedef void	(__thiscall* NxSapPairsFn)(const void*, PairCallback, void*);
+typedef void*	(__thiscall* NxAABBAddFn)(void*, const void*);
+typedef float	(__thiscall* NxAABBMakeCubeFn)(const void*, void*);
+typedef bool	(__thiscall* NxBoolConstPtrFn)(const void*, const void*);
+typedef bool	(__thiscall* NxPointsFn)(const void*, void*);
+typedef void*	(__thiscall* NxPlaneSetFn)(void*, const Point*, const Point*, const Point*);
+typedef float	(__thiscall* NxFloatThisFn)(const void*);
+typedef void	(__thiscall* NxPointOutFn)(const void*, Point*);
+typedef void	(__thiscall* NxInflateFn)(void*, float, bool);
+typedef bool	(__thiscall* NxReplaceFn)(void*, udword, udword);
+typedef unsigned char (__thiscall* NxFindEdgeFn)(const void*, udword, udword);
+typedef void	(__cdecl* NxInvertPRFn)(Matrix4x4*, const Matrix4x4*);
+typedef float	(__thiscall* NxCoFactorFn)(const void*, udword, udword);
+typedef void*	(__thiscall* NxInvertFn)(void*);
+typedef void	(__thiscall* NxEdgeNormalFn)(const void*, udword, Point*);
+typedef BOOL	(__thiscall* NxOBBInsideFn)(const void*, const void*);
+
+// The oracle objects live in raw storage with slack after the candidate's
+// sizeof, so an image that turned out bigger than the vendored class would
+// scribble on the slack and not on the heap -- and the slack is checked.
+static const unsigned kSlack = 64;
+static void* nxOracleAlloc(size_t size)
+	{
+	unsigned char* p = (unsigned char*) malloc(size + kSlack);
+	memset(p, 0xcd, size + kSlack);
+	return p;
+	}
+static void nxOracleFree(void* p, size_t size)
+	{
+	const unsigned char* bytes = (const unsigned char*) p;
+	for(unsigned i = 0; i < kSlack; ++i)
+		if(bytes[size + i] != 0xcd)
+			{
+			fprintf(stderr, "FAIL oracle object wrote past the vendored sizeof %u\n", (unsigned) size);
+			++gMismatches;
+			break;
+			}
+	free(p);
+	}
+
+static void* nxAt(const NxOracleRows& o, unsigned rva) { return o.base + rva; }
+static void nxTapeWords(NxTape& tape, const void* p, size_t bytes);
+
+// Containers built in raw storage by the vendored (inline) constructor, filled
+// by whichever side, released by that side's destructor.
+static void nxReleaseOracleContainer(const NxOracleRows& o, void* container)
+	{
+	o.containerDtor(container);
+	}
+
+static void nxTapeContainerEntries(NxTape& tape, const Container& c)
+	{
+	tape.push(c.GetNbEntries());
+	for(udword i = 0; i < c.GetNbEntries(); ++i)
+		tape.push(c.GetEntries()[i]);
+	}
+
+//////////////////////////////////////////////////////////////////////////////
+// Meshes. Six shapes of input: a height field, a triangle soup, a flat grid
+// (every triangle coplanar), a degenerate set (collinear, repeated-vertex and
+// duplicated triangles), a single triangle (the single-node model) and a
+// closed box. Each side gets its own copy of the arrays and its own
+// MeshInterface, so nothing one side writes can reach the other.
+
+struct NxMesh
+	{
+	unsigned	nbVerts;
+	unsigned	nbTris;
+	float		verts[3 * 400];
+	unsigned	tris[3 * 400];
+	float		minB[3];
+	float		maxB[3];
+	};
+
+static const int kNbMeshes = 6;
+static NxMesh gMeshes[kNbMeshes];
+
+static float nxUnit()	// [0, 1)
+	{
+	return (float) (nxNext() >> 8) * (1.0f / 16777216.0f);
+	}
+
+static float nxRange(float lo, float hi)
+	{
+	return lo + (hi - lo) * nxUnit();
+	}
+
+static void nxMeshBounds(NxMesh& m)
+	{
+	for(int k = 0; k < 3; ++k)
+		{
+		m.minB[k] = 1e30f;
+		m.maxB[k] = -1e30f;
+		}
+	for(unsigned v = 0; v < m.nbVerts; ++v)
+		for(int k = 0; k < 3; ++k)
+			{
+			if(m.verts[v * 3 + k] < m.minB[k]) m.minB[k] = m.verts[v * 3 + k];
+			if(m.verts[v * 3 + k] > m.maxB[k]) m.maxB[k] = m.verts[v * 3 + k];
+			}
+	}
+
+static void nxGridMesh(NxMesh& m, int n, bool flat)
+	{
+	m.nbVerts = (unsigned) ((n + 1) * (n + 1));
+	for(int j = 0; j <= n; ++j)
+		for(int i = 0; i <= n; ++i)
+			{
+			float* v = &m.verts[(j * (n + 1) + i) * 3];
+			v[0] = (float) i - n * 0.5f;
+			v[1] = (float) j - n * 0.5f;
+			v[2] = flat ? 0.0f : nxRange(-0.75f, 0.75f);
+			}
+	m.nbTris = 0;
+	for(int j = 0; j < n; ++j)
+		for(int i = 0; i < n; ++i)
+			{
+			const unsigned a = (unsigned) (j * (n + 1) + i), b = a + 1;
+			const unsigned c = a + (unsigned) (n + 1), d = c + 1;
+			unsigned* t = &m.tris[m.nbTris * 3];
+			t[0] = a; t[1] = b; t[2] = d;
+			t[3] = a; t[4] = d; t[5] = c;
+			m.nbTris += 2;
+			}
+	}
+
+static void nxBuildMeshes()
+	{
+	gState = 0x0bc0de01;
+	nxGridMesh(gMeshes[0], 8, false);					// 128 triangles
+
+	NxMesh& soup = gMeshes[1];							// 120 triangles
+	soup.nbTris = 120;
+	soup.nbVerts = 360;
+	for(unsigned t = 0; t < soup.nbTris; ++t)
+		{
+		const float cx = nxRange(-6.0f, 6.0f), cy = nxRange(-6.0f, 6.0f), cz = nxRange(-6.0f, 6.0f);
+		for(int k = 0; k < 3; ++k)
+			{
+			float* v = &soup.verts[(t * 3 + k) * 3];
+			v[0] = cx + nxRange(-1.5f, 1.5f);
+			v[1] = cy + nxRange(-1.5f, 1.5f);
+			v[2] = cz + nxRange(-1.5f, 1.5f);
+			soup.tris[t * 3 + k] = t * 3 + (unsigned) k;
+			}
+		}
+
+	nxGridMesh(gMeshes[2], 5, true);					// 50 coplanar triangles
+
+	NxMesh& degen = gMeshes[3];							// 24 triangles
+	degen.nbVerts = 16;
+	for(unsigned v = 0; v < 8; ++v)						// collinear along x
+		{
+		degen.verts[v * 3 + 0] = (float) v * 0.5f;
+		degen.verts[v * 3 + 1] = 1.0f;
+		degen.verts[v * 3 + 2] = -1.0f;
+		}
+	for(unsigned v = 8; v < 16; ++v)
+		for(int k = 0; k < 3; ++k)
+			degen.verts[v * 3 + k] = nxRange(-2.0f, 2.0f);
+	degen.nbTris = 24;
+	for(unsigned t = 0; t < 24; ++t)
+		{
+		unsigned* tri = &degen.tris[t * 3];
+		switch(t % 4)
+			{
+			case 0: tri[0] = t % 6; tri[1] = t % 6 + 1; tri[2] = t % 6 + 2; break;	// zero area
+			case 1: tri[0] = 8 + t % 8; tri[1] = tri[0]; tri[2] = 8 + (t + 3) % 8; break;	// repeated vertex
+			case 2: tri[0] = 8 + t % 8; tri[1] = 8 + (t + 1) % 8; tri[2] = 8 + (t + 5) % 8; break;
+			default: tri[0] = tri[-3]; tri[1] = tri[-2]; tri[2] = tri[-1]; break;	// duplicate
+			}
+		}
+
+	NxMesh& single = gMeshes[4];
+	single.nbVerts = 3;
+	single.nbTris = 1;
+	const float kSingle[9] = { -1.0f, -1.0f, 0.25f, 2.0f, -0.5f, 0.25f, 0.0f, 1.5f, 0.75f };
+	memcpy(single.verts, kSingle, sizeof(kSingle));
+	single.tris[0] = 0; single.tris[1] = 1; single.tris[2] = 2;
+
+	NxMesh& box = gMeshes[5];
+	box.nbVerts = 8;
+	for(unsigned v = 0; v < 8; ++v)
+		{
+		box.verts[v * 3 + 0] = (v & 1) ? 1.0f : -1.0f;
+		box.verts[v * 3 + 1] = (v & 2) ? 1.0f : -1.0f;
+		box.verts[v * 3 + 2] = (v & 4) ? 1.0f : -1.0f;
+		}
+	static const unsigned kBoxTris[36] =
+		{
+		0,2,1, 1,2,3,  4,5,6, 5,7,6,  0,1,4, 1,5,4,
+		2,6,3, 3,6,7,  0,4,2, 2,4,6,  1,3,5, 3,7,5
+		};
+	box.nbTris = 12;
+	memcpy(box.tris, kBoxTris, sizeof(kBoxTris));
+
+	for(int i = 0; i < kNbMeshes; ++i)
+		nxMeshBounds(gMeshes[i]);
+	}
+
+// One side's copy of a mesh.
+struct NxMeshCopy
+	{
+	MeshInterface	iface;
+	float*			verts;
+	unsigned*		tris;
+	};
+
+static void nxCopyMesh(NxMeshCopy& c, const NxMesh& m)
+	{
+	c.verts = (float*) malloc(sizeof(float) * 3 * m.nbVerts);
+	c.tris = (unsigned*) malloc(sizeof(unsigned) * 3 * m.nbTris);
+	memcpy(c.verts, m.verts, sizeof(float) * 3 * m.nbVerts);
+	memcpy(c.tris, m.tris, sizeof(unsigned) * 3 * m.nbTris);
+	c.iface.SetNbTriangles(m.nbTris);
+	c.iface.SetNbVertices(m.nbVerts);
+	c.iface.SetPointers((const IndexedTriangle*) c.tris, (const Point*) c.verts);
+	}
+
+//////////////////////////////////////////////////////////////////////////////
+// Models. Every mesh in the four tree kinds, and the height field once more
+// under each splitting rule, with the original tree kept, and with the two
+// NovodeX build settings on.
+
+struct NxModelPair
+	{
+	int				mesh;
+	int				kind;		// bit 0 no-leaf, bit 1 quantized
+	NxMeshCopy		oracleMesh;
+	NxMeshCopy		candidateMesh;
+	void*			oracle;		// raw storage, oracle Model
+	Model*			candidate;
+	bool			built;
+	bool			exact;		// taped into opcode_model_build, else opcode_model_build_x87
+	};
+
+static const int kMaxModels = 48;
+static NxModelPair gModels[kMaxModels];
+static int gNbModels = 0;
+static int gModelIndex[6][4];	// the default-rule model of each mesh and tree kind
+
+// The other families' tapes while several are being filled at once: X87 for
+// the float words a query returns, B for the queries whose input sits exactly
+// on a boundary (see nxDriveRay).
+static NxTape gOracleTapeX87;
+static NxTape gCandidateTapeX87;
+static NxTape gOracleTapeB;
+static NxTape gCandidateTapeB;
+
+// Reports a family filled on a side pair of tapes, through the main ones.
+static void nxReportTapes(const NxTape& oracle, const NxTape& candidate, const char* name,
+	const char* rva, const char* owner, const char* source, bool selfOnly, unsigned tolerance)
+	{
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	for(unsigned i = 0; i < oracle.count; ++i)
+		gOracleTape.push(oracle.words[i]);
+	for(unsigned i = 0; i < candidate.count; ++i)
+		gCandidateTape.push(candidate.words[i]);
+	nxReport(name, rva, owner, source, selfOnly, tolerance);
+	}
+
+// A node array with its links replaced by indices. `stride` is the node size;
+// `links` the byte offsets of the link words (the low bit marks a leaf).
+static void nxTapeNodes(NxTape& tape, const unsigned char* nodes, unsigned count, unsigned stride,
+	const unsigned* links, int nbLinks)
+	{
+	tape.push(count);
+	for(unsigned n = 0; n < count; ++n)
+		{
+		const unsigned char* node = nodes + n * stride;
+		for(unsigned off = 0; off < stride; off += 4)
+			{
+			unsigned word;
+			memcpy(&word, node + off, 4);
+			bool link = false;
+			for(int l = 0; l < nbLinks; ++l)
+				link |= links[l] == off;
+			if(link && !(word & 1))
+				{
+				const unsigned delta = word - (unsigned) (size_t) nodes;
+				word = 0x80000000u | (delta % stride == 0 ? delta / stride : 0x7fffffffu);
+				}
+			tape.push(word);
+			}
+		}
+	}
+
+// Everything a built model holds that is not a pointer.
+static void nxTapeModel(NxTape& tape, const void* object)
+	{
+	const Model* model = (const Model*) object;
+	tape.push(model->GetModelCode());
+	const AABBOptimizedTree* tree = model->GetTree();
+	if(!tree)
+		{
+		tape.push(0xdeadu);
+		return;
+		}
+	const unsigned char* raw = (const unsigned char*) tree;
+	unsigned nbNodes;
+	const unsigned char* nodes;
+	memcpy(&nbNodes, raw + 4, 4);
+	memcpy(&nodes, raw + 8, 4);
+	const udword code = model->GetModelCode();
+	const bool noLeaf = (code & OPC_NO_LEAF) != 0;
+	const bool quantized = (code & OPC_QUANTIZED) != 0;
+	if(!noLeaf && !quantized)
+		{
+		static const unsigned links[1] = { 24 };
+		nxTapeNodes(tape, nodes, nbNodes, sizeof(AABBCollisionNode), links, 1);
+		}
+	else if(noLeaf && !quantized)
+		{
+		static const unsigned links[2] = { 24, 28 };
+		nxTapeNodes(tape, nodes, nbNodes, sizeof(AABBNoLeafNode), links, 2);
+		}
+	else if(!noLeaf && quantized)
+		{
+		static const unsigned links[1] = { 12 };
+		nxTapeNodes(tape, nodes, nbNodes, sizeof(AABBQuantizedNode), links, 1);
+		for(unsigned off = 12; off < sizeof(AABBQuantizedTree); off += 4)
+			{
+			unsigned w;
+			memcpy(&w, raw + off, 4);
+			tape.push(w);
+			}
+		}
+	else
+		{
+		static const unsigned links[2] = { 12, 16 };
+		nxTapeNodes(tape, nodes, nbNodes, sizeof(AABBQuantizedNoLeafNode), links, 2);
+		for(unsigned off = 12; off < sizeof(AABBQuantizedNoLeafTree); off += 4)
+			{
+			unsigned w;
+			memcpy(&w, raw + off, 4);
+			tape.push(w);
+			}
+		}
+	}
+
+// A vanilla AABBTree, depth first from the root (the tree object itself). A
+// complete tree keeps its nodes in mPool and a partial one allocates them in
+// pairs, so the walk follows the links rather than reading the pool, and a
+// link is taped as present or absent plus its pool bit.
+static void nxTapeVanillaNode(NxTape& tape, const AABBTreeNode* node, const udword* indices, int depth)
+	{
+	const unsigned char* raw = (const unsigned char*) node;
+	for(unsigned off = 0; off < 24; off += 4)
+		{
+		unsigned w;
+		memcpy(&w, raw + off, 4);
+		tape.push(w);
+		}
+	unsigned pos;
+	memcpy(&pos, raw + 24, 4);
+	const udword* prims = node->GetPrimitives();
+	tape.push(prims ? (unsigned) (prims - indices) : 0xffffffffu);
+	tape.push(node->GetNbPrimitives());
+	const AABBTreeNode* child = node->GetPos();
+	tape.push((child ? 2u : 0u) | (pos & 1u));
+	if(child && depth < 64)
+		{
+		nxTapeVanillaNode(tape, child, indices, depth + 1);
+		nxTapeVanillaNode(tape, child + 1, indices, depth + 1);
+		}
+	}
+
+static void nxTapeVanillaTree(NxTape& tape, const AABBTree* tree)
+	{
+	tape.push(tree->GetNbNodes());
+	const udword* indices = tree->GetIndices();
+	nxTapeVanillaNode(tape, tree, indices, 0);
+	for(unsigned i = 0; i < tree->GetNbPrimitives(); ++i)
+		tape.push(indices[i]);
+	}
+
+static void nxAddModel(const NxOracleRows& o, int mesh, int kind, udword rules, bool keepOriginal,
+	float inflate, int extendAxis, float extendValue, bool exact, bool selfOnly)
+	{
+	NxModelPair& p = gModels[gNbModels++];
+	p.mesh = mesh;
+	p.kind = kind;
+	p.exact = exact;
+	nxCopyMesh(p.oracleMesh, gMeshes[mesh]);
+	nxCopyMesh(p.candidateMesh, gMeshes[mesh]);
+	NxTape& oracleTape = exact ? gOracleTape : gOracleTapeX87;
+	NxTape& candidateTape = exact ? gCandidateTape : gCandidateTapeX87;
+
+	OPCODECREATE create;
+	create.mSettings.mRules				= rules;
+	create.mSettings.mLimit				= 1;
+	create.mSettings.mNovodeXInflate	= inflate;
+	create.mSettings.mNovodeXExtendAxis	= extendAxis;
+	create.mSettings.mNovodeXExtendValue= extendValue;
+	create.mNoLeaf						= (kind & 1) != 0;
+	create.mQuantized					= (kind & 2) != 0;
+	create.mKeepOriginal				= keepOriginal;
+	create.mCanRemap					= false;
+
+	create.mIMesh = &p.oracleMesh.iface;
+	p.oracle = nxOracleAlloc(sizeof(Model));
+	((NxCtorFn) nxAt(o, kOpcModelCtor))(p.oracle);
+	const bool built = ((NxModelBuildFn) nxAt(o, kOpcModelBuild))(p.oracle, &create);
+	p.built = built;
+	oracleTape.push(built ? 1u : 0u);
+	if(built)
+		{
+		nxTapeModel(oracleTape, p.oracle);
+		oracleTape.push(((BaseModel*) p.oracle)->GetUsedBytes());
+		const AABBTree* source = ((Model*) p.oracle)->GetSourceTree();
+		oracleTape.push(source ? 1u : 0u);
+		if(source)
+			nxTapeVanillaTree(oracleTape, source);
+		}
+
+	p.candidate = 0;
+	if(!selfOnly)
+		{
+		create.mIMesh = &p.candidateMesh.iface;
+		p.candidate = new Model;
+		const bool cbuilt = p.candidate->Build(create);
+		candidateTape.push(cbuilt ? 1u : 0u);
+		if(cbuilt)
+			{
+			nxTapeModel(candidateTape, p.candidate);
+			candidateTape.push(p.candidate->GetUsedBytes());
+			const AABBTree* source = p.candidate->GetSourceTree();
+			candidateTape.push(source ? 1u : 0u);
+			if(source)
+				nxTapeVanillaTree(candidateTape, source);
+			}
+		}
+	}
+
+static void nxReleaseModels(const NxOracleRows& o)
+	{
+	for(int i = 0; i < gNbModels; ++i)
+		{
+		NxModelPair& p = gModels[i];
+		((NxDtorFn) nxAt(o, kOpcModelDtor))(p.oracle);
+		nxOracleFree(p.oracle, sizeof(Model));
+		delete p.candidate;
+		free(p.oracleMesh.verts);
+		free(p.oracleMesh.tris);
+		free(p.candidateMesh.verts);
+		free(p.candidateMesh.tris);
+		}
+	gNbModels = 0;
+	}
+
+// Two build families, because the builds split into two kinds of outcome.
+//
+// opcode_model_build is exact: every tree whose splits do not hang on a tie.
+// opcode_model_build_x87 is the rest, and it is DIVERGENT, measured and
+// attributed (evidence/vendored-correspondence.md, Task 4):
+//   * SPLIT_SPLATTER_POINTS over a mesh whose x and y variances are equal in
+//     exact arithmetic (the height field, the flat grid, the box). Which axis
+//     wins the tie is decided by rounding, and the two builds round
+//     differently: AABBTreeOfTrianglesBuilder::GetSplittingValue sums
+//     (v2+v1)+v0 and returns the x87 register unrounded in the oracle
+//     (0x000e9925..0x000e9933) where the candidate sums (v0+v1)+v2 and rounds
+//     to float (0x0009f5c1..0x0009f5ea), and AABBTreeNode::Subdivide keeps
+//     1/n unrounded in the oracle (0x000f0b37) where the candidate stores it
+//     as a float (0x000c4081). The first split that differs changes the tree.
+//   * every quantized tree: the oracle keeps CQuantCoeff = 32767/CMax on the
+//     x87 stack and takes mCenterCoeff = 1/that (0x000f31f3..0x000f32fd);
+//     the candidate rounds in between, so a coefficient can differ in its last
+//     bit and a quantized box by one step.
+// Neither is fixed here: both are the summation-order / register-lifetime work
+// unit the vendored-correspondence open items record. The collider families
+// below therefore query the ORACLE-built models on both sides, so what they
+// compare is the colliders and not the builds.
+static void nxDriveModels(const NxOracleRows& o, bool selfOnly)
+	{
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	gOracleTapeX87.reset();
+	gCandidateTapeX87.reset();
+	nxBuildMeshes();
+	const udword kDefaultRules = SPLIT_SPLATTER_POINTS | SPLIT_GEOM_CENTER;
+	for(int mesh = 0; mesh < kNbMeshes; ++mesh)
+		for(int kind = 0; kind < 4; ++kind)
+			{
+			// No tie: the soup, the degenerate set and the single triangle.
+			const bool untied = mesh == 1 || mesh == 3 || mesh == 4;
+			gModelIndex[mesh][kind] = gNbModels;
+			nxAddModel(o, mesh, kind, kDefaultRules, false, 0.0f, -1, 0.0f,
+				untied && !(kind & 2), selfOnly);
+			}
+	// The other splitting rules. The rules that do not look at the variance
+	// build the symmetric meshes exactly; the ones that do go to the x87 family.
+	static const udword kRules[] =
+		{
+		SPLIT_LARGEST_AXIS | SPLIT_GEOM_CENTER,
+		SPLIT_BEST_AXIS | SPLIT_SPLATTER_POINTS,
+		SPLIT_LARGEST_AXIS | SPLIT_BALANCED,
+		SPLIT_FIFTY,
+		SPLIT_SPLATTER_POINTS | SPLIT_BALANCED,
+		};
+	for(unsigned r = 0; r < sizeof(kRules) / sizeof(kRules[0]); ++r)
+		{
+		const bool variance = (kRules[r] & SPLIT_SPLATTER_POINTS) != 0;
+		nxAddModel(o, 0, 0, kRules[r], r == 0, 0.0f, -1, 0.0f, !variance, selfOnly);
+		nxAddModel(o, 1, 1, kRules[r], false, 0.0f, -1, 0.0f, true, selfOnly);
+		nxAddModel(o, 1, 3, kRules[r], false, 0.0f, -1, 0.0f, false, selfOnly);
+		if(!variance)
+			{
+			nxAddModel(o, 2, 1, kRules[r], false, 0.0f, -1, 0.0f, true, selfOnly);
+			nxAddModel(o, 5, 0, kRules[r], false, 0.0f, -1, 0.0f, true, selfOnly);
+			}
+		}
+	// The NovodeX settings: a margin, and the root box extended along z.
+	nxAddModel(o, 0, 0, SPLIT_LARGEST_AXIS | SPLIT_GEOM_CENTER, true, 0.25f, 2, -3.0f, true, selfOnly);
+	nxAddModel(o, 1, 1, kDefaultRules, false, 0.125f, 1, 9.0f, true, selfOnly);
+	nxAddModel(o, 0, 0, kDefaultRules, true, 0.25f, 2, -3.0f, false, selfOnly);
+	nxReport("opcode_model_build", "0x000e9100", "phys_fn_005368",
+		"OPC_Model.cpp,OPC_BaseModel.cpp,OPC_AABBTree.cpp,OPC_OptimizedTree.cpp,OPC_TreeBuilders.cpp",
+		selfOnly);
+
+	nxReportTapes(gOracleTapeX87, gCandidateTapeX87, "opcode_model_build_x87", "0x000f09b0", "phys_fn_005513",
+		"OPC_AABBTree.cpp,OPC_TreeBuilders.cpp,OPC_OptimizedTree.cpp", selfOnly, kDivergent);
+	}
+
+//////////////////////////////////////////////////////////////////////////////
+// Query inputs.
+
+static void nxRotation(float m[3][3])
+	{
+	float q[4];
+	double len = 0.0;
+	for(int k = 0; k < 4; ++k)
+		{
+		q[k] = nxRange(-1.0f, 1.0f);
+		len += (double) q[k] * q[k];
+		}
+	if(len < 1e-6)
+		{
+		q[0] = 1.0f; q[1] = q[2] = q[3] = 0.0f;
+		len = 1.0;
+		}
+	const double s = 1.0 / sqrt(len);
+	const double w = q[0] * s, x = q[1] * s, y = q[2] * s, z = q[3] * s;
+	m[0][0] = (float) (1 - 2 * (y * y + z * z)); m[0][1] = (float) (2 * (x * y + w * z)); m[0][2] = (float) (2 * (x * z - w * y));
+	m[1][0] = (float) (2 * (x * y - w * z)); m[1][1] = (float) (1 - 2 * (x * x + z * z)); m[1][2] = (float) (2 * (y * z + w * x));
+	m[2][0] = (float) (2 * (x * z + w * y)); m[2][1] = (float) (2 * (y * z - w * x)); m[2][2] = (float) (1 - 2 * (x * x + y * y));
+	}
+
+// Three world matrices: none, a translation, a rotation with a translation.
+static void nxWorld(Matrix4x4& m, int which)
+	{
+	memset(&m, 0, sizeof(m));
+	m.m[0][0] = m.m[1][1] = m.m[2][2] = m.m[3][3] = 1.0f;
+	if(which >= 1)
+		{
+		m.m[3][0] = 0.5f; m.m[3][1] = -0.25f; m.m[3][2] = 0.125f;
+		}
+	if(which >= 2)
+		{
+		float r[3][3];
+		nxRotation(r);
+		for(int i = 0; i < 3; ++i)
+			for(int j = 0; j < 3; ++j)
+				m.m[i][j] = r[i][j];
+		}
+	}
+
+static Point nxInside(const NxMesh& m, float grow)
+	{
+	return Point(nxRange(m.minB[0] - grow, m.maxB[0] + grow),
+				 nxRange(m.minB[1] - grow, m.maxB[1] + grow),
+				 nxRange(m.minB[2] - grow, m.maxB[2] + grow));
+	}
+
+static void nxTapeCollider(NxTape& tape, bool returned, const void* collider)
+	{
+	tape.push(returned ? 1u : 0u);
+	tape.push(((const Collider*) collider)->GetContactStatus() ? 1u : 0u);
+	}
+
+//////////////////////////////////////////////////////////////////////////////
+// RayCollider, both entry points.
+
+// The discrete outcome of a query goes on `tape`, the floats it returns on
+// `floats`: a hit's distance and barycentrics are sums the 2003 compiler
+// reassociated (OPC_RayTriOverlap.h; sum_grouping.csv), so they are compared on
+// a tape of their own, and the discrete outcome is not allowed to hide behind
+// them.
+static void nxTapeRay(NxTape& tape, NxTape& floats, bool returned, const void* collider,
+	const CollisionFaces& faces, udword cache)
+	{
+	const RayCollider* rc = (const RayCollider*) collider;
+	nxTapeCollider(tape, returned, collider);
+	tape.push(rc->GetNbRayBVTests());
+	tape.push(rc->GetNbRayPrimTests());
+	tape.push(rc->GetNbIntersections());
+	tape.push(cache);
+	tape.push(faces.GetNbFaces());
+	for(udword f = 0; f < faces.GetNbFaces(); ++f)
+		{
+		const CollisionFace& face = faces.GetFaces()[f];
+		tape.push(face.mFaceID);
+		floats.pushFloat(face.mDistance);
+		floats.pushFloat(face.mU);
+		floats.pushFloat(face.mV);
+		}
+	}
+
+static void nxMakeRay(const NxMesh& m, int r, Ray& ray, float& length)
+	{
+	Point from, to;
+	switch(r % 6)
+		{
+		case 0:		// from outside the box, aimed through it
+		case 1:
+			from = nxInside(m, 6.0f);
+			to = nxInside(m, 0.0f);
+			break;
+		case 2:		// straight down onto a vertex, an edge-sharing point
+			{
+			const unsigned v = nxNext() % m.nbVerts;
+			to = Point(m.verts[v * 3], m.verts[v * 3 + 1], m.verts[v * 3 + 2]);
+			from = to + Point(0.0f, 0.0f, 10.0f);
+			break;
+			}
+		case 3:		// grazing: parallel to z=const planes
+			from = nxInside(m, 0.0f);
+			from.z = (r & 8) ? m.minB[2] : 0.0f;
+			to = from + Point(nxRange(-1.0f, 1.0f), nxRange(-1.0f, 1.0f), 0.0f);
+			from.x = m.minB[0] - 3.0f;
+			break;
+		case 4:		// from inside
+			from = nxInside(m, 0.0f);
+			to = nxInside(m, 1.0f);
+			break;
+		default:	// through an edge midpoint
+			{
+			const unsigned t = nxNext() % m.nbTris;
+			const float* a = &m.verts[m.tris[t * 3] * 3];
+			const float* b = &m.verts[m.tris[t * 3 + 1] * 3];
+			to = Point((a[0] + b[0]) * 0.5f, (a[1] + b[1]) * 0.5f, (a[2] + b[2]) * 0.5f);
+			from = to + Point(nxRange(-3.0f, 3.0f), nxRange(-3.0f, 3.0f), 5.0f);
+			break;
+			}
+		}
+	Point dir = to - from;
+	float mag = dir.Magnitude();
+	if(mag < 1e-6f)
+		{
+		dir = Point(0.0f, 0.0f, -1.0f);
+		mag = 1.0f;
+		}
+	ray.mOrig = from;
+	ray.mDir = dir / mag;
+	length = mag * 1.25f;
+	}
+
+// Rays of six shapes (nxMakeRay). Three of them are aimed AT a boundary on
+// purpose -- straight down onto a vertex, along the plane of the root box's
+// face, through an edge's midpoint -- and there a hit is decided by the last
+// bit of an intermediate the oracle keeps in an x87 register and the candidate
+// rounds to float (RayAABBOverlap's `f`: 0x000b912d..0x000b913f against
+// 0x000a63ff..0x000a6407). Those go to opcode_ray_boundary, which is
+// DIVERGENT; the other three shapes go to opcode_ray (discrete outcome, exact)
+// and opcode_ray_x87 (distances and barycentrics, DIVERGENT, summation order).
+static void nxDriveRay(const NxOracleRows& o, bool selfOnly)
+	{
+	gState = 0x7a15ee01;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	gOracleTapeX87.reset();
+	gCandidateTapeX87.reset();
+	gOracleTapeB.reset();
+	gCandidateTapeB.reset();
+	for(int mi = 0; mi < gNbModels; ++mi)
+		{
+		NxModelPair& p = gModels[mi];
+		if(!p.built)
+			continue;
+		const NxMesh& m = gMeshes[p.mesh];
+		const int nbRays = mi < 24 ? 18 : 6;
+		for(int r = 0; r < nbRays; ++r)
+			{
+			Ray ray;
+			float length;
+			nxMakeRay(m, r, ray, length);
+			const int setting = (r + mi) % 12;
+			const bool segment = (setting & 1) != 0;
+			const bool culling = (setting & 2) != 0;
+			const bool closest = (setting & 4) != 0 && setting < 8;
+			const bool first = setting >= 8;
+			const bool coherent = setting == 9 || setting == 11;
+			const float tolerance = setting == 3 || setting == 10 ? 0.015625f : 0.0f;
+			Matrix4x4 world;
+			nxWorld(world, (r / 3) % 3);
+			const Matrix4x4* worldPtr = (r / 3) % 3 ? &world : 0;
+
+			const bool boundary = r % 6 == 2 || r % 6 == 3 || r % 6 == 5;
+			for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
+				{
+				NxTape& tape = boundary ? (side == 0 ? gOracleTapeB : gCandidateTapeB)
+					: (side == 0 ? gOracleTape : gCandidateTape);
+				NxTape& floats = boundary ? tape : (side == 0 ? gOracleTapeX87 : gCandidateTapeX87);
+				unsigned char facesStorage[sizeof(CollisionFaces) + 16];
+				CollisionFaces* faces = new (facesStorage) CollisionFaces;
+				void* object = side == 0 ? nxOracleAlloc(sizeof(RayCollider)) : (void*) new RayCollider;
+				if(side == 0)
+					((NxCtorFn) nxAt(o, kOpcRayCtor))(object);
+				RayCollider* rc = (RayCollider*) object;
+				rc->SetMaxDist(segment ? length : MAX_FLOAT);
+				rc->SetCulling(culling);
+				rc->SetClosestHit(closest);
+				rc->SetFirstContact(first);
+				rc->SetTemporalCoherence(coherent);
+				rc->SetDestination(faces);
+				memcpy((unsigned char*) object + 0x88, &tolerance, 4);
+				udword cache = coherent ? 0 : 0xffffffffu;
+				for(int call = 0; call < (coherent ? 2 : 1); ++call)
+					{
+					bool returned;
+					if(side == 0)
+						returned = ((NxRayModelFn) nxAt(o, kOpcRayCollideModel))(object, &ray, p.oracle,
+							worldPtr, coherent ? &cache : 0);
+					else
+						returned = rc->Collide(ray, *(const Model*) p.oracle, worldPtr, coherent ? &cache : 0);
+					nxTapeRay(tape, floats, returned, object, *faces, cache);
+					}
+				if(side == 0)
+					{
+					((NxDtorFn) nxAt(o, kOpcRayDtor))(object);
+					nxOracleFree(object, sizeof(RayCollider));
+					nxReleaseOracleContainer(o, faces);
+					}
+				else
+					{
+					delete rc;
+					faces->~CollisionFaces();
+					}
+				}
+			}
+		}
+
+	// RayCollider::ValidateSettings over the flag pairs it rejects and accepts:
+	// its answer is a message or null, taped as the message's words.
+	for(int combo = 0; combo < 8; ++combo)
+		for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
+			{
+			NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+			void* object = side == 0 ? nxOracleAlloc(sizeof(RayCollider)) : (void*) new RayCollider;
+			if(side == 0)
+				((NxCtorFn) nxAt(o, kOpcRayCtor))(object);
+			RayCollider* rc = (RayCollider*) object;
+			rc->SetClosestHit((combo & 1) != 0);
+			rc->SetFirstContact((combo & 2) != 0);
+			rc->SetTemporalCoherence((combo & 4) != 0);
+			const char* message = side == 0 ? ((NxMessageFn) nxAt(o, kOpcRayValidate))(object)
+				: rc->ValidateSettings();
+			tape.push(message ? (unsigned) strlen(message) : 0xffffffffu);
+			if(message)
+				nxTapeWords(tape, message, strlen(message) & ~3u);
+			if(side == 0)
+				{
+				((NxDtorFn) nxAt(o, kOpcRayDtor))(object);
+				nxOracleFree(object, sizeof(RayCollider));
+				}
+			else
+				delete rc;
+			}
+	nxReport("opcode_ray", "0x000ba6f0", "phys_fn_004932", "OPC_RayCollider.cpp", selfOnly);
+	nxReportTapes(gOracleTapeX87, gCandidateTapeX87, "opcode_ray_x87", "0x000b84c0", "phys_fn_004921",
+		"OPC_RayCollider.cpp,OPC_RayTriOverlap.h", selfOnly, kDivergent);
+	nxReportTapes(gOracleTapeB, gCandidateTapeB, "opcode_ray_boundary", "0x000b9070", "phys_fn_004925",
+		"OPC_RayCollider.cpp,OPC_RayAABBOverlap.h", selfOnly, kDivergent);
+	}
+
+//////////////////////////////////////////////////////////////////////////////
+// The volume colliders. One driver, parameterised by the query.
+
+enum NxVolumeKind { kVolSphere, kVolOBB, kVolAABB, kVolLSS, kVolPlanes };
+
+struct NxVolumeQuery
+	{
+	Sphere			sphere;
+	OBB				obb;
+	CollisionAABB	aabb;
+	LSS				lss;
+	Plane			planes[6];
+	udword			nbPlanes;
+	};
+
+static void nxMakeVolume(NxVolumeKind kind, const NxMesh& m, int q, NxVolumeQuery& v)
+	{
+	memset(&v, 0, sizeof(v));
+	static const float kRadii[] = { 0.0f, 0.1f, 0.6f, 2.0f, 1000.0f };
+	const float radius = kRadii[q % 5];
+	const Point c = nxInside(m, 0.5f);
+	switch(kind)
+		{
+		case kVolSphere:
+			v.sphere.mCenter = c;
+			v.sphere.mRadius = radius;
+			break;
+		case kVolOBB:
+			{
+			v.obb.mCenter = c;
+			v.obb.mExtents = Point(radius, (q % 7 == 3) ? 0.0f : radius * 0.5f + 0.05f, radius * 0.75f);
+			float r[3][3];
+			nxRotation(r);
+			for(int i = 0; i < 3; ++i)
+				for(int j = 0; j < 3; ++j)
+					v.obb.mRot.m[i][j] = (q % 4 == 0) ? (i == j ? 1.0f : 0.0f) : r[i][j];
+			break;
+			}
+		case kVolAABB:
+			v.aabb.mCenter = c;
+			v.aabb.mExtents = Point(radius + 0.01f, (q % 3 == 1) ? 0.0f : radius * 0.5f, radius * 0.25f + 0.02f);
+			break;
+		case kVolLSS:
+			{
+			v.lss.mP0 = c;
+			v.lss.mP1 = (q % 6 == 5) ? c : nxInside(m, 1.0f);
+			v.lss.mRadius = radius;
+			break;
+			}
+		default:
+			{
+			v.nbPlanes = 1 + (udword) (q % 6);
+			for(udword k = 0; k < v.nbPlanes; ++k)
+				{
+				Point n(nxRange(-1.0f, 1.0f), nxRange(-1.0f, 1.0f), nxRange(-1.0f, 1.0f));
+				if(n.Magnitude() < 1e-3f)
+					n = Point(0.0f, 0.0f, 1.0f);
+				n.Normalize();
+				const Point at = (q % 5 == 4) ? c + n * 1000.0f : nxInside(m, 0.0f);	// 4: all inside
+				v.planes[k].n = n;
+				v.planes[k].d = -(at | n);
+				}
+			break;
+			}
+		}
+	}
+
+// THE ORACLE'S VolumeCache IS NOT OPCODE 1.3'S. Stock 1.3 embeds the result
+// Container at the cache's head and the collider takes its address; the
+// oracle's InitQuery LOADS a pointer from there -- `mov ecx,[edx]; mov
+// [esi+0x10],ecx` in SphereCollider::InitQuery (0x000de925) and the same in
+// OBBCollider::InitQuery (0x000d57ab) -- and reads cache.Model at +4
+// (0x000de964) and SphereCache's Center/FatRadius2/FatCoeff at +8/+0x14/+0x18.
+// NovodeX made the cache hold `Container*`, eight bytes of base instead of
+// twenty. The candidate keeps the stock layout (0x000a112a stores &cache). This
+// is a NovodeX layout modification the vendored tree does not have; it is
+// recorded in evidence/vendored-correspondence.md (Task 4) and NOT fixed here.
+//
+// So the harness gives each side the cache its own code reads: the oracle a
+// NovodeX-layout image {Container*, Model, derived fields}, the candidate its
+// vendored cache, both starting from the same state (the derived fields are
+// copied from a freshly constructed vendored cache), and it compares what the
+// query left in them: the touched primitives and the derived fields.
+struct NxOracleVolumeCache
+	{
+	Container*		touched;
+	const void*		model;
+	unsigned char	derived[96];
+	};
+
+static void nxTapeVolume(NxTape& tape, NxTape& floats, bool returned, const void* collider,
+	const Container& touched, const void* derived, size_t derivedBytes)
+	{
+	const VolumeCollider* vc = (const VolumeCollider*) collider;
+	nxTapeCollider(tape, returned, collider);
+	tape.push(vc->GetNbVolumeBVTests());
+	tape.push(vc->GetNbVolumePrimTests());
+	nxTapeContainerEntries(tape, touched);
+	nxTapeWords(floats, derived, derivedBytes);
+	}
+
+struct NxVolumeRows
+	{
+	const char*	name;
+	const char*	rva;
+	const char*	owner;
+	const char*	source;
+	unsigned	ctor;
+	unsigned	dtor;
+	unsigned	collide;
+	size_t		objectSize;
+	size_t		cacheSize;
+	};
+
+static void* nxNewCache(NxVolumeKind kind, void* storage)
+	{
+	switch(kind)
+		{
+		case kVolSphere:	return new (storage) SphereCache;
+		case kVolOBB:		return new (storage) OBBCache;
+		case kVolAABB:		return new (storage) AABBCache;
+		case kVolLSS:		return new (storage) LSSCache;
+		default:			return new (storage) PlanesCache;
+		}
+	}
+
+static void* nxNewCollider(NxVolumeKind kind)
+	{
+	switch(kind)
+		{
+		case kVolSphere:	return new SphereCollider;
+		case kVolOBB:		return new OBBCollider;
+		case kVolAABB:		return new AABBCollider;
+		case kVolLSS:		return new LSSCollider;
+		default:			return new PlanesCollider;
+		}
+	}
+
+static bool nxCandidateVolume(NxVolumeKind kind, void* collider, void* cache, const NxVolumeQuery& v,
+	const Model& model, const Matrix4x4* worldv, const Matrix4x4* worldm)
+	{
+	switch(kind)
+		{
+		case kVolSphere:	return ((SphereCollider*) collider)->Collide(*(SphereCache*) cache, v.sphere, model, worldv, worldm);
+		case kVolOBB:		return ((OBBCollider*) collider)->Collide(*(OBBCache*) cache, v.obb, model, worldv, worldm);
+		case kVolAABB:		return ((AABBCollider*) collider)->Collide(*(AABBCache*) cache, v.aabb, model);
+		case kVolLSS:		return ((LSSCollider*) collider)->Collide(*(LSSCache*) cache, v.lss, model, worldv, worldm);
+		default:			return ((PlanesCollider*) collider)->Collide(*(PlanesCache*) cache, v.planes, v.nbPlanes, model, worldm);
+		}
+	}
+
+static bool nxOracleVolume(const NxOracleRows& o, NxVolumeKind kind, unsigned rva, void* collider,
+	void* cache, const NxVolumeQuery& v, const void* model, const Matrix4x4* worldv, const Matrix4x4* worldm)
+	{
+	void* fn = nxAt(o, rva);
+	switch(kind)
+		{
+		case kVolSphere:	return ((NxSphereModelFn) fn)(collider, cache, &v.sphere, model, worldv, worldm);
+		case kVolOBB:		return ((NxOBBModelFn) fn)(collider, cache, &v.obb, model, worldv, worldm);
+		case kVolAABB:		return ((NxAABBModelFn) fn)(collider, cache, &v.aabb, model);
+		case kVolLSS:		return ((NxLSSModelFn) fn)(collider, cache, &v.lss, model, worldv, worldm);
+		default:			return ((NxPlanesModelFn) fn)(collider, cache, v.planes, v.nbPlanes, model, worldm);
+		}
+	}
+
+static void nxDeleteCollider(NxVolumeKind kind, void* collider)
+	{
+	switch(kind)
+		{
+		case kVolSphere:	delete (SphereCollider*) collider; break;
+		case kVolOBB:		delete (OBBCollider*) collider; break;
+		case kVolAABB:		delete (AABBCollider*) collider; break;
+		case kVolLSS:		delete (LSSCollider*) collider; break;
+		default:			delete (PlanesCollider*) collider; break;
+		}
+	}
+
+static void nxDriveVolume(const NxOracleRows& o, NxVolumeKind kind, const NxVolumeRows& rows,
+	unsigned seed, bool selfOnly)
+	{
+	gState = seed;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	gOracleTapeX87.reset();
+	gCandidateTapeX87.reset();
+	for(int mi = 0; mi < gNbModels; ++mi)
+		{
+		NxModelPair& p = gModels[mi];
+		if(!p.built)
+			continue;
+		const NxMesh& m = gMeshes[p.mesh];
+		const int nbQueries = mi < 24 ? 10 : 4;
+		for(int q = 0; q < nbQueries; ++q)
+			{
+			NxVolumeQuery v;
+			nxMakeVolume(kind, m, q + mi, v);
+			// Settings: primitive tests off on one query in five (the
+			// NoPrimitiveTest walks), first contact on one in four, and
+			// temporal coherence with a second, nudged call on one in three.
+			// A single-triangle model has no tree, and stock OPCODE's Collide walks
+			// the tree when primitive tests are off -- both sides would fault.
+			const bool primitives = (q + mi) % 5 != 2 || p.mesh == 4;
+			const bool first = (q + mi) % 4 == 1;
+			const bool coherent = (q + mi) % 3 == 0;
+			const bool fullBox = (q + mi) % 2 == 0;
+			Matrix4x4 worldv, worldm;
+			nxWorld(worldv, (q / 2) % 3);
+			nxWorld(worldm, (q / 3) % 3);
+			const Matrix4x4* wv = (q / 2) % 3 ? &worldv : 0;
+			const Matrix4x4* wm = (q / 3) % 3 ? &worldm : 0;
+
+			for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
+				{
+				NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+				NxTape& floats = tape;
+				unsigned char cacheStorage[sizeof(OBBCache) + sizeof(LSSCache) + 64];
+				VolumeCache* vendoredCache = (VolumeCache*) nxNewCache(kind, cacheStorage);
+				const size_t derivedBytes = rows.cacheSize - sizeof(VolumeCache);
+				unsigned char touchedStorage[sizeof(Container) + 16];
+				NxOracleVolumeCache oracleCache;
+				void* cache = vendoredCache;
+				if(side == 0)
+					{
+					oracleCache.touched = new (touchedStorage) Container;
+					oracleCache.model = 0;
+					memcpy(oracleCache.derived, (unsigned char*) vendoredCache + sizeof(VolumeCache), derivedBytes);
+					cache = &oracleCache;
+					}
+				void* object;
+				if(side == 0)
+					{
+					object = nxOracleAlloc(rows.objectSize);
+					((NxCtorFn) nxAt(o, rows.ctor))(object);
+					}
+				else
+					object = nxNewCollider(kind);
+				Collider* c = (Collider*) object;
+				c->SetPrimitiveTests(primitives);
+				c->SetFirstContact(first);
+				c->SetTemporalCoherence(coherent);
+				if(kind == kVolOBB)
+					((OBBCollider*) object)->SetFullBoxBoxTest(fullBox);
+				for(int call = 0; call < (coherent ? 2 : 1); ++call)
+					{
+					NxVolumeQuery moved = v;
+					if(call)
+						{
+						const Point nudge(0.03125f, -0.0625f, 0.015625f);
+						moved.sphere.mCenter += nudge;
+						moved.obb.mCenter += nudge;
+						moved.aabb.mCenter += nudge;
+						moved.lss.mP0 += nudge;
+						moved.lss.mP1 += nudge;
+						}
+					const bool returned = side == 0
+						? nxOracleVolume(o, kind, rows.collide, object, cache, moved, p.oracle, wv, wm)
+						: nxCandidateVolume(kind, object, cache, moved, *(const Model*) p.oracle, wv, wm);
+					if(side == 0)
+						nxTapeVolume(tape, floats, returned, object, *oracleCache.touched, oracleCache.derived,
+							derivedBytes);
+					else
+						nxTapeVolume(tape, floats, returned, object, vendoredCache->TouchedPrimitives,
+							(unsigned char*) vendoredCache + sizeof(VolumeCache), derivedBytes);
+					}
+				if(side == 0)
+					{
+					((NxDtorFn) nxAt(o, rows.dtor))(object);
+					nxOracleFree(object, rows.objectSize);
+					nxReleaseOracleContainer(o, oracleCache.touched);
+					vendoredCache->TouchedPrimitives.~Container();
+					}
+				else
+					{
+					nxDeleteCollider(kind, object);
+					vendoredCache->TouchedPrimitives.~Container();
+					}
+				}
+			}
+		}
+	nxReport(rows.name, rows.rva, rows.owner, rows.source, selfOnly);
+	}
+
+//////////////////////////////////////////////////////////////////////////////
+// The vanilla AABBTree and the three colliders that query it directly.
+
+static void nxDriveVanilla(const NxOracleRows& o, bool selfOnly)
+	{
+	struct Tree { void* oracle; AABBTree* candidate; void* oracleBuilder; AABBTreeOfTrianglesBuilder* candidateBuilder; };
+	Tree trees[kNbMeshes];
+
+	// The build.
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	static const udword kRules[kNbMeshes] =
+		{
+		// Rules that do not hang a split on a variance or extent tie in these
+		// meshes (the tie cases are opcode_model_build_x87's).
+		SPLIT_LARGEST_AXIS | SPLIT_GEOM_CENTER, SPLIT_SPLATTER_POINTS | SPLIT_GEOM_CENTER, SPLIT_FIFTY,
+		SPLIT_SPLATTER_POINTS, SPLIT_FIFTY, SPLIT_LARGEST_AXIS | SPLIT_GEOM_CENTER
+		};
+	for(int mesh = 0; mesh < kNbMeshes; ++mesh)
+		{
+		Tree& t = trees[mesh];
+		// Each side reads the mesh through its own interface; the arrays are not written.
+		static MeshInterface ifaces[kNbMeshes];
+		ifaces[mesh].SetNbTriangles(gMeshes[mesh].nbTris);
+		ifaces[mesh].SetNbVertices(gMeshes[mesh].nbVerts);
+		ifaces[mesh].SetPointers((const IndexedTriangle*) gMeshes[mesh].tris, (const Point*) gMeshes[mesh].verts);
+
+		t.oracleBuilder = nxOracleAlloc(sizeof(AABBTreeOfTrianglesBuilder));
+		((NxCtorFn) nxAt(o, kOpcTriBuilderCtor))(t.oracleBuilder);
+		AABBTreeOfTrianglesBuilder* ob = (AABBTreeOfTrianglesBuilder*) t.oracleBuilder;
+		ob->mIMesh = &ifaces[mesh];
+		ob->mNbPrimitives = gMeshes[mesh].nbTris;
+		ob->mSettings.mRules = kRules[mesh];
+		ob->mSettings.mLimit = 1 + (mesh % 3);
+		t.oracle = nxOracleAlloc(sizeof(AABBTree));
+		((NxCtorFn) nxAt(o, kOpcTreeCtor))(t.oracle);
+		const bool built = ((NxTreeBuildFn) nxAt(o, kOpcTreeBuild))(t.oracle, t.oracleBuilder);
+		gOracleTape.push(built ? 1u : 0u);
+		gOracleTape.push(ob->GetCount());
+		gOracleTape.push(ob->GetNbInvalidSplits());
+		nxTapeVanillaTree(gOracleTape, (const AABBTree*) t.oracle);
+
+		t.candidate = 0;
+		t.candidateBuilder = 0;
+		if(!selfOnly)
+			{
+			t.candidateBuilder = new AABBTreeOfTrianglesBuilder;
+			t.candidateBuilder->mIMesh = &ifaces[mesh];
+			t.candidateBuilder->mNbPrimitives = gMeshes[mesh].nbTris;
+			t.candidateBuilder->mSettings.mRules = kRules[mesh];
+			t.candidateBuilder->mSettings.mLimit = 1 + (mesh % 3);
+			t.candidate = new AABBTree;
+			const bool cbuilt = t.candidate->Build(t.candidateBuilder);
+			gCandidateTape.push(cbuilt ? 1u : 0u);
+			gCandidateTape.push(t.candidateBuilder->GetCount());
+			gCandidateTape.push(t.candidateBuilder->GetNbInvalidSplits());
+			nxTapeVanillaTree(gCandidateTape, t.candidate);
+			}
+		}
+	nxReport("opcode_aabbtree", "0x000f10c0", "phys_fn_005523", "OPC_AABBTree.cpp,OPC_TreeBuilders.cpp",
+		selfOnly);
+
+	// Rays against the vanilla tree: box-level hits, as primitive indices.
+	gState = 0x7a15ee02;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	for(int mesh = 0; mesh < kNbMeshes; ++mesh)
+		for(int k = 0; k < 12; ++k)
+			{
+			// Only the three ray shapes aimed away from a boundary (see nxDriveRay).
+			static const int kShapes[3] = { 0, 1, 4 };
+			const int r = kShapes[k % 3] + 6 * (k / 3);
+			Ray ray;
+			float length;
+			nxMakeRay(gMeshes[mesh], r, ray, length);
+			for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
+				{
+				NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+				unsigned char boxStorage[sizeof(Container) + 16];
+				Container* boxes = new (boxStorage) Container;
+				void* object = side == 0 ? nxOracleAlloc(sizeof(RayCollider)) : (void*) new RayCollider;
+				if(side == 0)
+					((NxCtorFn) nxAt(o, kOpcRayCtor))(object);
+				RayCollider* rc = (RayCollider*) object;
+				rc->SetMaxDist((r & 1) ? length : MAX_FLOAT);
+				const bool returned = side == 0
+					? ((NxRayTreeFn) nxAt(o, kOpcRayCollideTree))(object, &ray, trees[mesh].oracle, boxes)
+					: rc->Collide(ray, (const AABBTree*) trees[mesh].oracle, *boxes);
+				nxTapeCollider(tape, returned, object);
+				tape.push(rc->GetNbRayBVTests());
+				nxTapeContainerEntries(tape, *boxes);
+				if(side == 0)
+					{
+					((NxDtorFn) nxAt(o, kOpcRayDtor))(object);
+					nxOracleFree(object, sizeof(RayCollider));
+					nxReleaseOracleContainer(o, boxes);
+					}
+				else
+					{
+					delete rc;
+					boxes->~Container();
+					}
+				}
+			}
+	nxReport("opcode_ray_vanilla", "0x000ba880", "phys_fn_004934", "OPC_RayCollider.cpp", selfOnly);
+
+	// Spheres and boxes against the vanilla tree.
+	for(int which = 0; which < 2; ++which)
+		{
+		gState = which == 0 ? 0x5fe2ee03 : 0xaabbee04;
+		gOracleTape.reset();
+		gCandidateTape.reset();
+		gOracleTapeX87.reset();
+		gCandidateTapeX87.reset();
+		for(int mesh = 0; mesh < kNbMeshes; ++mesh)
+			for(int q = 0; q < 10; ++q)
+				{
+				NxVolumeQuery v;
+				nxMakeVolume(which == 0 ? kVolSphere : kVolAABB, gMeshes[mesh], q + mesh, v);
+				const bool primitives = q % 4 != 3;
+				for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
+					{
+					NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+					unsigned char cacheStorage[sizeof(AABBCache) + sizeof(SphereCache) + 64];
+					const NxVolumeKind kind = which == 0 ? kVolSphere : kVolAABB;
+					VolumeCache* vendoredCache = (VolumeCache*) nxNewCache(kind, cacheStorage);
+					const size_t derivedBytes = (which == 0 ? sizeof(SphereCache) : sizeof(AABBCache)) - sizeof(VolumeCache);
+					unsigned char touchedStorage[sizeof(Container) + 16];
+					NxOracleVolumeCache oracleCache;
+					if(side == 0)
+						{
+						oracleCache.touched = new (touchedStorage) Container;
+						oracleCache.model = 0;
+						memcpy(oracleCache.derived, (unsigned char*) vendoredCache + sizeof(VolumeCache), derivedBytes);
+						}
+					const size_t size = which == 0 ? sizeof(SphereCollider) : sizeof(AABBCollider);
+					void* object;
+					if(side == 0)
+						{
+						object = nxOracleAlloc(size);
+						((NxCtorFn) nxAt(o, which == 0 ? kOpcSphereCtor : kOpcAABBCtor))(object);
+						}
+					else
+						object = nxNewCollider(kind);
+					((Collider*) object)->SetPrimitiveTests(primitives);
+					bool returned;
+					if(side == 0)
+						returned = which == 0
+							? ((NxSphereTreeFn) nxAt(o, kOpcSphereCollideTree))(object, &oracleCache, &v.sphere, trees[mesh].oracle)
+							: ((NxAABBModelFn) nxAt(o, kOpcAABBCollideTree))(object, &oracleCache, &v.aabb, trees[mesh].oracle);
+					else
+						returned = which == 0
+							? ((SphereCollider*) object)->Collide(*(SphereCache*) vendoredCache, v.sphere, (const AABBTree*) trees[mesh].oracle)
+							: ((AABBCollider*) object)->Collide(*(AABBCache*) vendoredCache, v.aabb, (const AABBTree*) trees[mesh].oracle);
+					NxTape& floats = tape;
+					if(side == 0)
+						nxTapeVolume(tape, floats, returned, object, *oracleCache.touched, oracleCache.derived, derivedBytes);
+					else
+						nxTapeVolume(tape, floats, returned, object, vendoredCache->TouchedPrimitives,
+							(unsigned char*) vendoredCache + sizeof(VolumeCache), derivedBytes);
+					if(side == 0)
+						{
+						((NxDtorFn) nxAt(o, which == 0 ? kOpcSphereDtor : kOpcAABBDtor))(object);
+						nxOracleFree(object, size);
+						nxReleaseOracleContainer(o, oracleCache.touched);
+						}
+					else
+						nxDeleteCollider(kind, object);
+					vendoredCache->TouchedPrimitives.~Container();
+					}
+				}
+		if(which == 0)
+			nxReport("opcode_sphere_vanilla", "0x000e14d0", "phys_fn_005107", "OPC_SphereCollider.cpp", selfOnly);
+		else
+			nxReport("opcode_aabb_vanilla", "0x000ef230", "phys_fn_005436", "OPC_AABBCollider.cpp", selfOnly);
+		}
+
+	// AABBTree::Refit2 after the vertices move, on the complete (pooled) trees
+	// it requires -- the ones built with mLimit 1. Each side refits its own
+	// tree; both read the same moved vertices through the shared interfaces.
+	gState = 0x4ef17002;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	for(int mesh = 0; mesh < kNbMeshes; mesh += 3)
+		{
+		NxMesh& m = gMeshes[mesh];
+		for(unsigned v = 0; v < m.nbVerts * 3; ++v)
+			m.verts[v] += nxRange(-0.25f, 0.25f);
+		const bool refit = ((NxTreeBuildFn) nxAt(o, kOpcTreeRefit2))(trees[mesh].oracle, trees[mesh].oracleBuilder);
+		gOracleTape.push(refit ? 1u : 0u);
+		nxTapeVanillaTree(gOracleTape, (const AABBTree*) trees[mesh].oracle);
+		if(!selfOnly)
+			{
+			const bool crefit = trees[mesh].candidate->Refit2(trees[mesh].candidateBuilder);
+			gCandidateTape.push(crefit ? 1u : 0u);
+			nxTapeVanillaTree(gCandidateTape, trees[mesh].candidate);
+			}
+		}
+	nxReport("opcode_aabbtree_refit", "0x000f11b0", "phys_fn_005525", "OPC_AABBTree.cpp", selfOnly);
+
+	for(int mesh = 0; mesh < kNbMeshes; ++mesh)
+		{
+		((NxDtorFn) nxAt(o, kOpcTreeDtor))(trees[mesh].oracle);
+		nxOracleFree(trees[mesh].oracle, sizeof(AABBTree));
+		nxOracleFree(trees[mesh].oracleBuilder, sizeof(AABBTreeOfTrianglesBuilder));
+		delete trees[mesh].candidate;
+		delete trees[mesh].candidateBuilder;
+		}
+	}
+
+//////////////////////////////////////////////////////////////////////////////
+// AABBTreeCollider through BVTCache: pairs of models of one tree kind, under
+// three relative placements, with the box/box and prim/box tests both ways.
+
+// The flat grid against the height field lines their vertices up on the same
+// x and y lines (half-integers against integers, and again after the 0.5
+// translation), so triangle edges meet exactly and TriTriOverlap's verdict on
+// those contacts is the last bit of its sums. That pair, unrotated, is
+// opcode_treecollider_boundary (DIVERGENT); every other pair and placement is
+// opcode_treecollider (exact).
+static void nxDriveTreeCollider(const NxOracleRows& o, bool selfOnly)
+	{
+	gState = 0x77ee0c01;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	gOracleTapeB.reset();
+	gCandidateTapeB.reset();
+	static const int kPairs[][2] = { { 0, 1 }, { 5, 5 }, { 2, 2 }, { 1, 1 }, { 0, 3 }, { 3, 3 }, { 2, 0 } };	// no single-triangle model: it has no tree to collide
+	for(int kind = 0; kind < 4; ++kind)
+		for(unsigned pr = 0; pr < sizeof(kPairs) / sizeof(kPairs[0]); ++pr)
+			for(int placement = 0; placement < 3; ++placement)
+				{
+				const NxModelPair& a = gModels[gModelIndex[kPairs[pr][0]][kind]];
+				const NxModelPair& b = gModels[gModelIndex[kPairs[pr][1]][kind]];
+				if(!a.built || !b.built)
+					continue;
+				Matrix4x4 w0, w1;
+				nxWorld(w0, placement == 2 ? 2 : 0);
+				nxWorld(w1, placement);
+				const int setting = (int) (pr + placement + kind) % 8;
+				for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
+					{
+					const bool boundary = kPairs[pr][0] == 2 && kPairs[pr][1] == 0 && placement < 2;
+					NxTape& tape = boundary ? (side == 0 ? gOracleTapeB : gCandidateTapeB)
+						: (side == 0 ? gOracleTape : gCandidateTape);
+					BVTCache cache;
+					cache.Model0 = (const Model*) a.oracle;
+					cache.Model1 = (const Model*) b.oracle;
+					void* object;
+					if(side == 0)
+						{
+						object = nxOracleAlloc(sizeof(AABBTreeCollider));
+						((NxCtorFn) nxAt(o, kOpcTreeColliderCtor))(object);
+						}
+					else
+						object = new AABBTreeCollider;
+					AABBTreeCollider* tc = (AABBTreeCollider*) object;
+					tc->SetFullBoxBoxTest((setting & 1) != 0);
+					tc->SetFullPrimBoxTest((setting & 2) != 0);
+					tc->SetFirstContact((setting & 4) != 0);
+					tc->SetTemporalCoherence(setting == 5);
+					for(int call = 0; call < (setting == 5 ? 2 : 1); ++call)
+						{
+						const bool returned = side == 0
+							? ((NxBVTFn) nxAt(o, kOpcTreeColliderBVT))(object, &cache, &w0, placement ? &w1 : 0)
+							: tc->Collide(cache, &w0, placement ? &w1 : 0);
+						nxTapeCollider(tape, returned, object);
+						tape.push(tc->GetNbBVBVTests());
+						tape.push(tc->GetNbBVPrimTests());
+						tape.push(tc->GetNbPrimPrimTests());
+						tape.push(cache.id0);
+						tape.push(cache.id1);
+						tape.push(tc->GetNbPairs());
+						for(udword i = 0; i < tc->GetNbPairs(); ++i)
+							{
+							tape.push(tc->GetPairs()[i].id0);
+							tape.push(tc->GetPairs()[i].id1);
+							}
+						}
+					if(side == 0)
+						{
+						((NxDtorFn) nxAt(o, kOpcTreeColliderDtor))(object);
+						nxOracleFree(object, sizeof(AABBTreeCollider));
+						}
+					else
+						delete tc;
+					}
+				}
+	nxReport("opcode_treecollider", "0x000d13c0", "phys_fn_004986",
+		"OPC_TreeCollider.cpp,OPC_TriTriOverlap.h,OPC_TriBoxOverlap.h,OPC_BoxBoxOverlap.h", selfOnly);
+	nxReportTapes(gOracleTapeB, gCandidateTapeB, "opcode_treecollider_boundary", "0x000bbd60", "phys_fn_004948",
+		"OPC_TreeCollider.cpp,OPC_TriTriOverlap.h", selfOnly, kDivergent);
+	}
+
+//////////////////////////////////////////////////////////////////////////////
+// BaseModel::Refit after the vertices move. Each side moves its own copy the
+// same way; the no-leaf trees refit, the others report that they cannot.
+
+static void nxDriveRefit(const NxOracleRows& o, bool selfOnly)
+	{
+	gState = 0x4ef17001;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	for(int mi = 0; mi < gNbModels; ++mi)
+		{
+		NxModelPair& p = gModels[mi];
+		// The single-triangle model has no tree, and BaseModel::Refit
+		// dereferences it unguarded (0x000e9418) -- stock behaviour, both sides.
+		if(!p.built || !p.exact || p.mesh == 4)
+			continue;
+		const NxMesh& m = gMeshes[p.mesh];
+		for(unsigned v = 0; v < m.nbVerts * 3; ++v)
+			{
+			const float d = nxRange(-0.25f, 0.25f);
+			p.oracleMesh.verts[v] += d;
+			p.candidateMesh.verts[v] += d;
+			}
+		const bool refit = ((NxBoolThisFn) nxAt(o, kOpcBaseModelRefit))(p.oracle);
+		gOracleTape.push(refit ? 1u : 0u);
+		nxTapeModel(gOracleTape, p.oracle);
+		if(!selfOnly)
+			{
+			const bool crefit = p.candidate->Refit();
+			gCandidateTape.push(crefit ? 1u : 0u);
+			nxTapeModel(gCandidateTape, p.candidate);
+			}
+		}
+	nxReport("opcode_refit", "0x000e9410", "phys_fn_005378", "OPC_BaseModel.cpp,OPC_OptimizedTree.cpp",
+		selfOnly);
+	}
+
+//////////////////////////////////////////////////////////////////////////////
+// SweepAndPrune: the NovodeX three-argument Init, updates, and the pairs.
+
+static BOOL nxSapPair(udword id0, udword id1, void* user)
+	{
+	NxTape* tape = (NxTape*) user;
+	tape->push(id0);
+	tape->push(id1);
+	return TRUE;
+	}
+
+static void nxDriveSap(const NxOracleRows& o, bool selfOnly)
+	{
+	gState = 0x5a9e0001;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	static const udword kCounts[] = { 1, 2, 9, 40 };
+	for(unsigned c = 0; c < sizeof(kCounts) / sizeof(kCounts[0]); ++c)
+		{
+		const udword n = kCounts[c];
+		AABB boxes[40];
+		const AABB* boxPtrs[40];
+		bool flags[40];
+		for(udword i = 0; i < n; ++i)
+			{
+			Point center(nxRange(-4.0f, 4.0f), nxRange(-4.0f, 4.0f), nxRange(-4.0f, 4.0f));
+			Point extents(nxRange(0.0f, 1.5f), nxRange(0.0f, 1.5f), (i % 7 == 3) ? 0.0f : nxRange(0.0f, 1.5f));
+			boxes[i].SetCenterExtents(center, extents);
+			boxPtrs[i] = &boxes[i];
+			flags[i] = (nxNext() % 3) == 0;
+			}
+		AABB moves[60];
+		udword moveIds[60];
+		for(int k = 0; k < 60; ++k)
+			{
+			moveIds[k] = nxNext() % n;
+			Point center(nxRange(-4.0f, 4.0f), nxRange(-4.0f, 4.0f), nxRange(-4.0f, 4.0f));
+			moves[k].SetCenterExtents(center, Point(nxRange(0.1f, 2.0f), nxRange(0.1f, 2.0f), nxRange(0.1f, 2.0f)));
+			}
+		for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
+			{
+			NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+			void* object;
+			if(side == 0)
+				{
+				object = nxOracleAlloc(sizeof(SweepAndPrune));
+				((NxCtorFn) nxAt(o, kOpcSapCtor))(object);
+				}
+			else
+				object = new SweepAndPrune;
+			SweepAndPrune* sap = (SweepAndPrune*) object;
+			const bool init = side == 0
+				? ((NxSapInitFn) nxAt(o, kOpcSapInit))(object, n, boxPtrs, flags)
+				: sap->Init(n, boxPtrs, flags);
+			tape.push(init ? 1u : 0u);
+			for(int round = 0; round < 4; ++round)
+				{
+				if(side == 0)
+					((NxSapPairsFn) nxAt(o, kOpcSapGetPairs))(object, nxSapPair, &tape);
+				else
+					sap->GetPairs(nxSapPair, &tape);
+				tape.push(0xfffffff0u);
+				for(int k = round * 15; k < round * 15 + 15; ++k)
+					{
+					const bool updated = side == 0
+						? ((NxSapUpdateFn) nxAt(o, kOpcSapUpdate))(object, moveIds[k], &moves[k])
+						: sap->UpdateObject(moveIds[k], moves[k]);
+					tape.push(updated ? 1u : 0u);
+					}
+				}
+			if(side == 0)
+				{
+				((NxDtorFn) nxAt(o, kOpcSapDtor))(object);
+				nxOracleFree(object, sizeof(SweepAndPrune));
+				}
+			else
+				delete sap;
+			}
+		}
+	nxReport("opcode_sap", "0x000e6ca0", "phys_fn_005283", "OPC_SweepAndPrune.cpp", selfOnly);
+	}
+
+//////////////////////////////////////////////////////////////////////////////
+// The ICE maths rows, called directly: AABB, Plane, Triangle, IndexedTriangle,
+// Matrix4x4 and OBB. Degenerate inputs included: zero-area triangles, flat
+// boxes, singular matrices, an OBB with a zero extent.
+
+static void nxTapeWords(NxTape& tape, const void* p, size_t bytes)
+	{
+	const unsigned char* b = (const unsigned char*) p;
+	for(size_t i = 0; i + 4 <= bytes; i += 4)
+		{
+		unsigned w;
+		memcpy(&w, b + i, 4);
+		tape.push(w);
+		}
+	}
+
+static const struct { const char* name; const char* rva; const char* owner; const char* source; } kIceParts[5] =
+	{
+	{ "ice_aabb", "0x000e2d20", "phys_fn_005141", "Ice/IceAABB.cpp" },
+	{ "ice_plane_triangle", "0x000e31c0", "phys_fn_005155", "Ice/IcePlane.cpp,Ice/IceTriangle.cpp" },
+	{ "ice_indexedtriangle", "0x000e4160", "phys_fn_005187", "Ice/IceIndexedTriangle.cpp" },
+	{ "ice_matrix4x4", "0x000e4400", "phys_fn_005197", "Ice/IceMatrix4x4.cpp" },
+	{ "ice_obb", "0x000e4580", "phys_fn_005199", "Ice/IceOBB.cpp" },
+	};
+
+// One pass per class. Every pass draws the same inputs, so a class's inputs do
+// not depend on which classes are driven; only `part`'s calls are made.
+static void nxDriveIcePart(const NxOracleRows& o, int part, bool selfOnly, unsigned tolerance)
+	{
+	gState = 0x1ce0a7b5;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	const int all = selfOnly ? 1 : 2;
+	for(int c = 0; c < 200; ++c)
+		{
+		// AABB
+		AABB a, b;
+		a.SetCenterExtents(Point(nxRange(-5, 5), nxRange(-5, 5), nxRange(-5, 5)),
+			Point(nxRange(0, 3), (c % 9 == 4) ? 0.0f : nxRange(0, 3), nxRange(0, 3)));
+		b.SetCenterExtents(Point(nxRange(-5, 5), nxRange(-5, 5), nxRange(-5, 5)),
+			Point(nxRange(0, 3), nxRange(0, 3), nxRange(0, 3)));
+		if(c % 11 == 0)
+			b = a;
+		for(int side = 0; side < (part == 0 ? all : 0); ++side)
+			{
+			NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+			AABB sum = a, cube;
+			Point pts[8];
+			if(side == 0)
+				{
+				((NxAABBAddFn) nxAt(o, kIceAABBAdd))(&sum, &b);
+				tape.pushFloat(((NxAABBMakeCubeFn) nxAt(o, kIceAABBMakeCube))(&a, &cube));
+				tape.push(((NxBoolConstPtrFn) nxAt(o, kIceAABBIsInside))(&a, &b) ? 1u : 0u);
+				tape.push(((NxPointsFn) nxAt(o, kIceAABBComputePoints))(&a, pts) ? 1u : 0u);
+				}
+			else
+				{
+				sum.Add(b);
+				tape.pushFloat(a.MakeCube(cube));
+				tape.push(a.IsInside(b) ? 1u : 0u);
+				tape.push(a.ComputePoints(pts) ? 1u : 0u);
+				}
+			nxTapeWords(tape, &sum, sizeof(sum));
+			nxTapeWords(tape, &cube, sizeof(cube));
+			nxTapeWords(tape, pts, sizeof(pts));
+			}
+
+		// Plane and Triangle
+		Point p0(nxRange(-5, 5), nxRange(-5, 5), nxRange(-5, 5));
+		Point p1 = (c % 7 == 2) ? p0 : Point(nxRange(-5, 5), nxRange(-5, 5), nxRange(-5, 5));
+		Point p2 = (c % 13 == 5) ? p0 + (p1 - p0) * 2.0f : Point(nxRange(-5, 5), nxRange(-5, 5), nxRange(-5, 5));
+		for(int side = 0; side < (part == 1 ? all : 0); ++side)
+			{
+			NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+			Plane plane;
+			Triangle tri(p0, p1, p2);
+			Point normal, center;
+			float area;
+			const float fat = 0.25f * (float) (c % 5);
+			if(side == 0)
+				{
+				((NxPlaneSetFn) nxAt(o, kIcePlaneSet))(&plane, &p0, &p1, &p2);
+				area = ((NxFloatThisFn) nxAt(o, kIceTriArea))(&tri);
+				((NxPointOutFn) nxAt(o, kIceTriNormal))(&tri, &normal);
+				((NxPointOutFn) nxAt(o, kIceTriCenter))(&tri, &center);
+				((NxInflateFn) nxAt(o, kIceTriInflate))(&tri, fat, (c & 1) != 0);
+				}
+			else
+				{
+				plane.Set(p0, p1, p2);
+				area = tri.Area();
+				tri.Normal(normal);
+				tri.Center(center);
+				tri.Inflate(fat, (c & 1) != 0);
+				}
+			nxTapeWords(tape, &plane, sizeof(plane));
+			tape.pushFloat(area);
+			nxTapeWords(tape, &normal, sizeof(normal));
+			nxTapeWords(tape, &center, sizeof(center));
+			nxTapeWords(tape, &tri, sizeof(tri));
+			}
+
+		// IndexedTriangle
+		udword refs[3] = { nxNext() % 6, nxNext() % 6, nxNext() % 6 };
+		const udword oldRef = nxNext() % 6, newRef = nxNext() % 6, e0 = nxNext() % 6, e1 = nxNext() % 6;
+		for(int side = 0; side < (part == 2 ? all : 0); ++side)
+			{
+			NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+			IndexedTriangle it(refs[0], refs[1], refs[2]);
+			bool replaced;
+			unsigned char edge;
+			if(side == 0)
+				{
+				edge = ((NxFindEdgeFn) nxAt(o, kIceITriFindEdge))(&it, e0, e1);
+				replaced = ((NxReplaceFn) nxAt(o, kIceITriReplace))(&it, oldRef, newRef);
+				}
+			else
+				{
+				edge = it.FindEdge(e0, e1);
+				replaced = it.ReplaceVertex(oldRef, newRef);
+				}
+			tape.push(edge);
+			tape.push(replaced ? 1u : 0u);
+			nxTapeWords(tape, &it, sizeof(it));
+			}
+
+		// Matrix4x4: a general matrix (singular one time in eight) and a PR one.
+		Matrix4x4 g, pr;
+		for(int i = 0; i < 4; ++i)
+			for(int j = 0; j < 4; ++j)
+				g.m[i][j] = nxRange(-2, 2);
+		if(c % 8 == 3)
+			for(int j = 0; j < 4; ++j)
+				g.m[2][j] = g.m[1][j] * 2.0f;
+		nxWorld(pr, 2);
+		pr.m[3][0] = nxRange(-9, 9);
+		const udword row = nxNext() % 4, col = nxNext() % 4;
+		for(int side = 0; side < (part == 3 ? all : 0); ++side)
+			{
+			NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+			Matrix4x4 inv = g, dest;
+			float cof, det;
+			if(side == 0)
+				{
+				cof = ((NxCoFactorFn) nxAt(o, kIceM4CoFactor))(&g, row, col);
+				det = ((NxFloatThisFn) nxAt(o, kIceM4Determinant))(&g);
+				((NxInvertFn) nxAt(o, kIceM4Invert))(&inv);
+				((NxInvertPRFn) nxAt(o, kIceInvertPR))(&dest, &pr);
+				}
+			else
+				{
+				cof = g.CoFactor(row, col);
+				det = g.Determinant();
+				inv.Invert();
+				InvertPRMatrix(dest, pr);
+				}
+			tape.pushFloat(cof);
+			tape.pushFloat(det);
+			nxTapeWords(tape, &inv, sizeof(inv));
+			nxTapeWords(tape, &dest, sizeof(dest));
+			}
+
+		// OBB
+		OBB box, other;
+		box.mCenter = Point(nxRange(-3, 3), nxRange(-3, 3), nxRange(-3, 3));
+		box.mExtents = Point(nxRange(0, 2), (c % 6 == 1) ? 0.0f : nxRange(0, 2), nxRange(0, 2));
+		other.mCenter = box.mCenter + Point(nxRange(-1, 1), nxRange(-1, 1), nxRange(-1, 1));
+		other.mExtents = Point(nxRange(0, 3), nxRange(0, 3), nxRange(0, 3));
+		{
+		float r[3][3];
+		nxRotation(r);
+		for(int i = 0; i < 3; ++i)
+			for(int j = 0; j < 3; ++j)
+				box.mRot.m[i][j] = (c % 5 == 0) ? (i == j ? 1.0f : 0.0f) : r[i][j];
+		nxRotation(r);
+		for(int i = 0; i < 3; ++i)
+			for(int j = 0; j < 3; ++j)
+				other.mRot.m[i][j] = r[i][j];
+		}
+		const udword edgeIndex = nxNext() % 12;
+		for(int side = 0; side < (part == 4 ? all : 0); ++side)
+			{
+			NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+			Plane planes[6];
+			Point pts[8], edgeNormal;
+			bool okPlanes, okPoints;
+			BOOL inside;
+			if(side == 0)
+				{
+				okPlanes = ((NxPointsFn) nxAt(o, kIceOBBPlanes))(&box, planes);
+				okPoints = ((NxPointsFn) nxAt(o, kIceOBBPoints))(&box, pts);
+				((NxEdgeNormalFn) nxAt(o, kIceOBBEdgeNormal))(&box, edgeIndex, &edgeNormal);
+				inside = ((NxOBBInsideFn) nxAt(o, kIceOBBIsInside))(&box, &other);
+				}
+			else
+				{
+				okPlanes = box.ComputePlanes(planes);
+				okPoints = box.ComputePoints(pts);
+				box.ComputeWorldEdgeNormal(edgeIndex, edgeNormal);
+				inside = box.IsInside(other);
+				}
+			tape.push(okPlanes ? 1u : 0u);
+			tape.push(okPoints ? 1u : 0u);
+			tape.push((unsigned) inside);
+			nxTapeWords(tape, planes, sizeof(planes));
+			nxTapeWords(tape, pts, sizeof(pts));
+			nxTapeWords(tape, &edgeNormal, sizeof(edgeNormal));
+			}
+		}
+	nxReport(kIceParts[part].name, kIceParts[part].rva, kIceParts[part].owner, kIceParts[part].source,
+		selfOnly, tolerance);
+	}
+
+// Three of the five are DIVERGENT, measured and attributed
+// (evidence/vendored-correspondence.md, Task 4): Plane::Set/Triangle's
+// cross products and normalisations, Matrix4x4's cofactor sums and OBB's
+// rotations are the reassociated sums and unrounded intermediates of the
+// summation-order work unit, and on the degenerate inputs (a collinear
+// triangle, a singular matrix) the oracle's unrounded residue is a tiny
+// non-zero where the candidate's is exactly zero.
+static void nxDriveIceMaths(const NxOracleRows& o, bool selfOnly)
+	{
+	static const bool kX87[5] = { false, true, false, true, true };
+	for(int part = 0; part < 5; ++part)
+		nxDriveIcePart(o, part, selfOnly, kX87[part] ? kDivergent : 0);
+	}
+
+//////////////////////////////////////////////////////////////////////////////
+// qhull: the hull the NovodeX cooker builds, "qhull o", over point sets that
+// reach qhull's facet merging (coplanar and duplicate points, a thin slab,
+// near-degenerate rings) and its error exits (a flat set, too few points, a
+// collinear set).
+//
+// The oracle's qhull reaches its host through the object pointer at
+// .data:0x00125080, a NovodeX class nothing has recovered (Task 2's open
+// item). The harness installs a stand-in for the duration of this family:
+// malloc/free on the harness heap, printing dropped, and the error exit handed
+// back to the driver by longjmp -- the same three things ThirdPartyHost.cpp's
+// shims do on the candidate side. The output-collecting slots (+0x00..+0x0c)
+// are stubs that drop what they are handed: qh_produce_output runs, as the
+// driver runs it, but the NovodeX output it produces goes through hooks whose
+// candidate side is a shim, and a shim has no outcome to compare. What it
+// leaves in the qh state is compared: the area and volume it computes for the
+// "o" header, and each facet's area, on the float tape.
+
+extern "C" {
+typedef struct NxQhullEntries
+	{
+	void*	initA;
+	void*	initflags;
+	void*	initB;
+	void*	qhull;
+	void*	checkOutput;
+	void*	produceOutput;
+	void*	fin;
+	void*	fout;
+	void*	ferr;
+	} NxQhullEntries;
+typedef void (*NxQhPush)(void* tape, unsigned word);
+int		nxQhullRun(const NxQhullEntries* e, double* points, int numpoints, const char* options);
+void	nxQhullTape(const void* state, const double* points, int numpoints, NxQhPush push, void* tape,
+	void* floats);
+void*	nxQhullCandidateState(void);
+void	nxQhullErrorExit(int exitcode);
+void	qh_init_A(FILE* infile, FILE* outfile, FILE* errfile, int argc, char* argv[]);
+void	qh_initflags(char* command);
+void	qh_init_B(double* points, int numpoints, int dim, unsigned int ismalloc);
+void	qh_qhull(void);
+void	qh_check_output(void);
+void	qh_produce_output(void);
+}
+
+static void* gQhOracleBlocks[65536];
+static unsigned gQhOracleNbBlocks = 0;
+
+static void __fastcall nxQhHostOff(void*, int, int, int, int, int) {}
+static void __fastcall nxQhHostPoint(void*, int, float, float, float) {}
+static void __fastcall nxQhHostFacet(void*, int, int, int*) {}
+static void __fastcall nxQhHostSize(void*, int, float, float) {}
+static int __cdecl nxQhHostPrintf(void*, void*, const char*, ...) { return 0; }
+static void* __fastcall nxQhHostMalloc(void*, int, size_t size)
+	{
+	void* p = malloc(size ? size : 1);
+	if(gQhOracleNbBlocks < sizeof(gQhOracleBlocks) / sizeof(gQhOracleBlocks[0]))
+		gQhOracleBlocks[gQhOracleNbBlocks++] = p;
+	return p;
+	}
+static void __fastcall nxQhHostFree(void*, int, void* p)
+	{
+	for(unsigned i = 0; i < gQhOracleNbBlocks; ++i)
+		if(gQhOracleBlocks[i] == p)
+			{
+			gQhOracleBlocks[i] = gQhOracleBlocks[--gQhOracleNbBlocks];
+			free(p);
+			return;
+			}
+	}
+static void __fastcall nxQhHostNarrow(void*, int) {}
+static void __fastcall nxQhHostErrexit(void*, int, int exitcode) { nxQhullErrorExit(exitcode); }
+
+static void* gQhHostVtable[9] =
+	{
+	(void*) &nxQhHostOff, (void*) &nxQhHostPoint, (void*) &nxQhHostFacet, (void*) &nxQhHostSize,
+	(void*) &nxQhHostPrintf, (void*) &nxQhHostMalloc, (void*) &nxQhHostFree, (void*) &nxQhHostNarrow,
+	(void*) &nxQhHostErrexit
+	};
+static void* gQhHostObject[4] = { gQhHostVtable, 0, 0, 0 };
+
+static void nxQhPushTape(void* tape, unsigned word)
+	{
+	((NxTape*) tape)->push(word);
+	}
+
+static unsigned nxQhullPoints(int set, float* out)
+	{
+	unsigned n = 0;
+	switch(set)
+		{
+		case 0:		// a tetrahedron
+			{
+			static const float k[12] = { 0,0,0, 1,0,0, 0,1,0, 0,0,1 };
+			memcpy(out, k, sizeof(k));
+			return 4;
+			}
+		case 1:		// a cube: six coplanar quads
+			for(unsigned v = 0; v < 8; ++v)
+				{
+				out[n * 3 + 0] = (v & 1) ? 1.0f : -1.0f;
+				out[n * 3 + 1] = (v & 2) ? 1.0f : -1.0f;
+				out[n * 3 + 2] = (v & 4) ? 1.0f : -1.0f;
+				++n;
+				}
+			return n;
+		case 2:		// a 3x3x3 lattice: coplanar points on every face, one interior
+			for(int i = 0; i < 27; ++i)
+				{
+				out[n * 3 + 0] = (float) (i % 3) - 1.0f;
+				out[n * 3 + 1] = (float) ((i / 3) % 3) - 1.0f;
+				out[n * 3 + 2] = (float) (i / 9) - 1.0f;
+				++n;
+				}
+			return n;
+		case 3:		// points on a sphere
+		case 4:		// points in a box
+			for(int i = 0; i < (set == 3 ? 96 : 200); ++i)
+				{
+				Point p(nxRange(-1, 1), nxRange(-1, 1), nxRange(-1, 1));
+				if(set == 3 && p.Magnitude() > 1e-3f)
+					p.Normalize();
+				out[n * 3 + 0] = p.x; out[n * 3 + 1] = p.y; out[n * 3 + 2] = p.z;
+				++n;
+				}
+			return n;
+		case 5:		// a thin slab: a jittered plane and two points above it
+			for(int i = 0; i < 60; ++i)
+				{
+				out[n * 3 + 0] = nxRange(-2, 2);
+				out[n * 3 + 1] = nxRange(-2, 2);
+				out[n * 3 + 2] = nxRange(-1e-5f, 1e-5f);
+				++n;
+				}
+			out[n * 3 + 0] = 0.25f; out[n * 3 + 1] = 0.5f; out[n * 3 + 2] = 0.5f; ++n;
+			out[n * 3 + 0] = -0.25f; out[n * 3 + 1] = 0.125f; out[n * 3 + 2] = 0.25f; ++n;
+			return n;
+		case 6:		// every point three times, plus the cube
+			for(int i = 0; i < 20; ++i)
+				{
+				const float x = nxRange(-1, 1), y = nxRange(-1, 1), z = nxRange(-1, 1);
+				for(int k = 0; k < 3; ++k)
+					{
+					out[n * 3 + 0] = x; out[n * 3 + 1] = y; out[n * 3 + 2] = z;
+					++n;
+					}
+				}
+			n += nxQhullPoints(1, out + n * 3);
+			return n;
+		case 7:		// a cylinder: two rings of 16, each ring coplanar
+			for(int ring = 0; ring < 2; ++ring)
+				for(int i = 0; i < 16; ++i)
+					{
+					const double a = i * (6.283185307179586 / 16.0);
+					out[n * 3 + 0] = (float) cos(a);
+					out[n * 3 + 1] = (float) sin(a);
+					out[n * 3 + 2] = ring ? 2.0f : 0.0f;
+					++n;
+					}
+			return n;
+		case 8:		// far from the origin: a small box at 1e5
+			for(int i = 0; i < 40; ++i)
+				{
+				out[n * 3 + 0] = 100000.0f + nxRange(-1, 1);
+				out[n * 3 + 1] = -50000.0f + nxRange(-1, 1);
+				out[n * 3 + 2] = 25000.0f + nxRange(-1, 1);
+				++n;
+				}
+			return n;
+		case 9:		// flat: every point on z = 0.5 (qhull's flat-simplex exit)
+			for(int i = 0; i < 16; ++i)
+				{
+				out[n * 3 + 0] = nxRange(-1, 1);
+				out[n * 3 + 1] = nxRange(-1, 1);
+				out[n * 3 + 2] = 0.5f;
+				++n;
+				}
+			return n;
+		case 10:	// too few points
+			out[0] = 0; out[1] = 0; out[2] = 0;
+			out[3] = 1; out[4] = 0; out[5] = 0;
+			out[6] = 0; out[7] = 1; out[8] = 0;
+			return 3;
+		default:	// collinear
+			for(int i = 0; i < 10; ++i)
+				{
+				out[n * 3 + 0] = (float) i;
+				out[n * 3 + 1] = (float) i * 2.0f;
+				out[n * 3 + 2] = (float) i * -0.5f;
+				++n;
+				}
+			return n;
+		}
+	}
+
+static void nxDriveQhullHull(const NxOracleRows& o, bool selfOnly)
+	{
+	gState = 0x9b0c0de5;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	gOracleTapeX87.reset();
+	gCandidateTapeX87.reset();
+
+	void** hostSlot = (void**) (o.base + kQhHostGlobal);
+	void* shippedHost = *hostSlot;
+	*hostSlot = gQhHostObject;
+
+	NxQhullEntries oracle;
+	oracle.initA		= o.base + kQhInitA;
+	oracle.initflags	= o.base + kQhInitflags;
+	oracle.initB		= o.base + kQhInitB;
+	oracle.qhull		= o.base + kQhQhull;
+	oracle.checkOutput	= o.base + kQhCheckOutput;
+	oracle.produceOutput	= o.base + kQhProduceOutput;
+	oracle.fin			= o.base + kOracleIob;
+	oracle.fout			= o.base + kOracleIob + 0x20;
+	oracle.ferr			= o.base + kOracleIob + 0x40;
+	NxQhullEntries candidate;
+	candidate.initA			= (void*) &qh_init_A;
+	candidate.initflags		= (void*) &qh_initflags;
+	candidate.initB			= (void*) &qh_init_B;
+	candidate.qhull			= (void*) &qh_qhull;
+	candidate.checkOutput	= (void*) &qh_check_output;
+	candidate.produceOutput	= (void*) &qh_produce_output;
+	candidate.fin			= stdin;
+	candidate.fout			= stdout;
+	candidate.ferr			= stderr;
+
+	// "o" is the NovodeX driver's only option, over every point set. The others
+	// reach vendored rows that option does not -- triangulated output, facet
+	// areas, the merge options, input scaling, the exhaustive initial simplex,
+	// output verification -- over the five sets that merge. The last, "o QR1",
+	// rotates the input by qhull's own random matrix first; the rotation's
+	// sums (qh_randommatrix, qh_gram_schmidt, qh_rotatepoints) round
+	// differently, the lattice and the slab stop being exactly coplanar in
+	// different places, and the merges that follow differ: that option goes to
+	// qhull_hull_rotated, DIVERGENT, as a whole.
+	static const char* const kOptions[] = { "o", "o Qt", "o FA", "o C-0", "o Qx", "o Qbb", "o QbB", "o Qs", "o Tv", "o QR1" };
+	static const int kMergingSets[] = { 2, 3, 5, 6, 7 };
+	static float points[3 * 256];
+	gOracleTapeB.reset();
+	gCandidateTapeB.reset();
+	for(int run = 0; run < 12 + 9 * 5; ++run)
+		{
+		const bool rotated = run >= 12 + 8 * 5;
+		const int set = run < 12 ? run : kMergingSets[(run - 12) % 5];
+		const char* options = kOptions[run < 12 ? 0 : 1 + (run - 12) / 5];
+		if(run == 12)
+			gState = 0x9b0c0de6;
+		const unsigned n = nxQhullPoints(set, points);
+		for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
+			{
+			NxTape& tape = rotated ? (side == 0 ? gOracleTapeB : gCandidateTapeB)
+				: (side == 0 ? gOracleTape : gCandidateTape);
+			NxTape& floats = rotated ? tape : (side == 0 ? gOracleTapeX87 : gCandidateTapeX87);
+			// The NovodeX driver widens the cooker's floats to doubles (0x0007d490).
+			double* coords = (double*) malloc(sizeof(double) * 3 * n);
+			for(unsigned i = 0; i < 3 * n; ++i)
+				coords[i] = points[i];
+			const int result = nxQhullRun(side == 0 ? &oracle : &candidate, coords, (int) n, options);
+			// Whether the build took an error exit, not which code: the candidate's
+			// exit arrives through ThirdPartyHost.cpp's qhNovodeXErrexit, which
+			// drops the code and aborts, so only the oracle side could tape it.
+			tape.push(result ? 1u : 0u);
+			if(result == 0)
+				nxQhullTape(side == 0 ? (const void*) (o.base + kQhState) : nxQhullCandidateState(),
+					coords, (int) n, nxQhPushTape, &tape, &floats);
+			if(side == 0)
+				{
+				while(gQhOracleNbBlocks)
+					free(gQhOracleBlocks[--gQhOracleNbBlocks]);
+				}
+			free(coords);
+			}
+		}
+	*hostSlot = shippedHost;
+	nxReport("qhull_hull", "0x0007d180", "phys_fn_003234",
+		"qhull.c,poly.c,poly2.c,merge.c,geom.c,geom2.c,qset.c,mem.c,global.c", selfOnly);
+	nxReportTapes(gOracleTapeX87, gCandidateTapeX87, "qhull_hull_x87", "0x0005c5c0", "phys_fn_002425",
+		"geom.c,geom2.c,merge.c", selfOnly, kDivergent);
+	nxReportTapes(gOracleTapeB, gCandidateTapeB, "qhull_hull_rotated", "0x0005ff40", "phys_fn_002520",
+		"geom2.c,qhull.c,poly.c,poly2.c,merge.c", selfOnly, kDivergent);
+	}
+
+// The Task 4 families, in the order they depend on each other: the models
+// first, every query over them, the refit last because it moves the vertices.
+static void nxDriveVendoredCoverage(const NxOracleRows& o, bool selfOnly)
+	{
+	// SetIceError on a rejecting arm dispatches through the oracle's import of
+	// NxFoundation's reporter, which aborts in a process with no SDK; the same
+	// redirection nxDrivePrunableRanges makes, for the same reason.
+	void** errorSlot = (void**) (o.base + kIatFoundationError);
+	void* shippedReporter = *errorSlot;
+	DWORD wasProtected = 0;
+	if(!VirtualProtect(errorSlot, sizeof(void*), PAGE_READWRITE, &wasProtected))
+		{
+		fprintf(stderr, "FAIL cannot reach the oracle's error import slot\n");
+		++gMismatches;
+		return;
+		}
+	*errorSlot = (void*) &nxFoundationErrorProbe;
+
+	nxDriveModels(o, selfOnly);
+	nxDriveRay(o, selfOnly);
+	static const NxVolumeRows kVolumes[] =
+		{
+		{ "opcode_sphere", "0x000e1360", "phys_fn_005105", "OPC_SphereCollider.cpp,OPC_SphereTriOverlap.h",
+		  kOpcSphereCtor, kOpcSphereDtor, kOpcSphereCollideModel, sizeof(SphereCollider), sizeof(SphereCache) },
+		{ "opcode_obb", "0x000de0d0", "phys_fn_005067", "OPC_OBBCollider.cpp,OPC_BoxBoxOverlap.h,OPC_TriBoxOverlap.h",
+		  kOpcOBBCtor, kOpcOBBDtor, kOpcOBBCollide, sizeof(OBBCollider), sizeof(OBBCache) },
+		{ "opcode_aabb", "0x000ef0d0", "phys_fn_005434", "OPC_AABBCollider.cpp,OPC_TriBoxOverlap.h",
+		  kOpcAABBCtor, kOpcAABBDtor, kOpcAABBCollideModel, sizeof(AABBCollider), sizeof(AABBCache) },
+		{ "opcode_lss", "0x000d4b90", "phys_fn_005027", "OPC_LSSCollider.cpp,OPC_LSSAABBOverlap.h,OPC_LSSTriOverlap.h",
+		  kOpcLSSCtor, kOpcLSSDtor, kOpcLSSCollide, sizeof(LSSCollider), sizeof(LSSCache) },
+		{ "opcode_planes", "0x000e2b60", "phys_fn_005138", "OPC_PlanesCollider.cpp,OPC_PlanesAABBOverlap.h,OPC_PlanesTriOverlap.h",
+		  kOpcPlanesCtor, kOpcPlanesDtor, kOpcPlanesCollide, sizeof(PlanesCollider), sizeof(PlanesCache) },
+		};
+	static const unsigned kSeeds[] = { 0x5fe2ee01, 0x0bbee001, 0xaabbee01, 0x1553ee01, 0x91a9e501 };
+	for(int k = 0; k < 5; ++k)
+		nxDriveVolume(o, (NxVolumeKind) k, kVolumes[k], kSeeds[k], selfOnly);
+	nxDriveTreeCollider(o, selfOnly);
+	nxDriveVanilla(o, selfOnly);
+	nxDriveRefit(o, selfOnly);
+	nxReleaseModels(o);
+	nxDriveSap(o, selfOnly);
+	nxDriveIceMaths(o, selfOnly);
+
+	*errorSlot = shippedReporter;
+	VirtualProtect(errorSlot, sizeof(void*), wasProtected, &wasProtected);
+
+	nxDriveQhullHull(o, selfOnly);
+	}
+
+//////////////////////////////////////////////////////////////////////////////
 // Layout assertions. Not a differential -- a static check that the vendored
 // headers produce the sizes and offsets the disassembly measured. Every one of
 // these is a modification a stock header gets silently wrong.
@@ -1977,6 +4123,14 @@ int wmain(int argc, wchar_t** argv)
 	nxDrivePrunableRanges(o, selfOnly);
 	nxDriveRadixSetRankBuffers(o, selfOnly);
 
+	printf("thirdparty coverage driven=%u divergent=%u words=%u layout_checks=%u\n",
+		gDriven, gDivergent, gWordsCompared, gLayoutChecks);
+	printf("thirdparty oracle digest=%08x\n", gRunDigest);
+
+	// Vendored correspondence, Task 4. The two lines above close the families
+	// registered before it and are printed where they always were; the same two
+	// lines again after these families carry the running totals.
+	nxDriveVendoredCoverage(o, selfOnly);
 	printf("thirdparty coverage driven=%u divergent=%u words=%u layout_checks=%u\n",
 		gDriven, gDivergent, gWordsCompared, gLayoutChecks);
 	printf("thirdparty oracle digest=%08x\n", gRunDigest);

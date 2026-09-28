@@ -2227,7 +2227,56 @@ $NxRequiredCoverageLines = [ordered] @{
         'layout Pruner.mWorldBoxes=20 expected=20 rva=0x000b55a0 ok',
 
         'thirdparty coverage driven=17 divergent=0 words=193758 layout_checks=47',
-        'thirdparty oracle digest=74ebc669'
+        'thirdparty oracle digest=74ebc669',
+
+        # Vendored correspondence, Task 4: execution evidence for the matched
+        # vendored groups the families above never reached -- OPCODE's model
+        # build, every collider over every tree kind, the vanilla AABBTree,
+        # SweepAndPrune, the ICE maths, and qhull's hull. The colliders query the
+        # ORACLE-built models on both sides, so they compare the colliders and
+        # not the builds. The two summary lines above are printed where they
+        # always were; the pair at the end of this block carries the totals.
+        #
+        # `verdict=exact` families are registered whole. A `divergent` family is
+        # registered only up to its oracle digest: what it diverges by is the
+        # candidate's own behaviour, and pinning it would register candidate-only
+        # output. Each is attributed in evidence/vendored-correspondence.md
+        # (Task 4): the summation-order and register-lifetime work unit (the
+        # three-product sums among them are in sum_grouping.csv) for *_x87,
+        # ice_plane_triangle, ice_matrix4x4 and ice_obb; inputs placed exactly on a boundary, where that same last bit
+        # decides a hit, for *_boundary; qhull's own random rotation ("QR1"),
+        # which rounds differently and so changes the merges after it, for
+        # qhull_hull_rotated. `layout_checks=` in the second coverage line is the
+        # same 47: the new families add no layout assertion.
+        'thirdparty name=opcode_model_build rva=0x000e9100 owner=phys_fn_005368 source=OPC_Model.cpp,OPC_BaseModel.cpp,OPC_AABBTree.cpp,OPC_OptimizedTree.cpp,OPC_TreeBuilders.cpp words=22607 oracle=737affc0 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=opcode_model_build_x87 rva=0x000f09b0 owner=phys_fn_005513 source=OPC_AABBTree.cpp,OPC_TreeBuilders.cpp,OPC_OptimizedTree.cpp words=19406 oracle=902f1257',
+        'thirdparty name=opcode_ray rva=0x000ba6f0 owner=phys_fn_004932 source=OPC_RayCollider.cpp words=2585 oracle=45be8f49 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=opcode_ray_x87 rva=0x000b84c0 owner=phys_fn_004921 source=OPC_RayCollider.cpp,OPC_RayTriOverlap.h words=525 oracle=24e93b36',
+        'thirdparty name=opcode_ray_boundary rva=0x000b9070 owner=phys_fn_004925 source=OPC_RayCollider.cpp,OPC_RayAABBOverlap.h words=3284 oracle=37e0cc32',
+        'thirdparty name=opcode_sphere rva=0x000e1360 owner=phys_fn_005105 source=OPC_SphereCollider.cpp,OPC_SphereTriOverlap.h words=9103 oracle=961ae915 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=opcode_obb rva=0x000de0d0 owner=phys_fn_005067 source=OPC_OBBCollider.cpp,OPC_BoxBoxOverlap.h,OPC_TriBoxOverlap.h words=13635 oracle=e1061b14 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=opcode_aabb rva=0x000ef0d0 owner=phys_fn_005434 source=OPC_AABBCollider.cpp,OPC_TriBoxOverlap.h words=8589 oracle=1b68b5c5 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=opcode_lss rva=0x000d4b90 owner=phys_fn_005027 source=OPC_LSSCollider.cpp,OPC_LSSAABBOverlap.h,OPC_LSSTriOverlap.h words=11986 oracle=7ad8f2f6 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=opcode_planes rva=0x000e2b60 owner=phys_fn_005138 source=OPC_PlanesCollider.cpp,OPC_PlanesAABBOverlap.h,OPC_PlanesTriOverlap.h words=12599 oracle=831f1266 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=opcode_treecollider rva=0x000d13c0 owner=phys_fn_004986 source=OPC_TreeCollider.cpp,OPC_TriTriOverlap.h,OPC_TriBoxOverlap.h,OPC_BoxBoxOverlap.h words=5432 oracle=e95063d8 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=opcode_treecollider_boundary rva=0x000bbd60 owner=phys_fn_004948 source=OPC_TreeCollider.cpp,OPC_TriTriOverlap.h words=872 oracle=c12dbe7c',
+        'thirdparty name=opcode_aabbtree rva=0x000f10c0 owner=phys_fn_005523 source=OPC_AABBTree.cpp,OPC_TreeBuilders.cpp words=4715 oracle=9078ecba mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=opcode_ray_vanilla rva=0x000ba880 owner=phys_fn_004934 source=OPC_RayCollider.cpp words=710 oracle=915a09b5 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=opcode_sphere_vanilla rva=0x000e14d0 owner=phys_fn_005107 source=OPC_SphereCollider.cpp words=1534 oracle=c0e95680 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=opcode_aabb_vanilla rva=0x000ef230 owner=phys_fn_005436 source=OPC_AABBCollider.cpp words=1334 oracle=65c5c51a mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=opcode_aabbtree_refit rva=0x000f11b0 owner=phys_fn_005525 source=OPC_AABBTree.cpp words=2874 oracle=269b1591 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=opcode_refit rva=0x000e9410 owner=phys_fn_005378 source=OPC_BaseModel.cpp,OPC_OptimizedTree.cpp words=17709 oracle=aa7a9145 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=opcode_sap rva=0x000e6ca0 owner=phys_fn_005283 source=OPC_SweepAndPrune.cpp words=674 oracle=c5135e72 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=ice_aabb rva=0x000e2d20 owner=phys_fn_005141 source=Ice/IceAABB.cpp words=7800 oracle=5b4cf6ae mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=ice_plane_triangle rva=0x000e31c0 owner=phys_fn_005155 source=Ice/IcePlane.cpp,Ice/IceTriangle.cpp words=4000 oracle=20b460cd',
+        'thirdparty name=ice_indexedtriangle rva=0x000e4160 owner=phys_fn_005187 source=Ice/IceIndexedTriangle.cpp words=1000 oracle=4660350a mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=ice_matrix4x4 rva=0x000e4400 owner=phys_fn_005197 source=Ice/IceMatrix4x4.cpp words=6800 oracle=d0f85eff',
+        'thirdparty name=ice_obb rva=0x000e4580 owner=phys_fn_005199 source=Ice/IceOBB.cpp words=10800 oracle=4f2c5548',
+        'thirdparty name=qhull_hull rva=0x0007d180 owner=phys_fn_003234 source=qhull.c,poly.c,poly2.c,merge.c,geom.c,geom2.c,qset.c,mem.c,global.c words=58488 oracle=c824ff7f mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=qhull_hull_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=32036 oracle=20ffcbef',
+        'thirdparty name=qhull_hull_rotated rva=0x0005ff40 owner=phys_fn_002520 source=geom2.c,qhull.c,poly.c,poly2.c,merge.c words=9431 oracle=0a2f0b05',
+        'thirdparty coverage driven=44 divergent=9 words=464286 layout_checks=47',
+        'thirdparty oracle digest=c16f0c0c'
     )
 }
 
@@ -2250,7 +2299,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
-    '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
+    '4' = 130  # 34 for NxPhysicsAssetTests, 96 for NxPhysicsThirdPartyTests (67 + 29 from
+               # vendored-correspondence Task 4)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
