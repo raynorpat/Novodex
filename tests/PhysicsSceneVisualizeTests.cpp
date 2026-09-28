@@ -24,10 +24,10 @@
 // nothing), bodies move, and after releaseScene the renderer must receive no
 // renderable (000663 releases it through the Foundation).
 //
-// Every body is given its mass and massSpaceInertia: the candidate's creation
-// path (Scene.cpp nxActorComputeMass) does not derive the inertia from a
-// shape when a mass is given, so a shape-derived inertia would show a
-// creation defect in the inertia box, not one of these rows'.
+// Every body is given its mass and massSpaceInertia: the creation path
+// (Scene.cpp nxActorBuildRecord, 000026) derives mass and inertia from the
+// shapes (000008) only when the tensor is all zero, so giving both keeps
+// these rows' output independent of that path.
 
 #include "PhysicsPairLoader.h"
 #include "NxPageGuardedAllocator.h"

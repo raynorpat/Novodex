@@ -37,8 +37,9 @@
 class NxDebugRenderable;
 
 // The dynamic-body record Joint::mBody[i] points to -- `[actorImpl+8]`, the
-// 0x260-byte record the candidate builds in nxActorComputeMass
-// (Physics/src/Scene.cpp). This is a read view only: nothing constructs it
+// 0x260-byte record the candidate builds in nxActorBuildRecord (000026,
+// Physics/src/Scene.cpp) through DynamicBody::construct (000797,
+// Physics/src/BodyCreation.cpp). This is a read view only: nothing constructs it
 // through this type. Only the fields the Joint rows touch are named; names
 // come from what the candidate stores there, the rest are by offset. See
 // revolute-contract.md "## Object layouts" (Body fields the Joint rows read).
@@ -105,8 +106,8 @@ struct JointBodyRecord
 	//! array, k the body's position in its island (the element base reloads
 	//! per island, so bodies in different islands share elements and
 	//! phys_fn_000600 may reallocate the array between islands). The
-	//! candidate has no step, so it stays 0 (Scene.cpp,
-	//! nxActorComputeMass). See joint-open-items-contract.md
+	//! candidate has no step, so it stays 0 (BodyCreation.cpp,
+	//! DynamicBody::construct). See joint-open-items-contract.md
 	//! "## Body record +0x204".
 	JointSupportBody*	mUnknown204;
 	};

@@ -16,7 +16,6 @@
 #include "FoundationSDK.h"
 #include "BodyCreation.h"
 #include "core/JointSupport.h"
-#include "core/JointSupport.h"
 #include "Scene.h"
 #include "Observable.h"
 

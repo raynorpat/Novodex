@@ -22,7 +22,8 @@
 // ActorPairEffector on) the force application on the two body records.
 //
 // The two observed body records are `[actorBody+8]`, the 0x260-byte dynamic
-// records the candidate builds in nxActorComputeMass (Scene.cpp); their
+// records the candidate builds in nxActorBuildRecord (Scene.cpp) through
+// DynamicBody::construct (BodyCreation.cpp); their
 // Observable part at +0 is what the effector registers with.
 
 #include "Nxp.h"
