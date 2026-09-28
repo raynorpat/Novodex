@@ -6126,8 +6126,8 @@ static NxIceRecordingAllocator gIceAllocator;
 static const int kIceMaxMeshes = 72;
 static NxMesh gIceMeshes[kIceMaxMeshes];
 static int gIceNbMeshes = 0;
-static unsigned gIceInputDigest[3];
-static unsigned gIceInputWords[3];
+static unsigned gIceInputDigest[5];	// 0..2 Task 2c; 3, 4 Task 2d
+static unsigned gIceInputWords[5];
 
 static NxMesh& nxIceNewMesh(unsigned nbVerts, unsigned nbTris)
 	{
@@ -7149,6 +7149,796 @@ static void nxDriveIceMeshTools(const NxOracleRows& o, bool selfOnly)
 		gIceNbMeshes, v.runs, v.succeeded, v.failed, v.adjacent, gIceReports, gIceReportLines[0]);
 	}
 
+//////////////////////////////////////////////////////////////////////////////
+// convex-mesh gap Task 2d. MeshBuilder2 (Physics/src/IceMeshBuilder2.cpp,
+// 001591..001637) and the vertex reduction (IceMeshTools.cpp, 001645, 001647,
+// 001659), linked into this harness. Two families, run through nxIceFamily
+// (the recording 004803 allocator and the report recorder installed per pass):
+//
+//   ice_meshbuilder2   driven as 002087 drives it: the constructor (001593),
+//                      Init (001623) with a create block, AddFace (001597) per
+//                      triangle, Build (001633), a second Init on the built
+//                      object (FreeUsedRam, 001621, over a full object) and the
+//                      destructor (001629); also AddFace before Init, AddFace
+//                      past the face count, and Build before any face. Eight
+//                      create-block configurations (the twelve flags, the uvw
+//                      and colour streams, smoothing groups, materials, flips,
+//                      out-of-range uvw/colour references), each mesh under a
+//                      rotating three of them (the six fixtures under all
+//                      eight), alternately under the x87 control words 0x027f
+//                      and 0x0f7f.
+//   vertex_reduction   001645 / 001647 / 001659 over each mesh's vertices with
+//                      duplicates inserted (welded), with and without the
+//                      result block, twice on one object (the release at its
+//                      start), an empty set, and sets whose smallest vertex has
+//                      the bits 0xffffffff x3 (the reduction's initial
+//                      "previous" vertex, so it is not kept).
+//
+// What a tape holds: every return value; for MeshBuilder2 after Build, the
+// thirteen Containers word for word (maximum, count, growth factor, entries),
+// the counts and flags, and digests of the owned arrays (the stream copies with
+// their cookies, the faces -- their output corners only after a successful
+// Build and their normals only when a normal flag computed them --, the
+// references, the face remap, the per-vertex face tables); the result block's
+// counts, and each of its pointers as WHICH array it points at (the two sides
+// allocate from different CRT heaps: no pointer is compared); for the
+// reduction the object, the cross-reference and the reduced vertices; and,
+// interleaved, every allocation and release through the 004803 getter (the
+// Containers' growth, the reduction's blocks, RadixSort). The CRT blocks
+// MeshBuilder2 allocates itself (005701 / 005700 in the oracle) come from the
+// oracle's own CRT heap and are not recorded on either side.
+//
+// Build is skipped (a marker is taped) for a case none of whose faces has three
+// corner positions of distinct bits: the vertex pass would drop every face and
+// the face sort then reads the rank of face 0 of an empty sort. It is a rule on
+// the fixed inputs, not a comparison; the coverage line counts such cases.
+#pragma push_macro("min")
+#pragma push_macro("max")
+#pragma push_macro("random")
+#undef min
+#undef max
+#undef random
+#include "IceMeshBuilder2.h"
+#pragma pop_macro("random")
+#pragma pop_macro("max")
+#pragma pop_macro("min")
+
+static const unsigned kMb2Ctor		= 0x0002ebe0;	// phys_fn_001593
+static const unsigned kMb2AddFace	= 0x0002eda0;	// phys_fn_001597
+static const unsigned kMb2Init		= 0x00030420;	// phys_fn_001623
+static const unsigned kMb2Dtor		= 0x00030d10;	// phys_fn_001629
+static const unsigned kMb2Build		= 0x00030f50;	// phys_fn_001633
+static const unsigned kVrCtor		= 0x00031680;	// phys_fn_001645
+static const unsigned kVrReduce		= 0x000316a0;	// phys_fn_001647
+static const unsigned kVrDtor		= 0x000324a0;	// phys_fn_001659
+
+typedef void*	(__thiscall* IceVrCtorFn)(void*, const void*, unsigned);
+
+typedef char nxMb2Layout0[sizeof(MeshBuilder2) == 0x124 && offsetof(MeshBuilder2, mMaxNbFaces) == 0xd0
+	&& offsetof(MeshBuilder2, mNbNormInfo) == 0x114 && offsetof(MeshBuilder2, mKillZeroAreaFaces) == 0x118
+	&& offsetof(MeshBuilder2, mOptimizeVertexList) == 0x123 ? 1 : -1];
+typedef char nxMb2Layout1[sizeof(MBCREATE) == 0x28 && offsetof(MBCREATE, KillZeroAreaFaces) == 0x1c
+	&& sizeof(MBFACEINFO) == 0x1c && offsetof(MBFACEINFO, Flip) == 0x18 && sizeof(MBRESULT) == 0x60
+	&& offsetof(MBRESULT, UseW) == 0x54 && offsetof(MBRESULT, Materials) == 0x5c ? 1 : -1];
+typedef char nxMb2Layout2[sizeof(MBFace) == 0x30 && offsetof(MBFace, Index) == 0x2c && sizeof(MBRef) == 12
+	&& sizeof(ReducedVertices) == 0x14 && sizeof(REDUCEDCLOUD) == 12 && sizeof(IceCore::Container) == 16 ? 1 : -1];
+
+// The x87 control word for a case, set and restored around it on both sides.
+static unsigned short nxMb2SetControlWord(unsigned short cw)
+	{
+	unsigned short old;
+	__asm
+		{
+		fnstcw	old
+		fldcw	cw
+		}
+	return old;
+	}
+
+static unsigned nxMb2Digest(const void* data, unsigned words)
+	{
+	unsigned d = 2166136261u;
+	const unsigned char* p = (const unsigned char*) data;
+	for(unsigned i = 0; i < words; ++i)
+		{
+		unsigned w;
+		memcpy(&w, p + i * 4, 4);
+		d = nxFold(d, w);
+		}
+	return d;
+	}
+
+static void nxMb2FoldInput(int family, const void* data, unsigned words)
+	{
+	if(!gIceOraclePass)
+		return;
+	unsigned d = gIceInputDigest[family];
+	const unsigned char* p = (const unsigned char*) data;
+	for(unsigned i = 0; i < words; ++i)
+		{
+		unsigned w;
+		memcpy(&w, p + i * 4, 4);
+		d = nxFold(d, w);
+		}
+	gIceInputDigest[family] = d;
+	gIceInputWords[family] += words;
+	}
+
+// Oracle-side coverage for the two families' lines.
+struct NxMb2Coverage
+	{
+	unsigned cases, initOk, initFailed, added, dropped, rejected, built, buildFailed, skipped;
+	unsigned outFaces, outVerts, submeshes, materials, killed, normInfo, remapped, x87;
+	unsigned vrRuns, vrVerts, vrReduced;
+	unsigned probes, probesFalse;	// AddFace before Init, AddFace past the count, Build before any face
+	};
+static NxMb2Coverage gMb2Coverage;
+
+static void nxMb2Probe(const NxIceSide& s, bool ok)
+	{
+	gIceTape->push(ok ? 1u : 0u);
+	if(s.oracle)
+		{
+		++gMb2Coverage.probes;
+		if(!ok)
+			++gMb2Coverage.probesFalse;
+		}
+	}
+
+// Where a result pointer points: 1 + the Container whose entries it is, 0x100
+// for the face remap, 0xfe for null, 0xff for anything else.
+static unsigned nxMb2PointerCode(const unsigned char* object, const void* pointer)
+	{
+	if(!pointer)
+		return 0xfeu;
+	for(unsigned c = 0; c < 13; ++c)
+		if((const void*) (size_t) nxIceWord(object, c * 16 + 8) == pointer)
+			return c + 1;
+	if((const void*) (size_t) nxIceWord(object, 0x100) == pointer)
+		return 0x100u;
+	return 0xffu;
+	}
+
+// An owned array: present or not; its cookie (the 12-byte streams: then the
+// cookie gives the length); its length and digest when `digest`.
+static void nxMb2TapeArray(const unsigned char* object, unsigned offset, unsigned words, bool cookie,
+	bool digest)
+	{
+	NxTape& t = *gIceTape;
+	const unsigned* array = (const unsigned*) (size_t) nxIceWord(object, offset);
+	t.push(0xa7700000u | offset);
+	t.push(array ? 1u : 0u);
+	if(!array)
+		return;
+	if(cookie)
+		{
+		t.push(array[-1]);
+		words = array[-1] * 3;
+		}
+	if(!digest)
+		return;
+	t.push(words);
+	t.push(nxMb2Digest(array, words));
+	}
+
+enum NxMb2TapeMode
+	{
+	kMb2AfterInit,		// a second Init: the face and reference records are not written yet
+	kMb2AfterFailure,	// a failed Build: no face's output corners are known to be written
+	kMb2AfterBuild,		// a successful Build
+	};
+
+static const unsigned kMb2RawEntries = 24;
+
+static void nxMb2TapeObject(const unsigned char* object, NxMb2TapeMode mode)
+	{
+	NxTape& t = *gIceTape;
+	t.push(0x0b1ec700u | (unsigned) mode);
+	for(unsigned c = 0; c < 13; ++c)
+		{
+		const unsigned base = c * 16;
+		const unsigned count = nxIceWord(object, base + 4);
+		const unsigned* entries = (const unsigned*) (size_t) nxIceWord(object, base + 8);
+		t.push(nxIceWord(object, base + 0));
+		t.push(count);
+		t.pushFloatWord(nxIceWord(object, base + 12));
+		t.push(entries ? 1u : 0u);
+		if(!entries)
+			continue;
+		// Containers 5..9 hold floats (vertices, uvw, colours, normals, face
+		// normals). The first kMb2RawEntries entries word for word, then a
+		// digest of all of them (the tape's length is bounded).
+		const bool floats = c >= 5 && c <= 9;
+		const unsigned n = count < kMb2RawEntries ? count : kMb2RawEntries;
+		for(unsigned i = 0; i < n; ++i)
+			floats ? t.pushFloatWord(entries[i]) : t.push(entries[i]);
+		t.push(nxMb2Digest(entries, count));
+		}
+	for(unsigned off = 0xd0; off <= 0xe8; off += 4)
+		t.push(nxIceWord(object, off));
+	t.push(nxIceWord(object, 0x104));
+	t.push(nxIceWord(object, 0x114));
+	t.push(nxIceWord(object, 0x118));
+	t.push(nxIceWord(object, 0x11c));
+	t.push(nxIceWord(object, 0x120));
+
+	const bool records = mode != kMb2AfterInit;
+	const unsigned nbVerts = nxIceWord(object, 0xd4);
+	const unsigned nbFaces = nxIceWord(object, 0xe0);
+	nxMb2TapeArray(object, 0xec, 0, true, true);
+	nxMb2TapeArray(object, 0xf0, 0, true, true);
+	nxMb2TapeArray(object, 0xf4, 0, true, true);
+	nxMb2TapeArray(object, 0xfc, nxIceWord(object, 0xe4) * 3, false, records);
+	nxMb2TapeArray(object, 0x100, nxIceWord(object, 0x104), false, true);
+	nxMb2TapeArray(object, 0x108, nbVerts, false, true);
+	nxMb2TapeArray(object, 0x10c, nbVerts, false, true);
+	nxMb2TapeArray(object, 0x110, nbFaces * 3, false, true);
+
+	const MBFace* F = (const MBFace*) (size_t) nxIceWord(object, 0xf8);
+	t.push(F ? 1u : 0u);
+	if(F)
+		{
+		t.push(((const unsigned*) F)[-1]);
+		if(records)
+			{
+			const bool built = mode == kMb2AfterBuild;
+			const bool normals = built && (object[0x11a] || object[0x11b]);
+			unsigned d = 2166136261u;
+			for(unsigned i = 0; i < nbFaces; ++i)
+				{
+				if(built)
+					for(int k = 0; k < 3; ++k)
+						d = nxFold(d, F[i].VRef[k]);
+				for(int k = 0; k < 3; ++k)
+					d = nxFold(d, F[i].Ref[k]);
+				d = nxFold(d, F[i].MaterialID);
+				d = nxFold(d, F[i].SmoothingGroups);
+				if(normals)
+					for(int k = 0; k < 3; ++k)
+						{
+						unsigned w;
+						memcpy(&w, &F[i].Normal[k], 4);
+						d = nxFold(d, w);
+						}
+				d = nxFold(d, F[i].Index);
+				}
+			t.push(d);
+			}
+		}
+	}
+
+static void nxMb2TapeResult(const unsigned char* object, const MBRESULT& r)
+	{
+	NxTape& t = *gIceTape;
+	t.push(0x4e5c0000u);
+	t.push(r.NbFaces);
+	t.push(r.NbMaxFaces);
+	t.push(r.NbSubmeshes);
+	t.push(r.NbVerts);
+	t.push(r.NbTVerts);
+	t.push(r.NbCVerts);
+	t.push(r.NbOutVerts);
+	t.push(r.NbNormInfo);
+	t.push(r.UseW ? 1u : 0u);
+	t.push(r.NbMaterials);
+	const void* pointers[14] =
+		{
+		r.Topology, r.FacesPerRun, r.FaceNormals, r.Runs, r.FaceRemap, r.VRefs, r.TRefs, r.CRefs,
+		r.Verts, r.TVerts, r.CVerts, r.Normals, r.NormInfo, r.Materials,
+		};
+	for(int i = 0; i < 14; ++i)
+		t.push(nxMb2PointerCode(object, pointers[i]));
+	}
+
+// One side's MeshBuilder2 and reduction entries.
+static void nxMb2Ctor(const NxIceSide& s, void* obj)
+	{
+	if(s.oracle)	((VoidThisFn) (s.o->base + kMb2Ctor))(obj);
+	else			new (obj) MeshBuilder2;
+	}
+static void nxMb2Dtor(const NxIceSide& s, void* obj)
+	{
+	if(s.oracle)	((VoidThisFn) (s.o->base + kMb2Dtor))(obj);
+	else			((MeshBuilder2*) obj)->~MeshBuilder2();
+	}
+static bool nxMb2Init(const NxIceSide& s, void* obj, const MBCREATE& c)
+	{
+	if(s.oracle)	return ((IceCreateFn) (s.o->base + kMb2Init))(obj, &c);
+	return ((MeshBuilder2*) obj)->Init(c);
+	}
+static bool nxMb2AddFace(const NxIceSide& s, void* obj, const MBFACEINFO& f)
+	{
+	if(s.oracle)	return ((IceCreateFn) (s.o->base + kMb2AddFace))(obj, &f);
+	return ((MeshBuilder2*) obj)->AddFace(f);
+	}
+static bool nxMb2Build(const NxIceSide& s, void* obj, MBRESULT& r)
+	{
+	if(s.oracle)	return ((IceCreateFn) (s.o->base + kMb2Build))(obj, &r);
+	return ((MeshBuilder2*) obj)->Build(r);
+	}
+static void nxVrCtor(const NxIceSide& s, void* obj, const void* verts, unsigned nb)
+	{
+	if(s.oracle)	((IceVrCtorFn) (s.o->base + kVrCtor))(obj, verts, nb);
+	else			new (obj) ReducedVertices((const IceMaths::Point*) verts, nb);
+	}
+static bool nxVrReduce(const NxIceSide& s, void* obj, REDUCEDCLOUD* rc)
+	{
+	if(s.oracle)	return ((IceCreateFn) (s.o->base + kVrReduce))(obj, rc);
+	return ((ReducedVertices*) obj)->Reduce(rc);
+	}
+static void nxVrDtor(const NxIceSide& s, void* obj)
+	{
+	if(s.oracle)	((VoidThisFn) (s.o->base + kVrDtor))(obj);
+	else			((ReducedVertices*) obj)->~ReducedVertices();
+	}
+
+// The eight create-block configurations. Flags in the create block's order:
+// kill zero-area faces, use w, vertex normals (smoothing groups), face normals,
+// normal info, indexed geometry, indexed uvw, indexed colours, relative
+// indices, skin (no vertex reduction), angle-weighted normals, optimize.
+struct NxMb2Config
+	{
+	unsigned char	flags[12];
+	int				uvw;		// 0 none; 1 one per vertex; 2 a null source (zeroed copy); 3 a palette of 5
+	int				colours;	// 0 none; 1 a palette of 4; 2 one per vertex
+	int				smoothing;	// 0 all 1; 1 drawn from {0, 1, 2, 4, 3}; 2 all 0
+	int				materials;	// 0 all 0xffffffff; 1 drawn from {0, 1, 2}; 2 from {0xffffffff, 5, 3}
+	bool			outOfRange;	// uvw / colour references drawn past the stream's count
+	bool			flips;		// the face's flip byte drawn
+	};
+
+static const NxMb2Config kMb2Configs[8] =
+	{
+	{ { 1,0,0,0,0,1,1,1,1,0,1,0 }, 0, 0, 0, 0, false, false },	// 002087's block
+	{ { 1,1,1,1,1,0,0,0,0,0,1,1 }, 1, 1, 1, 1, false, true },
+	{ { 0,0,1,0,1,1,0,1,1,0,0,0 }, 2, 0, 1, 2, false, true },
+	{ { 1,1,1,1,0,0,1,0,1,1,1,0 }, 3, 2, 1, 1, false, false },
+	{ { 0,0,0,1,0,0,0,0,0,0,0,0 }, 1, 1, 0, 1, true, true },
+	{ { 1,0,1,0,1,1,0,0,1,0,1,0 }, 0, 0, 2, 0, false, true },
+	{ { 1,1,1,1,1,1,1,1,0,1,0,1 }, 1, 1, 2, 2, false, false },
+	{ { 0,0,0,0,0,0,0,0,0,0,0,0 }, 3, 2, 1, 2, false, true },
+	};
+
+// Whether any face has three corner positions of distinct bits (see above).
+static bool nxMb2AnyDistinctFace(const NxMesh& m)
+	{
+	for(unsigned t = 0; t < m.nbTris; ++t)
+		{
+		const unsigned* tri = &m.tris[t * 3];
+		const bool d01 = memcmp(&m.verts[tri[0] * 3], &m.verts[tri[1] * 3], 12) != 0;
+		const bool d02 = memcmp(&m.verts[tri[0] * 3], &m.verts[tri[2] * 3], 12) != 0;
+		const bool d12 = memcmp(&m.verts[tri[1] * 3], &m.verts[tri[2] * 3], 12) != 0;
+		if(d01 && d02 && d12)
+			return true;
+		}
+	return false;
+	}
+
+static const int kMb2Family = 3;
+static const int kVrFamily = 4;
+
+// One case: a mesh under one configuration and control word.
+static void nxMb2Case(const NxIceSide& s, const NxMesh& mesh, int meshIndex, int config, bool firstOfMesh)
+	{
+	NxMb2Coverage& c = gMb2Coverage;
+	const NxMb2Config& cfg = kMb2Configs[config];
+	const unsigned short cw = ((meshIndex + config) & 1) ? 0x0f7f : 0x027f;
+	nxIceFoldRun(kMb2Family, (unsigned) meshIndex, (unsigned) config, cw);
+
+	// The streams and per-face words, drawn from a seed of the case's own.
+	gState = 0x6d623200u ^ (unsigned) (meshIndex * 131 + config * 7 + 1);
+	static float uvw[3 * 400];
+	static float colours[3 * 400];
+	static unsigned faceWords[400][9];
+	static unsigned faceInfo[400][3];
+	unsigned nbUVW = 0, nbColours = 0;
+	const float* uvwSource = 0;
+	const float* colourSource = 0;
+	if(cfg.uvw == 1)
+		{
+		nbUVW = mesh.nbVerts;
+		for(unsigned v = 0; v < nbUVW; ++v)
+			{
+			uvw[v * 3 + 0] = mesh.verts[v * 3 + 0] * 0.5f;
+			uvw[v * 3 + 1] = mesh.verts[v * 3 + 1] * 0.25f;
+			uvw[v * 3 + 2] = (float) (v & 3);
+			}
+		uvwSource = uvw;
+		}
+	else if(cfg.uvw == 2)
+		nbUVW = mesh.nbVerts / 2 + 1;
+	else if(cfg.uvw == 3)
+		{
+		nbUVW = 5;
+		for(unsigned v = 0; v < nbUVW; ++v)
+			{
+			uvw[v * 3 + 0] = (float) (v % 3);
+			uvw[v * 3 + 1] = (float) (v % 2);
+			uvw[v * 3 + 2] = 0.5f;
+			}
+		uvwSource = uvw;
+		}
+	if(cfg.colours == 1)
+		{
+		nbColours = 4;
+		for(unsigned v = 0; v < nbColours; ++v)
+			for(int k = 0; k < 3; ++k)
+				colours[v * 3 + k] = (float) ((v >> (k & 1)) & 1);
+		colourSource = colours;
+		}
+	else if(cfg.colours == 2)
+		{
+		nbColours = mesh.nbVerts;
+		for(unsigned v = 0; v < nbColours; ++v)
+			for(int k = 0; k < 3; ++k)
+				{
+				const unsigned draw = nxNext();
+				colours[v * 3 + k] = (float) (draw % 3) * 0.5f;
+				}
+		colourSource = colours;
+		}
+	static const unsigned kSmoothing[5] = { 0, 1, 2, 4, 3 };
+	static const unsigned kMaterialsA[3] = { 0, 1, 2 };
+	static const unsigned kMaterialsB[3] = { 0xffffffffu, 5, 3 };
+	for(unsigned t = 0; t < mesh.nbTris; ++t)
+		{
+		for(int k = 0; k < 3; ++k)
+			faceWords[t][k] = mesh.tris[t * 3 + k];
+		for(int k = 0; k < 3; ++k)
+			{
+			const unsigned draw = nxNext();
+			const unsigned span = nbUVW + (cfg.outOfRange ? 3 : 0);
+			faceWords[t][3 + k] = span ? draw % span : draw % 7;
+			}
+		for(int k = 0; k < 3; ++k)
+			{
+			const unsigned draw = nxNext();
+			const unsigned span = nbColours + (cfg.outOfRange ? 3 : 0);
+			faceWords[t][6 + k] = span ? draw % span : draw % 7;
+			}
+		const unsigned sgDraw = nxNext();
+		const unsigned matDraw = nxNext();
+		const unsigned flipDraw = nxNext();
+		faceInfo[t][0] = cfg.smoothing == 0 ? 1u : cfg.smoothing == 2 ? 0u : kSmoothing[sgDraw % 5];
+		faceInfo[t][1] = cfg.materials == 0 ? 0xffffffffu
+			: cfg.materials == 1 ? kMaterialsA[matDraw % 3] : kMaterialsB[matDraw % 3];
+		faceInfo[t][2] = cfg.flips ? (flipDraw & 1) : 0u;
+		}
+
+	MBCREATE create;
+	memset(&create, 0, sizeof(create));
+	create.NbVerts = mesh.nbVerts;
+	create.NbFaces = mesh.nbTris;
+	create.NbTVerts = nbUVW;
+	create.NbCVerts = nbColours;
+	create.Verts = (const IceMaths::Point*) mesh.verts;
+	create.TVerts = (const IceMaths::Point*) uvwSource;
+	create.CVerts = (const IceMaths::Point*) colourSource;
+	memcpy(&create.KillZeroAreaFaces, cfg.flags, 12);
+	nxMb2FoldInput(kMb2Family, mesh.verts, 3 * mesh.nbVerts);
+	nxMb2FoldInput(kMb2Family, &create, 4);
+	nxMb2FoldInput(kMb2Family, cfg.flags, 3);
+	if(uvwSource)
+		nxMb2FoldInput(kMb2Family, uvwSource, 3 * nbUVW);
+	if(colourSource)
+		nxMb2FoldInput(kMb2Family, colourSource, 3 * nbColours);
+	for(unsigned t = 0; t < mesh.nbTris; ++t)
+		{
+		nxMb2FoldInput(kMb2Family, faceWords[t], 9);
+		nxMb2FoldInput(kMb2Family, faceInfo[t], 3);
+		}
+
+	const unsigned short savedCw = nxMb2SetControlWord(cw);
+	NxTape& tape = *gIceTape;
+	tape.push(0xca5e0000u | (unsigned) (meshIndex << 4) | (unsigned) config);
+	unsigned char object[0x130];
+	memset(object, 0xcd, sizeof(object));
+	nxMb2Ctor(s, object);
+
+	MBFACEINFO info;
+	memset(&info, 0, sizeof(info));
+	info.VRefs = faceWords[0];
+	if(firstOfMesh)
+		{
+		// AddFace before Init: no face or reference array.
+		nxMb2Probe(s, nxMb2AddFace(s, object, info));
+		// Init with no faces: the streams are copied, then false.
+		MBCREATE none = create;
+		none.NbFaces = 0;
+		nxMb2Probe(s, nxMb2Init(s, object, none));
+		nxMb2TapeObject(object, kMb2AfterInit);
+		}
+
+	const bool initOk = nxMb2Init(s, object, create);
+	tape.push(initOk ? 1u : 0u);
+	if(s.oracle)
+		{
+		++c.cases;
+		initOk ? ++c.initOk : ++c.initFailed;
+		if(cw == 0x0f7f)
+			++c.x87;
+		}
+
+	MBRESULT result;
+	if(firstOfMesh && initOk)
+		{
+		// Build before any face.
+		memset(&result, 0, sizeof(result));
+		nxMb2Probe(s, nxMb2Build(s, object, result));
+		}
+
+	for(unsigned t = 0; t < mesh.nbTris; ++t)
+		{
+		memset(&info, 0, sizeof(info));
+		info.Index = t;
+		info.MaterialID = faceInfo[t][1];
+		info.SmoothingGroups = faceInfo[t][0];
+		info.VRefs = faceWords[t];
+		info.TRefs = nbUVW || cfg.outOfRange ? faceWords[t] + 3 : 0;
+		info.CRefs = nbColours || cfg.outOfRange ? faceWords[t] + 6 : 0;
+		info.Flip = faceInfo[t][2] != 0;
+		const unsigned before = nxIceWord(object, 0xe0);
+		const bool ok = nxMb2AddFace(s, object, info);
+		tape.push(ok ? 1u : 0u);
+		if(s.oracle)
+			{
+			if(!ok)
+				++c.rejected;
+			else if(nxIceWord(object, 0xe0) != before)
+				++c.added;
+			else
+				++c.dropped;
+			}
+		}
+	// Past the face count: an index above +0xd0 (and a full array).
+	memset(&info, 0, sizeof(info));
+	info.Index = mesh.nbTris + 1;
+	info.VRefs = faceWords[0];
+	nxMb2Probe(s, nxMb2AddFace(s, object, info));
+
+	if(!initOk || nxMb2AnyDistinctFace(mesh))
+		{
+		memset(&result, 0, sizeof(result));
+		const unsigned accepted = nxIceWord(object, 0xe0);
+		const bool built = nxMb2Build(s, object, result);
+		tape.push(built ? 1u : 0u);
+		nxMb2TapeObject(object, built ? kMb2AfterBuild : kMb2AfterFailure);
+		if(built)
+			nxMb2TapeResult(object, result);
+		if(s.oracle)
+			{
+			if(built)
+				{
+				++c.built;
+				c.outFaces += result.NbFaces;
+				c.outVerts += result.NbOutVerts;
+				c.submeshes += result.NbSubmeshes;
+				c.materials += result.NbMaterials;
+				c.killed += accepted - nxIceWord(object, 0xe0);
+				c.normInfo += result.NbNormInfo;
+				if(result.FaceRemap)
+					++c.remapped;
+				}
+			else
+				++c.buildFailed;
+			}
+		}
+	else
+		{
+		tape.push(0x5c1990edu);
+		if(s.oracle)
+			++c.skipped;
+		}
+
+	// A second Init over the built object: FreeUsedRam on full Containers. The
+	// face and reference counts are not reset by it (only +0xd0 is written).
+	if(config & 1)
+		{
+		tape.push(nxMb2Init(s, object, create) ? 1u : 0u);
+		nxMb2TapeObject(object, kMb2AfterInit);
+		}
+	nxMb2Dtor(s, object);
+	nxMb2SetControlWord(savedCw);
+	}
+
+// Three meshes of this family's own, driven under all eight configurations
+// after the shared ones:
+//   0  the box with every face's corners unshared (36 vertices, 12 faces): the
+//      vertex pass welds them back;
+//   1  two regular faces and one whose corners 0 and 3 are different vertices
+//      at the same position: with zero-area faces kept, the vertex pass drops
+//      it (the new face array);
+//   2  one face whose corners are two vertices at one position and a third:
+//      no face with distinct corners, so Build is skipped.
+static NxMesh gMb2Meshes[3];
+
+static void nxMb2BuildMeshes()
+	{
+	const NxMesh& box = gMeshes[5];
+	NxMesh& unshared = gMb2Meshes[0];
+	memset(&unshared, 0, sizeof(unshared));
+	unshared.nbTris = box.nbTris;
+	unshared.nbVerts = box.nbTris * 3;
+	for(unsigned i = 0; i < box.nbTris * 3; ++i)
+		{
+		memcpy(&unshared.verts[i * 3], &box.verts[box.tris[i] * 3], 12);
+		unshared.tris[i] = i;
+		}
+
+	NxMesh& weld = gMb2Meshes[1];
+	memset(&weld, 0, sizeof(weld));
+	weld.nbVerts = 6;
+	weld.nbTris = 3;
+	nxIceSetVertex(weld, 0, 0.0f, 0.0f, 0.0f);
+	nxIceSetVertex(weld, 1, 1.0f, 0.0f, 0.0f);
+	nxIceSetVertex(weld, 2, 0.0f, 1.0f, 0.0f);
+	nxIceSetVertex(weld, 3, 0.0f, 0.0f, 0.0f);
+	nxIceSetVertex(weld, 4, 1.0f, 1.0f, 0.5f);
+	nxIceSetVertex(weld, 5, -1.0f, 0.5f, 0.25f);
+	nxIceSetTri(weld, 0, 0, 1, 2);
+	nxIceSetTri(weld, 1, 3, 0, 4);
+	nxIceSetTri(weld, 2, 1, 4, 5);
+
+	NxMesh& flat = gMb2Meshes[2];
+	memset(&flat, 0, sizeof(flat));
+	flat.nbVerts = 3;
+	flat.nbTris = 1;
+	nxIceSetVertex(flat, 0, 2.0f, 3.0f, 4.0f);
+	nxIceSetVertex(flat, 1, 2.0f, 3.0f, 4.0f);
+	nxIceSetVertex(flat, 2, -2.0f, 1.0f, 0.0f);
+	nxIceSetTri(flat, 0, 0, 1, 2);
+	}
+
+static void nxMb2Drive(const NxIceSide& s)
+	{
+	const unsigned savedState = gState;
+	nxMb2BuildMeshes();
+	for(int m = 0; m < gIceNbMeshes + 3; ++m)
+		{
+		const NxMesh& mesh = m < gIceNbMeshes ? gIceMeshes[m] : gMb2Meshes[m - gIceNbMeshes];
+		if(m < kNbMeshes || m >= gIceNbMeshes)
+			{
+			for(int k = 0; k < 8; ++k)
+				nxMb2Case(s, mesh, m, k, k == 0);
+			}
+		else
+			{
+			nxMb2Case(s, mesh, m, m % 8, true);
+			nxMb2Case(s, mesh, m, (m + 3) % 8, false);
+			nxMb2Case(s, mesh, m, (m + 5) % 8, false);
+			}
+		}
+	if(gIceTape->overflow)
+		{
+		fprintf(stderr, "FAIL ice_meshbuilder2 tape overflow (%u words beyond)\n", gIceTape->overflow);
+		++gMismatches;
+		}
+	gState = savedState;
+	}
+
+// vertex_reduction: one object, one or two Reduce calls.
+static void nxVrRun(const NxIceSide& s, const float* verts, unsigned nb, bool withResult, bool twice)
+	{
+	NxMb2Coverage& c = gMb2Coverage;
+	NxTape& t = *gIceTape;
+	nxIceFoldRun(kVrFamily, nb, withResult ? 1u : 0u, twice ? 1u : 0u);
+	nxMb2FoldInput(kVrFamily, verts, 3 * nb);
+	unsigned char object[0x20];
+	memset(object, 0xcd, sizeof(object));
+	nxVrCtor(s, object, verts, nb);
+	t.push(nxIceWord(object, 0x00));
+	t.push((const float*) (size_t) nxIceWord(object, 0x04) == verts ? 1u : 0u);
+	t.push(nxIceWord(object, 0x08));
+	t.push(nxIceWord(object, 0x0c));
+	t.push(nxIceWord(object, 0x10));
+	for(int pass = 0; pass < (twice ? 2 : 1); ++pass)
+		{
+		REDUCEDCLOUD rc;
+		memset(&rc, 0xcd, sizeof(rc));
+		const bool ok = nxVrReduce(s, object, withResult ? &rc : 0);
+		t.push(ok ? 1u : 0u);
+		const unsigned nbReduced = nxIceWord(object, 0x08);
+		const float* reduced = (const float*) (size_t) nxIceWord(object, 0x0c);
+		const unsigned* xref = (const unsigned*) (size_t) nxIceWord(object, 0x10);
+		t.push(nxIceWord(object, 0x00));
+		t.push(nbReduced);
+		t.push(reduced ? 1u : 0u);
+		t.push(xref ? 1u : 0u);
+		if(xref)
+			for(unsigned i = 0; i < nb && i < kIceTableCap; ++i)
+				t.push(xref[i]);
+		if(reduced)
+			for(unsigned i = 0; i < 3 * nbReduced && i < kIceTableCap; ++i)
+				{
+				unsigned w;
+				memcpy(&w, &reduced[i], 4);
+				t.pushFloatWord(w);
+				}
+		if(withResult)
+			{
+			t.push((const float*) rc.RVerts == reduced ? 1u : 0u);
+			t.push(rc.NbRVerts);
+			t.push(rc.XRef == xref ? 1u : 0u);
+			}
+		else
+			t.push(nxIceWord(&rc, 0) == 0xcdcdcdcdu ? 1u : 0u);
+		if(s.oracle)
+			{
+			++c.vrRuns;
+			c.vrVerts += nb;
+			c.vrReduced += nbReduced;
+			}
+		}
+	nxVrDtor(s, object);
+	t.push(nxIceWord(object, 0x0c));
+	t.push(nxIceWord(object, 0x10));
+	}
+
+static void nxVrDrive(const NxIceSide& s)
+	{
+	const unsigned savedState = gState;
+	static float verts[3 * 800];
+	for(int m = 0; m < gIceNbMeshes; ++m)
+		{
+		const NxMesh& mesh = gIceMeshes[m];
+		gState = 0x76720000u ^ (unsigned) (m * 977 + 5);
+		unsigned nb = mesh.nbVerts;
+		memcpy(verts, mesh.verts, 12 * nb);
+		// Welded duplicates: a third of the vertices again, each a drawn vertex
+		// copied as bits into a drawn slot (the ones after it moved up).
+		const unsigned extra = nb / 3 + 1;
+		for(unsigned e = 0; e < extra; ++e)
+			{
+			const unsigned from = nxNext() % nb;
+			const unsigned to = nxNext() % (nb + 1);
+			memmove(&verts[(to + 1) * 3], &verts[to * 3], 12 * (nb - to));
+			memcpy(&verts[to * 3], &verts[(from >= to ? from + 1 : from) * 3], 12);
+			++nb;
+			}
+		nxVrRun(s, verts, nb, true, false);
+		nxVrRun(s, verts, nb, false, m % 5 == 0);
+		if(m % 4 == 1)
+			nxVrRun(s, mesh.verts, mesh.nbVerts, true, true);
+		}
+	// Empty.
+	nxVrRun(s, verts, 0, true, false);
+	// The smallest vertex (by bits) is 0xffffffff x3: alone (three copies),
+	// then with a larger one before it in memory.
+	unsigned ones[12];
+	for(int i = 0; i < 12; ++i)
+		ones[i] = 0xffffffffu;
+	nxVrRun(s, (const float*) ones, 3, true, false);
+	ones[3] = 0x7fc00000u;
+	nxVrRun(s, (const float*) ones, 4, true, false);
+	if(gIceTape->overflow)
+		{
+		fprintf(stderr, "FAIL vertex_reduction tape overflow (%u words beyond)\n", gIceTape->overflow);
+		++gMismatches;
+		}
+	gState = savedState;
+	}
+
+static void nxDriveIceMeshBuilder2(const NxOracleRows& o, bool selfOnly)
+	{
+	memset(&gMb2Coverage, 0, sizeof(gMb2Coverage));
+	gIceReports = 0;
+	nxIceFamily(o, selfOnly, nxMb2Drive, "ice_meshbuilder2", "0x00030f50", "phys_fn_001633",
+		"IceMeshBuilder2.cpp,IceMeshTools.cpp", kMb2Family);
+	const NxMb2Coverage& c = gMb2Coverage;
+	printf("thirdparty coverage name=ice_meshbuilder2 meshes=%d+3 cases=%u x87_0f7f=%u init_ok=%u init_failed=%u"
+		" faces_added=%u faces_dropped=%u faces_rejected=%u built=%u build_failed=%u skipped=%u out_faces=%u"
+		" out_verts=%u submeshes=%u materials=%u killed=%u norm_info=%u remapped=%u probes=%u probes_false=%u reports=%u\n",
+		gIceNbMeshes, c.cases, c.x87, c.initOk, c.initFailed, c.added, c.dropped, c.rejected, c.built,
+		c.buildFailed, c.skipped, c.outFaces, c.outVerts, c.submeshes, c.materials, c.killed, c.normInfo,
+		c.remapped, c.probes, c.probesFalse, gIceReports);
+
+	gIceReports = 0;
+	nxIceFamily(o, selfOnly, nxVrDrive, "vertex_reduction", "0x000316a0", "phys_fn_001647",
+		"IceMeshTools.cpp", kVrFamily);
+	printf("thirdparty coverage name=vertex_reduction meshes=%d runs=%u verts=%u reduced=%u reports=%u\n",
+		gIceNbMeshes, c.vrRuns, c.vrVerts, c.vrReduced, gIceReports);
+	}
+
 static void nxPrintTotals()
 	{
 	printf("thirdparty coverage driven=%u divergent=%u words=%u layout_checks=%u\n",
@@ -7283,6 +8073,11 @@ int wmain(int argc, wchar_t** argv)
 	// convex-mesh gap Task 2c: the same two lines after its three families, with
 	// the running totals; the pairs above stay where they were printed.
 	nxDriveIceMeshTools(o, selfOnly);
+	nxPrintTotals();
+
+	// convex-mesh gap Task 2d: the same two lines after its two families, with
+	// the running totals; the pairs above stay where they were printed.
+	nxDriveIceMeshBuilder2(o, selfOnly);
 	nxPrintTotals();
 	printf("thirdparty candidate mismatches=%u layout_failures=%u\n", gMismatches, gLayoutFailures);
 

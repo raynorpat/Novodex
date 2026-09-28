@@ -2592,7 +2592,27 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=ice_valencies rva=0x00032610 owner=phys_fn_001667 source=IceMeshTools.cpp,EdgeList.cpp words=32709 oracle=2cbd6dee mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=ice_valencies meshes=65 runs=261 succeeded=260 failed=1 adjacent=12020 reports=1 line72=1',
         'thirdparty coverage driven=76 divergent=27 words=1755447 layout_checks=47',
-        'thirdparty oracle digest=4a282660'
+        'thirdparty oracle digest=4a282660',
+        # convex-mesh gap Task 2d: MeshBuilder2 (IceMeshBuilder2.cpp, 001591..001637) and the
+        # vertex reduction (IceMeshTools.cpp, 001645/001647/001659), linked into the harness.
+        # ice_meshbuilder2 drives the oracle's 001593 / 001623 / 001597 / 001633 / 001629 at
+        # their RVAs as 002087 drives them, and the candidate's, over the meshes above and three
+        # of its own under eight create-block configurations and both x87 control words;
+        # vertex_reduction drives 001645 / 001647 / 001659. The tapes hold every return value,
+        # the Containers, counts, flags and owned arrays (as digests) after Build, the result
+        # block (its pointers as which array they point at), and every allocation and release
+        # through the 004803 getter. Both families are exact and registered whole; every line
+        # below is copied from the oracle side (the name lines' agreement fields are the gate's
+        # assertion); the coverage lines count oracle-side values and fixed inputs only. The
+        # pairs above keep printing where they were; the pair below carries the totals.
+        'thirdparty input name=ice_meshbuilder2 words=125178 input=1200bbc6',
+        'thirdparty name=ice_meshbuilder2 rva=0x00030f50 owner=phys_fn_001633 source=IceMeshBuilder2.cpp,IceMeshTools.cpp words=178377 oracle=5e33a49e mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=ice_meshbuilder2 meshes=65+3 cases=249 x87_0f7f=154 init_ok=249 init_failed=0 faces_added=6695 faces_dropped=445 faces_rejected=0 built=241 build_failed=0 skipped=8 out_faces=6689 out_verts=18056 submeshes=1043 materials=520 killed=3 norm_info=34816 remapped=174 probes=453 probes_false=453 reports=0',
+        'thirdparty input name=vertex_reduction words=13893 input=db8a41b6',
+        'thirdparty name=vertex_reduction rva=0x000316a0 owner=phys_fn_001647 source=IceMeshTools.cpp words=24313 oracle=9d4e0115 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=vertex_reduction meshes=65 runs=178 verts=5457 reduced=4331 reports=0',
+        'thirdparty coverage driven=78 divergent=27 words=1958137 layout_checks=47',
+        'thirdparty oracle digest=d54a58fc'
     )
 }
 
@@ -2616,9 +2636,9 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 243  # 18 for NxPhysicsKernelFuzzTests, 225 for NxPhysicsCollisionTests (85 + 23 from
                # convex-mesh gap Task 2a + 14 from its Task 2b + 59 + 44 from its harness hardening)
-    '4' = 175  # 34 for NxPhysicsAssetTests, 141 for NxPhysicsThirdPartyTests (67 + 29 from
+    '4' = 183  # 34 for NxPhysicsAssetTests, 149 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 26 from qhull-gap Task 1
-               # + 14 from convex-mesh gap Task 2c)
+               # + 14 from convex-mesh gap Task 2c + 8 from its Task 2d)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
