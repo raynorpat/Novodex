@@ -941,8 +941,11 @@ static void nxNpActorShapeSlot6(unsigned char* shape, unsigned flags)
 // the group itself. The candidate's group is still a 0x110-byte stub with no
 // table and no ShapeBase layout (Scene.cpp nxShapeGroupConstruct), so the
 // group's slot 6 is modelled here and the group-level 001315 call is open
-// until the group class is reconstructed (it changes only the group's own
-// pose words and dirty bits, which no public call reads).
+// until the group class is reconstructed. Besides the group's own pose
+// words and +0xdc bits, that call runs 001315's side effects on the group:
+// the append to the +0xa0 object's array when +0xdc lacks bit 2, and the
+// pruner slot-3 call for the group's prunable (ObjectModel.cpp
+// ShapeBase::nxApplyOwnerUpdate describes both).
 static void nxNpActorNotifyOwnedShapes(unsigned char* body)
 	{
 	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);

@@ -154,21 +154,19 @@ static void rotatedCase(NxScene* scene, const char* name, const NxMat33& orienta
 // single-shape and grouped (two-box) actors with rotated mass frames. Each
 // step prints the record words 000789 writes (+0x18, +0x24, +0x50, +0x5c,
 // +0x124, +0x164), the world centre and frame it reads, and every shape's
-// global pose (the 000004 shape update; for the group, 001018's child loop).
+// global pose (the 000004 shape update; for the group, 001018's child loop;
+// the pose itself is 001315's composition).
 static void globalMassStep(const char* tag, NxActor* actor)
 {
 	massFrame(tag, actor);
 	transformState(tag, actor);
-	// The shape's world pose is composed by 001315 (Shape.cpp), whose own x87
-	// order the candidate does not reproduce yet, so the pose is printed to
-	// four decimals: enough to show the update reached every shape.
+	// The shape's world pose (001315's composition), as exact words.
 	NxShape* const* shapes = actor->getShapes();
 	for(unsigned i = 0; i < actor->getNbShapes(); ++i)
 	{
-		const NxMat34 p = shapes[i]->getGlobalPose();
-		float v[9]; p.M.getRowMajor(v);
-		printf("cmass %s shape%u global_pose=%.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f\n",
-			tag, i, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], p.t.x, p.t.y, p.t.z);
+		char shapeTag[128];
+		sprintf(shapeTag, "%s shape%u", tag, i);
+		pose(shapeTag, "global_pose", shapes[i]->getGlobalPose());
 	}
 }
 static void globalMassCase(NxScene* scene, const char* name, unsigned shapeCount,
