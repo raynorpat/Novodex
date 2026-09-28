@@ -1291,6 +1291,28 @@ L323f8:
 		}
 	}
 
+// phys_fn_001657 (0x00032460, 60 B)
+// Reverses an array of dwords in place (cdecl: count, array): false when either
+// is zero; else count/2 swaps from both ends, and true. 001472 (ConvexHull.cpp)
+// calls it to turn a polygon's references round with its plane. (The row is
+// also modelled in ObjectModel.cpp; this is its product form, convex-mesh gap
+// Task 2f.)
+__declspec(noinline) bool nxIceReverseArray(NxU32 count, NxU32* array)
+	{
+	if(!count || !array)
+		return false;
+	const NxU32 half = count >> 1;
+	NxU32* last = array + count - 1;
+	for(NxU32 i = 0; i < half; i++)
+		{
+		const NxU32 tmp = *last;
+		*last = array[i];
+		array[i] = tmp;
+		last--;
+		}
+	return true;
+	}
+
 // phys_fn_001661 (0x000324f0, 155 B)
 // Adds a direction to a Container of axes (three floats per axis) unless it is
 // nearly parallel to one already there. The direction is copied; when the sign

@@ -126,6 +126,10 @@ void __cdecl nxIcePosePair(IceMaths::Matrix4x4* relative0, IceMaths::Matrix4x4* 
 // one already there (the oracle's is thiscall on the Container, `ret 4`).
 bool __fastcall nxIceAddUniqueAxis(IceCore::Container* axes, NxU32 edx, const IceMaths::Point* axis);
 
+// 001657: reverse an array of dwords in place (cdecl: count, array; false when
+// either is zero). ConvexHull.cpp's 001472 calls it.
+bool nxIceReverseArray(NxU32 count, NxU32* array);
+
 // 002144 (SmoothNormals.cpp): the corner angle, register convention (eax the
 // vertex, edx the three indices, esi the vertices; st(0) the result). Called
 // only from assembly.

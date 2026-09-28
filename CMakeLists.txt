@@ -155,6 +155,8 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/EdgeList.cpp
 		Physics/src/IceMeshTools.cpp
 		Physics/src/IceMeshBuilder2.cpp
+		Physics/src/ConvexHull.cpp
+		Physics/src/IceSupportMaps.cpp
 		Physics/src/ShapeRaycast.cpp
 		Physics/src/core/Joint.cpp
 		Physics/src/core/RevoluteJoint.cpp
@@ -219,7 +221,9 @@ endif()
 # 0x00030d90 are frameless with their Container, reducer and RadixSort locals).
 # Task 2e adds ConvexHull.cpp and TriangleMeshTopology.cpp (0x0002ae60,
 # 0x000543d0 and 0x00054460 are frameless around their MeshNormals local and
-# the objects they construct with placement new).
+# the objects they construct with placement new). Task 2f adds IceSupportMaps.cpp
+# (the support-map rows are frameless; its C++ rows hold no object with a
+# destructor, so the flag only keeps the file with its neighbours).
 if(MSVC)
 	set_property(SOURCE
 		Physics/src/EdgeList.cpp
@@ -228,6 +232,7 @@ if(MSVC)
 		Physics/src/IceMeshBuilder2.cpp
 		Physics/src/ConvexHull.cpp
 		Physics/src/TriangleMeshTopology.cpp
+		Physics/src/IceSupportMaps.cpp
 		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
 endif()
 
@@ -542,7 +547,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/NovodexBoxPruning.cpp
 		Physics/src/EdgeList.cpp Physics/src/IceAdjacencies.cpp Physics/src/IceMeshTools.cpp
 		Physics/src/IceMeshBuilder2.cpp Physics/src/ConvexHull.cpp Physics/src/TriangleMeshTopology.cpp
-		Physics/src/SmoothNormals.cpp)
+		Physics/src/IceSupportMaps.cpp Physics/src/SmoothNormals.cpp)
 	# SmoothNormals.cpp comes with IceMeshTools.cpp since convex-mesh gap Task 2e:
 	# 001651 calls the angle helper 002144, which is written there, beside the
 	# export that also calls it. The export is declared NXP_DLL_EXPORT, so the file
