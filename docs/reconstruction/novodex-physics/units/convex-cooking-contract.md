@@ -272,8 +272,15 @@ counter is `.data:0x00125084` (`phys_data_003856`), pre-incremented by both writ
 - faces: `f %d %d %d\r\n` (`.rdata:0x00108500`) in triangle mode, or `"f "` (`.rdata:0x001135c0`),
   `"%d "` (`.rdata:0x0010c1f4`) and `"\r\n"` (`.rdata:0x001135bc`) in polygon mode.
 
-Every face index is written 1-based (`inc` at 0x0007dfab, 0x0007e015-0x0007e019). In polygon
-mode the indices of each face are written in reverse order (0x0007df98-0x0007dfc4).
+Every face index is written 1-based (`inc` at 0x0007dfab, 0x0007e015-0x0007e019), and in
+reverse order in both modes: in polygon mode by the countdown at 0x0007df98-0x0007dfc4, in
+triangle mode by the argument order (`f i2+1 i1+1 i0+1`: `edx = [esi+8]` is pushed last,
+0x0007e004-0x0007e01a). (Task 4b correction: this read "in polygon mode" only.)
+
+The two writers, `boxFallback`, `buildResult` and `cleanupVertices` are all `thiscall` on the
+host (`lea ecx,[ebp-0x4068]` before each call in `003279`), though only `buildResult` and
+`cleanupVertices` read it: `writeOkObj` `ret 4`, `writeFailObj` `ret 0xc`, `boxFallback`
+`ret 8`, `buildResult` `ret 0xc`. The file names are formatted into a 512-byte stack buffer.
 
 **`HullResult`** is 0x1c bytes, at 002233's `E-0x1c`. `buildResult` zeroes +0x04..+0x18 and sets
 +0x00 to 1 (0x0007e64b-0x0007e65d).
@@ -304,6 +311,10 @@ sites:
 - `+0x10(&local)` is a release (0x0007ecd5).
 - On success the result's vertices and indices are replaced from the local's `+4/+8` and
   `+0xc/+0x10/+0x14` (0x0007ec46-0x0007ecc5).
+- The six arguments after `&local` are `(desc +0x18, result.vcount, result.vertices, 12,
+  result +0x0c, result.indices)`. The local's `+0x10` (index count) is never initialised
+  (0x0007ec09-0x0007ec16 zero the byte and `+4/+8/+0xc/+0x14`), and the replacement leaves
+  `result +0x14` as it was while it sets both `+0x0c` and `+0x10` from the local's `+0xc`.
 
 Task 4 writes this path from the listing but cannot execute it through NovodeX's caller.
 
@@ -584,6 +595,17 @@ directly: +0x10 `print` (the table's `fprintf`), +0x14 `trackedMalloc` and +0x18
 allocator, `abort` on errexit, silent prints) that every registered qhull family was measured
 against. The global is never cleared, in the product as in the oracle, so a harness that runs
 the candidate's `CreateConvexHull` resets it afterwards.
+
+**As written (Task 4b).** The driver rows are in the same file, in address order. `003243`'s
+position holds a marked placeholder `QhullHost::cleanupVertices` with no stable-ID line: it
+copies the input and sets the scale to (1,1,1), so the driver links and runs until piece 4c
+replaces it. A local check (not committed) against the pinned DLL at 0x0007ea10/0x0007e300,
+with flags that keep the oracle's clean-up transparent (0x00, 0x10, 0x30, and 0x40/0x80 for
+the dumps), gave identical `HullResult`s (every word and both arrays) and byte-identical
+`QHULL_OK` files for the cube, tetrahedron, sphere(96) and a 200-point random cloud, and on a
+diagonal-plane set the same FAIL dump sequence, `boxFallback` retry and OK result. The only
+differences seen were in `cleanupVertices`' territory: the oracle's clean-up writes `+0.0`
+where the input had `-0.0` and reorders one 30-point set.
 
 ### Dependency closure
 

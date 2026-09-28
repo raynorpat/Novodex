@@ -59657,13 +59657,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1185",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11653",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (runQhull) and checked against the Capstone listing; contract units/convex-cooking-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003237",
@@ -59858,13 +59859,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1190",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11711",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::writeOkObj, entry) and checked against the Capstone listing; contract units/convex-cooking-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003248",
@@ -59894,13 +59896,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1190",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11712",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::writeOkObj, continuation) and checked against the Capstone listing; contract units/convex-cooking-contract.md",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0007dea0"
+      "notes": "continuation of the entry at 0x0007dea0",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003250",
@@ -59930,13 +59933,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1191",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11722",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::writeFailObj) and checked against the Capstone listing; contract units/convex-cooking-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003252",
@@ -59966,13 +59970,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1192",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11726",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::boxFallback) and checked against the Capstone listing; contract units/convex-cooking-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003254",
@@ -60002,13 +60007,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1193",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11732",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (HullLibrary::ReleaseResult) and checked against the Capstone listing; contract units/convex-cooking-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003256",
@@ -60279,13 +60285,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1197",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11753",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::buildResult) and checked against the Capstone listing; contract units/convex-cooking-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003271",
@@ -60445,13 +60452,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1200",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11784",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (HullLibrary::CreateConvexHull) and checked against the Capstone listing; contract units/convex-cooking-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003280",
