@@ -20,10 +20,14 @@ Command:   cdb -cf <script> -logo <log> build\Release\NxPhysicsSceneRaycastTests
            The pair directories were staged by hand (D:\FlamingEnt__\novodex-analysis\pairs-sr\oracle
            and \candidate, not kept); the sha256s below identify the modules. Both runs exited 0 and
            printed the transcript the Phase 7 gate compares (stdout_delta=0).
-Recorded:  2026-09-28, branch claude/scene-raycast-block, Task 3 working tree (on 980809d).
+Recorded:  2026-09-28, branch claude/scene-raycast-block. The oracle side on the Task 3 working tree
+           (on 980809d); the candidate side re-run on the review-fix tree (on 28f3c5d, IcePruner.cpp built
+           /arch:IA32 /GR-) with the same harness executable. The earlier candidate run (NxPhysics.dll
+           9de9fbbcac550544...) gave the same counts and the same ordered sequence.
 Oracle:    NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-Candidate: NxPhysics.dll sha256=9de9fbbcac550544b8e09d9cb3da71d673f9887b1108be52203c7d6a6eaf5314
-           (identical to build\Release\NxPhysics.dll at the time of the trace)
+Candidate: NxPhysics.dll sha256=eeb12a6652488a472087d5a67849e314cfaecee5b41af5c5a1ca9c935cc48c02
+           (identical to build\Release\NxPhysics.dll at the time of the trace; a relink of the same
+           tree differs from it only in the link-timestamp bytes of the PE header and debug directory)
 Offsets:   module-relative. Candidate: from build\Release\NxPhysics.map of that build, one breakpoint per
            out-of-line symbol of every function Task 3 claims (the split rows 000684+000686 and
            000700+000702 are one function each), plus context functions marked x (not claimed here):
@@ -52,29 +56,29 @@ BREAKPOINTS, CANDIDATE (label, module offset, object, symbol)
   000704     0x2e330   SceneRaycast.obj   ?raycastAnyShape@NxSceneInternal@@QAE_NABVNxRay@@W4NxShapesType@@IM@Z
   000706     0x2e4f0   SceneRaycast.obj   ?raycastClosestShape@NxSceneInternal@@QAEPAXABVNxRay@@W4NxShapesType@@AAUNxRaycastHit@@IMI@Z
   000949     0x1b400   ObjectModel.obj    ?nxBoxRaycast@BoxShape@@QBEPAXPBMMIIPAX@Z
-  004857     0x59450   IcePruningEngine.obj ?nxPruningEngineAddObject@@YA_NPAXPAVPrunable@@@Z
-  004859     0x595e0   IcePruningEngine.obj ?nxPruningEngineRemoveObject@@YA_NPAXPAVPrunable@@@Z
-  005208     0x581e0   IcePruner.obj      ?AddObject@Pruner@@UAE_NPAVPrunable@@@Z
-  005210     0x58910   IcePruner.obj      ?RemoveObject@Pruner@@UAE_NPAVPrunable@@@Z
-  005214     0x58d90   IcePruner.obj      ?SetExternalBuffer@StaticPruner@@UAEXIPAI@Z
-  005216     0x584b0   IcePruner.obj      ?BuildTree@StaticPruner@@QAE_NXZ
-  005218     0x58470   IcePruner.obj      ?AddObject@StaticPruner@@UAE_NPAVPrunable@@@Z
-  005220     0x58bd0   IcePruner.obj      ?RemoveObject@StaticPruner@@UAE_NPAVPrunable@@@Z
-  005222     0x58e20   IcePruner.obj      ?UpdateObject@StaticPruner@@UAE_NPAVPrunable@@@Z
-  005225     0x58c10   IcePruner.obj      ?ReportTouched@StaticPruner@@QAEXAAVContainer@IceCore@@I@Z
-  005227     0x58870   IcePruner.obj      ?Raycast@StaticPruner@@UAE_NAAVContainer@IceCore@@ABVRay@IceMaths@@M_NI@Z
+  004857     0x59400   IcePruningEngine.obj ?nxPruningEngineAddObject@@YA_NPAXPAVPrunable@@@Z
+  004859     0x59590   IcePruningEngine.obj ?nxPruningEngineRemoveObject@@YA_NPAXPAVPrunable@@@Z
+  005208     0x581d0   IcePruner.obj      ?AddObject@Pruner@@UAE_NPAVPrunable@@@Z
+  005210     0x58940   IcePruner.obj      ?RemoveObject@Pruner@@UAE_NPAVPrunable@@@Z
+  005214     0x58e70   IcePruner.obj      ?SetExternalBuffer@StaticPruner@@UAEXIPAI@Z
+  005216     0x58520   IcePruner.obj      ?BuildTree@StaticPruner@@QAE_NXZ
+  005218     0x584e0   IcePruner.obj      ?AddObject@StaticPruner@@UAE_NPAVPrunable@@@Z
+  005220     0x58ca0   IcePruner.obj      ?RemoveObject@StaticPruner@@UAE_NPAVPrunable@@@Z
+  005222     0x58ef0   IcePruner.obj      ?UpdateObject@StaticPruner@@UAE_NPAVPrunable@@@Z
+  005225     0x58ce0   IcePruner.obj      ?ReportTouched@StaticPruner@@QAEXAAVContainer@IceCore@@I@Z
+  005227     0x588a0   IcePruner.obj      ?Raycast@StaticPruner@@UAE_NAAVContainer@IceCore@@ABVRay@IceMaths@@M_NI@Z
   005232     0x57d30   IcePruner.obj      ??0StaticPruner@@QAE@XZ
-  005464     0x57c20   IcePruner.obj      ??0DynamicPruner@@QAE@XZ
-  005468     0x58630   IcePruner.obj      ?Raycast@DynamicPruner@@UAE_NAAVContainer@IceCore@@ABVRay@IceMaths@@M_NI@Z
-  005481     0x58c80   IcePruner.obj      ?Resize@PruningPool@@QAE_NXZ
-  005483     0x581f0   IcePruner.obj      ?AddObject@PruningPool@@QAE_NPAVPrunable@@@Z
-  005485     0x58930   IcePruner.obj      ?RemoveObject@PruningPool@@QAEXPAVPrunable@@@Z
-  005541     0x59180   IcePruner.obj      ?nxSegmentAABB@@YA_NABVSegment@IceMaths@@ABVPoint@2@1@Z
-  005543     0x58ee0   IcePruner.obj      ?nxRayAABB@@YA_NABVRay@IceMaths@@ABVPoint@2@1@Z
+  005464     0x57c10   IcePruner.obj      ??0DynamicPruner@@QAE@XZ
+  005468     0x586a0   IcePruner.obj      ?Raycast@DynamicPruner@@UAE_NAAVContainer@IceCore@@ABVRay@IceMaths@@M_NI@Z
+  005481     0x58d50   IcePruner.obj      ?Resize@PruningPool@@QAE_NXZ
+  005483     0x581e0   IcePruner.obj      ?AddObject@PruningPool@@QAE_NPAVPrunable@@@Z
+  005485     0x58960   IcePruner.obj      ?RemoveObject@PruningPool@@QAEXPAVPrunable@@@Z
+  005541     0x591e0   IcePruner.obj      ?nxSegmentAABB@@YA_NABVSegment@IceMaths@@ABVPoint@2@1@Z
+  005543     0x58fc0   IcePruner.obj      ?nxRayAABB@@YA_NABVRay@IceMaths@@ABVPoint@2@1@Z
   004864x    0x1e4c0   ObjectModel.obj    ?nxMaskedFourSlotLoop4864@@YAEPAXIIIIIIP8NxSlotCtx@@AEXIIIII@Z@Z
   004886x    0x57ad0   IcePrunable.obj    ?UpdateWorldAABB@Prunable@@QAEXPAVAABB@IceMaths@@@Z
-  004919x    0xadd80   NxOpcode:OPC_RayCollider.obj ?_SegmentStab@RayCollider@Opcode@@IAEXPBVAABBTreeNode@2@AAVContainer@IceCore@@@Z
-  004928x    0xab410   NxOpcode:OPC_RayCollider.obj ?_RayStab@RayCollider@Opcode@@IAEXPBVAABBTreeNode@2@AAVContainer@IceCore@@@Z
+  004919x    0xadd40   NxOpcode:OPC_RayCollider.obj ?_SegmentStab@RayCollider@Opcode@@IAEXPBVAABBTreeNode@2@AAVContainer@IceCore@@@Z
+  004928x    0xab3d0   NxOpcode:OPC_RayCollider.obj ?_RayStab@RayCollider@Opcode@@IAEXPBVAABBTreeNode@2@AAVContainer@IceCore@@@Z
   001377x    0x2e840   ShapeRaycast.obj   ?NxShapeRaycastSphere@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z
   001010x    0x2e640   ShapeRaycast.obj   ?NxShapeRaycastCapsule@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z
   001261x    0x2e770   ShapeRaycast.obj   ?NxShapeRaycastPlane@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z

@@ -1509,6 +1509,15 @@ they are. This includes:
     | penetration-map builder | 14 | 4,805 | `PenetrationMap.cpp` (`002047`), `gap:ContactPlaneMesh.cpp..PenetrationMap.cpp` (`002025`) |
     | pruner C | 22 | 4,420 | `gap:core\NpPrismaticJoint.cpp..opcode\IcePrunable.cpp` (`004830`, `004832`, `004834`, `004852`, `004855`) |
     | pruner D | 18 | 2,976 | none by direct call (vtable dispatch) |
+
+  *Amended by the scene-raycast block, Task 3 (2026-09-28):* 17 of the 92 are now
+  `reconstructed` there, in `Physics/src/opcode/IcePruner.cpp`, for the scene raycasts: from
+  pruner A the base slots `005208`/`005210` and the static pruner's constructor, slots and raycast
+  path (`005214`, `005216`, `005218`, `005220`, `005222`, `005225`, `005227`, `005232`); from
+  pruner C/D the dynamic pruner's constructor and raycast (`005464`, `005468`) and the
+  separating-axis tests (`005541`, `005543`); and the pool's `005481`/`005483`/`005485`. The
+  deferred NovodeX clusters now hold **75** `discovered` rows (units/scene-raycast-contract.md,
+  `## Task 3 results`).
 - **Summation order and register lifetimes: their own tool-driven unit.** It covers several
   hundred OPCODE sites and at least `qh_distplane`, and is driven by `sum_grouping.csv` extended
   to offset-led and longer sums. Every promoted row's proof records this as not reproduced.
@@ -1627,6 +1636,29 @@ about 33,072 bytes per hour for the bytes promoted.
   - `0x000f1350`, the ICE culling walk: typed `compiler_artifact` but real code.
   - RayCollider's `+0x88` tolerance has no setter in the overlay; the scene raycast
     (`0x0002929b`) writes it from outside the class, so whoever reconstructs that raycast adds one.
+
+## Later change: the scene-raycast block, Task 3 (2026-09-28)
+
+- **004919's body changed.** `RayCollider::_SegmentStab(const AABBTreeNode*, Container&)`, promoted here
+  on the stock body, now tests its node with SegmentAABBOverlap written out in the image's register
+  lifetimes (`External/opcode/novodex/OPC_RayCollider.cpp` [2]; MODIFICATIONS.md, build-parity paragraph;
+  listing 0x000b8355-0x000b843d). Stock's `float f` overflowed against a plane's box and rejected the
+  static pruner's root. The row's proofs in inventory.json are amended (history kept);
+  `opcode_review.csv` and `vendored_coverage.csv` carry a note for it.
+- **The match outputs were regenerated** (`tools/vendored_match.py` on candidate
+  `eeb12a6652488a472087d5a67849e314cfaecee5b41af5c5a1ca9c935cc48c02`). No row changed class, in either
+  library. What changed: `candidate_rva` throughout (the product gained the scene-raycast and pruner
+  files, so the layout moved); `candidate_size` of 5 qhull rows (symbol extents, alignment padding);
+  `report_stores`/`report_jcc` tokens that print candidate global addresses; and 004919's
+  size, instruction count and shape note (n_insn 175->355, x87 94->255), the overlay itself.
+  `vendored_data_map.csv` is unchanged.
+- **A COMDAT the product now supplies.** `Physics/src/opcode/IcePruner.cpp` builds an
+  AABBTreeOfAABBsBuilder, so the linker keeps that object's copies of the builder's inline virtuals and
+  table ahead of NxOpcode's. Built SSE2, its `AABBTreeBuilder::GetSplittingValue` (002150) rounded the
+  centre to float (the matcher saw n_insn 6->9 with no x87); IcePruner.cpp is now built /arch:IA32 /GR-
+  as NxOpcode is, and 002150's matcher row is back to its earlier profile (only its address moved).
+- **Deferred NovodeX clusters:** 17 of the 92 `discovered` rows are now reconstructed (see
+  Deferred units above); 75 remain.
 
 ## Timing
 

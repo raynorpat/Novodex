@@ -649,7 +649,7 @@ transcript, including `layout candidate mismatches=1 mode=differential candidate
 Task 3 wrote the public scene raycast API and everything it runs through, drove it with a new staged-pair
 target, and promoted every row it wrote. Traces of both sides over that target:
 `evidence/scene-raycast-trace-task3.txt` (38 candidate breakpoints plus context functions, candidate
-NxPhysics.dll sha256 9de9fbbcac550544...; every claimed row hit exactly as often as the oracle row, and the
+NxPhysics.dll sha256 eeb12a6652488a47... after the review fixes; every claimed row hit exactly as often as the oracle row, and the
 two ordered hit sequences identical, 19,113 hits each).
 
 **Written, claimed and promoted to `reconstructed` (40 rows, 8,607 B), all with dynamic evidence:**
@@ -683,7 +683,7 @@ distances (both pruners' segment paths, limits inside a box and on a face); five
 stop after one and two hits; the error paths (non-unit, zero and just-off-unit directions, maxDist 0 and -1);
 then after moving a dynamic actor (setGlobalPosition) and a static shape (setLocalPosition, onto a ray only its
 new place meets), after releasing three actors (a static, a dynamic, the static compound) and after adding a
-static actor to a built tree. Every onHit is printed as the words its flags declare. 1,802 transcript lines,
+static actor to a built tree. Every onHit is printed as the words its flags declare. 1,815 transcript lines (1,810 of them `raycast` lines),
 equal on both pairs. 207 oracle-sourced lines are registered; the Phase 7 floor goes from 276 to 483 (gate_targets.ps1,
 test_gate_targets.py; the Phase 7 target list in test_gate_commands.py). No triangle mesh: the candidate's
 `NpPhysicsSDK::createTriangleMesh` (000242 -> 000478) still returns 0.
@@ -697,8 +697,12 @@ test_gate_targets.py; the Phase 7 target list in test_gate_commands.py). No tria
   Container&)` (004919) used stock OPCODE's inline SegmentAABBOverlap, whose `float f` overflows to +inf
   against the static tree's root box (the plane's +-1.7e38 box) and rejects the root. The image keeps those
   values in x87 registers. External/opcode/novodex/OPC_RayCollider.cpp now writes that site's test out with the
-  listing's lifetimes (build parity, MODIFICATIONS.md [2]); the other stabs keep the stock form, whose inlined
-  lifetimes differ per site in the image.
+  listing's lifetimes (build parity: the file's comment [2] and MODIFICATIONS.md's paragraph on the segment
+  test); the other stabs keep the stock form, whose inlined lifetimes differ per site in the image. 004919 was
+  promoted by the vendored-correspondence plan on the stock body: its proofs are amended (appended, history
+  kept) with the listing walk of 0x000b8355-0x000b843d and this trace (745 hits each side);
+  opcode_review.csv and vendored_coverage.csv carry a note; the vendored match outputs were regenerated (no
+  class changed; vendored-correspondence.md, "Later change").
 - A static shape moved after the tree was built was missed at its new place: the shapes' owner update
   (001315, ObjectModel.cpp `ShapeBase::nxApplyOwnerUpdate`, not a row of this block) incremented the pruner's
   stamp where the image calls the pruner's slot 3 (0x10026a92-0x10026ab5), which for the static pruner drops
@@ -717,18 +721,24 @@ block, emulations brought to the oracle's observable state):**
   Registration now goes through the reconstructed engine (004857/004859): single shapes in section 1, a
   compound's children in section 0 and its group in section 2, and a shape added at runtime moves the original
   to section 0 with the new child and joins the group to section 2 (nxActorAppendShape). All four layouts were
-  checked word by word against the pinned DLL's pools; releasing an added shape leaves its pool entry in
-  place, as the pinned DLL does.
+  checked word by word against the pinned DLL's pools, with a measurement probe that is not committed (a
+  temporary `NX_SCENE_RAYCAST_PROBE` build of the harness that dumped Scene+0x624, the four pruners, each
+  pooled prunable's shape words +0x9c..+0xe3 and the world boxes, after creation, a runtime shape add and
+  remove, and release); releasing an added shape leaves its pool entry in place, as the pinned DLL does. The
+  claim rests on that uncommitted probe. Its non-pool differences are open items (below).
 - 000503's tail was missing: the three containers at Scene+0x50, +0x500 (the queries' result collector) and
   +0x510 now borrow the shared buffer, and the engine loop (004861) hands it to every pruner through slot 4,
   where the static pruner's touched container borrows it (005214).
 - Scene release destroys the pruners through their destructors (the static tree, then the pool's arrays).
 
-**Precision.** SceneRaycast.cpp, IcePruner.cpp and IcePruningEngine.cpp keep the default architecture: their
-rows run only at API time, under 0x027f, where SSE2 double arithmetic is the x87's at 53 bits. Register
-lifetimes are `double`, the listing's spills `float`, and the roots go through X87Sqrt.h. The three files are
-built /EHs-c- like the joint files: the image's tree build is frameless, where /EHsc gave `new AABBTree` an
-unwind frame.
+**Precision.** The rows run only at API time, under 0x027f. Register lifetimes are `double`, the listing's
+spills `float`, and the roots go through X87Sqrt.h. SceneRaycast.cpp and IcePruningEngine.cpp keep the default
+architecture (SSE2 double arithmetic is the x87's at 53 bits there). IcePruner.cpp is built /arch:IA32 /GR-, as
+NxOpcode is (review fix): it instantiates OPCODE's AABBTreeOfAABBsBuilder, and the linker keeps this object's
+COMDAT copies of the builder's inline virtuals and table ahead of NxOpcode's; built SSE2, the kept
+`AABBTreeBuilder::GetSplittingValue` (002150) rounded the centre to float where the x87 copy returns it
+unrounded (the matcher showed it). The three files are built /EHs-c- like the joint files: the image's tree
+build is frameless, where /EHsc gave `new AABBTree` an unwind frame.
 
 **Not reconstructed here (not claimed):**
 - The base pruner's constructor (0x000f1550) and the destructors: its +0x34 member registers the pruner with a
@@ -738,6 +748,12 @@ unwind frame.
 - 005212 and 005242 (the base pruner's slots 3 and 4) are recorded elsewhere; the class carries their bodies.
 
 **Open, with the reason:**
+- The probe's non-pool differences (candidate vs pinned DLL), none read by the raycasts: the engine's +0x30
+  word (Scene+0x654; the image 3, the candidate 0); Scene+0x6a0 (the engine dump's +0x7c, the tracked-shape count
+  nxSceneTrackShape keeps) differs by 2; shape +0xdc bit 2 (the owner update's dirty flag) is not set on factory shapes; shape +0xe0
+  is not the box facade table 0x10106a88 (the product's shape factory does not run the BOX constructor 000977
+  that installs it; see Task 2's facade note); shape +0xa0 (an object the image's shapes carry, 0 on
+  factory shapes); the pruners' +0x34 handle (the image 0 and 1, the candidate 0).
 - The owner update 001315 still skips the image's dirty-list push through the shape's +0xa0 object
   (0x10026a50-0x10026a76): the candidate's factory shapes have no +0xa0 object. Not a row of this block.
 - The engine's bounds (Scene+0x628..+0x63c) are never set by the candidate, so the pruners' +0x1c bounds stay

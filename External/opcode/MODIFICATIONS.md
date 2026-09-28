@@ -12,7 +12,7 @@ unmodified** under a 2026 MSVC. Every one of these exists because the shipped
 |---|---|---|
 | `OPC_Settings.h` | `OPC_RAYHIT_CALLBACK` switched off; stock ships it defined | `0x000b5770`, `0x000b57ab`, `0x000b57b9` |
 | `OPC_RayCollider.h` | one 4-byte member added between `mMaxDist` and `mClosestHit`: a `float`, the culling-arm barycentric tolerance (identified in vendored-correspondence Task 3) | `0x000b5770` (+0x84), `0x000b579d` (+0x8c), `0x000b873b` |
-| `OPC_RayCollider.cpp` | the constructor clears the added member (vendored-correspondence Task 3); `_SegmentStab(const AABBTreeNode*, Container&)` writes its segment-box test out with the image's register lifetimes, so no cross-axis value is rounded to float (build parity, not source: stock's `float f` overflows to +inf against a plane's box and rejects the static pruner's root; scene-raycast block Task 3) | `0x000b5736`; `0x000b8355`-`0x000b843d` |
+| `OPC_RayCollider.cpp` | the constructor clears the added member (vendored-correspondence Task 3). Its other change, the segment test of `_SegmentStab(const AABBTreeNode*, Container&)`, is build parity and is recorded below the table | `0x000b5736` |
 | `OPC_RayTriOverlap.h` | the culling arm accepts U, V >= -tolerance and U, U+V <= det + tolerance, with the tolerance read from the added member; stock rejects on the sign bit and on `det` exactly. (vendored-correspondence Task 3: the candidate had kept the stock tests; the block is inlined at 14 sites). The overlay's other change, V held unrounded, is build parity and is recorded below the table | `0x000b873b`, `0x000b8765`; the 14 sites `0x000b5aef`, `0x000b5f75`, `0x000b65be`, `0x000b6bc3`, `0x000b7113`, `0x000b755d`, `0x000b7b30`, `0x000b7f7a`, `0x000b873b`, `0x000b8d50`, `0x000b92d4`, `0x000b9715`, `0x000b9d1d`, `0x000ba15e` |
 | `OPC_TreeBuilders.h` | `BuildSettings` 8 → 20 bytes — an extend value (`float`), an extend axis (`sdword`, −1 = off) and an inflate margin (`float`); `AABBTreeBuilder` gains 28 bytes between `mNodeBase` and `mCount` — the root node's captured `AABB` and a one-shot latch; `AABBTreeBuilder` carries the host-allocator class operators (Task 3) | `0x000538c0`, `0x000e92b0`, `0x000e9060`, `0x000e91cc`, `0x000e9100`, `0x000f0ec0`, `0x000f0efe`, `0x000f0f83`, `0x000f0ed7`, `0x000f1187` |
 | `OPC_AABBTree.cpp` | `AABBTree::Build` arms the one-shot capture latch; `AABBTreeNode::_BuildHierarchy` gains a block between `ComputeGlobalBox` and `Subdivide` that extends the node's box to a plane along the added axis and then inflates it by the added margin; `mIndices` (a `udword` array) allocated and freed through the host allocator (Task 3) | `0x000f1187`, `0x000f0ec0`–`0x000f1026`, `0x000f10f0`, `0x000f109f` |
@@ -54,6 +54,22 @@ sites). The overlay holds V as a double (a register lifetime), written out as it
 because `Point::operator|` rounds on return; stock rounds V first. Like `OPC_SphereTriOverlap.h`
 this is the 2003 compiler's arithmetic, not a NovodeX change (vendored-correspondence Task 3
 review fix; recorded separately from the tolerance change in the final review of the plan).
+
+**Build parity, not source: the segment test in `OPC_RayCollider.cpp`'s vanilla-tree
+`_SegmentStab(const AABBTreeNode*, Container&)`** (phys_fn_004919, the stab NovodeX's static
+pruner uses for its scene raycasts). The image keeps the test's values in x87 registers: Dx
+and Dy are compared unrounded and spilled to float only for the cross axes (`fst [esp+0x58]`,
+`fst [esp+0x5c]`, then `fabs`), Dz stays in a register throughout (`fld st(0)`), and no
+cross-axis value is ever stored (`0x000b8355`-`0x000b843d`). The overlay writes that site's
+test out with those lifetimes (the novodex file's comment [2]); stock inlines
+SegmentAABBOverlap with `float Dz` and `float f`. The difference is observable: against a
+tree whose root box holds a plane's +-1.7e38 box, a finite segment's `f = mData.x * Dy`
+overflows float to +inf and stock rejects the root, so no static shape is found; the register
+value is finite and the root passes. Found by the scene-raycast block's differential (Task 3,
+NxPhysicsSceneRaycastTests, every finite maxDist over the static shapes). Only this site: the
+other stabs inline the same test with other lifetimes (`0x000b698a` reloads a rounded Dx) and
+keep the stock form. Like the two entries above, this is the 2003 compiler's arithmetic, not a
+NovodeX change.
 
 **Build parity, not source.** `External/CMakeLists.txt` compiles `NxOpcode` with
 `/Qfast_transcendentals` (vendored-correspondence Task 3): the image's OPCODE

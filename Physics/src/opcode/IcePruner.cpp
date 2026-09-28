@@ -52,8 +52,11 @@ NOT RECONSTRUCTED.
 PRECISION. Every row here runs at API time under the control word 0x027f
 (53-bit precision, round to nearest): the raycasts, and the registration from
 createActor/releaseActor. The x87 register lifetimes are written `double`, the
-listing's float spills `float`; SSE2 double arithmetic is then the x87's at
-53 bits, so this file keeps the default architecture.
+listing's float spills `float`. The file is nevertheless built /arch:IA32 /GR-,
+as NxOpcode is (CMakeLists.txt): the tree build instantiates OPCODE's
+AABBTreeOfAABBsBuilder, and the linker keeps this object's COMDAT copies of the
+builder's inline virtuals and table, which must be OPCODE's code (built SSE2,
+AABBTreeBuilder::GetSplittingValue, 002150, rounded its result to float).
 */
 
 #include "IcePruner.h"

@@ -163,6 +163,17 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/core/D6Joint.cpp
 		Physics/src/core/JointSupport.cpp
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
+	# opcode/IcePruner.cpp builds OPCODE's AABBTreeOfAABBsBuilder on the stack
+	# (the static pruner's tree build, 005216), so it emits COMDAT copies of
+	# the builder's inline virtuals and its table, and the linker keeps the
+	# first copy it sees -- this file's, ahead of NxOpcode's. Built SSE2, its
+	# AABBTreeBuilder::GetSplittingValue (002150) rounded the centre to float
+	# where the x87 copy returns it unrounded. It is built as NxOpcode is
+	# (/arch:IA32 /GR-) so the kept copies are OPCODE's code (scene-raycast
+	# Task 3 review). Its own rows run at API time under 0x027f, where the x87
+	# at 53 bits is what the listing does.
+	set_property(SOURCE Physics/src/opcode/IcePruner.cpp
+		APPEND PROPERTY COMPILE_OPTIONS "/arch:IA32" "/GR-")
 endif()
 
 # The joint classes are built without C++ exception handling, as the oracle
