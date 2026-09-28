@@ -734,12 +734,12 @@ are the same under `--self`.
   - for the clusters: the same 12 vertices and 20 triangles in another order, after eight more
     tracked allocations on the candidate (the 48 words).
 
-  Under 0x0f7f both runs are exact, and they stay in the `_pc64` families. This is the vendored
-  qhull's own class (`qhull_hull_x87`: distances that differ in their last bit decide merges of
-  coplanar or coincident points differently), not a hull-library row. Every hull-library word
-  before qhull matches, and the rows after it transcribe what qhull hands them. The attribution
-  rests on the identical input and the dependence on precision; it is not a
-  statement-by-statement trace of qhull's merges.
+  Under 0x0f7f both runs are exact, and they stay in the `_pc64` families. Every hull-library
+  word before qhull matches. Attribution (corrected in Task 5): **box: vendored qhull
+  (reproduced by `hull_qhull_direct`); clusters: not reproduced by qhull alone -- open (Task 5;
+  candidates: allocation pattern, `qh_gethash` address hashing).** As first written here, both
+  were put down to the vendored qhull's `qhull_hull_x87` class on the identical input and the
+  dependence on precision alone; Task 5's run of qhull alone confirms that for the box only.
 - **`*_obj`.** The collinear set's FAIL dump prints the cleaned points, and the first has
   z = -0.0 on both sides (the
   oracle's own `cleanupVertices`, called directly on this set, returns `0x80000000` there). The oracle's 2003 static CRT prints it as `0.000000000`, the UCRT as
@@ -817,7 +817,7 @@ divergent ones are held by `kDivergentCeilings`, and the two `_qhull` families a
   `hull_create_pc64_objbytes` (18, `99ca1d01`), `hull_compute_objbytes` (2, `eebf5792`),
   `hull_compute_pc64_objbytes` (2, `16381ab0`), all **exact**.
 - **The trace driver** is committed as `tools/hull_trace.py`. It generated
-  `evidence/qhull-gap-trace-cooking.txt` again on this task's clean-built exe (`d2a584a3...`; all 37
+  `evidence/qhull-gap-trace-cooking.txt` again on this task's clean-built exe (`d2a584a3...`, and again after the final review's fixes on `a4352c79...`; all 37
   breakpointed rows hit, the four inlined rows through their callers), and the 40 rows'
   `dynamic_proof`s cite it.
 - **qhull alone over the two `_qhull` inputs** (`hull_qhull_direct` / `_x87`, divergent,
@@ -925,6 +925,17 @@ tail (4d); `002233` frees an uninitialised result's two words when `cleanupVerti
   EdgeList and IceAdjacencies rows under them, the mass rows `002241`/`001397`): about 63 KB
   with its vtable edges, a unit of its own.
 - **Differential C** (the public API) is deferred with the public chain.
+- **The TriangleMesh base-class wiring.** `002233`/`002235`/`002237` are written on
+  `TriangleMeshHullAllocator` because `TriangleMesh` carries its vtable as an opaque word;
+  making `TriangleMesh` derive from it (so its slots 0 and 1 are those rows and slot 2 onward
+  follows) belongs to the deferred TriangleMesh/ConvexHull unit.
+- **The clusters' divergence is open.** `hull_*_qhull`'s clusters input differs inside
+  `CreateConvexHull` under 0x027f but not in qhull alone (`hull_qhull_direct`); the cause is not
+  shown (candidates: the driver's allocation pattern, `qh_gethash`'s address hashing).
+- **The generic models in `ObjectModel.cpp`.** `nxBatchAppend3268` and `nxOwnVtableRelease3238`,
+  the phase 8 shapes whose rows (`003268`, `003238`) are now `QhullHost.cpp`'s, are kept: the
+  Phase 5 NxPhysicsObjectLayoutTests' `batch3268` and `ownvtable3238` blocks still drive them.
+  Their comments now say they are superseded models, without the stable-ID line form.
 
 **The rate** (timing table below). Part 1, Tasks 1-2 with their reviews: 2 h 58 min for 167
 rows / 61,010 bytes, about 20.6 KB an hour. Part 2, Task 3 and pieces 4a-4e: 2 h 29 min for
@@ -934,7 +945,7 @@ took 5 h 27 min for 207 rows / 73,503 bytes, and with Task 5 6 h 00 min (about 1
 
 **Verification** (this task's final tree): a fresh configure (`cmake --fresh -G "Visual Studio 18 2026" -A Win32`) and a clean build of every target (`--clean-first`, 0 errors); `verify_public_headers.py` 80 files on both roots;
 755 tool tests OK; `verify_vendored_sources.py` pass; `validate_inventory` exits 0
-(`unexplained=0`); gates 2, 3 (103), 4 (188 of 188, `thirdparty candidate mismatches=0 layout_failures=0`), 6 (403) and 7 (276) pass, and 5 is red only on `CANDIDATE-MISSING family=vtables` (its failure lines identical to Task 4d's), each run with `-RepoRoot`/`-BuildRoot` on the worktree. The trace and the 40 `dynamic_proof`s were regenerated on the clean build's exe (`d2a584a3...`, candidate DLL `a382bd84...`).
+(`unexplained=0`); gates 2, 3 (103), 4 (188 of 188, `thirdparty candidate mismatches=0 layout_failures=0`), 6 (403) and 7 (276) pass, and 5 is red only on `CANDIDATE-MISSING family=vtables` (its failure lines identical to Task 4d's), each run with `-RepoRoot`/`-BuildRoot` on the worktree. The trace and the 40 `dynamic_proof`s were regenerated on the clean build's exe (`d2a584a3...`, candidate DLL `a382bd84...`). After the final review's fixes (the attribution wording, the ObjectModel comments) they were regenerated once more on `a4352c79...`, and the checks above were run again.
 
 ## Timing
 

@@ -2341,7 +2341,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # QHULL_*.obj files in a directory of its own (units/convex-cooking-contract.md,
         # differentials A and B), and the host's size slot 003265 called directly. The exact
         # families are registered whole. hull_create_qhull
-        # and hull_compute_qhull (two inputs whose vendored-qhull hull differs under 0x027f)
+        # and hull_compute_qhull (two inputs that differ under 0x027f -- box: vendored qhull
+        # (reproduced by hull_qhull_direct); clusters: not reproduced by qhull alone, open
+        # (qhull-gap Task 5; candidates: allocation pattern, qh_gethash address hashing))
         # and the four _obj families (the OBJ text as tokens; the 2003 CRT prints -0.0
         # without its sign) are DIVERGENT, registered up to the oracle digest, and held by
         # kDivergentCeilings/kLengthCeilings. The pairs above keep printing where they were;

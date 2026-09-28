@@ -859,7 +859,9 @@ void*					nxActorGetPoseWords(void* self, void* out);
 void*					nxActorVtThunk104(void* self, void* arg1, unsigned* out);
 void*					nxActorVtThunk108(void* self, void* arg1, unsigned* out);
 
-//! phys_fn_003268 (0x7e560, ret 8): batch index/vertex append over the seven
+//! A generic model of the row at 0x7e560, superseded by QhullHost.cpp
+//! (phys_fn_003268; qhull-gap Task 4a) and kept for NxPhysicsObjectLayoutTests'
+//! batch3268 block: batch index/vertex append (ret 8) over the seven
 //! arrays at [self+8], +0xc, +0x10, +0x18, +0x1c, +0x20 and +0x4034..0x4044.
 void					nxBatchAppend3268(void* self, unsigned count,
 							const unsigned* indices);
@@ -1373,7 +1375,9 @@ void					nxReleaseOwnedFields(void* self, const unsigned* offsets,
 //! slot +0x14 ONLY when it is non-null, but the three fields are cleared
 //! REGARDLESS. That unconditional clearing is what 3z219's diff showed at
 //! offsets 0xc and 0x1c on pans where nothing was released.
-//! phys_fn_003238 (0x7d500): releases FOUR owned fields -- [self+0xc], [self+8],
+//! The row at 0x7d500 (a generic model superseded by QhullHost.cpp, phys_fn_003238;
+//! qhull-gap Task 4a; kept for NxPhysicsObjectLayoutTests' ownvtable3238 block,
+//! nxOwnVtableRelease3238 below): releases FOUR owned fields -- [self+0xc], [self+8],
 //! [self+0x4038] and [self+0x4044] -- through the object's OWN vtable slot
 //! +0x18, each only when non-null, then clears the field and, for the two high
 //! groups, one companion field ([self+0x4034] and [self+0x403c]). It finishes

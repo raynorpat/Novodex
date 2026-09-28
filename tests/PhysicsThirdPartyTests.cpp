@@ -403,7 +403,7 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "qhull_paths_t4_x87", 458, 1, 0, kInf64, 334, 85, 0, 4616189618054758400ull, HUGE_VAL },	// qhull-gap: the same run's doubles, out of step
 	{ "qhull_rotation", 268, 268, 0, 0ull, 0, 0, 0, 0ull, 0.0 },	// qhull-gap: "QRn": the merges differ, as qhull_hull_rotated
 	{ "qhull_rotation_x87", 2001, 0, 0, kInf64, 547, 20, 0, 4611686018427387904ull, 2.0 },	// qhull-gap: "QRn"
-	{ "hull_create_qhull", 242, 179, 0xffffffffu, 0, 16, 12, 0, 18874368ull, 14.0 },	// qhull-gap 4e: qhull's own path over the same input differs under 0x027f (the qhull_hull_x87 class): the same counts, another vertex order, and 8 more tracked allocations for the clusters (48 words)
+	{ "hull_create_qhull", 242, 179, 0xffffffffu, 0, 16, 12, 0, 18874368ull, 14.0 },	// qhull-gap 4e: the same counts, another vertex order, 8 more tracked allocations for the clusters (48 words); box: vendored qhull (reproduced by hull_qhull_direct); clusters: not reproduced by qhull alone -- open (Task 5; candidates: allocation pattern, qh_gethash address hashing)
 	{ "hull_compute_qhull", 248, 185, 0xffffffffu, 0, 16, 12, 0, 18874368ull, 14.0 },	// qhull-gap 4e: the same two inputs through 002233
 	{ "hull_create_obj", 1, 0, 0, kInf64, 1, 1, 0, 0ull, 0.0 },		// qhull-gap 4e: the 2003 CRT prints a float -0.0 as "0.000000000", the UCRT as "-0.000000000"
 	{ "hull_create_pc64_obj", 1, 0, 0, kInf64, 1, 1, 0, 0ull, 0.0 },	// qhull-gap 4e: the same print
@@ -6540,12 +6540,11 @@ static const int kHullComputeSets = 19;		// every set but the empty one (see nxD
 // that welds to two points (12) and the short quantization of the clusters
 // (17). qhull's input is the same on both sides, point for point (the stderr
 // probe NXHULL_PROBE=1 prints a digest of the vertex buffer when runQhull
-// allocates its double array, and the two sides print the same); what
-// differs is qhull's own hull over it, which is the vendored qhull's
-// last-bit class (qhull_hull_x87: a distance that differs in its last bit
-// decides a merge of the coplanar box faces and of the duplicated palette
-// points differently). Under 0x0f7f both runs are exact, and they stay in
-// the 0x0f7f families.
+// allocates its double array, and the two sides print the same). Box:
+// vendored qhull (reproduced by hull_qhull_direct); clusters: not reproduced
+// by qhull alone -- open (qhull-gap Task 5; candidates: allocation pattern,
+// qh_gethash address hashing). Under 0x0f7f both runs are exact, and they
+// stay in the 0x0f7f families.
 static bool nxHullQhullDivergent(int set, unsigned flags)
 	{
 	return (set == 12 || set == 17) && flags == 0xb7;

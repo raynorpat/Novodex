@@ -713,9 +713,10 @@ Two inputs are divergent under 0x027f only, in families of their own (`hull_crea
 `hull_compute_qhull`): the set that welds to two points (its 8-corner box) and the five
 clusters (a short quantization). qhull's input is the same on both sides, point for point
 (measured with the harness's `NXHULL_PROBE` digest); qhull's own path over it differs (another
-vertex order; for the clusters eight more tracked allocations, with the same counts), which is
-the vendored qhull's `qhull_hull_x87` class, not a hull-library row. Under 0x0f7f both are
-exact. The four `_obj` families differ in one word each: the 2003 static CRT prints a float
+vertex order; for the clusters eight more tracked allocations, with the same counts). Under
+0x0f7f both are exact. Attribution (corrected in Task 5): box: vendored qhull (reproduced by
+`hull_qhull_direct`); clusters: not reproduced by qhull alone -- open (Task 5; candidates:
+allocation pattern, `qh_gethash` address hashing). The four `_obj` families differ in one word each: the 2003 static CRT prints a float
 `-0.0` as `0.000000000` and the UCRT as `-0.000000000` (the collinear set's FAIL dump of the
 cleaned points).
 
@@ -823,7 +824,11 @@ As recorded before Task 4 (the first two items are replaced; see the "As written
 - `Physics/src/ObjectModel.cpp` generic shapes: `nxOwnVtableRelease3238`, `nxBatchAppend3268`,
   and the shape entries recorded as sources for `003257`, `003261`, `003265` and `003274`. Their
   inventory proofs were phase 8 shape drives, and `003268`'s carried a failing-differential note.
-  They became the product class's members in Task 4a. Whether the generic helpers are deleted or kept for
+  They became the product class's members in Task 4a. **Decision (qhull-gap Task 5):** the
+  helpers `nxBatchAppend3268` and `nxOwnVtableRelease3238` are kept, because the Phase 5
+  NxPhysicsObjectLayoutTests' `batch3268` and `ownvtable3238` blocks still drive them; their
+  comments now call them models superseded by `QhullHost.cpp` and no longer carry the
+  `// phys_fn_` stable-ID line form. The rows' `source` is `QhullHost.cpp`. Whether the generic helpers are deleted or kept for
   their drive is Task 4's call; the rows' `source` moves either way.
 - `Physics/src/NpPhysicsSDK.cpp:109` `createTriangleMesh` returns 0 ("needs TriangleMesh,
   Phase 4"). It is unchanged in Task 4 under the split below.

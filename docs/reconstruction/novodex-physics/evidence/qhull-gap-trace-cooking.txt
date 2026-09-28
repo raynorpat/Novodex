@@ -22,8 +22,8 @@ least 2000". Rows sharing one candidate function (a continuation) share its brea
 Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
 Command:   python tools/hull_trace.py --repo <repo> --work <dir>, which runs
            cdb -cf hull.cdb build\Release\NxPhysicsThirdPartyTests.exe <oracle dir> <sha256>
-Exe:       build\Release\NxPhysicsThirdPartyTests.exe sha256=d2a584a330812204d0d27aeff20a4bd4e74ff51a182878586f3f3c360f94f182
-           (built with candidate build\Release\NxPhysics.dll sha256=a382bd847837e21346740393a14543f5a49463010d6267a98c81f6be4fc6175e;
+Exe:       build\Release\NxPhysicsThirdPartyTests.exe sha256=a4352c790fb0d6238cb1860bd6bf9ecc1ea83d9eb552add114642735ef1331ed
+           (built with candidate build\Release\NxPhysics.dll sha256=2b5b6f8bda1ba9f9acf9a606e08d24eccb8ed61c0f4f1fa8934723ceb2375ac8;
            the link timestamp changes both hashes on every rebuild, so they pin this build
            only -- the families' oracle digests, registered in tools/gate_targets.ps1, are
            the stable identity)
