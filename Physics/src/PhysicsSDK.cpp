@@ -180,13 +180,13 @@ PhysicsSDK::PhysicsSDK()
 	mNp = NX_NEW(NpPhysicsSDK)(this);
 	}
 
-void nxShapeReleaseNameTable();
 void nxOpcodeReleasePool();
+void nxReleaseSdkPointerBindings();
 
 PhysicsSDK::~PhysicsSDK()
 	{
 	NX_DELETE_SINGLE(mNp);
-	nxShapeReleaseNameTable();
+	nxReleaseSdkPointerBindings();
 
 	// The global name map at .data 0x00123c0c is released above, and the
 	// process-wide OPCODE pool below. Other ownership paths remain open:

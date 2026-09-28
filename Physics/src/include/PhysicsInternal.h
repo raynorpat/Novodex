@@ -185,4 +185,9 @@ void* nxGetSdkPointerBinding(void* key);
 // destructor.
 bool nxSetSdkPointerBinding(void* key, void* value);
 
+// The SDK destructor's release of the global name map (.data 0x00123c0c)
+// when pairs are still in it: the table's destructor and its free, as
+// phys_fn_000474 does. The map is null afterwards.
+void nxReleaseSdkPointerBindings();
+
 #endif

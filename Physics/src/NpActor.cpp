@@ -11,6 +11,7 @@
 #include "NpActor.h"
 #include "NpActorDynamicMath.h"
 #include "NpSceneGuard.h"
+#include "PhysicsInternal.h"
 #include "ObjectModel.h"
 #include "FoundationSDK.h"
 #include "core/JointSupport.h"
@@ -444,90 +445,26 @@ static NxMaterialIndex __fastcall nxBoxHandleGetMaterial(void* self, void*)
 	return *reinterpret_cast<NxMaterialIndex*>(nxBoxHandleInternal(self) + 0xda);
 	}
 
-// The oracle's global name map stores pointer pairs for actors and shapes. A
-// null-name lookup for a missing object still inserts a null association once
-// the table exists; removing its last existing association destroys the table.
-struct NxShapeNamePair
-	{
-	void* shape;
-	const char* name;
-	};
-
-struct NxShapeNameTable
-	{
-	NxShapeNamePair* entries;
-	unsigned count;
-	unsigned capacity;
-	unsigned reserved;
-	};
-
-static NxShapeNameTable* gNxShapeNames = 0;
-
+// The oracle's global name map (.data 0x00123c0c) stores pointer pairs for
+// actors, shapes and joints: phys_fn_000480 sets or removes a pair and
+// phys_fn_000454 looks one up (PhysicsInternal.cpp's nxSetSdkPointerBinding
+// and nxGetSdkPointerBinding). A null-name call for a missing object still
+// inserts a null association once the table exists; removing its last
+// existing association destroys the table. The shape and actor names go
+// through the same table as the joint names (NpJointShared.h slot 29, ~Joint):
+// an earlier copy of it here kept them in a second table, so the joints' and
+// the actors' pairs never shared its growth or its destruction (found at the
+// merge of main into the NpActor.cpp completion branch, where the core dump's
+// outstanding-block count after the scene releases differed by the second
+// table's two blocks).
 void nxShapeSetName(void* shape, const char* name)
 	{
-	if(!shape) return;
-	if(!gNxShapeNames)
-		{
-		if(!name) return;
-		gNxShapeNames = static_cast<NxShapeNameTable*>(
-			nxGetSdkAllocator()->malloc(sizeof(NxShapeNameTable), NX_MEMORY_PERSISTENT));
-		if(!gNxShapeNames) return;
-		memset(gNxShapeNames, 0, sizeof(*gNxShapeNames));
-		}
-	for(unsigned i = 0; i < gNxShapeNames->count; ++i)
-		if(gNxShapeNames->entries[i].shape == shape)
-			{
-			if(name)
-				{
-				gNxShapeNames->entries[i].name = name;
-				return;
-				}
-			gNxShapeNames->entries[i] =
-				gNxShapeNames->entries[--gNxShapeNames->count];
-			if(!gNxShapeNames->count)
-				{
-				nxGetSdkAllocator()->free(gNxShapeNames->entries);
-				nxGetSdkAllocator()->free(gNxShapeNames);
-				gNxShapeNames = 0;
-				}
-			return;
-			}
-	if(gNxShapeNames->count == gNxShapeNames->capacity)
-		{
-		const unsigned capacity = gNxShapeNames->count * 2 + 2;
-		NxShapeNamePair* entries = static_cast<NxShapeNamePair*>(
-			nxGetSdkAllocator()->malloc(
-				capacity * sizeof(NxShapeNamePair), NX_MEMORY_PERSISTENT));
-		if(!entries) return;
-		if(gNxShapeNames->count)
-			memcpy(entries, gNxShapeNames->entries,
-				gNxShapeNames->count * sizeof(NxShapeNamePair));
-		if(gNxShapeNames->entries)
-			nxGetSdkAllocator()->free(gNxShapeNames->entries);
-		gNxShapeNames->entries = entries;
-		gNxShapeNames->capacity = capacity;
-		}
-	gNxShapeNames->entries[gNxShapeNames->count].shape = shape;
-	gNxShapeNames->entries[gNxShapeNames->count].name = name;
-	++gNxShapeNames->count;
-	}
-
-void nxShapeReleaseNameTable()
-	{
-	if(!gNxShapeNames) return;
-	if(gNxShapeNames->entries)
-		nxGetSdkAllocator()->free(gNxShapeNames->entries);
-	nxGetSdkAllocator()->free(gNxShapeNames);
-	gNxShapeNames = 0;
+	nxSetSdkPointerBinding(shape, const_cast<char*>(name));
 	}
 
 const char* nxShapeGetName(void* shape)
 	{
-	if(!gNxShapeNames || !shape) return 0;
-	for(unsigned i = 0; i < gNxShapeNames->count; ++i)
-		if(gNxShapeNames->entries[i].shape == shape)
-			return gNxShapeNames->entries[i].name;
-	return 0;
+	return static_cast<const char*>(nxGetSdkPointerBinding(shape));
 	}
 
 static void __fastcall nxBoxHandleSetName(void* self, void*, const char* name)
