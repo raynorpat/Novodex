@@ -80,6 +80,14 @@ X = substantive arithmetic/field/branch differences; M = missing.
   pushes the id and ORs the mask. The growth size (2n+2), copy/free order and index-table
   write otherwise match. Whether the null-list case is reachable from the public API was not
   established (all twelve differentials pass with stdout_delta=0).
+  H1 also covers the allocator: the helper grows and frees the list through
+  `nxGetSdkAllocator()` (NpActor.cpp:107-111), where every oracle inline growth goes through
+  the import [0x101041bc] `nxFoundationSDKAllocator` (e.g. 0x100082f1 malloc, 0x10008329
+  free), and it adds an `if(!grown) return` the oracle lacks. `nxNpActorTransitionKinematic`
+  (NpActor.cpp:130) has the same class of defect: 000785 allocates the 0x20-byte kinematic
+  state at 0x1001995d and frees it at 0x10019cda through [0x101041bc] with no null check,
+  and in the oracle the dirty marks 0x10000/0x20000/0x80000 (and any list growth they cause)
+  precede the malloc, while the candidate allocates first and marks once at the end.
 - **NG** (group R): the NA method takes no scene lock at all where the oracle brackets the
   read with 002362/002366 on [actor+0x10] (or the write-try on [actor+0xc]).
 - **SSE**: `NpActor.cpp` is not on the `/arch:IA32` list in `CMakeLists.txt` (only Geometry,
@@ -87,13 +95,21 @@ X = substantive arithmetic/field/branch differences; M = missing.
   expressions in it compile to SSE scalar code and round every product and sum to float,
   and `double`-typed chains are SSE2 double. The `__asm` blocks are x87 and unaffected. Any
   row whose arithmetic is written in plain C++ is x87-faithful only where its roundings
-  happen to coincide.
+  happen to coincide. For finite values a `double`-typed SSE2 chain equals the oracle's x87
+  at its 53-bit precision control, so the fix for rows like 000182 and 000789 is the
+  listing's source order with `double` register lifetimes and `float` spills; `float`-typed
+  expressions need `double` lifetimes or `__asm`. `/arch:IA32` is still needed wherever NaN
+  payload/propagation matters (the reason the joint units are on the list).
 - **S1** (000196-000202; 000204-000208 lack the call entirely): the oracle ends with
   `000004(body, 1)` (`nxForwardSubobjectCall`, ObjectModel.cpp:3650), a virtual call of slot 6
   on [body+0x10]. The candidate's `nxNpActorNotifyOwnedShapes` (NpActor.cpp:847) calls
   `ShapeBase::nxApplyOwnerUpdate(1)` directly and, for a kind-5 group, loops over the
-  children. For the four single-shape families slot 6 is that method; the group loop is an
-  assumption no row of this unit shows.
+  children. For the four single-shape families slot 6 is that method. For a group it is
+  not: the group vtable 0x10106c2c slot 6 is 001018 (0x227d0, 62 B, `discovered`), which calls
+  each child's slot 6 and then 001315(flags) on the group itself. `nxNpActorNotifyOwnedShapes`
+  omits that group-level 001315 call, so for grouped actors S1 is a real behavioural defect.
+  A faithful 000004 dispatch fixes it provided the candidate group's slot 6 behaves like
+  001018 (001315 is itself `discovered`/partial).
 - **ROT**: the body rotation from the quaternion at [rec+0x5c] is built with one x87 sequence
   (five float spills: 2yy, 2xz, 2yw, 1-2xx, 2yz) in every row that needs it.
   `nxNpActorRotationFromQuaternionGetter` (asm, NpActor.cpp:970) and `nxNpActorComposeRotation`
@@ -136,7 +152,7 @@ NxPhysicsDynamicFirstTests reaches only the 000118 counterpart.
 | 000066 | 0x000029e0 | 75 | reconstructed | slot 69 getSleepLinearVelocity | NpActor.cpp:2372 `getSleepLinearVelocity`; OM ObjectModel.cpp:839 | implemented | faithful | 4: ActorDynamicSetter 4 | NA and OM faithful (sqrtss == fsqrt+fstp) |
 | 000068 | 0x00002a30 | 75 | reconstructed | slot 71 getSleepAngularVelocity | NpActor.cpp:2397 `getSleepAngularVelocity`; OM ObjectModel.cpp:863 | implemented | faithful | 3: ActorDynamicSetter 3 | NA and OM faithful |
 | 000070 | 0x00002a80 | 185 | discovered | slot 13 createShape | NpActor.cpp:1172 `createShape` | partial | defect (X) | 1: ActorShapeMutation 1 | E1 0x1ac and Actor.cpp reentry guard (0x150) missing; empty actor and existing group return 0 (oracle installs/appends via 000036); promotion lacks scene remove/add (000535/000533/000531), group+8, 001041 arrays |
-| 000072 | 0x00002b40 | 90 | discovered | slot 14 releaseShape | NpActor.cpp:1181 `releaseShape` | partial | defect (X) | 1: ActorShapeMutation 1 | keyed on public NxShape* not [shape+8]; shift instead of swap-remove (001028); no +0xdc/+0x10c updates; no single-shape or empty-group release (000006, deleting dtor); E1 0x18f/0x19c/0x19d/0x1a4, reentry 0x186 |
+| 000072 | 0x00002b40 | 90 | discovered | slot 14 releaseShape | NpActor.cpp:1181 `releaseShape` | partial | defect (X) | 1: ActorShapeMutation 1 | keyed on public NxShape* not [shape+8]; shift instead of swap-remove (001028); no +0xdc/+0x10c updates; no single-shape or empty-group release (000006, deleting dtor); the Actor.cpp reports inside 000024 (reentry 0x186, 0x18f, 0x19c, 0x19d, 0x1a4) are absent (they belong to 000024, not 000072) |
 | 000074 | 0x00002ba0 | 85 | reconstructed | slot 75 raiseActorFlag | NpActor.cpp:2453 `raiseActorFlag`; OM ObjectModel.cpp:1107 | implemented | faithful | 1: ActorMetadata 1 | NA faithful (G1 0x1bb); OM faithful |
 | 000076 | 0x00002c00 | 87 | reconstructed | slot 76 clearActorFlag | NpActor.cpp:2463 `clearActorFlag`; OM ObjectModel.cpp:1113 | implemented | faithful | 1: ActorMetadata 1 | NA faithful (G1 0x1c1); OM faithful |
 | 000078 | 0x00002c60 | 39 | reconstructed | slot 77 readActorFlag | NpActor.cpp:2473 `readActorFlag`; OM ObjectModel.cpp:826 | implemented | faithful | 6: ActorMetadata 6 | NA and OM faithful |
@@ -159,12 +175,12 @@ NxPhysicsDynamicFirstTests reaches only the 000118 counterpart.
 | 000112 | 0x000035b0 | 82 | reconstructed | slot 85 setGroup | NpActor.cpp:2588 `setGroup`; OM ObjectModel.cpp:3628 | implemented | faithful | 1: ActorMetadata 1 | NA faithful (G1 0x3cd); OM faithful |
 | 000114 | 0x00003610 | 34 | reconstructed | slot 86 getGroup | NpActor.cpp:2597 `getGroup`; OM ObjectModel.cpp:814 | implemented | faithful | 2: ActorMetadata 2 | NA and OM faithful |
 | 000116 | 0x00003640 | 8 | reconstructed | table word 87 (0x1010468c): the member (actor+8) table's this-adjust thunk to slot 0 | none (candidate actor has no +8 member table) | OM only | defect (M) | not breakpointed (no candidate function) | NA: no member table or thunk. OM (ObjectModel) faithful, inherits 000118's allocator defect |
-| 000118 | 0x00003650 | 55 | reconstructed | slot 0 ~NxActor (scalar deleting dtor) | none; the wrapper is freed in `NxSceneInternal::releaseActor` Scene.cpp:1332 (free at :1369) | OM only | defect (M) | 47: ActorBodyFlag 1, ActorCMass 11, ActorDynamicSetter 8, ActorDynamics 2, ActorForce 11, ActorLifecycle 6, ActorMetadata 1, ActorMomentum 4, ActorName 1, ActorShapeMutation 1, DynamicFirst 1 | NA: no destructor; Scene.cpp:1369 frees the wrapper without the table stores/002406. OM: frees through nxGetSdkAllocator, not the imported nxFoundationSDKAllocator ([0x101041bc]); returns void |
+| 000118 | 0x00003650 | 55 | reconstructed | slot 0 ~NxActor (scalar deleting dtor) | none; the wrapper is freed in `NxSceneInternal::releaseActor` Scene.cpp:1332 (free at :1369); the compiler-generated `??_GNpActorVtable` (slot 0 of the candidate table) is the NA counterpart, which no path calls | OM only | defect (M) | 47: ActorBodyFlag 1, ActorCMass 11, ActorDynamicSetter 8, ActorDynamics 2, ActorForce 11, ActorLifecycle 6, ActorMetadata 1, ActorMomentum 4, ActorName 1, ActorShapeMutation 1, DynamicFirst 1 | NA: no destructor; Scene.cpp:1369 frees the wrapper without the table stores/002406. OM: frees through nxGetSdkAllocator, not the imported nxFoundationSDKAllocator ([0x101041bc]); returns void |
 | 000120 | 0x00003690 | 429 | reconstructed | slot 82 saveToDesc | NpActor.cpp:2543 `saveToDesc` | implemented | faithful | 3: ActorLifecycle 3 | NA faithful (G1 0x22) |
 | 000122 | 0x00003840 | 761 | discovered | slot 18 setDynamic | NpActor.cpp:1226 `setDynamic` | missing | defect (M) | 0 (breakpointed, not hit) | empty body; oracle: validate desc (0x63/0x66), remove static shape, build record via 000026 (malloc 0x260, ctor 0x1b5c0), errors 0x7c/0x7d, tear down old record (000632, notifyObservers(0x100), 000776, free), re-add shape (000531) |
 | 000124 | 0x00003b40 | 1075 | discovered | slot 10 moveGlobalPose | NpActor.cpp:1128 `moveGlobalPose` | partial | defect (X) | 5: ActorDynamics 5 | no CMass-frame composition (pose * {rec+0xdc, rec+0x100}); own inline quaternion extraction; 000784 ORs flags (candidate assigns 3); no wake; E1 0x291 |
 | 000126 | 0x00003f80 | 1192 | discovered | slot 12 moveGlobalOrientation | NpActor.cpp:1164 `moveGlobalOrientation` | partial | defect (X) | 3: ActorDynamics 3 | delegates to getGlobalPositionVal + moveGlobalPose; oracle composes inline under one lock with its own product orders; no wake; E1 0x2ae |
-| 000128 | 0x00004430 | 333 | discovered | slot 9 getGlobalPoseReference | NpActor.cpp:1100 `getGlobalPoseReference` | implemented | faithful | 2: ActorCMass 2 | all blocks incl. the one-shot 0xd0 warning (line 0x2c0) and the x87 quat-to-rows sequence |
+| 000128 | 0x00004430 | 333 | discovered | slot 9 getGlobalPoseReference | NpActor.cpp:1100 `getGlobalPoseReference` | implemented | faithful | 2: ActorCMass 2 | all blocks incl. the one-shot 0xd0 warning (line 0x2c0) and the x87 quat-to-rows sequence; nits: the oracle's inline `cmp [FoundationSDK::instance],0; int3` (0x10004442-0x1000445c) precedes the report (every G1/E1 fix should include it), and position x/y move by fld/fstp (quiets SNaN) where the candidate memcpys |
 | 000130 | 0x00004580 | 318 | reconstructed | slot 5 getGlobalPoseVal | NpActor.cpp:944 `getGlobalPoseVal`; OM ObjectModel.cpp:1359 | implemented | defect (X) | 16: ActorCMass 6, ActorDynamicSetter 6, ActorLifecycle 4 | NA: NG, two unguarded sub-reads (values match). OM: no guard, double quat-to-matrix without the spills |
 | 000132 | 0x000046c0 | 259 | reconstructed | slot 7 getGlobalOrientationVal | NpActor.cpp:1058 `getGlobalOrientationVal`; OM ObjectModel.cpp:3276 | implemented | defect (X) | 20: ActorCMass 6, ActorDynamicSetter 7, ActorLifecycle 7 | NA: NG (x87 helper exact). OM: no guard, no spills |
 | 000134 | 0x000047d0 | 907 | discovered | slot 32 getCMassGlobalPoseVal | NpActor.cpp:1644 `getCMassGlobalPoseVal` | implemented | defect (X) | 21: ActorCMass 21 | RF columns 1/2 use the 138 order, oracle (a1f4+a2f7)+a0f1 / (a0f2+a1f5)+a2f8; E1 0x30a |
@@ -242,18 +258,43 @@ breakpointed).
 ## Callees the implementing tasks need
 
 - 000008 (0x10a0, 751 B, `discovered`, gap `<start>..Actor.cpp`): the body's mass-from-shapes
-  computation 000164 calls (ecx = [actor+0x14]; density, &totalMass, &pose, &diag). No
-  candidate exists; 000164 cannot be written without it or a listing-faithful equivalent.
+  computation 000164 calls (ecx = [actor+0x14]; density, &totalMass, &pose, &diag). It
+  dispatches `[body+0x10]->vtbl[4](dest, 1.0f, ...)` to the per-shape mass wrappers: group
+  001024, box 000947, capsule 001008, sphere 001371 (reconstructed), 001397 (0x28e10, 104 B,
+  `discovered`), base 001249. Task 2 must confirm that the candidate's internal shapes really
+  dispatch slot 4 (ObjectModel.h describes several ShapeBase slots as "carried opaque").
+  Scene.cpp (~2064-2100) already approximates the 000026/000008 density path at actor
+  creation; Task 2 decides whether to replace it with the listing-faithful 000008. 000026
+  also calls 000008, so setDynamic (000122) needs 000008 too.
 - 000026 (0x19b0, 465 B, `discovered`) and 000776 (0x18570): setDynamic's record build and
   record destructor; 000632/000531/000533/000535 (Scene add/remove body and shape).
-- 000036/000024 (Actor.cpp createShape/releaseShape, `discovered`), 001041, 001028, 001033,
-  000006: the shape add/remove paths 000070/000072 forward to.
+- 000036/000024 (Actor.cpp createShape/releaseShape, `discovered`), 000032 (shape factory,
+  539 B), 001041, 001028, 001033, 000006, 001941, 000503, 003628, 000012, 001957, 001960: the
+  shape add/remove paths 000070/000072 forward to.
 - 000756 (0x17420) = `nxNpActorBodyQuaternionFromMatrix(rec+0x134, rec+0x124)`; 000789
   (0x19d00) = world-mass-pose apply (000746 tensor, listing displacement order, setter
-  quaternion); 000785 (0x19620; runs to 0x19cf9, longer than the inventory's 1,325 B) = the
-  kinematic transition with the 000712 island-root refresh.
+  quaternion); 000785 (0x19620) = the kinematic transition with the 000712 island-root
+  refresh. It runs to 0x19cf9: the part past the inventory's 1,325 B is row 000787 (0x19b50,
+  428 B), 000785's tail in the same way 000216 is 000214's.
 - 000782 (0x18730) and 000784 (0x194b0): the body force/torque accumulator and the kinematic
   target writer with its wake.
+
+Cosmetic (M5): the spill names in `nxNpActorRotationFromQuaternionGetter` (yy, yz, xz,
+diagonal, xw) do not all name what the slots hold; the instruction sequence is exact.
+
+## Dependency chains
+
+Sizes of the rows each open item pulls in (the Task 1 review's sizing, from the inventory):
+
+| Chain | Rows (B) | Total |
+|---|---|---:|
+| 000164 updateMassFromShapes | 000008 (751), 001397 (104), plus the slot-4 audit of the candidate shapes | 855 B + audit |
+| 000122 setDynamic | 000026 (465), 000797 (402), 000630 (233), 000776 (117), 000722 (127), 000632 (160), 004103 (142), 000531 (97), 001943 (270), 000503 (232), 000533 (40), 001279 (53); plus 000008 above | 2,338 B |
+| shape add/remove (000070/000072) | 000036, 000024, 000032, 001041, 001033, 001028, 000006, 001941 | ~2.1 KB |
+| force/torque (000054-000058, 000154-000162) | 000782 | 3,428 B |
+| CMass-global setters (000204-000208) | 000789 + 000746 | 1,706 B |
+| body flags (000188/000190) | 000785 + 000787 | 1,753 B |
+| kinematic moves (000090, 000124, 000126) | 000784 | 368 B |
 
 ## Listing review detail
 
