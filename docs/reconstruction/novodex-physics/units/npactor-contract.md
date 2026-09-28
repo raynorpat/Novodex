@@ -180,7 +180,7 @@ NxPhysicsDynamicFirstTests reaches only the 000118 counterpart.
 | 000116 | 0x00003640 | 8 | reconstructed | table word 87 (0x1010468c): the member (actor+8) table's this-adjust thunk to slot 0 | none (candidate actor has no +8 member table) | OM only | defect (M) | not breakpointed (no candidate function) | NA: no member table or thunk. OM (ObjectModel) faithful, inherits 000118's allocator defect |
 | 000118 | 0x00003650 | 55 | reconstructed | slot 0 ~NxActor (scalar deleting dtor) | none; the wrapper is freed in `NxSceneInternal::releaseActor` Scene.cpp:1332 (free at :1369); the compiler-generated `??_GNpActorVtable` (slot 0 of the candidate table) is the NA counterpart, which no path calls | OM only | defect (M) | 47: ActorBodyFlag 1, ActorCMass 11, ActorDynamicSetter 8, ActorDynamics 2, ActorForce 11, ActorLifecycle 6, ActorMetadata 1, ActorMomentum 4, ActorName 1, ActorShapeMutation 1, DynamicFirst 1 | NA: no destructor; Scene.cpp:1369 frees the wrapper without the table stores/002406. OM: frees through nxGetSdkAllocator, not the imported nxFoundationSDKAllocator ([0x101041bc]); returns void |
 | 000120 | 0x00003690 | 429 | reconstructed | slot 82 saveToDesc | NpActor.cpp:2543 `saveToDesc` | implemented | faithful | 3: ActorLifecycle 3 | NA faithful (G1 0x22 reproduced by Task 2) |
-| 000122 | 0x00003840 | 761 | discovered | slot 18 setDynamic | NpActor.cpp:1579 `setDynamic` | implemented | faithful | not traced (driven by ActorShapeMutation, Task 5) | Task 5: G1 0x5b; E1 0x63 (mass < 0, then the twelve massLocalPose words through _fpclass & 0x207), 0x66 (no shape and a zero-bit tensor); 000533 on a static body's shape; 000026 (Scene.cpp `nxActorBuildRecord`) with E1 0x7c/0x7d leaving the shape out; an old record: 000632, notifyObservers(0x100), 000776, free; 000531 with true. See `## Task 5` |
+| 000122 | 0x00003840 | 761 | discovered | slot 18 setDynamic | NpActor.cpp:1579 `setDynamic` | implemented | faithful | Task 6 trace: 14: ActorShapeMutation 14 | Task 5: G1 0x5b; E1 0x63 (mass < 0, then the twelve massLocalPose words through _fpclass & 0x207), 0x66 (no shape and a zero-bit tensor); 000533 on a static body's shape; 000026 (Scene.cpp `nxActorBuildRecord`) with E1 0x7c/0x7d leaving the shape out; an old record: 000632, notifyObservers(0x100), 000776, free; 000531 with true. See `## Task 5` |
 | 000124 | 0x00003b40 | 1075 | discovered | slot 10 moveGlobalPose | NpActor.cpp:1128 `moveGlobalPose` | implemented | faithful | 5: ActorDynamics 5 | Task 3: the CMass-frame composition from the listing (row 0 of M p kept in the register, rows 1-2 spilled; G = M F in the listing orders), the 000801 conversion of G, 000784 (ORs 1/2 into +0xc, no null test) and its wake |
 | 000126 | 0x00003f80 | 1192 | discovered | slot 12 moveGlobalOrientation | NpActor.cpp:1164 `moveGlobalOrientation` | implemented | faithful | 3: ActorDynamics 3 | Task 3: composes inline under its own lock with its own orders (translation +0x50; M p row 0 in the register, rows 1-2 spilled; G = M F row by row), the 000801 conversion, 000784 and its wake; no longer delegates |
 | 000128 | 0x00004430 | 333 | discovered | slot 9 getGlobalPoseReference | NpActor.cpp:1100 `getGlobalPoseReference` | implemented | faithful | 2: ActorCMass 2 | all blocks incl. the one-shot 0xd0 warning (line 0x2c0) and the x87 quat-to-rows sequence; Task 2 made the report getInstance().error (the inline `cmp [instance],0; int3`); the Task 3 review moved position x/y through fld/fstp (SNaN quieted) and z as a dword, as 0x10004553-0x10004568 |
@@ -201,7 +201,7 @@ NxPhysicsDynamicFirstTests reaches only the 000118 counterpart.
 | 000158 | 0x000062a0 | 214 | discovered | slot 57 addLocalForceAtLocalPos | NpActor.cpp:2025 `addLocalForceAtLocalPos` | implemented | faithful | 2: ActorForce 2 | Task 3: 000791/000782 from the listing; G1 0x144, E1 0x145 and both helpers from Task 2 |
 | 000160 | 0x00006380 | 198 | discovered | slot 59 addLocalForce | NpActor.cpp:2124 `addLocalForce` | implemented | faithful | 2: ActorForce 2 | Task 3: 000782 from the listing; G1 0x156, E1 0x157 and the 000150 helper from Task 2 |
 | 000162 | 0x00006450 | 198 | discovered | slot 61 addLocalTorque | NpActor.cpp:2145 `addLocalTorque` | implemented | faithful | 2: ActorForce 2 | Task 3: 000782 from the listing; G1 0x169, E1 0x16a and the 000150 helper from Task 2 |
-| 000164 | 0x00006520 | 1846 | discovered | slot 17 updateMassFromShapes | NpActor.cpp:1468 `updateMassFromShapes` | implemented | faithful | not traced (driven by ActorShapeMutation, Task 5) | Task 5: G1 0x98; E1 0x9a (ordered below zero or unordered), 0x9d, 0x9e, 0x9f, 0xa0, 0xa8/0xa9 from 000008 (Scene.cpp `nxActorComputeMassFromShapes`); +0x188, +0xc0 (1/m, no test), mark 0x10000; diagonal and _fpclass-zeroed inverses, mark 0x20000; +0x100, mark 0x200, ++0x198; +0xdc, mark 0x400, ++0x198; 000768. See `## Task 5` |
+| 000164 | 0x00006520 | 1846 | discovered | slot 17 updateMassFromShapes | NpActor.cpp:1468 `updateMassFromShapes` | implemented | faithful | Task 6 trace: 48: ActorShapeMutation 48 | Task 5: G1 0x98; E1 0x9a (ordered below zero or unordered), 0x9d, 0x9e, 0x9f, 0xa0, 0xa8/0xa9 from 000008 (Scene.cpp `nxActorComputeMassFromShapes`); +0x188, +0xc0 (1/m, no test), mark 0x10000; diagonal and _fpclass-zeroed inverses, mark 0x20000; +0x100, mark 0x200, ++0x198; +0xdc, mark 0x400, ++0x198; 000768. See `## Task 5` |
 | 000166 | 0x00006c60 | 479 | discovered | slot 35 setMass | NpActor.cpp:1681 `setMass` | implemented | faithful | 2: ActorDynamicSetter 2 | E1 0xba and 0xbb ("Body::setMass: mass is %f, should be positive!", the mass passed as a double) reproduced by Task 2; record effects faithful |
 | 000168 | 0x00006e40 | 577 | discovered | slot 37 setMassSpaceInertiaTensor | NpActor.cpp:1707 `setMassSpaceInertiaTensor` | implemented | faithful | 3: ActorDynamicSetter 2, ActorMomentum 1 | Task 3: the three float inverses 1/m are classified by the CRT _fpclass the oracle calls (005666); any NaN or infinity (0x207) zeroes all three, so negatives keep their inverse and zero/denormal inertias zero them; G1 0xc5, E1 0xc6 and H1 from Task 2 |
 | 000170 | 0x00007090 | 431 | discovered | slot 41 setLinearDamping | NpActor.cpp:1761 `setLinearDamping` | implemented | faithful | 2: ActorDynamicSetter 2 | E1 0xd1 (value, checked before dynamic) and 0xd2 reproduced by Task 2; record effects faithful |
@@ -227,7 +227,7 @@ NxPhysicsDynamicFirstTests reaches only the 000118 counterpart.
 | 000210 | 0x00009cc0 | 998 | discovered | slot 20 setCMassOffsetLocalPose | NpActor.cpp:1254 `setCMassOffsetLocalPose` | implemented | faithful | 8: ActorCMass 8 | E1 0x388, G1 0x387 and H1 fixed by Task 2; store/dirty/++0x198/000768/wake order faithful |
 | 000212 | 0x0000a0b0 | 739 | discovered | slot 21 setCMassOffsetLocalPosition | NpActor.cpp:1273 `setCMassOffsetLocalPosition` | implemented | faithful | 9: ActorCMass 9 | E1 0x394, G1 0x393 and H1 fixed by Task 2 |
 | 000214 | 0x0000a3a0 | 557 | discovered | slot 22 setCMassOffsetLocalOrientation | NpActor.cpp:1289 `setCMassOffsetLocalOrientation` | implemented | faithful | 8: ActorCMass 8 | E1 0x39f (the report sits in 000216's range), G1 0x39e and H1 fixed by Task 2 |
-| 000216 | 0x0000a5d0 | 163 | discovered | tail of 000214 (wake dirty-list growth loop, epilogue, error tail; entered by jumps from 000214) | inside NpActor.cpp:1289 `setCMassOffsetLocalOrientation` | implemented | faithful | not breakpointed (no candidate function) | not a function: 000214's tail, covered by setCMassOffsetLocalOrientation including E1 0x39f and H1 (Task 2) |
+| 000216 | 0x0000a5d0 | 163 | discovered | tail of 000214 (wake dirty-list growth loop, epilogue, error tail; entered by jumps from 000214) | inside NpActor.cpp:1289 `setCMassOffsetLocalOrientation` | implemented | faithful | not breakpointed (no candidate function); Task 6: 000214's 13 hits run its epilogue | not a function: 000214's tail, covered by setCMassOffsetLocalOrientation including E1 0x39f and H1 (Task 2) |
 | 000218 | 0x0000a680 | 1614 | discovered | slot 23 setCMassOffsetGlobalPose | NpActor.cpp:1374 `setCMassOffsetGlobalPose` | implemented | faithful | 8: ActorCMass 8 | E1 0x3ac, G1 0x3ab and H1 fixed by Task 2; rotation, 3 position and 9 orientation sums faithful |
 | 000220 | 0x0000acd0 | 1059 | discovered | slot 24 setCMassOffsetGlobalPosition | NpActor.cpp:1389 `setCMassOffsetGlobalPosition` | implemented | faithful | 8: ActorCMass 8 | E1 0x3b8, G1 0x3b7 and H1 fixed by Task 2; rotation and 3 sums faithful |
 | 000222 | 0x0000b100 | 1187 | discovered | slot 25 setCMassOffsetGlobalOrientation | NpActor.cpp:1403 `setCMassOffsetGlobalOrientation` | implemented | faithful | 8: ActorCMass 8 | E1 0x3c1, G1 0x3c0 and H1 fixed by Task 2; rotation and 9 sums faithful |
@@ -652,6 +652,37 @@ oracle lines are registered verbatim (repeated report lines once); floor 5 = 181
 
 Counts after Task 5. Of the 53 `discovered` rows, **53 are faithful**. The 34 `reconstructed` rows
 are unchanged: 30 faithful, 2 X (000086, 000088), 2 M (000116, 000118).
+
+## Task 6: the final trace
+
+Task 6 re-ran the cdb trace over all twelve Phase 5 actor staged-pair targets after Task 5 and its
+review (`evidence/npactor-trace-final.txt`, candidate sha256 5c2e247f...). The breakpoints cover the
+84 unit rows with a candidate function (Task 1's set less the 000118 counterpart) and every chain
+row this plan wrote or fixed, 138 in all, taken from `build/Release/NxPhysics.map` of that build.
+
+- **Unit.** Every one of the 53 `discovered` rows executes: 000122 (14 hits) and 000164 (48), which
+  Task 1 could not reach, are now driven by the Task 5 ShapeMutation blocks; 000216 has no function
+  of its own and 000214's 13 hits run its epilogue. Of the 34 `reconstructed` rows, 000102 (not hit
+  in Task 1) now runs 7 times; 000116 and 000118 still have no candidate function.
+- **Chain rows.** Every row the plan wrote as faithful executes: 000006 2, 000008 77, 000024 19,
+  000026 144, 000032 200, 000036 16, 000531 14, 000533 10, 000535 140, 000628 109, 000630 140,
+  000632 3, 000722 420, 000746 185, 000782 107, 000784 7, 000785 24, 000787 10 (two instruction
+  breakpoints in the disable arm of `nxNpActorTransitionKinematic`), 000789 24, 000791 24, 001018 27,
+  001028 14, 001032 27, 001033 27, 001039 27, 001041 19, 001279 175, 001941 7, 001945 171, 004103 1.
+  Executed only inlined, with the caller that proves it: 000756 (setCMassGlobalPose/Orientation, the
+  line before 000789), 000799 (inside `nxBodyRecordDestroy`, 000776, 3 hits), 001037 (inside the
+  group's deleting destructor, 001039, 27 hits), 000829 (000849's first call, 55 hits).
+- **noinline.** Four Scene.cpp helpers the compiler had inlined into conditional arms are now
+  `__declspec(noinline)` so that a breakpoint sees them run, as the oracle calls each as a function
+  (the precedent is addJoint and 000760): 001028 `nxShapeGroupRemoveChild`, 001032
+  `nxShapeGroupDeleteChildren`, 001941 `nxPruningAddShape` and 000535 `nxSceneRemoveDynamicShape`.
+  Their out-of-line copies had no caller in the image (checked by disassembly). Every Phase 5
+  staged-pair transcript is byte-identical after the change.
+- **Stable-ID lines.** 000128 (`getGlobalPoseReference`) and 000216 (inside
+  `setCMassOffsetLocalOrientation`) had none in NpActor.cpp; both now do, in the
+  `// phys_fn_NNNNNN (0x%08x, N B)` form. ObjectModel.cpp's "Provisional phys_fn_000947" comment is
+  now the row's line and a description checked against 0x20850-0x20874 (the wrapper is faithful).
+- **Cases.** No row in scope is unexecuted, so no case was added: floor 5 stays 1849.
 
 ## Callees the implementing tasks need
 

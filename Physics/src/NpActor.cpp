@@ -1181,6 +1181,7 @@ NxQuat NpActorVtable::getGlobalOrientationQuatVal() const
 	return quaternion;
 	}
 
+// phys_fn_000128 (0x00004430, 333 B)
 const NxMat34 & NpActorVtable::getGlobalPoseReference() const
 	{
 	void* self = const_cast<NpActorVtable*>(this);
@@ -1702,6 +1703,10 @@ void NpActorVtable::setCMassOffsetLocalPosition(const NxVec3& position)
 	}
 
 // phys_fn_000214 (0x0000a3a0, 557 B)
+// phys_fn_000216 (0x0000a5d0, 163 B)
+// 000214's tail (the wake's dirty-list growth loop, the epilogue and the
+// E1 0x39f report), entered only by jumps from 000214: it is part of this
+// function, not a function of its own.
 void NpActorVtable::setCMassOffsetLocalOrientation(const NxMat33& orientation)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);

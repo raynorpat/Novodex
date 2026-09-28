@@ -1,0 +1,5023 @@
+Public actor rows and the chain rows: cdb breakpoint trace of the Phase 5 actor staged-pair targets (npactor-completion Tasks 6-7)
+==================================================================================================================================
+
+The final execution evidence of the NpActor.cpp completion plan, taken after Task 5 and its review, in the
+method of evidence/npactor-trace.txt (Task 1). It is the dynamic_proof the Task 7 promotions record in
+inventory.json. ModLoad lines, banners, register dumps, the echoed breakpoint commands and the program's
+own stdout are removed; the HIT lines are kept in order, one section per target, except that a run of
+identical consecutive HIT lines is written once with "(xN)" appended (the only edit).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\<target>.exe <repo>\build\pairs\candidate
+           (run from build\pairs, the directory run_differential.ps1 runs the children in; the script
+           breaks on the NxPhysics load with `sxe ld:NxPhysics`, sets the breakpoints below, then runs to
+           exit). Each log shows exactly one NxPhysics.dll load and no unload, each program exited 0 and
+           printed its own `loaded module=NxPhysics.dll ... sha256=` line with the hash below.
+Recorded:  2026-09-28, on the Task 6 tree (commit fb71a41 plus the Task 6 source change: noinline on four
+           Scene.cpp helpers, stable-ID comments), after a Release build and a Phase 5 gate run that staged
+           build\pairs: 12/12 actor staged-pair targets stdout_delta=0 stderr_exact=True,
+           coverage_assertions_evaluated=1849 floor=1849, the gate red only on its CANDIDATE-MISSING
+           family=vtables marker (NxPhysicsObjectLayoutTests exit 1, candidate_fold 4492c8c1).
+Candidate: <repo>\build\pairs\candidate\NxPhysics.dll
+           sha256=5c2e247f7980ac65b30e8be6edcf3d46310505ad89b74aed91d41e1fc8d93562
+           (identical to build\Release\NxPhysics.dll at the time of the trace)
+Offsets:   module-relative, from build\Release\NxPhysics.map of that build. One breakpoint per candidate
+           function standing for a row: for the unit, the NpActorVtable method the row's public slot
+           dispatches to and the two static helpers of 000150/000152 (84 breakpoints; 000116, 000118 and
+           000216 have no candidate function: 000216 is 000214's tail, and 000214's epilogue, which is in
+           000216's range, runs on every call); for the chain rows, the candidate function carrying the
+           row's `// phys_fn_` line (Scene.cpp, NpActor.cpp, ObjectModel.cpp, core/Joint.cpp,
+           core/JointSupport.cpp). 000787 (000785's tail) is two instruction breakpoints inside
+           nxNpActorTransitionKinematic: +0xee, the disable arm's flag clear, and +0x16e, its free of the
+           kinematic block. 000746 has two copies (NpActor.obj, Scene.obj); only the NpActor.obj copy is
+           called. Rows with 0 hits have no call to their out-of-line copy anywhere in the image (checked by
+           disassembly): they are inlined, and the rows that rely on a caller say which one below.
+
+Hit counts (row, candidate function, total, per target). NxPhysicsEmptySceneTests reaches no breakpoint.
+
+The NpActor.cpp unit (the 53 discovered rows and the 32 reconstructed ones with a candidate function; 000116 and 000118 have none):
+  000050 getLinearDamping                                   4  ActorDynamics 1, ActorDynamicSetter 3
+  000052 getAngularDamping                                  3  ActorDynamics 1, ActorDynamicSetter 2
+  000054 addForceAtPos                                     22  ActorDynamicSetter 3, ActorForce 19
+  000056 addForce                                          40  ActorDynamicSetter 3, ActorForce 31, ActorShapeMutation 6
+  000058 addTorque                                         43  ActorDynamicSetter 3, ActorForce 34, ActorShapeMutation 6
+  000060 computeKineticEnergy                               8  ActorMomentum 8
+  000062 isGroupSleeping                                   14  ActorDynamicSetter 14
+  000064 isSleeping                                         6  ActorDynamicSetter 6
+  000066 getSleepLinearVelocity                             4  ActorDynamicSetter 4
+  000068 getSleepAngularVelocity                            3  ActorDynamicSetter 3
+  000070 createShape                                       21  ActorDynamicSetter 3, ActorShapeMutation 18
+  000072 releaseShape                                      20  ActorDynamicSetter 1, ActorShapeMutation 19
+  000074 raiseActorFlag                                     2  ActorMetadata 1, ActorDynamicSetter 1
+  000076 clearActorFlag                                     2  ActorMetadata 1, ActorDynamicSetter 1
+  000078 readActorFlag                                      7  ActorMetadata 6, ActorDynamicSetter 1
+  000080 readBodyFlag                                       7  ActorBodyFlag 6, ActorDynamicSetter 1
+  000082 getNbShapes                                      159  ActorLifecycle 3, ActorDynamicSetter 4, ActorCMass 83, ActorShapeMutation 69
+  000084 getShapes                                         94  ActorLifecycle 5, ActorName 1, ActorDynamicSetter 8, ActorCMass 28, ActorShapeMutation 52
+  000086 getName                                            7  ActorName 5, ActorDynamicSetter 2
+  000088 setName                                            4  ActorName 3, ActorDynamicSetter 1
+  000090 moveGlobalPosition                                13  ActorDynamics 9, ActorDynamicSetter 4
+  000092 getGlobalPositionVal                               5  ActorLifecycle 1, ActorDynamicSetter 4
+  000094 getGlobalOrientationQuatVal                       11  ActorLifecycle 3, ActorDynamicSetter 8
+  000096 getCMassLocalPoseVal                              29  ActorDynamicSetter 1, ActorCMass 28
+  000098 getCMassLocalPositionVal                          29  ActorDynamicSetter 1, ActorCMass 28
+  000100 getCMassLocalOrientationVal                       29  ActorDynamicSetter 1, ActorCMass 28
+  000102 getMassSpaceInertiaTensorVal                       7  ActorDynamicSetter 1, ActorShapeMutation 6
+  000104 getLinearVelocityVal                              10  ActorDynamics 1, ActorDynamicSetter 2, ActorMomentum 1, ActorShapeMutation 6
+  000106 getAngularVelocityVal                              7  ActorDynamics 1, ActorDynamicSetter 2, ActorMomentum 4
+  000108 getLinearMomentumVal                               3  ActorDynamicSetter 1, ActorMomentum 2
+  000110 isDynamic                                         24  ActorLifecycle 2, ActorDynamicSetter 2, ActorShapeMutation 20
+  000112 setGroup                                           2  ActorMetadata 1, ActorDynamicSetter 1
+  000114 getGroup                                           3  ActorMetadata 2, ActorDynamicSetter 1
+  000120 saveToDesc                                         4  ActorLifecycle 3, ActorDynamicSetter 1
+  000122 setDynamic                                        14  ActorShapeMutation 14
+  000124 moveGlobalPose                                    11  ActorDynamics 8, ActorDynamicSetter 3
+  000126 moveGlobalOrientation                             12  ActorDynamics 9, ActorDynamicSetter 3
+  000128 getGlobalPoseReference                             4  ActorCMass 4
+  000130 getGlobalPoseVal                                  18  ActorLifecycle 4, ActorDynamicSetter 8, ActorCMass 6
+  000132 getGlobalOrientationVal                            6  ActorLifecycle 3, ActorDynamicSetter 3
+  000134 getCMassGlobalPoseVal                             43  ActorDynamicSetter 1, ActorMomentum 14, ActorCMass 28
+  000136 getCMassGlobalPositionVal                         35  ActorDynamicSetter 1, ActorCMass 28, ActorShapeMutation 6
+  000138 getCMassGlobalOrientationVal                      37  ActorDynamicSetter 1, ActorMomentum 8, ActorCMass 28
+  000140 getGlobalInertiaTensorVal                         12  ActorDynamicSetter 1, ActorMomentum 11
+  000142 getGlobalInertiaTensorInverseVal                  15  ActorDynamicSetter 2, ActorMomentum 13
+  000144 getAngularMomentumVal                             13  ActorDynamicSetter 1, ActorMomentum 12
+  000146 getPointVelocityVal                               20  ActorLifecycle 20
+  000148 getLocalPointVelocityVal                          20  ActorLifecycle 20
+  000150 nxNpActorRotateLocalForce                         19  ActorForce 19
+  000152 nxNpActorLocalPosition                             4  ActorForce 4
+  000154 addForceAtLocalPos                                 5  ActorDynamicSetter 3, ActorForce 2
+  000156 addLocalForceAtPos                                 4  ActorDynamicSetter 3, ActorForce 1
+  000158 addLocalForceAtLocalPos                            5  ActorDynamicSetter 3, ActorForce 2
+  000160 addLocalForce                                     11  ActorDynamicSetter 3, ActorForce 8
+  000162 addLocalTorque                                    11  ActorDynamicSetter 3, ActorForce 8
+  000164 updateMassFromShapes                              48  ActorShapeMutation 48
+  000166 setMass                                           13  ActorDynamicSetter 6, ActorMomentum 7
+  000168 setMassSpaceInertiaTensor                         17  ActorDynamicSetter 4, ActorMomentum 13
+  000170 setLinearDamping                                  14  ActorBodyFlag 8, ActorDynamicSetter 6
+  000172 setAngularDamping                                  6  ActorDynamicSetter 6
+  000174 setLinearVelocity                                 27  ActorDynamicSetter 6, ActorMomentum 9, ActorForce 6, ActorShapeMutation 6
+  000176 setAngularVelocity                                21  ActorDynamicSetter 6, ActorMomentum 9, ActorForce 6
+  000178 setMaxAngularVelocity                              4  ActorDynamicSetter 2, ActorMomentum 2
+  000180 setLinearMomentum                                 12  ActorDynamicSetter 3, ActorMomentum 9
+  000182 setAngularMomentum                                18  ActorDynamicSetter 3, ActorMomentum 15
+  000184 setSleepLinearVelocity                             5  ActorDynamicSetter 4, ActorMomentum 1
+  000186 setSleepAngularVelocity                            4  ActorDynamicSetter 3, ActorMomentum 1
+  000188 raiseBodyFlag                                     18  ActorBodyFlag 5, ActorDynamics 7, ActorDynamicSetter 4, ActorMomentum 1, ActorForce 1
+  000190 clearBodyFlag                                     13  ActorBodyFlag 4, ActorDynamics 4, ActorDynamicSetter 3, ActorMomentum 1, ActorForce 1
+  000192 wakeUp                                            61  ActorDynamics 12, ActorDynamicSetter 6, ActorMomentum 23, ActorForce 19, ActorCMass 1
+  000194 putToSleep                                        13  ActorDynamics 3, ActorDynamicSetter 5, ActorMomentum 4, ActorForce 1
+  000196 setGlobalPose                                     13  ActorDynamicSetter 4, ActorCMass 7, ActorShapeMutation 2
+  000198 setGlobalPosition                                 13  ActorDynamicSetter 6, ActorCMass 7
+  000200 setGlobalOrientation                              13  ActorDynamicSetter 6, ActorCMass 7
+  000202 setGlobalOrientationQuat                          13  ActorDynamicSetter 3, ActorMomentum 2, ActorForce 1, ActorCMass 7
+  000204 setCMassGlobalPose                                12  ActorDynamicSetter 4, ActorCMass 8
+  000206 setCMassGlobalPosition                            11  ActorDynamicSetter 3, ActorCMass 8
+  000208 setCMassGlobalOrientation                         11  ActorDynamicSetter 3, ActorCMass 8
+  000210 setCMassOffsetLocalPose                           11  ActorDynamicSetter 3, ActorCMass 8
+  000212 setCMassOffsetLocalPosition                       12  ActorDynamicSetter 3, ActorCMass 9
+  000214 setCMassOffsetLocalOrientation                    13  ActorDynamicSetter 3, ActorMomentum 2, ActorCMass 8
+  000218 setCMassOffsetGlobalPose                          11  ActorDynamicSetter 3, ActorCMass 8
+  000220 setCMassOffsetGlobalPosition                      11  ActorDynamicSetter 3, ActorCMass 8
+  000222 setCMassOffsetGlobalOrientation                   11  ActorDynamicSetter 3, ActorCMass 8
+
+Chain rows written or fixed by the plan (owning units in units/npactor-contract.md), and the callers
+that stand for inlined ones:
+  000746 nxNpActorWorldTensorRDRt@NpActor                 185  ActorDynamicSetter 12, ActorMomentum 38, ActorForce 1, ActorCMass 101, ActorShapeMutation 33
+  000746 nxNpActorWorldTensorRDRt@Scene                     0  
+  000756 nxNpActorUpdateCMassQuaternion                     0  
+  000782 nxNpActorApplyForce                              107  ActorForce 95, ActorShapeMutation 12
+  000784 nxNpActorSetKinematicTarget                        7  ActorDynamics 7
+  000785 nxNpActorTransitionKinematic                      24  ActorBodyFlag 6, ActorDynamics 11, ActorDynamicSetter 3, ActorMomentum 2, ActorForce 2
+  000787 nxNpActorTransitionKinematic+0xee_disable_arm     10  ActorBodyFlag 3, ActorDynamics 4, ActorDynamicSetter 1, ActorMomentum 1, ActorForce 1
+  000787 nxNpActorTransitionKinematic+0x16e_free           10  ActorBodyFlag 3, ActorDynamics 4, ActorDynamicSetter 1, ActorMomentum 1, ActorForce 1
+  000789 nxNpActorApplyWorldMassPose                       24  ActorCMass 24
+  000791 nxNpActorForceAtPos                               24  ActorForce 24
+  001018 nxShapeGroupOwnerUpdate                           27  ActorDynamicSetter 2, ActorCMass 15, ActorShapeMutation 10
+  000024 nxActorReleaseShape                               19  ActorShapeMutation 19
+  000036 nxActorCreateShape                                16  ActorShapeMutation 16
+  000032 nxActorShapeFactory                              200  ActorLifecycle 8, DynamicFirst 1, ActorName 1, ActorMetadata 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 18, ActorMomentum 13, ActorForce 31, ActorCMass 24, ActorShapeMutation 89
+  000006 nxActorRemoveRootFromScene                         2  ActorShapeMutation 2
+  001033 nxShapeGroupConstructAt                           27  ActorLifecycle 1, ActorDynamicSetter 1, ActorCMass 5, ActorShapeMutation 20
+  001041 nxShapeGroupAddChild                              19  ActorShapeMutation 19
+  001028 nxShapeGroupRemoveChild                           14  ActorShapeMutation 14
+  000853 CapsuleShape::nxCapsuleComputeMassFrame            0  
+  001032 nxShapeGroupDeleteChildren                        27  ActorLifecycle 1, ActorDynamicSetter 1, ActorCMass 5, ActorShapeMutation 20
+  001039 nxShapeGroupDeletingDtor                          27  ActorLifecycle 1, ActorDynamicSetter 1, ActorCMass 5, ActorShapeMutation 20
+  001279 nxShapeLeavePruning                              175  ActorLifecycle 7, DynamicFirst 1, ActorName 1, ActorMetadata 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 17, ActorMomentum 13, ActorForce 31, ActorCMass 19, ActorShapeMutation 71
+  000531 nxSceneAddShape                                   14  ActorShapeMutation 14
+  000533 nxSceneRemoveStaticShape                          10  ActorShapeMutation 10
+  000535 nxSceneRemoveDynamicShape                        140  ActorLifecycle 6, DynamicFirst 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 6, ActorMomentum 12, ActorForce 31, ActorCMass 18, ActorShapeMutation 52
+  001941 nxPruningAddShape                                  7  ActorShapeMutation 7
+  001945 nxPruningRemoveBody                              171  ActorLifecycle 7, DynamicFirst 1, ActorName 1, ActorMetadata 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 17, ActorMomentum 13, ActorForce 31, ActorCMass 19, ActorShapeMutation 67
+  000008 nxActorComputeMassFromShapes                      77  ActorLifecycle 6, DynamicFirst 1, ActorBodyFlag 9, ActorDynamics 1, ActorShapeMutation 60
+  000026 nxActorBuildRecord                               144  ActorLifecycle 6, DynamicFirst 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 6, ActorMomentum 12, ActorForce 31, ActorCMass 18, ActorShapeMutation 56
+  000628 NxSceneInternal::releaseActor                    109  ActorLifecycle 4, ActorName 1, ActorMetadata 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 17, ActorMomentum 13, ActorForce 31, ActorCMass 19, ActorShapeMutation 9
+  000630 nxSceneAddBody                                   140  ActorLifecycle 6, DynamicFirst 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 6, ActorMomentum 12, ActorForce 31, ActorCMass 18, ActorShapeMutation 52
+  000632 nxSceneRemoveBody                                  3  ActorShapeMutation 3
+  004103 Joint::row004103                                   1  ActorShapeMutation 1
+  000722 Row000722Fixture::row000722                      420  ActorLifecycle 18, DynamicFirst 3, ActorBodyFlag 27, ActorDynamics 15, ActorDynamicSetter 18, ActorMomentum 36, ActorForce 93, ActorCMass 54, ActorShapeMutation 156
+  000030 nxActorDestroy                                   162  ActorLifecycle 7, DynamicFirst 1, ActorName 1, ActorMetadata 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 17, ActorMomentum 13, ActorForce 31, ActorCMass 19, ActorShapeMutation 58
+  000776 nxBodyRecordDestroy                                3  ActorShapeMutation 3
+  000797 nxBodyRecordConstruct                              0  
+  000793 nxBodyRecordApplyDesc                            140  ActorLifecycle 6, DynamicFirst 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 6, ActorMomentum 12, ActorForce 31, ActorCMass 18, ActorShapeMutation 52
+  001315 ShapeBase::nxApplyOwnerUpdate                    328  ActorLifecycle 7, DynamicFirst 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 45, ActorMomentum 14, ActorForce 32, ActorCMass 105, ActorShapeMutation 110
+  001323 nxRuntimeShapeBaseDestroy                        214  ActorLifecycle 9, DynamicFirst 1, ActorName 1, ActorMetadata 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 19, ActorMomentum 13, ActorForce 31, ActorCMass 29, ActorShapeMutation 96
+  000503 nxSceneUpdateActorCount                          209  ActorLifecycle 8, DynamicFirst 1, ActorName 2, ActorMetadata 2, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 28, ActorMomentum 14, ActorForce 31, ActorCMass 20, ActorShapeMutation 89
+  001943 nxPruningAddBody                                  14  ActorShapeMutation 14
+  001955 nxPruningRemoveRootPairs                           0  
+  000557 NxSceneInternal::pushJointWithoutBodies            1  ActorShapeMutation 1
+  000829 MassFrame::nxMassFrameBuildBox                     0  
+  000833 MassFrame::nxMassFrameTranslate                  158  ActorLifecycle 13, DynamicFirst 2, ActorBodyFlag 18, ActorDynamics 2, ActorShapeMutation 123
+  000845 MassFrame::nxMassFrameBuildCapsule                 0  
+  000849 BoxShape::nxBoxComputeMassFrame                   55  ActorLifecycle 7, DynamicFirst 1, ActorBodyFlag 9, ActorDynamics 1, ActorShapeMutation 37
+  000947 BoxShape::nxBoxAccumulateMass                     59  ActorLifecycle 7, DynamicFirst 1, ActorBodyFlag 9, ActorDynamics 1, ActorShapeMutation 41
+  001024 nxArrayVtCall3Args1024                            16  ActorLifecycle 1, ActorShapeMutation 15
+  001273 nxRuntimeShapeBaseInit                           227  ActorLifecycle 9, DynamicFirst 1, ActorName 1, ActorMetadata 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 19, ActorMomentum 13, ActorForce 31, ActorCMass 29, ActorShapeMutation 109
+  001957 nxPruningCountFirst                                0  
+  001960 nxPruningCountIndexed                              0  
+  003628 nxFluidManagerShapeChanged                         0  
+
+Inlined rows (0 hits on an unreferenced out-of-line copy) and the execution that stands for them:
+  000756 nxNpActorUpdateCMassQuaternion: inlined into setCMassGlobalPose (000204) and
+         setCMassGlobalOrientation (000208), each of which runs it unconditionally on its dynamic path
+         immediately before nxNpActorApplyWorldMassPose (000789, 24 hits in ActorCMass).
+  000829 MassFrame::nxMassFrameBuildBox: inlined into BoxShape::nxBoxComputeMassFrame (000849, 55 hits),
+         which calls it first and unconditionally.
+  000799 (no breakpoint of its own): straight-line code inside nxBodyRecordDestroy (000776, 3 hits).
+  001037 (no breakpoint of its own): the destructor body inside nxShapeGroupDeletingDtor (001039, 27 hits).
+  000797, 000845, 001955, 001957, 001960, 003628: inlined; not relied on by any promotion.
+
+Breakpoints (each echoes and continues):
+bp NxPhysics+0xd840 ".echo HIT 000050 getLinearDamping; gc"
+bp NxPhysics+0xc860 ".echo HIT 000052 getAngularDamping; gc"
+bp NxPhysics+0xc200 ".echo HIT 000054 addForceAtPos; gc"
+bp NxPhysics+0xc0c0 ".echo HIT 000056 addForce; gc"
+bp NxPhysics+0xc540 ".echo HIT 000058 addTorque; gc"
+bp NxPhysics+0xc6c0 ".echo HIT 000060 computeKineticEnergy; gc"
+bp NxPhysics+0xe3a0 ".echo HIT 000062 isGroupSleeping; gc"
+bp NxPhysics+0xe450 ".echo HIT 000064 isSleeping; gc"
+bp NxPhysics+0xe2d0 ".echo HIT 000066 getSleepLinearVelocity; gc"
+bp NxPhysics+0xe260 ".echo HIT 000068 getSleepAngularVelocity; gc"
+bp NxPhysics+0xc7a0 ".echo HIT 000070 createShape; gc"
+bp NxPhysics+0x12c10 ".echo HIT 000072 releaseShape; gc"
+bp NxPhysics+0x12a00 ".echo HIT 000074 raiseActorFlag; gc"
+bp NxPhysics+0xc5d0 ".echo HIT 000076 clearActorFlag; gc"
+bp NxPhysics+0x12b00 ".echo HIT 000078 readActorFlag; gc"
+bp NxPhysics+0x12b70 ".echo HIT 000080 readBodyFlag; gc"
+bp NxPhysics+0xdee0 ".echo HIT 000082 getNbShapes; gc"
+bp NxPhysics+0xe1f0 ".echo HIT 000084 getShapes; gc"
+bp NxPhysics+0xde50 ".echo HIT 000086 getName; gc"
+bp NxPhysics+0x14480 ".echo HIT 000088 setName; gc"
+bp NxPhysics+0xec20 ".echo HIT 000090 moveGlobalPosition; gc"
+bp NxPhysics+0xd770 ".echo HIT 000092 getGlobalPositionVal; gc"
+bp NxPhysics+0xd410 ".echo HIT 000094 getGlobalOrientationQuatVal; gc"
+bp NxPhysics+0xcff0 ".echo HIT 000096 getCMassLocalPoseVal; gc"
+bp NxPhysics+0xd160 ".echo HIT 000098 getCMassLocalPositionVal; gc"
+bp NxPhysics+0xcef0 ".echo HIT 000100 getCMassLocalOrientationVal; gc"
+bp NxPhysics+0xdd90 ".echo HIT 000102 getMassSpaceInertiaTensorVal; gc"
+bp NxPhysics+0xd990 ".echo HIT 000104 getLinearVelocityVal; gc"
+bp NxPhysics+0xcac0 ".echo HIT 000106 getAngularVelocityVal; gc"
+bp NxPhysics+0xd8e0 ".echo HIT 000108 getLinearMomentumVal; gc"
+bp NxPhysics+0xe350 ".echo HIT 000110 isDynamic; gc"
+bp NxPhysics+0x13ec0 ".echo HIT 000112 setGroup; gc"
+bp NxPhysics+0xd7e0 ".echo HIT 000114 getGroup; gc"
+bp NxPhysics+0x12cd0 ".echo HIT 000120 saveToDesc; gc"
+bp NxPhysics+0x13920 ".echo HIT 000122 setDynamic; gc"
+bp NxPhysics+0xe7e0 ".echo HIT 000124 moveGlobalPose; gc"
+bp NxPhysics+0xe4c0 ".echo HIT 000126 moveGlobalOrientation; gc"
+bp NxPhysics+0xd510 ".echo HIT 000128 getGlobalPoseReference; gc"
+bp NxPhysics+0xd6a0 ".echo HIT 000130 getGlobalPoseVal; gc"
+bp NxPhysics+0xd490 ".echo HIT 000132 getGlobalOrientationVal; gc"
+bp NxPhysics+0xcc90 ".echo HIT 000134 getCMassGlobalPoseVal; gc"
+bp NxPhysics+0xce20 ".echo HIT 000136 getCMassGlobalPositionVal; gc"
+bp NxPhysics+0xcb70 ".echo HIT 000138 getCMassGlobalOrientationVal; gc"
+bp NxPhysics+0xd2e0 ".echo HIT 000140 getGlobalInertiaTensorVal; gc"
+bp NxPhysics+0xd210 ".echo HIT 000142 getGlobalInertiaTensorInverseVal; gc"
+bp NxPhysics+0xc900 ".echo HIT 000144 getAngularMomentumVal; gc"
+bp NxPhysics+0xdf90 ".echo HIT 000146 getPointVelocityVal; gc"
+bp NxPhysics+0xda70 ".echo HIT 000148 getLocalPointVelocityVal; gc"
+bp NxPhysics+0x10a70 ".echo HIT 000150 nxNpActorRotateLocalForce; gc"
+bp NxPhysics+0x107a0 ".echo HIT 000152 nxNpActorLocalPosition; gc"
+bp NxPhysics+0xc150 ".echo HIT 000154 addForceAtLocalPos; gc"
+bp NxPhysics+0xc3f0 ".echo HIT 000156 addLocalForceAtPos; gc"
+bp NxPhysics+0xc330 ".echo HIT 000158 addLocalForceAtLocalPos; gc"
+bp NxPhysics+0xc290 ".echo HIT 000160 addLocalForce; gc"
+bp NxPhysics+0xc4a0 ".echo HIT 000162 addLocalTorque; gc"
+bp NxPhysics+0x14590 ".echo HIT 000164 updateMassFromShapes; gc"
+bp NxPhysics+0x141c0 ".echo HIT 000166 setMass; gc"
+bp NxPhysics+0x142a0 ".echo HIT 000168 setMassSpaceInertiaTensor; gc"
+bp NxPhysics+0x13f10 ".echo HIT 000170 setLinearDamping; gc"
+bp NxPhysics+0x12e60 ".echo HIT 000172 setAngularDamping; gc"
+bp NxPhysics+0x140e0 ".echo HIT 000174 setLinearVelocity; gc"
+bp NxPhysics+0x13090 ".echo HIT 000176 setAngularVelocity; gc"
+bp NxPhysics+0x143f0 ".echo HIT 000178 setMaxAngularVelocity; gc"
+bp NxPhysics+0x13fd0 ".echo HIT 000180 setLinearMomentum; gc"
+bp NxPhysics+0x12f20 ".echo HIT 000182 setAngularMomentum; gc"
+bp NxPhysics+0x14530 ".echo HIT 000184 setSleepLinearVelocity; gc"
+bp NxPhysics+0x144d0 ".echo HIT 000186 setSleepAngularVelocity; gc"
+bp NxPhysics+0x12a50 ".echo HIT 000188 raiseBodyFlag; gc"
+bp NxPhysics+0xc620 ".echo HIT 000190 clearBodyFlag; gc"
+bp NxPhysics+0x148a0 ".echo HIT 000192 wakeUp; gc"
+bp NxPhysics+0x12990 ".echo HIT 000194 putToSleep; gc"
+bp NxPhysics+0x13d00 ".echo HIT 000196 setGlobalPose; gc"
+bp NxPhysics+0x13e20 ".echo HIT 000198 setGlobalPosition; gc"
+bp NxPhysics+0x13ad0 ".echo HIT 000200 setGlobalOrientation; gc"
+bp NxPhysics+0x13b90 ".echo HIT 000202 setGlobalOrientationQuat; gc"
+bp NxPhysics+0x13270 ".echo HIT 000204 setCMassGlobalPose; gc"
+bp NxPhysics+0x13380 ".echo HIT 000206 setCMassGlobalPosition; gc"
+bp NxPhysics+0x13180 ".echo HIT 000208 setCMassGlobalOrientation; gc"
+bp NxPhysics+0x13730 ".echo HIT 000210 setCMassOffsetLocalPose; gc"
+bp NxPhysics+0x13860 ".echo HIT 000212 setCMassOffsetLocalPosition; gc"
+bp NxPhysics+0x13630 ".echo HIT 000214 setCMassOffsetLocalOrientation; gc"
+bp NxPhysics+0x134e0 ".echo HIT 000218 setCMassOffsetGlobalPose; gc"
+bp NxPhysics+0x13590 ".echo HIT 000220 setCMassOffsetGlobalPosition; gc"
+bp NxPhysics+0x13440 ".echo HIT 000222 setCMassOffsetGlobalOrientation; gc"
+bp NxPhysics+0x11b20 ".echo HIT 000746 nxNpActorWorldTensorRDRt@NpActor; gc"
+bp NxPhysics+0x2a250 ".echo HIT 000746 nxNpActorWorldTensorRDRt@Scene; gc"
+bp NxPhysics+0x113e0 ".echo HIT 000756 nxNpActorUpdateCMassQuaternion; gc"
+bp NxPhysics+0xf8e0 ".echo HIT 000782 nxNpActorApplyForce; gc"
+bp NxPhysics+0x10c30 ".echo HIT 000784 nxNpActorSetKinematicTarget; gc"
+bp NxPhysics+0x11260 ".echo HIT 000785 nxNpActorTransitionKinematic; gc"
+bp NxPhysics+0x1134e ".echo HIT 000787 nxNpActorTransitionKinematic+0xee_disable_arm; gc"
+bp NxPhysics+0x113ce ".echo HIT 000787 nxNpActorTransitionKinematic+0x16e_free; gc"
+bp NxPhysics+0xfc50 ".echo HIT 000789 nxNpActorApplyWorldMassPose; gc"
+bp NxPhysics+0x10500 ".echo HIT 000791 nxNpActorForceAtPos; gc"
+bp NxPhysics+0x2d230 ".echo HIT 001018 nxShapeGroupOwnerUpdate; gc"
+bp NxPhysics+0x28c20 ".echo HIT 000024 nxActorReleaseShape; gc"
+bp NxPhysics+0x282d0 ".echo HIT 000036 nxActorCreateShape; gc"
+bp NxPhysics+0x28e00 ".echo HIT 000032 nxActorShapeFactory; gc"
+bp NxPhysics+0x28d90 ".echo HIT 000006 nxActorRemoveRootFromScene; gc"
+bp NxPhysics+0x2d090 ".echo HIT 001033 nxShapeGroupConstructAt; gc"
+bp NxPhysics+0x2ce50 ".echo HIT 001041 nxShapeGroupAddChild; gc"
+bp NxPhysics+0x2d280 ".echo HIT 001028 nxShapeGroupRemoveChild; gc"
+bp NxPhysics+0x19da0 ".echo HIT 000853 CapsuleShape::nxCapsuleComputeMassFrame; gc"
+bp NxPhysics+0x2d100 ".echo HIT 001032 nxShapeGroupDeleteChildren; gc"
+bp NxPhysics+0x2d190 ".echo HIT 001039 nxShapeGroupDeletingDtor; gc"
+bp NxPhysics+0x2d320 ".echo HIT 001279 nxShapeLeavePruning; gc"
+bp NxPhysics+0x2b2a0 ".echo HIT 000531 nxSceneAddShape; gc"
+bp NxPhysics+0x2ca10 ".echo HIT 000533 nxSceneRemoveStaticShape; gc"
+bp NxPhysics+0x2c9f0 ".echo HIT 000535 nxSceneRemoveDynamicShape; gc"
+bp NxPhysics+0x2a7d0 ".echo HIT 001941 nxPruningAddShape; gc"
+bp NxPhysics+0x2a850 ".echo HIT 001945 nxPruningRemoveBody; gc"
+bp NxPhysics+0x28000 ".echo HIT 000008 nxActorComputeMassFromShapes; gc"
+bp NxPhysics+0x27bb0 ".echo HIT 000026 nxActorBuildRecord; gc"
+bp NxPhysics+0x2d3f0 ".echo HIT 000628 NxSceneInternal::releaseActor; gc"
+bp NxPhysics+0x2b100 ".echo HIT 000630 nxSceneAddBody; gc"
+bp NxPhysics+0x2c930 ".echo HIT 000632 nxSceneRemoveBody; gc"
+bp NxPhysics+0x38000 ".echo HIT 004103 Joint::row004103; gc"
+bp NxPhysics+0x39460 ".echo HIT 000722 Row000722Fixture::row000722; gc"
+bp NxPhysics+0x284c0 ".echo HIT 000030 nxActorDestroy; gc"
+bp NxPhysics+0x29470 ".echo HIT 000776 nxBodyRecordDestroy; gc"
+bp NxPhysics+0x292d0 ".echo HIT 000797 nxBodyRecordConstruct; gc"
+bp NxPhysics+0x29030 ".echo HIT 000793 nxBodyRecordApplyDesc; gc"
+bp NxPhysics+0x17ac0 ".echo HIT 001315 ShapeBase::nxApplyOwnerUpdate; gc"
+bp NxPhysics+0x2a9f0 ".echo HIT 001323 nxRuntimeShapeBaseDestroy; gc"
+bp NxPhysics+0x2cd10 ".echo HIT 000503 nxSceneUpdateActorCount; gc"
+bp NxPhysics+0x2a610 ".echo HIT 001943 nxPruningAddBody; gc"
+bp NxPhysics+0x2a990 ".echo HIT 001955 nxPruningRemoveRootPairs; gc"
+bp NxPhysics+0x2d3d0 ".echo HIT 000557 NxSceneInternal::pushJointWithoutBodies; gc"
+bp NxPhysics+0x1be40 ".echo HIT 000829 MassFrame::nxMassFrameBuildBox; gc"
+bp NxPhysics+0x1c910 ".echo HIT 000833 MassFrame::nxMassFrameTranslate; gc"
+bp NxPhysics+0x1bf60 ".echo HIT 000845 MassFrame::nxMassFrameBuildCapsule; gc"
+bp NxPhysics+0x18a80 ".echo HIT 000849 BoxShape::nxBoxComputeMassFrame; gc"
+bp NxPhysics+0x189c0 ".echo HIT 000947 BoxShape::nxBoxAccumulateMass; gc"
+bp NxPhysics+0x180d0 ".echo HIT 001024 nxArrayVtCall3Args1024; gc"
+bp NxPhysics+0x2ab60 ".echo HIT 001273 nxRuntimeShapeBaseInit; gc"
+bp NxPhysics+0x2a810 ".echo HIT 001957 nxPruningCountFirst; gc"
+bp NxPhysics+0x2a830 ".echo HIT 001960 nxPruningCountIndexed; gc"
+bp NxPhysics+0x295d0 ".echo HIT 003628 nxFluidManagerShapeChanged; gc"
+
+--- NxPhysicsActorLifecycleTests (209 HIT lines) ---
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000110 isDynamic
+HIT 000092 getGlobalPositionVal
+HIT 000132 getGlobalOrientationVal
+HIT 000094 getGlobalOrientationQuatVal
+HIT 000130 getGlobalPoseVal
+HIT 000120 saveToDesc
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000110 isDynamic
+HIT 000130 getGlobalPoseVal
+HIT 000120 saveToDesc
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000132 getGlobalOrientationVal
+HIT 000094 getGlobalOrientationQuatVal
+HIT 000130 getGlobalPoseVal
+HIT 000120 saveToDesc
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000132 getGlobalOrientationVal
+HIT 000094 getGlobalOrientationQuatVal
+HIT 000130 getGlobalPoseVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 001024 nxArrayVtCall3Args1024
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000084 getShapes
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000084 getShapes
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+
+--- NxPhysicsDynamicFirstTests (20 HIT lines) ---
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+
+--- NxPhysicsEmptySceneTests (0 HIT lines) ---
+
+--- NxPhysicsActorNameTests (18 HIT lines) ---
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000086 getName
+HIT 000084 getShapes
+HIT 000088 setName
+HIT 000086 getName
+HIT 000088 setName
+HIT 000086 getName (x2)
+HIT 000088 setName
+HIT 000086 getName
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+
+--- NxPhysicsActorMetadataTests (20 HIT lines) ---
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000078 readActorFlag
+HIT 000114 getGroup
+HIT 000078 readActorFlag
+HIT 000112 setGroup
+HIT 000074 raiseActorFlag
+HIT 000078 readActorFlag (x2)
+HIT 000114 getGroup
+HIT 000076 clearActorFlag
+HIT 000078 readActorFlag (x2)
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+
+--- NxPhysicsActorBodyFlagTests (224 HIT lines) ---
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000080 readBodyFlag (x2)
+HIT 000188 raiseBodyFlag
+HIT 000080 readBodyFlag (x2)
+HIT 000190 clearBodyFlag
+HIT 000080 readBodyFlag (x2)
+HIT 000188 raiseBodyFlag
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000170 setLinearDamping (x8)
+HIT 000188 raiseBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000190 clearBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000787 nxNpActorTransitionKinematic+0xee_disable_arm
+HIT 000787 nxNpActorTransitionKinematic+0x16e_free
+HIT 000188 raiseBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000190 clearBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000787 nxNpActorTransitionKinematic+0xee_disable_arm
+HIT 000787 nxNpActorTransitionKinematic+0x16e_free
+HIT 000188 raiseBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000190 clearBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000787 nxNpActorTransitionKinematic+0xee_disable_arm
+HIT 000787 nxNpActorTransitionKinematic+0x16e_free
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+
+--- NxPhysicsActorDynamicsTests (167 HIT lines) ---
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000050 getLinearDamping
+HIT 000052 getAngularDamping
+HIT 000104 getLinearVelocityVal
+HIT 000106 getAngularVelocityVal
+HIT 000188 raiseBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000190 clearBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000787 nxNpActorTransitionKinematic+0xee_disable_arm
+HIT 000787 nxNpActorTransitionKinematic+0x16e_free
+HIT 000188 raiseBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000190 clearBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000787 nxNpActorTransitionKinematic+0xee_disable_arm
+HIT 000787 nxNpActorTransitionKinematic+0x16e_free
+HIT 000188 raiseBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000090 moveGlobalPosition
+HIT 000126 moveGlobalOrientation
+HIT 000124 moveGlobalPose
+HIT 000784 nxNpActorSetKinematicTarget
+HIT 000090 moveGlobalPosition
+HIT 000190 clearBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000787 nxNpActorTransitionKinematic+0xee_disable_arm
+HIT 000787 nxNpActorTransitionKinematic+0x16e_free
+HIT 000188 raiseBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000126 moveGlobalOrientation
+HIT 000190 clearBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000787 nxNpActorTransitionKinematic+0xee_disable_arm
+HIT 000787 nxNpActorTransitionKinematic+0x16e_free
+HIT 000090 moveGlobalPosition
+HIT 000126 moveGlobalOrientation
+HIT 000124 moveGlobalPose
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000188 raiseBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000192 wakeUp
+HIT 000124 moveGlobalPose
+HIT 000784 nxNpActorSetKinematicTarget
+HIT 000192 wakeUp
+HIT 000126 moveGlobalOrientation
+HIT 000192 wakeUp
+HIT 000090 moveGlobalPosition
+HIT 000194 putToSleep
+HIT 000124 moveGlobalPose
+HIT 000784 nxNpActorSetKinematicTarget
+HIT 000192 wakeUp
+HIT 000126 moveGlobalOrientation
+HIT 000090 moveGlobalPosition
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000188 raiseBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000192 wakeUp
+HIT 000124 moveGlobalPose
+HIT 000784 nxNpActorSetKinematicTarget
+HIT 000192 wakeUp
+HIT 000126 moveGlobalOrientation
+HIT 000192 wakeUp
+HIT 000090 moveGlobalPosition
+HIT 000194 putToSleep
+HIT 000124 moveGlobalPose
+HIT 000784 nxNpActorSetKinematicTarget
+HIT 000192 wakeUp
+HIT 000126 moveGlobalOrientation
+HIT 000090 moveGlobalPosition
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000188 raiseBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000192 wakeUp
+HIT 000124 moveGlobalPose
+HIT 000784 nxNpActorSetKinematicTarget
+HIT 000192 wakeUp
+HIT 000126 moveGlobalOrientation
+HIT 000192 wakeUp
+HIT 000090 moveGlobalPosition
+HIT 000194 putToSleep
+HIT 000124 moveGlobalPose
+HIT 000784 nxNpActorSetKinematicTarget
+HIT 000192 wakeUp
+HIT 000126 moveGlobalOrientation
+HIT 000090 moveGlobalPosition
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+
+--- NxPhysicsActorDynamicSetterTests (508 HIT lines) ---
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000062 isGroupSleeping
+HIT 000166 setMass
+HIT 000168 setMassSpaceInertiaTensor
+HIT 000170 setLinearDamping
+HIT 000172 setAngularDamping
+HIT 000052 getAngularDamping
+HIT 000050 getLinearDamping
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000104 getLinearVelocityVal
+HIT 000106 getAngularVelocityVal
+HIT 000166 setMass
+HIT 000168 setMassSpaceInertiaTensor
+HIT 000170 setLinearDamping
+HIT 000172 setAngularDamping
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000188 raiseBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000190 clearBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000787 nxNpActorTransitionKinematic+0xee_disable_arm
+HIT 000787 nxNpActorTransitionKinematic+0x16e_free
+HIT 000184 setSleepLinearVelocity
+HIT 000186 setSleepAngularVelocity
+HIT 000066 getSleepLinearVelocity
+HIT 000068 getSleepAngularVelocity
+HIT 000192 wakeUp
+HIT 000064 isSleeping
+HIT 000194 putToSleep
+HIT 000064 isSleeping
+HIT 000062 isGroupSleeping
+HIT 000192 wakeUp
+HIT 000064 isSleeping
+HIT 000062 isGroupSleeping
+HIT 000184 setSleepLinearVelocity
+HIT 000066 getSleepLinearVelocity
+HIT 000192 wakeUp
+HIT 000062 isGroupSleeping
+HIT 000064 isSleeping
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000062 isGroupSleeping (x2)
+HIT 000194 putToSleep
+HIT 000062 isGroupSleeping (x2)
+HIT 000194 putToSleep
+HIT 000062 isGroupSleeping (x2)
+HIT 000192 wakeUp
+HIT 000062 isGroupSleeping (x2)
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000198 setGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000092 getGlobalPositionVal
+HIT 000198 setGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000198 setGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000202 setGlobalOrientationQuat
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000200 setGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000200 setGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000200 setGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000200 setGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000196 setGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000062 isGroupSleeping
+HIT 000064 isSleeping
+HIT 000066 getSleepLinearVelocity
+HIT 000068 getSleepAngularVelocity
+HIT 000184 setSleepLinearVelocity
+HIT 000186 setSleepAngularVelocity
+HIT 000192 wakeUp
+HIT 000194 putToSleep
+HIT 000062 isGroupSleeping
+HIT 000064 isSleeping
+HIT 000068 getSleepAngularVelocity
+HIT 000066 getSleepLinearVelocity
+HIT 000198 setGlobalPosition
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000092 getGlobalPositionVal
+HIT 000202 setGlobalOrientationQuat
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000200 setGlobalOrientation
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000196 setGlobalPose
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000084 getShapes
+HIT 000130 getGlobalPoseVal
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000198 setGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000196 setGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000084 getShapes
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x4)
+HIT 000130 getGlobalPoseVal
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000132 getGlobalOrientationVal
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000130 getGlobalPoseVal
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000084 getShapes
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000130 getGlobalPoseVal
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000084 getShapes
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x4)
+HIT 000130 getGlobalPoseVal
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000084 getShapes
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000130 getGlobalPoseVal
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000188 raiseBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000170 setLinearDamping (x2)
+HIT 000172 setAngularDamping (x2)
+HIT 000166 setMass
+HIT 000168 setMassSpaceInertiaTensor
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000178 setMaxAngularVelocity
+HIT 000180 setLinearMomentum
+HIT 000182 setAngularMomentum
+HIT 000188 raiseBodyFlag
+HIT 000190 clearBodyFlag
+HIT 000054 addForceAtPos
+HIT 000154 addForceAtLocalPos
+HIT 000156 addLocalForceAtPos
+HIT 000158 addLocalForceAtLocalPos
+HIT 000056 addForce
+HIT 000160 addLocalForce
+HIT 000058 addTorque
+HIT 000162 addLocalTorque
+HIT 000090 moveGlobalPosition
+HIT 000124 moveGlobalPose
+HIT 000126 moveGlobalOrientation
+HIT 000210 setCMassOffsetLocalPose
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000204 setCMassGlobalPose
+HIT 000206 setCMassGlobalPosition
+HIT 000208 setCMassGlobalOrientation
+HIT 000050 getLinearDamping
+HIT 000052 getAngularDamping
+HIT 000080 readBodyFlag
+HIT 000104 getLinearVelocityVal
+HIT 000106 getAngularVelocityVal
+HIT 000108 getLinearMomentumVal
+HIT 000144 getAngularMomentumVal
+HIT 000102 getMassSpaceInertiaTensorVal
+HIT 000140 getGlobalInertiaTensorVal
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000070 createShape
+HIT 000166 setMass (x2)
+HIT 000170 setLinearDamping
+HIT 000172 setAngularDamping
+HIT 000090 moveGlobalPosition
+HIT 000124 moveGlobalPose
+HIT 000126 moveGlobalOrientation
+HIT 000070 createShape
+HIT 000082 getNbShapes
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000182 setAngularMomentum
+HIT 000180 setLinearMomentum
+HIT 000056 addForce
+HIT 000058 addTorque
+HIT 000160 addLocalForce
+HIT 000162 addLocalTorque
+HIT 000054 addForceAtPos
+HIT 000154 addForceAtLocalPos
+HIT 000156 addLocalForceAtPos
+HIT 000158 addLocalForceAtLocalPos
+HIT 000210 setCMassOffsetLocalPose
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000204 setCMassGlobalPose
+HIT 000206 setCMassGlobalPosition
+HIT 000208 setCMassGlobalOrientation
+HIT 000090 moveGlobalPosition
+HIT 000084 getShapes
+HIT 000196 setGlobalPose
+HIT 000198 setGlobalPosition
+HIT 000200 setGlobalOrientation
+HIT 000202 setGlobalOrientationQuat
+HIT 000124 moveGlobalPose
+HIT 000090 moveGlobalPosition
+HIT 000126 moveGlobalOrientation
+HIT 000070 createShape
+HIT 000072 releaseShape
+HIT 000210 setCMassOffsetLocalPose
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000204 setCMassGlobalPose
+HIT 000206 setCMassGlobalPosition
+HIT 000208 setCMassGlobalOrientation
+HIT 000166 setMass
+HIT 000168 setMassSpaceInertiaTensor
+HIT 000170 setLinearDamping
+HIT 000172 setAngularDamping
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000178 setMaxAngularVelocity
+HIT 000180 setLinearMomentum
+HIT 000182 setAngularMomentum
+HIT 000054 addForceAtPos
+HIT 000154 addForceAtLocalPos
+HIT 000156 addLocalForceAtPos
+HIT 000158 addLocalForceAtLocalPos
+HIT 000056 addForce
+HIT 000160 addLocalForce
+HIT 000058 addTorque
+HIT 000162 addLocalTorque
+HIT 000184 setSleepLinearVelocity
+HIT 000186 setSleepAngularVelocity
+HIT 000192 wakeUp
+HIT 000194 putToSleep
+HIT 000074 raiseActorFlag
+HIT 000076 clearActorFlag
+HIT 000188 raiseBodyFlag
+HIT 000190 clearBodyFlag
+HIT 000120 saveToDesc
+HIT 000088 setName
+HIT 000112 setGroup
+HIT 000050 getLinearDamping
+HIT 000204 setCMassGlobalPose
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000086 getName
+HIT 000092 getGlobalPositionVal
+HIT 000132 getGlobalOrientationVal
+HIT 000094 getGlobalOrientationQuatVal
+HIT 000130 getGlobalPoseVal
+HIT 000110 isDynamic
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000086 getName
+HIT 000092 getGlobalPositionVal
+HIT 000132 getGlobalOrientationVal
+HIT 000094 getGlobalOrientationQuatVal
+HIT 000130 getGlobalPoseVal
+HIT 000110 isDynamic
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000094 getGlobalOrientationQuatVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000094 getGlobalOrientationQuatVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000094 getGlobalOrientationQuatVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000094 getGlobalOrientationQuatVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000094 getGlobalOrientationQuatVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000094 getGlobalOrientationQuatVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000078 readActorFlag
+HIT 000114 getGroup
+HIT 000082 getNbShapes
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+
+--- NxPhysicsActorMomentumTests (417 HIT lines) ---
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000108 getLinearMomentumVal
+HIT 000144 getAngularMomentumVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000140 getGlobalInertiaTensorVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000060 computeKineticEnergy
+HIT 000178 setMaxAngularVelocity
+HIT 000180 setLinearMomentum
+HIT 000108 getLinearMomentumVal
+HIT 000104 getLinearVelocityVal
+HIT 000182 setAngularMomentum
+HIT 000144 getAngularMomentumVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000106 getAngularVelocityVal
+HIT 000060 computeKineticEnergy
+HIT 000178 setMaxAngularVelocity
+HIT 000180 setLinearMomentum
+HIT 000182 setAngularMomentum
+HIT 000188 raiseBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000182 setAngularMomentum
+HIT 000180 setLinearMomentum
+HIT 000190 clearBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000787 nxNpActorTransitionKinematic+0xee_disable_arm
+HIT 000787 nxNpActorTransitionKinematic+0x16e_free
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000144 getAngularMomentumVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000140 getGlobalInertiaTensorVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000182 setAngularMomentum
+HIT 000144 getAngularMomentumVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000106 getAngularVelocityVal
+HIT 000060 computeKineticEnergy
+HIT 000168 setMassSpaceInertiaTensor
+HIT 000144 getAngularMomentumVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000140 getGlobalInertiaTensorVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000182 setAngularMomentum
+HIT 000106 getAngularVelocityVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000140 getGlobalInertiaTensorVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000144 getAngularMomentumVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000182 setAngularMomentum
+HIT 000106 getAngularVelocityVal
+HIT 000060 computeKineticEnergy
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000140 getGlobalInertiaTensorVal
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000060 computeKineticEnergy
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000134 getCMassGlobalPoseVal (x2)
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000140 getGlobalInertiaTensorVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000144 getAngularMomentumVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000134 getCMassGlobalPoseVal (x2)
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000140 getGlobalInertiaTensorVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000144 getAngularMomentumVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000134 getCMassGlobalPoseVal (x2)
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000140 getGlobalInertiaTensorVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000144 getAngularMomentumVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000134 getCMassGlobalPoseVal (x2)
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000140 getGlobalInertiaTensorVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000144 getAngularMomentumVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000134 getCMassGlobalPoseVal (x2)
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000140 getGlobalInertiaTensorVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000144 getAngularMomentumVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000134 getCMassGlobalPoseVal (x2)
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000140 getGlobalInertiaTensorVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000144 getAngularMomentumVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000202 setGlobalOrientationQuat
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000134 getCMassGlobalPoseVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000202 setGlobalOrientationQuat
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000134 getCMassGlobalPoseVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000184 setSleepLinearVelocity
+HIT 000186 setSleepAngularVelocity
+HIT 000192 wakeUp
+HIT 000174 setLinearVelocity
+HIT 000192 wakeUp
+HIT 000174 setLinearVelocity
+HIT 000192 wakeUp
+HIT 000174 setLinearVelocity
+HIT 000192 wakeUp
+HIT 000174 setLinearVelocity
+HIT 000192 wakeUp
+HIT 000174 setLinearVelocity
+HIT 000194 putToSleep
+HIT 000174 setLinearVelocity
+HIT 000192 wakeUp
+HIT 000176 setAngularVelocity
+HIT 000192 wakeUp
+HIT 000176 setAngularVelocity
+HIT 000192 wakeUp
+HIT 000176 setAngularVelocity
+HIT 000192 wakeUp
+HIT 000176 setAngularVelocity
+HIT 000192 wakeUp
+HIT 000176 setAngularVelocity
+HIT 000194 putToSleep
+HIT 000176 setAngularVelocity
+HIT 000192 wakeUp
+HIT 000180 setLinearMomentum
+HIT 000192 wakeUp
+HIT 000180 setLinearMomentum
+HIT 000192 wakeUp
+HIT 000180 setLinearMomentum
+HIT 000192 wakeUp
+HIT 000180 setLinearMomentum
+HIT 000192 wakeUp
+HIT 000180 setLinearMomentum
+HIT 000194 putToSleep
+HIT 000180 setLinearMomentum
+HIT 000192 wakeUp
+HIT 000182 setAngularMomentum
+HIT 000192 wakeUp
+HIT 000182 setAngularMomentum
+HIT 000192 wakeUp
+HIT 000182 setAngularMomentum
+HIT 000192 wakeUp
+HIT 000182 setAngularMomentum
+HIT 000192 wakeUp
+HIT 000182 setAngularMomentum
+HIT 000192 wakeUp
+HIT 000182 setAngularMomentum
+HIT 000192 wakeUp
+HIT 000182 setAngularMomentum
+HIT 000192 wakeUp
+HIT 000182 setAngularMomentum
+HIT 000194 putToSleep
+HIT 000182 setAngularMomentum
+HIT 000168 setMassSpaceInertiaTensor (x9)
+HIT 000166 setMass (x5)
+HIT 000168 setMassSpaceInertiaTensor
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000060 computeKineticEnergy
+HIT 000166 setMass
+HIT 000168 setMassSpaceInertiaTensor
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000060 computeKineticEnergy
+HIT 000166 setMass
+HIT 000168 setMassSpaceInertiaTensor
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000060 computeKineticEnergy
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+
+--- NxPhysicsActorForceTests (784 HIT lines) ---
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000194 putToSleep
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000160 addLocalForce
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000782 nxNpActorApplyForce
+HIT 000162 addLocalTorque
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000782 nxNpActorApplyForce
+HIT 000160 addLocalForce
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000782 nxNpActorApplyForce
+HIT 000162 addLocalTorque
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000154 addForceAtLocalPos
+HIT 000152 nxNpActorLocalPosition
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000156 addLocalForceAtPos
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000158 addLocalForceAtLocalPos
+HIT 000152 nxNpActorLocalPosition
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000154 addForceAtLocalPos
+HIT 000152 nxNpActorLocalPosition
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000158 addLocalForceAtLocalPos
+HIT 000152 nxNpActorLocalPosition
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000188 raiseBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000056 addForce
+HIT 000058 addTorque
+HIT 000056 addForce
+HIT 000058 addTorque
+HIT 000056 addForce
+HIT 000058 addTorque
+HIT 000056 addForce
+HIT 000058 addTorque
+HIT 000056 addForce
+HIT 000058 addTorque
+HIT 000190 clearBodyFlag
+HIT 000785 nxNpActorTransitionKinematic
+HIT 000787 nxNpActorTransitionKinematic+0xee_disable_arm
+HIT 000787 nxNpActorTransitionKinematic+0x16e_free
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000202 setGlobalOrientationQuat
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000160 addLocalForce
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000782 nxNpActorApplyForce
+HIT 000162 addLocalTorque
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000782 nxNpActorApplyForce
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000160 addLocalForce
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000782 nxNpActorApplyForce
+HIT 000162 addLocalTorque
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000782 nxNpActorApplyForce
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000160 addLocalForce
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000782 nxNpActorApplyForce
+HIT 000162 addLocalTorque
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000782 nxNpActorApplyForce
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000160 addLocalForce
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000782 nxNpActorApplyForce
+HIT 000162 addLocalTorque
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000782 nxNpActorApplyForce
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000160 addLocalForce
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000782 nxNpActorApplyForce
+HIT 000162 addLocalTorque
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000782 nxNpActorApplyForce
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000160 addLocalForce
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000782 nxNpActorApplyForce
+HIT 000162 addLocalTorque
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000192 wakeUp
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000054 addForceAtPos
+HIT 000791 nxNpActorForceAtPos
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+
+--- NxPhysicsActorCMassTests (955 HIT lines) ---
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000192 wakeUp
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000210 setCMassOffsetLocalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000130 getGlobalPoseVal
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000130 getGlobalPoseVal
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000130 getGlobalPoseVal
+HIT 000206 setCMassGlobalPosition
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000130 getGlobalPoseVal
+HIT 000208 setCMassGlobalOrientation
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000130 getGlobalPoseVal
+HIT 000204 setCMassGlobalPose
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000130 getGlobalPoseVal
+HIT 000128 getGlobalPoseReference
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000128 getGlobalPoseReference
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000196 setGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000198 setGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000200 setGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000202 setGlobalOrientationQuat
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000210 setCMassOffsetLocalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000196 setGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000198 setGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000200 setGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000202 setGlobalOrientationQuat
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000210 setCMassOffsetLocalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000196 setGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000198 setGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000200 setGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000202 setGlobalOrientationQuat
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000210 setCMassOffsetLocalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000196 setGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000198 setGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000200 setGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000202 setGlobalOrientationQuat
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000210 setCMassOffsetLocalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000196 setGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000198 setGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000200 setGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000202 setGlobalOrientationQuat
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000210 setCMassOffsetLocalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000196 setGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000198 setGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000200 setGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000202 setGlobalOrientationQuat
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000210 setCMassOffsetLocalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000196 setGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000198 setGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000200 setGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000202 setGlobalOrientationQuat
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000210 setCMassOffsetLocalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x2)
+HIT 000204 setCMassGlobalPose
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x2)
+HIT 000206 setCMassGlobalPosition
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x2)
+HIT 000208 setCMassGlobalOrientation
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x2)
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x2)
+HIT 000204 setCMassGlobalPose
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x2)
+HIT 000206 setCMassGlobalPosition
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x2)
+HIT 000208 setCMassGlobalOrientation
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x2)
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000204 setCMassGlobalPose
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000206 setCMassGlobalPosition
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000208 setCMassGlobalOrientation
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000204 setCMassGlobalPose
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000206 setCMassGlobalPosition
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000208 setCMassGlobalOrientation
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000204 setCMassGlobalPose
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000206 setCMassGlobalPosition
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000208 setCMassGlobalOrientation
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000204 setCMassGlobalPose
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000206 setCMassGlobalPosition
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000208 setCMassGlobalOrientation
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000204 setCMassGlobalPose
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000206 setCMassGlobalPosition
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000208 setCMassGlobalOrientation
+HIT 000789 nxNpActorApplyWorldMassPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x3)
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000128 getGlobalPoseReference (x2)
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+
+--- NxPhysicsActorShapeMutationTests (1858 HIT lines) ---
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000084 getShapes
+HIT 000082 getNbShapes
+HIT 000070 createShape
+HIT 000036 nxActorCreateShape
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000533 nxSceneRemoveStaticShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 001041 nxShapeGroupAddChild (x2)
+HIT 000531 nxSceneAddShape
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 001943 nxPruningAddBody
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 001028 nxShapeGroupRemoveChild
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x2)
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000084 getShapes (x2)
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000070 createShape
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000070 createShape
+HIT 000036 nxActorCreateShape
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000533 nxSceneRemoveStaticShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 001041 nxShapeGroupAddChild (x2)
+HIT 000531 nxSceneAddShape
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 001943 nxPruningAddBody
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000070 createShape
+HIT 000036 nxActorCreateShape
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 001041 nxShapeGroupAddChild
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 001941 nxPruningAddShape
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000070 createShape
+HIT 000036 nxActorCreateShape
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 001041 nxShapeGroupAddChild
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 001941 nxPruningAddShape
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000070 createShape
+HIT 000036 nxActorCreateShape
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 001041 nxShapeGroupAddChild
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 001941 nxPruningAddShape
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000070 createShape
+HIT 000036 nxActorCreateShape
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 001041 nxShapeGroupAddChild
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 001941 nxPruningAddShape
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000070 createShape
+HIT 000036 nxActorCreateShape
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 001041 nxShapeGroupAddChild
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 001941 nxPruningAddShape
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000070 createShape
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000070 createShape
+HIT 000036 nxActorCreateShape
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 001041 nxShapeGroupAddChild (x2)
+HIT 000531 nxSceneAddShape
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 001943 nxPruningAddBody
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000070 createShape
+HIT 000036 nxActorCreateShape
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 001041 nxShapeGroupAddChild
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 001941 nxPruningAddShape
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000070 createShape
+HIT 000036 nxActorCreateShape
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 001041 nxShapeGroupAddChild
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 001941 nxPruningAddShape
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000196 setGlobalPose
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x8)
+HIT 000196 setGlobalPose
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x5)
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 001028 nxShapeGroupRemoveChild
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 001028 nxShapeGroupRemoveChild
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 001028 nxShapeGroupRemoveChild
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 001028 nxShapeGroupRemoveChild
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 001028 nxShapeGroupRemoveChild
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 001028 nxShapeGroupRemoveChild
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 001028 nxShapeGroupRemoveChild
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 001028 nxShapeGroupRemoveChild
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x2)
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 001028 nxShapeGroupRemoveChild
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000082 getNbShapes (x2)
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 001028 nxShapeGroupRemoveChild
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 001028 nxShapeGroupRemoveChild
+HIT 000006 nxActorRemoveRootFromScene
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000070 createShape
+HIT 000036 nxActorCreateShape
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000531 nxSceneAddShape
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 001943 nxPruningAddBody
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 000082 getNbShapes
+HIT 000084 getShapes (x2)
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000070 createShape
+HIT 000036 nxActorCreateShape
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000531 nxSceneAddShape
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 001943 nxPruningAddBody
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000070 createShape
+HIT 000036 nxActorCreateShape
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 001041 nxShapeGroupAddChild (x2)
+HIT 000531 nxSceneAddShape
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 001943 nxPruningAddBody
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000070 createShape
+HIT 000036 nxActorCreateShape
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000533 nxSceneRemoveStaticShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 001041 nxShapeGroupAddChild (x2)
+HIT 000531 nxSceneAddShape
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 001943 nxPruningAddBody
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x2)
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000070 createShape
+HIT 000036 nxActorCreateShape
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000531 nxSceneAddShape
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 001943 nxPruningAddBody
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000070 createShape
+HIT 000036 nxActorCreateShape
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 001041 nxShapeGroupAddChild (x2)
+HIT 000531 nxSceneAddShape
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 001943 nxPruningAddBody
+HIT 000503 nxSceneUpdateActorCount
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 001028 nxShapeGroupRemoveChild
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000024 nxActorReleaseShape
+HIT 001028 nxShapeGroupRemoveChild
+HIT 000006 nxActorRemoveRootFromScene
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000503 nxSceneUpdateActorCount
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 001024 nxArrayVtCall3Args1024
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x4)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 001024 nxArrayVtCall3Args1024
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x4)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 001024 nxArrayVtCall3Args1024
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 001024 nxArrayVtCall3Args1024
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000164 updateMassFromShapes (x12)
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x4)
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 001024 nxArrayVtCall3Args1024
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x4)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000503 nxSceneUpdateActorCount
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 001024 nxArrayVtCall3Args1024
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x4)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x3)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x4)
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000122 setDynamic
+HIT 000533 nxSceneRemoveStaticShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 000531 nxSceneAddShape
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 001943 nxPruningAddBody
+HIT 000503 nxSceneUpdateActorCount
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000174 setLinearVelocity
+HIT 000104 getLinearVelocityVal
+HIT 000102 getMassSpaceInertiaTensorVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000122 setDynamic
+HIT 000533 nxSceneRemoveStaticShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 001024 nxArrayVtCall3Args1024
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x4)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 000531 nxSceneAddShape
+HIT 001018 nxShapeGroupOwnerUpdate
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x4)
+HIT 001943 nxPruningAddBody
+HIT 000503 nxSceneUpdateActorCount
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000174 setLinearVelocity
+HIT 000104 getLinearVelocityVal
+HIT 000102 getMassSpaceInertiaTensorVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000122 setDynamic
+HIT 000533 nxSceneRemoveStaticShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 000531 nxSceneAddShape
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 001943 nxPruningAddBody
+HIT 000503 nxSceneUpdateActorCount
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000174 setLinearVelocity
+HIT 000104 getLinearVelocityVal
+HIT 000102 getMassSpaceInertiaTensorVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000122 setDynamic
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 000632 nxSceneRemoveBody
+HIT 000776 nxBodyRecordDestroy
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000174 setLinearVelocity
+HIT 000104 getLinearVelocityVal
+HIT 000102 getMassSpaceInertiaTensorVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000122 setDynamic
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000122 setDynamic
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 000632 nxSceneRemoveBody
+HIT 000776 nxBodyRecordDestroy
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000174 setLinearVelocity
+HIT 000104 getLinearVelocityVal
+HIT 000102 getMassSpaceInertiaTensorVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000122 setDynamic
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000122 setDynamic
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000122 setDynamic
+HIT 000533 nxSceneRemoveStaticShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000122 setDynamic
+HIT 000533 nxSceneRemoveStaticShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000122 setDynamic
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000110 isDynamic (x2)
+HIT 000122 setDynamic
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 000632 nxSceneRemoveBody
+HIT 004103 Joint::row004103
+HIT 000557 NxSceneInternal::pushJointWithoutBodies
+HIT 000776 nxBodyRecordDestroy
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000056 addForce
+HIT 000782 nxNpActorApplyForce
+HIT 000058 addTorque
+HIT 000782 nxNpActorApplyForce
+HIT 000174 setLinearVelocity
+HIT 000104 getLinearVelocityVal
+HIT 000102 getMassSpaceInertiaTensorVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x4)
+HIT 000628 NxSceneInternal::releaseActor
+HIT 000030 nxActorDestroy
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x4)
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x4)
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 001024 nxArrayVtCall3Args1024
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x3)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 001024 nxArrayVtCall3Args1024
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x3)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 001024 nxArrayVtCall3Args1024
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x3)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 001024 nxArrayVtCall3Args1024
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x3)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 001024 nxArrayVtCall3Args1024
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x3)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 001024 nxArrayVtCall3Args1024
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x3)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 000503 nxSceneUpdateActorCount
+HIT 001033 nxShapeGroupConstructAt
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000026 nxActorBuildRecord
+HIT 000008 nxActorComputeMassFromShapes
+HIT 001024 nxArrayVtCall3Args1024
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x3)
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 001315 ShapeBase::nxApplyOwnerUpdate (x2)
+HIT 000503 nxSceneUpdateActorCount
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 000833 MassFrame::nxMassFrameTranslate (x2)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000164 updateMassFromShapes
+HIT 000008 nxActorComputeMassFromShapes
+HIT 001024 nxArrayVtCall3Args1024
+HIT 000947 BoxShape::nxBoxAccumulateMass
+HIT 000849 BoxShape::nxBoxComputeMassFrame
+HIT 000833 MassFrame::nxMassFrameTranslate (x3)
+HIT 000746 nxNpActorWorldTensorRDRt@NpActor
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000122 setDynamic
+HIT 000533 nxSceneRemoveStaticShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 000531 nxSceneAddShape
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 001943 nxPruningAddBody
+HIT 000503 nxSceneUpdateActorCount
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000032 nxActorShapeFactory
+HIT 001273 nxRuntimeShapeBaseInit
+HIT 000503 nxSceneUpdateActorCount (x2)
+HIT 000122 setDynamic
+HIT 000533 nxSceneRemoveStaticShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000026 nxActorBuildRecord
+HIT 000722 Row000722Fixture::row000722
+HIT 000793 nxBodyRecordApplyDesc
+HIT 000630 nxSceneAddBody
+HIT 000531 nxSceneAddShape
+HIT 001315 ShapeBase::nxApplyOwnerUpdate
+HIT 001943 nxPruningAddBody
+HIT 000503 nxSceneUpdateActorCount
+HIT 000110 isDynamic
+HIT 000082 getNbShapes
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001039 nxShapeGroupDeletingDtor
+HIT 001032 nxShapeGroupDeleteChildren
+HIT 001323 nxRuntimeShapeBaseDestroy (x3)
+HIT 000030 nxActorDestroy
+HIT 000535 nxSceneRemoveDynamicShape
+HIT 001279 nxShapeLeavePruning
+HIT 001945 nxPruningRemoveBody
+HIT 000722 Row000722Fixture::row000722 (x2)
+HIT 001323 nxRuntimeShapeBaseDestroy

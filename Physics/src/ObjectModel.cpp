@@ -5034,7 +5034,11 @@ void MassFrame::nxMassFrameTranslate(const void* param)
 	mOffset.z = static_cast<float>(oz + d[2]);
 	}
 
-// Provisional phys_fn_000947, ret 12: three stack DWORDs; the last is unused.
+// phys_fn_000947 (0x00020850, 39 B)
+// BOX-table slot 4, thiscall ret 0xc (destination, density, an unused third
+// DWORD): when +0xde & 7 is clear, 000849 on the destination with the
+// density, the hull dimensions (+0xe4) and the local pose (+0x6c)
+// (0x20850-0x2086d); always returns true (0x20872). Faithful to the listing.
 bool BoxShape::nxBoxAccumulateMass(MassFrame* destination, float density, unsigned reserved)
 	{
 	(void) reserved;

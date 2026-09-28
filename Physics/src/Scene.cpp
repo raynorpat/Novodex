@@ -2955,7 +2955,7 @@ static void nxShapeGroupAddChild(unsigned char* group, unsigned char* child)
 // and the last handle move into its slots (swap-remove in both arrays),
 // both ends drop by one, the child's +0xdc bit 0 is cleared and +0x10c =
 // -1.0f. The child is unlinked only: nothing is freed or unregistered.
-static bool nxShapeGroupRemoveChild(unsigned char* group, unsigned char* child)
+static __declspec(noinline) bool nxShapeGroupRemoveChild(unsigned char* group, unsigned char* child)
 	{
 	void** first = *reinterpret_cast<void***>(group + 0xe0);
 	const unsigned count = static_cast<unsigned>(*reinterpret_cast<void***>(group + 0xe4) - first);
@@ -2994,7 +2994,7 @@ static void __fastcall nxShapeGroupOwnerUpdate(void* self, void*, unsigned flags
 // phys_fn_001032 (0x00022d00, 96 B)
 // The children deleted (slot 0 with 1, each slot then cleared), both ends
 // reset to the begins, the group marked 0x100.
-static void nxShapeGroupDeleteChildren(unsigned char* group)
+static __declspec(noinline) void nxShapeGroupDeleteChildren(unsigned char* group)
 	{
 	unsigned char** child = *reinterpret_cast<unsigned char***>(group + 0xe0);
 	unsigned count = static_cast<unsigned>(
@@ -3130,7 +3130,7 @@ static void nxFluidManagerShapeChanged(unsigned char* manager, void* shape, bool
 // phys_fn_001941 (0x0004ba80, 59 B)
 // One shape into the collection: its prunable takes the type (+0x70 for a
 // dynamic owner, else 0; 004888) and kind 0 (004890), then 004857.
-static void nxPruningAddShape(unsigned char* pruning, unsigned char* shape, bool hasRecord)
+static __declspec(noinline) void nxPruningAddShape(unsigned char* pruning, unsigned char* shape, bool hasRecord)
 	{
 	shape[0xce] = static_cast<unsigned char>(
 		hasRecord ? *reinterpret_cast<unsigned*>(pruning + 0x70) : 0u);
@@ -3250,7 +3250,7 @@ bool nxSceneRemoveStaticShape(NxSceneInternal* scene, unsigned char* shape)
 
 // phys_fn_000535 (0x000106a0, 40 B)
 // The same for a dynamic shape, 003628 with true.
-static bool nxSceneRemoveDynamicShape(NxSceneInternal* scene, unsigned char* shape)
+static __declspec(noinline) bool nxSceneRemoveDynamicShape(NxSceneInternal* scene, unsigned char* shape)
 	{
 	nxShapeLeavePruning(shape);
 	if(scene->at<unsigned char*>(0x61c))
