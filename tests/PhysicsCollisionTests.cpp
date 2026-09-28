@@ -6264,8 +6264,12 @@ int wmain(int argc, wchar_t** argv)
 			// |ac - b^2| under the 1e-5f epsilon for most draws and large
 			// enough to cross it for some.
 			++parallelPairs;
-			const float scale = (nxUnit(&state) * 1.8f + 0.2f)
-				* ((nxNext(&state) & 1) ? 1.0f : -1.0f);
+			// Two draws, sequenced in the order the build had evaluated the
+			// one expression they used to share: the sign word, then the
+			// magnitude (every registered segment_segment line reproduces).
+			const unsigned signWord = nxNext(&state);
+			const float magnitude = nxUnit(&state) * 1.8f + 0.2f;
+			const float scale = magnitude * ((signWord & 1) ? 1.0f : -1.0f);
 			const float jitter = nxUnit(&state) * 4e-3f;
 			for(int k = 0; k < 3; ++k)
 				{

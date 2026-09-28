@@ -163,6 +163,75 @@ class RegisteredCoverageLines(unittest.TestCase):
                     "reports it" % match.group(1))
 
 
+def harness_sources():
+    """Every harness source file: tests/*.cpp, *.h and *.c."""
+    tests = REPO_ROOT / "tests"
+    return sorted(tests.glob("*.cpp")) + sorted(tests.glob("*.h")) + sorted(tests.glob("*.c"))
+
+
+# Functions the scan finds that must return a float by their interface, not by
+# a generator's choice. nxStreamReadFloat is the harness stream's
+# NxStream::readFloat slot (PhysicsAssetTests.cpp): the oracle's and the
+# candidate's readers both call it through the vtable and take its float from
+# st(0), as they would from any user stream, so both sides see the same word.
+# Found when the scan learned to see `__fastcall` between type and name
+# (convex-mesh gap Task 2c).
+RAW_BIT_FLOAT_INTERFACE_SLOTS = {
+    ("PhysicsAssetTests.cpp", "nxStreamReadFloat"),
+}
+
+FLOAT_TYPES = r"(?:float|double|NxReal|NxF32|NxF64)"
+# Specifiers before the return type, and calling conventions or qualifiers
+# between it and the name, in any order: `static float __cdecl f(`,
+# `static const float f(`, `float const f(`, `__declspec(noinline) double f(`.
+FLOAT_FUNCTION = re.compile(
+    r"(?m)^[ \t]*(?:(?:static|inline|__inline|__forceinline|extern|const|volatile|NX_INLINE"
+    r"|__declspec\s*\([^)]*\))\s+)*"
+    + FLOAT_TYPES +
+    r"\s+(?:(?:const|volatile|__cdecl|__stdcall|__fastcall|__thiscall|__vectorcall|WINAPI)\s+)*"
+    r"(\w+)\s*\([^;{)]*\)\s*\{")
+POINTER_PUN = re.compile(r"\*\s*\(\s*(?:const\s+)?" + FLOAT_TYPES + r"\s*(?:const\s*)?\*\s*\)")
+CAST_PUN = re.compile(r"reinterpret_cast\s*<\s*(?:const\s+)?" + FLOAT_TYPES + r"\s*(?:const\s*)?[&*]")
+
+
+def raw_bit_float_returners(text):
+    """The functions in `text` that return a float type built from raw bits."""
+    unions = set()
+    for match in re.finditer(r"\bunion\s+(\w+)?\s*\{", text):
+        if match.group(1):
+            unions.add(match.group(1))
+        # `typedef union [tag] { ... } Name;`: the name after the closing brace.
+        depth, end = 0, match.end() - 1
+        while end < len(text):
+            if text[end] == "{":
+                depth += 1
+            elif text[end] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            end += 1
+        tail = re.match(r"\}\s*(\w+)\s*;", text[end:])
+        if tail and text[max(0, match.start() - 8):match.start()].strip().endswith("typedef"):
+            unions.add(tail.group(1))
+    found = []
+    for match in FLOAT_FUNCTION.finditer(text):
+        depth, end = 0, match.end() - 1
+        while end < len(text):
+            if text[end] == "{":
+                depth += 1
+            elif text[end] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            end += 1
+        body = text[match.end() - 1:end]
+        if ("memcpy" in body or POINTER_PUN.search(body) or CAST_PUN.search(body)
+                or re.search(r"\bunion\b", body)
+                or any(re.search(r"\b%s\b" % re.escape(name), body) for name in unions)):
+            found.append(match.group(1))
+    return found
+
+
 FORMAT_SPEC = re.compile(r"%(?:0[0-9]+)?(?:l{0,2}[udx]|s|c|f|g|e|016llx)")
 PRINTF_CALL = re.compile(r'printf\(\s*"((?:[^"\\]|\\.)*)"')
 
@@ -519,27 +588,73 @@ class OracleDifferentialCoverageLines(unittest.TestCase):
         self.assertIn("static void nxPickWord(unsigned* state, float* out)", source)
         # Every harness, and any helper, not only the generators by name: a
         # function that returns a float type and builds it from raw bits (a
-        # memcpy or a pointer pun into the value it returns) is the same hazard.
-        header = re.compile(
-            r"(?m)^[ \t]*(?:static\s+)?(?:inline\s+)?(?:__forceinline\s+)?"
-            r"(?:float|double|NxReal|NxF32|NxF64)\s+(\w+)\s*\([^;{)]*\)\s*\{")
-        for path in sorted((REPO_ROOT / "tests").glob("*.cpp")) + sorted((REPO_ROOT / "tests").glob("*.h")):
+        # memcpy, a pointer pun, a reinterpret_cast or a union into the value it
+        # returns) is the same hazard. C sources too (PhysicsThirdPartyQhull.c).
+        sources = harness_sources()
+        self.assertTrue(any(path.suffix == ".c" for path in sources),
+            "the scan no longer reaches the C harness sources")
+        exempt_seen = set()
+        for path in sources:
             text = path.read_text(encoding="utf-8", errors="replace")
-            for match in header.finditer(text):
-                depth, end = 0, match.end() - 1
-                while end < len(text):
-                    if text[end] == "{":
-                        depth += 1
-                    elif text[end] == "}":
-                        depth -= 1
-                        if depth == 0:
-                            break
-                    end += 1
-                body = text[match.end() - 1:end]
-                self.assertFalse(
-                    "memcpy" in body or re.search(r"\*\s*\(\s*(?:float|NxReal)\s*\*\s*\)", body),
-                    "%s: %s returns a float built from raw bits; write it into its slot instead"
-                    % (path.name, match.group(1)))
+            for name in raw_bit_float_returners(text):
+                if (path.name, name) in RAW_BIT_FLOAT_INTERFACE_SLOTS:
+                    exempt_seen.add((path.name, name))
+                    continue
+                self.fail("%s: %s returns a float built from raw bits; write it into its slot instead"
+                    % (path.name, name))
+        self.assertEqual(exempt_seen, set(RAW_BIT_FLOAT_INTERFACE_SLOTS),
+            "an exempt interface slot is gone or no longer matches; remove its entry")
+
+    # The scan has to be able to fire. Each probe is a helper of one shape the
+    # hazard can take; each must be found, and an ordinary float function not.
+    def test_the_raw_bit_scan_finds_a_memcpy(self):
+        self.assertEqual(raw_bit_float_returners(
+            "static float nxProbe(unsigned w)\n{\n\tfloat f;\n\tmemcpy(&f, &w, 4);\n\treturn f;\n}\n"),
+            ["nxProbe"])
+
+    def test_the_raw_bit_scan_finds_a_pointer_pun(self):
+        self.assertEqual(raw_bit_float_returners(
+            "static NxReal nxProbe(unsigned w)\n\t{\n\treturn *(const NxReal*) &w;\n\t}\n"),
+            ["nxProbe"])
+
+    def test_the_raw_bit_scan_finds_a_reinterpret_cast(self):
+        self.assertEqual(raw_bit_float_returners(
+            "static inline float nxProbe(unsigned w)\n\t{\n\treturn reinterpret_cast<float&>(w);\n\t}\n"),
+            ["nxProbe"])
+        self.assertEqual(raw_bit_float_returners(
+            "double nxProbe(const unsigned* w)\n\t{\n\treturn *reinterpret_cast<const double*>(w);\n\t}\n"),
+            ["nxProbe"])
+
+    def test_the_raw_bit_scan_finds_a_local_union(self):
+        self.assertEqual(raw_bit_float_returners(
+            "static float nxProbe(unsigned w)\n\t{\n\tunion { unsigned u; float f; } pun;\n"
+            "\tpun.u = w;\n\treturn pun.f;\n\t}\n"),
+            ["nxProbe"])
+
+    def test_the_raw_bit_scan_finds_a_named_union(self):
+        text = ("typedef union NxProbeBits { unsigned u; float f; } NxProbeBits;\n"
+                "union NxOtherBits { unsigned u; float f; };\n"
+                "static float nxProbeA(unsigned w)\n\t{\n\tNxProbeBits b;\n\tb.u = w;\n\treturn b.f;\n\t}\n"
+                "static float nxProbeB(unsigned w)\n\t{\n\tNxOtherBits b;\n\tb.u = w;\n\treturn b.f;\n\t}\n")
+        self.assertEqual(raw_bit_float_returners(text), ["nxProbeA", "nxProbeB"])
+
+    def test_the_raw_bit_scan_sees_through_conventions_and_qualifiers(self):
+        for header in ("static float __cdecl nxProbe(unsigned w)",
+                       "static float __fastcall nxProbe(unsigned w)",
+                       "float __stdcall nxProbe(unsigned w)",
+                       "static const float nxProbe(unsigned w)",
+                       "static float const nxProbe(unsigned w)",
+                       "static __forceinline const NxF32 __cdecl nxProbe(unsigned w)",
+                       "__declspec(noinline) static double nxProbe(unsigned w)"):
+            self.assertEqual(raw_bit_float_returners(
+                header + "\n\t{\n\tfloat f;\n\tmemcpy(&f, &w, 4);\n\treturn f;\n\t}\n"),
+                ["nxProbe"], header)
+
+    def test_the_raw_bit_scan_passes_ordinary_arithmetic(self):
+        self.assertEqual(raw_bit_float_returners(
+            "static float nxUnit(unsigned* s)\n\t{\n\treturn (float) (nxNext(s) >> 8) * (1.0f / 16777216.0f);\n\t}\n"
+            "static float __cdecl nxRange(float lo, float hi)\n\t{\n\treturn lo + (hi - lo) * nxUnit(0);\n\t}\n"),
+            [])
 
     def test_every_registration_names_a_block_the_harness_still_drives(self):
         names = list(collision_driven_names())
