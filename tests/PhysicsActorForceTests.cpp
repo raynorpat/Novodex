@@ -123,6 +123,44 @@ static void t3ForceCase(NxScene* scene, unsigned mode, unsigned kind)
 	scene->releaseActor(*actor);
 }
 
+// Task 3 review: the unrounded x87 terms of 000782's modes 0 and 1. On an
+// unrotated body with an identity mass frame, +0x164 is diag(1/I), so each
+// row is one product; the inputs were chosen so that adding the product
+// unrounded (the listing) and adding it rounded to float give different
+// words: mode 0's linear x, mode 0's angular rows 0 and 1, mode 1's angular
+// row 0.
+static NxVec3 t3Bits(unsigned x, unsigned y, unsigned z)
+{
+	NxVec3 v; memcpy(&v.x, &x, 4); memcpy(&v.y, &y, 4); memcpy(&v.z, &z, 4);
+	return v;
+}
+static void t3ForceOrderCase(NxScene* scene)
+{
+	NxBoxShapeDesc box;
+	box.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
+	NxBodyDesc body;
+	body.mass = 3.7f;
+	body.massSpaceInertia = NxVec3(1.3f, 2.9f, 4.1f);
+	body.angularVelocity = NxVec3(-0.71f, 0.0f, 0.0f);
+	NxActorDesc desc;
+	desc.shapes.pushBack(&box);
+	desc.body = &body;
+	NxActor* actor = scene->createActor(desc);
+	if(!actor) return;
+	unsigned char* record = *reinterpret_cast<unsigned char**>(
+		*reinterpret_cast<unsigned char**>(reinterpret_cast<unsigned char*>(actor) + 0x14) + 8);
+	const float seed[3] = { 0.11f, -0.41f, 0.53f };
+	memcpy(record + 0x88, seed, sizeof(float));
+	memcpy(record + 0x94, seed + 1, 2 * sizeof(float));
+	printf("force t3_order inverse=%x.%x.%x.%x\n", word(record, 0xc0), word(record, 0x164),
+		word(record, 0x174), word(record, 0x184));
+	actor->addForce(t3Bits(0xbf184037u, 0, 0), NX_FORCE);
+	actor->addTorque(t3Bits(0x403201d9u, 0xc0df9b01u, 0), NX_FORCE);
+	actor->addTorque(t3Bits(0x409a66b4u, 0, 0), NX_IMPULSE);
+	printf("force t3_order acc=%x.%x.%x ang=%x\n", word(record, 0x88), word(record, 0x94),
+		word(record, 0x98), word(record, 0x78));
+	scene->releaseActor(*actor);
+}
 int wmain(int argc, wchar_t** argv)
 {
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -373,6 +411,7 @@ int wmain(int argc, wchar_t** argv)
 			for(unsigned kind = 0; kind < 3; ++kind)
 				t3ForceCase(scene, modes[m], kind);
 	}
+	t3ForceOrderCase(scene);
 	sdk->releaseScene(*scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);

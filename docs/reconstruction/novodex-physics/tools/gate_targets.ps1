@@ -111,6 +111,9 @@ $NxRequiredCoverageLines = [ordered] @{
     # conversion), +0x134 after setCMassOffsetGlobalOrientation (000222) and
     # +0x158 after setCMassOffsetGlobalPose (000218).
     'NxPhysicsActorCMassTests' = @(
+        # Task 3 review (000128): the reference getter quiets SNaNs in x and y (fld/fstp)
+        # and moves z as a dword.
+        'cmass reference_snan t=7fc00001.ffc00002.7fa00003',
         # NpActor.cpp completion Task 3 review (001315): every shape's global pose after the
         # CMass-global setters, as exact words.
         'cmass gm_single_general_created shape0 global_pose=3f650d79.3ee25b9e.3d8158ee.bea1af28.3f39efd6.bf1c4b72.bea1af28.3f06bca0.3f4a1af3.c0400000.40000000.3f800000',
@@ -562,6 +565,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'cmass static pose_reference=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0'
     )
     'NxPhysicsActorForceTests' = @(
+        # Task 3 review (000782 modes 0/1): inputs where adding the unrounded product and
+        # adding it rounded give different words.
+        'force t3_order inverse=3e8a60dd.3f44ec4f.3eb08d3d.3e79c190',
+        'force t3_order acc=bd4fd26d.3fdd6094.bff094d3 ang=404019ad',
         # NpActor.cpp completion Task 3 (000782, 000791): a rotated body with a rotated,
         # offset mass frame, three addForce/addTorque/addForceAtPos accumulations per mode
         # 0-4 and 7 (wake only), with every accumulator, the velocity copies, the wake words
@@ -3089,7 +3096,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 159  # 34 for NxPhysicsAssetTests, 125 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 24 from qhull-gap Task 1)
-    '5' = 1568 # 126 object-layout, 1 shape-vtable and 1441 public actor/pruner/box/scene lines
+    '5' = 1571 # 126 object-layout, 1 shape-vtable and 1444 public actor/pruner/box/scene lines
                # (744 + 251 from NpActor.cpp completion Task 2; RED on purpose: vtables
                # family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent

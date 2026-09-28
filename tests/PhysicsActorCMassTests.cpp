@@ -365,6 +365,32 @@ int wmain(int argc, wchar_t** argv)
 	globalMassCase(scene, "group_near_y", 2, identity, nearY, flipX);
 	globalMassCase(scene, "group_near_z", 2, identity, nearZ, flipY);
 	globalMassCase(scene, "group_rotated", 2, nearY, nearX, general);
+	// Task 3 review (000128): the reference getter moves the position's x and
+	// y through the x87 stack (an SNaN comes out quiet) and z as a dword.
+	{
+		NxBoxShapeDesc snanBox; snanBox.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
+		NxBodyDesc snanBodyDesc; snanBodyDesc.mass = 2.0f;
+		snanBodyDesc.massSpaceInertia = NxVec3(1.0f, 2.0f, 3.0f);
+		NxActorDesc snanDesc; snanDesc.shapes.pushBack(&snanBox); snanDesc.body = &snanBodyDesc;
+		NxActor* snanActor = scene->createActor(snanDesc);
+		if(snanActor)
+		{
+			unsigned char* snanBody = *reinterpret_cast<unsigned char**>(
+				reinterpret_cast<unsigned char*>(snanActor) + 0x14);
+			unsigned char* snanRecord = *reinterpret_cast<unsigned char**>(snanBody + 8);
+			unsigned saved[3];
+			memcpy(saved, snanRecord + 0x50, sizeof(saved));
+			const unsigned snan[3] = { 0x7f800001u, 0xff800002u, 0x7fa00003u };
+			memcpy(snanRecord + 0x50, snan, sizeof(snan));
+			const NxMat34& ref = snanActor->getGlobalPoseReference();
+			unsigned t[3];
+			memcpy(t, &ref.t, sizeof(t));
+			printf("cmass reference_snan t=%x.%x.%x\n", t[0], t[1], t[2]);
+			memcpy(snanRecord + 0x50, saved, sizeof(saved));
+			snanActor->getGlobalPoseReference();
+			scene->releaseActor(*snanActor);
+		}
+	}
 	sdk->releaseScene(*scene); sdk->release();
 	return nxReportPairIdentity(pairDirectory);
 }

@@ -1238,7 +1238,25 @@ const NxMat34 & NpActorVtable::getGlobalPoseReference() const
 		nxNpActorRotationFromQuaternionGetter(
 			reinterpret_cast<const float*>(record + 0x5c), rotation);
 		memcpy(body + 0x20, rotation, sizeof(rotation));
-		memcpy(body + 0x44, record + 0x50, sizeof(NxVec3));
+		// 0x10004553-0x10004568: x and y go through fld/fstp (an SNaN comes
+		// out quiet), z is a plain dword move.
+		const unsigned char* from = record + 0x50;
+		unsigned char* to = body + 0x44;
+#if defined(_MSC_VER) && defined(_M_IX86)
+		__asm {
+			mov eax, from
+			mov edx, to
+			fld dword ptr [eax]
+			fld dword ptr [eax+4]
+			fxch st(1)
+			fstp dword ptr [edx]
+			fstp dword ptr [edx+4]
+			mov ecx, dword ptr [eax+8]
+			mov dword ptr [edx+8], ecx
+		}
+#else
+		memcpy(to, from, sizeof(NxVec3));
+#endif
 		}
 	nxNpSceneGuardLeave(ctx);
 	return *reinterpret_cast<const NxMat34*>(body + 0x20);

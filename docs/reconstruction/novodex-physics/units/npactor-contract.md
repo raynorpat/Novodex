@@ -182,7 +182,7 @@ NxPhysicsDynamicFirstTests reaches only the 000118 counterpart.
 | 000122 | 0x00003840 | 761 | discovered | slot 18 setDynamic | NpActor.cpp:1226 `setDynamic` | missing | defect (M) | 0 (breakpointed, not hit) | empty body; oracle: validate desc (0x63/0x66), remove static shape, build record via 000026 (malloc 0x260, ctor 0x1b5c0), errors 0x7c/0x7d, tear down old record (000632, notifyObservers(0x100), 000776, free), re-add shape (000531) |
 | 000124 | 0x00003b40 | 1075 | discovered | slot 10 moveGlobalPose | NpActor.cpp:1128 `moveGlobalPose` | implemented | faithful | 5: ActorDynamics 5 | Task 3: the CMass-frame composition from the listing (row 0 of M p kept in the register, rows 1-2 spilled; G = M F in the listing orders), the 000801 conversion of G, 000784 (ORs 1/2 into +0xc, no null test) and its wake |
 | 000126 | 0x00003f80 | 1192 | discovered | slot 12 moveGlobalOrientation | NpActor.cpp:1164 `moveGlobalOrientation` | implemented | faithful | 3: ActorDynamics 3 | Task 3: composes inline under its own lock with its own orders (translation +0x50; M p row 0 in the register, rows 1-2 spilled; G = M F row by row), the 000801 conversion, 000784 and its wake; no longer delegates |
-| 000128 | 0x00004430 | 333 | discovered | slot 9 getGlobalPoseReference | NpActor.cpp:1100 `getGlobalPoseReference` | implemented | faithful | 2: ActorCMass 2 | all blocks incl. the one-shot 0xd0 warning (line 0x2c0) and the x87 quat-to-rows sequence; Task 2 made the report getInstance().error so the inline `cmp [FoundationSDK::instance],0; int3` precedes it as at 0x10004442-0x1000445c; nit left: position x/y move by fld/fstp (quiets SNaN) where the candidate memcpys |
+| 000128 | 0x00004430 | 333 | discovered | slot 9 getGlobalPoseReference | NpActor.cpp:1100 `getGlobalPoseReference` | implemented | faithful | 2: ActorCMass 2 | all blocks incl. the one-shot 0xd0 warning (line 0x2c0) and the x87 quat-to-rows sequence; Task 2 made the report getInstance().error (the inline `cmp [instance],0; int3`); the Task 3 review moved position x/y through fld/fstp (SNaN quieted) and z as a dword, as 0x10004553-0x10004568 |
 | 000130 | 0x00004580 | 318 | reconstructed | slot 5 getGlobalPoseVal | NpActor.cpp:944 `getGlobalPoseVal`; OM ObjectModel.cpp:1359 | implemented | faithful | 16: ActorCMass 6, ActorDynamicSetter 6, ActorLifecycle 4 | NA: Task 3: one read lock around both inline sub-reads, as 0x4580-0x46bb. OM: no guard, double quat-to-matrix without the spills (the OM form) |
 | 000132 | 0x000046c0 | 259 | reconstructed | slot 7 getGlobalOrientationVal | NpActor.cpp:1058 `getGlobalOrientationVal`; OM ObjectModel.cpp:3276 | implemented | faithful | 20: ActorCMass 6, ActorDynamicSetter 7, ActorLifecycle 7 | NA: Task 3 added the read lock (NG); x87 helper exact. OM: no guard, no spills (the OM form) |
 | 000134 | 0x000047d0 | 907 | discovered | slot 32 getCMassGlobalPoseVal | NpActor.cpp:1644 `getCMassGlobalPoseVal` | implemented | faithful | 21: ActorCMass 21 | Task 3: W = R F in the 134 order ((a1f4 + a2f7) + a0f1, (a0f2 + a1f5) + a2f8 in columns 1 and 2; nxNpActorWorldMassRotation NX_RF_134); ROT and the position were already faithful; E1 0x30a from Task 2 |
@@ -379,7 +379,7 @@ new staged-pair cases, and falsified against the previous commit's candidate.
   (gap:SceneRaycast.cpp..CapsuleShape.cpp): 000746, 000756, 000782, 000784, 000789 and 000791.
   001018's body is modelled inside `nxNpActorNotifyOwnedShapes` (gap:CapsuleShape.cpp..NpBoxShape.cpp).
   None of them changes state.
-- **Tests.** 500 oracle lines, each registered verbatim; floor 5 went from 1122 to 1568. Every
+- **Tests.** 446 oracle lines, each registered verbatim; floor 5 went from 1122 to 1568. Every
   new case was run against the previous commit's candidate, and each group's cases fail there:
   - CMass: 286 lines, 58 of which fail on the Task 2 candidate;
   - Dynamics: 21 lines (18);
@@ -388,8 +388,20 @@ new staged-pair cases, and falsified against the previous commit's candidate.
   - DynamicSetter: 23 (19);
   - BodyFlag: 5 (4);
   - Force: 18 (8).
-  The shape global poses in the CMass cases are printed to four decimals. 001315's own
-  composition (Shape.cpp) is one bit off from the oracle in both the old and the new candidate.
+- **Task 3 review** (commits bd53f6e and the follow-up):
+  - 001315 (Shape.cpp; `ShapeBase::nxApplyOwnerUpdate`, ObjectModel.cpp) composes the shape's
+    world pose from the listing: the owner rotation from record +0x24 by the five-spill
+    sequence, each world element in the listing's permuted operand order, the translation's
+    row 0 in the register and rows 1-2 spilled before T. The pruner/list arms (0x26a36-0x26ab8)
+    are described there; the append to the +0xa0 object's array is not reproduced.
+  - The CMass cases print the shape poses as exact words; the 48 rounded registrations were
+    replaced by the 48 exact oracle lines, and all of them match.
+  - 000128 now moves the position's x and y through fld/fstp (an SNaN comes out quiet), as
+    0x10004553-0x10004568 do; a CMass case covers it.
+  - A Force case on an unrotated body shows 000782's unrounded mode 0 linear x, mode 0
+    angular rows 0-1 and mode 1 angular row 0; all four words differ on the candidate before
+    the 000782 rewrite.
+  - Floor 5 is 1571 (the three new lines).
 
 Counts after Task 3. Of the 53 `discovered` rows:
 - 42 are faithful.
