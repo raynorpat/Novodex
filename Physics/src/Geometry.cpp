@@ -299,110 +299,296 @@ bool NX_CALL_CONV NxRaySphereIntersect(const NxVec3& origin, const NxVec3& dir,
 	return true;
 	}
 
-// 0x00036f50. Moller-Trumbore, with the culled and non-culled paths written
-// out separately in the oracle rather than sharing a tail. They are not the
-// same code with a different epsilon:
+// The three dword constants NxRayTriIntersect reads: 1e-6f at 0x10106880, -1e-6f at
+// 0x101079e8 and 1.0f at 0x101041ec.
+static const float gRayTriEpsilon = 1e-6f;
+static const float gRayTriNegativeEpsilon = -1e-6f;
+static const float gRayTriOne = 1.0f;
+
+// phys_fn_001712 (0x00036f50, 782 B)
+// Moller-Trumbore, with the culled and non-culled paths written out separately in
+// the oracle rather than sharing a tail. They are not the same code with a
+// different epsilon:
 //
 //   * the culled path stores the unscaled u and v, tests them, and only then
 //     multiplies all three outputs by 1/det -- so a caller that stops the
 //     function early sees unscaled barycentrics in u and v;
-//   * the non-culled path scales u and v as it computes them and tests
-//     against 1.0;
+//   * the non-culled path narrows 1/det into the `cull` argument slot
+//     (0x00037152), scales u and v as it computes them and tests against 1.0;
 //   * the two paths sum the three terms of v in a different order, at
 //     0x000370a9 and 0x000371f5.
 //
-// The u and v range tests are `test eax, eax; js` on the word just stored,
-// which is a sign-bit test and not `< 0`. u's upper test uses the register copy
-// (`fcomp dword ptr [esp + 0x40]` at 0x0003705a); it is v's that reads u back
-// out of the caller's float (`fadd dword ptr [ecx]` at 0x000370d3), so an
-// aliasing caller changes the second test and not the first.
-bool NX_CALL_CONV NxRayTriIntersect(const NxVec3& orig, const NxVec3& dir,
-	const NxVec3& vert0, const NxVec3& vert1, const NxVec3& vert2,
-	float& t, float& u, float& v, bool cull)
+// The u and v range tests are `test eax, eax; js` on the word just stored, a
+// sign-bit test and not `< 0`. u's upper test uses the register copy (`fcomp
+// dword ptr [esp + 0x40]` at 0x0003705a); it is v's that reads u back out of the
+// caller's float (`fadd dword ptr [ecx]` at 0x000370d3), so an aliasing caller
+// changes the second test and not the first. The determinant is stored into the
+// `vert1` argument slot (0x00036ff1) and reloaded from there.
+//
+// The whole row is x87 assembly transcribed instruction for instruction from the
+// listing (the per-site precedent in X87Sqrt.h, taken here for the whole row).
+// Its C++ form agreed with the oracle on every quiet input and differed on
+// SIGNALLING NaNs (convex-mesh gap harness hardening): x87 lets a signalling
+// memory operand lose to a quiet register operand whatever the significands, and
+// `fld` quiets what it loads, so which operands the listing loads and which it
+// uses from memory is part of the result. The listing loads vert1, vert2 and the
+// origin and uses vert0 and the direction only as memory operands of fsub/fmul;
+// MSVC's C++ loaded vert0 and the direction into registers first (quieting them)
+// and reordered operands, so the propagated payload -- and with it the sign bit
+// the u and v tests read -- differed: 1310 differing words in step_ray_tri when
+// its draws kept their signalling NaNs, and 75 / 31 fans (0x027f / 0x0f7f) of
+// ray_inflated_tris' pre-flight; 0 and 0 since. Naked, so the frame is the
+// listing's too: no prologue, the locals at [esp .. esp + 0x2c] after `sub esp,
+// 0x30`, the arguments above them.
+__declspec(naked) bool NX_CALL_CONV NxRayTriIntersect(const NxVec3& /*orig*/,
+	const NxVec3& /*dir*/, const NxVec3& /*vert0*/, const NxVec3& /*vert1*/,
+	const NxVec3& /*vert2*/, float& /*t*/, float& /*u*/, float& /*v*/, bool /*cull*/)
 	{
-	const NxReal edge1X = vert1.x - vert0.x;
-	const NxReal edge1Y = vert1.y - vert0.y;
-	const NxReal edge1Z = vert1.z - vert0.z;
-	const NxReal edge2X = vert2.x - vert0.x;
-	const NxReal edge2Y = vert2.y - vert0.y;
-	const NxReal edge2Z = vert2.z - vert0.z;
-
-	// pvec = dir x edge2. Its z component is stored with `fst` and not
-	// `fstp` at 0x00036fd6, so the determinant below multiplies the register
-	// copy while everything after it reads the narrowed one.
-	const NxReal pvecX = (NxReal) (edge2Z * (double) dir.y - edge2Y * (double) dir.z);
-	const NxReal pvecY = (NxReal) (edge2X * (double) dir.z - edge2Z * (double) dir.x);
-	const double pvecZ = edge2Y * (double) dir.x - edge2X * (double) dir.y;
-	const NxReal pvecZStored = (NxReal) pvecZ;
-
-	const NxReal det = (NxReal) ((pvecZ * edge1Z + pvecY * (double) edge1Y)
-		+ pvecX * (double) edge1X);
-
-	if(cull)
+	__asm
 		{
-		if(det < gTriangleEpsilon)
-			return false;
-
-		const NxReal tvecX = orig.x - vert0.x;
-		const NxReal tvecY = orig.y - vert0.y;
-		const double tvecZ = orig.z - (double) vert0.z;
-		const NxReal tvecZStored = (NxReal) tvecZ;
-
-		const double uRaw = (tvecZ * pvecZStored + tvecY * (double) pvecY)
-			+ tvecX * (double) pvecX;
-		u = (NxReal) uRaw;
-		if(storedSignBitSet(u) || uRaw > det)
-			return false;
-
-		const NxReal qvecX = (NxReal) (tvecY * (double) edge1Z - tvecZStored * (double) edge1Y);
-		const NxReal qvecY = (NxReal) (tvecZStored * (double) edge1X - edge1Z * (double) tvecX);
-		const NxReal qvecZ = (NxReal) (tvecX * (double) edge1Y - tvecY * (double) edge1X);
-
-		const double vRaw = (qvecY * (double) dir.y + qvecZ * (double) dir.z)
-			+ qvecX * (double) dir.x;
-		v = (NxReal) vRaw;
-		if(storedSignBitSet(v) || vRaw + u > det)
-			return false;
-
-		const double inverseDet = 1.0 / det;
-		t = (NxReal) (((qvecZ * (double) edge2Z + qvecY * (double) edge2Y)
-			+ qvecX * (double) edge2X) * inverseDet);
-		u = (NxReal) (inverseDet * u);
-		v = (NxReal) (inverseDet * v);
-		return true;
+		sub	esp, 0x30		// 0x00036f50
+		mov	eax, dword ptr [esp + 0x40]		// 0x00036f53
+		mov	ecx, dword ptr [esp + 0x3c]		// 0x00036f57
+		fld	dword ptr [eax]		// 0x00036f5b
+		fsub	dword ptr [ecx]		// 0x00036f5d
+		mov	edx, dword ptr [esp + 0x38]		// 0x00036f5f
+		fstp	dword ptr [esp]		// 0x00036f63
+		fld	dword ptr [eax + 4]		// 0x00036f66
+		fsub	dword ptr [ecx + 4]		// 0x00036f69
+		fstp	dword ptr [esp + 4]		// 0x00036f6c
+		fld	dword ptr [eax + 8]		// 0x00036f70
+		mov	eax, dword ptr [esp + 0x44]		// 0x00036f73
+		fsub	dword ptr [ecx + 8]		// 0x00036f77
+		fstp	dword ptr [esp + 8]		// 0x00036f7a
+		fld	dword ptr [eax]		// 0x00036f7e
+		fsub	dword ptr [ecx]		// 0x00036f80
+		fstp	dword ptr [esp + 0xc]		// 0x00036f82
+		fld	dword ptr [eax + 4]		// 0x00036f86
+		fsub	dword ptr [ecx + 4]		// 0x00036f89
+		fstp	dword ptr [esp + 0x10]		// 0x00036f8c
+		fld	dword ptr [eax + 8]		// 0x00036f90
+		mov	al, byte ptr [esp + 0x54]		// 0x00036f93
+		test	al, al		// 0x00036f97
+		fsub	dword ptr [ecx + 8]		// 0x00036f99
+		fstp	dword ptr [esp + 0x14]		// 0x00036f9c
+		fld	dword ptr [esp + 0x14]		// 0x00036fa0
+		fmul	dword ptr [edx + 4]		// 0x00036fa4
+		fld	dword ptr [esp + 0x10]		// 0x00036fa7
+		fmul	dword ptr [edx + 8]		// 0x00036fab
+		fsubp	st(1), st		// 0x00036fae
+		fstp	dword ptr [esp + 0x24]		// 0x00036fb0
+		fld	dword ptr [esp + 0xc]		// 0x00036fb4
+		fmul	dword ptr [edx + 8]		// 0x00036fb8
+		fld	dword ptr [esp + 0x14]		// 0x00036fbb
+		fmul	dword ptr [edx]		// 0x00036fbf
+		fsubp	st(1), st		// 0x00036fc1
+		fstp	dword ptr [esp + 0x28]		// 0x00036fc3
+		fld	dword ptr [esp + 0x10]		// 0x00036fc7
+		fmul	dword ptr [edx]		// 0x00036fcb
+		fld	dword ptr [esp + 0xc]		// 0x00036fcd
+		fmul	dword ptr [edx + 4]		// 0x00036fd1
+		fsubp	st(1), st		// 0x00036fd4
+		fst	dword ptr [esp + 0x2c]		// 0x00036fd6
+		fmul	dword ptr [esp + 8]		// 0x00036fda
+		fld	dword ptr [esp + 0x28]		// 0x00036fde
+		fmul	dword ptr [esp + 4]		// 0x00036fe2
+		faddp	st(1), st		// 0x00036fe6
+		fld	dword ptr [esp + 0x24]		// 0x00036fe8
+		fmul	dword ptr [esp]		// 0x00036fec
+		faddp	st(1), st		// 0x00036fef
+		fstp	dword ptr [esp + 0x40]		// 0x00036ff1
+		fld	dword ptr [esp + 0x40]		// 0x00036ff5
+		je	nonCulled		// 0x00036ff9
+		fcomp	gRayTriEpsilon		// 0x00036fff
+		fnstsw	ax		// 0x00037005
+		test	ah, 5		// 0x00037007
+		jnp	returnFalse		// 0x0003700a
+		mov	eax, dword ptr [esp + 0x34]		// 0x00037010
+		fld	dword ptr [eax]		// 0x00037014
+		fsub	dword ptr [ecx]		// 0x00037016
+		fstp	dword ptr [esp + 0x18]		// 0x00037018
+		fld	dword ptr [eax + 4]		// 0x0003701c
+		fsub	dword ptr [ecx + 4]		// 0x0003701f
+		fstp	dword ptr [esp + 0x1c]		// 0x00037022
+		fld	dword ptr [eax + 8]		// 0x00037026
+		fsub	dword ptr [ecx + 8]		// 0x00037029
+		mov	ecx, dword ptr [esp + 0x4c]		// 0x0003702c
+		fst	dword ptr [esp + 0x20]		// 0x00037030
+		fmul	dword ptr [esp + 0x2c]		// 0x00037034
+		fld	dword ptr [esp + 0x1c]		// 0x00037038
+		fmul	dword ptr [esp + 0x28]		// 0x0003703c
+		faddp	st(1), st		// 0x00037040
+		fld	dword ptr [esp + 0x18]		// 0x00037042
+		fmul	dword ptr [esp + 0x24]		// 0x00037046
+		faddp	st(1), st		// 0x0003704a
+		fld	st(0)		// 0x0003704c
+		fstp	dword ptr [ecx]		// 0x0003704e
+		mov	eax, dword ptr [ecx]		// 0x00037050
+		test	eax, eax		// 0x00037052
+		js	popFalse		// 0x00037054
+		fcomp	dword ptr [esp + 0x40]		// 0x0003705a
+		fnstsw	ax		// 0x0003705e
+		test	ah, 0x41		// 0x00037060
+		je	returnFalse		// 0x00037063
+		fld	dword ptr [esp + 0x1c]		// 0x00037069
+		fmul	dword ptr [esp + 8]		// 0x0003706d
+		fld	dword ptr [esp + 0x20]		// 0x00037071
+		fmul	dword ptr [esp + 4]		// 0x00037075
+		fsubp	st(1), st		// 0x00037079
+		fstp	dword ptr [esp + 0x24]		// 0x0003707b
+		fld	dword ptr [esp + 0x20]		// 0x0003707f
+		fmul	dword ptr [esp]		// 0x00037083
+		fld	dword ptr [esp + 8]		// 0x00037086
+		fmul	dword ptr [esp + 0x18]		// 0x0003708a
+		fsubp	st(1), st		// 0x0003708e
+		fstp	dword ptr [esp + 0x28]		// 0x00037090
+		fld	dword ptr [esp + 0x18]		// 0x00037094
+		fmul	dword ptr [esp + 4]		// 0x00037098
+		fld	dword ptr [esp + 0x1c]		// 0x0003709c
+		fmul	dword ptr [esp]		// 0x000370a0
+		fsubp	st(1), st		// 0x000370a3
+		fstp	dword ptr [esp + 0x2c]		// 0x000370a5
+		fld	dword ptr [esp + 0x28]		// 0x000370a9
+		fmul	dword ptr [edx + 4]		// 0x000370ad
+		fld	dword ptr [esp + 0x2c]		// 0x000370b0
+		fmul	dword ptr [edx + 8]		// 0x000370b4
+		faddp	st(1), st		// 0x000370b7
+		fld	dword ptr [esp + 0x24]		// 0x000370b9
+		fmul	dword ptr [edx]		// 0x000370bd
+		mov	edx, dword ptr [esp + 0x50]		// 0x000370bf
+		faddp	st(1), st		// 0x000370c3
+		fld	st(0)		// 0x000370c5
+		fstp	dword ptr [edx]		// 0x000370c7
+		mov	eax, dword ptr [edx]		// 0x000370c9
+		test	eax, eax		// 0x000370cb
+		js	popFalse		// 0x000370cd
+		fadd	dword ptr [ecx]		// 0x000370d3
+		fcomp	dword ptr [esp + 0x40]		// 0x000370d5
+		fnstsw	ax		// 0x000370d9
+		test	ah, 0x41		// 0x000370db
+		je	returnFalse		// 0x000370de
+		fld	gRayTriOne		// 0x000370e4
+		mov	eax, dword ptr [esp + 0x48]		// 0x000370ea
+		fdiv	dword ptr [esp + 0x40]		// 0x000370ee
+		fld	dword ptr [esp + 0x2c]		// 0x000370f2
+		fmul	dword ptr [esp + 0x14]		// 0x000370f6
+		fld	dword ptr [esp + 0x28]		// 0x000370fa
+		fmul	dword ptr [esp + 0x10]		// 0x000370fe
+		faddp	st(1), st		// 0x00037102
+		fld	dword ptr [esp + 0x24]		// 0x00037104
+		fmul	dword ptr [esp + 0xc]		// 0x00037108
+		faddp	st(1), st		// 0x0003710c
+		fmul	st, st(1)		// 0x0003710e
+		fstp	dword ptr [eax]		// 0x00037110
+		mov	al, 1		// 0x00037112
+		fld	st(0)		// 0x00037114
+		fmul	dword ptr [ecx]		// 0x00037116
+		fstp	dword ptr [ecx]		// 0x00037118
+		fmul	dword ptr [edx]		// 0x0003711a
+		fstp	dword ptr [edx]		// 0x0003711c
+		add	esp, 0x30		// 0x0003711e
+		ret		// 0x00037121
+nonCulled:
+		fcomp	gRayTriNegativeEpsilon		// 0x00037122
+		fnstsw	ax		// 0x00037128
+		test	ah, 0x41		// 0x0003712a
+		jne	nonCulledOutside		// 0x0003712d
+		fld	dword ptr [esp + 0x40]		// 0x0003712f
+		fcomp	gRayTriEpsilon		// 0x00037133
+		fnstsw	ax		// 0x00037139
+		test	ah, 5		// 0x0003713b
+		jnp	returnFalse		// 0x0003713e
+nonCulledOutside:
+		fld	gRayTriOne		// 0x00037144
+		mov	eax, dword ptr [esp + 0x34]		// 0x0003714a
+		fdiv	dword ptr [esp + 0x40]		// 0x0003714e
+		fstp	dword ptr [esp + 0x54]		// 0x00037152
+		fld	dword ptr [eax]		// 0x00037156
+		fsub	dword ptr [ecx]		// 0x00037158
+		fstp	dword ptr [esp + 0x18]		// 0x0003715a
+		fld	dword ptr [eax + 4]		// 0x0003715e
+		fsub	dword ptr [ecx + 4]		// 0x00037161
+		fstp	dword ptr [esp + 0x1c]		// 0x00037164
+		fld	dword ptr [eax + 8]		// 0x00037168
+		fsub	dword ptr [ecx + 8]		// 0x0003716b
+		mov	ecx, dword ptr [esp + 0x4c]		// 0x0003716e
+		fst	dword ptr [esp + 0x20]		// 0x00037172
+		fmul	dword ptr [esp + 0x2c]		// 0x00037176
+		fld	dword ptr [esp + 0x1c]		// 0x0003717a
+		fmul	dword ptr [esp + 0x28]		// 0x0003717e
+		faddp	st(1), st		// 0x00037182
+		fld	dword ptr [esp + 0x18]		// 0x00037184
+		fmul	dword ptr [esp + 0x24]		// 0x00037188
+		faddp	st(1), st		// 0x0003718c
+		fmul	dword ptr [esp + 0x54]		// 0x0003718e
+		fld	st(0)		// 0x00037192
+		fstp	dword ptr [ecx]		// 0x00037194
+		mov	eax, dword ptr [ecx]		// 0x00037196
+		test	eax, eax		// 0x00037198
+		js	popFalse		// 0x0003719a
+		fcomp	gRayTriOne		// 0x000371a0
+		fnstsw	ax		// 0x000371a6
+		test	ah, 0x41		// 0x000371a8
+		je	returnFalse		// 0x000371ab
+		fld	dword ptr [esp + 0x1c]		// 0x000371b1
+		mov	eax, dword ptr [esp + 0x50]		// 0x000371b5
+		fmul	dword ptr [esp + 8]		// 0x000371b9
+		fld	dword ptr [esp + 0x20]		// 0x000371bd
+		fmul	dword ptr [esp + 4]		// 0x000371c1
+		fsubp	st(1), st		// 0x000371c5
+		fstp	dword ptr [esp + 0x24]		// 0x000371c7
+		fld	dword ptr [esp + 0x20]		// 0x000371cb
+		fmul	dword ptr [esp]		// 0x000371cf
+		fld	dword ptr [esp + 8]		// 0x000371d2
+		fmul	dword ptr [esp + 0x18]		// 0x000371d6
+		fsubp	st(1), st		// 0x000371da
+		fstp	dword ptr [esp + 0x28]		// 0x000371dc
+		fld	dword ptr [esp + 0x18]		// 0x000371e0
+		fmul	dword ptr [esp + 4]		// 0x000371e4
+		fld	dword ptr [esp + 0x1c]		// 0x000371e8
+		fmul	dword ptr [esp]		// 0x000371ec
+		fsubp	st(1), st		// 0x000371ef
+		fstp	dword ptr [esp + 0x2c]		// 0x000371f1
+		fld	dword ptr [esp + 0x28]		// 0x000371f5
+		fmul	dword ptr [edx + 4]		// 0x000371f9
+		fld	dword ptr [esp + 0x24]		// 0x000371fc
+		fmul	dword ptr [edx]		// 0x00037200
+		faddp	st(1), st		// 0x00037202
+		fld	dword ptr [esp + 0x2c]		// 0x00037204
+		fmul	dword ptr [edx + 8]		// 0x00037208
+		faddp	st(1), st		// 0x0003720b
+		fmul	dword ptr [esp + 0x54]		// 0x0003720d
+		fld	st(0)		// 0x00037211
+		fstp	dword ptr [eax]		// 0x00037213
+		mov	edx, dword ptr [eax]		// 0x00037215
+		test	edx, edx		// 0x00037217
+		js	popFalse		// 0x00037219
+		fadd	dword ptr [ecx]		// 0x0003721b
+		fcomp	gRayTriOne		// 0x0003721d
+		fnstsw	ax		// 0x00037223
+		test	ah, 0x41		// 0x00037225
+		je	returnFalse		// 0x00037228
+		fld	dword ptr [esp + 0x2c]		// 0x0003722a
+		mov	ecx, dword ptr [esp + 0x48]		// 0x0003722e
+		fmul	dword ptr [esp + 0x14]		// 0x00037232
+		mov	al, 1		// 0x00037236
+		fld	dword ptr [esp + 0x28]		// 0x00037238
+		fmul	dword ptr [esp + 0x10]		// 0x0003723c
+		faddp	st(1), st		// 0x00037240
+		fld	dword ptr [esp + 0x24]		// 0x00037242
+		fmul	dword ptr [esp + 0xc]		// 0x00037246
+		faddp	st(1), st		// 0x0003724a
+		fmul	dword ptr [esp + 0x54]		// 0x0003724c
+		fstp	dword ptr [ecx]		// 0x00037250
+		add	esp, 0x30		// 0x00037252
+		ret		// 0x00037255
+popFalse:
+		fstp	st(0)		// 0x00037256
+returnFalse:
+		xor	al, al		// 0x00037258
+		add	esp, 0x30		// 0x0003725a
+		ret		// 0x0003725d
 		}
-
-	if(det > -gTriangleEpsilon && det < gTriangleEpsilon)
-		return false;
-
-	// 0x00037152 narrows 1/det before anything uses it, where the culled path
-	// keeps it in a register.
-	const NxReal inverseDet = (NxReal) (1.0 / det);
-
-	const NxReal tvecX = orig.x - vert0.x;
-	const NxReal tvecY = orig.y - vert0.y;
-	const double tvecZ = orig.z - (double) vert0.z;
-	const NxReal tvecZStored = (NxReal) tvecZ;
-
-	const double uRaw = ((tvecZ * pvecZStored + tvecY * (double) pvecY)
-		+ tvecX * (double) pvecX) * inverseDet;
-	u = (NxReal) uRaw;
-	if(storedSignBitSet(u) || uRaw > 1.0f)
-		return false;
-
-	const NxReal qvecX = (NxReal) (tvecY * (double) edge1Z - tvecZStored * (double) edge1Y);
-	const NxReal qvecY = (NxReal) (tvecZStored * (double) edge1X - edge1Z * (double) tvecX);
-	const NxReal qvecZ = (NxReal) (tvecX * (double) edge1Y - tvecY * (double) edge1X);
-
-	const double vRaw = ((qvecY * (double) dir.y + qvecX * (double) dir.x)
-		+ qvecZ * (double) dir.z) * inverseDet;
-	v = (NxReal) vRaw;
-	if(storedSignBitSet(v) || vRaw + u > 1.0f)
-		return false;
-
-	t = (NxReal) (((qvecZ * (double) edge2Z + qvecY * (double) edge2Y)
-		+ qvecX * (double) edge2X) * inverseDet);
-	return true;
 	}
 
 // convex-mesh gap Task 2b (units/convex-mesh-gap-contract.md, sub-unit F): the

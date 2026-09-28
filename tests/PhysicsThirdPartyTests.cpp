@@ -736,12 +736,16 @@ static unsigned nxNext()
 	return gState;
 	}
 
-static float nxNextFloat()
+// A raw word, written into its slot as bits. It used to be returned as a float,
+// and a float return travels in st(0), where a signalling NaN is quieted -- or not,
+// if the call is inlined and the word copied as an integer -- so the words handed
+// to the rows would have depended on code generation (the convex-mesh gap harness
+// hardening of tests/PhysicsCollisionTests.cpp). Its one use draws no signalling
+// NaN, so the words are the same either way.
+static void nxNextFloatBits(float* out)
 	{
-	unsigned bits = nxNext();
-	float value;
-	memcpy(&value, &bits, sizeof(value));
-	return value;
+	const unsigned bits = nxNext();
+	memcpy(out, &bits, sizeof(*out));
 	}
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1133,7 +1137,7 @@ static void nxDriveRadix(const NxOracleRows& o, bool selfOnly)
 		for(unsigned i = 0; i < nb; ++i)
 			{
 			dwords[i] = nxNext();
-			floats[i] = nxNextFloat();
+			nxNextFloatBits(&floats[i]);
 			}
 
 		// --- oracle

@@ -1593,11 +1593,13 @@ $NxRequiredCoverageLines = [ordered] @{
         # Two of Task 2's exports, driven here because the recovered matrix put
         # them inside the simulation step and their own differential runs under
         # the CRT default control word only. NxRayTriIntersect agrees under
-        # both. NxBuildSmoothNormals agrees under the default and differs on 24
+        # both, and since the harness hardening on draws that keep their signalling
+        # NaNs (nxPickRawWord; its row is now the listing's instructions, and these
+        # lines were re-registered once for that). NxBuildSmoothNormals agrees under the default and differs on 24
         # of 459,676 checks under 0x0f7f; that 24 is pinned in its coverage line
         # below rather than dropped, so it fails if it moves in either
         # direction, including toward zero.
-        'collision name=step_ray_tri index=- rva=export owner=phys_fn_001712 checks=1560000 oracle=2bb3aaedbd4ac9ed',
+        'collision name=step_ray_tri index=- rva=export owner=phys_fn_001712 checks=1560000 oracle=fdbc6163470513f9',
         'collision name=step_smooth_normals index=- rva=export owner=phys_fn_002146 checks=919352 oracle=6d5d4be60a607d94',
 
         # The branch mix behind each digest. A digest moving tells you the run
@@ -1635,7 +1637,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # segment_segment this block does NOT canonicalise them: removing the
         # canonicalisation leaves mismatches=0, so the payloads agree too.
         'collision coverage name=box_quad_depth aimed_inside=11250 reversed=22482 interpolated=36640 non_finite=12737 default_mismatches=0 simulate_mismatches=0',
-        'collision coverage name=step_ray_tri hits=47907 non_finite_words=97007 default_mismatches=0 simulate_mismatches=0',
+        'collision coverage name=step_ray_tri hits=47643 non_finite_words=96735 default_mismatches=0 simulate_mismatches=0',
         'collision coverage name=step_smooth_normals non_finite_words=65973 default_mismatches=0 simulate_mismatches=0',
 
         # The first contact-generation entry. The digest is over the whole
@@ -1864,14 +1866,17 @@ $NxRequiredCoverageLines = [ordered] @{
         # against the compound shape's own world bounds (the Prunable at Shape+0xa4),
         # and `refreshed` is the arm that calls phys_fn_004886 to set the valid bit,
         # which is compared too. The callback line pins that the oracle's owner
-        # callback is null, the state both sides are compared in.
+        # callback is null, the state both sides are compared in. Re-registered once in
+        # the harness hardening: a raw draw's bounds are now the two drawn words, not
+        # c - h and c + h (SSE keeps the first operand's NaN, and which operand of the
+        # commutative sum came first was the compiler's choice).
         'collision compound owner_world_aabb_callback=null',
-        'collision name=sphere_compound index=11 rva=0x0003f5b0 owner=phys_fn_001789 checks=600000 oracle=e3cf7959326e8e05',
-        'collision coverage name=sphere_compound true=35870 false=24130 refreshed=30007 inverted=6653 unflagged=0 default_mismatches=0 simulate_mismatches=0',
-        'collision name=box_compound index=17 rva=0x0003f700 owner=phys_fn_001791 checks=600000 oracle=0f9d2946320876b4',
-        'collision coverage name=box_compound true=32090 false=27910 refreshed=30012 inverted=6656 unflagged=7660 default_mismatches=0 simulate_mismatches=0',
-        'collision name=capsule_compound index=23 rva=0x0003f390 owner=phys_fn_001785 checks=600000 oracle=5b6ab7e9e5695661',
-        'collision coverage name=capsule_compound true=35375 false=24625 refreshed=30096 inverted=6433 unflagged=0 default_mismatches=0 simulate_mismatches=0',
+        'collision name=sphere_compound index=11 rva=0x0003f5b0 owner=phys_fn_001789 checks=600000 oracle=306d6cb8c80ea48f',
+        'collision coverage name=sphere_compound true=35933 false=24067 refreshed=30007 inverted=6653 unflagged=0 default_mismatches=0 simulate_mismatches=0',
+        'collision name=box_compound index=17 rva=0x0003f700 owner=phys_fn_001791 checks=600000 oracle=8ae3e6725ef7706e',
+        'collision coverage name=box_compound true=32111 false=27889 refreshed=30012 inverted=6656 unflagged=7660 default_mismatches=0 simulate_mismatches=0',
+        'collision name=capsule_compound index=23 rva=0x0003f390 owner=phys_fn_001785 checks=600000 oracle=97318ad61948798e',
+        'collision coverage name=capsule_compound true=35461 false=24539 refreshed=30096 inverted=6433 unflagged=0 default_mismatches=0 simulate_mismatches=0',
 
         # convex-mesh gap Task 2b (units/convex-mesh-gap-contract.md, sub-units E, F, I
         # and N). Each family draws a third raw (nxPickBits: every word written as bits,
@@ -1882,26 +1887,30 @@ $NxRequiredCoverageLines = [ordered] @{
         # its own parameters say ran, `flt_max` the determinant-zero interior), line/line
         # 001692, segment/triangle 001694 (r at the start, the end or between; `parallel`
         # the singular branch) -- exact under 0x027f, and 001672/001692 under 0x0f7f too.
-        # 001694's simulate_mismatches=31 are all phys_fn_001690's own 0x0f7f divergence
-        # reached through it: 0 with the oracle's 001690 bound in, measured on this draw.
+        # segment/triangle also replays the Task 2b review's 250,000 draws (a quarter of
+        # the words of mixed exponent), the ones that reach the interior's wide s; with
+        # them its simulate_mismatches=940 are all phys_fn_001690's own 0x0f7f divergence
+        # reached through it: 0 with the oracle's 001690 bound in (a throwaway build, this
+        # draw), where the C++ interior before the harness hardening gave 2.
         'collision name=point_triangle index=- rva=0x000329e0 owner=phys_fn_001672 checks=2160000 oracle=a411b7cd3688cb25',
         'collision coverage name=point_triangle degenerate=3697 on_feature=4904 vertex0=9862 vertex1=5282 vertex2=4926 edge_s0=3069 edge_t0=5806 open=23695 flt_max=3998 null_outputs=7360 mixed=20088 canonical_nan=118358 default_mismatches=0 simulate_mismatches=0',
         'collision name=line_line index=- rva=0x000345b0 owner=phys_fn_001692 checks=2880000 oracle=06550ebac920b252',
         'collision coverage name=line_line parallel=2557 zero_direction=1222 crossing=1261 at_origin0=31897 at_origin1=31372 mixed=19874 canonical_nan=57066 default_mismatches=0 simulate_mismatches=0',
-        'collision name=segment_triangle index=- rva=0x00034860 owner=phys_fn_001694 checks=2640000 oracle=601b861a1a0d4e66',
-        'collision coverage name=segment_triangle degenerate=3775 parallel=2534 zero_length=1221 crossing=1235 r_start=22940 r_end=10039 r_open=11602 s_zero=17297 t_zero=37970 intersecting=1538 null_outputs=7496 mixed=19944 canonical_nan=89157 default_mismatches=0 simulate_mismatches=31',
+        'collision name=segment_triangle index=- rva=0x00034860 owner=phys_fn_001694 checks=13640000 oracle=c77590b1ba895124',
+        'collision coverage name=segment_triangle degenerate=3775 parallel=2534 zero_length=1221 crossing=1235 r_start=22940 r_end=10039 r_open=11602 s_zero=17297 t_zero=37970 intersecting=1538 null_outputs=7496 mixed=19944 canonical_nan=255260 default_mismatches=0 simulate_mismatches=940',
 
         # Geometry.cpp's two helpers: the ray against an inflated triangle fan 001708,
         # gated on the fans on which both callees -- Triangle::Inflate (phys_fn_005185,
-        # vendored, known to differ) and NxRayTriIntersect (phys_fn_001712, which differs
-        # on some NaN inputs) -- agree between the two sides under that word; the other
+        # vendored, known to differ) and NxRayTriIntersect (phys_fn_001712, compared as a
+        # NaN is folded, and agreeing on every fan since the harness hardening) -- agree
+        # between the two sides under that word; the other
         # fans are counted per word (`inflate_divergent*`, `raytri_divergent*`) and their
         # words sit under the harness's enforced ceilings (kCalleeDivergentFanCeiling,
         # kCalleeDivergentWordCeiling). The slab test 001730/001732, exact under both
         # words; `parallel_axes` and `boundary_axes` are direction components inside
         # and exactly on +-FLT_EPSILON.
         'collision name=ray_inflated_tris index=- rva=0x00036d90 owner=phys_fn_001708 checks=600000 oracle=9604e3071aae4c41',
-        'collision coverage name=ray_inflated_tris hits=27976 misses=32024 count_two=3653 in_plane=2468 inflate_divergent=28725 inflate_divergent_simulate=41198 raytri_divergent=75 raytri_divergent_simulate=31 mixed=20017 canonical_nan=18150 default_mismatches=0 simulate_mismatches=0',
+        'collision coverage name=ray_inflated_tris hits=27976 misses=32024 count_two=3653 in_plane=2468 inflate_divergent=28725 inflate_divergent_simulate=41198 raytri_divergent=0 raytri_divergent_simulate=0 mixed=20017 canonical_nan=18130 default_mismatches=0 simulate_mismatches=0',
         'collision name=aabb_slab index=- rva=0x00038050 owner=phys_fn_001730 checks=1080000 oracle=25d802c82f8405bf',
         'collision coverage name=aabb_slab miss=51649 face0=1515 face1=1458 face2=1522 face3=1283 face4=1303 face5=1270 parallel_axes=15029 boundary_axes=7445 inverted=2441 mixed=19994 canonical_nan=0 default_mismatches=0 simulate_mismatches=0',
 
@@ -1914,7 +1923,77 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision name=triangle_plane index=- rva=0x0003c160 owner=phys_fn_001760 checks=1920000 oracle=0da910f4d8eb468b',
         'collision coverage name=triangle_plane degenerate=3753 zero_normal=3628 wrong_return=0 mixed=19862 canonical_nan=119068 default_mismatches=0 simulate_mismatches=0',
         'collision name=segment_triangle_edges index=- rva=0x00044510 owner=phys_fn_001855 checks=2040000 oracle=35f7ec3d9a18472d',
-        'collision coverage name=segment_triangle_edges on_edge=5853 exit_early=16188 exit_behind=12710 exit_outside=25249 parallel=2517 zero_length=1206 mixed=20246 canonical_nan=142688 default_mismatches=0 simulate_mismatches=215'
+        'collision coverage name=segment_triangle_edges on_edge=5853 exit_early=16188 exit_behind=12710 exit_outside=25249 parallel=2517 zero_length=1206 mixed=20246 canonical_nan=142688 default_mismatches=0 simulate_mismatches=215',
+
+        # Harness hardening (between convex-mesh gap Tasks 2b and 2c). One input line per
+        # block: a digest of the exact words the family hands the oracle, once per draw.
+        # An oracle digest moves when its inputs move as well as when the oracle's answers
+        # do; these say which. They were added when the generators stopped returning raw
+        # words as floats (a float return passes st(0), which quiets a signalling NaN
+        # depending on inlining), and the one-time re-registration that went with it is
+        # recorded in evidence/convex-mesh-gap.md, `Harness hardening`.
+        'collision input name=plane_sphere.random words=2160000 input=5a946a422dbc8ee6',
+        'collision input name=plane_sphere.aimed words=2160000 input=d2efd5953ca38ea7',
+        'collision input name=plane_box.random words=2160000 input=c428f123f2397292',
+        'collision input name=plane_box.aimed words=2160000 input=2576fff8dbcb8545',
+        'collision input name=plane_capsule.random words=2160000 input=ed2713a56187cb0b',
+        'collision input name=plane_capsule.aimed words=2160000 input=0b0211aa3cca347b',
+        'collision input name=sphere_sphere.random words=2160000 input=b2816248c46be25c',
+        'collision input name=sphere_sphere.aimed words=2160000 input=eefa1d60ee2cfa03',
+        'collision input name=sphere_box.random words=2160000 input=f65a5bcb3bc938e8',
+        'collision input name=sphere_box.aimed words=2160000 input=03612b4b8a9f8e10',
+        'collision input name=sphere_capsule.random words=2160000 input=46dd2b65f043bf6a',
+        'collision input name=sphere_capsule.aimed words=2160000 input=588fb878efc1f8e2',
+        'collision input name=box_box.random words=2160000 input=1e82b9493ebcdb46',
+        'collision input name=box_box.aimed words=2160000 input=26bfaad86775de9a',
+        'collision input name=box_capsule.random words=2160000 input=e9993f8e06148d24',
+        'collision input name=box_capsule.aimed words=2160000 input=71f58de47c76808a',
+        'collision input name=capsule_capsule.random words=2160000 input=d6f5a9557de84bd5',
+        'collision input name=capsule_capsule.aimed words=2160000 input=6edd851872f6c592',
+        'collision input name=box_corner words=1260000 input=48396a2521d8159b',
+        'collision input name=sphere_box_data words=1140000 input=a6ebc680195562f2',
+        'collision input name=box_quad_depth words=840000 input=f1a709236bfac7e7',
+        'collision input name=box_clip.random words=1800000 input=689b5625fe2b011e',
+        'collision input name=box_clip.aimed words=1800000 input=9f210f8d37f5f0ef',
+        'collision input name=box_axis.random words=1446000 input=2606e19588609a6d',
+        'collision input name=box_axis.aimed words=1446000 input=8e5139fdbc976042',
+        'collision input name=box_shim words=964000 input=ecf189bce8f91d7e',
+        'collision input name=contact_box_box words=1803996 input=b78baa3323e5acc7',
+        'collision input name=step_ray_tri words=915000 input=b3af9202902cf7ca',
+        'collision input name=step_smooth_normals words=200049 input=8b825b784684671f',
+        'collision input name=contact_plane_sphere words=1810476 input=3c9ca6e31e4cd03c',
+        'collision input name=contact_emit words=2196392 input=1c52c378f9ad8c86',
+        'collision input name=shape_raycast_plane words=1560000 input=225f623bff038d1f',
+        'collision input name=contact_plane_capsule words=1793520 input=da540d4323868023',
+        'collision input name=shape_raycast_sphere words=1560000 input=76699c958b60f670',
+        'collision input name=contact_sphere_capsule words=1799928 input=7a272f915af5472e',
+        'collision input name=contact_plane_box words=1805148 input=65fb9cea3818f1b7',
+        'collision input name=shape_raycast_capsule words=1560000 input=15f8356722f357f3',
+        'collision input name=contact_capsule_capsule words=1810728 input=ab89805d2fe1812c',
+        'collision input name=segment_segment words=780000 input=6d8dac20719a5757',
+        'collision input name=shape_owner words=148000 input=e113380f9d5db4b9',
+        'collision input name=ccd_guard words=148000 input=e113380f9d5db4b9',
+        'collision input name=contact_sphere_sphere words=1794276 input=935c1ff0d4b059ac',
+        'collision input name=sphere_box_contact words=1140000 input=99a393fa5e402360',
+        'collision input name=contact_sphere_box words=1807056 input=ed53dd9f59188ab9',
+        'collision input name=point_box words=1095000 input=4b87a89db12346fa',
+        'collision input name=line_box words=1275000 input=5b06ae84b677740e',
+        'collision input name=segment_box words=1320000 input=84ba14296dc2569a',
+        'collision input name=contact_box_capsule words=1797372 input=4f98b719d8ae29d5',
+        'collision input name=sphere_compound words=2640000 input=ee0e412b089ffc8c',
+        'collision input name=box_compound words=2640000 input=9a3dac417a7bf45c',
+        'collision input name=capsule_compound words=2640000 input=54afd91ea4c41c1e',
+        'collision input name=point_triangle words=780000 input=830bc841098b4ff3',
+        'collision input name=line_line words=720000 input=3b198818353acdb1',
+        'collision input name=segment_triangle words=4710000 input=0e8f31c39ee53daf',
+        'collision input name=ray_inflated_tris words=2340000 input=b96f8d70443d0ad3',
+        'collision input name=aabb_slab words=720000 input=0435faabb71adfc3',
+        'collision input name=triangle_plane words=540000 input=06e847b15680af49',
+        'collision input name=segment_triangle_edges words=900000 input=f90e10afd6e2b5ba',
+
+        # ray_inflated_tris' gating fans per control word and draw kind: the fans on which
+        # both callees (Triangle::Inflate and NxRayTriIntersect) agree between the sides.
+        'collision gated name=ray_inflated_tris raw=10778 aimed=14293 mixed=6204 raw_simulate=3727 aimed_simulate=13581 mixed_simulate=1494'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
@@ -2449,8 +2528,8 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
-    '3' = 140  # 18 for NxPhysicsKernelFuzzTests, 122 for NxPhysicsCollisionTests (85 + 23 from
-               # convex-mesh gap Task 2a + 14 from its Task 2b)
+    '3' = 199  # 18 for NxPhysicsKernelFuzzTests, 181 for NxPhysicsCollisionTests (85 + 23 from
+               # convex-mesh gap Task 2a + 14 from its Task 2b + 59 from its harness hardening)
     '4' = 161  # 34 for NxPhysicsAssetTests, 127 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 26 from qhull-gap Task 1)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines

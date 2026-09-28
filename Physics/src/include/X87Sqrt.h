@@ -87,6 +87,13 @@
 // per-row judgement of proportion, not a rule: phys_fn_001855 has the same shape
 // twice (about 131 instructions) and keeps the C++ form with its measured
 // divergence pinned.
+//
+// Two more uses of the same device, not about square roots (convex-mesh gap harness
+// hardening): phys_fn_001694's interior leaf in Distance.cpp, whose wide s MSVC
+// spilled to an 8-byte slot (2 words under 0x0f7f on the Task 2b review's draws,
+// 0 since), and phys_fn_001712 (NxRayTriIntersect) in Geometry.cpp, written whole
+// and naked because which operands its listing loads (quieting a signalling NaN)
+// and which it uses from memory decides the NaN it propagates.
 
 #include "Nxp.h"
 

@@ -1329,19 +1329,94 @@ static __declspec(noinline) int nxSegmentTriangleRegion(const NxSegmentTriangleT
 // The interior (0x00035483..0x00035524), in the listing's order: t's term, then
 // s's, then r's -- each ((t a + s a + r a) + 2 b) times its own parameter, with s
 // wide throughout -- then the offset's squared length added z, y, x.
+//
+// x87 assembly transcribed from the listing (the per-site precedent in
+// X87Sqrt.h): s is formed from the stored floats as at 0x00034b1a..0x00034b4e --
+// the listing keeps that register to here -- and stays in st(0)/st(1)/st(2)
+// through the three terms. Written in C++, MSVC spilled s, the partial products
+// and the offset's squares to 8-byte slots and summed them in its own order, so
+// under 0x0f7f s was cut to 64 -> 53 bits before its reuse (2 differing words in
+// 1M draws of mixed exponents, the interior cancellation case; convex-mesh gap
+// harness hardening). The listing's slots are the struct's fields: t [esp+0x14],
+// r [esp+0x20], a00 [esp+0x10], a01 [esp+0x1c], a02 [esp+0x58], a11 [esp+0x90],
+// a12 [esp+0x18], a22 [esp+0x8c], b0..b2 [esp+0xa8], [esp+0xa4], [esp+0xa0],
+// the offset [esp+0x24..0x2c]; for s, rhs0..rhs2 [esp+0x98], [esp+0x9c],
+// [esp+0x14] (before t is stored over it), cof01 [esp+0x30], cof12 [esp+0xac].
 static __declspec(noinline) NxReal nxSegmentTriangleInterior(const NxSegmentTriangleTerms* k)
 	{
-	const NxReal r = k->r;
-	const NxReal t = k->t;
-	const double s = nxSegmentTriangleS(k);
-	const double tTerm = ((((double) t * k->a22 + s * k->a12) + (double) r * k->a02)
-		+ ((double) k->b2 + k->b2)) * t;
-	const double sTerm = ((((double) t * k->a12 + s * k->a11) + (double) r * k->a01)
-		+ ((double) k->b1 + k->b1)) * s;
-	const double rTerm = ((((double) t * k->a02 + s * k->a01) + (double) r * k->a00)
-		+ ((double) k->b0 + k->b0)) * r;
-	return (NxReal) (((((tTerm + sTerm) + rTerm) + (double) k->diff[2] * k->diff[2])
-		+ (double) k->diff[1] * k->diff[1]) + (double) k->diff[0] * k->diff[0]);
+	NxReal squared;
+	__asm
+		{
+		mov		eax, k
+		// s (0x00034b1a..0x00034b4e)
+		fld		dword ptr [eax]NxSegmentTriangleTerms.a22
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.a00
+		fld		dword ptr [eax]NxSegmentTriangleTerms.a02
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.a02
+		fsubp	st(1), st
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.rhs1
+		fld		dword ptr [eax]NxSegmentTriangleTerms.rhs2
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.cof12
+		faddp	st(1), st
+		fld		dword ptr [eax]NxSegmentTriangleTerms.rhs0
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.cof01
+		faddp	st(1), st
+		// t's term (0x00035483..0x000354ab)
+		fld		dword ptr [eax]NxSegmentTriangleTerms.t
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.a22
+		fld		st(1)
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.a12
+		faddp	st(1), st
+		fld		dword ptr [eax]NxSegmentTriangleTerms.r
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.a02
+		faddp	st(1), st
+		fld		dword ptr [eax]NxSegmentTriangleTerms.b2
+		fadd	st, st
+		faddp	st(1), st
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.t
+		// s's term (0x000354af..0x000354d9)
+		fld		dword ptr [eax]NxSegmentTriangleTerms.t
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.a12
+		fld		st(2)
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.a11
+		faddp	st(1), st
+		fld		dword ptr [eax]NxSegmentTriangleTerms.r
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.a01
+		faddp	st(1), st
+		fld		dword ptr [eax]NxSegmentTriangleTerms.b1
+		fadd	st, st
+		faddp	st(1), st
+		fmul	st, st(2)
+		faddp	st(1), st
+		// r's term (0x000354db..0x00035504)
+		fld		dword ptr [eax]NxSegmentTriangleTerms.t
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.a02
+		fld		st(2)
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.a01
+		faddp	st(1), st
+		fld		dword ptr [eax]NxSegmentTriangleTerms.r
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.a00
+		faddp	st(1), st
+		fld		dword ptr [eax]NxSegmentTriangleTerms.b0
+		fadd	st, st
+		faddp	st(1), st
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.r
+		faddp	st(1), st
+		// the offset's squared length, z, y, x (0x00035506..0x00035524)
+		fld		dword ptr [eax]NxSegmentTriangleTerms.diff + 8
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.diff + 8
+		faddp	st(1), st
+		fld		dword ptr [eax]NxSegmentTriangleTerms.diff + 4
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.diff + 4
+		faddp	st(1), st
+		fld		dword ptr [eax]NxSegmentTriangleTerms.diff
+		fmul	dword ptr [eax]NxSegmentTriangleTerms.diff
+		faddp	st(1), st
+		fstp	squared
+		// s, which the listing carries on to its common exit.
+		fstp	st(0)
+		}
+	return squared;
 	}
 
 // (origin, origin + edge), the far end narrowed per component.

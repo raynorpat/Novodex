@@ -380,7 +380,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"3": 140, "4": 161, "5": 871, "6": 403, "7": 276}
+    MINIMUM = {"3": 199, "4": 161, "5": 871, "6": 403, "7": 276}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
@@ -461,12 +461,44 @@ class OracleDifferentialCoverageLines(unittest.TestCase):
                 "the harness reports coverage for %s but gate_targets.ps1 registers no "
                 "line for it" % block)
 
+    def test_every_driven_block_has_an_input_digest_line(self):
+        """Each block's inputs are pinned apart from its oracle's answers.
+
+        An oracle digest moves when the inputs move as well as when the oracle
+        does. The harness hardening between convex-mesh gap Tasks 2b and 2c found
+        that the inputs themselves had depended on code generation (a raw word
+        returned as a float passes st(0), which quiets a signalling NaN), so
+        every block prints the digest of the words it hands the oracle and every
+        one of those is registered.
+        """
+        names = list(collision_driven_names())
+        blocks = ["%s.%s" % (name, kind) for name in names for kind in ("random", "aimed")]
+        blocks += list(COLLISION_DIRECT_BLOCKS)
+        for block in blocks:
+            prefix = "collision input name=%s " % block
+            self.assertTrue(any(line.startswith(prefix) for line in self.registered),
+                "the harness drives %s but gate_targets.ps1 registers no input digest "
+                "line for it" % block)
+
+    def test_no_generator_returns_a_raw_word_as_a_float(self):
+        """Raw words are written into their slots as bits.
+
+        A float return value travels in st(0) under the x86 ABI, and loading a
+        signalling NaN there quiets it; whether a call site goes through st(0) is
+        an inlining decision. So no function in the harness that can produce a
+        raw word may return it as a float.
+        """
+        source = COLLISION_SOURCE.read_text(encoding="utf-8")
+        self.assertIsNone(re.search(r"static\s+(?:float|NxReal)\s+nxPick\w*\s*\(", source),
+            "a raw-word generator returns its word as a float again")
+        self.assertIn("static void nxPickWord(unsigned* state, float* out)", source)
+
     def test_every_registration_names_a_block_the_harness_still_drives(self):
         names = list(collision_driven_names())
         live = {"%s.%s" % (name, kind) for name in names for kind in ("random", "aimed")}
         live |= set(COLLISION_DIRECT_BLOCKS)
         for line in self.registered:
-            match = re.match(r"collision (?:coverage )?name=(\S+) ", line)
+            match = re.match(r"collision (?:coverage |input )?name=(\S+) ", line)
             if match:
                 self.assertIn(match.group(1), live,
                     "gate_targets.ps1 registers %s but the harness no longer drives it"
