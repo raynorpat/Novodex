@@ -28,6 +28,9 @@
 // streams and the 0x30-byte faces carry the count cookie in their first word
 // and are released at the pointer minus four, as the listing does.
 //
+// Every row the oracle has as a function of its own is a function here
+// (`noinline`), so that each has an address to trace.
+//
 // x87: on the /arch:IA32 list. The float sections -- 001597's zero-area test,
 // 001603's face normal, 001627's angle-weighted vertex normal, its sum and its
 // normalisation, and the `fld`/`fstp` through which 001607 and 001627 pass the
@@ -75,7 +78,7 @@ static inline void nxMb2DeleteArray(void* array)
 	}
 
 // phys_fn_001591 (0x0002eb50, 141 B)
-IceCore::Container& nxIceContainerAddPoint(IceCore::Container& container, const NxU32* point)
+__declspec(noinline) IceCore::Container& nxIceContainerAddPoint(IceCore::Container& container, const NxU32* point)
 	{
 	container.Add(point[0]);
 	container.Add(point[1]);
@@ -125,7 +128,7 @@ MeshBuilder2::MeshBuilder2()
 // The count is stored first; an empty stream returns true with the pointer
 // untouched. The copy is `new Point[nb]` (a count cookie, the trivial element
 // constructor 0x10027f00 through 000001), filled from the source or zeroed.
-bool nxMb2DuplicateStream(NxU32 nb, const IceMaths::Point* src, IceMaths::Point** dst, NxU32* dstNb)
+__declspec(noinline) bool nxMb2DuplicateStream(NxU32 nb, const IceMaths::Point* src, IceMaths::Point** dst, NxU32* dstNb)
 	{
 	*dstNb = nb;
 	if(!nb)
@@ -150,7 +153,7 @@ bool nxMb2DuplicateStream(NxU32 nb, const IceMaths::Point* src, IceMaths::Point*
 // references of the three streams are stored with corners 1 and 2 swapped when
 // Flip is set (0xffffffff for a missing stream) and then, stream by stream,
 // references at or past the stream's count are set to 0.
-bool MeshBuilder2::AddFace(const MBFACEINFO& face)
+__declspec(noinline) bool MeshBuilder2::AddFace(const MBFACEINFO& face)
 	{
 	if(!mFaces || !mRefs)
 		return false;
@@ -286,7 +289,7 @@ bool MeshBuilder2::AddFace(const MBFACEINFO& face)
 // groups become 0xffffffff. The new vertex array is `new Point[]` with a
 // cookie (no constructor call), old vertices then new; the old one is released
 // at the pointer minus four.
-bool MeshBuilder2::ComputeUnsharedVertices()
+__declspec(noinline) bool MeshBuilder2::ComputeUnsharedVertices()
 	{
 	if(!mComputeVNormals)
 		return true;
@@ -334,7 +337,7 @@ bool MeshBuilder2::ComputeUnsharedVertices()
 // The reference records reduced as 12-byte vertices (001645/001647/001659;
 // 001647's result is not tested), the faces' references remapped through the
 // cross-reference, and the reduced records copied into a fresh plain block.
-bool MeshBuilder2::ReduceReferences()
+__declspec(noinline) bool MeshBuilder2::ReduceReferences()
 	{
 	ReducedVertices Reducer((const IceMaths::Point*) mRefs, mNbRefs);
 	REDUCEDCLOUD RC;
@@ -371,7 +374,7 @@ bool MeshBuilder2::ReduceReferences()
 // (+0x108), their offsets (+0x10c) and the face list (+0x110), the offsets
 // advanced while filling and formed again afterwards. The two count arrays are
 // zeroed; a failed allocation returns false without releasing anything.
-bool MeshBuilder2::ComputeNormals()
+__declspec(noinline) bool MeshBuilder2::ComputeNormals()
 	{
 	if(!mComputeFNormals && !mComputeVNormals)
 		return true;
@@ -533,7 +536,7 @@ static NxU32 nxMb2X87Word(const float* p)
 // The streams that are output as indexed: all vertices (+0x11d) through 001591
 // into +0x50; all uvw words (+0x11e) through the FPU into +0x60, z only with
 // +0x119; all colours (+0x11f) through 001591 into +0x70. Always true.
-bool MeshBuilder2::SaveStreams()
+__declspec(noinline) bool MeshBuilder2::SaveStreams()
 	{
 	if(mVertsCopy && mIndexedGeo)
 		for(NxU32 i = 0; i < mNbVerts; i++)
@@ -559,7 +562,7 @@ bool MeshBuilder2::SaveStreams()
 // One corner: a reference already output gives its output vertex; a new one
 // appends (vertex, uvw, colour, the face's smoothing groups) to the run's
 // Container and takes the next vertex number.
-void nxMb2RemapCorner(MBRemapContext* context, NxU32 ref, NxU32* counter, NxU32 corner)
+__declspec(noinline) void nxMb2RemapCorner(MBRemapContext* context, NxU32 ref, NxU32* counter, NxU32 corner)
 	{
 	const NxU32 Known = context->Remap[ref];
 	if(Known != 0xffffffff)
@@ -594,7 +597,7 @@ void nxMb2RemapCorner(MBRemapContext* context, NxU32 ref, NxU32* counter, NxU32 
 // the marks and the remap are plain blocks. For any other `which` no
 // reference is read: the mark goes to the last selected index, first the
 // count pointer's own value, as in the listing (0x0002fcaa).
-bool MeshBuilder2::OptimizeStream(NxU32* nb, IceMaths::Point** stream, NxU32 which)
+__declspec(noinline) bool MeshBuilder2::OptimizeStream(NxU32* nb, IceMaths::Point** stream, NxU32 which)
 	{
 	if(!*nb)
 		return true;
@@ -723,7 +726,7 @@ bool MeshBuilder2::OptimizeStream(NxU32* nb, IceMaths::Point** stream, NxU32 whi
 // reference (a plain block, not tested, filled with 0xff). With +0x120 the
 // vertex numbering starts again at 0 for the run. The run's face count and
 // new-vertex count are appended to +0xb0; the new-vertex count is returned.
-NxU32 MeshBuilder2::RemapFaces(const NxU32* faces, NxU32 nb_faces, IceCore::Container& out)
+__declspec(noinline) NxU32 MeshBuilder2::RemapFaces(const NxU32* faces, NxU32 nb_faces, IceCore::Container& out)
 	{
 	NxU32* Remap = (NxU32*) nxMb2New(mNbRefs * 4);
 	memset(Remap, 0xff, mNbRefs * 4);
@@ -762,7 +765,7 @@ NxU32 MeshBuilder2::RemapFaces(const NxU32* faces, NxU32 nb_faces, IceCore::Cont
 // FreeUsedRam: the thirteen Containers emptied (004838) in order; the three
 // stream copies and the faces released at the pointer minus four; the
 // references, the three per-vertex arrays and the face remap as plain blocks.
-MeshBuilder2& MeshBuilder2::FreeUsedRam()
+__declspec(noinline) MeshBuilder2& MeshBuilder2::FreeUsedRam()
 	{
 	mTopology.Empty();
 	mFacesPerRun.Empty();
@@ -795,7 +798,7 @@ MeshBuilder2& MeshBuilder2::FreeUsedRam()
 // then the face array (`new[]` of 0x30-byte records with a cookie, through the
 // vector constructor iterator) and the reference records (a plain block of 36
 // bytes per face). False when the create block has no faces.
-bool MeshBuilder2::Init(const MBCREATE& create)
+__declspec(noinline) bool MeshBuilder2::Init(const MBCREATE& create)
 	{
 	FreeUsedRam();
 	mKillZeroAreaFaces = create.KillZeroAreaFaces;
@@ -835,7 +838,7 @@ bool MeshBuilder2::Init(const MBCREATE& create)
 // phys_fn_001625 (0x000305b0, 101 B)
 // The three streams through 001611: vertices (1) unless +0x121, uvw (2),
 // colours (4); the first failure returns false.
-bool MeshBuilder2::OptimizeStreams()
+__declspec(noinline) bool MeshBuilder2::OptimizeStreams()
 	{
 	if(!mIsSkin && !OptimizeStream(&mNbVerts, &mVertsCopy, 1))
 		return false;
@@ -854,7 +857,7 @@ bool MeshBuilder2::OptimizeStreams()
 // a smoothing group with it -- each weighted by the angle of that face at the
 // vertex with +0x122 -- and is normalised unless its squared length is 0;
 // with +0x11c the faces are listed in +0xa0 after their count.
-NxU32 MeshBuilder2::OutputRun(const NxU32* faces, NxU32 nb_faces, NxU32 material, NxU32 smoothing)
+__declspec(noinline) NxU32 MeshBuilder2::OutputRun(const NxU32* faces, NxU32 nb_faces, NxU32 material, NxU32 smoothing)
 	{
 	if(!mFaces)
 		return 0;
@@ -1124,7 +1127,7 @@ MeshBuilder2::~MeshBuilder2()
 // handed to 001627 as it closes. The three key and list blocks are plain; a
 // failure releases whichever exist (smoothing, material, list) and returns
 // false.
-bool MeshBuilder2::SortFaces()
+__declspec(noinline) bool MeshBuilder2::SortFaces()
 	{
 	NxU32* FaceList = (NxU32*) nxMb2New(mNbFaces * 4);
 	NxU32* Materials = (NxU32*) nxMb2New(mNbFaces * 4);
@@ -1183,7 +1186,7 @@ bool MeshBuilder2::SortFaces()
 // runs are not flushed; the normal-face lists are remapped from sorted to
 // output face order; the face remap is turned into the faces' AddFace indices
 // and handed out only when it is not the identity.
-bool MeshBuilder2::Build(MBRESULT& result)
+__declspec(noinline) bool MeshBuilder2::Build(MBRESULT& result)
 	{
 	if(!mNbFaces)
 		return false;
