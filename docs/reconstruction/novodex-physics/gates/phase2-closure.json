@@ -12,7 +12,7 @@
     "unreachable_in_phase_2": "reconstructed, but no input sequence through the Phase 2 public API enters it; for the rows demoted here that is a measurement, not a judgement -- a mutation was applied and every target read a delta of zero in the same run that a positive control read non-zero",
     "not_independently_falsifiable": "the row has no counterpart in the candidate that can be mutated on its own: it is emitted by the compiler from a construct belonging to another row, or its distinctive behaviour has no consequence any gate can observe",
     "homeless_shared_code": "shared_by_callers with no translation unit span; not drivable from any Phase 2 entry point, and not linkable for a static proof either",
-    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. 6 rows: the body-record rows phys_fn_000022, phys_fn_000712, phys_fn_000758 and phys_fn_000760, homeless_shared_code until joint-open-items Task 2 wrote them in Physics/src/core/JointSupport.cpp, and phys_fn_000713 and phys_fn_000722, homeless_shared_code until effector-and-coredump Task 2 wrote them there",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. 7 rows: the body-record rows phys_fn_000022, phys_fn_000712, phys_fn_000758 and phys_fn_000760, homeless_shared_code until joint-open-items Task 2 wrote them in Physics/src/core/JointSupport.cpp, and phys_fn_000713 and phys_fn_000722, homeless_shared_code until effector-and-coredump Task 2 wrote them there, and phys_fn_000267 (NpPhysicsSDK::coreDump), blocked_on_later_phase until effector-and-coredump Task 4 wired it to the core dump phys_fn_004062",
     "data_object_not_dispositioned": "a Phase 2 data object that Task 4 did not disposition; Task 5 owns the data half of the census and this list makes the debt countable rather than silent"
   },
   "measured_from": {
@@ -62,10 +62,10 @@
     "static_proof_falsified": 6,
     "oracle_differential_falsified": 1,
     "deferred_homeless_shared_code": 52,
-    "deferred_blocked_on_later_phase": 22,
+    "deferred_blocked_on_later_phase": 21,
     "deferred_unreachable_in_phase_2": 6,
     "deferred_not_independently_falsifiable": 1,
-    "deferred_reconstructed_not_falsified": 6
+    "deferred_reconstructed_not_falsified": 7
   },
   "closed": [
     {
@@ -848,19 +848,15 @@
       "id": "phys_fn_000267",
       "rva": "0x0000bf20",
       "size": 221,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "translation_unit_zone": "in NpPhysicsSDK.cpp",
-      "blocked_on": [
-        "phys_fn_004062"
-      ],
-      "blocked_on_type": null,
       "driving_phases": [
         3,
         4,
         6
       ],
-      "note": "NpPhysicsSDK::coreDump forwards to phys_fn_004062, which NpPhysicsSDK.h records as needing seventeen rows across Phases 3, 4 and 6; the candidate is a placeholder returning false, so nothing here is reconstructed. It was filed unreachable_in_phase_2 on the strength of a measurement that is still true -- a print at its entry changed no transcript, all three Phase 2 differential targets reading stdout_delta=0 in the same sweep whose positive control read 170 -- but unreachability was the consequence of the block, not the reason for it, and that bucket is the one the validator does not make name a driving phase. Filed here it names the phases that own it. The step this row was once closed on, step=recreate_release, is a real step of an unrelated slot, which is the failure the observed proof kinds were deleted for."
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000269",

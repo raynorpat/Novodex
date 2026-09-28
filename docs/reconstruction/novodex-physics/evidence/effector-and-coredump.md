@@ -84,6 +84,39 @@ pointer behind a table word). One oracle quirk recorded: the capsule arm passes 
 (355/355) pass; Phase 5 fails only on the vtables marker, as before, with all 12 staged-pair
 targets at `stdout_delta=0`.
 
+## Task 4: coreDump wired and tested
+
+`NxPhysicsSDK::coreDump` is 000267 as the listing has it (`NpPhysicsSDK.cpp`): the scene write-lock
+walk, the reverse unlock and report at line 225 on a held lock, and the call to 004062 with its
+result (always false) returned after the unlock walk.
+
+`NxPhysicsCoreDumpTests` (Phases 6 and 7) builds two populated scenes through the public API --
+static plane and box, dynamic sphere, box, capsule, kinematic, three-shape, zero-shape, frozen with
+collision off, asleep and unnamed actors; all ten joint families with names, breakability,
+collision and limit planes; a spring-and-damper effector; two added materials, three changed
+parameters, two disabled group pairs -- and dumps them seven times: text and binary, each with and
+without an addendum, the deadlock arm, one scene, none. Each `.psc` file is printed back line by
+line, with only the date line and the pointer tokens normalised (pointers to first-appearance
+ordinals, so aliasing is still compared).
+
+First runs: the oracle refused a dynamic actor whose only shape is a trigger (the candidate
+accepts it), and the candidate's creation model has no mass-from-shapes (phys_fn_000008, not
+written): spheres, capsules and compounds got mass 0, a local-pose box no com/comrot, a small cube
+an inertia one ulp off, and one limit plane's round trip followed. The scene now puts triggers on
+a static actor and a compound part, and gives every dynamic actor but one (an unrotated density
+box) its mass and inertia. What remained was one real defect in what the dump reads: a body with
+no maxAngularVelocity of its own took a pinned 7.0 where the body loader 000795 squares the SDK's
+live `NX_MAX_ANGULAR_VELOCITY` (the sleep thresholds likewise take the live parameters); fixed in
+`Scene.cpp`. After that the transcript is identical (`stdout_delta=0`) and no writer row needed a
+change. 278 oracle lines registered; floors 6/7 = 760/633.
+
+The cdb trace (`evidence/effector-and-coredump-trace-coredump.txt`) shows 000267, 004062 and every
+3a/3b row the scene can reach executing, with the continuations of 004037/004051 and the three rows
+the candidate inlined (003992, 003994, 004013) anchored on instructions only they execute. Not
+hit: the mesh arm (003991 004035 004046 001472), the pair loop (004059) and 000525, and the
+descriptor inlines nothing calls. 29 rows gain `dynamic_proof` (000267 among them); 000267 moves to
+`reconstructed` (Phase 2 ledger: `reconstructed_not_falsified`, 22 -> 21 blocked, 6 -> 7).
+
 ## Timing
 
 | Task | Start | End | Rows written | Bytes written | Notes |
@@ -93,3 +126,4 @@ targets at `stdout_delta=0`.
 | 2 (review) | 2026-09-28T09:22:00 (approx.) | 2026-09-28T09:45:00 | 1 (000722) | 127 | Body construction now runs 000760 then 000722 (000797 0x1b6fb/0x1b702); root +0x1f8 and the island words identical to the oracle and registered (2 lines; floors 6/7 = 482/355). Trace re-taken (000722, 000760 hit 4 times each). 003970/003972 caveat added; compound-shape recycle order recorded. Gates 2/3/4/6/7 pass, 5 only the vtables marker. |
 | 3a | 2026-09-28T09:45:00 | 2026-09-28T10:10:38 | 27 (18 hand-written incl. 3 continuations of 004037; 6 compiler-generated desc inlines: 003981 003985 004021 004023 004025 004027; readers 004068 004072 004085) | 11,793 | `core/SceneDump.cpp` (new, /arch:IA32 and /EHs-c-) + `include/core/SceneDump.h`; readers in `core/Joint.cpp`; parameter/group-mask accessors in `PhysicsSDK.cpp`. Not wired (Task 4); static proofs only; 163/164 format literals NUL-delimited in the image (the 164th, `\r\n`, a string tail as in the oracle). Contract correction: the 0x20000 block is 003991's mesh-name table. 004051 placeholder for 3b. 23 rows discovered -> reconstructed, Phase 6 ledger 45/386. Gates 2/3/4/6/7 pass, 5 only the vtables marker. |
 | 3b | 2026-09-28T10:12:00 (approx.) | 2026-09-28T10:58:00 | 23 (11 hand-written incl. 5 continuations of 004051; 7 compiler-generated desc inlines: 003983 003987 003989 004019 004029 004031 004033; readers 000015 000017 000509 000523 001283) | 11,630 | Asset, shape, mesh and effector rows in `core/SceneDump.cpp`; readers in `core/JointSupport.cpp`, `Scene.cpp`, `ContactGeneration.cpp`; deferred stubs 001472 and 000525/000527 (unreachable: no mesh shapes, no pair flags). Not wired (Task 4); static proofs only; 225/225 format literals in the image (222 NUL-delimited, 3 at the oracle pointer behind a table word). Found: capsule arm passes its own flags to 004017. 15 rows discovered -> reconstructed, Phase 6 ledger 30/401. `NxPhysicsInternalTests` links NarrowPhase/ContactGeneration. Gates 2/3/4/6/7 pass, 5 only the vtables marker. |
+| 4 | 2026-09-28T10:55:00 (approx.) | 2026-09-28T11:30:00 | 1 (000267) | 221 | 000267 wired in `NpPhysicsSDK.cpp` (lock walk, reverse unlock and report at line 225, call to 004062); `NpScene::writeLink()`. New staged-pair target `NxPhysicsCoreDumpTests` (Phases 6/7): two populated scenes dumped seven times (text/binary, with/without addendum, deadlock arm, one scene, none), each `.psc` printed back; date line and pointer tokens normalised. `stdout_delta=0`; 278 oracle lines registered, floors 6/7 = 760/633. Defect found and fixed: body thresholds (maxAngularVelocity, sleep velocities) from the live SDK parameters as 000795 does, not pinned defaults (`Scene.cpp`). Found, not fixed (unwritten Phase 5 rows): no mass from shapes (000008) and a trigger-only dynamic actor accepted; the scene gives explicit masses. cdb trace: 29 rows gain `dynamic_proof`; not hit: mesh arm, pair loop, 000525, descriptor inlines. 000267 Phase 2 ledger `reconstructed_not_falsified`. Gates 2/3/4/6/7 pass, 5 only the vtables marker. |

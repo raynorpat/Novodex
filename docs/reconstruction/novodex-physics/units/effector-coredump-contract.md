@@ -633,6 +633,61 @@ Format strings: all 225 distinct literals `SceneDump.cpp` now passes to the CRT 
 Not reachable yet: `NpPhysicsSDK::coreDump` (000267) is still the candidate stub; Task 4 wires it
 and records the dynamic proofs.
 
+### Task 4 record
+
+Wiring: 000267 is written in `Physics/src/NpPhysicsSDK.cpp` as the listing has it (stable-ID
+line; `NpScene::writeLink()` exposes the +0x0c link). For i < `getNbScenes()` it tries the write
+link of `getScene(i)`'s NxScene wrapper (+0x6cc) with `nxNpSceneGuardWriteTry` (002364); on a
+failure it releases the links already taken in reverse (002366), reports code 2 at
+`NpPhysicsSDK.cpp` line 225 (the immediate 0xe1) with the deadlock message and returns false
+without calling the dump. Otherwise it calls `PhysicsSDK::coreDump` (004062), keeps the result,
+releases every link in order and returns it (always false). The file name, binary flag and
+addendum pass through unchanged; 004062 appends `.psc`.
+
+Test: `NxPhysicsCoreDumpTests` (`tests/PhysicsCoreDumpTests.cpp`), a staged-pair target on Phases 6
+and 7 under the 0xcd page fill. Scene contents follow "### Proposed test scene" with these
+changes, each forced by the oracle or by an unwritten row:
+- two scenes (header `Contains 2 assets.`, the shape counter shared across them), then one, then
+  none;
+- multi-shape actors (three shapes; two in scene B) and a zero-shape actor are in: the oracle and
+  the candidate build them alike;
+- every dynamic actor but one gives `mass` and `massSpaceInertia` (three give a shifted or rotated
+  mass frame). Mass from shapes is phys_fn_000008 (Phase 5, discovered); the candidate's creation
+  model (`nxActorComputeMass`, Scene.cpp) covers one unrotated box from a density only. The first
+  run showed the gap: sphere, capsule and compound bodies with mass 0, the local-pose box without
+  its com/comrot, a 0.3 cube's inertia one ulp off, and a joint limit plane whose round trip went
+  through the missing mass frame. Only `mover` (an unrotated box) takes its mass from a density;
+- trigger flags sit on the static box and on one part of the compound: the oracle refuses a
+  dynamic actor whose only shape is a trigger (`Actor::loadFromDescInternal: Can't compute mass
+  from shapes: must have at least one non-trigger shape!`), which the candidate accepts (the
+  same unwritten mass path; recorded, not fixed here);
+- the deadlock arm: scene B's lock block is made to look held by another thread (flag +0x18 = 1,
+  owner +0x1c = another id); the report, `returned=0`, no file, and scene A's flag back at 0 are
+  identical in both DLLs.
+Normalised, and nothing else: the date line (everything after `Generated on `), and the hex of
+every `__<hex>` pointer token, replaced by its first-appearance ordinal over the run. The CRT
+digit rule of `NxPhysicsJointSlotTests` is in the harness as a guard, but no token reaches it:
+FLT_MAX prints as the literal `fltmax` (003995), `NX_COLL_INFINITY` included.
+
+Result: one source defect in what the dump reads. The body loader (000795) takes each threshold a
+body descriptor leaves at or below zero from the SDK's live parameter array: +0xd8 =
+`NX_MAX_ANGULAR_VELOCITY` squared (`fld`/`fmul [0x10123b34]` at 0x1b04a), +0xd0/+0xd4 =
+`NX_DEFAULT_SLEEP_LIN_VEL_SQUARED`/`NX_DEFAULT_SLEEP_ANG_VEL_SQUARED` copied (0x1b1fc, 0x1b3ac).
+The candidate's model pinned 7.0 and the two defaults, so `maxangularvelocity(7)` printed where the
+oracle printed the test's `NX_MAX_ANGULAR_VELOCITY` (9). Fixed in `Scene.cpp`. After it the
+transcript is identical (`stdout_delta=0`); no writer row needed a change. 278 oracle lines are
+registered; floors 6/7 = 760/633.
+
+Dumps (lines / normalised bytes): text 298 / 16,940; text + addendum 302 / 17,079; binary 298 /
+19,479; binary + addendum 301 / 19,608; one scene 239 / 13,916; no scene (binary, empty addendum)
+67 / 1,799.
+
+Trace (`evidence/effector-and-coredump-trace-coredump.txt`): every row the scene can reach runs:
+000267 (7 calls), 004062 (6), all written 3a/3b rows but the mesh arm, with the continuations and
+the three rows the candidate's compiler inlined (003992, 003994, 004013) anchored inside their
+enclosing functions. Not hit: the mesh arm (003991 004035 004046 001472), the pair loop (004059)
+and 000525, and the thirteen descriptor inlines, which nothing calls.
+
 ## Task split
 
 Out of scope: 004064, 004066 and 004070, in the same gap, are already written in
