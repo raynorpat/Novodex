@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 4,
   "evidence_file": "evidence/phase4-falsification.md",
-  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 28 closed and 1,025 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 359 vendored rows (qhull 202, OPCODE 157) from discovered to reconstructed; they defer reconstructed_not_falsified, and 249 vendored rows stay vendored_not_falsified (evidence/vendored-correspondence.md, Results). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. phys_fn_005493 has exact direct-link Segment behavior but no isolated mutation, while phys_fn_005517 and phys_fn_005523 have shared-overlay layout evidence but no isolated per-row falsification. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10 and 11.",
+  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 28 closed and 1,025 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 351 vendored rows (qhull 202, OPCODE 149) from discovered to reconstructed; they defer reconstructed_not_falsified, and 257 vendored rows stay vendored_not_falsified (evidence/vendored-correspondence.md, Results). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. phys_fn_005493 has exact direct-link Segment behavior but no isolated mutation, while phys_fn_005517 and phys_fn_005523 have shared-overlay layout evidence but no isolated per-row falsification. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10 and 11.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row's reconstruction in a throwaway `git archive` copy, rebuilt and run through a staged-pair differential. Phase 4 registers no staged-pair target -- `run_differential.ps1 -Phase 4` resolves none and exits the skip code -- so it closes no row this way",
     "static_proof_falsified": "a mutation aimed at this row and caught by a static check rather than a differential. Phase 4 registers no static-proof target and closes no row this way",
@@ -10,8 +10,8 @@
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this NovodeX row and names nothing that blocks it. A debt, not an obstruction: 306 rows (315 as first written; 313 after later closures; 306 once vendored-correspondence Task 3 moved seven rows it mapped to stock OPCODE functions to vendored_not_falsified). No per-row reachability claim is made, for the reason Phase 3 gave -- this component dispatches through vtables and function-pointer tables and a call-edge walk over it undercounts",
-    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation aimed at its own extent produced a measured non-zero count. 470 rows: 76 NovodeX, 35 vendored rows later drives confirmed, and 359 vendored rows vendored-correspondence Task 5b promoted to `reconstructed` on the static and execution evidence each row's static_proof records (this text said 110 and 34 before Task 5b; the ledger held 111 and 35). The sharpest are named in their own notes -- six penetration-map rows against which mutations R, S and U come out GREEN because every accepted fixture leaves a uniform grid, the cell-run decoder whose mutation V is green on this branch and was red only by crash at bcf544f, and two compiler-generated deleting destructors whose only mutation edits a class declaration",
-    "vendored_not_falsified": "NEW IN PHASE 4. The row's candidate side is a pinned upstream source tree -- qhull 2003.1 or OPCODE 1.3 -- vendored under External/, verified byte-identical to the archives outside the recorded modifications, and compiled into the NxQhull or NxOpcode static library NxPhysics.dll links; and NO MUTATION THIS LEDGER CAN SPEND IS AIMED AT THIS ROW. It is PRESENT, NOT PROVEN. 249 rows, 111,480 bytes: 238 qhull and 11 OPCODE (608 and 344,949 until vendored-correspondence Task 5b promoted 359 rows, 233,469 bytes, to `reconstructed` and moved them to reconstructed_not_falsified; 601 and 341,680 until vendored-correspondence Task 3 mapped seven rows the census had filed as NovodeX code to the stock OBB and SweepAndPrune functions they are). With the 394 vendored rows at `reconstructed` that defer `reconstructed_not_falsified` (35 raised by later drives, 359 by Task 5b), 643 vendored rows are unfalsified. It is used only where the census leaves a vendored code row at `discovered` -- validate_inventory.py rejects it on any other row, and rejects any reason but the two vendored ones on such a row -- because `not_reconstructed_in_phase` is false about such a row -- a candidate for its bytes exists and builds; a vendored row a later drive raised to `reconstructed` keeps that reason instead. The reason deliberately makes no reachability claim -- it does not say nothing runs the row -- because the harness drives library entry points that call onward and a per-row 'not exercised' claim would be another of this programme's undercounting walks. FIVE of the 608, none of them among the seven Task 3 added, owned a family NxPhysicsThirdPartyTests drives and that agrees exactly; each note says which family, how many words and which oracle digest, and agreement is still not falsification. Task 5b promoted four of them (phys_fn_002493, phys_fn_002505, phys_fn_003308, phys_fn_005357) and left phys_fn_004844, a DIFF group, here. phys_fn_004842, promoted too, carries an inlined copy of the statement mutation A edits, and none of that mutation's 20 mismatches lands on a word SetSize's call writes",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation aimed at its own extent produced a measured non-zero count. 462 rows: 76 NovodeX, 35 vendored rows later drives confirmed, and 351 vendored rows vendored-correspondence Task 5b promoted to `reconstructed` on the static and execution evidence each row's static_proof records (this text said 110 and 34 before Task 5b; the ledger held 111 and 35). The sharpest are named in their own notes -- six penetration-map rows against which mutations R, S and U come out GREEN because every accepted fixture leaves a uniform grid, the cell-run decoder whose mutation V is green on this branch and was red only by crash at bcf544f, and two compiler-generated deleting destructors whose only mutation edits a class declaration",
+    "vendored_not_falsified": "NEW IN PHASE 4. The row's candidate side is a pinned upstream source tree -- qhull 2003.1 or OPCODE 1.3 -- vendored under External/, verified byte-identical to the archives outside the recorded modifications, and compiled into the NxQhull or NxOpcode static library NxPhysics.dll links; and NO MUTATION THIS LEDGER CAN SPEND IS AIMED AT THIS ROW. It is PRESENT, NOT PROVEN. 257 rows, 113,070 bytes: 238 qhull and 19 OPCODE (608 and 344,949 until vendored-correspondence Task 5b promoted 351 rows, 231,879 bytes, to `reconstructed` and moved them to reconstructed_not_falsified; 601 and 341,680 until vendored-correspondence Task 3 mapped seven rows the census had filed as NovodeX code to the stock OBB and SweepAndPrune functions they are). With the 386 vendored rows at `reconstructed` that defer `reconstructed_not_falsified` (35 raised by later drives, 351 by Task 5b), 643 vendored rows are unfalsified. It is used only where the census leaves a vendored code row at `discovered` -- validate_inventory.py rejects it on any other row, and rejects any reason but the two vendored ones on such a row -- because `not_reconstructed_in_phase` is false about such a row -- a candidate for its bytes exists and builds; a vendored row a later drive raised to `reconstructed` keeps that reason instead. The reason deliberately makes no reachability claim -- it does not say nothing runs the row -- because the harness drives library entry points that call onward and a per-row 'not exercised' claim would be another of this programme's undercounting walks. FIVE of the 608, none of them among the seven Task 3 added, owned a family NxPhysicsThirdPartyTests drives and that agrees exactly; each note says which family, how many words and which oracle digest, and agreement is still not falsification. Task 5b promoted four of them (phys_fn_002493, phys_fn_002505, phys_fn_003308, phys_fn_005357) and left phys_fn_004844, a DIFF group, here. phys_fn_004842, promoted too, carries an inlined copy of the statement mutation A edits, and none of that mutation's 20 mismatches lands on a word SetSize's call writes",
     "vendored_driven_divergent": "The row has vendored source and is driven against the pinned oracle, but its candidate differs. Used for phys_fn_005493, Segment::SquareDistance: 9356 mismatches in the grid family and 15538 in the wide family; see evidence/phase4-falsification.md section 7. The code remains discovered and must be corrected before falsification can close it.",
     "data_object_not_dispositioned": "no Phase 4 data object gives it: all 2,813 stand at `classified`, the terminal rung their structural proof gives them, and are accounted for by that state"
   },
@@ -55,8 +55,8 @@
   "counts": {
     "oracle_differential_falsified": 28,
     "deferred_not_reconstructed_in_phase": 306,
-    "deferred_reconstructed_not_falsified": 470,
-    "deferred_vendored_not_falsified": 249
+    "deferred_reconstructed_not_falsified": 462,
+    "deferred_vendored_not_falsified": 257
   },
   "closed": [
     {
@@ -6885,10 +6885,9 @@
       "id": "phys_fn_005155",
       "rva": "0x000e31c0",
       "size": 245,
-      "reason": "reconstructed_not_falsified",
+      "reason": "vendored_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "vendored row promoted by vendored-correspondence Task 5b on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
+      "driving_phases": []
     },
     {
       "id": "phys_fn_005161",
@@ -6966,37 +6965,33 @@
       "id": "phys_fn_005179",
       "rva": "0x000e3ed0",
       "size": 126,
-      "reason": "reconstructed_not_falsified",
+      "reason": "vendored_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "vendored row promoted by vendored-correspondence Task 5b on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
+      "driving_phases": []
     },
     {
       "id": "phys_fn_005181",
       "rva": "0x000e3f50",
       "size": 206,
-      "reason": "reconstructed_not_falsified",
+      "reason": "vendored_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "vendored row promoted by vendored-correspondence Task 5b on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
+      "driving_phases": []
     },
     {
       "id": "phys_fn_005183",
       "rva": "0x000e4020",
       "size": 107,
-      "reason": "reconstructed_not_falsified",
+      "reason": "vendored_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "vendored row promoted by vendored-correspondence Task 5b on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
+      "driving_phases": []
     },
     {
       "id": "phys_fn_005185",
       "rva": "0x000e4090",
       "size": 193,
-      "reason": "reconstructed_not_falsified",
+      "reason": "vendored_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "vendored row promoted by vendored-correspondence Task 5b on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
+      "driving_phases": []
     },
     {
       "id": "phys_fn_005191",
@@ -7011,28 +7006,25 @@
       "id": "phys_fn_005193",
       "rva": "0x000e42a0",
       "size": 251,
-      "reason": "reconstructed_not_falsified",
+      "reason": "vendored_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "vendored row promoted by vendored-correspondence Task 5b on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
+      "driving_phases": []
     },
     {
       "id": "phys_fn_005195",
       "rva": "0x000e43a0",
       "size": 83,
-      "reason": "reconstructed_not_falsified",
+      "reason": "vendored_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "vendored row promoted by vendored-correspondence Task 5b on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
+      "driving_phases": []
     },
     {
       "id": "phys_fn_005197",
       "rva": "0x000e4400",
       "size": 379,
-      "reason": "reconstructed_not_falsified",
+      "reason": "vendored_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "vendored row promoted by vendored-correspondence Task 5b on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
+      "driving_phases": []
     },
     {
       "id": "phys_fn_005199",

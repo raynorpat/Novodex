@@ -1277,8 +1277,9 @@ in every word.
 
 **Arm (ii), outcome-exact.** Some execution of the group meets all of these:
 
-- **(a)** its discrete outcome is exact: a sibling family is exact, or, for the ICE maths, no
-  discrete word of the family differs;
+- **(a)** its discrete outcome is exact: a sibling family is exact, or, for `ice_obb`, the
+  family's own 600 discrete words (three return values per input) are all exact. A family with no
+  discrete words at all makes (a) vacuous, and does not qualify (final review, below);
 - **(b)** its float family has `discrete=0` and `length_delta=0` (and `inf_words=0`);
 - **(c)** the proof states that family's worst ulp, `beyond` and `beyond_abs`;
 - **(d)** the gate holds those figures (prerequisite 1);
@@ -1291,7 +1292,7 @@ The executions that qualify are:
 |---|---|---|
 | The qhull hull | `qhull_hull` | `qhull_hull_x87` |
 | The rays | `opcode_ray` | `opcode_ray_x87` (`opcode_ray_boundary` shares the segment and is attributed) |
-| The ICE maths | none | `ice_plane_triangle`, `ice_matrix4x4` or `ice_obb`, each with its degenerate inputs excluded by name |
+| The OBB maths | `ice_obb`'s own discrete words | `ice_obb` |
 
 **Arm static.** The static-only policy class: no x87 code, no `inlining:` note and no
 other-immediates note, with a hand review. Such a group is promoted even if nothing executes it.
@@ -1309,6 +1310,24 @@ other-immediates note, with a hand review. Such a group is promoted even if noth
   and `1/n`.
 - Unexecuted groups with x87 code.
 - Unexecuted groups with an inlining or other-immediate note.
+- **The ICE plane, triangle and matrix groups (final review of the plan).** `ice_plane_triangle`
+  and `ice_matrix4x4` tape no discrete words, so (a) is vacuous for them and the promotion
+  would rest on the float bounds alone. Those bounds are not last-bit. Outside the excluded
+  degenerate cases:
+
+  | Family | Worst ulp | Words beyond 4 ulp | Largest absolute difference |
+  |---|---:|---:|---|
+  | `ice_plane_triangle` | 2,820 | 39 | 8.34e-07 |
+  | `ice_matrix4x4` | 106 | 109 | 0.00128, on inverse entries up to 186 in magnitude (the cofactor sums are reassociated) |
+
+  Task 5b had promoted these eight rows under (ii). The final review held them back and returned
+  them to `discovered` / `vendored_not_falsified`; each row's `notes` keeps the proof Task 5b had
+  written and says why it is held back:
+  - `Plane::Set` (`phys_fn_005155`);
+  - `Triangle::Area`, `Normal`, `Center` and `Inflate` (`005179`, `005181`, `005183`, `005185`);
+  - `Matrix4x4::CoFactor`, `Determinant` and `Invert` (`005193`, `005195`, `005197`).
+
+  That is 1,590 bytes.
 
 **What each promoted row carries:**
 
@@ -1325,15 +1344,18 @@ other-immediates note, with a hand review. Such a group is promoted even if noth
   - that summation order and some register lifetimes are not reproduced, with the group's
     `sum_grouping.csv` sites;
   - the review verdict, with its addresses;
-  - the execution class and its figures, the discrete-mismatch families with their attribution,
-    and the evidence files.
+  - the execution class and its figures;
+  - every divergent float family the group also ran in, with its figures;
+  - the discrete-mismatch families with their attribution;
+  - the evidence files.
 
   For a collider on quantized nodes that also ran over candidate-built trees, the proof says
   that it matches on oracle-built quantized trees and differs end to end, because the build
   rows are not promoted.
 - `dynamic_proof`: only on rows whose group has trace hits. It cites
   `evidence/vendored-trace-{qhull,opcode}.txt`, the hit counts and families, the sha256 of both
-  traced exes and of the candidate DLL, and the identity result.
+  traced exes and of the candidate DLL, and the identity result. It also says that those pinned
+  binaries predate the plan's final clean link, which changes the link timestamp only.
 
 **Attribution quoted in the proofs:**
 
@@ -1362,7 +1384,7 @@ on inverse entries up to 186 in magnitude.
 
 ## Results
 
-### Rows promoted (`9658600`)
+### Rows promoted (`9658600`, amended by the final review)
 
 **By library:**
 
@@ -1373,10 +1395,10 @@ on inverse entries up to 186 in magnitude.
 | qhull | static-only | 28 | 30 | 3,808 |
 | qhull | **total** | **161** | **202** | **63,940** |
 | OPCODE | (i) exact | 94 | 126 | 149,043 |
-| OPCODE | (ii) outcome-exact | 19 | 21 | 19,829 |
+| OPCODE | (ii) outcome-exact | 11 | 13 | 18,239 |
 | OPCODE | static-only | 10 | 10 | 657 |
-| OPCODE | **total** | **123** | **157** | **169,529** |
-| **both** | | **284** | **359** | **233,469** |
+| OPCODE | **total** | **115** | **149** | **167,939** |
+| **both** | | **276** | **351** | **231,879** |
 
 **By match class:**
 
@@ -1386,7 +1408,7 @@ on inverse entries up to 186 in magnitude.
 | qhull | (ii) | – | 68 / 23,776 | 101 / 36,108 |
 | qhull | static | – | 19 / 2,022 | 11 / 1,786 |
 | OPCODE | (i) | 3 / 61 | 22 / 8,317 | 101 / 140,665 |
-| OPCODE | (ii) | – | 5 / 767 | 16 / 19,062 |
+| OPCODE | (ii) | – | – | 13 / 18,239 |
 | OPCODE | static | 5 / 69 | – | 5 / 588 |
 
 **What the arms contain:**
@@ -1394,10 +1416,9 @@ on inverse entries up to 186 in magnitude.
 - OPCODE's (ii) groups are:
   - the eight `_RayStab`/`_SegmentStab` walks and
     `RayCollider::Collide(const Ray&, const Model&, ...)`;
-  - `Plane::Set`;
-  - `Triangle::Area`, `Normal`, `Center` and `Inflate`;
-  - `Matrix4x4::CoFactor`, `Determinant` and `Invert`;
   - `OBB::ComputePlanes` and `ComputePoints`.
+
+  The plane, triangle and matrix groups are held back (see "Held back").
 
   `RayCollider::ValidateSettings` meets the rule too, but its row already stood at
   `reconstructed` and is left there.
@@ -1407,11 +1428,13 @@ on inverse entries up to 186 in magnitude.
   - qhull printers, set and statistics helpers with no x87 code and no notes, which nothing
     compares.
 
-**The ledger** (`gates/phase4-closure.json`) moves 359 deferrals from `vendored_not_falsified`
+**The ledger** (`gates/phase4-closure.json`) moves 351 deferrals from `vendored_not_falsified`
 to `reconstructed_not_falsified`:
 
-- `vendored_not_falsified`: 608 to 249;
-- `reconstructed_not_falsified`: 111 to 470.
+- `vendored_not_falsified`: 608 to 257;
+- `reconstructed_not_falsified`: 111 to 462.
+
+Task 5b had moved 359. The final review returned the eight ICE rows.
 
 Existing notes are kept. The prose counts are updated. `validate_inventory` requires that the one
 promoted row whose source had been `Physics/src/opcode/OPC_MeshInterface.cpp` (`phys_fn_005358`,
@@ -1429,7 +1452,8 @@ promoted row whose source had been `Physics/src/opcode/OPC_MeshInterface.cpp` (`
 | qhull | **total** | | **238** | **83,674** |
 | OPCODE | DIFF, including the four callback-variant groups (`novodex-variant-unwritten`) | 10 | 10 | 27,664 |
 | OPCODE | not executed, inlining or other-immediate note | 1 | 1 | 142 |
-| OPCODE | **total** | | **11** | **27,806** |
+| OPCODE | held back in the final review: the ICE plane/triangle and matrix groups (no discrete words; float divergence not last-bit) | 8 | 8 | 1,590 |
+| OPCODE | **total** | | **19** | **29,396** |
 
 **Rows already above `discovered`.** In the matched groups, 82 OPCODE rows stand at
 `classified`, 35 vendored rows (20 OPCODE, 15 qhull) at `reconstructed` and 3 OPCODE rows at
@@ -1477,6 +1501,16 @@ they are. This includes:
   hundred OPCODE sites and at least `qh_distplane`, and is driven by `sum_grouping.csv` extended
   to offset-led and longer sums. Every promoted row's proof records this as not reproduced.
 
+  The unit's scope also takes the degenerate-input differences the ICE drive marks. Both come
+  from where the oracle keeps an unrounded residue:
+  - **Zero-area triangles:** 29 inputs. The candidate's normal is exactly zero; the oracle
+    normalises its unrounded non-zero residue.
+  - **Singular matrices:** 17 inputs. The oracle's determinant is 0; the candidate's is about
+    -1e-16.
+
+  Their float divergence outside those cases (2,820 and 106 ulp) is why the eight plane,
+  triangle and matrix rows are held back.
+
 ### Defects found and fixed during the plan
 
 | Task | Commit | Defect |
@@ -1507,12 +1541,12 @@ The matcher and harness defects found along the way:
 
 ### Rate
 
-Of the 728 vendored map rows (qhull 455, OPCODE 273), 394 now stand at `reconstructed`: 359 from
-this task, and 35 raised earlier by other drives. That is 233,469 of the 380,693 matched bytes
+Of the 728 vendored map rows (qhull 455, OPCODE 273), 386 now stand at `reconstructed`: 351 from
+this task, and 35 raised earlier by other drives. That is 231,879 of the 380,693 matched bytes
 (61%) promoted by this plan.
 
 The plan's recorded wall time, Task 1 to the end of Task 5b, is 7.01 hours (the nine timing rows, 2026-09-27T15:24:12 to 2026-09-28T00:08:17). That gives
-about 33,299 bytes per hour for the bytes promoted.
+about 33,072 bytes per hour for the bytes promoted.
 
 ### Verification
 
@@ -1521,6 +1555,7 @@ about 33,299 bytes per hour for the bytes promoted.
 | Fresh configure | `cmake -G "Visual Studio 18 2026" -A Win32 --fresh`: exit 0. |
 | Clean build | `cmake --build build --config Release --clean-first`: exit 0, no errors. |
 | Candidate DLL after the clean build | sha256 `f9075db4...03ef`. It differs from Task 5a's `b0e275ae...` only by the link: the PE timestamp changes with every link. The matcher re-run over it (`--out-dir` scratch) gives `qhull_match.csv`, `opcode_match.csv` and `vendored_data_map.csv` byte-identical to the committed ones, candidate addresses and sizes included. The gates' own `--fresh` rebuild gave the same `f9075db4...`. |
+| Test exes after the clean build | `NxPhysicsThirdPartyTests.exe` `84b6c878...` and `NxPhysicsAssetTests.exe` `ae2d812b...`. The traces pin `6658d086...` and `8e77583c...`, linked before the clean build. As with the DLL, the difference is the link timestamp only, and the Phase 4 gate ran the relinked pair with the same digests. |
 | Public headers | `public_headers=pass` against the oracle tree and the worktree's `Physics/include` (in every gate run). |
 | Tool tests | `python -m unittest discover -s tests`: 753 tests OK (752 + the new `lea` test). `test_gate_targets` against the worktree harness: OK. |
 | `verify_vendored_sources.py` | pass: 148 upstream files checked, 36 locally modified, 0 failures. |
@@ -1594,3 +1629,4 @@ about 33,299 bytes per hour for the bytes promoted.
 | 4 | 2026-09-27T21:03:00 | 2026-09-27T22:21:48 | 0 | 0 | Execution coverage. `tools/vendored_trace.py` (14 tests): exe-versus-DLL body identity (every traced body the same code but one COMDAT without x87), counting cdb breakpoints per family, coverage CSV and trace excerpts; `/MAP` on both Phase 4 harnesses. `NxPhysicsThirdPartyTests` + 29 families (OPCODE builds, all colliders over oracle-built models, vanilla tree, SAP, ICE maths, qhull through the NovodeX call sequence over 10 option sets); 20 exact, 9 divergent and registered to the oracle digest only; Phase 4 floor 101 -> 130. Groups executed 40 -> 373 of 562; x87 groups in a compared family 9 -> 184 of 259. Found and fixed: stock `AABBCollider::_Collide(const AABBTreeNode*)` argument swap (overlay; candidate `e9e1ba15...` -> `f3a603a2...`). Found, not fixed: NovodeX `VolumeCache` holds `Container*` at +0 (open item). Divergences attributed: splatter-tie and quantized builds, RayTriOverlap/TriTri/ICE sums, boundary inputs, qhull doubles, QR1. No ledger change; gates 2, 3, 4, 6, 7 pass, Phase 5 red only on `CANDIDATE-MISSING family=vtables`. |
 | 5a | 2026-09-27T22:37:38 | 2026-09-27T23:24:09 | 0 | 0 | Execution evidence made enforceable. Divergent families fail above a recorded words/discrete ceiling (`kDivergentCeilings`, set to today's measurement; stderr names the first differing word); tape words carry their kind. `vendored_trace.py` (22 tests) classes families exact / lastbit (<= 4 ulp, no discrete word) / discrete and groups by their best execution, with `family_best` alongside: x87 groups qhull 3 exact / 0 lastbit / 70 discrete / 70 not executed, OPCODE 89 / 0 / 22 / 5; no family is lastbit. Harness drives split into per-family passes for attribution; a `release` mark. Fixed: NovodeX `VolumeCache` holds `Container*` at +0 (new overlays OPC_VolumeCollider.h, OPC_Sphere/OBB/PlanesCollider.cpp; AABB/LSS overlays; candidate `f3a603a2...` -> `b0e275ae...`). New families: candidate-built trees queried by candidate colliders (`opcode_candidate_trees` exact; `_ray` divergent by the collider's last bit; `_x87` divergent on quantized/tied trees); Phase 4 floor 130 -> 135. Serialization confirmed unexecuted (candidate stubs). No ledger change; gates 2, 3, 4, 6, 7 pass, Phase 5 red only on `CANDIDATE-MISSING family=vtables`. |
 | 5b | 2026-09-27T23:30:00 | 2026-09-28T00:08:17 | 359 | 233469 | Promotion. Prerequisites: kDivergentCeilings also caps worst float/double ulp, beyond, inf_words, degenerate, finite_ulp and beyond_abs (the absolute bound for values near zero); degenerate ICE inputs (29 zero-area triangles, 17 singular matrices) marked by construction and kept out of the distance figures; QR1 runs in their own trace segment (16 QR1-only qhull groups separated); a candidate-only build fails; matcher traces `lea r,[r]`/`lea r,[s+0]` as a copy (PlanesCollider::InitQuery artifact gone, no class change; 82 tests); boundary-count wording. Promoted discovered -> reconstructed: qhull 202 rows / 63,940 B (exact 3, outcome-exact 169, static-only 30), OPCODE 157 / 169,529 B (126 / 21 / 10); each with implementation/source = the defining upstream or overlay file, implementation_symbol, static_proof (matcher class, compared and not-compared features, summation order and register lifetimes not reproduced with sum_grouping sites, review verdict, execution class, attributed discrete families) and dynamic_proof where traced. Ledger: vendored_not_falsified 608 -> 249, reconstructed_not_falsified 111 -> 470; validate_inventory exits 0. Left: qhull DIFF 96, unexecuted x87 65, unexecuted with notes 59, QR1-only 10, option-gated 8; OPCODE DIFF 10, unexecuted with notes 1. work_units.json and the two vendored gap bundles regenerated. Fresh configure and clean build; gates 2, 3, 4, 6, 7 pass, Phase 5 red only on `CANDIDATE-MISSING family=vtables`. |
+| 5b review | 2026-09-28T00:20:00 | 2026-09-28T00:26:11 | -8 | -1590 | Final whole-plan review fixes: the eight ICE plane/triangle and matrix rows held back and returned to discovered / vendored_not_falsified (no discrete words, so rule (ii)(a) is vacuous; float divergence 2,820 and 106 ulp outside the degenerate cases is not last-bit), with their former proofs kept in notes; degenerate-input differences added to the summation-order unit's scope; qh_basevertices review line corrected (no other-immediates note); every promoted proof lists the divergent float families the group also ran in; the dynamic proofs and Verification say the pinned binaries predate the final clean link (timestamp only); OPC_RayTriOverlap.h's V lifetime recorded as build parity in MODIFICATIONS.md. Final: 351 rows / 231,879 B promoted (qhull 202 / 63,940, OPCODE 149 / 167,939); ledger vendored_not_falsified 257, reconstructed_not_falsified 462. Validator, 753 tool tests and verify_vendored_sources pass. |

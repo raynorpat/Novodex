@@ -36611,11 +36611,11 @@ undefined * FUN_100e31b0(void)
 
 ```
 
-## phys_fn_005155 (0x000e31c0, 245 B, reconstructed)
+## phys_fn_005155 (0x000e31c0, 245 B, discovered)
 
 - ambiguous: yes
-- source: External/opcode/upstream/Opcode/Ice/IcePlane.cpp
-- implementation: External/opcode/upstream/Opcode/Ice/IcePlane.cpp
+- source: None
+- implementation: None
 - prototype: void * __thiscall FUN_100e31c0(float * param_1, float * param_2, float * param_3)
 - calling convention: __thiscall, stack purge: 12
 - callers: phys_fn_001425 (0x00029a70), phys_fn_001435 (0x0002a190), phys_fn_001463 (0x0002af30), phys_fn_002061 (0x00051640), phys_fn_002255 (0x000555b0)
@@ -37988,11 +37988,11 @@ undefined4 __thiscall FUN_100e3ea0(void *this,int param_1,int param_2)
 
 ```
 
-## phys_fn_005179 (0x000e3ed0, 126 B, reconstructed)
+## phys_fn_005179 (0x000e3ed0, 126 B, discovered)
 
 - ambiguous: yes
-- source: External/opcode/upstream/Opcode/Ice/IceTriangle.cpp
-- implementation: External/opcode/upstream/Opcode/Ice/IceTriangle.cpp
+- source: None
+- implementation: None
 - prototype: float10 __fastcall FUN_100e3ed0(float * param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_001463 (0x0002af30), phys_fn_001849 (0x00043680)
@@ -38026,11 +38026,11 @@ float10 __fastcall FUN_100e3ed0(float *param_1)
 
 ```
 
-## phys_fn_005181 (0x000e3f50, 206 B, reconstructed)
+## phys_fn_005181 (0x000e3f50, 206 B, discovered)
 
 - ambiguous: yes
-- source: External/opcode/upstream/Opcode/Ice/IceTriangle.cpp
-- implementation: External/opcode/upstream/Opcode/Ice/IceTriangle.cpp
+- source: None
+- implementation: None
 - prototype: undefined __thiscall FUN_100e3f50(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_002061 (0x00051640), phys_fn_002290 (0x00057d00), phys_fn_002306 (0x00059320)
@@ -38080,11 +38080,11 @@ void __thiscall FUN_100e3f50(void *this,float *param_1)
 
 ```
 
-## phys_fn_005183 (0x000e4020, 107 B, reconstructed)
+## phys_fn_005183 (0x000e4020, 107 B, discovered)
 
 - ambiguous: yes
-- source: External/opcode/upstream/Opcode/Ice/IceTriangle.cpp
-- implementation: External/opcode/upstream/Opcode/Ice/IceTriangle.cpp
+- source: None
+- implementation: None
 - prototype: undefined __thiscall FUN_100e4020(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_001849 (0x00043680), phys_fn_005185 (0x000e4090)
@@ -38122,11 +38122,11 @@ void __thiscall FUN_100e4020(void *this,float *param_1)
 
 ```
 
-## phys_fn_005185 (0x000e4090, 193 B, reconstructed)
+## phys_fn_005185 (0x000e4090, 193 B, discovered)
 
 - ambiguous: yes
-- source: External/opcode/upstream/Opcode/Ice/IceTriangle.cpp
-- implementation: External/opcode/upstream/Opcode/Ice/IceTriangle.cpp
+- source: None
+- implementation: None
 - prototype: undefined __thiscall FUN_100e4090(float param_1, char param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_001708 (0x00036d90), phys_fn_002290 (0x00057d00)
@@ -38319,11 +38319,11 @@ void __cdecl FUN_100e4200(float *param_1,float *param_2)
 
 ```
 
-## phys_fn_005193 (0x000e42a0, 251 B, reconstructed)
+## phys_fn_005193 (0x000e42a0, 251 B, discovered)
 
 - ambiguous: yes
-- source: External/opcode/upstream/Opcode/Ice/IceMatrix4x4.cpp
-- implementation: External/opcode/upstream/Opcode/Ice/IceMatrix4x4.cpp
+- source: None
+- implementation: None
 - prototype: float10 __thiscall FUN_100e42a0(void * param_1, int param_2, int param_3)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_005195 (0x000e43a0), phys_fn_005197 (0x000e4400)
@@ -38386,11 +38386,11 @@ float10 __thiscall FUN_100e42a0(void *param_1,int param_2,int param_3)
 
 ```
 
-## phys_fn_005195 (0x000e43a0, 83 B, reconstructed)
+## phys_fn_005195 (0x000e43a0, 83 B, discovered)
 
 - ambiguous: yes
-- source: External/opcode/upstream/Opcode/Ice/IceMatrix4x4.cpp
-- implementation: External/opcode/upstream/Opcode/Ice/IceMatrix4x4.cpp
+- source: None
+- implementation: None
 - prototype: float10 __fastcall FUN_100e43a0(float * param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_005197 (0x000e4400)
@@ -38429,11 +38429,11 @@ float10 __fastcall FUN_100e43a0(float *param_1)
 
 ```
 
-## phys_fn_005197 (0x000e4400, 379 B, reconstructed)
+## phys_fn_005197 (0x000e4400, 379 B, discovered)
 
 - ambiguous: yes
-- source: External/opcode/upstream/Opcode/Ice/IceMatrix4x4.cpp
-- implementation: External/opcode/upstream/Opcode/Ice/IceMatrix4x4.cpp
+- source: None
+- implementation: None
 - prototype: float * __fastcall FUN_100e4400(float * param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_001822 (0x00041360)
