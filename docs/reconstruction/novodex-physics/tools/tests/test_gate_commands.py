@@ -38,10 +38,10 @@ PHASE_TARGETS = {
     # closure schema needs one (evidence 11l).
     # NxFoundationTangentTests joined it when NxNormalToTangents, which
     # NxJointDesc::setGlobalAxis calls, was brought to the oracle's words.
-    "6": "NxPhysicsJointStagedPairTests,NxFoundationTangentTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests",
+    "6": "NxPhysicsJointStagedPairTests,NxFoundationTangentTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests",
     # Phase 7 registered the same target for the same reason: five of the six rows
     # recorded in 11u are Phase 7's own and execute in that harness.
-    "7": "NxPhysicsJointStagedPairTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests",
+    "7": "NxPhysicsJointStagedPairTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests",
 }
 # Phases 6 and 7 moved out of this set when NxPhysicsJointStagedPairTests was
 # registered on them.

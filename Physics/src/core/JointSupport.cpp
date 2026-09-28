@@ -6,6 +6,7 @@
 |
 \*----------------------------------------------------------------------------*/
 #include "core/JointSupport.h"
+#include "core/Joint.h"
 #include "PhysicsInternal.h"
 #include "X87Sqrt.h"
 
@@ -15,8 +16,15 @@
 // 000760, 000778) belong to gap units outside the joint code; they are
 // written here because the joint code and the Scene's joint removal reach
 // them (joint-open-items Task 2, units/joint-open-items-contract.md
-// "## Scene joint rows"). 000754 is now written below (Task 6, 21b275d);
-// 004167 remains a deferred stub.
+// "## Scene joint rows"). 000015 and 000017, the actor body's shape readers,
+// are the core dump's (effector-and-coredump Task 3b, units/effector-
+// coredump-contract.md "### Readers and whether the candidate has them"); they
+// are members of the body view JointActorBody (core/Joint.h). 000754 is now
+// written below (Task 6, 21b275d);
+// 004167 remains a deferred stub. 000713 and the deferred stub 000791 are
+// the spring-and-damper solver slot's, and 000722 the body constructor's
+// (effector-and-coredump Task 2, units/effector-coredump-contract.md
+// "### Solver slots" and "### Task 2 record").
 //
 // Precision: as in core/Joint.cpp, a value the listing keeps on the x87
 // stack is a `double` here and a value it stores is an `NxReal`, with the
@@ -245,6 +253,34 @@ static NX_INLINE void*& supportPointer(void* record, NxU32 offset)
 // the same 0.39999998f (0x3ecccccc) phys_fn_004107 uses.
 static const NxReal gSupportWakeFloor = 0.39999998f;
 
+// phys_fn_000015 (0x000014f0, 41 B)
+// A compound (+0xd0 == 5) counts its +0xe0..+0xe4 pointer span (`sar`, a
+// signed quotient); any other shape is one; no shape is none.
+NxU32 JointActorBody::getNbShapes() const
+	{
+	const NxU8* shape = static_cast<const NxU8*>(mShape);
+	if(!shape)
+		return 0;
+	if(*reinterpret_cast<const NxU32*>(shape + 0xd0) != 5)
+		return 1;
+	void* const* first = *reinterpret_cast<void* const* const*>(shape + 0xe0);
+	void* const* last = *reinterpret_cast<void* const* const*>(shape + 0xe4);
+	return (NxU32)(last - first);
+	}
+
+// phys_fn_000017 (0x00001520, 28 B)
+// The compound's +0xe0 array, else &mShape (the listing's `lea eax,
+// [ecx+0x10]` is the return value); 0 with no shape.
+void** JointActorBody::getShapes()
+	{
+	NxU8* shape = static_cast<NxU8*>(mShape);
+	if(!shape)
+		return 0;
+	if(*reinterpret_cast<NxU32*>(shape + 0xd0) == 5)
+		return *reinterpret_cast<void***>(shape + 0xe0);
+	return &mShape;
+	}
+
 // phys_fn_000022 (0x00001840, 27 B)
 // 000754 on the actor body's +0x08 record, then the +0x10 object's slot 6
 // with the argument as a tail jump (0x1855), or `ret 4` when +0x10 is null.
@@ -418,6 +454,55 @@ Row000712Fixture* Row000712Fixture::row000712()
 	if(this != parent)
 		supportPointer(this, 0x1bc) = parent->row000712();
 	return static_cast<Row000712Fixture*>(supportPointer(this, 0x1bc));
+	}
+
+// phys_fn_000722 (0x00016130, 127 B)
+// The maximum is `fcom [rec+0x4c]; test ah,5; jp`: the running value is
+// replaced only when it is ordered below the record's; an unordered or
+// greater-or-equal one is kept. All the values are floats loaded exactly,
+// so no x87 precision question arises.
+__declspec(noinline) void Row000722Fixture::row000722()
+	{
+	void* parent = supportPointer(this, 0x1bc);
+	if(this != parent)
+		supportPointer(this, 0x1bc) = static_cast<Row000712Fixture*>(parent)->row000712();
+	void* root = supportPointer(this, 0x1bc);
+	if(root == this)
+		{
+		NxReal wake = 0.0f;
+		for(void* body = root; body; body = supportPointer(body, 0x1d0))
+			{
+			const NxReal value = *reinterpret_cast<const NxReal*>(static_cast<NxU8*>(body) + 0x4c);
+			if(wake < value)
+				wake = value;
+			}
+		*reinterpret_cast<NxReal*>(static_cast<NxU8*>(root) + 0x1cc) = wake;
+		}
+	else
+		supportWord(root, 0x1cc) = 0x4b7afafa;
+	for(NxU32 i = 0; i < 7; i++)
+		supportWord(this, 0x1e8 + i * 4) = supportWord(this, 0x1bc + i * 4);
+	supportWord(this, 0x25c) = 0;
+	supportWord(this, 0x208) = 0;
+	}
+
+// phys_fn_000713 (0x00015d50, 32 B)
+// 000712's shape on the +0x1e8 chain: the recursive result is stored back
+// and +0x1e8 reloaded for the return value.
+Row000713Fixture* Row000713Fixture::row000713()
+	{
+	Row000713Fixture* parent = static_cast<Row000713Fixture*>(supportPointer(this, 0x1e8));
+	if(this != parent)
+		supportPointer(this, 0x1e8) = parent->row000713();
+	return static_cast<Row000713Fixture*>(supportPointer(this, 0x1e8));
+	}
+
+// phys_fn_000791 (0x0001a2c0, 133 B)
+// (deferred: calls phys_fn_000782, 3,428 B, Phase 2, not written)
+void Row000791Fixture::row000791(const NxVec3& force, const NxVec3& position, NxU32 word3, NxU32 word4)
+	{
+	(void)force; (void)position; (void)word3; (void)word4;
+	NX_ASSERT(0);
 	}
 
 // phys_fn_000760 (0x00017710, 168 B)

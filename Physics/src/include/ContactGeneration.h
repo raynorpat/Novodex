@@ -157,6 +157,13 @@ void __cdecl NxContactPlaneBox(const NxCollisionShape* plane,
 // as the raycast rows above, except that this one takes no stack argument at all.
 const void* __fastcall NxShapeOwner(const NxCollisionShape* shape, void* edxUnused);
 
+// phys_fn_001283 at 0x000257b0, seven bytes: `mov eax,[ecx+0xd0]; ret`. The
+// shape's NxShapeType word. Its caller is the core dump's shape writer
+// (phys_fn_004048, core/SceneDump.cpp), which switches on it; written here
+// beside its neighbour 001281 (effector-and-coredump Task 3b). The same
+// __fastcall-for-__thiscall note as NxShapeOwner.
+NxU32 __fastcall NxShapeGetType(const NxCollisionShape* shape, void* edxUnused);
+
 // phys_fn_002266 at 0x00056650, 57 bytes. NOT an error path.
 //
 // Both sphere entries call it when one of the two shapes has a null
