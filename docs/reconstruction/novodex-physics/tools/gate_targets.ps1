@@ -1871,7 +1871,44 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision name=box_compound index=17 rva=0x0003f700 owner=phys_fn_001791 checks=600000 oracle=0f9d2946320876b4',
         'collision coverage name=box_compound true=32090 false=27910 refreshed=30012 inverted=6656 unflagged=7660 default_mismatches=0 simulate_mismatches=0',
         'collision name=capsule_compound index=23 rva=0x0003f390 owner=phys_fn_001785 checks=600000 oracle=5b6ab7e9e5695661',
-        'collision coverage name=capsule_compound true=35375 false=24625 refreshed=30096 inverted=6433 unflagged=0 default_mismatches=0 simulate_mismatches=0'
+        'collision coverage name=capsule_compound true=35375 false=24625 refreshed=30096 inverted=6433 unflagged=0 default_mismatches=0 simulate_mismatches=0',
+
+        # convex-mesh gap Task 2b (units/convex-mesh-gap-contract.md, sub-units E, F, I
+        # and N): the triangle distance kernels of Distance.cpp at their own addresses --
+        # point/triangle 001672 (`vertex*`, `edge_*` and `open` are the leaf its own
+        # parameters say ran, `flt_max` the determinant-zero interior), line/line 001692,
+        # segment/triangle 001694 (r at the start, the end or between; `parallel` the
+        # singular branch) -- exact under 0x027f and 001672/001692 under 0x0f7f too;
+        # 001694's simulate_mismatches=14 are phys_fn_001690's own 0x0f7f divergence
+        # reached through it (0 with the oracle's 001690 bound in, measured).
+        'collision name=point_triangle index=- rva=0x000329e0 owner=phys_fn_001672 checks=2160000 oracle=8f19e249dc43eec9',
+        'collision coverage name=point_triangle degenerate=5673 on_feature=7499 vertex0=9713 vertex1=5010 vertex2=4780 edge_s0=2903 edge_t0=2754 open=27362 flt_max=4990 null_outputs=7478 canonical_nan=139068 default_mismatches=0 simulate_mismatches=0',
+        'collision name=line_line index=- rva=0x000345b0 owner=phys_fn_001692 checks=2880000 oracle=1d281fc546bcbcd2',
+        'collision coverage name=line_line parallel=3767 zero_direction=1816 crossing=1901 at_origin0=32032 at_origin1=32982 canonical_nan=84514 default_mismatches=0 simulate_mismatches=0',
+        'collision name=segment_triangle index=- rva=0x00034860 owner=phys_fn_001694 checks=2640000 oracle=44d61b67d6b71ce8',
+        'collision coverage name=segment_triangle degenerate=5611 parallel=3758 zero_length=1868 crossing=1959 r_start=26553 r_end=8442 r_open=16914 s_zero=15505 t_zero=36381 intersecting=2218 null_outputs=7566 canonical_nan=87801 default_mismatches=0 simulate_mismatches=14',
+
+        # Geometry.cpp's two helpers: the ray against an inflated triangle fan 001708,
+        # gated on the fans whose two Triangle::Inflates (phys_fn_005185, a vendored row
+        # known to differ) agree; `inflate_divergent` counts the rest, whose words sit
+        # under the harness's enforced ceilings (kInflateDivergentFanCeiling and
+        # kInflateDivergentWordCeiling). The slab test 001730/001732, exact under both
+        # words; `parallel_axes` and `boundary_axes` are direction components inside
+        # and exactly on +-FLT_EPSILON.
+        'collision name=ray_inflated_tris index=- rva=0x00036d90 owner=phys_fn_001708 checks=600000 oracle=39b1bb82f55c3d40',
+        'collision coverage name=ray_inflated_tris hits=31831 misses=28169 count_two=3816 in_plane=3732 inflate_divergent=21018 canonical_nan=27140 default_mismatches=0 simulate_mismatches=0',
+        'collision name=aabb_slab index=- rva=0x00038050 owner=phys_fn_001730 checks=1080000 oracle=e4d0f88b37d126ce',
+        'collision coverage name=aabb_slab miss=47994 face0=2097 face1=2183 face2=2180 face3=1884 face4=1831 face5=1831 parallel_axes=22419 boundary_axes=11103 inverted=3754 canonical_nan=0 default_mismatches=0 simulate_mismatches=0',
+
+        # The triangle plane 001760 (ContactBoxMeshICE.cpp) and the segment/triangle-edge
+        # test 001855 (ContactMeshHeightfield.cpp). Exact under 0x027f; their
+        # simulate_mismatches (51, 32) are the square root's qword operand: each row takes
+        # fsqrt of a wide operand inline where the reconstruction passes it through
+        # X87Sqrt.h, cutting 64 bits to 53 (raw draws of extreme magnitude only).
+        'collision name=triangle_plane index=- rva=0x0003c160 owner=phys_fn_001760 checks=1920000 oracle=91e62181f49fa440',
+        'collision coverage name=triangle_plane degenerate=5745 zero_normal=5516 wrong_return=0 canonical_nan=169531 default_mismatches=0 simulate_mismatches=51',
+        'collision name=segment_triangle_edges index=- rva=0x00044510 owner=phys_fn_001855 checks=2040000 oracle=3831f54cc7aee8a1',
+        'collision coverage name=segment_triangle_edges on_edge=6457 exit_early=7574 exit_behind=13139 exit_outside=32830 parallel=3672 zero_length=1915 canonical_nan=208928 default_mismatches=0 simulate_mismatches=32'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
@@ -2406,8 +2443,8 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
-    '3' = 126  # 18 for NxPhysicsKernelFuzzTests, 108 for NxPhysicsCollisionTests (85 + 23 from
-               # convex-mesh gap Task 2a)
+    '3' = 140  # 18 for NxPhysicsKernelFuzzTests, 122 for NxPhysicsCollisionTests (85 + 23 from
+               # convex-mesh gap Task 2a + 14 from its Task 2b)
     '4' = 161  # 34 for NxPhysicsAssetTests, 127 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 26 from qhull-gap Task 1)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines

@@ -43,6 +43,11 @@
 #include "NxIntersectionRayTriangle.h"
 #include "NxSmoothNormals.h"
 #include "NxBoxDistance.h"
+#include "NxTriangleDistance.h"
+#include "NxGeometryHelpers.h"
+#include "NxMeshContactHelpers.h"
+#include "NxRay.h"
+#include "NxPlane.h"
 
 // ---------------------------------------------------------------------------
 // The recovered dispatch matrix.
@@ -1129,6 +1134,893 @@ static void nxBoxCoordinate(unsigned* state, float* u)
 	else if(kind == 4)
 		for(int k = 0; k < 3; ++k)
 			u[k] *= 2.5f;
+	}
+
+// convex-mesh gap Task 2b: the triangle distance kernels (Distance.cpp), the two
+// Geometry.cpp helpers, the triangle plane (ContactBoxMeshICE.cpp) and the
+// segment/triangle-edge test (ContactMeshHeightfield.cpp), each at its own
+// recorded address.
+static const unsigned kPointTriangleRva = 0x000329e0;	// phys_fn_001672
+static const unsigned kLineLineRva = 0x000345b0;		// phys_fn_001692
+static const unsigned kSegmentTriangleRva = 0x00034860;	// phys_fn_001694
+static const unsigned kRayInflatedFanRva = 0x00036d90;	// phys_fn_001708
+static const unsigned kRayAabbSlabRva = 0x00038050;	// phys_fn_001730
+static const unsigned kTrianglePlaneRva = 0x0003c160;	// phys_fn_001760
+static const unsigned kSegmentTriangleEdgeRva = 0x00044510;	// phys_fn_001855
+static const unsigned kIceTriangleInflateRva = 0x000e4090;	// phys_fn_005185
+
+// The candidate side of the pre-flight, in PhysicsCollisionInflate.cpp (why there).
+void nxCandidateTriangleInflate(float* corners, float fatCoeff, bool constantBorder);
+
+// Row phys_fn_001708 calls Triangle::Inflate (phys_fn_005185), a vendored row whose
+// candidate differs from the oracle's in the last bits (held at `discovered` for
+// that; evidence/vendored-correspondence.md). Each side of ray_inflated_tris
+// reaches its own, so the family pre-flights every fan: when the two Inflates
+// agree on all of its triangles the fan is compared exactly and gates; when they
+// differ the fan's words are counted apart under these ceilings and do not gate,
+// because what differs there is the callee, not 001708.
+// Measured when the family was written: 21,018 of the 60,000 fans, with 914
+// differing words under 0x027f and 981 under 0x0f7f; none on the other fans.
+static const unsigned kInflateDivergentFanCeiling = 21018;
+static const unsigned kInflateDivergentWordCeiling[2] = { 914, 981 };
+
+typedef void(__cdecl* NxLineLineFn)(NxReal*, NxReal*, const NxReal*, const NxReal*,
+	const NxReal*, const NxReal*);
+typedef bool(__cdecl* NxRayFanFn)(NxU32, const NxVec3*, const NxU32*, const NxRay*, NxReal*);
+typedef int(__cdecl* NxSlabFn)(const NxReal*, const NxReal*, const NxReal*, const NxReal*,
+	NxReal*, NxReal*);
+typedef NxPlane*(__fastcall* NxTrianglePlaneFn)(NxPlane*, void*, const NxVec3*, const NxVec3*,
+	const NxVec3*);
+typedef bool(__cdecl* NxSegmentEdgeFn)(const NxReal*, const NxReal*, const NxReal*,
+	const NxReal*, const NxReal*, NxReal*, NxReal*);
+
+// Seven arguments, st(0) spilled whole: phys_fn_001694's shape.
+static void nxCallWide7(const void* fn, const void* a0, const void* a1, const void* a2,
+	const void* a3, const void* a4, const void* a5, const void* a6, unsigned char wide[10])
+	{
+	__asm
+		{
+		mov  eax, a6
+		push eax
+		mov  eax, a5
+		push eax
+		mov  eax, a4
+		push eax
+		mov  eax, a3
+		push eax
+		mov  eax, a2
+		push eax
+		mov  eax, a1
+		push eax
+		mov  eax, a0
+		push eax
+		mov  eax, fn
+		call eax
+		add  esp, 28
+		mov  eax, wide
+		fstp tbyte ptr [eax]
+		}
+	}
+
+// A triangle for the triangle kernels. `aimed` keeps it finite: a random
+// triangle in [-2, 2]^3, one draw in eight degenerate (a repeated vertex, or the
+// third vertex on the line of the first two) and one in sixteen shrunk to a
+// thousandth; otherwise every word is nxPick's. Returns true for a degenerate one.
+static bool nxFillTriangle(unsigned* state, bool aimed, float v[3][3])
+	{
+	if(!aimed)
+		{
+		for(int i = 0; i < 3; ++i)
+			for(int k = 0; k < 3; ++k)
+				v[i][k] = nxPick(state);
+		return false;
+		}
+	for(int i = 0; i < 3; ++i)
+		for(int k = 0; k < 3; ++k)
+			v[i][k] = nxUnit(state) * 4.0f - 2.0f;
+	bool degenerate = false;
+	const unsigned kind = nxNext(state) & 15;
+	if(kind == 0 || kind == 1)
+		{
+		// A repeated vertex, any of the three pairs.
+		const unsigned a = nxNext(state) % 3;
+		const unsigned b = (a + 1 + nxNext(state) % 2) % 3;
+		for(int k = 0; k < 3; ++k)
+			v[b][k] = v[a][k];
+		degenerate = true;
+		}
+	else if(kind == 2)
+		{
+		for(int k = 0; k < 3; ++k)
+			v[2][k] = v[0][k] + (v[1][k] - v[0][k]) * 2.0f;
+		degenerate = true;
+		}
+	else if(kind == 3)
+		{
+		for(int i = 1; i < 3; ++i)
+			for(int k = 0; k < 3; ++k)
+				v[i][k] = v[0][k] + (v[i][k] - v[0][k]) * 0.001f;
+		}
+	return degenerate;
+	}
+
+// The unit normal of a finite triangle, or (0, 0, 1) for a degenerate one. Only
+// used to place inputs.
+static void nxTriangleNormal(const float v[3][3], float n[3])
+	{
+	const float e0[3] = { v[1][0] - v[0][0], v[1][1] - v[0][1], v[1][2] - v[0][2] };
+	const float e1[3] = { v[2][0] - v[0][0], v[2][1] - v[0][1], v[2][2] - v[0][2] };
+	n[0] = e0[1] * e1[2] - e0[2] * e1[1];
+	n[1] = e0[2] * e1[0] - e0[0] * e1[2];
+	n[2] = e0[0] * e1[1] - e0[1] * e1[0];
+	const float length = sqrtf(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
+	if(length > 1e-12f)
+		for(int k = 0; k < 3; ++k)
+			n[k] /= length;
+	else
+		{
+		n[0] = 0.0f;
+		n[1] = 0.0f;
+		n[2] = 1.0f;
+		}
+	}
+
+// A point v0 + u e0 + w e1 + h n, with (u, w) drawn to land in each of the seven
+// regions of the triangle's plane or exactly on a vertex or an edge (`onFeature`,
+// h = 0 then).
+static void nxTrianglePoint(unsigned* state, const float v[3][3], float out[3], bool* onFeature)
+	{
+	float n[3];
+	nxTriangleNormal(v, n);
+	float u = nxUnit(state) * 3.0f - 1.0f;
+	float w = nxUnit(state) * 3.0f - 1.0f;
+	float h = (nxUnit(state) * 2.0f - 1.0f) * ((nxNext(state) & 1) ? 1.0f : 0.05f);
+	*onFeature = false;
+	const unsigned feature = nxNext(state) & 7;
+	if(feature == 0)
+		{
+		// A vertex.
+		const unsigned which = nxNext(state) % 3;
+		u = which == 1 ? 1.0f : 0.0f;
+		w = which == 2 ? 1.0f : 0.0f;
+		h = 0.0f;
+		*onFeature = true;
+		}
+	else if(feature == 1)
+		{
+		// An edge, or the edge's line past its ends.
+		const unsigned which = nxNext(state) % 3;
+		if(which == 0)
+			w = 0.0f;
+		else if(which == 1)
+			u = 0.0f;
+		else
+			w = 1.0f - u;
+		h = 0.0f;
+		*onFeature = true;
+		}
+	for(int k = 0; k < 3; ++k)
+		out[k] = v[0][k] + u * (v[1][k] - v[0][k]) + w * (v[2][k] - v[0][k]) + h * n[k];
+	}
+
+// convex-mesh gap Task 2b (units/convex-mesh-gap-contract.md, sub-units E, F, I and
+// N). The families are out of wmain on purpose: with them inside it, the compiler
+// inlined this harness's generators differently at earlier call sites, and whether
+// nxPick's float comes back through st(0) -- quieting a signalling NaN it drew --
+// or stays in an SSE register is exactly what that changes, so registered oracle
+// digests of Task 2a's compound families moved without a line of theirs changing.
+// Returns the gating mismatch count.
+static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
+	{
+	unsigned totalMismatch = 0;
+	// The triangle distance kernels, the ray/fan and slab helpers, the
+	// triangle plane and the segment/triangle-edge test, at their own recorded
+	// addresses, half raw draws (every word through nxPick) and half aimed, under
+	// both control words. As for Task 2a's kernels only the default word's half
+	// gates; the 0x0f7f count is in the registered coverage line.
+	{
+	// Row phys_fn_001672, point/triangle. The aimed half places the point in each
+	// of the seven regions of the plane and exactly on vertices and edges; the
+	// coverage counts which leaf the oracle's own parameters say ran.
+	const void* const oracleFn = (const void*) (base + kPointTriangleRva);
+	const void* const candidateFn = (const void*) &NxPointTriangleSquareDistance;
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned perMode[2] = { 0, 0 };
+	unsigned canonical = 0;
+	unsigned degenerate = 0;
+	unsigned onFeature = 0;
+	unsigned vertex[3] = { 0, 0, 0 };
+	unsigned edgeS = 0;
+	unsigned edgeT = 0;
+	unsigned open = 0;
+	unsigned floatMax = 0;
+	unsigned nullOutputs = 0;
+	unsigned state = 0x3a17c0d5u;
+	for(unsigned i = 0; i < kPairIterations; ++i)
+		{
+		const bool aimed = (nxNext(&state) & 1) != 0;
+		float v[3][3];
+		if(nxFillTriangle(&state, aimed, v))
+			++degenerate;
+		float point[3];
+		if(aimed)
+			{
+			bool feature;
+			nxTrianglePoint(&state, v, point, &feature);
+			if(feature)
+				++onFeature;
+			}
+		else
+			for(int k = 0; k < 3; ++k)
+				point[k] = nxPick(&state);
+		const unsigned nulls = (nxNext(&state) % 8 == 0) ? (1 + nxNext(&state) % 3) : 0;
+		if(nulls)
+			++nullOutputs;
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			unsigned char wide[2][10];
+			NxReal out[2][2];
+			memset(out, 0xcd, sizeof(out));
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			nxCallWide6(oracleFn, point, v[0], v[1], v[2],
+				(nulls & 1) ? 0 : &out[0][0], (nulls & 2) ? 0 : &out[0][1], wide[0]);
+			nxCallWide6(candidateFn, point, v[0], v[1], v[2],
+				(nulls & 1) ? 0 : &out[1][0], (nulls & 2) ? 0 : &out[1][1], wide[1]);
+			nxSetControl(kControlDefault);
+
+			if(mode == 0 && !nulls)
+				{
+				const NxReal s = out[0][0];
+				const NxReal t = out[0][1];
+				if(s == 0.0f && t == 0.0f)
+					++vertex[0];
+				else if(s == 1.0f && t == 0.0f)
+					++vertex[1];
+				else if(s == 0.0f && t == 1.0f)
+					++vertex[2];
+				else if(s == 0.0f)
+					++edgeS;
+				else if(t == 0.0f)
+					++edgeT;
+				else
+					++open;
+				// FLT_MAX: the determinant-zero interior (0x00032c52).
+				if(wide[0][9] == 0x40 && wide[0][8] == 0x7e && wide[0][7] == 0xff && wide[0][6] == 0xff && wide[0][5] == 0xff && wide[0][4] == 0)
+					++floatMax;
+				}
+			nxFoldWide(&oracleDigest, &candidateDigest, wide[0], wide[1], &perMode[mode], &canonical);
+			nxFoldWords(&oracleDigest, &candidateDigest, &out[0][0], &out[1][0], 2,
+				&perMode[mode], &canonical);
+			}
+		}
+	totalMismatch += perMode[0];
+	printf("collision name=point_triangle index=- rva=0x%08x owner=phys_fn_001672 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		kPointTriangleRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state,
+		perMode[0] + perMode[1]);
+	printf("collision coverage name=point_triangle degenerate=%u on_feature=%u vertex0=%u vertex1=%u vertex2=%u edge_s0=%u edge_t0=%u open=%u flt_max=%u null_outputs=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
+		degenerate, onFeature, vertex[0], vertex[1], vertex[2], edgeS, edgeT, open, floatMax,
+		nullOutputs, canonical, perMode[0], perMode[1]);
+	}
+
+	{
+	// Row phys_fn_001692, closest points of two lines. Aimed: finite origins and
+	// directions, one draw in eight parallel (the second direction a multiple of
+	// the first), one in sixteen with a zero direction, and one in sixteen
+	// crossing (the second line through a point of the first).
+	const NxLineLineFn oracleFn = (NxLineLineFn) (base + kLineLineRva);
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned perMode[2] = { 0, 0 };
+	unsigned canonical = 0;
+	unsigned parallel = 0;
+	unsigned zeroDirection = 0;
+	unsigned crossing = 0;
+	unsigned atOrigin0 = 0;
+	unsigned atOrigin1 = 0;
+	unsigned state = 0x6c1b0e97u;
+	for(unsigned i = 0; i < kPairIterations; ++i)
+		{
+		const bool aimed = (nxNext(&state) & 1) != 0;
+		float o0[3], d0[3], o1[3], d1[3];
+		if(aimed)
+			{
+			for(int k = 0; k < 3; ++k)
+				{
+				o0[k] = nxUnit(&state) * 4.0f - 2.0f;
+				d0[k] = nxUnit(&state) * 4.0f - 2.0f;
+				o1[k] = nxUnit(&state) * 4.0f - 2.0f;
+				d1[k] = nxUnit(&state) * 4.0f - 2.0f;
+				}
+			const unsigned kind = nxNext(&state) & 15;
+			if(kind < 2)
+				{
+				const float scale = (nxNext(&state) & 1) ? -0.5f : 2.0f;
+				for(int k = 0; k < 3; ++k)
+					d1[k] = d0[k] * scale;
+				++parallel;
+				}
+			else if(kind == 2)
+				{
+				float* zeroed = (nxNext(&state) & 1) ? d0 : d1;
+				zeroed[0] = zeroed[1] = zeroed[2] = 0.0f;
+				++zeroDirection;
+				}
+			else if(kind == 3)
+				{
+				const float s = nxUnit(&state) * 1.4f - 0.2f;
+				const float t = nxUnit(&state) * 1.4f - 0.2f;
+				for(int k = 0; k < 3; ++k)
+					o1[k] = o0[k] + s * d0[k] - t * d1[k];
+				++crossing;
+				}
+			}
+		else
+			for(int k = 0; k < 3; ++k)
+				{
+				o0[k] = nxPick(&state);
+				d0[k] = nxPick(&state);
+				o1[k] = nxPick(&state);
+				d1[k] = nxPick(&state);
+				}
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			NxReal out[2][6];
+			memset(out, 0xcd, sizeof(out));
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			oracleFn(&out[0][0], &out[0][3], o0, d0, o1, d1);
+			NxLineLineClosestPoints(&out[1][0], &out[1][3], o0, d0, o1, d1);
+			nxSetControl(kControlDefault);
+			if(mode == 0)
+				{
+				if(memcmp(&out[0][0], o0, 12) == 0)
+					++atOrigin0;
+				if(memcmp(&out[0][3], o1, 12) == 0)
+					++atOrigin1;
+				}
+			nxFoldWords(&oracleDigest, &candidateDigest, &out[0][0], &out[1][0], 6,
+				&perMode[mode], &canonical);
+			}
+		}
+	totalMismatch += perMode[0];
+	printf("collision name=line_line index=- rva=0x%08x owner=phys_fn_001692 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		kLineLineRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state,
+		perMode[0] + perMode[1]);
+	printf("collision coverage name=line_line parallel=%u zero_direction=%u crossing=%u at_origin0=%u at_origin1=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
+		parallel, zeroDirection, crossing, atOrigin0, atOrigin1, canonical, perMode[0], perMode[1]);
+	}
+
+	{
+	// Row phys_fn_001694, segment/triangle, which reaches both phys_fn_001690
+	// and phys_fn_001672 (each side its own). Aimed: a finite triangle and a
+	// segment whose ends are placed like point_triangle's points -- in each of
+	// the seven regions of the plane, on vertices and edges, above and below
+	// it -- so the ends straddle the plane or not and r falls below 0, on
+	// [0, 1] or past 1; one draw in eight is parallel to the plane (both ends
+	// at one height, the singular branch), one in sixteen of zero length, and
+	// one in sixteen crossing the triangle's interior.
+	const void* const oracleFn = (const void*) (base + kSegmentTriangleRva);
+	const void* const candidateFn = (const void*) &NxSegmentTriangleSquareDistance;
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned perMode[2] = { 0, 0 };
+	unsigned canonical = 0;
+	unsigned degenerate = 0;
+	unsigned parallel = 0;
+	unsigned zeroLength = 0;
+	unsigned crossing = 0;
+	unsigned rStart = 0;
+	unsigned rEnd = 0;
+	unsigned rOpen = 0;
+	unsigned sZero = 0;
+	unsigned tZero = 0;
+	unsigned intersecting = 0;
+	unsigned nullOutputs = 0;
+	unsigned state = 0x59d02c4bu;
+	for(unsigned i = 0; i < kPairIterations; ++i)
+		{
+		const bool aimed = (nxNext(&state) & 1) != 0;
+		float v[3][3];
+		if(nxFillTriangle(&state, aimed, v))
+			++degenerate;
+		NxSegment segment;
+		if(aimed)
+			{
+			bool feature;
+			nxTrianglePoint(&state, v, &segment.p0.x, &feature);
+			nxTrianglePoint(&state, v, &segment.p1.x, &feature);
+			const unsigned kind = nxNext(&state) & 15;
+			if(kind < 2)
+				{
+				// Parallel: the second end moved to the first's height.
+				float n[3];
+				nxTriangleNormal(v, n);
+				const float h0 = (segment.p0.x - v[0][0]) * n[0] + (segment.p0.y - v[0][1]) * n[1]
+					+ (segment.p0.z - v[0][2]) * n[2];
+				const float h1 = (segment.p1.x - v[0][0]) * n[0] + (segment.p1.y - v[0][1]) * n[1]
+					+ (segment.p1.z - v[0][2]) * n[2];
+				segment.p1.x -= (h1 - h0) * n[0];
+				segment.p1.y -= (h1 - h0) * n[1];
+				segment.p1.z -= (h1 - h0) * n[2];
+				++parallel;
+				}
+			else if(kind == 2)
+				{
+				segment.p1 = segment.p0;
+				++zeroLength;
+				}
+			else if(kind == 3)
+				{
+				// Through the interior: the ends either side of an inner point.
+				float n[3];
+				nxTriangleNormal(v, n);
+				const float u = nxUnit(&state) * 0.5f;
+				const float w = nxUnit(&state) * 0.5f;
+				float inner[3];
+				for(int k = 0; k < 3; ++k)
+					inner[k] = v[0][k] + u * (v[1][k] - v[0][k]) + w * (v[2][k] - v[0][k]);
+				const float up = nxUnit(&state) + 0.1f;
+				const float down = nxUnit(&state) + 0.1f;
+				float tilt[3];
+				for(int k = 0; k < 3; ++k)
+					tilt[k] = (nxUnit(&state) - 0.5f) * 0.5f;
+				segment.p0.set(inner[0] + (n[0] + tilt[0]) * up, inner[1] + (n[1] + tilt[1]) * up,
+					inner[2] + (n[2] + tilt[2]) * up);
+				segment.p1.set(inner[0] - (n[0] + tilt[0]) * down, inner[1] - (n[1] + tilt[1]) * down,
+					inner[2] - (n[2] + tilt[2]) * down);
+				++crossing;
+				}
+			}
+		else
+			{
+			float* words = &segment.p0.x;
+			for(int k = 0; k < 6; ++k)
+				words[k] = nxPick(&state);
+			}
+		const unsigned nulls = (nxNext(&state) % 8 == 0) ? (1 + nxNext(&state) % 7) : 0;
+		if(nulls)
+			++nullOutputs;
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			unsigned char wide[2][10];
+			NxReal out[2][3];
+			memset(out, 0xcd, sizeof(out));
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			nxCallWide7(oracleFn, &segment, v[0], v[1], v[2], (nulls & 1) ? 0 : &out[0][0],
+				(nulls & 2) ? 0 : &out[0][1], (nulls & 4) ? 0 : &out[0][2], wide[0]);
+			nxCallWide7(candidateFn, &segment, v[0], v[1], v[2], (nulls & 1) ? 0 : &out[1][0],
+				(nulls & 2) ? 0 : &out[1][1], (nulls & 4) ? 0 : &out[1][2], wide[1]);
+			nxSetControl(kControlDefault);
+			if(mode == 0 && !nulls)
+				{
+				if(out[0][0] == 0.0f)
+					++rStart;
+				else if(out[0][0] == 1.0f)
+					++rEnd;
+				else if(out[0][0] > 0.0f && out[0][0] < 1.0f)
+					++rOpen;
+				if(out[0][1] == 0.0f)
+					++sZero;
+				if(out[0][2] == 0.0f)
+					++tZero;
+				if(wide[0][9] == 0 && wide[0][8] == 0)
+					++intersecting;
+				}
+			nxFoldWide(&oracleDigest, &candidateDigest, wide[0], wide[1], &perMode[mode], &canonical);
+			nxFoldWords(&oracleDigest, &candidateDigest, &out[0][0], &out[1][0], 3,
+				&perMode[mode], &canonical);
+			}
+		}
+	totalMismatch += perMode[0];
+	printf("collision name=segment_triangle index=- rva=0x%08x owner=phys_fn_001694 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		kSegmentTriangleRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state,
+		perMode[0] + perMode[1]);
+	printf("collision coverage name=segment_triangle degenerate=%u parallel=%u zero_length=%u crossing=%u r_start=%u r_end=%u r_open=%u s_zero=%u t_zero=%u intersecting=%u null_outputs=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
+		degenerate, parallel, zeroLength, crossing, rStart, rEnd, rOpen, sZero, tZero, intersecting,
+		nullOutputs, canonical, perMode[0], perMode[1]);
+	}
+
+	{
+	// Row phys_fn_001708, a ray against an inflated triangle fan. Each side reaches
+	// its own Triangle::Inflate and NxRayTriIntersect. Aimed: a convex polygon of
+	// 3..6 vertices in a random plane, the ray from off the plane towards a point
+	// inside it, near its rim or past it, one draw in eight parallel to the plane
+	// and one in sixteen with a count of 2 (no triangle).
+	const NxRayFanFn oracleFn = (NxRayFanFn) (base + kRayInflatedFanRva);
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned perMode[2] = { 0, 0 };
+	unsigned canonical = 0;
+	unsigned hits = 0;
+	unsigned misses = 0;
+	unsigned countTwo = 0;
+	unsigned inPlane = 0;
+	unsigned inflateDivergent = 0;
+	unsigned divergentMismatches[2] = { 0, 0 };
+	typedef void(__thiscall* NxInflateFn)(void*, float, bool);
+	const NxInflateFn oracleInflate = (NxInflateFn) (base + kIceTriangleInflateRva);
+	unsigned state = 0x0fa9d3e1u;
+	for(unsigned i = 0; i < kPairIterations; ++i)
+		{
+		const bool aimed = (nxNext(&state) & 1) != 0;
+		NxVec3 vertices[8];
+		NxU32 indices[8];
+		NxU32 count = 3 + nxNext(&state) % 4;
+		for(NxU32 k = 0; k < 8; ++k)
+			indices[k] = (k + nxNext(&state)) % 8;
+		NxRay ray;
+		if(aimed)
+			{
+			float basis[3][3];
+			for(int r = 0; r < 3; ++r)
+				for(int k = 0; k < 3; ++k)
+					basis[r][k] = nxUnit(&state) * 2.0f - 1.0f;
+			float centre[3];
+			for(int k = 0; k < 3; ++k)
+				centre[k] = nxUnit(&state) * 4.0f - 2.0f;
+			const float radius = nxUnit(&state) * 2.0f + 0.1f;
+			for(NxU32 k = 0; k < 8; ++k)
+				{
+				const float angle = 6.2831853f * (float) k / (float) count + 0.3f;
+				const float c = cosf(angle) * radius;
+				const float s = sinf(angle) * radius;
+				vertices[k].x = centre[0] + c * basis[0][0] + s * basis[1][0];
+				vertices[k].y = centre[1] + c * basis[0][1] + s * basis[1][1];
+				vertices[k].z = centre[2] + c * basis[0][2] + s * basis[1][2];
+				}
+			for(NxU32 k = 0; k < 8; ++k)
+				indices[k] = k;
+			const float reach = nxUnit(&state) * 1.3f;
+			const float angle = nxUnit(&state) * 6.2831853f;
+			float target[3];
+			for(int k = 0; k < 3; ++k)
+				target[k] = centre[k] + reach * radius * (cosf(angle) * basis[0][k] + sinf(angle) * basis[1][k]);
+			const float lift = (nxNext(&state) & 7) == 0 ? 0.0f : (nxUnit(&state) * 6.0f - 3.0f);
+			if(lift == 0.0f)
+				++inPlane;
+			const float origin[3] = {
+				target[0] + lift * basis[2][0] + (nxUnit(&state) - 0.5f) * basis[0][0],
+				target[1] + lift * basis[2][1] + (nxUnit(&state) - 0.5f) * basis[0][1],
+				target[2] + lift * basis[2][2] + (nxUnit(&state) - 0.5f) * basis[0][2] };
+			ray.orig.set(origin[0], origin[1], origin[2]);
+			ray.dir.set(target[0] - origin[0], target[1] - origin[1], target[2] - origin[2]);
+			if(nxNext(&state) & 1)
+				ray.dir.normalize();
+			}
+		else
+			{
+			for(NxU32 k = 0; k < 8; ++k)
+				vertices[k].set(nxPick(&state), nxPick(&state), nxPick(&state));
+			ray.orig.set(nxPick(&state), nxPick(&state), nxPick(&state));
+			ray.dir.set(nxPick(&state), nxPick(&state), nxPick(&state));
+			}
+		if((nxNext(&state) & 15) == 0)
+			{
+			count = 2;
+			++countTwo;
+			}
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			// The pre-flight: every triangle of the fan inflated by both sides'
+			// Triangle::Inflate under this word. A fan on which they differ is
+			// counted apart and does not gate (see kInflateDivergentFanCeiling).
+			bool inflateSame = true;
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			for(NxU32 k = 0; k + 2 < count; ++k)
+				{
+				float inflated[2][9];
+				memcpy(&inflated[0][0], &vertices[indices[0]], sizeof(NxVec3));
+				memcpy(&inflated[0][3], &vertices[indices[k + 1]], sizeof(NxVec3));
+				memcpy(&inflated[0][6], &vertices[indices[k + 2]], sizeof(NxVec3));
+				memcpy(&inflated[1], &inflated[0], sizeof(inflated[0]));
+				oracleInflate(&inflated[0], 0.02f, false);
+				nxCandidateTriangleInflate(inflated[1], 0.02f, false);
+				if(memcmp(&inflated[0], &inflated[1], sizeof(inflated[0])) != 0)
+					inflateSame = false;
+				}
+			NxReal t[2];
+			memset(t, 0xcd, sizeof(t));
+			const bool hit0 = oracleFn(count, vertices, indices, &ray, &t[0]);
+			const bool hit1 = NxRayInflatedTriangleFan(count, vertices, indices, &ray, &t[1]);
+			nxSetControl(kControlDefault);
+			if(mode == 0)
+				{
+				++*(hit0 ? &hits : &misses);
+				if(!inflateSame)
+					++inflateDivergent;
+				}
+			unsigned* const counter = inflateSame ? &perMode[mode] : &divergentMismatches[mode];
+			nxDigestByte(&oracleDigest, hit0 ? 1 : 0);
+			nxDigestByte(&candidateDigest, hit1 ? 1 : 0);
+			if(hit0 != hit1)
+				++*counter;
+			nxFoldWords(&oracleDigest, &candidateDigest, &t[0], &t[1], 1, counter, &canonical);
+			}
+		}
+	totalMismatch += perMode[0];
+	printf("collision name=ray_inflated_tris index=- rva=0x%08x owner=phys_fn_001708 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		kRayInflatedFanRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state,
+		perMode[0] + perMode[1]);
+	printf("collision coverage name=ray_inflated_tris hits=%u misses=%u count_two=%u in_plane=%u inflate_divergent=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
+		hits, misses, countTwo, inPlane, inflateDivergent, canonical, perMode[0], perMode[1]);
+	// The fans whose two Triangle::Inflates differ, and the words that differ on
+	// them under each word; enforced ceilings (they may fall, never rise).
+	printf("collision divergent name=ray_inflated_tris cause=phys_fn_005185 fans=%u default_mismatches=%u simulate_mismatches=%u\n",
+		inflateDivergent, divergentMismatches[0], divergentMismatches[1]);
+	if(inflateDivergent > kInflateDivergentFanCeiling
+		|| divergentMismatches[0] > kInflateDivergentWordCeiling[0]
+		|| divergentMismatches[1] > kInflateDivergentWordCeiling[1])
+		{
+		printf("collision divergent name=ray_inflated_tris ceiling=exceeded\n");
+		++totalMismatch;
+		}
+	}
+
+	{
+	// Row phys_fn_001730 (and its continuation phys_fn_001732), the slab test.
+	// Aimed: a finite box (one draw in eight inverted on one axis), an origin
+	// in or around it, and a direction whose components are each, with some
+	// probability, zero, inside (-FLT_EPSILON, FLT_EPSILON), exactly
+	// +-FLT_EPSILON (the boundary, which divides), or ordinary.
+	const NxSlabFn oracleFn = (NxSlabFn) (base + kRayAabbSlabRva);
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned perMode[2] = { 0, 0 };
+	unsigned canonical = 0;
+	unsigned faces[7] = { 0, 0, 0, 0, 0, 0, 0 };
+	unsigned parallelAxes = 0;
+	unsigned boundaryAxes = 0;
+	unsigned inverted = 0;
+	unsigned state = 0x2d5c93a7u;
+	for(unsigned i = 0; i < kPairIterations; ++i)
+		{
+		const bool aimed = (nxNext(&state) & 1) != 0;
+		float boxMin[3], boxMax[3], origin[3], dir[3];
+		if(aimed)
+			{
+			for(int k = 0; k < 3; ++k)
+				{
+				const float c = nxUnit(&state) * 4.0f - 2.0f;
+				const float e = nxUnit(&state) * 2.0f;
+				boxMin[k] = c - e;
+				boxMax[k] = c + e;
+				origin[k] = c + (nxUnit(&state) * 2.0f - 1.0f) * e * 2.0f;
+				const unsigned kind = nxNext(&state) % 8;
+				if(kind == 0)
+					dir[k] = (nxNext(&state) & 1) ? -0.0f : 0.0f;
+				else if(kind == 1)
+					dir[k] = (nxUnit(&state) * 2.0f - 1.0f) * 1.1920928e-7f * 0.99f;
+				else if(kind == 2)
+					dir[k] = (nxNext(&state) & 1) ? -1.1920928955078125e-7f : 1.1920928955078125e-7f;
+				else
+					dir[k] = nxUnit(&state) * 4.0f - 2.0f;
+				if(kind <= 1)
+					++parallelAxes;
+				else if(kind == 2)
+					++boundaryAxes;
+				}
+			if((nxNext(&state) & 7) == 0)
+				{
+				const unsigned k = nxNext(&state) % 3;
+				const float swap = boxMin[k];
+				boxMin[k] = boxMax[k];
+				boxMax[k] = swap;
+				++inverted;
+				}
+			}
+		else
+			for(int k = 0; k < 3; ++k)
+				{
+				boxMin[k] = nxPick(&state);
+				boxMax[k] = nxPick(&state);
+				origin[k] = nxPick(&state);
+				dir[k] = nxPick(&state);
+				}
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			NxReal out[2][2];
+			memset(out, 0xcd, sizeof(out));
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			const int face0 = oracleFn(boxMin, boxMax, origin, dir, &out[0][0], &out[0][1]);
+			const int face1 = NxRayAABBSlab(boxMin, boxMax, origin, dir, &out[1][0], &out[1][1]);
+			nxSetControl(kControlDefault);
+			if(mode == 0)
+				++faces[face0 >= 0 && face0 < 6 ? face0 + 1 : 0];
+			nxDigestByte(&oracleDigest, (unsigned char) face0);
+			nxDigestByte(&candidateDigest, (unsigned char) face1);
+			if(face0 != face1)
+				++perMode[mode];
+			nxFoldWords(&oracleDigest, &candidateDigest, &out[0][0], &out[1][0], 2, &perMode[mode], &canonical);
+			}
+		}
+	totalMismatch += perMode[0];
+	printf("collision name=aabb_slab index=- rva=0x%08x owner=phys_fn_001730 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		kRayAabbSlabRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state,
+		perMode[0] + perMode[1]);
+	printf("collision coverage name=aabb_slab miss=%u face0=%u face1=%u face2=%u face3=%u face4=%u face5=%u parallel_axes=%u boundary_axes=%u inverted=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
+		faces[0], faces[1], faces[2], faces[3], faces[4], faces[5], faces[6], parallelAxes,
+		boundaryAxes, inverted, canonical, perMode[0], perMode[1]);
+	}
+
+	{
+	// Row phys_fn_001760, the triangle plane (__thiscall, called as __fastcall on
+	// both sides). The plane is poisoned first so every word it leaves is one it
+	// wrote; the returned pointer must be the plane.
+	const NxTrianglePlaneFn oracleFn = (NxTrianglePlaneFn) (base + kTrianglePlaneRva);
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned perMode[2] = { 0, 0 };
+	unsigned canonical = 0;
+	unsigned degenerate = 0;
+	unsigned zeroNormal = 0;
+	unsigned wrongReturn = 0;
+	unsigned state = 0x71e3a90bu;
+	for(unsigned i = 0; i < kPairIterations; ++i)
+		{
+		const bool aimed = (nxNext(&state) & 1) != 0;
+		float v[3][3];
+		if(nxFillTriangle(&state, aimed, v))
+			++degenerate;
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			NxPlane plane[2];
+			memset(plane, 0xcd, sizeof(plane));
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			NxPlane* r0 = oracleFn(&plane[0], 0, (const NxVec3*) v[0], (const NxVec3*) v[1], (const NxVec3*) v[2]);
+			NxPlane* r1 = NxTrianglePlane(&plane[1], 0, (const NxVec3*) v[0], (const NxVec3*) v[1], (const NxVec3*) v[2]);
+			nxSetControl(kControlDefault);
+			if(r0 != &plane[0] || r1 != &plane[1])
+				++wrongReturn;
+			if(mode == 0 && plane[0].normal.x == 0.0f && plane[0].normal.y == 0.0f && plane[0].normal.z == 0.0f)
+				++zeroNormal;
+			nxFoldWords(&oracleDigest, &candidateDigest, &plane[0].normal.x, &plane[1].normal.x, 4,
+				&perMode[mode], &canonical);
+			}
+		}
+	totalMismatch += perMode[0] + wrongReturn;
+	printf("collision name=triangle_plane index=- rva=0x%08x owner=phys_fn_001760 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		kTrianglePlaneRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state,
+		perMode[0] + perMode[1]);
+	printf("collision coverage name=triangle_plane degenerate=%u zero_normal=%u wrong_return=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
+		degenerate, zeroNormal, wrongReturn, canonical, perMode[0], perMode[1]);
+	}
+
+	{
+	// Row phys_fn_001855, a segment against a triangle edge. The edge is two
+	// vertices of a triangle and the axis its unit normal, as at the callers.
+	// Aimed: the segment through a point near the edge's plane (on the edge,
+	// past its ends, or off to either side along the axis), crossing it, one
+	// draw in eight parallel to it and one in sixteen of zero length. `t` and
+	// `hit` are poisoned, so which exit ran is read off what the oracle wrote.
+	const NxSegmentEdgeFn oracleFn = (NxSegmentEdgeFn) (base + kSegmentTriangleEdgeRva);
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned perMode[2] = { 0, 0 };
+	unsigned canonical = 0;
+	unsigned onEdge = 0;
+	unsigned exitEarly = 0;
+	unsigned exitBehind = 0;
+	unsigned exitOutside = 0;
+	unsigned parallel = 0;
+	unsigned zeroLength = 0;
+	unsigned state = 0x4b8e2f61u;
+	for(unsigned i = 0; i < kPairIterations; ++i)
+		{
+		const bool aimed = (nxNext(&state) & 1) != 0;
+		float v[3][3];
+		nxFillTriangle(&state, aimed, v);
+		float axis[3];
+		float s0[3], s1[3];
+		const unsigned a = nxNext(&state) % 3;
+		const unsigned b = (a + 1) % 3;
+		if(aimed)
+			{
+			nxTriangleNormal(v, axis);
+			float edge[3];
+			for(int k = 0; k < 3; ++k)
+				edge[k] = v[b][k] - v[a][k];
+			// The edge plane's normal, edge x axis, placed by the harness only.
+			float across[3] = {
+				edge[1] * axis[2] - edge[2] * axis[1],
+				edge[2] * axis[0] - edge[0] * axis[2],
+				edge[0] * axis[1] - edge[1] * axis[0] };
+			const float along = nxUnit(&state) * 2.0f - 0.5f;
+			const float up = (nxUnit(&state) * 2.0f - 1.0f) * ((nxNext(&state) & 1) ? 1.0f : 0.1f);
+			float p[3];
+			for(int k = 0; k < 3; ++k)
+				p[k] = v[a][k] + along * edge[k] + up * axis[k];
+			float d[3];
+			for(int k = 0; k < 3; ++k)
+				d[k] = nxUnit(&state) * 2.0f - 1.0f;
+			const unsigned kind = nxNext(&state) & 15;
+			if(kind < 2)
+				{
+				// Parallel to the edge plane: no component along `across`.
+				const float aa = across[0] * across[0] + across[1] * across[1] + across[2] * across[2];
+				if(aa > 0.0f)
+					{
+					const float k0 = (d[0] * across[0] + d[1] * across[1] + d[2] * across[2]) / aa;
+					for(int k = 0; k < 3; ++k)
+						d[k] -= k0 * across[k];
+					}
+				++parallel;
+				}
+			else
+				for(int k = 0; k < 3; ++k)
+					d[k] += across[k] * (nxUnit(&state) * 4.0f - 2.0f);
+			const float l0 = nxUnit(&state) * 1.5f + 0.05f;
+			const float l1 = nxUnit(&state) * 1.5f + 0.05f;
+			for(int k = 0; k < 3; ++k)
+				{
+				s0[k] = p[k] + d[k] * l0;
+				s1[k] = p[k] - d[k] * l1;
+				}
+			if(kind == 2)
+				{
+				for(int k = 0; k < 3; ++k)
+					s1[k] = s0[k];
+				++zeroLength;
+				}
+			}
+		else
+			for(int k = 0; k < 3; ++k)
+				{
+				axis[k] = nxPick(&state);
+				s0[k] = nxPick(&state);
+				s1[k] = nxPick(&state);
+				}
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			NxReal out[2][4];
+			memset(out, 0xcd, sizeof(out));
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			const bool r0 = oracleFn(v[a], v[b], axis, s0, s1, &out[0][0], &out[0][1]);
+			const bool r1 = NxSegmentTriangleEdge(v[a], v[b], axis, s0, s1, &out[1][0], &out[1][1]);
+			nxSetControl(kControlDefault);
+			if(mode == 0)
+				{
+				NxU32 tWord;
+				memcpy(&tWord, &out[0][0], 4);
+				NxU32 hitWord;
+				memcpy(&hitWord, &out[0][1], 4);
+				if(r0)
+					++onEdge;
+				else if(hitWord == 0xcdcdcdcdu)
+					++exitEarly;
+				else if(tWord != 0xcdcdcdcdu && out[0][0] < 0.0f)
+					++exitBehind;
+				else
+					++exitOutside;
+				}
+			nxDigestByte(&oracleDigest, r0 ? 1 : 0);
+			nxDigestByte(&candidateDigest, r1 ? 1 : 0);
+			if(r0 != r1)
+				++perMode[mode];
+			nxFoldWords(&oracleDigest, &candidateDigest, &out[0][0], &out[1][0], 4, &perMode[mode], &canonical);
+			}
+		}
+	totalMismatch += perMode[0];
+	printf("collision name=segment_triangle_edges index=- rva=0x%08x owner=phys_fn_001855 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		kSegmentTriangleEdgeRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state,
+		perMode[0] + perMode[1]);
+	printf("collision coverage name=segment_triangle_edges on_edge=%u exit_early=%u exit_behind=%u exit_outside=%u parallel=%u zero_length=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
+		onEdge, exitEarly, exitBehind, exitOutside, parallel, zeroLength, canonical, perMode[0], perMode[1]);
+	}
+
+	return totalMismatch;
 	}
 
 int wmain(int argc, wchar_t** argv)
@@ -5936,6 +6828,10 @@ int wmain(int argc, wchar_t** argv)
 			perMode[0], perMode[1]);
 		}
 	}
+
+	// convex-mesh gap Task 2b's families (units/convex-mesh-gap-contract.md,
+	// sub-units E, F, I and N), in a function of their own; see nxDriveTask2b.
+	totalMismatch += nxDriveTask2b(base);
 
 	// What is not covered, named rather than left as an absence.
 	for(unsigned index = 0; index < 36; ++index)

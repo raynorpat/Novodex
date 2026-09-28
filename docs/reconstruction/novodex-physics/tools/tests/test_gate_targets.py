@@ -59,7 +59,11 @@ COLLISION_DIRECT_BLOCKS = ("box_corner", "sphere_box_data",
                            # convex-mesh gap Task 2a
                            "point_box", "line_box", "segment_box",
                            "contact_box_capsule", "sphere_compound",
-                           "box_compound", "capsule_compound")
+                           "box_compound", "capsule_compound",
+                           # convex-mesh gap Task 2b
+                           "point_triangle", "line_line", "segment_triangle",
+                           "ray_inflated_tris", "aabb_slab", "triangle_plane",
+                           "segment_triangle_edges")
 
 
 def registered_lines():
@@ -376,7 +380,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"3": 126, "4": 161, "5": 871, "6": 403, "7": 276}
+    MINIMUM = {"3": 140, "4": 161, "5": 871, "6": 403, "7": 276}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
