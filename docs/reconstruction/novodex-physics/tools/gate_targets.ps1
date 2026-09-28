@@ -15,8 +15,8 @@ $NxPhaseTestTargets = [ordered] @{
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @()
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests')
-    '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests')
-    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests')
+    '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests')
+    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests')
     '8' = @()
 }
 
@@ -1260,6 +1260,96 @@ $NxRequiredCoverageLines = [ordered] @{
         'd6dump line=72 text=maxForce: f32:7f7fffff,  bias:  -0.000002',
         'd6dump lines=77'
     )
+    # Effector-and-coredump Task 2: the spring-and-damper effector differential.
+    # NxScene's effector API and every NxSpringAndDamperEffector method over two
+    # dynamic actors; the internal effector's slots 2 and 3 by index (each root's
+    # +0x1f8 set to 0 on both sides); release, a release/create cycle, an actor
+    # released under two effectors (the record's 0x100 notify), and the scene
+    # released with two live effectors (000575). Each step prints the SDK
+    # allocations and frees it made. Copied verbatim from the ORACLE side. The
+    # first run differed only in the scene release's free order (the candidate
+    # recycled a shape's id after freeing the shape; fixed in Scene.cpp) and in
+    # lines since dropped (the record's +0x14 pad and the root's +0x1f8, which
+    # the candidate's record does not build) or renamed (the lock links).
+    'NxPhysicsEffectorTests' = @(
+        'effector start count=0 iterator=none',
+        'effector actors=created,created',
+        'effector fixture rec_a vt=physics observers=0 capacity=0 list=none',
+        'effector fixture rec_b vt=physics observers=0 capacity=0 list=none',
+        'effector fixture rec_a owner=body_a',
+        'effector create allocs=4 sizes=68,18,8,8 frees=0 sizes=none',
+        'effector create created=yes',
+        'effector create np words=physics.00000000.physics.wlink.rlink.eff',
+        'effector create internal vt=physics observers=0 capacity=0 list=none',
+        'effector create internal words=00000000.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000',
+        'effector create rec_a vt=physics observers=1 capacity=2 list=eff',
+        'effector create rec_b vt=physics observers=1 capacity=2 list=eff',
+        'effector create count=1 iterator=np',
+        'effector create is=np slot6=np slot7=np userData_set=5eed0001',
+        'effector create spring=3f000000.3fa00000.40400000.42200000.425c0000 damper=c0200000.3fe00000.40e00000.41180000',
+        'effector set spring=3f400000.40000000.40900000.41480000.41f00000 damper=bfc00000.40500000.3f000000.40c00000',
+        'effector set internal vt=physics observers=0 capacity=0 list=none',
+        'effector set internal words=00000000.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f400000.40000000.40900000.41480000.41f00000.bfc00000.40500000.3f000000.40c00000',
+        'effector swap allocs=0 sizes=none frees=0 sizes=none',
+        'effector swap internal vt=physics observers=0 capacity=0 list=none',
+        'effector swap internal words=00000000.scene.np.rec_b.rec_a.c0112dd1.4035dc6d.3ffec990.3f96710b.bf82f9c0.3f47617b.3f400000.40000000.40900000.41480000.41f00000.bfc00000.40500000.3f000000.40c00000',
+        'effector swap rec_a vt=physics observers=1 capacity=2 list=eff',
+        'effector swap rec_b vt=physics observers=1 capacity=2 list=eff',
+        'effector restore allocs=0 sizes=none frees=0 sizes=none',
+        'effector restore internal vt=physics observers=0 capacity=0 list=none',
+        'effector restore internal words=00000000.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f400000.40000000.40900000.41480000.41f00000.bfc00000.40500000.3f000000.40c00000',
+        'effector slots rec0 root=rec_a',
+        'effector slots rec1 root=rec_b',
+        'effector slots allocs=0 sizes=none frees=0 sizes=none',
+        'effector slots slots internal changed none',
+        'effector slots slots rec0 changed none',
+        'effector slots slots rec1 changed none',
+        'effector release allocs=0 sizes=none frees=2 sizes=18,68',
+        'effector release count=0 iterator=none',
+        'effector release rec_a vt=physics observers=0 capacity=2 list=none',
+        'effector release rec_b vt=physics observers=0 capacity=2 list=none',
+        'effector cycle1 allocs=2 sizes=68,18 frees=0 sizes=none',
+        'effector cycle1 created=yes',
+        'effector cycle1 np words=physics.00000000.physics.wlink.rlink.eff',
+        'effector cycle1 internal vt=physics observers=0 capacity=0 list=none',
+        'effector cycle1 internal words=00000000.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000',
+        'effector cycle2 allocs=2 sizes=68,18 frees=0 sizes=none',
+        'effector cycle2 created=yes',
+        'effector cycle2 np words=physics.00000000.physics.wlink.rlink.eff',
+        'effector cycle2 internal vt=physics observers=0 capacity=0 list=none',
+        'effector cycle2 internal words=eff.scene.np.rec_b.rec_a.bfeed232.400bca1a.3f650d78.4033b2de.be8e4bce.3ecdcc20.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000',
+        'effector cycle2 count=2 iterator=np2.np1',
+        'effector cycle2 rec_a vt=physics observers=2 capacity=2 list=eff1.eff2',
+        'effector cycle2 rec_b vt=physics observers=2 capacity=2 list=eff1.eff2',
+        'effector cycle_release1 allocs=0 sizes=none frees=2 sizes=18,68',
+        'effector cycle_release1 count=1 iterator=np2',
+        'effector cycle3 allocs=2 sizes=68,18 frees=0 sizes=none',
+        'effector cycle3 created=yes',
+        'effector cycle3 np words=physics.00000000.physics.wlink.rlink.eff',
+        'effector cycle3 internal vt=physics observers=0 capacity=0 list=none',
+        'effector cycle3 internal words=eff2.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000',
+        'effector cycle3 count=2 iterator=np3.np2',
+        'effector cycle3 rec_a vt=physics observers=2 capacity=2 list=eff2.eff3',
+        'effector cycle3 rec_b vt=physics observers=2 capacity=2 list=eff2.eff3',
+        'effector actor_release allocs=3 sizes=8,8,8 frees=6 sizes=18,8,260,1c,228,50',
+        'effector actor_release e2 internal vt=physics observers=0 capacity=0 list=none',
+        'effector actor_release e2 internal words=00000000.scene.np2.rec_b.00000000.bfeed232.400bca1a.3f650d78.4033b2de.be8e4bce.3ecdcc20.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000',
+        'effector actor_release e3 internal vt=physics observers=0 capacity=0 list=none',
+        'effector actor_release e3 internal words=eff2.scene.np3.00000000.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000',
+        'effector actor_release rec_b vt=physics observers=2 capacity=2 list=eff2.eff3',
+        'effector actor_release count=2 iterator=np3.np2',
+        'effector after_actor_release allocs=0 sizes=none frees=2 sizes=18,68',
+        'effector after_actor_release count=1 iterator=np2',
+        'effector after_actor_release rec_b vt=physics observers=1 capacity=2 list=eff2',
+        'effector actors2=created,created',
+        'effector live allocs=4 sizes=68,18,8,8 frees=0 sizes=none',
+        'effector live created=yes',
+        'effector live np words=physics.00000000.physics.wlink.rlink.eff',
+        'effector live internal vt=physics observers=0 capacity=0 list=none',
+        'effector live internal words=eff2.scene.np.rec_c.rec_d.3fdab1cb.bfa9b3b6.c009a579.3fcccccc.c0333333.c0366666.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000',
+        'effector live count=2 iterator=np4.np2',
+        'effector scene_release allocs=3 sizes=18,18,18 frees=55 sizes=14,18,20,4,20,4,28,18,8,260,1c,228,50,18,8,260,1c,228,50,18,8,8,260,8,1c,8,228,50,18,68,18,68,400,400,400,400,400,400,400,400,400,400,400,400,a8,18,18,18,10,60,10,3c,18,18,710'
+    )
     'NxFoundationTangentTests' = @(
         'tangent sweep unit=120000 threshold=60000 scaled=60000 digest=5db0093f',
         'tangent coverage arm_z=93923 arm_xy=146112',
@@ -2319,9 +2409,9 @@ $NxPhaseCoverageFloor = [ordered] @{
                # vendored-correspondence Task 4 + 5 from its Task 5a)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
-    '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
-               # + 12 joint-allocator + 146 joint-slot
-    '7' = 276  # the 118 + 12 + 146 STAGED-PAIR assertions; the oracle-differential assertions
+    '6' = 480  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
+               # + 12 joint-allocator + 146 joint-slot + 77 effector
+    '7' = 353  # the 118 + 12 + 146 + 77 STAGED-PAIR assertions; the oracle-differential assertions
                # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
                # does not run
     '8' = 0
@@ -2354,6 +2444,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsActorCMassTests',
     'NxPhysicsDynamicFirstTests',
     'NxPhysicsEmptySceneTests',
+    'NxPhysicsEffectorTests',
     'NxPhysicsCoreClusterTests',
     'NxFoundationTangentTests',
     'NxPhysicsExportTests',

@@ -16,7 +16,9 @@
 // written here because the joint code and the Scene's joint removal reach
 // them (joint-open-items Task 2, units/joint-open-items-contract.md
 // "## Scene joint rows"). 000754 is now written below (Task 6, 21b275d);
-// 004167 remains a deferred stub.
+// 004167 remains a deferred stub. 000713 and the deferred stub 000791 are
+// the spring-and-damper solver slot's (effector-and-coredump Task 2,
+// units/effector-coredump-contract.md "### Solver slots").
 //
 // Precision: as in core/Joint.cpp, a value the listing keeps on the x87
 // stack is a `double` here and a value it stores is an `NxReal`, with the
@@ -418,6 +420,25 @@ Row000712Fixture* Row000712Fixture::row000712()
 	if(this != parent)
 		supportPointer(this, 0x1bc) = parent->row000712();
 	return static_cast<Row000712Fixture*>(supportPointer(this, 0x1bc));
+	}
+
+// phys_fn_000713 (0x00015d50, 32 B)
+// 000712's shape on the +0x1e8 chain: the recursive result is stored back
+// and +0x1e8 reloaded for the return value.
+Row000713Fixture* Row000713Fixture::row000713()
+	{
+	Row000713Fixture* parent = static_cast<Row000713Fixture*>(supportPointer(this, 0x1e8));
+	if(this != parent)
+		supportPointer(this, 0x1e8) = parent->row000713();
+	return static_cast<Row000713Fixture*>(supportPointer(this, 0x1e8));
+	}
+
+// phys_fn_000791 (0x0001a2c0, 133 B)
+// (deferred: calls phys_fn_000782, 3,428 B, Phase 2, not written)
+void Row000791Fixture::row000791(const NxVec3& force, const NxVec3& position, NxU32 word3, NxU32 word4)
+	{
+	(void)force; (void)position; (void)word3; (void)word4;
+	NX_ASSERT(0);
 	}
 
 // phys_fn_000760 (0x00017710, 168 B)

@@ -41,6 +41,9 @@ class NxJointDesc;
 class NxJoint;
 class Joint;
 class JointBreakEvent;
+class Effector;
+class SpringAndDamperEffector;
+class NxSpringAndDamperEffectorDesc;
 
 /**
 The 0x710-byte scene object.
@@ -90,6 +93,24 @@ class NxSceneInternal
 	NxU32 getNbJoints() const;
 	void resetJointIterator();
 	Joint* getNextJoint();
+
+	// The effector rows (units/effector-coredump-contract.md "### Scene and
+	// NpScene rows"). The Scene keeps its effectors in a list through
+	// Effector +0x18 headed at +0x5a4, with the count at +0x6c4 and the
+	// enumeration cursor at +0x6c0.
+	// phys_fn_000587 (0x00010c90). Scene::createSpringAndDamperEffector.
+	SpringAndDamperEffector* createSpringAndDamperEffector(const NxSpringAndDamperEffectorDesc& desc);
+	// phys_fn_000594 (0x00010e80). Scene::releaseEffector.
+	void releaseEffector(Effector* effector);
+	// phys_fn_000573 (0x00010900). Scene::removeEffector.
+	void removeEffector(Effector* effector);
+	// phys_fn_000575 (0x00010970). Releases every effector (Scene teardown).
+	void releaseEffectors();
+	// phys_fn_000561 (0x00010870), phys_fn_000565 (0x00010890) and
+	// phys_fn_000569 (0x000108c0).
+	NxU32 getNbEffectors() const;
+	void resetEffectorIterator();
+	Effector* getNextEffector();
 
 	// The raw object. `at` is the only sanctioned way to reach a field whose name
 	// is not recovered.

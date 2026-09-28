@@ -170,6 +170,30 @@ struct Row000712Fixture
 	Row000712Fixture* row000712();
 	};
 
+// phys_fn_000713 (0x00015d50, 32 B; owner gap SceneRaycast..CapsuleShape;
+// written by the effector-and-coredump plan, Task 2). Thiscall on a body
+// record, no stack arguments, plain `ret`: the root of the record chain
+// through +0x1e8 (the candidate's record points +0x1e8 at itself), found
+// recursively with path compression -- 000712's shape on the other chain.
+// The spring-and-damper solver slot 003979 calls it on each body and tests
+// the root's +0x1f8 before it applies a force.
+struct Row000713Fixture
+	{
+	Row000713Fixture* row000713();
+	};
+
+// phys_fn_000791 (0x0001a2c0, 133 B, Phase 2; deferred). Thiscall on a body
+// record, four stack arguments, `ret 0x10`: add a force at a world position
+// (force, position, then two words the effector passes as 1 and 0); it
+// forms the torque arm and calls phys_fn_000782 (3,428 B, Phase 2, not
+// written). Reached only from the spring-and-damper solver slot 003979
+// when the chain root's +0x1f8 is non-zero. Its stub is NX_ASSERT(0): a
+// silent no-op in Release (/DNDEBUG).
+struct Row000791Fixture
+	{
+	void row000791(const NxVec3& force, const NxVec3& position, NxU32 word3, NxU32 word4);
+	};
+
 // phys_fn_000760 (0x00017710, 168 B; owner gap SceneRaycast..CapsuleShape).
 // Thiscall on a body record, no stack arguments, plain `ret`: resets the
 // record's island fields (+0x1bc..+0x1e4) to a single-body island, frees the

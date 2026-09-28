@@ -1892,6 +1892,7 @@ void nxVtCall2390(void* self)
 	}
 
 // phys_fn_003924 (0x8ed50): the __stdcall slot takes two arguments.
+// Product row: Physics/src/core/SpringAndDamperEffector.cpp.
 void nxVtCall3924(void* self)
 	{
 	unsigned char* p = reinterpret_cast<unsigned char*>(self);
@@ -2057,6 +2058,7 @@ void nxOnceReportVtEx(void* self, unsigned char* gate, unsigned slot,
 
 // phys_fn_003938 (0x8eec0, ret 4): the deleting destructor that also calls a
 // process-wide global slot with no arguments.
+// Product row: Physics/src/core/SpringAndDamperEffector.cpp.
 static void (*gNxGlobalHook3938)(void) = nullptr;
 
 void nxSetGlobalHook3938(void (*fn)(void))
@@ -2922,6 +2924,7 @@ float nxLockedThunkFloat2(void* self, unsigned lockOff, unsigned objOff,
 	}
 
 // phys_fn_003936 (0x8eeb0): the vtable store plus the global tail jump.
+// Product row: Physics/src/core/SpringAndDamperEffector.cpp.
 void nxDtorTrampoline3936(void* self, void (*fn)(void*))
 	{
 	unsigned vtable = 0x10117920u;
@@ -3184,6 +3187,7 @@ void nxReleaseAdjusted2060(void* self, const unsigned* offsets, const int* adjus
 
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
+// Product row: Physics/src/core/NpSpringAndDamperEffector.cpp.
 void* nxLockedSelf3950(void* self)
 	{
 	return self;
@@ -3390,6 +3394,7 @@ void nxAggregateAABB1030(void* self, float* out)
 // phys_fn_000713 (0x15d50): recursive path compression over the record
 // chain -- each record caches its group root at +0x1e8, a self-pointing
 // cache naming the root. Recursion terminates on the self-parented node.
+// Product row: Physics/src/core/JointSupport.cpp.
 unsigned nxBodyRecordFixRoot(void* rec)
 	{
 	unsigned r = reinterpret_cast<unsigned>(rec);

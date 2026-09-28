@@ -142,6 +142,9 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # are x87 in the oracle too and are reached from the solver step, so they are
 # on the list for the same reason. core/JointSupport.cpp's rows 004389 and 004393 are x87 in the
 # oracle and are called from the solver slots 004360 and 004362 inside the step.
+# core/SpringAndDamperEffector.cpp (effector-and-coredump Task 2) does x87
+# work in 003962/003964/003970/003972 and its solver slot 003979 runs inside
+# the step; core/NpSpringAndDamperEffector.cpp does none and stays default.
 if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set_source_files_properties(
 		Physics/src/Geometry.cpp
@@ -162,6 +165,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/core/FixedJoint.cpp
 		Physics/src/core/D6Joint.cpp
 		Physics/src/core/JointSupport.cpp
+		Physics/src/core/SpringAndDamperEffector.cpp
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 endif()
 
@@ -200,6 +204,8 @@ if(MSVC)
 		Physics/src/core/NpPulleyJoint.cpp
 		Physics/src/core/NpFixedJoint.cpp
 		Physics/src/core/NpD6Joint.cpp
+		Physics/src/core/SpringAndDamperEffector.cpp
+		Physics/src/core/NpSpringAndDamperEffector.cpp
 		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
 endif()
 
@@ -363,6 +369,15 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsJointSlotTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsJointSlotTests bcrypt)
+	# The spring-and-damper effector differential (effector-and-coredump Task
+	# 2): NxScene's effector API, every NxSpringAndDamperEffector method, the
+	# internal effector's slots 2 and 3 by index, the record teardown notify
+	# and the scene release of a live effector, with each step's SDK
+	# allocations and frees.
+	add_executable(NxPhysicsEffectorTests tests/PhysicsEffectorTests.cpp)
+	target_include_directories(NxPhysicsEffectorTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsEffectorTests bcrypt)
 	# Every block the page-guarded allocator returns to these targets is filled
 	# with 0xcd instead of being left as fresh zeroed pages, so a scene, actor,
 	# shape or joint constructor that leaves a field it later reads to the
@@ -379,7 +394,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 			NxPhysicsActorDynamicSetterTests NxPhysicsActorMomentumTests
 			NxPhysicsActorForceTests NxPhysicsActorCMassTests
 			NxPhysicsActorShapeMutationTests NxPhysicsJointStagedPairTests
-			NxPhysicsJointSlotTests)
+			NxPhysicsJointSlotTests NxPhysicsEffectorTests)
 		target_compile_definitions(${nx_fill_target} PRIVATE NX_PAGE_GUARDED_FILL)
 	endforeach()
 	target_include_directories(NxPhysicsJointTests PRIVATE Foundation/include Physics/include)
