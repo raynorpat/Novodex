@@ -216,13 +216,13 @@ NxPhysicsDynamicFirstTests reaches only the 000118 counterpart.
 | 000190 | 0x00008670 | 415 | discovered | slot 79 clearBodyFlag | NpActor.cpp:2501 `clearBodyFlag` | partial | defect (X) | 8: ActorBodyFlag 1, ActorDynamicSetter 1, ActorDynamics 4, ActorForce 1, ActorMomentum 1 | Task 2: G1 0x1d9, E1 0x1da, H1, 000785's marks and allocator, and the unconditional 1.0f/m (the mass<=0 guard removed) fixed. Open: 000785 disable arm lacks the root refresh/+0x1e4 |
 | 000192 | 0x00008810 | 371 | discovered | slot 73 wakeUp | NpActor.cpp:2422 `wakeUp` | implemented | faithful | 7: ActorCMass 1, ActorDynamicSetter 5, ActorForce 1 | H1 fixed by Task 2; body faithful (G1 0x207 reproduced) |
 | 000194 | 0x00008990 | 354 | discovered | slot 74 putToSleep | NpActor.cpp:2437 `putToSleep` | implemented | faithful | 5: ActorDynamicSetter 4, ActorForce 1 | H1 fixed by Task 2; body faithful (G1 0x211 reproduced) |
-| 000196 | 0x00008b00 | 1114 | discovered | slot 1 setGlobalPose | NpActor.cpp:695 `setGlobalPose` | implemented | defect (S) | 10: ActorCMass 7, ActorDynamicSetter 3 | Task 2: G1 0x21d and H1 fixed. Open: S1 (000004 virtual slot-6 dispatch replaced by nxNpActorNotifyOwnedShapes and its group loop); conversion, stores and 000768 faithful |
-| 000198 | 0x00008f60 | 418 | discovered | slot 2 setGlobalPosition | NpActor.cpp:862 `setGlobalPosition` | implemented | defect (S) | 12: ActorCMass 7, ActorDynamicSetter 5 | Task 2: G1 0x232 and H1 fixed. Open: S1; both arms and the refresh faithful |
-| 000200 | 0x00009110 | 821 | discovered | slot 3 setGlobalOrientation | NpActor.cpp:887 `setGlobalOrientation` | implemented | defect (S) | 12: ActorCMass 7, ActorDynamicSetter 5 | Task 2: G1 0x242 and H1 fixed. Open: S1; setter conversion faithful |
-| 000202 | 0x00009450 | 611 | discovered | slot 4 setGlobalOrientationQuat | NpActor.cpp:915 `setGlobalOrientationQuat` | implemented | defect (S) | 9: ActorCMass 7, ActorDynamicSetter 2 | Task 2: G1 0x254 and H1 fixed. Open: S1; static quat-to-matrix x87 sequence faithful |
-| 000204 | 0x000096c0 | 520 | discovered | slot 26 setCMassGlobalPose | NpActor.cpp:1419 `setCMassGlobalPose` | partial | defect (X) | 1: ActorCMass 1 | Task 2: E1 0x268 (before the lock, no unlock) and G1 0x269 fixed. Open: 000004 shape update missing; 000756 != nxNpActorUpdateCMassQuaternion (trace (m8+m4)+m0, x-arm spill); 000789 != nxNpActorApplyWorldMassPose (000746 tensor, displacement order/spill, setter quaternion) |
-| 000206 | 0x000098d0 | 504 | discovered | slot 27 setCMassGlobalPosition | NpActor.cpp:1574 `setCMassGlobalPosition` | partial | defect (X) | 1: ActorCMass 1 | Task 2: E1 0x276 and G1 0x277 fixed. Open: 000004 shape update missing; 000789 precision (as 000204) |
-| 000208 | 0x00009ad0 | 492 | discovered | slot 28 setCMassGlobalOrientation | NpActor.cpp:1586 `setCMassGlobalOrientation` | partial | defect (X) | 1: ActorCMass 1 | Task 2: E1 0x281 and G1 0x282 fixed. Open: 000004 shape update missing; 000756 and 000789 precision |
+| 000196 | 0x00008b00 | 1114 | discovered | slot 1 setGlobalPose | NpActor.cpp:695 `setGlobalPose` | implemented | defect (S) | 10: ActorCMass 7, ActorDynamicSetter 3 | Task 2: G1 0x21d and H1 fixed. Open: S1 residual. Task 3 made the update a virtual slot-6 dispatch (000004) and the group arm a model of 001018 (each child's slot 6), but the group-level 001315 call is still missing; conversion, stores and 000768 faithful |
+| 000198 | 0x00008f60 | 418 | discovered | slot 2 setGlobalPosition | NpActor.cpp:862 `setGlobalPosition` | implemented | defect (S) | 12: ActorCMass 7, ActorDynamicSetter 5 | Task 2: G1 0x232 and H1 fixed. Open: S1 residual (group-level 001315; Task 3 made the dispatch virtual); both arms and the refresh faithful |
+| 000200 | 0x00009110 | 821 | discovered | slot 3 setGlobalOrientation | NpActor.cpp:887 `setGlobalOrientation` | implemented | defect (S) | 12: ActorCMass 7, ActorDynamicSetter 5 | Task 2: G1 0x242 and H1 fixed. Open: S1 residual (group-level 001315; Task 3 made the dispatch virtual); setter conversion faithful |
+| 000202 | 0x00009450 | 611 | discovered | slot 4 setGlobalOrientationQuat | NpActor.cpp:915 `setGlobalOrientationQuat` | implemented | defect (S) | 9: ActorCMass 7, ActorDynamicSetter 2 | Task 2: G1 0x254 and H1 fixed. Open: S1 residual (group-level 001315; Task 3 made the dispatch virtual); static quat-to-matrix x87 sequence faithful |
+| 000204 | 0x000096c0 | 520 | discovered | slot 26 setCMassGlobalPose | NpActor.cpp:1419 `setCMassGlobalPose` | implemented | defect (S) | 1: ActorCMass 1 | Task 3: 000756 = nxNpActorBodyQuaternionFromMatrix (x87 roots), 000789 rewritten from the listing (000746 tensor first, displacement row 0 unrounded and rows 1-2 spilled, setter conversion), 000004 shape update added (virtual slot 6; the group arm models 001018). Open: S1 residual, the group-level 001315 call (the candidate group has no table or ShapeBase layout) |
+| 000206 | 0x000098d0 | 504 | discovered | slot 27 setCMassGlobalPosition | NpActor.cpp:1574 `setCMassGlobalPosition` | implemented | defect (S) | 1: ActorCMass 1 | Task 3: 000789 rewritten from the listing and the 000004 shape update added. Open: S1 residual (group-level 001315) |
+| 000208 | 0x00009ad0 | 492 | discovered | slot 28 setCMassGlobalOrientation | NpActor.cpp:1586 `setCMassGlobalOrientation` | implemented | defect (S) | 1: ActorCMass 1 | Task 3: 000756, 000789 and the 000004 shape update fixed as in 000204. Open: S1 residual (group-level 001315) |
 | 000210 | 0x00009cc0 | 998 | discovered | slot 20 setCMassOffsetLocalPose | NpActor.cpp:1254 `setCMassOffsetLocalPose` | implemented | faithful | 8: ActorCMass 8 | E1 0x388, G1 0x387 and H1 fixed by Task 2; store/dirty/++0x198/000768/wake order faithful |
 | 000212 | 0x0000a0b0 | 739 | discovered | slot 21 setCMassOffsetLocalPosition | NpActor.cpp:1273 `setCMassOffsetLocalPosition` | implemented | faithful | 9: ActorCMass 9 | E1 0x394, G1 0x393 and H1 fixed by Task 2 |
 | 000214 | 0x0000a3a0 | 557 | discovered | slot 22 setCMassOffsetLocalOrientation | NpActor.cpp:1289 `setCMassOffsetLocalOrientation` | implemented | faithful | 8: ActorCMass 8 | E1 0x39f (the report sits in 000216's range), G1 0x39e and H1 fixed by Task 2 |
@@ -232,6 +232,9 @@ NxPhysicsDynamicFirstTests reaches only the 000118 counterpart.
 | 000222 | 0x0000b100 | 1187 | discovered | slot 25 setCMassOffsetGlobalOrientation | NpActor.cpp:1403 `setCMassOffsetGlobalOrientation` | implemented | faithful | 8: ActorCMass 8 | E1 0x3c1, G1 0x3c0 and H1 fixed by Task 2; rotation and 9 sums faithful |
 
 ## Counts
+
+These are the Task 1 counts (before Task 2); the counts after Task 2 are at the end of
+`## Task 2: the cross-cutting pass`, and after Task 3 in `## Task 3: row-level defects`.
 
 The 53 `discovered` rows (30,673 B):
 
@@ -266,7 +269,7 @@ new verdicts and says in each summary what Task 2 fixed and what is still open.
   which reports kind 2, the row's line and the 0x10104760 message and returns without
   unlocking: 46 rows, lines 0x22-0x3cd, each read from its listing. 000088 setName now takes
   the write lock at all (G1 0x1ff). 000122/000164 (empty bodies) are left to their own tasks.
-- **E1**: 52 reports (`nxNpActorReport(line, message)`, kind 1; 000166's 0xbb is the one
+- **E1**: 51 reports (`nxNpActorReport(line, message)`, kind 1; 000166's 0xbb is the one
   formatted report, the mass passed as a double) in the order each listing has them: the
   readers report inside their read lock before the default result and the unlock; the
   writers report and then unlock; 000170/000172 test the value before the actor; 000204-000208
@@ -278,8 +281,8 @@ new verdicts and says in each summary what Task 2 fixed and what is still open.
   DLL has the oracle's `mov eax,[__imp_instance]; cmp [eax],0; jne; int3` before each
   `call [__imp_error]` (checked by disassembling the built nxNpActorWriteTry). 000128 was
   switched to the same form.
-- Every message and the file string were checked byte for byte against the PE (all 52 found
-  NUL-terminated in the image).
+- Every message and the file string were checked byte for byte against the PE (all 51 found
+  NUL-terminated in the image; Task 3 recounted them, 51 not 52).
 - **H1**: `nxNpActorMarkRecordDirty` is the listing's inline NxArray pushBack (000184
   0x10008285-0x1000836c; 000170, 000785 and the other rows differ only in register allocation
   and store order, so one helper covers all of them): no null or id tests, the index written

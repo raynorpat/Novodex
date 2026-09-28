@@ -898,19 +898,51 @@ NxVec3 NpActorVtable::getPointVelocityVal(const NxVec3& point) const
 // phys_fn_000198 at 0x00008f60, actor dynamic slot 2. The body stores a
 // cached pose for static actors; dynamic records keep a current and shadow
 // translation and refresh their mass-frame center after position changes.
+// A shape's slot 6 (+0x18), thiscall (flags). The four reconstructed families'
+// internal tables all hold ShapeBase::nxApplyOwnerUpdate (001315) there; a
+// shape of a family whose table the candidate does not install yet (its
+// vtable word is null) gets that method directly.
+static void nxNpActorShapeSlot6(unsigned char* shape, unsigned flags)
+	{
+	void** table = *reinterpret_cast<void***>(shape);
+	if(!table)
+		{
+		static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(flags);
+		return;
+		}
+	typedef void (__thiscall* NxShapeSlot6Fn)(void* shape, unsigned flags);
+	reinterpret_cast<NxShapeSlot6Fn>(table[6])(shape, flags);
+	}
+
+// The owned-shape update every pose and CMass-global setter ends with (000196-
+// 000208: `mov ecx,[actor+0x14]; push 1; call 0x10001070`), phys_fn_000004 =
+// nxForwardSubobjectCall (ObjectModel.cpp): slot 6 of [body+0x10] with 1, or
+// nothing when the body has no shape. For a multi-shape actor that shape is
+// the group, whose table (0x10106c2c) has slot 6 = phys_fn_001018 (0x227d0,
+// 62 B): each child's slot 6 with the same argument, over (end - begin) / 4
+// entries of the +0xe0/+0xe4 array with no null test, then 001315(flags) on
+// the group itself. The candidate's group is still a 0x110-byte stub with no
+// table and no ShapeBase layout (Scene.cpp nxShapeGroupConstruct), so the
+// group's slot 6 is modelled here and the group-level 001315 call is open
+// until the group class is reconstructed (it changes only the group's own
+// pose words and dirty bits, which no public call reads).
 static void nxNpActorNotifyOwnedShapes(unsigned char* body)
 	{
 	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
 	if(!shape) return;
 	if(*reinterpret_cast<unsigned*>(shape + 0xd0) == 5u)
 		{
-		void** first = *reinterpret_cast<void***>(shape + 0xe0);
-		void** last = *reinterpret_cast<void***>(shape + 0xe4);
-		for(void** child = first; child && child != last; ++child)
-			static_cast<ShapeBase*>(*child)->nxApplyOwnerUpdate(1);
+		// phys_fn_001018 (0x000227d0, 62 B)
+		unsigned char** child = *reinterpret_cast<unsigned char***>(shape + 0xe0);
+		unsigned count = static_cast<unsigned>(
+			*reinterpret_cast<unsigned char***>(shape + 0xe4) - child);
+		for(; count; --count)
+			nxNpActorShapeSlot6(*child++, 1);
 		}
+	else if(*reinterpret_cast<void**>(shape))
+		nxForwardSubobjectCall(body, reinterpret_cast<void*>(1));
 	else
-		static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
+		nxNpActorShapeSlot6(shape, 1);
 	}
 
 void NpActorVtable::setGlobalPosition(const NxVec3& position)
@@ -1537,6 +1569,7 @@ void NpActorVtable::setCMassGlobalPose(const NxMat34& pose)
 	nxNpActorUpdateCMassQuaternion(record);
 	nxNpActorApplyWorldMassPose(record);
 	nxNpActorWakeAfterCMassWrite(record);
+	nxNpActorNotifyOwnedShapes(nxNpActorBody(this));		// 0x987d: 000004(body, 1)
 	nxNpSceneGuardLeave(ctx);
 	}
 
@@ -1591,58 +1624,56 @@ static float nxNpActorX87MassPositionX(float actorX, const float* rotation,
 #endif
 	}
 
+// phys_fn_000789 (0x00019d00, 1461 B)
+// A row of gap:SceneRaycast.cpp..CapsuleShape.cpp (thiscall on the record),
+// the world-mass-pose apply 000204-000208 call after their stores. In the
+// listing's order:
+// - 0x19d09-0x19d1e: +0x164 = the 000746 world tensor of diag(+0xc4) and the
+//   world mass frame W (+0x134);
+// - 0x19d23-0x19e5a: the actor rotation A = W F^T (F the local mass frame at
+//   +0xdc), nine x87 dot products rounded once each;
+// - 0x19e5e-0x19ef7: the actor position t = w - A p (w the world centre at
+//   +0x158, p the local mass position at +0x100). Row 0's (A2 p2 + A1 p1) +
+//   A0 p0 stays in the register; rows 1 and 2 are spilled to float first.
+//   t goes to +0x50 and +0x18; dirty |= 1;
+// - 0x19fe1-0x1a2ae: the quaternion of A by the setter conversion, to +0x5c
+//   and +0x24; dirty |= 2.
+// It does not call 000768.
 static void nxNpActorApplyWorldMassPose(unsigned char* record)
 	{
 	const float* worldMass = reinterpret_cast<const float*>(record + 0x134);
 	const float* localMass = reinterpret_cast<const float*>(record + 0xdc);
 	const float* localPosition = reinterpret_cast<const float*>(record + 0x100);
 	const float* worldPosition = reinterpret_cast<const float*>(record + 0x158);
-	float actorRotation[9];
-	actorRotation[0] = nxNpActorX87Dot3(localMass[1], worldMass[1], worldMass[2], localMass[2], worldMass[0], localMass[0]);
-	actorRotation[1] = nxNpActorX87Dot3(localMass[4], worldMass[1], localMass[3], worldMass[0], localMass[5], worldMass[2]);
-	actorRotation[2] = nxNpActorX87Dot3(localMass[6], worldMass[0], worldMass[2], localMass[8], worldMass[1], localMass[7]);
-	actorRotation[3] = nxNpActorX87Dot3(worldMass[3], localMass[0], localMass[1], worldMass[4], worldMass[5], localMass[2]);
-	actorRotation[4] = nxNpActorX87Dot3(worldMass[5], localMass[5], worldMass[4], localMass[4], worldMass[3], localMass[3]);
-	actorRotation[5] = nxNpActorX87Dot3(worldMass[5], localMass[8], worldMass[4], localMass[7], worldMass[3], localMass[6]);
-	actorRotation[6] = nxNpActorX87Dot3(worldMass[6], localMass[0], localMass[1], worldMass[7], worldMass[8], localMass[2]);
-	actorRotation[7] = nxNpActorX87Dot3(worldMass[8], localMass[5], worldMass[7], localMass[4], worldMass[6], localMass[3]);
-	actorRotation[8] = nxNpActorX87Dot3(worldMass[8], localMass[8], worldMass[7], localMass[7], worldMass[6], localMass[6]);
+	nxNpActorWorldTensorRDRt(reinterpret_cast<const float*>(record + 0xc4),
+		worldMass, reinterpret_cast<float*>(record + 0x164));
+	float a[9];
+	a[0] = nxNpActorX87Dot3(localMass[1], worldMass[1], worldMass[2], localMass[2], worldMass[0], localMass[0]);
+	a[1] = nxNpActorX87Dot3(localMass[4], worldMass[1], localMass[3], worldMass[0], localMass[5], worldMass[2]);
+	a[2] = nxNpActorX87Dot3(localMass[6], worldMass[0], worldMass[2], localMass[8], worldMass[1], localMass[7]);
+	a[3] = nxNpActorX87Dot3(worldMass[3], localMass[0], localMass[1], worldMass[4], worldMass[5], localMass[2]);
+	a[4] = nxNpActorX87Dot3(worldMass[5], localMass[5], worldMass[4], localMass[4], worldMass[3], localMass[3]);
+	a[5] = nxNpActorX87Dot3(worldMass[5], localMass[8], worldMass[4], localMass[7], worldMass[3], localMass[6]);
+	a[6] = nxNpActorX87Dot3(worldMass[6], localMass[0], localMass[1], worldMass[7], worldMass[8], localMass[2]);
+	a[7] = nxNpActorX87Dot3(worldMass[8], localMass[5], worldMass[7], localMass[4], worldMass[6], localMass[3]);
+	a[8] = nxNpActorX87Dot3(worldMass[8], localMass[8], worldMass[7], localMass[7], worldMass[6], localMass[6]);
+	#define NX_AP(i, k) (static_cast<double>(a[i]) * localPosition[k])
+	const double d0 = (NX_AP(2, 2) + NX_AP(1, 1)) + NX_AP(0, 0);
+	const float d1 = static_cast<float>((NX_AP(5, 2) + NX_AP(4, 1)) + NX_AP(3, 0));
+	const float d2 = static_cast<float>((NX_AP(8, 2) + NX_AP(7, 1)) + NX_AP(6, 0));
+	#undef NX_AP
 	float actorPosition[3];
-	for(unsigned row = 0; row < 3; ++row)
-		{
-		const volatile float displacement = static_cast<float>(
-			static_cast<double>(actorRotation[row * 3]) * localPosition[0] +
-			static_cast<double>(actorRotation[row * 3 + 1]) * localPosition[1] +
-			static_cast<double>(actorRotation[row * 3 + 2]) * localPosition[2]);
-		actorPosition[row] = static_cast<float>(static_cast<double>(worldPosition[row]) - displacement);
-		}
+	actorPosition[0] = static_cast<float>(static_cast<double>(worldPosition[0]) - d0);
+	actorPosition[1] = static_cast<float>(static_cast<double>(worldPosition[1]) - d1);
+	actorPosition[2] = static_cast<float>(static_cast<double>(worldPosition[2]) - d2);
 	memcpy(record + 0x50, actorPosition, sizeof(actorPosition));
 	memcpy(record + 0x18, actorPosition, sizeof(actorPosition));
 	nxNpActorMarkRecordDirty(record, 1);
 	float actorQuaternion[4];
-	nxNpActorQuaternionFromMatrix(actorRotation, actorQuaternion);
-	const double trace = static_cast<double>(actorRotation[0]) +
-		actorRotation[4] + actorRotation[8];
-	if(trace < 0.0 && actorRotation[4] > actorRotation[0] &&
-		actorRotation[4] >= actorRotation[8])
-		{
-		// RVA 0x1a0ec spills the reciprocal scale before multiplying the
-		// off-diagonal terms in the negative-trace Y branch.
-		const double root = sqrt(static_cast<double>(actorRotation[4]) -
-			(static_cast<double>(actorRotation[0]) + actorRotation[8]) + 1.0);
-		const volatile float scale = static_cast<float>(0.5 / root);
-		actorQuaternion[0] = static_cast<float>(
-			(static_cast<double>(actorRotation[1]) + actorRotation[3]) * scale);
-		actorQuaternion[2] = static_cast<float>(
-			(static_cast<double>(actorRotation[5]) + actorRotation[7]) * scale);
-		actorQuaternion[3] = static_cast<float>(
-			(static_cast<double>(actorRotation[2]) - actorRotation[6]) * scale);
-		}
+	nxNpActorSetterQuaternionFromMatrix(a, actorQuaternion);
 	memcpy(record + 0x5c, actorQuaternion, sizeof(actorQuaternion));
 	memcpy(record + 0x24, actorQuaternion, sizeof(actorQuaternion));
 	nxNpActorMarkRecordDirty(record, 2);
-	nxNpActorWorldTensor(reinterpret_cast<const float*>(record + 0xc4),
-		worldMass, reinterpret_cast<float*>(record + 0x164));
 	}
 
 static const unsigned char* nxNpActorDerivedMassFrame(
@@ -1697,6 +1728,7 @@ void NpActorVtable::setCMassGlobalPosition(const NxVec3& position)
 	memcpy(record + 0x158, &position, sizeof(position));
 	nxNpActorApplyWorldMassPose(record);
 	nxNpActorWakeAfterCMassWrite(record);
+	nxNpActorNotifyOwnedShapes(nxNpActorBody(this));		// 0x9a7f: 000004(body, 1)
 	nxNpSceneGuardLeave(ctx);
 	}
 
@@ -1717,6 +1749,7 @@ void NpActorVtable::setCMassGlobalOrientation(const NxMat33& orientation)
 	nxNpActorUpdateCMassQuaternion(record);
 	nxNpActorApplyWorldMassPose(record);
 	nxNpActorWakeAfterCMassWrite(record);
+	nxNpActorNotifyOwnedShapes(nxNpActorBody(this));		// 0x9c71: 000004(body, 1)
 	nxNpSceneGuardLeave(ctx);
 	}
 
@@ -2637,6 +2670,7 @@ NxReal NpActorVtable::getSleepLinearVelocity() const
 	return threshold;
 	}
 
+// phys_fn_000184 (0x00008230, 333 B)
 void NpActorVtable::setSleepLinearVelocity(NxReal threshold)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
@@ -2662,6 +2696,7 @@ NxReal NpActorVtable::getSleepAngularVelocity() const
 	return threshold;
 	}
 
+// phys_fn_000186 (0x00008380, 333 B)
 void NpActorVtable::setSleepAngularVelocity(NxReal threshold)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
@@ -2675,6 +2710,7 @@ void NpActorVtable::setSleepAngularVelocity(NxReal threshold)
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000192 (0x00008810, 371 B)
 void NpActorVtable::wakeUp(NxReal wakeCounterValue)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
@@ -2690,6 +2726,7 @@ void NpActorVtable::wakeUp(NxReal wakeCounterValue)
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000194 (0x00008990, 354 B)
 void NpActorVtable::putToSleep()
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
@@ -2706,6 +2743,7 @@ void NpActorVtable::putToSleep()
 	}
 
 // Concrete actor slots 75-77 store the flag mask in the 0x50-byte body.
+// phys_fn_000074 (0x00002ba0, 85 B)
 void NpActorVtable::raiseActorFlag(NxActorFlag flag)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
@@ -2716,6 +2754,7 @@ void NpActorVtable::raiseActorFlag(NxActorFlag flag)
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000076 (0x00002c00, 87 B)
 void NpActorVtable::clearActorFlag(NxActorFlag flag)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
@@ -2844,7 +2883,9 @@ void NpActorVtable::setName(const char* name)
 	if(!nxNpActorWriteTry(ctx, 0x1ff)) return;
 	unsigned char* body = *reinterpret_cast<unsigned char**>(
 		reinterpret_cast<unsigned char*>(this) + 0x14);
-	if(body) nxShapeSetName(body, name);
+	// 0x2dce-0x2dd7: the name table call (0x1000edc0) takes [actor+0x14]
+	// with no null test.
+	nxShapeSetName(body, name);
 	nxNpSceneGuardLeave(ctx);
 	}
 
@@ -2856,6 +2897,7 @@ const char* NpActorVtable::getName() const
 	}
 
 // Concrete actor slots 85/86 address the body +0x1c group word.
+// phys_fn_000112 (0x000035b0, 82 B)
 void NpActorVtable::setGroup(NxActorGroup group)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);

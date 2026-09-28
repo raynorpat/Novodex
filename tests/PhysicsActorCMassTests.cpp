@@ -7,6 +7,7 @@
 #include "NxActor.h"
 #include "NxBodyDesc.h"
 #include "NxBoxShapeDesc.h"
+#include "NxShape.h"
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -147,6 +148,63 @@ static void rotatedCase(NxScene* scene, const char* name, const NxMat33& orienta
 	actor->setCMassOffsetGlobalPose(worldPose);
 	sprintf(tag, "rot_%s_set_global_offset_pose", name); massFrame(tag, actor);
 	sprintf(tag, "rot_%s_final", name); probe(tag, actor);
+	scene->releaseActor(*actor);
+}
+// NpActor.cpp completion Task 3: the CMass-global setters 000204-000208 over
+// single-shape and grouped (two-box) actors with rotated mass frames. Each
+// step prints the record words 000789 writes (+0x18, +0x24, +0x50, +0x5c,
+// +0x124, +0x164), the world centre and frame it reads, and every shape's
+// global pose (the 000004 shape update; for the group, 001018's child loop).
+static void globalMassStep(const char* tag, NxActor* actor)
+{
+	massFrame(tag, actor);
+	transformState(tag, actor);
+	// The shape's world pose is composed by 001315 (Shape.cpp), whose own x87
+	// order the candidate does not reproduce yet, so the pose is printed to
+	// four decimals: enough to show the update reached every shape.
+	NxShape* const* shapes = actor->getShapes();
+	for(unsigned i = 0; i < actor->getNbShapes(); ++i)
+	{
+		const NxMat34 p = shapes[i]->getGlobalPose();
+		float v[9]; p.M.getRowMajor(v);
+		printf("cmass %s shape%u global_pose=%.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f\n",
+			tag, i, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], p.t.x, p.t.y, p.t.z);
+	}
+}
+static void globalMassCase(NxScene* scene, const char* name, unsigned shapeCount,
+	const NxMat33& massRotation, const NxMat33& first, const NxMat33& second)
+{
+	NxBoxShapeDesc box0; box0.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
+	NxBoxShapeDesc box1; box1.dimensions = NxVec3(0.5f, 0.25f, 1.5f);
+	box1.localPose.M = quatMatrix(0.2f, -0.4f, 0.3f, 0.8f);
+	box1.localPose.t = NxVec3(1.25f, -0.5f, 2.0f);
+	NxBodyDesc body; body.mass = 3.0f;
+	body.massSpaceInertia = NxVec3(1.5f, 2.5f, 3.5f);
+	body.massLocalPose.M = massRotation;
+	body.massLocalPose.t = NxVec3(0.75f, -1.25f, 0.5f);
+	NxActorDesc desc; desc.shapes.pushBack(&box0);
+	if(shapeCount > 1) desc.shapes.pushBack(&box1);
+	desc.body = &body;
+	desc.globalPose.M = quatMatrix(0.3f, 0.1f, -0.2f, 0.9f);
+	desc.globalPose.t = NxVec3(-3.0f, 2.0f, 1.0f);
+	NxActor* actor = scene->createActor(desc);
+	char tag[96];
+	sprintf(tag, "gm_%s", name);
+	printf("cmass %s created=%u shapes=%u\n", tag, actor ? 1u : 0u,
+		actor ? actor->getNbShapes() : 0u);
+	if(!actor) return;
+	matrix(tag, "input_mass_rotation", massRotation);
+	matrix(tag, "input_first", first);
+	matrix(tag, "input_second", second);
+	sprintf(tag, "gm_%s_created", name); globalMassStep(tag, actor);
+	NxMat34 target; target.M = first; target.t = NxVec3(1.5f, -2.25f, 3.125f);
+	actor->setCMassGlobalPose(target);
+	sprintf(tag, "gm_%s_pose", name); globalMassStep(tag, actor);
+	actor->setCMassGlobalPosition(NxVec3(-0.375f, 4.5f, -1.75f));
+	sprintf(tag, "gm_%s_position", name); globalMassStep(tag, actor);
+	actor->setCMassGlobalOrientation(second);
+	sprintf(tag, "gm_%s_orientation", name); globalMassStep(tag, actor);
+	sprintf(tag, "gm_%s_final", name); probe(tag, actor);
 	scene->releaseActor(*actor);
 }
 int wmain(int argc, wchar_t** argv)
@@ -297,6 +355,18 @@ int wmain(int argc, wchar_t** argv)
 	rotatedCase(scene, "near_x", nearX, flipY, flipZ);
 	rotatedCase(scene, "near_y", nearY, general, flipX);
 	rotatedCase(scene, "near_z", nearZ, nearX, flipY);
+	// NpActor.cpp completion Task 3 (000204-000208, 000756, 000789, 000746,
+	// 000004/001018). With an identity mass frame the actor rotation 000789
+	// converts is the target itself, so the targets walk every arm of both
+	// conversions; the rotated frames give general products.
+	const NxMat33 identity(NX_IDENTITY_MATRIX);
+	globalMassCase(scene, "single_general", 1, mass, general, nearZ);
+	globalMassCase(scene, "single_flip_x", 1, identity, flipX, nearY);
+	globalMassCase(scene, "group_general", 2, mass, general, nearZ);
+	globalMassCase(scene, "group_near_x", 2, identity, nearX, flipZ);
+	globalMassCase(scene, "group_near_y", 2, identity, nearY, flipX);
+	globalMassCase(scene, "group_near_z", 2, identity, nearZ, flipY);
+	globalMassCase(scene, "group_rotated", 2, nearY, nearX, general);
 	sdk->releaseScene(*scene); sdk->release();
 	return nxReportPairIdentity(pairDirectory);
 }

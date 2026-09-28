@@ -3,6 +3,7 @@
 
 #include "NxMat33.h"
 #include "NxQuat.h"
+#include "X87Sqrt.h"
 #include <math.h>
 #include <string.h>
 
@@ -95,6 +96,12 @@ static inline void nxNpActorQuaternionFromMatrix(const float* m, float* q)
 // spills (m11 + m22) to a float that the x arm reuses. Each arm computes
 // s = sqrt(... + 1), stores 0.5 * s, and multiplies three sums or differences
 // by the register reciprocal 0.5 / s.
+// It is also phys_fn_000756 (0x17420, 525 B, thiscall on the record: +0x134 to
+// +0x124), which setCMassGlobalPose/setCMassGlobalOrientation (000204/000208)
+// call: the same instruction sequence with the (m11 + m22) spill at [esp].
+// The roots are the listing's inline fsqrt (X87Sqrt.h), each over the operands
+// in the listing's order: fadd 1.0f after the trace, `fld b; fadd c; fsubr a;
+// fadd 1.0f` in the y and z arms, m00 - float(m11 + m22) + 1.0f in the x arm.
 static inline void nxNpActorBodyQuaternionFromMatrix(const float* m, float* q)
 	{
 	const double yz = static_cast<double>(m[4]) + m[8];
@@ -102,7 +109,7 @@ static inline void nxNpActorBodyQuaternionFromMatrix(const float* m, float* q)
 	const double trace = yz + m[0];
 	if(trace >= 0.0)		// fcom 0.0; test ah, 1: below or unordered takes the arms
 		{
-		const double s = sqrt(trace + 1.0);
+		const double s = x87FsqrtSum4(m[4], m[8], m[0], 1.0);
 		q[3] = static_cast<float>(0.5 * s);
 		const double r = 0.5 / s;
 		q[0] = static_cast<float>((static_cast<double>(m[7]) - m[5]) * r);
@@ -116,7 +123,7 @@ static inline void nxNpActorBodyQuaternionFromMatrix(const float* m, float* q)
 		axis = 2;
 	if(axis == 0)
 		{
-		const double s = sqrt((static_cast<double>(m[0]) - yzSpill) + 1.0);
+		const double s = x87FsqrtSum3(m[0], -static_cast<double>(yzSpill), 1.0);
 		q[0] = static_cast<float>(0.5 * s);
 		const double r = 0.5 / s;
 		q[1] = static_cast<float>((static_cast<double>(m[3]) + m[1]) * r);
@@ -125,8 +132,7 @@ static inline void nxNpActorBodyQuaternionFromMatrix(const float* m, float* q)
 		}
 	else if(axis == 1)
 		{
-		const double s = sqrt((static_cast<double>(m[4]) -
-			(static_cast<double>(m[0]) + m[8])) + 1.0);
+		const double s = x87FsqrtDiag(m[4], m[8], m[0]);		// 0x1001755a
 		q[1] = static_cast<float>(0.5 * s);
 		const double r = 0.5 / s;
 		q[2] = static_cast<float>((static_cast<double>(m[7]) + m[5]) * r);
@@ -135,8 +141,7 @@ static inline void nxNpActorBodyQuaternionFromMatrix(const float* m, float* q)
 		}
 	else
 		{
-		const double s = sqrt((static_cast<double>(m[8]) -
-			(static_cast<double>(m[4]) + m[0])) + 1.0);
+		const double s = x87FsqrtDiag(m[8], m[4], m[0]);		// 0x100174ec
 		q[2] = static_cast<float>(0.5 * s);
 		const double r = 0.5 / s;
 		q[0] = static_cast<float>((static_cast<double>(m[6]) + m[2]) * r);
@@ -152,6 +157,10 @@ static inline void nxNpActorBodyQuaternionFromMatrix(const float* m, float* q)
 // - the z arm spills s to float and forms 0.5 / float(s);
 // - the y and x arms spill the reciprocal 0.5 / s to float before using it.
 // In every arm the (m22 + m11) sum is spilled to float, as in 000801.
+// phys_fn_000789 (0x19d00) converts its actor rotation with the same sequence
+// (0x19fe1-0x1a1a0: spill at [esp+0x10], trace arm, z arm 0x1a093 with
+// float(s), y arm 0x1a0ec and x arm 0x1a148 with the reciprocal spilled).
+// The roots are the listing's inline fsqrt (X87Sqrt.h) over its operands.
 static inline void nxNpActorSetterQuaternionFromMatrix(const float* m, float* q)
 	{
 	const double zy = static_cast<double>(m[8]) + m[4];
@@ -159,7 +168,7 @@ static inline void nxNpActorSetterQuaternionFromMatrix(const float* m, float* q)
 	const double trace = zy + m[0];
 	if(trace >= 0.0)
 		{
-		const double s = sqrt(trace + 1.0);
+		const double s = x87FsqrtSum4(m[8], m[4], m[0], 1.0);
 		q[3] = static_cast<float>(0.5 * s);
 		const double r = 0.5 / s;
 		q[0] = static_cast<float>((static_cast<double>(m[7]) - m[5]) * r);
@@ -173,8 +182,7 @@ static inline void nxNpActorSetterQuaternionFromMatrix(const float* m, float* q)
 	if(axis == 2)
 		{
 		// 0x8bf7: fst [esp+0x34] keeps a float copy of s for the reciprocal.
-		const double s = sqrt((static_cast<double>(m[8]) -
-			(static_cast<double>(m[4]) + m[0])) + 1.0);
+		const double s = x87FsqrtDiag(m[8], m[4], m[0]);
 		const float sSpill = static_cast<float>(s);
 		q[2] = static_cast<float>(s * 0.5);
 		const double r = 0.5 / static_cast<double>(sSpill);
@@ -185,8 +193,7 @@ static inline void nxNpActorSetterQuaternionFromMatrix(const float* m, float* q)
 	else if(axis == 1)
 		{
 		// 0x8c46: the reciprocal is stored to [esp+0x34] and reloaded.
-		const double s = sqrt((static_cast<double>(m[4]) -
-			(static_cast<double>(m[8]) + m[0])) + 1.0);
+		const double s = x87FsqrtDiag(m[4], m[8], m[0]);
 		q[1] = static_cast<float>(0.5 * s);
 		const double r = static_cast<float>(0.5 / s);
 		q[2] = static_cast<float>((static_cast<double>(m[7]) + m[5]) * r);
@@ -196,7 +203,7 @@ static inline void nxNpActorSetterQuaternionFromMatrix(const float* m, float* q)
 	else
 		{
 		// 0x8c98: as the y arm, over m00 - float(m22 + m11).
-		const double s = sqrt((static_cast<double>(m[0]) - zySpill) + 1.0);
+		const double s = x87FsqrtSum3(m[0], -static_cast<double>(zySpill), 1.0);
 		q[0] = static_cast<float>(0.5 * s);
 		const double r = static_cast<float>(0.5 / s);
 		q[1] = static_cast<float>((static_cast<double>(m[3]) + m[1]) * r);
@@ -205,6 +212,8 @@ static inline void nxNpActorSetterQuaternionFromMatrix(const float* m, float* q)
 		}
 	}
 
+// phys_fn_000746 (0x00016e80, 245 B)
+// A row of gap:SceneRaycast.cpp..CapsuleShape.cpp that 000768 and 000789 call.
 // out = R diag(d) R^T, as the cdecl helper phys_fn_000746 (0x16e80, 245 B)
 // forms it (joint-open-items Task 4). Of the nine products d[k] * R[i][k],
 // four stay in x87 registers (d0*R00, d0*R20, d1*R21, d2*R22: double here)
@@ -320,9 +329,14 @@ static inline void nxNpActorUpdateMassFrame(unsigned char* record)
 		reinterpret_cast<float*>(record + 0x164));
 	}
 
+// phys_fn_000756 (0x00017420, 525 B)
+// A row of gap:SceneRaycast.cpp..CapsuleShape.cpp (thiscall on the record):
+// the quaternion of the mass-frame world rotation +0x134 into +0x124, by the
+// 000801 conversion (the instruction sequences are the same; checked by
+// listing, Task 3 of the NpActor.cpp completion plan).
 static inline void nxNpActorUpdateCMassQuaternion(unsigned char* record)
 	{
-	nxNpActorQuaternionFromMatrix(
+	nxNpActorBodyQuaternionFromMatrix(
 		reinterpret_cast<const float*>(record + 0x134),
 		reinterpret_cast<float*>(record + 0x124));
 	}
