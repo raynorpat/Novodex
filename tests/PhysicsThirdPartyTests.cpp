@@ -350,7 +350,8 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "ice_obb",						1204,	0 },
 	{ "qhull_hull_x87",					1284,	0 },	// doubles only; the combinatorial hull is exact
 	{ "qhull_hull_rotated",				1201,	582 },	// "QR1": the merges differ
-	{ "opcode_candidate_trees_x87",		2436,	2436 },	// candidate-built quantized and tied trees: test counts and hits
+	{ "opcode_candidate_trees_ray",		18,		1 },	// the collider's floats, and one grazing ray's BV test count
+	{ "opcode_candidate_trees_x87",		2489,	2436 },	// candidate-built quantized and tied trees: test counts, hits, floats
 	};
 
 static const NxDivergentCeiling* nxFindCeiling(const char* name)
@@ -4034,23 +4035,34 @@ static void nxDriveVendoredCoverage(const NxOracleRows& o, bool selfOnly)
 // runs the oracle's collider on the oracle's model and the candidate's collider
 // on the candidate's model, over the same inputs.
 //
-//   opcode_candidate_trees      the models whose build is exact
-//                               (opcode_model_build: no tie, not quantized),
-//                               and tree-versus-tree pairs of two of them.
-//                               Registered whole: exact.
+//   opcode_candidate_trees      the volume colliders on the models whose
+//                               build is exact (opcode_model_build: no tie,
+//                               not quantized), and tree-versus-tree pairs of
+//                               two of them. Registered whole: exact.
+//   opcode_candidate_trees_ray  rays on the same models: each query's discrete
+//                               outcome and its hits' distances and
+//                               barycentrics. DIVERGENT, with a ceiling, and
+//                               not because of the trees: the floats are
+//                               opcode_ray_x87's summation order, and one
+//                               ray's BV test count (6 in the oracle, 14 in
+//                               the candidate) comes out the same when the
+//                               candidate's collider queries the ORACLE's
+//                               model, so it is the collider's last bit
+//                               (opcode_ray_boundary's RayAABBOverlap `f`
+//                               rounding) on a ray that happens to graze a box.
 //   opcode_candidate_trees_x87  the rest -- quantized trees, and the height
 //                               field, the flat grid and the box, whose
 //                               splatter splits hang on a tie
-//                               (opcode_model_build_x87) -- and every pair
-//                               with one of them. DIVERGENT, with a ceiling.
+//                               (opcode_model_build_x87) -- every query on
+//                               them, floats included, and every pair with one
+//                               of them. DIVERGENT, with a ceiling.
 //
 // What is taped is each query's discrete outcome (return value, contact
-// status, test counts, hits and face ids, touched primitives, pairs) and the
-// volume caches' derived fields; a ray hit's distance and barycentrics are
-// not, because they are opcode_ray_x87's summation-order divergence whatever
-// built the tree. The rays are the three shapes opcode_ray takes; the three
-// aimed at a boundary are opcode_ray_boundary's, and the flat grid against the
-// height field is opcode_treecollider_boundary's, so neither is driven here.
+// status, test counts, hits and face ids, touched primitives, pairs), the
+// volume caches' derived fields, and the ray hits' floats as said. The rays
+// are the three shapes opcode_ray takes; the three aimed at a boundary are
+// opcode_ray_boundary's, and the flat grid against the height field is
+// opcode_treecollider_boundary's, so neither is driven here.
 
 static const NxVolumeRows kVolumeRows[] =
 	{
@@ -4066,14 +4078,14 @@ static const NxVolumeRows kVolumeRows[] =
 	  kOpcPlanesCtor, kOpcPlanesDtor, kOpcPlanesCollide, sizeof(PlanesCollider), sizeof(PlanesCache) },
 	};
 
-// One model's queries, both sides, onto `oracleTape`/`candidateTape`.
+// One model's queries, both sides, onto `oracleTape`/`candidateTape`: the rays
+// (their hits' floats onto `oracleFloats`/`candidateFloats`) or the volumes.
 static void nxCandidateTreeQueries(const NxOracleRows& o, const NxModelPair& p, NxTape& oracleTape,
-	NxTape& candidateTape, bool selfOnly)
+	NxTape& candidateTape, bool rays, NxTape& oracleFloats, NxTape& candidateFloats, bool selfOnly)
 	{
 	const NxMesh& m = gMeshes[p.mesh];
-	static NxTape discardedFloats;
 	static const int kRayShapes[6] = { 0, 1, 4, 6, 7, 10 };	// nxMakeRay's shapes 0, 1 and 4
-	for(int k = 0; k < 6; ++k)
+	for(int k = 0; k < (rays ? 6 : 0); ++k)
 		{
 		const int r = kRayShapes[k];
 		Ray ray;
@@ -4090,7 +4102,7 @@ static void nxCandidateTreeQueries(const NxOracleRows& o, const NxModelPair& p, 
 		for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
 			{
 			NxTape& tape = side == 0 ? oracleTape : candidateTape;
-			discardedFloats.reset();
+			NxTape& floats = side == 0 ? oracleFloats : candidateFloats;
 			unsigned char facesStorage[sizeof(CollisionFaces) + 16];
 			CollisionFaces* faces = new (facesStorage) CollisionFaces;
 			void* object = side == 0 ? nxOracleAlloc(sizeof(RayCollider)) : (void*) new RayCollider;
@@ -4107,7 +4119,7 @@ static void nxCandidateTreeQueries(const NxOracleRows& o, const NxModelPair& p, 
 			const bool returned = side == 0
 				? ((NxRayModelFn) nxAt(o, kOpcRayCollideModel))(object, &ray, p.oracle, worldPtr, 0)
 				: rc->Collide(ray, *p.candidate, worldPtr, 0);
-			nxTapeRay(tape, discardedFloats, returned, object, *faces, 0xffffffffu);
+			nxTapeRay(tape, floats, returned, object, *faces, 0xffffffffu);
 			if(side == 0)
 				{
 				((NxDtorFn) nxAt(o, kOpcRayDtor))(object);
@@ -4122,7 +4134,7 @@ static void nxCandidateTreeQueries(const NxOracleRows& o, const NxModelPair& p, 
 			}
 		}
 
-	for(int kind = 0; kind < 5; ++kind)
+	for(int kind = 0; kind < (rays ? 0 : 5); ++kind)
 		for(int q = 0; q < 4; ++q)
 			{
 			NxVolumeQuery v;
@@ -4277,7 +4289,13 @@ static void nxDriveCandidateTrees(const NxOracleRows& o, bool selfOnly)
 				++gMismatches;
 				continue;
 				}
-			nxCandidateTreeQueries(o, p, gOracleTape, gCandidateTape, selfOnly);
+			// The exact pass takes the rays in a family of their own, below; the
+			// divergent pass tapes their floats with everything else.
+			if(!exact)
+				nxCandidateTreeQueries(o, p, gOracleTape, gCandidateTape, true, gOracleTape, gCandidateTape,
+					selfOnly);
+			nxCandidateTreeQueries(o, p, gOracleTape, gCandidateTape, false, gOracleTape, gCandidateTape,
+				selfOnly);
 			}
 		for(int kind = 0; kind < 4; ++kind)
 			for(unsigned pr = 0; pr < sizeof(kPairs) / sizeof(kPairs[0]); ++pr)
@@ -4293,10 +4311,25 @@ static void nxDriveCandidateTrees(const NxOracleRows& o, bool selfOnly)
 						gOracleTape, gCandidateTape, selfOnly);
 				}
 		if(exact)
+			{
 			nxReport("opcode_candidate_trees", "0x000e9100", "phys_fn_005368",
-				"OPC_Model.cpp,OPC_TreeBuilders.cpp,OPC_OptimizedTree.cpp,OPC_RayCollider.cpp,OPC_SphereCollider.cpp,"
+				"OPC_Model.cpp,OPC_TreeBuilders.cpp,OPC_OptimizedTree.cpp,OPC_SphereCollider.cpp,"
 				"OPC_OBBCollider.cpp,OPC_AABBCollider.cpp,OPC_LSSCollider.cpp,OPC_PlanesCollider.cpp,OPC_TreeCollider.cpp",
 				selfOnly);
+			gState = 0xca7d1d03;
+			gOracleTape.reset();
+			gCandidateTape.reset();
+			for(int i = 0; i < gNbModels; ++i)
+				{
+				const NxModelPair& p = gModels[i];
+				if(!p.exact || !p.built || (!selfOnly && !p.candidateBuilt))
+					continue;
+				nxCandidateTreeQueries(o, p, gOracleTape, gCandidateTape, true, gOracleTape, gCandidateTape,
+					selfOnly);
+				}
+			nxReport("opcode_candidate_trees_ray", "0x000ba6f0", "phys_fn_004932",
+				"OPC_RayCollider.cpp,OPC_RayAABBOverlap.h,OPC_RayTriOverlap.h", selfOnly, kDivergent);
+			}
 		else
 			nxReport("opcode_candidate_trees_x87", "0x000f09b0", "phys_fn_005513",
 				"OPC_AABBTree.cpp,OPC_TreeBuilders.cpp,OPC_OptimizedTree.cpp", selfOnly, kDivergent);

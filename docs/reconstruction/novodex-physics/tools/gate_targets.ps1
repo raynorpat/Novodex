@@ -2280,15 +2280,19 @@ $NxRequiredCoverageLines = [ordered] @{
 
         # Vendored correspondence, Task 5a: candidate-built trees queried by the
         # candidate's colliders, against the oracle's trees and colliders over the
-        # same inputs. The exact family (the models opcode_model_build builds
-        # exactly) is registered whole; the quantized and tied models are
+        # same inputs. The exact family (the volume colliders and tree pairs on the
+        # models opcode_model_build builds exactly) is registered whole. The rays on
+        # those models, and everything on the quantized and tied models, are
         # DIVERGENT, registered up to the oracle digest, and held by the harness's
-        # recorded ceiling (kDivergentCeilings). The pair above keeps printing
-        # where Task 4 put it; the pair below carries the totals.
-        'thirdparty name=opcode_candidate_trees rva=0x000e9100 owner=phys_fn_005368 source=OPC_Model.cpp,OPC_TreeBuilders.cpp,OPC_OptimizedTree.cpp,OPC_RayCollider.cpp,OPC_SphereCollider.cpp,OPC_OBBCollider.cpp,OPC_AABBCollider.cpp,OPC_LSSCollider.cpp,OPC_PlanesCollider.cpp,OPC_TreeCollider.cpp words=4172 oracle=6f68c7e3 mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty name=opcode_candidate_trees_x87 rva=0x000f09b0 owner=phys_fn_005513 source=OPC_AABBTree.cpp,OPC_TreeBuilders.cpp,OPC_OptimizedTree.cpp words=18517 oracle=b7da8d7c',
-        'thirdparty coverage driven=46 divergent=10 words=486975 layout_checks=47',
-        'thirdparty oracle digest=dafb6637'
+        # recorded ceilings (kDivergentCeilings); the rays diverge by the collider's
+        # own last bit, not the tree's (evidence/vendored-correspondence.md, Task 5a).
+        # The pair above keeps printing where Task 4 put it; the pair below carries
+        # the totals.
+        'thirdparty name=opcode_candidate_trees rva=0x000e9100 owner=phys_fn_005368 source=OPC_Model.cpp,OPC_TreeBuilders.cpp,OPC_OptimizedTree.cpp,OPC_SphereCollider.cpp,OPC_OBBCollider.cpp,OPC_AABBCollider.cpp,OPC_LSSCollider.cpp,OPC_PlanesCollider.cpp,OPC_TreeCollider.cpp words=3674 oracle=1474f5d6 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=opcode_candidate_trees_ray rva=0x000ba6f0 owner=phys_fn_004932 source=OPC_RayCollider.cpp,OPC_RayAABBOverlap.h,OPC_RayTriOverlap.h words=292 oracle=f9c26128',
+        'thirdparty name=opcode_candidate_trees_x87 rva=0x000f09b0 owner=phys_fn_005513 source=OPC_AABBTree.cpp,OPC_TreeBuilders.cpp,OPC_OptimizedTree.cpp words=18694 oracle=b7ff4dc5',
+        'thirdparty coverage driven=47 divergent=11 words=486946 layout_checks=47',
+        'thirdparty oracle digest=5f87aa37'
     )
 }
 
@@ -2311,8 +2315,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
-    '4' = 134  # 34 for NxPhysicsAssetTests, 100 for NxPhysicsThirdPartyTests (67 + 29 from
-               # vendored-correspondence Task 4 + 4 from its Task 5a)
+    '4' = 135  # 34 for NxPhysicsAssetTests, 101 for NxPhysicsThirdPartyTests (67 + 29 from
+               # vendored-correspondence Task 4 + 5 from its Task 5a)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
