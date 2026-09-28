@@ -883,6 +883,7 @@ float nxActorSqrtFieldD4(void* self)
 // phys_fn_000015 (0x14f0): body helper. [body+0x10] names the shape list
 // head; null yields 0, a non-mesh shape (type word at +0xd0 != 5) yields 1,
 // and a mesh yields its triangle-array span ([+0xe4]-[+0xe0])>>2.
+// Product row: Physics/src/core/JointSupport.cpp.
 unsigned nxBodyShapeRecordCount(void* body)
 	{
 	unsigned sh = *reinterpret_cast<unsigned*>(

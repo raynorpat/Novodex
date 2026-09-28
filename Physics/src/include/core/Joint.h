@@ -135,17 +135,33 @@ static_assert(offsetof(JointBodyRecord, mWorldInverseInertia) == 0x164, "world i
 // global pose through it: the rows of the +8 record's +0x5c quaternion and
 // its +0x50 position when +8 is set (the listing's inlined quaternion-to-
 // matrix, 0x9637e-0x9643e), else the 3x3 at +0x20 and the vec3 at +0x44.
+//
+// The core dump (core/SceneDump.cpp) reads the body's shapes through the two
+// readers below, which are written in core/JointSupport.cpp with the other
+// rows of their gap unit (gap:<start>..Actor.cpp; effector-and-coredump
+// Task 3b).
 struct JointActorBody
 	{
+	//! phys_fn_000015 (0x000014f0). The shape count: 0 with no shape, the
+	//! compound's (+0xd0 == 5) +0xe0..+0xe4 span, else 1.
+	NxU32				getNbShapes() const;
+	//! phys_fn_000017 (0x00001520). The shape list: the compound's +0xe0
+	//! array, else the address of mShape itself; 0 with no shape.
+	void**				getShapes();
+
 	NxActor*			mActor;				//!< +0x00 (phys_fn_004066 reads it)
 	NxU32				mUnknown004;		//!< +0x04
 	JointBodyRecord*	mBody;				//!< +0x08; null for a static actor
-	NxU8				mUnknown00c[0x20 - 0x0c];
+	NxU32				mUnknown00c;		//!< +0x0c
+	//! +0x10. The internal shape (its type word at +0xd0), or null.
+	void*				mShape;
+	NxU8				mUnknown014[0x20 - 0x14];
 	NxReal				mPoseRotation[9];	//!< +0x20; row-major
 	NxVec3				mPosePosition;		//!< +0x44
 	};
 
 static_assert(offsetof(JointActorBody, mBody) == 0x08, "body record at +0x08");
+static_assert(offsetof(JointActorBody, mShape) == 0x10, "shape at +0x10");
 static_assert(offsetof(JointActorBody, mPoseRotation) == 0x20, "static pose at +0x20");
 static_assert(offsetof(JointActorBody, mPosePosition) == 0x44, "static position at +0x44");
 static_assert(sizeof(JointActorBody) == 0x50, "the actor body is 0x50 bytes");

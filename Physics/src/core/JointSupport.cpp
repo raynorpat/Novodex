@@ -6,6 +6,7 @@
 |
 \*----------------------------------------------------------------------------*/
 #include "core/JointSupport.h"
+#include "core/Joint.h"
 #include "PhysicsInternal.h"
 #include "X87Sqrt.h"
 
@@ -15,7 +16,11 @@
 // 000760, 000778) belong to gap units outside the joint code; they are
 // written here because the joint code and the Scene's joint removal reach
 // them (joint-open-items Task 2, units/joint-open-items-contract.md
-// "## Scene joint rows"). 000754 is now written below (Task 6, 21b275d);
+// "## Scene joint rows"). 000015 and 000017, the actor body's shape readers,
+// are the core dump's (effector-and-coredump Task 3b, units/effector-
+// coredump-contract.md "### Readers and whether the candidate has them"); they
+// are members of the body view JointActorBody (core/Joint.h). 000754 is now
+// written below (Task 6, 21b275d);
 // 004167 remains a deferred stub. 000713 and the deferred stub 000791 are
 // the spring-and-damper solver slot's, and 000722 the body constructor's
 // (effector-and-coredump Task 2, units/effector-coredump-contract.md
@@ -247,6 +252,34 @@ static NX_INLINE void*& supportPointer(void* record, NxU32 offset)
 // .rdata 0x101053d4: the wake floor phys_fn_000760 compares +0x4c against,
 // the same 0.39999998f (0x3ecccccc) phys_fn_004107 uses.
 static const NxReal gSupportWakeFloor = 0.39999998f;
+
+// phys_fn_000015 (0x000014f0, 41 B)
+// A compound (+0xd0 == 5) counts its +0xe0..+0xe4 pointer span (`sar`, a
+// signed quotient); any other shape is one; no shape is none.
+NxU32 JointActorBody::getNbShapes() const
+	{
+	const NxU8* shape = static_cast<const NxU8*>(mShape);
+	if(!shape)
+		return 0;
+	if(*reinterpret_cast<const NxU32*>(shape + 0xd0) != 5)
+		return 1;
+	void* const* first = *reinterpret_cast<void* const* const*>(shape + 0xe0);
+	void* const* last = *reinterpret_cast<void* const* const*>(shape + 0xe4);
+	return (NxU32)(last - first);
+	}
+
+// phys_fn_000017 (0x00001520, 28 B)
+// The compound's +0xe0 array, else &mShape (the listing's `lea eax,
+// [ecx+0x10]` is the return value); 0 with no shape.
+void** JointActorBody::getShapes()
+	{
+	NxU8* shape = static_cast<NxU8*>(mShape);
+	if(!shape)
+		return 0;
+	if(*reinterpret_cast<NxU32*>(shape + 0xd0) == 5)
+		return *reinterpret_cast<void***>(shape + 0xe0);
+	return &mShape;
+	}
 
 // phys_fn_000022 (0x00001840, 27 B)
 // 000754 on the actor body's +0x08 record, then the +0x10 object's slot 6

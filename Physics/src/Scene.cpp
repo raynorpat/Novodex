@@ -2850,6 +2850,37 @@ void NxSceneInternal::releaseEffector(Effector* effector)
 	gCreateJointReentry = false;
 	}
 
+// phys_fn_000509 (0x00010200, 33 B, phase 2): the three gravity words at
+// +0x520..+0x528 copied out as words (`ret 4`). The core dump's `PsGravity`
+// line.
+void NxSceneInternal::getGravity(NxVec3& gravity) const
+	{
+	NxU32* out = reinterpret_cast<NxU32*>(&gravity.x);
+	out[0] = at<NxU32>(0x520);
+	out[1] = at<NxU32>(0x524);
+	out[2] = at<NxU32>(0x528);
+	}
+
+// phys_fn_000523 (0x00010400, 4 B, phase 7): the pair-flag count at +0x3c.
+// The candidate never raises a pair flag, so it stays 0 and the core dump
+// never reaches getPairFlagArray.
+NxU32 NxSceneInternal::getNbPairs() const
+	{
+	return at<NxU32>(0x3c);
+	}
+
+// phys_fn_000525 (0x00010410, 61 B, phase 7), deferred with its continuation
+// phys_fn_000527 (0x00010450, 284 B): the pairs are walked out of the hash at
+// +0x624 through phys_fn_001957 into a 0x4000c-byte frame, which the
+// candidate's pair-flag hash does not reproduce. Its one caller is the core
+// dump, behind getNbPairs() != 0, which the candidate never has.
+bool NxSceneInternal::getPairFlagArray(NxPairFlag* userArray, NxU32 numPairs) const
+	{
+	(void)userArray; (void)numPairs;
+	NX_ASSERT(0);
+	return false;
+	}
+
 // phys_fn_000561 (0x00010870, 7 B, phase 7): the effector count at +0x6c4.
 NxU32 NxSceneInternal::getNbEffectors() const
 	{
