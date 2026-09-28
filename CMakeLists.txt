@@ -158,6 +158,10 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # CCD sweep 002264), with 000951's slab helper 001730/001732; they are x87 in
 # the oracle and run only inside the simulation step under its control word
 # 0x0f7f (64-bit, round toward zero), so the file is built x87 like the others.
+# NpActor.cpp, the public actor API, is here for the same reason: its float
+# rows (the x87 row sums of 000150/000152, the setters and getters) are x87 in
+# the oracle, and its `double` register lifetimes must compile to x87 at the
+# process's _PC_53 rather than to SSE2 (NpActor.cpp completion Task 2).
 # QhullHost.cpp is NovodeX's hull library around qhull (qhull-gap Task 4): x87 in the oracle
 # (the box fallback, the OBJ writers' widening, the rescale) and run under the caller's word.
 # Quantizer.cpp is the same library's band B (Wu's quantizer and reduceVertices, piece 4d), x87 too.
@@ -177,6 +181,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/NarrowPhase.cpp
 		Physics/src/ContactGeneration.cpp
 		Physics/src/ShapeRaycast.cpp
+		Physics/src/NpActor.cpp
 		Physics/src/core/Joint.cpp
 		Physics/src/core/RevoluteJoint.cpp
 		Physics/src/core/PrismaticJoint.cpp

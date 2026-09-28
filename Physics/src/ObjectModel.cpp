@@ -18,6 +18,7 @@
 #include "PhysicsSDK.h"
 #include "NxDebugRenderable.h"
 #include "NxBox.h"
+#include "NpActorDynamicMath.h"
 
 #include <float.h>
 #include <math.h>
@@ -812,13 +813,13 @@ void nxBindDebugRenderGuardC(float* guardC)
 // Scene-raycast block Task 4 (visualisation): the parameter was read through a
 // pointer only a test probe bound (nxBindDebugRenderGuardC), so the
 // box arm never ran in the product; it now reads the live array as the listing
-// does (nxSdkParameterTable, PhysicsSDK.cpp).
+// does (nxPhysicsSDKParameters, PhysicsSDK.cpp).
 void BoxShape::nxDebugRenderDispatch(const void* renderer) const
 	{
 	if(!mBase.nxFlagBitsDE(8))
 		return;
 	nxDebugRender(renderer);
-	if(nxSdkParameterTable()[NX_VISUALIZE_COLLISION_SHAPES] == 0.0f)
+	if(nxPhysicsSDKParameters()[NX_VISUALIZE_COLLISION_SHAPES] == 0.0f)
 		return;
 	NxBox box;
 	static_assert(sizeof(NxBox) == 60, "000931's 60-byte descriptor");
@@ -2395,9 +2396,11 @@ unsigned char nxArrayVtCall3Args1024(void* self, unsigned a1, unsigned a2,
 		unsigned char* elem = reinterpret_cast<unsigned char*>(begin[i]);
 		if(elem[0xde] & 7)
 			continue;
+		// `mov ecx,[edi]; call [eax+0x10]` (0x229d1-0x229ea): a thiscall on
+		// the element, its result tested as a byte.
 		void** vt = *reinterpret_cast<void***>(elem);
-		typedef unsigned char (__stdcall* Fn)(unsigned, unsigned, unsigned);
-		if(reinterpret_cast<Fn>(vt[0x10 / 4])(a1, a2, a3) == 0)
+		typedef unsigned char (__thiscall* Fn)(void*, unsigned, unsigned, unsigned);
+		if(reinterpret_cast<Fn>(vt[0x10 / 4])(elem, a1, a2, a3) == 0)
 			return 0;
 		}
 	return 1;
@@ -3604,10 +3607,15 @@ void nxAggregateAABB1030(void* self, float* out)
 // Actor slate 5: the sleep-chain readers.
 
 // Row 000713 (0x00015d50, 32 B) is claimed by core/JointSupport.cpp's
-// thiscall Row000713Fixture::row000713, which the product callers (000776,
-// the island rows, 003979) call. This cdecl copy is an unclaimed helper kept
-// for 000744 below, because the object-layout and shape-table harnesses link
-// ObjectModel.cpp without core/JointSupport.cpp.
+// thiscall Row000713Fixture::row000713, which the other product callers (000776,
+// the island rows, 003979) call. This cdecl copy is product code, not a test
+// helper: it is compiled into NxPhysics.dll as the callee of 000744 below, which
+// the image calls 000713 from out of line (0x16e3c). It stays an unclaimed copy
+// (the same effect, cdecl) because the object-layout and shape-table harnesses
+// link ObjectModel.cpp without core/JointSupport.cpp, so 000744 cannot call the
+// claimed row there. In the DLL no product path reaches 000744 yet: the image's
+// 000062 (isGroupSleeping, 0x2950) calls it, but NpActor.cpp's 000062 walks the
+// chain itself; the object-layout harness drives it (actorsm5).
 // Recursive path compression over the record
 // chain -- each record caches its group root at +0x1e8, a self-pointing
 // cache naming the root. Recursion terminates on the self-parented node.
@@ -4555,10 +4563,6 @@ void ShapeBase::nxApplyGroup(unsigned short group)
 		1u << ((mHalfwordD8 & 0xff) & 0x1f);
 	}
 
-// phys_fn_001315 (0x000266a0), BASE-table slot 6. Detached-shape path:
-// owner == null takes the early exit at 0x00026abb which is a pure no-op
-// (pop ebp / add esp,0x84 / ret 4). The owned path needs scene
-// infrastructure from Task 4 and is not reachable for detached shapes.
 // phys_fn_000981 (0x00021990, 55 B)
 // BOX-table slot 12, __thiscall ret 4: the three dimension words copied as
 // dwords (0x10021998-0x100219af), the hull rebuild (call 0x10021420 at
@@ -4723,13 +4727,46 @@ void PlaneShape::nxPlaneSetEquation(const float* normal, float distance)
 	// shape path tested here has no owner and returns without a write.
 	}
 
+// phys_fn_001315 (0x000266a0, 1061 B)
+// BASE-table slot 6, a row of Shape.cpp: the shape's world pose from its
+// owner. A detached shape (owner +4 null) takes the early exit at 0x26abb.
+// - 0x266bc-0x266fb: with a nonzero argument, a scene stamp [scene+0x540]
+//   other than +8 copies pose one (+0xc) to pose two (+0x3c) and stores it.
+// - 0x266fe-0x267f6: the owner pose. A dynamic owner's rotation comes from
+//   the record quaternion +0x24 by the inline sequence every body row uses
+//   (five doubled products spilled to float: nxNpActorComposeRotation), with
+//   the translation +0x18; a static owner's is the body's +0x20/+0x44.
+// - 0x267f6-0x269fa: pose one = owner * local (+0x6c): each rotation element
+//   one register sum rounded once, in the listing's operand order
+//     row 0: (R1 L3 + R2 L6) + R0 L0, (R1 L4 + R2 L7) + R0 L1,
+//            (R0 L2 + R1 L5) + R2 L8
+//     row 1: (R3 L0 + R4 L3) + R5 L6, (R3 L1 + R4 L4) + R5 L7,
+//            (R3 L2 + R4 L5) + R5 L8
+//     row 2: (R7 L3 + R8 L6) + R6 L0, (R7 L4 + R8 L7) + R6 L1,
+//            (R7 L5 + R8 L8) + R6 L2
+//   and the translation row 0, (R0 l0 + R1 l1) + R2 l2, added to T.x in the
+//   register, rows 1 and 2 spilled to float before T.y/T.z are added.
+// - 0x269fd-0x26a33: +0xdc bit 4 copies pose one to pose two and clears.
+// - 0x26a36-0x26ab8, with a nonzero argument: when +0xdc lacks bit 2 and the
+//   shape has the object at +0xa0, the shape is appended to that object's
+//   array at +0x78 (grown through 0x100b4de0); then +0xdc |= 2; then, when
+//   the prunable (+0xa4) has a handle (+0x28 != 0xffff) and a pruning type
+//   (+0x2a) below 4, its +8 loses bit 2 and the scene's pruner for that type
+//   ([scene+0x640 + 4 type]) gets slot 3 with the prunable. The candidate
+//   makes that call (Pruner::UpdateObject, scene-raycast Task 3). The +0xa0 array
+//   append is not reproduced: since NpActor.cpp completion Task 4 every
+//   Scene root carries the pruning collection at +0xa0 (001943), but no
+//   candidate path reaches the arm -- +0xdc starts at 6 (001273) and every
+//   call with a nonzero argument sets bit 2, and nothing in the candidate
+//   clears it -- and the add paths (000531, 000036) run slot 6 before the
+//   prunable is inserted, so they do not reach the slot-3 call either.
 void ShapeBase::nxApplyOwnerUpdate(unsigned flags)
 	{
 	if(mOwner04 == nullptr)
 		return;
 	unsigned char* body = static_cast<unsigned char*>(mOwner04);
 	unsigned char* scene = *reinterpret_cast<unsigned char**>(body + 4);
-	if((flags & 1u) != 0 && scene)
+	if((flags & 0xffu) != 0 && scene)
 		{
 		const unsigned stamp = *reinterpret_cast<unsigned*>(scene + 0x540);
 		if(mWord08 != stamp)
@@ -4739,39 +4776,47 @@ void ShapeBase::nxApplyOwnerUpdate(unsigned flags)
 			}
 		}
 	unsigned char* record = *reinterpret_cast<unsigned char**>(body + 8);
-	float ownerRotation[9];
-	float ownerTranslation[3];
+	float r[9];
+	float t[3];
 	if(record)
 		{
-		nxQuatToMatrix9(reinterpret_cast<const float*>(record + 0x5c),
-			ownerRotation);
-		memcpy(ownerTranslation, record + 0x18, sizeof(ownerTranslation));
+		nxNpActorComposeRotation(reinterpret_cast<const float*>(record + 0x24), r);
+		memcpy(t, record + 0x18, sizeof(t));
 		}
 	else
 		{
-		memcpy(ownerRotation, body + 0x20, sizeof(ownerRotation));
-		memcpy(ownerTranslation, body + 0x44, sizeof(ownerTranslation));
+		memcpy(r, body + 0x20, sizeof(r));
+		memcpy(t, body + 0x44, sizeof(t));
 		}
-	const float* local = reinterpret_cast<const float*>(mPose6C.mRotation);
-	float* world = reinterpret_cast<float*>(mPose0C.mRotation);
-	for(unsigned row = 0; row < 3; ++row)
-		for(unsigned col = 0; col < 3; ++col)
-			world[row * 3 + col] = static_cast<float>(
-				static_cast<double>(ownerRotation[row * 3]) * local[col] +
-				static_cast<double>(ownerRotation[row * 3 + 1]) * local[3 + col] +
-				static_cast<double>(ownerRotation[row * 3 + 2]) * local[6 + col]);
-	for(unsigned row = 0; row < 3; ++row)
-		mPose0C.mTranslation[row] = static_cast<float>(
-			static_cast<double>(ownerRotation[row * 3]) * mPose6C.mTranslation[0] +
-			static_cast<double>(ownerRotation[row * 3 + 1]) * mPose6C.mTranslation[1] +
-			static_cast<double>(ownerRotation[row * 3 + 2]) * mPose6C.mTranslation[2] +
-			ownerTranslation[row]);
+	const float* l = reinterpret_cast<const float*>(mPose6C.mRotation);
+	const float* lt = mPose6C.mTranslation;
+	float* w = reinterpret_cast<float*>(mPose0C.mRotation);
+	#define NX_RL(a, b) (static_cast<double>(r[a]) * l[b])
+	const double c0 = (static_cast<double>(r[0]) * lt[0] + static_cast<double>(r[1]) * lt[1]) +
+		static_cast<double>(r[2]) * lt[2];
+	const float c1 = static_cast<float>((static_cast<double>(r[3]) * lt[0] +
+		static_cast<double>(r[4]) * lt[1]) + static_cast<double>(r[5]) * lt[2]);
+	const float c2 = static_cast<float>((static_cast<double>(r[6]) * lt[0] +
+		static_cast<double>(r[7]) * lt[1]) + static_cast<double>(r[8]) * lt[2]);
+	mPose0C.mTranslation[0] = static_cast<float>(t[0] + c0);
+	mPose0C.mTranslation[1] = static_cast<float>(static_cast<double>(t[1]) + c1);
+	mPose0C.mTranslation[2] = static_cast<float>(static_cast<double>(t[2]) + c2);
+	w[0] = static_cast<float>((NX_RL(1, 3) + NX_RL(2, 6)) + NX_RL(0, 0));
+	w[1] = static_cast<float>((NX_RL(1, 4) + NX_RL(2, 7)) + NX_RL(0, 1));
+	w[2] = static_cast<float>((NX_RL(0, 2) + NX_RL(1, 5)) + NX_RL(2, 8));
+	w[3] = static_cast<float>((NX_RL(3, 0) + NX_RL(4, 3)) + NX_RL(5, 6));
+	w[4] = static_cast<float>((NX_RL(3, 1) + NX_RL(4, 4)) + NX_RL(5, 7));
+	w[5] = static_cast<float>((NX_RL(3, 2) + NX_RL(4, 5)) + NX_RL(5, 8));
+	w[6] = static_cast<float>((NX_RL(7, 3) + NX_RL(8, 6)) + NX_RL(6, 0));
+	w[7] = static_cast<float>((NX_RL(7, 4) + NX_RL(8, 7)) + NX_RL(6, 1));
+	w[8] = static_cast<float>((NX_RL(7, 5) + NX_RL(8, 8)) + NX_RL(6, 2));
+	#undef NX_RL
 	if((mHalfwordDC & 4u) != 0)
 		{
 		mHalfwordDC &= static_cast<NxU16>(~4u);
 		mPose3C = mPose0C;
 		}
-	if(flags)
+	if(flags & 0xffu)
 		{
 		mHalfwordDC |= 2u;
 		if(scene && mPrunable.mHandle != 0xffffu &&
@@ -4806,8 +4851,16 @@ void nxShapeFactoryInitializePose(void* shape, const void* localPose)
 		for(unsigned i = 0; i < 3; ++i)
 			memcpy(bytes + 0x6c + 4 * (i * 3 + i), &one, 4);
 		}
-	static_cast<ShapeBase*>(shape)->nxApplyOwnerUpdate(0);
+	// With 1, as the creation path's 000531 runs the shape's slot 6: the
+	// shape takes the Scene stamp at +8 and +0xdc gains bit 2 (the fresh
+	// shape's +0xdc = 6 loses bit 4 as pose one is copied to pose two).
+	static_cast<ShapeBase*>(shape)->nxApplyOwnerUpdate(1);
 	memcpy(bytes + 0x3c, bytes + 0x0c, 0x30);
+	}
+
+void nxShapeApplyOwnerUpdate(void* shape, unsigned flags)
+	{
+	static_cast<ShapeBase*>(shape)->nxApplyOwnerUpdate(flags);
 	}
 
 void nxShapeFactoryRefreshPose(void* shape)
@@ -5296,11 +5349,23 @@ void MassFrame::nxMassFrameConditionalZero(unsigned flag)
 	mMass = 0.0f;
 	}
 
+// The two frame rows Actor.cpp's 000008 (Scene.cpp) calls on its local frame.
+void nxMassFrameConditionalZeroAt(void* frame, unsigned flag)
+	{
+	static_cast<MassFrame*>(frame)->nxMassFrameConditionalZero(flag);
+	}
+
+void nxMassFrameTranslateAt(void* frame, const void* displacement)
+	{
+	static_cast<MassFrame*>(frame)->nxMassFrameTranslate(displacement);
+	}
+
 // phys_fn_000841 (0x0001c720, 43 B)
 // __thiscall, plain ret: {-o.x, -o.y, -o.z} built on the stack (fld; fchs;
 // fstp m32, an exact negation, 0x1c723-0x1c73e), then 000833 on it
 // (0x1c742). The only oracle caller is 000008 (the actor's mass from its
-// shapes), which the product does not reproduce yet.
+// shapes; Scene.cpp nxActorComputeMassFromShapes since the NpActor.cpp
+// completion).
 void MassFrame::nxMassFrameTranslateToCentre()
 	{
 	float negated[3];
@@ -5415,7 +5480,10 @@ __declspec(noinline) void MassFrame::nxMassFrameTranslate(const void* param)
 	}
 
 // phys_fn_000947 (0x00020850, 39 B)
-// BOX slot 4, ret 12: three stack DWORDs; the last is unused.
+// BOX-table slot 4, thiscall ret 0xc (destination, density, an unused third
+// DWORD): when +0xde & 7 is clear, 000849 on the destination with the
+// density, the hull dimensions (+0xe4) and the local pose (+0x6c)
+// (0x20850-0x2086d); always returns true (0x20872). Faithful to the listing.
 bool BoxShape::nxBoxAccumulateMass(MassFrame* destination, float density, unsigned reserved)
 	{
 	(void) reserved;

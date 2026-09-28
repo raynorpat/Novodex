@@ -2209,11 +2209,11 @@ int wmain(int argc, wchar_t** argv)
 }
 
 // ObjectModel.cpp's BOX slot 3 (phys_fn_000945) reads the SDK's live parameter
-// array through nxSdkParameterTable, which PhysicsSDK.cpp defines in the DLL.
+// array through nxPhysicsSDKParameters, which PhysicsSDK.cpp defines in the DLL.
 // This harness does not link PhysicsSDK.cpp and never calls slot 3, so it
 // supplies an all-zero array (every visualisation parameter at its default;
 // 128 covers NxParameter).
-const NxReal* nxSdkParameterTable()
+const NxReal* nxPhysicsSDKParameters()
 {
     static const NxReal parameters[128] = {0};
     return parameters;

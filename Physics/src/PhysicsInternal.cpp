@@ -242,3 +242,11 @@ bool nxSetSdkPointerBinding(void* key, void* value)
 	gPointerBindings->pushBack(pair);
 	return true;
 	}
+
+void nxReleaseSdkPointerBindings()
+	{
+	if(!gPointerBindings)
+		return;
+	NX_DELETE_SINGLE(gPointerBindings);
+	gPointerBindings = 0;
+	}

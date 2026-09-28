@@ -58,7 +58,8 @@
 #include "NxMat33.h"
 #include "NxQuat.h"
 #include "FoundationSDK.h"
-#include "PhysicsSDK.h"
+#include "NxAllocateable.h"
+#include "NxUtilities.h"
 #include "SceneVisualize.h"
 #include "ContactPairManager.h"
 #include "NxDebugRenderable.h"
@@ -72,6 +73,13 @@ void nxShapeSetName(void* shape, const char* name);
 void nxShapeFactoryInitializePose(void* shape, const void* localPose);
 void nxShapeFactoryRefreshPose(void* shape);
 void nxShapeFactoryInstallVtable(void* shape, unsigned type);
+// ShapeBase::nxApplyOwnerUpdate (phys_fn_001315, ObjectModel.cpp) on a shape.
+void nxShapeApplyOwnerUpdate(void* shape, unsigned flags);
+// ObjectModel.cpp's rows the Task 4 chain calls: phys_fn_000012 (the id pool),
+// phys_fn_000028 (its push) and phys_fn_002344 (the Scene+0x5d4 pair removal).
+unsigned nxIdAllocNext(void* container);
+void nxU32VectorPushBack(void* vecHeader, NxU32 value);
+void nxSceneRemovePairs(void* container, void* shape);
 void nxShapeFactoryInitializePlane(void* shape, const float* normal,
 	float distance);
 
@@ -124,6 +132,8 @@ void nxSceneEngineDestroyPruners(void* engine);
 void nxSceneEngineSetExternalBuffer(void* engine, unsigned capacity, void* entries);
 void nxShapeFactoryInstallPrunable(void* shape);
 bool nxShapeFactoryLoadBox(void* shape, const void* descriptor);
+// 002421 and 002411, keyed on the manager: BodyCreation.cpp's 000801 and
+// 000799 pass the record's +0x120.
 void nxSceneAuxRegisterRecord(void* aux, void* record);
 void nxSceneAuxUnregisterRecord(void* aux, void* record);
 unsigned nxSceneTakeShapeId(NxSceneInternal* scene);
@@ -356,16 +366,16 @@ void nxSceneDeadlockReport();
 // Rows Actor::loadFromDescInternal and the actor constructor call. REPRODUCTION
 // HOLES, as above.
 // ---------------------------------------------------------------------------
-// phys_fn_00001de0 (0x00001de0, phase 5): the shape factory. REPRODUCTION HOLE;
-// it returns a non-null shape object, which is what the caller tests.
+// Actor::loadFromDescInternal's use of the shape factory phys_fn_000032 (the
+// factory and the runtime shapes are defined with the Task 4 chain below).
 void* nxShapeFactory(void* shapeDesc, void* actor);
-// The multi-shape group builder (0x110 bytes). REPRODUCTION HOLE.
+// The multi-shape group of the actor-creation path (0x110 bytes).
 void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsigned count);
 
 
 void nxActorSetName(void* actor, unsigned name);
 void nxActorBuildBody(void* actor, const unsigned* desc);
-int nxActorComputeMass(void* actor, const unsigned* bodyWord);
+int nxActorBuildRecord(unsigned char* body, const NxBodyDesc* desc);
 void nxSceneAddActorObject(void* scene, void* object, void* actor);
 void nxActorBuildUserDataObject(void* actor);
 void nxSceneReportErrorA(const char* message);
@@ -380,8 +390,8 @@ NxActor* nxSceneActorConstruct(void* memory, void* scene);
 // phys_fn_00002010 (0x00002010, phase 2): applies the descriptor to the actor and
 // returns the actor's vtable word. Modelled as "applied, non-null".
 void* nxSceneActorInitialise(NxActor* actor, const void* desc);
-// phys_fn_00001c40 (0x00001c40, phase 2): destroys an actor built by the two above.
-void nxSceneActorDestroy(NxActor* actor);
+// Actor.cpp's actor destructor body, row 000030 (defined below).
+void nxActorDestroy(unsigned char* body);
 // phys_fn_000100a0 (0x000100a0, phase 7): refreshes a cached count from an array.
 void nxSceneUpdateActorCount(void* scene, unsigned count);
 // phys_fn_00089d50 (0x00089d50, phase 6): the scene's notification hook.
@@ -634,19 +644,11 @@ void nxSceneRecycleActorId(NxSceneInternal* scene, unsigned id)
 	scene->at<unsigned*>(0x6d8) = last + 1;
 	}
 
-// Dynamic-record IDs use the same LIFO vector layout at Scene+0x6fc,
-// with the next fresh ID at +0x6f8. The record constructor 000797 takes one
-// (inlined there, BodyCreation.cpp); the record destructor 000776 returns its
-// +0x11c ID through this vector (000028's push) before the record is freed.
-void nxSceneRecycleRecordId(NxSceneInternal* scene, unsigned id)
-	{
-	unsigned char* header = scene->bytes() + 0x6fc;
-	nxSceneArrayReserve(header, 1);
-	unsigned* last = scene->at<unsigned*>(0x700);
-	if(!last) return;
-	*last = id;
-	scene->at<unsigned*>(0x700) = last + 1;
-	}
+// Dynamic-record IDs use the same LIFO vector layout at Scene+0x6fc, with the
+// next fresh ID at +0x6f8 (000028's container). The record constructor 000797
+// takes one (inlined there, BodyCreation.cpp); the record destructor 000776
+// returns its +0x11c ID through 000028 (nxU32VectorPushBack) before 000030
+// frees the record.
 
 // The first dynamic record initializes five 256-slot arrays in the Scene's
 // 0xa8-byte auxiliary manager. Three are prepared through a temporary 0x800
@@ -948,6 +950,21 @@ static void nxSceneUntrackShape(NxSceneInternal* scene, unsigned char* shape)
 			}
 	}
 
+// ---------------------------------------------------------------------------
+// The pruning collection at Scene+0x624 (phys_fn_001980 builds it) is the
+// OPCODE pruning engine, opcode/IcePruningEngine.cpp: its pruners sit at
+// +0x1c + 4 type (the static one, type 0, at Scene+0x640; the dynamic one,
+// type 2, at Scene+0x648), created on first use; +0x70 holds the type a
+// dynamic prunable takes (2). A shape's prunable is the sub-object at +0xa4:
+// +0xc4 its pruner, +0xcc its handle (0xffff when it has none), +0xce its type
+// (phys_fn_004888), +0xcf its section (phys_fn_004890: 2 for a group root, 1
+// for a single root, 0 for a group child). The engine's add and remove are
+// the rows phys_fn_004857 and phys_fn_004859 (scene-raycast block Task 3); the
+// NpActor.cpp completion's model of the pruners (its table allocation, growth
+// and swap-removal) was replaced by them at the second merge of main into the
+// scene-raycast block.
+// ---------------------------------------------------------------------------
+
 // Registers a body's shape with the engine's pruner of the given type (0
 // static, 2 dynamic): a single shape in section 1; a compound's children in
 // section 0 and its group shape in section 2 (the pinned DLL's pool layout,
@@ -980,16 +997,39 @@ static void nxSceneEngineRemoveRoot(NxSceneInternal* scene, unsigned char* shape
 	nxSceneEngineRemoveShape(engine, shape);
 	}
 
+// Row 004857 on a shape whose prunable type (+0xce) and section (+0xcf)
+// the caller has set (001941, 001943).
+static void nxScenePrunerInsert(NxSceneInternal* scene, unsigned char* shape)
+	{
+	nxSceneEngineAddShape(&scene->at<unsigned char>(0x624), shape, shape[0xce], shape[0xcf]);
+	}
+
+// Row 004859 on a shape's prunable (001945).
+static void nxScenePrunerErase(NxSceneInternal* scene, unsigned char* shape)
+	{
+	if(!shape) return;
+	nxSceneEngineRemoveShape(&scene->at<unsigned char>(0x624), shape);
+	}
+
+// The actor-creation registration of a dynamic body (this file's model of
+// the 000034 -> 000531 path): the root takes the pruning collection at +0xa0
+// and joins its +0x78 list; a group's children enter the dynamic pruner in
+// section 0 before the group in section 2, a single root goes in section 1.
 void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* bodyPointer)
 	{
 	unsigned char* body = static_cast<unsigned char*>(bodyPointer);
 	if(!body || !*reinterpret_cast<void**>(body + 8)) return;
 	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
 	if(!shape) return;
+	*reinterpret_cast<void**>(shape + 0xa0) = scene->bytes() + 0x624;
 	nxSceneEngineAddRoot(scene, shape, 2);
 	nxSceneTrackShape(scene, shape);
 	}
 
+// The actor-release removal of a body's shapes: the root leaves the +0x78
+// list, then the root and each current child leave their pruner (this
+// file's model of phys_fn_001955 and phys_fn_001945, which 000533/000535
+// reach through 001279). A static root goes through the same removal.
 void nxSceneBroadphaseUnregister(NxSceneInternal* scene, void* bodyPointer)
 	{
 	unsigned char* body = static_cast<unsigned char*>(bodyPointer);
@@ -1005,7 +1045,6 @@ void nxSceneBroadphaseUnregister(NxSceneInternal* scene, void* bodyPointer)
 	nxSceneUntrackShape(scene, shape);
 	nxSceneEngineRemoveRoot(scene, shape);
 	}
-
 
 
 
@@ -1106,25 +1145,31 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 		return 1;
 		}
 
-	const int mass = nxActorComputeMass(actor, &d[0x0c]);
+	// 000026 on the body (0x21cd), with the descriptor's body. Its record
+	// reaches the Scene's +0x56c array through 000630 (a dynamic actor built
+	// without shapes too: the push and 000503 precede the public actor
+	// array's growth, NpActor.cpp completion Task 4, t4_bare_create). 1 and
+	// any other nonzero result are the Actor.cpp reports 0xe5 and 0xe6.
+	const int mass = nxActorBuildRecord(body,
+		reinterpret_cast<const NxBodyDesc*>(d[0x0c]));
 	if(mass == 1)
 		{
-		nxSceneReportErrorA("Actor::loadFromDescInternal: Compute mesh inertia tensor "
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\Actor.cpp", 0xe5, 0,
+			"Actor::loadFromDescInternal: Compute mesh inertia tensor "
 			"failed for one of the actor's mesh shapes! Please change mesh geometry or "
 			"supply a tensor manually!");
 		return 0;
 		}
 	if(mass == 0)
 		{
-		if(!a[0x10 / 4])
-			{
-			return 1;
-			}
 		nxSceneAddActorObject(reinterpret_cast<void*>(a[1]),
 			reinterpret_cast<void*>(a[0x10 / 4]), actor);
 		return 1;
 		}
-	nxSceneReportErrorA("Actor::loadFromDescInternal: Can't compute mass from shapes: "
+	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,
+		"\\Epic\\Novodex\\SDKs\\Physics\\src\\Actor.cpp", 0xe6, 0,
+		"Actor::loadFromDescInternal: Can't compute mass from shapes: "
 		"must have at least one non-trigger shape!");
 	return 0;
 	}
@@ -1222,10 +1267,13 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 	// decide the actor was built. Reproduction hole.
 	if(!nxActorLoadFromDescInternal(actor, reinterpret_cast<const unsigned*>(&desc)))
 		{
-		nxSceneActorDestroy(actor);
-		nxGetSdkAllocator()->free(actor);
-		nxGetSdkAllocator()->free(outerMemory);
-		nxSceneReportError("Actor Initialisation failed: returned NULL.");
+		// 000030 on the body (it deletes the public actor through its
+		// slot 0), then the body freed through [0x101041bc].
+		nxActorDestroy(static_cast<unsigned char*>(outerMemory));
+		nxFoundationSDKAllocator->free(outerMemory);
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\Scene.cpp", 0x228, 0,
+			"Actor Initialisation failed: returned NULL.");
 		return 0;
 		}
 
@@ -1270,103 +1318,58 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 	return actor;
 	}
 
-// phys_fn_000628 at 0x000123d0: the public wrapper passes the actor's 0x50-byte
-// body, whose first word points back to the 0x18-byte public actor. The Scene
-// removes that actor by swapping in the last entry, then tears down the owned
-// body graph. Callback and name paths remain separate gaps.
+// phys_fn_000628 (0x000123d0, 241 B)
+// Scene::releaseActor(body). Under the API reentry flag (.data 0x10123c10;
+// set: code 2, line 0x492, the message at 0x10122050): the public actor
+// ([body]) is searched for in the +0x55c array; not found is code 2, line
+// 0x4ae, "Scene::releaseActor: double deletion detected!". Found: the last
+// entry takes its place and the array shrinks; a fluid manager at +0x61c
+// takes 003635 (0x1248c-0x12497), which is NOT written: 003635 walks the
+// manager's fluids through 003485 into the emitter rows 003593/003622, none
+// of them written, and +0x61c is only set by createFluid (000645/000400),
+// which the candidate stubs. The row stays `discovered` until that chain is
+// (NpActor completion final review I2). Actor.cpp's 000030 destroys the
+// actor and the body is freed through [0x101041bc]; the flag is cleared.
+void nxActorDestroy(unsigned char* body);
+
+// .data 0x10123c10: the one API reentry flag. Scene::createJoint and
+// releaseJoint, Scene::createEffector and releaseEffector, Scene::releaseActor
+// and Actor.cpp's createShape and
+// releaseShape (000036/000024) test, set and clear it.
+static bool gNxApiReentry = false;
+
 void NxSceneInternal::releaseActor(void* bodyPointer)
 	{
+	if(gNxApiReentry)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\Scene.cpp", 0x492, 0,
+			"Reentry check: You may not call this API method from a callback!");
+		return;
+		}
+	gNxApiReentry = true;
 	unsigned char* body = static_cast<unsigned char*>(bodyPointer);
 	NxActor* actor = *reinterpret_cast<NxActor**>(body);
 	NxActor** first = at<NxActor**>(0x55c);
-	NxActor** last = at<NxActor**>(0x560);
-	if(!first || !last || first == last)
+	const unsigned count = static_cast<unsigned>(at<NxActor**>(0x560) - first);
+	unsigned index = 0;
+	while(index < count && first[index] != actor)
+		++index;
+	if(index == count)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\Scene.cpp", 0x4ae, 0,
+			"Scene::releaseActor: double deletion detected!");
+		gNxApiReentry = false;
 		return;
-	NxActor** found = first;
-	while(found != last && *found != actor)
-		++found;
-	if(found == last)
-		return;
-	nxSceneBroadphaseUnregister(this, body);
-	--last;
-	*found = *last;
-	at<NxActor**>(0x560) = last;
-
-	unsigned char* record = *reinterpret_cast<unsigned char**>(body + 8);
-	if(record)
-		{
-		void** objects = at<void**>(0x56c);
-		void** objectsEnd = at<void**>(0x570);
-		for(void** it = objects; it && it != objectsEnd; ++it)
-			if(*it == record)
-				{
-				--objectsEnd;
-				*it = *objectsEnd;
-				at<void**>(0x570) = objectsEnd;
-				break;
-				}
 		}
-
-	// The observed free order for a dynamic box actor: public wrapper,
-	// dynamic record, shape helper, shape, then the outer body.
-	const unsigned actorId = *reinterpret_cast<unsigned*>(body + 0xc);
-	nxGetSdkAllocator()->free(actor);
-	nxShapeSetName(body, 0);
-	if(record)
-		{
-		// The internal actor teardown phys_fn_000030 notifies the record's
-		// observers with 0x100 (import 0x101041ac, 0x1d82) before the
-		// record's destructor runs: every effector observing the record nulls
-		// its pointer to it (phys_fn_003928). (effector-and-coredump Task 2.)
-		reinterpret_cast<NxFoundation::Observable*>(record)->notifyObservers(0x100);
-		// The record destructor 000776 (BodyCreation.cpp): the id recycle,
-		// the island teardown, the auxiliary manager's unregistration and the
-		// kinematic block's free (000799), as 000030 calls it before the free.
-		reinterpret_cast<DynamicBody*>(record)->destruct();
-		nxGetSdkAllocator()->free(record);
-		}
-	nxSceneRecycleActorId(this, actorId);
-	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
-	if(shape && *reinterpret_cast<unsigned*>(shape + 0xd0) == 5u)
-		{
-		void** shapes = *reinterpret_cast<void***>(shape + 0xe0);
-		void** shapesEnd = *reinterpret_cast<void***>(shape + 0xe4);
-		void** helpers = *reinterpret_cast<void***>(shape + 0xf0);
-		for(unsigned i = 0; i < static_cast<unsigned>(shapesEnd - shapes); ++i)
-			{
-			const unsigned id = *reinterpret_cast<unsigned*>(
-				static_cast<unsigned char*>(shapes[i]) + 0xd4);
-			nxSceneAuxUnregisterShape(this, shapes[i]);
-			nxGetSdkAllocator()->free(helpers[i]);
-			nxShapeSetName(shapes[i], 0);
-			nxGetSdkAllocator()->free(shapes[i]);
-			nxSceneRecycleShapeId(this, id);
-			}
-		nxGetSdkAllocator()->free(helpers);
-		nxGetSdkAllocator()->free(shapes);
-		nxSceneAuxUnregisterShape(this, shape);
-		nxSceneRecycleShapeId(this, *reinterpret_cast<unsigned*>(shape + 0xd4));
-		nxShapeSetName(shape, 0);
-		nxGetSdkAllocator()->free(shape);
-		}
-	else if(shape)
-		{
-		const unsigned id = *reinterpret_cast<unsigned*>(shape + 0xd4);
-		void* helper = *reinterpret_cast<void**>(shape + 0x9c);
-		nxSceneAuxUnregisterShape(this, shape);
-		if(helper) nxGetSdkAllocator()->free(helper);
-		nxShapeSetName(shape, 0);
-		// The shape id is recycled before the shape is freed: the oracle's
-		// free order is helper, the id vector's old block when the recycle
-		// grows it, then the shape (effector-and-coredump Task 2: the scene
-		// release of NxPhysicsEffectorTests, whose third actor's recycle
-		// grows the vector, printed 1c,8,228 on the oracle side).
-		nxSceneRecycleShapeId(this, id);
-		nxGetSdkAllocator()->free(shape);
-		}
-	nxGetSdkAllocator()->free(body);
+	if(index != count - 1)
+		first[index] = at<NxActor**>(0x560)[-1];
+	--at<NxActor**>(0x560);
+	nxActorDestroy(body);
+	nxFoundationSDKAllocator->free(body);
+	gNxApiReentry = false;
 	}
-
 
 // ---------------------------------------------------------------------------
 // phys_fn_000665 (0x000142c0, 718 B, phase 7) is Scene::createJoint.
@@ -1417,27 +1420,27 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 // so NpScene::createJoint keeps returning what this returns for every type.
 // ---------------------------------------------------------------------------
 
-static bool gCreateJointReentry = false;
+// .data 0x10123c10 is gNxApiReentry (defined above Scene::releaseActor).
 
 NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 	{
 	unsigned* p = reinterpret_cast<unsigned*>(mBytes);
 	const unsigned* d = reinterpret_cast<const unsigned*>(&desc);
 
-	if(gCreateJointReentry)
+	if(gNxApiReentry)
 		{
 		nxSceneReportErrorA("Reentry check: You may not call this function "
 			"recursively. Scene.cpp:0x245");
 		return 0;
 		}
-	gCreateJointReentry = true;
+	gNxApiReentry = true;
 
 	// desc.isValid() is the pinned header's own inline predicate, reached through
 	// the descriptor's vtable in the oracle and called directly here.
 	if(!desc.isValid())
 		{
 		nxSceneReportErrorA("PhysicsSDK::createJoint: desc.isValid() fails!");
-		gCreateJointReentry = false;
+		gNxApiReentry = false;
 		return 0;
 		}
 
@@ -1458,7 +1461,7 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 		{
 		nxSceneReportErrorA("PhysicsSDK::createJoint: at least one of the two actors "
 			"must be dynamic!");
-		gCreateJointReentry = false;
+		gNxApiReentry = false;
 		return 0;
 		}
 
@@ -1607,7 +1610,7 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 	// then the re-entry flag is cleared.
 	++p[0x6c8 / 4];
 	p[0x6bc / 4] = p[0x59c / 4];
-	gCreateJointReentry = false;
+	gNxApiReentry = false;
 	return result;
 	}
 
@@ -1875,36 +1878,46 @@ void* nxSceneActorInitialise(NxActor* actor, const void* desc)
 	return const_cast<void*>(desc);
 	}
 
-void nxSceneActorDestroy(NxActor* actor)
-	{
-	(void)actor;
-	}
-
+// phys_fn_000503 (0x000100a0, 232 B)
+// A row of gap:PhysicsSDK.cpp..Scene.cpp. The Scene's per-object buffers follow a count: nothing when +4 already
+// holds it; else +4 = (count + 0x100) & ~0xff, the +8 block freed and
+// reallocated, then the +0xc block (both through [0x101041bc], capacity * 4
+// bytes), only +8 zeroed (rep stosd over edi = [+8]), +0x14 = the capacity,
+// and the SdkContainers at +0x50, +0x500 and +0x510 take (capacity, [+0xc])
+// as their external buffer (004847). The last call, 004861 on the pruning
+// collection (each pruner's slot 4 with the same pair), is not carried: the
+// candidate's pruners (the model above) have no table.
 void nxSceneUpdateActorCount(void* scene, unsigned count)
 	{
 	unsigned char* bytes = static_cast<unsigned char*>(scene);
 	unsigned& capacity = *reinterpret_cast<unsigned*>(bytes + 4);
-	if(count <= capacity) return;
-	capacity = (count + 0xffu) & ~0xffu;
-	for(unsigned offset = 8; offset <= 0xc; offset += 4)
+	if(capacity >= count) return;
+	capacity = (count + 0x100u) & ~0xffu;
+	void*& first = *reinterpret_cast<void**>(bytes + 8);
+	if(first)
 		{
-		void* old = *reinterpret_cast<void**>(bytes + offset);
-		if(old) nxGetSdkAllocator()->free(old);
-		void* next = nxGetSdkAllocator()->malloc(capacity * 4,
-			NX_MEMORY_PERSISTENT);
-		if(next) memset(next, 0, capacity * 4);
-		*reinterpret_cast<void**>(bytes + offset) = next;
+		nxFoundationSDKAllocator->free(first);
+		first = 0;
 		}
+	first = nxFoundationSDKAllocator->malloc(capacity * 4, NX_MEMORY_PERSISTENT);
+	void*& second = *reinterpret_cast<void**>(bytes + 0xc);
+	if(second)
+		{
+		nxFoundationSDKAllocator->free(second);
+		second = 0;
+		}
+	second = nxFoundationSDKAllocator->malloc(capacity * 4, NX_MEMORY_PERSISTENT);
+	memset(first, 0, capacity * 4);
 	*reinterpret_cast<unsigned*>(bytes + 0x14) = capacity;
 	// 0x00010137-0x0001017e: the three embedded containers at +0x50, +0x500
 	// (the scene queries' result collector) and +0x510 borrow the +0x0c buffer
 	// (phys_fn_004847), and the pruning engine at +0x624 hands it to every
 	// pruner through slot 4 (phys_fn_004861); scene-raycast block Task 3.
-	NxU32* shared = *reinterpret_cast<NxU32**>(bytes + 0xc);
-	reinterpret_cast<SdkContainer*>(bytes + 0x50)->setExternalBuffer(capacity, shared);
-	reinterpret_cast<SdkContainer*>(bytes + 0x500)->setExternalBuffer(capacity, shared);
-	reinterpret_cast<SdkContainer*>(bytes + 0x510)->setExternalBuffer(capacity, shared);
-	nxSceneEngineSetExternalBuffer(bytes + 0x624, capacity, shared);
+	NxU32* buffer = static_cast<NxU32*>(second);
+	reinterpret_cast<SdkContainer*>(bytes + 0x50)->setExternalBuffer(capacity, buffer);
+	reinterpret_cast<SdkContainer*>(bytes + 0x500)->setExternalBuffer(capacity, buffer);
+	reinterpret_cast<SdkContainer*>(bytes + 0x510)->setExternalBuffer(capacity, buffer);
+	nxSceneEngineSetExternalBuffer(bytes + 0x624, capacity, buffer);
 	}
 
 void nxSceneNotifyActorCreated(void* hook)
@@ -1942,80 +1955,239 @@ void nxActorBuildBody(void* actor, const unsigned* desc)
 	}
 
 
-int nxActorComputeMass(void* actor, const unsigned* bodyWord)
+// A float moved through the x87 (fld; fstp) and one negated there (fld;
+// fchs; fstp), as the listings do: loading a signalling NaN quiets it, which
+// an SSE move or sign flip would not.
+static void nxX87MoveFloat(const void* from, void* to)
 	{
-	// What phys_fn_000026 (Body::createBody, 0x19b0; not a row of this block)
-	// does before and after the record constructor. The dynamic record is built
-	// after the shape and its helper, in the order the guarded oracle allocator
-	// reports. bodyWord addresses the descriptor's body POINTER at d[0xc],
-	// rather than the body descriptor.
-	unsigned char* actorBytes = static_cast<unsigned char*>(actor);
-	unsigned char* body = *reinterpret_cast<unsigned char**>(actorBytes + 0x14);
-	if(!body)
-		return 1;
-	// 000026 works on a copy of the body descriptor (000010, 0x19d1) and, when
-	// its massSpaceInertia is all zero, fills mass and inertia from the shapes
-	// (000008, 0x1a11); the record constructor reads the copy.
-	NxBodyDesc desc = *reinterpret_cast<const NxBodyDesc*>(*bodyWord);
-	// The one-box density path in FUN_100019b0/FUN_1001a350 derives mass
-	// from the full box extents and diagonal inertia from their squared radii.
-	// Rotated/translated and compound geometry still need the full tensor path
-	// (000008 is not reproduced).
-	const unsigned* actorDesc = bodyWord - 0x0c;
-	float density;
-	memcpy(&density, actorDesc + 0x0d, sizeof(density));
-	if(desc.mass == 0.0f && density > 0.0f &&
-		actorDesc[0x14] - actorDesc[0x13] == sizeof(void*))
+#if defined(_MSC_VER) && defined(_M_IX86)
+	__asm {
+		mov eax, from
+		mov edx, to
+		fld dword ptr [eax]
+		fstp dword ptr [edx]
+	}
+#else
+	memcpy(to, from, 4);
+#endif
+	}
+
+static void nxX87NegateFloat(const void* from, void* to)
+	{
+#if defined(_MSC_VER) && defined(_M_IX86)
+	__asm {
+		mov eax, from
+		mov edx, to
+		fld dword ptr [eax]
+		fchs
+		fstp dword ptr [edx]
+	}
+#else
+	float value;
+	memcpy(&value, from, 4);
+	value = -value;
+	memcpy(to, &value, 4);
+#endif
+	}
+
+int nxActorComputeMassFromShapes(unsigned char* body, float density, float* totalMass,
+	NxMat34* pose, NxVec3* diagonal);
+
+// phys_fn_000630 (0x000124d0, 233 B)
+// Scene::addBody(record): the record is pushed on the +0x56c array, which
+// grows when full (capacity <= end) to 2n + 2 entries through [0x101041bc]
+// unless its capacity already covers that, the live entries copied before
+// the old block is freed; then 000503 with the new count. A null record (a
+// failed allocation in 000026) is pushed too.
+void nxSceneAddBody(NxSceneInternal* scene, unsigned char* record)
+	{
+	unsigned char* bytes = scene->bytes();
+	void**& first = *reinterpret_cast<void***>(bytes + 0x56c);
+	void**& last = *reinterpret_cast<void***>(bytes + 0x570);
+	void**& end = *reinterpret_cast<void***>(bytes + 0x574);
+	if(!(end > last))
 		{
-		const NxShapeDesc* shape = *reinterpret_cast<const NxShapeDesc* const*>(
-			actorDesc[0x13]);
-		if(shape && shape->getType() == NX_SHAPE_BOX)
+		const unsigned count = static_cast<unsigned>(last - first);
+		const unsigned capacity = count + count + 2;
+		const unsigned held = first ? static_cast<unsigned>(end - first) : 0;
+		if(held < capacity)
 			{
-			const NxVec3& radii = static_cast<const NxBoxShapeDesc*>(shape)->dimensions;
-			const float mass = 8.0f * density * radii.x * radii.y * radii.z;
-			const float thirdMass = mass / 3.0f;
-			desc.mass = mass;
-			desc.massSpaceInertia.x = thirdMass * (radii.y * radii.y + radii.z * radii.z);
-			desc.massSpaceInertia.y = thirdMass * (radii.x * radii.x + radii.z * radii.z);
-			desc.massSpaceInertia.z = thirdMass * (radii.x * radii.x + radii.y * radii.y);
+			void** grown = static_cast<void**>(nxFoundationSDKAllocator->malloc(
+				capacity * sizeof(void*), NX_MEMORY_PERSISTENT));
+			void** to = grown;
+			for(void** from = first; from != last; ++from)
+				*to++ = *from;
+			if(first)
+				nxFoundationSDKAllocator->free(first);
+			end = grown + capacity;
+			last = grown + count;
+			first = grown;
 			}
 		}
-	// The pose the constructor takes: a new body's global pose, the 3x3 at
-	// body+0x20 and the position at body+0x44 (0x1b11-0x1b38).
-	float pose[12];
-	memcpy(pose, body + 0x20, 9 * sizeof(float));
-	memcpy(pose + 9, body + 0x44, 3 * sizeof(float));
-	unsigned char* record = static_cast<unsigned char*>(
-		nxGetSdkAllocator()->malloc(0x260, NX_MEMORY_PERSISTENT));
-	if(!record)
-		return 1;
-	// Not in the image, which constructs over the allocator's bytes: the
-	// constructor chain writes every word but +0x10, +0x14, +0x23c and +0x240,
-	// which nothing before a simulation step reads.
-	memset(record, 0, 0x260);
-	// The record constructor Row 000797 (BodyCreation.cpp), then body+8 = the
-	// record (0x1b6c). The joint-descriptor exports walk actor+0x14 -> body+8
-	// -> record+0x19c, which the constructor points back at this body.
-	reinterpret_cast<DynamicBody*>(record)->construct(body, pose, &desc);
-	*reinterpret_cast<void**>(body + 0x08) = record;
+	*last = record;
+	++last;
+	nxSceneUpdateActorCount(scene, static_cast<unsigned>(last - first));
+	}
 
+// phys_fn_000632 (0x000125c0, 160 B)
+// Scene::removeBody(record): a record found in the +0x56c array is replaced
+// by the last entry (when it is not the last) and the array shrinks; then,
+// found or not, 000778 dissolves its island into the Scene's +0x58c joint
+// array (no joint excepted), 000760 resets it, and every joint of that array
+// runs 004103 with the record; a joint 004103 took out of the array (the
+// entry changed) is not stepped over.
+void nxSceneRemoveBody(NxSceneInternal* scene, unsigned char* record)
+	{
+	unsigned char* bytes = scene->bytes();
+	void** first = *reinterpret_cast<void***>(bytes + 0x56c);
+	const unsigned count = static_cast<unsigned>(*reinterpret_cast<void***>(bytes + 0x570) - first);
+	for(unsigned i = 0; i < count; ++i)
+		if(first[i] == record)
+			{
+			void**& last = *reinterpret_cast<void***>(bytes + 0x570);
+			if(i != count - 1)
+				first[i] = last[-1];
+			--last;
+			break;
+			}
+	void** joints = &scene->at<void*>(0x58c);
+	reinterpret_cast<Row000778Fixture*>(record)->row000778(0, joints);
+	reinterpret_cast<Row000760Fixture*>(record)->row000760();
+	for(unsigned i = 0; i < static_cast<unsigned>(
+		scene->at<Joint**>(0x590) - scene->at<Joint**>(0x58c)); ++i)
+		{
+		Joint* joint = scene->at<Joint**>(0x58c)[i];
+		joint->row004103(record);
+		if(joint != scene->at<Joint**>(0x58c)[i])
+			--i;
+		}
+	}
+
+// The record constructor 000797 (with 000801, 000793/000795 and 000748) and
+// its destructor 000776 (with 000799) are BodyCreation.cpp's DynamicBody
+// members (scene-raycast block Task 4); 000026 and 000030 below call them.
+// The NpActor.cpp completion's models of them (nxBodyRecordConstruct,
+// nxBodyRecordApplyDesc, nxBodyRecordDestroy) were folded into those at the
+// second merge of main into the scene-raycast block.
+
+// phys_fn_000026 (0x000019b0, 465 B)
+// Actor.cpp's record build on the body (thiscall (desc), `ret 4`), shared by
+// the creation path (000034) and setDynamic (000122). The descriptor is
+// copied (000010); a tensor whose three words are all zero bits takes
+// 000008 with the body's density (+0x18) into the copy's mass (in and out),
+// mass pose and tensor, and its nonzero result is returned. The pose is the
+// old record's (its +0x5c quaternion by the five-spill rotation, ROT, and
+// its +0x50 position) when the body has one, else the body's own (+0x20).
+// 0x260 bytes through [0x101041bc], 000797 on them (BodyCreation.cpp
+// DynamicBody::construct), +8 = the record (0 when the allocation failed),
+// 000630 on the Scene with it; 0. One recorded difference: the block is
+// zeroed first. The image constructs over the allocator's bytes; the
+// constructor chain writes every word but +0x10, +0x14, +0x23c and +0x240,
+// which nothing before a simulation step reads.
+int nxActorBuildRecord(unsigned char* body, const NxBodyDesc* desc)
+	{
+	NxBodyDesc local = *desc;
+	const unsigned* tensor = reinterpret_cast<const unsigned*>(&desc->massSpaceInertia);
+	if(!tensor[0] && !tensor[1] && !tensor[2])
+		{
+		float density;
+		memcpy(&density, body + 0x18, sizeof(density));
+		const int result = nxActorComputeMassFromShapes(body, density, &local.mass,
+			&local.massLocalPose, &local.massSpaceInertia);
+		if(result)
+			return result;
+		}
+	NxMat34 pose;
+	const unsigned char* old = *reinterpret_cast<unsigned char**>(body + 8);
+	if(old)
+		{
+		float rows[9];
+		nxNpActorComposeRotation(reinterpret_cast<const float*>(old + 0x5c), rows);
+		memcpy(&pose.M, rows, sizeof(rows));
+		memcpy(&pose.t, old + 0x50, sizeof(NxVec3));
+		}
+	else
+		memcpy(&pose, body + 0x20, sizeof(NxMat34));
+	unsigned char* record = static_cast<unsigned char*>(
+		nxFoundationSDKAllocator->malloc(0x260, NX_MEMORY_PERSISTENT));
+	if(record)
+		{
+		memset(record, 0, 0x260);
+		reinterpret_cast<DynamicBody*>(record)->construct(body,
+			reinterpret_cast<const NxReal*>(&pose), &local);
+		}
+	*reinterpret_cast<unsigned char**>(body + 8) = record;
+	nxSceneAddBody(*reinterpret_cast<NxSceneInternal**>(body + 4), record);
 	return 0;
+	}
+
+// phys_fn_000030 (0x00001c40, 403 B)
+// Actor.cpp's actor destructor body, thiscall on the body, plain `ret`. The
+// public actor ([body]) is deleted through its slot 0 with 1 (000118; the
+// candidate's wrapper has no destructor to run, so it is freed) and [body]
+// cleared; the name is dropped (000480 with 0); the root, when there is
+// one, leaves the Scene (000535 with a record, else 000533: 000006's
+// test). With a record: its pose goes back to the body (+0x20: the +0x5c
+// quaternion by ROT, +0x50/+0x54 through the x87 and +0x58 as a word),
+// 000632 removes it from the Scene, it notifies its observers with 0x100,
+// and 000776 (BodyCreation.cpp DynamicBody::destruct) destroys it before
+// [0x101041bc] frees it. The actor id (+0xc)
+// goes back to the Scene's +0x6d0 pool (000028); 000521 hands the root to
+// 000517, whose pass over the Scene's +0x3c/+0x40 pair table the candidate
+// does not carry (it keeps none); the root is deleted through its slot 0
+// with 1.
+static void nxActorRemoveRootFromScene(unsigned char* body);
+static void nxRuntimeShapeDeleteRoot(unsigned char* shape);
+
+void nxActorDestroy(unsigned char* body)
+	{
+	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(body + 4);
+	void*& actor = *reinterpret_cast<void**>(body);
+	if(actor)
+		{
+		nxGetSdkAllocator()->free(actor);
+		actor = 0;
+		}
+	nxShapeSetName(body, 0);
+	nxActorRemoveRootFromScene(body);
+	unsigned char* record = *reinterpret_cast<unsigned char**>(body + 8);
+	if(record)
+		{
+		float rows[9];
+		nxNpActorComposeRotation(reinterpret_cast<const float*>(record + 0x5c), rows);
+		memcpy(body + 0x20, rows, sizeof(rows));
+		nxX87MoveFloat(record + 0x50, body + 0x44);
+		nxX87MoveFloat(record + 0x54, body + 0x48);
+		memcpy(body + 0x4c, record + 0x58, 4);
+		nxSceneRemoveBody(scene, record);
+		reinterpret_cast<NxFoundation::Observable*>(record)->notifyObservers(0x100);
+		reinterpret_cast<DynamicBody*>(record)->destruct();
+		nxFoundationSDKAllocator->free(record);
+		}
+	nxU32VectorPushBack(scene->bytes() + 0x6d0, *reinterpret_cast<unsigned*>(body + 0xc));
+	unsigned char* root = *reinterpret_cast<unsigned char**>(body + 0x10);
+	if(root)
+		nxRuntimeShapeDeleteRoot(root);
 	}
 
 // A static actor's shape goes to the engine's static pruner (type 0), created
 // on the first registration; its pool grows from four entries (0x60 bytes of
 // boxes, 0x10 of object pointers) by doubling. These allocations occur in
-// Actor::loadFromDescInternal, before Scene::createActor grows its public actor
-// list.
+// Actor::loadFromDescInternal, before Scene::createActor grows its public
+// actor list. The root takes the pruning collection at +0xa0 (001943), and a
+// static group's children are registered too, in section 0 (001943 adds them).
 static void nxSceneStaticPrunerRegister(NxSceneInternal* scene, unsigned char* shape)
 	{
 	if(!scene || !shape) return;
+	*reinterpret_cast<void**>(shape + 0xa0) = scene->bytes() + 0x624;
 	nxSceneEngineAddRoot(scene, shape, 0);
 	nxSceneTrackShape(scene, shape);
 	unsigned char* pruner = scene->at<unsigned char*>(0x640);
 	nxSceneUpdateActorCount(scene, pruner ? *reinterpret_cast<unsigned short*>(pruner + 0x10) : 0);
 	}
 
+// A static root and its current children leave the static pruner, the root
+// its +0x78 list entry first.
 static void nxSceneStaticPrunerUnregister(NxSceneInternal* scene, unsigned char* shape)
 	{
 	nxSceneUntrackShape(scene, shape);
@@ -2023,24 +2195,32 @@ static void nxSceneStaticPrunerUnregister(NxSceneInternal* scene, unsigned char*
 	nxSceneEngineRemoveRoot(scene, shape);
 	}
 
+static void nxRuntimeShapeSlot6(unsigned char* shape, unsigned flags);
+
 void nxSceneAddActorObject(void* scene, void* object, void* actorPointer)
 	{
 	// Register the dynamic record in the Scene's +0x56c array. Static actors
 	// have no record and do not enter this array; the fourth box actor grows
 	// its capacity from two entries to six, matching the pinned DLL.
-	if(!object) return;
 	unsigned char* actor = static_cast<unsigned char*>(actorPointer);
 	if(!actor) return;
 	unsigned char* body = *reinterpret_cast<unsigned char**>(actor + 0x14);
 	unsigned char* record = body
 		? *reinterpret_cast<unsigned char**>(body + 8) : 0;
+	if(!object && !record) return;
+	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
 	if(!record)
 		{
+		// 000531's first step on a static group root: its slot 6 with 1
+		// (001018: each child's 001315, then the group's own, which leaves
+		// the group's +0xdc at 2). A single root took 001315 with 1 in the
+		// factory wrapper.
+		if(shape && *reinterpret_cast<unsigned*>(shape + 0xd0) == 5u)
+			nxRuntimeShapeSlot6(shape, 1);
 		nxSceneStaticPrunerRegister(static_cast<NxSceneInternal*>(scene),
 			static_cast<unsigned char*>(object));
 		return;
 		}
-	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
 	if(shape)
 		{
 		if(*reinterpret_cast<unsigned*>(shape + 0xd0) == 5u)
@@ -2052,17 +2232,6 @@ void nxSceneAddActorObject(void* scene, void* object, void* actorPointer)
 			}
 		else
 			nxShapeFactoryRefreshPose(shape);
-		}
-	unsigned char* bytes = static_cast<unsigned char*>(scene);
-	nxSceneArrayReserve(bytes + 0x56c, 1);
-	void** last = *reinterpret_cast<void***>(bytes + 0x570);
-	if(last)
-		{
-		*last = record;
-		*reinterpret_cast<void***>(bytes + 0x570) = last + 1;
-		nxSceneUpdateActorCount(scene, static_cast<unsigned>(
-			*reinterpret_cast<void***>(bytes + 0x570) -
-			*reinterpret_cast<void***>(bytes + 0x56c)));
 		}
 	nxSceneBroadphaseRegister(static_cast<NxSceneInternal*>(scene), body);
 	}
@@ -2084,279 +2253,914 @@ void nxSceneDeadlockReport()
 		"to avoid a deadlock!\n");
 	}
 
-// phys_fn_00001de0 (0x00001de0, phase 5): the shape factory. REPRODUCTION HOLE.
+// ---------------------------------------------------------------------------
+// The runtime shapes and Actor.cpp's shape add/remove chain (NpActor.cpp
+// completion Task 4; units/npactor-contract.md "## Task 4: shape add/remove"
+// names each row's owning unit).
 //
-// The oracle builds a shape object from the descriptor and links it into the actor.
-// What the caller of this function checks is that it returned something, so this
-// returns a small allocation through the SDK allocator rather than null -- an actor
-// whose shape list is empty cannot be created, and every downstream path in this
-// reconstruction needs creation to succeed before it can be measured.
-//
-// The body points to the measured 0x228-byte internal shape; its +0x9c word
-// reaches a separate 0x1c-byte public handle. Most internal fields and public
-// virtual methods remain to be reconstructed.
-void* nxShapeFactory(void* shapeDesc, void* actor)
+// The shapes an actor holds are raw allocations of the oracle's sizes whose
+// words are the listing's: the families' final classes in ObjectModel.cpp
+// (ShapeBase, BoxShape, SphereShape, ...) are the listing models the layout
+// differentials drive, and their installed tables give the runtime shapes
+// the reconstructed virtual rows (slot 6 is ShapeBase::nxApplyOwnerUpdate,
+// 001315). The families' slot 0 there models the listing's object, so the
+// runtime shape's deleting destructor is nxRuntimeShapeDelete below; the
+// group is this file's own object with its own table.
+// ---------------------------------------------------------------------------
+
+#define NX_ACTOR_CPP	"\\Epic\\Novodex\\SDKs\\Physics\\src\\Actor.cpp"
+
+// .data 0x10123c10 is gNxApiReentry (with Scene::createJoint's rows above).
+// The message .data 0x10122050 points at.
+static const char gNxActorReentryMessage[] =
+	"Reentry check: You may not call this API method from a callback!";
+
+static void nxActorCppReport(NxErrorCode code, int line, const char* message)
 	{
-	unsigned char* shape = static_cast<unsigned char*>(
-		nxGetSdkAllocator()->malloc(0x228, NX_MEMORY_PERSISTENT));
-	if(!shape)
-		return 0;
-	memset(shape, 0, 0x228);
+	NxFoundation::FoundationSDK::getInstance().error(code, NX_ACTOR_CPP, line, 0, message);
+	}
+
+typedef void (__thiscall* NxRuntimeShapeSlot6Fn)(void* shape, unsigned flags);
+typedef void* (__thiscall* NxRuntimeShapeDeleteFn)(void* shape, unsigned flags);
+
+static void nxRuntimeShapeSlot6(unsigned char* shape, unsigned flags)
+	{
+	void** table = *reinterpret_cast<void***>(shape);
+	reinterpret_cast<NxRuntimeShapeSlot6Fn>(table[6])(shape, flags);
+	}
+
+// phys_fn_001273 (0x00025530, 424 B)
+// The base-shape constructor on a runtime shape (a row of
+// gap:NpTriangleMeshShape.cpp..Shape.cpp; ShapeBase::ShapeBase in
+// ObjectModel.cpp is its listing model): the owner body
+// at +4, +8 zeroed, the three identity poses, +0x9c/+0xa0 zeroed, the
+// prunable at +0xa4 (phys_fn_004874 at 0x255df: +8, +0x20 and the type and
+// kind bytes zeroed, +0x24 = -1, handle +0x28 = 0xffff, +0x10 = the
+// prunable; the shape then stores itself as its owner, 0x25649), the
+// 0x7fffffff sentinel, the id at +0xd4, halfwords +0xd8/+0xda zeroed,
+// +0xdc = 6, +0xde = 8, and with an owner the Scene registration through
+// [scene+0x48] (phys_fn_002423 at 0x25626; nxSceneAuxRegisterShape is this
+// file's model). The prunable is built in place by ObjectModel.cpp's
+// nxShapeFactoryInstallPrunable (004874 with its vptr and the owner hooks,
+// scene-raycast block Task 3); its 005297 member is not carried.
+static void nxRuntimeShapeBaseInit(unsigned char* shape, unsigned char* body, unsigned id)
+	{
+	static const unsigned identity[12] = {
+		0x3f800000u, 0, 0, 0, 0x3f800000u, 0, 0, 0, 0x3f800000u, 0, 0, 0 };
+	*reinterpret_cast<unsigned char**>(shape + 4) = body;
+	*reinterpret_cast<unsigned*>(shape + 8) = 0;
+	memcpy(shape + 0x0c, identity, sizeof(identity));
+	memcpy(shape + 0x3c, identity, sizeof(identity));
+	memcpy(shape + 0x6c, identity, sizeof(identity));
+	*reinterpret_cast<unsigned*>(shape + 0x9c) = 0;
+	*reinterpret_cast<unsigned*>(shape + 0xa0) = 0;
 	nxShapeFactoryInstallPrunable(shape);
-	const NxShapeDesc* descriptor = static_cast<const NxShapeDesc*>(shapeDesc);
-	if(descriptor)
-		{
-		nxShapeFactoryInstallVtable(shape,
-			static_cast<unsigned>(descriptor->getType()));
-		*reinterpret_cast<unsigned*>(shape + 0xd0) =
-			static_cast<unsigned>(descriptor->getType());
-		*reinterpret_cast<NxCollisionGroup*>(shape + 0xd8) = descriptor->group;
-		*reinterpret_cast<NxMaterialIndex*>(shape + 0xda) = descriptor->materialIndex;
-		*reinterpret_cast<unsigned*>(shape + 0xc8) = 1u << descriptor->group;
-		*reinterpret_cast<NxU16*>(shape + 0xde) =
-			static_cast<NxU16>(descriptor->shapeFlags);
-		if(descriptor->getType() == NX_SHAPE_BOX)
-			{
-			// The image's box creation: the facade table at +0xe0 (000977) and
-			// the BOX table's slot 12 (000981: dims, hull rebuild 000973, BASE
-			// fields), whose al 0 releases the shape (0x10001efd-0x10001f02).
-			if(!nxShapeFactoryLoadBox(shape, descriptor))
-				{
-				nxGetSdkAllocator()->free(shape);
-				return 0;
-				}
-			}
-		else if(descriptor->getType() == NX_SHAPE_SPHERE)
-			memcpy(shape + 0xe0,
-				&static_cast<const NxSphereShapeDesc*>(descriptor)->radius,
-				sizeof(float));
-		else if(descriptor->getType() == NX_SHAPE_CAPSULE)
-			{
-			const NxCapsuleShapeDesc* capsule =
-				static_cast<const NxCapsuleShapeDesc*>(descriptor);
-			memcpy(shape + 0xe0, &capsule->radius, sizeof(float));
-			const float halfHeight = capsule->height * 0.5f;
-			memcpy(shape + 0xe4, &halfHeight, sizeof(float));
-			// The capsule's own flags (desc +0x54) go to +0xe8, as the
-			// capsule loader phys_fn_000989 stores them (0x00021af0) and its
-			// saveToDesc (slot 13) reads them back. The core-dump
-			// differential (effector-and-coredump Task 5) found them missing:
-			// the dump hands this word to its trigger writer 004017.
-			memcpy(shape + 0xe8, &capsule->flags, sizeof(NxU32));
-			}
-		else if(descriptor->getType() == NX_SHAPE_PLANE)
-			{
-			const NxPlaneShapeDesc* plane =
-				static_cast<const NxPlaneShapeDesc*>(descriptor);
-			nxShapeFactoryInitializePlane(shape, &plane->normal.x, plane->d);
-			}
-		}
-	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(
-		static_cast<unsigned char*>(actor) + 4);
-	*reinterpret_cast<unsigned*>(shape + 0xd4) = nxSceneTakeShapeId(scene);
-	nxSceneAuxRegisterShape(scene, shape);
-	// The oracle shape does not point at the public 0x18-byte actor wrapper.
-	void* helper = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
-	if(!helper)
-		{
-		nxSceneAuxUnregisterShape(scene, shape);
-		nxSceneRecycleShapeId(scene, *reinterpret_cast<unsigned*>(shape + 0xd4));
-		nxGetSdkAllocator()->free(shape);
-		return 0;
-		}
-	memset(helper, 0, 0x1c);
-	if(descriptor)
-		*reinterpret_cast<void**>(helper) = nxShapePublicVtable(
-			static_cast<unsigned>(descriptor->getType()));
-	*reinterpret_cast<void**>(shape + 0x9c) = helper;
-	*reinterpret_cast<void**>(static_cast<unsigned char*>(helper) + 8) = shape;
-	*reinterpret_cast<void**>(static_cast<unsigned char*>(helper) + 0x18) = shape;
-	unsigned char* body = *reinterpret_cast<unsigned char**>(
-		static_cast<unsigned char*>(actor) + 0x14);
+	*reinterpret_cast<unsigned*>(shape + 0xac) = 0;
+	*reinterpret_cast<unsigned char**>(shape + 0xb4) = shape + 0xa4;
+	*reinterpret_cast<unsigned*>(shape + 0xc4) = 0;
+	shape[0xce] = 0;
+	shape[0xcf] = 0;
+	*reinterpret_cast<unsigned*>(shape + 0xc8) = 0xffffffffu;
+	*reinterpret_cast<unsigned short*>(shape + 0xcc) = 0xffffu;
+	*reinterpret_cast<unsigned char**>(shape + 0xa8) = shape;
+	*reinterpret_cast<unsigned*>(shape + 0xd0) = 0x7fffffffu;
+	*reinterpret_cast<unsigned*>(shape + 0xd4) = id;
+	*reinterpret_cast<unsigned short*>(shape + 0xd8) = 0;
+	*reinterpret_cast<unsigned short*>(shape + 0xda) = 0;
+	*reinterpret_cast<unsigned short*>(shape + 0xdc) = 6;
+	*reinterpret_cast<unsigned short*>(shape + 0xde) = 8;
 	if(body)
+		nxSceneAuxRegisterShape(*reinterpret_cast<NxSceneInternal**>(body + 4), shape);
+	}
+
+// The family constructors phys_fn_000032 calls on its allocation: 001247
+// plane (0x10c B), 001349 sphere (0xe4 B), 000977 box (0x228 B) and 000987
+// capsule (0xec B). Each runs 001273, installs its final table, allocates
+// its 0x1c-byte collision object -- the public NxShape handle -- through
+// [0x101041bc] (box 0x218f1, sphere 0x277e4) and stores it at +0x9c, and
+// writes its sentinel at +0xd0; the box also sets its dimensions to 1.0f
+// (0x21926-0x21932). The handle carries the public table, and the shape at
+// +8 and +0x18 (phys_fn_001193's two stores). Words the listings leave
+// unwritten start zeroed here.
+static unsigned char* nxRuntimeShapeConstruct(void* memory, unsigned size, unsigned type,
+	unsigned char* body, unsigned id)
+	{
+	unsigned char* shape = static_cast<unsigned char*>(memory);
+	memset(shape, 0, size);
+	nxRuntimeShapeBaseInit(shape, body, id);
+	nxShapeFactoryInstallVtable(shape, type);
+	void* handle = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
+	if(handle)
 		{
-		*reinterpret_cast<void**>(body + 0x10) = shape;
-		*reinterpret_cast<void**>(shape + 4) = body;
-		nxShapeFactoryInitializePose(shape,
-			descriptor ? &descriptor->localPose : nullptr);
+		memset(handle, 0, 0x1c);
+		*reinterpret_cast<void**>(handle) = nxShapePublicVtable(type);
+		*reinterpret_cast<void**>(static_cast<unsigned char*>(handle) + 8) = shape;
+		*reinterpret_cast<void**>(static_cast<unsigned char*>(handle) + 0x18) = shape;
 		}
-	if(descriptor && descriptor->name)
-		nxShapeSetName(shape, descriptor->name);
+	*reinterpret_cast<void**>(shape + 0x9c) = handle;
+	*reinterpret_cast<unsigned*>(shape + 0xd0) = type;
+	if(type == 2)
+		{
+		const float one = 1.0f;
+		memcpy(shape + 0xe4, &one, 4);
+		memcpy(shape + 0xe8, &one, 4);
+		memcpy(shape + 0xec, &one, 4);
+		}
 	return shape;
 	}
 
-// The multi-shape group builder. The two parallel child arrays match the
-// observed two-box layout; shape registration and spatial bookkeeping remain
-// reproduction holes.
-void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsigned count)
+// The families' slot-12 descriptor load (vtable +0x30) on a runtime shape:
+// the collision group (+0xd8) and its mask (+0xc8), the material (+0xda),
+// the shape flags (+0xde), the family's geometry, the local pose into the
+// third pose (+0x6c, the base apply-desc 001347) and the name registration.
+// SphereShape::nxSphereLoadFromDesc and its siblings are the listing models.
+static bool nxRuntimeShapeLoad(unsigned char* shape, const NxShapeDesc* descriptor)
 	{
-	unsigned char* group = static_cast<unsigned char*>(
-		nxGetSdkAllocator()->malloc(0x110, NX_MEMORY_PERSISTENT));
-	if(!group)
+	*reinterpret_cast<NxCollisionGroup*>(shape + 0xd8) = descriptor->group;
+	*reinterpret_cast<NxMaterialIndex*>(shape + 0xda) = descriptor->materialIndex;
+	*reinterpret_cast<unsigned*>(shape + 0xc8) = 1u << descriptor->group;
+	*reinterpret_cast<NxU16*>(shape + 0xde) = static_cast<NxU16>(descriptor->shapeFlags);
+	if(descriptor->getType() == NX_SHAPE_BOX)
+		memcpy(shape + 0xe4,
+			&static_cast<const NxBoxShapeDesc*>(descriptor)->dimensions, sizeof(NxVec3));
+	else if(descriptor->getType() == NX_SHAPE_SPHERE)
+		memcpy(shape + 0xe0,
+			&static_cast<const NxSphereShapeDesc*>(descriptor)->radius, sizeof(float));
+	else if(descriptor->getType() == NX_SHAPE_CAPSULE)
+		{
+		const NxCapsuleShapeDesc* capsule = static_cast<const NxCapsuleShapeDesc*>(descriptor);
+		memcpy(shape + 0xe0, &capsule->radius, sizeof(float));
+		const float halfHeight = capsule->height * 0.5f;
+		memcpy(shape + 0xe4, &halfHeight, sizeof(float));
+		// The capsule's own flags (desc +0x54) go to +0xe8, as the capsule
+		// loader phys_fn_000989 stores them (0x00021af0) and its saveToDesc
+		// (slot 13) reads them back; the core dump hands this word to its
+		// trigger writer 004017 (effector-and-coredump Task 5).
+		memcpy(shape + 0xe8, &capsule->flags, sizeof(NxU32));
+		}
+	else if(descriptor->getType() == NX_SHAPE_PLANE)
+		{
+		const NxPlaneShapeDesc* plane = static_cast<const NxPlaneShapeDesc*>(descriptor);
+		nxShapeFactoryInitializePlane(shape, &plane->normal.x, plane->d);
+		}
+	memcpy(shape + 0x6c, &descriptor->localPose, 0x30);
+	if(descriptor->name)
+		nxShapeSetName(shape, descriptor->name);
+	return true;
+	}
+
+static void nxPruningRemoveRootPairs(unsigned char* pruning, unsigned char* body);
+static void nxPruningRemoveBody(unsigned char* pruning, unsigned char* body);
+
+// phys_fn_001323 (0x00026bd0, 182 B)
+// The base-shape destructor body (Shape.cpp) on a runtime shape: the name
+// registration dropped (000480 with a null name),
+// with an owner the Scene's +0x70c |= 2, the [scene+0x48] registration
+// (002413; nxSceneAuxUnregisterShape models it), the Scene+0x5d4 pair list
+// (002344) and the id returned to Scene+0x6e4 (000028); then, while +0xa0
+// names the pruning collection, 001955 and 001945 on the owner and +0xa0
+// cleared. Not carried: 000517's pass over the Scene's +0x3c/+0x40 pair
+// table (the candidate keeps none) and the prunable's destructor 004892.
+static void nxRuntimeShapeBaseDestroy(unsigned char* shape)
+	{
+	nxShapeSetName(shape, 0);
+	unsigned char* body = *reinterpret_cast<unsigned char**>(shape + 4);
+	NxSceneInternal* scene = body ? *reinterpret_cast<NxSceneInternal**>(body + 4) : 0;
+	if(body)
+		scene->at<unsigned>(0x70c) |= 2u;
+	if(body)
+		nxSceneAuxUnregisterShape(scene, shape);
+	if(body)
+		nxSceneRemovePairs(scene->bytes() + 0x5d4, shape);
+	if(body)
+		nxU32VectorPushBack(scene->bytes() + 0x6e4, *reinterpret_cast<unsigned*>(shape + 0xd4));
+	if(*reinterpret_cast<unsigned char**>(shape + 0xa0))
+		nxPruningRemoveRootPairs(*reinterpret_cast<unsigned char**>(shape + 0xa0), body);
+	if(*reinterpret_cast<unsigned char**>(shape + 0xa0))
+		{
+		nxPruningRemoveBody(*reinterpret_cast<unsigned char**>(shape + 0xa0), body);
+		*reinterpret_cast<unsigned char**>(shape + 0xa0) = 0;
+		}
+	}
+
+// The four families' deleting destructors with flag 1 (sphere 001375 at
+// 0x27c30 and its siblings): the collision object's deleting destructor
+// with 1 (001197: its hook teardown 002406 is not carried), then 001323,
+// then the shape freed through [0x101041bc].
+static void nxRuntimeShapeDelete(unsigned char* shape)
+	{
+	void* handle = *reinterpret_cast<void**>(shape + 0x9c);
+	if(handle)
+		nxFoundationSDKAllocator->free(handle);
+	nxRuntimeShapeBaseDestroy(shape);
+	nxFoundationSDKAllocator->free(shape);
+	}
+
+// phys_fn_000032 (0x00001de0, 539 B)
+// Actor.cpp's shape factory, cdecl (desc, body). The id comes first, from
+// the Scene's pool at +0x6e4 (000012 inlined, 0x1de8-0x1e1a); the jump
+// table on the descriptor's type (0x1e2c) allocates the family through
+// [0x101041bc] and constructs it; slot 12 loads the descriptor, and a load
+// that fails or a shape without its collision object is deleted (slot 0
+// with 1). A built shape's handle takes the NpScene's two lock links
+// ([[scene+0x6cc]+0xc]/+0x10 to handle +0x10/+0x14, 0x1f16-0x1f31) and the
+// shape +8 = [scene+0x540] - 1 (0x1fd1-0x1fdc); without a shape the id goes
+// back to the pool (000028, 0x1fe5). Type 4 (the triangle mesh, 0xe8 B,
+// 001379, which also counts Scene+0x10 and calls 000503) has no runtime
+// family in the candidate and takes the no-shape arm, like types above 4.
+static unsigned char* nxActorShapeFactory(const NxShapeDesc* descriptor, unsigned char* body)
+	{
+	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(body + 4);
+	const unsigned id = nxIdAllocNext(scene->bytes() + 0x6e4);
+	const unsigned type = static_cast<unsigned>(descriptor->getType());
+	unsigned char* shape = 0;
+	if(type <= 3)
+		{
+		static const unsigned sizes[4] = { 0x10c, 0xe4, 0x228, 0xec };
+		void* memory = nxFoundationSDKAllocator->malloc(sizes[type], NX_MEMORY_PERSISTENT);
+		if(memory)
+			{
+			shape = nxRuntimeShapeConstruct(memory, sizes[type], type, body, id);
+			// The box's slot 12 is 000981 (ObjectModel.cpp nxBoxLoadFromDesc, through
+			// nxShapeFactoryLoadBox, which also stores 000977's facade table at
+			// +0xe0): the dims, the hull rebuild 000973 and BASE slot 1, its al the
+			// load's result (0x10001efd-0x10001f02; scene-raycast block Task 4, box
+			// hull). nxRuntimeShapeLoad then applies this file's model of the
+			// remaining descriptor fields, the same words for a box.
+			const bool boxLoaded = type != 2 || nxShapeFactoryLoadBox(shape, descriptor);
+			if(!boxLoaded || !nxRuntimeShapeLoad(shape, descriptor) ||
+				!*reinterpret_cast<void**>(shape + 0x9c))
+				{
+				nxRuntimeShapeDelete(shape);
+				shape = 0;
+				}
+			else
+				{
+				unsigned char* handle = *reinterpret_cast<unsigned char**>(shape + 0x9c);
+				unsigned char* npScene = scene->at<unsigned char*>(0x6cc);
+				*reinterpret_cast<unsigned*>(handle + 0x10) = *reinterpret_cast<unsigned*>(npScene + 0xc);
+				*reinterpret_cast<unsigned*>(handle + 0x14) = *reinterpret_cast<unsigned*>(npScene + 0x10);
+				}
+			}
+		}
+	if(!shape)
+		{
+		nxU32VectorPushBack(scene->bytes() + 0x6e4, id);
 		return 0;
-	memset(group, 0, 0x110);
-	nxShapeFactoryInstallPrunable(group);
-	*reinterpret_cast<unsigned*>(group + 0xd0) = 5;
-	// Like the oracle, the group retains its 0x50-byte outer body at +4.
-	// Its owned children are reached through the two arrays near the end.
+		}
+	*reinterpret_cast<unsigned*>(shape + 8) = scene->at<unsigned>(0x540) - 1u;
+	return shape;
+	}
+
+// Actor::loadFromDescInternal's use of the factory (row 000034, this
+// file's model above): the new shape becomes the body's root, and its
+// poses are composed here (the oracle's 000034 reaches 001315 through
+// 000531); a group built by the creation path re-links its children.
+void* nxShapeFactory(void* shapeDesc, void* actor)
+	{
 	unsigned char* body = *reinterpret_cast<unsigned char**>(
 		static_cast<unsigned char*>(actor) + 0x14);
-	*reinterpret_cast<void**>(group + 4) = body;
-	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(
-		static_cast<unsigned char*>(actor) + 4);
-	*reinterpret_cast<unsigned*>(group + 0xd4) = nxSceneTakeShapeId(scene);
+	const NxShapeDesc* descriptor = static_cast<const NxShapeDesc*>(shapeDesc);
+	if(!body || !descriptor) return 0;
+	unsigned char* shape = nxActorShapeFactory(descriptor, body);
+	if(!shape) return 0;
+	*reinterpret_cast<void**>(body + 0x10) = shape;
+	nxShapeFactoryInitializePose(shape, &descriptor->localPose);
+	return shape;
+	}
+
+// ---------------------------------------------------------------------------
+// The shape group (NX_SHAPE_COMPOUND, sentinel 5), rows of
+// gap:CapsuleShape.cpp..NpBoxShape.cpp. +0xe0/+0xe4/+0xe8 are the child
+// array's begin/end/capacity, +0xf0/+0xf4/+0xf8 the parallel array of the
+// children's public handles, +0x10c a float the adds and removes reset to
+// -1.0f. Its table (.rdata 0x10106c2c) is this file's gNxShapeGroupTable:
+// slot 0 the deleting destructor 001039, slot 4 the mass walk 001024 and
+// slot 6 the owner update 001018 are the slots the runtime reaches; the
+// others (001347, 001277, 001022, 001030, ...) are not wired and stay null.
+// ---------------------------------------------------------------------------
+
+static void* __fastcall nxShapeGroupDeletingDtor(void* self, void*, unsigned flags);
+static void __fastcall nxShapeGroupOwnerUpdate(void* self, void*, unsigned flags);
+
+// The group's slot 4 is 001024 (ObjectModel.cpp nxArrayVtCall3Args1024,
+// thiscall `ret 0xc`): each child whose +0xde has none of the low three bits
+// runs its own slot 4 with the same three arguments, and the first false
+// return ends the walk with false. Reached by 000008.
+unsigned char nxArrayVtCall3Args1024(void* self, unsigned a1, unsigned a2, unsigned a3);
+
+static bool __fastcall nxShapeGroupAccumulateMass(void* self, void*, void* frame,
+	unsigned density, void* reserved)
+	{
+	return nxArrayVtCall3Args1024(self, reinterpret_cast<unsigned>(frame), density,
+		reinterpret_cast<unsigned>(reserved)) != 0;
+	}
+
+static void** nxShapeGroupTable()
+	{
+	static void* table[15] = {
+		reinterpret_cast<void*>(&nxShapeGroupDeletingDtor), 0, 0, 0,
+		reinterpret_cast<void*>(&nxShapeGroupAccumulateMass), 0,
+		reinterpret_cast<void*>(&nxShapeGroupOwnerUpdate), 0, 0, 0, 0, 0, 0, 0, 0 };
+	return table;
+	}
+
+// phys_fn_001033 (0x00022d60, 99 B)
+// The group's constructor (thiscall (body, id)): 001273, the group table,
+// both arrays emptied, sentinel 5, +0xd8 = 0xffff and +0x10c = -1.0f.
+static unsigned char* nxShapeGroupConstructAt(void* memory, unsigned char* body, unsigned id)
+	{
+	unsigned char* group = static_cast<unsigned char*>(memory);
+	memset(group, 0, 0x110);
+	nxRuntimeShapeBaseInit(group, body, id);
+	*reinterpret_cast<void***>(group) = nxShapeGroupTable();
+	for(unsigned offset = 0xe0; offset <= 0xf8; offset += 4)
+		if(offset != 0xec)
+			*reinterpret_cast<unsigned*>(group + offset) = 0;
+	*reinterpret_cast<unsigned*>(group + 0xd0) = 5;
 	*reinterpret_cast<unsigned short*>(group + 0xd8) = 0xffffu;
-	nxSceneAuxRegisterShape(scene, group);
-	void** shapes = 0;
-	void** helpers = 0;
-	unsigned built = 0;
-	for(unsigned i = 0; i < count; ++i)
-		{
-		unsigned char* child = static_cast<unsigned char*>(nxShapeFactory(
-			reinterpret_cast<void*>(shapeDescriptions[i]), actor));
-		if(!child) break;
-		if(i == 0)
-			{
-			shapes = static_cast<void**>(nxGetSdkAllocator()->malloc(
-				count * sizeof(void*), NX_MEMORY_PERSISTENT));
-			helpers = static_cast<void**>(nxGetSdkAllocator()->malloc(
-				count * sizeof(void*), NX_MEMORY_PERSISTENT));
-			if(!shapes || !helpers)
-				{
-				nxSceneAuxUnregisterShape(scene, child);
-				nxSceneRecycleShapeId(scene, *reinterpret_cast<unsigned*>(child + 0xd4));
-				nxGetSdkAllocator()->free(*reinterpret_cast<void**>(child + 0x9c));
-				nxGetSdkAllocator()->free(child);
-				break;
-				}
-			*reinterpret_cast<void***>(group + 0xe0) = shapes;
-			*reinterpret_cast<void***>(group + 0xe4) = shapes;
-			*reinterpret_cast<void***>(group + 0xe8) = shapes + count;
-			*reinterpret_cast<void***>(group + 0xf0) = helpers;
-			*reinterpret_cast<void***>(group + 0xf4) = helpers;
-			*reinterpret_cast<void***>(group + 0xf8) = helpers + count;
-			}
-		void*** shapesEnd = reinterpret_cast<void***>(group + 0xe4);
-		void*** helpersEnd = reinterpret_cast<void***>(group + 0xf4);
-		*(*shapesEnd)++ = child;
-		*(*helpersEnd)++ = *reinterpret_cast<void**>(child + 0x9c);
-		++built;
-		}
-	if(built != count)
-		{
-		while(built)
-			{
-			--built;
-			nxSceneAuxUnregisterShape(scene, shapes[built]);
-			nxSceneRecycleShapeId(scene,
-				*reinterpret_cast<unsigned*>(static_cast<unsigned char*>(shapes[built]) + 0xd4));
-			nxGetSdkAllocator()->free(helpers[built]);
-			nxGetSdkAllocator()->free(shapes[built]);
-			}
-		if(helpers) nxGetSdkAllocator()->free(helpers);
-		if(shapes) nxGetSdkAllocator()->free(shapes);
-		nxSceneAuxUnregisterShape(scene, group);
-		nxSceneRecycleShapeId(scene, *reinterpret_cast<unsigned*>(group + 0xd4));
-		nxGetSdkAllocator()->free(group);
-		if(body) *reinterpret_cast<void**>(body + 0x10) = 0;
-		return 0;
-		}
-	if(body)
-		*reinterpret_cast<void**>(body + 0x10) = group;
+	*reinterpret_cast<unsigned*>(group + 0x10c) = 0xbf800000u;
 	return group;
 	}
 
-// Runtime single-to-group promotion follows the allocation order of the
-// actor's public createShape slot: child, public handle, group, then arrays.
-// The factory temporarily links the new child as the body's root; promotion
-// replaces that link with the group while retaining the original child.
-void* nxActorAppendShape(void* actor, const NxShapeDesc* descriptor)
+// 001041's inline pointer-array push: a full array (capacity <= end) grows
+// to 2n + 2 entries through [0x101041bc] unless it already holds that many,
+// the live entries copied before the old block is released.
+static void nxShapeGroupArrayPush(unsigned char* group, unsigned offset, void* value)
 	{
-	if(!actor || !descriptor || !descriptor->isValid()) return 0;
-	unsigned char* body = *reinterpret_cast<unsigned char**>(
-		static_cast<unsigned char*>(actor) + 0x14);
-	if(!body) return 0;
-	unsigned char* original = *reinterpret_cast<unsigned char**>(body + 0x10);
-	if(!original || *reinterpret_cast<unsigned*>(original + 0xd0) == 5u)
-		return 0;
-	unsigned char* child = static_cast<unsigned char*>(nxShapeFactory(
-		const_cast<NxShapeDesc*>(descriptor), actor));
-	if(!child) return 0;
-	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(body + 4);
-	unsigned char* group = static_cast<unsigned char*>(
-		nxGetSdkAllocator()->malloc(0x110, NX_MEMORY_PERSISTENT));
-	void** shapes = group ? static_cast<void**>(
-		nxGetSdkAllocator()->malloc(2 * sizeof(void*), NX_MEMORY_PERSISTENT)) : 0;
-	void** helpers = shapes ? static_cast<void**>(
-		nxGetSdkAllocator()->malloc(2 * sizeof(void*), NX_MEMORY_PERSISTENT)) : 0;
-	if(!helpers)
+	void**& first = *reinterpret_cast<void***>(group + offset);
+	void**& last = *reinterpret_cast<void***>(group + offset + 4);
+	void**& end = *reinterpret_cast<void***>(group + offset + 8);
+	if(!(end > last))
 		{
-		if(shapes) nxGetSdkAllocator()->free(shapes);
-		if(group) nxGetSdkAllocator()->free(group);
-		nxSceneAuxUnregisterShape(scene, child);
-		nxSceneRecycleShapeId(scene, *reinterpret_cast<unsigned*>(child + 0xd4));
-		nxGetSdkAllocator()->free(*reinterpret_cast<void**>(child + 0x9c));
-		nxShapeSetName(child, 0);
-		nxGetSdkAllocator()->free(child);
-		*reinterpret_cast<void**>(body + 0x10) = original;
-		return 0;
+		const unsigned count = static_cast<unsigned>(last - first);
+		const unsigned capacity = count + count + 2;
+		const unsigned held = first ? static_cast<unsigned>(end - first) : 0;
+		if(held < capacity)
+			{
+			void** grown = static_cast<void**>(nxFoundationSDKAllocator->malloc(
+				capacity * sizeof(void*), NX_MEMORY_PERSISTENT));
+			void** to = grown;
+			for(void** from = first; from != last; ++from)
+				*to++ = *from;
+			if(first)
+				nxFoundationSDKAllocator->free(first);
+			end = grown + capacity;
+			last = grown + count;
+			first = grown;
+			}
 		}
-	memset(group, 0, 0x110);
-	nxShapeFactoryInstallPrunable(group);
-	*reinterpret_cast<void**>(group + 4) = body;
-	*reinterpret_cast<unsigned*>(group + 0xd0) = 5;
-	*reinterpret_cast<unsigned*>(group + 0xd4) = nxSceneTakeShapeId(scene);
-	*reinterpret_cast<unsigned short*>(group + 0xd8) = 0xffffu;
-	nxSceneAuxRegisterShape(scene, group);
-	shapes[0] = original;
-	shapes[1] = child;
-	helpers[0] = *reinterpret_cast<void**>(original + 0x9c);
-	helpers[1] = *reinterpret_cast<void**>(child + 0x9c);
-	*reinterpret_cast<void***>(group + 0xe0) = shapes;
-	*reinterpret_cast<void***>(group + 0xe4) = shapes + 2;
-	*reinterpret_cast<void***>(group + 0xe8) = shapes + 2;
-	*reinterpret_cast<void***>(group + 0xf0) = helpers;
-	*reinterpret_cast<void***>(group + 0xf4) = helpers + 2;
-	*reinterpret_cast<void***>(group + 0xf8) = helpers + 2;
-	*reinterpret_cast<void**>(body + 0x10) = group;
-	// The pruning pools, as the pinned DLL leaves them (scene-raycast block
-	// Task 3): the original shape leaves its section 1 slot and returns in
-	// section 0 with the new shape, and the group joins section 2, in the
-	// actor's pruner (static 0, dynamic 2). Releasing the added shape later
-	// leaves its pool entry in place, as the pinned DLL does.
-	void* engine = &scene->at<unsigned char>(0x624);
-	const unsigned type = *reinterpret_cast<void**>(body + 8) ? 2u : 0u;
-	nxSceneEngineRemoveShape(engine, original);
-	nxSceneEngineAddShape(engine, original, type, 0);
-	nxSceneEngineAddShape(engine, child, type, 0);
-	nxSceneEngineAddShape(engine, group, type, 2);
-	return helpers[1];
+	*last = value;
+	++last;
 	}
 
-void nxActorRemoveShape(void* actor, void* handle)
+// phys_fn_001041 (0x00022e80, 442 B)
+// Group add: the child onto +0xe0, its handle ([child+0x9c]) onto +0xf0,
+// the child's +0xdc bit 0 set, +0x10c = -1.0f and the group marked with
+// 0x100 (001325).
+static void nxShapeGroupAddChild(unsigned char* group, unsigned char* child)
 	{
-	if(!actor || !handle) return;
+	nxShapeGroupArrayPush(group, 0xe0, child);
+	nxShapeGroupArrayPush(group, 0xf0, *reinterpret_cast<void**>(child + 0x9c));
+	child[0xdc] |= 1;
+	*reinterpret_cast<unsigned*>(group + 0x10c) = 0xbf800000u;
+	nxSceneMarkShapeDirty(group, 0x100);
+	}
+
+// phys_fn_001028 (0x00022b50, 152 B)
+// Group remove: a child the +0xe0 array does not hold returns false with
+// nothing written. Otherwise, unless it is the last entry, the last child
+// and the last handle move into its slots (swap-remove in both arrays),
+// both ends drop by one, the child's +0xdc bit 0 is cleared and +0x10c =
+// -1.0f. The child is unlinked only: nothing is freed or unregistered.
+static __declspec(noinline) bool nxShapeGroupRemoveChild(unsigned char* group, unsigned char* child)
+	{
+	void** first = *reinterpret_cast<void***>(group + 0xe0);
+	const unsigned count = static_cast<unsigned>(*reinterpret_cast<void***>(group + 0xe4) - first);
+	unsigned index = 0;
+	while(index < count && first[index] != child)
+		++index;
+	if(index == count)
+		return false;
+	if(index != count - 1)
+		{
+		first[index] = (*reinterpret_cast<void***>(group + 0xe4))[-1];
+		(*reinterpret_cast<void***>(group + 0xf0))[index] =
+			(*reinterpret_cast<void***>(group + 0xf4))[-1];
+		}
+	*reinterpret_cast<void***>(group + 0xe4) -= 1;
+	*reinterpret_cast<void***>(group + 0xf4) -= 1;
+	child[0xdc] &= 0xfe;
+	*reinterpret_cast<unsigned*>(group + 0x10c) = 0xbf800000u;
+	return true;
+	}
+
+// phys_fn_001018 (0x000227d0, 62 B)
+// Group slot 6: every child's slot 6 with the argument ((end - begin) / 4
+// entries, no null test), then 001315 on the group itself.
+static void __fastcall nxShapeGroupOwnerUpdate(void* self, void*, unsigned flags)
+	{
+	unsigned char* group = static_cast<unsigned char*>(self);
+	unsigned char** child = *reinterpret_cast<unsigned char***>(group + 0xe0);
+	unsigned count = static_cast<unsigned>(
+		*reinterpret_cast<unsigned char***>(group + 0xe4) - child);
+	for(; count; --count)
+		nxRuntimeShapeSlot6(*child++, flags);
+	nxShapeApplyOwnerUpdate(self, flags);
+	}
+
+// phys_fn_001032 (0x00022d00, 96 B)
+// The children deleted (slot 0 with 1, each slot then cleared), both ends
+// reset to the begins, the group marked 0x100.
+static __declspec(noinline) void nxShapeGroupDeleteChildren(unsigned char* group)
+	{
+	unsigned char** child = *reinterpret_cast<unsigned char***>(group + 0xe0);
+	unsigned count = static_cast<unsigned>(
+		*reinterpret_cast<unsigned char***>(group + 0xe4) - child);
+	for(; count; --count, ++child)
+		if(*child)
+			{
+			nxRuntimeShapeDelete(*child);
+			*child = 0;
+			}
+	*reinterpret_cast<void**>(group + 0xe4) = *reinterpret_cast<void**>(group + 0xe0);
+	*reinterpret_cast<void**>(group + 0xf4) = *reinterpret_cast<void**>(group + 0xf0);
+	nxSceneMarkShapeDirty(group, 0x100);
+	}
+
+// phys_fn_001039 (0x00022e50, 34 B)
+// phys_fn_001037 (0x00022de0, 110 B)
+// The group's deleting destructor (001039) over its destructor body (001037): 001032, the handle array then the child
+// array freed through [0x101041bc] and zeroed, 001323, and with flag bit 0
+// the group freed.
+static void* __fastcall nxShapeGroupDeletingDtor(void* self, void*, unsigned flags)
+	{
+	unsigned char* group = static_cast<unsigned char*>(self);
+	nxShapeGroupDeleteChildren(group);
+	if(*reinterpret_cast<void**>(group + 0xf0))
+		nxFoundationSDKAllocator->free(*reinterpret_cast<void**>(group + 0xf0));
+	*reinterpret_cast<unsigned*>(group + 0xf0) = 0;
+	*reinterpret_cast<unsigned*>(group + 0xf4) = 0;
+	*reinterpret_cast<unsigned*>(group + 0xf8) = 0;
+	if(*reinterpret_cast<void**>(group + 0xe0))
+		nxFoundationSDKAllocator->free(*reinterpret_cast<void**>(group + 0xe0));
+	*reinterpret_cast<unsigned*>(group + 0xe0) = 0;
+	*reinterpret_cast<unsigned*>(group + 0xe4) = 0;
+	*reinterpret_cast<unsigned*>(group + 0xe8) = 0;
+	nxRuntimeShapeBaseDestroy(group);
+	if(flags & 1u)
+		nxFoundationSDKAllocator->free(group);
+	return group;
+	}
+
+// Slot 0 with 1 on a body's root: the group's table, or the families'
+// deleting destructors as modelled above.
+static void nxRuntimeShapeDeleteRoot(unsigned char* shape)
+	{
+	if(*reinterpret_cast<unsigned*>(shape + 0xd0) == 5u)
+		reinterpret_cast<NxRuntimeShapeDeleteFn>((*reinterpret_cast<void***>(shape))[0])(shape, 1);
+	else
+		nxRuntimeShapeDelete(shape);
+	}
+
+// The multi-shape group of the actor-creation path, 000034's group arm
+// (0x2137-0x21a9): 0x110 bytes through [0x101041bc], an id from the Scene's
+// pool (000012, after the allocation), 001033, the group becomes the body's
+// root with +8 = [scene+0x540] - 1; then each descriptor's shape from the
+// factory (000032) is appended by 001041 (its arrays growing to 2n + 2 as
+// they fill; the child's +0xdc bit 0). The children keep this model's pose
+// initialisation (the factory wrapper's 001315 with 1). A failed child ends
+// the arm: the oracle returns with the group installed, the candidate
+// deletes it and clears the root.
+void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsigned count)
+	{
 	unsigned char* body = *reinterpret_cast<unsigned char**>(
 		static_cast<unsigned char*>(actor) + 0x14);
-	unsigned char* group = body
-		? *reinterpret_cast<unsigned char**>(body + 0x10) : 0;
-	if(!group || *reinterpret_cast<unsigned*>(group + 0xd0) != 5u)
-		return;
-	void** shapes = *reinterpret_cast<void***>(group + 0xe0);
-	void** helpers = *reinterpret_cast<void***>(group + 0xf0);
-	void** end = *reinterpret_cast<void***>(group + 0xf4);
-	for(unsigned i = 0, count = static_cast<unsigned>(end - helpers); i < count; ++i)
-		if(helpers[i] == handle)
+	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(
+		static_cast<unsigned char*>(actor) + 4);
+	void* memory = nxFoundationSDKAllocator->malloc(0x110, NX_MEMORY_PERSISTENT);
+	if(!memory)
+		return 0;
+	unsigned char* group = nxShapeGroupConstructAt(memory, body,
+		nxIdAllocNext(scene->bytes() + 0x6e4));
+	*reinterpret_cast<unsigned char**>(body + 0x10) = group;
+	*reinterpret_cast<unsigned*>(group + 8) = scene->at<unsigned>(0x540) - 1u;
+	for(unsigned i = 0; i < count; ++i)
+		{
+		const NxShapeDesc* descriptor =
+			reinterpret_cast<const NxShapeDesc*>(shapeDescriptions[i]);
+		unsigned char* child = nxActorShapeFactory(descriptor, body);
+		if(!child)
 			{
-			for(unsigned j = i + 1; j < count; ++j)
-				{
-				shapes[j - 1] = shapes[j];
-				helpers[j - 1] = helpers[j];
-				}
-			*reinterpret_cast<void***>(group + 0xe4) = shapes + count - 1;
-			*reinterpret_cast<void***>(group + 0xf4) = helpers + count - 1;
+			nxRuntimeShapeDeleteRoot(group);
+			*reinterpret_cast<void**>(body + 0x10) = 0;
+			return 0;
+			}
+		nxShapeFactoryInitializePose(child, &descriptor->localPose);
+		nxShapeGroupAddChild(group, child);
+		}
+	return group;
+	}
+
+// ---------------------------------------------------------------------------
+// The Scene's shape registration: Scene.cpp rows 000531/000533/000535 and
+// the pruning collection's rows of gap:ContactPlaneMesh.cpp..PenetrationMap.cpp
+// (001941, 001943, 001945, 001955, 001957, 001960). The pruners are the
+// model above (nxScenePrunerInsert/Erase); the collection's +0x78 list is
+// the SdkContainer phys_fn_001980 builds there (Scene+0x69c).
+// ---------------------------------------------------------------------------
+
+static NxSceneInternal* nxPruningScene(unsigned char* pruning)
+	{
+	return reinterpret_cast<NxSceneInternal*>(pruning - 0x624);
+	}
+
+// phys_fn_001957 (0x0004be80, 16 B)
+// The first pruner's two counts.
+static unsigned nxPruningCountFirst(const unsigned char* pruning)
+	{
+	const unsigned char* pruner = *reinterpret_cast<unsigned char* const*>(pruning + 0x1c);
+	return pruner ? *reinterpret_cast<const unsigned*>(pruner + 0xc) +
+		*reinterpret_cast<const unsigned*>(pruner + 8) : 0;
+	}
+
+// phys_fn_001960 (0x0004bec0, 20 B)
+// The counts of the pruner +0x70 selects.
+static unsigned nxPruningCountIndexed(const unsigned char* pruning)
+	{
+	const unsigned char* pruner = *reinterpret_cast<unsigned char* const*>(
+		pruning + *reinterpret_cast<const unsigned*>(pruning + 0x70) * 4 + 0x1c);
+	return pruner ? *reinterpret_cast<const unsigned*>(pruner + 0xc) +
+		*reinterpret_cast<const unsigned*>(pruner + 8) : 0;
+	}
+
+// phys_fn_003628 (0x00089bb0, 22 B)
+// A row of gap:fluids\Fluid.cpp..fluids\FluidManager.cpp: the fluid
+// manager's shape-change flag, byte +0x28 = 1 when byte +0x2b is set and the shape
+// is static (second argument false).
+static void nxFluidManagerShapeChanged(unsigned char* manager, void* shape, bool hasRecord)
+	{
+	(void)shape;
+	if(manager[0x2b] && !hasRecord)
+		manager[0x28] = 1;
+	}
+
+// phys_fn_001941 (0x0004ba80, 59 B)
+// One shape into the collection: its prunable takes the type (+0x70 for a
+// dynamic owner, else 0; 004888) and kind 0 (004890), then 004857.
+static __declspec(noinline) void nxPruningAddShape(unsigned char* pruning, unsigned char* shape, bool hasRecord)
+	{
+	shape[0xce] = static_cast<unsigned char>(
+		hasRecord ? *reinterpret_cast<unsigned*>(pruning + 0x70) : 0u);
+	shape[0xcf] = 0;
+	nxScenePrunerInsert(nxPruningScene(pruning), shape);
+	}
+
+// phys_fn_001943 (0x0004bac0, 270 B)
+// A body's root into the collection: the root's +0xa0 = the collection,
+// its prunable the type and kind 2 (group) or 1, then 004857; a group's
+// children follow with kind 0; the root is appended to the +0x78 list
+// (grown through 004840 when full). The cached object at +0x2c the row
+// releases first is never set by the candidate.
+static void nxPruningAddBody(unsigned char* pruning, unsigned char* body, bool hasRecord)
+	{
+	const unsigned char type = static_cast<unsigned char>(
+		hasRecord ? *reinterpret_cast<unsigned*>(pruning + 0x70) : 0u);
+	unsigned char* root = *reinterpret_cast<unsigned char**>(body + 0x10);
+	const bool group = *reinterpret_cast<unsigned*>(root + 0xd0) == 5u;
+	*reinterpret_cast<unsigned char**>(root + 0xa0) = pruning;
+	root[0xce] = type;
+	root[0xcf] = group ? 2 : 1;
+	nxScenePrunerInsert(nxPruningScene(pruning), root);
+	if(group)
+		{
+		unsigned char** child = *reinterpret_cast<unsigned char***>(root + 0xe0);
+		const unsigned count = static_cast<unsigned>(
+			*reinterpret_cast<unsigned char***>(root + 0xe4) - child);
+		for(unsigned i = 0; i < count; ++i)
+			{
+			child[i][0xce] = type;
+			child[i][0xcf] = 0;
+			nxScenePrunerInsert(nxPruningScene(pruning), child[i]);
+			}
+		}
+	SdkContainer* list = reinterpret_cast<SdkContainer*>(pruning + 0x78);
+	if(list->mCount == list->mCapacity)
+		list->resize(1);
+	list->mEntries[list->mCount] = reinterpret_cast<NxU32>(root);
+	++list->mCount;
+	}
+
+// phys_fn_001945 (0x0004bbd0, 74 B)
+// A body's root and a group's current children leave their pruners (004859).
+static void nxPruningRemoveBody(unsigned char* pruning, unsigned char* body)
+	{
+	unsigned char* root = *reinterpret_cast<unsigned char**>(body + 0x10);
+	nxScenePrunerErase(nxPruningScene(pruning), root);
+	if(*reinterpret_cast<unsigned*>(root + 0xd0) == 5u)
+		{
+		unsigned char** child = *reinterpret_cast<unsigned char***>(root + 0xe0);
+		const unsigned count = static_cast<unsigned>(
+			*reinterpret_cast<unsigned char***>(root + 0xe4) - child);
+		for(unsigned i = 0; i < count; ++i)
+			nxScenePrunerErase(nxPruningScene(pruning), child[i]);
+		}
+	}
+
+// phys_fn_001955 (0x0004bde0, 153 B)
+// The collection's pair records (+0x44 count, +0x48 array) that name the
+// root are released first (0x4bdeb-0x4be37; the candidate keeps none, so
+// the count is always 0 here); then the root leaves the +0x78 list, the
+// last entry moving into its place.
+static void nxPruningRemoveRootPairs(unsigned char* pruning, unsigned char* body)
+	{
+	unsigned char* root = *reinterpret_cast<unsigned char**>(body + 0x10);
+	SdkContainer* list = reinterpret_cast<SdkContainer*>(pruning + 0x78);
+	for(unsigned i = 0; i < list->mCount; ++i)
+		if(list->mEntries[i] == reinterpret_cast<NxU32>(root))
+			{
+			--list->mCount;
+			list->mEntries[i] = list->mEntries[list->mCount];
 			return;
 			}
+	}
+
+// phys_fn_001279 (0x00025760, 53 B)
+// A row of gap:NpTriangleMeshShape.cpp..Shape.cpp. While +0xa0 names the collection: 001955 and 001945 on the owner body,
+// then +0xa0 cleared.
+static void nxShapeLeavePruning(unsigned char* shape)
+	{
+	unsigned char* body = *reinterpret_cast<unsigned char**>(shape + 4);
+	if(*reinterpret_cast<unsigned char**>(shape + 0xa0))
+		nxPruningRemoveRootPairs(*reinterpret_cast<unsigned char**>(shape + 0xa0), body);
+	if(*reinterpret_cast<unsigned char**>(shape + 0xa0))
+		{
+		nxPruningRemoveBody(*reinterpret_cast<unsigned char**>(shape + 0xa0), body);
+		*reinterpret_cast<unsigned char**>(shape + 0xa0) = 0;
+		}
+	}
+
+// phys_fn_000531 (0x00010600, 97 B)
+// Scene::addShape(shape, hasRecord): the shape's slot 6 with 1; 001943 on
+// the collection with the shape's owner; 000503 with 001960 + 001957; and
+// with a fluid manager at +0x61c, 003628.
+void nxSceneAddShape(NxSceneInternal* scene, unsigned char* shape, bool hasRecord)
+	{
+	nxRuntimeShapeSlot6(shape, 1);
+	unsigned char* pruning = scene->bytes() + 0x624;
+	nxPruningAddBody(pruning, *reinterpret_cast<unsigned char**>(shape + 4), hasRecord);
+	const unsigned indexed = nxPruningCountIndexed(pruning);
+	nxSceneUpdateActorCount(scene, indexed + nxPruningCountFirst(pruning));
+	if(scene->at<unsigned char*>(0x61c))
+		nxFluidManagerShapeChanged(scene->at<unsigned char*>(0x61c), shape, hasRecord);
+	}
+
+// phys_fn_000533 (0x00010670, 40 B)
+// A static shape leaves the Scene: 001279, then 003628 with false; returns
+// true.
+bool nxSceneRemoveStaticShape(NxSceneInternal* scene, unsigned char* shape)
+	{
+	nxShapeLeavePruning(shape);
+	if(scene->at<unsigned char*>(0x61c))
+		nxFluidManagerShapeChanged(scene->at<unsigned char*>(0x61c), shape, false);
+	return true;
+	}
+
+// phys_fn_000535 (0x000106a0, 40 B)
+// The same for a dynamic shape, 003628 with true.
+static __declspec(noinline) bool nxSceneRemoveDynamicShape(NxSceneInternal* scene, unsigned char* shape)
+	{
+	nxShapeLeavePruning(shape);
+	if(scene->at<unsigned char*>(0x61c))
+		nxFluidManagerShapeChanged(scene->at<unsigned char*>(0x61c), shape, true);
+	return true;
+	}
+
+// phys_fn_000006 (0x00001080, 30 B)
+// A row of gap:<start>..Actor.cpp. The body's root, when it has one, leaves the Scene: 000535 when the body
+// has a dynamic record, else 000533.
+static void nxActorRemoveRootFromScene(unsigned char* body)
+	{
+	unsigned char* root = *reinterpret_cast<unsigned char**>(body + 0x10);
+	if(!root) return;
+	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(body + 4);
+	if(*reinterpret_cast<void**>(body + 8))
+		nxSceneRemoveDynamicShape(scene, root);
+	else
+		nxSceneRemoveStaticShape(scene, root);
+	}
+
+// phys_fn_000008 (0x000010a0, 751 B)
+// A row of gap:<start>..Actor.cpp: the body's mass from its shapes,
+// thiscall on the body (density, &totalMass, &pose, &diagonal), `ret 0x10`.
+// The frame (0x34 B: the tensor at +0, the centre at +0x24, the mass at
+// +0x30) is zeroed by 000847 with 1; the root's slot 4 (vtable +0x10) adds
+// each family's frame at unit density (1.0f) with a zeroed vector as its
+// third argument. A false return is 1 (the mesh-inertia failure); a mass
+// that is not above zero (ordered: NaN passes, `test ah,0x41; jp`) is 2.
+// Otherwise pose.t = the centre (integer copies), the frame moves to its
+// centre (0x1c720, 000841: 000833 with the negated centre), and the
+// tensor is scaled into the nine-word local:
+// - density > 0 and totalMass > 0 (0x118e): each word times the density;
+// - density > 0 only (0x1242): *totalMass = mass * density, then each word
+//   times the density;
+// - otherwise (density not above zero, NaN included; 0x12e6): the register
+//   ratio totalMass / mass (not rounded to float) times each word.
+// Each product is rounded once at its fstp. The import [0x101041b8]
+// NxDiagonalizeInertiaTensor(tensor, diagonal, pose.M) ends it (its result
+// is not tested); 0x2ea70, the frame's destructor, is an empty `ret`.
+typedef bool (__thiscall* NxRuntimeShapeMassFn)(void* shape, void* frame, float density,
+	void* reserved);
+
+// ObjectModel.cpp's MassFrame (its layout) and the two frame rows 000008
+// calls: 000847 (0x1c880, conditional zero) and 000833 (0x1c040, translate).
+struct NxActorMassFrame
+	{
+	float inertia[9];
+	float offset[3];
+	float mass;
+	};
+void nxMassFrameConditionalZeroAt(void* frame, unsigned flag);
+void nxMassFrameTranslateAt(void* frame, const void* displacement);
+
+int nxActorComputeMassFromShapes(unsigned char* body, float density, float* totalMass,
+	NxMat34* pose, NxVec3* diagonal)
+	{
+	NxActorMassFrame frame;
+	nxMassFrameConditionalZeroAt(&frame, 1);
+	unsigned char* root = *reinterpret_cast<unsigned char**>(body + 0x10);
+	unsigned reserved[3] = { 0, 0, 0 };
+	void** table = *reinterpret_cast<void***>(root);
+	if(!reinterpret_cast<NxRuntimeShapeMassFn>(table[4])(root, &frame, 1.0f, reserved))
+		return 1;
+	if(frame.mass <= 0.0f)
+		return 2;
+	memcpy(&pose->t, frame.offset, sizeof(NxVec3));
+	// 0x1c720 (row 000841): fld; fchs; fstp of each centre word, then 000833.
+	float centre[3];
+	for(unsigned i = 0; i < 3; ++i)
+		nxX87NegateFloat(&frame.offset[i], &centre[i]);
+	nxMassFrameTranslateAt(&frame, centre);
+	float tensor[9];
+	if(density > 0.0f)
+		{
+		if(!(*totalMass > 0.0f))
+			*totalMass = static_cast<float>(static_cast<double>(frame.mass) * density);
+		for(unsigned i = 0; i < 9; ++i)
+			tensor[i] = static_cast<float>(static_cast<double>(frame.inertia[i]) * density);
+		}
+	else
+		{
+		const double ratio = static_cast<double>(*totalMass) / frame.mass;
+		for(unsigned i = 0; i < 9; ++i)
+			tensor[i] = static_cast<float>(static_cast<double>(frame.inertia[i]) * ratio);
+		}
+	NxMat33 dense;
+	memcpy(&dense, tensor, sizeof(tensor));
+	NxDiagonalizeInertiaTensor(dense, *diagonal, pose->M);
+	return 0;
+	}
+
+// phys_fn_000036 (0x00002250, 420 B)
+// Actor::createShape(desc) on the body (Actor.cpp). Under the reentry flag
+// (set: report code 2, line 0x150, return 0), the factory builds the
+// shape, then by the body's root (+0x10):
+// - none (0x23c8): the shape becomes the root and, when built, 000531 adds
+//   it with hasRecord = (body+8 != 0);
+// - a group (0x22b3): 001041 appends it, its slot 6 runs with 1, 001941
+//   adds it to the collection, 000503 takes 001957 + 001960 and a fluid
+//   manager gets 003628;
+// - a single shape (0x2344): the root leaves the Scene (000535 or 000533),
+//   a 0x110-byte group is allocated through [0x101041bc] and constructed
+//   (001033) with an id from the pool (000012), it becomes the root with
+//   +8 = [scene+0x540] - 1, 001041 adds the old root and then the new
+//   shape, and 000531 adds the group.
+// The flag is cleared and the new shape (not the group) returned. The
+// oracle does not test the factory's result on the group arms (001041
+// reads [shape+0x9c]) nor the group allocation (+8 is written through it);
+// the candidate returns before either would fault.
+unsigned char* nxActorCreateShape(unsigned char* body, const NxShapeDesc* descriptor)
+	{
+	if(gNxApiReentry)
+		{
+		nxActorCppReport(NXE_INVALID_OPERATION, 0x150, gNxActorReentryMessage);
+		return 0;
+		}
+	gNxApiReentry = true;
+	unsigned char* shape = nxActorShapeFactory(descriptor, body);
+	unsigned char* root = *reinterpret_cast<unsigned char**>(body + 0x10);
+	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(body + 4);
+	if(!root)
+		{
+		*reinterpret_cast<unsigned char**>(body + 0x10) = shape;
+		if(shape)
+			nxSceneAddShape(scene, shape, *reinterpret_cast<void**>(body + 8) != 0);
+		}
+	else if(!shape)
+		{
+		}
+	else if(*reinterpret_cast<unsigned*>(root + 0xd0) == 5u)
+		{
+		nxShapeGroupAddChild(root, shape);
+		nxRuntimeShapeSlot6(shape, 1);
+		const bool hasRecord = *reinterpret_cast<void**>(body + 8) != 0;
+		unsigned char* pruning = scene->bytes() + 0x624;
+		nxPruningAddShape(pruning, shape, hasRecord);
+		const unsigned first = nxPruningCountFirst(pruning);
+		nxSceneUpdateActorCount(scene, first + nxPruningCountIndexed(pruning));
+		if(scene->at<unsigned char*>(0x61c))
+			nxFluidManagerShapeChanged(scene->at<unsigned char*>(0x61c), shape, hasRecord);
+		}
+	else
+		{
+		if(*reinterpret_cast<void**>(body + 8))
+			nxSceneRemoveDynamicShape(scene, root);
+		else
+			nxSceneRemoveStaticShape(scene, root);
+		void* memory = nxFoundationSDKAllocator->malloc(0x110, NX_MEMORY_PERSISTENT);
+		if(memory)
+			{
+			unsigned char* group = nxShapeGroupConstructAt(memory, body,
+				nxIdAllocNext(scene->bytes() + 0x6e4));
+			*reinterpret_cast<unsigned char**>(body + 0x10) = group;
+			*reinterpret_cast<unsigned*>(group + 8) = scene->at<unsigned>(0x540) - 1u;
+			nxShapeGroupAddChild(group, root);
+			nxShapeGroupAddChild(group, shape);
+			nxSceneAddShape(scene, group, *reinterpret_cast<void**>(body + 8) != 0);
+			}
+		else
+			*reinterpret_cast<unsigned char**>(body + 0x10) = 0;
+		}
+	gNxApiReentry = false;
+	return shape;
+	}
+
+// phys_fn_000024 (0x00001860, 328 B)
+// Actor::releaseShape(internal shape) on the body (Actor.cpp). Under the
+// reentry flag (report code 2, line 0x186); every other report is code 1:
+// - no root: line 0x1a4, "shape not found!";
+// - a group holding one child on a static body: line 0x18f, the static
+//   actor may not be left without shapes (nothing is removed, even when
+//   the shape is not that child);
+// - a group otherwise: 001028 unlinks the shape (a shape it does not hold
+//   is ignored silently); a group left empty leaves the Scene (000006), is
+//   deleted (slot 0 with 1) and the root cleared;
+// - a single root on a static body: line 0x19c (the same message as 0x18f);
+// - a single root that is not the shape: line 0x19d, "shape not found!";
+// - the single root itself: 000006, the shape deleted, the root cleared.
+void nxActorReleaseShape(unsigned char* body, unsigned char* shape)
+	{
+	if(gNxApiReentry)
+		{
+		nxActorCppReport(NXE_INVALID_OPERATION, 0x186, gNxActorReentryMessage);
+		return;
+		}
+	gNxApiReentry = true;
+	unsigned char* root = *reinterpret_cast<unsigned char**>(body + 0x10);
+	const bool hasRecord = *reinterpret_cast<void**>(body + 8) != 0;
+	if(!root)
+		nxActorCppReport(NXE_INVALID_PARAMETER, 0x1a4, "Actor::releaseShape: shape not found!");
+	else if(*reinterpret_cast<unsigned*>(root + 0xd0) == 5u)
+		{
+		const unsigned bytes = static_cast<unsigned>(
+			*reinterpret_cast<unsigned char**>(root + 0xe4) -
+			*reinterpret_cast<unsigned char**>(root + 0xe0));
+		if((bytes & ~3u) == 4 && !hasRecord)
+			nxActorCppReport(NXE_INVALID_PARAMETER, 0x18f, "Actor::releaseShape: "
+				"Can't release shape: A static actor can't be left with no shapes!");
+		else if(nxShapeGroupRemoveChild(root, shape))
+			{
+			const unsigned left = static_cast<unsigned>(
+				*reinterpret_cast<unsigned char**>(root + 0xe4) -
+				*reinterpret_cast<unsigned char**>(root + 0xe0));
+			if(!(left & ~3u))
+				{
+				nxActorRemoveRootFromScene(body);
+				unsigned char* emptied = *reinterpret_cast<unsigned char**>(body + 0x10);
+				if(emptied)
+					{
+					nxRuntimeShapeDeleteRoot(emptied);
+					*reinterpret_cast<unsigned char**>(body + 0x10) = 0;
+					}
+				}
+			}
+		}
+	else if(!hasRecord)
+		nxActorCppReport(NXE_INVALID_PARAMETER, 0x19c, "Actor::releaseShape: "
+			"Can't release shape: A static actor can't be left with no shapes!");
+	else if(root != shape)
+		nxActorCppReport(NXE_INVALID_PARAMETER, 0x19d, "Actor::releaseShape: shape not found!");
+	else
+		{
+		nxActorRemoveRootFromScene(body);
+		unsigned char* single = *reinterpret_cast<unsigned char**>(body + 0x10);
+		if(single)
+			{
+			nxRuntimeShapeDeleteRoot(single);
+			*reinterpret_cast<unsigned char**>(body + 0x10) = 0;
+			}
+		}
+	gNxApiReentry = false;
 	}
 
 // ---------------------------------------------------------------------------
@@ -2467,27 +3271,35 @@ void NxSceneInternal::removeJoint(Joint* joint)
 	joint->mScene = 0;
 	}
 
+// phys_fn_000557 (0x00010840, 22 B)
+// The joint is pushed on the +0x5a0 list through its +0x10 link.
+void NxSceneInternal::pushJointWithoutBodies(Joint* joint)
+	{
+	joint->mNextJoint = at<Joint*>(0x5a0);
+	at<Joint*>(0x5a0) = joint;
+	}
+
 // phys_fn_000653 (0x00013760, 126 B, phase 7) is Scene::releaseJoint.
-// The re-entry flag is createJoint's (.data 0x00123c10); a re-entrant call is
+// The re-entry flag is gNxApiReentry (.data 0x10123c10); a re-entrant call is
 // reported with the message the pointer at .data 0x00122050 names (code 2,
 // line 0x4e2). Otherwise: removeJoint, the joint's scalar deleting
 // destructor (slot 5 with 1) when the pointer is non-null, --[+0x6c8] and
 // the enumeration cursor reset to the list head, then the flag cleared.
 void NxSceneInternal::releaseJoint(Joint* joint)
 	{
-	if(gCreateJointReentry)
+	if(gNxApiReentry)
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION, NX_SCENE_CPP, 0x4e2, 0,
 			"Reentry check: You may not call this API method from a callback!");
 		return;
 		}
-	gCreateJointReentry = true;
+	gNxApiReentry = true;
 	removeJoint(joint);
 	if(joint)
 		delete joint;
 	--at<NxU32>(0x6c8);
 	at<void*>(0x6bc) = at<void*>(0x59c);
-	gCreateJointReentry = false;
+	gNxApiReentry = false;
 	}
 
 // phys_fn_000598 (0x00010f50, 138 B, phase 7) grows the 0x50-byte record
@@ -2738,26 +3550,26 @@ __declspec(noinline) void NxSceneInternal::releaseEffectors()
 	}
 
 // phys_fn_000594 (0x00010e80, 126 B, phase 7) is Scene::releaseEffector.
-// The re-entry flag is createJoint's (.data 0x00123c10); a re-entrant call is
+// The re-entry flag is gNxApiReentry (.data 0x10123c10); a re-entrant call is
 // reported with the message the pointer at .data 0x00122050 names (code 2,
 // line 0x4ec). Otherwise: removeEffector, the effector's scalar deleting
 // destructor (slot 1 with 1) when the pointer is non-null, --[+0x6c4] and
 // the cursor reset to the list head, then the flag cleared.
 void NxSceneInternal::releaseEffector(Effector* effector)
 	{
-	if(gCreateJointReentry)
+	if(gNxApiReentry)
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION, NX_SCENE_CPP, 0x4ec, 0,
 			"Reentry check: You may not call this API method from a callback!");
 		return;
 		}
-	gCreateJointReentry = true;
+	gNxApiReentry = true;
 	removeEffector(effector);
 	if(effector)
 		delete effector;
 	--at<NxU32>(0x6c4);
 	at<void*>(0x6c0) = at<void*>(0x5a4);
-	gCreateJointReentry = false;
+	gNxApiReentry = false;
 	}
 
 // phys_fn_000509 (0x00010200, 33 B, phase 2): the three gravity words at

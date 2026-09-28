@@ -86,6 +86,8 @@ class NxSceneInternal
 	void addJoint(Joint* joint);
 	// phys_fn_000633 (0x00012660). Scene::removeJoint.
 	void removeJoint(Joint* joint);
+	// phys_fn_000557 (0x00010840). Pushes a joint on the +0x5a0 list.
+	void pushJointWithoutBodies(Joint* joint);
 	// phys_fn_000653 (0x00013760). Scene::releaseJoint.
 	void releaseJoint(Joint* joint);
 	// phys_fn_000598 (0x00010f50). Grows the 0x50-byte record array at +0x5b8.

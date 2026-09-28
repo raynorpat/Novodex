@@ -368,7 +368,7 @@ __declspec(noinline) void __stdcall cpmRestitution0857(NxU32 materialIds, CpmRes
 __declspec(noinline) void __stdcall cpmAnisotropicFriction0859(const NxU8* shape,
 	const NxMaterial* material, const NxMaterial* other, NxReal normalForce, CpmFrictionParams* out)
 	{
-	const NxReal* parameter = nxSdkParameterTable();
+	const NxReal* parameter = nxPhysicsSDKParameters();
 	double otherDynamic;
 	NxReal otherStatic;
 	if(other->flags & NX_MF_ANISOTROPIC)
@@ -434,7 +434,7 @@ __declspec(noinline) void __stdcall cpmAnisotropicFriction0859(const NxU8* shape
 __declspec(noinline) void __stdcall cpmFrictionParams0861(NxU8* const* shapes, NxU32 materialIds,
 	const NxVec3* normal, NxReal normalForce, CpmFrictionParams* out, NxVec3* tangent0, NxVec3* tangent1)
 	{
-	const NxReal* parameter = nxSdkParameterTable();
+	const NxReal* parameter = nxPhysicsSDKParameters();
 	const NxMaterial* a = cpmMaterial(materialIds & 0xffff);
 	const NxMaterial* b = cpmMaterial(materialIds >> 16);
 	out->spring = (a->flags | b->flags) & 4;
@@ -714,7 +714,7 @@ __declspec(noinline) NxFrictionPatch& NxFrictionPatch::operator=(const NxFrictio
 __declspec(noinline) void NxActorPair::row000879(NxSceneInternal* scene, NxReal forceScale,
 	NxReal errorScale)
 	{
-	const NxReal* parameter = nxSdkParameterTable();
+	const NxReal* parameter = nxPhysicsSDKParameters();
 	JointSupportBody* const support0 = cpmBodySupport(at<const NxU8*>(8));
 	JointSupportBody* const support1 = cpmBodySupport(at<const NxU8*>(0xc));
 	for(NxU32 i = 0; i < at<NxU32>(0x48); i++)
@@ -920,7 +920,7 @@ __declspec(noinline) void NxActorPair::row000883(NxSceneInternal* scene, NxFrict
 	{
 	(void)separationBits;
 	(void)normal;
-	const NxReal* parameter = nxSdkParameterTable();
+	const NxReal* parameter = nxPhysicsSDKParameters();
 	const NxU8* body0 = at<const NxU8*>(8);
 	JointSupportBody* const support0 = cpmBodySupport(body0);
 	JointSupportBody* const support1 = cpmBodySupport(at<const NxU8*>(0xc));
@@ -1030,7 +1030,7 @@ __declspec(noinline) void __fastcall cpmActorPairRelease0887(NxActorPair* pair)
 // Scene+0x540.
 __declspec(noinline) void NxActorPair::row000891(NxSceneInternal* scene)
 	{
-	const NxReal* parameter = nxSdkParameterTable();
+	const NxReal* parameter = nxPhysicsSDKParameters();
 	at<NxU32>(0xd4) = 0;
 	// The frame slots (+0x24..+0x6c) live across patches: a patch with no
 	// anchors leaves the previous patch's second anchors in place and the
@@ -1314,7 +1314,7 @@ struct CpmAnchors
 __declspec(noinline) void NxActorPair::row000897(NxSceneInternal* scene, NxReal forceScale,
 	NxReal penaltyScale)
 	{
-	const NxReal* parameter = nxSdkParameterTable();
+	const NxReal* parameter = nxPhysicsSDKParameters();
 	JointSupportBody* const support0 = cpmBodySupport(at<const NxU8*>(8));
 	JointSupportBody* const support1 = cpmBodySupport(at<const NxU8*>(0xc));
 	if((cpmAt<NxU8>(at<const NxU8*>(0), 0x14) & 2) || (cpmAt<NxU8>(at<const NxU8*>(4), 0x14) & 2))
@@ -1739,7 +1739,7 @@ __declspec(noinline) NxPairNode* NxPairList::row000911(NxU8* element0, NxU8* ele
 	const NxU32 group0 = cpmAt<NxU16>(cpmAt<NxU8*>(first, 0x10), 0xd8);
 	const NxU32 group1 = cpmAt<NxU16>(cpmAt<NxU8*>(second, 0x10), 0xd8);
 	if(group0 != 0xffff && group1 != 0xffff
-		&& !(nxSdkGroupCollisionMaskTable()[group0] & (1u << (group1 & 31))))
+		&& !(nxPhysicsSDKGroupCollisionMasks()[group0] & (1u << (group1 & 31))))
 		return 0;
 	void* block = nxFoundationSDKAllocator->malloc(0x108, NX_MEMORY_PERSISTENT);
 	if(!block)

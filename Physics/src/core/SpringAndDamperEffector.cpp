@@ -436,8 +436,9 @@ static void effectorBodyState2(const void* record, const NxVec3& b, EffectorBody
 // record whose chain root (000713) has a non-zero +0x1f8 (or a NaN, the
 // listing's `jnp`): 000791 with F scaled by -step (body 1, the step size
 // being the Scene's +0x548 float) or +step (body 2), the end's world
-// point, 1 and 0. 000791 is a deferred stub; with both roots' +0x1f8 zero
-// the row has no side effect beyond 000713's path compression.
+// point, 1 and 0. 000791 is NpActor.cpp's (written by the NpActor.cpp
+// completion, one definition since its merge with main); with both roots'
+// +0x1f8 zero the row has no side effect beyond 000713's path compression.
 void SpringAndDamperEffector::apply(NxFoundation::Observable* body1, NxFoundation::Observable* body2)
 	{
 	EffectorBodyState end1;

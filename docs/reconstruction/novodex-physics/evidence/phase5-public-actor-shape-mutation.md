@@ -25,3 +25,24 @@ mutation also remain open.
 The Phase 5 gate remains red at the explicit final-vtable marker in
 `NxPhysicsObjectLayoutTests`; this packet does not close the shape finals and
 actor classes family.
+
+NpActor.cpp completion Task 4 (`units/npactor-contract.md`, "## Task 4: shape
+add/remove") replaced the partial candidate path with Actor.cpp's 000036 and
+000024 and their chain, and extended this target past the one-to-two
+transition: every family the harness builds on static and dynamic actors,
+appends that grow the group arrays, releases at every position down to the
+group teardown, single-root installs and releases, the Actor.cpp E1 reports,
+the group's own poses, and a Scene whose first shape comes from createShape.
+The removed child of a group is still only unlinked (001028), as measured
+above; a released single root and an emptied group are deleted. 136 more
+oracle lines are registered; the nine lines above are unchanged.
+
+NpActor.cpp completion Task 5 (`units/npactor-contract.md`, "## Task 5: mass
+from shapes and setDynamic") adds two blocks to this target on fresh Scenes:
+updateMassFromShapes (000164 -> Actor.cpp 000008 -> each family's slot 4)
+with a density and with a total mass over every family, groups, triggers and
+planes, with its argument errors; the creation path's own mass pass (000026)
+and its failures; and setDynamic (000122) on static, dynamic, shapeless and
+jointed actors, each actor then used and released through the rewritten
+releaseActor (000628 -> 000030). 110 more oracle lines are registered; every
+line above is unchanged.

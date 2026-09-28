@@ -9,7 +9,6 @@
 #include "core/Joint.h"
 #include "PhysicsInternal.h"
 #include "X87Sqrt.h"
-#include "BodyCreation.h"
 
 // Rows phys_fn_004389/004391/004393 are not Joint or RevoluteJoint members: they
 // run on JointSupportRecord (see core/JointSupport.h and revolute-contract.md
@@ -22,9 +21,10 @@
 // coredump-contract.md "### Readers and whether the candidate has them"); they
 // are members of the body view JointActorBody (core/Joint.h). 000754 is now
 // written below (Task 6, 21b275d);
-// 004167 remains a deferred stub. 000713 and 000791 (written
-// from the listing in scene-raycast Task 4) are the spring-and-damper solver
-// slot's, and 000722 the body constructor's
+// 004167 remains a deferred stub. 000713 (written by effector-and-coredump
+// Task 2) and 000791 (written from the listing in scene-raycast Task 4, the one
+// definition since the second merge of main; it calls NpActor.cpp's 000782)
+// are the spring-and-damper solver slot's, and 000722 the body constructor's
 // (effector-and-coredump Task 2, units/effector-coredump-contract.md
 // "### Solver slots" and "### Task 2 record").
 //
@@ -463,6 +463,10 @@ Row000712Fixture* Row000712Fixture::row000712()
 // replaced only when it is ordered below the record's; an unordered or
 // greater-or-equal one is kept. All the values are floats loaded exactly,
 // so no x87 precision question arises.
+// The root is stored back to +0x1bc only when the record is not its own
+// root (0x16144-0x16149), then +0x1bc is reloaded. Written on both main
+// (effector-and-coredump Task 2) and the NpActor.cpp completion branch
+// (Task 5); the two were equivalent and this one is kept at the merge.
 __declspec(noinline) void Row000722Fixture::row000722()
 	{
 	void* parent = supportPointer(this, 0x1bc);
@@ -511,14 +515,21 @@ Row000713Fixture* Row000713Fixture::row000713()
 	return static_cast<Row000713Fixture*>(supportPointer(this, 0x1e8));
 	}
 
+// Row 000782 (NpActor.cpp): the body's force/torque accumulator, thiscall on
+// the record in the image (`ret 0x10`).
+void nxNpActorApplyForce(unsigned char* record, const NxVec3* force,
+	const NxVec3* torque, unsigned mode, bool wake);
+
 // phys_fn_000791 (0x0001a2c0, 133 B)
 // The lever d = position - centre of mass (+0x158): dx stays in the register
 // (0x1a2c7-0x1a2c9), dy and dz are spilled to float (0x1a2d8, 0x1a2e9). The
 // torque d x force is formed x, y, z (each `fmul; fmul; fsubp`, 0x1a2ed-0x1a315)
-// and stored to a float local; 000782 is called once with (force, &torque,
-// mode, wake), the last two words passed through unchanged (000782 reads the
-// wake's low byte). noinline: the image calls it as its own function (from
-// 000054, 000154-000158 and 003979).
+// and stored to a float local; 000782 (NpActor.cpp nxNpActorApplyForce, the
+// NpActor.cpp completion's row, kept at the second merge) is called once with
+// (force, &torque, mode, wake), the mode passed through unchanged and the
+// wake as its low byte (000782 tests `mov al,[esp+0x2c]`, 0x1936f). noinline:
+// the image calls it as its own function (from 000054, 000154-000158 and
+// 003979).
 __declspec(noinline) void Row000791Fixture::row000791(const NxVec3& force, const NxVec3& position, NxU32 word3,
 	NxU32 word4)
 	{
@@ -530,7 +541,8 @@ __declspec(noinline) void Row000791Fixture::row000791(const NxVec3& force, const
 	torque.x = (NxReal)((double)dy * force.z - (double)dz * force.y);
 	torque.y = (NxReal)((double)dz * force.x - dx * force.z);
 	torque.z = (NxReal)(dx * force.y - (double)dy * force.x);
-	reinterpret_cast<DynamicBody*>(this)->addForce(&force, &torque, word3, (NxU8)word4 != 0);
+	nxNpActorApplyForce(reinterpret_cast<NxU8*>(static_cast<void*>(this)), &force, &torque, word3,
+		(NxU8)word4 != 0);
 	}
 
 // phys_fn_000760 (0x00017710, 168 B)

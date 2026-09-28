@@ -196,15 +196,15 @@ struct Row000713Fixture
 // scene-raycast Task 4, sub-area setters). Thiscall on a body record, four
 // stack arguments, `ret 0x10`: add a force at a world position (force,
 // position, then the force mode and the wake word): it forms the lever from
-// the world centre of mass (+0x158) and the torque, and calls phys_fn_000782
-// (BodyCreation.h DynamicBody::addForce) once with both vectors. Callers:
-// the NxActor addForceAt* rows 000054/000154/000156/000158 (NpActor.cpp
-// nxNpActorForceAtPos, mode and wake 1) and the spring-and-damper solver slot
-// 003979 (mode 1, wake 0; step-only). Name and signature as on main
-// (effector-and-coredump), where it was a deferred stub.
+// the world centre of mass (+0x158) and the torque, and calls row 000782
+// (NpActor.cpp nxNpActorApplyForce) once with both vectors. Callers: the
+// NxActor addForceAt* rows 000054/000154/000156/000158 (NpActor.cpp
+// nxNpActorForceAtPos, wake 1) and the spring-and-damper solver slot 003979
+// (mode 1, wake 0; step-only). Defined in core/JointSupport.cpp; the NpActor.cpp
+// completion's copy in NpActor.cpp was folded into it at the second merge.
 struct Row000791Fixture
 	{
-	void row000791(const NxVec3& force, const NxVec3& position, NxU32 word3, NxU32 word4);
+	void row000791(const NxVec3& force, const NxVec3& position, NxU32 mode, NxU32 wake);
 	};
 
 // Row 000760 (0x00017710, 168 B; owner gap SceneRaycast..CapsuleShape).
@@ -224,7 +224,7 @@ struct Row000760Fixture
 // over the island's +0x1d0 chain (from 0.0f; 0x4b7afafa when the record is
 // not its own root), copies the seven words +0x1bc..+0x1d4 to +0x1e8..+0x200
 // and zeroes +0x25c and +0x208. The body constructor 000797 calls it right
-// after 000760 (0x1b6fb, 0x1b702).
+// after 000760 (0x1b6fb, 0x1b702), and the destructor 000776 calls it too.
 struct Row000722Fixture
 	{
 	void row000722();

@@ -1059,6 +1059,27 @@ void Joint::row004107(void* actorImpl0, void* actorImpl1, bool suppressAttach)
 		static_cast<NxSceneInternal*>(mScene)->addJoint(this);
 	}
 
+// phys_fn_004103 (0x00097c10, 142 B)
+// A joint holding `bodyRecord` as either body (+8 or +0xc) lets go of it:
+// both bodies are woken (the inline raise: unless +0x114 bit 8, an ordered
+// +0x4c below 0.39999998f becomes 0x3ecccccc) and cleared, Scene::removeJoint
+// (000633) runs on the joint's Scene (+0x30, read before the call and not
+// null-tested), the flags become (flags & ~8) | 0x10, and 000557 pushes the
+// joint on the Scene's +0x5a0 list. A joint on neither body is left alone.
+void Joint::row004103(void* bodyRecord)
+	{
+	if(bodyRecord != mBody[0] && bodyRecord != mBody[1])
+		return;
+	jointRaiseWakeCounter(mBody[0]);
+	jointRaiseWakeCounter(mBody[1]);
+	mBody[0] = 0;
+	mBody[1] = 0;
+	NxSceneInternal* scene = static_cast<NxSceneInternal*>(mScene);
+	scene->removeJoint(this);
+	mFlags = (mFlags & ~8u) | 0x10u;
+	scene->pushJointWithoutBodies(this);
+	}
+
 // phys_fn_004109 (0x00097e60, 366 B)
 // The report is the imported error call alone (no instance test), code 1,
 // line 0x285. pointIsOnBody2 clears flag bit 1 and puts body 1 first in

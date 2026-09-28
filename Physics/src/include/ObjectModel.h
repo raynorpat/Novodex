@@ -625,9 +625,10 @@ class MassFrame
 	//! mass = pi*r^2*(2c); the axial diagonal gets mass*r^2/2, the other
 	//! two the full cylinder transverse mass*(3r^2+4c^2)/12 over the
 	//! .rdata 3 ([0x101068f8]) / 4 ([0x101068f4]) / one-twelfth constants.
-	//! `axisSelector` picks the axial diagonal (0=x, 1=y, >=2=z); the other
-	//! two diagonals take the transverse term (selector 1 stores it at +0x00
-	//! before its branch, 0x1c836).
+	//! `axisSelector` picks the axial diagonal (0=x, 1=y, >=2=z); every
+	//! arm writes all three diagonal words (selector 1 stores the side term
+	//! at +0x00 at 0x1c836 before it branches; the capsule's slot 4, 001008,
+	//! passes 1).
 	void				nxMassFrameBuildCapsule(unsigned axisSelector,
 							float radius, float cylHalfHeight);
 
@@ -650,8 +651,9 @@ class MassFrame
 	//! by a {Vec3 d} at param+0. Early-outs when d is all-zero; otherwise
 	//! forms d+offset; if the new center is at the origin uses the centered
 	//! quadratic path (0x1c0d7), else the displaced parallel-axis path
-	//! (0x1c26f), and finally adds d to the offset. PROVISIONAL transcription
-	//! being driven differentially (NOT yet census-closed).
+	//! (0x1c26f), and finally adds d to the offset. Transcribed from the
+	//! listing (NpActor.cpp completion Task 5 review): the 0.0f-multiplied
+	//! diagonal terms and the spilled squares are the listing's.
 	void				nxMassFrameTranslate(const void* param);
 
 	//! phys_fn_000841 (0x0001c720), __thiscall plain `ret`: translate the

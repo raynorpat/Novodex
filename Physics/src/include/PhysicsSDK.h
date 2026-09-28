@@ -100,16 +100,12 @@ class PhysicsSDK : public NxAllocateable
 	NxArraySDK<NxMaterial> mMaterials;
 	};
 
-// The live parameter array (.data 0x00123b18, indexed by NxParameter) and the
-// 32 group collision masks (.data 0x00123a98), for rows that read them
-// directly (ContactPairManager.cpp). Defined in PhysicsSDK.cpp; not rows.
-const NxReal* nxSdkParameterTable();
-const NxU32* nxSdkGroupCollisionMaskTable();
-
 // The live SDK parameters (.data 0x00123b18, NX_PARAMS_NUM_VALUES floats)
 // and the 32 collision-group masks (.data 0x00123a98), which PhysicsSDK.cpp
-// keeps file-static. The core dump (phys_fn_004062) reads both directly;
-// these accessors hand it the arrays without making them global.
+// keeps file-static. The core dump (phys_fn_004062) and the contact-pair
+// manager rows (ContactPairManager.cpp) read both directly, and ObjectModel.cpp's
+// BOX slot 3 (000945) the parameters; these accessors hand them the arrays
+// without making them global. Not rows.
 const NxReal* nxPhysicsSDKParameters();
 const NxU32* nxPhysicsSDKGroupCollisionMasks();
 

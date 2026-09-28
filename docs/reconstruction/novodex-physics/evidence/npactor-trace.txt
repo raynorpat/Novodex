@@ -1,0 +1,834 @@
+Public actor rows: cdb breakpoint trace of the Phase 5 actor staged-pair targets (npactor-completion Task 1)
+===========================================================================================================
+
+A trimmed excerpt of the raw cdb logs, in the method of evidence/joint-open-items-trace-release.txt.
+ModLoad lines, banners, register dumps, the echoed breakpoint commands and the program's own stdout
+are removed; the HIT lines are kept in order and otherwise unedited, one section per target. It is
+the execution evidence for units/npactor-contract.md (column "traced") and for the dynamic_proof a
+later task of evidence/npactor-completion.md records in inventory.json.
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\<target>.exe <repo>\build\pairs\candidate
+           (run from build\pairs, the directory run_differential.ps1 runs the children in; the
+           script breaks on the NxPhysics load with `sxe ld:NxPhysics`, sets the breakpoints
+           below, then runs to exit). Each log shows exactly one NxPhysics.dll load and no
+           unload, and each program printed its own `loaded module=NxPhysics.dll ... sha256=`
+           line with the hash below.
+Recorded:  2026-09-28, on commit 63fd8cd (no source change), after a fresh configure and Release
+           build and a Phase 5 gate run that staged build\pairs (12/12 actor staged-pair targets
+           stdout_delta=0; the gate is red only on its CANDIDATE-MISSING family=vtables marker).
+Candidate: <repo>\build\pairs\candidate\NxPhysics.dll
+           sha256=fb64a931163ddb46db024cc9dea6df34c34b6954e2e4ccd1c737df1628d59bec
+           (identical to build\Release\NxPhysics.dll at the time of the trace)
+Offsets:   module-relative, from build\Release\NxPhysics.map of that build. One breakpoint per
+           candidate function standing for a row of the unit: the NpActorVtable method the row's
+           public slot dispatches to (82 rows), the two static helpers standing for the non-vtable
+           rows 000150 (nxNpActorRotateLocalForce) and 000152 (nxNpActorLocalPosition), and for
+           000118 NxSceneInternal::releaseActor, which frees the 0x18-byte wrapper where the oracle
+           runs the actor's slot-0 scalar deleting destructor (the candidate never deletes the
+           wrapper through its vtable, so 000118's hits are a counterpart, not the row). 85
+           breakpoints. 000116 (the member table's this-adjust thunk) and 000216 (the 0xa5d0
+           block) have no candidate function and are not breakpointed. No breakpointed function
+           is inlined: each has its own symbol in the map.
+
+Hit counts (row, candidate function, total, per target). Rows with 0 were breakpointed and not hit.
+  000050 getLinearDamping                      2  ActorDynamicSetter 1, ActorDynamics 1
+  000052 getAngularDamping                     2  ActorDynamicSetter 1, ActorDynamics 1
+  000054 addForceAtPos                         1  ActorForce 1
+  000056 addForce                             12  ActorForce 12
+  000058 addTorque                            14  ActorForce 14
+  000060 computeKineticEnergy                  5  ActorMomentum 5
+  000062 isGroupSleeping                      14  ActorDynamicSetter 14
+  000064 isSleeping                            6  ActorDynamicSetter 6
+  000066 getSleepLinearVelocity                4  ActorDynamicSetter 4
+  000068 getSleepAngularVelocity               3  ActorDynamicSetter 3
+  000070 createShape                           1  ActorShapeMutation 1
+  000072 releaseShape                          1  ActorShapeMutation 1
+  000074 raiseActorFlag                        1  ActorMetadata 1
+  000076 clearActorFlag                        1  ActorMetadata 1
+  000078 readActorFlag                         6  ActorMetadata 6
+  000080 readBodyFlag                          6  ActorBodyFlag 6
+  000082 getNbShapes                           6  ActorLifecycle 3, ActorShapeMutation 3
+  000084 getShapes                            14  ActorDynamicSetter 5, ActorLifecycle 5, ActorName 1, ActorShapeMutation 3
+  000086 getName                               5  ActorName 5
+  000088 setName                               3  ActorName 3
+  000090 moveGlobalPosition                    3  ActorDynamics 3
+  000092 getGlobalPositionVal                 22  ActorCMass 6, ActorDynamicSetter 8, ActorDynamics 3, ActorLifecycle 5
+  000094 getGlobalOrientationQuatVal           3  ActorLifecycle 3
+  000096 getCMassLocalPoseVal                 21  ActorCMass 21
+  000098 getCMassLocalPositionVal             21  ActorCMass 21
+  000100 getCMassLocalOrientationVal          21  ActorCMass 21
+  000102 getMassSpaceInertiaTensorVal          0
+  000104 getLinearVelocityVal                  3  ActorDynamicSetter 1, ActorDynamics 1, ActorMomentum 1
+  000106 getAngularVelocityVal                 6  ActorDynamicSetter 1, ActorDynamics 1, ActorMomentum 4
+  000108 getLinearMomentumVal                  2  ActorMomentum 2
+  000110 isDynamic                             2  ActorLifecycle 2
+  000112 setGroup                              1  ActorMetadata 1
+  000114 getGroup                              2  ActorMetadata 2
+  000118 releaseActor (NxSceneInternal)       47  ActorBodyFlag 1, ActorCMass 11, ActorDynamicSetter 8, ActorDynamics 2, ActorForce 11, ActorLifecycle 6, ActorMetadata 1, ActorMomentum 4, ActorName 1, ActorShapeMutation 1, DynamicFirst 1
+  000120 saveToDesc                            3  ActorLifecycle 3
+  000122 setDynamic                            0
+  000124 moveGlobalPose                        5  ActorDynamics 5
+  000126 moveGlobalOrientation                 3  ActorDynamics 3
+  000128 getGlobalPoseReference                2  ActorCMass 2
+  000130 getGlobalPoseVal                     16  ActorCMass 6, ActorDynamicSetter 6, ActorLifecycle 4
+  000132 getGlobalOrientationVal              20  ActorCMass 6, ActorDynamicSetter 7, ActorLifecycle 7
+  000134 getCMassGlobalPoseVal                21  ActorCMass 21
+  000136 getCMassGlobalPositionVal            21  ActorCMass 21
+  000138 getCMassGlobalOrientationVal         21  ActorCMass 21
+  000140 getGlobalInertiaTensorVal             5  ActorMomentum 5
+  000142 getGlobalInertiaTensorInverseVal      5  ActorMomentum 5
+  000144 getAngularMomentumVal                 6  ActorMomentum 6
+  000146 getPointVelocityVal                  20  ActorLifecycle 20
+  000148 getLocalPointVelocityVal             20  ActorLifecycle 20
+  000150 nxNpActorRotateLocalForce             7  ActorForce 7
+  000152 nxNpActorLocalPosition                4  ActorForce 4
+  000154 addForceAtLocalPos                    2  ActorForce 2
+  000156 addLocalForceAtPos                    1  ActorForce 1
+  000158 addLocalForceAtLocalPos               2  ActorForce 2
+  000160 addLocalForce                         2  ActorForce 2
+  000162 addLocalTorque                        2  ActorForce 2
+  000164 updateMassFromShapes                  0
+  000166 setMass                               2  ActorDynamicSetter 2
+  000168 setMassSpaceInertiaTensor             3  ActorDynamicSetter 2, ActorMomentum 1
+  000170 setLinearDamping                      2  ActorDynamicSetter 2
+  000172 setAngularDamping                     2  ActorDynamicSetter 2
+  000174 setLinearVelocity                     3  ActorDynamicSetter 3
+  000176 setAngularVelocity                    3  ActorDynamicSetter 3
+  000178 setMaxAngularVelocity                 2  ActorMomentum 2
+  000180 setLinearMomentum                     3  ActorMomentum 3
+  000182 setAngularMomentum                    6  ActorMomentum 6
+  000184 setSleepLinearVelocity                3  ActorDynamicSetter 3
+  000186 setSleepAngularVelocity               2  ActorDynamicSetter 2
+  000188 raiseBodyFlag                         9  ActorBodyFlag 2, ActorDynamicSetter 1, ActorDynamics 4, ActorForce 1, ActorMomentum 1
+  000190 clearBodyFlag                         8  ActorBodyFlag 1, ActorDynamicSetter 1, ActorDynamics 4, ActorForce 1, ActorMomentum 1
+  000192 wakeUp                                7  ActorCMass 1, ActorDynamicSetter 5, ActorForce 1
+  000194 putToSleep                            5  ActorDynamicSetter 4, ActorForce 1
+  000196 setGlobalPose                        10  ActorCMass 7, ActorDynamicSetter 3
+  000198 setGlobalPosition                    12  ActorCMass 7, ActorDynamicSetter 5
+  000200 setGlobalOrientation                 12  ActorCMass 7, ActorDynamicSetter 5
+  000202 setGlobalOrientationQuat              9  ActorCMass 7, ActorDynamicSetter 2
+  000204 setCMassGlobalPose                    1  ActorCMass 1
+  000206 setCMassGlobalPosition                1  ActorCMass 1
+  000208 setCMassGlobalOrientation             1  ActorCMass 1
+  000210 setCMassOffsetLocalPose               8  ActorCMass 8
+  000212 setCMassOffsetLocalPosition           9  ActorCMass 9
+  000214 setCMassOffsetLocalOrientation        8  ActorCMass 8
+  000218 setCMassOffsetGlobalPose              8  ActorCMass 8
+  000220 setCMassOffsetGlobalPosition          8  ActorCMass 8
+  000222 setCMassOffsetGlobalOrientation       8  ActorCMass 8
+
+Breakpoints (each echoes and continues):
+bp NxPhysics+0xdc00 ".echo HIT 000050 getLinearDamping; gc"
+bp NxPhysics+0xce50 ".echo HIT 000052 getAngularDamping; gc"
+bp NxPhysics+0xc5c0 ".echo HIT 000054 addForceAtPos; gc"
+bp NxPhysics+0xc450 ".echo HIT 000056 addForce; gc"
+bp NxPhysics+0xc980 ".echo HIT 000058 addTorque; gc"
+bp NxPhysics+0xcb80 ".echo HIT 000060 computeKineticEnergy; gc"
+bp NxPhysics+0xe690 ".echo HIT 000062 isGroupSleeping; gc"
+bp NxPhysics+0xe740 ".echo HIT 000064 isSleeping; gc"
+bp NxPhysics+0xe5c0 ".echo HIT 000066 getSleepLinearVelocity; gc"
+bp NxPhysics+0xe520 ".echo HIT 000068 getSleepAngularVelocity; gc"
+bp NxPhysics+0xcca0 ".echo HIT 000070 createShape; gc"
+bp NxPhysics+0x144a0 ".echo HIT 000072 releaseShape; gc"
+bp NxPhysics+0x14260 ".echo HIT 000074 raiseActorFlag; gc"
+bp NxPhysics+0xca30 ".echo HIT 000076 clearActorFlag; gc"
+bp NxPhysics+0x143b0 ".echo HIT 000078 readActorFlag; gc"
+bp NxPhysics+0x14420 ".echo HIT 000080 readBodyFlag; gc"
+bp NxPhysics+0xe210 ".echo HIT 000082 getNbShapes; gc"
+bp NxPhysics+0xe4f0 ".echo HIT 000084 getShapes; gc"
+bp NxPhysics+0xe1c0 ".echo HIT 000086 getName; gc"
+bp NxPhysics+0x16060 ".echo HIT 000088 setName; gc"
+bp NxPhysics+0xeb00 ".echo HIT 000090 moveGlobalPosition; gc"
+bp NxPhysics+0xdb60 ".echo HIT 000092 getGlobalPositionVal; gc"
+bp NxPhysics+0xd560 ".echo HIT 000094 getGlobalOrientationQuatVal; gc"
+bp NxPhysics+0xd310 ".echo HIT 000096 getCMassLocalPoseVal; gc"
+bp NxPhysics+0xd3d0 ".echo HIT 000098 getCMassLocalPositionVal; gc"
+bp NxPhysics+0xd2a0 ".echo HIT 000100 getCMassLocalOrientationVal; gc"
+bp NxPhysics+0xe120 ".echo HIT 000102 getMassSpaceInertiaTensorVal; gc"
+bp NxPhysics+0xdd20 ".echo HIT 000104 getLinearVelocityVal; gc"
+bp NxPhysics+0xcff0 ".echo HIT 000106 getAngularVelocityVal; gc"
+bp NxPhysics+0xdc80 ".echo HIT 000108 getLinearMomentumVal; gc"
+bp NxPhysics+0xe670 ".echo HIT 000110 isDynamic; gc"
+bp NxPhysics+0x15ab0 ".echo HIT 000112 setGroup; gc"
+bp NxPhysics+0xdba0 ".echo HIT 000114 getGroup; gc"
+bp NxPhysics+0x2cbc0 ".echo HIT 000118 releaseActor (NxSceneInternal); gc"
+bp NxPhysics+0x145a0 ".echo HIT 000120 saveToDesc; gc"
+bp NxPhysics+0x15620 ".echo HIT 000122 setDynamic; gc"
+bp NxPhysics+0xe820 ".echo HIT 000124 moveGlobalPose; gc"
+bp NxPhysics+0xe7b0 ".echo HIT 000126 moveGlobalOrientation; gc"
+bp NxPhysics+0xd940 ".echo HIT 000128 getGlobalPoseReference; gc"
+bp NxPhysics+0xdab0 ".echo HIT 000130 getGlobalPoseVal; gc"
+bp NxPhysics+0xd800 ".echo HIT 000132 getGlobalOrientationVal; gc"
+bp NxPhysics+0xd110 ".echo HIT 000134 getCMassGlobalPoseVal; gc"
+bp NxPhysics+0xd1f0 ".echo HIT 000136 getCMassGlobalPositionVal; gc"
+bp NxPhysics+0xd080 ".echo HIT 000138 getCMassGlobalOrientationVal; gc"
+bp NxPhysics+0xd4d0 ".echo HIT 000140 getGlobalInertiaTensorVal; gc"
+bp NxPhysics+0xd460 ".echo HIT 000142 getGlobalInertiaTensorInverseVal; gc"
+bp NxPhysics+0xced0 ".echo HIT 000144 getAngularMomentumVal; gc"
+bp NxPhysics+0xe280 ".echo HIT 000146 getPointVelocityVal; gc"
+bp NxPhysics+0xdde0 ".echo HIT 000148 getLocalPointVelocityVal; gc"
+bp NxPhysics+0x11720 ".echo HIT 000150 nxNpActorRotateLocalForce; gc"
+bp NxPhysics+0x11190 ".echo HIT 000152 nxNpActorLocalPosition; gc"
+bp NxPhysics+0xc500 ".echo HIT 000154 addForceAtLocalPos; gc"
+bp NxPhysics+0xc800 ".echo HIT 000156 addLocalForceAtPos; gc"
+bp NxPhysics+0xc730 ".echo HIT 000158 addLocalForceAtLocalPos; gc"
+bp NxPhysics+0xc670 ".echo HIT 000160 addLocalForce; gc"
+bp NxPhysics+0xc8c0 ".echo HIT 000162 addLocalTorque; gc"
+bp NxPhysics+0x16480 ".echo HIT 000164 updateMassFromShapes; gc"
+bp NxPhysics+0x15db0 ".echo HIT 000166 setMass; gc"
+bp NxPhysics+0x15e80 ".echo HIT 000168 setMassSpaceInertiaTensor; gc"
+bp NxPhysics+0x15b40 ".echo HIT 000170 setLinearDamping; gc"
+bp NxPhysics+0x14750 ".echo HIT 000172 setAngularDamping; gc"
+bp NxPhysics+0x15ce0 ".echo HIT 000174 setLinearVelocity; gc"
+bp NxPhysics+0x149b0 ".echo HIT 000176 setAngularVelocity; gc"
+bp NxPhysics+0x15fb0 ".echo HIT 000178 setMaxAngularVelocity; gc"
+bp NxPhysics+0x15c00 ".echo HIT 000180 setLinearMomentum; gc"
+bp NxPhysics+0x14810 ".echo HIT 000182 setAngularMomentum; gc"
+bp NxPhysics+0x16130 ".echo HIT 000184 setSleepLinearVelocity; gc"
+bp NxPhysics+0x16080 ".echo HIT 000186 setSleepAngularVelocity; gc"
+bp NxPhysics+0x142f0 ".echo HIT 000188 raiseBodyFlag; gc"
+bp NxPhysics+0xcac0 ".echo HIT 000190 clearBodyFlag; gc"
+bp NxPhysics+0x16490 ".echo HIT 000192 wakeUp; gc"
+bp NxPhysics+0x141b0 ".echo HIT 000194 putToSleep; gc"
+bp NxPhysics+0x158a0 ".echo HIT 000196 setGlobalPose; gc"
+bp NxPhysics+0x159d0 ".echo HIT 000198 setGlobalPosition; gc"
+bp NxPhysics+0x15630 ".echo HIT 000200 setGlobalOrientation; gc"
+bp NxPhysics+0x15710 ".echo HIT 000202 setGlobalOrientationQuat; gc"
+bp NxPhysics+0x14b30 ".echo HIT 000204 setCMassGlobalPose; gc"
+bp NxPhysics+0x14c00 ".echo HIT 000206 setCMassGlobalPosition; gc"
+bp NxPhysics+0x14a80 ".echo HIT 000208 setCMassGlobalOrientation; gc"
+bp NxPhysics+0x15400 ".echo HIT 000210 setCMassOffsetLocalPose; gc"
+bp NxPhysics+0x15540 ".echo HIT 000212 setCMassOffsetLocalPosition; gc"
+bp NxPhysics+0x152f0 ".echo HIT 000214 setCMassOffsetLocalOrientation; gc"
+bp NxPhysics+0x14d20 ".echo HIT 000218 setCMassOffsetGlobalPose; gc"
+bp NxPhysics+0x15010 ".echo HIT 000220 setCMassOffsetGlobalPosition; gc"
+bp NxPhysics+0x14c70 ".echo HIT 000222 setCMassOffsetGlobalOrientation; gc"
+
+--- NxPhysicsActorLifecycleTests (78 HIT lines) ---
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000110 isDynamic
+HIT 000092 getGlobalPositionVal
+HIT 000132 getGlobalOrientationVal
+HIT 000094 getGlobalOrientationQuatVal
+HIT 000130 getGlobalPoseVal
+HIT 000132 getGlobalOrientationVal
+HIT 000092 getGlobalPositionVal
+HIT 000120 saveToDesc
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000110 isDynamic
+HIT 000130 getGlobalPoseVal
+HIT 000132 getGlobalOrientationVal
+HIT 000092 getGlobalPositionVal
+HIT 000120 saveToDesc
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000132 getGlobalOrientationVal
+HIT 000094 getGlobalOrientationQuatVal
+HIT 000130 getGlobalPoseVal
+HIT 000132 getGlobalOrientationVal
+HIT 000092 getGlobalPositionVal
+HIT 000120 saveToDesc
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000132 getGlobalOrientationVal
+HIT 000094 getGlobalOrientationQuatVal
+HIT 000130 getGlobalPoseVal
+HIT 000132 getGlobalOrientationVal
+HIT 000092 getGlobalPositionVal
+HIT 000148 getLocalPointVelocityVal
+HIT 000146 getPointVelocityVal
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000084 getShapes
+HIT 000084 getShapes
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000118 releaseActor (NxSceneInternal)
+
+--- NxPhysicsDynamicFirstTests (1 HIT lines) ---
+HIT 000118 releaseActor (NxSceneInternal)
+
+--- NxPhysicsEmptySceneTests (0 HIT lines) ---
+
+--- NxPhysicsActorNameTests (10 HIT lines) ---
+HIT 000086 getName
+HIT 000084 getShapes
+HIT 000088 setName
+HIT 000086 getName
+HIT 000088 setName
+HIT 000086 getName
+HIT 000086 getName
+HIT 000088 setName
+HIT 000086 getName
+HIT 000118 releaseActor (NxSceneInternal)
+
+--- NxPhysicsActorMetadataTests (12 HIT lines) ---
+HIT 000078 readActorFlag
+HIT 000114 getGroup
+HIT 000078 readActorFlag
+HIT 000112 setGroup
+HIT 000074 raiseActorFlag
+HIT 000078 readActorFlag
+HIT 000078 readActorFlag
+HIT 000114 getGroup
+HIT 000076 clearActorFlag
+HIT 000078 readActorFlag
+HIT 000078 readActorFlag
+HIT 000118 releaseActor (NxSceneInternal)
+
+--- NxPhysicsActorBodyFlagTests (10 HIT lines) ---
+HIT 000080 readBodyFlag
+HIT 000080 readBodyFlag
+HIT 000188 raiseBodyFlag
+HIT 000080 readBodyFlag
+HIT 000080 readBodyFlag
+HIT 000190 clearBodyFlag
+HIT 000080 readBodyFlag
+HIT 000080 readBodyFlag
+HIT 000188 raiseBodyFlag
+HIT 000118 releaseActor (NxSceneInternal)
+
+--- NxPhysicsActorDynamicsTests (28 HIT lines) ---
+HIT 000050 getLinearDamping
+HIT 000052 getAngularDamping
+HIT 000104 getLinearVelocityVal
+HIT 000106 getAngularVelocityVal
+HIT 000188 raiseBodyFlag
+HIT 000190 clearBodyFlag
+HIT 000188 raiseBodyFlag
+HIT 000190 clearBodyFlag
+HIT 000188 raiseBodyFlag
+HIT 000090 moveGlobalPosition
+HIT 000126 moveGlobalOrientation
+HIT 000092 getGlobalPositionVal
+HIT 000124 moveGlobalPose
+HIT 000124 moveGlobalPose
+HIT 000090 moveGlobalPosition
+HIT 000190 clearBodyFlag
+HIT 000188 raiseBodyFlag
+HIT 000126 moveGlobalOrientation
+HIT 000092 getGlobalPositionVal
+HIT 000124 moveGlobalPose
+HIT 000190 clearBodyFlag
+HIT 000090 moveGlobalPosition
+HIT 000126 moveGlobalOrientation
+HIT 000092 getGlobalPositionVal
+HIT 000124 moveGlobalPose
+HIT 000124 moveGlobalPose
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000118 releaseActor (NxSceneInternal)
+
+--- NxPhysicsActorDynamicSetterTests (110 HIT lines) ---
+HIT 000062 isGroupSleeping
+HIT 000166 setMass
+HIT 000168 setMassSpaceInertiaTensor
+HIT 000170 setLinearDamping
+HIT 000172 setAngularDamping
+HIT 000050 getLinearDamping
+HIT 000052 getAngularDamping
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000104 getLinearVelocityVal
+HIT 000106 getAngularVelocityVal
+HIT 000166 setMass
+HIT 000168 setMassSpaceInertiaTensor
+HIT 000170 setLinearDamping
+HIT 000172 setAngularDamping
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000188 raiseBodyFlag
+HIT 000174 setLinearVelocity
+HIT 000176 setAngularVelocity
+HIT 000190 clearBodyFlag
+HIT 000184 setSleepLinearVelocity
+HIT 000186 setSleepAngularVelocity
+HIT 000066 getSleepLinearVelocity
+HIT 000068 getSleepAngularVelocity
+HIT 000192 wakeUp
+HIT 000064 isSleeping
+HIT 000194 putToSleep
+HIT 000064 isSleeping
+HIT 000062 isGroupSleeping
+HIT 000192 wakeUp
+HIT 000064 isSleeping
+HIT 000062 isGroupSleeping
+HIT 000184 setSleepLinearVelocity
+HIT 000066 getSleepLinearVelocity
+HIT 000192 wakeUp
+HIT 000062 isGroupSleeping
+HIT 000064 isSleeping
+HIT 000062 isGroupSleeping
+HIT 000062 isGroupSleeping
+HIT 000194 putToSleep
+HIT 000062 isGroupSleeping
+HIT 000062 isGroupSleeping
+HIT 000194 putToSleep
+HIT 000062 isGroupSleeping
+HIT 000062 isGroupSleeping
+HIT 000192 wakeUp
+HIT 000062 isGroupSleeping
+HIT 000062 isGroupSleeping
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000198 setGlobalPosition
+HIT 000092 getGlobalPositionVal
+HIT 000198 setGlobalPosition
+HIT 000198 setGlobalPosition
+HIT 000202 setGlobalOrientationQuat
+HIT 000200 setGlobalOrientation
+HIT 000200 setGlobalOrientation
+HIT 000200 setGlobalOrientation
+HIT 000200 setGlobalOrientation
+HIT 000196 setGlobalPose
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000062 isGroupSleeping
+HIT 000064 isSleeping
+HIT 000068 getSleepAngularVelocity
+HIT 000066 getSleepLinearVelocity
+HIT 000184 setSleepLinearVelocity
+HIT 000186 setSleepAngularVelocity
+HIT 000192 wakeUp
+HIT 000194 putToSleep
+HIT 000062 isGroupSleeping
+HIT 000064 isSleeping
+HIT 000068 getSleepAngularVelocity
+HIT 000066 getSleepLinearVelocity
+HIT 000198 setGlobalPosition
+HIT 000092 getGlobalPositionVal
+HIT 000202 setGlobalOrientationQuat
+HIT 000200 setGlobalOrientation
+HIT 000196 setGlobalPose
+HIT 000084 getShapes
+HIT 000130 getGlobalPoseVal
+HIT 000132 getGlobalOrientationVal
+HIT 000092 getGlobalPositionVal
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000198 setGlobalPosition
+HIT 000196 setGlobalPose
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000084 getShapes
+HIT 000130 getGlobalPoseVal
+HIT 000132 getGlobalOrientationVal
+HIT 000092 getGlobalPositionVal
+HIT 000132 getGlobalOrientationVal
+HIT 000130 getGlobalPoseVal
+HIT 000132 getGlobalOrientationVal
+HIT 000092 getGlobalPositionVal
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000084 getShapes
+HIT 000130 getGlobalPoseVal
+HIT 000132 getGlobalOrientationVal
+HIT 000092 getGlobalPositionVal
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000084 getShapes
+HIT 000130 getGlobalPoseVal
+HIT 000132 getGlobalOrientationVal
+HIT 000092 getGlobalPositionVal
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000084 getShapes
+HIT 000130 getGlobalPoseVal
+HIT 000132 getGlobalOrientationVal
+HIT 000092 getGlobalPositionVal
+HIT 000118 releaseActor (NxSceneInternal)
+
+--- NxPhysicsActorMomentumTests (46 HIT lines) ---
+HIT 000108 getLinearMomentumVal
+HIT 000144 getAngularMomentumVal
+HIT 000140 getGlobalInertiaTensorVal
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000060 computeKineticEnergy
+HIT 000178 setMaxAngularVelocity
+HIT 000180 setLinearMomentum
+HIT 000108 getLinearMomentumVal
+HIT 000104 getLinearVelocityVal
+HIT 000182 setAngularMomentum
+HIT 000144 getAngularMomentumVal
+HIT 000106 getAngularVelocityVal
+HIT 000060 computeKineticEnergy
+HIT 000178 setMaxAngularVelocity
+HIT 000180 setLinearMomentum
+HIT 000182 setAngularMomentum
+HIT 000188 raiseBodyFlag
+HIT 000182 setAngularMomentum
+HIT 000180 setLinearMomentum
+HIT 000190 clearBodyFlag
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000144 getAngularMomentumVal
+HIT 000140 getGlobalInertiaTensorVal
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000182 setAngularMomentum
+HIT 000144 getAngularMomentumVal
+HIT 000106 getAngularVelocityVal
+HIT 000060 computeKineticEnergy
+HIT 000168 setMassSpaceInertiaTensor
+HIT 000144 getAngularMomentumVal
+HIT 000140 getGlobalInertiaTensorVal
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000182 setAngularMomentum
+HIT 000106 getAngularVelocityVal
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000140 getGlobalInertiaTensorVal
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000144 getAngularMomentumVal
+HIT 000182 setAngularMomentum
+HIT 000106 getAngularVelocityVal
+HIT 000060 computeKineticEnergy
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000140 getGlobalInertiaTensorVal
+HIT 000142 getGlobalInertiaTensorInverseVal
+HIT 000060 computeKineticEnergy
+HIT 000118 releaseActor (NxSceneInternal)
+
+--- NxPhysicsActorForceTests (62 HIT lines) ---
+HIT 000056 addForce
+HIT 000058 addTorque
+HIT 000056 addForce
+HIT 000058 addTorque
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000056 addForce
+HIT 000058 addTorque
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000056 addForce
+HIT 000058 addTorque
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000056 addForce
+HIT 000058 addTorque
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000056 addForce
+HIT 000058 addTorque
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000192 wakeUp
+HIT 000056 addForce
+HIT 000194 putToSleep
+HIT 000058 addTorque
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000058 addTorque
+HIT 000058 addTorque
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000160 addLocalForce
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000162 addLocalTorque
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000160 addLocalForce
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000162 addLocalTorque
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000054 addForceAtPos
+HIT 000154 addForceAtLocalPos
+HIT 000152 nxNpActorLocalPosition
+HIT 000156 addLocalForceAtPos
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000158 addLocalForceAtLocalPos
+HIT 000152 nxNpActorLocalPosition
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000154 addForceAtLocalPos
+HIT 000152 nxNpActorLocalPosition
+HIT 000158 addLocalForceAtLocalPos
+HIT 000152 nxNpActorLocalPosition
+HIT 000150 nxNpActorRotateLocalForce
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000188 raiseBodyFlag
+HIT 000056 addForce
+HIT 000058 addTorque
+HIT 000056 addForce
+HIT 000058 addTorque
+HIT 000056 addForce
+HIT 000058 addTorque
+HIT 000056 addForce
+HIT 000058 addTorque
+HIT 000056 addForce
+HIT 000058 addTorque
+HIT 000190 clearBodyFlag
+HIT 000118 releaseActor (NxSceneInternal)
+
+--- NxPhysicsActorCMassTests (238 HIT lines) ---
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000192 wakeUp
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000210 setCMassOffsetLocalPose
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000130 getGlobalPoseVal
+HIT 000132 getGlobalOrientationVal
+HIT 000092 getGlobalPositionVal
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000130 getGlobalPoseVal
+HIT 000132 getGlobalOrientationVal
+HIT 000092 getGlobalPositionVal
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000130 getGlobalPoseVal
+HIT 000132 getGlobalOrientationVal
+HIT 000092 getGlobalPositionVal
+HIT 000206 setCMassGlobalPosition
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000130 getGlobalPoseVal
+HIT 000132 getGlobalOrientationVal
+HIT 000092 getGlobalPositionVal
+HIT 000208 setCMassGlobalOrientation
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000130 getGlobalPoseVal
+HIT 000132 getGlobalOrientationVal
+HIT 000092 getGlobalPositionVal
+HIT 000204 setCMassGlobalPose
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000130 getGlobalPoseVal
+HIT 000132 getGlobalOrientationVal
+HIT 000092 getGlobalPositionVal
+HIT 000128 getGlobalPoseReference
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000128 getGlobalPoseReference
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000196 setGlobalPose
+HIT 000198 setGlobalPosition
+HIT 000200 setGlobalOrientation
+HIT 000202 setGlobalOrientationQuat
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000210 setCMassOffsetLocalPose
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000196 setGlobalPose
+HIT 000198 setGlobalPosition
+HIT 000200 setGlobalOrientation
+HIT 000202 setGlobalOrientationQuat
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000210 setCMassOffsetLocalPose
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000196 setGlobalPose
+HIT 000198 setGlobalPosition
+HIT 000200 setGlobalOrientation
+HIT 000202 setGlobalOrientationQuat
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000210 setCMassOffsetLocalPose
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000196 setGlobalPose
+HIT 000198 setGlobalPosition
+HIT 000200 setGlobalOrientation
+HIT 000202 setGlobalOrientationQuat
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000210 setCMassOffsetLocalPose
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000196 setGlobalPose
+HIT 000198 setGlobalPosition
+HIT 000200 setGlobalOrientation
+HIT 000202 setGlobalOrientationQuat
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000210 setCMassOffsetLocalPose
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000196 setGlobalPose
+HIT 000198 setGlobalPosition
+HIT 000200 setGlobalOrientation
+HIT 000202 setGlobalOrientationQuat
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000210 setCMassOffsetLocalPose
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000118 releaseActor (NxSceneInternal)
+HIT 000196 setGlobalPose
+HIT 000198 setGlobalPosition
+HIT 000200 setGlobalOrientation
+HIT 000202 setGlobalOrientationQuat
+HIT 000212 setCMassOffsetLocalPosition
+HIT 000214 setCMassOffsetLocalOrientation
+HIT 000210 setCMassOffsetLocalPose
+HIT 000220 setCMassOffsetGlobalPosition
+HIT 000222 setCMassOffsetGlobalOrientation
+HIT 000218 setCMassOffsetGlobalPose
+HIT 000096 getCMassLocalPoseVal
+HIT 000098 getCMassLocalPositionVal
+HIT 000100 getCMassLocalOrientationVal
+HIT 000134 getCMassGlobalPoseVal
+HIT 000136 getCMassGlobalPositionVal
+HIT 000138 getCMassGlobalOrientationVal
+HIT 000118 releaseActor (NxSceneInternal)
+
+--- NxPhysicsActorShapeMutationTests (9 HIT lines) ---
+HIT 000084 getShapes
+HIT 000082 getNbShapes
+HIT 000070 createShape
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000072 releaseShape
+HIT 000082 getNbShapes
+HIT 000084 getShapes
+HIT 000118 releaseActor (NxSceneInternal)
