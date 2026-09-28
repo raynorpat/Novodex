@@ -1420,6 +1420,18 @@ on inverse entries up to 186 in magnitude.
 
   The plane, triangle and matrix groups are held back (see "Held back").
 
+  **Why the two OBB groups stay promoted (controller decision, final review).**
+  - The outcome-exact arm requires the family's discrete tape to be exact, non-vacuously.
+    `ice_obb` has 600 discrete words (three return values per input), and all of them are exact.
+  - The arm does not require the floats to be last-bit. `ice_obb` differs by up to 512 ulp
+    (`beyond_abs` 2.38e-07), and qhull's outcome-exact rows also carry large-ulp differences
+    next to zero, stated with an absolute bound.
+  - The plane, triangle and matrix groups were held back because their tapes have no discrete
+    words. For them condition (a) was vacuous, and the only evidence was a float bound that is
+    not last-bit.
+
+  Both OBB rows' `static_proof` records this.
+
   `RayCollider::ValidateSettings` meets the rule too, but its row already stood at
   `reconstructed` and is left there.
 - qhull's (ii) groups are every hull group that ran in the unrotated runs.
