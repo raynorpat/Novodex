@@ -2358,6 +2358,7 @@ unsigned nxFieldRead4(void* self)
 	}
 
 // phys_fn_004085 (0x95cb0): the registry lookup with its own `this`.
+// Product row: Physics/src/core/Joint.cpp.
 unsigned nxRegistryLookupNull(void* self)
 	{
 	(void) self;

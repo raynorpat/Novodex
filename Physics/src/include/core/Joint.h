@@ -282,9 +282,24 @@ class Joint
 	//! +0x2c / +0x48.
 	void saveToDescBase(NxJointDesc& desc) const;
 
+	//! phys_fn_004068 (0x00095a40, 56 B; write: the core dump's joint
+	//! block and joint line, 004037/004015). The owners (+0x19c) of the
+	//! two body records, 0 for a missing body. `ret 8`, two pointers.
+	void getBodyOwners(void*& owner0, void*& owner1) const;
+
 	//! phys_fn_004070 (0x00095a80, 7 B; write). Returns +0x168, the
 	//! NxJointType phys_fn_004141 stores.
 	NxJointType getType() const;
+
+	//! phys_fn_004072 (0x00095a90, 25 B; write: the core dump's joint
+	//! block, 004037). This joint when its type (+0x168) is `type`, else 0
+	//! (`setne; dec; and`).
+	Joint* is(NxJointType type);
+
+	//! phys_fn_004085 (0x00095cb0, 10 B; write: the core dump's names,
+	//! 004004/004007). The joint's name: the registry lookup
+	//! nxGetSdkPointerBinding (phys_fn_000454) keyed on this joint.
+	const char* getName() const;
 
 	//! phys_fn_004074 (0x00095ab0, 216 B; write). Np slot 9 setBreakable
 	//! (phys_fn_004685) body.

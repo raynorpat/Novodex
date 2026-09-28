@@ -145,6 +145,9 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # core/SpringAndDamperEffector.cpp (effector-and-coredump Task 2) does x87
 # work in 003962/003964/003970/003972 and its solver slot 003979 runs inside
 # the step; core/NpSpringAndDamperEffector.cpp does none and stays default.
+# core/SceneDump.cpp (effector-and-coredump Task 3) is the core dump: its
+# float tokens compare and widen x87 values and round with fistp at the live
+# control word, and its asset writer converts poses to quaternions with fsqrt.
 if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set_source_files_properties(
 		Physics/src/Geometry.cpp
@@ -166,6 +169,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/core/D6Joint.cpp
 		Physics/src/core/JointSupport.cpp
 		Physics/src/core/SpringAndDamperEffector.cpp
+		Physics/src/core/SceneDump.cpp
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 endif()
 
@@ -206,6 +210,7 @@ if(MSVC)
 		Physics/src/core/NpD6Joint.cpp
 		Physics/src/core/SpringAndDamperEffector.cpp
 		Physics/src/core/NpSpringAndDamperEffector.cpp
+		Physics/src/core/SceneDump.cpp
 		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
 endif()
 
