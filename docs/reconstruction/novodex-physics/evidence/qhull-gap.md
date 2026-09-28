@@ -787,6 +787,155 @@ The exact families are registered whole, and the divergent ones up to the oracle
 divergent ones are held by `kDivergentCeilings`, and the two `_qhull` families also by
 `kLengthCeilings` (48). The Phase 4 floor goes from 167 to 180.
 
+## Task 5: review follow-ups and results
+
+### Follow-ups to the Task 4e review
+
+- **The print slot's dispatch (not changed).** The oracle's qhull calls the host's slot +0x10
+  inline at every host-print site, with qhull's own format; the candidate's qhull calls the
+  `qhNovodeXFprintf` hook, which formats the message and calls `003263` through the vtable
+  with `"%s"`, so the row formats the same text twice. Making the `fprintf` redirect in
+  `External/qhull/novodex/QhullNovodeXHost.h` dispatch inline was weighed and not done:
+  - it changes the ~593 host-print sites NxQhull.lib compiles, which are the bodies the
+    committed `qhull_match.csv` classes and the Task 2 promotions describe
+    (`vendored_match.py` normalises a call of a `qhNovodeX*` hook to `icall[host]+slot`, and
+    an inline vtable load from a C global is not normalised), so every promoted qhull row's
+    static evidence would have to be re-derived;
+  - Task 1's print capture reaches the harness through the hook, and the harness would need a
+    second host object to keep the registered qhull families where they are.
+
+  The difference is unobservable: `003263`'s 0x2000-byte buffer is never read, and its
+  observable act, `errexit(1)` through slot +0x20, is the oracle's. `003263`'s
+  `dynamic_proof` records how it is reached.
+- **`003263` and `003265` proofs.** `003263`'s says how the slot is reached and why its text
+  is unobservable; `003265`'s says what `hull_host_size` does (the harness calls the slot
+  directly on five float pairs, because qhull calls it only for `FS`).
+- **OBJ bytes.** `nxHullTapeObjBytes` tapes each dump's normalised length and byte digest
+  after dropping the sign of a printed `-0.000...` (and nothing else), so a width, padding or
+  whitespace slip the token tape cannot see still fails. Four families, reported after the
+  Task 4e totals so no registered line moves: `hull_create_objbytes` (18 words, `ef34c50f`),
+  `hull_create_pc64_objbytes` (18, `99ca1d01`), `hull_compute_objbytes` (2, `eebf5792`),
+  `hull_compute_pc64_objbytes` (2, `16381ab0`), all **exact**.
+- **The trace driver** is committed as `tools/hull_trace.py`. It generated
+  `evidence/qhull-gap-trace-cooking.txt` again on this task's clean-built exe (`d2a584a3...`; all 37
+  breakpointed rows hit, the four inlined rows through their callers), and the 40 rows'
+  `dynamic_proof`s cite it.
+- **qhull alone over the two `_qhull` inputs** (`hull_qhull_direct` / `_x87`, divergent,
+  ceilinged): each set's candidate `cleanupVertices` output (weld, normalise, reduce to 256,
+  a zeroing allocator: the buffer both `CreateConvexHull` runs hand qhull) is run through
+  `nxQhullRun` with `"o"` on both sides, as `qhull_hull` runs qhull, under 0x027f. With
+  `NXHULL_PROBE=1` the harness prints each set's share:
+
+  | Set | Points | Discrete words differing | Doubles differing |
+  |---|---:|---:|---:|
+  | welds to two points (the 8-corner box) | 8 | 105 of 322 | 40 of 124 |
+  | five clusters (short quantization) | 256 | 0 of 490 | 21 of 286 |
+
+  - **The box: statement-level.** qhull alone, over bit-identical input, builds a different
+    hull (the first difference is word 9 of the family, in the facet structure), so the
+    `hull_*_qhull` difference for this input is the vendored qhull's own.
+  - **The clusters: not reproduced.** qhull alone builds the same hull combinatorially; only
+    21 doubles differ in their last bits (the `qhull_hull_x87` class). Inside
+    `CreateConvexHull` the same input gives another vertex order and eight more tracked
+    allocations on the candidate. What makes the driver runs differ is therefore not shown:
+    the candidates are the doubles taking another branch under the driver's allocation
+    pattern, and qhull's address-dependent hashing (`qh_gethash` hashes vertex addresses, and
+    the driver's tracked allocator puts blocks elsewhere than the stand-in). Under 0x0f7f the
+    driver runs are exact. The hull-library words before qhull match in both runs.
+
+### Results
+
+**Part 1: the held-back vendored qhull rows (Tasks 1-2).** Promoted `discovered` to
+`reconstructed`: **167 rows, 61,010 bytes** (106 groups; `5c07d5d`, proofs regenerated in
+`a15a6e1`):
+
+| Arm | Groups | Rows | Bytes |
+|---|---:|---:|---:|
+| (i) exact | 51 | 66 | 16,104 |
+| (ii) outcome-exact | 24 | 32 | 8,908 |
+| static-only | 0 | 0 | 0 |
+| DIFF-equivalent | 31 | 69 | 35,998 |
+
+Ledger: `vendored_not_falsified` 257 -> 90, `reconstructed_not_falsified` 462 -> 629.
+
+**Part 2: the NovodeX hull library (Tasks 3-4).** Written in address order under stable-ID
+lines: **40 rows, 12,493 bytes**, of which 34 rows / 11,968 bytes moved `discovered` to
+`reconstructed` and 6 rows / 525 bytes were re-sourced from generic shapes in
+`ObjectModel.cpp`:
+
+| Piece | Commit | File | Rows | Bytes | Newly reconstructed |
+|---|---|---|---:|---:|---|
+| 4a host object | `c1e29b1` | `QhullHost.cpp` | 14 | 1,334 | 8 rows / 809 B |
+| 4b driver | `0cba68f` | `QhullHost.cpp` | 8 | 2,690 | 8 / 2,690 |
+| 4c `cleanupVertices` | `dad1299` | `QhullHost.cpp` | 2 | 2,264 | 2 / 2,264 |
+| 4d quantizer | `873db6e` | `Quantizer.cpp` | 13 | 5,878 | 13 / 5,878 |
+| 4e TriangleMesh side | `49ab429` | `TriangleMesh.cpp` | 3 | 327 | 3 / 327 |
+
+Ledger: `not_reconstructed_in_phase` 306 -> 272, `reconstructed_not_falsified` 629 -> 663.
+Every one of the 40 rows has execution evidence (`evidence/qhull-gap-trace-cooking.txt`):
+exact in `hull_create`/`hull_compute` and their 0x0f7f twins, or, for `003265`, in
+`hull_host_size`.
+
+**The unit.** `gap:Controller.cpp..fluids\Fluid.cpp` had 292 `discovered` rows / 102,552 bytes
+when the plan started (`9d061f7`) and has 94 / 29,901 now: 167 vendored and 31 hull-library
+rows left it (the other 3 hull rows are in `TriangleMesh.cpp`).
+
+**Defects found and fixed.**
+
+| Defect | Fixed in |
+|---|---|
+| qhull's nine host hooks were shims: `fprintf` returned 0 where the oracle errexits, `errexit` aborted where it `longjmp`s, and malloc/free were untracked | `c1e29b1` (the real host object) |
+| `003268`'s recorded source, the generic `nxBatchAppend3268`, wrote nothing (its FAILING DIFFERENTIAL note) | `c1e29b1` (`QhullHost::facet`, exact in `hull_create`) |
+| The contract said only polygon faces are written reversed; triangle faces are too | `0cba68f` |
+| The contract's row table called `003351` the float `m2` plane; it is the g loop over all five planes | `873db6e` |
+| The candidate never ran `003263`: the print hook repeated its body | `49ab429` (the hook calls the slot) |
+| The cube's T4 run compared out of step inside `qhull_paths` | `3027fce` (a pair of its own, length ceilings) |
+| `vendored_trace.py` did not credit groups the candidate inlines with their callers' drives | `599631a` |
+| The sign listing stopped before the trailing float and ignored the word kinds | `8a92d81` |
+| Four `qhull_review.csv` equivalence reasons had the inlining direction backwards | `a15a6e1` |
+| The Task 4d sanity count was reported inconsistently (352/13 against a review's 420/15) | `49ab429` (reconciled: 352/13 as run) |
+| The OBJ dumps were compared only as tokens | this task (byte digests) |
+
+Oracle defects the candidate keeps on purpose (not fixed): the tracked allocator frees a block
+with CRT `free` when its table is full, even when the user allocator made it (4a); the Wu
+moment table is never zeroed and a short quantization dequantises an uninitialised palette
+tail (4d); `002233` frees an uninitialised result's two words when `cleanupVertices` refuses
+(4e).
+
+**Rows left, and why.**
+
+- **71 held-back vendored qhull rows, 22,664 bytes** (49 groups), by the reason Task 2 gave:
+
+  | Reason | Groups | Rows | Bytes |
+  |---|---:|---:|---:|
+  | DIFF, outcome-exact only (the arm needs `exact`) | 8 | 15 | 4,542 |
+  | DIFF, discrete only | 1 | 1 | 390 |
+  | DIFF, not executed | 6 | 9 | 2,189 |
+  | review `equivalent-option-gated` | 9 | 10 | 6,539 |
+  | not executed, x87 code | 6 | 10 | 3,083 |
+  | not executed, inlining or other-immediate note | 17 | 24 | 5,587 |
+  | only compared executions are QRn | 2 | 2 | 334 |
+
+- **23 rows / 7,237 bytes of other phases** sit in the same unit (phase 2: 4 rows / 2,027 B;
+  phase 3: 1 / 38; phase 5: 1 / 553; phase 7: 17 / 4,619). This plan does not own them.
+- **The public chain** `000242 -> 000478 -> 002251 -> 002260` (and `002253`; 2,008 bytes) is
+  deferred with the TriangleMesh/ConvexHull unit: it is wired only once `TriangleMesh` is a
+  real class, and `NpPhysicsSDK::createTriangleMesh` still returns NULL.
+- **The post-hull closure** (`002256`, `002083`, `002164`/`002158`, `002255`, the ConvexHull,
+  EdgeList and IceAdjacencies rows under them, the mass rows `002241`/`001397`): about 63 KB
+  with its vtable edges, a unit of its own.
+- **Differential C** (the public API) is deferred with the public chain.
+
+**The rate** (timing table below). Part 1, Tasks 1-2 with their reviews: 2 h 58 min for 167
+rows / 61,010 bytes, about 20.6 KB an hour. Part 2, Task 3 and pieces 4a-4e: 2 h 29 min for
+40 rows / 12,493 bytes, about 5.0 KB an hour (the x87-heavy pieces 4c and 4d at 16 KB an
+hour; 4e's hour was the differential and trace for the whole library). The plan's tasks 1-4e
+took 5 h 27 min for 207 rows / 73,503 bytes.
+
+**Verification** (this task's final tree): a fresh configure (`cmake --fresh -G "Visual Studio 18 2026" -A Win32`) and a clean build of every target (`--clean-first`, 0 errors); `verify_public_headers.py` 80 files on both roots;
+755 tool tests OK; `verify_vendored_sources.py` pass; `validate_inventory` exits 0
+(`unexplained=0`); gates 2, 3 (103), 4 (188 of 188, `thirdparty candidate mismatches=0 layout_failures=0`), 6 (403) and 7 (276) pass, and 5 is red only on `CANDIDATE-MISSING family=vtables` (its failure lines identical to Task 4d's), each run with `-RepoRoot`/`-BuildRoot` on the worktree. The trace and the 40 `dynamic_proof`s were regenerated on the clean build's exe (`d2a584a3...`, candidate DLL `a382bd84...`).
+
 ## Timing
 
 | Task | Start | End | Rows written | Bytes written | Notes |

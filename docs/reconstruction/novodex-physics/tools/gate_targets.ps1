@@ -2358,7 +2358,21 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=hull_compute_pc64 rva=0x00054920 owner=phys_fn_002233 source=TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp words=12633 oracle=f5a778d6 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_compute_pc64_obj rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=122 oracle=4ebf7157',
         'thirdparty coverage driven=88 divergent=33 words=1719545 layout_checks=47',
-        'thirdparty oracle digest=87804f45'
+        'thirdparty oracle digest=87804f45',
+        # qhull-gap Task 5 (the Task 4e review): the byte digest of every QHULL_*.obj of
+        # the Task 4e families after dropping the sign of a printed -0.000 (the two CRTs'
+        # one known difference), exact and registered whole; and hull_qhull_direct(_x87),
+        # the two inputs of hull_create_qhull run through qhull alone (nxQhullRun, "o"),
+        # DIVERGENT, registered up to the oracle digest and held by kDivergentCeilings. The
+        # pairs above keep printing where they were; the pair below carries the totals.
+        'thirdparty name=hull_create_objbytes rva=0x0007dea0 owner=phys_fn_003247 source=QhullHost.cpp words=18 oracle=ef34c50f mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=hull_create_pc64_objbytes rva=0x0007dea0 owner=phys_fn_003247 source=QhullHost.cpp words=18 oracle=99ca1d01 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=hull_compute_objbytes rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=2 oracle=eebf5792 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=hull_compute_pc64_objbytes rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=2 oracle=16381ab0 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=hull_qhull_direct rva=0x0007d180 owner=phys_fn_003234 source=qhull.c,poly.c,poly2.c,merge.c,geom.c,geom2.c,qset.c,mem.c,global.c words=812 oracle=12922cc6',
+        'thirdparty name=hull_qhull_direct_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=410 oracle=27d5b5e1',
+        'thirdparty coverage driven=94 divergent=35 words=1720807 layout_checks=47',
+        'thirdparty oracle digest=5d3c9ff1'
     )
 }
 
@@ -2381,9 +2395,9 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
-    '4' = 180  # 34 for NxPhysicsAssetTests, 146 for NxPhysicsThirdPartyTests (67 + 29 from
+    '4' = 188  # 34 for NxPhysicsAssetTests, 154 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 32 from qhull-gap Task 1
-               # + 13 from qhull-gap Task 4e)
+               # + 13 from qhull-gap Task 4e + 8 from qhull-gap Task 5)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent

@@ -748,6 +748,31 @@ shows every one of the 40 written rows executing. Four have no out-of-line call 
 and are credited through the caller they are inlined into: `003257` and `003277` into `003279`,
 `003274` into `003272` and `003365` into `003369`.
 
+**Review follow-up (qhull-gap Task 5).**
+
+- **The print slot's dispatch stays a hook.** The oracle's qhull calls slot +0x10 inline at
+  every host-print site (`mov eax,[0x10125080]; mov ecx,[eax]`, the arguments pushed, `push eax;
+  call [ecx+0x10]`), so `003263` formats qhull's own format once. The candidate's qhull calls
+  `qhNovodeXFprintf`, which formats the message and calls the slot through the vtable with
+  `"%s"`, so `003263` formats the same text a second time. Doing the dispatch inline in the
+  `fprintf` redirect of `QhullNovodeXHost.h` was weighed and not done: it would change the
+  ~593 host-print sites that NxQhull.lib compiles, which are the bodies the committed
+  `vendored_match` classes and the qhull-gap Task 2 promotions describe (`vendored_match.py`
+  normalises a call of a `qhNovodeX*` hook to `icall[host]+slot`; an inline vtable load from
+  a C global is not normalised), and Task 1's print capture reaches the harness through the
+  hook. The difference is unobservable: `003263`'s buffer is never read, and what it does is
+  `errexit(1)` through slot +0x20, as the oracle's. `003263`'s proof records the reach.
+- **The OBJ dumps are also compared as bytes**: a length and a digest of each file after the
+  sign of a printed `-0.000...` is dropped (the two CRTs' one known difference), in four
+  families of their own, all exact.
+- **qhull alone over the two `_qhull` inputs** (`hull_qhull_direct`, `nxQhullRun` with `"o"`,
+  the candidate `cleanupVertices`' output for each set): the box's hull differs in qhull
+  itself (105 discrete words), so that divergence is qhull's, statement for statement. The
+  clusters' hull is the same in qhull alone (21 doubles differ, the `qhull_hull_x87` class);
+  inside `CreateConvexHull` it differs, so for the clusters the combinatorial difference is
+  not reproduced by qhull alone (see `evidence/qhull-gap.md`, Task 5).
+- The trace driver is committed as `tools/hull_trace.py`.
+
 ### Dependency closure
 
 **write (Task 4): 40 rows, 12,493 B.** 34 of them are `discovered` (11,968 B). The other six

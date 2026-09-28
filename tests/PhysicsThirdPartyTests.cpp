@@ -409,6 +409,8 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "hull_create_pc64_obj", 1, 0, 0, kInf64, 1, 1, 0, 0ull, 0.0 },	// qhull-gap 4e: the same print
 	{ "hull_compute_obj", 1, 0, 0, kInf64, 1, 1, 0, 0ull, 0.0 },		// qhull-gap 4e: the same print
 	{ "hull_compute_pc64_obj", 1, 0, 0, kInf64, 1, 1, 0, 0ull, 0.0 },	// qhull-gap 4e: the same print
+	{ "hull_qhull_direct", 105, 105, 0, 0, 0, 0, 0, 0ull, 0.0 },	// qhull-gap 5: hull_create_qhull's two inputs through qhull alone: the box's hull differs in qhull itself (105 words); the clusters' differs only in 21 doubles
+	{ "hull_qhull_direct_x87", 61, 0, 0, kInf64, 37, 12, 0, 4607182418800017408ull, 2.0000000596046448 },	// qhull-gap 5: the same runs' doubles
 	};
 
 // qhull-gap Task 1: the tape-length difference some divergent families are
@@ -6298,6 +6300,35 @@ static void nxHullDirectories()
 // else is hashed. Not bytes: the oracle's 2003 static CRT prints a float -0.0
 // as "0.000000000" where the UCRT prints "-0.000000000", which as bytes would
 // also put every later word out of step. Each file is removed once taped.
+// qhull-gap Task 5 (the 4e review): each dump's bytes as well, as a length and
+// a digest, after one normalisation -- a negative zero printed as "-0." and
+// zeros up to the next non-digit loses its sign, the one known difference
+// between the two CRTs (see the _obj families) -- so that a width, padding or
+// whitespace slip the token tape cannot see still fails. Reported after the
+// Task 4e totals, one family per Task 4e family (gHullBytes, below).
+static NxTape gHullBytes[4][2];
+static NxTape* gHullBytesCur[2] = { 0, 0 };
+
+static void nxHullTapeObjBytes(NxTape& tape, const char* bytes, size_t size)
+	{
+	static char normal[1 << 20];
+	size_t n = 0;
+	for(size_t k = 0; k < size; ++k)
+		{
+		if(bytes[k] == '-' && k + 2 < size && bytes[k + 1] == '0' && bytes[k + 2] == '.')
+			{
+			size_t m = k + 3;
+			while(m < size && bytes[m] == '0')
+				++m;
+			if(m == size || bytes[m] < '0' || bytes[m] > '9')
+				continue;		// "-0.000...": drop the sign
+			}
+		normal[n++] = bytes[k];
+		}
+	tape.push((unsigned) n);			// the normalised length (the raw one differs by the sign)
+	tape.push(nxHashBytes(normal, n));
+	}
+
 static void nxHullTapeObjFiles(NxTape& tape, NxTape& text, int side)
 	{
 	wchar_t pattern[MAX_PATH];
@@ -6353,6 +6384,8 @@ static void nxHullTapeObjFiles(NxTape& tape, NxTape& text, int side)
 			}
 		nxQhTapeText(bytes, size, text, text);
 		text.push(0x0e0f0000u);
+		if(gHullBytesCur[side])
+			nxHullTapeObjBytes(*gHullBytesCur[side], bytes, size);
 		DeleteFileW(path);
 		}
 	}
@@ -6812,6 +6845,11 @@ static void nxDriveConvexCooking(const NxOracleRows& o, bool selfOnly)
 		gHullTape[1].reset();
 		gHullText[0].reset();
 		gHullText[1].reset();
+		for(int side = 0; side < 2; ++side)
+			{
+			gHullBytes[w][side].reset();
+			gHullBytesCur[side] = &gHullBytes[w][side];
+			}
 		for(unsigned r = 0; r < count; ++r)
 			if(!(w == 0 && nxHullQhullDivergent(runs[r].set, runs[r].flags)))
 				nxHullCreateRun(o, runs[r], kWords[w], (int) r, selfOnly);
@@ -6850,6 +6888,11 @@ static void nxDriveConvexCooking(const NxOracleRows& o, bool selfOnly)
 		gHullTape[1].reset();
 		gHullText[0].reset();
 		gHullText[1].reset();
+		for(int side = 0; side < 2; ++side)
+			{
+			gHullBytes[2 + w][side].reset();
+			gHullBytesCur[side] = &gHullBytes[2 + w][side];
+			}
 		const unsigned meshFlags = NX_MF_CONVEX | NX_MF_COMPUTE_CONVEX;
 		for(int set = 0; set < kHullComputeSets; ++set)
 			if(!(w == 0 && nxHullQhullDivergent(set, 0xb7)))
@@ -6876,8 +6919,116 @@ static void nxDriveConvexCooking(const NxOracleRows& o, bool selfOnly)
 
 	*hostSlot = shippedHost;
 	gQhullHost = 0;
+	gHullBytesCur[0] = gHullBytesCur[1] = 0;
 	for(int side = 0; side < 2; ++side)
 		RemoveDirectoryW(gHullDir[side]);
+	}
+
+// qhull-gap Task 5 (the 4e review). Two parts, after the Task 4e totals.
+//
+// The OBJ dumps' bytes (nxHullTapeObjBytes), one family per Task 4e family.
+//
+// hull_qhull_direct(_x87): the two inputs of hull_create_qhull, run through
+// qhull ALONE, the way qhull_hull does (nxQhullRun with "o": the oracle's
+// qh_init_A .. qh_produce_output at their RVAs against the vendored tree, the
+// harness's stand-in host, nxQhullTape of each side's finished hull), under
+// the process's 0x027f. The points are the candidate cleanupVertices' output
+// for each set with NovodeX's arguments (weld, normalise, reduce to 256, a
+// zeroing allocator): the buffer both CreateConvexHull runs hand qhull, which
+// the NXHULL_PROBE digest shows is identical on the two sides. So whatever
+// differs here differs in qhull alone.
+static void nxDriveConvexCookingBytes(const NxOracleRows& o, bool selfOnly)
+	{
+	static const char* const kBytesNames[4] =
+		{ "hull_create_objbytes", "hull_create_pc64_objbytes", "hull_compute_objbytes", "hull_compute_pc64_objbytes" };
+	static const char* const kBytesRva[4] = { "0x0007dea0", "0x0007dea0", "0x0007e050", "0x0007e050" };
+	static const char* const kBytesOwner[4] = { "phys_fn_003247", "phys_fn_003247", "phys_fn_003251", "phys_fn_003251" };
+	for(int k = 0; k < 4; ++k)
+		nxReportTapes(gHullBytes[k][0], gHullBytes[k][1], kBytesNames[k], kBytesRva[k], kBytesOwner[k],
+			"QhullHost.cpp", selfOnly, 0);
+
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	gOracleTapeX87.reset();
+	gCandidateTapeX87.reset();
+	NxQhullEntries oracle;
+	oracle.initA		= o.base + kQhInitA;
+	oracle.initflags	= o.base + kQhInitflags;
+	oracle.initB		= o.base + kQhInitB;
+	oracle.qhull		= o.base + kQhQhull;
+	oracle.checkOutput	= o.base + kQhCheckOutput;
+	oracle.produceOutput	= o.base + kQhProduceOutput;
+	oracle.fin			= o.base + kOracleIob;
+	oracle.fout			= o.base + kOracleIob + 0x20;
+	oracle.ferr			= o.base + kOracleIob + 0x40;
+	NxQhullEntries candidate;
+	candidate.initA			= (void*) &qh_init_A;
+	candidate.initflags		= (void*) &qh_initflags;
+	candidate.initB			= (void*) &qh_init_B;
+	candidate.qhull			= (void*) &qh_qhull;
+	candidate.checkOutput	= (void*) &qh_check_output;
+	candidate.produceOutput	= (void*) &qh_produce_output;
+	candidate.fin			= stdin;
+	candidate.fout			= stdout;
+	candidate.ferr			= stderr;
+	void** hostSlot = (void**) (o.base + kQhHostGlobal);
+	void* shippedHost = *hostSlot;
+	*hostSlot = gQhHostObject;
+	static const int kSets[2] = { 12, 17 };
+	static float cleaned[3 * 2049];
+	for(int s = 0; s < 2; ++s)
+		{
+		unsigned stride;
+		const unsigned n = nxHullPoints(kSets[s], gHullInput, &stride);
+		NxHullTestAllocator allocator;
+		gHullBlocks.reset(0);
+		NxU32 count = 0;
+		NxReal scale[3];
+		{
+		QhullHost host(&allocator);
+		host.cleanupVertices(n, gHullInput, stride, count, cleaned, 0.00001f, scale, true, true, 0x100);
+		}
+		gHullBlocks.reset(0);
+		const unsigned from[2] = { gOracleTape.count, gCandidateTape.count };
+		const unsigned fromX87[2] = { gOracleTapeX87.count, gCandidateTapeX87.count };
+		for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
+			{
+			NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+			NxTape& floats = side == 0 ? gOracleTapeX87 : gCandidateTapeX87;
+			tape.push(count);
+			double* coords = (double*) malloc(sizeof(double) * 3 * (count ? count : 1));
+			for(unsigned i = 0; i < 3 * count; ++i)
+				coords[i] = cleaned[i];
+			const int result = nxQhullRun(side == 0 ? &oracle : &candidate, coords, (int) count, "o");
+			tape.push(result ? 1u : 0u);
+			if(result == 0)
+				nxQhullTape(side == 0 ? (const void*) (o.base + kQhState) : nxQhullCandidateState(),
+					coords, (int) count, nxQhPushTape, &tape, nxQhPushTapeDouble, &floats);
+			if(side == 0)
+				{
+				while(gQhOracleNbBlocks)
+					free(gQhOracleBlocks[--gQhOracleNbBlocks]);
+				}
+			free(coords);
+			}
+		// Which of the two inputs differs, on stderr (NXHULL_PROBE=1).
+		if(getenv("NXHULL_PROBE") && !selfOnly)
+			{
+			unsigned words = 0, doubles = 0;
+			for(unsigned i = from[0]; i < gOracleTape.count && from[1] + (i - from[0]) < gCandidateTape.count; ++i)
+				words += gOracleTape.words[i] != gCandidateTape.words[from[1] + (i - from[0])];
+			for(unsigned i = fromX87[0]; i < gOracleTapeX87.count && fromX87[1] + (i - fromX87[0]) < gCandidateTapeX87.count; ++i)
+				doubles += gOracleTapeX87.words[i] != gCandidateTapeX87.words[fromX87[1] + (i - fromX87[0])];
+			fprintf(stderr, "PROBE direct set=%d points=%u words=%u/%u differ=%u x87=%u/%u differ=%u\n", kSets[s], count,
+				gOracleTape.count - from[0], gCandidateTape.count - from[1], words,
+				gOracleTapeX87.count - fromX87[0], gCandidateTapeX87.count - fromX87[1], doubles);
+			}
+		}
+	*hostSlot = shippedHost;
+	nxReport("hull_qhull_direct", "0x0007d180", "phys_fn_003234",
+		"qhull.c,poly.c,poly2.c,merge.c,geom.c,geom2.c,qset.c,mem.c,global.c", selfOnly, kDivergent);
+	nxReportTapes(gOracleTapeX87, gCandidateTapeX87, "hull_qhull_direct_x87", "0x0005c5c0", "phys_fn_002425",
+		"geom.c,geom2.c,merge.c", selfOnly, kDivergent);
 	}
 
 static void nxPrintTotals()
@@ -7013,6 +7164,11 @@ int wmain(int argc, wchar_t** argv)
 
 	// qhull-gap Task 4e: convex cooking, the same two lines after its families.
 	nxDriveConvexCooking(o, selfOnly);
+	nxPrintTotals();
+
+	// qhull-gap Task 5: the OBJ byte digests and qhull alone over the two
+	// hull_*_qhull inputs, the same two lines after them.
+	nxDriveConvexCookingBytes(o, selfOnly);
 	nxPrintTotals();
 	printf("thirdparty candidate mismatches=%u layout_failures=%u\n", gMismatches, gLayoutFailures);
 
