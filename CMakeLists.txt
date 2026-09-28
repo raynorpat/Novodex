@@ -580,6 +580,15 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		target_link_options(NxPhysicsThirdPartyTests PRIVATE legacy_stdio_float_rounding.obj)
 	endif()
 
+	# ObjectModel.cpp's MESH slot 7 (the 001407 model) calls the support-map
+	# lookup 001556 and the hull's polygons 001472 (convex-mesh gap Task 2f), and
+	# they bring the ICE rows they call, so every target that compiles
+	# ObjectModel.cpp links these (SmoothNormals.cpp too, where the target does
+	# not already have it; 001651 calls its angle helper 002144).
+	set(NX_ICE_MESH_ROW_SOURCES
+		Physics/src/IceSupportMaps.cpp Physics/src/ConvexHull.cpp Physics/src/IceAdjacencies.cpp
+		Physics/src/EdgeList.cpp Physics/src/IceMeshTools.cpp Physics/src/IceMeshBuilder2.cpp)
+
 	# A static-proof gate, not a differential: it links the private translation
 	# units directly because the rows it covers cannot be reached through the
 	# public API. Same shape as NxFoundationCustomArrayTests above.
@@ -590,6 +599,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
+		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp
 		${PHYSICS_CORE_SOURCES})
 	target_include_directories(NxPhysicsInternalTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
@@ -614,7 +624,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/MemoryStream.cpp
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp
-		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp)
+		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
+		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp)
 	target_include_directories(NxPhysicsObjectLayoutTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
 		Physics/src/opcode)
@@ -649,12 +660,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
-		# MESH slot 7 (001407) calls the support-map lookup 001556 and the hull's
-		# polygons 001472 (convex-mesh gap Task 2f), and they bring the ICE rows
-		# they call, as in NxPhysicsThirdPartyTests.
-		Physics/src/IceSupportMaps.cpp Physics/src/ConvexHull.cpp Physics/src/IceAdjacencies.cpp
-		Physics/src/EdgeList.cpp Physics/src/IceMeshTools.cpp Physics/src/IceMeshBuilder2.cpp
-		Physics/src/SmoothNormals.cpp)
+		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp)
 	target_include_directories(NxPhysicsShapeVtableTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
 		Physics/src/opcode)
@@ -687,6 +693,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
 		Physics/src/ObjectModel.cpp Physics/src/MemoryStream.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
+		${NX_ICE_MESH_ROW_SOURCES}
 		${PHYSICS_CORE_SOURCES})
 	target_include_directories(NxPhysicsCollisionTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
