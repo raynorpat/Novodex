@@ -41,6 +41,8 @@
 #include "NxSegment.h"
 #include "NxMat33.h"
 #include "NxIntersectionBoxBox.h"
+#include "NxBoxDistance.h"
+#include "IcePrunable.h"
 
 #include <math.h>
 #include <stddef.h>
@@ -748,4 +750,206 @@ double __cdecl NxSegmentSegmentSquareDistance(const NxSegment* segment0,
 	// 0x000345a6, and it is a sign clear rather than a test, which is what
 	// makes a negative NaN come back positive.
 	return fabs(result);
+	}
+
+// ---------------------------------------------------------------------------
+// convex-mesh gap Task 2a: the matrix B entries that reach the box distance
+// kernels of Distance.cpp (units/convex-mesh-gap-contract.md, sub-units G, J
+// and K), and matrix B [CAPSULE][CAPSULE].
+
+// The capsule's axis segment, the construction phys_fn_001921 above writes out
+// in place. 0x0003b0e7..0x0003b175 (001751), 0x0003d898..0x0003d932 and
+// 0x0003d936..0x0003d996 (001774, once per capsule) and 0x0003f39d..0x0003f427
+// (001785) are the same instructions over different frame slots: the x
+// component of the half axis is narrowed and read back, y and z stay in
+// registers, and -z is narrowed before it is added.
+static __forceinline void nxCapsuleSegment(const NxCollisionShape* capsule, NxSegment* segment)
+	{
+	const NxReal* m = capsule->rotation;
+	const NxReal* t = capsule->translation;
+
+	const NxReal halfHeight = capsule->geometry[1];
+	const NxReal axisX = (NxReal) ((double) m[1] * halfHeight);
+	const double axisY = (double) m[4] * halfHeight;
+	const double axisZ = (double) m[7] * halfHeight;
+	const NxReal negatedAxisZ = (NxReal) (-axisZ);
+
+	segment->p0.x = (NxReal) (-(double) axisX + t[0]);
+	segment->p0.y = (NxReal) (-axisY + t[1]);
+	segment->p0.z = (NxReal) ((double) negatedAxisZ + t[2]);
+	segment->p1.x = (NxReal) ((double) axisX + t[0]);
+	segment->p1.y = (NxReal) (axisY + t[1]);
+	segment->p1.z = (NxReal) (axisZ + t[2]);
+	}
+
+// The world box of a shape's pruning handle: the Prunable at Shape+0xa4
+// (Physics/src/opcode/IcePrunable.h), i.e. Prunable::GetUpdatedWorldAABB
+// inlined with its UpdateWorldAABB left as a call -- 0x0003f413..0x0003f45f in
+// 001785, 0x0003f5b8..0x0003f5fd in 001789, 0x0003f718..0x0003f765 in 001791,
+// each `call 0x100b55b0` (phys_fn_004886). The pruner is loaded before the
+// handle is tested. An invalid handle gives a null box, which all three
+// entries then dereference, as the oracle does.
+static __forceinline const NxReal* nxShapeWorldBounds(const NxCollisionShape* shape)
+	{
+	Prunable* prunable = (Prunable*) ((NxU8*) shape + 0xa4);
+	Pruner* pruner = prunable->mPruner;
+	if(prunable->mHandle == PRUNABLE_INVALID_HANDLE)
+		return 0;
+	if(!(prunable->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
+		prunable->UpdateWorldAABB((AABB*) ((NxU8*) pruner->mWorldBoxes + prunable->mHandle * 24));
+	return (const NxReal*) ((NxU8*) pruner->mWorldBoxes + prunable->mHandle * 24);
+	}
+
+// The box the three compound entries build from those bounds (min at +0,
+// max at +0xc): centre and half size, each of x and y narrowed before the
+// halving and z halved in the register it was formed in, with an identity
+// rotation written as nine immediates. 001785 and 001789 form each centre sum
+// as max + min, 001791 as min + max; the sum is the same.
+static __forceinline void nxBoundsBox(const NxReal* bounds, NxCollisionBoxData* box)
+	{
+	const NxReal sumX = (NxReal) ((double) bounds[3] + bounds[0]);
+	const NxReal sumY = (NxReal) ((double) bounds[4] + bounds[1]);
+	const double sumZ = (double) bounds[5] + bounds[2];
+	box->center[0] = (NxReal) ((double) sumX * 0.5f);
+	box->center[1] = (NxReal) ((double) sumY * 0.5f);
+	box->center[2] = (NxReal) (sumZ * 0.5f);
+
+	const NxReal sizeX = (NxReal) ((double) bounds[3] - bounds[0]);
+	const NxReal sizeY = (NxReal) ((double) bounds[4] - bounds[1]);
+	const double sizeZ = (double) bounds[5] - bounds[2];
+	box->extents[0] = (NxReal) ((double) sizeX * 0.5f);
+	box->extents[1] = (NxReal) ((double) sizeY * 0.5f);
+	box->extents[2] = (NxReal) (sizeZ * 0.5f);
+
+	for(int i = 0; i < 9; ++i)
+		box->rotation[i] = (i % 4 == 0) ? 1.0f : 0.0f;
+	}
+
+// phys_fn_001751 (0x0003b0e0, 370 B)
+// Matrix B [BOX][CAPSULE]. A sphere of the capsule's radius at each end of its
+// axis against the box through phys_fn_001913, and only when neither overlaps
+// the axis segment against the box through phys_fn_001688 (null parameter
+// and point), against the squared radius. The radius is narrowed into two
+// slots (0x0003b0f3 and 0x0003b180); the squared distance is compared as the
+// register the kernel returned (0x0003b23d `fcompp`), strictly.
+bool __cdecl NxOverlapBoxCapsule(const NxCollisionShape* box, const NxCollisionShape* capsule)
+	{
+	const NxReal radius = capsule->geometry[0];
+
+	NxSegment segment;
+	nxCapsuleSegment(capsule, &segment);
+
+	NxCollisionBoxData boxData;
+	boxData.center[0] = box->translation[0];
+	boxData.center[1] = box->translation[1];
+	boxData.center[2] = box->translation[2];
+	boxData.extents[0] = box->geometry[1];
+	boxData.extents[1] = box->geometry[2];
+	boxData.extents[2] = box->geometry[3];
+	for(int i = 0; i < 9; ++i)
+		boxData.rotation[i] = box->rotation[i];
+
+	NxCollisionSphereData sphere;
+	sphere.center[0] = segment.p0.x;
+	sphere.center[1] = segment.p0.y;
+	sphere.center[2] = segment.p0.z;
+	sphere.radius = radius;
+	if(NxOverlapSphereBoxData(&sphere, &boxData))
+		return true;
+
+	sphere.center[0] = segment.p1.x;
+	sphere.center[1] = segment.p1.y;
+	sphere.center[2] = segment.p1.z;
+	sphere.radius = radius;
+	if(NxOverlapSphereBoxData(&sphere, &boxData))
+		return true;
+
+	const double squared = NxSegmentBoxSquareDistance(&segment, boxData.center,
+		boxData.extents, boxData.rotation, 0, 0);
+	return (double) radius * radius > squared;
+	}
+
+// phys_fn_001774 (0x0003d890, 320 B)
+// Matrix B [CAPSULE][CAPSULE]. The two axis segments through phys_fn_001690,
+// whose parameters go to the caller's two argument slots, against the sum of
+// the radii squared -- and unlike [SPHERE][CAPSULE] the sum is NOT narrowed:
+// `fld [esi+0xe0]; fadd [edi+0xe0]; fld st(0); fmul st(1)` at 0x0003d9a0 keeps
+// it on the stack. Strict, and an unordered compare is false (0x0003d9bf
+// `test ah,5; jp`).
+bool __cdecl NxOverlapCapsuleCapsule(const NxCollisionShape* capsule0, const NxCollisionShape* capsule1)
+	{
+	NxSegment segment0;
+	NxSegment segment1;
+	nxCapsuleSegment(capsule0, &segment0);
+	nxCapsuleSegment(capsule1, &segment1);
+
+	NxReal parameter0;
+	NxReal parameter1;
+	const double squared = NxSegmentSegmentSquareDistance(&segment0, &segment1,
+		&parameter0, &parameter1);
+	const double radiusSum = (double) capsule0->geometry[0] + capsule1->geometry[0];
+	return squared < radiusSum * radiusSum;
+	}
+
+// phys_fn_001785 (0x0003f390, 471 B)
+// Matrix B [CAPSULE][COMPOUND]. Not a walk over children: the capsule's axis
+// against ONE box, the compound shape's own world bounds, through
+// phys_fn_001688 with null outputs, against the squared radius (copied as a
+// word at 0x0003f3a6 and squared from that copy at 0x0003f545).
+bool __cdecl NxOverlapCapsuleCompound(const NxCollisionShape* capsule, const NxCollisionShape* compound)
+	{
+	const NxReal radius = capsule->geometry[0];
+
+	NxSegment segment;
+	nxCapsuleSegment(capsule, &segment);
+
+	NxCollisionBoxData boxData;
+	nxBoundsBox(nxShapeWorldBounds(compound), &boxData);
+
+	const double squared = NxSegmentBoxSquareDistance(&segment, boxData.center,
+		boxData.extents, boxData.rotation, 0, 0);
+	return (double) radius * radius > squared;
+	}
+
+// phys_fn_001789 (0x0003f5b0, 334 B)
+// Matrix B [SPHERE][COMPOUND]. The sphere against the compound's world bounds
+// through phys_fn_001913.
+bool __cdecl NxOverlapSphereCompound(const NxCollisionShape* sphere, const NxCollisionShape* compound)
+	{
+	NxCollisionBoxData boxData;
+	nxBoundsBox(nxShapeWorldBounds(compound), &boxData);
+
+	NxCollisionSphereData sphereData;
+	sphereData.center[0] = sphere->translation[0];
+	sphereData.center[1] = sphere->translation[1];
+	sphereData.center[2] = sphere->translation[2];
+	sphereData.radius = sphere->geometry[0];
+
+	return NxOverlapSphereBoxData(&sphereData, &boxData);
+	}
+
+// phys_fn_001791 (0x0003f700, 418 B)
+// Matrix B [BOX][COMPOUND]. False at once unless the box carries one of the
+// three low bits of its flag word at Shape+0xde (0x0003f70b `test byte ptr
+// [ebx+0xde], 7`), and otherwise the compound's world bounds against the box
+// through NxBoxBoxIntersect (phys_fn_001702, 0x00036690) with the BOUNDS as
+// the first box, the identity as its rotation, and `fullTest` set.
+bool __cdecl NxOverlapBoxCompound(const NxCollisionShape* box, const NxCollisionShape* compound)
+	{
+	if(!(*((const NxU8*) box + 0xde) & 7))
+		return false;
+
+	NxCollisionBoxData boundsData;
+	nxBoundsBox(nxShapeWorldBounds(compound), &boundsData);
+
+	NxVec3 extents0(boundsData.extents[0], boundsData.extents[1], boundsData.extents[2]);
+	NxVec3 center0(boundsData.center[0], boundsData.center[1], boundsData.center[2]);
+	NxMat33 rotation0;
+	rotation0.setRowMajor(boundsData.rotation);
+	NxVec3 extents1(box->geometry[1], box->geometry[2], box->geometry[3]);
+	NxVec3 center1(box->translation[0], box->translation[1], box->translation[2]);
+	NxMat33 rotation1;
+	rotation1.setRowMajor(box->rotation);
+
+	return NxBoxBoxIntersect(extents0, center0, rotation0, extents1, center1, rotation1, true);
 	}

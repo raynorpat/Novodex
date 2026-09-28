@@ -149,6 +149,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/SmoothNormals.cpp
 		Physics/src/NarrowPhase.cpp
 		Physics/src/ContactGeneration.cpp
+		Physics/src/Distance.cpp
 		Physics/src/ShapeRaycast.cpp
 		Physics/src/core/Joint.cpp
 		Physics/src/core/RevoluteJoint.cpp
@@ -630,7 +631,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# neighbours in with it.
 	add_executable(NxPhysicsCollisionTests tests/PhysicsCollisionTests.cpp
 		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp
-		Physics/src/ShapeRaycast.cpp
+		Physics/src/Distance.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp

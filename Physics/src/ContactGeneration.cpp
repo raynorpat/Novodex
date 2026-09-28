@@ -23,6 +23,8 @@
 #include "NxIntersectionSegmentCapsule.h"
 #include "NxPlane.h"
 #include "NxSegment.h"
+#include "NxBoxDistance.h"
+#include "X87Sqrt.h"
 
 #include <math.h>
 #include <stddef.h>
@@ -2493,4 +2495,279 @@ void __cdecl NxContactBoxBox(const NxCollisionShape* box0,
 		const NxReal flipped = (NxReal) (-(double) separations[c]);
 		nxAppendContactRecord(sink, &points[c], nxBits(flipped), 0);
 		}
+	}
+
+// ---------------------------------------------------------------------------
+// phys_fn_001753 (0x0003b260, 2267 B)
+// Matrix A [BOX][CAPSULE] (convex-mesh gap Task 2a; units/convex-mesh-gap-
+// contract.md, sub-unit G). The capsule's axis is built as the overlap entries
+// build it (0x0003b26e..0x0003b2e7), and then three algorithms behind two
+// tests:
+//
+//  * NX_SWEPT_SHAPE (the capsule's flag byte at +0xe8, 0x0003b28b): a ray
+//    along the axis through the BOX's vtable slot 5 -- the one indirect call,
+//    `call dword ptr [eax+0x14]` at 0x0003b3da with ecx = arg0, the box, and
+//    [box] its vtable: phys_fn_000949 (0x00020880) on a box shape -- asked for
+//    the normal (`push 4`), and the hit emitted with separation 0.
+//  * otherwise a sphere of the capsule's radius at each end through
+//    phys_fn_001917, each hit emitted when its normal is within 0.01 of facing
+//    along the axis away from the other end; and unless BOTH ends emitted, the
+//    axis against the box through phys_fn_001688:
+//  * a positive squared distance inside the radius emits one contact between
+//    the closest points; exactly zero -- the axis crosses the box -- runs the
+//    box/box search (phys_fn_001748) with the capsule as a box of half size
+//    (0.666 r, h, 0.666 r) and writes the manifold inline, the way
+//    phys_fn_001749 does.
+void __cdecl NxContactBoxCapsule(const NxCollisionShape* box,
+	const NxCollisionShape* capsule, NxContactSink* sink, void* context)
+	{
+	(void) context;
+	const NxReal* m = capsule->rotation;
+	const NxReal* t = capsule->translation;
+	const NxReal halfHeight = capsule->geometry[1];
+
+	const NxReal axisX = (NxReal) ((double) m[1] * halfHeight);
+	const double axisY = (double) m[4] * halfHeight;
+	const double axisZ = (double) m[7] * halfHeight;
+	const NxReal negatedAxisZ = (NxReal) (-axisZ);
+
+	NxSegment segment;
+	segment.p0.x = (NxReal) (-(double) axisX + t[0]);
+	segment.p0.y = (NxReal) (-axisY + t[1]);
+	segment.p0.z = (NxReal) ((double) negatedAxisZ + t[2]);
+	segment.p1.x = (NxReal) ((double) axisX + t[0]);
+	segment.p1.y = (NxReal) (axisY + t[1]);
+	segment.p1.z = (NxReal) (axisZ + t[2]);
+
+	const NxU8 sweptFlag = *(const NxU8*) &capsule->geometry[2];
+	if(sweptFlag & 1)
+		{
+		// 0x0003b2f1. x is stored with `fst` and the wide difference is what a
+		// zero-length axis leaves as the direction (0x0003b38e `fstp`); the
+		// length's sum is (x^2 + z^2) + y^2 over the three stored words.
+		const double wideDx = (double) segment.p1.x - segment.p0.x;
+		const NxReal dx = (NxReal) wideDx;
+		const NxReal dy = (NxReal) ((double) segment.p1.y - segment.p0.y);
+		const NxReal dz = (NxReal) ((double) segment.p1.z - segment.p0.z);
+		const NxReal length = (NxReal) x87FsqrtDot3(dx, dx, dz, dz, dy, dy);
+
+		NxRay ray;
+		ray.orig = segment.p0;
+		if(length == 0.0f)
+			{
+			ray.dir.x = (NxReal) wideDx;
+			ray.dir.y = dy;
+			ray.dir.z = dz;
+			}
+		else
+			{
+			// Over the half height's slot, dead on this path.
+			const NxReal inverse = (NxReal) (1.0f / (double) length);
+			ray.dir.x = (NxReal) ((double) dx * inverse);
+			ray.dir.y = (NxReal) ((double) dy * inverse);
+			ray.dir.z = (NxReal) ((double) dz * inverse);
+			}
+
+		NxRaycastHit hit;
+		const NxShapeRaycastFn raycast = (*(const NxShapeRaycastFn* const*) box)[5];
+		if(!raycast(box, &ray, length, 0, NX_RAYCAST_NORMAL, &hit))
+			return;
+		NxEmitContact(sink, capsule->collisionObject, box->collisionObject,
+			0, &hit.worldImpact, &hit.worldNormal, 0xffff, 0xffff);
+		return;
+		}
+
+	// 0x0003b424. The box is flattened into the frame the way phys_fn_001919
+	// does it, and the radius is copied over the half height's slot.
+	const NxReal radius = capsule->geometry[0];
+	NxCollisionBoxData boxData;
+	boxData.center[0] = box->translation[0];
+	boxData.center[1] = box->translation[1];
+	boxData.center[2] = box->translation[2];
+	boxData.extents[0] = box->geometry[1];
+	boxData.extents[1] = box->geometry[2];
+	boxData.extents[2] = box->geometry[3];
+	for(int i = 0; i < 9; ++i)
+		boxData.rotation[i] = box->rotation[i];
+
+	// [esp+0x14] holds a byte per end, [esp+0x3c] whether the axis has been
+	// normalised, and the axis itself sits in [esp+8..0x10]. The axis is
+	// negated at the bottom of every pass (0x0003b5fd), normalised or not, so
+	// the second end is tested against the axis pointing back at the first.
+	NxU8 emitted[2];
+	int axisReady = 0;
+	NxReal axis[3] = { 0.0f, 0.0f, 0.0f };
+	const NxVec3* ends[2] = { &segment.p0, &segment.p1 };
+	for(int end = 0; end < 2; ++end)
+		{
+		NxCollisionSphereData sphere;
+		sphere.center[0] = ends[end]->x;
+		sphere.center[1] = ends[end]->y;
+		sphere.center[2] = ends[end]->z;
+		sphere.radius = radius;
+
+		NxVec3 point;
+		NxVec3 normal;
+		NxReal separation;
+		emitted[end] = NxSphereBoxContactData(&sphere, &boxData, &point, &normal, &separation) ? 1 : 0;
+		if(emitted[end])
+			{
+			if(!axisReady)
+				{
+				// 0x0003b50c. x and z stay in registers; the length is
+				// (x^2 + z^2) + y^2 with y narrowed, and a zero length
+				// leaves the three stored differences.
+				const double adx = (double) segment.p1.x - segment.p0.x;
+				const NxReal ady = (NxReal) ((double) segment.p1.y - segment.p0.y);
+				const double adz = (double) segment.p1.z - segment.p0.z;
+				axis[1] = ady;
+				axis[0] = (NxReal) adx;
+				axis[2] = (NxReal) adz;
+				const double length = x87FsqrtDot3(adx, adx, adz, adz, ady, ady);
+				if(length != 0.0)
+					{
+					const double inverse = 1.0f / length;
+					axis[0] = (NxReal) (adx * inverse);
+					axis[1] = (NxReal) ((double) ady * inverse);
+					axis[2] = (NxReal) (adz * inverse);
+					}
+				axisReady = 1;
+				}
+
+			// 0x0003b58f: against the DOUBLE -0.01 at 0x10107b58, strictly.
+			const double facing = ((double) normal.x * axis[0] + (double) normal.z * axis[2])
+				+ (double) normal.y * axis[1];
+			if(facing > -0.01)
+				NxEmitContact(sink, capsule->collisionObject, box->collisionObject,
+					nxBits(separation), &point, &normal, 0xffff, 0xffff);
+			else
+				emitted[end] = 0;
+			}
+
+		const NxReal flippedX = (NxReal) (-(double) axis[0]);
+		const NxReal flippedY = (NxReal) (-(double) axis[1]);
+		const NxReal flippedZ = (NxReal) (-(double) axis[2]);
+		axis[0] = flippedX;
+		axis[1] = flippedY;
+		axis[2] = flippedZ;
+		}
+
+	// 0x0003b63a: both ends emitted, nothing more.
+	if(emitted[0] && emitted[1])
+		return;
+
+	NxReal parameter;
+	NxReal boxPoint[3];
+	const NxReal squared = (NxReal) NxSegmentBoxSquareDistance(&segment, boxData.center,
+		boxData.extents, boxData.rotation, &parameter, boxPoint);
+
+	if(squared == 0.0f)
+		{
+		// 0x0003b843: the axis crosses the box. The capsule becomes a box of
+		// half size (0.666 r, h, 0.666 r) on its own pose; 0.666f is the float
+		// at 0x10107b54 and the product is narrowed into both slots.
+		const double scaled = (double) capsule->geometry[0] * 0.666f;
+		NxReal pseudoExtents[3];
+		pseudoExtents[0] = (NxReal) scaled;
+		pseudoExtents[1] = halfHeight;
+		pseudoExtents[2] = (NxReal) scaled;
+
+		// Sixteen deep in the oracle (0x0003b889, 0x0003b881: the frame ends at
+		// the return address); eighty here, as in NxContactBoxBox.
+		NxVec3 points[80];
+		NxReal separations[80];
+		NxVec3 normal;
+		const int count = NxBoxBoxTransposedPair(points, separations, &normal,
+			pseudoExtents, &capsule->rotation[0],
+			&box->geometry[1], &box->rotation[0], &sink->separatingAxis);
+
+		// 0x0003b8a3: `mov byte ptr [esi], al` -- the count's low byte, zero.
+		if(count == 0)
+			{
+			sink->separatingAxis = 0;
+			return;
+			}
+
+		// 0x0003b8ae: the orientation is the CAPSULE's owner, the first shape
+		// of the box/box search.
+		const NxCollisionShape* first = capsule;
+		const NxCollisionShape* second = box;
+		const bool negated =
+			*(void* const*) ((const NxU8*) capsule->owner + 8) != sink->orientedTo;
+		if(negated)
+			{
+			first = box;
+			second = capsule;
+			}
+
+		sink->featurePairValid = 0;
+		nxAppendPairHeader(sink, first->collisionObject, second->collisionObject,
+			nxHeaderMaterial(first, second), 0);
+
+		NxVec3 emittedNormal;
+		if(negated)
+			{
+			emittedNormal.x = (NxReal) (-(double) normal.x);
+			emittedNormal.y = (NxReal) (-(double) normal.y);
+			emittedNormal.z = (NxReal) (-(double) normal.z);
+			}
+		else
+			emittedNormal = normal;
+		nxAppendNormalBlock(sink, &emittedNormal);
+
+		for(int c = 0; c < count; ++c)
+			{
+			const NxReal flipped = (NxReal) (-(double) separations[c]);
+			nxAppendContactRecord(sink, &points[c], nxBits(flipped), 0);
+			}
+		return;
+		}
+
+	// 0x0003b695: strictly inside the radius, against the narrowed distance.
+	if(!((double) radius * radius > squared))
+		return;
+
+	// The closest point on the axis: x narrowed after the multiply and again
+	// after the add, y narrowed once, z kept in a register (0x0003b6ac..0x0003b6f4).
+	const double sdx = (double) segment.p1.x - segment.p0.x;
+	const double sdy = (double) segment.p1.y - segment.p0.y;
+	const NxReal sdz = (NxReal) ((double) segment.p1.z - segment.p0.z);
+	const NxReal alongX = (NxReal) (sdx * parameter);
+	const NxReal onAxisX = (NxReal) ((double) alongX + segment.p0.x);
+	const NxReal onAxisY = (NxReal) (sdy * parameter + segment.p0.y);
+	const double onAxisZ = (double) sdz * parameter + segment.p0.z;
+
+	// The box's closest point back in world space. Row 0 is summed
+	// ((b0 r0 + b2 r2) + b1 r1), rows 1 and 2 ((b2 + b1) + b0); x and y are
+	// added to the centre from registers, z narrowed first (0x0003b6f8..0x0003b78e).
+	const NxReal* r = boxData.rotation;
+	const double worldX = ((double) boxPoint[0] * r[0] + (double) boxPoint[2] * r[2])
+		+ (double) boxPoint[1] * r[1];
+	const double worldY = ((double) r[5] * boxPoint[2] + (double) r[4] * boxPoint[1])
+		+ (double) r[3] * boxPoint[0];
+	const NxReal worldZ = (NxReal) (((double) r[8] * boxPoint[2] + (double) r[7] * boxPoint[1])
+		+ (double) r[6] * boxPoint[0]);
+
+	NxVec3 point;
+	point.x = (NxReal) (worldX + boxData.center[0]);
+	point.y = (NxReal) (worldY + boxData.center[1]);
+	point.z = (NxReal) ((double) worldZ + boxData.center[2]);
+
+	NxVec3 normal;
+	normal.x = (NxReal) ((double) onAxisX - point.x);
+	normal.y = (NxReal) ((double) onAxisY - point.y);
+	const double normalZ = onAxisZ - point.z;
+
+	const double length = x87FsqrtDot3(normal.x, normal.x, normalZ, normalZ, normal.y, normal.y);
+	if(length == 0.0)
+		return;
+	const double inverse = 1.0f / length;
+	normal.x = (NxReal) ((double) normal.x * inverse);
+	normal.y = (NxReal) ((double) normal.y * inverse);
+	normal.z = (NxReal) (normalZ * inverse);
+
+	// The separation from the narrowed squared distance (0x0003b824).
+	const NxReal separation = (NxReal) (x87Fsqrt(squared) - radius);
+	NxEmitContact(sink, capsule->collisionObject, box->collisionObject,
+		nxBits(separation), &point, &normal, 0xffff, 0xffff);
 	}

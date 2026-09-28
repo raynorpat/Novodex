@@ -342,4 +342,10 @@ int NxBoxBoxTransposedPair(NxVec3* points, NxReal* separations, NxVec3* normal,
 void __cdecl NxContactBoxBox(const NxCollisionShape* box0,
 	const NxCollisionShape* box1, NxContactSink* sink, void* context);
 
+// phys_fn_001753 at 0x0003b260, matrix A [BOX][CAPSULE] (convex-mesh gap
+// Task 2a). Its swept path raycasts through the BOX's vtable slot 5, so a box
+// driven into it needs a vtable, as a plane driven into phys_fn_001891 does.
+void __cdecl NxContactBoxCapsule(const NxCollisionShape* box,
+	const NxCollisionShape* capsule, NxContactSink* sink, void* context);
+
 #endif

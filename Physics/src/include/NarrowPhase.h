@@ -98,6 +98,18 @@ bool __cdecl NxOverlapSphereBox(const NxCollisionShape* sphere, const NxCollisio
 bool __cdecl NxOverlapSphereCapsule(const NxCollisionShape* sphere, const NxCollisionShape* capsule);
 bool __cdecl NxOverlapBoxBox(const NxCollisionShape* box0, const NxCollisionShape* box1);
 
+// convex-mesh gap Task 2a (units/convex-mesh-gap-contract.md, sub-units G, J
+// and K): matrix B [BOX][CAPSULE] (phys_fn_001751, index 15), [CAPSULE][CAPSULE]
+// (phys_fn_001774, index 21), and the three compound entries [CAPSULE][COMPOUND]
+// (phys_fn_001785, 23), [SPHERE][COMPOUND] (phys_fn_001789, 11) and
+// [BOX][COMPOUND] (phys_fn_001791, 17). The compound entries read the second
+// shape's pruning handle, a Prunable embedded at Shape+0xa4.
+bool __cdecl NxOverlapBoxCapsule(const NxCollisionShape* box, const NxCollisionShape* capsule);
+bool __cdecl NxOverlapCapsuleCapsule(const NxCollisionShape* capsule0, const NxCollisionShape* capsule1);
+bool __cdecl NxOverlapCapsuleCompound(const NxCollisionShape* capsule, const NxCollisionShape* compound);
+bool __cdecl NxOverlapSphereCompound(const NxCollisionShape* sphere, const NxCollisionShape* compound);
+bool __cdecl NxOverlapBoxCompound(const NxCollisionShape* box, const NxCollisionShape* compound);
+
 // phys_fn_001690 at 0x00033e80, 1,836 bytes -- and a PHASE 2 row, written here
 // because it has no translation unit of its own and both capsule/capsule
 // entries need it. Phase 2 censused it as `shared_by_callers` with no span,
