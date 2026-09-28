@@ -44,6 +44,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <float.h>
+#include <math.h>
 
 // qhull's C interface, as its own qhull_interface.cpp includes it. The merged
 // tree (build/External/qhull-tree) comes with NxQhull's include directory.
@@ -131,34 +132,301 @@ void QhullHost::rawFree(void* memory)
 	::free(memory);
 	}
 
-// PLACEHOLDER, NOT A ROW. phys_fn_003243/003245 (0x0007d5b0, cleanupVertices)
-// sit here in address order and are qhull-gap piece 4c. Until 4c replaces this
-// body, it only copies the input into the driver's buffer -- no bounding box,
-// no normalisation (the scale stays 1,1,1), no weld, no reduction, no box for
-// degenerate input -- so the driver links and runs. It carries no stable-ID
-// line and no inventory row names it.
+// Inlined eight times in 003253 (0x0007e226-0x0007e2f5) and eight times in
+// each of cleanupVertices' two boxes (0x0007dd1f-0x0007de27,
+// 0x0007db24-0x0007de27): the vertex goes to the end of the array and the
+// count is bumped after each store.
+static inline void addPoint(NxU32& vcount, NxReal* p, NxReal x, NxReal y, NxReal z)
+	{
+	NxReal* dest = &p[vcount * 3];
+	dest[0] = x;
+	dest[1] = y;
+	dest[2] = z;
+	vcount++;
+	}
+
+// phys_fn_003243 (0x0007d5b0, 933 B)
+// phys_fn_003245 (0x0007d960, 1331 B)
+// One function: 003245 starts inside the bounding-box loop over the cleaned
+// points, reached by the jump at 0x0007d953. Ratcliff's CleanupVertices with
+// two NovodeX arms: the weld is optional (`weld`, 0x0007d7f0) and a cleaned
+// cloud larger than maxVertices goes to band B's quantizer (`reduce`,
+// 0x0007da0c-0x0007da38).
+//
+// The constants are the image's: 1e-6f (.rdata:0x00106880), 0.5f
+// (0x001043cc), 1.0f (0x001041ec), FLT_MAX (0x00106858, and the 0x7f7fffff /
+// 0xff7fffff immediates of the box initialisers), 0.05f (0x001135b8), and the
+// 0.01f immediate 0x3c23d70a.
+//
+// Floating point, from the listing:
+//   * the extents, the centres, the reciprocals, py and pz are stored (fstp
+//     dword) and are NxReal; px, the running shortest extent `len`, the weld
+//     differences, the squared distances and the box corners stay on the FPU
+//     stack and are double (the listing also spills y2 and z2 to float for
+//     the last corners, 0x0007dd4b/0x0007dd5f; a float store of the same
+//     value, so every corner word is the same);
+//   * in the weld, the listing spills the stored vertex's y and z offsets
+//     from the centre (0x0007d871, 0x0007d87d) and keeps the other four on
+//     the stack; both squared distances are summed z, then y, then x:
+//     (z*z + y*y) + x*x (0x0007d880-0x0007d8a6);
+//   * the vertex kept is the one farther from the centre: the new point
+//     replaces the stored one when dist(stored) < dist(new) (fcompp, test
+//     ah,5; jp -- false on NaN);
+//   * the first box takes an extent as the shortest when it is > 1e-6f
+//     (test ah,0x41), the second when it is >= 1e-6f (test ah,1).
 bool QhullHost::cleanupVertices(NxU32 svcount, const NxReal* svertices, NxU32 stride,
-	NxU32& vcount, NxReal* vertices, NxReal /*normalepsilon*/, NxReal* scale,
-	bool /*weld*/, bool /*reduce*/, NxU32 /*maxVertices*/)
+	NxU32& vcount, NxReal* vertices, NxReal normalepsilon, NxReal* scale,
+	bool weld, bool reduce, NxU32 maxVertices)
 	{
 	if(svcount == 0)
 		return false;
+
+	vcount = 0;
+
+	NxReal recip[3];
+
 	if(scale)
 		{
 		scale[0] = 1.0f;
 		scale[1] = 1.0f;
 		scale[2] = 1.0f;
 		}
-	const char* source = (const char*) svertices;
+
+	NxReal bmin[3] = { FLT_MAX, FLT_MAX, FLT_MAX };
+	NxReal bmax[3] = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+
+	const char* vtx = (const char*) svertices;
+
 	for(NxU32 i = 0; i < svcount; i++)
 		{
-		const NxReal* p = (const NxReal*) source;
-		vertices[i * 3 + 0] = p[0];
-		vertices[i * 3 + 1] = p[1];
-		vertices[i * 3 + 2] = p[2];
-		source += stride;
+		const NxReal* p = (const NxReal*) vtx;
+		vtx += stride;
+		for(int j = 0; j < 3; j++)
+			{
+			if(p[j] < bmin[j])		// fcomp; test ah,5; jp
+				bmin[j] = p[j];
+			if(p[j] > bmax[j])		// fcomp; test ah,0x41; jne
+				bmax[j] = p[j];
+			}
 		}
-	vcount = svcount;
+
+	NxReal dx = bmax[0] - bmin[0];
+	NxReal dy = bmax[1] - bmin[1];
+	NxReal dz = bmax[2] - bmin[2];
+
+	NxReal center[3];
+	center[0] = dx * 0.5f + bmin[0];
+	center[1] = dy * 0.5f + bmin[1];
+	center[2] = dz * 0.5f + bmin[2];
+
+	if(dx < 0.000001f || dy < 0.000001f || dz < 0.000001f || svcount < 3)
+		{
+		// 0x0007dc7a. The first test against the running shortest is folded to
+		// the constant (fcomp dword [0x00106858]).
+		double len = FLT_MAX;
+		if(dx > 0.000001f && dx < FLT_MAX)
+			len = dx;
+		if(dy > 0.000001f && dy < len)
+			len = dy;
+		if(dz > 0.000001f && dz < len)
+			len = dz;
+
+		if(len == FLT_MAX)		// fucompp; test ah,0x44; jp
+			{
+			dx = dy = dz = 0.01f;
+			}
+		else
+			{
+			if(dx < 0.000001f)
+				dx = (NxReal) (0.05f * len);
+			if(dy < 0.000001f)
+				dy = (NxReal) (0.05f * len);
+			if(dz < 0.000001f)
+				dz = (NxReal) (0.05f * len);
+			}
+
+		double x1 = center[0] - dx;
+		double x2 = center[0] + dx;
+		double y1 = center[1] - dy;
+		double y2 = center[1] + dy;
+		double z1 = center[2] - dz;
+		double z2 = center[2] + dz;
+
+		addPoint(vcount, vertices, (NxReal) x1, (NxReal) y1, (NxReal) z1);
+		addPoint(vcount, vertices, (NxReal) x2, (NxReal) y1, (NxReal) z1);
+		addPoint(vcount, vertices, (NxReal) x2, (NxReal) y2, (NxReal) z1);
+		addPoint(vcount, vertices, (NxReal) x1, (NxReal) y2, (NxReal) z1);
+		addPoint(vcount, vertices, (NxReal) x1, (NxReal) y1, (NxReal) z2);
+		addPoint(vcount, vertices, (NxReal) x2, (NxReal) y1, (NxReal) z2);
+		addPoint(vcount, vertices, (NxReal) x2, (NxReal) y2, (NxReal) z2);
+		addPoint(vcount, vertices, (NxReal) x1, (NxReal) y2, (NxReal) z2);
+
+		return true;
+		}
+
+	if(scale)
+		{
+		// 0x0007d73c: 1.0f / extent, then one multiply per coordinate.
+		scale[0] = dx;
+		scale[1] = dy;
+		scale[2] = dz;
+
+		recip[0] = 1.0f / dx;
+		recip[1] = 1.0f / dy;
+		recip[2] = 1.0f / dz;
+
+		center[0] = recip[0] * center[0];
+		center[1] = recip[1] * center[1];
+		center[2] = recip[2] * center[2];
+		}
+
+	vtx = (const char*) svertices;
+
+	for(NxU32 i = 0; i < svcount; i++)
+		{
+		const NxReal* p = (const NxReal*) vtx;
+		vtx += stride;
+
+		double px = p[0];
+		NxReal py = p[1];
+		NxReal pz = p[2];
+
+		if(scale)
+			{
+			px = px * recip[0];
+			py = py * recip[1];
+			pz = pz * recip[2];
+			}
+
+		if(weld)
+			{
+			NxU32 j;
+			for(j = 0; j < vcount; j++)
+				{
+				NxReal* v = &vertices[j * 3];
+
+				if(fabs(v[0] - px) < normalepsilon
+					&& fabs(v[1] - (double) py) < normalepsilon
+					&& fabs(v[2] - (double) pz) < normalepsilon)
+					{
+					// Close enough: keep whichever of the two is farther from the
+					// cloud's centre.
+					double ax = px - center[0];
+					double ay = py - (double) center[1];
+					double az = pz - (double) center[2];
+					double bx = v[0] - (double) center[0];
+					NxReal by = (NxReal) (v[1] - (double) center[1]);
+					NxReal bz = (NxReal) (v[2] - (double) center[2]);
+
+					double dist1 = (az * az + ay * ay) + ax * ax;
+					double dist2 = ((double) bz * bz + (double) by * by) + bx * bx;
+
+					if(dist2 < dist1)
+						{
+						v[0] = (NxReal) px;
+						v[1] = py;
+						v[2] = pz;
+						}
+
+					break;
+					}
+				}
+
+			if(j == vcount)
+				{
+				NxReal* dest = &vertices[vcount * 3];
+				dest[1] = py;
+				dest[0] = (NxReal) px;
+				dest[2] = pz;
+				vcount++;
+				}
+			}
+		else
+			{
+			NxReal* dest = &vertices[vcount * 3];
+			dest[1] = py;
+			dest[0] = (NxReal) px;
+			dest[2] = pz;
+			vcount++;
+			}
+		}
+
+	// Make sure the clean-up did not leave the cloud degenerate.
+	NxReal bmin2[3] = { FLT_MAX, FLT_MAX, FLT_MAX };
+	NxReal bmax2[3] = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+
+	for(NxU32 i = 0; i < vcount; i++)
+		{
+		const NxReal* p = &vertices[i * 3];
+		for(int j = 0; j < 3; j++)
+			{
+			if(p[j] < bmin2[j])		// fcomp; test ah,5; jp
+				bmin2[j] = p[j];
+			if(p[j] > bmax2[j])		// fcomp; test ah,0x41; jne
+				bmax2[j] = p[j];
+			}
+		}
+
+	NxReal dx2 = bmax2[0] - bmin2[0];
+	NxReal dy2 = bmax2[1] - bmin2[1];
+	NxReal dz2 = bmax2[2] - bmin2[2];
+
+	if(dx2 < 0.000001f || dy2 < 0.000001f || dz2 < 0.000001f || vcount < 3)
+		{
+		// 0x0007da49.
+		NxReal cx = dx2 * 0.5f + bmin2[0];
+		NxReal cy = dy2 * 0.5f + bmin2[1];
+		NxReal cz = dz2 * 0.5f + bmin2[2];
+
+		double len = FLT_MAX;
+		if(dx2 >= 0.000001f && dx2 < FLT_MAX)
+			len = dx2;
+		if(dy2 >= 0.000001f && dy2 < len)
+			len = dy2;
+		if(dz2 >= 0.000001f && dz2 < len)
+			len = dz2;
+
+		if(len == FLT_MAX)		// fucompp; test ah,0x44; jp
+			{
+			dx2 = dy2 = dz2 = 0.01f;
+			}
+		else
+			{
+			if(dx2 < 0.000001f)
+				dx2 = (NxReal) (0.05f * len);
+			if(dy2 < 0.000001f)
+				dy2 = (NxReal) (0.05f * len);
+			if(dz2 < 0.000001f)
+				dz2 = (NxReal) (0.05f * len);
+			}
+
+		double x1 = cx - dx2;
+		double x2 = cx + dx2;
+		double y1 = cy - dy2;
+		double y2 = cy + dy2;
+		double z1 = cz - dz2;
+		double z2 = cz + dz2;
+
+		vcount = 0;
+
+		addPoint(vcount, vertices, (NxReal) x1, (NxReal) y1, (NxReal) z1);
+		addPoint(vcount, vertices, (NxReal) x2, (NxReal) y1, (NxReal) z1);
+		addPoint(vcount, vertices, (NxReal) x2, (NxReal) y2, (NxReal) z1);
+		addPoint(vcount, vertices, (NxReal) x1, (NxReal) y2, (NxReal) z1);
+		addPoint(vcount, vertices, (NxReal) x1, (NxReal) y1, (NxReal) z2);
+		addPoint(vcount, vertices, (NxReal) x2, (NxReal) y1, (NxReal) z2);
+		addPoint(vcount, vertices, (NxReal) x2, (NxReal) y2, (NxReal) z2);
+		addPoint(vcount, vertices, (NxReal) x1, (NxReal) y2, (NxReal) z2);
+
+		return true;
+		}
+
+	if(reduce && vcount > maxVertices)
+		{
+		HullVertexReducer reducer;
+		reducer.reduceVertices(mAllocator, vcount, vertices, vcount, vertices, maxVertices);
+		}
+
 	return true;
 	}
 
@@ -223,17 +491,6 @@ void QhullHost::writeFailObj(NxU32 vcount, const NxReal* vertices, NxU32 stride)
 		vtx += stride;
 		}
 	fclose(fph);
-	}
-
-// Inlined eight times in 003253 (0x0007e226-0x0007e2f5): the vertex goes to
-// the end of the array and the count is bumped after each store.
-static inline void addPoint(NxU32& vcount, NxReal* p, NxReal x, NxReal y, NxReal z)
-	{
-	NxReal* dest = &p[vcount * 3];
-	dest[0] = x;
-	dest[1] = y;
-	dest[2] = z;
-	vcount++;
 	}
 
 // phys_fn_003253 (0x0007e0f0, 526 B)
@@ -769,4 +1026,15 @@ void qhNovodeXNarrowHull()
 void qhNovodeXErrexit(int exitcode)
 	{
 	gQhullHost->errexit(exitcode);
+	}
+
+// PLACEHOLDER, NOT A ROW. HullVertexReducer::reduceVertices is band B's entry
+// phys_fn_003369 (0x00080e90) and belongs to qhull-gap piece 4d, which writes
+// the Wu quantizer in its own file. Until then it leaves the cloud as it is --
+// no quantization, so a cloud over maxVertices goes to qhull whole -- so that
+// cleanupVertices' reduce arm links. It carries no stable-ID line and no
+// inventory row names it. When 4d's definition lands, delete this one.
+void HullVertexReducer::reduceVertices(HullAllocator* /*allocator*/, NxU32 /*svcount*/,
+	const NxReal* /*svertices*/, NxU32& /*vcount*/, NxReal* /*vertices*/, NxU32 /*maxVertices*/)
+	{
 	}

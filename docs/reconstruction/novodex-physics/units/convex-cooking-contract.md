@@ -607,6 +607,33 @@ diagonal-plane set the same FAIL dump sequence, `boxFallback` retry and OK resul
 differences seen were in `cleanupVertices`' territory: the oracle's clean-up writes `+0.0`
 where the input had `-0.0` and reorders one 30-point set.
 
+**As written (Task 4c).** `QhullHost::cleanupVertices` replaces the placeholder in place, one
+function under both stable-ID lines (`003245` begins inside the second bounding-box loop, reached
+by the jump at 0x0007d953). It is Ratcliff's `CleanupVertices` with NovodeX's two arms: the weld
+runs only when `weld` is set (0x0007d7f0), and a non-degenerate cleaned cloud larger than
+`maxVertices` goes to band B when `reduce` is set (0x0007da0c-0x0007da38). Read from the listing:
+- `*vcount = 0` and the `(1,1,1)` scale are written before the first box (0x0007d5d2-0x0007d5e4).
+- The first degenerate box takes an extent as the running shortest when it is `> 1e-6f`
+  (`test ah,0x41`); the second, after the weld, when it is `>= 1e-6f` (`test ah,1`). The first
+  compare against the running shortest is folded to `FLT_MAX` from memory.
+- The weld keeps the new point when `dist(stored) < dist(new)` (`fcompp`, false on NaN). Both
+  squared distances are summed `(z*z + y*y) + x*x` (0x0007d880-0x0007d8a6). The stored vertex's
+  y and z offsets from the centre are spilled to float (0x0007d871, 0x0007d87d); the other four
+  offsets, the scaled `px` (0x0007d7d4) and the weld's `|v - p|` differences stay on the stack.
+- The reduce call is `thiscall` on an object with no fields, built in the dead `weld` argument
+  slot (`lea ecx,[esp+0x6c]`), with `(host+0x4048, vcount, vertices, &vcount, vertices,
+  maxVertices)`; its result is not read. `QhullHost.h` declares it as
+  `HullVertexReducer::reduceVertices`, and `QhullHost.cpp` holds a marked no-op placeholder for
+  it (no stable-ID line) until piece 4d writes band B.
+
+A local check (not committed) called 0x0007d5b0 in the pinned DLL and the candidate on 24 point
+sets (tetrahedron, cube, lattice, sphere(96), 200 and 300 random, weld pairs, `-0.0`, flat,
+collinear, axis line, all equal, two points, one point, zero points, sub-epsilon extents, sets
+that weld to two points or to a flat cloud, 1e6 and 1e-4 scales, a diagonal plane, stride 20),
+each with weld and scale on and off, under control words 0x027f, 0x037f, 0x007f and 0x0f7f:
+every return, count, scale word and output word identical in 407 of 408 cases. The one difference was a
+300-point set with `reduce` on, which reaches the quantizer placeholder.
+
 ### Dependency closure
 
 **write (Task 4): 40 rows, 12,493 B.** 34 of them are `discovered` (11,968 B). The other six

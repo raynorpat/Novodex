@@ -45815,11 +45815,11 @@ void __thiscall FUN_1007d590(void *this,void *param_1)
 
 ```
 
-## phys_fn_003243 (0x0007d5b0, 933 B, discovered)
+## phys_fn_003243 (0x0007d5b0, 933 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/QhullHost.cpp
+- implementation: Physics/src/QhullHost.cpp
 - prototype: undefined4 __thiscall FUN_1007d5b0(float param_1, float * param_2, float param_3, uint * param_4, float * param_5, float param_6, float * param_7, char param_8, float param_9, uint param_10)
 - calling convention: __thiscall, stack purge: 40
 - callers: phys_fn_003279 (0x0007ea10)
@@ -46159,11 +46159,11 @@ LAB_1007de29:
 
 ```
 
-## phys_fn_003245 (0x0007d960, 1331 B, discovered)
+## phys_fn_003245 (0x0007d960, 1331 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/QhullHost.cpp
+- implementation: Physics/src/QhullHost.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none

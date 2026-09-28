@@ -59787,13 +59787,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1189",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11667",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::cleanupVertices, entry) and checked against the Capstone listing 0x0007d5b0-0x0007de93 instruction by instruction: every compare's NaN polarity (test ah,5/jp for <, ah,0x41/jne for >, ah,1/jne for >=, fucompp ah,0x44/jp for ==), the constants read from the PE (1e-6f .rdata:0x00106880, 0.5f 0x001043cc, 1.0f 0x001041ec, FLT_MAX 0x00106858, 0.05f 0x001135b8, 0.01f immediate 0x3c23d70a), the register lifetimes (px, len, weld differences, squared distances and box corners double; extents, centres, reciprocals, py, pz and the two spilled offsets NxReal) and the listing's summation order (z*z + y*y) + x*x of both squared distances (0x0007d880-0x0007d8a6); contract units/convex-cooking-contract.md. The reduce arm calls band B's reduceVertices (003369, piece 4d), a marked placeholder in QhullHost.cpp until 4d lands",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003244",
@@ -59823,13 +59824,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1189",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11686",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::cleanupVertices, continuation) and checked against the Capstone listing 0x0007d5b0-0x0007de93 instruction by instruction: every compare's NaN polarity (test ah,5/jp for <, ah,0x41/jne for >, ah,1/jne for >=, fucompp ah,0x44/jp for ==), the constants read from the PE (1e-6f .rdata:0x00106880, 0.5f 0x001043cc, 1.0f 0x001041ec, FLT_MAX 0x00106858, 0.05f 0x001135b8, 0.01f immediate 0x3c23d70a), the register lifetimes (px, len, weld differences, squared distances and box corners double; extents, centres, reciprocals, py, pz and the two spilled offsets NxReal) and the listing's summation order (z*z + y*y) + x*x of both squared distances (0x0007d880-0x0007d8a6); contract units/convex-cooking-contract.md. The reduce arm calls band B's reduceVertices (003369, piece 4d), a marked placeholder in QhullHost.cpp until 4d lands",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0007d5b0"
+      "notes": "continuation of the entry at 0x0007d5b0",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003246",
