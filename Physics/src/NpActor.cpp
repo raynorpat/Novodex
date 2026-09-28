@@ -1211,29 +1211,89 @@ const NxMat34 & NpActorVtable::getGlobalPoseReference() const
 	return *reinterpret_cast<const NxMat34*>(body + 0x20);
 	}
 
+static float nxNpActorX87Dot3(float a, float b, float c, float d, float e, float f);
+static void nxNpActorWakeAfterCMassWrite(unsigned char* record);
+
+// phys_fn_000784 (0x000194b0, 368 B)
+// A row of gap:SceneRaycast.cpp..CapsuleShape.cpp (thiscall on the record,
+// (position, quaternion), `ret 8`): the kinematic target writer the three
+// moves call. The 0x20-byte block at [record+0x118] is written with no null
+// test: a non-null position goes to +0..+8 and ORs 1 into +0xc, a non-null
+// quaternion to +0x10..+0x1c and ORs 2. Then the wake every setter has
+// (0x1950a-0x1961b): unless +0x114 & 0x100, an ordered +0x84 < 0.39999998f
+// raises +0x84 and +0x4c to 0x3ecccccc and marks 0x10.
+static void nxNpActorSetKinematicTarget(unsigned char* record,
+	const float* position, const float* quaternion)
+	{
+	if(position)
+		{
+		unsigned char* target = *reinterpret_cast<unsigned char**>(record + 0x118);
+		memcpy(target, position, 3 * sizeof(float));
+		*reinterpret_cast<unsigned*>(target + 0xc) |= 1u;
+		}
+	if(quaternion)
+		{
+		unsigned char* target = *reinterpret_cast<unsigned char**>(record + 0x118);
+		memcpy(target + 0x10, quaternion, 4 * sizeof(float));
+		*reinterpret_cast<unsigned*>(target + 0xc) |= 2u;
+		}
+	nxNpActorWakeAfterCMassWrite(record);
+	}
+
 // phys_fn_000124 (0x00003b40, 1075 B)
+// The target is the mass frame's world pose, pose * {F = +0xdc, p = +0x100}:
+// - 0x3bad-0x3c23: the centre M p + t. Row 0, (p0 m0 + p1 m1) + p2 m2, stays in
+//   the register and has t.x added there; rows 1, (m5 p2 + p0 m3) + m4 p1, and
+//   2, (p1 m7 + m6 p0) + p2 m8, are spilled to float before t.y/t.z are added;
+// - 0x3c27-0x3d6c: G = M F, nine x87 dot products in the listing's operand
+//   orders, each rounded once;
+// - 0x3d7c-0x3f14: the quaternion of G by the 000801 conversion ((G8 + G4)
+//   spilled, register reciprocals);
+// - 0x3f16: 000784(position, quaternion).
 void NpActorVtable::moveGlobalPose(const NxMat34& pose)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
 	if(!nxNpActorWriteTry(ctx, 0x28f)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(!record || (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
-		nxNpActorReport(0x291, "Actor::moveGlobalPose: Actor must be kinematic!");
-	else
 		{
-		unsigned char* target = *reinterpret_cast<unsigned char**>(record + 0x118);
-		if(target)
-			{
-			memcpy(target, &pose.t, sizeof(pose.t));
-			*reinterpret_cast<unsigned*>(target + 0x0c) = 3;
-			const NxQuat orientation(pose.M);
-			memcpy(target + 0x10, &orientation, sizeof(orientation));
-			}
+		nxNpActorReport(0x291, "Actor::moveGlobalPose: Actor must be kinematic!");
+		nxNpSceneGuardLeave(ctx);
+		return;
 		}
+	float m[9];
+	pose.M.getRowMajor(m);
+	const float* f = reinterpret_cast<const float*>(record + 0xdc);
+	const float* p = reinterpret_cast<const float*>(record + 0x100);
+	const double c0 = (static_cast<double>(p[0]) * m[0] + static_cast<double>(p[1]) * m[1]) +
+		static_cast<double>(p[2]) * m[2];
+	const float c1 = static_cast<float>((static_cast<double>(m[5]) * p[2] +
+		static_cast<double>(p[0]) * m[3]) + static_cast<double>(m[4]) * p[1]);
+	const float c2 = static_cast<float>((static_cast<double>(p[1]) * m[7] +
+		static_cast<double>(m[6]) * p[0]) + static_cast<double>(p[2]) * m[8]);
+	float position[3];
+	position[0] = static_cast<float>(c0 + pose.t.x);
+	position[1] = static_cast<float>(static_cast<double>(c1) + pose.t.y);
+	position[2] = static_cast<float>(static_cast<double>(c2) + pose.t.z);
+	float g[9];
+	g[0] = nxNpActorX87Dot3(f[3], m[1], f[0], m[0], m[2], f[6]);
+	g[1] = nxNpActorX87Dot3(f[7], m[2], f[4], m[1], f[1], m[0]);
+	g[2] = nxNpActorX87Dot3(f[5], m[1], m[0], f[2], f[8], m[2]);
+	g[3] = nxNpActorX87Dot3(f[0], m[3], m[5], f[6], m[4], f[3]);
+	g[4] = nxNpActorX87Dot3(f[1], m[3], m[5], f[7], m[4], f[4]);
+	g[5] = nxNpActorX87Dot3(f[8], m[5], f[5], m[4], f[2], m[3]);
+	g[6] = nxNpActorX87Dot3(f[0], m[6], m[8], f[6], f[3], m[7]);
+	g[7] = nxNpActorX87Dot3(f[7], m[8], f[4], m[7], f[1], m[6]);
+	g[8] = nxNpActorX87Dot3(m[6], f[2], f[8], m[8], f[5], m[7]);
+	float quaternion[4];
+	nxNpActorBodyQuaternionFromMatrix(g, quaternion);
+	nxNpActorSetKinematicTarget(record, position, quaternion);
 	nxNpSceneGuardLeave(ctx);
 	}
 
 // phys_fn_000090 (0x00002df0, 211 B)
+// 0x2e48-0x2e79: the target position is the input plus the local mass
+// position +0x100 (not rotated), each sum rounded; then 000784(&v, 0).
 void NpActorVtable::moveGlobalPosition(const NxVec3& position)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
@@ -1243,36 +1303,64 @@ void NpActorVtable::moveGlobalPosition(const NxVec3& position)
 		nxNpActorReport(0x2a1, "Actor::moveGlobalPosition: Actor must be kinematic!");
 	else
 		{
-		unsigned char* target = *reinterpret_cast<unsigned char**>(record + 0x118);
-		if(target)
-			{
-			memcpy(target, &position, sizeof(position));
-			*reinterpret_cast<unsigned*>(target + 0x0c) |= 1u;
-			}
+		const float* p = reinterpret_cast<const float*>(record + 0x100);
+		float target[3];
+		target[2] = p[2] + position.z;
+		target[1] = p[1] + position.y;
+		target[0] = p[0] + position.x;
+		nxNpActorSetKinematicTarget(record, target, 0);
 		}
 	nxNpSceneGuardLeave(ctx);
 	}
 
 // phys_fn_000126 (0x00003f80, 1192 B)
-// The oracle composes the target inline under this one write lock; the
-// composition is still delegated to moveGlobalPose (a row-level defect), but
-// the lock, G1 line 0x2ac and the kinematic check with E1 line 0x2ae are this
-// row's, so the nested moveGlobalPose (re-entrant on this thread) never
-// reports its own lines.
+// The same composition as 000124 with the actor's current position +0x50
+// as the translation, inline under this row's own lock (G1 0x2ac, E1 0x2ae),
+// in its own operand orders:
+// - 0x3fed-0x40a1: row 0, (m1 p1 + m2 p2) + m0 p0, in the register added to
+//   +0x50; rows 1, (m4 p1 + m5 p2) + m3 p0, and 2, (m7 p1 + m8 p2) + m6 p0,
+//   spilled to float before +0x54/+0x58 are added;
+// - 0x409d-0x421e: G = M F, each element of row i summed as
+//   (m[i][0] F[0][0] + m[i][1] F[1][0]) + m[i][2] F[2][0] in column 0 and
+//   (m[i][1] F[1][j] + m[i][2] F[2][j]) + m[i][0] F[0][j] in columns 1 and 2;
+// - 0x4231-0x43c9: the 000801 conversion of G; 0x43cb: 000784.
 void NpActorVtable::moveGlobalOrientation(const NxMat33& orientation)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
 	if(!nxNpActorWriteTry(ctx, 0x2ac)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(!record || (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
-		nxNpActorReport(0x2ae, "Actor::moveGlobalOrientation: Actor must be kinematic!");
-	else
 		{
-		NxMat34 pose;
-		pose.M = orientation;
-		pose.t = getGlobalPositionVal();
-		moveGlobalPose(pose);
+		nxNpActorReport(0x2ae, "Actor::moveGlobalOrientation: Actor must be kinematic!");
+		nxNpSceneGuardLeave(ctx);
+		return;
 		}
+	float m[9];
+	orientation.getRowMajor(m);
+	const float* f = reinterpret_cast<const float*>(record + 0xdc);
+	const float* p = reinterpret_cast<const float*>(record + 0x100);
+	const float* t = reinterpret_cast<const float*>(record + 0x50);
+	const double c0 = (static_cast<double>(m[1]) * p[1] + static_cast<double>(m[2]) * p[2]) +
+		static_cast<double>(m[0]) * p[0];
+	const float c1 = static_cast<float>((static_cast<double>(m[4]) * p[1] +
+		static_cast<double>(m[5]) * p[2]) + static_cast<double>(m[3]) * p[0]);
+	const float c2 = static_cast<float>((static_cast<double>(m[7]) * p[1] +
+		static_cast<double>(m[8]) * p[2]) + static_cast<double>(m[6]) * p[0]);
+	float position[3];
+	position[0] = static_cast<float>(static_cast<double>(t[0]) + c0);
+	position[1] = static_cast<float>(static_cast<double>(t[1]) + c1);
+	position[2] = static_cast<float>(static_cast<double>(t[2]) + c2);
+	float g[9];
+	for(unsigned row = 0; row < 3; ++row)
+		{
+		const float* a = m + row * 3;
+		g[row * 3] = nxNpActorX87Dot3(a[0], f[0], a[1], f[3], a[2], f[6]);
+		g[row * 3 + 1] = nxNpActorX87Dot3(a[1], f[4], a[2], f[7], a[0], f[1]);
+		g[row * 3 + 2] = nxNpActorX87Dot3(a[1], f[5], a[2], f[8], a[0], f[2]);
+		}
+	float quaternion[4];
+	nxNpActorBodyQuaternionFromMatrix(g, quaternion);
+	nxNpActorSetKinematicTarget(record, position, quaternion);
 	nxNpSceneGuardLeave(ctx);
 	}
 

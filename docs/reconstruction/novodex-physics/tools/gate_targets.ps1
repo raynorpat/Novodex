@@ -1040,6 +1040,30 @@ $NxRequiredCoverageLines = [ordered] @{
         'setter plane_saved=1.0.8.0.0.1.1.0.3f800000.0.0.0.bf800000.0.0.0.bf800000.3f800000.40000000.40400000.0.0.3f800000.40200000'
     )
     'NxPhysicsActorDynamicsTests' = @(
+        # NpActor.cpp completion Task 3 (000124, 000126, 000090, 000784): kinematic actors
+        # with rotated, offset mass frames; each move's full target block, wake words and
+        # dirty word, with the wake counter below, at and above 0.39999998f or asleep.
+        'dynamics kin_general created=1',
+        'dynamics kin_general_pose_low target=3d81b4e5.402c5f93.3f6aaaac.3.be8ad5e3.3ee76479.3f46ff5f.3eafdbb8 wake=3ecccccc.3ecccccc.0 dirty=10',
+        'dynamics kin_general_orientation_at target=401511ed.bf29a80e.bf408c4c.3.3f2f8f2a.3d22d663.3f26a76f.3ea561c2 wake=3ecccccc.3ecccccc.0 dirty=0',
+        'dynamics kin_general_position_below target=40733333.c09e6666.400e6666.1.0.0.0.0 wake=3ecccccc.3ecccccc.0 dirty=10',
+        'dynamics kin_general_pose_asleep target=3d81b4e5.402c5f93.3f6aaaac.3.be8ad5e3.3ee76479.3f46ff5f.3eafdbb8 wake=0.0.100 dirty=0',
+        'dynamics kin_general_orientation_high target=40540da7.bf4e81b4.3f2aaaac.3.be8ad5e3.3ee76479.3f46ff5f.3eafdbb8 wake=3f000000.3f000000.0 dirty=0',
+        'dynamics kin_general_position_or target=be4ccccc.bee66666.40e33333.3.be8ad5e3.3ee76479.3f46ff5f.3eafdbb8 wake=3f000000.3f000000.0 dirty=0',
+        'dynamics kin_identity_frame created=1',
+        'dynamics kin_identity_frame_pose_low target=bfb2848d.3fa7a26f.3e205b64.3.3e1ac3e0.3f6825d0.be9ac3e0.3e80f890 wake=3ecccccc.3ecccccc.0 dirty=10',
+        'dynamics kin_identity_frame_orientation_at target=3fff440e.3e79ffc0.3f7df506.3.be4c8b64.3e7fae3d.3f661ccf.3e99688b wake=3ecccccc.3ecccccc.0 dirty=0',
+        'dynamics kin_identity_frame_position_below target=40733333.c09e6666.400e6666.1.0.0.0.0 wake=3ecccccc.3ecccccc.0 dirty=10',
+        'dynamics kin_identity_frame_pose_asleep target=bfb2848d.3fa7a26f.3e205b64.3.3e1ac3e0.3f6825d0.be9ac3e0.3e80f890 wake=0.0.100 dirty=0',
+        'dynamics kin_identity_frame_orientation_high target=3fed7b73.c00c2ec8.bdbf4938.3.3e1ac3e0.3f6825d0.be9ac3e0.3e80f890 wake=3f000000.3f000000.0 dirty=0',
+        'dynamics kin_identity_frame_position_or target=be4ccccc.bee66666.40e33333.3.3e1ac3e0.3f6825d0.be9ac3e0.3e80f890 wake=3f000000.3f000000.0 dirty=0',
+        'dynamics kin_rotated_frame created=1',
+        'dynamics kin_rotated_frame_pose_low target=bfc66666.404ccccd.3feccccd.3.be4d9285.3f741dfd.3e4d9285.bdcd9285 wake=3ecccccc.3ecccccc.0 dirty=10',
+        'dynamics kin_rotated_frame_orientation_at target=40005816.c0040f6a.3fa7e9fb.3.3f3a85c2.3eb7dba0.3f1537d0.3caa88ff wake=3ecccccc.3ecccccc.0 dirty=0',
+        'dynamics kin_rotated_frame_position_below target=40733333.c09e6666.400e6666.1.0.0.0.0 wake=3ecccccc.3ecccccc.0 dirty=10',
+        'dynamics kin_rotated_frame_pose_asleep target=bfc66666.404ccccd.3feccccd.3.be4d9285.3f741dfd.3e4d9285.bdcd9285 wake=0.0.100 dirty=0',
+        'dynamics kin_rotated_frame_orientation_high target=3fd9999a.be99999a.3fcccccd.3.be4d9285.3f741dfd.3e4d9285.bdcd9285 wake=3f000000.3f000000.0 dirty=0',
+        'dynamics kin_rotated_frame_position_or target=be4ccccc.bee66666.40e33333.3.be4d9285.3f741dfd.3e4d9285.bdcd9285 wake=3f000000.3f000000.0 dirty=0',
         'dynamics created=1',
         'dynamics mass=40a00000.3e4ccccd.40a00000.100',
         'dynamics inertia=40000000.40400000.40800000.3f000000.3eaaaaab.3e800000',
@@ -2905,7 +2929,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 159  # 34 for NxPhysicsAssetTests, 125 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 24 from qhull-gap Task 1)
-    '5' = 1408 # 126 object-layout, 1 shape-vtable and 1281 public actor/pruner/box/scene lines
+    '5' = 1429 # 126 object-layout, 1 shape-vtable and 1302 public actor/pruner/box/scene lines
                # (744 + 251 from NpActor.cpp completion Task 2; RED on purpose: vtables
                # family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent

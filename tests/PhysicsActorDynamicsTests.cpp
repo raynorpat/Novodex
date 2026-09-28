@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(
 	NxU32, NxUserAllocator*, NxUserOutputStream*);
@@ -42,6 +43,100 @@ static void printMoveState(const char* label, const unsigned char* state,
 		word(record, 0x50), word(record, 0x54), word(record, 0x58));
 }
 
+// NpActor.cpp completion Task 3 (000124, 000126, 000090 and 000784): a
+// kinematic actor with a rotated, offset mass frame. Each move prints the
+// whole 0x20-byte target block, the wake words (+0x84, +0x4c, +0x114) and the
+// record's dirty flags; the wake counter is set before each move to just
+// below, at and above 0.39999998f, or the actor is put to sleep.
+static NxMat33 rotationOf(float x, float y, float z, float w)
+{
+	const float inv = 1.0f / sqrtf(x * x + y * y + z * z + w * w);
+	x *= inv; y *= inv; z *= inv; w *= inv;
+	NxMat33 m;
+	m.setRow(0, NxVec3(1.0f - 2.0f * (y * y + z * z), 2.0f * (x * y - w * z), 2.0f * (x * z + w * y)));
+	m.setRow(1, NxVec3(2.0f * (x * y + w * z), 1.0f - 2.0f * (x * x + z * z), 2.0f * (y * z - w * x)));
+	m.setRow(2, NxVec3(2.0f * (x * z - w * y), 2.0f * (y * z + w * x), 1.0f - 2.0f * (x * x + y * y)));
+	return m;
+}
+static void printTarget(const char* label, NxActor* actor)
+{
+	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(
+		reinterpret_cast<const unsigned char*>(actor) + 0x14);
+	const unsigned char* record = *reinterpret_cast<unsigned char* const*>(body + 8);
+	const unsigned char* state = *reinterpret_cast<unsigned char* const*>(record + 0x118);
+	const unsigned char* aux = *reinterpret_cast<unsigned char* const*>(record + 0x120);
+	const unsigned* flags = *reinterpret_cast<unsigned* const*>(aux + 0x40);
+	printf("dynamics %s target=", label);
+	for(unsigned i = 0; i < 8; ++i)
+		printf("%s%x", i ? "." : "", word(state, 4 * i));
+	printf(" wake=%x.%x.%x dirty=%x\n", word(record, 0x84), word(record, 0x4c),
+		word(record, 0x114), flags[word(record, 0x11c)]);
+}
+// The target block is cleared and the record's dirty word zeroed before a
+// move, so the move's own flag bits and wake mark (0x10) are what is printed;
+// afterwards the dirty list, index and word are put back.
+struct DirtyWindow
+{
+	unsigned* flags; unsigned* index; unsigned** end; unsigned id;
+	unsigned savedFlags, savedIndex; unsigned* savedEnd;
+	DirtyWindow(NxActor* actor)
+	{
+		const unsigned char* body = *reinterpret_cast<unsigned char* const*>(
+			reinterpret_cast<const unsigned char*>(actor) + 0x14);
+		const unsigned char* record = *reinterpret_cast<unsigned char* const*>(body + 8);
+		unsigned char* state = *reinterpret_cast<unsigned char* const*>(record + 0x118);
+		memset(state, 0, 0x20);
+		unsigned char* aux = *reinterpret_cast<unsigned char* const*>(record + 0x120);
+		flags = *reinterpret_cast<unsigned**>(aux + 0x40);
+		index = *reinterpret_cast<unsigned**>(aux + 0x60);
+		end = reinterpret_cast<unsigned**>(aux + 0x54);
+		id = word(record, 0x11c);
+		savedFlags = flags[id]; savedIndex = index[id]; savedEnd = *end;
+	}
+	void open() { flags[id] = 0; }
+	void close() { flags[id] = savedFlags; index[id] = savedIndex; *end = savedEnd; }
+};
+static void kinematicMoves(NxScene* scene, const char* name, const NxMat33& massRotation,
+	const NxMat33& first, const NxMat33& second)
+{
+	NxBoxShapeDesc box;
+	box.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
+	NxBodyDesc bodyDesc;
+	bodyDesc.mass = 4.0f;
+	bodyDesc.massSpaceInertia = NxVec3(1.0f, 2.0f, 3.0f);
+	bodyDesc.massLocalPose.M = massRotation;
+	bodyDesc.massLocalPose.t = NxVec3(0.3f, -0.7f, 1.1f);
+	NxActorDesc actorDesc;
+	actorDesc.shapes.pushBack(&box);
+	actorDesc.body = &bodyDesc;
+	actorDesc.globalPose.t = NxVec3(2.0f, -1.0f, 0.5f);
+	NxActor* actor = scene->createActor(actorDesc);
+	printf("dynamics kin_%s created=%u\n", name, actor ? 1u : 0u);
+	if(!actor) return;
+	actor->raiseBodyFlag(NX_BF_KINEMATIC);
+	char label[96];
+	NxMat34 pose;
+	pose.M = first;
+	pose.t = NxVec3(-1.25f, 2.5f, 0.75f);
+	actor->wakeUp(0.1f);
+	{ DirtyWindow w(actor); w.open(); actor->moveGlobalPose(pose);
+	sprintf(label, "kin_%s_pose_low", name); printTarget(label, actor); w.close(); }
+	actor->wakeUp(0.39999998f);
+	{ DirtyWindow w(actor); w.open(); actor->moveGlobalOrientation(second);
+	sprintf(label, "kin_%s_orientation_at", name); printTarget(label, actor); w.close(); }
+	actor->wakeUp(0.39999995f);
+	{ DirtyWindow w(actor); w.open(); actor->moveGlobalPosition(NxVec3(3.5f, -4.25f, 1.125f));
+	sprintf(label, "kin_%s_position_below", name); printTarget(label, actor); w.close(); }
+	actor->putToSleep();
+	{ DirtyWindow w(actor); w.open(); actor->moveGlobalPose(pose);
+	sprintf(label, "kin_%s_pose_asleep", name); printTarget(label, actor); w.close(); }
+	actor->wakeUp(0.5f);
+	{ DirtyWindow w(actor); w.open(); actor->moveGlobalOrientation(first);
+	sprintf(label, "kin_%s_orientation_high", name); printTarget(label, actor);
+	actor->moveGlobalPosition(NxVec3(-0.5f, 0.25f, 6.0f));
+	sprintf(label, "kin_%s_position_or", name); printTarget(label, actor); w.close(); }
+	scene->releaseActor(*actor);
+}
 int wmain(int argc, wchar_t** argv)
 {
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -201,6 +296,14 @@ int wmain(int argc, wchar_t** argv)
 		word(densityRecord, 0x194), word(densityRecord, 0xc4),
 		word(densityRecord, 0xc8), word(densityRecord, 0xcc));
 	scene->releaseActor(*densityActor);
+	// NpActor.cpp completion Task 3: the targets walk every arm of 000124's
+	// and 000126's quaternion conversion (trace, and the x, y and z pivots).
+	kinematicMoves(scene, "general", rotationOf(-0.3f, 0.5f, 0.2f, 0.8f),
+		rotationOf(1.0f, 2.0f, 3.0f, 4.0f), rotationOf(0.95f, 0.2f, 0.1f, 0.2f));
+	kinematicMoves(scene, "identity_frame", NxMat33(NX_IDENTITY_MATRIX),
+		rotationOf(0.15f, 0.9f, -0.3f, 0.25f), rotationOf(-0.2f, 0.25f, 0.9f, 0.3f));
+	kinematicMoves(scene, "rotated_frame", rotationOf(0.95f, 0.2f, 0.1f, 0.2f),
+		rotationOf(0.0f, 0.0f, 1.0f, 0.0f), rotationOf(0.2f, -0.4f, 0.3f, 0.8f));
 	sdk->releaseScene(*scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);
