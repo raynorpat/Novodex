@@ -72961,13 +72961,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1495",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13111",
-      "static_proof": null,
+      "static_proof": "compiler-generated NxJointDesc::isValid (slot 2 of NxJointDesc's table 0x10117a44): Physics/src/core/SceneDump.cpp carries only its stable-ID line in address order before writeJoint (phys_fn_004037), which constructs the joint descriptors on its stack; the compiler emits it from the immutable public header (NxJointDesc.h; candidate ?isValid@NxJointDesc@@UBE_NXZ, 0x10053780 in build/Release/NxPhysics.map), as the oracle does from the same header in the same unit. The candidate links /OPT:NOICF, so where the oracle folded identical bodies into this one row the candidate keeps one copy per descriptor class; see units/effector-coredump-contract.md (### Task 3a record) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_003982",
@@ -73034,12 +73035,13 @@
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "template + FLT_MAX/identity init (0x8fc50)",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1927",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13119",
-      "static_proof": "identity 1.0f at +0x10/+0x30/+0x3c and +0x1c; zero many; +0x58/+0x5c=FLT_MAX; +0x68=2; ret",
+      "static_proof": "identity 1.0f at +0x10/+0x30/+0x3c and +0x1c; zero many; +0x58/+0x5c=FLT_MAX; +0x68=2; ret; product row compiler-generated NxJointDesc::setToDefault (slot 1 of 0x10117a44 and of the six descriptor tables writeJoint installs): Physics/src/core/SceneDump.cpp carries only its stable-ID line in address order before writeJoint (phys_fn_004037), which constructs the joint descriptors on its stack; the compiler emits it from the immutable public header (NxJointDesc.h; candidate ?setToDefault@NxJointDesc@@UAEXXZ, 0x10054f80, slot 1 of the candidate NxJointDesc, NxRevoluteJointDesc and NxSphericalJointDesc tables), as the oracle does from the same header in the same unit. The candidate links /OPT:NOICF, so where the oracle folded identical bodies into this one row the candidate keeps one copy per descriptor class; see units/effector-coredump-contract.md (### Task 3a record) (effector-and-coredump Task 3a)",
       "dynamic_proof": "confirmed via tmplfm drive (3z69): failures=0",
-      "notes": ""
+      "notes": "Product row since effector-and-coredump Task 3a in Physics/src/core/SceneDump.cpp. Previous source: template + FLT_MAX/identity init (0x8fc50).",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_003986",
@@ -73159,13 +73161,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1497",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13127",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_003993",
@@ -73195,13 +73198,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1498",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13128",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_003995",
@@ -73213,13 +73217,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1499",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13129",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_003996",
@@ -73249,13 +73254,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1500",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13141",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_003998",
@@ -73285,13 +73291,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1501",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13168",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004000",
@@ -73340,12 +73347,13 @@
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "delimiter scan (0x90db0, ret 4)",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1502",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13194",
-      "static_proof": "returns 1 if the string via [esp+4] contains any delimiter char (space,quote,tab,comma,parens,=,[,],{,},#), else 0; ret 4",
+      "static_proof": "returns 1 if the string via [esp+4] contains any delimiter char (space,quote,tab,comma,parens,=,[,],{,},#), else 0; ret 4; product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": "confirmed via delimscan drive (3z90): failures=0",
-      "notes": ""
+      "notes": "Product row since effector-and-coredump Task 3a in Physics/src/core/SceneDump.cpp. Previous source: delimiter scan (0x90db0, ret 4).",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004003",
@@ -73375,13 +73383,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1503",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13198",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004005",
@@ -73411,13 +73420,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1504",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13202",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004007",
@@ -73429,13 +73439,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1505",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13207",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004008",
@@ -73465,13 +73476,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1506",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13213",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004010",
@@ -73501,13 +73513,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1507",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13214",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004012",
@@ -73537,13 +73550,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1508",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13215",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004014",
@@ -73573,13 +73587,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1509",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13217",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004016",
@@ -73681,13 +73696,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1512",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13226",
-      "static_proof": null,
+      "static_proof": "compiler-generated NxRevoluteJointDesc::isValid (slot 2 of 0x101182a4): Physics/src/core/SceneDump.cpp carries only its stable-ID line in address order before writeJoint (phys_fn_004037), which constructs the joint descriptors on its stack; the compiler emits it from the immutable public header (NxRevoluteJointDesc.h; candidate ?isValid@NxRevoluteJointDesc@@UBE_NXZ, 0x10053d30), as the oracle does from the same header in the same unit. The candidate links /OPT:NOICF, so where the oracle folded identical bodies into this one row the candidate keeps one copy per descriptor class; see units/effector-coredump-contract.md (### Task 3a record) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004022",
@@ -73717,13 +73733,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1513",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13233",
-      "static_proof": null,
+      "static_proof": "compiler-generated the isValid of the cylindrical, prismatic, point-on-line and point-in-plane descriptors (slot 2 of 0x10118280, 0x101182b4, 0x10118298, 0x1011828c): Physics/src/core/SceneDump.cpp carries only its stable-ID line in address order before writeJoint (phys_fn_004037), which constructs the joint descriptors on its stack; the compiler emits it from the immutable public header (their headers; candidate ?isValid@NxCylindricalJointDesc@@UBE_NXZ 0x10053660 and the prismatic, point-on-line and point-in-plane copies), as the oracle does from the same header in the same unit. The candidate links /OPT:NOICF, so where the oracle folded identical bodies into this one row the candidate keeps one copy per descriptor class; see units/effector-coredump-contract.md (### Task 3a record) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004024",
@@ -73753,13 +73770,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1945",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13240",
-      "static_proof": null,
+      "static_proof": "compiler-generated scalar deleting destructor of NxJointDesc and of every joint descriptor (slot 0 of the tables above): Physics/src/core/SceneDump.cpp carries only its stable-ID line in address order before writeJoint (phys_fn_004037), which constructs the joint descriptors on its stack; the compiler emits it from the immutable public header (NxJointDesc.h; candidate ??_GNxJointDesc@@UAEPAXI@Z 0x10052bf0 and one copy per descriptor), as the oracle does from the same header in the same unit. The candidate links /OPT:NOICF, so where the oracle folded identical bodies into this one row the candidate keeps one copy per descriptor class; see units/effector-coredump-contract.md (### Task 3a record) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004026",
@@ -73789,13 +73807,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1514",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13242",
-      "static_proof": null,
+      "static_proof": "compiler-generated NxSphericalJointDesc::isValid (slot 2 of 0x101182c0): Physics/src/core/SceneDump.cpp carries only its stable-ID line in address order before writeJoint (phys_fn_004037), which constructs the joint descriptors on its stack; the compiler emits it from the immutable public header (NxSphericalJointDesc.h; candidate ?isValid@NxSphericalJointDesc@@UBE_NXZ, 0x10053f50), as the oracle does from the same header in the same unit. The candidate links /OPT:NOICF, so where the oracle folded identical bodies into this one row the candidate keeps one copy per descriptor class; see units/effector-coredump-contract.md (### Task 3a record) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004028",
@@ -73969,13 +73988,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1518",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13265",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004038",
@@ -74005,13 +74025,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1518",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13270",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00092060"
+      "notes": "continuation of the entry at 0x00092060 (phys_fn_004037); written with it as SceneDump::writeJoint",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004040",
@@ -74041,13 +74062,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1518",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13279",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00092060"
+      "notes": "continuation of the entry at 0x00092060 (phys_fn_004037); written with it as SceneDump::writeJoint",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004042",
@@ -74077,13 +74099,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1518",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13282",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00092060"
+      "notes": "continuation of the entry at 0x00092060 (phys_fn_004037); written with it as SceneDump::writeJoint",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004044",
@@ -74419,13 +74442,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1522",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13448",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
       "id": "phys_fn_004063",
@@ -74530,12 +74554,13 @@
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "chained-field copy (0x95a40, ret 8)",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1525",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13481",
-      "static_proof": "out1 = [this+8] ? [*[this+8]+0x19c] : 0; out2 = [this+0xc] ? [*[this+0xc]+0x19c] : 0; ret 8",
+      "static_proof": "out1 = [this+8] ? [*[this+8]+0x19c] : 0; out2 = [this+0xc] ? [*[this+0xc]+0x19c] : 0; ret 8; product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": "confirmed via chaincopy drive (3z88): failures=0",
-      "notes": ""
+      "notes": "Product row since effector-and-coredump Task 3a in Physics/src/core/Joint.cpp. Previous source: chained-field copy (0x95a40, ret 8).",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004069",
@@ -74602,13 +74627,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1527",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13486",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004073",
@@ -74843,12 +74869,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "registry lookup with its own this (0x95cb0)",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1534",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13499",
-      "static_proof": "static review of the recorded shape: registry lookup with its own this (0x95cb0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
+      "static_proof": "static review of the recorded shape: registry lookup with its own this (0x95cb0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257); product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); not yet reachable from the public API (Task 4 wires NpPhysicsSDK::coreDump, phys_fn_000267, and records the dynamic proof) (effector-and-coredump Task 3a)",
       "dynamic_proof": "confirmed via the blockers differential (3z183): failures=0 for all seven rows, with each global function pointer and the registry global bound to the same recorders the candidate uses",
-      "notes": ""
+      "notes": "Product row since effector-and-coredump Task 3a in Physics/src/core/Joint.cpp. Previous source: registry lookup with its own this (0x95cb0). The parameterised model in Physics/src/ObjectModel.cpp stays.",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004086",

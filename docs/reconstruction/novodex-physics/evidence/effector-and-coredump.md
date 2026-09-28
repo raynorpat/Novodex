@@ -45,6 +45,24 @@ shows 000722 and 000760 running once per dynamic body. The record's +0x14 pad st
 `releaseActor`'s compound-shape branch order is recorded as unmeasured (contract, "### Task 2
 record").
 
+## Task 3a: the core dump's first half
+
+The core dump's infrastructure, joint blocks and entry are product code in
+`Physics/src/core/SceneDump.cpp` (new; `/arch:IA32`, `/EHs-c-`): the date, name and float-token
+rows, the settings records, the joint frame and limit text rows, the joint line, the joint block
+(004037 with its three continuations) and `PhysicsSDK::coreDump` (004062); the readers 004068,
+004072 and 004085 in `core/Joint.cpp`; the SDK parameter and group-mask arrays reach the dump
+through two accessors in `PhysicsSDK.cpp`. 27 rows, 11,793 B, 23 of them moved from `discovered`
+(the other four were model rows). The descriptor inlines carry stable-ID lines only. The asset
+writer 004051 is a placeholder for Task 3b.
+
+Nothing calls 004062 yet (000267 is the candidate stub), so this task records static proofs only:
+every row transcribed from the Capstone listing, and every format string the file passes to the
+CRT checked against the image. The listing corrected one contract claim: the 0x20000-byte block
+004062 allocates is the mesh-name table 003991 fills, reached through the three frame words
+passed to 004051 (contract, "### Task 3a record"). Gates 2, 3, 4, 6 (482/482) and 7 (355/355)
+pass; Phase 5 fails only on the vtables marker, as before.
+
 ## Timing
 
 | Task | Start | End | Rows written | Bytes written | Notes |
@@ -52,3 +70,4 @@ record").
 | 1 | 2026-09-28T07:58:00 (approx.; the first build started just before 08:00) | 2026-09-28T08:30:00 | 0 | 0 | Contract only. Fresh configure and Release build of the worktree (`build/`); Phase 6 gate baseline `status=pass` (403/403 coverage assertions). Bundles for `gap:fluids\NpImplicitMesh.cpp..NpSpringAndDamperEffector.cpp`, `NpSpringAndDamperEffector.cpp`, `gap:NpSpringAndDamperEffector.cpp..Joint.cpp` generated. Supplement rerun with the 34 existing plus 9 new requests (0x8ed50 0x8edb0 0x8f100 0x8fc00 0x8fc50 0x8fcb0 0x8fd00 0x91940 0x91de0), 43/43 `ok`, existing entries unchanged. Effector: 30 rows 3,325 B plus 12 Scene/NpScene rows 887 B; the candidate body record has no Observable part, which the effector's observer calls need (Task 2 prerequisite). Core dump: 41 rows 22,965 B plus 003981; always returns false; text and binary differ only in the float token; the file embeds the date and heap pointers, which the test must normalise. Split: 2 = 4,212 B, 3a = 11,793 B (24 rows incl. 003981), 3b = 11,630 B, 4 = 221 B. |
 | 2 | 2026-09-28T08:32:00 (approx.) | 2026-09-28T09:20:00 | 43 (40 hand-written, 3 compiler-generated: 003932 003938 003954) | 4,244 | 30 effector rows 3,325 B, 12 Scene/NpScene rows 887 B, 000713 32 B; deferred 000791 (133 B, needs 000782). Body record Observable (placement at +0, no field moved, no allocation), the 0x100 notify and `~Observable` in `releaseActor`, 000575 in `nxSceneDelete`. New staged-pair target `NxPhysicsEffectorTests`, 77 registered oracle lines, `stdout_delta=0`. Defect found by the transcript: shape id recycled after the shape free in `releaseActor` (fixed). Left: the record +0x14 pad (zeroed by the candidate) and the missing 000722 island snapshot (+0x1f8). Gates 2/3/4/6/7 pass, 5 only the vtables marker. |
 | 2 (review) | 2026-09-28T09:22:00 (approx.) | 2026-09-28T09:45:00 | 1 (000722) | 127 | Body construction now runs 000760 then 000722 (000797 0x1b6fb/0x1b702); root +0x1f8 and the island words identical to the oracle and registered (2 lines; floors 6/7 = 482/355). Trace re-taken (000722, 000760 hit 4 times each). 003970/003972 caveat added; compound-shape recycle order recorded. Gates 2/3/4/6/7 pass, 5 only the vtables marker. |
+| 3a | 2026-09-28T09:45:00 | 2026-09-28T10:10:38 | 27 (18 hand-written incl. 3 continuations of 004037; 6 compiler-generated desc inlines: 003981 003985 004021 004023 004025 004027; readers 004068 004072 004085) | 11,793 | `core/SceneDump.cpp` (new, /arch:IA32 and /EHs-c-) + `include/core/SceneDump.h`; readers in `core/Joint.cpp`; parameter/group-mask accessors in `PhysicsSDK.cpp`. Not wired (Task 4); static proofs only; 163/164 format literals NUL-delimited in the image (the 164th, `\r\n`, a string tail as in the oracle). Contract correction: the 0x20000 block is 003991's mesh-name table. 004051 placeholder for 3b. 23 rows discovered -> reconstructed, Phase 6 ledger 45/386. Gates 2/3/4/6/7 pass, 5 only the vtables marker. |

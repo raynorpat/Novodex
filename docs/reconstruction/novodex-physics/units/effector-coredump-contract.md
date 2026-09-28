@@ -279,7 +279,8 @@ nothing. The whole chain:
 - Close: 005673 `fclose` at 0x9576f, after the addendum, on the success path only (a failed
   open skips everything).
 - Scratch: 004062 calls `operator new(0x20000)` (005701) first and `free` (005668) last, on
-  both paths; the block is never used. It is CRT heap, not the SDK allocator.
+  both paths. It is CRT heap, not the SDK allocator. It is the mesh-name table 003991 fills
+  (0x8000 pointers), not an unused block; see "### Task 3a record".
 - 004051 allocates its pair arrays with `operator new` and frees them with `free` (005700/005668).
 
 ### Text vs binary
@@ -501,6 +502,69 @@ actor bodies and joints). Replace each distinct pointer by its first-appearance 
 printing. Text lines are otherwise printed verbatim; the binary-mode `$%x` suffixes are
 deterministic. The dump consumes the scene's joint iterator (+0x6bc) and the actor's settings
 are read under the recursive scene lock that 000267 already holds.
+
+### Task 3a record
+
+File placement: `Physics/src/core/SceneDump.cpp` with `Physics/src/include/core/SceneDump.h`.
+No row in the gap reports an error or carries another `__FILE__`-style string, so nothing names
+the oracle's unit; the file is named by what it does. It is on the `/arch:IA32` list (the rows
+compare and widen x87 floats and round three setting kinds with `fistp` at the live control
+word; Task 3b's asset writer adds the `fsqrt` pose-to-quaternion conversion) and on the `/EHs-c-`
+list (the joint block keeps descriptors with virtual destructors on its stack; the oracle's frame
+has no unwind state). The readers 004068, 004072 and 004085 are `Joint` members in
+`Physics/src/core/Joint.cpp` (`getBodyOwners`, `is`, `getName`). `PhysicsSDK.cpp` keeps
+`gParameter` and `gGroupCollisionMask` file-static and exposes them through
+`nxPhysicsSDKParameters()` and `nxPhysicsSDKGroupCollisionMasks()` (declared in
+`PhysicsSDK.h`); `PhysicsSDK::coreDump` (004062) is declared in `PhysicsSDK.h` and defined in
+`SceneDump.cpp`.
+
+Written (27 rows, 11,793 B): 003992 (`sceneDumpDateTime`), 003994 (`sceneDumpPointerName`), 003995
+(`sceneDumpToken`), 003997/003999 (`SceneDumpSetting::store`/`print`), 004002
+(`SceneDump::hasDelimiter`), 004004 (`jointName`), 004006 (`actorName`), 004007
+(`writeJointFrames`), 004009 (`limitPairText`), 004011 (`tripleText`), 004013 (`motorText`),
+004015 (`writeJointLine`), 004037 with its continuations 004039/004041/004043 (`writeJoint`),
+004062 (`PhysicsSDK::coreDump`); readers 004068, 004072, 004085. The descriptor inlines 003981
+003985 004021 004023 004025 004027 carry stable-ID lines only (the compiler emits them from the
+public headers where `writeJoint` constructs the descriptors). Format strings: all 163 distinct
+literals the file passes to the CRT occur NUL-delimited in the image; the 164th, `"\r\n"`
+(0x101135bc), is the tail of a longer string there, as the oracle's pointer is.
+
+Corrections and additions to the sections above, from the listing:
+- The 0x20000-byte block is not unused. 004062's frame words 0x1c, 0x20 and 0x24 are
+  `SceneDumpNames` {shape-group counter, mesh count, mesh table}: 004062 zeroes the first two and
+  stores the block's address in the third, and passes the three by address as 004051's fifth
+  argument, which hands it to 004048 and on to 004046/003991. 003991 is `thiscall` on it: it looks
+  the mesh up in the table (+8, count +4), appends it when new, formats `tmesh%d` and caps the
+  count at 0x7fff; the block holds 0x8000 pointers. 004062 frees it through `free` on both paths.
+- 004051 is `thiscall` on the settings object with five arguments (`ret 0x14`): scene, FILE*,
+  binary, the scene index (not read), `SceneDumpNames*`; it returns `al = 1`, which 004062
+  ignores. Task 3b replaces the placeholder `SceneDump::writeAsset` (an `NX_ASSERT(0)` that writes
+  nothing) with it and adds its stable-ID line.
+- The material lookup in 004062 is not 000456: it takes the index as an `NxMaterialIndex` and
+  falls back to element 0 past the end, with no bit-31 test (0x95240-0x95277). The loop count
+  is `this`'s material count, the lookup is on `PhysicsSDK::instance`; both counts are signed
+  quotients (`jl`), the scene count unsigned (`jb`).
+- 004011 is one row for three floats of either an `NxJointLimitDesc` (spherical swing limit,
+  0x9272b) or an `NxSpringDesc` (every spring); it is written once, taking the first float's
+  address.
+- 004015's third argument is not read; its owners come from 004068 into two zeroed locals, as in
+  004037, whose owners are read and never used.
+- 003994 takes its pointer in `eax` (`cdq` on entry; its one caller, 004006, loads `eax` first):
+  a register convention the candidate's compiler does not produce without whole-program
+  optimisation; the candidate passes it as a parameter. Output is the same.
+- 004007 compares maxForce and maxTorque with 0x7f7fffff as words (0x911a4-0x911b3); written as a
+  bit comparison.
+- The descriptor rows: the oracle folded identical bodies (004023 for four `isValid`s, 003985 for
+  the base and the four trivial `setToDefault`s, 004025 for every descriptor's scalar deleting
+  destructor). The candidate links `/OPT:NOICF` and keeps one copy per class
+  (`?isValid@NxCylindricalJointDesc@@UBE_NXZ` and the prismatic, point-on-line and point-in-plane
+  copies; `??_G<Desc>@@UAEPAXI@Z` per descriptor); the revolute and spherical tables' slot 1 is
+  `NxJointDesc::setToDefault` in both DLLs.
+
+Model rows now product rows: 003985, 004002, 004068 (no model code in the repository; the recorded
+proofs stay) and 004085 (`nxRegistryLookupNull` in `ObjectModel.cpp` stays and gains a
+`// Product row:` pointer). Not reachable yet: `NpPhysicsSDK::coreDump` (000267) is still the
+candidate stub; dynamic proofs come with Task 4's transcript.
 
 ## Task split
 
