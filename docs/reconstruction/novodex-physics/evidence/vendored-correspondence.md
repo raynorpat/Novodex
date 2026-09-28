@@ -223,7 +223,9 @@ Which evidence a group needs before its rows can move depends on its class and n
 - **Execution evidence** (a cdb trace, or a differential with a matching outcome) is required
   for any group with x87 compares or x87 arithmetic, whatever else it has. Task 4 records it per
   group in `phase4-third-party-map/vendored_coverage.csv` (`hits`, `outcome`, `differential`),
-  backed by `evidence/vendored-trace-{qhull,opcode}.txt`.
+  backed by `evidence/vendored-trace-{qhull,opcode}.txt`. Task 5a replaced the column's values
+  with `exact` / `lastbit` / `discrete`, classed per execution (see "Task 5a"). Deciding which
+  class counts as "a matching outcome" is Task 5b's call.
 - **Not promotable until fixed:** DIFF, MISSING and AMBIGUOUS groups. MAPCHECK groups wait for
   the map to be corrected.
 - **Summation order and register lifetimes (added after the Task 3 review).** A static proof
@@ -777,6 +779,10 @@ Reading `outcome`:
 | `layout` | Only the candidate-only layout assertions ran it: execution, not a compared outcome. |
 | `none` | Nothing ran it. |
 
+These were Task 4's values. Task 5a replaced `exact+divergent` and `divergent` with `lastbit` and
+`discrete`, classed per execution, and added `family_best` and `uncompared`; see "Task 5a". The
+table below keeps Task 4's figures.
+
 ### Coverage before and after
 
 Groups executed. The columns after "executed" split it by `outcome`. "x87 compared" counts the
@@ -924,6 +930,279 @@ The oracle faults in each, and so would the candidate. The harness does not driv
   - The four callback-variant rows. Their oracle rows have no candidate body of their own.
   - The `Walk` functions, and destructors the exe inlines.
 
+## Task 5a: enforceable execution evidence
+
+Task 4's review approved its differential and traces, but found five gaps to close before Task 5b
+promotes any row on them:
+
+- a divergent family could not fail;
+- `exact+divergent` put last-bit float noise and different trees in one class;
+- the `VolumeCache` layout was still stock;
+- no family queried a candidate-built tree with the candidate's colliders;
+- serialization had not been looked at.
+
+Task 5a closes them.
+
+### Divergent families have ceilings
+
+Every tape word now records its kind: discrete, float, or one half of a double. The kind is not
+part of any digest.
+
+A divergent family's line (`verdict=divergent`) now reports how far apart the two tapes are:
+
+| Field | Meaning |
+|---|---|
+| `mismatches` | differing words, plus the length difference |
+| `discrete` | differing discrete words, plus 1 if the lengths differ |
+| `float_ulp`, `double_ulp` | the largest distance, in representable values, over the differing floats and doubles (`inf` for a sign change, an infinity or a NaN) |
+| `beyond` | how many of those floats and doubles are more than 4 ulp apart |
+| `first_diff` | the first differing index, or where the shorter tape ends |
+| `length_delta` | candidate words minus oracle words |
+| `ceiling` | the recorded words/discrete ceiling |
+
+stderr names the first differing word, with both values and kinds.
+
+`kDivergentCeilings` in `tests/PhysicsThirdPartyTests.cpp` records each family's measured
+`mismatches` and `discrete` counts. A run over either ceiling prints `verdict=FAILED` and fails the
+harness; a run under both prints an `IMPROVED ... lower the ceiling` note. Each ceiling is today's
+measurement, so today passes and any regression fails. This was checked by lowering
+`opcode_ray_x87` to 193, which failed, and raising `ice_obb` to 1205/1, which gave the note. The
+families are deterministic: repeated runs print byte-identical output.
+
+| Family | Words | Mismatches (ceiling) | Discrete (ceiling) | float ulp | double ulp | Beyond 4 ulp | First difference |
+|---|---:|---:|---:|---:|---:|---:|---|
+| `opcode_model_build_x87` | 19,406 | 2,316 | 779 | inf | – | 1,517 | word 38: a node box, 2.0 against 3.0 |
+| `opcode_ray_x87` | 525 | 194 | 0 | 377 | – | 21 | word 0: a hit distance, 1 ulp |
+| `opcode_ray_boundary` | 3,284 | 927 | 756 | (out of step) | – | 68 | word 48, 1 ulp; the candidate tape is 4 words shorter |
+| `opcode_treecollider_boundary` | 872 | 684 | 671 | 0 | – | 0 | word 37, a discrete word: 0x4f against 0x4e; 14 words shorter |
+| `ice_plane_triangle` | 4,000 | 947 | 0 | inf | – | 116 | word 0, 2 ulp |
+| `ice_matrix4x4` | 6,800 | 1,815 | 0 | inf | – | 128 | word 1, 6 ulp |
+| `ice_obb` | 10,800 | 1,204 | 0 | 512 | – | 72 | word 60, 2 ulp |
+| `qhull_hull_x87` | 32,036 | 1,284 | 0 | – | 3.4e15 | 7 | word 404, 1 ulp |
+| `qhull_hull_rotated` | 9,431 | 1,201 | 582 | – | inf | 146 | word 5: the next facet id, 25 against 21 |
+| `opcode_candidate_trees_ray` (new) | 292 | 18 | 1 | 14 | – | 2 | word 51: a hit distance, 3 ulp |
+| `opcode_candidate_trees_x87` (new) | 18,694 | 2,489 | 2,436 | (out of step) | – | 9 | word 2: a ray's BV test count |
+
+Notes on the table:
+
+- `opcode_ray_boundary` and `opcode_candidate_trees_x87` are out of step after their first
+  difference, so from there on their float "distances" compare unrelated words.
+- Of `qhull_hull_x87`'s 1,284 differing words, only 7 doubles are more than 4 ulp apart. They are
+  values next to zero.
+
+### Outcome classes
+
+`tools/vendored_trace.py` (22 tests) no longer produces `exact+divergent`. It classifies each
+family from its own line:
+
+| Class | Meaning |
+|---|---|
+| `exact` | No word differs. |
+| `lastbit` | Divergent, but no discrete word differs, the tapes are the same length, and every differing float or double is at most 4 ulp from the oracle's. |
+| `discrete` | Anything else: a differing count, index, verdict, tree link or quantized box; a length difference; a sign change; or a float more than 4 ulp away. That covers a different tree topology, different hit or pair verdicts, a zero normal, a zero determinant and different merges, whatever their ulp. |
+
+**Why 4 ulp.** A three-term sum that the 2003 build adds in a different order, or keeps unrounded
+where the 2026 `/fp:precise` build rounds, differs from the candidate's by one rounding of the
+result. A few such operations in a row differ by a few units. 4 ulp allows two roundings on each
+side. A value further apart than that has been through a cancellation or a different branch,
+which is not a last-bit difference. The harness (`kLastBitUlp`) and the tool (`LASTBIT_ULP`) use
+the same bound.
+
+**Executions, not families.** Some drives fill several families from the same queries and report
+them back to back. For example, `opcode_ray` gets the discrete outcome and `opcode_ray_x87` the
+distances. So the trace segments of the later families hold no hits.
+
+- An execution is a segment with hits, plus the hit-less sibling segments reported right after it.
+- An execution's class is the worst class among its families: the floats it produced are part of
+  its outcome.
+- A group's `outcome` is its best execution. So `exact` means that at least one execution of the
+  group was compared and matched completely.
+- The column `family_best` keeps the looser reading: the best class of any family the group ran
+  in, whatever else that execution fed.
+
+**Harness changes for attribution.** To keep each family's executions in their own segment, the
+harness now runs its interleaved drives in passes:
+
+- the model builds: all of `opcode_model_build`'s, then all of the x87 family's;
+- the tree-collider queries: the ordinary ones, then the boundary pair;
+- each candidate-tree pass builds its own models.
+
+Each tape keeps its order, and every registered line prints unchanged.
+
+A new `release` mark, at `nxDriveSap`, closes the harness's release of the Task 4 models. That
+release ran inside `opcode_sap`'s segment before and was credited to that family. Its segment,
+like `END`, is now `uncompared`.
+
+**Segments still shared.** Two drives still share a segment:
+
+- the boundary rays share one with `opcode_ray`;
+- the `QR1` runs share one with `qhull_hull`.
+
+Neither changes a class: those executions already include a `discrete` family (`opcode_ray_x87`
+and `qhull_hull_x87` respectively).
+
+Groups by class, for the groups with x87 code. "Not executed" is `none`.
+
+| Library | x87 groups | exact | lastbit | discrete | not executed | `family_best` = exact |
+|---|---:|---:|---:|---:|---:|---:|
+| qhull | 143 | 3 | 0 | 70 | 70 | 73 |
+| OPCODE | 116 | 89 | 0 | 22 | 5 | 98 |
+
+For all traced groups:
+
+- qhull: 331 groups, 9 exact, 171 discrete, 151 none;
+- OPCODE: 231 groups, 160 exact, 27 discrete, 1 `layout`, 5 `uncompared`, 38 none. The
+  `uncompared` ones are `Model`'s and the four trees' deleting destructors.
+
+x87 groups by match class:
+
+| Library | Match class | x87 groups | exact | discrete | not executed |
+|---|---|---:|---:|---:|---:|
+| qhull | SHAPE | 48 | 3 | 16 | 29 |
+| qhull | REVIEW | 63 | 0 | 38 | 25 |
+| qhull | DIFF | 32 | 0 | 16 | 16 |
+| OPCODE | SHAPE | 15 | 8 | 5 | 2 |
+| OPCODE | REVIEW | 96 | 80 | 16 | 0 |
+| OPCODE | DIFF | 5 | 1 | 1 | 3 |
+
+Reading these counts:
+
+- **No family is `lastbit`.** Every divergent family has at least one float more than 4 ulp away,
+  or a discrete difference. So with the stated bound, "divergent" and "discrete" name the same
+  families today.
+- **Every qhull group that runs in the hull is `discrete`.** Its only execution also fills
+  `qhull_hull_x87`, and that family has 7 doubles past the bound. The combinatorial hull
+  (`qhull_hull`) is exact, which is why `family_best` gives 73.
+- **OPCODE's 22 discrete x87 groups are:**
+  - the eight ray-stab walks and `ValidateSettings`. Every execution of them also feeds a float
+    family: `opcode_ray_x87`, or the candidate-tree rays;
+  - `AABBQuantized*Tree::Build`, whose coefficient rounds differently;
+  - the ICE plane, triangle, matrix and OBB rows.
+- **Before this split**, 36 OPCODE and 70 qhull x87 groups had been `exact+divergent`. Now:
+  - the builders are `exact`, because the model builds' split into passes gives them an exact
+    execution;
+  - the ray walks are `discrete`;
+  - the tree colliders, `CoplanarTriTri` and `OBB::IsInside` are `exact` through their own exact
+    families.
+
+### VolumeCache: fixed
+
+The oracle's cache constructor is inlined into its owners. At `0x000e56d0` a NovodeX object:
+
+- constructs a `SphereCache` at `+0x50` and an `AABBCache` at `+0x6c`;
+- zeroes both of their first words (`0x000e56ef`, `0x000e56f2`, `0x000e5709`, `0x000e570c`);
+- then points both at its own `Container` at `+0x40` (`0x000e5731`, `0x000e5734`).
+
+`0x00059832`..`0x00059846` builds an `AABBCache` on the stack the same way.
+
+None of the five `InitQuery` bodies tests the pointer. Each loads it and stores it in
+`mTouchedPrimitives`:
+
+| Collider | Address |
+|---|---|
+| LSS | `0x000d36f2` |
+| OBB | `0x000d57ab` |
+| Sphere | `0x000de925` |
+| Planes | `0x000e173d` |
+| AABB | `0x000e9c00` |
+
+The fix:
+
+- **The cache itself.** The new overlay `OPC_VolumeCollider.h` makes `VolumeCache`
+  `{Container* TouchedPrimitives; const BaseModel* Model;}`, with a constructor that nulls both.
+- **The three stock colliders.** The new overlays `OPC_SphereCollider.cpp`, `OPC_OBBCollider.cpp`
+  and `OPC_PlanesCollider.cpp` are upstream copies, CRLF like upstream. Each changes only its
+  `InitQuery` assignment and its hybrid `Reset`/assign pair.
+- **The two existing overlays.** `OPC_AABBCollider.cpp` and `OPC_LSSCollider.cpp` take the same
+  change.
+- **The record.** `MODIFICATIONS.md` has the entries. `verify_vendored_sources` passes with 36
+  locally modified files.
+
+The harness now gives both sides the one vendored cache type, each pointing at its own
+`Container`, and the oracle-only image is gone. All volume families still compare exactly, with
+the same digests. The candidate is now `b0e275ae…b05d`.
+
+The matcher was re-run. The class of every row is unchanged. The field reports of the five
+`InitQuery` rows changed, and their review notes record the fix. `PlanesCollider::InitQuery`'s
+`diff_fields` changed from empty to base-tag differences (`this` against `derived`), which Task 5b
+has to re-review.
+
+This rerun is also the first since Task 4's `AABBCollider` overlay, so `opcode_match.csv` carries
+that change too. `sum_grouping.csv` was regenerated; the grouping counts are unchanged and only
+the candidate addresses moved.
+
+### Candidate-built trees, end to end
+
+The new families build every mesh in every tree kind on both sides. Each query then runs:
+
+- the oracle's collider on the oracle's model;
+- the candidate's collider on the candidate's model.
+
+Both sides get the same inputs. The queries cover rays of `opcode_ray`'s three shapes (not the
+ones aimed at a boundary), the five volume colliders (primitive tests off and temporal coherence
+included), and tree-versus-tree pairs in three placements. Each query's discrete outcome, the
+caches' derived fields, and the ray hits' distances and barycentrics are compared.
+
+| Family | Models | Result |
+|---|---|---|
+| `opcode_candidate_trees` | Volume colliders and tree pairs on the models `opcode_model_build` builds exactly: untied and not quantized, which means the soup, the degenerate set and the single triangle | **exact**, 3,674 words |
+| `opcode_candidate_trees_ray` | Rays on the same models, in their own segment | divergent: 18 of 292 words, 1 discrete; ceiling 18/1 |
+| `opcode_candidate_trees_x87` | Everything on the quantized trees and the tied meshes (height field, flat grid, box), and every pair that includes one | divergent: 2,489 of 18,694 words, 2,436 discrete (test counts, hits, pairs); ceiling 2,489/2,436 |
+
+**The ray divergence comes from the collider, not the tree.**
+
+- 17 of the ray family's differences are hit floats: `opcode_ray_x87`'s summation order.
+- The one discrete difference is a ray's BV test count: 6 in the oracle, 14 in the candidate.
+- When the candidate's collider was made to query the *oracle's* model instead, the same count
+  came out. So it is the collider's own last bit (`opcode_ray_boundary`'s `RayAABBOverlap` `f`
+  rounding) on a random ray that happens to graze a box.
+- A first version of this family taped the rays' discrete outcome only, and with other random
+  draws it came out exact. That would have credited the ray stab groups with an `exact` that
+  said nothing about their floats, so the rays now have a family of their own that compares
+  everything.
+
+**What this shows.** Where the build is exact, a candidate tree queried by the candidate's volume
+and tree colliders gives the oracle's answers. Where the build ties or quantizes, it does not,
+which `opcode_model_build_x87` already predicted. That divergence is now held by a ceiling.
+
+**Registration.**
+
+- The families are registered by appending: the exact line whole, the two divergent ones up to
+  their digests, and a third pair of totals lines (`driven=47 divergent=11 words=486946`,
+  digest `5f87aa37`).
+- The Phase 4 floor goes from 130 to 135.
+- Earlier in this task these lines were registered once, in `24cfafd`, before the rays had a
+  family of their own. Commit `7835de6` replaces those lines; against the Task 4 head the
+  registry is still append-only.
+- The totals now print from one helper, and the divergent report is one printf literal. So each
+  registration is a prefix of exactly one harness format, which `test_gate_targets` checks.
+  Task 4's second copy of the totals printf had broken that check when it was run against the
+  worktree's harness.
+
+### Serialization: not executed
+
+The candidate's `BaseModel::Save` and `BaseModel::Load` are the reporting stubs in
+`novodex/OPC_BaseModel.cpp`, and `Model::Build`'s deserialize arm calls `Load`. The four trees'
+serialization rows are not written. So no candidate deserialization exists to compare, and no
+harness drives it. Serialization (17 rows, 1,277 bytes) stays unexecuted, as the open item says.
+
+### Evidence
+
+The trace was re-run on the Task 5a build:
+
+| Binary | sha256 |
+|---|---|
+| Candidate DLL | `b0e275ae70e5f381d251a582c300ffd9778c2442d14ddca1deae6e29f419b05d` |
+| `NxPhysicsThirdPartyTests.exe` | `0d3551211a2a409c93b932036f64e0a5b14330aad6bd919c5012f967741b7dbc` |
+| `NxPhysicsAssetTests.exe` | `8e77583c50343cbd15c0727986c1585eb2fe23a1bf4f4ea3873a30ff162b1418` |
+
+- The ThirdParty trace has 50 segments; the asset trace, 1.
+- Identity again finds every traced body the same code, except the `AABBTreeBuilder` deleting
+  destructor.
+- The groups executed are the same 373 as in Task 4.
+- The results are in `vendored-trace-{qhull,opcode}.txt` and `vendored_coverage.csv` (columns
+  `outcome` and `family_best`).
+
 ## Open items
 
 - **The NovodeX hull library (separate work unit, controller decision after Task 2).** The 31
@@ -945,12 +1224,11 @@ The oracle faults in each, and so would the candidate. The harness does not driv
   `qh_distplane` in qhull. Until it lands, Task 5's static proofs for vendored rows state that
   summation order and some register lifetimes are not reproduced, and rows with x87 arithmetic
   still need execution evidence.
-- **The NovodeX `VolumeCache` layout (found by Task 4; not fixed).** The oracle's cache holds a
-  `Container*` at `+0` and the owning model at `+4`, with each collider's own fields from `+8`; the
-  vendored cache embeds the `Container` (see "Task 4: execution coverage", difference 2). The five
-  volume colliders' `InitQuery` rows read the other layout, so they are not promotable as they
-  stand. The fix changes `OPC_VolumeCollider.h`, the five `InitQuery` bodies and the vendored API,
-  and needs a decision on who owns the container (the oracle's scene code supplies it).
+- **The NovodeX `VolumeCache` layout: fixed in Task 5a.** The cache holds a `Container*` at `+0`
+  and the owning model at `+4`. The owner supplies the `Container`, and the colliders never test
+  the pointer. The fix is `novodex/OPC_VolumeCollider.h` plus the five `InitQuery` overlays; see
+  "Task 5a". `PlanesCollider::InitQuery`'s matcher field report changed with the rebuild, and
+  Task 5b has to re-review it.
 - **Execution gaps after Task 4.** qhull has 70 x87 groups that no differential runs, most of them
   printers for output formats the NovodeX driver never requests. OPCODE has 5: the base
   `GetSplittingValue`, the two `AABBTreeOfAABBsBuilder` rows, and two bodies the exes inline. See
@@ -963,7 +1241,9 @@ The oracle faults in each, and so would the candidate. The harness does not driv
     - BaseModel slots 4 to 6, and the four trees' getSerialSize, save, load and relocation rows;
     - they need MemoryStream host seams and a direct-oracle differential;
     - their stubs are reachable from the reconstructed `TriangleMesh.cpp` save path and from
-      `Model::Build`'s load dispatch.
+      `Model::Build`'s load dispatch;
+    - Task 5a confirmed that nothing executes them: the candidate side has only the reporting
+      stubs, so no differential can compare a deserialize.
   - The NovodeX pruner, penetration-map and SweepAndPrune-dump clusters in the OPCODE span, with
     the scene-query and mesh units that own their callers.
   - `0x000f1350`, the ICE culling walk: typed `compiler_artifact` but real code.
