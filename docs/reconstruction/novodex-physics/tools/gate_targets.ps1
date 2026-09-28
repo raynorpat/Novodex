@@ -2563,7 +2563,32 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=qhull_rotation rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,global.c,qhull.c,merge.c words=9980 oracle=e80e1851',
         'thirdparty name=qhull_rotation_x87 rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,geom.c words=8724 oracle=07282fca',
         'thirdparty coverage driven=71 divergent=25 words=1500640 layout_checks=47',
-        'thirdparty oracle digest=a6ae0830'
+        'thirdparty oracle digest=a6ae0830',
+        # convex-mesh gap Task 2c: the ICE-shaped rows with no vendored source,
+        # reconstructed in Physics/src (EdgeList.cpp, IceAdjacencies.cpp, IceMeshTools.cpp)
+        # and linked into the harness. Each family drives the oracle's entry row at its
+        # RVA and the candidate's over the same meshes, comparing the return value, the
+        # whole object image, every allocation and release through the 004803 getter
+        # and every report. The input line pins the words handed to the oracle. The
+        # exact families are registered whole; `.plane_divergent` holds the vertex runs
+        # of the meshes whose active-edge decisions follow the vendored Plane::Set /
+        # Triangle::Normal (005155, 005181; pre-flighted edge by edge), registered up
+        # to the oracle digest and held by kDivergentCeilings. The pairs above keep
+        # printing where they were; the pair below carries the totals.
+        'thirdparty input name=edge_list words=11703 input=466037b8',
+        'thirdparty name=edge_list rva=0x00051dd0 owner=phys_fn_002063 source=EdgeList.cpp words=160261 oracle=76644d57 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=edge_list.plane_divergent rva=0x00051dd0 owner=phys_fn_002063 source=EdgeList.cpp words=23225 oracle=18406f6d',
+        'thirdparty coverage name=edge_list meshes=65 runs=650 succeeded=650 failed=0 edges=27045 active_edge_links=6714 active_vertex_links=12384 reports=8 line72=2 line10a=1 line10b=1 line10e=1 line111=1 line114=1 line117=1',
+        'thirdparty coverage name=edge_list.plane_divergent pairs=1487 side=40 angle=9 meshes=13',
+        'thirdparty input name=ice_adjacencies words=11478 input=3ce4907d',
+        'thirdparty name=ice_adjacencies rva=0x0002def0 owner=phys_fn_001546 source=IceAdjacencies.cpp words=35084 oracle=39b6cbc7 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=ice_adjacencies.plane_divergent rva=0x0002def0 owner=phys_fn_001546 source=IceAdjacencies.cpp words=3528 oracle=b67b88e0',
+        'thirdparty coverage name=ice_adjacencies meshes=65 runs=335 succeeded=182 failed=153 links=12821 boundary=14323 active=15877 reports=153 line266=2 line267=5 line321=146 line72=1',
+        'thirdparty input name=ice_valencies words=10533 input=0863cbf9',
+        'thirdparty name=ice_valencies rva=0x00032610 owner=phys_fn_001667 source=IceMeshTools.cpp,EdgeList.cpp words=32709 oracle=2cbd6dee mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=ice_valencies meshes=65 runs=261 succeeded=260 failed=1 adjacent=12020 reports=1 line72=1',
+        'thirdparty coverage driven=76 divergent=27 words=1755447 layout_checks=47',
+        'thirdparty oracle digest=4a282660'
     )
 }
 
@@ -2587,8 +2612,9 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 243  # 18 for NxPhysicsKernelFuzzTests, 225 for NxPhysicsCollisionTests (85 + 23 from
                # convex-mesh gap Task 2a + 14 from its Task 2b + 59 + 44 from its harness hardening)
-    '4' = 161  # 34 for NxPhysicsAssetTests, 127 for NxPhysicsThirdPartyTests (67 + 29 from
-               # vendored-correspondence Task 4 + 5 from its Task 5a + 26 from qhull-gap Task 1)
+    '4' = 175  # 34 for NxPhysicsAssetTests, 141 for NxPhysicsThirdPartyTests (67 + 29 from
+               # vendored-correspondence Task 4 + 5 from its Task 5a + 26 from qhull-gap Task 1
+               # + 14 from convex-mesh gap Task 2c)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent

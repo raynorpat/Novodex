@@ -17,6 +17,13 @@
  * test exe's candidate allocates, frees and exits exactly as the product's
  * ThirdPartyHost.cpp does. NxPhysics.dll itself still links
  * Physics/src/ThirdPartyHost.cpp, and nothing here reaches it.
+ *
+ * The SetIceError seam (opcNovodeXSetIceError, the candidate side of
+ * phys_fn_002160) is renamed the same way (convex-mesh gap Task 2c): the real
+ * name forwards to gNxIceErrorSink while the harness installs one -- so the
+ * families of the ICE-shaped rows (EdgeList, IceAdjacencies, Valencies) can
+ * compare the (message, file, line) each report carries with what the oracle's
+ * rows push -- and otherwise does what the shim does and returns its false.
  */
 
 #define qhNovodeXOffBegin		nxProductQhNovodeXOffBegin
@@ -24,7 +31,9 @@
 #define qhNovodeXFacet3Vertex	nxProductQhNovodeXFacet3Vertex
 #define qhNovodeXSize			nxProductQhNovodeXSize
 #define qhNovodeXFprintf		nxProductQhNovodeXFprintf
+#define opcNovodeXSetIceError	nxProductOpcNovodeXSetIceError
 #include "../Physics/src/ThirdPartyHost.cpp"
+#undef opcNovodeXSetIceError
 #undef qhNovodeXOffBegin
 #undef qhNovodeXPoint3
 #undef qhNovodeXFacet3Vertex
@@ -92,3 +101,15 @@ int qhNovodeXFprintf(FILE* stream, const char* format, ...)
 	}
 
 }
+
+// The SetIceError seam. The shim's result is returned either way: the rows
+// return what their report returns.
+bool (*gNxIceErrorSink)(const char* message, const char* file, int line) = 0;
+
+bool opcNovodeXSetIceError(const char* message, const char* file, int line)
+	{
+	const bool returned = nxProductOpcNovodeXSetIceError(message, file, line);
+	if(gNxIceErrorSink)
+		gNxIceErrorSink(message, file, line);
+	return returned;
+	}

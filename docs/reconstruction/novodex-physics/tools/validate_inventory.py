@@ -1928,8 +1928,10 @@ UNRESOLVED_SOURCE_PATHS = (
     # was REMOVED when joint-families Task 3i wrote the unit in
     # Physics/src/core/D6Joint.cpp (the rows' notes keep the oracle path), as
     # Physics/src/Joint.cpp below was.
-    'Physics/src/EdgeList.cpp',                      # 3 rows
-    'Physics/src/IceAdjacencies.cpp',                # 2 rows
+    # 'Physics/src/EdgeList.cpp' (3 rows) and 'Physics/src/IceAdjacencies.cpp'
+    # (2 rows) were here, and were REMOVED when convex-mesh gap Task 2c wrote
+    # both files. The check said so itself: "is on the allowlist but no longer
+    # unresolved; remove the entry".
     'Physics/src/InternalTriangleMesh.cpp',          # 1 rows
     # 'Physics/src/Joint.cpp' was here with 4 rows (004099 004101 004109 004143),
     # and was REMOVED when joint-families Task 2 wrote those rows in
