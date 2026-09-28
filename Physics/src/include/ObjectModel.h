@@ -2135,8 +2135,8 @@ class MeshShape
 	//! the mesh's neighbor graph when present, otherwise the local bounds.
 	void				nxMeshWorldAABB(float* out) const;
 
-	//! MESH-table slot 7, phys_fn_001407 (0x00029610), for a null
-	//! classifier or a classifier whose tree plane table is already built.
+	//! MESH-table slot 7, phys_fn_001407 (0x00029610): the null-classifier
+	//! arm and the prepared arm, through the product 001556 and 001472.
 	bool				nxMeshSweepPrepared(float* out, const float* point) const;
 
 	//! MESH-table slot 4, phys_fn_001397 (0x00028e10), for a mesh whose

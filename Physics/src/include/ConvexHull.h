@@ -43,7 +43,8 @@ class ConvexHull
 	public:
 	bool				ComputeVertexNormals();
 
-	NxU32				mWord00;			// +0x00, read by none of these rows
+	NxU32				mWord00;			// +0x00, read by none of these rows (a table: TriangleMesh.h,
+										// 002164 releases the hull at mesh +0xa0 through its slot 0)
 	NxU32				mNbFaces;			// +0x04, 0x0002aedc
 	const NxU16*		mFaces;				// +0x08, 16-bit triangles, 0x0002aee3
 	NxU32				mNbVerts;			// +0x0c, 0x0002ae84 / 0x0002aeb0

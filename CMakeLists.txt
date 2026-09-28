@@ -648,7 +648,13 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/MemoryStream.cpp Physics/src/Geometry.cpp
 		Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp
-		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp)
+		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
+		# MESH slot 7 (001407) calls the support-map lookup 001556 and the hull's
+		# polygons 001472 (convex-mesh gap Task 2f), and they bring the ICE rows
+		# they call, as in NxPhysicsThirdPartyTests.
+		Physics/src/IceSupportMaps.cpp Physics/src/ConvexHull.cpp Physics/src/IceAdjacencies.cpp
+		Physics/src/EdgeList.cpp Physics/src/IceMeshTools.cpp Physics/src/IceMeshBuilder2.cpp
+		Physics/src/SmoothNormals.cpp)
 	target_include_directories(NxPhysicsShapeVtableTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
 		Physics/src/opcode)
