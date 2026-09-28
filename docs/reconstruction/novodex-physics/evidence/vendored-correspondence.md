@@ -196,7 +196,10 @@ The matcher does not look at any of the following. A static proof that relies on
 - indexed operands and array offsets, and negative displacements (pointer walks);
 - call counts once the inlining check has absorbed a callee (compared as sets only);
 - which object a field belongs to, beyond the `this`/pointer base class;
-- arithmetic order and precision.
+- arithmetic order and precision. In particular the grouping of float sums, which the 2003
+  compiler reassociated per site. `tools/x87_sum_grouping.py` reports it for three-product sums
+  (`phase4-third-party-map/sum_grouping.csv`; see "Summation order" below) but nothing
+  classifies on it.
 
 ## Promotion policy for Task 5
 
@@ -613,6 +616,81 @@ belong with the scene-query and mesh work units that own their callers.
 The "reconstructed" rows in them are P4 Task 2b's small generic helpers (getters, zeroers, frees),
 and none is wired to its cluster.
 
+## Summation order (Task 3 follow-up)
+
+**Finding.** The oracle does not add float products in source order. `a.x*b.x + a.y*b.y + a.z*b.z`
+is `(x+y)+z` in the source. The 2003 compiler that built the oracle reassociated these sums site by
+site; a 2026 `/fp:precise` build keeps the source order. The two groupings round differently in the
+last bit of the register value, and that bit shows up in compares made on the register and in any
+float that is later stored.
+
+**Scope, measured by `tools/x87_sum_grouping.py`.** The tool uses a symbolic x87 evaluator over
+every matched group; the method is in its docstring and it has 5 tests. Its output is
+`phase4-third-party-map/sum_grouping.csv`.
+
+- **OPCODE, oracle: 980 three-product sums in 70 groups.** Their groupings:
+
+  | Grouping | Sites |
+  |---|---:|
+  | `(y+z)+x` | 373 |
+  | `(x+z)+y` | 237 |
+  | `(x+y)+z` (source order) | 198 |
+  | unlabelled, no common Point base | 172 |
+
+  So only about a quarter of the labelled sites are in source order.
+- **OPCODE, candidate: 428 sites.**
+
+  | Grouping | Sites |
+  |---|---:|
+  | `(x+y)+z` | 92 |
+  | `(x+z)+y` | 8 |
+  | `(y+z)+x` | 5 |
+  | unlabelled | 323 |
+
+  The candidate keeps more values in registers, so fewer products can be named. Where they can,
+  they are overwhelmingly in source order.
+- **Pairing.** Of the oracle sites whose three products the candidate also sums, 27 group the same
+  way and 53 do not.
+- **It is not one rule, and not one rule per source expression.** The same inlined source
+  expression is grouped differently in different instantiations. RayTriOverlap's
+  `det = edge1|pvec`, for example:
+  - is `(z+y)+x` in `_RayStab(const AABBCollisionNode*)` (`0x000b86cb`..`0x000b86e1`);
+  - is `(x+z)+y` in `_RayStab(const AABBQuantizedNode*)` (`0x000b8cd8`..`0x000b8cf2`);
+  - and `_RayStab(const AABBCollisionNode*)` has all 7 of its sites as `(y+z)+x`, where
+    `_RayStab(const AABBQuantizedNode*)` has 5 `(x+z)+y` and 2 `(y+z)+x`.
+
+  The grouping follows which operand the 2003 scheduler had live on the x87 stack, not the
+  expression. `IcePoint`'s `operator|` and the other inline operators are therefore not the unit
+  of the difference. An overlay of `IcePoint.h` cannot reproduce it: no single spelling of
+  `operator|` matches the instantiations.
+- **qhull is affected too.** Task 2's rows do not already match. `qh_distplane`'s 3-d case, on the
+  hull's main path, is `((p2*n2 + p1*n1) + p0*n0) + offset` in the oracle
+  (`0x0005c601`..`0x0005c61d`), the source order reversed. The source, `geom.c`, reads
+  `offset + p0*n0 + p1*n1 + p2*n2`. The tool's three-product pattern misses sums that begin with a
+  non-product (the offset), so its qhull count (11 oracle sites, all unlabelled
+  `double` walks) undercounts.
+
+**Not fixed; this needs its own work unit.** Reproducing the oracle needs an explicit grouping at
+each of the several hundred OPCODE sites, and at the qhull sites once they are counted. Where an
+inline header is instantiated several times with different groupings, the header needs a
+per-instantiation grouping parameter. That is a rewrite of the collider and overlap headers
+(`OPC_RayTriOverlap.h`, `OPC_TriBoxOverlap.h`, `OPC_BoxBoxOverlap.h`, the `_Collide` bodies, the
+ICE math headers) and of qhull's `geom.c`/`geom2.c` sums, driven site by site from
+`sum_grouping.csv` extended to n-term sums. A partial fix would leave a mix. So none is applied
+here, including the RayTriOverlap `V` from the review fix: V's value is unrounded, but its sum
+keeps source order.
+
+Consequences for promotion:
+
+- Every group with x87 sums already needs execution evidence under the Task 5 policy. That
+  evidence will see these low-bit differences, and they are expected, not a new defect.
+- `opcode_review.csv` notes each affected group's oracle and candidate groupings.
+- No registered differential line moved. The families the differentials drive are either
+  bit-exact already (`segment_sqrdist`: P4 Task 2b's `Ice/IceSegment.cpp` overlay spells the oracle's
+  groupings out explicitly, e.g. `((dz*dz) + (dx*dx)) + (dy*dy)`, which is the precedent for the
+  site-by-site unit) or contain no
+  such sum.
+
 ## Open items
 
 - **The NovodeX hull library (separate work unit, controller decision after Task 2).** The 31
@@ -628,6 +706,10 @@ and none is wired to its cluster.
   `gap:Controller.cpp..fluids\Fluid.cpp`), reconstructed together with their only caller
   `phys_fn_002233` and a differential through it. Until then the qhull host hooks in
   `Physics/src/ThirdPartyHost.cpp` stay shims.
+- **Float summation order (both libraries; see "Summation order").** Several hundred OPCODE
+  sites and at least `qh_distplane` in qhull group float sums differently from the source; the
+  grouping varies per inlined instantiation. It needs a site-by-site unit driven by
+  `sum_grouping.csv`.
 - **OPCODE, after Task 3 (separate work units; see the Task 3 section).**
   - The NovodeX callback instantiation of the no-leaf tree-versus-tree collider:
     - rows `0x000d12b0`, `0x000cd700`, `0x000ca5a0`, `0x000cbe50` (25,613 bytes);
