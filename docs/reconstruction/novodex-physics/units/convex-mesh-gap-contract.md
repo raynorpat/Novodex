@@ -87,7 +87,7 @@ The groups of referenced data between consecutive blocks, in image order:
 | 0x10107960 | 0x10107978 -FLT_MAX (001698 NxSeparatingAxis) |
 | 0x10107980, 0x10107998, 0x101079b8 | none |
 | 0x101079d0 | 0x101079e8 -1e-6f (001712 NxRayTriIntersect) |
-| 0x101079f0 | 0x10107a08 1e-5f (001724, 001728), 0x10107a0c/10 +-FLT_EPSILON (001732, first use) |
+| 0x101079f0 | 0x10107a08 1e-5f (first use 001724; also 001728, 001874, 001933), 0x10107a0c/10 +-FLT_EPSILON (001732, first use) |
 | 0x10107a18 | 0x10107a30 0.99999988f (001734 NxRayCapsuleIntersect) |
 | 0x10107a38 | none |
 | 0x10107a50 | box/box tables and 0.999f (001741, 001743, 001745) |
@@ -95,7 +95,7 @@ The groups of referenced data between consecutive blocks, in image order:
 | 0x10107b60 | {0,2,1} table and 0.01f (001768), `ContactBoxMeshICE.cpp` (001772), "Opcode is not OK." |
 | 0x10107bd8 | 0.9998f (001775 capsule/capsule) |
 | 0x10107bf8, 0x10107c18 | none |
-| 0x10107c38 | double 1e-6 (001816, 001838) |
+| 0x10107c38 | double 1e-6 (001816, 001838); this is the block directly before CCH's at 0x10107c60 |
 | 0x10107c60 | `ContactConvexHeightfield.cpp` (001847, 001849) |
 | 0x10107cb8 | {0,2,1} table (001857) |
 | 0x10107ce0 | 0.1f (001859), `ContactMeshHeightfield.cpp` (001865) |
@@ -110,11 +110,13 @@ What this establishes, and what it does not:
   the box/capsule unit and 001772 in .text).
 - 001857 is in a unit of its own, after `ContactConvexHeightfield.cpp` and before
   `ContactMeshHeightfield.cpp`; 001859 and 001865 share `ContactMeshHeightfield.cpp`. 001855 has
-  no data; it sits between 001853 and 001857 and goes with 001857.
+  no data; it sits between 001853 and 001857. So 001855/001857 are, by this evidence, an unnamed
+  unit of their own, not part of `ContactMeshHeightfield.cpp`; placing them in that candidate file
+  (sub-unit N, and 001855 written early in task 2b) is a **choice**, recorded in `## Open items`.
 - The support-map classes and the ICE-shaped helpers (MeshBuilder2, the vertex reduction, the
   valencies) have no block, so they are in Foundation-free units; the table cannot split them
-  further. Float literals are not reliable single-unit markers (0x10107a08 is shared by five
-  rows in three areas), so only strings, tables and first uses are used above.
+  further. Float literals are not reliable single-unit markers (0x10107a08 is shared by four
+  rows in three areas: 001724/001728, 001874, 001933), so only strings, tables and first uses are used above.
 
 ### Vendored ICE correspondence
 
@@ -211,7 +213,9 @@ Allocator census over 0x0002daf0..0x00046ab0: 33 calls to the 004803 getter, 20 
 Each table lists the rows, their state and phase, the direct callers from
 `oracle/dependencies.dot` (which attributes a table slot to the constructor that installs the
 table, and a continuation's edges to the row it continues) and what the row does. "Candidate"
-means what `Physics/src` has today.
+means what `Physics/src` has today. There is no sub-unit H (see `## Open items`). A sub-unit
+names the file its rows go to; the task that writes a row is given in `## Task split`, which moves
+001760 (I) and 001855 (N) forward to 2b and the matrix-B compound entries (K) to 2a.
 
 ### A. IceAdjacencies.cpp - `Physics/src/IceAdjacencies.cpp` (new)
 
@@ -237,8 +241,9 @@ Totals: 7 rows; discovered 1,560 B, reconstructed 37 B
   exists; 001544 is modelled in `ObjectModel.cpp` (keep that test green, or route it to the new
   row).
 - **Callees outside.** 004803; RadixSort 005157/005163/005159 (vendored); IndexedTriangle::FindEdge
-  005189 (vendored); 002160 (the SetIceError report row, reconstructed); 000001, 005695
-  (`__chkstk` for the alloca in 001541); **EdgeList.cpp 002052 (zero), 002063 (`EdgeList::Init`,
+  005189 (vendored); 002160 (the SetIceError report row, reconstructed); 005695 (`__chkstk`, for
+  the alloca in 001541); 000001 (MSVC's compiler-generated `vector constructor iterator`, called
+  by `new[]` sites with the trivial constructor 0x00027f00 - not a prerequisite); **EdgeList.cpp 002052 (zero), 002063 (`EdgeList::Init`,
   not started), 002060 (release, reconstructed)**. 002063's closure is 002054, 002058, 002061,
   002063 (3,179 B, `EdgeList.cpp`, not started) plus vendored `Plane::Set` (005155) and
   `Triangle::Normal` (005181) - see `## Out-of-range prerequisites`.
@@ -291,12 +296,15 @@ Totals: 20 rows; discovered 1,889 B, reconstructed 417 B, dynamically_gated 1 B
   rows among 001552..001589 are modelled in `ObjectModel.cpp`; 001407 is modelled in
   `ObjectModel.cpp` (`MeshShape::nxMeshSweepPrepared`); 002255 and 002249 do not exist.
 - **Callees outside.** **001472 (0x0002b6f0, 664 B) and 001496 (0x0002c8f0, 296 B)**, both not
-  started, in the ConvexHull.cpp gap - P-Hull in `## Out-of-range prerequisites`. 004803.
+  started, in the ConvexHull.cpp gap - P-Hull in `## Out-of-range prerequisites`. 001567 and
+  001573 call 001472 when the hull's polygon data is absent; **001569 (class A slot 2) calls
+  001496 unconditionally** (0x0002e61d). So the product rows of B cannot link or run without
+  P-Hull, which is ordered before B in `## Task split`. 004803.
 - **x87.** 001556, 001558/001560, 001573, 001581 are float code: `/arch:IA32`.
 - **Test route.** `NxPhysicsThirdPartyTests` family `support_maps`: for each class, construct
-  on each side through its own wrapper (001565/001571/001575) over a synthetic hull (A, B: the
-  +0x18/+0x24/+0x28 fields filled so 001472 is not reached, which keeps the differential usable
-  before P-Hull lands) or vertex source (C), call 001558 with n = 1..8, compare the byte maps
+  on each side through its own wrapper (001565/001571/001575) over a hull built by each side's own
+  P-Hull rows from an `NxMesh` fixture (A, B; class A's compute always goes through 001496, so a
+  filled-in hull alone is not enough) or a vertex source (C), call 001558 with n = 1..8, compare the byte maps
   (6*n*n bytes) and the return; call 001556 over random and axis-aligned directions (ties at the
   face and cell boundaries) and compare the index.
 
@@ -307,7 +315,7 @@ Totals: 20 rows; discovered 1,889 B, reconstructed 417 B, dynamically_gated 1 B
 | 001591 | 0x0002eb50 | 141 | discovered | 4 | 001599, 001603, 001607, 001627, 001661, 002087 | Container::Add of three dwords (Resize 004840 when full) |
 | 001593 | 0x0002ebe0 | 301 | discovered | 4 | 002087 | MeshBuilder2 constructor: 13 Containers (004836) at +0x00..+0xc0, zeroed fields to +0x123 |
 | 001595 | 0x0002ed10 | 134 | discovered | 4 | 001623 | duplicate a 12-byte-element array with CRT operator new (count cookie, trivial constructor 0x27f00), copy or zero |
-| 001597 | 0x0002eda0 | 1,251 | discovered | 4 | 002087 | face validation and record (degenerate and range tests) |
+| 001597 | 0x0002eda0 | 1,251 | discovered | 4 | 002087 | AddFace, called by 002087 once per face: validates the face (degenerate and range tests) and records it |
 | 001599 | 0x0002f290 | 61 | discovered | 4 | 001633 | build pass: unshared-vertex expansion (flags +0x11a/+0x121) |
 | 001601 | 0x0002f2d0 | 480 | discovered | 4 | continuation | continuation of 001599 |
 | 001602 | 0x0002f4b0 | 272 | discovered | 4 | 001633 | build pass: vertex reduction (001645/001647/001659) and face remap |
@@ -323,7 +331,7 @@ Totals: 20 rows; discovered 1,889 B, reconstructed 417 B, dynamically_gated 1 B
 | 001621 | 0x000302b0 | 364 | discovered | 4 | 001623, 001629 | FreeUsedRam: Empty the 13 Containers, CRT free of the owned arrays |
 | 001623 | 0x00030420 | 398 | discovered | 4 | 002087 | Init(create): copies 12 flag bytes (create+0x1c..+0x27 -> +0x118..+0x123), duplicates three streams (001595) |
 | 001625 | 0x000305b0 | 101 | discovered | 4 | 001633 | pass driver: 001611 over streams 1, 2 and 4 |
-| 001627 | 0x00030620 | 1,764 | discovered | 4 | 001631 | AddFace (1,764 B): face record, smoothing groups, per-corner references |
+| 001627 | 0x00030620 | 1,764 | discovered | 4 | 001631 | per sorted face output (1,764 B), called only by 001631 after the RadixSort: face record, smoothing groups, per-corner references |
 | 001629 | 0x00030d10 | 127 | discovered | 4 | 002087 | destructor: FreeUsedRam then ~Container x13 |
 | 001631 | 0x00030d90 | 441 | discovered | 4 | 001633 | build pass: face sort (RadixSort) and output |
 | 001633 | 0x00030f50 | 346 | discovered | 4 | 002087 | Build(result): the pass sequence 001625, 001599, 001602, 001603, 001607, 001631, then the result fields |
@@ -332,19 +340,21 @@ Totals: 20 rows; discovered 1,889 B, reconstructed 417 B, dynamically_gated 1 B
 
 Totals: 25 rows; discovered 10,236 B
 
-- **Evidence.** One call-graph cluster: every row is reached from 001633/001623/001627/001629/
-  001593, all called only by 002087 (0x000523c0, the `EdgeList.cpp..InternalTriangleMesh.cpp`
-  gap, Phase 4), except 001591 (also used by 001661). No strings, no .rdata.
-- **Entry rows.** 001593 (constructor), 001623 (Init), 001627 (AddFace), 001633 (Build), 001629
-  (destructor), 001621 (FreeUsedRam), called in that order by 002087. **Candidate:** 002087 does
-  not exist.
+- **Evidence.** One call-graph cluster: every row is reached from 001593/001623/001597/001633/
+  001629, all called only by 002087 (0x000523c0, 216 B, with its continuation 002089, 541 B; the
+  `EdgeList.cpp..InternalTriangleMesh.cpp` gap, Phase 4; itself called by 002256), except 001591
+  (also used by 001661). No strings, no .rdata.
+- **Entry rows.** 001593 (constructor), 001623 (Init), 001597 (AddFace, once per face), 001633
+  (Build), 001629 (destructor), called in that order by 002087/002089. 001627 is **not** an entry:
+  it is called only by 001631, after the RadixSort, once per sorted face. 001621 (FreeUsedRam) is
+  called only by 001623 and 001629. **Candidate:** 002087 does not exist.
 - **Callees outside.** Vendored Container rows; RadixSort; the vertex reduction 001645/001647/
-  001659 (sub-unit D - write 001647 with this sub-unit, see `## Task split`); CRT `operator new`
+  001659 (sub-unit D - 001647 is written with this sub-unit in task 2d); CRT `operator new`
   005701 and `free` 005700 (the candidate uses its own CRT's; the two are paired).
-- **x87.** 001597, 001603 (normals), 001627 are float code: `/arch:IA32`.
+- **x87.** 001597, 001603 (normals) and 001627 are float code: `/arch:IA32`.
 - **Test route.** `NxPhysicsThirdPartyTests` family `ice_meshbuilder2`, driven as 002087 drives
   it: constructor, Init with a create block (vertex, uvw and colour streams; the twelve flags
-  toggled per case), AddFace per triangle of each `NxMesh` fixture with duplicated vertices,
+  toggled per case), 001597 (AddFace) per triangle of each `NxMesh` fixture with duplicated vertices,
   degenerate faces and several materials, Build, then compare the result block and every output
   array by content (the two sides allocate from different CRT heaps: never compare pointers).
 
@@ -382,7 +392,8 @@ Totals: 16 rows; discovered 4,668 B, reconstructed 435 B
   001514 (convex wrappers), 001812, 001834, 001836; 001663..001668 <- 001411, 001413, 001415,
   001419 (0x00029780.., MESH-shape helpers). **Candidate:** 001413 is modelled in `ObjectModel.cpp`
   (calls 001668's model); the rest have no candidate callers.
-- **Callees outside.** 002144 (0x000532e0, 217 B, not started, closure empty) for 001651; 005191
+- **Callees outside.** 002144 (0x000532e0, 217 B, not started, closure empty; modelled today as `angleAtVertex` in
+  `SmoothNormals.cpp`, see P-Small) for 001651; 005191
   (vendored) for 001653; 004844 (vendored) for 001641; the EdgeList closure for 001667.
 - **x87.** 001651, 001653, 001661, 001668: `/arch:IA32`.
 - **Test route.** Leaf families in `NxPhysicsCollisionTests` for the float rows (001653 over random
@@ -700,74 +711,112 @@ sub-units:
    built by that side's own `Model::Build` (as `opcode_model_build` in `NxPhysicsThirdPartyTests`
    already does for both sides), the height-field fields, +0x84/+0x88 as the first sub-unit to
    read them establishes, and for convex meshes the +0xa0..+0xa8 fields and a hull.
-2. The candidate side needs the rows the images reach: the polygon interface (002211..002249;
-   nine rows, 649 B, not started - P-Mesh), and for convex meshes the support maps (B) and the
-   hull (P-Hull).
+2. The candidate side needs the rows the images reach: the polygon interface and its helpers
+   (P-Mesh: nine interface rows, 649 B, plus 001514, 001516, 001530, 892 B), and for convex
+   meshes the support maps (B) and the hull (P-Hull).
 3. A mesh shape is an `NxCollisionShape` with `geometry` (+0xe0) pointing at that side's image.
 
-This is harness code plus the polygon-interface rows; it is the first step of the first
-mesh-dependent task in `## Task split`.
+This is harness code plus the P-Mesh rows; it is the first step of task 2g.
 
 ## Out-of-range prerequisites
 
-Rows outside the four units that the product code here calls and that do not exist on the
-candidate side. Product code cannot link without them. Each needs a controller decision: adopt
-it into the task named, or defer the dependent sub-unit.
+These rows sit outside the four units. Product code in this range calls them, and none of them
+exists on the candidate side. **Controller decision (contract review): adopt them as ordered
+tasks.** Each one is written in the task named in `## Task split`, under that task's own
+differential. Caller chains come from `oracle/dependencies.dot`.
 
-| id | rows (not started) | bytes | owner unit | needed by |
+| id | rows (not started) | bytes | owner unit | caller chain into this range |
 |---|---|---:|---|---|
-| P-EdgeList | 002054, 002058, 002061, 002063 (+ vendored 005155, 005181) | 3,179 | `EdgeList.cpp` | A (001546), D (001667), and through 002188/002186 M, N |
-| P-Hull | 001441, 001445, 001449, 001459, 001463, 001465 (ConvexHull.cpp), 001472, 001496, 001502 | 3,107 | `ConvexHull.cpp` and the gaps either side | B (001567/001569/001573), M (001822; 001844 via 001502). Itself needs A, D (001641, 001651), P-EdgeList and 002144 |
-| P-Mesh | TriangleMesh polygon interface 002221, 002223, 002225, 002227, 002229, 002231, 002217, 002219, 002249 | 649 | `TriangleMesh.cpp` span | L, M (slots 2/3/4/11); 002249 needs B |
-| P-Emit | 000875 | 915 | `gap:SceneRaycast.cpp..CapsuleShape.cpp` | I, J, M, and 001909 |
-| P-Plane | 001909, 001903, 001907 | 1,385 | `gap:ContactPlaneMesh.cpp..PenetrationMap.cpp` | L, M |
-| P-Small | 002081, 002144 (276), 002188 (152, needs P-EdgeList), 002186 (143, needs A and P-EdgeList), 001461 (194, needs 001651) | 765 | TriangleMesh spans, SphereShape..ConvexHull gap | D (001651), I, M, N |
-| P-Dispatch | 002348 (719, phase 2), 000529 (134, phase 7), 004153 (156, phase 6) | 1,009 | `gap:Controller.cpp..fluids\Fluid.cpp`, `Scene.cpp` area | K (A entries) |
-| P-Sphere | 001351 (33 B) and its closure: 000517, 000887, 000903, 000915, 001323, 001945, 001955, 002354, 002413, 004157, 004859 | 1,315 | phases 3 and 5 | N (001874) |
+| P-EdgeList | 002063 (`EdgeList::Init`, 225), 002054 (554), 002058 (467), 002061 (1,933); vendored 005155 `Plane::Set` and 005181 `Triangle::Normal` | 3,179 | `EdgeList.cpp` | 001546 -> 002063; 001667 -> 002063; 002188 -> 002063; 002063 -> 002054, 002058, 002061 |
+| P-Small | 002144 (217), 001461 (194), 002186 (143), 002188 (152) | 706 | TriangleMesh spans, SphereShape..ConvexHull gap | 001651 -> 002144; 001844 -> 001461 -> 001651; 001859 -> 002186 -> 001546/001544; 001834, 001844, 001849, 001859 -> 002188 -> 002063 |
+| P-Hull | 001441 (178), 001445 (146), 001449 (156), 001459 (241), 001463 (337), 001465 (`ConvexHull.cpp`, 791), 001472 (664), 001496 (296), 001502 (298) | 3,107 | `ConvexHull.cpp` and the gaps either side | 001567, 001573, 001822 -> 001472; 001569 -> 001496 -> 001472; 001844 -> 001502 -> 001472; 001472 -> 001459 (-> 001441, 001445), 001463, 001465 (-> 001449, and in range 001542, 001544, 001546, 001641) |
+| P-Mesh | polygon interface 002217 (11), 002219 (11), 002221 (26), 002223 (38), 002225 (26), 002227..002231 (3 x 26), 002249 (459); their helpers 001514 (441), 001516 (298), 001530 (153) | 649 + 892 | `TriangleMesh.cpp` span; ConvexHull gap | 001820 -> TriangleMesh+0x04 slots 2/3/4/11; 002225 -> 001514 (-> 001472, 001661); 002219 -> 001516 (-> 001472, 001502); 002249 -> 001530, 001556; 002217 -> 001496; 002221/002223 -> 001472; 002227..002231 -> 001502 |
+| P-Emit | 000875 (915) | 915 | `gap:SceneRaycast.cpp..CapsuleShape.cpp` | 001762, 001779, 001844, 001909 -> 000875 |
+| P-Plane | 001909 (733), 001903 (45), 001907 (607) | 1,385 | `gap:ContactPlaneMesh.cpp..PenetrationMap.cpp` | 001818, 001842 -> 001909 -> 001903, 001907, 000875 |
+| 002081 | 002081 (59) | 59 | TriangleMesh span | 001762, 001844, 001865 -> 002081 -> 002146 (`NxBuildSmoothNormals`, dynamically_gated, in `SmoothNormals.cpp`) |
+| P-Sphere | 001351 (33) and its closure 000517, 000887, 000903, 000915, 001323, 001945, 001955, 002354, 002413, 004157, 004859 | 1,315 | phases 3 and 5 | 001874 -> 001351 -> 001323 -> ... |
+| P-Dispatch | 002348 (719, phase 2), 000529 (134, phase 7), 004153 (156, phase 6) | 1,009 | `gap:Controller.cpp..fluids\Fluid.cpp`, `Scene.cpp` area | 001793, 001797 -> 002348; 001793, 001797 -> 000529 -> 004153 |
+
+Dependencies between the prerequisites:
+- P-Hull needs A and 001641 (2e), because 001465 calls 001542, 001544, 001546 and 001641.
+- P-Mesh needs P-Hull, 001661 (2e) and B (002249 calls 001556).
+- 002186 needs A.
+- 002188 needs P-EdgeList.
+
+000001 is not a prerequisite. It is MSVC's compiler-generated `vector constructor iterator`,
+which `new[]` produces.
+
+**002144 is already modelled.** `Physics/src/SmoothNormals.cpp` has `angleAtVertex`, which
+stands in for 002144 (217 B) inside the reconstructed `NxBuildSmoothNormals`. Task 2e writes
+002144 as a product row and makes `angleAtVertex` a wrapper of it (or replaces it). The existing
+`step_smooth_normals` and `NxBuildSmoothNormals` families must stay green.
 
 ## Task split
 
-Ordered, dependencies first; bytes are the not-started bytes the task writes (in range, plus any
-prerequisite adopted). The template is the plan's Task 2. Each task names the sub-unit sections
-above for its rows, callers, structures and test route.
+Adopted from the contract review. The order puts dependencies first. The bytes are the
+not-started bytes each task writes, prerequisites included. The template is the plan's Task 2.
+Each task names the sub-unit sections above, which give its rows, callers, structures and test
+route.
 
-| task | rows | in-range bytes | prerequisite | test family (new) |
-|---|---|---:|---|---|
-| 2a | E box distance (001670, 001674..001688) + G box/capsule (001751, 001753) + J 001774 | 7,245 | none | point_box, line_box, segment_box, contact_box_capsule, overlap_box_capsule, overlap_capsule_capsule |
-| 2b | E triangle distance (001672, 001692, 001694) + F (001708, 001730/001732) | 8,860 | none | point_triangle, line_line, segment_triangle, ray_inflated_tris, aabb_slab |
-| 2c | A IceAdjacencies.cpp (incl. 001537) + D valencies (001667) | 2,072 | P-EdgeList (3,179) | ice_adjacencies, ice_valencies, edge_list |
-| 2d | C MeshBuilder2 + D vertex reduction (001647) | 10,728 | none | ice_meshbuilder2, vertex_reduction |
-| 2e | D remainder (001639, 001641/001643, 001651, 001653, 001661) | 3,664 | P-Small 002144 | pose_pair, unique_axis, edge_dedupe, mesh_normals |
-| 2f | B support maps | 1,889 | P-Hull (3,107) for the product rows; the differential runs on filled hulls | support_maps |
-| 2g | Mesh fixture + L convex/convex | 5,529 | P-Mesh, P-Plane, P-Emit | contact_convex_convex |
-| 2h | M first half: 001822..001842 | 5,160 | P-Hull (001472), 002188 | (leaf families on the fixture) |
-| 2i | M second half: 001844..001853 (incl. the ContactConvexHeightfield.cpp unit) | 7,447 | 001461, 001502, 002081 | contact_convex_heightfield |
-| 2j | I ContactBoxMeshICE.cpp | 7,457 | (2g..2i done) | contact_box_mesh, overlap_box_mesh |
-| 2k | J capsule/mesh (001777..001783) | 4,097 | - | contact_capsule_mesh, overlap_capsule_mesh |
-| 2l | N (001855..001874) | 9,538 | 002186, P-Sphere | contact_mesh_heightfield, overlap_mesh_mesh |
-| 2m | K compound | 2,429 | P-Dispatch (A entries only; B entries need none) | overlap_*_compound, contact_compound |
+| task | contents | bytes | test families (new) |
+|---|---|---:|---|
+| 2a | E box distance: 001670, 001674..001688 (incl. 001686). G: 001751, 001753. J: 001774. K's matrix-B entries 001785, 001789, 001791 | 8,468 | point_box, line_box, segment_box, contact_box_capsule, overlap_box_capsule, overlap_capsule_capsule, overlap_capsule/sphere/box_compound |
+| 2b | E triangle distance: 001672, 001692, 001694. F: 001708, 001730/001732. From I, 001760; from N, 001855 | 9,919 | point_triangle, line_line, segment_triangle, ray_inflated_tris, aabb_slab, triangle_plane, segment_triangle_edges |
+| 2c | P-EdgeList (002054, 002058, 002061, 002063). A: 001537..001548. D: 001667 | 5,251 | edge_list, ice_adjacencies, ice_valencies |
+| 2d | C MeshBuilder2 (001591..001637). D vertex reduction: 001647 | 10,728 | ice_meshbuilder2, vertex_reduction |
+| 2e | D remainder: 001639, 001641/001643, 001651, 001653, 001661. P-Small: 002144 (wrapping `angleAtVertex`), 001461, 002186, 002188 | 4,370 | pose_pair, unique_axis, edge_dedupe, mesh_normals, adjacency_owner |
+| 2f | P-Hull (001441..001502), then B support maps (001550..001589) | 4,996 | convex_hull, support_maps |
+| 2g | The mesh fixture. P-Mesh (649 + 892). P-Emit (000875). P-Plane (001909, 001903, 001907). L convex/convex (001803..001820) | 9,370 | polygon_interface, contact_emit_ext, contact_convex_convex |
+| 2h | M first half: 001822..001842 | 5,160 | leaf families on the fixture |
+| 2i | M second half: 001844..001853. 002081 | 7,506 | contact_convex_heightfield |
+| 2j | I ContactBoxMeshICE.cpp without 001760: 001755, 001757, 001758, 001762..001772 | 7,235 | contact_box_mesh, overlap_box_mesh |
+| 2k | J capsule/mesh: 001777..001783 | 4,097 | contact_capsule_mesh, overlap_capsule_mesh |
+| 2l | N without 001855: 001857..001874. P-Sphere | 10,016 | contact_mesh_heightfield, overlap_mesh_mesh |
+| 2m | P-Dispatch (002348, 000529, 004153). K's matrix-A entries: 001793, 001795, 001797..001801 | 2,215 | contact_compound |
 
-Every new file except `IceAdjacencies.cpp` holds float code and goes on the `/arch:IA32` list in
-`CMakeLists.txt` (the existing `ContactGeneration.cpp`, `NarrowPhase.cpp` and `Geometry.cpp` are
-already on it). No task exceeds 12 KB with the prerequisites it adopts: the largest are 2d
-(10,728 B) and 2g (8,478 B with P-Mesh, P-Plane and P-Emit).
-
-In-range total 76,115 B. Tasks 2a, 2b and 2d need nothing outside the range and can start at
-once; 2c needs only P-EdgeList, and 2e only 002144. Everything mesh-shaped (2f..2l) is blocked on
-the mesh fixture and on P-Hull/P-Mesh; if the controller defers those prerequisites, stop after
-2e plus 2m's three B entries (001785, 001789, 001791), which is about 34 KB written. 2m's A
-entries wait for P-Dispatch in every case.
+Notes on the split:
+- **The three matrix-B compound entries moved to 2a** (this contract's choice). Their only
+  in-range callee is 001688 (2a). Their other callees already exist in the candidate: 001702
+  (`Geometry.cpp`), 001913 and 004886. So they no longer wait for P-Dispatch, and 2m is left with
+  the matrix-A entries and the dispatcher.
+- **001760 and 001855 moved to 2b** because of their callers. 001844 (2i) calls 001760 and
+  001855, and 001762 (2j) calls both. Each is written into the file its sub-unit names (I and N).
+- **Task sizes.** No task exceeds 12 KB. The largest are 2d (10,728 B) and 2l (10,016 B).
+- **x87 build list.** Every new file except `IceAdjacencies.cpp` holds float code and goes on the
+  `/arch:IA32` list in `CMakeLists.txt`. `ContactGeneration.cpp`, `NarrowPhase.cpp`,
+  `Geometry.cpp` and `SmoothNormals.cpp` are already on it.
+- **Totals.** In range: 76,115 B. Adopted prerequisites: 13,216 B (the `P-*` rows above plus 002081).
+  All thirteen tasks: 89,331 B, not counting the mesh-fixture harness code.
 
 ## Open items
 
-1. `tools/work_units.py` misses three translation units whose Ghidra string entries start early
-   (ContactBoxMeshICE.cpp, ContactMeshHeightfield.cpp, core\Articulation.cpp). Fixing it
-   renames `gap:IceAdjacencies.cpp..ContactConvexHeightfield.cpp` and
-   `gap:ContactConvexHeightfield.cpp..ContactMeshMesh.cpp` in `work_units.json` and their
-   bundles; Task 3 regenerates both, so the fix belongs before or in Task 3.
-2. 001753's indirect call `[eax+0x14]` (0x0003b3da) and 001779's (0x0003e6c8): resolve the
-   receiver from the listing.
-3. TriangleMesh +0x84, +0x88, +0xa4, +0xa8: only the use sites above are known, not what they hold.
+1. **The census early-string bug is in two tools.**
+   - `tools/work_units.py` misses three translation units whose Ghidra string entries start
+     early: ContactBoxMeshICE.cpp, ContactMeshHeightfield.cpp and core\Articulation.cpp.
+   - `tools/reconcile_analysis.py` (the same `files` keying at lines 709-716) has the same bug.
+     It shows in the inventory's phase provenance: 001772 is `layout_adjacency` and 001865 is
+     `enclosed_by_one_phase`, where each should have been seeded by its own `__FILE__`.
+   - The work_units.py fix renames `gap:IceAdjacencies.cpp..ContactConvexHeightfield.cpp` and
+     `gap:ContactConvexHeightfield.cpp..ContactMeshMesh.cpp`. It also splits or renames
+     `gap:Joint.cpp..D6Joint.cpp`, because core\Articulation.cpp's string (it starts at 0x101194d0) is referenced at
+     0x0009b0f8 in 004172.
+   - Recommendation: fix both tools as a step of their own at the end, in Task 3, and regenerate
+     `work_units.json`, the affected bundles and any provenance change there. Do not fix them
+     now.
+2. Two indirect calls are unresolved. For 001753's `[eax+0x14]` (0x0003b3da) and 001779's
+   (0x0003e6c8), resolve the receiver from the listing.
+3. TriangleMesh +0x84, +0x88, +0xa4 and +0xa8: only the use sites above are known, not what they
+   hold.
 4. The pointers 0x000f8100 -> 001857+0x23 and 0x00101bdc -> 001874+0xd0.
-5. Which file holds the support-map classes (IceAdjacencies.cpp or a neighbour) and whether
-   001822..001846 open ContactConvexHeightfield.cpp or close the convex/convex file.
+5. Three placements are open:
+   - Which file holds the support-map classes: IceAdjacencies.cpp or a neighbour.
+   - Whether 001822..001846 open ContactConvexHeightfield.cpp or close the convex/convex file.
+   - 001855/001857. The .rdata evidence puts them in an unnamed unit of their own, between
+     ContactConvexHeightfield.cpp and ContactMeshHeightfield.cpp. Placing them in
+     `ContactMeshHeightfield.cpp` is this contract's choice. A later task may give them their own
+     file instead.
+6. There is no sub-unit H. The letters follow the survey's first draft, where H was box/capsule;
+   it was merged into G, and the letters were kept so the references stay stable.
+7. 001514 calls the CRT pair 005668 (`_free`) and 005702 (`operator new`). These are different
+   rows from the 005700/005701 pair MeshBuilder2 uses. Check which heap they reach before writing
+   001514 (2g).
