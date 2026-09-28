@@ -45710,8 +45710,8 @@ undefined4 __cdecl FUN_1007d420(int param_1,undefined4 *param_2,int param_3)
 ## phys_fn_003238 (0x0007d500, 106 B, reconstructed)
 
 - ambiguous: yes
-- source: four-field release through the object own vtable (0x7d500)
-- implementation: None
+- source: Physics/src/QhullHost.cpp
+- implementation: Physics/src/QhullHost.cpp
 - prototype: undefined __fastcall FUN_1007d500(int * param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_003259 (0x0007e3d0), phys_fn_003267 (0x0007e540), phys_fn_003270 (0x0007e640), phys_fn_003277 (0x0007e980)
@@ -45751,11 +45751,11 @@ void __fastcall FUN_1007d500(int *param_1)
 
 ```
 
-## phys_fn_003240 (0x0007d570, 32 B, discovered)
+## phys_fn_003240 (0x0007d570, 32 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/QhullHost.cpp
+- implementation: Physics/src/QhullHost.cpp
 - prototype: undefined __thiscall FUN_1007d570(size_t param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_003270 (0x0007e640), phys_fn_003279 (0x0007ea10)
@@ -45783,11 +45783,11 @@ void __thiscall FUN_1007d570(void *this,size_t param_1)
 
 ```
 
-## phys_fn_003241 (0x0007d590, 31 B, discovered)
+## phys_fn_003241 (0x0007d590, 31 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/QhullHost.cpp
+- implementation: Physics/src/QhullHost.cpp
 - prototype: undefined __thiscall FUN_1007d590(void * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_003279 (0x0007ea10)
@@ -47018,8 +47018,8 @@ undefined4 __thiscall FUN_1007e300(void *this,int param_1)
 ## phys_fn_003257 (0x0007e370, 95 B, reconstructed)
 
 - ambiguous: yes
-- source: big ctor (0x7e370, ret 4)
-- implementation: None
+- source: Physics/src/QhullHost.cpp
+- implementation: Physics/src/QhullHost.cpp
 - prototype: void * __thiscall FUN_1007e370(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_003279 (0x0007ea10)
@@ -47062,11 +47062,11 @@ void * __thiscall FUN_1007e370(void *this,undefined4 param_1)
 
 ```
 
-## phys_fn_003259 (0x0007e3d0, 210 B, discovered)
+## phys_fn_003259 (0x0007e3d0, 210 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/QhullHost.cpp
+- implementation: Physics/src/QhullHost.cpp
 - prototype: undefined __thiscall FUN_1007e3d0(undefined4 param_1, int param_2, undefined4 param_3)
 - calling convention: __thiscall, stack purge: 16
 - callers: phys_fn_003257 (0x0007e370)
@@ -47133,8 +47133,8 @@ void __thiscall FUN_1007e3d0(void *this,undefined4 param_1,int param_2,undefined
 ## phys_fn_003261 (0x0007e4b0, 43 B, reconstructed)
 
 - ambiguous: yes
-- source: bounded push of 3 words (0x7e4b0, ret 0xc)
-- implementation: None
+- source: Physics/src/QhullHost.cpp
+- implementation: Physics/src/QhullHost.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_003257 (0x0007e370)
@@ -47161,11 +47161,11 @@ Decompile (capstone disassembly):
 0x0007e4d8  ret 0xc
 ```
 
-## phys_fn_003263 (0x0007e4e0, 60 B, discovered)
+## phys_fn_003263 (0x0007e4e0, 60 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/QhullHost.cpp
+- implementation: Physics/src/QhullHost.cpp
 - prototype: undefined __cdecl FUN_1007e4e0(int * param_1, undefined4 param_2, char * param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003257 (0x0007e370)
@@ -47197,8 +47197,8 @@ void __cdecl FUN_1007e4e0(int *param_1,undefined4 param_2,char *param_3)
 ## phys_fn_003265 (0x0007e520, 23 B, reconstructed)
 
 - ambiguous: yes
-- source: store two args to [this+0x404c/0x4050] (0x7e520, ret 8)
-- implementation: None
+- source: Physics/src/QhullHost.cpp
+- implementation: Physics/src/QhullHost.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_003257 (0x0007e370)
@@ -47216,11 +47216,11 @@ Decompile (capstone disassembly):
 0x0007e534  ret 8
 ```
 
-## phys_fn_003267 (0x0007e540, 32 B, discovered)
+## phys_fn_003267 (0x0007e540, 32 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/QhullHost.cpp
+- implementation: Physics/src/QhullHost.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_003257 (0x0007e370)
@@ -47253,8 +47253,8 @@ Decompile (capstone disassembly):
 ## phys_fn_003268 (0x0007e560, 210 B, reconstructed)
 
 - ambiguous: yes
-- source: batch index/vertex append (0x7e560, ret 8)
-- implementation: None
+- source: Physics/src/QhullHost.cpp
+- implementation: Physics/src/QhullHost.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_003257 (0x0007e370)
@@ -47458,11 +47458,11 @@ undefined1 __thiscall FUN_1007e640(void *this,undefined1 *param_1,char param_2,c
 
 ```
 
-## phys_fn_003272 (0x0007e810, 222 B, discovered)
+## phys_fn_003272 (0x0007e810, 222 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/QhullHost.cpp
+- implementation: Physics/src/QhullHost.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_003257 (0x0007e370)
@@ -47568,8 +47568,8 @@ Decompile (capstone disassembly):
 ## phys_fn_003274 (0x0007e8f0, 48 B, reconstructed)
 
 - ambiguous: yes
-- source: char header init JOHNRAT + NUL + store 2 args (0x7e8f0, ret 8)
-- implementation: None
+- source: Physics/src/QhullHost.cpp
+- implementation: Physics/src/QhullHost.cpp
 - prototype: undefined __thiscall FUN_1007e8f0(undefined4 param_1, undefined4 param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_003272 (0x0007e810)
@@ -47600,11 +47600,11 @@ void __thiscall FUN_1007e8f0(void *this,undefined4 param_1,undefined4 param_2)
 
 ```
 
-## phys_fn_003275 (0x0007e920, 92 B, discovered)
+## phys_fn_003275 (0x0007e920, 92 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/QhullHost.cpp
+- implementation: Physics/src/QhullHost.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_003257 (0x0007e370)
@@ -47649,11 +47649,11 @@ Decompile (capstone disassembly):
 0x0007e979  ret 4
 ```
 
-## phys_fn_003277 (0x0007e980, 130 B, discovered)
+## phys_fn_003277 (0x0007e980, 130 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/QhullHost.cpp
+- implementation: Physics/src/QhullHost.cpp
 - prototype: undefined __fastcall FUN_1007e980(int * param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_003279 (0x0007ea10)

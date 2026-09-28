@@ -142,6 +142,8 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # are x87 in the oracle too and are reached from the solver step, so they are
 # on the list for the same reason. core/JointSupport.cpp's rows 004389 and 004393 are x87 in the
 # oracle and are called from the solver slots 004360 and 004362 inside the step.
+# QhullHost.cpp is NovodeX's hull library around qhull (qhull-gap Task 4): x87 in the oracle
+# (the box fallback, the OBJ writers' widening, the rescale) and run under the caller's word.
 if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set_source_files_properties(
 		Physics/src/Geometry.cpp
@@ -162,6 +164,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/core/FixedJoint.cpp
 		Physics/src/core/D6Joint.cpp
 		Physics/src/core/JointSupport.cpp
+		Physics/src/QhullHost.cpp
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 endif()
 
@@ -200,6 +203,7 @@ if(MSVC)
 		Physics/src/core/NpPulleyJoint.cpp
 		Physics/src/core/NpFixedJoint.cpp
 		Physics/src/core/NpD6Joint.cpp
+		Physics/src/QhullHost.cpp
 		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
 endif()
 
@@ -504,10 +508,13 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# NxPhysicsInternalTests does.
 	#
 	# tests/PhysicsThirdPartyHost.cpp compiles Physics/src/ThirdPartyHost.cpp
-	# unchanged but for qhull's five output hooks, which it routes to the
-	# harness's capture sink while a run installs one (qhull-gap Task 1): the
-	# oracle's printing is captured through its host object, the candidate's
-	# through the same sink.
+	# and Physics/src/QhullHost.cpp unchanged but for qhull's nine hooks, which
+	# it renames and routes per call: to the product's host object while one is
+	# published (a candidate CreateConvexHull run), to the harness's capture
+	# sink while a run installs one (qhull-gap Task 1: the oracle's printing is
+	# captured through its host object, the candidate's through the same sink),
+	# and otherwise to the stand-in every qhull family was measured against
+	# (qhull-gap Task 4a).
 	add_executable(NxPhysicsThirdPartyTests tests/PhysicsThirdPartyTests.cpp
 		tests/PhysicsThirdPartyQhull.c
 		tests/PhysicsThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp

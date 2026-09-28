@@ -570,6 +570,21 @@ The product version keeps the hooks and makes each forward to the object publish
 
 The OPCODE hooks in the same file are untouched.
 
+**As written (Task 4a).** Band A is `Physics/src/QhullHost.cpp` with the classes in
+`Physics/src/include/QhullHost.h` (`/arch:IA32`, `/EHs-c-`). The nine hooks moved out of
+`ThirdPartyHost.cpp` into `QhullHost.cpp`, after the rows, so the targets that link
+`ThirdPartyHost.cpp` without qhull do not pull the library in. Three slots carry different
+descriptive names in the source, so that a member cannot shadow the CRT function a row calls
+directly: +0x10 `print` (the table's `fprintf`), +0x14 `trackedMalloc` and +0x18 `trackedFree`.
+`qhNovodeXFprintf` cannot forward `...` to the variadic slot, so it repeats `003263`'s body
+(format into 0x2000 bytes, `errexit(1)` through the vtable) on the published object.
+`NxPhysicsThirdPartyTests` compiles `QhullHost.cpp` with the nine hooks renamed
+(`tests/PhysicsThirdPartyHost.cpp`) and routes each call: to the product hook while
+`gQhullHost` is non-NULL, else to the Task 1 sink, else to the pre-4a stand-in (untracked SDK
+allocator, `abort` on errexit, silent prints) that every registered qhull family was measured
+against. The global is never cleared, in the product as in the oracle, so a harness that runs
+the candidate's `CreateConvexHull` resets it afterwards.
+
 ### Dependency closure
 
 **write (Task 4): 40 rows, 12,493 B.** 34 of them are `discovered` (11,968 B). The other six

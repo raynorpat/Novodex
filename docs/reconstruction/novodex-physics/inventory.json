@@ -59694,12 +59694,13 @@
       "phase": 4,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": "four-field release through the object own vtable (0x7d500)",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1186",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11658",
-      "static_proof": "static review of the recorded shape: four-field release through the object own vtable (0x7d500); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
+      "static_proof": "static review of the recorded shape: four-field release through the object own vtable (0x7d500); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257); transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::releaseArrays) and checked against the Capstone listing; contract units/convex-cooking-contract.md (qhull-gap Task 4a rewrote the row as product source)",
       "dynamic_proof": "confirmed via the ownvtable3238 differential (3z224): failures=0 over three consecutive runs across all sixteen occupancy pans of the four fields, comparing the slot hit count and the whole 0x4060-byte object, with the fixture vtable slot +0x18 holding the member-function recorder",
-      "notes": ""
+      "notes": "previous source: four-field release through the object own vtable (0x7d500); the dynamic proof above drove the previous generic shape, not Physics/src/QhullHost.cpp",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003239",
@@ -59729,13 +59730,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1187",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11663",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::rawAlloc) and checked against the Capstone listing; contract units/convex-cooking-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003241",
@@ -59747,13 +59749,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1188",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11665",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::rawFree) and checked against the Capstone listing; contract units/convex-cooking-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003242",
@@ -60036,12 +60039,13 @@
       "phase": 4,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": "big ctor (0x7e370, ret 4)",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1194",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11738",
-      "static_proof": "set [this]=vptr 0x10113614; [this+0x4048]=arg; zero several words; rep stosd zero 0x1000 dwords at [this+0x34]; return this",
+      "static_proof": "set [this]=vptr 0x10113614; [this+0x4048]=arg; zero several words; rep stosd zero 0x1000 dwords at [this+0x34]; return this; transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::QhullHost) and checked against the Capstone listing; contract units/convex-cooking-contract.md (qhull-gap Task 4a rewrote the row as product source)",
       "dynamic_proof": "confirmed via biginit drive (3z91): failures=0",
-      "notes": ""
+      "notes": "previous source: big ctor (0x7e370, ret 4); the dynamic proof above drove the previous generic shape, not Physics/src/QhullHost.cpp",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003258",
@@ -60071,13 +60075,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1195",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11739",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::offBegin) and checked against the Capstone listing; contract units/convex-cooking-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003260",
@@ -60108,12 +60113,13 @@
       "phase": 4,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": "bounded push of 3 words (0x7e4b0, ret 0xc)",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1573",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11741",
-      "static_proof": "if [this+0x14] < [this+0x10], store 3 args at [this+0xc + count*12] and inc count",
+      "static_proof": "if [this+0x14] < [this+0x10], store 3 args at [this+0xc + count*12] and inc count; transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::point3) and checked against the Capstone listing; contract units/convex-cooking-contract.md (qhull-gap Task 4a rewrote the row as product source)",
       "dynamic_proof": "confirmed via boundedpush drive (3z66): failures=0",
-      "notes": ""
+      "notes": "previous source: bounded push of 3 words (0x7e4b0, ret 0xc); the dynamic proof above drove the previous generic shape, not Physics/src/QhullHost.cpp",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003262",
@@ -60143,13 +60149,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1196",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11743",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::print) and checked against the Capstone listing; contract units/convex-cooking-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003264",
@@ -60180,12 +60187,13 @@
       "phase": 4,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": "store two args to [this+0x404c/0x4050] (0x7e520, ret 8)",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1575",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11744",
-      "static_proof": "mov [ecx+0x404c],[esp+4]; mov [ecx+0x4050],[esp+8]; ret 8",
+      "static_proof": "mov [ecx+0x404c],[esp+4]; mov [ecx+0x4050],[esp+8]; ret 8; transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::size) and checked against the Capstone listing; contract units/convex-cooking-contract.md (qhull-gap Task 4a rewrote the row as product source)",
       "dynamic_proof": "confirmed via zmix drive (3z54): failures=0",
-      "notes": ""
+      "notes": "previous source: store two args to [this+0x404c/0x4050] (0x7e520, ret 8); the dynamic proof above drove the previous generic shape, not Physics/src/QhullHost.cpp",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003266",
@@ -60215,13 +60223,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1576",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11745",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::errexit) and checked against the Capstone listing; contract units/convex-cooking-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003268",
@@ -60234,12 +60243,13 @@
       "phase": 4,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": "batch index/vertex append (0x7e560, ret 8)",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1577",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11746",
-      "static_proof": "bails when [this+0x18]>=[this+0x1c]; accumulates (count-2) into [this+0x20]; records count in the [this+0x403c]/[this+0x4044] list when it has room; for each index below [this+0x10] copies the 3-dword vertex through the [this+8] map into the [this+0x4034]/[this+0x4038] output (fresh id when the slot is zero) and appends id-1 to the aux list; ret 8",
+      "static_proof": "bails when [this+0x18]>=[this+0x1c]; accumulates (count-2) into [this+0x20]; records count in the [this+0x403c]/[this+0x4044] list when it has room; for each index below [this+0x10] copies the 3-dword vertex through the [this+8] map into the [this+0x4034]/[this+0x4038] output (fresh id when the slot is zero) and appends id-1 to the aux list; ret 8; transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::facet) and checked against the Capstone listing; contract units/convex-cooking-contract.md (qhull-gap Task 4a rewrote the row as product source)",
       "dynamic_proof": "FAILING DIFFERENTIAL (phase-8 audit 3z264): the block batch3268 reports 3 failures and has done so in EVERY gate log. The diffs show the candidate writing NOTHING while the oracle writes this+0000, this+0004, this+0010 through this+0038, this+4034 and this+403c, so nxBatchAppend3268 is effectively a no-op against the row. This closure is UNFOUNDED and the row should be reopened when the harness allows it; the failure was invisible because the phase-5 gate counts only candidateMissing, not per-block failures",
-      "notes": ""
+      "notes": "previous source: batch index/vertex append (0x7e560, ret 8); the dynamic proof above drove the previous generic shape, not Physics/src/QhullHost.cpp",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003269",
@@ -60305,13 +60315,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1579",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11764",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::trackedMalloc) and checked against the Capstone listing; contract units/convex-cooking-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003273",
@@ -60342,12 +60353,13 @@
       "phase": 4,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": "char header init JOHNRAT + NUL + store 2 args (0x7e8f0, ret 8)",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1198",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11776",
-      "static_proof": "writes 7 magic chars + NUL to [this+0..7], stores [esp+4]/[esp+8] to [this+8/0xc]; ret 8",
+      "static_proof": "writes 7 magic chars + NUL to [this+0..7], stores [esp+4]/[esp+8] to [this+8/0xc]; ret 8; transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (BlockHeader::init) and checked against the Capstone listing; contract units/convex-cooking-contract.md (qhull-gap Task 4a rewrote the row as product source)",
       "dynamic_proof": "confirmed via misc3 drive (3z64): failures=0",
-      "notes": ""
+      "notes": "previous source: char header init JOHNRAT + NUL + store 2 args (0x7e8f0, ret 8); the dynamic proof above drove the previous generic shape, not Physics/src/QhullHost.cpp",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003275",
@@ -60359,13 +60371,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1580",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11777",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::trackedFree) and checked against the Capstone listing; contract units/convex-cooking-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003276",
@@ -60395,13 +60408,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1199",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11780",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::~QhullHost) and checked against the Capstone listing; contract units/convex-cooking-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/QhullHost.cpp"
     },
     {
       "id": "phys_fn_003278",
