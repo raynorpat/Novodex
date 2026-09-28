@@ -200,6 +200,61 @@ int wmain(int argc, wchar_t** argv)
 		mutableFlags[growIds[i]] = growFlags[i];
 		activeIndex[growIds[i]] = growIndex[i];
 		}
+	// NpActor.cpp completion Task 3 (000785/000787's island-root refresh):
+	// three growth records are chained through +0x1bc (0 -> 1 -> 2, 2 its own
+	// root). Each kinematic transition on record 0 first finds the root with
+	// 000712, compressing the chain, and ORs 2 into the root's +0x1e4 only
+	// when the root has an island object at +0x1e0. The harness puts the
+	// island words back before the actors are released.
+	{
+		unsigned char* chain[3];
+		unsigned char* savedParent[3];
+		void* savedIsland[3];
+		unsigned savedBits[3];
+		for(unsigned i = 0; i < 3; ++i)
+		{
+			chain[i] = *reinterpret_cast<unsigned char**>(
+				*reinterpret_cast<unsigned char**>(
+					reinterpret_cast<unsigned char*>(grow[i]) + 0x14) + 8);
+			savedParent[i] = *reinterpret_cast<unsigned char**>(chain[i] + 0x1bc);
+			savedIsland[i] = *reinterpret_cast<void**>(chain[i] + 0x1e0);
+			savedBits[i] = *reinterpret_cast<unsigned*>(chain[i] + 0x1e4);
+		}
+		printf("body_flag island_initial self=%u.%u.%u island=%u.%u.%u bits=%x.%x.%x\n",
+			savedParent[0] == chain[0] ? 1u : 0u, savedParent[1] == chain[1] ? 1u : 0u,
+			savedParent[2] == chain[2] ? 1u : 0u, savedIsland[0] ? 1u : 0u,
+			savedIsland[1] ? 1u : 0u, savedIsland[2] ? 1u : 0u,
+			savedBits[0], savedBits[1], savedBits[2]);
+		static unsigned fakeIsland[16];
+		const char* step[4] = { "raise_island", "clear_island", "raise_no_island", "clear_no_island" };
+		for(unsigned k = 0; k < 4; ++k)
+		{
+			*reinterpret_cast<unsigned char**>(chain[0] + 0x1bc) = chain[1];
+			*reinterpret_cast<unsigned char**>(chain[1] + 0x1bc) = chain[2];
+			*reinterpret_cast<unsigned char**>(chain[2] + 0x1bc) = chain[2];
+			*reinterpret_cast<void**>(chain[2] + 0x1e0) = k < 2 ? fakeIsland : 0;
+			*reinterpret_cast<unsigned*>(chain[2] + 0x1e4) = 0x10u;
+			*reinterpret_cast<unsigned*>(chain[0] + 0x1e4) = 0x20u;
+			if(k % 2 == 0) grow[0]->raiseBodyFlag(NX_BF_KINEMATIC);
+			else grow[0]->clearBodyFlag(NX_BF_KINEMATIC);
+			unsigned parent[2];
+			for(unsigned i = 0; i < 2; ++i)
+			{
+				unsigned char* p = *reinterpret_cast<unsigned char**>(chain[i] + 0x1bc);
+				parent[i] = p == chain[0] ? 0u : p == chain[1] ? 1u : p == chain[2] ? 2u : 9u;
+			}
+			printf("body_flag %s parents=%u.%u bits=%x.%x flags=%x\n", step[k], parent[0], parent[1],
+				*reinterpret_cast<unsigned*>(chain[0] + 0x1e4),
+				*reinterpret_cast<unsigned*>(chain[2] + 0x1e4),
+				*reinterpret_cast<unsigned*>(chain[0] + 0x10c));
+		}
+		for(unsigned i = 0; i < 3; ++i)
+		{
+			*reinterpret_cast<unsigned char**>(chain[i] + 0x1bc) = savedParent[i];
+			*reinterpret_cast<void**>(chain[i] + 0x1e0) = savedIsland[i];
+			*reinterpret_cast<unsigned*>(chain[i] + 0x1e4) = savedBits[i];
+		}
+	}
 	for(unsigned i = 0; i < 8; ++i)
 		scene->releaseActor(*grow[i]);
 	scene->releaseActor(*actor);

@@ -770,6 +770,32 @@ $NxRequiredCoverageLines = [ordered] @{
         'momentum static_energy=0'
     )
     'NxPhysicsActorDynamicSetterTests' = @(
+        # NpActor.cpp completion Task 3 (contract NG and 000094): the read lock of the
+        # unguarded readers, seen through the read-link block's flag/owner words (000142
+        # takes none), and 000094's static-arm conversion over six orientations.
+        'setter ng_nb_shapes_0 state=0.1',
+        'setter ng_shapes_0 state=0.1',
+        'setter ng_name_0 state=0.1',
+        'setter ng_position_0 state=0.1',
+        'setter ng_orientation_0 state=0.1',
+        'setter ng_orientation_quat_0 state=0.1',
+        'setter ng_pose_0 state=0.1',
+        'setter ng_is_dynamic_0 state=0.1',
+        'setter ng_inverse_inertia_0 state=1.0',
+        'setter ng_nb_shapes_1 state=0.1',
+        'setter ng_shapes_1 state=0.1',
+        'setter ng_name_1 state=0.1',
+        'setter ng_position_1 state=0.1',
+        'setter ng_orientation_1 state=0.1',
+        'setter ng_orientation_quat_1 state=0.1',
+        'setter ng_pose_1 state=0.1',
+        'setter ng_is_dynamic_1 state=0.1',
+        'setter static_quat_0=3e3af4b9.3ebaf4b9.3f0c378c.3f3af4ba',
+        'setter static_quat_1=3f800000.0.0.0',
+        'setter static_quat_2=0.3f800000.0.0',
+        'setter static_quat_3=3f741dfd.3e4d9285.3dcd9285.3e4d9285',
+        'setter static_quat_4=3e1ac3df.3f6825d0.be9ac3df.3e80f88f',
+        'setter static_quat_5=be4c8b64.3e7fae3d.3f661ccf.3e99688b',
         # NpActor.cpp completion Task 2 (contract G1/E1): the Foundation error stream the
         # target now passes, enabled only for these cases, prints every report the pair
         # delivers. Static, kinematic and invalid-argument calls report E1 with the row's
@@ -1189,6 +1215,14 @@ $NxRequiredCoverageLines = [ordered] @{
         'dynamics density_inertia=43d00000.43a00000.43200000.3b1d89d9.3b4ccccd.3bcccccd'
     )
     'NxPhysicsActorBodyFlagTests' = @(
+        # NpActor.cpp completion Task 3 (000785/000787's 000712 island-root refresh): a
+        # three-record chain compressed on each kinematic transition, the root's +0x1e4
+        # ORed with 2 only when it has an island object.
+        'body_flag island_initial self=1.1.1 island=0.0.0 bits=0.0.0',
+        'body_flag raise_island parents=2.2 bits=20.12 flags=180',
+        'body_flag clear_island parents=2.2 bits=20.12 flags=100',
+        'body_flag raise_no_island parents=2.2 bits=20.10 flags=180',
+        'body_flag clear_no_island parents=2.2 bits=20.10 flags=100',
         # NpActor.cpp completion Task 2 (contract H1): the dirty list grown from a null
         # list through 2, 6 and 14 entries by eight clean ids, then the kinematic
         # transition (000785) growing it before its 0x20-byte block. Oracle side.
@@ -3031,7 +3065,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 159  # 34 for NxPhysicsAssetTests, 125 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 24 from qhull-gap Task 1)
-    '5' = 1522 # 126 object-layout, 1 shape-vtable and 1395 public actor/pruner/box/scene lines
+    '5' = 1550 # 126 object-layout, 1 shape-vtable and 1423 public actor/pruner/box/scene lines
                # (744 + 251 from NpActor.cpp completion Task 2; RED on purpose: vtables
                # family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent

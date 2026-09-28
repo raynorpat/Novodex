@@ -13,6 +13,7 @@
 #include "NpSceneGuard.h"
 #include "ObjectModel.h"
 #include "FoundationSDK.h"
+#include "core/JointSupport.h"
 
 #include "NxMat34.h"
 #include "NxMat33.h"
@@ -77,6 +78,17 @@ static void* nxNpActorContext(void* actor, unsigned offset)
 	{
 	return *reinterpret_cast<void**>(static_cast<unsigned char*>(actor) + offset);
 	}
+
+// The read lock the unguarded readers take in the oracle (contract NG):
+// 002362 on [actor+0x10] before the read and 002366 after it, the result
+// being formed in between.
+struct NxNpActorReadGuard
+	{
+	void* ctx;
+	NxNpActorReadGuard(const void* actor)
+		: ctx(nxNpActorContext(const_cast<void*>(actor), 0x10)) { nxNpSceneGuardEnter(ctx); }
+	~NxNpActorReadGuard() { nxNpSceneGuardLeave(ctx); }
+	};
 
 // The reports every public actor row makes (contract G1 and E1), in the form
 // of 000128's warning. Each is written as the joint units write theirs,
@@ -163,9 +175,22 @@ static void nxNpActorMarkRecordDirty(unsigned char* record, unsigned mask)
 // at +0x118 is allocated if absent (0x1001995d, no null check) and its +0xc
 // cleared. Disable, when it is: flags &= ~0x80, mark 0x80000; +0xc0 = 1/mass,
 // mark 0x10000; +0xc4..+0xcc = 1/inertia (unguarded fld 1; fdiv), mark
-// 0x20000; then the block is freed (0x10019cda) and cleared. The 000712
-// island-root refresh at the head of both arms (+0x1bc, [root+0x1e4] |= 2)
-// is a row-level defect left to the body-flag group.
+// 0x20000; then the block is freed (0x10019cda) and cleared. Both arms begin
+// (0x19643-0x19668, 0x19992-0x199b7) with the island-root refresh: a record
+// that is not its own root (+0x1bc) stores its parent's 000712 (the root,
+// found with path compression), and when the root has an island object
+// (+0x1e0) its +0x1e4 word gets bit 2.
+static void nxNpActorRefreshIslandRoot(unsigned char* record)
+	{
+	unsigned char*& parent = *reinterpret_cast<unsigned char**>(record + 0x1bc);
+	if(parent != record)
+		parent = reinterpret_cast<unsigned char*>(
+			reinterpret_cast<Row000712Fixture*>(parent)->row000712());
+	unsigned char* root = parent;
+	if(*reinterpret_cast<void**>(root + 0x1e0))
+		*reinterpret_cast<unsigned*>(root + 0x1e4) |= 2u;
+	}
+
 static void nxNpActorTransitionKinematic(unsigned char* record, bool enable)
 	{
 	unsigned& flags = *reinterpret_cast<unsigned*>(record + 0x10c);
@@ -175,6 +200,7 @@ static void nxNpActorTransitionKinematic(unsigned char* record, bool enable)
 	if(enable)
 		{
 		if(flags & 0x80u) return;
+		nxNpActorRefreshIslandRoot(record);
 		inverse[0] = 0.0f;
 		nxNpActorMarkRecordDirty(record, 0x10000u);
 		inverse[1] = 0.0f;
@@ -190,6 +216,7 @@ static void nxNpActorTransitionKinematic(unsigned char* record, bool enable)
 	else
 		{
 		if(!(flags & 0x80u)) return;
+		nxNpActorRefreshIslandRoot(record);
 		flags &= ~0x80u;
 		nxNpActorMarkRecordDirty(record, 0x80000u);
 		inverse[0] = static_cast<float>(1.0 / mass[0]);
@@ -723,14 +750,14 @@ void NpActorObject::installVtable()
 	}
 
 
-// phys_fn_000110 at 0x00003580, dynamic actor vtable slot 19. The shipped
-// implementation tests the actor's body at +0x14, then its marker at +0x08.
-// The lock calls around that read are an independent scene-lock dependency.
+// phys_fn_000110 (0x00003580, 35 B)
+// Dynamic actor vtable slot 19: under the read lock, whether the body at
+// +0x14 (not null-tested) has a record at +0x08.
 bool NpActorVtable::isDynamic() const
 	{
-	const unsigned char* actor = reinterpret_cast<const unsigned char*>(this);
-	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(actor + 0x14);
-	return body && *reinterpret_cast<const unsigned*>(body + 0x08) != 0;
+	NxNpActorReadGuard guard(this);
+	const unsigned char* body = nxNpActorBody(const_cast<NpActorVtable*>(this));
+	return *reinterpret_cast<const unsigned*>(body + 0x08) != 0;
 	}
 
 // phys_fn_000196 at 0x00008b00, actor dynamic slot 1. The dynamic path
@@ -1017,28 +1044,36 @@ void NpActorVtable::setGlobalOrientationQuat(const NxQuat& orientation)
 // phys_fn_000130 at 0x00004580, actor vtable slot 5. It returns the same
 // matrix and translation exposed by slots 7 and 6, respectively. The public
 // drive checks all twelve words, including the quarter-turn precision case.
+static NxVec3 nxNpActorGlobalPosition(const void* actor);
+static NxMat33 nxNpActorGlobalOrientation(const void* actor);
+// Under one read lock, the orientation and position forms inline (NG, Task 3).
 NxMat34 NpActorVtable::getGlobalPoseVal() const
 	{
+	NxNpActorReadGuard guard(this);
 	NxMat34 pose;
-	pose.M = getGlobalOrientationVal();
-	pose.t = getGlobalPositionVal();
+	pose.M = nxNpActorGlobalOrientation(this);
+	pose.t = nxNpActorGlobalPosition(this);
 	return pose;
 	}
 
 // phys_fn_000092 at 0x00002ed0, actor vtable slot 6. The oracle reads the
 // nested pose translation when body+8 is non-null, otherwise the outer body's
 // translation at +0x44. The final actor fallback covers incomplete setup.
+// The body is not null-tested (0x2ede-0x2ee4).
+static NxVec3 nxNpActorGlobalPosition(const void* actor)
+	{
+	const unsigned char* body = nxNpActorBody(const_cast<void*>(actor));
+	const unsigned char* record = *reinterpret_cast<unsigned char* const*>(body + 0x08);
+	NxVec3 result;
+	memcpy(&result, record ? record + 0x50 : body + 0x44, sizeof(result));
+	return result;
+	}
+
+// Under the read lock (NG, Task 3).
 NxVec3 NpActorVtable::getGlobalPositionVal() const
 	{
-	const unsigned char* actor = reinterpret_cast<const unsigned char*>(this);
-	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(actor + 0x14);
-	const unsigned char* record = body
-		? *reinterpret_cast<unsigned char* const*>(body + 0x08) : 0;
-	const unsigned char* translation = record ? record + 0x50
-		: (body ? body + 0x44 : actor + 0x44);
-	NxVec3 result;
-	memcpy(&result, translation, sizeof(result));
-	return result;
+	NxNpActorReadGuard guard(this);
+	return nxNpActorGlobalPosition(this);
 	}
 
 // phys_fn_000132 at 0x000046c0 keeps several quaternion products on the
@@ -1131,12 +1166,10 @@ static void nxNpActorRotationFromQuaternionGetter(const float* q, float* rows)
 // phys_fn_000132 at 0x000046c0, actor vtable slot 7. The dynamic arm
 // converts the quaternion in the nested record; the static arm copies the
 // outer body's matrix at +0x20. Lock behavior remains a separate dependency.
-NxMat33 NpActorVtable::getGlobalOrientationVal() const
+static NxMat33 nxNpActorGlobalOrientation(const void* actor)
 	{
-	const unsigned char* actor = reinterpret_cast<const unsigned char*>(this);
-	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(actor + 0x14);
-	const unsigned char* record = body
-		? *reinterpret_cast<unsigned char* const*>(body + 0x08) : 0;
+	const unsigned char* body = nxNpActorBody(const_cast<void*>(actor));
+	const unsigned char* record = *reinterpret_cast<unsigned char* const*>(body + 0x08);
 	NxMat33 orientation;
 	if(record)
 		{
@@ -1148,29 +1181,36 @@ NxMat33 NpActorVtable::getGlobalOrientationVal() const
 		orientation.setRowMajor(rows);
 		}
 	else
-		memcpy(&orientation, body ? body + 0x20 : actor + 0x20,
-			sizeof(orientation));
+		memcpy(&orientation, body + 0x20, sizeof(orientation));
 	return orientation;
+	}
+
+// Under the read lock (NG, Task 3).
+NxMat33 NpActorVtable::getGlobalOrientationVal() const
+	{
+	NxNpActorReadGuard guard(this);
+	return nxNpActorGlobalOrientation(this);
 	}
 
 // phys_fn_000094 at 0x00002f30, actor vtable slot 8. The dynamic arm
 // copies the record's quaternion; the static arm converts the outer matrix.
+// Under the read lock (NG, Task 3). The static arm (0x2f77-0x3109) converts
+// the body's matrix at +0x20 with the pose setters' sequence ((m11 + m22)
+// spilled, the z arm over float(s), the x and y arms with the reciprocal
+// spilled): nxNpActorSetterQuaternionFromMatrix, whose (m22 + m11) is the same
+// value.
 NxQuat NpActorVtable::getGlobalOrientationQuatVal() const
 	{
-	const unsigned char* actor = reinterpret_cast<const unsigned char*>(this);
-	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(actor + 0x14);
-	const unsigned char* record = body
-		? *reinterpret_cast<unsigned char* const*>(body + 0x08) : 0;
+	NxNpActorReadGuard guard(this);
+	const unsigned char* body = nxNpActorBody(const_cast<NpActorVtable*>(this));
+	const unsigned char* record = *reinterpret_cast<unsigned char* const*>(body + 0x08);
+	NxQuat quaternion;
 	if(record)
-		{
-		NxQuat quaternion;
 		memcpy(&quaternion, record + 0x5c, sizeof(quaternion));
-		return quaternion;
-		}
-	NxMat33 orientation;
-	memcpy(&orientation, body ? body + 0x20 : actor + 0x20,
-		sizeof(orientation));
-	return NxQuat(orientation);
+	else
+		nxNpActorSetterQuaternionFromMatrix(
+			reinterpret_cast<const float*>(body + 0x20), &quaternion.x);
+	return quaternion;
 	}
 
 const NxMat34 & NpActorVtable::getGlobalPoseReference() const
@@ -1384,8 +1424,10 @@ void NpActorVtable::releaseShape(NxShape& shape)
 // phys_fn_000082 (0x00002d00) delegates to the outer body's shape holder.
 // A single shape contributes one public handle; kind 5 is the group whose
 // child array at +0xe0/+0xe4 determines the count.
+// Under the read lock (NG, Task 3).
 NxU32 NpActorVtable::getNbShapes() const
 	{
+	NxNpActorReadGuard guard(this);
 	const unsigned char* actor = reinterpret_cast<const unsigned char*>(this);
 	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(actor + 0x14);
 	const unsigned char* shape = body
@@ -1399,8 +1441,10 @@ NxU32 NpActorVtable::getNbShapes() const
 
 // phys_fn_000084 (0x00002d30) returns the address of the single helper
 // pointer, or the group's parallel array of public helper pointers.
+// Under the read lock (NG, Task 3).
 NxShape** NpActorVtable::getShapes() const
 	{
+	NxNpActorReadGuard guard(this);
 	const unsigned char* actor = reinterpret_cast<const unsigned char*>(this);
 	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(actor + 0x14);
 	const unsigned char* shape = body
@@ -3059,8 +3103,12 @@ void NpActorVtable::setName(const char* name)
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000086 (0x00002d60, 40 B)
+// Under the read lock (NG, Task 3); which table the name is looked up in is
+// the row's remaining defect.
 const char* NpActorVtable::getName() const
 	{
+	NxNpActorReadGuard guard(this);
 	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(
 		reinterpret_cast<const unsigned char*>(this) + 0x14);
 	return nxShapeGetName(const_cast<unsigned char*>(body));

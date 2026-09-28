@@ -19,6 +19,7 @@
 #include "NxBoxShape.h"
 #include "NxBox.h"
 #include "NxBounds3.h"
+#include <math.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -1095,6 +1096,64 @@ int wmain(int argc, wchar_t** argv)
 	ERROR_CASE("locked_static_cmass_global_pose", errStatic->setCMassGlobalPose(errPose));
 	printf("setter error_locked_static_state=%u.%u\n", errStaticLock.flag(), errStaticLock.owner());
 	errStaticLock.release();
+	// NpActor.cpp completion Task 3 (contract NG): the readers that take the
+	// read lock in the oracle (002362/002366 on the block [actor+0x10] links
+	// to). With that block's flag/owner words set to 1/0, a read lock and its
+	// unlock rewrite the owner to this thread and the flag to 0; 000142,
+	// which takes no lock, leaves both.
+	{
+		const unsigned tid = GetCurrentThreadId();
+		NxActor* ngActors[2] = { errDynamic, errStatic };
+		for(unsigned k = 0; k < 2; ++k)
+		{
+			NxActor* a = ngActors[k];
+			unsigned char* readLink = *reinterpret_cast<unsigned char**>(
+				reinterpret_cast<unsigned char*>(a) + 0x10);
+			struct ReadLock
+			{
+				unsigned* state; unsigned saved[2];
+				void hold() { saved[0] = state[0]; saved[1] = state[1]; state[0] = 1; state[1] = 0; }
+				void release() { state[0] = saved[0]; state[1] = saved[1]; }
+				unsigned flag() const { return state[0]; }
+				unsigned owner() const { return state[1]; }
+			} lock;
+			lock.state = reinterpret_cast<unsigned*>(*reinterpret_cast<unsigned char**>(readLink) + 0x18);
+#define NG_CASE(name, call) lock.hold(); call; 	printf("setter ng_%s_%u state=%u.%u\n", name, k, lock.flag(), lock.owner() == tid ? 1u : 0u); 	lock.release()
+			NG_CASE("nb_shapes", a->getNbShapes());
+			NG_CASE("shapes", a->getShapes());
+			NG_CASE("name", a->getName());
+			NG_CASE("position", a->getGlobalPosition());
+			NG_CASE("orientation", a->getGlobalOrientation());
+			NG_CASE("orientation_quat", a->getGlobalOrientationQuat());
+			NG_CASE("pose", a->getGlobalPose());
+			NG_CASE("is_dynamic", a->isDynamic());
+			if(k == 0) { NG_CASE("inverse_inertia", a->getGlobalInertiaTensorInverse()); }
+#undef NG_CASE
+		}
+	}
+	// 000094's static arm: the quaternion of a static actor's matrix, over
+	// orientations that walk the trace arm and the x, y and z pivots.
+	{
+		const float quats[6][4] = {
+			{ 1.0f, 2.0f, 3.0f, 4.0f }, { 1.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 0.0f },
+			{ 0.95f, 0.2f, 0.1f, 0.2f }, { 0.15f, 0.9f, -0.3f, 0.25f }, { -0.2f, 0.25f, 0.9f, 0.3f } };
+		for(unsigned i = 0; i < 6; ++i)
+		{
+			float x = quats[i][0], y = quats[i][1], z = quats[i][2], w = quats[i][3];
+			const float inv = 1.0f / sqrtf(x * x + y * y + z * z + w * w);
+			x *= inv; y *= inv; z *= inv; w *= inv;
+			NxActorDesc rotatedDesc;
+			rotatedDesc.shapes.pushBack(&box);
+			rotatedDesc.globalPose.M.setRow(0, NxVec3(1.0f - 2.0f * (y * y + z * z), 2.0f * (x * y - w * z), 2.0f * (x * z + w * y)));
+			rotatedDesc.globalPose.M.setRow(1, NxVec3(2.0f * (x * y + w * z), 1.0f - 2.0f * (x * x + z * z), 2.0f * (y * z - w * x)));
+			rotatedDesc.globalPose.M.setRow(2, NxVec3(2.0f * (x * z - w * y), 2.0f * (y * z + w * x), 1.0f - 2.0f * (x * x + y * y)));
+			NxActor* rotated = scene->createActor(rotatedDesc);
+			if(!rotated) continue;
+			const NxQuat q = rotated->getGlobalOrientationQuat();
+			printf("setter static_quat_%u=%x.%x.%x.%x\n", i, bits(q.x), bits(q.y), bits(q.z), bits(q.w));
+			scene->releaseActor(*rotated);
+		}
+	}
 	printf("setter error_locked_unchanged=%x.%x.%x.%x.%x.%x.%x.%x.%x.%u.%u.%u\n",
 		word(errDynamicRecord, 0x188), word(errDynamicRecord, 0xc0),
 		word(errDynamicRecord, 0xb8), word(errDynamicRecord, 0xbc),
