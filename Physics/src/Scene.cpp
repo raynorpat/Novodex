@@ -53,6 +53,7 @@
 #include "core/SpringAndDamperEffector.h"
 #include "NxSpringAndDamperEffectorDesc.h"
 #include "Observable.h"
+#include "PhysicsSDK.h"
 #include "NxMat33.h"
 #include "NxQuat.h"
 #include "FoundationSDK.h"
@@ -2094,20 +2095,32 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	*reinterpret_cast<float*>(record + 0xbc) = bodyDesc->angularDamping;
 	*reinterpret_cast<float*>(record + 0x84) = bodyDesc->wakeUpCounter;
 	*reinterpret_cast<float*>(record + 0x4c) = bodyDesc->wakeUpCounter;
-	// FUN_1001a350 uses pinned SDK defaults when descriptor thresholds are
-	// negative. These are 0.15^2 and 0.14^2 in the shipped binary.
-	*reinterpret_cast<unsigned*>(record + 0xd0) = 0x3cb851ecu;
-	*reinterpret_cast<unsigned*>(record + 0xd4) = 0x3ca0902eu;
-	const float maxAngularVelocity = bodyDesc->maxAngularVelocity > 0.0f
-		? bodyDesc->maxAngularVelocity : 7.0f;
-	*reinterpret_cast<float*>(record + 0xd8) =
-		maxAngularVelocity * maxAngularVelocity;
+	// The body descriptor loader phys_fn_000795 takes each threshold the
+	// descriptor leaves at or below zero from the SDK's LIVE parameter array
+	// (.data 0x10123b18), not from a pinned default: +0xd8 is
+	// NX_MAX_ANGULAR_VELOCITY squared (`fld`/`fmul [0x10123b34]` at
+	// 0x1b04a), +0xd0 and +0xd4 are NX_DEFAULT_SLEEP_LIN_VEL_SQUARED and
+	// NX_DEFAULT_SLEEP_ANG_VEL_SQUARED copied as they are (0x1b1fc, 0x1b3ac).
+	// A positive descriptor value is squared (0x1afaa, 0x1b15c, 0x1b30c).
+	// The core-dump differential (effector-and-coredump Task 4) found the
+	// pinned 7.0 after the SDK's NX_MAX_ANGULAR_VELOCITY had been changed.
+	const NxReal* parameters = nxPhysicsSDKParameters();
+	if(bodyDesc->maxAngularVelocity > 0.0f)
+		*reinterpret_cast<float*>(record + 0xd8) =
+			bodyDesc->maxAngularVelocity * bodyDesc->maxAngularVelocity;
+	else
+		*reinterpret_cast<float*>(record + 0xd8) =
+			parameters[NX_MAX_ANGULAR_VELOCITY] * parameters[NX_MAX_ANGULAR_VELOCITY];
 	if(bodyDesc->sleepLinearVelocity > 0.0f)
 		*reinterpret_cast<float*>(record + 0xd0) =
 			bodyDesc->sleepLinearVelocity * bodyDesc->sleepLinearVelocity;
+	else
+		*reinterpret_cast<float*>(record + 0xd0) = parameters[NX_DEFAULT_SLEEP_LIN_VEL_SQUARED];
 	if(bodyDesc->sleepAngularVelocity > 0.0f)
 		*reinterpret_cast<float*>(record + 0xd4) =
 			bodyDesc->sleepAngularVelocity * bodyDesc->sleepAngularVelocity;
+	else
+		*reinterpret_cast<float*>(record + 0xd4) = parameters[NX_DEFAULT_SLEEP_ANG_VEL_SQUARED];
 	memcpy(record + 0x6c, &bodyDesc->linearVelocity, sizeof(NxVec3));
 	memcpy(record + 0x34, &bodyDesc->linearVelocity, sizeof(NxVec3));
 	memcpy(record + 0x78, &bodyDesc->angularVelocity, sizeof(NxVec3));
