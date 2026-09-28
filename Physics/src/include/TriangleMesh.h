@@ -137,7 +137,12 @@ class TriangleMesh
 
 	//! +0x00, the vtable slot. Not a C++ vtable; see the class comment.
 	void*					mVtableSlot;
-	//! +0x04, unestablished.
+	//! +0x04, the polygon interface table (0x101085d4: the constructor stores
+	//! it at 0x000554a4 over the abstract table it stored at 0x00055493, the
+	//! destructor again at 0x00055581). Its twelve slots take the mesh plus
+	//! four as `this` and read the convex mesh at +0xa0; the candidate's slots
+	//! are gTriangleMeshPolygonTable (TriangleMeshPolygons.cpp, convex-mesh gap
+	//! Task 2g). No candidate constructor exists yet to store it.
 	NxU32					mWord04;
 	//! +0x08, the embedded internal mesh -- which reaches exactly to +0x40.
 	InternalTriangleMesh	mInternal;
@@ -173,7 +178,11 @@ class TriangleMesh
 	//! +0x9c, unestablished; the next measured store is the hull at +0xa0.
 	NxU32					mWord9C;
 	//! +0xa0, the convex mesh. Released through its slot 0 by
-	//! phys_fn_002164; no type is established beyond that.
+	//! phys_fn_002164. The polygon interface reads it as the hull of
+	//! ConvexHull.h (+0x0c..+0x48) with a vertex graph at +0x64 (002249).
+	//! The words after it, +0xa4 (passed to 001818, which never reads it) and
+	//! +0xa8 (the kind C support map slot 11 takes; 001820 at 0x000411f1 /
+	//! 0x000411f7), are outside this class's measured size.
 	void*					mConvexMesh;
 	};
 
