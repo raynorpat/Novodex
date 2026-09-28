@@ -2629,10 +2629,10 @@ $NxRequiredCoverageLines = [ordered] @{
         # (evidence/convex-mesh-gap.md, Task 2e): the name lines' agreement fields are the gate's
         # assertion, and the coverage lines count oracle-side values and fixed inputs only. The
         # pairs above keep printing where they were; the pair below carries the totals.
-        'thirdparty input name=pose_pair words=53760 input=b9b7f03f',
-        'thirdparty name=pose_pair rva=0x00031db0 owner=phys_fn_001653 source=IceMeshTools.cpp words=77668 oracle=56567247 mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty name=pose_pair.inverse_divergent rva=0x00031db0 owner=phys_fn_001653 source=IceMeshTools.cpp words=23760 oracle=7a83cbc5',
-        'thirdparty coverage name=pose_pair calls=3072 exact=2352 inverse_divergent=720 x87_0f7f=1536 identity_guard_before=0 identity_at_block=1 identity_kept=1 reports=0',
+        'thirdparty input name=pose_pair words=80640 input=fa36d674',
+        'thirdparty name=pose_pair rva=0x00031db0 owner=phys_fn_001653 source=IceMeshTools.cpp words=127828 oracle=5daac11c mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=pose_pair.inverse_divergent rva=0x00031db0 owner=phys_fn_001653 source=IceMeshTools.cpp words=24288 oracle=f698d5e5',
+        'thirdparty coverage name=pose_pair calls=4608 exact=3872 inverse_divergent=736 x87_0f7f=2304 identity_guard_before=0 identity_at_block=1 identity_kept=1 reports=0',
         'thirdparty input name=unique_axis words=3783 input=95bee3a5',
         'thirdparty name=unique_axis rva=0x000324f0 owner=phys_fn_001661 source=IceMeshTools.cpp,IceMeshBuilder2.cpp words=13830 oracle=fb7a8219 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=unique_axis cases=320 calls=2202 added=1652 rejected=550 negated=1070 input_snan=320 reports=0',
@@ -2646,8 +2646,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=adjacency_owner rva=0x000543d0 owner=phys_fn_002186 source=TriangleMeshTopology.cpp,IceAdjacencies.cpp,EdgeList.cpp words=28728 oracle=b9df247a mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=adjacency_owner.plane_divergent rva=0x000543d0 owner=phys_fn_002186 source=TriangleMeshTopology.cpp,IceAdjacencies.cpp,EdgeList.cpp words=6300 oracle=50e4dd46',
         'thirdparty coverage name=adjacency_owner meshes=65 adjacencies=66 adjacencies_built=36 edge_lists=66 edge_lists_built=65 frozen_split_runs=13 reports=30 line72=1 line321=29',
-        'thirdparty coverage driven=85 divergent=29 words=2174863 layout_checks=47',
-        'thirdparty oracle digest=d9a2accc'
+        'thirdparty coverage driven=85 divergent=29 words=2225551 layout_checks=47',
+        'thirdparty oracle digest=a1b4f9a6'
     )
 }
 

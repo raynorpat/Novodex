@@ -394,7 +394,7 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "qhull_rotation_x87", 2001, 0, 0, kInf64, 547, 20, 0, 4611686018427387904ull, 2.0 },	// qhull-gap: "QRn"
 	{ "edge_list.plane_divergent", 465, 465, 0, 0, 0, 0, 0, 0ull, 0.0 },	// convex-mesh gap Task 2c: active-edge bits that follow the vendored Plane::Set / Triangle::Normal (005155, 005181); 0 with the oracle's bound in
 	{ "ice_adjacencies.plane_divergent", 124, 124, 0, 0, 0, 0, 0, 0ull, 0.0 },	// the same, through 001546's EdgeList
-	{ "pose_pair.inverse_divergent", 990, 0, 0xffffffffu, 0, 990, 990, 0, 0ull, HUGE_VAL },	// convex-mesh gap Task 2e: 001653 over the inverse of a raw pose; every word a NaN whose signalling bit the vendored InvertPRMatrix (005191) quiets by copying through the FPU; 0 with the oracle's bound in
+	{ "pose_pair.inverse_divergent", 944, 0, 0xffffffffu, 0, 944, 944, 0, 0ull, HUGE_VAL },	// convex-mesh gap Task 2e: 001653 over the inverse of a raw pose; every word a NaN whose signalling bit the vendored InvertPRMatrix (005191) quiets by copying through the FPU; 0 with the oracle's bound in
 	{ "adjacency_owner.plane_divergent", 155, 155, 0, 0, 0, 0, 0, 0ull, 0.0 },	// convex-mesh gap Task 2e: 002188's EdgeList on Task 2c's 13 frozen meshes (005155, 005181); 0 with the oracle's bound in
 	};
 
@@ -8020,7 +8020,10 @@ static void nxDriveIceMeshBuilder2(const NxOracleRows& o, bool selfOnly)
 //                    of zero products, so the vendored InvertPRMatrix (005191,
 //                    whose sums the 2003 compiler reassociated, and which
 //                    copies through the FPU) inverts it exactly as the
-//                    oracle's does. A call that uses the inverse of a raw
+//                    oracle's does. Rows (x, x, y) against rows (x, -x, y)
+//                    make every product element cancel down to its small term,
+//                    so the listing's per-element order of the four terms is
+//                    observable. A call that uses the inverse of a raw
 //                    pose goes to pose_pair.inverse_divergent, under a ceiling
 //                    (a rule on the fixed inputs, not a comparison).
 //   unique_axis      001661 over sequences of directions on a fresh Container:
@@ -8211,10 +8214,50 @@ static unsigned nxMtRawWord(bool finiteOnly)
 // ---------------------------------------------------------------------------
 // pose_pair
 
-// A pose of kind 0 (null), 1 (clean), 2 (raw) or 3 (a raw rotation at the
-// origin), as sixteen words.
+// A word of +-[0.5, 1), and one of +-[2^-60, 0.5), drawn as bits.
+static unsigned nxMtUnitWord()
+	{
+	const unsigned p = nxNext();
+	return 0x3f000000u | (p & 0x807fffffu);
+	}
+static unsigned nxMtSmallWord()
+	{
+	const unsigned p = nxNext();
+	const unsigned e = 67 + (p >> 24) % 59;
+	return (p & 0x807fffffu) | (e << 23);
+	}
+
+// A pose of kind 0 (null), 1 (clean), 2 (raw), 3 (a raw rotation at the
+// origin), 4 (rows (x, x, y) at the origin) or 5 (rows (x, -x, y) at the
+// origin), as sixteen words. With x of +-[0.5, 1) and y of +-[2^-60, 0.5), a
+// kind 4 pose times the inverse of a kind 5 one (or the other way round) sums
+// x*x' - x*x' + y*y' in every element: the two large products cancel, and
+// whether the small one was added to one of them first (and rounded there) is
+// decided by the element's order of the four terms, which is what the listing
+// fixes per element.
 static void nxMtPose(unsigned kind, unsigned* m)
 	{
+	if(kind == 4 || kind == 5)
+		{
+		for(int r = 0; r < 3; ++r)
+			{
+			const unsigned x = nxMtUnitWord();
+			const unsigned y = nxMtSmallWord();
+			m[r * 4 + 0] = x;
+			m[r * 4 + 1] = kind == 5 ? x ^ 0x80000000u : x;
+			m[r * 4 + 2] = y;
+			const unsigned last = nxMtRawWord(false);
+			m[r * 4 + 3] = last;
+			}
+		for(int c = 0; c < 3; ++c)
+			{
+			const unsigned sign = nxNext() & 0x80000000u;
+			m[12 + c] = sign;
+			}
+		const unsigned last = nxMtRawWord(false);
+		m[15] = last;
+		return;
+		}
 	if(kind == 2)
 		{
 		for(int i = 0; i < 16; ++i)
@@ -8338,10 +8381,10 @@ static void nxMtPoseDrive(const NxIceSide& s)
 	const unsigned savedState = gState;
 	nxMtIdentity(s);
 	unsigned p0[16], p1[16];
-	for(unsigned k0 = 0; k0 < 4; ++k0)
-		for(unsigned k1 = 0; k1 < 4; ++k1)
+	for(unsigned k0 = 0; k0 < 6; ++k0)
+		for(unsigned k1 = 0; k1 < 6; ++k1)
 			for(unsigned want = 0; want < 4; ++want)
-				for(unsigned draw = 0; draw < 24; ++draw)
+				for(unsigned draw = 0; draw < 16; ++draw)
 					{
 					gState = 0x90e50000u ^ (k0 * 1031 + k1 * 257 + want * 61 + draw * 7 + 3);
 					nxMtPose(k0, p0);
