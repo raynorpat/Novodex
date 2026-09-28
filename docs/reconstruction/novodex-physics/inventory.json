@@ -30357,13 +30357,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Distance.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/661",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4621",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00032840..0x000329d2: offset from the centre kept on the FPU stack, box-frame coordinates ((z + y) + x) stored, squared distance a register (x arm replaces the 0.0, y/z `faddp st(2)`) returned unnarrowed, closest point z stored last",
+      "dynamic_proof": "convex-mesh gap Task 2a: NxPointBoxSquareDistance hit in the full run of NxPhysicsCollisionTests (evidence/convex-mesh-gap-trace-2a.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4442c4767cfc46f7...)); oracle differential point_box (base+0x00032840) against the pinned oracle, mismatches=0 under 0x027f and 0x0f7f; see evidence/convex-mesh-gap.md",
+      "notes": "",
+      "implementation": "Physics/src/Distance.cpp"
     },
     {
       "id": "phys_fn_001671",
@@ -30429,13 +30430,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Distance.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/663",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4658",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00032f10..0x000335e6 (register convention: ecx/stack i0, edi i1, esi i2, ebx pmE, edx dir): ppE stored, unrounded opening products, the reciprocal-times-delta parameter, the shared near-edge leaf 0x0003328d entered wide (0x00033004) and narrowed (0x00033289), each far-edge and corner leaf with its own summation tree; leaves split into functions of their own so no wide intermediate is spilled",
+      "dynamic_proof": "convex-mesh gap Task 2a: nxLineBoxFace hit in the full run of NxPhysicsCollisionTests (evidence/convex-mesh-gap-trace-2a.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4442c4767cfc46f7...)); oracle differential line_box (base+0x00033a50) and segment_box, through 001684 against the pinned oracle, mismatches=0 under 0x027f and 0x0f7f; see evidence/convex-mesh-gap.md",
+      "notes": "",
+      "implementation": "Physics/src/Distance.cpp"
     },
     {
       "id": "phys_fn_001675",
@@ -30465,13 +30467,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Distance.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/664",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4670",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x000335f0..0x000336b1: pmE stored, three unrounded product comparisons (0x00033631, 0x00033647, 0x00033679) choosing Face(0,1,2), (1,2,0) or (2,0,1)",
+      "dynamic_proof": "convex-mesh gap Task 2a: nxLineBoxCaseNoZeros hit in the full run of NxPhysicsCollisionTests (evidence/convex-mesh-gap-trace-2a.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4442c4767cfc46f7...)); oracle differential line_box (base+0x00033a50), through 001684 against the pinned oracle, mismatches=0 under 0x027f and 0x0f7f; see evidence/convex-mesh-gap.md",
+      "notes": "",
+      "implementation": "Physics/src/Distance.cpp"
     },
     {
       "id": "phys_fn_001677",
@@ -30501,13 +30504,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Distance.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/665",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4673",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x000336c0..0x00033896: pmE0/pmE1 and both products stored, ppE and delta `fst` and used wide, the shared parameter tail 0x000337fe over [esp+8]/[esp+0x10], the i2 clamp",
+      "dynamic_proof": "convex-mesh gap Task 2a: nxLineBoxCase0 hit in the full run of NxPhysicsCollisionTests (evidence/convex-mesh-gap-trace-2a.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4442c4767cfc46f7...)); oracle differential line_box (base+0x00033a50), identity frames with one zero direction component against the pinned oracle, mismatches=0 under 0x027f and 0x0f7f; see evidence/convex-mesh-gap.md",
+      "notes": "",
+      "implementation": "Physics/src/Distance.cpp"
     },
     {
       "id": "phys_fn_001679",
@@ -30537,13 +30541,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Distance.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/666",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4682",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x000338a0..0x00033962: the stored quotient parameter, the i1 clamp, and the i2 clamp whose low arm stores -e[i2] into pnt[i1] (0x0003393a `fstp [edx+esi*4]`)",
+      "dynamic_proof": "convex-mesh gap Task 2a: nxLineBoxCase00 hit in the full run of NxPhysicsCollisionTests (evidence/convex-mesh-gap-trace-2a.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4442c4767cfc46f7...)); oracle differential line_box (base+0x00033a50), identity frames with two zero direction components against the pinned oracle, mismatches=0 under 0x027f and 0x0f7f; see evidence/convex-mesh-gap.md",
+      "notes": "",
+      "implementation": "Physics/src/Distance.cpp"
     },
     {
       "id": "phys_fn_001681",
@@ -30573,13 +30578,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Distance.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/667",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4688",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00033970..0x00033a45: the three clamps, each squared in a register and added to the memory accumulator",
+      "dynamic_proof": "convex-mesh gap Task 2a: nxLineBoxCase000 hit in the full run of NxPhysicsCollisionTests (evidence/convex-mesh-gap-trace-2a.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4442c4767cfc46f7...)); oracle differential line_box (base+0x00033a50), zero directions; segment_box zero-length segments against the pinned oracle, mismatches=0 under 0x027f and 0x0f7f; see evidence/convex-mesh-gap.md",
+      "notes": "",
+      "implementation": "Physics/src/Distance.cpp"
     },
     {
       "id": "phys_fn_001683",
@@ -30609,13 +30615,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Distance.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/668",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4695",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00033a50..0x00033b3b: rotation column 0 on the FPU stack and the other six words copied, box-frame point and direction as ((z + y) + x) sums, stored",
+      "dynamic_proof": "convex-mesh gap Task 2a: NxLineBoxSquareDistance hit in the full run of NxPhysicsCollisionTests (evidence/convex-mesh-gap-trace-2a.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4442c4767cfc46f7...)); oracle differential line_box (base+0x00033a50) against the pinned oracle, mismatches=0 under 0x027f and 0x0f7f; see evidence/convex-mesh-gap.md",
+      "notes": "",
+      "implementation": "Physics/src/Distance.cpp"
     },
     {
       "id": "phys_fn_001685",
@@ -30645,13 +30652,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Distance.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/668",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4696",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00033a50"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00033b40..0x00033cfc (continuation of 001684): the reflection loop (flags in the caller's second argument slot), the sign dispatch to 001676/001678/001680/001682 with their register arguments, `*lineParam = 0` after Case000, the write-back guarded by lineParam (0x00033cb2) and the float result loaded back (0x00033cf1)",
+      "dynamic_proof": "convex-mesh gap Task 2a: NxLineBoxSquareDistance hit in the full run of NxPhysicsCollisionTests (evidence/convex-mesh-gap-trace-2a.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4442c4767cfc46f7...)); oracle differential line_box (base+0x00033a50); the continuation of every 001684 call against the pinned oracle, mismatches=0 under 0x027f and 0x0f7f; see evidence/convex-mesh-gap.md",
+      "notes": "continuation of the entry at 0x00033a50",
+      "implementation": "Physics/src/Distance.cpp"
     },
     {
       "id": "phys_fn_001687",
@@ -30681,13 +30689,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Distance.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/669",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4713",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00033d00..0x00033e79: box copied into the frame, line = p0 and stored p1 - p0, 001684 with outputs in the caller's argument slots, t < 0 / t > 1 to 001670 with the original rotation pointer, 001684's st(0) returned as is inside [0, 1]",
+      "dynamic_proof": "convex-mesh gap Task 2a: NxSegmentBoxSquareDistance hit in the full run of NxPhysicsCollisionTests (evidence/convex-mesh-gap-trace-2a.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4442c4767cfc46f7...)); oracle differential segment_box (base+0x00033d00) against the pinned oracle, mismatches=0 under 0x027f and 0x0f7f; see evidence/convex-mesh-gap.md",
+      "notes": "",
+      "implementation": "Physics/src/Distance.cpp"
     },
     {
       "id": "phys_fn_001689",
@@ -31851,13 +31860,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NarrowPhase.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/694",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5081",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0003b0e0..0x0003b251: the capsule axis (x narrowed, y/z wide, -z narrowed), the box flattened, 001913 at each end, then 001688 with null outputs against r*r strictly",
+      "dynamic_proof": "convex-mesh gap Task 2a: NxOverlapBoxCapsule hit in the full run of NxPhysicsCollisionTests (evidence/convex-mesh-gap-trace-2a.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4442c4767cfc46f7...)); oracle differential box_capsule.random/.aimed, matrix B index 15 (base+0x0003b0e0) against the pinned oracle, mismatches=0 under 0x027f and 0x0f7f; see evidence/convex-mesh-gap.md",
+      "notes": "",
+      "implementation": "Physics/src/NarrowPhase.cpp"
     },
     {
       "id": "phys_fn_001752",
@@ -31887,13 +31897,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactGeneration.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/858",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5084",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0003b260..0x0003bb3a: the swept arm raycasts through the BOX's vtable slot 5 (`call [eax+0x14]` at 0x0003b3da, ecx = arg0; phys_fn_000949 on a box); the end spheres through 001917 with the -0.01 (double) facing test and the axis negated each pass; 001688, then the segment/box contact or, at squared distance 0, 001748 over the capsule as a (0.666r, h, 0.666r) box with the inline manifold",
+      "dynamic_proof": "convex-mesh gap Task 2a: NxContactBoxCapsule hit in the full run of NxPhysicsCollisionTests (evidence/convex-mesh-gap-trace-2a.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4442c4767cfc46f7...)); oracle differential contact_box_capsule, matrix A index 15 (base+0x0003b260), box slot 5 bound to the oracle's 000949 on both sides against the pinned oracle, mismatches=0 under 0x027f and 0x0f7f; see evidence/convex-mesh-gap.md",
+      "notes": "",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_001754",
@@ -32265,13 +32276,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NarrowPhase.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/868",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5181",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0003d890..0x0003d9cf: both capsule axes, 001690, and the unnarrowed radius sum squared (0x0003d9a0), strict, unordered false",
+      "dynamic_proof": "convex-mesh gap Task 2a: NxOverlapCapsuleCapsule hit in the full run of NxPhysicsCollisionTests (evidence/convex-mesh-gap-trace-2a.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4442c4767cfc46f7...)); oracle differential capsule_capsule.random/.aimed, matrix B index 21 (base+0x0003d890) against the pinned oracle, mismatches=0 under 0x027f and 0x0f7f; see evidence/convex-mesh-gap.md",
+      "notes": "",
+      "implementation": "Physics/src/NarrowPhase.cpp"
     },
     {
       "id": "phys_fn_001775",
@@ -32463,13 +32475,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NarrowPhase.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/701",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5227",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0003f390..0x0003f566: the capsule axis; the compound's world bounds from the Prunable at Shape+0xa4 (GetUpdatedWorldAABB inlined, 004886 called); centre/half size with x/y narrowed before halving; identity rotation; 001688 against r*r",
+      "dynamic_proof": "convex-mesh gap Task 2a: NxOverlapCapsuleCompound hit in the full run of NxPhysicsCollisionTests (evidence/convex-mesh-gap-trace-2a.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4442c4767cfc46f7...)); oracle differential capsule_compound, matrix B index 23 (base+0x0003f390) against the pinned oracle, mismatches=0 under 0x027f and 0x0f7f; see evidence/convex-mesh-gap.md",
+      "notes": "",
+      "implementation": "Physics/src/NarrowPhase.cpp"
     },
     {
       "id": "phys_fn_001786",
@@ -32535,13 +32548,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NarrowPhase.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/875",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5234",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0003f5b0..0x0003f6fd: the compound's world bounds as a box (as 001785) against the sphere through 001913",
+      "dynamic_proof": "convex-mesh gap Task 2a: NxOverlapSphereCompound hit in the full run of NxPhysicsCollisionTests (evidence/convex-mesh-gap-trace-2a.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4442c4767cfc46f7...)); oracle differential sphere_compound, matrix B index 11 (base+0x0003f5b0) against the pinned oracle, mismatches=0 under 0x027f and 0x0f7f; see evidence/convex-mesh-gap.md",
+      "notes": "",
+      "implementation": "Physics/src/NarrowPhase.cpp"
     },
     {
       "id": "phys_fn_001790",
@@ -32571,13 +32585,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NarrowPhase.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/702",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5238",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0003f700..0x0003f8a1: false unless [box+0xde] & 7; else the compound's world bounds (identity rotation) as box 0 against the box through NxBoxBoxIntersect (0x00036690) with fullTest",
+      "dynamic_proof": "convex-mesh gap Task 2a: NxOverlapBoxCompound hit in the full run of NxPhysicsCollisionTests (evidence/convex-mesh-gap-trace-2a.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4442c4767cfc46f7...)); oracle differential box_compound, matrix B index 17 (base+0x0003f700) against the pinned oracle, mismatches=0 under 0x027f and 0x0f7f; see evidence/convex-mesh-gap.md",
+      "notes": "",
+      "implementation": "Physics/src/NarrowPhase.cpp"
     },
     {
       "id": "phys_fn_001792",

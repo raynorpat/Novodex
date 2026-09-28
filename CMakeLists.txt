@@ -646,6 +646,12 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# linkage here as in the DLL or every one of them warns.
 	target_compile_definitions(NxPhysicsCollisionTests PRIVATE NX_PHYSICS_DLL=1)
 	target_link_libraries(NxPhysicsCollisionTests NxFoundation NxOpcode bcrypt)
+	# The map the convex-mesh gap traces resolve their breakpoints from (the exe has no
+	# PDB); see NxPhysicsAssetTests below. /MAP writes a file beside the exe and changes
+	# nothing in it.
+	if(MSVC)
+		target_link_options(NxPhysicsCollisionTests PRIVATE /MAP)
+	endif()
 	# No architecture rule here: source file properties are per directory, so
 	# the /arch:IA32 rule above already covers these two files in this target
 	# too. A second rule naming them would set the same value and silently

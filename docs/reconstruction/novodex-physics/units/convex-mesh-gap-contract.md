@@ -158,7 +158,12 @@ established and must not be filled in from what ICE or NovodeX usually do.
 **Collision shape** (`Physics/src/include/NarrowPhase.h` `NxCollisionShape`): rotation +0x0c
 (row major, nine floats), translation +0x30, owner +0x04, collision object +0x9c, type +0xd0,
 geometry +0xe0 (box extents +0xe4..+0xec; capsule radius +0xe0, half height +0xe4; **mesh: +0xe0
-is the `TriangleMesh*`**, read at 0x0003bb4b in 001755 and at 0x000411eb/0x000411fd in 001820). Matrix A
+is the `TriangleMesh*`**, read at 0x0003bb4b in 001755 and at 0x000411eb/0x000411fd in 001820);
+**+0xa4 the shape's pruning handle, a `Prunable` (`Physics/src/opcode/IcePrunable.h`: flags +0xac,
+pruner +0xc4 whose world-box array is at pruner+0x14, handle word +0xcc)**, read by the three matrix B
+compound entries (0x0003f413/0x0003f41d in 001785, 0x0003f5b8/0x0003f5bf in 001789,
+0x0003f720/0x0003f727 in 001791; established by Task 2a); **+0xde a flag byte**, `test byte ptr
+[ebx+0xde], 7` at 0x0003f70b in 001791. Matrix A
 entries are `cdecl(shape0, shape1, NxContactSink*, context)`, matrix B entries
 `cdecl(shape0, shape1, context)` returning `al`.
 
@@ -498,8 +503,10 @@ Totals: 9 rows; dynamically_gated 9,929 B, discovered 2,637 B
   goes to `NarrowPhase.cpp` beside the other B entries; **001753** (matrix A [BOX][CAPSULE],
   index 15) to `ContactGeneration.cpp` beside the other A entries. Their unit is its own (block at
   0x10107b38). Callees: 001688 (sub-unit E), 001748 and 001917 (dynamically_gated), 000873,
-  004840. 001753 reads one indirect call `[eax+0x14]` at 0x0003b3da: resolve it from the listing
-  before writing.
+  004840. 001753 reads one indirect call `[eax+0x14]` at 0x0003b3da: resolved by Task 2a -- `mov
+  esi,[esp+0x1d8]` (arg0, the BOX), `mov eax,[esi]`, `mov ecx,esi`: slot 5 of the box's vtable,
+  phys_fn_000949 (0x00020880, the box raycast, Phase 5, provisional in `ObjectModel.cpp`) on a box
+  shape. The differential binds the oracle's 000949 into both worlds' box vtables.
 - **Callers.** Only the matrices (002338 writes them; 002348 reads them). **Candidate:**
   `ShapePairFunctionTable` in `PhysicsInternal.cpp` is cleared and no entry is wired; the Phase 3
   harness calls entries directly. Do not wire the table in this plan.
@@ -565,10 +572,10 @@ Totals: 6 rows; discovered 4,417 B, dynamically_gated 2,463 B
 
 | row | rva | bytes | state | phase | callers | role |
 |---|---|---:|---|---:|---|---|
-| 001785 | 0x0003f390 | 471 | discovered | 3 | none (table) | matrix B [CAPSULE][COMPOUND]: per child, capsule-box through 001688 |
+| 001785 | 0x0003f390 | 471 | discovered | 3 | none (table) | matrix B [CAPSULE][COMPOUND]: the capsule axis against the compound's own world bounds (Prunable at +0xa4, 004886) through 001688 |
 | 001787 | 0x0003f570 | 56 | reconstructed | 3 | none (table) | matrix B [PLANE][COMPOUND] and [MESH][COMPOUND]: AABB refresh, always false |
-| 001789 | 0x0003f5b0 | 334 | discovered | 3 | none (table) | matrix B [SPHERE][COMPOUND]: per child, sphere-box (001913) |
-| 001791 | 0x0003f700 | 418 | discovered | 3 | none (table) | matrix B [BOX][COMPOUND]: per child, NxBoxBoxIntersect (001702) |
+| 001789 | 0x0003f5b0 | 334 | discovered | 3 | none (table) | matrix B [SPHERE][COMPOUND]: the sphere against the compound's world bounds through 001913 |
+| 001791 | 0x0003f700 | 418 | discovered | 3 | none (table) | matrix B [BOX][COMPOUND]: false unless [box+0xde] & 7, else the compound's world bounds against the box through NxBoxBoxIntersect (001702) |
 | 001793 | 0x0003f8b0 | 345 | discovered | 3 | 001795 | compound contact expander: child AABB refresh (004886), each child re-dispatched through 002348 (000529) |
 | 001795 | 0x0003fa10 | 29 | discovered | 3 | none (table) | matrix A [*][COMPOUND]: swaps the shapes and calls 001793 |
 | 001797 | 0x0003fa30 | 77 | discovered | 3 | none (table) | matrix A [COMPOUND][COMPOUND]: child pairs through 002348 |
@@ -584,8 +591,12 @@ Totals: 9 rows; discovered 2,429 B, reconstructed 56 B
   (the pair dispatcher, 719 B, not started), **000529** (134 B + 004153, not started). The A
   entries re-dispatch every child pair through 002348, so they cannot run until the dispatcher
   and the function table exist on the candidate side.
-- **Test route.** B entries: `overlap_*_compound` families with a synthetic compound shape whose
-  children array (+0xe0 begin, +0xe4 end, read at 0x0003fa43 and 0x0003fa37) points at primitive shapes. A
+- **Test route.** B entries (as Task 2a found them, correcting this table's first draft): none of
+  the three walks children -- each tests its primitive against the compound shape's OWN world bounds,
+  read through the `Prunable` at Shape+0xa4 (see `## Shared structures`), so the families
+  (`sphere_compound`, `box_compound`, `capsule_compound`) build a compound whose Prunable points at a
+  harness world-box array. The A entries do walk children: the children array (+0xe0 begin, +0xe4
+  end, read at 0x0003fa43 and 0x0003fa37) points at primitive shapes. A
   entries: only after 002348 is written; then drive 001795/001797 with a compound of primitives
   and compare the sink.
 
@@ -803,7 +814,8 @@ Notes on the split:
    - Recommendation: fix both tools as a step of their own at the end, in Task 3, and regenerate
      `work_units.json`, the affected bundles and any provenance change there. Do not fix them
      now.
-2. Two indirect calls are unresolved. For 001753's `[eax+0x14]` (0x0003b3da) and 001779's
+2. Two indirect calls were unresolved; 001753's is resolved (Task 2a: the box's slot 5, 000949,
+   see sub-unit G). For 001753's `[eax+0x14]` (0x0003b3da) and 001779's
    (0x0003e6c8), resolve the receiver from the listing.
 3. TriangleMesh +0x84, +0x88, +0xa4 and +0xa8: only the use sites above are known, not what they
    hold.
