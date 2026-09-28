@@ -314,6 +314,96 @@ above plus 000050, 000052, 000080, 000096-000108), 12 defect (000060, 000082-000
 000094, 000110, 000116, 000118, 000130, 000132). 000102's E1 arm is now driven by the setter
 target.
 
+## Task 3: row-level defects
+
+Task 3 fixed the row-level defects left after Task 2, in six commits (d6a84ba, cf5b3c0, 123b88c,
+ebfd183, 725cfd2, 7666f0c). The Rows table above carries the new verdicts. Every change was
+checked against the Capstone listing (a symbolic x87 walk of each arithmetic block), driven by
+new staged-pair cases, and falsified against the previous commit's candidate.
+
+- **CMass-global setters (000204-000208).**
+  - 000756 (0x17420) is the 000801 conversion, so `nxNpActorUpdateCMassQuaternion` now calls
+    `nxNpActorBodyQuaternionFromMatrix`.
+  - 000789 (0x19d00) is rewritten from the listing: the 000746 tensor comes first, then the nine
+    x87 dot products. The displacement keeps row 0, (A2 p2 + A1 p1) + A0 p0, in the register and
+    spills rows 1 and 2. The actor rotation is converted with the setter sequence.
+  - The rows end with the 000004 shape update: a virtual slot-6 dispatch on [body+0x10]. The
+    group arm models 001018: each child's slot 6, over (end - begin) / 4 entries.
+  - The group-level 001315 call is still open, because the candidate group is a 0x110-byte stub
+    with no table and no ShapeBase layout.
+  - The square roots of both quaternion conversions are now X87Sqrt.h forms, with the listing's
+    operand order.
+- **Kinematic moves (000090, 000124, 000126).**
+  - 000784 (0x194b0) writes the target block with no null test, ORs 1/2 into +0xc, and runs the
+    wake.
+  - 000124 composes pose * {+0xdc, +0x100}: row 0 of M p stays in the register and rows 1-2 are
+    spilled; G = M F uses the listing's orders; G is converted with the 000801 sequence.
+  - 000126 does the same inline under its own lock, with its own operand orders and the current
+    position +0x50.
+  - 000090 adds the unrotated +0x100.
+- **Wake blocks (000174, 000176, 000180, 000182).**
+  - The squared speed is compared against the sleep threshold (+0xd0 or +0xd4): the input's
+    (y y + z z) + x x for the velocity setters, the stored velocity's (x x + y y) + z z for the
+    momentum setters.
+  - A speed that is below the threshold, or unordered, skips the wake. Otherwise the usual
+    +0x114 & 0x100 test, the < 0.39999998f test and the 0x10 mark follow.
+  - 000182's rows are (I1 y + I2 z) + I0 x, (I4 y + I3 x) + I5 z and (I7 y + I6 x) + I8 z.
+- **000168.** The three float inverses are classified by the CRT `_fpclass` that the oracle calls
+  (005666). A NaN or infinity (0x207) in any of them zeroes all three.
+- **Summation orders.**
+  - 000060/000742: ((m v.v + I2 w2 w2) + I1 w1 w1) + I0 w0 w0, with the linear sum
+    (vz vz + vy vy) + vx vx.
+  - `nxNpActorWorldMassRotation` holds the four W = R F operand orders:
+    - 134, used by 000134 and 000142;
+    - 138;
+    - 140;
+    - 144, which is 140 with row 0's third column from 138.
+  - 000140, 000142 and 000144 now use ROT and the 000746 model; 000144's T w rows are x87 dot
+    products.
+- **The rest.**
+  - 000785/000787 begin both arms with the 000712 island-root refresh.
+  - NG: 000082, 000084, 000086, 000092, 000094, 000110, 000130 and 000132 take the read lock on
+    [actor+0x10]. 000130 does both sub-reads under one lock.
+  - 000094's static arm uses the setter conversion. The body null tests the oracle lacks were
+    dropped.
+  - 000782 (0x18730) is rewritten from the listing:
+    - the modes 0/3 linear x product and angular rows 0-1 stay in registers, and so does mode 1's
+      angular row 0;
+    - the rows are (I2 z + I1 y) + I0 x;
+    - there is one wake after both arms, and a mode above 4 still wakes.
+  - 000791 keeps r.x in the register and makes one 000782 call.
+  - setName lost its body null test.
+  - Stable-ID lines were added for 000074, 000076, 000112, 000184, 000186, 000192 and 000194.
+  - The E1 count is 51, not 52.
+- **Helper rows outside this unit** are marked with `// phys_fn_` lines and the owning unit
+  (gap:SceneRaycast.cpp..CapsuleShape.cpp): 000746, 000756, 000782, 000784, 000789 and 000791.
+  001018's body is modelled inside `nxNpActorNotifyOwnedShapes` (gap:CapsuleShape.cpp..NpBoxShape.cpp).
+  None of them changes state.
+- **Tests.** 500 oracle lines, each registered verbatim; floor 5 went from 1122 to 1568. Every
+  new case was run against the previous commit's candidate, and each group's cases fail there:
+  - CMass: 286 lines, 58 of which fail on the Task 2 candidate;
+  - Dynamics: 21 lines (18);
+  - Momentum: 93 lines (41 across the two groups), where the near-cancelling momenta, the energy tie and the two RF frames
+    were constructed so that the order decides the last bit;
+  - DynamicSetter: 23 (19);
+  - BodyFlag: 5 (4);
+  - Force: 18 (8).
+  The shape global poses in the CMass cases are printed to four decimals. 001315's own
+  composition (Shape.cpp) is one bit off from the oracle in both the old and the new candidate.
+
+Counts after Task 3. Of the 53 `discovered` rows:
+- 42 are faithful.
+- 7 are S1-residual: 000196-000208, where only the group-level 001315 call is missing.
+- 2 are X, the shape add/remove rows 000070 and 000072 (Task 4).
+- 2 are M, 000122 and 000164 (Task 5).
+
+Of the 34 `reconstructed` rows:
+- 30 are faithful (NA form).
+- 2 are X: 000086 and 000088, whose name table is not 000454/000480's.
+- 2 are M: 000116 and 000118, with no member table or destructor.
+
+The OM forms of 000094, 000130 and 000132 (ObjectModel.cpp) keep their own defects.
+
 ## Callees the implementing tasks need
 
 - 000008 (0x10a0, 751 B, `discovered`, gap `<start>..Actor.cpp`): the body's mass-from-shapes
