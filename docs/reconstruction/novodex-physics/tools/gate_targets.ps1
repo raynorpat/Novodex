@@ -2334,7 +2334,31 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=qhull_rotation rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,global.c,qhull.c,merge.c words=9980 oracle=e80e1851',
         'thirdparty name=qhull_rotation_x87 rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,geom.c words=8724 oracle=07282fca',
         'thirdparty coverage driven=77 divergent=27 words=1636017 layout_checks=47',
-        'thirdparty oracle digest=52015450'
+        'thirdparty oracle digest=52015450',
+        # qhull-gap Task 4e: convex cooking. HullLibrary::CreateConvexHull/ReleaseResult
+        # (0x0007ea10/0x0007e300) and phys_fn_002233 (0x00054920) called directly on both
+        # sides, under 0x027f and 0x0f7f, with a zeroing recording allocator, each side's
+        # QHULL_*.obj files in a directory of its own (units/convex-cooking-contract.md,
+        # differentials A and B), and the host's size slot 003265 called directly. The exact
+        # families are registered whole. hull_create_qhull
+        # and hull_compute_qhull (two inputs whose vendored-qhull hull differs under 0x027f)
+        # and the four _obj families (the OBJ text as tokens; the 2003 CRT prints -0.0
+        # without its sign) are DIVERGENT, registered up to the oracle digest, and held by
+        # kDivergentCeilings/kLengthCeilings. The pairs above keep printing where they were;
+        # the pair below carries the totals.
+        'thirdparty name=hull_host_size rva=0x0007e520 owner=phys_fn_003265 source=QhullHost.cpp words=15 oracle=c9faaedb mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=hull_create rva=0x0007ea10 owner=phys_fn_003279 source=QhullHost.cpp,Quantizer.cpp words=23542 oracle=1cf4b7ed mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=hull_create_qhull rva=0x0007ea10 owner=phys_fn_003279 source=QhullHost.cpp,Quantizer.cpp words=442 oracle=980dbb03',
+        'thirdparty name=hull_create_obj rva=0x0007dea0 owner=phys_fn_003247 source=QhullHost.cpp words=5001 oracle=af04f879',
+        'thirdparty name=hull_create_pc64 rva=0x0007ea10 owner=phys_fn_003279 source=QhullHost.cpp,Quantizer.cpp words=24047 oracle=c32b26d1 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=hull_create_pc64_obj rva=0x0007dea0 owner=phys_fn_003247 source=QhullHost.cpp words=5022 oracle=28e98259',
+        'thirdparty name=hull_compute rva=0x00054920 owner=phys_fn_002233 source=TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp words=12128 oracle=8a6e6bdb mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=hull_compute_qhull rva=0x00054920 owner=phys_fn_002233 source=TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp words=454 oracle=dae9e9bd',
+        'thirdparty name=hull_compute_obj rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=122 oracle=bc33134f',
+        'thirdparty name=hull_compute_pc64 rva=0x00054920 owner=phys_fn_002233 source=TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp words=12633 oracle=f5a778d6 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=hull_compute_pc64_obj rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=122 oracle=4ebf7157',
+        'thirdparty coverage driven=88 divergent=33 words=1719545 layout_checks=47',
+        'thirdparty oracle digest=87804f45'
     )
 }
 
@@ -2357,8 +2381,9 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
-    '4' = 167  # 34 for NxPhysicsAssetTests, 133 for NxPhysicsThirdPartyTests (67 + 29 from
-               # vendored-correspondence Task 4 + 5 from its Task 5a + 32 from qhull-gap Task 1)
+    '4' = 180  # 34 for NxPhysicsAssetTests, 146 for NxPhysicsThirdPartyTests (67 + 29 from
+               # vendored-correspondence Task 4 + 5 from its Task 5a + 32 from qhull-gap Task 1
+               # + 13 from qhull-gap Task 4e)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent

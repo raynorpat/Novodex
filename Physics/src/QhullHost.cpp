@@ -497,7 +497,10 @@ void QhullHost::writeFailObj(NxU32 vcount, const NxReal* vertices, NxU32 stride)
 // The retry's input: the eight corners of centre +- extent of the cloud's box,
 // so a box twice the cloud's. The extents and the centre are spilled (fstp
 // dword); the six corner coordinates stay on the FPU stack until each is
-// stored.
+// stored. y2 and z2 are also spilled to dword slots (fst [esp+0x34] at
+// 0x0007e20e, fstp [esp+0x30] at 0x0007e222), and later corners read those
+// float copies (mov esi,[esp+0x30] at 0x0007e28f); a float store of the value
+// each corner is rounded to anyway, so the words are identical.
 void QhullHost::boxFallback(NxU32& vcount, NxReal* vertices)
 	{
 	NxReal bmin[3] = { FLT_MAX, FLT_MAX, FLT_MAX };
@@ -630,7 +633,7 @@ int QhullHost::print(FILE* /*stream*/, const char* format, ...)
 	vsprintf(buffer, format, args);
 	va_end(args);
 	errexit(1);
-	return 0;
+	return 0;	// not in the listing (unobservable: errexit never returns)
 	}
 
 // phys_fn_003265 (0x0007e520, 23 B)
@@ -992,18 +995,20 @@ void qhNovodeXSize(float totarea, float totvol)
 	gQhullHost->size(totarea, totvol);
 	}
 
-// Slot +0x10 is variadic and C cannot forward `...`, so the hook runs 003263's
-// body against the published object: format into 0x2000 bytes, then
-// errexit(1) through the vtable. It does not return.
-int qhNovodeXFprintf(FILE* /*stream*/, const char* format, ...)
+// Slot +0x10 is variadic and C cannot forward `...`, so the hook formats the
+// message itself and hands the text to the slot as "%s" (qhull-gap Task 4e;
+// until then it repeated the row's body here): 003263 formats it again, to the
+// same text, into its own 0x2000 bytes and errexits, so the row's code is what
+// runs, reached through the vtable as the oracle's qhull reaches it. It does
+// not return.
+int qhNovodeXFprintf(FILE* stream, const char* format, ...)
 	{
 	char buffer[0x2000];
 	va_list args;
 	va_start(args, format);
 	vsprintf(buffer, format, args);
 	va_end(args);
-	gQhullHost->errexit(1);
-	return 0;
+	return gQhullHost->print(stream, "%s", buffer);
 	}
 
 void* qhNovodeXMalloc(size_t size)

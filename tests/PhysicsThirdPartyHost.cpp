@@ -110,10 +110,11 @@ int qhNovodeXFprintf(FILE* stream, const char* format, ...)
 	if(gQhullHost)
 		{
 		// The product hook's body (QhullHost.cpp): `...` cannot be forwarded
-		// to it, so it is repeated here. errexit does not return.
+		// to it, so it is repeated here -- format, then the host's print slot
+		// (003263) with the text as "%s", which errexits and does not return.
 		char buffer[0x2000];
 		vsprintf(buffer, format, args);
-		gQhullHost->errexit(1);
+		gQhullHost->print(stream, "%s", buffer);
 		}
 	if(gNxQhSink)
 		gNxQhSink->vprintf(stream, format, args);

@@ -271,7 +271,7 @@ double WuQuantizer::Var(const WuBox* cube)
 	NxI32 ir = Vol(cube, mr);
 	NxI32 ig = Vol(cube, mg);
 	NxI32 ib = Vol(cube, mb);
-	NxI32 iw = Vol(cube, wt);
+	NxI32 iw = Vol(cube, wt);	// called first, unlike the listing (0x00080758): Vol is pure, so the order is irrelevant
 
 	double dr = (double) ir;
 	double dg = (double) ig;

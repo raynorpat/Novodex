@@ -9,6 +9,8 @@
 
 #include "NxStream.h"
 
+#include <string.h>
+
 // The two tags are read and written as DWORDS, so on the little-endian target
 // the bytes on disc are 54 53 58 4e and 48 53 45 4d. Written most significant
 // byte first the two constants spell NXST and MESH; in file order they spell
@@ -107,4 +109,74 @@ bool TriangleMesh::save(NxStream& stream) const
 
 	// mov al,1 / ret 4: no error path.
 	return true;
+	}
+
+// ---------------------------------------------------------------------------
+// qhull-gap Task 4e: the hull computation and TriangleMesh's allocator slots
+// (units/convex-cooking-contract.md, "Row assignment" and "Object layouts").
+// The Foundation allocator is `[[0x101041bc]]`, nxFoundationSDKAllocator.
+
+// phys_fn_002233 (0x00054920, 277 B)
+// thiscall, `ret 8`. The library object (E-0x40), the descriptor (E-0x38) and
+// the result (E-0x1c) are locals; the result is not initialised before the
+// call. On success the whole input descriptor is copied first (rep movsd of
+// 13 dwords, 0x00054992), then the counts, strides, arrays and flags are
+// overwritten. NX_MF_16_BIT_INDICES is NOT cleared although the triangles
+// written are 32-bit with stride 12 (the listing's `and [ebx+0x18],~8` only).
+// ReleaseResult runs on both paths (0x00054a26); its return is not read.
+bool TriangleMeshHullAllocator::computeHull(const NxTriangleMeshDesc& desc, NxTriangleMeshDesc& out)
+	{
+	HullLibrary library;
+	library.mAllocator = this;										// mov [esp+8],ecx 0x0005492e
+
+	HullDesc hullDesc;
+	hullDesc.mFlags = QF_WELD | QF_NORMALIZE | QF_REDUCE | QF_TRIANGLES | QF_REVERSE_ORDER
+		| QF_WRITE_FAIL_OBJ;										// 0xb7, 0x0005494d
+	hullDesc.mVcount = desc.numVertices;							// 0x0005493b
+	hullDesc.mVertices = static_cast<const NxReal*>(desc.points);	// 0x00054936
+	hullDesc.mVertexStride = desc.pointStrideBytes;					// 0x00054955
+	hullDesc.mNormalEpsilon = 0.00001f;								// 0x3727c5ac, 0x00054959
+	hullDesc.mMaxVertices = 0x100;									// 0x00054961
+	hullDesc.mUnknown18 = 0.8f;										// 0x3f4ccccd, 0x00054969
+	library.mPolygonizer = 0;										// 0x00054971
+
+	HullResult result;
+	bool built = false;												// xor ebx,ebx 0x00054946
+	if(library.CreateConvexHull(hullDesc, result) == QE_OK)			// 0x00054975
+		{
+		out = desc;													// rep movsd, 13 dwords, 0x00054992
+		out.numVertices = result.mNumOutputVertices;				// 0x0005499b
+		out.numTriangles = result.mNumTriangles;					// 0x00054998
+		out.pointStrideBytes = 12;									// 0x000549a2
+		out.triangleStrideBytes = 12;								// 0x000549a5
+
+		void* points = nxFoundationSDKAllocator->malloc(result.mNumOutputVertices * 12, NX_MEMORY_TEMP);	// 0x000549bb
+		out.points = points;										// 0x000549cc
+		memcpy(points, result.mOutputVertices, out.numVertices * 12);	// 0x000549d4-0x000549db
+
+		void* triangles = nxFoundationSDKAllocator->malloc(result.mNumTriangles * 12, NX_MEMORY_TEMP);	// 0x000549f3
+		out.triangles = triangles;									// 0x00054a08
+		memcpy(triangles, result.mIndices, out.numTriangles * 12);	// 0x00054a0d-0x00054a14
+
+		out.flags &= ~NX_MF_COMPUTE_CONVEX;							// and [ebx+0x18],0xfffffff7 0x00054a16
+		built = true;												// mov bl,1 0x00054a1a
+		}
+	library.ReleaseResult(result);									// 0x00054a26
+	return built;
+	}
+
+// phys_fn_002235 (0x00054a40, 22 B)
+// Slot 0: `push 0; push size; call [edx+8]` on [[0x101041bc]], `ret 4`.
+void* TriangleMeshHullAllocator::malloc(size_t size)
+	{
+	return nxFoundationSDKAllocator->malloc(size, NX_MEMORY_PERSISTENT);
+	}
+
+// phys_fn_002237 (0x00054a60, 28 B)
+// Slot 1: a null pointer returns (`ret 4` at 0x00054a79); otherwise a tail
+// `jmp [edx+0x14]` into the Foundation allocator's free.
+void TriangleMeshHullAllocator::free(void* memory)
+	{
+	if(memory)
+		nxFoundationSDKAllocator->free(memory);
 	}

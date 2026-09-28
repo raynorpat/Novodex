@@ -647,6 +647,146 @@ the same verdict as the traced exe for all 562 groups. (`24a45e0b...` was the ex
 - **The ten `qhull_paths` runs are still attributed to the tie mechanism by analogy.** Only the
   cube and the lattice `Qr` run were read at trace level 4.
 
+## Task 4e: the convex-cooking differentials
+
+The hull library written in pieces 4a-4d (`Physics/src/QhullHost.cpp`, `Quantizer.cpp`) and the
+three TriangleMesh rows written here (`phys_fn_002233`, `002235`, `002237`, in
+`Physics/src/TriangleMesh.cpp`) are checked against the pinned DLL by `nxDriveConvexCooking` in
+`tests/PhysicsThirdPartyTests.cpp`. These are the contract's differentials A and B
+(`units/convex-cooking-contract.md`, "The differential Task 4 should build" and "As written
+(Task 4e)"). Differential C (the public API) is deferred with the public chain.
+
+### What runs
+
+- **A**, `CreateConvexHull`/`ReleaseResult` (0x0007ea10/0x0007e300) against `HullLibrary`: 52 runs
+  over 20 point sets:
+  - the tetrahedron, cube, lattice, sphere(96) and box(200) of `nxQhullPoints`;
+  - 600 points in a box and 1,000 on an ellipsoid, which reach the quantizer, and a 10x10x10
+    lattice;
+  - the cube with copies inside the weld epsilon; a flat set; a collinear set; all points equal;
+    a set that welds to two points;
+  - 1e6 and 1e-4 scales; a diagonal plane; stride 20; five tight clusters (a short
+    quantization); `-0.0` components; no points.
+
+  Every set runs with `0xb7`; the tetrahedron, cube and sphere also with `0xa7`, `0x97`, `0xb6`,
+  `0xb5`, `0xb3` and `0xf7`. On top of those: the OK dump in polygon mode, `0xf7` on the lattice
+  and the diagonal plane, no points without the FAIL dump, six runs of the `+4` interface, and
+  four runs with no user allocator (the CRT arms, with pointers taped as present or not).
+- **B**, `phys_fn_002233` (0x00054920) against `TriangleMeshHullAllocator::computeHull`: the
+  same sets but the empty one, as `NxTriangleMeshDesc`s with `NX_MF_CONVEX|NX_MF_COMPUTE_CONVEX`,
+  and the cube and the sphere with `NX_MF_16_BIT_INDICES` too.
+  - The oracle's `ecx` is an object whose vptr is `TriangleMesh`'s own table
+    (`.rdata:0x00108608`), so its own `002235`/`002237` run.
+  - The Foundation allocator `[[0x101041bc]]` is pointed at the recording allocator for the call.
+    In this process that import resolves to the same variable as the candidate's
+    `nxFoundationSDKAllocator` (the harness prints `HULL foundation_allocator=shared` on stderr).
+- **The size slot**, `003265` (0x0007e520), called directly on five float pairs
+  (`hull_host_size`). qhull calls it only for the `FS` format, and `CreateConvexHull` runs `o`.
+
+Each run is made under 0x027f and again under 0x0f7f, set on both sides before the call. The
+tape holds:
+- every call into the recording allocator: the size, the memory type, and for a free the block's
+  ordinal;
+- the return, and every result word, with pointers taped as block ordinals;
+- the vertices bit for bit, and the indices;
+- the names of the `QHULL_*.obj` files each side wrote, each in a temporary directory of its
+  own;
+- `ReleaseResult`'s calls and the result words after it.
+
+B tapes the output descriptor's 13 dwords and both arrays instead of a `HullResult`. The
+recording allocator zeroes what it returns: the oracle never clears its moment table, and a
+short quantization reads an uninitialised palette tail (Task 4d). The `.obj` text is taped as
+tokens in `_obj` families of its own (Task 1's `nxQhTapeText`). The candidate's `gQhullHost` is
+reset after every call.
+
+### Results
+
+| Family | Word | Words | Oracle digest | Result |
+|---|---|---:|---|---|
+| `hull_host_size` | 0x027f | 15 | c9faaedb | exact |
+| `hull_create` | 0x027f | 23,542 | 1cf4b7ed | exact (50 runs) |
+| `hull_create_qhull` | 0x027f | 442 | 980dbb03 | divergent: 242 words, 179 discrete, length_delta 48 |
+| `hull_create_obj` | 0x027f | 5,001 | af04f879 | divergent: 1 word (a signed zero) |
+| `hull_create_pc64` | 0x0f7f | 24,047 | c32b26d1 | exact (52 runs) |
+| `hull_create_pc64_obj` | 0x0f7f | 5,022 | 28e98259 | divergent: 1 word (a signed zero) |
+| `hull_compute` | 0x027f | 12,128 | 8a6e6bdb | exact (19 runs) |
+| `hull_compute_qhull` | 0x027f | 454 | dae9e9bd | divergent: 248 words, 185 discrete, length_delta 48 |
+| `hull_compute_obj` | 0x027f | 122 | bc33134f | divergent: 1 word (a signed zero) |
+| `hull_compute_pc64` | 0x0f7f | 12,633 | f5a778d6 | exact (21 runs) |
+| `hull_compute_pc64_obj` | 0x0f7f | 122 | 4ebf7157 | divergent: 1 word (a signed zero) |
+
+The run totals are `driven=88 divergent=33 words=1719545`, digest 87804f45. The oracle digests
+are the same under `--self`.
+
+**Attribution of the divergences.**
+
+- **`hull_*_qhull`.** Two inputs differ, under 0x027f only:
+  - the set that welds to two points, where `cleanupVertices` gives the 8 corners of their box;
+  - the five clusters, where the quantizer leaves a zeroed palette tail, so many points
+    coincide.
+
+  The input qhull gets is identical on both sides, point for point. With `NXHULL_PROBE=1` the
+  harness prints a digest of the vertex buffer when `runQhull` allocates its double array, and
+  the two sides print the same digest for both runs under both words. The hull qhull builds from
+  it differs:
+  - for the box: the same 8 vertices, 6 faces and 12 triangles in another order, and a
+    different free order inside qhull;
+  - for the clusters: the same 12 vertices and 20 triangles in another order, after eight more
+    tracked allocations on the candidate (the 48 words).
+
+  Under 0x0f7f both runs are exact, and they stay in the `_pc64` families. This is the vendored
+  qhull's own class (`qhull_hull_x87`: distances that differ in their last bit decide merges of
+  coplanar or coincident points differently), not a hull-library row. Every hull-library word
+  before qhull matches, and the rows after it transcribe what qhull hands them. The attribution
+  rests on the identical input and the dependence on precision; it is not a
+  statement-by-statement trace of qhull's merges.
+- **`*_obj`.** The collinear set's FAIL dump prints the cleaned points, and the first has
+  z = -0.0 on both sides (the
+  oracle's own `cleanupVertices`, called directly on this set, returns `0x80000000` there). The oracle's 2003 static CRT prints it as `0.000000000`, the UCRT as
+  `-0.000000000`: the signed-zero print artefact Task 2 attributed in `qhull_trace_x87`. Every
+  other token of every dump matches, and so do the file names and counts in the main tapes.
+
+**Found by the differential** (both recorded in the contract, "As written (Task 4e)"):
+
+- `002233` leaves its result uninitialised when `CreateConvexHull` returns before
+  `buildResult`, and `ReleaseResult` then frees two stack words. That happens only for
+  `vcount == 0`, which `isValid` rules out, so the empty set is not in B.
+- `HullResult +0x00` is written as a byte (0x0007e65d, 0x0007e6ea). The taped word is
+  `0xcdcdcd00` on both sides.
+
+**The `+4` interface** (`HullLibrary::mPolygonizer`, which NovodeX never passes) is driven with
+a test interface whose virtuals are `HullPolygonizer`'s slots; one object serves both sides.
+The six runs are:
+- triangles (`fromTriangles`);
+- polygons (`fromPolygons`, then `finishPolygons`);
+- a refusal at each of those;
+- the interface without bit 3, and bit 3 without the interface.
+
+All six are exact in `hull_create` and `hull_create_pc64`.
+
+### Execution
+
+`evidence/qhull-gap-trace-cooking.txt` is the cdb trace of the candidate over these families:
+one counting breakpoint per hull-library function in the test exe, dumped at every family
+boundary.
+- All 40 rows written in Task 4 executed.
+- Four of them have no out-of-line call in the test exe and are credited through the caller they
+  are inlined into: `003257` and `003277` in `003279`, `003274` in `003272`, and `003365` in
+  `003369`.
+- Before this task, `003263` (the print slot) never ran in the candidate. qhull reaches it
+  through the `qhNovodeXFprintf` hook, and the hook repeated the row's body. The hook now formats
+  the message and calls the slot with it as `"%s"`, so the row's own code runs (in `hull_create`,
+  on the collinear set's qhull error).
+
+The trace's per-family counts are in the excerpt, and the rows' `dynamic_proof`s cite them.
+
+### Registration
+
+13 lines go into `tools/gate_targets.ps1`: 11 families, the coverage line and the digest line.
+The exact families are registered whole, and the divergent ones up to the oracle digest. The
+divergent ones are held by `kDivergentCeilings`, and the two `_qhull` families also by
+`kLengthCeilings` (48). The Phase 4 floor goes from 167 to 180.
+
 ## Timing
 
 | Task | Start | End | Rows written | Bytes written | Notes |

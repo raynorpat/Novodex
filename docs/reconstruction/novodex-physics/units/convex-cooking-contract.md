@@ -428,9 +428,10 @@ Slot 4 is a variadic member. MSVC passes `this` on the stack for those: `[esp+4]
 2. It **calls `this->errexit(1)`** (`push 1; call [eax+0x20]`, 0x0007e504-0x0007e512).
 3. The formatted text is never used.
 
-So in the shipped DLL, any qhull diagnostic printed through the host ends the hull attempt. The
-candidate's shim `qhNovodeXFprintf` returns 0 instead (`Physics/src/ThirdPartyHost.cpp`). The
-Task 1/2 qhull families use their own test host, so they are unaffected.
+So in the shipped DLL, any qhull diagnostic printed through the host ends the hull attempt. Until
+Task 4a, the candidate's shim `qhNovodeXFprintf` returned 0 instead (`Physics/src/ThirdPartyHost.cpp`);
+since 4a the hook repeats this row's body (see "As written (Task 4a)"). The Task 1/2 qhull
+families use their own test host, so they are unaffected.
 
 Slot 8 (`003267`) calls `releaseArrays` (0x0007e540), then
 `longjmp(.data:0x00125040, code)` (`phys_fn_005776` 0x000f6124, 0x0007e54f). It does not
@@ -561,8 +562,8 @@ Nothing in `NxTriangleMesh` exposes planes.
 ### How the candidate's host maps onto the object
 
 `External/qhull/novodex/QhullNovodeXHost.h` declares nine C hooks, one per slot, in slot order.
-The vendored tree already calls them at the oracle's sites. In `Physics/src/ThirdPartyHost.cpp`
-all nine are shims today, and malloc/free go to the SDK allocator untracked.
+The vendored tree already calls them at the oracle's sites. Until Task 4a, all nine were shims in
+`Physics/src/ThirdPartyHost.cpp`, and malloc/free went to the SDK allocator untracked.
 
 The product version keeps the hooks and makes each forward to the object published at the
 `0x00125080` equivalent:
@@ -587,8 +588,9 @@ The OPCODE hooks in the same file are untouched.
 `ThirdPartyHost.cpp` without qhull do not pull the library in. Three slots carry different
 descriptive names in the source, so that a member cannot shadow the CRT function a row calls
 directly: +0x10 `print` (the table's `fprintf`), +0x14 `trackedMalloc` and +0x18 `trackedFree`.
-`qhNovodeXFprintf` cannot forward `...` to the variadic slot, so it repeats `003263`'s body
-(format into 0x2000 bytes, `errexit(1)` through the vtable) on the published object.
+`qhNovodeXFprintf` cannot forward `...` to the variadic slot, so it repeated `003263`'s body
+(format into 0x2000 bytes, `errexit(1)` through the vtable) on the published object, until
+Task 4e routed it to the slot itself.
 `NxPhysicsThirdPartyTests` compiles `QhullHost.cpp` with the nine hooks renamed
 (`tests/PhysicsThirdPartyHost.cpp`) and routes each call: to the product hook while
 `gQhullHost` is non-NULL, else to the Task 1 sink, else to the pre-4a stand-in (untracked SDK
@@ -662,13 +664,89 @@ struct is `{r0, r1, g0, g1, b0, b1, vol}` (0x1c bytes). Read from the listing:
 A local check (not committed) called 0x00080e90 and the reduce arm of 0x0007d5b0 in the pinned
 DLL against the candidate on ten sets over 256 points (300 and 1000 random, sphere(500), a
 1000-point lattice, 1e6 and 1e-4 scales, five tight clusters, a thin slab, a 2000-point shell,
-`-0.0` components), with `maxVertices` 256, 64, 20 and 300, a zeroing test allocator and the
-CRT, under control words 0x027f, 0x0f7f, 0x037f, 0x007f and 0x067f, plus a flat set sent to
-`reduceVertices` directly. It compared the count, every output word, the return value and the
-allocator's call sequence and sizes: 339 of 352 cases were identical. The other 13 are all the
-clustered set with the CRT allocator, where `Quantize` finds fewer boxes than `k` and the
-uninitialised palette tail differs between the two CRTs. The same set is identical with the
-zeroing allocator, through both entries and under every control word.
+`-0.0` components) plus a flat set sent to `reduceVertices` directly. It compared the count,
+every output word, the return value and the allocator's call sequence and sizes. What ran
+(Task 4e reconciliation, from the harness source and its log): each of the ten sets in seven
+cells -- `cleanupVertices` with the CRT at `maxVertices` 256 and 64 and with the zeroing
+allocator at 256; `reduceVertices` with the zeroing allocator at 256, 20 and 300 and with the
+CRT at 256 -- under all five control words 0x027f, 0x0f7f, 0x037f, 0x007f and 0x067f (350
+cases), and the flat set's zeroing `reduceVertices` at 256 under 0x027f and 0x0f7f only (2): 352
+cases, not the 420 a review estimated. 339 were identical. The other 13 are all the clustered
+set with the CRT allocator, where `Quantize` finds fewer boxes than `k` and the uninitialised
+palette tail differs between the two CRTs: its two CRT `cleanupVertices` cells under all five
+words (10), and its CRT `reduceVertices` cell under 0x027f, 0x037f and 0x067f (3; under 0x0f7f
+and 0x007f the two heaps' tails happened to agree), which is 13, not the 15 a review expected.
+The same set is identical with the zeroing allocator, through both entries and under every
+control word. The registered differential of Task 4e (`hull_create`, `hull_compute` and their
+0x0f7f twins) supersedes this check.
+
+**As written (Task 4e).** `002233`, `002235` and `002237` are in `Physics/src/TriangleMesh.cpp`,
+after the writer `002162`, on a base declared in `Physics/src/include/TriangleMesh.h`:
+`TriangleMeshHullAllocator : HullAllocator`, whose slots 0 and 1 are `002235` (the Foundation
+allocator's `malloc(size, NX_MEMORY_PERSISTENT)`, slot +8) and `002237` (its `free` for a
+non-null pointer, slot +0x14), and whose member `computeHull` is `002233`, handing `this` to the
+library as the user allocator. `TriangleMesh` itself still carries its vtable as an opaque word,
+so deriving it from that base (and so the public chain) stays with the deferred
+TriangleMesh/ConvexHull unit. `002233` is transcribed from the listing: the descriptor
+`{0xb7, n, points, stride, 1e-5f, 0x100, 0.8f}`, the library `{this, NULL}`, an uninitialised
+result, the 13-dword copy of the input descriptor, then the counts, both strides 12, the two
+`NX_MEMORY_TEMP` copies through `[[0x101041bc]]` +8 and `flags &= ~NX_MF_COMPUTE_CONVEX`, and
+`ReleaseResult` on both paths.
+
+Differentials A and B are registered in `NxPhysicsThirdPartyTests` (`nxDriveConvexCooking`;
+evidence in `evidence/qhull-gap.md`, "Task 4e"). A calls `0x0007ea10`/`0x0007e300` directly: 20
+point sets with `0xb7`, the tetrahedron, cube and sphere(96) also with `0xa7`, `0x97`, `0xb6`,
+`0xb5`, `0xb3` and `0xf7`, the OK dump in polygon mode (`0xe7`), `0xf7` on the lattice and the
+diagonal plane, no points with `0x37`, the `+4` interface on the cube (see below), and four runs
+with no user allocator (the CRT arms): 52 runs. B calls `0x00054920` with `ecx` pointing at an
+object whose vptr is `TriangleMesh`'s own table `.rdata:0x00108608`, so the oracle's own
+`002235`/`002237` run, and points the Foundation allocator (`[[0x101041bc]]`, which in this
+process is the same variable as the candidate's `nxFoundationSDKAllocator`) at a recording
+allocator: 19 sets as `NxTriangleMeshDesc`s with `NX_MF_CONVEX|NX_MF_COMPUTE_CONVEX`, and the
+cube and the sphere with `NX_MF_16_BIT_INDICES` as well. Both run under 0x027f and 0x0f7f. Each
+side's `QHULL_*.obj` files are written in a temporary directory of its own and taped as text
+tokens (Task 1's `nxQhTapeText`). The recording allocator zeroes what it returns (the 4d
+defects) and tapes every call's size, memory type and block.
+
+Results: `hull_create`, `hull_create_pc64`, `hull_compute` and `hull_compute_pc64` are exact.
+Two inputs are divergent under 0x027f only, in families of their own (`hull_create_qhull`,
+`hull_compute_qhull`): the set that welds to two points (its 8-corner box) and the five
+clusters (a short quantization). qhull's input is the same on both sides, point for point
+(measured with the harness's `NXHULL_PROBE` digest); qhull's own path over it differs (another
+vertex order; for the clusters eight more tracked allocations, with the same counts), which is
+the vendored qhull's `qhull_hull_x87` class, not a hull-library row. Under 0x0f7f both are
+exact. The four `_obj` families differ in one word each: the 2003 static CRT prints a float
+`-0.0` as `0.000000000` and the UCRT as `-0.000000000` (the collinear set's FAIL dump of the
+cleaned points).
+
+Found by the differential and recorded, not fixed:
+- **`002233`'s result is uninitialised when `CreateConvexHull` returns before `buildResult`**
+  (only `cleanupVertices` refusing, `vcount == 0`): `ReleaseResult` then frees the two stack
+  words at `E-0x14`/`E-0x04` through `002237`. The candidate does the same with its own stack.
+  `isValid`'s `numVertices >= 3` keeps it unreachable from the public API; B does not drive it.
+- **`HullResult +0x00` is a byte** (`mov byte ptr [ebp],1` at 0x0007e65d, `0` at 0x0007e6ea):
+  the upper three bytes keep what the caller left there, on both sides.
+
+**The `+4` interface is driven** with a test interface whose slots are the candidate's
+`HullPolygonizer` virtuals, the same object serving both sides: `fromTriangles` (bit 3 with
+triangles), `fromPolygons` then `finishPolygons` (bit 3 with polygons), a refusal at each, the
+interface without bit 3 and bit 3 without the interface. All six runs are in `hull_create`
+and `hull_create_pc64`, exact: the arguments the listing pushes (0x0007ebe6-0x0007ec22, the
+float at `desc +0x18` as the second), the replacement of the result's vertices and indices, and
+`+0x14` left as it was.
+
+**Two slots no hull run reached in the candidate.** The size slot `003265` is called by qhull
+only for the `FS` format (io.c NOVODEX [4]), and `CreateConvexHull` runs `o`: it is called
+directly (`hull_host_size`, exact). The print slot `003263` was reached through the
+`qhNovodeXFprintf` hook, which repeated its body (see "As written (Task 4a)"): the hook now
+formats the message and calls the slot through the vtable with the text as `"%s"`, so the row's
+own code formats it again, to the same text, and errexits. The harness's copy of the hook does
+the same.
+
+The cdb trace of the candidate over these families (`evidence/qhull-gap-trace-cooking.txt`)
+shows every one of the 40 written rows executing. Four have no out-of-line call in the test exe
+and are credited through the caller they are inlined into: `003257` and `003277` into `003279`,
+`003274` into `003272` and `003365` into `003369`.
 
 ### Dependency closure
 
@@ -712,13 +790,15 @@ TriangleMesh/ConvexHull unit of its own, and Task 4 cannot absorb it at the ~12 
 
 ### Existing candidate code this replaces
 
-- `Physics/src/ThirdPartyHost.cpp`, the qhull half: nine shims. `qhNovodeXFprintf` returns 0
-  where the oracle errexits. `qhNovodeXErrexit` calls `abort()` where the oracle `longjmp`s.
-  malloc and free are untracked.
+As recorded before Task 4 (the first two items are replaced; see the "As written" notes):
+
+- `Physics/src/ThirdPartyHost.cpp`, the qhull half: nine shims until Task 4a. `qhNovodeXFprintf`
+  returned 0 where the oracle errexits, `qhNovodeXErrexit` called `abort()` where the oracle
+  `longjmp`s, and malloc and free were untracked.
 - `Physics/src/ObjectModel.cpp` generic shapes: `nxOwnVtableRelease3238`, `nxBatchAppend3268`,
   and the shape entries recorded as sources for `003257`, `003261`, `003265` and `003274`. Their
-  inventory proofs are phase 8 shape drives, and `003268`'s carries a failing-differential note.
-  They become the product class's members. Whether the generic helpers are deleted or kept for
+  inventory proofs were phase 8 shape drives, and `003268`'s carried a failing-differential note.
+  They became the product class's members in Task 4a. Whether the generic helpers are deleted or kept for
   their drive is Task 4's call; the rows' `source` moves either way.
 - `Physics/src/NpPhysicsSDK.cpp:109` `createTriangleMesh` returns 0 ("needs TriangleMesh,
   Phase 4"). It is unchanged in Task 4 under the split below.
@@ -728,7 +808,9 @@ TriangleMesh/ConvexHull unit of its own, and Task 4 cannot absorb it at the ~12 
   `002235`/`002237` as that interface's TriangleMesh implementation. It records the
   `TriangleMesh` base-class wiring as deferred.
 
-### What the tests reach today
+### What the tests reach
+
+As recorded before Task 4; Task 4e adds differentials A and B (see "As written (Task 4e)").
 
 - **The candidate's public convex mesh API.** Nothing exists: `createTriangleMesh` returns NULL
   and there is no NpTriangleMesh.
@@ -736,8 +818,8 @@ TriangleMesh/ConvexHull unit of its own, and Task 4 cannot absorb it at the ~12 
   reader and writer on byte-built objects (`kMeshWriterRva` 0x000539d0, :111, :1007, :1049).
   They do not drive cooking.
 - **`tests/PhysicsThirdPartyTests.cpp`** drives vendored qhull through `003236`'s call sequence
-  with its own nine-slot host object (`gQhHostVtable`, :3951-3957). It never calls
-  `003279`/`002233`.
+  with its own nine-slot host object (`gQhHostVtable`). Until Task 4e it never called
+  `003279`/`002233`; `nxDriveConvexCooking` now does.
 
 ### The differential Task 4 should build
 
