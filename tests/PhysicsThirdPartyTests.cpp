@@ -4242,7 +4242,9 @@ static void nxDriveCandidateTrees(const NxOracleRows& o, bool selfOnly)
 
 	// The default-rule model of every mesh in every tree kind, as
 	// nxDriveModels builds them; their build tapes are opcode_model_build's
-	// business and are dropped here.
+	// business and are dropped here. Each pass builds its own models first, so
+	// that the builds a family's queries depend on sit in that family's trace
+	// segment.
 	nxBuildMeshes();
 	gNbModels = 0;
 	const udword kDefaultRules = SPLIT_SPLATTER_POINTS | SPLIT_GEOM_CENTER;
@@ -4253,13 +4255,14 @@ static void nxDriveCandidateTrees(const NxOracleRows& o, bool selfOnly)
 			gModelIndex[mesh][kind] = gNbModels;
 			nxAddModel(mesh, kind, kDefaultRules, false, 0.0f, -1, 0.0f, untied && !(kind & 2));
 			}
-	for(int i = 0; i < gNbModels; ++i)
-		nxBuildModel(o, gModels[i], selfOnly);
 
 	static const int kPairs[][2] = { { 0, 1 }, { 5, 5 }, { 2, 2 }, { 1, 1 }, { 0, 3 }, { 3, 3 }, { 1, 3 } };
 	for(int pass = 0; pass < 2; ++pass)
 		{
 		const bool exact = pass == 0;
+		for(int i = 0; i < gNbModels; ++i)
+			if(gModels[i].exact == exact)
+				nxBuildModel(o, gModels[i], selfOnly);
 		gState = exact ? 0xca7d1d01 : 0xca7d1d02;
 		gOracleTape.reset();
 		gCandidateTape.reset();
