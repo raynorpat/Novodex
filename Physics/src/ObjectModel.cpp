@@ -14,6 +14,7 @@
 #include "NxPlane.h"
 #include "ContactGeneration.h"
 #include "NxUtilities.h"
+#include "NxGeometryHelpers.h"
 
 #include <math.h>
 #include <string.h>
@@ -416,39 +417,51 @@ void* BoxShape::nxBoxRaycast(const float* ray, float maxDistance,
 	return const_cast<BoxShape*>(this);		// 0x00020b0e: eax = this
 	}
 
-// phys_fn_000951 (BOX slot 7) -- swept-AABB entry parameter. PROVISIONAL:
-// transcribed per the 3z36 verified model (out0 = min over valid axes of
-// |col_k . H| / swept[k]), NOT yet differentially closed. phys_fn_000951
-// stays `discovered`.
+// phys_fn_000951 (0x00020b20, 507 B)
+// BOX slot 7, the swept-AABB entry, wired to the slab test phys_fn_001730 by
+// convex-mesh gap Task 2b (units/convex-mesh-gap-contract.md,
+// sub-unit F). Written from the listing (0x00020b20..0x00020d18) in place of the
+// earlier model (min over axes of |col_k . H| / |swept[k]|), which the listing
+// does not compute: the box's own AABB (-extents, extents), a ray whose origin
+// is the box's translation taken into the box's frame and back out -- R^T(-t)
+// plus R^T t, a rounding residue, x formed wide and y, z from narrowed halves
+// (0x00020b8b..0x00020c79) -- and whose direction is R^T swept
+// (0x00020c7d..0x00020cd2), through NxRayAABBSlab; a miss (-1) returns false,
+// otherwise |tFar| is written (0x00020cf6..0x00020d03). The row itself stays
+// `discovered`: it is a Phase 5 row this task does not own, compiled here
+// without /arch:IA32, and closed only by the shape-vtable slot 7 comparison.
 bool BoxShape::nxBoxSweep(void* out, const float* swept) const
 	{
 	const NxF32* R = reinterpret_cast<const NxF32*>(mBase.mPose0C.mRotation);
-	const NxF32* H = mHull.mDims04;
-	float tmin = 3.4028235e38f;
-	bool any = false;
-	for(unsigned k = 0; k < 3; ++k)
-		{
-		// x87 stores the face projection to m32 (fstp), so the arithmetic
-		// is single-precision: (Rk0*H0 + Rk1*H1 + Rk2*H2) then /swept[k].
-		const float colDotH = R[3*k+0]*H[0] + R[3*k+1]*H[1] + R[3*k+2]*H[2];
-		const float s = swept[k];
-		// Valid swept: non-zero normal finite value (3z36). Degenerate
-		// (0/subnormal/FLT_MAX here) -> axis rejected.
-		unsigned sw; memcpy(&sw, &s, 4);
-		if(sw == 0 || sw == 0x7f7fffffu || sw == 0xff7fffffu)
-			continue;
-		// Entry parameter uses the swept MAGNITUDE (negative swept still
-		// gives a positive entry) with the reciprocal-forced rounding:
-		// |col_k.H| * |1.0/swept[k]|. Pin: sh0/p0/sw{-3,-2,-1} -> 0.5.
-		volatile float recip = 1.0f / (s < 0.0f ? -s : s);
-		const float t = (colDotH < 0.0f ? -colDotH : colDotH) * recip;
-		any = true;
-		if(t < tmin)
-			tmin = t;
-		}
-	if(!any)
+	const NxF32* t = mBase.mPose0C.mTranslation;
+	const NxF32* e = mHull.mDims04;
+	const NxReal boxMax[3] = { e[0], e[1], e[2] };
+	const NxReal boxMin[3] = { -e[0], -e[1], -e[2] };
+	const NxReal negX = t[0] * -1.0f;
+	const double negY = (double) t[1] * -1.0f;
+	const double negZ = (double) t[2] * -1.0f;
+
+	const NxReal localY = (NxReal) (((double) R[7] * negZ + negY * R[4]) + (double) R[1] * negX);
+	const NxReal localZ = (NxReal) (((double) R[8] * negZ + negY * R[5]) + (double) R[2] * negX);
+	const double localX = (negZ * R[6] + negY * R[3]) + (double) negX * R[0];
+	const double backX = ((double) R[6] * t[2] + (double) R[3] * t[1]) + (double) R[0] * t[0];
+	const NxReal backY = (NxReal) (((double) R[1] * t[0] + (double) R[7] * t[2]) + (double) R[4] * t[1]);
+	const NxReal backZ = (NxReal) (((double) R[2] * t[0] + (double) R[8] * t[2]) + (double) R[5] * t[1]);
+
+	NxReal origin[3];
+	origin[0] = (NxReal) (localX + backX);
+	origin[1] = (NxReal) ((double) backY + localY);
+	origin[2] = (NxReal) ((double) backZ + localZ);
+	NxReal dir[3];
+	dir[0] = (NxReal) (((double) R[0] * swept[0] + (double) R[6] * swept[2]) + (double) R[3] * swept[1]);
+	dir[1] = (NxReal) (((double) R[1] * swept[0] + (double) R[7] * swept[2]) + (double) R[4] * swept[1]);
+	dir[2] = (NxReal) (((double) R[2] * swept[0] + (double) R[8] * swept[2]) + (double) R[5] * swept[1]);
+
+	NxReal tNear;
+	NxReal tFar;
+	if(NxRayAABBSlab(boxMin, boxMax, origin, dir, &tNear, &tFar) == -1)
 		return false;
-	*static_cast<float*>(out) = tmin;
+	*static_cast<float*>(out) = (float) fabs(tFar);
 	return true;
 	}
 

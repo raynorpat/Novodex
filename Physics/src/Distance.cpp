@@ -7,7 +7,7 @@
 \*----------------------------------------------------------------------------*/
 // Sub-unit E of units/convex-mesh-gap-contract.md, the box half: the point/box,
 // line/box and segment/box squared distances (convex-mesh gap Task 2a). The
-// triangle half (001672, 001692, 001694) is Task 2b's and joins this file.
+// triangle half (001672, 001692, 001694) follows them (Task 2b).
 //
 // These are Eberly's (Magic Software) DistVec3Box3, DistLin3Box3 and
 // DistSeg3Box3 as NovodeX built them, and that correspondence is only a map:
@@ -47,6 +47,9 @@
 // address of its own for the trace.
 
 #include "NxBoxDistance.h"
+#include "NxTriangleDistance.h"
+
+#include <math.h>
 
 #include <string.h>
 
@@ -726,4 +729,823 @@ __declspec(noinline) double __cdecl NxSegmentBoxSquareDistance(const NxSegment* 
 	if(segmentParam)
 		*segmentParam = 0.0f;
 	return NxPointBoxSquareDistance(&segment->p0.x, center, extents, rotation, boxPoint);
+	}
+
+// ---------------------------------------------------------------------------
+// The triangle half of sub-unit E (convex-mesh gap Task 2b): point/triangle,
+// line/line and segment/triangle. Eberly's DistVec3Tri3 and DistSeg3Tri3 as
+// NovodeX built them; the same caveat as above applies -- the listing is what
+// is transcribed, association and all.
+
+// Point/triangle's leaves. The oracle's 001672 is one function whose FPU
+// stack holds the first edge through the setup and then c (the squared offset)
+// and t through every branch to the end. Written as one C++ function, MSVC
+// spilled the edge, c and t to 8-byte slots, which cut them to 53 bits under
+// 0x0f7f (the class Face's leaves above avoid). So point/triangle is written as
+// the listing's leaves, each its own small function entered only with the
+// values the listing narrows (NxPointTriangleTerms) and forming its wide ones
+// locally from them: c from the three stored offset components, t from b0,
+// b1, a00 and a01, a numerator from its float operands, all in the listing's
+// order, so each is the same value the oracle's register holds. Each leaf ends
+// the row (the parameters written, the result |squared| left in st(0)), so no
+// wide result crosses a join either.
+
+// Everything 0x000329e0..0x00032b0c stores: the five coefficients, the
+// determinant and s, and the offset v0 - p.
+struct NxPointTriangleTerms
+	{
+	NxReal a00;
+	NxReal a01;
+	NxReal a11;
+	NxReal b0;
+	NxReal b1;
+	NxReal det;
+	NxReal s;
+	NxReal dx;
+	NxReal dy;
+	NxReal dz;
+	};
+
+// 0x000329e0..0x00032b0c. The first edge is on the FPU stack; the second edge
+// and the offset are stored. a00 is (x^2 + z^2) + y^2 of the first edge.
+static __declspec(noinline) void nxPointTriangleTerms(const NxReal* point, const NxReal* v0,
+	const NxReal* v1, const NxReal* v2, NxPointTriangleTerms* k)
+	{
+	const double e0x = (double) v1[0] - v0[0];
+	const double e0y = (double) v1[1] - v0[1];
+	const double e0z = (double) v1[2] - v0[2];
+	const NxReal e1x = (NxReal) ((double) v2[0] - v0[0]);
+	const NxReal e1y = (NxReal) ((double) v2[1] - v0[1]);
+	const NxReal e1z = (NxReal) ((double) v2[2] - v0[2]);
+	k->dx = (NxReal) ((double) v0[0] - point[0]);
+	k->dy = (NxReal) ((double) v0[1] - point[1]);
+	k->dz = (NxReal) ((double) v0[2] - point[2]);
+
+	k->a00 = (NxReal) ((e0x * e0x + e0z * e0z) + e0y * e0y);
+	k->a01 = (NxReal) (((double) e1x * e0x + (double) e1z * e0z) + (double) e1y * e0y);
+	k->a11 = (NxReal) (((double) e1z * e1z + (double) e1y * e1y) + (double) e1x * e1x);
+	k->b0 = (NxReal) (((double) k->dx * e0x + (double) k->dz * e0z) + (double) k->dy * e0y);
+	k->b1 = (NxReal) (((double) k->dz * e1z + (double) k->dy * e1y) + (double) k->dx * e1x);
+	k->det = (NxReal) fabs((double) k->a11 * k->a00 - (double) k->a01 * k->a01);
+	k->s = (NxReal) ((double) k->b1 * k->a01 - (double) k->b0 * k->a11);
+	}
+
+// c, the squared offset (0x00032ac8..0x00032ae2): (z^2 + y^2) + x^2.
+static __forceinline double nxPointTriangleC(const NxPointTriangleTerms* k)
+	{
+	return ((double) k->dz * k->dz + (double) k->dy * k->dy) + (double) k->dx * k->dx;
+	}
+
+// t before any division (0x00032b10..0x00032b20): b0 a01 - b1 a00.
+static __forceinline double nxPointTriangleT(const NxPointTriangleTerms* k)
+	{
+	return (double) k->b0 * k->a01 - (double) k->b1 * k->a00;
+	}
+
+// The denominator of the three quotient leaves: (a00 - (a01 + a01)) + a11.
+static __forceinline double nxPointTriangleDenominator(const NxPointTriangleTerms* k)
+	{
+	return ((double) k->a00 - ((double) k->a01 + k->a01)) + k->a11;
+	}
+
+// 0x00032eec: the parameters, then |squared|.
+static __forceinline double nxPointTriangleFinish(NxReal* sParam, NxReal* tParam,
+	NxReal s, NxReal t, double squared)
+	{
+	if(sParam)
+		*sParam = s;
+	if(tParam)
+		*tParam = t;
+	return fabs(squared);
+	}
+
+// Vertex 1 (0x00032cc9): s = 1, t = 0, ((b0 + b0) + c) + a00.
+static __declspec(noinline) double nxPointTriangleVertex1(const NxPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	return nxPointTriangleFinish(sParam, tParam, 1.0f, 0.0f,
+		(((double) k->b0 + k->b0) + nxPointTriangleC(k)) + k->a00);
+	}
+
+// Vertex 2 (0x00032d0c, 0x00032d9e, 0x00032e5c): s = 0, t = 1,
+// ((b1 + b1) + c) + a11.
+static __declspec(noinline) double nxPointTriangleVertex2(const NxPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	return nxPointTriangleFinish(sParam, tParam, 0.0f, 1.0f,
+		(((double) k->b1 + k->b1) + nxPointTriangleC(k)) + k->a11);
+	}
+
+// Vertex 0 (0x00032bb9, 0x00032c01 with 0x00032c1e, 0x00032d2d, 0x00032e1c):
+// both parameters 0 and the squared distance c.
+static __declspec(noinline) double nxPointTriangleVertex0(const NxPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	return nxPointTriangleFinish(sParam, tParam, 0.0f, 0.0f, nxPointTriangleC(k));
+	}
+
+// Edge 0's quotient (0x00032e2d): s = -(b0 / a00), kept wide for s b0 + c.
+static __declspec(noinline) double nxPointTriangleEdge0Quotient(const NxPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	const double s = -((double) k->b0 / k->a00);
+	return nxPointTriangleFinish(sParam, tParam, (NxReal) s, 0.0f, s * k->b0 + nxPointTriangleC(k));
+	}
+
+// Edge 1's quotient (0x00032d3a/0x00032d3e): t = -(b1 / a11), kept wide.
+static __declspec(noinline) double nxPointTriangleEdge1Quotient(const NxPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	const double t = -((double) k->b1 / k->a11);
+	return nxPointTriangleFinish(sParam, tParam, 0.0f, (NxReal) t, t * k->b1 + nxPointTriangleC(k));
+	}
+
+// Edge 0, t = 0 (0x00032b72, from regions 4 and 5): past the far vertex when
+// -b0 >= a00.
+static __declspec(noinline) double nxPointTriangleEdge0(const NxPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	if(-k->b0 >= k->a00)
+		return nxPointTriangleVertex1(k, sParam, tParam);
+	return nxPointTriangleEdge0Quotient(k, sParam, tParam);
+	}
+
+// Edge 1, s = 0 (0x00032ba0, regions 3 and 4).
+static __declspec(noinline) double nxPointTriangleEdge1(const NxPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	if(k->b1 >= 0.0f)
+		return nxPointTriangleVertex0(k, sParam, tParam);
+	if(-k->b1 >= k->a11)
+		return nxPointTriangleVertex2(k, sParam, tParam);
+	return nxPointTriangleEdge1Quotient(k, sParam, tParam);
+	}
+
+// The interior sum (0x00032eb1): the first t is `first`, every later read of
+// t and s is the narrowed copy; ((X + Y) + c) with
+// X = t ((first a11 + s a01) + (b1 + b1)) and Y = s ((t a01 + s a00) + (b0 + b0)).
+static __forceinline double nxPointTriangleInterior(const NxPointTriangleTerms* k,
+	NxReal s, NxReal t, double first)
+	{
+	return ((first * k->a11 + (double) s * k->a01) + ((double) k->b1 + k->b1)) * t
+		+ (((double) t * k->a01 + (double) s * k->a00) + ((double) k->b0 + k->b0)) * s
+		+ nxPointTriangleC(k);
+	}
+
+// The interior entered from a quotient s (0x00032e9b..0x00032ead): t = 1 - s
+// stored with `fst` and its wide value used first.
+static __declspec(noinline) double nxPointTriangleInteriorFromS(const NxPointTriangleTerms* k,
+	NxReal s, NxReal* sParam, NxReal* tParam)
+	{
+	const double first = 1.0f - (double) s;
+	const NxReal t = (NxReal) first;
+	return nxPointTriangleFinish(sParam, tParam, s, t, nxPointTriangleInterior(k, s, t, first));
+	}
+
+// The interior entered with t reloaded (0x00032c79, 0x00032dd8).
+static __declspec(noinline) double nxPointTriangleInteriorNarrow(const NxPointTriangleTerms* k,
+	NxReal s, NxReal t, NxReal* sParam, NxReal* tParam)
+	{
+	return nxPointTriangleFinish(sParam, tParam, s, t, nxPointTriangleInterior(k, s, t, t));
+	}
+
+// Region 0 (0x00032c2b): the determinant-zero interior returns FLT_MAX
+// (0x10106858) with both parameters 0; otherwise s and t are scaled by the
+// wide reciprocal and narrowed.
+static __declspec(noinline) double nxPointTriangleRegion0(const NxPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	if(k->det == 0.0f)
+		return nxPointTriangleFinish(sParam, tParam, 0.0f, 0.0f, 3.402823466e+38f);
+	const double inverse = 1.0f / (double) k->det;
+	const NxReal s = (NxReal) ((double) k->s * inverse);
+	const NxReal t = (NxReal) (inverse * nxPointTriangleT(k));
+	return nxPointTriangleInteriorNarrow(k, s, t, sParam, tParam);
+	}
+
+// Region 2's quotient (0x00032cab..0x00032cc5): numer = (b1 + a11) - tmp0.
+static __declspec(noinline) double nxPointTriangleRegion2Quotient(const NxPointTriangleTerms* k,
+	NxReal tmp0, NxReal* sParam, NxReal* tParam)
+	{
+	const double numer = ((double) k->b1 + k->a11) - tmp0;
+	const double denom = nxPointTriangleDenominator(k);
+	if(numer >= denom)
+		return nxPointTriangleVertex1(k, sParam, tParam);
+	return nxPointTriangleInteriorFromS(k, (NxReal) (numer / denom), sParam, tParam);
+	}
+
+// Region 2 (0x00032c8b): tmp0 = b0 + a01 narrowed into the t slot, tmp1 =
+// b1 + a11 wide.
+static __declspec(noinline) double nxPointTriangleRegion2(const NxPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	const NxReal tmp0 = (NxReal) ((double) k->b0 + k->a01);
+	const double tmp1 = (double) k->b1 + k->a11;
+	if(tmp1 > tmp0)
+		return nxPointTriangleRegion2Quotient(k, tmp0, sParam, tParam);
+	if(tmp1 <= 0.0)
+		return nxPointTriangleVertex2(k, sParam, tParam);
+	if(k->b1 >= 0.0f)
+		return nxPointTriangleVertex0(k, sParam, tParam);
+	return nxPointTriangleEdge1Quotient(k, sParam, tParam);
+	}
+
+// Region 6's quotient (0x00032d80..0x00032dd8): t = numer / denom narrowed,
+// s = 1 - t narrowed, and the interior entered with t reloaded.
+static __declspec(noinline) double nxPointTriangleRegion6Quotient(const NxPointTriangleTerms* k,
+	NxReal tmp0, NxReal* sParam, NxReal* tParam)
+	{
+	const double numer = ((double) k->b0 + k->a00) - tmp0;
+	const double denom = nxPointTriangleDenominator(k);
+	if(numer >= denom)
+		return nxPointTriangleVertex2(k, sParam, tParam);
+	const NxReal t = (NxReal) (numer / denom);
+	const NxReal s = (NxReal) (1.0f - (double) t);
+	return nxPointTriangleInteriorNarrow(k, s, t, sParam, tParam);
+	}
+
+// Region 6 (0x00032d65): tmp0 = b1 + a01 narrowed, tmp1 = b0 + a00 wide.
+static __declspec(noinline) double nxPointTriangleRegion6(const NxPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	const NxReal tmp0 = (NxReal) ((double) k->b1 + k->a01);
+	const double tmp1 = (double) k->b0 + k->a00;
+	if(tmp1 > tmp0)
+		return nxPointTriangleRegion6Quotient(k, tmp0, sParam, tParam);
+	if(tmp1 <= 0.0)
+		return nxPointTriangleVertex1(k, sParam, tParam);
+	if(k->b0 >= 0.0f)
+		return nxPointTriangleVertex0(k, sParam, tParam);
+	return nxPointTriangleEdge0Quotient(k, sParam, tParam);
+	}
+
+// Region 1 (0x00032e40): numer = ((b1 + a11) - a01) - b0, stored narrowed
+// into the t slot and tested wide against 0; the division reads the narrowed
+// copy.
+static __declspec(noinline) double nxPointTriangleRegion1(const NxPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	const double numerWide = (((double) k->b1 + k->a11) - k->a01) - k->b0;
+	const NxReal numer = (NxReal) numerWide;
+	if(numerWide <= 0.0)
+		return nxPointTriangleVertex2(k, sParam, tParam);
+	const double denom = nxPointTriangleDenominator(k);
+	if(numer >= denom)
+		return nxPointTriangleVertex1(k, sParam, tParam);
+	return nxPointTriangleInteriorFromS(k, (NxReal) (numer / denom), sParam, tParam);
+	}
+
+// The region decision (0x00032b10..0x00032b68, 0x00032bf2, 0x00032c82,
+// 0x00032d50): s + t against the determinant, then the signs of s, t and b0.
+// Returns Eberly's region number.
+static __declspec(noinline) int nxPointTriangleRegion(const NxPointTriangleTerms* k)
+	{
+	const double t = nxPointTriangleT(k);
+	if((double) k->s + t <= k->det)
+		{
+		if(k->s < 0.0f)
+			return (t < 0.0 && k->b0 < 0.0f) ? 4 : 3;
+		return t < 0.0 ? 5 : 0;
+		}
+	if(k->s < 0.0f)
+		return 2;
+	return t < 0.0 ? 6 : 1;
+	}
+
+// phys_fn_001672 (0x000329e0, 1326 B)
+// Point to triangle (origin v0, edges v1 - v0 and v2 - v0), with the two edge
+// parameters written through optional pointers. The first edge stays on the
+// FPU stack (0x000329eb..0x000329fc) and is squared and dotted from there; the
+// second edge and the offset v0 - p are stored. a00, a01, a11, b0, b1, the
+// determinant and s are narrowed -- b0, the determinant and s into the
+// caller's first three argument slots, b1 into the fourth -- while c (the
+// squared offset, 0x00032ac8..0x00032ae2) and t stay in registers; c is added
+// last in every leaf. The quotient leaves keep the parameter they just divided
+// in st(0) (`fst` at 0x00032d43, 0x00032e33, 0x00032ead) and use it wide; the
+// interior leaf (0x00032eb1) reads its first t either wide or reloaded, by
+// entry. The determinant-zero interior returns FLT_MAX (0x10106858) with both
+// parameters 0. Every comparison keeps the listing's NaN side: a NaN takes the
+// branch the `test ah` pattern gives it (for example b1 NaN at 0x00032bb7 is
+// "b1 < 0", the quotient). Regions 3 and 4 share the edge-1 leaf and regions 4
+// and 5 the edge-0 leaf, as the listing's jumps do.
+__declspec(noinline) double __cdecl NxPointTriangleSquareDistance(const NxReal* point,
+	const NxReal* v0, const NxReal* v1, const NxReal* v2, NxReal* sParam, NxReal* tParam)
+	{
+	NxPointTriangleTerms k;
+	nxPointTriangleTerms(point, v0, v1, v2, &k);
+	switch(nxPointTriangleRegion(&k))
+		{
+		case 0:
+			return nxPointTriangleRegion0(&k, sParam, tParam);
+		case 1:
+			return nxPointTriangleRegion1(&k, sParam, tParam);
+		case 2:
+			return nxPointTriangleRegion2(&k, sParam, tParam);
+		case 3:
+			return nxPointTriangleEdge1(&k, sParam, tParam);
+		case 4:
+			return nxPointTriangleEdge0(&k, sParam, tParam);
+		case 5:
+			if(k.b0 >= 0.0f)
+				return nxPointTriangleVertex0(&k, sParam, tParam);
+			return nxPointTriangleEdge0(&k, sParam, tParam);
+		default:
+			return nxPointTriangleRegion6(&k, sParam, tParam);
+		}
+	}
+
+// Clamp to [0, 1] as 0x00034681..0x000346c7 (and its three copies) do it: past
+// 1 is 1, and anything not on [0, 1] otherwise -- below 0, or a NaN -- is 0.
+// The kept value is the register itself, not a narrowed copy.
+static __forceinline double nxClampUnit(double x)
+	{
+	if(x < 0.0)
+		return 0.0f;
+	if(x > 1.0)
+		return 1.0f;
+	if(x >= 0.0 && x <= 1.0)
+		return x;
+	return 0.0f;
+	}
+
+// phys_fn_001692 (0x000345b0, 684 B)
+// Closest points of two lines given as origin and direction: s on the first
+// from the 2x2 system, clamped to [0, 1] and kept in a register; t from s,
+// narrowed into the caller's c slot (0x000346d5), and when t leaves [0, 1] --
+// tested wide against 0 but narrowed against 1 -- it is pinned and s is
+// recomputed from the pinned end. The offset origin1 - origin0 never touches
+// memory. The two points are formed differently: the first narrows all three
+// products s * dir0 before adding the origin, the second keeps t * dir1.x in
+// st(0) (0x00034821) and narrows only y and z.
+__declspec(noinline) void __cdecl NxLineLineClosestPoints(NxReal* point0, NxReal* point1,
+	const NxReal* origin0, const NxReal* dir0, const NxReal* origin1, const NxReal* dir1)
+	{
+	const double offX = (double) origin1[0] - origin0[0];
+	const double offY = (double) origin1[1] - origin0[1];
+	const double offZ = (double) origin1[2] - origin0[2];
+
+	const NxReal a = (NxReal) (((double) dir0[2] * dir0[2] + (double) dir0[0] * dir0[0])
+		+ (double) dir0[1] * dir0[1]);
+	const NxReal c = (NxReal) (((double) dir1[0] * dir1[0] + (double) dir1[1] * dir1[1])
+		+ (double) dir1[2] * dir1[2]);
+	const NxReal b = (NxReal) (((double) dir0[2] * dir1[2] + (double) dir0[1] * dir1[1])
+		+ (double) dir0[0] * dir1[0]);
+	const NxReal e = (NxReal) ((offZ * dir0[2] + offY * dir0[1]) + offX * dir0[0]);
+	const NxReal f = (NxReal) ((offX * dir1[0] + offZ * dir1[2]) + offY * dir1[1]);
+
+	double s = nxClampUnit(((double) e * c - (double) f * b) / ((double) c * a - (double) b * b));
+
+	const double tWide = ((double) b * s - f) / c;
+	NxReal t = (NxReal) tWide;
+	if(tWide < 0.0)
+		{
+		t = 0.0f;
+		s = nxClampUnit((double) e / a);
+		}
+	else if(t > 1.0f)
+		{
+		t = 1.0f;
+		s = nxClampUnit(((double) e + b) / a);
+		}
+	else if(!(t >= 0.0f && t <= 1.0f))
+		{
+		t = 0.0f;
+		s = nxClampUnit((double) e / a);
+		}
+
+	const NxReal p0x = (NxReal) (s * dir0[0]);
+	const NxReal p0y = (NxReal) (s * dir0[1]);
+	const NxReal p0z = (NxReal) (s * dir0[2]);
+	point0[0] = (NxReal) ((double) p0x + origin0[0]);
+	point0[1] = (NxReal) ((double) p0y + origin0[1]);
+	point0[2] = (NxReal) ((double) p0z + origin0[2]);
+
+	const double p1x = (double) t * dir1[0];
+	const NxReal p1y = (NxReal) ((double) t * dir1[1]);
+	const NxReal p1z = (NxReal) ((double) t * dir1[2]);
+	point1[0] = (NxReal) (p1x + origin1[0]);
+	point1[1] = (NxReal) ((double) p1y + origin1[1]);
+	point1[2] = (NxReal) ((double) p1z + origin1[2]);
+	}
+
+// ---------------------------------------------------------------------------
+// Segment/triangle (phys_fn_001694) and its pieces. Eberly's DistSeg3Tri3:
+// the segment p0 + r (p1 - p0) against the triangle v0 + s e0 + t e1 (e0 =
+// v1 - v0, e1 = v2 - v0). When the 3x3 system is not singular its solution
+// (r, s, t) picks one of 19 regions (r below 0, on [0, 1] or past 1, times the
+// seven regions of the triangle's plane); each region but the interior one
+// takes the smallest of a few boundary distances: segment against an edge
+// (phys_fn_001690), or an end of the segment against the triangle
+// (phys_fn_001672). When it is singular (|det| < 1e-5, 0x10107958) the segment
+// is parallel to the plane and all five boundary distances are taken.
+//
+// What the listing fixes and a reading of Eberly would not:
+//  * The best squared distance is a float: every candidate the callee leaves
+//    wide in st(0) is compared wide against the narrowed best and narrowed when
+//    it wins (`fcom dword; test ah, 5; jp` -- a NaN never wins), and the row
+//    returns |best| loaded back from its float slot, 0x000360ce. Even the
+//    interior's closed form is stored (0x00035524) and reloaded.
+//  * The edge segments are (origin, origin + edge) with each end narrowed, not
+//    Eberly's (origin, direction). The third edge is (v1, v1 + (e1 - e0)) with
+//    z's difference narrowed first and x's and y's kept wide (0x00034f0f..
+//    0x00034f46 and its eight copies). The far end of the segment is re-formed
+//    as p0 + (p1 - p0), narrowed, not read as p1.
+//  * s stays wide in st(0) from 0x00034b50 through the region tests and into
+//    the interior's closed form; r and t are narrowed before they are tested.
+//  * A NaN goes the way `test ah` sends it: r NaN is "r >= 0" and then "r > 1",
+//    a NaN s + t is "s + t > 1", a NaN s or t is ">= 0", and a NaN determinant
+//    is parallel.
+//
+// Everything wide that the listing keeps across a branch is formed from stored
+// floats alone (s from the cofactors and right-hand sides, 0x00034b1a..
+// 0x00034b50), so it is recomputed where it is used rather than kept, the
+// same device as point/triangle's leaves above.
+
+// Everything the listing stores in the setup (0x00034860..0x00034b8d).
+struct NxSegmentTriangleTerms
+	{
+	NxReal e0[3];
+	NxReal e1[3];
+	NxReal dir[3];
+	NxReal diff[3];
+	NxReal a00;
+	NxReal a01;
+	NxReal a02;
+	NxReal a11;
+	NxReal a12;
+	NxReal a22;
+	NxReal b0;
+	NxReal b1;
+	NxReal b2;
+	NxReal cof01;
+	NxReal cof02;
+	NxReal cof12;
+	NxReal rhs0;
+	NxReal rhs1;
+	NxReal rhs2;
+	NxReal r;
+	NxReal s;
+	NxReal t;
+	};
+
+// cof00 as the listing forms it and keeps it in st(1) (0x00034a2d..0x00034a43).
+static __forceinline double nxSegmentTriangleCof00(const NxSegmentTriangleTerms* k)
+	{
+	return (double) k->a22 * k->a11 - (double) k->a12 * k->a12;
+	}
+
+// 0x00034a45..0x00034a8e: cof01 and cof02 narrowed (cof02 with `fst`, its wide
+// value going on into the determinant), and the determinant returned in st(0).
+static __declspec(noinline) double nxSegmentTriangleDeterminant(NxSegmentTriangleTerms* k)
+	{
+	const double cof00 = nxSegmentTriangleCof00(k);
+	k->cof01 = (NxReal) ((double) k->a12 * k->a02 - (double) k->a22 * k->a01);
+	const double cof02 = (double) k->a12 * k->a01 - (double) k->a11 * k->a02;
+	k->cof02 = (NxReal) cof02;
+	return (cof02 * k->a02 + (double) k->cof01 * k->a01) + cof00 * k->a00;
+	}
+
+// 0x00034b1a..0x00034b8d: s and t from the stored cofactors and right-hand
+// sides, each narrowed (s with `fst`, kept wide in the listing; see
+// nxSegmentTriangleS).
+static __declspec(noinline) void nxSegmentTriangleST(NxSegmentTriangleTerms* k)
+	{
+	const NxReal rhs0 = k->rhs0;
+	const NxReal rhs1 = k->rhs1;
+	const NxReal rhs2 = k->rhs2;
+	k->s = (NxReal) ((((double) k->a22 * k->a00 - (double) k->a02 * k->a02) * rhs1
+		+ (double) rhs2 * k->cof12) + (double) rhs0 * k->cof01);
+	k->t = (NxReal) ((((double) k->a11 * k->a00 - (double) k->a01 * k->a01) * rhs2
+		+ (double) rhs1 * k->cof12) + (double) rhs0 * k->cof02);
+	}
+
+// 0x00034a90..0x00034b18: the tolerance test on |det| (a NaN is singular),
+// cof12, the reciprocal and the three right-hand sides -- the third kept wide
+// for r -- and r over the wide cof00. Returns false when singular.
+static __declspec(noinline) bool nxSegmentTriangleSolve(NxSegmentTriangleTerms* k)
+	{
+	const double det = nxSegmentTriangleDeterminant(k);
+	if(!(fabs(det) >= 1e-5f))
+		return false;
+	k->cof12 = (NxReal) ((double) k->a02 * k->a01 - (double) k->a12 * k->a00);
+	const double inverse = 1.0f / det;
+	k->rhs0 = (NxReal) -((double) k->b0 * inverse);
+	k->rhs1 = (NxReal) -((double) k->b1 * inverse);
+	const double rhs2 = -(inverse * k->b2);
+	k->rhs2 = (NxReal) rhs2;
+	k->r = (NxReal) ((rhs2 * k->cof02 + (double) k->rhs1 * k->cof01)
+		+ (double) k->rhs0 * nxSegmentTriangleCof00(k));
+	nxSegmentTriangleST(k);
+	return true;
+	}
+
+// 0x00034860..0x00034a9f: the edges, the segment's direction and the offset
+// v0 - p0, the six coefficients and three right-hand sides, and the
+// determinant over the cofactors, cof00 and cof02 wide. Returns true when it
+// is not singular, having gone on to 0x00034b8d: cof12, the reciprocal, the
+// three right-hand sides (the third kept wide for r) and r, s, t.
+static __declspec(noinline) bool nxSegmentTriangleTerms(const NxSegment* segment,
+	const NxReal* v0, const NxReal* v1, const NxReal* v2, NxSegmentTriangleTerms* k)
+	{
+	for(int i = 0; i < 3; ++i)
+		{
+		k->e0[i] = (NxReal) ((double) v1[i] - v0[i]);
+		k->e1[i] = (NxReal) ((double) v2[i] - v0[i]);
+		}
+	k->dir[0] = (NxReal) ((double) segment->p1.x - segment->p0.x);
+	k->dir[1] = (NxReal) ((double) segment->p1.y - segment->p0.y);
+	k->dir[2] = (NxReal) ((double) segment->p1.z - segment->p0.z);
+	k->diff[0] = (NxReal) ((double) v0[0] - segment->p0.x);
+	k->diff[1] = (NxReal) ((double) v0[1] - segment->p0.y);
+	k->diff[2] = (NxReal) ((double) v0[2] - segment->p0.z);
+
+	const NxReal* e0 = k->e0;
+	const NxReal* e1 = k->e1;
+	const NxReal* d = k->dir;
+	const NxReal* q = k->diff;
+	k->a00 = (NxReal) (((double) d[2] * d[2] + (double) d[1] * d[1]) + (double) d[0] * d[0]);
+	k->a01 = (NxReal) -(((double) e0[2] * d[2] + (double) e0[1] * d[1]) + (double) d[0] * e0[0]);
+	k->a02 = (NxReal) -(((double) d[2] * e1[2] + (double) d[1] * e1[1]) + (double) d[0] * e1[0]);
+	k->a11 = (NxReal) (((double) e0[2] * e0[2] + (double) e0[1] * e0[1]) + (double) e0[0] * e0[0]);
+	k->a12 = (NxReal) (((double) e0[2] * e1[2] + (double) e0[1] * e1[1]) + (double) e1[0] * e0[0]);
+	k->a22 = (NxReal) (((double) e1[2] * e1[2] + (double) e1[1] * e1[1]) + (double) e1[0] * e1[0]);
+	k->b0 = (NxReal) -(((double) q[2] * d[2] + (double) q[1] * d[1]) + (double) q[0] * d[0]);
+	k->b1 = (NxReal) (((double) e0[2] * q[2] + (double) e0[1] * q[1]) + (double) q[0] * e0[0]);
+	k->b2 = (NxReal) (((double) q[2] * e1[2] + (double) q[1] * e1[1]) + (double) q[0] * e1[0]);
+
+	return nxSegmentTriangleSolve(k);
+	}
+
+// s as the listing keeps it in st(0) (0x00034b1a..0x00034b50): from the stored
+// cofactors and right-hand sides only.
+static __forceinline double nxSegmentTriangleS(const NxSegmentTriangleTerms* k)
+	{
+	return (((double) k->a22 * k->a00 - (double) k->a02 * k->a02) * k->rhs1
+		+ (double) k->rhs2 * k->cof12) + (double) k->rhs0 * k->cof01;
+	}
+
+// The regions, numbered as in Eberly with r's third as a suffix: 0..6 for r
+// below 0 (his "m"), 10..16 for r on [0, 1], 20..26 for r past 1 ("p").
+static __declspec(noinline) int nxSegmentTriangleRegion(const NxSegmentTriangleTerms* k)
+	{
+	const double s = nxSegmentTriangleS(k);
+	int third;
+	if(k->r < 0.0f)
+		third = 0;
+	else if(k->r <= 1.0f)
+		third = 10;
+	else
+		third = 20;
+	if((double) k->t + s <= 1.0)
+		{
+		if(s < 0.0)
+			return third + (k->t < 0.0f ? 4 : 3);
+		return third + (k->t < 0.0f ? 5 : 0);
+		}
+	if(s < 0.0)
+		return third + 2;
+	return third + (k->t < 0.0f ? 6 : 1);
+	}
+
+// The interior (0x00035483..0x00035524): r (e0-row) ... in the listing's
+// order, with s wide throughout, then the offset's squared length z, y, x.
+static __declspec(noinline) NxReal nxSegmentTriangleInterior(const NxSegmentTriangleTerms* k)
+	{
+	const NxReal r = k->r;
+	const NxReal t = k->t;
+	const double s = nxSegmentTriangleS(k);
+	const double tTerm = ((((double) t * k->a22 + s * k->a12) + (double) r * k->a02)
+		+ ((double) k->b2 + k->b2)) * t;
+	const double sTerm = ((((double) t * k->a12 + s * k->a11) + (double) r * k->a01)
+		+ ((double) k->b1 + k->b1)) * s;
+	const double rTerm = ((((double) t * k->a02 + s * k->a01) + (double) r * k->a00)
+		+ ((double) k->b0 + k->b0)) * r;
+	return (NxReal) (((((tTerm + sTerm) + rTerm) + (double) k->diff[2] * k->diff[2])
+		+ (double) k->diff[1] * k->diff[1]) + (double) k->diff[0] * k->diff[0]);
+	}
+
+// (origin, origin + edge), the far end narrowed per component.
+static __forceinline void nxEdgeSegment(NxSegment* out, const NxReal* origin, const NxReal* edge)
+	{
+	out->p0.x = origin[0];
+	out->p0.y = origin[1];
+	out->p0.z = origin[2];
+	out->p1.x = (NxReal) ((double) edge[0] + origin[0]);
+	out->p1.y = (NxReal) ((double) edge[1] + origin[1]);
+	out->p1.z = (NxReal) ((double) edge[2] + origin[2]);
+	}
+
+// (v1, v1 + (e1 - e0)): z's difference narrowed first, x's and y's wide.
+static __forceinline void nxThirdEdgeSegment(NxSegment* out, const NxReal* v1,
+	const NxSegmentTriangleTerms* k)
+	{
+	const NxReal dz = (NxReal) ((double) k->e1[2] - k->e0[2]);
+	out->p0.x = v1[0];
+	out->p0.y = v1[1];
+	out->p0.z = v1[2];
+	out->p1.x = (NxReal) (((double) k->e1[0] - k->e0[0]) + v1[0]);
+	out->p1.y = (NxReal) (((double) k->e1[1] - k->e0[1]) + v1[1]);
+	out->p1.z = (NxReal) ((double) dz + v1[2]);
+	}
+
+// The running minimum: the float best and its three parameters.
+struct NxSegmentTriangleBest
+	{
+	NxReal squared;
+	NxReal r;
+	NxReal s;
+	NxReal t;
+	};
+
+// The segment against edge 0 (v0, v0 + e0): r and s, t = 0.
+static void nxSegTriEdge0(NxSegmentTriangleBest* best, bool first, const NxSegment* segment,
+	const NxReal* v0, const NxSegmentTriangleTerms* k)
+	{
+	NxSegment edge;
+	nxEdgeSegment(&edge, v0, k->e0);
+	if(first)
+		{
+		best->squared = (NxReal) NxSegmentSegmentSquareDistance(segment, &edge, &best->r, &best->s);
+		best->t = 0.0f;
+		return;
+		}
+	NxReal r;
+	NxReal s;
+	const double squared = NxSegmentSegmentSquareDistance(segment, &edge, &r, &s);
+	if(squared < best->squared)
+		{
+		best->squared = (NxReal) squared;
+		best->r = r;
+		best->s = s;
+		best->t = 0.0f;
+		}
+	}
+
+// The segment against edge 1 (v0, v0 + e1): r and t, s = 0.
+static void nxSegTriEdge1(NxSegmentTriangleBest* best, bool first, const NxSegment* segment,
+	const NxReal* v0, const NxSegmentTriangleTerms* k)
+	{
+	NxSegment edge;
+	nxEdgeSegment(&edge, v0, k->e1);
+	if(first)
+		{
+		best->squared = (NxReal) NxSegmentSegmentSquareDistance(segment, &edge, &best->r, &best->t);
+		best->s = 0.0f;
+		return;
+		}
+	NxReal r;
+	NxReal t;
+	const double squared = NxSegmentSegmentSquareDistance(segment, &edge, &r, &t);
+	if(squared < best->squared)
+		{
+		best->squared = (NxReal) squared;
+		best->r = r;
+		best->s = 0.0f;
+		best->t = t;
+		}
+	}
+
+// The segment against the third edge (v1, v1 + (e1 - e0)): r and t, s = 1 - t.
+static void nxSegTriEdge2(NxSegmentTriangleBest* best, bool first, const NxSegment* segment,
+	const NxReal* v1, const NxSegmentTriangleTerms* k)
+	{
+	NxSegment edge;
+	nxThirdEdgeSegment(&edge, v1, k);
+	if(first)
+		{
+		best->squared = (NxReal) NxSegmentSegmentSquareDistance(segment, &edge, &best->r, &best->t);
+		best->s = (NxReal) (1.0f - (double) best->t);
+		return;
+		}
+	NxReal r;
+	NxReal t;
+	const double squared = NxSegmentSegmentSquareDistance(segment, &edge, &r, &t);
+	const NxReal s = (NxReal) (1.0f - (double) t);
+	if(squared < best->squared)
+		{
+		best->squared = (NxReal) squared;
+		best->r = r;
+		best->s = s;
+		best->t = t;
+		}
+	}
+
+// An end of the segment against the triangle: s and t, r = 0 (the start) or
+// 1 (p0 + (p1 - p0), narrowed).
+static void nxSegTriEnd(NxSegmentTriangleBest* best, bool first, bool far, const NxSegment* segment,
+	const NxReal* v0, const NxReal* v1, const NxReal* v2, const NxSegmentTriangleTerms* k)
+	{
+	NxReal end[3];
+	const NxReal* point = &segment->p0.x;
+	if(far)
+		{
+		end[0] = (NxReal) ((double) k->dir[0] + segment->p0.x);
+		end[1] = (NxReal) ((double) k->dir[1] + segment->p0.y);
+		end[2] = (NxReal) ((double) k->dir[2] + segment->p0.z);
+		point = end;
+		}
+	if(first)
+		{
+		best->squared = (NxReal) NxPointTriangleSquareDistance(point, v0, v1, v2, &best->s, &best->t);
+		best->r = far ? 1.0f : 0.0f;
+		return;
+		}
+	NxReal s;
+	NxReal t;
+	const double squared = NxPointTriangleSquareDistance(point, v0, v1, v2, &s, &t);
+	if(squared < best->squared)
+		{
+		best->squared = (NxReal) squared;
+		best->r = far ? 1.0f : 0.0f;
+		best->s = s;
+		best->t = t;
+		}
+	}
+
+// phys_fn_001694 (0x00034860, 6266 B)
+// Segment to triangle, with the segment parameter and the two triangle
+// parameters written through optional pointers (0x00036097..0x000360cc: r, then
+// s from st(0), then t) and |best| returned. The regions and the boundary
+// distances each takes, in the listing's order (the parameters of the first
+// written straight into r, s, t; each later one replacing them only when its
+// wide distance is below the narrowed best):
+//
+//   r < 0:   0 end0;  1 edge2, end0;  2 edge1, edge2, end0;  3 edge1, end0;
+//            4 edge1, edge0, end0;  5 edge0, end0;  6 edge0, edge2, end0
+//   r 0..1:  0 the interior's closed form;  1 edge2;  2 edge1, edge2;
+//            3 edge1;  4 edge1, edge0;  5 edge0;  6 edge0, edge2
+//   r > 1:   as r < 0 with end1 (r = 1) for end0
+//   parallel: edge0, edge1, edge2, end0, end1
+//
+// (edge0 = (v0, v0 + e0) giving r, s and t = 0; edge1 = (v0, v0 + e1) giving
+// r, t and s = 0; edge2 = the third edge giving r, t and s = 1 - t; endN = that
+// end against the triangle through phys_fn_001672 giving s, t.)
+__declspec(noinline) double __cdecl NxSegmentTriangleSquareDistance(const NxSegment* segment,
+	const NxReal* v0, const NxReal* v1, const NxReal* v2,
+	NxReal* segmentParam, NxReal* sParam, NxReal* tParam)
+	{
+	NxSegmentTriangleTerms k;
+	NxSegmentTriangleBest best;
+	if(!nxSegmentTriangleTerms(segment, v0, v1, v2, &k))
+		{
+		// 0x00035dd7: parallel.
+		nxSegTriEdge0(&best, true, segment, v0, &k);
+		nxSegTriEdge1(&best, false, segment, v0, &k);
+		nxSegTriEdge2(&best, false, segment, v1, &k);
+		nxSegTriEnd(&best, false, false, segment, v0, v1, v2, &k);
+		nxSegTriEnd(&best, false, true, segment, v0, v1, v2, &k);
+		}
+	else
+		{
+		const int region = nxSegmentTriangleRegion(&k);
+		const int triangleRegion = region % 10;
+		const bool end = region < 10 || region >= 20;
+		const bool far = region >= 20;
+		if(region == 10)
+			{
+			best.squared = nxSegmentTriangleInterior(&k);
+			best.r = k.r;
+			best.s = k.s;
+			best.t = k.t;
+			}
+		else if(end && triangleRegion == 0)
+			nxSegTriEnd(&best, true, far, segment, v0, v1, v2, &k);
+		else
+			{
+			switch(triangleRegion)
+				{
+				case 1:
+					nxSegTriEdge2(&best, true, segment, v1, &k);
+					break;
+				case 2:
+					nxSegTriEdge1(&best, true, segment, v0, &k);
+					nxSegTriEdge2(&best, false, segment, v1, &k);
+					break;
+				case 3:
+					nxSegTriEdge1(&best, true, segment, v0, &k);
+					break;
+				case 4:
+					nxSegTriEdge1(&best, true, segment, v0, &k);
+					nxSegTriEdge0(&best, false, segment, v0, &k);
+					break;
+				case 5:
+					nxSegTriEdge0(&best, true, segment, v0, &k);
+					break;
+				default:
+					nxSegTriEdge0(&best, true, segment, v0, &k);
+					nxSegTriEdge2(&best, false, segment, v1, &k);
+					break;
+				}
+			if(end)
+				nxSegTriEnd(&best, false, far, segment, v0, v1, v2, &k);
+			}
+		}
+
+	if(segmentParam)
+		*segmentParam = best.r;
+	if(sParam)
+		*sParam = best.s;
+	if(tParam)
+		*tParam = best.t;
+	return fabs((double) best.squared);
 	}

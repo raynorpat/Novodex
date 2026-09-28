@@ -39,6 +39,8 @@
 #include "NxIntersectionSegmentCapsule.h"
 #include "NxIntersectionSweptSpheres.h"
 #include "X87Sqrt.h"
+#include "NxGeometryHelpers.h"
+#include "Opcode.h"
 
 #include <float.h>
 #include <math.h>
@@ -401,6 +403,110 @@ bool NX_CALL_CONV NxRayTriIntersect(const NxVec3& orig, const NxVec3& dir,
 	t = (NxReal) (((qvecZ * (double) edge2Z + qvecY * (double) edge2Y)
 		+ qvecX * (double) edge2X) * inverseDet);
 	return true;
+	}
+
+// convex-mesh gap Task 2b (units/convex-mesh-gap-contract.md, sub-unit F): the
+// two not-started helpers among this file's exports.
+
+// phys_fn_001708 (0x00036d90, 227 B)
+// A ray against a triangle fan given as `count` vertex indices: vertex 0 is the
+// hub, and each of the count - 2 triangles (v0, v[i], v[i + 1]) is copied onto
+// the stack, inflated by 0.02 about its centre (Triangle::Inflate, 0x000e4090,
+// constant_border false) and tested with NxRayTriIntersect, not culled; the
+// first hit returns true with its distance in `t`. The count is decremented
+// before the first compare only through `add ebp, -2; je` (0x00036d99), so a
+// count below 2 is an unsigned loop, as in the oracle. u and v land in the
+// caller's first two argument slots there; they are locals here.
+bool __cdecl NxRayInflatedTriangleFan(NxU32 count, const NxVec3* vertices, const NxU32* indices,
+	const NxRay* ray, NxReal* t)
+	{
+	NxU32 remaining = count - 2;
+	if(remaining == 0)
+		return false;
+	const NxVec3& hub = vertices[indices[0]];
+	do
+		{
+		// The three corners are copied as words (`mov`, 0x00036dc4..0x00036e1d)
+		// into a 36-byte stack block that Triangle::Inflate is called on as
+		// `this` (0x00036e18..0x00036e21). A plain block and not an
+		// IceMaths::Triangle object: Triangle declares a destructor, and an
+		// object with one gave this function an unwind frame the oracle's does
+		// not have.
+		NxVec3 corners[3];
+		memcpy(&corners[0], &hub, sizeof(NxVec3));
+		const NxVec3& second = vertices[indices[1]];
+		++indices;
+		memcpy(&corners[1], &second, sizeof(NxVec3));
+		const NxVec3& third = vertices[indices[1]];
+		memcpy(&corners[2], &third, sizeof(NxVec3));
+		--remaining;
+		reinterpret_cast<IceMaths::Triangle*>(corners)->Inflate(0.02f, false);
+		float u;
+		float v;
+		if(NxRayTriIntersect(ray->orig, ray->dir, corners[0], corners[1], corners[2], *t, u, v, false))
+			return true;
+		}
+	while(remaining != 0);
+	return false;
+	}
+
+// phys_fn_001730 (0x00038050, 61 B)
+// phys_fn_001732 (0x00038090, 296 B)
+// Slab test of a ray against the box (boxMin, boxMax): the entry and exit
+// parameters through `tNear` and `tFar` (initialised -FLT_MAX and FLT_MAX), and
+// the return is the entry face -- axis i for the min plane, i + 3 for the max
+// plane -- or -1 for a miss. 001730 is the prologue and 001732 the loop and the
+// exits. An axis whose direction is inside (-FLT_EPSILON, FLT_EPSILON)
+// (0x10107a10, 0x10107a0c) is parallel: a miss unless the origin is between the
+// planes (a NaN origin passes). Otherwise the reciprocal is narrowed
+// (0x000380e1), the min-plane parameter stays in st(0) and the max-plane one is
+// narrowed; when they are swapped the min-plane value is narrowed on the way
+// (0x00038108). So an entry parameter taken from the min plane is compared
+// wide and stored narrowed. Each non-parallel axis ends with the two exits
+// (tNear > tFar, tFar < FLT_EPSILON), and the loop's end repeats them, so a
+// trailing parallel axis is checked too.
+int __cdecl NxRayAABBSlab(const NxReal* boxMin, const NxReal* boxMax, const NxReal* origin,
+	const NxReal* dir, NxReal* tNear, NxReal* tFar)
+	{
+	*tNear = -FLT_MAX;
+	*tFar = FLT_MAX;
+	int face = -1;
+	for(int i = 0; i < 3; ++i)
+		{
+		if(dir[i] > -FLT_EPSILON && dir[i] < FLT_EPSILON)
+			{
+			if(origin[i] < boxMin[i] || origin[i] > boxMax[i])
+				return -1;
+			continue;
+			}
+		const NxReal inverse = (NxReal) (1.0f / (double) dir[i]);
+		double entry = ((double) boxMin[i] - origin[i]) * inverse;
+		NxReal exit = (NxReal) (((double) boxMax[i] - origin[i]) * inverse);
+		int entryFace = i;
+		if(entry > exit)
+			{
+			const NxReal swapped = (NxReal) entry;
+			entry = exit;
+			exit = swapped;
+			entryFace = i + 3;
+			}
+		if(entry > *tNear)
+			{
+			*tNear = (NxReal) entry;
+			face = entryFace;
+			}
+		if(exit < *tFar)
+			*tFar = exit;
+		if(*tNear > *tFar)
+			return -1;
+		if(*tFar < FLT_EPSILON)
+			return -1;
+		}
+	if(*tNear > *tFar)
+		return -1;
+	if(*tFar < FLT_EPSILON)
+		return -1;
+	return face;
 	}
 
 // 0x00037c80 and 0x00037e70. The Woo candidate-plane ray/box kernel, twice.

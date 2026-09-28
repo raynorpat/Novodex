@@ -432,10 +432,10 @@ class BoxShape
 		unsigned reserved, unsigned flags, void* hit) const;
 
 	//! phys_fn_000951 (BOX slot 7, 0x20b20, ret 8): swept-AABB entry.
-	//! `out` (arg1) is written on a hit; `swept` (arg2) is a per-axis swept
-	//! field array whose elements [0],[1],[2] drive the result: out[0] =
-	//! |col_k dot H| / swept[k] (the box-face entry parameter). PROVISIONAL
-	//! transcription; NOT differentially closed yet; stays discovered.
+	//! `out` (arg1) receives |tFar| of the slab test phys_fn_001730 of the
+	//! ray (box translation round-tripped through the box frame, R^T swept)
+	//! against the box's own AABB; false on a miss. Written from the listing
+	//! (convex-mesh gap Task 2b); stays discovered (a Phase 5 row).
 	bool nxBoxSweep(void* out, const float* swept) const;
 
 	//! BOX-table slot 10, phys_fn_000937 (0x00020670): writes the pose-one
