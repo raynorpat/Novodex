@@ -4947,6 +4947,21 @@ static void nxQhNoteSource(unsigned from, unsigned fromFloat, const char* source
 		gQhFloatSource[gQhCap.side][i] = source;
 	}
 static bool gQhCapOn = false;
+// Attribution only: each double nxQhullDirect pushes itself (a return value or
+// an out-parameter) is labelled by its order, so a QHGAP_SIGN line names it.
+static unsigned gQhDirectOrdinal = 0;
+static char gQhDirectLabel[256][24];
+static void nxQhPushTapeDoubleDirect(void* tape, double value)
+	{
+	NxTape* t = (NxTape*) tape;
+	const unsigned from = t->count;
+	t->pushDouble(value);
+	const unsigned n = gQhDirectOrdinal < 256 ? gQhDirectOrdinal : 255;
+	snprintf(gQhDirectLabel[n], sizeof(gQhDirectLabel[n]), "<direct push %u>", gQhDirectOrdinal);
+	++gQhDirectOrdinal;
+	for(unsigned i = from; i < t->count && i < NxTape::kMax; ++i)
+		gQhFloatSource[gQhCap.side][i] = gQhDirectLabel[n];
+	}
 
 static unsigned nxHashBytes(const char* s, size_t n)
 	{
@@ -5549,8 +5564,9 @@ static void nxQhGapRun(const NxOracleRows& o, const NxQhullEntries& oracle, cons
 			gQhCapOn = true;
 			if(side == 1)
 				gNxQhSink = &gQhCandidateSink;
+			gQhDirectOrdinal = 0;
 			const int direct = nxQhullDirect(entries[side], state, (FILE*) fout, nxQhPushTape, &tape,
-				nxQhPushTapeDouble, &floats);
+				nxQhPushTapeDoubleDirect, &floats);
 			gNxQhSink = 0;
 			gQhCapOn = false;
 			tape.push(direct ? 1u : 0u);
@@ -5651,6 +5667,45 @@ static void nxQhGapRun(const NxOracleRows& o, const NxQhullEntries& oracle, cons
 		fprintf(stderr, "QHGAP_FLOAT run=%d word=%u oracle=%.17g candidate=%.17g from=\"%s\"\n", runIndex, i, x, y, line);
 		++shown;
 		}
+	// Every float or double whose sign bit differs between the sides (the
+	// tape's inf distances), uncapped, with its source (NXQHGAP_SIGNS=1).
+	if(getenv("NXQHGAP_SIGNS"))
+		for(unsigned i = 0; i + 1 < lenF0 && i + 1 < lenF1; ++i)
+			{
+			const unsigned a = startFloats[0] + i, b = startFloats[1] + i;
+			if(a + 1 >= NxTape::kMax || b + 1 >= NxTape::kMax)
+				break;
+			const NxTape& fo = gQhGapFloats[0];
+			const NxTape& fc = gQhGapFloats[1];
+			double x, y;
+			if(fo.kinds[a] == kWordDoubleLo)
+				{
+				unsigned w[2] = { fo.words[a], fo.words[a + 1] };
+				memcpy(&x, w, sizeof(x));
+				unsigned v[2] = { fc.words[b], fc.words[b + 1] };
+				memcpy(&y, v, sizeof(y));
+				}
+			else if(fo.kinds[a] == kWordFloat)
+				{
+				float fx, fy;
+				memcpy(&fx, &fo.words[a], 4);
+				memcpy(&fy, &fc.words[b], 4);
+				x = fx;
+				y = fy;
+				}
+			else
+				continue;
+			if(memcmp(&x, &y, sizeof(x)) == 0 || (signbit(x) != 0) == (signbit(y) != 0))
+				continue;
+			const char* source = gQhFloatSource[0][a] ? gQhFloatSource[0][a] : "<hull>";
+			char line[96];
+			size_t k = 0;
+			for(; source[k] && k < sizeof(line) - 1; ++k)
+				line[k] = source[k] == '\n' ? '|' : source[k];
+			line[k] = 0;
+			fprintf(stderr, "QHGAP_SIGN family=%s run=%d word=%u family_word=%u oracle=%.17g candidate=%.17g from=\"%s\"\n",
+				gQhFamilyName, runIndex, i, a, x, y, line);
+			}
 	}
 
 static void nxQhGapFamily(const NxOracleRows& o, const char* name, const char* nameX87, const char* rva,
