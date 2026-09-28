@@ -307,3 +307,81 @@ phase 5 exit 1   candidate CANDIDATE-MISSING family=vtables (NxPhysicsObjectLayo
 phase 6 exit 0   coverage_assertions_evaluated=403 floor=403 / phase_gate=6 status=pass
 phase 7 exit 0   coverage_assertions_evaluated=276 floor=276 / phase_gate=7 status=pass
 ```
+
+## Integration with main
+
+Local `main` (acc17d1: the effector and core-dump work, then qhull gap Tasks 2-5) was merged in as
+a591394. The follow-up 4ce9627 comes after it.
+
+Text conflicts:
+- CMakeLists.txt: both /arch:IA32 lists and all targets are kept.
+- Scene.cpp, core/JointSupport.h: resolved by hand.
+- The phase 2 and 6 ledgers, inventory.json, gate_targets.ps1, test_gate_targets.py and
+  work_units.json: see the JSON item below.
+- The phase 7 ledger auto-merged but had stale counts; they were recomputed.
+
+Semantic overlaps:
+- **000722.** Written on both sides and auto-merged into two definitions. Both walk 0x16130-0x161ae
+  the same way, so main's `__declspec(noinline)` definition is kept. The row keeps both proofs (this
+  trace and the effector trace).
+- **000797/000776.** The branch's release structure stays (000628 -> 000030 -> 000632 / notify 0x100 /
+  000776). Main's `NxBodyRecordObservable` is added where the listing puts it:
+  - the constructor right after the 000801 pose (0x1b60c-0x1b614);
+  - `~Observable` in 000776 after 000760/000722 (0x185d6).
+  That closes 000776's recorded gap, and 000776 is now `reconstructed` (phase 2 ledger:
+  reconstructed_not_falsified, 12 rows). 000797 stays `discovered`: 000801's full sub-object is
+  still a model.
+- **000791.** Main had declared it in core/JointSupport.h with an `NX_ASSERT(0)` stub for the
+  effector's solver slot 003979. The branch's NpActor.cpp row is now `Row000791Fixture::row000791`,
+  with the listing's mode and wake words. The at-position rows pass wake = 1. The stable-ID line is
+  claimed once.
+- **Shape factory.** The branch's capsule loader now stores the capsule flags at +0xe8 (000989,
+  0x21af0), which main's core dump reads. Main's plane initializer was already in the branch's
+  loader.
+- **000008.** The branch's `reconstructed` row is kept, and main's open-item note is replaced by a
+  line saying the row closes it.
+- **Reentry flag.** Main's effector create/release use the branch's `gNxApiReentry`
+  (.data 0x10123c10).
+- **JSON.** inventory.json and the phase 2/6/7 ledgers were merged row by row. Counts and the reason
+  texts were recomputed: P2 12, P6 402, P7 207 reconstructed_not_falsified. Floors are 4=188,
+  5=1862, 6=856 and 7=729, with the Python pins to match. work_units.json was regenerated with
+  tools/work_units.py.
+- **Global name map (4ce9627).** One transcript difference came from combining the two sides. After
+  the scene releases, NxPhysicsCoreDumpTests read `outstanding=16` against the oracle's 14. The cause
+  was the candidate's two copies of the oracle's global name map (000480/000454):
+  - NpActor.cpp's shape/actor table;
+  - PhysicsInternal.cpp's joint table.
+  On main, the joint table's early destruction happened to cancel two other blocks. The branch's
+  release path reorders the joint releases, so that table now keeps its null pairs, as the oracle's
+  does. Actor and shape names now use the one map. The SDK destructor releases it.
+
+The traces were re-recorded on the merged DLL (sha256 2f9815a1...), and every `dynamic_proof` that
+cited 9dadfcea... (91 rows) or 8313db1b... (42 rows) was re-pinned:
+- **evidence/npactor-trace-final.txt.** 11 of the 12 targets are identical apart from 000791's new
+  label. ActorLifecycle has three HIT lines (000092, 000120, 000628) that the earlier excerpt lost
+  inside stdout lines.
+- **evidence/effector-and-coredump-trace-effector.txt.** 000722 goes 4 -> 12 and 000760 goes
+  4 -> 16, because each actor release now runs 000632 and 000776. The releaseActor helper is inlined
+  into the scene destructor.
+- **The core-dump trace (0093a945...).** Not re-recorded: core/SceneDump.cpp and its rows are
+  unchanged by the merge.
+
+Verification, 2026-09-28, on 4ce9627's product source:
+
+```
+cmake --fresh -G "Visual Studio 18 2026" -A Win32              exit 0
+cmake --build build --config Release --clean-first             exit 0; NxPhysics.vcxproj warnings:
+  26 x C4005, 5 x C4291, 4 x D9025
+NxPhysics.dll sha256 2f9815a105ac1fe5754ce2d69d7d1b2030a336eb8327fadeeb0f5388481c3dee
+git diff 259dc52 -- Physics/include Foundation/include: empty; public_headers=pass
+pytest docs/reconstruction/novodex-physics/tools/tests: 755 passed, 690 subtests passed
+validate_inventory.py: closure phase=7 closed=4 deferred=557, unexplained=0
+phase 2 exit 0   phase_gate=2 status=pass
+phase 3 exit 0   coverage_assertions_evaluated=103 floor=103 / phase_gate=3 status=pass
+phase 4 exit 0   coverage_assertions_evaluated=188 floor=188 / phase_gate=4 status=pass
+phase 5 exit 1   candidate CANDIDATE-MISSING family=vtables (NxPhysicsObjectLayoutTests exit 1,
+                 candidate_fold=4492c8c1); coverage_assertions_evaluated=1862 floor=1862; all 12
+                 actor staged pairs stdout_delta=0 stderr_exact=True
+phase 6 exit 0   coverage_assertions_evaluated=856 floor=856; 6/6 staged pairs stdout_delta=0
+phase 7 exit 0   coverage_assertions_evaluated=729 floor=729; 5/5 staged pairs stdout_delta=0
+```
