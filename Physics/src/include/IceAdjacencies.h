@@ -49,6 +49,7 @@ struct ADJACENCIESCREATE
 class Adjacencies
 	{
 	public:
+				Adjacencies();
 				~Adjacencies();
 
 	bool		Init(const ADJACENCIESCREATE& create);

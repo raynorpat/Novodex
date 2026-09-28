@@ -188,6 +188,18 @@ NxU32 Adjacencies::ComputeNbBoundaryEdges() const
 	return Nb;
 	}
 
+// phys_fn_001536 (0x0002dae0, 16 B)
+// Zeroes +0x00 and +0x04 (`mov eax, ecx` first, so it returns this). The
+// oracle's linker folded this constructor with MeshNormals' (IceMeshTools.h),
+// whose inline one does the same; 002186 constructs the Adjacencies it
+// allocates through it (convex-mesh gap Task 2e). (The row is also modelled in
+// ObjectModel.cpp; this is its product form.)
+__declspec(noinline) Adjacencies::Adjacencies()
+	{
+	mNbFaces = 0;
+	mFaces = 0;
+	}
+
 // phys_fn_001544 (0x0002dec0, 37 B)
 // Releases the faces (`new[]`, released at the pointer minus four) and clears
 // the pointer. (The row is also modelled in ObjectModel.cpp, whose layout test

@@ -217,12 +217,17 @@ endif()
 # lacks. None of the three files uses try, catch or throw. Task 2d adds
 # IceMeshBuilder2.cpp for the same reason (0x0002f290, 0x0002fc50, 0x00030620,
 # 0x00030d90 are frameless with their Container, reducer and RadixSort locals).
+# Task 2e adds ConvexHull.cpp and TriangleMeshTopology.cpp (0x0002ae60,
+# 0x000543d0 and 0x00054460 are frameless around their MeshNormals local and
+# the objects they construct with placement new).
 if(MSVC)
 	set_property(SOURCE
 		Physics/src/EdgeList.cpp
 		Physics/src/IceAdjacencies.cpp
 		Physics/src/IceMeshTools.cpp
 		Physics/src/IceMeshBuilder2.cpp
+		Physics/src/ConvexHull.cpp
+		Physics/src/TriangleMeshTopology.cpp
 		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
 endif()
 
@@ -536,7 +541,15 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		tests/PhysicsThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/NovodexBoxPruning.cpp
 		Physics/src/EdgeList.cpp Physics/src/IceAdjacencies.cpp Physics/src/IceMeshTools.cpp
-		Physics/src/IceMeshBuilder2.cpp)
+		Physics/src/IceMeshBuilder2.cpp Physics/src/ConvexHull.cpp Physics/src/TriangleMeshTopology.cpp
+		Physics/src/SmoothNormals.cpp)
+	# SmoothNormals.cpp comes with IceMeshTools.cpp since convex-mesh gap Task 2e:
+	# 001651 calls the angle helper 002144, which is written there, beside the
+	# export that also calls it. The export is declared NXP_DLL_EXPORT, so the file
+	# is compiled with the DLL's linkage in every target that links it (as
+	# NxPhysicsCollisionTests does for the whole target); here only the file gets
+	# it, so the harness's own translation units keep theirs.
+	set_source_files_properties(Physics/src/SmoothNormals.cpp PROPERTIES COMPILE_DEFINITIONS NX_PHYSICS_DLL=1)
 	# The hull family's C half reads qhull's own structs, so it and only it sees the
 	# merged tree's headers (their fprintf redirection stays out of the C++ harness).
 	set_source_files_properties(tests/PhysicsThirdPartyQhull.c PROPERTIES

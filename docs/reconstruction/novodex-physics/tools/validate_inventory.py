@@ -1923,7 +1923,9 @@ UNRESOLVED_SOURCE_PATHS = (
     'Physics/src/ContactMeshMesh.cpp',               # 1 rows
     'Physics/src/ContactPlaneMesh.cpp',              # 2 rows
     'Physics/src/Controller.cpp',                    # 2 rows
-    'Physics/src/ConvexHull.cpp',                    # 1 rows
+    # 'Physics/src/ConvexHull.cpp' (1 row) was here, and was REMOVED when
+    # convex-mesh gap Task 2e created the file (001461); the check said so
+    # itself: "is on the allowlist but no longer unresolved; remove the entry".
     # 'Physics/src/D6Joint.cpp' was here with 3 rows (004182 004184 004212), and
     # was REMOVED when joint-families Task 3i wrote the unit in
     # Physics/src/core/D6Joint.cpp (the rows' notes keep the oracle path), as

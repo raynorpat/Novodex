@@ -16,6 +16,8 @@
 #include "Opcode.h"
 
 class NxStream;
+class Adjacencies;
+class EdgeList;
 
 /**
 The triangle-mesh stream format's reader and writer, and ONLY the parts of them
@@ -128,6 +130,11 @@ class TriangleMesh
 	//! literal 1; there is no error path in it (mov al,1 at 0x00053b64).
 	bool					save(NxStream& stream) const;
 
+	//! phys_fn_002186 (0x000543d0) and phys_fn_002188 (0x00054460): build the
+	//! adjacencies (+0x84) and the edge list (+0x88) of the triangles.
+	void					createAdjacencies();
+	void					createEdgeList();
+
 	//! +0x00, the vtable slot. Not a C++ vtable; see the class comment.
 	void*					mVtableSlot;
 	//! +0x04, unestablished.
@@ -146,8 +153,15 @@ class TriangleMesh
 	NxU32					mHeightFieldVerticalAxis;
 	//! +0x80, heightFieldVerticalExtent.
 	float					mHeightFieldVerticalExtent;
-	//! +0x84..+0x88, unestablished.
-	NxU8					mGap84[0x08];
+	//! +0x84, the adjacencies, built on demand by phys_fn_002186
+	//! (createAdjacencies, TriangleMeshTopology.cpp). The mesh/height-field
+	//! pass 001859 builds them when the word is 0 and stores 1 when that fails
+	//! (0x00044b8e..0x00044bb1), so 1 means "could not be built".
+	Adjacencies*			mAdjacencies;
+	//! +0x88, the edge list, built on demand by phys_fn_002188
+	//! (createEdgeList, TriangleMeshTopology.cpp) when 001834 finds it null
+	//! (0x00041c23..0x00041c31).
+	EdgeList*				mEdgeList;
 	//! +0x8c, presence flag A for the array at +0x94.
 	NxU32					mPresenceFlagA;
 	//! +0x90, presence flag B for the array at +0x98.
@@ -179,6 +193,8 @@ static_assert(offsetof(TriangleMesh, mHullFlags) == 0x40, "the hull flags are at
 static_assert(offsetof(TriangleMesh, mConvexEdgeThreshold) == 0x6c, "the threshold is at +0x6c");
 static_assert(offsetof(TriangleMesh, mHeightFieldVerticalAxis) == 0x7c, "the height-field axis is at +0x7c");
 static_assert(offsetof(TriangleMesh, mHeightFieldVerticalExtent) == 0x80, "the height-field extent is at +0x80");
+static_assert(offsetof(TriangleMesh, mAdjacencies) == 0x84, "the adjacencies are at +0x84");
+static_assert(offsetof(TriangleMesh, mEdgeList) == 0x88, "the edge list is at +0x88");
 static_assert(offsetof(TriangleMesh, mPresenceFlagA) == 0x8c, "presence flag A is at +0x8c");
 static_assert(offsetof(TriangleMesh, mPresenceFlagB) == 0x90, "presence flag B is at +0x90");
 static_assert(offsetof(TriangleMesh, mArrayA) == 0x94, "array A is at +0x94");
