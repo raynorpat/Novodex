@@ -28941,13 +28941,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/628",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4244",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002eb50..0x0002ebda: three dwords appended, each through the inline Container::Add (Resize 004840 with 1 when full), the Container returned",
+      "dynamic_proof": "convex-mesh gap Task 2d: nxIceContainerAddPoint hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001592",
@@ -28977,13 +28978,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/629",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4248",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002ebe0..0x0002ed0c: thirteen Container constructors (004836) at +0x00..+0xc0, the dwords +0xd0..+0xfc, +0x108, +0x10c, +0x110, +0x100, +0x114, +0x104 zeroed, the flag bytes +0x119..+0x122 cleared except +0x118 and +0x11d set to 1; +0x123 not written",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::MeshBuilder2 hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001594",
@@ -29013,13 +29015,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/630",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4249",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002ed10..0x0002ed95: the count stored first, true for an empty stream, else CRT operator new (005701) of nb*12+4 with the count cookie and the vector constructor iterator over 0x10027f00, false on null, the source copied or the copy zeroed",
+      "dynamic_proof": "convex-mesh gap Task 2d: nxMb2DuplicateStream hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001596",
@@ -29049,13 +29052,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/631",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4255",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002eda0..0x0002f280: false without faces or references, when full, or for an index above +0xd0; with +0x118 and vertex references a repeated reference or a zero (z*z+y*y)+x*x of (p0-p1)^(p0-p2) (fucompp against 0.0f, jnp) drops the face with true; material, smoothing groups (only with +0x11a, else 1) and index stored; the three streams' references with corners 1 and 2 swapped by the flip byte, 0xffffffff when absent, each clamped to 0 at or past its count; three reference records numbered; its x87 sections are assembly blocks transcribed from the listing, and the FPU opcode sequence of the built function equals the listing's (memory operands aside; evidence/convex-mesh-gap.md, Task 2d)",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::AddFace hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001598",
@@ -29085,13 +29089,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/632",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4290",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002f290..0x0002f2cb: true without +0x11a, a local Container",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::ComputeUnsharedVertices hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001600",
@@ -29121,13 +29126,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/632",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4292",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002f290"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002f2d0..0x0002f4af (continuation of 001599): faces without smoothing groups get three copied vertices (unless +0x121) and their references renumbered from +0xd4, their smoothing groups set to 0xffffffff; count/3 new vertices appended in a new[] with cookie (no constructor call), the old array released at the pointer minus four",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::ComputeUnsharedVertices (001601 has no separate address; it is the body of MeshBuilder2::ComputeUnsharedVertices past its entry checks) hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "continuation of the entry at 0x0002f290",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001602",
@@ -29139,13 +29145,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/633",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4300",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002f4b0..0x0002f5bf: the reference records reduced as 12-byte vertices (001645, 001647 unchecked, 001659), the faces' references remapped through the cross-reference, the old block freed (005700) and the reduced records copied into a fresh plain block",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::ReduceReferences hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001603",
@@ -29157,13 +29164,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/634",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4305",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002f5c0..0x0002f97f: true without +0x11a and +0x11b, false without vertices, references or faces; per face the normal (p2-p1)^(p0-p1) spilled into the face, normalised when its (x*x+y*y)+z*z is not 0 (fsqrt, fdivr 1.0f), appended to +0x90 with +0x11b; the per-vertex face counts and offsets (zeroed plain blocks), the face list filled through advancing offsets; its x87 sections are assembly blocks transcribed from the listing, and the FPU opcode sequence of the built function equals the listing's (memory operands aside; evidence/convex-mesh-gap.md, Task 2d)",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::ComputeNormals hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001604",
@@ -29193,13 +29201,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/634",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4318",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002f5c0"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002f980..0x0002f9b9 (continuation of 001603): the offsets formed again and the true / false exits",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::ComputeNormals (001605 has no separate address; it is the body of MeshBuilder2::ComputeNormals past its entry checks) hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "continuation of the entry at 0x0002f5c0",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001606",
@@ -29229,13 +29238,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/635",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4321",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002f9c0..0x0002fb3b: with +0x11d every vertex through 001591 into +0x50; with +0x11e every uvw x, y (and z with +0x119) through fld/fstp into +0x60; with +0x11f every colour through 001591 into +0x70; true; its x87 sections are assembly blocks transcribed from the listing, and the FPU opcode sequence of the built function equals the listing's (memory operands aside; evidence/convex-mesh-gap.md, Task 2d)",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::SaveStreams hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001608",
@@ -29265,13 +29275,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/636",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4332",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002fb40..0x0002fc40: a reference already output gives its output vertex to the face corner; a new one appends (vertex, uvw, colour, smoothing groups) to the run Container and takes the counter's value, which is advanced",
+      "dynamic_proof": "convex-mesh gap Task 2d: nxMb2RemapCorner hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001610",
@@ -29301,13 +29312,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/637",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4338",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002fc50..0x0002ffff: true for an empty stream; the entries used by the selected reference field (1/2/4) marked (plain block) and packed (new[] with cookie) with a remap, the references remapped, the packed stream reduced (001645/001647)",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::OptimizeStream hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001612",
@@ -29337,13 +29349,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/637",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4367",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002fc50"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00030000..0x000300bf (continuation of 001611): with duplicates, for vertices, the faces whose three vertices still differ kept in a Container and copied into a new face array (new[] of the old count, cookie)",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::OptimizeStream (001613 has no separate address; it is the body of MeshBuilder2::OptimizeStream past its entry checks) hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "continuation of the entry at 0x0002fc50",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001614",
@@ -29373,13 +29386,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/637",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4375",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002fc50"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x000300c0..0x00030135 (continuation of 001611): the kept faces copied, the old face array released at the pointer minus four, the counts set, the Container and reducer destroyed",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::OptimizeStream (001615 has no separate address; it is the body of MeshBuilder2::OptimizeStream past its entry checks) hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "continuation of the entry at 0x0002fc50",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001616",
@@ -29409,13 +29423,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/638",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4379",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00030140..0x000301cf: a remap per reference (plain block, not tested, filled with 0xff), the counter +0xe8 reset with +0x120, the context on the stack",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::RemapFaces hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001618",
@@ -29445,13 +29460,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/638",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4381",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00030140"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x000301d0..0x000302ab (continuation of 001617): 001609 on the run's faces corner by corner, the remap freed, the face count and new-vertex count appended to +0xb0, the new-vertex count returned",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::RemapFaces (001619 has no separate address; it is the body of MeshBuilder2::RemapFaces past its entry checks) hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "continuation of the entry at 0x00030140",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001620",
@@ -29481,13 +29497,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/639",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4386",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x000302b0..0x0003041b: the thirteen Containers emptied (004838) in order, the three stream copies and the faces freed at the pointer minus four, the references, the three per-vertex blocks and the face remap freed, each cleared",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::FreeUsedRam hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001622",
@@ -29517,13 +29534,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/640",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4396",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00030420..0x000305ab: FreeUsedRam, the twelve flag bytes copied, the three streams duplicated (001595, a failure returns false), the w of every uvw zeroed without +0x119, false without faces, the face array (new[] of 0x30-byte records with cookie, vector constructor iterator) and the reference block (36 bytes per face); returns whether the latter exists",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::Init hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001624",
@@ -29553,13 +29571,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/641",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4404",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x000305b0..0x00030614: 001611 on vertices (1) unless +0x121, uvw (2) and colours (4), the first false returned",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::OptimizeStreams hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001626",
@@ -29589,13 +29608,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/642",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4407",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00030620..0x00030d01: false without faces; material and smoothing groups appended to +0xb0, 001617 into a local Container, then per new vertex its uvw (index into +0x30 or values through fld/fstp into +0x60), colour (+0x40 or 001591 into +0x70), with +0x11a its normal summed over the faces sharing a smoothing group (angle-weighted by fpatan of the corner with +0x122, else plain sums; +0xa0 lists with +0x11c) and normalised unless (z*z+y*y)+x*x is 0, appended to +0x80, and its position (+0x20 or 001591 into +0x50); then the face count, the output corners into +0x00, the face remap and a closing 0 in +0xb0; its x87 sections are assembly blocks transcribed from the listing, and the FPU opcode sequence of the built function equals the listing's (memory operands aside; evidence/convex-mesh-gap.md, Task 2d)",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::OutputRun hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001628",
@@ -29625,13 +29645,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/643",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4448",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00030d10..0x00030d8a: FreeUsedRam, then the thirteen Container destructors (004846) from +0xc0 down to +0x00",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::~MeshBuilder2 hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001630",
@@ -29661,13 +29682,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/644",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4449",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00030d90..0x00030f48: three plain blocks (released on any failure: smoothing, material, list), the keys copied, RadixSort on the smoothing groups then the materials (unsigned), runs of equal (material, smoothing groups) handed to 001627 as they close, the blocks freed",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::SortFaces hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001632",
@@ -29697,13 +29719,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/645",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4461",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00030f50..0x000310af: false without faces; the face remap (plain block, 0xff), the passes 001625, 001599, 001602, 001603, 001607, 001631, the first false returned; the result's pointers into the Containers",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::Build hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001634",
@@ -29733,13 +29756,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/645",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4465",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00030f50"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x000310b0..0x0003137f (continuation of 001633): the runs gathered per material into +0xc0 (0xffffffff meaning none yet), the result counts, the normal-face lists remapped through the inverse face remap",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::Build (001635 has no separate address; it is the body of MeshBuilder2::Build past its entry checks) hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "continuation of the entry at 0x00030f50",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001636",
@@ -29769,13 +29793,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshBuilder2.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/645",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4485",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00030f50"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00031380..0x000313d5 (continuation of 001633): the face remap turned into the faces' AddFace indices, handed out only when it is not the identity",
+      "dynamic_proof": "convex-mesh gap Task 2d: MeshBuilder2::Build (001637 has no separate address; it is the body of MeshBuilder2::Build past its entry checks) hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "continuation of the entry at 0x00030f50",
+      "implementation": "Physics/src/IceMeshBuilder2.cpp"
     },
     {
       "id": "phys_fn_001638",
@@ -29919,7 +29944,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4511",
       "static_proof": "mov [this+4],arg1; mov [this],arg2; zero [this+8/0xc/0x10]; ret 8",
       "dynamic_proof": "confirmed via finalbatch drive (3z57): failures=0",
-      "notes": ""
+      "notes": "convex-mesh gap Task 2d: the product form is ReducedVertices::ReducedVertices in Physics/src/IceMeshTools.cpp (stable-ID line), called by 001647's callers (MeshBuilder2 001602 and 001611) and hit in evidence/convex-mesh-gap-trace-2d.txt; the vertex_reduction and ice_meshbuilder2 families compare its effects (the object image and every release through the 004803 getter) with the oracle's. The ObjectModel.cpp model and its proof stand; state unchanged"
     },
     {
       "id": "phys_fn_001646",
@@ -29949,13 +29974,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshTools.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/649",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4512",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x000316a0..0x00031889: +0x10 and +0x0c released through the 004803 getter's slot 3, the cross-reference (type 0, checked) and the key buffer (type 1, checked), RadixSort on the bits of x, y, z (unsigned hint), the keys released, the reduced array (type 0, not checked), a vertex kept when any word differs from the previous sorted one (initially three 0xffffffff words), the cross-reference written, the result block filled when given",
+      "dynamic_proof": "convex-mesh gap Task 2d: ReducedVertices::Reduce hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2d.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 69e19c5619e2299c...)); oracle differential vertex_reduction (001645 / 001647 / 001659 at their RVAs over welded vertex sets, with and without the result block, twice on one object, empty, and the 0xffffffff-bits vertex) against the pinned oracle, mismatches=0 on 24,313 words; and through MeshBuilder2, oracle differential ice_meshbuilder2 (001593 / 001623 / 001597 / 001633 / 001629 at their RVAs, driven as 002087 drives them over 68 meshes under eight create-block configurations and both x87 control words) against the pinned oracle: return values, the thirteen Containers, counts, flags, the owned arrays, the result block and every allocation/release through the 004803 getter compared word for word, mismatches=0 on 178,377 words; see evidence/convex-mesh-gap.md, Task 2d",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshTools.cpp"
     },
     {
       "id": "phys_fn_001648",
@@ -30171,7 +30197,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4592",
       "static_proof": "static review of the recorded shape: singleton release of two owned pointers (0x324a0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the singletonrel differential (3z218): failures=0 over three consecutive runs, covering all four occupancy pans of each two-field row (8 cases) and all three guard states of 004838 (positive, negative and zero guard, with and without a live pointer), comparing the slot hit count and the whole object, with the singleton pointer bound",
-      "notes": ""
+      "notes": "convex-mesh gap Task 2d: the product form is ReducedVertices::~ReducedVertices in Physics/src/IceMeshTools.cpp (stable-ID line), called by 001647's callers (MeshBuilder2 001602 and 001611) and hit in evidence/convex-mesh-gap-trace-2d.txt; the vertex_reduction and ice_meshbuilder2 families compare its effects (the object image and every release through the 004803 getter) with the oracle's. The ObjectModel.cpp model and its proof stand; state unchanged"
     },
     {
       "id": "phys_fn_001660",

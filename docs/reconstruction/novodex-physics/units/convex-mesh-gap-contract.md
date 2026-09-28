@@ -350,7 +350,7 @@ Totals: 20 rows; discovered 1,889 B, reconstructed 417 B, dynamically_gated 1 B
 | 001621 | 0x000302b0 | 364 | discovered | 4 | 001623, 001629 | FreeUsedRam: Empty the 13 Containers, CRT free of the owned arrays |
 | 001623 | 0x00030420 | 398 | discovered | 4 | 002087 | Init(create): copies 12 flag bytes (create+0x1c..+0x27 -> +0x118..+0x123), duplicates three streams (001595) |
 | 001625 | 0x000305b0 | 101 | discovered | 4 | 001633 | pass driver: 001611 over streams 1, 2 and 4 |
-| 001627 | 0x00030620 | 1,764 | discovered | 4 | 001631 | per sorted face output (1,764 B), called only by 001631 after the RadixSort: face record, smoothing groups, per-corner references |
+| 001627 | 0x00030620 | 1,764 | discovered | 4 | 001631 | one run's output (1,764 B), called only by 001631 after the RadixSort, once per run of equal (material, smoothing groups): run header, per new vertex its uvw, colour, normal and position, the faces' output corners (corrected by Task 2d) |
 | 001629 | 0x00030d10 | 127 | discovered | 4 | 002087 | destructor: FreeUsedRam then ~Container x13 |
 | 001631 | 0x00030d90 | 441 | discovered | 4 | 001633 | build pass: face sort (RadixSort) and output |
 | 001633 | 0x00030f50 | 346 | discovered | 4 | 002087 | Build(result): the pass sequence 001625, 001599, 001602, 001603, 001607, 001631, then the result fields |
@@ -365,12 +365,21 @@ Totals: 25 rows; discovered 10,236 B
   (also used by 001661). No strings, no .rdata.
 - **Entry rows.** 001593 (constructor), 001623 (Init), 001597 (AddFace, once per face), 001633
   (Build), 001629 (destructor), called in that order by 002087/002089. 001627 is **not** an entry:
-  it is called only by 001631, after the RadixSort, once per sorted face. 001621 (FreeUsedRam) is
-  called only by 001623 and 001629. **Candidate:** 002087 does not exist.
+  it is called only by 001631, after the RadixSort, once per run of faces of equal (material,
+  smoothing groups) -- not once per sorted face, as this contract first said (Task 2d). 001621
+  (FreeUsedRam) is called only by 001623 and 001629. **Candidate:** 002087 does not exist.
 - **Callees outside.** Vendored Container rows; RadixSort; the vertex reduction 001645/001647/
   001659 (sub-unit D - 001647 is written with this sub-unit in task 2d); CRT `operator new`
-  005701 and `free` 005700 (the candidate uses its own CRT's; the two are paired).
+  005701 and `free` 005700 (the candidate uses its own CRT's; the two are paired). 005701 is
+  `jmp 005702` and 005700 is `jmp 005668`: the same heap as 001514's pair (Task 2d; Open item 7).
 - **x87.** 001597, 001603 (normals) and 001627 are float code: `/arch:IA32`.
+- **As written by Task 2d** (`Physics/src/IceMeshBuilder2.cpp`, `include/IceMeshBuilder2.h`). The
+  create block (0x28), AddFace's face block (0x1c: index, material, smoothing groups, three
+  reference pointers, flip byte), the face record (0x30: output corners +0x00, references +0x0c,
+  material +0x18, smoothing groups +0x1c, normal +0x20, AddFace index +0x2c), the reference record
+  (12: vertex, uvw, colour) and the result block (0x60) are read off the listing and recorded in
+  the header. Init does not reset +0xe0/+0xe4; 001593 does not write +0x123; 001635 treats
+  material 0xffffffff as "none yet" when it gathers runs per material (see evidence, Task 2d).
 - **Test route.** `NxPhysicsThirdPartyTests` family `ice_meshbuilder2`, driven as 002087 drives
   it: constructor, Init with a create block (vertex, uvw and colour streams; the twelve flags
   toggled per case), 001597 (AddFace) per triangle of each `NxMesh` fixture with duplicated vertices,
@@ -864,4 +873,7 @@ Notes on the split:
    it was merged into G, and the letters were kept so the references stay stable.
 7. 001514 calls the CRT pair 005668 (`_free`) and 005702 (`operator new`). These are different
    rows from the 005700/005701 pair MeshBuilder2 uses. Check which heap they reach before writing
-   001514 (2g).
+   001514 (2g). **Checked by Task 2d:** 005700 (0x000f48bb) is `jmp 005668` and 005701
+   (0x000f48c0) is `jmp 005702`, which is `__nh_malloc(size, 1)` (005690); both pairs are the
+   same two functions of the DLL's static CRT, one heap, so 001514 can use the candidate CRT's
+   `operator new` / `free` pair as MeshBuilder2 does.

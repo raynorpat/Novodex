@@ -19,6 +19,7 @@ table below.
 | H review | 2026-09-28T13:00:00 | 2026-09-28T13:45:53 | 0 | 0 | Task H review fixes: the separating-axis byte of contact_box_box and contact_box_capsule tallied into their `.snan` ceilings (346 / 346, 78 / 78, 236 / 236 and 99 / 93, 7 / 7, 40 / 40); every remaining unsequenced multi-draw expression in the collision, fuzz, third-party and tangent harnesses sequenced in the order the build used (all registered lines and the geometry transcript unchanged; one site was missed, segment_segment's `scale`, sequenced by Task 2c -- see the correction under `## Harness hardening`); float-returning raw-bit helpers removed from all harnesses and the tool test widened to every tests/*.cpp; ray_inflated_tris' divergent cause no longer names 001712. See `## Harness hardening`. |
 | 2c | 2026-09-28T13:48:00 | 2026-09-28T14:38:42 | 12 | 5,564 | EdgeList (002054 with continuation 002056, 002058, 002061, 002063) in the new `EdgeList.cpp`, IceAdjacencies (001537..001548) in the new `IceAdjacencies.cpp`, 001667 in the new `IceMeshTools.cpp`; product forms of 002052, 002060, 001544, 001663, 001665. Allocations through the 004803 getter with the listing's cookies; reports through the SetIceError seam; 002061's plane side and angle as x87 blocks; the three files `/EHs-c-`. Families edge_list, ice_adjacencies, ice_valencies in NxPhysicsThirdPartyTests (object image, allocations and reports compared): exact on every gated run; the vertex runs of 13 meshes whose decisions follow the vendored Plane::Set / Triangle::Normal split into `.plane_divergent` under ceilings (465 / 124 words; 0 with the oracle's callees bound in). 14 lines registered, phase 4 floor 175. 15 traced functions hit. Also: segment_segment's scale draws sequenced (stdout identical) and the raw-bit float-return scan widened (.c files, casts, unions, conventions). See `## Task 2c`. |
 | 2c review | 2026-09-28T14:38:42 | 2026-09-28T14:58:32 | 0 | 0 | Task 2c review: the edge_list / ice_adjacencies plane-divergent split frozen as a list of 13 meshes (the candidate pre-flight kept as a failing check, detail on stderr); every digest unchanged, the coverage line `pairs=1487 side=40 angle=9 meshes=13` replaced by `frozen_meshes=13`; the throwaway callee binding committed as `convex-mesh-gap-2c-bind-oracle-callees.patch` (re-run: 465/124, 306/100, 342/92, 0/0); the 002160 product shim recorded (evidence, contract, row notes); the 001539 errata extended to the no-face-array case. See `## Task 2c`. |
+| 2d | 2026-09-28T15:01:00 | 2026-09-28T15:41:14 | 26 | 10,728 | MeshBuilder2 (sub-unit C, 001591..001637, 25 rows incl. seven continuations) in the new `IceMeshBuilder2.cpp` and the vertex reduction 001647 in `IceMeshTools.cpp`; product forms of 001645 / 001659. Heap checked first: 005700/005701 are `jmp`s to 005668/005702, the same static-CRT heap as 001514's pair (contract Open item 7 closed); the candidate uses its CRT's nothrow `operator new` / `free` with the listing's cookies; the reduction uses the 004803 getter. x87 sections as assembly blocks; the FPU sequences of 001597, 001603, 001607, 001627 equal the listing's (45/62/6/110). Families ice_meshbuilder2 (249 cases over 68 meshes, eight create-block configurations, both control words) and vertex_reduction: exact (178,377 and 24,313 words). 8 lines registered, phase 4 floor 183. 21 traced functions hit. Contract corrected: 001627 runs once per run of faces, not per face. See `## Task 2d`. |
 
 ## Task 2a: box distance kernels and the entries that reach them
 
@@ -567,3 +568,151 @@ with the standard note: phase 2 001546/001548 homeless_shared_code -> reconstruc
 (302 -> 300 / 11 -> 13); phase 4 the eight EdgeList and IceAdjacencies rows (296 -> 288 / 472 -> 480);
 reason texts and the phase 3 note's count updated. `validate_inventory.py`: the EdgeList.cpp and
 IceAdjacencies.cpp entries leave the unresolved-source allowlist (the check asked for it).
+
+## Task 2d: MeshBuilder2 and the vertex reduction
+
+**Rows (26, 10,728 B), all `discovered` -> `reconstructed`.** Sub-unit C, all 25 rows
+(001591..001637, 10,236 B, seven of them continuations), in the new `Physics/src/IceMeshBuilder2.cpp`
+with its header `Physics/src/include/IceMeshBuilder2.h`; from sub-unit D the vertex reduction 001647
+(492 B) in `Physics/src/IceMeshTools.cpp`, with product forms of the already-reconstructed 001645
+(its constructor) and 001659 (its destructor) and their stable-ID lines (their ObjectModel.cpp models
+and proofs stand; states unchanged; notes say so). The shape is ICE's MeshBuilder2, which is not
+vendored (OPCODE 1.3's `Ice/` has none). Nothing is wired: the rows' only caller, 002087
+(0x000523c0, the EdgeList.cpp..InternalTriangleMesh.cpp gap), is not written, and the candidate has
+no stand-in for any row.
+
+- *Heap (the contract's open item, checked first).* MeshBuilder2 allocates through 005701, which is
+  `jmp 005702` (`operator new`: `push 1; push size; call __nh_malloc` 005690), and frees through
+  005700, which is `jmp 005668` (`_free`). 001514's pair 005702/005668 is the same two functions
+  reached without the thunks: one heap, the DLL's static CRT (listing 0x000f48bb..0x000f48d2,
+  0x000f41f0). The candidate uses its own CRT's pair: nothrow `operator new` (so a failure returns
+  null, as `__nh_malloc` does) and `free`, which pair (MSVC's `operator new` is `malloc`). The
+  `new[]` blocks -- the three stream copies (001595, 001599, 001611), the face array (001623, 001611)
+  -- carry the listing's count cookie and are released at the pointer minus four; the references,
+  per-vertex tables, face remap, marks, remaps and sort keys are plain blocks. The vertex reduction
+  allocates through the 004803 getter (cross-reference and reduced array type 0, key buffer type 1),
+  as its listing does; the Containers grow through the vendored Resize (the 004803 getter).
+- *x87.* The float sections are assembly blocks transcribed from the listing: 001597's zero-area
+  test ((p0-p1)^(p0-p2), x and y spilled to floats, (z*z+y*y)+x*x against 0.0f, 0x0002ee29..
+  0x0002eece), 001603's face normal and its normalisation (0x0002f661..0x0002f734), 001627's
+  angle-weighted corner normal (the cross product's length square-rooted and rounded to float before
+  `fpatan`, unlike 002061's), its plain sum and the vertex normal's normalisation (0x0003097c..
+  0x00030b5d; the weighted and plain paths share the z store as in the listing), and the `fld`/`fstp`
+  through which 001607 and 001627 pass each uvw word (so a signalling NaN comes out quiet, as in the
+  oracle). The FPU instruction sequence of each of the four built functions equals the listing's --
+  register forms byte for byte, memory forms by operation and size (the operands' addressing differs
+  by construction): 45, 62, 6 and 110 instructions (`evidence/convex-mesh-gap-2d-fpu-opcodes.py`,
+  which reads the committed Capstone manifest and a `dumpbin /disasm` of the object; usage in its
+  docstring). IceMeshBuilder2.cpp is on the `/arch:IA32` list.
+- *Frames and functions.* The file is built `/EHs-c-` with the other ICE-shaped files (the listings
+  are frameless; the Container, reducer and RadixSort locals would otherwise get unwind frames). Every
+  row the oracle has as a function of its own is `noinline` (001595, 001602, 001617 and 001625 had
+  been inlined into Init, Build and OutputRun), so each has an address to trace. 001591 is a free
+  function (the oracle's is thiscall on the Container, whose vendored header is not changed).
+
+**Listing findings** (reproduced; the contract is corrected where it said otherwise).
+- 001627 is called once per *run* of faces of equal (material, smoothing groups), not once per
+  sorted face: 001631 cuts the radix-sorted faces (smoothing groups, then material, both unsigned)
+  into runs and hands each to 001627 as it closes. Each run appends five words to +0xb0 (material,
+  smoothing groups, face count, new-vertex count, 0) and its face count to +0x10.
+- 001593 never writes +0x123 (only Init copies it). Init (001623) does not reset the face and
+  reference counts (+0xe0, +0xe4): a second Init on a built object keeps them, so AddFace continues
+  at the old index or rejects every face when the old count equals the new maximum. 002087 always
+  builds a fresh object.
+- 001597's zero-area test reads the vertex copies at the face's references before they are clamped
+  (the clamp to 0 at or past each stream's count comes after); the face index may equal +0xd0.
+- 001635 gathers the runs per material with 0xffffffff meaning "none yet": runs of material
+  0xffffffff followed by another material are counted into that material's entry, not flushed
+  (002087 passes 0xffffffff for every face).
+- 001611 marks the entry of the previous reference for a `which` other than 1, 2 or 4 (unreachable:
+  001625 passes only those); on a failed packed-stream allocation it frees the remap and the marks.
+  With duplicates, and for vertices only, the faces whose three vertices no longer differ are dropped
+  into a new face array allocated with the *old* count as its cookie.
+- 001617's remap and 001647's reduced array are not null-checked (the listing stores through them).
+- 001647 compares each sorted vertex with the previous one by bits, starting from three 0xffffffff
+  words on the stack: a smallest vertex with those bits is not kept and its cross-reference is
+  0xffffffff (driven; reproduced).
+
+**Differential** (`NxPhysicsThirdPartyTests`, through the Task 2c `nxIceFamily`: the recording 004803
+allocator in the oracle's singleton slot and through `nxSetSdkAllocatorBridge`, the report recorder
+installed per pass; entry rows by RVA on oracle-side objects, the candidate's on its own).
+
+| family | entries | runs | words | result |
+|---|---|---:|---:|---|
+| ice_meshbuilder2 | 001593, 001623, 001597, 001633, 001629 | 249 cases | 178,377 | exact |
+| vertex_reduction | 001645, 001647, 001659 | 178 reductions | 24,313 | exact |
+
+*ice_meshbuilder2* is driven as 002087 drives it: constructor, Init with a create block, AddFace per
+triangle, Build, then (odd configurations) a second Init over the built object -- FreeUsedRam over
+full Containers -- and the destructor. Once per mesh also: AddFace before Init, Init with no faces
+(false, after copying the streams), Build before any face; and after every case AddFace with an
+index above +0xd0. Inputs: the 65 meshes of Task 2c and three of this family's own (the box with
+every face's corners unshared, which the vertex pass welds back; a face whose two corners are
+different vertices at one position, which the vertex pass drops -- `killed=3`; a face with no
+distinct corners). Eight create-block configurations (002087's own among them) vary the twelve
+flags, the uvw stream (per vertex, a palette of five, a null source with a count -- the zeroed copy
+of 001595), the colour stream (a palette of four, per vertex), smoothing groups (all 1, all 0 --
+every face unshared --, drawn from {0, 1, 2, 4, 3}), materials (all 0xffffffff, {0, 1, 2},
+{0xffffffff, 5, 3}), flips and out-of-range uvw/colour references (clamped). The six fixtures and
+the three own meshes run all eight, the other meshes a rotating three; cases alternate between the
+x87 control words 0x027f and 0x0f7f (154 of 249 under 0x0f7f). Build is skipped, by a fixed rule on
+the inputs, for a case none of whose faces has three corner positions of distinct bits (the vertex
+pass would drop every face and 001631 would then read the rank of face 0 of an empty sort): the
+eight cases of the third own mesh.
+
+Each tape holds every return value; after Build (or its failure) the thirteen Containers (maximum,
+count, growth factor, the first 24 entries word for word and a digest of all), the counts, the flag
+bytes, digests of the owned arrays (the three stream copies with their cookies, the references, the
+face remap, the per-vertex face tables, and the face records -- output corners only after a
+successful Build, normals only when a normal flag computed them, since the CRT leaves the rest
+unwritten); the result block's counts and each of its pointers as *which* array it points at (the
+two sides allocate from different CRT heaps, so no pointer is compared); and every allocation and
+release through the 004803 getter in order. After a second Init the face and reference records are
+not digested (Init allocates them unwritten). The CRT blocks MeshBuilder2 takes itself come from the
+oracle's own heap and are not recorded on either side.
+
+*vertex_reduction*: per mesh its vertices with a third again inserted as bit copies at drawn slots
+(welded duplicates), with and without the result block; every fifth mesh twice on one object (the
+release of both outputs at 001647's start); every fourth mesh's plain vertices twice; an empty set;
+three copies of the 0xffffffff-bits vertex (nothing kept) and the same with a larger vertex. Tapes:
+the object before and after, the cross-reference and reduced vertices word for word, the result
+block against the object's pointers, and every 004803 allocation and release.
+
+Coverage (oracle side, registered): 249 cases, 249 Init true (and 68 no-face Inits false among the
+453 probes, all false); 6,695 faces added, 445 dropped by the zero-area test, 241 builds true, 8
+skipped; 6,689 output faces, 18,056 output vertices, 1,043 runs, 520 material entries, 3 faces
+dropped by the vertex pass, 34,816 normal-info words, 174 non-identity face remaps; vertex_reduction
+178 reductions of 5,457 vertices to 4,331. No report is made by these rows (reports=0).
+
+*Sensitivity (throwaway, not committed).* Each edit below was made on the working tree, rebuilt and
+run, then reverted: (A) `jnp SkipNormalize` -> `jp` in 001627's normalisation: ice_meshbuilder2
+2,655 mismatches; (C) the `fxch st(1)` before 001627's `fpatan` removed: 1,183; (B) 001597's third
+uvw clamp `>=` -> `>` and (D) 001647 comparing only x and y: both end the run in an access violation
+(an unclamped reference, a wrong cross-reference), which fails the gate as well. Reproduce with, for
+example, `sed -i 's/\t\t\t\tjnp\t\tSkipNormalize/\t\t\t\tjp\t\tSkipNormalize/'
+Physics/src/IceMeshBuilder2.cpp`, rebuild NxPhysicsThirdPartyTests, run, `git checkout` the file.
+
+Registered: 8 lines (per family the input digest, the exact line whole and the coverage line, and
+the totals pair `driven=78 divergent=27 words=1958137` / `d54a58fc`), every one copied from the
+oracle side of a run (the name lines' agreement fields are the gate's assertion; the coverage lines
+count oracle-side values and fixed inputs only). Phase 4 floor 175 -> 183 and `test_gate_targets.py`
+MINIMUM with it. Every line registered before is unchanged (the families run after all others and
+restore the generator state). Deterministic run to run; `--self` prints the same oracle digests.
+
+**Trace.** `evidence/convex-mesh-gap-trace-2d.txt`: one-shot cdb breakpoints (from the map, against
+`@$exentry` as in Task 2c) on the 21 candidate functions -- the 26 rows' 19 functions (the seven
+continuations have no address of their own) and the product forms of 001645 and 001659 -- all hit in
+one full run closing `thirdparty candidate mismatches=0` (exe sha256 69e19c5619e2299c..., build of
+e8fe4e3).
+
+**Inventory and ledgers.** The 26 rows: `reconstructed`, `source`/`implementation` their file,
+static proofs citing the listing ranges (and, for 001597, 001603, 001607 and 001627, the FPU
+sequence check), dynamic proofs citing the trace and the family. 001645 and 001659: notes record the
+product forms. Ledgers, with the standard note: phase 2 001647 homeless_shared_code ->
+reconstructed_not_falsified (49 -> 48 / 9 -> 10); phase 4 the 25 MeshBuilder2 rows
+not_reconstructed_in_phase -> reconstructed_not_falsified (288 -> 263 / 480 -> 505); reason texts
+updated. `validate_inventory.py` asked for nothing else.
+
+**Verification.** Build (Release, Win32) clean; gates 2, 3, 4, 6 and 7 pass; phase 5 fails only on
+`candidate CANDIDATE-MISSING family=vtables`; tool tests 763 OK; `validate_inventory.py`
+inventory=pass.

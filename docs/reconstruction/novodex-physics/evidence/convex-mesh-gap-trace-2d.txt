@@ -1,0 +1,85 @@
+convex-mesh gap Task 2d: cdb breakpoint trace of the MeshBuilder2 and vertex-reduction rows
+===========================================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/convex-mesh-gap-trace-2c.txt.
+Banners, ModLoad lines and the program's own output are removed except the Task 2d families' lines
+and the harness's closing line (marked `  | `); the echoed breakpoint commands and the HIT lines
+are kept in order and unedited. It is the evidence behind the dynamic_proof this task records in
+inventory.json for the rows below (see evidence/convex-mesh-gap.md, Task 2d).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsThirdPartyTests.exe
+           D:\FlamingEnt__\Unreal_3\Binaries 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+           (the script is the bp lines below, then `g` and `q`)
+Recorded:  2026-09-28, on the build of the Task 2d rows (commit e8fe4e3) and differential (99e232c).
+Binary:    build\Release\NxPhysicsThirdPartyTests.exe
+           sha256=69e19c5619e2299c6951db5152425d87a96a07e1bf0e544ecf309aa3037e23f0
+Oracle:    D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+           sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c (the pin; the
+           harness re-hashes it and refuses to run otherwise)
+Offsets:   module-relative, from build\Release\NxPhysicsThirdPartyTests.map of that build (the exe
+           has no PDB). As in the Task 2c trace, each breakpoint is written against the entry point:
+           `@$exentry - 0x861e0` is the image base (entry point RVA 0x861e0, the map's
+           0001:000851e0). One one-shot breakpoint (`bp /1`) per candidate function carrying one of
+           this task's stable IDs, including the product forms of the already-reconstructed 001645
+           and 001659. The continuations 001601 (of 001599), 001605 (of 001603), 001613 and 001615
+           (of 001611), 001619 (of 001617), 001635 and 001637 (of 001633) have no separate address
+           here; each is the body of the function it continues, past its entry checks.
+
+Result: every one of the 21 breakpoints was hit, so all 21 functions (28 rows with the seven
+continuations) executed in the run; the harness then closed with
+`thirdparty candidate mismatches=0 layout_failures=0`. The hits come from the ice_meshbuilder2
+family in call order (the reduction rows first through 001611, and later through 001602); each
+breakpoint fires on the candidate pass, which follows the oracle pass of the same family.
+
+0:000> bp /1 @$exentry-0x861e0+0x24550 ".echo HIT 001591 nxIceContainerAddPoint +0x24550; gc"
+0:000> bp /1 @$exentry-0x861e0+0x22100 ".echo HIT 001593 MeshBuilder2::MeshBuilder2 +0x22100; gc"
+0:000> bp /1 @$exentry-0x861e0+0x245c0 ".echo HIT 001595 nxMb2DuplicateStream +0x245c0; gc"
+0:000> bp /1 @$exentry-0x861e0+0x222e0 ".echo HIT 001597 MeshBuilder2::AddFace +0x222e0; gc"
+0:000> bp /1 @$exentry-0x861e0+0x22ee0 ".echo HIT 001599 MeshBuilder2::ComputeUnsharedVertices +0x22ee0; gc"
+0:000> bp /1 @$exentry-0x861e0+0x23fc0 ".echo HIT 001602 MeshBuilder2::ReduceReferences +0x23fc0; gc"
+0:000> bp /1 @$exentry-0x861e0+0x22ac0 ".echo HIT 001603 MeshBuilder2::ComputeNormals +0x22ac0; gc"
+0:000> bp /1 @$exentry-0x861e0+0x24210 ".echo HIT 001607 MeshBuilder2::SaveStreams +0x24210; gc"
+0:000> bp /1 @$exentry-0x861e0+0x24640 ".echo HIT 001609 nxMb2RemapCorner +0x24640; gc"
+0:000> bp /1 @$exentry-0x861e0+0x233f0 ".echo HIT 001611 MeshBuilder2::OptimizeStream +0x233f0; gc"
+0:000> bp /1 @$exentry-0x861e0+0x240d0 ".echo HIT 001617 MeshBuilder2::RemapFaces +0x240d0; gc"
+0:000> bp /1 @$exentry-0x861e0+0x230f0 ".echo HIT 001621 MeshBuilder2::FreeUsedRam +0x230f0; gc"
+0:000> bp /1 @$exentry-0x861e0+0x23270 ".echo HIT 001623 MeshBuilder2::Init +0x23270; gc"
+0:000> bp /1 @$exentry-0x861e0+0x23900 ".echo HIT 001625 MeshBuilder2::OptimizeStreams +0x23900; gc"
+0:000> bp /1 @$exentry-0x861e0+0x23960 ".echo HIT 001627 MeshBuilder2::OutputRun +0x23960; gc"
+0:000> bp /1 @$exentry-0x861e0+0x22260 ".echo HIT 001629 MeshBuilder2::~MeshBuilder2 +0x22260; gc"
+0:000> bp /1 @$exentry-0x861e0+0x24390 ".echo HIT 001631 MeshBuilder2::SortFaces +0x24390; gc"
+0:000> bp /1 @$exentry-0x861e0+0x22680 ".echo HIT 001633 MeshBuilder2::Build +0x22680; gc"
+0:000> bp /1 @$exentry-0x861e0+0x21c10 ".echo HIT 001645 ReducedVertices::ReducedVertices +0x21c10; gc"
+0:000> bp /1 @$exentry-0x861e0+0x21ee0 ".echo HIT 001647 ReducedVertices::Reduce +0x21ee0; gc"
+0:000> bp /1 @$exentry-0x861e0+0x21c70 ".echo HIT 001659 ReducedVertices::~ReducedVertices +0x21c70; gc"
+0:000> g
+HIT 001593 MeshBuilder2::MeshBuilder2 +0x22100
+HIT 001597 MeshBuilder2::AddFace +0x222e0
+HIT 001623 MeshBuilder2::Init +0x23270
+HIT 001621 MeshBuilder2::FreeUsedRam +0x230f0
+HIT 001595 nxMb2DuplicateStream +0x245c0
+HIT 001633 MeshBuilder2::Build +0x22680
+HIT 001625 MeshBuilder2::OptimizeStreams +0x23900
+HIT 001611 MeshBuilder2::OptimizeStream +0x233f0
+HIT 001645 ReducedVertices::ReducedVertices +0x21c10
+HIT 001647 ReducedVertices::Reduce +0x21ee0
+HIT 001659 ReducedVertices::~ReducedVertices +0x21c70
+HIT 001599 MeshBuilder2::ComputeUnsharedVertices +0x22ee0
+HIT 001602 MeshBuilder2::ReduceReferences +0x23fc0
+HIT 001603 MeshBuilder2::ComputeNormals +0x22ac0
+HIT 001607 MeshBuilder2::SaveStreams +0x24210
+HIT 001591 nxIceContainerAddPoint +0x24550
+HIT 001631 MeshBuilder2::SortFaces +0x24390
+HIT 001627 MeshBuilder2::OutputRun +0x23960
+HIT 001617 MeshBuilder2::RemapFaces +0x240d0
+HIT 001609 nxMb2RemapCorner +0x24640
+HIT 001629 MeshBuilder2::~MeshBuilder2 +0x22260
+  | thirdparty input name=ice_meshbuilder2 words=125178 input=1200bbc6
+  | thirdparty name=ice_meshbuilder2 rva=0x00030f50 owner=phys_fn_001633 source=IceMeshBuilder2.cpp,IceMeshTools.cpp words=178377 oracle=5e33a49e mismatches=0 worst_ulp=0 verdict=exact
+  | thirdparty coverage name=ice_meshbuilder2 meshes=65+3 cases=249 x87_0f7f=154 init_ok=249 init_failed=0 faces_added=6695 faces_dropped=445 faces_rejected=0 built=241 build_failed=0 skipped=8 out_faces=6689 out_verts=18056 submeshes=1043 materials=520 killed=3 norm_info=34816 remapped=174 probes=453 probes_false=453 reports=0
+  | thirdparty input name=vertex_reduction words=13893 input=db8a41b6
+  | thirdparty name=vertex_reduction rva=0x000316a0 owner=phys_fn_001647 source=IceMeshTools.cpp words=24313 oracle=9d4e0115 mismatches=0 worst_ulp=0 verdict=exact
+  | thirdparty coverage name=vertex_reduction meshes=65 runs=178 verts=5457 reduced=4331 reports=0
+  | thirdparty candidate mismatches=0 layout_failures=0
+0:000> q
