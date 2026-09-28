@@ -53,6 +53,8 @@
 #include "NxUserRaycastReport.h"
 #include "NxUserOutputStream.h"
 #include "NxRay.h"
+#include "NxBoxShape.h"
+#include "NxBounds3.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -83,6 +85,20 @@ static void nxSymbolAdd(const void* pointer, const char* name)
 		nxSymbols[nxSymbolCount].name = name;
 		nxSymbolCount++;
 		}
+	}
+
+// A name for a pointer that may already carry one: a shape allocated after a
+// release can reuse a released shape's address, which keeps its old name in
+// the table (the box resize block, created after the releases, renames).
+static void nxSymbolSet(const void* pointer, const char* name)
+	{
+	for(unsigned i = 0; i < nxSymbolCount; i++)
+		if(nxSymbols[i].pointer == pointer)
+			{
+			nxSymbols[i].name = name;
+			return;
+			}
+	nxSymbolAdd(pointer, name);
 	}
 
 static void nxPrintWord(NxU32 word, bool first)
@@ -357,6 +373,238 @@ static void nxQueryStops(NxScene* scene, const NxRay& ray, const char* tag)
 		}
 	}
 
+// ---------------------------------------------------------------------------
+// Box resize (scene-raycast Task 4, box hull): NxBoxShape::setDimensions
+// (001069 -> 000983 -> the hull rebuild 000973) on a static, a dynamic and a
+// rotated dynamic box created after every query above, then the public
+// queries that read the new size (getDimensions, getWorldBounds, raycasts),
+// the internal shape's hull words (+0xe0..+0x227) and its facade's slots 1,
+// 3, 9 and 10 (000957/000959) called through the table at +0xe0, and the
+// scene's dirty word for the shape (001325's flags[shape id]).
+//
+// The internal shape is the handle's +0x18 word (001069 at 0x10023500). The
+// hull's list pointers name the image's .rdata index lists, so the four
+// words each points at are printed instead; the facade table's address is
+// printed only as present or absent.
+
+typedef NxU32 (__thiscall *NxFacadeCountFn)(const void*);
+typedef NxU32 (__thiscall *NxFacadeSupportFn)(const void*, const float*, const float*);
+typedef NxU32 (__thiscall *NxFacadeFeatureFn)(const void*, const float*, const float*, NxU32*);
+
+static const unsigned char* nxInternalShape(const NxShape* shape)
+	{
+	return *reinterpret_cast<unsigned char* const*>(reinterpret_cast<const unsigned char*>(shape) + 0x18);
+	}
+
+static void nxPrintWords(const void* words, unsigned count)
+	{
+	const NxU32* w = static_cast<const NxU32*>(words);
+	for(unsigned i = 0; i < count; i++)
+		printf("%s%08x", i ? "." : "", static_cast<unsigned>(w[i]));
+	}
+
+static void nxPrintHull(const char* name, const char* when, const NxShape* shape)
+	{
+	const unsigned char* internal = nxInternalShape(shape);
+	void* const* table = *reinterpret_cast<void* const* const*>(internal + 0xe0);
+	printf("box_resize %s %s facade=%u dims=", name, when, table ? 1u : 0u);
+	nxPrintWords(internal + 0xe4, 3);
+	printf("\n");
+	printf("box_resize %s %s vertices=", name, when);
+	nxPrintWords(internal + 0xf0, 24);
+	printf("\n");
+	for(unsigned f = 0; f < 6; f++)
+		{
+		const unsigned char* face = internal + 0x150 + f * 0x24;
+		const NxU32* listA = *reinterpret_cast<const NxU32* const*>(face + 4);
+		const NxU32* listB = *reinterpret_cast<const NxU32* const*>(face + 8);
+		printf("box_resize %s %s face=%u corners=", name, when, f);
+		nxPrintWords(face, 1);
+		printf(" list_a=");
+		if(listA)
+			nxPrintWords(listA, 4);
+		else
+			printf("null");
+		printf(" list_b=");
+		if(listB)
+			nxPrintWords(listB, 4);
+		else
+			printf("null");
+		printf(" plane=");
+		nxPrintWords(face + 0x0c, 4);
+		printf(" range=");
+		nxPrintWords(face + 0x1c, 2);
+		printf("\n");
+		}
+	if(!table)
+		return;
+	const void* facade = internal + 0xe0;
+	printf("box_resize %s %s slot1=%u slot3=%u\n", name, when,
+		static_cast<unsigned>(reinterpret_cast<NxFacadeCountFn>(table[1])(facade)),
+		static_cast<unsigned>(reinterpret_cast<NxFacadeCountFn>(table[3])(facade)));
+	static const float directions[][3] =
+		{
+		{ 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f },
+		{ 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, -1.0f }, { 0.6f, 0.8f, 0.0f }, { -0.6f, 0.0f, 0.8f },
+		{ 0.577f, 0.577f, 0.577f }, { 0.3f, -0.4f, 0.1f }, { 1.0f, 1.0f, 0.0f }, { 0.0f, -2.0f, 3.0f },
+		};
+	// Words 0-2, 4-6 and 8-10 are the rotation rows the slots read.
+	static const float pose[12] =
+		{ 0.6f, -0.8f, 0.0f, 0.0f, 0.8f, 0.6f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f };
+	for(unsigned d = 0; d < sizeof(directions) / sizeof(directions[0]); d++)
+		for(unsigned p = 0; p < 2; p++)
+			{
+			const float* posePointer = p ? pose : 0;
+			NxU32 feature = 0xcdcdcdcdu;
+			const NxU32 face = reinterpret_cast<NxFacadeSupportFn>(table[9])(facade, directions[d], posePointer);
+			const NxU32 featureFace = reinterpret_cast<NxFacadeFeatureFn>(table[10])(facade, directions[d],
+				posePointer, &feature);
+			const NxU32 bareFace = reinterpret_cast<NxFacadeFeatureFn>(table[10])(facade, directions[d],
+				posePointer, 0);
+			printf("box_resize %s %s support dir=%u pose=%u face=%u feature_face=%u feature=%08x bare=%u\n", name,
+				when, d, p, static_cast<unsigned>(face), static_cast<unsigned>(featureFace),
+				static_cast<unsigned>(feature), static_cast<unsigned>(bareFace));
+			}
+	}
+
+// flags[shape id] of the scene's shape-update list, the word 001325
+// (0x10026c90) ORs its bit into: shape+4 -> +4 -> +0x48 -> [0], index +0xd4.
+static void nxPrintDirty(const char* name, const char* when, const NxShape* shape)
+	{
+	const unsigned char* internal = nxInternalShape(shape);
+	const unsigned char* owner = *reinterpret_cast<unsigned char* const*>(internal + 4);
+	const unsigned char* sceneWords = owner ? *reinterpret_cast<unsigned char* const*>(owner + 4) : 0;
+	const unsigned char* list = sceneWords ? *reinterpret_cast<unsigned char* const*>(sceneWords + 0x48) : 0;
+	const NxU32* flags = list ? *reinterpret_cast<NxU32* const*>(list) : 0;
+	printf("box_resize %s %s dirty=", name, when);
+	if(flags)
+		printf("%08x\n", static_cast<unsigned>(flags[*reinterpret_cast<const NxU32*>(internal + 0xd4)]));
+	else
+		printf("none\n");
+	}
+
+static void nxPrintBoxPublic(const char* name, const char* when, NxShape* shape)
+	{
+	NxBoxShape* box = shape->isBox();
+	printf("box_resize %s %s is_box=%u", name, when, box ? 1u : 0u);
+	if(box)
+		{
+		const NxVec3 dims = box->getDimensions();
+		printf(" get_dims=%08x.%08x.%08x", nxU(dims.x), nxU(dims.y), nxU(dims.z));
+		}
+	NxBounds3 bounds;
+	shape->getWorldBounds(bounds);
+	printf(" world_bounds=%08x.%08x.%08x.%08x.%08x.%08x\n", nxU(bounds.getMin().x), nxU(bounds.getMin().y),
+		nxU(bounds.getMin().z), nxU(bounds.getMax().x), nxU(bounds.getMax().y), nxU(bounds.getMax().z));
+	}
+
+struct NxResizeCase
+	{
+	const char* name;
+	bool dynamic;
+	bool rotated;
+	NxVec3 position;
+	NxVec3 created;
+	NxVec3 grown;
+	NxVec3 shrunk;
+	NxU16 group;
+	};
+
+static void nxResizeQueries(NxScene* scene, const char* when)
+	{
+	static const NxRayCase rays[] =
+		{
+		{ "x_resize_s", NxVec3(35.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f) },
+		{ "x_resize_d", NxVec3(35.0f, 0.0f, 5.0f), NxVec3(1.0f, 0.0f, 0.0f) },
+		{ "x_resize_r", NxVec3(35.0f, 0.25f, 10.0f), NxVec3(1.0f, 0.0f, 0.0f) },
+		{ "down_resize_s", NxVec3(41.5f, 10.0f, 0.0f), NxVec3(0.0f, -1.0f, 0.0f) },
+		{ "down_resize_d", NxVec3(40.75f, 10.0f, 5.0f), NxVec3(0.0f, -1.0f, 0.0f) },
+		{ "down_resize_r", NxVec3(40.0f, 10.0f, 11.0f), NxVec3(0.0f, -1.0f, 0.0f) },
+		{ "z_resize", NxVec3(40.25f, 0.0f, -5.0f), NxVec3(0.0f, 0.0f, 1.0f) },
+		};
+	static const NxShapesType types[3] = { NX_STATIC_SHAPES, NX_DYNAMIC_SHAPES, NX_ALL_SHAPES };
+	char tag[96];
+	for(unsigned r = 0; r < sizeof(rays) / sizeof(rays[0]); r++)
+		{
+		sprintf(tag, "%s ray=%s", when, rays[r].name);
+		const NxRay ray(rays[r].origin, rays[r].direction);
+		for(unsigned t = 0; t < 3; t++)
+			nxQueryAll(scene, ray, types[t], (1u << 13) | (1u << 14) | (1u << 15), NX_MAX_F32, 0xffffffffu, tag);
+		nxQueryAll(scene, ray, NX_ALL_SHAPES, 0xffffffffu, 2.0f, 0xffffffffu, tag);
+		}
+	}
+
+static void nxResizeCases(NxScene* scene)
+	{
+	static const NxResizeCase cases[] =
+		{
+		{ "s_resize", false, false, NxVec3(40.0f, 0.0f, 0.0f), NxVec3(1.0f, 1.0f, 1.0f),
+			NxVec3(2.0f, 0.5f, 3.0f), NxVec3(0.25f, 1.5f, 0.125f), 13 },
+		{ "d_resize", true, false, NxVec3(40.0f, 0.0f, 5.0f), NxVec3(0.5f, 0.5f, 0.5f),
+			NxVec3(1.0f, 2.0f, 0.75f), NxVec3(0.1f, 0.2f, 0.3f), 14 },
+		{ "r_resize", true, true, NxVec3(40.0f, 0.0f, 10.0f), NxVec3(1.0f, 0.5f, 0.25f),
+			NxVec3(3.0f, 0.5f, 1.5f), NxVec3(0.5f, 3.0f, 0.5f), 15 },
+		};
+	static const unsigned kCount = sizeof(cases) / sizeof(cases[0]);
+	NxActor* actors[kCount];
+	NxShape* shapes[kCount];
+	for(unsigned i = 0; i < kCount; i++)
+		{
+		const NxResizeCase& c = cases[i];
+		NxBoxShapeDesc box;
+		box.dimensions = c.created;
+		box.group = c.group;
+		NxActorDesc actor;
+		actor.shapes.pushBack(&box);
+		actor.globalPose.t = c.position;
+		if(c.rotated)
+			{
+			actor.globalPose.M.setRow(0, NxVec3(0.6f, -0.8f, 0.0f));
+			actor.globalPose.M.setRow(1, NxVec3(0.8f, 0.6f, 0.0f));
+			actor.globalPose.M.setRow(2, NxVec3(0.0f, 0.0f, 1.0f));
+			}
+		NxBodyDesc body;
+		if(c.dynamic)
+			{
+			body.mass = 1.0f;
+			body.massSpaceInertia = NxVec3(1.0f, 1.0f, 1.0f);
+			actor.body = &body;
+			}
+		actors[i] = scene->createActor(actor);
+		shapes[i] = actors[i] && actors[i]->getNbShapes() == 1 ? actors[i]->getShapes()[0] : 0;
+		printf("box_resize create %s created=%u shape=%u\n", c.name, actors[i] ? 1u : 0u, shapes[i] ? 1u : 0u);
+		if(shapes[i])
+			{
+			nxSymbolSet(shapes[i], c.name);
+			nxPrintBoxPublic(c.name, "created", shapes[i]);
+			nxPrintHull(c.name, "created", shapes[i]);
+			nxPrintDirty(c.name, "created", shapes[i]);
+			}
+		}
+	nxResizeQueries(scene, "box_resize created");
+
+	for(unsigned step = 0; step < 2; step++)
+		{
+		const char* when = step ? "shrunk" : "grown";
+		for(unsigned i = 0; i < kCount; i++)
+			{
+			if(!shapes[i] || !shapes[i]->isBox())
+				continue;
+			shapes[i]->isBox()->setDimensions(step ? cases[i].shrunk : cases[i].grown);
+			nxPrintBoxPublic(cases[i].name, when, shapes[i]);
+			nxPrintHull(cases[i].name, when, shapes[i]);
+			nxPrintDirty(cases[i].name, when, shapes[i]);
+			}
+		char tag[64];
+		sprintf(tag, "box_resize %s", when);
+		nxResizeQueries(scene, tag);
+		}
+
+	for(unsigned i = 0; i < kCount; i++)
+		if(actors[i])
+			scene->releaseActor(*actors[i]);
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -572,6 +820,8 @@ int wmain(int argc, wchar_t** argv)
 		if(late)
 			scene->releaseActor(*late);
 	}
+
+	nxResizeCases(scene);
 
 	for(unsigned i = 0; i < kShapeCaseCount; i++)
 		if(nxActors[i])

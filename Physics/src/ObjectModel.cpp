@@ -16,6 +16,7 @@
 #include "NxUtilities.h"
 #include "X87Sqrt.h"
 
+#include <float.h>
 #include <math.h>
 #include <string.h>
 
@@ -121,6 +122,216 @@ const NxU32* BoxHullFacade::faceCornerTable()
 const NxU32* BoxHullFacade::adjacencyTable()
 	{
 	return gAdjacencyTable;
+	}
+
+// The face records' two index lists, which the hull rebuild (000973) points
+// every record at: each face's four corners (.rdata 0x10106998..0x101069f7)
+// and its four edges (.rdata 0x101069f8..0x10106a57), the pinned image's words.
+static const NxU32 gHullFaceCorners[6][4] =
+	{ { 0, 1, 2, 3 }, { 1, 5, 6, 2 }, { 5, 4, 7, 6 },
+	  { 4, 0, 3, 7 }, { 3, 2, 6, 7 }, { 4, 5, 1, 0 } };
+static const NxU32 gHullFaceEdges[6][4] =
+	{ { 0, 1, 2, 3 }, { 1, 8, 5, 9 }, { 6, 7, 4, 5 },
+	  { 11, 3, 10, 7 }, { 2, 9, 4, 10 }, { 6, 8, 0, 11 } };
+// The twelve edge directions slot 10 (000959) tests after the faces, .rdata
+// 0x101220f0..0x1012217f (+-0x3f3504f3, sqrt(1/2) as a float, and 0).
+static const NxU32 gHullEdgeDirections[12 * 3] =
+	{ 0x00000000u, 0xbf3504f3u, 0xbf3504f3u,  0x3f3504f3u, 0x00000000u, 0xbf3504f3u,
+	  0x00000000u, 0x3f3504f3u, 0xbf3504f3u,  0xbf3504f3u, 0x00000000u, 0xbf3504f3u,
+	  0x00000000u, 0x3f3504f3u, 0x3f3504f3u,  0x3f3504f3u, 0x00000000u, 0x3f3504f3u,
+	  0x00000000u, 0xbf3504f3u, 0x3f3504f3u,  0xbf3504f3u, 0x00000000u, 0x3f3504f3u,
+	  0x3f3504f3u, 0xbf3504f3u, 0x00000000u,  0x3f3504f3u, 0x3f3504f3u, 0x00000000u,
+	  0xbf3504f3u, 0x3f3504f3u, 0x00000000u,  0xbf3504f3u, 0xbf3504f3u, 0x00000000u };
+
+// The facade's own table words the hull rows call through (+0xe0 of the box,
+// ecx = the facade): slot 1 vertex count, 2 vertices, 3 face count, 6-8 the
+// static tables.
+typedef unsigned (__thiscall* BoxHullCountSlot)(const BoxHullFacade*);
+typedef const float* (__thiscall* BoxHullVerticesSlot)(const BoxHullFacade*);
+typedef const NxU32* (__thiscall* BoxHullTableSlot)(const BoxHullFacade*);
+
+static void* const* nxBoxHullTable(const BoxHullFacade* facade)
+	{
+	return static_cast<void* const*>(facade->mVptrSlot);
+	}
+
+// phys_fn_000957 (0x00020d40, 578 B)
+// Facade slot 9, __thiscall ret 8 (arg1 direction, arg2 optional pose). With
+// a pose, the direction is taken through the rows at words 0-2, 4-6 and 8-10
+// (copied to a local 3x3 first, 0x10020d5c-0x10020dab), each component
+// (m0*d0 + m1*d1) + m2*d2, spilled to float (0x10020dc5/de1/e01). The face
+// count comes from the facade's own slot 3 (0x10020e23). Face 0 seeds the
+// best as (d2*nz + d1*ny) + d0*nx, kept in the register unrounded; a face
+// replaces it only on strictly greater (fcomp, test ah,0x41), and the value
+// that replaces it is the float spill reloaded (0x10020e7c/0x10020e8d). The
+// four-way unrolled run (entered when count-1 >= 4, signed, and repeated while
+// i < count-3) sums (d0*nx + d2*nz) + d1*ny, the tail (d2*nz + d0*nx) + d1*ny.
+// The zero store at 0x10020d4e is a local nothing reads.
+unsigned BoxHullFacade::supportFace(const float* direction, const float* pose) const
+	{
+	float local[3];
+	if(pose != 0)
+		{
+		const float m[9] = { pose[0], pose[1], pose[2], pose[4], pose[5], pose[6],
+			pose[8], pose[9], pose[10] };
+		local[0] = (float)(((double)m[0] * direction[0] + (double)m[1] * direction[1])
+			+ (double)m[2] * direction[2]);
+		local[1] = (float)(((double)m[3] * direction[0] + (double)m[4] * direction[1])
+			+ (double)m[5] * direction[2]);
+		local[2] = (float)(((double)m[6] * direction[0] + (double)m[7] * direction[1])
+			+ (double)m[8] * direction[2]);
+		direction = local;
+		}
+	const float d0 = direction[0];
+	const float d1 = direction[1];
+	const float d2 = direction[2];
+	const unsigned count = reinterpret_cast<BoxHullCountSlot>(nxBoxHullTable(this)[3])(this);
+	double best = ((double)d2 * mFaces[0].mNormal[2] + (double)d1 * mFaces[0].mNormal[1])
+		+ (double)d0 * mFaces[0].mNormal[0];
+	unsigned bestFace = 0;
+	unsigned i = 1;
+	if((int)(count - 1) >= 4)
+		{
+		const unsigned last = count - 3;
+		do
+			{
+			for(unsigned k = 0; k < 4; ++k)
+				{
+				const float* n = mFaces[i + k].mNormal;
+				const double value = ((double)d0 * n[0] + (double)d2 * n[2]) + (double)d1 * n[1];
+				if(value > best)
+					{
+					bestFace = i + k;
+					best = (float)value;
+					}
+				}
+			i += 4;
+			}
+		while(i < last);
+		}
+	for(; i < count; ++i)
+		{
+		const float* n = mFaces[i].mNormal;
+		const double value = ((double)d2 * n[2] + (double)d0 * n[0]) + (double)d1 * n[1];
+		if(value > best)
+			{
+			bestFace = i;
+			best = (float)value;
+			}
+		}
+	return bestFace;
+	}
+
+// phys_fn_000959 (0x00020f90, 1062 B)
+// Facade slot 10, __thiscall ret 0xc (arg1 direction, arg2 optional pose,
+// arg3 optional out word). The pose rows are summed (m0*d0 + m2*d2) + m1*d1
+// here (0x10020ffc-0x10021050). The face search is slot 9's, except that the
+// unrolled run's first face sums (d2*nz + d0*nx) + d1*ny and its other three
+// (d2*nz + d1*ny) + d0*nx (0x100210b0-0x10021166). The running best then
+// continues over the twelve edge directions (.rdata 0x101220f0, six per pass,
+// each (d0*x + d2*z) + d1*y, 0x100211d2-0x100212f6). No edge wins: arg3 = 0
+// and the best face is returned. An edge wins: arg3 = 1, the facade's slots 6,
+// 7 and 8 are called (slot 6's result unused), the edge's word in the slot-7
+// table indexes the slot-8 table for its two faces A and B, and A is returned
+// only when B's projection is strictly less than A's (fcompp, test ah,5; both
+// kept unrounded), otherwise B (unordered included).
+unsigned BoxHullFacade::supportFeature(const float* direction, const float* pose,
+	NxU32* edgeWon) const
+	{
+	float local[3];
+	if(pose != 0)
+		{
+		const float m[9] = { pose[0], pose[1], pose[2], pose[4], pose[5], pose[6],
+			pose[8], pose[9], pose[10] };
+		local[0] = (float)(((double)m[0] * direction[0] + (double)m[2] * direction[2])
+			+ (double)m[1] * direction[1]);
+		local[1] = (float)(((double)m[3] * direction[0] + (double)m[5] * direction[2])
+			+ (double)m[4] * direction[1]);
+		local[2] = (float)(((double)m[6] * direction[0] + (double)m[8] * direction[2])
+			+ (double)m[7] * direction[1]);
+		direction = local;
+		}
+	const float d0 = direction[0];
+	const float d1 = direction[1];
+	const float d2 = direction[2];
+	void* const* table = nxBoxHullTable(this);
+	const unsigned count = reinterpret_cast<BoxHullCountSlot>(table[3])(this);
+	double best = ((double)d2 * mFaces[0].mNormal[2] + (double)d1 * mFaces[0].mNormal[1])
+		+ (double)d0 * mFaces[0].mNormal[0];
+	unsigned bestFace = 0;
+	unsigned i = 1;
+	if((int)(count - 1) >= 4)
+		{
+		const unsigned last = count - 3;
+		do
+			{
+			const float* n = mFaces[i].mNormal;
+			double value = ((double)d2 * n[2] + (double)d0 * n[0]) + (double)d1 * n[1];
+			if(value > best)
+				{
+				bestFace = i;
+				best = (float)value;
+				}
+			for(unsigned k = 1; k < 4; ++k)
+				{
+				n = mFaces[i + k].mNormal;
+				value = ((double)d2 * n[2] + (double)d1 * n[1]) + (double)d0 * n[0];
+				if(value > best)
+					{
+					bestFace = i + k;
+					best = (float)value;
+					}
+				}
+			i += 4;
+			}
+		while(i < last);
+		}
+	for(; i < count; ++i)
+		{
+		const float* n = mFaces[i].mNormal;
+		const double value = ((double)d2 * n[2] + (double)d0 * n[0]) + (double)d1 * n[1];
+		if(value > best)
+			{
+			bestFace = i;
+			best = (float)value;
+			}
+		}
+	const float* edges = reinterpret_cast<const float*>(gHullEdgeDirections);
+	int bestEdge = -1;
+	for(unsigned e = 0; e < 12; e += 6)
+		{
+		for(unsigned k = 0; k < 6; ++k)
+			{
+			const float* v = edges + (e + k) * 3;
+			const double value = ((double)d0 * v[0] + (double)d2 * v[2]) + (double)d1 * v[1];
+			if(value > best)
+				{
+				bestEdge = (int)(e + k);
+				best = (float)value;
+				}
+			}
+		}
+	if(bestEdge == -1)
+		{
+		if(edgeWon != 0)
+			*edgeWon = 0;
+		return bestFace;
+		}
+	if(edgeWon != 0)
+		*edgeWon = 1;
+	reinterpret_cast<BoxHullTableSlot>(table[6])(this);
+	const NxU32* edgeFaces = reinterpret_cast<BoxHullTableSlot>(table[7])(this);
+	const NxU32* faces = reinterpret_cast<BoxHullTableSlot>(table[8])(this);
+	const NxU32 pair = edgeFaces[bestEdge * 2 + 1];
+	const NxU32 faceA = faces[pair];
+	const NxU32 faceB = faces[pair + 1];
+	const float* a = mFaces[faceA].mNormal;
+	const float* b = mFaces[faceB].mNormal;
+	const double projectionA = ((double)d2 * a[2] + (double)d1 * a[1]) + (double)d0 * a[0];
+	const double projectionB = ((double)d2 * b[2] + (double)d1 * b[1]) + (double)d0 * b[0];
+	if(projectionB < projectionA)
+		return faceA;
+	return faceB;
 	}
 
 // ---------------------------------------------------------------------------
@@ -3887,10 +4098,9 @@ static void** nxBoxShapeInternalVtable()
 	}
 
 // The box hull facade's final table, .rdata 0x10106a88: twelve slots, read
-// from the pinned image (the BOX table follows at 0x10106ab8). Slots 9 and 10
-// are 000957 (0x20d40) and 000959 (0x20f90), which are not written yet, so
-// they stay null here; nothing in the product calls through them (their only
-// callers are 000973, 000957 and 000959 themselves).
+// from the pinned image (the BOX table follows at 0x10106ab8). The image has
+// no direct caller of slots 9 and 10 (000957, 000959); they are reached only
+// through this table.
 static void** nxBoxHullFacadeVtable()
 	{
 	struct Table
@@ -3907,8 +4117,8 @@ static void** nxBoxHullFacadeVtable()
 			slot[6] = reinterpret_cast<void*>(&BoxHullFacade::edgeTable);			// 0x213f0, 000967
 			slot[7] = reinterpret_cast<void*>(&BoxHullFacade::faceCornerTable);	// 0x21400, 000969
 			slot[8] = reinterpret_cast<void*>(&BoxHullFacade::adjacencyTable);		// 0x21410, 000971
-			slot[9] = 0;															// 0x20d40, 000957 (not written)
-			slot[10] = 0;															// 0x20f90, 000959 (not written)
+			slot[9] = nxShapeMethodAddress(&BoxHullFacade::supportFace);			// 0x20d40, 000957
+			slot[10] = nxShapeMethodAddress(&BoxHullFacade::supportFeature);		// 0x20f90, 000959
 			slot[11] = nxShapeMethodAddress(&BoxHullFacade::supportBounds);		// 0x217c0, 000975
 			}
 		};
@@ -4042,6 +4252,24 @@ void nxShapeFactoryInstallVtable(void* shape, unsigned type)
 		default: break;
 		}
 	if(table) *reinterpret_cast<void***>(shape) = table;
+	}
+
+// The box part of the image's creation path for Scene's raw box allocation.
+// NxScene::createActor's shape builder 000032 constructs the box with 000977
+// (call 0x10021870 at 0x10001ec6), which stores the facade table at +0xe0
+// (0x10021895), then loads the descriptor through the BOX table's slot 12
+// (call [eax+0x30] at 0x10001efd: 000981, which copies the dims, rebuilds the
+// hull through 000973 and applies the BASE fields) and releases the shape when
+// its al is 0 (0x10001f02). The factory's zero fill already gives the face
+// records 000977 zeroes; this stores the facade table and makes the slot-12
+// call through the table the factory installed. Returns the slot's bool.
+bool nxShapeFactoryLoadBox(void* shape, const void* descriptor)
+	{
+	BoxShape* box = static_cast<BoxShape*>(shape);
+	box->mHull.mVptrSlot = nxBoxHullFacadeVtable();		// 0x10021895
+	typedef bool (__thiscall* LoadFn)(void*, const void*);
+	void** table = *reinterpret_cast<void***>(shape);
+	return reinterpret_cast<LoadFn>(table[12])(shape, descriptor);
 	}
 
 // phys_fn_000977 (0x00021870, 207 B)
@@ -4316,15 +4544,117 @@ void ShapeBase::nxApplyGroup(unsigned short group)
 // owner == null takes the early exit at 0x00026abb which is a pure no-op
 // (pop ebp / add esp,0x84 / ret 4). The owned path needs scene
 // infrastructure from Task 4 and is not reachable for detached shapes.
-// Row 000981 (0x00021990), BOX-table slot 12.
-void BoxShape::nxBoxLoadFromDesc(const void* record)
+// phys_fn_000981 (0x00021990, 55 B)
+// BOX-table slot 12, __thiscall ret 4: the three dimension words copied as
+// dwords (0x10021998-0x100219af), the hull rebuild (call 0x10021420 at
+// 0x100219b5), then BASE slot 1 (call 0x10027740 at 0x100219bd), whose al is
+// the row's return.
+bool BoxShape::nxBoxLoadFromDesc(const void* record)
 	{
 	const unsigned char* rec = static_cast<const unsigned char*>(record);
 	memcpy(&mHull.mDims04[0], rec + 0x4c, sizeof(mHull.mDims04[0]));
 	memcpy(&mHull.mDims04[1], rec + 0x50, sizeof(mHull.mDims04[1]));
 	memcpy(&mHull.mDims04[2], rec + 0x54, sizeof(mHull.mDims04[2]));
-	// helper 0x21420 recomputes hull data -- Task 3 deep chain
-	mBase.nxApplyDescriptor(rec);
+	nxBoxRebuildHull();
+	return mBase.nxApplyDescriptor(rec);
+	}
+
+// phys_fn_000973 (0x00021420, 913 B)
+// The box hull rebuild; ecx = the box, no stack arguments, plain ret (the
+// image's callers 000981 and 000983 call it directly).
+// - The box about a zero centre with half-extents +0xe4 (the ICE AABB
+//   SetCenterExtents copy 000923, call at 0x10021451) and its eight corners to
+//   +0xf0 (AABB::ComputePoints 005147, call at 0x10021461).
+// - The face records' list pointers (0x10021466-0x100214d4) and corner counts
+//   of 4 (0x100214e3-0x10021501).
+// - The axis normals, in the image's store order: face 1 (+1,0,0), face 3
+//   (-1,0,0), face 4 (0,+1,0), face 5 (0,-1,0), face 2 (0,0,+1), face 0
+//   (0,0,-1) (0x1002151f-0x10021647).
+// - Each plane distance -((n_a + n_b) * 0.0f + s * n_c), where n_c is the
+//   normal's axis component, n_a + n_b the other two in the listed operand
+//   order, and s the signed half-extent on that axis: dx and -dx are float
+//   spills of the fld'd dims, dz and -dz and -dy stay in registers, dy is a
+//   float spill (0x10021507-0x10021725). Faces 0-5 in that order.
+// - Per face, through the facade's own table (+0xe0): slot 3 face count before
+//   the loop and after each face, slots 1 and 2 per face; min seeded FLT_MAX
+//   and max -FLT_MAX; per corner (vz*nz + vy*ny) + vx*nx unrounded; the min
+//   takes it on strictly less (fcom, test ah,5, jp), the max on strictly
+//   greater (test ah,0x41) (0x1002172b-0x100217a7).
+void BoxShape::nxBoxRebuildHull()
+	{
+	const IceMaths::Point centre(0.0f, 0.0f, 0.0f);
+	IceMaths::AABB box;
+	box.SetCenterExtents(centre, *reinterpret_cast<const IceMaths::Point*>(mHull.mDims04));
+	box.ComputePoints(reinterpret_cast<IceMaths::Point*>(mHull.mVertices));
+
+	BoxFaceRecord* faces = mHull.mFaces;
+	for(unsigned r = 0; r < 6; ++r)
+		{
+		faces[r].mIndexListA = gHullFaceCorners[r];
+		faces[r].mIndexListB = gHullFaceEdges[r];
+		}
+	for(unsigned r = 0; r < 6; ++r)
+		faces[r].mCorners = 4;
+
+	const double dx = mHull.mDims04[0];			// fld [edi] at 0x10021507
+	const double dy = mHull.mDims04[1];			// fld [edi+4] at 0x1002150c
+	const float dz = mHull.mDims04[2];			// the dword at 0x10021509, spilled
+
+	faces[1].mNormal[0] = 1.0f;  faces[1].mNormal[1] = 0.0f;  faces[1].mNormal[2] = 0.0f;
+	faces[3].mNormal[0] = -1.0f; faces[3].mNormal[1] = 0.0f;  faces[3].mNormal[2] = 0.0f;
+	faces[4].mNormal[0] = 0.0f;  faces[4].mNormal[1] = 1.0f;  faces[4].mNormal[2] = 0.0f;
+	faces[5].mNormal[0] = 0.0f;  faces[5].mNormal[1] = -1.0f; faces[5].mNormal[2] = 0.0f;
+	faces[2].mNormal[0] = 0.0f;  faces[2].mNormal[1] = 0.0f;  faces[2].mNormal[2] = 1.0f;
+	faces[0].mNormal[0] = 0.0f;  faces[0].mNormal[1] = 0.0f;  faces[0].mNormal[2] = -1.0f;
+
+	const float dxSpill = (float)dx;			// fstp [esp+0x10] at 0x10021623
+	const float negDxSpill = (float)-dx;		// fchs; fstp [esp+0x28] at 0x10021633
+	const float dySpill = (float)dy;			// fst [esp+0x38] at 0x10021643
+	const double negDy = -dy;					// fchs at 0x1002164a, kept
+	const double posDz = dz;					// fld [esp+0x24] at 0x10021654, kept
+	const double negDz = -(double)dz;			// fld; fchs at 0x10021663
+
+	const double zero = 0.0f;					// fmul [0x101041f0]
+	float* n = faces[0].mNormal;
+	faces[0].mDistance = (float)-((( (double)n[1] + n[0]) * zero) + negDz * n[2]);
+	n = faces[1].mNormal;
+	faces[1].mDistance = (float)-((( (double)n[2] + n[1]) * zero) + (double)dxSpill * n[0]);
+	n = faces[2].mNormal;
+	faces[2].mDistance = (float)-((( (double)n[1] + n[0]) * zero) + posDz * n[2]);
+	n = faces[3].mNormal;
+	faces[3].mDistance = (float)-((( (double)n[2] + n[1]) * zero) + (double)negDxSpill * n[0]);
+	n = faces[4].mNormal;
+	faces[4].mDistance = (float)-((( (double)n[2] + n[0]) * zero) + (double)dySpill * n[1]);
+	n = faces[5].mNormal;
+	faces[5].mDistance = (float)-((( (double)n[2] + n[0]) * zero) + negDy * n[1]);
+
+	const BoxHullFacade* facade = &mHull;
+	void* const* table = nxBoxHullTable(facade);
+	unsigned face = 0;
+	if(reinterpret_cast<BoxHullCountSlot>(table[3])(facade) != 0)
+		{
+		BoxFaceRecord* record = faces;
+		do
+			{
+			unsigned corners = reinterpret_cast<BoxHullCountSlot>(table[1])(facade);
+			const float* v = reinterpret_cast<BoxHullVerticesSlot>(table[2])(facade);
+			record->mMinProjection = FLT_MAX;
+			record->mMaxProjection = -FLT_MAX;
+			for(; corners != 0; --corners)
+				{
+				const double projection = ((double)v[2] * record->mNormal[2]
+					+ (double)v[1] * record->mNormal[1]) + (double)v[0] * record->mNormal[0];
+				if(projection < record->mMinProjection)
+					record->mMinProjection = (float)projection;
+				if(projection > record->mMaxProjection)
+					record->mMaxProjection = (float)projection;
+				v += 3;
+				}
+			++face;
+			++record;
+			}
+		while(face < reinterpret_cast<BoxHullCountSlot>(table[3])(facade));
+		}
 	}
 
 // phys_fn_001383 (0x00027e30), MESH-table slot 12.

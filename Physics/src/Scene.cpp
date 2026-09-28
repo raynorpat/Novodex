@@ -115,6 +115,7 @@ bool nxSceneEngineRemoveShape(void* engine, void* shape);
 void nxSceneEngineDestroyPruners(void* engine);
 void nxSceneEngineSetExternalBuffer(void* engine, unsigned capacity, void* entries);
 void nxShapeFactoryInstallPrunable(void* shape);
+bool nxShapeFactoryLoadBox(void* shape, const void* descriptor);
 void nxSceneAuxRegisterRecord(void* aux, void* record);
 void nxSceneAuxUnregisterRecord(void* aux, void* record);
 unsigned nxSceneTakeShapeId(NxSceneInternal* scene);
@@ -2082,9 +2083,16 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 		*reinterpret_cast<NxU16*>(shape + 0xde) =
 			static_cast<NxU16>(descriptor->shapeFlags);
 		if(descriptor->getType() == NX_SHAPE_BOX)
-			memcpy(shape + 0xe4,
-				&static_cast<const NxBoxShapeDesc*>(descriptor)->dimensions,
-				sizeof(NxVec3));
+			{
+			// The image's box creation: the facade table at +0xe0 (000977) and
+			// the BOX table's slot 12 (000981: dims, hull rebuild 000973, BASE
+			// fields), whose al 0 releases the shape (0x10001efd-0x10001f02).
+			if(!nxShapeFactoryLoadBox(shape, descriptor))
+				{
+				nxGetSdkAllocator()->free(shape);
+				return 0;
+				}
+			}
 		else if(descriptor->getType() == NX_SHAPE_SPHERE)
 			memcpy(shape + 0xe0,
 				&static_cast<const NxSphereShapeDesc*>(descriptor)->radius,

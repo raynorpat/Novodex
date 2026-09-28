@@ -98,24 +98,26 @@ The box's convex-hull descriptor -- the polymorphic subobject embedded at
 Shape+0xe0 (abstract wall at .rdata 0x10106a58 during construction,
 final twelve-slot table at 0x10106a88). Eight vertices at +0x10, six
 36-byte face records at +0x70 (which is Shape+0x150), and three static
-tables in .rdata. The face records carry a corner count of 4 and pointers
-into two families of static index lists (an 8-corner chained-quad family
-and a second topology reaching ids 10/11); their float areas hold
-dim-independent face normals. What CONSUMES the hull is still open --
-the sweep dispatch of slot 7 is the suspect.
+tables in .rdata. The box hull rebuild phys_fn_000973 fills the records:
+a corner count of 4, pointers into two static index lists (the face's four
+corners, .rdata 0x10106998.., and its four edges, .rdata 0x101069f8..), the
+axis normal, the plane distance and the min/max projection of the eight
+corners onto the normal.
 
-Row map: slot 0 phys_fn_000985 (dtor, untranscribed), 1 phys_fn_000953,
-2 phys_fn_000955, 3 phys_fn_000961, 4 phys_fn_000963, 5 phys_fn_000965,
-6 phys_fn_000967, 7 phys_fn_000969, 8 phys_fn_000971, 9 phys_fn_000957
-(untranscribed), 10 phys_fn_000959 (untranscribed), 11 phys_fn_000975
-(support mapping, untranscribed).
+Row map: slot 0 phys_fn_000985, 1 phys_fn_000953, 2 phys_fn_000955,
+3 phys_fn_000961, 4 phys_fn_000963, 5 phys_fn_000965, 6 phys_fn_000967,
+7 phys_fn_000969, 8 phys_fn_000971, 9 phys_fn_000957 (best face),
+10 phys_fn_000959 (best face or edge), 11 phys_fn_000975 (support bounds).
 */
 struct BoxFaceRecord
 	{
-	NxU32				mCorners;		//!< 4, store 0x000214e3 and friends
-	const NxU32*		mIndexListA;	//!< chained-quad family (.rdata 0x10106998...)
-	const NxU32*		mIndexListB;	//!< second family (.rdata 0x101069f8...)
-	NxU32				mFloatData[6];	//!< face normal et al, dim-independent
+	NxU32				mCorners;		//!< +0x00, 4 (store 0x000214e3 and friends)
+	const NxU32*		mIndexListA;	//!< +0x04, the face's corners (.rdata 0x10106998...)
+	const NxU32*		mIndexListB;	//!< +0x08, the face's edges (.rdata 0x101069f8...)
+	float				mNormal[3];		//!< +0x0c, the axis normal
+	float				mDistance;		//!< +0x18, plane d = -(normal . face point)
+	float				mMinProjection;	//!< +0x1c, min over the corners of normal . v
+	float				mMaxProjection;	//!< +0x20, max over the corners of normal . v
 	};
 
 static_assert(sizeof(BoxFaceRecord) == 0x24, "a face record is thirty-six bytes");
@@ -166,6 +168,18 @@ class BoxHullFacade
 	void				supportBounds(NxU32 unread1, float* outMin, float* outMax,
 							const float* direction, const float* pose,
 							NxU32 unread6) const;
+
+	//! phys_fn_000957 (0x00020d40), facade slot 9, __thiscall ret 8. The
+	//! direction (arg1), first carried through the rotation of the optional
+	//! pose (arg2, rows at words 0, 4 and 8), picks the face whose normal
+	//! has the greatest projection; returns the face index.
+	unsigned			supportFace(const float* direction, const float* pose) const;
+	//! phys_fn_000959 (0x00020f90), facade slot 10, __thiscall ret 0xc. The
+	//! same face search, continued over the twelve edge directions; an edge
+	//! that wins picks the better of its two adjacent faces. Writes 1 (edge)
+	//! or 0 (face) to the optional arg3 and returns the face index.
+	unsigned			supportFeature(const float* direction, const float* pose,
+							NxU32* edgeWon) const;
 
 	//! phys_fn_000985 (0x00021a10), slot 0. A once-guarded lazy init: zeroes
 	//! a twelve-byte .data global (.data 0x10123c64), runs an initializer
@@ -484,10 +498,17 @@ class BoxShape
 	//! exactly the offset the constructor read them back from.
 	bool				nxBoxSaveState(void* record);
 
-	//! BOX-table slot 12, phys_fn_000981: loadFromDesc -- stores dimensions
-	//! from desc+0x4c/50/54 into the facade dims, recomputes derived data
-	//! via helper 0x21420, then applies BASE fields.
-	void				nxBoxLoadFromDesc(const void* record);
+	//! BOX-table slot 12, phys_fn_000981 (0x00021990, ret 4): loadFromDesc --
+	//! stores dimensions from desc+0x4c/50/54 into the facade dims, rebuilds
+	//! the hull (phys_fn_000973), then applies BASE fields (0x27740) and
+	//! returns its bool.
+	bool				nxBoxLoadFromDesc(const void* record);
+
+	//! phys_fn_000973 (0x00021420): the box hull rebuild. ecx = the box, no
+	//! stack arguments, plain ret. Eight corners of the box of half-extents
+	//! +0xe4 about the origin to +0xf0, then the six face records (+0x150),
+	//! the face loop reaching the facade through its own table at +0xe0.
+	void				nxBoxRebuildHull();
 
 	//! BOX-table slot 8, phys_fn_000941 (0x00020700): local AABB -- out[0..2]
 	//! = negated dims, out[3..5] = raw dims.

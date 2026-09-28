@@ -220,7 +220,7 @@ candidate, status and verdict of every row those tasks changed, and supersede th
 | 000977 | 0x21870 | 207 | reconstructed | Box ctor (ret 8): base 001273, vptr 0x10106ab8, facade vptr 0x10106a88 at +0xe0, zero face words, colobj 001075, +0xd0=2, dims 1.0 | shape | OM:4000 BoxShape::BoxShape | implemented | defect: +0xe0 facade vptr never stored (0x10021895); allocator: the 0x1c-byte collision object is allocated through nxGetSdkAllocator() (ObjectModel.cpp:4022) where the oracle uses [0x101041bc] at 0x100218f1 | BFlag 1, CMass 11, DSet 6, Dyn 2, DynF 1, Force 11, JAll 2, JSP 6, JSlot 27, Life 7, Meta 1, Mom 4, Name 1, ShMut 2 | not hit | no | NxScene::createActor -> 000626 -> 000034 -> 000032 -> row |
 | 000979 | 0x21940 | 69 | reconstructed | BOX slot 0 scalar deleting dtor | shape | OM:5587 BoxShape::nxBoxScalarDeletingDtor | implemented | defect: allocator: the scalar-deleting free goes through nxGetSdkAllocator() (ObjectModel.cpp:5597) where the oracle frees through [0x101041bc] slot +0x14 at 0x10021971; the vptr restores [esi]=0x10106ab8 and [esi+0xe0]=0x10106a88 at 0x1002194b/0x10021951 are dropped | BFlag 1, CMass 11, DSet 6, Dyn 2, DynF 1, Force 11, JAll 2, JSP 8, JSlot 27, Life 8, Meta 1, Mom 4, Name 1, ShMut 1 | not hit | no | NxActor::releaseShape / NxScene::releaseActor -> slot 0 |
 | 000981 | 0x21990 | 55 | reconstructed | BOX slot 12 loadFromDesc: dims <- desc+0x4c.., 000973, BASE apply 0x27740; returns its al=1 (ret 4) | shape | OM:4270 BoxShape::nxBoxLoadFromDesc | partial | defect: 000973 call at 0x100219b5 omitted; bool return dropped | BFlag 1, CMass 11, DSet 6, Dyn 2, DynF 1, Force 11, JAll 2, JSP 8, JSlot 27, Life 8, Meta 1, Mom 4, Name 1, ShMut 2 | not hit | no | NxScene::createActor -> 000034 -> 000032 (call [eax+0x30] at 0x10001efd, tests al) -> row |
-| 000983 | 0x219d0 | 62 | discovered | Box setDimensions: dims <- *arg, 000973, slot 6(1), 001325(0x40) (ret 4). Caller 001069 | shape | NPA:557 nxBoxHandleSetDimensions | partial | defect: no 000973 (0x100219f3); dirty flag 0x20 vs 0x40 (0x10021a01) | DSet 1 | yes: DSet 1 | no | NxBoxShape::setDimensions -> 001069 -> row |
+| 000983 | 0x219d0 | 62 | discovered | Box setDimensions: dims <- *arg, 000973, slot 6(1), 001325(0x40) (ret 4). Caller 001069 | shape | NPA nxBoxSetDimensions (corrected in Task 4, box hull; nxBoxHandleSetDimensions is 001069's role) | partial | defect: no 000973 (0x100219f3); dirty flag 0x20 vs 0x40 (0x10021a01) | DSet 1 | yes: DSet 1 | no | NxBoxShape::setDimensions -> 001069 -> row |
 | 000985 | 0x21a10 | 78 | reconstructed | facade slot 0: once-guarded static (0x10123c64) zeroed + atexit(0x10103010), returns its address | shape | OM:217 BoxHullFacade::sharedHook | implemented | faithful | none | not hit | no | facade slot 0 (no direct callers) |
 | 000987 | 0x21a60 | 101 | reconstructed | Capsule ctor (ret 8): base, vptr 0x10106b20, +0xe0/+0xe4=0, colobj 001123, +0xd0=3 | shape | OM:5261 CapsuleShape::CapsuleShape | implemented | defect: allocator: the 0x1c-byte collision object is allocated through nxGetSdkAllocator() (ObjectModel.cpp:5272) where the oracle uses [0x101041bc] at 0x10021a8e; the rest (base, vptr 0x10106b20, +0xe0/+0xe4, colobj 001123, +0xd0=3) matches | DSet 1 | not hit | no | NxScene::createActor -> 000034 -> 000032 -> row |
 | 000989 | 0x21ad0 | 110 | reconstructed | CAPSULE slot 12 loadFromDesc: radius, height*0.5, +0xe8; report(1, CapsuleShape.cpp, 0x37, 0, "...loadFromDesc: radius should be positive!") when radius <= 0; BASE apply; returns its al (ret 4) | shape | OM:5479 CapsuleShape::nxCapsuleLoadFromDesc | implemented | defect: NaN radius reported (0x10021b07); bool return dropped (0x10021b34) | DSet 1 | not hit | no | NxScene::createActor -> 000034 -> 000032 -> row |
@@ -471,7 +471,7 @@ localized edits to NpActor.cpp:
 |---|---|---|
 | 000929 | 001071 NpBoxShape::getDimensions (gap:NpBoxShape..NpCapsuleShape), 001770 | NpActor.cpp:487 `nxBoxHandleGetDimensions` (inline +0xe4) |
 | 000933 | 001073 NpBoxShape::getWorldOBB (gap:NpBoxShape..NpCapsuleShape) | NpActor.cpp:492 `nxBoxHandleGetWorldOBB` |
-| 000983 | 001069 NpBoxShape::setDimensions (NpBoxShape.cpp) | NpActor.cpp:557 `nxBoxHandleSetDimensions` |
+| 000983 | 001069 NpBoxShape::setDimensions (NpBoxShape.cpp) | NpActor.cpp `nxBoxSetDimensions` (called by `nxBoxHandleSetDimensions`, 001069's role; corrected in Task 4, box hull) |
 | 000993 | 001113 NpCapsuleShape::setDimensions (NpCapsuleShape.cpp) | NpActor.cpp:566 `nxCapsuleHandleSetDimensions` |
 | 000995 | capsule table 0x10106b58 (slot 14); called through [edx+0x38] at 0x10023bd5 | ObjectModel.cpp:5295 member, and NpActor.cpp:543 `nxCapsuleHandleSetRadius` |
 
@@ -1110,3 +1110,84 @@ requires); 753 tool tests OK; stable-ID check: 3 new lines (000933 ObjectModel.c
 ContactGeneration.cpp) and 000867/000951 in StepOnlyRows.cpp, exact form, RVA and size equal to the inventory, no
 duplicates, no new non-stable `// phys_fn_` line. Ledgers: phase 3 (000933, 000993) and phase 5 (000951) to
 `reconstructed_not_falsified`.
+
+## Task 4 results: box hull
+
+The box hull rows were written in a separate branch (`claude/sr-t4-hull` ed67cfe from bb2e485, carried to
+`claude/sr-t4-hull2` as 2186f38 on 052f1c0, then 79069b7 for the public path; notes
+`.superpowers/sdd/sr/task-4-hull-notes.md`) and cherry-picked onto f65b65c. One conflict,
+tests/PhysicsShapeVtableTests.cpp's tail: merged, keeping the shape sub-area's massframe/boxsweep blocks and
+lines and adding `runBoxHullCases` and its line after them (the exit code fails on any block). ObjectModel.cpp,
+ObjectModel.h and NpActor.cpp merged cleanly with f65b65c's shape changes (the handle helpers of 000933, 000993
+and 000995 are kept). Traces of both sides: `evidence/scene-raycast-trace-task4-hull.txt` (18 staged targets,
+candidate NxPhysics.dll sha256 31c22a97dc248903..., plus the oracle differentials NxPhysicsShapeVtableTests and
+NxPhysicsObjectLayoutTests, whose exe sha256s are recorded there).
+
+**Written, claimed and promoted to `reconstructed` (5 rows, 2,670 B), all with dynamic evidence:**
+
+| Row | B | Candidate | Hits (oracle/candidate) |
+|---|---:|---|---|
+| 000973 | 913 | `BoxShape::nxBoxRebuildHull` (ObjectModel.cpp) | 112/112 over 16 staged targets (once per box created, once per setDimensions); ShapeVtable 48/48, ObjectLayout 1/1 |
+| 000957 | 578 | `BoxHullFacade::supportFace`, facade slot 9 (ObjectModel.cpp) | SRay 216/216; ShapeVtable 259/259 |
+| 000959 | 1,062 | `BoxHullFacade::supportFeature`, facade slot 10 (ObjectModel.cpp) | SRay 432/432; ShapeVtable 518/518 |
+| 000981 | 55 | `BoxShape::nxBoxLoadFromDesc`, BOX slot 12 (ObjectModel.cpp) | 105/105 over 16 staged targets (once per box); ShapeVtable 9/9, ObjectLayout 1/1 |
+| 000983 | 62 | `nxBoxSetDimensions` (NpActor.cpp, static noinline __fastcall, edx unused = the row's thiscall `ret 4`) | 7/7 (DSet 1, SRay 6) |
+
+The ordered hit sequences (the five rows with the handle 001069 and the creation step) are identical on every
+target. 000981 was demoted in Task 2 for the missing 000973 call (0x100219b5) and the dropped bool of 0x27740;
+both are fixed. `nxBoxHullFacadeVtable` slots 9 and 10 now hold 000957/000959 (they were null). The face index
+lists (.rdata 0x10106998/0x101069f8) and the twelve edge directions (.rdata 0x101220f0) are the pinned image's
+words; `BoxFaceRecord`'s float words are named (normal +0x0c, distance +0x18, min/max projection +0x1c/+0x20).
+
+**The public path.** The image's shape builder 000032 constructs a box with 000977 (facade table at +0xe0,
+0x10021895) and loads it through BOX slot 12 (`call [eax+0x30]` at 0x10001efd; al 0 deletes the shape through
+slot 0 and fails, 0x10001f02), so 000981 and 000973 run once per box created. The product's `nxShapeFactory`
+(Scene.cpp) now does the same for boxes through `nxShapeFactoryLoadBox` (ObjectModel.cpp): it stores the facade
+table and calls slot 12 through the BOX table the factory installed, in place of copying the dims; a false return
+frees the shape through the SDK allocator, which allocated it (unreachable: the candidate's 0x27740 returns true).
+The Scene.cpp change is that one arm of the factory plus a declaration. 000983 (NxBoxShape::setDimensions'
+internal row) is `nxBoxSetDimensions`: the dims dwords, 000973 (0x100219f3), BASE slot 6 through the shape's table
+with 1 (0x100219fe), 001325 with 0x40 (0x10021a01; it was 0x20, with no rebuild and a direct owner update).
+`nxBoxHandleSetDimensions` keeps 001069's role (handle +0x18 -> 000983); the NpActor.cpp edit is this block's
+handle helper only (the old inline body replaced, 000983's function added beside it). **Candidate-name
+correction:** the row table and the Ownership table named `nxBoxHandleSetDimensions` for 000983; the row's
+candidate is `nxBoxSetDimensions` (both tables corrected). **Not reproduced:** 001069's scene-lock check
+(0x1005b730/0x1005b790) and its report (0x100234cf-0x100234f4); 001069 is not claimed.
+
+**Review at integration (Capstone listing).** Walked 000973 in full (0x10021420-0x100217b0: the AABB and corner
+calls, the twelve list pointers, the counts, the normal stores in the image's order, the x87 stack of dx/dy/dz
+through the six plane distances with the three m32 spills and the three register lifetimes, and the per-face loop
+through the facade's slots 3, 1, 2 with the FLT_MAX seeds after the slot calls and the `test ah,5; jp` /
+`test ah,0x41` predicates); 000959's slot-10 arms in full (0x10020f90-0x100213b3: the pose-row grouping, the
+unrolled and tail groupings, the edge continuation six per pass, the out word, the slot 6/7/8 calls, the
+adjacent-face fcompp with `test ah,5; jp`, unordered -> B); 000981 and 000983 in full. All faithful; no fix was
+needed. 000923 (IceAABB SetCenterExtents, the ICF-folded copy 000973 calls at 0x10021451) is inlined by the
+candidate from the vendored IceAABB.h (the same words for a zero centre); recorded in 000973's proof and 000923's
+notes, and 000923 stays `discovered` (the trace: 112 oracle hits, 0 candidate).
+
+**Allocator pairing (Task 2's deferred note), still accurate and still not live:** factory boxes are allocated
+0x228 through the SDK allocator, while BOX slot 0 (000979) frees through the Foundation allocator; nothing in the
+candidate calls slot 0 on a factory shape (actor release and releaseShape free shapes directly through the SDK
+allocator or not at all), and the new load-failure path frees through the SDK allocator where the image calls
+slot 0 on a Foundation-allocated box. The pair must be matched when the factory's allocation or the allocator gap
+is fixed.
+
+**New registered lines** (regenerated on the oracle side of the pinned pair and copied verbatim):
+NxPhysicsShapeVtableTests 1 (`box hull oracle_digest=e0477220 cases=314 failures=0`; Phase 5 floor 1045 -> 1046)
+and NxPhysicsSceneRaycastTests 8 (the six `box_resize` dims/bounds/face/support lines and two resized-box
+raycasts from the writer's notes; Phase 7 floor 483 -> 491). test_gate_targets.py's pins follow; both blocks are
+appended after the last existing line, which is not edited. The resize block's 909 transcript lines are equal on
+both pairs (NxPhysicsSceneRaycastTests 2,719 lines, stdout_delta=0).
+
+**Open.** 000977 itself is still not run by the factory (nxShapeFactoryLoadBox emulates its +0xe0 store; the
++0x9c collision object, +0xd0 and the allocation stay the factory's, as Task 3 lists). The 0x40 dirty flag of
+000983 is not observable on any staged target (the scene's flag word is all ones there on both sides). 001325 is
+Scene.cpp's emulation (`nxSceneMarkShapeDirty`), not claimed. 000923 as above.
+
+**Verification.** Build clean; gates 2, 3, 4, 6, 7 pass; Phase 5 fails only on `candidate CANDIDATE-MISSING
+family=vtables` (`batch3268 candidate failures=3`, `layout ... candidate_fold=4492c8c1` and `shape vtable
+oracle_digest=ed1294b6 cases=626 failures=0` unchanged, the new `box hull` line reported; coverage 1046/1046; all
+13 staged targets stdout_delta=0; Phase 7 coverage 491/491); validator unexplained=0; 753 tool tests OK; stable-ID
+check: 5 new lines (ObjectModel.cpp 000957, 000959, 000973, 000981; NpActor.cpp 000983), exact form, RVA and size
+equal to the inventory, no duplicates, no new non-stable `// phys_fn_` line. Ledgers: phase 2 (000973, from
+`homeless_shared_code`), phase 3 (000983) and phase 5 (000957, 000959, 000981) to `reconstructed_not_falsified`.

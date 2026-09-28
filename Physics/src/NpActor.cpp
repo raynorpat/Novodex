@@ -533,13 +533,33 @@ static void __fastcall nxCapsuleHandleSetHeight(void* self, void*, NxReal height
 	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
 	}
 
+// phys_fn_000983 (0x000219d0, 62 B)
+// NxBoxShape::setDimensions' internal row, called by 001069 on the handle's
+// +0x18 shape (0x10023503); __thiscall ret 4 (ecx = the internal box, the
+// fastcall's edx unused). The three dims words copied as dwords to
+// +0xe4..+0xec (0x100219d7-0x100219ed), the hull rebuild 000973 (call
+// 0x10021420 at 0x100219f3), BASE slot 6 through the shape's own table with 1
+// (call [edx+0x18] at 0x100219fe), then 001325 with dirty flag 0x40 (call
+// 0x10026c90 at 0x10021a05).
+static __declspec(noinline) void __fastcall nxBoxSetDimensions(void* self, void*,
+	const NxVec3& dimensions)
+	{
+	unsigned char* shape = static_cast<unsigned char*>(self);
+	memcpy(shape + 0xe4, &dimensions.x, 4);
+	memcpy(shape + 0xe8, &dimensions.y, 4);
+	memcpy(shape + 0xec, &dimensions.z, 4);
+	static_cast<BoxShape*>(self)->nxBoxRebuildHull();
+	typedef void (__thiscall* OwnerUpdateFn)(void*, unsigned);
+	reinterpret_cast<OwnerUpdateFn>((*reinterpret_cast<void***>(shape))[6])(shape, 1);
+	nxSceneMarkShapeDirty(shape, 0x40);
+	}
+
+// 001069's role (NpBoxShape.cpp in the image; the scene lock and its report
+// are not reproduced here): the handle's internal shape through 000983.
 static void __fastcall nxBoxHandleSetDimensions(void* self, void*,
 	const NxVec3& dimensions)
 	{
-	unsigned char* shape = nxBoxHandleInternal(self);
-	memcpy(shape + 0xe4, &dimensions, sizeof(dimensions));
-	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
-	nxSceneMarkShapeDirty(shape, 0x20);
+	nxBoxSetDimensions(nxBoxHandleInternal(self), 0, dimensions);
 	}
 
 // The reconstruction's error stream (ObjectModel.cpp).

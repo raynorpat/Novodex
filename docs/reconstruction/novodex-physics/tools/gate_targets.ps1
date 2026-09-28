@@ -106,6 +106,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'shape vtable capsule_load_return oracle=1 candidate=1',
         'shape vtable massframe oracle_digest=7c450cef cases=201 failures=0',
         'shape vtable boxsweep oracle_digest=2c5d5c09 cases=84 failures=0'
+        # Scene-raycast Task 4, box hull: 000973 and BOX slot 12 (000981), facade
+        # slots 9 and 10 (000957, 000959) against the oracle rows. The oracle
+        # side's line, appended as its own statement.
+        'box hull oracle_digest=e0477220 cases=314 failures=0'
     )
     # Joint-open-items Task 4 review: seven rotated bodies (a general rotation,
     # 180 degrees about x, y and z, and three general rotations whose largest
@@ -1675,6 +1679,18 @@ $NxRequiredCoverageLines = [ordered] @{
         'raycast late ray=x_statics type=1 groups=ffffffff max=7f7fffff hint=ffffffff all_bounds on_hit=1 flags=00000013 shape=s_rotated impact=4190cccd.00000000.00000000 distance=41b8cccd return=1',
         'raycast late ray=x_statics type=1 groups=ffffffff max=7f7fffff hint=ffffffff all_bounds on_hit=2 flags=00000013 shape=s_capsule impact=41180000.00000000.00000000 distance=41680000 return=1',
         'raycast late ray=x_statics type=1 groups=ffffffff max=7f7fffff hint=ffffffff all_bounds on_hit=3 flags=00000013 shape=s_late impact=40000000.00000000.00000000 distance=40e00000 return=1'
+        # Scene-raycast Task 4, box hull: boxes created through the image's path
+        # (000981 -> 000973) and resized through setDimensions (000983), their
+        # dims, world bounds, hull words, facade slots 9/10 and raycasts. The
+        # oracle side's lines, appended as their own statement.
+        'box_resize s_resize grown is_box=1 get_dims=40000000.3f000000.40400000 world_bounds=42180000.bf000000.c0400000.42280000.3f000000.40400000',
+        'box_resize d_resize grown is_box=1 get_dims=3f800000.40000000.3f400000 world_bounds=421c0000.c0000000.40880000.42240000.40000000.40b80000',
+        'box_resize r_resize grown is_box=1 get_dims=40400000.3f000000.3fc00000 world_bounds=42173333.c02ccccc.41080000.4228cccd.402ccccc.41380000',
+        'box_resize r_resize grown face=1 corners=00000004 list_a=00000001.00000005.00000006.00000002 list_b=00000001.00000008.00000005.00000009 plane=3f800000.00000000.00000000.c0400000 range=c0400000.40400000',
+        'box_resize d_resize shrunk is_box=1 get_dims=3dcccccd.3e4ccccd.3e99999a world_bounds=421f999a.be4ccccd.40966666.42206666.3e4ccccd.40a9999a',
+        'box_resize r_resize shrunk support dir=6 pose=1 face=4 feature_face=4 feature=00000000 bare=4',
+        'raycast box_resize grown ray=x_resize_s type=3 groups=0000e000 max=7f7fffff hint=ffffffff closest_shape result=s_resize flags=00000017 shape=s_resize impact=42180000.00000000.00000000 normal=bf800000.00000000.00000000 distance=40400000',
+        'raycast box_resize shrunk ray=x_resize_r type=3 groups=0000e000 max=7f7fffff hint=ffffffff closest_shape result=r_resize flags=00000017 shape=r_resize impact=421b5555.3e7ffff7.41200000 normal=bf19999a.bf4ccccc.00000000 distance=40755550'
     )
     'NxFoundationTangentTests' = @(
         'tangent sweep unit=120000 threshold=60000 scaled=60000 digest=5db0093f',
@@ -2733,14 +2749,15 @@ $NxPhaseCoverageFloor = [ordered] @{
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 135  # 34 for NxPhysicsAssetTests, 101 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a)
-    '5' = 1045  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
+    '5' = 1046  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # + 149 body-creation lines (scene-raycast Task 4)
                # + 13 setters lines (scene-raycast Task 4, setters)
                # + 9 dynamic-setter and 3 shape-vtable lines (scene-raycast Task 4, shape)
+               # + 1 shape-vtable line (scene-raycast Task 4, box hull)
                # (RED on purpose: vtables family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot
-    '7' = 483  # the 118 + 12 + 146 STAGED-PAIR joint assertions + 207 scene-raycast; the oracle-differential assertions
+    '7' = 491  # the 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast; the oracle-differential assertions
                # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
                # does not run
     '8' = 0

@@ -115,6 +115,313 @@ static void __fastcall capturePose(void*, void*, unsigned count,
     ++renderCount;
 }
 
+// The box hull rows (scene-raycast Task 4): the rebuild 000973 (0x21420,
+// ecx = the box, no stack arguments), BOX slot 12 000981 (0x21990), and the
+// facade's slots 9 and 10 (000957, 000959), reached through each side's own
+// table at +0xe0 of a box its own constructor built. Its own line and digest,
+// so the registered shape vtable line above is untouched; the digest folds
+// only the pinned DLL's answers.
+struct BoxHullResult { unsigned digest, cases, failures; };
+static unsigned gHullFaceCount = 6;
+static unsigned gHullVertexCount = 8;
+struct HullFakeSlots {
+    // __fastcall with an unused edx is __thiscall with no stack arguments.
+    static unsigned __fastcall faceCount(void*, void*) { return gHullFaceCount; }
+    static unsigned __fastcall vertexCount(void*, void*) { return gHullVertexCount; }
+};
+static unsigned gHullSeed = 0x2468ace1u;
+static float hullRandom(float scale) {
+    gHullSeed = gHullSeed * 1664525u + 1013904223u;
+    const int value = static_cast<int>(gHullSeed >> 8) - 0x800000;
+    return static_cast<float>(value) * (scale / 8388608.0f);
+}
+// The hull's words with each face record's two list pointers replaced by the
+// four words each points at (the two DLLs keep the lists at different
+// addresses): dims, eight corners, then per face corners, list A, list B and
+// the six floats. 3 + 24 + 6*15 words.
+static void hullWords(const unsigned char* shape, unsigned out[117]) {
+    memcpy(out, shape + 0xe4, 12 + 96);
+    unsigned* w = out + 27;
+    for(unsigned r = 0; r < 6; ++r) {
+        const unsigned char* record = shape + 0x150 + 0x24*r;
+        memcpy(w, record, 4);
+        for(unsigned list = 0; list < 2; ++list) {
+            const unsigned* pointer;
+            memcpy(&pointer, record + 4 + 4*list, 4);
+            if(pointer) memcpy(w + 1 + 4*list, pointer, 16);
+            else for(unsigned k = 0; k < 4; ++k) w[1 + 4*list + k] = 0xffffffffu;
+        }
+        memcpy(w + 9, record + 0xc, 24);
+        w += 15;
+    }
+}
+static BoxHullResult runBoxHullCases(const unsigned char* base) {
+    BoxHullResult result = { 2166136261u, 0, 0 };
+    typedef void (__thiscall* BoxCtor)(void*, void*, unsigned);
+    typedef void (__thiscall* DtorSlot)(void*, unsigned);
+    typedef void (__fastcall* RebuildRow)(void*);
+    typedef bool (__thiscall* LoadSlot)(void*, const void*);
+    typedef unsigned (__thiscall* FaceSlot)(void*, const float*, const float*);
+    typedef unsigned (__thiscall* FeatureSlot)(void*, const float*, const float*, unsigned*);
+    const BoxCtor oracleCtor = reinterpret_cast<BoxCtor>(const_cast<unsigned char*>(base) + 0x21870);
+    const RebuildRow oracleRebuild = reinterpret_cast<RebuildRow>(const_cast<unsigned char*>(base) + 0x21420);
+    unsigned char o[0x228], c[0x228];
+    auto build = [&]() {
+        memset(o, 0xcd, sizeof(o));
+        memset(c, 0xcd, sizeof(c));
+        oracleCtor(o, 0, 0);
+        new(c) BoxShape(0, 0);
+    };
+    auto destroy = [&]() {
+        reinterpret_cast<DtorSlot>((*reinterpret_cast<void***>(o))[0])(o, 0);
+        reinterpret_cast<DtorSlot>((*reinterpret_cast<void***>(c))[0])(c, 0);
+    };
+    auto compareHull = [&](const char* what, unsigned index) {
+        unsigned ow[117], cw[117];
+        hullWords(o, ow);
+        hullWords(c, cw);
+        result.digest = foldOracle(result.digest, ow, sizeof(ow));
+        if(memcmp(ow, cw, sizeof(ow)) != 0) {
+            fprintf(stderr, "box hull %s case=%u differs\n", what, index);
+            for(unsigned k = 0; k < 117; ++k)
+                if(ow[k] != cw[k])
+                    fprintf(stderr, "  word%u oracle=%08x candidate=%08x\n", k, ow[k], cw[k]);
+            ++result.failures;
+        }
+        ++result.cases;
+    };
+    const unsigned dimensionBits[][3] = {
+        {0x3f800000u, 0x3f800000u, 0x3f800000u},    // 1, 1, 1
+        {0x40200000u, 0x40500000u, 0x40980000u},    // 2.5, 3.25, 4.75
+        {0x3e000000u, 0x42c80000u, 0x3f400000u},    // 0.125, 100, 0.75
+        {0x00000000u, 0x80000000u, 0x00000000u},    // 0, -0, 0
+        {0xbf800000u, 0x40000000u, 0xc0400000u},    // -1, 2, -3
+        {0x3a83126fu, 0x4be4e1c0u, 0x40e33333u},    // 0.001, 3e7, 7.1
+        {0x3dcccccdu, 0x3eaaaaabu, 0x3f7fffffu},    // 0.1, 1/3, 1-ulp
+        {0x7f800000u, 0x00000001u, 0x7fc00123u},    // inf, denormal, NaN payload
+        {0xffc00456u, 0xff800000u, 0x3f000000u}     // -NaN payload, -inf, 0.5
+    };
+    const unsigned dimensionCases = sizeof(dimensionBits) / sizeof(dimensionBits[0]);
+
+    // 000973 called directly on each side.
+    for(unsigned i = 0; i < dimensionCases; ++i) {
+        build();
+        memcpy(o + 0xe4, dimensionBits[i], 12);
+        memcpy(c + 0xe4, dimensionBits[i], 12);
+        oracleRebuild(o);
+        reinterpret_cast<BoxShape*>(c)->nxBoxRebuildHull();
+        compareHull("rebuild", i);
+        destroy();
+    }
+
+    // 000973 through tables whose face and vertex counts the harness sets:
+    // the loops' zero-count and short arms. Each side's table is its own
+    // twelve slots with slots 1 and 3 replaced.
+    build();
+    void* oracleFake[12];
+    void* candidateFake[12];
+    void** oracleFacade = *reinterpret_cast<void***>(o + 0xe0);
+    void** candidateFacade = *reinterpret_cast<void***>(c + 0xe0);
+    memcpy(oracleFake, oracleFacade, sizeof(oracleFake));
+    memcpy(candidateFake, candidateFacade, sizeof(candidateFake));
+    oracleFake[1] = candidateFake[1] = reinterpret_cast<void*>(&HullFakeSlots::vertexCount);
+    oracleFake[3] = candidateFake[3] = reinterpret_cast<void*>(&HullFakeSlots::faceCount);
+    void* oracleFakePointer = oracleFake;
+    void* candidateFakePointer = candidateFake;
+    memcpy(o + 0xe0, &oracleFakePointer, 4);
+    memcpy(c + 0xe0, &candidateFakePointer, 4);
+    const unsigned vertexCounts[4] = {0, 1, 5, 8};
+    for(unsigned faces = 0; faces <= 6; ++faces)
+    for(unsigned v = 0; v < 4; ++v) {
+        gHullFaceCount = faces;
+        gHullVertexCount = vertexCounts[v];
+        const unsigned index = faces * 4 + v;
+        const unsigned* dims = dimensionBits[1 + index % 6];
+        memcpy(o + 0xe4, dims, 12);
+        memcpy(c + 0xe4, dims, 12);
+        oracleRebuild(o);
+        reinterpret_cast<BoxShape*>(c)->nxBoxRebuildHull();
+        compareHull("rebuild_counts", index);
+    }
+    gHullFaceCount = 6;
+    gHullVertexCount = 8;
+    memcpy(o + 0xe0, &oracleFacade, 4);
+    memcpy(c + 0xe0, &candidateFacade, 4);
+    destroy();
+
+    // 000981, BOX slot 12, through each side's own BOX table.
+    for(unsigned i = 0; i < dimensionCases; ++i) {
+        build();
+        unsigned char record[0x58] = {};
+        const float pose[12] = {0,0,1, 0,1,0, -1,0,0, 1.5f,-2.0f,0.25f};
+        memcpy(record + 8, pose, sizeof(pose));
+        const unsigned short group = static_cast<unsigned short>(i % 4);
+        memcpy(record + 0x3c, &group, 2);
+        memcpy(record + 0x4c, dimensionBits[i], 12);
+        const bool ro = reinterpret_cast<LoadSlot>((*reinterpret_cast<void***>(o))[12])(o, record);
+        const bool rc = reinterpret_cast<LoadSlot>((*reinterpret_cast<void***>(c))[12])(c, record);
+        const unsigned char roByte = ro ? 1 : 0;
+        result.digest = foldOracle(result.digest, &roByte, 1);
+        result.digest = foldOracle(result.digest, o + 0x6c, 48);
+        result.digest = foldOracle(result.digest, o + 0xd8, 8);
+        if(ro != rc || memcmp(o + 0x6c, c + 0x6c, 48) != 0 ||
+           memcmp(o + 0xd8, c + 0xd8, 8) != 0) {
+            fprintf(stderr, "box hull load case=%u return/base differs\n", i);
+            ++result.failures;
+        }
+        ++result.cases;
+        compareHull("load", i);
+        destroy();
+    }
+
+    // Facade slots 9 and 10 through each side's own +0xe0 table.
+    const float directions[][3] = {
+        {1,0,0}, {-1,0,0}, {0,1,0}, {0,-1,0}, {0,0,1}, {0,0,-1},
+        {1,1,0}, {1,0,1}, {0,1,1}, {-1,1,0}, {1,-1,-1}, {1,1,1}, {-1,-1,-1},
+        {0,0,0}, {-0.0f,0,0}, {0.5f,0.49999997f,0}, {1e-30f,0,0},
+        {0.70710677f,0.70710677f,0}, {0.3f,-0.8f,0.52f}, {2.0f,-3.5f,0.125f}
+    };
+    const unsigned directionCount = sizeof(directions) / sizeof(directions[0]);
+    float poses[4][12];
+    memset(poses, 0, sizeof(poses));
+    poses[1][0] = poses[1][5] = poses[1][10] = 1.0f;                // identity, 4-word rows
+    const float rotation[12] = {0,-1,0,9, 1,0,0,9, 0,0,1,9};
+    memcpy(poses[2], rotation, sizeof(rotation));
+    for(unsigned k = 0; k < 12; ++k) poses[3][k] = hullRandom(1.5f);
+    auto driveSlots = [&](const char* what, unsigned index, const float* direction,
+            const float* pose) {
+        FaceSlot oracleFace = reinterpret_cast<FaceSlot>((*reinterpret_cast<void***>(o + 0xe0))[9]);
+        FaceSlot candidateFace = reinterpret_cast<FaceSlot>((*reinterpret_cast<void***>(c + 0xe0))[9]);
+        FeatureSlot oracleFeature = reinterpret_cast<FeatureSlot>((*reinterpret_cast<void***>(o + 0xe0))[10]);
+        FeatureSlot candidateFeature = reinterpret_cast<FeatureSlot>((*reinterpret_cast<void***>(c + 0xe0))[10]);
+        const unsigned fo = oracleFace(o + 0xe0, direction, pose);
+        const unsigned fc = candidateFace(c + 0xe0, direction, pose);
+        unsigned outO = 0xcdcdcdcdu, outC = 0xcdcdcdcdu;
+        const unsigned eo = oracleFeature(o + 0xe0, direction, pose, &outO);
+        const unsigned ec = candidateFeature(c + 0xe0, direction, pose, &outC);
+        const unsigned no = oracleFeature(o + 0xe0, direction, pose, 0);
+        const unsigned nc = candidateFeature(c + 0xe0, direction, pose, 0);
+        const unsigned words[4] = {fo, eo, outO, no};
+        result.digest = foldOracle(result.digest, words, sizeof(words));
+        if(fo != fc || eo != ec || outO != outC || no != nc) {
+            fprintf(stderr, "box hull %s case=%u slot9 %u/%u slot10 %u/%u out %08x/%08x null %u/%u\n",
+                what, index, fo, fc, eo, ec, outO, outC, no, nc);
+            ++result.failures;
+        }
+        ++result.cases;
+    };
+    build();
+    memcpy(o + 0xe4, dimensionBits[1], 12);
+    memcpy(c + 0xe4, dimensionBits[1], 12);
+    oracleRebuild(o);
+    reinterpret_cast<BoxShape*>(c)->nxBoxRebuildHull();
+    for(unsigned d = 0; d < directionCount; ++d)
+    for(unsigned p = 0; p < 5; ++p)
+        driveSlots("support", d * 5 + p, directions[d], p ? poses[p - 1] : 0);
+    const float nanDirection[3] = {0, 0, 0};
+    unsigned nanBits = 0x7fc00001u;
+    float withNan[3];
+    memcpy(withNan, nanDirection, sizeof(withNan));
+    memcpy(&withNan[1], &nanBits, 4);
+    driveSlots("support_nan", 0, withNan, 0);
+    withNan[0] = 1.0f;
+    driveSlots("support_nan", 1, withNan, 0);
+
+    // Crafted normals and poses where the listing's sum grouping and its float
+    // spills decide the answer (random data almost never does). A = 1e17f:
+    // (A*1 + 4*1) - A is 0 in double where (A - A) + 4 is 4.
+    const float bigA = 1e17f;
+    auto writeNormals = [&](const float (*normals)[3]) {
+        for(unsigned r = 0; r < 6; ++r) {
+            memcpy(o + 0x15c + 0x24*r, normals[r], 12);
+            memcpy(c + 0x15c + 0x24*r, normals[r], 12);
+        }
+    };
+    const float ones[3] = {1, 1, 1};
+    unsigned crafted = 0;
+    // Grouping of each face position's sum: face j carries A, 4, -A in the
+    // three orders; the other faces project to 2 (above every edge's 2*sqrt(1/2),
+    // so slot 10's edge pass cannot mask the face search).
+    for(unsigned j = 0; j < 6; ++j)
+    for(unsigned unitAxis = 0; unitAxis < 3; ++unitAxis)
+    for(unsigned sign = 0; sign < 2; ++sign) {
+        float normals[6][3];
+        for(unsigned r = 0; r < 6; ++r) { normals[r][0] = 2.0f; normals[r][1] = 0; normals[r][2] = 0; }
+        const unsigned first = (unitAxis + 1) % 3, second = (unitAxis + 2) % 3;
+        normals[j][unitAxis] = 4.0f;
+        normals[j][first] = sign ? -bigA : bigA;
+        normals[j][second] = sign ? bigA : -bigA;
+        writeNormals(normals);
+        driveSlots("crafted_grouping", crafted++, ones, 0);
+    }
+    // The float spill of a replaced best: faces a < b, a projects to 2 + 2^-29
+    // (not a float), b to 2 + 2^-30 -- b wins only against the spilled 2.0f.
+    // Face 0's seed stays unrounded, so a = 0 keeps it.
+    const unsigned pairs[][2] = {{0,1}, {1,2}, {1,4}, {2,3}, {3,5}, {4,5}, {0,5}};
+    for(const auto& pair : pairs) {
+        float normals[6][3];
+        for(unsigned r = 0; r < 6; ++r) { normals[r][0] = 0.25f; normals[r][1] = 0; normals[r][2] = 0; }
+        normals[pair[0]][0] = 2.0f; normals[pair[0]][1] = 1.0f / 536870912.0f;
+        normals[pair[1]][0] = 2.0f; normals[pair[1]][2] = 1.0f / 1073741824.0f;
+        writeNormals(normals);
+        driveSlots("crafted_spill", crafted++, ones, 0);
+    }
+    // The pose rows' grouping: one row carries A, 4, -A in the three orders.
+    {
+        oracleRebuild(o);
+        reinterpret_cast<BoxShape*>(c)->nxBoxRebuildHull();
+        for(unsigned row = 0; row < 3; ++row)
+        for(unsigned unitAxis = 0; unitAxis < 3; ++unitAxis) {
+            float pose[12] = {0.25f,0,0,0, 0,0.25f,0,0, 0,0,0.25f,0};
+            const unsigned first = (unitAxis + 1) % 3, second = (unitAxis + 2) % 3;
+            pose[4*row + unitAxis] = 4.0f;
+            pose[4*row + first] = bigA;
+            pose[4*row + second] = -bigA;
+            const float direction[3] = {1, 1, 1};
+            driveSlots("crafted_pose", crafted++, direction, pose);
+            const float flipped[3] = {-1, -1, -1};
+            driveSlots("crafted_pose", crafted++, flipped, pose);
+        }
+    }
+
+    // The same slots over face normals the harness writes into both records
+    // (the sums' grouping shows once the normals are not axes), with every face
+    // count through the replaced slot 3.
+    const unsigned samples = 96;
+    for(unsigned s = 0; s < samples; ++s) {
+        float normals[6][3];
+        for(unsigned r = 0; r < 6; ++r)
+            for(unsigned k = 0; k < 3; ++k)
+                normals[r][k] = hullRandom(1.25f);
+        if(s % 8 == 3) memcpy(normals[4], normals[2], 12);   // a tie
+        for(unsigned r = 0; r < 6; ++r) {
+            memcpy(o + 0x15c + 0x24*r, normals[r], 12);
+            memcpy(c + 0x15c + 0x24*r, normals[r], 12);
+        }
+        float direction[3], pose[12];
+        for(unsigned k = 0; k < 3; ++k) direction[k] = hullRandom(2.0f);
+        for(unsigned k = 0; k < 12; ++k) pose[k] = hullRandom(1.0f);
+        const bool fake = s >= samples / 2;
+        if(fake) {
+            gHullFaceCount = s % 7;
+            memcpy(o + 0xe0, &oracleFakePointer, 4);
+            memcpy(c + 0xe0, &candidateFakePointer, 4);
+            memcpy(oracleFake, oracleFacade, sizeof(oracleFake));
+            memcpy(candidateFake, candidateFacade, sizeof(candidateFake));
+            oracleFake[3] = candidateFake[3] = reinterpret_cast<void*>(&HullFakeSlots::faceCount);
+        }
+        driveSlots(fake ? "support_counts" : "support_normals", s, direction,
+            s % 3 == 0 ? 0 : pose);
+        if(fake) {
+            memcpy(o + 0xe0, &oracleFacade, 4);
+            memcpy(c + 0xe0, &candidateFacade, 4);
+            gHullFaceCount = 6;
+        }
+    }
+    destroy();
+    return result;
+}
+
 // A separate process keeps the Phase 5 layout harness's giant, fragile
 // wmain frame unchanged while checking constructed vtable dispatch.
 int wmain(int argc, wchar_t** argv)
@@ -1883,6 +2190,7 @@ int wmain(int argc, wchar_t** argv)
         ++sweepCases;
     }
     }
+    const BoxHullResult hull = runBoxHullCases(base);
     nxSetSdkAllocatorBridge(0);
     printf("shape vtable oracle_digest=%08x cases=%u failures=%u\n",
         oracleDigest, cases, failures);
@@ -1892,8 +2200,10 @@ int wmain(int argc, wchar_t** argv)
         massDigest, massCases, massFailures);
     printf("shape vtable boxsweep oracle_digest=%08x cases=%u failures=%u\n",
         sweepDigest, sweepCases, sweepFailures);
+    printf("box hull oracle_digest=%08x cases=%u failures=%u\n",
+        hull.digest, hull.cases, hull.failures);
     if(capsuleLoadOracleReturn != capsuleLoadCandidateReturn || massFailures ||
-       sweepFailures)
+       sweepFailures || hull.failures)
         return 1;
     return failures ? 1 : 0;
 }

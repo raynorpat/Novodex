@@ -55,9 +55,9 @@
   "counts": {
     "differential_falsified": 31,
     "oracle_differential_falsified": 30,
-    "deferred_not_reconstructed_in_phase": 303,
+    "deferred_not_reconstructed_in_phase": 302,
     "deferred_blocked_on_later_phase": 18,
-    "deferred_reconstructed_not_falsified": 10
+    "deferred_reconstructed_not_falsified": 11
   },
   "closed": [
     {
@@ -803,9 +803,10 @@
       "id": "phys_fn_000983",
       "rva": "0x000219d0",
       "size": 62,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000993",
