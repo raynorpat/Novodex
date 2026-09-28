@@ -2590,8 +2590,9 @@ void __cdecl NxContactBoxCapsule(const NxCollisionShape* box,
 	for(int i = 0; i < 9; ++i)
 		boxData.rotation[i] = box->rotation[i];
 
-	// [esp+0x14] holds a byte per end, [esp+0x3c] whether the axis has been
-	// normalised, and the axis itself sits in [esp+8..0x10]. The axis is
+	// In the listing's frame after its prologue pushes (0x0003b42e, 0x0003b460),
+	// [esp+0x24] holds a byte per end, [esp+0x4c] whether the axis has been
+	// normalised, and the axis itself sits in [esp+0x18..0x20]. The axis is
 	// negated at the bottom of every pass (0x0003b5fd), normalised or not, so
 	// the second end is tested against the axis pointing back at the first.
 	NxU8 emitted[2];

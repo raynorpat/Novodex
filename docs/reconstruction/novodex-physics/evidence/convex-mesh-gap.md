@@ -66,6 +66,11 @@ needed. 23 oracle-side lines were registered (the phase 3 coverage floor goes fr
   family returned the oracle into a contact coordinate and took the harness down; it now uses
   contact_box_box's pre-flight (the oracle's own 001748 with 80 slots and a copy of the cache byte),
   which measured `probe_max=18` and skipped 21 pairs (`overflow_skipped=21`, registered).
+  For a pair whose manifold has more than sixteen contacts the candidate does not reproduce the
+  overrun: `NxContactBoxCapsule` gives the manifold 80 slots and emits every contact, where the
+  oracle writes the seventeenth over its own return address. That is a deliberate, documented
+  divergence, and the pre-flight is what keeps those pairs out of the comparison (the count is the
+  same, 21, under both control words; Task 2b made the harness count and check both).
 
 **Harness notes.** The box's slot 5 is phys_fn_000949, a Phase 5 row this task does not own and whose
 candidate is provisional, so both worlds of contact_box_capsule carry the ORACLE's 000949 in the box

@@ -893,8 +893,8 @@ bool __cdecl NxOverlapCapsuleCapsule(const NxCollisionShape* capsule0, const NxC
 
 // phys_fn_001785 (0x0003f390, 471 B)
 // Matrix B [CAPSULE][COMPOUND]. Not a walk over children: the capsule's axis
-// against ONE box, the compound shape's own world bounds, through
-// phys_fn_001688 with null outputs, against the squared radius (copied as a
+// against ONE box, the compound shape's own world bounds, through segment/box
+// (phys_fn_001688) with null outputs, against the squared radius (copied as a
 // word at 0x0003f3a6 and squared from that copy at 0x0003f545).
 bool __cdecl NxOverlapCapsuleCompound(const NxCollisionShape* capsule, const NxCollisionShape* compound)
 	{

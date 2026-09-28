@@ -24,13 +24,13 @@ struct NxDistanceLine
 	NxReal direction[3];
 	};
 
-// phys_fn_001670 at 0x00032840. Squared distance from `point` to the box
+// Row phys_fn_001670 at 0x00032840. Squared distance from `point` to the box
 // (centre, extents, rotation), and the closest point in BOX coordinates when
 // `closest` is not null.
 double __cdecl NxPointBoxSquareDistance(const NxReal* point, const NxReal* center,
 	const NxReal* extents, const NxReal* rotation, NxReal* closest);
 
-// phys_fn_001684 at 0x00033a50 (continuation phys_fn_001686). Squared distance
+// Row phys_fn_001684 at 0x00033a50 (continuation phys_fn_001686). Squared distance
 // from the infinite line to the box. When `lineParam` is not null it receives
 // the line parameter and the three box parameters receive the closest point in
 // box coordinates; when it is null none of the four is written.
@@ -38,7 +38,7 @@ double __cdecl NxLineBoxSquareDistance(const NxDistanceLine* line,
 	const NxCollisionBoxData* box, NxReal* lineParam,
 	NxReal* boxParam0, NxReal* boxParam1, NxReal* boxParam2);
 
-// phys_fn_001688 at 0x00033d00. Squared distance from the segment p0..p1 to the
+// Row phys_fn_001688 at 0x00033d00. Squared distance from the segment p0..p1 to the
 // box, the segment parameter (0..1) and the closest point in box coordinates,
 // each written only when its pointer is not null.
 double __cdecl NxSegmentBoxSquareDistance(const NxSegment* segment,

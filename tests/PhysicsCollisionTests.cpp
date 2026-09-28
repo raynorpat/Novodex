@@ -6456,7 +6456,11 @@ int wmain(int argc, wchar_t** argv)
 	typedef int(__cdecl* NxOracleShimFn)(NxVec3*, NxReal*, NxVec3*, const NxReal*,
 		const NxReal*, const NxReal*, const NxReal*, unsigned char*);
 	NxOracleShimFn oracleShim = (NxOracleShimFn) (base + 0x0003ace0);
-	unsigned overflowSkipped = 0;
+	// Counted under each control word: the probe runs under the word the pair
+	// is driven under, so the two could differ. The registered line prints the
+	// default word's count and the harness fails if the simulate word's is not
+	// the same.
+	unsigned overflowSkipped[2] = { 0, 0 };
 	unsigned probeMax = 0;
 
 	static NxContactWorld world[2];
@@ -6612,8 +6616,7 @@ int wmain(int argc, wchar_t** argv)
 					probeMax = (unsigned) probeCount;
 				if(probeCount > 16)
 					{
-					if(mode == 0)
-						++overflowSkipped;
+					++overflowSkipped[mode];
 					continue;
 					}
 				}
@@ -6655,7 +6658,13 @@ int wmain(int argc, wchar_t** argv)
 		emitted, swept, sweptEmitted, centred, parallel, zeroAxis,
 		contactCounts[0], contactCounts[1], contactCounts[2], contactCounts[3],
 		contactCounts[4], contactCounts[5], contactCounts[6], contactCounts[7],
-		maxContacts, overflowSkipped, probeMax, perMode[0], perMode[1]);
+		maxContacts, overflowSkipped[0], probeMax, perMode[0], perMode[1]);
+	if(overflowSkipped[1] != overflowSkipped[0])
+		{
+		printf("collision coverage name=contact_box_capsule overflow_skipped_simulate=%u differs\n",
+			overflowSkipped[1]);
+		++totalMismatch;
+		}
 	}
 
 	// -----------------------------------------------------------------------
