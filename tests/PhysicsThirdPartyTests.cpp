@@ -387,8 +387,9 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "qhull_merge_x87", 2376, 0, 0, 2814749767106560ull, 26, 0, 0, 2814749767106560ull, 3.2585045772748344e-13 },	// qhull-gap: large and near-degenerate inputs
 	{ "qhull_random_x87", 317, 0, 0, 3197379813572608ull, 14, 0, 0, 3197379813572608ull, 1.3877787807814457e-14 },	// qhull-gap: QJ/Qr/R: the qhull_hull_x87 class over joggled and perturbed input
 	{ "qhull_direct_x87", 1062, 0, 0, kInf64, 43, 7, 0, 18858823439613952ull, 2.2204460492503131e-16 },	// qhull-gap: out-of-line printers and helpers; the inf words are distances next to 0
-	{ "qhull_paths", 3211, 3203, 0, 0ull, 0, 0, 0, 0ull, 0.0 },	// qhull-gap: distance-test counts and a trace-4 search path; the T4 run is 9 words longer
-	{ "qhull_paths_x87", 616, 1, 0, kInf64, 346, 85, 0, 4616189618054758400ull, HUGE_VAL },	// qhull-gap: the same runs; misaligned after the T4 run's extra lines
+	{ "qhull_merge2_x87", 1700, 0, 0, 2814749767106560ull, 103, 0, 0, 2814749767106560ull, 5.5511151231257827e-15 },	// qhull-gap: the Qn switches, larger thresholds, Qf, Delaunay Qt
+	{ "qhull_paths", 3212, 3204, 0, 0ull, 0, 0, 0, 0ull, 0.0 },	// qhull-gap: distance-test counts and a trace-4 search path; the T4 run is 9 words longer
+	{ "qhull_paths_x87", 644, 1, 0, kInf64, 348, 85, 0, 4616189618054758400ull, HUGE_VAL },	// qhull-gap: the same runs; misaligned after the T4 run's extra lines
 	{ "qhull_rotation", 268, 268, 0, 0ull, 0, 0, 0, 0ull, 0.0 },	// qhull-gap: "QRn": the merges differ, as qhull_hull_rotated
 	{ "qhull_rotation_x87", 2001, 0, 0, kInf64, 547, 20, 0, 4611686018427387904ull, 2.0 },	// qhull-gap: "QRn"
 	};
@@ -5773,6 +5774,22 @@ static void nxDriveQhullGap(const NxOracleRows& o, bool selfOnly)
 		{ 21, "o", 0 }, { 21, "C-0", 0 },
 		{ 13, "C-0", 0 }, { 13, "Qx", 0 },
 		};
+	// More of the merge code: the Qn switches over the merge-heavy sets,
+	// larger merge thresholds (degenerate and redundant facets, vertex
+	// renaming), the furthest-outside partition, and triangulated Delaunay
+	// output over co-circular input (mirror facets).
+	static const NxQhGapRun kMerge2[] =
+		{
+		{ 17, "Q1", 0 }, { 17, "Q2", 0 }, { 17, "Q4", 0 }, { 17, "Q0", 0 }, { 17, "C-0.01", 0 },
+		{ 19, "Q2", 0 }, { 19, "Q0", 0 }, { 18, "C-0.02", 0 }, { 18, "A-0.9", 0 }, { 18, "C-0 Q4", 0 },
+		{ 21, "C-0.05", 0 }, { 21, "Qf", 0 }, { 3, "Qf", 0 }, { 6, "C-0", 0 }, { 6, "Q0", 0 },
+		{ 2, "Q1 C-0", 0 }, { 13, "d Qt", 1 }, { 17, "TF1", 0 },
+		{ 2, "QG-0 Pg", 0 }, { 22, "d QG0 Pg", 1 }, { 22, "d QG-0 Pg", 1 },
+		};
+	nxQhGapFamily(o, "qhull_merge2", "qhull_merge2_x87", "0x0007d180", "phys_fn_003234", "qhull.c,poly.c,poly2.c,merge.c,qset.c",
+		"0x0007d180", "phys_fn_003234", "geom.c,geom2.c,merge.c", kMerge2, sizeof(kMerge2) / sizeof(kMerge2[0]),
+		selfOnly, 0, kDivergent);
+
 	nxQhGapFamily(o, "qhull_merge", "qhull_merge_x87", "0x0007d180", "phys_fn_003234", "qhull.c,poly.c,poly2.c,merge.c,qset.c",
 		"0x0007d180", "phys_fn_003234", "geom.c,geom2.c,merge.c", kMerge, sizeof(kMerge) / sizeof(kMerge[0]),
 		selfOnly, 0, kDivergent);
@@ -5812,7 +5829,7 @@ static void nxDriveQhullGap(const NxOracleRows& o, bool selfOnly)
 	static const NxQhGapRun kPaths[] =
 		{
 		{ 16, "s", 0 }, { 12, "d Qbb", 1 }, { 16, "C-0", 0 }, { 16, "Qx", 0 }, { 16, "Qv", 0 },
-		{ 18, "C0.01", 0 }, { 21, "C0.01", 0 }, { 2, "Qr", 0 }, { 2, "QR-5 Qr", 0 },
+		{ 18, "C0.01", 0 }, { 21, "C0.01", 0 }, { 2, "Qr", 0 }, { 2, "QR-5 Qr", 0 }, { 12, "d Qt", 1 },
 		{ 1, "T4", 0 },	// last: its tape is 9 words longer on the candidate side
 		};
 	nxQhGapFamily(o, "qhull_paths", "qhull_paths_x87", "0x0005c5c0", "phys_fn_002425", "geom.c,qhull.c,poly2.c,merge.c,io.c",

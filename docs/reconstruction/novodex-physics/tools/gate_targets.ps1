@@ -2314,18 +2314,20 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=qhull_trace_x87 rva=0x0007d180 owner=phys_fn_003234 source=qhull.c,poly.c,poly2.c,merge.c,geom.c,geom2.c,io.c words=16754 oracle=07d0eefc',
         'thirdparty name=qhull_options rva=0x000626f0 owner=phys_fn_002587 source=global.c,qhull.c,poly.c,poly2.c,merge.c,geom2.c words=35342 oracle=6e73c257 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=qhull_options_x87 rva=0x000626f0 owner=phys_fn_002587 source=global.c,merge.c,geom.c,geom2.c words=29002 oracle=675ae947',
+        'thirdparty name=qhull_merge2 rva=0x0007d180 owner=phys_fn_003234 source=qhull.c,poly.c,poly2.c,merge.c,qset.c words=53209 oracle=d5c49873 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=qhull_merge2_x87 rva=0x0007d180 owner=phys_fn_003234 source=geom.c,geom2.c,merge.c words=62090 oracle=b399c974',
         'thirdparty name=qhull_merge rva=0x0007d180 owner=phys_fn_003234 source=qhull.c,poly.c,poly2.c,merge.c,qset.c words=84575 oracle=a0e11bc1 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=qhull_merge_x87 rva=0x0007d180 owner=phys_fn_003234 source=geom.c,geom2.c,merge.c words=77301 oracle=3639a851',
         'thirdparty name=qhull_random rva=0x00061490 owner=phys_fn_002550 source=geom2.c,global.c,qhull.c,merge.c words=10722 oracle=ba2b5e75 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=qhull_random_x87 rva=0x00061490 owner=phys_fn_002550 source=geom2.c,geom.c words=7184 oracle=1baa6368',
         'thirdparty name=qhull_direct rva=0x00068ce0 owner=phys_fn_002779 source=io.c,geom2.c,poly2.c,stat.c,qset.c words=127485 oracle=2cf4876b mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=qhull_direct_x87 rva=0x00068ce0 owner=phys_fn_002779 source=io.c,geom.c,geom2.c words=22629 oracle=3e023a50',
-        'thirdparty name=qhull_paths rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,qhull.c,poly2.c,merge.c,io.c words=26445 oracle=c2d1ad84',
-        'thirdparty name=qhull_paths_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=17625 oracle=f493b1a6',
+        'thirdparty name=qhull_paths rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,qhull.c,poly2.c,merge.c,io.c words=27407 oracle=cc3e11e3',
+        'thirdparty name=qhull_paths_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=18247 oracle=a11a0524',
         'thirdparty name=qhull_rotation rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,global.c,qhull.c,merge.c words=9980 oracle=e80e1851',
         'thirdparty name=qhull_rotation_x87 rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,geom.c words=8724 oracle=07282fca',
-        'thirdparty coverage driven=69 divergent=24 words=1383757 layout_checks=47',
-        'thirdparty oracle digest=ef0868a5'
+        'thirdparty coverage driven=71 divergent=25 words=1500640 layout_checks=47',
+        'thirdparty oracle digest=a6ae0830'
     )
 }
 
@@ -2348,8 +2350,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
-    '4' = 159  # 34 for NxPhysicsAssetTests, 125 for NxPhysicsThirdPartyTests (67 + 29 from
-               # vendored-correspondence Task 4 + 5 from its Task 5a + 24 from qhull-gap Task 1)
+    '4' = 161  # 34 for NxPhysicsAssetTests, 127 for NxPhysicsThirdPartyTests (67 + 29 from
+               # vendored-correspondence Task 4 + 5 from its Task 5a + 26 from qhull-gap Task 1)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
