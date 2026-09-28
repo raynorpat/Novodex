@@ -12,7 +12,10 @@
 // vertex normals, P-Small) and the fields +0x04..+0x14 it reads; Task 2f writes
 // the rest of P-Hull (001441..001502) and the fields those rows establish: the
 // centroid, the polygons and the edges. Only fields a listing site reads or
-// writes are named; +0x00 and +0x34 are read by none of these rows.
+// writes are named; +0x00 is read by none of these rows. Task 2g names +0x34
+// (001514's edge axes). The object at TriangleMesh +0xa0 is larger than this
+// class: the polygon interface's slot 11 (002249) also reads a vertex graph at
+// +0x64 (0x00055369), named where it is read (TriangleMeshPolygons.cpp).
 
 #include "IceAdjacencies.h"
 #include "IceMeshTools.h"
@@ -55,7 +58,7 @@ class ConvexHull
 	HullPolygon*		mPolygons;			// +0x28, `new[]` (cookie), 0x0002b79f
 	NxU32*				mPolygonVRefs;		// +0x2c, every polygon's references, 0x0002b7db
 	NxU32*				mPolygonERefs;		// +0x30, every polygon's edge numbers, 0x0002cf5e
-	NxU32				mWord34;			// +0x34, read by none of these rows
+	IceCore::Container*	mEdgeAxes;			// +0x34, a CRT-allocated Container: 001514 (0x0002d487)
 	NxU32				mNbEdges;			// +0x38, 0x0002cd32 / 0x0002ce4f
 	HullEdge*			mEdges;				// +0x3c, `new[]` (cookie), 0x0002ced1
 	IceMaths::Point*	mEdgeNormals;		// +0x40, 0x0002d1f2
@@ -104,6 +107,20 @@ NxU32 __fastcall nxHullSupportPolygon(ConvexHull* hull, NxU32 edx, const IceMath
 // 001502: the edges, the polygons' edge numbers, the edge-to-polygon table and
 // the edge normals (thiscall).
 bool __fastcall nxHullComputeEdges(ConvexHull* hull);
+
+// Task 2g (P-Mesh): the helpers the TriangleMesh polygon interface reaches.
+// 001514: the edge axes into a CRT-allocated Container at +0x34 (thiscall).
+bool __fastcall nxHullComputeEdgeAxes(ConvexHull* hull);
+
+// 001516: the supporting face along a direction (optionally rotated by a 4x4
+// pose): a polygon index, and in *kind 0 (a face) or 1 (the better face of the
+// winning edge) (thiscall, `ret 0xc`).
+NxU32 __fastcall nxHullSupportFace(ConvexHull* hull, NxU32 edx, const IceMaths::Point* dir,
+	const float* pose, NxU32* kind);
+
+// 001530: the hill climb over a vertex graph (cdecl).
+bool nxHullClimbSupportVertex(NxU32* index, const IceMaths::Point* dir, const IceMaths::Point* verts,
+	const void* graph, NxU32 stamp, NxU32* visited);
 
 // The element constructors the `new[]` sites run through 000001, as their
 // product forms (thiscall, no argument).

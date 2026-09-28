@@ -9,7 +9,9 @@
 // units/convex-mesh-gap-contract.md). Convex-mesh gap Task 2e wrote 001461 (in
 // the P-Small list); Task 2f writes the rest of P-Hull from the Capstone
 // listing: 001441, 001445, 001449, 001459, 001463, 001465, 001472, 001496 (with
-// its continuations 001498 and 001500) and 001502 (with 001504..001512). The
+// its continuations 001498 and 001500) and 001502 (with 001504..001512); Task
+// 2g adds the P-Mesh helpers that follow 001512 in the image, 001514, 001516
+// (with 001518..001522) and 001530 (with 001532 and 001534). The
 // file name follows 001465's __FILE__ (0x101076ac); the other rows lie in the
 // gaps either side of it, so their placement here is a choice (the contract
 // records it).
@@ -56,6 +58,14 @@ extern "C" void nxIceCallPlaneSet();			// 005155, Plane::Set(const Point&, const
 #pragma comment(linker, "/alternatename:_nxIceCallRadixSortSort=?Sort@RadixSort@IceCore@@QAEAAV12@PBIIW4RadixHint@2@@Z")
 #pragma comment(linker, "/alternatename:_nxIceCallTriangleArea=?Area@Triangle@IceMaths@@QBEMXZ")
 #pragma comment(linker, "/alternatename:_nxIceCallPlaneSet=?Set@Plane@IceMaths@@QAEAAV12@ABVPoint@2@00@Z")
+// Task 2g: 001514's Container growth (004840, a private member) and its CRT
+// `operator new` (005702; see the row).
+extern "C" void nxIceCallContainerResize();		// 004840, Container::Resize(udword)
+extern "C" void nxIceCallCrtNew();				// 005702, the static CRT's operator new
+extern "C" void nxIceCallCrtFree();				// 005668, the static CRT's free (a direct call)
+#pragma comment(linker, "/alternatename:_nxIceCallContainerResize=?Resize@Container@IceCore@@AAE_NI@Z")
+#pragma comment(linker, "/alternatename:_nxIceCallCrtNew=??2@YAPAXIABUnothrow_t@std@@@Z")
+#pragma comment(linker, "/alternatename:_nxIceCallCrtFree=_free")
 
 
 // The constants the float rows read: 0.0f (0x101041f0), 1.0f (0x101041ec), 0.5f
@@ -1922,6 +1932,816 @@ L2d2c0:
 		pop	ebx		// 0x0002d2ce
 		add	esp, 0x68		// 0x0002d2cf
 		ret		// 0x0002d2d2
+		}
+	}
+
+// phys_fn_001514 (0x0002d2e0, 441 B)
+// The hull's edge axes (thiscall, no argument; convex-mesh gap Task 2g, P-Mesh):
+// the previous Container at +0x34 is destroyed (004846) and freed through the
+// static CRT's `free` (005668) and cleared; a Container on the stack (004836)
+// gathers, over every polygon (built first by 001472 when the count, and again
+// when the array, is zero), each outline edge's direction -- the vertex with
+// the smaller reference minus the other, both references ordered by `xor`
+// swaps, the direction normalised in place when its squared length is not
+// 0.0f (`test ah, 0x44; jnp`: a NaN or zero length is left as it is) and
+// handed to 001661, which keeps it unless it is within 0.9999 of one already
+// kept. Then a 16-byte Container is allocated through the static CRT's
+// `operator new` (005702, `__nh_malloc(size, 1)`: null on failure), built
+// (004836), grown (004840) to the stack Container's count rounded down to a
+// multiple of three (the `0xaaaaaaab` division), and that many words copied
+// (`rep movsd`); a failed allocation leaves null. The pointer is stored into
+// +0x34, the stack Container destroyed, and true returned. Allocator: the
+// candidate's CRT pair, as MeshBuilder2's (the contract's open item 7): its
+// nothrow `operator new` (reached as nxIceCallCrtNew; the listing pushes only
+// the size, and the nothrow tag slot is the caller's word, which MSVC's
+// implementation never reads) and `free`. The listing's instructions, naked.
+__declspec(naked) bool __fastcall nxHullComputeEdgeAxes(ConvexHull* /*hull*/)
+	{
+	__asm
+		{
+		sub	esp, 0x34		// 0x0002d2e0
+		push	ebx		// 0x0002d2e3
+		push	ebp		// 0x0002d2e4
+		push	esi		// 0x0002d2e5
+		push	edi		// 0x0002d2e6
+		mov	edi, ecx		// 0x0002d2e7
+		mov	esi, dword ptr [edi + 0x34]		// 0x0002d2e9
+		xor	ebx, ebx		// 0x0002d2ec
+		cmp	esi, ebx		// 0x0002d2ee
+		mov	dword ptr [esp + 0x18], edi		// 0x0002d2f0
+		je	L2d309		// 0x0002d2f4
+		mov	ecx, esi		// 0x0002d2f6
+		call	nxIceCallContainerDtor		// 0x0002d2f8
+		push	esi		// 0x0002d2fd
+		call	nxIceCallCrtFree		// 0x0002d2fe
+		add	esp, 4		// 0x0002d303
+		mov	dword ptr [edi + 0x34], ebx		// 0x0002d306
+L2d309:
+		lea	ecx, [esp + 0x34]		// 0x0002d309
+		call	nxIceCallContainerCtor		// 0x0002d30d
+		cmp	dword ptr [edi + 0x24], ebx		// 0x0002d312
+		mov	ebp, dword ptr [edi + 0x10]		// 0x0002d315
+		jne	L2d321		// 0x0002d318
+		mov	ecx, edi		// 0x0002d31a
+		call	nxHullComputePolygons		// 0x0002d31c
+L2d321:
+		mov	eax, dword ptr [edi + 0x24]		// 0x0002d321
+		cmp	eax, ebx		// 0x0002d324
+		jbe	L2d428		// 0x0002d326
+		mov	dword ptr [esp + 0x10], ebx		// 0x0002d32c
+		mov	dword ptr [esp + 0x14], eax		// 0x0002d330
+L2d334:
+		mov	eax, dword ptr [edi + 0x28]		// 0x0002d334
+		test	eax, eax		// 0x0002d337
+		jne	L2d342		// 0x0002d339
+		mov	ecx, edi		// 0x0002d33b
+		call	nxHullComputePolygons		// 0x0002d33d
+L2d342:
+		mov	eax, dword ptr [edi + 0x28]		// 0x0002d342
+		mov	edx, dword ptr [esp + 0x10]		// 0x0002d345
+		mov	esi, dword ptr [eax + edx]		// 0x0002d349
+		mov	ebx, dword ptr [eax + edx + 4]		// 0x0002d34c
+		add	eax, edx		// 0x0002d350
+		xor	eax, eax		// 0x0002d352
+		test	esi, esi		// 0x0002d354
+		jbe	L2d40e		// 0x0002d356
+		_emit	0x8d
+		_emit	0x64
+		_emit	0x24
+		_emit	0x00		// 0x0002d35c lea esp, [esp]
+L2d360:
+		mov	ecx, dword ptr [ebx + eax*4]		// 0x0002d360
+		lea	edi, [eax + 1]		// 0x0002d363
+		xor	edx, edx		// 0x0002d366
+		mov	eax, edi		// 0x0002d368
+		div	esi		// 0x0002d36a
+		mov	edx, dword ptr [ebx + edx*4]		// 0x0002d36c
+		cmp	ecx, edx		// 0x0002d36f
+		jbe	L2d379		// 0x0002d371
+		xor	ecx, edx		// 0x0002d373
+		xor	edx, ecx		// 0x0002d375
+		xor	ecx, edx		// 0x0002d377
+L2d379:
+		lea	ecx, [ecx + ecx*2]		// 0x0002d379
+		fld	dword ptr [ebp + ecx*4]		// 0x0002d37c
+		lea	ecx, [ebp + ecx*4]		// 0x0002d380
+		lea	eax, [edx + edx*2]		// 0x0002d384
+		fsub	dword ptr [ebp + eax*4]		// 0x0002d387
+		lea	eax, [ebp + eax*4]		// 0x0002d38b
+		fld	dword ptr [ecx + 4]		// 0x0002d38f
+		fsub	dword ptr [eax + 4]		// 0x0002d392
+		fld	dword ptr [ecx + 8]		// 0x0002d395
+		fsub	dword ptr [eax + 8]		// 0x0002d398
+		fst	dword ptr [esp + 0x24]		// 0x0002d39b
+		fmul	dword ptr [esp + 0x24]		// 0x0002d39f
+		fld	st(1)		// 0x0002d3a3
+		fmul	st, st(2)		// 0x0002d3a5
+		faddp	st(1), st		// 0x0002d3a7
+		fld	st(2)		// 0x0002d3a9
+		fmul	st, st(3)		// 0x0002d3ab
+		faddp	st(1), st		// 0x0002d3ad
+		fld	dword ptr kIceHullZero		// 0x0002d3af
+		fld	st(1)		// 0x0002d3b5
+		fucompp		// 0x0002d3b7
+		fnstsw	ax		// 0x0002d3b9
+		test	ah, 0x44		// 0x0002d3bb
+		jnp	L2d3de		// 0x0002d3be
+		fsqrt		// 0x0002d3c0
+		fdivr	dword ptr kIceHullOne		// 0x0002d3c2
+		fxch	st(2)		// 0x0002d3c8
+		fmul	st, st(2)		// 0x0002d3ca
+		fxch	st(2)		// 0x0002d3cc
+		fxch	st(1)		// 0x0002d3ce
+		fmul	st, st(1)		// 0x0002d3d0
+		fxch	st(1)		// 0x0002d3d2
+		fld	dword ptr [esp + 0x24]		// 0x0002d3d4
+		fmul	st, st(1)		// 0x0002d3d8
+		fstp	dword ptr [esp + 0x24]		// 0x0002d3da
+L2d3de:
+		mov	edx, dword ptr [esp + 0x24]		// 0x0002d3de
+		fstp	st(0)		// 0x0002d3e2
+		fxch	st(1)		// 0x0002d3e4
+		lea	eax, [esp + 0x28]		// 0x0002d3e6
+		fstp	dword ptr [esp + 0x28]		// 0x0002d3ea
+		push	eax		// 0x0002d3ee
+		lea	ecx, [esp + 0x38]		// 0x0002d3ef
+		fstp	dword ptr [esp + 0x30]		// 0x0002d3f3
+		mov	dword ptr [esp + 0x34], edx		// 0x0002d3f7
+		call	nxIceAddUniqueAxis		// 0x0002d3fb
+		mov	eax, edi		// 0x0002d400
+		cmp	eax, esi		// 0x0002d402
+		jb	L2d360		// 0x0002d404
+		mov	edi, dword ptr [esp + 0x18]		// 0x0002d40a
+L2d40e:
+		mov	ecx, dword ptr [esp + 0x10]		// 0x0002d40e
+		mov	eax, dword ptr [esp + 0x14]		// 0x0002d412
+		add	ecx, 0x24		// 0x0002d416
+		dec	eax		// 0x0002d419
+		mov	dword ptr [esp + 0x10], ecx		// 0x0002d41a
+		mov	dword ptr [esp + 0x14], eax		// 0x0002d41e
+		jne	L2d334		// 0x0002d422
+L2d428:
+		push	0x10		// 0x0002d428
+		call	nxIceCallCrtNew		// 0x0002d42a
+		mov	ebx, eax		// 0x0002d42f
+		add	esp, 4		// 0x0002d431
+		test	ebx, ebx		// 0x0002d434
+		je	L2d481		// 0x0002d436
+		mov	esi, dword ptr [esp + 0x3c]		// 0x0002d438
+		mov	edi, dword ptr [esp + 0x38]		// 0x0002d43c
+		mov	ecx, ebx		// 0x0002d440
+		call	nxIceCallContainerCtor		// 0x0002d442
+		mov	ecx, dword ptr [ebx + 4]		// 0x0002d447
+		mov	eax, 0xaaaaaaab		// 0x0002d44a
+		mul	edi		// 0x0002d44f
+		mov	eax, dword ptr [ebx]		// 0x0002d451
+		shr	edx, 1		// 0x0002d453
+		lea	ebp, [edx + edx*2]		// 0x0002d455
+		add	ecx, ebp		// 0x0002d458
+		cmp	ecx, eax		// 0x0002d45a
+		jbe	L2d466		// 0x0002d45c
+		push	ebp		// 0x0002d45e
+		mov	ecx, ebx		// 0x0002d45f
+		call	nxIceCallContainerResize		// 0x0002d461
+L2d466:
+		mov	edx, dword ptr [ebx + 4]		// 0x0002d466
+		mov	eax, dword ptr [ebx + 8]		// 0x0002d469
+		lea	edi, [eax + edx*4]		// 0x0002d46c
+		mov	ecx, ebp		// 0x0002d46f
+		rep movsd		// 0x0002d471
+		mov	eax, dword ptr [ebx + 4]		// 0x0002d473
+		mov	edi, dword ptr [esp + 0x18]		// 0x0002d476
+		add	eax, ebp		// 0x0002d47a
+		mov	dword ptr [ebx + 4], eax		// 0x0002d47c
+		jmp	L2d483		// 0x0002d47f
+L2d481:
+		xor	ebx, ebx		// 0x0002d481
+L2d483:
+		lea	ecx, [esp + 0x34]		// 0x0002d483
+		mov	dword ptr [edi + 0x34], ebx		// 0x0002d487
+		call	nxIceCallContainerDtor		// 0x0002d48a
+		pop	edi		// 0x0002d48f
+		pop	esi		// 0x0002d490
+		pop	ebp		// 0x0002d491
+		mov	al, 1		// 0x0002d492
+		pop	ebx		// 0x0002d494
+		add	esp, 0x34		// 0x0002d495
+		ret		// 0x0002d498
+		}
+	}
+
+// phys_fn_001516 (0x0002d4a0, 298 B)
+// phys_fn_001518 (0x0002d5d0, 234 B)
+// phys_fn_001520 (0x0002d6c0, 136 B)
+// phys_fn_001522 (0x0002d750, 490 B)
+// The hull's supporting face along a direction (thiscall, `ret 0xc`; the row
+// and three continuations the contract's list lacked: the unrolled polygon
+// loop and its remainder, the unrolled edge loop and its remainder). With a
+// pose (a 4x4: rows at +0x00, +0x10, +0x20) the 3x3 is copied out and the
+// direction rotated by it, each component narrowed; without one the direction
+// is copied as integers. The polygons are built when the count is zero
+// (001472). The first polygon's plane normal seeds the best; each next one
+// replaces it when strictly greater (`test ah, 0x41`), four at a time while
+// at least four remain, then one at a time. Then (001502 when the edge count,
+// and again when the edge normals, are zero) the edge normals (+0x40) are
+// scanned the same way against that best, from index -1: when no edge normal
+// is strictly greater, *kind (when given) is 0 and the best polygon's index is
+// returned; otherwise *kind is 1 and, of the two polygons the winning edge
+// joins (its EdgeDesc at +0x44 names their run in +0x48; 001502 built for each
+// of +0x3c, +0x44, +0x48 still null), the first is returned when its normal is
+// at least as far along the direction as the second's (`fcompp; test ah, 5;
+// jp`: a NaN picks the second). The listing's instructions, naked.
+__declspec(naked) NxU32 __fastcall nxHullSupportFace(ConvexHull* /*hull*/, NxU32 /*edx*/,
+	const IceMaths::Point* /*dir*/, const float* /*pose*/, NxU32* /*kind*/)
+	{
+	__asm
+		{
+		sub	esp, 0x64		// 0x0002d4a0
+		mov	eax, dword ptr [esp + 0x6c]		// 0x0002d4a3
+		push	ebx		// 0x0002d4a7
+		push	ebp		// 0x0002d4a8
+		xor	ebp, ebp		// 0x0002d4a9
+		cmp	eax, ebp		// 0x0002d4ab
+		push	esi		// 0x0002d4ad
+		push	edi		// 0x0002d4ae
+		mov	ebx, ecx		// 0x0002d4af
+		mov	dword ptr [esp + 0x10], ebp		// 0x0002d4b1
+		je	L2d566		// 0x0002d4b5
+		mov	ecx, dword ptr [eax]		// 0x0002d4bb
+		mov	edx, dword ptr [eax + 4]		// 0x0002d4bd
+		mov	dword ptr [esp + 0x2c], ecx		// 0x0002d4c0
+		mov	ecx, dword ptr [eax + 8]		// 0x0002d4c4
+		mov	dword ptr [esp + 0x30], edx		// 0x0002d4c7
+		mov	edx, dword ptr [eax + 0x10]		// 0x0002d4cb
+		mov	dword ptr [esp + 0x34], ecx		// 0x0002d4ce
+		mov	ecx, dword ptr [eax + 0x14]		// 0x0002d4d2
+		mov	dword ptr [esp + 0x38], edx		// 0x0002d4d5
+		mov	edx, dword ptr [eax + 0x18]		// 0x0002d4d9
+		mov	dword ptr [esp + 0x3c], ecx		// 0x0002d4dc
+		mov	ecx, dword ptr [eax + 0x20]		// 0x0002d4e0
+		mov	dword ptr [esp + 0x40], edx		// 0x0002d4e3
+		mov	edx, dword ptr [eax + 0x24]		// 0x0002d4e7
+		mov	eax, dword ptr [eax + 0x28]		// 0x0002d4ea
+		mov	dword ptr [esp + 0x44], ecx		// 0x0002d4ed
+		mov	dword ptr [esp + 0x4c], eax		// 0x0002d4f1
+		mov	eax, dword ptr [esp + 0x78]		// 0x0002d4f5
+		mov	ecx, 9		// 0x0002d4f9
+		lea	esi, [esp + 0x2c]		// 0x0002d4fe
+		lea	edi, [esp + 0x50]		// 0x0002d502
+		mov	dword ptr [esp + 0x48], edx		// 0x0002d506
+		rep movsd		// 0x0002d50a
+		fld	dword ptr [esp + 0x50]		// 0x0002d50c
+		fmul	dword ptr [eax]		// 0x0002d510
+		fld	dword ptr [esp + 0x58]		// 0x0002d512
+		fmul	dword ptr [eax + 8]		// 0x0002d516
+		faddp	st(1), st		// 0x0002d519
+		fld	dword ptr [esp + 0x54]		// 0x0002d51b
+		fmul	dword ptr [eax + 4]		// 0x0002d51f
+		faddp	st(1), st		// 0x0002d522
+		fstp	dword ptr [esp + 0x20]		// 0x0002d524
+		fld	dword ptr [esp + 0x5c]		// 0x0002d528
+		fmul	dword ptr [eax]		// 0x0002d52c
+		fld	dword ptr [esp + 0x64]		// 0x0002d52e
+		fmul	dword ptr [eax + 8]		// 0x0002d532
+		faddp	st(1), st		// 0x0002d535
+		fld	dword ptr [esp + 0x60]		// 0x0002d537
+		fmul	dword ptr [eax + 4]		// 0x0002d53b
+		faddp	st(1), st		// 0x0002d53e
+		fstp	dword ptr [esp + 0x24]		// 0x0002d540
+		fld	dword ptr [esp + 0x68]		// 0x0002d544
+		fmul	dword ptr [eax]		// 0x0002d548
+		fld	dword ptr [esp + 0x70]		// 0x0002d54a
+		fmul	dword ptr [eax + 8]		// 0x0002d54e
+		faddp	st(1), st		// 0x0002d551
+		fld	dword ptr [esp + 0x6c]		// 0x0002d553
+		fmul	dword ptr [eax + 4]		// 0x0002d557
+		lea	eax, [esp + 0x20]		// 0x0002d55a
+		faddp	st(1), st		// 0x0002d55e
+		fstp	dword ptr [esp + 0x28]		// 0x0002d560
+		jmp	L2d56a		// 0x0002d564
+L2d566:
+		mov	eax, dword ptr [esp + 0x78]		// 0x0002d566
+L2d56a:
+		mov	ecx, dword ptr [eax]		// 0x0002d56a
+		mov	edx, dword ptr [eax + 4]		// 0x0002d56c
+		mov	eax, dword ptr [eax + 8]		// 0x0002d56f
+		mov	dword ptr [esp + 0x1c], eax		// 0x0002d572
+		cmp	dword ptr [ebx + 0x24], ebp		// 0x0002d576
+		mov	dword ptr [esp + 0x14], ecx		// 0x0002d579
+		mov	dword ptr [esp + 0x18], edx		// 0x0002d57d
+		jne	L2d58a		// 0x0002d581
+		mov	ecx, ebx		// 0x0002d583
+		call	nxHullComputePolygons		// 0x0002d585
+L2d58a:
+		mov	esi, dword ptr [ebx + 0x28]		// 0x0002d58a
+		fld	dword ptr [esp + 0x1c]		// 0x0002d58d
+		fmul	dword ptr [esi + 0x14]		// 0x0002d591
+		mov	edi, dword ptr [ebx + 0x24]		// 0x0002d594
+		fld	dword ptr [esp + 0x18]		// 0x0002d597
+		lea	edx, [edi - 1]		// 0x0002d59b
+		cmp	edx, 4		// 0x0002d59e
+		fmul	dword ptr [esi + 0x10]		// 0x0002d5a1
+		mov	dword ptr [esp + 0x7c], ebp		// 0x0002d5a4
+		mov	ecx, 1		// 0x0002d5a8
+		faddp	st(1), st		// 0x0002d5ad
+		fld	dword ptr [esp + 0x14]		// 0x0002d5af
+		fmul	dword ptr [esi + 0xc]		// 0x0002d5b3
+		faddp	st(1), st		// 0x0002d5b6
+		fst	dword ptr [esp + 0x78]		// 0x0002d5b8
+		jl	L2d6ad		// 0x0002d5bc
+		lea	ebp, [edi - 3]		// 0x0002d5c2
+		lea	edx, [esi + 0x34]		// 0x0002d5c5
+		jmp	L2d5d0		// 0x0002d5c8
+		_emit	0x8d
+		_emit	0x9b
+		_emit	0x00
+		_emit	0x00
+		_emit	0x00
+		_emit	0x00		// 0x0002d5ca lea ebx, [ebx]
+L2d5d0:
+		fld	dword ptr [esp + 0x1c]		// 0x0002d5d0
+		fmul	dword ptr [edx + 4]		// 0x0002d5d4
+		fld	dword ptr [esp + 0x14]		// 0x0002d5d7
+		fmul	dword ptr [edx - 4]		// 0x0002d5db
+		faddp	st(1), st		// 0x0002d5de
+		fld	dword ptr [esp + 0x18]		// 0x0002d5e0
+		fmul	dword ptr [edx]		// 0x0002d5e4
+		faddp	st(1), st		// 0x0002d5e6
+		fst	dword ptr [esp + 0x78]		// 0x0002d5e8
+		fcomp	st(1)		// 0x0002d5ec
+		fnstsw	ax		// 0x0002d5ee
+		test	ah, 0x41		// 0x0002d5f0
+		jne	L2d5ff		// 0x0002d5f3
+		fstp	st(0)		// 0x0002d5f5
+		mov	dword ptr [esp + 0x7c], ecx		// 0x0002d5f7
+		fld	dword ptr [esp + 0x78]		// 0x0002d5fb
+L2d5ff:
+		fld	dword ptr [esp + 0x1c]		// 0x0002d5ff
+		fmul	dword ptr [edx + 0x28]		// 0x0002d603
+		fld	dword ptr [esp + 0x18]		// 0x0002d606
+		fmul	dword ptr [edx + 0x24]		// 0x0002d60a
+		faddp	st(1), st		// 0x0002d60d
+		fld	dword ptr [esp + 0x14]		// 0x0002d60f
+		fmul	dword ptr [edx + 0x20]		// 0x0002d613
+		faddp	st(1), st		// 0x0002d616
+		fst	dword ptr [esp + 0x78]		// 0x0002d618
+		fcomp	st(1)		// 0x0002d61c
+		fnstsw	ax		// 0x0002d61e
+		test	ah, 0x41		// 0x0002d620
+		jne	L2d632		// 0x0002d623
+		lea	eax, [ecx + 1]		// 0x0002d625
+		fstp	st(0)		// 0x0002d628
+		fld	dword ptr [esp + 0x78]		// 0x0002d62a
+		mov	dword ptr [esp + 0x7c], eax		// 0x0002d62e
+L2d632:
+		fld	dword ptr [esp + 0x1c]		// 0x0002d632
+		fmul	dword ptr [edx + 0x4c]		// 0x0002d636
+		fld	dword ptr [esp + 0x18]		// 0x0002d639
+		fmul	dword ptr [edx + 0x48]		// 0x0002d63d
+		faddp	st(1), st		// 0x0002d640
+		fld	dword ptr [esp + 0x14]		// 0x0002d642
+		fmul	dword ptr [edx + 0x44]		// 0x0002d646
+		faddp	st(1), st		// 0x0002d649
+		fst	dword ptr [esp + 0x78]		// 0x0002d64b
+		fcomp	st(1)		// 0x0002d64f
+		fnstsw	ax		// 0x0002d651
+		test	ah, 0x41		// 0x0002d653
+		jne	L2d665		// 0x0002d656
+		lea	eax, [ecx + 2]		// 0x0002d658
+		fstp	st(0)		// 0x0002d65b
+		fld	dword ptr [esp + 0x78]		// 0x0002d65d
+		mov	dword ptr [esp + 0x7c], eax		// 0x0002d661
+L2d665:
+		fld	dword ptr [esp + 0x1c]		// 0x0002d665
+		fmul	dword ptr [edx + 0x70]		// 0x0002d669
+		fld	dword ptr [esp + 0x18]		// 0x0002d66c
+		fmul	dword ptr [edx + 0x6c]		// 0x0002d670
+		faddp	st(1), st		// 0x0002d673
+		fld	dword ptr [esp + 0x14]		// 0x0002d675
+		fmul	dword ptr [edx + 0x68]		// 0x0002d679
+		faddp	st(1), st		// 0x0002d67c
+		fst	dword ptr [esp + 0x78]		// 0x0002d67e
+		fcomp	st(1)		// 0x0002d682
+		fnstsw	ax		// 0x0002d684
+		test	ah, 0x41		// 0x0002d686
+		jne	L2d698		// 0x0002d689
+		lea	eax, [ecx + 3]		// 0x0002d68b
+		fstp	st(0)		// 0x0002d68e
+		fld	dword ptr [esp + 0x78]		// 0x0002d690
+		mov	dword ptr [esp + 0x7c], eax		// 0x0002d694
+L2d698:
+		add	ecx, 4		// 0x0002d698
+		add	edx, 0x90		// 0x0002d69b
+		cmp	ecx, ebp		// 0x0002d6a1
+		jb	L2d5d0		// 0x0002d6a3
+		fst	dword ptr [esp + 0x78]		// 0x0002d6a9
+L2d6ad:
+		cmp	ecx, edi		// 0x0002d6ad
+		jae	L2d6fb		// 0x0002d6af
+		lea	edx, [ecx + ecx*8]		// 0x0002d6b1
+		lea	edx, [esi + edx*4 + 0x10]		// 0x0002d6b4
+		jmp	L2d6c0		// 0x0002d6b8
+		_emit	0x8d
+		_emit	0x9b
+		_emit	0x00
+		_emit	0x00
+		_emit	0x00
+		_emit	0x00		// 0x0002d6ba lea ebx, [ebx]
+L2d6c0:
+		fld	dword ptr [esp + 0x1c]		// 0x0002d6c0
+		fmul	dword ptr [edx + 4]		// 0x0002d6c4
+		fld	dword ptr [esp + 0x14]		// 0x0002d6c7
+		fmul	dword ptr [edx - 4]		// 0x0002d6cb
+		faddp	st(1), st		// 0x0002d6ce
+		fld	dword ptr [esp + 0x18]		// 0x0002d6d0
+		fmul	dword ptr [edx]		// 0x0002d6d4
+		faddp	st(1), st		// 0x0002d6d6
+		fst	dword ptr [esp + 0x78]		// 0x0002d6d8
+		fcomp	st(1)		// 0x0002d6dc
+		fnstsw	ax		// 0x0002d6de
+		test	ah, 0x41		// 0x0002d6e0
+		jne	L2d6ef		// 0x0002d6e3
+		fstp	st(0)		// 0x0002d6e5
+		mov	dword ptr [esp + 0x7c], ecx		// 0x0002d6e7
+		fld	dword ptr [esp + 0x78]		// 0x0002d6eb
+L2d6ef:
+		inc	ecx		// 0x0002d6ef
+		add	edx, 0x24		// 0x0002d6f0
+		cmp	ecx, edi		// 0x0002d6f3
+		jb	L2d6c0		// 0x0002d6f5
+		fst	dword ptr [esp + 0x78]		// 0x0002d6f7
+L2d6fb:
+		mov	eax, dword ptr [ebx + 0x38]		// 0x0002d6fb
+		test	eax, eax		// 0x0002d6fe
+		jne	L2d70f		// 0x0002d700
+		mov	ecx, ebx		// 0x0002d702
+		fstp	st(0)		// 0x0002d704
+		call	nxHullComputeEdges		// 0x0002d706
+		fld	dword ptr [esp + 0x78]		// 0x0002d70b
+L2d70f:
+		mov	eax, dword ptr [ebx + 0x40]		// 0x0002d70f
+		test	eax, eax		// 0x0002d712
+		mov	ebp, dword ptr [ebx + 0x38]		// 0x0002d714
+		mov	dword ptr [esp + 0x10], ebp		// 0x0002d717
+		jne	L2d72a		// 0x0002d71b
+		mov	ecx, ebx		// 0x0002d71d
+		fstp	st(0)		// 0x0002d71f
+		call	nxHullComputeEdges		// 0x0002d721
+		fld	dword ptr [esp + 0x78]		// 0x0002d726
+L2d72a:
+		mov	edx, dword ptr [ebx + 0x40]		// 0x0002d72a
+		or	edi, 0xffffffff		// 0x0002d72d
+		xor	ecx, ecx		// 0x0002d730
+		cmp	ebp, 4		// 0x0002d732
+		jl	L2d81e		// 0x0002d735
+		add	ebp, -3		// 0x0002d73b
+		mov	esi, 2		// 0x0002d73e
+		add	edx, 0x10		// 0x0002d743
+		jmp	L2d750		// 0x0002d746
+		_emit	0x8d
+		_emit	0xa4
+		_emit	0x24
+		_emit	0x00
+		_emit	0x00
+		_emit	0x00
+		_emit	0x00		// 0x0002d748 lea esp, [esp]
+		_emit	0x90		// 0x0002d74f nop 
+L2d750:
+		fld	dword ptr [esp + 0x14]		// 0x0002d750
+		fmul	dword ptr [edx - 0x10]		// 0x0002d754
+		fld	dword ptr [esp + 0x1c]		// 0x0002d757
+		fmul	dword ptr [edx - 8]		// 0x0002d75b
+		faddp	st(1), st		// 0x0002d75e
+		fld	dword ptr [esp + 0x18]		// 0x0002d760
+		fmul	dword ptr [edx - 0xc]		// 0x0002d764
+		faddp	st(1), st		// 0x0002d767
+		fst	dword ptr [esp + 0x78]		// 0x0002d769
+		fcomp	st(1)		// 0x0002d76d
+		fnstsw	ax		// 0x0002d76f
+		test	ah, 0x41		// 0x0002d771
+		jne	L2d77e		// 0x0002d774
+		fstp	st(0)		// 0x0002d776
+		mov	edi, ecx		// 0x0002d778
+		fld	dword ptr [esp + 0x78]		// 0x0002d77a
+L2d77e:
+		fld	dword ptr [esp + 0x14]		// 0x0002d77e
+		fmul	dword ptr [edx - 4]		// 0x0002d782
+		fld	dword ptr [esp + 0x1c]		// 0x0002d785
+		fmul	dword ptr [edx + 4]		// 0x0002d789
+		faddp	st(1), st		// 0x0002d78c
+		fld	dword ptr [esp + 0x18]		// 0x0002d78e
+		fmul	dword ptr [edx]		// 0x0002d792
+		faddp	st(1), st		// 0x0002d794
+		fst	dword ptr [esp + 0x78]		// 0x0002d796
+		fcomp	st(1)		// 0x0002d79a
+		fnstsw	ax		// 0x0002d79c
+		test	ah, 0x41		// 0x0002d79e
+		jne	L2d7ac		// 0x0002d7a1
+		fstp	st(0)		// 0x0002d7a3
+		lea	edi, [esi - 1]		// 0x0002d7a5
+		fld	dword ptr [esp + 0x78]		// 0x0002d7a8
+L2d7ac:
+		fld	dword ptr [esp + 0x14]		// 0x0002d7ac
+		fmul	dword ptr [edx + 8]		// 0x0002d7b0
+		fld	dword ptr [esp + 0x1c]		// 0x0002d7b3
+		fmul	dword ptr [edx + 0x10]		// 0x0002d7b7
+		faddp	st(1), st		// 0x0002d7ba
+		fld	dword ptr [esp + 0x18]		// 0x0002d7bc
+		fmul	dword ptr [edx + 0xc]		// 0x0002d7c0
+		faddp	st(1), st		// 0x0002d7c3
+		fst	dword ptr [esp + 0x78]		// 0x0002d7c5
+		fcomp	st(1)		// 0x0002d7c9
+		fnstsw	ax		// 0x0002d7cb
+		test	ah, 0x41		// 0x0002d7cd
+		jne	L2d7da		// 0x0002d7d0
+		fstp	st(0)		// 0x0002d7d2
+		mov	edi, esi		// 0x0002d7d4
+		fld	dword ptr [esp + 0x78]		// 0x0002d7d6
+L2d7da:
+		fld	dword ptr [esp + 0x14]		// 0x0002d7da
+		fmul	dword ptr [edx + 0x14]		// 0x0002d7de
+		fld	dword ptr [esp + 0x1c]		// 0x0002d7e1
+		fmul	dword ptr [edx + 0x1c]		// 0x0002d7e5
+		faddp	st(1), st		// 0x0002d7e8
+		fld	dword ptr [esp + 0x18]		// 0x0002d7ea
+		fmul	dword ptr [edx + 0x18]		// 0x0002d7ee
+		faddp	st(1), st		// 0x0002d7f1
+		fst	dword ptr [esp + 0x78]		// 0x0002d7f3
+		fcomp	st(1)		// 0x0002d7f7
+		fnstsw	ax		// 0x0002d7f9
+		test	ah, 0x41		// 0x0002d7fb
+		jne	L2d809		// 0x0002d7fe
+		fstp	st(0)		// 0x0002d800
+		lea	edi, [esi + 1]		// 0x0002d802
+		fld	dword ptr [esp + 0x78]		// 0x0002d805
+L2d809:
+		add	ecx, 4		// 0x0002d809
+		add	edx, 0x30		// 0x0002d80c
+		add	esi, 4		// 0x0002d80f
+		cmp	ecx, ebp		// 0x0002d812
+		jb	L2d750		// 0x0002d814
+		mov	ebp, dword ptr [esp + 0x10]		// 0x0002d81a
+L2d81e:
+		cmp	ecx, ebp		// 0x0002d81e
+		jae	L2d865		// 0x0002d820
+		mov	edx, dword ptr [ebx + 0x40]		// 0x0002d822
+		lea	eax, [ecx + ecx*2]		// 0x0002d825
+		lea	edx, [edx + eax*4 + 4]		// 0x0002d828
+		_emit	0x8d
+		_emit	0x64
+		_emit	0x24
+		_emit	0x00		// 0x0002d82c lea esp, [esp]
+L2d830:
+		fld	dword ptr [esp + 0x1c]		// 0x0002d830
+		fmul	dword ptr [edx + 4]		// 0x0002d834
+		fld	dword ptr [esp + 0x14]		// 0x0002d837
+		fmul	dword ptr [edx - 4]		// 0x0002d83b
+		faddp	st(1), st		// 0x0002d83e
+		fld	dword ptr [esp + 0x18]		// 0x0002d840
+		fmul	dword ptr [edx]		// 0x0002d844
+		faddp	st(1), st		// 0x0002d846
+		fst	dword ptr [esp + 0x78]		// 0x0002d848
+		fcomp	st(1)		// 0x0002d84c
+		fnstsw	ax		// 0x0002d84e
+		test	ah, 0x41		// 0x0002d850
+		jne	L2d85d		// 0x0002d853
+		fstp	st(0)		// 0x0002d855
+		mov	edi, ecx		// 0x0002d857
+		fld	dword ptr [esp + 0x78]		// 0x0002d859
+L2d85d:
+		inc	ecx		// 0x0002d85d
+		add	edx, 0xc		// 0x0002d85e
+		cmp	ecx, ebp		// 0x0002d861
+		jb	L2d830		// 0x0002d863
+L2d865:
+		cmp	edi, -1		// 0x0002d865
+		fstp	st(0)		// 0x0002d868
+		mov	eax, dword ptr [esp + 0x80]		// 0x0002d86a
+		je	L2d922		// 0x0002d871
+		test	eax, eax		// 0x0002d877
+		je	L2d881		// 0x0002d879
+		mov	dword ptr [eax], 1		// 0x0002d87b
+L2d881:
+		mov	eax, dword ptr [ebx + 0x3c]		// 0x0002d881
+		test	eax, eax		// 0x0002d884
+		jne	L2d88f		// 0x0002d886
+		mov	ecx, ebx		// 0x0002d888
+		call	nxHullComputeEdges		// 0x0002d88a
+L2d88f:
+		mov	eax, dword ptr [ebx + 0x44]		// 0x0002d88f
+		test	eax, eax		// 0x0002d892
+		jne	L2d89d		// 0x0002d894
+		mov	ecx, ebx		// 0x0002d896
+		call	nxHullComputeEdges		// 0x0002d898
+L2d89d:
+		mov	eax, dword ptr [ebx + 0x48]		// 0x0002d89d
+		test	eax, eax		// 0x0002d8a0
+		mov	esi, dword ptr [ebx + 0x44]		// 0x0002d8a2
+		jne	L2d8ae		// 0x0002d8a5
+		mov	ecx, ebx		// 0x0002d8a7
+		call	nxHullComputeEdges		// 0x0002d8a9
+L2d8ae:
+		mov	ecx, dword ptr [esi + edi*8 + 4]		// 0x0002d8ae
+		fld	dword ptr [esp + 0x1c]		// 0x0002d8b2
+		mov	eax, dword ptr [ebx + 0x48]		// 0x0002d8b6
+		mov	edx, dword ptr [eax + ecx*4]		// 0x0002d8b9
+		mov	esi, dword ptr [eax + ecx*4 + 4]		// 0x0002d8bc
+		lea	eax, [eax + ecx*4]		// 0x0002d8c0
+		mov	ecx, dword ptr [ebx + 0x28]		// 0x0002d8c3
+		lea	eax, [edx + edx*8]		// 0x0002d8c6
+		fmul	dword ptr [ecx + eax*4 + 0x14]		// 0x0002d8c9
+		lea	eax, [ecx + eax*4 + 0xc]		// 0x0002d8cd
+		fld	dword ptr [esp + 0x18]		// 0x0002d8d1
+		lea	edi, [esi + esi*8]		// 0x0002d8d5
+		fmul	dword ptr [eax + 4]		// 0x0002d8d8
+		lea	ecx, [ecx + edi*4 + 0xc]		// 0x0002d8db
+		faddp	st(1), st		// 0x0002d8df
+		fld	dword ptr [esp + 0x14]		// 0x0002d8e1
+		fmul	dword ptr [eax]		// 0x0002d8e5
+		faddp	st(1), st		// 0x0002d8e7
+		fld	dword ptr [esp + 0x1c]		// 0x0002d8e9
+		fmul	dword ptr [ecx + 8]		// 0x0002d8ed
+		fld	dword ptr [esp + 0x18]		// 0x0002d8f0
+		fmul	dword ptr [ecx + 4]		// 0x0002d8f4
+		faddp	st(1), st		// 0x0002d8f7
+		fld	dword ptr [esp + 0x14]		// 0x0002d8f9
+		fmul	dword ptr [ecx]		// 0x0002d8fd
+		faddp	st(1), st		// 0x0002d8ff
+		fcompp		// 0x0002d901
+		fnstsw	ax		// 0x0002d903
+		test	ah, 5		// 0x0002d905
+		jp	L2d916		// 0x0002d908
+		pop	edi		// 0x0002d90a
+		pop	esi		// 0x0002d90b
+		pop	ebp		// 0x0002d90c
+		mov	eax, edx		// 0x0002d90d
+		pop	ebx		// 0x0002d90f
+		add	esp, 0x64		// 0x0002d910
+		ret	0xc		// 0x0002d913
+L2d916:
+		pop	edi		// 0x0002d916
+		mov	eax, esi		// 0x0002d917
+		pop	esi		// 0x0002d919
+		pop	ebp		// 0x0002d91a
+		pop	ebx		// 0x0002d91b
+		add	esp, 0x64		// 0x0002d91c
+		ret	0xc		// 0x0002d91f
+L2d922:
+		test	eax, eax		// 0x0002d922
+		je	L2d92c		// 0x0002d924
+		mov	dword ptr [eax], 0		// 0x0002d926
+L2d92c:
+		mov	eax, dword ptr [esp + 0x7c]		// 0x0002d92c
+		pop	edi		// 0x0002d930
+		pop	esi		// 0x0002d931
+		pop	ebp		// 0x0002d932
+		pop	ebx		// 0x0002d933
+		add	esp, 0x64		// 0x0002d934
+		ret	0xc		// 0x0002d937
+		}
+	}
+
+// phys_fn_001530 (0x0002d9b0, 153 B)
+// phys_fn_001532 (0x0002da50, 29 B)
+// phys_fn_001534 (0x0002da70, 109 B)
+// The hill climb to the vertex furthest along a direction over a vertex graph
+// (cdecl: the start and result index, the direction, the vertices, the graph,
+// the stamp, the visited array; the row and the two continuations the
+// contract's list lacked). False when the vertices, the graph, the visited
+// array or any of the graph's three arrays (+0x08 the neighbour counts, +0x0c
+// the offsets into +0x10, the neighbours) is null. Otherwise the start is
+// stamped and its projection ((v.y d.y + v.z d.z) + v.x d.x, stored narrow)
+// seeds the best; each unstamped neighbour of the current vertex is stamped
+// and replaces the best when strictly greater (`test ah, 0x41`: equal and NaN
+// do not); the climb moves to the winner and repeats until a pass keeps the
+// current vertex, whose index is left in *index; true. The listing's
+// instructions, naked.
+__declspec(naked) bool nxHullClimbSupportVertex(NxU32* /*index*/, const IceMaths::Point* /*dir*/,
+	const IceMaths::Point* /*verts*/, const void* /*graph*/, NxU32 /*stamp*/, NxU32* /*visited*/)
+	{
+	__asm
+		{
+		mov	eax, dword ptr [esp + 0xc]		// 0x0002d9b0
+		sub	esp, 0x14		// 0x0002d9b4
+		test	eax, eax		// 0x0002d9b7
+		push	ebp		// 0x0002d9b9
+		je	L2dad6		// 0x0002d9ba
+		mov	edx, dword ptr [esp + 0x28]		// 0x0002d9c0
+		test	edx, edx		// 0x0002d9c4
+		je	L2dad6		// 0x0002d9c6
+		mov	ebp, dword ptr [esp + 0x30]		// 0x0002d9cc
+		test	ebp, ebp		// 0x0002d9d0
+		je	L2dad6		// 0x0002d9d2
+		mov	ecx, dword ptr [edx + 8]		// 0x0002d9d8
+		test	ecx, ecx		// 0x0002d9db
+		mov	dword ptr [esp + 0x14], ecx		// 0x0002d9dd
+		je	L2dad6		// 0x0002d9e1
+		mov	ecx, dword ptr [edx + 0xc]		// 0x0002d9e7
+		test	ecx, ecx		// 0x0002d9ea
+		mov	dword ptr [esp + 0xc], ecx		// 0x0002d9ec
+		je	L2dad6		// 0x0002d9f0
+		push	edi		// 0x0002d9f6
+		mov	edi, dword ptr [edx + 0x10]		// 0x0002d9f7
+		test	edi, edi		// 0x0002d9fa
+		mov	dword ptr [esp + 0x14], edi		// 0x0002d9fc
+		jne	L2da0a		// 0x0002da00
+		pop	edi		// 0x0002da02
+		xor	al, al		// 0x0002da03
+		pop	ebp		// 0x0002da05
+		add	esp, 0x14		// 0x0002da06
+		ret		// 0x0002da09
+L2da0a:
+		mov	edx, dword ptr [esp + 0x20]		// 0x0002da0a
+		push	ebx		// 0x0002da0e
+		mov	ebx, dword ptr [esp + 0x34]		// 0x0002da0f
+		push	esi		// 0x0002da13
+		mov	esi, dword ptr [edx]		// 0x0002da14
+		lea	edx, [esi + esi*2]		// 0x0002da16
+		fld	dword ptr [eax + edx*4 + 4]		// 0x0002da19
+		lea	eax, [eax + edx*4]		// 0x0002da1d
+		mov	edx, dword ptr [esp + 0x2c]		// 0x0002da20
+		fmul	dword ptr [edx + 4]		// 0x0002da24
+		fld	dword ptr [eax + 8]		// 0x0002da27
+		fmul	dword ptr [edx + 8]		// 0x0002da2a
+		faddp	st(1), st		// 0x0002da2d
+		fld	dword ptr [edx]		// 0x0002da2f
+		fmul	dword ptr [eax]		// 0x0002da31
+		mov	dword ptr [ebp + esi*4], ebx		// 0x0002da33
+		faddp	st(1), st		// 0x0002da37
+		fstp	dword ptr [esp + 0x10]		// 0x0002da39
+		jmp	L2da50		// 0x0002da3d
+L2da3f:
+		mov	ecx, dword ptr [esp + 0x18]		// 0x0002da3f
+		mov	edi, dword ptr [esp + 0x1c]		// 0x0002da43
+		jmp	L2da50		// 0x0002da47
+		_emit	0x8d
+		_emit	0xa4
+		_emit	0x24
+		_emit	0x00
+		_emit	0x00
+		_emit	0x00
+		_emit	0x00		// 0x0002da49 lea esp, [esp]
+L2da50:
+		mov	ecx, dword ptr [ecx + esi*4]		// 0x0002da50
+		mov	eax, dword ptr [esp + 0x20]		// 0x0002da53
+		mov	eax, dword ptr [eax + esi*4]		// 0x0002da57
+		test	eax, eax		// 0x0002da5a
+		lea	edi, [edi + ecx*4]		// 0x0002da5c
+		mov	ecx, dword ptr [esp + 0x28]		// 0x0002da5f
+		mov	dword ptr [ecx], esi		// 0x0002da63
+		je	L2dac0		// 0x0002da65
+		mov	dword ptr [esp + 0x14], eax		// 0x0002da67
+		jmp	L2da70		// 0x0002da6b
+		_emit	0x8d
+		_emit	0x49
+		_emit	0x00		// 0x0002da6d lea ecx, [ecx]
+L2da70:
+		mov	ecx, dword ptr [edi]		// 0x0002da70
+		mov	eax, dword ptr [ebp + ecx*4]		// 0x0002da72
+		add	edi, 4		// 0x0002da76
+		cmp	eax, ebx		// 0x0002da79
+		je	L2daba		// 0x0002da7b
+		mov	dword ptr [ebp + ecx*4], ebx		// 0x0002da7d
+		mov	ebp, dword ptr [esp + 0x30]		// 0x0002da81
+		lea	eax, [ecx + ecx*2]		// 0x0002da85
+		fld	dword ptr [ebp + eax*4 + 4]		// 0x0002da88
+		lea	eax, [ebp + eax*4]		// 0x0002da8c
+		fmul	dword ptr [edx + 4]		// 0x0002da90
+		mov	ebp, dword ptr [esp + 0x3c]		// 0x0002da93
+		fld	dword ptr [eax + 8]		// 0x0002da97
+		fmul	dword ptr [edx + 8]		// 0x0002da9a
+		faddp	st(1), st		// 0x0002da9d
+		fld	dword ptr [edx]		// 0x0002da9f
+		fmul	dword ptr [eax]		// 0x0002daa1
+		faddp	st(1), st		// 0x0002daa3
+		fcom	dword ptr [esp + 0x10]		// 0x0002daa5
+		fnstsw	ax		// 0x0002daa9
+		test	ah, 0x41		// 0x0002daab
+		jne	L2dab8		// 0x0002daae
+		fstp	dword ptr [esp + 0x10]		// 0x0002dab0
+		mov	esi, ecx		// 0x0002dab4
+		jmp	L2daba		// 0x0002dab6
+L2dab8:
+		fstp	st(0)		// 0x0002dab8
+L2daba:
+		dec	dword ptr [esp + 0x14]		// 0x0002daba
+		jne	L2da70		// 0x0002dabe
+L2dac0:
+		mov	ecx, dword ptr [esp + 0x28]		// 0x0002dac0
+		cmp	esi, dword ptr [ecx]		// 0x0002dac4
+		jne	L2da3f		// 0x0002dac6
+		pop	esi		// 0x0002dacc
+		pop	ebx		// 0x0002dacd
+		pop	edi		// 0x0002dace
+		mov	al, 1		// 0x0002dacf
+		pop	ebp		// 0x0002dad1
+		add	esp, 0x14		// 0x0002dad2
+		ret		// 0x0002dad5
+L2dad6:
+		xor	al, al		// 0x0002dad6
+		pop	ebp		// 0x0002dad8
+		add	esp, 0x14		// 0x0002dad9
+		ret		// 0x0002dadc
 		}
 	}
 

@@ -348,4 +348,28 @@ void __cdecl NxContactBoxBox(const NxCollisionShape* box0,
 void __cdecl NxContactBoxCapsule(const NxCollisionShape* box,
 	const NxCollisionShape* capsule, NxContactSink* sink, void* context);
 
+// convex-mesh gap Task 2g (ContactGeneration.cpp and ContactConvexConvex.cpp;
+// units/convex-mesh-gap-contract.md, P-Emit, P-Plane and sub-unit L). All are
+// the listing's instructions, naked; the register-argument rows are declared
+// without parameters and are only called from naked rows.
+
+// 000875 at 0x0001d8e0: the emitter with feature words, thiscall on
+// the sink with nine stack arguments (`ret 0x24`).
+void __fastcall NxEmitContactFeatures(NxContactSink* sink, NxU32 edx, void* object1, void* object0,
+	NxU32 separationBits, const NxVec3* point, const NxVec3* normal, NxU32 featureId0, NxU32 featureId1,
+	NxU32 featureWord0, NxU32 featureWord1);
+
+// 001903 at 0x00048b30: eax the count, ecx the vertices; caller cleans.
+NxU32 nxPolygonContainsPoint(float x, float y);
+
+// 001907 at 0x00048bd0: register arguments edx, ecx, esi, ebx.
+NxU32 nxClipEdgeToPolygonPlane();
+
+// 001909 at 0x00048e30: cdecl, 22 arguments (see the definition).
+void NxConvexPolygonContacts();
+
+// 001820 at 0x000411a0: the convex/convex entry, matrix-A signature.
+void NxContactConvexConvex(const NxCollisionShape* shape0, const NxCollisionShape* shape1,
+	NxContactSink* sink, void* context);
+
 #endif
