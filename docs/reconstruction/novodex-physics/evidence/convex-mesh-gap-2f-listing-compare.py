@@ -22,7 +22,9 @@ the same operands, except that
   - 001558's `jmp dword ptr [ebx*4 + table]` is compared by the instructions its six entries land
     on (the oracle's table at 0x1002e550, the candidate's gIceSupportMapFaceCases), each as an
     instruction index.
-It prints the differing instructions, ALL EQUAL or DIFFERENCES, then the calls. `--offsets`
+It prints the differing instructions, ALL EQUAL or DIFFERENCES, then the calls and constructors,
+each asserted against the candidate function it must reach (MAPPINGS ... unexpected=0); it
+exits non-zero on any difference. `--offsets`
 prints the offsets of 001558's three case labels in the built row (the values of
 kIceSupportMapCaseX/Y/Z in IceSupportMaps.cpp).
 """
@@ -99,6 +101,18 @@ for name,lo,hi in ROWS:
         print('   #%d %08x oracle=%s candidate=%s'%(k,o[k].address if k<len(o) else 0,a,b))
     ok&=not diff
 print('ALL EQUAL' if ok else 'DIFFERENCES')
+# Every direct call and every pushed constructor must reach the candidate function of the same
+# stable ID (or the vendored member the oracle's row is): the oracle target's RVA -> a substring of
+# the candidate's decorated name. Asserted, not only printed (Task 2f review).
+EXPECTED={0x1000:'?nxIceVectorConstruct@',0x20440:'?nxHullPolygonConstruct@',0x27f00:'?nxIceIdentityConstruct@',
+ 0x2a610:'?nxEdgeDescConstruct@',0x2a620:'?nxHullTriangleArea@',0x2a790:'?nxHullTriangleCenter@',
+ 0x2ad60:'?nxHullComputeCentroid@',0x2af30:'?nxHullPolygonPlane@',0x2b090:'?nxHullExtractPolygons@',
+ 0x2b6f0:'?nxHullComputePolygons@',0x2cb50:'?nxHullComputeEdges@',0x32460:'?nxIceReverseArray@',
+ 0xb4000:'?nxGetSdkAllocator@',0xb4d70:'??0Container@IceCore@@QAE@XZ',0xb4f50:'??1Container@IceCore@@QAE@XZ',
+ 0xe32c0:'??0RadixSort@IceCore@@QAE@XZ',0xe32e0:'??1RadixSort@IceCore@@QAE@XZ',
+ 0xe33c0:'?Sort@RadixSort@IceCore@@QAEAAV12@PBIIW4RadixHint@2@@Z',0xe3ed0:'?Area@Triangle@IceMaths@@QBEMXZ',
+ 0xe31c0:'?Set@Plane@IceMaths@@QAEAAV12@ABVPoint@2@00@Z',0x2e160:'?nxSupportMapCubeFace@'}
+checked=0; bad=0
 for name,lo,hi in ROWS:
     o=dis(orc,0x10000000+lo,hi-lo)
     sym,va=lookup(name)
@@ -106,4 +120,10 @@ for name,lo,hi in ROWS:
     for a,b in zip(o,c):
         if (a.mnemonic=='call' or a.mnemonic=='push') and a.op_str.startswith('0x') and b.op_str.startswith('0x'):
             if a.mnemonic=='push' and not (0x10001000<=int(a.op_str,16)<0x10100000): continue
-            print('  %s %s -> oracle %s ; candidate %s'%(a.mnemonic,name,a.op_str,rev.get(int(b.op_str,16),b.op_str)))
+            target=int(b.op_str,16)
+            want=EXPECTED.get(int(a.op_str,16)-0x10000000)
+            good=want is not None and any(want in k and v==target for k,v in syms.items())
+            checked+=1; bad+=not good
+            print('  %s %s -> oracle %s ; candidate %s%s'%(a.mnemonic,name,a.op_str,rev.get(target,b.op_str),'' if good else '  <-- UNEXPECTED'))
+print('MAPPINGS checked=%d unexpected=%d'%(checked,bad))
+sys.exit(0 if ok and not bad else 1)

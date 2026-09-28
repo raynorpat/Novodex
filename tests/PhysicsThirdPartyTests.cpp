@@ -9531,7 +9531,18 @@ static unsigned nxChLatticeIndex(unsigned i, unsigned j, unsigned k)
 static void nxChBuildMesh(NxChMesh& m, unsigned index)
 	{
 	gState = 0x2f0c0000u ^ (index * 0x9e3779b9u + 1u);
-	const unsigned* shape = kChShapes[index % kChNbShapes];
+	// Round 5 (index 5 * kChNbShapes on): the unit box, the two-cube bar and the
+	// separate cubes again under 0x0f7f, through the tables whose steps between
+	// the entries these shapes use are powers of two (0, 2, 4, 7). Every face
+	// polygon is then at most two cells, so every cross product 001463 and
+	// 002061 form is a power of two times the other step and the vendored
+	// Plane::Set / Triangle::Normal normalise it exactly under chop rounding
+	// too: these stay in the main family.
+	static const unsigned kExtraKinds[4] = { 0, 1, 16, 17 };
+	static const unsigned kPow2Tables[4] = { 0, 2, 4, 7 };
+	const bool extra = index >= 5 * kChNbShapes;
+	const unsigned kind = extra ? kExtraKinds[(index - 5 * kChNbShapes) % 4] : index % kChNbShapes;
+	const unsigned* shape = kChShapes[kind];
 	const unsigned nx = shape[0], ny = shape[1], nz = shape[2];
 	unsigned fill = shape[3];
 	if(!fill)
@@ -9539,16 +9550,19 @@ static void nxChBuildMesh(NxChMesh& m, unsigned index)
 		// A drawn fill, with the first voxel and, for 3 x 3 x 3, the centre
 		// voxel set: an enclosed empty voxel would give an inner shell whose
 		// edges are all concave, so a face group with no active edge, and
-		// 001641 (0x000314c0) reads the first pair of an empty Container
+		// 001643 (0x00031537, in 001641's continuation) reads the first pair of an empty Container
 		// without testing its count -- a null read on both sides. Such an
 		// input cannot be driven (a rule on the fixed input, as Task 2e's
 		// edge_dedupe does not drive pairs that all cancel).
 		const unsigned drawn = nxNext();
 		fill = drawn | 1u | (nx == 3 && ny == 3 && nz == 3 ? 0x2000u : 0u);
 		}
-	const unsigned tx = nxNext() % 8;
-	const unsigned ty = nxNext() % 8;
-	const unsigned tz = nxNext() % 8;
+	const unsigned drawX = nxNext();
+	const unsigned drawY = nxNext();
+	const unsigned drawZ = nxNext();
+	const unsigned tx = extra ? kPow2Tables[drawX % 4] : drawX % 8;
+	const unsigned ty = extra ? kPow2Tables[drawY % 4] : drawY % 8;
+	const unsigned tz = extra ? kPow2Tables[drawZ % 4] : drawZ % 8;
 	bool solid[5][4][4];
 	memset(solid, 0, sizeof(solid));
 	for(unsigned k = 0; k < nz; ++k)
@@ -9618,16 +9632,16 @@ static void nxChBuildMesh(NxChMesh& m, unsigned index)
 	const bool open = index % 7 == 3 && m.nbTris > 4;
 	if(open)
 		m.nbTris -= 2;
-	const unsigned kind = index % kChNbShapes;
 	m.buildable = !open && kind != 8 && kind != 9 && !shape[4] && index < 2 * kChNbShapes;
 	// Rounds 0 and 1 run under 0x027f, round 4 (the same lattice words) under
 	// 0x0f7f, and the nudged rounds 2 and 3 alternate. Under 0x0f7f's chop
 	// rounding the vendored Plane::Set normalises (0, c, 0) to 0x3f7ffffe where
 	// the oracle's 005155, which keeps the length and its reciprocal on the
 	// x87 stack, gives 0x3f7fffff, whenever 1/c is inexact: so every mesh
-	// under 0x0f7f is in the split too, as is every concave set.
+	// under 0x0f7f is in the split too, as is every concave set -- except round
+	// 5 (see above), whose steps keep 1/c exact.
 	m.cw = index >= 4 * kChNbShapes ? 0x0f7f : index >= 2 * kChNbShapes && (index & 1) ? 0x0f7f : 0x027f;
-	m.split = index >= 2 * kChNbShapes || shape[4] != 0;
+	m.split = (index >= 2 * kChNbShapes && !extra) || shape[4] != 0;
 	if(m.split)
 		{
 		// Past the first two rounds, nudges of a few units in the last place (by
@@ -9890,7 +9904,7 @@ static void nxChPlaneCases(const NxIceSide& s)
 	gIceTape = s.mainTape;
 	}
 
-static const unsigned kChNbMeshes = 5 * kChNbShapes;
+static const unsigned kChNbMeshes = 5 * kChNbShapes + 12;
 
 static void nxChHullDrive(const NxIceSide& s)
 	{

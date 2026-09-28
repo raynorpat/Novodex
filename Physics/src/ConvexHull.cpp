@@ -571,6 +571,12 @@ L2b077:
 // of its references (when the array and the count are both non-zero), and the
 // polygon count is incremented; an empty outline adds nothing. When every face
 // is marked, true. The Adjacencies is released (001544) on every return.
+// Stack and code form, not behaviour: MSVC gives this function a /GS cookie
+// for the `_alloca` (the oracle's row has none; the precedent of 001541 and
+// 001647, recorded rather than removed with safebuffers), takes the marks
+// through __alloca_probe_16 (16-byte aligned) where the listing calls __chkstk,
+// and zeroes the marks and copies the references through the CRT's memset and
+// memcpy where the listing inlines `rep stos` and `rep movs`.
 __declspec(noinline) bool nxHullExtractPolygons(NxU32* nbPolygons, IceCore::Container* data,
 	const ConvexHull* hull)
 	{

@@ -2659,7 +2659,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # 001558, the slots, the deleting destructors) over built and hand-built hulls. Every float
         # input is written as bits (signalling and quiet NaNs, infinities, denormals, -0). The exact
         # families are registered whole. convex_hull.plane_divergent is a rule on the fixed inputs
-        # (concave sets, nudged words, meshes under 0x0f7f and 001463's drawn points: the planes 001463
+        # (concave sets, nudged words, lattice meshes under 0x0f7f whose steps are not powers of two, and 001463's drawn points: the planes 001463
         # takes through the vendored Plane::Set / Triangle::Area, 005155 / 005179), registered up to
         # the oracle digest and held by kDivergentCeilings. Every line below is copied from the oracle
         # side of a run (evidence/convex-mesh-gap.md, Task 2f): the name lines' agreement fields are
@@ -2668,15 +2668,15 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty input name=hull_leaf words=181380 input=9279a52e',
         'thirdparty name=hull_leaf rva=0x0002a620 owner=phys_fn_001441 source=ConvexHull.cpp,IceMeshTools.cpp words=21813 oracle=106d7907 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=hull_leaf area=900 center=900 centroid=400 centroid_true=379 support=1500 support_posed=752 gather=300 gather_faces=1639 reverse=24 vector=18 input_snan=7706 x87_0f7f=450 reports=0',
-        'thirdparty input name=convex_hull words=70348 input=2ebe9920',
-        'thirdparty name=convex_hull rva=0x0002b6f0 owner=phys_fn_001472 source=ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp words=20691 oracle=64a1d9bd mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty input name=convex_hull words=74098 input=d03735ea',
+        'thirdparty name=convex_hull rva=0x0002b6f0 owner=phys_fn_001472 source=ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp words=32993 oracle=c722f53c mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=convex_hull.plane_divergent rva=0x0002b6f0 owner=phys_fn_001472 source=ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp words=56808 oracle=87dd3578',
-        'thirdparty coverage name=convex_hull meshes=90 split_meshes=68 polygons_true=53 polygons_false=34 edges_alone=3 polygons=469 edges_true=56 edges_false=0 edges=1495 rebuilt=22 support=1344 plane=700 plane_split=175 reports=24 line318=9 line321=15',
+        'thirdparty coverage name=convex_hull meshes=102 split_meshes=68 polygons_true=63 polygons_false=36 edges_alone=3 polygons=583 edges_true=66 edges_false=0 edges=1735 rebuilt=25 support=1584 plane=700 plane_split=175 reports=24 line318=9 line321=15',
         'thirdparty input name=support_maps words=26184 input=caa5f9eb',
         'thirdparty name=support_maps rva=0x0002e2f0 owner=phys_fn_001558 source=IceSupportMaps.cpp,ConvexHull.cpp words=26162 oracle=79d50caf mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=support_maps faces=2400 lookups=2400 maps=138 init_true=135 init_false=3 samples=11844 map_lookups=1620 freed=66 input_snan=625 reports=4',
-        'thirdparty coverage driven=89 divergent=30 words=2351025 layout_checks=47',
-        'thirdparty oracle digest=cfa5d10e'
+        'thirdparty coverage driven=89 divergent=30 words=2363327 layout_checks=47',
+        'thirdparty oracle digest=781af325'
     )
 }
 
