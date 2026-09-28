@@ -80,6 +80,8 @@ static bool sha256(const wchar_t* path, char out[65]) {
     return true;
 }
 
+static unsigned capsuleLoadOracleReturn = 2u;
+static unsigned capsuleLoadCandidateReturn = 2u;
 static unsigned renderCount;
 static unsigned renderRows[12][16];
 static unsigned lineCount;
@@ -821,10 +823,13 @@ int wmain(int argc, wchar_t** argv)
     memcpy(loadRecord + 0x4c, loadDimensions, sizeof(loadDimensions));
     memcpy(loadRecord + 0x54, &loadWord, 4);
     memcpy(loadRecord + 0x3c, &loadGroup, 2);
-    reinterpret_cast<CapsuleLoadSlot>(oracleCapsuleTable[12])(
-        oracleCapsule, loadRecord);
-    reinterpret_cast<CapsuleLoadSlot>(candidateCapsuleTable[12])(
-        candidateCapsule, loadRecord);
+    // Row 000989 returns the al of the BASE apply (0x10021b34); the return
+    // is reported on its own line so the registered digest line is unchanged.
+    typedef bool (__thiscall* CapsuleLoadReturnSlot)(void*, const void*);
+    capsuleLoadOracleReturn = reinterpret_cast<CapsuleLoadReturnSlot>(
+        oracleCapsuleTable[12])(oracleCapsule, loadRecord) ? 1u : 0u;
+    capsuleLoadCandidateReturn = reinterpret_cast<CapsuleLoadReturnSlot>(
+        candidateCapsuleTable[12])(candidateCapsule, loadRecord) ? 1u : 0u;
     oracleDigest = foldOracle(oracleDigest, oracleCapsule + 0xe0, 12);
     if(memcmp(oracleCapsule + 0xe0, candidateCapsule + 0xe0, 12) != 0 ||
        memcmp(oracleCapsule + 0xd8, candidateCapsule + 0xd8, 8) != 0) {
@@ -1762,8 +1767,133 @@ int wmain(int argc, wchar_t** argv)
         }
         ++cases;
     }
+    // Mass-frame rows (scene-raycast Task 4, shape rows): 000833's translate
+    // over non-finite and signed-zero offsets and steps, where its
+    // x*[0x101041f0] addends show, over both its centered (c == 0) and
+    // displaced paths; and 000829's box build over irregular half-extents,
+    // where its m32 spills of F and the pairwise sums show. Reported on
+    // their own line so the registered digest line above is unchanged.
+    unsigned massCases = 0, massFailures = 0, massDigest = 2166136261u;
+    {
+    typedef void (__thiscall* FrameArgFn)(void*, const void*);
+    FrameArgFn oracleTranslate = reinterpret_cast<FrameArgFn>(
+        const_cast<unsigned char*>(base) + 0x1c040);
+    FrameArgFn oracleBuildBox = reinterpret_cast<FrameArgFn>(
+        const_cast<unsigned char*>(base) + 0x1bd00);
+    const unsigned specialBits[] = {
+        0x7f800000u, 0xff800000u, 0x7fc00000u, 0x80000000u, 0x00000000u,
+        0x3fc00000u, 0xc0100000u, 0x3dcccccdu };
+    const unsigned specialCount = sizeof(specialBits) / sizeof(specialBits[0]);
+    for(unsigned oi = 0; oi < specialCount; ++oi)
+    for(unsigned di = 0; di < specialCount; ++di)
+    for(unsigned shape = 0; shape < 3; ++shape) {
+        float frame[13];
+        for(unsigned k = 0; k < 9; ++k)
+            frame[k] = 0.5f + 0.25f * static_cast<float>(k);
+        unsigned o[3] = { specialBits[oi], specialBits[(oi + shape + 1) % specialCount],
+            0x3f000000u };
+        unsigned d[3] = { specialBits[di], 0xbf400000u,
+            specialBits[(di + 2 * shape) % specialCount] };
+        if(shape == 2) {
+            // centered path: d = -o, so c lands exactly on zero
+            o[2] = 0x3f000000u;
+            o[0] = 0x3fc00000u; o[1] = 0xc0100000u;
+            d[0] = o[0] ^ 0x80000000u; d[1] = o[1] ^ 0x80000000u;
+            d[2] = o[2] ^ 0x80000000u;
+            if(di & 1) { o[0] = specialBits[oi]; d[0] = o[0] ^ 0x80000000u; }
+        }
+        memcpy(frame + 9, o, sizeof(o));
+        frame[12] = 2.5f;
+        unsigned char oracleFrame[0x34], candidateFrame[0x34];
+        memcpy(oracleFrame, frame, sizeof(oracleFrame));
+        memcpy(candidateFrame, frame, sizeof(candidateFrame));
+        oracleTranslate(oracleFrame, d);
+        reinterpret_cast<MassFrame*>(candidateFrame)->nxMassFrameTranslate(d);
+        massDigest = foldOracle(massDigest, oracleFrame, sizeof(oracleFrame));
+        if(memcmp(oracleFrame, candidateFrame, sizeof(oracleFrame)) != 0) {
+            fprintf(stderr, "masstranslate o=%u d=%u shape=%u differs\n", oi, di, shape);
+            ++massFailures;
+        }
+        ++massCases;
+    }
+    const float boxExtents[][3] = {
+        {0.7f, 1.3f, 2.1f}, {0.1f, 3.3f, 0.37f}, {1.0f, 1.0f, 1.0f},
+        {0.0f, 2.2f, 5.9f}, {1e-3f, 7.77f, 0.123f}, {4.4f, 0.0f, 0.0f},
+        // extents where rounding F and the sums to m32 changes a diagonal
+        {5.62f, 6.69f, 7.17f}, {0.31f, 4.22f, 8.49f}, {5.86f, 8.11f, 1.06f} };
+    for(unsigned b = 0; b < sizeof(boxExtents) / sizeof(boxExtents[0]); ++b) {
+        unsigned char oracleFrame[0x34], candidateFrame[0x34];
+        memset(oracleFrame, 0xcd, sizeof(oracleFrame));
+        memset(candidateFrame, 0xcd, sizeof(candidateFrame));
+        oracleBuildBox(oracleFrame, boxExtents[b]);
+        reinterpret_cast<MassFrame*>(candidateFrame)->nxMassFrameBuildBox(boxExtents[b]);
+        massDigest = foldOracle(massDigest, oracleFrame, sizeof(oracleFrame));
+        if(memcmp(oracleFrame, candidateFrame, sizeof(oracleFrame)) != 0) {
+            fprintf(stderr, "massbox b=%u differs\n", b);
+            ++massFailures;
+        }
+        ++massCases;
+    }
+    }
+    // BOX slot 7 (000951) through its slab test (001730) on rotated,
+    // translated boxes, with directions that lie inside the +-2^-23 parallel
+    // band on some axes, exactly on it, negative, and non-finite.
+    unsigned sweepCases = 0, sweepFailures = 0, sweepDigest = 2166136261u;
+    {
+    typedef void (__thiscall* SweepBoxCtor)(void*, void*, unsigned);
+    typedef bool (__thiscall* SweepFn)(void*, void*, const void*);
+    SweepFn oracleSweep = reinterpret_cast<SweepFn>(
+        const_cast<unsigned char*>(base) + 0x20b20);
+    const float sweepRotations[3][9] = {
+        {1,0,0, 0,1,0, 0,0,1},
+        {0.36f, 0.48f, -0.8f, -0.8f, 0.6f, 0.0f, 0.48f, 0.64f, 0.6f},
+        {0.8660254f, -0.5f, 0.0f, 0.5f, 0.8660254f, 0.0f, 0.0f, 0.0f, 1.0f} };
+    const float sweepTranslations[2][3] = { {0,0,0}, {1.25f, -3.5f, 0.75f} };
+    const float sweepDims[2][3] = { {0.7f, 1.3f, 2.1f}, {3.0f, 0.25f, 1.0f} };
+    const float sweepDirs[][3] = {
+        {1,0,0}, {0.3f, -0.9f, 0.2f}, {-2.0f, 1e-8f, 0.5f},
+        {1.1920929e-7f, -1.1920929e-7f, 1.0f}, {5e-8f, -5e-8f, 2e-8f},
+        {-0.25f, -0.5f, -4.0f}, {0.0f, 0.0f, 0.0f} };
+    for(unsigned r = 0; r < 3; ++r)
+    for(unsigned t = 0; t < 2; ++t)
+    for(unsigned m = 0; m < 2; ++m)
+    for(unsigned dd = 0; dd < sizeof(sweepDirs) / sizeof(sweepDirs[0]); ++dd) {
+        unsigned char oracleBox[0x228], candidateBox[0x228];
+        memset(oracleBox, 0xcd, sizeof(oracleBox));
+        memset(candidateBox, 0xcd, sizeof(candidateBox));
+        reinterpret_cast<SweepBoxCtor>(const_cast<unsigned char*>(base) + 0x21870)(
+            oracleBox, 0, 0);
+        BoxShape& candidateShape = *new(candidateBox) BoxShape(0, 0);
+        memcpy(oracleBox + 0x0c, sweepRotations[r], 36);
+        memcpy(candidateBox + 0x0c, sweepRotations[r], 36);
+        memcpy(oracleBox + 0x30, sweepTranslations[t], 12);
+        memcpy(candidateBox + 0x30, sweepTranslations[t], 12);
+        memcpy(oracleBox + 0xe4, sweepDims[m], 12);
+        memcpy(candidateBox + 0xe4, sweepDims[m], 12);
+        float oracleOut = 0.5f, candidateOut = 0.5f;
+        const bool ro = oracleSweep(oracleBox, &oracleOut, sweepDirs[dd]);
+        const bool rc = candidateShape.nxBoxSweep(&candidateOut, sweepDirs[dd]);
+        const unsigned oracleWords[2] = { ro ? 1u : 0u, 0u };
+        sweepDigest = foldOracle(sweepDigest, oracleWords, 4);
+        sweepDigest = foldOracle(sweepDigest, &oracleOut, 4);
+        if(ro != rc || memcmp(&oracleOut, &candidateOut, 4) != 0) {
+            fprintf(stderr, "boxsweep r=%u t=%u m=%u d=%u differs\n", r, t, m, dd);
+            ++sweepFailures;
+        }
+        ++sweepCases;
+    }
+    }
     nxSetSdkAllocatorBridge(0);
     printf("shape vtable oracle_digest=%08x cases=%u failures=%u\n",
         oracleDigest, cases, failures);
+    printf("shape vtable capsule_load_return oracle=%u candidate=%u\n",
+        capsuleLoadOracleReturn, capsuleLoadCandidateReturn);
+    printf("shape vtable massframe oracle_digest=%08x cases=%u failures=%u\n",
+        massDigest, massCases, massFailures);
+    printf("shape vtable boxsweep oracle_digest=%08x cases=%u failures=%u\n",
+        sweepDigest, sweepCases, sweepFailures);
+    if(capsuleLoadOracleReturn != capsuleLoadCandidateReturn || massFailures ||
+       sweepFailures)
+        return 1;
     return failures ? 1 : 0;
 }

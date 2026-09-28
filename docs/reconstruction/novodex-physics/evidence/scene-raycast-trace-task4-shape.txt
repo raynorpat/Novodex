@@ -1,0 +1,214 @@
+SceneRaycast..CapsuleShape block: cdb breakpoint traces of the shape and mass-property rows
+(scene-raycast Task 4, sub-area shape)
+====================================================================================================
+
+A trimmed excerpt of the raw cdb logs, in the method of evidence/joint-open-items-trace-slots.txt,
+evidence/scene-raycast-trace-task3.txt and the Task 4 body-creation and setters traces. ModLoad lines, banners,
+register dumps, the echoed breakpoint commands and the programs' own stdout are removed (the `.printf` output
+shares the console with the program, so HIT labels were extracted in order with a pattern that skips the echoed
+commands). The per-label hit counts are complete for every target on both sides; the ordered HIT lines are kept
+for NxPhysicsActorDynamicSetterTests. It is the evidence behind the dynamic_proof fields recorded in
+inventory.json for 000933, 000993 and 000951 (the last a harness drive only), and the hit counts quoted in the
+notes of 000995, 000989, 000935, 000829, 000833, 000849, 000867 and 000873
+(units/scene-raycast-contract.md, ## Task 4 results: shape and mass properties).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Staged-pair targets (18):
+           cdb -cf <script> build\Release\<target>.exe <pair directory>, cwd the pairs root; the script breaks
+           on the NxPhysics load with `sxe ld:NxPhysics`, sets `bp NxPhysics+<offset> ".printf \"HIT <label>\n\";
+           gc"` for each label below, then runs to exit. The pair directories were staged by hand
+           (D:\FlamingEnt__\novodex-analysis\pairs-shape-int\oracle and \candidate, not kept); the sha256s identify
+           the modules. Every run exited 0; the same build gives stdout_delta=0 on all 18 targets.
+Oracle differentials (candidate code linked into the test exe, the pinned oracle loaded in the same process):
+           cdb -cf <script> build\Release\<target>.exe <oracle directory> <oracle sha256>; one script sets the
+           oracle breakpoints on NxPhysics+<rva> (labels o<row>) and the candidate breakpoints on <exe module>+<offset>
+           from the exe's linker map (labels c<row>). NxPhysicsShapeVtableTests and NxPhysicsCollisionTests are
+           linked /MAP for this (CMakeLists.txt; the map is a side file). NxPhysicsCollisionTests calls the emitter
+           too often for printed hits: its script counts in pseudo-registers (`bp ... "r $t0=@$t0+1; gc"`) and
+           prints the two totals at exit.
+Recorded:  2026-09-28, branch claude/scene-raycast-block (052f1c0 plus the shape working tree, cherry-picked
+           from claude/sr-t4-shape c1a70e1, with the integration fixes).
+Oracle:    NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate: NxPhysics.dll sha256=3d8c9aac9b60a1073d75221735b37c3773d3a05dc4602262a768e578c74bb111
+           NxPhysicsShapeVtableTests.exe sha256=6a3bd86efbbac715ee26edf6df16f05d98221123f382e9231fc62f469b05d92c
+           NxPhysicsObjectLayoutTests.exe sha256=a35d06cf89cd3ee63d86b26dfe65b894cc6d83c7e41dcc1d781d7c25ac29077b
+           NxPhysicsCollisionTests.exe sha256=2d54869c949e70cb657e2d38ebd4471e9c068187dd30c3a8b598c3a8b6435b13
+           (each identical to the build\Release file at the time of the trace)
+Offsets:   module-relative. Oracle: every row's inventory RVA. Candidate: from the linker map of each binary,
+           one breakpoint per out-of-line symbol. Labels ending in x are context, not claimed here: 001309
+           (ShapeBase::nxShapeGlobalPose, written for 000933, unclaimed) and 001730 (nxSegmentSlabs, 001730+001732
+           written for 000951, unclaimed).
+
+BREAKPOINTS, ORACLE (label, module offset)
+------------------------------------------
+  000933    0x204e0
+  000935    0x205a0
+  000951    0x20b20
+  000989    0x21ad0
+  000993    0x21b70
+  000995    0x21be0
+  000829    0x1bd00
+  000833    0x1c040
+  000849    0x1c8c0
+  000867    0x1d260
+  000873    0x1d610
+  001309x   0x25f60
+  001730x   0x38050
+
+BREAKPOINTS, CANDIDATE NxPhysics (label, module offset, object, symbol)
+----------------------------------------------------------------------
+  000933    0x246a0   ObjectModel    ?nxBoxGetWorldOBB@BoxShape@@QBEXPAM@Z
+  000935    0x24f20   ObjectModel    ?nxBoxWorldAABB@BoxShape@@QBEXPAM@Z
+  000951    0x37ac0   StepOnlyRows   ?nxBoxSweep@BoxShape@@QBE_NPAXPBM@Z
+  000989    0x25f60   ObjectModel    ?nxCapsuleLoadFromDesc@CapsuleShape@@QAE_NPBX@Z
+  000993    0x19d90   NpActor        ?nxCapsuleSetDimensions@CapsuleShape@@QAEXMM@Z
+  000995    0x26100   ObjectModel    ?nxCapsuleSetRadius@CapsuleShape@@QAEXM@Z
+  000829    0x278b0   ObjectModel    ?nxMassFrameBuildBox@MassFrame@@QAEXPBM@Z
+  000833    0x28450   ObjectModel    ?nxMassFrameTranslate@MassFrame@@QAEXPBX@Z
+  000849    0x24360   ObjectModel    ?nxBoxComputeMassFrame@BoxShape@@QAEXPAVMassFrame@@MPBMPBX@Z
+  000867    0x37a10   StepOnlyRows   ?nxAccumulateByKind0867@@YAXPAXM0M@Z
+  000873    0xb090    ContactGeneration ?NxEmitContact@@YAXPAUNxContactSink@@PAX1IPBVNxVec3@@2GG@Z
+  001309x   0x2ba10   ObjectModel    ?nxShapeGlobalPose@ShapeBase@@QBEXPAM@Z
+  001730x   0x37cb0   StepOnlyRows   ?nxSegmentSlabs@?A0xa75c4d5f@@YAHPBM000PAM1@Z
+
+BREAKPOINTS, CANDIDATE NxPhysicsShapeVtableTests (label, module offset, object, symbol)
+----------------------------------------------------------------------
+  000933    (no out-of-line symbol in this binary)
+  000935    0xa870    ObjectModel    ?nxBoxWorldAABB@BoxShape@@QBEXPAM@Z
+  000951    0xdaf0    StepOnlyRows   ?nxBoxSweep@BoxShape@@QBE_NPAXPBM@Z
+  000989    0xb070    ObjectModel    ?nxCapsuleLoadFromDesc@CapsuleShape@@QAE_NPBX@Z
+  000993    (no out-of-line symbol in this binary)
+  000995    0xb200    ObjectModel    ?nxCapsuleSetRadius@CapsuleShape@@QAEXM@Z
+  000829    0xb730    ObjectModel    ?nxMassFrameBuildBox@MassFrame@@QAEXPBM@Z
+  000833    0xbb90    ObjectModel    ?nxMassFrameTranslate@MassFrame@@QAEXPBX@Z
+  000849    0xa1f0    ObjectModel    ?nxBoxComputeMassFrame@BoxShape@@QAEXPAVMassFrame@@MPBMPBX@Z
+  000867    (no out-of-line symbol in this binary)
+  000873    (no out-of-line symbol in this binary)
+  001309x   (no out-of-line symbol in this binary)
+  001730x   0xdce0    StepOnlyRows   ?nxSegmentSlabs@?A0xa75c4d5f@@YAHPBM000PAM1@Z
+
+BREAKPOINTS, CANDIDATE NxPhysicsObjectLayoutTests (label, module offset, object, symbol)
+----------------------------------------------------------------------
+  000933    0x30840   ObjectModel    ?nxBoxGetWorldOBB@BoxShape@@QBEXPAM@Z
+  000935    0x30e90   ObjectModel    ?nxBoxWorldAABB@BoxShape@@QBEXPAM@Z
+  000951    0x37200   StepOnlyRows   ?nxBoxSweep@BoxShape@@QBE_NPAXPBM@Z
+  000989    0x317b0   ObjectModel    ?nxCapsuleLoadFromDesc@CapsuleShape@@QAE_NPBX@Z
+  000993    (no out-of-line symbol in this binary)
+  000995    0x31940   ObjectModel    ?nxCapsuleSetRadius@CapsuleShape@@QAEXM@Z
+  000829    0x32fe0   ObjectModel    ?nxMassFrameBuildBox@MassFrame@@QAEXPBM@Z
+  000833    0x336d0   ObjectModel    ?nxMassFrameTranslate@MassFrame@@QAEXPBX@Z
+  000849    0x30780   ObjectModel    ?nxBoxComputeMassFrame@BoxShape@@QAEXPAVMassFrame@@MPBMPBX@Z
+  000867    0x37150   StepOnlyRows   ?nxAccumulateByKind0867@@YAXPAXM0M@Z
+  000873    (no out-of-line symbol in this binary)
+  001309x   0x35b70   ObjectModel    ?nxShapeGlobalPose@ShapeBase@@QBEXPAM@Z
+  001730x   0x373f0   StepOnlyRows   ?nxSegmentSlabs@?A0xa75c4d5f@@YAHPBM000PAM1@Z
+
+BREAKPOINTS, CANDIDATE NxPhysicsCollisionTests (label, module offset, object, symbol)
+----------------------------------------------------------------------
+  000873    0x185e0   ContactGeneration ?NxEmitContact@@YAXPAUNxContactSink@@PAX1IPBVNxVec3@@2GG@Z
+
+HIT COUNTS, STAGED PAIRS (oracle/candidate; targets with no hit on either side omitted)
+----------------------------------------------------------------------------------------
+  000933   total 4/4: DSet 4/4
+  000935   total 12/12: DSet 3/3, SRay 9/9
+  000951   total 0/0: -
+  000989   total 4/0: DSet 2/0, SRay 2/0
+  000993   total 2/2: DSet 2/2
+  000995   total 2/2: DSet 2/2
+  000829   total 50/0: Life 7/0, DynF 1/0, BFlag 1/0, Dyn 1/0, BodyC 3/0, JSP 8/0, JAll 2/0, JSlot 27/0
+  000833   total 99/0: Life 13/0, DynF 2/0, BFlag 2/0, Dyn 2/0, BodyC 6/0, JSP 16/0, JAll 4/0, JSlot 54/0
+  000849   total 50/0: Life 7/0, DynF 1/0, BFlag 1/0, Dyn 1/0, BodyC 3/0, JSP 8/0, JAll 2/0, JSlot 27/0
+  000867   total 0/0: -
+  000873   total 0/0: -
+  001309x  total 6/4: DSet 6/4
+  001730x  total 0/0: -
+
+HIT COUNTS, ORACLE DIFFERENTIALS (oracle row / candidate function, one process)
+--------------------------------------------------------------------------------
+  NxPhysicsShapeVtableTests: 000951 132/132, 000989 1/1, 000995 4/4, 000829 9/9, 000833 210/210, 001730x 132/132
+  NxPhysicsObjectLayoutTests: 000935 1/1, 000951 48/48, 000989 2/2, 000995 1/1, 000829 10/10, 000833 77/77, 000849 10/10, 000867 15/15, 001730x 48/48
+  NxPhysicsCollisionTests: 000873 396668/396668 (counted, not printed)
+
+READING
+-------
+  000933, 000935, 000993 and 000995 are hit exactly as often as the oracle rows on every staged target
+  (4, 12, 2 and 2), and in the same order (the DynamicSetter lines below). 000933's and 000993's candidates are
+  the functions written here (the handles call them as 001073 and 001113 do); 000995 is reached through the
+  capsule table's slot 14, as NpCapsuleShape::setRadius does.
+  001309x: oracle 6, candidate 4 on DynamicSetter. The four are 000933's; the oracle's other two come from 001231
+  (a locked wrapper that calls 001309 on [this+0x18], 0x10024cd6) and 001317 (0x10026b3a), one each (checked
+  with breakpoints on 0x24cc0 and 0x26ad0 on the oracle pair); the candidate does not route those callers through
+  001309. Neither is a row of this sub-area.
+  000989: the oracle row runs 4 times on the staged pairs (NxScene::createActor -> 000034 -> 000032 -> slot 12,
+  once per capsule on DynamicSetter and SceneRaycast); the candidate 0, because its actor creation does not load
+  shapes through slot 12 (000032 is not reproduced). The oracle differentials reach both sides equally (1/1, 2/2).
+  000829, 000833, 000849: the oracle runs the box mass chain through 000008 (the shape mass pass) on every
+  density body (50, 99 and 50 hits); the candidate never does (Scene.cpp's one-box emulation stands in for
+  000008). The oracle differentials drive both sides equally: ShapeVtable 9/9 and 210/210, ObjectLayout 10/10,
+  77/77 and 10/10.
+  000951 and 000867 (step-only) are reached by no staged target on either side. The oracle differentials call
+  them directly at API time, under the harness's control word 0x027f and not the step's 0x0f7f: 000951
+  ShapeVtable 132/132 and ObjectLayout 48/48 (001730 equally), 000867 ObjectLayout 15/15.
+  000873 (the contact-stream emitter) is reached only by NxPhysicsCollisionTests, which pre-sizes the stream, so
+  the eight growth sites are unexercised on both sides.
+
+ORDERED SEQUENCES (all 13 labels, per staged target; oracle/candidate hits)
+----------------------------------------------------------------------------
+  NxPhysicsActorLifecycleTests         27/0    differ (000933/000935/000993/000995 subsequence identical)
+  NxPhysicsDynamicFirstTests            4/0    differ (000933/000935/000993/000995 subsequence identical)
+  NxPhysicsEmptySceneTests              0/0    identical
+  NxPhysicsActorNameTests               0/0    identical
+  NxPhysicsActorMetadataTests           0/0    identical
+  NxPhysicsActorBodyFlagTests           4/0    differ (000933/000935/000993/000995 subsequence identical)
+  NxPhysicsActorDynamicsTests           4/0    differ (000933/000935/000993/000995 subsequence identical)
+  NxPhysicsActorDynamicSetterTests     19/15   differ (000933/000935/000993/000995 subsequence identical)
+  NxPhysicsActorMomentumTests           0/0    identical
+  NxPhysicsActorForceTests              0/0    identical
+  NxPhysicsActorCMassTests              0/0    identical
+  NxPhysicsActorShapeMutationTests      0/0    identical
+  NxPhysicsBodyCreationTests           12/0    differ (000933/000935/000993/000995 subsequence identical)
+  NxPhysicsJointStagedPairTests        32/0    differ (000933/000935/000993/000995 subsequence identical)
+  NxFoundationTangentTests              0/0    identical
+  NxPhysicsJointAllocatorTests          8/0    differ (000933/000935/000993/000995 subsequence identical)
+  NxPhysicsJointSlotTests             108/0    differ (000933/000935/000993/000995 subsequence identical)
+  NxPhysicsSceneRaycastTests           11/9    differ (000933/000935/000993/000995 subsequence identical)
+
+HIT LINES, NxPhysicsActorDynamicSetterTests, ORACLE (19)
+------------------------------------------------------------
+HIT 001309x
+HIT 001309x
+HIT 000935
+HIT 000935
+HIT 000933
+HIT 001309x
+HIT 000989
+HIT 000995
+HIT 000993
+HIT 000933
+HIT 001309x
+HIT 000935
+HIT 000933
+HIT 001309x
+HIT 000933
+HIT 001309x
+HIT 000989
+HIT 000993
+HIT 000995
+
+HIT LINES, NxPhysicsActorDynamicSetterTests, CANDIDATE (15)
+------------------------------------------------------------
+HIT 000935
+HIT 000935
+HIT 000933
+HIT 001309x
+HIT 000995
+HIT 000993
+HIT 000933
+HIT 001309x
+HIT 000935
+HIT 000933
+HIT 001309x
+HIT 000933
+HIT 001309x
+HIT 000993
+HIT 000995

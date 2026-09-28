@@ -100,6 +100,12 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsShapeVtableTests' = @(
         'shape vtable oracle_digest=ed1294b6 cases=626 failures=0'
+        # Scene-raycast Task 4, shape: 000989's return, the mass-frame rows
+        # 000829/000833 and BOX slot 7 (000951) against the oracle rows. The
+        # oracle side's lines, appended as their own statement.
+        'shape vtable capsule_load_return oracle=1 candidate=1',
+        'shape vtable massframe oracle_digest=7c450cef cases=201 failures=0',
+        'shape vtable boxsweep oracle_digest=2c5d5c09 cases=84 failures=0'
     )
     # Joint-open-items Task 4 review: seven rotated bodies (a general rotation,
     # 180 degrees about x, y and z, and three general rotations whose largest
@@ -499,6 +505,19 @@ $NxRequiredCoverageLines = [ordered] @{
         'setter plane_local_position=3f000000.bf800000.40000000.3f000000.bf800000.40000000.3f000000.bf800000.40000000.80002.1',
         'setter plane_global_pose=3f800000.0.0.0.bf800000.0.0.0.bf800000.3f800000.40000000.40400000.3f800000.0.0.0.bf800000.0.0.0.bf800000.3f800000.40000000.40400000.80002.1',
         'setter plane_saved=1.0.8.0.0.1.1.0.3f800000.0.0.0.bf800000.0.0.0.bf800000.3f800000.40000000.40400000.0.0.3f800000.40200000'
+        # The shape rows (scene-raycast Task 4, shape: 000933 through 001309 on
+        # dynamic and static owners, 000935 on a rotated local pose, 000993 and
+        # 000995 on a capsule). The oracle's lines, appended as their own
+        # statement so the line above is not edited.
+        'setter geometry_actor=0.1',
+        'setter geometry_obb=0.0.4094cccd.bfd99999.40b80000.3f333333.3fa66666.40066666.3f2e3abc.beeb6ef9.3f11d0d9.3f24a368.3ba1120f.bf439d28.3eb22871.3f63410c.3e98f887',
+        'setter geometry_bounds=0.0.40184c72.c070b7cc.406e6615.40dd7361.3eb8f194.40f8ccf5',
+        'setter geometry_obb=0.1.40408db8.be99c434.40b6a61f.3f333333.3fa66666.40066666.3e4d9d93.bf634975.bed43861.3f79b0c5.3e095e90.3e3a9cb7.bdd7f68b.bee30a90.3f642177',
+        'setter geometry_actor=1.1',
+        'setter geometry_obb=1.0.40408db9.be99c438.40b6a61f.3f333333.3fa66666.40066666.3e4d9d94.bf634976.bed43860.3f79b0c5.3e095e92.3e3a9cb6.bdd7f687.bee30a90.3f642177',
+        'setter geometry_capsule_actor=1',
+        'setter geometry_capsule_dimensions=3e99999a.3fd9999a.3e99999a.3f59999a.80002',
+        'setter geometry_capsule_radius=3ee66666.3ee66666.80002'
     )
     'NxPhysicsActorDynamicsTests' = @(
         'dynamics created=1',
@@ -2714,9 +2733,10 @@ $NxPhaseCoverageFloor = [ordered] @{
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 135  # 34 for NxPhysicsAssetTests, 101 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a)
-    '5' = 1033  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
+    '5' = 1045  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # + 149 body-creation lines (scene-raycast Task 4)
                # + 13 setters lines (scene-raycast Task 4, setters)
+               # + 9 dynamic-setter and 3 shape-vtable lines (scene-raycast Task 4, shape)
                # (RED on purpose: vtables family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot

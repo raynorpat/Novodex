@@ -1918,7 +1918,6 @@ def plan_path(evidence_root, plan):
 # the row. Adding one is a regression that has to be argued.
 UNRESOLVED_SOURCE_PATHS = (
     'Physics/src/Actor.cpp',                         # 3 rows
-    'Physics/src/CapsuleShape.cpp',                  # 1 rows
     'Physics/src/ContactConvexHeightfield.cpp',      # 2 rows
     'Physics/src/ContactMeshMesh.cpp',               # 1 rows
     'Physics/src/ContactPlaneMesh.cpp',              # 2 rows

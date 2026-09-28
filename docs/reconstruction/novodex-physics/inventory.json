@@ -15194,9 +15194,9 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/340",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2540",
-      "static_proof": "unit-density solid-box mass-frame builder over three half-extents: replace-or-multiply accumulator opened at the .rdata 1.0f literal with integer zero-word compares, mass = 8*hx*hy*hz ([0x101068f0]), diagonal = (mass/3) ([0x101068ec]) times pairwise squared-extent sums; the mass value stays live on the x87 stack across the whole function",
+      "static_proof": "unit-density solid-box mass-frame builder over three half-extents: replace-or-multiply accumulator opened at the .rdata 1.0f literal with integer zero-word compares, mass = 8*hx*hy*hz ([0x101068f0]), diagonal = (mass/3) ([0x101068ec]) times pairwise squared-extent sums; the mass value stays live on the x87 stack across the whole function  Scene-raycast Task 4 (shape), defect fixed and re-walked at integration: walked 0x1001bd00-0x1001bdb8 (thiscall `ret 4`): F = (1/3)*mass is spilled to m32 (fstp [esp+0x1c], 0x1001bd39) and so are the three pairwise square sums (0x1001bd67, 0x1001bd6c, 0x1001bd72); each diagonal is the spilled sum times the spilled F. The candidate kept all four in double. MassFrame::nxMassFrameBuildBox is now noinline (000849 calls it as a function, 0x1001c8d0).",
       "dynamic_proof": null,
-      "notes": "",
+      "notes": "Scene-raycast Task 4 (shape): new registered line `shape vtable massframe oracle_digest=7c450cef cases=201 failures=0` (9 box builds among them). cdb hits oracle/candidate: NxPhysicsShapeVtableTests 9/9, NxPhysicsObjectLayoutTests 10/10; on the staged pairs the oracle row is hit 50 times through 000008 (the shape mass pass on density bodies) and the candidate 0: 000008 is not reproduced (Scene.cpp's one-box emulation) (evidence/scene-raycast-trace-task4-shape.txt).",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -15268,9 +15268,9 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/342",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2545",
-      "static_proof": "MassFrame translate (0x1c040, __thiscall ret 4): early-outs when the {d} arg is all-zero; else moves the reference center from old_offset o to c=d+o and adds the parallel-axis Delta-Q m*(Q(c)-Q(o)) to the nine inertia words, where Q(r)=|r|^2 I - r r^T; the image splits this into a centered path (0x1c0d7, c==0 -> -Q(o)) and a displaced path (0x1c26f, generic, with the 0.0-literal multiplications [0x101041f0] matching the symmetric Q structure), then the shared tail (0x1c578) sets offset=c. nxMassFrameTranslate reproduces Q(c)-Q(o); see 3z40.",
+      "static_proof": "MassFrame translate (0x1c040, __thiscall ret 4): early-outs when the {d} arg is all-zero; else moves the reference center from old_offset o to c=d+o and adds the parallel-axis Delta-Q m*(Q(c)-Q(o)) to the nine inertia words, where Q(r)=|r|^2 I - r r^T; the image splits this into a centered path (0x1c0d7, c==0 -> -Q(o)) and a displaced path (0x1c26f, generic, with the 0.0-literal multiplications [0x101041f0] matching the symmetric Q structure), then the shared tail (0x1c578) sets offset=c. nxMassFrameTranslate reproduces Q(c)-Q(o); see 3z40.  Scene-raycast Task 4 (shape), defect fixed and re-walked at integration: rewritten from the listing, 0x1001c040-0x1001c598 (thiscall `ret 4`): the all-zero-d early out (0x1001c04e-0x1001c05e); the skew matrix X of o on the stack; c = d + o spilled to m32 (0x1001c09b-0x1001c0b5); the centered path (every word of c zero, 0x1001c0d7-0x1001c26a) adds mass * X*X; the displaced path (0x1001c26f-0x1001c569) builds N = -Q(c) with (-cy)cy spilled ([esp+0xc]) and (-cx)cx stored by fst ([esp+8]: the unrounded value feeds +0x10, the spill +0x20), then X*X again (0x1001c350), and adds mass * (X*X - N); every off-diagonal carries its product with the .rdata zero [0x101041f0] (0x1001c108, 0x1001c2b4, 0x1001c374 and the rest: NaN for a non-finite operand, -0 cases), (-ox)ox is spilled at 0x1001c14c/0x1001c3c5, and every element, difference and mass product is rounded to m32 as stored; both paths end in offset += d (0x1001c578-0x1001c58f). The earlier candidate computed Q(c) - Q(o) directly and set offset = c. noinline (000849 calls it, 0x1001c8eb).",
       "dynamic_proof": "differential 54/54 (6 offsets x 9 translations, incl. negatives/fractionals) byte-exact vs oracle 0x1c040; mutation of the Q off-diagonal sign -> 37/54 red (build/r25-mut.log), restored green",
-      "notes": "Additional 48-case mesh cached-mass drive found and corrected asymmetric x87 rounding in diagonal Q terms; NxPhysicsShapeVtableTests digest ed1294b6, failures=0. previous source: Physics/src/ObjectModel.cpp (MassFrame::nxMassFrameTranslate)",
+      "notes": "Additional 48-case mesh cached-mass drive found and corrected asymmetric x87 rounding in diagonal Q terms; NxPhysicsShapeVtableTests digest ed1294b6, failures=0. previous source: Physics/src/ObjectModel.cpp (MassFrame::nxMassFrameTranslate) Scene-raycast Task 4 (shape): new registered line `shape vtable massframe ...` (192 translates over inf/-inf/NaN/-0/+0 and finite offsets, both paths; dropping two zero addends gives failures=20 there). cdb hits oracle/candidate: NxPhysicsShapeVtableTests 210/210, NxPhysicsObjectLayoutTests 77/77; on the staged pairs the oracle row is hit 99 times through 000008 and the candidate 0 (000008 not reproduced) (evidence/scene-raycast-trace-task4-shape.txt).",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -15563,9 +15563,9 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/350",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2562",
-      "static_proof": "BOX slot-4 compute-mass row: builds a unit-density solid-box mass frame from three half-extents through 0x0001bd00, folds the optional payload pair through 0x1bdc0/0x1c040 when non-null, scales by density through 0x0001c5c0 unless a fucompp finds it equal to the .rdata 0x101041ec 1.0f literal, then merges into the destination through 0x0001c630; __thiscall ret 0xc",
+      "static_proof": "BOX slot-4 compute-mass row: builds a unit-density solid-box mass frame from three half-extents through 0x0001bd00, folds the optional payload pair through 0x1bdc0/0x1c040 when non-null, scales by density through 0x0001c5c0 unless a fucompp finds it equal to the .rdata 0x101041ec 1.0f literal, then merges into the destination through 0x0001c630; __thiscall ret 0xc  Scene-raycast Task 4 (shape), defect fixed and re-walked at integration: walked 0x1001c8c0-0x1001c922: build (000829, 0x1001c8d0); when extra is non-null, fold (000831, 0x1001c8de) and translate by extra+0x24 (000833, 0x1001c8eb); scale (000843) unless density == 1.0f (fucompp; `test ah,0x44; jnp`: equal skips, unordered scales); merge (000839, 0x1001c918). The candidate replaced the 000833 call with an inline centered formula; it now calls MassFrame::nxMassFrameTranslate. BoxShape::nxBoxComputeMassFrame is noinline (000947 calls it, 0x1002086d). Convention recorded: the row is thiscall on the destination MassFrame (`ret 0xc`); the candidate is a BoxShape member taking the destination first (only caller 000947 calls it directly; a code-shape difference).",
       "dynamic_proof": null,
-      "notes": "",
+      "notes": "Scene-raycast Task 4 (shape): cdb hits oracle/candidate: NxPhysicsObjectLayoutTests 10/10 (boxmass digest d82de90e unchanged); staged pairs: oracle 50 (through 000008), candidate 0 (evidence/scene-raycast-trace-task4-shape.txt).",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -15893,13 +15893,13 @@
       "phase": 7,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": "Physics/src/ObjectModel.cpp",
+      "source": "Physics/src/StepOnlyRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/422",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2637",
-      "static_proof": "static review of the recorded shape: kind-selected accumulator (0x1d260, ret 0xc); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
+      "static_proof": "static review of the recorded shape: kind-selected accumulator (0x1d260, ret 0xc); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)  Scene-raycast Task 4 (shape), defect fixed and re-walked at integration: walked 0x1001d260-0x1001d2c4 (thiscall `ret 0xc` on the accumulator; a, desc, b): v = a / b stays unrounded (fdiv at 0x1001d26b; the candidate rounded it to float); kinds other than 4 and 5 add v to +0x64; kinds 4 and 5 add v*desc[0] and v*desc[1] from the stack and v*desc[2] after its m32 spill (0x1001d299; the candidate did not round that product), then bit 6 of desc+0xc sets the byte +0x75. The candidate nxAccumulateByKind0867 is a cdecl free function taking the accumulator first (the only oracle caller 000893 calls it directly: a code-shape difference). Reachable only from the simulation step; no public path while NpScene::simulate is a stub. (000911 -> 000901 -> 000893.) Built /arch:IA32 (Physics/src/StepOnlyRows.cpp, on the CMakeLists.txt list with its reason) for the step's control word 0x0f7f.",
       "dynamic_proof": "confirmed via the accum0867 differential (3z194): fifteen combinations -- five descriptor kinds including the 0x24 case that masks down to 4, by three value pairs including a zero numerator -- all failures=0 against the whole 0x100-byte object, with the accumulators seeded so the adds are not all from zero",
-      "notes": "previous source: kind-selected accumulator (0x1d260, ret 0xc)",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "notes": "previous source: kind-selected accumulator (0x1d260, ret 0xc) Scene-raycast Task 4 (shape): moved from ObjectModel.cpp to Physics/src/StepOnlyRows.cpp (source and implementation follow). cdb hits oracle/candidate: NxPhysicsObjectLayoutTests 15/15 (accum0867, harness control word); DLL targets 0/0 (evidence/scene-raycast-trace-task4-shape.txt).",
+      "implementation": "Physics/src/StepOnlyRows.cpp"
     },
     {
       "id": "phys_fn_000868",
@@ -16003,12 +16003,13 @@
       "phase": 3,
       "phase_provenance": "callers",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "Physics/src/ContactGeneration.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/361",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2661",
-      "static_proof": null,
+      "static_proof": "Scene-raycast Task 4 (shape), defect fixed and walked at integration: 0x1001d610-0x1001d8cf (thiscall `ret 0x1c`, sink = this): orientation swap/negate, header on object change (feature-pair flag, ids +0x9c, material<<24|flag<<16, pair count), normal block on raw-word change, contact record (separation & 0x7fffffff, optional feature word). The stream is the SdkContainer at sink+0x38 and grows through 004840 (SdkContainer::resize, Containers.cpp) at the eight sites: `count == capacity` -> resize(1) before each single-word append (0x1001d6e7, 0x1001d711, 0x1001d752, 0x1001d7fc, 0x1001d87b, 0x1001d8a8) and `count + 3 > capacity` (unsigned) -> resize(3) before each three-word burst (0x1001d7c7, 0x1001d83f); resize's bool is ignored and the write follows regardless. The candidate (NxEmitContact and its helpers) now does the same; it used to refuse the write. Stable-ID line added. Reachable only from the simulation step; no public path while NpScene::simulate is a stub. (narrow phase.) ContactGeneration.cpp is on the /arch:IA32 list.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (shape): growth through 004840 restored; the CollisionTests harness pre-sizes the stream, so the growth sites are unexercised on both sides (contact_emit oracle=candidate=deaa1fc557071411, mismatches=0, unchanged). cdb counts on NxPhysicsCollisionTests (exe sha256 2d54869c9e70cb65, the oracle row at 0x1d610 and the candidate NxEmitContact in one process): 396,668 / 396,668 (evidence/scene-raycast-trace-task4-shape.txt).",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_000874",
@@ -17108,13 +17109,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/384",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2963",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) and walked instruction by instruction in scene-raycast Task 4 (shape; re-walked at integration): 0x100204e0-0x10020599, thiscall `ret 4` (out = NxBox): an identity 3x4 pose on the stack, 001309 at 0x1002054d composes the shape's global pose into it, then center = the pose translation (x through fld/fstp, y and z as dwords), rep movsd of the 9 rotation dwords to out+0x18 and the dims +0xe4..+0xec to out+0xc. 001309 (0x10025f60-0x1002627a, 797 B, not claimed here; its owners may claim it) is written from its listing as ShapeBase::nxShapeGlobalPose: [owner+8] non-null expands the body quaternion (+0x5c..+0x68) with the m32 spills at 0x10025f9f (2yy), 0x10025fd3 (2xz), 0x10025fdd (2yw, fst), 0x10025ffd (1-2xx, fst) and 0x1002600d (2yz) and copies the position +0x50; otherwise the owner pose +0x20; translation x kept in the register into its + t.x, rows y and z spilled first (0x100260d3/0x100260f9); each rotation element (a + b) + c in the listing's load order (0x10026122-0x1002624d, column 2 as (r1 L12 + r2 L22) + r0 L02). Candidate BoxShape::nxBoxGetWorldOBB (Physics/src/ObjectModel.cpp), called by NpActor.cpp nxBoxHandleGetWorldOBB, the product copy of 001073, as 0x10023566 does (it used to copy the cached +0x30/+0x0c pose). The row runs at API time under 0x027f; ObjectModel.cpp keeps the default architecture, whose double arithmetic is the x87 53-bit register arithmetic there. units/scene-raycast-contract.md",
+      "dynamic_proof": "executed under the 18 staged-pair targets of the Task 4 traces: a cdb breakpoint on the candidate symbol (build/Release/NxPhysics.map) was hit 4 times (NxPhysicsActorDynamicSetterTests: box_world_obb and the three geometry_obb lines), against the staged candidate pair (NxPhysics.dll sha256 3d8c9aac9b60a107, identical to build/Release/NxPhysics.dll), exactly the oracle row's count at 0x204e0 on every target; the new registered lines `setter geometry_obb=...` (a dynamic owner at two quaternions, a static owner) are equal bit for bit on both pairs while the candidate's cached pose differs from the oracle's there, so they separate the row from the old cache copy; stdout_delta=0 on every target; trace excerpt committed as evidence/scene-raycast-trace-task4-shape.txt (scene-raycast Task 4, shape)",
+      "notes": "Scene-raycast Task 4 (shape): written from the listing and claimed; the handle calls it. 001309 is written as the unclaimed helper ShapeBase::nxShapeGlobalPose (no stable-ID line; its owners' row).",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000934",
@@ -17148,9 +17150,9 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/385",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2964",
-      "static_proof": "__thiscall: per-axis extents |rot-row . dims| over pose one (rot words +0x0c..+0x2c, dims +0xe4/e8/ec; axis0 r0/r2/r1, axis1 r3/r5/r4, axis2 r6/r8/r7) then min=t-ext, max=t+ext into a caller record; BOX vtable slot 9",
+      "static_proof": "__thiscall: per-axis extents |rot-row . dims| over pose one (rot words +0x0c..+0x2c, dims +0xe4/e8/ec; axis0 r0/r2/r1, axis1 r3/r5/r4, axis2 r6/r8/r7) then min=t-ext, max=t+ext into a caller record; BOX vtable slot 9  Scene-raycast Task 4 (shape), defect fixed and re-walked at integration: walked 0x100205a0-0x10020663 (thiscall `ret 4`): each extent sums (|dz r2| + |dy r1|) + |dx r0| (faddp at 0x100205ce, 0x100205dc and the row copies); the row-0 and row-1 extents are spilled to m32 (0x100205de, 0x10020604) and re-read by the fsub/fadd, the row-2 extent stays in st(4) and is used unrounded (0x10020646, 0x10020659); the fst at 0x100205d8/0x100205fe/0x10020622 are dead. The candidate summed (|dx r0| + |dy r1|) + |dz r2| in float; it now keeps the listing's association and rounding.",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests boxrow family on a real constructed identity-pose box: minmax bf800000 x3 / 3f800000 x3 equal candidate bitwise; mixed single/extended rounding of partial sums left open for general poses",
-      "notes": "P5 Task 3: the OBB world-bounds helper.",
+      "notes": "P5 Task 3: the OBB world-bounds helper. Scene-raycast Task 4 (shape): new registered line `setter geometry_bounds=...` (a rotated local pose on a rotated dynamic body). cdb hits oracle/candidate: NxPhysicsActorDynamicSetterTests 3/3, NxPhysicsSceneRaycastTests 9/9, NxPhysicsObjectLayoutTests 1/1 (evidence/scene-raycast-trace-task4-shape.txt). World bounds on a rotated owner still inherit 001315's cached-pose rounding (see the contract).",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -17439,13 +17441,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/StepOnlyRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/464",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2979",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (authoritative) and walked instruction by instruction in scene-raycast Task 4 (shape; re-walked at integration): 0x10020b20-0x10020d18, thiscall `ret 8` (out, direction): max = dims, min = -dims (fchs); -t through the -1.0 literal [0x1010687c] (x spilled to m32, y and z kept); R^T(-t) row 0 kept, rows 1 and 2 spilled (0x10020bbd, 0x10020bd9); R^T t row 0 kept, rows 1 and 2 spilled (0x10020c25, 0x10020c4d); origin = their sums spilled (0x10020c63-0x10020c79); R^T d spilled per element (0x10020c95, 0x10020cb1, 0x10020cdd), each dot product in the listing's load order; then 001730 (cdecl, 0x10020ce7) with (min, max, origin, dir, &tnear, &tfar); -1 returns false (0x10020d10), otherwise *out = |tfar| (fld; fabs; fstp) and true. 001730/001732 (0x10038050-0x100381b7, one function split by the splitter; not claimed here) are written from the listing as the unclaimed static helper nxSegmentSlabs (noinline, as the row calls it): the strict (-2^-23, 2^-23) parallel band ([0x10107a10]/[0x10107a0c]; NaN takes the divide path), the band's origin-outside-slab exits, inv = 1/dir spilled to m32, t1 unrounded and t2 spilled, the swap on t1 > t2 (face i+3, t1 rounded), the near/far updates and the two exit tests in the loop and after it. Candidate BoxShape::nxBoxSweep (Physics/src/StepOnlyRows.cpp; it replaces the fitted model). Reachable only from the simulation step; no public path while NpScene::simulate is a stub. (BOX slot 7 is called only by the CCD sweep 002264, at 0x100562c3 and 0x100564b9; NX_CONTINUOUS_CD is off by default.) Built /arch:IA32 (Physics/src/StepOnlyRows.cpp, on the CMakeLists.txt list with its reason) for the step's control word 0x0f7f. units/scene-raycast-contract.md",
+      "dynamic_proof": "no DLL target reaches it on either side (0/0 over the 18 staged-pair targets). Driven directly, at API time under the harness's control word 0x027f and not the step's 0x0f7f, by two oracle differentials that call the oracle row at 0x20b20 and the candidate function in one process: cdb hits oracle/candidate NxPhysicsShapeVtableTests 132/132 (exe sha256 6a3bd86efbbac715; registered line `shape vtable boxsweep oracle_digest=2c5d5c09 cases=84 failures=0`) and NxPhysicsObjectLayoutTests 48/48 (exe sha256 a35d06cf89cd3ee6; `boxsweep-diff candidate run=48 failures=0`), and 001730 equally (132/132, 48/48); trace excerpt evidence/scene-raycast-trace-task4-shape.txt. This shows the listing code agreeing at 53-bit precision; it says nothing about the step's 64-bit truncating word (scene-raycast Task 4, shape)",
+      "notes": "Scene-raycast Task 4 (shape): rewritten from the listing (the fitted model is gone), claimed and promoted on its static proof; moved to StepOnlyRows.cpp (/arch:IA32). The slab helper 001730/001732 stays unclaimed (its owners' row).",
+      "implementation": "Physics/src/StepOnlyRows.cpp"
     },
     {
       "id": "phys_fn_000952",
@@ -18140,9 +18143,9 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/398",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3050",
-      "static_proof": "reads radius/half-height/third word from desc into +0xe0/e4/e8 (height halved), then applies BASE slot 1; the validation arm is also transcribed and driven: an invalid radius is stored unconditionally (with height halved into +0xe4 regardless), reported through the error stream (1, CapsuleShape.cpp, line 0x37, 0, \"radius should be positive!\"), and the BASE apply-desc tail runs anyway (loaderr family)",
+      "static_proof": "reads radius/half-height/third word from desc into +0xe0/e4/e8 (height halved), then applies BASE slot 1; the validation arm is also transcribed and driven: an invalid radius is stored unconditionally (with height halved into +0xe4 regardless), reported through the error stream (1, CapsuleShape.cpp, line 0x37, 0, \"radius should be positive!\"), and the BASE apply-desc tail runs anyway (loaderr family)  Scene-raycast Task 4 (shape), defect fixed and re-walked at integration: walked 0x10021ad0-0x10021b3b (thiscall `ret 4`): the report condition is `radius <= 0` (fcomp; `test ah,0x41; jp` at 0x10021b07: a NaN radius is not reported), and the row returns the al of the BASE apply-descriptor call at 0x10021b34 (the candidate returned void; its declaration is now bool).",
       "dynamic_proof": null,
-      "notes": "",
+      "notes": "Scene-raycast Task 4 (shape): new registered line `shape vtable capsule_load_return oracle=1 candidate=1`. cdb hits oracle/candidate: NxPhysicsShapeVtableTests 1/1, NxPhysicsObjectLayoutTests 2/2; on the staged pairs the oracle row is hit 4 times (NxPhysicsActorDynamicSetterTests 2, NxPhysicsSceneRaycastTests 2: NxScene::createActor -> 000034 -> 000032 -> slot 12 for each capsule) and the candidate 0, because the candidate's actor creation does not load shapes through slot 12 (000032 is not reproduced; its owners' gap) (evidence/scene-raycast-trace-task4-shape.txt).",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -18210,13 +18213,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/CapsuleShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/399",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3054",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (authoritative) and walked in scene-raycast Task 4 (shape; re-walked at integration): 0x10021b70-0x10021bd9, thiscall `ret 8` (radius, height): radius dword to +0xe0, height*0.5f ([0x101043cc]) to +0xe4, fcomp of the radius against 0.0 with `test ah,0x41; jp` (the report (1, CapsuleShape.cpp, line 0x4f, 0, \"CapsuleShape::setDimensions: radius should be positive!\") on radius <= 0; greater and unordered skip, so NaN is not reported), vtable slot 6 through the shape's own table with 1 (call [edx+0x18], 0x10021bc9), then 001325 with 0x100 (0x10021bd3). Candidate CapsuleShape::nxCapsuleSetDimensions, noinline, defined in Physics/src/NpActor.cpp beside its only caller because it calls 001325 (Scene.cpp), which the ObjectModel-only test targets do not link; nxCapsuleHandleSetDimensions, the product copy of 001113, calls it as 0x10023b78 does. Fixed from the handle's inline copy: the report arm, slot 6 through the table, and the dirty flag 0x100 (was 0x20). The report goes through the reconstruction's nxReport, whose sink the DLL never installs (a candidate-wide gap; see the contract). The row runs at API time under 0x027f; NpActor.cpp keeps the default architecture. units/scene-raycast-contract.md",
+      "dynamic_proof": "executed under the 18 staged-pair targets: a cdb breakpoint on the candidate symbol was hit 2 times (NxPhysicsActorDynamicSetterTests: capsule_set_dimensions and geometry_capsule_dimensions) against the staged candidate pair (NxPhysics.dll sha256 3d8c9aac9b60a107), exactly the oracle row's count at 0x21b70 on every target; the registered lines (existing `setter capsule_set_dimensions=...`, new `setter geometry_capsule_dimensions=...`, which prints the 0x100 dirty word) are equal on both pairs; trace excerpt evidence/scene-raycast-trace-task4-shape.txt (scene-raycast Task 4, shape)",
+      "notes": "Scene-raycast Task 4 (shape): written from the listing and claimed (the earlier source \"Physics/src/CapsuleShape.cpp\" named no existing file); the handle calls it. No radius <= 0 case is registered: the arm reports through a sink the DLL does not install.",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000994",
@@ -18250,9 +18254,9 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/486",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3057",
-      "static_proof": "__thiscall: stores the argument to +0xe0 (0x00021be6) then TAIL-JUMPS through BASE slot 6 with the flag forced to 1 -- a null-owner no-op on a detached shape",
+      "static_proof": "__thiscall: stores the argument to +0xe0 (0x00021be6) then TAIL-JUMPS through BASE slot 6 with the flag forced to 1 -- a null-owner no-op on a detached shape  Scene-raycast Task 4 (shape), defect fixed and re-walked at integration: walked 0x10021be0-0x10021bf6: the vptr is read (0x10021be4) before +0xe0 = radius (0x10021be6), the argument slot is overwritten with 1 and the row tail-jumps through slot 6 (+0x18, jmp at 0x10021bf4). CapsuleShape::nxCapsuleSetRadius now calls slot 6 through the table with 1 (it only stored); NpActor.cpp nxCapsuleHandleSetRadius, the product copy of NpCapsuleShape::setRadius, calls the internal shape's slot 14 through its table as 0x10023bd5 does (call [edx+0x38]) instead of inlining the row.",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests capsetrad family on a real constructed capsule with radius 1.5f: stored word 3fc00000 equal candidate",
-      "notes": "",
+      "notes": "Scene-raycast Task 4 (shape): cdb hits oracle/candidate: NxPhysicsActorDynamicSetterTests 2/2, NxPhysicsShapeVtableTests 4/4, NxPhysicsObjectLayoutTests 1/1 (evidence/scene-raycast-trace-task4-shape.txt).",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -23938,7 +23942,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3442",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (shape): written from the listing (0x10025f60-0x1002627a) as ShapeBase::nxShapeGlobalPose (Physics/src/ObjectModel.cpp) for 000933, not claimed (no stable-ID line): its owners may claim it after their own walk. Callers in the image: 000933, 001231, 001317."
     },
     {
       "id": "phys_fn_001310",
@@ -31581,7 +31585,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4921",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (shape): written with 001732 as one function (0x10038050-0x100381b7), the static helper nxSegmentSlabs in Physics/src/StepOnlyRows.cpp, for 000951; not claimed (no stable-ID line): its owners may claim it."
     },
     {
       "id": "phys_fn_001731",
@@ -31617,7 +31621,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4922",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00038050"
+      "notes": "continuation of the entry at 0x00038050 Scene-raycast Task 4 (shape): the loop body of 001730; see 001730's note (nxSegmentSlabs, StepOnlyRows.cpp, not claimed)."
     },
     {
       "id": "phys_fn_001733",

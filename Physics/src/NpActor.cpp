@@ -467,10 +467,10 @@ static const NxVec3* __fastcall nxBoxHandleGetDimensions(void* self, void*)
 
 static void __fastcall nxBoxHandleGetWorldOBB(void* self, void*, NxBox& box)
 	{
+	// 001073 calls 000933 on the internal shape (0x10023566).
 	unsigned char* shape = nxBoxHandleInternal(self);
-	memcpy(&box.center, shape + 0x30, sizeof(box.center));
-	memcpy(&box.extents, shape + 0xe4, sizeof(box.extents));
-	memcpy(&box.rot, shape + 0x0c, sizeof(box.rot));
+	static_cast<BoxShape*>(static_cast<void*>(shape))->nxBoxGetWorldOBB(
+		&box.center.x);
 	}
 
 static bool __fastcall nxBoxHandleSaveToDesc(void* self, void*,
@@ -518,9 +518,12 @@ static void __fastcall nxSphereHandleSetRadius(void* self, void*, NxReal radius)
 
 static void __fastcall nxCapsuleHandleSetRadius(void* self, void*, NxReal radius)
 	{
+	// NpCapsuleShape::setRadius calls the internal shape's slot 14 (000995)
+	// through its table (call [edx+0x38] at 0x10023bd5).
 	unsigned char* shape = nxBoxHandleInternal(self);
-	*reinterpret_cast<NxReal*>(shape + 0xe0) = radius;
-	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
+	void** table = *reinterpret_cast<void***>(shape);
+	typedef void (__thiscall* SetRadiusFn)(void*, NxReal);
+	reinterpret_cast<SetRadiusFn>(table[14])(shape, radius);
 	}
 
 static void __fastcall nxCapsuleHandleSetHeight(void* self, void*, NxReal height)
@@ -539,14 +542,38 @@ static void __fastcall nxBoxHandleSetDimensions(void* self, void*,
 	nxSceneMarkShapeDirty(shape, 0x20);
 	}
 
+// The reconstruction's error stream (ObjectModel.cpp).
+void nxReport(int kind, const char* file, int line, int code,
+	const char* message);
+
+// phys_fn_000993 (0x00021b70, 108 B)
+// CapsuleShape::setDimensions, __thiscall `ret 8` (0x10021b70-0x10021bd9),
+// called by NpCapsuleShape::setDimensions (001113, 0x10023b78) with
+// (radius, height). Defined here rather than in ObjectModel.cpp because it
+// calls 001325 (Scene.cpp), which the ObjectModel-only test targets do not link.
+__declspec(noinline) void CapsuleShape::nxCapsuleSetDimensions(float radius,
+	float height)
+	{
+	mFloatE0 = radius;						// dword copy, 0x10021b81
+	mFloatE4 = height * 0.5f;				// fld; fmul [0x101043cc]; fstp +0xe4
+	// fcomp of the stack argument against 0.0 (0x10021b91); `test ah,0x41;
+	// jp` skips on greater and on unordered: report (line 0x4f) on <= 0.
+	if(radius <= 0.0f)
+		nxReport(1, nxSourceFileCapsuleShapeCpp, 0x4f, 0,
+			nxMsgCapsuleSetDimensionsRadius);
+	void** vtable = static_cast<void**>(mBase.mVptrSlot);
+	typedef void (__thiscall* OwnerUpdateFn)(void*, unsigned);
+	reinterpret_cast<OwnerUpdateFn>(vtable[6])(this, 1u);	// call [edx+0x18], 0x10021bc9
+	nxSceneMarkShapeDirty(this, 0x100);		// 001325(0x100), 0x10021bd3
+	}
+
 static void __fastcall nxCapsuleHandleSetDimensions(void* self, void*,
 	NxReal radius, NxReal height)
 	{
+	// 001113 calls 000993 on the internal shape (0x10023b78).
 	unsigned char* shape = nxBoxHandleInternal(self);
-	*reinterpret_cast<NxReal*>(shape + 0xe0) = radius;
-	*reinterpret_cast<NxReal*>(shape + 0xe4) = height * 0.5f;
-	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
-	nxSceneMarkShapeDirty(shape, 0x20);
+	static_cast<CapsuleShape*>(static_cast<void*>(shape))->nxCapsuleSetDimensions(
+		radius, height);
 	}
 
 static void __fastcall nxPlaneHandleSetPlane(void* self, void*,

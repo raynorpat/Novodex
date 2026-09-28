@@ -1022,3 +1022,91 @@ validator unexplained=0; 753 tool tests OK; stable-ID check: 6 new lines (BodyCr
 1), exact form, RVA and size equal to the inventory, no duplicates. Ledgers: phase 2 (000782, 000791 from
 `homeless_shared_code`) and phase 5 (000784, 000785, 000787, 000789 from `not_reconstructed_in_phase`) to
 `reconstructed_not_falsified`.
+
+## Task 4 results: shape and mass properties
+
+The shape and mass-property rows were written in a separate branch from the body-creation commit
+(`claude/sr-t4-shape` c1a70e1, from 6bd2529; notes `.superpowers/sdd/sr/task-4-shape-notes.md`) and cherry-picked
+onto 052f1c0. One conflict, CMakeLists.txt's /arch:IA32 list: merged, keeping the island/step/CPM entries and adding
+Physics/src/StepOnlyRows.cpp with its reason. Traces of both sides:
+`evidence/scene-raycast-trace-task4-shape.txt` (18 staged targets, candidate NxPhysics.dll sha256
+3d8c9aac9b60a107..., plus the oracle differentials NxPhysicsShapeVtableTests, NxPhysicsObjectLayoutTests and
+NxPhysicsCollisionTests, whose candidate code is in the test exe: their sha256s are recorded there).
+
+**Written, claimed and promoted to `reconstructed` (3 rows, 803 B):**
+
+| Row | B | Candidate | Evidence (hits, oracle/candidate) |
+|---|---:|---|---|
+| 000933 | 188 | `BoxShape::nxBoxGetWorldOBB` (ObjectModel.cpp), called by the handle as 001073 does (0x10023566) | dynamic: DSet 4/4 |
+| 000993 | 108 | `CapsuleShape::nxCapsuleSetDimensions` (NpActor.cpp, noinline; it calls 001325 in Scene.cpp), called by the handle as 001113 does (0x10023b78) | dynamic: DSet 2/2 |
+| 000951 | 507 | `BoxShape::nxBoxSweep` (new Physics/src/StepOnlyRows.cpp, /arch:IA32), replacing the fitted model | static (step-only: CCD sweep 002264); harness drives ShapeVtable 132/132, ObjectLayout 48/48 at 0x027f, recorded in its dynamic_proof with that limit |
+
+**Defects fixed in rows already `reconstructed` (state kept; static_proof and notes appended):**
+- 000995 (0x21be0): the slot-6 tail jump (0x10021bf4) through the shape's own table with 1; the handle calls the
+  internal table's slot 14 (0x10023bd5) instead of inlining the row. DSet 2/2, ShapeVtable 4/4, ObjectLayout 1/1.
+- 000989 (0x21ad0): NaN radius no longer reported (`test ah,0x41; jp`, 0x10021b07); returns the BASE apply's al
+  (0x10021b34). New line `shape vtable capsule_load_return`.
+- 000935 (0x205a0): (|dz r2| + |dy r1|) + |dx r0| per row; rows 0/1 spilled to m32 (0x100205de, 0x10020604), row 2
+  unrounded (0x10020646, 0x10020659). New line `setter geometry_bounds`. DSet 3/3, SRay 9/9.
+- 000829 (0x1bd00): F and the three pairwise sums spilled to m32 (0x1001bd39, 0x1001bd67/6c/72).
+- 000833 (0x1c040): rewritten from the listing, both paths (centered 0x1001c0d7, displaced 0x1001c26f), every
+  `x*[0x101041f0]` addend, the (-ox)ox/(-cy)cy/(-cx)cx spills, offset += d (0x1001c578). New line `shape vtable
+  massframe oracle_digest=7c450cef cases=201`.
+- 000849 (0x1c8c0): calls 000833 (0x1001c8eb) instead of the inline centered formula.
+- 000867 (0x1d260): v unrounded (0x1001d26b), v*desc[2] spilled (0x1001d299); moved to StepOnlyRows.cpp (source and
+  implementation follow).
+- 000873 (0x1d610, `dynamically_gated`, kept): the eight growth sites call 004840 (SdkContainer::resize) on the
+  sink's stream (+0x38) with 1 or 3 and write regardless (0x1001d6e7 ... 0x1001d8a8); stable-ID line added; source
+  and implementation set to ContactGeneration.cpp. The CollisionTests harness pre-sizes the stream, so growth is
+  unexercised on both sides.
+
+**Integration review (Capstone listing).** Walked 000933 (0x100204e0-0x10020599) into 001309 (0x10025f60-
+0x1002627a) in full: the quaternion expansion's spill pattern, the body/static-owner split, the translation (x
+kept, y and z spilled) and all nine rotation sums including the two `pop`s that shift the stack offsets at
+0x100261ab/0x100261b0; 000951 (0x10020b20-0x10020d18) and 001730/001732 (0x10038050-0x100381b7) in full, including
+the argument order of the cdecl call and every compare's flag test; 000833 on both paths; 000873's eight growth
+sites and their predicates; 000829, 000935, 000867 in full. All faithful. The NpActor.cpp diff touches only this
+block's handle helpers (nxBoxHandleGetWorldOBB, nxCapsuleHandleSetRadius, nxCapsuleHandleSetDimensions) and adds
+000993's definition beside them; no NpActor-unit row (0x2610-0xb100) or call site changed. StepOnlyRows.cpp's
+reason comment is in CMakeLists.txt. Fixes made at integration:
+- The trace found candidate functions inlined into their callers where the image calls them as functions, which
+  would have hidden them from a breakpoint: 000993 (the handle), 000829 and 000833 (into 000849), 000849 (into
+  000947) and the slab helper (into 000951) are now `noinline` (the image's calls at 0x10023b78, 0x1001c8d0,
+  0x1001c8eb, 0x1002086d, 0x10020ce7). No value changes (the outputs of every target are unchanged).
+- ObjectModel.cpp's comment naming 000867 (left only for the validator) reworded; the census now names
+  StepOnlyRows.cpp.
+- NxPhysicsShapeVtableTests and NxPhysicsCollisionTests are linked /MAP (a side file) so their candidate code can be
+  traced by symbol.
+
+**New registered lines** (regenerated on the oracle side and copied verbatim): NxPhysicsActorDynamicSetterTests 9
+(`setter geometry_*`: the OBB on a dynamic owner at two quaternions and on a static owner, bounds on a rotated
+local pose, the capsule setters) and NxPhysicsShapeVtableTests 3 (`capsule_load_return`, `massframe` 201 cases,
+`boxsweep` 84 cases). Phase 5 floor 1033 -> 1045 (test_gate_targets.py pin follows). Both blocks are appended
+after the last existing line, which is not edited.
+
+**Findings for other owners (not changed here).**
+- 001315 (`ShapeBase::nxApplyOwnerUpdate`, the cached world pose +0x0c): after setGlobalOrientationQuat on a
+  dynamic body, and on a static actor created with a rotated pose and local pose, the candidate's cached pose
+  differs from the oracle's in the last bits (e.g. t.y be99c436 vs be99c438 on the static owner). It expands the
+  quaternion through the unstaged nxQuatToMatrix9 and reads the body translation at record+0x18, where 001309's
+  listing stages the spills and reads +0x50. World bounds and capsule bounds on a rotated owner inherit this; the
+  new lines print bounds only where the cache agrees.
+- The report sink: the reconstruction's `nxReport` sink (`nxInstallReportSink`) is never installed in the DLL, so
+  every "radius should be positive" arm (000989, 000993, the sphere rows) is silent where the oracle reports
+  through the SDK's error stream. No radius <= 0 case is registered for that reason.
+- 001309 (0x25f60, 797 B) is written as `ShapeBase::nxShapeGlobalPose` and 001730+001732 (0x38050, 61 + 296 B) as
+  StepOnlyRows.cpp's `nxSegmentSlabs`; both unclaimed (no stable-ID lines), walked here, for their owners to claim.
+  The oracle's other 001309 callers (001231, 001317) do not route through it in the candidate (DSet 6/4).
+- 000989 runs 4 times on the oracle pairs through NxScene::createActor -> 000034 -> 000032 -> slot 12 (one per
+  capsule) and never on the candidate's: 000032 is not reproduced. The mass chain 000849/000829/000833 runs 50/50/99
+  times on the oracle pairs through 000008 (not reproduced; Scene.cpp's one-box emulation).
+
+**Verification.** Build clean; gates 2, 3, 4, 6, 7 pass; Phase 5 fails only on `candidate CANDIDATE-MISSING
+family=vtables` (`batch3268 candidate failures=3`, `layout ... candidate_fold=4492c8c1` and `shape vtable
+oracle_digest=ed1294b6 cases=626 failures=0` unchanged; the three new shape-vtable lines reported; coverage
+1045/1045; all 13 staged targets stdout_delta=0); validator unexplained=0 (000993 no longer names the missing
+Physics/src/CapsuleShape.cpp, so that path left validate_inventory.py's unresolved-source allowlist, as the list
+requires); 753 tool tests OK; stable-ID check: 3 new lines (000933 ObjectModel.cpp, 000993 NpActor.cpp, 000873
+ContactGeneration.cpp) and 000867/000951 in StepOnlyRows.cpp, exact form, RVA and size equal to the inventory, no
+duplicates, no new non-stable `// phys_fn_` line. Ledgers: phase 3 (000933, 000993) and phase 5 (000951) to
+`reconstructed_not_falsified`.

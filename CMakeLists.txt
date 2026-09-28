@@ -153,9 +153,15 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # constraint rows, the friction patches and the contact reports) are x87 in the
 # oracle and run from the simulation step (002400 -> 000659 -> 000655) under its
 # control word 0x0f7f.
+# Physics/src/StepOnlyRows.cpp holds 000867 (the kind accumulator, called only
+# from the pair constructor 000893) and 000951 (BOX slot 7, called only from the
+# CCD sweep 002264), with 000951's slab helper 001730/001732; they are x87 in
+# the oracle and run only inside the simulation step under its control word
+# 0x0f7f (64-bit, round toward zero), so the file is built x87 like the others.
 if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set_source_files_properties(
 		Physics/src/ContactPairManager.cpp
+		Physics/src/StepOnlyRows.cpp
 		Physics/src/Geometry.cpp
 		Physics/src/MassProperties.cpp
 		Physics/src/SmoothNormals.cpp
@@ -587,7 +593,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
 		Physics/src/SceneRaycast.cpp Physics/src/BodyCreation.cpp
-		Physics/src/ObjectModel.cpp Physics/src/MemoryStream.cpp
+		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
@@ -612,7 +618,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# pinned DLL so the layouts Tasks 2 and 3 write already have something
 	# failing for them. See evidence/phase5-object-model.md.
 	add_executable(NxPhysicsObjectLayoutTests tests/PhysicsObjectLayoutTests.cpp
-		Physics/src/ObjectModel.cpp Physics/src/Containers.cpp
+		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/Containers.cpp
 		Physics/src/MemoryStream.cpp
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp
@@ -646,7 +652,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# The layout gate's single huge wmain has known stack-frame corruption if
 	# extended, so vtable probes live in this small executable.
 	add_executable(NxPhysicsShapeVtableTests tests/PhysicsShapeVtableTests.cpp
-		Physics/src/ObjectModel.cpp Physics/src/Containers.cpp
+		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/Containers.cpp
 		Physics/src/MemoryStream.cpp Physics/src/Geometry.cpp
 		Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp
@@ -657,6 +663,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_link_libraries(NxPhysicsShapeVtableTests NxFoundation NxOpcode bcrypt)
 	if(MSVC)
 		target_compile_options(NxPhysicsShapeVtableTests PRIVATE /arch:IA32 /GR- /wd4996)
+		# A linker map, so a cdb trace can break on the candidate functions
+		# linked into this exe by name (evidence/scene-raycast-trace-task4-
+		# shape.txt). /MAP writes a file beside the exe and changes nothing in it.
+		target_link_options(NxPhysicsShapeVtableTests PRIVATE /MAP)
 	endif()
 	# The narrow-phase differential. Neither a staged-pair differential nor a
 	# static proof: it holds the pinned oracle in its own process and calls the
@@ -681,7 +691,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
 		Physics/src/SceneRaycast.cpp Physics/src/BodyCreation.cpp
-		Physics/src/ObjectModel.cpp Physics/src/MemoryStream.cpp
+		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
 		${PHYSICS_CORE_SOURCES})
@@ -692,6 +702,11 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# linkage here as in the DLL or every one of them warns.
 	target_compile_definitions(NxPhysicsCollisionTests PRIVATE NX_PHYSICS_DLL=1)
 	target_link_libraries(NxPhysicsCollisionTests NxFoundation NxOpcode bcrypt)
+	# A linker map for the cdb traces of the candidate code in this exe (as for
+	# NxPhysicsShapeVtableTests above); it changes nothing in the exe.
+	if(MSVC)
+		target_link_options(NxPhysicsCollisionTests PRIVATE /MAP)
+	endif()
 	# No architecture rule here: source file properties are per directory, so
 	# the /arch:IA32 rule above already covers these two files in this target
 	# too. A second rule naming them would set the same value and silently

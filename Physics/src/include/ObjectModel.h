@@ -270,6 +270,13 @@ class ShapeBase
 	//! because every family's apply/load rows reach it.
 	void				nxApplyGroup(unsigned short group);
 
+	//! Row 001309 (0x00025f60, __thiscall `ret 4`, not claimed): the shape's
+	//! global pose written to out[0..11] (row-major rotation, translation),
+	//! composed from the owner's pose -- the body's quaternion (+0x5c) and
+	//! position (+0x50) when [owner+8] is a body, else the owner's cached
+	//! pose at +0x20 -- and the local pose at +0x6c. Written for 000933.
+	void				nxShapeGlobalPose(float* out) const;
+
 	//! BASE-table slot 6, phys_fn_001315 (0x000266a0): owner update.
 	//! For a detached shape (owner == null) this is a proven no-op that
 	//! returns immediately through the early exit at 0x00026abb.
@@ -436,12 +443,12 @@ class BoxShape
 	void* nxBoxRaycast(const float* ray, float maxDistance,
 		unsigned reserved, unsigned flags, void* hit) const;
 
-	//! phys_fn_000951 (BOX slot 7, 0x20b20, ret 8): swept-AABB entry.
-	//! `out` (arg1) is written on a hit; `swept` (arg2) is a per-axis swept
-	//! field array whose elements [0],[1],[2] drive the result: out[0] =
-	//! |col_k dot H| / swept[k] (the box-face entry parameter). PROVISIONAL
-	//! transcription; NOT differentially closed yet; stays discovered.
-	bool nxBoxSweep(void* out, const float* swept) const;
+	//! phys_fn_000951 (BOX slot 7, 0x20b20, ret 8), StepOnlyRows.cpp: the
+	//! exit distance from the box centre along `direction` (arg2), through
+	//! the slab test 001730 against [-dims, dims]; *out = |tfar| and true
+	//! on a hit, false when the test returns -1. Called only by the CCD
+	//! sweep 002264 inside the step.
+	bool nxBoxSweep(void* out, const float* direction) const;
 
 	//! BOX-table slot 10, phys_fn_000937 (0x00020670): writes the pose-one
 	//! translation (+0x30/+0x34/+0x38) to out[0..2] and a sqrt-of-squared-
@@ -488,10 +495,14 @@ class BoxShape
 
 	//! BOX-table slot 9, phys_fn_000935 (0x000205a0): world AABB from pose
 	//! one -- extents |rot-row . dims| per axis, then min = t - ext,
-	//! max = t + ext. Exact for the identity pose the gate drives; the
-	//! image's mixed single/extended rounding of partial sums is left open
-	//! for general poses.
+	//! max = t + ext, with the listing's association and its m32 spills of
+	//! the first two extents (the third stays unrounded).
 	void				nxBoxWorldAABB(float* out) const;
+
+	//! phys_fn_000933 (0x000204e0, `ret 4`): getWorldOBB for
+	//! NpBoxShape::getWorldOBB (001073). out is an NxBox: center (the global
+	//! pose's translation), extents (the dims at +0xe4) and rotation.
+	void				nxBoxGetWorldOBB(float* out) const;
 
 	//! BOX-table slots 14, 15 and 16, phys_fn_001391 (0x00027f00): a 3-byte
 	//! `mov eax,ecx; ret` -- returns this, ignores every argument. The same
@@ -1791,6 +1802,7 @@ extern const char* const	nxMsgSphereLoadRadius;
 //! CapsuleShape.cpp's loadFromDesc pair (line 0x37).
 extern const char* const	nxSourceFileCapsuleShapeCpp;
 extern const char* const	nxMsgCapsuleLoadRadius;
+extern const char* const	nxMsgCapsuleSetDimensionsRadius;
 
 /**
 The sphere shape. Constructor phys_fn_001349 (0x000277c0).
@@ -1922,8 +1934,8 @@ class CapsuleShape
 	bool				nxCapsuleSaveState(void* record);
 
 	//! CAPSULE-table slot 14, phys_fn_000995 (0x00021be0): set-radius.
-	//! Stores to +0xe0 then tail-jumps through BASE slot 6 -- a null-owner
-	//! no-op on a detached shape.
+	//! Stores to +0xe0 then tail-jumps through its own vtable's slot 6 with
+	//! 1 (the owner update; a no-op on a detached shape).
 	void				nxCapsuleSetRadius(float radius);
 	//! CAPSULE-table slot 15, phys_fn_001359 (0x00027920): returns +0xe0.
 	float				nxCapsuleGetRadius() const { return mFloatE0; }
@@ -1950,8 +1962,14 @@ class CapsuleShape
 	//! CAPSULE-table slot 12, phys_fn_000989 (0x00021ad0): loadFromDesc --
 	//! reads radius (+0xe0), half-height (desc+0x50 * 0.5f), third word
 	//! (+0xe8) from the descriptor, then applies base fields through
-	//! BASE slot 1.
-	void				nxCapsuleLoadFromDesc(const void* record);
+	//! BASE slot 1, whose bool is the row's return.
+	bool				nxCapsuleLoadFromDesc(const void* record);
+
+	//! phys_fn_000993 (0x00021b70, `ret 8`): setDimensions(radius, height)
+	//! from NpCapsuleShape::setDimensions (001113). Stores both, reports a
+	//! radius <= 0, runs vtable slot 6 with 1, then marks the owner dirty
+	//! 0x100 (001325).
+	void				nxCapsuleSetDimensions(float radius, float height);
 
 	//! CAPSULE-table slot 4, phys_fn_000853 (0x0001c980), __thiscall
 	//! `ret 0x14`: the compute-mass row. Builds the unit-density cylinder

@@ -13,6 +13,7 @@
 // means it stored it and read it back.
 
 #include "ContactGeneration.h"
+#include "Containers.h"
 
 // phys_fn_002266 reads NX_CONTINUOUS_CD out of the SDK's live parameter array
 // through phys_fn_000429, so this unit reaches Phase 2's PhysicsSDK.
@@ -35,47 +36,37 @@ static_assert(offsetof(NxContactSink, lastNormal) == 0x28, "sink lastNormal is a
 static_assert(offsetof(NxContactSink, featurePairValid) == 0x34, "sink featurePairValid is at 0x34");
 static_assert(offsetof(NxContactSink, stream) == 0x40, "sink stream data is at 0x40");
 
-// The stream never reallocates here.
+// The stream is the SdkContainer {capacity, count, entries, growthFactor} at
+// sink+0x38, and it grows through phys_fn_004840 (0x000b4de0,
+// SdkContainer::resize, Containers.cpp). The oracle uses two predicates:
 //
-// The *policy* -- how much phys_fn_004840 at 0x000b4de0 adds and where it gets
-// it -- is that Phase 2 row's business and is not reproduced. What belongs to
-// this row is *when* it is called and with what count, and the oracle uses two
-// different predicates:
+//   count == capacity      before every single-word append: resize(1)
+//   count + 3 > capacity   before each of the two three-word bursts: resize(3)
 //
-//   count == capacity      before every single-word append
-//   count + 3 > capacity   before each of the two three-word bursts
+// eight call sites in all: 0x1001d6e7, 0x1001d711, 0x1001d752, 0x1001d7c7,
+// 0x1001d7fc, 0x1001d83f, 0x1001d87b and 0x1001d8a8. The row ignores resize's
+// bool and writes the word(s) either way, as here.
 //
-// eight sites in all: 0x0001d6d2, 0x0001d6ff, 0x0001d744, 0x0001d7c0,
-// 0x0001d7f1, 0x0001d838, 0x0001d873 and 0x0001d8a0. Roughly 110 of this row's
-// 706 bytes are those tests and the calls under them. An earlier version of
-// this file had neither predicate and never read streamCapacity at all, so it
-// would have run off the end of a real caller's buffer instead of growing.
-//
-// The differential pre-sizes the stream, so no reserve ever fails and the
-// growth path is unexercised on both sides; a matching stream says nothing
-// about it. What the guard buys is that this reconstruction stops rather than
-// overruns.
-static bool nxReserve(NxContactSink* sink, NxU32 count)
+// The differential pre-sizes the stream, so no resize is ever called on
+// either side; the growth path is unexercised.
+static void nxReserve(NxContactSink* sink, NxU32 count)
 	{
 	const bool full = (count == 1)
 		? (sink->streamCount == sink->streamCapacity)
 		: (sink->streamCount + count > sink->streamCapacity);
-	// phys_fn_004840 would grow here. Until that row is reconstructed, refusing
-	// the write is the only safe thing.
-	return !full;
+	if(full)
+		reinterpret_cast<SdkContainer*>(&sink->streamCapacity)->resize(count);
 	}
 
 static void nxAppend(NxContactSink* sink, NxU32 word)
 	{
-	if(!nxReserve(sink, 1))
-		return;
+	nxReserve(sink, 1);
 	sink->stream[sink->streamCount++] = word;
 	}
 
 static void nxAppend3(NxContactSink* sink, NxU32 a, NxU32 b, NxU32 c)
 	{
-	if(!nxReserve(sink, 3))
-		return;
+	nxReserve(sink, 3);
 	sink->stream[sink->streamCount + 0] = a;
 	sink->stream[sink->streamCount + 1] = b;
 	sink->stream[sink->streamCount + 2] = c;
@@ -208,6 +199,7 @@ static void nxAppendContactRecord(NxContactSink* sink, const NxVec3* point,
 		nxAppend(sink, featureWord);
 	}
 
+// phys_fn_000873 (0x0001d610, 706 B)
 // Row 000873 at 0x0001d610.
 //
 // Three nested levels, each opened by a count word that later appends increment

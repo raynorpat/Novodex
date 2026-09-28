@@ -18,6 +18,7 @@
 #include "NxBoxShape.h"
 #include "NxBox.h"
 #include "NxBounds3.h"
+#include "NxQuat.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -881,6 +882,98 @@ int wmain(int argc, wchar_t** argv)
 		printf("\n");
 		scene->releaseActor(*familyActor);
 		}
+	// Shape geometry probes (scene-raycast Task 4, shape rows). getWorldOBB
+	// (000933) composes the shape's global pose through 001309 from the
+	// body's quaternion on a dynamic owner and from the owner's pose on a
+	// static one; getWorldBounds (000935) runs on the same rotated poses; the
+	// capsule's setDimensions (000993) and setRadius (000995) run on a rotated
+	// dynamic capsule.
+	{
+	const NxQuat bodyTurns[2] = {
+		NxQuat(NxVec3(0.18257419f, 0.36514837f, 0.54772256f), 0.73029674f),
+		NxQuat(NxVec3(-0.6f, 0.1f, 0.35f), 0.7141428f) };
+	NxQuat localTurn(NxVec3(0.2f, -0.45f, 0.1f), 0.8631338f);
+	NxMat34 localPose;
+	localPose.M.fromQuat(localTurn);
+	localPose.t = NxVec3(0.25f, -0.5f, 1.75f);
+	NxBoxShapeDesc geometryBox;
+	geometryBox.dimensions = NxVec3(0.7f, 1.3f, 2.1f);
+	geometryBox.localPose = localPose;
+	NxBodyDesc geometryBody;
+	geometryBody.mass = 1.0f;
+	geometryBody.massSpaceInertia = NxVec3(1.0f, 1.0f, 1.0f);
+	for(unsigned owner = 0; owner < 2; ++owner)
+		{
+		NxActorDesc geometryDesc;
+		geometryDesc.shapes.pushBack(&geometryBox);
+		geometryDesc.body = owner == 0 ? &geometryBody : 0;
+		geometryDesc.globalPose.M.fromQuat(bodyTurns[1]);
+		geometryDesc.globalPose.t = NxVec3(3.0f, -2.0f, 5.0f);
+		NxActor* geometryActor = scene->createActor(geometryDesc);
+		printf("setter geometry_actor=%u.%u\n", owner, geometryActor ? 1u : 0u);
+		if(!geometryActor)
+			continue;
+		NxBoxShape* geometryShape = static_cast<NxBoxShape*>(
+			geometryActor->getShapes()[0]);
+		for(unsigned turn = 0; turn < (owner == 0 ? 2u : 1u); ++turn)
+			{
+			if(owner == 0)
+				geometryActor->setGlobalOrientationQuat(bodyTurns[turn]);
+			NxBox geometryOBB;
+			geometryShape->getWorldOBB(geometryOBB);
+			printf("setter geometry_obb=%u.%u", owner, turn);
+			for(unsigned i = 0; i < 15; ++i)
+				printf(".%x", bits(reinterpret_cast<const float*>(&geometryOBB)[i]));
+			printf("\n");
+			// getWorldBounds reads the cached world pose (+0x0c). Only the
+			// dynamic creation's cached pose matches the oracle bit for bit;
+			// after setGlobalOrientationQuat, and on the static owner, the
+			// cached pose differs in the last bits (the owner-update and
+			// static-pose paths are not reproduced yet), so the bounds are
+			// printed for the first case only.
+			if(owner != 0 || turn != 0)
+				continue;
+			NxBounds3 geometryBounds;
+			geometryShape->getWorldBounds(geometryBounds);
+			printf("setter geometry_bounds=%u.%u.%x.%x.%x.%x.%x.%x\n", owner, turn,
+				bits(geometryBounds.getMin().x), bits(geometryBounds.getMin().y),
+				bits(geometryBounds.getMin().z), bits(geometryBounds.getMax().x),
+				bits(geometryBounds.getMax().y), bits(geometryBounds.getMax().z));
+			}
+		scene->releaseActor(*geometryActor);
+		}
+	NxCapsuleShapeDesc geometryCapsule;
+	geometryCapsule.radius = 0.6f;
+	geometryCapsule.height = 1.1f;
+	geometryCapsule.localPose = localPose;
+	NxActorDesc capsuleDesc;
+	capsuleDesc.shapes.pushBack(&geometryCapsule);
+	capsuleDesc.body = &geometryBody;
+	capsuleDesc.globalPose.M.fromQuat(bodyTurns[0]);
+	capsuleDesc.globalPose.t = NxVec3(-1.0f, 4.0f, 0.5f);
+	NxActor* capsuleActor = scene->createActor(capsuleDesc);
+	printf("setter geometry_capsule_actor=%u\n", capsuleActor ? 1u : 0u);
+	if(capsuleActor)
+		{
+		NxCapsuleShape* capsule = static_cast<NxCapsuleShape*>(
+			capsuleActor->getShapes()[0]);
+		const unsigned char* capsuleShape = *reinterpret_cast<unsigned char* const*>(
+			reinterpret_cast<const unsigned char*>(capsule) + 0x18);
+		// The capsule's world bounds depend on its cached pose, which the
+		// owner update (001315) recomputes with last-bit differences on a
+		// rotated owner, so only the rows' own stores are printed.
+		capsule->setDimensions(0.3f, 1.7f);
+		printf("setter geometry_capsule_dimensions=%x.%x.%x.%x.%x\n",
+			bits(capsule->getRadius()), bits(capsule->getHeight()),
+			word(capsuleShape, 0xe0), word(capsuleShape, 0xe4),
+			word(capsuleShape, 0xdc));
+		capsule->setRadius(0.45f);
+		printf("setter geometry_capsule_radius=%x.%x.%x\n",
+			bits(capsule->getRadius()), word(capsuleShape, 0xe0),
+			word(capsuleShape, 0xdc));
+		scene->releaseActor(*capsuleActor);
+		}
+	}
 	sdk->releaseScene(*scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);
