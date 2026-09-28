@@ -94,3 +94,11 @@ void SdkContainer::setExternalBuffer(NxU32 capacity, NxU32* entries)
 	mEntries = entries;
 	mGrowthFactor = -1.0f;
 	}
+
+// setExternalBuffer on a container of this layout, for opcode/IcePruner.cpp,
+// whose OPCODE headers do not mix with this one (the static pruner's slot 4,
+// scene-raycast block Task 3).
+void nxSdkContainerSetExternalBuffer(void* container, NxU32 capacity, NxU32* entries)
+	{
+	static_cast<SdkContainer*>(container)->setExternalBuffer(capacity, entries);
+	}

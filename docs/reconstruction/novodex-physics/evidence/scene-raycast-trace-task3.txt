@@ -1,0 +1,508 @@
+SceneRaycast..CapsuleShape block: cdb breakpoint traces of NxPhysicsSceneRaycastTests (scene-raycast Task 3)
+=====================================================================================================
+
+A trimmed excerpt of the two raw cdb logs, in the method of evidence/joint-open-items-trace-slots.txt.
+ModLoad lines, banners, register dumps, the echoed breakpoint commands and the program's own stdout are
+removed. The per-label hit counts are complete; the HIT lines themselves are kept in order for the first
+160 hits of each side (the creation of the single-shape actors and the first query), because the full
+runs are 20,085 (oracle) and 19,113 (candidate) lines. The full ordered sequences were compared instead:
+with the oracle's two continuation labels 000686 and 000702 removed (their breakpoints sit on the loop
+heads 0x15300 and 0x15930 the entries jump to, so they fire once per iteration), the two sequences are
+identical, 19,113 hits each, sha256 of the newline-joined label sequence
+61f6fe9574a323fcef884643e8fa0ce9817cdf731ea1851cd630b5e9ee5ac953 on both sides.
+It is the evidence behind the dynamic_proof fields Task 3 records in inventory.json
+(units/scene-raycast-contract.md, ## Task 3 results).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> -logo <log> build\Release\NxPhysicsSceneRaycastTests.exe <pair directory>
+           (cwd the pairs root; the script breaks on the NxPhysics load with `sxe ld:NxPhysics`, sets
+           the breakpoints below as `bp NxPhysics+<offset> ".echo HIT <label>; gc"`, then runs to exit.)
+           The pair directories were staged by hand (D:\FlamingEnt__\novodex-analysis\pairs-sr\oracle
+           and \candidate, not kept); the sha256s below identify the modules. Both runs exited 0 and
+           printed the transcript the Phase 7 gate compares (stdout_delta=0).
+Recorded:  2026-09-28, branch claude/scene-raycast-block, Task 3 working tree (on 980809d).
+Oracle:    NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate: NxPhysics.dll sha256=9de9fbbcac550544b8e09d9cb3da71d673f9887b1108be52203c7d6a6eaf5314
+           (identical to build\Release\NxPhysics.dll at the time of the trace)
+Offsets:   module-relative. Candidate: from build\Release\NxPhysics.map of that build, one breakpoint per
+           out-of-line symbol of every function Task 3 claims (the split rows 000684+000686 and
+           000700+000702 are one function each), plus context functions marked x (not claimed here):
+           the engine loop 004864, Prunable::UpdateWorldAABB 004886, the vanilla-tree stabs 004919 and
+           004928, and the sphere, capsule and plane slot 5s 001377, 001010 and 001261. Oracle: every
+           row's inventory RVA, the split rows' continuations as their own labels.
+
+BREAKPOINTS, CANDIDATE (label, module offset, object, symbol)
+-------------------------------------------------------------
+  000366     0x173b0   NpScene.obj        ?raycastAnyBounds@NpScene@@UBE_NABVNxRay@@W4NxShapesType@@IM@Z
+  000368     0x174d0   NpScene.obj        ?raycastAnyShape@NpScene@@UBE_NABVNxRay@@W4NxShapesType@@IM@Z
+  000370     0x17150   NpScene.obj        ?raycastAllBounds@NpScene@@UBEIABVNxRay@@AAVNxUserRaycastReport@@W4NxShapesType@@IMI@Z
+  000372     0x17280   NpScene.obj        ?raycastAllShapes@NpScene@@UBEIABVNxRay@@AAVNxUserRaycastReport@@W4NxShapesType@@IMI@Z
+  000374     0x175f0   NpScene.obj        ?raycastClosestBounds@NpScene@@UBEPAVNxShape@@ABVNxRay@@W4NxShapesType@@AAUNxRaycastHit@@IMI@Z
+  000376     0x17720   NpScene.obj        ?raycastClosestShape@NpScene@@UBEPAVNxShape@@ABVNxRay@@W4NxShapesType@@AAUNxRaycastHit@@IMI@Z
+  000680     0x2da30   SceneRaycast.obj   ?nxRaycastAnyBoundsLoop@@YA_NABVSdkContainer@@ABVNxRay@@MI@Z
+  000682     0x2d710   SceneRaycast.obj   ?nxRaycastAllBoundsLoop@@YAIABVSdkContainer@@ABVNxRay@@MAAVNxUserRaycastReport@@I@Z
+  000684+686 0x2d900   SceneRaycast.obj   ?nxRaycastAllShapesLoop@@YAIABVSdkContainer@@ABVNxRay@@IMAAVNxUserRaycastReport@@I@Z
+  000688     0x2dc20   SceneRaycast.obj   ?nxRaycastClosestBoundsLoop@@YAXABVSdkContainer@@AAUNxRaycastHit@@ABVNxRay@@MI@Z
+  000690     0x2e270   SceneRaycast.obj   ?raycastAnyBounds@NxSceneInternal@@QAE_NABVNxRay@@W4NxShapesType@@IM@Z
+  000692     0x2e0f0   SceneRaycast.obj   ?raycastAllBounds@NxSceneInternal@@QAEIABVNxRay@@AAVNxUserRaycastReport@@W4NxShapesType@@IMI@Z
+  000694     0x2e1b0   SceneRaycast.obj   ?raycastAllShapes@NxSceneInternal@@QAEIABVNxRay@@AAVNxUserRaycastReport@@W4NxShapesType@@IMI@Z
+  000696     0x2e3f0   SceneRaycast.obj   ?raycastClosestBounds@NxSceneInternal@@QAEPAXABVNxRay@@W4NxShapesType@@AAUNxRaycastHit@@IMI@Z
+  000698     0x2db50   SceneRaycast.obj   ?nxRaycastAnyShapeLoop@@YA_NABVSdkContainer@@ABVNxRay@@MI@Z
+  000700+702 0x2dde0   SceneRaycast.obj   ?nxRaycastClosestShapeLoop@@YAXABVSdkContainer@@ABVNxRay@@AAUNxRaycastHit@@MII@Z
+  000704     0x2e330   SceneRaycast.obj   ?raycastAnyShape@NxSceneInternal@@QAE_NABVNxRay@@W4NxShapesType@@IM@Z
+  000706     0x2e4f0   SceneRaycast.obj   ?raycastClosestShape@NxSceneInternal@@QAEPAXABVNxRay@@W4NxShapesType@@AAUNxRaycastHit@@IMI@Z
+  000949     0x1b400   ObjectModel.obj    ?nxBoxRaycast@BoxShape@@QBEPAXPBMMIIPAX@Z
+  004857     0x59450   IcePruningEngine.obj ?nxPruningEngineAddObject@@YA_NPAXPAVPrunable@@@Z
+  004859     0x595e0   IcePruningEngine.obj ?nxPruningEngineRemoveObject@@YA_NPAXPAVPrunable@@@Z
+  005208     0x581e0   IcePruner.obj      ?AddObject@Pruner@@UAE_NPAVPrunable@@@Z
+  005210     0x58910   IcePruner.obj      ?RemoveObject@Pruner@@UAE_NPAVPrunable@@@Z
+  005214     0x58d90   IcePruner.obj      ?SetExternalBuffer@StaticPruner@@UAEXIPAI@Z
+  005216     0x584b0   IcePruner.obj      ?BuildTree@StaticPruner@@QAE_NXZ
+  005218     0x58470   IcePruner.obj      ?AddObject@StaticPruner@@UAE_NPAVPrunable@@@Z
+  005220     0x58bd0   IcePruner.obj      ?RemoveObject@StaticPruner@@UAE_NPAVPrunable@@@Z
+  005222     0x58e20   IcePruner.obj      ?UpdateObject@StaticPruner@@UAE_NPAVPrunable@@@Z
+  005225     0x58c10   IcePruner.obj      ?ReportTouched@StaticPruner@@QAEXAAVContainer@IceCore@@I@Z
+  005227     0x58870   IcePruner.obj      ?Raycast@StaticPruner@@UAE_NAAVContainer@IceCore@@ABVRay@IceMaths@@M_NI@Z
+  005232     0x57d30   IcePruner.obj      ??0StaticPruner@@QAE@XZ
+  005464     0x57c20   IcePruner.obj      ??0DynamicPruner@@QAE@XZ
+  005468     0x58630   IcePruner.obj      ?Raycast@DynamicPruner@@UAE_NAAVContainer@IceCore@@ABVRay@IceMaths@@M_NI@Z
+  005481     0x58c80   IcePruner.obj      ?Resize@PruningPool@@QAE_NXZ
+  005483     0x581f0   IcePruner.obj      ?AddObject@PruningPool@@QAE_NPAVPrunable@@@Z
+  005485     0x58930   IcePruner.obj      ?RemoveObject@PruningPool@@QAEXPAVPrunable@@@Z
+  005541     0x59180   IcePruner.obj      ?nxSegmentAABB@@YA_NABVSegment@IceMaths@@ABVPoint@2@1@Z
+  005543     0x58ee0   IcePruner.obj      ?nxRayAABB@@YA_NABVRay@IceMaths@@ABVPoint@2@1@Z
+  004864x    0x1e4c0   ObjectModel.obj    ?nxMaskedFourSlotLoop4864@@YAEPAXIIIIIIP8NxSlotCtx@@AEXIIIII@Z@Z
+  004886x    0x57ad0   IcePrunable.obj    ?UpdateWorldAABB@Prunable@@QAEXPAVAABB@IceMaths@@@Z
+  004919x    0xadd80   NxOpcode:OPC_RayCollider.obj ?_SegmentStab@RayCollider@Opcode@@IAEXPBVAABBTreeNode@2@AAVContainer@IceCore@@@Z
+  004928x    0xab410   NxOpcode:OPC_RayCollider.obj ?_RayStab@RayCollider@Opcode@@IAEXPBVAABBTreeNode@2@AAVContainer@IceCore@@@Z
+  001377x    0x2e840   ShapeRaycast.obj   ?NxShapeRaycastSphere@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z
+  001010x    0x2e640   ShapeRaycast.obj   ?NxShapeRaycastCapsule@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z
+  001261x    0x2e770   ShapeRaycast.obj   ?NxShapeRaycastPlane@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z
+
+BREAKPOINTS, ORACLE (label, module offset, source, row)
+-------------------------------------------------------
+  000366     0xced0    oracle             phys_fn_000366
+  000368     0xcf90    oracle             phys_fn_000368
+  000370     0xd050    oracle             phys_fn_000370
+  000372     0xd110    oracle             phys_fn_000372
+  000374     0xd1d0    oracle             phys_fn_000374
+  000376     0xd2b0    oracle             phys_fn_000376
+  000680     0x15060   oracle             phys_fn_000680
+  000682     0x15150   oracle             phys_fn_000682
+  000684+686 0x152e0   oracle             phys_fn_000684
+  000684+686b 0x15300   oracle             phys_fn_000686
+  000688     0x153c0   oracle             phys_fn_000688
+  000690     0x15520   oracle             phys_fn_000690
+  000692     0x155f0   oracle             phys_fn_000692
+  000694     0x156c0   oracle             phys_fn_000694
+  000696     0x15790   oracle             phys_fn_000696
+  000698     0x15890   oracle             phys_fn_000698
+  000700+702 0x15910   oracle             phys_fn_000700
+  000700+702b 0x15930   oracle             phys_fn_000702
+  000704     0x15a50   oracle             phys_fn_000704
+  000706     0x15b20   oracle             phys_fn_000706
+  000949     0x20880   oracle             phys_fn_000949
+  004857     0xb5180   oracle             phys_fn_004857
+  004859     0xb5260   oracle             phys_fn_004859
+  005208     0xe50c0   oracle             phys_fn_005208
+  005210     0xe50d0   oracle             phys_fn_005210
+  005214     0xe5100   oracle             phys_fn_005214
+  005216     0xe5110   oracle             phys_fn_005216
+  005218     0xe5210   oracle             phys_fn_005218
+  005220     0xe5250   oracle             phys_fn_005220
+  005222     0xe52a0   oracle             phys_fn_005222
+  005225     0xe53e0   oracle             phys_fn_005225
+  005227     0xe5440   oracle             phys_fn_005227
+  005232     0xe56d0   oracle             phys_fn_005232
+  005464     0xef850   oracle             phys_fn_005464
+  005468     0xefa90   oracle             phys_fn_005468
+  005481     0xeffc0   oracle             phys_fn_005481
+  005483     0xf00c0   oracle             phys_fn_005483
+  005485     0xf02a0   oracle             phys_fn_005485
+  005541     0xf1600   oracle             phys_fn_005541
+  005543     0xf17c0   oracle             phys_fn_005543
+  004864x    0xb5360   oracle             phys_fn_004864
+  004886x    0xb55b0   oracle             phys_fn_004886
+  004919x    0xb82a0   oracle             phys_fn_004919
+  004928x    0xba470   oracle             phys_fn_004928
+  001377x    0x27c70   oracle             phys_fn_001377
+  001010x    0x22480   oracle             phys_fn_001010
+  001261x    0x25350   oracle             phys_fn_001261
+
+HIT COUNTS (label, oracle, candidate)
+-------------------------------------
+Every label is hit, and every claimed label equally often on both sides. 000686 and 000702 are the
+oracle-only continuation labels (see above); 000684+686 and 000700+702 are the entries.
+  000366      oracle=203    candidate=203
+  000368      oracle=203    candidate=203
+  000370      oracle=211    candidate=211
+  000372      oracle=211    candidate=211
+  000374      oracle=203    candidate=203
+  000376      oracle=203    candidate=203
+  000680      oracle=198    candidate=198
+  000682      oracle=206    candidate=206
+  000684+686  oracle=206    candidate=206
+  000686      oracle=493    candidate=-
+  000688      oracle=198    candidate=198
+  000690      oracle=201    candidate=201
+  000692      oracle=209    candidate=209
+  000694      oracle=209    candidate=209
+  000696      oracle=201    candidate=201
+  000698      oracle=198    candidate=198
+  000700+702  oracle=198    candidate=198
+  000702      oracle=479    candidate=-
+  000704      oracle=201    candidate=201
+  000706      oracle=201    candidate=201
+  000949      oracle=315    candidate=315
+  001010x     oracle=84     candidate=84
+  001261x     oracle=406    candidate=406
+  001377x     oracle=123    candidate=123
+  004857      oracle=17     candidate=17
+  004859      oracle=17     candidate=17
+  004864x     oracle=1204   candidate=1204
+  004886x     oracle=17     candidate=17
+  004919x     oracle=745    candidate=745
+  004928x     oracle=3020   candidate=3020
+  005208      oracle=7      candidate=7
+  005210      oracle=7      candidate=7
+  005214      oracle=1      candidate=1
+  005216      oracle=4      candidate=4
+  005218      oracle=10     candidate=10
+  005220      oracle=10     candidate=10
+  005222      oracle=11     candidate=11
+  005225      oracle=1054   candidate=1054
+  005227      oracle=1054   candidate=1054
+  005232      oracle=1      candidate=1
+  005464      oracle=1      candidate=1
+  005468      oracle=1054   candidate=1054
+  005481      oracle=17     candidate=17
+  005483      oracle=17     candidate=17
+  005485      oracle=17     candidate=17
+  005541      oracle=1500   candidate=1500
+  005543      oracle=4740   candidate=4740
+
+ORACLE HIT lines, in order (first 160)
+--------------------------------------
+HIT 004857
+HIT 005232
+HIT 005218
+HIT 005483
+HIT 005481
+HIT 005222
+HIT 005214
+HIT 004857
+HIT 005218
+HIT 005483
+HIT 005481
+HIT 005222
+HIT 004857
+HIT 005218
+HIT 005483
+HIT 005481
+HIT 005222
+HIT 004857
+HIT 005218
+HIT 005483
+HIT 005481
+HIT 005222
+HIT 004857
+HIT 005218
+HIT 005483
+HIT 005481
+HIT 005222
+HIT 004857
+HIT 005218
+HIT 005483
+HIT 005481
+HIT 005222
+HIT 004857
+HIT 005464
+HIT 005208
+HIT 005483
+HIT 005481
+HIT 004857
+HIT 005208
+HIT 005483
+HIT 005481
+HIT 004857
+HIT 005208
+HIT 005483
+HIT 005481
+HIT 004857
+HIT 005208
+HIT 005483
+HIT 005481
+HIT 004857
+HIT 005218
+HIT 005483
+HIT 005481
+HIT 005222
+HIT 004857
+HIT 005218
+HIT 005483
+HIT 005481
+HIT 005222
+HIT 004857
+HIT 005218
+HIT 005483
+HIT 005481
+HIT 005222
+HIT 004857
+HIT 005208
+HIT 005483
+HIT 005481
+HIT 004857
+HIT 005208
+HIT 005483
+HIT 005481
+HIT 004857
+HIT 005208
+HIT 005483
+HIT 005481
+HIT 000366
+HIT 000690
+HIT 004864x
+HIT 005227
+HIT 005216
+HIT 004886x
+HIT 004886x
+HIT 004886x
+HIT 004886x
+HIT 004886x
+HIT 004886x
+HIT 004886x
+HIT 004886x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 005225
+HIT 000680
+HIT 000368
+HIT 000704
+HIT 004864x
+HIT 005227
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 005225
+HIT 000698
+HIT 000949
+HIT 000374
+HIT 000696
+HIT 004864x
+HIT 005227
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 005225
+HIT 000688
+HIT 000376
+HIT 000706
+HIT 004864x
+HIT 005227
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 004928x
+HIT 005225
+HIT 000700+702
+HIT 000702
+HIT 000949
+HIT 000702
+HIT 000949
+HIT 000702
+HIT 000702
+HIT 001010x
+HIT 000702
+HIT 001377x
+HIT 000702
+HIT 000949
+HIT 000702
+HIT 001261x
+HIT 000370
+HIT 000692
+HIT 004864x
+HIT 005227
+HIT 004928x
+
+CANDIDATE HIT lines, in order (first 160)
+-----------------------------------------
+HIT 004857 IcePruningEngine
+HIT 005232 IcePruner
+HIT 005218 IcePruner
+HIT 005483 IcePruner
+HIT 005481 IcePruner
+HIT 005222 IcePruner
+HIT 005214 IcePruner
+HIT 004857 IcePruningEngine
+HIT 005218 IcePruner
+HIT 005483 IcePruner
+HIT 005481 IcePruner
+HIT 005222 IcePruner
+HIT 004857 IcePruningEngine
+HIT 005218 IcePruner
+HIT 005483 IcePruner
+HIT 005481 IcePruner
+HIT 005222 IcePruner
+HIT 004857 IcePruningEngine
+HIT 005218 IcePruner
+HIT 005483 IcePruner
+HIT 005481 IcePruner
+HIT 005222 IcePruner
+HIT 004857 IcePruningEngine
+HIT 005218 IcePruner
+HIT 005483 IcePruner
+HIT 005481 IcePruner
+HIT 005222 IcePruner
+HIT 004857 IcePruningEngine
+HIT 005218 IcePruner
+HIT 005483 IcePruner
+HIT 005481 IcePruner
+HIT 005222 IcePruner
+HIT 004857 IcePruningEngine
+HIT 005464 IcePruner
+HIT 005208 IcePruner
+HIT 005483 IcePruner
+HIT 005481 IcePruner
+HIT 004857 IcePruningEngine
+HIT 005208 IcePruner
+HIT 005483 IcePruner
+HIT 005481 IcePruner
+HIT 004857 IcePruningEngine
+HIT 005208 IcePruner
+HIT 005483 IcePruner
+HIT 005481 IcePruner
+HIT 004857 IcePruningEngine
+HIT 005208 IcePruner
+HIT 005483 IcePruner
+HIT 005481 IcePruner
+HIT 004857 IcePruningEngine
+HIT 005218 IcePruner
+HIT 005483 IcePruner
+HIT 005481 IcePruner
+HIT 005222 IcePruner
+HIT 004857 IcePruningEngine
+HIT 005218 IcePruner
+HIT 005483 IcePruner
+HIT 005481 IcePruner
+HIT 005222 IcePruner
+HIT 004857 IcePruningEngine
+HIT 005218 IcePruner
+HIT 005483 IcePruner
+HIT 005481 IcePruner
+HIT 005222 IcePruner
+HIT 004857 IcePruningEngine
+HIT 005208 IcePruner
+HIT 005483 IcePruner
+HIT 005481 IcePruner
+HIT 004857 IcePruningEngine
+HIT 005208 IcePruner
+HIT 005483 IcePruner
+HIT 005481 IcePruner
+HIT 004857 IcePruningEngine
+HIT 005208 IcePruner
+HIT 005483 IcePruner
+HIT 005481 IcePruner
+HIT 000366 NpScene
+HIT 000690 SceneRaycast
+HIT 004864x ObjectModel
+HIT 005227 IcePruner
+HIT 005216 IcePruner
+HIT 004886x IcePrunable
+HIT 004886x IcePrunable
+HIT 004886x IcePrunable
+HIT 004886x IcePrunable
+HIT 004886x IcePrunable
+HIT 004886x IcePrunable
+HIT 004886x IcePrunable
+HIT 004886x IcePrunable
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 005225 IcePruner
+HIT 000680 SceneRaycast
+HIT 000368 NpScene
+HIT 000704 SceneRaycast
+HIT 004864x ObjectModel
+HIT 005227 IcePruner
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 005225 IcePruner
+HIT 000698 SceneRaycast
+HIT 000949 ObjectModel
+HIT 000374 NpScene
+HIT 000696 SceneRaycast
+HIT 004864x ObjectModel
+HIT 005227 IcePruner
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 005225 IcePruner
+HIT 000688 SceneRaycast
+HIT 000376 NpScene
+HIT 000706 SceneRaycast
+HIT 004864x ObjectModel
+HIT 005227 IcePruner
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 005225 IcePruner
+HIT 000700+702 SceneRaycast
+HIT 000949 ObjectModel
+HIT 000949 ObjectModel
+HIT 001010x ShapeRaycast
+HIT 001377x ShapeRaycast
+HIT 000949 ObjectModel
+HIT 001261x ShapeRaycast
+HIT 000370 NpScene
+HIT 000692 SceneRaycast
+HIT 004864x ObjectModel
+HIT 005227 IcePruner
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider
+HIT 004928x NxOpcode:OPC_RayCollider

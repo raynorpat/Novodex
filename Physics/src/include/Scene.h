@@ -32,6 +32,7 @@
 
 #include "Nxp.h"
 #include "PhysicsInternal.h"
+#include "NxUserRaycastReport.h"
 
 class Scene;
 class NxSceneDesc;
@@ -41,6 +42,7 @@ class NxJointDesc;
 class NxJoint;
 class Joint;
 class JointBreakEvent;
+class NxRay;
 
 /**
 The 0x710-byte scene object.
@@ -90,6 +92,21 @@ class NxSceneInternal
 	NxU32 getNbJoints() const;
 	void resetJointIterator();
 	Joint* getNextJoint();
+
+	// The scene raycasts (SceneRaycast.cpp, scene-raycast block Task 3), the
+	// rows the NxScene wrappers call on +0x24. The two closest queries return
+	// the internal shape (the hit shape's +0x08); the wrappers return its
+	// public shape (+0x9c).
+	bool raycastAnyBounds(const NxRay& worldRay, NxShapesType shapesType, NxU32 groups, NxReal maxDist);
+	NxU32 raycastAllBounds(const NxRay& worldRay, NxUserRaycastReport& report, NxShapesType shapesType,
+		NxU32 groups, NxReal maxDist, NxU32 hintFlags);
+	NxU32 raycastAllShapes(const NxRay& worldRay, NxUserRaycastReport& report, NxShapesType shapesType,
+		NxU32 groups, NxReal maxDist, NxU32 hintFlags);
+	void* raycastClosestBounds(const NxRay& worldRay, NxShapesType shapeType, NxRaycastHit& hit,
+		NxU32 groups, NxReal maxDist, NxU32 hintFlags);
+	bool raycastAnyShape(const NxRay& worldRay, NxShapesType shapesType, NxU32 groups, NxReal maxDist);
+	void* raycastClosestShape(const NxRay& worldRay, NxShapesType shapeType, NxRaycastHit& hit,
+		NxU32 groups, NxReal maxDist, NxU32 hintFlags);
 
 	// The raw object. `at` is the only sanctioned way to reach a field whose name
 	// is not recovered.

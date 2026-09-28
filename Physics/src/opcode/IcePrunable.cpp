@@ -227,7 +227,7 @@ const AABB* Prunable::GetWorldAABB() const
 {
 	if(mHandle == PRUNABLE_INVALID_HANDLE)	return null;
 
-	return &mPruner->mWorldBoxes[mHandle];
+	return &mPruner->mPool.mWorldBoxes[mHandle];
 }
 
 //! 0x000b55b0, 34 bytes, ret 4.
@@ -268,11 +268,11 @@ const AABB* Prunable::GetUpdatedWorldAABB()
 	if(!(mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
 	{
 		if(gPrunableOwnerWorldAABB)
-			gPrunableOwnerWorldAABB(mOwner, &mPruner->mWorldBoxes[mHandle]);
+			gPrunableOwnerWorldAABB(mOwner, &mPruner->mPool.mWorldBoxes[mHandle]);
 
 		mFlags |= PRUNABLE_FLAG_WORLD_AABB_VALID;
 	}
-	return &mPruner->mWorldBoxes[mHandle];
+	return &mPruner->mPool.mWorldBoxes[mHandle];
 }
 
 //! 0x000b55e0, 47 bytes, ret 4. IcePrunable.cpp:152 in NovodeX's own tree.

@@ -72,40 +72,74 @@ extern udword	(*gPrunableAdapterQuery)(Prunable* prunable);
 extern void		(*gPrunableAdapterNotify)(Prunable* prunable, AABB* box);
 
 ///////////////////////////////////////////////////////////////////////////////
-//! The pruner Prunable points at.
+//! The pool every pruner embeds at +0x04 (0x18 bytes).
 //!
-//! NOT RECONSTRUCTED. The pruner family is 61 census rows behind five nine-slot
-//! vtables (`.rdata:0x0011bc18` base, `0x0011b9c8`, `0x0011b9f0`, `0x0011bb98`,
-//! `0x0011bbc0`) and P4 Task 2b did not reach it. Declared here is exactly what
-//! Prunable reaches into it and nothing else:
+//! Its objects are kept in three contiguous sections, in the order section 0,
+//! section 1, section 2; a prunable's section is its byte at +0x2b. The world
+//! boxes and the object pointers are parallel arrays, and each object's handle
+//! (+0x28) is its index in them. Layout from the constructor at 0x000efeb0 and
+//! from AddObject/RemoveObject/Resize (scene-raycast block, Task 3; see
+//! IcePruner.cpp):
 //!
-//!   * vtable slot 2, called with the prunable, by ~Prunable at 0x000b565b
-//!     (`mov eax,[ecx]; push esi; call [eax+8]`) and by the deleting destructor
-//!     at 0x000b56eb;
-//!   * the world-box array at +0x14, read by GetWorldAABB at 0x000b55a0
-//!     (`mov edx,[ecx+0x14]`) and by GetUpdatedWorldAABB at 0x000b5699
-//!     (`mov edx,[edi+0x10]` with `edi = mPruner + 4`).
+//!   +0x00, +0x04, +0x08   the three section counts
+//!   +0x0c                 the total (uword)
+//!   +0x0e                 the capacity (uword)
+//!   +0x10                 AABB*       the world boxes (0x000b55a0 reads it
+//!                                     through the pruner at +0x14)
+//!   +0x14                 Prunable**  the objects
+class PruningPool
+{
+	public:
+								PruningPool();
+			bool				Resize();
+			bool				AddObject(Prunable* object);
+			void				RemoveObject(Prunable* object);
+
+			udword				mNbObjects[3];		//!< +0x00..+0x08, per section
+			uword				mNbTotal;			//!< +0x0c
+			uword				mMaxNbObjects;		//!< +0x0e
+			AABB*				mWorldBoxes;		//!< +0x10
+			Prunable**			mObjects;			//!< +0x14
+};
+
+///////////////////////////////////////////////////////////////////////////////
+//! The pruner Prunable points at: the base of the family behind five nine-slot
+//! vtables (`.rdata:0x0011bc18` base, `0x0011b9c8` static, `0x0011b9f0`,
+//! `0x0011bb98`, `0x0011bbc0` dynamic). The slots, from the base table and the
+//! two families IcePruner.cpp reconstructs:
 //!
-//! The four dwords between the vptr and the array are named for their offsets
-//! because nothing this task disassembled writes them.
+//!   0  the deleting destructor
+//!   1  AddObject(Prunable*)              base 0x000e50c0: the pool's AddObject
+//!   2  RemoveObject(Prunable*)           base 0x000e50d0; ~Prunable calls it at
+//!                                        0x000b565b and 0x000b56eb
+//!   3  UpdateObject(Prunable*)           base 0x000e50f0: bumps the stamp
+//!   4  SetExternalBuffer(udword, udword*) base 0x000e5890: nothing
+//!   5  a five-argument query              base 0x000f1580: false
+//!   6  Raycast(Container&, const Ray&, float, bool, udword)  base 0x000f1580
+//!   7, 8  four-argument queries           base 0x000f1590: false
+//!
+//! Slots 5, 7 and 8 are declared for their table positions only; nothing in
+//! this reconstruction calls them.
 class Pruner
 {
 	public:
-	virtual						~Pruner()										{}
-	virtual	void				NovodeXPrunerSlot1()							= 0;
+								Pruner();
+	virtual						~Pruner();
+	virtual	bool				AddObject(Prunable* object);
 	//! Slot 2. ~Prunable calls it when the handle is valid.
-	virtual	void				RemoveObject(Prunable* object)					= 0;
-	// Slots 3-8 exist in the image and are not declared: nothing in Prunable
-	// dispatches through them, and declaring a slot nobody measured would be an
-	// invention with a vtable index attached to it.
+	virtual	bool				RemoveObject(Prunable* object);
+	virtual	bool				UpdateObject(Prunable* object);
+	virtual	void				SetExternalBuffer(udword max_nb, udword* entries);
+	virtual	bool				NovodeXPrunerSlot5(udword, udword, udword, udword, udword);
+	virtual	bool				Raycast(Container& objects, const Ray& world_ray, float max_dist,
+									bool first_contact, udword mask);
+	virtual	bool				NovodeXPrunerSlot7(udword, udword, udword, udword);
+	virtual	bool				NovodeXPrunerSlot8(udword, udword, udword, udword);
 
-	protected:
-			udword				mPruner04;			//!< +0x04, unidentified
-			udword				mPruner08;			//!< +0x08, unidentified
-			udword				mPruner0C;			//!< +0x0c, unidentified
-			udword				mPruner10;			//!< +0x10, unidentified
-	public:
-			AABB*				mWorldBoxes;		//!< +0x14. 0x000b55a0
+			PruningPool			mPool;				//!< +0x04
+			AABB				mBounds;			//!< +0x1c, 0x00053810 at 0x000f156c
+			udword				mPruner34;			//!< +0x34, 0x000b4cc0's handle
+			udword				mTimestamp;			//!< +0x38
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -38947,30 +38947,39 @@ undefined4 __thiscall FUN_100e4d30(void *this,float *param_1)
 
 ```
 
-## phys_fn_005208 (0x000e50c0, 8 B, discovered)
+## phys_fn_005208 (0x000e50c0, 8 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
-- prototype: None
-- calling convention: None, stack purge: None
+- source: Physics/src/opcode/IcePruner.cpp
+- implementation: Physics/src/opcode/IcePruner.cpp
+- prototype: undefined FUN_100e50c0(void)
+- calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_005464 (0x000ef850), phys_fn_005531 (0x000f1550)
 - callees: phys_fn_005483 (0x000f00c0)
 - indirect calls: none
 - strings: none
 
-Decompile (capstone disassembly):
+Decompile (ghidra supplement):
 
-```asm
-0x000e50c0  add ecx, 4
-0x000e50c3  jmp 0x100f00c0
+```c
+
+void FUN_100e50c0(int param_1)
+
+{
+  int in_ECX;
+  
+  FUN_100f00c0((void *)(in_ECX + 4),param_1);
+  return;
+}
+
+
 ```
 
-## phys_fn_005210 (0x000e50d0, 21 B, discovered)
+## phys_fn_005210 (0x000e50d0, 21 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/opcode/IcePruner.cpp
+- implementation: Physics/src/opcode/IcePruner.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_005464 (0x000ef850), phys_fn_005531 (0x000f1550)
@@ -39010,30 +39019,39 @@ Decompile (capstone disassembly):
 0x000e50f5  ret 4
 ```
 
-## phys_fn_005214 (0x000e5100, 8 B, discovered)
+## phys_fn_005214 (0x000e5100, 8 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
-- prototype: None
-- calling convention: None, stack purge: None
+- source: Physics/src/opcode/IcePruner.cpp
+- implementation: Physics/src/opcode/IcePruner.cpp
+- prototype: undefined FUN_100e5100(void)
+- calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_005232 (0x000e56d0), phys_fn_005448 (0x000ef670)
 - callees: phys_fn_004847 (0x000b4f90)
 - indirect calls: none
 - strings: none
 
-Decompile (capstone disassembly):
+Decompile (ghidra supplement):
 
-```asm
-0x000e5100  add ecx, 0x40
-0x000e5103  jmp 0x100b4f90
+```c
+
+void FUN_100e5100(undefined4 param_1,undefined4 param_2)
+
+{
+  int in_ECX;
+  
+  FUN_100b4f90((void *)(in_ECX + 0x40),param_1,param_2);
+  return;
+}
+
+
 ```
 
-## phys_fn_005216 (0x000e5110, 250 B, discovered)
+## phys_fn_005216 (0x000e5110, 250 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/opcode/IcePruner.cpp
+- implementation: Physics/src/opcode/IcePruner.cpp
 - prototype: undefined4 __fastcall FUN_100e5110(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_001969 (0x0004c070), phys_fn_005227 (0x000e5440), phys_fn_005229 (0x000e5500), phys_fn_005231 (0x000e5590), phys_fn_005236 (0x000e5780), phys_fn_005452 (0x000ef6d0)
@@ -39094,11 +39112,11 @@ undefined4 __fastcall FUN_100e5110(int param_1)
 
 ```
 
-## phys_fn_005218 (0x000e5210, 56 B, discovered)
+## phys_fn_005218 (0x000e5210, 56 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/opcode/IcePruner.cpp
+- implementation: Physics/src/opcode/IcePruner.cpp
 - prototype: undefined __thiscall FUN_100e5210(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_005232 (0x000e56d0), phys_fn_005448 (0x000ef670)
@@ -39130,11 +39148,11 @@ void __thiscall FUN_100e5210(void *this,int param_1)
 
 ```
 
-## phys_fn_005220 (0x000e5250, 65 B, discovered)
+## phys_fn_005220 (0x000e5250, 65 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/opcode/IcePruner.cpp
+- implementation: Physics/src/opcode/IcePruner.cpp
 - prototype: undefined4 __thiscall FUN_100e5250(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_005232 (0x000e56d0), phys_fn_005448 (0x000ef670)
@@ -39168,11 +39186,11 @@ undefined4 __thiscall FUN_100e5250(void *this,int param_1)
 
 ```
 
-## phys_fn_005222 (0x000e52a0, 48 B, discovered)
+## phys_fn_005222 (0x000e52a0, 48 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/opcode/IcePruner.cpp
+- implementation: Physics/src/opcode/IcePruner.cpp
 - prototype: undefined4 __fastcall FUN_100e52a0(int param_1)
 - calling convention: __fastcall, stack purge: 4
 - callers: phys_fn_005232 (0x000e56d0)
@@ -39332,11 +39350,11 @@ Decompile (capstone disassembly):
 0x000e53dd  ret
 ```
 
-## phys_fn_005225 (0x000e53e0, 94 B, discovered)
+## phys_fn_005225 (0x000e53e0, 94 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/opcode/IcePruner.cpp
+- implementation: Physics/src/opcode/IcePruner.cpp
 - prototype: undefined __thiscall FUN_100e53e0(int * param_1, uint param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_005227 (0x000e5440), phys_fn_005229 (0x000e5500), phys_fn_005231 (0x000e5590)
@@ -39375,11 +39393,11 @@ void __thiscall FUN_100e53e0(void *this,int *param_1,uint param_2)
 
 ```
 
-## phys_fn_005227 (0x000e5440, 184 B, discovered)
+## phys_fn_005227 (0x000e5440, 184 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/opcode/IcePruner.cpp
+- implementation: Physics/src/opcode/IcePruner.cpp
 - prototype: undefined4 __thiscall FUN_100e5440(int * param_1, float * param_2, undefined4 param_3, char param_4, uint param_5)
 - calling convention: __thiscall, stack purge: 20
 - callers: phys_fn_005232 (0x000e56d0), phys_fn_005458 (0x000ef7c0)
@@ -39531,11 +39549,11 @@ undefined4 __thiscall FUN_100e5590(void *this,int *param_1,float *param_2,char p
 
 ```
 
-## phys_fn_005232 (0x000e56d0, 108 B, discovered)
+## phys_fn_005232 (0x000e56d0, 108 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/opcode/IcePruner.cpp
+- implementation: Physics/src/opcode/IcePruner.cpp
 - prototype: undefined4 * __fastcall FUN_100e56d0(undefined4 * param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004852 (0x000b5090), phys_fn_005448 (0x000ef670)

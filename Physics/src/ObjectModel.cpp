@@ -370,63 +370,78 @@ void BoxShape::nxFillShapeDescriptor(unsigned* out) const
 		dest[3 + i] = self[0xe4 / 4 + i];	// 0x204b6..cf
 	}
 
-// Provisional phys_fn_000949 (BOX slot 5): the local-space raycast wrapper.
-// Store order per the listing: point z/x/y (0x20a10/17/1a) and t (0x20a1d)
-// BEFORE the distance gate (0x20a2f); acceptance then writes colobj, the
-// three zero words and tag 0x13, and the flags&4 arm overwrites tag 0x17
-// and the normal z/x/y (0x20b05..0x20b0b). Driven coverage must precede
-// census closure.
+// phys_fn_000949 (0x00020880, 663 B)
+// BOX slot 5, thiscall (ray, maxDistance, groups, hintFlags, hit), `ret 0x14`.
+// The pose is the shape's +0x0c (R row-major at +0x0c..+0x2c, t at +0x30).
+// Written from the listing with its register lifetimes (scene-raycast block
+// Task 3; the earlier float transcription grouped and rounded differently):
+//
+//   * the local origin R^T (o - t). dx stays in a register throughout, dy is
+//     spilled to float, and dz is spilled but its unrounded register value
+//     feeds the first row (0x0002089f `fst` then `fmul`):
+//         x = (dz R20 + dy R10) + dx R00     (dz unrounded)
+//         y = (dz R21 + dy R11) + dx R01     (dz rounded)
+//         z = (dz R22 + dy R12) + dx R02
+//   * the local direction R^T d, each row its own association
+//     (0x000208fe-0x00020944):
+//         x = (R10 dy + R20 dz) + dx R00
+//         y = (R01 dx + R11 dy) + R21 dz
+//         z = (R02 dx + R12 dy) + R22 dz
+//   * NxRayAABBIntersect2 against -dims..dims (0x0002098c; the distance is
+//     returned through the ray argument's stack slot);
+//   * the world point R c + t, rows (cy Rr1 + cz Rr2) + cx Rr0; the x row stays
+//     in a register into its `+ t.x`, y and z are spilled first
+//     (0x0002099e-0x00020a1a). Point and distance are written before the gate;
+//   * reject only a distance greater than maxDistance (0x00020a2d: equal and
+//     unordered accept); then the +0x9c word, face 0, u = v = 0, flags 0x13;
+//   * with hint bit 2 the flags become 0x17 and the normal is +-1 on the hit
+//     face's axis: +1 only when the hit coordinate is greater than zero
+//     (0x00020a9b `test ah,0x41; je`), -1 for zero, negative and NaN; then
+//     R n, rows as the point's.
 void* BoxShape::nxBoxRaycast(const float* ray, float maxDistance,
 	unsigned reserved, unsigned flags, void* hit) const
 	{
 	(void) reserved;
-	const float* rot = reinterpret_cast<const float*>(&mBase.mPose0C.mRotation);
-	const float* trn = reinterpret_cast<const float*>(&mBase.mPose0C.mTranslation);
-	const float dx = ray[0] - trn[0];			// 0x00020887..8c
-	const float dy = ray[1] - trn[1];			// 0x0002088f..92
-	const float dz = ray[2] - trn[2];			// 0x00020899..9c
-	// R^T per column with the image association (dz*R2c + dy*R1c) + dx*R0c.
-	const float lo[3] =
-		{
-		dz * rot[6] + dy * rot[3] + dx * rot[0],
-		dz * rot[7] + dy * rot[4] + dx * rot[1],
-		dz * rot[8] + dy * rot[5] + dx * rot[2]
-		};
-	const float ld[3] =
-		{
-		ray[5] * rot[6] + ray[4] * rot[3] + ray[3] * rot[0],
-		ray[5] * rot[7] + ray[4] * rot[4] + ray[3] * rot[1],
-		ray[5] * rot[8] + ray[4] * rot[5] + ray[3] * rot[2]
-		};
+	const float* R = reinterpret_cast<const float*>(&mBase.mPose0C.mRotation);
+	const float* T = reinterpret_cast<const float*>(&mBase.mPose0C.mTranslation);
+
+	const double dx = double(ray[0]) - T[0];
+	const float dy = float(double(ray[1]) - T[1]);
+	const double dzWide = double(ray[2]) - T[2];
+	const float dz = float(dzWide);
+	float localOrigin[3];
+	localOrigin[0] = float((dzWide * R[6] + double(dy) * R[3]) + dx * R[0]);
+	localOrigin[1] = float((double(dz) * R[7] + double(dy) * R[4]) + dx * R[1]);
+	localOrigin[2] = float((double(dz) * R[8] + double(dy) * R[5]) + dx * R[2]);
+
+	float localDir[3];
+	localDir[0] = float((double(R[3]) * ray[4] + double(R[6]) * ray[5]) + double(ray[3]) * R[0]);
+	localDir[1] = float((double(R[1]) * ray[3] + double(R[4]) * ray[4]) + double(R[7]) * ray[5]);
+	localDir[2] = float((double(R[2]) * ray[3] + double(R[5]) * ray[4]) + double(R[8]) * ray[5]);
+
 	const NxVec3 negDims(-mHull.mDims04[0], -mHull.mDims04[1], -mHull.mDims04[2]);
-	const NxVec3 posDims(mHull.mDims04[0], mHull.mDims04[1], mHull.mDims04[2]);
-	NxVec3 coord(0.0f, 0.0f, 0.0f);
-	NxReal t = 0.0f;
-	// 0x0002098c: (negDims, posDims, localOrigin, localDirection, coord, t).
-	const NxU32 plane = NxRayAABBIntersect2(negDims, posDims,
-		*reinterpret_cast<const NxVec3*>(lo),
-		*reinterpret_cast<const NxVec3*>(ld), coord, t);
+	NxVec3 coord;
+	NxReal t;
+	const NxU32 plane = NxRayAABBIntersect2(negDims,
+		*reinterpret_cast<const NxVec3*>(mHull.mDims04),
+		*reinterpret_cast<const NxVec3*>(localOrigin),
+		*reinterpret_cast<const NxVec3*>(localDir), coord, t);
 	if(plane == 0)
 		return nullptr;							// 0x00020998
 
 	unsigned char* rec = static_cast<unsigned char*>(hit);
-	// Point z/x/y then t, all BEFORE the gate: 0x00020a10/17/1a, 0x20a1d.
-	// World transform = R·coord + t, rows of the row-major R (listing
-	// 0x2099e..0x20a03: worldX=row0, worldY=row1, worldZ=row2), not the
-	// transposed form. The transposed indices passed every axis-aligned
-	// permutation and were caught by the quarter turn.
-	const float wz = coord.x * rot[6] + coord.y * rot[7] + coord.z * rot[8]
-		+ trn[2];								// row2 dot, 0x209d8..0x20a03
-	const float wx = coord.x * rot[0] + coord.y * rot[1] + coord.z * rot[2]
-		+ trn[0];
-	const float wy = coord.x * rot[3] + coord.y * rot[4] + coord.z * rot[5]
-		+ trn[1];
-	memcpy(rec + 0x0c, &wz, 4);
-	memcpy(rec + 0x04, &wx, 4);
-	memcpy(rec + 0x08, &wy, 4);
-	memcpy(rec + 0x20, &t, 4);
+	const double wx = (double(coord.y) * R[1] + double(coord.z) * R[2]) + double(coord.x) * R[0];
+	const float wy = float((double(coord.y) * R[4] + double(coord.z) * R[5]) + double(coord.x) * R[3]);
+	const float wz = float((double(coord.y) * R[7] + double(coord.z) * R[8]) + double(coord.x) * R[6]);
+	const float pointZ = float(double(wz) + T[2]);
+	const float pointX = float(wx + T[0]);
+	const float pointY = float(double(wy) + T[1]);
+	memcpy(rec + 0x0c, &pointZ, 4);				// 0x00020a10
+	memcpy(rec + 0x04, &pointX, 4);				// 0x00020a17
+	memcpy(rec + 0x08, &pointY, 4);				// 0x00020a1a
+	memcpy(rec + 0x20, &t, 4);					// 0x00020a1d
 
-	if(t > maxDistance) // 0x20a20..2d: reject ordered greater; accept unordered
+	if(t > maxDistance)
 		return nullptr;							// 0x00020a2f
 
 	memcpy(rec + 0x00, &mBase.mWord9C, 4);		// 0x00020a38..3e
@@ -436,18 +451,20 @@ void* BoxShape::nxBoxRaycast(const float* ray, float maxDistance,
 	memcpy(rec + 0x28, &zero, 4);				// 0x00020a53
 	unsigned tag = 0x13;						// 0x00020a5a
 	memcpy(rec + 0x2c, &tag, 4);
-	if(flags & 4)								// 0x00020a40, mask 0x04
+	if(flags & 4)								// 0x00020a40
 		{
 		tag = 0x17;								// 0x00020a72
 		memcpy(rec + 0x2c, &tag, 4);
 		float n[3] = { 0.0f, 0.0f, 0.0f };
-		n[plane - 1] = coord[plane - 1] < 0.0f ? -1.0f : 1.0f;
-		const float nz = n[0] * rot[6] + n[1] * rot[7] + n[2] * rot[8];
-		const float nx = n[0] * rot[0] + n[1] * rot[1] + n[2] * rot[2];
-		const float ny = n[0] * rot[3] + n[1] * rot[4] + n[2] * rot[5];
+		n[plane - 1] = coord[plane - 1] > 0.0f ? 1.0f : -1.0f;
+		const double nx = (double(n[1]) * R[1] + double(n[2]) * R[2]) + double(n[0]) * R[0];
+		const double ny = (double(n[1]) * R[4] + double(n[2]) * R[5]) + double(n[0]) * R[3];
+		const float nz = float((double(n[1]) * R[7] + double(n[2]) * R[8]) + double(n[0]) * R[6]);
+		const float nxf = float(nx);
+		const float nyf = float(ny);
 		memcpy(rec + 0x18, &nz, 4);				// 0x00020b05
-		memcpy(rec + 0x10, &nx, 4);				// 0x00020b08
-		memcpy(rec + 0x14, &ny, 4);				// 0x00020b0b
+		memcpy(rec + 0x10, &nxf, 4);			// 0x00020b08
+		memcpy(rec + 0x14, &nyf, 4);			// 0x00020b0b
 		}
 	return const_cast<BoxShape*>(this);		// 0x00020b0e: eax = this
 	}
@@ -4057,6 +4074,22 @@ static void** nxPlaneShapeInternalVtable()
 	return table.slot;
 	}
 
+// ShapeBase::ShapeBase's prunable, for Scene.cpp's raw shape allocations (the
+// factory does not run the shape constructors): the member built in place
+// (Prunable::Prunable at 0x000255df), the three owner hooks in the image's
+// store order (0x0002562b, 0x00025635, 0x0002563f), then the shape as the
+// prunable's owner (0x00025649). The scene raycasts reach every shape through
+// its prunable (the pruners report prunables; the loops read the owner at
+// +0x04, and a stale world box is recomputed through the WorldAABB hook).
+void nxShapeFactoryInstallPrunable(void* shape)
+	{
+	Prunable* prunable = new(static_cast<unsigned char*>(shape) + 0xa4) Prunable;
+	gPrunableOwnerWorldAABB = shapeOwnerWorldAABB;
+	gPrunableOwnerNotify = shapeOwnerNotify;
+	gPrunableOwnerQuery = shapeOwnerQuery;
+	prunable->mOwner = shape;
+	}
+
 // Install the reconstructed final table on Scene's raw shape allocation.
 // The factory's full per-family constructor and descriptor path remain open;
 // this makes the already reconstructed virtual dispatch reachable on the
@@ -4463,10 +4496,16 @@ void ShapeBase::nxApplyOwnerUpdate(unsigned flags)
 		if(scene && mPrunable.mHandle != 0xffffu &&
 			mPrunable.mPruningType < 4u)
 			{
+			// 0x00026a92-0x00026ab5: the box marked stale, then the pruner's
+			// slot 3 (UpdateObject) through its own table -- the static
+			// pruner's drops its tree there (phys_fn_005222). The pruner is
+			// not tested for null, as in the image (scene-raycast Task 3; the
+			// stamp increment written here before was the dynamic pruner's
+			// slot 3 alone).
 			mPrunable.mFlags &= ~2u;
-			unsigned char* manager = *reinterpret_cast<unsigned char**>(
+			Pruner* pruner = *reinterpret_cast<Pruner**>(
 				scene + 0x640 + mPrunable.mPruningType * 4);
-			if(manager) ++*reinterpret_cast<unsigned*>(manager + 0x38);
+			pruner->UpdateObject(&mPrunable);
 			}
 		}
 	}

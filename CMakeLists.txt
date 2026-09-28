@@ -201,6 +201,15 @@ if(MSVC)
 		Physics/src/core/NpFixedJoint.cpp
 		Physics/src/core/NpD6Joint.cpp
 		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
+	# The scene raycasts and the pruners (scene-raycast block Task 3), for the
+	# same reason: the static pruner's tree build (0x000e5110) is frameless in
+	# the oracle, where /EHsc gave its `new AABBTree` an unwind frame. None of
+	# these files uses try, catch or throw.
+	set_property(SOURCE
+		Physics/src/SceneRaycast.cpp
+		Physics/src/opcode/IcePruner.cpp
+		Physics/src/opcode/IcePruningEngine.cpp
+		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
 endif()
 
 # These geometry and contact files are on that list because the x87 control word is not the same
@@ -363,6 +372,13 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsJointSlotTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsJointSlotTests bcrypt)
+	# The scene raycast differential (scene-raycast block, Task 3): every public
+	# NxScene raycast over static and dynamic box, sphere, capsule and plane
+	# shapes, with the NxUserRaycastReport callbacks printed as words.
+	add_executable(NxPhysicsSceneRaycastTests tests/PhysicsSceneRaycastTests.cpp)
+	target_include_directories(NxPhysicsSceneRaycastTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsSceneRaycastTests bcrypt)
 	# Every block the page-guarded allocator returns to these targets is filled
 	# with 0xcd instead of being left as fresh zeroed pages, so a scene, actor,
 	# shape or joint constructor that leaves a field it later reads to the
@@ -379,7 +395,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 			NxPhysicsActorDynamicSetterTests NxPhysicsActorMomentumTests
 			NxPhysicsActorForceTests NxPhysicsActorCMassTests
 			NxPhysicsActorShapeMutationTests NxPhysicsJointStagedPairTests
-			NxPhysicsJointSlotTests)
+			NxPhysicsJointSlotTests NxPhysicsSceneRaycastTests)
 		target_compile_definitions(${nx_fill_target} PRIVATE NX_PAGE_GUARDED_FILL)
 	endforeach()
 	target_include_directories(NxPhysicsJointTests PRIVATE Foundation/include Physics/include)
@@ -505,7 +521,9 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsThirdPartyTests tests/PhysicsThirdPartyTests.cpp
 		tests/PhysicsThirdPartyQhull.c
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
-		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/NovodexBoxPruning.cpp)
+		Physics/src/Containers.cpp
+		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/IcePruner.cpp
+		Physics/src/opcode/NovodexBoxPruning.cpp)
 	# The hull family's C half reads qhull's own structs, so it and only it sees the
 	# merged tree's headers (their fprintf redirection stays out of the C++ harness).
 	set_source_files_properties(tests/PhysicsThirdPartyQhull.c PROPERTIES
@@ -531,9 +549,11 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsInternalTests tests/PhysicsInternalTests.cpp
 		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
+		Physics/src/SceneRaycast.cpp
 		Physics/src/ObjectModel.cpp Physics/src/MemoryStream.cpp
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
+		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		${PHYSICS_CORE_SOURCES})
 	target_include_directories(NxPhysicsInternalTests PRIVATE
@@ -623,8 +643,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
+		Physics/src/SceneRaycast.cpp
 		Physics/src/ObjectModel.cpp Physics/src/MemoryStream.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
+		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
 		${PHYSICS_CORE_SOURCES})
 	target_include_directories(NxPhysicsCollisionTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include

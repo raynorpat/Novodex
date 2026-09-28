@@ -1955,7 +1955,8 @@ UNRESOLVED_SOURCE_PATHS = (
     # field resolves and the allowlist entry would be a claim that a real file is
     # missing. The validator says so itself -- "is on the allowlist but no longer
     # unresolved; remove the entry" -- which is the check working.
-    'Physics/src/SceneRaycast.cpp',                  # 6 rows
+    # 'Physics/src/SceneRaycast.cpp' was here with 6 rows against it, and is
+    # REMOVED: scene-raycast Task 3 created the file for the Scene raycasts.
     'Physics/src/Shape.cpp',                         # 6 rows
     # 'Physics/src/core/CylindricalJoint.cpp' was here with 2 rows against it,
     # and is REMOVED: joint-families Task 3b created the file.

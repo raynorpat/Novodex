@@ -453,40 +453,155 @@ NxUserFluidContactReport* NpScene::getUserFluidContactReport() const
 	return 0;
 	}
 
-// (unimplemented) raycastAnyBounds
+// The six NxScene raycasts (slots 42-47 of the NpScene table at
+// .rdata:0x10105a98). Each takes the write lock at +0xc (phys_fn_002364); on
+// failure it reports the deadlock (code 2, this file's line) and returns a
+// null result without unlocking. Otherwise the lock link is kept, maxDist must
+// be greater than zero (the fcomp against 0.0f, 0x1000cf11: a NaN fails),
+// else error 1 on the next line; the Scene row on +0x24 runs, then the unlock
+// (phys_fn_002366) on the kept link. Scene-raycast block Task 3.
+static const char* const kNpSceneFile = "\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp";
+static const char* const kNpSceneDeadlock =
+	"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!";
+
+static inline void nxNpSceneRaycastError(NxErrorCode code, int line, const char* message)
+	{
+	NxFoundation::FoundationSDK::getInstance().error(code, kNpSceneFile, line, 0, message);
+	}
+
+// phys_fn_000366 (0x0000ced0, 181 B)
 bool NpScene::raycastAnyBounds(const NxRay& worldRay, NxShapesType shapesType, NxU32 groups, NxReal maxDist) const
 	{
-	return 0;
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		nxNpSceneRaycastError(NXE_INVALID_OPERATION, 0x18b, kNpSceneDeadlock);
+		return false;
+		}
+	void* link = mWriteLock;
+	if(!(maxDist > 0.0f))
+		{
+		nxNpSceneRaycastError(NXE_INVALID_PARAMETER, 0x18c,
+			"Scene::raycastAnyBounds: The maximum distance must be greater than zero!");
+		nxNpSceneGuardLeave(link);
+		return false;
+		}
+	const bool result = mScene->raycastAnyBounds(worldRay, shapesType, groups, maxDist);
+	nxNpSceneGuardLeave(link);
+	return result;
 	}
 
-// (unimplemented) raycastAnyShape
+// phys_fn_000368 (0x0000cf90, 181 B)
 bool NpScene::raycastAnyShape(const NxRay& worldRay, NxShapesType shapesType, NxU32 groups, NxReal maxDist) const
 	{
-	return 0;
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		nxNpSceneRaycastError(NXE_INVALID_OPERATION, 0x197, kNpSceneDeadlock);
+		return false;
+		}
+	void* link = mWriteLock;
+	if(!(maxDist > 0.0f))
+		{
+		nxNpSceneRaycastError(NXE_INVALID_PARAMETER, 0x198,
+			"Scene::raycastAnyShape: The maximum distance must be greater than zero!");
+		nxNpSceneGuardLeave(link);
+		return false;
+		}
+	const bool result = mScene->raycastAnyShape(worldRay, shapesType, groups, maxDist);
+	nxNpSceneGuardLeave(link);
+	return result;
 	}
 
-// (unimplemented) raycastAllBounds
+// phys_fn_000370 (0x0000d050, 189 B)
 NxU32 NpScene::raycastAllBounds(const NxRay& worldRay, NxUserRaycastReport& report, NxShapesType shapesType, NxU32 groups, NxReal maxDist, NxU32 hintFlags) const
 	{
-	return 0;
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		nxNpSceneRaycastError(NXE_INVALID_OPERATION, 0x1a2, kNpSceneDeadlock);
+		return 0;
+		}
+	void* link = mWriteLock;
+	if(!(maxDist > 0.0f))
+		{
+		nxNpSceneRaycastError(NXE_INVALID_PARAMETER, 0x1a3,
+			"Scene::raycastAllBounds: The maximum distance must be greater than zero!");
+		nxNpSceneGuardLeave(link);
+		return 0;
+		}
+	const NxU32 result = mScene->raycastAllBounds(worldRay, report, shapesType, groups, maxDist, hintFlags);
+	nxNpSceneGuardLeave(link);
+	return result;
 	}
 
-// (unimplemented) raycastAllShapes
+// phys_fn_000372 (0x0000d110, 189 B)
 NxU32 NpScene::raycastAllShapes(const NxRay& worldRay, NxUserRaycastReport& report, NxShapesType shapesType, NxU32 groups, NxReal maxDist, NxU32 hintFlags) const
 	{
-	return 0;
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		nxNpSceneRaycastError(NXE_INVALID_OPERATION, 0x1ad, kNpSceneDeadlock);
+		return 0;
+		}
+	void* link = mWriteLock;
+	if(!(maxDist > 0.0f))
+		{
+		nxNpSceneRaycastError(NXE_INVALID_PARAMETER, 0x1ae,
+			"Scene::raycastAllShapes: The maximum distance must be greater than zero!");
+		nxNpSceneGuardLeave(link);
+		return 0;
+		}
+	const NxU32 result = mScene->raycastAllShapes(worldRay, report, shapesType, groups, maxDist, hintFlags);
+	nxNpSceneGuardLeave(link);
+	return result;
 	}
 
-// (unimplemented) raycastClosestBounds
-NxShape* NpScene::raycastClosestBounds(const NxRay& worldRay, NxShapesType shapeType, NxRaycastHit& hit, NxU32 groups, NxReal maxDist, NxU32 hintFlags) const
+// phys_fn_000374 (0x0000d1d0, 210 B)
+// maxDist is checked, then the Scene row gets FLT_MAX and hint flags
+// 0xffffffff in their place (0x1000d263, 0x1000d265). A hit returns the
+// shape's public object (+0x9c).
+NxShape* NpScene::raycastClosestBounds(const NxRay& worldRay, NxShapesType shapeType, NxRaycastHit& hit, NxU32 groups, NxReal maxDist, NxU32 /*hintFlags*/) const
 	{
-	return 0;
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		nxNpSceneRaycastError(NXE_INVALID_OPERATION, 0x1b9, kNpSceneDeadlock);
+		return 0;
+		}
+	void* link = mWriteLock;
+	if(!(maxDist > 0.0f))
+		{
+		nxNpSceneRaycastError(NXE_INVALID_PARAMETER, 0x1ba,
+			"Scene::raycastClosestBounds: The maximum distance must be greater than zero!");
+		nxNpSceneGuardLeave(link);
+		return 0;
+		}
+	void* shape = mScene->raycastClosestBounds(worldRay, shapeType, hit, groups, NX_MAX_F32, 0xffffffff);
+	NxShape* result = shape
+		? *reinterpret_cast<NxShape**>(static_cast<unsigned char*>(shape) + 0x9c)
+		: 0;
+	nxNpSceneGuardLeave(link);
+	return result;
 	}
 
-// (unimplemented) raycastClosestShape
+// phys_fn_000376 (0x0000d2b0, 213 B)
 NxShape* NpScene::raycastClosestShape(const NxRay& worldRay, NxShapesType shapeType, NxRaycastHit& hit, NxU32 groups, NxReal maxDist, NxU32 hintFlags) const
 	{
-	return 0;
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		nxNpSceneRaycastError(NXE_INVALID_OPERATION, 0x1c6, kNpSceneDeadlock);
+		return 0;
+		}
+	void* link = mWriteLock;
+	if(!(maxDist > 0.0f))
+		{
+		nxNpSceneRaycastError(NXE_INVALID_PARAMETER, 0x1c7,
+			"Scene::raycastClosestShape: The maximum distance must be greater than zero!");
+		nxNpSceneGuardLeave(link);
+		return 0;
+		}
+	void* shape = mScene->raycastClosestShape(worldRay, shapeType, hit, groups, maxDist, hintFlags);
+	NxShape* result = shape
+		? *reinterpret_cast<NxShape**>(static_cast<unsigned char*>(shape) + 0x9c)
+		: 0;
+	nxNpSceneGuardLeave(link);
+	return result;
 	}
 
 // (unimplemented) overlapSphereShapes

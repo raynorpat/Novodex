@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "phase": 5,
-  "note": "Phase 5 closes NOTHING, and says so rather than closing on a recorded differential. It owns 205 function rows and 122 data objects; 120 of the function rows are reconstructed with a proof, 85 are not reconstructed, and no data object is dispositioned. The schema accepts one thing as a closure -- a mutation aimed at the row that the gate catches -- and this phase has no per-row mutation evidence. The ledger is published so that every row the phase owns is accounted for rather than left in no list: before it existed, 327 rows were owned by a phase with no ledger at all.",
+  "note": "Phase 5 closes NOTHING, and says so rather than closing on a recorded differential. It owns 205 function rows and 122 data objects; 121 of the function rows are reconstructed with a proof, 84 are not reconstructed, and no data object is dispositioned. The schema accepts one thing as a closure -- a mutation aimed at the row that the gate catches -- and this phase has no per-row mutation evidence. The ledger is published so that every row the phase owns is accounted for rather than left in no list: before it existed, 327 rows were owned by a phase with no ledger at all.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway archive copy, rebuilt, and run against the committed oracle transcript through a registered staged-pair target. This phase has none yet.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. This phase has none yet."
@@ -18,8 +18,8 @@
     "differentials": []
   },
   "counts": {
-    "deferred_not_reconstructed_in_phase": 85,
-    "deferred_reconstructed_not_falsified": 120
+    "deferred_not_reconstructed_in_phase": 84,
+    "deferred_reconstructed_not_falsified": 121
   },
   "closed": [],
   "deferred": [
@@ -636,9 +636,10 @@
       "id": "phys_fn_000949",
       "rva": "0x00020880",
       "size": 663,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000951",

@@ -12,11 +12,11 @@ Evidenced span: ['0x00015520', '0x00015b20']. Rows: 10 (0 ambiguous). Generated 
 - gap:Scene.cpp..SceneRaycast.cpp: phys_fn_000680, phys_fn_000682, phys_fn_000684
 - gap:core\NpPrismaticJoint.cpp..opcode\IcePrunable.cpp: phys_fn_004864, phys_fn_004886
 
-## phys_fn_000688 (0x000153c0, 339 B, discovered)
+## phys_fn_000688 (0x000153c0, 339 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/SceneRaycast.cpp
+- implementation: Physics/src/SceneRaycast.cpp
 - prototype: undefined __thiscall FUN_100153c0(float * param_1, float param_2, uint param_3)
 - calling convention: __thiscall, stack purge: 0
 - callers: phys_fn_000696 (0x00015790)
@@ -83,11 +83,11 @@ void __thiscall FUN_100153c0(void *this,float *param_1,float param_2,uint param_
 
 ```
 
-## phys_fn_000690 (0x00015520, 202 B, discovered)
+## phys_fn_000690 (0x00015520, 202 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/SceneRaycast.cpp
-- implementation: None
+- implementation: Physics/src/SceneRaycast.cpp
 - prototype: uint __thiscall FUN_10015520(float * param_1, byte param_2, uint param_3, float param_4)
 - calling convention: __thiscall, stack purge: 16
 - callers: phys_fn_000366 (0x0000ced0)
@@ -133,11 +133,11 @@ uint __thiscall FUN_10015520(void *this,float *param_1,byte param_2,uint param_3
 
 ```
 
-## phys_fn_000692 (0x000155f0, 206 B, discovered)
+## phys_fn_000692 (0x000155f0, 206 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/SceneRaycast.cpp
-- implementation: None
+- implementation: Physics/src/SceneRaycast.cpp
 - prototype: int __thiscall FUN_100155f0(int param_1, undefined4 * param_2, byte param_3, uint param_4, float param_5)
 - calling convention: __thiscall, stack purge: 24
 - callers: phys_fn_000370 (0x0000d050)
@@ -185,11 +185,11 @@ FUN_100155f0(void *this,int param_1,undefined4 *param_2,byte param_3,uint param_
 
 ```
 
-## phys_fn_000694 (0x000156c0, 207 B, discovered)
+## phys_fn_000694 (0x000156c0, 207 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/SceneRaycast.cpp
-- implementation: None
+- implementation: Physics/src/SceneRaycast.cpp
 - prototype: undefined4 __thiscall FUN_100156c0(int param_1, undefined4 * param_2, byte param_3, undefined4 param_4, undefined4 param_5)
 - calling convention: __thiscall, stack purge: 24
 - callers: phys_fn_000372 (0x0000d110)
@@ -238,11 +238,11 @@ FUN_100156c0(void *this,int param_1,undefined4 *param_2,byte param_3,undefined4 
 
 ```
 
-## phys_fn_000696 (0x00015790, 245 B, discovered)
+## phys_fn_000696 (0x00015790, 245 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/SceneRaycast.cpp
-- implementation: None
+- implementation: Physics/src/SceneRaycast.cpp
 - prototype: undefined4 __thiscall FUN_10015790(float * param_1, byte param_2, int * param_3, uint param_4, float param_5)
 - calling convention: __thiscall, stack purge: 24
 - callers: phys_fn_000374 (0x0000d1d0)
@@ -297,11 +297,11 @@ FUN_10015790(void *this,float *param_1,byte param_2,int *param_3,uint param_4,fl
 
 ```
 
-## phys_fn_000698 (0x00015890, 126 B, discovered)
+## phys_fn_000698 (0x00015890, 126 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/SceneRaycast.cpp
+- implementation: Physics/src/SceneRaycast.cpp
 - prototype: undefined4 __cdecl FUN_10015890(undefined4 param_1, undefined4 param_2, uint param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_000704 (0x00015a50)
@@ -344,11 +344,11 @@ uint __cdecl FUN_10015890(undefined4 param_1,undefined4 param_2,uint param_3)
 
 ```
 
-## phys_fn_000700 (0x00015910, 29 B, discovered)
+## phys_fn_000700 (0x00015910, 29 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/SceneRaycast.cpp
+- implementation: Physics/src/SceneRaycast.cpp
 - prototype: undefined __thiscall FUN_10015910(undefined4 param_1, uint param_2)
 - calling convention: __thiscall, stack purge: 0
 - callers: phys_fn_000706 (0x00015b20)
@@ -425,11 +425,11 @@ void __thiscall FUN_10015910(void *this,undefined4 param_1,uint param_2)
 
 ```
 
-## phys_fn_000702 (0x00015930, 277 B, discovered)
+## phys_fn_000702 (0x00015930, 277 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/SceneRaycast.cpp
+- implementation: Physics/src/SceneRaycast.cpp
 - prototype: undefined FUN_10015930(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: none
@@ -497,11 +497,11 @@ void FUN_10015930(undefined4 param_1,int param_2,undefined4 param_3,float param_
 
 ```
 
-## phys_fn_000704 (0x00015a50, 202 B, discovered)
+## phys_fn_000704 (0x00015a50, 202 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/SceneRaycast.cpp
-- implementation: None
+- implementation: Physics/src/SceneRaycast.cpp
 - prototype: undefined4 __thiscall FUN_10015a50(int param_1, byte param_2, uint param_3, undefined4 param_4)
 - calling convention: __thiscall, stack purge: 16
 - callers: phys_fn_000368 (0x0000cf90)
@@ -550,11 +550,11 @@ FUN_10015a50(void *this,int param_1,byte param_2,uint param_3,undefined4 param_4
 
 ```
 
-## phys_fn_000706 (0x00015b20, 249 B, discovered)
+## phys_fn_000706 (0x00015b20, 249 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/SceneRaycast.cpp
-- implementation: None
+- implementation: Physics/src/SceneRaycast.cpp
 - prototype: undefined4 __thiscall FUN_10015b20(int param_1, byte param_2, int * param_3, uint param_4, undefined4 param_5)
 - calling convention: __thiscall, stack purge: 24
 - callers: phys_fn_000376 (0x0000d2b0)

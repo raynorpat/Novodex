@@ -61,11 +61,11 @@
     "differential_falsified": 49,
     "static_proof_falsified": 6,
     "oracle_differential_falsified": 1,
-    "deferred_homeless_shared_code": 52,
+    "deferred_homeless_shared_code": 51,
     "deferred_blocked_on_later_phase": 22,
     "deferred_unreachable_in_phase_2": 6,
     "deferred_not_independently_falsifiable": 1,
-    "deferred_reconstructed_not_falsified": 6
+    "deferred_reconstructed_not_falsified": 7
   },
   "closed": [
     {
@@ -1892,7 +1892,7 @@
       "id": "phys_fn_004857",
       "rva": "0x000b5180",
       "size": 213,
-      "reason": "homeless_shared_code",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "shared_by_callers",
       "translation_unit_zone": "gap core/NpPrismaticJoint.cpp .. opcode/IcePrunable.cpp",
       "reachability": "reachable_via_other_phase",
@@ -1900,7 +1900,8 @@
         5,
         7
       ],
-      "callers": 2
+      "callers": 2,
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     }
   ]
 }

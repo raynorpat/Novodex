@@ -7,6 +7,26 @@
  *     uninitialised by every culling-mode stab (OPC_RayTriOverlap.h [1]).
  *     established at 0x000b5736, `mov [esi+0x88], eax` with eax = 0, in
  *     RayCollider::RayCollider at 0x000b5720.
+ *
+ * [2] _SegmentStab(const AABBTreeNode*, Container&) -- the vanilla-tree
+ *     segment stab NovodeX's static pruner uses for its scene raycasts --
+ *     tests the node with SegmentAABBOverlap written out, because the image
+ *     keeps that test's values in x87 registers where the stock inline rounds
+ *     them to float. Build parity, not source: Dx and Dy are compared
+ *     unrounded and spilled to float for the cross axes, Dz stays in a
+ *     register throughout, and no cross-axis value `f` is ever stored.
+ *     Stock's `float f` is observable: against the static pruner's tree,
+ *     whose root box holds a plane's +-1.7e38 box, a finite segment's
+ *     f = mData.x * Dy overflows float to +inf and the root is rejected, so
+ *     no static shape is found; the register value is finite and the root
+ *     passes. Found by the scene-raycast block's differential (Task 3,
+ *     NxPhysicsSceneRaycastTests, every finite maxDist over the static
+ *     shapes).
+ *     established at 0x000b8355-0x000b843d in phys_fn_004919 (0x000b82a0):
+ *     `fst [esp+0x58]` / `fst [esp+0x5c]` then `fabs` of the unrounded Dx and
+ *     Dy, `fld st(0)` keeping Dz, and the three fsubp/fabs/fcompp cross tests
+ *     with no store. The other stabs inline the test with other lifetimes
+ *     (0x000b698a reloads a rounded Dx) and keep the stock form.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -620,7 +640,24 @@ void RayCollider::_SegmentStab(const AABBTreeNode* node, Container& box_indices)
 	Point Center, Extents;
 	node->GetAABB()->GetCenter(Center);
 	node->GetAABB()->GetExtents(Extents);
-	if(!SegmentAABBOverlap(Center, Extents))	return;
+	// NOVODEX [2]: SegmentAABBOverlap written out with this site's register
+	// lifetimes (see the header comment).
+	mNbRayBVTests++;
+	const double Dx = double(mData2.x) - Center.x;
+	const float fDx = float(Dx);
+	if(fabs(Dx) > double(Extents.x) + mFDir.x)	return;
+	const double Dy = double(mData2.y) - Center.y;
+	const float fDy = float(Dy);
+	if(fabs(Dy) > double(Extents.y) + mFDir.y)	return;
+	const double Dz = double(mData2.z) - Center.z;
+	if(fabs(Dz) > double(Extents.z) + mFDir.z)	return;
+	double f;
+	f = Dz * mData.y - double(fDy) * mData.z;
+	if(fabs(f) > double(Extents.y) * mFDir.z + double(Extents.z) * mFDir.y)	return;
+	f = double(fDx) * mData.z - Dz * mData.x;
+	if(fabs(f) > double(Extents.x) * mFDir.z + double(Extents.z) * mFDir.x)	return;
+	f = double(fDy) * mData.x - double(fDx) * mData.y;
+	if(fabs(f) > double(Extents.x) * mFDir.y + double(Extents.y) * mFDir.x)	return;
 
 	if(node->IsLeaf())
 	{

@@ -1442,8 +1442,7 @@ static void __fastcall nxRemoveObjectProbe(void* /*pruner*/, int /*edx*/, void* 
 // The candidate side of the same two hooks.
 struct NxCandidatePruner : public Pruner
 	{
-	void	NovodeXPrunerSlot1()					{}
-	void	RemoveObject(Prunable* object)			{ ++gPrunerRemovals; gPrunerLastRemoved = object; }
+	bool	RemoveObject(Prunable* object)			{ ++gPrunerRemovals; gPrunerLastRemoved = object; return true; }
 	};
 
 struct NxCandidatePrunable : public Prunable
@@ -1753,7 +1752,7 @@ static void nxDrivePrunablePruner(const NxOracleRows& o, bool selfOnly)
 		AABB candidateBoxes[8];
 		unsigned char prunerStorage[64];
 		NxCandidatePruner* candidatePruner = new (prunerStorage) NxCandidatePruner;
-		candidatePruner->mWorldBoxes = candidateBoxes;
+		candidatePruner->mPool.mWorldBoxes = candidateBoxes;
 
 		unsigned char storage[64];
 		for(unsigned h = 0; h < sizeof(kHandles) / sizeof(kHandles[0]); ++h)
@@ -1794,6 +1793,9 @@ static void nxDrivePrunablePruner(const NxOracleRows& o, bool selfOnly)
 						for(int b = 0; b < 8 * 6; ++b)
 							gCandidateTape.pushFloat(((float*) candidateBoxes)[b]);
 						}
+		// The pool frees its arrays in the pruner's destructor (0x000efed0); the
+		// boxes here are the harness's own, so they are handed back first.
+		candidatePruner->mPool.mWorldBoxes = 0;
 		candidatePruner->~NxCandidatePruner();
 		gPrunableOwnerWorldAABB = 0;
 		}
@@ -4745,7 +4747,7 @@ static void nxCheckLayouts()
 	nxLayout("Prunable.mPruningType", (size_t) &(((Prunable*) 0)->mPruningType), 0x2a, "0x000b55ed");
 	nxLayout("Prunable.mPruningSection", (size_t) &(((Prunable*) 0)->mPruningSection), 0x2b, "0x000b561d");
 	nxLayout("sizeof_Prunable0C", sizeof(Prunable0C), 20, "0x000e7330,0x000b54a9");
-	nxLayout("Pruner.mWorldBoxes", (size_t) &(((Pruner*) 0)->mWorldBoxes), 0x14, "0x000b55a0");
+	nxLayout("Pruner.mWorldBoxes", (size_t) &(((Pruner*) 0)->mPool.mWorldBoxes), 0x14, "0x000b55a0");
 	}
 
 //////////////////////////////////////////////////////////////////////////////

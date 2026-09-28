@@ -154,8 +154,8 @@ undefined4 __fastcall FUN_10015d30(int param_1)
 ## phys_fn_000713 (0x00015d50, 32 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/ObjectModel.cpp
 - prototype: undefined4 __fastcall FUN_10015d50(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000655 (0x000137e0), phys_fn_000718 (0x00015fe0), phys_fn_000724 (0x000161b0), phys_fn_000744 (0x00016e30), phys_fn_000776 (0x00018570), phys_fn_003979 (0x0008f700)
@@ -980,8 +980,8 @@ undefined4 __thiscall FUN_10016a60(void *this,float *param_1,float param_2)
 ## phys_fn_000738 (0x00016c00, 21 B, reconstructed)
 
 - ambiguous: yes
-- source: flag-to-pointer (0x16c00)
-- implementation: None
+- source: Physics/src/core/JointSupport.cpp
+- implementation: Physics/src/core/JointSupport.cpp
 - prototype: int __fastcall FUN_10016c00(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_001303 (0x000258f0)
@@ -1081,8 +1081,8 @@ void __thiscall FUN_10016c20(void *this,float param_1)
 ## phys_fn_000742 (0x00016dd0, 89 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/ObjectModel.cpp
 - prototype: float10 __fastcall FUN_10016dd0(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000060 (0x00002900)
@@ -1115,8 +1115,8 @@ float10 __fastcall FUN_10016dd0(int param_1)
 ## phys_fn_000744 (0x00016e30, 68 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/ObjectModel.cpp
 - prototype: undefined2 __fastcall FUN_10016e30(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000062 (0x00002950)
@@ -1159,11 +1159,11 @@ undefined2 __fastcall FUN_10016e30(int param_1)
 
 ```
 
-## phys_fn_000746 (0x00016e80, 245 B, discovered)
+## phys_fn_000746 (0x00016e80, 245 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/include/NpActorDynamicMath.h
+- implementation: Physics/src/include/NpActorDynamicMath.h
 - prototype: undefined __cdecl FUN_10016e80(float * param_1, float * param_2, float * param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_000140 (0x00005000), phys_fn_000142 (0x000052d0), phys_fn_000144 (0x00005590), phys_fn_000768 (0x00017f10), phys_fn_000770 (0x000183a0), phys_fn_000772 (0x00018470), phys_fn_000789 (0x00019d00)
@@ -1459,11 +1459,11 @@ void __fastcall FUN_10017010(int param_1)
 
 ```
 
-## phys_fn_000756 (0x00017420, 525 B, discovered)
+## phys_fn_000756 (0x00017420, 525 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/include/NpActorDynamicMath.h
+- implementation: Physics/src/include/NpActorDynamicMath.h
 - prototype: undefined __fastcall FUN_10017420(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000204 (0x000096c0), phys_fn_000208 (0x00009ad0), phys_fn_000772 (0x00018470)
@@ -1951,11 +1951,11 @@ void __thiscall FUN_100179a0(void *this,int *param_1)
 
 ```
 
-## phys_fn_000768 (0x00017f10, 1164 B, discovered)
+## phys_fn_000768 (0x00017f10, 1164 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/include/NpActorDynamicMath.h
+- implementation: Physics/src/include/NpActorDynamicMath.h
 - prototype: undefined __fastcall FUN_10017f10(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000164 (0x00006520), phys_fn_000196 (0x00008b00), phys_fn_000198 (0x00008f60), phys_fn_000200 (0x00009110), phys_fn_000202 (0x00009450), phys_fn_000210 (0x00009cc0), phys_fn_000212 (0x0000a0b0), phys_fn_000214 (0x0000a3a0), phys_fn_000218 (0x0000a680), phys_fn_000220 (0x0000acd0), phys_fn_000222 (0x0000b100), phys_fn_000793 (0x0001a350)
@@ -5445,8 +5445,8 @@ LAB_1001b988:
 ## phys_fn_000803 (0x0001ba90, 23 B, dynamically_gated)
 
 - ambiguous: yes
-- source: None
-- implementation: Physics/src/ContactGeneration.cpp
+- source: Physics/src/MassProperties.cpp
+- implementation: Physics/src/MassProperties.cpp
 - prototype: NxReal __cdecl NxComputeSphereMass(NxReal radius, NxReal density)
 - calling convention: __cdecl, stack purge: 0
 - callers: none
@@ -5471,8 +5471,8 @@ NxReal __cdecl NxComputeSphereMass(NxReal radius,NxReal density)
 ## phys_fn_000805 (0x0001bab0, 23 B, dynamically_gated)
 
 - ambiguous: yes
-- source: None
-- implementation: Physics/src/ContactGeneration.cpp
+- source: Physics/src/MassProperties.cpp
+- implementation: Physics/src/MassProperties.cpp
 - prototype: NxReal __cdecl NxComputeSphereDensity(NxReal radius, NxReal mass)
 - calling convention: __cdecl, stack purge: 0
 - callers: none
@@ -5497,8 +5497,8 @@ NxReal __cdecl NxComputeSphereDensity(NxReal radius,NxReal mass)
 ## phys_fn_000807 (0x0001bad0, 44 B, dynamically_gated)
 
 - ambiguous: yes
-- source: None
-- implementation: Physics/src/ContactGeneration.cpp
+- source: Physics/src/MassProperties.cpp
+- implementation: Physics/src/MassProperties.cpp
 - prototype: NxReal __cdecl NxComputeBoxMass(NxVec3 * extents, NxReal density)
 - calling convention: __cdecl, stack purge: 0
 - callers: none
@@ -5535,8 +5535,8 @@ NxReal __cdecl NxComputeBoxMass(NxVec3 *extents,NxReal density)
 ## phys_fn_000809 (0x0001bb00, 44 B, dynamically_gated)
 
 - ambiguous: yes
-- source: None
-- implementation: Physics/src/ContactGeneration.cpp
+- source: Physics/src/MassProperties.cpp
+- implementation: Physics/src/MassProperties.cpp
 - prototype: NxReal __cdecl NxComputeBoxDensity(NxVec3 * extents, NxReal mass)
 - calling convention: __cdecl, stack purge: 0
 - callers: none
@@ -5573,8 +5573,8 @@ NxReal __cdecl NxComputeBoxDensity(NxVec3 *extents,NxReal mass)
 ## phys_fn_000811 (0x0001bb30, 50 B, dynamically_gated)
 
 - ambiguous: yes
-- source: None
-- implementation: Physics/src/ContactGeneration.cpp
+- source: Physics/src/MassProperties.cpp
+- implementation: Physics/src/MassProperties.cpp
 - prototype: NxReal __cdecl NxComputeEllipsoidMass(NxVec3 * extents, NxReal density)
 - calling convention: __cdecl, stack purge: 0
 - callers: none
@@ -5611,8 +5611,8 @@ NxReal __cdecl NxComputeEllipsoidMass(NxVec3 *extents,NxReal density)
 ## phys_fn_000813 (0x0001bb70, 50 B, dynamically_gated)
 
 - ambiguous: yes
-- source: None
-- implementation: Physics/src/ContactGeneration.cpp
+- source: Physics/src/MassProperties.cpp
+- implementation: Physics/src/MassProperties.cpp
 - prototype: NxReal __cdecl NxComputeEllipsoidDensity(NxVec3 * extents, NxReal mass)
 - calling convention: __cdecl, stack purge: 0
 - callers: none
@@ -5649,8 +5649,8 @@ NxReal __cdecl NxComputeEllipsoidDensity(NxVec3 *extents,NxReal mass)
 ## phys_fn_000815 (0x0001bbb0, 25 B, dynamically_gated)
 
 - ambiguous: yes
-- source: None
-- implementation: Physics/src/ContactGeneration.cpp
+- source: Physics/src/MassProperties.cpp
+- implementation: Physics/src/MassProperties.cpp
 - prototype: NxReal __cdecl NxComputeCylinderMass(NxReal radius, NxReal length, NxReal density)
 - calling convention: __cdecl, stack purge: 0
 - callers: none
@@ -5675,8 +5675,8 @@ NxReal __cdecl NxComputeCylinderMass(NxReal radius,NxReal length,NxReal density)
 ## phys_fn_000817 (0x0001bbd0, 25 B, dynamically_gated)
 
 - ambiguous: yes
-- source: None
-- implementation: Physics/src/ContactGeneration.cpp
+- source: Physics/src/MassProperties.cpp
+- implementation: Physics/src/MassProperties.cpp
 - prototype: NxReal __cdecl NxComputeCylinderDensity(NxReal radius, NxReal length, NxReal mass)
 - calling convention: __cdecl, stack purge: 0
 - callers: none
@@ -5701,8 +5701,8 @@ NxReal __cdecl NxComputeCylinderDensity(NxReal radius,NxReal length,NxReal mass)
 ## phys_fn_000819 (0x0001bbf0, 25 B, dynamically_gated)
 
 - ambiguous: yes
-- source: None
-- implementation: Physics/src/ContactGeneration.cpp
+- source: Physics/src/MassProperties.cpp
+- implementation: Physics/src/MassProperties.cpp
 - prototype: NxReal __cdecl NxComputeConeMass(NxReal radius, NxReal length, NxReal density)
 - calling convention: __cdecl, stack purge: 0
 - callers: none
@@ -5727,8 +5727,8 @@ NxReal __cdecl NxComputeConeMass(NxReal radius,NxReal length,NxReal density)
 ## phys_fn_000821 (0x0001bc10, 25 B, dynamically_gated)
 
 - ambiguous: yes
-- source: None
-- implementation: Physics/src/ContactGeneration.cpp
+- source: Physics/src/MassProperties.cpp
+- implementation: Physics/src/MassProperties.cpp
 - prototype: NxReal __cdecl NxComputeConeDensity(NxReal radius, NxReal length, NxReal mass)
 - calling convention: __cdecl, stack purge: 0
 - callers: none
@@ -5753,8 +5753,8 @@ NxReal __cdecl NxComputeConeDensity(NxReal radius,NxReal length,NxReal mass)
 ## phys_fn_000823 (0x0001bc30, 75 B, dynamically_gated)
 
 - ambiguous: yes
-- source: None
-- implementation: Physics/src/ContactGeneration.cpp
+- source: Physics/src/MassProperties.cpp
+- implementation: Physics/src/MassProperties.cpp
 - prototype: void __cdecl NxComputeBoxInertiaTensor(NxVec3 * diagInertia, NxReal mass, NxReal xlength, NxReal ylength, NxReal zlength)
 - calling convention: __cdecl, stack purge: 0
 - callers: none
@@ -5787,8 +5787,8 @@ NxComputeBoxInertiaTensor
 ## phys_fn_000825 (0x0001bc80, 62 B, dynamically_gated)
 
 - ambiguous: yes
-- source: None
-- implementation: Physics/src/ContactGeneration.cpp
+- source: Physics/src/MassProperties.cpp
+- implementation: Physics/src/MassProperties.cpp
 - prototype: void __cdecl NxComputeSphereInertiaTensor(NxVec3 * diagInertia, NxReal mass, NxReal radius, uchar hollow)
 - calling convention: __cdecl, stack purge: 0
 - callers: none
@@ -5827,8 +5827,8 @@ NxComputeSphereInertiaTensor(NxVec3 *diagInertia,NxReal mass,NxReal radius,uchar
 ## phys_fn_000827 (0x0001bcc0, 50 B, reconstructed)
 
 - ambiguous: yes
-- source: pose copy with tail (0x1bcc0, ret 0xc)
-- implementation: None
+- source: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/ObjectModel.cpp
 - prototype: undefined __thiscall FUN_1001bcc0(undefined4 * param_1, undefined4 * param_2, undefined4 param_3)
 - calling convention: __thiscall, stack purge: 12
 - callers: phys_fn_001397 (0x00028e10)
@@ -5865,8 +5865,8 @@ void __thiscall FUN_1001bcc0(void *this,undefined4 *param_1,undefined4 *param_2,
 ## phys_fn_000829 (0x0001bd00, 187 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/ObjectModel.cpp
 - prototype: undefined __thiscall FUN_1001bd00(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000849 (0x0001c8c0)
@@ -6066,8 +6066,8 @@ void __thiscall FUN_1001bdc0(void *this,float *param_1)
 ## phys_fn_000833 (0x0001c040, 1371 B, reconstructed)
 
 - ambiguous: yes
-- source: Physics/src/ObjectModel.cpp (MassFrame::nxMassFrameTranslate)
-- implementation: None
+- source: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/ObjectModel.cpp
 - prototype: undefined __thiscall FUN_1001c040(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000835 (0x0001c5a0), phys_fn_000841 (0x0001c720), phys_fn_000843 (0x0001c750), phys_fn_000849 (0x0001c8c0), phys_fn_000853 (0x0001c980)
@@ -6282,8 +6282,8 @@ void __thiscall FUN_1001c5a0(void *this,float *param_1)
 ## phys_fn_000837 (0x0001c5c0, 101 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/ObjectModel.cpp
 - prototype: undefined __thiscall FUN_1001c5c0(float param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000849 (0x0001c8c0), phys_fn_000851 (0x0001c930), phys_fn_000853 (0x0001c980)
@@ -6317,8 +6317,8 @@ void __thiscall FUN_1001c5c0(void *this,float param_1)
 ## phys_fn_000839 (0x0001c630, 231 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/ObjectModel.cpp
 - prototype: undefined __thiscall FUN_1001c630(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000849 (0x0001c8c0), phys_fn_000851 (0x0001c930), phys_fn_000853 (0x0001c980), phys_fn_001397 (0x00028e10)
@@ -6369,8 +6369,8 @@ void __thiscall FUN_1001c630(void *this,float *param_1)
 ## phys_fn_000841 (0x0001c720, 43 B, reconstructed)
 
 - ambiguous: yes
-- source: negated-offset translate via nxMassFrameTranslate
-- implementation: None
+- source: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/ObjectModel.cpp
 - prototype: undefined __fastcall FUN_1001c720(void * param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000008 (0x000010a0)
@@ -6402,8 +6402,8 @@ void __fastcall FUN_1001c720(void *param_1)
 ## phys_fn_000843 (0x0001c750, 110 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/ObjectModel.cpp
 - prototype: undefined __thiscall FUN_1001c750(float param_1, float * param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_000851 (0x0001c930)
@@ -6449,8 +6449,8 @@ void __thiscall FUN_1001c750(void *this,float param_1,float *param_2)
 ## phys_fn_000845 (0x0001c7c0, 181 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/ObjectModel.cpp
 - prototype: undefined __thiscall FUN_1001c7c0(int param_1, float param_2, float param_3)
 - calling convention: __thiscall, stack purge: 12
 - callers: phys_fn_000853 (0x0001c980)
@@ -6508,8 +6508,8 @@ void __thiscall FUN_1001c7c0(void *this,int param_1,float param_2,float param_3)
 ## phys_fn_000847 (0x0001c880, 53 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/ObjectModel.cpp
 - prototype: undefined __thiscall FUN_1001c880(char param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000008 (0x000010a0)
@@ -7181,8 +7181,8 @@ void __thiscall FUN_1001d0c0(void *this,int param_1,int param_2,char param_3)
 ## phys_fn_000867 (0x0001d260, 103 B, reconstructed)
 
 - ambiguous: yes
-- source: kind-selected accumulator (0x1d260, ret 0xc)
-- implementation: None
+- source: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/ObjectModel.cpp
 - prototype: undefined FUN_1001d260(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_000893 (0x0001efa0)
@@ -10778,8 +10778,8 @@ void __thiscall FUN_100203c0(void *this,float *param_1,float *param_2)
 ## phys_fn_000925 (0x00020440, 13 B, reconstructed)
 
 - ambiguous: yes
-- source: zero-init three dwords (0x20440)
-- implementation: None
+- source: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/ObjectModel.cpp
 - prototype: undefined FUN_10020440(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: none
@@ -10864,8 +10864,8 @@ int __fastcall FUN_10020480(int param_1)
 ## phys_fn_000931 (0x00020490, 70 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/ObjectModel.cpp
 - prototype: undefined __thiscall FUN_10020490(undefined4 * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000945 (0x000207e0), phys_fn_002310 (0x000597c0)
@@ -11119,8 +11119,8 @@ void FUN_10020700(float *param_1)
 ## phys_fn_000943 (0x00020750, 139 B, dynamically_gated)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/NarrowPhase.cpp
+- implementation: Physics/src/NarrowPhase.cpp
 - prototype: undefined __thiscall FUN_10020750(int param_1, int param_2, int param_3, float * param_4)
 - calling convention: __thiscall, stack purge: 16
 - callers: phys_fn_001881 (0x00047e90), phys_fn_001883 (0x00047f20)
@@ -11209,8 +11209,8 @@ void __thiscall FUN_100207e0(void *this,int *param_1)
 ## phys_fn_000947 (0x00020850, 39 B, reconstructed)
 
 - ambiguous: yes
-- source: BOX slot-4 mass wrapper (0x20850, ret 0xc)
-- implementation: None
+- source: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/ObjectModel.cpp
 - prototype: undefined FUN_10020850(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_000977 (0x00021870)
@@ -11236,11 +11236,11 @@ undefined4 FUN_10020850(void *param_1,float param_2)
 
 ```
 
-## phys_fn_000949 (0x00020880, 663 B, discovered)
+## phys_fn_000949 (0x00020880, 663 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/ObjectModel.cpp
 - prototype: void * __thiscall FUN_10020880(float * param_1, float param_2, undefined4 param_3, byte param_4, undefined4 * param_5)
 - calling convention: __thiscall, stack purge: 20
 - callers: phys_fn_000977 (0x00021870)
@@ -12228,11 +12228,11 @@ void * __thiscall FUN_10021940(void *this,byte param_1)
 
 ```
 
-## phys_fn_000981 (0x00021990, 55 B, reconstructed)
+## phys_fn_000981 (0x00021990, 55 B, discovered)
 
 - ambiguous: yes
-- source: Physics/src/ObjectModel.cpp
-- implementation: Physics/src/ObjectModel.cpp
+- source: None
+- implementation: None
 - prototype: undefined __thiscall FUN_10021990(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000977 (0x00021870)

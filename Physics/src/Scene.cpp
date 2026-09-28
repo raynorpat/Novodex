@@ -107,6 +107,13 @@ void* nxShapePublicVtable(unsigned type);
 void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* body);
 void nxSceneBroadphaseUnregister(NxSceneInternal* scene, void* body);
 static void nxSceneStaticPrunerUnregister(NxSceneInternal* scene, unsigned char* shape);
+// The pruning engine at +0x624 (opcode/IcePruningEngine.cpp) and the shape
+// prunable (ObjectModel.cpp); scene-raycast block Task 3.
+bool nxSceneEngineAddShape(void* engine, void* shape, unsigned type, unsigned section);
+bool nxSceneEngineRemoveShape(void* engine, void* shape);
+void nxSceneEngineDestroyPruners(void* engine);
+void nxSceneEngineSetExternalBuffer(void* engine, unsigned capacity, void* entries);
+void nxShapeFactoryInstallPrunable(void* shape);
 void nxSceneAuxRegisterRecord(NxSceneInternal* scene, void* record);
 void nxSceneAuxUnregisterRecord(NxSceneInternal* scene, void* record);
 unsigned nxSceneTakeShapeId(NxSceneInternal* scene);
@@ -864,7 +871,7 @@ void nxSceneAuxUnregisterRecord(NxSceneInternal* scene, void* recordPointer)
 // dynamic. Its process-wide header owns four initial buffers.
 static unsigned char* gNxOpcodePool = 0;
 
-static bool nxOpcodeEnsurePool()
+bool nxOpcodeEnsurePool()
 	{
 	if(gNxOpcodePool) return true;
 	gNxOpcodePool = static_cast<unsigned char*>(nxGetSdkAllocator()->malloc(
@@ -943,15 +950,36 @@ static void nxSceneUntrackShape(NxSceneInternal* scene, unsigned char* shape)
 			}
 	}
 
-static void nxSceneInvalidateBroadphaseEntry(unsigned char* table,
-	unsigned char* entries, unsigned index, unsigned char* shape)
+// Registers a body's shape with the engine's pruner of the given type (0
+// static, 2 dynamic): a single shape in section 1; a compound's children in
+// section 0 and its group shape in section 2 (the pinned DLL's pool layout,
+// scene-raycast block Task 3).
+static void nxSceneEngineAddRoot(NxSceneInternal* scene, unsigned char* shape, unsigned type)
 	{
-	static const unsigned emptyBounds[6] = {
-		0x7f7fffffu, 0x7f7fffffu, 0x7f7fffffu,
-		0xff7fffffu, 0xff7fffffu, 0xff7fffffu };
-	memcpy(entries + index * 0x18, emptyBounds, sizeof(emptyBounds));
-	*reinterpret_cast<unsigned char*>(shape + 0xcf) = 1;
-	++*reinterpret_cast<unsigned*>(table + 0x38);
+	void* engine = &scene->at<unsigned char>(0x624);
+	if(*reinterpret_cast<unsigned*>(shape + 0xd0) == 5u)
+		{
+		void** first = *reinterpret_cast<void***>(shape + 0xe0);
+		void** last = *reinterpret_cast<void***>(shape + 0xe4);
+		for(void** child = first; child && child != last; ++child)
+			nxSceneEngineAddShape(engine, *child, type, 0);
+		nxSceneEngineAddShape(engine, shape, type, 2);
+		}
+	else
+		nxSceneEngineAddShape(engine, shape, type, 1);
+	}
+
+static void nxSceneEngineRemoveRoot(NxSceneInternal* scene, unsigned char* shape)
+	{
+	void* engine = &scene->at<unsigned char>(0x624);
+	if(*reinterpret_cast<unsigned*>(shape + 0xd0) == 5u)
+		{
+		void** first = *reinterpret_cast<void***>(shape + 0xe0);
+		void** last = *reinterpret_cast<void***>(shape + 0xe4);
+		for(void** child = first; child && child != last; ++child)
+			nxSceneEngineRemoveShape(engine, *child);
+		}
+	nxSceneEngineRemoveShape(engine, shape);
 	}
 
 void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* bodyPointer)
@@ -960,73 +988,7 @@ void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* bodyPointer)
 	if(!body || !*reinterpret_cast<void**>(body + 8)) return;
 	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
 	if(!shape) return;
-	const bool group = *reinterpret_cast<unsigned*>(shape + 0xd0) == 5u;
-	const unsigned childCount = group ? static_cast<unsigned>(
-		*reinterpret_cast<void***>(shape + 0xe4) -
-		*reinterpret_cast<void***>(shape + 0xe0)) : 0;
-	const unsigned added = group ? childCount + 1 : 1;
-	unsigned char*& table = scene->at<unsigned char*>(0x648);
-	if(!table)
-		{
-		table = static_cast<unsigned char*>(
-			nxGetSdkAllocator()->malloc(0x3c, NX_MEMORY_PERSISTENT));
-		if(!table) return;
-		memset(table, 0, 0x3c);
-		if(!nxOpcodeEnsurePool()) return;
-		}
-	unsigned short& count = *reinterpret_cast<unsigned short*>(table + 0x10);
-	unsigned short& capacity = *reinterpret_cast<unsigned short*>(table + 0x12);
-	if(static_cast<unsigned>(count) + added > capacity)
-		{
-		unsigned next = capacity ? capacity * 2u : 4u;
-		while(next < static_cast<unsigned>(count) + added) next *= 2u;
-		unsigned char* entries = static_cast<unsigned char*>(
-			nxGetSdkAllocator()->malloc(next * 0x18, NX_MEMORY_PERSISTENT));
-		void** references = static_cast<void**>(
-			nxGetSdkAllocator()->malloc(next * sizeof(void*), NX_MEMORY_PERSISTENT));
-		if(!entries || !references)
-			{
-			if(entries) nxGetSdkAllocator()->free(entries);
-			if(references) nxGetSdkAllocator()->free(references);
-			return;
-			}
-		memset(entries, 0, next * 0x18);
-		memset(references, 0, next * sizeof(void*));
-		unsigned char* oldEntries = *reinterpret_cast<unsigned char**>(table + 0x14);
-		void** oldReferences = *reinterpret_cast<void***>(table + 0x18);
-		if(oldEntries) memcpy(entries, oldEntries, count * 0x18);
-		if(oldReferences) memcpy(references, oldReferences, count * sizeof(void*));
-		if(oldEntries) nxGetSdkAllocator()->free(oldEntries);
-		if(oldReferences) nxGetSdkAllocator()->free(oldReferences);
-		*reinterpret_cast<unsigned char**>(table + 0x14) = entries;
-		*reinterpret_cast<void***>(table + 0x18) = references;
-		capacity = static_cast<unsigned short>(next);
-		}
-	void** references = *reinterpret_cast<void***>(table + 0x18);
-	unsigned char* entries = *reinterpret_cast<unsigned char**>(table + 0x14);
-	if(group)
-		{
-		memmove(references + childCount, references, count * sizeof(void*));
-		memmove(entries + childCount * 0x18, entries, count * 0x18);
-		}
-	for(unsigned i = 0; i < childCount; ++i)
-		{
-		unsigned char* object = static_cast<unsigned char*>(
-			(*reinterpret_cast<void***>(shape + 0xe0))[i]);
-		references[i] = object + 0xa4;
-		*reinterpret_cast<void**>(object + 0xc4) = table;
-		*reinterpret_cast<unsigned short*>(object + 0xcc) =
-			static_cast<unsigned short>(i);
-		*reinterpret_cast<unsigned char*>(object + 0xce) = 2;
-		nxSceneInvalidateBroadphaseEntry(table, entries, i, object);
-		}
-	references[count + childCount] = shape + 0xa4;
-	*reinterpret_cast<void**>(shape + 0xc4) = table;
-	*reinterpret_cast<unsigned short*>(shape + 0xcc) =
-		static_cast<unsigned short>(count + childCount);
-	*reinterpret_cast<unsigned char*>(shape + 0xce) = 2;
-	nxSceneInvalidateBroadphaseEntry(table, entries, count + childCount, shape);
-	count = static_cast<unsigned short>(count + added);
+	nxSceneEngineAddRoot(scene, shape, 2);
 	nxSceneTrackShape(scene, shape);
 	}
 
@@ -1040,27 +1002,12 @@ void nxSceneBroadphaseUnregister(NxSceneInternal* scene, void* bodyPointer)
 			*reinterpret_cast<unsigned char**>(body + 0x10));
 		return;
 		}
-	unsigned char* table = scene->at<unsigned char*>(0x648);
-	if(!table) return;
 	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
 	if(!shape) return;
 	nxSceneUntrackShape(scene, shape);
-	const bool group = *reinterpret_cast<unsigned*>(shape + 0xd0) == 5u;
-	const unsigned childCount = group ? static_cast<unsigned>(
-		*reinterpret_cast<void***>(shape + 0xe4) -
-		*reinterpret_cast<void***>(shape + 0xe0)) : 0;
-	const unsigned removed = group ? childCount + 1 : 1;
-	unsigned short& count = *reinterpret_cast<unsigned short*>(table + 0x10);
-	if(group && count >= removed)
-		{
-		void** references = *reinterpret_cast<void***>(table + 0x18);
-		unsigned char* entries = *reinterpret_cast<unsigned char**>(table + 0x14);
-		const unsigned remaining = count - removed;
-		memmove(references, references + childCount, remaining * sizeof(void*));
-		memmove(entries, entries + childCount * 0x18, remaining * 0x18);
-		}
-	count = static_cast<unsigned short>(count >= removed ? count - removed : 0);
+	nxSceneEngineRemoveRoot(scene, shape);
 	}
+
 
 
 
@@ -1861,26 +1808,9 @@ static void nxSceneDelete(void* self, int flags)
 			entries = 0;
 			}
 		}
-	const unsigned tableOffsets[] = {0x640, 0x648};
-	for(unsigned offset : tableOffsets)
-		{
-		void*& table = *reinterpret_cast<void**>(
-			static_cast<unsigned char*>(self) + offset);
-		if(!table) continue;
-		unsigned char* container = static_cast<unsigned char*>(table);
-		const unsigned childOffsets[] = {0x14, 0x18};
-		for(unsigned childOffset : childOffsets)
-			{
-			void*& child = *reinterpret_cast<void**>(container + childOffset);
-			if(child)
-				{
-				nxGetSdkAllocator()->free(child);
-				child = 0;
-				}
-			}
-		nxGetSdkAllocator()->free(table);
-		table = 0;
-		}
+	// The pruning engine's pruners: each one's tree (static), its world boxes
+	// and objects, then its storage (opcode/IcePruner.cpp).
+	nxSceneEngineDestroyPruners(static_cast<unsigned char*>(self) + 0x624);
 	const unsigned objectArrayOffsets[] = {0x56c, 0x55c};
 	for(unsigned offset : objectArrayOffsets)
 		{
@@ -1942,9 +1872,15 @@ void nxSceneUpdateActorCount(void* scene, unsigned count)
 		*reinterpret_cast<void**>(bytes + offset) = next;
 		}
 	*reinterpret_cast<unsigned*>(bytes + 0x14) = capacity;
-	// The three embedded broadphase caches at +0x50, +0x500, and +0x510,
-	// and the pruning collection at +0x624, also receive this capacity in the
-	// oracle. Their complete update routines remain separate reconstruction work.
+	// 0x00010137-0x0001017e: the three embedded containers at +0x50, +0x500
+	// (the scene queries' result collector) and +0x510 borrow the +0x0c buffer
+	// (phys_fn_004847), and the pruning engine at +0x624 hands it to every
+	// pruner through slot 4 (phys_fn_004861); scene-raycast block Task 3.
+	NxU32* shared = *reinterpret_cast<NxU32**>(bytes + 0xc);
+	reinterpret_cast<SdkContainer*>(bytes + 0x50)->setExternalBuffer(capacity, shared);
+	reinterpret_cast<SdkContainer*>(bytes + 0x500)->setExternalBuffer(capacity, shared);
+	reinterpret_cast<SdkContainer*>(bytes + 0x510)->setExternalBuffer(capacity, shared);
+	nxSceneEngineSetExternalBuffer(bytes + 0x624, capacity, shared);
 	}
 
 void nxSceneNotifyActorCreated(void* hook)
@@ -2110,83 +2046,25 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	return 0;
 	}
 
-// OPCODE's first static pruner is a 0x90-byte object. Its constructor also
-// initializes a process-wide 0x1c-byte pool on first use. The first insertion
-// gives it four 0x18-byte entries and four pointer references. These allocations
-// occur in Actor::loadFromDescInternal, before Scene::createActor grows its
-// public actor list.
+// A static actor's shape goes to the engine's static pruner (type 0), created
+// on the first registration; its pool grows from four entries (0x60 bytes of
+// boxes, 0x10 of object pointers) by doubling. These allocations occur in
+// Actor::loadFromDescInternal, before Scene::createActor grows its public actor
+// list.
 static void nxSceneStaticPrunerRegister(NxSceneInternal* scene, unsigned char* shape)
 	{
 	if(!scene || !shape) return;
-	unsigned char*& manager = scene->at<unsigned char*>(0x640);
-	if(!manager)
-		{
-		manager = static_cast<unsigned char*>(nxGetSdkAllocator()->malloc(
-			0x90, NX_MEMORY_PERSISTENT));
-		if(!manager) return;
-		memset(manager, 0, 0x90);
-		if(!nxOpcodeEnsurePool()) return;
-		void* entries = nxGetSdkAllocator()->malloc(0x60, NX_MEMORY_PERSISTENT);
-		void* references = nxGetSdkAllocator()->malloc(0x10, NX_MEMORY_PERSISTENT);
-		if(!entries || !references) return;
-		memset(entries, 0, 0x60);
-		memset(references, 0, 0x10);
-		*reinterpret_cast<void**>(manager + 0x14) = entries;
-		*reinterpret_cast<void**>(manager + 0x18) = references;
-		*reinterpret_cast<unsigned short*>(manager + 0x12) = 4;
-		for(unsigned i = 0; i < 3; ++i)
-			{
-			*reinterpret_cast<unsigned*>(manager + 0x1c + i * 4) = 0x7f7fffffu;
-			*reinterpret_cast<unsigned*>(manager + 0x28 + i * 4) = 0xff7fffffu;
-			}
-		*reinterpret_cast<unsigned*>(manager + 0x4c) = 0xbf800000u;
-		*reinterpret_cast<unsigned*>(manager + 0x68) = 0x3f8ccccdu;
-		*reinterpret_cast<unsigned*>(manager + 0x8c) = 0x3f8ccccdu;
-		*reinterpret_cast<void**>(manager + 0x50) = manager + 0x40;
-		}
-	unsigned short& count = *reinterpret_cast<unsigned short*>(manager + 0x10);
-	unsigned short& capacity = *reinterpret_cast<unsigned short*>(manager + 0x12);
-	if(count >= capacity) return;
-	unsigned char* entries = *reinterpret_cast<unsigned char**>(manager + 0x14);
-	void** references = *reinterpret_cast<void***>(manager + 0x18);
-	memset(entries + count * 0x18, 0, 0x18);
-	references[count] = shape + 0xa4;
-	*reinterpret_cast<unsigned short*>(shape + 0xcc) = count;
-	*reinterpret_cast<unsigned char*>(shape + 0xce) = 0;
-	*reinterpret_cast<void**>(shape + 0xc4) = manager;
-	++count;
-	*reinterpret_cast<unsigned*>(manager + 8) = count;
-	++*reinterpret_cast<unsigned*>(manager + 0x38);
+	nxSceneEngineAddRoot(scene, shape, 0);
 	nxSceneTrackShape(scene, shape);
-	nxSceneUpdateActorCount(scene, count);
-	*reinterpret_cast<void**>(manager + 0x48) = scene->at<void*>(0xc);
-	*reinterpret_cast<unsigned*>(manager + 0x40) = scene->at<unsigned>(4);
+	unsigned char* pruner = scene->at<unsigned char*>(0x640);
+	nxSceneUpdateActorCount(scene, pruner ? *reinterpret_cast<unsigned short*>(pruner + 0x10) : 0);
 	}
 
 static void nxSceneStaticPrunerUnregister(NxSceneInternal* scene, unsigned char* shape)
 	{
 	nxSceneUntrackShape(scene, shape);
-	unsigned char* manager = scene->at<unsigned char*>(0x640);
-	if(!manager || !shape) return;
-	unsigned short& count = *reinterpret_cast<unsigned short*>(manager + 0x10);
-	if(!count) return;
-	const unsigned index = *reinterpret_cast<unsigned short*>(shape + 0xcc);
-	if(index >= count) return;
-	void** references = *reinterpret_cast<void***>(manager + 0x18);
-	unsigned char* entries = *reinterpret_cast<unsigned char**>(manager + 0x14);
-	const unsigned last = count - 1;
-	if(index != last)
-		{
-		references[index] = references[last];
-		memcpy(entries + index * 0x18, entries + last * 0x18, 0x18);
-		unsigned char* moved = static_cast<unsigned char*>(references[index]) - 0xa4;
-		*reinterpret_cast<unsigned short*>(moved + 0xcc) =
-			static_cast<unsigned short>(index);
-		}
-	--count;
-	*reinterpret_cast<unsigned*>(manager + 8) = count;
-	++*reinterpret_cast<unsigned*>(manager + 0x38);
-	*reinterpret_cast<unsigned short*>(shape + 0xcc) = 0xffffu;
+	if(!shape) return;
+	nxSceneEngineRemoveRoot(scene, shape);
 	}
 
 void nxSceneAddActorObject(void* scene, void* object, void* actorPointer)
@@ -2268,6 +2146,7 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 	if(!shape)
 		return 0;
 	memset(shape, 0, 0x228);
+	nxShapeFactoryInstallPrunable(shape);
 	const NxShapeDesc* descriptor = static_cast<const NxShapeDesc*>(shapeDesc);
 	if(descriptor)
 		{
@@ -2347,6 +2226,7 @@ void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsi
 	if(!group)
 		return 0;
 	memset(group, 0, 0x110);
+	nxShapeFactoryInstallPrunable(group);
 	*reinterpret_cast<unsigned*>(group + 0xd0) = 5;
 	// Like the oracle, the group retains its 0x50-byte outer body at +4.
 	// Its owned children are reached through the two arrays near the end.
@@ -2453,6 +2333,7 @@ void* nxActorAppendShape(void* actor, const NxShapeDesc* descriptor)
 		return 0;
 		}
 	memset(group, 0, 0x110);
+	nxShapeFactoryInstallPrunable(group);
 	*reinterpret_cast<void**>(group + 4) = body;
 	*reinterpret_cast<unsigned*>(group + 0xd0) = 5;
 	*reinterpret_cast<unsigned*>(group + 0xd4) = nxSceneTakeShapeId(scene);
@@ -2469,6 +2350,17 @@ void* nxActorAppendShape(void* actor, const NxShapeDesc* descriptor)
 	*reinterpret_cast<void***>(group + 0xf4) = helpers + 2;
 	*reinterpret_cast<void***>(group + 0xf8) = helpers + 2;
 	*reinterpret_cast<void**>(body + 0x10) = group;
+	// The pruning pools, as the pinned DLL leaves them (scene-raycast block
+	// Task 3): the original shape leaves its section 1 slot and returns in
+	// section 0 with the new shape, and the group joins section 2, in the
+	// actor's pruner (static 0, dynamic 2). Releasing the added shape later
+	// leaves its pool entry in place, as the pinned DLL does.
+	void* engine = &scene->at<unsigned char>(0x624);
+	const unsigned type = *reinterpret_cast<void**>(body + 8) ? 2u : 0u;
+	nxSceneEngineRemoveShape(engine, original);
+	nxSceneEngineAddShape(engine, original, type, 0);
+	nxSceneEngineAddShape(engine, child, type, 0);
+	nxSceneEngineAddShape(engine, group, type, 2);
 	return helpers[1];
 	}
 
