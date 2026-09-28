@@ -363,8 +363,10 @@ cited 9dadfcea... (91 rows) or 8313db1b... (42 rows) was re-pinned:
 - **evidence/effector-and-coredump-trace-effector.txt.** 000722 goes 4 -> 12 and 000760 goes
   4 -> 16, because each actor release now runs 000632 and 000776. The releaseActor helper is inlined
   into the scene destructor.
-- **The core-dump trace (0093a945...).** Not re-recorded: core/SceneDump.cpp and its rows are
-  unchanged by the merge.
+- **evidence/effector-and-coredump-trace-coredump.txt.** Re-recorded by the final review on
+  2f9815a1... (it had pinned 0093a945..., from before main's scene C). The first seven coreDump
+  calls have the same per-call counts, and call 1 has the same HIT sequence. Calls 8 and 9
+  (scene C) are new. Its 29 dynamic proofs cite the new totals and 374/374 coverage lines.
 
 Verification, 2026-09-28, on 4ce9627's product source:
 
