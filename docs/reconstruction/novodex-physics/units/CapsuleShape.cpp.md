@@ -127,11 +127,11 @@ void FUN_10021b40(int param_1)
 
 ```
 
-## phys_fn_000993 (0x00021b70, 108 B, discovered)
+## phys_fn_000993 (0x00021b70, 108 B, reconstructed)
 
 - ambiguous: no
-- source: Physics/src/CapsuleShape.cpp
-- implementation: None
+- source: Physics/src/NpActor.cpp
+- implementation: Physics/src/NpActor.cpp
 - prototype: undefined __thiscall FUN_10021b70(float param_1, float param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_001113 (0x00023b30)

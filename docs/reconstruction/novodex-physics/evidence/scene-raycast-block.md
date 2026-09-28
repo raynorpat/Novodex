@@ -26,6 +26,9 @@ The contract is `units/scene-raycast-contract.md`. Each task appends one row to 
 | 4 (box hull, integration) | 2026-09-28T14:25:59 | 2026-09-28T14:41:22 | 5 | 2670 | Cherry-picked 2186f38 and 79069b7 onto f65b65c (tests/PhysicsShapeVtableTests.cpp tail merged: the shape blocks kept, the box hull block and line added after them). Review against the listing: 000973 in full, 000959's slot-10 arms in full, 000981 and 000983 in full: faithful, no fix needed; Scene.cpp's change is the factory's box arm only; the NpActor.cpp edit is this block's handle helper and 000983's definition; 000923 inlined in 000973 (recorded, left discovered); the factory/slot-0 allocator pairing note still accurate and not live. 9 oracle-sourced lines registered (ShapeVtable 1, SceneRaycast 8; floors Phase 5 1045 -> 1046, Phase 7 483 -> 491). cdb traces of both sides (evidence/scene-raycast-trace-task4-hull.txt, candidate sha256 31c22a97dc248903...): 000973 112/112, 000981 105/105, 000983 7/7, 000957 216/216, 000959 432/432 on the staged pairs, ordered sequences identical on every target; ShapeVtable and ObjectLayout equal. Promoted 000973, 000957, 000959, 000981, 000983 (dynamic; 5 rows, 2,670 B). Ledgers phase 2 (1), phase 3 (1), phase 5 (3) to reconstructed_not_falsified. Contract: 000983's candidate name corrected to nxBoxSetDimensions. Verification: build; gates 2, 3, 4, 6, 7 pass; Phase 5 red only on its vtables marker (batch3268 failures=3, candidate_fold=4492c8c1, oracle_digest=ed1294b6 unchanged; 13 staged targets stdout_delta=0; coverage 1046/1046); validator unexplained=0; 753 tool tests; stable-ID check (5 new lines, 0 malformed, 0 duplicates). |
 | 4 (visualisation, source) | 2026-09-28T12:00:00 | 2026-09-28T13:27:00 | 7 | 3583 | Writer, branch claude/sr-t4-vis 914f6b0 (from bb2e485; about 12:00-12:31) and the Foundation follow-up claude/sr-t4-vis2 697a25b (about 13:15-13:27); times as given in the hand-off. New SceneVisualize.cpp/.h: 000020, 000766, 000869, 000907 and the draw-nothing placeholders for 001978, 000638, 000581 and 003639; 000344 (NpScene.cpp), 000657 and 000579 (Scene.cpp); nxSceneDelete releases the Scene's debug renderable; draft NxPhysicsSceneVisualizeTests. Foundation: addArrow, addBasis and NxComputeBoxPoints to the oracle Foundation's x87 words (77 lines off by 1 ulp before). Notes: .superpowers/sdd/sr/task-4-vis-notes.md. |
 | 4 (visualisation, integration) | 2026-09-28T14:46:27 | 2026-09-28T15:20:00 | 8 | 3687 | Cherry-picked 914f6b0 and 697a25b onto 4c74429 (CMakeLists.txt source lists merged: SceneVisualize.cpp beside BodyCreation.cpp and StepOnlyRows.cpp). Review against the listing: 000344, 000657 and 000020 in full, 000766 over 0x179a0-0x17d7b and 0x17ea6-0x17efe; addArrow spot-checked against the oracle NxFoundation disassembly: faithful. Fixes: 000869/000907 moved onto ContactPairManager.h's NxActorPair (the stream container at +0x38) and NxPairNode; 000579 noinline (inlined, trace 11/0); 000945 reads NX_VISUALIZE_COLLISION_SHAPES from the live parameter array instead of a probe-bound pointer (ObjectLayout/ShapeVtable harnesses supply nxSdkParameterTable; ObjectLayout's slot-3 contract binds it to the oracle's array); a joint_groups stage. NxPhysicsSceneVisualizeTests registered on Phase 7 (185 oracle-sourced lines, floor 491 -> 676). cdb traces of both sides over 24 staged targets (evidence/scene-raycast-trace-task4-vis.txt, candidate NxPhysics 113dbcfb440b437d..., NxFoundation bc5c9248190bf4c4...): 000344 14/14, 000657 14/14, 000579 11/11, 000020 77/77, 000766 55/55, Foundation labels equal, sequences identical; 000945 65/65 on ObjectLayout. Promoted 000344, 000657, 000579, 000020, 000766 (dynamic), 000945 (dynamic_proof from the harness drive, staged 0/0; counted dynamic in the Task 4 totals), 000869, 000907 (static, step-only): 8 rows, 3,687 B (1,499 B of them outside the block's units). Ledgers phase 7 (7) and phase 5 (1). Foundation change recorded in phase6-joints.md 18e. Verification: build; gates 2, 3, 4, 6, 7 pass; Phase 5 red only on its vtables marker (batch3268 failures=3, candidate_fold=4492c8c1, oracle_digest=ed1294b6 unchanged; 13 staged targets stdout_delta=0; coverage 1046/1046); validator unexplained=0; 753 tool tests; stable-ID check (8 new lines, 0 malformed, 0 duplicates). |
+| 4 (review minors) | 2026-09-28T15:30:00 | 2026-09-28T15:45:41 | 0 | 0 | Commit 0344fde, records only. Task 4's in-block evidence counts corrected to 23 dynamic (17,917 B; 000945 and 000951 carry harness-drive dynamic proofs) and 54 static (19,273 B); 26 contact-pair manager static proofs no longer repeat "reachable only from the simulation step"; the contract's new "Task 4 totals" lists the static rows with a non-step path (000913/000881, 000887/000889/000903/000915, 000710, 000772/000774, 000784). Validator unexplained=0. |
+| 5 (merge main) | 2026-09-28T15:46:00 | 2026-09-28T16:05:00 | 0 | 0 | Merge commit cd3db01 (main acc17d1: qhull gap, effector/core dump). 14 conflicted files resolved as recorded in "## Merge notes": one Observable class; main's 0x100 notify kept before DynamicBody::destruct, its recycle and dtor dropped; 000713 claimed once (main's Row000713Fixture, now called by 000776 and the island rows); 000791 this block's body; registrations unioned, floors 4=188, 5=1046, 6=856, 7=1129; inventory, ledgers and Ghidra supplement unioned per row. |
+| 5 (results) | 2026-09-28T16:05:00 | 2026-09-28T16:35:00 | 0 | 0 | Fresh configure and clean build; gates 2, 3, 4, 6, 7 pass and Phase 5 red only on its vtables marker (every staged target of both sides stdout_delta=0); validator unexplained=0; 755 tool tests; vendored sources pass; headers pass; stable IDs 599 lines, 0 duplicates. Post-merge cdb trace of the block's dynamic-proof rows over 20 staged targets (evidence/scene-raycast-trace-merge.txt, candidate sha256 34a6c8baefc2caf7...): equal to the oracle except the recorded NpActor-unit 000746/000713 differences; proofs amended. work_units.json and the three bundles regenerated. Block totals: 141 reconstructed, 14 dynamically_gated, 1 discovered (000923); 90 rows (41,814 B) moved, 36 dynamic and 54 static. |
 
 ## Audit summary (Task 1, revision 2)
 
@@ -96,3 +99,220 @@ The contract gives the recommended action for each.
   actor creation), 000973 (every box creation) and the mass-frame negated translate 000841.
 - The oracle also reaches the box mass chain 000947, 000849, 000829, 000831, 000833, 000839 and 000847 on
   every dynamic box creation. The candidate never calls it: `nxActorComputeMass` computes the mass inline.
+
+## Results (Task 5)
+
+**Block totals.** The three units hold 156 code rows (50,060 B). Before Task 1: 51 reconstructed, 14
+dynamically_gated, 91 discovered. Now (work_units.json regenerated after the main merge):
+
+| Unit | reconstructed | dynamically_gated | discovered |
+|---|---:|---:|---:|
+| SceneRaycast.cpp | 10 (2,082) | 0 | 0 |
+| gap:SceneRaycast.cpp..CapsuleShape.cpp | 126 (46,158) | 14 (1,316) | 1 (120) |
+| CapsuleShape.cpp | 5 (384) | 0 | 0 |
+| total | 141 (48,624) | 14 (1,316) | 1 (120) |
+
+**Rows and bytes moved** from discovered to `reconstructed`: 90 rows, 41,814 B, by sub-area (the contract's
+sub-areas) and evidence type. "Dynamic" means the row carries a `dynamic_proof` (a committed cdb trace);
+"static" means a `static_proof` (listing walk) only.
+
+| Sub-area | dynamic | static | total |
+|---|---:|---:|---:|
+| scene raycast | 10 (2,082) | 0 | 10 (2,082) |
+| body-actor math | 13 (14,606) | 7 (2,972) | 20 (17,578) |
+| island | 3 (291) | 10 (1,848) | 13 (2,139) |
+| CCD | 0 | 3 (664) | 3 (664) |
+| shape | 9 (4,185) | 0 | 9 (4,185) |
+| contact-pair manager | 0 | 32 (13,082) | 32 (13,082) |
+| visualisation | 1 (1,377) | 2 (707) | 3 (2,084) |
+| total | 36 (22,541) | 54 (19,273) | 90 (41,814) |
+
+By task:
+- Task 2 moved 3 rows (1,934 B, dynamic).
+- Task 3 moved 11: the 10 SceneRaycast.cpp rows and 000949 (2,745 B, dynamic).
+- Task 4 moved 76: 22 dynamic (17,862 B) and 54 static (19,273 B). Task 4's 77 promotions include 000981,
+  which was already `reconstructed` before Task 1 (demoted in Task 2, re-promoted in Task 4), so it is not
+  counted as moved.
+
+Two of the dynamic rows, 000945 and 000951, rest on harness drives: no staged target reaches them (0/0). Most
+of the 54 static rows are step-only. The exceptions are listed in the contract's "Task 4 totals": 000913/000881
+(releaseScene), 000887/000889/000903/000915 (the destructors), 000710 (fetchResults), 000772/000774 (CCD) and
+000784 (unwired). Outside the block's units, Task 3 moved 29 rows (5,862 B: the NxScene raycast wrappers, the loop
+helpers, the pruners and the engine add/remove) and Task 4 moved 4 (000344, 000657, 000579, 000020; 1,499 B),
+all dynamic: 33 rows, 7,361 B.
+
+**Fixed in place.** These rows were already `reconstructed` or `dynamically_gated`; their defects were fixed
+against the listing.
+- Task 2: 000713's claim; 000742/000744 re-walked; 000845 (capsule inertia word); 000847; 000937/000939 (x87
+  roots); 000967/000969/000971 (tables); 000975 (ABI); 000977/000979/000987 (allocator, vptrs); 000953/000961.
+- Task 4: 000829, 000833, 000849, 000867, 000873, 000935, 000989 and 000995.
+
+**Defects found, with the commits that fixed them.**
+- 26fdc3c / 5663e7a (audit):
+  - 48 of the 84 implemented or partial rows had a defect cited by oracle address;
+  - the six public raycasts were stubs;
+  - 000845 left a capsule inertia word uninitialised;
+  - 000738, 000841 and 000925 were recorded `reconstructed` with no product function.
+- c8f6fd5 (Task 2):
+  - CRT sqrt where the oracle uses fsqrt (000756, 000768, 000801);
+  - the SDK allocator where the oracle uses the Foundation allocator, for the shape collision objects;
+  - 000979's free and vptr restores;
+  - 000975's ABI;
+  - the 24-dword tables.
+- 28f3c5d, bb2e485 (Task 3):
+  - 000949's precision and normal sign;
+  - the vendored segment stab 004919 rounded its cross terms to float, so every finite-distance query missed
+    the static shapes;
+  - 001315 bumped the pruner stamp instead of calling slot 3;
+  - IcePruner.cpp's COMDAT splitting value rounded under SSE2 (the file is now /arch:IA32).
+- 6bd2529 (body creation):
+  - the record was not an Observable;
+  - 1/mass was guarded;
+  - the tensor test and the _fpclass rejection were wrong;
+  - the sleep and angular defaults were hard-coded;
+  - no kinematic block was created at creation, and the block leaked at release;
+  - there was no island seed at creation and no teardown at release;
+  - the aux registration happened in the wrong place.
+- 052f1c0 (setters): CRT sqrt in 000789.
+- f65b65c (shape): 000995, 000989, 000935, 000829, 000833 (both paths), 000849, 000867 and 000873 (growth).
+- 16f846c (visualisation):
+  - 000945 read its guard through a test-bound pointer, so the product never drew;
+  - NxFoundation's addArrow, addBasis and NxComputeBoxPoints were 1 ulp off in 77 lines.
+- 0344fde (Task 4 review): the evidence counts (now 23 dynamic / 54 static) and 26 doubled phrases in static
+  proofs.
+
+**Rows left, and why.**
+- 000923 (120 B) stays discovered. It is the vendored IceAABB::SetCenterExtents, inlined into 000973 in both
+  the image and the candidate, so it belongs to the vendored method (vendored_match), not this block.
+- 14 dynamically_gated rows keep their state, because no row is promoted above `reconstructed`: the 12
+  mass-property exports 000803-000825, 000873 (fixed in place) and 000943.
+
+**Placeholder callees outside the block.** These are unwritten named no-op stand-ins with no stable-ID lines:
+- 004172 (the island rebuild);
+- 002348, 002354, 002356, 004153, 004155 and 004157 (the contact-pair manager's open callees), and the
+  pair-flags hash .data 0x10123c28;
+- 001978, 000638, 000581 (+000583) and 003639 (the visualisation's collision and fluid draws; they draw
+  nothing).
+
+**Unclaimed helpers written from the listing:**
+- 001309 (ShapeBase::nxShapeGlobalPose);
+- 001730/001732 (nxSegmentSlabs);
+- since the merge, ObjectModel.cpp's cdecl nxBodyRecordFixRoot, a copy of 000713 kept for 000744's harnesses.
+
+**Rate.** The block ran from 2026-09-28T08:03:47 to 16:35, about 8.5 h for all five tasks and the merge.
+- Inside the units: 90 rows and 41,814 B moved, about 10.6 rows/h and 4,900 B/h.
+- Including the 33 rows (7,361 B) moved outside the units: 123 rows and 49,175 B, about 14.5 rows/h and
+  5,800 B/h.
+
+**Verification** (the merged tree at cd3db01, plus the Task 5 records).
+- `cmake -S . -B build -A Win32 --fresh`, then a clean Release build (`--clean-first`): 0 errors.
+- Public headers: `public_headers=pass` for both the oracle and the repository Physics/include (the gates'
+  check).
+- Tool tests: 755 OK.
+- Validator: unexplained=0.
+- verify_vendored_sources.py: `vendored status=pass failures=0` (148 upstream files checked, 36 locally
+  modified).
+- Gates:
+  - phases 2, 3, 4, 6 and 7: `status=pass`, each floor met exactly (3: 103, 4: 188, 6: 856, 7: 1129);
+  - Phase 5: RED only on `candidate CANDIDATE-MISSING family=vtables`. `batch3268 candidate failures=3
+    provisional=1`, `layout candidate mismatches=1 ... candidate_fold=4492c8c1` and `shape vtable
+    oracle_digest=ed1294b6 cases=626 failures=0` are unchanged; coverage 1046/1046.
+- Staged pairs, all `stdout_delta=0`:
+  - Phase 5: all 13 (BodyCreation, DynamicSetter and the other actor targets);
+  - Phase 6: all six (JointStagedPair, FoundationTangent, JointAllocator, JointSlot, and main's Effector and
+    CoreDump);
+  - Phase 7: all seven (the three joint targets, SceneRaycast, SceneVisualize, Effector and CoreDump).
+- Other targets:
+  - main's Phase 4 NxPhysicsThirdPartyTests (qhull) and NxPhysicsAssetTests meet their coverage (188/188);
+  - ShapeVtable's box hull, boxsweep and shape digests are unchanged.
+- Stable IDs: 599 claim lines across Physics/src and Foundation/src, 599 distinct IDs, 0 duplicates. Every RVA
+  and size equals the inventory's.
+- Post-merge trace (evidence/scene-raycast-trace-merge.txt, candidate sha256 34a6c8baefc2caf7...):
+  - every dynamic-proof row of this block is hit exactly as often as the oracle row on all 20 staged targets,
+    and the ordered sequences are identical;
+  - the only exceptions are the two NpActor-unit differences already recorded: 000746 on ActorMomentum 17/3
+    and 000713 on ActorDynamicSetter 4/0;
+  - the dynamic proofs now cite this trace in addition to their pre-merge ones.
+
+## Merge notes
+
+`git merge main` (main acc17d1: the qhull-gap and effector/core-dump sessions), merge commit cd3db01.
+Conflicts and their resolutions:
+
+- **Observable.** Both sides derived the record's +0 object from NxFoundation::Observable, sizeof 0x14 on both.
+  - One class is kept: BodyCreation.cpp's DynamicBodyObservable, which now carries main's `static_assert(sizeof
+    == 0x14)`.
+  - Main's NxBodyRecordObservable and its `new(record)` in the stand-in body build are removed, because 000797
+    (DynamicBody::construct) builds the record.
+  - Main's whole nxActorComputeMass body build was therefore dropped in favour of this block's. Its content is
+    already in 000797/000795: the 000760/000722 order, +0x204 = 0 and the live SDK thresholds.
+- **releaseActor.**
+  - Main's `notifyObservers(0x100)` (000030's) is kept, immediately before `DynamicBody::destruct()`.
+  - Main's nxSceneRecycleRecordId and ~NxBodyRecordObservable calls are dropped. 000776 does both, so keeping
+    them would recycle the id twice and destroy the Observable twice.
+  - Main's shape-id recycle before the shape free, and the Scene destructor's releaseEffectors, merged cleanly.
+- **000713.**
+  - The one claim is main's Row000713Fixture::row000713 (core/JointSupport.cpp, thiscall; it stores the root,
+    then reloads +0x1e8), with main's stable-ID line. This block's `// phys_fn_000713` line in ObjectModel.cpp
+    is removed.
+  - 000776 (BodyCreation.cpp) and the island rows (Island.cpp islandGroupCompress) now call row000713
+    directly.
+  - ObjectModel.cpp's cdecl nxBodyRecordFixRoot stays as an unclaimed helper for 000744.
+    NxPhysicsObjectLayoutTests and NxPhysicsShapeVtableTests link ObjectModel.cpp without core/JointSupport.cpp,
+    so a forwarder would not link there.
+  - Inventory: main's record (source JointSupport.cpp, with its effector trace), plus this block's Task 2
+    re-walk appended.
+- **000722.** The bodies were byte-identical. Inventory: this block's record (the 18-target trace), with main's
+  effector trace and notes appended.
+- **000791.** This block's body (JointSupport.cpp) is kept. Main had an NX_ASSERT stub with the same stable-ID
+  line, so one line remains. The JointSupport.cpp header comment no longer calls it a stub.
+- **000795.** This block's `reconstructed` record is kept, with main's open-item note appended (000008 mass
+  from shapes; the trigger-only dynamic refusal).
+- **Headers.**
+  - JointSupport.h: both the 000738 (ours) and 000713 (main's) declarations are kept. The comments for
+    000713/000722/000760/000778 keep this block's `// Row` form (the marker rule).
+  - Scene.h: both member blocks are kept (raycasts and visualisation; effectors and core-dump readers).
+  - PhysicsSDK.h: both accessor pairs are kept. nxSdkParameterTable / nxSdkGroupCollisionMaskTable and main's
+    nxPhysicsSDKParameters / nxPhysicsSDKGroupCollisionMasks return the same two arrays. The object-layout and
+    shape-table harnesses supply nxSdkParameterTable.
+- **CMakeLists.txt.**
+  - The /arch:IA32 list and its reasons are unioned: this block's BodyStep.cpp and Island.cpp,
+    and main's QhullHost.cpp, Quantizer.cpp, SpringAndDamperEffector.cpp and SceneDump.cpp.
+  - Both sides' test executables are kept, and the 0xcd-fill list is unioned.
+  - NxPhysicsThirdPartyTests takes main's sources plus this block's Containers.cpp and IcePruner.cpp.
+- **gate_targets.ps1.**
+  - Registrations are unioned; no line is dropped or edited. Phase 5 adds BodyCreation, phase 6 adds Effector
+    and CoreDump, and phase 7 has SceneRaycast, SceneVisualize, Effector and CoreDump. Both sides' target
+    blocks are kept.
+  - Floors, from the registered counts: 4 = 188 (main), 5 = 1046 (ours), 6 = 856 (main), 7 = 1129 (118 + 12 +
+    146 + 207 + 8 + 185 + 79 + 374).
+  - Python pins: test_gate_targets.py's MINIMUM and test_gate_commands.py's phase 7 list.
+- **inventory.json.** A per-row three-way union. The 328 rows that only main changed were taken from main; the
+  three rows both sides changed (000713, 000722, 000795) were merged as above.
+- **Ledgers.** The phase 2, 4 and 7 closure ledgers are a per-row union (000722 changed identically on both
+  sides), with counts recomputed from the rows:
+  - phase 2: 17 reconstructed_not_falsified;
+  - phase 4: 680 / 255 / 90;
+  - phase 7: 271 / 286.
+
+  Phase 2's reason text lists both sessions' rows.
+- **Ghidra supplement.** The union of both sides' requests: 75 RVAs, the 34 shared ones byte-identical.
+- **Stable IDs.** No ID is claimed twice after the merge (599 lines, 599 IDs).
+
+**Pending collision with the NpActor session.** Branch claude/nifty-meitner-27ac02 (ab2ebbf) independently
+claims these rows as reconstructed:
+- 000782, 000784, 000785, 000787, 000789 and 000791 (NpActor.cpp);
+- 000776 and 000799 (Scene.cpp);
+- 000746 (NpActorDynamicMath.h).
+
+It also has stable-ID lines for 000797 and 000793.
+
+When that branch merges, keep one owner per row:
+- this block's BodyCreation.cpp and Scene.cpp versions, which were walked against the listing and traced on
+  both sides;
+- core/JointSupport.cpp for 000791;
+- NpActor.cpp keeps only the call sites and forwarders. The handover rows are that session's call sites: 000784
+  at 000090/000124/000126, 000785 at 000188/000190, 000742 via 000060 and 000746 via 000140/000142.
+
+That branch's stable-ID lines for rows this block owns must be removed, or the stable-ID check fails on
+duplicates.

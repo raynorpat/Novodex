@@ -1,0 +1,166 @@
+SceneRaycast..CapsuleShape block: post-merge cdb breakpoint trace of the block's dynamic-proof rows
+(scene-raycast Task 5, after merging main acc17d1 into claude/scene-raycast-block)
+====================================================================================================
+
+Why: the merge of main (qhull-gap and effector/core-dump sessions) changed the candidate NxPhysics.dll, so
+the dynamic proofs of this block, which cite pre-merge sha256s, were re-checked on the merged build. Every
+in-block row that carries a dynamic_proof from a staged-pair trace is traced here on both sides, plus
+000713, whose one claim is now main's Row000713Fixture::row000713. 000945 and 000951 are harness drives
+(NxPhysicsObjectLayoutTests / NxPhysicsShapeVtableTests, not DLL targets); their contracts still pass on the
+merged tree in Phase 5 (slot3 contract cases=64 failures=0; slot3 candidate masks=64 agree; boxsweep-diff
+candidate run=48 failures=0; shape vtable boxsweep oracle_digest=2c5d5c09 cases=84 failures=0).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\<target>.exe build\pairs\<side>  (cwd build\pairs, as staged by
+           run_phase_gate.ps1; the script breaks on the NxPhysics load with `sxe ld:NxPhysics`, sets
+           `bp NxPhysics+<offset> ".printf \"HIT <label>\n\"; gc"`, then runs to exit). Every run exited 0.
+Recorded:  2026-09-28, branch claude/scene-raycast-block at the merge commit cd3db01.
+Oracle:    NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate: NxPhysics.dll sha256=34a6c8baefc2caf7d5aac0ad8711112996771f22bc5009266796df3b0ed51baf
+           (identical to build\Release\NxPhysics.dll of the merged tree; gates 2-7 ran on the same build)
+
+BREAKPOINTS, ORACLE (label, module offset = inventory RVA)
+----------------------------------------------------------
+  000746    0x16e80
+  000756    0x17420
+  000768    0x17f10
+  000688    0x153c0
+  000690    0x15520
+  000692    0x155f0
+  000694    0x156c0
+  000696    0x15790
+  000698    0x15890
+  000700    0x15910
+  000704    0x15a50
+  000706    0x15b20
+  000949    0x20880
+  000797    0x1b5c0
+  000801    0x1b7a0
+  000793    0x1a350
+  000722    0x16130
+  000748    0x16f80
+  000776    0x18570
+  000799    0x1b760
+  000782    0x18730
+  000785    0x19620
+  000789    0x19d00
+  000791    0x1a2c0
+  000933    0x204e0
+  000993    0x21b70
+  000973    0x21420
+  000957    0x20d40
+  000959    0x20f90
+  000981    0x21990
+  000983    0x219d0
+  000766    0x179a0
+  000713    0x15d50
+
+BREAKPOINTS, CANDIDATE (label, module offset from build\Release\NxPhysics.map, symbol; one per out-of-line copy)
+----------------------------------------------------------------------------------------------------
+  000746    0x4b50    ?nxNpActorWorldTensorRDRt@@YAXPBM0PAM@Z
+  000746    0x6070    ?nxNpActorWorldTensorRDRt@@YAXPBM0PAM@Z
+  000746    0x1c650    ?nxNpActorWorldTensorRDRt@@YAXPBM0PAM@Z
+  000756    0x6050    ?nxNpActorUpdateCMassQuaternion@@YAXPAE@Z
+  000756    0x1bfe0    ?nxNpActorUpdateCMassQuaternion@@YAXPAE@Z
+  000768    0x4640    ?nxNpActorUpdateMassFrame@@YAXPAE@Z
+  000768    0x1c000    ?nxNpActorUpdateMassFrame@@YAXPAE@Z
+  000688    0x3b520    ?nxRaycastClosestBoundsLoop@@YAXABVSdkContainer@@AAUNxRaycastHit@@ABVNxRay@@MI@Z
+  000690    0x3bb70    ?raycastAnyBounds@NxSceneInternal@@QAE_NABVNxRay@@W4NxShapesType@@IM@Z
+  000692    0x3b9f0    ?raycastAllBounds@NxSceneInternal@@QAEIABVNxRay@@AAVNxUserRaycastReport@@W4NxShapesType@@IMI@Z
+  000694    0x3bab0    ?raycastAllShapes@NxSceneInternal@@QAEIABVNxRay@@AAVNxUserRaycastReport@@W4NxShapesType@@IMI@Z
+  000696    0x3bcf0    ?raycastClosestBounds@NxSceneInternal@@QAEPAXABVNxRay@@W4NxShapesType@@AAUNxRaycastHit@@IMI@Z
+  000698    0x3b450    ?nxRaycastAnyShapeLoop@@YA_NABVSdkContainer@@ABVNxRay@@MI@Z
+  000700    0x3b6e0    ?nxRaycastClosestShapeLoop@@YAXABVSdkContainer@@ABVNxRay@@AAUNxRaycastHit@@MII@Z
+  000704    0x3bc30    ?raycastAnyShape@NxSceneInternal@@QAE_NABVNxRay@@W4NxShapesType@@IM@Z
+  000706    0x3bdf0    ?raycastClosestShape@NxSceneInternal@@QAEPAXABVNxRay@@W4NxShapesType@@AAUNxRaycastHit@@IMI@Z
+  000949    0x24e30    ?nxBoxRaycast@BoxShape@@QBEPAXPBMMIIPAX@Z
+  000797    0x2af0    ?construct@DynamicBody@@QAEPAU1@PAXPBMPBVNxBodyDesc@@@Z
+  000801    0x2db0    ?construct@DynamicBodyBase@@QAEPAU1@PAXPBMI@Z
+  000793    0x30d0    ?loadFromBodyDesc@DynamicBody@@QAEXPBVNxBodyDesc@@@Z
+  000722    0x494c0    ?row000722@Row000722Fixture@@QAEXXZ
+  000748    0x41a0    ?markIslandDirty@DynamicBody@@QAEXXZ
+  000776    0x3010    ?destruct@DynamicBody@@QAEXXZ
+  000799    0x3090    ?destruct@DynamicBodyBase@@QAEXXZ
+  000782    0x1120    ?addForce@DynamicBody@@QAEXPBVNxVec3@@0I_N@Z
+  000785    0x4d80    ?setKinematic@DynamicBody@@QAEXI@Z
+  000789    0x5600    ?setPoseFromCMass@DynamicBody@@QAEXXZ
+  000791    0x49cc0    ?row000791@Row000791Fixture@@QAEXABVNxVec3@@0II@Z
+  000933    0x24ca0    ?nxBoxGetWorldOBB@BoxShape@@QBEXPAM@Z
+  000993    0x19db0    ?nxCapsuleSetDimensions@CapsuleShape@@QAEXMM@Z
+  000973    0x252c0    ?nxBoxRebuildHull@BoxShape@@QAEXXZ
+  000957    0x2e510    ?supportFace@BoxHullFacade@@QBEIPBM0@Z
+  000959    0x2e800    ?supportFeature@BoxHullFacade@@QBEIPBM0PAI@Z
+  000981    0x24d90    ?nxBoxLoadFromDesc@BoxShape@@QAE_NPBX@Z
+  000983    0x19980    ?nxBoxSetDimensions@@YIXPAX0ABVNxVec3@@@Z
+  000766    0x3ca70    ?visualize@NxBodyVisualRecord@@QAEXAAVNxDebugRenderable@@@Z
+  000713    0x494a0    ?row000713@Row000713Fixture@@QAEPAU1@XZ
+
+HIT COUNTS per target, oracle/candidate (labels not listed for a target: 0/0)
+------------------------------------------------------------------------------
+  NxPhysicsActorLifecycleTests: 000722 18/18, 000746 6/6, 000748 6/6, 000768 6/6, 000776 6/6, 000785 6/6, 000793 6/6, 000797 6/6, 000799 6/6, 000801 6/6, 000973 8/8, 000981 8/8
+  NxPhysicsDynamicFirstTests: 000722 3/3, 000746 1/1, 000748 1/1, 000768 1/1, 000776 1/1, 000785 1/1, 000793 1/1, 000797 1/1, 000799 1/1, 000801 1/1, 000973 1/1, 000981 1/1
+  NxPhysicsEmptySceneTests: -
+  NxPhysicsActorNameTests: 000973 1/1, 000981 1/1
+  NxPhysicsActorMetadataTests: 000973 1/1, 000981 1/1
+  NxPhysicsActorBodyFlagTests: 000722 3/3, 000746 1/1, 000748 1/1, 000768 1/1, 000776 1/1, 000785 1/1, 000793 1/1, 000797 1/1, 000799 1/1, 000801 1/1, 000973 1/1, 000981 1/1
+  NxPhysicsActorDynamicsTests: 000722 6/6, 000746 2/2, 000748 2/2, 000768 2/2, 000776 2/2, 000785 10/10, 000793 2/2, 000797 2/2, 000799 2/2, 000801 2/2, 000973 2/2, 000981 2/2
+  NxPhysicsActorDynamicSetterTests: 000713 4/0, 000722 18/18, 000746 19/19, 000748 6/6, 000768 19/19, 000776 6/6, 000785 8/8, 000793 6/6, 000797 6/6, 000799 6/6, 000801 6/6, 000933 4/4, 000973 9/9, 000981 8/8, 000983 1/1, 000993 2/2
+  NxPhysicsActorMomentumTests: 000722 9/9, 000746 17/3, 000748 3/3, 000768 3/3, 000776 3/3, 000785 5/5, 000793 3/3, 000797 3/3, 000799 3/3, 000801 3/3, 000973 4/4, 000981 4/4
+  NxPhysicsActorForceTests: 000722 33/33, 000746 11/11, 000748 11/11, 000768 11/11, 000776 11/11, 000782 26/26, 000785 13/13, 000791 6/6, 000793 11/11, 000797 11/11, 000799 11/11, 000801 11/11, 000973 11/11, 000981 11/11
+  NxPhysicsActorCMassTests: 000722 30/30, 000746 90/90, 000748 10/10, 000756 2/2, 000768 87/87, 000776 10/10, 000785 10/10, 000789 3/3, 000793 10/10, 000797 10/10, 000799 10/10, 000801 10/10, 000973 11/11, 000981 11/11
+  NxPhysicsActorShapeMutationTests: 000973 2/2, 000981 2/2
+  NxPhysicsBodyCreationTests: 000722 21/21, 000746 7/7, 000748 7/7, 000768 7/7, 000776 7/7, 000782 1/1, 000785 9/9, 000793 7/7, 000797 7/7, 000799 7/7, 000801 7/7, 000973 7/7, 000981 7/7
+  NxPhysicsJointStagedPairTests: 000722 24/24, 000746 8/8, 000748 8/8, 000768 8/8, 000776 8/8, 000785 8/8, 000793 8/8, 000797 8/8, 000799 8/8, 000801 8/8, 000973 8/8, 000981 8/8
+  NxPhysicsJointAllocatorTests: 000722 6/6, 000746 2/2, 000748 2/2, 000768 2/2, 000776 2/2, 000785 2/2, 000793 2/2, 000797 2/2, 000799 2/2, 000801 2/2, 000973 2/2, 000981 2/2
+  NxPhysicsJointSlotTests: 000722 81/81, 000746 55/55, 000748 27/27, 000768 55/55, 000776 27/27, 000785 27/27, 000793 27/27, 000797 27/27, 000799 27/27, 000801 27/27, 000973 27/27, 000981 27/27
+  NxPhysicsSceneRaycastTests: 000688 282/282, 000690 285/285, 000692 293/293, 000694 293/293, 000696 285/285, 000698 282/282, 000700 282/282, 000704 285/285, 000706 285/285, 000722 21/21, 000746 8/8, 000748 7/7, 000768 8/8, 000776 7/7, 000785 7/7, 000793 7/7, 000797 7/7, 000799 7/7, 000801 7/7, 000949 426/426, 000957 216/216, 000959 432/432, 000973 17/17, 000981 11/11, 000983 6/6
+  NxPhysicsSceneVisualizeTests: 000722 15/15, 000746 6/6, 000748 5/5, 000766 55/55, 000768 6/6, 000776 5/5, 000785 5/5, 000793 5/5, 000797 5/5, 000799 5/5, 000801 5/5, 000973 5/5, 000981 5/5
+  NxPhysicsEffectorTests: 000713 4/4, 000722 12/12, 000746 4/4, 000748 4/4, 000768 4/4, 000776 4/4, 000785 4/4, 000793 4/4, 000797 4/4, 000799 4/4, 000801 4/4, 000973 4/4, 000981 4/4
+  NxPhysicsCoreDumpTests: 000722 45/45, 000746 15/15, 000748 15/15, 000768 15/15, 000776 15/15, 000785 15/15, 000793 15/15, 000797 15/15, 000799 15/15, 000801 15/15, 000973 14/14, 000981 14/14
+
+TOTALS, oracle/candidate
+------------------------
+  000688  282/282
+  000690  285/285
+  000692  293/293
+  000694  293/293
+  000696  285/285
+  000698  282/282
+  000700  282/282
+  000704  285/285
+  000706  285/285
+  000713  8/4
+  000722  345/345
+  000746  252/238
+  000748  115/115
+  000756  2/2
+  000766  55/55
+  000768  235/235
+  000776  115/115
+  000782  27/27
+  000785  131/131
+  000789  3/3
+  000791  6/6
+  000793  115/115
+  000797  115/115
+  000799  115/115
+  000801  115/115
+  000933  4/4
+  000949  426/426
+  000957  216/216
+  000959  432/432
+  000973  135/135
+  000981  128/128
+  000983  7/7
+  000993  2/2
+
+RESULT
+------
+Every label is hit exactly as often on the candidate as on the oracle, on every target, except the two
+differences already recorded before the merge, both in NpActor-unit code (handover to the NpActor session):
+  000746  ActorMomentum 17/3: the oracle's momentum getters call 000746; the candidate's NpActor.cpp copies
+          inline it (evidence/scene-raycast-trace-task4-setters.txt, 000746x).
+  000713  ActorDynamicSetter 4/0: the live candidate copy is NpActor.cpp nxNpActorGroupRoot, inside an
+          NpActor-unit row (inventory 000713 notes, Task 2). Effector 4/4 (main's 003979 path).
+With those two labels removed, the ordered HIT sequences are identical on the two sides for all 20 targets
+(oracle 5676 hits, candidate 5658). Every staged target is stdout_delta=0 on this build.
