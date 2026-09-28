@@ -605,6 +605,17 @@ the Task 2 trace confirms nothing in the product calls them yet.
 | 000738 | ecx, plain ret | thiscall member, no arguments | (001303) | same ABI |
 
 **Deferred, with the reason:**
+- The sibling shape deleting destructors -- plane 001263, sphere 001375, capsule 001014 and mesh 001399
+  (ObjectModel.cpp, the `nx*ScalarDeletingDtor` members) -- still free `this` through the SDK allocator where
+  the oracle uses [0x101041bc] (0x22607, 0x27c57, 0x28eb4, 0x25447). Since Task 2 that is inconsistent with the
+  box (000979), which frees through the Foundation allocator. It is part of the candidate-wide scene/actor/shape
+  allocator gap. An earlier session left an unverified branch, `claude/scene-allocator-unverified`, that routes
+  these; it has not been reviewed or merged.
+- Latent mismatch: `nxShapeFactory` (Scene.cpp) allocates the 0x228 box and its +0x9c helper through the SDK
+  allocator but installs the BOX table, whose slot 0 (000979) now frees through the Foundation allocator. It is
+  not live today -- actor release frees shapes and helpers directly through the SDK allocator (Scene.cpp,
+  `releaseActor`) and never calls slot 0 -- but the pair must be matched when the factory or the allocator gap
+  is fixed.
 - The dirty-mark vector growth inside 000782, 000784, 000789 and 000793/000795 (`nxNpActorMarkRecordDirty`,
   NpActor.cpp) stays on `nxGetSdkAllocator()`. The vector belongs to the Scene auxiliary manager: it is
   allocated and freed in Scene.cpp by rows outside this block, so moving only the growth would free

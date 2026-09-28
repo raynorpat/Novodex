@@ -34,6 +34,9 @@ struct CandidateAllocator : SdkAllocator {
 // count before the candidate runs, and counts the candidate's frees as its
 // share of the holder's count plus the SDK bridge's -- which keeps every
 // oracle-side fold free of candidate frees.
+// It sums the candidate's SDK-bridge and Foundation-holder frees, so the
+// harness checks how many blocks the candidate freed, no longer which
+// allocator it freed them through.
 static unsigned candidateFreesSince(const CandidateAllocator& allocator,
         unsigned sdkBefore, unsigned holderBefore) {
     return (allocator.freeCount - sdkBefore) + (oracleFreeCount - holderBefore);

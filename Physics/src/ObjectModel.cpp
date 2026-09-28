@@ -4126,7 +4126,7 @@ SphereShape::SphereShape(void* owner, unsigned argument)
 	mRadiusE0 = 0.0f;						// mov [esi+0xe0],0 at 0x000277da
 
 	// The embedded collision object: a fresh 0x1c-byte block through the imported
-	// Foundation allocator [0x101041bc] (0x00027de4..f2), built by phys_fn_001193 itself -- the
+	// Foundation allocator [0x101041bc] (0x000277e4..f2), built by phys_fn_001193 itself -- the
 	// GENERIC collision-object constructor, not a per-type variant -- with
 	// the sphere stored at BOTH +0x08 and +0x18.
 	void* memory = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
