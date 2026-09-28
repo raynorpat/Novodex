@@ -502,9 +502,15 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# allocation seam reaches nxGetSdkAllocator -- phys_fn_004803, a Phase 2 row
 	# -- and that pulls PhysicsInternal.cpp in with it, the same way
 	# NxPhysicsInternalTests does.
+	#
+	# tests/PhysicsThirdPartyHost.cpp compiles Physics/src/ThirdPartyHost.cpp
+	# unchanged but for qhull's five output hooks, which it routes to the
+	# harness's capture sink while a run installs one (qhull-gap Task 1): the
+	# oracle's printing is captured through its host object, the candidate's
+	# through the same sink.
 	add_executable(NxPhysicsThirdPartyTests tests/PhysicsThirdPartyTests.cpp
 		tests/PhysicsThirdPartyQhull.c
-		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
+		tests/PhysicsThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/NovodexBoxPruning.cpp)
 	# The hull family's C half reads qhull's own structs, so it and only it sees the
 	# merged tree's headers (their fprintf redirection stays out of the C++ harness).
@@ -523,6 +529,12 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		# The map the vendored-correspondence trace resolves breakpoints from; see
 		# NxPhysicsAssetTests above.
 		target_link_options(NxPhysicsThirdPartyTests PRIVATE /MAP)
+		# The candidate qhull linked into this exe prints its traces through the
+		# UCRT, as NxPhysics.dll's does, so it gets NxPhysics.dll's printf rounding
+		# too (see legacy_stdio_float_rounding.obj above): without it a "%2.2g" of
+		# an exact tie such as -3.25 prints -3.2 where the oracle's 2003 CRT, and
+		# the shipped candidate DLL, print -3.3 (qhull-gap Task 1).
+		target_link_options(NxPhysicsThirdPartyTests PRIVATE legacy_stdio_float_rounding.obj)
 	endif()
 
 	# A static-proof gate, not a differential: it links the private translation
