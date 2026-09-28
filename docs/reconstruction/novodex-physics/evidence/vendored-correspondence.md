@@ -228,7 +228,21 @@ Which evidence a group needs before its rows can move depends on its class and n
   class counts as "a matching outcome" is Task 5b's call. *Task 5b's rule is under "Task 5b:
   promotion", below.*
 - **Not promotable until fixed:** DIFF, MISSING and AMBIGUOUS groups. MAPCHECK groups wait for
-  the map to be corrected.
+  the map to be corrected. *DIFF groups have one exception, the DIFF-equivalent arm below.*
+- **DIFF-equivalent arm (user decision, 2026-09-28; first used by qhull-gap Task 2).** A group
+  the matcher classes DIFF may be promoted only when all of these hold:
+  - its hand review verdict (`{qhull,opcode}_review.csv`) is exactly `equivalent`, and the review
+    cites the addresses it read;
+  - its execution class is `exact` in an oracle-vs-candidate family: some execution of the group
+    was compared and matched in every word. Outcome-exact is not enough;
+  - its static proof states the matcher difference (every `diff_*` token of its rows) and why it
+    is equivalent.
+
+  The controller's Task 2 rule (`qhull-gap.md`, "What this does not settle") applies to this arm
+  as to arm (i): the exact class counts only if the proof lists and attributes every divergent
+  family the group also ran in, and a group that is itself a named divergence source
+  (`qh_distplane`, or a group owning `sum_grouping.csv` sites a divergent family's attribution
+  implicates) cannot use this arm. MISSING and AMBIGUOUS groups stay unpromotable.
 - **Summation order and register lifetimes (added after the Task 3 review).** A static proof
   for a vendored row with x87 arithmetic says that the float-sum grouping and some register
   lifetimes of the oracle are not reproduced (see "Summation order"), and names the row's

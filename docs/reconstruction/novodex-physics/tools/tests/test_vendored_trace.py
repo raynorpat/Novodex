@@ -215,6 +215,30 @@ class Groups(unittest.TestCase):
         self.assertTrue(groups[1]["separate"])
         self.assertEqual(groups[2]["rows"], [(0x3000, 8), (0x3008, 8)])
 
+    def test_an_inlined_group_is_credited_to_its_callers(self):
+        def group(key, symbol, rva):
+            return {"library": "qhull", "key": key, "symbol": symbol, "rows": [(rva, 16)]}
+        caller = group("_caller", "_caller", 0x1000)
+        other = group("_other", "_other", 0x3000)
+        callee = group("_callee", "_callee", 0x2000)
+        called = group("_called", "_called", 0x4000)
+        rows = [("qhull", {"rva": "0x00001000",
+                           "shape": "inlining: candidate inlines callee, oracle inlines x; n_insn 1->2",
+                           "diff_calls": ""}),
+                ("qhull", {"rva": "0x00003000", "shape": "",
+                           "diff_calls": "-called; +callee; -icall[host]+0x10"}),
+                ("qhull", {"rva": "0x00002000", "shape": "inlining: candidate inlines callee",
+                           "diff_calls": ""})]
+        out = vt.inline_callers([caller, other, callee, called], rows)
+        self.assertEqual([g["key"] for g in out[("qhull", "_callee")]], ["_caller"])
+        self.assertEqual([g["key"] for g in out[("qhull", "_called")]], ["_other"])
+        self.assertNotIn(("qhull", "_caller"), out)
+
+    def test_the_inlining_note_keeps_overload_parameters(self):
+        self.assertEqual(vt._shape_inlined("x87 1->2; inlining: candidate inlines A::f(int,float), "
+                                           "oracle inlines B::g, candidate inlines C::h"),
+                         ["A::f(int,float)", "C::h"])
+
     def test_breakpoints_are_one_per_address(self):
         exe = mapped(b"\xc3", [symbol("?F@@YAXH@Z", TEXT), symbol("?G@@YAXXZ", TEXT)])
         groups = [

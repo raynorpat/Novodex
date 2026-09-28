@@ -2650,10 +2650,15 @@ static void nxNpActorApplyForce(unsigned char* record, const NxVec3* force,
 // (force, pos, mode, wake)): the lever r = pos - the world centre +0x158,
 // r.x kept in the register and r.y, r.z spilled; the torque r x f, each
 // component rounded once; then 000782(force, &torque, mode, wake). The
-// at-position rows 000054/000154/000156/000158 pass wake = 1.
-static void nxNpActorForceAtPos(unsigned char* record, const NxVec3& force,
-	const NxVec3& worldPosition, NxForceMode mode)
+// at-position rows 000054/000154/000156/000158 pass wake = 1 (through
+// nxNpActorForceAtPos below); the spring-and-damper solver slot 003979
+// passes (1, 0). The one definition of the row since the merge with main,
+// whose effector-and-coredump work had declared it in core/JointSupport.h
+// and left a stub.
+__declspec(noinline) void Row000791Fixture::row000791(const NxVec3& force,
+	const NxVec3& worldPosition, NxU32 mode, NxU32 wake)
 	{
+	unsigned char* record = reinterpret_cast<unsigned char*>(this);
 	const float* center = reinterpret_cast<const float*>(record + 0x158);
 	const double rx = static_cast<double>(worldPosition.x) - center[0];
 	const float ry = worldPosition.y - center[1];
@@ -2663,7 +2668,14 @@ static void nxNpActorForceAtPos(unsigned char* record, const NxVec3& force,
 		static_cast<double>(rz) * force.y);
 	torque.y = static_cast<float>(static_cast<double>(rz) * force.x - rx * force.z);
 	torque.z = static_cast<float>(rx * force.y - static_cast<double>(ry) * force.x);
-	nxNpActorApplyForce(record, &force, &torque, static_cast<unsigned>(mode), true);
+	nxNpActorApplyForce(record, &force, &torque, mode, wake != 0);
+	}
+
+static void nxNpActorForceAtPos(unsigned char* record, const NxVec3& force,
+	const NxVec3& worldPosition, NxForceMode mode)
+	{
+	reinterpret_cast<Row000791Fixture*>(record)->row000791(force, worldPosition,
+		static_cast<NxU32>(mode), 1);
 	}
 
 // phys_fn_000152 (0x00005fa0, 346 B)

@@ -15,6 +15,11 @@
 // ending in Save -- NxPhysicsThirdPartyTests asserts against the image.
 #include "Opcode.h"
 
+// The hull library phys_fn_002233 calls (qhull-gap Task 4).
+#include "QhullHost.h"
+#include "NxSimpleTriangleMesh.h"
+#include "NxTriangleMeshDesc.h"
+
 class NxStream;
 
 /**
@@ -184,4 +189,35 @@ static_assert(offsetof(TriangleMesh, mPresenceFlagB) == 0x90, "presence flag B i
 static_assert(offsetof(TriangleMesh, mArrayA) == 0x94, "array A is at +0x94");
 static_assert(offsetof(TriangleMesh, mArrayB) == 0x98, "array B is at +0x98");
 static_assert(offsetof(TriangleMesh, mConvexMesh) == 0xa0, "the convex mesh is at +0xa0");
+
+/**
+TriangleMesh's first two virtuals, slots 0 and 1 of .rdata:0x00108608, are an
+allocator interface -- malloc(size) (phys_fn_002235) and free(p)
+(phys_fn_002237) -- and it is the interface the hull library takes as its user
+allocator (Physics/src/include/QhullHost.h, HullAllocator). phys_fn_002233, the
+hull computation loadFromDesc runs for NX_MF_COMPUTE_CONVEX, hands `this` to the
+library as that allocator (`mov [esp+8],ecx` at 0x0005492e).
+
+TriangleMesh above carries its vtable as an opaque word, so the three rows are
+written on this base, which is exactly that interface plus the member that uses
+it. Making TriangleMesh derive from it (so that slot 2 onward follows) belongs to
+the deferred TriangleMesh/ConvexHull unit (units/convex-cooking-contract.md,
+"Existing candidate code this replaces"). The name is descriptive; no original
+identifier is evidenced.
+*/
+class TriangleMeshHullAllocator : public HullAllocator
+	{
+	public:
+	//! phys_fn_002235 (0x00054a40), slot 0: the Foundation allocator's
+	//! malloc(size, NX_MEMORY_PERSISTENT).
+	virtual	void*			malloc(size_t size);
+	//! phys_fn_002237 (0x00054a60), slot 1: the Foundation allocator's free,
+	//! only for a non-null pointer.
+	virtual	void			free(void* memory);
+
+	//! phys_fn_002233 (0x00054920): the convex hull of desc's points, as a
+	//! triangle mesh descriptor in `out`; false (and `out` untouched) when
+	//! CreateConvexHull fails.
+	bool					computeHull(const NxTriangleMeshDesc& desc, NxTriangleMeshDesc& out);
+	};
 #endif

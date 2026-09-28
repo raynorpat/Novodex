@@ -1947,7 +1947,6 @@ UNRESOLVED_SOURCE_PATHS = (
     # when the file was created for the Scene reconstruction. The check said so
     # itself: "is on the allowlist but no longer unresolved; remove the entry".
     'Physics/src/NpSphereShape.cpp',                 # 12 rows
-    'Physics/src/NpSpringAndDamperEffector.cpp',     # 3 rows
     'Physics/src/NpTriangleMesh.cpp',                # 6 rows
     'Physics/src/NpTriangleMeshShape.cpp',           # 11 rows
     # 'Physics/src/Scene.cpp' was here with 14 rows against it. It is REMOVED

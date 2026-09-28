@@ -43,7 +43,13 @@ following hit-less segments whose family is its sibling (`<family>_<suffix>`), a
 the worst class of those families: the floats an execution produced are part of its outcome.
 
 `differential` lists, per drive in which the group executed, the drive's families with their
-classes. `outcome` is the group's best drive (exact < lastbit < discrete < failed): `exact` if
+classes. A breakpoint sees only the candidate's out-of-line copy of a group, so a group the
+candidate compiler inlines into a caller is also credited with the caller's drives, marked
+`<harness>[via-inline:<caller symbol>]:...` (inline_callers): the matcher's inlining note
+"candidate inlines G" on the caller, or an oracle-only call to G in the caller's `diff_calls`,
+means the oracle calls G's out-of-line row from that caller where the candidate runs an inlined
+copy. Those entries list families; they do not change `outcome` or `family_best`, which stay
+about executions of the out-of-line body that identity checks. `outcome` is the group's best drive (exact < lastbit < discrete < failed): `exact` if
 some execution of it was compared and matched completely. `family_best` is the best class of
 any family the group ran in, whatever else its execution fed -- the looser reading, kept so the
 two can be told apart. `layout` means only the ThirdParty harness's candidate-only layout
@@ -106,6 +112,79 @@ def load_groups(map_dir=vm.MAP_DIR):
                     }
                 g["rows"].append((int(r["rva"], 16), int(r["size"])))
     return list(groups.values())
+
+
+INLINE_NOTE = re.compile(r"candidate inlines (.+)")
+
+
+def _shape_inlined(shape):
+    """Identities the matcher's inlining note says the candidate inlines ("inlining: candidate
+    inlines A, oracle inlines B, candidate inlines C; ..."). Overload identities list their
+    parameters without spaces, so ", " separates the entries."""
+    out = []
+    for part in shape.split("; "):
+        if not part.startswith("inlining: "):
+            continue
+        for entry in part[len("inlining: "):].split(", "):
+            m = INLINE_NOTE.fullmatch(entry.strip())
+            if m:
+                out.append(m.group(1))
+    return out
+
+
+def group_identities(groups):
+    """{call identity: group key} for (library, key), as the matcher names call targets: the
+    candidate symbol's short key, and for an overload the key with its parameter list."""
+    by_short = defaultdict(list)
+    exact = {}
+    for g in groups:
+        d = vm.demangle(g["symbol"])
+        if d is None or not d.components:
+            continue
+        k = vm.short_key(d.components)
+        by_short[(g["library"], k)].append(g)
+        if d.params is not None:
+            exact[(g["library"], f"{k}({','.join(d.params)})")] = g
+    out = {}
+    for (lib, k), gs in by_short.items():
+        if len({g["key"] for g in gs}) == 1:
+            out[(lib, k)] = gs[0]
+    out.update(exact)
+    return out
+
+
+def inline_callers(groups, match_rows):
+    """{(library, callee key): [caller group, ...]}: the groups the candidate inlines into a
+    caller, from the caller's match rows (the inlining note, and oracle-only calls left in
+    diff_calls). match_rows: [(library, row dict)]."""
+    by_row = {}
+    for g in groups:
+        for rva, _ in g["rows"]:
+            by_row[(g["library"], rva)] = g
+    idents = group_identities(groups)
+    out = defaultdict(list)
+    for lib, r in match_rows:
+        caller = by_row.get((lib, int(r["rva"], 16)))
+        if caller is None:
+            continue
+        names = _shape_inlined(r.get("shape", ""))
+        names += [t[1:] for t in (r.get("diff_calls") or "").split("; ") if t.startswith("-")]
+        for name in names:
+            callee = idents.get((lib, name))
+            if callee is None or callee["key"] == caller["key"]:
+                continue
+            bucket = out[(lib, callee["key"])]
+            if all(c["key"] != caller["key"] for c in bucket):
+                bucket.append(caller)
+    return out
+
+
+def load_match_rows(map_dir=vm.MAP_DIR):
+    rows = []
+    for library in ("qhull", "opcode"):
+        with (Path(map_dir) / f"{library}_match.csv").open(encoding="utf-8", newline="") as handle:
+            rows.extend((library, r) for r in csv.DictReader(handle))
+    return rows
 
 
 def x87_count(image, rows):
@@ -527,6 +606,17 @@ def cmd_coverage(args, groups):
                 names = ["asset" if n == "END" and harness == "asset" else n for n in names]
                 plan.append((index, names))
             prepared.append((harness, segments, plan, classes))
+        callers = inline_callers(groups, load_match_rows(args.map_dir))
+
+        def executed(g):
+            """[(harness, names, member classes)] for the drives in which g's body ran."""
+            out = []
+            for harness, segments, plan, classes in prepared:
+                for index, names in plan:
+                    if segments[index]["hits"].get(g["key"], 0) and names != ["layout"]                             and any(n in classes for n in names):
+                        out.append((harness, names, [classes.get(n, "?") for n in names]))
+            return out
+
         for g in groups:
             hits, saturated, listed, idents, drive_classes, family_classes = 0, False, [], [], [], []
             for harness, segments, plan, classes in prepared:
@@ -558,6 +648,14 @@ def cmd_coverage(args, groups):
                 hits_text = f"{hits}+" if saturated else str(hits)
                 outcome = outcome_of(drive_classes)
                 loose = best(family_classes) or outcome
+                seen = set()
+                for caller in callers.get((g["library"], g["key"]), []):
+                    for harness, names, member in executed(caller):
+                        entry = (f"{harness}[via-inline:{caller['key']}]:" +
+                                 "+".join(f"{n}={c}" for n, c in zip(names, member)))
+                        if entry not in seen:
+                            seen.add(entry)
+                            listed.append(entry)
             w.writerow([g["library"], f"0x{g['rows'][0][0]:08x}", g["class"], g["symbol"],
                         x87_count(oracle, g["rows"]), ";".join(idents), hits_text, outcome, loose,
                         ";".join(listed), g["source_function"]])

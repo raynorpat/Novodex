@@ -170,6 +170,30 @@ struct Row000712Fixture
 	Row000712Fixture* row000712();
 	};
 
+// phys_fn_000713 (0x00015d50, 32 B; owner gap SceneRaycast..CapsuleShape;
+// written by the effector-and-coredump plan, Task 2). Thiscall on a body
+// record, no stack arguments, plain `ret`: the root of the record chain
+// through +0x1e8 (the candidate's record points +0x1e8 at itself), found
+// recursively with path compression -- 000712's shape on the other chain.
+// The spring-and-damper solver slot 003979 calls it on each body and tests
+// the root's +0x1f8 before it applies a force.
+struct Row000713Fixture
+	{
+	Row000713Fixture* row000713();
+	};
+
+// phys_fn_000791 (0x0001a2c0, 133 B, Phase 2). Thiscall on a body record,
+// four stack arguments, `ret 0x10`: add a force at a world position (force,
+// position, then the force mode and the wake word, which the effector passes
+// as 1 and 0); it forms the torque arm and calls phys_fn_000782. Defined in
+// NpActor.cpp (the NpActor.cpp completion plan wrote 000791 and 000782); the
+// spring-and-damper solver slot 003979 calls it when the chain root's +0x1f8
+// is non-zero.
+struct Row000791Fixture
+	{
+	void row000791(const NxVec3& force, const NxVec3& position, NxU32 mode, NxU32 wake);
+	};
+
 // phys_fn_000760 (0x00017710, 168 B; owner gap SceneRaycast..CapsuleShape).
 // Thiscall on a body record, no stack arguments, plain `ret`: resets the
 // record's island fields (+0x1bc..+0x1e4) to a single-body island, frees the
@@ -184,10 +208,11 @@ struct Row000760Fixture
 // Thiscall on a body record, no stack arguments, plain `ret`: the record's
 // island snapshot. The root (+0x1bc, refreshed through 000712 when the
 // record is not its own) is read; a record that is its own root stores the
-// largest +0x4c over its island chain (+0x1d0 links, starting from 0.0f) at
-// +0x1cc, any other stores 0x4b7afafa there; the seven words +0x1bc..+0x1d4
-// are copied to +0x1e8..+0x200, and +0x25c and +0x208 are zeroed. The record
-// constructor 000797 and destructor 000776 call it.
+// largest +0x4c wake counter over its island chain (+0x1d0 links, starting
+// from 0.0f) at +0x1cc, any other stores 0x4b7afafa there; the seven words
+// +0x1bc..+0x1d4 are copied to +0x1e8..+0x200, and +0x25c and +0x208 are
+// zeroed. The body constructor 000797 calls it right after 000760 (0x1b6fb,
+// 0x1b702), and the destructor 000776 calls it too.
 struct Row000722Fixture
 	{
 	void row000722();

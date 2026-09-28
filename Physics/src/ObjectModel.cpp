@@ -884,6 +884,7 @@ float nxActorSqrtFieldD4(void* self)
 // phys_fn_000015 (0x14f0): body helper. [body+0x10] names the shape list
 // head; null yields 0, a non-mesh shape (type word at +0xd0 != 5) yields 1,
 // and a mesh yields its triangle-array span ([+0xe4]-[+0xe0])>>2.
+// Product row: Physics/src/core/JointSupport.cpp.
 unsigned nxBodyShapeRecordCount(void* body)
 	{
 	unsigned sh = *reinterpret_cast<unsigned*>(
@@ -1286,7 +1287,10 @@ void* nxActorVtThunk104(void* self, void* arg1, unsigned* out)
 void* nxActorVtThunk108(void* self, void* arg1, unsigned* out)
 	{ return nxActorVtThunk(self, arg1, out, 0x108u); }
 
-// phys_fn_003268 (0x7e560, ret 8): batch index/vertex append. Bails when
+// A generic model of the row at 0x7e560, superseded by QhullHost.cpp (phys_fn_003268,
+// QhullHost::facet, qhull-gap Task 4a), which is the row's source now. Kept only
+// because NxPhysicsObjectLayoutTests' batch3268 block still drives it. Batch
+// index/vertex append, ret 8. Bails when
 // [self+0x18] >= [self+0x1c]; accumulates (count-2) into [self+0x20]; records
 // the count in the [self+0x403c]/[self+0x4044] list when it has room; then for
 // each index below [self+0x10] copies the 3-dword vertex record through the
@@ -1893,6 +1897,7 @@ void nxVtCall2390(void* self)
 	}
 
 // phys_fn_003924 (0x8ed50): the __stdcall slot takes two arguments.
+// Product row: Physics/src/core/SpringAndDamperEffector.cpp.
 void nxVtCall3924(void* self)
 	{
 	unsigned char* p = reinterpret_cast<unsigned char*>(self);
@@ -2058,6 +2063,7 @@ void nxOnceReportVtEx(void* self, unsigned char* gate, unsigned slot,
 
 // phys_fn_003938 (0x8eec0, ret 4): the deleting destructor that also calls a
 // process-wide global slot with no arguments.
+// Product row: Physics/src/core/SpringAndDamperEffector.cpp.
 static void (*gNxGlobalHook3938)(void) = nullptr;
 
 void nxSetGlobalHook3938(void (*fn)(void))
@@ -2359,6 +2365,7 @@ unsigned nxFieldRead4(void* self)
 	}
 
 // phys_fn_004085 (0x95cb0): the registry lookup with its own `this`.
+// Product row: Physics/src/core/Joint.cpp.
 unsigned nxRegistryLookupNull(void* self)
 	{
 	(void) self;
@@ -2925,6 +2932,7 @@ float nxLockedThunkFloat2(void* self, unsigned lockOff, unsigned objOff,
 	}
 
 // phys_fn_003936 (0x8eeb0): the vtable store plus the global tail jump.
+// Product row: Physics/src/core/SpringAndDamperEffector.cpp.
 void nxDtorTrampoline3936(void* self, void (*fn)(void*))
 	{
 	unsigned vtable = 0x10117920u;
@@ -3144,7 +3152,10 @@ void nxAllocReleaseClear2342(void* self, void* alloc, NxSlotMfp1 slot)
 		}
 	}
 
-// phys_fn_003238 (0x7d500): the own-vtable four-field release.
+// A generic model of the row at 0x7d500, superseded by QhullHost.cpp (phys_fn_003238,
+// QhullHost::releaseArrays, qhull-gap Task 4a), which is the row's source now. Kept
+// only because NxPhysicsObjectLayoutTests' ownvtable3238 block still drives it: the
+// own-vtable four-field release.
 void nxOwnVtableRelease3238(void* self, NxSlotMfp1 slot)
 	{
 	unsigned char* p = reinterpret_cast<unsigned char*>(self);
@@ -3187,6 +3198,7 @@ void nxReleaseAdjusted2060(void* self, const unsigned* offsets, const int* adjus
 
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
+// Product row: Physics/src/core/NpSpringAndDamperEffector.cpp.
 void* nxLockedSelf3950(void* self)
 	{
 	return self;
@@ -3393,6 +3405,7 @@ void nxAggregateAABB1030(void* self, float* out)
 // phys_fn_000713 (0x15d50): recursive path compression over the record
 // chain -- each record caches its group root at +0x1e8, a self-pointing
 // cache naming the root. Recursion terminates on the self-parented node.
+// Product row: Physics/src/core/JointSupport.cpp.
 unsigned nxBodyRecordFixRoot(void* rec)
 	{
 	unsigned r = reinterpret_cast<unsigned>(rec);

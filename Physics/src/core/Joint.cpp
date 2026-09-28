@@ -577,10 +577,28 @@ void Joint::saveToDescBase(NxJointDesc& desc) const
 		desc.jointFlags &= ~(NxU32)NX_JF_VISUALIZATION;
 	}
 
+// phys_fn_004068 (0x00095a40, 56 B)
+// The core dump's readers (004037, 004015) of the two body records' owners,
+// the 0x50-byte actor bodies at record +0x19c; 0 for a missing body. Each
+// output is stored as soon as it is read (0x95a55, 0x95a68/0x95a73).
+void Joint::getBodyOwners(void*& owner0, void*& owner1) const
+	{
+	owner0 = mBody[0] ? jointBody(mBody[0])->mOwner : 0;
+	owner1 = mBody[1] ? jointBody(mBody[1])->mOwner : 0;
+	}
+
 // phys_fn_004070 (0x00095a80, 7 B)
 NxJointType Joint::getType() const
 	{
 	return mType;
+	}
+
+// phys_fn_004072 (0x00095a90, 25 B)
+// The core dump's typed view of an internal joint (004037): this joint when
+// +0x168 is `type`, else 0, branch-free in the listing (`setne; dec; and`).
+Joint* Joint::is(NxJointType type)
+	{
+	return type == mType ? this : 0;
 	}
 
 // phys_fn_004074 (0x00095ab0, 216 B)
@@ -654,6 +672,15 @@ void Joint::resetLimitPlaneIterator()
 bool Joint::hasMoreLimitPlanes() const
 	{
 	return gLimitPlaneIterator != 0;
+	}
+
+// phys_fn_004085 (0x00095cb0, 10 B)
+// The joint's name for the core dump (004004, 004007): the name registry
+// nxGetSdkPointerBinding (phys_fn_000454, cdecl) keyed on this internal
+// joint, the key the NpJoint getName body 004743 reads too (NpJointShared.cpp).
+const char* Joint::getName() const
+	{
+	return static_cast<const char*>(nxGetSdkPointerBinding(const_cast<Joint*>(this)));
 	}
 
 // phys_fn_004089 (0x00095d20, 58 B)

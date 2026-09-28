@@ -36,7 +36,8 @@ The remaining placeholders are blocked rather than unwritten. getScene,
 releaseScene, createScene, createTriangleMesh and releaseTriangleMesh all need
 the Scene or TriangleMesh layout that Phases 3 and 4 own; setActorGroupPairFlags
 and getActorGroupPairFlags need phys_fn_004155 and phys_fn_004153, which the
-census places in Phase 6; coreDump needs seventeen rows across Phases 3, 4 and 6.
+census places in Phase 6. coreDump (phys_fn_000267) is reconstructed: it takes every
+scene's write lock and calls the core dump phys_fn_004062 (core/SceneDump.cpp).
 */
 class NpPhysicsSDK : public NxPhysicsSDK, public NxAllocateable
 	{
@@ -75,7 +76,7 @@ class NpPhysicsSDK : public NxPhysicsSDK, public NxAllocateable
 	void setMaterialAtIndex(NxMaterialIndex index, const NxMaterial* material);
 	NxMaterial* getMaterial(NxMaterialIndex index);
 	void purgeMaterials();
-	bool coreDump(const char* fname, bool binary, const char* addendum);
+	bool coreDump(const char* fname, bool binary, const char* addendum);	// reconstructed, phys_fn_000267
 	bool setPerformanceInspector(NxPerformanceInspector* npi);
 
 	// SDK-internal state, left accessible so the measured offsets can be asserted.

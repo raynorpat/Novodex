@@ -146,6 +146,15 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # rows (the x87 row sums of 000150/000152, the setters and getters) are x87 in
 # the oracle, and its `double` register lifetimes must compile to x87 at the
 # process's _PC_53 rather than to SSE2 (NpActor.cpp completion Task 2).
+# QhullHost.cpp is NovodeX's hull library around qhull (qhull-gap Task 4): x87 in the oracle
+# (the box fallback, the OBJ writers' widening, the rescale) and run under the caller's word.
+# Quantizer.cpp is the same library's band B (Wu's quantizer and reduceVertices, piece 4d), x87 too.
+# core/SpringAndDamperEffector.cpp (effector-and-coredump Task 2) does x87
+# work in 003962/003964/003970/003972 and its solver slot 003979 runs inside
+# the step; core/NpSpringAndDamperEffector.cpp does none and stays default.
+# core/SceneDump.cpp (effector-and-coredump Task 3) is the core dump: its
+# float tokens compare and widen x87 values and round with fistp at the live
+# control word, and its asset writer converts poses to quaternions with fsqrt.
 if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set_source_files_properties(
 		Physics/src/Geometry.cpp
@@ -167,6 +176,10 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/core/FixedJoint.cpp
 		Physics/src/core/D6Joint.cpp
 		Physics/src/core/JointSupport.cpp
+		Physics/src/QhullHost.cpp
+		Physics/src/Quantizer.cpp
+		Physics/src/core/SpringAndDamperEffector.cpp
+		Physics/src/core/SceneDump.cpp
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 endif()
 
@@ -205,6 +218,11 @@ if(MSVC)
 		Physics/src/core/NpPulleyJoint.cpp
 		Physics/src/core/NpFixedJoint.cpp
 		Physics/src/core/NpD6Joint.cpp
+		Physics/src/QhullHost.cpp
+		Physics/src/Quantizer.cpp
+		Physics/src/core/SpringAndDamperEffector.cpp
+		Physics/src/core/NpSpringAndDamperEffector.cpp
+		Physics/src/core/SceneDump.cpp
 		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
 endif()
 
@@ -368,6 +386,23 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsJointSlotTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsJointSlotTests bcrypt)
+	# The spring-and-damper effector differential (effector-and-coredump Task
+	# 2): NxScene's effector API, every NxSpringAndDamperEffector method, the
+	# internal effector's slots 2 and 3 by index, the record teardown notify
+	# and the scene release of a live effector, with each step's SDK
+	# allocations and frees.
+	add_executable(NxPhysicsEffectorTests tests/PhysicsEffectorTests.cpp)
+	target_include_directories(NxPhysicsEffectorTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsEffectorTests bcrypt)
+	# The scene core-dump differential (effector-and-coredump Task 4): two
+	# populated scenes dumped through NxPhysicsSDK::coreDump in text and binary
+	# mode, with and without an addendum, each .psc file printed back; then a
+	# third scene (Task 5 review coverage) dumped on its own in text and binary.
+	add_executable(NxPhysicsCoreDumpTests tests/PhysicsCoreDumpTests.cpp)
+	target_include_directories(NxPhysicsCoreDumpTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsCoreDumpTests bcrypt)
 	# Every block the page-guarded allocator returns to these targets is filled
 	# with 0xcd instead of being left as fresh zeroed pages, so a scene, actor,
 	# shape or joint constructor that leaves a field it later reads to the
@@ -384,7 +419,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 			NxPhysicsActorDynamicSetterTests NxPhysicsActorMomentumTests
 			NxPhysicsActorForceTests NxPhysicsActorCMassTests
 			NxPhysicsActorShapeMutationTests NxPhysicsJointStagedPairTests
-			NxPhysicsJointSlotTests)
+			NxPhysicsJointSlotTests NxPhysicsEffectorTests NxPhysicsCoreDumpTests)
 		target_compile_definitions(${nx_fill_target} PRIVATE NX_PAGE_GUARDED_FILL)
 	endforeach()
 	target_include_directories(NxPhysicsJointTests PRIVATE Foundation/include Physics/include)
@@ -465,9 +500,12 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# ThirdPartyHost.cpp and PhysicsInternal.cpp come with NxOpcode for the same
 	# reason they do in NxPhysicsThirdPartyTests: the vendored tree's allocation
 	# seam is opcNovodeXAlloc/opcNovodeXFree and that reaches nxGetSdkAllocator.
+	# TriangleMesh.cpp holds phys_fn_002233, the hull computation, which calls the hull
+	# library (qhull-gap Task 4e), so QhullHost.cpp, Quantizer.cpp and NxQhull come with it.
 	add_executable(NxPhysicsAssetTests tests/PhysicsAssetTests.cpp
 		Physics/src/PMap.cpp Physics/src/MemoryStream.cpp Physics/src/TriangleMesh.cpp
-		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp)
+		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
+		Physics/src/QhullHost.cpp Physics/src/Quantizer.cpp)
 	target_include_directories(NxPhysicsAssetTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
 		# The generated oracle-RVA to candidate-address table. It is built from the census and the
@@ -487,7 +525,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# nxSetSdkAllocatorBridge -- but the definition has to be in place before the link comes out, or the
 	# tree stops building. Round 75 measured why it matters: linking the Foundation makes the loader
 	# resolve it as an import before any harness code runs, so the PAIR's copy is never the one loaded.
-	target_link_libraries(NxPhysicsAssetTests NxOpcode bcrypt)
+	target_link_libraries(NxPhysicsAssetTests NxQhull NxOpcode bcrypt)
 	# A linker map, so the vendored-correspondence execution trace can resolve the vendored
 	# functions linked into this exe by name (evidence/vendored-trace-*.txt). /MAP writes a
 	# file beside the exe and changes nothing in it.
@@ -509,14 +547,20 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# NxPhysicsInternalTests does.
 	#
 	# tests/PhysicsThirdPartyHost.cpp compiles Physics/src/ThirdPartyHost.cpp
-	# unchanged but for qhull's five output hooks, which it routes to the
-	# harness's capture sink while a run installs one (qhull-gap Task 1): the
-	# oracle's printing is captured through its host object, the candidate's
-	# through the same sink.
+	# and Physics/src/QhullHost.cpp unchanged but for qhull's nine hooks, which
+	# it renames and routes per call: to the product's host object while one is
+	# published (a candidate CreateConvexHull run), to the harness's capture
+	# sink while a run installs one (qhull-gap Task 1: the oracle's printing is
+	# captured through its host object, the candidate's through the same sink),
+	# and otherwise to the stand-in every qhull family was measured against
+	# (qhull-gap Task 4a). TriangleMesh.cpp (and MemoryStream.cpp, which its
+	# writer uses) is linked for phys_fn_002233/002235/002237, which the
+	# convex-cooking differentials drive (qhull-gap Task 4e).
 	add_executable(NxPhysicsThirdPartyTests tests/PhysicsThirdPartyTests.cpp
 		tests/PhysicsThirdPartyQhull.c
-		tests/PhysicsThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
-		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/NovodexBoxPruning.cpp)
+		tests/PhysicsThirdPartyHost.cpp Physics/src/Quantizer.cpp Physics/src/PhysicsInternal.cpp
+		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/NovodexBoxPruning.cpp
+		Physics/src/TriangleMesh.cpp Physics/src/MemoryStream.cpp)
 	# The hull family's C half reads qhull's own structs, so it and only it sees the
 	# merged tree's headers (their fprintf redirection stays out of the C++ harness).
 	set_source_files_properties(tests/PhysicsThirdPartyQhull.c PROPERTIES
@@ -552,6 +596,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
+		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp
 		${PHYSICS_CORE_SOURCES})
 	target_include_directories(NxPhysicsInternalTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
@@ -561,8 +606,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# createJoint constructs all ten joint families, so the target links
 	# Physics/src/core/*.cpp, and the families' SDK-parameter reads
 	# (PhysicsSDK::getParameter, PhysicsSDK::instance) pull in PhysicsSDK.cpp and
-	# NpPhysicsSDK.cpp. The /arch:IA32 rule above is per directory, so it gives
-	# the internal joint files NoExtensions here too.
+	# NpPhysicsSDK.cpp. The core dump (core/SceneDump.cpp) reads a shape's owner
+	# and type through phys_fn_001281/001283 in ContactGeneration.cpp, which
+	# needs NarrowPhase.cpp. The /arch:IA32 rule above is per directory, so it
+	# gives the internal joint files NoExtensions here too.
 	target_compile_definitions(NxPhysicsInternalTests PRIVATE NX_PHYSICS_DLL=1)
 	target_link_libraries(NxPhysicsInternalTests NxFoundation NxOpcode)
 
