@@ -246,7 +246,10 @@ Totals: 7 rows; discovered 1,560 B, reconstructed 37 B
   exists; 001544 is modelled in `ObjectModel.cpp` (keep that test green, or route it to the new
   row).
 - **Callees outside.** 004803; RadixSort 005157/005163/005159 (vendored); IndexedTriangle::FindEdge
-  005189 (vendored); 002160 (the SetIceError report row, reconstructed); 005695 (`__chkstk`, for
+  005189 (vendored); 002160 (the SetIceError report row: `reconstructed` in the census as an ObjectModel model, but the
+  product's seam, `opcNovodeXSetIceError` in Physics/src/ThirdPartyHost.cpp, is still a shim that
+  reports nothing and returns false, where the oracle forwards (2, file, line, 0, message) to the
+  error-stream pointer at [0x101041b4]; the Task 2c rows call the seam); 005695 (`__chkstk`, for
   the alloca in 001541); 000001 (MSVC's compiler-generated `vector constructor iterator`, called
   by `new[]` sites with the trivial constructor 0x00027f00 - not a prerequisite); **EdgeList.cpp 002052 (zero), 002063 (`EdgeList::Init`,
   not started), 002060 (release, reconstructed)**. 002063's closure is 002054, 002058, 002061,
@@ -263,10 +266,14 @@ Totals: 7 rows; discovered 1,560 B, reconstructed 37 B
   edge case reaches 001541's non-manifold arm - capture the report the way the OPCODE families
   capture SetIceError. Release through 001544 on each side.
 - **Task 2c findings (errata).** A repeated vertex does NOT reach 001539's invalid-edge arm: the
-  edge records come from the face itself, so FindEdge always finds them. The arm is reached only
-  when the create block carries both face arrays and they disagree (AddTriangle reads DFaces
+  edge records come from the face itself, so FindEdge always finds them. With face arrays the arm
+  is reached only when the create block carries both and they disagree (AddTriangle reads DFaces
   first, UpdateLink lets WFaces override), in the first face of the pair (line 266) or the second
-  (267); the family drives both. ADJACENCIESCREATE has a fifth field, +0x10 epsilon, handed to
+  (267); the family drives both. With NEITHER face array, AddTriangle uses the references 0, 1, 2
+  for every face, so two faces pair on all three edges and UpdateLink runs FindEdge on its two
+  IndexedTriangle locals, which nothing has written: the outcome depends on stack contents, in
+  the oracle as in any reconstruction. The family drives the bare block only with one face
+  (nothing to link) and three (the non-manifold report comes first), never with two. ADJACENCIESCREATE has a fifth field, +0x10 epsilon, handed to
   the EdgeList create block (0x0002e095). 001546 returns the database's result whatever the
   EdgeList does. The link word is (edge << 30) | face, an OR.
 

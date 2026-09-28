@@ -18,6 +18,7 @@ table below.
 | H | 2026-09-28T11:36:00 | 2026-09-28T12:58:35 | 1 | 782 | Harness hardening. Every raw draw of the collision harness is written as bits (no float return, which quieted signalling NaNs depending on inlining); pre-Task-2b families draw their NaNs quiet explicitly (all their digests reproduce); handed signalling NaNs, 15 of their blocks' candidates differ (recorded, not registered). 58 input-digest lines registered. 001712 rewritten as a naked x87 transcription (its C++ loaded operands the listing uses from memory: 1,310 step_ray_tri words and 75 / 31 fans on signalling NaNs; now 0), step_ray_tri on signalling NaNs. 001694's interior leaf an x87 block (2 own 0x0f7f words on the review's draws; now 0); segment_triangle replays the review's 250,000 draws (0x0f7f 940, all 001690's). Compound raw bounds drawn directly. 11 lines re-registered once, 59 added; phase 3 floor 199. 12 traced functions hit. Follow-up (controller decision): the 15 blocks, and 3 kernel-fuzz exports replayed in-process, also run as `.snan` variants divergent under enforced ceilings (44 lines, floor 243); the fuzz harness writes bits and quiets explicitly (its lines unchanged); two unsequenced draws sequenced; the affected rows' notes say signalling-NaN propagation is not reproduced. See `## Harness hardening`. |
 | H review | 2026-09-28T13:00:00 | 2026-09-28T13:45:53 | 0 | 0 | Task H review fixes: the separating-axis byte of contact_box_box and contact_box_capsule tallied into their `.snan` ceilings (346 / 346, 78 / 78, 236 / 236 and 99 / 93, 7 / 7, 40 / 40); every remaining unsequenced multi-draw expression in the collision, fuzz, third-party and tangent harnesses sequenced in the order the build used (all registered lines and the geometry transcript unchanged; one site was missed, segment_segment's `scale`, sequenced by Task 2c -- see the correction under `## Harness hardening`); float-returning raw-bit helpers removed from all harnesses and the tool test widened to every tests/*.cpp; ray_inflated_tris' divergent cause no longer names 001712. See `## Harness hardening`. |
 | 2c | 2026-09-28T13:48:00 | 2026-09-28T14:38:42 | 12 | 5,564 | EdgeList (002054 with continuation 002056, 002058, 002061, 002063) in the new `EdgeList.cpp`, IceAdjacencies (001537..001548) in the new `IceAdjacencies.cpp`, 001667 in the new `IceMeshTools.cpp`; product forms of 002052, 002060, 001544, 001663, 001665. Allocations through the 004803 getter with the listing's cookies; reports through the SetIceError seam; 002061's plane side and angle as x87 blocks; the three files `/EHs-c-`. Families edge_list, ice_adjacencies, ice_valencies in NxPhysicsThirdPartyTests (object image, allocations and reports compared): exact on every gated run; the vertex runs of 13 meshes whose decisions follow the vendored Plane::Set / Triangle::Normal split into `.plane_divergent` under ceilings (465 / 124 words; 0 with the oracle's callees bound in). 14 lines registered, phase 4 floor 175. 15 traced functions hit. Also: segment_segment's scale draws sequenced (stdout identical) and the raw-bit float-return scan widened (.c files, casts, unions, conventions). See `## Task 2c`. |
+| 2c review | 2026-09-28T14:38:42 | 2026-09-28T14:58:32 | 0 | 0 | Task 2c review: the edge_list / ice_adjacencies plane-divergent split frozen as a list of 13 meshes (the candidate pre-flight kept as a failing check, detail on stderr); every digest unchanged, the coverage line `pairs=1487 side=40 angle=9 meshes=13` replaced by `frozen_meshes=13`; the throwaway callee binding committed as `convex-mesh-gap-2c-bind-oracle-callees.patch` (re-run: 465/124, 306/100, 342/92, 0/0); the 002160 product shim recorded (evidence, contract, row notes); the 001539 errata extended to the no-face-array case. See `## Task 2c`. |
 
 ## Task 2a: box distance kernels and the entries that reach them
 
@@ -500,14 +501,41 @@ in the plane or an angle at 0.1. Measured on a throwaway build that could bind t
 into the candidate's 002061: edge_list 465 differing words and ice_adjacencies 124 (whose vertex
 runs go through the same EdgeList); with 005155 bound 306 / 100, with 005181 bound 342 / 92, with
 both bound 0 / 0 -- every differing word is the callees'. (Before the six raw-word meshes were added:
-72 / 0, and 0 with 005155 alone.) So each mesh is pre-flighted edge by edge in 002061's order
+72 / 0, and 0 with 005155 alone.) Each mesh was pre-flighted edge by edge in 002061's order
 (faces ascending, the six-way opposite-vertex rule, both callees' planes and normals; an angle within
 1e-6 of 0.1 counts as undecided): 1,487 two-face edges, 40 with the side differing and 9 with the
-angle decision, in 13 meshes (eight random soups and five raw-word meshes; every fixture and every
-designed mesh is gated). The vertex runs of those 13 meshes go to `<family>.plane_divergent`,
-registered up to the oracle digest and held by `kDivergentCeilings` (465/465, 124/124 discrete
-words; a change either way is reported, exceeding fails). Every other run, including every vertex
-run of the fixtures, is exact.
+angle decision, in 13 meshes (eight random soups, 40..53, and five raw-word meshes, 59..63; every
+fixture and every designed mesh is gated). The vertex runs of those 13 meshes go to
+`<family>.plane_divergent`, registered up to the oracle digest and held by `kDivergentCeilings`
+(465/465, 124/124 discrete words; a change either way is reported, exceeding fails). Every other
+run, including every vertex run of the fixtures, is exact.
+
+*Frozen split (Task 2c review).* As first registered, the split was recomputed each run from that
+pre-flight, which runs the candidate's vendored Plane::Set / Triangle::Normal -- so the registered
+digests encoded candidate behaviour, and a later fix to 005155/005181 would have moved lines that
+append-only registration then protects. The split is now the constant list
+`kIcePlaneDivergentMeshes` = {40, 41, 42, 43, 44, 46, 50, 53, 59, 60, 61, 62, 63} in the harness; the
+pre-flight remains as a check that fails the run when a mesh OUTSIDE the list could diverge
+(checked: dropping 63 from the list fails with exit 1), and prints its detail to stderr only. The
+list reproduces the same split, so every digest and count is unchanged; the one registered line
+that carried candidate-dependent counts was replaced (a line this task added, not yet merged):
+
+    before: thirdparty coverage name=edge_list.plane_divergent pairs=1487 side=40 angle=9 meshes=13
+    after:  thirdparty coverage name=edge_list.plane_divergent frozen_meshes=13
+
+*Reproducing the attribution.* `evidence/convex-mesh-gap-2c-bind-oracle-callees.patch` is the
+throwaway change, applicable with `git apply` to the commit that froze the split: hooks in
+EdgeList.cpp's 002061 that the harness fills from `NX_ICE_BIND` (1 binds the oracle's 005155 at
+base+0x000e31c0, 2 its 005181 at base+0x000e3f50, 3 both). Rebuild NxPhysicsThirdPartyTests and run
+it with NX_ICE_BIND=0..3: the `.plane_divergent` lines read 465/124, 306/100, 342/92 and 0/0 (re-run
+for the review). Never commit it applied: product code must not reach the oracle.
+
+*The 002160 seam.* The rows report through `opcNovodeXSetIceError`, the host seam for 002160. In the
+product DLL that seam (Physics/src/ThirdPartyHost.cpp) is still the shim: it reports nothing and
+returns false, where the oracle's 002160 forwards (2, file, line, 0, message) to the error-stream
+pointer at [0x101041b4]. The rows' return values are unaffected (both return the false), and the
+families compare the (message, file, line) the rows pass; what a user's error stream would receive
+is not reproduced until 002160 is written as product code.
 
 Registered: 14 lines (per family an input digest, the exact line whole, the divergent line to the
 oracle digest and the coverage lines, and the totals pair `driven=76 divergent=27 words=1755447` /
