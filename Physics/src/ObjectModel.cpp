@@ -14,6 +14,7 @@
 #include "NxPlane.h"
 #include "ContactGeneration.h"
 #include "NxUtilities.h"
+#include "X87Sqrt.h"
 
 #include <math.h>
 #include <string.h>
@@ -39,12 +40,14 @@ CollisionObject::CollisionObject(void* argument)
 
 // phys_fn_001079 (0x000235d0): the box-family collision-object deleting
 // row. The embedded hook teardown at 0x5ba90 changes only its vptr, then
-// flag bit zero selects the SDK allocator's +0x14 free operation.
+// flag bit zero selects the +0x14 free operation of the imported Foundation
+// allocator [0x101041bc] (0x100235f4). Every shape constructor allocates its
+// collision object from that allocator, so the pair stays on one allocator.
 void CollisionObject::nxScalarDeletingDtor(unsigned flags)
 	{
 	mMember.~EmbeddedHookBase();
 	if(flags & 1u)
-		nxGetSdkAllocator()->free(this);
+		nxFoundationSDKAllocator->free(this);
 	}
 
 // phys_fn_001281 (0x000257a0): mov eax,[ecx+4]; ret. The whole row -- note
@@ -61,34 +64,60 @@ const void* nxShapeOwner(const void* shape)
 // copies live at different addresses, which is fine -- consumers get them
 // through these getters, and the layout gate compares content, not pointers.
 
-static const NxU32 gEdgeTable[12] =
-	{ 0, 1, 1, 2, 2, 3, 3, 0, 7, 6, 6, 5 };			// 0x10122180..
-static const NxU32 gFaceCornerTable[12] =
-	{ 131073, 0, 131073, 2, 131073, 4, 131073, 6, 131073, 8, 131073, 10 };	// 0x101221e0..
-static const NxU32 gAdjacencyTable[12] =
-	{ 0, 5, 0, 1, 0, 4, 0, 3, 2, 4, 1, 2 };			// 0x10122240..
+// Each table is 24 dwords: the three start 0x60 bytes apart in .rdata, and
+// the words are the pinned image's own.
+static const NxU32 gEdgeTable[24] =
+	{ 0, 1, 1, 2, 2, 3, 3, 0, 7, 6, 6, 5,
+	  5, 4, 4, 7, 1, 5, 6, 2, 3, 7, 4, 0 };			// 0x10122180..0x101221df
+static const NxU32 gFaceCornerTable[24] =
+	{ 131073, 0, 131073, 2, 131073, 4, 131073, 6, 131073, 8, 131073, 10,
+	  131073, 12, 131073, 14, 131073, 16, 131073, 18, 131073, 20, 131073, 22 };	// 0x101221e0..0x1012223f
+static const NxU32 gAdjacencyTable[24] =
+	{ 0, 5, 0, 1, 0, 4, 0, 3, 2, 4, 1, 2,
+	  2, 5, 2, 3, 1, 5, 1, 4, 3, 4, 3, 5 };			// 0x10122240..0x1012229f
 
+// phys_fn_000953 (0x00020d20, 6 B)
+// Facade slot 1: `mov eax,8; ret`, the vertex count 000973 reads through
+// the +0xe0 table.
+unsigned BoxHullFacade::vertexCount() const
+	{
+	return kVertexCount;
+	}
+
+// phys_fn_000961 (0x000213c0, 6 B)
+// Facade slot 3: `mov eax,6; ret`, the face count 000973, 000957 and 000959
+// read through the +0xe0 table.
+unsigned BoxHullFacade::faceCount() const
+	{
+	return kFaceCount;
+	}
+
+// phys_fn_000955 (0x00020d30, 4 B)
 const NxU32* BoxHullFacade::vertices() const
 	{
 	return mVertices;							// lea eax,[ecx+0x10]
 	}
 
+// phys_fn_000963 (0x000213d0, 14 B)
 const BoxFaceRecord* BoxHullFacade::face(unsigned index) const
 	{
 	// lea eax,[eax+eax*8]; lea eax,[ecx+eax*4+0x70] -- index*36 + (this+0x70).
 	return &mFaces[index];
 	}
 
+// phys_fn_000967 (0x000213f0, 6 B)
 const NxU32* BoxHullFacade::edgeTable()
 	{
 	return gEdgeTable;
 	}
 
+// phys_fn_000969 (0x00021400, 6 B)
 const NxU32* BoxHullFacade::faceCornerTable()
 	{
 	return gFaceCornerTable;
 	}
 
+// phys_fn_000971 (0x00021410, 6 B)
 const NxU32* BoxHullFacade::adjacencyTable()
 	{
 	return gAdjacencyTable;
@@ -165,7 +194,11 @@ void nxReport(int kind, const char* file, int line, int code,
 	}
 
 
-// phys_fn_000975 (0x000217c0). The three per-corner values are column dots
+// phys_fn_000975 (0x000217c0, 168 B)
+// Facade slot 11, __thiscall ret 0x18: min pointer in the second stack
+// argument, max in the third, direction in the fourth, pose in the fifth
+// (0x100217c0-0x100217d3); the first and sixth are never read. The three
+// per-corner values are column dots
 // plus translation: A = col0.v + tx, B = col1.v + ty, C = col2.v + tz; the
 // projection combines them as A*dx + (C*dz + B*dy) -- that exact association,
 // because the x87 stack built C first and folded B before A. Bounds updates
@@ -174,8 +207,8 @@ void nxReport(int kind, const char* file, int line, int code,
 // unordered case sets C0, which both masks include). Intermediates are kept
 // in double so a spilled value cannot truncate what the x87 stack held at
 // 64-bit. The row reads neither of its two unread stack arguments.
-void BoxHullFacade::supportBounds(const float* direction, float* outMin,
-	float* outMax, const float* pose) const
+void BoxHullFacade::supportBounds(NxU32 /*unread1*/, float* outMin, float* outMax,
+	const float* direction, const float* pose, NxU32 /*unread6*/) const
 	{
 	NxU32 minBits = 0x7f7fffffu;				// +FLT_MAX: the minimum starts high (store 0x000217d7 -> a2)
 	NxU32 maxBits = 0xff7fffffu;				// -FLT_MAX: the maximum starts low (store 0x000217dd -> a3)
@@ -210,7 +243,8 @@ void BoxHullFacade::supportBounds(const float* direction, float* outMin,
 	memcpy(outMax, &maxValue, sizeof(maxValue));
 	}
 
-// phys_fn_000985 (0x00021a10). The image's initializer array at .rdata
+// phys_fn_000985 (0x00021a10, 78 B)
+// The image's initializer array at .rdata
 // 0x10103010 is twelve `ret` stubs, so the CRT helper runs nothing and the
 // twelve-byte global stays zeroed. Same observable state here: a static
 // all-zero object behind a once-flag.
@@ -230,7 +264,8 @@ const void* BoxHullFacade::sharedHook()
 // population. All three are cdecl, owner first, and ignore nothing they are
 // handed -- the shipped rows carry no null tests.
 
-// phys_fn_000965 (0x000213e0): `xor eax,eax; ret` -- the same folded stub the
+// phys_fn_000965 (0x000213e0, 3 B)
+// `xor eax,eax; ret` -- the same folded stub the
 // facade exposes as kZero, installed as .data 0x10128470.
 static udword shapeOwnerQuery(void* /*owner*/)
 	{
@@ -317,7 +352,8 @@ unsigned ShapeBase::nxFlagBitsDE(unsigned mask) const
 	return static_cast<unsigned>(mHalfwordDE) & mask;
 	}
 
-// phys_fn_000931 (0x00020490, 70 bytes): translation, forward rotation
+// phys_fn_000931 (0x00020490, 70 B)
+// translation, forward rotation
 // copy, THEN dimensions. Word-wise volatile accesses retain the image's
 // load/store order when out aliases this (including forward rep movsd).
 // A bulk memcpy/memmove or dimensions-first copy is not equivalent.
@@ -416,7 +452,7 @@ void* BoxShape::nxBoxRaycast(const float* ray, float maxDistance,
 	return const_cast<BoxShape*>(this);		// 0x00020b0e: eax = this
 	}
 
-// phys_fn_000951 (BOX slot 7) -- swept-AABB entry parameter. PROVISIONAL:
+// Row 000951 (BOX slot 7) -- swept-AABB entry parameter. PROVISIONAL:
 // transcribed per the 3z36 verified model (out0 = min over valid axes of
 // |col_k . H| / swept[k]), NOT yet differentially closed. phys_fn_000951
 // stays `discovered`.
@@ -1028,7 +1064,8 @@ void nxActorDeletingDtorThunk(void* memberThis, unsigned flags)
 // ---------------------------------------------------------------------------
 // Actor slate 2: the write side and two record readers.
 //
-// phys_fn_000742 (0x16dd0): record helper -- a pure x87 chain whose cross
+// phys_fn_000742 (0x00016dd0, 89 B)
+// record helper -- a pure x87 chain whose cross
 // terms carry their scale factors SQUARED (the fxch/faddp ladder multiplies
 // each product by its second word a second time): 0.5 * (([+0x74]^2 +
 // [+0x70]^2 + [+0x6c]^2)*[+0x188] + [+0x194]*[+0x80]^2 + [+0x190]*[+0x7c]^2
@@ -1054,7 +1091,7 @@ float nxBodyRecordEnergyWord(void* rec)
 		+ v18c * (m78 * m78)) * 0.5);
 	}
 
-// phys_fn_000730-equivalent guard upgrade (0x5b730): try to take the writer
+// Guard upgrade (0x5b730, the write-side guard): try to take the writer
 // flag at [cs]+0x18; if it is already held by ANOTHER thread, fail without
 // entering -- the caller reports and skips to avoid a deadlock. Held by this
 // thread or free: enter, re-take, record the tid, succeed.
@@ -2682,7 +2719,8 @@ float nxOnceReportThunkFloat(void* self, unsigned code, unsigned file,
 	return nxLockedHelperCallF(self, 0x10, 0x14, fn, viaField4);
 	}
 
-// phys_fn_000867 (0x1d260, ret 0xc): the kind-selected accumulator. The x87
+// phys_fn_000867 (0x0001d260, 103 B)
+// the kind-selected accumulator. The x87
 // sequence reduces to plain adds of v times each descriptor component. Note
 // the argument order: the DESCRIPTOR is the second argument and the divisor
 // the third, which the first drive got wrong by reading the divisor as a
@@ -3387,7 +3425,12 @@ void nxAggregateAABB1030(void* self, float* out)
 // ---------------------------------------------------------------------------
 // Actor slate 5: the sleep-chain readers.
 
-// phys_fn_000713 (0x15d50): recursive path compression over the record
+// phys_fn_000713 (0x00015d50, 32 B)
+// The row is thiscall on the record (`mov esi,ecx` at 0x15d51, plain `ret`);
+// this is a cdecl free function. Every oracle caller (000655, 000718, 000724,
+// 000744, 000776, 003979) calls it directly and none reaches it through a
+// table, so the convention is a code-shape difference, not a behaviour one.
+// Recursive path compression over the record
 // chain -- each record caches its group root at +0x1e8, a self-pointing
 // cache naming the root. Recursion terminates on the self-parented node.
 unsigned nxBodyRecordFixRoot(void* rec)
@@ -3402,7 +3445,12 @@ unsigned nxBodyRecordFixRoot(void* rec)
 	return *reinterpret_cast<unsigned*>(r + 0x1e8);
 	}
 
-// phys_fn_000744 (0x16e30): compress the record's chain to its root, then
+// phys_fn_000744 (0x00016e30, 68 B)
+// The row takes the record in ecx (fastcall-style, plain `ret`); this is a
+// cdecl free function. Its only oracle caller, 000062, calls it directly, so
+// the convention is a code-shape difference only. It calls 000713 on the
+// cached parent when the record is not its own root (0x16e3c), as here.
+// Compress the record's chain to its root, then
 // walk the +0x1fc list answering whether EVERY node's word at +0x84 reads
 // zero -- the group-wide sleep test. A null root also answers true.
 bool nxBodyRecordChainSettled(void* rec)
@@ -3885,6 +3933,36 @@ static void** nxBoxShapeInternalVtable()
 	return table.slot;
 	}
 
+// The box hull facade's final table, .rdata 0x10106a88: twelve slots, read
+// from the pinned image (the BOX table follows at 0x10106ab8). Slots 9 and 10
+// are 000957 (0x20d40) and 000959 (0x20f90), which are not written yet, so
+// they stay null here; nothing in the product calls through them (their only
+// callers are 000973, 000957 and 000959 themselves).
+static void** nxBoxHullFacadeVtable()
+	{
+	struct Table
+		{
+		void* slot[12];
+		Table()
+			{
+			slot[0] = reinterpret_cast<void*>(&BoxHullFacade::sharedHook);			// 0x21a10, 000985
+			slot[1] = nxShapeMethodAddress(&BoxHullFacade::vertexCount);			// 0x20d20, 000953
+			slot[2] = nxShapeMethodAddress(&BoxHullFacade::vertices);				// 0x20d30, 000955
+			slot[3] = nxShapeMethodAddress(&BoxHullFacade::faceCount);				// 0x213c0, 000961
+			slot[4] = nxShapeMethodAddress(&BoxHullFacade::face);					// 0x213d0, 000963
+			slot[5] = reinterpret_cast<void*>(&shapeOwnerQuery);					// 0x213e0, 000965
+			slot[6] = reinterpret_cast<void*>(&BoxHullFacade::edgeTable);			// 0x213f0, 000967
+			slot[7] = reinterpret_cast<void*>(&BoxHullFacade::faceCornerTable);	// 0x21400, 000969
+			slot[8] = reinterpret_cast<void*>(&BoxHullFacade::adjacencyTable);		// 0x21410, 000971
+			slot[9] = 0;															// 0x20d40, 000957 (not written)
+			slot[10] = 0;															// 0x20f90, 000959 (not written)
+			slot[11] = nxShapeMethodAddress(&BoxHullFacade::supportBounds);		// 0x217c0, 000975
+			}
+		};
+	static Table table;
+	return table.slot;
+	}
+
 static void** nxSphereShapeInternalVtable()
 	{
 	struct Table
@@ -3997,17 +4075,20 @@ void nxShapeFactoryInstallVtable(void* shape, unsigned type)
 	if(table) *reinterpret_cast<void***>(shape) = table;
 	}
 
+// phys_fn_000977 (0x00021870, 207 B)
+// __thiscall ret 8: the BOX final's constructor.
 BoxShape::BoxShape(void* owner, unsigned argument)
 	: mBase(owner, argument)				// forwarded unchanged: 0x0002187c..80
 	{
 	// vptr stores. The image stores the abstract wall at +0xe0 first
 	// (0x00021885), the BOX primary table next (0x0002188f), then replaces
 	// the wall with the facade's final twelve-slot table (0x00021895). The
-	// wall store is a chained-construction intermediate; C++ installs both
-	// final tables and it is never observable after the constructor returns.
+	// wall store is a chained-construction intermediate, overwritten before
+	// anything can read it, so only the two final tables are stored here.
 	// The transcription writes the face-record pointer words once; the image
 	// reaches record 5 through a walking pointer with identical effect.
 	mBase.mVptrSlot = nxBoxShapeInternalVtable();
+	mHull.mVptrSlot = nxBoxHullFacadeVtable();	// 0x00021895
 	for(unsigned r = 0; r < 6; ++r)			// 0x000218a1..0x000218ee
 		{
 		mHull.mFaces[r].mCorners = 0;
@@ -4015,11 +4096,11 @@ BoxShape::BoxShape(void* owner, unsigned argument)
 		mHull.mFaces[r].mIndexListB = 0;
 		}
 
-	// The embedded collision object: a fresh 0x1c-byte block through the SDK
-	// allocator (0x000218f1..fe -- malloc slot, size 0x1c, flag 0), built by
+	// The embedded collision object: a fresh 0x1c-byte block through the imported
+	// Foundation allocator [0x101041bc] (0x000218f1..fe -- malloc slot, size 0x1c, flag 0), built by
 	// phys_fn_001075 (0x00023580), whose body is phys_fn_001193 with the
 	// box-family tables and which stores the box at BOTH +0x08 and +0x18.
-	void* memory = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	CollisionObject* object = memory
 		? new(memory) CollisionObject(this)
 		: 0;								// null arm: 0x0002190f
@@ -4044,11 +4125,11 @@ SphereShape::SphereShape(void* owner, unsigned argument)
 	mBase.mVptrSlot = nxSphereShapeInternalVtable();
 	mRadiusE0 = 0.0f;						// mov [esi+0xe0],0 at 0x000277da
 
-	// The embedded collision object: a fresh 0x1c-byte block through the SDK
-	// allocator (0x00027de4..f2), built by phys_fn_001193 itself -- the
+	// The embedded collision object: a fresh 0x1c-byte block through the imported
+	// Foundation allocator [0x101041bc] (0x00027de4..f2), built by phys_fn_001193 itself -- the
 	// GENERIC collision-object constructor, not a per-type variant -- with
 	// the sphere stored at BOTH +0x08 and +0x18.
-	void* memory = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	CollisionObject* object = memory
 		? new(memory) CollisionObject(this)
 		: 0;								// null arm: 0x00027803
@@ -4266,7 +4347,7 @@ void ShapeBase::nxApplyGroup(unsigned short group)
 // owner == null takes the early exit at 0x00026abb which is a pure no-op
 // (pop ebp / add esp,0x84 / ret 4). The owned path needs scene
 // infrastructure from Task 4 and is not reachable for detached shapes.
-// phys_fn_000981 (0x00021990), BOX-table slot 12.
+// Row 000981 (0x00021990), BOX-table slot 12.
 void BoxShape::nxBoxLoadFromDesc(const void* record)
 	{
 	const unsigned char* rec = static_cast<const unsigned char*>(record);
@@ -4576,7 +4657,8 @@ namespace
 		}
 	}
 
-// phys_fn_000843 (0x0001c750), __thiscall ret 8. The image squares and cubes
+// phys_fn_000843 (0x0001c750, 110 B)
+// __thiscall ret 8. The image squares and cubes
 // the radius on the x87 stack, multiplies by 4pi/3 for the mass, then keeps
 // going from the mass value -- r^3 -> r^5 through two more radius multiplies,
 // one 2/5 -- for the diagonal inertia. Nine words are zeroed by integer moves
@@ -4617,7 +4699,8 @@ void MassFrame::nxMassFrameBuildSphere(float radius, const void* extra)
 		}
 	}
 
-// phys_fn_000837 (0x0001c5c0), __thiscall ret 4. Ten fld/fmul/fstp triples:
+// phys_fn_000837 (0x0001c5c0, 101 B)
+// __thiscall ret 4. Ten fld/fmul/fstp triples:
 // the nine inertia words and the mass. The offset at +0x24..+0x2c is skipped
 // entirely -- scaling by density keeps the center.
 void MassFrame::nxMassFrameScale(float s)
@@ -4627,7 +4710,8 @@ void MassFrame::nxMassFrameScale(float s)
 	mMass = mul32(mMass, s);
 	}
 
-// phys_fn_000839 (0x0001c630), __thiscall ret 4. The weights live at +0x30 on
+// phys_fn_000839 (0x0001c630, 231 B)
+// __thiscall ret 4. The weights live at +0x30 on
 // both frames; the quotient divides the .rdata 1.0f literal by their sum (a
 // real fdiv, then rounded by fstp m32 at 0x1c695 before use). The
 // products are formed weight-times-offset per frame first, added pairwise --
@@ -4662,7 +4746,12 @@ void MassFrame::nxMassFrameMerge(const MassFrame& other)
 			static_cast<double>(mInertia[i]) + static_cast<double>(other.mInertia[i]));
 	}
 
-// phys_fn_000851 (0x0001c930), __thiscall ret 0xc, SPHERE-table slot 4.
+// phys_fn_000851 (0x0001c930, 77 B)
+// __thiscall ret 0xc, SPHERE-table slot 4.
+// The row is thiscall on the destination MassFrame; this member takes the
+// destination as its first argument and has the shape in ecx. The row's only
+// caller, 001371 (SPHERE slot 4), calls it directly and no table holds it,
+// so the convention is a code-shape difference, not a behaviour one.
 // Local frame, optional payload fold, conditional density scale against the
 // 1.0f sentinel (fucompp/test ah,0x44/jnp: an unordered density falls through
 // and scales, which `!=` reproduces), merge into the destination.
@@ -4700,7 +4789,8 @@ namespace
 		}
 	}
 
-// phys_fn_000829 (0x0001bd00), __thiscall ret 4. Volume over half-extents:
+// phys_fn_000829 (0x0001bd00, 187 B)
+// __thiscall ret 4. Volume over half-extents:
 // the accumulator replaces with the first non-zero extent then multiplies the
 // rest, times 8 ([0x101068f0]) -- full extents are twice half-extents. That
 // mass value stays live on the x87 stack for the whole function; a copy times
@@ -4738,14 +4828,17 @@ void MassFrame::nxMassFrameBuildBox(const float* he)
 	mOffset.x = 0.0f; mOffset.y = 0.0f; mOffset.z = 0.0f;
 	}
 
-// phys_fn_000845 (0x0001c7c0), __thiscall ret 0xc. A unit-density cylinder of
+// phys_fn_000845 (0x0001c7c0, 181 B)
+// __thiscall ret 0xc. A unit-density cylinder of
 // radius `radius` and height 2*cylHalfHeight: mass = pi*r^2*2c. The axial
 // diagonal carries mass*r^2/2 (through r^2*pi*c*... folded to mr^2/2 by the
 // .rdata 0.5f at 0x101043cc); the transverse pair carries the full cylinder
 // formula mass*(3r^2+4c^2)/12 ([0x101068f8] = 3, [0x101068f4] = 4, over the
 // .rdata 1/12 at 0x101068e0). axisSelector routes the axial term:
-// 0 -> +0x00, 1 -> +0x10 (and that path never writes +0x00 -- an image hole
-// this transcription reproduces), anything else -> +0x20.
+// 0 -> +0x00, 1 -> +0x10, anything else -> +0x20; the other two diagonals
+// take the transverse term. Selector 1 writes +0x00 too: `dec edx` sets ZF,
+// `mov [ecx],edx` stores the transverse term at 0x1c836, and only then does
+// the `je` at 0x1c838 branch to the +0x10 arm.
 void MassFrame::nxMassFrameBuildCapsule(unsigned axisSelector, float radius,
 	float cylHalfHeight)
 	{
@@ -4782,10 +4875,9 @@ void MassFrame::nxMassFrameBuildCapsule(unsigned axisSelector, float radius,
 		}
 	else if(axisSelector == 1)
 		{
+		mInertia[0] = sSide;								// mov [ecx],edx at 0x1c836
 		mInertia[4] = sAx;
 		mInertia[8] = sSide;
-		// +0x00 stays as the caller left it: the image's selector==1 path
-		// never stores it.
 		}
 	else
 		{
@@ -4796,7 +4888,8 @@ void MassFrame::nxMassFrameBuildCapsule(unsigned axisSelector, float radius,
 	mOffset.x = 0.0f; mOffset.y = 0.0f; mOffset.z = 0.0f;
 	}
 
-// phys_fn_000831 (0x0001bdc0), __thiscall ret 4. Straight-line x87 transform
+// phys_fn_000831 (0x0001bdc0, 635 B)
+// __thiscall ret 4. Straight-line x87 transform
 // over payload {Vec3 d; SymMat3 K}. Nine intermediates -- each an faddp chain
 // ROUNDED TO FLOAT32 by its fstp m32 store before the rep movsd copy feeds
 // them back -- then nine inertia stores, then the offset triple. The mass at
@@ -4862,12 +4955,15 @@ void MassFrame::nxMassFrameFoldPayload(const void* payload)
 	mOffset.z = nz;
 	}
 
-// phys_fn_000847 (0x0001c880), __thiscall ret 4. Conditionally zeroes all
+// phys_fn_000847 (0x0001c880, 53 B)
+// __thiscall ret 4. Conditionally zeroes all
 // thirteen words when the byte argument is non-zero; leaves the frame
 // untouched when it is zero.
 void MassFrame::nxMassFrameConditionalZero(unsigned flag)
 	{
-	if(flag == 0)
+	// `mov dl,[esp+4]; cmp dl,cl` (0x1c880/0x1c888): only the low byte of
+	// the argument slot is tested.
+	if(static_cast<unsigned char>(flag) == 0)
 		return;
 	mInertia[0] = 0.0f; mInertia[1] = 0.0f; mInertia[2] = 0.0f;
 	mInertia[3] = 0.0f; mInertia[4] = 0.0f; mInertia[5] = 0.0f;
@@ -4876,7 +4972,22 @@ void MassFrame::nxMassFrameConditionalZero(unsigned flag)
 	mMass = 0.0f;
 	}
 
-// phys_fn_000833 (0x1c040), __thiscall ret 4: translate the frame by
+// phys_fn_000841 (0x0001c720, 43 B)
+// __thiscall, plain ret: {-o.x, -o.y, -o.z} built on the stack (fld; fchs;
+// fstp m32, an exact negation, 0x1c723-0x1c73e), then 000833 on it
+// (0x1c742). The only oracle caller is 000008 (the actor's mass from its
+// shapes), which the product does not reproduce yet.
+void MassFrame::nxMassFrameTranslateToCentre()
+	{
+	float negated[3];
+	negated[0] = -mOffset.x;
+	negated[1] = -mOffset.y;
+	negated[2] = -mOffset.z;
+	nxMassFrameTranslate(negated);
+	}
+
+// phys_fn_000833 (0x0001c040, 1371 B)
+// __thiscall ret 4: translate the frame by
 // {d.x,d.y,d.z} at param+0. PROVISIONAL: early-out when d all-zero; else
 // d+offset; centered path (new center at origin) vs displaced path.
 void MassFrame::nxMassFrameTranslate(const void* param)
@@ -4937,7 +5048,8 @@ void MassFrame::nxMassFrameTranslate(const void* param)
 	mOffset.x = cx; mOffset.y = cy; mOffset.z = cz;	// shared tail 0x1c578
 	}
 
-// Provisional phys_fn_000947, ret 12: three stack DWORDs; the last is unused.
+// phys_fn_000947 (0x00020850, 39 B)
+// BOX slot 4, ret 12: three stack DWORDs; the last is unused.
 bool BoxShape::nxBoxAccumulateMass(MassFrame* destination, float density, unsigned reserved)
 	{
 	(void) reserved;
@@ -5169,7 +5281,8 @@ bool SphereShape::nxSphereAccumulateMass(MassFrame* destination, float density,
 	return true;
 	}
 
-// phys_fn_000827 (0x1bcc0, ret 0xc): rep-movsd 9 from arg1 into [this+0],
+// phys_fn_000827 (0x0001bcc0, 50 B)
+// rep-movsd 9 from arg1 into [this+0],
 // then arg2[0..2] into [this+0x24..0x2c] and arg3 into [this+0x30].
 void BoxShape::nxPoseCopyWithTail0827(const void* src, const unsigned* extra,
 	unsigned x)
@@ -5203,7 +5316,12 @@ void MeshShape::nxMeshTransformCenter(float* out) const
 	out[3] = v[3];
 	}
 
-// phys_fn_000849 (0x0001c8c0), __thiscall ret 0xc, helper of BOX slot 4.
+// phys_fn_000849 (0x0001c8c0, 101 B)
+// __thiscall ret 0xc, helper of BOX slot 4.
+// The row is thiscall on the destination MassFrame; this member takes the
+// destination as its first argument and has the shape in ecx. The row's only
+// caller, 000947 (BOX slot 4), calls it directly and no table holds it,
+// so the convention is a code-shape difference, not a behaviour one.
 // Pose support is provisional: centered boxes and the driven finite poses;
 // general x87 staging, exceptional inputs and payload aliasing remain open.
 void BoxShape::nxBoxComputeMassFrame(MassFrame* dest, float density,
@@ -5237,7 +5355,12 @@ void BoxShape::nxBoxComputeMassFrame(MassFrame* dest, float density,
 		local.nxMassFrameScale(density);
 	dest->nxMassFrameMerge(local);		}
 
-// phys_fn_000853 (0x0001c980), __thiscall ret 0x14, CAPSULE-table slot 4.
+// phys_fn_000853 (0x0001c980, 115 B)
+// __thiscall ret 0x14, CAPSULE-table slot 4.
+// The row is thiscall on the destination MassFrame; this member takes the
+// destination as its first argument and has the shape in ecx. The row's only
+// caller, 001008 (CAPSULE slot 4), calls it directly and no table holds it,
+// so the convention is a code-shape difference, not a behaviour one.
 void CapsuleShape::nxCapsuleComputeMassFrame(MassFrame* dest, float density,
 	unsigned axisSelector, float radius, float cylHalfHeight, const void* extra)
 	{
@@ -5258,6 +5381,8 @@ void CapsuleShape::nxCapsuleComputeMassFrame(MassFrame* dest, float density,
 // ---------------------------------------------------------------------------
 // CapsuleShape. See ObjectModel.h for the row map.
 
+// phys_fn_000987 (0x00021a60, 101 B)
+// __thiscall ret 8: the CAPSULE final's constructor.
 CapsuleShape::CapsuleShape(void* owner, unsigned argument)
 	: mBase(owner, argument)				// forwarded unchanged: 0x00021a67..6f
 	{
@@ -5265,11 +5390,11 @@ CapsuleShape::CapsuleShape(void* owner, unsigned argument)
 	mFloatE0 = 0.0f;						// mov [esi+0xe0],0 at 0x00021a7a
 	mFloatE4 = 0.0f;						// mov [esi+0xe4],0 at 0x00021a84
 
-	// The embedded collision object: a fresh 0x1c-byte block through the SDK
-	// allocator (0x00021a8e..9c), built by phys_fn_001123 -- the capsule-family
+	// The embedded collision object: a fresh 0x1c-byte block through the imported
+	// Foundation allocator [0x101041bc] (0x00021a8e..9c), built by phys_fn_001123 -- the capsule-family
 	// variant of the shared collision-object constructor -- with the capsule
 	// stored at BOTH +0x08 and +0x18.
-	void* memory = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	CollisionObject* object = memory
 		? new(memory) CollisionObject(this)
 		: 0;								// null arm: 0x00021aad
@@ -5278,7 +5403,8 @@ CapsuleShape::CapsuleShape(void* owner, unsigned argument)
 	mBase.mSentinelD0 = 3;					// NX_SHAPE_CAPSULE: 0x00021ab5
 	}
 
-// phys_fn_000991 (0x00021b40), CAPSULE-table slot 13.
+// phys_fn_000991 (0x00021b40, 42 B)
+// CAPSULE-table slot 13.
 bool CapsuleShape::nxCapsuleSaveState(void* record)
 	{
 	unsigned char* rec = static_cast<unsigned char*>(record);
@@ -5291,7 +5417,8 @@ bool CapsuleShape::nxCapsuleSaveState(void* record)
 	return mBase.nxBaseSaveState(record);				// jmp 0x000256f0 at 0x00021b65
 	}
 
-// phys_fn_000995 (0x00021be0), CAPSULE-table slot 14.
+// phys_fn_000995 (0x00021be0, 23 B)
+// CAPSULE-table slot 14.
 void CapsuleShape::nxCapsuleSetRadius(float radius)
 	{
 	mFloatE0 = radius;						// mov [ecx+0xe0],eax at 0x00021be6
@@ -5475,7 +5602,8 @@ void CapsuleShape::nxCapsuleDebugRenderDispatch(const void* renderer) const
 		}
 	}
 
-// phys_fn_000989 (0x00021ad0), CAPSULE-table slot 12.
+// phys_fn_000989 (0x00021ad0, 110 B)
+// CAPSULE-table slot 12.
 void CapsuleShape::nxCapsuleLoadFromDesc(const void* record)
 	{
 	const unsigned char* rec = static_cast<const unsigned char*>(record);
@@ -5517,6 +5645,7 @@ void CapsuleShape::nxCapsuleZeroCenterRadius(float* out) const
 // ---------------------------------------------------------------------------
 // BOX-table slot 10. See ObjectModel.h.
 
+// phys_fn_000937 (0x00020670, 69 B)
 void BoxShape::nxBoxCenterAndDiagonal(float* out) const
 	{
 	out[0] = mBase.mPose0C.mTranslation[0];	// mov edx,[ecx+0x30] at 0x00020670
@@ -5525,10 +5654,12 @@ void BoxShape::nxBoxCenterAndDiagonal(float* out) const
 	const double dx = mHull.mDims04[0];		// fld [+0xe4]
 	const double dy = mHull.mDims04[1];		// [+0xe8]
 	const double dz = mHull.mDims04[2];		// [+0xec]
-	out[3] = static_cast<float>(sqrt(dx * dx + dy * dy + dz * dz));
+	// fsqrt of (dx dx + dy dy) + dz dz, formed on the stack (0x20697-0x206a7).
+	out[3] = static_cast<float>(x87FsqrtDot3(dx, dx, dy, dy, dz, dz));
 	}
 
-// phys_fn_000939 (0x000206c0), BOX-table slot 11.
+// phys_fn_000939 (0x000206c0, 62 B)
+// BOX-table slot 11.
 void BoxShape::nxBoxZeroCenterAndDiagonal(float* out) const
 	{
 	out[0] = 0.0f;							// xor edx,edx; mov [eax],edx ...
@@ -5537,10 +5668,22 @@ void BoxShape::nxBoxZeroCenterAndDiagonal(float* out) const
 	const double dx = mHull.mDims04[0];
 	const double dy = mHull.mDims04[1];
 	const double dz = mHull.mDims04[2];
-	out[3] = static_cast<float>(sqrt(dx * dx + dy * dy + dz * dz));	// 0x000206ce..f8
+	// fsqrt of (dx dx + dy dy) + dz dz, formed on the stack (0x206e0-0x206f0).
+	out[3] = static_cast<float>(x87FsqrtDot3(dx, dx, dy, dy, dz, dz));	// 0x000206ce..f8
 	}
 
-// phys_fn_000927 (0x00020450), BOX-table slot 13.
+// phys_fn_000925 (0x00020440, 13 B)
+// `mov eax,ecx; xor ecx,ecx`, three dword stores of zero at +0/+4/+8, `ret`:
+// the constructor returns this, as every MSVC constructor does.
+HullScratchElement::HullScratchElement()
+	{
+	mWords[0] = 0;
+	mWords[1] = 0;
+	mWords[2] = 0;
+	}
+
+// phys_fn_000927 (0x00020450, 40 B)
+// BOX-table slot 13.
 bool BoxShape::nxBoxSaveState(void* record)
 	{
 	memcpy(reinterpret_cast<unsigned char*>(record) + 0x4c,
@@ -5548,7 +5691,8 @@ bool BoxShape::nxBoxSaveState(void* record)
 	return mBase.nxBaseSaveState(record);			// jmp 0x000256f0 at 0x00020473
 	}
 
-// phys_fn_000941 (0x00020700), BOX-table slot 8.
+// phys_fn_000941 (0x00020700, 68 B)
+// BOX-table slot 8.
 void BoxShape::nxBoxLocalAABB(float* out) const
 	{
 	out[0] = -mHull.mDims04[0];				// fld/fchs/fxch chain, 0x00020700..23
@@ -5559,7 +5703,8 @@ void BoxShape::nxBoxLocalAABB(float* out) const
 	out[5] = mHull.mDims04[2];
 	}
 
-// phys_fn_000935 (0x000205a0), BOX-table slot 9. Extent rows of pose one's
+// phys_fn_000935 (0x000205a0, 198 B)
+// BOX-table slot 9. Extent rows of pose one's
 // rotation: each row uses its three columns in order for |row . dims|.
 void BoxShape::nxBoxWorldAABB(float* out) const
 	{
@@ -5579,13 +5724,19 @@ void BoxShape::nxBoxWorldAABB(float* out) const
 	out[5] = t[2] + e2;
 	}
 
-// phys_fn_000979 (0x00021940), BOX-table slot 0. The image's order: vtable
-// restore words (masked on both sides), the colobj destruction, then the
-// base-dtor chain whose tail destroys the embedded Prunable. The colobj's
-// own deleting row is not transcribed yet -- its writes land in an external
-// block, so nothing inside the shape buffer depends on it.
+// phys_fn_000979 (0x00021940, 69 B)
+// BOX-table slot 0. The image's order: the two vtable restores (the BOX
+// table at +0x00, 0x1002194b, and the facade table at +0xe0, 0x10021951),
+// the colobj destruction, then the base-dtor chain whose tail destroys the
+// embedded Prunable, and the free of this through the imported Foundation
+// allocator [0x101041bc] (0x10021971) when flags&1. The image destroys the
+// colobj through its own table slot 0 (`call [eax]`, 0x1002195d); the
+// product's collision object has one class, so its deleting destructor is
+// called directly.
 void BoxShape::nxBoxScalarDeletingDtor(unsigned flags)
 	{
+	mBase.mVptrSlot = nxBoxShapeInternalVtable();	// 0x1002194b
+	mHull.mVptrSlot = nxBoxHullFacadeVtable();		// 0x10021951
 	if(mBase.mWord9C)
 		{
 		// mov ecx,[esi+0x9c]; test; push 1; call [eax] at 0x0002195b..61.
@@ -5594,7 +5745,7 @@ void BoxShape::nxBoxScalarDeletingDtor(unsigned flags)
 	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of 0x00026bd0: jmp 0xb5640
 	if(flags & 1u)
-		nxGetSdkAllocator()->free(this);
+		nxFoundationSDKAllocator->free(this);
 	}
 
 // phys_fn_001399 (0x00028e80), MESH-table slot 0.
@@ -5622,11 +5773,11 @@ PlaneShape::PlaneShape(void* owner, unsigned argument)
 	: mBase(owner, argument)				// forwarded unchanged: 0x00024edb..df
 	{
 	mBase.mVptrSlot = nxPlaneShapeInternalVtable();
-	// The embedded collision object: a fresh 0x1c-byte block through the SDK
-	// allocator (0x00024eea..f8), built by phys_fn_001159 -- the plane-family
+	// The embedded collision object: a fresh 0x1c-byte block through the imported
+	// Foundation allocator [0x101041bc] (0x00024eea..f8), built by phys_fn_001159 -- the plane-family
 	// variant of the shared collision-object constructor -- with the plane
 	// stored at BOTH +0x08 and +0x18.
-	void* memory = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	CollisionObject* object = memory
 		? new(memory) CollisionObject(this)
 		: 0;								// null arm: 0x00024f09
@@ -5776,11 +5927,11 @@ MeshShape::MeshShape(void* owner, unsigned argument)
 	mWordE0 = 0;							// mov [esi+0xe0],0 at 0x00027dca
 	mWordE4 = 0;							// mov [esi+0xe4],0 at 0x00027dd4
 
-	// The embedded collision object: a fresh 0x1c-byte block through the SDK
-	// allocator (0x00027dde..ec), built by phys_fn_001241 -- the mesh-family
+	// The embedded collision object: a fresh 0x1c-byte block through the imported
+	// Foundation allocator [0x101041bc] (0x00027dde..ec), built by phys_fn_001241 -- the mesh-family
 	// variant of the shared collision-object constructor -- with the mesh
 	// shape stored at BOTH +0x08 and +0x18.
-	void* memory = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	CollisionObject* object = memory
 		? new(memory) CollisionObject(this)
 		: 0;								// null arm: 0x00027dfd

@@ -555,9 +555,10 @@
       "id": "phys_fn_000768",
       "rva": "0x00017f10",
       "size": 1164,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000784",
@@ -1310,10 +1311,9 @@
       "id": "phys_fn_000981",
       "rva": "0x00021990",
       "size": 55,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_reconstructed_in_phase",
       "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "driving_phases": []
     },
     {
       "id": "phys_fn_000985",

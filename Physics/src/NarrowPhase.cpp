@@ -54,7 +54,12 @@ static_assert(offsetof(NxCollisionShape, translation) == 0x30, "shape translatio
 static_assert(offsetof(NxCollisionShape, type) == 0xd0, "shape type is at 0xd0");
 static_assert(offsetof(NxCollisionShape, geometry) == 0xe0, "shape geometry union is at 0xe0");
 
-// phys_fn_000943 at 0x00020750.
+// phys_fn_000943 (0x00020750, 139 B)
+//
+// The row is thiscall on the box (ecx) with four stack arguments, `ret 0x10`
+// (0x100207d8); this is a cdecl free function taking the box first. Its
+// oracle callers 001881 ([PLANE][BOX]) and 001883 call it directly and no
+// table holds it, so the convention is a code-shape difference only.
 //
 // The signs arrive as full ints and are converted with `fild`, not folded into
 // the constant, so the caller is free to pass anything; the plane/box entry

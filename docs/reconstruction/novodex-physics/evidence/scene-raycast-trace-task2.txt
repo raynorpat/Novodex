@@ -1,0 +1,793 @@
+SceneRaycast..CapsuleShape block: candidate cdb breakpoint trace after the Task 2 fixes (scene-raycast Task 2)
+============================================================================================================
+
+A trimmed excerpt of the raw cdb logs, in the method of evidence/joint-open-items-trace-slots.txt and
+evidence/scene-raycast-trace-audit.txt. ModLoad lines, banners, register dumps, the echoed breakpoint
+commands and the programs' own stdout are removed; the HIT lines are kept in order and otherwise
+unedited, per target. It is the evidence behind the dynamic_proof fields Task 2 records in
+inventory.json (units/scene-raycast-contract.md, ## Task 2 results). The oracle side is unchanged by
+Task 2 and is not re-run: its per-row counts are the ORACLE section of scene-raycast-trace-audit.txt.
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\<target>.exe build\pairs\candidate  (cwd build\pairs)
+           the pair directory staged by tools/run_phase_gate.ps1 -Phase 5/6/7 on this build; the script
+           breaks on the NxPhysics load with `sxe ld:NxPhysics`, sets the breakpoints below, then runs
+           to exit.
+Targets:   the 12 Phase 5 staged-pair targets and the Phase 6/7 joint targets (NxPhysicsJointStagedPairTests,
+           NxFoundationTangentTests, NxPhysicsJointAllocatorTests, NxPhysicsJointSlotTests): 16 executables.
+           On this build every one of them passed its gate with stdout_delta=0 (phases 5, 6 and 7).
+Recorded:  2026-09-28, on branch claude/scene-raycast-block, Task 2 working tree (after 5663e7a).
+Candidate: build\pairs\candidate\NxPhysics.dll
+           sha256=12ad8413b4fd51ce1e724f30fe8ad1144caec0201777e9b491486d9d0c290da0
+           (identical to build\Release\NxPhysics.dll at the time of the trace)
+Offsets:   module-relative, from build\Release\NxPhysics.map of that build: one breakpoint per
+           out-of-line symbol of every function Task 2 claims for a row of this block, plus the
+           quaternion helper 000768 and 000801 share (label 000801x). 62 addresses.
+
+BREAKPOINTS (label, module offset, object, symbol)
+--------------------------------------------------
+  000713   0x1a450  ObjectModel     ?nxBodyRecordFixRoot@@YAIPAX@Z
+  000738   0x38fd0  JointSupport    ?row000738@Row000738Fixture@@QAEPAXXZ
+  000742   0x1a390  ObjectModel     ?nxBodyRecordEnergyWord@@YAMPAX@Z
+  000744   0x1a320  ObjectModel     ?nxBodyRecordChainSettled@@YA_NPAX@Z
+  000746   0x12e70  NpActor         ?nxNpActorWorldTensorRDRt@@YAXPBM0PAM@Z
+  000746   0x2aac0  Scene           ?nxNpActorWorldTensorRDRt@@YAXPBM0PAM@Z
+  000756   0x12800  NpActor         ?nxNpActorUpdateCMassQuaternion@@YAXPAE@Z
+  000768   0x12820  NpActor         ?nxNpActorUpdateMassFrame@@YAXPAE@Z
+  000768   0x2a5b0  Scene           ?nxNpActorUpdateMassFrame@@YAXPAE@Z
+  000801x  0x10360  NpActor         ?nxNpActorBodyQuaternionFromMatrix@@YAXPBMPAM@Z
+  000801x  0x2a140  Scene           ?nxNpActorBodyQuaternionFromMatrix@@YAXPBMPAM@Z
+  000803   0xa290   MassProperties  _NxComputeSphereMass
+  000805   0xa210   MassProperties  _NxComputeSphereDensity
+  000807   0xa030   MassProperties  _NxComputeBoxMass
+  000809   0x9f70   MassProperties  _NxComputeBoxDensity
+  000811   0xa1a0   MassProperties  _NxComputeEllipsoidMass
+  000813   0xa130   MassProperties  _NxComputeEllipsoidDensity
+  000815   0xa100   MassProperties  _NxComputeCylinderMass
+  000817   0xa0e0   MassProperties  _NxComputeCylinderDensity
+  000819   0xa0c0   MassProperties  _NxComputeConeMass
+  000821   0xa0a0   MassProperties  _NxComputeConeDensity
+  000823   0x9fe0   MassProperties  _NxComputeBoxInertiaTensor
+  000825   0xa240   MassProperties  _NxComputeSphereInertiaTensor
+  000827   0x20d60  ObjectModel     ?nxPoseCopyWithTail0827@BoxShape@@QAEXPBXPBII@Z
+  000829   0x1dd00  ObjectModel     ?nxMassFrameBuildBox@MassFrame@@QAEXPBM@Z
+  000831   0x1e010  ObjectModel     ?nxMassFrameFoldPayload@MassFrame@@QAEXPBX@Z
+  000833   0x1e740  ObjectModel     ?nxMassFrameTranslate@MassFrame@@QAEXPBX@Z
+  000837   0x1e660  ObjectModel     ?nxMassFrameScale@MassFrame@@QAEXM@Z
+  000839   0x1e470  ObjectModel     ?nxMassFrameMerge@MassFrame@@QAEXABV1@@Z
+  000841   0x1ea50  ObjectModel     ?nxMassFrameTranslateToCentre@MassFrame@@QAEXXZ
+  000843   0x1def0  ObjectModel     ?nxMassFrameBuildSphere@MassFrame@@QAEXMPBX@Z
+  000845   0x1de00  ObjectModel     ?nxMassFrameBuildCapsule@MassFrame@@QAEXIMM@Z
+  000847   0x1dfa0  ObjectModel     ?nxMassFrameConditionalZero@MassFrame@@QAEXI@Z
+  000849   0x1a5c0  ObjectModel     ?nxBoxComputeMassFrame@BoxShape@@QAEXPAVMassFrame@@MPBMPBX@Z
+  000851   0x22470  ObjectModel     ?nxSphereComputeMassFrame@SphereShape@@QAEXPAVMassFrame@@MMPBX@Z
+  000853   0x1bc60  ObjectModel     ?nxCapsuleComputeMassFrame@CapsuleShape@@QAEXPAVMassFrame@@MIMMPBX@Z
+  000867   0x180a0  ObjectModel     ?nxAccumulateByKind0867@@YAXPAXM0M@Z
+  000925   0x17920  ObjectModel     ??0HullScratchElement@@QAE@XZ
+  000927   0x1b050  ObjectModel     ?nxBoxSaveState@BoxShape@@QAE_NPAX@Z
+  000931   0x1d020  ObjectModel     ?nxFillShapeDescriptor@BoxShape@@QBEXPAI@Z
+  000935   0x1b3a0  ObjectModel     ?nxBoxWorldAABB@BoxShape@@QBEXPAM@Z
+  000937   0x1a550  ObjectModel     ?nxBoxCenterAndDiagonal@BoxShape@@QBEXPAM@Z
+  000939   0x1b490  ObjectModel     ?nxBoxZeroCenterAndDiagonal@BoxShape@@QBEXPAM@Z
+  000941   0x1ac60  ObjectModel     ?nxBoxLocalAABB@BoxShape@@QBEXPAM@Z
+  000943   0xa8d0   NarrowPhase     ?NxBoxShapeCorner@@YAXPBUNxCollisionShape@@HHHPAVNxVec3@@@Z
+  000947   0x1a520  ObjectModel     ?nxBoxAccumulateMass@BoxShape@@QAE_NPAVMassFrame@@MI@Z
+  000953   0x23940  ObjectModel     ?vertexCount@BoxHullFacade@@QBEIXZ
+  000955   0x23950  ObjectModel     ?vertices@BoxHullFacade@@QBEPBIXZ
+  000961   0x18050  ObjectModel     ?faceCount@BoxHullFacade@@QBEIXZ
+  000963   0x18020  ObjectModel     ?face@BoxHullFacade@@QBEPBUBoxFaceRecord@@I@Z
+  000965   0x23090  ObjectModel     ?shapeOwnerQuery@@YAIPAX@Z
+  000967   0x18010  ObjectModel     ?edgeTable@BoxHullFacade@@SAPBIXZ
+  000969   0x18040  ObjectModel     ?faceCornerTable@BoxHullFacade@@SAPBIXZ
+  000971   0x18000  ObjectModel     ?adjacencyTable@BoxHullFacade@@SAPBIXZ
+  000975   0x23100  ObjectModel     ?supportBounds@BoxHullFacade@@QBEXIPAM0PBM1I@Z
+  000977   0x176c0  ObjectModel     ??0BoxShape@@QAE@PAXI@Z
+  000979   0x1b0c0  ObjectModel     ?nxBoxScalarDeletingDtor@BoxShape@@QAEXI@Z
+  000985   0x230c0  ObjectModel     ?sharedHook@BoxHullFacade@@SAPBXXZ
+  000987   0x17830  ObjectModel     ??0CapsuleShape@@QAE@PAXI@Z
+  000989   0x1c3a0  ObjectModel     ?nxCapsuleLoadFromDesc@CapsuleShape@@QAEXPBX@Z
+  000991   0x1c470  ObjectModel     ?nxCapsuleSaveState@CapsuleShape@@QAE_NPAX@Z
+  000995   0x1c550  ObjectModel     ?nxCapsuleSetRadius@CapsuleShape@@QAEXM@Z
+
+CANDIDATE: hit counts per breakpoint (breakpoints not listed were not hit by any target)
+----------------------------------------------------------------------------------------
+Totals per target: Life 21, DynF 4, Empty 0, Name 0, Meta 0, BFlag 4, Dyn 8, DSet 54, Mom 12, Force 44, CMass 275, ShMut 0, JSP 29, Tangent 0, JAll 8, JSlot 192
+  000746   NpActor      DSet=11 CMass=77 JSlot=28
+  000746   Scene        Life=6 DynF=1 BFlag=1 Dyn=2 DSet=4 Mom=3 Force=11 CMass=10 JSP=8 JAll=2 JSlot=27
+  000756   NpActor      CMass=2
+  000768   NpActor      DSet=11 CMass=77 JSlot=28
+  000768   Scene        Life=6 DynF=1 BFlag=1 Dyn=2 DSet=4 Mom=3 Force=11 CMass=10 JSP=8 JAll=2 JSlot=27
+  000801x  NpActor      DSet=11 CMass=79 JSlot=28
+  000801x  Scene        Life=9 DynF=2 BFlag=2 Dyn=4 DSet=8 Mom=6 Force=22 CMass=20 JSP=13 JAll=4 JSlot=54
+  000935   ObjectModel  DSet=2
+  000937   ObjectModel  DSet=1
+  000941   ObjectModel  DSet=1
+  000991   ObjectModel  DSet=1
+
+Not hit by any target: 000713, 000738, 000742, 000744, 000803, 000805, 000807, 000809, 000811, 000813, 000815, 000817, 000819, 000821, 000823, 000825, 000827, 000829, 000831, 000833, 000837, 000839, 000841, 000843, 000845, 000847, 000849, 000851, 000853, 000867, 000925, 000927, 000931, 000939, 000943, 000947, 000953, 000955, 000961, 000963, 000965, 000967, 000969, 000971, 000975, 000977, 000979, 000985, 000987, 000989, 000995
+
+CANDIDATE HIT lines, in order, per target
+-----------------------------------------
+
+[NxPhysicsActorLifecycleTests] 21 hits
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+
+[NxPhysicsDynamicFirstTests] 4 hits
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+
+[NxPhysicsEmptySceneTests] 0 hits
+
+[NxPhysicsActorNameTests] 0 hits
+
+[NxPhysicsActorMetadataTests] 0 hits
+
+[NxPhysicsActorBodyFlagTests] 4 hits
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+
+[NxPhysicsActorDynamicsTests] 8 hits
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+
+[NxPhysicsActorDynamicSetterTests] 54 hits
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000937 ObjectModel
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000935 ObjectModel
+HIT 000935 ObjectModel
+HIT 000941 ObjectModel
+HIT 000991 ObjectModel
+
+[NxPhysicsActorMomentumTests] 12 hits
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+
+[NxPhysicsActorForceTests] 44 hits
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+
+[NxPhysicsActorCMassTests] 275 hits
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000756 NpActor
+HIT 000801x NpActor
+HIT 000756 NpActor
+HIT 000801x NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+
+[NxPhysicsActorShapeMutationTests] 0 hits
+
+[NxPhysicsJointStagedPairTests] 29 hits
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+
+[NxFoundationTangentTests] 0 hits
+
+[NxPhysicsJointAllocatorTests] 8 hits
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+
+[NxPhysicsJointSlotTests] 192 hits
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000801x Scene
+HIT 000768 Scene
+HIT 000801x Scene
+HIT 000746 Scene
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor
+HIT 000768 NpActor
+HIT 000801x NpActor
+HIT 000746 NpActor

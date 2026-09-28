@@ -7,7 +7,7 @@
 // The dispatcher hands each entry `(shape0, shape1, sink, context)` with the
 // pair already ordered by ascending shape type. Entries write nothing
 // themselves; they compute a separation, a point and a normal and hand those to
-// phys_fn_000873, which owns the stream format.
+// Row 000873, which owns the stream format.
 
 #include "NarrowPhase.h"
 #include "NxRay.h"
@@ -69,7 +69,7 @@ struct NxContactSink
 	NxU8   tail[2];
 	};
 
-// phys_fn_000873 at 0x0001d610. __thiscall on the sink, seven stack arguments,
+// Row 000873 at 0x0001d610. __thiscall on the sink, seven stack arguments,
 // `ret 0x1c`.
 void NxEmitContact(NxContactSink* sink, void* object1, void* object0,
 	NxU32 separationBits, const NxVec3* point, const NxVec3* normal,
@@ -315,7 +315,7 @@ int NxBoxBoxTransposedPair(NxVec3* points, NxReal* separations, NxVec3* normal,
 // last entry of matrix A that Phase 3 can close.
 //
 // It is the second entry that INLINES the emitter rather than calling
-// phys_fn_000873, and it inlines the same three levels plane/box does, so the
+// Row 000873, and it inlines the same three levels plane/box does, so the
 // shared helpers cover its stream half. What is its own is four things:
 //
 //   the orientation swap is here, not in the emitter (0x0003ae67), and it reads

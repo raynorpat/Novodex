@@ -2033,7 +2033,7 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	*reinterpret_cast<unsigned char**>(record + 0x1bc) = record;
 	*reinterpret_cast<unsigned char**>(record + 0x1e8) = record;
 	// The body's JointSupportBody pointer: the oracle's body constructor
-	// phys_fn_000797 stores 0 at +0x204 (0x1b713), after +0x1e4/+0x1e0. Only
+	// Row 000797 stores 0 at +0x204 (0x1b713), after +0x1e4/+0x1e0. Only
 	// the simulation step's phys_fn_000611 (0x11305) points it at an element
 	// of the Scene's +0x5ac array; the candidate has no step, so it stays 0
 	// (joint-open-items-contract.md "## Body record +0x204"). No allocation.
@@ -2099,7 +2099,7 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 			1.0f / inertia.z;
 		}
 	// The oracle's creation path refreshes the mass frame through
-	// phys_fn_000768 (called from 000795 at 0x1b497): +0x134, +0x158, +0x124
+	// Row 000768 (called from 000795 at 0x1b497): +0x134, +0x158, +0x124
 	// and +0x164 from the +0x24 quaternion and +0x18 position. Joint-open-items
 	// Task 4 found the earlier sequence one bit off on rotated bodies (the
 	// fixed and prismatic relative rotations read +0x124/+0x134/+0x158).

@@ -137,8 +137,10 @@ static void nxNpActorTransitionKinematic(unsigned char* record, bool enable)
 		flags |= 0x80u;
 		memset(record + 0xc0, 0, 4 * sizeof(float));
 		void*& state = *reinterpret_cast<void**>(record + 0x118);
+		// The imported Foundation allocator, [0x101041bc] (0x1001995d); the
+		// block is freed through the same allocator below (0x10019cda).
 		if(!state)
-			state = nxGetSdkAllocator()->malloc(0x20, NX_MEMORY_PERSISTENT);
+			state = nxFoundationSDKAllocator->malloc(0x20, NX_MEMORY_PERSISTENT);
 		if(state) *reinterpret_cast<unsigned*>(
 			static_cast<unsigned char*>(state) + 0xc) = 0;
 		}
@@ -155,7 +157,7 @@ static void nxNpActorTransitionKinematic(unsigned char* record, bool enable)
 		void*& state = *reinterpret_cast<void**>(record + 0x118);
 		if(state)
 			{
-			nxGetSdkAllocator()->free(state);
+			nxFoundationSDKAllocator->free(state);
 			state = 0;
 			}
 		}
@@ -1229,7 +1231,7 @@ void NpActorVtable::setDynamic(const NxBodyDesc&)
 	}
 
 // The mass-frame refresh every pose and CMass-offset setter calls last:
-// phys_fn_000768 (000196, 000198, 000200, 000202, 000210, 000212, 000214,
+// Row 000768 (000196, 000198, 000200, 000202, 000210, 000212, 000214,
 // 000218, 000220 and 000222 each `call 0x10017f10` with ecx = the record,
 // after their stores and +0x198 increments and before the wake test). It
 // writes +0x134, +0x158, +0x124 and +0x164. Joint-open-items Task 4 routed

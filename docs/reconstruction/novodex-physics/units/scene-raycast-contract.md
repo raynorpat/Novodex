@@ -66,6 +66,9 @@ Discovered rows that are implemented and faithful (the Task 2 promotion candidat
 
 ## Rows
 
+This table is the Task 1 audit. `## Task 2 results` (at the end) gives the new candidate, status and verdict
+of every row Task 2 changed, and supersedes this table for those rows.
+
 | Row | RVA | B | State | Role (callers -> callees; strings) | Sub-area | Candidate (file:line symbol) | Status | Verdict | Reached by (oracle trace) | Candidate executed | Step only | Public path |
 |---|---|---:|---|---|---|---|---|---|---|---|---|---|
 | 000688 | 0x153c0 | 339 | discovered | Closest-bounds loop. Custom convention: ecx=collector, ebx=NxRaycastHit*, stack (ray, maxDist, groups), cdecl `ret`. For each element S=[e+4]: skip if byte S+0xde&0x40; group word S+0xd8!=0xffff must have its bit set in groups. Gets the world AABB: Prunable at S+0xa4, handle word S+0xcc (0xffff gives a null box). Runs 004886 when [S+0xac]&2 is clear. Then 001722 NxRayAABBIntersect(min,max,orig,dir,&pt), NxComputeDistanceSquared import [0x1010419c](ray,&pt,0), fsqrt. Keeps the hit when sqrt<=maxDist and the squared \|orig-pt\| < hit.distance(+0x20). On a keep it writes hit.distance=squared value, hit.shape=[S+0x9c], hit.worldImpact=pt, hit.flags(+0x2c)=0x13. Callers 000696. Callees 004886, 001722. No strings. | scene raycast | none (NpScene.cpp:481 is a `return 0` stub) | missing | - | none | - | no | NxScene::raycastClosestBounds (slot 46, 000374) -> 000696 -> 000688 |
@@ -479,7 +482,16 @@ the fix, and this block does not edit them:
 |---|---|---|
 | 000742 | called only by 000060 (NxActor::computeKineticEnergy). The live `NpActorVtable::computeKineticEnergy` (NpActor.cpp:2156) re-derives the formula with the wrong association. | 000060 calls `nxBodyRecordEnergyWord` (ObjectModel.cpp:1038, faithful to 0x10016dd0-0x10016e22) instead. The convention of that helper (cdecl where the row is fastcall) is this block's fix. |
 | 000784 | inlined in 000090 (moveGlobalPosition), 000124 (moveGlobalPose), 000126 (moveGlobalOrientation) | Call a 000784 reproduction (target ORs 1 and 2, the wake block 0x1950a-0x1961b, orientation-only stores only the quaternion) in place of the inline emulation, once this block writes 000784. |
-| 000785 | called by 000188/000190 (raiseBodyFlag/clearBodyFlag), and by this block's 000795 | Call the 000785/000787 reproduction (island step, unconditional inverses, Foundation allocator) once this block writes it. |
+| 000785 | called by 000188/000190 (raiseBodyFlag/clearBodyFlag), and by this block's 000795 | Call the 000785/000787 reproduction (island step, unconditional inverses, Foundation allocator) once this block writes it. Task 2 already moved the kinematic block's malloc and free in `nxNpActorTransitionKinematic` to the Foundation allocator. |
+| 000713 | the live copy `nxNpActorGroupRoot` (NpActor.cpp) is used by 000062's `isGroupSleeping` | Call the claimed `nxBodyRecordFixRoot` (ObjectModel.cpp) or keep the copy; both are faithful in logic (Task 2 claim is the ObjectModel.cpp function). |
+| 000744 | inlined into 000062 (`NpActorVtable::isGroupSleeping`) | Call the claimed `nxBodyRecordChainSettled` (ObjectModel.cpp, faithful in logic) instead of the inline copy. |
+| 000746 | 000140/000142 (getGlobalInertiaTensor/Inverse) call `nxNpActorWorldTensor`, a different helper; 000789's product copy does too | Call `nxNpActorWorldTensorRDRt` (NpActorDynamicMath.h, now `reconstructed`). The oracle row is hit 17 more times than the candidate for this reason (Mom 14, CMass 3). |
+| 000756 | 000204/000208 call `nxNpActorUpdateCMassQuaternion` | Nothing to do: Task 2 retargeted that header function to the listing's conversion (now `reconstructed`); the call sites are unchanged. |
+
+Task 2 touched NpActor.cpp in two places only: the kinematic block's allocator in `nxNpActorTransitionKinematic`
+(000785/000787, ours), and one comment line near `nxNpActorRefreshCMass` that began `// phys_fn_000768 (` and
+now begins `// Row 000768 (` (the marker rule). Scene.cpp: two comment lines reworded the same way (000797,
+000768). The NpActorDynamicMath.h edits are listed in `## Task 2 results`.
 
 **Merge hazard.** The NpActor contract walks 000756, 000782, 000784, 000785 and 000789 as callees of its
 rows. Their current emulations live in NpActor.cpp:
@@ -513,3 +525,108 @@ not merge textually. The shared files are NpActor.cpp and NpActorDynamicMath.h.
    - 000738/000740 (CCD), 000841 and 000925 (state mismatches).
 
    The step-only rows would be source-only `reconstructed`.
+
+## Task 2 results
+
+Task 2 fixed the listed defects, claimed every implemented row's product function with its stable-ID line,
+and promoted the rows the evidence supports. Candidate trace after the fixes:
+`evidence/scene-raycast-trace-task2.txt` (62 breakpoints over the 16 staged-pair targets, candidate
+NxPhysics.dll sha256 12ad8413b4fd51ce...; the final build differs from it only in the two link timestamps,
+PE header and debug directory).
+
+**Promoted to `reconstructed` (3 rows, 1,934 B), all with dynamic evidence:**
+
+| Row | B | Candidate | Evidence |
+|---|---:|---|---|
+| 000768 | 1164 | `nxNpActorUpdateMassFrame` (NpActorDynamicMath.h; NpActor.obj and Scene.obj copies) | 191 hits, per target exactly the oracle's counts |
+| 000746 | 245 | `nxNpActorWorldTensorRDRt` (NpActorDynamicMath.h), now `__declspec(noinline)` | 191 hits, one per 000768 call; the oracle's 17 extra calls come from 000140/000142/000789, whose product copies use another helper (handover) |
+| 000756 | 525 | `nxNpActorUpdateCMassQuaternion` (NpActorDynamicMath.h), now `__declspec(noinline)`, calling `nxNpActorBodyQuaternionFromMatrix` | CMass 2, the oracle's count |
+
+000768 was re-walked in full (rotation spills, centre, the nine R F sums, the quaternion arms, the call
+arguments to 000746). 000746 and 000756 were walked against their listings (0x16e80-0x16f74,
+0x17420-0x1762c).
+
+**Defects fixed:**
+- 000845: selector 1 stores the transverse term at +0x00 (0x1c836) before its branch; the comment that said
+  the image leaves the word unwritten is corrected.
+- 000768/000801/000756: the four roots of `nxNpActorBodyQuaternionFromMatrix` are now fsqrt through the
+  X87Sqrt.h helpers in 000768's operand order (0x18216/0x182a8/0x182f3/0x18339): trace `x87FsqrtSum4`, z and
+  y arms `x87FsqrtDiag`, x arm `x87FsqrtSum3` on the float spill. The helpers are naked asm, so they execute
+  fsqrt in the SSE2 units NpActor.cpp and Scene.cpp too; under 0x027f the result equals the CRT's, and every
+  Phase 5 target stayed at stdout_delta=0. 000756's candidate now uses this conversion (it used
+  `nxNpActorQuaternionFromMatrix`, which grouped the trace (m00 + m11) + m22). `nxNpActorQuaternionFromMatrix`
+  keeps CRT sqrt; its only user is now 000789, which is left for its rewrite.
+- Allocator: 000977 and 000987 allocate the collision object from `nxFoundationSDKAllocator` ([0x101041bc],
+  0x218f1/0x21a8e); 000979 frees `this` through it (0x21971). To keep every block on one allocator, the
+  collision object's deleting destructor (`CollisionObject::nxScalarDeletingDtor`, row 001079, 0x235f4) and
+  the sphere, plane and mesh constructors' collision-object allocations moved too (their oracle rows use
+  [0x101041bc] at 0x277e4, 0x24eea and 0x27dde). The kinematic block at +0x118 (000785/000787,
+  `nxNpActorTransitionKinematic`) is allocated and freed through it (0x1995d, 0x19cda).
+- 000979: the vptr restores at 0x2194b (BOX table) and 0x21951 (facade table) are written.
+- 000977: stores the facade table at +0xe0 (0x21895). The facade table is new
+  (`nxBoxHullFacadeVtable`, ObjectModel.cpp), dumped from .rdata 0x10106a88: slot 0 000985, 1 000953,
+  2 000955, 3 000961, 4 000963, 5 000965, 6-8 000967/000969/000971, 9 000957 and 10 000959 (null: not
+  written), 11 000975.
+- 000953 and 000961 are real slot functions (`BoxHullFacade::vertexCount`/`faceCount`).
+- 000975 has the row's ABI: six stack arguments, `ret 0x18` (unread, min, max, direction, pose, unread). It
+  sits in a table, so its convention matters; the layout harness call was updated to it.
+- 000967/000969/000971: the tables hold all 24 dwords of the image (they held 12).
+- 000937/000939: the root is `x87FsqrtDot3` in the listing order, not CRT sqrt.
+- 000847: only the argument's low byte is tested (0x1c888).
+- The `phys_fn_000730-equivalent` comment line (ObjectModel.cpp) is reworded, and 18 other comment lines that
+  began `// phys_fn_` for rows of this block without the stable-ID form now begin `// Row` (ContactGeneration.cpp
+  and .h, NarrowPhase.h, NpActor.cpp, ObjectModel.cpp, Scene.cpp, core/JointSupport.h).
+
+**State mismatches resolved (rows stay `reconstructed`; stale proofs replaced by static proofs):**
+- 000738: written as `Row000738Fixture::row000738` (core/JointSupport.cpp), the row's ABI; step-only.
+- 000841: written as `MassFrame::nxMassFrameTranslateToCentre` (ObjectModel.cpp); its only caller 000008 is
+  not reproduced.
+- 000925: written as `HullScratchElement::HullScratchElement` (ObjectModel.cpp); its only user 001472 is not
+  reproduced.
+
+The old dynamic proofs of these three drove only the oracle (or a harness composition) and are removed;
+the Task 2 trace confirms nothing in the product calls them yet.
+- 000713: source and implementation set (`nxBodyRecordFixRoot`, ObjectModel.cpp).
+- 000803-000825: implementation corrected to MassProperties.cpp, where the stable-ID lines now are.
+- 000981: demoted to `discovered` (phase 5 ledger reason `not_reconstructed_in_phase`). It still omits the call
+  to 000973 (0x219b5) and drops the bool return; 000973 is the Task 4 hull batch.
+
+**Calling conventions (rule c).** Decided per row by whether anything reaches the row other than a direct call:
+
+| Row | Row ABI | Candidate | Callers | Decision |
+|---|---|---|---|---|
+| 000713 | thiscall | cdecl | direct only (000655, 000718, 000724, 000744, 000776, 003979) | code shape; recorded |
+| 000744 | ecx, plain ret | cdecl | direct only (000062) | code shape; recorded |
+| 000756 | ecx, plain ret | cdecl | direct only (000204, 000208, 000772) | code shape; recorded |
+| 000768 | thiscall | cdecl | direct only (000164, 000196-000222, 000793, 000795) | code shape; recorded |
+| 000849, 000851, 000853 | thiscall on the destination | shape member, destination first | direct only (000947, 001371, 001008) | code shape; recorded |
+| 000943 | thiscall ret 0x10 | cdecl | direct only (001881, 001883) | code shape; recorded |
+| 000975 | thiscall ret 0x18 | was a four-argument member | facade table slot 11 | **fixed** |
+| 000738 | ecx, plain ret | thiscall member, no arguments | (001303) | same ABI |
+
+**Deferred, with the reason:**
+- The dirty-mark vector growth inside 000782, 000784, 000789 and 000793/000795 (`nxNpActorMarkRecordDirty`,
+  NpActor.cpp) stays on `nxGetSdkAllocator()`. The vector belongs to the Scene auxiliary manager: it is
+  allocated and freed in Scene.cpp by rows outside this block, so moving only the growth would free
+  Foundation blocks through the SDK allocator. The whole vector lifetime has to move in one change.
+- 000923 stays `discovered`: its candidate is vendored ICE code (IceAABB.h `SetCenterExtents`, the ICF-folded
+  copy), which the vendored-correspondence method promotes, and its oracle callers (000973, 005143) are not
+  reproduced, so no trace reaches it.
+- Remaining defects in claimed rows, unchanged by Task 2: 000829 (float spills), 000833 (the `x*0.0` addends),
+  000849 (inline formula for the 000833 call), 000867 (v rounding), 000873 (stream growth), 000935
+  (association), 000989 (NaN report, bool return), 000995 (slot-6 tail jump). 000742's live copy is the NpActor
+  session's (handover).
+- Partial rows left for Task 4: 000776/000799, 000782, 000784, 000785/000787 (island step, inverses), 000789,
+  000791, 000793/000795/000797, 000801 (registration), 000933, 000951, 000981, 000983, 000993.
+
+**Claims.** 63 stable-ID lines for rows of this block, all in the exact form, none duplicated, every RVA and
+size equal to the inventory's: ObjectModel.cpp (41), MassProperties.cpp (12), NpActorDynamicMath.h (3),
+core/JointSupport.cpp (6: 000712, 000738, 000754, 000758, 000760, 000778), NarrowPhase.cpp (1: 000943).
+
+**Harness changes (no registered line edited).** NxPhysicsShapeVtableTests: the oracle's [0x101041bc] holder and
+the candidate's `nxFoundationSDKAllocator` are the same word in that process (one NxFoundation.dll), so the
+candidate's collision-object frees had started to count in `oracleFreeCount` and moved the oracle digest.
+Every free comparison now takes the oracle's count before the candidate runs and counts the candidate's share of
+the holder plus its SDK bridge; the registered line `shape vtable oracle_digest=ed1294b6 cases=626 failures=0`
+is reproduced. NxPhysicsObjectLayoutTests: the one `supportBounds` call takes the six-argument form; its
+transcript, including `layout candidate mismatches=1 mode=differential candidate_fold=4492c8c1`, is unchanged.

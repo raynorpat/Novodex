@@ -122,7 +122,7 @@ double __cdecl NxSegmentSegmentSquareDistance(const NxSegment* segment0,
 // The two helpers the entries above share, declared because the differential
 // drives them at their own recorded addresses as well as through their callers.
 
-// phys_fn_000943 at 0x00020750, __thiscall on the box shape. Writes the world
+// Row 000943 at 0x00020750, __thiscall on the box shape. Writes the world
 // position of the corner picked by the three signs, each of which the oracle
 // passes as a full int and converts with `fild`.
 void NxBoxShapeCorner(const NxCollisionShape* box, int signX, int signY, int signZ, NxVec3* corner);

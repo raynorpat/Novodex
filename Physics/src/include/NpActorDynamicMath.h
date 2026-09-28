@@ -3,6 +3,7 @@
 
 #include "NxMat33.h"
 #include "NxQuat.h"
+#include "X87Sqrt.h"
 #include <math.h>
 #include <string.h>
 
@@ -93,8 +94,21 @@ static inline void nxNpActorQuaternionFromMatrix(const float* m, float* q)
 // not the public NxMat33::toQuat: the listing keeps every intermediate in an x87
 // register (53-bit here, so double), sums the trace as (m11 + m22) + m00 and
 // spills (m11 + m22) to a float that the x arm reuses. Each arm computes
-// s = sqrt(... + 1), stores 0.5 * s, and multiplies three sums or differences
-// by the register reciprocal 0.5 / s.
+// s = fsqrt(... + 1), stores 0.5 * s, and multiplies three sums or differences
+// by the register reciprocal 0.5 / s. The same instruction sequence is the
+// conversion inside row 000768 (0x181f7-0x18379) and the whole of row 000756
+// (0x17420); the three listings differ only in which operand of a commutative
+// fadd comes first.
+// Each root is an inline `fsqrt` in the listing, so it goes through an
+// X87Sqrt.h helper that forms the sum inside, in 000768's operand order:
+// trace arm `fld m11; fadd m22; fadd m00; fadd 1.0f` (0x181f7-0x18216),
+// z arm `fld m00; fadd m11; fsubr m22; fadd 1.0f` (0x1829a-0x182a8),
+// y arm `fld m00; fadd m22; fsubr m11; fadd 1.0f` (0x182e5-0x182f3),
+// x arm `fld m00; fsub float(m11 + m22); fadd 1.0f` (0x1832d-0x18339).
+// The helpers are naked asm, so they run fsqrt whatever the including unit's
+// /arch: NpActor.cpp and Scene.cpp are SSE2, where the result comes back in
+// st(0) by the cdecl ABI and, under the API-time control word 0x027f, equals
+// the correctly rounded double the CRT sqrt gave.
 static inline void nxNpActorBodyQuaternionFromMatrix(const float* m, float* q)
 	{
 	const double yz = static_cast<double>(m[4]) + m[8];
@@ -102,7 +116,7 @@ static inline void nxNpActorBodyQuaternionFromMatrix(const float* m, float* q)
 	const double trace = yz + m[0];
 	if(trace >= 0.0)		// fcom 0.0; test ah, 1: below or unordered takes the arms
 		{
-		const double s = sqrt(trace + 1.0);
+		const double s = x87FsqrtSum4(m[4], m[8], m[0], 1.0f);
 		q[3] = static_cast<float>(0.5 * s);
 		const double r = 0.5 / s;
 		q[0] = static_cast<float>((static_cast<double>(m[7]) - m[5]) * r);
@@ -116,7 +130,7 @@ static inline void nxNpActorBodyQuaternionFromMatrix(const float* m, float* q)
 		axis = 2;
 	if(axis == 0)
 		{
-		const double s = sqrt((static_cast<double>(m[0]) - yzSpill) + 1.0);
+		const double s = x87FsqrtSum3(m[0], -yzSpill, 1.0f);
 		q[0] = static_cast<float>(0.5 * s);
 		const double r = 0.5 / s;
 		q[1] = static_cast<float>((static_cast<double>(m[3]) + m[1]) * r);
@@ -125,8 +139,7 @@ static inline void nxNpActorBodyQuaternionFromMatrix(const float* m, float* q)
 		}
 	else if(axis == 1)
 		{
-		const double s = sqrt((static_cast<double>(m[4]) -
-			(static_cast<double>(m[0]) + m[8])) + 1.0);
+		const double s = x87FsqrtDiag(m[4], m[0], m[8]);
 		q[1] = static_cast<float>(0.5 * s);
 		const double r = 0.5 / s;
 		q[2] = static_cast<float>((static_cast<double>(m[7]) + m[5]) * r);
@@ -135,8 +148,7 @@ static inline void nxNpActorBodyQuaternionFromMatrix(const float* m, float* q)
 		}
 	else
 		{
-		const double s = sqrt((static_cast<double>(m[8]) -
-			(static_cast<double>(m[4]) + m[0])) + 1.0);
+		const double s = x87FsqrtDiag(m[8], m[0], m[4]);
 		q[2] = static_cast<float>(0.5 * s);
 		const double r = 0.5 / s;
 		q[0] = static_cast<float>((static_cast<double>(m[6]) + m[2]) * r);
@@ -205,12 +217,15 @@ static inline void nxNpActorSetterQuaternionFromMatrix(const float* m, float* q)
 		}
 	}
 
+// phys_fn_000746 (0x00016e80, 245 B)
 // out = R diag(d) R^T, as the cdecl helper phys_fn_000746 (0x16e80, 245 B)
 // forms it (joint-open-items Task 4). Of the nine products d[k] * R[i][k],
 // four stay in x87 registers (d0*R00, d0*R20, d1*R21, d2*R22: double here)
 // and five are spilled to float; each element then sums three products in
 // the listing's order and the symmetric pairs store one value twice.
-static inline void nxNpActorWorldTensorRDRt(const float* d, const float* r, float* out)
+// Kept out of line: the oracle calls it (`call 0x10016e80` from 000768 at
+// 0x1838a, and from 000789/000770/000772), so a breakpoint on it sees it run.
+static __declspec(noinline) void nxNpActorWorldTensorRDRt(const float* d, const float* r, float* out)
 	{
 	const double a = static_cast<double>(d[0]) * r[0];
 	const float s4 = static_cast<float>(static_cast<double>(d[0]) * r[3]);
@@ -264,6 +279,7 @@ static inline void nxNpActorComposeRotation(const float* q, float* r)
 	r[8] = static_cast<float>(static_cast<double>(xx1Spill) - yy2);
 	}
 
+// phys_fn_000768 (0x00017f10, 1164 B)
 // The mass-frame refresh phys_fn_000768 (0x17f10, 1164 B, thiscall on the
 // record, joint-open-items Task 4). From the pose quaternion at +0x24 (w
 // last) and position at +0x18 it forms the rotation R with the same x87
@@ -320,9 +336,19 @@ static inline void nxNpActorUpdateMassFrame(unsigned char* record)
 		reinterpret_cast<float*>(record + 0x164));
 	}
 
-static inline void nxNpActorUpdateCMassQuaternion(unsigned char* record)
+// phys_fn_000756 (0x00017420, 525 B)
+// fastcall(record): the +0x124 quaternion of the +0x134 3x3. The listing is the
+// conversion nxNpActorBodyQuaternionFromMatrix reproduces (trace (m11 + m22) +
+// m00 with m11 + m22 spilled to a float for the x arm, fsqrt in every arm); it
+// differs from 000768's copy only in the operand order of two commutative
+// fadds (z arm `fld m11; fadd m00` at 0x174ec, y arm `fld m22; fadd m00` at
+// 0x1755a), which cannot change a sum. Its callers are 000204 and 000208 (the
+// CMass global pose/orientation setters) and 000772; all call it directly, so
+// the free-function convention here is a code-shape difference only. Kept out
+// of line as the oracle's `call 0x10017420` is.
+static __declspec(noinline) void nxNpActorUpdateCMassQuaternion(unsigned char* record)
 	{
-	nxNpActorQuaternionFromMatrix(
+	nxNpActorBodyQuaternionFromMatrix(
 		reinterpret_cast<const float*>(record + 0x134),
 		reinterpret_cast<float*>(record + 0x124));
 	}

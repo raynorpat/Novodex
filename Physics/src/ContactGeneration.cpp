@@ -122,7 +122,7 @@ static NxU32 nxBits(NxReal value)
 // The three stream levels, factored out because there are two implementations
 // of them in the oracle and therefore two here.
 //
-// phys_fn_000873 at 0x0001d610 is the emitter that fifteen inventory rows call.
+// Row 000873 at 0x0001d610 is the emitter that fifteen inventory rows call.
 // phys_fn_001883, matrix A [PLANE][BOX], does not call it: it writes
 // `sink->[0x34]`, `+0x20` and `+0x24` itself at 0x00047fdf, 0x00047fec and
 // 0x00047ff5 and appends through its own `lea esi,[edi+0x38]`. So the oracle
@@ -139,7 +139,7 @@ static NxU32 nxBits(NxReal value)
 // it changes a predicate, it changes only the row whose predicate it is.
 //
 // The differential is the second half of that: contact_emit drives
-// phys_fn_000873 and contact_plane_box drives the inlined copy, each against its
+// Row 000873 and contact_plane_box drives the inlined copy, each against its
 // own counterpart in the pinned DLL, so a drift that these helpers cannot
 // prevent is a drift one of the two blocks fails on.
 
@@ -208,7 +208,7 @@ static void nxAppendContactRecord(NxContactSink* sink, const NxVec3* point,
 		nxAppend(sink, featureWord);
 	}
 
-// phys_fn_000873 at 0x0001d610.
+// Row 000873 at 0x0001d610.
 //
 // Three nested levels, each opened by a count word that later appends increment
 // in place. The pair header is written only when either shape's collision

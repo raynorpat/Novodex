@@ -13011,12 +13011,13 @@
       "phase": 2,
       "phase_provenance": "shared_by_callers",
       "state": "reconstructed",
-      "source": null,
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/285",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2022",
-      "static_proof": "recursive path compression over the record chain: each record caches its group root at +0x1e8; a non-self cache recurses down the chain, stores the fixed root back, and returns it -- union-find find()",
+      "static_proof": "recursive path compression over the record chain: each record caches its group root at +0x1e8; a non-self cache recurses down the chain, stores the fixed root back, and returns it -- union-find find(). Re-walked in scene-raycast Task 2 against 0x15d50-0x15d6f: logic, offsets and the reload of +0x1e8 for the return match. Candidate nxBodyRecordFixRoot (Physics/src/ObjectModel.cpp). The row is thiscall and the candidate a cdecl free function; every oracle caller (000655, 000718, 000724, 000744, 000776, 003979) calls it directly and none through a table, so that is a code-shape difference only.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 2: source and implementation set (were null). The live product copy is NpActor.cpp nxNpActorGroupRoot (hit 4 times in DSet, as the oracle row is), inside an NpActor-unit row; the NpActor session owns that call site.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000714",
@@ -13461,12 +13462,13 @@
       "phase": 3,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": "flag-to-pointer (0x16c00)",
+      "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/298",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2099",
-      "static_proof": "if [this+0x1e4]&0x200 return this+0x244 else 0; ret",
-      "dynamic_proof": "confirmed via smallflag2 differential (3z106): failures=0",
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (0x16c00-0x16c14) in scene-raycast Task 2: fastcall(record), `test ah,2` on +0x1e4 returns record+0x244 (the swept box 000740 fills) when bit 9 is set, else 0. Candidate Row000738Fixture::row000738 (Physics/src/core/JointSupport.cpp), a thiscall member with no stack arguments, the same ABI as the row. Reachable only from the simulation step (001303 <- 001949 <- 001976 <- 000608 <- 000655), which the product does not run, so no target executes it (the Task 2 trace confirms: not hit).",
+      "dynamic_proof": null,
+      "notes": "Scene-raycast Task 2: written. The earlier proof \"smallflag2 differential (3z106)\" drove only the oracle at 0x16c00 against harness expectations, and the earlier source was a description; both replaced.",
+      "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
       "id": "phys_fn_000739",
@@ -13533,12 +13535,13 @@
       "phase": 5,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": null,
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/300",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2108",
       "static_proof": "record helper returning in st(0): 0.5*(([+0x74]^2 + [+0x70]^2 + [+0x6c]^2)*[+0x188] + [+0x194]*[+0x80]^2 + [+0x190]*[+0x7c]^2 + [+0x18c]*[+0x78]^2) -- note each cross term carries its scale factor SQUARED, the fxch/faddp ladder multiplying twice; full-precision intermediates, one rounding",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 2: source and implementation set to the faithful nxBodyRecordEnergyWord (ObjectModel.cpp), which nothing in the product calls; the live NxActor::computeKineticEnergy (NpActor.cpp, row 000060) re-derives the formula with a different association -- handed to the NpActor session (contract, Handover).",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000743",
@@ -13569,12 +13572,13 @@
       "phase": 5,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": null,
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/301",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2109",
-      "static_proof": "group sleep test: compresses the record's chain to its root, then walks the +0x1fc links answering false if any node's word at +0x84 reads above zero, true otherwise (null root answers true)",
+      "static_proof": "group sleep test: compresses the record's chain to its root, then walks the +0x1fc links answering false if any node's word at +0x84 reads above zero, true otherwise (null root answers true). Re-walked in scene-raycast Task 2 against 0x16e30-0x16e73 (000713 on the cached parent at 0x16e3c; `fcomp 0.0; test ah,0x41; je` returns false only on an ordered positive word, so a NaN continues the walk). Candidate nxBodyRecordChainSettled (Physics/src/ObjectModel.cpp). The row takes the record in ecx and the candidate is cdecl; its only caller, 000062, calls it directly, so that is a code-shape difference only.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 2: source and implementation set. The live product path inlines its own copy into NpActorVtable::isGroupSleeping (NpActor.cpp, row 000062, NpActor session); handover recorded in the contract.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000745",
@@ -13604,13 +13608,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/include/NpActorDynamicMath.h",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/302",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2114",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x16e80-0x16f74) and re-walked in scene-raycast Task 2: out = R diag(d) R^T, cdecl (d, R, out) with no purge; d0R00, d0R20, d1R21 and d2R22 kept in registers, the other five products spilled to float (two into the argument slots), each element summed in the listing order and the symmetric pairs stored with fst/fstp. Candidate nxNpActorWorldTensorRDRt (Physics/src/include/NpActorDynamicMath.h), kept out of line (__declspec(noinline)) as the oracle calls it. units/scene-raycast-contract.md",
+      "dynamic_proof": "executed under the 16 Phase 5/6/7 staged-pair targets: cdb breakpoints on both candidate copies (NpActor.obj, Scene.obj) were hit 191 times against the staged candidate pair (NxPhysics.dll sha256 12ad8413b4fd51ce, identical to build/Release/NxPhysics.dll), once per 000768 call (Life 6, DynF 1, BFlag 1, Dyn 2, DSet 15, Mom 3, Force 11, CMass 87, JSP 8, JAll 2, JSlot 55). The oracle row is hit 208 times; the 17 extra calls come from 000140/000142 (Mom 14) and 000789 (CMass 3), whose product emulations use another helper (nxNpActorWorldTensor) -- a defect of those rows, recorded in the contract, not of this one; every target passed with stdout_delta=0; trace excerpt committed as evidence/scene-raycast-trace-task2.txt (scene-raycast Task 2)",
+      "notes": "Scene-raycast Task 2: claimed and promoted. Before Task 2 it ran only inlined in 000768, so no breakpoint could see it.",
+      "implementation": "Physics/src/include/NpActorDynamicMath.h"
     },
     {
       "id": "phys_fn_000747",
@@ -13785,13 +13790,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/include/NpActorDynamicMath.h",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/306",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2132",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x17420-0x1762c) in scene-raycast Task 2: fastcall(record), the +0x124 quaternion of the +0x134 3x3 -- trace (m11 + m22) + m00 with m11 + m22 spilled to a float for the x arm (0x1742d), the strict-greater diagonal selection, and fsqrt in every arm (0x17449, 0x17504, 0x17572, 0x175d7) through the X87Sqrt.h helpers. It is the instruction sequence 000768 inlines and 000801 uses, except for the operand order of two commutative fadds (0x174ec, 0x1755a), so the candidate nxNpActorUpdateCMassQuaternion calls the shared nxNpActorBodyQuaternionFromMatrix (Physics/src/include/NpActorDynamicMath.h). Before Task 2 the candidate used nxNpActorQuaternionFromMatrix, which grouped the trace (m00 + m11) + m22 and used CRT sqrt. Convention: the candidate is a cdecl free function; its callers 000204/000208 (and 000772) call it directly, so that is a code-shape difference only. units/scene-raycast-contract.md",
+      "dynamic_proof": "executed under NxPhysicsActorCMassTests: a cdb breakpoint on the candidate (NpActor.obj, kept out of line) was hit 2 times against the staged candidate pair (NxPhysics.dll sha256 12ad8413b4fd51ce, identical to build/Release/NxPhysics.dll), the oracle row's count in evidence/scene-raycast-trace-audit.txt (CMass 2); no other target reaches the row on either side; every target passed with stdout_delta=0; trace excerpt committed as evidence/scene-raycast-trace-task2.txt (scene-raycast Task 2)",
+      "notes": "Scene-raycast Task 2: written (retargeted to the listing conversion), claimed and promoted.",
+      "implementation": "Physics/src/include/NpActorDynamicMath.h"
     },
     {
       "id": "phys_fn_000757",
@@ -14003,13 +14009,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/include/NpActorDynamicMath.h",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/312",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2174",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x17f10-0x1838f) and re-walked instruction by instruction in scene-raycast Task 2: rotation of the +0x24 quaternion with the five float spills (0x17f18-0x17fdb), world centre R p + t with x kept in the register and y, z rounded (0x17fe1-0x1807b), the nine R F sums in the listing operand order (0x1807f-0x181e6), the quaternion of +0x134 by the 000801/000756 conversion with every fsqrt (0x18216, 0x182a8, 0x182f3, 0x18339) formed inside an X87Sqrt.h helper in the listing operand order, and the call to 000746 (+0xc4, +0x134, +0x164). Candidate nxNpActorUpdateMassFrame (Physics/src/include/NpActorDynamicMath.h), emitted in NpActor.obj and Scene.obj. Recorded differences, neither a behaviour one: the row is thiscall on the record and the candidate a cdecl free function (every oracle caller -- 000164, the setters 000196-000222, 000793/000795 -- calls it directly; no table holds it); NpActor.cpp and Scene.cpp are SSE2 units, whose double arithmetic equals the x87 53-bit register arithmetic under the API-time control word 0x027f, the only word the product runs this row under (the step that would run it under 0x0f7f is not reproduced). units/scene-raycast-contract.md",
+      "dynamic_proof": "executed under the 16 Phase 5/6/7 staged-pair targets: cdb breakpoints on both candidate copies (build/Release/NxPhysics.map: NpActor.obj and Scene.obj) were hit 191 times against the staged candidate pair (NxPhysics.dll sha256 12ad8413b4fd51ce, identical to build/Release/NxPhysics.dll), per target exactly the oracle row's counts in evidence/scene-raycast-trace-audit.txt (Life 6, DynF 1, BFlag 1, Dyn 2, DSet 15, Mom 3, Force 11, CMass 87, JSP 8, JAll 2, JSlot 55); every target passed its gate with stdout_delta=0; trace excerpt committed as evidence/scene-raycast-trace-task2.txt (scene-raycast Task 2)",
+      "notes": "Scene-raycast Task 2: the four roots moved from CRT sqrt to the X87Sqrt.h helpers; promoted. Called from NpActor.cpp nxNpActorRefreshCMass and Scene.cpp (creation).",
+      "implementation": "Physics/src/include/NpActorDynamicMath.h"
     },
     {
       "id": "phys_fn_000769",
@@ -14636,13 +14643,13 @@
       "phase": 3,
       "phase_provenance": "export_pin",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "Physics/src/MassProperties.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/327",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2514",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp",
+      "notes": "Scene-raycast Task 2: implementation corrected from ContactGeneration.cpp to MassProperties.cpp (the stable-ID line is there); no state change.",
+      "implementation": "Physics/src/MassProperties.cpp",
       "implementation_symbol": null
     },
     {
@@ -14674,13 +14681,13 @@
       "phase": 3,
       "phase_provenance": "export_pin",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "Physics/src/MassProperties.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/328",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2515",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp",
+      "notes": "Scene-raycast Task 2: implementation corrected from ContactGeneration.cpp to MassProperties.cpp (the stable-ID line is there); no state change.",
+      "implementation": "Physics/src/MassProperties.cpp",
       "implementation_symbol": null
     },
     {
@@ -14712,13 +14719,13 @@
       "phase": 3,
       "phase_provenance": "export_pin",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "Physics/src/MassProperties.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/329",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2516",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp",
+      "notes": "Scene-raycast Task 2: implementation corrected from ContactGeneration.cpp to MassProperties.cpp (the stable-ID line is there); no state change.",
+      "implementation": "Physics/src/MassProperties.cpp",
       "implementation_symbol": null
     },
     {
@@ -14750,13 +14757,13 @@
       "phase": 3,
       "phase_provenance": "export_pin",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "Physics/src/MassProperties.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/330",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2520",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp",
+      "notes": "Scene-raycast Task 2: implementation corrected from ContactGeneration.cpp to MassProperties.cpp (the stable-ID line is there); no state change.",
+      "implementation": "Physics/src/MassProperties.cpp",
       "implementation_symbol": null
     },
     {
@@ -14788,13 +14795,13 @@
       "phase": 3,
       "phase_provenance": "export_pin",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "Physics/src/MassProperties.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/331",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2524",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp",
+      "notes": "Scene-raycast Task 2: implementation corrected from ContactGeneration.cpp to MassProperties.cpp (the stable-ID line is there); no state change.",
+      "implementation": "Physics/src/MassProperties.cpp",
       "implementation_symbol": null
     },
     {
@@ -14826,13 +14833,13 @@
       "phase": 3,
       "phase_provenance": "export_pin",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "Physics/src/MassProperties.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/332",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2528",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp",
+      "notes": "Scene-raycast Task 2: implementation corrected from ContactGeneration.cpp to MassProperties.cpp (the stable-ID line is there); no state change.",
+      "implementation": "Physics/src/MassProperties.cpp",
       "implementation_symbol": null
     },
     {
@@ -14864,13 +14871,13 @@
       "phase": 3,
       "phase_provenance": "export_pin",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "Physics/src/MassProperties.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/333",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2532",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp",
+      "notes": "Scene-raycast Task 2: implementation corrected from ContactGeneration.cpp to MassProperties.cpp (the stable-ID line is there); no state change.",
+      "implementation": "Physics/src/MassProperties.cpp",
       "implementation_symbol": null
     },
     {
@@ -14902,13 +14909,13 @@
       "phase": 3,
       "phase_provenance": "export_pin",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "Physics/src/MassProperties.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/334",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2533",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp",
+      "notes": "Scene-raycast Task 2: implementation corrected from ContactGeneration.cpp to MassProperties.cpp (the stable-ID line is there); no state change.",
+      "implementation": "Physics/src/MassProperties.cpp",
       "implementation_symbol": null
     },
     {
@@ -14940,13 +14947,13 @@
       "phase": 3,
       "phase_provenance": "export_pin",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "Physics/src/MassProperties.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/335",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2534",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp",
+      "notes": "Scene-raycast Task 2: implementation corrected from ContactGeneration.cpp to MassProperties.cpp (the stable-ID line is there); no state change.",
+      "implementation": "Physics/src/MassProperties.cpp",
       "implementation_symbol": null
     },
     {
@@ -14978,13 +14985,13 @@
       "phase": 3,
       "phase_provenance": "export_pin",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "Physics/src/MassProperties.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/336",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2535",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp",
+      "notes": "Scene-raycast Task 2: implementation corrected from ContactGeneration.cpp to MassProperties.cpp (the stable-ID line is there); no state change.",
+      "implementation": "Physics/src/MassProperties.cpp",
       "implementation_symbol": null
     },
     {
@@ -15016,13 +15023,13 @@
       "phase": 3,
       "phase_provenance": "export_pin",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "Physics/src/MassProperties.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/337",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2536",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp",
+      "notes": "Scene-raycast Task 2: implementation corrected from ContactGeneration.cpp to MassProperties.cpp (the stable-ID line is there); no state change.",
+      "implementation": "Physics/src/MassProperties.cpp",
       "implementation_symbol": null
     },
     {
@@ -15054,13 +15061,13 @@
       "phase": 3,
       "phase_provenance": "export_pin",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "Physics/src/MassProperties.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/338",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2537",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp",
+      "notes": "Scene-raycast Task 2: implementation corrected from ContactGeneration.cpp to MassProperties.cpp (the stable-ID line is there); no state change.",
+      "implementation": "Physics/src/MassProperties.cpp",
       "implementation_symbol": null
     },
     {
@@ -15092,12 +15099,13 @@
       "phase": 3,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": "pose copy with tail (0x1bcc0, ret 0xc)",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/339",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2539",
       "static_proof": "copies nine dwords from arg1 to [this+0], three dwords from arg2 to [this+0x24..0x2c], and arg3 to [this+0x30]; ret 0xc",
       "dynamic_proof": "confirmed via posecopy827 differential (3z126): 3 cases failures=0",
-      "notes": ""
+      "notes": "previous source: pose copy with tail (0x1bcc0, ret 0xc)",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000828",
@@ -15128,12 +15136,13 @@
       "phase": 5,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": null,
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/340",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2540",
       "static_proof": "unit-density solid-box mass-frame builder over three half-extents: replace-or-multiply accumulator opened at the .rdata 1.0f literal with integer zero-word compares, mass = 8*hx*hy*hz ([0x101068f0]), diagonal = (mass/3) ([0x101068ec]) times pairwise squared-extent sums; the mass value stays live on the x87 stack across the whole function",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000830",
@@ -15201,12 +15210,13 @@
       "phase": 2,
       "phase_provenance": "shared_by_callers",
       "state": "reconstructed",
-      "source": "Physics/src/ObjectModel.cpp (MassFrame::nxMassFrameTranslate)",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/342",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2545",
       "static_proof": "MassFrame translate (0x1c040, __thiscall ret 4): early-outs when the {d} arg is all-zero; else moves the reference center from old_offset o to c=d+o and adds the parallel-axis Delta-Q m*(Q(c)-Q(o)) to the nine inertia words, where Q(r)=|r|^2 I - r r^T; the image splits this into a centered path (0x1c0d7, c==0 -> -Q(o)) and a displaced path (0x1c26f, generic, with the 0.0-literal multiplications [0x101041f0] matching the symmetric Q structure), then the shared tail (0x1c578) sets offset=c. nxMassFrameTranslate reproduces Q(c)-Q(o); see 3z40.",
       "dynamic_proof": "differential 54/54 (6 offsets x 9 translations, incl. negatives/fractionals) byte-exact vs oracle 0x1c040; mutation of the Q off-diagonal sign -> 37/54 red (build/r25-mut.log), restored green",
-      "notes": "Additional 48-case mesh cached-mass drive found and corrected asymmetric x87 rounding in diagonal Q terms; NxPhysicsShapeVtableTests digest ed1294b6, failures=0."
+      "notes": "Additional 48-case mesh cached-mass drive found and corrected asymmetric x87 rounding in diagonal Q terms; NxPhysicsShapeVtableTests digest ed1294b6, failures=0. previous source: Physics/src/ObjectModel.cpp (MassFrame::nxMassFrameTranslate)",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000834",
@@ -15273,12 +15283,13 @@
       "phase": 2,
       "phase_provenance": "shared_by_callers",
       "state": "reconstructed",
-      "source": null,
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/344",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2551",
       "static_proof": "scales the nine inertia words (+0x00..+0x20) and the mass (+0x30) by its float argument through ten fld/fmul/fstp triples; the COM offset at +0x24..+0x2c does not participate",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000838",
@@ -15309,12 +15320,13 @@
       "phase": 2,
       "phase_provenance": "shared_by_callers",
       "state": "reconstructed",
-      "source": null,
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/345",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2552",
       "static_proof": "merges the argument mass frame into this: masses sum, the offset becomes the mass-weighted average divided through the .rdata 0x101041ec literal (1.0f) by a full x87 fdiv, inertia accumulates componentwise",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000840",
@@ -15345,12 +15357,13 @@
       "phase": 5,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": "negated-offset translate via nxMassFrameTranslate",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/346",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2553",
-      "static_proof": "negated-offset translate wrapper (0x1c720, __thiscall ret 0): builds {-offset} on the stack by fchs of this+0x24/0x28/0x2c and calls 000833 (MassFrame translate), moving the frame center to the origin",
-      "dynamic_proof": "differential 5/5 (build/r26-restore.log negtrans run=5 failures=0) vs oracle 0x1c720; mutation of the negate sign -> 4/5 red (build/r26-mut.log), restored green",
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (0x1c720-0x1c74a) in scene-raycast Task 2: thiscall on the MassFrame, plain ret; {-o.x, -o.y, -o.z} built on the stack by fld/fchs/fstp m32 and passed to 000833 (0x1c742). Candidate MassFrame::nxMassFrameTranslateToCentre (Physics/src/ObjectModel.cpp). Its only oracle caller, 000008 (actor mass from shapes), is not reproduced, so nothing in the product calls it yet (Task 2 trace: not hit). Representation note: a signalling-NaN offset would be quietened by the oracle's fld and is not here.",
+      "dynamic_proof": null,
+      "notes": "Scene-raycast Task 2: written as a MassFrame member. The earlier proof (\"negtrans\", build/r26-restore.log) composed nxMassFrameTranslate with a negation written in the harness; no product function built {-offset}, so it is replaced.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000842",
@@ -15381,12 +15394,13 @@
       "phase": 3,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": null,
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/347",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2554",
       "static_proof": "unit-density solid-sphere mass-frame builder: mass = (4pi/3)r^3 via .rdata 0x101068d8 and diagonal inertia = (2/5)mass*r^2 via 0x101068e4, every other word integer-zeroed; non-null second argument folds two point-mass payloads through 0x1bdc0/0x1c040",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000844",
@@ -15417,12 +15431,13 @@
       "phase": 3,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": null,
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/348",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2556",
-      "static_proof": "unit-density cylinder mass-frame builder: mass = pi*r^2*2c ([0x101068d0]); axial diagonal = mass*r^2/2 ([0x101043cc] halves it), transverse pair = mass*(3r^2+4c^2)/12 ([0x101068f8]=3, [0x101068f4]=4, [0x101068e0]=1/12); axisSelector argument routes the axial diagonal and selector==1 leaves +0x00 unwritten",
+      "static_proof": "unit-density cylinder mass-frame builder: mass = pi*r^2*2c ([0x101068d0]); axial diagonal = mass*r^2/2 ([0x101043cc] halves it), transverse pair = mass*(3r^2+4c^2)/12 ([0x101068f8]=3, [0x101068f4]=4, [0x101068e0]=1/12); axisSelector routes the axial diagonal. Corrected in scene-raycast Task 2 against 0x1c82f-0x1c872: selector 1 stores the transverse term at +0x00 (0x1c836) before its branch, then the axial term at +0x10 and the transverse at +0x20; the earlier transcription left +0x00 unwritten.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 2: the selector-1 store at +0x00 added (it had been left uninitialised).",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000846",
@@ -15453,12 +15468,13 @@
       "phase": 5,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": null,
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/349",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2560",
       "static_proof": null,
       "dynamic_proof": "driven and gated: the transcript line 'mzero row=phys_fn_000847 zA=00000000 zB=42424242 digest=23206019', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
-      "notes": ""
+      "notes": "Scene-raycast Task 2: only the low byte of the argument is tested now (0x1c888).",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000848",
@@ -15816,12 +15832,13 @@
       "phase": 7,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": "kind-selected accumulator (0x1d260, ret 0xc)",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/422",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2637",
       "static_proof": "static review of the recorded shape: kind-selected accumulator (0x1d260, ret 0xc); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the accum0867 differential (3z194): fifteen combinations -- five descriptor kinds including the 0x24 case that masks down to 4, by three value pairs including a zero numerator -- all failures=0 against the whole 0x100-byte object, with the accumulators seeded so the adds are not all from zero",
-      "notes": ""
+      "notes": "previous source: kind-selected accumulator (0x1d260, ret 0xc)",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000868",
@@ -16860,12 +16877,13 @@
       "phase": 3,
       "phase_provenance": "layout_adjacency",
       "state": "reconstructed",
-      "source": "zero-init three dwords (0x20440)",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/451",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2959",
-      "static_proof": "zeroes the three dwords at this+0,4,8 and returns this; ret 0",
-      "dynamic_proof": "confirmed in shapegetters2 drive (3z44)",
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (0x20440-0x2044c) in scene-raycast Task 2: thiscall, `mov eax,ecx`, three zero dword stores at +0/+4/+8, plain ret. Candidate HullScratchElement::HullScratchElement (Physics/src/ObjectModel.cpp), the 0x24-byte element 001472 constructs through the vector-constructor iterator. Its only user, 001472, is not reproduced, so nothing in the product constructs it yet (Task 2 trace: not hit).",
+      "dynamic_proof": null,
+      "notes": "Scene-raycast Task 2: written. The earlier proof \"shapegetters2 drive (3z44)\" drove only the oracle, and the earlier source was a description; both replaced.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000926",
@@ -16969,12 +16987,13 @@
       "phase": 2,
       "phase_provenance": "shared_by_callers",
       "state": "reconstructed",
-      "source": null,
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/383",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2962",
       "static_proof": "word-wise ordered transfers out[0..2] from +0x30, out[6..14] forward from +0x0c, then out[3..5] from +0xe4 (BoxShape::nxFillShapeDescriptor); reads past the 0xe0 ShapeBase extent, so the receiver is the box",
       "dynamic_proof": "shapeleaf drive cb0e48f9 on a marked 0xf0-byte record; aliasing twin checks at offsets 0/4/c/24/cc/e4/240 all match, dims-first and wrong-offset mutants fail",
-      "notes": "receiver moved to BoxShape after review; drive buffer sized 0xf0 after the first drive read stack garbage past 0xe0 on both sides"
+      "notes": "receiver moved to BoxShape after review; drive buffer sized 0xf0 after the first drive read stack garbage past 0xe0 on both sides",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000932",
@@ -17083,7 +17102,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2966",
       "static_proof": "__thiscall ret 4: zeroes out[0..2] (three dword stores, 0x000206c4..cc) then writes sqrt(dx*dx+dy*dy+dz*dz) over the facade dims to out[3] (0x000206ce..f8); BOX vtable .rdata 0x10106ab8 slot 11 (merged-run index 35)",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests boxrow family on a real constructed box with default dims: oracle words 00000000.00000000.00000000.3fddb3d7 equal candidate bitwise",
-      "notes": "P5 Task 3: same diagonal arithmetic as slot 10 but a zeroed center.",
+      "notes": "P5 Task 3: same diagonal arithmetic as slot 10 but a zeroed center. Scene-raycast Task 2: the root is an fsqrt through the X87Sqrt.h helper x87FsqrtDot3 in the listing order ((dx dx + dy dy) + dz dz) instead of CRT sqrt.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -17102,7 +17121,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2965",
       "static_proof": "__thiscall ret 4: writes pose-one translation (+0x30/+0x34/+0x38) to out[0..2] and sqrt(dx*dx+dy*dy+dz*dz) over the facade dims (+0xe4/e8/ec) to out[3]; BOX vtable .rdata 0x10106ab8 slot 10 (merged-run index 34)",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests boxrow family on a real constructed box with default dims: oracle words 00000000.00000000.00000000.3fddb3d7 equal candidate bitwise (sqrt(3) is association-exact at these inputs); general-dims x87 association left open in evidence",
-      "notes": "P5 Task 3: first BOX-final behavior row closed.",
+      "notes": "P5 Task 3: first BOX-final behavior row closed. Scene-raycast Task 2: the root is an fsqrt through the X87Sqrt.h helper x87FsqrtDot3 in the listing order ((dx dx + dy dy) + dz dz) instead of CRT sqrt.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -17189,12 +17208,13 @@
       "phase": 3,
       "phase_provenance": "callers",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "Physics/src/NarrowPhase.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/386",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2968",
-      "static_proof": null,
+      "static_proof": "walked in scene-raycast Task 1/2 against 0x20750-0x207d8: fild signs times dims, each rotated row (fz*m2 + fy*m1) + fx*m0 stored as a float, then + t. Candidate NxBoxShapeCorner (Physics/src/NarrowPhase.cpp). The row is thiscall ret 0x10 and the candidate cdecl; its callers 001881 and 001883 call it directly, so that is a code-shape difference only. Reached only from the simulation step's plane-box pair.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NarrowPhase.cpp"
     },
     {
       "id": "phys_fn_000944",
@@ -17261,12 +17281,13 @@
       "phase": 5,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": "BOX slot-4 mass wrapper (0x20850, ret 0xc)",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/462",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2972",
       "static_proof": "if [this+0xde]&7 open, call the 000849 mass helper on the facade pose/dims (this+0x6c/+0xe4) into the destination MassFrame; always returns true",
       "dynamic_proof": "confirmed via boxslot4 differential (3z102): cases=pose4 x low8 x density2 failures=0; candidate nxBoxAccumulateMass",
-      "notes": ""
+      "notes": "previous source: BOX slot-4 mass wrapper (0x20850, ret 0xc)",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000948",
@@ -17372,9 +17393,9 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/465",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2981",
-      "static_proof": null,
-      "dynamic_proof": "driven and gated: the transcript line 'hull row=phys_fn_000953..71 vertexCount=8 faceCount=6 zero=0 face2_offset=0xb8 vertices_offset=0x10', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
-      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
+      "static_proof": "facade slot 1 of the 0x10106a88 table: `mov eax,8; ret`. Scene-raycast Task 2 wrote it as the member BoxHullFacade::vertexCount (Physics/src/ObjectModel.cpp), installed in slot 1 of the facade table the box constructor now stores at +0xe0. Its callers (000973 through [+0xe0]) are not reproduced, so the product never calls it (Task 2 trace: not hit).",
+      "dynamic_proof": null,
+      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer. Earlier dynamic_proof (moved here in Task 2; it drove only the constant): driven and gated: the transcript line 'hull row=phys_fn_000953..71 vertexCount=8 faceCount=6 zero=0 face2_offset=0xb8 vertices_offset=0x10', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -17518,7 +17539,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/469",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3018",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 3 | `phys_fn_000961` | `mov eax,6` — six faces |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "facade slot 3 of the 0x10106a88 table: `mov eax,6; ret`. Scene-raycast Task 2 wrote it as the member BoxHullFacade::faceCount (Physics/src/ObjectModel.cpp), installed in slot 3 of the facade table. Its callers (000973, 000957, 000959 through [+0xe0]) are not reproduced, so the product never calls it (Task 2 trace: not hit).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17631,7 +17652,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3021",
       "static_proof": null,
       "dynamic_proof": "driven by the Phase 5 layout gate and covered by a registered assertion: the harness calls the three hull-table accessors and folds the 12 dwords each returns into `hull static tables digest=f835c8c3`, which tools/gate_targets.ps1 registers as a coverage assertion for NxPhysicsObjectLayoutTests. evidence/phase5-object-model.md 5b names this row as one of the three static .rdata tables at 0x10122180/e0/240. Backfilled (7k) from that registration and that table; the row was driven, the proof field was never filled in.",
-      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
+      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer. Scene-raycast Task 2: the table now holds all 24 dwords of the pinned image (it held the first 12).",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -17668,7 +17689,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3022",
       "static_proof": null,
       "dynamic_proof": "driven by the Phase 5 layout gate and covered by a registered assertion: the harness calls the three hull-table accessors and folds the 12 dwords each returns into `hull static tables digest=f835c8c3`, which tools/gate_targets.ps1 registers as a coverage assertion for NxPhysicsObjectLayoutTests. evidence/phase5-object-model.md 5b names this row as one of the three static .rdata tables at 0x10122180/e0/240. Backfilled (7k) from that registration and that table; the row was driven, the proof field was never filled in.",
-      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
+      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer. Scene-raycast Task 2: the table now holds all 24 dwords of the pinned image (it held the first 12).",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -17705,7 +17726,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3023",
       "static_proof": null,
       "dynamic_proof": "driven by the Phase 5 layout gate and covered by a registered assertion: the harness calls the three hull-table accessors and folds the 12 dwords each returns into `hull static tables digest=f835c8c3`, which tools/gate_targets.ps1 registers as a coverage assertion for NxPhysicsObjectLayoutTests. evidence/phase5-object-model.md 5b names this row as one of the three static .rdata tables at 0x10122180/e0/240. Backfilled (7k) from that registration and that table; the row was driven, the proof field was never filled in.",
-      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
+      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer. Scene-raycast Task 2: the table now holds all 24 dwords of the pinned image (it held the first 12).",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -17778,7 +17799,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3032",
       "static_proof": null,
       "dynamic_proof": "driven and gated: the transcript line 'hull support row=phys_fn_000975 min_bits=c19c0000 max_bits=4eada5a5', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
-      "notes": "P5: transcribed. Projects the eight vertices through a pose (column dots + translation) and folds them with a direction as A*dx + (C*dz + B*dy); min replaces strictly-less, max strictly-greater, NaN skips both (unordered sets C0 in both fnstsw masks). Frame: (this, a1 unread, a2=&min, a3=&max, a4=dir, a5=pose, a6 unread), ret 0x18. Driven by NxPhysicsObjectLayoutTests on twin buffers; bitwise match at oracle digest bfb698ec.",
+      "notes": "P5: transcribed. Projects the eight vertices through a pose (column dots + translation) and folds them with a direction as A*dx + (C*dz + B*dy); min replaces strictly-less, max strictly-greater, NaN skips both (unordered sets C0 in both fnstsw masks). Frame: (this, a1 unread, a2=&min, a3=&max, a4=dir, a5=pose, a6 unread), ret 0x18. Driven by NxPhysicsObjectLayoutTests on twin buffers; bitwise match at oracle digest bfb698ec. Scene-raycast Task 2: the member now has the row's six-argument ABI (ret 0x18: unread, min, max, direction, pose, unread) and sits in slot 11 of the facade table.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -17813,9 +17834,9 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/393",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3037",
-      "static_proof": "__thiscall ret 8, both args forwarded to phys_fn_001273 (0x2187c..80); primary BOX vptr 0x10106ab8 (0x2188f); facade final 0x10106a88 at +0xe0 after wall intermediate (0x21885/0x21895); six face records' first three words zeroed (0x218a1..ee); 0x1c-byte collision object via SDK allocator malloc(0x1c,0) (0x218f1..fe) built by phys_fn_001075 and stored at +0x9c (0x21911); sentinel +0xd0 overwritten to 2 (0x2191c); dims +0xe4/e8/ec = 1.0f (0x21926..36)",
+      "static_proof": "__thiscall ret 8, both args forwarded to phys_fn_001273 (0x2187c..80); primary BOX vptr 0x10106ab8 (0x2188f); facade final table 0x10106a88 at +0xe0 (0x21895; the wall store at 0x21885 is overwritten before anything reads it) -- stored since scene-raycast Task 2, as the product-built twelve-slot table with slots 9/10 null because 000957/000959 are not written; six face records' first three words zeroed (0x218a1..ee); 0x1c-byte collision object from the imported Foundation allocator [0x101041bc] malloc(0x1c,0) (0x218f1..fe; through nxFoundationSDKAllocator since Task 2) built by phys_fn_001075 and stored at +0x9c (0x21911); sentinel +0xd0 overwritten to 2 (0x2191c); dims +0xe4/e8/ec = 1.0f (0x21926..36)",
       "dynamic_proof": "poisoned-0x228-buffer differential NxPhysicsObjectLayoutTests boxshape family with a shim allocator interface installed at the SDK holder: oracle digest ac5ed12f equals candidate under a seven-pointer mask; poison preservation, face zeroing, sentinel overwrite and back-pointing colobj all asserted",
-      "notes": "P5 Task 3: the BOX final's constructor. sizeof(BoxShape)==0xe0+0x148; vertices and face float data stay untouched until the face builder runs.",
+      "notes": "P5 Task 3: the BOX final's constructor. sizeof(BoxShape)==0xe0+0x148; vertices and face float data stay untouched until the face builder runs. Scene-raycast Task 2: the product never executes this constructor -- Scene.cpp builds shapes by another path -- so its only execution is the harness differentials (Task 2 cdb trace over the 16 staged-pair targets: not hit).",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -17850,9 +17871,9 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/394",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3040",
-      "static_proof": "__thiscall ret 4: destroys the embedded collision object through [colobj-vtbl+0] with flag 1 UNCONDITIONALLY (0x2195b..61), runs the base-dtor chain 0x26bd0 (owner arms null-safe, +0xa0 arms, Prunable tail), then frees this through SDK-allocator slot +0x14 when flag&1; BOX vtable .rdata 0x10106ab8 slot 0",
+      "static_proof": "BOX slot 0 scalar deleting destructor (0x21940-0x21982): restores the BOX table at +0x00 (0x2194b) and the facade table at +0xe0 (0x21951), destroys the collision object through its slot 0 with 1, runs the base destructor chain (0x26bd0), and when flags&1 frees this through the imported Foundation allocator [0x101041bc] slot +0x14 (0x21971); ret 4. Scene-raycast Task 2 restored both vptr stores and moved the free to nxFoundationSDKAllocator; the collision object's free (001079) and every shape constructor's collision-object allocation moved with it, so each block stays on one allocator. The product calls the collision object's deleting destructor directly (one class) where the image dispatches through its table.",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests boxdtor family on a real constructed box, flag=0 path: post-dtor oracle digest a29800b7 equals candidate bitwise under the seven-pointer mask (destruction-time vptr restorations carried opaque)",
-      "notes": "P5 Task 3: the colobj's own deleting-dtor row (0x235d0) remains its own census row; discovery of the allocator free ABI (callee pops one pushed argument, no caller cleanup) recorded in evidence.",
+      "notes": "P5 Task 3: the colobj's own deleting-dtor row (0x235d0) remains its own census row; discovery of the allocator free ABI (callee pops one pushed argument, no caller cleanup) recorded in evidence. Scene-raycast Task 2: never executed by the product (shapes are torn down by Scene.cpp directly); Task 2 cdb trace: not hit.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -17883,14 +17904,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "Physics/src/ObjectModel.cpp",
+      "state": "discovered",
+      "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/395",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3043",
-      "static_proof": "stores dims from desc+0x4c/50/54 into facade +0xe4/e8/ec; calls hull-recompute helper 0x21420 then BASE slot 1",
+      "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "notes": "Scene-raycast Task 2: demoted from reconstructed (contract, State mismatches). The candidate BoxShape::nxBoxLoadFromDesc (ObjectModel.cpp) omits the call to 000973 (0x21420) at 0x219b5 and drops the bool return of 0x27740; 000973 is not written yet (Task 4 hull batch). Previous fields: {\"source\": \"Physics/src/ObjectModel.cpp\", \"static_proof\": \"stores dims from desc+0x4c/50/54 into facade +0xe4/e8/ec; calls hull-recompute helper 0x21420 then BASE slot 1\", \"dynamic_proof\": null, \"implementation\": \"Physics/src/ObjectModel.cpp\"}"
     },
     {
       "id": "phys_fn_000982",
@@ -17999,7 +18019,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3047",
       "static_proof": "__thiscall ret 8, both args forwarded to phys_fn_001273 (0x21a67..6f); CAPSULE vptr 0x10106b20 (0x21a74); +0xe0/+0xe4 zeroed (0x21a7a/84); 0x1c-byte collision object via SDK malloc(0x1c,0) built by phys_fn_001123 (0x23cb0 at 0x21aa6) and stored at +0x9c (0x21aaf); sentinel +0xd0 overwritten to 3 = NX_SHAPE_CAPSULE (0x21ab5)",
       "dynamic_proof": "poisoned-0xe8-buffer differential NxPhysicsObjectLayoutTests capsule family: oracle digest 9b0768d7 equals candidate under a six-pointer mask; zeroed data words, sentinel 3 and back-pointing colobj asserted",
-      "notes": "P5 Task 3: per-shape sentinel +0xd0 proven to be the NxShapeType tag by the pinned NxShape.h enumeration.",
+      "notes": "P5 Task 3: per-shape sentinel +0xd0 proven to be the NxShapeType tag by the pinned NxShape.h enumeration. Scene-raycast Task 2: the collision object comes from nxFoundationSDKAllocator ([0x101041bc], 0x21a8e), freed by the same allocator in 001079. Never executed by the product (Task 2 cdb trace: not hit).",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {

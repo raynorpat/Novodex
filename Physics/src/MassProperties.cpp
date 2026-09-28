@@ -70,6 +70,7 @@ static double extentProduct(const NxVec3& extents)
 	return product;
 	}
 
+// phys_fn_000803 (0x0001ba90, 23 B)
 // 0x0001ba90
 NxReal NX_CALL_CONV NxComputeSphereMass(NxReal radius, NxReal density)
 	{
@@ -77,6 +78,7 @@ NxReal NX_CALL_CONV NxComputeSphereMass(NxReal radius, NxReal density)
 	return (NxReal) (r * r * r * density * gFourThirdsPi);
 	}
 
+// phys_fn_000805 (0x0001bab0, 23 B)
 // 0x0001bab0. `fdivr`, so the denominator is accumulated first and the divide
 // is the last operation.
 NxReal NX_CALL_CONV NxComputeSphereDensity(NxReal radius, NxReal mass)
@@ -85,24 +87,28 @@ NxReal NX_CALL_CONV NxComputeSphereDensity(NxReal radius, NxReal mass)
 	return (NxReal) (mass / (r * r * r * gFourThirdsPi));
 	}
 
+// phys_fn_000807 (0x0001bad0, 44 B)
 // 0x0001bad0
 NxReal NX_CALL_CONV NxComputeBoxMass(const NxVec3& extents, NxReal density)
 	{
 	return (NxReal) (extentProduct(extents) * density);
 	}
 
+// phys_fn_000809 (0x0001bb00, 44 B)
 // 0x0001bb00
 NxReal NX_CALL_CONV NxComputeBoxDensity(const NxVec3& extents, NxReal mass)
 	{
 	return (NxReal) (mass / extentProduct(extents));
 	}
 
+// phys_fn_000811 (0x0001bb30, 50 B)
 // 0x0001bb30
 NxReal NX_CALL_CONV NxComputeEllipsoidMass(const NxVec3& extents, NxReal density)
 	{
 	return (NxReal) (extentProduct(extents) * density * gFourThirdsPi);
 	}
 
+// phys_fn_000813 (0x0001bb70, 50 B)
 // 0x0001bb70. The oracle folds the constant into the denominator before the
 // `fdivr`, so this is mass / (product * k) and not (mass / product) / k.
 NxReal NX_CALL_CONV NxComputeEllipsoidDensity(const NxVec3& extents, NxReal mass)
@@ -110,6 +116,7 @@ NxReal NX_CALL_CONV NxComputeEllipsoidDensity(const NxVec3& extents, NxReal mass
 	return (NxReal) (mass / (extentProduct(extents) * gFourThirdsPi));
 	}
 
+// phys_fn_000815 (0x0001bbb0, 25 B)
 // 0x0001bbb0. `fld length; fadd st(0), st(0)` -- the length is doubled, so the
 // caller's length is a half-height. The doubling happens before either radius
 // multiply, which is the oracle's order and is kept.
@@ -119,6 +126,7 @@ NxReal NX_CALL_CONV NxComputeCylinderMass(NxReal radius, NxReal length, NxReal d
 	return (NxReal) ((l + l) * radius * radius * density * gPi);
 	}
 
+// phys_fn_000817 (0x0001bbd0, 25 B)
 // 0x0001bbd0
 NxReal NX_CALL_CONV NxComputeCylinderDensity(NxReal radius, NxReal length, NxReal mass)
 	{
@@ -126,6 +134,7 @@ NxReal NX_CALL_CONV NxComputeCylinderDensity(NxReal radius, NxReal length, NxRea
 	return (NxReal) (mass / ((l + l) * radius * radius * gPi));
 	}
 
+// phys_fn_000819 (0x0001bbf0, 25 B)
 // 0x0001bbf0. `fabs` on the length rather than a doubling: the cone kernels
 // take the magnitude of the length where the cylinder kernels double it.
 NxReal NX_CALL_CONV NxComputeConeMass(NxReal radius, NxReal length, NxReal density)
@@ -134,6 +143,7 @@ NxReal NX_CALL_CONV NxComputeConeMass(NxReal radius, NxReal length, NxReal densi
 	return (NxReal) (l * radius * radius * density * gOneThirdPi);
 	}
 
+// phys_fn_000821 (0x0001bc10, 25 B)
 // 0x0001bc10
 NxReal NX_CALL_CONV NxComputeConeDensity(NxReal radius, NxReal length, NxReal mass)
 	{
@@ -141,6 +151,7 @@ NxReal NX_CALL_CONV NxComputeConeDensity(NxReal radius, NxReal length, NxReal ma
 	return (NxReal) (mass / (l * radius * radius * gOneThirdPi));
 	}
 
+// phys_fn_000823 (0x0001bc30, 75 B)
 // 0x0001bc30. Two details are load-bearing and neither is visible in the
 // arithmetic:
 //
@@ -163,6 +174,7 @@ void NX_CALL_CONV NxComputeBoxInertiaTensor(NxVec3& diagInertia, NxReal mass,
 	diagInertia.z = (NxReal) ((squaredX + y * y) * massOverTwelve);
 	}
 
+// phys_fn_000825 (0x0001bc80, 62 B)
 // 0x0001bc80. The oracle stores the unscaled mass*r*r into diagInertia.x
 // before it branches (`fld st(0); fstp dword ptr [eax]`) and then overwrites
 // it with the scaled value, so a caller that aliases the output can observe

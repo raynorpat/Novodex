@@ -145,7 +145,7 @@ struct Row000022Target
 	virtual void slot6(NxU32 arg) = 0;
 	};
 
-// phys_fn_000754 (0x00017010, 1027 B; owner gap SceneRaycast..CapsuleShape;
+// Row 000754 (0x00017010, 1027 B; owner gap SceneRaycast..CapsuleShape;
 // written by joint-open-items Task 6, 21b275d). Thiscall on the body record,
 // no stack arguments, plain `ret`: rebuilds the body's pose (+0x18 position,
 // +0x24 quaternion) from its centre-of-mass pose (x87).
@@ -154,7 +154,7 @@ struct Row000754Fixture
 	void row000754();
 	};
 
-// phys_fn_000758 (0x00017630, 214 B; owner gap SceneRaycast..CapsuleShape).
+// Row 000758 (0x00017630, 214 B; owner gap SceneRaycast..CapsuleShape).
 // `this` (the body record) in ecx, no stack arguments, plain `ret`: rebuilds
 // the record's +0x134 3x3 from its +0x124 quaternion (x, y, z, w).
 struct Row000758Fixture
@@ -162,7 +162,7 @@ struct Row000758Fixture
 	void row000758();
 	};
 
-// phys_fn_000712 (0x00015d30, 32 B; owner gap SceneRaycast..CapsuleShape).
+// Row 000712 (0x00015d30, 32 B; owner gap SceneRaycast..CapsuleShape).
 // Thiscall on a body record, no stack arguments, plain `ret`: the island
 // root at +0x1bc, found recursively with path compression.
 struct Row000712Fixture
@@ -170,7 +170,17 @@ struct Row000712Fixture
 	Row000712Fixture* row000712();
 	};
 
-// phys_fn_000760 (0x00017710, 168 B; owner gap SceneRaycast..CapsuleShape).
+// Row 000738 (0x00016c00, 21 B; owner gap SceneRaycast..CapsuleShape;
+// scene-raycast Task 2). The body record in ecx, no stack arguments, plain
+// `ret` (fastcall on one argument and thiscall with none are the same ABI):
+// the record's swept-bounds box at +0x244 when +0x1e4 bit 9 is set (000740
+// sets it), otherwise null.
+struct Row000738Fixture
+	{
+	void* row000738();
+	};
+
+// Row 000760 (0x00017710, 168 B; owner gap SceneRaycast..CapsuleShape).
 // Thiscall on a body record, no stack arguments, plain `ret`: resets the
 // record's island fields (+0x1bc..+0x1e4) to a single-body island, frees the
 // island object at +0x1e0 when the record is its own root, and raises the
@@ -180,7 +190,7 @@ struct Row000760Fixture
 	void row000760();
 	};
 
-// phys_fn_000778 (0x000185f0, 58 B, with its continuation phys_fn_000780 at
+// Row 000778 (0x000185f0, 58 B, with its continuation phys_fn_000780 at
 // 0x00018630, 243 B; owner gap SceneRaycast..CapsuleShape). Thiscall on a
 // body record, two stack arguments, `ret 8`: dissolves the body's island.
 // Every joint on each island body's +0x1d8 list (linked through Joint +0x34)
@@ -202,7 +212,7 @@ struct Row004167Fixture
 	};
 
 // The pointer-array push that phys_fn_000661 (0x13e53-0x13f12) and
-// phys_fn_000780 (0x1864c-0x186e6) both inline. `array` is {begin, end,
+// Row 000780 (0x1864c-0x186e6) both inline. `array` is {begin, end,
 // capacity}. With no room (capacity <= end) the array grows to 2n + 2
 // entries unless its capacity already covers that: a new block from the Foundation
 // allocator (slot +8 with (bytes, 0)), the old entries copied, the old block

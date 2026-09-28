@@ -26,6 +26,18 @@ struct CandidateAllocator : SdkAllocator {
     void* realloc(void* p, size_t size) override { return ::realloc(p, size); }
     void free(void* p) override { ++freeCount; ::free(p); }
 };
+// The oracle's [0x101041bc] holder and the candidate's nxFoundationSDKAllocator
+// are the same word: both modules import the one NxFoundation.dll this process
+// loads, so installAllocator makes the candidate's Foundation-allocator frees
+// (the shape constructors' collision objects, the box's own free) count in
+// oracleFreeCount too. Every free comparison therefore takes the oracle's
+// count before the candidate runs, and counts the candidate's frees as its
+// share of the holder's count plus the SDK bridge's -- which keeps every
+// oracle-side fold free of candidate frees.
+static unsigned candidateFreesSince(const CandidateAllocator& allocator,
+        unsigned sdkBefore, unsigned holderBefore) {
+    return (allocator.freeCount - sdkBefore) + (oracleFreeCount - holderBefore);
+}
 static bool installAllocator(const unsigned char* base) {
     static void* table[6] = {
         reinterpret_cast<void*>(&OracleAllocator::release), 0,
@@ -175,9 +187,14 @@ int wmain(int argc, wchar_t** argv)
         ++failures;
     ++cases;
     typedef void (__thiscall* DtorSlot)(void*, unsigned);
+    unsigned oracleBefore = oracleFreeCount;
     reinterpret_cast<DtorSlot>(oracleTable[0])(oracleBytes, 0);
+    unsigned oracleFrees = oracleFreeCount - oracleBefore;
+    unsigned holderBefore = oracleFreeCount;
+    unsigned candidateBefore = candidateAllocator.freeCount;
     reinterpret_cast<DtorSlot>(candidateTable[0])(candidateBytes, 0);
-    if(oracleFreeCount != 1 || candidateAllocator.freeCount != 1)
+    if(oracleFrees != 1 ||
+       candidateFreesSince(candidateAllocator, candidateBefore, holderBefore) != 1)
         ++failures;
     ++cases;
 
@@ -190,9 +207,14 @@ int wmain(int argc, wchar_t** argv)
     new(candidateHeap) BoxShape(0, 0);
     void** oracleHeapTable = *reinterpret_cast<void***>(oracleHeap);
     void** candidateHeapTable = *reinterpret_cast<void***>(candidateHeap);
+    oracleBefore = oracleFreeCount;
     reinterpret_cast<DtorSlot>(oracleHeapTable[0])(oracleHeap, 1);
+    oracleFrees = oracleFreeCount - oracleBefore;
+    holderBefore = oracleFreeCount;
+    candidateBefore = candidateAllocator.freeCount;
     reinterpret_cast<DtorSlot>(candidateHeapTable[0])(candidateHeap, 1);
-    if(oracleFreeCount != 3 || candidateAllocator.freeCount != 3)
+    if(oracleFrees != 2 ||
+       candidateFreesSince(candidateAllocator, candidateBefore, holderBefore) != 2)
         ++failures;
     ++cases;
 
@@ -452,12 +474,14 @@ int wmain(int argc, wchar_t** argv)
     memcpy(scale, &savedScale, 4);
     memcpy(guardC, &savedGuardC, 4);
     VirtualProtect(guardC, 4, oldProtection, &ignoredProtection);
-    unsigned oracleBefore = oracleFreeCount;
-    unsigned candidateBefore = candidateAllocator.freeCount;
+    oracleBefore = oracleFreeCount;
     reinterpret_cast<DtorSlot>(oracleSphereTable[0])(oracleSphere, 0);
+    oracleFrees = oracleFreeCount - oracleBefore;
+    holderBefore = oracleFreeCount;
+    candidateBefore = candidateAllocator.freeCount;
     reinterpret_cast<DtorSlot>(candidateSphereTable[0])(candidateSphere, 0);
-    if(oracleFreeCount - oracleBefore != 1 ||
-       candidateAllocator.freeCount - candidateBefore != 1)
+    if(oracleFrees != 1 ||
+       candidateFreesSince(candidateAllocator, candidateBefore, holderBefore) != 1)
         ++failures;
     ++cases;
     unsigned char* oracleSphereHeap = static_cast<unsigned char*>(malloc(0xe4));
@@ -471,11 +495,13 @@ int wmain(int argc, wchar_t** argv)
     void** oracleHeapSphereTable = *reinterpret_cast<void***>(oracleSphereHeap);
     void** candidateHeapSphereTable = *reinterpret_cast<void***>(candidateSphereHeap);
     oracleBefore = oracleFreeCount;
-    candidateBefore = candidateAllocator.freeCount;
     reinterpret_cast<DtorSlot>(oracleHeapSphereTable[0])(oracleSphereHeap, 1);
+    oracleFrees = oracleFreeCount - oracleBefore;
+    holderBefore = oracleFreeCount;
+    candidateBefore = candidateAllocator.freeCount;
     reinterpret_cast<DtorSlot>(candidateHeapSphereTable[0])(candidateSphereHeap, 1);
-    if(oracleFreeCount - oracleBefore != 2 ||
-       candidateAllocator.freeCount - candidateBefore != 2)
+    if(oracleFrees != 2 ||
+       candidateFreesSince(candidateAllocator, candidateBefore, holderBefore) != 2)
         ++failures;
     ++cases;
 
@@ -887,17 +913,19 @@ int wmain(int argc, wchar_t** argv)
     }
     ++cases;
     oracleBefore = oracleFreeCount;
-    candidateBefore = candidateAllocator.freeCount;
     reinterpret_cast<DtorSlot>(oracleCapsuleTable[0])(oracleCapsule, 0);
+    const unsigned oracleStackFrees = oracleFreeCount - oracleBefore;
+    holderBefore = oracleFreeCount;
+    candidateBefore = candidateAllocator.freeCount;
     if(capsuleTableInstalled)
         reinterpret_cast<DtorSlot>(candidateCapsuleTable[0])(candidateCapsule, 0);
     else
         capsule.nxCapsuleScalarDeletingDtor(0);
-    const unsigned oracleStackFrees = oracleFreeCount - oracleBefore;
     oracleDigest = foldOracle(oracleDigest, &oracleStackFrees,
         sizeof(oracleStackFrees));
     if(oracleStackFrees != 1 ||
-       candidateAllocator.freeCount - candidateBefore != oracleStackFrees)
+       candidateFreesSince(candidateAllocator, candidateBefore, holderBefore) !=
+           oracleStackFrees)
         ++failures;
     ++cases;
     unsigned char* oracleCapsuleHeap = static_cast<unsigned char*>(malloc(0xec));
@@ -911,18 +939,20 @@ int wmain(int argc, wchar_t** argv)
     void** oracleCapsuleHeapTable = *reinterpret_cast<void***>(oracleCapsuleHeap);
     void** candidateCapsuleHeapTable = *reinterpret_cast<void***>(candidateCapsuleHeap);
     oracleBefore = oracleFreeCount;
-    candidateBefore = candidateAllocator.freeCount;
     reinterpret_cast<DtorSlot>(oracleCapsuleHeapTable[0])(oracleCapsuleHeap, 1);
+    const unsigned oracleHeapFrees = oracleFreeCount - oracleBefore;
+    holderBefore = oracleFreeCount;
+    candidateBefore = candidateAllocator.freeCount;
     if(capsuleTableInstalled)
         reinterpret_cast<DtorSlot>(candidateCapsuleHeapTable[0])(
             candidateCapsuleHeap, 1);
     else
         reinterpret_cast<CapsuleShape*>(candidateCapsuleHeap)->nxCapsuleScalarDeletingDtor(1);
-    const unsigned oracleHeapFrees = oracleFreeCount - oracleBefore;
     oracleDigest = foldOracle(oracleDigest, &oracleHeapFrees,
         sizeof(oracleHeapFrees));
     if(oracleHeapFrees != 2 ||
-       candidateAllocator.freeCount - candidateBefore != oracleHeapFrees)
+       candidateFreesSince(candidateAllocator, candidateBefore, holderBefore) !=
+           oracleHeapFrees)
         ++failures;
     ++cases;
 
@@ -1302,17 +1332,19 @@ int wmain(int argc, wchar_t** argv)
     }
     ++cases;
     oracleBefore = oracleFreeCount;
-    candidateBefore = candidateAllocator.freeCount;
     reinterpret_cast<DtorSlot>(oraclePlaneTable[0])(oraclePlane, 0);
+    const unsigned oraclePlaneStackFrees = oracleFreeCount - oracleBefore;
+    holderBefore = oracleFreeCount;
+    candidateBefore = candidateAllocator.freeCount;
     if(planeTableInstalled)
         reinterpret_cast<DtorSlot>(candidatePlaneTable[0])(candidatePlane, 0);
     else
         plane.nxPlaneScalarDeletingDtor(0);
-    const unsigned oraclePlaneStackFrees = oracleFreeCount - oracleBefore;
     oracleDigest = foldOracle(oracleDigest, &oraclePlaneStackFrees,
         sizeof(oraclePlaneStackFrees));
     if(oraclePlaneStackFrees != 1 ||
-       candidateAllocator.freeCount - candidateBefore != oraclePlaneStackFrees)
+       candidateFreesSince(candidateAllocator, candidateBefore, holderBefore) !=
+           oraclePlaneStackFrees)
         ++failures;
     ++cases;
     unsigned char* oraclePlaneHeap = static_cast<unsigned char*>(malloc(0x10c));
@@ -1326,18 +1358,20 @@ int wmain(int argc, wchar_t** argv)
     void** oraclePlaneHeapTable = *reinterpret_cast<void***>(oraclePlaneHeap);
     void** candidatePlaneHeapTable = *reinterpret_cast<void***>(candidatePlaneHeap);
     oracleBefore = oracleFreeCount;
-    candidateBefore = candidateAllocator.freeCount;
     reinterpret_cast<DtorSlot>(oraclePlaneHeapTable[0])(oraclePlaneHeap, 1);
+    const unsigned oraclePlaneHeapFrees = oracleFreeCount - oracleBefore;
+    holderBefore = oracleFreeCount;
+    candidateBefore = candidateAllocator.freeCount;
     if(planeTableInstalled)
         reinterpret_cast<DtorSlot>(candidatePlaneHeapTable[0])(
             candidatePlaneHeap, 1);
     else
         reinterpret_cast<PlaneShape*>(candidatePlaneHeap)->nxPlaneScalarDeletingDtor(1);
-    const unsigned oraclePlaneHeapFrees = oracleFreeCount - oracleBefore;
     oracleDigest = foldOracle(oracleDigest, &oraclePlaneHeapFrees,
         sizeof(oraclePlaneHeapFrees));
     if(oraclePlaneHeapFrees != 2 ||
-       candidateAllocator.freeCount - candidateBefore != oraclePlaneHeapFrees)
+       candidateFreesSince(candidateAllocator, candidateBefore, holderBefore) !=
+           oraclePlaneHeapFrees)
         ++failures;
     ++cases;
     // MESH slot 10 copies its four-word center record, transforms the first
@@ -1636,17 +1670,18 @@ int wmain(int argc, wchar_t** argv)
         pointer = candidateMesh;
         memcpy(candidateShape + 0xe0, &pointer, 4);
         const unsigned oracleBefore = oracleFreeCount;
-        const unsigned candidateBefore = candidateAllocator.freeCount;
         reinterpret_cast<DtorSlot>(const_cast<unsigned char*>(base) +
             0x28e80)(oracleShape, flags);
+        const unsigned oracleFrees = oracleFreeCount - oracleBefore;
+        const unsigned holderBefore = oracleFreeCount;
+        const unsigned candidateBefore = candidateAllocator.freeCount;
         reinterpret_cast<MeshShape*>(candidateShape)->nxMeshScalarDeletingDtor(
             flags);
         unsigned oracleRefcount = 0, candidateRefcount = 0;
         memcpy(&oracleRefcount, oracleMesh + 0x74, 4);
         memcpy(&candidateRefcount, candidateMesh + 0x74, 4);
-        const unsigned oracleFrees = oracleFreeCount - oracleBefore;
         const unsigned candidateFrees =
-            candidateAllocator.freeCount - candidateBefore;
+            candidateFreesSince(candidateAllocator, candidateBefore, holderBefore);
         oracleDigest = foldOracle(oracleDigest, &oracleFrees,
             sizeof(oracleFrees));
         oracleDigest = foldOracle(oracleDigest, &oracleRefcount,

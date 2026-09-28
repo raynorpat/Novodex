@@ -135,13 +135,16 @@ class BoxHullFacade
 	BoxFaceRecord		mFaces[6];
 
 	public:
-	//! phys_fn_000953 (0x00020d20): mov eax,8; ret.
+	//! The values facade slots 1 and 3 return (phys_fn_000953/000961).
 	static const unsigned	kVertexCount = 8;
-	//! phys_fn_000961 (0x000213c0): mov eax,6; ret.
 	static const unsigned	kFaceCount = 6;
 	//! phys_fn_000965 (0x000213e0): xor eax,eax; ret.
 	static const unsigned	kZero = 0;
 
+	//! Facade slot 1, phys_fn_000953 (0x00020d20): mov eax,8; ret.
+	unsigned			vertexCount() const;
+	//! Facade slot 3, phys_fn_000961 (0x000213c0): mov eax,6; ret.
+	unsigned			faceCount() const;
 	//! phys_fn_000955 (0x00020d30): lea eax,[ecx+0x10]; ret.
 	const NxU32*		vertices() const;
 	//! phys_fn_000963 (0x000213d0): lea eax,[eax+eax*8]; lea eax,[ecx+eax*4+0x70].
@@ -154,13 +157,15 @@ class BoxHullFacade
 	//! phys_fn_000971 (0x00021410): mov eax,0x10122240; ret.
 	static const NxU32*	adjacencyTable();
 
-	//! phys_fn_000975 (0x000217c0). Projects all eight vertices through
-	//! `pose` (a column-major 3x4: rotation words then translation at word
-	//! 12..14) and folds them with `direction`, keeping the min into
-	//! `outMin` and the max into `outMax`. Six stack arguments in the row;
-	//! the first and last are read by nothing.
-	void				supportBounds(const float* direction, float* outMin,
-							float* outMax, const float* pose) const;
+	//! phys_fn_000975 (0x000217c0), facade slot 11, __thiscall ret 0x18.
+	//! Projects all eight vertices through `pose` (a column-major 3x4:
+	//! rotation words then translation at word 12..14) and folds them with
+	//! `direction`, keeping the min into `outMin` and the max into `outMax`.
+	//! Six stack arguments in the row's order; the first and last are read
+	//! by nothing.
+	void				supportBounds(NxU32 unread1, float* outMin, float* outMax,
+							const float* direction, const float* pose,
+							NxU32 unread6) const;
 
 	//! phys_fn_000985 (0x00021a10), slot 0. A once-guarded lazy init: zeroes
 	//! a twelve-byte .data global (.data 0x10123c64), runs an initializer
@@ -588,9 +593,9 @@ class MassFrame
 	//! mass = pi*r^2*(2c); the axial diagonal gets mass*r^2/2, the other
 	//! two the full cylinder transverse mass*(3r^2+4c^2)/12 over the
 	//! .rdata 3 ([0x101068f8]) / 4 ([0x101068f4]) / one-twelfth constants.
-	//! `axisSelector` picks the axial diagonal (0=x, 1=y, >=2=z). The
-	//! selector==1 path never writes +0x00 -- an image hole reproduced by
-	//! leaving that word untouched; drives use 0 and 2.
+	//! `axisSelector` picks the axial diagonal (0=x, 1=y, >=2=z); the other
+	//! two diagonals take the transverse term (selector 1 stores it at +0x00
+	//! before its branch, 0x1c836).
 	void				nxMassFrameBuildCapsule(unsigned axisSelector,
 							float radius, float cylHalfHeight);
 
@@ -617,6 +622,12 @@ class MassFrame
 	//! being driven differentially (NOT yet census-closed).
 	void				nxMassFrameTranslate(const void* param);
 
+	//! phys_fn_000841 (0x0001c720), __thiscall plain `ret`: translate the
+	//! frame by its own negated offset {-o} (built on the stack by three
+	//! fld/fchs/fstp m32), through phys_fn_000833; the frame's reference
+	//! point moves to its centre of mass.
+	void				nxMassFrameTranslateToCentre();
+
 	//! +0x00..+0x20, stored row-major as three column triples.
 	NxF32				mInertia[9];
 	//! +0x24..+0x2c.
@@ -625,6 +636,22 @@ class MassFrame
 	NxF32				mMass;		};
 
 static_assert(sizeof(MassFrame) == 0x34, "the mass frame is thirteen floats");
+
+/**
+The 0x24-byte element whose constructor is phys_fn_000925 (0x00020440,
+__thiscall, plain `ret`): it zeroes the first three words and returns this.
+The row has no direct callers; 001472 (0x2b6f0, not written yet) pushes its
+address as the element constructor of a `new T[n]` (the vector-constructor
+iterator at 0x1000, element size 0x24, 0x1002b786). What the other six words
+hold is 001472's to establish.
+*/
+struct HullScratchElement
+	{
+	NxU32				mWords[9];
+						HullScratchElement();
+	};
+
+static_assert(sizeof(HullScratchElement) == 0x24, "the element is 36 bytes");
 
 /**
 The 0x48-byte material record the SDK stores BY VALUE in its materials

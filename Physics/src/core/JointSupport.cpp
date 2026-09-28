@@ -420,6 +420,18 @@ Row000712Fixture* Row000712Fixture::row000712()
 	return static_cast<Row000712Fixture*>(supportPointer(this, 0x1bc));
 	}
 
+// phys_fn_000738 (0x00016c00, 21 B)
+// `mov eax,[ecx+0x1e4]; test ah,2`: bit 9 of +0x1e4 set returns
+// `lea eax,[ecx+0x244]`, clear returns 0. The only caller is 001303 in the
+// broadphase's CCD path (001949 <- 001976 <- 000608 <- the step 000655),
+// which the product does not run, so nothing calls this yet.
+void* Row000738Fixture::row000738()
+	{
+	if(supportWord(this, 0x1e4) & 0x200)
+		return static_cast<NxU8*>(static_cast<void*>(this)) + 0x244;
+	return 0;
+	}
+
 // phys_fn_000760 (0x00017710, 168 B)
 // Only a record that is its own root frees its island object (+0x1e0,
 // through 004167 and the Foundation allocator's slot +0x14). The flags word +0x114
