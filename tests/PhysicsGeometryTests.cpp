@@ -28,13 +28,6 @@ static NxU32 nxU(float value)
 	return bits;
 	}
 
-static float nxF(NxU32 bits)
-	{
-	float value;
-	memcpy(&value, &bits, 4);
-	return value;
-	}
-
 // The scratch array carries the case inputs and the output buffers as raw
 // words, so a value only ever passes through a float register when the
 // signature says it is passed by value.
@@ -129,7 +122,7 @@ static unsigned nxRun_NxComputeSphereMass(HMODULE module)
 		char ret[16];
 		const unsigned kOut = 40;
 		nxPoison(s, 0, 80);
-		float r = fn(nxF(in[0]), nxF(in[1]));
+		float r = fn(*nxVec(in, 0), *nxVec(in, 1));
 		nxRetBits(ret, nxU(r));
 		nxLine("NxComputeSphereMass", i, in, 2, ret, out, 0);
 		}
@@ -169,7 +162,7 @@ static unsigned nxRun_NxComputeSphereDensity(HMODULE module)
 		char ret[16];
 		const unsigned kOut = 40;
 		nxPoison(s, 0, 80);
-		float r = fn(nxF(in[0]), nxF(in[1]));
+		float r = fn(*nxVec(in, 0), *nxVec(in, 1));
 		nxRetBits(ret, nxU(r));
 		nxLine("NxComputeSphereDensity", i, in, 2, ret, out, 0);
 		}
@@ -210,7 +203,7 @@ static unsigned nxRun_NxComputeBoxMass(HMODULE module)
 		const unsigned kOut = 40;
 		nxPoison(s, 0, 80);
 		nxCopy(s, 0, in, 3);
-		float r = fn(nxVec(s, 0), nxF(in[3]));
+		float r = fn(nxVec(s, 0), *nxVec(in, 3));
 		nxRetBits(ret, nxU(r));
 		nxLine("NxComputeBoxMass", i, in, 4, ret, out, 0);
 		}
@@ -251,7 +244,7 @@ static unsigned nxRun_NxComputeBoxDensity(HMODULE module)
 		const unsigned kOut = 40;
 		nxPoison(s, 0, 80);
 		nxCopy(s, 0, in, 3);
-		float r = fn(nxVec(s, 0), nxF(in[3]));
+		float r = fn(nxVec(s, 0), *nxVec(in, 3));
 		nxRetBits(ret, nxU(r));
 		nxLine("NxComputeBoxDensity", i, in, 4, ret, out, 0);
 		}
@@ -292,7 +285,7 @@ static unsigned nxRun_NxComputeEllipsoidMass(HMODULE module)
 		const unsigned kOut = 40;
 		nxPoison(s, 0, 80);
 		nxCopy(s, 0, in, 3);
-		float r = fn(nxVec(s, 0), nxF(in[3]));
+		float r = fn(nxVec(s, 0), *nxVec(in, 3));
 		nxRetBits(ret, nxU(r));
 		nxLine("NxComputeEllipsoidMass", i, in, 4, ret, out, 0);
 		}
@@ -333,7 +326,7 @@ static unsigned nxRun_NxComputeEllipsoidDensity(HMODULE module)
 		const unsigned kOut = 40;
 		nxPoison(s, 0, 80);
 		nxCopy(s, 0, in, 3);
-		float r = fn(nxVec(s, 0), nxF(in[3]));
+		float r = fn(nxVec(s, 0), *nxVec(in, 3));
 		nxRetBits(ret, nxU(r));
 		nxLine("NxComputeEllipsoidDensity", i, in, 4, ret, out, 0);
 		}
@@ -373,7 +366,7 @@ static unsigned nxRun_NxComputeCylinderMass(HMODULE module)
 		char ret[16];
 		const unsigned kOut = 40;
 		nxPoison(s, 0, 80);
-		float r = fn(nxF(in[0]), nxF(in[1]), nxF(in[2]));
+		float r = fn(*nxVec(in, 0), *nxVec(in, 1), *nxVec(in, 2));
 		nxRetBits(ret, nxU(r));
 		nxLine("NxComputeCylinderMass", i, in, 3, ret, out, 0);
 		}
@@ -413,7 +406,7 @@ static unsigned nxRun_NxComputeCylinderDensity(HMODULE module)
 		char ret[16];
 		const unsigned kOut = 40;
 		nxPoison(s, 0, 80);
-		float r = fn(nxF(in[0]), nxF(in[1]), nxF(in[2]));
+		float r = fn(*nxVec(in, 0), *nxVec(in, 1), *nxVec(in, 2));
 		nxRetBits(ret, nxU(r));
 		nxLine("NxComputeCylinderDensity", i, in, 3, ret, out, 0);
 		}
@@ -453,7 +446,7 @@ static unsigned nxRun_NxComputeConeMass(HMODULE module)
 		char ret[16];
 		const unsigned kOut = 40;
 		nxPoison(s, 0, 80);
-		float r = fn(nxF(in[0]), nxF(in[1]), nxF(in[2]));
+		float r = fn(*nxVec(in, 0), *nxVec(in, 1), *nxVec(in, 2));
 		nxRetBits(ret, nxU(r));
 		nxLine("NxComputeConeMass", i, in, 3, ret, out, 0);
 		}
@@ -493,7 +486,7 @@ static unsigned nxRun_NxComputeConeDensity(HMODULE module)
 		char ret[16];
 		const unsigned kOut = 40;
 		nxPoison(s, 0, 80);
-		float r = fn(nxF(in[0]), nxF(in[1]), nxF(in[2]));
+		float r = fn(*nxVec(in, 0), *nxVec(in, 1), *nxVec(in, 2));
 		nxRetBits(ret, nxU(r));
 		nxLine("NxComputeConeDensity", i, in, 3, ret, out, 0);
 		}
@@ -533,7 +526,7 @@ static unsigned nxRun_NxComputeBoxInertiaTensor(HMODULE module)
 		const unsigned kOut = 40;
 		nxPoison(s, 0, 80);
 		nxPoison(s, kOut, 8);
-		fn(nxVecW(s, kOut), nxF(in[0]), nxF(in[1]), nxF(in[2]), nxF(in[3]));
+		fn(nxVecW(s, kOut), *nxVec(in, 0), *nxVec(in, 1), *nxVec(in, 2), *nxVec(in, 3));
 		nxRetVoid(ret);
 		nxGather(out, 0, s, kOut, 5);
 		nxLine("NxComputeBoxInertiaTensor", i, in, 4, ret, out, 5);
@@ -576,7 +569,7 @@ static unsigned nxRun_NxComputeSphereInertiaTensor(HMODULE module)
 		const unsigned kOut = 40;
 		nxPoison(s, 0, 80);
 		nxPoison(s, kOut, 8);
-		fn(nxVecW(s, kOut), nxF(in[0]), nxF(in[1]), (unsigned char) in[2]);
+		fn(nxVecW(s, kOut), *nxVec(in, 0), *nxVec(in, 1), (unsigned char) in[2]);
 		nxRetVoid(ret);
 		nxGather(out, 0, s, kOut, 5);
 		nxLine("NxComputeSphereInertiaTensor", i, in, 3, ret, out, 5);
@@ -718,7 +711,7 @@ static unsigned nxRun_NxRaySphereIntersect(HMODULE module)
 		nxPoison(s, kOut, 8);
 		unsigned coordOff = in[10] == 2 ? 0u : (unsigned) kOut;
 		float* coord = in[10] == 1 ? 0 : nxVecW(s, coordOff);
-		unsigned char r = fn(nxVec(s, 0), nxVec(s, 3), nxVec(s, 6), nxF(in[9]), coord);
+		unsigned char r = fn(nxVec(s, 0), nxVec(s, 3), nxVec(s, 6), *nxVec(in, 9), coord);
 		nxRetBits(ret, r);
 		nxGather(out, 0, s, coordOff, 5);
 		nxLine("NxRaySphereIntersect", i, in, 11, ret, out, 5);

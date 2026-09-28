@@ -517,6 +517,29 @@ class OracleDifferentialCoverageLines(unittest.TestCase):
         self.assertIsNone(re.search(r"static\s+(?:float|NxReal)\s+nxPick\w*\s*\(", source),
             "a raw-word generator returns its word as a float again")
         self.assertIn("static void nxPickWord(unsigned* state, float* out)", source)
+        # Every harness, and any helper, not only the generators by name: a
+        # function that returns a float type and builds it from raw bits (a
+        # memcpy or a pointer pun into the value it returns) is the same hazard.
+        header = re.compile(
+            r"(?m)^[ \t]*(?:static\s+)?(?:inline\s+)?(?:__forceinline\s+)?"
+            r"(?:float|double|NxReal|NxF32|NxF64)\s+(\w+)\s*\([^;{)]*\)\s*\{")
+        for path in sorted((REPO_ROOT / "tests").glob("*.cpp")) + sorted((REPO_ROOT / "tests").glob("*.h")):
+            text = path.read_text(encoding="utf-8", errors="replace")
+            for match in header.finditer(text):
+                depth, end = 0, match.end() - 1
+                while end < len(text):
+                    if text[end] == "{":
+                        depth += 1
+                    elif text[end] == "}":
+                        depth -= 1
+                        if depth == 0:
+                            break
+                    end += 1
+                body = text[match.end() - 1:end]
+                self.assertFalse(
+                    "memcpy" in body or re.search(r"\*\s*\(\s*(?:float|NxReal)\s*\*\s*\)", body),
+                    "%s: %s returns a float built from raw bits; write it into its slot instead"
+                    % (path.name, match.group(1)))
 
     def test_every_registration_names_a_block_the_harness_still_drives(self):
         names = list(collision_driven_names())

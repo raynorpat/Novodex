@@ -400,7 +400,7 @@ static const NxSnanCeiling kSnanCeilings[] =
 	{ "box_clip.random", { 19717, 19700 }, { 589, 588 }, { 18520, 18504 } },
 	{ "box_axis.random", { 30212, 30190 }, { 2904, 2897 }, { 25904, 25889 } },
 	{ "box_shim", { 5105, 5105 }, { 435, 435 }, { 4335, 4335 } },
-	{ "contact_box_box", { 307, 307 }, { 39, 39 }, { 236, 236 } },
+	{ "contact_box_box", { 346, 346 }, { 78, 78 }, { 236, 236 } },
 	{ "step_smooth_normals", { 15, 15 }, { 0, 0 }, { 0, 0 } },
 	{ "contact_emit", { 3738, 3738 }, { 0, 0 }, { 0, 0 } },
 	{ "shape_raycast_plane", { 1720, 1720 }, { 0, 0 }, { 0, 0 } },
@@ -409,7 +409,7 @@ static const NxSnanCeiling kSnanCeilings[] =
 	{ "contact_sphere_capsule", { 804, 804 }, { 0, 0 }, { 0, 0 } },
 	{ "sphere_box_contact", { 3181, 3181 }, { 0, 0 }, { 0, 0 } },
 	{ "contact_sphere_box", { 2022, 2022 }, { 0, 0 }, { 0, 0 } },
-	{ "contact_box_capsule", { 96, 90 }, { 4, 4 }, { 40, 40 } },
+	{ "contact_box_capsule", { 99, 93 }, { 7, 7 }, { 40, 40 } },
 	// the kernel fuzz harness's three (nxDriveFuzzSnan)
 	{ "fuzz_ray_plane", { 15, 15 }, { 0, 0 }, { 0, 0 } },
 	{ "fuzz_ray_aabb", { 1, 1 }, { 0, 0 }, { 0, 0 } },
@@ -1594,7 +1594,10 @@ static void nxTrianglePoint(unsigned* state, const float v[3][3], float out[3], 
 	nxTriangleNormal(v, n);
 	float u = nxUnit(state) * 3.0f - 1.0f;
 	float w = nxUnit(state) * 3.0f - 1.0f;
-	float h = (nxUnit(state) * 2.0f - 1.0f) * ((nxNext(state) & 1) ? 1.0f : 0.05f);
+	// Sequenced: as one expression the draws' order was the compiler's.
+	const bool heightFull = (nxNext(state) & 1) != 0;
+	const float heightDraw = nxUnit(state);
+	float h = (heightDraw * 2.0f - 1.0f) * (heightFull ? 1.0f : 0.05f);
 	*onFeature = false;
 	const unsigned feature = nxNext(state) & 7;
 	if(feature == 0)
@@ -2208,7 +2211,7 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	// each word; enforced ceilings (they may fall, never rise).
 	const unsigned calleeFans[2] = { inflateDivergent[0] + rayTriDivergent[0],
 		inflateDivergent[1] + rayTriDivergent[1] };
-	printf("collision divergent name=ray_inflated_tris cause=phys_fn_005185,phys_fn_001712 fans=%u fans_simulate=%u default_mismatches=%u simulate_mismatches=%u\n",
+	printf("collision divergent name=ray_inflated_tris cause=phys_fn_005185 fans=%u fans_simulate=%u default_mismatches=%u simulate_mismatches=%u\n",
 		calleeFans[0], calleeFans[1], divergentMismatches[0], divergentMismatches[1]);
 	if(calleeFans[0] > kCalleeDivergentFanCeiling[0]
 		|| calleeFans[1] > kCalleeDivergentFanCeiling[1]
@@ -2418,7 +2421,10 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 				edge[2] * axis[0] - edge[0] * axis[2],
 				edge[0] * axis[1] - edge[1] * axis[0] };
 			const float along = nxUnit(&state) * 2.0f - 0.5f;
-			const float up = (nxUnit(&state) * 2.0f - 1.0f) * ((nxNext(&state) & 1) ? 1.0f : 0.1f);
+			// Sequenced: as one expression the draws' order was the compiler's.
+			const bool upFull = (nxNext(&state) & 1) != 0;
+			const float upDraw = nxUnit(&state);
+			const float up = (upDraw * 2.0f - 1.0f) * (upFull ? 1.0f : 0.1f);
 			float p[3];
 			for(int k = 0; k < 3; ++k)
 				p[k] = v[a][k] + along * edge[k] + up * axis[k];
@@ -4275,6 +4281,7 @@ int wmain(int argc, wchar_t** argv)
 					++mismatches;
 					++perMode[mode];
 					}
+				nxSnanDiscrete(mode, world[0].sink.separatingAxis, world[1].sink.separatingAxis);
 				nxDigestByte(&oracleDigest, world[0].sink.separatingAxis);
 				nxDigestByte(&candidateDigest, world[1].sink.separatingAxis);
 				}
@@ -7644,6 +7651,7 @@ int wmain(int argc, wchar_t** argv)
 			perMode[mode] += differing;
 			if(world[0].sink.separatingAxis != world[1].sink.separatingAxis)
 				++perMode[mode];
+			nxSnanDiscrete(mode, world[0].sink.separatingAxis, world[1].sink.separatingAxis);
 			nxDigestByte(&oracleDigest, world[0].sink.separatingAxis);
 			nxDigestByte(&candidateDigest, world[1].sink.separatingAxis);
 			}

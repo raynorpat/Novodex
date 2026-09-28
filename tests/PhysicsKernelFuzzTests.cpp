@@ -140,13 +140,6 @@ static NxU32 nxNext(NxRandom* r)
 	return r->state;
 	}
 
-static float nxFromBits(NxU32 bits)
-	{
-	float value;
-	memcpy(&value, &bits, 4);
-	return value;
-	}
-
 // The input mixture. Raw 32-bit patterns are the point of case 0: they produce
 // NaN of both signs and arbitrary payload, infinity, denormals and negative
 // zero without any of them having to be written down. The rest keep the run
@@ -292,7 +285,10 @@ static void nxPrecisionWitness(HMODULE physics)
 		};
 	for(int i = 0; i < 5; ++i)
 		{
-		const float result = sphereMass(nxFromBits(witnesses[i].radius), nxFromBits(witnesses[i].density));
+		float radius, density;
+		memcpy(&radius, &witnesses[i].radius, 4);
+		memcpy(&density, &witnesses[i].density, 4);
+		const float result = sphereMass(radius, density);
 		NxU32 word;
 		memcpy(&word, &result, 4);
 		printf("witness radius=%08x density=%08x ret=%08x role=%s\n",
@@ -681,8 +677,11 @@ static void nxRunAimedBoxBlock(HMODULE physics)
 		// The oriented variants. The same target is expressed in box space and
 		// pushed back out through the rotation, so the ray still aims at it.
 		float rot[9];
-		nxRotation(rot, nxUnit(&random) * 6.2831853f, nxUnit(&random) * 6.2831853f,
-			nxUnit(&random) * 6.2831853f);
+		// Sequenced: as one expression the draws' order was the compiler's.
+		const float rotAngle0 = nxUnit(&random) * 6.2831853f;
+		const float rotAngle1 = nxUnit(&random) * 6.2831853f;
+		const float rotAngle2 = nxUnit(&random) * 6.2831853f;
+		nxRotation(rot, rotAngle0, rotAngle1, rotAngle2);
 		float local[3], world[3];
 		for(int k = 0; k < 3; ++k)
 			local[k] = extents[k] * (nxUnit(&random) * 2.4f - 1.2f);
@@ -893,10 +892,16 @@ static void nxRunSatBlock(HMODULE physics)
 			// occur often enough to discriminate.
 			centre1[k] = centre0[k] + (nxUnit(&random) * 6.0f - 3.0f);
 			}
-		nxRotation(rot0, nxUnit(&random) * 6.2831853f, nxUnit(&random) * 6.2831853f,
-			nxUnit(&random) * 6.2831853f);
-		nxRotation(rot1, nxUnit(&random) * 6.2831853f, nxUnit(&random) * 6.2831853f,
-			nxUnit(&random) * 6.2831853f);
+		// Sequenced: as one expression the draws' order was the compiler's.
+		const float rot0Angle1 = nxUnit(&random) * 6.2831853f;
+		const float rot0Angle0 = nxUnit(&random) * 6.2831853f;
+		const float rot0Angle2 = nxUnit(&random) * 6.2831853f;
+		nxRotation(rot0, rot0Angle0, rot0Angle1, rot0Angle2);
+		// Sequenced: as one expression the draws' order was the compiler's.
+		const float rot1Angle0 = nxUnit(&random) * 6.2831853f;
+		const float rot1Angle1 = nxUnit(&random) * 6.2831853f;
+		const float rot1Angle2 = nxUnit(&random) * 6.2831853f;
+		nxRotation(rot1, rot1Angle0, rot1Angle1, rot1Angle2);
 		for(unsigned char full = 0; full < 2; ++full)
 			{
 			if(boxBox)

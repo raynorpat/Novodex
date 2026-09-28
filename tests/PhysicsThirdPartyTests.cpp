@@ -1228,8 +1228,11 @@ static void nxDriveCompletePruning(const NxOracleRows& o, bool selfOnly)
 			const float y = (float)((int)(nxNext() % 17u) - 8);
 			const float z = (float)((int)(nxNext() % 17u) - 8);
 			const Point low(x, y, z);
-			const Point high(x + (float)(nxNext() % 7u),
-				y + (float)(nxNext() % 7u), z + (float)(nxNext() % 7u));
+			// Sequenced: as one expression the draws' order was the compiler's.
+			const float growZ = (float)(nxNext() % 7u);
+			const float growY = (float)(nxNext() % 7u);
+			const float growX = (float)(nxNext() % 7u);
+			const Point high(x + growX, y + growY, z + growZ);
 			boxes[i].SetMinMax(low, high);
 			boxPointers[i] = &boxes[i];
 			}
@@ -2701,9 +2704,11 @@ static void nxWorld(Matrix4x4& m, int which)
 
 static Point nxInside(const NxMesh& m, float grow)
 	{
-	return Point(nxRange(m.minB[0] - grow, m.maxB[0] + grow),
-				 nxRange(m.minB[1] - grow, m.maxB[1] + grow),
-				 nxRange(m.minB[2] - grow, m.maxB[2] + grow));
+	// Sequenced: as one expression the draws' order was the compiler's.
+	const float insideZ = nxRange(m.minB[2] - grow, m.maxB[2] + grow);
+	const float insideY = nxRange(m.minB[1] - grow, m.maxB[1] + grow);
+	const float insideX = nxRange(m.minB[0] - grow, m.maxB[0] + grow);
+	return Point(insideX, insideY, insideZ);
 	}
 
 static void nxTapeCollider(NxTape& tape, bool returned, const void* collider)
@@ -2760,7 +2765,12 @@ static void nxMakeRay(const NxMesh& m, int r, Ray& ray, float& length)
 		case 3:		// grazing: parallel to z=const planes
 			from = nxInside(m, 0.0f);
 			from.z = (r & 8) ? m.minB[2] : 0.0f;
-			to = from + Point(nxRange(-1.0f, 1.0f), nxRange(-1.0f, 1.0f), 0.0f);
+				// Sequenced: as one expression the draws' order was the compiler's.
+				{
+				const float toX = nxRange(-1.0f, 1.0f);
+				const float toY = nxRange(-1.0f, 1.0f);
+				to = from + Point(toX, toY, 0.0f);
+				}
 			from.x = m.minB[0] - 3.0f;
 			break;
 		case 4:		// from inside
@@ -2773,7 +2783,12 @@ static void nxMakeRay(const NxMesh& m, int r, Ray& ray, float& length)
 			const float* a = &m.verts[m.tris[t * 3] * 3];
 			const float* b = &m.verts[m.tris[t * 3 + 1] * 3];
 			to = Point((a[0] + b[0]) * 0.5f, (a[1] + b[1]) * 0.5f, (a[2] + b[2]) * 0.5f);
-			from = to + Point(nxRange(-3.0f, 3.0f), nxRange(-3.0f, 3.0f), 5.0f);
+				// Sequenced: as one expression the draws' order was the compiler's.
+				{
+				const float fromX = nxRange(-3.0f, 3.0f);
+				const float fromY = nxRange(-3.0f, 3.0f);
+				from = to + Point(fromX, fromY, 5.0f);
+				}
 			break;
 			}
 		}
@@ -2961,7 +2976,11 @@ static void nxMakeVolume(NxVolumeKind kind, const NxMesh& m, int q, NxVolumeQuer
 			v.nbPlanes = 1 + (udword) (q % 6);
 			for(udword k = 0; k < v.nbPlanes; ++k)
 				{
-				Point n(nxRange(-1.0f, 1.0f), nxRange(-1.0f, 1.0f), nxRange(-1.0f, 1.0f));
+				// Sequenced: as one expression the draws' order was the compiler's.
+				const float normalZ = nxRange(-1.0f, 1.0f);
+				const float normalY = nxRange(-1.0f, 1.0f);
+				const float normalX = nxRange(-1.0f, 1.0f);
+				Point n(normalX, normalY, normalZ);
 				if(n.Magnitude() < 1e-3f)
 					n = Point(0.0f, 0.0f, 1.0f);
 				n.Normalize();
@@ -3539,8 +3558,16 @@ static void nxDriveSap(const NxOracleRows& o, bool selfOnly)
 		bool flags[40];
 		for(udword i = 0; i < n; ++i)
 			{
-			Point center(nxRange(-4.0f, 4.0f), nxRange(-4.0f, 4.0f), nxRange(-4.0f, 4.0f));
-			Point extents(nxRange(0.0f, 1.5f), nxRange(0.0f, 1.5f), (i % 7 == 3) ? 0.0f : nxRange(0.0f, 1.5f));
+			// Sequenced: as one expression the draws' order was the compiler's.
+			const float centerX = nxRange(-4.0f, 4.0f);
+			const float centerY = nxRange(-4.0f, 4.0f);
+			const float centerZ = nxRange(-4.0f, 4.0f);
+			Point center(centerX, centerY, centerZ);
+			// Sequenced: as one expression the draws' order was the compiler's.
+			const float extentZ = (i % 7 == 3) ? 0.0f : nxRange(0.0f, 1.5f);
+			const float extentX = nxRange(0.0f, 1.5f);
+			const float extentY = nxRange(0.0f, 1.5f);
+			Point extents(extentX, extentY, extentZ);
 			boxes[i].SetCenterExtents(center, extents);
 			boxPtrs[i] = &boxes[i];
 			flags[i] = (nxNext() % 3) == 0;
@@ -3550,8 +3577,16 @@ static void nxDriveSap(const NxOracleRows& o, bool selfOnly)
 		for(int k = 0; k < 60; ++k)
 			{
 			moveIds[k] = nxNext() % n;
-			Point center(nxRange(-4.0f, 4.0f), nxRange(-4.0f, 4.0f), nxRange(-4.0f, 4.0f));
-			moves[k].SetCenterExtents(center, Point(nxRange(0.1f, 2.0f), nxRange(0.1f, 2.0f), nxRange(0.1f, 2.0f)));
+			// Sequenced: as one expression the draws' order was the compiler's.
+			const float centerZ = nxRange(-4.0f, 4.0f);
+			const float centerX = nxRange(-4.0f, 4.0f);
+			const float centerY = nxRange(-4.0f, 4.0f);
+			Point center(centerX, centerY, centerZ);
+			// Sequenced: as one expression the draws' order was the compiler's.
+			const float extentZ = nxRange(0.1f, 2.0f);
+			const float extentY = nxRange(0.1f, 2.0f);
+			const float extentX = nxRange(0.1f, 2.0f);
+			moves[k].SetCenterExtents(center, Point(extentX, extentY, extentZ));
 			}
 		for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
 			{
@@ -3645,10 +3680,22 @@ static void nxDriveIcePart(const NxOracleRows& o, int part, bool selfOnly, unsig
 		{
 		// AABB
 		AABB a, b;
-		a.SetCenterExtents(Point(nxRange(-5, 5), nxRange(-5, 5), nxRange(-5, 5)),
-			Point(nxRange(0, 3), (c % 9 == 4) ? 0.0f : nxRange(0, 3), nxRange(0, 3)));
-		b.SetCenterExtents(Point(nxRange(-5, 5), nxRange(-5, 5), nxRange(-5, 5)),
-			Point(nxRange(0, 3), nxRange(0, 3), nxRange(0, 3)));
+		// Sequenced: as one expression the draws' order was the compiler's.
+		const float aExtentY = (c % 9 == 4) ? 0.0f : nxRange(0, 3);
+		const float aCenterX = nxRange(-5, 5);
+		const float aCenterY = nxRange(-5, 5);
+		const float aCenterZ = nxRange(-5, 5);
+		const float aExtentX = nxRange(0, 3);
+		const float aExtentZ = nxRange(0, 3);
+		a.SetCenterExtents(Point(aCenterX, aCenterY, aCenterZ), Point(aExtentX, aExtentY, aExtentZ));
+		// Sequenced: as one expression the draws' order was the compiler's.
+		const float bExtentX = nxRange(0, 3);
+		const float bExtentY = nxRange(0, 3);
+		const float bExtentZ = nxRange(0, 3);
+		const float bCenterX = nxRange(-5, 5);
+		const float bCenterY = nxRange(-5, 5);
+		const float bCenterZ = nxRange(-5, 5);
+		b.SetCenterExtents(Point(bCenterX, bCenterY, bCenterZ), Point(bExtentX, bExtentY, bExtentZ));
 		if(c % 11 == 0)
 			b = a;
 		for(int side = 0; side < (part == 0 ? all : 0); ++side)
@@ -3676,9 +3723,29 @@ static void nxDriveIcePart(const NxOracleRows& o, int part, bool selfOnly, unsig
 			}
 
 		// Plane and Triangle
-		Point p0(nxRange(-5, 5), nxRange(-5, 5), nxRange(-5, 5));
-		Point p1 = (c % 7 == 2) ? p0 : Point(nxRange(-5, 5), nxRange(-5, 5), nxRange(-5, 5));
-		Point p2 = (c % 13 == 5) ? p0 + (p1 - p0) * 2.0f : Point(nxRange(-5, 5), nxRange(-5, 5), nxRange(-5, 5));
+		// Sequenced: as one expression the draws' order was the compiler's.
+		const float p0X = nxRange(-5, 5);
+		const float p0Y = nxRange(-5, 5);
+		const float p0Z = nxRange(-5, 5);
+		Point p0(p0X, p0Y, p0Z);
+		// Sequenced: as one expression the draws' order was the compiler's.
+		Point p1 = p0;
+		if(!(c % 7 == 2))
+			{
+			const float p1X = nxRange(-5, 5);
+			const float p1Y = nxRange(-5, 5);
+			const float p1Z = nxRange(-5, 5);
+			p1 = Point(p1X, p1Y, p1Z);
+			}
+		// Sequenced: as one expression the draws' order was the compiler's.
+		Point p2 = p0 + (p1 - p0) * 2.0f;
+		if(!(c % 13 == 5))
+			{
+			const float p2X = nxRange(-5, 5);
+			const float p2Y = nxRange(-5, 5);
+			const float p2Z = nxRange(-5, 5);
+			p2 = Point(p2X, p2Y, p2Z);
+			}
 		// The zero-area inputs: a repeated vertex, and three collinear points.
 		const bool flat = c % 7 == 2 || c % 13 == 5;
 		for(int side = 0; side < (part == 1 ? all : 0); ++side)
@@ -3779,10 +3846,26 @@ static void nxDriveIcePart(const NxOracleRows& o, int part, bool selfOnly, unsig
 
 		// OBB
 		OBB box, other;
-		box.mCenter = Point(nxRange(-3, 3), nxRange(-3, 3), nxRange(-3, 3));
-		box.mExtents = Point(nxRange(0, 2), (c % 6 == 1) ? 0.0f : nxRange(0, 2), nxRange(0, 2));
-		other.mCenter = box.mCenter + Point(nxRange(-1, 1), nxRange(-1, 1), nxRange(-1, 1));
-		other.mExtents = Point(nxRange(0, 3), nxRange(0, 3), nxRange(0, 3));
+		// Sequenced: as one expression the draws' order was the compiler's.
+		const float boxCenterX = nxRange(-3, 3);
+		const float boxCenterY = nxRange(-3, 3);
+		const float boxCenterZ = nxRange(-3, 3);
+		box.mCenter = Point(boxCenterX, boxCenterY, boxCenterZ);
+		// Sequenced: as one expression the draws' order was the compiler's.
+		const float boxExtentY = (c % 6 == 1) ? 0.0f : nxRange(0, 2);
+		const float boxExtentX = nxRange(0, 2);
+		const float boxExtentZ = nxRange(0, 2);
+		box.mExtents = Point(boxExtentX, boxExtentY, boxExtentZ);
+		// Sequenced: as one expression the draws' order was the compiler's.
+		const float otherOffsetX = nxRange(-1, 1);
+		const float otherOffsetY = nxRange(-1, 1);
+		const float otherOffsetZ = nxRange(-1, 1);
+		other.mCenter = box.mCenter + Point(otherOffsetX, otherOffsetY, otherOffsetZ);
+		// Sequenced: as one expression the draws' order was the compiler's.
+		const float otherExtentX = nxRange(0, 3);
+		const float otherExtentY = nxRange(0, 3);
+		const float otherExtentZ = nxRange(0, 3);
+		other.mExtents = Point(otherExtentX, otherExtentY, otherExtentZ);
 		{
 		float r[3][3];
 		nxRotation(r);
@@ -3967,7 +4050,11 @@ static unsigned nxQhullPoints(int set, float* out)
 		case 4:		// points in a box
 			for(int i = 0; i < (set == 3 ? 96 : 200); ++i)
 				{
-				Point p(nxRange(-1, 1), nxRange(-1, 1), nxRange(-1, 1));
+				// Sequenced: as one expression the draws' order was the compiler's.
+				const float pointZ = nxRange(-1, 1);
+				const float pointY = nxRange(-1, 1);
+				const float pointX = nxRange(-1, 1);
+				Point p(pointX, pointY, pointZ);
 				if(set == 3 && p.Magnitude() > 1e-3f)
 					p.Normalize();
 				out[n * 3 + 0] = p.x; out[n * 3 + 1] = p.y; out[n * 3 + 2] = p.z;
@@ -5394,7 +5481,11 @@ static void nxQhGapPoints(int set, NxQhGapSet& s)
 		case 18:	// 500 points on a sphere
 			for(int i = 0; i < 500; ++i)
 				{
-				Point p(nxRange(-1, 1), nxRange(-1, 1), nxRange(-1, 1));
+				// Sequenced: as one expression the draws' order was the compiler's.
+				const float pointZ = nxRange(-1, 1);
+				const float pointY = nxRange(-1, 1);
+				const float pointX = nxRange(-1, 1);
+				Point p(pointX, pointY, pointZ);
 				if(p.Magnitude() > 1e-3f)
 					p.Normalize();
 				out[n * 3] = p.x; out[n * 3 + 1] = p.y; out[n * 3 + 2] = p.z;
