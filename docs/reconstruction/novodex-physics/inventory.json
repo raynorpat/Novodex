@@ -27955,13 +27955,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceAdjacencies.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/605",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4101",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; the census unit of the row is gap:ConvexHull.cpp..IceAdjacencies.cpp, adopted into sub-unit A) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002daf0..0x0002dbb3: register arguments (EAX &nbEdges, ECX edges, EDX face, EDI ref0; stack ref1, ref2, faces), the face's three words set to 0xffffffff, then the edges (0,1), (0,2), (1,2) appended as {smaller, larger, face} with the count re-read after every store; written as a noinline function with those registers as parameters",
+      "dynamic_proof": "convex-mesh gap Task 2c: nxAdjacenciesAddTriangle hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2c.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 e9b4c202edc33af5...)); reached through every 001546 run of oracle differential ice_adjacencies (001546 at base+0x0002def0 over 65 meshes with 32-bit and 16-bit faces, with and without vertices, both face arrays, disagreeing face arrays and bare create blocks; 001542 and 001544 after every run) against the pinned oracle: return values, NbFaces, the faces block with its cookie, the boundary count, every allocation/release and report (lines 266, 267, 321 and EdgeList's 0x72 reached) compared word for word, mismatches=0 on 35,084 words; the vertex runs of the 13 plane-divergent meshes apart as ice_adjacencies.plane_divergent, 124 words under an enforced ceiling, 0 with 005155/005181 bound in; see evidence/convex-mesh-gap.md, Task 2c",
+      "notes": "",
+      "implementation": "Physics/src/IceAdjacencies.cpp"
     },
     {
       "id": "phys_fn_001538",
@@ -27991,13 +27992,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/IceAdjacencies.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/606",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4107",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/IceAdjacencies.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002dbc0..0x0002dce4: ECX the create block, EDI/EAX the two faces, stack ref0, ref1, faces; the two IndexedTriangle locals from DFaces and then from WFaces (two tests, 0x0002dc0a, so WFaces wins), FindEdge (005189, vendored) on each, 0xff reported through 002160 at 0x10a / 0x10b with the oracle's file and messages and the report's false returned, the links (edge << 30) | face written both ways; written as a noinline function",
+      "dynamic_proof": "convex-mesh gap Task 2c: nxAdjacenciesUpdateLink hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2c.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 e9b4c202edc33af5...)); reached through 001541 in oracle differential ice_adjacencies (001546 at base+0x0002def0 over 65 meshes with 32-bit and 16-bit faces, with and without vertices, both face arrays, disagreeing face arrays and bare create blocks; 001542 and 001544 after every run) against the pinned oracle: return values, NbFaces, the faces block with its cookie, the boundary count, every allocation/release and report (lines 266, 267, 321 and EdgeList's 0x72 reached) compared word for word, mismatches=0 on 35,084 words; the vertex runs of the 13 plane-divergent meshes apart as ice_adjacencies.plane_divergent, 124 words under an enforced ceiling, 0 with 005155/005181 bound in; see evidence/convex-mesh-gap.md, Task 2c",
+      "notes": "",
+      "implementation": "Physics/src/IceAdjacencies.cpp"
     },
     {
       "id": "phys_fn_001540",
@@ -28027,13 +28029,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/IceAdjacencies.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/607",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4112",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/IceAdjacencies.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002dcf0..0x0002de5f: EAX the edge count, stack faces, edges, create; RadixSort on the stack (005157/005159), the keys alloca'd (0x0002dd10), sorted on Ref0 then Ref1 (005163, hint 0), the first record read before the loop, runs of two linked through 001539 (in the loop and after it, 0x0002dd86), a run of three reported at 0x141 (non-manifold) and the report's false returned, a failing link returning false",
+      "dynamic_proof": "convex-mesh gap Task 2c: nxAdjacenciesCreateDatabase hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2c.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 e9b4c202edc33af5...)); reached through 001546 in oracle differential ice_adjacencies (001546 at base+0x0002def0 over 65 meshes with 32-bit and 16-bit faces, with and without vertices, both face arrays, disagreeing face arrays and bare create blocks; 001542 and 001544 after every run) against the pinned oracle: return values, NbFaces, the faces block with its cookie, the boundary count, every allocation/release and report (lines 266, 267, 321 and EdgeList's 0x72 reached) compared word for word, mismatches=0 on 35,084 words; the vertex runs of the 13 plane-divergent meshes apart as ice_adjacencies.plane_divergent, 124 words under an enforced ceiling, 0 with 005155/005181 bound in; see evidence/convex-mesh-gap.md, Task 2c",
+      "notes": "",
+      "implementation": "Physics/src/IceAdjacencies.cpp"
     },
     {
       "id": "phys_fn_001542",
@@ -28045,13 +28048,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceAdjacencies.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/608",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4126",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002de60..0x0002deba: zero without faces or with a zero count, else the number of link words whose low 29 bits are 0x1fffffff",
+      "dynamic_proof": "convex-mesh gap Task 2c: Adjacencies::ComputeNbBoundaryEdges hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2c.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 e9b4c202edc33af5...)); called after every run of oracle differential ice_adjacencies (001546 at base+0x0002def0 over 65 meshes with 32-bit and 16-bit faces, with and without vertices, both face arrays, disagreeing face arrays and bare create blocks; 001542 and 001544 after every run) against the pinned oracle: return values, NbFaces, the faces block with its cookie, the boundary count, every allocation/release and report (lines 266, 267, 321 and EdgeList's 0x72 reached) compared word for word, mismatches=0 on 35,084 words; the vertex runs of the 13 plane-divergent meshes apart as ice_adjacencies.plane_divergent, 124 words under an enforced ceiling, 0 with 005155/005181 bound in; see evidence/convex-mesh-gap.md, Task 2c",
+      "notes": "",
+      "implementation": "Physics/src/IceAdjacencies.cpp"
     },
     {
       "id": "phys_fn_001543",
@@ -28087,7 +28091,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4132",
       "static_proof": "static review of the recorded shape: singleton vtable-slot call after 004803 (0x2dec0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the slot1544 differential (3z215): failures=0 over three consecutive runs for both the null and non-null [self+4] cases, comparing the slot hit count, its argument and the whole object, with the singleton pointer bound and the helper reached through its real code",
-      "notes": ""
+      "notes": "convex-mesh gap Task 2c: the product form is Adjacencies::~Adjacencies in Physics/src/IceAdjacencies.cpp (stable-ID line), called by the Task 2c rows and hit in evidence/convex-mesh-gap-trace-2c.txt; the edge_list / ice_adjacencies / ice_valencies families compare its effects (the object image and every release through the 004803 getter) with the oracle's. The ObjectModel.cpp model and its proof stand; state unchanged"
     },
     {
       "id": "phys_fn_001545",
@@ -28117,13 +28121,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceAdjacencies.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/610",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4134",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002def0..0x0002e0d8 (continuation 001548): false on no faces (the count untouched); new[] faces (12 bytes, persistent, count cookie) and 3n edge records (12 bytes, temporary, cookie) through the 004803 getter, the vector constructor iterator with the identity constructor; AddTriangle per face from DFaces, else WFaces, else 0/1/2; CreateDatabase; the records released at the pointer minus four; with vertices and a good database, an EdgeList on the stack (002052, 002063 with FacesToEdges set, VerticesToEdges clear, the vertices and epsilon) whose link bits 31 set or clear bit 29 of words 0, 1, 2 from links 0, 2, 1, then released (002060); the database's result returned",
+      "dynamic_proof": "convex-mesh gap Task 2c: Adjacencies::Init hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2c.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 e9b4c202edc33af5...)); oracle differential ice_adjacencies (001546 at base+0x0002def0 over 65 meshes with 32-bit and 16-bit faces, with and without vertices, both face arrays, disagreeing face arrays and bare create blocks; 001542 and 001544 after every run) against the pinned oracle: return values, NbFaces, the faces block with its cookie, the boundary count, every allocation/release and report (lines 266, 267, 321 and EdgeList's 0x72 reached) compared word for word, mismatches=0 on 35,084 words; the vertex runs of the 13 plane-divergent meshes apart as ice_adjacencies.plane_divergent, 124 words under an enforced ceiling, 0 with 005155/005181 bound in; see evidence/convex-mesh-gap.md, Task 2c",
+      "notes": "",
+      "implementation": "Physics/src/IceAdjacencies.cpp"
     },
     {
       "id": "phys_fn_001547",
@@ -28153,13 +28158,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceAdjacencies.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/610",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4152",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002def0"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0002e0e0..0x0002e157 (continuation of 001546): the active-edge loop over mFaces -- links 0, 2, 1 of the EdgeList face into bit 29 of words 0, 1, 2 (byte or/and at +3, dword at +8) -- the EdgeList release and the return",
+      "dynamic_proof": "convex-mesh gap Task 2c: Adjacencies::Init (001548 has no separate address; it is the second half of the function) hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2c.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 e9b4c202edc33af5...)); oracle differential ice_adjacencies (001546 at base+0x0002def0 over 65 meshes with 32-bit and 16-bit faces, with and without vertices, both face arrays, disagreeing face arrays and bare create blocks; 001542 and 001544 after every run) against the pinned oracle: return values, NbFaces, the faces block with its cookie, the boundary count, every allocation/release and report (lines 266, 267, 321 and EdgeList's 0x72 reached) compared word for word, mismatches=0 on 35,084 words; the vertex runs of the 13 plane-divergent meshes apart as ice_adjacencies.plane_divergent, 124 words under an enforced ceiling, 0 with 005155/005181 bound in; see evidence/convex-mesh-gap.md, Task 2c",
+      "notes": "continuation of the entry at 0x0002def0",
+      "implementation": "Physics/src/IceAdjacencies.cpp"
     },
     {
       "id": "phys_fn_001549",
@@ -30237,7 +30243,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4600",
       "static_proof": "xor ecx,ecx; 5 dword zero-stores through +0x10; ret",
       "dynamic_proof": "confirmed via zmix drive (3z54): failures=0",
-      "notes": ""
+      "notes": "convex-mesh gap Task 2c: the product form is Valencies::Valencies in Physics/src/IceMeshTools.cpp (stable-ID line), called by the Task 2c rows and hit in evidence/convex-mesh-gap-trace-2c.txt; the edge_list / ice_adjacencies / ice_valencies families compare its effects (the object image and every release through the 004803 getter) with the oracle's. The ObjectModel.cpp model and its proof stand; state unchanged"
     },
     {
       "id": "phys_fn_001664",
@@ -30273,7 +30279,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4601",
       "static_proof": "static review of the recorded shape: three-field owned free (0x325b0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers4 differential (3z186): failures=0 for all three rows on both the all-fields-null and all-fields-present arms, comparing the object and the ordered free sequence against each side own blocks",
-      "notes": ""
+      "notes": "convex-mesh gap Task 2c: the product form is Valencies::~Valencies in Physics/src/IceMeshTools.cpp (stable-ID line), called by the Task 2c rows and hit in evidence/convex-mesh-gap-trace-2c.txt; the edge_list / ice_adjacencies / ice_valencies families compare its effects (the object image and every release through the 004803 getter) with the oracle's. The ObjectModel.cpp model and its proof stand; state unchanged"
     },
     {
       "id": "phys_fn_001666",
@@ -30303,13 +30309,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceMeshTools.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/659",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4605",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00032610..0x0003280f: NbVerts stored, the valence array (persistent, no cookie) allocated and zeroed, an EdgeList (002052) built with FacesToEdges only and epsilon 0.001f (0x3a83126f), valences counted over its edges; with AdjacentList the offsets (prefix sums), NbAdjVerts, the adjacent array written through the advancing offsets and the offsets formed again; the EdgeList released (002060) on every path after it exists",
+      "dynamic_proof": "convex-mesh gap Task 2c: Valencies::Compute hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2c.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 e9b4c202edc33af5...)); oracle differential ice_valencies (001667 at base+0x00032610 over 65 meshes with 32-bit and 16-bit faces, with and without the adjacent lists, and with no faces) against the pinned oracle: return values, the object image and its three arrays, every allocation/release and report compared word for word, mismatches=0 on 32,709 words; see evidence/convex-mesh-gap.md, Task 2c",
+      "notes": "",
+      "implementation": "Physics/src/IceMeshTools.cpp"
     },
     {
       "id": "phys_fn_001668",
@@ -37320,7 +37327,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6529",
       "static_proof": "xor ecx,ecx; zero-stores at +0/+4/+0xc/+0x10/+0x14; ret",
       "dynamic_proof": "confirmed via zmix drive (3z54): failures=0",
-      "notes": ""
+      "notes": "convex-mesh gap Task 2c: the product form is EdgeList::EdgeList in Physics/src/EdgeList.cpp (stable-ID line), called by the Task 2c rows and hit in evidence/convex-mesh-gap-trace-2c.txt; the edge_list / ice_adjacencies / ice_valencies families compare its effects (the object image and every release through the 004803 getter) with the oracle's. The ObjectModel.cpp model and its proof stand; state unchanged"
     },
     {
       "id": "phys_fn_002053",
@@ -37350,13 +37357,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/EdgeList.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/798",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6530",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; no unit bundle: the EdgeList.cpp rows sit outside the four units, contract `## Out-of-range prerequisites`, P-EdgeList) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00051080..0x000512a8 (continuation 002056): no faces or neither face array reported at 0x72 with the oracle's file and message, the report's false returned; true at once when the links exist; new[] links (persistent, cookie), VRefs0 and VRefs1 (temporary, no cookie) and new[] edge buffer (temporary, cookie) through the 004803 getter, each failure returning false and releasing nothing; the (0,1), (1,2), (2,0) pairs sorted into VRefs0/VRefs1 (0, 1, 2 without face arrays)",
+      "dynamic_proof": "convex-mesh gap Task 2c: EdgeList::CreateFacesToEdges hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2c.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 e9b4c202edc33af5...)); oracle differential edge_list (002063 at base+0x00051dd0 over flag and face-array combinations of 65 meshes, 002054 and 002061 called directly for their early returns and every report) against the pinned oracle: return values, the whole object image including the count cookies, every allocation and release through the 004803 getter and every report compared word for word, mismatches=0 on 160,261 words; the vertex runs of 13 meshes whose active-edge decisions follow the vendored Plane::Set / Triangle::Normal (005155, 005181; pre-flighted edge by edge) compared apart as edge_list.plane_divergent, 465 words under an enforced ceiling, 0 with the oracle's 005155 and 005181 bound into the candidate (throwaway build); see evidence/convex-mesh-gap.md, Task 2c",
+      "notes": "",
+      "implementation": "Physics/src/EdgeList.cpp"
     },
     {
       "id": "phys_fn_002055",
@@ -37386,13 +37394,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/EdgeList.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/798",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6547",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00051080"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; no unit bundle: the EdgeList.cpp rows sit outside the four units, contract `## Out-of-range prerequisites`, P-EdgeList) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x000512b0..0x000513e6 (continuation of 002054): RadixSort on VRefs1 then VRefs0 (hint 0); the runs of equal pairs, both last references starting at 0xffffffff, into the buffer and each face's link set to its run; new[] edges (persistent, cookie; on failure only the sorter released), the buffer copied, the buffer (minus four), VRefs1 and VRefs0 released, the sorter destroyed",
+      "dynamic_proof": "convex-mesh gap Task 2c: EdgeList::CreateFacesToEdges (002056 has no separate address; it is the second half of the function) hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2c.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 e9b4c202edc33af5...)); oracle differential edge_list (002063 at base+0x00051dd0 over flag and face-array combinations of 65 meshes, 002054 and 002061 called directly for their early returns and every report) against the pinned oracle: return values, the whole object image including the count cookies, every allocation and release through the 004803 getter and every report compared word for word, mismatches=0 on 160,261 words; the vertex runs of 13 meshes whose active-edge decisions follow the vendored Plane::Set / Triangle::Normal (005155, 005181; pre-flighted edge by edge) compared apart as edge_list.plane_divergent, 465 words under an enforced ceiling, 0 with the oracle's 005155 and 005181 bound into the candidate (throwaway build); see evidence/convex-mesh-gap.md, Task 2c",
+      "notes": "continuation of the entry at 0x00051080",
+      "implementation": "Physics/src/EdgeList.cpp"
     },
     {
       "id": "phys_fn_002057",
@@ -37422,13 +37431,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/EdgeList.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/799",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6557",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; no unit bundle: the EdgeList.cpp rows sit outside the four units, contract `## Out-of-range prerequisites`, P-EdgeList) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x000513f0..0x000515c3: 002054 first; the EdgeDesc array (8 bytes, persistent, no cookie, constructed by 0x1002a610 which zeroes it), counts per edge over nb_faces faces, run starts, the faces-by-edges array sized by the last run end, the faces written through the advancing offsets and the offsets formed again",
+      "dynamic_proof": "convex-mesh gap Task 2c: EdgeList::CreateEdgesToFaces hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2c.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 e9b4c202edc33af5...)); oracle differential edge_list (002063 at base+0x00051dd0 over flag and face-array combinations of 65 meshes, 002054 and 002061 called directly for their early returns and every report) against the pinned oracle: return values, the whole object image including the count cookies, every allocation and release through the 004803 getter and every report compared word for word, mismatches=0 on 160,261 words; the vertex runs of 13 meshes whose active-edge decisions follow the vendored Plane::Set / Triangle::Normal (005155, 005181; pre-flighted edge by edge) compared apart as edge_list.plane_divergent, 465 words under an enforced ceiling, 0 with the oracle's 005155 and 005181 bound into the candidate (throwaway build); see evidence/convex-mesh-gap.md, Task 2c",
+      "notes": "",
+      "implementation": "Physics/src/EdgeList.cpp"
     },
     {
       "id": "phys_fn_002059",
@@ -37464,7 +37474,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6571",
       "static_proof": "static review of the recorded shape: singleton release of four fields with two adjusted by minus four (0x515d0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the adjusted2060 differential (3z225): failures=0 over three consecutive runs across all sixteen occupancy pans, comparing the hit count, the ORDERED sequence of adjusted arguments each call received, and the whole object -- so a model that skipped the minus-four adjustment could not have passed",
-      "notes": "",
+      "notes": "convex-mesh gap Task 2c: the product form is EdgeList::~EdgeList in Physics/src/EdgeList.cpp (stable-ID line), called by the Task 2c rows and hit in evidence/convex-mesh-gap-trace-2c.txt; the edge_list / ice_adjacencies / ice_valencies families compare its effects (the object image and every release through the 004803 getter) with the oracle's. The ObjectModel.cpp model and its proof stand; state unchanged",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -37477,13 +37487,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/EdgeList.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/801",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6576",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; no unit bundle: the EdgeList.cpp rows sit outside the four units, contract `## Out-of-range prerequisites`, P-EdgeList) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00051640..0x00051dca: reports at 0x10a (no face arrays), 0x10b (no vertices), 0x10e, 0x111, 0x114, 0x117 (no edges, edge data, descriptors, faces-by-edges) with the report's false returned; per edge active when one face uses it or, for two, when the first face's opposite vertex (six-way rule, 0xffffffff when none) is strictly below the second face's plane (Plane::Set 005155; 0x0005189f..0x000518d4, an x87 block: (n.y p.y + n.z p.z) + n.x p.x + d, `test ah, 5; jp`) and |atan2(|n0 x n1|, n0 . n1)| > 0.1f (Triangle::Normal 005181 twice; 0x000519c1..0x00051a3a, an x87 block: the cross length ((x^2 + z^2) + y^2) square-rooted and kept on the stack into fpatan, `test ah, 0x41`); the epsilon argument unread; marks into link bit 31 and descriptor bit 0; the vertex marks sized by the largest reference over nb_faces plus one, into link bit 30 over mNbFaces; both temporary buffers through the 004803 getter",
+      "dynamic_proof": "convex-mesh gap Task 2c: EdgeList::ComputeActiveEdges hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2c.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 e9b4c202edc33af5...)); oracle differential edge_list (002063 at base+0x00051dd0 over flag and face-array combinations of 65 meshes, 002054 and 002061 called directly for their early returns and every report) against the pinned oracle: return values, the whole object image including the count cookies, every allocation and release through the 004803 getter and every report compared word for word, mismatches=0 on 160,261 words; the vertex runs of 13 meshes whose active-edge decisions follow the vendored Plane::Set / Triangle::Normal (005155, 005181; pre-flighted edge by edge) compared apart as edge_list.plane_divergent, 465 words under an enforced ceiling, 0 with the oracle's 005155 and 005181 bound into the candidate (throwaway build); see evidence/convex-mesh-gap.md, Task 2c",
+      "notes": "",
+      "implementation": "Physics/src/EdgeList.cpp"
     },
     {
       "id": "phys_fn_002062",
@@ -37513,13 +37524,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/EdgeList.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/802",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6634",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; no unit bundle: the EdgeList.cpp rows sit outside the four units, contract `## Out-of-range prerequisites`, P-EdgeList) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00051dd0..0x00051eae: with vertices both tables are built whatever the flags (0x00051de0, 0x00051e46), then 002054, 002058 and 002061 as flagged, each failure returning false; afterwards without FacesToEdges the links released (minus four), without VerticesToEdges the descriptors and faces-by-edges",
+      "dynamic_proof": "convex-mesh gap Task 2c: EdgeList::Init hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2c.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 e9b4c202edc33af5...)); oracle differential edge_list (002063 at base+0x00051dd0 over flag and face-array combinations of 65 meshes, 002054 and 002061 called directly for their early returns and every report) against the pinned oracle: return values, the whole object image including the count cookies, every allocation and release through the 004803 getter and every report compared word for word, mismatches=0 on 160,261 words; the vertex runs of 13 meshes whose active-edge decisions follow the vendored Plane::Set / Triangle::Normal (005155, 005181; pre-flighted edge by edge) compared apart as edge_list.plane_divergent, 465 words under an enforced ceiling, 0 with the oracle's 005155 and 005181 bound into the candidate (throwaway build); see evidence/convex-mesh-gap.md, Task 2c",
+      "notes": "",
+      "implementation": "Physics/src/EdgeList.cpp"
     },
     {
       "id": "phys_fn_002064",

@@ -1,0 +1,80 @@
+convex-mesh gap Task 2c: cdb breakpoint trace of the EdgeList, IceAdjacencies and Valencies rows
+===================================================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/convex-mesh-gap-trace-2b.txt.
+Banners, ModLoad lines and the program's own output are removed except the Task 2c families' lines
+and the harness's closing line (marked `  | `); the echoed breakpoint commands and the HIT lines
+are kept in order and unedited. It is the evidence behind the dynamic_proof this task records in
+inventory.json for the rows below (see evidence/convex-mesh-gap.md, Task 2c).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsThirdPartyTests.exe
+           D:\FlamingEnt__\Unreal_3\Binaries 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+           (the script is the bp lines below, then `g` and `q`)
+Recorded:  2026-09-28, on the build of the Task 2c rows and differential (commit f325d1a).
+Binary:    build\Release\NxPhysicsThirdPartyTests.exe
+           sha256=e9b4c202edc33af5b343ce14e20a0beb5041fd5195284f9d18cc8ab4e95d2558
+Oracle:    D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+           sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c (the pin; the
+           harness re-hashes it and refuses to run otherwise)
+Offsets:   module-relative, from build\Release\NxPhysicsThirdPartyTests.map of that build (the exe
+           has no PDB). This cdb names the image `image<base>` rather than by its file name (its
+           ModLoad line), so each breakpoint is written against the entry point: `@$exentry -
+           0x80a00` is the image base (entry point RVA 0x80a00, the map's 0001:0007fa00). One
+           one-shot breakpoint (`bp /1`) per candidate function carrying one of this task's stable
+           IDs, including the product forms of the already-reconstructed 002052, 002060, 001544,
+           001663 and 001665. 001548 is the continuation of 001546 and 002056 that of 002054 in the
+           oracle: neither has a separate address here, and every call of 001546 / 002054 that
+           gets past its first allocation runs it.
+
+Result: every one of the 15 breakpoints was hit, so all 15 functions (17 rows with the two
+continuations) executed in the run; the harness then closed with
+`thirdparty candidate mismatches=0 layout_failures=0`. The first hit of each comes from its
+family, in the harness's order (edge_list, ice_adjacencies, ice_valencies); each breakpoint fires
+on the candidate pass, which follows the oracle pass of the same family.
+
+0:000> bp /1 @$exentry-0x80a00+0x1d690 ".echo HIT 002052 EdgeList::EdgeList +0x1d690; gc"
+0:000> bp /1 @$exentry-0x80a00+0x1e1f0 ".echo HIT 002054 EdgeList::CreateFacesToEdges +0x1e1f0; gc"
+0:000> bp /1 @$exentry-0x80a00+0x1e000 ".echo HIT 002058 EdgeList::CreateEdgesToFaces +0x1e000; gc"
+0:000> bp /1 @$exentry-0x80a00+0x1d6c0 ".echo HIT 002060 EdgeList::~EdgeList +0x1d6c0; gc"
+0:000> bp /1 @$exentry-0x80a00+0x1d770 ".echo HIT 002061 EdgeList::ComputeActiveEdges +0x1d770; gc"
+0:000> bp /1 @$exentry-0x80a00+0x1e560 ".echo HIT 002063 EdgeList::Init +0x1e560; gc"
+0:000> bp /1 @$exentry-0x80a00+0x1e990 ".echo HIT 001537 nxAdjacenciesAddTriangle +0x1e990; gc"
+0:000> bp /1 @$exentry-0x80a00+0x1ec00 ".echo HIT 001539 nxAdjacenciesUpdateLink +0x1ec00; gc"
+0:000> bp /1 @$exentry-0x80a00+0x1ea70 ".echo HIT 001541 nxAdjacenciesCreateDatabase +0x1ea70; gc"
+0:000> bp /1 @$exentry-0x80a00+0x1e6b0 ".echo HIT 001542 Adjacencies::ComputeNbBoundaryEdges +0x1e6b0; gc"
+0:000> bp /1 @$exentry-0x80a00+0x1e680 ".echo HIT 001544 Adjacencies::~Adjacencies +0x1e680; gc"
+0:000> bp /1 @$exentry-0x80a00+0x1e710 ".echo HIT 001546 Adjacencies::Init +0x1e710; gc"
+0:000> bp /1 @$exentry-0x80a00+0x1ed50 ".echo HIT 001663 Valencies::Valencies +0x1ed50; gc"
+0:000> bp /1 @$exentry-0x80a00+0x1ed80 ".echo HIT 001665 Valencies::~Valencies +0x1ed80; gc"
+0:000> bp /1 @$exentry-0x80a00+0x1ede0 ".echo HIT 001667 Valencies::Compute +0x1ede0; gc"
+0:000> g
+HIT 002052 EdgeList::EdgeList +0x1d690
+HIT 002063 EdgeList::Init +0x1e560
+HIT 002054 EdgeList::CreateFacesToEdges +0x1e1f0
+HIT 002060 EdgeList::~EdgeList +0x1d6c0
+HIT 002058 EdgeList::CreateEdgesToFaces +0x1e000
+HIT 002061 EdgeList::ComputeActiveEdges +0x1d770
+  | thirdparty input name=edge_list words=11703 input=466037b8
+  | thirdparty name=edge_list rva=0x00051dd0 owner=phys_fn_002063 source=EdgeList.cpp words=160261 oracle=76644d57 mismatches=0 worst_ulp=0 verdict=exact
+  | thirdparty name=edge_list.plane_divergent rva=0x00051dd0 owner=phys_fn_002063 source=EdgeList.cpp words=23225 oracle=18406f6d mismatches=465 discrete=465 float_ulp=0 double_ulp=0 beyond=0 inf_words=0 degenerate=0 finite_ulp=0 beyond_abs=0 first_diff=445 length_delta=0 ceiling=465/465 verdict=divergent
+  | thirdparty coverage name=edge_list meshes=65 runs=650 succeeded=650 failed=0 edges=27045 active_edge_links=6714 active_vertex_links=12384 reports=8 line72=2 line10a=1 line10b=1 line10e=1 line111=1 line114=1 line117=1
+  | thirdparty coverage name=edge_list.plane_divergent pairs=1487 side=40 angle=9 meshes=13
+HIT 001546 Adjacencies::Init +0x1e710
+HIT 001537 nxAdjacenciesAddTriangle +0x1e990
+HIT 001541 nxAdjacenciesCreateDatabase +0x1ea70
+HIT 001539 nxAdjacenciesUpdateLink +0x1ec00
+HIT 001542 Adjacencies::ComputeNbBoundaryEdges +0x1e6b0
+HIT 001544 Adjacencies::~Adjacencies +0x1e680
+  | thirdparty input name=ice_adjacencies words=11478 input=3ce4907d
+  | thirdparty name=ice_adjacencies rva=0x0002def0 owner=phys_fn_001546 source=IceAdjacencies.cpp words=35084 oracle=39b6cbc7 mismatches=0 worst_ulp=0 verdict=exact
+  | thirdparty name=ice_adjacencies.plane_divergent rva=0x0002def0 owner=phys_fn_001546 source=IceAdjacencies.cpp words=3528 oracle=b67b88e0 mismatches=124 discrete=124 float_ulp=0 double_ulp=0 beyond=0 inf_words=0 degenerate=0 finite_ulp=0 beyond_abs=0 first_diff=1960 length_delta=0 ceiling=124/124 verdict=divergent
+  | thirdparty coverage name=ice_adjacencies meshes=65 runs=335 succeeded=182 failed=153 links=12821 boundary=14323 active=15877 reports=153 line266=2 line267=5 line321=146 line72=1
+HIT 001663 Valencies::Valencies +0x1ed50
+HIT 001667 Valencies::Compute +0x1ede0
+HIT 001665 Valencies::~Valencies +0x1ed80
+  | thirdparty input name=ice_valencies words=10533 input=0863cbf9
+  | thirdparty name=ice_valencies rva=0x00032610 owner=phys_fn_001667 source=IceMeshTools.cpp,EdgeList.cpp words=32709 oracle=2cbd6dee mismatches=0 worst_ulp=0 verdict=exact
+  | thirdparty coverage name=ice_valencies meshes=65 runs=261 succeeded=260 failed=1 adjacent=12020 reports=1 line72=1
+  | thirdparty candidate mismatches=0 layout_failures=0
+0:000> q

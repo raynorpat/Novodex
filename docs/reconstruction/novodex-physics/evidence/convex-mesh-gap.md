@@ -17,6 +17,7 @@ table below.
 | 2b review | 2026-09-28T11:18:00 | 2026-09-28T11:32:34 | 0 | 0 | No row added; 001760 (x87 block), 001672 (first-edge leaf) and the Task 2b families (bit-written raw draws, mixed exponents, 001712 pre-flight) reworked after the review. Under 0x0f7f: 001672, 001692, 001708, 001730, 001760 exact; 001694 31 on these draws (all 001690's; its own interior leaf differed on 2 of the review's 1M draws, which these did not reach -- see the harness hardening), 001855 215, pinned. The 14 Task 2b lines re-registered; all 122 collision lines reproduce. 35 traced functions hit. See `## Task 2b`, **Review**. |
 | H | 2026-09-28T11:36:00 | 2026-09-28T12:58:35 | 1 | 782 | Harness hardening. Every raw draw of the collision harness is written as bits (no float return, which quieted signalling NaNs depending on inlining); pre-Task-2b families draw their NaNs quiet explicitly (all their digests reproduce); handed signalling NaNs, 15 of their blocks' candidates differ (recorded, not registered). 58 input-digest lines registered. 001712 rewritten as a naked x87 transcription (its C++ loaded operands the listing uses from memory: 1,310 step_ray_tri words and 75 / 31 fans on signalling NaNs; now 0), step_ray_tri on signalling NaNs. 001694's interior leaf an x87 block (2 own 0x0f7f words on the review's draws; now 0); segment_triangle replays the review's 250,000 draws (0x0f7f 940, all 001690's). Compound raw bounds drawn directly. 11 lines re-registered once, 59 added; phase 3 floor 199. 12 traced functions hit. Follow-up (controller decision): the 15 blocks, and 3 kernel-fuzz exports replayed in-process, also run as `.snan` variants divergent under enforced ceilings (44 lines, floor 243); the fuzz harness writes bits and quiets explicitly (its lines unchanged); two unsequenced draws sequenced; the affected rows' notes say signalling-NaN propagation is not reproduced. See `## Harness hardening`. |
 | H review | 2026-09-28T13:00:00 | 2026-09-28T13:45:53 | 0 | 0 | Task H review fixes: the separating-axis byte of contact_box_box and contact_box_capsule tallied into their `.snan` ceilings (346 / 346, 78 / 78, 236 / 236 and 99 / 93, 7 / 7, 40 / 40); every remaining unsequenced multi-draw expression in the collision, fuzz, third-party and tangent harnesses sequenced in the order the build used (all registered lines and the geometry transcript unchanged; one site was missed, segment_segment's `scale`, sequenced by Task 2c -- see the correction under `## Harness hardening`); float-returning raw-bit helpers removed from all harnesses and the tool test widened to every tests/*.cpp; ray_inflated_tris' divergent cause no longer names 001712. See `## Harness hardening`. |
+| 2c | 2026-09-28T13:48:00 | 2026-09-28T14:38:42 | 12 | 5,564 | EdgeList (002054 with continuation 002056, 002058, 002061, 002063) in the new `EdgeList.cpp`, IceAdjacencies (001537..001548) in the new `IceAdjacencies.cpp`, 001667 in the new `IceMeshTools.cpp`; product forms of 002052, 002060, 001544, 001663, 001665. Allocations through the 004803 getter with the listing's cookies; reports through the SetIceError seam; 002061's plane side and angle as x87 blocks; the three files `/EHs-c-`. Families edge_list, ice_adjacencies, ice_valencies in NxPhysicsThirdPartyTests (object image, allocations and reports compared): exact on every gated run; the vertex runs of 13 meshes whose decisions follow the vendored Plane::Set / Triangle::Normal split into `.plane_divergent` under ceilings (465 / 124 words; 0 with the oracle's callees bound in). 14 lines registered, phase 4 floor 175. 15 traced functions hit. Also: segment_segment's scale draws sequenced (stdout identical) and the raw-bit float-return scan widened (.c files, casts, unions, conventions). See `## Task 2c`. |
 
 ## Task 2a: box distance kernels and the entries that reach them
 
@@ -414,3 +415,127 @@ ten leaves, the interior block among them) on the build of a8df0e8 (exe sha256 7
 
 **Trace, `.snan` follow-up.** No product code changed after a8df0e8 (harness, registry, inventory
 notes and evidence only), so the trace above stands.
+
+## Task 2c: EdgeList, IceAdjacencies and the valencies
+
+**Rows (12, 5,564 B), all `discovered` -> `reconstructed`.** Prerequisite P-EdgeList in the new
+`Physics/src/EdgeList.cpp` (the oracle's own `__FILE__`): 002054 `CreateFacesToEdges` (554 B) with
+its continuation 002056 (313 B, missing from the contract's row list until now), 002058
+`CreateEdgesToFaces` (467 B), 002061 `ComputeActiveEdges` (1,933 B) and 002063 `Init` (225 B).
+Sub-unit A in the new `Physics/src/IceAdjacencies.cpp`: 001537 AddTriangle, 001539 UpdateLink and
+001541 CreateDatabase (register conventions, written as noinline functions with those registers as
+parameters), 001542 ComputeNbBoundaryEdges and 001546 Init with its continuation 001548. From
+sub-unit D, 001667 `Valencies::Compute` in the new `Physics/src/IceMeshTools.cpp`. The five
+already-reconstructed rows these need -- 002052 and 002060 (EdgeList constructor and release), 001544
+(Adjacencies release), 001663 and 001665 (Valencies constructor and release) -- have product forms in
+the same files with their stable-ID lines; their ObjectModel.cpp models and proofs stand, their
+states are unchanged and their notes say so. Nothing is vendored: OPCODE 1.3's `Ice/` has no
+IceAdjacencies, EdgeList or Valencies (checked against `External/opcode/upstream/Opcode/Ice`), and no
+candidate stand-in or caller existed for any of the rows (callers 001465, 001411, 002186, 002188,
+002239 are not written), so there was nothing to wire.
+
+- *Allocation.* Every allocation in the three files is the 004803 getter's (slot 0 with the
+  listing's type, slot 3 to release; none through CRT new/free or the imported allocator), with the
+  listing's count cookies: `new[]` of the adjacency faces, the temporary edge records, the edge
+  links, the edge buffer and the edges (released at the pointer minus four), plain blocks for the
+  reference lists, descriptors (zeroed by their constructor 0x1002a610), faces-by-edges, the mark
+  buffers and the three valency arrays. The families record every call and compare them.
+- *Reports.* Through the SetIceError seam (002160, `OpcodeNovodeXHost.h`) with the oracle's file
+  string, line and message; the report's `false` is the row's return value, as in the listing.
+- *Vendored callees,* called where the oracle calls them: RadixSort (005157, 005163 with hint 0,
+  005159), IndexedTriangle::FindEdge (005189), Plane::Set (005155) and Triangle::Normal (005181).
+- *x87.* 002061's two float sections are assembly blocks transcribed from the listing: the side of
+  the plane (0x0005189f..0x000518d4) and the angle (0x000519c1..0x00051a3a), whose cross-product
+  length is square-rooted and kept on the FPU stack into `fpatan`. EdgeList.cpp and IceMeshTools.cpp
+  are on the `/arch:IA32` list; IceAdjacencies.cpp is integer code.
+- *Frames.* The three files are built with `/EHs-c-`, as the joint files are: the listings are
+  frameless, and under `/EHsc` the RadixSort and EdgeList locals and the noexcept destructors gave
+  seven functions unwind frames. The `/GS` cookies on the functions with local arrays remain
+  (002061, 001539, and 001541 for its alloca), as 001708's does.
+
+**Listing findings.** 001539 reads both faces from DFaces and then from WFaces (two tests, not an
+else), so its invalid-edge arm is reachable only when the two face arrays disagree -- a repeated
+vertex cannot reach it (the contract said it could; corrected). The link word is
+`(edge << 30) | face`. ADJACENCIESCREATE has a fifth field, the epsilon at +0x10, which 001546 hands
+to the EdgeList create block; 002061 never reads it and compares the angle with the constant 0.1f
+(0x10106954). 001546 returns CreateDatabase's result whatever its EdgeList does. 002054 starts both
+last references at 0xffffffff (not at the first sorted pair, as ICE does) and leaks what it has
+allocated on every failing path; 002061 sizes its vertex marks by the largest reference over the
+`nb_faces` argument but walks `mNbFaces`, and reads vertex 0xffffffff (12 bytes before the array)
+when the edge is not a side of the first face.
+
+**Differential** (`NxPhysicsThirdPartyTests`; the oracle's entry rows by RVA on oracle-side objects,
+the candidate's on its own; tapes compared word for word). Inputs: the six NxMesh fixtures and 59
+meshes of the task's own -- height grids straddling the 0.1 rad threshold, folded pairs (convex,
+concave, flat, both windings), three faces on one edge, a face (a, a, a), duplicated faces (same and
+reversed winding), the box with isolated vertices, the height field with shuffled indices and faces,
+a pair whose shared edge sorts last, 24 random soups and six meshes with raw words among the
+coordinates (written as bits). Each run's tape: the return value, the whole object image (counts,
+every table word, every count cookie), every allocation (type, size) and release (which block) through
+the 004803 getter -- a recording allocator written into the oracle's singleton slot
+.data:0x0012845c for the oracle pass and installed through `nxSetSdkAllocatorBridge` for the
+candidate's, blocks filled with 0xcd -- and every report (line, file and message digests; the
+oracle's import slot 0x001041b4 redirected to a recorder, the candidate's seam made capturable in
+`tests/PhysicsThirdPartyHost.cpp`). Vertex arrays sit behind a fixed 12-byte guard.
+
+| family | entry | runs | words | result |
+|---|---|---:|---:|---|
+| edge_list | 002063 (and 002054, 002061 direct) | 650 + direct | 160,261 | exact |
+| edge_list.plane_divergent | 002063, vertex runs of 13 meshes | (in the 650) | 23,225 | 465 words, ceiling 465 |
+| ice_adjacencies | 001546 (001542, 001544 after each) | 335 | 35,084 | exact |
+| ice_adjacencies.plane_divergent | 001546, vertex runs of the same 13 | (in the 335) | 3,528 | 124 words, ceiling 124 |
+| ice_valencies | 001667 | 261 | 32,709 | exact |
+
+Coverage (oracle side, registered): edge_list 27,045 edges, 6,714 active-edge and 12,384
+active-vertex link bits, every report of 002054 and 002061 (0x72 twice; 0x10a, 0x10b, 0x10e, 0x111,
+0x114, 0x117); ice_adjacencies 182 true / 153 false, 12,821 links, 14,323 boundary words, 15,877
+active bits, reports at 266 (2), 267 (5), 321 (146) and EdgeList's 0x72 (1); ice_valencies 260 true
+/ 1 false (no faces), 12,020 adjacent entries.
+
+*The divergent split.* 002061 decides an edge shared by two faces from two vendored callees:
+Plane::Set for the second face's plane (the first face's opposite vertex is tested against it) and
+Triangle::Normal for the angle, and both are measured divergences (`ice_plane_triangle`, up to 2,820
+ulp; 005155 and 005181 are held `discovered`). A last-bit difference flips the decision for a vertex
+in the plane or an angle at 0.1. Measured on a throwaway build that could bind the oracle's rows
+into the candidate's 002061: edge_list 465 differing words and ice_adjacencies 124 (whose vertex
+runs go through the same EdgeList); with 005155 bound 306 / 100, with 005181 bound 342 / 92, with
+both bound 0 / 0 -- every differing word is the callees'. (Before the six raw-word meshes were added:
+72 / 0, and 0 with 005155 alone.) So each mesh is pre-flighted edge by edge in 002061's order
+(faces ascending, the six-way opposite-vertex rule, both callees' planes and normals; an angle within
+1e-6 of 0.1 counts as undecided): 1,487 two-face edges, 40 with the side differing and 9 with the
+angle decision, in 13 meshes (eight random soups and five raw-word meshes; every fixture and every
+designed mesh is gated). The vertex runs of those 13 meshes go to `<family>.plane_divergent`,
+registered up to the oracle digest and held by `kDivergentCeilings` (465/465, 124/124 discrete
+words; a change either way is reported, exceeding fails). Every other run, including every vertex
+run of the fixtures, is exact.
+
+Registered: 14 lines (per family an input digest, the exact line whole, the divergent line to the
+oracle digest and the coverage lines, and the totals pair `driven=76 divergent=27 words=1755447` /
+`4a282660`); phase 4 floor 161 -> 175 and `test_gate_targets.py` MINIMUM with it. The other
+families' lines, including the totals pairs printed before these families, are unchanged. The
+harness is deterministic run to run, and `--self` prints the same oracle digests.
+
+**Also (separate commit).** tests/PhysicsCollisionTests.cpp: segment_segment's near-parallel
+`scale` (a unit draw and a sign draw, operands of one `*`) sequenced into named locals, sign word
+first -- the order the build had used (the other order moves the segment_segment lines); the whole
+stdout is identical. The harness-hardening review's claim that every remaining site had been
+sequenced is corrected under `## Harness hardening`. The tool test that rejects float-returning
+raw-bit helpers now scans `tests/*.c` too, finds `reinterpret_cast` and union puns (local, named and
+typedef'd) and sees calling conventions and `const` between the return type and the name, with a
+probe test per shape; the widened scan found `nxStreamReadFloat` in PhysicsAssetTests.cpp, the
+harness stream's `NxStream::readFloat` slot, whose float return is the interface's ABI on both sides
+(exempted by name; the exemption is checked live).
+
+**Trace.** `evidence/convex-mesh-gap-trace-2c.txt`: one-shot cdb breakpoints (from
+`NxPhysicsThirdPartyTests.map`, written against `@$exentry` because this cdb names the 22 MB image
+`image<base>`) on the 15 candidate functions -- the twelve rows' ten functions and the five product
+forms; 001548 and 002056 are continuations with no address of their own -- all hit in one full run,
+closing `thirdparty candidate mismatches=0` (exe sha256 e9b4c202edc33af5..., build of f325d1a).
+
+**Inventory and ledgers.** The 12 rows: `reconstructed`, `source`/`implementation` their file,
+static proofs citing the listing ranges, dynamic proofs citing the trace and the family. Ledgers,
+with the standard note: phase 2 001546/001548 homeless_shared_code -> reconstructed_not_falsified
+(51 -> 49 / 7 -> 9); phase 3 001542, 001667 not_reconstructed_in_phase -> reconstructed_not_falsified
+(302 -> 300 / 11 -> 13); phase 4 the eight EdgeList and IceAdjacencies rows (296 -> 288 / 472 -> 480);
+reason texts and the phase 3 note's count updated. `validate_inventory.py`: the EdgeList.cpp and
+IceAdjacencies.cpp entries leave the unresolved-source allowlist (the check asked for it).

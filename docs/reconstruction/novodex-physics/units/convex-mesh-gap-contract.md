@@ -227,7 +227,7 @@ names the file its rows go to; the task that writes a row is given in `## Task s
 | row | rva | bytes | state | phase | callers | role |
 |---|---|---:|---|---:|---|---|
 | 001537 | 0x0002daf0 | 196 | discovered | 4 | 001546 | Adjacencies::AddTriangle (AddEdge x3 inlined): face ATri = 0xffffffff x3, three AdjEdge {min, max, face}; register arguments (EAX = &nbEdges, EDI = v0) |
-| 001539 | 0x0002dbc0 | 293 | discovered | 4 | 001541 | Adjacencies::UpdateLink: FindEdge (005189) on both faces, asserts at lines 266/267, writes ATri = (edge << 30) + tri; register arguments (EDI = tri0, EAX = tri1) |
+| 001539 | 0x0002dbc0 | 293 | discovered | 4 | 001541 | Adjacencies::UpdateLink: FindEdge (005189) on both faces, asserts at lines 266/267, writes ATri = (edge << 30) | tri; register arguments (EDI = tri0, EAX = tri1); both faces from DFaces and then from WFaces (two tests, WFaces wins) |
 | 001541 | 0x0002dcf0 | 368 | discovered | 4 | 001546 | Adjacencies::CreateDatabase: alloca'd key array, RadixSort twice (005157/005163/005159), non-manifold assert, UpdateLink per matching pair |
 | 001542 | 0x0002de60 | 91 | discovered | 3 | 001465 | Adjacencies::ComputeNbBoundaryEdges: counts ATri words with (w & 0x1fffffff) == 0x1fffffff |
 | 001544 | 0x0002dec0 | 37 | reconstructed | 2 | 001465, 002186, 002239 | Adjacencies::~Adjacencies (frees mFaces through 004803 slot 3); already reconstructed as an ObjectModel model |
@@ -262,6 +262,13 @@ Totals: 7 rows; discovered 1,560 B, reconstructed 37 B
   set reaches 001539's invalid-edge arm (a triangle with a repeated vertex) and a three-faces-per-
   edge case reaches 001541's non-manifold arm - capture the report the way the OPCODE families
   capture SetIceError. Release through 001544 on each side.
+- **Task 2c findings (errata).** A repeated vertex does NOT reach 001539's invalid-edge arm: the
+  edge records come from the face itself, so FindEdge always finds them. The arm is reached only
+  when the create block carries both face arrays and they disagree (AddTriangle reads DFaces
+  first, UpdateLink lets WFaces override), in the first face of the pair (line 266) or the second
+  (267); the family drives both. ADJACENCIESCREATE has a fifth field, +0x10 epsilon, handed to
+  the EdgeList create block (0x0002e095). 001546 returns the database's result whatever the
+  EdgeList does. The link word is (edge << 30) | face, an OR.
 
 ### B. Support-vertex maps - `Physics/src/IceSupportMaps.cpp` (new; file name chosen by this contract)
 
@@ -746,7 +753,7 @@ differential. Caller chains come from `oracle/dependencies.dot`.
 
 | id | rows (not started) | bytes | owner unit | caller chain into this range |
 |---|---|---:|---|---|
-| P-EdgeList | 002063 (`EdgeList::Init`, 225), 002054 (554), 002058 (467), 002061 (1,933); vendored 005155 `Plane::Set` and 005181 `Triangle::Normal` | 3,179 | `EdgeList.cpp` | 001546 -> 002063; 001667 -> 002063; 002188 -> 002063; 002063 -> 002054, 002058, 002061 |
+| P-EdgeList | 002063 (`EdgeList::Init`, 225), 002054 (554) with its continuation 002056 (313; added by Task 2c), 002058 (467), 002061 (1,933); vendored 005155 `Plane::Set` and 005181 `Triangle::Normal` | 3,492 | `EdgeList.cpp` | 001546 -> 002063; 001667 -> 002063; 002188 -> 002063; 002063 -> 002054, 002058, 002061 |
 | P-Small | 002144 (217), 001461 (194), 002186 (143), 002188 (152) | 706 | TriangleMesh spans, SphereShape..ConvexHull gap | 001651 -> 002144; 001844 -> 001461 -> 001651; 001859 -> 002186 -> 001546/001544; 001834, 001844, 001849, 001859 -> 002188 -> 002063 |
 | P-Hull | 001441 (178), 001445 (146), 001449 (156), 001459 (241), 001463 (337), 001465 (`ConvexHull.cpp`, 791), 001472 (664), 001496 (296), 001502 (298) | 3,107 | `ConvexHull.cpp` and the gaps either side | 001567, 001573, 001822 -> 001472; 001569 -> 001496 -> 001472; 001844 -> 001502 -> 001472; 001472 -> 001459 (-> 001441, 001445), 001463, 001465 (-> 001449, and in range 001542, 001544, 001546, 001641) |
 | P-Mesh | polygon interface 002217 (11), 002219 (11), 002221 (26), 002223 (38), 002225 (26), 002227..002231 (3 x 26), 002249 (459); their helpers 001514 (441), 001516 (298), 001530 (153) | 649 + 892 | `TriangleMesh.cpp` span; ConvexHull gap | 001820 -> TriangleMesh+0x04 slots 2/3/4/11; 002225 -> 001514 (-> 001472, 001661); 002219 -> 001516 (-> 001472, 001502); 002249 -> 001530, 001556; 002217 -> 001496; 002221/002223 -> 001472; 002227..002231 -> 001502 |
@@ -761,6 +768,16 @@ Dependencies between the prerequisites:
 - P-Mesh needs P-Hull, 001661 (2e) and B (002249 calls 001556).
 - 002186 needs A.
 - 002188 needs P-EdgeList.
+
+P-EdgeList as written by Task 2c (Physics/src/EdgeList.cpp): 002054 has a continuation row,
+002056 (0x000512b0, 313 B, the sort, the runs and the release), missing from the row list above
+until then. 002061 never reads its epsilon argument: the angle is compared with the constant 0.1f
+at 0x10106954 (and the plane side with 0.0f at 0x101041f0); the create block's epsilon only
+travels. 002061 is x87 (Plane::Set, two Triangle::Normal calls, an inline fsqrt and fpatan), so
+EdgeList.cpp is on the `/arch:IA32` list; its active-edge decisions inherit the vendored 005155 /
+005181 divergence (evidence/convex-mesh-gap.md, Task 2c). Every allocation in the three Task 2c
+files goes through the 004803 getter (types 0 and 1, count cookies on the `new[]` blocks), none
+through CRT new/free or the imported allocator.
 
 000001 is not a prerequisite. It is MSVC's compiler-generated `vector constructor iterator`,
 which `new[]` produces.
@@ -781,7 +798,7 @@ route.
 |---|---|---:|---|
 | 2a | E box distance: 001670, 001674..001688 (incl. 001686). G: 001751, 001753. J: 001774. K's matrix-B entries 001785, 001789, 001791 | 8,468 | point_box, line_box, segment_box, contact_box_capsule, overlap_box_capsule, overlap_capsule_capsule, overlap_capsule/sphere/box_compound |
 | 2b | E triangle distance: 001672, 001692, 001694. F: 001708, 001730/001732. From I, 001760; from N, 001855 | 9,919 | point_triangle, line_line, segment_triangle, ray_inflated_tris, aabb_slab, triangle_plane, segment_triangle_edges |
-| 2c | P-EdgeList (002054, 002058, 002061, 002063). A: 001537..001548. D: 001667 | 5,251 | edge_list, ice_adjacencies, ice_valencies |
+| 2c | P-EdgeList (002054 with continuation 002056, 002058, 002061, 002063). A: 001537..001548. D: 001667 | 5,564 | edge_list, ice_adjacencies, ice_valencies |
 | 2d | C MeshBuilder2 (001591..001637). D vertex reduction: 001647 | 10,728 | ice_meshbuilder2, vertex_reduction |
 | 2e | D remainder: 001639, 001641/001643, 001651, 001653, 001661. P-Small: 002144 (wrapping `angleAtVertex`), 001461, 002186, 002188 | 4,370 | pose_pair, unique_axis, edge_dedupe, mesh_normals, adjacency_owner |
 | 2f | P-Hull (001441..001502), then B support maps (001550..001589) | 4,996 | convex_hull, support_maps |
@@ -804,8 +821,9 @@ Notes on the split:
 - **x87 build list.** Every new file except `IceAdjacencies.cpp` holds float code and goes on the
   `/arch:IA32` list in `CMakeLists.txt`. `ContactGeneration.cpp`, `NarrowPhase.cpp`,
   `Geometry.cpp` and `SmoothNormals.cpp` are already on it.
-- **Totals.** In range: 76,115 B. Adopted prerequisites: 13,216 B (the `P-*` rows above plus 002081).
-  All thirteen tasks: 89,331 B, not counting the mesh-fixture harness code.
+- **Totals.** In range: 76,115 B. Adopted prerequisites: 13,529 B (the `P-*` rows above plus 002081;
+  13,216 before Task 2c added 002056, 002054's continuation). All thirteen tasks: 89,644 B, not
+  counting the mesh-fixture harness code.
 
 ## Open items
 
