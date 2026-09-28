@@ -1365,6 +1365,11 @@ $NxRequiredCoverageLines = [ordered] @{
     # binary tokens, both addenda, and the one- and no-scene dumps. The first run
     # differed in scene A's bodies only: maxangularvelocity(7) where the oracle
     # prints the SDK's changed NX_MAX_ANGULAR_VELOCITY (fixed in Scene.cpp).
+    # Task 5 (review) added scene C, dumped after the others in a new pointer
+    # epoch: an unjointed actor created asleep, static capsules (one whose own
+    # flags reach the trigger writer), consecutive equal actors and shapes for the
+    # PsDefaultSettings lines, and a static three-shape actor; its first run found
+    # the capsule's flags missing from the shape (fixed in Scene.cpp).
     'NxPhysicsCoreDumpTests' = @(
         'sdk materials=3 added=1,2',
         'sdk group_1_3=0 group_2_2=0',
@@ -1643,6 +1648,101 @@ $NxRequiredCoverageLines = [ordered] @{
         'dump no_scene line=64 text=### Begin : User supplied addendum script.<CR>',
         'dump no_scene line=65 text=<CR>',
         'dump no_scene line=66 text=### End   : User supplied addendum script.<CR>',
+        'scene c=created',
+        'dump pointer_epoch reset',
+        'scene actor napper=created',
+        'scene actor sensor=created',
+        'scene actor sensor 2=created',
+        'scene actor west=created',
+        'scene actor west again=created',
+        'scene actor pebble=created',
+        'scene actor pebble 2=created',
+        'scene actor twin=created',
+        'scene actor twin 2=created',
+        'scene actor brick=created',
+        'scene actor brick 2=created',
+        'scene actor gate=created',
+        'dump scene_c coreDump binary=0 addendum=no returned=0',
+        'dump scene_c present=yes',
+        'dump scene_c line=3 text=### Contains one Asset.<CR>',
+        'dump scene_c line=62 text=PsAssetBegin Asset__P1<CR>',
+        'dump scene_c line=92 text=## Scene in initial configuration.<CR>',
+        'dump scene_c line=95 text=PsSphere radius(0.5) localposition(0,0,0) localorientation(0,0,0,1) material(mat1) group(0) name(napper___P2) awake(false) position(-6,0.5,0) orientation(0,0,0,1) com(0,0,0) comrot(0,0,0,1) inertia(0.050000001,0.050000001,0.050000001) mass(0.5) solvercount(4) velocity(0,0,0) angularvelocity(0,0,0) wakeupcounter(0) lineardamping(0) angulardamping(0.050000001) maxangularvelocity(9) <CR>',
+        'dump scene_c line=96 text=PsDefaultSettings localposition(0,0,0)<CR>',
+        'dump scene_c line=97 text=PsDefaultSettings localorientation(0,0,0,1)<CR>',
+        'dump scene_c line=98 text=PsDefaultSettings material(mat1)<CR>',
+        'dump scene_c line=99 text=PsDefaultSettings group(0)<CR>',
+        'dump scene_c line=100 text=PsCapsule height(2) radius(0.25) name(sensor___P3) awake(false) position(0,1,-6) orientation(0,0,0.382683486,0.923879504) static(true) <CR>',
+        'dump scene_c line=101 text=PsDefaultSettings position(0,1,-6)<CR>',
+        'dump scene_c line=102 text=PsDefaultSettings orientation(0,0,0.382683486,0.923879504)<CR>',
+        'dump scene_c line=103 text=PsDefaultSettings radius(0.25)<CR>',
+        'dump scene_c line=104 text=PsDefaultSettings height(2)<CR>',
+        'dump scene_c line=105 text=PsCapsule triggerevent(enter,) name("sensor 2___P4") awake(false) static(true) <CR>',
+        'dump scene_c line=106 text=PsPlane  plane(1,0,0,-20) name(west___P5) awake(false) position(0,0,0) orientation(0,0,0,1) static(true) <CR>',
+        'dump scene_c line=107 text=PsDefaultSettings position(0,0,0)<CR>',
+        'dump scene_c line=108 text=PsDefaultSettings orientation(0,0,0,1)<CR>',
+        'dump scene_c line=109 text=PsDefaultSettings plane(1,0,0,-20)<CR>',
+        'dump scene_c line=110 text=PsPlane  name("west again___P6") awake(false) static(true) <CR>',
+        'dump scene_c line=111 text=PsSphere radius(0.375) material(mat3) name(pebble___P7) awake(false) position(3,0.375,3) static(true) <CR>',
+        'dump scene_c line=112 text=PsDefaultSettings position(3,0.375,3)<CR>',
+        'dump scene_c line=113 text=PsDefaultSettings radius(0.375)<CR>',
+        'dump scene_c line=114 text=PsDefaultSettings material(mat3)<CR>',
+        'dump scene_c line=115 text=PsSphere name("pebble 2___P8") awake(false) static(true) <CR>',
+        'dump scene_c line=116 text=PsDefaultSettings comrot(0,0,0,1)<CR>',
+        'dump scene_c line=117 text=PsBox sides(1,1.5,2.5) localposition(0,0.25,0) material(mat2) group(4) name(twin___P9) position(5,1,5) orientation(0,0.301131338,0,0.953582644) com(0,0.25,0) inertia(0.5,0.625,0.75) mass(3) solvercount(6) velocity(0.25,0,-0.5) angularvelocity(0,0.75,0) wakeupcounter(0.399999976) lineardamping(0.25) angulardamping(0.125) maxangularvelocity(5) <CR>',
+        'dump scene_c line=118 text=PsDefaultSettings position(5,1,5)<CR>',
+        'dump scene_c line=119 text=PsDefaultSettings orientation(0,0.301131338,0,0.953582644)<CR>',
+        'dump scene_c line=120 text=PsDefaultSettings com(0,0.25,0)<CR>',
+        'dump scene_c line=121 text=PsDefaultSettings inertia(0.5,0.625,0.75)<CR>',
+        'dump scene_c line=122 text=PsDefaultSettings mass(3)<CR>',
+        'dump scene_c line=123 text=PsDefaultSettings solvercount(6)<CR>',
+        'dump scene_c line=124 text=PsDefaultSettings velocity(0.25,0,-0.5)<CR>',
+        'dump scene_c line=125 text=PsDefaultSettings angularvelocity(0,0.75,0)<CR>',
+        'dump scene_c line=126 text=PsDefaultSettings wakeupcounter(0.399999976)<CR>',
+        'dump scene_c line=127 text=PsDefaultSettings lineardamping(0.25)<CR>',
+        'dump scene_c line=128 text=PsDefaultSettings angulardamping(0.125)<CR>',
+        'dump scene_c line=129 text=PsDefaultSettings maxangularvelocity(5)<CR>',
+        'dump scene_c line=130 text=PsDefaultSettings sides(1,1.5,2.5)<CR>',
+        'dump scene_c line=131 text=PsDefaultSettings localposition(0,0.25,0)<CR>',
+        'dump scene_c line=132 text=PsDefaultSettings material(mat2)<CR>',
+        'dump scene_c line=133 text=PsDefaultSettings group(4)<CR>',
+        'dump scene_c line=134 text=PsBox name("twin 2___P10") <CR>',
+        'dump scene_c line=135 text=PsBox sides(0.5,0.5,1) localposition(0,0,0) material(mat1) group(0) name(brick___P11) position(-3,2,-3) orientation(0,0,0,1) density(2) com(0,0,0) inertia(0.052083336,0.052083336,0.020833334) mass(0.5) solvercount(4) velocity(0,0,0) angularvelocity(0,0,0) lineardamping(0) angulardamping(0.050000001) maxangularvelocity(9) <CR>',
+        'dump scene_c line=136 text=PsDefaultSettings orientation(0,0,0,1)<CR>',
+        'dump scene_c line=137 text=PsDefaultSettings density(2)<CR>',
+        'dump scene_c line=138 text=PsDefaultSettings com(0,0,0)<CR>',
+        'dump scene_c line=139 text=PsDefaultSettings inertia(0.052083336,0.052083336,0.020833334)<CR>',
+        'dump scene_c line=140 text=PsDefaultSettings mass(0.5)<CR>',
+        'dump scene_c line=141 text=PsDefaultSettings solvercount(4)<CR>',
+        'dump scene_c line=142 text=PsDefaultSettings velocity(0,0,0)<CR>',
+        'dump scene_c line=143 text=PsDefaultSettings angularvelocity(0,0,0)<CR>',
+        'dump scene_c line=144 text=PsDefaultSettings lineardamping(0)<CR>',
+        'dump scene_c line=145 text=PsDefaultSettings angulardamping(0.050000001)<CR>',
+        'dump scene_c line=146 text=PsDefaultSettings maxangularvelocity(9)<CR>',
+        'dump scene_c line=147 text=PsDefaultSettings sides(0.5,0.5,1)<CR>',
+        'dump scene_c line=148 text=PsDefaultSettings localposition(0,0,0)<CR>',
+        'dump scene_c line=149 text=PsDefaultSettings material(mat1)<CR>',
+        'dump scene_c line=150 text=PsDefaultSettings group(0)<CR>',
+        'dump scene_c line=151 text=PsBox name("brick 2___P12") position(-3,3,-3) <CR>',
+        'dump scene_c line=152 text=PsShapeBegin Shape1<CR>',
+        'dump scene_c line=153 text=PsBox sides(0.5,4,0.5) localposition(-1,0,0) <CR>',
+        'dump scene_c line=154 text=PsDefaultSettings sides(0.5,4,0.5)<CR>',
+        'dump scene_c line=155 text=PsBox localposition(1,0,0) <CR>',
+        'dump scene_c line=156 text=PsCapsule radius(0.200000003) localposition(0,2,0) localorientation(0,0,0.707106888,0.707106709) group(6) <CR>',
+        'dump scene_c line=157 text=PsShapeEnd<CR>',
+        'dump scene_c line=158 text=PsShape Shape1 name(gate___P13) awake(false) position(8,2,-2) static(true) <CR>',
+        'dump scene_c lines=167 normalised_bytes=7270',
+        'dump scene_c_binary coreDump binary=1 addendum=no returned=0',
+        'dump scene_c_binary present=yes',
+        'dump scene_c_binary line=95 text=PsSphere radius(0.5000$3f000000) localposition(0,0,0) localorientation(0,0,0,1) material(mat1) group(0) name(napper___P2) awake(false) position(-6.0000$c0c00000,0.5000$3f000000,0) orientation(0,0,0,1) com(0,0,0) comrot(0,0,0,1) inertia(0.0500$3d4ccccd,0.0500$3d4ccccd,0.0500$3d4ccccd) mass(0.5000$3f000000) solvercount(4) velocity(0,0,0) angularvelocity(0,0,0) wakeupcounter(0) lineardamping(0) angulardamping(0.0500$3d4ccccd) maxangularvelocity(9.0000$41100000) <CR>',
+        'dump scene_c_binary line=100 text=PsCapsule height(2.0000$40000000) radius(0.2500$3e800000) name(sensor___P3) awake(false) position(0,1,-6.0000$c0c00000) orientation(0,0,0.3827$3ec3ef17,0.9239$3f6c835e) static(true) <CR>',
+        'dump scene_c_binary line=105 text=PsCapsule triggerevent(enter,) name("sensor 2___P4") awake(false) static(true) <CR>',
+        'dump scene_c_binary line=117 text=PsBox sides(1,1.5000$3fc00000,2.5000$40200000) localposition(0,0.2500$3e800000,0) material(mat2) group(4) name(twin___P9) position(5.0000$40a00000,1,5.0000$40a00000) orientation(0,0.3011$3e9a2de3,0,0.9536$3f741dfe) com(0,0.2500$3e800000,0) inertia(0.5000$3f000000,0.6250$3f200000,0.7500$3f400000) mass(3.0000$40400000) solvercount(6) velocity(0.2500$3e800000,0,-0.5000$bf000000) angularvelocity(0,0.7500$3f400000,0) wakeupcounter(0.4000$3ecccccc) lineardamping(0.2500$3e800000) angulardamping(0.1250$3e000000) maxangularvelocity(5.0000$40a00000) <CR>',
+        'dump scene_c_binary line=135 text=PsBox sides(0.5000$3f000000,0.5000$3f000000,1) localposition(0,0,0) material(mat1) group(0) name(brick___P11) position(-3.0000$c0400000,2.0000$40000000,-3.0000$c0400000) orientation(0,0,0,1) density(2.0000$40000000) com(0,0,0) inertia(0.0521$3d555556,0.0521$3d555556,0.0208$3caaaaab) mass(0.5000$3f000000) solvercount(4) velocity(0,0,0) angularvelocity(0,0,0) lineardamping(0) angulardamping(0.0500$3d4ccccd) maxangularvelocity(9.0000$41100000) <CR>',
+        'dump scene_c_binary line=153 text=PsBox sides(0.5000$3f000000,4.0000$40800000,0.5000$3f000000) localposition(-1,0,0) <CR>',
+        'dump scene_c_binary line=156 text=PsCapsule radius(0.2000$3e4ccccd) localposition(0,2.0000$40000000,0) localorientation(0,0,0.7071$3f3504f5,0.7071$3f3504f2) group(6) <CR>',
+        'dump scene_c_binary lines=167 normalised_bytes=8523',
+        'scene c=released',
         'dump no_scene lines=67 normalised_bytes=1799'
     )
     'NxFoundationTangentTests' = @(
@@ -2704,9 +2804,9 @@ $NxPhaseCoverageFloor = [ordered] @{
                # vendored-correspondence Task 4 + 5 from its Task 5a)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
-    '6' = 760  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
-               # + 12 joint-allocator + 146 joint-slot + 79 effector + 278 core-dump
-    '7' = 633  # the 118 + 12 + 146 + 79 + 278 STAGED-PAIR assertions; the oracle-differential assertions
+    '6' = 855  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
+               # + 12 joint-allocator + 146 joint-slot + 79 effector + 373 core-dump
+    '7' = 728  # the 118 + 12 + 146 + 79 + 373 STAGED-PAIR assertions; the oracle-differential assertions
                # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
                # does not run
     '8' = 0

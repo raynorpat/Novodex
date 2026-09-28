@@ -2360,6 +2360,12 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 			memcpy(shape + 0xe0, &capsule->radius, sizeof(float));
 			const float halfHeight = capsule->height * 0.5f;
 			memcpy(shape + 0xe4, &halfHeight, sizeof(float));
+			// The capsule's own flags (desc +0x54) go to +0xe8, as the
+			// capsule loader phys_fn_000989 stores them (0x00021af0) and its
+			// saveToDesc (slot 13) reads them back. The core-dump
+			// differential (effector-and-coredump Task 5) found them missing:
+			// the dump hands this word to its trigger writer 004017.
+			memcpy(shape + 0xe8, &capsule->flags, sizeof(NxU32));
 			}
 		else if(descriptor->getType() == NX_SHAPE_PLANE)
 			{

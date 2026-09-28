@@ -38,7 +38,8 @@
 //   * scene B: a static box, a dynamic sphere and a two-shape actor.
 // Dumps: text, text with a two-line addendum, binary, binary with an
 // addendum, the deadlock arm of 000267 (below), scene B released (one
-// asset), both released (no asset, binary, an empty addendum). Every report
+// asset), both released (no asset, binary, an empty addendum); then scene C
+// (nxBuildSceneC, below) in text and binary, in a new pointer epoch. Every report
 // the SDK makes goes to a printing output stream and is compared too.
 //
 // What is normalised, and nothing else:
@@ -81,6 +82,7 @@
 #include "NxBoxShapeDesc.h"
 #include "NxSphereShapeDesc.h"
 #include "NxCapsuleShapeDesc.h"
+#include "NxCapsuleShape.h"
 #include "NxPlaneShapeDesc.h"
 #include "NxShape.h"
 #include "NxJoint.h"
@@ -628,6 +630,112 @@ static void nxBuildSceneA(NxScene& scene)
 	printf("scene effector=%s\n", spring ? "created" : "null");
 	}
 
+// Scene C (review addition, dumped after the scenes above are gone, so the
+// earlier dumps are unchanged): an unjointed actor created asleep (the
+// `awake(false)` arm of a dynamic body), a static capsule with a trigger
+// flag (the capsule arm hands the desc's own +0x54 flags to 004017),
+// consecutive actors and shapes with equal values so the settings records
+// print their `PsDefaultSettings` lines (position, orientation, density,
+// sides, localposition, localorientation, plane, height, radius, material,
+// group, com, comrot, inertia, mass, solvercount, velocity, angularvelocity,
+// wakeupcounter, lineardamping, angulardamping, maxangularvelocity), and a
+// static actor with two shapes.
+static NxActor* nxTwinBox(NxScene& scene, const char* name)
+	{
+	NxBoxShapeDesc box;
+	box.dimensions = NxVec3(0.5f, 0.75f, 1.25f);
+	box.localPose.t = NxVec3(0.0f, 0.25f, 0.0f);
+	box.materialIndex = 1;
+	box.group = 4;
+	NxBodyDesc body;
+	body.linearVelocity = NxVec3(0.25f, 0.0f, -0.5f);
+	body.angularVelocity = NxVec3(0.0f, 0.75f, 0.0f);
+	body.linearDamping = 0.25f;
+	body.angularDamping = 0.125f;
+	body.maxAngularVelocity = 5.0f;
+	body.solverIterationCount = 6;
+	body.mass = 3.0f;
+	body.massSpaceInertia = NxVec3(0.5f, 0.625f, 0.75f);
+	body.massLocalPose.t = NxVec3(0.0f, 0.25f, 0.0f);
+	return nxDynamic(scene, name, &box, 0, 0, nxQuatMatrix(0.0f, 0.3f, 0.0f, 0.95f), NxVec3(5.0f, 1.0f, 5.0f), body,
+		0.0f, 0);
+	}
+
+static void nxBuildSceneC(NxScene& scene)
+	{
+	NxSphereShapeDesc napShape;
+	napShape.radius = 0.5f;
+	NxBodyDesc napBody;
+	napBody.wakeUpCounter = 0.0f;
+	napBody.mass = 0.5f;
+	napBody.massSpaceInertia = NxVec3(0.05f, 0.05f, 0.05f);
+	nxDynamic(scene, "napper", &napShape, 0, 0, nxQuatMatrix(0.0f, 0.0f, 0.0f, 1.0f), NxVec3(-6.0f, 0.5f, 0.0f),
+		napBody, 0.0f, 0);
+
+	NxCapsuleShapeDesc sensor;
+	sensor.radius = 0.25f;
+	sensor.height = 2.0f;
+	sensor.shapeFlags |= NX_TRIGGER_ON_ENTER | NX_TRIGGER_ON_STAY;
+	nxStatic(scene, "sensor", &sensor, nxQuatMatrix(0.0f, 0.0f, 0.3826834f, 0.9238795f), NxVec3(0.0f, 1.0f, -6.0f));
+	NxCapsuleShapeDesc sensor2;
+	sensor2.radius = 0.25f;
+	sensor2.height = 2.0f;
+	sensor2.flags = NX_SWEPT_SHAPE;
+	nxStatic(scene, "sensor 2", &sensor2, nxQuatMatrix(0.0f, 0.0f, 0.3826834f, 0.9238795f), NxVec3(0.0f, 1.0f, -6.0f));
+
+	NxPlaneShapeDesc wallPlane;
+	wallPlane.normal = NxVec3(1.0f, 0.0f, 0.0f);
+	wallPlane.d = -20.0f;
+	nxStatic(scene, "west", &wallPlane, nxQuatMatrix(0.0f, 0.0f, 0.0f, 1.0f), NxVec3(0.0f, 0.0f, 0.0f));
+	NxPlaneShapeDesc wallPlane2 = wallPlane;
+	nxStatic(scene, "west again", &wallPlane2, nxQuatMatrix(0.0f, 0.0f, 0.0f, 1.0f), NxVec3(0.0f, 0.0f, 0.0f));
+
+	NxSphereShapeDesc ball1;
+	ball1.radius = 0.375f;
+	ball1.materialIndex = 2;
+	nxStatic(scene, "pebble", &ball1, nxQuatMatrix(0.0f, 0.0f, 0.0f, 1.0f), NxVec3(3.0f, 0.375f, 3.0f));
+	NxSphereShapeDesc ball2;
+	ball2.radius = 0.375f;
+	ball2.materialIndex = 2;
+	nxStatic(scene, "pebble 2", &ball2, nxQuatMatrix(0.0f, 0.0f, 0.0f, 1.0f), NxVec3(3.0f, 0.375f, 3.0f));
+
+	nxTwinBox(scene, "twin");
+	nxTwinBox(scene, "twin 2");
+
+	NxBoxShapeDesc brick;
+	brick.dimensions = NxVec3(0.25f, 0.25f, 0.5f);
+	NxBodyDesc brickBody;
+	nxDynamic(scene, "brick", &brick, 0, 0, nxQuatMatrix(0.0f, 0.0f, 0.0f, 1.0f), NxVec3(-3.0f, 2.0f, -3.0f),
+		brickBody, 2.0f, 0);
+	NxBoxShapeDesc brick2;
+	brick2.dimensions = NxVec3(0.25f, 0.25f, 0.5f);
+	NxBodyDesc brickBody2;
+	nxDynamic(scene, "brick 2", &brick2, 0, 0, nxQuatMatrix(0.0f, 0.0f, 0.0f, 1.0f), NxVec3(-3.0f, 3.0f, -3.0f),
+		brickBody2, 2.0f, 0);
+
+	NxBoxShapeDesc postA;
+	postA.dimensions = NxVec3(0.25f, 2.0f, 0.25f);
+	postA.localPose.t = NxVec3(-1.0f, 0.0f, 0.0f);
+	NxBoxShapeDesc postB;
+	postB.dimensions = NxVec3(0.25f, 2.0f, 0.25f);
+	postB.localPose.t = NxVec3(1.0f, 0.0f, 0.0f);
+	NxCapsuleShapeDesc beam;
+	beam.radius = 0.2f;
+	beam.height = 2.0f;
+	beam.localPose.M = nxQuatMatrix(0.0f, 0.0f, 0.7071068f, 0.7071068f);
+	beam.localPose.t = NxVec3(0.0f, 2.0f, 0.0f);
+	beam.group = 6;
+	NxActorDesc gate;
+	gate.shapes.pushBack(&postA);
+	gate.shapes.pushBack(&postB);
+	gate.shapes.pushBack(&beam);
+	gate.globalPose.t = NxVec3(8.0f, 2.0f, -2.0f);
+	NxActor* gateActor = scene.createActor(gate);
+	if(gateActor)
+		gateActor->setName("gate");
+	nxReport("gate", gateActor);
+	}
+
 static void nxBuildSceneB(NxScene& scene)
 	{
 	NxBoxShapeDesc floorShape;
@@ -752,6 +860,27 @@ int wmain(int argc, wchar_t** argv)
 	sdk->releaseScene(*sceneA);
 	nxDump(*sdk, "no_scene", "coredump_no_scene", true, "");
 	printf("scene=released\n");
+
+	// Scene C, dumped on its own after the others (review addition).
+	sceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
+	NxScene* sceneC = sdk->createScene(sceneDesc);
+	printf("scene c=%s\n", sceneC ? "created" : "null");
+	if(sceneC)
+		{
+		// A new pointer epoch: every object of scenes A and B is freed, and a
+		// block scene C allocates may take an address one of them had. Which
+		// address the page-guarded allocator's VirtualAlloc hands back after
+		// a free depends on the process's whole address-space history (the
+		// two DLLs' CRT heaps differ by construction), so aliasing with a
+		// freed object is not compared: the ordinals restart here.
+		gPointerCount = 0;
+		printf("dump pointer_epoch reset\n");
+		nxBuildSceneC(*sceneC);
+		nxDump(*sdk, "scene_c", "coredump_scene_c", false, 0);
+		nxDump(*sdk, "scene_c_binary", "coredump_scene_c_binary", true, 0);
+		sdk->releaseScene(*sceneC);
+		printf("scene c=released\n");
+		}
 
 	sdk->release();
 	printf("sdk=released\n");
