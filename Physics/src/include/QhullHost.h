@@ -109,15 +109,16 @@ class HullPolygonizer
 
 // Band B's entry, reduceVertices (phys_fn_003369, 0x00080e90, thiscall,
 // `ret 0x18`): Wu's colour quantizer reducing the cleaned cloud to
-// maxVertices points, written by qhull-gap piece 4d. cleanupVertices calls it
-// on an object with no fields, built in a dead argument slot of its own frame
-// (`lea ecx,[esp+0x6c]` at 0x0007da34, the `weld` slot), passing the host's
-// user allocator and the same buffer as input and output. Its return value is
-// not read (cleanupVertices returns true after it, 0x0007da40).
+// maxVertices points (Physics/src/Quantizer.cpp, qhull-gap piece 4d).
+// cleanupVertices calls it on an object with no fields, built in a dead
+// argument slot of its own frame (`lea ecx,[esp+0x6c]` at 0x0007da34, the
+// `weld` slot), passing the host's user allocator and the same buffer as input
+// and output. It returns `this` (0x000814c3); cleanupVertices does not read it
+// (it returns true after the call, 0x0007da40).
 class HullVertexReducer
 	{
 	public:
-	void					reduceVertices(HullAllocator* allocator, NxU32 svcount, const NxReal* svertices,
+	HullVertexReducer*		reduceVertices(HullAllocator* allocator, NxU32 svcount, const NxReal* svertices,
 								NxU32& vcount, NxReal* vertices, NxU32 maxVertices);
 	};
 

@@ -144,6 +144,7 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # oracle and are called from the solver slots 004360 and 004362 inside the step.
 # QhullHost.cpp is NovodeX's hull library around qhull (qhull-gap Task 4): x87 in the oracle
 # (the box fallback, the OBJ writers' widening, the rescale) and run under the caller's word.
+# Quantizer.cpp is the same library's band B (Wu's quantizer and reduceVertices, piece 4d), x87 too.
 if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set_source_files_properties(
 		Physics/src/Geometry.cpp
@@ -165,6 +166,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/core/D6Joint.cpp
 		Physics/src/core/JointSupport.cpp
 		Physics/src/QhullHost.cpp
+		Physics/src/Quantizer.cpp
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 endif()
 
@@ -204,6 +206,7 @@ if(MSVC)
 		Physics/src/core/NpFixedJoint.cpp
 		Physics/src/core/NpD6Joint.cpp
 		Physics/src/QhullHost.cpp
+		Physics/src/Quantizer.cpp
 		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
 endif()
 
@@ -517,7 +520,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# (qhull-gap Task 4a).
 	add_executable(NxPhysicsThirdPartyTests tests/PhysicsThirdPartyTests.cpp
 		tests/PhysicsThirdPartyQhull.c
-		tests/PhysicsThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
+		tests/PhysicsThirdPartyHost.cpp Physics/src/Quantizer.cpp Physics/src/PhysicsInternal.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/NovodexBoxPruning.cpp)
 	# The hull family's C half reads qhull's own structs, so it and only it sees the
 	# merged tree's headers (their fprintf redirection stays out of the C++ harness).

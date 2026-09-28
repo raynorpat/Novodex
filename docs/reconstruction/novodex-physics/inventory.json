@@ -59791,7 +59791,7 @@
       "source": "Physics/src/QhullHost.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1189",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11667",
-      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::cleanupVertices, entry) and checked against the Capstone listing 0x0007d5b0-0x0007de93 instruction by instruction: every compare's NaN polarity (test ah,5/jp for <, ah,0x41/jne for >, ah,1/jne for >=, fucompp ah,0x44/jp for ==), the constants read from the PE (1e-6f .rdata:0x00106880, 0.5f 0x001043cc, 1.0f 0x001041ec, FLT_MAX 0x00106858, 0.05f 0x001135b8, 0.01f immediate 0x3c23d70a), the register lifetimes (px, len, weld differences, squared distances and box corners double; extents, centres, reciprocals, py, pz and the two spilled offsets NxReal) and the listing's summation order (z*z + y*y) + x*x of both squared distances (0x0007d880-0x0007d8a6); contract units/convex-cooking-contract.md. The reduce arm calls band B's reduceVertices (003369, piece 4d), a marked placeholder in QhullHost.cpp until 4d lands",
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (QhullHost::cleanupVertices, entry) and checked against the Capstone listing 0x0007d5b0-0x0007de93 instruction by instruction: every compare's NaN polarity (test ah,5/jp for <, ah,0x41/jne for >, ah,1/jne for >=, fucompp ah,0x44/jp for ==), the constants read from the PE (1e-6f .rdata:0x00106880, 0.5f 0x001043cc, 1.0f 0x001041ec, FLT_MAX 0x00106858, 0.05f 0x001135b8, 0.01f immediate 0x3c23d70a), the register lifetimes (px, len, weld differences, squared distances and box corners double; extents, centres, reciprocals, py, pz and the two spilled offsets NxReal) and the listing's summation order (z*z + y*y) + x*x of both squared distances (0x0007d880-0x0007d8a6); contract units/convex-cooking-contract.md. The reduce arm calls band B's reduceVertices (003369, Physics/src/Quantizer.cpp, piece 4d)",
       "dynamic_proof": null,
       "notes": "",
       "implementation": "Physics/src/QhullHost.cpp"
@@ -61775,13 +61775,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Quantizer.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1235",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11981",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (WuQuantizer::M3d, entry) and checked against the Capstone listing 0x0007fda0-0x000803fc instruction by instruction: one function with 003349 and 003351 (ret 0x14, ecx = the table, the five planes passed explicitly); the area arrays zeroed per r; line2 a double register lifetime across the b loop (fld 0.0f at 0x000802a0), area2 NxReal spills, and the unrounded line2 + area2[b] both stored to area2[b] (fst) and added to m2[ind2] (0x000802f2-0x00080385); the four integer planes 32-bit wrapping; register lifetimes double and spills NxReal per core/Joint.cpp, the listing's summation order, every compare's NaN polarity and the PE's constants as read; contract units/convex-cooking-contract.md. Local sanity run (not committed) against the pinned DLL: reduceVertices at 0x00080e90 and cleanupVertices' reduce arm at 0x0007d5b0 identical in 339 of 352 cases under 0x027f, 0x0f7f, 0x037f, 0x007f and 0x067f; the 13 others are one clustered set with the CRT allocator, where Quantize finds fewer boxes than k and the uninitialised palette tail differs, and that set is identical with a zeroing allocator",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/Quantizer.cpp"
     },
     {
       "id": "phys_fn_003348",
@@ -61811,13 +61812,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Quantizer.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1235",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11982",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (WuQuantizer::M3d, r loop) and checked against the Capstone listing 0x0007fe20-0x0008029f instruction by instruction: continuation of 003347 from the jump target 0x0007fe20 (the per-r zeroing of the five 33-entry area arrays at esp+0x50/0xd4/0x158/0x1dc/0x260); register lifetimes double and spills NxReal per core/Joint.cpp, the listing's summation order, every compare's NaN polarity and the PE's constants as read; contract units/convex-cooking-contract.md. Local sanity run (not committed) against the pinned DLL: reduceVertices at 0x00080e90 and cleanupVertices' reduce arm at 0x0007d5b0 identical in 339 of 352 cases under 0x027f, 0x0f7f, 0x037f, 0x007f and 0x067f; the 13 others are one clustered set with the CRT allocator, where Quantize finds fewer boxes than k and the uninitialised palette tail differs, and that set is identical with a zeroing allocator",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0007fda0"
+      "notes": "continuation of the entry at 0x0007fda0",
+      "implementation": "Physics/src/Quantizer.cpp"
     },
     {
       "id": "phys_fn_003350",
@@ -61847,13 +61849,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Quantizer.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1235",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11983",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (WuQuantizer::M3d, g and b loops) and checked against the Capstone listing 0x000802a0-0x000803fc instruction by instruction: continuation of 003347 (0x000802a0, the g loop head): all five planes, the float plane's line2 kept on the FPU stack and summed (line2 + area2[b]) + m2[ind2]; register lifetimes double and spills NxReal per core/Joint.cpp, the listing's summation order, every compare's NaN polarity and the PE's constants as read; contract units/convex-cooking-contract.md. Local sanity run (not committed) against the pinned DLL: reduceVertices at 0x00080e90 and cleanupVertices' reduce arm at 0x0007d5b0 identical in 339 of 352 cases under 0x027f, 0x0f7f, 0x037f, 0x007f and 0x067f; the 13 others are one clustered set with the CRT allocator, where Quantize finds fewer boxes than k and the uninitialised palette tail differs, and that set is identical with a zeroing allocator",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0007fda0"
+      "notes": "continuation of the entry at 0x0007fda0",
+      "implementation": "Physics/src/Quantizer.cpp"
     },
     {
       "id": "phys_fn_003352",
@@ -61883,13 +61886,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Quantizer.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1236",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11986",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (WuQuantizer::Vol) and checked against the Capstone listing 0x00080400-0x00080487 instruction by instruction: Wu's eight-term box sum with index ((r*33)+g)*33+b (imul 0x21), ret 8, integer only; register lifetimes double and spills NxReal per core/Joint.cpp, the listing's summation order, every compare's NaN polarity and the PE's constants as read; contract units/convex-cooking-contract.md. Local sanity run (not committed) against the pinned DLL: reduceVertices at 0x00080e90 and cleanupVertices' reduce arm at 0x0007d5b0 identical in 339 of 352 cases under 0x027f, 0x0f7f, 0x037f, 0x007f and 0x067f; the 13 others are one clustered set with the CRT allocator, where Quantize finds fewer boxes than k and the uninitialised palette tail differs, and that set is identical with a zeroing allocator",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/Quantizer.cpp"
     },
     {
       "id": "phys_fn_003354",
@@ -61919,13 +61923,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Quantizer.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1237",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11987",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (WuQuantizer::Bottom) and checked against the Capstone listing 0x00080490-0x0008055f instruction by instruction: switch on the byte dir (movzx) 0 blue / 1 green / 2 red, unknown returns 0 (0x000804a4), ret 0xc, integer only; register lifetimes double and spills NxReal per core/Joint.cpp, the listing's summation order, every compare's NaN polarity and the PE's constants as read; contract units/convex-cooking-contract.md. Local sanity run (not committed) against the pinned DLL: reduceVertices at 0x00080e90 and cleanupVertices' reduce arm at 0x0007d5b0 identical in 339 of 352 cases under 0x027f, 0x0f7f, 0x037f, 0x007f and 0x067f; the 13 others are one clustered set with the CRT allocator, where Quantize finds fewer boxes than k and the uninitialised palette tail differs, and that set is identical with a zeroing allocator",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/Quantizer.cpp"
     },
     {
       "id": "phys_fn_003356",
@@ -61955,13 +61960,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Quantizer.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1238",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11992",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (WuQuantizer::Top) and checked against the Capstone listing 0x00080570-0x00080672 instruction by instruction: switch on the byte dir, unknown returns 0 (0x00080588), ret 0x10, integer only; register lifetimes double and spills NxReal per core/Joint.cpp, the listing's summation order, every compare's NaN polarity and the PE's constants as read; contract units/convex-cooking-contract.md. Local sanity run (not committed) against the pinned DLL: reduceVertices at 0x00080e90 and cleanupVertices' reduce arm at 0x0007d5b0 identical in 339 of 352 cases under 0x027f, 0x0f7f, 0x037f, 0x007f and 0x067f; the 13 others are one clustered set with the CRT allocator, where Quantize finds fewer boxes than k and the uninitialised palette tail differs, and that set is identical with a zeroing allocator",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/Quantizer.cpp"
     },
     {
       "id": "phys_fn_003358",
@@ -61991,13 +61997,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Quantizer.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1239",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11996",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (WuQuantizer::Var) and checked against the Capstone listing 0x00080680-0x00080772 instruction by instruction: dr, dg, db fild-loaded and held as double; xx summed in Wu's left-to-right order from the float plane (0x00080714-0x00080745); the squares summed (db*db + dg*dg) + dr*dr (0x00080748-0x00080756) and fidiv by Vol(wt); the result returned unrounded in st(0) (double return); Vol(wt), called last in the listing, is pure and called first; register lifetimes double and spills NxReal per core/Joint.cpp, the listing's summation order, every compare's NaN polarity and the PE's constants as read; contract units/convex-cooking-contract.md. Local sanity run (not committed) against the pinned DLL: reduceVertices at 0x00080e90 and cleanupVertices' reduce arm at 0x0007d5b0 identical in 339 of 352 cases under 0x027f, 0x0f7f, 0x037f, 0x007f and 0x067f; the 13 others are one clustered set with the CRT allocator, where Quantize finds fewer boxes than k and the uninitialised palette tail differs, and that set is identical with a zeroing allocator",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/Quantizer.cpp"
     },
     {
       "id": "phys_fn_003360",
@@ -62027,13 +62034,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Quantizer.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1240",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11997",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (WuQuantizer::Maximize) and checked against the Capstone listing 0x00080780-0x00080912 instruction by instruction: ret 0x24; max a double register starting at 0.0f (.rdata:0x001041f0); each half's (r*r + g*g) + b*b fidiv by its weight, an empty half skipped (je on the add/sub flags); temp stored to float (fst 0x000808db) but compared unrounded, temp > max (fcomp; test ah,0x41; jne, false on NaN), max taking the stored float; register lifetimes double and spills NxReal per core/Joint.cpp, the listing's summation order, every compare's NaN polarity and the PE's constants as read; contract units/convex-cooking-contract.md. Local sanity run (not committed) against the pinned DLL: reduceVertices at 0x00080e90 and cleanupVertices' reduce arm at 0x0007d5b0 identical in 339 of 352 cases under 0x027f, 0x0f7f, 0x037f, 0x007f and 0x067f; the 13 others are one clustered set with the CRT allocator, where Quantize finds fewer boxes than k and the uninitialised palette tail differs, and that set is identical with a zeroing allocator",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/Quantizer.cpp"
     },
     {
       "id": "phys_fn_003362",
@@ -62063,13 +62071,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Quantizer.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1241",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12002",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (WuQuantizer::Cut) and checked against the Capstone listing 0x00080920-0x00080b03 instruction by instruction: ret 8; the three maxima stored to float and compared >= (fcomp; test ah,1; jne, false on NaN); unlike Wu's source, every direction returns 0 on a negative cut (0x00080a0a, 0x00080a3a, 0x00080a4e); both vols recomputed; register lifetimes double and spills NxReal per core/Joint.cpp, the listing's summation order, every compare's NaN polarity and the PE's constants as read; contract units/convex-cooking-contract.md. Local sanity run (not committed) against the pinned DLL: reduceVertices at 0x00080e90 and cleanupVertices' reduce arm at 0x0007d5b0 identical in 339 of 352 cases under 0x027f, 0x0f7f, 0x037f, 0x007f and 0x067f; the 13 others are one clustered set with the CRT allocator, where Quantize finds fewer boxes than k and the uninitialised palette tail differs, and that set is identical with a zeroing allocator",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/Quantizer.cpp"
     },
     {
       "id": "phys_fn_003364",
@@ -62099,13 +62108,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Quantizer.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1242",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12009",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (WuQuantizer::Hist3d) and checked against the Capstone listing 0x00080b10-0x00080bf8 instruction by instruction: ret 4, three bytes in; the square table .data:0x00125088 (phys_data_003857) built once under the flag .data:0x00125488 (phys_data_003859), both zero-filled .data; index ((r>>3)+1, (g>>3)+1, (b>>3)+1); the integer square sum fild-loaded and added to the float plane (0x00080bed-0x00080bf5); register lifetimes double and spills NxReal per core/Joint.cpp, the listing's summation order, every compare's NaN polarity and the PE's constants as read; contract units/convex-cooking-contract.md. Local sanity run (not committed) against the pinned DLL: reduceVertices at 0x00080e90 and cleanupVertices' reduce arm at 0x0007d5b0 identical in 339 of 352 cases under 0x027f, 0x0f7f, 0x037f, 0x007f and 0x067f; the 13 others are one clustered set with the CRT allocator, where Quantize finds fewer boxes than k and the uninitialised palette tail differs, and that set is identical with a zeroing allocator",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/Quantizer.cpp"
     },
     {
       "id": "phys_fn_003366",
@@ -62135,13 +62145,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Quantizer.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1243",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12012",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (WuQuantizer::Quantize) and checked against the Capstone listing 0x00080c00-0x00080e85 instruction by instruction: ret 8; k == 0 returns 0, k capped at 256 (unsigned); CRT calloc(k,4) and calloc(k,0x1c), 0 returned if either fails (the first freed); next box = first largest variance (vv[j] > temp: fcom; test ah,5; jp), early end when temp <= 0.0f (test ah,0x41; jnp, false on NaN) with K = i+1; the mean a signed idiv truncated to a byte, (0,0,0) for an empty box; returns K; register lifetimes double and spills NxReal per core/Joint.cpp, the listing's summation order, every compare's NaN polarity and the PE's constants as read; contract units/convex-cooking-contract.md. Local sanity run (not committed) against the pinned DLL: reduceVertices at 0x00080e90 and cleanupVertices' reduce arm at 0x0007d5b0 identical in 339 of 352 cases under 0x027f, 0x0f7f, 0x037f, 0x007f and 0x067f; the 13 others are one clustered set with the CRT allocator, where Quantize finds fewer boxes than k and the uninitialised palette tail differs, and that set is identical with a zeroing allocator",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/Quantizer.cpp"
     },
     {
       "id": "phys_fn_003368",
@@ -62171,13 +62182,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Quantizer.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1244",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12038",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (HullVertexReducer::reduceVertices, entry) and checked against the Capstone listing 0x00080e90-0x000814ed instruction by instruction: one function with 003371 (thiscall on a fieldless object, ret 0x18, returns this: mov eax,[esp+0x10]); the box's min/max start at vertex 0 as bit copies, x and y compared through fcomp (min test ah,5; jp, max test ah,0x41; jne) and the running max z held on the FPU stack (fcom; test ah,5; jp); register lifetimes double and spills NxReal per core/Joint.cpp, the listing's summation order, every compare's NaN polarity and the PE's constants as read; contract units/convex-cooking-contract.md. Local sanity run (not committed) against the pinned DLL: reduceVertices at 0x00080e90 and cleanupVertices' reduce arm at 0x0007d5b0 identical in 339 of 352 cases under 0x027f, 0x0f7f, 0x037f, 0x007f and 0x067f; the 13 others are one clustered set with the CRT allocator, where Quantize finds fewer boxes than k and the uninitialised palette tail differs, and that set is identical with a zeroing allocator",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/Quantizer.cpp"
     },
     {
       "id": "phys_fn_003370",
@@ -62207,13 +62219,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Quantizer.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1244",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12039",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__Controller.cpp__to__fluids__Fluid.cpp.md (HullVertexReducer::reduceVertices, continuation) and checked against the Capstone listing 0x00080ef0-0x000814ed instruction by instruction: continuation of 003369 from the unrolled box loop's head (jump at 0x00080eeb): extents and 1.0f/extent (.rdata:0x001041ec) stored to float; the 0xaf794-byte table from allocator slot 0 or CRT malloc, NOT zeroed (an oracle defect kept); x's (x-min)*recip a double register, y's and z's NxReal spills, each times 255.0f (.rdata:0x00106888) converted by an inline fistp qword at the live rounding mode (naked helper wuFistp255, 0x00081208-0x00081238) and the low dword clamped [0,255] with signed compares; the palette k = min(n, maxVertices) entries of 3 bytes from the allocator; the output count is k whatever Quantize returns (0x000812db, a second oracle defect kept: a short quantization dequantises uninitialised palette bytes); dequantisation byte * (extent * 0.003921569f, .rdata:0x00113a10, stored to float) + min; palette then table freed through slot 1 or CRT free; register lifetimes double and spills NxReal per core/Joint.cpp, the listing's summation order, every compare's NaN polarity and the PE's constants as read; contract units/convex-cooking-contract.md. Local sanity run (not committed) against the pinned DLL: reduceVertices at 0x00080e90 and cleanupVertices' reduce arm at 0x0007d5b0 identical in 339 of 352 cases under 0x027f, 0x0f7f, 0x037f, 0x007f and 0x067f; the 13 others are one clustered set with the CRT allocator, where Quantize finds fewer boxes than k and the uninitialised palette tail differs, and that set is identical with a zeroing allocator",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00080e90"
+      "notes": "continuation of the entry at 0x00080e90",
+      "implementation": "Physics/src/Quantizer.cpp"
     },
     {
       "id": "phys_fn_003372",

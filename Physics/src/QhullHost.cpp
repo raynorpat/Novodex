@@ -1027,14 +1027,3 @@ void qhNovodeXErrexit(int exitcode)
 	{
 	gQhullHost->errexit(exitcode);
 	}
-
-// PLACEHOLDER, NOT A ROW. HullVertexReducer::reduceVertices is band B's entry
-// phys_fn_003369 (0x00080e90) and belongs to qhull-gap piece 4d, which writes
-// the Wu quantizer in its own file. Until then it leaves the cloud as it is --
-// no quantization, so a cloud over maxVertices goes to qhull whole -- so that
-// cleanupVertices' reduce arm links. It carries no stable-ID line and no
-// inventory row names it. When 4d's definition lands, delete this one.
-void HullVertexReducer::reduceVertices(HullAllocator* /*allocator*/, NxU32 /*svcount*/,
-	const NxReal* /*svertices*/, NxU32& /*vcount*/, NxReal* /*vertices*/, NxU32 /*maxVertices*/)
-	{
-	}

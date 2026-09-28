@@ -125,7 +125,7 @@ bands are C++: they use `__thiscall` and a vtable.
 | `003279` | 0x0007ea10 | 819 | discovered | 287 / 9 | `HullLibrary::CreateConvexHull(const HullDesc&, HullResult&)` |
 | `003347` | 0x0007fda0 | 125 | discovered | 34 / 0 | Wu `M3d` (cumulative moments): entry |
 | `003349` | 0x0007fe20 | 1,145 | discovered | 172 / 0 | `M3d`, continuation |
-| `003351` | 0x000802a0 | 351 | discovered | 90 / 8 | `M3d`, continuation (the float `m2` plane) |
+| `003351` | 0x000802a0 | 351 | discovered | 90 / 8 | `M3d`, continuation: the g loop, all five planes (Task 4d correction: this read "the float `m2` plane") |
 | `003353` | 0x00080400 | 138 | discovered | 53 / 0 | Wu `Vol(box, moment)` |
 | `003355` | 0x00080490 | 210 | discovered | 88 / 0 | Wu `Bottom(box, dir, moment)` |
 | `003357` | 0x00080570 | 261 | discovered | 106 / 0 | Wu `Top(box, dir, pos, moment)` |
@@ -633,6 +633,42 @@ that weld to two points or to a flat cloud, 1e6 and 1e-4 scales, a diagonal plan
 each with weld and scale on and off, under control words 0x027f, 0x037f, 0x007f and 0x0f7f:
 every return, count, scale word and output word identical in 407 of 408 cases. The one difference was a
 300-point set with `reduce` on, which reaches the quantizer placeholder.
+
+**As written (Task 4d).** Band B is `Physics/src/Quantizer.cpp` (`/arch:IA32`, `/EHs-c-`), a
+sibling of `QhullHost.cpp` because band B is a separate object in the image; the name sorts
+between `qset.c` and `stat.c`. `QhullHost.cpp`'s placeholder is deleted. The Wu rows are
+members of `WuQuantizer`, the 0xaf794-byte table, whose planes are, in order, `wt`, `mr`, `mg`,
+`mb` (32-bit integers) and `m2` (float); `x`, `y`, `z` are Wu's `r`, `g`, `b`, and the box
+struct is `{r0, r1, g0, g1, b0, b1, vol}` (0x1c bytes). Read from the listing:
+- `M3d` is one function under 003347/003349/003351. It is `ret 0x14` with the five planes passed
+  explicitly. `line2` stays on the FPU stack across the b loop, and the unrounded
+  `line2 + area2[b]` is both stored to `area2[b]` and added to `m2[ind2]`.
+- `Var` sums xx in Wu's order and the squares `(db*db + dg*dg) + dr*dr`, and returns unrounded.
+  `Maximize` sums `(r*r + g*g) + b*b` per half, compares the unrounded `temp > max` and keeps
+  the float-stored value. `Cut` compares the float maxima with `>=`, and, **unlike Wu's source,
+  returns 0 on a negative cut in every direction**, not only red.
+- `Quantize` returns the box count; `k` is capped at 256. `Bottom`/`Top` return 0 for an
+  unknown direction.
+- `reduceVertices` (003369/003371) **returns `this`** (`mov eax,[esp+0x10]`, the saved `ecx`);
+  `QhullHost.h` now declares it `HullVertexReducer*`. The quantized coordinate is the listing's
+  inline `fistp qword` (a naked helper `wuFistp255` in the file: `fld; fmul 255.0f; fistp`), and
+  only its low dword is clamped.
+- **Two oracle defects, reproduced:** the 0xaf794-byte moment table is never zeroed
+  (0x00081178-0x000811d3; the oracle relies on a block that large coming from fresh pages), and
+  the output count is `min(n, maxVertices)` whatever `Quantize` returns (0x000812db), so a short
+  quantization (fewer occupied cells than boxes, or a failed `calloc`) dequantises uninitialised
+  palette bytes. `maxVertices` above 256 does the same for the entries past 256.
+
+A local check (not committed) called 0x00080e90 and the reduce arm of 0x0007d5b0 in the pinned
+DLL against the candidate on ten sets over 256 points (300 and 1000 random, sphere(500), a
+1000-point lattice, 1e6 and 1e-4 scales, five tight clusters, a thin slab, a 2000-point shell,
+`-0.0` components), with `maxVertices` 256, 64, 20 and 300, a zeroing test allocator and the
+CRT, under control words 0x027f, 0x0f7f, 0x037f, 0x007f and 0x067f, plus a flat set sent to
+`reduceVertices` directly. It compared the count, every output word, the return value and the
+allocator's call sequence and sizes: 339 of 352 cases were identical. The other 13 are all the
+clustered set with the CRT allocator, where `Quantize` finds fewer boxes than `k` and the
+uninitialised palette tail differs between the two CRTs. The same set is identical with the
+zeroing allocator, through both entries and under every control word.
 
 ### Dependency closure
 
