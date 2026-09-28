@@ -2074,8 +2074,16 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	*reinterpret_cast<unsigned char**>(record + 0x120) =
 		scene->at<unsigned char*>(0x48);
 	*reinterpret_cast<unsigned*>(record + 0x11c) = nxSceneTakeRecordId(scene);
-	*reinterpret_cast<unsigned char**>(record + 0x1bc) = record;
-	*reinterpret_cast<unsigned char**>(record + 0x1e8) = record;
+	// The island fields, as the body constructor phys_fn_000797 builds them
+	// (0x1b6fb, 0x1b702): 000760 makes the record a single-body island
+	// (+0x1bc..+0x1e4, raising the still-zero +0x4c to 0x3ecccccc), then
+	// 000722 records the island's wake counter in +0x1cc and copies
+	// +0x1bc..+0x1d4 to +0x1e8..+0x200 (so +0x1f8 is that wake counter,
+	// which the spring-and-damper solver slot 003979 tests). Both run before
+	// the descriptor's wake counter is stored in +0x4c below, as 000797 calls
+	// them before 000793. (effector-and-coredump Task 2 review.)
+	reinterpret_cast<Row000760Fixture*>(record)->row000760();
+	reinterpret_cast<Row000722Fixture*>(record)->row000722();
 	// The body's JointSupportBody pointer: the oracle's body constructor
 	// phys_fn_000797 stores 0 at +0x204 (0x1b713), after +0x1e4/+0x1e0. Only
 	// the simulation step's phys_fn_000611 (0x11305) points it at an element

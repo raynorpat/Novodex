@@ -1269,8 +1269,10 @@ $NxRequiredCoverageLines = [ordered] @{
     # allocations and frees it made. Copied verbatim from the ORACLE side. The
     # first run differed only in the scene release's free order (the candidate
     # recycled a shape's id after freeing the shape; fixed in Scene.cpp) and in
-    # lines since dropped (the record's +0x14 pad and the root's +0x1f8, which
-    # the candidate's record does not build) or renamed (the lock links).
+    # lines since dropped (the record's +0x14 pad) or renamed (the lock links).
+    # The root's +0x1f8 differed too: the candidate's record did not build
+    # 000797's island (000760, then 000722's copy); fixed in the Task 2 review
+    # and the island words +0x1bc..+0x200 registered (the two island lines).
     'NxPhysicsEffectorTests' = @(
         'effector start count=0 iterator=none',
         'effector actors=created,created',
@@ -1300,6 +1302,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'effector restore internal words=00000000.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f400000.40000000.40900000.41480000.41f00000.bfc00000.40500000.3f000000.40c00000',
         'effector slots rec0 root=rec_a',
         'effector slots rec1 root=rec_b',
+        'effector slots rec0 island=rec_a.00000000.00000000.00000001.3ecccccc.00000000.rec_a.00000000.00000000.00000000.00000000.rec_a.00000000.00000000.00000001.3ecccccc.00000000.rec_a wake=3ecccccc',
+        'effector slots rec1 island=rec_b.00000000.00000000.00000001.3ecccccc.00000000.rec_b.00000000.00000000.00000000.00000000.rec_b.00000000.00000000.00000001.3ecccccc.00000000.rec_b wake=3ecccccc',
         'effector slots allocs=0 sizes=none frees=0 sizes=none',
         'effector slots slots internal changed none',
         'effector slots slots rec0 changed none',
@@ -2409,9 +2413,9 @@ $NxPhaseCoverageFloor = [ordered] @{
                # vendored-correspondence Task 4 + 5 from its Task 5a)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
-    '6' = 480  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
-               # + 12 joint-allocator + 146 joint-slot + 77 effector
-    '7' = 353  # the 118 + 12 + 146 + 77 STAGED-PAIR assertions; the oracle-differential assertions
+    '6' = 482  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
+               # + 12 joint-allocator + 146 joint-slot + 79 effector
+    '7' = 355  # the 118 + 12 + 146 + 79 STAGED-PAIR assertions; the oracle-differential assertions
                # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
                # does not run
     '8' = 0

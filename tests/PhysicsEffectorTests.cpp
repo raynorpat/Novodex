@@ -23,13 +23,12 @@
 //
 // Cases: create over two dynamic actors; getters; setters; setBodies with the
 // ends swapped; the effector's slots 2 and 3 called through its own table
-// (each record's chain root +0x1e8 is printed first, and the root's +0x1f8
+// (each record's chain root +0x1e8 and its island words +0x1bc..+0x200 --
+// the island 000760 builds and the copy 000722 makes of it, whose +0x1f8 is
+// the island's wake counter -- are printed first; then the root's +0x1f8
 // is set to 0 on both sides, so the slot's only callee that would apply a
-// force, 000791, is not reached: its dependency 000782 is not written. The
-// oracle's record holds the island's wake counter there, 0x3ecccccc, which
-// 000722 copies from +0x1cc at construction; the candidate's record does
-// not build that snapshot, so the value itself is not printed); release; a
-// release/create cycle; an actor released while an
+// force, 000791, is not reached: its dependency 000782 is not written);
+// release; a release/create cycle; an actor released while an
 // effector holds its record (the record's 0x100 notify nulls the effector's
 // pointer), then the effector released; and the scene released with a live
 // effector (000575 after the actor loop).
@@ -360,6 +359,10 @@ static void nxSlotCalls(const char* label, void* internal, unsigned char* recA, 
 		printf("effector %s rec%u root=", label, i);
 		nxPrintWord(nxWordAt(records[i], 0x1e8), true);
 		printf("\n");
+		printf("effector %s rec%u island=", label, i);
+		for(unsigned off = 0x1bc; off <= 0x200; off += 4)
+			nxPrintWord(nxWordAt(records[i], off), off == 0x1bc);
+		printf(" wake=%08x\n", static_cast<unsigned>(nxWordAt(records[i], 0x4c)));
 		}
 	for(unsigned i = 0; i < 2; i++)
 		if(nxPointerAt(records[i], 0x1e8) != records[i])
