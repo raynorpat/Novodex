@@ -1443,6 +1443,14 @@ def _base_class(ordered, position, reg, depth=0):
         if depth < 4:
             return _base_class(ordered, w, writer.reg_name(wops[1].reg), depth + 1)
         return "other"
+    if (writer.mnemonic == "lea" and len(wops) == 2 and wops[1].type == x86.X86_OP_MEM
+            and wops[1].mem.base and not wops[1].mem.index and wops[1].mem.disp == 0
+            and writer.reg_name(wops[1].mem.base) not in FRAME_REGISTERS):
+        # `lea r,[s]` / `lea r,[s+0]` is a copy of s; with r == s it is the compiler's
+        # alignment no-op (PlanesCollider::InitQuery, Task 5b), which changes nothing
+        if depth < 4:
+            return _base_class(ordered, w, writer.reg_name(wops[1].mem.base), depth + 1)
+        return "other"
     if writer.mnemonic in ("mov", "lea") and len(wops) == 2 and wops[1].type == x86.X86_OP_MEM:
         base = writer.reg_name(wops[1].mem.base) if wops[1].mem.base else None
         if base and base not in FRAME_REGISTERS:

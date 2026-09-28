@@ -493,6 +493,17 @@ class BaseClassAndPairsTest(unittest.TestCase):
                                                                          for b in range(8, 12)})
         self.assertEqual(other.fields, {("other", b) for b in range(8, 12)})
 
+    def test_an_lea_with_no_offset_is_a_copy(self):
+        # PlanesCollider::InitQuery: the alignment no-op `lea esi,[esi+0]` between the
+        # copy of this and its uses must not turn this into a derived pointer
+        nop8 = run(b"\x8b\xf1\x8d\x76\x00\x8b\x46\x08\xc3")    # mov esi,ecx; lea esi,[esi+0]
+        nop = run(b"\x8b\xf1\x8d\x36\x8b\x46\x08\xc3")         # mov esi,ecx; lea esi,[esi]
+        copy = run(b"\x8d\x31\x8b\x46\x08\xc3")                # lea esi,[ecx]
+        offset = run(b"\x8d\x71\x04\x8b\x46\x08\xc3")          # lea esi,[ecx+4]
+        for feats in (nop8, nop, copy):
+            self.assertEqual({c for c, _ in feats.fields}, {"this"})
+        self.assertEqual({c for c, _ in offset.fields}, {"derived"})
+
     def test_register_read_modify_write_is_the_memory_form(self):
         rmw = run(b"\x8b\x41\x08\x83\xc8\x04\x89\x41\x08\xc3")  # load; or eax,4; store
         memory = run(b"\x83\x49\x08\x04\xc3")                   # or dword [ecx+8],4
