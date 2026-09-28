@@ -1,0 +1,717 @@
+SceneRaycast..CapsuleShape block: cdb breakpoint trace after the second merge of main (482a621)
+================================================================================================
+
+Why: the merge of main (the NpActor.cpp completion, merges a591394..482a621, and the core-dump re-trace) into
+claude/scene-raycast-block changed the candidate NxPhysics.dll, and 18 rows both sessions had implemented now
+keep one implementation each (evidence/scene-raycast-block.md, "### Second merge (482a621)"). Every row whose
+dynamic_proof cited a pre-merge candidate of either session is traced here, on both sides:
+- this block: 12ad8413, eeb12a66, cc7aba6d, 52cfab3a, 3d8c9aac, 31c22a97, 113dbcfb and the first merge 34a6c8ba;
+- the NpActor.cpp completion and its effector/core-dump re-recordings: 2f9815a1 (and older 9dadfcea, ccae6021,
+  8313db1b, 0093a945 where a proof still names them).
+That is 217 rows, among them the 36 this block had not re-pinned at the first merge (000366-000376,
+000680-000686, 000344, 000020, 000579, 000657 and the OPCODE rows 004857, 004859, 004919, 0052xx, 0054xx,
+0055xx). 000945 and 000951, whose proofs are harness drives, are re-traced in their harnesses (last section).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\<target>.exe <worktree>\build\pairs\<side>  (cwd build\pairs, as staged
+           by run_phase_gate.ps1; the script breaks on the NxPhysics load with `sxe ld:NxPhysics`, sets
+           `bp NxPhysics+<offset> ".echo HIT <label>; gc"` for every breakpoint below, then runs to exit).
+           Each run loaded NxPhysics.dll exactly once and ran to NtTerminateProcess.
+Recorded:  2026-09-28, branch claude/scene-raycast-block at aa1d080 (the merge c6d6620 and its 000784
+           noinline fix), after a fresh configure
+           (-G "Visual Studio 18 2026" -A Win32 --fresh), a --clean-first Release build and gates 2-7 on that
+           build (every staged target stdout_delta=0 stderr_exact=True; Phase 5 red only on its vtables marker).
+Oracle:    NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate: NxPhysics.dll sha256=79b7950faf904173c93f463b405935896aa85c09b0e1de17f01d81452e13f757
+           (build\pairs\candidate, identical to build\Release\NxPhysics.dll). The pin goes stale on any relink:
+           the PE header and debug directory carry the link timestamp.
+Offsets:   oracle: every row's inventory RVA (a continuation row, such as 000795 or 000686, has its own).
+           Candidate: build\Release\NxPhysics.map, one breakpoint per out-of-line copy of the function that
+           carries the row's claim line (resolved by name). A candidate function that stands for two rows
+           (a row and its continuation) has one breakpoint labelled with both. Instruction anchors: 000787 at
+           nxNpActorTransitionKinematic+0xee (the disable arm's flag clear) and +0x16e (its free of the
+           kinematic block), re-checked in the new disassembly; the core-dump anchors of
+           evidence/effector-and-coredump-trace-coredump.txt at the same offsets from their enclosing
+           functions (core/SceneDump.cpp is unchanged; each re-checked to be the same push or loop head).
+
+BREAKPOINTS, CANDIDATE (label, module offset, symbol)
+------------------------------------------------------
+  000006         0x34a20  ?nxActorRemoveRootFromScene@@YAXPAE@Z
+  000008         0x33de0  ?nxActorComputeMassFromShapes@@YAHPAEMPAMPAVNxMat34@@PAVNxVec3@@@Z
+  000015         0x463a0  ?getNbShapes@JointActorBody@@QBEIXZ
+  000020         0x39850  ?visualize@NxActorVisualRecord@@QAEXAAVNxDebugRenderable@@@Z
+  000024         0x348b0  ?nxActorReleaseShape@@YAXPAE0@Z
+  000026         0x33ad0  ?nxActorBuildRecord@@YAHPAEPBVNxBodyDesc@@@Z
+  000036         0x340b0  ?nxActorCreateShape@@YAPAEPAEPBVNxShapeDesc@@@Z
+  000054         0x12e00  ?addForceAtPos@NpActorVtable@@UAEXABVNxVec3@@0W4NxForceMode@@@Z
+  000056         0x12cc0  ?addForce@NpActorVtable@@UAEXABVNxVec3@@W4NxForceMode@@@Z
+  000058         0x13130  ?addTorque@NpActorVtable@@UAEXABVNxVec3@@W4NxForceMode@@@Z
+  000070         0x13390  ?createShape@NpActorVtable@@UAEPAVNxShape@@ABVNxShapeDesc@@@Z
+  000072         0x19440  ?releaseShape@NpActorVtable@@UAEXAAVNxShape@@@Z
+  000090         0x15580  ?moveGlobalPosition@NpActorVtable@@UAEXABVNxVec3@@@Z
+  000122         0x1a070  ?setDynamic@NpActorVtable@@UAEXABVNxBodyDesc@@@Z
+  000124         0x15110  ?moveGlobalPose@NpActorVtable@@UAEXABVNxMat34@@@Z
+  000126         0x14e60  ?moveGlobalOrientation@NpActorVtable@@UAEXABVNxMat33@@@Z
+  000128         0x13f20  ?getGlobalPoseReference@NpActorVtable@@UBEABVNxMat34@@XZ
+  000134         0x13840  ?getCMassGlobalPoseVal@NpActorVtable@@UBE?AVNxMat34@@XZ
+  000136         0x13940  ?getCMassGlobalPositionVal@NpActorVtable@@UBE?AVNxVec3@@XZ
+  000138         0x13760  ?getCMassGlobalOrientationVal@NpActorVtable@@UBE?AVNxMat33@@XZ
+  000140         0x13d10  ?getGlobalInertiaTensorVal@NpActorVtable@@UBE?AVNxMat33@@XZ
+  000142         0x13c70  ?getGlobalInertiaTensorInverseVal@NpActorVtable@@UBE?AVNxMat33@@XZ
+  000144         0x134f0  ?getAngularMomentumVal@NpActorVtable@@UBE?AVNxVec3@@XZ
+  000150         0x17330  ?nxNpActorRotateLocalForce@@YA?AVNxVec3@@PBEABV1@@Z
+  000152         0x17050  ?nxNpActorLocalPosition@@YA?AVNxVec3@@PBEABV1@@Z
+  000154         0x12d50  ?addForceAtLocalPos@NpActorVtable@@UAEXABVNxVec3@@0W4NxForceMode@@@Z
+  000156         0x12ff0  ?addLocalForceAtPos@NpActorVtable@@UAEXABVNxVec3@@0W4NxForceMode@@@Z
+  000158         0x12f30  ?addLocalForceAtLocalPos@NpActorVtable@@UAEXABVNxVec3@@0W4NxForceMode@@@Z
+  000160         0x12e90  ?addLocalForce@NpActorVtable@@UAEXABVNxVec3@@W4NxForceMode@@@Z
+  000162         0x13090  ?addLocalTorque@NpActorVtable@@UAEXABVNxVec3@@W4NxForceMode@@@Z
+  000164         0x1ace0  ?updateMassFromShapes@NpActorVtable@@UAEXMM@Z
+  000166         0x1a910  ?setMass@NpActorVtable@@UAEXM@Z
+  000168         0x1a9f0  ?setMassSpaceInertiaTensor@NpActorVtable@@UAEXABVNxVec3@@@Z
+  000170         0x1a660  ?setLinearDamping@NpActorVtable@@UAEXM@Z
+  000172         0x19670  ?setAngularDamping@NpActorVtable@@UAEXM@Z
+  000174         0x1a830  ?setLinearVelocity@NpActorVtable@@UAEXABVNxVec3@@@Z
+  000176         0x198a0  ?setAngularVelocity@NpActorVtable@@UAEXABVNxVec3@@@Z
+  000178         0x1ab40  ?setMaxAngularVelocity@NpActorVtable@@UAEXM@Z
+  000180         0x1a720  ?setLinearMomentum@NpActorVtable@@UAEXABVNxVec3@@@Z
+  000182         0x19730  ?setAngularMomentum@NpActorVtable@@UAEXABVNxVec3@@@Z
+  000184         0x1ac80  ?setSleepLinearVelocity@NpActorVtable@@UAEXM@Z
+  000186         0x1ac20  ?setSleepAngularVelocity@NpActorVtable@@UAEXM@Z
+  000188         0x19280  ?raiseBodyFlag@NpActorVtable@@UAEXW4NxBodyFlag@@@Z
+  000190         0x13210  ?clearBodyFlag@NpActorVtable@@UAEXW4NxBodyFlag@@@Z
+  000192         0x1aff0  ?wakeUp@NpActorVtable@@UAEXM@Z
+  000194         0x191c0  ?putToSleep@NpActorVtable@@UAEXXZ
+  000196         0x1a450  ?setGlobalPose@NpActorVtable@@UAEXABVNxMat34@@@Z
+  000198         0x1a570  ?setGlobalPosition@NpActorVtable@@UAEXABVNxVec3@@@Z
+  000200         0x1a220  ?setGlobalOrientation@NpActorVtable@@UAEXABVNxMat33@@@Z
+  000202         0x1a2e0  ?setGlobalOrientationQuat@NpActorVtable@@UAEXABVNxQuat@@@Z
+  000204         0x19a60  ?setCMassGlobalPose@NpActorVtable@@UAEXABVNxMat34@@@Z
+  000206         0x19b50  ?setCMassGlobalPosition@NpActorVtable@@UAEXABVNxVec3@@@Z
+  000208         0x19990  ?setCMassGlobalOrientation@NpActorVtable@@UAEXABVNxMat33@@@Z
+  000210         0x19ec0  ?setCMassOffsetLocalPose@NpActorVtable@@UAEXABVNxMat34@@@Z
+  000212         0x19fb0  ?setCMassOffsetLocalPosition@NpActorVtable@@UAEXABVNxVec3@@@Z
+  000214+000216  0x19e00  ?setCMassOffsetLocalOrientation@NpActorVtable@@UAEXABVNxMat33@@@Z
+  000218         0x19cb0  ?setCMassOffsetGlobalPose@NpActorVtable@@UAEXABVNxMat34@@@Z
+  000220         0x19d60  ?setCMassOffsetGlobalPosition@NpActorVtable@@UAEXABVNxVec3@@@Z
+  000222         0x19c10  ?setCMassOffsetGlobalOrientation@NpActorVtable@@UAEXABVNxMat33@@@Z
+  000267         0x1b270  ?coreDump@NpPhysicsSDK@@UAE_NPBD_N0@Z
+  000301         0x1bb40  ?createSpringAndDamperEffector@NpScene@@UAEPAVNxSpringAndDamperEffector@@ABVNxSpringAndDamperEffectorDesc@@@Z
+  000303         0x1c840  ?releaseEffector@NpScene@@UAEXAAVNxEffector@@@Z
+  000327         0x1bd00  ?getNbEffectors@NpScene@@UBEIXZ
+  000329         0x1c9e0  ?resetEffectorIterator@NpScene@@UAEXXZ
+  000331         0x1bdd0  ?getNextEffector@NpScene@@UAEPAVNxEffector@@XZ
+  000344         0x1cb30  ?visualize@NpScene@@UAEXXZ
+  000366         0x1c2d0  ?raycastAnyBounds@NpScene@@UBE_NABVNxRay@@W4NxShapesType@@IM@Z
+  000368         0x1c3f0  ?raycastAnyShape@NpScene@@UBE_NABVNxRay@@W4NxShapesType@@IM@Z
+  000370         0x1c070  ?raycastAllBounds@NpScene@@UBEIABVNxRay@@AAVNxUserRaycastReport@@W4NxShapesType@@IMI@Z
+  000372         0x1c1a0  ?raycastAllShapes@NpScene@@UBEIABVNxRay@@AAVNxUserRaycastReport@@W4NxShapesType@@IMI@Z
+  000374         0x1c510  ?raycastClosestBounds@NpScene@@UBEPAVNxShape@@ABVNxRay@@W4NxShapesType@@AAUNxRaycastHit@@IMI@Z
+  000376         0x1c640  ?raycastClosestShape@NpScene@@UBEPAVNxShape@@ABVNxRay@@W4NxShapesType@@AAUNxRaycastHit@@IMI@Z
+  000531         0x35ba0  ?nxSceneAddShape@@YAXPAVNxSceneInternal@@PAE_N@Z
+  000533         0x36da0  ?nxSceneRemoveStaticShape@@YA_NPAVNxSceneInternal@@PAE@Z
+  000535         0x36d80  ?nxSceneRemoveDynamicShape@@YA_NPAVNxSceneInternal@@PAE@Z
+  000557         0x37750  ?pushJointWithoutBodies@NxSceneInternal@@QAEXPAVJoint@@@Z
+  000561         0x33090  ?getNbEffectors@NxSceneInternal@@QBEIXZ
+  000565         0x37b60  ?resetEffectorIterator@NxSceneInternal@@QAEXXZ
+  000569         0x330c0  ?getNextEffector@NxSceneInternal@@QAEPAVEffector@@XZ
+  000573         0x37990  ?removeEffector@NxSceneInternal@@QAEXPAVEffector@@@Z
+  000575         0x378d0  ?releaseEffectors@NxSceneInternal@@QAEXXZ
+  000579         0x33030  ?getDebugRenderable@NxSceneInternal@@QAEPAVNxDebugRenderable@@XZ
+  000587         0x32f30  ?createSpringAndDamperEffector@NxSceneInternal@@QAEPAVSpringAndDamperEffector@@ABVNxSpringAndDamperEffectorDesc@@@Z
+  000594         0x37850  ?releaseEffector@NxSceneInternal@@QAEXPAVEffector@@@Z
+  000630         0x359f0  ?nxSceneAddBody@@YAXPAVNxSceneInternal@@PAE@Z
+  000632         0x36cc0  ?nxSceneRemoveBody@@YAXPAVNxSceneInternal@@PAE@Z
+  000657         0x37ba0  ?visualize@NxSceneInternal@@QAEXXZ
+  000680         0x38230  ?nxRaycastAnyBoundsLoop@@YA_NABVSdkContainer@@ABVNxRay@@MI@Z
+  000682         0x37f10  ?nxRaycastAllBoundsLoop@@YAIABVSdkContainer@@ABVNxRay@@MAAVNxUserRaycastReport@@I@Z
+  000684+000686  0x38100  ?nxRaycastAllShapesLoop@@YAIABVSdkContainer@@ABVNxRay@@IMAAVNxUserRaycastReport@@I@Z
+  000688         0x38420  ?nxRaycastClosestBoundsLoop@@YAXABVSdkContainer@@AAUNxRaycastHit@@ABVNxRay@@MI@Z
+  000690         0x38a70  ?raycastAnyBounds@NxSceneInternal@@QAE_NABVNxRay@@W4NxShapesType@@IM@Z
+  000692         0x388f0  ?raycastAllBounds@NxSceneInternal@@QAEIABVNxRay@@AAVNxUserRaycastReport@@W4NxShapesType@@IMI@Z
+  000694         0x389b0  ?raycastAllShapes@NxSceneInternal@@QAEIABVNxRay@@AAVNxUserRaycastReport@@W4NxShapesType@@IMI@Z
+  000696         0x38bf0  ?raycastClosestBounds@NxSceneInternal@@QAEPAXABVNxRay@@W4NxShapesType@@AAUNxRaycastHit@@IMI@Z
+  000698         0x38350  ?nxRaycastAnyShapeLoop@@YA_NABVSdkContainer@@ABVNxRay@@MI@Z
+  000700+000702  0x385e0  ?nxRaycastClosestShapeLoop@@YAXABVSdkContainer@@ABVNxRay@@AAUNxRaycastHit@@MII@Z
+  000704         0x38b30  ?raycastAnyShape@NxSceneInternal@@QAE_NABVNxRay@@W4NxShapesType@@IM@Z
+  000706         0x38cf0  ?raycastClosestShape@NxSceneInternal@@QAEPAXABVNxRay@@W4NxShapesType@@AAUNxRaycastHit@@IMI@Z
+  000713         0x46430  ?row000713@Row000713Fixture@@QAEPAU1@XZ
+  000722         0x46450  ?row000722@Row000722Fixture@@QAEXXZ
+  000746         0x2560   ?nxNpActorWorldTensorRDRt@@YAXPBM0PAM@Z
+  000746         0x29b0   ?nxNpActorWorldTensorRDRt@@YAXPBM0PAM@Z
+  000746         0x18500  ?nxNpActorWorldTensorRDRt@@YAXPBM0PAM@Z
+  000748         0x1bc0   ?markIslandDirty@DynamicBody@@QAEXXZ
+  000756         0x2990   ?nxNpActorUpdateCMassQuaternion@@YAXPAE@Z
+  000756         0x17d70  ?nxNpActorUpdateCMassQuaternion@@YAXPAE@Z
+  000760         0x46a40  ?row000760@Row000760Fixture@@QAEXXZ
+  000766         0x39970  ?visualize@NxBodyVisualRecord@@QAEXAAVNxDebugRenderable@@@Z
+  000768         0x2050   ?nxNpActorUpdateMassFrame@@YAXPAE@Z
+  000768         0x17d90  ?nxNpActorUpdateMassFrame@@YAXPAE@Z
+  000776         0x16b0   ?destruct@DynamicBody@@QAEXXZ
+  000782         0x16210  ?nxNpActorApplyForce@@YAXPAEPBVNxVec3@@1I_N@Z
+  000784         0x174f0  ?nxNpActorSetKinematicTarget@@YAXPAEPBM1@Z
+  000785         0x17bf0  ?nxNpActorTransitionKinematic@@YAXPAE_N@Z
+  000787         0x17cde  nxNpActorTransitionKinematic+0xee
+  000787         0x17d5e  nxNpActorTransitionKinematic+0x16e
+  000789         0x16580  ?nxNpActorApplyWorldMassPose@@YAXPAE@Z
+  000791         0x46c50  ?row000791@Row000791Fixture@@QAEXABVNxVec3@@0II@Z
+  000793+000795  0x1770   ?loadFromBodyDesc@DynamicBody@@QAEXPBVNxBodyDesc@@@Z
+  000797         0x1190   ?construct@DynamicBody@@QAEPAU1@PAXPBMPBVNxBodyDesc@@@Z
+  000799         0x1730   ?destruct@DynamicBodyBase@@QAEXXZ
+  000801         0x1450   ?construct@DynamicBodyBase@@QAEPAU1@PAXPBMI@Z
+  000933         0x20170  ?nxBoxGetWorldOBB@BoxShape@@QBEXPAM@Z
+  000949         0x20300  ?nxBoxRaycast@BoxShape@@QBEPAXPBMMIIPAX@Z
+  000957         0x29c40  ?supportFace@BoxHullFacade@@QBEIPBM0@Z
+  000959         0x29f30  ?supportFeature@BoxHullFacade@@QBEIPBM0PAI@Z
+  000973         0x20790  ?nxBoxRebuildHull@BoxShape@@QAEXXZ
+  000981         0x20260  ?nxBoxLoadFromDesc@BoxShape@@QAE_NPBX@Z
+  000983         0x15d50  ?nxBoxSetDimensions@@YIXPAX0ABVNxVec3@@@Z
+  000993         0x16170  ?nxCapsuleSetDimensions@CapsuleShape@@QAEXMM@Z
+  001018         0x375b0  ?nxShapeGroupOwnerUpdate@@YIXPAX0I@Z
+  001024         0x1f4a0  ?nxArrayVtCall3Args1024@@YAEPAXIII@Z
+  001028         0x37600  ?nxShapeGroupRemoveChild@@YA_NPAE0@Z
+  001032         0x37480  ?nxShapeGroupDeleteChildren@@YAXPAE@Z
+  001033         0x37410  ?nxShapeGroupConstructAt@@YAPAEPAXPAEI@Z
+  001037+001039  0x37510  ?nxShapeGroupDeletingDtor@@YIPAXPAX0I@Z
+  001041         0x371d0  ?nxShapeGroupAddChild@@YAXPAE0@Z
+  001273         0x35450  ?nxRuntimeShapeBaseInit@@YAXPAE0I@Z
+  001279         0x376a0  ?nxShapeLeavePruning@@YAXPAE@Z
+  001941         0x351a0  ?nxPruningAddShape@@YAXPAE0_N@Z
+  001945         0x35220  ?nxPruningRemoveBody@@YAXPAE0@Z
+  003922         0x6b910  ??0ActorPairEffector@@QAE@PAVNxSceneInternal@@@Z
+  003924         0x6c550  ?tick@ActorPairEffector@@UAEXXZ
+  003926         0x6c400  ?setBodyRecords@ActorPairEffector@@QAEXPAVObservable@NxFoundation@@0@Z
+  003928         0x6c070  ?event@ActorPairEffector@@UAEXIAAVObservable@NxFoundation@@@Z
+  003930         0x6ba00  ??1ActorPairEffector@@UAE@XZ
+  003934         0x6b940  ??0Effector@@QAE@PAVNxSceneInternal@@@Z
+  003936         0x6ba40  ??1Effector@@UAE@XZ
+  003940         0x55ea0  ?setBodies@NpSpringAndDamperEffector@@UAEXPAVNxActor@@ABVNxVec3@@01@Z
+  003942         0x56060  ?setLinearSpring@NpSpringAndDamperEffector@@UAEXMMMMM@Z
+  003944         0x55f80  ?setLinearDamper@NpSpringAndDamperEffector@@UAEXMMMM@Z
+  003946         0x55cf0  ?getLinearSpring@NpSpringAndDamperEffector@@UAEXAAM0000@Z
+  003948         0x55c90  ?getLinearDamper@NpSpringAndDamperEffector@@UAEXAAM000@Z
+  003950         0x55d50  ?isSpringAndDamperEffector@NpSpringAndDamperEffector@@UAEPAVNxSpringAndDamperEffector@@XZ
+  003950         0x55da0  ?isSpringAndDamperEffectorSlot6@NpSpringAndDamperEffector@@UAEPAVNxSpringAndDamperEffector@@XZ
+  003950         0x55df0  ?isSpringAndDamperEffectorSlot7@NpSpringAndDamperEffector@@UAEPAVNxSpringAndDamperEffector@@XZ
+  003952         0x55c80  ?getInternal@NpSpringAndDamperEffector@@QAEPAVSpringAndDamperEffector@@XZ
+  003954         0x55c24  ??_ENpSpringAndDamperEffector@@W7AEPAXI@Z
+  003956         0x55c30  ??_GNpSpringAndDamperEffector@@UAEPAXI@Z
+  003958         0x55bb0  ??0NpSpringAndDamperEffector@@QAE@PAVSpringAndDamperEffector@@@Z
+  003960         0x6b980  ??0SpringAndDamperEffector@@QAE@PAVNxSceneInternal@@@Z
+  003962         0x6c250  ?setBodies@SpringAndDamperEffector@@QAEXPAXABVNxVec3@@01@Z
+  003964         0x6c0a0  ?getBodies@SpringAndDamperEffector@@QAEXPAPAXAAVNxVec3@@01@Z
+  003966         0x6c470  ?setLinearSpring@SpringAndDamperEffector@@QAEXMMMMM@Z
+  003968         0x6c450  ?setLinearDamper@SpringAndDamperEffector@@QAEXMMMM@Z
+  003970         0x6c4a0  ?springForce@SpringAndDamperEffector@@QAENM@Z
+  003972         0x6bd80  ?damperForce@SpringAndDamperEffector@@QAENM@Z
+  003974         0x6c220  ?getLinearSpring@SpringAndDamperEffector@@QAEXAAM0000@Z
+  003975         0x6c1f0  ?getLinearDamper@SpringAndDamperEffector@@QAEXAAM000@Z
+  003977         0x6bb20  ??_GSpringAndDamperEffector@@UAEPAXI@Z
+  003979         0x6bb80  ?apply@SpringAndDamperEffector@@UAEXPAVObservable@NxFoundation@@0@Z
+  003992         0x62f40  ?sceneDumpDateTime@@YAXPAD0@Z
+  003992         0x60476  ?coreDump@PhysicsSDK@@QAE_NPBD_N0@Z+0xd6
+  003994         0x62fb0  ?sceneDumpPointerName@@YAPBDPBDPBX@Z
+  003994         0x60314  ?actorName@SceneDump@@QAEXPADPAUJointActorBody@@@Z+0x94
+  003995         0x63210  ?sceneDumpToken@@YAPBDM_N@Z
+  003997         0x63a40  ?store@SceneDumpSetting@@QAE_NMMMM@Z
+  003999         0x626b0  ?print@SceneDumpSetting@@QAE_NXZ
+  004004         0x623c0  ?jointName@SceneDump@@QAEPBDPAVJoint@@@Z
+  004006         0x60280  ?actorName@SceneDump@@QAEXPADPAUJointActorBody@@@Z
+  004007         0x65a50  ?writeJointFrames@SceneDump@@QAEXABVNxJointDesc@@PAU_iobuf@@PAVJoint@@_N@Z
+  004009         0x624a0  ?limitPairText@SceneDump@@QAEPBDABVNxJointLimitPairDesc@@_N@Z
+  004011         0x64270  ?tripleText@SceneDump@@QAEPBDPBM_N@Z
+  004013         0x62640  ?motorText@SceneDump@@QAEPBDABVNxMotorDesc@@_N@Z
+  004013         0x65392  ?writeJoint@SceneDump@@QAEXPAU_iobuf@@PAVJoint@@_N@Z+0x302
+  004015         0x65d00  ?writeJointLine@SceneDump@@QAEXPAU_iobuf@@PAVJoint@@_N@Z
+  004017         0x66d30  ?writeTriggerFlags@SceneDump@@QAEXPAU_iobuf@@I@Z
+  004037         0x65090  ?writeJoint@SceneDump@@QAEXPAU_iobuf@@PAVJoint@@_N@Z
+  004037         0x65119  ?writeJoint@SceneDump@@QAEXPAU_iobuf@@PAVJoint@@_N@Z+0x89
+  004039         0x653b6  ?writeJoint@SceneDump@@QAEXPAU_iobuf@@PAVJoint@@_N@Z+0x326
+  004039         0x65435  ?writeJoint@SceneDump@@QAEXPAU_iobuf@@PAVJoint@@_N@Z+0x3a5
+  004041         0x654ed  ?writeJoint@SceneDump@@QAEXPAU_iobuf@@PAVJoint@@_N@Z+0x45d
+  004043         0x65760  ?writeJoint@SceneDump@@QAEXPAU_iobuf@@PAVJoint@@_N@Z+0x6d0
+  004048         0x66360  ?writeShape@SceneDump@@QAEXPAU_iobuf@@PAUNxCollisionShape@@_NPAUSceneDumpNames@@@Z
+  004051         0x642e0  ?writeAsset@SceneDump@@QAE_NPAVNxSceneInternal@@PAU_iobuf@@_NIPAUSceneDumpNames@@@Z
+  004051         0x6434c  ?writeAsset@SceneDump@@QAE_NPAVNxSceneInternal@@PAU_iobuf@@_NIPAUSceneDumpNames@@@Z+0x6c
+  004053         0x644e0  ?writeAsset@SceneDump@@QAE_NPAVNxSceneInternal@@PAU_iobuf@@_NIPAUSceneDumpNames@@@Z+0x200
+  004055         0x6498c  ?writeAsset@SceneDump@@QAE_NPAVNxSceneInternal@@PAU_iobuf@@_NIPAUSceneDumpNames@@@Z+0x6ac
+  004057         0x64a02  ?writeAsset@SceneDump@@QAE_NPAVNxSceneInternal@@PAU_iobuf@@_NIPAUSceneDumpNames@@@Z+0x722
+  004057         0x64b16  ?writeAsset@SceneDump@@QAE_NPAVNxSceneInternal@@PAU_iobuf@@_NIPAUSceneDumpNames@@@Z+0x836
+  004061         0x6503d  ?writeAsset@SceneDump@@QAE_NPAVNxSceneInternal@@PAU_iobuf@@_NIPAUSceneDumpNames@@@Z+0xd5d
+  004062         0x603a0  ?coreDump@PhysicsSDK@@QAE_NPBD_N0@Z
+  004072         0x43c10  ?is@Joint@@QAEPAV1@W4NxJointType@@@Z
+  004103         0x44f80  ?row004103@Joint@@QAEXPAX@Z
+  004145         0x43b30  ?getNextLimitPlane@Joint@@QAE_NAAVNxVec3@@AAM@Z
+  004857         0x6e240  ?nxPruningEngineAddObject@@YA_NPAXPAVPrunable@@@Z
+  004859         0x6e3d0  ?nxPruningEngineRemoveObject@@YA_NPAXPAVPrunable@@@Z
+  004919         0xc2a10  ?_SegmentStab@RayCollider@Opcode@@IAEXPBVAABBTreeNode@2@AAVContainer@IceCore@@@Z
+  005208         0x6d010  ?AddObject@Pruner@@UAE_NPAVPrunable@@@Z
+  005210         0x6d780  ?RemoveObject@Pruner@@UAE_NPAVPrunable@@@Z
+  005214         0x6dcb0  ?SetExternalBuffer@StaticPruner@@UAEXIPAI@Z
+  005216         0x6d360  ?BuildTree@StaticPruner@@QAE_NXZ
+  005218         0x6d320  ?AddObject@StaticPruner@@UAE_NPAVPrunable@@@Z
+  005220         0x6dae0  ?RemoveObject@StaticPruner@@UAE_NPAVPrunable@@@Z
+  005222         0x6dd30  ?UpdateObject@StaticPruner@@UAE_NPAVPrunable@@@Z
+  005225         0x6db20  ?ReportTouched@StaticPruner@@QAEXAAVContainer@IceCore@@I@Z
+  005227         0x6d6e0  ?Raycast@StaticPruner@@UAE_NAAVContainer@IceCore@@ABVRay@IceMaths@@M_NI@Z
+  005232         0x6cb90  ??0StaticPruner@@QAE@XZ
+  005464         0x6caa0  ??0DynamicPruner@@QAE@XZ
+  005468         0x6d4e0  ?Raycast@DynamicPruner@@UAE_NAAVContainer@IceCore@@ABVRay@IceMaths@@M_NI@Z
+  005481         0x6db90  ?Resize@PruningPool@@QAE_NXZ
+  005483         0x6d020  ?AddObject@PruningPool@@QAE_NPAVPrunable@@@Z
+  005485         0x6d7a0  ?RemoveObject@PruningPool@@QAEXPAVPrunable@@@Z
+  005541         0x6e020  ?nxSegmentAABB@@YA_NABVSegment@IceMaths@@ABVPoint@2@1@Z
+  005543         0x6de00  ?nxRayAABB@@YA_NABVRay@IceMaths@@ABVPoint@2@1@Z
+
+Oracle breakpoints: the 217 rows above at their inventory RVAs.
+
+HIT COUNTS per target, oracle/candidate (a row absent from a target: 0/0). A combined candidate label counts
+for each of its rows; the oracle counts a continuation row only when execution enters it at its own address.
+--------------------------------------------------------------------------------------------------------------
+  NxPhysicsActorLifecycleTests (Life):
+    000008 6/6, 000015 5/0, 000026 6/6, 000531 7/0, 000533 1/0, 000535 6/6, 000575 1/1, 000630 6/6
+    000632 6/0, 000722 18/18, 000746 6/6, 000748 6/6, 000760 24/24, 000768 6/6, 000776 6/6, 000785 6/6
+    000793 6/6, 000795 0/6, 000797 6/6, 000799 6/6, 000801 6/6, 000973 8/8, 000981 8/8, 001018 1/0
+    001024 1/1, 001032 1/1, 001033 1/1, 001037 1/1, 001039 1/1, 001041 2/0, 001273 9/9, 001279 7/7
+    001945 7/7, 004857 9/9, 004859 9/9, 005208 8/8, 005210 8/8, 005214 1/1, 005218 1/1, 005220 1/1
+    005222 1/1, 005232 1/1, 005464 1/1, 005481 9/9, 005483 9/9, 005485 9/9
+  NxPhysicsDynamicFirstTests (DynF):
+    000008 1/1, 000026 1/1, 000531 1/0, 000535 1/1, 000575 1/1, 000630 1/1, 000632 1/0, 000722 3/3
+    000746 1/1, 000748 1/1, 000760 4/4, 000768 1/1, 000776 1/1, 000785 1/1, 000793 1/1, 000795 0/1
+    000797 1/1, 000799 1/1, 000801 1/1, 000973 1/1, 000981 1/1, 001273 1/1, 001279 1/1, 001945 1/1
+    004857 1/1, 004859 1/1, 005208 1/1, 005210 1/1, 005464 1/1, 005481 1/1, 005483 1/1, 005485 1/1
+  NxPhysicsEmptySceneTests (Empty):
+    000575 1/1
+  NxPhysicsActorNameTests (Name):
+    000531 1/0, 000533 1/0, 000575 1/1, 000973 1/1, 000981 1/1, 001273 1/1, 001279 1/1, 001945 1/1
+    004857 1/1, 004859 1/1, 005214 1/1, 005218 1/1, 005220 1/1, 005222 1/1, 005232 1/1, 005481 1/1
+    005483 1/1, 005485 1/1
+  NxPhysicsActorMetadataTests (Meta):
+    000531 1/0, 000533 1/0, 000575 1/1, 000973 1/1, 000981 1/1, 001273 1/1, 001279 1/1, 001945 1/1
+    004857 1/1, 004859 1/1, 005214 1/1, 005218 1/1, 005220 1/1, 005222 1/1, 005232 1/1, 005481 1/1
+    005483 1/1, 005485 1/1
+  NxPhysicsActorBodyFlagTests (BFlag):
+    000008 9/9, 000026 9/9, 000531 9/0, 000535 9/9, 000575 1/1, 000630 9/9, 000632 9/0, 000722 27/27
+    000746 9/9, 000748 9/9, 000760 36/36, 000768 9/9, 000776 9/9, 000785 15/15, 000793 9/9, 000795 0/9
+    000797 9/9, 000799 9/9, 000801 9/9, 000973 9/9, 000981 9/9, 001273 9/9, 001279 9/9, 001945 9/9
+    004857 9/9, 004859 9/9, 005208 9/9, 005210 9/9, 005464 1/1, 005481 9/9, 005483 9/9, 005485 9/9
+    000170 8/8, 000188 5/5, 000190 4/4, 000787 0/6
+  NxPhysicsActorDynamicsTests (Dyn):
+    000008 1/1, 000026 5/5, 000531 5/0, 000535 5/5, 000575 1/1, 000630 5/5, 000632 5/0, 000722 15/15
+    000746 5/5, 000748 5/5, 000760 20/20, 000768 5/5, 000776 5/5, 000785 16/16, 000793 5/5, 000795 0/5
+    000797 5/5, 000799 5/5, 000801 5/5, 000973 5/5, 000981 5/5, 001273 5/5, 001279 5/5, 001945 5/5
+    004857 5/5, 004859 5/5, 005208 5/5, 005210 5/5, 005464 1/1, 005481 5/5, 005483 5/5, 005485 5/5
+    000188 7/7, 000190 4/4, 000787 0/8, 000090 9/9, 000124 8/8, 000126 9/9, 000192 12/12, 000194 3/3
+    000784 23/23
+  NxPhysicsActorDynamicSetterTests (DSet):
+    000015 6/0, 000026 8/8, 000531 20/0, 000533 12/0, 000535 8/8, 000575 1/1, 000630 8/8, 000632 8/0
+    000722 24/24, 000746 22/22, 000748 8/8, 000760 32/32, 000768 21/21, 000776 8/8, 000785 11/11, 000793 8/8
+    000795 0/8, 000797 8/8, 000799 8/8, 000801 8/8, 000973 18/18, 000981 17/17, 001018 3/2, 001032 1/1
+    001033 1/1, 001037 1/1, 001039 1/1, 001041 2/0, 001273 22/22, 001279 20/20, 001945 20/20, 004857 22/22
+    004859 22/22, 005208 10/10, 005210 10/10, 005218 12/12, 005220 12/12, 005222 28/28, 005232 1/1
+    005464 1/1, 005481 22/22, 005483 22/22, 005485 22/22, 000170 6/6, 000188 4/4, 000190 3/3, 000787 0/2
+    000090 4/4, 000124 3/3, 000126 3/3, 000192 6/6, 000194 5/5, 000784 1/1, 000054 3/3, 000056 3/3
+    000058 3/3, 000070 3/3, 000072 1/1, 000134 1/1, 000136 1/1, 000138 1/1, 000140 1/1, 000142 2/2
+    000144 1/1, 000154 3/3, 000156 3/3, 000158 3/3, 000160 3/3, 000162 3/3, 000166 6/6, 000168 4/4
+    000172 6/6, 000174 6/6, 000176 6/6, 000178 2/2, 000180 3/3, 000182 3/3, 000184 4/4, 000186 3/3
+    000196 4/4, 000198 6/6, 000200 6/6, 000202 5/5, 000204 4/4, 000206 3/3, 000208 3/3, 000210 3/3
+    000212 3/3, 000214 3/3, 000216 0/3, 000218 3/3, 000220 3/3, 000222 3/3, 000713 4/0, 000933 4/4
+    000983 1/1, 000993 2/2
+  NxPhysicsActorMomentumTests (Mom):
+    000026 12/12, 000531 13/0, 000533 1/0, 000535 12/12, 000575 1/1, 000630 12/12, 000632 12/0, 000722 36/36
+    000746 50/50, 000748 12/12, 000760 48/48, 000768 16/16, 000776 12/12, 000785 14/14, 000793 12/12
+    000795 0/12, 000797 12/12, 000799 12/12, 000801 12/12, 000973 13/13, 000981 13/13, 001273 13/13
+    001279 13/13, 001945 13/13, 004857 13/13, 004859 13/13, 005208 12/12, 005210 12/12, 005218 1/1
+    005220 1/1, 005222 1/1, 005232 1/1, 005464 1/1, 005481 13/13, 005483 13/13, 005485 13/13, 000188 1/1
+    000190 1/1, 000787 0/2, 000192 23/23, 000194 4/4, 000134 14/14, 000138 8/8, 000140 11/11, 000142 13/13
+    000144 12/12, 000166 7/7, 000168 13/13, 000174 9/9, 000176 9/9, 000178 2/2, 000180 9/9, 000182 15/15
+    000184 1/1, 000186 1/1, 000202 2/2, 000214 2/2, 000216 0/2
+  NxPhysicsActorForceTests (Force):
+    000026 31/31, 000531 31/0, 000535 31/31, 000575 1/1, 000630 31/31, 000632 31/0, 000722 93/93
+    000746 32/32, 000748 31/31, 000760 124/124, 000768 32/32, 000776 31/31, 000785 33/33, 000793 31/31
+    000795 0/31, 000797 31/31, 000799 31/31, 000801 31/31, 000973 31/31, 000981 31/31, 001273 31/31
+    001279 31/31, 001945 31/31, 004857 31/31, 004859 31/31, 005208 31/31, 005210 31/31, 005464 1/1
+    005481 31/31, 005483 31/31, 005485 31/31, 000188 1/1, 000190 1/1, 000787 0/2, 000192 19/19, 000194 1/1
+    000054 19/19, 000056 31/31, 000058 34/34, 000154 2/2, 000156 1/1, 000158 2/2, 000160 8/8, 000162 8/8
+    000174 6/6, 000176 6/6, 000202 1/1, 000150 19/19, 000152 4/4, 000782 95/95, 000791 24/24
+  NxPhysicsActorCMassTests (CMass):
+    000015 93/0, 000026 25/25, 000531 27/0, 000533 2/0, 000535 25/25, 000575 1/1, 000630 25/25, 000632 25/0
+    000722 75/75, 000746 130/130, 000748 25/25, 000760 100/100, 000768 104/104, 000776 25/25, 000785 26/26
+    000793 25/25, 000795 0/25, 000797 25/25, 000799 25/25, 000801 25/25, 000973 32/32, 000981 32/32
+    001018 20/15, 001032 5/5, 001033 5/5, 001037 5/5, 001039 5/5, 001041 10/0, 001273 37/37, 001279 27/27
+    001945 27/27, 004857 37/37, 004859 37/37, 005208 35/35, 005210 35/35, 005218 2/2, 005220 2/2, 005222 2/2
+    005232 1/1, 005464 1/1, 005481 37/37, 005483 37/37, 005485 37/37, 000188 1/1, 000124 1/1, 000126 1/1
+    000192 2/2, 000784 2/2, 000134 28/28, 000136 28/28, 000138 28/28, 000196 7/7, 000198 7/7, 000200 7/7
+    000202 7/7, 000204 9/9, 000206 8/8, 000208 9/9, 000210 9/9, 000212 9/9, 000214 9/9, 000216 0/9
+    000218 8/8, 000220 8/8, 000222 8/8, 000128 4/4, 000756 18/18, 000789 26/26
+  NxPhysicsActorShapeMutationTests (SMut):
+    000008 60/60, 000015 111/0, 000026 56/56, 000531 67/14, 000533 19/10, 000535 52/52, 000575 6/6
+    000630 52/52, 000632 52/3, 000722 156/156, 000746 85/85, 000748 52/52, 000760 208/208, 000768 85/85
+    000776 52/52, 000785 52/52, 000793 52/52, 000795 0/52, 000797 52/52, 000799 52/52, 000801 52/52
+    000973 42/42, 000981 42/42, 001018 23/10, 001024 15/15, 001032 20/20, 001033 20/20, 001037 20/20
+    001039 20/20, 001041 51/19, 001273 109/109, 001279 71/71, 001945 67/67, 004857 121/121, 004859 108/108
+    005208 92/92, 005210 86/86, 005214 2/2, 005218 29/29, 005220 22/22, 005222 37/37, 005232 5/5, 005464 5/5
+    005481 121/121, 005483 121/121, 005485 108/108, 000056 6/6, 000058 6/6, 000070 18/18, 000072 19/19
+    000136 6/6, 000174 6/6, 000196 2/2, 000782 12/12, 000006 3/2, 000024 19/19, 000036 16/16, 000122 14/14
+    000164 48/48, 000557 1/1, 001028 14/14, 001941 7/7, 004103 1/1
+  NxPhysicsBodyCreationTests (BodyC):
+    000008 3/3, 000026 7/7, 000531 7/0, 000535 7/7, 000575 1/1, 000630 7/7, 000632 7/0, 000722 21/21
+    000746 7/7, 000748 7/7, 000760 28/28, 000768 7/7, 000776 7/7, 000785 9/9, 000793 7/7, 000795 0/7
+    000797 7/7, 000799 7/7, 000801 7/7, 000973 7/7, 000981 7/7, 001273 7/7, 001279 7/7, 001945 7/7
+    004857 7/7, 004859 7/7, 005208 7/7, 005210 7/7, 005464 1/1, 005481 7/7, 005483 7/7, 005485 7/7
+    000188 1/1, 000190 1/1, 000787 0/2, 000056 1/1, 000782 1/1
+  NxPhysicsJointStagedPairTests (JSP):
+    000008 8/8, 000026 8/8, 000531 8/0, 000535 8/8, 000575 4/4, 000630 8/8, 000632 8/0, 000722 24/24
+    000746 8/8, 000748 8/8, 000760 157/157, 000768 8/8, 000776 8/8, 000785 8/8, 000793 8/8, 000795 0/8
+    000797 8/8, 000799 8/8, 000801 8/8, 000973 8/8, 000981 8/8, 001273 8/8, 001279 8/8, 001945 8/8
+    004857 8/8, 004859 8/8, 005208 8/8, 005210 8/8, 005464 4/4, 005481 8/8, 005483 8/8, 005485 8/8
+    000557 2/2, 004103 2/2
+  NxPhysicsJointAllocatorTests (JAll):
+    000008 2/2, 000026 2/2, 000531 2/0, 000535 2/2, 000575 1/1, 000630 2/2, 000632 2/0, 000722 6/6
+    000746 2/2, 000748 2/2, 000760 10/10, 000768 2/2, 000776 2/2, 000785 2/2, 000793 2/2, 000795 0/2
+    000797 2/2, 000799 2/2, 000801 2/2, 000973 2/2, 000981 2/2, 001273 2/2, 001279 2/2, 001945 2/2
+    004857 2/2, 004859 2/2, 005208 2/2, 005210 2/2, 005464 1/1, 005481 2/2, 005483 2/2, 005485 2/2
+  NxPhysicsJointSlotTests (JSlot):
+    000008 27/27, 000026 27/27, 000531 27/0, 000535 27/27, 000575 1/1, 000630 27/27, 000632 27/0
+    000722 81/81, 000746 55/55, 000748 27/27, 000760 122/122, 000768 55/55, 000776 27/27, 000785 27/27
+    000793 27/27, 000795 0/27, 000797 27/27, 000799 27/27, 000801 27/27, 000973 27/27, 000981 27/27
+    001273 27/27, 001279 27/27, 001945 27/27, 004857 27/27, 004859 27/27, 005208 27/27, 005210 27/27
+    005464 1/1, 005481 27/27, 005483 27/27, 005485 27/27, 000174 27/27, 000176 27/27, 000198 14/14
+    000200 14/14
+  NxPhysicsSceneRaycastTests (SRay):
+    000015 29/0, 000026 7/7, 000531 16/0, 000533 9/0, 000535 7/7, 000575 1/1, 000630 7/7, 000632 7/0
+    000722 21/21, 000746 8/8, 000748 7/7, 000760 28/28, 000768 8/8, 000776 7/7, 000785 7/7, 000793 7/7
+    000795 0/7, 000797 7/7, 000799 7/7, 000801 7/7, 000973 17/17, 000981 11/11, 001018 2/1, 001032 2/2
+    001033 2/2, 001037 2/2, 001039 2/2, 001041 4/0, 001273 20/20, 001279 16/16, 001945 16/16, 004857 20/20
+    004859 20/20, 005208 9/9, 005210 9/9, 005214 1/1, 005218 11/11, 005220 11/11, 005222 14/14, 005232 1/1
+    005464 1/1, 005481 20/20, 005483 20/20, 005485 20/20, 000198 1/1, 000983 6/6, 000366 287/287
+    000368 287/287, 000370 295/295, 000372 295/295, 000374 287/287, 000376 287/287, 000680 282/282
+    000682 290/290, 000684 290/290, 000686 595/290, 000688 282/282, 000690 285/285, 000692 293/293
+    000694 293/293, 000696 285/285, 000698 282/282, 000700 282/282, 000702 581/282, 000704 285/285
+    000706 285/285, 000949 426/426, 000957 216/216, 000959 432/432, 004919 980/980, 005216 7/7
+    005225 1432/1432, 005227 1432/1432, 005468 1432/1432, 005541 2235/2235, 005543 6651/6651
+  NxPhysicsSceneVisualizeTests (SVis):
+    000026 5/5, 000531 7/0, 000533 2/0, 000535 5/5, 000575 1/1, 000630 5/5, 000632 5/0, 000722 15/15
+    000746 6/6, 000748 5/5, 000760 20/20, 000768 6/6, 000776 5/5, 000785 5/5, 000793 5/5, 000795 0/5
+    000797 5/5, 000799 5/5, 000801 5/5, 000973 5/5, 000981 5/5, 001273 7/7, 001279 7/7, 001945 7/7
+    004857 7/7, 004859 7/7, 005208 5/5, 005210 5/5, 005214 1/1, 005218 2/2, 005220 2/2, 005222 2/2
+    005232 1/1, 005464 1/1, 005481 7/7, 005483 7/7, 005485 7/7, 000174 1/1, 000176 2/2, 000198 1/1
+    000020 77/77, 000344 14/14, 000579 11/11, 000657 14/14, 000766 55/55
+  NxPhysicsEffectorTests (Eff):
+    000008 4/4, 000026 4/4, 000531 4/0, 000535 4/4, 000575 1/1, 000630 4/4, 000632 4/0, 000722 12/12
+    000746 4/4, 000748 4/4, 000760 16/16, 000768 4/4, 000776 4/4, 000785 4/4, 000793 4/4, 000795 0/4
+    000797 4/4, 000799 4/4, 000801 4/4, 000973 4/4, 000981 4/4, 001273 4/4, 001279 4/4, 001945 4/4
+    004857 4/4, 004859 4/4, 005208 4/4, 005210 4/4, 005464 1/1, 005481 4/4, 005483 4/4, 005485 4/4
+    000713 4/4, 000301 5/5, 000303 3/3, 000327 9/9, 000329 9/9, 000331 20/20, 000561 9/9, 000565 9/9
+    000569 20/20, 000573 3/3, 000587 5/5, 000594 3/3, 003922 5/5, 003924 1/1, 003926 7/7, 003928 5/5
+    003930 5/5, 003934 5/5, 003936 5/5, 003940 2/2, 003942 1/1, 003944 1/1, 003946 2/2, 003948 2/2
+    003950 3/3, 003952 3/3, 003954 5/5, 003956 5/5, 003958 5/5, 003960 5/5, 003962 7/7, 003966 6/6
+    003968 6/6, 003970 4/4, 003972 4/4, 003974 2/2, 003975 2/2, 003977 5/5, 003979 4/4
+  NxPhysicsCoreDumpTests (Dump):
+    000008 3/3, 000015 92/86, 000026 15/15, 000531 24/0, 000533 10/0, 000535 14/14, 000575 3/3, 000630 15/15
+    000632 15/0, 000722 45/45, 000746 15/15, 000748 15/15, 000760 60/60, 000768 15/15, 000776 15/15
+    000785 15/15, 000793 15/15, 000795 0/15, 000797 15/15, 000799 15/15, 000801 15/15, 000973 14/14
+    000981 14/14, 001018 3/1, 001032 3/3, 001033 3/3, 001037 3/3, 001039 3/3, 001041 8/0, 001273 32/32
+    001279 24/24, 001945 24/24, 004857 32/32, 004859 32/32, 005208 19/19, 005210 19/19, 005214 2/2
+    005218 13/13, 005220 13/13, 005222 13/13, 005232 3/3, 005464 3/3, 005481 32/32, 005483 32/32
+    005485 32/32, 000557 12/12, 004103 25/47, 000301 1/1, 000587 1/1, 003922 1/1, 003926 1/1, 003928 2/2
+    003930 1/1, 003934 1/1, 003936 1/1, 003954 1/1, 003956 1/1, 003958 1/1, 003960 1/1, 003962 1/1
+    003966 1/1, 003968 1/1, 003974 5/5, 003975 5/5, 003977 1/1, 000267 9/9, 003964 5/5, 003992 8/8
+    003994 186/91, 003995 3665/3665, 003997 1407/1407, 003999 1407/1407, 004004 100/100, 004006 216/96
+    004007 40/40, 004009 10/10, 004011 25/25, 004013 5/5, 004015 60/60, 004017 99/99, 004037 60/65
+    004039 20/10, 004041 10/5, 004043 20/5, 004048 99/99, 004051 11/22, 004053 264/264, 004055 86/16
+    004057 29/21, 004061 5/5, 004062 8/8, 004072 40/40, 004145 15/15
+
+TOTALS, oracle/candidate
+------------------------
+  000006  3/2
+  000008  124/124
+  000015  336/86
+  000020  77/77
+  000024  19/19
+  000026  228/228
+  000036  16/16
+  000054  22/22
+  000056  41/41
+  000058  43/43
+  000070  21/21
+  000072  20/20
+  000090  13/13
+  000122  14/14
+  000124  12/12
+  000126  13/13
+  000128  4/4
+  000134  43/43
+  000136  35/35
+  000138  37/37
+  000140  12/12
+  000142  15/15
+  000144  13/13
+  000150  19/19
+  000152  4/4
+  000154  5/5
+  000156  4/4
+  000158  5/5
+  000160  11/11
+  000162  11/11
+  000164  48/48
+  000166  13/13
+  000168  17/17
+  000170  14/14
+  000172  6/6
+  000174  55/55
+  000176  50/50
+  000178  4/4
+  000180  12/12
+  000182  18/18
+  000184  5/5
+  000186  4/4
+  000188  20/20
+  000190  14/14
+  000192  62/62
+  000194  13/13
+  000196  13/13
+  000198  29/29
+  000200  27/27
+  000202  15/15
+  000204  13/13
+  000206  11/11
+  000208  12/12
+  000210  12/12
+  000212  12/12
+  000214  14/14
+  000216  0/14
+  000218  11/11
+  000220  11/11
+  000222  11/11
+  000267  9/9
+  000301  6/6
+  000303  3/3
+  000327  9/9
+  000329  9/9
+  000331  20/20
+  000344  14/14
+  000366  287/287
+  000368  287/287
+  000370  295/295
+  000372  295/295
+  000374  287/287
+  000376  287/287
+  000531  277/14
+  000533  58/10
+  000535  223/223
+  000557  15/15
+  000561  9/9
+  000565  9/9
+  000569  20/20
+  000573  3/3
+  000575  30/30
+  000579  11/11
+  000587  6/6
+  000594  3/3
+  000630  224/224
+  000632  224/3
+  000657  14/14
+  000680  282/282
+  000682  290/290
+  000684  290/290
+  000686  595/290
+  000688  282/282
+  000690  285/285
+  000692  293/293
+  000694  293/293
+  000696  285/285
+  000698  282/282
+  000700  282/282
+  000702  581/282
+  000704  285/285
+  000706  285/285
+  000713  8/4
+  000722  672/672
+  000746  445/445
+  000748  224/224
+  000756  18/18
+  000760  1037/1037
+  000766  55/55
+  000768  384/384
+  000776  224/224
+  000782  108/108
+  000784  26/26
+  000785  251/251
+  000787  0/22
+  000789  26/26
+  000791  24/24
+  000793  224/224
+  000795  0/224
+  000797  224/224
+  000799  224/224
+  000801  224/224
+  000933  4/4
+  000949  426/426
+  000957  216/216
+  000959  432/432
+  000973  245/245
+  000981  238/238
+  000983  7/7
+  000993  2/2
+  001018  52/29
+  001024  16/16
+  001028  14/14
+  001032  32/32
+  001033  32/32
+  001037  32/32
+  001039  32/32
+  001041  77/19
+  001273  345/345
+  001279  281/281
+  001941  7/7
+  001945  277/277
+  003922  6/6
+  003924  1/1
+  003926  8/8
+  003928  7/7
+  003930  6/6
+  003934  6/6
+  003936  6/6
+  003940  2/2
+  003942  1/1
+  003944  1/1
+  003946  2/2
+  003948  2/2
+  003950  3/3
+  003952  3/3
+  003954  6/6
+  003956  6/6
+  003958  6/6
+  003960  6/6
+  003962  8/8
+  003964  5/5
+  003966  7/7
+  003968  7/7
+  003970  4/4
+  003972  4/4
+  003974  7/7
+  003975  7/7
+  003977  6/6
+  003979  4/4
+  003992  8/8
+  003994  186/91
+  003995  3665/3665
+  003997  1407/1407
+  003999  1407/1407
+  004004  100/100
+  004006  216/96
+  004007  40/40
+  004009  10/10
+  004011  25/25
+  004013  5/5
+  004015  60/60
+  004017  99/99
+  004037  60/65
+  004039  20/10
+  004041  10/5
+  004043  20/5
+  004048  99/99
+  004051  11/22
+  004053  264/264
+  004055  86/16
+  004057  29/21
+  004061  5/5
+  004062  8/8
+  004072  40/40
+  004103  28/50
+  004145  15/15
+  004857  357/357
+  004859  344/344
+  004919  980/980
+  005208  284/284
+  005210  278/278
+  005214  9/9
+  005216  7/7
+  005218  73/73
+  005220  66/66
+  005222  100/100
+  005225  1432/1432
+  005227  1432/1432
+  005232  16/16
+  005464  26/26
+  005468  1432/1432
+  005481  357/357
+  005483  357/357
+  005485  344/344
+  005541  2235/2235
+  005543  6651/6651
+
+RESULT
+------
+41315 HIT lines on the oracle and 38976 on the candidate over the 20 targets.
+Every row's count equals the oracle's on every target except the labels below. None of them comes from the
+merge: the candidate count equals the pre-merge recording of the row's own session (004103 on the
+core-dump target was recorded by neither), or the label is a combined or anchor breakpoint with no single
+oracle counterpart.
+
+Label effects (not differences):
+  000795 (000793+000795), 000216 (000214+000216), 000686 (000684+000686), 000702 (000700+000702): one candidate
+    function stands for the row and its continuation; the entry row's count equals the oracle's on every
+    target (000793, 000214, 000684, 000700). The oracle hits a continuation only when it is jumped to.
+  000787: two instruction anchors inside nxNpActorTransitionKinematic, each hit as often as the NpActor.cpp
+    completion recorded (BFlag 3, Dyn 4, DSet 1, Mom 1, Force 1, and now BodyC 1); the oracle's 0x19b50 is
+    reached only by the tail jump. 000785 itself is equal on every target.
+  003994, 004037, 004039, 004041, 004043, 004051, 004055, 004057: the core-dump anchors are pushes inside
+    their enclosing functions; the oracle breakpoint is the row's own entry. Every anchor count equals the
+    effector-and-coredump recording (91; 60+5; 5+5; 5; 5; 11+11; 16; 16+5).
+
+Pre-existing differences in NpActor.cpp-completion rows (candidate counts equal to its recordings on
+2f9815a1; the oracle side was not recorded there):
+  000531, 000533, 000632, 001018, 001041, 000006: the candidate's creation and release paths are Scene.cpp's
+    models (nxSceneAddActorObject / nxSceneBroadphaseRegister, the inlined Scene.cpp copies), so only the
+    out-of-line copies NpActor.cpp calls (createShape, releaseShape, setDynamic) are hit: SMut 14, 10, 3, 10, 19,
+    2 as recorded. The oracle runs them on every actor creation and release.
+  000015 (Dump 92/86; the oracle's Life/DSet/CMass/SMut/SRay hits have no candidate counterpart) and 004006
+    (Dump 216/96): the recorded candidate counts (86, 96); the oracle's actor rows also reach them.
+  004103 Dump 25/47 (SMut 1/1, JSP 2/2): Joint::row004103 runs from 000632's loop over the Scene's +0x58c
+    joints (Scene.cpp nxSceneRemoveBody, the NpActor.cpp completion's code, which this merge did not change);
+    the candidate runs it 22 more times on the core-dump target's releases. It was not recorded on this
+    target before. It is an open item of that row, not of this merge.
+  000713 DSet 4/0: NpActor.cpp's 000062 walks the chain itself (nxNpActorGroupRoot), as recorded at the first
+    merge.
+
+Changes against the first-merge trace (34a6c8ba): every count of this block's rows that changed did so on the
+NpActor.cpp completion's new cases (the Phase 5 actor targets grew by 991 lines), and each new count equals the
+oracle's. 000746 is now equal on ActorMomentum (50/50; it was 17/3): the completion's getters 000140/000142/
+000144 call nxNpActorWorldTensorRDRt, which stays out of line. 000776, 000785 and 000746 are also higher than
+the completion's own recordings (for example 000776 SMut 52 against 3, 000785 CMass 26 against 1) and equal to
+the oracle: 000776 is out of line in BodyCreation.cpp, and 000795 calls 000785 at every record construction
+(0x1b4a8).
+
+000784 is equal too since aa1d080. On the merge commit (candidate 3e1b5141...) the first run of this trace
+found it at Dyn 23/7, DSet 1/0, CMass 2/1 (oracle/candidate; the candidate side is the NpActor.cpp
+completion's recorded count): the compiler had
+folded nxNpActorSetKinematicTarget into moveGlobalPosition and moveGlobalOrientation, where the image calls
+0x194b0 from all three moves. It is now noinline, and this trace was re-run on the rebuilt DLL. The oracle
+side of that first run is reused: the same pinned oracle DLL, the same RVAs, and test programs built from the
+same sources (the fix touched NpActor.cpp only).
+
+Ordered sequences. Restricted to the labels whose counts agree (and without anchors and continuations), the
+oracle and candidate HIT sequences are identical on 17 of the 20 targets. On ActorShapeMutation,
+SceneVisualize and CoreDump the multisets agree, but the order of whole actor releases differs. In
+SceneVisualize, for example, the oracle removes both static actors first (000533 001279 001945 004859 005220
+005485, twice) and then the five dynamic ones. The candidate removes one static actor, the five dynamic ones,
+then the second static actor. The scene release (nxSceneDelete) and releaseActor are the same code on both
+pre-merge sides. The test's own note records the underlying difference: the oracle's releaseActor leaves a
+released actor on the array. The transcripts are byte-identical (stdout_delta=0).
+
+HARNESS DRIVES (candidate code linked into the test exe, the pinned oracle loaded in the same process;
+cdb -G -cf <script> build\Release\<exe> D:\FlamingEnt__\Unreal_3\Binaries <oracle sha256>)
+--------------------------------------------------------------------------------------------------------
+  NxPhysicsObjectLayoutTests.exe sha256=61be29dea69ec098a40568ff3969fb0a056736868d80de36f9c414ce73cf9ff8
+    c000945 65, c000951 48, o000945 65, o000951 48
+    slot3 contract cases=64 failures=0 mode=oracle-only
+    slot3 candidate masks=64 agree n28-first=1
+    boxsweep-diff candidate run=48 failures=0 provisional=1
+  NxPhysicsShapeVtableTests.exe sha256=ae05bdcc8ab1a8263a117fbfed6e1b469983c148ced8fb37e73e605242686260
+    c000951 132, o000951 132
+    shape vtable boxsweep oracle_digest=2c5d5c09 cases=84 failures=0
+  000945: oracle row 65 / candidate ?nxDebugRenderDispatch@BoxShape@@QBEXPBX@Z 65 (ObjectLayout); 000951:
+  oracle row / candidate ?nxBoxSweep@BoxShape@@QBE_NPAXPBM@Z 48/48 (ObjectLayout) and 132/132 (ShapeVtable),
+  the pre-merge counts.

@@ -29,6 +29,7 @@ The contract is `units/scene-raycast-contract.md`. Each task appends one row to 
 | 4 (review minors) | 2026-09-28T15:30:00 | 2026-09-28T15:45:41 | 0 | 0 | Commit 0344fde, records only. Task 4's in-block evidence counts corrected to 23 dynamic (17,917 B; 000945 and 000951 carry harness-drive dynamic proofs) and 54 static (19,273 B); 26 contact-pair manager static proofs no longer repeat "reachable only from the simulation step"; the contract's new "Task 4 totals" lists the static rows with a non-step path (000913/000881, 000887/000889/000903/000915, 000710, 000772/000774, 000784). Validator unexplained=0. |
 | 5 (merge main) | 2026-09-28T15:46:00 | 2026-09-28T16:05:00 | 0 | 0 | Merge commit cd3db01 (main acc17d1: qhull gap, effector/core dump). 14 conflicted files resolved as recorded in "## Merge notes": one Observable class; main's 0x100 notify kept before DynamicBody::destruct, its recycle and dtor dropped; 000713 claimed once (main's Row000713Fixture, now called by 000776 and the island rows); 000791 this block's body; registrations unioned, floors 4=188, 5=1046, 6=856, 7=1129; inventory, ledgers and Ghidra supplement unioned per row. |
 | 5 (results) | 2026-09-28T16:05:00 | 2026-09-28T16:35:00 | 0 | 0 | Fresh configure and clean build; gates 2, 3, 4, 6, 7 pass and Phase 5 red only on its vtables marker (every staged target of both sides stdout_delta=0); validator unexplained=0; 755 tool tests; vendored sources pass; headers pass; stable IDs 599 lines, 0 duplicates. Post-merge cdb trace of the block's dynamic-proof rows over 20 staged targets (evidence/scene-raycast-trace-merge.txt, candidate sha256 34a6c8baefc2caf7...): equal to the oracle except the recorded NpActor-unit 000746/000713 differences; proofs amended. work_units.json and the three bundles regenerated. Block totals: 141 reconstructed, 14 dynamically_gated, 1 discovered (000923); 90 rows (41,814 B) moved, 36 dynamic and 54 static. |
+| 5 (second merge) | 2026-09-28T16:32:28 | 2026-09-28T18:25:00 | 0 | 0 | Merge commit c6d6620 (main 482a621: the NpActor.cpp completion and the core-dump re-trace), then aa1d080 and the records. 17 files conflicted. The 18 rows both sessions implemented were each compared with the listing (12 kept from this block, 6 from main: 000756, 000782, 000784, 000785/000787 and 000789), with one lifecycle (main's 000026/000030 around DynamicBody::construct/destruct, one Observable, one dirty-mark helper) and main's pruner model replaced by the engine rows 004857/004859. The PhysicsSDK.h accessor pair is folded to main's names. Registrations are unioned (floors 5 = 2037, 7 = 1129), and the inventory and ledgers are merged row by row. aa1d080: 000784 made noinline after the trace found it folded into two moves. Verification: fresh configure and clean build; gates 2, 3, 4, 6 and 7 pass, and Phase 5 is red only on its vtables marker; every staged pair of both sides is stdout_delta=0; validator unexplained=0; 755 tool tests; stable IDs 699 lines, 0 duplicates. The cdb re-trace (evidence/scene-raycast-trace-merge2.txt, candidate 79b7950f...) covers 217 rows over 20 targets, both sides, plus the 000945/000951 harness drives; 219 dynamic proofs are re-pinned. work_units.json and the three bundles are regenerated. The review minors are fixed: the JointSupport.cpp header on 000713, the 000744 comment, 000746's proof text, and task-5-report's 36. |
 
 ## Audit summary (Task 1, revision 2)
 
@@ -272,9 +273,10 @@ Conflicts and their resolutions:
   - JointSupport.h: both the 000738 (ours) and 000713 (main's) declarations are kept. The comments for
     000713/000722/000760/000778 keep this block's `// Row` form (the marker rule).
   - Scene.h: both member blocks are kept (raycasts and visualisation; effectors and core-dump readers).
-  - PhysicsSDK.h: both accessor pairs are kept. nxSdkParameterTable / nxSdkGroupCollisionMaskTable and main's
-    nxPhysicsSDKParameters / nxPhysicsSDKGroupCollisionMasks return the same two arrays. The object-layout and
-    shape-table harnesses supply nxSdkParameterTable.
+  - PhysicsSDK.h: both accessor pairs were kept at this merge. nxSdkParameterTable / nxSdkGroupCollisionMaskTable
+    and main's nxPhysicsSDKParameters / nxPhysicsSDKGroupCollisionMasks return the same two arrays. The pair was
+    folded at the second merge (below): main's names stay, and the object-layout and shape-table harnesses, which
+    link ObjectModel.cpp without PhysicsSDK.cpp, now supply nxPhysicsSDKParameters.
 - **CMakeLists.txt.**
   - The /arch:IA32 list and its reasons are unioned: this block's BodyStep.cpp and Island.cpp,
     and main's QhullHost.cpp, Quantizer.cpp, SpringAndDamperEffector.cpp and SceneDump.cpp.
@@ -299,20 +301,131 @@ Conflicts and their resolutions:
 - **Ghidra supplement.** The union of both sides' requests: 75 RVAs, the 34 shared ones byte-identical.
 - **Stable IDs.** No ID is claimed twice after the merge (599 lines, 599 IDs).
 
-**Pending collision with the NpActor session.** Branch claude/nifty-meitner-27ac02 (ab2ebbf) independently
-claims these rows as reconstructed:
-- 000782, 000784, 000785, 000787, 000789 and 000791 (NpActor.cpp);
-- 000776 and 000799 (Scene.cpp);
-- 000746 (NpActorDynamicMath.h).
+### Second merge (482a621)
 
-It also has stable-ID lines for 000797 and 000793.
+`git merge main` (main 482a621: the NpActor.cpp completion, merges a591394..482a621, and the core-dump
+re-trace), merge commit c6d6620. 17 files conflicted. This replaces the one-sided collision rule that stood
+here before the merge ("keep this block's owners"): each of the 18 rows both sessions implemented was compared
+with the Capstone listing, and the more faithful implementation was kept. When the two were equally faithful,
+the owner the census names was kept: every one of the 18 rows lies in gap:SceneRaycast.cpp..CapsuleShape.cpp,
+this block's unit.
 
-When that branch merges, keep one owner per row:
-- this block's BodyCreation.cpp and Scene.cpp versions, which were walked against the listing and traced on
-  both sides;
-- core/JointSupport.cpp for 000791;
-- NpActor.cpp keeps only the call sites and forwarders. The handover rows are that session's call sites: 000784
-  at 000090/000124/000126, 000785 at 000188/000190, 000742 via 000060 and 000746 via 000140/000142.
+**Per-row ownership** (12 kept from this block, 6 from main):
 
-That branch's stable-ID lines for rows this block owns must be removed, or the stable-ID check fails on
-duplicates.
+| Row | Winner | File | Reason |
+|---|---|---|---|
+| 000713 | ours (identical) | core/JointSupport.cpp | The two Row000713Fixture::row000713 bodies are byte-identical, and there is one claim line. |
+| 000722 | ours (identical) | core/JointSupport.cpp | The two Row000722Fixture::row000722 bodies are byte-identical, and there is one claim line. |
+| 000746 | ours | include/NpActorDynamicMath.h | Identical body. This block's `static __declspec(noinline)` is kept: the image calls 0x16e80 out of line from all seven of its sites (000140/142/144, 000768, 000770, 000772, 000789). Main's copy was `static inline`. |
+| 000756 | main | include/NpActorDynamicMath.h | Main's arms: the x arm is x87FsqrtDiffSum (`fld m00; fsub [esp]`, 0x175c8), so a NaN keeps its sign; this block's copy negated the spill (Sum3(m00, -spill, 1)). The z/y operand orders are 000756's own (0x174ec, 0x1755a). This block's `noinline` is kept: the image calls 0x17420 from 000204, 000208 and 000772, and main's copy ran inlined. |
+| 000776 | ours | BodyCreation.cpp | DynamicBody::destruct calls 000713 out of line (0x1859e) and 000799 as its own function (the tail jump at 0x185e0). Main's nxBodyRecordDestroy used the cdecl nxBodyRecordFixRoot copy and inlined 000799. The id push now goes through 000028 (nxU32VectorPushBack on Scene+0x6f8, 0x18589-0x1858f), as main's did. |
+| 000782 | main | NpActor.cpp | Equal arithmetic. Main's nxNpActorApplyForce is x87 code (NpActor.cpp is on the /arch:IA32 list; this block's BodyCreation.cpp copy compiled SSE2), and its dirty marks grow the queue through [0x101041bc] (0x18805/0x18815) where ours used nxGetSdkAllocator. It is now exported and `noinline`, so 000791 calls it out of line. |
+| 000784 | main | NpActor.cpp | Equal word moves and wake test. Main's wake-block dirty mark allocates through [0x101041bc] (0x195a0/0x195d9) and is wired: 000090, 000124 and 000126 call it. This block's copy was unwired. Made `noinline` after the merge (aa1d080): the trace found it folded into two of the three moves. |
+| 000785 / 000787 | main | NpActor.cpp | Main's nxNpActorTransitionKinematic has x87 code and [0x101041bc] dirty marks (0x196d4/0x19719). Ours stored the leave path's inverses x, z, y (0x19bd4-0x19bea) where main stores x, y, z; the difference cannot be observed. The function is exported: 000795 (BodyCreation.cpp) now calls it. |
+| 000789 | main | NpActor.cpp | Main's nxNpActorApplyWorldMassPose has x87 code with the x87 dot products, the x-arm DiffSum (0x1a148), and [0x101041bc] dirty marks with no id bound. Ours was SSE2 with the negated x-arm spill. Ours matched the listing's quaternion store order (0x1a1a4-0x1a1ce); that difference cannot be observed. |
+| 000791 | ours | core/JointSupport.cpp | Equal arithmetic. Ours passes the wake word's low byte (000782 tests `mov al,[esp+0x2c]`, 0x1936f) and calls 000782 out of line (0x1a33a). Main's copy in NpActor.cpp is removed, and nxNpActorForceAtPos calls this one. |
+| 000797 | ours | BodyCreation.cpp | Main left 000797 `discovered`, and its nxBodyRecordConstruct was a model: memset, its own 000801 and aux registration. |
+| 000799 | ours | BodyCreation.cpp | 000776's tail jump (0x185e0) with ecx = the +0x18 sub-object; it unregisters through [this+0x108]. Main had it inlined in nxBodyRecordDestroy. |
+| 000829 | ours | ObjectModel.cpp | Equal arithmetic. Ours is `noinline` (000849 calls it at 0x1c8d0) and keeps the listing's `fld [0x101068ec]; fmul st(1)` order (0x1bd31). |
+| 000833 | ours | ObjectModel.cpp | Both sides match every term. Ours is `noinline` (called at 0x1c8eb and 0x1c742). Main's nxMassFrameTranslateAt and nxMassFrameConditionalZeroAt wrappers, which 000008 uses, now call it. |
+| 000845 | ours (identical) | ObjectModel.cpp | Identical bodies, including the selector-1 store at 0x1c836. Ours has the exact-form claim line. |
+| 000849 | ours | ObjectModel.cpp | Identical bodies. Ours is `noinline` (000947 calls it at 0x2086d). |
+| 000947 | ours (identical) | ObjectModel.cpp | Identical code, with main's comment. |
+
+Each row's inventory record is the winner's (implementation, source, static_proof), with a note naming the
+other side's copy. The dynamic proofs are re-pinned on the merged DLL (below).
+
+**One lifecycle.**
+- One Observable class: BodyCreation.cpp's DynamicBodyObservable. Main's NxBodyRecordObservable is removed.
+- One construct path: main's 000026 (Scene.cpp nxActorBuildRecord) allocates the 0x260 bytes through
+  [0x101041bc], zeroes them (a recorded difference), calls DynamicBody::construct (000797), then 000630.
+- One destroy path: main's 000030 (nxActorDestroy), and 000122 setDynamic on an old record. Each runs 000632,
+  then `notifyObservers(0x100)` (0x1d82, the listing's place), then DynamicBody::destruct (000776), then frees
+  through [0x101041bc].
+- 000776 alone recycles the record id (through 000028), and 000799 alone frees the kinematic block. Main's
+  nxBodyRecordConstruct, nxBodyRecordApplyDesc, nxBodyRecordDestroy, nxSceneTakeRecordId and
+  nxSceneRecycleRecordId are removed, and so are this block's nxActorComputeMass and releaseActor record code.
+- nxSceneAuxRegisterRecord/UnregisterRecord keep this block's (aux, record) signature, since the listing
+  passes the manager in ecx.
+- One dirty-mark helper: NpActor.cpp's nxNpActorMarkRecordDirty (Foundation allocator, as the listing). It
+  keeps this block's `id < 256` guard as a recorded difference, because the Scene's model tables are
+  256-entry. BodyCreation.cpp's bodyMarkDirty forwards to it.
+
+**Pruning.** Main's model of the pruners (nxScenePrunerFor/Reserve, the direct table writes, the "+0x38
+counter") is replaced by this block's engine rows 004857/004859 (opcode/IcePruningEngine.cpp):
+- main's 001941/001943/001945 (nxPruningAddShape/AddBody/RemoveBody) set the prunable's type and section as
+  before, then call the engine;
+- the creation path's nxSceneBroadphaseRegister and nxSceneStaticPrunerRegister register a group's children
+  in section 0 and the group in section 2, a single root in section 1, and set the root's +0xa0;
+- the scene release destroys the engine's pruners, and 000503 hands the shared buffer to the engine too.
+
+Main's runtime shapes (000032, 001273) build the prunable in place through nxShapeFactoryInstallPrunable. The
+box's slot 12 runs 000981 (nxShapeFactoryLoadBox: the facade table, the dims, the hull rebuild 000973).
+
+**Other resolutions.**
+- CMakeLists.txt: both /arch:IA32 reasons (this block's step/CPM files; main's NpActor.cpp).
+- NpActor.cpp: the setters and the forwarders to BodyCreation.cpp are gone. The NpActor-unit call sites are
+  main's.
+- ObjectModel.cpp: this block's rows. Main's 001024 thiscall fix, its 001315 owner update (the listing's
+  operand grouping) and its nxShapeApplyOwnerUpdate are kept. The 001315 comment now says the candidate
+  makes the slot-3 call. Main's prose `// phys_fn_` lines for this block's rows are reworded (000742 in
+  NpActor.cpp, the 004857/004859 comments in Scene.cpp).
+- JointSupport.h/.cpp: this block's `// Row` comments. The header comment no longer attributes 000713 to
+  scene-raycast Task 4.
+- PhysicsSDK.h: the duplicate accessor pair is folded. Main's nxPhysicsSDKParameters /
+  nxPhysicsSDKGroupCollisionMasks stay. ContactPairManager.cpp (7 sites) and ObjectModel.cpp (000945) are
+  switched to them, and so are the two harness stand-ins in tests/PhysicsShapeVtableTests.cpp and
+  tests/PhysicsObjectLayoutTests.cpp. Both harnesses do supply it: the UTF-16 ObjectLayout source defines it
+  at its end. nxSdkParameterTable / nxSdkGroupCollisionMaskTable are deleted.
+- tests/PhysicsActorDynamicSetterTests.cpp: main's G1/E1 error block runs first and this block's geometry
+  probes follow it. Both sets of registered lines match the oracle in this order.
+- gate_targets.ps1:
+  - the registrations are unioned (every line of both sides present, none edited);
+  - floors 2 = 0, 3 = 103, 4 = 188, 5 = 2037 (1046 + 991), 6 = 856, 7 = 1129;
+  - the pins are test_gate_targets.py MINIMUM 5 = 2037, 7 = 1129.
+- inventory.json: a per-row three-way merge. 157 rows only this block changed and 151 only main changed; the
+  18 rows both changed are as in the table above.
+- Ledgers: a per-row three-way merge, with the counts recomputed from the rows:
+  - phase 2: 17 reconstructed_not_falsified, 42 homeless;
+  - phase 3: 20 / 293 / 18;
+  - phase 5: 194 / 11;
+  - phase 7: 276 / 281.
+
+  The reason texts are rewritten. work_units.json is regenerated.
+
+**Verification and the re-trace.** Verified on aa1d080, the merge plus the 000784 noinline fix:
+- a fresh configure (`-G "Visual Studio 18 2026" -A Win32 --fresh`) and a `--clean-first` Release build: 0 errors;
+  the NxPhysics warnings are 26 x C4005 and 5 x C4291, as on main;
+- gates 2, 3, 4, 6 and 7 pass, with coverage 103/103, 188/188, 856/856 and 1129/1129;
+- Phase 5 is red only on `candidate CANDIDATE-MISSING family=vtables`. `batch3268 candidate failures=3`,
+  `candidate_fold=4492c8c1` and `shape vtable oracle_digest=ed1294b6 cases=626 failures=0` are unchanged, and
+  coverage is 2037/2037;
+- every staged pair of both sides is stdout_delta=0 stderr_exact=True: Phase 5's 13 (the NpActor.cpp
+  completion's 12 plus BodyCreation), Phase 6's 6 and Phase 7's 7;
+- public_headers=pass, vendored status=pass, validator unexplained=0, 755 tool tests OK;
+- stable IDs: 699 exact-form lines, 699 IDs, 0 duplicates, no ID claimed in two files, and every RVA and
+  size matches the inventory.
+
+Candidate NxPhysics.dll sha256 79b7950faf904173.... evidence/scene-raycast-trace-merge2.txt traces both sides
+over the 20 staged targets. It covers the 217 rows whose dynamic proof cited a pre-merge candidate of either
+session, including the 36 this block had not re-pinned. The harnesses re-drive 000945 and 000951 (65/65;
+48/48 and 132/132).
+- Every row's count equals the oracle's on every target except labels with no one-to-one oracle breakpoint:
+  continuations sharing a candidate function, 000787's two anchors and the core-dump anchors. Each of these
+  equals its pre-merge recording.
+- There are also pre-existing differences in NpActor.cpp-completion rows whose candidate counts equal that
+  session's recording on 2f9815a1:
+  - 000531, 000533, 000632, 001018, 001041 and 000006 (Scene.cpp's creation and release models);
+  - 000015 and 004006 (the core dump's readers);
+  - 000713 (DSet 4/0, as at the first merge);
+  - 004103 (Dump 25/47), which neither session had recorded on that target.
+- 000746 is now equal on ActorMomentum (50/50; it was 17/3 at the first merge).
+- 000784 was 7/23 on ActorDynamics before aa1d080, and 23/23 after it.
+
+The ordered sequences are identical on 17 of the 20 targets. On ActorShapeMutation, SceneVisualize and
+CoreDump, the order of whole actor releases differs. The candidate's scene release takes a static actor
+after the dynamic ones, where the oracle's defers removal (the test's own note says so). The counts and the
+transcripts are unchanged.
+
+219 dynamic proofs were re-pinned (the 217, plus 000945 and 000951), and 000746's text no longer claims 3
+extra CMass calls.

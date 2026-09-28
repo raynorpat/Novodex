@@ -1334,3 +1334,20 @@ NpScene::simulate is a stub). The exceptions, each with a real non-step path the
 
 The inventory's contact-pair manager static proofs no longer repeat "reachable only from the simulation step"
 twice (26 proofs deduplicated).
+
+## Second merge (482a621): the handover and the shared rows
+
+Main brought the NpActor.cpp completion. `evidence/scene-raycast-block.md` ("### Second merge (482a621)") has the
+per-row ownership table: 12 rows keep this block's implementation and 6 keep main's (000756, 000782, 000784,
+000785/000787 and 000789). The handover above now stands as follows:
+
+| Row | Status after the merge |
+|---|---|
+| 000742 | 000060 still computes the energy inline (NpActor.cpp, the completion's walk of 0x16dd0-0x16e22); its comment line is reworded to `// Row 000742`. Open, as before. |
+| 000784 | Main's nxNpActorSetKinematicTarget is the row, called by 000090, 000124 and 000126. It is `noinline` since aa1d080, and each count equals the oracle's. |
+| 000785 | Main's nxNpActorTransitionKinematic is the row (000188/000190), and this block's 000795 calls it. |
+| 000713 / 000744 | 000062 (`isGroupSleeping`) still walks the chain itself (DSet 4/0 for 000713). 000744's `nxBodyRecordChainSettled` and its callee `nxBodyRecordFixRoot` are compiled into the DLL, but only the object-layout harness reaches them. Open, as before. |
+| 000746 | 000140/000142/000144 call nxNpActorWorldTensorRDRt, which stays out of line. Its count equals the oracle's on every target (ActorMomentum 50/50). |
+| 000756 | Main's arms (the x-arm DiffSum) with this block's `noinline`. 000204/000208 call it out of line. |
+
+The merge hazard above is resolved: each shared function was compared with the listing, not merged textually.

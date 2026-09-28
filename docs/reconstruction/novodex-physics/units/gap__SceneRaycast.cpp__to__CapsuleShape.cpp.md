@@ -2493,8 +2493,8 @@ void FUN_10018630(void)
 ## phys_fn_000782 (0x00018730, 3428 B, reconstructed)
 
 - ambiguous: yes
-- source: Physics/src/BodyCreation.cpp
-- implementation: Physics/src/BodyCreation.cpp
+- source: Physics/src/NpActor.cpp
+- implementation: Physics/src/NpActor.cpp
 - prototype: undefined __thiscall FUN_10018730(float * param_1, float * param_2, undefined4 param_3, char param_4)
 - calling convention: __thiscall, stack purge: 16
 - callers: phys_fn_000056 (0x000027a0), phys_fn_000058 (0x00002850), phys_fn_000160 (0x00006380), phys_fn_000162 (0x00006450), phys_fn_000791 (0x0001a2c0), phys_fn_003601 (0x000881c0)
@@ -3103,8 +3103,8 @@ switchD_10018746_default:
 ## phys_fn_000784 (0x000194b0, 368 B, reconstructed)
 
 - ambiguous: yes
-- source: Physics/src/BodyCreation.cpp
-- implementation: Physics/src/BodyCreation.cpp
+- source: Physics/src/NpActor.cpp
+- implementation: Physics/src/NpActor.cpp
 - prototype: undefined __thiscall FUN_100194b0(undefined4 * param_1, undefined4 * param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_000090 (0x00002df0), phys_fn_000124 (0x00003b40), phys_fn_000126 (0x00003f80)
@@ -3202,8 +3202,8 @@ void __thiscall FUN_100194b0(void *this,undefined4 *param_1,undefined4 *param_2)
 ## phys_fn_000785 (0x00019620, 1325 B, reconstructed)
 
 - ambiguous: yes
-- source: Physics/src/BodyCreation.cpp
-- implementation: Physics/src/BodyCreation.cpp
+- source: Physics/src/NpActor.cpp
+- implementation: Physics/src/NpActor.cpp
 - prototype: undefined __thiscall FUN_10019620(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000188 (0x000084d0), phys_fn_000190 (0x00008670), phys_fn_000793 (0x0001a350)
@@ -3516,8 +3516,8 @@ void __thiscall FUN_10019620(void *this,int param_1)
 ## phys_fn_000787 (0x00019b50, 428 B, reconstructed)
 
 - ambiguous: yes
-- source: Physics/src/BodyCreation.cpp
-- implementation: Physics/src/BodyCreation.cpp
+- source: Physics/src/NpActor.cpp
+- implementation: Physics/src/NpActor.cpp
 - prototype: undefined FUN_10019b50(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: none
@@ -3622,8 +3622,8 @@ void FUN_10019b50(void)
 ## phys_fn_000789 (0x00019d00, 1461 B, reconstructed)
 
 - ambiguous: yes
-- source: Physics/src/BodyCreation.cpp
-- implementation: Physics/src/BodyCreation.cpp
+- source: Physics/src/NpActor.cpp
+- implementation: Physics/src/NpActor.cpp
 - prototype: undefined __fastcall FUN_10019d00(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000204 (0x000096c0), phys_fn_000206 (0x000098d0), phys_fn_000208 (0x00009ad0)
