@@ -40,16 +40,40 @@
 - [ ] Run cdb breakpoint traces of the candidate DLL over every Phase 5 actor staged-pair target, following the method in `$EV/evidence/joint-open-items-trace-slots.txt`. Record the hit rows and commit the excerpt `$EV/evidence/npactor-trace.txt` with the sha pin.
 - [ ] Create `$EV/evidence/npactor-completion.md`. Commit.
 
-### Task 2: Missing and partial rows
+### Task 2: Cross-cutting pass (contract `## Conventions` G1, E1, H1, SSE)
 
-- [ ] Write 000164 (`updateMassFromShapes`), `setDynamic` and `setGlobalPose` from the listing. Complete the four partial rows (000196, 000198, 000200, 000202) as the contract records. Fix any defects the Task 1 review found.
-- [ ] Add staged-pair cases for these rows to the relevant Phase 5 targets (or a new NpActor target following the existing pattern), including rotated bodies and error paths where the oracle has them. Register oracle-sourced lines and update floors. The transcripts must stay byte-identical. Commit.
+- [ ] **Error reports (G1/E1).** Reproduce the oracle's lock-failure (G1) and invalid-argument/state (E1) reports on every NpActor row that has them, following 000128. Match the code, file string, line, message and order, including the inline `FoundationSDK::instance` null check (`int3`) before each report. The report and lock order must follow each row's listing (for example 000204 checks E1 before taking the lock).
+- [ ] **H1.** Rewrite `nxNpActorMarkRecordDirty` from the oracle's inline growth sequence: no null or id bounds tests, 2n+2 growth, `nxFoundationSDKAllocator`, and no `if(!grown)`. Fix `nxNpActorTransitionKinematic` (000785/000787) to do its dirty marks and list growth before the malloc, and to use the Foundation allocator for the 0x20 state.
+- [ ] **x87 order.** Put `Physics/src/NpActor.cpp` on the `/arch:IA32` list, then fix the float expressions the contract names (000150 and the others) to the listing's order with `double` register lifetimes.
+- [ ] Add staged-pair cases to the Phase 5 actor targets for the error paths (invalid args, static/kinematic misuse, lock-held calls if the harness can hold a lock) and for H1's growth past the initial capacity. Register oracle-sourced lines and update floors and pins. Commit.
 
-### Task 3: Coverage for implemented-but-untraced rows
+### Task 3: Row-level defects
 
-- [ ] For rows the Task 1 trace did not reach, add staged-pair cases that call them, including error, lock-failure and static-actor paths where the oracle distinguishes them. Re-run the traces, register lines and commit.
+- [ ] Fix every substantive row defect in the contract, grouped as the contract groups them:
+  - 000204-000208 (000756/000789 models, the 000004 shape update with the group's 001018/001315);
+  - 000124/000126/000090 (CMass-frame composition, 000784 wake);
+  - the wake blocks in 000174/000176/000180/000182;
+  - 000168 (`_fpclass` gating);
+  - the summation orders (000182, 000134, 000060/000742, …);
+  - 000746 (the world tensor);
+  - the rest.
+  Write the helper rows the fixes need where the contract assigns them (000789, 000746, 000784, 000756, 000785/000787, 000782). Follow the listing, and add staged-pair cases that reach each fixed branch (wake thresholds, NaN/denormal masses, grouped actors). Commit per group.
 
-### Task 4: Promotion and results
+### Task 4: Shape add/remove (000070/000072)
+
+- [ ] Write the shape add and release chain from the listing: 000036, 000024, 000032, 001041, 001033, 001028, 000006, 001941, 000503, 003628, 000012, 001957 and 001960, as the contract's dependency chains require. Reconcile with the candidate's existing partial implementation and the Phase 5 shape-mutation differential. Add cases for every shape type and for grouped actors. Commit.
+
+### Task 5: Mass from shapes and setDynamic (000164, 000122)
+
+- [ ] Write 000008 and 001397, and audit the candidate shapes' slot-4 dispatch against the mass wrappers 000947/001008/001371/001024/001249. Then write 000164.
+- [ ] Write the record lifecycle rows: 000026 (000797, 000630), 000776 (000722), 000632 (004103) and 000531/000533/001943/001279. Decide whether they replace Scene.cpp's createActor density approximation; they should, if the listing shows the same path. Then write 000122 (`setDynamic`).
+- [ ] Add cases: updateMassFromShapes over each shape type, with density and mass descriptors, and setDynamic on a static actor with and without shapes. Commit.
+
+### Task 6: Coverage for untraced rows
+
+- [ ] Re-run the NpActor trace over all Phase 5 targets. Add cases for any row still unexecuted. Commit.
+
+### Task 7: Promotion and results
 
 - [ ] Promote rows with a `faithful` review and trace hits to `reconstructed`, with `static_proof` (the review) and `dynamic_proof` (the trace). `implementation`/`source` name `Physics/src/NpActor.cpp`, which must contain the stable ID. Update the Phase 5 ledger and run the validator.
 - [ ] Regenerate `work_units.json` and the NpActor bundle. Complete `npactor-completion.md` with:
