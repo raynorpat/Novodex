@@ -422,7 +422,7 @@ Totals: 16 rows; discovered 4,668 B, reconstructed 435 B
 | 001686 | 0x00033b40 | 445 | discovered | 4 | continuation | continuation of 001684 |
 | 001688 | 0x00033d00 | 378 | discovered | 4 | 001751, 001753, 001785 | segment-box squared distance: 001684, then the segment clamp, 001670 at the ends |
 | 001690 | 0x00033e80 | 1,836 | dynamically_gated | 2 | 001694, 001774, 001775 | segment-segment squared distance, already in Physics/src/NarrowPhase.cpp |
-| 001692 | 0x000345b0 | 684 | discovered | 3 | 001762, 001844, 001859 | closest points of two lines given origin and direction pairs (684 B) |
+| 001692 | 0x000345b0 | 684 | discovered | 3 | 001762, 001844, 001859 | closest points of two lines given origin and direction pairs, both parameters clamped to [0, 1] (so two segments), both points written (684 B) |
 | 001694 | 0x00034860 | 6,266 | discovered | 4 | 001779 | segment-triangle squared distance (6,266 B): parallel and general cases, 001672 and 001690 at the boundaries |
 
 Totals: 13 rows; discovered 12,564 B, dynamically_gated 1,836 B
@@ -457,7 +457,7 @@ Totals: 13 rows; discovered 12,564 B, dynamically_gated 1,836 B
 | 001702 | 0x00036690 | 1,308 | dynamically_gated | 3 | 001738, 001791 | NxBoxBoxIntersect |
 | 001704 | 0x00036bb0 | 162 | dynamically_gated | 3 | 001261, 001407 | NxRayPlaneIntersect |
 | 001706 | 0x00036c60 | 291 | dynamically_gated | 3 | none (table) | NxSegmentPlaneIntersect |
-| 001708 | 0x00036d90 | 227 | discovered | 3 | 001822 | ray against a triangle list: per triangle Triangle::Inflate (005185), then NxRayTriIntersect (001712); first hit |
+| 001708 | 0x00036d90 | 227 | discovered | 3 | 001822 | ray against a triangle FAN (count, vertices, indices; hub indices[0], count - 2 triangles): per triangle Triangle::Inflate(0.02, false) (005185), then NxRayTriIntersect (001712) not culled; first hit |
 | 001710 | 0x00036e80 | 198 | dynamically_gated | 3 | 001377 | NxRaySphereIntersect |
 | 001712 | 0x00036f50 | 782 | dynamically_gated | 3 | 001708 | NxRayTriIntersect |
 | 001714 | 0x00037260 | 737 | dynamically_gated | 3 | none (table) | NxSegmentBoxIntersect |
@@ -481,7 +481,12 @@ Totals: 21 rows; dynamically_gated 9,708 B, discovered 584 B
   Callees: 001712 (in `Geometry.cpp`), vendored `Triangle::Inflate` 005185. `/arch:IA32` (already).
 - **Test route.** Leaf families `ray_inflated_tris` (001708) and `aabb_slab` (001730) in
   `NxPhysicsCollisionTests`; wire `ObjectModel.cpp`'s provisional 000951 to call 001730 and keep
-  its test green.
+  its test green. Done by Task 2b: 000951's model did not compute what the listing does, so its body
+  was written from the listing (0x00020b20..0x00020d18): the box's own AABB, the translation taken
+  into the box frame and back as the ray origin, R^T swept as its direction, and |tFar| written on
+  a hit. The shape-vtable slot 7 comparison stays green; 000951 stays `discovered` (Phase 5).
+  001708's Triangle::Inflate is the vendored 005185, which differs from the oracle's in the last
+  bits, so `ray_inflated_tris` gates only fans on which both sides' Inflates agree.
 
 ### G. Box/box and box/capsule - `Physics/src/ContactGeneration.cpp` and `NarrowPhase.cpp` (existing)
 
@@ -676,7 +681,7 @@ Totals: 18 rows; discovered 12,607 B
 
 | row | rva | bytes | state | phase | callers | role |
 |---|---|---:|---|---:|---|---|
-| 001855 | 0x00044510 | 837 | discovered | 3 | 001762, 001844, 001859 | segment against triangle edges, closest points (837 B); shared by box/mesh, convex/mesh and mesh/height-field |
+| 001855 | 0x00044510 | 837 | discovered | 3 | 001762, 001844, 001859 | a segment against ONE triangle edge: the plane through the edge containing an axis (the triangle normal), the crossing, t along the axis back to the edge line, true when the moved point is between the edge ends; bool, t and the point out (837 B); shared by box/mesh, convex/mesh and mesh/height-field |
 | 001857 | 0x00044860 | 774 | discovered | 3 | 001859 | triangle-edge contact helper: the {0,2,1} table at 0x10107cd4 and the adjacency words (& 0x1fffffff) |
 | 001859 | 0x00044b70 | 2,892 | discovered | 3 | 001861 | mesh/height-field triangle-pair contact (2,892 B): mesh +0x84 state (0, 1, other), 001855, 001857, 001692 |
 | 001861 | 0x000456c0 | 538 | discovered | 3 | 001869 | mesh/height-field AABBTreeCollider (004986) pass (538 B + continuation 001863) |
