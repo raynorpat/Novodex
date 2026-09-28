@@ -54,6 +54,7 @@
 #include "NxQuat.h"
 #include "FoundationSDK.h"
 #include "NxAllocateable.h"
+#include "NxUtilities.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -2640,18 +2641,32 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 // array's begin/end/capacity, +0xf0/+0xf4/+0xf8 the parallel array of the
 // children's public handles, +0x10c a float the adds and removes reset to
 // -1.0f. Its table (.rdata 0x10106c2c) is this file's gNxShapeGroupTable:
-// slot 0 the deleting destructor 001039 and slot 6 the owner update 001018
-// are the slots the runtime reaches; the others (001347, 001277, 001022,
-// 001030, ...) are not wired and stay null.
+// slot 0 the deleting destructor 001039, slot 4 the mass walk 001024 and
+// slot 6 the owner update 001018 are the slots the runtime reaches; the
+// others (001347, 001277, 001022, 001030, ...) are not wired and stay null.
 // ---------------------------------------------------------------------------
 
 static void* __fastcall nxShapeGroupDeletingDtor(void* self, void*, unsigned flags);
 static void __fastcall nxShapeGroupOwnerUpdate(void* self, void*, unsigned flags);
 
+// The group's slot 4 is 001024 (ObjectModel.cpp nxArrayVtCall3Args1024,
+// thiscall `ret 0xc`): each child whose +0xde has none of the low three bits
+// runs its own slot 4 with the same three arguments, and the first false
+// return ends the walk with false. Reached by 000008.
+unsigned char nxArrayVtCall3Args1024(void* self, unsigned a1, unsigned a2, unsigned a3);
+
+static bool __fastcall nxShapeGroupAccumulateMass(void* self, void*, void* frame,
+	unsigned density, void* reserved)
+	{
+	return nxArrayVtCall3Args1024(self, reinterpret_cast<unsigned>(frame), density,
+		reinterpret_cast<unsigned>(reserved)) != 0;
+	}
+
 static void** nxShapeGroupTable()
 	{
 	static void* table[15] = {
-		reinterpret_cast<void*>(&nxShapeGroupDeletingDtor), 0, 0, 0, 0, 0,
+		reinterpret_cast<void*>(&nxShapeGroupDeletingDtor), 0, 0, 0,
+		reinterpret_cast<void*>(&nxShapeGroupAccumulateMass), 0,
 		reinterpret_cast<void*>(&nxShapeGroupOwnerUpdate), 0, 0, 0, 0, 0, 0, 0, 0 };
 	return table;
 	}
@@ -3065,6 +3080,74 @@ static void nxActorRemoveRootFromScene(unsigned char* body)
 		nxSceneRemoveDynamicShape(scene, root);
 	else
 		nxSceneRemoveStaticShape(scene, root);
+	}
+
+// phys_fn_000008 (0x000010a0, 751 B)
+// A row of gap:<start>..Actor.cpp: the body's mass from its shapes,
+// thiscall on the body (density, &totalMass, &pose, &diagonal), `ret 0x10`.
+// The frame (0x34 B: the tensor at +0, the centre at +0x24, the mass at
+// +0x30) is zeroed by 000847 with 1; the root's slot 4 (vtable +0x10) adds
+// each family's frame at unit density (1.0f) with a zeroed vector as its
+// third argument. A false return is 1 (the mesh-inertia failure); a mass
+// that is not above zero (ordered: NaN passes, `test ah,0x41; jp`) is 2.
+// Otherwise pose.t = the centre (integer copies), the frame moves to its
+// centre (0x1c720: 000833 with the negated centre, each fchs exact), and the
+// tensor is scaled into the nine-word local:
+// - density > 0 and totalMass > 0 (0x118e): each word times the density;
+// - density > 0 only (0x1242): *totalMass = mass * density, then each word
+//   times the density;
+// - otherwise (density not above zero, NaN included; 0x12e6): the register
+//   ratio totalMass / mass (not rounded to float) times each word.
+// Each product is rounded once at its fstp. The import [0x101041b8]
+// NxDiagonalizeInertiaTensor(tensor, diagonal, pose.M) ends it (its result
+// is not tested); 0x2ea70, the frame's destructor, is an empty `ret`.
+typedef bool (__thiscall* NxRuntimeShapeMassFn)(void* shape, void* frame, float density,
+	void* reserved);
+
+// ObjectModel.cpp's MassFrame (its layout) and the two frame rows 000008
+// calls: 000847 (0x1c880, conditional zero) and 000833 (0x1c040, translate).
+struct NxActorMassFrame
+	{
+	float inertia[9];
+	float offset[3];
+	float mass;
+	};
+void nxMassFrameConditionalZeroAt(void* frame, unsigned flag);
+void nxMassFrameTranslateAt(void* frame, const void* displacement);
+
+int nxActorComputeMassFromShapes(unsigned char* body, float density, float* totalMass,
+	NxMat34* pose, NxVec3* diagonal)
+	{
+	NxActorMassFrame frame;
+	nxMassFrameConditionalZeroAt(&frame, 1);
+	unsigned char* root = *reinterpret_cast<unsigned char**>(body + 0x10);
+	unsigned reserved[3] = { 0, 0, 0 };
+	void** table = *reinterpret_cast<void***>(root);
+	if(!reinterpret_cast<NxRuntimeShapeMassFn>(table[4])(root, &frame, 1.0f, reserved))
+		return 1;
+	if(frame.mass <= 0.0f)
+		return 2;
+	memcpy(&pose->t, frame.offset, sizeof(NxVec3));
+	const float centre[3] = { -frame.offset[0], -frame.offset[1], -frame.offset[2] };
+	nxMassFrameTranslateAt(&frame, centre);
+	float tensor[9];
+	if(density > 0.0f)
+		{
+		if(!(*totalMass > 0.0f))
+			*totalMass = static_cast<float>(static_cast<double>(frame.mass) * density);
+		for(unsigned i = 0; i < 9; ++i)
+			tensor[i] = static_cast<float>(static_cast<double>(frame.inertia[i]) * density);
+		}
+	else
+		{
+		const double ratio = static_cast<double>(*totalMass) / frame.mass;
+		for(unsigned i = 0; i < 9; ++i)
+			tensor[i] = static_cast<float>(static_cast<double>(frame.inertia[i]) * ratio);
+		}
+	NxMat33 dense;
+	memcpy(&dense, tensor, sizeof(tensor));
+	NxDiagonalizeInertiaTensor(dense, *diagonal, pose->M);
+	return 0;
 	}
 
 // phys_fn_000036 (0x00002250, 420 B)

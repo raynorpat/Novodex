@@ -359,6 +359,400 @@ static void runTask4Cases(NxPhysicsSDK* sdk, NxPageGuardedAllocator& allocator,
 	sdk->releaseScene(*fresh);
 	}
 
+// NpActor.cpp completion Task 5: updateMassFromShapes (000164 -> Actor.cpp
+// 000008 -> each family's slot 4) and setDynamic (000122 -> 000026). Every
+// case prints the record's mass words: the mass and its inverse (+0x188,
+// +0xc0), the diagonal and its inverse (+0x18c.., +0xc4..), the mass frame
+// (+0xdc..+0x108), the world frame 000768 refreshes (+0x124..+0x184) and the
+// +0x198 counter, as exact words.
+static void printMass(const char* label, const NxActor* actor, unsigned reports)
+	{
+	const unsigned char* body = actorBody(actor);
+	const unsigned char* record = reinterpret_cast<const unsigned char*>(word(body, 8));
+	printf("shape_mutation %s=%u", label, reports);
+	if(!record) { printf(".static\n"); return; }
+	printf(".m%x.%x.i%x.%x.%x.%x.%x.%x.f", word(record, 0x188), word(record, 0xc0),
+		word(record, 0x18c), word(record, 0x190), word(record, 0x194),
+		word(record, 0xc4), word(record, 0xc8), word(record, 0xcc));
+	for(unsigned offset = 0xdc; offset < 0x10c; offset += 4)
+		printf(".%x", word(record, offset));
+	printf(".w");
+	for(unsigned offset = 0x124; offset < 0x188; offset += 4)
+		printf(".%x", word(record, offset));
+	printf(".n%x\n", word(record, 0x198));
+	}
+
+#define MASS_CASE(label, actor, density, total) \
+	{ \
+	const unsigned e0 = errors.reports; \
+	(actor)->updateMassFromShapes(density, total); \
+	printMass(label, actor, errors.reports - e0); \
+	}
+
+static NxActor* t5Dynamic(NxScene* scene, NxShapeDesc* const* shapes, unsigned count,
+	const NxMat34& pose, float density, float mass, const NxVec3& inertia)
+	{
+	NxBodyDesc bodyDesc;
+	bodyDesc.mass = mass;
+	bodyDesc.massSpaceInertia = inertia;
+	NxActorDesc desc;
+	for(unsigned i = 0; i < count; ++i)
+		desc.shapes.pushBack(shapes[i]);
+	desc.globalPose = pose;
+	desc.density = density;
+	desc.body = &bodyDesc;
+	return scene->createActor(desc);
+	}
+
+// The root's prunable bytes, its +0xa0 link and +0xdc, and the Scene's
+// record count (+0x56c array) and pruner counts.
+static void printRoot(const char* label, const NxActor* actor)
+	{
+	const unsigned char* body = actorBody(actor);
+	const unsigned char* scene = *reinterpret_cast<unsigned char* const*>(body + 4);
+	const unsigned char* root = *reinterpret_cast<unsigned char* const*>(body + 0x10);
+	printf("shape_mutation %s=%u.%u", label, actor->isDynamic() ? 1u : 0u,
+		actor->getNbShapes());
+	if(root)
+		printf(".r%x.%x.%x.%x.%x", word(root, 0xd0), root[0xce], root[0xcf],
+			word(root, 0xa0) ? word(root, 0xa0) - reinterpret_cast<unsigned>(scene) : 0,
+			half(root, 0xdc));
+	printf(".s%u.%x.%x\n", (word(scene, 0x570) - word(scene, 0x56c)) / 4, word(scene, 4),
+		prunerCount(scene));
+	}
+
+#define DYNAMIC_CASE(label, actor, bodyDesc) \
+	{ \
+	const unsigned a0 = allocator.allocations(), f0 = allocator.frees(); \
+	const unsigned e0 = errors.reports; \
+	(actor)->setDynamic(bodyDesc); \
+	printAllocations(label "_memory", allocator, a0, f0); \
+	printMass(label, actor, errors.reports - e0); \
+	printRoot(label "_root", actor); \
+	}
+
+// After setDynamic the actor is used as a dynamic one: a force, a velocity
+// and the public readbacks, then it is released.
+static void t5UseDynamic(const char* label, NxActor* actor)
+	{
+	const unsigned char* record = reinterpret_cast<const unsigned char*>(
+		word(actorBody(actor), 8));
+	if(!record) { printf("shape_mutation %s=static\n", label); return; }
+	actor->addForce(NxVec3(1.0f, 2.0f, 3.0f));
+	actor->addTorque(NxVec3(-0.5f, 0.25f, 2.0f));
+	actor->setLinearVelocity(NxVec3(0.5f, -1.0f, 0.25f));
+	const NxVec3 velocity = actor->getLinearVelocity();
+	const NxVec3 inertia = actor->getMassSpaceInertiaTensor();
+	const NxVec3 centre = actor->getCMassGlobalPosition();
+	const NxReal mass = actor->getMass();
+	unsigned v[10];
+	memcpy(v, &velocity, 12);
+	memcpy(v + 3, &inertia, 12);
+	memcpy(v + 6, &centre, 12);
+	memcpy(v + 9, &mass, 4);
+	printf("shape_mutation %s=%x.%x.%x.%x.%x.%x", label, word(record, 0x88),
+		word(record, 0x8c), word(record, 0x90), word(record, 0x94), word(record, 0x98),
+		word(record, 0x9c));
+	for(unsigned i = 0; i < 10; ++i)
+		printf(".%x", v[i]);
+	printf("\n");
+	}
+
+static NxReal t5Bits(unsigned bits)
+	{
+	NxReal value;
+	memcpy(&value, &bits, 4);
+	return value;
+	}
+
+static void runTask5Cases(NxPhysicsSDK* sdk, NxPageGuardedAllocator& allocator,
+	NxActorErrorStream& errors)
+	{
+	errors.enabled = true;
+	NxSceneDesc sceneDesc;
+	sceneDesc.setToDefault();
+	NxScene* scene = sdk->createScene(sceneDesc);
+	if(!scene) { printf("shape_mutation t5_scene=0\n"); return; }
+
+	NxMat34 identity;
+	identity.id();
+	NxMat34 pose;
+	pose.M = axisRotation(0, 0.87758255f, 0.47942555f);
+	pose.t = NxVec3(1.0f, 2.0f, 3.0f);
+	NxBoxShapeDesc box;
+	box.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
+	NxBoxShapeDesc rotatedBox;
+	rotatedBox.dimensions = NxVec3(0.5f, 0.25f, 2.0f);
+	rotatedBox.localPose.M = axisRotation(2, 0.76484221f, -0.64421767f);
+	rotatedBox.localPose.t = NxVec3(3.0f, 1.0f, -1.0f);
+	NxSphereShapeDesc sphere;
+	sphere.radius = 0.75f;
+	sphere.localPose.t = NxVec3(0.5f, -1.0f, 2.0f);
+	NxCapsuleShapeDesc capsule;
+	capsule.radius = 0.25f;
+	capsule.height = 1.5f;
+	capsule.localPose.M = axisRotation(1, 0.95533651f, 0.29552022f);
+	capsule.localPose.t = NxVec3(-2.0f, 0.25f, 1.0f);
+	NxPlaneShapeDesc plane;
+	plane.normal = NxVec3(0.0f, 1.0f, 0.0f);
+	plane.d = -4.0f;
+	NxBoxShapeDesc trigger;
+	trigger.dimensions = NxVec3(2.0f, 2.0f, 2.0f);
+	trigger.shapeFlags |= NX_TRIGGER_ENABLE;
+	const NxVec3 given(1.0f, 2.0f, 3.0f);
+
+	// updateMassFromShapes over each family (density, then total mass), on
+	// actors built with an explicit mass and tensor.
+	NxShapeDesc* one[1];
+	one[0] = &rotatedBox;
+	NxActor* boxActor = t5Dynamic(scene, one, 1, pose, 0.0f, 2.0f, given);
+	one[0] = &sphere;
+	NxActor* sphereActor = t5Dynamic(scene, one, 1, pose, 0.0f, 2.0f, given);
+	one[0] = &capsule;
+	NxActor* capsuleActor = t5Dynamic(scene, one, 1, identity, 0.0f, 2.0f, given);
+	one[0] = &box;
+	NxActor* centredActor = t5Dynamic(scene, one, 1, identity, 0.0f, 2.0f, given);
+	NxShapeDesc* three[3] = { &rotatedBox, &sphere, &capsule };
+	NxActor* groupActor = t5Dynamic(scene, three, 3, pose, 0.0f, 2.0f, given);
+	one[0] = &plane;
+	NxActor* planeActor = t5Dynamic(scene, one, 1, identity, 0.0f, 2.0f, given);
+	one[0] = &trigger;
+	NxActor* triggerActor = t5Dynamic(scene, one, 1, identity, 0.0f, 2.0f, given);
+	NxShapeDesc* mixed[2] = { &trigger, &sphere };
+	NxActor* mixedActor = t5Dynamic(scene, mixed, 2, pose, 0.0f, 2.0f, given);
+	NxShapeDesc* withPlane[2] = { &box, &plane };
+	NxActor* planeGroup = t5Dynamic(scene, withPlane, 2, identity, 0.0f, 2.0f, given);
+	NxActor* bare = t5Dynamic(scene, 0, 0, pose, 0.0f, 2.0f, given);
+	NxActorDesc staticDesc;
+	staticDesc.shapes.pushBack(&box);
+	staticDesc.globalPose = pose;
+	NxActor* staticActor = scene->createActor(staticDesc);
+	printf("shape_mutation t5_created=%u.%u.%u.%u.%u.%u.%u.%u.%u.%u.%u\n",
+		boxActor ? 1u : 0u, sphereActor ? 1u : 0u, capsuleActor ? 1u : 0u,
+		centredActor ? 1u : 0u, groupActor ? 1u : 0u, planeActor ? 1u : 0u,
+		triggerActor ? 1u : 0u, mixedActor ? 1u : 0u, planeGroup ? 1u : 0u,
+		bare ? 1u : 0u, staticActor ? 1u : 0u);
+	if(!boxActor || !sphereActor || !capsuleActor || !centredActor || !groupActor ||
+		!planeActor || !triggerActor || !mixedActor || !planeGroup || !bare || !staticActor)
+		return;
+
+	printMass("t5_box_initial", boxActor, 0);
+	MASS_CASE("t5_box_density", boxActor, 2.0f, 0.0f);
+	MASS_CASE("t5_box_total", boxActor, 0.0f, 10.0f);
+	MASS_CASE("t5_sphere_density", sphereActor, 1.5f, 0.0f);
+	MASS_CASE("t5_sphere_total", sphereActor, 0.0f, 7.0f);
+	MASS_CASE("t5_capsule_density", capsuleActor, 3.0f, 0.0f);
+	MASS_CASE("t5_capsule_total", capsuleActor, 0.0f, 0.3f);
+	MASS_CASE("t5_centred_density", centredActor, 0.5f, 0.0f);
+	MASS_CASE("t5_centred_total", centredActor, 0.0f, 12.0f);
+	MASS_CASE("t5_group_density", groupActor, 1.25f, 0.0f);
+	MASS_CASE("t5_group_total", groupActor, 0.0f, 9.0f);
+	MASS_CASE("t5_mixed_density", mixedActor, 2.0f, 0.0f);
+	// A plane has no mass (the base slot 4 returns false): E1 0xa8, and so
+	// does a group holding one. A trigger is skipped: E1 0xa9.
+	MASS_CASE("t5_plane_density", planeActor, 2.0f, 0.0f);
+	MASS_CASE("t5_plane_group", planeGroup, 0.0f, 4.0f);
+	MASS_CASE("t5_trigger_density", triggerActor, 2.0f, 0.0f);
+	MASS_CASE("t5_trigger_total", triggerActor, 0.0f, 3.0f);
+	// Argument errors, in the listing's order: sign (0x9a, NaN included),
+	// dynamic (0x9d), shapes (0x9e), both zero (0x9f), both nonzero (0xa0).
+	MASS_CASE("t5_negative_density", boxActor, -1.0f, 0.0f);
+	MASS_CASE("t5_negative_total", boxActor, 0.0f, -2.0f);
+	MASS_CASE("t5_nan_density", boxActor, t5Bits(0x7fc00000u), 0.0f);
+	MASS_CASE("t5_nan_total", boxActor, 0.0f, t5Bits(0xffc00001u));
+	MASS_CASE("t5_both_zero", boxActor, 0.0f, 0.0f);
+	MASS_CASE("t5_negative_zero", boxActor, t5Bits(0x80000000u), 0.0f);
+	MASS_CASE("t5_both_nonzero", boxActor, 1.0f, 1.0f);
+	MASS_CASE("t5_static", staticActor, 1.0f, 0.0f);
+	MASS_CASE("t5_static_negative", staticActor, -1.0f, 0.0f);
+	MASS_CASE("t5_bare", bare, 1.0f, 0.0f);
+	MASS_CASE("t5_bare_zero", bare, 0.0f, 0.0f);
+	// Extreme densities: a denormal mass, an infinite density and a huge
+	// total mass (the inverses and the NaN/infinity zeroing).
+	MASS_CASE("t5_tiny_density", centredActor, t5Bits(0x00000010u), 0.0f);
+	MASS_CASE("t5_inf_density", centredActor, t5Bits(0x7f800000u), 0.0f);
+	MASS_CASE("t5_huge_total", centredActor, 0.0f, t5Bits(0x7f7fffffu));
+	MASS_CASE("t5_centred_again", centredActor, 0.5f, 0.0f);
+	{
+	NxActorWriteLockHolder lock(boxActor);
+	lock.hold();
+	MASS_CASE("t5_locked", boxActor, 2.0f, 0.0f);
+	lock.release();
+	}
+
+	errors.enabled = false;
+	sdk->releaseScene(*scene);
+	}
+
+// The creation path's mass pass and setDynamic (000122), on a fresh Scene.
+static void runTask5DynamicCases(NxPhysicsSDK* sdk, NxPageGuardedAllocator& allocator,
+	NxActorErrorStream& errors)
+	{
+	errors.enabled = true;
+	NxSceneDesc sceneDesc;
+	sceneDesc.setToDefault();
+	NxScene* scene = sdk->createScene(sceneDesc);
+	if(!scene) { printf("shape_mutation t5_dynamic_scene=0\n"); return; }
+	NxMat34 identity;
+	identity.id();
+	NxMat34 pose;
+	pose.M = axisRotation(0, 0.87758255f, 0.47942555f);
+	pose.t = NxVec3(1.0f, 2.0f, 3.0f);
+	NxBoxShapeDesc box;
+	box.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
+	NxBoxShapeDesc rotatedBox;
+	rotatedBox.dimensions = NxVec3(0.5f, 0.25f, 2.0f);
+	rotatedBox.localPose.M = axisRotation(2, 0.76484221f, -0.64421767f);
+	rotatedBox.localPose.t = NxVec3(3.0f, 1.0f, -1.0f);
+	NxSphereShapeDesc sphere;
+	sphere.radius = 0.75f;
+	sphere.localPose.t = NxVec3(0.5f, -1.0f, 2.0f);
+	NxCapsuleShapeDesc capsule;
+	capsule.radius = 0.25f;
+	capsule.height = 1.5f;
+	capsule.localPose.M = axisRotation(1, 0.95533651f, 0.29552022f);
+	capsule.localPose.t = NxVec3(-2.0f, 0.25f, 1.0f);
+	NxPlaneShapeDesc plane;
+	plane.normal = NxVec3(0.0f, 1.0f, 0.0f);
+	plane.d = -4.0f;
+	NxBoxShapeDesc trigger;
+	trigger.dimensions = NxVec3(2.0f, 2.0f, 2.0f);
+	trigger.shapeFlags |= NX_TRIGGER_ENABLE;
+	const NxVec3 given(1.0f, 2.0f, 3.0f);
+	NxShapeDesc* one[1];
+	NxShapeDesc* three[3] = { &rotatedBox, &sphere, &capsule };
+	NxActor* bare = t5Dynamic(scene, 0, 0, pose, 0.0f, 2.0f, given);
+	NxActorDesc staticDesc;
+	staticDesc.shapes.pushBack(&box);
+	staticDesc.globalPose = pose;
+	NxActor* staticActor = scene->createActor(staticDesc);
+	printf("shape_mutation t5_dynamic_created=%u.%u\n", bare ? 1u : 0u,
+		staticActor ? 1u : 0u);
+	if(!bare || !staticActor) return;
+	NxActor* boxActor = staticActor;
+
+	// The creation path's own mass pass (000034 -> 000026 -> 000008): a
+	// density or a total mass with no tensor, over each family.
+	one[0] = &rotatedBox;
+	NxActor* createdBox = t5Dynamic(scene, one, 1, pose, 2.0f, 0.0f, NxVec3(0, 0, 0));
+	printMass("t5_create_box_density", createdBox ? createdBox : boxActor, createdBox ? 0 : 99);
+	one[0] = &sphere;
+	NxActor* createdSphere = t5Dynamic(scene, one, 1, pose, 0.0f, 5.0f, NxVec3(0, 0, 0));
+	printMass("t5_create_sphere_total", createdSphere ? createdSphere : boxActor,
+		createdSphere ? 0 : 99);
+	one[0] = &capsule;
+	NxActor* createdCapsule = t5Dynamic(scene, one, 1, identity, 1.5f, 0.0f, NxVec3(0, 0, 0));
+	printMass("t5_create_capsule_density", createdCapsule ? createdCapsule : boxActor,
+		createdCapsule ? 0 : 99);
+	NxActor* createdGroup = t5Dynamic(scene, three, 3, pose, 0.75f, 0.0f, NxVec3(0, 0, 0));
+	printMass("t5_create_group_density", createdGroup ? createdGroup : boxActor,
+		createdGroup ? 0 : 99);
+	NxActor* createdGroupTotal = t5Dynamic(scene, three, 3, identity, 0.0f, 6.0f,
+		NxVec3(0, 0, 0));
+	printMass("t5_create_group_total", createdGroupTotal ? createdGroupTotal : boxActor,
+		createdGroupTotal ? 0 : 99);
+	{
+	const unsigned e0 = errors.reports;
+	one[0] = &trigger;
+	NxActor* createdTrigger = t5Dynamic(scene, one, 1, identity, 2.0f, 0.0f, NxVec3(0, 0, 0));
+	one[0] = &plane;
+	NxActor* createdPlane = t5Dynamic(scene, one, 1, identity, 2.0f, 0.0f, NxVec3(0, 0, 0));
+	printf("shape_mutation t5_create_failures=%u.%u.%u\n", createdTrigger ? 1u : 0u,
+		createdPlane ? 1u : 0u, errors.reports - e0);
+	}
+
+	// setDynamic (000122). A static actor with one shape (the shape leaves
+	// the static pruner through 000533 and comes back through 000531), then
+	// used as a dynamic actor and released.
+	NxBodyDesc given2;
+	given2.mass = 3.0f;
+	given2.massSpaceInertia = NxVec3(0.5f, 1.5f, 2.5f);
+	given2.linearVelocity = NxVec3(1.0f, 0.0f, -1.0f);
+	given2.angularDamping = 0.25f;
+	NxActorDesc oneDesc;
+	oneDesc.shapes.pushBack(&rotatedBox);
+	oneDesc.globalPose = pose;
+	NxActor* single = scene->createActor(oneDesc);
+	NxActorDesc groupDesc;
+	groupDesc.shapes.pushBack(&rotatedBox);
+	groupDesc.shapes.pushBack(&sphere);
+	groupDesc.shapes.pushBack(&capsule);
+	groupDesc.globalPose = pose;
+	groupDesc.density = 2.0f;
+	NxActor* several = scene->createActor(groupDesc);
+	NxActorDesc densityDesc;
+	densityDesc.shapes.pushBack(&capsule);
+	densityDesc.density = 0.5f;
+	NxActor* dense = scene->createActor(densityDesc);
+	NxActorDesc triggerDesc;
+	triggerDesc.shapes.pushBack(&trigger);
+	NxActor* staticTrigger = scene->createActor(triggerDesc);
+	NxActorDesc planeDesc;
+	planeDesc.shapes.pushBack(&plane);
+	NxActor* staticPlane = scene->createActor(planeDesc);
+	printf("shape_mutation t5_statics=%u.%u.%u.%u.%u\n", single ? 1u : 0u,
+		several ? 1u : 0u, dense ? 1u : 0u, staticTrigger ? 1u : 0u,
+		staticPlane ? 1u : 0u);
+	if(!single || !several || !dense || !staticTrigger || !staticPlane) return;
+	printRoot("t5_single_before", single);
+	DYNAMIC_CASE("t5_single_dynamic", single, given2);
+	t5UseDynamic("t5_single_use", single);
+	MASS_CASE("t5_single_mass", single, 1.0f, 0.0f);
+
+	// Several shapes, the mass from the shapes: the tensor is zero, so
+	// 000026 runs 000008 with the actor's density (body +0x18) and the
+	// descriptor's mass.
+	NxBodyDesc fromShapes;
+	fromShapes.mass = 4.0f;
+	printRoot("t5_several_before", several);
+	DYNAMIC_CASE("t5_several_dynamic", several, fromShapes);
+	t5UseDynamic("t5_several_use", several);
+	NxBodyDesc fromDensity;
+	DYNAMIC_CASE("t5_dense_dynamic", dense, fromDensity);
+	t5UseDynamic("t5_dense_use", dense);
+
+	// An already dynamic actor: a new record replaces the old one (000632,
+	// notifyObservers, 000776 and the free).
+	DYNAMIC_CASE("t5_single_again", single, fromShapes);
+	t5UseDynamic("t5_single_again_use", single);
+	// No shapes: the dynamic bare actor, with and without a tensor (E1 0x66).
+	DYNAMIC_CASE("t5_bare_no_tensor", bare, fromShapes);
+	DYNAMIC_CASE("t5_bare_tensor", bare, given2);
+	t5UseDynamic("t5_bare_use", bare);
+	// Invalid descriptors: a negative mass and a NaN in the mass pose (0x63).
+	NxBodyDesc negative;
+	negative.mass = -1.0f;
+	negative.massSpaceInertia = given;
+	DYNAMIC_CASE("t5_negative_mass", staticActor, negative);
+	NxBodyDesc nanPose = given2;
+	nanPose.massLocalPose.t.y = t5Bits(0x7fc00000u);
+	DYNAMIC_CASE("t5_nan_pose", staticActor, nanPose);
+	// A trigger-only static actor: 000008 returns 2 (E1 0x7d) and the shape
+	// 000533 removed is not added back; a plane: 000008 returns 1 (E1 0x7c).
+	printRoot("t5_trigger_before", staticTrigger);
+	DYNAMIC_CASE("t5_trigger_dynamic", staticTrigger, fromShapes);
+	printRoot("t5_plane_before", staticPlane);
+	DYNAMIC_CASE("t5_plane_dynamic", staticPlane, fromShapes);
+	{
+	NxActorWriteLockHolder lock(staticActor);
+	lock.hold();
+	DYNAMIC_CASE("t5_locked_dynamic", staticActor, given2);
+	lock.release();
+	}
+
+	const unsigned a0 = allocator.allocations(), f0 = allocator.frees();
+	scene->releaseActor(*single);
+	printAllocations("t5_single_release_memory", allocator, a0, f0);
+	const unsigned a1 = allocator.allocations(), f1 = allocator.frees();
+	scene->releaseActor(*several);
+	printAllocations("t5_several_release_memory", allocator, a1, f1);
+	const unsigned a2 = allocator.allocations(), f2 = allocator.frees();
+	scene->releaseActor(*bare);
+	printAllocations("t5_bare_release_memory", allocator, a2, f2);
+	errors.enabled = false;
+	sdk->releaseScene(*scene);
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -452,6 +846,8 @@ int wmain(int argc, wchar_t** argv)
 		beforeActorReleaseAlloc, beforeActorReleaseFree);
 	sdk->releaseScene(*scene);
 	runTask4Cases(sdk, allocator, errors);
+	runTask5Cases(sdk, allocator, errors);
+	// runTask5DynamicCases(sdk, allocator, errors);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);
 	}

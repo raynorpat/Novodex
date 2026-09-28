@@ -588,9 +588,10 @@ class MassFrame
 	//! mass = pi*r^2*(2c); the axial diagonal gets mass*r^2/2, the other
 	//! two the full cylinder transverse mass*(3r^2+4c^2)/12 over the
 	//! .rdata 3 ([0x101068f8]) / 4 ([0x101068f4]) / one-twelfth constants.
-	//! `axisSelector` picks the axial diagonal (0=x, 1=y, >=2=z). The
-	//! selector==1 path never writes +0x00 -- an image hole reproduced by
-	//! leaving that word untouched; drives use 0 and 2.
+	//! `axisSelector` picks the axial diagonal (0=x, 1=y, >=2=z); every
+	//! arm writes all three diagonal words (selector 1 stores the side term
+	//! at +0x00 at 0x1c836 before it branches; the capsule's slot 4, 001008,
+	//! passes 1).
 	void				nxMassFrameBuildCapsule(unsigned axisSelector,
 							float radius, float cylHalfHeight);
 

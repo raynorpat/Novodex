@@ -1446,10 +1446,114 @@ NxShape** NpActorVtable::getShapes() const
 	return reinterpret_cast<NxShape**>(const_cast<unsigned char*>(shape + 0x9c));
 	}
 
-// (unimplemented) updateMassFromShapes
+// phys_fn_000164 (0x00006520, 1846 B)
+// updateMassFromShapes (slot 17). After the write lock (G1 0x98): a density
+// or total mass below zero, or unordered (`test ah,1`), E1 0x9a; no record,
+// E1 0x9d; no shapes (body +0x10), E1 0x9e; both zero (fucompp, -0.0 is
+// zero), E1 0x9f; both nonzero, E1 0xa0. Then Actor.cpp's 000008 on the body
+// with the density, the total mass's own argument slot (in and out), an
+// identity pose and an unset diagonal; 1 is E1 0xa8 and any other nonzero
+// E1 0xa9. Every E1 unlocks. On success, in the listing's order:
+// +0x188 = the mass (integer copy), +0xc0 = (float)(1.0 / mass) with no
+// test, mark 0x10000; +0x18c.. = the diagonal, its three float inverses
+// classified by _fpclass (005666) in order, all zeroed when one is NaN or
+// infinite (0x207), mark 0x20000; +0x100.. = pose.t, mark 0x200, +++0x198;
+// +0xdc.. = pose.M (nine words), mark 0x400, +++0x198; 000768; unlock. No
+// wake and no kinematic test.
+int nxActorComputeMassFromShapes(unsigned char* body, float density, float* totalMass,
+	NxMat34* pose, NxVec3* diagonal);
+
 void NpActorVtable::updateMassFromShapes(NxReal density, NxReal totalMass)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpActorWriteTry(ctx, 0x98)) return;
+	if(!(density >= 0.0f) || !(totalMass >= 0.0f))
+		{
+		nxNpActorReport(0x9a, "Actor::updateMassFromShapes: density and total Mass of a "
+			"shape have to be nonnegative!");
+		nxNpSceneGuardLeave(ctx);
+		return;
+		}
+	unsigned char* body = nxNpActorBody(this);
+	unsigned char* record = *reinterpret_cast<unsigned char**>(body + 8);
+	if(!record)
+		{
+		nxNpActorReport(0x9d, "Actor::updateMassFromShapes: Actor must be dynamic!");
+		nxNpSceneGuardLeave(ctx);
+		return;
+		}
+	if(!*reinterpret_cast<void**>(body + 0x10))
+		{
+		nxNpActorReport(0x9e, "Actor::updateMassFromShapes: Actor must have shapes!");
+		nxNpSceneGuardLeave(ctx);
+		return;
+		}
+	if(density == 0.0f && totalMass == 0.0f)
+		{
+		nxNpActorReport(0x9f, "Actor::updateMassFromShapes: density or total mass must "
+			"be nonzero!");
+		nxNpSceneGuardLeave(ctx);
+		return;
+		}
+	if(density != 0.0f && totalMass != 0.0f)
+		{
+		nxNpActorReport(0xa0, "Actor::updateMassFromShapes: density and total mass may "
+			"not both be nonzero!");
+		nxNpSceneGuardLeave(ctx);
+		return;
+		}
+	NxMat34 pose;
+	static const unsigned identity[12] = {
+		0x3f800000u, 0, 0, 0, 0x3f800000u, 0, 0, 0, 0x3f800000u, 0, 0, 0 };
+	memcpy(&pose, identity, sizeof(identity));
+	NxVec3 diagonal;
+	const int result = nxActorComputeMassFromShapes(body, density, &totalMass, &pose,
+		&diagonal);
+	if(result == 1)
+		{
+		nxNpActorReport(0xa8, "Actor::updateMassFromShapes: Compute mesh inertia tensor "
+			"failed for one of the actor's mesh shapes! Please change mesh geometry or "
+			"supply a tensor manually!");
+		nxNpSceneGuardLeave(ctx);
+		return;
+		}
+	if(result)
+		{
+		nxNpActorReport(0xa9, "Actor::updateMassFromShapes: Can't compute mass from "
+			"shapes: must have at least one non-trigger shape!");
+		nxNpSceneGuardLeave(ctx);
+		return;
+		}
+	memcpy(record + 0x188, &totalMass, 4);
+	*reinterpret_cast<float*>(record + 0xc0) = static_cast<float>(1.0 / totalMass);
+	nxNpActorMarkRecordDirty(record, 0x10000);
+	memcpy(record + 0x18c, &diagonal, sizeof(diagonal));
+	const float inverseX = 1.0f / diagonal.x;
+	const float inverseY = 1.0f / diagonal.y;
+	const float inverseZ = 1.0f / diagonal.z;
+	float* inverse = reinterpret_cast<float*>(record + 0xc4);
+	if((_fpclass(inverseX) & 0x207) || (_fpclass(inverseY) & 0x207) ||
+		(_fpclass(inverseZ) & 0x207))
+		{
+		inverse[0] = 0.0f;
+		inverse[1] = 0.0f;
+		inverse[2] = 0.0f;
+		}
+	else
+		{
+		inverse[0] = inverseX;
+		inverse[1] = inverseY;
+		inverse[2] = inverseZ;
+		}
+	nxNpActorMarkRecordDirty(record, 0x20000);
+	memcpy(record + 0x100, &pose.t, sizeof(NxVec3));
+	nxNpActorMarkRecordDirty(record, 0x200);
+	++*reinterpret_cast<unsigned*>(record + 0x198);
+	memcpy(record + 0xdc, &pose.M, 0x24);
+	nxNpActorMarkRecordDirty(record, 0x400);
+	++*reinterpret_cast<unsigned*>(record + 0x198);
+	nxNpActorRefreshCMass(record);
+	nxNpSceneGuardLeave(ctx);
 	}
 
 // (unimplemented) setDynamic

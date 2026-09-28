@@ -2153,9 +2153,11 @@ unsigned char nxArrayVtCall3Args1024(void* self, unsigned a1, unsigned a2,
 		unsigned char* elem = reinterpret_cast<unsigned char*>(begin[i]);
 		if(elem[0xde] & 7)
 			continue;
+		// `mov ecx,[edi]; call [eax+0x10]` (0x229d1-0x229ea): a thiscall on
+		// the element, its result tested as a byte.
 		void** vt = *reinterpret_cast<void***>(elem);
-		typedef unsigned char (__stdcall* Fn)(unsigned, unsigned, unsigned);
-		if(reinterpret_cast<Fn>(vt[0x10 / 4])(a1, a2, a3) == 0)
+		typedef unsigned char (__thiscall* Fn)(void*, unsigned, unsigned, unsigned);
+		if(reinterpret_cast<Fn>(vt[0x10 / 4])(elem, a1, a2, a3) == 0)
 			return 0;
 		}
 	return 1;
@@ -4828,10 +4830,14 @@ void MassFrame::nxMassFrameBuildCapsule(unsigned axisSelector, float radius,
 		}
 	else if(axisSelector == 1)
 		{
+		// 0x1c831-0x1c85e: `dec edx` leaves the side term in edx, stored at
+		// +0x00 before the selector-1 branch (0x1c836), then the axial term
+		// at +0x10 and the side term at +0x20. (An earlier reading had this
+		// arm leave +0x00 unwritten; the capsule's slot 4, 001008, is the
+		// selector-1 caller: NpActor.cpp completion Task 5.)
+		mInertia[0] = sSide;
 		mInertia[4] = sAx;
 		mInertia[8] = sSide;
-		// +0x00 stays as the caller left it: the image's selector==1 path
-		// never stores it.
 		}
 	else
 		{
@@ -4920,6 +4926,17 @@ void MassFrame::nxMassFrameConditionalZero(unsigned flag)
 	mInertia[6] = 0.0f; mInertia[7] = 0.0f; mInertia[8] = 0.0f;
 	mOffset.x = 0.0f; mOffset.y = 0.0f; mOffset.z = 0.0f;
 	mMass = 0.0f;
+	}
+
+// The two frame rows Actor.cpp's 000008 (Scene.cpp) calls on its local frame.
+void nxMassFrameConditionalZeroAt(void* frame, unsigned flag)
+	{
+	static_cast<MassFrame*>(frame)->nxMassFrameConditionalZero(flag);
+	}
+
+void nxMassFrameTranslateAt(void* frame, const void* displacement)
+	{
+	static_cast<MassFrame*>(frame)->nxMassFrameTranslate(displacement);
 	}
 
 // phys_fn_000833 (0x1c040), __thiscall ret 4: translate the frame by
