@@ -5552,6 +5552,9 @@ static void nxQhGapRun(const NxOracleRows& o, const NxQhullEntries& oracle, cons
 	for(unsigned i = 0; i < lenF0 && i < lenF1; ++i)
 		if(gQhGapFloats[0].words[startFloats[0] + i] != gQhGapFloats[1].words[startFloats[1] + i])
 			++doubles;
+	if(getenv("NXQHGAP_RUNS"))
+		fprintf(stderr, "QHGAP_RUN family=%s run=%d set=%d options=\"%s\" exact=%d\n", gQhFamilyName, runIndex,
+			run.set, run.options, !(discrete || doubles || lenT0 != lenT1 || lenF0 != lenF1));
 	if(discrete || doubles || lenT0 != lenT1 || lenF0 != lenF1)
 		fprintf(stderr, "QHGAP run=%d set=%d options=\"%s\" discrete=%u/%u length=%u/%u floats=%u/%u length=%u/%u\n",
 			runIndex, run.set, run.options, discrete, lenT0, lenT0, lenT1, doubles, lenF0, lenF0, lenF1);
@@ -5819,6 +5822,50 @@ static void nxDriveQhullGap(const NxOracleRows& o, bool selfOnly)
 	nxQhGapFamily(o, "qhull_direct", "qhull_direct_x87", "0x00068ce0", "phys_fn_002779", "io.c,geom2.c,poly2.c,stat.c,qset.c",
 		"0x00068ce0", "phys_fn_002779", "io.c,geom.c,geom2.c", kDirect, sizeof(kDirect) / sizeof(kDirect[0]),
 		selfOnly, 0, kDivergent);
+
+	// EXACT on both tapes: the runs of the families above whose discrete AND
+	// float tapes compare exactly, run again as families of their own, so that
+	// a group they reach has an execution whose every output word matches
+	// (execution class `exact`, not only outcome-exact). The selection is by
+	// measurement (NXQHGAP_RUNS=1 lists each run's result) and deterministic; a
+	// run that stopped matching would fail these families.
+	static const NxQhGapRun kExactOutput[] =
+		{
+		{ 2, "s", 0, 0 }, { 2, "f", 0, 0 }, { 2, "i", 0, 0 }, { 2, "n", 0, 0 }, { 2, "p", 0, 0 }, { 2, "m", 0, 0 },
+		{ 2, "G", 0, 0 }, { 2, "FF Fi Fn", 0, 0 }, { 2, "Fa FA", 0, 0 }, { 2, "Fc FC", 0, 0 }, { 2, "FD", 0, 0 }, { 2, "Fo FI FN", 0, 0 },
+		{ 2, "FO FP", 0, 0 }, { 2, "FQ FS", 0, 0 }, { 2, "Fs Ft", 0, 0 }, { 2, "Fv FV", 0, 0 }, { 2, "Fx", 0, 0 }, { 2, "FM", 0, 0 },
+		{ 2, "Fm", 0, 0 }, { 2, "Gv Gp", 0, 0 }, { 2, "Gc Gh Gr", 0, 0 }, { 2, "Gi Gn", 0, 0 }, { 2, "Go", 0, 0 }, { 2, "Gt", 0, 0 },
+		{ 2, "PG", 0, 0 }, { 2, "Ts", 0, 0 }, { 1, "s", 0, 0 }, { 1, "f", 0, 0 }, { 1, "i", 0, 0 }, { 1, "G", 0, 0 },
+		{ 1, "m", 0, 0 }, { 1, "Fx", 0, 0 }, { 1, "Fc FN Fv", 0, 0 }, { 1, "Ts", 0, 0 }, { 1, "i Qt", 0, 0 }, { 1, "G Qt", 0, 0 },
+		{ 1, "m Qt", 0, 0 }, { 6, "s", 0, 0 }, { 6, "f", 0, 0 }, { 6, "Fc FP", 0, 0 }, { 6, "G", 0, 0 }, { 7, "f", 0, 0 },
+		{ 7, "i", 0, 0 }, { 0, "s", 0, 0 }, { 0, "f", 0, 0 }, { 0, "G", 0, 0 }, { 0, "Ts", 0, 0 }, { 9, "s", 0, 0 },
+		{ 10, "s", 0, 0 }, { 11, "s", 0, 0 }, { 12, "o", 0, 0 }, { 12, "s", 0, 0 }, { 12, "f", 0, 0 }, { 12, "i", 0, 0 },
+		{ 12, "m", 0, 0 }, { 12, "G", 0, 0 }, { 12, "Fx", 0, 0 }, { 12, "n p", 0, 0 }, { 12, "FN Fv", 0, 0 }, { 12, "Ts", 0, 0 },
+		{ 13, "o", 0, 0 }, { 13, "s", 0, 0 }, { 13, "Fx", 0, 0 }, { 22, "o", 0, 0 }, { 22, "i", 0, 0 }, { 14, "o", 0, 0 },
+		{ 14, "s", 0, 0 }, { 14, "f", 0, 0 }, { 14, "i", 0, 0 }, { 14, "G", 0, 0 }, { 14, "Fx", 0, 0 }, { 14, "n", 0, 0 },
+		{ 16, "G", 0, 0 }, { 16, "i", 0, 0 }, { 23, "v G", 1, 0 }, { 23, "d m", 1, 0 },
+		};
+	nxQhGapFamily(o, "qhull_exact_output", "qhull_exact_output_x87", "0x0006d800", "phys_fn_002866",
+		"io.c,geom2.c,poly2.c,stat.c", "0x0006d800", "phys_fn_002866", "io.c,geom.c,geom2.c",
+		kExactOutput, sizeof(kExactOutput) / sizeof(kExactOutput[0]), selfOnly, 0, 0);
+
+	static const NxQhGapRun kExactOther[] =
+		{
+		{ 0, "T1", 0, 0 }, { 0, "T2", 0, 0 }, { 0, "T3", 0, 0 }, { 2, "Tc", 0, 0 }, { 2, "T1 TP3", 0, 0 }, { 2, "T1 TC2", 0, 0 },
+		{ 2, "T1 TW0.1", 0, 0 }, { 12, "T3", 0, 0 }, { 14, "T2", 0, 0 }, { 10, "T1", 0, 0 }, { 11, "T1", 0, 0 }, { 2, "C-0.02", 0, 0 },
+		{ 2, "C0.02", 0, 0 }, { 2, "A-0.99", 0, 0 }, { 2, "A0.99", 0, 0 }, { 2, "W0.1", 0, 0 }, { 2, "V0.1", 0, 0 }, { 2, "U0.1", 0, 0 },
+		{ 2, "E0.001", 0, 0 }, { 2, "Qc", 0, 0 }, { 2, "Qi", 0, 0 }, { 2, "Qc Qi", 0, 0 }, { 2, "Q0", 0, 0 }, { 2, "Q1", 0, 0 },
+		{ 2, "Q2", 0, 0 }, { 2, "Q3", 0, 0 }, { 2, "Q4", 0, 0 }, { 2, "Q5", 0, 0 }, { 2, "Q6", 0, 0 }, { 2, "Q7", 0, 0 },
+		{ 2, "Q8", 0, 0 }, { 2, "Q9", 0, 0 }, { 2, "Qv", 0, 0 }, { 2, "Qm", 0, 0 }, { 2, "Qg QG0", 0, 0 }, { 2, "Qg QV0", 0, 0 },
+		{ 2, "QG0 Pg", 0, 0 }, { 2, "QV0 Pg", 0, 0 }, { 2, "QG-0 Pg", 0, 0 }, { 2, "Pd0:0.5", 0, 0 }, { 2, "PD0:0.5", 0, 0 }, { 2, "PA2", 0, 0 },
+		{ 2, "PM1", 0, 0 }, { 2, "PF0.1", 0, 0 }, { 2, "Qb0:0B0:0", 0, 0 }, { 2, "Qb0:-1B0:1", 0, 0 }, { 2, "Qf", 0, 0 }, { 6, "Qv", 0, 0 },
+		{ 6, "Qc Qi", 0, 0 }, { 12, "C-0.01", 0, 0 }, { 12, "Qc", 0, 0 }, { 6, "C-0", 0, 0 }, { 6, "Q0", 0, 0 }, { 2, "Q1 C-0", 0, 0 },
+		{ 2, "QG-0 Pg", 0, 0 }, { 13, "C-0", 0, 0 }, { 13, "Qx", 0, 0 }, { 2, "o", 0, 1 }, { 0, "Qt", 0, 1 }, { 1, "o", 0, 1 },
+		{ 12, "o", 0, 1 }, { 14, "o", 0, 1 },
+		};
+	nxQhGapFamily(o, "qhull_exact_other", "qhull_exact_other_x87", "0x0007d180", "phys_fn_003234",
+		"qhull.c,poly.c,poly2.c,merge.c,global.c,io.c,qset.c", "0x0007d180", "phys_fn_003234", "geom.c,geom2.c,merge.c,io.c",
+		kExactOther, sizeof(kExactOther) / sizeof(kExactOther[0]), selfOnly, 0, 0);
 
 	// DIVERGENT, discrete: the runs whose search path differs. The hull each
 	// builds is the same on both sides; what differs is how many distance tests

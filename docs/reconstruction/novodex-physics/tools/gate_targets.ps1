@@ -2297,9 +2297,10 @@ $NxRequiredCoverageLines = [ordered] @{
         # the NovodeX driver sequence with qhull's printing captured on both sides
         # (the host object's slots, and each side's own CRT through files its own
         # fopen opened; evidence/qhull-gap.md). Each family is a discrete tape and a
-        # float tape. The discrete families that compare exactly are registered
-        # whole; the float families, qhull_paths and qhull_rotation are DIVERGENT,
-        # registered up to the oracle digest, and held by kDivergentCeilings. The
+        # float tape. The discrete families that compare exactly, and both tapes of
+        # qhull_exact_output/qhull_exact_other, are registered whole; the other float
+        # families, qhull_paths and qhull_rotation are DIVERGENT, registered up to
+        # the oracle digest, and held by kDivergentCeilings. The
         # pairs above keep printing where Tasks 4 and 5a put them; the pair below
         # carries the totals.
         'thirdparty name=qhull_output rva=0x0006d800 owner=phys_fn_002866 source=io.c,geom2.c,poly2.c,stat.c words=113021 oracle=6f5465b7 mismatches=0 worst_ulp=0 verdict=exact',
@@ -2322,12 +2323,16 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=qhull_random_x87 rva=0x00061490 owner=phys_fn_002550 source=geom2.c,geom.c words=7184 oracle=1baa6368',
         'thirdparty name=qhull_direct rva=0x00068ce0 owner=phys_fn_002779 source=io.c,geom2.c,poly2.c,stat.c,qset.c words=127485 oracle=2cf4876b mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=qhull_direct_x87 rva=0x00068ce0 owner=phys_fn_002779 source=io.c,geom.c,geom2.c words=22629 oracle=3e023a50',
+        'thirdparty name=qhull_exact_output rva=0x0006d800 owner=phys_fn_002866 source=io.c,geom2.c,poly2.c,stat.c words=55168 oracle=4f7bae0d mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=qhull_exact_output_x87 rva=0x0006d800 owner=phys_fn_002866 source=io.c,geom.c,geom2.c words=24566 oracle=3ae85f24 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=qhull_exact_other rva=0x0007d180 owner=phys_fn_003234 source=qhull.c,poly.c,poly2.c,merge.c,global.c,io.c,qset.c words=37571 oracle=cb2d8512 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=qhull_exact_other_x87 rva=0x0007d180 owner=phys_fn_003234 source=geom.c,geom2.c,merge.c,io.c words=18072 oracle=22bf6dbb mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=qhull_paths rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,qhull.c,poly2.c,merge.c,io.c words=27407 oracle=cc3e11e3',
         'thirdparty name=qhull_paths_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=18247 oracle=a11a0524',
         'thirdparty name=qhull_rotation rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,global.c,qhull.c,merge.c words=9980 oracle=e80e1851',
         'thirdparty name=qhull_rotation_x87 rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,geom.c words=8724 oracle=07282fca',
-        'thirdparty coverage driven=71 divergent=25 words=1500640 layout_checks=47',
-        'thirdparty oracle digest=a6ae0830'
+        'thirdparty coverage driven=75 divergent=25 words=1636017 layout_checks=47',
+        'thirdparty oracle digest=00d40782'
     )
 }
 
@@ -2350,8 +2355,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
-    '4' = 161  # 34 for NxPhysicsAssetTests, 127 for NxPhysicsThirdPartyTests (67 + 29 from
-               # vendored-correspondence Task 4 + 5 from its Task 5a + 26 from qhull-gap Task 1)
+    '4' = 165  # 34 for NxPhysicsAssetTests, 131 for NxPhysicsThirdPartyTests (67 + 29 from
+               # vendored-correspondence Task 4 + 5 from its Task 5a + 30 from qhull-gap Task 1)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
