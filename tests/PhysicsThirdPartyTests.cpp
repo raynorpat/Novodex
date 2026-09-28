@@ -6132,8 +6132,8 @@ static NxIceRecordingAllocator gIceAllocator;
 static const int kIceMaxMeshes = 72;
 static NxMesh gIceMeshes[kIceMaxMeshes];
 static int gIceNbMeshes = 0;
-static unsigned gIceInputDigest[13];	// 0..2 Task 2c; 3, 4 Task 2d; 5..9 Task 2e
-static unsigned gIceInputWords[13];
+static unsigned gIceInputDigest[14];	// 0..2 Task 2c; 3, 4 Task 2d; 5..9 Task 2e; 10..12 Task 2f; 13 Task 2g
+static unsigned gIceInputWords[14];
 
 static NxMesh& nxIceNewMesh(unsigned nbVerts, unsigned nbTris)
 	{
@@ -10177,6 +10177,342 @@ static void nxDriveConvexHull(const NxOracleRows& o, bool selfOnly)
 		c.mapSnan, gIceReports);
 	}
 
+// ---------------------------------------------------------------------------
+// convex-mesh gap Task 2g: polygon_interface. The TriangleMesh polygon interface
+// (P-Mesh: the table 0x101085d4, TriangleMeshPolygons.cpp) driven slot by slot
+// through each side's own table, over TriangleMesh images whose +0xa0 is a hull
+// image built from convex_hull's meshes, and with it the helpers the slots reach:
+// 001514 (slot 5; and again directly, over a hull that already has its axes: the
+// release through the CRT's free), 001516 (slot 10), 001530 and 000505 (slot 11
+// without a map). Every float input is written as bits.
+
+#include "TriangleMeshPolygons.h"
+
+static const unsigned kPiTable			= 0x001085d4;	// the polygon interface
+static const unsigned kPiEdgeAxes		= 0x0002d2e0;	// phys_fn_001514
+static const unsigned kPiCrtFree		= 0x000f41f0;	// phys_fn_005668, the static CRT's free
+static const int kPolygonFamily = 13;
+
+struct NxPiCoverage
+	{
+	unsigned hulls, built, polygons, edges, axes, axesRebuilt, support, supportPosed, faces, facesEdge, faceKindNull,
+		projects, projectsMap, projectsGraph, climbsFailed, stampWraps, inputSnan;
+	};
+static NxPiCoverage gPiCoverage;
+
+static unsigned nxPiCall3(const void* fn, const void* self, unsigned a0, unsigned a1, unsigned a2)
+	{
+	unsigned r;
+	__asm
+		{
+		push	a2
+		push	a1
+		push	a0
+		mov		ecx, self
+		xor		edx, edx
+		call	fn
+		mov		r, eax
+		}
+	return r;
+	}
+static void nxPiCall6(const void* fn, const void* self, unsigned a0, unsigned a1, unsigned a2, unsigned a3,
+	unsigned a4, unsigned a5)
+	{
+	__asm
+		{
+		push	a5
+		push	a4
+		push	a3
+		push	a2
+		push	a1
+		push	a0
+		mov		ecx, self
+		xor		edx, edx
+		call	fn
+		}
+	}
+
+// The vertex graph 001530 climbs (+0x08 counts, +0x0c offsets, +0x10 neighbours):
+// every triangle edge of the mesh, both ways, once.
+struct NxPiGraph
+	{
+	unsigned		word0, word4;
+	const unsigned*	counts;
+	const unsigned*	offsets;
+	const unsigned*	neighbours;
+	unsigned		countStore[kChMaxVerts], offsetStore[kChMaxVerts], neighbourStore[kChMaxVerts * 16];
+	};
+
+static void nxPiBuildGraph(const NxChMesh& m, NxPiGraph& g, unsigned variant)
+	{
+	static bool adjacent[kChMaxVerts][kChMaxVerts];
+	memset(adjacent, 0, sizeof(adjacent));
+	for(unsigned t = 0; t < m.nbTris; ++t)
+		for(unsigned e = 0; e < 3; ++e)
+			{
+			const unsigned a = m.tris[3 * t + e], b = m.tris[3 * t + (e + 1) % 3];
+			adjacent[a][b] = adjacent[b][a] = true;
+			}
+	unsigned next = 0;
+	for(unsigned v = 0; v < m.nbVerts; ++v)
+		{
+		g.offsetStore[v] = next;
+		g.countStore[v] = 0;
+		for(unsigned w = 0; w < m.nbVerts; ++w)
+			if(adjacent[v][w] && next < kChMaxVerts * 16)
+				{
+				g.neighbourStore[next++] = w;
+				++g.countStore[v];
+				}
+		}
+	g.word0 = 0xcdcd6400u;
+	g.word4 = 0xcdcd6404u;
+	// Variant 1: no neighbour array (001530 returns false and slot 11 keeps vertex 0).
+	g.counts = g.countStore;
+	g.offsets = g.offsetStore;
+	g.neighbours = variant == 1 ? 0 : g.neighbourStore;
+	}
+
+// The +0x34 Container 001514 leaves: destroyed and freed by the side's own CRT.
+static void nxPiReleaseAxes(const NxIceSide& s, unsigned* hull)
+	{
+	void* axes = (void*) (size_t) hull[13];
+	if(!axes)
+		return;
+	if(s.oracle)
+		{
+		((VoidThisFn) (s.o->base + kContainerDtor))(axes);
+		typedef void (__cdecl* CrtFreeFn)(void*);
+		((CrtFreeFn) (s.o->base + kPiCrtFree))(axes);
+		}
+	else
+		{
+		((IceCore::Container*) axes)->~Container();
+		free(axes);
+		}
+	hull[13] = 0;
+	}
+
+static void nxPiTapeAxes(const unsigned* hull)
+	{
+	NxTape& t = *gIceTape;
+	const unsigned* axes = (const unsigned*) (size_t) hull[13];
+	t.push(axes ? 1u : 0u);
+	if(!axes)
+		return;
+	t.push(axes[1]);
+	const unsigned* entries = (const unsigned*) (size_t) axes[2];
+	for(unsigned i = 0; i < axes[1] && entries; ++i)
+		t.pushKind(entries[i], kWordFloat);
+	if(gIceOraclePass)
+		gPiCoverage.axes += axes[1];
+	}
+
+static void nxPiHull(const NxIceSide& s, const NxChMesh& m, unsigned index)
+	{
+	NxPiCoverage& c = gPiCoverage;
+	NxTape& t = *gIceTape;
+	nxMb2FoldInput(kPolygonFamily, m.verts, 3 * m.nbVerts);
+	nxMb2FoldInput(kPolygonFamily, m.tris, (3 * m.nbTris) / 2);
+	nxIceFoldRun(kPolygonFamily, index, m.nbTris, m.cw);
+	static NxPiGraph graph;
+	nxPiBuildGraph(m, graph, index % 5 == 2 ? 1u : 0u);
+	unsigned hull[0x80 / 4];
+	nxChHullImage(hull, m);
+	memset(&hull[20], 0, 0x30);
+	// The centre (+0x18): lattice words of the mesh's own vertices.
+	const unsigned corner = nxNext() % m.nbVerts;
+	hull[6] = m.verts[3 * corner + 0];
+	hull[7] = m.verts[3 * corner + 1];
+	hull[8] = m.verts[3 * corner + 2];
+	hull[13] = 0;
+	hull[25] = index % 5 == 3 ? 0u : nxChPtr(&graph);	// +0x64; none on every fifth
+	nxMb2FoldInput(kPolygonFamily, &hull[6], 3);
+	unsigned char mesh[0xb0];
+	memset(mesh, 0xcd, sizeof(mesh));
+	const void* table = s.oracle ? (const void*) (s.o->base + kPiTable) : (const void*) gTriangleMeshPolygonTable;
+	*(const void**) (mesh + 0x04) = table;
+	*(unsigned**) (mesh + 0xa0) = hull;
+	const void* const* slots = (const void* const*) table;
+	const void* iface = mesh + 4;
+	if(s.oracle)
+		++c.hulls;
+
+	// Slots 0..2: pointers into the hull, as offsets.
+	t.push(nxChCall0(slots[0], iface) - nxChPtr(hull));
+	t.push(nxChCall0(slots[1], iface));
+	t.push(nxChCall0(slots[2], iface) - hull[4]);
+	// Slot 3 builds the polygons (001472) under the mesh's control word, then 4.
+	const unsigned short saved = nxMb2SetControlWord(m.cw);
+	const unsigned count = nxChCall0(slots[3], iface);
+	nxMb2SetControlWord(saved);
+	t.push(count);
+	for(unsigned p = 0; p < count; ++p)
+		t.push(nxChCall1(slots[4], iface, p) - hull[10]);
+	if(s.oracle)
+		{
+		c.polygons += count;
+		if(count)
+			++c.built;
+		}
+	// Slot 5 (001514); every other hull 001514 again directly, which releases
+	// the first Container through the CRT's free.
+	const unsigned axesPtr = nxChCall0(slots[5], iface);
+	t.push(axesPtr == hull[13] ? 1u : 0u);
+	nxPiTapeAxes(hull);
+	if(index & 1)
+		{
+		const unsigned again = nxChCall0(nxChRow(s, kPiEdgeAxes, (const void*) &nxHullComputeEdgeAxes), hull) & 0xff;
+		t.push(again);
+		nxPiTapeAxes(hull);
+		if(s.oracle)
+			++c.axesRebuilt;
+		}
+	if(count)
+		{
+		// Slots 6..8 build the edges (001502) when +0x3c is null.
+		const unsigned short saved2 = nxMb2SetControlWord(m.cw);
+		const unsigned edges = nxChCall0(slots[6], iface);
+		nxMb2SetControlWord(saved2);
+		t.push(edges == hull[15] ? 1u : 0u);
+		t.push(nxChCall0(slots[7], iface) == hull[17] ? 1u : 0u);
+		t.push(nxChCall0(slots[8], iface) == hull[18] ? 1u : 0u);
+		t.push(hull[14]);
+		if(s.oracle)
+			c.edges += hull[14];
+		// Slots 9 and 10 over drawn directions, with and without a drawn pose.
+		for(unsigned d = 0; d < 16; ++d)
+			{
+			unsigned dir[3], pose[16];
+			nxChWords(dir, 3);
+			nxChWords(pose, 16);
+			const unsigned posed = d & 1;
+			nxMb2FoldInput(kPolygonFamily, dir, 3);
+			if(posed)
+				nxMb2FoldInput(kPolygonFamily, pose, 16);
+			unsigned kind = 0xcdcdcdcdu;
+			const unsigned nullKind = d % 8 == 6;
+			const unsigned short saved3 = nxMb2SetControlWord((d & 2) ? 0x0f7f : 0x027f);
+			const unsigned best = nxChCall2(slots[9], iface, nxChPtr(dir), posed ? nxChPtr(pose) : 0u);
+			const unsigned face = nxPiCall3(slots[10], iface, nxChPtr(dir), posed ? nxChPtr(pose) : 0u,
+				nullKind ? 0u : nxChPtr(&kind));
+			nxMb2SetControlWord(saved3);
+			t.push(best);
+			t.push(face);
+			t.push(kind);
+			if(s.oracle)
+				{
+				++c.support;
+				if(posed)
+					++c.supportPosed;
+				++c.faces;
+				if(kind == 1)
+					++c.facesEdge;
+				if(nullKind)
+					++c.faceKindNull;
+				c.inputSnan += nxMb2CountSnan((const float*) dir, 3) + (posed ? nxMb2CountSnan((const float*) pose, 16) : 0);
+				}
+			}
+		}
+	// Slot 11 with the side's own kind C map (built over this hull by its
+	// constructor and Init) and without one (the graph), over drawn directions
+	// and poses; the scratch record's stamp drawn, near its wrap one time in four.
+	unsigned map[6];
+	for(unsigned i = 0; i < 6; ++i)
+		map[i] = 0xcdcdc000u + i;
+	const unsigned n = 1 + index % 4;
+	nxChCall1(nxChRow(s, kSmCtorC, (const void*) &nxSupportMapVertexConstruct), map, nxChPtr(hull));
+	const unsigned mapOk = nxChCall1(nxChRow(s, kSmInit, (const void*) &nxSupportMapInit), map, n) & 0xff;
+	t.push(mapOk);
+	unsigned visited[kChMaxVerts];
+	memset(visited, 0, sizeof(visited));
+	unsigned scratch[8];
+	scratch[0] = 0xcdcd5000u;
+	scratch[1] = kChMaxVerts;
+	scratch[2] = nxChPtr(visited);
+	scratch[3] = 0xcdcd500cu;
+	scratch[4] = 0xcdcd5010u;
+	for(unsigned d = 0; d < 16; ++d)
+		{
+		unsigned dir[3], pose[16];
+		nxChWords(dir, 3);
+		nxChWords(pose, 16);
+		const unsigned stampDraw = nxNext();
+		scratch[5] = (stampDraw & 3) == 0 ? 0xfffffffeu : stampDraw & 0xffffu;
+		const bool withMap = (d & 1) && mapOk;
+		nxMb2FoldInput(kPolygonFamily, dir, 3);
+		nxMb2FoldInput(kPolygonFamily, pose, 16);
+		nxIceFoldRun(kPolygonFamily, scratch[5], withMap ? 1u : 0u, d);
+		unsigned least = 0xcdcdd000u, greatest = 0xcdcdd001u;
+		const unsigned stampBefore = scratch[5];
+		const unsigned short saved4 = nxMb2SetControlWord((d & 2) ? 0x0f7f : 0x027f);
+		nxPiCall6(slots[11], iface, nxChPtr(scratch), nxChPtr(&least), nxChPtr(&greatest), nxChPtr(dir),
+			nxChPtr(pose), withMap ? nxChPtr(map) : 0u);
+		nxMb2SetControlWord(saved4);
+		t.pushKind(least, kWordFloat);
+		t.pushKind(greatest, kWordFloat);
+		t.push(scratch[5]);
+		nxChWordArray(visited, m.nbVerts);
+		if(s.oracle)
+			{
+			++c.projects;
+			withMap ? ++c.projectsMap : ++c.projectsGraph;
+			if(!withMap && !hull[25])
+				++c.climbsFailed;
+			if(scratch[5] < stampBefore)
+				++c.stampWraps;
+			c.inputSnan += nxMb2CountSnan((const float*) dir, 3) + nxMb2CountSnan((const float*) pose, 16);
+			}
+		}
+	const void* const* mapTable = (const void* const*) (size_t) map[0];
+	nxChCall1(mapTable[0], map, 0);
+	nxPiReleaseAxes(s, hull);
+	nxChFreeHull(hull);
+	}
+
+// The hulls: convex_hull's main meshes that are not in its split (under
+// 0x027f) and its round 5 (the power-of-two meshes, under 0x0f7f), so the
+// vendored Plane::Set and Triangle::Normal in each side's 001472 build are exact.
+// The open, ring and edge-pair meshes build no polygon (001472 false): slots 3..5
+// and 11 run on them, 6..10 do not (001502 over a hull without polygons writes
+// outside the block it allocates, as in the oracle: not driven).
+static void nxPiDrive(const NxIceSide& s)
+	{
+	const unsigned savedState = gState;
+	static NxChMesh mesh;
+	for(unsigned index = 0; index < kChNbMeshes; ++index)
+		{
+		if(index >= 2 * kChNbShapes && index < 5 * kChNbShapes)
+			continue;
+		nxChBuildMesh(mesh, index);
+		if(mesh.split)
+			continue;
+		gState = 0x2e9c0000u ^ (index * 0x85ebca6bu + 5u);
+		nxPiHull(s, mesh, index);
+		}
+	if(gIceTape->overflow)
+		{
+		fprintf(stderr, "FAIL polygon_interface tape overflow (%u words beyond)\n", gIceTape->overflow);
+		++gMismatches;
+		}
+	gState = savedState;
+	}
+
+static void nxDrivePolygonInterface(const NxOracleRows& o, bool selfOnly)
+	{
+	memset(&gPiCoverage, 0, sizeof(gPiCoverage));
+	const NxPiCoverage& c = gPiCoverage;
+	gIceReports = 0;
+	nxIceFamily(o, selfOnly, nxPiDrive, "polygon_interface", "0x000552c0", "phys_fn_002249",
+		"TriangleMeshPolygons.cpp,ConvexHull.cpp,IceSupportMaps.cpp", kPolygonFamily);
+	printf("thirdparty coverage name=polygon_interface hulls=%u built=%u polygons=%u edges=%u axes=%u axes_rebuilt=%u"
+		" support=%u support_posed=%u faces=%u faces_edge=%u face_kind_null=%u projects=%u projects_map=%u"
+		" projects_graph=%u climbs_failed=%u stamp_wraps=%u input_snan=%u reports=%u\n",
+		c.hulls, c.built, c.polygons, c.edges, c.axes, c.axesRebuilt, c.support, c.supportPosed, c.faces, c.facesEdge,
+		c.faceKindNull, c.projects, c.projectsMap, c.projectsGraph, c.climbsFailed, c.stampWraps, c.inputSnan,
+		gIceReports);
+	}
+
 static void nxPrintTotals()
 	{
 	printf("thirdparty coverage driven=%u divergent=%u words=%u layout_checks=%u\n",
@@ -10326,6 +10662,11 @@ int wmain(int argc, wchar_t** argv)
 	// convex-mesh gap Task 2f: the same two lines after its three families, with
 	// the running totals; the pairs above stay where they were printed.
 	nxDriveConvexHull(o, selfOnly);
+	nxPrintTotals();
+
+	// convex-mesh gap Task 2g: the same two lines after its family, with the
+	// running totals; the pairs above stay where they were printed.
+	nxDrivePolygonInterface(o, selfOnly);
 	nxPrintTotals();
 	printf("thirdparty candidate mismatches=%u layout_failures=%u\n", gMismatches, gLayoutFailures);
 

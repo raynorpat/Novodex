@@ -2666,6 +2666,11 @@ static __declspec(noinline) unsigned nxDriveFuzzSnan(HMODULE physics)
 	return totalMismatch;
 	}
 
+// convex-mesh gap Task 2g's families, defined after wmain: their block includes
+// the ICE headers (TriangleMeshPolygons.h), whose pragmas would otherwise change
+// how wmain's generators are compiled (see the block).
+static unsigned nxDriveTask2g(unsigned char* base);
+
 int wmain(int argc, wchar_t** argv)
 	{
 	if(argc != 3)
@@ -7881,6 +7886,10 @@ int wmain(int argc, wchar_t** argv)
 	// The kernel fuzz harness's signalling-NaN variants; see nxDriveFuzzSnan.
 	totalMismatch += nxDriveFuzzSnan(physics);
 
+	// convex-mesh gap Task 2g's families (P-Emit, P-Plane, P-Mesh and sub-unit L),
+	// in a function of their own; see nxDriveTask2g.
+	totalMismatch += nxDriveTask2g(base);
+
 	// What is not covered, named rather than left as an absence.
 	for(unsigned index = 0; index < 36; ++index)
 		{
@@ -7912,3 +7921,832 @@ int wmain(int argc, wchar_t** argv)
 	printf("collision=pass\n");
 	return 0;
 	}
+
+// ---------------------------------------------------------------------------
+// convex-mesh gap Task 2g (units/convex-mesh-gap-contract.md: P-Emit, P-Plane,
+// P-Mesh and sub-unit L). Two families, both on raw words written as bits:
+//
+// contact_emit_ext drives phys_fn_000875 (the emitter with feature words) at its
+// own address, as contact_emit drives 000873: shapes staged by nxStageWorld with
+// the flag byte +0xde drawn (bit 0x20 turns on the feature-word flag 4), 16-bit
+// ids drawn real or 0xffff with junk in the high halves of their slots, 32-bit
+// feature words drawn at most or above 0xffff, and points and normals drawn by
+// nxPickRawWord (signalling NaNs kept: the row is naked and loads the normal
+// with `fld`, which quiets them on both sides), one normal in four the previous
+// one again (the cached-normal skip). The stream never fills (0x2000 words), so
+// 004840's growth is not reached here.
+//
+// contact_convex_convex drives phys_fn_001820 (and through it 001818, 001816,
+// 001809, 001807, 001805, 001803, 001812/001814, 001810, 001909/001911,
+// 001903/001905, 001907, 000875, 001653, 001661 and the polygon interface slots
+// 0, 2, 3, 4, 9, 10, 11 with 001496, 001516, 002249, 001530, 000505, 001556) over
+// pairs of box hulls. Each side builds its own images: a TriangleMesh image
+// (+0x04 the side's polygon table -- the oracle's 0x101085d4 or
+// gTriangleMeshPolygonTable -- +0xa0 the hull, +0xa8 a kind C support map built
+// by the side's own constructor and Init, or null), a hull image of a closed box
+// on lattice words (kLattice2g: every face axis-aligned, so the vendored
+// Plane::Set / Triangle::Normal in 001472's build are exact) whose polygons and
+// edges the side's own 001472 and 001502 build through slots 3 and 6 before the
+// pairs (under 0x027f), a centre drawn from the lattice words and the vertex
+// graph at +0x64 (the box's triangle edges; 001530 climbs it when the map is
+// null), and a scratch record (the context: +0x04 count, +0x08 visited, +0x14
+// stamp, +0x4e0 / +0x4f0 two Containers built by the side's own constructor).
+// The shapes are staged by nxStageWorld; their pruning handles (+0xa4 Prunable
+// flags with bit 2 set, so 004886 is not called; +0xc4 a pruner whose +0x14
+// holds the world boxes; +0xcc the handle) carry drawn box words.
+//
+// Fixed-input rules (the inputs that would make the oracle read memory it does
+// not own are not driven): a pose word is never a NaN or an infinity. With a NaN
+// axis every comparison in 001809's face pass fails, its best index stays -1
+// (0x0003ffe2), and 001816 hands that index to slot 4 (0x000407cd), which reads
+// the polygon before the array; an infinity reaches the same through inf - inf.
+// The handle is never 0xffff (001818 then passes a null box, and 001812's box test
+// 001810 reads through it). Pose words are drawn from signed permutations,
+// rotations about an axis by fixed (cos, sin) words, and tables of finite words
+// with denormals and -0; translations and boxes from lattice and drawn finite
+// words.
+
+// This block is placed after wmain on purpose: the ICE headers it includes set
+// `#pragma inline_depth`, which changed the inlining of the helpers wmain's
+// generators share and with it nine registered input digests when the block
+// stood before wmain.
+#pragma push_macro("min")
+#pragma push_macro("max")
+#pragma push_macro("random")
+#undef min
+#undef max
+#include "TriangleMeshPolygons.h"
+#pragma pop_macro("random")
+#pragma pop_macro("max")
+#pragma pop_macro("min")
+
+static const unsigned kEmitFeaturesRva = 0x0001d8e0;		// phys_fn_000875
+static const unsigned kConvexConvexRva = 0x000411a0;		// phys_fn_001820
+static const unsigned kPolygonTableRva = 0x001085d4;		// the TriangleMesh +0x04 table
+static const unsigned kVertexMapCtorRva = 0x0002e7c0;		// phys_fn_001575
+static const unsigned kSupportMapInitRva = 0x0002e2f0;		// phys_fn_001558
+static const unsigned kIceContainerCtorRva = 0x000b4d70;	// phys_fn_004836
+static const unsigned kIceContainerDtorRva = 0x000b4f50;	// phys_fn_004846
+static const unsigned kSdkAllocatorGetterRva = 0x000b4000;	// phys_fn_004803
+static const unsigned kEmitExtIterations = 8000;
+static const unsigned kConvexPairs = 10000;
+// contact_convex_convex.pose_divergent's ceiling: the differing words and runs
+// measured when the split was registered (a count may fall, never rise).
+static const unsigned kConvexPoseDivergentWords = 2;
+static const unsigned kConvexPoseDivergentRuns = 1;
+
+// ecx the object, edx cleared: the oracle's thiscall rows and the candidate's
+// __fastcall forms alike.
+static unsigned nx2gCall0(const void* fn, void* self)
+	{
+	unsigned r;
+	__asm
+		{
+		mov		ecx, self
+		xor		edx, edx
+		call	fn
+		mov		r, eax
+		}
+	return r;
+	}
+static unsigned nx2gCall1(const void* fn, void* self, unsigned a0)
+	{
+	unsigned r;
+	__asm
+		{
+		push	a0
+		mov		ecx, self
+		xor		edx, edx
+		call	fn
+		mov		r, eax
+		}
+	return r;
+	}
+
+// The lattice words (convex-mesh gap Task 2f's kChLattice): each row increases.
+static const unsigned kLattice2g[8][5] =
+	{
+	{ 0x00000000u, 0x3f800000u, 0x40000000u, 0x40400000u, 0x40800000u },
+	{ 0xbfc00000u, 0xbf000000u, 0x3e800000u, 0x3fe00000u, 0x41200000u },
+	{ 0x42c00000u, 0x43000000u, 0x43200000u, 0x43600000u, 0x43800000u },
+	{ 0x3e000000u, 0x3ec00000u, 0x3f000000u, 0x3f200000u, 0x40600000u },
+	{ 0xc0800000u, 0xc0400000u, 0xc0000000u, 0xbf800000u, 0x80000000u },
+	{ 0x80000000u, 0x3f000000u, 0x3fc00000u, 0x40200000u, 0x40c00000u },
+	{ 0xc1000000u, 0xc0c00000u, 0xc0000000u, 0xbf800000u, 0xbf400000u },
+	{ 0x45000000u, 0x45400000u, 0x45800000u, 0x45c00000u, 0x46000000u },
+	};
+
+// Finite words for poses and boxes: +-1, +-0, the (cos, sin) words below, 0.5,
+// denormals.
+static const unsigned kPoseWords2g[16] =
+	{
+	0x3f800000u, 0xbf800000u, 0x00000000u, 0x80000000u, 0x3f19999au, 0x3f4ccccdu, 0xbf19999au, 0xbf4ccccdu,
+	0x3f3504f3u, 0xbf3504f3u, 0x3f000000u, 0x3f5db3d7u, 0x00000003u, 0x80400000u, 0x3e800000u, 0x40000000u
+	};
+static const unsigned kCosSin2g[4][2] =
+	{
+	{ 0x3f19999au, 0x3f4ccccdu }, { 0x3f4ccccdu, 0x3f19999au }, { 0x3f3504f3u, 0x3f3504f3u }, { 0x3f5db3d7u, 0x3f000000u }
+	};
+
+// A finite word of +-[2^-7, 2^8), drawn as bits.
+static unsigned nx2gMidWord(unsigned* state)
+	{
+	const unsigned mantissa = nxNext(state);
+	const unsigned exponent = nxNext(state);
+	return (mantissa & 0x807fffffu) | ((120u + exponent % 15u) << 23);
+	}
+
+static void nx2gSetWord(void* p, unsigned word)
+	{
+	memcpy(p, &word, 4);
+	}
+
+// A rotation's nine words.
+static void nx2gRotation(unsigned* state, unsigned* r)
+	{
+	const unsigned kind = nxNext(state) % 4;
+	if(kind < 2)
+		{
+		// A signed permutation.
+		const unsigned perm = nxNext(state) % 6;
+		static const unsigned kPerm[6][3] = { { 0, 1, 2 }, { 0, 2, 1 }, { 1, 0, 2 }, { 1, 2, 0 }, { 2, 0, 1 }, { 2, 1, 0 } };
+		const unsigned signs = nxNext(state);
+		for(unsigned i = 0; i < 9; ++i)
+			r[i] = 0;
+		for(unsigned row = 0; row < 3; ++row)
+			r[3 * row + kPerm[perm][row]] = ((signs >> row) & 1) ? 0xbf800000u : 0x3f800000u;
+		}
+	else if(kind == 2)
+		{
+		// About one axis by fixed (cos, sin) words.
+		const unsigned axis = nxNext(state) % 3;
+		const unsigned pair = nxNext(state) % 4;
+		const unsigned flip = nxNext(state) & 1;
+		const unsigned c = kCosSin2g[pair][0], s = kCosSin2g[pair][1];
+		const unsigned a = (axis + 1) % 3, b = (axis + 2) % 3;
+		for(unsigned i = 0; i < 9; ++i)
+			r[i] = 0;
+		r[3 * axis + axis] = 0x3f800000u;
+		r[3 * a + a] = c;
+		r[3 * b + b] = c;
+		r[3 * a + b] = flip ? s : s | 0x80000000u;
+		r[3 * b + a] = flip ? s | 0x80000000u : s;
+		}
+	else
+		{
+		// Words from the table (not orthonormal: the rows do not renormalise).
+		for(unsigned i = 0; i < 9; ++i)
+			{
+			const unsigned pick = nxNext(state);
+			r[i] = kPoseWords2g[pick % 16];
+			}
+		}
+	}
+
+// A box mesh: 8 corners (corner i + 2j + 4k), 12 outward triangles.
+struct Nx2gBox
+	{
+	unsigned		verts[24];
+	unsigned short	tris[36];
+	unsigned		centre[3];
+	unsigned		lo[3], hi[3];
+	};
+
+// The box sides: pairs of lattice words whose difference is a power of two, so
+// every face's cross product is a power of two on one axis and the vendored
+// Plane::Set in the side's own 001472 build normalises it exactly (with other
+// spans its 1/c is inexact and the vendored and oracle 005155 normals differ in
+// the last place). The small rows' pairs, then rows 2 and 7's.
+static const unsigned kSpans2g[44][2] =
+	{
+	{ 0x00000000u, 0x3f800000u },	// 1
+	{ 0x00000000u, 0x40000000u },	// 2
+	{ 0x00000000u, 0x40800000u },	// 4
+	{ 0x3f800000u, 0x40000000u },	// 1
+	{ 0x3f800000u, 0x40400000u },	// 2
+	{ 0x40000000u, 0x40400000u },	// 1
+	{ 0x40000000u, 0x40800000u },	// 2
+	{ 0x40400000u, 0x40800000u },	// 1
+	{ 0xbfc00000u, 0xbf000000u },	// 1
+	{ 0x3e000000u, 0x3ec00000u },	// 0.25
+	{ 0x3e000000u, 0x3f200000u },	// 0.5
+	{ 0x3ec00000u, 0x3f000000u },	// 0.125
+	{ 0x3ec00000u, 0x3f200000u },	// 0.25
+	{ 0x3f000000u, 0x3f200000u },	// 0.125
+	{ 0xc0800000u, 0xc0400000u },	// 1
+	{ 0xc0800000u, 0xc0000000u },	// 2
+	{ 0xc0800000u, 0x80000000u },	// 4
+	{ 0xc0400000u, 0xc0000000u },	// 1
+	{ 0xc0400000u, 0xbf800000u },	// 2
+	{ 0xc0000000u, 0xbf800000u },	// 1
+	{ 0xc0000000u, 0x80000000u },	// 2
+	{ 0xbf800000u, 0x80000000u },	// 1
+	{ 0x80000000u, 0x3f000000u },	// 0.5
+	{ 0x3f000000u, 0x3fc00000u },	// 1
+	{ 0x3f000000u, 0x40200000u },	// 2
+	{ 0x3fc00000u, 0x40200000u },	// 1
+	{ 0xc1000000u, 0xc0c00000u },	// 2
+	{ 0xc0c00000u, 0xc0000000u },	// 4
+	{ 0xc0000000u, 0xbf800000u },	// 1
+	{ 0xbf800000u, 0xbf400000u },	// 0.25
+	{ 0x42c00000u, 0x43000000u },	// 32
+	{ 0x42c00000u, 0x43200000u },	// 64
+	{ 0x42c00000u, 0x43600000u },	// 128
+	{ 0x43000000u, 0x43200000u },	// 32
+	{ 0x43000000u, 0x43800000u },	// 128
+	{ 0x43200000u, 0x43600000u },	// 64
+	{ 0x43600000u, 0x43800000u },	// 32
+	{ 0x45000000u, 0x45400000u },	// 1024
+	{ 0x45000000u, 0x45800000u },	// 2048
+	{ 0x45000000u, 0x45c00000u },	// 4096
+	{ 0x45400000u, 0x45800000u },	// 1024
+	{ 0x45800000u, 0x45c00000u },	// 2048
+	{ 0x45800000u, 0x46000000u },	// 4096
+	{ 0x45c00000u, 0x46000000u },	// 2048
+	};
+static const unsigned kNbSmallSpans2g = 30;
+
+// The lattice rows of small words (0..10), for the translations.
+static const unsigned kSmallRows2g[6] = { 0, 1, 3, 4, 5, 6 };
+static const unsigned kNearRows2g[3] = { 0, 3, 5 };
+
+static void nx2gBuildBox(unsigned* state, Nx2gBox& box, bool large)
+	{
+	const unsigned nbSpans = sizeof(kSpans2g) / sizeof(kSpans2g[0]);
+	for(unsigned axis = 0; axis < 3; ++axis)
+		{
+		const unsigned spanDraw = nxNext(state);
+		const unsigned span = large ? kNbSmallSpans2g + spanDraw % (nbSpans - kNbSmallSpans2g)
+			: spanDraw % kNbSmallSpans2g;
+		const unsigned centreDraw = nxNext(state);
+		box.centre[axis] = kSpans2g[(span + centreDraw % 3) % nbSpans][centreDraw & 1];
+		box.lo[axis] = kSpans2g[span][0];
+		box.hi[axis] = kSpans2g[span][1];
+		}
+	for(unsigned c = 0; c < 8; ++c)
+		{
+		box.verts[3 * c + 0] = (c & 1) ? box.hi[0] : box.lo[0];
+		box.verts[3 * c + 1] = (c & 2) ? box.hi[1] : box.lo[1];
+		box.verts[3 * c + 2] = (c & 4) ? box.hi[2] : box.lo[2];
+		}
+	static const unsigned kQuads[6][4] = { { 1, 3, 7, 5 }, { 0, 4, 6, 2 }, { 2, 6, 7, 3 }, { 0, 1, 5, 4 }, { 4, 5, 7, 6 }, { 0, 2, 3, 1 } };
+	for(unsigned q = 0; q < 6; ++q)
+		{
+		const unsigned diagonal = nxNext(state) & 1;
+		unsigned short* t = &box.tris[6 * q];
+		const unsigned a = kQuads[q][0], b = kQuads[q][1], c = kQuads[q][2], d = kQuads[q][3];
+		if(diagonal)
+			{
+			t[0] = (unsigned short) a; t[1] = (unsigned short) b; t[2] = (unsigned short) c;
+			t[3] = (unsigned short) a; t[4] = (unsigned short) c; t[5] = (unsigned short) d;
+			}
+		else
+			{
+			t[0] = (unsigned short) a; t[1] = (unsigned short) b; t[2] = (unsigned short) d;
+			t[3] = (unsigned short) b; t[4] = (unsigned short) c; t[5] = (unsigned short) d;
+			}
+		}
+	}
+
+// The vertex graph 001530 climbs: +0x08 the neighbour counts, +0x0c the offsets
+// into +0x10, the neighbours (every triangle edge, both ways, once).
+struct Nx2gGraph
+	{
+	unsigned		word0, word4;
+	const unsigned*	counts;
+	const unsigned*	offsets;
+	const unsigned*	neighbours;
+	unsigned		countStore[8], offsetStore[8], neighbourStore[64];
+	};
+
+static void nx2gBuildGraph(const Nx2gBox& box, Nx2gGraph& g)
+	{
+	bool adjacent[8][8];
+	memset(adjacent, 0, sizeof(adjacent));
+	for(unsigned t = 0; t < 12; ++t)
+		for(unsigned e = 0; e < 3; ++e)
+			{
+			const unsigned a = box.tris[3 * t + e], b = box.tris[3 * t + (e + 1) % 3];
+			adjacent[a][b] = adjacent[b][a] = true;
+			}
+	unsigned next = 0;
+	for(unsigned v = 0; v < 8; ++v)
+		{
+		g.offsetStore[v] = next;
+		g.countStore[v] = 0;
+		for(unsigned w = 0; w < 8; ++w)
+			if(adjacent[v][w])
+				{
+				g.neighbourStore[next++] = w;
+				++g.countStore[v];
+				}
+		}
+	g.word0 = 0xcdcd6400u;
+	g.word4 = 0xcdcd6404u;
+	g.counts = g.countStore;
+	g.offsets = g.offsetStore;
+	g.neighbours = g.neighbourStore;
+	}
+
+// One side's images of one hull.
+struct Nx2gHullSide
+	{
+	unsigned		hull[0x80 / 4];
+	unsigned char	mesh[0xb0];
+	unsigned		map[6];
+	bool			hasMap;
+	};
+
+static const unsigned kNb2gHulls = 12;
+
+struct Nx2gSide
+	{
+	bool				oracle;
+	unsigned char*		base;
+	Nx2gHullSide		hulls[kNb2gHulls];
+	unsigned char		scratch[0x500];
+	unsigned			visited[64];
+	unsigned			pruner[8];
+	float				boxes[2][6];
+	};
+
+static void nx2gContainerCtor(Nx2gSide& s, void* object)
+	{
+	if(s.oracle)
+		nx2gCall0(s.base + kIceContainerCtorRva, object);
+	else
+		new(object) IceCore::Container;
+	}
+
+static void nx2gContainerDtor(Nx2gSide& s, void* object)
+	{
+	if(s.oracle)
+		nx2gCall0(s.base + kIceContainerDtorRva, object);
+	else
+		((IceCore::Container*) object)->~Container();
+	}
+
+// A block of the side's own 004803 allocator, released through its slot 3.
+static void nx2gFree(Nx2gSide& s, void* block)
+	{
+	if(!block)
+		return;
+	if(s.oracle)
+		{
+		typedef void** (__cdecl* GetterFn)();
+		typedef void (__thiscall* FreeFn)(void*, void*);
+		void** allocator = ((GetterFn) (s.base + kSdkAllocatorGetterRva))();
+		((FreeFn) ((void**) *allocator)[3])(allocator, block);
+		}
+	else
+		nxGetSdkAllocator()->free(block);
+	}
+
+static void nx2gBuildHull(Nx2gSide& s, Nx2gHullSide& h, const Nx2gBox& box, const Nx2gGraph* graph,
+	unsigned mapSubdiv)
+	{
+	memset(h.hull, 0, sizeof(h.hull));
+	h.hull[0] = 0xcdcd8000u;
+	h.hull[1] = 12;
+	h.hull[2] = (unsigned) (size_t) box.tris;
+	h.hull[3] = 8;
+	h.hull[4] = (unsigned) (size_t) box.verts;
+	h.hull[6] = box.centre[0];
+	h.hull[7] = box.centre[1];
+	h.hull[8] = box.centre[2];
+	h.hull[25] = (unsigned) (size_t) graph;
+	memset(h.mesh, 0, sizeof(h.mesh));
+	const void* table = s.oracle ? (const void*) (s.base + kPolygonTableRva) : (const void*) gTriangleMeshPolygonTable;
+	*(const void**) (h.mesh + 0x04) = table;
+	*(unsigned**) (h.mesh + 0xa0) = h.hull;
+	*(unsigned*) (h.mesh + 0xa4) = 0xcdcda4a4u;
+	const void* const* slots = (const void* const*) table;
+	nxSetControl(kControlDefault);
+	nx2gCall0(slots[3], h.mesh + 4);		// 002221: 001472
+	nx2gCall0(slots[6], h.mesh + 4);		// 002227: 001502
+	h.hasMap = mapSubdiv != 0;
+	if(h.hasMap)
+		{
+		for(unsigned i = 0; i < 6; ++i)
+			h.map[i] = 0xcdcdc000u + i;
+		nx2gCall1(s.oracle ? (const void*) (s.base + kVertexMapCtorRva) : (const void*) &nxSupportMapVertexConstruct,
+			h.map, (unsigned) (size_t) h.hull);
+		nx2gCall1(s.oracle ? (const void*) (s.base + kSupportMapInitRva) : (const void*) &nxSupportMapInit,
+			h.map, mapSubdiv);
+		*(unsigned**) (h.mesh + 0xa8) = h.map;
+		}
+	}
+
+static void nx2gReleaseHull(Nx2gSide& s, Nx2gHullSide& h)
+	{
+	if(h.hasMap)
+		{
+		// Slot 0 of the map's own table without the free bit: the bytes released.
+		const void* const* table = (const void* const*) (size_t) h.map[0];
+		nx2gCall1(table[0], h.map, 0);
+		}
+	const unsigned cookieFields[2] = { 10, 15 };
+	const unsigned plainFields[5] = { 11, 12, 16, 17, 18 };
+	for(int i = 0; i < 2; ++i)
+		if(h.hull[cookieFields[i]])
+			nx2gFree(s, (unsigned*) (size_t) h.hull[cookieFields[i]] - 1);
+	for(int i = 0; i < 5; ++i)
+		if(h.hull[plainFields[i]])
+			nx2gFree(s, (void*) (size_t) h.hull[plainFields[i]]);
+	}
+
+static void nx2gFoldScratch(NxDigest* digest, const unsigned char* scratch)
+	{
+	for(unsigned c = 0; c < 2; ++c)
+		{
+		const unsigned* container = (const unsigned*) (scratch + 0x4e0 + 0x10 * c);
+		const unsigned count = container[1];
+		nxFoldInput(digest, &count, 4);
+		const unsigned* entries = (const unsigned*) (size_t) container[2];
+		if(entries && count)
+			nxFoldInput(digest, entries, 4 * count);
+		}
+	nxFoldInput(digest, scratch + 0x14, 4);
+	}
+
+static unsigned nx2gCompareScratch(const unsigned char* a, const unsigned char* b)
+	{
+	unsigned differing = 0;
+	for(unsigned c = 0; c < 2; ++c)
+		{
+		const unsigned* ca = (const unsigned*) (a + 0x4e0 + 0x10 * c);
+		const unsigned* cb = (const unsigned*) (b + 0x4e0 + 0x10 * c);
+		if(ca[1] != cb[1])
+			{
+			++differing;
+			continue;
+			}
+		const unsigned* ea = (const unsigned*) (size_t) ca[2];
+		const unsigned* eb = (const unsigned*) (size_t) cb[2];
+		for(unsigned i = 0; i < ca[1]; ++i)
+			if(ea[i] != eb[i])
+				++differing;
+		}
+	if(memcmp(a + 0x14, b + 0x14, 4) != 0)
+		++differing;
+	return differing;
+	}
+
+static __declspec(noinline) unsigned nxDriveTask2g(unsigned char* base)
+	{
+	unsigned total = 0;
+
+	// -----------------------------------------------------------------------
+	// contact_emit_ext: phys_fn_000875.
+	{
+	typedef void(__thiscall* NxOracleEmitExtFn)(NxContactSink*, void*, void*, NxU32, const NxVec3*,
+		const NxVec3*, NxU32, NxU32, NxU32, NxU32);
+	NxOracleEmitExtFn oracleEmit = (NxOracleEmitExtFn) (base + kEmitFeaturesRva);
+	static NxContactWorld world[2];
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	unsigned perMode[2] = { 0, 0 };
+	unsigned calls = 0, headers = 0, flagIds = 0, flagWords = 0, wideWords = 0, swapped = 0, repeatedNormal = 0,
+		inputSnan = 0;
+	unsigned state = 0x2e875000u;
+	for(unsigned i = 0; i < kEmitExtIterations; ++i)
+		{
+		const unsigned sequenceSeed = nxNext(&state);
+		const unsigned pairsDraw = nxNext(&state);
+		const unsigned pairs = 1 + pairsDraw % 4;
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			for(int side = 0; side < 2; ++side)
+				nxResetWorld(&world[side]);
+			unsigned local = sequenceSeed;
+			NxVec3 normal;
+			memset(&normal, 0, sizeof(normal));
+			for(unsigned p = 0; p < pairs; ++p)
+				{
+				static unsigned char store0[kShapeBytes];
+				static unsigned char store1[kShapeBytes];
+				NxCollisionShape* s0 = (NxCollisionShape*) store0;
+				NxCollisionShape* s1 = (NxCollisionShape*) store1;
+				nxIdentity(s0);
+				nxIdentity(s1);
+				const unsigned flags0 = nxNext(&local);
+				const unsigned flags1 = nxNext(&local);
+				store0[0xde] = (unsigned char) (flags0 & 0x3f);
+				store1[0xde] = (unsigned char) (flags1 & 0x3f);
+				const unsigned idDraw0 = nxNext(&local);
+				const unsigned idDraw1 = nxNext(&local);
+				const unsigned junk0 = nxNext(&local);
+				const unsigned junk1 = nxNext(&local);
+				const NxU32 id0 = ((idDraw0 & 1) ? ((idDraw0 >> 1) & 0x7fff) : 0xffffu) | (junk0 & 0xffff0000u);
+				const NxU32 id1 = ((idDraw1 & 1) ? ((idDraw1 >> 1) & 0x7fff) : 0xffffu) | (junk1 & 0xffff0000u);
+				const unsigned wordDraw0 = nxNext(&local);
+				const unsigned wordDraw1 = nxNext(&local);
+				const unsigned wordSize = nxNext(&local);
+				const NxU32 word0 = (wordSize & 3) == 0 ? wordDraw0 : wordDraw0 & 0xffffu;
+				const NxU32 word1 = (wordSize & 12) == 0 ? wordDraw1 : wordDraw1 & 0xffffu;
+				NxVec3 point;
+				for(int k = 0; k < 3; ++k)
+					nxPickRawWord(&local, &(&point.x)[k]);
+				const unsigned repeat = nxNext(&local);
+				if(p == 0 || (repeat & 3) != 0)
+					for(int k = 0; k < 3; ++k)
+						nxPickRawWord(&local, &(&normal.x)[k]);
+				else if(mode == 0)
+					++repeatedNormal;
+				const NxU32 separationBits = nxNext(&local);
+				const bool newIdentity0 = (p == 0) || ((nxNext(&local) & 3) == 0);
+				const bool newIdentity1 = (p == 0) || ((nxNext(&local) & 3) == 0);
+				const NxU32 material0 = nxNext(&local) & 0xff;
+				const NxU32 material1 = nxNext(&local) & 0xff;
+				const bool nullHolder1 = (nxNext(&local) & 7) == 0;
+				const bool orient = (nxNext(&local) & 1) != 0;
+				for(int side = 0; side < 2; ++side)
+					nxStageWorld(&world[side], s0, s1, newIdentity0, newIdentity1, material0, material1,
+						false, nullHolder1, orient);
+				if(mode == 0)
+					{
+					nxFoldInput(&inputDigest, store0 + 0xde, 1);
+					nxFoldInput(&inputDigest, store1 + 0xde, 1);
+					nxFoldInput(&inputDigest, &id0, 4);
+					nxFoldInput(&inputDigest, &id1, 4);
+					nxFoldInput(&inputDigest, &word0, 4);
+					nxFoldInput(&inputDigest, &word1, 4);
+					nxFoldInput(&inputDigest, &point, sizeof(point));
+					nxFoldInput(&inputDigest, &normal, sizeof(normal));
+					nxFoldInput(&inputDigest, &separationBits, 4);
+					for(int k = 0; k < 3; ++k)
+						{
+						const NxU32 pw = nxBits((&point.x)[k]), nw = nxBits((&normal.x)[k]);
+						inputSnan += ((pw & 0x7fc00000u) == 0x7f800000u && (pw & 0x3fffffu)) ? 1 : 0;
+						inputSnan += ((nw & 0x7fc00000u) == 0x7f800000u && (nw & 0x3fffffu)) ? 1 : 0;
+						}
+					}
+				const NxU32 countBefore = world[0].sink.streamCount;
+				const void* lastBefore = world[0].sink.lastObject1;
+				nxSetControl(mode ? kControlSimulate : kControlDefault);
+				oracleEmit(&world[0].sink, world[0].sphere->collisionObject, world[0].plane->collisionObject,
+					separationBits, &point, &normal, id0, id1, word0, word1);
+				NxEmitContactFeatures(&world[1].sink, 0, world[1].sphere->collisionObject,
+					world[1].plane->collisionObject, separationBits, &point, &normal, id0, id1, word0, word1);
+				nxSetControl(kControlDefault);
+				if(mode == 0)
+					{
+					++calls;
+					const NxU32 flag = world[0].sink.featurePairValid;
+					if(world[0].sink.lastObject1 != lastBefore || countBefore == 1)
+						++headers;
+					if(flag & 1)
+						++flagIds;
+					if(flag & 4)
+						{
+						++flagWords;
+						if(word0 > 0xffffu || word1 > 0xffffu)
+							++wideWords;
+						}
+					if(orient)
+						++swapped;
+					}
+				}
+			nxFoldStream(&oracleDigest, &world[0]);
+			nxFoldStream(&candidateDigest, &world[1]);
+			perMode[mode] += nxCompareStreams(&world[0], &world[1], mode);
+			}
+		}
+	total += perMode[0] + perMode[1];
+	printf("collision name=contact_emit_ext index=- rva=0x%08x owner=phys_fn_000875 checks=%u oracle=%016llx candidate=%016llx mismatches=%u default_mismatches=%u simulate_mismatches=%u\n",
+		kEmitFeaturesRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state, perMode[0] + perMode[1],
+		perMode[0], perMode[1]);
+	nxPrintInput("contact_emit_ext", &inputDigest);
+	printf("collision coverage name=contact_emit_ext calls=%u headers=%u flag_ids=%u flag_words=%u wide_words=%u swapped=%u repeated_normal=%u input_snan=%u\n",
+		calls, headers, flagIds, flagWords, wideWords, swapped, repeatedNormal, inputSnan);
+	}
+
+	// -----------------------------------------------------------------------
+	// contact_convex_convex: phys_fn_001820.
+	{
+	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
+	NxOracleContactFn oracleContact = (NxOracleContactFn) (base + kConvexConvexRva);
+	static Nx2gSide sides[2];
+	static Nx2gBox boxes[kNb2gHulls];
+	static Nx2gGraph graphs[kNb2gHulls];
+	static NxContactWorld world[2];
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+
+	unsigned state = 0x2e820000u;
+	unsigned mapSubdiv[kNb2gHulls];
+	for(unsigned h = 0; h < kNb2gHulls; ++h)
+		{
+		nx2gBuildBox(&state, boxes[h], h >= kNb2gHulls - 2);
+		nx2gBuildGraph(boxes[h], graphs[h]);
+		static const unsigned kSubdiv[4] = { 1, 2, 3, 5 };
+		const unsigned subdivDraw = nxNext(&state);
+		mapSubdiv[h] = (h & 1) ? kSubdiv[subdivDraw % 4] : 0;
+		nxFoldInput(&inputDigest, boxes[h].verts, sizeof(boxes[h].verts));
+		nxFoldInput(&inputDigest, boxes[h].tris, sizeof(boxes[h].tris));
+		nxFoldInput(&inputDigest, boxes[h].centre, sizeof(boxes[h].centre));
+		nxFoldInput(&inputDigest, &mapSubdiv[h], 4);
+		}
+	unsigned builtPolygons = 0, builtEdges = 0;
+	for(int side = 0; side < 2; ++side)
+		{
+		Nx2gSide& s = sides[side];
+		s.oracle = side == 0;
+		s.base = base;
+		for(unsigned h = 0; h < kNb2gHulls; ++h)
+			nx2gBuildHull(s, s.hulls[h], boxes[h], &graphs[h], mapSubdiv[h]);
+		memset(s.scratch, 0, sizeof(s.scratch));
+		*(unsigned*) (s.scratch + 0x04) = 64;
+		*(unsigned**) (s.scratch + 0x08) = s.visited;
+		memset(s.visited, 0, sizeof(s.visited));
+		nx2gContainerCtor(s, s.scratch + 0x4e0);
+		nx2gContainerCtor(s, s.scratch + 0x4f0);
+		memset(s.pruner, 0, sizeof(s.pruner));
+		s.pruner[5] = (unsigned) (size_t) s.boxes;	// +0x14, the world boxes
+		}
+	// The two sides' builds, compared once (discrete words).
+	unsigned buildMismatches = 0;
+	for(unsigned h = 0; h < kNb2gHulls; ++h)
+		{
+		const unsigned* a = sides[0].hulls[h].hull;
+		const unsigned* b = sides[1].hulls[h].hull;
+		if(a[9] != b[9] || a[14] != b[14])
+			++buildMismatches;
+		builtPolygons += a[9];
+		builtEdges += a[14];
+		}
+
+	NxDigest splitOracle, splitCandidate;
+	nxDigestInit(&splitOracle);
+	nxDigestInit(&splitCandidate);
+	unsigned splitWords = 0, splitRuns = 0, splitPairs = 0;
+	unsigned perMode[2] = { 0, 0 };
+	unsigned pairs = 0, pairsWithContacts = 0, contacts = 0, headers = 0, mapPairs = 0, graphPairs = 0,
+		nullHolders = 0, stampWraps = 0, axesTotal = 0;
+	for(unsigned i = 0; i < kConvexPairs; ++i)
+		{
+		unsigned local = 0x2e821000u ^ (i * 0x9e3779b9u + 1u);
+		const unsigned hullDraw0 = nxNext(&local);
+		const unsigned hullDraw1 = nxNext(&local);
+		// Half the pairs are one hull twice: kind 0 the same pose but for one
+		// translation word, kind 1 the same translation under another rotation;
+		// the rest are two hulls on words of rows 0, 3 and 5 up to 2.
+		const unsigned pairKind = nxNext(&local) % 4;
+		const unsigned h0 = hullDraw0 % kNb2gHulls;
+		const unsigned h1 = pairKind < 2 ? h0 : hullDraw1 % kNb2gHulls;
+		unsigned rotation0[9], rotation1[9], translation0[3], translation1[3];
+		nx2gRotation(&local, rotation0);
+		nx2gRotation(&local, rotation1);
+		const unsigned ownAxis = nxNext(&local) % 3;
+		for(unsigned k = 0; k < 3; ++k)
+			{
+			const unsigned pick0 = nxNext(&local);
+			const unsigned pick1 = nxNext(&local);
+			const unsigned table0 = kNearRows2g[nxNext(&local) % 3];
+			const unsigned table1 = kNearRows2g[nxNext(&local) % 3];
+			translation0[k] = (pick0 & 15) == 0 ? nx2gMidWord(&local)
+				: kLattice2g[table0][(pick0 >> 4) % 3] | ((pick0 >> 8) & 0x80000000u);
+			translation1[k] = (pick1 & 15) == 0 ? nx2gMidWord(&local)
+				: (pick1 & 3) == 1 ? kLattice2g[table1][(pick1 >> 4) % 5] | ((pick1 >> 8) & 0x80000000u)
+				: kLattice2g[table1][(pick1 >> 4) % 3] | ((pick1 >> 8) & 0x80000000u);
+			if((pairKind == 0 && k != ownAxis) || pairKind == 1)
+				translation1[k] = translation0[k];
+			}
+		// Kind 0: the same rotation too, so the two boxes are one box shifted along
+		// one axis (face against face, or apart).
+		if(pairKind == 0)
+			memcpy(rotation1, rotation0, sizeof(rotation1));
+		unsigned boxWords[2][6];
+		for(unsigned b = 0; b < 2; ++b)
+			for(unsigned k = 0; k < 6; ++k)
+				{
+				const unsigned pick = nxNext(&local);
+				const unsigned sign = k < 3 ? 0x80000000u : 0u;
+				boxWords[b][k] = (pick & 3) == 0 ? (0x7149f2cau | sign)
+					: (pick & 3) == 1 ? nx2gMidWord(&local) : (kLattice2g[0][pick % 5] | (((pick >> 8) & 1) ? sign : 0u));
+				}
+		const unsigned flags0 = nxNext(&local);
+		const unsigned flags1 = nxNext(&local);
+		const unsigned holderDraw = nxNext(&local);
+		const bool nullHolder0 = holderDraw % 8 == 1;
+		const bool nullHolder1 = holderDraw % 8 == 2;
+		const NxU32 material0 = nxNext(&local) & 0xff;
+		const NxU32 material1 = nxNext(&local) & 0xff;
+		const bool orient = (nxNext(&local) & 1) != 0;
+		const unsigned stampDraw = nxNext(&local);
+		const unsigned stamp = (stampDraw & 15) == 0 ? 0xfffffffeu : stampDraw & 0xffffu;
+		nxFoldInput(&inputDigest, &h0, 4);
+		nxFoldInput(&inputDigest, &h1, 4);
+		nxFoldInput(&inputDigest, rotation0, sizeof(rotation0));
+		nxFoldInput(&inputDigest, rotation1, sizeof(rotation1));
+		nxFoldInput(&inputDigest, translation0, sizeof(translation0));
+		nxFoldInput(&inputDigest, translation1, sizeof(translation1));
+		nxFoldInput(&inputDigest, boxWords, sizeof(boxWords));
+		nxFoldInput(&inputDigest, &flags0, 4);
+		nxFoldInput(&inputDigest, &flags1, 4);
+		nxFoldInput(&inputDigest, &holderDraw, 4);
+		nxFoldInput(&inputDigest, &stamp, 4);
+		bool poseDenormal = false;
+		for(unsigned k = 0; k < 9; ++k)
+			poseDenormal |= ((rotation0[k] | rotation1[k]) & 0x7f800000u) != 0x7f800000u
+				&& (((rotation0[k] & 0x7f800000u) == 0 && (rotation0[k] & 0x007fffffu))
+					|| ((rotation1[k] & 0x7f800000u) == 0 && (rotation1[k] & 0x007fffffu)));
+		++pairs;
+		if(sides[0].hulls[h0].hasMap || sides[0].hulls[h1].hasMap)
+			++mapPairs;
+		if(!sides[0].hulls[h0].hasMap || !sides[0].hulls[h1].hasMap)
+			++graphPairs;
+		if(nullHolder0 || nullHolder1)
+			++nullHolders;
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			for(int side = 0; side < 2; ++side)
+				{
+				Nx2gSide& s = sides[side];
+				static unsigned char store[2][2][kShapeBytes];
+				unsigned char* shape[2] = { store[side][0], store[side][1] };
+				for(unsigned b = 0; b < 2; ++b)
+					{
+					nxIdentity((NxCollisionShape*) shape[b]);
+					memcpy(((NxCollisionShape*) shape[b])->rotation, b ? rotation1 : rotation0, 36);
+					memcpy(((NxCollisionShape*) shape[b])->translation, b ? translation1 : translation0, 12);
+					((NxCollisionShape*) shape[b])->type = 4;
+					*(unsigned char**) (shape[b] + 0xe0) = s.hulls[b ? h1 : h0].mesh;
+					shape[b][0xac] = 2;								// Prunable flags: no refresh
+					*(unsigned**) (shape[b] + 0xc4) = s.pruner;		// the pruner
+					*(unsigned short*) (shape[b] + 0xcc) = (unsigned short) b;	// the handle
+					shape[b][0xde] = (unsigned char) ((b ? flags1 : flags0) & 0x3f);
+					memcpy(s.boxes[b], boxWords[b], 24);
+					}
+				nxResetWorld(&world[side]);
+				nxStageWorld(&world[side], (NxCollisionShape*) shape[0], (NxCollisionShape*) shape[1],
+					true, true, material0, material1, nullHolder0, nullHolder1, orient);
+				*(unsigned*) (s.scratch + 0x14) = stamp;
+				}
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			oracleContact(world[0].plane, world[0].sphere, &world[0].sink, sides[0].scratch);
+			NxContactConvexConvex(world[1].plane, world[1].sphere, &world[1].sink, sides[1].scratch);
+			nxSetControl(kControlDefault);
+			// The split (a rule on the fixed input): a pose with a denormal word, run
+			// under 0x0f7f. There the candidate's 001653 relative poses can differ in
+			// the last places, through the vendored InvertPRMatrix it calls (005191;
+			// with the oracle's bound in, none do: the bind patch in the evidence).
+			const bool split = mode == 1 && poseDenormal;
+			nxFoldStream(split ? &splitOracle : &oracleDigest, &world[0]);
+			nxFoldStream(split ? &splitCandidate : &candidateDigest, &world[1]);
+			nx2gFoldScratch(split ? &splitOracle : &oracleDigest, sides[0].scratch);
+			nx2gFoldScratch(split ? &splitCandidate : &candidateDigest, sides[1].scratch);
+			const unsigned differing = nxCompareStreams(&world[0], &world[1], mode)
+				+ nx2gCompareScratch(sides[0].scratch, sides[1].scratch);
+			if(split)
+				{
+				splitWords += differing;
+				if(differing)
+					++splitRuns;
+				}
+			else
+				perMode[mode] += differing;
+			if(mode == 1 && poseDenormal)
+				++splitPairs;
+			if(mode == 0)
+				{
+				if(world[0].sink.contactCount)
+					++pairsWithContacts;
+				contacts += world[0].sink.contactCount;
+				headers += world[0].stream[0];
+				const unsigned after = *(const unsigned*) (sides[0].scratch + 0x14);
+				if(stamp > 0xfffffff0u && after < stamp)
+					++stampWraps;
+				axesTotal += ((const unsigned*) (sides[0].scratch + 0x4e0))[1]
+					+ ((const unsigned*) (sides[0].scratch + 0x4f0))[1];
+				}
+			}
+		}
+	for(int side = 0; side < 2; ++side)
+		{
+		Nx2gSide& s = sides[side];
+		for(unsigned h = 0; h < kNb2gHulls; ++h)
+			nx2gReleaseHull(s, s.hulls[h]);
+		nx2gContainerDtor(s, s.scratch + 0x4e0);
+		nx2gContainerDtor(s, s.scratch + 0x4f0);
+		}
+	const bool splitOver = splitWords > kConvexPoseDivergentWords || splitRuns > kConvexPoseDivergentRuns;
+	total += perMode[0] + perMode[1] + buildMismatches + (splitOver ? 1 : 0);
+	printf("collision name=contact_convex_convex index=- rva=0x%08x owner=phys_fn_001820 checks=%u oracle=%016llx candidate=%016llx mismatches=%u default_mismatches=%u simulate_mismatches=%u build_mismatches=%u\n",
+		kConvexConvexRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state,
+		perMode[0] + perMode[1] + buildMismatches, perMode[0], perMode[1], buildMismatches);
+	printf("collision name=contact_convex_convex.pose_divergent index=- rva=0x%08x owner=phys_fn_001820 checks=%u oracle=%016llx candidate=%016llx words=%u runs=%u ceiling_words=%u ceiling_runs=%u ceiling=%s\n",
+		kConvexConvexRva, splitOracle.checks, splitOracle.state, splitCandidate.state, splitWords, splitRuns,
+		kConvexPoseDivergentWords, kConvexPoseDivergentRuns, splitOver ? "exceeded" : "ok");
+	nxPrintInput("contact_convex_convex", &inputDigest);
+	printf("collision coverage name=contact_convex_convex hulls=%u polygons=%u edges=%u pairs=%u pairs_with_contacts=%u contacts=%u headers=%u map_pairs=%u graph_pairs=%u null_holders=%u stamp_wraps=%u axes=%u split_pairs=%u\n",
+		kNb2gHulls, builtPolygons, builtEdges, pairs, pairsWithContacts, contacts, headers, mapPairs, graphPairs,
+		nullHolders, stampWraps, axesTotal, splitPairs);
+	}
+	return total;
+	}
+
