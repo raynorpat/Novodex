@@ -307,6 +307,48 @@ int wmain(int argc, wchar_t** argv)
 	scene->releaseActor(*e);
 	printTraffic("kinematic_release_traffic", allocs, frees);
 
+	// Sub-area setters: 000785/000787 through NxActor::raiseBodyFlag and
+	// clearBodyFlag (000188/000190) on the zero-element tensor body: entering
+	// zeroes the inverses and allocates the 0x20-byte block; leaving takes
+	// 1.0f / mass and 1.0f / each tensor element with no test (0x19abb,
+	// 0x19bb6-0x19bce), so the zero element gives an infinite inverse, and
+	// frees the block.
+	allocs = gAllocator.allocations();
+	frees = gAllocator.frees();
+	d->raiseBodyFlag(NX_BF_KINEMATIC);
+	printTraffic("setters_enter_traffic", allocs, frees);
+	printRange("setters_enter_inverses", recordOf(d), 0xc0, 4);
+	printRange("setters_enter_flags", recordOf(d), 0x10c, 1);
+	{
+		const unsigned char* block = *reinterpret_cast<unsigned char* const*>(
+			recordOf(d) + 0x118);
+		printf("bodycreate setters_enter_block=%x\n", block ? word(block, 0xc) : 0xffffffffu);
+	}
+	allocs = gAllocator.allocations();
+	frees = gAllocator.frees();
+	d->clearBodyFlag(NX_BF_KINEMATIC);
+	printTraffic("setters_leave_traffic", allocs, frees);
+	printRange("setters_leave_inverses", recordOf(d), 0xc0, 4);
+	printRange("setters_leave_flags", recordOf(d), 0x10c, 1);
+	printf("bodycreate setters_leave_block=%u\n", word(recordOf(d), 0x118) ? 1u : 0u);
+
+	// 000782 with a force mode above 4 (`cmp eax,4; ja 0x1936f`) changes no
+	// field but still runs the wake block: a counter below 0x3ecccccc is
+	// raised at +0x84 and +0x4c.
+	NxBodyDesc drowsy;
+	drowsy.mass = 2.0f;
+	drowsy.massSpaceInertia = NxVec3(1.0f, 1.0f, 1.0f);
+	drowsy.wakeUpCounter = 0.125f;
+	NxActor* g = createBox(scene, drowsy, 0.0f, identity);
+	printf("bodycreate setters_drowsy_created=%u\n", g ? 1u : 0u);
+	if(!g) return nxFail("drowsy actor creation failed");
+	printf("bodycreate setters_drowsy_wake=%x.%x\n", word(recordOf(g), 0x84), word(recordOf(g), 0x4c));
+	g->addForce(NxVec3(1.0f, 2.0f, 3.0f), static_cast<NxForceMode>(5));
+	printf("bodycreate setters_mode5_wake=%x.%x\n", word(recordOf(g), 0x84), word(recordOf(g), 0x4c));
+	printRange("setters_mode5_accumulators", recordOf(g), 0x88, 12);
+	printRange("setters_mode5_velocity", recordOf(g), 0x6c, 6);
+	scene->releaseActor(*g);
+
 	scene->releaseActor(*f);
 	scene->releaseActor(*d);
 	scene->releaseActor(*b);

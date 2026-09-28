@@ -31,6 +31,8 @@
 #include "Nxp.h"
 
 class NxBodyDesc;
+class NxVec3;
+class NxQuat;
 
 // this = record + 0x18.
 struct DynamicBodyBase
@@ -56,6 +58,24 @@ struct DynamicBody
 	// Row 000776 (0x18570, plain ret; tail-jumps to 000799): the record
 	// destructor (non-deleting; phys_fn_000030 frees the block).
 	void destruct();
+
+	// The setters (scene-raycast Task 4, sub-area setters). NpActor.cpp's
+	// helpers nxNpActorAccumulateForce, nxNpActorTransitionKinematic and
+	// nxNpActorApplyWorldMassPose forward to them; 000791 is
+	// core/JointSupport.cpp's Row000791Fixture::row000791.
+	// Row 000782 (0x18730, ret 0x10): add `force` (linear) and `torque`
+	// (angular), either may be null, under `mode`; then wake when `wake`.
+	void addForce(const NxVec3* force, const NxVec3* torque, NxU32 mode, bool wake);
+	// Row 000784 (0x194b0, ret 8): the kinematic target in the +0x118
+	// block, either part may be null; then wake.
+	void setKinematicTarget(const NxVec3* position, const NxQuat* orientation);
+	// Row 000785 with its continuation 000787 (0x19620, ret 4): enter
+	// (non-zero) or leave (zero) the kinematic state.
+	void setKinematic(NxU32 enable);
+	// Row 000789 (0x19d00, plain ret): the actor pose (+0x50, +0x5c and the
+	// copies at +0x18, +0x24) from the world mass frame (+0x134, +0x158) and
+	// the local one (+0xdc, +0x100), and the world inverse tensor (+0x164).
+	void setPoseFromCMass();
 	};
 
 #endif

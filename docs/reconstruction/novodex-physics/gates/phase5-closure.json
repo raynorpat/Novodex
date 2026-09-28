@@ -18,8 +18,8 @@
     "differentials": []
   },
   "counts": {
-    "deferred_not_reconstructed_in_phase": 79,
-    "deferred_reconstructed_not_falsified": 126
+    "deferred_not_reconstructed_in_phase": 75,
+    "deferred_reconstructed_not_falsified": 130
   },
   "closed": [],
   "deferred": [
@@ -565,33 +565,37 @@
       "id": "phys_fn_000784",
       "rva": "0x000194b0",
       "size": 368,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000785",
       "rva": "0x00019620",
       "size": 1325,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000787",
       "rva": "0x00019b50",
       "size": 428,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000789",
       "rva": "0x00019d00",
       "size": 1461,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000793",

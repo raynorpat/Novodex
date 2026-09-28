@@ -1025,6 +1025,23 @@ $NxRequiredCoverageLines = [ordered] @{
         'bodycreate reused_links=body.self.0.self.self.0.self.0.0.0.0.0',
         'bodycreate reused_getters=3e19999a.3e0f5c29.41200000',
         'bodycreate kinematic_release_traffic=0.6 a f.50.18.20.260.1c.228'
+        # The setters (scene-raycast Task 4, setters: 000782, 000785/000787):
+        # kinematic enter/leave on the zero-element tensor body and a mode-5
+        # addForce on a drowsy body. The oracle's lines, appended as their own
+        # statement so the line above is not edited.
+        'bodycreate setters_enter_traffic=1.0 a.260 f',
+        'bodycreate setters_enter_inverses=0.0.0.0',
+        'bodycreate setters_enter_flags=180',
+        'bodycreate setters_enter_block=0',
+        'bodycreate setters_leave_traffic=0.1 a f.50',
+        'bodycreate setters_leave_inverses=3f800000.3f800000.7f800000.3f000000',
+        'bodycreate setters_leave_flags=100',
+        'bodycreate setters_leave_block=0',
+        'bodycreate setters_drowsy_created=1',
+        'bodycreate setters_drowsy_wake=3e000000.3e000000',
+        'bodycreate setters_mode5_wake=3ecccccc.3ecccccc',
+        'bodycreate setters_mode5_accumulators=0.0.0.0.0.0.0.0.0.0.0.0',
+        'bodycreate setters_mode5_velocity=0.0.0.0.0.0'
     )
     # The Phase 6 joint-descriptor differential. Two cases over the two exported
     # rows, printing the whole descriptor surface before and after each call. The
@@ -2697,8 +2714,9 @@ $NxPhaseCoverageFloor = [ordered] @{
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 135  # 34 for NxPhysicsAssetTests, 101 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a)
-    '5' = 1020  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
+    '5' = 1033  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # + 149 body-creation lines (scene-raycast Task 4)
+               # + 13 setters lines (scene-raycast Task 4, setters)
                # (RED on purpose: vtables family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot

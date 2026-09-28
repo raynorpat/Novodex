@@ -8,6 +8,7 @@
 #include "core/JointSupport.h"
 #include "PhysicsInternal.h"
 #include "X87Sqrt.h"
+#include "BodyCreation.h"
 
 // Rows phys_fn_004389/004391/004393 are not Joint or RevoluteJoint members: they
 // run on JointSupportRecord (see core/JointSupport.h and revolute-contract.md
@@ -460,6 +461,28 @@ void* Row000738Fixture::row000738()
 	if(supportWord(this, 0x1e4) & 0x200)
 		return static_cast<NxU8*>(static_cast<void*>(this)) + 0x244;
 	return 0;
+	}
+
+// phys_fn_000791 (0x0001a2c0, 133 B)
+// The lever d = position - centre of mass (+0x158): dx stays in the register
+// (0x1a2c7-0x1a2c9), dy and dz are spilled to float (0x1a2d8, 0x1a2e9). The
+// torque d x force is formed x, y, z (each `fmul; fmul; fsubp`, 0x1a2ed-0x1a315)
+// and stored to a float local; 000782 is called once with (force, &torque,
+// mode, wake), the last two words passed through unchanged (000782 reads the
+// wake's low byte). noinline: the image calls it as its own function (from
+// 000054, 000154-000158 and 003979).
+__declspec(noinline) void Row000791Fixture::row000791(const NxVec3& force, const NxVec3& position, NxU32 word3,
+	NxU32 word4)
+	{
+	const NxReal* centre = reinterpret_cast<const NxReal*>(static_cast<NxU8*>(static_cast<void*>(this)) + 0x158);
+	const double dx = (double)position.x - centre[0];
+	const NxReal dy = (NxReal)((double)position.y - centre[1]);
+	const NxReal dz = (NxReal)((double)position.z - centre[2]);
+	NxVec3 torque;
+	torque.x = (NxReal)((double)dy * force.z - (double)dz * force.y);
+	torque.y = (NxReal)((double)dz * force.x - dx * force.z);
+	torque.z = (NxReal)(dx * force.y - (double)dy * force.x);
+	reinterpret_cast<DynamicBody*>(this)->addForce(&force, &torque, word3, (NxU8)word4 != 0);
 	}
 
 // phys_fn_000760 (0x00017710, 168 B)

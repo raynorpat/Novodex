@@ -952,3 +952,73 @@ _CIacos go through X87Sqrt.h's naked helpers). Recorded code-shape differences, 
 these sub-areas). Wiring waits for the simulation step, the CCD sweep, the Scene destructor's 000913 call and pair
 deletion. The Phase 7 ledger's note still carries its older "187 / 374" figures (not checked by the validator; not
 changed here).
+
+## Task 4 results: setters
+
+The body setters were written in a separate branch from the body-creation commit (`claude/sr-t4-setters` b471c9f,
+from 6bd2529; notes `.superpowers/sdd/sr/task-4-setters-notes.md`) and cherry-picked onto 378bff1 without
+conflicts. Traces of both sides: `evidence/scene-raycast-trace-task4-setters.txt` (18 targets, candidate NxPhysics.dll
+sha256 52cfab3a0158b0ad...; the ordered sequences of the four compared labels identical, 139 hits each).
+
+**Written, claimed and promoted to `reconstructed` (6 rows, 7,143 B):**
+
+| Row | B | Candidate | Evidence (hits, both sides) |
+|---|---:|---|---|
+| 000782 | 3,428 | `DynamicBody::addForce(force*, torque*, mode, wake)` (BodyCreation.cpp) | dynamic: 27 (Force 26, BodyC 1) |
+| 000785+000787 | 1,325 + 428 | `DynamicBody::setKinematic(NxU32)` (BodyCreation.cpp), one function carrying both lines | dynamic: 103 at 000785 (000787's own address 0x19b50 is the queue-growth copy loop: 0 on the oracle side) |
+| 000789 | 1,461 | `DynamicBody::setPoseFromCMass()` (BodyCreation.cpp) | dynamic: 3 (CMass) |
+| 000791 | 133 | `Row000791Fixture::row000791` (core/JointSupport.cpp; main's name, signature and placement) | dynamic: 6 (Force) |
+| 000784 | 368 | `DynamicBody::setKinematicTarget(pos*, quat*)` (BodyCreation.cpp) | static only: not wired (oracle 5 on ActorDynamics, candidate 0) |
+
+Each member is `noinline` with the row's thiscall ABI and `ret` size. The rows run at API time under 0x027f
+(BodyCreation.cpp keeps the default architecture; 000791's JointSupport.cpp is /arch:IA32). NpActor.cpp's helpers
+now forward: `nxNpActorAccumulateForce` -> `addForce` (one vector, wake 1), `nxNpActorForceAtPos` -> `row000791`
+(wake 1), `nxNpActorTransitionKinematic` -> `setKinematic`, `nxNpActorApplyWorldMassPose` -> `setPoseFromCMass`.
+No NpActor-unit row body or call site changed (checked on the diff: only those four helper bodies and two
+includes). 000795 calls `setKinematic((flags >> 7) & 1)` directly (0x1b4a8); its static proof was updated.
+
+**Defects of the emulation that the rows fix (oracle addresses):** 000782: the x87 grouping of modes 0/1/3
+(0x18759, 0x1888b, 0x18a09, 0x18b44, 0x18ecf, 0x1900b), the wake argument (0x1936f), mode > 4 still wakes
+(0x18740). 000785/000787: the inlined 000748 island step (0x19643-0x1966f, 0x19992-0x199be); the inverses are
+unconditional (0x19abb, 0x19bb6-0x19bce; a zero element gives inf, as the new BodyCreation lines show). 000789:
+000746 first (0x19d1e) instead of the other tensor helper last; the displacement grouping (0x19e5e-0x19ec8); the
+quaternion arms and spills (0x19ff3, 0x1a0a7, 0x1a114, 0x1a16c) with fsqrt through X87Sqrt.h instead of CRT sqrt.
+000791: lever.x kept in the register (0x1a2c7) and one 000782 call for both vectors (0x1a33a).
+
+**Integration review (listing walked, Capstone).** 000785/000787 over 0x19620-0x19cf9 (both island steps against
+000748 0x16f80-0x16fae, the enter stores and block allocation 0x1966f-0x19987, the leave divisions, the x/z/y store
+order and the free 0x19aa5-0x19cf9); 000789's quaternion over 0x19fd0-0x1a2b4 (the (m22 + m11) spill, the trace
+compare, the arm selection through `fcomp [esp+edx+0x28]`, each arm's operands against the X87Sqrt.h helper bodies,
+the spilled and register values, the store order); 000782 over 0x18730-0x187a0, 0x18a00-0x18a60, 0x18b40-0x18be0
+and the wake block 0x1936f-0x193b0; 000791 in full (0x1a2c0-0x1a342, the stack order of the torque local). All
+faithful; no fix was needed.
+
+**New registered lines.** NxPhysicsBodyCreationTests gains 13 lines (kinematic enter/leave on the zero-element tensor
+body, a mode-5 addForce on a drowsy body), regenerated on the oracle side of the pinned pair and copied verbatim; the
+old emulation would have printed an inverse 0 and no wake. Phase 5 floor 1020 -> 1033 (test_gate_targets.py pin
+follows). The lines are appended as their own statement after the last existing one, which is not edited.
+
+**Recorded differences (none reachable by a target):** the dirty-mark queue growth allocates through
+nxGetSdkAllocator() where the image uses [0x101041bc], and the `id < 256` test (as in body-creation; Task 2's
+deferred list); 000791 passes the wake word as `(NxU8)word4 != 0` (000782 reads only the low byte). 000782's in-step
+callers 003601 and 003979 (through 000791) are not reproduced; if they come to run under the step's 0x0f7f,
+000782 (BodyCreation.cpp, SSE2 codegen) would need x87 codegen for its 64-bit intermediates.
+
+**Handover to the NpActor session (additions).**
+- 000784: replace the inline emulation in 000090/000124/000126 (moveGlobalPosition/Pose/Orientation) with
+  `reinterpret_cast<DynamicBody*>(record)->setKinematicTarget(pos or 0, quat or 0)`; then 000784's hit count can be
+  compared (oracle 5 on NxPhysicsActorDynamicsTests) and a dynamic proof recorded.
+- 000785: the call sites in 000188/000190 (raiseBodyFlag/clearBodyFlag) still go through
+  `nxNpActorTransitionKinematic`, which now forwards to `DynamicBody::setKinematic`; they may call the member
+  directly. When merging NpActor.cpp, keep the four forwarders and do not merge the old emulation bodies back.
+- 000746: 000140/000142 still call `nxNpActorWorldTensor` (ActorMomentum: oracle 17, candidate 3 hits of 000746).
+  That gap is theirs, not these rows'. CMass's 000746 count now matches (90/90).
+- `nxNpActorQuaternionFromMatrix` (NpActorDynamicMath.h, CRT sqrt) has no user left; the header was not edited.
+
+**Verification.** Build clean; gates 2, 3, 4, 6, 7 pass; Phase 5 fails only on `candidate CANDIDATE-MISSING
+family=vtables` (`batch3268 candidate failures=3`, `layout ... candidate_fold=4492c8c1` and `shape vtable
+oracle_digest=ed1294b6 cases=626 failures=0` unchanged; coverage 1033/1033; all 13 staged targets stdout_delta=0);
+validator unexplained=0; 753 tool tests OK; stable-ID check: 6 new lines (BodyCreation.cpp 5, core/JointSupport.cpp
+1), exact form, RVA and size equal to the inventory, no duplicates. Ledgers: phase 2 (000782, 000791 from
+`homeless_shared_code`) and phase 5 (000784, 000785, 000787, 000789 from `not_reconstructed_in_phase`) to
+`reconstructed_not_falsified`.

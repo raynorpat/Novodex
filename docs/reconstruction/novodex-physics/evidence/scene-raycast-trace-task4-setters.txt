@@ -1,0 +1,262 @@
+SceneRaycast..CapsuleShape block: cdb breakpoint traces of the body setter rows
+(scene-raycast Task 4, sub-area setters)
+====================================================================================================
+
+A trimmed excerpt of the raw cdb logs, in the method of evidence/joint-open-items-trace-slots.txt,
+evidence/scene-raycast-trace-task3.txt and evidence/scene-raycast-trace-task4-body-creation.txt. ModLoad
+lines, banners, register dumps, the echoed breakpoint commands and the programs' own stdout are removed (the
+`.printf` output shares the console with the program's stdout, so HIT labels were extracted from each line
+in order). The per-label hit counts are complete for every target on both sides; the ordered HIT lines are
+kept for NxPhysicsActorForceTests and NxPhysicsActorDynamicsTests. For the other targets the ordered
+sequences of the four compared labels (000782, 000785, 000789, 000791) were compared instead: identical on
+the two sides for every target. It is the evidence behind the dynamic_proof fields recorded in
+inventory.json for 000782, 000785, 000787, 000789 and 000791 (units/scene-raycast-contract.md,
+## Task 4 results: setters).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\<target>.exe <pair directory>
+           (cwd the pairs root; the script breaks on the NxPhysics load with `sxe ld:NxPhysics`, sets the
+           breakpoints below as `bp NxPhysics+<offset> ".printf \"HIT <label>\n\"; gc"`, then runs to exit.)
+           The pair directories were staged by hand (D:\FlamingEnt__\novodex-analysis\pairs-st4\oracle and
+           \candidate, not kept); the sha256s below identify the modules. Every run exited normally; the same
+           candidate build gives equal stdout on NxPhysicsBodyCreationTests (167 lines, the pair-directory and
+           module-count lines aside) and stdout_delta=0 on every staged target in the Phase 5, 6 and 7 gates.
+Recorded:  2026-09-28, branch claude/scene-raycast-block (378bff1 plus the setters working tree, cherry-picked
+           from claude/sr-t4-setters b471c9f).
+Oracle:    NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate: NxPhysics.dll sha256=52cfab3a0158b0ad64880ea40cda802e17bfcac151d35b8a3fffb12058f9d88c
+           (identical to build\Release\NxPhysics.dll at the time of the trace)
+Offsets:   module-relative. Oracle: every row's inventory RVA. 000787c is 000787's own address 0x19b50, the
+           continuation of 000785 whose first instruction is the copy loop of the 0x10000 dirty mark's queue
+           growth (entered by `jmp 0x19b50` at 0x19b4b and the loop's `jne` at 0x19b5c): no target grows the
+           queue there, so it is 0 on the oracle side and the one function is counted at 000785 (as 000795c in the body-creation trace). Candidate: from build\Release\NxPhysics.map
+           of that build, one breakpoint per out-of-line symbol; the split rows 000785+000787 are one function.
+           Labels ending in x are context, not claimed here: 000746 (the three candidate copies of the
+           NpActorDynamicMath.h helper, BodyCreation.obj, BodyStep.obj, NpActor.obj) and 000712.
+
+BREAKPOINTS, ORACLE (label, module offset)
+------------------------------------------
+  000782    0x18730
+  000784    0x194b0
+  000785    0x19620
+  000787c   0x19b50
+  000789    0x19d00
+  000791    0x1a2c0
+  000746x   0x16e80
+  000712x   0x15d30
+
+BREAKPOINTS, CANDIDATE (label, module offset, object, symbol)
+------------------------------------------------------------
+  000782    0x1120    BodyCreation   ?addForce@DynamicBody@@QAEXPBVNxVec3@@0I_N@Z
+  000784    0x5480    BodyCreation   ?setKinematicTarget@DynamicBody@@QAEXPBVNxVec3@@PBVNxQuat@@@Z
+  000785    0x4d80    BodyCreation   ?setKinematic@DynamicBody@@QAEXI@Z
+  000789    0x5600    BodyCreation   ?setPoseFromCMass@DynamicBody@@QAEXXZ
+  000791    0x43520   JointSupport   ?row000791@Row000791Fixture@@QAEXABVNxVec3@@0II@Z
+  000746x   0x4b50    BodyCreation   ?nxNpActorWorldTensorRDRt@@YAXPBM0PAM@Z
+  000746x   0x6070    BodyStep       ?nxNpActorWorldTensorRDRt@@YAXPBM0PAM@Z
+  000746x   0x1c730   NpActor        ?nxNpActorWorldTensorRDRt@@YAXPBM0PAM@Z
+  000712x   0x42d00   JointSupport   ?row000712@Row000712Fixture@@QAEPAU1@XZ
+
+TARGETS (18): NxPhysicsActorLifecycleTests, NxPhysicsDynamicFirstTests, NxPhysicsEmptySceneTests,
+NxPhysicsActorNameTests, NxPhysicsActorMetadataTests, NxPhysicsActorBodyFlagTests, NxPhysicsActorDynamicsTests,
+NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorForceTests, NxPhysicsActorCMassTests,
+NxPhysicsActorShapeMutationTests, NxPhysicsBodyCreationTests (with the 13 setters lines), NxPhysicsJointStagedPairTests,
+NxPhysicsJointAllocatorTests, NxPhysicsJointSlotTests, NxPhysicsSceneRaycastTests, NxFoundationTangentTests.
+
+HIT COUNTS PER TARGET (oracle/candidate; targets with no hit on either side omitted)
+------------------------------------------------------------------------------------
+  000782   total 27/27: ActorForce 26/26, BodyCreation 1/1
+  000784   total 5/0: ActorDynamics 5/0
+  000785   total 103/103: ActorLifecycle 6/6, DynamicFirst 1/1, ActorBodyFlag 1/1, ActorDynamics 10/10, ActorDynamicSetter 6/6, ActorMomentum 5/5, ActorForce 13/13, ActorCMass 10/10, BodyCreation 9/9, JointStagedPair 8/8, JointAllocator 2/2, JointSlot 27/27, SceneRaycast 5/5
+  000787c  total 0/0: -
+  000789   total 3/3: ActorCMass 3/3
+  000791   total 6/6: ActorForce 6/6
+  000746x  total 221/207: ActorLifecycle 6/6, DynamicFirst 1/1, ActorBodyFlag 1/1, ActorDynamics 2/2, ActorDynamicSetter 15/15, ActorMomentum 17/3, ActorForce 11/11, ActorCMass 90/90, BodyCreation 7/7, JointStagedPair 8/8, JointAllocator 2/2, JointSlot 55/55, SceneRaycast 6/6
+  000712x  total 0/0: -
+
+  000782, 000785, 000789 and 000791 are hit exactly as often as the oracle rows on every target. 000784 is
+  hit 5 times on the oracle side (ActorDynamics: moveGlobalPosition/Pose/Orientation, 000090/000124/000126)
+  and never on the candidate side: those NpActor-unit rows keep their inline emulation (handover to the
+  NpActor session); 000784 is written but not wired and is promoted on its static proof only. 000746's
+  Momentum difference (17/3) is 000140/000142's (getGlobalInertiaTensor/Inverse call a different helper;
+  NpActor handover): it is not on any path of these rows. CMass's 000746 count now matches: the three hits
+  000789 makes were among the extra oracle hits recorded before.
+
+ORDERED SEQUENCES (the four compared labels 000782, 000785, 000789, 000791, per target; oracle/candidate hits)
+-------------------------------------------------------------------------------------------------------------
+  ActorLifecycle       6/6  identical
+  DynamicFirst         1/1  identical
+  EmptyScene           0/0  identical
+  ActorName            0/0  identical
+  ActorMetadata        0/0  identical
+  ActorBodyFlag        1/1  identical
+  ActorDynamics        10/10  identical
+  ActorDynamicSetter   6/6  identical
+  ActorMomentum        5/5  identical
+  ActorForce           45/45  identical
+  ActorCMass           13/13  identical
+  ActorShapeMutation   0/0  identical
+  BodyCreation         10/10  identical
+  JointStagedPair      8/8  identical
+  JointAllocator       2/2  identical
+  JointSlot            27/27  identical
+  SceneRaycast         5/5  identical
+  Tangent              0/0  identical
+139 139 30e84a29d39dad764c89ac717cfb7d3ff8f0e0212d1b235fbc4ff1b4f07bfe9a 30e84a29d39dad764c89ac717cfb7d3ff8f0e0212d1b235fbc4ff1b4f07bfe9a
+  all targets: 139 hits each side; sha256 of the newline-joined label sequence
+    oracle    30e84a29d39dad764c89ac717cfb7d3ff8f0e0212d1b235fbc4ff1b4f07bfe9a
+    candidate 30e84a29d39dad764c89ac717cfb7d3ff8f0e0212d1b235fbc4ff1b4f07bfe9a
+
+HIT LINES, NxPhysicsActorForceTests, ORACLE (56)
+------------------------------------------------------------
+HIT 000746x
+HIT 000785
+HIT 000782
+HIT 000782
+HIT 000782
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000782
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000782
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000782
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000782
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000782
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000782
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000782
+HIT 000782
+HIT 000782
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000791
+HIT 000782
+HIT 000791
+HIT 000782
+HIT 000791
+HIT 000782
+HIT 000791
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000791
+HIT 000782
+HIT 000791
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000785
+HIT 000785
+
+HIT LINES, NxPhysicsActorForceTests, CANDIDATE (56)
+------------------------------------------------------------
+HIT 000746x
+HIT 000785
+HIT 000782
+HIT 000782
+HIT 000782
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000782
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000782
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000782
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000782
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000782
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000782
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000782
+HIT 000782
+HIT 000782
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000791
+HIT 000782
+HIT 000791
+HIT 000782
+HIT 000791
+HIT 000782
+HIT 000791
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000791
+HIT 000782
+HIT 000791
+HIT 000782
+HIT 000746x
+HIT 000785
+HIT 000785
+HIT 000785
+
+HIT LINES, NxPhysicsActorDynamicsTests, ORACLE (17)
+------------------------------------------------------------
+HIT 000746x
+HIT 000785
+HIT 000785
+HIT 000785
+HIT 000785
+HIT 000785
+HIT 000785
+HIT 000784
+HIT 000784
+HIT 000784
+HIT 000784
+HIT 000785
+HIT 000785
+HIT 000784
+HIT 000785
+HIT 000746x
+HIT 000785
+
+HIT LINES, NxPhysicsActorDynamicsTests, CANDIDATE (12)
+------------------------------------------------------------
+HIT 000746x
+HIT 000785
+HIT 000785
+HIT 000785
+HIT 000785
+HIT 000785
+HIT 000785
+HIT 000785
+HIT 000785
+HIT 000785
+HIT 000746x
+HIT 000785
+

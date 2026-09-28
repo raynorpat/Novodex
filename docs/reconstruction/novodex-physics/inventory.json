@@ -14308,13 +14308,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/BodyCreation.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/318",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2207",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x18730-0x19491) and walked in full in scene-raycast Task 4 (setters): thiscall on the record, `ret 0x10` (force, torque, mode, wake); mode > 4 (`cmp eax,4; ja 0x1936f`) skips every arm but not the wake block; the jump table 0x10019494 arms {0x1874d, 0x189fd, 0x18c87, 0x18ec3, 0x19138} each test their pointer before use and keep the listing's x87 grouping: modes 0/3 linear x kept in the register, y/z spilled (0x18759-0x1879b, 0x18ecf-0x18f11); angular rows summed (I[r][2] tz + I[r][1] ty) + I[r][0] tx with x/y kept and z spilled (0x1888b-0x1890d, 0x1900b-0x1908d); mode 1 linear all spilled (0x18a09-0x18a55), angular x kept and y/z spilled (0x18b44-0x18bd9), the sums stored to +0x6c/+0x78 and copied to +0x34/+0x40 (x from the register, y/z as words); modes 2/4 unscaled; dirty masks 0x20/0x40, 4/8, 4/8, 0x80/0x100, 0x80/0x100; the wake block on the argument's low byte (0x1936f): +0x114 bit 8 clear and an ordered +0x84 < [0x101053d4] (0x3ecccccc) set +0x84 = +0x4c = 0x3ecccccc, mark 0x10. Candidate DynamicBody::addForce (Physics/src/BodyCreation.cpp, noinline); NpActor.cpp nxNpActorAccumulateForce forwards to it with one vector and wake 1, as 000056/000058/000160/000162 push. Recorded difference: the dirty-mark queue growth allocates through nxGetSdkAllocator() where the image uses [0x101041bc] (Task 2 deferred list), and the `id < 256` test is the candidate's. Its in-step callers 003601 and 003979 (through 000791) are not reproduced; if they come to run under the step's 0x0f7f, this row would need x87 codegen for 64-bit intermediates. The row runs at API time under 0x027f; BodyCreation.cpp keeps the default architecture, whose double arithmetic is the x87 53-bit register arithmetic there. Re-walked at integration (setters review). units/scene-raycast-contract.md",
+      "dynamic_proof": "executed under the 12 Phase 5 staged-pair targets, NxPhysicsBodyCreationTests (with the 13 setters lines), the Phase 6/7 joint targets and NxPhysicsSceneRaycastTests: a cdb breakpoint on the candidate symbol (build/Release/NxPhysics.map) was hit 27 times (Force 26, BodyC 1) against the staged candidate pair (NxPhysics.dll sha256 52cfab3a0158b0ad, identical to build/Release/NxPhysics.dll), per target exactly the oracle row's count at its RVA on the same targets; the ordered sequences of the four compared labels (000782, 000785, 000789, 000791) are identical on the two sides (139 hits each); every target stdout_delta=0; trace excerpt committed as evidence/scene-raycast-trace-task4-setters.txt (scene-raycast Task 4, setters)",
+      "notes": "Scene-raycast Task 4 (setters): written from the listing as DynamicBody::addForce, replacing NpActor.cpp's per-vector emulation (x87 grouping in modes 0/1/3, wake argument ignored, mode > 4 skipped the wake); claimed and promoted.",
+      "implementation": "Physics/src/BodyCreation.cpp"
     },
     {
       "id": "phys_fn_000783",
@@ -14344,13 +14345,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/BodyCreation.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/319",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2289",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x194b0-0x1961d) and walked in full in scene-raycast Task 4 (setters): thiscall on the record, `ret 8` (position, orientation); a non-null position is copied to [+0x118]+0..8 and [+0x118]+0xc |= 1 (0x194d5); a non-null quaternion to [+0x118]+0x10..0x1c and +0xc |= 2 (0x19506); the block pointer is never tested; then the wake block (0x1950a-0x1961b) unconditionally. Candidate DynamicBody::setKinematicTarget (Physics/src/BodyCreation.cpp, noinline). Not called: its only callers 000090/000124/000126 (moveGlobalPosition/Pose/Orientation) are NpActor-unit rows whose inline emulation remains (handover to the NpActor session); source-only, no dynamic evidence (the oracle row is hit 5 times on NxPhysicsActorDynamicsTests, the candidate function 0; evidence/scene-raycast-trace-task4-setters.txt). Recorded difference: the dirty-mark queue growth allocates through nxGetSdkAllocator() where the image uses [0x101041bc] (Task 2 deferred list), and the `id < 256` test is the candidate's. The row runs at API time under 0x027f; BodyCreation.cpp keeps the default architecture, whose double arithmetic is the x87 53-bit register arithmetic there. Re-walked at integration (setters review). units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (setters): written from the listing as DynamicBody::setKinematicTarget; claimed and promoted on its static proof; unwired until the NpActor session replaces the inline emulation in 000090/000124/000126.",
+      "implementation": "Physics/src/BodyCreation.cpp"
     },
     {
       "id": "phys_fn_000785",
@@ -14362,13 +14364,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/BodyCreation.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/320",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2300",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x19620-0x19cf9 with its continuation 000787) and walked in full in scene-raycast Task 4 (setters), one function with 000787: thiscall on the record, `ret 4`, the argument tested as a dword (0x1962c); each path tests +0x10c bit 7 (`test al,al; js/jns`) and returns when there is nothing to do, then runs the island step 000748 inlines (0x19643-0x1966f, 0x19992-0x199be: +0x1bc refreshed through 000712 on the parent when the record is not its own root, the root's +0x1e4 |= 2 when +0x1e0 is set). Enter: +0xc0 = 0, mark 0x10000; +0xc4..+0xcc = 0, mark 0x20000; +0x10c |= 0x80, mark 0x80000; the 0x20-byte block from [0x101041bc] when +0x118 is null (0x1995d), its +0xc = 0. Leave: +0x10c &= ~0x80, mark 0x80000; +0xc0 = 1.0f / +0x188 unconditionally (0x19abb), mark 0x10000; then 000787. Candidate DynamicBody::setKinematic (Physics/src/BodyCreation.cpp, noinline), called by 000795 (DynamicBody::loadFromBodyDesc, 0x1b4a8) and by NpActor.cpp nxNpActorTransitionKinematic, the forwarder the NpActor-unit rows 000188/000190 (raiseBodyFlag/clearBodyFlag) call; their call sites are unchanged. Recorded difference: the dirty-mark queue growth allocates through nxGetSdkAllocator() where the image uses [0x101041bc] (Task 2 deferred list), and the `id < 256` test is the candidate's. The row runs at API time under 0x027f; BodyCreation.cpp keeps the default architecture, whose double arithmetic is the x87 53-bit register arithmetic there. Re-walked at integration (setters review). units/scene-raycast-contract.md",
+      "dynamic_proof": "executed under the 12 Phase 5 staged-pair targets, NxPhysicsBodyCreationTests (with the 13 setters lines), the Phase 6/7 joint targets and NxPhysicsSceneRaycastTests: a cdb breakpoint on the candidate symbol (build/Release/NxPhysics.map) was hit 103 times (Life 6, DynF 1, BFlag 1, Dyn 10, DSet 6, Mom 5, Force 13, CMass 10, BodyC 9, JSP 8, JAll 2, JSlot 27, SRay 5) against the staged candidate pair (NxPhysics.dll sha256 52cfab3a0158b0ad, identical to build/Release/NxPhysics.dll), per target exactly the oracle row's count at its RVA on the same targets; the ordered sequences of the four compared labels (000782, 000785, 000789, 000791) are identical on the two sides (139 hits each); every target stdout_delta=0; trace excerpt committed as evidence/scene-raycast-trace-task4-setters.txt (scene-raycast Task 4, setters)",
+      "notes": "Scene-raycast Task 4 (setters): written from the listing as DynamicBody::setKinematic with 000787 (the island step and the unconditional inverses are new); claimed and promoted.",
+      "implementation": "Physics/src/BodyCreation.cpp"
     },
     {
       "id": "phys_fn_000786",
@@ -14398,13 +14401,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/BodyCreation.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/320",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2337",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00019620"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x19b50-0x19cf9) and walked in scene-raycast Task 4 (setters) as the tail of 000785's leave path (its first instruction is the copy loop of the 0x10000 dirty mark's queue growth, entered by `jmp 0x19b50` at 0x19b4b and the loop's `jne` at 0x19b5c; the `ret 4` at 0x19cf9), one function with it: the three inverses 1.0f / +0x18c, +0x190, +0x194 formed before any store with no test (0x19bb6-0x19bce), z spilled (0x19bd4), stored x, z, y; mark 0x20000; the block at +0x118 freed through [0x101041bc] (0x19cda) and nulled. Candidate DynamicBody::setKinematic (Physics/src/BodyCreation.cpp), the function that carries 000785. Recorded difference: the dirty-mark queue growth allocates through nxGetSdkAllocator() where the image uses [0x101041bc] (Task 2 deferred list), and the `id < 256` test is the candidate's. The row runs at API time under 0x027f; BodyCreation.cpp keeps the default architecture, whose double arithmetic is the x87 53-bit register arithmetic there. Re-walked at integration (setters review). units/scene-raycast-contract.md",
+      "dynamic_proof": "no address of its own in the candidate (one function with 000785, as in the image); the image's continuation 0x19b50 is reached only through the queue-growth copy loop and was hit 0 times on every target, so the tail's execution is 000785's: executed under the 12 Phase 5 staged-pair targets, NxPhysicsBodyCreationTests (with the 13 setters lines), the Phase 6/7 joint targets and NxPhysicsSceneRaycastTests: a cdb breakpoint on the candidate symbol (build/Release/NxPhysics.map) was hit 103 times (Life 6, DynF 1, BFlag 1, Dyn 10, DSet 6, Mom 5, Force 13, CMass 10, BodyC 9, JSP 8, JAll 2, JSlot 27, SRay 5) against the staged candidate pair (NxPhysics.dll sha256 52cfab3a0158b0ad, identical to build/Release/NxPhysics.dll), per target exactly the oracle row's count at its RVA on the same targets; the ordered sequences of the four compared labels (000782, 000785, 000789, 000791) are identical on the two sides (139 hits each); every target stdout_delta=0; trace excerpt committed as evidence/scene-raycast-trace-task4-setters.txt (scene-raycast Task 4, setters); NxPhysicsBodyCreationTests prints the leave path's inverses (including 1/0 = inf) and the block traffic, equal on both sides",
+      "notes": "continuation of the entry at 0x00019620 Scene-raycast Task 4 (setters): written with 000785 as one function (the unconditional inverses are new); claimed and promoted.",
+      "implementation": "Physics/src/BodyCreation.cpp"
     },
     {
       "id": "phys_fn_000788",
@@ -14434,13 +14438,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/BodyCreation.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/321",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2350",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x19d00-0x1a2b4) and walked in full in scene-raycast Task 4 (setters): thiscall on the record, no arguments, plain `ret`; 000746 (+0xc4, +0x134, +0x164) first (0x19d1e; the out-of-line nxNpActorWorldTensorRDRt); M = C F^T into a float local in the listing's sum order (0x19d23-0x19e5a); the displacement M p with the x row kept in the register and the y/z rows spilled (0x19e5e-0x19ec8); t = +0x158 - M p to +0x50 and +0x18, mark 1; the quaternion (0x19fe1-0x1a1ce): (m22 + m11) spilled (0x19ff3), the trace kept in the register and compared `fcom 0; test ah,1`, the arm chosen by strict greater-than (`test ah,0x41`), fsqrt through X87Sqrt.h (x87FsqrtSum4 trace arm, x87FsqrtDiag z and y arms, x87FsqrtSum3 x arm over the spill), the z arm spilling s and forming 0.5 / float(s) (0x1a0a7-0x1a0b7), the y and x arms spilling 0.5 / s (0x1a114, 0x1a16c); stores +0x64 (from the register), +0x68, +0x5c, +0x60 and the +0x24..+0x30 copies, mark 2. Candidate DynamicBody::setPoseFromCMass (Physics/src/BodyCreation.cpp, noinline); NpActor.cpp nxNpActorApplyWorldMassPose forwards to it (the NpActor-unit callers 000204/000206/000208 unchanged). No CRT math. Recorded difference: the dirty-mark queue growth allocates through nxGetSdkAllocator() where the image uses [0x101041bc] (Task 2 deferred list), and the `id < 256` test is the candidate's. The row runs at API time under 0x027f; BodyCreation.cpp keeps the default architecture, whose double arithmetic is the x87 53-bit register arithmetic there. Re-walked at integration (setters review). units/scene-raycast-contract.md",
+      "dynamic_proof": "executed under the 12 Phase 5 staged-pair targets, NxPhysicsBodyCreationTests (with the 13 setters lines), the Phase 6/7 joint targets and NxPhysicsSceneRaycastTests: a cdb breakpoint on the candidate symbol (build/Release/NxPhysics.map) was hit 3 times (CMass 3) against the staged candidate pair (NxPhysics.dll sha256 52cfab3a0158b0ad, identical to build/Release/NxPhysics.dll), per target exactly the oracle row's count at its RVA on the same targets; the ordered sequences of the four compared labels (000782, 000785, 000789, 000791) are identical on the two sides (139 hits each); every target stdout_delta=0; trace excerpt committed as evidence/scene-raycast-trace-task4-setters.txt (scene-raycast Task 4, setters); the oracle's 000746 count on NxPhysicsActorCMassTests (90) now equals the candidate's",
+      "notes": "Scene-raycast Task 4 (setters): written from the listing as DynamicBody::setPoseFromCMass (000746 first, the displacement grouping, the X87Sqrt.h quaternion arms), replacing NpActor.cpp's emulation; claimed and promoted.",
+      "implementation": "Physics/src/BodyCreation.cpp"
     },
     {
       "id": "phys_fn_000790",
@@ -14470,13 +14475,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/322",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2372",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1a2c0-0x1a342) and walked in full in scene-raycast Task 4 (setters): thiscall on the record, `ret 0x10` (force, position, mode, wake); dx = position.x - +0x158 kept in the register (0x1a2c7-0x1a2c9), dy and dz spilled to float (0x1a2d8, 0x1a2e9); the torque d x force formed x, y, z (each `fmul; fmul; fsubp`, 0x1a2ed-0x1a315) into a float local; one call to 000782 (0x1a33a) with (force, &torque, mode, wake). Candidate Row000791Fixture::row000791 (Physics/src/core/JointSupport.cpp, noinline, /arch:IA32), main's name, signature and placement (effector-and-coredump), now faithful; NpActor.cpp nxNpActorForceAtPos forwards with wake 1 as 000054/000154-000158 push. Recorded difference: the wake word is passed to 000782 as `(NxU8)word4 != 0` (000782 reads only the low byte). Re-walked at integration (setters review). units/scene-raycast-contract.md",
+      "dynamic_proof": "executed under the 12 Phase 5 staged-pair targets, NxPhysicsBodyCreationTests (with the 13 setters lines), the Phase 6/7 joint targets and NxPhysicsSceneRaycastTests: a cdb breakpoint on the candidate symbol (build/Release/NxPhysics.map) was hit 6 times (Force 6) against the staged candidate pair (NxPhysics.dll sha256 52cfab3a0158b0ad, identical to build/Release/NxPhysics.dll), per target exactly the oracle row's count at its RVA on the same targets; the ordered sequences of the four compared labels (000782, 000785, 000789, 000791) are identical on the two sides (139 hits each); every target stdout_delta=0; trace excerpt committed as evidence/scene-raycast-trace-task4-setters.txt (scene-raycast Task 4, setters)",
+      "notes": "Scene-raycast Task 4 (setters): main's Row000791Fixture::row000791 written from the listing (lever.x kept in the register, one 000782 call for both vectors); claimed and promoted.",
+      "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
       "id": "phys_fn_000792",
@@ -14547,9 +14553,9 @@
       "source": "Physics/src/BodyCreation.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/323",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2415",
-      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1a9a0-0x1b5af) and walked in scene-raycast Task 4 (body-creation) as the tail of 000793 (entered by 0x1a99b `jmp` and 0x1a84d `je 0x1aa06`; the `ret 4` at 0x1b5af), one function with it: the all-zero tensor branch (0x1aa06-0x1aaa6: (1, 1, 1) and inverses 1.0 through the same _fpclass test on the double 1.0) and the dirty mark 0x20000; +0x6c = linearVelocity copied to +0x34, mark 4; +0x78 = angularVelocity copied to +0x40, mark 8; +0x84 = +0x4c = wakeUpCounter, mark 0x10; +0x110 = solverIterationCount, mark 0x40000; +0xd8 = maxAngularVelocity > 0 ? v * v : g * g with g the live NX_MAX_ANGULAR_VELOCITY (0x10123b34), mark 0x8000; +0xd0 / +0xd4 = the sleep velocities squared or the live NX_DEFAULT_SLEEP_LIN/ANG_VEL_SQUARED (0x10123b20/0x10123b24), marks 0x2000/0x4000 (each `> 0` is `fcomp 0; test ah, 0x41`); 000768 (0x1b497); 000785((flags >> 7) & 1) (0x1b4a8); +0x10c = flags, mark 0x80000; 000748 (0x1b5a3). Candidate DynamicBody::loadFromBodyDesc (Physics/src/BodyCreation.cpp), the function that carries 000793. The SDK parameters are read through PhysicsSDK::getParameter, which returns the stored float of the same table. 000785 is NpActor.cpp's nxNpActorTransitionKinematic (000785/000787 stay partial: the island step and the guarded inverses are the setters sub-area's); on a new record its enable path matches the image's (no island object; the inverses zeroed; the 0x20-byte block from the Foundation allocator) and its disable path returns as the image's does. Same recorded differences as 000793 (queue allocator, id < 256). The row runs at API time (NxScene::createActor, NxScene::releaseActor, the Scene release) under 0x027f; the file keeps the default architecture, whose double arithmetic is the x87 53-bit register arithmetic there. units/scene-raycast-contract.md",
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1a9a0-0x1b5af) and walked in scene-raycast Task 4 (body-creation) as the tail of 000793 (entered by 0x1a99b `jmp` and 0x1a84d `je 0x1aa06`; the `ret 4` at 0x1b5af), one function with it: the all-zero tensor branch (0x1aa06-0x1aaa6: (1, 1, 1) and inverses 1.0 through the same _fpclass test on the double 1.0) and the dirty mark 0x20000; +0x6c = linearVelocity copied to +0x34, mark 4; +0x78 = angularVelocity copied to +0x40, mark 8; +0x84 = +0x4c = wakeUpCounter, mark 0x10; +0x110 = solverIterationCount, mark 0x40000; +0xd8 = maxAngularVelocity > 0 ? v * v : g * g with g the live NX_MAX_ANGULAR_VELOCITY (0x10123b34), mark 0x8000; +0xd0 / +0xd4 = the sleep velocities squared or the live NX_DEFAULT_SLEEP_LIN/ANG_VEL_SQUARED (0x10123b20/0x10123b24), marks 0x2000/0x4000 (each `> 0` is `fcomp 0; test ah, 0x41`); 000768 (0x1b497); 000785((flags >> 7) & 1) (0x1b4a8); +0x10c = flags, mark 0x80000; 000748 (0x1b5a3). Candidate DynamicBody::loadFromBodyDesc (Physics/src/BodyCreation.cpp), the function that carries 000793. The SDK parameters are read through PhysicsSDK::getParameter, which returns the stored float of the same table. 000785 is DynamicBody::setKinematic((flags >> 7) & 1), called directly (setters sub-area; before it, NpActor.cpp's nxNpActorTransitionKinematic). Same recorded differences as 000793 (queue allocator, id < 256). The row runs at API time (NxScene::createActor, NxScene::releaseActor, the Scene release) under 0x027f; the file keeps the default architecture, whose double arithmetic is the x87 53-bit register arithmetic there. units/scene-raycast-contract.md",
       "dynamic_proof": "no address of its own in the candidate (one function with 000793, as in the image); the image's continuation 0x1a9a0 is reached only through the queue-growth `jmp` 0x1a99b and was hit 0 times on every target, so the tail's execution is 000793's: executed under the 12 Phase 5 staged-pair targets, NxPhysicsBodyCreationTests (new, Phase 5), the Phase 6/7 joint targets and NxPhysicsSceneRaycastTests: a cdb breakpoint on the candidate symbol (build/Release/NxPhysics.map) was hit 86 times (Life 6, DynF 1, BFlag 1, Dyn 2, DSet 4, Mom 3, Force 11, CMass 10, BodyC 6, JSP 8, JAll 2, JSlot 27, SRay 5) against the staged candidate pair (NxPhysics.dll sha256 cc7aba6d1e8075b2, identical to build/Release/NxPhysics.dll), per target exactly the oracle row's count at its RVA on the same targets; the ordered sequences of the eleven compared labels (000797, 000801, 000793, 000722, 000748, 000776, 000799, 000768, 000785, 002421, 002411) are identical on the two sides (1,249 hits each); every target stdout_delta=0; NxPhysicsBodyCreationTests prints the tail's words (velocities, wake counter, solver count, the sleep and angular limits from the descriptor and from live SDK parameters, the flags, the kinematic block), equal on both sides; trace excerpt committed as evidence/scene-raycast-trace-task4-body-creation.txt (scene-raycast Task 4, body-creation)",
-      "notes": "continuation of the entry at 0x0001a350 Scene-raycast Task 4 (body-creation): written with 000793 as one function; the live SDK defaults and the 000785 and 000748 calls are new; claimed and promoted.",
+      "notes": "continuation of the entry at 0x0001a350 Scene-raycast Task 4 (body-creation): written with 000793 as one function; the live SDK defaults and the 000785 and 000748 calls are new; claimed and promoted. Scene-raycast Task 4 (setters): the 000785 call now reaches the written DynamicBody::setKinematic directly.",
       "implementation": "Physics/src/BodyCreation.cpp"
     },
     {

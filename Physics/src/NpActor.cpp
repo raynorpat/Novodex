@@ -13,6 +13,8 @@
 #include "NpSceneGuard.h"
 #include "ObjectModel.h"
 #include "FoundationSDK.h"
+#include "BodyCreation.h"
+#include "core/JointSupport.h"
 
 #include "NxMat34.h"
 #include "NxMat33.h"
@@ -125,44 +127,15 @@ static void nxNpActorMarkRecordDirty(unsigned char* record, unsigned mask)
 	}
 
 // The kinematic branch at 0x19620 runs before the ordinary body-flag OR/AND.
-// The explicit-mass path keeps inverse mass/inertia at +0xc0..+0xcc and a
-// 0x20-byte transition block at +0x118. Scene dirties are independent bits.
-// Not static: the body creation row 000795 (BodyCreation.cpp) calls it too.
+// Row 000785/000787 (Body::setKinematic) is written from the listing as
+// DynamicBody::setKinematic (BodyCreation.cpp, scene-raycast Task 4 setters):
+// the island step, the unconditional inverses, the Foundation allocator. This
+// helper keeps the NpActor-unit call sites (raiseBodyFlag/clearBodyFlag,
+// 000188/000190) unchanged and forwards; the body creation row 000795 calls
+// the member directly.
 void nxNpActorTransitionKinematic(unsigned char* record, bool enable)
 	{
-	unsigned& flags = *reinterpret_cast<unsigned*>(record + 0x10c);
-	if(enable ? (flags & 0x80u) != 0 : (flags & 0x80u) == 0)
-		return;
-	if(enable)
-		{
-		flags |= 0x80u;
-		memset(record + 0xc0, 0, 4 * sizeof(float));
-		void*& state = *reinterpret_cast<void**>(record + 0x118);
-		// The imported Foundation allocator, [0x101041bc] (0x1001995d); the
-		// block is freed through the same allocator below (0x10019cda).
-		if(!state)
-			state = nxFoundationSDKAllocator->malloc(0x20, NX_MEMORY_PERSISTENT);
-		if(state) *reinterpret_cast<unsigned*>(
-			static_cast<unsigned char*>(state) + 0xc) = 0;
-		}
-	else
-		{
-		flags &= ~0x80u;
-		const unsigned massOffsets[4] = {0x188, 0x18c, 0x190, 0x194};
-		for(unsigned i = 0; i < 4; ++i)
-			{
-			const float mass = *reinterpret_cast<float*>(record + massOffsets[i]);
-			*reinterpret_cast<float*>(record + 0xc0 + i * 4) =
-				mass > 0.0f ? 1.0f / mass : 0.0f;
-			}
-		void*& state = *reinterpret_cast<void**>(record + 0x118);
-		if(state)
-			{
-			nxFoundationSDKAllocator->free(state);
-			state = 0;
-			}
-		}
-	nxNpActorMarkRecordDirty(record, 0x80000u | 0x10000u | 0x20000u);
+	reinterpret_cast<DynamicBody*>(record)->setKinematic(enable ? 1u : 0u);
 	}
 
 // The vtable word. A single static instance of the concrete class supplies it: the
@@ -1484,58 +1457,14 @@ static float nxNpActorX87MassPositionX(float actorX, const float* rotation,
 #endif
 	}
 
+// Row 000789 (Body::setPoseFromCMass) is written from the listing as
+// DynamicBody::setPoseFromCMass (BodyCreation.cpp, scene-raycast Task 4
+// setters): 000746 first, the listing's sums and spills, the X87Sqrt.h roots.
+// This helper keeps the NpActor-unit call sites (000204, 000206, 000208)
+// unchanged and forwards.
 static void nxNpActorApplyWorldMassPose(unsigned char* record)
 	{
-	const float* worldMass = reinterpret_cast<const float*>(record + 0x134);
-	const float* localMass = reinterpret_cast<const float*>(record + 0xdc);
-	const float* localPosition = reinterpret_cast<const float*>(record + 0x100);
-	const float* worldPosition = reinterpret_cast<const float*>(record + 0x158);
-	float actorRotation[9];
-	actorRotation[0] = nxNpActorX87Dot3(localMass[1], worldMass[1], worldMass[2], localMass[2], worldMass[0], localMass[0]);
-	actorRotation[1] = nxNpActorX87Dot3(localMass[4], worldMass[1], localMass[3], worldMass[0], localMass[5], worldMass[2]);
-	actorRotation[2] = nxNpActorX87Dot3(localMass[6], worldMass[0], worldMass[2], localMass[8], worldMass[1], localMass[7]);
-	actorRotation[3] = nxNpActorX87Dot3(worldMass[3], localMass[0], localMass[1], worldMass[4], worldMass[5], localMass[2]);
-	actorRotation[4] = nxNpActorX87Dot3(worldMass[5], localMass[5], worldMass[4], localMass[4], worldMass[3], localMass[3]);
-	actorRotation[5] = nxNpActorX87Dot3(worldMass[5], localMass[8], worldMass[4], localMass[7], worldMass[3], localMass[6]);
-	actorRotation[6] = nxNpActorX87Dot3(worldMass[6], localMass[0], localMass[1], worldMass[7], worldMass[8], localMass[2]);
-	actorRotation[7] = nxNpActorX87Dot3(worldMass[8], localMass[5], worldMass[7], localMass[4], worldMass[6], localMass[3]);
-	actorRotation[8] = nxNpActorX87Dot3(worldMass[8], localMass[8], worldMass[7], localMass[7], worldMass[6], localMass[6]);
-	float actorPosition[3];
-	for(unsigned row = 0; row < 3; ++row)
-		{
-		const volatile float displacement = static_cast<float>(
-			static_cast<double>(actorRotation[row * 3]) * localPosition[0] +
-			static_cast<double>(actorRotation[row * 3 + 1]) * localPosition[1] +
-			static_cast<double>(actorRotation[row * 3 + 2]) * localPosition[2]);
-		actorPosition[row] = static_cast<float>(static_cast<double>(worldPosition[row]) - displacement);
-		}
-	memcpy(record + 0x50, actorPosition, sizeof(actorPosition));
-	memcpy(record + 0x18, actorPosition, sizeof(actorPosition));
-	nxNpActorMarkRecordDirty(record, 1);
-	float actorQuaternion[4];
-	nxNpActorQuaternionFromMatrix(actorRotation, actorQuaternion);
-	const double trace = static_cast<double>(actorRotation[0]) +
-		actorRotation[4] + actorRotation[8];
-	if(trace < 0.0 && actorRotation[4] > actorRotation[0] &&
-		actorRotation[4] >= actorRotation[8])
-		{
-		// RVA 0x1a0ec spills the reciprocal scale before multiplying the
-		// off-diagonal terms in the negative-trace Y branch.
-		const double root = sqrt(static_cast<double>(actorRotation[4]) -
-			(static_cast<double>(actorRotation[0]) + actorRotation[8]) + 1.0);
-		const volatile float scale = static_cast<float>(0.5 / root);
-		actorQuaternion[0] = static_cast<float>(
-			(static_cast<double>(actorRotation[1]) + actorRotation[3]) * scale);
-		actorQuaternion[2] = static_cast<float>(
-			(static_cast<double>(actorRotation[5]) + actorRotation[7]) * scale);
-		actorQuaternion[3] = static_cast<float>(
-			(static_cast<double>(actorRotation[2]) - actorRotation[6]) * scale);
-		}
-	memcpy(record + 0x5c, actorQuaternion, sizeof(actorQuaternion));
-	memcpy(record + 0x24, actorQuaternion, sizeof(actorQuaternion));
-	nxNpActorMarkRecordDirty(record, 2);
-	nxNpActorWorldTensor(reinterpret_cast<const float*>(record + 0xc4),
-		worldMass, reinterpret_cast<float*>(record + 0x164));
+	reinterpret_cast<DynamicBody*>(record)->setPoseFromCMass();
 	}
 
 static const unsigned char* nxNpActorDerivedMassFrame(
@@ -1962,17 +1891,14 @@ static void nxNpActorAccumulateForce(unsigned char* record,
 static NxVec3 nxNpActorRotateLocalForce(const unsigned char* record,
 	const NxVec3& local);
 
+// Row 000791 (Body::addForceAtPos) is core/JointSupport.cpp's
+// Row000791Fixture::row000791 (scene-raycast Task 4 setters): the lever and
+// torque in the listing's precision, one 000782 call for both vectors. The
+// NpActor-unit callers (000054, 000154-000158) pass wake 1, as here.
 static void nxNpActorForceAtPos(unsigned char* record, const NxVec3& force,
 	const NxVec3& worldPosition, NxForceMode mode)
 	{
-	const float* center = reinterpret_cast<const float*>(record + 0x158);
-	const NxVec3 lever(worldPosition.x - center[0],
-		worldPosition.y - center[1], worldPosition.z - center[2]);
-	const NxVec3 torque(lever.y * force.z - lever.z * force.y,
-		lever.z * force.x - lever.x * force.z,
-		lever.x * force.y - lever.y * force.x);
-	nxNpActorAccumulateForce(record, force, mode, false);
-	nxNpActorAccumulateForce(record, torque, mode, true);
+	reinterpret_cast<Row000791Fixture*>(record)->row000791(force, worldPosition, mode, 1);
 	}
 
 static NxVec3 nxNpActorLocalPosition(const unsigned char* record,
@@ -2037,61 +1963,16 @@ void NpActorVtable::addLocalForceAtLocalPos(const NxVec3& force, const NxVec3& p
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// Row 000782 (Body::addForce(force*, torque*, mode, wake)) is written from the
+// listing as DynamicBody::addForce (BodyCreation.cpp, scene-raycast Task 4
+// setters). The NpActor-unit callers (000056, 000058, 000160, 000162) pass one
+// vector and a null for the other, and wake 1 (e.g. 0x100027fa-0x10002800);
+// this helper keeps their call sites unchanged and forwards.
 static void nxNpActorAccumulateForce(unsigned char* record,
 	const NxVec3& value, NxForceMode mode, bool angular)
 	{
-	unsigned target;
-	unsigned mask;
-	switch(mode)
-		{
-		case NX_FORCE:
-			target = angular ? 0x94 : 0x88;
-			mask = angular ? 0x40 : 0x20;
-			break;
-		case NX_IMPULSE:
-		case NX_VELOCITY_CHANGE:
-			target = angular ? 0x78 : 0x6c;
-			mask = angular ? 8 : 4;
-			break;
-		case NX_SMOOTH_IMPULSE:
-		case NX_SMOOTH_VELOCITY_CHANGE:
-			target = angular ? 0xac : 0xa0;
-			mask = angular ? 0x100 : 0x80;
-			break;
-		default:
-			return;
-		}
-	const float input[3] = { value.x, value.y, value.z };
-	float increment[3];
-	if(mode == NX_VELOCITY_CHANGE || mode == NX_SMOOTH_VELOCITY_CHANGE)
-		memcpy(increment, input, sizeof(increment));
-	else if(!angular)
-		{
-		const float inverseMass = *reinterpret_cast<float*>(record + 0xc0);
-		for(unsigned i = 0; i < 3; ++i) increment[i] = inverseMass * input[i];
-		}
-	else
-		{
-		const float* inverse = reinterpret_cast<const float*>(record + 0x164);
-		for(unsigned i = 0; i < 3; ++i)
-			increment[i] = static_cast<float>(
-				static_cast<double>(inverse[i * 3]) * input[0] +
-				static_cast<double>(inverse[i * 3 + 1]) * input[1] +
-				static_cast<double>(inverse[i * 3 + 2]) * input[2]);
-		}
-	float* destination = reinterpret_cast<float*>(record + target);
-	for(unsigned i = 0; i < 3; ++i)
-		destination[i] += increment[i];
-	if(target == 0x6c || target == 0x78)
-		memcpy(record + (angular ? 0x40 : 0x34), destination, sizeof(NxVec3));
-	nxNpActorMarkRecordDirty(record, mask);
-	if((*reinterpret_cast<unsigned*>(record + 0x114) & 0x100u) == 0 &&
-		*reinterpret_cast<float*>(record + 0x84) < 0.39999998f)
-		{
-		*reinterpret_cast<unsigned*>(record + 0x84) = 0x3eccccccu;
-		*reinterpret_cast<unsigned*>(record + 0x4c) = 0x3eccccccu;
-		nxNpActorMarkRecordDirty(record, 0x10);
-		}
+	reinterpret_cast<DynamicBody*>(record)->addForce(angular ? 0 : &value,
+		angular ? &value : 0, static_cast<NxU32>(mode), true);
 	}
 
 void NpActorVtable::addForce(const NxVec3& force, NxForceMode mode )

@@ -180,6 +180,21 @@ struct Row000738Fixture
 	void* row000738();
 	};
 
+// Row 000791 (0x0001a2c0, 133 B; owner gap SceneRaycast..CapsuleShape;
+// scene-raycast Task 4, sub-area setters). Thiscall on a body record, four
+// stack arguments, `ret 0x10`: add a force at a world position (force,
+// position, then the force mode and the wake word): it forms the lever from
+// the world centre of mass (+0x158) and the torque, and calls phys_fn_000782
+// (BodyCreation.h DynamicBody::addForce) once with both vectors. Callers:
+// the NxActor addForceAt* rows 000054/000154/000156/000158 (NpActor.cpp
+// nxNpActorForceAtPos, mode and wake 1) and the spring-and-damper solver slot
+// 003979 (mode 1, wake 0; step-only). Name and signature as on main
+// (effector-and-coredump), where it was a deferred stub.
+struct Row000791Fixture
+	{
+	void row000791(const NxVec3& force, const NxVec3& position, NxU32 word3, NxU32 word4);
+	};
+
 // Row 000760 (0x00017710, 168 B; owner gap SceneRaycast..CapsuleShape).
 // Thiscall on a body record, no stack arguments, plain `ret`: resets the
 // record's island fields (+0x1bc..+0x1e4) to a single-body island, frees the
