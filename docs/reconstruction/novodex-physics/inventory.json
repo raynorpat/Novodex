@@ -168,13 +168,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/3",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit gap:<start>..Actor.cpp): nxActorRemoveRootFromScene: 000535 on the root when the body has a record, else 000533 (## Task 4). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxActorRemoveRootFromScene) in the candidate build (build/Release/NxPhysics.map) was hit 2 times (ActorShapeMutation 2) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit gap:<start>..Actor.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000007",
@@ -204,13 +205,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/4",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit gap:<start>..Actor.cpp): nxActorComputeMassFromShapes: 000847 zero, the root's slot 4 at unit density (false: 1), a mass not above zero (ordered): 2, pose.t = centre, 000841 (x87 negations, then 000833), the three scaling arms (the register ratio totalMass / mass), NxDiagonalizeInertiaTensor ([0x101041b8]) (## Task 5 and its review). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxActorComputeMassFromShapes) in the candidate build (build/Release/NxPhysics.map) was hit 77 times (ActorLifecycle 6, DynamicFirst 1, ActorBodyFlag 9, ActorDynamics 1, ActorShapeMutation 60) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit gap:<start>..Actor.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp; Scene.cpp is an SSE2 translation unit: the arithmetic keeps double register lifetimes, equal to the x87 at its 53-bit precision control for finite values; SNaN-quieting moves go through the x87 (nxX87MoveFloat/nxX87NegateFloat); which payload wins between two NaN operands is not separately reproduced (Task 5 concern)",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000009",
@@ -495,13 +497,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/Actor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/13",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/43",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit Actor.cpp): nxActorReleaseShape: reentry (code 2, 0x186; static-only, no callback can set the flag), E1 0x1a4/0x18f/0x19c/0x19d in the listing's order, 001028 swap-remove, an emptied group or the single root through 000006 and its deleting destructor (## Task 4). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxActorReleaseShape) in the candidate build (build/Release/NxPhysics.map) was hit 19 times (ActorShapeMutation 19) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit Actor.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000025",
@@ -531,13 +534,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/14",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/57",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit Actor.cpp): nxActorBuildRecord: 000008 when the tensor is zero bits (1 -> the caller's E1 0x7c, other nonzero 0x7d), the pose from an old record (ROT) or the body, the 0x260-byte record through [0x101041bc], 000797, 000630 (## Task 5). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxActorBuildRecord) in the candidate build (build/Release/NxPhysics.map) was hit 144 times (ActorLifecycle 6, DynamicFirst 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 6, ActorMomentum 12, ActorForce 31, ActorCMass 18, ActorShapeMutation 56) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit Actor.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp; 000797, which it calls, stays discovered",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000027",
@@ -712,13 +716,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/Actor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/19",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/116",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit Actor.cpp): nxActorCreateShape: reentry (code 2, 0x150; static-only), the factory, then by the root: none -> 000531; a group -> 001041, slot 6 with 1, 001941, 000503(001957 + 001960), 003628 with a fluid manager; a single -> 000535/000533, a 0x110-byte group through [0x101041bc] built by 001033 with a 000012 id, +8, 001041 old then new, 000531 (## Task 4). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxActorCreateShape) in the candidate build (build/Release/NxPhysics.map) was hit 16 times (ActorShapeMutation 16) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit Actor.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp; Scene +0x61c (the fluid manager) is only ever zeroed in the candidate, so that arm is unreachable in the product today (the 003628 call)",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000037",
@@ -1036,13 +1041,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/21",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/142",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 54 addForceAtPos; verdict faithful): Task 3: 000791 (r.x kept in the register, r.y/r.z spilled, torque components rounded once, one 000782 call) and 000782 from the listing (x unrounded in modes 0/3, angular rows (I2z + I1y) + I0x with the listing spills, one wake after both arms, mode > 4 still wakes); G1 0x12a, E1 0x12b and H1 from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorForceTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable addForceAtPos) in the candidate build (build/Release/NxPhysics.map) was hit 22 times (ActorDynamicSetter 3, ActorForce 19) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000055",
@@ -1072,13 +1078,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/22",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/147",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 58 addForce; verdict faithful): Task 3: 000782 from the listing (see 000054); G1 0x14d, E1 0x14e and H1 from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorForceTests, NxPhysicsActorShapeMutationTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable addForce) in the candidate build (build/Release/NxPhysics.map) was hit 40 times (ActorDynamicSetter 3, ActorForce 31, ActorShapeMutation 6) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000057",
@@ -1108,13 +1115,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/23",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/152",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 60 addTorque; verdict faithful): Task 3: 000782 angular arm from the listing (see 000054); G1 0x160, E1 0x161 and H1 from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorForceTests, NxPhysicsActorShapeMutationTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable addTorque) in the candidate build (build/Release/NxPhysics.map) was hit 43 times (ActorDynamicSetter 3, ActorForce 34, ActorShapeMutation 6) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000059",
@@ -1324,13 +1332,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/33",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/167",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 13 createShape; verdict faithful): Task 4: 000036(body, desc) (Scene.cpp `nxActorCreateShape`: reentry 0x150, empty-root install, group append, promotion with scene remove/add, group+8, 001041 arrays) and the handle [shape+0x9c] read before the unlock; the callees and their residuals are in `## Task 4`. G1 0x1ab and E1 0x1ac from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorShapeMutationTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable createShape) in the candidate build (build/Release/NxPhysics.map) was hit 21 times (ActorDynamicSetter 3, ActorShapeMutation 18) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000071",
@@ -1360,13 +1369,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/25",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/173",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 14 releaseShape; verdict faithful): Task 4: 000024(body, [NxShape+8]) (Scene.cpp `nxActorReleaseShape`): reentry 0x186, E1 0x18f/0x19c/0x19d/0x1a4, 001028 swap-remove with the +0xdc/+0x10c writes, the emptied group and the single root released through 000006 and their deleting destructors. G1 0x1b3 from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorShapeMutationTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable releaseShape) in the candidate build (build/Release/NxPhysics.map) was hit 20 times (ActorDynamicSetter 1, ActorShapeMutation 19) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000073",
@@ -1684,13 +1694,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/34",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/192",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 11 moveGlobalPosition; verdict faithful): Task 3: the target is the input plus the unrotated local mass position +0x100 (each sum rounded), written by 000784 (ORs 1, no null test) with its wake; G1 0x29e and E1 0x2a1 from Task 2. Staged-pair cases: NxPhysicsActorDynamicsTests, NxPhysicsActorDynamicSetterTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable moveGlobalPosition) in the candidate build (build/Release/NxPhysics.map) was hit 13 times (ActorDynamics 9, ActorDynamicSetter 4) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000091",
@@ -2260,13 +2271,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/47",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/243",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 18 setDynamic; verdict faithful): Task 5: G1 0x5b; E1 0x63 (mass < 0, then the twelve massLocalPose words through _fpclass & 0x207), 0x66 (no shape and a zero-bit tensor); 000533 on a static body's shape; 000026 (Scene.cpp `nxActorBuildRecord`) with E1 0x7c/0x7d leaving the shape out; an old record: 000632, notifyObservers(0x100), 000776, free; 000531 with true. See `## Task 5`. Staged-pair cases: NxPhysicsActorShapeMutationTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setDynamic) in the candidate build (build/Release/NxPhysics.map) was hit 14 times (ActorShapeMutation 14) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000123",
@@ -2296,13 +2308,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/60",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/261",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 10 moveGlobalPose; verdict faithful): Task 3: the CMass-frame composition from the listing (row 0 of M p kept in the register, rows 1-2 spilled; G = M F in the listing orders), the 000801 conversion of G, 000784 (ORs 1/2 into +0xc, no null test) and its wake. Staged-pair cases: NxPhysicsActorDynamicsTests, NxPhysicsActorDynamicSetterTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable moveGlobalPose) in the candidate build (build/Release/NxPhysics.map) was hit 11 times (ActorDynamics 8, ActorDynamicSetter 3) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000125",
@@ -2332,13 +2345,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/61",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/274",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 12 moveGlobalOrientation; verdict faithful): Task 3: composes inline under its own lock with its own orders (translation +0x50; M p row 0 in the register, rows 1-2 spilled; G = M F row by row), the 000801 conversion, 000784 and its wake; no longer delegates. Staged-pair cases: NxPhysicsActorDynamicsTests, NxPhysicsActorDynamicSetterTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable moveGlobalOrientation) in the candidate build (build/Release/NxPhysics.map) was hit 12 times (ActorDynamics 9, ActorDynamicSetter 3) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000127",
@@ -2368,13 +2382,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/48",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/287",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 9 getGlobalPoseReference; verdict faithful): all blocks incl. the one-shot 0xd0 warning (line 0x2c0) and the x87 quat-to-rows sequence; Task 2 made the report getInstance().error (the inline `cmp [instance],0; int3`); the Task 3 review moved position x/y through fld/fstp (SNaN quieted) and z as a dword, as 0x10004553-0x10004568. Staged-pair cases: NxPhysicsActorCMassTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable getGlobalPoseReference) in the candidate build (build/Release/NxPhysics.map) was hit 4 times (ActorCMass 4) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000129",
@@ -2476,13 +2491,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/65",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/296",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 32 getCMassGlobalPoseVal; verdict faithful): Task 3: W = R F in the 134 order ((a1f4 + a2f7) + a0f1, (a0f2 + a1f5) + a2f8 in columns 1 and 2; nxNpActorWorldMassRotation NX_RF_134); ROT and the position were already faithful; E1 0x30a from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorCMassTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable getCMassGlobalPoseVal) in the candidate build (build/Release/NxPhysics.map) was hit 43 times (ActorDynamicSetter 1, ActorMomentum 14, ActorCMass 28) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000135",
@@ -2512,13 +2528,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/51",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/299",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 33 getCMassGlobalPositionVal; verdict faithful): E1 0x314 reproduced by Task 2; ROT and position arithmetic faithful. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorCMassTests, NxPhysicsActorShapeMutationTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable getCMassGlobalPositionVal) in the candidate build (build/Release/NxPhysics.map) was hit 35 times (ActorDynamicSetter 1, ActorCMass 28, ActorShapeMutation 6) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000137",
@@ -2548,13 +2565,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/52",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/302",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 34 getCMassGlobalOrientationVal; verdict faithful): E1 0x31d reproduced by Task 2; ROT and RF faithful (nxNpActorDerivedMassFrame). Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorCMassTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable getCMassGlobalOrientationVal) in the candidate build (build/Release/NxPhysics.map) was hit 37 times (ActorDynamicSetter 1, ActorMomentum 8, ActorCMass 28) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000139",
@@ -2584,13 +2602,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/68",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/306",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 39 getGlobalInertiaTensorVal; verdict faithful): Task 3: ROT, W = R F in the 140 order, then the 000746 model (nxNpActorWorldTensorRDRt) of diag(+0x18c); E1 0x32f from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable getGlobalInertiaTensorVal) in the candidate build (build/Release/NxPhysics.map) was hit 12 times (ActorDynamicSetter 1, ActorMomentum 11) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000141",
@@ -2620,13 +2639,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/69",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/310",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 40 getGlobalInertiaTensorInverseVal; verdict faithful): Task 3: ROT, W in the 134 order, the 000746 model of diag(+0xc4); no lock (Task 2), E1 0x338. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable getGlobalInertiaTensorInverseVal) in the candidate build (build/Release/NxPhysics.map) was hit 15 times (ActorDynamicSetter 2, ActorMomentum 13) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000143",
@@ -2656,13 +2676,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/70",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/313",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 53 getAngularMomentumVal; verdict faithful): Task 3: ROT, W in the 144 order (row 0 column 2 as in 138), T = 000746 of diag(+0x18c), L rows (t1 wy + t2 wz) + t0 wx in x87, rounded once; E1 0x35a from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable getAngularMomentumVal) in the candidate build (build/Release/NxPhysics.map) was hit 13 times (ActorDynamicSetter 1, ActorMomentum 12) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000145",
@@ -2764,13 +2785,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/54",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/320",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, helper: rotate a local vector by the body orientation (thiscall on the record; callers 000156/000158/000160/000162); verdict faithful): Task 2: rewritten from the listing: ROT via nxNpActorRotationFromQuaternionGetter, rows (m1y+m2z)+m0x in x87 registers (double lifetimes, NpActor.cpp now /arch:IA32), one rounding at the store. Staged-pair cases: NxPhysicsActorForceTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxNpActorRotateLocalForce) in the candidate build (build/Release/NxPhysics.map) was hit 19 times (ActorForce 19) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000151",
@@ -2800,13 +2822,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/55",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/321",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, helper: local point to world (callers 000154/000158); verdict faithful): Task 2: rewritten from the listing: ROT, x = (R01y+R02z)+R00x kept in the register and added to t.x; y = (R11y+R12z)+R10x and z = (R22z+R20x)+R21y spilled to float before t.y/t.z are added. Staged-pair cases: NxPhysicsActorForceTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxNpActorLocalPosition) in the candidate build (build/Release/NxPhysics.map) was hit 4 times (ActorForce 4) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000153",
@@ -2836,13 +2859,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/56",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/322",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 55 addForceAtLocalPos; verdict faithful): Task 3: 000791/000782 from the listing; G1 0x131, E1 0x132 and the 000152 helper from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorForceTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable addForceAtLocalPos) in the candidate build (build/Release/NxPhysics.map) was hit 5 times (ActorDynamicSetter 3, ActorForce 2) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000155",
@@ -2872,13 +2896,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/57",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/327",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 56 addLocalForceAtPos; verdict faithful): Task 3: 000791/000782 from the listing; G1 0x13b, E1 0x13c and the 000150 helper from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorForceTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable addLocalForceAtPos) in the candidate build (build/Release/NxPhysics.map) was hit 4 times (ActorDynamicSetter 3, ActorForce 1) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000157",
@@ -2908,13 +2933,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/58",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/332",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 57 addLocalForceAtLocalPos; verdict faithful): Task 3: 000791/000782 from the listing; G1 0x144, E1 0x145 and both helpers from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorForceTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable addLocalForceAtLocalPos) in the candidate build (build/Release/NxPhysics.map) was hit 5 times (ActorDynamicSetter 3, ActorForce 2) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000159",
@@ -2944,13 +2970,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/59",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/337",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 59 addLocalForce; verdict faithful): Task 3: 000782 from the listing; G1 0x156, E1 0x157 and the 000150 helper from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorForceTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable addLocalForce) in the candidate build (build/Release/NxPhysics.map) was hit 11 times (ActorDynamicSetter 3, ActorForce 8) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000161",
@@ -2980,13 +3007,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/60",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/342",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 61 addLocalTorque; verdict faithful): Task 3: 000782 from the listing; G1 0x169, E1 0x16a and the 000150 helper from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorForceTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable addLocalTorque) in the candidate build (build/Release/NxPhysics.map) was hit 11 times (ActorDynamicSetter 3, ActorForce 8) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000163",
@@ -3016,13 +3044,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/61",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/347",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 17 updateMassFromShapes; verdict faithful): Task 5: G1 0x98; E1 0x9a (ordered below zero or unordered), 0x9d, 0x9e, 0x9f, 0xa0, 0xa8/0xa9 from 000008 (Scene.cpp `nxActorComputeMassFromShapes`); +0x188, +0xc0 (1/m, no test), mark 0x10000; diagonal and _fpclass-zeroed inverses, mark 0x20000; +0x100, mark 0x200, ++0x198; +0xdc, mark 0x400, ++0x198; 000768. See `## Task 5`. Staged-pair cases: NxPhysicsActorShapeMutationTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable updateMassFromShapes) in the candidate build (build/Release/NxPhysics.map) was hit 48 times (ActorShapeMutation 48) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000165",
@@ -3052,13 +3081,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/81",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/397",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 35 setMass; verdict faithful): E1 0xba and 0xbb (\"Body::setMass: mass is %f, should be positive!\", the mass passed as a double) reproduced by Task 2; record effects faithful. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setMass) in the candidate build (build/Release/NxPhysics.map) was hit 13 times (ActorDynamicSetter 6, ActorMomentum 7) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000167",
@@ -3088,13 +3118,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/82",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/411",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 37 setMassSpaceInertiaTensor; verdict faithful): Task 3: the three float inverses 1/m are classified by the CRT _fpclass the oracle calls (005666); any NaN or infinity (0x207) zeroes all three, so negatives keep their inverse and zero/denormal inertias zero them; G1 0xc5, E1 0xc6 and H1 from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setMassSpaceInertiaTensor) in the candidate build (build/Release/NxPhysics.map) was hit 17 times (ActorDynamicSetter 4, ActorMomentum 13) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000169",
@@ -3124,13 +3155,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/83",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/426",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 41 setLinearDamping; verdict faithful): E1 0xd1 (value, checked before dynamic) and 0xd2 reproduced by Task 2; record effects faithful. Staged-pair cases: NxPhysicsActorBodyFlagTests, NxPhysicsActorDynamicSetterTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setLinearDamping) in the candidate build (build/Release/NxPhysics.map) was hit 14 times (ActorBodyFlag 8, ActorDynamicSetter 6) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000171",
@@ -3160,13 +3192,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/84",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/441",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 43 setAngularDamping; verdict faithful): E1 0xe0 and 0xe1 reproduced by Task 2; record effects faithful. Staged-pair cases: NxPhysicsActorDynamicSetterTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setAngularDamping) in the candidate build (build/Release/NxPhysics.map) was hit 6 times (ActorDynamicSetter 6) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000173",
@@ -3196,13 +3229,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/85",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/456",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 45 setLinearVelocity; verdict faithful): Task 3: the wake after the stores and the 4 mark: the input (y y + z z) + x x in the register against +0xd0 (below or unordered skips), then +0x114 & 0x100, the ordered < 0.39999998f and the 0x10 mark; G1 0xf3, E1 0xf4 and H1 from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorForceTests, NxPhysicsActorShapeMutationTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setLinearVelocity) in the candidate build (build/Release/NxPhysics.map) was hit 27 times (ActorDynamicSetter 6, ActorMomentum 9, ActorForce 6, ActorShapeMutation 6) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000175",
@@ -3232,13 +3266,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/62",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/476",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 46 setAngularVelocity; verdict faithful): Task 3: the wake as 000174 against +0xd4; G1 0xfc, E1 0xfd and H1 from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorForceTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setAngularVelocity) in the candidate build (build/Release/NxPhysics.map) was hit 21 times (ActorDynamicSetter 6, ActorMomentum 9, ActorForce 6) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000177",
@@ -3268,13 +3303,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/87",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/496",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 49 setMaxAngularVelocity; verdict faithful): E1 0x109 and H1 fixed by Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setMaxAngularVelocity) in the candidate build (build/Release/NxPhysics.map) was hit 4 times (ActorDynamicSetter 2, ActorMomentum 2) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000179",
@@ -3304,13 +3340,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/63",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/508",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 50 setLinearMomentum; verdict faithful): Task 3: the wake over the stored velocity (x x + y y) + z z against +0xd0; G1 0x113, E1 0x114 and H1 from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setLinearMomentum) in the candidate build (build/Release/NxPhysics.map) was hit 12 times (ActorDynamicSetter 3, ActorMomentum 9) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000181",
@@ -3340,13 +3377,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/64",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/528",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 51 setAngularMomentum; verdict faithful): Task 3: rows (I1 y + I2 z) + I0 x, (I4 y + I3 x) + I5 z, (I7 y + I6 x) + I8 z rounded once each, then the wake over the stored angular velocity (x x + y y) + z z against +0xd4; G1 0x11c, E1 0x11d and H1 from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setAngularMomentum) in the candidate build (build/Release/NxPhysics.map) was hit 18 times (ActorDynamicSetter 3, ActorMomentum 15) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000183",
@@ -3376,13 +3414,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/90",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/548",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 70 setSleepLinearVelocity; verdict faithful): H1 fixed by Task 2; body faithful (G1 0x195 reproduced). Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setSleepLinearVelocity) in the candidate build (build/Release/NxPhysics.map) was hit 5 times (ActorDynamicSetter 4, ActorMomentum 1) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000185",
@@ -3412,13 +3451,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/91",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/559",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 72 setSleepAngularVelocity; verdict faithful): H1 fixed by Task 2; body faithful (G1 0x1a2 reproduced). Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setSleepAngularVelocity) in the candidate build (build/Release/NxPhysics.map) was hit 4 times (ActorDynamicSetter 3, ActorMomentum 1) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000187",
@@ -3448,13 +3488,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/92",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/570",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 78 raiseBodyFlag; verdict faithful): Task 3: 000785 enable arm now begins with the island-root refresh (000712 on +0x1bc with path compression; [root+0x1e4] |= 2 when [root+0x1e0]); G1 0x1cf, E1 0x1d0, H1 and the marks/allocator from Task 2. Staged-pair cases: NxPhysicsActorBodyFlagTests, NxPhysicsActorDynamicsTests, NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorForceTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable raiseBodyFlag) in the candidate build (build/Release/NxPhysics.map) was hit 18 times (ActorBodyFlag 5, ActorDynamics 7, ActorDynamicSetter 4, ActorMomentum 1, ActorForce 1) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000189",
@@ -3484,13 +3525,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/93",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/583",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 79 clearBodyFlag; verdict faithful): Task 3: 000785 disable arm now begins with the same island-root refresh; G1 0x1d9, E1 0x1da, H1, the marks/allocator and the unconditional 1/m from Task 2. Staged-pair cases: NxPhysicsActorBodyFlagTests, NxPhysicsActorDynamicsTests, NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorForceTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable clearBodyFlag) in the candidate build (build/Release/NxPhysics.map) was hit 13 times (ActorBodyFlag 4, ActorDynamics 4, ActorDynamicSetter 3, ActorMomentum 1, ActorForce 1) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000191",
@@ -3520,13 +3562,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/94",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/596",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 73 wakeUp; verdict faithful): H1 fixed by Task 2; body faithful (G1 0x207 reproduced). Staged-pair cases: NxPhysicsActorDynamicsTests, NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorForceTests, NxPhysicsActorCMassTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable wakeUp) in the candidate build (build/Release/NxPhysics.map) was hit 61 times (ActorDynamics 12, ActorDynamicSetter 6, ActorMomentum 23, ActorForce 19, ActorCMass 1) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000193",
@@ -3556,13 +3599,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/65",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/607",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 74 putToSleep; verdict faithful): H1 fixed by Task 2; body faithful (G1 0x211 reproduced). Staged-pair cases: NxPhysicsActorDynamicsTests, NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorForceTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable putToSleep) in the candidate build (build/Release/NxPhysics.map) was hit 13 times (ActorDynamics 3, ActorDynamicSetter 5, ActorMomentum 4, ActorForce 1) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000195",
@@ -3592,13 +3636,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/66",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/618",
-      "static_proof": "Partial: Ghidra at RVA 0x8b00 shows the static 12-word pose copy and dynamic quaternion conversion, orientation dirty bit 2 before translation dirty bit 1, one mass-frame refresh, then one owned-shape update.",
-      "dynamic_proof": "Public actor probes match the pinned DLL for dynamic current/shadow position and quaternion, dirty mask 3, mass center and shape world pose; static body/shape poses and two-child compound shape poses also match.",
-      "notes": "Candidate implementation is partial pending lock-error, scene and final shape-family closure."
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 1 setGlobalPose; verdict faithful): Task 2: G1 0x21d and H1 fixed; conversion, stores and 000768 faithful. Task 4: S1 closed (the group has its table; 000004 reaches 001018 and the group-level 001315). Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorCMassTests, NxPhysicsActorShapeMutationTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setGlobalPose) in the candidate build (build/Release/NxPhysics.map) was hit 13 times (ActorDynamicSetter 4, ActorCMass 7, ActorShapeMutation 2) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "Candidate implementation is partial pending lock-error, scene and final shape-family closure.",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000197",
@@ -3628,13 +3673,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/67",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/644",
-      "static_proof": "Partial: Ghidra shows the static body+0x44 translation copy and the dynamic record+0x50/+0x18 copies, dirty bit 1 and call to record refresh at 0x17f10, followed by body shape slot-6 owner update with flag 1. Candidate covers these arms; full error/scene/group closure remains.",
-      "dynamic_proof": "Public actor setter probes match static and dynamic positions, mass center, shape world pose, dirty bit, pruner invalidation, and two-child group translation. The row remains discovered pending complete scene and shape-family coverage.",
-      "notes": "Owned shape slot-6 and broadphase initialization are transcribed in ObjectModel.cpp and Scene.cpp."
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 2 setGlobalPosition; verdict faithful): Task 2: G1 0x232 and H1 fixed; both arms and the refresh faithful. Task 4: S1 closed (the group has its table; 000004 reaches 001018 and the group-level 001315). Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorCMassTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setGlobalPosition) in the candidate build (build/Release/NxPhysics.map) was hit 13 times (ActorDynamicSetter 6, ActorCMass 7) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "Owned shape slot-6 and broadphase initialization are transcribed in ObjectModel.cpp and Scene.cpp.",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000199",
@@ -3664,13 +3710,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/68",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/656",
-      "static_proof": "Partial: Ghidra at RVA 0x9110 copies nine matrix words to static body+0x20. Its dynamic arm chooses trace or largest diagonal for matrix-to-quaternion conversion, stores current/shadow quaternions at record+0x5c/+0x24, marks dirty bit 2, refreshes mass-frame data, and invokes owned-shape update.",
-      "dynamic_proof": "Public actor probes match the pinned DLL for positive-trace and all three negative-trace matrix branches, including dirty bit, current/shadow quaternion words and shape pose words; a static case matches the body matrix and owned shape matrix.",
-      "notes": "Candidate implementation is partial pending error/scene/group and shape-family closure."
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 3 setGlobalOrientation; verdict faithful): Task 2: G1 0x242 and H1 fixed; setter conversion faithful. Task 4: S1 closed (the group has its table; 000004 reaches 001018 and the group-level 001315). Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorCMassTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setGlobalOrientation) in the candidate build (build/Release/NxPhysics.map) was hit 13 times (ActorDynamicSetter 6, ActorCMass 7) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "Candidate implementation is partial pending error/scene/group and shape-family closure.",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000201",
@@ -3700,13 +3747,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/69",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/675",
-      "static_proof": "Partial: Ghidra at RVA 0x9450 shows the static quaternion-to-matrix copy into body+0x20 and the dynamic current/shadow quaternion writes at record+0x5c/+0x24, dirty bit 2, mass-frame refresh, then body shape owner update with flag 1.",
-      "dynamic_proof": "Public actor probes match the oracle for dynamic current/shadow quaternion words, dirty bit 2, mass center and owned-shape world pose, and for the static body's nine matrix words. The shape factory now initializes the descriptor's local pose, so the setter probe no longer overrides it.",
-      "notes": "Candidate implementation is partial pending error/scene/group and shape-family closure."
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 4 setGlobalOrientationQuat; verdict faithful): Task 2: G1 0x254 and H1 fixed; static quat-to-matrix x87 sequence faithful. Task 4: S1 closed (the group has its table; 000004 reaches 001018 and the group-level 001315). Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorForceTests, NxPhysicsActorCMassTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setGlobalOrientationQuat) in the candidate build (build/Release/NxPhysics.map) was hit 13 times (ActorDynamicSetter 3, ActorMomentum 2, ActorForce 1, ActorCMass 7) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "Candidate implementation is partial pending error/scene/group and shape-family closure.",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000203",
@@ -3736,13 +3784,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/70",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/687",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 26 setCMassGlobalPose; verdict faithful): Task 3: 000756 = nxNpActorBodyQuaternionFromMatrix (x87 roots), 000789 rewritten from the listing (000746 tensor first, displacement row 0 unrounded and rows 1-2 spilled, setter conversion), 000004 shape update added (virtual slot 6; the group arm models 001018). Task 4: S1 closed (the group has its table; 000004 reaches 001018 and the group-level 001315). Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorCMassTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setCMassGlobalPose) in the candidate build (build/Release/NxPhysics.map) was hit 12 times (ActorDynamicSetter 4, ActorCMass 8) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000205",
@@ -3772,13 +3821,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/71",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/700",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 27 setCMassGlobalPosition; verdict faithful): Task 3: 000789 rewritten from the listing and the 000004 shape update added. Task 4: S1 closed (the group has its table; 000004 reaches 001018 and the group-level 001315). Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorCMassTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setCMassGlobalPosition) in the candidate build (build/Release/NxPhysics.map) was hit 11 times (ActorDynamicSetter 3, ActorCMass 8) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000207",
@@ -3808,13 +3858,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/72",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/713",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 28 setCMassGlobalOrientation; verdict faithful): Task 3: 000756, 000789 and the 000004 shape update fixed as in 000204. Task 4: S1 closed (the group has its table; 000004 reaches 001018 and the group-level 001315). Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorCMassTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setCMassGlobalOrientation) in the candidate build (build/Release/NxPhysics.map) was hit 11 times (ActorDynamicSetter 3, ActorCMass 8) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000209",
@@ -3844,13 +3895,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/73",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/726",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 20 setCMassOffsetLocalPose; verdict faithful): E1 0x388, G1 0x387 and H1 fixed by Task 2; store/dirty/++0x198/000768/wake order faithful. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorCMassTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setCMassOffsetLocalPose) in the candidate build (build/Release/NxPhysics.map) was hit 11 times (ActorDynamicSetter 3, ActorCMass 8) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000211",
@@ -3880,13 +3932,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/74",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/753",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 21 setCMassOffsetLocalPosition; verdict faithful): E1 0x394, G1 0x393 and H1 fixed by Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorCMassTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setCMassOffsetLocalPosition) in the candidate build (build/Release/NxPhysics.map) was hit 12 times (ActorDynamicSetter 3, ActorCMass 9) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000213",
@@ -3916,13 +3969,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/75",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/773",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 22 setCMassOffsetLocalOrientation; verdict faithful): E1 0x39f (the report sits in 000216's range), G1 0x39e and H1 fixed by Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorCMassTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setCMassOffsetLocalOrientation) in the candidate build (build/Release/NxPhysics.map) was hit 13 times (ActorDynamicSetter 3, ActorMomentum 2, ActorCMass 8) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000215",
@@ -3952,13 +4006,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/75",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/785",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0000a3a0"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, tail of 000214 (wake dirty-list growth loop, epilogue, error tail; entered by jumps from 000214); verdict faithful): not a function: 000214's tail, covered by setCMassOffsetLocalOrientation including E1 0x39f and H1 (Task 2). Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorCMassTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at 000214's candidate function (setCMassOffsetLocalOrientation; 000216 is 000214's tail with no entry of its own, and its range holds 000214's epilogue, which every call runs) in the candidate build (build/Release/NxPhysics.map) was hit 13 times (ActorDynamicSetter 3, ActorMomentum 2, ActorCMass 8) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "continuation of the entry at 0x0000a3a0",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000217",
@@ -3988,13 +4043,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/107",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/793",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 23 setCMassOffsetGlobalPose; verdict faithful): E1 0x3ac, G1 0x3ab and H1 fixed by Task 2; rotation, 3 position and 9 orientation sums faithful. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorCMassTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setCMassOffsetGlobalPose) in the candidate build (build/Release/NxPhysics.map) was hit 11 times (ActorDynamicSetter 3, ActorCMass 8) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000219",
@@ -4024,13 +4080,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/76",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/820",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 24 setCMassOffsetGlobalPosition; verdict faithful): E1 0x3b8, G1 0x3b7 and H1 fixed by Task 2; rotation and 3 sums faithful. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorCMassTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setCMassOffsetGlobalPosition) in the candidate build (build/Release/NxPhysics.map) was hit 11 times (ActorDynamicSetter 3, ActorCMass 8) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000221",
@@ -4060,13 +4117,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/77",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/840",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 25 setCMassOffsetGlobalOrientation; verdict faithful): E1 0x3c1, G1 0x3c0 and H1 fixed by Task 2; rotation and 9 sums faithful. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorCMassTests.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setCMassOffsetGlobalOrientation) in the candidate build (build/Release/NxPhysics.map) was hit 11 times (ActorDynamicSetter 3, ActorCMass 8) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000223",
@@ -9719,13 +9777,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/196",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1437",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit Scene.cpp): nxSceneAddShape: slot 6 with 1, 001943, 000503(001960 + 001957), 003628 with a fluid manager (## Task 4). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxSceneAddShape) in the candidate build (build/Release/NxPhysics.map) was hit 14 times (ActorShapeMutation 14) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit Scene.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp; Scene +0x61c (the fluid manager) is only ever zeroed in the candidate, so that arm is unreachable in the product today (the 003628 call)",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000532",
@@ -9755,13 +9814,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/197",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1439",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit Scene.cpp): nxSceneRemoveStaticShape: 001279, then 003628 with false with a fluid manager (## Task 4). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxSceneRemoveStaticShape) in the candidate build (build/Release/NxPhysics.map) was hit 10 times (ActorShapeMutation 10) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit Scene.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp; Scene +0x61c (the fluid manager) is only ever zeroed in the candidate, so that arm is unreachable in the product today (the 003628 call)",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000534",
@@ -9791,13 +9851,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/198",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1441",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit Scene.cpp): nxSceneRemoveDynamicShape: 001279, then 003628 with true with a fluid manager (## Task 4); __declspec(noinline) since Task 6 so that a breakpoint sees it, as the oracle calls it. Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxSceneRemoveDynamicShape) in the candidate build (build/Release/NxPhysics.map) was hit 140 times (ActorLifecycle 6, DynamicFirst 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 6, ActorMomentum 12, ActorForce 31, ActorCMass 18, ActorShapeMutation 52) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit Scene.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp; Scene +0x61c (the fluid manager) is only ever zeroed in the candidate, so that arm is unreachable in the product today (the 003628 call)",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000536",
@@ -10191,9 +10252,10 @@
       "source": "link-insert: [arg+0x10]=old head, [this+0x5a0]=arg (0x10840, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/210",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1457",
-      "static_proof": "mov edx,[ecx+0x5a0]; mov eax,[esp+4]; mov [eax+0x10],edx; mov [ecx+0x5a0],eax; ret 4",
-      "dynamic_proof": "confirmed via zmix2 drive (3z55): failures=0",
-      "notes": ""
+      "static_proof": "mov edx,[ecx+0x5a0]; mov eax,[esp+4]; mov [eax+0x10],edx; mov [ecx+0x5a0],eax; ret 4; product row since npactor-completion Task 5: NxSceneInternal::pushJointWithoutBodies in Physics/src/Scene.cpp, the same four instructions (units/npactor-contract.md ## Task 5)",
+      "dynamic_proof": "confirmed via zmix2 drive (3z55): failures=0; npactor-completion Task 6: a cdb breakpoint at the product row (NxSceneInternal::pushJointWithoutBodies), reached from 004103 when setDynamic breaks a joint, was hit 1 times (ActorShapeMutation 1) in the Phase 5 actor staged-pair targets against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855), with all twelve transcripts byte-identical to the oracle (stdout_delta=0, coverage 1849/1849); evidence/npactor-trace-final.txt",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000558",
@@ -11471,13 +11533,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/244",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1638",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit Scene.cpp): Scene::releaseActor: reentry 0x492 (static-only), the +0x55c search, code 2 line 0x4ae \"double deletion detected!\" (not driven), swap-remove, 003635 with a fluid manager, 000030, the body freed through [0x101041bc] (## Task 5). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NxSceneInternal::releaseActor) in the candidate build (build/Release/NxPhysics.map) was hit 109 times (ActorLifecycle 4, ActorName 1, ActorMetadata 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 17, ActorMomentum 13, ActorForce 31, ActorCMass 19, ActorShapeMutation 9) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit Scene.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp; Scene +0x61c (the fluid manager) is only ever zeroed in the candidate, so that arm is unreachable in the product today (the 003635 call); 000030, which it calls, stays discovered",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000629",
@@ -11507,13 +11570,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/245",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1646",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit Scene.cpp): nxSceneAddBody: the +0x56c push (2n + 2 through [0x101041bc]) and 000503 (## Task 5). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxSceneAddBody) in the candidate build (build/Release/NxPhysics.map) was hit 140 times (ActorLifecycle 6, DynamicFirst 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 6, ActorMomentum 12, ActorForce 31, ActorCMass 18, ActorShapeMutation 52) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit Scene.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000631",
@@ -11543,13 +11607,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/246",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1653",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit Scene.cpp): nxSceneRemoveBody: swap-remove, 000778 into +0x58c, 000760, the 004103 loop over the body's joints (## Task 5). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxSceneRemoveBody) in the candidate build (build/Release/NxPhysics.map) was hit 3 times (ActorShapeMutation 3) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit Scene.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000633",
@@ -13172,13 +13237,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/290",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2043",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit gap:SceneRaycast.cpp..CapsuleShape.cpp): Row000722Fixture::row000722: the island snapshot (## Task 5). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (Row000722Fixture::row000722) in the candidate build (build/Release/NxPhysics.map) was hit 420 times (ActorLifecycle 18, DynamicFirst 3, ActorBodyFlag 27, ActorDynamics 15, ActorDynamicSetter 18, ActorMomentum 36, ActorForce 93, ActorCMass 54, ActorShapeMutation 156) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit gap:SceneRaycast.cpp..CapsuleShape.cpp; written by the NpActor.cpp completion plan in Physics/src/core/JointSupport.cpp",
+      "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
       "id": "phys_fn_000723",
@@ -13604,13 +13670,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/include/NpActorDynamicMath.h",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/302",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2114",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit gap:SceneRaycast.cpp..CapsuleShape.cpp): nxNpActorWorldTensorRDRt: the world tensor R D R^T in the listing's x87 order, re-verified against 0x16e80 (## Task 3). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxNpActorWorldTensorRDRt, the NpActor.obj copy) in the candidate build (build/Release/NxPhysics.map) was hit 185 times (ActorDynamicSetter 12, ActorMomentum 38, ActorForce 1, ActorCMass 101, ActorShapeMutation 33) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit gap:SceneRaycast.cpp..CapsuleShape.cpp; written by the NpActor.cpp completion plan in Physics/src/include/NpActorDynamicMath.h; two copies (NpActor.obj, Scene.obj); the NpActor.obj copy is the one called",
+      "implementation": "Physics/src/include/NpActorDynamicMath.h"
     },
     {
       "id": "phys_fn_000747",
@@ -13785,13 +13852,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/include/NpActorDynamicMath.h",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/306",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2132",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit gap:SceneRaycast.cpp..CapsuleShape.cpp): nxNpActorUpdateCMassQuaternion: the quaternion of the mass-frame world rotation +0x134 into +0x124 by the 000801 conversion (the instruction sequences are the same, every arm checked; X87Sqrt.h roots in the listing's operand order) (## Task 3). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed inlined: the out-of-line nxNpActorUpdateCMassQuaternion has no caller in the image (checked by disassembly); setCMassGlobalPose (000204, 12 hits) and setCMassGlobalOrientation (000208, 11 hits) run it unconditionally on their dynamic path immediately before nxNpActorApplyWorldMassPose (000789). executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at 000789's candidate function (nxNpActorApplyWorldMassPose, reached from 000204/000206/000208) in the candidate build (build/Release/NxPhysics.map) was hit 24 times (ActorCMass 24) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit gap:SceneRaycast.cpp..CapsuleShape.cpp; written by the NpActor.cpp completion plan in Physics/src/include/NpActorDynamicMath.h",
+      "implementation": "Physics/src/include/NpActorDynamicMath.h"
     },
     {
       "id": "phys_fn_000757",
@@ -14257,13 +14325,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/318",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2207",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit gap:SceneRaycast.cpp..CapsuleShape.cpp): nxNpActorApplyForce: modes 0/3 linear x and angular rows 0-1 unrounded, mode 1 angular row 0 unrounded, rows (I2 z + I1 y) + I0 x with the listing's spills, modes 2/4 plain adds, one wake after both arms, a mode above 4 still wakes (## Task 3). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxNpActorApplyForce) in the candidate build (build/Release/NxPhysics.map) was hit 107 times (ActorForce 95, ActorShapeMutation 12) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit gap:SceneRaycast.cpp..CapsuleShape.cpp; written by the NpActor.cpp completion plan in Physics/src/NpActor.cpp",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000783",
@@ -14293,13 +14362,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/319",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2289",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit phase 5 (callers)): nxNpActorSetKinematicTarget: the target block at +0x118 written with no null test, 1/2 ORed into +0xc, then the wake (## Task 3). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxNpActorSetKinematicTarget) in the candidate build (build/Release/NxPhysics.map) was hit 7 times (ActorDynamics 7) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit phase 5 (callers); written by the NpActor.cpp completion plan in Physics/src/NpActor.cpp",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000785",
@@ -14311,13 +14381,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/320",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2300",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit phase 5 (callers)): nxNpActorTransitionKinematic: both arms begin with the 000712 island-root refresh; enable: +0xc0 = 0 mark 0x10000, +0xc4..+0xcc = 0 mark 0x20000, flags |= 0x80 mark 0x80000, the 0x20-byte block through [0x101041bc] with no null check; disable: the reverse, unconditional 1/m, the free (## Task 2, ## Task 3). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxNpActorTransitionKinematic) in the candidate build (build/Release/NxPhysics.map) was hit 24 times (ActorBodyFlag 6, ActorDynamics 11, ActorDynamicSetter 3, ActorMomentum 2, ActorForce 2) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit phase 5 (callers); written by the NpActor.cpp completion plan in Physics/src/NpActor.cpp",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000786",
@@ -14347,13 +14418,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/320",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2337",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00019620"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit phase 5 (callers)): 000785's tail (0x19b50-0x19cf9), inside nxNpActorTransitionKinematic: the disable arm's inverse divides and marks and the free of the kinematic block through [0x101041bc] (## Task 2, ## Task 3). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at two instruction addresses inside the candidate's nxNpActorTransitionKinematic (+0xee, the disable arm's flag clear, and +0x16e, its free of the kinematic block; each) in the candidate build (build/Release/NxPhysics.map) was hit 10 times (ActorBodyFlag 3, ActorDynamics 4, ActorDynamicSetter 1, ActorMomentum 1, ActorForce 1) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "continuation of the entry at 0x00019620; owning unit phase 5 (callers); written by the NpActor.cpp completion plan in Physics/src/NpActor.cpp",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000788",
@@ -14383,13 +14455,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/321",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2350",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit phase 5 (callers)): nxNpActorApplyWorldMassPose: the 000746 tensor first, nine x87 dot products, displacement row 0 unrounded and rows 1-2 spilled, the position w - d to +0x50/+0x18 (mark 1), the setter quaternion to +0x5c/+0x24 (mark 2) (## Task 3). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxNpActorApplyWorldMassPose) in the candidate build (build/Release/NxPhysics.map) was hit 24 times (ActorCMass 24) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit phase 5 (callers); written by the NpActor.cpp completion plan in Physics/src/NpActor.cpp",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000790",
@@ -14419,13 +14492,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/322",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2372",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit gap:SceneRaycast.cpp..CapsuleShape.cpp): nxNpActorForceAtPos: r.x kept in the register, r.y/r.z spilled, the torque components rounded once, one 000782 call (## Task 3). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxNpActorForceAtPos) in the candidate build (build/Release/NxPhysics.map) was hit 24 times (ActorForce 24) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit gap:SceneRaycast.cpp..CapsuleShape.cpp; written by the NpActor.cpp completion plan in Physics/src/NpActor.cpp",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000792",
@@ -14563,13 +14637,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/325",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2503",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit phase 7 (Scene.cpp..)): inside nxBodyRecordDestroy (000776's candidate): on the +0x18 sub-object, the dirty manager's slot released and the kinematic block at +0x118 freed through [0x101041bc] and cleared (## Task 5). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at nxBodyRecordDestroy (000776's candidate, whose straight-line body holds this row inlined) in the candidate build (build/Release/NxPhysics.map) was hit 3 times (ActorShapeMutation 3) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit phase 7 (Scene.cpp..); written by the NpActor.cpp completion plan in Physics/src/Scene.cpp; the slot release calls nxSceneAuxUnregisterRecord, the candidate's model of 0x5bbb0 (a row outside this plan); 000776, its caller, stays discovered",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000800",
@@ -15131,9 +15206,10 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/340",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2540",
-      "static_proof": "unit-density solid-box mass-frame builder over three half-extents: replace-or-multiply accumulator opened at the .rdata 1.0f literal with integer zero-word compares, mass = 8*hx*hy*hz ([0x101068f0]), diagonal = (mass/3) ([0x101068ec]) times pairwise squared-extent sums; the mass value stays live on the x87 stack across the whole function",
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "unit-density solid-box mass-frame builder over three half-extents: replace-or-multiply accumulator opened at the .rdata 1.0f literal with integer zero-word compares, mass = 8*hx*hy*hz ([0x101068f0]), diagonal = (mass/3) ([0x101068ec]) times pairwise squared-extent sums; the mass value stays live on the x87 stack across the whole function; npactor-completion Task 5 review: the factor mass/3 and the three pairwise sums are spilled to float (0x1bd31-0x1bd72), as the listing does; the model had kept them in the register and differed in the last bit at inexact extents",
+      "dynamic_proof": "npactor-completion Task 6: executed inlined in BoxShape::nxBoxComputeMassFrame (000849), which calls it first and unconditionally; npactor-completion Task 6: a cdb breakpoint at 000849's candidate was hit 55 times (ActorLifecycle 7, DynamicFirst 1, ActorBodyFlag 9, ActorDynamics 1, ActorShapeMutation 37) in the Phase 5 actor staged-pair targets against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855), with all twelve transcripts byte-identical to the oracle (stdout_delta=0, coverage 1849/1849); evidence/npactor-trace-final.txt",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000830",
@@ -15204,9 +15280,10 @@
       "source": "Physics/src/ObjectModel.cpp (MassFrame::nxMassFrameTranslate)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/342",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2545",
-      "static_proof": "MassFrame translate (0x1c040, __thiscall ret 4): early-outs when the {d} arg is all-zero; else moves the reference center from old_offset o to c=d+o and adds the parallel-axis Delta-Q m*(Q(c)-Q(o)) to the nine inertia words, where Q(r)=|r|^2 I - r r^T; the image splits this into a centered path (0x1c0d7, c==0 -> -Q(o)) and a displaced path (0x1c26f, generic, with the 0.0-literal multiplications [0x101041f0] matching the symmetric Q structure), then the shared tail (0x1c578) sets offset=c. nxMassFrameTranslate reproduces Q(c)-Q(o); see 3z40.",
-      "dynamic_proof": "differential 54/54 (6 offsets x 9 translations, incl. negatives/fractionals) byte-exact vs oracle 0x1c040; mutation of the Q off-diagonal sign -> 37/54 red (build/r25-mut.log), restored green",
-      "notes": "Additional 48-case mesh cached-mass drive found and corrected asymmetric x87 rounding in diagonal Q terms; NxPhysicsShapeVtableTests digest ed1294b6, failures=0."
+      "static_proof": "MassFrame translate (0x1c040, __thiscall ret 4): early-outs when the {d} arg is all-zero; else moves the reference center from old_offset o to c=d+o and adds the parallel-axis Delta-Q m*(Q(c)-Q(o)) to the nine inertia words, where Q(r)=|r|^2 I - r r^T; the image splits this into a centered path (0x1c0d7, c==0 -> -Q(o)) and a displaced path (0x1c26f, generic, with the 0.0-literal multiplications [0x101041f0] matching the symmetric Q structure), then the shared tail (0x1c578) sets offset=c. nxMassFrameTranslate reproduces Q(c)-Q(o); see 3z40.; npactor-completion Task 5 review: rewritten from the listing (0x1c040-0x1c598): P = S(o) S(o) and, unless the new centre is all zero bits, Q = S(c) S(c) in the listing's operand orders, with the 0.0f-multiplied diagonal terms and the spilled -c.y^2/-c.x^2 and -o.x^2; T = fl(P - Q), fl(T m) + I; checked word for word against the oracle's 000833 and 000841 in-process",
+      "dynamic_proof": "differential 54/54 (6 offsets x 9 translations, incl. negatives/fractionals) byte-exact vs oracle 0x1c040; mutation of the Q off-diagonal sign -> 37/54 red (build/r25-mut.log), restored green; npactor-completion Task 6: a cdb breakpoint at the row's candidate (MassFrame::nxMassFrameTranslate) was hit 158 times (ActorLifecycle 13, DynamicFirst 2, ActorBodyFlag 18, ActorDynamics 2, ActorShapeMutation 123) in the Phase 5 actor staged-pair targets against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855), with all twelve transcripts byte-identical to the oracle (stdout_delta=0, coverage 1849/1849); evidence/npactor-trace-final.txt",
+      "notes": "Additional 48-case mesh cached-mass drive found and corrected asymmetric x87 rounding in diagonal Q terms; NxPhysicsShapeVtableTests digest ed1294b6, failures=0.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000834",
@@ -15420,9 +15497,10 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/348",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2556",
-      "static_proof": "unit-density cylinder mass-frame builder: mass = pi*r^2*2c ([0x101068d0]); axial diagonal = mass*r^2/2 ([0x101043cc] halves it), transverse pair = mass*(3r^2+4c^2)/12 ([0x101068f8]=3, [0x101068f4]=4, [0x101068e0]=1/12); axisSelector argument routes the axial diagonal and selector==1 leaves +0x00 unwritten",
+      "static_proof": "unit-density cylinder mass-frame builder: mass = pi*r^2*2c ([0x101068d0]); axial diagonal = mass*r^2/2 ([0x101043cc] halves it), transverse pair = mass*(3r^2+4c^2)/12 ([0x101068f8]=3, [0x101068f4]=4, [0x101068e0]=1/12); axisSelector argument routes the axial diagonal and selector==1 leaves +0x00 unwritten; corrected by npactor-completion Task 5: the listing stores the side term to +0x00 (0x1c836) before it branches on the selector, so selector 1 writes +0x00 too (the capsule's slot 4 passes 1); the candidate now does, and the clause above saying selector 1 leaves +0x00 unwritten is superseded",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000846",
@@ -15492,8 +15570,8 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/350",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2562",
-      "static_proof": "BOX slot-4 compute-mass row: builds a unit-density solid-box mass frame from three half-extents through 0x0001bd00, folds the optional payload pair through 0x1bdc0/0x1c040 when non-null, scales by density through 0x0001c5c0 unless a fucompp finds it equal to the .rdata 0x101041ec 1.0f literal, then merges into the destination through 0x0001c630; __thiscall ret 0xc",
-      "dynamic_proof": null,
+      "static_proof": "BOX slot-4 compute-mass row: builds a unit-density solid-box mass frame from three half-extents through 0x0001bd00, folds the optional payload pair through 0x1bdc0/0x1c040 when non-null, scales by density through 0x0001c5c0 unless a fucompp finds it equal to the .rdata 0x101041ec 1.0f literal, then merges into the destination through 0x0001c630; __thiscall ret 0xc; npactor-completion Task 5 review: calls 000833 with the pose translation (0x1c8e3-0x1c8eb) instead of an inlined centred specialization that rounded the squares' sums differently",
+      "dynamic_proof": "npactor-completion Task 6: a cdb breakpoint at the row's candidate (BoxShape::nxBoxComputeMassFrame) was hit 55 times (ActorLifecycle 7, DynamicFirst 1, ActorBodyFlag 9, ActorDynamics 1, ActorShapeMutation 37) in the Phase 5 actor staged-pair targets against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855), with all twelve transcripts byte-identical to the oracle (stdout_delta=0, coverage 1849/1849); evidence/npactor-trace-final.txt",
       "notes": "",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
@@ -17264,9 +17342,10 @@
       "source": "BOX slot-4 mass wrapper (0x20850, ret 0xc)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/462",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2972",
-      "static_proof": "if [this+0xde]&7 open, call the 000849 mass helper on the facade pose/dims (this+0x6c/+0xe4) into the destination MassFrame; always returns true",
-      "dynamic_proof": "confirmed via boxslot4 differential (3z102): cases=pose4 x low8 x density2 failures=0; candidate nxBoxAccumulateMass",
-      "notes": ""
+      "static_proof": "if [this+0xde]&7 open, call the 000849 mass helper on the facade pose/dims (this+0x6c/+0xe4) into the destination MassFrame; always returns true; npactor-completion Task 6: re-read against 0x20850-0x20874 (test [+0xde],7; 000849 on the destination with the density, +0xe4 and +0x6c; mov al,1; ret 0xc) and the candidate's comment made the row's stable-ID line",
+      "dynamic_proof": "confirmed via boxslot4 differential (3z102): cases=pose4 x low8 x density2 failures=0; candidate nxBoxAccumulateMass; npactor-completion Task 6: a cdb breakpoint at the row's candidate (BoxShape::nxBoxAccumulateMass) was hit 59 times (ActorLifecycle 7, DynamicFirst 1, ActorBodyFlag 9, ActorDynamics 1, ActorShapeMutation 41) in the Phase 5 actor staged-pair targets against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855), with all twelve transcripts byte-identical to the oracle (stdout_delta=0, coverage 1849/1849); evidence/npactor-trace-final.txt",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000948",
@@ -18561,13 +18640,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/497",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3084",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit gap:CapsuleShape.cpp..NpBoxShape.cpp): nxShapeGroupOwnerUpdate (the group table's slot 6): each child's slot 6 with the flags, then 001315 on the group (## Task 4). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxShapeGroupOwnerUpdate) in the candidate build (build/Release/NxPhysics.map) was hit 27 times (ActorDynamicSetter 2, ActorCMass 15, ActorShapeMutation 10) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit gap:CapsuleShape.cpp..NpBoxShape.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp; 001315, which it calls, stays discovered (its pruner slot-3 arm is modelled)",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_001019",
@@ -18673,9 +18753,10 @@
       "source": "guarded three-argument dispatch loop (0x229b0, ret 0xc)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/406",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3096",
-      "static_proof": "static review of the recorded shape: guarded three-argument dispatch loop (0x229b0, ret 0xc); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the loop1024 differential (3z175): twelve combinations -- element counts 0..2, skip flag set and clear, slot returning 1 and 0 -- all failures=0, comparing the result, the slot hit count and all three arguments",
-      "notes": ""
+      "static_proof": "static review of the recorded shape: guarded three-argument dispatch loop (0x229b0, ret 0xc); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257); npactor-completion Task 5: the model dispatches each element's slot 4 as a thiscall on the element (0x229d1-0x229ea), where it had called a stdcall with no this; it is the runtime group table's slot 4 (Scene.cpp)",
+      "dynamic_proof": "confirmed via the loop1024 differential (3z175): twelve combinations -- element counts 0..2, skip flag set and clear, slot returning 1 and 0 -- all failures=0, comparing the result, the slot hit count and all three arguments; npactor-completion Task 6: a cdb breakpoint at the row's candidate (nxArrayVtCall3Args1024), reached through the group's slot 4 from 000008, was hit 16 times (ActorLifecycle 1, ActorShapeMutation 15) in the Phase 5 actor staged-pair targets against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855), with all twelve transcripts byte-identical to the oracle (stdout_delta=0, coverage 1849/1849); evidence/npactor-trace-final.txt",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001025",
@@ -18741,13 +18822,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/408",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3106",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit gap:CapsuleShape.cpp..NpBoxShape.cpp): nxShapeGroupRemoveChild: swap-with-last in both arrays, the child's +0xdc bit 0 cleared, +0x10c = -1.0f, nothing freed or unregistered (## Task 4); __declspec(noinline) since Task 6, as the oracle calls it. Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxShapeGroupRemoveChild) in the candidate build (build/Release/NxPhysics.map) was hit 14 times (ActorShapeMutation 14) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit gap:CapsuleShape.cpp..NpBoxShape.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_001029",
@@ -18813,13 +18895,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/410",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3120",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit gap:CapsuleShape.cpp..NpBoxShape.cpp): nxShapeGroupDeleteChildren: each child deleted through slot 0 with 1 and cleared, both ends reset, the group marked 0x100 (## Task 4); __declspec(noinline) since Task 6, as the oracle calls it. Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxShapeGroupDeleteChildren) in the candidate build (build/Release/NxPhysics.map) was hit 27 times (ActorLifecycle 1, ActorDynamicSetter 1, ActorCMass 5, ActorShapeMutation 20) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit gap:CapsuleShape.cpp..NpBoxShape.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_001033",
@@ -18831,13 +18914,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/411",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3124",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit gap:CapsuleShape.cpp..NpBoxShape.cpp): nxShapeGroupConstructAt: 001273, the group table, the arrays emptied, sentinel 5, +0xd8 = 0xffff, +0x10c = -1.0f (## Task 4). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxShapeGroupConstructAt) in the candidate build (build/Release/NxPhysics.map) was hit 27 times (ActorLifecycle 1, ActorDynamicSetter 1, ActorCMass 5, ActorShapeMutation 20) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit gap:CapsuleShape.cpp..NpBoxShape.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_001034",
@@ -18904,13 +18988,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/412",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3126",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit gap:CapsuleShape.cpp..NpBoxShape.cpp): the group destructor body inside nxShapeGroupDeletingDtor (001039): 001032, the handle then the child array freed through [0x101041bc] and zeroed, 001323 (## Task 4). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at nxShapeGroupDeletingDtor (001039's candidate, which holds this destructor body inlined) in the candidate build (build/Release/NxPhysics.map) was hit 27 times (ActorLifecycle 1, ActorDynamicSetter 1, ActorCMass 5, ActorShapeMutation 20) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit gap:CapsuleShape.cpp..NpBoxShape.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp; 001323, which it calls, stays discovered",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_001038",
@@ -18940,13 +19025,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/413",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3129",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit gap:CapsuleShape.cpp..NpBoxShape.cpp): nxShapeGroupDeletingDtor (the group table's slot 0): the 001037 body, then with flag bit 0 the group freed through [0x101041bc] (## Task 4). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxShapeGroupDeletingDtor) in the candidate build (build/Release/NxPhysics.map) was hit 27 times (ActorLifecycle 1, ActorDynamicSetter 1, ActorCMass 5, ActorShapeMutation 20) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit gap:CapsuleShape.cpp..NpBoxShape.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_001040",
@@ -18976,13 +19062,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/414",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3131",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit gap:CapsuleShape.cpp..NpBoxShape.cpp): nxShapeGroupAddChild: both pushes grow a full array to 2n + 2 through [0x101041bc]; the child's +0xdc bit 0; +0x10c = -1.0f; 001325(0x100) (## Task 4). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxShapeGroupAddChild) in the candidate build (build/Release/NxPhysics.map) was hit 19 times (ActorShapeMutation 19) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit gap:CapsuleShape.cpp..NpBoxShape.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_001042",
@@ -23181,7 +23268,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/514",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3410",
       "static_proof": "__thiscall ret 8: vptr 0x10107494 (0x2553d); arg1->+4 (0x25543); +8 zeroed; three identity poses +0x0c/+0x3c/+0x6c written twice; +0x9c/+0xa0 zeroed; Prunable ctor at 0xa4 (0x255df->0xb54a0) then mOwner=this (0x25649); +0xd0=0x7fffffff (0x255ed); +0xd4=arg2 ([esp+0x14]==entry [esp+8], 0x255f7); halfwords +0xd8/+0xda zero, +0xdc=6, +0xde=8; hook stores to .data 0x128470/74/78 (0x2562b..3f)",
-      "dynamic_proof": "poisoned-0xe0-buffer differential NxPhysicsObjectLayoutTests shapebase family: oracle digest de5f5000 equals candidate under a five-pointer mask; owner_self registration asserted",
+      "dynamic_proof": "poisoned-0xe0-buffer differential NxPhysicsObjectLayoutTests shapebase family: oracle digest de5f5000 equals candidate under a five-pointer mask; owner_self registration asserted; npactor-completion Task 6: a cdb breakpoint at the runtime shapes' copy of the same stores (Scene.cpp nxRuntimeShapeBaseInit, npactor-completion Task 4; the canonical claim stays ObjectModel.h's ShapeBase::ShapeBase) was hit 227 times (ActorLifecycle 9, DynamicFirst 1, ActorName 1, ActorMetadata 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 19, ActorMomentum 13, ActorForce 31, ActorCMass 29, ActorShapeMutation 109) in the Phase 5 actor staged-pair targets against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855), with all twelve transcripts byte-identical to the oracle (stdout_delta=0, coverage 1849/1849); evidence/npactor-trace-final.txt",
       "notes": "P5 Task 3: base-shape constructor; sizeof(ShapeBase)==0xe0 with the box hull embedding at +0xe0. Owner-registration arm ([owner+4]+0x48 -> phys_fn_002423) awaits Task 4 actors.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
@@ -23286,13 +23373,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/517",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3415",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit gap:NpTriangleMeshShape.cpp..Shape.cpp): nxShapeLeavePruning: 001955, 001945, +0xa0 cleared (## Task 4). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxShapeLeavePruning) in the candidate build (build/Release/NxPhysics.map) was hit 175 times (ActorLifecycle 7, DynamicFirst 1, ActorName 1, ActorMetadata 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 17, ActorMomentum 13, ActorForce 31, ActorCMass 19, ActorShapeMutation 71) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit gap:NpTriangleMeshShape.cpp..Shape.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp; 001955, which it calls, stays discovered",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_001280",
@@ -35271,13 +35359,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/758",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5882",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit gap:ContactPlaneMesh.cpp..PenetrationMap.cpp): nxPruningAddShape: the prunable's type (+0x70 for a dynamic owner, else 0; 004888) and kind 0 (004890), then the pruner insert (004857, the candidate's pruner model) (## Task 4); __declspec(noinline) since Task 6, as the oracle calls it. Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxPruningAddShape) in the candidate build (build/Release/NxPhysics.map) was hit 7 times (ActorShapeMutation 7) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit gap:ContactPlaneMesh.cpp..PenetrationMap.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_001942",
@@ -35343,13 +35432,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/760",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5894",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit gap:ContactPlaneMesh.cpp..PenetrationMap.cpp): nxPruningRemoveBody: the root and its current children erased from the pruner (the candidate's pruner model) (## Task 4). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxPruningRemoveBody) in the candidate build (build/Release/NxPhysics.map) was hit 171 times (ActorLifecycle 7, DynamicFirst 1, ActorName 1, ActorMetadata 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 17, ActorMomentum 13, ActorForce 31, ActorCMass 19, ActorShapeMutation 67) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit gap:ContactPlaneMesh.cpp..PenetrationMap.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_001946",
@@ -75131,13 +75221,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1543",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13580",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit Joint.cpp): Joint::row004103: wakes and clears both bodies, 000633, flags (& ~8) | 0x10, 000557 (## Task 5). Staged-pair cases: the targets named in the dynamic proof.",
+      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (Joint::row004103) in the candidate build (build/Release/NxPhysics.map) was hit 1 times (ActorShapeMutation 1) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
+      "notes": "owning unit Joint.cpp; written by the NpActor.cpp completion plan in Physics/src/core/Joint.cpp",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004104",

@@ -13,14 +13,18 @@ Command:   cdb -cf <script> build\Release\<target>.exe <repo>\build\pairs\candid
            breaks on the NxPhysics load with `sxe ld:NxPhysics`, sets the breakpoints below, then runs to
            exit). Each log shows exactly one NxPhysics.dll load and no unload, each program exited 0 and
            printed its own `loaded module=NxPhysics.dll ... sha256=` line with the hash below.
-Recorded:  2026-09-28, on the Task 6 tree (commit fb71a41 plus the Task 6 source change: noinline on four
-           Scene.cpp helpers, stable-ID comments), after a Release build and a Phase 5 gate run that staged
-           build\pairs: 12/12 actor staged-pair targets stdout_delta=0 stderr_exact=True,
-           coverage_assertions_evaluated=1849 floor=1849, the gate red only on its CANDIDATE-MISSING
-           family=vtables marker (NxPhysicsObjectLayoutTests exit 1, candidate_fold 4492c8c1).
+Recorded:  2026-09-28, on commit a2803e0 (Task 6; it holds every product change of the plan), after the
+           Task 7 verification build (a fresh configure and a --clean-first Release build) and a Phase 5
+           gate run that staged build\pairs: 12/12 actor staged-pair targets stdout_delta=0
+           stderr_exact=True, coverage_assertions_evaluated=1849 floor=1849, the gate red only on its
+           CANDIDATE-MISSING family=vtables marker (NxPhysicsObjectLayoutTests exit 1, candidate_fold
+           4492c8c1).
 Candidate: <repo>\build\pairs\candidate\NxPhysics.dll
-           sha256=5c2e247f7980ac65b30e8be6edcf3d46310505ad89b74aed91d41e1fc8d93562
-           (identical to build\Release\NxPhysics.dll at the time of the trace)
+           sha256=ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855
+           (identical to build\Release\NxPhysics.dll at the time of the trace). The Task 6 commit first
+           recorded this trace on an incremental build of the same source (sha256 5c2e247f..., link
+           timestamp 0x6aba9e29); the clean build differs in its link timestamp (0x6abaa2ad), and its
+           breakpoint offsets, per-target HIT sequences and hit counts are the same.
 Offsets:   module-relative, from build\Release\NxPhysics.map of that build. One breakpoint per candidate
            function standing for a row: for the unit, the NpActorVtable method the row's public slot
            dispatches to and the two static helpers of 000150/000152 (84 breakpoints; 000116, 000118 and
