@@ -5304,9 +5304,14 @@ void MeshShape::nxMeshTransformCenter(float* out) const
 	out[3] = v[3];
 	}
 
-// phys_fn_000849 (0x0001c8c0), __thiscall ret 0xc, helper of BOX slot 4.
-// Pose support is provisional: centered boxes and the driven finite poses;
-// general x87 staging, exceptional inputs and payload aliasing remain open.
+// phys_fn_000849 (0x0001c8c0, 101 B)
+// __thiscall ret 0xc, helper of BOX slot 4. The listing's order: the
+// unit-density box frame from the half-extents (000829, 0x1c8d0); with a
+// pose (extra non-null) its nine words are folded in (000831, 0x1c8de) and
+// the frame is moved to the pose translation at extra + 0x24 (000833,
+// 0x1c8eb); the frame is scaled by the density unless it compares equal to
+// the 1.0f at [0x101041ec] (0x1c8f0-0x1c90c: fucompp, so a NaN density
+// scales); then it is merged into dest (0x1c918).
 void BoxShape::nxBoxComputeMassFrame(MassFrame* dest, float density,
 	const float* halfExtents, const void* extra)
 	{

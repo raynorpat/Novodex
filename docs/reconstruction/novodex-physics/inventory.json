@@ -3642,7 +3642,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/618",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 1 setGlobalPose; verdict faithful): Task 2: G1 0x21d and H1 fixed; conversion, stores and 000768 faithful. Task 4: S1 closed (the group has its table; 000004 reaches 001018 and the group-level 001315). Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorCMassTests, NxPhysicsActorShapeMutationTests.",
       "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setGlobalPose) in the candidate build (build/Release/NxPhysics.map) was hit 13 times (ActorDynamicSetter 4, ActorCMass 7, ActorShapeMutation 2) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
-      "notes": "Candidate implementation is partial pending lock-error, scene and final shape-family closure.",
+      "notes": "",
       "implementation": "Physics/src/NpActor.cpp"
     },
     {
@@ -3716,7 +3716,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/656",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 3 setGlobalOrientation; verdict faithful): Task 2: G1 0x242 and H1 fixed; setter conversion faithful. Task 4: S1 closed (the group has its table; 000004 reaches 001018 and the group-level 001315). Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorCMassTests.",
       "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setGlobalOrientation) in the candidate build (build/Release/NxPhysics.map) was hit 13 times (ActorDynamicSetter 6, ActorCMass 7) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
-      "notes": "Candidate implementation is partial pending error/scene/group and shape-family closure.",
+      "notes": "",
       "implementation": "Physics/src/NpActor.cpp"
     },
     {
@@ -3753,7 +3753,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/675",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 4 setGlobalOrientationQuat; verdict faithful): Task 2: G1 0x254 and H1 fixed; static quat-to-matrix x87 sequence faithful. Task 4: S1 closed (the group has its table; 000004 reaches 001018 and the group-level 001315). Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorForceTests, NxPhysicsActorCMassTests.",
       "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable setGlobalOrientationQuat) in the candidate build (build/Release/NxPhysics.map) was hit 13 times (ActorDynamicSetter 3, ActorMomentum 2, ActorForce 1, ActorCMass 7) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
-      "notes": "Candidate implementation is partial pending error/scene/group and shape-family closure.",
+      "notes": "",
       "implementation": "Physics/src/NpActor.cpp"
     },
     {
@@ -11539,7 +11539,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1638",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit Scene.cpp): Scene::releaseActor: reentry 0x492 (static-only), the +0x55c search, code 2 line 0x4ae \"double deletion detected!\" (not driven), swap-remove, 003635 with a fluid manager, 000030, the body freed through [0x101041bc] (## Task 5). Staged-pair cases: the targets named in the dynamic proof.",
       "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NxSceneInternal::releaseActor) in the candidate build (build/Release/NxPhysics.map) was hit 109 times (ActorLifecycle 4, ActorName 1, ActorMetadata 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 17, ActorMomentum 13, ActorForce 31, ActorCMass 19, ActorShapeMutation 9) against build/pairs/candidate (NxPhysics.dll sha256 ccae60213e30a5ca98698734f36d402875a687b93486627b0b903d11f7243855, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1849/1849); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6)",
-      "notes": "owning unit Scene.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp; Scene +0x61c (the fluid manager) is only ever zeroed in the candidate, so that arm is unreachable in the product today (the 003635 call); 000030, which it calls, stays discovered",
+      "notes": "owning unit Scene.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp; Scene +0x61c (the fluid manager) is only ever zeroed in the candidate, so that arm is unreachable in the product today (the 003635 call, not written); the oracle sets +0x61c in 000645 from NxScene::createFluid (000400), which the candidate stubs, so the arm must be written when fluids are; 000030, which it calls, stays discovered",
       "implementation": "Physics/src/Scene.cpp"
     },
     {
