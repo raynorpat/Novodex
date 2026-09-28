@@ -50,8 +50,9 @@ static unsigned char* nxNpActorRecord(void* actor)
 static void nxNpActorRotationFromQuaternionGetter(const float* q, float* rows);
 static void nxNpActorRefreshCMass(unsigned char* record);
 static void nxNpActorNotifyOwnedShapes(unsigned char* body);
-void* nxActorAppendShape(void* actor, const NxShapeDesc* descriptor);
-void nxActorRemoveShape(void* actor, void* handle);
+// Actor.cpp's createShape/releaseShape (phys_fn_000036/000024, Scene.cpp).
+unsigned char* nxActorCreateShape(unsigned char* body, const NxShapeDesc* descriptor);
+void nxActorReleaseShape(unsigned char* body, unsigned char* shape);
 
 // The RF operand orders of nxNpActorWorldMassRotation (defined below).
 enum NxNpActorRfOrder { NX_RF_134, NX_RF_138, NX_RF_140, NX_RF_144 };
@@ -912,59 +913,21 @@ NxVec3 NpActorVtable::getPointVelocityVal(const NxVec3& point) const
 	return out;
 	}
 
-// phys_fn_000198 at 0x00008f60, actor dynamic slot 2. The body stores a
-// cached pose for static actors; dynamic records keep a current and shadow
-// translation and refresh their mass-frame center after position changes.
-// A shape's slot 6 (+0x18), thiscall (flags). The four reconstructed families'
-// internal tables all hold ShapeBase::nxApplyOwnerUpdate (001315) there; a
-// shape of a family whose table the candidate does not install yet (its
-// vtable word is null) gets that method directly.
-static void nxNpActorShapeSlot6(unsigned char* shape, unsigned flags)
-	{
-	void** table = *reinterpret_cast<void***>(shape);
-	if(!table)
-		{
-		static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(flags);
-		return;
-		}
-	typedef void (__thiscall* NxShapeSlot6Fn)(void* shape, unsigned flags);
-	reinterpret_cast<NxShapeSlot6Fn>(table[6])(shape, flags);
-	}
-
 // The owned-shape update every pose and CMass-global setter ends with (000196-
 // 000208: `mov ecx,[actor+0x14]; push 1; call 0x10001070`), phys_fn_000004 =
 // nxForwardSubobjectCall (ObjectModel.cpp): slot 6 of [body+0x10] with 1, or
-// nothing when the body has no shape. For a multi-shape actor that shape is
-// the group, whose table (0x10106c2c) has slot 6 = phys_fn_001018 (0x227d0,
-// 62 B): each child's slot 6 with the same argument, over (end - begin) / 4
-// entries of the +0xe0/+0xe4 array with no null test, then 001315(flags) on
-// the group itself. The candidate's group is still a 0x110-byte stub with no
-// table and no ShapeBase layout (Scene.cpp nxShapeGroupConstruct), so the
-// group's slot 6 is modelled here and the group-level 001315 call is open
-// until the group class is reconstructed. Besides the group's own pose
-// words and +0xdc bits, that call runs 001315's side effects on the group:
-// the append to the +0xa0 object's array when +0xdc lacks bit 2, and the
-// pruner slot-3 call for the group's prunable (ObjectModel.cpp
-// ShapeBase::nxApplyOwnerUpdate describes both).
+// nothing when the body has no shape. Every root the Scene builds carries its
+// table: the four families' ObjectModel tables (slot 6 = 001315) and the
+// group's own (Scene.cpp, slot 6 = phys_fn_001018: each child's slot 6, then
+// 001315 on the group itself -- the group-level call Task 3 left open, S1).
 static void nxNpActorNotifyOwnedShapes(unsigned char* body)
 	{
-	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
-	if(!shape) return;
-	if(*reinterpret_cast<unsigned*>(shape + 0xd0) == 5u)
-		{
-		// phys_fn_001018 (0x000227d0, 62 B)
-		unsigned char** child = *reinterpret_cast<unsigned char***>(shape + 0xe0);
-		unsigned count = static_cast<unsigned>(
-			*reinterpret_cast<unsigned char***>(shape + 0xe4) - child);
-		for(; count; --count)
-			nxNpActorShapeSlot6(*child++, 1);
-		}
-	else if(*reinterpret_cast<void**>(shape))
-		nxForwardSubobjectCall(body, reinterpret_cast<void*>(1));
-	else
-		nxNpActorShapeSlot6(shape, 1);
+	nxForwardSubobjectCall(body, reinterpret_cast<void*>(1));
 	}
 
+// phys_fn_000198 at 0x00008f60, actor dynamic slot 2. The body stores a
+// cached pose for static actors; dynamic records keep a current and shadow
+// translation and refresh their mass-frame center after position changes.
 void NpActorVtable::setGlobalPosition(const NxVec3& position)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
@@ -1418,6 +1381,9 @@ void NpActorVtable::moveGlobalOrientation(const NxMat33& orientation)
 // phys_fn_000070 (0x00002a80, 185 B)
 // 0x2abc-0x2b03: the descriptor's own isValid() (vtable slot 2) is asked
 // first; a false answer reports E1 line 0x1ac and returns 0 after unlocking.
+// 0x2b06-0x2b36: Actor.cpp's createShape (000036) on the body [actor+0x14]
+// with the descriptor; a built shape's public handle [shape+0x9c] is read
+// before the unlock and returned, else 0.
 NxShape* NpActorVtable::createShape(const NxShapeDesc& descriptor)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
@@ -1428,17 +1394,21 @@ NxShape* NpActorVtable::createShape(const NxShapeDesc& descriptor)
 		nxNpSceneGuardLeave(ctx);
 		return 0;
 		}
-	NxShape* shape = static_cast<NxShape*>(nxActorAppendShape(this, &descriptor));
+	unsigned char* shape = nxActorCreateShape(nxNpActorBody(this), &descriptor);
+	NxShape* handle = shape ? *reinterpret_cast<NxShape**>(shape + 0x9c) : 0;
 	nxNpSceneGuardLeave(ctx);
-	return shape;
+	return handle;
 	}
 
 // phys_fn_000072 (0x00002b40, 90 B)
+// 0x2b7a-0x2b90: Actor.cpp's releaseShape (000024) on the body with the
+// INTERNAL shape the public handle holds at +8, then the unlock.
 void NpActorVtable::releaseShape(NxShape& shape)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
 	if(!nxNpActorWriteTry(ctx, 0x1b3)) return;
-	nxActorRemoveShape(this, &shape);
+	nxActorReleaseShape(nxNpActorBody(this),
+		*reinterpret_cast<unsigned char**>(reinterpret_cast<unsigned char*>(&shape) + 8));
 	nxNpSceneGuardLeave(ctx);
 	}
 

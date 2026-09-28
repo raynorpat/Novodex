@@ -4351,8 +4351,13 @@ void PlaneShape::nxPlaneSetEquation(const float* normal, float distance)
 //   the prunable (+0xa4) has a handle (+0x28 != 0xffff) and a pruning type
 //   (+0x2a) below 4, its +8 loses bit 2 and the scene's pruner for that type
 //   ([scene+0x640 + 4 type]) gets slot 3 with the prunable. The candidate
-//   models that slot-3 call as the pruner's +0x38 counter; the +0xa0 array
-//   append is not reproduced (no candidate shape carries a +0xa0 object).
+//   models that slot-3 call as the pruner's +0x38 counter. The +0xa0 array
+//   append is not reproduced: since NpActor.cpp completion Task 4 every
+//   Scene root carries the pruning collection at +0xa0 (001943), but no
+//   candidate path reaches the arm -- +0xdc starts at 6 (001273) and every
+//   call with a nonzero argument sets bit 2, and nothing in the candidate
+//   clears it -- and the add paths (000531, 000036) run slot 6 before the
+//   prunable is inserted, so they do not reach the slot-3 call either.
 void ShapeBase::nxApplyOwnerUpdate(unsigned flags)
 	{
 	if(mOwner04 == nullptr)
@@ -4438,8 +4443,16 @@ void nxShapeFactoryInitializePose(void* shape, const void* localPose)
 		for(unsigned i = 0; i < 3; ++i)
 			memcpy(bytes + 0x6c + 4 * (i * 3 + i), &one, 4);
 		}
-	static_cast<ShapeBase*>(shape)->nxApplyOwnerUpdate(0);
+	// With 1, as the creation path's 000531 runs the shape's slot 6: the
+	// shape takes the Scene stamp at +8 and +0xdc gains bit 2 (the fresh
+	// shape's +0xdc = 6 loses bit 4 as pose one is copied to pose two).
+	static_cast<ShapeBase*>(shape)->nxApplyOwnerUpdate(1);
 	memcpy(bytes + 0x3c, bytes + 0x0c, 0x30);
+	}
+
+void nxShapeApplyOwnerUpdate(void* shape, unsigned flags)
+	{
+	static_cast<ShapeBase*>(shape)->nxApplyOwnerUpdate(flags);
 	}
 
 void nxShapeFactoryRefreshPose(void* shape)
