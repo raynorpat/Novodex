@@ -152,6 +152,8 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Distance.cpp
 		Physics/src/ContactBoxMeshICE.cpp
 		Physics/src/ContactMeshHeightfield.cpp
+		Physics/src/EdgeList.cpp
+		Physics/src/IceMeshTools.cpp
 		Physics/src/ShapeRaycast.cpp
 		Physics/src/core/Joint.cpp
 		Physics/src/core/RevoluteJoint.cpp
@@ -514,7 +516,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsThirdPartyTests tests/PhysicsThirdPartyTests.cpp
 		tests/PhysicsThirdPartyQhull.c
 		tests/PhysicsThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
-		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/NovodexBoxPruning.cpp)
+		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/NovodexBoxPruning.cpp
+		Physics/src/EdgeList.cpp Physics/src/IceAdjacencies.cpp Physics/src/IceMeshTools.cpp)
 	# The hull family's C half reads qhull's own structs, so it and only it sees the
 	# merged tree's headers (their fprintf redirection stays out of the C++ harness).
 	set_source_files_properties(tests/PhysicsThirdPartyQhull.c PROPERTIES
