@@ -429,7 +429,7 @@ Without the variable, stdout and stderr are byte-identical to the Task 1 run. Th
 
 | Family | Run | Words | Oracle / candidate | Source |
 |---|---|---|---|---|
-| `qhull_trace_x87` | 19 (set 7, `T2`) | 7584, 7594 | `0` / `-0` | `qh_detsimplex`'s trace `det= 0` against `det=-0`: the signed-zero print artefact. The 2003 CRT prints a negative zero without its sign. |
+| `qhull_trace_x87` | 19 (set 7, `T2`) | 7584, 7594 | `0` / `-0` | `qh_detsimplex`'s trace `det= 0` against `det=-0`. It is a zero on both sides, and both print `nearzero? 1`. The 2003 CRT prints a negative zero without its sign, so this is either that print artefact or a zero of the other sign from operand order in the inlined `qh_determinant` (`fsub` against `fsubr`, not compared). The decision is the same either way. |
 | `qhull_trace_x87` | 19 | 8602, 8610, 8666, 8846, 9090, 9094 | `0` / `-2.775558e-17` | `qh_findhorizon`'s trace `point p%d is coplanar to horizon f%d, dist=`: a distance `qh_distplane` computed for a point coplanar with a horizon facet. Both sides take the same branch (below `qh MINvisible`). |
 | `qhull_direct_x87` | 2, 7, 8, 9, 10, 11 | 4457, 4541, 11909, 13527, 15600, 18659, 21081 | up to 1.5e-16, opposite signs | `<direct push 6/9/15/18>`: `qh_distnorm` of a vertex of the facet itself, which is zero in exact arithmetic. |
 
@@ -468,9 +468,78 @@ each token, and recomputed the residue a REVIEW class would carry. Then:
     `qh_point_add`, `qh_printextremes_2d`, `qh_allstatA..I`, `qh_appendmergeset` and `memcmp`;
   - `fadd st,st` for a folded `2*x`, or `fmul -2.0` against `fchs`/`fadd`.
 
-  Six tokens are not in the group's own body: `qh_init_A`'s `--1`, and
-  `qh_test_appendmerge`'s five. They come from callee bodies the inlining check merged into that
-  side.
+  Six tokens are not in the group's own body. They come from the out-of-line oracle callee that
+  the candidate inlines, whose body the inlining check merged into the oracle side:
+  - **`qh_init_A`'s `--1`** is `qh_initqhull_start`'s `or eax,0xffffffff` (`0x00062416`), which
+    materialises -1 before storing it. The candidate's inlined copy stores -1 immediates
+    (`0x00076fe1`, `0x00077012`, `0x00077044`, `0x0007704e`).
+  - **`qh_test_appendmerge`'s five** are `qh_appendmergeset`'s MRGdegen/MRGmirror arms
+    (`0x0006e0cc`, `0x0006e0c0`, `0x0006e145`, `0x0006e18a`). The oracle calls that function at
+    `0x0006e0b0` with a constant mergetype: 2 at `0x00070988`, 3 at `0x00070b1d` and 1 at
+    `0x00070b8a`. For mergetype 1 to 3 those arms are dead, and the candidate's inlined copies
+    drop them.
+
+  **Review corrections (Task 2 review).** Three Task 2 review lines had the inlining the wrong way
+  round, or blamed constant propagation:
+  - **`qh_test_appendmerge`**: the candidate inlines `qh_appendmergeset`; the oracle does not.
+  - **`qh_maxmin`**: the candidate inlines `qh_printpoints`, which the oracle calls at
+    `0x00061974`. The oracle-only `" %d"` is that callee's null-string arm (`0x0005fcda`), dead
+    for `qh_maxmin`'s constant string.
+  - **`qh_printfacetheader`**: the oracle calls `qh_printpoint` four times (`0x0006b7a1`,
+    `0x0006b800`, `0x0006b89a`, `0x0006b8f9`), and the candidate inlines two of those calls. So
+    the `" p%d: "` literal and the `id != -1` test (candidate `0x00072156`, `0x00072296`) sit in
+    the oracle's out-of-line `qh_printpointid` (`0x00067f44`). The same reason gives four
+    `qh_pointid` calls against two. It is not constant propagation.
+
+  **The review lines are fixed.** `qhull_review.csv` now carries the residue attribution with its
+  addresses in all 24 lines (a `qhull-gap Task 2 residue` entry in `note`, the sites in
+  `addresses`), so the review itself cites the addresses the arm requires.
+
+### Inlined copies (Task 2 review)
+
+A cdb breakpoint sees only the candidate's out-of-line copy of a group. So a group the candidate
+inlines into a caller missed the families that caller ran in.
+
+`vendored_trace.py coverage` (`599631a`) now credits such a group with each caller's executed
+drives, marked `<harness>[via-inline:<caller>]`. The caller is named either:
+- by the matcher's `candidate inlines G` note; or
+- by an oracle-only call to G in the caller's `diff_calls`.
+
+These entries list families only. `outcome` and `family_best` still describe the out-of-line
+body, which is what identity checks. The credit over-approximates, because a caller's drive need
+not reach the inlined code on every input. Two tests cover it.
+
+The regenerated `vendored_coverage.csv` gives 91 groups via-inline entries, and changes no
+other column.
+
+**The Task 2 rows gaining divergent families.** Every one keeps its arm, and every proof is
+rewritten to list and attribute the new families:
+- arm (i): `qh_projectpoint` (via `qh_getcentrum`; its own arithmetic is the same operation for
+  operation, oracle `0x0005d980`, candidate `0x00080f50`), `qh_rotatepoints` (above),
+  `qh_maxouter`, `qh_detjoggle`, `qh_facetarea`, `qh_printfacet2math`, `qh_printfacet3vertex`,
+  `qh_printfacetNvertex_simplicial`, `qh_printextremes`, `qh_printextremes_2d`, `qh_printpoint`,
+  `qh_printpoint3`, `qh_printpointvect2`, `qh_pointvertex`, `qh_printlists`, `qh_furthestnext`,
+  `qh_setdelsorted`, `qh_printstatlevel` and `qh_newstats`;
+- arm (ii): `qh_sethyperplane_gauss`, `qh_printvdiagram` and `qh_gethash`;
+- DIFF-equivalent: `qh_printfacet2geom`, `qh_printspheres` and `qh_setequal`.
+
+No new family's attribution implicates the group's own code, so nothing is demoted. Two
+attribution texts were sharpened:
+- `qhull_hull_rotated` now names the rotation matrix (`qh_randommatrix`, and
+  `qh_gram_schmidt`'s reciprocal) rather than `qh_rotatepoints`;
+- `qhull_random_x87` now also names the reciprocal random-number scaling of the held-back
+  option-gated groups.
+
+**Rows promoted before Task 2.** 25 earlier-promoted rows gain families the same way:
+- 22 Task 5b qhull rows, `qh_isvertex`, two OPCODE `AABBTreeCollider::Collide` wrappers, and the
+  `AABBTreeOfTrianglesBuilder` constructor;
+- each `static_proof` gets a `qhull-gap Task 2 review addendum` listing the new families with
+  their figures and attribution.
+
+One addendum names an implication. `qh_determinant` is the copy inlined in `qh_detsimplex`, so
+the two `det= 0`/`det=-0` trace words are its output. They are a zero on both sides, with the
+same `nearzero` decision. Any sign difference would come from operand order, which is not
+compared. It stays promoted.
 
 ### Results
 
@@ -499,10 +568,15 @@ By Task 5b's held-back reason:
 - **The (i) groups** are the 50 x87/notes/QR1-only groups that Task 1 lists as exact, plus
   `qh_rotatepoints`.
   - Every one of the 51 is exact only through the `qhull_exact_*` reruns.
-  - `qh_rotatepoints` appears in Task 5b's attribution of `qhull_hull_rotated` as part of the
-    rotation chain, but it owns no `sum_grouping.csv` site. Its executions here are
-    `qhull_direct` and the exact rerun; it did not run in any QRn family. So it is not a named
-    source under the rule.
+  - **`qh_rotatepoints` stays on arm (i).**
+    - Its out-of-line body ran in `qhull_direct` and the exact rerun.
+    - The candidate also inlines it into `qh_rotateinput` (oracle call `0x00061d1d`), so it
+      ran in `qhull_rotation`, `qhull_rotation_x87` and `qhull_hull_rotated` too. Its proof now
+      lists and attributes those families.
+    - It owns no `sum_grouping.csv` site. Its own arithmetic is the same operation for
+      operation (oracle `0x0005ff40`, candidate `0x0007e400`). The QRn families differ through
+      the matrix it is given, from `qh_gram_schmidt`'s reciprocal, so it is not a divergence
+      source.
 - **The (ii) groups** are the 24 groups Task 1 lists as outcome-exact outside DIFF and
   option-gated.
   - Each proof cites the first inf-free pair it ran in: `qhull_output_delaunay`, `qhull_options`,
@@ -555,9 +629,10 @@ By Task 5b's held-back reason:
   - the traced exe `07a435eb...` and the DLL `f9075db4...`;
   - the identity result.
 
-**Binaries.** The traced exe is Task 1's `07a435eb...`. The gate now runs `24a45e0b...`
-(`ffd6a47`), which differs from it in harness code only. Its identity check against the DLL
-gives the same verdict as the traced exe for all 562 groups.
+**Binaries.** The traced exe is Task 1's `07a435eb...`. The gate now runs `9ab62bd8...`
+(`ffd6a47`, and `8a92d81`: the sign listing reads the trailing float and both sides' word
+kinds), which differs from it in harness code only. Its identity check against the DLL gives
+the same verdict as the traced exe for all 562 groups. (`24a45e0b...` was the exe at `ffd6a47`.)
 
 ### What this does not settle
 
