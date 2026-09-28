@@ -244,6 +244,14 @@ Phase 4 rows -- `phys_fn_004768`, `004770`, `004780`, `004782`, `004784`, `00478
   `phys_fn_004836`, stand at `reconstructed` on this branch, raised by later drives, and defer
   `reconstructed_not_falsified` with the same family note. `phys_fn_004842` carries an inlined copy of
   A's statement. The other 595 have had nothing aimed at them.
+
+  *Update, vendored-correspondence Task 5b:* 359 of the then 608 vendored `discovered` rows
+  (233,469 bytes) are promoted to `reconstructed` on the structural matcher, a hand review and,
+  where they have x87 code, an exact or outcome-exact execution against the oracle; they defer
+  `reconstructed_not_falsified`, and no mutation is aimed at any of them either. Four of the five
+  family owners above are among them (`phys_fn_002493`, `002505`, `003308`, `005357`), and so is
+  `phys_fn_004842`. 249 vendored rows stay `discovered`, deferred `vendored_not_falsified`; the
+  evidence and the per-reason split are in evidence/vendored-correspondence.md, "Results".
 - **`phys_fn_005493`** `0x000f0560`+252, `Segment::SquareDistance`, vendored stock, driven, and it
   does **not** reproduce the image: re-measured here, `segment_sqrdist.grid` reads
   `mismatches=9356 worst_ulp=67` over 60,000 words and `segment_sqrdist.wide`

@@ -2013,7 +2013,10 @@ UNRESOLVED_SOURCE_PATHS = (
     'Physics/src/fluids/NpFluid.cpp',                # 32 rows
     'Physics/src/fluids/NpFluidEmitter.cpp',         # 14 rows
     'Physics/src/fluids/NpImplicitMesh.cpp',         # 9 rows
-    'Physics/src/opcode/OPC_MeshInterface.cpp',      # 1 rows
+    # 'Physics/src/opcode/OPC_MeshInterface.cpp' was here with 1 row against it
+    # (phys_fn_005358, MeshInterface::SetPointers), and is REMOVED:
+    # vendored-correspondence Task 5b promoted that row and its source now names
+    # the vendored file that defines it, External/opcode/upstream/Opcode/.
     'Physics/src/opcode/OPC_Model.cpp',              # 1 rows
 )
 
