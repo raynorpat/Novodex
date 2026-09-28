@@ -5670,22 +5670,25 @@ static void nxQhGapRun(const NxOracleRows& o, const NxQhullEntries& oracle, cons
 	// Every float or double whose sign bit differs between the sides (the
 	// tape's inf distances), uncapped, with its source (NXQHGAP_SIGNS=1).
 	if(getenv("NXQHGAP_SIGNS"))
-		for(unsigned i = 0; i + 1 < lenF0 && i + 1 < lenF1; ++i)
+		for(unsigned i = 0; i < lenF0 && i < lenF1; ++i)
 			{
 			const unsigned a = startFloats[0] + i, b = startFloats[1] + i;
-			if(a + 1 >= NxTape::kMax || b + 1 >= NxTape::kMax)
+			if(a >= NxTape::kMax || b >= NxTape::kMax)
 				break;
 			const NxTape& fo = gQhGapFloats[0];
 			const NxTape& fc = gQhGapFloats[1];
 			double x, y;
-			if(fo.kinds[a] == kWordDoubleLo)
+			// Both sides' word kinds decide; a double needs its high half on both tapes.
+			if(fo.kinds[a] == kWordDoubleLo && fc.kinds[b] == kWordDoubleLo)
 				{
+				if(i + 1 >= lenF0 || i + 1 >= lenF1 || a + 1 >= NxTape::kMax || b + 1 >= NxTape::kMax)
+					break;
 				unsigned w[2] = { fo.words[a], fo.words[a + 1] };
 				memcpy(&x, w, sizeof(x));
 				unsigned v[2] = { fc.words[b], fc.words[b + 1] };
 				memcpy(&y, v, sizeof(y));
 				}
-			else if(fo.kinds[a] == kWordFloat)
+			else if(fo.kinds[a] == kWordFloat && fc.kinds[b] == kWordFloat)
 				{
 				float fx, fy;
 				memcpy(&fx, &fo.words[a], 4);
