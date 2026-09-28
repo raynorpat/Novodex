@@ -208,6 +208,20 @@ if(MSVC)
 		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
 endif()
 
+# The same for the ICE-shaped mesh rows (convex-mesh gap Task 2c). Their
+# listings are frameless (0x00051080, 0x0002dcf0, 0x0002def0, 0x00032610 set up
+# no fs:[0] record); under /EHsc the RadixSort and EdgeList locals and the
+# noexcept destructors gave CreateFacesToEdges, CreateDatabase, Adjacencies::
+# Init, Valencies::Compute and the three destructors unwind frames the oracle
+# lacks. None of the three files uses try, catch or throw.
+if(MSVC)
+	set_property(SOURCE
+		Physics/src/EdgeList.cpp
+		Physics/src/IceAdjacencies.cpp
+		Physics/src/IceMeshTools.cpp
+		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
+endif()
+
 # These geometry and contact files are on that list because the x87 control word is not the same
 # everywhere this code runs, and the flag is what lets a translation unit follow
 # it at all.
