@@ -1814,7 +1814,64 @@ $NxRequiredCoverageLines = [ordered] @{
         # plane/sphere gives shape1; the two materials and the two identities are
         # driven apart so that swapping them moves words.
         'collision name=contact_sphere_box index=8 rva=0x0004a2d0 owner=phys_fn_001919 checks=2453136 oracle=966d357901d1dba9',
-        'collision coverage name=contact_sphere_box emitted=65826 centre_inside=8638 repeated=15287 static0=4173 static1=4171 negated=25490 w4=18442 w8=7236 w11=40148 default_mismatches=0 simulate_mismatches=0'
+        'collision coverage name=contact_sphere_box emitted=65826 centre_inside=8638 repeated=15287 static0=4173 static1=4171 negated=25490 w4=18442 w8=7236 w11=40148 default_mismatches=0 simulate_mismatches=0',
+
+        # convex-mesh gap Task 2a (units/convex-mesh-gap-contract.md, sub-units E, G,
+        # J and K). Matrix B [BOX][CAPSULE] (phys_fn_001751) and [CAPSULE][CAPSULE]
+        # (phys_fn_001774) through the random and aimed generator; both agree on
+        # every check under both control words.
+        'collision name=box_capsule.random index=15 rva=0x0003b0e0 owner=phys_fn_001751 checks=120000 oracle=4c87ecf1a0a119e4',
+        'collision coverage name=box_capsule.random true=39319 false=80681',
+        'collision name=box_capsule.aimed index=15 rva=0x0003b0e0 owner=phys_fn_001751 checks=120000 oracle=939b2c65bec73969',
+        'collision coverage name=box_capsule.aimed true=55396 false=64604 swap_differs=27698',
+        'collision name=capsule_capsule.random index=21 rva=0x0003d890 owner=phys_fn_001774 checks=120000 oracle=e2e1899bb6f06943',
+        'collision coverage name=capsule_capsule.random true=17928 false=102072',
+        'collision name=capsule_capsule.aimed index=21 rva=0x0003d890 owner=phys_fn_001774 checks=120000 oracle=dd8b1523c2c36ab9',
+        'collision coverage name=capsule_capsule.aimed true=36500 false=83500 swap_differs=0',
+
+        # The box distance kernels at their own addresses (Physics/src/Distance.cpp):
+        # point/box 001670, line/box 001684 (through it 001686 and the five
+        # register-convention helpers 001674..001682) and segment/box 001688. Half
+        # raw draws, half aimed. `zeros0..zeros3` are line/box's four dispatch arms,
+        # counted by construction (identity frame, that many zero direction
+        # components); `boundary0..3` are how many box-frame coordinates the oracle
+        # itself put on the box -- face, edge and corner leaves of Face; `at_start`,
+        # `at_end` and `interior` are segment/box's three arms read off the oracle's
+        # own parameter. simulate_mismatches is 0 and pinned: Face written as one
+        # function differed on 16 segment_box words under 0x0f7f (spilled doubles
+        # across its branches, the phys_fn_001690 class), and splitting its leaves
+        # removed them.
+        'collision name=point_box index=- rva=0x00032840 owner=phys_fn_001670 checks=2640000 oracle=ead6c821b01308b8',
+        'collision coverage name=point_box inside=30047 boundary0=22333 boundary1=9411 boundary2=11352 boundary3=9435 null_closest=7469 canonical_nan=87174 default_mismatches=0 simulate_mismatches=0',
+        'collision name=line_box index=- rva=0x00033a50 owner=phys_fn_001684 checks=3120000 oracle=f1398dd50ddbbb3b',
+        'collision coverage name=line_box zeros0=3696 zeros1=3819 zeros2=3832 zeros3=3814 through=7392 intersecting=28430 boundary0=5515 boundary1=17675 boundary2=14320 boundary3=14986 null_param=7504 canonical_nan=94785 default_mismatches=0 simulate_mismatches=0',
+        'collision name=segment_box index=- rva=0x00033d00 owner=phys_fn_001688 checks=3120000 oracle=b1be995ba7339455',
+        'collision coverage name=segment_box at_start=30512 at_end=13496 interior=10973 intersecting=39187 zero_length=4918 null_outputs=7512 canonical_nan=89899 default_mismatches=0 simulate_mismatches=0',
+
+        # Matrix A [BOX][CAPSULE], phys_fn_001753. The box's vtable slot 5 is the
+        # oracle's own box raycast (phys_fn_000949) on BOTH sides, because that row is
+        # not this task's; what is compared is the entry. `swept_emitted` is the
+        # raycast path, c1/c2 the end-sphere and segment/box contacts, c3 and up
+        # the crossing branch's box/box manifold. `overflow_skipped` and
+        # `probe_max` are the pre-flight contact_box_box uses: a pair whose
+        # phys_fn_001748 manifold would overrun the entry's sixteen slots is counted
+        # and not driven.
+        'collision name=contact_box_capsule index=15 rva=0x0003b260 owner=phys_fn_001753 checks=6532012 oracle=02a88c53ea2676a3',
+        'collision coverage name=contact_box_capsule emitted=34933 swept=19896 swept_emitted=2570 centred=20944 parallel=25838 zero_axis=24738 c0=14994 c1=7653 c2=13335 c3=499 c4=2376 c5=1970 c6=2113 c7plus=6987 max_contacts=16 overflow_skipped=21 probe_max=18 default_mismatches=0 simulate_mismatches=0',
+
+        # The three matrix B compound entries, 001789 [SPHERE][COMPOUND], 001791
+        # [BOX][COMPOUND] and 001785 [CAPSULE][COMPOUND]: each tests its primitive
+        # against the compound shape's own world bounds (the Prunable at Shape+0xa4),
+        # and `refreshed` is the arm that calls phys_fn_004886 to set the valid bit,
+        # which is compared too. The callback line pins that the oracle's owner
+        # callback is null, the state both sides are compared in.
+        'collision compound owner_world_aabb_callback=null',
+        'collision name=sphere_compound index=11 rva=0x0003f5b0 owner=phys_fn_001789 checks=600000 oracle=e3cf7959326e8e05',
+        'collision coverage name=sphere_compound true=35870 false=24130 refreshed=30007 inverted=6653 unflagged=0 default_mismatches=0 simulate_mismatches=0',
+        'collision name=box_compound index=17 rva=0x0003f700 owner=phys_fn_001791 checks=600000 oracle=0f9d2946320876b4',
+        'collision coverage name=box_compound true=32090 false=27910 refreshed=30012 inverted=6656 unflagged=7660 default_mismatches=0 simulate_mismatches=0',
+        'collision name=capsule_compound index=23 rva=0x0003f390 owner=phys_fn_001785 checks=600000 oracle=5b6ab7e9e5695661',
+        'collision coverage name=capsule_compound true=35375 false=24625 refreshed=30096 inverted=6433 unflagged=0 default_mismatches=0 simulate_mismatches=0'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
@@ -2349,7 +2406,8 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
-    '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
+    '3' = 126  # 18 for NxPhysicsKernelFuzzTests, 108 for NxPhysicsCollisionTests (85 + 23 from
+               # convex-mesh gap Task 2a)
     '4' = 161  # 34 for NxPhysicsAssetTests, 127 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 26 from qhull-gap Task 1)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines

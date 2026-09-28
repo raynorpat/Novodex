@@ -29,10 +29,14 @@ from pathlib import Path
 TOOLS_DIR = Path(__file__).resolve().parents[1]
 GATE_TARGETS = TOOLS_DIR / "gate_targets.ps1"
 RUN_DIFFERENTIAL = TOOLS_DIR / "run_differential.ps1"
-FUZZ_SOURCE = Path(r"D:/github/Novodex/tests/PhysicsKernelFuzzTests.cpp")
-COLLISION_SOURCE = Path(r"D:/github/Novodex/tests/PhysicsCollisionTests.cpp")
-ASSET_SOURCE = Path(r"D:/github/Novodex/tests/PhysicsAssetTests.cpp")
-THIRDPARTY_SOURCE = Path(r"D:/github/Novodex/tests/PhysicsThirdPartyTests.cpp")
+# The harness sources of THIS tree. They were absolute paths into the main
+# checkout, so a worktree's registry was checked against another tree's
+# harness (convex-mesh gap Task 2a: the blocks it adds are in its own harness).
+REPO_ROOT = TOOLS_DIR.parents[3]
+FUZZ_SOURCE = REPO_ROOT / "tests" / "PhysicsKernelFuzzTests.cpp"
+COLLISION_SOURCE = REPO_ROOT / "tests" / "PhysicsCollisionTests.cpp"
+ASSET_SOURCE = REPO_ROOT / "tests" / "PhysicsAssetTests.cpp"
+THIRDPARTY_SOURCE = REPO_ROOT / "tests" / "PhysicsThirdPartyTests.cpp"
 
 # The blocks NxPhysicsCollisionTests drives directly rather than through a
 # dispatch-matrix slot, so they have no entry in the driven table to parse. The
@@ -51,7 +55,11 @@ COLLISION_DIRECT_BLOCKS = ("box_corner", "sphere_box_data",
                            "contact_sphere_box", "box_quad_depth",
                            "box_clip.random", "box_clip.aimed",
                            "box_axis.random", "box_axis.aimed",
-                           "box_shim", "contact_box_box")
+                           "box_shim", "contact_box_box",
+                           # convex-mesh gap Task 2a
+                           "point_box", "line_box", "segment_box",
+                           "contact_box_capsule", "sphere_compound",
+                           "box_compound", "capsule_compound")
 
 
 def registered_lines():
@@ -368,7 +376,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"3": 103, "4": 161, "5": 871, "6": 403, "7": 276}
+    MINIMUM = {"3": 126, "4": 161, "5": 871, "6": 403, "7": 276}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
