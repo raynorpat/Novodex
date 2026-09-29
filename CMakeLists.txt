@@ -695,7 +695,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# reconstruction of that guard has to reach the same array the oracle does
 	# rather than a copy of it. PhysicsSDK.cpp owns it and drags its own
 	# neighbours in with it.
-	add_executable(NxPhysicsCollisionTests tests/PhysicsCollisionTests.cpp tests/PhysicsCollisionInflate.cpp
+	# tests/PhysicsCollisionOpcode.cpp (convex-mesh gap Task 2i) holds the candidate
+	# side's OPCODE models, OBBCollider and the Foundation SDK the Task 2i
+	# families need, apart from Opcode.h's pragmas (see PhysicsCollisionInflate.cpp).
+	add_executable(NxPhysicsCollisionTests tests/PhysicsCollisionTests.cpp tests/PhysicsCollisionInflate.cpp tests/PhysicsCollisionOpcode.cpp
 		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp
 		Physics/src/Distance.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp

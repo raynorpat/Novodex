@@ -2112,7 +2112,33 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision coverage name=convex_mesh_cross cases=6000 true=4976 false=1024 axes=105189 runs_with_axes=2122 input_snan=33',
         'collision name=convex_mesh_contacts index=- rva=0x00042560 owner=phys_fn_001842 checks=185684 oracle=4273cba8615346bb',
         'collision input name=convex_mesh_contacts words=585830 input=0a4f63d137c1f4c8',
-        'collision coverage name=convex_mesh_contacts calls=5000 calls_with_contacts=684 contacts=2117 headers=684 mesh_posed=1255 swapped=2487'
+        'collision coverage name=convex_mesh_contacts calls=5000 calls_with_contacts=684 contacts=2117 headers=684 mesh_posed=1255 swapped=2487',
+        # convex-mesh gap Task 2i (nxDriveTask2i, after nxDriveTask2h, whose helpers it reuses): sub-unit
+        # M's second half, each entry at its own address with the matrix-A signature over each side's
+        # own images (the Task 2g box hulls and polytopes with their local bounds; TriangleMesh images of
+        # ten meshes -- the Task 2h eight and two larger height fields -- each with an OPCODE Model the
+        # side's own Model::Build built, its EdgeList, vertex normals and part arrays; a context with an
+        # OBBCollider and OBBCache the side's own constructor built; a Foundation SDK for the report arms
+        # and 002081's allocations): contact_convex_heightfield (001847 -> 001844/001846, 002081,
+        # 001822, 001855, 001692, 001760, 000875), contact_convex_mesh (001853 -> 001851 -> 001849 ->
+        # 001653, 001832, 001836, 001840, 001842, RadixSort, Triangle::Area/Center) and
+        # mesh_vertex_normals (002081 -> 002146); both control words, raw-word inputs. The two
+        # .callee_divergent splits are frozen run lists (2 runs: Triangle::Inflate, 005185; 44 runs:
+        # OBBCollider::Collide, 005067), attributed by a bind build and 0 with the oracle's callee bound
+        # in; the families' live comparisons only guard them. Every line is copied from the oracle side
+        # (evidence/convex-mesh-gap.md, Task 2i); the coverage lines count oracle-side values and fixed
+        # inputs only.
+        'collision name=contact_convex_heightfield index=- rva=0x000432d0 owner=phys_fn_001847 checks=10307868 oracle=a0bad27e2ad09616',
+        'collision name=contact_convex_heightfield.callee_divergent index=- rva=0x000432d0 owner=phys_fn_001847 checks=2856 oracle=dca8b33818338ae4',
+        'collision input name=contact_convex_heightfield words=456146 input=b989eb6aa41d8a19',
+        'collision coverage name=contact_convex_heightfield hulls=22 meshes=10 cases=6000 cases_with_contacts=680 contacts=8341 headers=680 touched=38177 normals_built=652 failed=98 polytope_cases=2734 dyadic=2008 other_axes=2195 flipped=810 mesh_posed=4546 large_mesh=1322 raw_box=382 simulate_runs_with_contacts=680 max_stream=1786 input_snan=41',
+        'collision name=contact_convex_mesh index=- rva=0x00044500 owner=phys_fn_001853 checks=7964768 oracle=f33a1f09afe5de4c',
+        'collision name=contact_convex_mesh.callee_divergent index=- rva=0x00044500 owner=phys_fn_001853 checks=63316 oracle=ede64a9b7519f9e2',
+        'collision input name=contact_convex_mesh words=305002 input=c583b56ee11c4382',
+        'collision coverage name=contact_convex_mesh hulls=22 meshes=10 cases=5000 cases_with_contacts=417 contacts=3014 headers=481 touched=6258 axes=19164 failed=76 polytope_cases=2520 rotated=3124 layouts=1686/1612/1702 large_mesh=968 ccd_pairs=632 simulate_runs_with_contacts=404 max_stream=632',
+        'collision name=mesh_vertex_normals index=- rva=0x00052240 owner=phys_fn_002081 checks=45408 oracle=4ac98b29b7f5d50f',
+        'collision input name=mesh_vertex_normals words=14574 input=5cb05b03a5962493',
+        'collision coverage name=mesh_vertex_normals meshes=10 variants=4 runs=80 normals=1852 raw_words=90 input_snan=6'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
@@ -2771,9 +2797,9 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
-    '3' = 270  # 18 for NxPhysicsKernelFuzzTests, 252 for NxPhysicsCollisionTests (85 + 23 from
+    '3' = 281  # 18 for NxPhysicsKernelFuzzTests, 263 for NxPhysicsCollisionTests (85 + 23 from
                # convex-mesh gap Task 2a + 14 from its Task 2b + 59 + 44 from its harness hardening
-               # + 7 from its Task 2g + 4 from its review + 16 from its Task 2h)
+               # + 7 from its Task 2g + 4 from its review + 16 from its Task 2h + 11 from its Task 2i)
     '4' = 219  # 34 for NxPhysicsAssetTests, 185 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 26 from qhull-gap Task 1
                # + 14 from convex-mesh gap Task 2c + 8 from its Task 2d + 19 from its Task 2e
