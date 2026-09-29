@@ -2077,7 +2077,39 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision name=contact_convex_hulls index=- rva=0x000411a0 owner=phys_fn_001820 checks=2018272 oracle=ce182fdd7d71baca',
         'collision name=contact_convex_hulls.pose_divergent index=- rva=0x000411a0 owner=phys_fn_001820 checks=288116 oracle=1f382fe009ff0ad8',
         'collision input name=contact_convex_hulls words=271445 input=c8aa86d39513ec0c',
-        'collision coverage name=contact_convex_hulls hulls=10 polygons=216 edges=348 pairs=6000 pairs_with_contacts=3989 contacts=18148 headers=3989 map_pairs=3714 graph_pairs=3762 null_holders=1479 stamp_wraps=223 axes=155964 split_pairs=1731'
+        'collision coverage name=contact_convex_hulls hulls=10 polygons=216 edges=348 pairs=6000 pairs_with_contacts=3989 contacts=18148 headers=3989 map_pairs=3714 graph_pairs=3762 null_holders=1479 stamp_wraps=223 axes=155964 split_pairs=1731',
+        # convex-mesh gap Task 2h (nxDriveTask2h, after nxDriveTask2g, whose fixture it reuses):
+        # sub-unit M's first half (ContactConvexHeightfield.cpp), each entry row at its own address
+        # through a register thunk with the registers and caller-cleaned stack its Task 2i callers
+        # give it, over each side's own images (the Task 2g box hulls and polytopes, TriangleMesh
+        # images of six fixed triangle meshes whose EdgeLists each side's 002188 builds, a scratch
+        # record): convex_mesh_ray (001822 with 001472, 001708 and the vendored Invert),
+        # convex_mesh_faces (001832 with 001830, 001828, 001826, 001824), convex_mesh_edges (001840
+        # with 001833, 001834, 002188, 001661), convex_mesh_cross (001836 with 001838) and
+        # convex_mesh_contacts (001842 with 001909 and 000875); raw-word inputs, both control words.
+        # convex_mesh_ray's split (.callee_divergent) is a frozen list of hulls whose fans the
+        # oracle's and the vendored Triangle::Inflate (005185) inflate differently under the word,
+        # re-derived by a pre-flight that fails when it no longer matches, and any pose that is not a
+        # signed permutation (the vendored Matrix4x4::Invert, 005197); held by
+        # kRay2hCalleeDivergentWords / Runs, 0 with the oracle's pair bound in; registered up to its
+        # oracle digest. Every line is copied from the oracle side (evidence/convex-mesh-gap.md,
+        # Task 2h); the coverage lines count oracle-side values and fixed inputs only.
+        'collision name=convex_mesh_ray index=- rva=0x00041360 owner=phys_fn_001822 checks=1117952 oracle=c471c6d91284b546',
+        'collision name=convex_mesh_ray.callee_divergent index=- rva=0x00041360 owner=phys_fn_001822 checks=930048 oracle=b81832b5ea888016',
+        'collision input name=convex_mesh_ray words=438170 input=75f57d163c1510f6',
+        'collision coverage name=convex_mesh_ray hulls=22 cases=8000 hits=2820 misses=5180 lazy=476 lazy_polygons=2856 posed=3965 posed_exact=1975 split_runs=7266 input_snan=368',
+        'collision name=convex_mesh_faces index=- rva=0x000419b0 owner=phys_fn_001832 checks=4992000 oracle=34514a1dcfe9f7df',
+        'collision input name=convex_mesh_faces words=296312 input=9c5a93a7b23e51c2',
+        'collision coverage name=convex_mesh_faces meshes=6 cases=6000 overlapping=3358 separated=2642 best_set=2599 listed_all=1989 map_cases=2974 stamp_wraps=266 input_snan=136',
+        'collision name=convex_mesh_edges index=- rva=0x00042460 owner=phys_fn_001840 checks=2169768 oracle=aedf13416bfaa683',
+        'collision input name=convex_mesh_edges words=365996 input=7a65a64169130f1f',
+        'collision coverage name=convex_mesh_edges meshes=6 cases=6000 true=3041 false=2959 directions=25209 kept=1541 input_snan=45',
+        'collision name=convex_mesh_cross index=- rva=0x00041fe0 owner=phys_fn_001836 checks=1296792 oracle=452b6b5eb127fea1',
+        'collision input name=convex_mesh_cross words=414838 input=6422c5651298c10b',
+        'collision coverage name=convex_mesh_cross cases=6000 true=5032 false=968 axes=108054 runs_with_axes=2133 input_snan=33',
+        'collision name=convex_mesh_contacts index=- rva=0x00042560 owner=phys_fn_001842 checks=198864 oracle=00d0f883588e9c9b',
+        'collision input name=convex_mesh_contacts words=400728 input=86efa880aa8b921b',
+        'collision coverage name=convex_mesh_contacts calls=5000 calls_with_contacts=760 contacts=2324 headers=760 mesh_posed=1237 swapped=2504'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
@@ -2736,9 +2768,9 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
-    '3' = 254  # 18 for NxPhysicsKernelFuzzTests, 236 for NxPhysicsCollisionTests (85 + 23 from
+    '3' = 270  # 18 for NxPhysicsKernelFuzzTests, 252 for NxPhysicsCollisionTests (85 + 23 from
                # convex-mesh gap Task 2a + 14 from its Task 2b + 59 + 44 from its harness hardening
-               # + 7 from its Task 2g + 4 from its review)
+               # + 7 from its Task 2g + 4 from its review + 16 from its Task 2h)
     '4' = 219  # 34 for NxPhysicsAssetTests, 185 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 26 from qhull-gap Task 1
                # + 14 from convex-mesh gap Task 2c + 8 from its Task 2d + 19 from its Task 2e
