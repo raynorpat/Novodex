@@ -8426,6 +8426,49 @@ static void nx2gReleaseHull(Nx2gSide& s, Nx2gHullSide& h)
 			nx2gFree(s, (void*) (size_t) h.hull[plainFields[i]]);
 	}
 
+// The two sides' built edge arrays, word for word: the edges (+0x3c, two words
+// each), the edge normals (+0x40, three), the edge-to-polygon descriptors
+// (+0x44, two), the polygons by edge (+0x48, one per link) and every polygon's
+// edge numbers (+0x30, one per outline vertex). A count of differing words for
+// the name line's build_mismatches; nothing here enters a digest.
+static unsigned nx2gCompareEdges(const unsigned* a, const unsigned* b)
+	{
+	if(a[9] != b[9] || a[14] != b[14])
+		return 1;
+	unsigned differing = 0;
+	const unsigned nbEdges = a[14];
+	const unsigned sizes[3][2] = { { 15, 2 }, { 16, 3 }, { 17, 2 } };
+	for(unsigned k = 0; k < 3; ++k)
+		{
+		const unsigned* ea = (const unsigned*) (size_t) a[sizes[k][0]];
+		const unsigned* eb = (const unsigned*) (size_t) b[sizes[k][0]];
+		if(!ea || !eb)
+			{
+			differing += (ea != 0) != (eb != 0);
+			continue;
+			}
+		for(unsigned i = 0; i < sizes[k][1] * nbEdges; ++i)
+			differing += ea[i] != eb[i];
+		}
+	unsigned links = 0;
+	const unsigned* descs = (const unsigned*) (size_t) a[17];
+	for(unsigned e = 0; descs && e < nbEdges; ++e)
+		links += descs[2 * e] >> 16;
+	const unsigned* ta = (const unsigned*) (size_t) a[18];
+	const unsigned* tb = (const unsigned*) (size_t) b[18];
+	for(unsigned i = 0; ta && tb && i < links; ++i)
+		differing += ta[i] != tb[i];
+	unsigned total = 0;
+	const unsigned* polys = (const unsigned*) (size_t) a[10];
+	for(unsigned q = 0; polys && q < a[9]; ++q)
+		total += polys[9 * q];
+	const unsigned* ra = (const unsigned*) (size_t) a[12];
+	const unsigned* rb = (const unsigned*) (size_t) b[12];
+	for(unsigned i = 0; ra && rb && i < total; ++i)
+		differing += ra[i] != rb[i];
+	return differing;
+	}
+
 static void nx2gFoldScratch(NxDigest* digest, const unsigned char* scratch)
 	{
 	for(unsigned c = 0; c < 2; ++c)
@@ -9208,8 +9251,7 @@ static __declspec(noinline) unsigned nxDriveTask2g(unsigned char* base)
 		{
 		const unsigned* a = sides[0].hulls[h].hull;
 		const unsigned* b = sides[1].hulls[h].hull;
-		if(a[9] != b[9] || a[14] != b[14])
-			++buildMismatches;
+		buildMismatches += nx2gCompareEdges(a, b);
 		builtPolygons += a[9];
 		builtEdges += a[14];
 		}
@@ -9278,8 +9320,7 @@ static __declspec(noinline) unsigned nxDriveTask2g(unsigned char* base)
 		{
 		const unsigned* a = sides[0].hulls[h].hull;
 		const unsigned* b = sides[1].hulls[h].hull;
-		if(a[14] != b[14])
-			++buildMismatches;
+		buildMismatches += nx2gCompareEdges(a, b);
 		polygons += a[9];
 		edges += a[14];
 		}

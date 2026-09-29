@@ -1411,7 +1411,10 @@ convex polygon has one crossing on each side of it, so the flipped side counts t
 by one word only; the direction's `fsub` is the one recorded. Every row's ledger note cites its own
 caught mutation.
 
-*Registered lines.* 12 lines, copied from the oracle side (the collision name lines up to their
+*Registered lines* (as first registered; **superseded in part by the review**: the contact_emit_ext
+input and coverage lines and the contact_convex_convex input line below were re-registered, and four
+contact_convex_hulls lines added -- the current lines are listed under **Review**, *Registered lines*,
+and in gate_targets.ps1). 12 lines, copied from the oracle side (the collision name lines up to their
 oracle digest, the thirdparty name line whole):
 - `collision name=contact_emit_ext index=- rva=0x0001d8e0 owner=phys_fn_000875 checks=1929864 oracle=4204d51093cb3aa1`
 - `collision input name=contact_emit_ext words=230000 input=f9469769b399c7e5`
@@ -1458,9 +1461,11 @@ validate_inventory.py passes.
 
 **Limits.** NxFindRotationMatrix is not compared by these families: both harnesses load the
 candidate's NxFoundation.dll before the oracle, so the oracle's import resolves to the same export.
-Prunable::UpdateWorldAABB (004886) is not reached (every shape's flag 2 is set). The sink's stream
-never fills, so 000875's growth through 004840 is not reached. Only box hulls drive the convex pair
-(their normals keep the vendored Plane::Set exact); edge-edge axes come from the rotations.
+Prunable::UpdateWorldAABB (004886) is not reached (every shape's flag 2 is set). *Updated by the
+review:* 000875's growth through 004840 is now driven (contact_emit_ext, 1,000 sequences), and the
+convex pairs cover non-box hulls (contact_convex_hulls: prisms of three, five and six sides, an
+octahedron, an 80-triangle icosphere). Those polytopes' plane words are inputs (their 001472 does
+not run; 001472 is covered by convex_hull and polygon_interface).
 
 **Review (Task 2g review; commits 7a90cc4, bd7b747 and the evidence commit).**
 - *No harness helper returns a float type.* The collision harness's nxUnit returns a four-byte struct
@@ -1473,9 +1478,19 @@ never fills, so 000875's growth through 004840 is not reached. Only box hulls dr
   nxUniform, KernelFuzz nxUnit, ThirdParty nxUnit and nxRange (structs), nxAbsDifference, nxIceAngle,
   nxChCallSt1 and the collision harness's nxCapsulePseudoExtent (pointers). All 232 pre-existing
   collision lines and every thirdparty line reproduce unchanged (gates 3, 4 and 6 confirm the fuzz and
-  tangent lines). With the Task 2g block moved back before wmain in a throwaway build, every collision
-  line reproduced too. test_gate_targets now fails on any float- or double-returning function in a
-  harness (the stream's readFloat / readDouble slots exempt), with a probe that it fires.
+  tangent lines). With the Task 2g block moved back before wmain, every collision line reproduced
+  too: `evidence/convex-mesh-gap-2g-block-before-wmain.patch` (it moves the block; `git apply` to the
+  commit that adds it, rebuild NxPhysicsCollisionTests, run it, then `git checkout
+  tests/PhysicsCollisionTests.cpp`); measured on this commit's harness: its whole stdout is identical
+  to the unmoved build's, and all 236 registered collision lines are present in both. test_gate_targets
+  now fails on any float- or double-returning function in a harness (the stream's readFloat /
+  readDouble slots exempt), with a probe that it fires.
+- *Built edges compared.* Both convex families now compare the two sides' built edge arrays word for
+  word (the edges, edge normals, edge-to-polygon descriptors, polygons by edge, and every polygon's
+  edge numbers), not only the edge count; the differing words go to the name line's
+  build_mismatches (0), outside every digest, so no registered line moved. The 2f 001502 mutation
+  (`jnp` -> `jp` at 0x0002d26b) gives build_mismatches=288 (contact_convex_convex) and 916
+  (contact_convex_hulls).
 - *Polytopes (contact_convex_hulls).* The contract's test route asks for prisms and a sphere-like hull:
   6,000 more pairs over hand-built hull images of a triangular prism, a hexagonal prism, a tall
   pentagonal prism, an octahedron and an icosphere of 80 triangles (vertex, outline and plane words
