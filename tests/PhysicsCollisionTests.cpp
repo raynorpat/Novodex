@@ -8035,6 +8035,7 @@ static const unsigned kVertexMapCtorRva = 0x0002e7c0;		// phys_fn_001575
 static const unsigned kSupportMapInitRva = 0x0002e2f0;		// phys_fn_001558
 static const unsigned kIceContainerCtorRva = 0x000b4d70;	// phys_fn_004836
 static const unsigned kIceContainerDtorRva = 0x000b4f50;	// phys_fn_004846
+static const unsigned kIceContainerSetSizeRva = 0x000b4e90;	// Container::SetSize
 static const unsigned kSdkAllocatorGetterRva = 0x000b4000;	// phys_fn_004803
 static const unsigned kEmitExtIterations = 8000;
 static const unsigned kConvexPairs = 10000;
@@ -8042,6 +8043,10 @@ static const unsigned kConvexPairs = 10000;
 // measured when the split was registered (a count may fall, never rise).
 static const unsigned kConvexPoseDivergentWords = 2;
 static const unsigned kConvexPoseDivergentRuns = 1;
+// contact_convex_hulls (the polytopes, Task 2g review): its pairs and its split's ceiling.
+static const unsigned kConvexHullPairs = 6000;
+static const unsigned kConvexHullsPoseDivergentWords = 14;
+static const unsigned kConvexHullsPoseDivergentRuns = 4;
 
 // ecx the object, edx cleared: the oracle's thiscall rows and the candidate's
 // __fastcall forms alike.
@@ -8278,7 +8283,7 @@ struct Nx2gGraph
 	const unsigned*	counts;
 	const unsigned*	offsets;
 	const unsigned*	neighbours;
-	unsigned		countStore[8], offsetStore[8], neighbourStore[64];
+	unsigned		countStore[64], offsetStore[64], neighbourStore[512];
 	};
 
 static void nx2gBuildGraph(const Nx2gBox& box, Nx2gGraph& g)
@@ -8317,6 +8322,9 @@ struct Nx2gHullSide
 	unsigned char	mesh[0xb0];
 	unsigned		map[6];
 	bool			hasMap;
+	bool			handBuilt;			// a polytope: its polygon and reference arrays are the storage below
+	unsigned		polyStore[80 * 9];
+	unsigned		refStore[256];
 	};
 
 static const unsigned kNb2gHulls = 12;
@@ -8368,6 +8376,7 @@ static void nx2gBuildHull(Nx2gSide& s, Nx2gHullSide& h, const Nx2gBox& box, cons
 	unsigned mapSubdiv)
 	{
 	memset(h.hull, 0, sizeof(h.hull));
+	h.handBuilt = false;
 	h.hull[0] = 0xcdcd8000u;
 	h.hull[1] = 12;
 	h.hull[2] = (unsigned) (size_t) box.tris;
@@ -8410,10 +8419,10 @@ static void nx2gReleaseHull(Nx2gSide& s, Nx2gHullSide& h)
 	const unsigned cookieFields[2] = { 10, 15 };
 	const unsigned plainFields[5] = { 11, 12, 16, 17, 18 };
 	for(int i = 0; i < 2; ++i)
-		if(h.hull[cookieFields[i]])
+		if(h.hull[cookieFields[i]] && !(h.handBuilt && cookieFields[i] == 10))
 			nx2gFree(s, (unsigned*) (size_t) h.hull[cookieFields[i]] - 1);
 	for(int i = 0; i < 5; ++i)
-		if(h.hull[plainFields[i]])
+		if(h.hull[plainFields[i]] && !(h.handBuilt && plainFields[i] == 11))
 			nx2gFree(s, (void*) (size_t) h.hull[plainFields[i]]);
 	}
 
@@ -8454,6 +8463,526 @@ static unsigned nx2gCompareScratch(const unsigned char* a, const unsigned char* 
 	return differing;
 	}
 
+// The polytopes: hand-built hull images of convex hulls that are not boxes
+// (convex-mesh gap Task 2g review; the contract's test route asks for prisms and
+// a sphere-like hull). L's rows read a hull only through the polygon interface,
+// so each side gets the same vertex, outline and plane words and builds its own
+// edges with its own 001502 (slot 6); its own 001472 never runs (the polygon
+// count is set), so no vendored Plane::Set / Triangle::Normal is reached and the
+// images are identical on both sides.
+// Generated offline (scratchpad genpoly.py): vertex words, and per polygon its
+// outline (counter-clockwise seen from outside), its plane words (the normal of
+// the first three outline vertices normalised in double and narrowed, d = -n.v0)
+// and its least and greatest vertex projection. Inputs, fixed words.
+// triangular prism: 6 vertices, 5 polygons
+static const unsigned kPolyVerts0[18] =
+	{
+	0x24b07d7eu, 0x3fa00000u, 0xbf400000u,
+	0xbf8a9067u, 0xbf200000u, 0xbf400000u,
+	0x3f8a9067u, 0xbf200000u, 0xbf400000u,
+	0x24b07d7eu, 0x3fa00000u, 0x3f400000u,
+	0xbf8a9067u, 0xbf200000u, 0x3f400000u,
+	0x3f8a9067u, 0xbf200000u, 0x3f400000u
+	};
+static const unsigned kPolyRefs0[18] = { 2, 1, 0, 3, 4, 5, 0, 1, 4, 3, 1, 2, 5, 4, 2, 0, 3, 5 };
+static const unsigned kPolyFaces0[5][8] =
+	{
+	{ 3, 0, 0x00000000u, 0x00000000u, 0xbf800000u, 0xbf400000u, 0xbf400000u, 0x3f400000u },
+	{ 3, 3, 0x80000000u, 0x00000000u, 0x3f800000u, 0xbf400000u, 0xbf400000u, 0x3f400000u },
+	{ 4, 6, 0xbf5db3d7u, 0x3f000000u, 0x00000000u, 0xbf200000u, 0xbfa00000u, 0x3f200001u },
+	{ 4, 10, 0x00000000u, 0xbf800000u, 0x00000000u, 0xbf200000u, 0xbfa00000u, 0x3f200000u },
+	{ 4, 14, 0x3f5db3d7u, 0x3f000000u, 0x80000000u, 0xbf200001u, 0xbfa00000u, 0x3f200001u },
+	};
+// hexagonal prism: 12 vertices, 8 polygons
+static const unsigned kPolyVerts1[36] =
+	{
+	0x3f800000u, 0x00000000u, 0xbf000000u,
+	0x3f000000u, 0x3f5db3d7u, 0xbf000000u,
+	0xbf000000u, 0x3f5db3d7u, 0xbf000000u,
+	0xbf800000u, 0x250d3132u, 0xbf000000u,
+	0xbf000000u, 0xbf5db3d7u, 0xbf000000u,
+	0x3f000000u, 0xbf5db3d7u, 0xbf000000u,
+	0x3f800000u, 0x00000000u, 0x3f000000u,
+	0x3f000000u, 0x3f5db3d7u, 0x3f000000u,
+	0xbf000000u, 0x3f5db3d7u, 0x3f000000u,
+	0xbf800000u, 0x250d3132u, 0x3f000000u,
+	0xbf000000u, 0xbf5db3d7u, 0x3f000000u,
+	0x3f000000u, 0xbf5db3d7u, 0x3f000000u
+	};
+static const unsigned kPolyRefs1[36] = { 5, 4, 3, 2, 1, 0, 6, 7, 8, 9, 10, 11, 0, 1, 7, 6, 1, 2, 8, 7, 2, 3, 9, 8, 3, 4, 10, 9, 4, 5, 11, 10, 5, 0, 6, 11 };
+static const unsigned kPolyFaces1[8][8] =
+	{
+	{ 6, 0, 0x00000000u, 0x00000000u, 0xbf800000u, 0xbf000000u, 0xbf000000u, 0x3f000000u },
+	{ 6, 6, 0x00000000u, 0x00000000u, 0x3f800000u, 0xbf000000u, 0xbf000000u, 0x3f000000u },
+	{ 4, 12, 0x3f5db3d7u, 0x3f000000u, 0x80000000u, 0xbf5db3d7u, 0xbf5db3d7u, 0x3f5db3d7u },
+	{ 4, 16, 0x00000000u, 0x3f800000u, 0x80000000u, 0xbf5db3d7u, 0xbf5db3d7u, 0x3f5db3d7u },
+	{ 4, 20, 0xbf5db3d7u, 0x3f000000u, 0x00000000u, 0xbf5db3d7u, 0xbf5db3d7u, 0x3f5db3d7u },
+	{ 4, 24, 0xbf5db3d7u, 0xbf000000u, 0x00000000u, 0xbf5db3d7u, 0xbf5db3d7u, 0x3f5db3d7u },
+	{ 4, 28, 0x00000000u, 0xbf800000u, 0x00000000u, 0xbf5db3d7u, 0xbf5db3d7u, 0x3f5db3d7u },
+	{ 4, 32, 0x3f5db3d7u, 0xbf000000u, 0x00000000u, 0xbf5db3d7u, 0xbf5db3d7u, 0x3f5db3d7u },
+	};
+// pentagonal prism, tall: 10 vertices, 7 polygons
+static const unsigned kPolyVerts2[30] =
+	{
+	0x3f376cb3u, 0x3e62f5a3u, 0xbfc00000u,
+	0x3c2dfbb6u, 0x3f3ffb13u, 0xbfc00000u,
+	0xbf35be97u, 0x3e77a49cu, 0xbfc00000u,
+	0xbee615e4u, 0xbf19b7c2u, 0xbfc00000u,
+	0x3edd49ceu, 0xbf1ce9e0u, 0xbfc00000u,
+	0x3f376cb3u, 0x3e62f5a3u, 0x3fc00000u,
+	0x3c2dfbb6u, 0x3f3ffb13u, 0x3fc00000u,
+	0xbf35be97u, 0x3e77a49cu, 0x3fc00000u,
+	0xbee615e4u, 0xbf19b7c2u, 0x3fc00000u,
+	0x3edd49ceu, 0xbf1ce9e0u, 0x3fc00000u
+	};
+static const unsigned kPolyRefs2[30] = { 4, 3, 2, 1, 0, 5, 6, 7, 8, 9, 0, 1, 6, 5, 1, 2, 7, 6, 2, 3, 8, 7, 3, 4, 9, 8, 4, 0, 5, 9 };
+static const unsigned kPolyFaces2[7][8] =
+	{
+	{ 5, 0, 0x00000000u, 0x00000000u, 0xbf800000u, 0xbfc00000u, 0xbfc00000u, 0x3fc00000u },
+	{ 5, 5, 0x00000000u, 0x00000000u, 0x3f800000u, 0xbfc00000u, 0xbfc00000u, 0x3fc00000u },
+	{ 4, 10, 0x3f1963eeu, 0x3f4cf503u, 0x80000000u, 0xbf1b54ceu, 0xbf400000u, 0x3f1b54ceu },
+	{ 4, 14, 0xbf13868au, 0x3f5137d6u, 0x00000000u, 0xbf1b54ceu, 0xbf400000u, 0x3f1b54ceu },
+	{ 4, 18, 0xbf7490eeu, 0xbe974e6eu, 0x00000000u, 0xbf1b54cdu, 0xbf400000u, 0x3f1b54ceu },
+	{ 4, 22, 0xbc67fa34u, 0xbf7ff96eu, 0x00000000u, 0xbf1b54cdu, 0xbf400000u, 0x3f1b54cdu },
+	{ 4, 26, 0x3f725374u, 0xbea51869u, 0x00000000u, 0xbf1b54ceu, 0xbf400001u, 0x3f1b54ceu },
+	};
+// octahedron: 6 vertices, 8 polygons
+static const unsigned kPolyVerts3[18] =
+	{
+	0x3fc00000u, 0x00000000u, 0x00000000u,
+	0xbfc00000u, 0x00000000u, 0x00000000u,
+	0x00000000u, 0x3fc00000u, 0x00000000u,
+	0x00000000u, 0xbfc00000u, 0x00000000u,
+	0x00000000u, 0x00000000u, 0x3fc00000u,
+	0x00000000u, 0x00000000u, 0xbfc00000u
+	};
+static const unsigned kPolyRefs3[24] = { 0, 2, 4, 2, 1, 4, 1, 3, 4, 3, 0, 4, 2, 0, 5, 1, 2, 5, 3, 1, 5, 0, 3, 5 };
+static const unsigned kPolyFaces3[8][8] =
+	{
+	{ 3, 0, 0x3f13cd3au, 0x3f13cd3au, 0x3f13cd3au, 0xbf5db3d7u, 0xbf5db3d7u, 0x3f5db3d7u },
+	{ 3, 3, 0xbf13cd3au, 0x3f13cd3au, 0x3f13cd3au, 0xbf5db3d7u, 0xbf5db3d7u, 0x3f5db3d7u },
+	{ 3, 6, 0xbf13cd3au, 0xbf13cd3au, 0x3f13cd3au, 0xbf5db3d7u, 0xbf5db3d7u, 0x3f5db3d7u },
+	{ 3, 9, 0x3f13cd3au, 0xbf13cd3au, 0x3f13cd3au, 0xbf5db3d7u, 0xbf5db3d7u, 0x3f5db3d7u },
+	{ 3, 12, 0x3f13cd3au, 0x3f13cd3au, 0xbf13cd3au, 0xbf5db3d7u, 0xbf5db3d7u, 0x3f5db3d7u },
+	{ 3, 15, 0xbf13cd3au, 0x3f13cd3au, 0xbf13cd3au, 0xbf5db3d7u, 0xbf5db3d7u, 0x3f5db3d7u },
+	{ 3, 18, 0xbf13cd3au, 0xbf13cd3au, 0xbf13cd3au, 0xbf5db3d7u, 0xbf5db3d7u, 0x3f5db3d7u },
+	{ 3, 21, 0x3f13cd3au, 0xbf13cd3au, 0xbf13cd3au, 0xbf5db3d7u, 0xbf5db3d7u, 0x3f5db3d7u },
+	};
+// icosphere (80 triangles): 42 vertices, 80 polygons
+static const unsigned kPolyVerts4[126] =
+	{
+	0xbf283be5u, 0x3f881aa8u, 0x00000000u,
+	0x3f283be5u, 0x3f881aa8u, 0x00000000u,
+	0xbf283be5u, 0xbf881aa8u, 0x00000000u,
+	0x3f283be5u, 0xbf881aa8u, 0x00000000u,
+	0x00000000u, 0xbf283be5u, 0x3f881aa8u,
+	0x00000000u, 0x3f283be5u, 0x3f881aa8u,
+	0x00000000u, 0xbf283be5u, 0xbf881aa8u,
+	0x00000000u, 0x3f283be5u, 0xbf881aa8u,
+	0x3f881aa8u, 0x00000000u, 0xbf283be5u,
+	0x3f881aa8u, 0x00000000u, 0x3f283be5u,
+	0xbf881aa8u, 0x00000000u, 0xbf283be5u,
+	0xbf881aa8u, 0x00000000u, 0x3f283be5u,
+	0xbf817156u, 0x3f200000u, 0x3ec5c558u,
+	0xbf200000u, 0x3ec5c558u, 0x3f817156u,
+	0xbec5c558u, 0x3f817156u, 0x3f200000u,
+	0x3ec5c558u, 0x3f817156u, 0x3f200000u,
+	0x00000000u, 0x3fa00000u, 0x00000000u,
+	0x3ec5c558u, 0x3f817156u, 0xbf200000u,
+	0xbec5c558u, 0x3f817156u, 0xbf200000u,
+	0xbf200000u, 0x3ec5c558u, 0xbf817156u,
+	0xbf817156u, 0x3f200000u, 0xbec5c558u,
+	0xbfa00000u, 0x00000000u, 0x00000000u,
+	0x3f200000u, 0x3ec5c558u, 0x3f817156u,
+	0x3f817156u, 0x3f200000u, 0x3ec5c558u,
+	0xbf200000u, 0xbec5c558u, 0x3f817156u,
+	0x00000000u, 0x00000000u, 0x3fa00000u,
+	0xbf817156u, 0xbf200000u, 0xbec5c558u,
+	0xbf817156u, 0xbf200000u, 0x3ec5c558u,
+	0x00000000u, 0x00000000u, 0xbfa00000u,
+	0xbf200000u, 0xbec5c558u, 0xbf817156u,
+	0x3f817156u, 0x3f200000u, 0xbec5c558u,
+	0x3f200000u, 0x3ec5c558u, 0xbf817156u,
+	0x3f817156u, 0xbf200000u, 0x3ec5c558u,
+	0x3f200000u, 0xbec5c558u, 0x3f817156u,
+	0x3ec5c558u, 0xbf817156u, 0x3f200000u,
+	0xbec5c558u, 0xbf817156u, 0x3f200000u,
+	0x00000000u, 0xbfa00000u, 0x00000000u,
+	0xbec5c558u, 0xbf817156u, 0xbf200000u,
+	0x3ec5c558u, 0xbf817156u, 0xbf200000u,
+	0x3f200000u, 0xbec5c558u, 0xbf817156u,
+	0x3f817156u, 0xbf200000u, 0xbec5c558u,
+	0x3fa00000u, 0x00000000u, 0x00000000u
+	};
+static const unsigned kPolyRefs4[240] = { 0, 12, 14, 11, 13, 12, 5, 14, 13, 12, 13, 14, 0, 14, 16, 5, 15, 14, 1, 16, 15, 14, 15, 16, 0, 16, 18, 1, 17, 16, 7, 18, 17, 16, 17, 18, 0, 18, 20, 7, 19, 18, 10, 20, 19, 18, 19, 20, 0, 20, 12, 10, 21, 20, 11, 12, 21, 20, 21, 12, 1, 15, 23, 5, 22, 15, 9, 23, 22, 15, 22, 23, 5, 13, 25, 11, 24, 13, 4, 25, 24, 13, 24, 25, 11, 21, 27, 10, 26, 21, 2, 27, 26, 21, 26, 27, 10, 19, 29, 7, 28, 19, 6, 29, 28, 19, 28, 29, 7, 17, 31, 1, 30, 17, 8, 31, 30, 17, 30, 31, 3, 32, 34, 9, 33, 32, 4, 34, 33, 32, 33, 34, 3, 34, 36, 4, 35, 34, 2, 36, 35, 34, 35, 36, 3, 36, 38, 2, 37, 36, 6, 38, 37, 36, 37, 38, 3, 38, 40, 6, 39, 38, 8, 40, 39, 38, 39, 40, 3, 40, 32, 8, 41, 40, 9, 32, 41, 40, 41, 32, 4, 33, 25, 9, 22, 33, 5, 25, 22, 33, 22, 25, 2, 35, 27, 4, 24, 35, 11, 27, 24, 35, 24, 27, 6, 37, 29, 2, 26, 37, 10, 29, 26, 37, 26, 29, 8, 39, 31, 6, 28, 39, 7, 31, 28, 39, 28, 31, 9, 41, 23, 8, 30, 41, 1, 23, 30, 41, 30, 23 };
+static const unsigned kPolyFaces4[80][8] =
+	{
+	{ 3, 0, 0xbf1547eeu, 0x3f3fb046u, 0x3ea153fdu, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 3, 0xbf3fb046u, 0x3ea153fdu, 0x3f1547eeu, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 6, 0xbea153fdu, 0x3f1547eeu, 0x3f3fb046u, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 9, 0xbf13cd3au, 0x3f13cd3au, 0x3f13cd3au, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 12, 0xbe893bdfu, 0x3f718aacu, 0x3e476997u, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 15, 0x00000000u, 0x3f472254u, 0x3f20e0adu, 0xbf96f6abu, 0xbf96f6abu, 0x3f96f6abu },
+	{ 3, 18, 0x3e893bdfu, 0x3f718aacu, 0x3e476997u, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 21, 0x80000000u, 0x3f6f25ebu, 0x3eb6b163u, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 24, 0xbe893bdfu, 0x3f718aacu, 0xbe476997u, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 27, 0x3e893bdfu, 0x3f718aacu, 0xbe476997u, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 30, 0x00000000u, 0x3f472254u, 0xbf20e0adu, 0xbf96f6abu, 0xbf96f6abu, 0x3f96f6abu },
+	{ 3, 33, 0x00000000u, 0x3f6f25ebu, 0xbeb6b163u, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 36, 0xbf1547eeu, 0x3f3fb046u, 0xbea153fdu, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 39, 0xbea153fdu, 0x3f1547eeu, 0xbf3fb046u, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 42, 0xbf3fb046u, 0x3ea153fdu, 0xbf1547eeu, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 45, 0xbf13cd3au, 0x3f13cd3au, 0xbf13cd3au, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 48, 0xbf472254u, 0x3f20e0adu, 0x00000000u, 0xbf96f6abu, 0xbf96f6abu, 0x3f96f6abu },
+	{ 3, 51, 0xbf718aacu, 0x3e476997u, 0xbe893bdfu, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 54, 0xbf718aacu, 0x3e476997u, 0x3e893bdfu, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 57, 0xbf6f25ebu, 0x3eb6b163u, 0x00000000u, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 60, 0x3f1547eeu, 0x3f3fb046u, 0x3ea153fdu, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 63, 0x3ea153fdu, 0x3f1547eeu, 0x3f3fb046u, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 66, 0x3f3fb046u, 0x3ea153fdu, 0x3f1547eeu, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 69, 0x3f13cd3au, 0x3f13cd3au, 0x3f13cd3au, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 72, 0xbe476997u, 0x3e893bdfu, 0x3f718aacu, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 75, 0xbf20e0adu, 0x00000000u, 0x3f472254u, 0xbf96f6abu, 0xbf96f6abu, 0x3f96f6abu },
+	{ 3, 78, 0xbe476997u, 0xbe893bdfu, 0x3f718aacu, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 81, 0xbeb6b163u, 0x00000000u, 0x3f6f25ebu, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 84, 0xbf718aacu, 0xbe476997u, 0x3e893bdfu, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 87, 0xbf718aacu, 0xbe476997u, 0xbe893bdfu, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 90, 0xbf472254u, 0xbf20e0adu, 0x80000000u, 0xbf96f6abu, 0xbf96f6abu, 0x3f96f6abu },
+	{ 3, 93, 0xbf6f25ebu, 0xbeb6b163u, 0x00000000u, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 96, 0xbf20e0adu, 0x80000000u, 0xbf472254u, 0xbf96f6abu, 0xbf96f6abu, 0x3f96f6abu },
+	{ 3, 99, 0xbe476997u, 0x3e893bdfu, 0xbf718aacu, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 102, 0xbe476997u, 0xbe893bdfu, 0xbf718aacu, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 105, 0xbeb6b163u, 0x00000000u, 0xbf6f25ebu, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 108, 0x3ea153fdu, 0x3f1547eeu, 0xbf3fb046u, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 111, 0x3f1547eeu, 0x3f3fb046u, 0xbea153fdu, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 114, 0x3f3fb046u, 0x3ea153fdu, 0xbf1547eeu, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 117, 0x3f13cd3au, 0x3f13cd3au, 0xbf13cd3au, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 120, 0x3f1547eeu, 0xbf3fb046u, 0x3ea153fdu, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 123, 0x3f3fb046u, 0xbea153fdu, 0x3f1547eeu, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 126, 0x3ea153fdu, 0xbf1547eeu, 0x3f3fb046u, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 129, 0x3f13cd3au, 0xbf13cd3au, 0x3f13cd3au, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 132, 0x3e893bdfu, 0xbf718aacu, 0x3e476997u, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 135, 0x00000000u, 0xbf472254u, 0x3f20e0adu, 0xbf96f6abu, 0xbf96f6abu, 0x3f96f6abu },
+	{ 3, 138, 0xbe893bdfu, 0xbf718aacu, 0x3e476997u, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 141, 0x00000000u, 0xbf6f25ebu, 0x3eb6b163u, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 144, 0x3e893bdfu, 0xbf718aacu, 0xbe476997u, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 147, 0xbe893bdfu, 0xbf718aacu, 0xbe476997u, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 150, 0x80000000u, 0xbf472254u, 0xbf20e0adu, 0xbf96f6abu, 0xbf96f6abu, 0x3f96f6abu },
+	{ 3, 153, 0x00000000u, 0xbf6f25ebu, 0xbeb6b163u, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 156, 0x3f1547eeu, 0xbf3fb046u, 0xbea153fdu, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 159, 0x3ea153fdu, 0xbf1547eeu, 0xbf3fb046u, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 162, 0x3f3fb046u, 0xbea153fdu, 0xbf1547eeu, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 165, 0x3f13cd3au, 0xbf13cd3au, 0xbf13cd3au, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 168, 0x3f472254u, 0xbf20e0adu, 0x00000000u, 0xbf96f6abu, 0xbf96f6abu, 0x3f96f6abu },
+	{ 3, 171, 0x3f718aacu, 0xbe476997u, 0xbe893bdfu, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 174, 0x3f718aacu, 0xbe476997u, 0x3e893bdfu, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 177, 0x3f6f25ebu, 0xbeb6b163u, 0x00000000u, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 180, 0x3e476997u, 0xbe893bdfu, 0x3f718aacu, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 183, 0x3f20e0adu, 0x00000000u, 0x3f472254u, 0xbf96f6abu, 0xbf96f6abu, 0x3f96f6abu },
+	{ 3, 186, 0x3e476997u, 0x3e893bdfu, 0x3f718aacu, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 189, 0x3eb6b163u, 0x80000000u, 0x3f6f25ebu, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 192, 0xbf1547eeu, 0xbf3fb046u, 0x3ea153fdu, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 195, 0xbea153fdu, 0xbf1547eeu, 0x3f3fb046u, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 198, 0xbf3fb046u, 0xbea153fdu, 0x3f1547eeu, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 201, 0xbf13cd3au, 0xbf13cd3au, 0x3f13cd3au, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 204, 0xbea153fdu, 0xbf1547eeu, 0xbf3fb046u, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 207, 0xbf1547eeu, 0xbf3fb046u, 0xbea153fdu, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 210, 0xbf3fb046u, 0xbea153fdu, 0xbf1547eeu, 0xbf96f6acu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 213, 0xbf13cd3au, 0xbf13cd3au, 0xbf13cd3au, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 216, 0x3f20e0adu, 0x00000000u, 0xbf472254u, 0xbf96f6abu, 0xbf96f6abu, 0x3f96f6abu },
+	{ 3, 219, 0x3e476997u, 0xbe893bdfu, 0xbf718aacu, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 222, 0x3e476997u, 0x3e893bdfu, 0xbf718aacu, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 225, 0x3eb6b163u, 0x00000000u, 0xbf6f25ebu, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	{ 3, 228, 0x3f718aacu, 0x3e476997u, 0x3e893bdfu, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 231, 0x3f718aacu, 0x3e476997u, 0xbe893bdfu, 0xbf96f6abu, 0xbf96f6acu, 0x3f96f6acu },
+	{ 3, 234, 0x3f472254u, 0x3f20e0adu, 0x00000000u, 0xbf96f6abu, 0xbf96f6abu, 0x3f96f6abu },
+	{ 3, 237, 0x3f6f25ebu, 0x3eb6b163u, 0x80000000u, 0xbf9577b3u, 0xbf9577b3u, 0x3f9577b3u },
+	};
+struct Nx2gPolytope
+	{
+	const char* name;
+	unsigned nbVerts, nbPolygons, nbRefs;
+	const unsigned* verts;
+	const unsigned* refs;
+	const unsigned (*faces)[8];
+	};
+static const Nx2gPolytope kPolytopes2g[5] =
+	{
+	{ "triangular prism", 6, 5, 18, kPolyVerts0, kPolyRefs0, kPolyFaces0 },
+	{ "hexagonal prism", 12, 8, 36, kPolyVerts1, kPolyRefs1, kPolyFaces1 },
+	{ "pentagonal prism, tall", 10, 7, 30, kPolyVerts2, kPolyRefs2, kPolyFaces2 },
+	{ "octahedron", 6, 8, 24, kPolyVerts3, kPolyRefs3, kPolyFaces3 },
+	{ "icosphere (80 triangles)", 42, 80, 240, kPolyVerts4, kPolyRefs4, kPolyFaces4 },
+	};
+
+static const unsigned kNb2gPolytopeHulls = 10;	// each polytope twice: without and with a kind C map
+
+static void nx2gBuildPolytopeGraph(const Nx2gPolytope& p, Nx2gGraph& g)
+	{
+	static bool adjacent[64][64];
+	memset(adjacent, 0, sizeof(adjacent));
+	for(unsigned f = 0; f < p.nbPolygons; ++f)
+		{
+		const unsigned n = p.faces[f][0], first = p.faces[f][1];
+		for(unsigned e = 0; e < n; ++e)
+			{
+			const unsigned a = p.refs[first + e], b = p.refs[first + (e + 1) % n];
+			adjacent[a][b] = adjacent[b][a] = true;
+			}
+		}
+	unsigned next = 0;
+	for(unsigned v = 0; v < p.nbVerts; ++v)
+		{
+		g.offsetStore[v] = next;
+		g.countStore[v] = 0;
+		for(unsigned w = 0; w < p.nbVerts; ++w)
+			if(adjacent[v][w])
+				{
+				g.neighbourStore[next++] = w;
+				++g.countStore[v];
+				}
+		}
+	g.word0 = 0xcdcd6400u;
+	g.word4 = 0xcdcd6404u;
+	g.counts = g.countStore;
+	g.offsets = g.offsetStore;
+	g.neighbours = g.neighbourStore;
+	}
+
+static void nx2gBuildPolytope(Nx2gSide& s, Nx2gHullSide& h, const Nx2gPolytope& p, const Nx2gGraph* graph,
+	unsigned mapSubdiv)
+	{
+	memset(h.hull, 0, sizeof(h.hull));
+	h.handBuilt = true;
+	for(unsigned r = 0; r < p.nbRefs; ++r)
+		h.refStore[r] = p.refs[r];
+	for(unsigned f = 0; f < p.nbPolygons; ++f)
+		{
+		unsigned* poly = &h.polyStore[9 * f];
+		poly[0] = p.faces[f][0];
+		poly[1] = (unsigned) (size_t) &h.refStore[p.faces[f][1]];
+		poly[2] = 0;
+		for(unsigned k = 0; k < 6; ++k)
+			poly[3 + k] = p.faces[f][2 + k];
+		}
+	h.hull[0] = 0xcdcd8000u;
+	h.hull[3] = p.nbVerts;
+	h.hull[4] = (unsigned) (size_t) p.verts;
+	// The centre: the origin, which every polytope surrounds.
+	h.hull[9] = p.nbPolygons;
+	h.hull[10] = (unsigned) (size_t) h.polyStore;
+	h.hull[11] = (unsigned) (size_t) h.refStore;
+	h.hull[25] = (unsigned) (size_t) graph;
+	memset(h.mesh, 0, sizeof(h.mesh));
+	const void* table = s.oracle ? (const void*) (s.base + kPolygonTableRva) : (const void*) gTriangleMeshPolygonTable;
+	*(const void**) (h.mesh + 0x04) = table;
+	*(unsigned**) (h.mesh + 0xa0) = h.hull;
+	*(unsigned*) (h.mesh + 0xa4) = 0xcdcda4a4u;
+	const void* const* slots = (const void* const*) table;
+	nxSetControl(kControlDefault);
+	nx2gCall0(slots[6], h.mesh + 4);		// 002227: 001502 (the polygons are set, so no 001472)
+	h.hasMap = mapSubdiv != 0;
+	if(h.hasMap)
+		{
+		for(unsigned i = 0; i < 6; ++i)
+			h.map[i] = 0xcdcdc000u + i;
+		nx2gCall1(s.oracle ? (const void*) (s.base + kVertexMapCtorRva) : (const void*) &nxSupportMapVertexConstruct,
+			h.map, (unsigned) (size_t) h.hull);
+		nx2gCall1(s.oracle ? (const void*) (s.base + kSupportMapInitRva) : (const void*) &nxSupportMapInit,
+			h.map, mapSubdiv);
+		*(unsigned**) (h.mesh + 0xa8) = h.map;
+		}
+	}
+
+// Oracle-side counts of one pair family.
+struct Nx2gPairStats
+	{
+	unsigned pairs, pairsWithContacts, contacts, headers, mapPairs, graphPairs, nullHolders, stampWraps, axes,
+		splitPairs;
+	};
+
+// One pair family over the hulls of `sides`: each pair under both control words,
+// the streams and the scratch records compared, a pose with a denormal word under
+// 0x0f7f split off (see contact_convex_convex). `polytopes` draws translations
+// near the origin, which the polytopes surround; the boxes keep their draws.
+static unsigned nx2gRunPairs(unsigned char* base, Nx2gSide* sides, unsigned nbHulls, unsigned seed, unsigned nbPairs,
+	bool polytopes, NxDigest* inputDigest, NxDigest* oracleDigest, NxDigest* candidateDigest, NxDigest* splitOracle,
+	NxDigest* splitCandidate, unsigned* perMode, unsigned* splitWords, unsigned* splitRuns, Nx2gPairStats& st)
+	{
+	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
+	NxOracleContactFn oracleContact = (NxOracleContactFn) (base + kConvexConvexRva);
+	static NxContactWorld world[2];
+	memset(&st, 0, sizeof(st));
+	for(unsigned i = 0; i < nbPairs; ++i)
+		{
+		unsigned local = seed ^ (i * 0x9e3779b9u + 1u);
+		const unsigned hullDraw0 = nxNext(&local);
+		const unsigned hullDraw1 = nxNext(&local);
+		// Half the pairs are one hull twice: kind 0 the same pose but for one
+		// translation word, kind 1 the same translation under another rotation;
+		// the rest are two hulls on words of rows 0, 3 and 5 up to 2.
+		const unsigned pairKind = nxNext(&local) % 4;
+		const unsigned h0 = hullDraw0 % nbHulls;
+		const unsigned h1 = pairKind < 2 ? h0 : hullDraw1 % nbHulls;
+		unsigned rotation0[9], rotation1[9], translation0[3], translation1[3];
+		nx2gRotation(&local, rotation0);
+		nx2gRotation(&local, rotation1);
+		const unsigned ownAxis = nxNext(&local) % 3;
+		for(unsigned k = 0; k < 3; ++k)
+			{
+			const unsigned pick0 = nxNext(&local);
+			const unsigned pick1 = nxNext(&local);
+			const unsigned table0 = kNearRows2g[nxNext(&local) % 3];
+			const unsigned table1 = kNearRows2g[nxNext(&local) % 3];
+			if(polytopes)
+				{
+				// Words of rows 0, 3 and 5 up to 1.5, signed, one in sixteen a drawn
+				// finite word: the polytopes are about two units across.
+				translation0[k] = (pick0 & 15) == 0 ? nx2gMidWord(&local)
+					: kLattice2g[table0][(pick0 >> 4) % 2] | ((pick0 >> 8) & 0x80000000u);
+				translation1[k] = (pick1 & 15) == 0 ? nx2gMidWord(&local)
+					: kLattice2g[table1][(pick1 >> 4) % 3] | ((pick1 >> 8) & 0x80000000u);
+				}
+			else
+				{
+				translation0[k] = (pick0 & 15) == 0 ? nx2gMidWord(&local)
+					: kLattice2g[table0][(pick0 >> 4) % 3] | ((pick0 >> 8) & 0x80000000u);
+				translation1[k] = (pick1 & 15) == 0 ? nx2gMidWord(&local)
+					: (pick1 & 3) == 1 ? kLattice2g[table1][(pick1 >> 4) % 5] | ((pick1 >> 8) & 0x80000000u)
+					: kLattice2g[table1][(pick1 >> 4) % 3] | ((pick1 >> 8) & 0x80000000u);
+				}
+			if((pairKind == 0 && k != ownAxis) || pairKind == 1)
+				translation1[k] = translation0[k];
+			}
+		// Kind 0: the same rotation too, so the two hulls are one hull shifted along
+		// one axis (face against face, or apart).
+		if(pairKind == 0)
+			memcpy(rotation1, rotation0, sizeof(rotation1));
+		unsigned boxWords[2][6];
+		for(unsigned b = 0; b < 2; ++b)
+			for(unsigned k = 0; k < 6; ++k)
+				{
+				const unsigned pick = nxNext(&local);
+				const unsigned sign = k < 3 ? 0x80000000u : 0u;
+				boxWords[b][k] = (pick & 3) == 0 ? (0x7149f2cau | sign)
+					: (pick & 3) == 1 ? nx2gMidWord(&local) : (kLattice2g[0][pick % 5] | (((pick >> 8) & 1) ? sign : 0u));
+				}
+		const unsigned flags0 = nxNext(&local);
+		const unsigned flags1 = nxNext(&local);
+		const unsigned holderDraw = nxNext(&local);
+		const bool nullHolder0 = holderDraw % 8 == 1;
+		const bool nullHolder1 = holderDraw % 8 == 2;
+		const NxU32 material0 = nxNext(&local) & 0xff;
+		const NxU32 material1 = nxNext(&local) & 0xff;
+		const bool orient = (nxNext(&local) & 1) != 0;
+		const unsigned stampDraw = nxNext(&local);
+		const unsigned stamp = (stampDraw & 15) == 0 ? 0xfffffffeu : stampDraw & 0xffffu;
+		const unsigned orientWord = orient ? 1u : 0u;
+		nxFoldInput(inputDigest, &h0, 4);
+		nxFoldInput(inputDigest, &h1, 4);
+		nxFoldInput(inputDigest, rotation0, sizeof(rotation0));
+		nxFoldInput(inputDigest, rotation1, sizeof(rotation1));
+		nxFoldInput(inputDigest, translation0, sizeof(translation0));
+		nxFoldInput(inputDigest, translation1, sizeof(translation1));
+		nxFoldInput(inputDigest, boxWords, sizeof(boxWords));
+		nxFoldInput(inputDigest, &flags0, 4);
+		nxFoldInput(inputDigest, &flags1, 4);
+		nxFoldInput(inputDigest, &holderDraw, 4);
+		nxFoldInput(inputDigest, &material0, 4);
+		nxFoldInput(inputDigest, &material1, 4);
+		nxFoldInput(inputDigest, &orientWord, 4);
+		nxFoldInput(inputDigest, &stamp, 4);
+		bool poseDenormal = false;
+		for(unsigned k = 0; k < 9; ++k)
+			poseDenormal |= ((rotation0[k] | rotation1[k]) & 0x7f800000u) != 0x7f800000u
+				&& (((rotation0[k] & 0x7f800000u) == 0 && (rotation0[k] & 0x007fffffu))
+					|| ((rotation1[k] & 0x7f800000u) == 0 && (rotation1[k] & 0x007fffffu)));
+		++st.pairs;
+		if(sides[0].hulls[h0].hasMap || sides[0].hulls[h1].hasMap)
+			++st.mapPairs;
+		if(!sides[0].hulls[h0].hasMap || !sides[0].hulls[h1].hasMap)
+			++st.graphPairs;
+		if(nullHolder0 || nullHolder1)
+			++st.nullHolders;
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			for(int side = 0; side < 2; ++side)
+				{
+				Nx2gSide& s = sides[side];
+				static unsigned char store[2][2][kShapeBytes];
+				unsigned char* shape[2] = { store[side][0], store[side][1] };
+				for(unsigned b = 0; b < 2; ++b)
+					{
+					nxIdentity((NxCollisionShape*) shape[b]);
+					memcpy(((NxCollisionShape*) shape[b])->rotation, b ? rotation1 : rotation0, 36);
+					memcpy(((NxCollisionShape*) shape[b])->translation, b ? translation1 : translation0, 12);
+					((NxCollisionShape*) shape[b])->type = 4;
+					*(unsigned char**) (shape[b] + 0xe0) = s.hulls[b ? h1 : h0].mesh;
+					shape[b][0xac] = 2;								// Prunable flags: no refresh
+					*(unsigned**) (shape[b] + 0xc4) = s.pruner;		// the pruner
+					*(unsigned short*) (shape[b] + 0xcc) = (unsigned short) b;	// the handle
+					shape[b][0xde] = (unsigned char) ((b ? flags1 : flags0) & 0x3f);
+					memcpy(s.boxes[b], boxWords[b], 24);
+					}
+				nxResetWorld(&world[side]);
+				nxStageWorld(&world[side], (NxCollisionShape*) shape[0], (NxCollisionShape*) shape[1],
+					true, true, material0, material1, nullHolder0, nullHolder1, orient);
+				*(unsigned*) (s.scratch + 0x14) = stamp;
+				}
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			oracleContact(world[0].plane, world[0].sphere, &world[0].sink, sides[0].scratch);
+			NxContactConvexConvex(world[1].plane, world[1].sphere, &world[1].sink, sides[1].scratch);
+			nxSetControl(kControlDefault);
+			// The split (a rule on the fixed input): a pose with a denormal word, run
+			// under 0x0f7f. There the candidate's 001653 relative poses can differ in
+			// the last places, through the vendored InvertPRMatrix it calls (005191;
+			// with the oracle's bound in, none do: the bind patch in the evidence).
+			const bool split = mode == 1 && poseDenormal;
+			nxFoldStream(split ? splitOracle : oracleDigest, &world[0]);
+			nxFoldStream(split ? splitCandidate : candidateDigest, &world[1]);
+			nx2gFoldScratch(split ? splitOracle : oracleDigest, sides[0].scratch);
+			nx2gFoldScratch(split ? splitCandidate : candidateDigest, sides[1].scratch);
+			const unsigned differing = nxCompareStreams(&world[0], &world[1], mode)
+				+ nx2gCompareScratch(sides[0].scratch, sides[1].scratch);
+			if(split)
+				{
+				*splitWords += differing;
+				if(differing)
+					++*splitRuns;
+				}
+			else
+				perMode[mode] += differing;
+			if(mode == 1 && poseDenormal)
+				++st.splitPairs;
+			if(mode == 0)
+				{
+				if(world[0].sink.contactCount)
+					++st.pairsWithContacts;
+				st.contacts += world[0].sink.contactCount;
+				st.headers += world[0].stream[0];
+				const unsigned after = *(const unsigned*) (sides[0].scratch + 0x14);
+				if(stamp > 0xfffffff0u && after < stamp)
+					++st.stampWraps;
+				st.axes += ((const unsigned*) (sides[0].scratch + 0x4e0))[1]
+					+ ((const unsigned*) (sides[0].scratch + 0x4f0))[1];
+				}
+			}
+		}
+	return 0;
+	}
+
+static void nx2gInitScratch(Nx2gSide& s)
+	{
+	memset(s.scratch, 0, sizeof(s.scratch));
+	*(unsigned*) (s.scratch + 0x04) = 64;
+	*(unsigned**) (s.scratch + 0x08) = s.visited;
+	memset(s.visited, 0, sizeof(s.visited));
+	nx2gContainerCtor(s, s.scratch + 0x4e0);
+	nx2gContainerCtor(s, s.scratch + 0x4f0);
+	memset(s.pruner, 0, sizeof(s.pruner));
+	s.pruner[5] = (unsigned) (size_t) s.boxes;	// +0x14, the world boxes
+	}
+
 static __declspec(noinline) unsigned nxDriveTask2g(unsigned char* base)
 	{
 	unsigned total = 0;
@@ -8470,6 +8999,7 @@ static __declspec(noinline) unsigned nxDriveTask2g(unsigned char* base)
 	nxDigestInit(&candidateDigest);
 	nxDigestInit(&inputDigest);
 	unsigned perMode[2] = { 0, 0 };
+	unsigned grown = 0;
 	unsigned calls = 0, headers = 0, flagIds = 0, flagWords = 0, wideWords = 0, swapped = 0, repeatedNormal = 0,
 		inputSnan = 0;
 	unsigned state = 0x2e875000u;
@@ -8478,10 +9008,38 @@ static __declspec(noinline) unsigned nxDriveTask2g(unsigned char* base)
 		const unsigned sequenceSeed = nxNext(&state);
 		const unsigned pairsDraw = nxNext(&state);
 		const unsigned pairs = 1 + pairsDraw % 4;
+		// One sequence in eight streams into a Container each side builds with its
+		// own constructor and SetSize(4): the fourth word fills it, so 000875 grows
+		// it through the side's own 004840 (Resize), as a nearly full stream would.
+		const bool growth = i % 8 == 5;
+		nxFoldInput(&inputDigest, &pairs, 4);
 		for(int mode = 0; mode < 2; ++mode)
 			{
+			unsigned growthStore[2][4];
 			for(int side = 0; side < 2; ++side)
+				{
 				nxResetWorld(&world[side]);
+				if(growth)
+					{
+					// The sink's +0x38 is a Container: capacity, count, entries, growth.
+					if(side == 0)
+						{
+						nx2gCall0(base + kIceContainerCtorRva, growthStore[side]);
+						nx2gCall1(base + kIceContainerSetSizeRva, growthStore[side], 4);
+						}
+					else
+						{
+						new(growthStore[side]) IceCore::Container;
+						((IceCore::Container*) growthStore[side])->SetSize(4);
+						}
+					NxU32* entries = (NxU32*) (size_t) growthStore[side][2];
+					entries[0] = 0;
+					world[side].sink.streamCapacity = growthStore[side][0];
+					world[side].sink.streamCount = 1;
+					world[side].sink.stream = entries;
+					memcpy(world[side].sink.gap1, &growthStore[side][3], 4);
+					}
+				}
 			unsigned local = sequenceSeed;
 			NxVec3 normal;
 			memset(&normal, 0, sizeof(normal));
@@ -8538,6 +9096,9 @@ static __declspec(noinline) unsigned nxDriveTask2g(unsigned char* base)
 					nxFoldInput(&inputDigest, &point, sizeof(point));
 					nxFoldInput(&inputDigest, &normal, sizeof(normal));
 					nxFoldInput(&inputDigest, &separationBits, 4);
+					const unsigned staging[6] = { newIdentity0 ? 1u : 0u, newIdentity1 ? 1u : 0u, material0,
+						material1, nullHolder1 ? 1u : 0u, orient ? 1u : 0u };
+					nxFoldInput(&inputDigest, staging, sizeof(staging));
 					for(int k = 0; k < 3; ++k)
 						{
 						const NxU32 pw = nxBits((&point.x)[k]), nw = nxBits((&normal.x)[k]);
@@ -8571,6 +9132,25 @@ static __declspec(noinline) unsigned nxDriveTask2g(unsigned char* base)
 						++swapped;
 					}
 				}
+			if(growth)
+				for(int side = 0; side < 2; ++side)
+					{
+					// The grown stream back into the world's array for the comparison,
+					// then the Container released by the side's own destructor.
+					NxContactSink& sink = world[side].sink;
+					if(side == 0 && mode == 0 && sink.streamCapacity > 4)
+						++grown;
+					memcpy(world[side].stream, sink.stream, 4 * sink.streamCount);
+					growthStore[side][0] = sink.streamCapacity;
+					growthStore[side][1] = sink.streamCount;
+					growthStore[side][2] = (unsigned) (size_t) sink.stream;
+					memcpy(&growthStore[side][3], sink.gap1, 4);
+					world[side].sink.stream = world[side].stream;
+					if(side == 0)
+						nx2gCall0(base + kIceContainerDtorRva, growthStore[side]);
+					else
+						((IceCore::Container*) growthStore[side])->~Container();
+					}
 			nxFoldStream(&oracleDigest, &world[0]);
 			nxFoldStream(&candidateDigest, &world[1]);
 			perMode[mode] += nxCompareStreams(&world[0], &world[1], mode);
@@ -8581,23 +9161,22 @@ static __declspec(noinline) unsigned nxDriveTask2g(unsigned char* base)
 		kEmitFeaturesRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state, perMode[0] + perMode[1],
 		perMode[0], perMode[1]);
 	nxPrintInput("contact_emit_ext", &inputDigest);
-	printf("collision coverage name=contact_emit_ext calls=%u headers=%u flag_ids=%u flag_words=%u wide_words=%u swapped=%u repeated_normal=%u input_snan=%u\n",
-		calls, headers, flagIds, flagWords, wideWords, swapped, repeatedNormal, inputSnan);
+	printf("collision coverage name=contact_emit_ext calls=%u headers=%u flag_ids=%u flag_words=%u wide_words=%u swapped=%u repeated_normal=%u input_snan=%u grown=%u\n",
+		calls, headers, flagIds, flagWords, wideWords, swapped, repeatedNormal, inputSnan, grown);
 	}
 
 	// -----------------------------------------------------------------------
-	// contact_convex_convex: phys_fn_001820.
+	// contact_convex_convex: phys_fn_001820 over the box hulls.
 	{
-	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
-	NxOracleContactFn oracleContact = (NxOracleContactFn) (base + kConvexConvexRva);
 	static Nx2gSide sides[2];
 	static Nx2gBox boxes[kNb2gHulls];
 	static Nx2gGraph graphs[kNb2gHulls];
-	static NxContactWorld world[2];
-	NxDigest oracleDigest, candidateDigest, inputDigest;
+	NxDigest oracleDigest, candidateDigest, inputDigest, splitOracle, splitCandidate;
 	nxDigestInit(&oracleDigest);
 	nxDigestInit(&candidateDigest);
 	nxDigestInit(&inputDigest);
+	nxDigestInit(&splitOracle);
+	nxDigestInit(&splitCandidate);
 
 	unsigned state = 0x2e820000u;
 	unsigned mapSubdiv[kNb2gHulls];
@@ -8621,14 +9200,7 @@ static __declspec(noinline) unsigned nxDriveTask2g(unsigned char* base)
 		s.base = base;
 		for(unsigned h = 0; h < kNb2gHulls; ++h)
 			nx2gBuildHull(s, s.hulls[h], boxes[h], &graphs[h], mapSubdiv[h]);
-		memset(s.scratch, 0, sizeof(s.scratch));
-		*(unsigned*) (s.scratch + 0x04) = 64;
-		*(unsigned**) (s.scratch + 0x08) = s.visited;
-		memset(s.visited, 0, sizeof(s.visited));
-		nx2gContainerCtor(s, s.scratch + 0x4e0);
-		nx2gContainerCtor(s, s.scratch + 0x4f0);
-		memset(s.pruner, 0, sizeof(s.pruner));
-		s.pruner[5] = (unsigned) (size_t) s.boxes;	// +0x14, the world boxes
+		nx2gInitScratch(s);
 		}
 	// The two sides' builds, compared once (discrete words).
 	unsigned buildMismatches = 0;
@@ -8641,153 +9213,11 @@ static __declspec(noinline) unsigned nxDriveTask2g(unsigned char* base)
 		builtPolygons += a[9];
 		builtEdges += a[14];
 		}
-
-	NxDigest splitOracle, splitCandidate;
-	nxDigestInit(&splitOracle);
-	nxDigestInit(&splitCandidate);
-	unsigned splitWords = 0, splitRuns = 0, splitPairs = 0;
+	unsigned splitWords = 0, splitRuns = 0;
 	unsigned perMode[2] = { 0, 0 };
-	unsigned pairs = 0, pairsWithContacts = 0, contacts = 0, headers = 0, mapPairs = 0, graphPairs = 0,
-		nullHolders = 0, stampWraps = 0, axesTotal = 0;
-	for(unsigned i = 0; i < kConvexPairs; ++i)
-		{
-		unsigned local = 0x2e821000u ^ (i * 0x9e3779b9u + 1u);
-		const unsigned hullDraw0 = nxNext(&local);
-		const unsigned hullDraw1 = nxNext(&local);
-		// Half the pairs are one hull twice: kind 0 the same pose but for one
-		// translation word, kind 1 the same translation under another rotation;
-		// the rest are two hulls on words of rows 0, 3 and 5 up to 2.
-		const unsigned pairKind = nxNext(&local) % 4;
-		const unsigned h0 = hullDraw0 % kNb2gHulls;
-		const unsigned h1 = pairKind < 2 ? h0 : hullDraw1 % kNb2gHulls;
-		unsigned rotation0[9], rotation1[9], translation0[3], translation1[3];
-		nx2gRotation(&local, rotation0);
-		nx2gRotation(&local, rotation1);
-		const unsigned ownAxis = nxNext(&local) % 3;
-		for(unsigned k = 0; k < 3; ++k)
-			{
-			const unsigned pick0 = nxNext(&local);
-			const unsigned pick1 = nxNext(&local);
-			const unsigned table0 = kNearRows2g[nxNext(&local) % 3];
-			const unsigned table1 = kNearRows2g[nxNext(&local) % 3];
-			translation0[k] = (pick0 & 15) == 0 ? nx2gMidWord(&local)
-				: kLattice2g[table0][(pick0 >> 4) % 3] | ((pick0 >> 8) & 0x80000000u);
-			translation1[k] = (pick1 & 15) == 0 ? nx2gMidWord(&local)
-				: (pick1 & 3) == 1 ? kLattice2g[table1][(pick1 >> 4) % 5] | ((pick1 >> 8) & 0x80000000u)
-				: kLattice2g[table1][(pick1 >> 4) % 3] | ((pick1 >> 8) & 0x80000000u);
-			if((pairKind == 0 && k != ownAxis) || pairKind == 1)
-				translation1[k] = translation0[k];
-			}
-		// Kind 0: the same rotation too, so the two boxes are one box shifted along
-		// one axis (face against face, or apart).
-		if(pairKind == 0)
-			memcpy(rotation1, rotation0, sizeof(rotation1));
-		unsigned boxWords[2][6];
-		for(unsigned b = 0; b < 2; ++b)
-			for(unsigned k = 0; k < 6; ++k)
-				{
-				const unsigned pick = nxNext(&local);
-				const unsigned sign = k < 3 ? 0x80000000u : 0u;
-				boxWords[b][k] = (pick & 3) == 0 ? (0x7149f2cau | sign)
-					: (pick & 3) == 1 ? nx2gMidWord(&local) : (kLattice2g[0][pick % 5] | (((pick >> 8) & 1) ? sign : 0u));
-				}
-		const unsigned flags0 = nxNext(&local);
-		const unsigned flags1 = nxNext(&local);
-		const unsigned holderDraw = nxNext(&local);
-		const bool nullHolder0 = holderDraw % 8 == 1;
-		const bool nullHolder1 = holderDraw % 8 == 2;
-		const NxU32 material0 = nxNext(&local) & 0xff;
-		const NxU32 material1 = nxNext(&local) & 0xff;
-		const bool orient = (nxNext(&local) & 1) != 0;
-		const unsigned stampDraw = nxNext(&local);
-		const unsigned stamp = (stampDraw & 15) == 0 ? 0xfffffffeu : stampDraw & 0xffffu;
-		nxFoldInput(&inputDigest, &h0, 4);
-		nxFoldInput(&inputDigest, &h1, 4);
-		nxFoldInput(&inputDigest, rotation0, sizeof(rotation0));
-		nxFoldInput(&inputDigest, rotation1, sizeof(rotation1));
-		nxFoldInput(&inputDigest, translation0, sizeof(translation0));
-		nxFoldInput(&inputDigest, translation1, sizeof(translation1));
-		nxFoldInput(&inputDigest, boxWords, sizeof(boxWords));
-		nxFoldInput(&inputDigest, &flags0, 4);
-		nxFoldInput(&inputDigest, &flags1, 4);
-		nxFoldInput(&inputDigest, &holderDraw, 4);
-		nxFoldInput(&inputDigest, &stamp, 4);
-		bool poseDenormal = false;
-		for(unsigned k = 0; k < 9; ++k)
-			poseDenormal |= ((rotation0[k] | rotation1[k]) & 0x7f800000u) != 0x7f800000u
-				&& (((rotation0[k] & 0x7f800000u) == 0 && (rotation0[k] & 0x007fffffu))
-					|| ((rotation1[k] & 0x7f800000u) == 0 && (rotation1[k] & 0x007fffffu)));
-		++pairs;
-		if(sides[0].hulls[h0].hasMap || sides[0].hulls[h1].hasMap)
-			++mapPairs;
-		if(!sides[0].hulls[h0].hasMap || !sides[0].hulls[h1].hasMap)
-			++graphPairs;
-		if(nullHolder0 || nullHolder1)
-			++nullHolders;
-		for(int mode = 0; mode < 2; ++mode)
-			{
-			for(int side = 0; side < 2; ++side)
-				{
-				Nx2gSide& s = sides[side];
-				static unsigned char store[2][2][kShapeBytes];
-				unsigned char* shape[2] = { store[side][0], store[side][1] };
-				for(unsigned b = 0; b < 2; ++b)
-					{
-					nxIdentity((NxCollisionShape*) shape[b]);
-					memcpy(((NxCollisionShape*) shape[b])->rotation, b ? rotation1 : rotation0, 36);
-					memcpy(((NxCollisionShape*) shape[b])->translation, b ? translation1 : translation0, 12);
-					((NxCollisionShape*) shape[b])->type = 4;
-					*(unsigned char**) (shape[b] + 0xe0) = s.hulls[b ? h1 : h0].mesh;
-					shape[b][0xac] = 2;								// Prunable flags: no refresh
-					*(unsigned**) (shape[b] + 0xc4) = s.pruner;		// the pruner
-					*(unsigned short*) (shape[b] + 0xcc) = (unsigned short) b;	// the handle
-					shape[b][0xde] = (unsigned char) ((b ? flags1 : flags0) & 0x3f);
-					memcpy(s.boxes[b], boxWords[b], 24);
-					}
-				nxResetWorld(&world[side]);
-				nxStageWorld(&world[side], (NxCollisionShape*) shape[0], (NxCollisionShape*) shape[1],
-					true, true, material0, material1, nullHolder0, nullHolder1, orient);
-				*(unsigned*) (s.scratch + 0x14) = stamp;
-				}
-			nxSetControl(mode ? kControlSimulate : kControlDefault);
-			oracleContact(world[0].plane, world[0].sphere, &world[0].sink, sides[0].scratch);
-			NxContactConvexConvex(world[1].plane, world[1].sphere, &world[1].sink, sides[1].scratch);
-			nxSetControl(kControlDefault);
-			// The split (a rule on the fixed input): a pose with a denormal word, run
-			// under 0x0f7f. There the candidate's 001653 relative poses can differ in
-			// the last places, through the vendored InvertPRMatrix it calls (005191;
-			// with the oracle's bound in, none do: the bind patch in the evidence).
-			const bool split = mode == 1 && poseDenormal;
-			nxFoldStream(split ? &splitOracle : &oracleDigest, &world[0]);
-			nxFoldStream(split ? &splitCandidate : &candidateDigest, &world[1]);
-			nx2gFoldScratch(split ? &splitOracle : &oracleDigest, sides[0].scratch);
-			nx2gFoldScratch(split ? &splitCandidate : &candidateDigest, sides[1].scratch);
-			const unsigned differing = nxCompareStreams(&world[0], &world[1], mode)
-				+ nx2gCompareScratch(sides[0].scratch, sides[1].scratch);
-			if(split)
-				{
-				splitWords += differing;
-				if(differing)
-					++splitRuns;
-				}
-			else
-				perMode[mode] += differing;
-			if(mode == 1 && poseDenormal)
-				++splitPairs;
-			if(mode == 0)
-				{
-				if(world[0].sink.contactCount)
-					++pairsWithContacts;
-				contacts += world[0].sink.contactCount;
-				headers += world[0].stream[0];
-				const unsigned after = *(const unsigned*) (sides[0].scratch + 0x14);
-				if(stamp > 0xfffffff0u && after < stamp)
-					++stampWraps;
-				axesTotal += ((const unsigned*) (sides[0].scratch + 0x4e0))[1]
-					+ ((const unsigned*) (sides[0].scratch + 0x4f0))[1];
-				}
-			}
-		}
+	Nx2gPairStats st;
+	nx2gRunPairs(base, sides, kNb2gHulls, 0x2e821000u, kConvexPairs, false, &inputDigest, &oracleDigest,
+		&candidateDigest, &splitOracle, &splitCandidate, perMode, &splitWords, &splitRuns, st);
 	for(int side = 0; side < 2; ++side)
 		{
 		Nx2gSide& s = sides[side];
@@ -8806,8 +9236,78 @@ static __declspec(noinline) unsigned nxDriveTask2g(unsigned char* base)
 		kConvexPoseDivergentWords, kConvexPoseDivergentRuns, splitOver ? "exceeded" : "ok");
 	nxPrintInput("contact_convex_convex", &inputDigest);
 	printf("collision coverage name=contact_convex_convex hulls=%u polygons=%u edges=%u pairs=%u pairs_with_contacts=%u contacts=%u headers=%u map_pairs=%u graph_pairs=%u null_holders=%u stamp_wraps=%u axes=%u split_pairs=%u\n",
-		kNb2gHulls, builtPolygons, builtEdges, pairs, pairsWithContacts, contacts, headers, mapPairs, graphPairs,
-		nullHolders, stampWraps, axesTotal, splitPairs);
+		kNb2gHulls, builtPolygons, builtEdges, st.pairs, st.pairsWithContacts, st.contacts, st.headers, st.mapPairs,
+		st.graphPairs, st.nullHolders, st.stampWraps, st.axes, st.splitPairs);
+	}
+
+	// -----------------------------------------------------------------------
+	// contact_convex_hulls: phys_fn_001820 over the polytopes (Task 2g review):
+	// triangular, hexagonal and tall pentagonal prisms, an octahedron and an
+	// icosphere of 80 triangles, each with and without a kind C map, so the
+	// polygons 001909 clips are triangles, quads, pentagons and hexagons, and the
+	// face pairs are not parallel.
+	{
+	static Nx2gSide sides[2];
+	static Nx2gGraph graphs[5];
+	NxDigest oracleDigest, candidateDigest, inputDigest, splitOracle, splitCandidate;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	nxDigestInit(&splitOracle);
+	nxDigestInit(&splitCandidate);
+	static const unsigned kSubdiv[5] = { 1, 2, 3, 5, 8 };
+	for(unsigned k = 0; k < 5; ++k)
+		{
+		nx2gBuildPolytopeGraph(kPolytopes2g[k], graphs[k]);
+		nxFoldInput(&inputDigest, kPolytopes2g[k].verts, 12 * kPolytopes2g[k].nbVerts);
+		nxFoldInput(&inputDigest, kPolytopes2g[k].refs, 4 * kPolytopes2g[k].nbRefs);
+		nxFoldInput(&inputDigest, kPolytopes2g[k].faces, 32 * kPolytopes2g[k].nbPolygons);
+		nxFoldInput(&inputDigest, &kSubdiv[k], 4);
+		}
+	unsigned polygons = 0, edges = 0, buildMismatches = 0;
+	for(int side = 0; side < 2; ++side)
+		{
+		Nx2gSide& s = sides[side];
+		s.oracle = side == 0;
+		s.base = base;
+		for(unsigned h = 0; h < kNb2gPolytopeHulls; ++h)
+			nx2gBuildPolytope(s, s.hulls[h], kPolytopes2g[h % 5], &graphs[h % 5], h >= 5 ? kSubdiv[h % 5] : 0);
+		nx2gInitScratch(s);
+		}
+	for(unsigned h = 0; h < kNb2gPolytopeHulls; ++h)
+		{
+		const unsigned* a = sides[0].hulls[h].hull;
+		const unsigned* b = sides[1].hulls[h].hull;
+		if(a[14] != b[14])
+			++buildMismatches;
+		polygons += a[9];
+		edges += a[14];
+		}
+	unsigned splitWords = 0, splitRuns = 0;
+	unsigned perMode[2] = { 0, 0 };
+	Nx2gPairStats st;
+	nx2gRunPairs(base, sides, kNb2gPolytopeHulls, 0x2e823000u, kConvexHullPairs, true, &inputDigest, &oracleDigest,
+		&candidateDigest, &splitOracle, &splitCandidate, perMode, &splitWords, &splitRuns, st);
+	for(int side = 0; side < 2; ++side)
+		{
+		Nx2gSide& s = sides[side];
+		for(unsigned h = 0; h < kNb2gPolytopeHulls; ++h)
+			nx2gReleaseHull(s, s.hulls[h]);
+		nx2gContainerDtor(s, s.scratch + 0x4e0);
+		nx2gContainerDtor(s, s.scratch + 0x4f0);
+		}
+	const bool splitOver = splitWords > kConvexHullsPoseDivergentWords || splitRuns > kConvexHullsPoseDivergentRuns;
+	total += perMode[0] + perMode[1] + buildMismatches + (splitOver ? 1 : 0);
+	printf("collision name=contact_convex_hulls index=- rva=0x%08x owner=phys_fn_001820 checks=%u oracle=%016llx candidate=%016llx mismatches=%u default_mismatches=%u simulate_mismatches=%u build_mismatches=%u\n",
+		kConvexConvexRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state,
+		perMode[0] + perMode[1] + buildMismatches, perMode[0], perMode[1], buildMismatches);
+	printf("collision name=contact_convex_hulls.pose_divergent index=- rva=0x%08x owner=phys_fn_001820 checks=%u oracle=%016llx candidate=%016llx words=%u runs=%u ceiling_words=%u ceiling_runs=%u ceiling=%s\n",
+		kConvexConvexRva, splitOracle.checks, splitOracle.state, splitCandidate.state, splitWords, splitRuns,
+		kConvexHullsPoseDivergentWords, kConvexHullsPoseDivergentRuns, splitOver ? "exceeded" : "ok");
+	nxPrintInput("contact_convex_hulls", &inputDigest);
+	printf("collision coverage name=contact_convex_hulls hulls=%u polygons=%u edges=%u pairs=%u pairs_with_contacts=%u contacts=%u headers=%u map_pairs=%u graph_pairs=%u null_holders=%u stamp_wraps=%u axes=%u split_pairs=%u\n",
+		kNb2gPolytopeHulls, polygons, edges, st.pairs, st.pairsWithContacts, st.contacts, st.headers, st.mapPairs,
+		st.graphPairs, st.nullHolders, st.stampWraps, st.axes, st.splitPairs);
 	}
 	return total;
 	}

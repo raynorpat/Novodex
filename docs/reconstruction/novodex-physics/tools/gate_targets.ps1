@@ -2064,12 +2064,20 @@ $NxRequiredCoverageLines = [ordered] @{
         # copied from the oracle side (evidence/convex-mesh-gap.md, Task 2g); the coverage lines
         # count oracle-side values and fixed inputs only.
         'collision name=contact_emit_ext index=- rva=0x0001d8e0 owner=phys_fn_000875 checks=1929864 oracle=4204d51093cb3aa1',
-        'collision input name=contact_emit_ext words=230000 input=f9469769b399c7e5',
-        'collision coverage name=contact_emit_ext calls=20000 headers=15542 flag_ids=5111 flag_words=14892 wide_words=6439 swapped=10069 repeated_normal=2998 input_snan=7452',
+        'collision input name=contact_emit_ext words=358000 input=f37b3ffb3a0d61b6',
+        'collision coverage name=contact_emit_ext calls=20000 headers=15542 flag_ids=5111 flag_words=14892 wide_words=6439 swapped=10069 repeated_normal=2998 input_snan=7452 grown=1000',
         'collision name=contact_convex_convex index=- rva=0x000411a0 owner=phys_fn_001820 checks=758960 oracle=c4e3960c6cba3de5',
         'collision name=contact_convex_convex.pose_divergent index=- rva=0x000411a0 owner=phys_fn_001820 checks=71448 oracle=658c566aec79d1c4',
-        'collision input name=contact_convex_convex words=420552 input=8c6535dc797e8cc6',
-        'collision coverage name=contact_convex_convex hulls=12 polygons=72 edges=144 pairs=10000 pairs_with_contacts=1446 contacts=6247 headers=1446 map_pairs=6228 graph_pairs=6234 null_holders=2577 stamp_wraps=395 axes=24519 split_pairs=2681'
+        'collision input name=contact_convex_convex words=450552 input=1bd415c2c85d70f5',
+        'collision coverage name=contact_convex_convex hulls=12 polygons=72 edges=144 pairs=10000 pairs_with_contacts=1446 contacts=6247 headers=1446 map_pairs=6228 graph_pairs=6234 null_holders=2577 stamp_wraps=395 axes=24519 split_pairs=2681',
+        # Task 2g review: contact_convex_hulls, the same pairs over hand-built polytopes (prisms of
+        # three, five and six sides, an octahedron, an icosphere of 80 triangles; each side builds
+        # its own edges with 001502), and its .pose_divergent split on the same rule (a pose with a
+        # denormal word under 0x0f7f; 0 with the oracle's 005191 bound into 001653).
+        'collision name=contact_convex_hulls index=- rva=0x000411a0 owner=phys_fn_001820 checks=2018272 oracle=ce182fdd7d71baca',
+        'collision name=contact_convex_hulls.pose_divergent index=- rva=0x000411a0 owner=phys_fn_001820 checks=288116 oracle=1f382fe009ff0ad8',
+        'collision input name=contact_convex_hulls words=271445 input=c8aa86d39513ec0c',
+        'collision coverage name=contact_convex_hulls hulls=10 polygons=216 edges=348 pairs=6000 pairs_with_contacts=3989 contacts=18148 headers=3989 map_pairs=3714 graph_pairs=3762 null_holders=1479 stamp_wraps=223 axes=155964 split_pairs=1731'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
@@ -2728,9 +2736,9 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
-    '3' = 250  # 18 for NxPhysicsKernelFuzzTests, 232 for NxPhysicsCollisionTests (85 + 23 from
+    '3' = 254  # 18 for NxPhysicsKernelFuzzTests, 236 for NxPhysicsCollisionTests (85 + 23 from
                # convex-mesh gap Task 2a + 14 from its Task 2b + 59 + 44 from its harness hardening
-               # + 7 from its Task 2g)
+               # + 7 from its Task 2g + 4 from its review)
     '4' = 219  # 34 for NxPhysicsAssetTests, 185 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 26 from qhull-gap Task 1
                # + 14 from convex-mesh gap Task 2c + 8 from its Task 2d + 19 from its Task 2e

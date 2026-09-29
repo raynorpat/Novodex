@@ -65,12 +65,12 @@ COLLISION_DIRECT_BLOCKS = ("box_corner", "sphere_box_data",
                            "ray_inflated_tris", "aabb_slab", "triangle_plane",
                            "segment_triangle_edges",
                            # convex-mesh gap Task 2g
-                           "contact_emit_ext", "contact_convex_convex")
+                           "contact_emit_ext", "contact_convex_convex", "contact_convex_hulls")
 
 # Fixed-input splits of a direct block, divergent under an enforced ceiling:
 # registered up to their oracle digest, with no input or coverage line of their
 # own (the block's lines cover their inputs).
-COLLISION_SPLIT_BLOCKS = ("contact_convex_convex.pose_divergent",)
+COLLISION_SPLIT_BLOCKS = ("contact_convex_convex.pose_divergent", "contact_convex_hulls.pose_divergent")
 
 # The `.snan` variants of the harness hardening: the same blocks re-run with
 # their signalling NaNs kept, divergent under enforced ceilings. Each registers
@@ -481,7 +481,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"3": 250, "4": 219, "5": 871, "6": 403, "7": 276}
+    MINIMUM = {"3": 254, "4": 219, "5": 871, "6": 403, "7": 276}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
