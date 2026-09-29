@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ConvexHull.cpp b/Physics/src/ConvexHull.cpp
+index 447e468..9c2a1d0 100644
+--- a/Physics/src/ConvexHull.cpp
++++ b/Physics/src/ConvexHull.cpp
+@@ -2271,7 +2271,7 @@ L2d5d0:
+ 		fcomp	st(1)		// 0x0002d5ec
+ 		fnstsw	ax		// 0x0002d5ee
+ 		test	ah, 0x41		// 0x0002d5f0
+-		jne	L2d5ff		// 0x0002d5f3
++		je	L2d5ff		// 0x0002d5f3
+ 		fstp	st(0)		// 0x0002d5f5
+ 		mov	dword ptr [esp + 0x7c], ecx		// 0x0002d5f7
+ 		fld	dword ptr [esp + 0x78]		// 0x0002d5fb

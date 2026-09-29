@@ -1,0 +1,13 @@
+diff --git a/Physics/src/TriangleMeshPolygons.cpp b/Physics/src/TriangleMeshPolygons.cpp
+index 4d3483f..015a1d0 100644
+--- a/Physics/src/TriangleMeshPolygons.cpp
++++ b/Physics/src/TriangleMeshPolygons.cpp
+@@ -365,7 +365,7 @@ L55363:
+ 		call	nxHullClimbSupportVertex		// 0x0005539b
+ 		fld	dword ptr [esp + 0x30]		// 0x000553a0
+ 		mov	eax, dword ptr [ebp + 0x9c]		// 0x000553a4
+-		fchs		// 0x000553aa
++		fnop		// 0x000553aa
+ 		mov	edx, dword ptr [eax + 0x10]		// 0x000553ac
+ 		mov	ebp, dword ptr [eax + 0x64]		// 0x000553af
+ 		fstp	dword ptr [esp + 0x3c]		// 0x000553b2

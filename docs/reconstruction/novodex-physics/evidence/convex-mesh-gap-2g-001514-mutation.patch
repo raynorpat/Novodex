@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ConvexHull.cpp b/Physics/src/ConvexHull.cpp
+index 447e468..8d294de 100644
+--- a/Physics/src/ConvexHull.cpp
++++ b/Physics/src/ConvexHull.cpp
+@@ -2026,7 +2026,7 @@ L2d379:
+ 		fld	dword ptr [ebp + ecx*4]		// 0x0002d37c
+ 		lea	ecx, [ebp + ecx*4]		// 0x0002d380
+ 		lea	eax, [edx + edx*2]		// 0x0002d384
+-		fsub	dword ptr [ebp + eax*4]		// 0x0002d387
++		fadd	dword ptr [ebp + eax*4]		// 0x0002d387
+ 		lea	eax, [ebp + eax*4]		// 0x0002d38b
+ 		fld	dword ptr [ecx + 4]		// 0x0002d38f
+ 		fsub	dword ptr [eax + 4]		// 0x0002d392

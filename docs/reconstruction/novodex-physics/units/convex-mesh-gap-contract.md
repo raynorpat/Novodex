@@ -679,18 +679,40 @@ Totals: 9 rows; discovered 2,429 B, reconstructed 56 B
 
 | row | rva | bytes | state | phase | callers | role |
 |---|---|---:|---|---:|---|---|
-| 001803 | 0x0003fd80 | 152 | discovered | 3 | 001807, 001816 | convex SAT: one axis, both objects' slot 11 (+0x2c) projections, overlap and depth |
-| 001805 | 0x0003fe20 | 117 | discovered | 3 | 001809 | convex SAT: one axis against one object's projection (caller cleans 8 B: needs an assembly thunk, phase5 3z214) |
-| 001807 | 0x0003fea0 | 301 | discovered | 3 | 001809 | convex SAT: face normals of object A (slot 3 count, slot 4 polygon; plane at polygon+0xc) against B |
-| 001809 | 0x0003ffd0 | 432 | discovered | 3 | 001816 | convex SAT: face normals with the separating-distance bookkeeping (13 arguments) |
-| 001810 | 0x00040180 | 611 | discovered | 3 | 001812 | box-frame edge axis helper (4x4 pose, register arguments) |
-| 001812 | 0x000403f0 | 125 | discovered | 3 | 001816 | convex SAT: edge-edge axes through 001661 (unique-axis Container) |
-| 001814 | 0x00040470 | 381 | discovered | 3 | continuation | continuation of 001812 |
-| 001816 | 0x000405f0 | 1,490 | discovered | 3 | 001818 | convex/convex separating-axis search (1,490 B, alloca) |
-| 001818 | 0x00040bd0 | 1,478 | discovered | 3 | 001758, 001820 | convex/convex contact: 001816, then 001653, contacts through 001909 (1,478 B) |
-| 001820 | 0x000411a0 | 442 | discovered | 3 | 001876 | convex/convex entry (called by 001876): poses to 4x4, the TriangleMesh+0x04 interfaces and +0xa4/+0xa8, then 001818 |
+| 001803 | 0x0003fd80 | 152 | reconstructed (2g) | 3 | 001807, 001816 | convex SAT: one axis, both objects' slot 11 (+0x2c) projections, overlap and depth |
+| 001805 | 0x0003fe20 | 117 | reconstructed (2g) | 3 | 001809 | convex SAT: one axis against one object's projection (register arguments ecx, edx, esi; five stack arguments the caller cleans, `add esp, 0x14` at 0x00040066 -- Task 2g erratum: not two 8-byte arguments) |
+| 001807 | 0x0003fea0 | 301 | reconstructed (2g) | 3 | 001809 | convex SAT: face normals of object A (slot 3 count, slot 4 polygon; plane at polygon+0xc) against B |
+| 001809 | 0x0003ffd0 | 432 | reconstructed (2g) | 3 | 001816 | convex SAT: face normals with the separating-distance bookkeeping (13 arguments) |
+| 001810 | 0x00040180 | 611 | reconstructed (2g) | 3 | 001812 | box-frame edge axis helper (4x4 pose, register arguments) |
+| 001812 | 0x000403f0 | 125 | reconstructed (2g) | 3 | 001816 | convex SAT: edge-edge axes through 001661 (unique-axis Container) |
+| 001814 | 0x00040470 | 381 | reconstructed (2g) | 3 | continuation | continuation of 001812 |
+| 001816 | 0x000405f0 | 1,490 | reconstructed (2g) | 3 | 001818 | convex/convex separating-axis search (1,490 B, alloca) |
+| 001818 | 0x00040bd0 | 1,478 | reconstructed (2g) | 3 | 001758, 001820 | convex/convex contact: 001816, then 001653, contacts through 001909 (1,478 B) |
+| 001820 | 0x000411a0 | 442 | reconstructed (2g) | 3 | 001876 | convex/convex entry (called by 001876): poses to 4x4, the TriangleMesh+0x04 interfaces and +0xa4/+0xa8, then 001818 |
 
-Totals: 10 rows; discovered 5,529 B
+Totals: 10 rows; reconstructed 5,529 B (Task 2g)
+
+**Written by Task 2g** (`Physics/src/ContactConvexConvex.cpp`, every row the listing's instructions,
+naked; evidence/convex-mesh-gap-2g-listing-compare.py). Established by the listings, correcting the
+table above where it guessed:
+- *The context is a scratch record.* 001820's fourth argument (the matrix-A context) reaches 001818 as
+  its twelfth, 001816 as its first and slot 11 (002249) as its first: +0x04 the visited array's count,
+  +0x08 the visited array, +0x14 the stamp (advanced by 000505), +0x4e0 and +0x4f0 two Containers
+  of edge axes (001816 empties them at 0x00040987 / 0x0004099a and 001812 fills them).
+- *TriangleMesh +0xa8* is the support map slot 11 takes (kind C: its two byte maps are the least and
+  greatest vertex); *+0xa4* is passed to 001818 as its seventh and eighth arguments, which 001818 never
+  reads (an esp-tracked scan of 0x00040bd0..0x00041196).
+- 001820 calls 002266 when an owner's +0x08 is null and does not read its result: the contact
+  generation continues either way. 001818 reads each shape's world box through its Prunable (+0xa4
+  flags byte +0xac, pruner +0xc4 whose +0x14 is the box array, handle +0xcc; a null box for 0xffff,
+  004886 first unless flag 2 is set); 001812's box test 001810 reads through that box, so a handle of
+  0xffff with edge axes to test is a null read in the oracle (not driven).
+- Register arguments with the caller cleaning: 001803 (ecx, esi, ebx, edi; five stack arguments),
+  001805 (see the table), 001807 (eax, ecx; ten), 001810 (edx, ecx, esi, edi, ebx; one), 001812 (eax;
+  the rest on the stack). 001809 (13), 001816 (16) and 001818 (12) are cdecl.
+- A NaN axis leaves 001809's best index at -1 (0x0003ffe2) and 001816 hands it to slot 4
+  (0x000407cd), which reads the polygon before the array: mirrored, not driven (the family's poses
+  are finite).
 
 - **Evidence.** One cluster, entered at 001820 (called by 001876, `ContactMeshMesh.cpp`, when both
   meshes are convex) and at 001818 (also called by 001758). 001816's double 1e-6 opens the unit two
@@ -698,7 +720,8 @@ Totals: 10 rows; discovered 5,529 B
 - **Callees outside.** 001653, 001661 (D); **001909** (0x00048e30, 733 B, ContactPlaneMesh gap;
   closure 001903, 001907, 000875); 004886; 002266; 001281; the polygon interface slots 2/3/4/11 of
   `TriangleMesh+0x04` (002215, 002221, 002223, **002249**; see `## Shared structures`), which reach
-  the support maps (B) and the hull (P-Hull). 001805 is caller-cleans with two 8-byte arguments:
+  the support maps (B) and the hull (P-Hull). (Task 2g: 001805 takes five stack arguments, see the
+  table; the note that follows is the survey's.) 001805 is caller-cleans with two 8-byte arguments:
   per `evidence/phase5-object-model.md` 3z214 it needs a hand-written assembly thunk for the
   oracle call in the harness.
 - **Test route.** Needs the mesh fixture with convex meshes (the polygon interface and +0xa4/+0xa8
@@ -852,6 +875,38 @@ result); `angleAtVertex` now calls it, and step_smooth_normals is unchanged. 001
 sit in TriangleMesh's own span, but a file of their own keeps the asset harness, which links
 TriangleMesh.cpp, free of the ICE rows). Neither tests its allocation before calling Init on it,
 as the listing does not; both return nothing a caller reads.
+
+**Written by Task 2g.** P-Mesh, P-Emit and P-Plane, every row the listing's instructions, naked
+(evidence/convex-mesh-gap-2g-listing-compare.py: 29 functions equal, 70 call and tail-jump mappings
+asserted).
+- *Placements (choices).* The polygon interface (002211..002231, 002249; the table
+  gTriangleMeshPolygonTable) and a product form of 000505 in the new `Physics/src/TriangleMeshPolygons.cpp`
+  (the TriangleMesh span; a file of its own so the asset harness stays free of the hull rows);
+  001514, 001516 and 001530 in `Physics/src/ConvexHull.cpp` (they follow 001512 in the image);
+  000875 and P-Plane in `Physics/src/ContactGeneration.cpp`, which already holds their units'
+  neighbours (000873; 001901 and the sphere/box rows).
+- *Errata: continuations the row lists lacked* (4,061 B): 001516 has 001518, 001520 and 001522
+  (860 B), 001530 has 001532 and 001534 (138 B), 001903 has 001905 (111 B) and 001909 has 001911
+  (2,952 B). With them Task 2g writes 33 rows, 13,431 B (9,370 before).
+- *Errata: the polygon interface.* Its `this` is the mesh plus four and every slot reads the hull
+  at [this + 0x9c]. Slots: 0 the centre (+0x18), 1 the vertex count, 2 the vertices, 3 the polygon
+  count, 4 polygon i, 5 the edge axes (+0x34, 001514), 6..8 the edges, the edge-to-polygon
+  descriptors and the polygons by edge (001502), 9 a tail jump to 001496, 10 a tail jump to 001516
+  (the supporting face and whether it came through an edge), 11 the extent (002249). The convex
+  rows use slots 0, 2, 3, 4, 9, 10 and 11, not only the 2, 3, 4 and 11 the survey listed. The hull object is larger than ConvexHull.h's
+  0x4c bytes: 002249 reads a vertex graph at +0x64 (+0x08 counts, +0x0c offsets, +0x10 neighbours),
+  climbed by 001530.
+- *001514's heap* is the static CRT's (open item 7): `operator new` 005702 and `free` 005668, the
+  candidate's nothrow `operator new` and `free` (through /alternatename aliases, so the calls stay
+  direct).
+- *P-Plane.* 001909 calls the Foundation export NxFindRotationMatrix through its import slot
+  (0x10104174); 001903 is a point-in-convex-polygon test (eax, ecx and two stack floats) and 001907
+  clips an edge against the plane through the other polygon's edge (register arguments).
+- *Differentials.* polygon_interface (NxPhysicsThirdPartyTests), contact_emit_ext and
+  contact_convex_convex (NxPhysicsCollisionTests: the convex family lives there because 001820 calls
+  002266, which links the SDK parameter rows). The mesh fixture is each side's own images built in
+  the harnesses (TriangleMesh +0x04 table, +0xa0 hull, +0xa8 kind C map; shapes with a Prunable,
+  pruner and world boxes; the scratch record), with hulls each side's own 001472 and 001502 build.
 
 **Written by Task 2f.** P-Hull is in `Physics/src/ConvexHull.cpp` with sub-unit B in
 `Physics/src/IceSupportMaps.cpp` (both on the `/arch:IA32` and `/EHs-c-` lists).

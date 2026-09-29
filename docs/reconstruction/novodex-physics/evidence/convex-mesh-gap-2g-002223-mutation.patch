@@ -1,0 +1,13 @@
+diff --git a/Physics/src/TriangleMeshPolygons.cpp b/Physics/src/TriangleMeshPolygons.cpp
+index 4d3483f..806142c 100644
+--- a/Physics/src/TriangleMeshPolygons.cpp
++++ b/Physics/src/TriangleMeshPolygons.cpp
+@@ -151,7 +151,7 @@ __declspec(naked) const HullPolygon* __fastcall nxMeshHullPolygon(const void* /*
+ L54885:
+ 		mov	eax, dword ptr [esp + 8]		// 0x00054885
+ 		mov	ecx, dword ptr [esi + 0x28]		// 0x00054889
+-		lea	eax, [eax + eax*8]		// 0x0005488c
++		lea	eax, [eax + eax*4]		// 0x0005488c
+ 		lea	eax, [ecx + eax*4]		// 0x0005488f
+ 		pop	esi		// 0x00054892
+ 		ret	4		// 0x00054893

@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ContactConvexConvex.cpp b/Physics/src/ContactConvexConvex.cpp
+index a0bb17a..aa80aa4 100644
+--- a/Physics/src/ContactConvexConvex.cpp
++++ b/Physics/src/ContactConvexConvex.cpp
+@@ -172,7 +172,7 @@ __declspec(naked) bool nxConvexAxisSeparation()
+ 		test	esi, esi		// 0x0003fe5f
+ 		je	L3fe89		// 0x0003fe61
+ 		fld	dword ptr [esp + 0x18]		// 0x0003fe63
+-		fsub	dword ptr [esp]		// 0x0003fe67
++		fadd	dword ptr [esp]		// 0x0003fe67
+ 		fld	dword ptr [esp + 4]		// 0x0003fe6a
+ 		fsub	dword ptr [esp + 0x14]		// 0x0003fe6e
+ 		fstp	dword ptr [esp + 0x18]		// 0x0003fe72

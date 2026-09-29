@@ -1,0 +1,130 @@
+convex-mesh gap Task 2g: cdb breakpoint trace of P-Mesh, P-Emit, P-Plane and sub-unit L
+=======================================================================================
+
+A trimmed excerpt of the raw cdb logs, in the method of evidence/convex-mesh-gap-trace-2f.txt: two
+runs, one per harness. Banners, ModLoad lines and the programs' own output are removed except the
+Task 2g families' lines and each harness's closing line (marked `  | `); the echoed breakpoint
+commands and the HIT lines are kept in order and unedited. It is the evidence behind the
+dynamic_proof this task records in inventory.json for the rows below (see
+evidence/convex-mesh-gap.md, Task 2g).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\<harness>.exe
+           D:\FlamingEnt__\Unreal_3\Binaries 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+           (the script is the bp lines below, then `g` and `q`)
+Recorded:  2026-09-28, on the build of commit cdf3fe6 (the Task 2g rows, wiring and families), the
+           final build of this task (after the mutation runs, rebuilt clean from cdf3fe6).
+Oracle:    D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+           sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c (the pin; each
+           harness re-hashes it and refuses to run otherwise)
+Offsets:   module-relative, from each exe's linker map (the exes have no PDB); each breakpoint is
+           written against the entry point (`@$exentry - <entry RVA>` is the image base). One
+           one-shot breakpoint (`bp /1`) per candidate function carrying one of this task's stable
+           IDs (the continuations 001518..001522, 001532, 001534, 001905, 001911 and 001814 are
+           bodies of 001516, 001530, 001903, 001909 and 001812 and have no address of their own),
+           and the product forms 000505, 002211, 002213, 002215.
+
+Result: every breakpoint was hit in both runs (24 of 24 in NxPhysicsCollisionTests, 16 of 16 in
+NxPhysicsThirdPartyTests), and each harness closed with its pass line.
+
+
+-----------------------------------------------------------------------------------------------
+Run: NxPhysicsCollisionTests.exe  sha256=29b58e2cb00b37e0f387bd821cc870c660800bf175907156fb2badb448da1373  (entry point RVA 0x6ad00)
+-----------------------------------------------------------------------------------------------
+0:000> bp /1 @$exentry-0x6ad00+0x2bba0 ".echo HIT 000875 NxEmitContactFeatures +0x2bba0; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x2cc80 ".echo HIT 001903 nxPolygonContainsPoint +0x2cc80; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x2ca20 ".echo HIT 001907 nxClipEdgeToPolygonPlane +0x2ca20; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x2ac00 ".echo HIT 001909 NxConvexPolygonContacts +0x2ac00; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x333e0 ".echo HIT 001803 nxConvexAxisOverlap +0x333e0; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x33480 ".echo HIT 001805 nxConvexAxisSeparation +0x33480; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x33d40 ".echo HIT 001807 nxConvexFaceAxes +0x33d40; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x33e70 ".echo HIT 001809 nxConvexFaceAxesFirst +0x33e70; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x33ad0 ".echo HIT 001810 nxConvexEdgeBoxOverlap +0x33ad0; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x34020 ".echo HIT 001812 nxConvexGatherEdgeAxes +0x34020; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x34220 ".echo HIT 001816 nxConvexSeparatingAxis +0x34220; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x33500 ".echo HIT 001818 nxConvexConvexContact +0x33500; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x33220 ".echo HIT 001820 NxContactConvexConvex +0x33220; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x34800 ".echo HIT 002211 nxMeshHullCentre +0x34800; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x34820 ".echo HIT 002215 nxMeshHullVertices +0x34820; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x34830 ".echo HIT 002221 nxMeshHullPolygonCount +0x34830; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x34850 ".echo HIT 002223 nxMeshHullPolygon +0x34850; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x348a0 ".echo HIT 002227 nxMeshHullEdges +0x348a0; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x34900 ".echo HIT 002217 nxMeshHullSupportPolygon +0x34900; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x34910 ".echo HIT 002219 nxMeshHullSupportFace +0x34910; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x34920 ".echo HIT 002249 nxMeshHullProject +0x34920; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x49b40 ".echo HIT 001516 nxHullSupportFace +0x49b40; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x48810 ".echo HIT 001530 nxHullClimbSupportVertex +0x48810; gc"
+0:000> bp /1 @$exentry-0x6ad00+0x34af0 ".echo HIT 000505 nxScratchStamp +0x34af0; gc"
+HIT 000875 NxEmitContactFeatures +0x2bba0
+HIT 002221 nxMeshHullPolygonCount +0x34830
+HIT 002227 nxMeshHullEdges +0x348a0
+HIT 001820 NxContactConvexConvex +0x33220
+HIT 001818 nxConvexConvexContact +0x33500
+HIT 002211 nxMeshHullCentre +0x34800
+HIT 002249 nxMeshHullProject +0x34920
+HIT 000505 nxScratchStamp +0x34af0
+HIT 001530 nxHullClimbSupportVertex +0x48810
+HIT 001816 nxConvexSeparatingAxis +0x34220
+HIT 001809 nxConvexFaceAxesFirst +0x33e70
+HIT 002223 nxMeshHullPolygon +0x34850
+HIT 001805 nxConvexAxisSeparation +0x33480
+HIT 001812 nxConvexGatherEdgeAxes +0x34020
+HIT 002215 nxMeshHullVertices +0x34820
+HIT 001810 nxConvexEdgeBoxOverlap +0x33ad0
+HIT 002217 nxMeshHullSupportPolygon +0x34900
+HIT 002219 nxMeshHullSupportFace +0x34910
+HIT 001516 nxHullSupportFace +0x49b40
+HIT 001909 NxConvexPolygonContacts +0x2ac00
+HIT 001903 nxPolygonContainsPoint +0x2cc80
+HIT 001907 nxClipEdgeToPolygonPlane +0x2ca20
+HIT 001807 nxConvexFaceAxes +0x33d40
+HIT 001803 nxConvexAxisOverlap +0x333e0
+  | collision name=contact_emit_ext index=- rva=0x0001d8e0 owner=phys_fn_000875 checks=1929864 oracle=4204d51093cb3aa1 candidate=4204d51093cb3aa1 mismatches=0 default_mismatches=0 simulate_mismatches=0
+  | collision input name=contact_emit_ext words=230000 input=f9469769b399c7e5
+  | collision coverage name=contact_emit_ext calls=20000 headers=15542 flag_ids=5111 flag_words=14892 wide_words=6439 swapped=10069 repeated_normal=2998 input_snan=7452
+  | collision name=contact_convex_convex index=- rva=0x000411a0 owner=phys_fn_001820 checks=758960 oracle=c4e3960c6cba3de5 candidate=c4e3960c6cba3de5 mismatches=0 default_mismatches=0 simulate_mismatches=0 build_mismatches=0
+  | collision name=contact_convex_convex.pose_divergent index=- rva=0x000411a0 owner=phys_fn_001820 checks=71448 oracle=658c566aec79d1c4 candidate=11b33e5b32e03986 words=2 runs=1 ceiling_words=2 ceiling_runs=1 ceiling=ok
+  | collision input name=contact_convex_convex words=420552 input=8c6535dc797e8cc6
+  | collision coverage name=contact_convex_convex hulls=12 polygons=72 edges=144 pairs=10000 pairs_with_contacts=1446 contacts=6247 headers=1446 map_pairs=6228 graph_pairs=6234 null_holders=2577 stamp_wraps=395 axes=24519 split_pairs=2681
+  | collision matrix_wrong=0 index_wrong=0 mismatches=0
+  | collision=pass
+
+-----------------------------------------------------------------------------------------------
+Run: NxPhysicsThirdPartyTests.exe  sha256=5b49df732e08748b0d1dd319235b206c09e8d700c861dc367441d93a8a2730ed  (entry point RVA 0x92000)
+-----------------------------------------------------------------------------------------------
+0:000> bp /1 @$exentry-0x92000+0x30190 ".echo HIT 002211 nxMeshHullCentre +0x30190; gc"
+0:000> bp /1 @$exentry-0x92000+0x301a0 ".echo HIT 002213 nxMeshHullVertexCount +0x301a0; gc"
+0:000> bp /1 @$exentry-0x92000+0x301b0 ".echo HIT 002215 nxMeshHullVertices +0x301b0; gc"
+0:000> bp /1 @$exentry-0x92000+0x301c0 ".echo HIT 002221 nxMeshHullPolygonCount +0x301c0; gc"
+0:000> bp /1 @$exentry-0x92000+0x301e0 ".echo HIT 002223 nxMeshHullPolygon +0x301e0; gc"
+0:000> bp /1 @$exentry-0x92000+0x30210 ".echo HIT 002225 nxMeshHullEdgeAxes +0x30210; gc"
+0:000> bp /1 @$exentry-0x92000+0x30230 ".echo HIT 002227 nxMeshHullEdges +0x30230; gc"
+0:000> bp /1 @$exentry-0x92000+0x30250 ".echo HIT 002229 nxMeshHullEdgeToPolygons +0x30250; gc"
+0:000> bp /1 @$exentry-0x92000+0x30270 ".echo HIT 002231 nxMeshHullEdgePolygons +0x30270; gc"
+0:000> bp /1 @$exentry-0x92000+0x30290 ".echo HIT 002217 nxMeshHullSupportPolygon +0x30290; gc"
+0:000> bp /1 @$exentry-0x92000+0x302a0 ".echo HIT 002219 nxMeshHullSupportFace +0x302a0; gc"
+0:000> bp /1 @$exentry-0x92000+0x302b0 ".echo HIT 002249 nxMeshHullProject +0x302b0; gc"
+0:000> bp /1 @$exentry-0x92000+0x2d8b0 ".echo HIT 001514 nxHullComputeEdgeAxes +0x2d8b0; gc"
+0:000> bp /1 @$exentry-0x92000+0x2e9b0 ".echo HIT 001516 nxHullSupportFace +0x2e9b0; gc"
+0:000> bp /1 @$exentry-0x92000+0x2d680 ".echo HIT 001530 nxHullClimbSupportVertex +0x2d680; gc"
+0:000> bp /1 @$exentry-0x92000+0x30480 ".echo HIT 000505 nxScratchStamp +0x30480; gc"
+HIT 002211 nxMeshHullCentre +0x30190
+HIT 002213 nxMeshHullVertexCount +0x301a0
+HIT 002215 nxMeshHullVertices +0x301b0
+HIT 002221 nxMeshHullPolygonCount +0x301c0
+HIT 002223 nxMeshHullPolygon +0x301e0
+HIT 002225 nxMeshHullEdgeAxes +0x30210
+HIT 001514 nxHullComputeEdgeAxes +0x2d8b0
+HIT 002227 nxMeshHullEdges +0x30230
+HIT 002229 nxMeshHullEdgeToPolygons +0x30250
+HIT 002231 nxMeshHullEdgePolygons +0x30270
+HIT 002217 nxMeshHullSupportPolygon +0x30290
+HIT 002219 nxMeshHullSupportFace +0x302a0
+HIT 001516 nxHullSupportFace +0x2e9b0
+HIT 002249 nxMeshHullProject +0x302b0
+HIT 000505 nxScratchStamp +0x30480
+HIT 001530 nxHullClimbSupportVertex +0x2d680
+  | thirdparty input name=polygon_interface words=20733 input=4df6a369
+  | thirdparty name=polygon_interface rva=0x000552c0 owner=phys_fn_002249 source=TriangleMeshPolygons.cpp,ConvexHull.cpp,IceSupportMaps.cpp words=31253 oracle=28edec7b mismatches=0 worst_ulp=0 verdict=exact
+  | thirdparty coverage name=polygon_interface hulls=34 built=25 polygons=234 edges=604 axes=333 axes_rebuilt=18 support=400 support_posed=200 faces=400 faces_edge=33 face_kind_null=50 projects=544 projects_map=272 projects_graph=272 climbs_failed=48 stamp_wraps=65 input_snan=823 reports=10
+  | thirdparty candidate mismatches=0 layout_failures=0

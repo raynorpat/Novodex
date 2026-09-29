@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ContactConvexConvex.cpp b/Physics/src/ContactConvexConvex.cpp
+index a0bb17a..a66289c 100644
+--- a/Physics/src/ContactConvexConvex.cpp
++++ b/Physics/src/ContactConvexConvex.cpp
+@@ -808,7 +808,7 @@ L40489:
+ 		fld	dword ptr [esi]		// 0x000404a2
+ 		fmul	dword ptr [edx]		// 0x000404a4
+ 		faddp	st(1), st		// 0x000404a6
+-		fadd	dword ptr [edx + 0xc]		// 0x000404a8
++		fsub	dword ptr [edx + 0xc]		// 0x000404a8
+ 		fcomp	dword ptr kConvexZero		// 0x000404ab
+ 		fnstsw	ax		// 0x000404b1
+ 		test	ah, 0x41		// 0x000404b3

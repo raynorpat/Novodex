@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ContactGeneration.cpp b/Physics/src/ContactGeneration.cpp
+index 3a968a9..0d8528b 100644
+--- a/Physics/src/ContactGeneration.cpp
++++ b/Physics/src/ContactGeneration.cpp
+@@ -3200,7 +3200,7 @@ __declspec(naked) NxU32 nxPolygonContainsPoint(float /*x*/, float /*y*/)
+ 		fcomp	dword ptr [esp + 0x18]		// 0x00048b41
+ 		fnstsw	ax		// 0x00048b45
+ 		test	ah, 1		// 0x00048b47
+-		jne	L48b53		// 0x00048b4a
++		je	L48b53		// 0x00048b4a
+ 		mov	ebx, 1		// 0x00048b4c
+ 		jmp	L48b55		// 0x00048b51
+ L48b53:

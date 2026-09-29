@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ContactConvexConvex.cpp b/Physics/src/ContactConvexConvex.cpp
+index a0bb17a..0215867 100644
+--- a/Physics/src/ContactConvexConvex.cpp
++++ b/Physics/src/ContactConvexConvex.cpp
+@@ -111,7 +111,7 @@ __declspec(naked) bool nxConvexAxisOverlap()
+ 		test	ebp, ebp		// 0x0003fdde
+ 		je	L3fe0a		// 0x0003fde0
+ 		fld	dword ptr [esp + 4]		// 0x0003fde2
+-		fsub	dword ptr [esp + 8]		// 0x0003fde6
++		fadd	dword ptr [esp + 8]		// 0x0003fde6
+ 		fld	dword ptr [esp + 0xc]		// 0x0003fdea
+ 		fsub	dword ptr [esp + 0x10]		// 0x0003fdee
+ 		fstp	dword ptr [esp + 0x10]		// 0x0003fdf2

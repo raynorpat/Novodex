@@ -25,6 +25,7 @@ table below.
 | 2e review | 2026-09-28T16:58:00 | 2026-09-28T17:21:44 | 0 | 0 | Task 2e review cleanups: the four caught mutations re-measured in a `git archive` copy between un-mutated controls (oracle digest a1b4f9a6 unmoved) and cited in the ledger notes of 001661, 001651, 001653 and 002144, which stay reconstructed_not_falsified because a closure needs `dynamically_gated`; the listing comparison now checks absolute operands by their bytes (still 0 differing); the pose_pair split classified over all 944 words (276 quieted signalling NaNs, 668 quiet NaNs differing downstream); the UB of calling Init on a possibly null object noted at 002186/002188; stale contract states updated. See `## Task 2e`, **Review**. |
 | 2f | 2026-09-28T17:22:00 | 2026-09-28T18:38:20 | 25 | 6,875 | P-Hull (001441, 001445, 001449, 001459, 001463, 001465, 001472, 001496 with continuations 001498/001500, 001502 with continuations 001504..001512 -- seven continuations the contract's list lacked) in `ConvexHull.cpp` and sub-unit B (001550, 001556, 001558/001560, 001567, 001569, 001573, 001579, 001581) in the new `IceSupportMaps.cpp`; product forms of the eleven small support-map rows, of 000925, 001391, 001439, 001657, and 000001 (not promoted). The twelve x87 rows are naked listing transcriptions, instruction-equal to the listing (vendored members through /alternatename, 001558's switch table row-relative in .rdata). The 001407 model now calls 001556 and 001472 (shape vtable 626/0 unchanged). Families hull_leaf, convex_hull, support_maps in NxPhysicsThirdPartyTests, all exact with signalling NaNs in the inputs; convex_hull.plane_divergent (a fixed-input rule: concave, nudged and 0x0f7f polycubes, drawn 001463 points) under a ceiling of 1,595 words, 0 with the oracle's 005155/005179 bound into 001463. All twelve x87 mutations caught. Two oracle out-of-bounds reads found and not driven (001641 on an empty Container, 001502 without polygons). 12 lines registered, phase 4 floor 214. 32 of 33 traced functions hit. See `## Task 2f`. |
 | 2f review | 2026-09-28T18:42:00 | 2026-09-28T18:56:30 | 0 | 0 | Task 2f review: 001465's /GS cookie (its `_alloca`) recorded in the row, its static proof and the evidence, with its `__alloca_probe_16` and CRT memset/memcpy (stack and code form, not behaviour); the empty-Container read cited at 0x00031537 (001643); the listing comparison asserts its 67 call/constructor mappings (0 unexpected); round 5 adds 12 exact 0x0f7f meshes on power-of-two steps (convex_hull input, exact, coverage and totals lines re-registered; the split line unchanged); trace re-recorded on c7d5ea8 (32 of 33 hit). Gates 2, 3, 4, 6, 7 pass; phase 5 only CANDIDATE-MISSING vtables. See `## Task 2f`. |
+| 2g | 2026-09-28T19:11:34 | 2026-09-28T20:36:45 | 33 | 13,431 | The mesh fixture, P-Mesh (the TriangleMesh polygon interface 002217..002231, 002249 in the new `TriangleMeshPolygons.cpp`; 001514, 001516, 001530 in `ConvexHull.cpp`), P-Emit (000875) and P-Plane (001903, 001907, 001909) in `ContactGeneration.cpp`, and sub-unit L (001803..001820) in the new `ContactConvexConvex.cpp`; seven continuations the contract lacked (001518..001522, 001532, 001534, 001905, 001911: 4,061 B). Product forms of 000505, 002211, 002213, 002215. All 29 functions naked and listing-exact (70 call / tail-jump mappings asserted), no /GS cookie or fs: frame. Families polygon_interface (NxPhysicsThirdPartyTests), contact_emit_ext and contact_convex_convex (NxPhysicsCollisionTests; each side builds its own mesh, hull, map and scratch images), exact with raw words; one fixed-input split, contact_convex_convex.pose_divergent (a pose with a denormal word under 0x0f7f: 1 run / 2 words from the vendored InvertPRMatrix in 001653, 0 with the oracle's 005191 bound in). All 18 mutations caught (two strengthened: 001807 needed centred boxes, 001903's first mutation is invisible by construction). The collision block sits after wmain: the ICE headers' inline_depth pragma moved nine registered input digests when it stood before. 12 lines registered, phase 3 floor 250, phase 4 219. 40 of 40 traced functions hit. Found: the context is a scratch record (+0x4e0/+0x4f0 edge-axis Containers), mesh +0xa8 the kind C map, +0xa4 unread, 001820 ignores 002266's result. See `## Task 2g`. |
 
 ## Task 2a: box distance kernels and the entries that reach them
 
@@ -1229,3 +1230,220 @@ passes.
   519 (001496, 001498, 001500, 001550, 001558, 001560, 001567, 001569, 001573, 001579, 001581).
   The reason stays reconstructed_not_falsified for the mutated rows too: a closure needs the
   inventory at `dynamically_gated`, and this plan promotes no row above `reconstructed`.
+
+## Task 2g: the mesh fixture, P-Mesh, P-Emit, P-Plane and convex/convex
+
+**Rows (33, 13,431 B), all `discovered` -> `reconstructed`.** The contract's 29 rows (9,370 B) and
+seven continuations its lists lacked (4,061 B): 001518, 001520 and 001522 of 001516; 001532 and
+001534 of 001530; 001905 of 001903; 001911 of 001909.
+
+| row | bytes | candidate | file |
+|---|---:|---|---|
+| 001514 | 441 | `nxHullComputeEdgeAxes` | ConvexHull.cpp |
+| 001516 + 001518, 001520, 001522 | 298 + 860 | `nxHullSupportFace` | ConvexHull.cpp |
+| 001530 + 001532, 001534 | 153 + 138 | `nxHullClimbSupportVertex` | ConvexHull.cpp |
+| 002221, 002223, 002225, 002227, 002229, 002231, 002217, 002219 (slots 3..10) | 190 | `nxMeshHull*` | TriangleMeshPolygons.cpp (new) |
+| 002249 (slot 11) | 459 | `nxMeshHullProject` | TriangleMeshPolygons.cpp |
+| 000875 | 915 | `NxEmitContactFeatures` | ContactGeneration.cpp |
+| 001903 + 001905 | 45 + 111 | `nxPolygonContainsPoint` | ContactGeneration.cpp |
+| 001907 | 607 | `nxClipEdgeToPolygonPlane` | ContactGeneration.cpp |
+| 001909 + 001911 | 733 + 2,952 | `NxConvexPolygonContacts` | ContactGeneration.cpp |
+| 001803, 001805, 001807, 001809, 001810, 001812 + 001814, 001816, 001818, 001820 | 5,529 | `nxConvex*`, `NxContactConvexConvex` | ContactConvexConvex.cpp (new) |
+
+Also written, states unchanged (notes record them): product forms of the three reconstructed
+getters that complete the table, 002211, 002213 and 002215 (slots 0..2), and of 000505
+(`nxScratchStamp`, the scratch record's stamp), which 002249 calls.
+
+*Form.* Every row is the listing's instructions, naked, generated from the Capstone listing (branch
+targets as labels named by their RVA, alignment fillers and three instructions whose encoding the
+inline assembler would change -- `test al, dl` at 0x0001d996 and `cmp dx, 0xffff` at 0x00040d6b /
+0x00040dd2 -- as their bytes). `evidence/convex-mesh-gap-2g-listing-compare.py` shows each of the 29
+built functions in NxPhysics.dll equal to its listing extent instruction for instruction
+(continuations and fillers included; `ALL EQUAL`), absolute operands compared by the bytes they read
+(0.0f, 1.0f, 0.5f, the doubles 1e-6, 1e-7 and -1e-7) and the import slot 0x10104174 by its name
+(NxFindRotationMatrix), and it asserts all 70 call and tail-jump mappings (`MAPPINGS checked=70
+unexpected=0`), exiting non-zero on any difference:
+- the rows of the same stable ID (the hull rows 001472, 001496, 001502 and the new ones; 001556;
+  001653 and 001661; 001281 `NxShapeOwner` and 002266 `NxContinuousCdPair`);
+- the vendored Container constructor, destructor and (private) Resize, and Prunable::UpdateWorldAABB,
+  reached from naked code through /alternatename aliases of their decorated names;
+- the CRT: 001514's `operator new` (005702) and `free` (005668) as the candidate CRT's nothrow
+  `operator new` and `_free` (aliases, so the calls stay direct `call rel32` as in the listing; a
+  plain `call free` compiled to `call [__imp__free]`), and the stack probe 005695 as `__chkstk`.
+
+*Calling conventions.* The oracle's. Thiscall rows are `__fastcall` with an unused edx (the polygon
+interface slots, 000505, 001514, 001516, 000875); cdecl rows are cdecl (001530, 001809, 001816,
+001818, 001820, 001909); the register-argument rows with the caller cleaning -- 001803 (ecx, esi, ebx,
+edi), 001805 (ecx, edx, esi), 001807 (eax, ecx), 001810 (edx, ecx, esi, edi, ebx), 001812 (eax), 001903
+(eax, ecx), 001907 (edx, ecx, esi, ebx) -- are declared without parameters and called only from the
+naked rows.
+
+*Frames and /GS.* A scan of the built NxPhysics.dll over the 29 functions finds no reference to
+`___security_cookie` (0x100f8480) and no fs: access: no cookie and no unwind frame, as in the oracle
+(naked functions get neither). Stack and code form: 001816 and 001909 probe their `_alloca` blocks
+through the candidate CRT's `__chkstk` where the oracle calls its static copy 005695 (the same
+contract: eax the size, esp moved); nothing else differs.
+
+*Allocators.* 001514 uses the CRT pair (open item 7: 005702/005668 are the same static-CRT heap as
+MeshBuilder2's); every other allocation the rows reach is the 004803 getter's (001472, 001502 and
+the support map's Init, unchanged). 000875 grows the sink's stream through the vendored
+Container::Resize.
+
+*Wiring.* No candidate caller reaches these rows yet: 001820's caller is 001876 (ContactMeshMesh.cpp,
+outside the plan), 001818's other caller 001758 is Task 2j, and the candidate has no TriangleMesh
+constructor to store the +0x04 table. TriangleMesh.h now names +0x04 (the polygon table) and the
+words after +0xa0 that the rows read.
+
+*Listing findings* (the contract is corrected):
+- The polygon interface's `this` is the mesh plus four; every slot reads the hull at [this + 0x9c].
+  The convex rows use slots 0, 2, 3, 4, 9, 10 and 11. 002249 reads a vertex graph at hull +0x64, so the
+  object at mesh +0xa0 is larger than ConvexHull.h's 0x4c bytes.
+- The matrix-A context is a scratch record: +0x04 count, +0x08 visited array, +0x14 stamp, +0x4e0 and
+  +0x4f0 two edge-axis Containers. Mesh +0xa8 is the kind C support map slot 11 takes; +0xa4 is passed
+  to 001818, which never reads its seventh and eighth arguments.
+- 001820 calls 002266 when an owner's +0x08 is null and ignores its result.
+- 001805 takes five stack arguments, not two 8-byte ones.
+- UB mirrored from the oracle, not driven: a NaN pose axis leaves 001809's best index at -1
+  (0x0003ffe2) and 001816 passes it to slot 4 (0x000407cd), a read before the polygon array; a pruning
+  handle of 0xffff gives 001818 a null world box that 001812's 001810 reads through; 002223 and
+  001909/001911 do not check polygon indices or vertex references. The families' poses are finite and
+  their handles valid (fixed-input rules).
+
+**The mesh fixture** is each side's own images, built in the harnesses (the contract's first step):
+TriangleMesh images (+0x04 the side's polygon table, the oracle's 0x101085d4 or
+gTriangleMeshPolygonTable; +0xa0 a hull image; +0xa8 a kind C map built by the side's own constructor
+and Init, or null), hull images whose polygons and edges the side's own 001472 and 001502 build through
+the slots, a vertex graph at hull +0x64, shapes (NxContactWorld staging) with a Prunable, a pruner and
+world boxes, and the scratch record with Containers built by the side's own constructor.
+
+**Differential.**
+
+| family | harness | rows | size | result |
+|---|---|---|---:|---|
+| polygon_interface | NxPhysicsThirdPartyTests | the twelve slots, 000505, 001514, 001516/001518..001522, 001530/001532/001534, the kind C map | 31,253 words | exact |
+| contact_emit_ext | NxPhysicsCollisionTests | 000875 | 1,929,864 checks | exact |
+| contact_convex_convex | NxPhysicsCollisionTests | 001820 and every row of L, P-Plane, 000875, the slots and helpers | 758,960 checks | exact |
+| contact_convex_convex.pose_divergent | NxPhysicsCollisionTests | the same, on the split inputs | 71,448 checks | 1 run / 2 words, ceiling 1 / 2 |
+
+- **polygon_interface.** 34 hull images of convex_hull's meshes (its main set that is not split, under
+  0x027f, and its round 5, under 0x0f7f: the vendored Plane::Set / Triangle::Normal in the side's 001472
+  are exact there), including the open, ring and edge-pair meshes on which 001472 builds nothing
+  (slots 3..5 and 11 run on them; 6..10 do not: 001502 without polygons writes outside its block).
+  Slots 0..2 as offsets, slot 3, slot 4 for every polygon, slot 5 (001514) and on every other hull
+  001514 again directly (releasing the first Container through each side's CRT), slots 6..8, 16
+  drawn directions through slots 9 and 10 with and without a drawn pose (the kind pointer null one
+  time in eight), and 16 through slot 11 with the side's kind C map (n = 1..4) and over the graph
+  (none on every fifth hull, no neighbour array on another fifth), the stamp near its wrap one time
+  in four. Every float input is a raw word (823 signalling NaNs); both control words.
+- **contact_emit_ext.** 8,000 sequences of one to four emissions per control word, on NxContactWorld
+  staging: flag bytes drawn (bit 0x20 for flag 4), ids real or 0xffff with junk in their high halves,
+  feature words at most or above 0xffff, points and normals from nxPickRawWord with signalling NaNs
+  kept (7,452), one normal in four repeated.
+- **contact_convex_convex.** 12 box hulls on lattice words whose spans are powers of two (every face's
+  cross product is a power of two on one axis, so the vendored Plane::Set normalises exactly; with
+  other spans the side's 001472 builds normals a unit in the last place apart -- found on the first
+  run), centred at the exact midpoints of their spans in three boxes of four (so 001807 runs), two of
+  them large; 10,000 pairs, each under both control words: half one hull twice (the same pose but one
+  translation word, or the same translation under another rotation), rotations signed permutations,
+  rotations about an axis by fixed (cos, sin) words, or table words with -0 and denormals;
+  translations of lattice and drawn finite words; world boxes of wide, lattice and drawn words; null
+  holders one pair in four (002266 runs); maps on odd hulls; stamps near the wrap. 1,446 pairs emit
+  6,247 contacts.
+  - *The split is a rule on the fixed inputs:* a pair whose pose holds a denormal word, run under
+    0x0f7f (2,681 pairs). There 001653's relative poses can differ in the last places through the
+    vendored InvertPRMatrix (005191). `evidence/convex-mesh-gap-2g-bind-oracle-callees.patch` (git
+    apply to cdf3fe6; rebuild NxPhysicsCollisionTests; run with NX_ICE_BIND unset and 4; `git checkout`
+    the two files) binds the oracle's 005191 into the candidate's 001653: 2 words / 1 run unbound, 0 /
+    0 bound. Never commit the patch applied.
+- **Stability.** The runs are deterministic (`--self` gives the same thirdparty digests). Every earlier
+  collision and thirdparty line is unchanged: the Task 2g collision block is defined after wmain,
+  because the ICE headers it includes set `#pragma inline_depth`, and placed before wmain they changed
+  the inlining of the helpers wmain's generators share and with it nine registered input digests and
+  box_corner's two oracle digests (found, then fixed, before any line was registered).
+
+*Sensitivity* (one throwaway mutation per row with float code, and 002223, each committed as
+`evidence/convex-mesh-gap-2g-<row>-mutation.patch`). To reproduce: `git apply` the patch to cdf3fe6,
+rebuild NxPhysicsCollisionTests and NxPhysicsThirdPartyTests, run both, then `git checkout` the file.
+Measured on the build of cdf3fe6 between un-mutated controls before the first and after the last
+(all three families mismatches=0, the split at 2 words):
+
+| row (patch) | mutation | polygon_interface | contact_emit_ext | contact_convex_convex |
+|---|---|---:|---:|---:|
+| 001514 | `fsub` -> `fadd` at 0x0002d387 | FAILED (tape 31,568 vs 31,253) | 0 | 0 |
+| 001516 (in 001518) | `jne` -> `je` at 0x0002d5f3 | 290 | 0 | 747 |
+| 001530 (in 001534) | `jne` -> `je` at 0x0002daae | 3,228 | 0 | 0 |
+| 002249 | the `fchs` at 0x000553aa removed | 909 | 0 | 8,549 |
+| 002223 | `[eax + eax*8]` -> `[eax + eax*4]` at 0x0005488c | 209 | - | - |
+| 000875 | the `fchs` at 0x0001d92a removed | 0 | 19,314 | 1,492 |
+| 001903 | `jne` -> `je` at 0x00048b4a | 0 | 0 | 24,645 |
+| 001907 | `fsub` -> `fadd` at 0x00048c26 | 0 | 0 | 3,251 |
+| 001909 (in 001911) | `fadd` -> `fsub` at 0x0004913e | 0 | 0 | 205 |
+| 001803 | `fsub` -> `fadd` at 0x0003fde6 | 0 | 0 | 9,974 |
+| 001805 | `fsub` -> `fadd` at 0x0003fe67 | 0 | 0 | 29,039 |
+| 001807 | `faddp` -> `fsubp` at 0x0003ff00 | 0 | 0 | 18 |
+| 001809 | `fadd` -> `fsub` at 0x00040025 | 0 | 0 | 21,240 |
+| 001810 | `fmul` -> `fdiv` (0.5f) at 0x000401ac | 0 | 0 | 1,648 |
+| 001812 (in 001814) | `fadd` -> `fsub` at 0x000404a8 | 0 | 0 | 1,586 |
+| 001816 | `fsubp` -> `faddp` at 0x00040a3e | 0 | 0 | 18 |
+| 001818 | the `fchs` at 0x00040e9c removed | 0 | 0 | 4,445 |
+| 001820 | the translation's first word from +0x34 at 0x00041259 | 0 | 0 | 24,808 |
+
+Two mutations of the first run (on 5770180) were invisible and the inputs or the mutation were
+changed: 001807's (0; its row ran only when no face passed 001809's centre test, which the drawn
+centres rarely allowed -- the centres moved to the span midpoints, 18 since) and 001903's first one,
+the side test's `jp` -> `jnp` at 0x00048b9e, which is invisible by construction (a point in a convex
+polygon has one crossing on each side of it, so the flipped side counts the same); its mutation moved
+to the last vertex's side. 001514's first mutation (`fdivr` -> `fdiv` at 0x0002d3c2) was caught but
+only by one word, because most box edges have length 1; the direction's `fsub` is the stronger one
+recorded. The ledger notes of the caught rows (001518, 001534, 001911 and 001814 for the
+continuations) cite them.
+
+*Registered lines.* 12 lines, copied from the oracle side (the collision name lines up to their
+oracle digest, the thirdparty name line whole):
+- `collision name=contact_emit_ext index=- rva=0x0001d8e0 owner=phys_fn_000875 checks=1929864 oracle=4204d51093cb3aa1`
+- `collision input name=contact_emit_ext words=230000 input=f9469769b399c7e5`
+- `collision coverage name=contact_emit_ext calls=20000 headers=15542 flag_ids=5111 flag_words=14892 wide_words=6439 swapped=10069 repeated_normal=2998 input_snan=7452`
+- `collision name=contact_convex_convex index=- rva=0x000411a0 owner=phys_fn_001820 checks=758960 oracle=c4e3960c6cba3de5`
+- `collision name=contact_convex_convex.pose_divergent index=- rva=0x000411a0 owner=phys_fn_001820 checks=71448 oracle=658c566aec79d1c4`
+- `collision input name=contact_convex_convex words=420552 input=8c6535dc797e8cc6`
+- `collision coverage name=contact_convex_convex hulls=12 polygons=72 edges=144 pairs=10000 pairs_with_contacts=1446 contacts=6247 headers=1446 map_pairs=6228 graph_pairs=6234 null_holders=2577 stamp_wraps=395 axes=24519 split_pairs=2681`
+- `thirdparty input name=polygon_interface words=20733 input=4df6a369`
+- `thirdparty name=polygon_interface rva=0x000552c0 owner=phys_fn_002249 source=TriangleMeshPolygons.cpp,ConvexHull.cpp,IceSupportMaps.cpp words=31253 oracle=28edec7b mismatches=0 worst_ulp=0 verdict=exact`
+- `thirdparty coverage name=polygon_interface hulls=34 built=25 polygons=234 edges=604 axes=333 axes_rebuilt=18 support=400 support_posed=200 faces=400 faces_edge=33 face_kind_null=50 projects=544 projects_map=272 projects_graph=272 climbs_failed=48 stamp_wraps=65 input_snan=823 reports=10`
+- `thirdparty coverage driven=90 divergent=30 words=2394580 layout_checks=47`
+- `thirdparty oracle digest=8f91122f`
+
+The four contact_convex_convex lines were first registered on 5770180 (`checks=778668
+oracle=9b0ac3ce57a9a358`, `checks=74388 oracle=b0142ff04d77457f`, `input=e896f6663efd62fe`,
+`pairs_with_contacts=1444 contacts=6327 headers=1444 ... axes=27180`) and re-registered on cdf3fe6
+when the box centres moved to their midpoints. The coverage lines count oracle-side values and fixed
+inputs only (the mismatch counts moved to the name lines, after the registered prefix). The phase 3
+floor goes from 243 to 250 and the phase 4 floor from 214 to 219, with the MINIMUM pin; the tool
+tests know the two new collision blocks and the split. `kConvexPoseDivergentWords` / `Runs` hold the
+split at 2 words, 1 run.
+
+**Trace.** `evidence/convex-mesh-gap-trace-2g.txt` records one-shot cdb breakpoints on every
+candidate function carrying this task's stable IDs, in two runs of the final build (rebuilt clean
+from cdf3fe6 after the mutation runs): NxPhysicsCollisionTests (sha256 29b58e2cb00b37e0..., 24 of 24
+hit) and NxPhysicsThirdPartyTests (sha256 5b49df732e08748b..., 16 of 16 hit). The continuations are
+bodies of their rows and have no address of their own.
+
+**Gates** (on the final build with this commit's inventory): phases 2, 3 (250/250), 4 (219/219), 6 (403) and 7 (276) pass; phase 5 fails only on `candidate CANDIDATE-MISSING family=vtables` through NxPhysicsObjectLayoutTests (871/871; shape vtable 626/0). The gates were run with `-RepoRoot` set to this worktree, and their fresh configure and build reproduced both traced exes byte for byte (the sha256 above). Tool tests 763 OK;
+validate_inventory.py passes.
+
+**Inventory and ledgers.**
+- The 33 rows are now `reconstructed`, with static proofs that cite the listing ranges and the
+  comparison script, and dynamic proofs that cite the trace and the family.
+- Notes: 000505, 002211, 002213, 002215 (product forms; states unchanged).
+- Ledgers, every moved row to reconstructed_not_falsified (the standard note, or the caught
+  mutation's): phase 2 homeless_shared_code 39 -> 36 and 19 -> 22 (001530, 001532, 001534); phase 3
+  not_reconstructed_in_phase 290 -> 274 and 24 -> 40 (000875, 001803..001820, 001903..001911); phase 4
+  not_reconstructed_in_phase 249 -> 235 and 519 -> 533 (001514, 001516..001522, 002217..002231,
+  002249). The reason stays reconstructed_not_falsified for the mutated rows too: a closure needs the
+  inventory at `dynamically_gated`, and this plan promotes no row above `reconstructed`.
+
+**Limits.** NxFindRotationMatrix is not compared by these families: both harnesses load the
+candidate's NxFoundation.dll before the oracle, so the oracle's import resolves to the same export.
+Prunable::UpdateWorldAABB (004886) is not reached (every shape's flag 2 is set). The sink's stream
+never fills, so 000875's growth through 004840 is not reached. Only box hulls drive the convex pair
+(their normals keep the vendored Plane::Set exact); edge-edge axes come from the rotations.
