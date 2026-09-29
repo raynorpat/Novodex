@@ -33949,13 +33949,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactMeshHeightfield.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/732",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5545",
-      "static_proof": null,
+      "static_proof": "naked x86 inline assembly transcribed from the pinned listing; evidence/convex-mesh-gap-2l-listing-compare.py compares all 768 instructions across the complete 2,892-byte extent and checks all 14 direct call targets",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "reconstructed_not_falsified; dynamic proof is pending the complete 001869 caller path"
     },
     {
       "id": "phys_fn_001860",
@@ -33985,13 +33985,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactMeshHeightfield.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/733",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5582",
-      "static_proof": null,
+      "static_proof": "naked x86 inline assembly transcribed from both pinned listing fragments; evidence/convex-mesh-gap-2l-listing-compare.py compares all 430 instructions across the complete 1,693-byte body, normalizes the two relocatable globals, and checks all four direct call targets",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "reconstructed_not_falsified; dynamic proof is pending the complete 001869 caller path"
     },
     {
       "id": "phys_fn_001862",

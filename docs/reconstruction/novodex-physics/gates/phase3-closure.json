@@ -55,9 +55,9 @@
   "counts": {
     "differential_falsified": 31,
     "oracle_differential_falsified": 30,
-    "deferred_not_reconstructed_in_phase": 247,
+    "deferred_not_reconstructed_in_phase": 245,
     "deferred_blocked_on_later_phase": 10,
-    "deferred_reconstructed_not_falsified": 74
+    "deferred_reconstructed_not_falsified": 76
   },
   "closed": [
     {
@@ -3137,24 +3137,32 @@
       "size": 774,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [3],
+      "driving_phases": [
+        3
+      ],
       "note": "Task 2l review ruling: exercise 001857 directly with test-owned adjacency words derived from each mesh index buffer until the mesh/heightfield entry rows land. The helper ABI requires an adjacency object distinct from the vendored EdgeList image. Its instructions and outputs match exactly; the caller route will receive its own full differential in the remaining Task 2l work."
     },
     {
       "id": "phys_fn_001859",
       "rva": "0x00044b70",
       "size": 2892,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [
+        3
+      ],
+      "note": "Task 2l: listing-exact 001859 callback; static comparator checks the full extent and direct targets. Dynamic proof is pending the 001869/001861 caller path because ESI carries the shared triangle-pair Container."
     },
     {
       "id": "phys_fn_001861",
       "rva": "0x000456c0",
       "size": 538,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [
+        3
+      ],
+      "note": "Task 2l: listing-exact AABB pass, including relocatable shared Container setup and all four direct call targets. Dynamic proof is pending the complete 001869/001865 entry differential."
     },
     {
       "id": "phys_fn_001863",
@@ -3205,7 +3213,9 @@
       "size": 146,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [3],
+      "driving_phases": [
+        3
+      ],
       "note": "Task 2l partial: listing comparison and direct oracle/candidate differential; see evidence/convex-mesh-gap-2l-listing-compare.py and evidence/convex-mesh-gap-2l-run.txt and convex-mesh-gap-trace-2l.txt. No mutation probe run; remains reconstructed_not_falsified."
     },
     {
