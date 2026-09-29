@@ -11,7 +11,8 @@
 // the unit's own asserts name (001847 line 583, 001849 line 2594); the contract
 // leaves open whether these twelve rows open ContactConvexHeightfield.cpp or
 // close the convex/convex file, and puts them here because every caller
-// (001844, 001849; Task 2i) is here.
+// (001844, 001849) is here. Task 2i adds those callers and the unit's entries
+// (001847, 001851/001853) at the end of the file.
 //
 // The rows test one convex mesh -- its TriangleMesh polygon interface (the
 // table at mesh +0x04, TriangleMeshPolygons.cpp: slot 2 the vertices, 3 the
@@ -37,8 +38,9 @@
 // the float code keeps values on the x87 stack across narrowing stores, and
 // every row takes register arguments that no C++ declaration expresses, so the
 // rows are declared without parameters and are only called from naked code
-// (their callers, 001844 and 001849, are Task 2i; the harness calls them
-// through register thunks). The stack arguments are cleaned by the caller.
+// (their callers, 001844 and 001849, below; the Task 2h leaf families also
+// call them through register thunks). The stack arguments are cleaned by the
+// caller.
 //
 // x87: on the /arch:IA32 list; /EHs-c- with the other ICE-shaped files.
 
