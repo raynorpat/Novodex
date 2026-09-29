@@ -20,6 +20,277 @@
 
 #include <math.h>
 
+// Listing literals used by the mesh adjacency normal helper.
+static const unsigned nxTask2lEdgeOrder[3] = { 0u, 2u, 1u };
+static const float nxTask2lZero = 0.0f;
+static const float nxTask2lOne = 1.0f;
+
+// phys_fn_001857 (0x00044860, 774 B)
+// Smooth the seed normal with the adjacent triangle edge normal.
+extern "C" __declspec(naked) void __cdecl nxMeshTriangleEdgeNormal(float*, const void*, const float*, const float*, const void*, unsigned, unsigned)
+	{
+	__asm {
+		mov eax, dword ptr [esp + 0x10]
+		mov ecx, dword ptr [eax]
+		sub esp, 0x54
+		push esi
+		push edi
+		mov edi, dword ptr [esp + 0x60]
+		mov dword ptr [edi], ecx
+		mov edx, dword ptr [eax + 4]
+		mov dword ptr [edi + 4], edx
+		mov eax, dword ptr [eax + 8]
+		mov edx, dword ptr [esp + 0x78]
+		mov dword ptr [edi + 8], eax
+		mov eax, dword ptr [esp + 0x74]
+		mov esi, nxTask2lEdgeOrder[edx*4]
+		lea ecx, [eax + eax*2]
+		mov eax, dword ptr [esp + 0x70]
+		mov edx, dword ptr [eax + 4]
+		add ecx, esi
+		mov eax, dword ptr [edx + ecx*4]
+		and eax, 0x1fffffff
+		cmp eax, 0x1fffffff
+		je L_00044b60
+		lea ecx, [eax + eax*2]
+		mov eax, dword ptr [esp + 0x64]
+		mov edx, dword ptr [eax + 0x14]
+		mov esi, dword ptr [eax + 0x10]
+		mov eax, dword ptr [edx + ecx*4]
+		lea edx, [edx + ecx*4]
+		lea eax, [eax + eax*2]
+		fld dword ptr [esi + eax*4 + 4]
+		lea ecx, [esi + eax*4]
+		mov eax, dword ptr [esp + 0x68]
+		fmul dword ptr [eax + 4]
+		fld dword ptr [eax + 8]
+		fmul dword ptr [ecx + 8]
+		faddp st(1), st(0)
+		fld dword ptr [eax]
+		fmul dword ptr [ecx]
+		faddp st(1), st(0)
+		fld dword ptr [eax + 0x14]
+		fmul dword ptr [ecx + 8]
+		fld dword ptr [ecx + 4]
+		fmul dword ptr [eax + 0x10]
+		faddp st(1), st(0)
+		fld dword ptr [eax + 0xc]
+		fmul dword ptr [ecx]
+		faddp st(1), st(0)
+		fld dword ptr [eax + 0x20]
+		fmul dword ptr [ecx + 8]
+		fld dword ptr [ecx]
+		fmul dword ptr [eax + 0x18]
+		faddp st(1), st(0)
+		fld dword ptr [ecx + 4]
+		fmul dword ptr [eax + 0x1c]
+		faddp st(1), st(0)
+		fstp dword ptr [esp + 0x1c]
+		fxch st(1)
+		fadd dword ptr [eax + 0x24]
+		fstp dword ptr [esp + 0x20]
+		mov ecx, dword ptr [esp + 0x20]
+		mov dword ptr [esp + 0x38], ecx
+		fadd dword ptr [eax + 0x28]
+		fld dword ptr [esp + 0x1c]
+		fadd dword ptr [eax + 0x2c]
+		fld st(1)
+		fstp dword ptr [esp + 0x3c]
+		fst dword ptr [esp + 0x40]
+		mov ecx, dword ptr [edx + 4]
+		fld dword ptr [eax + 8]
+		lea ecx, [ecx + ecx*2]
+		fmul dword ptr [esi + ecx*4 + 8]
+		lea ecx, [esi + ecx*4]
+		fld dword ptr [ecx + 4]
+		fmul dword ptr [eax + 4]
+		faddp st(1), st(0)
+		fld dword ptr [ecx]
+		fmul dword ptr [eax]
+		faddp st(1), st(0)
+		fld dword ptr [ecx]
+		fmul dword ptr [eax + 0xc]
+		fld dword ptr [ecx + 8]
+		fmul dword ptr [eax + 0x14]
+		faddp st(1), st(0)
+		fld dword ptr [ecx + 4]
+		fmul dword ptr [eax + 0x10]
+		faddp st(1), st(0)
+		fld dword ptr [ecx]
+		fmul dword ptr [eax + 0x18]
+		fld dword ptr [eax + 0x20]
+		fmul dword ptr [ecx + 8]
+		faddp st(1), st(0)
+		fld dword ptr [eax + 0x1c]
+		fmul dword ptr [ecx + 4]
+		faddp st(1), st(0)
+		fstp dword ptr [esp + 0x1c]
+		fxch st(1)
+		fadd dword ptr [eax + 0x24]
+		fstp dword ptr [esp + 8]
+		mov ecx, dword ptr [esp + 8]
+		fadd dword ptr [eax + 0x28]
+		fld dword ptr [esp + 0x1c]
+		fadd dword ptr [eax + 0x2c]
+		fst dword ptr [esp + 0x10]
+		fld st(1)
+		mov dword ptr [esp + 0x44], ecx
+		fstp dword ptr [esp + 0x48]
+		fstp dword ptr [esp + 0x4c]
+		mov edx, dword ptr [edx + 8]
+		fld dword ptr [eax + 8]
+		lea edx, [edx + edx*2]
+		fmul dword ptr [esi + edx*4 + 8]
+		lea ecx, [esi + edx*4]
+		fld dword ptr [eax]
+		fmul dword ptr [ecx]
+		faddp st(1), st(0)
+		fld dword ptr [ecx + 4]
+		fmul dword ptr [eax + 4]
+		faddp st(1), st(0)
+		fld dword ptr [eax + 0xc]
+		fmul dword ptr [ecx]
+		fld dword ptr [ecx + 8]
+		fmul dword ptr [eax + 0x14]
+		faddp st(1), st(0)
+		fld dword ptr [ecx + 4]
+		fmul dword ptr [eax + 0x10]
+		faddp st(1), st(0)
+		fld dword ptr [eax + 0x20]
+		fmul dword ptr [ecx + 8]
+		fld dword ptr [eax + 0x1c]
+		fmul dword ptr [ecx + 4]
+		faddp st(1), st(0)
+		fld dword ptr [ecx]
+		fmul dword ptr [eax + 0x18]
+		faddp st(1), st(0)
+		fstp dword ptr [esp + 0x1c]
+		fxch st(1)
+		fadd dword ptr [eax + 0x24]
+		fstp dword ptr [esp + 0x2c]
+		fadd dword ptr [eax + 0x28]
+		fld dword ptr [esp + 0x1c]
+		fadd dword ptr [eax + 0x2c]
+		fld dword ptr [esp + 0x2c]
+		fsub dword ptr [esp + 0x20]
+		fstp dword ptr [esp + 0x14]
+		fxch st(1)
+		fsub st(0), st(4)
+		fstp dword ptr [esp + 0x18]
+		fsub st(0), st(2)
+		fstp dword ptr [esp + 0x1c]
+		fld dword ptr [esp + 8]
+		fsub dword ptr [esp + 0x20]
+		fstp dword ptr [esp + 0x20]
+		fsub st(0), st(2)
+		fstp dword ptr [esp + 0x24]
+		fld dword ptr [esp + 0x10]
+		fsub st(0), st(1)
+		fstp st(2)
+		fstp st(0)
+		fld dword ptr [esp + 0x24]
+		fmul dword ptr [esp + 0x1c]
+		fld st(1)
+		fmul dword ptr [esp + 0x18]
+		fsubp st(1), st(0)
+		fstp dword ptr [esp + 8]
+		fmul dword ptr [esp + 0x14]
+		fld dword ptr [esp + 0x1c]
+		fmul dword ptr [esp + 0x20]
+		fsubp st(1), st(0)
+		fstp dword ptr [esp + 0xc]
+		mov eax, dword ptr [esp + 0xc]
+		fld dword ptr [esp + 0x18]
+		fmul dword ptr [esp + 0x20]
+		fld dword ptr [esp + 0x24]
+		mov dword ptr [esp + 0x24], eax
+		fmul dword ptr [esp + 0x14]
+		fsubp st(1), st(0)
+		fstp dword ptr [esp + 0x10]
+		fld dword ptr [esp + 8]
+		fld dword ptr [esp + 8]
+		mov ecx, dword ptr [esp + 0x10]
+		fmul dword ptr [esp + 8]
+		mov dword ptr [esp + 0x28], ecx
+		fld dword ptr [esp + 0x10]
+		fmul dword ptr [esp + 0x10]
+		faddp st(1), st(0)
+		fld dword ptr [esp + 0xc]
+		fmul dword ptr [esp + 0xc]
+		faddp st(1), st(0)
+		fsqrt
+		fstp dword ptr [esp + 0x6c]
+		fld nxTask2lZero
+		fld dword ptr [esp + 0x6c]
+		fucompp
+		fnstsw ax
+		test ah, 0x44
+		jnp L_00044aef
+		fstp st(0)
+		fld nxTask2lOne
+		fdiv dword ptr [esp + 0x6c]
+		fstp dword ptr [esp + 0x6c]
+		fld dword ptr [esp + 8]
+		fmul dword ptr [esp + 0x6c]
+		fld dword ptr [esp + 0xc]
+		fmul dword ptr [esp + 0x6c]
+		fstp dword ptr [esp + 0x24]
+		fld dword ptr [esp + 0x10]
+		fmul dword ptr [esp + 0x6c]
+		fstp dword ptr [esp + 0x28]
+L_00044aef:
+		fadd dword ptr [edi]
+		fst dword ptr [edi]
+		fld dword ptr [esp + 0x24]
+		fadd dword ptr [edi + 4]
+		fstp dword ptr [esp + 0x6c]
+		fld dword ptr [esp + 0x28]
+		mov edx, dword ptr [esp + 0x6c]
+		fadd dword ptr [edi + 8]
+		mov dword ptr [edi + 4], edx
+		fst dword ptr [edi + 8]
+		fld st(0)
+		fmul st(0), st(1)
+		fld dword ptr [esp + 0x6c]
+		fmul dword ptr [esp + 0x6c]
+		faddp st(1), st(0)
+		fld st(2)
+		fmul st(0), st(3)
+		faddp st(1), st(0)
+		fsqrt
+		fld nxTask2lZero
+		fld st(1)
+		fucompp
+		fnstsw ax
+		test ah, 0x44
+		jnp L_00044b5a
+		fdivr nxTask2lOne
+		fld st(0)
+		fmul st(0), st(3)
+		fstp dword ptr [edi]
+		fld dword ptr [esp + 0x6c]
+		fmul st(0), st(1)
+		fstp dword ptr [edi + 4]
+		fmul st(0), st(1)
+		fstp dword ptr [edi + 8]
+		pop edi
+		pop esi
+		fstp st(0)
+		fstp st(0)
+		add esp, 0x54
+		ret
+L_00044b5a:
+		fstp st(0)
+		fstp st(0)
+		fstp st(0)
+L_00044b60:
+		pop edi
+		pop esi
+		add esp, 0x54
+		ret
+	}
+	}
+
 // ContactAccumulator storage owned by the reconstructed 001872. The oracle
 // uses the same packed layout at 0x10123d8c; keeping this block contiguous
 // makes the callback independently differential-testable.

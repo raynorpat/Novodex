@@ -2716,6 +2716,8 @@ static unsigned nxDriveTask2i(unsigned char* base);
 static unsigned nxDriveTask2j(unsigned char* base);
 static unsigned nxDriveTask2k(unsigned char* base);
 static unsigned nxDriveTask2lAccumulator(unsigned char* base);
+struct Nx2iSide;
+static unsigned nxDriveTask2lEdgeNormal(unsigned char* base, Nx2iSide* sides);
 
 // Candidate box/mesh entries implemented from the listing in ContactBoxMeshICE.cpp.
 void __cdecl NxContactBoxMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
@@ -11298,6 +11300,87 @@ static unsigned nx2iCompareModels(const Nx2iSide& a, const Nx2iSide& b)
 	return differing;
 	}
 
+extern "C" void __cdecl nxMeshTriangleEdgeNormal(float*, const void*, const float*,
+	const float*, const void*, unsigned, unsigned);
+
+// Task 2l's 001857 helper over independently built adjacency words derived
+// from each side's identical mesh indices. Test shared and boundary edges.
+static unsigned nxDriveTask2lEdgeNormal(unsigned char* base, Nx2iSide* sides)
+	{
+	typedef void (__cdecl * OracleFn)(float*, const void*, const float*, const float*, const void*, unsigned, unsigned);
+	OracleFn oracle = (OracleFn)(base + 0x00044860);
+	static const float transform[12] = { 1,0,0, 0,1,0, 0,0,1, 0,0,0 };
+	static const unsigned edgeOrder[3] = { 0, 2, 1 };
+	unsigned mismatches = 0, cases = 0, adjacent = 0, boundary = 0;
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest); nxDigestInit(&candidateDigest); nxDigestInit(&inputDigest);
+	for(unsigned meshIndex = 0; meshIndex < kNb2iMeshes; ++meshIndex)
+		{
+		const Nx2hMesh& mesh = nx2iMesh(meshIndex);
+		static unsigned adjacency[2][512 * 3];
+		unsigned adjacencyObject[2][2] = {};
+		const unsigned* tris = (const unsigned*)mesh.tris;
+		for(unsigned side = 0; side < 2; ++side)
+			for(unsigned i = 0; i < 3 * mesh.nbTris; ++i)
+				adjacency[side][i] = 0x1fffffffu;
+		for(unsigned tri = 0; tri < mesh.nbTris; ++tri)
+			for(unsigned edge = 0; edge < 3; ++edge)
+				{
+				unsigned a = tris[tri * 3 + (edge + 1) % 3];
+				unsigned b = tris[tri * 3 + (edge + 2) % 3];
+				if(a > b) { unsigned swap = a; a = b; b = swap; }
+				for(unsigned other = tri + 1; other < mesh.nbTris; ++other)
+					for(unsigned otherEdge = 0; otherEdge < 3; ++otherEdge)
+						{
+						unsigned c = tris[other * 3 + (otherEdge + 1) % 3];
+						unsigned d = tris[other * 3 + (otherEdge + 2) % 3];
+						if(c > d) { unsigned swap = c; c = d; d = swap; }
+						if(a == c && b == d)
+							for(unsigned side = 0; side < 2; ++side)
+								{
+								adjacency[side][tri * 3 + edgeOrder[edge]] = other;
+								adjacency[side][other * 3 + edgeOrder[otherEdge]] = tri;
+								}
+						}
+				}
+		for(unsigned side = 0; side < 2; ++side)
+			adjacencyObject[side][1] = (unsigned)(size_t)adjacency[side];
+		for(unsigned tri = 0; tri < mesh.nbTris && tri < 8; ++tri)
+			for(unsigned edge = 0; edge < 3; ++edge)
+			for(unsigned mode = 0; mode < 2; ++mode)
+				{
+			float output[2][3];
+			float seed[3] = { 0.25f + 0.03125f * tri, -0.5f + 0.0625f * edge, 0.75f - 0.125f * mode };
+			const unsigned mapWord = adjacency[0][tri * 3 + edgeOrder[edge]];
+			for(unsigned side = 0; side < 2; ++side) memcpy(output[side], seed, sizeof(seed));
+			const unsigned neighbor = mapWord & 0x1fffffffu;
+			if(neighbor == 0x1fffffffu) ++boundary; else ++adjacent;
+			const unsigned draws[5] = { meshIndex, tri, edge, mode, mapWord };
+			nxFoldInput(&inputDigest, draws, sizeof(draws));
+			nxFoldInput(&inputDigest, seed, sizeof(seed));
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			oracle(output[0], sides[0].meshes[meshIndex].image,
+				transform, seed, adjacencyObject[0], tri, edge);
+			nxMeshTriangleEdgeNormal(output[1], sides[1].meshes[meshIndex].image,
+				transform, seed, adjacencyObject[1], tri, edge);
+			nxSetControl(kControlDefault);
+			++cases;
+			for(unsigned axis = 0; axis < 3; ++axis)
+				{
+			mismatches += memcmp(&output[0][axis], &output[1][axis], sizeof(float)) != 0;
+			nxFoldInput(&oracleDigest, &output[0][axis], sizeof(float));
+			nxFoldInput(&candidateDigest, &output[1][axis], sizeof(float));
+			}
+			}
+		}
+	printf("collision name=mesh_adjacent_normal index=- rva=0x00044860 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=mesh_adjacent_normal meshes=%u cases=%u adjacent=%u boundary=%u control_words=2\n",
+		kNb2iMeshes, cases, adjacent, boundary);
+	nxPrintInput("mesh_adjacent_normal", &inputDigest);
+	return mismatches;
+	}
+
 // Words of the height field's placement: translations (0..3 across, heights -1..1).
 static const unsigned kMeshPlace2i[8] =
 	{
@@ -12102,6 +12185,8 @@ static __declspec(noinline) unsigned nxDriveTask2i(unsigned char* base)
 		kNb2iMeshes, kNormals2iVariants, runs, normals, rawWords, inputSnan);
 	}
 
+	// The Task 2l triangle-edge normal helper shares these lazy EdgeLists.
+	total += nxDriveTask2lEdgeNormal(base, sides);
 	unsigned edgeListsBuilt = 0;
 	buildMismatches += nx2iCompareEdgeLists(sides[0], sides[1], &edgeListsBuilt);
 	// The hulls' vertex normals 001461 built inside 001844, word for word.

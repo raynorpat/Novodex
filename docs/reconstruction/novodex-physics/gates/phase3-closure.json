@@ -55,9 +55,9 @@
   "counts": {
     "differential_falsified": 31,
     "oracle_differential_falsified": 30,
-    "deferred_not_reconstructed_in_phase": 248,
+    "deferred_not_reconstructed_in_phase": 247,
     "deferred_blocked_on_later_phase": 11,
-    "deferred_reconstructed_not_falsified": 72
+    "deferred_reconstructed_not_falsified": 73
   },
   "closed": [
     {
@@ -3135,9 +3135,10 @@
       "id": "phys_fn_001857",
       "rva": "0x00044860",
       "size": 774,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [3],
+      "note": "Task 2l review ruling: exercise 001857 directly with test-owned adjacency words derived from each mesh index buffer until the mesh/heightfield entry rows land. The helper ABI requires an adjacency object distinct from the vendored EdgeList image. Its instructions and outputs match exactly; the caller route will receive its own full differential in the remaining Task 2l work."
     },
     {
       "id": "phys_fn_001859",
@@ -3206,7 +3207,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [3],
-      "note": "Task 2l partial: listing comparison and direct oracle/candidate differential; see evidence/convex-mesh-gap-2l-001872-listing-compare.py and evidence/convex-mesh-gap-2l-001872-run.txt. No mutation probe run; remains reconstructed_not_falsified."
+      "note": "Task 2l partial: listing comparison and direct oracle/candidate differential; see evidence/convex-mesh-gap-2l-listing-compare.py and evidence/convex-mesh-gap-2l-run.txt and convex-mesh-gap-trace-2l.txt. No mutation probe run; remains reconstructed_not_falsified."
     },
     {
       "id": "phys_fn_001874",

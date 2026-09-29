@@ -1,0 +1,8 @@
+oracle module path=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+collision name=mesh_adjacent_normal index=- rva=0x00044860 checks=372 oracle=369538c8a82202ee candidate=369538c8a82202ee mismatches=0
+collision coverage name=mesh_adjacent_normal meshes=10 cases=372 adjacent=266 boundary=106 control_words=2
+collision input name=mesh_adjacent_normal words=2976 input=4d27271fa9633845
+collision name=mesh_contact_accumulator index=- rva=0x000466e0 checks=40 oracle=6299a0c8f1109f5a candidate=6299a0c8f1109f5a mismatches=0 contacts=32
+collision coverage name=mesh_contact_accumulator calls=40 stored=32 cap=32 sums_after_cap=40
+collision input name=mesh_contact_accumulator words=360 input=164a783f6b3daae0
+collision=pass
