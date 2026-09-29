@@ -17,6 +17,8 @@ for line in open(map_path, encoding="latin-1"):
 rows = [
     ("phys_fn_001859", "_nxMeshHeightfieldTriangleContact", 0x44b70, 2892, None),
     ("phys_fn_001861", "_nxMeshHeightfieldAabbPass", 0x456c0, 1693, None),
+    ("phys_fn_001865", "_nxMeshHeightfieldObbPass", 0x45d70, 1937, None),
+    ("phys_fn_001869", "_nxMeshHeightfieldContact", 0x46510, 64, None),
     ("phys_fn_001857", "_nxMeshTriangleEdgeNormal", 0x44860, 774, None),
     ("phys_fn_001872", "_nxMeshContactAccumulate@20", 0x466e0, 146, None),
     ("phys_fn_001870", "_nxOverlapMeshMesh", 0x46550, 394,
@@ -45,6 +47,11 @@ def fragmented_001861(image):
             + instructions(image, 0x100458e0, 1155))
 
 
+def fragmented_001865(image):
+    return (instructions(image, 0x10045d70, 1498)
+            + instructions(image, 0x10046350, 439))
+
+
 def normalized(items, call_targets=None, address_values=None):
     addresses = {item.address: index for index, item in enumerate(items)}
     call_targets = call_targets or {}
@@ -70,6 +77,7 @@ for stable_id, symbol, row_rva, row_size, external_call in rows:
     if symbol not in symbols:
         raise SystemExit("candidate symbol is missing: " + symbol)
     oracle_items = (fragmented_001861(oracle) if stable_id == "phys_fn_001861"
+                    else fragmented_001865(oracle) if stable_id == "phys_fn_001865"
                     else instructions(oracle, 0x10000000 + row_rva, row_size))
     candidate_items = instructions(candidate, symbols[symbol], row_size)
     if sum(item.size for item in oracle_items) != row_size or sum(item.size for item in candidate_items) != row_size:
@@ -128,6 +136,53 @@ for stable_id, symbol, row_rva, row_size, external_call in rows:
         if call_count != 4:
             print("001861 direct call count=%d expected=4" % call_count)
             all_equal = False
+    if stable_id == "phys_fn_001865":
+        call_map = {
+            0xde0d0: "?Collide@OBBCollider@Opcode@@QAE_NAAUOBBCache@2@ABVOBB@IceMaths@@ABVModel@2@PBVMatrix4x4@5@3@Z",
+            0x10190: "?nxScratchStamp@@YIIPAX@Z",
+            0x52240: "?nxMeshComputeVertexNormals@@YAXXZ",
+            0xf47b0: "__alloca_probe",
+            0x3c160: "?NxTrianglePlane@@YIPAVNxPlane@@PAV1@PAXPBVNxVec3@@22@Z",
+            0x1d610: "?NxEmitContact@@YAXPAUNxContactSink@@PAX1IPBVNxVec3@@2GG@Z",
+        }
+        call_count = 0
+        for expected, actual in zip(oracle_items, candidate_items):
+            if expected.mnemonic != "call" or not expected.op_str.startswith("0x"):
+                continue
+            oracle_target = int(expected.op_str, 16) - 0x10000000
+            candidate_target = int(actual.op_str, 16) if actual.op_str.startswith("0x") else -1
+            wanted = call_map.get(oracle_target)
+            matched = wanted is not None and any(
+                name == wanted and address == candidate_target for name, address in symbols.items()
+            )
+            print("001865 direct call oracle_rva=0x%08x candidate=%s%s" % (
+                oracle_target,
+                next((name for name, address in symbols.items() if address == candidate_target), "?"),
+                "" if matched else " UNEXPECTED"))
+            call_count += 1
+            all_equal &= matched
+        if call_count != 7:
+            print("001865 direct call count=%d expected=7" % call_count)
+            all_equal = False
+    if stable_id == "phys_fn_001869":
+        call_map = {
+            0x456c0: "_nxMeshHeightfieldAabbPass",
+            0x45d70: "_nxMeshHeightfieldObbPass",
+        }
+        for expected, actual in zip(oracle_items, candidate_items):
+            if expected.mnemonic != "call" or not expected.op_str.startswith("0x"):
+                continue
+            oracle_target = int(expected.op_str, 16) - 0x10000000
+            candidate_target = int(actual.op_str, 16) if actual.op_str.startswith("0x") else -1
+            wanted = call_map.get(oracle_target)
+            matched = wanted is not None and any(
+                name == wanted and address == candidate_target for name, address in symbols.items()
+            )
+            print("001869 direct call oracle_rva=0x%08x candidate=%s%s" % (
+                oracle_target,
+                next((name for name, address in symbols.items() if address == candidate_target), "?"),
+                "" if matched else " UNEXPECTED"))
+            all_equal &= matched
     oracle_addresses = {}
     candidate_addresses = {}
     if stable_id == "phys_fn_001861":
@@ -135,6 +190,20 @@ for stable_id, symbol, row_rva, row_size, external_call in rows:
         candidate_addresses = {
             symbols["?nxTask2lTrianglePairContainer@@3PAEA"]: "shared-container",
             symbols["_nxTask2lTrianglePairContainerCleanup"]: "container-cleanup",
+        }
+    if stable_id == "phys_fn_001865":
+        oracle_addresses = {
+            0x101043cc: "mesh-epsilon", 0x101041f0: "zero",
+            0x10107bc4: "opcode-error", 0x10107d00: "source-file",
+            0x101041b0: "foundation-instance-slot", 0x101041b4: "foundation-error-slot",
+        }
+        candidate_addresses = {
+            symbols["?nxTask2lEpsilon@@3MB"]: "mesh-epsilon",
+            symbols["?nxTask2lZero@@3MB"]: "zero",
+            symbols["?nxTask2lOpcodeError@@3QBDB"]: "opcode-error",
+            symbols["?nxTask2lSourceFile@@3QBDB"]: "source-file",
+            symbols["_nxConvexMeshFoundationInstanceSlot"]: "foundation-instance-slot",
+            symbols["_nxConvexMeshFoundationErrorSlot"]: "foundation-error-slot",
         }
     left = normalized(oracle_items, oracle_calls, oracle_addresses)
     right = normalized(candidate_items, candidate_calls, candidate_addresses)

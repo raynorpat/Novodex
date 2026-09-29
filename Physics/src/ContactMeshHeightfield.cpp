@@ -29,6 +29,9 @@ static const float nxTask2lZero = 0.0f;
 static const float nxTask2lOne = 1.0f;
 static const float nxTask2lThird = 0.3333333432674407959f;
 static const float nxTask2lTenth = 0.1000000014901161194f;
+static const float nxTask2lEpsilon = 0.5f;
+static const char nxTask2lOpcodeError[] = "Opcode is not OK.";
+static const char nxTask2lSourceFile[] = "ContactMeshHeightfield.cpp";
 
 // Shared storage used by the oracle's mesh/height-field AABB callback pass.
 static unsigned char nxTask2lTrianglePairContainer[16] = {};
@@ -36,6 +39,13 @@ static unsigned nxTask2lTrianglePairContainerFlag = 0;
 extern "C" void nxTask2lCallContainerCtor();
 extern "C" void nxTask2lCallContainerDtor();
 extern "C" void nxTask2lCallAtexit();
+extern "C" void nxConvexMeshCallObbCollide();
+extern "C" void nxTask2lCallScratchStamp();
+extern "C" void nxTask2lCallMeshComputeVertexNormals();
+extern "C" void nxTask2lCallTrianglePlane();
+extern "C" void nxTask2lCallChkstk();
+extern "C" void* nxConvexMeshFoundationInstanceSlot;
+extern "C" void* nxConvexMeshFoundationErrorSlot;
 extern "C" void nxMeshMeshCallAabbTreeCollide();
 extern "C" void nxMeshHeightfieldTriangleContact(const void*, const void*, const float*, const float*, unsigned, unsigned, void*);
 extern "C" void __declspec(naked) nxTask2lTrianglePairContainerCleanup()
@@ -58,6 +68,12 @@ extern "C" void nxTask2lCallGetDebugRenderable();
 #pragma comment(linker, "/alternatename:_nxTask2lCallContainerCtor=??0Container@IceCore@@QAE@XZ")
 #pragma comment(linker, "/alternatename:_nxTask2lCallContainerDtor=??1Container@IceCore@@QAE@XZ")
 #pragma comment(linker, "/alternatename:_nxTask2lCallAtexit=_atexit")
+#pragma comment(linker, "/alternatename:_nxTask2lCallScratchStamp=?nxScratchStamp@@YIIPAX@Z")
+#pragma comment(linker, "/alternatename:_nxTask2lCallMeshComputeVertexNormals=?nxMeshComputeVertexNormals@@YAXXZ")
+#pragma comment(linker, "/alternatename:_nxTask2lCallTrianglePlane=?NxTrianglePlane@@YIPAVNxPlane@@PAV1@PAXPBVNxVec3@@22@Z")
+#pragma comment(linker, "/alternatename:_nxTask2lCallChkstk=__chkstk")
+#pragma comment(linker, "/alternatename:_nxConvexMeshFoundationInstanceSlot=__imp_?instance@FoundationSDK@NxFoundation@@0PAV12@A")
+#pragma comment(linker, "/alternatename:_nxConvexMeshFoundationErrorSlot=__imp_?error@FoundationSDK@NxFoundation@@SA_NW4NxErrorCode@@PBDHPA_N1ZZ")
 
 // phys_fn_001861 (0x000456c0, 1693 B)
 // Mesh/height-field AABB pass from the pinned listing. The inline-assembly
@@ -500,6 +516,706 @@ L_10045d5a:
 L_10045d5b:
         pop      esi
         add      esp, 0x164
+        ret
+    }
+}
+
+// phys_fn_001865 (0x00045d70, 1937 B)
+// Mesh/height-field OBB pass, transcribed from its two pinned listing fragments.
+extern "C" __declspec(naked) void __cdecl nxMeshHeightfieldObbPass()
+{
+    __asm {
+        push     ebp
+        lea      ebp, [esp - 0x6c]
+        sub      esp, 0x128
+        push     edi
+        mov      edi, eax
+        mov      eax, dword ptr [ebx + 0xe0]
+        fld      dword ptr [eax + 0x50]
+        add      eax, 0x44
+        fsub     dword ptr [eax]
+        mov      ecx, dword ptr [ebx + 0xc]
+        mov      edx, dword ptr [ebx + 0x10]
+        fstp     dword ptr [ebp - 0x8c]
+        fld      dword ptr [eax + 0x10]
+        fsub     dword ptr [eax + 4]
+        fstp     dword ptr [ebp - 0x88]
+        fld      dword ptr [eax + 0x14]
+        fsub     dword ptr [eax + 8]
+        fld      dword ptr [ebp - 0x8c]
+        fmul     dword ptr [nxTask2lEpsilon]
+        fstp     dword ptr [ebp - 0x8c]
+        fld      dword ptr [ebp - 0x88]
+        fmul     dword ptr [nxTask2lEpsilon]
+        fstp     dword ptr [ebp - 0x88]
+        fmul     dword ptr [nxTask2lEpsilon]
+        fstp     dword ptr [ebp - 0x84]
+        fld      dword ptr [eax]
+        fadd     dword ptr [eax + 0xc]
+        fld      dword ptr [eax + 0x10]
+        fadd     dword ptr [eax + 4]
+        fld      dword ptr [eax + 0x14]
+        fadd     dword ptr [eax + 8]
+        mov      dword ptr [ebp - 0x80], ecx
+        mov      ecx, dword ptr [ebx + 0x18]
+        mov      dword ptr [ebp - 0x74], edx
+        fstp     dword ptr [ebp + 0x24]
+        mov      edx, dword ptr [ebx + 0x1c]
+        fxch     st(1)
+        mov      dword ptr [ebp - 0x7c], ecx
+        fmul     dword ptr [nxTask2lEpsilon]
+        mov      dword ptr [ebp - 0x70], edx
+        fstp     dword ptr [ebp + 0x1c]
+        fmul     dword ptr [nxTask2lEpsilon]
+        fld      dword ptr [ebp + 0x24]
+        fmul     dword ptr [nxTask2lEpsilon]
+        fld      st(0)
+        fmul     dword ptr [ebx + 0x14]
+        fld      st(2)
+        fmul     dword ptr [ebx + 0x10]
+        faddp    st(1), st
+        fld      dword ptr [ebp + 0x1c]
+        fmul     dword ptr [ebx + 0xc]
+        faddp    st(1), st
+        fstp     dword ptr [ebp + 0x2c]
+        fld      dword ptr [ebp + 0x1c]
+        fmul     dword ptr [ebx + 0x18]
+        fld      st(1)
+        fmul     dword ptr [ebx + 0x20]
+        faddp    st(1), st
+        fld      st(2)
+        fmul     dword ptr [ebx + 0x1c]
+        faddp    st(1), st
+        fstp     dword ptr [ebp + 0x30]
+        fld      dword ptr [ebp + 0x1c]
+        fmul     dword ptr [ebx + 0x24]
+        fxch     st(1)
+        fmul     dword ptr [ebx + 0x2c]
+        faddp    st(1), st
+        fxch     st(1)
+        fmul     dword ptr [ebx + 0x28]
+        faddp    st(1), st
+        fld      dword ptr [ebp + 0x2c]
+        fadd     dword ptr [ebx + 0x30]
+        fld      dword ptr [ebp + 0x30]
+        fadd     dword ptr [ebx + 0x34]
+        fxch     st(2)
+        fadd     dword ptr [ebx + 0x38]
+        fstp     dword ptr [ebp + 4]
+        mov      eax, dword ptr [ebp + 4]
+        mov      dword ptr [ebp - 0x90], eax
+        mov      eax, dword ptr [ebx + 0x14]
+        fstp     dword ptr [ebp - 0x98]
+        mov      dword ptr [ebp - 0x68], eax
+        mov      eax, dword ptr [ebx + 0x20]
+        fstp     dword ptr [ebp - 0x94]
+        mov      ecx, dword ptr [ebx + 0x24]
+        mov      edx, dword ptr [ebx + 0x28]
+        mov      dword ptr [ebp - 0x6c], edx
+        mov      dword ptr [ebp - 0x64], eax
+        mov      eax, dword ptr [ebx + 0x2c]
+        mov      dword ptr [ebp - 0x60], eax
+        mov      dword ptr [ebp - 0x78], ecx
+        mov      ecx, dword ptr [ebp + 0x7c]
+        mov      eax, dword ptr [ecx + 0x114]
+        add      ecx, 0x110
+        and      eax, 0xfffffffe
+        mov      dword ptr [ecx + 4], eax
+        mov      edx, eax
+        and      edx, 0xfffffffd
+        mov      eax, edx
+        mov      dword ptr [ecx + 4], edx
+        and      eax, 0xffffffef
+        mov      dword ptr [ecx + 4], eax
+        mov      eax, dword ptr [ebp + 0x74]
+        mov      edx, dword ptr [eax + 0xc]
+        mov      dword ptr [ebp - 0x44], edx
+        mov      edx, dword ptr [eax + 0x10]
+        mov      dword ptr [ebp - 0x34], edx
+        mov      edx, dword ptr [eax + 0x14]
+        mov      dword ptr [ebp - 0x24], edx
+        mov      edx, dword ptr [eax + 0x18]
+        mov      dword ptr [ebp - 0x40], edx
+        mov      edx, dword ptr [eax + 0x1c]
+        mov      dword ptr [ebp - 0x30], edx
+        mov      edx, dword ptr [eax + 0x20]
+        mov      dword ptr [ebp - 0x20], edx
+        mov      edx, dword ptr [eax + 0x24]
+        mov      dword ptr [ebp - 0x3c], edx
+        mov      edx, dword ptr [eax + 0x28]
+        mov      dword ptr [ebp - 0x2c], edx
+        mov      edx, dword ptr [eax + 0x2c]
+        mov      dword ptr [ebp - 0x1c], edx
+        mov      edx, dword ptr [eax + 0x30]
+        mov      dword ptr [ebp - 0x14], edx
+        mov      edx, dword ptr [eax + 0x34]
+        mov      dword ptr [ebp - 0x10], edx
+        mov      edx, dword ptr [eax + 0x38]
+        mov      eax, dword ptr [eax + 0xe0]
+        mov      dword ptr [ebp - 0xc], edx
+        lea      edx, [ebp - 0x44]
+        push     edx
+        mov      edx, dword ptr [ebp + 0x7c]
+        push     0
+        mov      dword ptr [ebp - 0x18], 0
+        mov      dword ptr [ebp - 0x28], 0
+        mov      dword ptr [ebp - 0x38], 0
+        mov      dword ptr [ebp - 8], 0x3f800000
+        mov      eax, dword ptr [eax + 0x28]
+        push     eax
+        lea      eax, [ebp - 0x98]
+        push     eax
+        add      edx, 0x244
+        push     edx
+        call     nxConvexMeshCallObbCollide
+        test     al, al
+        jne      L_10045f8e
+        mov      eax, dword ptr [nxConvexMeshFoundationInstanceSlot]
+        cmp      dword ptr [eax], 0
+        jne      L_10045f64
+        int      3
+L_10045f64:
+        push     offset nxTask2lOpcodeError
+        push     0
+        push     0x148
+        push     offset nxTask2lSourceFile
+        push     4
+        call     dword ptr [nxConvexMeshFoundationErrorSlot]
+        add      esp, 0x14
+        lea      esp, [ebp - 0xc0]
+        pop      edi
+        add      ebp, 0x6c
+        mov      esp, ebp
+        pop      ebp
+        ret
+L_10045f8e:
+        mov      edx, dword ptr [ebp + 0x7c]
+        test     byte ptr [edx + 0x114], 4
+        je       L_100464f9
+        mov      eax, dword ptr [edx + 0x120]
+        test     eax, eax
+        je       L_10045fb0
+        mov      ecx, dword ptr [eax + 4]
+        mov      dword ptr [ebp + 0x60], ecx
+        jmp      L_10045fb7
+L_10045fb0:
+        mov      dword ptr [ebp + 0x60], 0
+L_10045fb7:
+        mov      eax, dword ptr [edx + 0x120]
+        test     eax, eax
+        je       L_10045fc6
+        mov      eax, dword ptr [eax + 8]
+        jmp      L_10045fc8
+L_10045fc6:
+        xor      eax, eax
+L_10045fc8:
+        mov      ecx, dword ptr [ebx + 0xe0]
+        mov      dword ptr [ebp + 0x14], eax
+        mov      eax, dword ptr [ebp + 0x74]
+        mov      eax, dword ptr [eax + 0xe0]
+        mov      dword ptr [ebp + 0x68], ecx
+        mov      ecx, dword ptr [eax + 0x7c]
+        mov      dword ptr [ebp - 0x5c], eax
+        shl      ecx, 3
+        mov      eax, 0x1000201
+        shr      eax, cl
+        mov      ecx, eax
+        and      ecx, 0xff
+        movzx    eax, ah
+        mov      dword ptr [ebp + 0xc], ecx
+        mov      ecx, edx
+        mov      dword ptr [ebp + 0x28], eax
+        call     nxTask2lCallScratchStamp
+        mov      ecx, dword ptr [ebp + 0x68]
+        mov      edx, dword ptr [ecx + 0x20]
+        add      ecx, 8
+        test     edx, edx
+        mov      dword ptr [ebp + 8], eax
+        mov      eax, dword ptr [ecx]
+        mov      dword ptr [ebp + 0x44], eax
+        jne      L_10046022
+        call     nxTask2lCallMeshComputeVertexNormals
+        mov      eax, dword ptr [ebp + 0x44]
+L_10046022:
+        mov      ecx, dword ptr [ebp + 0x68]
+        lea      eax, [eax + eax*2]
+        shl      eax, 2
+        mov      dword ptr [ebp + 0x54], eax
+        add      ecx, 8
+        mov      ecx, dword ptr [ecx + 0x18]
+        add      eax, 3
+        and      eax, 0xfffffffc
+        mov      dword ptr [ebp + 0x50], ecx
+        call     nxTask2lCallChkstk
+        mov      eax, dword ptr [ebp + 0x54]
+        add      eax, 3
+        and      eax, 0xfffffffc
+        mov      dword ptr [ebp + 0x48], esp
+        call     nxTask2lCallChkstk
+        mov      eax, dword ptr [ebp + 0x44]
+        test     eax, eax
+        mov      edx, esp
+        mov      dword ptr [ebp + 0x10], edx
+        jbe      L_10046178
+        mov      ecx, dword ptr [ebp + 0x50]
+        mov      eax, dword ptr [ebp + 0x48]
+        sub      edx, ecx
+        mov      dword ptr [ebp + 0x50], edx
+        mov      edx, dword ptr [ebp + 0x48]
+        sub      edx, ecx
+        mov      dword ptr [ebp + 0x64], edx
+        mov      edx, 0xfffffff8
+        sub      edx, ecx
+        mov      dword ptr [ebp + 0x5c], eax
+        lea      eax, [ecx + 8]
+        mov      dword ptr [ebp + 0x54], edx
+        mov      edx, dword ptr [ebp + 0x48]
+        mov      ecx, esp
+        sub      ecx, edx
+        mov      dword ptr [ebp + 0x38], ecx
+        mov      ecx, dword ptr [ebp + 0x44]
+        mov      dword ptr [ebp + 0x58], ecx
+L_10046096:
+        mov      edx, dword ptr [ebp + 0x68]
+        mov      ecx, dword ptr [edx + 0x10]
+        add      ecx, dword ptr [ebp + 0x54]
+        fld      dword ptr [ecx + eax + 8]
+        add      ecx, eax
+        fmul     dword ptr [edi + 8]
+        mov      edx, dword ptr [ebp + 0x38]
+        fld      dword ptr [ecx + 4]
+        add      eax, 0xc
+        fmul     dword ptr [edi + 4]
+        faddp    st(1), st
+        fld      dword ptr [ecx]
+        fmul     dword ptr [edi]
+        faddp    st(1), st
+        fld      dword ptr [ecx + 8]
+        fmul     dword ptr [edi + 0x14]
+        fld      dword ptr [ecx + 4]
+        fmul     dword ptr [edi + 0x10]
+        faddp    st(1), st
+        fld      dword ptr [ecx]
+        fmul     dword ptr [edi + 0xc]
+        faddp    st(1), st
+        fstp     dword ptr [ebp + 0x30]
+        fld      dword ptr [ecx + 8]
+        fmul     dword ptr [edi + 0x20]
+        fld      dword ptr [ecx + 4]
+        fmul     dword ptr [edi + 0x1c]
+        faddp    st(1), st
+        fld      dword ptr [edi + 0x18]
+        fmul     dword ptr [ecx]
+        mov      ecx, dword ptr [ebp + 0x5c]
+        add      ecx, 0xc
+        mov      dword ptr [ebp + 0x5c], ecx
+        faddp    st(1), st
+        fstp     dword ptr [ebp + 0x34]
+        fadd     dword ptr [edi + 0x24]
+        fld      dword ptr [ebp + 0x30]
+        fadd     dword ptr [edi + 0x28]
+        fld      dword ptr [ebp + 0x34]
+        fadd     dword ptr [edi + 0x2c]
+        fstp     dword ptr [ebp + 4]
+        fxch     st(1)
+        fstp     dword ptr [edx + ecx - 0xc]
+        mov      edx, dword ptr [ebp + 0x50]
+        fstp     dword ptr [edx + eax - 0x10]
+        fld      dword ptr [ebp + 4]
+        fstp     dword ptr [edx + eax - 0xc]
+        mov      edx, dword ptr [ebp + 0x64]
+        fld      dword ptr [eax - 0xc]
+        fmul     dword ptr [edi + 0x14]
+        fld      dword ptr [eax - 0x10]
+        fmul     dword ptr [edi + 0x10]
+        faddp    st(1), st
+        fld      dword ptr [eax - 0x14]
+        fmul     dword ptr [edi + 0xc]
+        faddp    st(1), st
+        fld      dword ptr [edi + 0x18]
+        fmul     dword ptr [eax - 0x14]
+        fld      dword ptr [eax - 0xc]
+        fmul     dword ptr [edi + 0x20]
+        faddp    st(1), st
+        fld      dword ptr [eax - 0x10]
+        fmul     dword ptr [edi + 0x1c]
+        faddp    st(1), st
+        fld      dword ptr [edi]
+        fmul     dword ptr [eax - 0x14]
+        fld      dword ptr [eax - 0xc]
+        fmul     dword ptr [edi + 8]
+        faddp    st(1), st
+        fld      dword ptr [eax - 0x10]
+        fmul     dword ptr [edi + 4]
+        faddp    st(1), st
+        fstp     dword ptr [ecx - 0xc]
+        fxch     st(1)
+        fstp     dword ptr [ecx - 8]
+        mov      ecx, dword ptr [ebp + 0x58]
+        dec      ecx
+        fstp     dword ptr [edx + eax - 0xc]
+        mov      dword ptr [ebp + 0x58], ecx
+        jne      L_10046096
+L_10046178:
+        mov      eax, dword ptr [ebp + 0x60]
+        test     eax, eax
+        je       L_100464f9
+        mov      dword ptr [ebp + 0x54], eax
+L_10046186:
+        mov      ecx, dword ptr [ebp + 0x14]
+        mov      eax, dword ptr [ecx]
+        add      ecx, 4
+        mov      dword ptr [ebp + 0x14], ecx
+        lea      ecx, [eax + eax*2]
+        mov      eax, dword ptr [ebp - 0x5c]
+        mov      edx, dword ptr [eax + 0x14]
+        lea      edi, [edx + ecx*4]
+        mov      edx, dword ptr [eax + 0x10]
+        mov      eax, dword ptr [edi]
+        lea      eax, [eax + eax*2]
+        fld      dword ptr [edx + eax*4 + 8]
+        lea      eax, [edx + eax*4]
+        fmul     dword ptr [esi + 8]
+        mov      ecx, dword ptr [edi + 4]
+        fld      dword ptr [esi]
+        lea      ecx, [ecx + ecx*2]
+        fmul     dword ptr [eax]
+        lea      ecx, [edx + ecx*4]
+        mov      edi, dword ptr [edi + 8]
+        lea      edi, [edi + edi*2]
+        faddp    st(1), st
+        lea      edx, [edx + edi*4]
+        fld      dword ptr [eax + 4]
+        fmul     dword ptr [esi + 4]
+        faddp    st(1), st
+        fld      dword ptr [eax + 8]
+        fmul     dword ptr [esi + 0x14]
+        fld      dword ptr [eax + 4]
+        fmul     dword ptr [esi + 0x10]
+        faddp    st(1), st
+        fld      dword ptr [esi + 0xc]
+        fmul     dword ptr [eax]
+        faddp    st(1), st
+        fstp     dword ptr [ebp + 0x30]
+        fld      dword ptr [eax + 8]
+        fmul     dword ptr [esi + 0x20]
+        fld      dword ptr [esi + 0x18]
+        fmul     dword ptr [eax]
+        faddp    st(1), st
+        fld      dword ptr [eax + 4]
+        fmul     dword ptr [esi + 0x1c]
+        faddp    st(1), st
+        fstp     dword ptr [ebp + 0x34]
+        fadd     dword ptr [esi + 0x24]
+        fld      dword ptr [ebp + 0x30]
+        fadd     dword ptr [esi + 0x28]
+        fld      dword ptr [ebp + 0x34]
+        fadd     dword ptr [esi + 0x2c]
+        fstp     dword ptr [ebp - 0xb4]
+        mov      eax, dword ptr [ebp - 0xb4]
+        fxch     st(1)
+        mov      dword ptr [ebp - 0x20], eax
+        fstp     dword ptr [ebp - 0x28]
+        fstp     dword ptr [ebp - 0x24]
+        fld      dword ptr [esi]
+        fmul     dword ptr [ecx]
+        fld      dword ptr [esi + 8]
+        fmul     dword ptr [ecx + 8]
+        faddp    st(1), st
+        fld      dword ptr [esi + 4]
+        fmul     dword ptr [ecx + 4]
+        faddp    st(1), st
+        fld      dword ptr [esi + 0xc]
+        fmul     dword ptr [ecx]
+        fld      dword ptr [ecx + 8]
+        fmul     dword ptr [esi + 0x14]
+        faddp    st(1), st
+        fld      dword ptr [ecx + 4]
+        fmul     dword ptr [esi + 0x10]
+        faddp    st(1), st
+        fstp     dword ptr [ebp + 0x20]
+        fld      dword ptr [esi + 0x20]
+        fmul     dword ptr [ecx + 8]
+        fld      dword ptr [esi + 0x1c]
+        fmul     dword ptr [ecx + 4]
+        faddp    st(1), st
+        fld      dword ptr [esi + 0x18]
+        fmul     dword ptr [ecx]
+        faddp    st(1), st
+        fstp     dword ptr [ebp + 0x24]
+        fadd     dword ptr [esi + 0x24]
+        lea      eax, [ebp - 0x10]
+        fld      dword ptr [ebp + 0x20]
+        push     eax
+        fadd     dword ptr [esi + 0x28]
+        fld      dword ptr [ebp + 0x24]
+        fadd     dword ptr [esi + 0x2c]
+        fstp     dword ptr [ebp - 0x9c]
+        mov      ecx, dword ptr [ebp - 0x9c]
+        fxch     st(1)
+        mov      dword ptr [ebp - 0x14], ecx
+        fstp     dword ptr [ebp - 0x1c]
+        lea      ecx, [ebp - 0x1c]
+        push     ecx
+        fstp     dword ptr [ebp - 0x18]
+        lea      ecx, [ebp - 0x54]
+        fld      dword ptr [esi]
+        fmul     dword ptr [edx]
+        fld      dword ptr [edx + 8]
+        fmul     dword ptr [esi + 8]
+        faddp    st(1), st
+        fld      dword ptr [edx + 4]
+        fmul     dword ptr [esi + 4]
+        faddp    st(1), st
+        fld      dword ptr [edx + 8]
+        fmul     dword ptr [esi + 0x14]
+        fld      dword ptr [edx + 4]
+        fmul     dword ptr [esi + 0x10]
+        faddp    st(1), st
+        fld      dword ptr [esi + 0xc]
+        fmul     dword ptr [edx]
+        faddp    st(1), st
+        fstp     dword ptr [ebp]
+        fld      dword ptr [edx + 8]
+        fmul     dword ptr [esi + 0x20]
+        fld      dword ptr [edx + 4]
+        fmul     dword ptr [esi + 0x1c]
+        faddp    st(1), st
+        fld      dword ptr [esi + 0x18]
+        fmul     dword ptr [edx]
+        faddp    st(1), st
+        fstp     dword ptr [ebp + 4]
+        fadd     dword ptr [esi + 0x24]
+        fld      dword ptr [ebp]
+        fadd     dword ptr [esi + 0x28]
+        fld      dword ptr [ebp + 4]
+        fadd     dword ptr [esi + 0x2c]
+        fstp     dword ptr [ebp - 0xa8]
+        mov      edx, dword ptr [ebp - 0xa8]
+        fxch     st(1)
+        mov      dword ptr [ebp - 8], edx
+        fstp     dword ptr [ebp - 0x10]
+        lea      edx, [ebp - 0x28]
+        push     edx
+        fstp     dword ptr [ebp - 0xc]
+        call     nxTask2lCallTrianglePlane
+        mov      eax, dword ptr [ebp + 0x44]
+        xor      edi, edi
+        test     eax, eax
+        jbe      L_100464f0
+        mov      ecx, dword ptr [ebp + 0x10]
+        mov      eax, dword ptr [ebp + 0x48]
+        mov      edx, dword ptr [ebp + 0x28]
+        add      eax, 8
+        mov      dword ptr [ebp + 0x68], eax
+        lea      eax, [ecx + edx*4]
+        mov      edx, dword ptr [ebp + 0xc]
+        mov      dword ptr [ebp + 0x5c], eax
+        lea      eax, [ecx + edx*4]
+        mov      edx, dword ptr [ebp + 0x48]
+        mov      dword ptr [ebp + 0x58], eax
+        mov      eax, ecx
+        sub      eax, edx
+        mov      edx, dword ptr [ebp + 0x68]
+        mov      dword ptr [ebp + 0x50], ecx
+        mov      dword ptr [ebp + 0x38], eax
+        jmp      L_10046350
+L_10046350:
+        mov      eax, dword ptr [ebp + 0x7c]
+        mov      eax, dword ptr [eax + 8]
+        mov      eax, dword ptr [eax + edi*4]
+        sub      eax, dword ptr [ebp + 8]
+        je       L_100464d0
+        fld      dword ptr [ebp - 0x50]
+        fmul     dword ptr [edx - 4]
+        fld      dword ptr [ebp - 0x54]
+        fmul     dword ptr [edx - 8]
+        faddp    st(1), st
+        fld      dword ptr [ebp - 0x4c]
+        fmul     dword ptr [edx]
+        faddp    st(1), st
+        fcomp    dword ptr [nxTask2lZero]
+        fnstsw   ax
+        test     ah, 1
+        je       L_100464d0
+        mov      eax, dword ptr [ebp + 0x38]
+        fld      dword ptr [ebp - 0x4c]
+        fmul     dword ptr [edx + eax]
+        fld      dword ptr [ebp - 0x50]
+        fmul     dword ptr [ecx + 4]
+        faddp    st(1), st
+        fld      dword ptr [ebp - 0x54]
+        fmul     dword ptr [ecx]
+        faddp    st(1), st
+        fadd     dword ptr [ebp - 0x48]
+        fst      dword ptr [ebp - 0x58]
+        fcomp    dword ptr [nxTask2lZero]
+        fnstsw   ax
+        test     ah, 5
+        jp       L_100464d0
+        mov      edx, dword ptr [ebp + 0x28]
+        fld      dword ptr [ebp + edx*4 - 0x10]
+        lea      eax, [ebp + edx*4 - 0x28]
+        fsub     dword ptr [eax]
+        mov      dword ptr [ebp + 0x64], eax
+        mov      eax, dword ptr [ebp + 0xc]
+        fld      dword ptr [ebp + eax*4 - 0x10]
+        lea      edx, [ebp + eax*4 - 0x28]
+        fsub     dword ptr [edx]
+        mov      dword ptr [ebp + 0x3c], edx
+        mov      edx, dword ptr [ebp + 0x28]
+        fld      dword ptr [ebp + edx*4 - 0x1c]
+        mov      edx, dword ptr [ebp + 0x64]
+        fsub     dword ptr [edx]
+        fld      dword ptr [ebp + eax*4 - 0x1c]
+        mov      eax, dword ptr [ebp + 0x3c]
+        fsub     dword ptr [eax]
+        mov      eax, dword ptr [ebp + 0x58]
+        fld      st(0)
+        fmul st, st(1)
+        fld      st(2)
+        fmul st, st(3)
+        faddp    st(1), st
+        fstp     dword ptr [ebp + 0x64]
+        fld      st(0)
+        fmul st, st(3)
+        fld      st(2)
+        fmul st, st(5)
+        faddp    st(1), st
+        fstp     dword ptr [ebp + 0x60]
+        fld      st(2)
+        fmul st(0), st(3)
+        fld      st(4)
+        fmul st(0), st(5)
+        faddp    st(1), st
+        fstp     dword ptr [ebp + 0x18]
+        fld      dword ptr [eax]
+        mov      eax, dword ptr [ebp + 0x3c]
+        fsub     dword ptr [eax]
+        mov      eax, dword ptr [ebp + 0x5c]
+        fstp     dword ptr [ebp + 0x3c]
+        fld      dword ptr [eax]
+        fsub     dword ptr [edx]
+        fstp     dword ptr [ebp + 0x4c]
+        fld      dword ptr [ebp + 0x3c]
+        fmul st(0), st(1)
+        fld      dword ptr [ebp + 0x4c]
+        fmul st(0), st(3)
+        faddp    st(1), st
+        fstp     dword ptr [ebp + 0x40]
+        fstp     st(0)
+        fstp     st(0)
+        fld      dword ptr [ebp + 0x3c]
+        fmul st(0), st(1)
+        fld      dword ptr [ebp + 0x4c]
+        fmul st(0), st(3)
+        faddp    st(1), st
+        fstp     st(2)
+        fstp     st(0)
+        fld      dword ptr [ebp + 0x40]
+        fmul     dword ptr [ebp + 0x18]
+        fld      st(1)
+        fmul     dword ptr [ebp + 0x60]
+        fsubp    st(1), st(0)
+        fstp     dword ptr [ebp + 0x4c]
+        fmul     dword ptr [ebp + 0x64]
+        fld      dword ptr [ebp + 0x40]
+        fmul     dword ptr [ebp + 0x60]
+        fsubp    st(1), st(0)
+        fst      dword ptr [ebp + 0x40]
+        fadd     dword ptr [ebp + 0x4c]
+        fld      dword ptr [ebp + 0x18]
+        fmul     dword ptr [ebp + 0x64]
+        fld      dword ptr [ebp + 0x60]
+        fmul     dword ptr [ebp + 0x60]
+        mov      eax, dword ptr [ebp + 0x4c]
+        fsubp    st(1), st(0)
+        mov      edx, dword ptr [ebp + 0x40]
+        or       edx, eax
+        fsubp    st(1), st(0)
+        not      edx
+        fstp     dword ptr [ebp + 0x64]
+        and      edx, dword ptr [ebp + 0x64]
+        test     edx, edx
+        jns      L_100464cd
+        mov      edx, dword ptr [ebp + 0x74]
+        push     0xffff
+        push     0xffff
+        lea      eax, [ebp - 0x54]
+        push     eax
+        mov      eax, dword ptr [edx + 0x9c]
+        push     ecx
+        mov      ecx, dword ptr [ebp - 0x58]
+        push     ecx
+        mov      ecx, dword ptr [ebx + 0x9c]
+        push     eax
+        push     ecx
+        mov      ecx, dword ptr [ebp + 0x78]
+        call     NxEmitContact
+        mov      edx, dword ptr [ebp + 0x7c]
+        mov      ecx, dword ptr [ebp + 8]
+        mov      eax, dword ptr [edx + 8]
+        mov      dword ptr [eax + edi*4], ecx
+        mov      ecx, dword ptr [ebp + 0x50]
+L_100464cd:
+        mov      edx, dword ptr [ebp + 0x68]
+L_100464d0:
+        add      dword ptr [ebp + 0x58], 0xc
+        add      dword ptr [ebp + 0x5c], 0xc
+        mov      eax, dword ptr [ebp + 0x44]
+        inc      edi
+        add      edx, 0xc
+        add      ecx, 0xc
+        cmp      edi, eax
+        mov      dword ptr [ebp + 0x68], edx
+        mov      dword ptr [ebp + 0x50], ecx
+        jb       L_10046350
+L_100464f0:
+        dec      dword ptr [ebp + 0x54]
+        jne      L_10046186
+L_100464f9:
+        lea      esp, [ebp - 0xc0]
+        pop      edi
+        add      ebp, 0x6c
+        mov      esp, ebp
+        pop      ebp
+        ret
+    }
+}
+
+// phys_fn_001869 (0x00046510, 64 B)
+// Mesh/height-field entry: establish the shared register ABI, then run AABB and OBBCollider passes.
+extern "C" __declspec(naked) void __cdecl nxMeshHeightfieldContact()
+{
+    __asm {
+        mov eax, dword ptr [esp + 0x0c]
+        push ebx
+        push ebp
+        mov ebp, dword ptr [esp + 0x0c]
+        push esi
+        mov esi, dword ptr [esp + 0x14]
+        push edi
+        push eax
+        mov eax, dword ptr [esp + 0x24]
+        push esi
+        lea ebx, [ebp + 0x0c]
+        lea edi, [esi + 0x0c]
+        push ebp
+        call nxMeshHeightfieldAabbPass
+        mov ecx, dword ptr [esp + 0x2c]
+        mov edx, dword ptr [esp + 0x28]
+        push ecx
+        push edx
+        push esi
+        mov eax, ebx
+        mov esi, edi
+        mov ebx, ebp
+        call nxMeshHeightfieldObbPass
+        add esp, 0x18
+        pop edi
+        pop esi
+        pop ebp
+        pop ebx
         ret
     }
 }

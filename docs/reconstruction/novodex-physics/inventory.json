@@ -34021,13 +34021,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactMeshHeightfield.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/733",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5585",
-      "static_proof": null,
+      "static_proof": "continuation transcribed in the same naked x86 AABB-pass body as 001861; evidence/convex-mesh-gap-2l-listing-compare.py matches all 430 instructions across both listing fragments (538 + 1,155 bytes) and checks four direct call targets",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000456c0"
+      "notes": "reconstructed_not_falsified; dynamic proof is pending the full mesh/height-field entry differential"
     },
     {
       "id": "phys_fn_001864",
@@ -34057,13 +34057,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactMeshHeightfield.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/734",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5588",
-      "static_proof": null,
+      "static_proof": "naked x86 inline assembly transcribed from the pinned listing; evidence/convex-mesh-gap-2l-listing-compare.py matches all 640 instructions across the complete two-fragment 1,937-byte extent, maps six relocatable constants/slots and checks all seven direct calls",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "reconstructed_not_falsified; dynamic proof is pending the full mesh/height-field entry differential"
     },
     {
       "id": "phys_fn_001866",
@@ -34093,13 +34093,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactMeshHeightfield.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/734",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5599",
-      "static_proof": null,
+      "static_proof": "continuation transcribed in the same naked x86 OBB-pass body as 001865; evidence/convex-mesh-gap-2l-listing-compare.py matches all 640 instructions across both listing fragments (1,498 + 439 bytes), maps six relocatable constants/slots and checks all seven direct calls",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00045d70"
+      "notes": "reconstructed_not_falsified; dynamic proof is pending the full mesh/height-field entry differential"
     },
     {
       "id": "phys_fn_001868",
@@ -34129,13 +34129,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactMeshHeightfield.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/735",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5604",
-      "static_proof": null,
+      "static_proof": "naked x86 inline assembly transcribed from the pinned listing; evidence/convex-mesh-gap-2l-listing-compare.py matches all 29 instructions across the complete 64-byte extent and checks both direct call targets",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "reconstructed_not_falsified; dynamic proof is pending the full mesh/height-field entry differential"
     },
     {
       "id": "phys_fn_001870",
