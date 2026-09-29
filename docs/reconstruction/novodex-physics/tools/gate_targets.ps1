@@ -2090,26 +2090,29 @@ $NxRequiredCoverageLines = [ordered] @{
         # convex_mesh_ray's split (.callee_divergent) is a frozen list of hulls whose fans the
         # oracle's and the vendored Triangle::Inflate (005185) inflate differently under the word,
         # re-derived by a pre-flight that fails when it no longer matches, and any pose that is not a
-        # signed permutation (the vendored Matrix4x4::Invert, 005197); held by
-        # kRay2hCalleeDivergentWords / Runs, 0 with the oracle's pair bound in; registered up to its
-        # oracle digest. Every line is copied from the oracle side (evidence/convex-mesh-gap.md,
+        # signed permutation (the vendored Matrix4x4::Invert, 005197) -- since the Task 2h review a
+        # second frozen list, the runs whose pose the two Inverts invert to different words (a
+        # pre-flight per case); held by kRay2hCalleeDivergentWords / Runs, 0 with the oracle's pair
+        # bound in (one bind bit each); registered up to its oracle digest. The Task 2h review
+        # re-registered all 16 lines (dyadic exact-inverse poses, two more meshes, 001842's own world
+        # pose, the cross family's inputs). Every line is copied from the oracle side (evidence/convex-mesh-gap.md,
         # Task 2h); the coverage lines count oracle-side values and fixed inputs only.
-        'collision name=convex_mesh_ray index=- rva=0x00041360 owner=phys_fn_001822 checks=1117952 oracle=c471c6d91284b546',
-        'collision name=convex_mesh_ray.callee_divergent index=- rva=0x00041360 owner=phys_fn_001822 checks=930048 oracle=b81832b5ea888016',
-        'collision input name=convex_mesh_ray words=438170 input=75f57d163c1510f6',
-        'collision coverage name=convex_mesh_ray hulls=22 cases=8000 hits=2820 misses=5180 lazy=476 lazy_polygons=2856 posed=3965 posed_exact=1975 split_runs=7266 input_snan=368',
-        'collision name=convex_mesh_faces index=- rva=0x000419b0 owner=phys_fn_001832 checks=4992000 oracle=34514a1dcfe9f7df',
-        'collision input name=convex_mesh_faces words=296312 input=9c5a93a7b23e51c2',
-        'collision coverage name=convex_mesh_faces meshes=6 cases=6000 overlapping=3358 separated=2642 best_set=2599 listed_all=1989 map_cases=2974 stamp_wraps=266 input_snan=136',
-        'collision name=convex_mesh_edges index=- rva=0x00042460 owner=phys_fn_001840 checks=2169768 oracle=aedf13416bfaa683',
-        'collision input name=convex_mesh_edges words=365996 input=7a65a64169130f1f',
-        'collision coverage name=convex_mesh_edges meshes=6 cases=6000 true=3041 false=2959 directions=25209 kept=1541 input_snan=45',
-        'collision name=convex_mesh_cross index=- rva=0x00041fe0 owner=phys_fn_001836 checks=1296792 oracle=452b6b5eb127fea1',
-        'collision input name=convex_mesh_cross words=414838 input=6422c5651298c10b',
-        'collision coverage name=convex_mesh_cross cases=6000 true=5032 false=968 axes=108054 runs_with_axes=2133 input_snan=33',
-        'collision name=convex_mesh_contacts index=- rva=0x00042560 owner=phys_fn_001842 checks=198864 oracle=00d0f883588e9c9b',
-        'collision input name=convex_mesh_contacts words=400728 input=86efa880aa8b921b',
-        'collision coverage name=convex_mesh_contacts calls=5000 calls_with_contacts=760 contacts=2324 headers=760 mesh_posed=1237 swapped=2504'
+        'collision name=convex_mesh_ray index=- rva=0x00041360 owner=phys_fn_001822 checks=1213440 oracle=c60b31b66fcb3424',
+        'collision name=convex_mesh_ray.callee_divergent index=- rva=0x00041360 owner=phys_fn_001822 checks=834560 oracle=f90e10499b9a9e86',
+        'collision input name=convex_mesh_ray words=466510 input=0368f06f352174fd',
+        'collision coverage name=convex_mesh_ray hulls=22 cases=8000 hits=2380 misses=5620 lazy=537 lazy_polygons=3222 posed=5009 posed_exact=1957 posed_dyadic=979 invert_split_runs=2963 split_runs=6520 input_snan=363',
+        'collision name=convex_mesh_faces index=- rva=0x000419b0 owner=phys_fn_001832 checks=4992000 oracle=073689c31d0394d9',
+        'collision input name=convex_mesh_faces words=296312 input=dc4fe87f0a4a2dcf',
+        'collision coverage name=convex_mesh_faces meshes=8 cases=6000 overlapping=3325 separated=2675 best_set=2576 listed_all=1980 map_cases=2974 stamp_wraps=273 input_snan=136',
+        'collision name=convex_mesh_edges index=- rva=0x00042460 owner=phys_fn_001840 checks=2169480 oracle=83852b0107c2a134',
+        'collision input name=convex_mesh_edges words=365996 input=408639aaec7eea06',
+        'collision coverage name=convex_mesh_edges meshes=8 cases=6000 true=3184 false=2816 directions=25044 kept=1541 input_snan=45',
+        'collision name=convex_mesh_cross index=- rva=0x00041fe0 owner=phys_fn_001836 checks=1273848 oracle=5c36165879438a55',
+        'collision input name=convex_mesh_cross words=462838 input=4c67d88ec36f88c7',
+        'collision coverage name=convex_mesh_cross cases=6000 true=4976 false=1024 axes=105189 runs_with_axes=2122 input_snan=33',
+        'collision name=convex_mesh_contacts index=- rva=0x00042560 owner=phys_fn_001842 checks=185684 oracle=4273cba8615346bb',
+        'collision input name=convex_mesh_contacts words=585830 input=0a4f63d137c1f4c8',
+        'collision coverage name=convex_mesh_contacts calls=5000 calls_with_contacts=684 contacts=2117 headers=684 mesh_posed=1255 swapped=2487'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap

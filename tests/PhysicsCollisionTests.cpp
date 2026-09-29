@@ -1456,6 +1456,7 @@ static const unsigned kIceTriangleInflateRva = 0x000e4090;	// phys_fn_005185
 
 // The candidate side of the pre-flight, in PhysicsCollisionInflate.cpp (why there).
 void nxCandidateTriangleInflate(float* corners, float fatCoeff, bool constantBorder);
+void nxCandidateMatrixInvert(float* m);
 
 static const unsigned kRayTriIntersectRva = 0x00036f50;	// phys_fn_001712
 
@@ -9371,8 +9372,9 @@ static __declspec(noinline) unsigned nxDriveTask2g(unsigned char* base)
 // 001844 give it, over each side's own images: the hulls of the Task 2g fixture
 // (the small box hulls each side builds with its own 001472 / 001502, and the
 // hand-built polytopes, with and without a kind C map), TriangleMesh images of
-// six fixed triangle meshes (a height-field-like terrain, a flat grid, a roof, a
-// valley, a closed pyramid and one tilted triangle: +0x0c, +0x10, +0x14; +0x88
+// eight fixed triangle meshes (a height-field-like terrain, a flat grid, a roof, a
+// valley, a closed pyramid, one tilted triangle, a strip with a zero-area and a
+// collinear triangle, a 30-vertex terrain: +0x0c, +0x10, +0x14; +0x88
 // the EdgeList each side's own 002188 builds the first time 001834 needs it),
 // and a scratch record (+0x04 / +0x08 a visited array, +0x14 the stamp, the two
 // Containers at +0x4e0 / +0x4f0 built by the side's own constructor). Every case
@@ -9381,7 +9383,8 @@ static __declspec(noinline) unsigned nxDriveTask2g(unsigned char* base)
 //   convex_mesh_ray       001822 (with 001472 on a hull whose polygons are not
 //                         built yet, 001708 and the vendored Matrix4x4::Invert)
 //                         over rays from inside and outside the hulls, with no
-//                         pose, a signed-permutation pose and a general one.
+//                         pose, a signed-permutation pose, a dyadic one (exact
+//                         inverse) and a general one.
 //   convex_mesh_faces     001832 (001830, 001828, 001826, 001824, slot 11) over
 //                         a group of a mesh's triangles and a point in the hull's
 //                         frame: inside (every face faces away: 001828's arm),
@@ -9499,7 +9502,33 @@ static const unsigned kMeshPlanes2h5[4] =
 	{
 	0xbdf68cdcu, 0xbe768cdcu, 0x3f768cdcu, 0x80000000u
 	};
-static const Nx2hMesh kMeshes2h[6] =
+// degenerate: 9 vertices, 7 triangles
+static const unsigned kMeshVerts2h6[27] =
+	{
+	0x00000000u, 0x00000000u, 0x00000000u, 0x40000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x40000000u, 0x00000000u, 0x40000000u, 0x40000000u, 0x3f000000u, 0x40800000u, 0x00000000u, 0x00000000u, 0x40800000u, 0x00000000u, 0x00000000u, 0x40800000u, 0x40000000u, 0x3f800000u, 0x40c00000u, 0x00000000u, 0x00000000u, 0x3f800000u, 0x00000000u, 0x00000000u
+	};
+static const unsigned kMeshTris2h6[21] =
+	{
+	0, 1, 2, 1, 3, 2, 1, 4, 3, 4, 5, 6, 4, 6, 3, 5, 7, 6, 0, 8, 1
+	};
+static const unsigned kMeshPlanes2h6[28] =
+	{
+	0x00000000u, 0x00000000u, 0x3f800000u, 0x80000000u, 0xbe715befu, 0xbe715befu, 0x3f715befu, 0x3ef15befu, 0x00000000u, 0xbe785b42u, 0x3f785b42u, 0x80000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0xbe5f7483u, 0xbedf7483u, 0x3f5f7483u, 0x3f5f7483u, 0x00000000u, 0xbee4f92eu, 0x3f64f92eu, 0x80000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u
+	};
+// wide terrain: 30 vertices, 40 triangles
+static const unsigned kMeshVerts2h7[90] =
+	{
+	0x00000000u, 0x00000000u, 0x00000000u, 0x3f800000u, 0x00000000u, 0x3f000000u, 0x40000000u, 0x00000000u, 0x3f800000u, 0x40400000u, 0x00000000u, 0x3f800000u, 0x40800000u, 0x00000000u, 0x3f000000u, 0x40a00000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x3f800000u, 0x00000000u, 0x3f800000u, 0x3f800000u, 0x3f800000u, 0x40000000u, 0x3f800000u, 0x3fc00000u, 0x40400000u, 0x3f800000u, 0x40000000u, 0x40800000u, 0x3f800000u, 0x3f800000u, 0x40a00000u, 0x3f800000u, 0x00000000u, 0x00000000u, 0x40000000u, 0x3f000000u, 0x3f800000u, 0x40000000u, 0x3f800000u, 0x40000000u, 0x40000000u, 0x40000000u, 0x40400000u, 0x40000000u, 0x40000000u, 0x40800000u, 0x40000000u, 0x3fc00000u, 0x40a00000u, 0x40000000u, 0x3f000000u, 0x00000000u, 0x40400000u, 0x00000000u, 0x3f800000u, 0x40400000u, 0x3f000000u, 0x40000000u, 0x40400000u, 0x3f800000u, 0x40400000u, 0x40400000u, 0x3fc00000u, 0x40800000u, 0x40400000u, 0x3f800000u, 0x40a00000u, 0x40400000u, 0x00000000u, 0x00000000u, 0x40800000u, 0x00000000u, 0x3f800000u, 0x40800000u, 0x00000000u, 0x40000000u, 0x40800000u, 0x3f000000u, 0x40400000u, 0x40800000u, 0x3f000000u, 0x40800000u, 0x40800000u, 0x00000000u, 0x40a00000u, 0x40800000u, 0x00000000u
+	};
+static const unsigned kMeshTris2h7[120] =
+	{
+	0, 1, 6, 1, 7, 6, 1, 2, 8, 1, 8, 7, 2, 3, 8, 3, 9, 8, 3, 4, 10, 3, 10, 9, 4, 5, 10, 5, 11, 10, 6, 7, 13, 6, 13, 12, 7, 8, 13, 8, 14, 13, 8, 9, 15, 8, 15, 14, 9, 10, 15, 10, 16, 15, 10, 11, 17, 10, 17, 16, 12, 13, 18, 13, 19, 18, 13, 14, 20, 13, 20, 19, 14, 15, 20, 15, 21, 20, 15, 16, 22, 15, 22, 21, 16, 17, 22, 17, 23, 22, 18, 19, 25, 18, 25, 24, 19, 20, 25, 20, 26, 25, 20, 21, 27, 20, 27, 26, 21, 22, 27, 22, 28, 27, 22, 23, 29, 22, 29, 28
+	};
+static const unsigned kMeshPlanes2h7[160] =
+	{
+	0xbee4f92eu, 0x00000000u, 0x3f64f92eu, 0x80000000u, 0xbf2aaaabu, 0xbeaaaaabu, 0x3f2aaaabu, 0x3eaaaaabu, 0xbed105ecu, 0xbed105ecu, 0x3f5105ecu, 0x80000000u, 0xbed105ecu, 0xbed105ecu, 0x3f5105ecu, 0x80000000u, 0x00000000u, 0xbee4f92eu, 0x3f64f92eu, 0xbf64f92eu, 0xbeaaaaabu, 0xbf2aaaabu, 0x3f2aaaabu, 0x3eaaaaabu, 0x3ed105ecu, 0xbed105ecu, 0x3f5105ecu, 0xc002a3b4u, 0x3f13cd3au, 0xbf13cd3au, 0x3f13cd3au, 0xc013cd3au, 0x3ed105ecu, 0xbed105ecu, 0x3f5105ecu, 0xc002a3b4u, 0x3f3504f3u, 0x80000000u, 0x3f3504f3u, 0xc0624630u, 0xbf3504f3u, 0x00000000u, 0x3f3504f3u, 0x80000000u, 0xbed105ecu, 0xbed105ecu, 0x3f5105ecu, 0x3ed105ecu, 0xbee4f92eu, 0x00000000u, 0x3f64f92eu, 0xbee4f92eu, 0xbf2aaaabu, 0xbeaaaaabu, 0x3f2aaaabu, 0x3f2aaaabu, 0xbee4f92eu, 0x00000000u, 0x3f64f92eu, 0xbee4f92eu, 0x00000000u, 0xbee4f92eu, 0x3f64f92eu, 0xbf64f92eu, 0x3f3504f3u, 0x80000000u, 0x3f3504f3u, 0xc0624630u, 0x3ed105ecu, 0xbed105ecu, 0x3f5105ecu, 0xc002a3b4u, 0x3f2aaaabu, 0xbeaaaaabu, 0x3f2aaaabu, 0xc0400000u, 0x3f2aaaabu, 0xbeaaaaabu, 0x3f2aaaabu, 0xc0400000u, 0xbed105ecu, 0x3ed105ecu, 0x3f5105ecu, 0xbf9cc471u, 0xbed105ecu, 0x3ed105ecu, 0x3f5105ecu, 0xbf9cc471u, 0xbf13cd3au, 0x3f13cd3au, 0x3f13cd3au, 0xbf93cd3au, 0xbed105ecu, 0x3ed105ecu, 0x3f5105ecu, 0xbf9cc471u, 0x80000000u, 0x3f3504f3u, 0x3f3504f3u, 0xc03504f3u, 0xbed105ecu, 0x3ed105ecu, 0x3f5105ecu, 0xbf9cc471u, 0x3ed105ecu, 0x3ed105ecu, 0x3f5105ecu, 0xc06b26aau, 0x3ed105ecu, 0x3ed105ecu, 0x3f5105ecu, 0xc06b26aau, 0x3f2aaaabu, 0x3eaaaaabu, 0x3f2aaaabu, 0xc08aaaabu, 0x3f2aaaabu, 0x3eaaaaabu, 0x3f2aaaabu, 0xc08aaaabu, 0xbed105ecu, 0x3ed105ecu, 0x3f5105ecu, 0xbf9cc471u, 0x00000000u, 0x00000000u, 0x3f800000u, 0x80000000u, 0xbed105ecu, 0x3ed105ecu, 0x3f5105ecu, 0xbf9cc471u, 0xbed105ecu, 0x3ed105ecu, 0x3f5105ecu, 0xbf9cc471u, 0xbeaaaaabu, 0x3f2aaaabu, 0x3f2aaaabu, 0xc0000000u, 0x00000000u, 0x3ee4f92eu, 0x3f64f92eu, 0xc00f1bbdu, 0x3eaaaaabu, 0x3f2aaaabu, 0x3f2aaaabu, 0xc0800000u, 0x3eaaaaabu, 0x3f2aaaabu, 0x3f2aaaabu, 0xc0800000u, 0x3f3504f3u, 0x00000000u, 0x3f3504f3u, 0xc0624630u, 0x00000000u, 0x3f3504f3u, 0x3f3504f3u, 0xc03504f3u
+	};
+static const Nx2hMesh kMeshes2h[8] =
 	{
 	{ "terrain", 16, 18, kMeshVerts2h0, kMeshTris2h0, kMeshPlanes2h0 },
 	{ "flat", 9, 8, kMeshVerts2h1, kMeshTris2h1, kMeshPlanes2h1 },
@@ -9507,6 +9536,8 @@ static const Nx2hMesh kMeshes2h[6] =
 	{ "valley", 6, 4, kMeshVerts2h3, kMeshTris2h3, kMeshPlanes2h3 },
 	{ "pyramid", 5, 6, kMeshVerts2h4, kMeshTris2h4, kMeshPlanes2h4 },
 	{ "triangle", 3, 1, kMeshVerts2h5, kMeshTris2h5, kMeshPlanes2h5 },
+	{ "degenerate", 9, 7, kMeshVerts2h6, kMeshTris2h6, kMeshPlanes2h6 },
+	{ "wide terrain", 30, 40, kMeshVerts2h7, kMeshTris2h7, kMeshPlanes2h7 },
 	};
 
 static const unsigned kNb2hMeshes = sizeof(kMeshes2h) / sizeof(kMeshes2h[0]);
@@ -9522,13 +9553,17 @@ static const unsigned kSat2hCases = 6000;
 static const unsigned kContact2hCases = 5000;
 // convex_mesh_ray's split (see the family): the hulls (bit k) with a polygon fan
 // on which the oracle's Triangle::Inflate (005185) and the candidate's vendored
-// one differ, under 0x027f and under 0x0f7f -- a frozen list, re-derived by the
-// family's pre-flight, which fails if it no longer matches -- and the split's
-// ceiling: the differing words and runs measured when it was registered (a count
-// may fall, never rise).
+// one differ, under 0x027f and under 0x0f7f; the (case, control word) runs whose
+// pose the oracle's Matrix4x4::Invert (005197) and the candidate's vendored one
+// invert to different words, as a count and a digest of the run numbers (Task 2h
+// review) -- both frozen, re-derived by the family's pre-flights, which fail if
+// they no longer match -- and the split's ceiling: the differing words and runs
+// measured when it was registered (a count may fall, never rise).
 static const unsigned kRay2hInflateDivergent[2] = { 0x00252000u, 0x002f7000u };
-static const unsigned kRay2hCalleeDivergentWords = 165;
-static const unsigned kRay2hCalleeDivergentRuns = 91;
+static const unsigned kRay2hInvertDivergentRuns = 2963;
+static const unsigned __int64 kRay2hInvertDivergentDigest = 0x773d5c7f92630fd0ull;
+static const unsigned kRay2hCalleeDivergentWords = 184;
+static const unsigned kRay2hCalleeDivergentRuns = 109;
 
 // A register-argument call: eax, ecx, edx, ebx, esi and edi from `r`, `count`
 // stack words pushed last first, the caller cleaning, as 001844 and 001849 call
@@ -9691,6 +9726,41 @@ static const unsigned kPlace2h[3][8] =
 	{ 0x00000000u, 0x3f800000u, 0x40000000u, 0x40400000u, 0x40800000u, 0x40a00000u, 0x3fc00000u, 0x40200000u },
 	{ 0xbf800000u, 0xbf000000u, 0x00000000u, 0x3f000000u, 0x3f800000u, 0x3fc00000u, 0x40000000u, 0x40400000u },
 	};
+
+// A pose whose inverse is exact (Task 2h review): a signed permutation times a
+// unit upper-triangular shear with power-of-two scales on the diagonal, S * P,
+// every entry a word of S with P's sign bit (no arithmetic: P has one nonzero
+// per row), and a translation from kPlace2h. Its determinant is a power of two,
+// so the oracle's and the vendored Matrix4x4::Invert return the same words (the
+// pre-flight checks it per case), and 001822's pose transform is compared in the
+// exact family.
+static const unsigned kShear2h[6] = { 0x00000000u, 0x3f000000u, 0xbe800000u, 0x3f800000u, 0xc0000000u, 0x3e800000u };
+static const unsigned kScale2h[3] = { 0x3f800000u, 0x40000000u, 0x3f000000u };
+
+static void nx2hDyadicPose(unsigned* state, NxDigest* input, unsigned m[16])
+	{
+	const unsigned permDraw = nxNext(state);
+	const unsigned signDraw = nxNext(state);
+	const unsigned shearDraw = nxNext(state);
+	const unsigned scaleDraw = nxNext(state);
+	const unsigned placeDraw = nxNext(state);
+	const unsigned draws[5] = { permDraw, signDraw, shearDraw, scaleDraw, placeDraw };
+	nxFoldInput(input, draws, sizeof(draws));
+	static const unsigned kPerm[6][3] = { { 0, 1, 2 }, { 0, 2, 1 }, { 1, 0, 2 }, { 1, 2, 0 }, { 2, 0, 1 }, { 2, 1, 0 } };
+	const unsigned* column = kPerm[permDraw % 6];
+	unsigned s[3][3];
+	for(unsigned i = 0; i < 3; ++i)
+		for(unsigned j = 0; j < 3; ++j)
+			s[i][j] = j < i ? 0u : j == i ? kScale2h[(scaleDraw >> (4 * i)) % 3] : kShear2h[(shearDraw >> (4 * (i + j))) % 6];
+	memset(m, 0, 64);
+	for(unsigned i = 0; i < 3; ++i)
+		for(unsigned j = 0; j < 3; ++j)
+			m[4 * i + column[j]] = s[i][j] ^ (((signDraw >> j) & 1) ? 0x80000000u : 0u);
+	for(unsigned k = 0; k < 3; ++k)
+		m[12 + k] = kPlace2h[k][(placeDraw >> (4 * k)) % 8];
+	m[15] = 0x3f800000u;
+	nxFoldInput(input, m, 64);
+	}
 
 // A pose and the pose the other way (see the block comment); `exact` when the
 // second is the first's inverse word for word.
@@ -9947,7 +10017,13 @@ static __declspec(noinline) unsigned nxDriveTask2h(unsigned char* base)
 	nxDigestInit(&inputDigest);
 	nxFoldInput(&inputDigest, &fixture.state, 8);
 	unsigned perMode[2] = { 0, 0 };
-	unsigned cases = 0, hits = 0, misses = 0, lazy = 0, lazyPolygons = 0, posed = 0, posedExact = 0, inputSnan = 0;
+	unsigned cases = 0, hits = 0, misses = 0, lazy = 0, lazyPolygons = 0, posed = 0, posedExact = 0, posedDyadic = 0,
+		inputSnan = 0;
+	typedef void*(__thiscall* NxInvertFn)(void*);
+	const NxInvertFn oracleInvert = (NxInvertFn) (base + 0x000e4400);		// phys_fn_005197
+	unsigned invertRuns = 0;
+	NxDigest invertDigest;
+	nxDigestInit(&invertDigest);
 	static Nx2gHullSide lazyHull[2];
 	NxDigest splitOracle, splitCandidate;
 	nxDigestInit(&splitOracle);
@@ -10019,9 +10095,21 @@ static __declspec(noinline) unsigned nxDriveTask2h(unsigned char* base)
 		nx2hPose(&local, &inputDigest, pose, inverse, &exact);
 		// Kinds: no pose (half), the pose with its translation zeroed and the origin
 		// taken through its rotation word for word (a signed permutation: the ray
-		// stays inside), or the pose as drawn.
+		// stays inside), or the pose as drawn. Task 2h review: one case in eight of
+		// the no-pose half takes a dyadic pose (nx2hDyadicPose), and one in two of
+		// those puts the origin at the pose's translation words, where 001822's
+		// transform takes it to the hull's origin.
 		const unsigned poseKind = poseDraw % 8;
-		const bool withPose = poseKind >= 4;
+		const unsigned dyadicDraw = nxNext(&local);
+		nxFoldInput(&inputDigest, &dyadicDraw, 4);
+		const bool dyadic = poseKind == 0;
+		const bool withPose = poseKind >= 4 || dyadic;
+		if(dyadic)
+			{
+			nx2hDyadicPose(&local, &inputDigest, pose);
+			if(dyadicDraw & 1)
+				memcpy(origin, &pose[12], 12);
+			}
 		if(poseKind >= 4 && poseKind < 6 && exact)
 			{
 			pose[12] = pose[13] = pose[14] = 0;
@@ -10038,9 +10126,34 @@ static __declspec(noinline) unsigned nxDriveTask2h(unsigned char* base)
 		if(withPose)
 			{
 			++posed;
-			if(exact)
+			if(dyadic)
+				++posedDyadic;
+			else if(exact)
 				++posedExact;
 			}
+		// The Invert pre-flight (Task 2h review): the pose inverted by the oracle's
+		// 005197 and by the candidate's vendored Matrix4x4::Invert under each control
+		// word; a run where the two differ goes to the split. The runs are frozen
+		// (kRay2hInvertDivergentRuns / Digest) and checked after the loop.
+		bool invertDivergent[2] = { false, false };
+		if(withPose)
+			for(int mode = 0; mode < 2; ++mode)
+				{
+				unsigned inverted[2][16];
+				memcpy(inverted[0], pose, 64);
+				memcpy(inverted[1], pose, 64);
+				nxSetControl(mode ? kControlSimulate : kControlDefault);
+				oracleInvert(inverted[0]);
+				nxCandidateMatrixInvert((float*) inverted[1]);
+				nxSetControl(kControlDefault);
+				if(memcmp(inverted[0], inverted[1], 64) != 0)
+					{
+					invertDivergent[mode] = true;
+					const unsigned run = 2 * i + (unsigned) mode;
+					nxFoldInput(&invertDigest, &run, 4);
+					++invertRuns;
+					}
+				}
 		if(lazyCase)
 			++lazy;
 		for(int mode = 0; mode < 2; ++mode)
@@ -10094,12 +10207,12 @@ static __declspec(noinline) unsigned nxDriveTask2h(unsigned char* base)
 				while(n < 32)
 					out[side][n++] = 0;
 				}
-			// The split (a rule on the fixed inputs): a hull on the frozen Inflate list
-			// under this word, or a pose that is not a signed permutation, which the
-			// candidate's vendored Matrix4x4::Invert (005197) inverts in its own order
-			// (0 with the oracle's 005185 and 005197 bound in: the bind patch in the
-			// evidence).
-			const bool split = ((kRay2hInflateDivergent[mode] >> k) & 1) != 0 || (withPose && !exact);
+			// The split (two frozen lists): a hull on the Inflate list under this word,
+			// or a run whose pose the two Matrix4x4::Inverts (005197) invert to different
+			// words (the Invert pre-flight). With the oracle's 005185 bound into 001708
+			// and its 005197 into 001822 it reads 0 (the bind patch in the evidence, one
+			// bit each).
+			const bool split = ((kRay2hInflateDivergent[mode] >> k) & 1) != 0 || invertDivergent[mode];
 			const unsigned differing = nx2hFold(split ? &splitOracle : &oracleDigest,
 				split ? &splitCandidate : &candidateDigest, out[0], out[1], 32);
 			if(split)
@@ -10120,6 +10233,12 @@ static __declspec(noinline) unsigned nxDriveTask2h(unsigned char* base)
 				}
 			}
 		}
+	if(invertRuns != kRay2hInvertDivergentRuns || invertDigest.state != kRay2hInvertDivergentDigest)
+		{
+		fprintf(stderr, "FAIL convex_mesh_ray pre-flight: the Invert-divergent runs are %u (digest %016llx), the frozen list is %u (%016llx)\n",
+			invertRuns, invertDigest.state, kRay2hInvertDivergentRuns, kRay2hInvertDivergentDigest);
+		++total;
+		}
 	const bool splitOver = splitWords > kRay2hCalleeDivergentWords || splitRuns > kRay2hCalleeDivergentRuns;
 	total += perMode[0] + perMode[1] + (splitOver ? 1 : 0);
 	printf("collision name=convex_mesh_ray index=- rva=0x%08x owner=phys_fn_001822 checks=%u oracle=%016llx candidate=%016llx mismatches=%u default_mismatches=%u simulate_mismatches=%u build_mismatches=%u\n",
@@ -10129,8 +10248,9 @@ static __declspec(noinline) unsigned nxDriveTask2h(unsigned char* base)
 		kConvexMeshRayRva, splitOracle.checks, splitOracle.state, splitCandidate.state, splitWords, splitRuns,
 		kRay2hCalleeDivergentWords, kRay2hCalleeDivergentRuns, splitOver ? "exceeded" : "ok");
 	nxPrintInput("convex_mesh_ray", &inputDigest);
-	printf("collision coverage name=convex_mesh_ray hulls=%u cases=%u hits=%u misses=%u lazy=%u lazy_polygons=%u posed=%u posed_exact=%u split_runs=%u input_snan=%u\n",
-		kNb2gHulls + kNb2gPolytopeHulls, cases, hits, misses, lazy, lazyPolygons, posed, posedExact, splitCases, inputSnan);
+	printf("collision coverage name=convex_mesh_ray hulls=%u cases=%u hits=%u misses=%u lazy=%u lazy_polygons=%u posed=%u posed_exact=%u posed_dyadic=%u invert_split_runs=%u split_runs=%u input_snan=%u\n",
+		kNb2gHulls + kNb2gPolytopeHulls, cases, hits, misses, lazy, lazyPolygons, posed, posedExact, posedDyadic,
+		kRay2hInvertDivergentRuns, splitCases, inputSnan);
 	}
 
 	// -----------------------------------------------------------------------
@@ -10310,6 +10430,12 @@ static __declspec(noinline) unsigned nxDriveTask2h(unsigned char* base)
 		nxFoldInput(&edgesInput, &depth, 4);
 		nxFoldInput(&edgesInput, normal, 12);
 		nxFoldInput(&edgesInput, &stamp, 4);
+		// 001836 reads what 001840 left, so 001840's own inputs are this family's
+		// inputs too (Task 2h review).
+		nxFoldInput(&crossInput, &polygon, 4);
+		nxFoldInput(&crossInput, &depth, 4);
+		nxFoldInput(&crossInput, axisIn, 12);
+		nxFoldInput(&crossInput, normal, 12);
 		nxFoldInput(&crossInput, crossPlane, 16);
 		nxFoldInput(&crossInput, &nbCross, 4);
 		nxFoldInput(&crossInput, crossPolygons, 4 * nbCross);
@@ -10469,6 +10595,15 @@ static __declspec(noinline) unsigned nxDriveTask2h(unsigned char* base)
 		const bool posedMesh = meshPoseDraw % 4 == 0;
 		if(!posedMesh)
 			memcpy(meshPose, kIdentity2h, sizeof(meshPose));
+		// The hull's world pose (ebx) is an object of its own, as 001849's is (Task
+		// 2h review): one case in two its words are the relative pose's (the mesh at
+		// the identity makes the two agree), otherwise a pose drawn apart.
+		unsigned convexWorld[16], convexWorldOther[16];
+		bool convexWorldExact = false;
+		nx2hPose(&local, &inputDigest, convexWorld, convexWorldOther, &convexWorldExact);
+		if((meshPoseDraw >> 8) & 1)
+			memcpy(convexWorld, pose, sizeof(convexWorld));
+		nxFoldInput(&inputDigest, convexWorld, sizeof(convexWorld));
 		const unsigned* plane = &mesh.planes[4 * triangle];
 		unsigned normal[3];
 		const unsigned normalKind = normalDraw % 8;
@@ -10522,7 +10657,7 @@ static __declspec(noinline) unsigned nxDriveTask2h(unsigned char* base)
 					material0, material1, nullHolder0, nullHolder1, orient);
 				const unsigned* verts = mesh.verts;
 				const unsigned* tri = &mesh.tris[3 * triangle];
-				Nx2hRegs r = { 0, 0, polygon, (unsigned) (size_t) pose, (unsigned) (size_t) meshPose,
+				Nx2hRegs r = { 0, 0, polygon, (unsigned) (size_t) convexWorld, (unsigned) (size_t) meshPose,
 					(unsigned) (size_t) plane };
 				const unsigned stack[13] = { (unsigned) (size_t) normal, (unsigned) (size_t) (h.mesh + 4),
 					(unsigned) (size_t) &verts[3 * tri[0]], (unsigned) (size_t) &verts[3 * tri[1]],

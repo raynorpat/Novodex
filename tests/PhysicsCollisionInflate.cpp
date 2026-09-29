@@ -14,3 +14,11 @@ void nxCandidateTriangleInflate(float* corners, float fatCoeff, bool constantBor
 	{
 	reinterpret_cast<IceMaths::Triangle*>(corners)->Inflate(fatCoeff, constantBorder);
 	}
+
+// The candidate's Matrix4x4::Invert (vendored OPCODE, phys_fn_005197) for
+// NxPhysicsCollisionTests' convex_mesh_ray pre-flight (convex-mesh gap Task 2h
+// review), here for the same reason. `m` is sixteen floats, inverted in place.
+void nxCandidateMatrixInvert(float* m)
+	{
+	reinterpret_cast<IceMaths::Matrix4x4*>(m)->Invert();
+	}
