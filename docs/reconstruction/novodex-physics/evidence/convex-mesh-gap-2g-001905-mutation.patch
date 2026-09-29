@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ContactGeneration.cpp b/Physics/src/ContactGeneration.cpp
+index 3a968a9..62467ac 100644
+--- a/Physics/src/ContactGeneration.cpp
++++ b/Physics/src/ContactGeneration.cpp
+@@ -3228,7 +3228,7 @@ L48b78:
+ 		cmp	ebx, edx		// 0x00048b78
+ 		je	L48bb3		// 0x00048b7a
+ 		fld	dword ptr [esi]		// 0x00048b7c
+-		fsub	dword ptr [ecx]		// 0x00048b7e
++		fadd	dword ptr [ecx]		// 0x00048b7e
+ 		fld	dword ptr [ecx + 4]		// 0x00048b80
+ 		fsub	dword ptr [esp + 0x18]		// 0x00048b83
+ 		fmulp	st(1), st		// 0x00048b87

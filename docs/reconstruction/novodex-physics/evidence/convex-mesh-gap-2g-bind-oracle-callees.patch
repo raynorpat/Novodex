@@ -42,10 +42,10 @@ index 4ebef2b..8752f29 100644
  		jmp	L31e57		// 0x00031e28
  L31e2a:
 diff --git a/tests/PhysicsCollisionTests.cpp b/tests/PhysicsCollisionTests.cpp
-index 5ffd306..4c853ff 100644
+index d7dc2b3..73e521a 100644
 --- a/tests/PhysicsCollisionTests.cpp
 +++ b/tests/PhysicsCollisionTests.cpp
-@@ -8542,6 +8542,10 @@ static __declspec(noinline) unsigned nxDriveTask2g(unsigned char* base)
+@@ -8811,6 +8811,10 @@ static unsigned nx2gRunPairs(unsigned char* base, Nx2gSide* sides, unsigned nbHu
  	{
  	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
  	NxOracleContactFn oracleContact = (NxOracleContactFn) (base + kConvexConvexRva);
@@ -53,6 +53,6 @@ index 5ffd306..4c853ff 100644
 +	// binds the oracle's 005191 (InvertPRMatrix) into the candidate's 001653.
 +	extern void* gNxDbgInvert;
 +	gNxDbgInvert = (getenv("NX_ICE_BIND") && (atoi(getenv("NX_ICE_BIND")) & 4)) ? (void*) (base + 0x000e4200) : 0;
- 	static Nx2gSide sides[2];
- 	static Nx2gBox boxes[kNb2gHulls];
- 	static Nx2gGraph graphs[kNb2gHulls];
+ 	static NxContactWorld world[2];
+ 	memset(&st, 0, sizeof(st));
+ 	for(unsigned i = 0; i < nbPairs; ++i)

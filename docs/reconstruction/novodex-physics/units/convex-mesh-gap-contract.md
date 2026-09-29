@@ -907,6 +907,9 @@ asserted).
   002266, which links the SDK parameter rows). The mesh fixture is each side's own images built in
   the harnesses (TriangleMesh +0x04 table, +0xa0 hull, +0xa8 kind C map; shapes with a Prunable,
   pruner and world boxes; the scratch record), with hulls each side's own 001472 and 001502 build.
+  The Task 2g review adds the test route's non-box hulls as hand-built images (contact_convex_hulls:
+  triangular, hexagonal and pentagonal prisms, an octahedron, an 80-triangle icosphere), identical
+  words on both sides, edges from each side's own 001502; L reads a hull only through the slots.
 
 **Written by Task 2f.** P-Hull is in `Physics/src/ConvexHull.cpp` with sub-unit B in
 `Physics/src/IceSupportMaps.cpp` (both on the `/arch:IA32` and `/EHs-c-` lists).

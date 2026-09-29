@@ -143,7 +143,7 @@ class TriangleMesh
 	//! four as `this` and read the convex mesh at +0xa0; the candidate's slots
 	//! are gTriangleMeshPolygonTable (TriangleMeshPolygons.cpp, convex-mesh gap
 	//! Task 2g). No candidate constructor exists yet to store it.
-	NxU32					mWord04;
+	const void* const*		mPolygonTable;
 	//! +0x08, the embedded internal mesh -- which reaches exactly to +0x40.
 	InternalTriangleMesh	mInternal;
 	//! +0x40, the hull-construction flags. Only bit 0 is established.
@@ -189,6 +189,7 @@ class TriangleMesh
 // The measured offsets, pinned so a field added in the wrong place fails here
 // rather than in a differential.
 static_assert(offsetof(TriangleMesh, mVtableSlot) == 0x00, "the vtable slot is first");
+static_assert(offsetof(TriangleMesh, mPolygonTable) == 0x04, "the polygon interface table is at +0x04");
 static_assert(offsetof(TriangleMesh, mInternal) == 0x08, "the internal mesh is embedded at +0x08");
 static_assert(offsetof(TriangleMesh, mInternal.mVertexCount) == 0x08, "vertex count is internal+0x00");
 static_assert(offsetof(TriangleMesh, mInternal.mTriangleCount) == 0x0c, "triangle count is internal+0x04");
