@@ -56,8 +56,8 @@
     "differential_falsified": 31,
     "oracle_differential_falsified": 30,
     "deferred_not_reconstructed_in_phase": 249,
-    "deferred_blocked_on_later_phase": 15,
-    "deferred_reconstructed_not_falsified": 67
+    "deferred_blocked_on_later_phase": 11,
+    "deferred_reconstructed_not_falsified": 71
   },
   "closed": [
     {
@@ -2760,49 +2760,37 @@
       "id": "phys_fn_001777",
       "rva": "0x0003e370",
       "size": 447,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": [
-        4
-      ],
-      "blocked_on_type": "TriangleMesh",
-      "note": "matrix B [CAPSULE][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+      "driving_phases": [],
+      "note": "reconstructed, with an exact listing comparison and the Task 2k oracle differential recorded in evidence/convex-mesh-gap-2k-run.txt; no mutation was aimed at this row. It remains deferred at reconstructed_not_falsified because the plan promotes no row above reconstructed."
     },
     {
       "id": "phys_fn_001779",
       "rva": "0x0003e530",
       "size": 1656,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": [
-        4
-      ],
-      "blocked_on_type": "TriangleMesh",
-      "note": "matrix A [CAPSULE][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+      "driving_phases": [],
+      "note": "reconstructed, with an exact listing comparison and the Task 2k oracle differential recorded in evidence/convex-mesh-gap-2k-run.txt; no mutation was aimed at this row. It remains deferred at reconstructed_not_falsified because the plan promotes no row above reconstructed."
     },
     {
       "id": "phys_fn_001781",
       "rva": "0x0003ebb0",
       "size": 867,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": [
-        4
-      ],
-      "blocked_on_type": "TriangleMesh",
-      "note": "continuation at 0x0003ebb0 of matrix A [CAPSULE][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+      "driving_phases": [],
+      "note": "reconstructed, with an exact listing comparison and the Task 2k oracle differential recorded in evidence/convex-mesh-gap-2k-run.txt; no mutation was aimed at this row. It remains deferred at reconstructed_not_falsified because the plan promotes no row above reconstructed."
     },
     {
       "id": "phys_fn_001783",
       "rva": "0x0003ef20",
       "size": 1127,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": [
-        4
-      ],
-      "blocked_on_type": "TriangleMesh",
-      "note": "continuation at 0x0003ef20 of matrix A [CAPSULE][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+      "driving_phases": [],
+      "note": "reconstructed, with an exact listing comparison and the Task 2k oracle differential recorded in evidence/convex-mesh-gap-2k-run.txt; no mutation was aimed at this row. It remains deferred at reconstructed_not_falsified because the plan promotes no row above reconstructed."
     },
     {
       "id": "phys_fn_001785",

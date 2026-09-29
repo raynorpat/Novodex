@@ -151,6 +151,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/ContactGeneration.cpp
 		Physics/src/Distance.cpp
 		Physics/src/ContactBoxMeshICE.cpp
+		Physics/src/ContactCapsuleMesh.cpp
 		Physics/src/ContactMeshHeightfield.cpp
 		Physics/src/EdgeList.cpp
 		Physics/src/IceMeshTools.cpp
@@ -702,7 +703,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp
 		Physics/src/Distance.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp
-		Physics/src/ContactBoxMeshICE.cpp Physics/src/ContactMeshHeightfield.cpp
+		Physics/src/ContactBoxMeshICE.cpp Physics/src/ContactCapsuleMesh.cpp Physics/src/ContactMeshHeightfield.cpp
 		Physics/src/ContactConvexConvex.cpp Physics/src/TriangleMeshPolygons.cpp
 		Physics/src/ContactConvexHeightfield.cpp Physics/src/TriangleMeshTopology.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp

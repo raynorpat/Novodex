@@ -17411,7 +17411,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/466",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2982",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` \u00e2\u20ac\u201d the vertex array |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` — the vertex array |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17520,7 +17520,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/469",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3018",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 3 | `phys_fn_000961` | `mov eax,6` \u00e2\u20ac\u201d six faces |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 3 | `phys_fn_000961` | `mov eax,6` — six faces |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17557,7 +17557,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/470",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3019",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 4 | `phys_fn_000963` | `index*36 + this+0x70` \u00e2\u20ac\u201d face-record[k] |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 4 | `phys_fn_000963` | `index*36 + this+0x70` — face-record[k] |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -32431,13 +32431,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/869",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5200",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed naked x86 bytes from oracle/capstone/manifest.json, listing 0x0003e370..0x0003e52e; LSSCollider::Collide (005027) receives the capsule LSS, its cache and the side-local OPCODE Model; addresses/calls bind to candidate functions, including the vendored LSSCollider; evidence/convex-mesh-gap-2k-listing-compare.py reports the row byte-instruction exact with the contact emitter mappings; no oracle access",
+      "dynamic_proof": "convex-mesh gap Task 2k: NxPhysicsCollisionTests called the oracle RVA and candidate entry over six independently built mesh models and three capsule placements; overlap_capsule_mesh 18 checks, exact, oracle digest 8190a8953018a8af; contact_capsule_mesh 18 checks, exact, oracle digest 6ac3ddf8da4861be (16 oracle contacts); input digest 2488b42d3079cbfb; pinned NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; see evidence/convex-mesh-gap-2k-run.txt",
+      "notes": "",
+      "implementation": "Physics/src/ContactCapsuleMesh.cpp",
+      "implementation_symbol": "NxOverlapCapsuleMesh"
     },
     {
       "id": "phys_fn_001778",
@@ -32467,13 +32469,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/870",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5202",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed naked x86 bytes from oracle/capstone/manifest.json, listing 0x0003e530..0x0003eba7; the three entry/continuation ranges 001779/001781/001783 retain their 8- and 13-byte alignment gaps in one control-flow extent; calls map to candidate LSSCollider, NxSegmentTriangleSquareDistance, NxTrianglePlane, NxEmitContact, NxEmitContactFeatures and the ICE vector constructor; evidence/convex-mesh-gap-2k-listing-compare.py reports all 953 instructions equal and 11 mappings accounted for; no oracle access",
+      "dynamic_proof": "convex-mesh gap Task 2k: NxPhysicsCollisionTests called the oracle RVA and candidate entry over six independently built mesh models and three capsule placements; overlap_capsule_mesh 18 checks, exact, oracle digest 8190a8953018a8af; contact_capsule_mesh 18 checks, exact, oracle digest 6ac3ddf8da4861be (16 oracle contacts); input digest 2488b42d3079cbfb; pinned NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; see evidence/convex-mesh-gap-2k-run.txt",
+      "notes": "",
+      "implementation": "Physics/src/ContactCapsuleMesh.cpp",
+      "implementation_symbol": "NxContactCapsuleMesh"
     },
     {
       "id": "phys_fn_001780",
@@ -32503,13 +32507,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/871",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5211",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0003e530"
+      "static_proof": "transcribed naked x86 bytes from oracle/capstone/manifest.json, listing 0x0003ebb0..0x0003ef12; the three entry/continuation ranges 001779/001781/001783 retain their 8- and 13-byte alignment gaps in one control-flow extent; calls map to candidate LSSCollider, NxSegmentTriangleSquareDistance, NxTrianglePlane, NxEmitContact, NxEmitContactFeatures and the ICE vector constructor; evidence/convex-mesh-gap-2k-listing-compare.py reports all 953 instructions equal and 11 mappings accounted for; no oracle access",
+      "dynamic_proof": "convex-mesh gap Task 2k: NxPhysicsCollisionTests called the oracle RVA and candidate entry over six independently built mesh models and three capsule placements; overlap_capsule_mesh 18 checks, exact, oracle digest 8190a8953018a8af; contact_capsule_mesh 18 checks, exact, oracle digest 6ac3ddf8da4861be (16 oracle contacts); input digest 2488b42d3079cbfb; pinned NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; see evidence/convex-mesh-gap-2k-run.txt",
+      "notes": "continuation of the entry at 0x0003e530",
+      "implementation": "Physics/src/ContactCapsuleMesh.cpp",
+      "implementation_symbol": "NxContactCapsuleMesh"
     },
     {
       "id": "phys_fn_001782",
@@ -32539,13 +32545,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/872",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5218",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0003e530"
+      "static_proof": "transcribed naked x86 bytes from oracle/capstone/manifest.json, listing 0x0003ef20..0x0003f386; the three entry/continuation ranges 001779/001781/001783 retain their 8- and 13-byte alignment gaps in one control-flow extent; calls map to candidate LSSCollider, NxSegmentTriangleSquareDistance, NxTrianglePlane, NxEmitContact, NxEmitContactFeatures and the ICE vector constructor; evidence/convex-mesh-gap-2k-listing-compare.py reports all 953 instructions equal and 11 mappings accounted for; no oracle access",
+      "dynamic_proof": "convex-mesh gap Task 2k: NxPhysicsCollisionTests called the oracle RVA and candidate entry over six independently built mesh models and three capsule placements; overlap_capsule_mesh 18 checks, exact, oracle digest 8190a8953018a8af; contact_capsule_mesh 18 checks, exact, oracle digest 6ac3ddf8da4861be (16 oracle contacts); input digest 2488b42d3079cbfb; pinned NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; see evidence/convex-mesh-gap-2k-run.txt",
+      "notes": "continuation of the entry at 0x0003e530",
+      "implementation": "Physics/src/ContactCapsuleMesh.cpp",
+      "implementation_symbol": "NxContactCapsuleMesh"
     },
     {
       "id": "phys_fn_001784",

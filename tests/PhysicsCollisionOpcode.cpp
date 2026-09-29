@@ -38,6 +38,16 @@ void nx2iCandidateObbColliderConstruct(void* at)
 	new(at) OBBCollider;
 	}
 
+void nx2iCandidateLssColliderConstruct(void* at)
+	{
+	new(at) LSSCollider;
+	}
+
+void nx2iCandidateLssColliderDestruct(void* at)
+	{
+	((LSSCollider*) at)->~LSSCollider();
+	}
+
 void nx2iCandidateObbColliderDestruct(void* at)
 	{
 	((OBBCollider*) at)->~OBBCollider();

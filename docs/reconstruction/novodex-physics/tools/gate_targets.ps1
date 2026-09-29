@@ -2148,7 +2148,16 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision input name=overlap_box_mesh words=788 input=74a6fc50c06a045e',
         'collision input name=contact_box_mesh words=788 input=74a6fc50c06a045e',
         'collision coverage name=overlap_box_mesh meshes=6 cases=36 true=16 false=20',
-        'collision coverage name=contact_box_mesh meshes=6 cases=18 inside=6 resting=6 straddling=6 oracle_contacts=334'
+        'collision coverage name=contact_box_mesh meshes=6 cases=18 inside=6 resting=6 straddling=6 oracle_contacts=334',
+        # convex-mesh gap Task 2k: capsule/mesh overlap and contact over the
+        # same six independently built mesh models, with inside, resting and
+        # side-straddling capsule poses.
+        'collision name=overlap_capsule_mesh index=- rva=0x0003e370 checks=18 oracle=8190a8953018a8af',
+        'collision name=contact_capsule_mesh index=- rva=0x0003e530 checks=18 oracle=6ac3ddf8da4861be',
+        'collision input name=overlap_capsule_mesh words=440 input=2488b42d3079cbfb',
+        'collision input name=contact_capsule_mesh words=440 input=2488b42d3079cbfb',
+        'collision coverage name=overlap_capsule_mesh meshes=6 cases=18 true=8 false=10',
+        'collision coverage name=contact_capsule_mesh meshes=6 cases=18 inside=6 resting=6 straddling=6 oracle_contacts=16'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
@@ -2807,10 +2816,10 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
-    '3' = 287  # 18 for NxPhysicsKernelFuzzTests, 269 for NxPhysicsCollisionTests (85 + 23 from
+    '3' = 293  # 18 for NxPhysicsKernelFuzzTests, 275 for NxPhysicsCollisionTests (85 + 23 from
                # convex-mesh gap Task 2a + 14 from its Task 2b + 59 + 44 from its harness hardening
                # + 7 from its Task 2g + 4 from its review + 16 from its Task 2h + 11 from its Task 2i
-               # + 6 from its Task 2j)
+               # + 6 from its Task 2j + 6 from its Task 2k)
     '4' = 219  # 34 for NxPhysicsAssetTests, 185 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 26 from qhull-gap Task 1
                # + 14 from convex-mesh gap Task 2c + 8 from its Task 2d + 19 from its Task 2e
