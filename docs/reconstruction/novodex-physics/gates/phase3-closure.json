@@ -55,9 +55,9 @@
   "counts": {
     "differential_falsified": 31,
     "oracle_differential_falsified": 30,
-    "deferred_not_reconstructed_in_phase": 256,
-    "deferred_blocked_on_later_phase": 17,
-    "deferred_reconstructed_not_falsified": 58
+    "deferred_not_reconstructed_in_phase": 249,
+    "deferred_blocked_on_later_phase": 15,
+    "deferred_reconstructed_not_falsified": 67
   },
   "closed": [
     {
@@ -2662,7 +2662,7 @@
       "id": "phys_fn_001755",
       "rva": "0x0003bb40",
       "size": 386,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": []
     },
@@ -2670,7 +2670,7 @@
       "id": "phys_fn_001757",
       "rva": "0x0003bcd0",
       "size": 464,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [
         4
@@ -2682,7 +2682,7 @@
       "id": "phys_fn_001758",
       "rva": "0x0003bea0",
       "size": 694,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": []
     },
@@ -2699,7 +2699,7 @@
       "id": "phys_fn_001762",
       "rva": "0x0003c240",
       "size": 493,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": []
     },
@@ -2707,7 +2707,7 @@
       "id": "phys_fn_001764",
       "rva": "0x0003c430",
       "size": 1258,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": []
     },
@@ -2715,7 +2715,7 @@
       "id": "phys_fn_001766",
       "rva": "0x0003c920",
       "size": 922,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": []
     },
@@ -2723,7 +2723,7 @@
       "id": "phys_fn_001768",
       "rva": "0x0003ccc0",
       "size": 1053,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": []
     },
@@ -2731,7 +2731,7 @@
       "id": "phys_fn_001770",
       "rva": "0x0003d0e0",
       "size": 1054,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": []
     },
@@ -2739,7 +2739,7 @@
       "id": "phys_fn_001772",
       "rva": "0x0003d500",
       "size": 911,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [
         4

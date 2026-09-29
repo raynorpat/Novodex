@@ -1111,3 +1111,8 @@ Notes on the split:
    (0x000f48c0) is `jmp 005702`, which is `__nh_malloc(size, 1)` (005690); both pairs are the
    same two functions of the DLL's static CRT, one heap, so 001514 can use the candidate CRT's
    `operator new` / `free` pair as MeshBuilder2 does.
+
+
+### Task 2j review: box/mesh fixture scope
+
+The 001762 contact loop reads each triangle's flags through `mesh + 0x3c`, then `triangle * 16 + 0x0c`; the mesh fixture therefore provides the 512-entry four-word records at that address. The route covers six multi-triangle fixtures and inside/resting/straddling box poses under both control words. The one-triangle model remains a fixed-input exclusion: OPCODE supplies no tree, and the query dereferences it. Task 2j leaves its rows at `reconstructed`; no mutation was aimed at their bodies.

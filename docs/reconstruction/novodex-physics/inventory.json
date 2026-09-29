@@ -17411,7 +17411,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/466",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2982",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` — the vertex array |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` \u00e2\u20ac\u201d the vertex array |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17520,7 +17520,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/469",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3018",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 3 | `phys_fn_000961` | `mov eax,6` — six faces |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 3 | `phys_fn_000961` | `mov eax,6` \u00e2\u20ac\u201d six faces |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17557,7 +17557,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/470",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3019",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 4 | `phys_fn_000963` | `index*36 + this+0x70` — face-record[k] |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 4 | `phys_fn_000963` | `index*36 + this+0x70` \u00e2\u20ac\u201d face-record[k] |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -32015,13 +32015,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/695",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5114",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit I, Task 2j); listing 0x0003bb40..0x0003bcc1; naked x86 bytes with rebased data references and calls mapped to the corresponding candidate entry or vendored OPCODE 1.3; byte-for-byte instruction comparison against the linked candidate in evidence/convex-mesh-gap-2j-listing-compare.py; no oracle module access or forwarding",
+      "dynamic_proof": "convex-mesh gap Task 2j: NxPhysicsCollisionTests differential against pinned oracle; entry row directly invoked over six mesh fixtures, inside/resting/straddling box placements and both x87 control words; overlap_box_mesh (001757) 36 checks, exact, digest caeffa7eb05312e5; contact_box_mesh (001772) 36 checks, exact, digest fffc01e364a4fa8b; input digest 74a6fc50c06a045e; see evidence/convex-mesh-gap.md Task 2j",
+      "notes": "",
+      "implementation": "Physics/src/ContactBoxMeshICE.cpp",
+      "implementation_symbol": "_nxBoxMeshTransformTriangle"
     },
     {
       "id": "phys_fn_001756",
@@ -32051,13 +32053,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/696",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5115",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit I, Task 2j); listing 0x0003bcd0..0x0003be9f; naked x86 bytes with rebased data references and calls mapped to the corresponding candidate entry or vendored OPCODE 1.3; byte-for-byte instruction comparison against the linked candidate in evidence/convex-mesh-gap-2j-listing-compare.py; no oracle module access or forwarding",
+      "dynamic_proof": "convex-mesh gap Task 2j: NxPhysicsCollisionTests differential against pinned oracle; entry row directly invoked over six mesh fixtures, inside/resting/straddling box placements and both x87 control words; overlap_box_mesh (001757) 36 checks, exact, digest caeffa7eb05312e5; contact_box_mesh (001772) 36 checks, exact, digest fffc01e364a4fa8b; input digest 74a6fc50c06a045e; see evidence/convex-mesh-gap.md Task 2j",
+      "notes": "",
+      "implementation": "Physics/src/ContactBoxMeshICE.cpp",
+      "implementation_symbol": "NxOverlapBoxMesh"
     },
     {
       "id": "phys_fn_001758",
@@ -32069,13 +32073,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/697",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5121",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit I, Task 2j); listing 0x0003bea0..0x0003c155; naked x86 bytes with rebased data references and calls mapped to the corresponding candidate entry or vendored OPCODE 1.3; byte-for-byte instruction comparison against the linked candidate in evidence/convex-mesh-gap-2j-listing-compare.py; no oracle module access or forwarding",
+      "dynamic_proof": "convex-mesh gap Task 2j: NxPhysicsCollisionTests differential against pinned oracle; entry row directly invoked over six mesh fixtures, inside/resting/straddling box placements and both x87 control words; overlap_box_mesh (001757) 36 checks, exact, digest caeffa7eb05312e5; contact_box_mesh (001772) 36 checks, exact, digest fffc01e364a4fa8b; input digest 74a6fc50c06a045e; see evidence/convex-mesh-gap.md Task 2j",
+      "notes": "",
+      "implementation": "Physics/src/ContactBoxMeshICE.cpp",
+      "implementation_symbol": "_nxBoxMeshConvex"
     },
     {
       "id": "phys_fn_001759",
@@ -32142,13 +32148,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/699",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5134",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit I, Task 2j); listing 0x0003c240..0x0003c42c; naked x86 bytes with rebased data references and calls mapped to the corresponding candidate entry or vendored OPCODE 1.3; byte-for-byte instruction comparison against the linked candidate in evidence/convex-mesh-gap-2j-listing-compare.py; no oracle module access or forwarding",
+      "dynamic_proof": "convex-mesh gap Task 2j: NxPhysicsCollisionTests differential against pinned oracle; entry row directly invoked over six mesh fixtures, inside/resting/straddling box placements and both x87 control words; overlap_box_mesh (001757) 36 checks, exact, digest caeffa7eb05312e5; contact_box_mesh (001772) 36 checks, exact, digest fffc01e364a4fa8b; input digest 74a6fc50c06a045e; see evidence/convex-mesh-gap.md Task 2j",
+      "notes": "",
+      "implementation": "Physics/src/ContactBoxMeshICE.cpp",
+      "implementation_symbol": "_NxContactBoxMeshTriangles"
     },
     {
       "id": "phys_fn_001763",
@@ -32178,13 +32186,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/699",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5139",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0003c240"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit I, Task 2j); listing 0x0003c430..0x0003c919; naked x86 bytes with rebased data references and calls mapped to the corresponding candidate entry or vendored OPCODE 1.3; byte-for-byte instruction comparison against the linked candidate in evidence/convex-mesh-gap-2j-listing-compare.py; no oracle module access or forwarding",
+      "dynamic_proof": "convex-mesh gap Task 2j: NxPhysicsCollisionTests differential against pinned oracle; entry row directly invoked over six mesh fixtures, inside/resting/straddling box placements and both x87 control words; overlap_box_mesh (001757) 36 checks, exact, digest caeffa7eb05312e5; contact_box_mesh (001772) 36 checks, exact, digest fffc01e364a4fa8b; input digest 74a6fc50c06a045e; see evidence/convex-mesh-gap.md Task 2j",
+      "notes": "",
+      "implementation": "Physics/src/ContactBoxMeshICE.cpp",
+      "implementation_symbol": "_NxContactBoxMeshTriangles"
     },
     {
       "id": "phys_fn_001765",
@@ -32214,13 +32224,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/699",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5146",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0003c240"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit I, Task 2j); listing 0x0003c920..0x0003ccb9; naked x86 bytes with rebased data references and calls mapped to the corresponding candidate entry or vendored OPCODE 1.3; byte-for-byte instruction comparison against the linked candidate in evidence/convex-mesh-gap-2j-listing-compare.py; no oracle module access or forwarding",
+      "dynamic_proof": "convex-mesh gap Task 2j: NxPhysicsCollisionTests differential against pinned oracle; entry row directly invoked over six mesh fixtures, inside/resting/straddling box placements and both x87 control words; overlap_box_mesh (001757) 36 checks, exact, digest caeffa7eb05312e5; contact_box_mesh (001772) 36 checks, exact, digest fffc01e364a4fa8b; input digest 74a6fc50c06a045e; see evidence/convex-mesh-gap.md Task 2j",
+      "notes": "",
+      "implementation": "Physics/src/ContactBoxMeshICE.cpp",
+      "implementation_symbol": "_NxContactBoxMeshTriangles"
     },
     {
       "id": "phys_fn_001767",
@@ -32250,13 +32262,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/699",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5151",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0003c240"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit I, Task 2j); listing 0x0003ccc0..0x0003d0dc; naked x86 bytes with rebased data references and calls mapped to the corresponding candidate entry or vendored OPCODE 1.3; byte-for-byte instruction comparison against the linked candidate in evidence/convex-mesh-gap-2j-listing-compare.py; no oracle module access or forwarding",
+      "dynamic_proof": "convex-mesh gap Task 2j: NxPhysicsCollisionTests differential against pinned oracle; entry row directly invoked over six mesh fixtures, inside/resting/straddling box placements and both x87 control words; overlap_box_mesh (001757) 36 checks, exact, digest caeffa7eb05312e5; contact_box_mesh (001772) 36 checks, exact, digest fffc01e364a4fa8b; input digest 74a6fc50c06a045e; see evidence/convex-mesh-gap.md Task 2j",
+      "notes": "",
+      "implementation": "Physics/src/ContactBoxMeshICE.cpp",
+      "implementation_symbol": "_NxContactBoxMeshTriangles"
     },
     {
       "id": "phys_fn_001769",
@@ -32286,13 +32300,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/700",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5161",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit I, Task 2j); listing 0x0003d0e0..0x0003d4fd; naked x86 bytes with rebased data references and calls mapped to the corresponding candidate entry or vendored OPCODE 1.3; byte-for-byte instruction comparison against the linked candidate in evidence/convex-mesh-gap-2j-listing-compare.py; no oracle module access or forwarding",
+      "dynamic_proof": "convex-mesh gap Task 2j: NxPhysicsCollisionTests differential against pinned oracle; entry row directly invoked over six mesh fixtures, inside/resting/straddling box placements and both x87 control words; overlap_box_mesh (001757) 36 checks, exact, digest caeffa7eb05312e5; contact_box_mesh (001772) 36 checks, exact, digest fffc01e364a4fa8b; input digest 74a6fc50c06a045e; see evidence/convex-mesh-gap.md Task 2j",
+      "notes": "",
+      "implementation": "Physics/src/ContactBoxMeshICE.cpp",
+      "implementation_symbol": "_nxBoxMeshTriangleTest"
     },
     {
       "id": "phys_fn_001771",
@@ -32322,13 +32338,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/867",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5169",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit I, Task 2j); listing 0x0003d500..0x0003d88e; naked x86 bytes with rebased data references and calls mapped to the corresponding candidate entry or vendored OPCODE 1.3; byte-for-byte instruction comparison against the linked candidate in evidence/convex-mesh-gap-2j-listing-compare.py; no oracle module access or forwarding",
+      "dynamic_proof": "convex-mesh gap Task 2j: NxPhysicsCollisionTests differential against pinned oracle; entry row directly invoked over six mesh fixtures, inside/resting/straddling box placements and both x87 control words; overlap_box_mesh (001757) 36 checks, exact, digest caeffa7eb05312e5; contact_box_mesh (001772) 36 checks, exact, digest fffc01e364a4fa8b; input digest 74a6fc50c06a045e; see evidence/convex-mesh-gap.md Task 2j",
+      "notes": "",
+      "implementation": "Physics/src/ContactBoxMeshICE.cpp",
+      "implementation_symbol": "NxContactBoxMesh"
     },
     {
       "id": "phys_fn_001773",

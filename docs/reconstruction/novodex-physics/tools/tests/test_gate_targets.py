@@ -53,6 +53,7 @@ COLLISION_DIRECT_BLOCKS = ("box_corner", "sphere_box_data",
                            "shape_owner", "ccd_guard",
                            "contact_sphere_sphere", "sphere_box_contact",
                            "contact_sphere_box", "box_quad_depth",
+                           "overlap_box_mesh", "contact_box_mesh",
                            "box_clip.random", "box_clip.aimed",
                            "box_axis.random", "box_axis.aimed",
                            "box_shim", "contact_box_box",
@@ -488,7 +489,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"3": 281, "4": 219, "5": 871, "6": 403, "7": 276}
+    MINIMUM = {"3": 287, "4": 219, "5": 871, "6": 403, "7": 276}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()

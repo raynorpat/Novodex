@@ -1933,3 +1933,11 @@ on d6c8919 with every family at 0 and the splits at 3 and 51 words):
 **Trace** (`evidence/convex-mesh-gap-trace-2i.txt`): one-shot cdb breakpoints on the six candidate
 functions (001846 is a body of 001844) in one full run of NxPhysicsCollisionTests (sha256 4f7d6076b838018ecf6557b1ab46f877c06342b2c6b39b50279003685650f0aa): 6 of 6
 hit, and the run closed with `collision=pass`.
+
+
+## Task 2j: ContactBoxMeshICE.cpp (2026-09-29)
+
+Reconstructed the box/triangle-mesh sub-unit I rows in `Physics/src/ContactBoxMeshICE.cpp`: 001755 (triangle transform), 001757 (`NxOverlapBoxMesh`), 001758 (convex fallback), 001762 with continuations 001764/001766/001768 (triangle contact loop), 001770 (triangle test) and 001772 (`NxContactBoxMesh`). The existing 001760 plane helper from Task 2b is reused. Every emitted row uses naked listing bytes; direct call targets and relocated read-only operands resolve to the candidate symbols and matching import slots. The listing comparator reports all seven extents (including 000929's shared address helper) equal and 26 call/data mappings accounted for, with zero unexpected mappings.
+
+`NxPhysicsCollisionTests` drives the overlap entry over six multi-triangle mesh models, inside/resting/straddling placements and both x87 control words: 36 checks, exact (`caeffa7eb05312e5`). The contact entry uses the same six mesh models and placements: 36 checks, exact (`fffc01e364a4fa8b`), with 334 oracle contacts. Each side builds its own OPCODE model; the input stream is 788 words (`74a6fc50c06a045e`). Fixed-input rule: the one-triangle fixture is excluded because the OPCODE model has no tree and the oracle's query path dereferences null. Static and dynamic proofs are recorded for each row, including continuations. Mutation probes were not run in this task, so these rows remain at `reconstructed` under the plan's state limit.
+

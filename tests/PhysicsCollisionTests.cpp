@@ -2713,12 +2713,18 @@ static unsigned nxDriveTask2h(unsigned char* base);
 // convex-mesh gap Task 2i's families (sub-unit M's second half and 002081),
 // defined after Task 2h's, whose helpers they reuse.
 static unsigned nxDriveTask2i(unsigned char* base);
+static unsigned nxDriveTask2j(unsigned char* base);
+
+// Candidate box/mesh entries implemented from the listing in ContactBoxMeshICE.cpp.
+void __cdecl NxContactBoxMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
+bool __cdecl NxOverlapBoxMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 
 int wmain(int argc, wchar_t** argv)
 	{
-	if(argc != 3)
+	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
+	if(argc != 3 && !task2jOnly)
 		{
-		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256>\n");
+		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only]\n");
 		return 2;
 		}
 
@@ -2762,6 +2768,13 @@ int wmain(int argc, wchar_t** argv)
 	// shipped one. That is a shared callee on both sides of one entry, and the
 	// transcript has to say so rather than leave it to be assumed.
 	nxReportOwningModule("NxComputeSquareDistance", *(void**) (base + kSquareDistanceIatRva));
+	if(task2jOnly)
+		{
+		const unsigned mismatches = nxDriveTask2j(base);
+		printf("collision matrix_wrong=0 index_wrong=0 mismatches=%u\n", mismatches);
+		printf("collision=%s\n", mismatches ? "fail" : "pass");
+		return mismatches ? 1 : 0;
+		}
 
 	// -----------------------------------------------------------------------
 	// The dispatch matrix, checked against the oracle's own constructor.
@@ -7950,6 +7963,9 @@ int wmain(int argc, wchar_t** argv)
 	// height-field and convex / triangle-mesh entries, and 002081); see nxDriveTask2i.
 	totalMismatch += nxDriveTask2i(base);
 
+	// convex-mesh gap Task 2j's box/mesh entries; see nxDriveTask2j.
+	totalMismatch += nxDriveTask2j(base);
+
 	// What is not covered, named rather than left as an absence.
 	for(unsigned index = 0; index < 36; ++index)
 		{
@@ -11024,6 +11040,9 @@ struct Nx2iMeshSide
 	void*			iface;
 	void*			model;
 	unsigned char	failModel[0x80];
+	// 001762 reads a three-bit per-triangle field at mesh +0x3c, with one
+	// 16-byte record per triangle (the low three bits of dword 3).
+	unsigned		triangleFlags[512][4];
 	unsigned short	materials[512];
 	unsigned		remap[512];
 	unsigned		parts[3][512];
@@ -11150,6 +11169,8 @@ static void nx2iInitSide(Nx2gSide& owner, Nx2iSide& s, const Nx2iMeshWords* word
 		ms.image[0x20 / 4] = 0;
 		ms.image[0x24 / 4] = (unsigned) (size_t) mesh.planes;
 		ms.image[0x28 / 4] = (unsigned) (size_t) ms.model;
+		memset(ms.triangleFlags, 0, sizeof(ms.triangleFlags));
+		ms.image[0x3c / 4] = (unsigned) (size_t) ms.triangleFlags;
 		ms.image[0x78 / 4] = 2;
 		ms.image[0x7c / 4] = 2;
 		ms.image[0x80 / 4] = 0x40400000u;
@@ -12083,6 +12104,194 @@ static __declspec(noinline) unsigned nxDriveTask2i(unsigned char* base)
 			nx2gReleaseHull(polySides[side], hs);
 			}
 		}
+	nx2iFoundationEnd();
+	return total;
+	}
+
+// RED-stage Task 2j differential: matrix A [BOX][MESH] and matrix B [BOX][MESH]
+// against the oracle, with each image's own OPCODE model, OBBCollider, contact
+// graph and mesh arrays. The boxes enclose every fixture's local bounds, which
+// guarantees overlap while exercising all ten mesh shapes from Task 2i.
+static unsigned nxDriveTask2j(unsigned char* base)
+	{
+	unsigned total = 0;
+	static const unsigned kBoxMeshFixtureIndexes[6] = { 0, 1, 2, 3, 4, 6 };
+	static Nx2gSide owners[2];
+	static Nx2iSide sides[2];
+	static Nx2iMeshWords words[kNb2iMeshes];
+	static NxContactWorld worlds[2];
+	static unsigned char shapeStorage[2][2][kShapeBytes];
+	NxCollisionShape* shapes[2][2];
+	NxDigest fixture, oracleContact, candidateContact, oracleOverlap, candidateOverlap;
+	nxDigestInit(&fixture);
+	nxDigestInit(&oracleContact);
+	nxDigestInit(&candidateContact);
+	nxDigestInit(&oracleOverlap);
+	nxDigestInit(&candidateOverlap);
+	unsigned state = 0x2e8b020au;
+	if(!nx2iFoundationBegin())
+		{
+		fprintf(stderr, "FAIL task 2j: could not install the recording Foundation SDK\n");
+		return 1;
+		}
+	for(unsigned pick = 0; pick < 6; ++pick)
+		{
+		const unsigned m = kBoxMeshFixtureIndexes[pick];
+		const Nx2hMesh& mesh = nx2iMesh(m);
+		nxFoldInput(&fixture, mesh.verts, 12 * mesh.nbVerts);
+		nxFoldInput(&fixture, mesh.tris, 12 * mesh.nbTris);
+		nx2iDrawMeshWords(&state, &fixture, m, words[m]);
+		}
+	unsigned buildFailures = 0;
+	for(int side = 0; side < 2; ++side)
+		{
+		owners[side].oracle = side == 0;
+		owners[side].base = base;
+		nx2iInitSide(owners[side], sides[side], words, &buildFailures);
+		}
+	if(buildFailures)
+		{
+		fprintf(stderr, "FAIL task 2j: fixture build failures=%u\n", buildFailures);
+		total += buildFailures;
+		}
+	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
+	const NxOracleContactFn oracleA = (NxOracleContactFn) (base + 0x0003d500);
+	const NxOracleOverlapFn oracleB = (NxOracleOverlapFn) (base + 0x0003bcd0);
+	unsigned contacts = 0, overlapPairs = 0, overlapTrue = 0, overlapMismatches = 0, contactMismatches = 0;
+	unsigned reportMismatches = 0;
+	unsigned scenarioCases[3] = { 0, 0, 0 };
+	for(unsigned pick = 0; pick < 6; ++pick)
+		{
+		const unsigned m = kBoxMeshFixtureIndexes[pick];
+		const Nx2hMesh& mesh = nx2iMesh(m);
+		float lo[3] = { FLT_MAX, FLT_MAX, FLT_MAX };
+		float hi[3] = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+		for(unsigned v = 0; v < mesh.nbVerts; ++v)
+			for(unsigned a = 0; a < 3; ++a)
+				{
+				const float value = ((const float*) mesh.verts)[3 * v + a];
+				if(value < lo[a]) lo[a] = value;
+				if(value > hi[a]) hi[a] = value;
+				}
+		for(unsigned scenario = 0; scenario < 3; ++scenario)
+			{
+			++scenarioCases[scenario];
+			nxFoldInput(&fixture, &scenario, sizeof(scenario));
+		for(int side = 0; side < 2; ++side)
+			{
+			shapes[side][0] = (NxCollisionShape*) shapeStorage[side][0];
+			shapes[side][1] = (NxCollisionShape*) shapeStorage[side][1];
+			NxCollisionShape& box = *shapes[side][0];
+			NxCollisionShape& meshShape = *shapes[side][1];
+			nxIdentity(&box);
+			nxIdentity(&meshShape);
+			box.type = 1; // NX_SHAPE_BOX
+			meshShape.type = 4; // NX_SHAPE_MESH
+			for(unsigned a = 0; a < 3; ++a)
+				{
+				const float span = hi[a] - lo[a];
+				const float mid = (lo[a] + hi[a]) * 0.5f;
+				const float smallHalf = span > 0.0f ? fminf(0.5f, span * 0.2f) : 0.1f;
+				if(scenario == 0) // small box inside the mesh bounds
+					{
+					box.translation[a] = mid;
+					box.geometry[a + 1] = smallHalf > 0.0f ? smallHalf : 0.1f;
+					}
+				else if(scenario == 1) // resting against the mesh's positive-y bound
+					{
+					box.translation[a] = a == 1 ? hi[a] + 0.25f : mid;
+					box.geometry[a + 1] = a == 1 ? 0.25f : (smallHalf > 0.0f ? smallHalf : 0.1f);
+					}
+				else // straddling the center of the fixture
+					{
+					box.translation[a] = mid;
+					box.geometry[a + 1] = smallHalf > 0.0f ? smallHalf : 0.1f;
+					}
+				}
+			Nx2iMeshSide& ms = sides[side].meshes[m];
+			*(unsigned char**) (&meshShape.geometry[0]) = (unsigned char*) ms.image;
+			ms.image[0x18 / 4] = (unsigned) (size_t) ms.materials;
+			ms.image[0x1c / 4] = (unsigned) (size_t) ms.remap;
+			ms.image[0x28 / 4] = (unsigned) (size_t) ms.model;
+			ms.image[0x20 / 4] = 0;
+			ms.image[0x88 / 4] = 0;
+			*(unsigned*) (sides[side].context + 0x114) = 0;
+			sides[side].touched[1] = 0;
+			memset(sides[side].visited, 0, sizeof(sides[side].visited));
+			nxResetWorld(&worlds[side]);
+			nxStageWorld(&worlds[side], &box, &meshShape, true, true, 3 + m, 9 + m, false, false, false);
+			}
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			for(int side = 0; side < 2; ++side)
+				{
+				Nx2iMeshSide& ms = sides[side].meshes[m];
+				memcpy(ms.remap, words[m].remap, 4 * mesh.nbTris);
+				*(unsigned*) (sides[side].context + 0x114) = 0;
+				sides[side].touched[1] = 0;
+				memset(sides[side].visited, 0, sizeof(sides[side].visited));
+				nxResetWorld(&worlds[side]);
+				nxStageWorld(&worlds[side], shapes[side][0], shapes[side][1], true, true,
+					3 + m, 9 + m, false, false, false);
+				if(side == 0)
+					{
+					nxFoldInput(&fixture, shapes[side][0]->translation, sizeof(shapes[side][0]->translation));
+					nxFoldInput(&fixture, shapes[side][0]->geometry, sizeof(shapes[side][0]->geometry));
+					}
+				}
+			unsigned reports[2][16];
+			unsigned nReports[2] = { 0, 0 };
+			nx2iTakeReports(reports[0], 4);
+			nxFoldInput(&fixture, &mode, sizeof(mode));
+			++overlapPairs;
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			const unsigned oracleOverlapResult = oracleB(shapes[0][0], shapes[0][1], sides[0].context) ? 1 : 0;
+			overlapTrue += oracleOverlapResult;
+			nxSetControl(kControlDefault);
+			nReports[0] = nx2iTakeReports(reports[0], 4);
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			const unsigned candidateOverlapResult = NxOverlapBoxMesh(shapes[1][0], shapes[1][1], sides[1].context) ? 1 : 0;
+			nxSetControl(kControlDefault);
+			nReports[1] = nx2iTakeReports(reports[1], 4);
+			nxDigestByte(&oracleOverlap, (unsigned char) oracleOverlapResult);
+			nxDigestByte(&candidateOverlap, (unsigned char) candidateOverlapResult);
+			overlapMismatches += oracleOverlapResult != candidateOverlapResult;
+			reportMismatches += nReports[0] != nReports[1];
+			for(unsigned r = 0; r < 4 * (nReports[0] < nReports[1] ? nReports[0] : nReports[1]); ++r)
+				reportMismatches += reports[0][r] != reports[1][r];
+			nx2iTakeReports(reports[0], 4);
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			oracleA(worlds[0].plane, worlds[0].sphere, &worlds[0].sink, sides[0].context);
+			nxSetControl(kControlDefault);
+			nReports[0] = nx2iTakeReports(reports[0], 4);
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			NxContactBoxMesh(worlds[1].plane, worlds[1].sphere, &worlds[1].sink, sides[1].context);
+			nxSetControl(kControlDefault);
+			nReports[1] = nx2iTakeReports(reports[1], 4);
+			const unsigned differing = nxCompareStreams(&worlds[0], &worlds[1], mode);
+			contactMismatches += differing;
+			contacts += worlds[0].sink.contactCount;
+			reportMismatches += nReports[0] != nReports[1];
+			for(unsigned r = 0; r < 4 * (nReports[0] < nReports[1] ? nReports[0] : nReports[1]); ++r)
+				reportMismatches += reports[0][r] != reports[1][r];
+			nxFoldStream(&oracleContact, &worlds[0]);
+			nxFoldStream(&candidateContact, &worlds[1]);
+			}
+			}
+		}
+	printf("collision name=overlap_box_mesh index=- rva=0x0003bcd0 owner=phys_fn_001757 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		overlapPairs, oracleOverlap.state, candidateOverlap.state, overlapMismatches);
+	printf("collision name=contact_box_mesh index=- rva=0x0003d500 owner=phys_fn_001772 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		overlapPairs, oracleContact.state, candidateContact.state, contactMismatches);
+	nxPrintInput("overlap_box_mesh", &fixture);
+	nxPrintInput("contact_box_mesh", &fixture);
+	printf("collision coverage name=overlap_box_mesh meshes=%u cases=%u true=%u false=%u\n",
+		6, overlapPairs, overlapTrue, overlapPairs - overlapTrue);
+	printf("collision coverage name=contact_box_mesh meshes=%u cases=%u inside=%u resting=%u straddling=%u oracle_contacts=%u\n",
+		6, overlapPairs / 2, scenarioCases[0], scenarioCases[1], scenarioCases[2], contacts);
+	total += overlapMismatches + contactMismatches + reportMismatches + buildFailures;
+	for(int side = 0; side < 2; ++side)
+		nx2iReleaseSide(owners[side], sides[side]);
 	nx2iFoundationEnd();
 	return total;
 	}

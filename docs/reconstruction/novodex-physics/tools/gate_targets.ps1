@@ -2138,7 +2138,17 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision coverage name=contact_convex_mesh hulls=22 meshes=10 cases=5000 cases_with_contacts=417 contacts=3014 headers=481 touched=6258 axes=19164 failed=76 polytope_cases=2520 rotated=3124 layouts=1686/1612/1702 large_mesh=968 ccd_pairs=632 simulate_runs_with_contacts=404 max_stream=632',
         'collision name=mesh_vertex_normals index=- rva=0x00052240 owner=phys_fn_002081 checks=45408 oracle=4ac98b29b7f5d50f',
         'collision input name=mesh_vertex_normals words=14574 input=5cb05b03a5962493',
-        'collision coverage name=mesh_vertex_normals meshes=10 variants=4 runs=80 normals=1852 raw_words=90 input_snan=6'
+        'collision coverage name=mesh_vertex_normals meshes=10 variants=4 runs=80 normals=1852 raw_words=90 input_snan=6',
+        # convex-mesh gap Task 2j: 001757 and 001772 on each side's own mesh models,
+        # OBBCollider/OBBCache and Foundation SDK; inside/resting/straddling boxes,
+        # both control words. Listing equality and call mappings are checked by
+        # evidence/convex-mesh-gap-2j-listing-compare.py.
+        'collision name=overlap_box_mesh index=- rva=0x0003bcd0 owner=phys_fn_001757 checks=36 oracle=caeffa7eb05312e5',
+        'collision name=contact_box_mesh index=- rva=0x0003d500 owner=phys_fn_001772 checks=36 oracle=fffc01e364a4fa8b',
+        'collision input name=overlap_box_mesh words=788 input=74a6fc50c06a045e',
+        'collision input name=contact_box_mesh words=788 input=74a6fc50c06a045e',
+        'collision coverage name=overlap_box_mesh meshes=6 cases=36 true=16 false=20',
+        'collision coverage name=contact_box_mesh meshes=6 cases=18 inside=6 resting=6 straddling=6 oracle_contacts=334'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
@@ -2797,9 +2807,10 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
-    '3' = 281  # 18 for NxPhysicsKernelFuzzTests, 263 for NxPhysicsCollisionTests (85 + 23 from
+    '3' = 287  # 18 for NxPhysicsKernelFuzzTests, 269 for NxPhysicsCollisionTests (85 + 23 from
                # convex-mesh gap Task 2a + 14 from its Task 2b + 59 + 44 from its harness hardening
-               # + 7 from its Task 2g + 4 from its review + 16 from its Task 2h + 11 from its Task 2i)
+               # + 7 from its Task 2g + 4 from its review + 16 from its Task 2h + 11 from its Task 2i
+               # + 6 from its Task 2j)
     '4' = 219  # 34 for NxPhysicsAssetTests, 185 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 26 from qhull-gap Task 1
                # + 14 from convex-mesh gap Task 2c + 8 from its Task 2d + 19 from its Task 2e
@@ -2864,3 +2875,4 @@ $NxRegisteredOracleDifferentialTargets = @(
     'NxPhysicsThirdPartyTests'
 )
 $NxSkippedExitCode = 3
+
