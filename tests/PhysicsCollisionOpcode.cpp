@@ -53,6 +53,16 @@ void nx2iCandidateObbColliderDestruct(void* at)
 	((OBBCollider*) at)->~OBBCollider();
 	}
 
+void nx2lCandidateAabbTreeColliderConstruct(void* at)
+	{
+	new(at) AABBTreeCollider;
+	}
+
+void nx2lCandidateAabbTreeColliderDestruct(void* at)
+	{
+	((AABBTreeCollider*) at)->~AABBTreeCollider();
+	}
+
 // The collider's flags (+0x04) and touched-primitive Container pointer (+0x10),
 // as the rows read them: checked against the vendored class once.
 unsigned nx2iObbColliderLayoutOk()

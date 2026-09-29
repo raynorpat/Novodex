@@ -56,8 +56,8 @@
     "differential_falsified": 31,
     "oracle_differential_falsified": 30,
     "deferred_not_reconstructed_in_phase": 247,
-    "deferred_blocked_on_later_phase": 11,
-    "deferred_reconstructed_not_falsified": 73
+    "deferred_blocked_on_later_phase": 10,
+    "deferred_reconstructed_not_falsified": 74
   },
   "closed": [
     {
@@ -3192,13 +3192,12 @@
       "id": "phys_fn_001870",
       "rva": "0x00046550",
       "size": 394,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [
-        4
+        3
       ],
-      "blocked_on_type": "TriangleMesh",
-      "note": "matrix B [MESH][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+      "note": "Task 2l: listing-exact 001870 drove three independently built mesh pairs under both control words; oracle and candidate match in all six calls. No mutation probe was run, so the row remains reconstructed_not_falsified."
     },
     {
       "id": "phys_fn_001872",

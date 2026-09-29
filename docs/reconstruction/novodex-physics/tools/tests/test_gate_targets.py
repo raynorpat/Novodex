@@ -74,7 +74,8 @@ COLLISION_DIRECT_BLOCKS = ("box_corner", "sphere_box_data",
                            # convex-mesh gap Task 2i
                            "contact_convex_heightfield", "contact_convex_mesh", "mesh_vertex_normals",
                            # convex-mesh gap Task 2l
-                           "mesh_contact_accumulator", "mesh_adjacent_normal")
+                           "mesh_contact_accumulator", "mesh_adjacent_normal",
+                           "overlap_mesh_mesh")
 
 # Fixed-input splits of a direct block, divergent under an enforced ceiling:
 # registered up to their oracle digest, with no input or coverage line of their
@@ -492,7 +493,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"3": 299, "4": 219, "5": 871, "6": 403, "7": 276}
+    MINIMUM = {"3": 302, "4": 219, "5": 871, "6": 403, "7": 276}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()

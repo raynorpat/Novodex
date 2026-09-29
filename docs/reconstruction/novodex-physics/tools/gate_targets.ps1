@@ -2167,7 +2167,12 @@ $NxRequiredCoverageLines = [ordered] @{
         # triangle edges with independently built adjacency words.
         'collision name=mesh_adjacent_normal index=- rva=0x00044860 checks=372 oracle=369538c8a82202ee',
         'collision coverage name=mesh_adjacent_normal meshes=10 cases=372 adjacent=266 boundary=106 control_words=2',
-        'collision input name=mesh_adjacent_normal words=2976 input=4d27271fa9633845'
+        'collision input name=mesh_adjacent_normal words=2976 input=4d27271fa9633845',
+        # convex-mesh gap Task 2l: AABBTreeCollider mesh/mesh overlap over
+        # independently built model pairs under both x87 control words.
+        'collision name=overlap_mesh_mesh index=- rva=0x00046550 checks=48 oracle=d5db216e1ca74a85',
+        'collision coverage name=overlap_mesh_mesh pairs=3 cases=6 control_words=2',
+        'collision input name=overlap_mesh_mesh words=6870 input=58411e741c134200'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
@@ -2826,7 +2831,7 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
-    '3' = 299  # 18 for NxPhysicsKernelFuzzTests, 281 for NxPhysicsCollisionTests (85 + 23 from
+    '3' = 302  # 18 for NxPhysicsKernelFuzzTests, 284 for NxPhysicsCollisionTests (85 + 23 from
                # convex-mesh gap Task 2a + 14 from its Task 2b + 59 + 44 from its harness hardening
                # + 7 from its Task 2g + 4 from its review + 16 from its Task 2h + 11 from its Task 2i
                # + 6 from its Task 2j + 6 from its Task 2k + 3 from its Task 2l accumulator

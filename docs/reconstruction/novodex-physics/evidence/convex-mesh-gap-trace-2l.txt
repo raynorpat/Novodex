@@ -1,5 +1,5 @@
-Task 2l cdb trace: 001857 and 001872
-===========================================
+Task 2l cdb trace: 001857, 001870 and 001872
+=============================================
 
 Pinned oracle SHA-256: 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
 Debugger: Windows Kits x86 cdb, one-shot breakpoints, full NxPhysicsCollisionTests run.
@@ -9,12 +9,19 @@ Commands:
 0:000> bp /1 NxPhysicsCollisionTests+0x479d0 ".echo HIT_CANDIDATE_001872; gc"
 0:000> bp /1 NxPhysics+0x44860 ".echo HIT_ORACLE_001857; gc"
 0:000> bp /1 NxPhysics+0x466e0 ".echo HIT_ORACLE_001872; gc"
+0:000> bu NxPhysicsCollisionTests+0x484f0 ".echo HIT_CANDIDATE_001870; kb; bc 0; gc"
 
 First-hit records:
 HIT_ORACLE_001857
 HIT_CANDIDATE_001857
 HIT_ORACLE_001872 (interleaved with the preceding stdout line)
 HIT_CANDIDATE_001872
+HIT_CANDIDATE_001870
+
+The 001870 breakpoint resolves from the built map at candidate RVA 0x000484f0
+and hit inside nxDriveTask2lMeshOverlap. The collision harness completed with
+collision=pass. Its listing comparison spans all 394 bytes and maps the direct
+call to the candidate 004986 AABBTreeCollider::Collide symbol.
 
 Differential transcript:
 oracle module path=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
@@ -22,4 +29,7 @@ collision name=mesh_adjacent_normal index=- rva=0x00044860 checks=372 oracle=369
 collision coverage name=mesh_adjacent_normal meshes=10 cases=372 adjacent=266 boundary=106 control_words=2
 collision input name=mesh_adjacent_normal words=2976 input=4d27271fa9633845
 collision name=mesh_contact_accumulator index=- rva=0x000466e0 checks=40 oracle=6299a0c8f1109f5a candidate=6299a0c8f1109f5a mismatches=0 contacts=32
+collision name=overlap_mesh_mesh index=- rva=0x00046550 checks=48 oracle=d5db216e1ca74a85 candidate=d5db216e1ca74a85 mismatches=0
+collision input name=overlap_mesh_mesh words=6870 input=58411e741c134200
+collision coverage name=overlap_mesh_mesh pairs=3 cases=6 control_words=2
 collision=pass

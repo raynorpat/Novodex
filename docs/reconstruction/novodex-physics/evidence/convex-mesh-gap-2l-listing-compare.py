@@ -15,8 +15,10 @@ for line in open(map_path, encoding="latin-1"):
         symbols[match.group(1)] = int(match.group(2), 16)
 
 rows = [
-    ("phys_fn_001857", "_nxMeshTriangleEdgeNormal", 0x44860, 774),
-    ("phys_fn_001872", "_nxMeshContactAccumulate@20", 0x466e0, 146),
+    ("phys_fn_001857", "_nxMeshTriangleEdgeNormal", 0x44860, 774, None),
+    ("phys_fn_001872", "_nxMeshContactAccumulate@20", 0x466e0, 146, None),
+    ("phys_fn_001870", "_nxOverlapMeshMesh", 0x46550, 394,
+        (0x100d13c0, "_nxMeshMeshCallAabbTreeCollide", "AABBTreeCollider::Collide")),
 ]
 decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
 
@@ -26,13 +28,16 @@ def instructions(image, address, size):
     return list(decoder.disasm(raw, address))
 
 
-def normalized(items):
+def normalized(items, call_targets=None):
     addresses = {item.address: index for index, item in enumerate(items)}
+    call_targets = call_targets or {}
     output = []
     for item in items:
         operands = item.op_str
         if item.mnemonic.startswith("j") and operands.startswith("0x"):
             operands = "@%s" % addresses.get(int(operands, 16), -1)
+        elif item.mnemonic == "call" and operands.startswith("0x"):
+            operands = call_targets.get(int(operands, 16), "external-call")
         else:
             operands = re.sub(r"\[0x[0-9a-f]+\]", "[absolute]", operands)
             operands = re.sub(r"\[([^]]*)\+ 0x[0-9a-f]+\]", r"[\1+ absolute]", operands)
@@ -41,15 +46,23 @@ def normalized(items):
 
 
 all_equal = True
-for stable_id, symbol, row_rva, row_size in rows:
+for stable_id, symbol, row_rva, row_size, external_call in rows:
     if symbol not in symbols:
         raise SystemExit("candidate symbol is missing: " + symbol)
     oracle_items = instructions(oracle, 0x10000000 + row_rva, row_size)
     candidate_items = instructions(candidate, symbols[symbol], row_size)
     if sum(item.size for item in oracle_items) != row_size or sum(item.size for item in candidate_items) != row_size:
         raise SystemExit(stable_id + " does not decode to its full row extent")
-    left = normalized(oracle_items)
-    right = normalized(candidate_items)
+    oracle_calls = {}
+    candidate_calls = {}
+    if external_call:
+        oracle_target, candidate_symbol, label = external_call
+        if candidate_symbol not in symbols:
+            raise SystemExit("candidate call target is missing: " + candidate_symbol)
+        oracle_calls[oracle_target] = label
+        candidate_calls[symbols[candidate_symbol]] = label
+    left = normalized(oracle_items, oracle_calls)
+    right = normalized(candidate_items, candidate_calls)
     diffs = [(index, a, b) for index, (a, b) in enumerate(zip(left, right)) if a != b]
     print("%s instructions=%d differences=%d" % (stable_id, len(left), len(diffs)))
     for index, expected, actual in diffs:

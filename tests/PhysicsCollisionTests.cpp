@@ -2723,6 +2723,7 @@ static unsigned nxDriveTask2lEdgeNormal(unsigned char* base, Nx2iSide* sides);
 void __cdecl NxContactBoxMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
 bool __cdecl NxOverlapBoxMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 void __cdecl NxContactCapsuleMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
+extern "C" bool __cdecl nxOverlapMeshMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 bool __cdecl NxOverlapCapsuleMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 
 int wmain(int argc, wchar_t** argv)
@@ -10900,6 +10901,8 @@ void nx2iCandidateLssColliderConstruct(void* at);
 void nx2iCandidateLssColliderDestruct(void* at);
 void nx2iCandidateObbColliderDestruct(void* at);
 unsigned nx2iObbColliderLayoutOk();
+void nx2lCandidateAabbTreeColliderConstruct(void* at);
+void nx2lCandidateAabbTreeColliderDestruct(void* at);
 unsigned nx2iModelSize();
 void* nx2iMeshInterfaceNew(unsigned nbTris, unsigned nbVerts, const unsigned* tris, const unsigned* verts);
 void nx2iMeshInterfaceDelete(void* iface);
@@ -11378,6 +11381,74 @@ static unsigned nxDriveTask2lEdgeNormal(unsigned char* base, Nx2iSide* sides)
 	printf("collision coverage name=mesh_adjacent_normal meshes=%u cases=%u adjacent=%u boundary=%u control_words=2\n",
 		kNb2iMeshes, cases, adjacent, boundary);
 	nxPrintInput("mesh_adjacent_normal", &inputDigest);
+	return mismatches;
+	}
+
+// Task 2l's mesh/mesh matrix-B entry (001870), compared directly because the
+// out-of-range 001876 dispatcher is not part of this plan.
+static unsigned nxDriveTask2lMeshOverlap(unsigned char* base, Nx2iSide* sides)
+	{
+	typedef bool (__cdecl * OracleFn)(const NxCollisionShape*, const NxCollisionShape*, void*);
+	const OracleFn oracle = (OracleFn) (base + 0x46550);
+	static unsigned char shapeStore[2][2][kShapeBytes];
+	static const unsigned pairs[][2] = { { 0, 1 }, { 2, 3 }, { 8, 9 } };
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	for(unsigned side = 0; side < 2; ++side)
+		nx2lCandidateAabbTreeColliderConstruct(sides[side].context + 0x32c);
+	unsigned cases = 0, mismatches = 0;
+	for(unsigned p = 0; p < sizeof(pairs) / sizeof(pairs[0]); ++p)
+		for(unsigned mode = 0; mode < 2; ++mode)
+			{
+		bool result[2] = { false, false };
+		unsigned flags[2] = { 0, 0 };
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			for(unsigned slot = 0; slot < 2; ++slot)
+				{
+				NxCollisionShape* shape = (NxCollisionShape*) shapeStore[side][slot];
+				nxIdentity(shape);
+				shape->type = 4;
+				Nx2iMeshSide& mesh = sides[side].meshes[pairs[p][slot]];
+				*(unsigned**) (shapeStore[side][slot] + 0xe0) = mesh.image;
+				}
+			memset(sides[side].context + 0x330, 0, 4);
+			memset(sides[side].context + 0x440, 0, 0x30);
+			const unsigned control = mode ? kControlSimulate : kControlDefault;
+			nxSetControl(control);
+			result[side] = side == 0
+				? oracle((const NxCollisionShape*) shapeStore[side][0],
+					(const NxCollisionShape*) shapeStore[side][1], sides[side].context)
+				: nxOverlapMeshMesh((const NxCollisionShape*) shapeStore[side][0],
+					(const NxCollisionShape*) shapeStore[side][1], sides[side].context);
+			nxSetControl(kControlDefault);
+			flags[side] = *(unsigned*) (sides[side].context + 0x330);
+			}
+		const unsigned in[3] = { pairs[p][0], pairs[p][1], mode };
+		nxFoldInput(&inputDigest, in, sizeof(in));
+		const Nx2hMesh& mesh0 = nx2iMesh(pairs[p][0]);
+		const Nx2hMesh& mesh1 = nx2iMesh(pairs[p][1]);
+		nxFoldInput(&inputDigest, mesh0.verts, 12 * mesh0.nbVerts);
+		nxFoldInput(&inputDigest, mesh0.tris, 12 * mesh0.nbTris);
+		nxFoldInput(&inputDigest, mesh1.verts, 12 * mesh1.nbVerts);
+		nxFoldInput(&inputDigest, mesh1.tris, 12 * mesh1.nbTris);
+		nxFoldInputShape(&inputDigest, (const NxCollisionShape*) shapeStore[0][0]);
+		nxFoldInputShape(&inputDigest, (const NxCollisionShape*) shapeStore[0][1]);
+		const unsigned out[2][2] = { { result[0], flags[0] }, { result[1], flags[1] } };
+		nxFoldInput(&oracleDigest, out[0], sizeof(out[0]));
+		nxFoldInput(&candidateDigest, out[1], sizeof(out[1]));
+		mismatches += result[0] != result[1] || flags[0] != flags[1];
+		++cases;
+		}
+	printf("collision name=overlap_mesh_mesh index=- rva=0x00046550 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	nxPrintInput("overlap_mesh_mesh", &inputDigest);
+	printf("collision coverage name=overlap_mesh_mesh pairs=%u cases=%u control_words=2\n",
+		(unsigned) (sizeof(pairs) / sizeof(pairs[0])), cases);
+	for(unsigned side = 0; side < 2; ++side)
+		nx2lCandidateAabbTreeColliderDestruct(sides[side].context + 0x32c);
 	return mismatches;
 	}
 
@@ -12187,6 +12258,9 @@ static __declspec(noinline) unsigned nxDriveTask2i(unsigned char* base)
 
 	// The Task 2l triangle-edge normal helper shares these lazy EdgeLists.
 	total += nxDriveTask2lEdgeNormal(base, sides);
+	// The Task 2l mesh/mesh overlap row consumes each side's independently built
+	// OPCODE models and its own scene OBB collider state.
+	total += nxDriveTask2lMeshOverlap(base, sides);
 	unsigned edgeListsBuilt = 0;
 	buildMismatches += nx2iCompareEdgeLists(sides[0], sides[1], &edgeListsBuilt);
 	// The hulls' vertex normals 001461 built inside 001844, word for word.

@@ -34147,13 +34147,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/913",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5605",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "naked x86 inline assembly transcribed from the pinned listing; evidence/convex-mesh-gap-2l-listing-compare.py compares all 99 instructions across the complete 394-byte extent, including the direct 004986 AABBTreeCollider::Collide call",
+      "dynamic_proof": "Task 2l direct mesh/mesh overlap differential: three independently built mesh pairs under both x87 control words (six calls); oracle and candidate digest d5db216e1ca74a85, zero mismatches; input 6,870 words, digest 58411e741c134200; cdb hit candidate 001870 during a full collision run; pinned NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; see evidence/convex-mesh-gap-2l-run.txt and evidence/convex-mesh-gap-trace-2l.txt",
+      "notes": "",
+      "implementation": "Physics/src/ContactMeshMesh.cpp",
+      "implementation_symbol": "nxOverlapMeshMesh"
     },
     {
       "id": "phys_fn_001871",
