@@ -55,9 +55,9 @@
   "counts": {
     "differential_falsified": 31,
     "oracle_differential_falsified": 30,
-    "deferred_not_reconstructed_in_phase": 249,
+    "deferred_not_reconstructed_in_phase": 248,
     "deferred_blocked_on_later_phase": 11,
-    "deferred_reconstructed_not_falsified": 71
+    "deferred_reconstructed_not_falsified": 72
   },
   "closed": [
     {
@@ -3203,9 +3203,10 @@
       "id": "phys_fn_001872",
       "rva": "0x000466e0",
       "size": 146,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [3],
+      "note": "Task 2l partial: listing comparison and direct oracle/candidate differential; see evidence/convex-mesh-gap-2l-001872-listing-compare.py and evidence/convex-mesh-gap-2l-001872-run.txt. No mutation probe run; remains reconstructed_not_falsified."
     },
     {
       "id": "phys_fn_001874",

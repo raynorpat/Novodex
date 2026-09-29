@@ -20,6 +20,65 @@
 
 #include <math.h>
 
+// ContactAccumulator storage owned by the reconstructed 001872. The oracle
+// uses the same packed layout at 0x10123d8c; keeping this block contiguous
+// makes the callback independently differential-testable.
+extern "C" {
+unsigned nxMeshContactCount = 0;
+float nxMeshContactSums[3] = {};
+float nxMeshContactNormalAndMaterial[50] = {};
+float nxMeshContactVertices[96] = {};
+float nxMeshContactNormals[96] = {};
+}
+
+// phys_fn_001872 (0x000466e0, 146 B)
+// Accumulate the normal unconditionally, then append one contact while the
+// global contact count is below the oracle's fixed limit of 32.
+extern "C" __declspec(naked) void __stdcall nxMeshContactAccumulate(
+	unsigned, unsigned, unsigned, const unsigned*, const float*)
+	{
+	__asm {
+		mov edx, dword ptr [esp + 14h]
+		fld nxMeshContactSums
+		fadd dword ptr [edx]
+		mov ecx, nxMeshContactCount
+		cmp ecx, 20h
+		fstp nxMeshContactSums
+		fld dword ptr nxMeshContactSums[4]
+		fadd dword ptr [edx + 4]
+		fstp dword ptr nxMeshContactSums[4]
+		fld dword ptr nxMeshContactSums[8]
+		fadd dword ptr [edx + 8]
+		fstp dword ptr nxMeshContactSums[8]
+		jae done
+		fld dword ptr [esp + 0ch]
+		push esi
+		mov esi, dword ptr [esp + 14h]
+		push edi
+		mov edi, dword ptr [esi]
+		lea eax, [ecx + ecx*2]
+		shl eax, 2
+		mov dword ptr nxMeshContactVertices[eax], edi
+		mov edi, dword ptr [esi + 4]
+		mov dword ptr nxMeshContactVertices[eax + 4], edi
+		mov esi, dword ptr [esi + 8]
+		mov dword ptr nxMeshContactVertices[eax + 8], esi
+		mov esi, dword ptr [edx]
+		mov dword ptr nxMeshContactNormals[eax], esi
+		mov esi, dword ptr [edx + 4]
+		mov dword ptr nxMeshContactNormals[eax + 4], esi
+		mov edx, dword ptr [edx + 8]
+		fstp dword ptr nxMeshContactNormalAndMaterial[ecx*4]
+		inc ecx
+		pop edi
+		mov dword ptr nxMeshContactNormals[eax + 8], edx
+		mov nxMeshContactCount, ecx
+		pop esi
+	done:
+		ret 14h
+	}
+}
+
 // phys_fn_001855 (0x00044510, 837 B)
 // The segment s0..s1 against the plane through the triangle edge e0..e1 that
 // contains `axis` (the triangle's normal at the callers): the plane normal is

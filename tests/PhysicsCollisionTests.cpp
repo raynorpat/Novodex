@@ -2715,6 +2715,7 @@ static unsigned nxDriveTask2h(unsigned char* base);
 static unsigned nxDriveTask2i(unsigned char* base);
 static unsigned nxDriveTask2j(unsigned char* base);
 static unsigned nxDriveTask2k(unsigned char* base);
+static unsigned nxDriveTask2lAccumulator(unsigned char* base);
 
 // Candidate box/mesh entries implemented from the listing in ContactBoxMeshICE.cpp.
 void __cdecl NxContactBoxMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
@@ -7978,6 +7979,9 @@ int wmain(int argc, wchar_t** argv)
 
 	// convex-mesh gap Task 2k's capsule/mesh entries; see nxDriveTask2k.
 	totalMismatch += nxDriveTask2k(base);
+	// Task 2l's callback has a direct accumulator differential before the mesh
+	// pair entry is added.
+	totalMismatch += nxDriveTask2lAccumulator(base);
 
 	// What is not covered, named rather than left as an absence.
 	for(unsigned index = 0; index < 36; ++index)
@@ -12461,4 +12465,72 @@ static unsigned nxDriveTask2k(unsigned char* base)
 	for(int side = 0; side < 2; ++side) nx2iReleaseSide(owners[side], sides[side]);
 	nx2iFoundationEnd();
 	return total;
-	}\n
+	}
+
+
+extern "C" void __stdcall nxMeshContactAccumulate(unsigned, unsigned, unsigned, const unsigned*, const float*);
+extern "C" unsigned nxMeshContactCount;
+extern "C" float nxMeshContactSums[3];
+extern "C" float nxMeshContactNormalAndMaterial[50];
+extern "C" float nxMeshContactVertices[96];
+extern "C" float nxMeshContactNormals[96];
+
+// Isolate 001872's fixed 32-contact global accumulator from its mesh/mesh
+// caller so its cap, unconditional sums, and each stored record are pinned.
+static unsigned nxDriveTask2lAccumulator(unsigned char* base)
+	{
+	typedef void (__stdcall * AccumulateFn)(unsigned, unsigned, unsigned, const unsigned*, const float*);
+	AccumulateFn oracle = (AccumulateFn)(base + 0x000466e0);
+	unsigned char* og = base + 0x00123d8c;
+	unsigned mismatches = 0;
+	NxDigest oracleDigest, candidateDigest;
+	NxDigest inputDigest;
+	nxDigestInit(&oracleDigest); nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	memset(og - 0x94, 0, 0x2a0);
+	nxMeshContactCount = 0;
+	memset(nxMeshContactSums, 0, sizeof(nxMeshContactSums));
+	memset(nxMeshContactNormalAndMaterial, 0, sizeof(nxMeshContactNormalAndMaterial));
+	memset(nxMeshContactVertices, 0, sizeof(nxMeshContactVertices));
+	memset(nxMeshContactNormals, 0, sizeof(nxMeshContactNormals));
+	for(unsigned i = 0; i < 40; ++i)
+		{
+		unsigned vertex[3] = { 0x3f000000u + i, 0xbf000000u - i, 0x3e800000u + 3 * i };
+		float normal[3] = { (float)(i + 1) * 0.125f, (float)(i - 7) * 0.0625f, (float)(9 - (int)i) * 0.03125f };
+		unsigned a0 = i * 7, a1 = i * 11, a2 = i * 13;
+		nxFoldInput(&inputDigest, &a0, sizeof(a0)); nxFoldInput(&inputDigest, &a1, sizeof(a1));
+		nxFoldInput(&inputDigest, &a2, sizeof(a2)); nxFoldInput(&inputDigest, vertex, sizeof(vertex));
+		nxFoldInput(&inputDigest, normal, sizeof(normal));
+		oracle(i * 7, i * 11, i * 13, vertex, normal);
+		nxMeshContactAccumulate(i * 7, i * 11, i * 13, vertex, normal);
+		}
+	unsigned oracleCount = *(unsigned*)(og);
+	mismatches += oracleCount != nxMeshContactCount;
+	const float* oracleSums = (const float*)(og + 4);
+	for(unsigned i = 0; i < 3; ++i)
+		{
+		mismatches += memcmp(&oracleSums[i], &nxMeshContactSums[i], sizeof(float)) != 0;
+		nxFoldInput(&oracleDigest, &oracleSums[i], sizeof(float));
+		nxFoldInput(&candidateDigest, &nxMeshContactSums[i], sizeof(float));
+		}
+	const float* ov = (const float*)(base + 0x00123f20);
+	const float* on = (const float*)(base + 0x00123da0);
+	const float* om = (const float*)(base + 0x00123cf8);
+	for(unsigned i = 0; i < 96; ++i)
+		{
+		mismatches += memcmp(&ov[i], &nxMeshContactVertices[i], sizeof(float)) != 0;
+		mismatches += memcmp(&on[i], &nxMeshContactNormals[i], sizeof(float)) != 0;
+		nxFoldInput(&oracleDigest, &ov[i], sizeof(float)); nxFoldInput(&candidateDigest, &nxMeshContactVertices[i], sizeof(float));
+		nxFoldInput(&oracleDigest, &on[i], sizeof(float)); nxFoldInput(&candidateDigest, &nxMeshContactNormals[i], sizeof(float));
+		}
+	for(unsigned i = 0; i < 32; ++i)
+		{
+		mismatches += memcmp(&om[i], &nxMeshContactNormalAndMaterial[i], sizeof(float)) != 0;
+		nxFoldInput(&oracleDigest, &om[i], sizeof(float)); nxFoldInput(&candidateDigest, &nxMeshContactNormalAndMaterial[i], sizeof(float));
+		}
+	printf("collision name=mesh_contact_accumulator index=- rva=0x000466e0 checks=40 oracle=%016llx candidate=%016llx mismatches=%u contacts=%u\n",
+		oracleDigest.state, candidateDigest.state, mismatches, oracleCount);
+	printf("collision coverage name=mesh_contact_accumulator calls=40 stored=%u cap=32 sums_after_cap=40\n", oracleCount);
+	nxPrintInput("mesh_contact_accumulator", &inputDigest);
+	return mismatches;
+	}

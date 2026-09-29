@@ -34181,12 +34181,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/736",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5607",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "naked x86 inline-assembly transcription of the pinned listing; evidence/convex-mesh-gap-2l-001872-listing-compare.py decodes the full 146-byte extent as 37 matching instructions; absolute operands resolve to the reconstructed accumulator block",
+      "dynamic_proof": "Task 2l partial differential: direct oracle RVA and candidate stdcall callback, 40 deterministic calls (360 input words, digest 164a783f6b3daae0); exact sums and contact arrays, capped at 32 stored contacts while all 40 normals contribute to sums; oracle digest 6299a0c8f1109f5a; pinned NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; see evidence/convex-mesh-gap-2l-001872-run.txt",
       "notes": ""
     },
     {
