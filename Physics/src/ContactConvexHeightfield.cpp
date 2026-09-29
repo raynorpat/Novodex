@@ -63,13 +63,6 @@ static const float kConvexMeshZero = 0.0f;
 static const float kConvexMeshOne = 1.0f;
 static const double kConvexMeshMicro = 1e-6;
 
-void nxConvexMeshProject();
-bool nxConvexMeshAxis();
-bool nxConvexMeshFaceAxesAll();
-bool nxConvexMeshInterval();
-bool nxConvexMeshTriangleAxis();
-void nxConvexMeshEdgeDirections();
-
 // phys_fn_001822 (0x00041360, 717 B)
 // A ray from inside a hull out through its polygons (register arguments: ecx
 // the origin, eax the direction, ebx the ConvexHull; three stack arguments:

@@ -372,4 +372,21 @@ void NxConvexPolygonContacts();
 void NxContactConvexConvex(const NxCollisionShape* shape0, const NxCollisionShape* shape1,
 	NxContactSink* sink, void* context);
 
+// convex-mesh gap Task 2h (ContactConvexHeightfield.cpp; sub-unit M's first
+// half, 0x00041360..0x000427cf). Every row takes register arguments with the
+// caller cleaning the stack (see the definitions), so they are declared without
+// parameters; their callers, 001844 and 001849, are Task 2i's, and until then
+// only the harness reaches them, through register thunks.
+bool nxConvexMeshRay();					// 001822: ecx origin, eax direction, ebx hull; 3 stack
+void nxConvexMeshProject();				// 001824: ebx, esi, edi; 4 stack
+bool nxConvexMeshAxis();				// 001826: ecx, eax, edx; 6 stack
+bool nxConvexMeshFaceAxesAll();			// 001828: edi, esi; 8 stack
+bool nxConvexMeshInterval();			// 001830: ecx, eax, esi, edi; 4 stack
+bool nxConvexMeshFaceAxes();			// 001832: ebx; 12 stack
+bool nxConvexMeshTriangleAxis();		// 001833: ecx, edx, esi, edi; 7 stack
+void nxConvexMeshEdgeDirections();		// 001834: ecx, eax; 5 stack
+bool nxConvexMeshCrossAxes();			// 001836 with 001838: eax, ebx, edx; 11 stack
+bool nxConvexMeshEdgeAxes();			// 001840: ebx; 16 stack
+void nxConvexMeshContacts();			// 001842: edx, ebx, esi, edi; 13 stack
+
 #endif
