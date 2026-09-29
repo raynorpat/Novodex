@@ -733,18 +733,18 @@ table above where it guessed:
 
 | row | rva | bytes | state | phase | callers | role |
 |---|---|---:|---|---:|---|---|
-| 001822 | 0x00041360 | 717 | discovered | 3 | 001844 | convex against a triangle: inflated-triangle ray tests through 001708, Matrix4x4::Invert (005197) |
-| 001824 | 0x00041630 | 348 | discovered | 3 | 001826, 001830 | project a mesh vertex subset on an axis, each vertex once (timestamp from 000505) |
-| 001826 | 0x00041790 | 166 | discovered | 3 | 001828, 001833, 001836 | axis test: an object's slot 11 projection against 001824's interval |
-| 001828 | 0x00041840 | 235 | discovered | 3 | 001832 | face-normal loop (slots 3/4) for the height-field path |
-| 001830 | 0x00041930 | 123 | discovered | 3 | 001832 | axis test on a precomputed interval |
-| 001832 | 0x000419b0 | 496 | discovered | 3 | 001849 | convex/height-field separating-axis driver |
-| 001833 | 0x00041ba0 | 112 | discovered | 3 | 001840 | edge-axis loop helper |
-| 001834 | 0x00041c10 | 961 | discovered | 3 | 001840 | edge-edge axes against triangle edges (961 B, alloca; mesh +0x88 built lazily by 002188) |
-| 001836 | 0x00041fe0 | 342 | discovered | 3 | 001849 | triangle-normal axes (342 B + continuation 001838) |
-| 001838 | 0x00042140 | 790 | discovered | 3 | continuation | continuation of 001836 |
-| 001840 | 0x00042460 | 247 | discovered | 3 | 001849 | convex/height-field axis search (calls 001833, 001834) |
-| 001842 | 0x00042560 | 623 | discovered | 3 | 001849 | convex/height-field contact reduction and emission through 001909 |
+| 001822 | 0x00041360 | 717 | reconstructed (2h) | 3 | 001844 | a ray from inside a hull out through its polygons (Task 2h erratum: not a triangle): 001708 on each polygon fan, the ray first taken into the hull's frame through Matrix4x4::Invert (005197) when a 4x4 is given; 001472 when the polygons are not built |
+| 001824 | 0x00041630 | 348 | reconstructed (2h) | 3 | 001826, 001830 | project a mesh vertex subset on an axis, each vertex once (timestamp from 000505) |
+| 001826 | 0x00041790 | 166 | reconstructed (2h) | 3 | 001828, 001833, 001836 | axis test: an object's slot 11 projection against 001824's interval |
+| 001828 | 0x00041840 | 235 | reconstructed (2h) | 3 | 001832 | every face normal (slots 3/4) through 001826, when no face faces the point |
+| 001830 | 0x00041930 | 123 | reconstructed (2h) | 3 | 001832 | axis test on a precomputed interval |
+| 001832 | 0x000419b0 | 496 | reconstructed (2h) | 3 | 001849 | the hull's face axes: the faces facing a point through 001830 on their +0x1c/+0x20 extents, else 001828; the facing polygons out |
+| 001833 | 0x00041ba0 | 112 | reconstructed (2h) | 3 | 001840 | one axis (the triangle's normal) through 001826 against the best so far (Task 2h erratum: not an edge loop) |
+| 001834 | 0x00041c10 | 961 | reconstructed (2h) | 3 | 001840 | the triangles' active edges (EdgeList bit 31) near a hull polygon's plane, normalised into the scratch record's +0x4e0 Container through 001661 (961 B, an unused alloca; mesh +0x88 built lazily by 002188) |
+| 001836 | 0x00041fe0 | 342 | reconstructed (2h) | 3 | 001849 | the cross axes: the listed polygons' edges near the triangle's plane crossed with the +0x4e0 directions into +0x4f0 (001661), each tested by 001826 (342 B + continuation 001838; Task 2h erratum: not the triangle normals) |
+| 001838 | 0x00042140 | 790 | reconstructed (2h) | 3 | continuation | continuation of 001836 |
+| 001840 | 0x00042460 | 247 | reconstructed (2h) | 3 | 001849 | a triangle's axes: its normal (001833), then the second list's active edges gathered (001834) |
+| 001842 | 0x00042560 | 623 | reconstructed (2h) | 3 | 001849 | a hull polygon and a triangle to 001909, the one more nearly along the contact normal first |
 | 001844 | 0x000427d0 | 2,170 | discovered | 3 | 001847 | convex against mesh triangles (2,170 B + continuation 001846, alloca): 001822, 001855, 001692, 001760 |
 | 001846 | 0x00043050 | 640 | discovered | 3 | continuation | continuation of 001844 |
 | 001847 | 0x000432d0 | 943 | discovered | 3 | 001876 | ContactConvexHeightfield.cpp entry (943 B): line 583, OBBCollider (005067), 001844 |
@@ -752,7 +752,41 @@ table above where it guessed:
 | 001851 | 0x000441e0 | 790 | discovered | 3 | 001853 | convex/height-field entry: poses, CCD guard (002266), 001849 |
 | 001853 | 0x00044500 | 5 | discovered | 3 | 001876 | five-byte jmp to 001851 (called by 001876) |
 
-Totals: 18 rows; discovered 12,607 B
+Totals: 18 rows; reconstructed 5,160 B (Task 2h: 001822..001842), discovered 7,447 B
+
+**Written by Task 2h** (`Physics/src/ContactConvexHeightfield.cpp`, every row the listing's
+instructions, naked; evidence/convex-mesh-gap-2h-listing-compare.py: 11 functions equal, 22 call
+mappings asserted). No continuation was missing from the row list (001838 was listed).
+- *Placement (open item 5, decided).* 001822..001842 are written into
+  `ContactConvexHeightfield.cpp`, the file every caller is in; nothing in the listing separates
+  them from 001847/001849.
+- *What the rows read.* The mesh is a TriangleMesh read at +0x10 (vertices), +0x14 (32-bit
+  triangles), +0x0c (002188's count) and +0x88 (the EdgeList, its face words at +0x0c with bit 31
+  the active flag); the height-field fields +0x7c/+0x80 are not read by these rows. The convex is
+  read through the polygon interface (slots 2, 3, 4, 11) and its kind C map, as in sub-unit L;
+  001822 reads a ConvexHull directly (+0x10 vertices, +0x24/+0x28 polygons). The scratch record is
+  L's: +0x04/+0x08 the visited array (001824 stamps mesh vertices in it), +0x14 the stamp, +0x4e0
+  the triangle edge directions (001834 fills, 001836 reads), +0x4f0 the cross axes (001836).
+- *Conventions (from 001844's and 001849's call sites).* Every row takes register arguments and
+  the caller cleans: 001822 ecx/eax/ebx + 3; 001824 ebx/esi/edi + 4; 001826 ecx/eax/edx + 6;
+  001828 edi/esi + 8; 001830 ecx/eax/esi/edi + 4; 001832 ebx + 12; 001833 ecx/edx/esi/edi + 7;
+  001834 ecx/eax + 5; 001836 eax/ebx/edx + 11; 001840 ebx + 16; 001842 edx/ebx/esi/edi + 13.
+  001842's hull shape (its eighth argument) gives 001909 the word at +0xda.
+- *Callees reached through aliases.* Matrix4x4::Invert (005197, vendored) and
+  TriangleMesh::createEdgeList (002188) through /alternatename, so the calls stay direct; 001834's
+  `_alloca` probe is the candidate CRT's `_chkstk` where the oracle has its static copy 005695.
+- *Not driven (the oracle would read memory it does not own).* 001840 with 001832's -1 index (a NaN
+  axis leaves it -1 at 0x000419bc): 001834 hands it to slot 4, which reads before the polygon
+  array. Out-of-range triangle or polygon indices (none of these rows checks them). 001842 with a
+  NaN contact normal (001909).
+- *Differentials* (NxPhysicsCollisionTests, nxDriveTask2h): convex_mesh_ray (001822),
+  convex_mesh_faces (001832), convex_mesh_edges (001840), convex_mesh_cross (001836 after 001840)
+  and convex_mesh_contacts (001842), each entry at its own address through a register thunk over
+  the Task 2g hull fixture and six fixed triangle meshes (a height-field-like terrain, a flat grid,
+  a roof, a valley, a closed pyramid, one tilted triangle), with the hulls placed on, across and
+  below them. All exact; convex_mesh_ray's split (.callee_divergent: the frozen list of hulls whose
+  fans the vendored Triangle::Inflate, 005185, inflates differently, and non-permutation poses
+  through the vendored Invert) is 0 with the oracle's pair bound in.
 
 - **Evidence.** The asserts (001847 line 583, 001849 line 2594). 001822..001846 lie between the
   convex/convex cluster and 001847 and are called only from 001844 and 001849; they may be the
@@ -766,7 +800,8 @@ Totals: 18 rows; discovered 12,607 B
   needs the EdgeList closure) from 001834/001849; **002081**; **000875**; 001909; RadixSort,
   Triangle::Area/Center, Matrix4x4::Invert, OBBCollider (vendored); 000505; 002266; 004886.
 - **Test route.** Needs the mesh fixture with a height-field mesh (+0x7c axis, +0x80 extent; the
-  `NxMesh` height-field fixture) and a convex mesh. `contact_convex_heightfield` through 001851
+  `NxMesh` height-field fixture) and a convex mesh (Task 2h drove its twelve rows as leaf families;
+  the entries below are Task 2i's). `contact_convex_heightfield` through 001851
   (and 001847 for the second entry), over the height field with the hull resting on, crossing and
   below the surface; the "Opcode is not OK." arms by a failing collider.
 
@@ -1004,6 +1039,8 @@ Notes on the split:
 5. Three placements are open:
    - Which file holds the support-map classes: IceAdjacencies.cpp or a neighbour.
    - Whether 001822..001846 open ContactConvexHeightfield.cpp or close the convex/convex file.
+     **Decided by Task 2h:** 001822..001842 are written into `ContactConvexHeightfield.cpp`, where
+     every caller is; the listing gives nothing that separates them from it.
    - 001855/001857. The .rdata evidence puts them in an unnamed unit of their own, between
      ContactConvexHeightfield.cpp and ContactMeshHeightfield.cpp. Placing them in
      `ContactMeshHeightfield.cpp` is this contract's choice. A later task may give them their own

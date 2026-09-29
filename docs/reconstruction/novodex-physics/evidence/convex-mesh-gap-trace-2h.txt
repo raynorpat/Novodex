@@ -1,0 +1,72 @@
+convex-mesh gap Task 2h: cdb breakpoint trace of sub-unit M's first half
+=======================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/convex-mesh-gap-trace-2g.txt: one
+run of NxPhysicsCollisionTests. Banners, ModLoad lines and the program's own output are removed
+except the Task 2h families' lines and the harness's closing lines (marked `  | `); the echoed
+breakpoint commands and the HIT lines are kept in order and unedited. One HIT line (001842's) was
+echoed while the program's buffered stdout was mid-line, so it is kept as cdb printed it, joined to
+the start of an input line (`  |+` marks the input line's rest, which cdb printed after a ModLoad
+line). It is the evidence behind the dynamic_proof this task records in inventory.json for the
+rows below (see evidence/convex-mesh-gap.md, Task 2h).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsCollisionTests.exe
+           D:\FlamingEnt__\Unreal_3\Binaries 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+           (the script is the bp lines below, then `g` and `q`)
+Recorded:  2026-09-28, on the final build of Task 2h (the exe the task's gate run -- fresh configure,
+           worktree -RepoRoot / -BuildRoot -- rebuilt byte for byte and passed).
+Oracle:    D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+           sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c (the pin; the
+           harness re-hashes it and refuses to run otherwise)
+Offsets:   module-relative, from the exe's linker map (the exe has no PDB); each breakpoint is
+           written against the entry point (`@$exentry - <entry RVA>` is the image base). One
+           one-shot breakpoint (`bp /1`) per candidate function carrying one of this task's stable
+           IDs (the continuation 001838 is a body of 001836 and has no address of its own).
+
+Result: every breakpoint was hit (11 of 11), and the harness closed with its pass line.
+
+
+-----------------------------------------------------------------------------------------------
+Run: NxPhysicsCollisionTests.exe  sha256=e3d9db86cf7686a4deaa7f5bd86126331358f99834bec6248ccca3dade0b69c6  (entry point RVA 0x744b0)
+-----------------------------------------------------------------------------------------------
+0:000> bp /1 @$exentry-0x744b0+0x3db50 ".echo HIT 001822 nxConvexMeshRay +0x3db50; gc"
+0:000> bp /1 @$exentry-0x744b0+0x3d9f0 ".echo HIT 001824 nxConvexMeshProject +0x3d9f0; gc"
+0:000> bp /1 @$exentry-0x744b0+0x3ca20 ".echo HIT 001826 nxConvexMeshAxis +0x3ca20; gc"
+0:000> bp /1 @$exentry-0x744b0+0x3d880 ".echo HIT 001828 nxConvexMeshFaceAxesAll +0x3d880; gc"
+0:000> bp /1 @$exentry-0x744b0+0x3d970 ".echo HIT 001830 nxConvexMeshInterval +0x3d970; gc"
+0:000> bp /1 @$exentry-0x744b0+0x3d690 ".echo HIT 001832 nxConvexMeshFaceAxes +0x3d690; gc"
+0:000> bp /1 @$exentry-0x744b0+0x3de20 ".echo HIT 001833 nxConvexMeshTriangleAxis +0x3de20; gc"
+0:000> bp /1 @$exentry-0x744b0+0x3d2c0 ".echo HIT 001834 nxConvexMeshEdgeDirections +0x3d2c0; gc"
+0:000> bp /1 @$exentry-0x744b0+0x3cd40 ".echo HIT 001836 nxConvexMeshCrossAxes +0x3cd40; gc"
+0:000> bp /1 @$exentry-0x744b0+0x3d1c0 ".echo HIT 001840 nxConvexMeshEdgeAxes +0x3d1c0; gc"
+0:000> bp /1 @$exentry-0x744b0+0x3cad0 ".echo HIT 001842 nxConvexMeshContacts +0x3cad0; gc"
+HIT 001822 nxConvexMeshRay +0x3db50
+HIT 001832 nxConvexMeshFaceAxes +0x3d690
+HIT 001828 nxConvexMeshFaceAxesAll +0x3d880
+HIT 001826 nxConvexMeshAxis +0x3ca20
+HIT 001824 nxConvexMeshProject +0x3d9f0
+HIT 001830 nxConvexMeshInterval +0x3d970
+HIT 001840 nxConvexMeshEdgeAxes +0x3d1c0
+HIT 001833 nxConvexMeshTriangleAxis +0x3de20
+HIT 001834 nxConvexMeshEdgeDirections +0x3d2c0
+HIT 001836 nxConvexMeshCrossAxes +0x3cd40
+  | collision name=convex_mesh_ray index=- rva=0x00041360 owner=phys_fn_001822 checks=1117952 oracle=c471c6d91284b546 candidate=c471c6d91284b546 mismatches=0 default_mismatches=0 simulate_mismatches=0 build_mismatches=0
+  | collision name=convex_mesh_ray.callee_divergent index=- rva=0x00041360 owner=phys_fn_001822 checks=930048 oracle=b81832b5ea888016 candidate=71e1d551fc4a0517 words=165 runs=91 ceiling_words=165 ceiling_runs=91 ceiling=ok
+  | collision input name=convex_mesh_ray words=438170 input=75f57d163c1510f6
+  | collision coverage name=convex_mesh_ray hulls=22 cases=8000 hits=2820 misses=5180 lazy=476 lazy_polygons=2856 posed=3965 posed_exact=1975 split_runs=7266 input_snan=368
+  | collision name=convex_mesh_faces index=- rva=0x000419b0 owner=phys_fn_001832 checks=4992000 oracle=34514a1dcfe9f7df candidate=34514a1dcfe9f7df mismatches=0 default_mismatches=0 simulate_mismatches=0
+  | collision input name=convex_mesh_faces words=296312 input=9c5a93a7b23e51c2
+  | collision coverage name=convex_mesh_faces meshes=6 cases=6000 overlapping=3358 separated=2642 best_set=2599 listed_all=1989 map_cases=2974 stamp_wraps=266 input_snan=136
+  | collision name=convex_mesh_edges index=- rva=0x00042460 owner=phys_fn_001840 checks=2169768 oracle=aedf13416bfaa683 candidate=aedf13416bfaa683 mismatches=0 default_mismatches=0 simulate_mismatches=0 build_mismatches=0
+  | collision input name=convex_mesh_edges words=365996 input=7a65a64169HIT 001842 nxConvexMeshContacts +0x3cad0
+  |+130f1f
+  | collision coverage name=convex_mesh_edges meshes=6 cases=6000 true=3041 false=2959 directions=25209 kept=1541 input_snan=45
+  | collision name=convex_mesh_cross index=- rva=0x00041fe0 owner=phys_fn_001836 checks=1296792 oracle=452b6b5eb127fea1 candidate=452b6b5eb127fea1 mismatches=0 default_mismatches=0 simulate_mismatches=0
+  | collision input name=convex_mesh_cross words=414838 input=6422c5651298c10b
+  | collision coverage name=convex_mesh_cross cases=6000 true=5032 false=968 axes=108054 runs_with_axes=2133 input_snan=33
+  | collision name=convex_mesh_contacts index=- rva=0x00042560 owner=phys_fn_001842 checks=198864 oracle=00d0f883588e9c9b candidate=00d0f883588e9c9b mismatches=0 default_mismatches=0 simulate_mismatches=0
+  | collision input name=convex_mesh_contacts words=400728 input=86efa880aa8b921b
+  | collision coverage name=convex_mesh_contacts calls=5000 calls_with_contacts=760 contacts=2324 headers=760 mesh_posed=1237 swapped=2504
+  | collision matrix_wrong=0 index_wrong=0 mismatches=0
+  | collision=pass

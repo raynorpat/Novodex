@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ContactConvexHeightfield.cpp b/Physics/src/ContactConvexHeightfield.cpp
+index c5c37e5..ab8e575 100644
+--- a/Physics/src/ContactConvexHeightfield.cpp
++++ b/Physics/src/ContactConvexHeightfield.cpp
+@@ -1053,7 +1053,7 @@ L41c36:
+ 		fmul	dword ptr [eax + 4]		// 0x00041ca6
+ 		fld	dword ptr [ebp - 0x20]		// 0x00041ca9
+ 		fmul	dword ptr [eax]		// 0x00041cac
+-		faddp	st(1), st		// 0x00041cae
++		fsubp	st(1), st		// 0x00041cae
+ 		fld	dword ptr [ebp - 8]		// 0x00041cb0
+ 		fmul	dword ptr [eax + 8]		// 0x00041cb3
+ 		faddp	st(1), st		// 0x00041cb6

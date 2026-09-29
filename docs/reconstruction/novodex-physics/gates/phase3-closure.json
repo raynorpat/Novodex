@@ -12,8 +12,8 @@
     "unreachable_in_phase_2": "Phase 2's reason, unused here",
     "not_independently_falsifiable": "the row has no counterpart in the candidate that can be mutated on its own. Unused here",
     "homeless_shared_code": "Phase 2's reason for shared code with no translation unit span. Unused here",
-    "not_reconstructed_in_phase": "Phase 3 did not reconstruct this row and names nothing that blocks it. This is a debt, not an obstruction, and it is the largest single category in this ledger. No per-row reachability claim is made for these 274 rows (310 before convex-mesh gap Task 2a reconstructed matrix B [CAPSULE][CAPSULE] and three of the compound entries, 306 before its Task 2b reconstructed four helpers, 302 before its Task 2c reconstructed two ICE rows, 300 before its Task 2e reconstructed four more, 296 before its Task 2f reconstructed six hull rows, 290 before its Task 2g reconstructed the emitter 000875, the polygon contact rows and the convex/convex rows), and that is deliberate: this component dispatches through function-pointer tables and vtable slots and the census splits functions at their internal alignment padding, so a call-edge closure over them systematically undercounts -- four separate counting methods in this programme have each answered a narrower question than the one asked, the last of them a call-edge walk that could not see a continuation row. Some of these rows will turn out to be blocked on Phase 4 mesh data once someone walks them properly; asserting which ones without walking them is the claim this reason refuses to make. Where the evidence does say something specific about a row -- the three compound entries still here -- the entry carries a note",
-    "reconstructed_not_falsified": "the row is reconstructed and driven against the pinned oracle, and no mutation aimed at its own body is recorded. Forty rows: `phys_fn_001901`, the six matrix entries convex-mesh gap Task 2a reconstructed and drove exactly in NxPhysicsCollisionTests (`phys_fn_001751`, `phys_fn_001753`, `phys_fn_001774`, `phys_fn_001785`, `phys_fn_001789`, `phys_fn_001791`), and the four helpers its Task 2b reconstructed and drove there (`phys_fn_001692`, `phys_fn_001708`, `phys_fn_001760`, `phys_fn_001855`), and the two ICE rows its Task 2c reconstructed and drove exactly in NxPhysicsThirdPartyTests (`phys_fn_001542`, `phys_fn_001667`), and the five its Task 2e reconstructed and drove exactly there (`phys_fn_001641` with its continuation `phys_fn_001643`, `phys_fn_001651`, `phys_fn_001653`, `phys_fn_001461`), and the six hull rows its Task 2f reconstructed and drove exactly there (`phys_fn_001441`, `phys_fn_001445`, `phys_fn_001449`, `phys_fn_001459`, `phys_fn_001463`, `phys_fn_001465`), and the sixteen its Task 2g reconstructed and drove exactly in NxPhysicsCollisionTests (`phys_fn_000875`; `phys_fn_001903` with its continuation `phys_fn_001905`, `phys_fn_001907`, `phys_fn_001909` with its continuation `phys_fn_001911`; `phys_fn_001803`, `phys_fn_001805`, `phys_fn_001807`, `phys_fn_001809`, `phys_fn_001810`, `phys_fn_001812` with its continuation `phys_fn_001814`, `phys_fn_001816`, `phys_fn_001818`, `phys_fn_001820`). This is not `unreachable` and not `blocked`: the instrument exists and runs, and what is missing is one mutation. Two of Task 2e's five are the exception to 'what is missing is one mutation': phys_fn_001651 and phys_fn_001653 each had one aimed at them and caught by NxPhysicsThirdPartyTests (their notes), and stay here because a closure needs the inventory at `dynamically_gated` and that plan promotes no row above `reconstructed`. Four of Task 2f's six are exceptions for the same reason: phys_fn_001441, phys_fn_001445, phys_fn_001459 and phys_fn_001463 each had a mutation aimed at them and caught (their notes). Fifteen of Task 2g's sixteen are exceptions for the same reason (all but phys_fn_001812, which holds no float code): phys_fn_000875, phys_fn_001903, phys_fn_001905, phys_fn_001907, phys_fn_001909, phys_fn_001911, phys_fn_001803, phys_fn_001805, phys_fn_001807, phys_fn_001809, phys_fn_001810, phys_fn_001814, phys_fn_001816, phys_fn_001818 and phys_fn_001820 each had a mutation aimed at them and caught (their notes)",
+    "not_reconstructed_in_phase": "Phase 3 did not reconstruct this row and names nothing that blocks it. This is a debt, not an obstruction, and it is the largest single category in this ledger. No per-row reachability claim is made for these 262 rows (310 before convex-mesh gap Task 2a reconstructed matrix B [CAPSULE][CAPSULE] and three of the compound entries, 306 before its Task 2b reconstructed four helpers, 302 before its Task 2c reconstructed two ICE rows, 300 before its Task 2e reconstructed four more, 296 before its Task 2f reconstructed six hull rows, 290 before its Task 2g reconstructed the emitter 000875, the polygon contact rows and the convex/convex rows, 274 before its Task 2h reconstructed the first half of the convex/mesh rows), and that is deliberate: this component dispatches through function-pointer tables and vtable slots and the census splits functions at their internal alignment padding, so a call-edge closure over them systematically undercounts -- four separate counting methods in this programme have each answered a narrower question than the one asked, the last of them a call-edge walk that could not see a continuation row. Some of these rows will turn out to be blocked on Phase 4 mesh data once someone walks them properly; asserting which ones without walking them is the claim this reason refuses to make. Where the evidence does say something specific about a row -- the three compound entries still here -- the entry carries a note",
+    "reconstructed_not_falsified": "the row is reconstructed and driven against the pinned oracle, and no mutation aimed at its own body is recorded. Fifty-two rows: `phys_fn_001901`, the six matrix entries convex-mesh gap Task 2a reconstructed and drove exactly in NxPhysicsCollisionTests (`phys_fn_001751`, `phys_fn_001753`, `phys_fn_001774`, `phys_fn_001785`, `phys_fn_001789`, `phys_fn_001791`), and the four helpers its Task 2b reconstructed and drove there (`phys_fn_001692`, `phys_fn_001708`, `phys_fn_001760`, `phys_fn_001855`), and the two ICE rows its Task 2c reconstructed and drove exactly in NxPhysicsThirdPartyTests (`phys_fn_001542`, `phys_fn_001667`), and the five its Task 2e reconstructed and drove exactly there (`phys_fn_001641` with its continuation `phys_fn_001643`, `phys_fn_001651`, `phys_fn_001653`, `phys_fn_001461`), and the six hull rows its Task 2f reconstructed and drove exactly there (`phys_fn_001441`, `phys_fn_001445`, `phys_fn_001449`, `phys_fn_001459`, `phys_fn_001463`, `phys_fn_001465`), and the sixteen its Task 2g reconstructed and drove exactly in NxPhysicsCollisionTests (`phys_fn_000875`; `phys_fn_001903` with its continuation `phys_fn_001905`, `phys_fn_001907`, `phys_fn_001909` with its continuation `phys_fn_001911`; `phys_fn_001803`, `phys_fn_001805`, `phys_fn_001807`, `phys_fn_001809`, `phys_fn_001810`, `phys_fn_001812` with its continuation `phys_fn_001814`, `phys_fn_001816`, `phys_fn_001818`, `phys_fn_001820`), and the twelve its Task 2h reconstructed and drove exactly there (`phys_fn_001822`, `phys_fn_001824`, `phys_fn_001826`, `phys_fn_001828`, `phys_fn_001830`, `phys_fn_001832`, `phys_fn_001833`, `phys_fn_001834`, `phys_fn_001836` with its continuation `phys_fn_001838`, `phys_fn_001840`, `phys_fn_001842`). This is not `unreachable` and not `blocked`: the instrument exists and runs, and what is missing is one mutation. Two of Task 2e's five are the exception to 'what is missing is one mutation': phys_fn_001651 and phys_fn_001653 each had one aimed at them and caught by NxPhysicsThirdPartyTests (their notes), and stay here because a closure needs the inventory at `dynamically_gated` and that plan promotes no row above `reconstructed`. Four of Task 2f's six are exceptions for the same reason: phys_fn_001441, phys_fn_001445, phys_fn_001459 and phys_fn_001463 each had a mutation aimed at them and caught (their notes). Fifteen of Task 2g's sixteen are exceptions for the same reason (all but phys_fn_001812, which holds no float code): phys_fn_000875, phys_fn_001903, phys_fn_001905, phys_fn_001907, phys_fn_001909, phys_fn_001911, phys_fn_001803, phys_fn_001805, phys_fn_001807, phys_fn_001809, phys_fn_001810, phys_fn_001814, phys_fn_001816, phys_fn_001818 and phys_fn_001820 each had a mutation aimed at them and caught (their notes). All twelve of Task 2h's are exceptions for the same reason: each had a mutation aimed inside its own extent and caught (their notes)",
     "data_object_not_dispositioned": "a Phase 3 data object that no Phase 3 task dispositioned. A data object has no body to mutate and no transcript of its own, so it cannot carry a code proof kind; Phase 2 left its 1,051 in the same state and this list makes the same debt countable rather than silent. One of the 102 is load-bearing and named in the evidence: phys_data_000006 at 0x0003acc0, the 24-byte switch table phys_fn_001745's `jmp dword ptr [ecx*4+0x1003acc0]` walks, whose six slots were all resolved when that row was closed"
   },
   "measured_from": {
@@ -55,9 +55,9 @@
   "counts": {
     "differential_falsified": 31,
     "oracle_differential_falsified": 30,
-    "deferred_not_reconstructed_in_phase": 274,
+    "deferred_not_reconstructed_in_phase": 262,
     "deferred_blocked_on_later_phase": 17,
-    "deferred_reconstructed_not_falsified": 40
+    "deferred_reconstructed_not_falsified": 52
   },
   "closed": [
     {
@@ -2976,97 +2976,109 @@
       "id": "phys_fn_001822",
       "rva": "0x00041360",
       "size": 717,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001822-mutation.patch (`fadd` -> `fsub` at 0x00041555, the origin's plane value) gave convex_mesh_ray 20410, convex_mesh_ray.callee_divergent 7943 (from 165). Measured on the build of 93b9539 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 165 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
     },
     {
       "id": "phys_fn_001824",
       "rva": "0x00041630",
       "size": 348,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001824-mutation.patch (`faddp` -> `fsubp` at 0x000416a5, the first vertex's projection) gave convex_mesh_faces 16837, convex_mesh_edges 4923, convex_mesh_cross 5820. Measured on the build of 93b9539 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 165 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
     },
     {
       "id": "phys_fn_001826",
       "rva": "0x00041790",
       "size": 166,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001826-mutation.patch (`fsub` -> `fadd` at 0x000417fe, the first overlap) gave convex_mesh_faces 11773, convex_mesh_edges 3385, convex_mesh_cross 7865. Measured on the build of 93b9539 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 165 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
     },
     {
       "id": "phys_fn_001828",
       "rva": "0x00041840",
       "size": 235,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001828-mutation.patch (`faddp` -> `fsubp` at 0x00041875, the rotated normal) gave convex_mesh_faces 11185. Measured on the build of 93b9539 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 165 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
     },
     {
       "id": "phys_fn_001830",
       "rva": "0x00041930",
       "size": 123,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001830-mutation.patch (`fsub` -> `fadd` at 0x00041977, the first overlap) gave convex_mesh_faces 17901. Measured on the build of 93b9539 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 165 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
     },
     {
       "id": "phys_fn_001832",
       "rva": "0x000419b0",
       "size": 496,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001832-mutation.patch (`fadd` -> `fsub` at 0x00041a19, the point's plane value) gave convex_mesh_faces 109692. Measured on the build of 93b9539 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 165 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
     },
     {
       "id": "phys_fn_001833",
       "rva": "0x00041ba0",
       "size": 112,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001833-mutation.patch (`jp` -> `jnp` at 0x00041be7, the depth comparison) gave convex_mesh_edges 19689. Measured on the build of 93b9539 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 165 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
     },
     {
       "id": "phys_fn_001834",
       "rva": "0x00041c10",
       "size": 961,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001834-mutation.patch (`faddp` -> `fsubp` at 0x00041cae, the plane normal taken into the mesh's frame) gave convex_mesh_edges 2021, convex_mesh_cross 5042. Measured on the build of 93b9539 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 165 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
     },
     {
       "id": "phys_fn_001836",
       "rva": "0x00041fe0",
       "size": 342,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001836-mutation.patch (`faddp` -> `fsubp` at 0x00042057, the plane taken into the hull's frame) gave convex_mesh_cross 10165. Measured on the build of 93b9539 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 165 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
     },
     {
       "id": "phys_fn_001838",
       "rva": "0x00042140",
       "size": 790,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001838-mutation.patch (`fsub` -> `fadd` at 0x00042249, the edge's z difference) gave convex_mesh_cross 38943. Measured on the build of 93b9539 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 165 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
     },
     {
       "id": "phys_fn_001840",
       "rva": "0x00042460",
       "size": 247,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001840-mutation.patch (`jp` -> `jnp` at 0x000424e3, the depth comparison) gave convex_mesh_edges 22029. Measured on the build of 93b9539 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 165 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
     },
     {
       "id": "phys_fn_001842",
       "rva": "0x00042560",
       "size": 623,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001842-mutation.patch (`faddp` -> `fsubp` at 0x0004258d, the polygon normal's rotation) gave convex_mesh_contacts 451. Measured on the build of 93b9539 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 165 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
     },
     {
       "id": "phys_fn_001844",

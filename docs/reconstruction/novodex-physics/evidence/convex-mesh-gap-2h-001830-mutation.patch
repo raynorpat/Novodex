@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ContactConvexHeightfield.cpp b/Physics/src/ContactConvexHeightfield.cpp
+index c5c37e5..2ab7a39 100644
+--- a/Physics/src/ContactConvexHeightfield.cpp
++++ b/Physics/src/ContactConvexHeightfield.cpp
+@@ -690,7 +690,7 @@ __declspec(naked) bool nxConvexMeshInterval()
+ 		test	ebp, ebp		// 0x0004196f
+ 		je	L4199b		// 0x00041971
+ 		fld	dword ptr [esp + 0x1c]		// 0x00041973
+-		fsub	dword ptr [esp + 8]		// 0x00041977
++		fadd	dword ptr [esp + 8]		// 0x00041977
+ 		fld	dword ptr [esp + 0xc]		// 0x0004197b
+ 		fsub	dword ptr [esp + 0x18]		// 0x0004197f
+ 		fstp	dword ptr [esp + 0x1c]		// 0x00041983

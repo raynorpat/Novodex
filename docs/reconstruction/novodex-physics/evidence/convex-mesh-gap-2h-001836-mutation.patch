@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ContactConvexHeightfield.cpp b/Physics/src/ContactConvexHeightfield.cpp
+index c5c37e5..e43717d 100644
+--- a/Physics/src/ContactConvexHeightfield.cpp
++++ b/Physics/src/ContactConvexHeightfield.cpp
+@@ -1405,7 +1405,7 @@ __declspec(naked) bool nxConvexMeshCrossAxes()
+ 		fmul	dword ptr [edx + 4]		// 0x0004204a
+ 		fld	dword ptr [esp + 0x94]		// 0x0004204d
+ 		fmul	dword ptr [edx + 8]		// 0x00042054
+-		faddp	st(1), st		// 0x00042057
++		fsubp	st(1), st		// 0x00042057
+ 		fld	dword ptr [esp + 0x7c]		// 0x00042059
+ 		fmul	dword ptr [edx]		// 0x0004205d
+ 		faddp	st(1), st		// 0x0004205f
