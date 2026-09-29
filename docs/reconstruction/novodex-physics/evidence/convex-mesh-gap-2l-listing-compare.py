@@ -1,4 +1,4 @@
-"""Compare Task 2l's 001857 and 001872 rows against pinned x86 listings."""
+"""Compare Task 2l's implemented callback and helper rows against pinned x86 listings."""
 import re
 import sys
 
@@ -15,11 +15,22 @@ for line in open(map_path, encoding="latin-1"):
         symbols[match.group(1)] = int(match.group(2), 16)
 
 rows = [
+    ("phys_fn_001859", "_nxMeshHeightfieldTriangleContact", 0x44b70, 2892, None),
     ("phys_fn_001857", "_nxMeshTriangleEdgeNormal", 0x44860, 774, None),
     ("phys_fn_001872", "_nxMeshContactAccumulate@20", 0x466e0, 146, None),
     ("phys_fn_001870", "_nxOverlapMeshMesh", 0x46550, 394,
         (0x100d13c0, "_nxMeshMeshCallAabbTreeCollide", "AABBTreeCollider::Collide")),
 ]
+CALL_MAPPINGS_001859 = {
+    0x543d0: "_nxTask2lCallCreateAdjacencies",
+    0x54460: "_nxTask2lCallCreateEdgeList",
+    0x44860: "_nxMeshTriangleEdgeNormal",
+    0x44510: "?NxSegmentTriangleEdge@@",
+    0x345b0: "?NxLineLineClosestPoints@@",
+    0xb4de0: "_nxTask2lCallContainerResize",
+    0x0deb0: "_nxTask2lCallGetDebugRenderable",
+    0x1d610: "?NxEmitContact@@",
+}
 decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
 
 
@@ -61,6 +72,26 @@ for stable_id, symbol, row_rva, row_size, external_call in rows:
             raise SystemExit("candidate call target is missing: " + candidate_symbol)
         oracle_calls[oracle_target] = label
         candidate_calls[symbols[candidate_symbol]] = label
+    if stable_id == "phys_fn_001859":
+        call_count = 0
+        for expected, actual in zip(oracle_items, candidate_items):
+            if expected.mnemonic != "call" or not expected.op_str.startswith("0x"):
+                continue
+            oracle_target = int(expected.op_str, 16) - 0x10000000
+            candidate_target = int(actual.op_str, 16) if actual.op_str.startswith("0x") else -1
+            wanted = CALL_MAPPINGS_001859.get(oracle_target)
+            matched = wanted is not None and any(
+                wanted in name and address == candidate_target for name, address in symbols.items()
+            )
+            print("  call oracle_rva=0x%08x candidate=%s%s" % (
+                oracle_target, next((name for name, address in symbols.items() if address == candidate_target), "?"),
+                "" if matched else " UNEXPECTED"))
+            call_count += 1
+            all_equal &= matched
+        if call_count != 14:
+            print("001859 direct call count=%d expected=14" % call_count)
+            all_equal = False
+        print("001859 direct calls checked=%d mappings=14" % call_count)
     left = normalized(oracle_items, oracle_calls)
     right = normalized(candidate_items, candidate_calls)
     diffs = [(index, a, b) for index, (a, b) in enumerate(zip(left, right)) if a != b]
