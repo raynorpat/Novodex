@@ -786,9 +786,10 @@ mappings asserted). No continuation was missing from the row list (001838 was li
   a roof, a valley, a closed pyramid, one tilted triangle, a strip with a zero-area and a collinear
   triangle, a 30-vertex terrain), with the hulls placed on, across and below them. All exact;
   001822's pose transform is compared exactly on dyadic exact-inverse poses (the Task 2h review).
-  convex_mesh_ray's split (.callee_divergent) holds two frozen lists re-derived by failing
-  pre-flights -- the hulls whose fans the vendored Triangle::Inflate (005185) inflates differently,
-  and the runs whose pose the vendored Matrix4x4::Invert (005197) inverts differently -- and reads 0
+  convex_mesh_ray's split (.callee_divergent) is routed by two frozen lists, which live pre-flights
+  only guard -- the hulls whose fans the vendored Triangle::Inflate (005185) inflates differently,
+  and a bitmap of the runs whose pose the vendored Matrix4x4::Invert (005197) inverts differently
+  (the Task 2h re-review) -- and reads 0
   with the oracle's pair bound in (123 words / 48 runs are Invert's, 62 / 62 Inflate's).
 - *Undefined behaviour.* None is mirrored or driven by these twelve rows; the three unguarded reads
   above are the oracle's, kept out of the inputs.

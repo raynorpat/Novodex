@@ -29,6 +29,7 @@ table below.
 | 2g review | 2026-09-28T20:50:00 | 2026-09-28T21:27:29 | 0 | 0 | Task 2g review: no harness helper returns a float type any more (the collision harness's nxUnit/nxReach did, through st(0), and code added before wmain flipped their inlining and moved thirteen registered lines -- not the inline_depth pragma the first report blamed); every pre-existing line reproduces, also with the Task 2g block moved before wmain in a throwaway build; the tool test fails on any float-returning harness helper. contact_convex_hulls adds hand-built polytopes (prisms of three, five and six sides, an octahedron, an 80-triangle icosphere), exact, split 14 / 4 (0 bound); 000875's stream growth driven (1,000 sequences); every draw folded into the inputs; a mutation in the own extent of 001516, 001520, 001522, 001530, 001905 and 001909, all caught (the whole campaign re-measured on bd7b747). 4 lines added, 3 of this task's re-registered, phase 3 floor 254. Trace re-recorded (40 of 40). See `## Task 2g`, **Review**. |
 | 2h | 2026-09-28T21:52:00 | 2026-09-28T22:51:41 | 12 | 5,160 | Sub-unit M's first half (001822..001842, incl. the continuation 001838) in the new `ContactConvexHeightfield.cpp` (open item 5 decided): every row the listing's instructions, naked, with register arguments and caller-cleaned stacks read from 001844's and 001849's call sites (11 functions listing-exact, 22 call mappings asserted; the vendored Matrix4x4::Invert and TriangleMesh::createEdgeList through /alternatename); no /GS cookie or fs: frame. No candidate caller yet (001844 / 001849 are Task 2i). Families convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts in NxPhysicsCollisionTests (register thunks; the Task 2g hull fixture and six fixed triangle meshes whose EdgeLists each side's 002188 builds; raw words, both control words): all exact; one split, convex_mesh_ray.callee_divergent (a frozen list of hulls whose fans the vendored Triangle::Inflate inflates differently, re-derived by a failing pre-flight, and non-permutation poses through the vendored Invert: 165 words / 91 runs, 0 with the oracle's 005185 / 005197 bound in). A mutation inside each row's own extent, all 12 caught. Contract roles of 001822, 001833, 001834, 001836 and 001840 corrected. 16 lines registered, phase 3 floor 270. 11 of 11 traced functions hit. See `## Task 2h`. |
 | 2h review | 2026-09-28T23:05:00 | 2026-09-28T23:34:41 | 0 | 0 | Task 2h review: dyadic exact-inverse poses (a signed permutation times a power-of-two unit-triangular shear, placed as words) put 001822's pose transform in the exact family, and a mutation inside it (0x000413e1) is caught there (1,518); the non-permutation rule is replaced by a per-case Invert pre-flight (oracle 005197 against the vendored Invert, frozen as 2,963 runs and a digest, failing on change); the bind patch has one bit per callee: Invert 123 words / 48 runs, Inflate 62 / 62 of the split's 184 / 109. convex_mesh_cross folds 001840's inputs; 001842's world pose is an object of its own; a zero-area / collinear strip and a 30-vertex terrain added (EdgeLists still equal). All 16 of the task's lines re-registered, every pre-existing line unchanged; all 13 mutations re-measured and caught. UB: none. Trace re-recorded (11 of 11). See `## Task 2h`, **Review**. |
+| 2h re-review | 2026-09-28T23:40:00 | 2026-09-28T23:47:52 | 0 | 0 | Task 2h re-review: convex_mesh_ray's Invert split is routed by a frozen bitmap of its 2,963 runs (kRay2hInvertDivergentMap, checked against the frozen count and digest), not by the live comparison, which now only guards (a divergent run off the map or any divergent signed-permutation / dyadic pose fails; a mapped run that stops diverging stays split, logged IMPROVED). Every line of the run is byte-identical to the registered run; with the oracle's Invert bound in (bit 16) all 2,963 runs log IMPROVED and every registered line still reproduces. Trace re-recorded (11 of 11). See `## Task 2h`, **Re-review**. |
 
 ## Task 2a: box distance kernels and the entries that reach them
 
@@ -1763,3 +1764,35 @@ review's gate run built): 11 of 11 hit. *Gates* on that build: phases 2, 3 (270/
 (403) and 7 (276) pass; phase 5 fails only on `candidate CANDIDATE-MISSING family=vtables` (871/871;
 shape vtable 626/0); worktree `-RepoRoot` / `-BuildRoot`. Tool tests 765 pass; validate_inventory.py
 passes.
+
+**Re-review (commit 2a5a14b and the evidence commit).** The Invert half of the split was routed by the
+live comparison of the two Inverts, with the frozen count and digest checked only after the loop, so a
+later fix to the vendored Invert would have moved the registered digests and `split_runs`. It is now
+routed by a frozen table, as Task 2c's `kIcePlaneDivergentMeshes` is: `kRay2hInvertDivergentMap`, a
+bitmap of the 16,000 runs (run = 2 x case + control word) holding the 2,963 the pre-flight first
+derived, checked before the family runs against `kRay2hInvertDivergentRuns` (2,963) and the digest of
+its run numbers in order (773d5c7f92630fd0). The live comparison only guards: a run that diverges off
+the map fails, any signed-permutation or dyadic pose that diverges fails (both with the run on
+stderr), and a run on the map that inverts identically stays in the split and is logged `IMPROVED`.
+Every counter comes from the map and the fixed inputs.
+
+The routing set is the same as before, so the run is byte-identical: every output line of the
+harness equals the registered run's (diff of the whole stdout), and all 250 registered
+NxPhysicsCollisionTests lines reproduce. *Stability, shown with a throwaway build*
+(`evidence/convex-mesh-gap-2h-bind-oracle-callees.patch`, which now also routes the pre-flight's
+candidate Invert through the bound oracle 005197 when bit 16 is set): `git apply` the patch, build
+NxPhysicsCollisionTests, run it with `NX_ICE_BIND` 0, 16, 32 and 48, then `git checkout Physics tests`.
+
+| NX_ICE_BIND | split words / runs | IMPROVED runs | other stderr | registered lines reproduced |
+|---|---|---:|---:|---:|
+| 0 | 184 / 109 | 0 | 0 | 250 / 250 |
+| 16 (Invert bound) | 62 / 62 | 2,963 | 0 | 250 / 250 |
+| 32 (Inflate bound) | 123 / 48 | 0 | 0 | 250 / 250 |
+| 48 (both) | 0 / 0 | 2,963 | 0 | 250 / 250 |
+
+With the Invert fixed, only the split's candidate digest and its word / run counts move (the
+registered prefixes, `split_runs=6520` and `invert_split_runs=2963` do not). Trace re-recorded on the
+final build (NxPhysicsCollisionTests sha256 3fe1013958c404b1..., which the gate run built): 11 of 11
+hit. Gates 2, 3 (270/270), 4 (219/219), 6 (403), 7 (276) pass; phase 5 fails only on
+`candidate CANDIDATE-MISSING family=vtables` (871/871); worktree `-RepoRoot` / `-BuildRoot`; tool tests
+765 pass; validate_inventory.py passes.

@@ -53,12 +53,12 @@ index b47c94c..fbbb355 100644
  		float u;
  		float v;
 diff --git a/tests/PhysicsCollisionTests.cpp b/tests/PhysicsCollisionTests.cpp
-index 36c16c2..f2389c0 100644
+index 195b296..ec98433 100644
 --- a/tests/PhysicsCollisionTests.cpp
 +++ b/tests/PhysicsCollisionTests.cpp
-@@ -10025,6 +10025,14 @@ static __declspec(noinline) unsigned nxDriveTask2h(unsigned char* base)
- 	NxDigest invertDigest;
- 	nxDigestInit(&invertDigest);
+@@ -10115,6 +10115,14 @@ static __declspec(noinline) unsigned nxDriveTask2h(unsigned char* base)
+ 	}
+ 	unsigned invertImproved = 0;
  	static Nx2gHullSide lazyHull[2];
 +	// THROWAWAY (evidence/convex-mesh-gap-2h-bind-oracle-callees.patch): NX_ICE_BIND=16 (Invert) and 32 (Inflate)
 +	// binds the oracle's 005197 (Matrix4x4::Invert) into the candidate's 001822 and
@@ -71,3 +71,13 @@ index 36c16c2..f2389c0 100644
  	NxDigest splitOracle, splitCandidate;
  	nxDigestInit(&splitOracle);
  	nxDigestInit(&splitCandidate);
+@@ -10240,6 +10248,9 @@ static __declspec(noinline) unsigned nxDriveTask2h(unsigned char* base)
+ 				memcpy(inverted[1], pose, 64);
+ 				nxSetControl(mode ? kControlSimulate : kControlDefault);
+ 				oracleInvert(inverted[0]);
++				if(gNxDbgInvert2h)
++					((void*(__thiscall*)(void*)) gNxDbgInvert2h)(inverted[1]);
++				else
+ 				nxCandidateMatrixInvert((float*) inverted[1]);
+ 				nxSetControl(kControlDefault);
+ 				live = memcmp(inverted[0], inverted[1], 64) != 0;
