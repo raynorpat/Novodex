@@ -210,4 +210,10 @@ static_assert(offsetof(TriangleMesh, mPresenceFlagB) == 0x90, "presence flag B i
 static_assert(offsetof(TriangleMesh, mArrayA) == 0x94, "array A is at +0x94");
 static_assert(offsetof(TriangleMesh, mArrayB) == 0x98, "array B is at +0x98");
 static_assert(offsetof(TriangleMesh, mConvexMesh) == 0xa0, "the convex mesh is at +0xa0");
+
+//! The internal mesh's vertex normals (phys_fn_002081, 0x00052240), built on
+//! demand (TriangleMeshTopology.cpp, convex-mesh gap Task 2i). Thiscall on the
+//! InternalTriangleMesh with no argument; naked, so declared without parameters
+//! and called from naked code (001844) or through a register thunk.
+void nxMeshComputeVertexNormals();
 #endif

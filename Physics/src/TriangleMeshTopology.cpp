@@ -24,6 +24,10 @@
 //
 // Integer code; built /EHs-c- with the other ICE-shaped files (the listings
 // are frameless).
+//
+// convex-mesh gap Task 2i adds 002081 (0x00052240), the internal mesh's vertex
+// normals on demand, which also sits in TriangleMesh's span; naked, integer
+// code (it allocates through the Foundation allocator and calls 002146).
 
 #include "TriangleMesh.h"
 #include "IceAdjacencies.h"
@@ -95,5 +99,53 @@ __declspec(noinline) void TriangleMesh::createEdgeList()
 			nxIceFree(mEdgeList);
 			mEdgeList = 0;
 			}
+		}
+	}
+
+// phys_fn_002081 (0x00052240, 59 B)
+// The internal mesh's vertex normals, built on demand (thiscall on the
+// InternalTriangleMesh, TriangleMesh +0x08; 001844 calls it when +0x18 is null):
+// a block of vertex count x 12 bytes from the Foundation allocator
+// (nxFoundationSDKAllocator, the import slot 0x101041bc: its slot 2, malloc(size,
+// NX_MEMORY_PERSISTENT)), stored at +0x18 BEFORE it is filled, then
+// NxBuildSmoothNormals(triangle count, vertex count, vertices, triangles, no
+// 16-bit triangles, the block, 1) (002146, cdecl). Neither the block nor the
+// result is tested, as in the listing. The listing's instructions, naked (the
+// allocator slot is read through its import, as the listing reads it).
+extern "C" void* nxTriangleMeshFoundationAllocatorSlot;	// the import slot 0x101041bc
+#pragma comment(linker, "/alternatename:_nxTriangleMeshFoundationAllocatorSlot=__imp_?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A")
+extern "C" void nxTriangleMeshCallBuildSmoothNormals();		// 002146, NxBuildSmoothNormals
+#pragma comment(linker, "/alternatename:_nxTriangleMeshCallBuildSmoothNormals=_NxBuildSmoothNormals")
+__declspec(naked) void nxMeshComputeVertexNormals()
+	{
+	__asm
+		{
+		mov	eax, dword ptr nxTriangleMeshFoundationAllocatorSlot		// 0x00052240
+		push	esi		// 0x00052245
+		mov	esi, ecx		// 0x00052246
+		mov	ecx, dword ptr [eax]		// 0x00052248
+		mov	eax, dword ptr [esi]		// 0x0005224a
+		mov	edx, dword ptr [ecx]		// 0x0005224c
+		lea	eax, [eax + eax*2]		// 0x0005224e
+		push	0		// 0x00052251
+		shl	eax, 2		// 0x00052253
+		push	eax		// 0x00052256
+		call	dword ptr [edx + 8]		// 0x00052257
+		mov	ecx, dword ptr [esi + 0xc]		// 0x0005225a
+		mov	edx, dword ptr [esi + 8]		// 0x0005225d
+		push	1		// 0x00052260
+		push	eax		// 0x00052262
+		push	0		// 0x00052263
+		push	ecx		// 0x00052265
+		mov	ecx, dword ptr [esi + 4]		// 0x00052266
+		mov	dword ptr [esi + 0x18], eax		// 0x00052269
+		mov	eax, dword ptr [esi]		// 0x0005226c
+		push	edx		// 0x0005226e
+		push	eax		// 0x0005226f
+		push	ecx		// 0x00052270
+		call	nxTriangleMeshCallBuildSmoothNormals		// 0x00052271
+		add	esp, 0x1c		// 0x00052276
+		pop	esi		// 0x00052279
+		ret		// 0x0005227a
 		}
 	}

@@ -375,8 +375,7 @@ void NxContactConvexConvex(const NxCollisionShape* shape0, const NxCollisionShap
 // convex-mesh gap Task 2h (ContactConvexHeightfield.cpp; sub-unit M's first
 // half, 0x00041360..0x000427cf). Every row takes register arguments with the
 // caller cleaning the stack (see the definitions), so they are declared without
-// parameters; their callers, 001844 and 001849, are Task 2i's, and until then
-// only the harness reaches them, through register thunks.
+// parameters; their callers are 001844 and 001849 (Task 2i).
 bool nxConvexMeshRay();					// 001822: ecx origin, eax direction, ebx hull; 3 stack
 void nxConvexMeshProject();				// 001824: ebx, esi, edi; 4 stack
 bool nxConvexMeshAxis();				// 001826: ecx, eax, edx; 6 stack
@@ -388,5 +387,16 @@ void nxConvexMeshEdgeDirections();		// 001834: ecx, eax; 5 stack
 bool nxConvexMeshCrossAxes();			// 001836 with 001838: eax, ebx, edx; 11 stack
 bool nxConvexMeshEdgeAxes();			// 001840: ebx; 16 stack
 void nxConvexMeshContacts();			// 001842: edx, ebx, esi, edi; 13 stack
+
+// convex-mesh gap Task 2i (ContactConvexHeightfield.cpp; sub-unit M's second
+// half). The entries have the matrix-A signature; 001844, 001849 and 001851 are
+// cdecl and only called from naked rows (see the definitions).
+void nxConvexHeightfieldContacts();		// 001844 with 001846: cdecl, 8 arguments
+void __cdecl NxContactConvexHeightfield(const NxCollisionShape* convex, const NxCollisionShape* heightfield,
+	NxContactSink* sink, void* context);	// 001847
+void nxConvexMeshContact();				// 001849: cdecl, 9 arguments
+void nxContactConvexMeshEntry();		// 001851: cdecl, the matrix-A signature
+void __cdecl NxContactConvexMesh(const NxCollisionShape* convex, const NxCollisionShape* mesh,
+	NxContactSink* sink, void* context);	// 001853, a jmp to 001851
 
 #endif
