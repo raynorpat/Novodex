@@ -28,6 +28,7 @@ table below.
 | 2g | 2026-09-28T19:11:34 | 2026-09-28T20:36:45 | 33 | 13,431 | The mesh fixture, P-Mesh (the TriangleMesh polygon interface 002217..002231, 002249 in the new `TriangleMeshPolygons.cpp`; 001514, 001516, 001530 in `ConvexHull.cpp`), P-Emit (000875) and P-Plane (001903, 001907, 001909) in `ContactGeneration.cpp`, and sub-unit L (001803..001820) in the new `ContactConvexConvex.cpp`; seven continuations the contract lacked (001518..001522, 001532, 001534, 001905, 001911: 4,061 B). Product forms of 000505, 002211, 002213, 002215. All 29 functions naked and listing-exact (70 call / tail-jump mappings asserted), no /GS cookie or fs: frame. Families polygon_interface (NxPhysicsThirdPartyTests), contact_emit_ext and contact_convex_convex (NxPhysicsCollisionTests; each side builds its own mesh, hull, map and scratch images), exact with raw words; one fixed-input split, contact_convex_convex.pose_divergent (a pose with a denormal word under 0x0f7f: 1 run / 2 words from the vendored InvertPRMatrix in 001653, 0 with the oracle's 005191 bound in). All 18 mutations caught (two strengthened: 001807 needed centred boxes, 001903's first mutation is invisible by construction); the review adds a mutation in the own extent of 001516, 001520, 001522, 001530, 001905, 001909 (all caught). Thirteen registered lines moved when the collision block first stood before wmain: float returns through st(0) in nxUnit/nxReach, fixed in the review (the first diagnosis, the inline_depth pragma, was wrong). 12 lines registered, phase 3 floor 250, phase 4 219. 40 of 40 traced functions hit. Found: the context is a scratch record (+0x4e0/+0x4f0 edge-axis Containers), mesh +0xa8 the kind C map, +0xa4 unread, 001820 ignores 002266's result. See `## Task 2g`. |
 | 2g review | 2026-09-28T20:50:00 | 2026-09-28T21:27:29 | 0 | 0 | Task 2g review: no harness helper returns a float type any more (the collision harness's nxUnit/nxReach did, through st(0), and code added before wmain flipped their inlining and moved thirteen registered lines -- not the inline_depth pragma the first report blamed); every pre-existing line reproduces, also with the Task 2g block moved before wmain in a throwaway build; the tool test fails on any float-returning harness helper. contact_convex_hulls adds hand-built polytopes (prisms of three, five and six sides, an octahedron, an 80-triangle icosphere), exact, split 14 / 4 (0 bound); 000875's stream growth driven (1,000 sequences); every draw folded into the inputs; a mutation in the own extent of 001516, 001520, 001522, 001530, 001905 and 001909, all caught (the whole campaign re-measured on bd7b747). 4 lines added, 3 of this task's re-registered, phase 3 floor 254. Trace re-recorded (40 of 40). See `## Task 2g`, **Review**. |
 | 2h | 2026-09-28T21:52:00 | 2026-09-28T22:51:41 | 12 | 5,160 | Sub-unit M's first half (001822..001842, incl. the continuation 001838) in the new `ContactConvexHeightfield.cpp` (open item 5 decided): every row the listing's instructions, naked, with register arguments and caller-cleaned stacks read from 001844's and 001849's call sites (11 functions listing-exact, 22 call mappings asserted; the vendored Matrix4x4::Invert and TriangleMesh::createEdgeList through /alternatename); no /GS cookie or fs: frame. No candidate caller yet (001844 / 001849 are Task 2i). Families convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts in NxPhysicsCollisionTests (register thunks; the Task 2g hull fixture and six fixed triangle meshes whose EdgeLists each side's 002188 builds; raw words, both control words): all exact; one split, convex_mesh_ray.callee_divergent (a frozen list of hulls whose fans the vendored Triangle::Inflate inflates differently, re-derived by a failing pre-flight, and non-permutation poses through the vendored Invert: 165 words / 91 runs, 0 with the oracle's 005185 / 005197 bound in). A mutation inside each row's own extent, all 12 caught. Contract roles of 001822, 001833, 001834, 001836 and 001840 corrected. 16 lines registered, phase 3 floor 270. 11 of 11 traced functions hit. See `## Task 2h`. |
+| 2h review | 2026-09-28T23:05:00 | 2026-09-28T23:34:41 | 0 | 0 | Task 2h review: dyadic exact-inverse poses (a signed permutation times a power-of-two unit-triangular shear, placed as words) put 001822's pose transform in the exact family, and a mutation inside it (0x000413e1) is caught there (1,518); the non-permutation rule is replaced by a per-case Invert pre-flight (oracle 005197 against the vendored Invert, frozen as 2,963 runs and a digest, failing on change); the bind patch has one bit per callee: Invert 123 words / 48 runs, Inflate 62 / 62 of the split's 184 / 109. convex_mesh_cross folds 001840's inputs; 001842's world pose is an object of its own; a zero-area / collinear strip and a 30-vertex terrain added (EdgeLists still equal). All 16 of the task's lines re-registered, every pre-existing line unchanged; all 13 mutations re-measured and caught. UB: none. Trace re-recorded (11 of 11). See `## Task 2h`, **Review**. |
 
 ## Task 2a: box distance kernels and the entries that reach them
 
@@ -1691,3 +1692,74 @@ polytopes' under 0x027f), are compared only under the split's ceiling (about 45%
 runs); the box hulls keep every arm in the exact family. The rows' callers (001844, 001849) are
 Task 2i's, so the families call the rows with inputs a caller could give rather than through them;
 001840's polygon index and 001836's polygon list are inputs, not 001832's outputs.
+
+**Review (Task 2h review; commit e02dc3d and the evidence commit).** The figures above are the task's
+first registration; the harness and all 16 lines changed here, and the current lines are in
+gate_targets.ps1.
+
+1. *001822's pose transform* (0x000413a1..0x000414e1, about 42% of the row) was compared only under
+   the split, because every non-permutation pose went there. One case in eight now takes a dyadic
+   pose (`nx2hDyadicPose`: a signed permutation times a unit upper-triangular shear with entries in
+   {0, +-0.25, +-0.5, 1, -2} and power-of-two scales on the diagonal, every entry a word placed with
+   the permutation's sign bit, a translation from kPlace2h), half of them with the origin at the
+   translation words, which the transform takes to the hull's origin. The determinant is a power of
+   two, and the two Inverts agree on every one of these runs (the pre-flight below). A mutation inside
+   the transform, `faddp` -> `fsubp` at 0x000413e1
+   (`evidence/convex-mesh-gap-2h-001822own-mutation.patch`), gives convex_mesh_ray 1,518 in the exact
+   family (and moves the split from 184 to 840); 001822's ledger note cites it.
+2. *The Invert attribution.* The bind patch now has one bit per callee: NX_ICE_BIND=16 binds the
+   oracle's 005197 into 001822, 32 binds its 005185 into 001708. On the current inputs the split
+   reads 184 words / 109 runs unbound, 62 / 62 with Invert bound (Inflate's share), 123 / 48 with
+   Inflate bound (Invert's share) and 0 / 0 with both. The rule "any pose that is not a signed
+   permutation" is replaced by a pre-flight per case: each pose inverted by the oracle's 005197 (at
+   base + 0xe4400) and by the vendored Matrix4x4::Invert (`nxCandidateMatrixInvert`, in
+   tests/PhysicsCollisionInflate.cpp for the same reason as the Inflate helper) under the run's
+   control word; a run where the words differ joins the split. Those runs are frozen as a count and
+   a digest of their run numbers (`kRay2hInvertDivergentRuns` = 2,963,
+   `kRay2hInvertDivergentDigest` = 773d5c7f92630fd0), and the family fails, with both on stderr,
+   when the pre-flight derives anything else. The split holds 6,520 of 16,000 runs (7,266 before);
+   the exact family 1,213,440 checks. The coverage line's `invert_split_runs` is the frozen count.
+3. *convex_mesh_cross* folds 001840's own inputs (polygon index, depth, axis, normal), which 001836
+   depends on through +0x4e0.
+4. *convex_mesh_contacts*: 001842's ebx (the hull's world pose) is an object of its own, not the
+   relative pose passed as its ninth argument: one case in two its words are the relative pose's
+   (the mesh at the identity makes them agree), otherwise a pose drawn apart.
+5. *Fixture:* two more meshes, a strip with a zero-area triangle (two corners on one point, distinct
+   indices) and a collinear one (their plane words are zero), and a 6x5 terrain (indices up to 29).
+   Both sides' EdgeLists still agree word for word.
+6. *Undefined behaviour:* none. No row of this task mirrors UB in the inputs driven; the oracle's
+   unguarded reads (001840 with a -1 index, unchecked triangle and polygon indices, 001842 with a NaN
+   normal) are listed above and kept out of the inputs.
+
+*Mutations, re-measured* on e02dc3d between clean controls (all five families 0, the split at 184):
+
+| row | mutation | ray | faces | edges | cross | contacts |
+|---|---|---:|---:|---:|---:|---:|
+| 001822 | `faddp` -> `fsubp` at 0x000413e1 (the pose transform) | 1,518 | 0 | 0 | 0 | 0 |
+| 001822 | `fadd` -> `fsub` at 0x00041555 | 16,580 | 0 | 0 | 0 | 0 |
+| 001824 | 0x000416a5 | 0 | 15,552 | 4,575 | 5,372 | 0 |
+| 001826 | 0x000417fe | 0 | 11,419 | 3,556 | 7,572 | 0 |
+| 001828 | 0x00041875 | 0 | 11,657 | 0 | 0 | 0 |
+| 001830 | 0x00041977 | 0 | 17,642 | 0 | 0 | 0 |
+| 001832 | 0x00041a19 | 0 | 114,926 | 0 | 0 | 0 |
+| 001833 | 0x00041be7 | 0 | 0 | 20,684 | 0 | 0 |
+| 001834 | 0x00041cae | 0 | 0 | 2,034 | 5,084 | 0 |
+| 001836 | 0x00042057 | 0 | 0 | 0 | 8,416 | 0 |
+| 001838 | 0x00042249 | 0 | 0 | 0 | 36,773 | 0 |
+| 001840 | 0x000424e3 | 0 | 0 | 23,010 | 0 | 0 |
+| 001842 | 0x0004258d | 0 | 0 | 0 | 0 | 451 |
+
+*Registered lines, re-registered* (the task's own 16; every pre-existing line unchanged):
+- `collision name=convex_mesh_ray index=- rva=0x00041360 owner=phys_fn_001822 checks=1213440 oracle=c60b31b66fcb3424`
+- `collision name=convex_mesh_ray.callee_divergent index=- rva=0x00041360 owner=phys_fn_001822 checks=834560 oracle=f90e10499b9a9e86`
+- `collision input name=convex_mesh_ray words=466510 input=0368f06f352174fd`
+- `collision coverage name=convex_mesh_ray hulls=22 cases=8000 hits=2380 misses=5620 lazy=537 lazy_polygons=3222 posed=5009 posed_exact=1957 posed_dyadic=979 invert_split_runs=2963 split_runs=6520 input_snan=363`
+- faces, edges, cross and contacts: new digests with the two meshes, the cross family's inputs and
+  001842's world pose (faces 4,992,000 checks, edges 2,169,480, cross 1,273,848, contacts 185,684 with
+  684 calls with contacts and 2,117 contacts).
+
+*Trace* re-recorded on the final build (NxPhysicsCollisionTests sha256 9ecb34c9ac337c10..., which the
+review's gate run built): 11 of 11 hit. *Gates* on that build: phases 2, 3 (270/270), 4 (219/219), 6
+(403) and 7 (276) pass; phase 5 fails only on `candidate CANDIDATE-MISSING family=vtables` (871/871;
+shape vtable 626/0); worktree `-RepoRoot` / `-BuildRoot`. Tool tests 765 pass; validate_inventory.py
+passes.

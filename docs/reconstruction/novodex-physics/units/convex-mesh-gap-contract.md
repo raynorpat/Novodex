@@ -782,11 +782,16 @@ mappings asserted). No continuation was missing from the row list (001838 was li
 - *Differentials* (NxPhysicsCollisionTests, nxDriveTask2h): convex_mesh_ray (001822),
   convex_mesh_faces (001832), convex_mesh_edges (001840), convex_mesh_cross (001836 after 001840)
   and convex_mesh_contacts (001842), each entry at its own address through a register thunk over
-  the Task 2g hull fixture and six fixed triangle meshes (a height-field-like terrain, a flat grid,
-  a roof, a valley, a closed pyramid, one tilted triangle), with the hulls placed on, across and
-  below them. All exact; convex_mesh_ray's split (.callee_divergent: the frozen list of hulls whose
-  fans the vendored Triangle::Inflate, 005185, inflates differently, and non-permutation poses
-  through the vendored Invert) is 0 with the oracle's pair bound in.
+  the Task 2g hull fixture and eight fixed triangle meshes (a height-field-like terrain, a flat grid,
+  a roof, a valley, a closed pyramid, one tilted triangle, a strip with a zero-area and a collinear
+  triangle, a 30-vertex terrain), with the hulls placed on, across and below them. All exact;
+  001822's pose transform is compared exactly on dyadic exact-inverse poses (the Task 2h review).
+  convex_mesh_ray's split (.callee_divergent) holds two frozen lists re-derived by failing
+  pre-flights -- the hulls whose fans the vendored Triangle::Inflate (005185) inflates differently,
+  and the runs whose pose the vendored Matrix4x4::Invert (005197) inverts differently -- and reads 0
+  with the oracle's pair bound in (123 words / 48 runs are Invert's, 62 / 62 Inflate's).
+- *Undefined behaviour.* None is mirrored or driven by these twelve rows; the three unguarded reads
+  above are the oracle's, kept out of the inputs.
 
 - **Evidence.** The asserts (001847 line 583, 001849 line 2594). 001822..001846 lie between the
   convex/convex cluster and 001847 and are called only from 001844 and 001849; they may be the

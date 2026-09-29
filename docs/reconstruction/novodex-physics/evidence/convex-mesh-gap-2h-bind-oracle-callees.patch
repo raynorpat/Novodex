@@ -53,21 +53,21 @@ index b47c94c..fbbb355 100644
  		float u;
  		float v;
 diff --git a/tests/PhysicsCollisionTests.cpp b/tests/PhysicsCollisionTests.cpp
-index da19f76..4587fc9 100644
+index 36c16c2..f2389c0 100644
 --- a/tests/PhysicsCollisionTests.cpp
 +++ b/tests/PhysicsCollisionTests.cpp
-@@ -9949,6 +9949,14 @@ static __declspec(noinline) unsigned nxDriveTask2h(unsigned char* base)
- 	unsigned perMode[2] = { 0, 0 };
- 	unsigned cases = 0, hits = 0, misses = 0, lazy = 0, lazyPolygons = 0, posed = 0, posedExact = 0, inputSnan = 0;
+@@ -10025,6 +10025,14 @@ static __declspec(noinline) unsigned nxDriveTask2h(unsigned char* base)
+ 	NxDigest invertDigest;
+ 	nxDigestInit(&invertDigest);
  	static Nx2gHullSide lazyHull[2];
-+	// THROWAWAY (evidence/convex-mesh-gap-2h-bind-oracle-callees.patch): NX_ICE_BIND=16
++	// THROWAWAY (evidence/convex-mesh-gap-2h-bind-oracle-callees.patch): NX_ICE_BIND=16 (Invert) and 32 (Inflate)
 +	// binds the oracle's 005197 (Matrix4x4::Invert) into the candidate's 001822 and
 +	// its 005185 (Triangle::Inflate) into the candidate's 001708.
 +	extern void* gNxDbgInvert2h;
 +	extern void* gNxDbgInflate2h;
-+	const bool bind2h = getenv("NX_ICE_BIND") && (atoi(getenv("NX_ICE_BIND")) & 16);
-+	gNxDbgInvert2h = bind2h ? (void*) (base + 0x000e4400) : 0;
-+	gNxDbgInflate2h = bind2h ? (void*) (base + kIceTriangleInflateRva) : 0;
++	const int bind2h = getenv("NX_ICE_BIND") ? atoi(getenv("NX_ICE_BIND")) : 0;
++	gNxDbgInvert2h = (bind2h & 16) ? (void*) (base + 0x000e4400) : 0;
++	gNxDbgInflate2h = (bind2h & 32) ? (void*) (base + kIceTriangleInflateRva) : 0;
  	NxDigest splitOracle, splitCandidate;
  	nxDigestInit(&splitOracle);
  	nxDigestInit(&splitCandidate);
