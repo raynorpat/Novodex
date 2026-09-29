@@ -745,14 +745,14 @@ table above where it guessed:
 | 001838 | 0x00042140 | 790 | reconstructed (2h) | 3 | continuation | continuation of 001836 |
 | 001840 | 0x00042460 | 247 | reconstructed (2h) | 3 | 001849 | a triangle's axes: its normal (001833), then the second list's active edges gathered (001834) |
 | 001842 | 0x00042560 | 623 | reconstructed (2h) | 3 | 001849 | a hull polygon and a triangle to 001909, the one more nearly along the contact normal first |
-| 001844 | 0x000427d0 | 2,170 | discovered | 3 | 001847 | convex against mesh triangles (2,170 B + continuation 001846, alloca): 001822, 001855, 001692, 001760 |
-| 001846 | 0x00043050 | 640 | discovered | 3 | continuation | continuation of 001844 |
-| 001847 | 0x000432d0 | 943 | discovered | 3 | 001876 | ContactConvexHeightfield.cpp entry (943 B): line 583, OBBCollider (005067), 001844 |
-| 001849 | 0x00043680 | 2,899 | discovered | 3 | 001758, 001851 | ContactConvexHeightfield.cpp main (2,899 B): line 2594, RadixSort, Triangle::Area/Center, 001832/001836/001840/001842, 001653 |
-| 001851 | 0x000441e0 | 790 | discovered | 3 | 001853 | convex/height-field entry: poses, CCD guard (002266), 001849 |
-| 001853 | 0x00044500 | 5 | discovered | 3 | 001876 | five-byte jmp to 001851 (called by 001876) |
+| 001844 | 0x000427d0 | 2,170 | reconstructed (2i) | 3 | 001847 | the hull against the height field's touched triangles (Task 2i erratum: a height field, with its up axis from +0x78 / +0x7c): hull vertices under a triangle (001760), triangle vertices inside the hull (001822 along the up vector), then 001846; 002081, 002188, 001461 on first use (2,170 B + continuation 001846, alloca) |
+| 001846 | 0x00043050 | 640 | reconstructed (2i) | 3 | continuation | continuation of 001844: hull edges against active triangle edges (001855, 001692) |
+| 001847 | 0x000432d0 | 943 | reconstructed (2i) | 3 | 001876 | the convex / **height-field** entry (Task 2i erratum): the convex's Prunable world box through OBBCollider::Collide (005067) with no primitive tests; a failure reported (line 583); 001844 |
+| 001849 | 0x00043680 | 2,899 | reconstructed (2i) | 3 | 001758, 001851 | the convex against a triangle mesh (2,899 B): 001653, Collide with primitive tests (a failure reported, line 2594), the touched triangles radix-sorted by convex part (+0x94) and flat part (+0x98), Triangle::Area/Center, 001832/001836/001840/001842 |
+| 001851 | 0x000441e0 | 790 | reconstructed (2i) | 3 | 001853 | the convex / **triangle-mesh** entry's body (Task 2i erratum: not the height field's): CCD guard (002266), poses, the convex mesh's local bounds (+0x44..+0x58) as a world box, 001849 |
+| 001853 | 0x00044500 | 5 | reconstructed (2i) | 3 | 001876 | five-byte jmp to 001851 (called by 001876 when neither mesh is a height field) |
 
-Totals: 18 rows; reconstructed 5,160 B (Task 2h: 001822..001842), discovered 7,447 B
+Totals: 18 rows; reconstructed 12,607 B (Task 2h: 001822..001842, 5,160 B; Task 2i: 001844..001853, 7,447 B)
 
 **Written by Task 2h** (`Physics/src/ContactConvexHeightfield.cpp`, every row the listing's
 instructions, naked; evidence/convex-mesh-gap-2h-listing-compare.py: 11 functions equal, 22 call
@@ -794,12 +794,58 @@ mappings asserted). No continuation was missing from the row list (001838 was li
 - *Undefined behaviour.* None is mirrored or driven by these twelve rows; the three unguarded reads
   above are the oracle's, kept out of the inputs.
 
+**Written by Task 2i** (`Physics/src/ContactConvexHeightfield.cpp`, after the Task 2h rows; every row
+the listing's instructions, naked; evidence/convex-mesh-gap-2i-listing-compare.py: 6 functions
+equal, 51 call and tail-jump mappings asserted). No continuation was missing (001846 was listed).
+- *The entries (erratum).* 001876 calls 001847 when one mesh is a height field (+0x7c != 0xff) and
+  the other convex, and 001853 (-> 001851) when neither is a height field and one is convex; the
+  survey had the two roles the other way round. 001844 reads the height field's +0x78 (bits 0-1 the
+  up component, bit 3 its sign: -1.0f at 0x1010687c) and +0x7c (the vertical axis; the other two
+  axes are the bytes of 0x1000201 >> 8 * axis); +0x80 is read by none of Task 2i's rows.
+- *What the rows read.* The context is the scene record: +0x110 an OBBCollider (flags +0x04:
+  001847 sets OPC_NO_PRIMITIVE_TESTS 0x10 and clears 1 and 2, 001849 clears all three; the touched
+  Container pointer at +0x10), +0x244 its OBBCache (the Container pointer, then the fat box; as 000647
+  builds them), plus the Task 2g/2h fields. The mesh: +0x08 (vertex count, 002081), +0x0c, +0x10,
+  +0x14, +0x18 (16-bit materials or null), +0x1c (a triangle remap or null), +0x20 (vertex normals,
+  002081 on demand), +0x24 (16-byte triangle planes, 001849), +0x28 (the OPCODE model), +0x88, +0x94
+  (convex part per triangle) and +0x98 (flat part per triangle), both read without a presence test.
+  The convex mesh: +0x04, +0xa0 (the hull: +0x0c, +0x10, +0x14 normals via 001461, +0x38 / +0x3c edges
+  via 001502), +0xa8, and +0x44..+0x58 its local bounds (001851).
+- *Conventions.* 001847, 001851 and 001853 cdecl with the matrix-A signature; 001844 cdecl with eight
+  arguments (context, touched count and indices, hull, the convex's 4x4, the two shapes, the sink);
+  001849 cdecl with nine (the two shapes, the two 4x4s, the polygon interface, the support map, the
+  box, the sink, the context).
+- *Callees through aliases.* OBBCollider::Collide, RadixSort (ctor, dtor, Sort, SetRankBuffers),
+  Triangle::Area / Center, Prunable::UpdateWorldAABB and ConvexHull::ComputeVertexNormals through
+  /alternatename; FoundationSDK::instance, FoundationSDK::error and nxFoundationSDKAllocator through
+  their `__imp_` slots; the `_alloca` probes through the candidate CRT's `_chkstk` (005695 in the
+  oracle). 001847's `cmp ax, 0xffff` is emitted as the listing's bytes.
+- *Wiring.* 001844 tests 001855's result in eax (0x000430b2): Task 2b's C++ 001855 now returns NxU32
+  0 / 1 (as the listing: `xor eax, eax` / `mov eax, 1`), not bool.
+- *Listing findings.* 001844 remaps the triangle index through +0x1c in place once per emitted
+  contact (0x00042dfb, 0x00042f6e, 0x0004322e), so a triangle's later contacts carry the remap applied
+  again.
+- *Not driven (the oracle reads memory it does not own, or breaks).* A pruning handle of 0xffff
+  (001847 reads the null box, 0x000434ab); a single-triangle height field (its model has no tree,
+  which the no-primitive-test query walks, 0x000de215 in 005067); an out-of-range remap word; a NaN pose
+  into 001849 (001832's -1 index reaches slot 4); a failed query with no Foundation instance (the
+  guard's `int3`). UB mirrored: none.
+- *Differentials* (NxPhysicsCollisionTests, nxDriveTask2i): contact_convex_heightfield (001847),
+  contact_convex_mesh (001853) and mesh_vertex_normals (002081), each side on its own images (each
+  mesh's OPCODE model built by that side's own Model::Build, with splitting rules and a tree kind
+  chosen so the two trees are equal word for word -- no quantized tree of a multi-triangle mesh is;
+  each side's own OBBCollider; a Foundation SDK with a recording stream and allocator). All exact;
+  two splits routed by frozen run lists and guarded by the live comparison: 2 runs of the height-field
+  family (the vendored Triangle::Inflate, 005185) and 44 of the mesh family (the vendored
+  OBBCollider::Collide, 005067), each 0 with the oracle's callee bound in.
+
 - **Evidence.** The asserts (001847 line 583, 001849 line 2594). 001822..001846 lie between the
   convex/convex cluster and 001847 and are called only from 001844 and 001849; they may be the
   head of `ContactConvexHeightfield.cpp` or the tail of the convex/convex file (the .rdata cannot
   separate them: 001838 shares 001816's double). They are assigned here because every caller is
   here.
-- **Entry rows.** 001851 (called through the 5-byte jmp 001853 by 001876) and 001847 (called by
+- **Entry rows.** (Task 2i: 001847 is the height-field entry and 001853 / 001851 the triangle-mesh
+  one; see above.) 001851 (called through the 5-byte jmp 001853 by 001876) and 001847 (called by
   001876); 001849 also by 001758 (box/mesh).
 - **Callees outside.** 001653, 001661 (D); 001692 (E); 001708 (F); 001760 (I); 001855 (N);
   **001472** (from 001822) and **001461, 001502** (from 001844) - P-Hull; **002188** (152 B,
@@ -916,6 +962,12 @@ result); `angleAtVertex` now calls it, and step_smooth_normals is unchanged. 001
 sit in TriangleMesh's own span, but a file of their own keeps the asset harness, which links
 TriangleMesh.cpp, free of the ICE rows). Neither tests its allocation before calling Init on it,
 as the listing does not; both return nothing a caller reads.
+
+**Written by Task 2i.** 002081 is a naked row in `Physics/src/TriangleMeshTopology.cpp` (the
+TriangleMesh span's file of its own), thiscall on the InternalTriangleMesh: a block of vertex count
+x 12 bytes from nxFoundationSDKAllocator (import slot 0x101041bc, slot 2, type 0) stored at +0x18
+before it is filled, then NxBuildSmoothNormals(triangle count, vertex count, vertices, triangles, 0,
+the block, 1); nothing is tested. mesh_vertex_normals drives it exactly under both control words.
 
 **Written by Task 2g.** P-Mesh, P-Emit and P-Plane, every row the listing's instructions, naked
 (evidence/convex-mesh-gap-2g-listing-compare.py: 29 functions equal, 70 call and tail-jump mappings

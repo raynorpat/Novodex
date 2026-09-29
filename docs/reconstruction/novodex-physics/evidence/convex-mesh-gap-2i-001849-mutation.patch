@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ContactConvexHeightfield.cpp b/Physics/src/ContactConvexHeightfield.cpp
+index 69d13a7..b38dcd1 100644
+--- a/Physics/src/ContactConvexHeightfield.cpp
++++ b/Physics/src/ContactConvexHeightfield.cpp
+@@ -3791,7 +3791,7 @@ L439e2:
+ 		mov	dword ptr [ebp + 0x10], eax		// 0x00043abf
+ 		fstp	dword ptr [ebp - 0x17c]		// 0x00043ac2
+ 		fxch	st(1)		// 0x00043ac8
+-		fadd	dword ptr [ebp - 0x18]		// 0x00043aca
++		fsub	dword ptr [ebp - 0x18]		// 0x00043aca
+ 		fstp	dword ptr [ebp - 0x18]		// 0x00043acd
+ 		fadd	dword ptr [ebp - 0x14]		// 0x00043ad0
+ 		fstp	dword ptr [ebp - 0x14]		// 0x00043ad3

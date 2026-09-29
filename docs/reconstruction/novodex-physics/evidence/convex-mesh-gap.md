@@ -30,6 +30,7 @@ table below.
 | 2h | 2026-09-28T21:52:00 | 2026-09-28T22:51:41 | 12 | 5,160 | Sub-unit M's first half (001822..001842, incl. the continuation 001838) in the new `ContactConvexHeightfield.cpp` (open item 5 decided): every row the listing's instructions, naked, with register arguments and caller-cleaned stacks read from 001844's and 001849's call sites (11 functions listing-exact, 22 call mappings asserted; the vendored Matrix4x4::Invert and TriangleMesh::createEdgeList through /alternatename); no /GS cookie or fs: frame. No candidate caller yet (001844 / 001849 are Task 2i). Families convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts in NxPhysicsCollisionTests (register thunks; the Task 2g hull fixture and six fixed triangle meshes whose EdgeLists each side's 002188 builds; raw words, both control words): all exact; one split, convex_mesh_ray.callee_divergent (a frozen list of hulls whose fans the vendored Triangle::Inflate inflates differently, re-derived by a failing pre-flight, and non-permutation poses through the vendored Invert: 165 words / 91 runs, 0 with the oracle's 005185 / 005197 bound in). A mutation inside each row's own extent, all 12 caught. Contract roles of 001822, 001833, 001834, 001836 and 001840 corrected. 16 lines registered, phase 3 floor 270. 11 of 11 traced functions hit. See `## Task 2h`. |
 | 2h review | 2026-09-28T23:05:00 | 2026-09-28T23:34:41 | 0 | 0 | Task 2h review: dyadic exact-inverse poses (a signed permutation times a power-of-two unit-triangular shear, placed as words) put 001822's pose transform in the exact family, and a mutation inside it (0x000413e1) is caught there (1,518); the non-permutation rule is replaced by a per-case Invert pre-flight (oracle 005197 against the vendored Invert, frozen as 2,963 runs and a digest, failing on change); the bind patch has one bit per callee: Invert 123 words / 48 runs, Inflate 62 / 62 of the split's 184 / 109. convex_mesh_cross folds 001840's inputs; 001842's world pose is an object of its own; a zero-area / collinear strip and a 30-vertex terrain added (EdgeLists still equal). All 16 of the task's lines re-registered, every pre-existing line unchanged; all 13 mutations re-measured and caught. UB: none. Trace re-recorded (11 of 11). See `## Task 2h`, **Review**. |
 | 2h re-review | 2026-09-28T23:40:00 | 2026-09-28T23:47:52 | 0 | 0 | Task 2h re-review: convex_mesh_ray's Invert split is routed by a frozen bitmap of its 2,963 runs (kRay2hInvertDivergentMap, checked against the frozen count and digest), not by the live comparison, which now only guards (a divergent run off the map or any divergent signed-permutation / dyadic pose fails; a mapped run that stops diverging stays split, logged IMPROVED). Every line of the run is byte-identical to the registered run; with the oracle's Invert bound in (bit 16) all 2,963 runs log IMPROVED and every registered line still reproduces. Trace re-recorded (11 of 11). See `## Task 2h`, **Re-review**. |
+| 2i | 2026-09-28T23:49:00 | 2026-09-29T01:03:54 | 7 | 7,506 | Sub-unit M's second half (001844 with its continuation 001846, 001847, 001849, 001851, 001853) appended to `ContactConvexHeightfield.cpp` and 002081 in `TriangleMeshTopology.cpp`: every row the listing's instructions, naked (6 functions ALL EQUAL, 51 call / tail-jump mappings asserted; import slots through `__imp_` aliases, the report strings by their bytes); no /GS cookie or fs: frame. 001844 / 001849 call the Task 2h rows directly; Task 2b's 001855 now returns its result in eax (001844 tests eax). Families contact_convex_heightfield (001847), contact_convex_mesh (001853) and mesh_vertex_normals (002081) in NxPhysicsCollisionTests over each side's own images (ten meshes incl. a 289-vertex / 512-triangle height field, each side's own OPCODE model -- rules and kind chosen so the trees agree, no quantized tree does --, OBBCollider, EdgeList, normals; a Foundation SDK for the "Opcode is not OK." reports and 002081's blocks): all exact under both control words; two splits routed by frozen run lists (2 runs, Triangle::Inflate; 44 runs, OBBCollider::Collide), 0 with the oracle's callee bound in, all 261 registered lines unchanged under the bind. Contract erratum: 001847 is the height-field entry, 001853/001851 the triangle-mesh one. Found: 001844 remaps in place per contact; a single-triangle height field walks a null tree. All 7 mutations caught. 11 lines registered, phase 3 floor 281. 6 of 6 traced functions hit. See `## Task 2i`. |
 
 ## Task 2a: box distance kernels and the entries that reach them
 
@@ -1796,3 +1797,139 @@ final build (NxPhysicsCollisionTests sha256 3fe1013958c404b1..., which the gate 
 hit. Gates 2, 3 (270/270), 4 (219/219), 6 (403), 7 (276) pass; phase 5 fails only on
 `candidate CANDIDATE-MISSING family=vtables` (871/871); worktree `-RepoRoot` / `-BuildRoot`; tool tests
 765 pass; validate_inventory.py passes.
+
+## Task 2i: sub-unit M's second half (the convex / height-field and convex / mesh entries) and 002081
+
+**Rows (7, 7,506 B), all `discovered` -> `reconstructed`.** 001844 with its continuation 001846,
+001847, 001849, 001851 and 001853 appended to `Physics/src/ContactConvexHeightfield.cpp` (already on
+the `/arch:IA32` and `/EHs-c-` lists); 002081 in `Physics/src/TriangleMeshTopology.cpp` (the
+TriangleMesh span's file of its own; integer code, on the `/EHs-c-` list). No continuation was missing
+from the contract's list.
+
+| row | bytes | candidate | role |
+|---|---:|---|---|
+| 001844 + 001846 | 2,170 + 640 | `nxConvexHeightfieldContacts` | the hull against the height field's touched triangles: hull vertices under a triangle, triangle vertices inside the hull (001822 along the up vector), hull edges against active triangle edges (001855, 001692); contacts through 000875 |
+| 001847 | 943 | `NxContactConvexHeightfield` | the convex / height-field entry: the convex's Prunable world box through OBBCollider::Collide (no primitive tests), then 001844 |
+| 001849 | 2,899 | `nxConvexMeshContact` | the convex against a triangle mesh: Collide (primitive tests), the touched triangles radix-sorted by convex part and flat part, the Task 2h separating-axis rows per part, 001842 |
+| 001851 | 790 | `nxContactConvexMeshEntry` | the convex / triangle-mesh entry's body: the CCD guard (002266), the poses, the convex's local bounds as a world box, 001849 |
+| 001853 | 5 | `NxContactConvexMesh` | a `jmp` to 001851 (the address 001876 calls) |
+| 002081 | 59 | `nxMeshComputeVertexNormals` | the internal mesh's vertex normals on demand: a Foundation-allocator block, then 002146 |
+
+*Form.* Every row is the listing's instructions, naked, generated from the Capstone listing (the
+Task 2h converter; the filler between 001844 and 001846 emitted as its bytes, as is 001847's
+`cmp ax, 0xffff`, whose listing encoding 66 3d ff ff MSVC's assembler would re-encode as 66 83 f8 ff).
+001844 and 001849 call the Task 2h rows directly (the Task 2h families keep their register thunks).
+The vendored OBBCollider::Collide, RadixSort (constructor, destructor, Sort, SetRankBuffers),
+Triangle::Area and Center, Prunable::UpdateWorldAABB and ConvexHull::ComputeVertexNormals (001461)
+are reached through /alternatename aliases of their decorated names; FoundationSDK::instance,
+FoundationSDK::error and nxFoundationSDKAllocator through aliases of their `__imp_` slots, so the
+listing's `mov ecx, [0x101041b0]`, `call [0x101041b4]` and `mov eax, [0x101041bc]` stay slot reads.
+The report's two strings (`\Epic\Novodex\SDKs\Physics\src\ContactConvexHeightfield.cpp`, `Opcode is
+not OK.`) are the candidate's own, with the oracle's bytes.
+`evidence/convex-mesh-gap-2i-listing-compare.py`: 6 functions ALL EQUAL (import slots compared by
+their names, pushed strings by their bytes, absolute operands by the bytes they read), 51 call and
+tail-jump mappings asserted (`MAPPINGS checked=51 unexpected=0`).
+
+*/GS, frames and code form.* A scan of the built NxPhysics.dll over the six functions finds no
+reference to `___security_cookie` (0x100fb480) and no `fs:` access; the oracle has none. The 13
+`_alloca` probes of 001844 and 001849 go through the candidate CRT's `_chkstk` where the oracle calls
+its static copy 005695 (the same contract).
+
+*Calling conventions* (from 001876's, 001847's and 001851's call sites): 001847, 001851 and 001853
+cdecl with the matrix-A signature (convex shape, other shape, sink, context); 001844 cdecl with eight
+arguments, 001849 cdecl with nine; 002081 thiscall on the InternalTriangleMesh (TriangleMesh +0x08).
+
+*Wiring fix to Task 2b's 001855.* 001844 tests 001855's result with `test eax, eax` (0x000430b2);
+the listing's 001855 returns 0 or 1 in the whole of eax. The C++ row returned `bool`, so its upper
+bytes were undefined and the candidate 001844 took phantom edge crossings (the first run emitted past
+the sink's stream). It now returns NxU32; every pre-existing collision line, candidate digests
+included, is unchanged.
+
+*Allocators.* 002081 allocates through the imported nxFoundationSDKAllocator (slot 2, type 0), not
+the 004803 getter; nothing else in the seven allocates (001461, 002188 and the vendored RadixSort /
+Container use their own).
+
+*Listing findings (the contract is corrected).*
+- The entries' roles were swapped in the survey: 001847 is the convex / **height-field** entry
+  (001876 calls it when one mesh's +0x7c is not 0xff and the other is convex) and 001853 / 001851 the
+  convex / **triangle-mesh** entry (neither a height field). 001844 reads the height field's +0x78
+  (the up component in bits 0-1, its sign in bit 3) and +0x7c (the vertical axis; the other two axes
+  are the bytes of 0x1000201 >> 8 * axis); +0x80 is read by none of the seven.
+- 001849 reads TriangleMesh +0x94 (the convex part of each triangle) and +0x98 (the flat part),
+  +0x24 (16-byte triangle planes), +0x18 (16-bit materials), +0x1c (a triangle remap), +0x28 (the
+  OPCODE model) and +0x44..+0x58 of the convex mesh (its local bounds, via 001851).
+- The context is the scene record: +0x110 an OBBCollider (flags at +0x04, the touched Container
+  pointer at +0x10), +0x244 its OBBCache, as the scene constructor 000647 builds them.
+- 001844 remaps the triangle index through +0x1c **in place, once per emitted contact**
+  (0x00042dfb, 0x00042f6e, 0x0004322e), so a triangle's second and later contacts carry the remap
+  applied again.
+
+*Not driven (the oracle would read memory it does not own, or break).* A pruning handle of 0xffff
+(001847 reads the null box, 0x000434ab); a single-triangle height field (its model has no tree, which
+the no-primitive-test query walks: 005067 reads through null at 0x000de215); an out-of-range remap word
+(read at a remapped index); a NaN pose into 001849 (001832's -1 index reaches slot 4 through 001840 /
+001834); the failed-query arm without a Foundation instance (the listing's guard breaks). The harness
+keeps each as a fixed-input rule. UB mirrored: none (the rows are the listing's instructions).
+
+**Differential** (`NxPhysicsCollisionTests`, `nxDriveTask2i`, after `nxDriveTask2h`, whose helpers it
+reuses). Each entry at its own address with its own convention, on each side's own images: the Task 2g
+box hulls (built by each side's own 001472 / 001502) and polytopes, with and without kind C maps, their
+convex mesh images carrying the local bounds (the boxes' lattice words, or offline words for the
+polytopes); TriangleMesh images of ten meshes -- the Task 2h eight and two larger height fields
+generated offline (scratchpad genmesh2i.py: 17 x 17 vertices / 512 triangles with quarter-step heights,
+10 x 9 / 144 with cliffs) -- each with an OPCODE Model built by that side's own Model::Build over a
+MeshInterface of its own (tests/PhysicsCollisionOpcode.cpp; the splitting rules and tree kind per mesh
+chosen by an offline probe of 20 rule sets x 4 kinds so that both sides' trees are equal word for word,
+links as offsets -- on these lattice meshes many splits tie, and no quantized tree of a multi-triangle
+mesh agrees; the fixture compares the trees again), its EdgeList (002188 on first use), vertex normals
+(002081 on first use), materials, a remap (a permutation) and three part layouts; a context with an
+OBBCollider and an OBBCache Container built by the side's own constructors; staged shapes and sinks
+as in contact_convex_convex. A Foundation SDK with a recording output stream and a recording
+allocator exists while the block runs: the "Opcode is not OK." reports (a model copy without its mesh
+interface makes Collide fail) are compared as (code, line, message, file) and 002081's blocks come from
+the recording allocator. Every run starts from the same visited words and empty Containers, so one
+run's differences cannot reach the next. Every float input is a word written as bits; every draw is
+folded into the input digest; both control words.
+
+| family | entry | checks | result |
+|---|---|---:|---|
+| contact_convex_heightfield | 001847 | 10,307,868 | exact (6,000 cases; 680 with contacts, 8,341 contacts; 652 normal builds; 98 failed queries; 2,008 dyadic poses; 382 raw box words) |
+| contact_convex_heightfield.callee_divergent | 001847 | 2,856 | 3 words / 2 runs (a frozen list), ceiling 3 / 2; 0 with the oracle's Triangle::Inflate (005185) bound in |
+| contact_convex_mesh | 001853 | 7,964,768 | exact (5,000 cases; 417 with contacts, 3,014 contacts; 76 failed queries; 3,124 rotated) |
+| contact_convex_mesh.callee_divergent | 001853 | 63,316 | 51 words / 44 runs (a frozen list), ceiling 51 / 44; 0 with the oracle's OBBCollider::Collide (005067) bound in |
+| mesh_vertex_normals | 002081 | 45,408 | exact (10 meshes x 4 variants, raw words, both control words) |
+
+*Splits.* Each is a frozen list of runs (`2 * case + control word`), checked against its count and the
+digest of its run numbers before the family runs (kHeightfield2iDivergent: 2 runs, 60f18262738970e0;
+kConvexMesh2iDivergent: 44, 5478912a9c90a7ca). The lists route; the live comparison only guards: a run
+off its list that diverges is the family's mismatch and is detailed on stderr as FAIL; a listed run
+that agrees stays in the split and is logged IMPROVED. Attribution, with the throwaway bind patch
+`evidence/convex-mesh-gap-2i-bind-oracle-callees.patch` (one bit per callee: 1 OBBCollider::Collide,
+2 001855, 4 001692, 8 Triangle::Area / Center, 16 Matrix4x4::Invert, 32 Triangle::Inflate, 64
+InvertPRMatrix, 128 001760): bit 1 alone empties contact_convex_mesh's split (44 IMPROVED), bit 32
+alone empties contact_convex_heightfield's (2 IMPROVED); bits 2, 4, 8, 16, 64 and 128 alone move
+nothing. With bits 0, 1, 32 and 33 all 261 registered NxPhysicsCollisionTests lines reproduce (the
+throwaway build's harness leaves the touched Container, grown by the oracle's Container code, unreleased
+under bit 1). Lattice 0x0f7f coverage: contact_convex_heightfield is exact under 0x0f7f with 680
+runs with contacts, 001855's square root included (lattice and dyadic inputs).
+
+**Mutations** (each inside its row's own extent; `evidence/convex-mesh-gap-2i-<row>-mutation.patch`;
+NxPhysicsCollisionTests rebuilt after each and after each `git checkout`, between un-mutated controls
+on d6c8919 with every family at 0 and the splits at 3 and 51 words):
+
+| row | mutation | caught |
+|---|---|---|
+| 001844 | `faddp` -> `fsubp` at 0x00042893 (a hull vertex's world transform) | contact_convex_heightfield 45,457 |
+| 001846 | `fsub` -> `fadd` at 0x00043149 (a triangle edge's z difference) | contact_convex_heightfield 51,253 |
+| 001847 | `fadd` -> `fsub` at 0x000434c3 (the query box's centre) | contact_convex_heightfield 16,807 |
+| 001849 | `fadd` -> `fsub` at 0x00043aca (the area-weighted centre's sum) | contact_convex_mesh 10,999 |
+| 001851 | `fadd` -> `fsub` at 0x0004433d (the local bounds' centre) | contact_convex_mesh 13,049 |
+| 001853 | `jmp 001851` -> `ret` at 0x00044500 | contact_convex_mesh 11,580 |
+| 002081 | `push 1` -> `push 0` at 0x00052260 (the flip argument) | mesh_vertex_normals 10,303 |
+
+**Pre-existing lines.** Every collision line printed before the block is unchanged, full lines
+(candidate digests included) compared against the Task 2h run.
+
+**Trace** (`evidence/convex-mesh-gap-trace-2i.txt`): one-shot cdb breakpoints on the six candidate
+functions (001846 is a body of 001844) in one full run of NxPhysicsCollisionTests (sha256 4f7d6076b838018ecf6557b1ab46f877c06342b2c6b39b50279003685650f0aa): 6 of 6
+hit, and the run closed with `collision=pass`.

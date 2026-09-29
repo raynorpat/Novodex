@@ -33644,13 +33644,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactConvexHeightfield.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/725",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5435",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit M, second half; Task 2i); listing 0x000427d0..0x00043049 (with its continuation 001846 one extent): cdecl, eight arguments (context, touched count and indices, ConvexHull, the convex's 4x4, the convex and height-field shapes, the sink), ebp frame, three `_alloca` blocks probed through 005695; the hull's world vertices and negated world vertex normals (001461 when +0x14 is null); the up vector +-1.0f on component (mesh +0x78 & 3), -1.0f with +0x78 bit 3, the other two axes the bytes of 0x1000201 >> (8 * +0x7c); 002081 when the mesh's vertex normals (+0x20) are null, 002188 when its EdgeList (+0x88) is; per triangle its material (+0x18 or 0xffff), world corners and plane (001760); hull vertices facing and on or below the plane and inside the triangle in the other two axes emitted through 000875 (the triangle index remapped in place through +0x1c, once per contact); the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID or the vendored / CRT function the listing calls, import slots by their imported names, absolute operands by the bytes they read in each image, pushed strings by their bytes; evidence/convex-mesh-gap-2i-listing-compare.py); no /GS cookie or fs: frame in the built DLL, as in the oracle",
+      "dynamic_proof": "convex-mesh gap Task 2i: nxConvexHeightfieldContacts hit in the full run (evidence/convex-mesh-gap-trace-2i.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4f7d6076b838018e...)); oracle differential contact_convex_heightfield (NxPhysicsCollisionTests: 001847 at its address with the matrix-A signature over 6,000 cases -- the Task 2g box hulls and polytopes on nine height-field meshes (the Task 2h meshes but the single triangle, a 289-vertex / 512-triangle and a 90 / 144 height field), each side's own OPCODE model, EdgeList and vertex normals, signed-permutation and dyadic convex poses, rotated / translated height fields, drawn +0x78 / +0x7c up axes, raw-word Prunable boxes, 98 failed queries through a model without a mesh interface, materials and remaps present or null; 680 cases with contacts, 8,341 contacts; both x87 control words) against the pinned oracle, mismatches=0 over 10,307,868 checks (the split .callee_divergent, a frozen list of 2 runs whose fans the vendored Triangle::Inflate (005185) inflates differently, 3 words, 0 with the oracle's bound in); see evidence/convex-mesh-gap.md, Task 2i",
+      "notes": "stack and code form: the `_alloca` probes go through the candidate CRT's `_chkstk` where the oracle calls its static copy 005695. Listing finding: the triangle index is remapped through mesh +0x1c in place once per emitted contact (0x00042dfb, 0x00042f6e, 0x0004322e), so a triangle's later contacts carry the remap applied again; an out-of-range remap word would be read out of bounds there (not driven: the family's remaps are permutations)",
+      "implementation": "Physics/src/ContactConvexHeightfield.cpp"
     },
     {
       "id": "phys_fn_001845",
@@ -33680,13 +33681,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactConvexHeightfield.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/725",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5461",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000427d0"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit M, second half; Task 2i); listing 0x00043050..0x000432cf (continuation of 001844): each hull edge (+0x38 / +0x3c, 001502 when zero) against each active (EdgeList bit 31) triangle edge along -up (001855, `test eax, eax`), the closest points (001692), the edges' cross product normalised by an inline `fsqrt` unless its length is exactly 0.0f (`fucompp; test ah, 0x44; jnp`), turned to face up (`test ah, 0x41; jne`), emitted through 000875 with -t; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID or the vendored / CRT function the listing calls, import slots by their imported names, absolute operands by the bytes they read in each image, pushed strings by their bytes; evidence/convex-mesh-gap-2i-listing-compare.py); no /GS cookie or fs: frame in the built DLL, as in the oracle",
+      "dynamic_proof": "convex-mesh gap Task 2i: nxConvexHeightfieldContacts (001846 has no separate address; it is a body of nxConvexHeightfieldContacts) hit in the full run (evidence/convex-mesh-gap-trace-2i.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4f7d6076b838018e...)); oracle differential contact_convex_heightfield (NxPhysicsCollisionTests: 001847 at its address with the matrix-A signature over 6,000 cases -- the Task 2g box hulls and polytopes on nine height-field meshes (the Task 2h meshes but the single triangle, a 289-vertex / 512-triangle and a 90 / 144 height field), each side's own OPCODE model, EdgeList and vertex normals, signed-permutation and dyadic convex poses, rotated / translated height fields, drawn +0x78 / +0x7c up axes, raw-word Prunable boxes, 98 failed queries through a model without a mesh interface, materials and remaps present or null; 680 cases with contacts, 8,341 contacts; both x87 control words) against the pinned oracle, mismatches=0 over 10,307,868 checks (the split .callee_divergent, a frozen list of 2 runs whose fans the vendored Triangle::Inflate (005185) inflates differently, 3 words, 0 with the oracle's bound in); see evidence/convex-mesh-gap.md, Task 2i",
+      "notes": "continuation of the entry at 0x000427d0",
+      "implementation": "Physics/src/ContactConvexHeightfield.cpp"
     },
     {
       "id": "phys_fn_001847",
@@ -33698,13 +33700,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/ContactConvexHeightfield.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/726",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5470",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit M, second half; Task 2i); listing 0x000432d0..0x0004367e: cdecl (convex shape, height-field shape, sink, context); the collider at context +0x110: flags &= ~1, &= ~2, |= 0x10; both poses to transposed 4x4s; the convex's Prunable world box (+0xa4: handle +0xcc, 0xffff a null box read; 004886 unless flag bit 2 of +0xac; pruner +0xc4 +0x14) as centre and extents (x 0.5f) with an identity rotation; OBBCollider::Collide(context +0x244, box, mesh +0x28, null, the height field's 4x4); false: the instance guard (`cmp [instance], 0; jne; int3`) and FoundationSDK::error(4, __FILE__, 583, 0, \"Opcode is not OK.\"); OPC_CONTACT: 001844 with the touched Container's count and entries, the hull (+0xa0) and the convex's 4x4; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID or the vendored / CRT function the listing calls, import slots by their imported names, absolute operands by the bytes they read in each image, pushed strings by their bytes; evidence/convex-mesh-gap-2i-listing-compare.py); no /GS cookie or fs: frame in the built DLL, as in the oracle",
+      "dynamic_proof": "convex-mesh gap Task 2i: NxContactConvexHeightfield hit in the full run (evidence/convex-mesh-gap-trace-2i.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4f7d6076b838018e...)); oracle differential contact_convex_heightfield (NxPhysicsCollisionTests: 001847 at its address with the matrix-A signature over 6,000 cases -- the Task 2g box hulls and polytopes on nine height-field meshes (the Task 2h meshes but the single triangle, a 289-vertex / 512-triangle and a 90 / 144 height field), each side's own OPCODE model, EdgeList and vertex normals, signed-permutation and dyadic convex poses, rotated / translated height fields, drawn +0x78 / +0x7c up axes, raw-word Prunable boxes, 98 failed queries through a model without a mesh interface, materials and remaps present or null; 680 cases with contacts, 8,341 contacts; both x87 control words) against the pinned oracle, mismatches=0 over 10,307,868 checks (the split .callee_divergent, a frozen list of 2 runs whose fans the vendored Triangle::Inflate (005185) inflates differently, 3 words, 0 with the oracle's bound in); see evidence/convex-mesh-gap.md, Task 2i",
+      "notes": "a pruning handle of 0xffff gives a null box that is read (0x000434ab); a single-triangle height field's model has no tree, which the query with OPC_NO_PRIMITIVE_TESTS walks (0x000de215 in 005067 reads through null); neither is driven. The listing's `cmp ax, 0xffff` (66 3d ff ff) is emitted as bytes; MSVC's assembler would encode it 66 83 f8 ff",
+      "implementation": "Physics/src/ContactConvexHeightfield.cpp"
     },
     {
       "id": "phys_fn_001848",
@@ -33734,13 +33737,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/ContactConvexHeightfield.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/727",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5481",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit M, second half; Task 2i); listing 0x00043680..0x000441d2: cdecl, nine arguments (the two shapes, the two 4x4s, the polygon interface, the support map, the box, the sink, the context), ebp frame, `_alloca` blocks probed through 005695; collider flags &= ~1, ~2, ~0x10; 001653; slot 3; OBBCollider::Collide(context +0x244, box, mesh +0x28, null, the mesh's 4x4), a failure reported at line 2594; the touched triangles radix-sorted (RadixSort with its rank buffers set) by convex part (+0x94); per part the area-weighted centre (Triangle::Area, Center), 001832; the part sorted by flat part (+0x98), 001840 on each triangle whose plane (+0x24) has the centre above it (`test ah, 0x41`), 001836; the normal turned against the centres' difference, slot 9 and 001842 on the best flat part's triangles; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID or the vendored / CRT function the listing calls, import slots by their imported names, absolute operands by the bytes they read in each image, pushed strings by their bytes; evidence/convex-mesh-gap-2i-listing-compare.py); no /GS cookie or fs: frame in the built DLL, as in the oracle",
+      "dynamic_proof": "convex-mesh gap Task 2i: nxConvexMeshContact hit in the full run (evidence/convex-mesh-gap-trace-2i.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4f7d6076b838018e...)); oracle differential contact_convex_mesh (NxPhysicsCollisionTests: 001853 at its address with the matrix-A signature over 5,000 cases -- the small Task 2g hulls on all ten meshes, three convex / flat part layouts (+0x94 / +0x98), permutation, dyadic and rotated poses on both shapes, 76 failed queries, CCD-guard pairs; 417 cases with contacts, 3,014 contacts; both x87 control words) against the pinned oracle, mismatches=0 over 7,964,768 checks (the split .callee_divergent, a frozen list of 44 runs on which the vendored OBBCollider::Collide (005067) returns a different touched list, 51 words, 0 with the oracle's bound in); see evidence/convex-mesh-gap.md, Task 2i",
+      "notes": "stack and code form: `_alloca` through the candidate CRT's `_chkstk` (005695 in the oracle). A NaN pose leaves 001832's index -1, which the row hands 001840 and 001834 to slot 4 (reads before the polygon array); not driven. The vendored OBBCollider::Collide (005067) returns a different touched list from the oracle's on 44 of the family's 10,000 runs (frozen list, contact_convex_mesh.callee_divergent)",
+      "implementation": "Physics/src/ContactConvexHeightfield.cpp"
     },
     {
       "id": "phys_fn_001850",
@@ -33770,13 +33774,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactConvexHeightfield.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/728",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5523",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit M, second half; Task 2i); listing 0x000441e0..0x000444f5: cdecl (convex shape, mesh shape, sink, context); 002266 when the mesh shape's owner (001281) has no holder at +0x08, its result unread; the two poses to 4x4s (four rotation words kept on the x87 stack through `fst`); the convex mesh's bounds (+0x44..+0x58) as centre and extents (x 0.5f), the centre through the convex's pose, the rotation copied (`rep movsd`); 001849 with the polygon interface (mesh +0x04) and the support map (+0xa8); the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID or the vendored / CRT function the listing calls, import slots by their imported names, absolute operands by the bytes they read in each image, pushed strings by their bytes; evidence/convex-mesh-gap-2i-listing-compare.py); no /GS cookie or fs: frame in the built DLL, as in the oracle",
+      "dynamic_proof": "convex-mesh gap Task 2i: nxContactConvexMeshEntry hit in the full run (evidence/convex-mesh-gap-trace-2i.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4f7d6076b838018e...)); oracle differential contact_convex_mesh (NxPhysicsCollisionTests: 001853 at its address with the matrix-A signature over 5,000 cases -- the small Task 2g hulls on all ten meshes, three convex / flat part layouts (+0x94 / +0x98), permutation, dyadic and rotated poses on both shapes, 76 failed queries, CCD-guard pairs; 417 cases with contacts, 3,014 contacts; both x87 control words) against the pinned oracle, mismatches=0 over 7,964,768 checks (the split .callee_divergent, a frozen list of 44 runs on which the vendored OBBCollider::Collide (005067) returns a different touched list, 51 words, 0 with the oracle's bound in); see evidence/convex-mesh-gap.md, Task 2i",
+      "notes": "",
+      "implementation": "Physics/src/ContactConvexHeightfield.cpp"
     },
     {
       "id": "phys_fn_001852",
@@ -33806,13 +33811,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactConvexHeightfield.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/729",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5527",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit M, second half; Task 2i); listing 0x00044500..0x00044504: `jmp` to 001851; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID or the vendored / CRT function the listing calls, import slots by their imported names, absolute operands by the bytes they read in each image, pushed strings by their bytes; evidence/convex-mesh-gap-2i-listing-compare.py); no /GS cookie or fs: frame in the built DLL, as in the oracle",
+      "dynamic_proof": "convex-mesh gap Task 2i: NxContactConvexMesh hit in the full run (evidence/convex-mesh-gap-trace-2i.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4f7d6076b838018e...)); oracle differential contact_convex_mesh (NxPhysicsCollisionTests: 001853 at its address with the matrix-A signature over 5,000 cases -- the small Task 2g hulls on all ten meshes, three convex / flat part layouts (+0x94 / +0x98), permutation, dyadic and rotated poses on both shapes, 76 failed queries, CCD-guard pairs; 417 cases with contacts, 3,014 contacts; both x87 control words) against the pinned oracle, mismatches=0 over 7,964,768 checks (the split .callee_divergent, a frozen list of 44 runs on which the vendored OBBCollider::Collide (005067) returns a different touched list, 51 words, 0 with the oracle's bound in); see evidence/convex-mesh-gap.md, Task 2i",
+      "notes": "",
+      "implementation": "Physics/src/ContactConvexHeightfield.cpp"
     },
     {
       "id": "phys_fn_001854",
@@ -33848,7 +33854,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5528",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x00044510..0x00044854: the edge-plane normal (e1 - e0) x axis with x, z wide and y stored, normalised unless zero; d and the start's x term narrowed (0x000445fa), a miss when the two signed distances' product is > 0; the direction (x wide, y, z stored, z squared wide * narrowed), a miss on a zero denominator; the crossing written (x wide); the dominant-axis choice (0x00044738..0x00044798); t stored then tested (< 0 a miss); the moved point stored with `fst` and kept; inside when the z, x, y dot product < 0",
       "dynamic_proof": "convex-mesh gap Task 2b: NxSegmentTriangleEdge hit in the full run of NxPhysicsCollisionTests (evidence/convex-mesh-gap-trace-2b.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 796dc67c0d58887e...)); oracle differential segment_triangle_edges (base+0x00044510) against the pinned oracle with draws a third raw (nxPickBits, words written as bits), a third aimed and a third of mixed exponents (2^-27..2^72), mismatches=0 under 0x027f; under 0x0f7f 215 words, pinned in the registered coverage line: the wide intermediates (the normal's x and z, the direction's x and z) are cut to 53 bits as square-root operands and in their reuse after the root; see evidence/convex-mesh-gap.md",
-      "notes": "",
+      "notes": "convex-mesh gap Task 2i: returns NxU32 0 or 1 in the whole of eax, as the listing does (`xor eax, eax` / `mov eax, 1`), because 001844's naked caller tests eax (0x000430b2); as bool the upper bytes were undefined and the candidate 001844 took phantom crossings",
       "implementation": "Physics/src/ContactMeshHeightfield.cpp"
     },
     {
@@ -37944,13 +37950,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMeshTopology.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/810",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6678",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit M, second half; Task 2i); listing 0x00052240..0x0005227a: thiscall on the InternalTriangleMesh; vertex count x 12 bytes from nxFoundationSDKAllocator (import slot 0x101041bc, its slot 2 with NX_MEMORY_PERSISTENT), stored at +0x18 before it is filled, then NxBuildSmoothNormals(triangle count, vertex count, vertices, triangles, 0, the block, 1) (002146, cdecl); nothing tested; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID or the vendored / CRT function the listing calls, import slots by their imported names, absolute operands by the bytes they read in each image, pushed strings by their bytes; evidence/convex-mesh-gap-2i-listing-compare.py); no /GS cookie or fs: frame in the built DLL, as in the oracle",
+      "dynamic_proof": "convex-mesh gap Task 2i: nxMeshComputeVertexNormals hit in the full run (evidence/convex-mesh-gap-trace-2i.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4f7d6076b838018e...)); oracle differential mesh_vertex_normals (NxPhysicsCollisionTests: 002081 at its address, thiscall on the internal mesh, over the ten meshes in four variants each (three with raw words, signalling NaNs kept), the block from the Foundation allocator, both x87 control words) against the pinned oracle, mismatches=0 over 45,408 checks; and inside contact_convex_heightfield (652 builds); see evidence/convex-mesh-gap.md, Task 2i",
+      "notes": "allocates through the Foundation allocator's import (not the 004803 getter); the harness creates a Foundation SDK with a recording allocator for it",
+      "implementation": "Physics/src/TriangleMeshTopology.cpp"
     },
     {
       "id": "phys_fn_002082",
