@@ -214,9 +214,21 @@ static void nxPoison(float* out, unsigned count)
 		}
 	}
 
-static float nxUnit(NxRandom* r)
+// Returned in a four-byte struct, never as a float (convex-mesh gap Task 2g
+// review): a float return travels in st(0), and whether a caller then
+// computes in x87 or SSE follows the compiler's inlining; a four-byte
+// struct comes back in eax either way. Every call site was inlined, so the
+// values are the ones the registered lines were measured on.
+struct NxUnitDraw
 	{
-	return (float) ((double) (nxNext(r) >> 8) / 16777216.0);
+	float value;
+	};
+
+static NxUnitDraw nxUnit(NxRandom* r)
+	{
+	NxUnitDraw draw;
+	draw.value = (float) ((double) (nxNext(r) >> 8) / 16777216.0);
+	return draw;
 	}
 
 typedef float (NX_CALL_CONV *NxFnFF)(float, float);
@@ -454,12 +466,12 @@ static void nxRunAimedBlock(HMODULE physics)
 		float v0[3], v1[3], v2[3], origin[3], direction[3];
 		for(int k = 0; k < 3; ++k)
 			{
-			v0[k] = nxUnit(&random) * 8.0f - 4.0f;
-			v1[k] = nxUnit(&random) * 8.0f - 4.0f;
-			v2[k] = nxUnit(&random) * 8.0f - 4.0f;
-			origin[k] = nxUnit(&random) * 12.0f - 6.0f;
+			v0[k] = nxUnit(&random).value * 8.0f - 4.0f;
+			v1[k] = nxUnit(&random).value * 8.0f - 4.0f;
+			v2[k] = nxUnit(&random).value * 8.0f - 4.0f;
+			origin[k] = nxUnit(&random).value * 12.0f - 6.0f;
 			}
-		float a = nxUnit(&random), b = nxUnit(&random);
+		float a = nxUnit(&random).value, b = nxUnit(&random).value;
 		if(a + b > 1.0f)
 			{
 			a = 1.0f - a;
@@ -612,14 +624,14 @@ static void nxRunAimedBoxBlock(HMODULE physics)
 		float centre[3], extents[3], target[3], origin[3], direction[3], min[3], max[3];
 		for(int k = 0; k < 3; ++k)
 			{
-			centre[k] = nxUnit(&random) * 8.0f - 4.0f;
-			extents[k] = nxUnit(&random) * 3.0f + 0.03125f;
+			centre[k] = nxUnit(&random).value * 8.0f - 4.0f;
+			extents[k] = nxUnit(&random).value * 3.0f + 0.03125f;
 			min[k] = centre[k] - extents[k];
 			max[k] = centre[k] + extents[k];
 			// Inside the box for most iterations, a little outside for some, so
 			// the near-miss boundary is exercised as well as the clean hit.
-			target[k] = centre[k] + extents[k] * (nxUnit(&random) * 2.4f - 1.2f);
-			origin[k] = nxUnit(&random) * 24.0f - 12.0f;
+			target[k] = centre[k] + extents[k] * (nxUnit(&random).value * 2.4f - 1.2f);
+			origin[k] = nxUnit(&random).value * 24.0f - 12.0f;
 			direction[k] = target[k] - origin[k];
 			}
 		// The segment runs from the origin to a point past the target, so it
@@ -678,13 +690,13 @@ static void nxRunAimedBoxBlock(HMODULE physics)
 		// pushed back out through the rotation, so the ray still aims at it.
 		float rot[9];
 		// Sequenced: as one expression the draws' order was the compiler's.
-		const float rotAngle0 = nxUnit(&random) * 6.2831853f;
-		const float rotAngle1 = nxUnit(&random) * 6.2831853f;
-		const float rotAngle2 = nxUnit(&random) * 6.2831853f;
+		const float rotAngle0 = nxUnit(&random).value * 6.2831853f;
+		const float rotAngle1 = nxUnit(&random).value * 6.2831853f;
+		const float rotAngle2 = nxUnit(&random).value * 6.2831853f;
 		nxRotation(rot, rotAngle0, rotAngle1, rotAngle2);
 		float local[3], world[3];
 		for(int k = 0; k < 3; ++k)
-			local[k] = extents[k] * (nxUnit(&random) * 2.4f - 1.2f);
+			local[k] = extents[k] * (nxUnit(&random).value * 2.4f - 1.2f);
 		for(int k = 0; k < 3; ++k)
 			world[k] = centre[k] + rot[k] * local[0] + rot[k + 3] * local[1] + rot[k + 6] * local[2];
 		float obbRay[6], obbFar[3];
@@ -772,16 +784,16 @@ static void nxRunCapsuleBlock(HMODULE physics)
 		float capsule[7], origin[3], direction[3], target[3];
 		for(int k = 0; k < 3; ++k)
 			{
-			capsule[k] = nxUnit(&random) * 6.0f - 3.0f;
-			capsule[k + 3] = capsule[k] + nxUnit(&random) * 6.0f - 3.0f;
+			capsule[k] = nxUnit(&random).value * 6.0f - 3.0f;
+			capsule[k + 3] = capsule[k] + nxUnit(&random).value * 6.0f - 3.0f;
 			}
-		capsule[6] = nxUnit(&random) * 1.5f + 0.03125f;
-		const float along = nxUnit(&random);
+		capsule[6] = nxUnit(&random).value * 1.5f + 0.03125f;
+		const float along = nxUnit(&random).value;
 		for(int k = 0; k < 3; ++k)
 			{
 			const float axis = capsule[k] + along * (capsule[k + 3] - capsule[k]);
-			target[k] = axis + capsule[6] * (nxUnit(&random) * 2.4f - 1.2f);
-			origin[k] = nxUnit(&random) * 20.0f - 10.0f;
+			target[k] = axis + capsule[6] * (nxUnit(&random).value * 2.4f - 1.2f);
+			origin[k] = nxUnit(&random).value * 20.0f - 10.0f;
 			direction[k] = target[k] - origin[k];
 			}
 		if(rayCapsule)
@@ -800,13 +812,13 @@ static void nxRunCapsuleBlock(HMODULE physics)
 		float sphere0[4], sphere1[4], velocity0[3], velocity1[3];
 		for(int k = 0; k < 3; ++k)
 			{
-			sphere0[k] = nxUnit(&random) * 6.0f - 3.0f;
-			sphere1[k] = nxUnit(&random) * 6.0f - 3.0f;
-			velocity0[k] = (sphere1[k] - sphere0[k]) * (nxUnit(&random) * 2.0f);
-			velocity1[k] = (sphere0[k] - sphere1[k]) * (nxUnit(&random) * 2.0f);
+			sphere0[k] = nxUnit(&random).value * 6.0f - 3.0f;
+			sphere1[k] = nxUnit(&random).value * 6.0f - 3.0f;
+			velocity0[k] = (sphere1[k] - sphere0[k]) * (nxUnit(&random).value * 2.0f);
+			velocity1[k] = (sphere0[k] - sphere1[k]) * (nxUnit(&random).value * 2.0f);
 			}
-		sphere0[3] = nxUnit(&random) * 2.0f + 0.03125f;
-		sphere1[3] = nxUnit(&random) * 2.0f + 0.03125f;
+		sphere0[3] = nxUnit(&random).value * 2.0f + 0.03125f;
+		sphere1[3] = nxUnit(&random).value * 2.0f + 0.03125f;
 		if(swept)
 			{
 			const unsigned char hit = swept(sphere0, velocity0, sphere1, velocity1);
@@ -885,22 +897,22 @@ static void nxRunSatBlock(HMODULE physics)
 		float extents0[3], centre0[3], rot0[9], extents1[3], centre1[3], rot1[9];
 		for(int k = 0; k < 3; ++k)
 			{
-			extents0[k] = nxUnit(&random) * 2.0f + 0.0625f;
-			extents1[k] = nxUnit(&random) * 2.0f + 0.0625f;
-			centre0[k] = nxUnit(&random) * 4.0f - 2.0f;
+			extents0[k] = nxUnit(&random).value * 2.0f + 0.0625f;
+			extents1[k] = nxUnit(&random).value * 2.0f + 0.0625f;
+			centre0[k] = nxUnit(&random).value * 4.0f - 2.0f;
 			// Near box0, and sometimes far enough to separate, so both answers
 			// occur often enough to discriminate.
-			centre1[k] = centre0[k] + (nxUnit(&random) * 6.0f - 3.0f);
+			centre1[k] = centre0[k] + (nxUnit(&random).value * 6.0f - 3.0f);
 			}
 		// Sequenced: as one expression the draws' order was the compiler's.
-		const float rot0Angle1 = nxUnit(&random) * 6.2831853f;
-		const float rot0Angle0 = nxUnit(&random) * 6.2831853f;
-		const float rot0Angle2 = nxUnit(&random) * 6.2831853f;
+		const float rot0Angle1 = nxUnit(&random).value * 6.2831853f;
+		const float rot0Angle0 = nxUnit(&random).value * 6.2831853f;
+		const float rot0Angle2 = nxUnit(&random).value * 6.2831853f;
 		nxRotation(rot0, rot0Angle0, rot0Angle1, rot0Angle2);
 		// Sequenced: as one expression the draws' order was the compiler's.
-		const float rot1Angle0 = nxUnit(&random) * 6.2831853f;
-		const float rot1Angle1 = nxUnit(&random) * 6.2831853f;
-		const float rot1Angle2 = nxUnit(&random) * 6.2831853f;
+		const float rot1Angle0 = nxUnit(&random).value * 6.2831853f;
+		const float rot1Angle1 = nxUnit(&random).value * 6.2831853f;
+		const float rot1Angle2 = nxUnit(&random).value * 6.2831853f;
 		nxRotation(rot1, rot1Angle0, rot1Angle1, rot1Angle2);
 		for(unsigned char full = 0; full < 2; ++full)
 			{
@@ -978,7 +990,7 @@ static void nxRunNormalsBlock(HMODULE physics)
 				if(nonFinite)
 					nxPickWord(&random, i + v + (unsigned) k, &verts[v * 3 + k]);
 				else
-					verts[v * 3 + k] = nxUnit(&random) * 4.0f - 2.0f;
+					verts[v * 3 + k] = nxUnit(&random).value * 4.0f - 2.0f;
 		for(NxU32 t = 0; t < nbTris * 3; ++t)
 			{
 			const NxU32 index = nxNext(&random) % nbVerts;

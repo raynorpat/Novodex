@@ -284,9 +284,29 @@ static unsigned nxNext(unsigned* state)
 	return x;
 	}
 
-static float nxUnit(unsigned* state)
+// A draw in [0, 1), exact as a float (24 bits of the state times 2^-24).
+//
+// Returned in a four-byte struct, never as a float (convex-mesh gap Task 2g
+// review). Under the x86 ABI a float return travels in st(0), and where this
+// helper was not inlined the caller carried on in x87 at the control word's 53
+// bits -- `u * 1.5f + 0.05f` rounded once -- where an inlined copy ran in SSE
+// and rounded after each operation. Which sites were inlined followed the size
+// of the translation unit, so moving code elsewhere in this file moved
+// registered digests. A four-byte struct comes back in eax whether or not the
+// call is inlined, so every site now computes in SSE float, as the inlined
+// sites always did; the two sites that were compiled to x87 (nxPickWordFrom's
+// `* 8 - 4` and nxFillGeometry's capsule radius) write the double arithmetic
+// they were compiled to, so their registered values are unchanged.
+struct NxUnitDraw
 	{
-	return (float) (nxNext(state) >> 8) * (1.0f / 16777216.0f);
+	float value;
+	};
+
+static NxUnitDraw nxUnit(unsigned* state)
+	{
+	NxUnitDraw draw;
+	draw.value = (float) (nxNext(state) >> 8) * (1.0f / 16777216.0f);
+	return draw;
 	}
 
 // Mostly values a caller would really pass, one branch in eight that is a raw
@@ -336,7 +356,7 @@ static void nxPickWordFrom(unsigned* state, unsigned choice, float* out)
 		bits = 0;
 	else if(choice == 2)
 		{
-		const float value = nxUnit(state) * 1e-6f;
+		const float value = nxUnit(state).value * 1e-6f;
 		memcpy(&bits, &value, 4);
 		}
 	else if(choice == 3)
@@ -346,7 +366,9 @@ static void nxPickWordFrom(unsigned* state, unsigned choice, float* out)
 		bits = (nxNext(state) & 0x807fffffu) | 0x7f800000u;
 	else
 		{
-		const float value = nxUnit(state) * 8.0f - 4.0f;
+		// Compiled to x87 until the Task 2g review (the draw came back in st(0)):
+		// the double arithmetic it ran is written out. Exact either way here.
+		const float value = (float) ((double) nxUnit(state).value * 8.0 - 4.0);
 		memcpy(&bits, &value, 4);
 		}
 	memcpy(out, &bits, 4);
@@ -898,7 +920,7 @@ static void nxRandomRotation(unsigned* state, NxCollisionShape* shape)
 	{
 	float q[4];
 	for(int i = 0; i < 4; ++i)
-		q[i] = nxUnit(state) * 2.0f - 1.0f;
+		q[i] = nxUnit(state).value * 2.0f - 1.0f;
 	float length = q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3] * q[3];
 	if(length > 1e-6f && (nxNext(state) & 7) != 0)
 		{
@@ -928,7 +950,7 @@ static void nxFillGeometry(unsigned* state, NxCollisionShape* shape, unsigned ty
 		float n[3];
 		for(int i = 0; i < 3; ++i)
 			if(tame)
-				n[i] = nxUnit(state) * 2.0f - 1.0f;
+				n[i] = nxUnit(state).value * 2.0f - 1.0f;
 			else
 				nxPickWord(state, &n[i]);
 		if(tame)
@@ -944,14 +966,14 @@ static void nxFillGeometry(unsigned* state, NxCollisionShape* shape, unsigned ty
 		shape->geometry[1] = n[1];
 		shape->geometry[2] = n[2];
 		if(tame)
-			shape->geometry[3] = nxUnit(state) * 4.0f - 2.0f;
+			shape->geometry[3] = nxUnit(state).value * 4.0f - 2.0f;
 		else
 			nxPickWord(state, &shape->geometry[3]);
 		}
 	else if(type == 1)
 		{
 		if(tame)
-			shape->geometry[0] = nxUnit(state) * 2.0f + 0.05f;
+			shape->geometry[0] = nxUnit(state).value * 2.0f + 0.05f;
 		else
 			nxPickWord(state, &shape->geometry[0]);
 		}
@@ -963,18 +985,20 @@ static void nxFillGeometry(unsigned* state, NxCollisionShape* shape, unsigned ty
 			nxPickWord(state, &shape->geometry[0]);
 		for(int i = 1; i < 4; ++i)
 			if(tame)
-				shape->geometry[i] = nxUnit(state) * 2.0f + 0.05f;
+				shape->geometry[i] = nxUnit(state).value * 2.0f + 0.05f;
 			else
 				nxPickWord(state, &shape->geometry[i]);
 		}
 	else
 		{
 		if(tame)
-			shape->geometry[0] = nxUnit(state) * 1.5f + 0.05f;
+			// x87 until the Task 2g review, rounded once: written as the double
+			// arithmetic it was compiled to, so the registered draws are unchanged.
+			shape->geometry[0] = (float) ((double) nxUnit(state).value * 1.5 + (double) 0.05f);
 		else
 			nxPickWord(state, &shape->geometry[0]);
 		if(tame)
-			shape->geometry[1] = nxUnit(state) * 2.0f + 0.05f;
+			shape->geometry[1] = nxUnit(state).value * 2.0f + 0.05f;
 		else
 			nxPickWord(state, &shape->geometry[1]);
 		if(tame)
@@ -990,18 +1014,28 @@ static void nxFillGeometry(unsigned* state, NxCollisionShape* shape, unsigned ty
 
 // A rough scale for how far apart two shapes have to be before they cannot
 // touch. Only used to aim the generator, never to decide an answer.
-static float nxReach(const NxCollisionShape* shape)
+//
+// Written through a pointer, as a double (convex-mesh gap Task 2g review): it
+// used to return a float, which came back in st(0) unrounded -- its body was
+// x87 at the control word's 53 bits -- and the aimed block's sum of two reaches
+// was added there too. The double arithmetic below is what that code computed
+// (every input is a tame, finite geometry word), so the aimed draws, and the
+// registered digests over them, are unchanged; and no longer depend on
+// whether the compiler inlines it.
+static void nxReach(const NxCollisionShape* shape, double* out)
 	{
 	if(shape->type == 1)
-		return shape->geometry[0];
+		*out = shape->geometry[0];
 	// The mean extent, not the sum: the sum aims at a separation the two boxes
 	// can essentially never span, and an aimed block that never overlaps is
 	// the same as no aimed block.
-	if(shape->type == 2)
-		return (shape->geometry[1] + shape->geometry[2] + shape->geometry[3]) * (1.0f / 3.0f);
-	if(shape->type == 3)
-		return shape->geometry[0] + shape->geometry[1];
-	return 0.0f;
+	else if(shape->type == 2)
+		*out = (((double) shape->geometry[2] + shape->geometry[1]) + shape->geometry[3])
+			* (double) (1.0f / 3.0f);
+	else if(shape->type == 3)
+		*out = (double) shape->geometry[1] + shape->geometry[0];
+	else
+		*out = 0.0;
 	}
 
 // ---------------------------------------------------------------------------
@@ -1268,7 +1302,8 @@ static const unsigned kSegmentBoxRva = 0x00033d00;		// phys_fn_001688
 // [0x10107b54]; fst dword` under the live control word. The pre-flight probe
 // below needs the same word, and this file is not built for x87, so it is
 // formed here the way the oracle forms it.
-static NxReal nxCapsulePseudoExtent(NxReal radius)
+// Written through a pointer (Task 2g review), not returned in st(0).
+static void nxCapsulePseudoExtent(NxReal radius, NxReal* out)
 	{
 	static const float scale = 0.666f;
 	NxReal product;
@@ -1278,7 +1313,7 @@ static NxReal nxCapsulePseudoExtent(NxReal radius)
 		fmul scale
 		fstp product
 		}
-	return product;
+	*out = product;
 	}
 
 static void nxCallWide6(const void* fn, const void* a0, const void* a1, const void* a2,
@@ -1363,11 +1398,11 @@ static void nxFillBoxData(unsigned* state, NxCollisionBoxData* box, bool aimed, 
 	for(int k = 0; k < 3; ++k)
 		{
 		if(aimed)
-			box->center[k] = nxUnit(state) * 4.0f - 2.0f;
+			box->center[k] = nxUnit(state).value * 4.0f - 2.0f;
 		else
 			nxPickWord(state, &box->center[k]);
 		if(aimed)
-			box->extents[k] = nxUnit(state) * 2.0f + 0.05f;
+			box->extents[k] = nxUnit(state).value * 2.0f + 0.05f;
 		else
 			nxPickWord(state, &box->extents[k]);
 		}
@@ -1393,7 +1428,7 @@ static void nxBoxCoordinate(unsigned* state, float* u)
 	{
 	const unsigned kind = nxNext(state) % 5;
 	for(int k = 0; k < 3; ++k)
-		u[k] = nxUnit(state) * 2.0f - 1.0f;
+		u[k] = nxUnit(state).value * 2.0f - 1.0f;
 	if(kind >= 1 && kind <= 3)
 		{
 		// `kind` coordinates pinned to +-1: a face, an edge, a corner.
@@ -1537,7 +1572,7 @@ static bool nxFillTriangle(unsigned* state, bool aimed, bool mixed, float v[3][3
 		}
 	for(int i = 0; i < 3; ++i)
 		for(int k = 0; k < 3; ++k)
-			v[i][k] = nxUnit(state) * 4.0f - 2.0f;
+			v[i][k] = nxUnit(state).value * 4.0f - 2.0f;
 	bool degenerate = false;
 	const unsigned kind = nxNext(state) & 15;
 	if(kind == 0 || kind == 1)
@@ -1592,11 +1627,11 @@ static void nxTrianglePoint(unsigned* state, const float v[3][3], float out[3], 
 	{
 	float n[3];
 	nxTriangleNormal(v, n);
-	float u = nxUnit(state) * 3.0f - 1.0f;
-	float w = nxUnit(state) * 3.0f - 1.0f;
+	float u = nxUnit(state).value * 3.0f - 1.0f;
+	float w = nxUnit(state).value * 3.0f - 1.0f;
 	// Sequenced: as one expression the draws' order was the compiler's.
 	const bool heightFull = (nxNext(state) & 1) != 0;
-	const float heightDraw = nxUnit(state);
+	const float heightDraw = nxUnit(state).value;
 	float h = (heightDraw * 2.0f - 1.0f) * (heightFull ? 1.0f : 0.05f);
 	*onFeature = false;
 	const unsigned feature = nxNext(state) & 7;
@@ -1768,10 +1803,10 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 			{
 			for(int k = 0; k < 3; ++k)
 				{
-				o0[k] = nxUnit(&state) * 4.0f - 2.0f;
-				d0[k] = nxUnit(&state) * 4.0f - 2.0f;
-				o1[k] = nxUnit(&state) * 4.0f - 2.0f;
-				d1[k] = nxUnit(&state) * 4.0f - 2.0f;
+				o0[k] = nxUnit(&state).value * 4.0f - 2.0f;
+				d0[k] = nxUnit(&state).value * 4.0f - 2.0f;
+				o1[k] = nxUnit(&state).value * 4.0f - 2.0f;
+				d1[k] = nxUnit(&state).value * 4.0f - 2.0f;
 				}
 			const unsigned kind = nxNext(&state) & 15;
 			if(kind < 2)
@@ -1789,8 +1824,8 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 				}
 			else if(kind == 3)
 				{
-				const float s = nxUnit(&state) * 1.4f - 0.2f;
-				const float t = nxUnit(&state) * 1.4f - 0.2f;
+				const float s = nxUnit(&state).value * 1.4f - 0.2f;
+				const float t = nxUnit(&state).value * 1.4f - 0.2f;
 				for(int k = 0; k < 3; ++k)
 					o1[k] = o0[k] + s * d0[k] - t * d1[k];
 				++crossing;
@@ -1908,16 +1943,16 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 				// Through the interior: the ends either side of an inner point.
 				float n[3];
 				nxTriangleNormal(v, n);
-				const float u = nxUnit(&state) * 0.5f;
-				const float w = nxUnit(&state) * 0.5f;
+				const float u = nxUnit(&state).value * 0.5f;
+				const float w = nxUnit(&state).value * 0.5f;
 				float inner[3];
 				for(int k = 0; k < 3; ++k)
 					inner[k] = v[0][k] + u * (v[1][k] - v[0][k]) + w * (v[2][k] - v[0][k]);
-				const float up = nxUnit(&state) + 0.1f;
-				const float down = nxUnit(&state) + 0.1f;
+				const float up = nxUnit(&state).value + 0.1f;
+				const float down = nxUnit(&state).value + 0.1f;
 				float tilt[3];
 				for(int k = 0; k < 3; ++k)
-					tilt[k] = (nxUnit(&state) - 0.5f) * 0.5f;
+					tilt[k] = (nxUnit(&state).value - 0.5f) * 0.5f;
 				segment.p0.set(inner[0] + (n[0] + tilt[0]) * up, inner[1] + (n[1] + tilt[1]) * up,
 					inner[2] + (n[2] + tilt[2]) * up);
 				segment.p1.set(inner[0] - (n[0] + tilt[0]) * down, inner[1] - (n[1] + tilt[1]) * down,
@@ -1993,7 +2028,7 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 				memcpy(&words[k], &bits, 4);
 				}
 			else
-				words[k] = nxUnit(&reviewState) * 8.0f - 4.0f;
+				words[k] = nxUnit(&reviewState).value * 8.0f - 4.0f;
 			}
 		const float* const v = &words[3];
 		NxSegment segment;
@@ -2073,11 +2108,11 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 			float basis[3][3];
 			for(int r = 0; r < 3; ++r)
 				for(int k = 0; k < 3; ++k)
-					basis[r][k] = nxUnit(&state) * 2.0f - 1.0f;
+					basis[r][k] = nxUnit(&state).value * 2.0f - 1.0f;
 			float centre[3];
 			for(int k = 0; k < 3; ++k)
-				centre[k] = nxUnit(&state) * 4.0f - 2.0f;
-			const float radius = nxUnit(&state) * 2.0f + 0.1f;
+				centre[k] = nxUnit(&state).value * 4.0f - 2.0f;
+			const float radius = nxUnit(&state).value * 2.0f + 0.1f;
 			for(NxU32 k = 0; k < 8; ++k)
 				{
 				const float angle = 6.2831853f * (float) k / (float) count + 0.3f;
@@ -2089,18 +2124,18 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 				}
 			for(NxU32 k = 0; k < 8; ++k)
 				indices[k] = k;
-			const float reach = nxUnit(&state) * 1.3f;
-			const float angle = nxUnit(&state) * 6.2831853f;
+			const float reach = nxUnit(&state).value * 1.3f;
+			const float angle = nxUnit(&state).value * 6.2831853f;
 			float target[3];
 			for(int k = 0; k < 3; ++k)
 				target[k] = centre[k] + reach * radius * (cosf(angle) * basis[0][k] + sinf(angle) * basis[1][k]);
-			const float lift = (nxNext(&state) & 7) == 0 ? 0.0f : (nxUnit(&state) * 6.0f - 3.0f);
+			const float lift = (nxNext(&state) & 7) == 0 ? 0.0f : (nxUnit(&state).value * 6.0f - 3.0f);
 			if(lift == 0.0f)
 				++inPlane;
 			const float origin[3] = {
-				target[0] + lift * basis[2][0] + (nxUnit(&state) - 0.5f) * basis[0][0],
-				target[1] + lift * basis[2][1] + (nxUnit(&state) - 0.5f) * basis[0][1],
-				target[2] + lift * basis[2][2] + (nxUnit(&state) - 0.5f) * basis[0][2] };
+				target[0] + lift * basis[2][0] + (nxUnit(&state).value - 0.5f) * basis[0][0],
+				target[1] + lift * basis[2][1] + (nxUnit(&state).value - 0.5f) * basis[0][1],
+				target[2] + lift * basis[2][2] + (nxUnit(&state).value - 0.5f) * basis[0][2] };
 			ray.orig.set(origin[0], origin[1], origin[2]);
 			ray.dir.set(target[0] - origin[0], target[1] - origin[1], target[2] - origin[2]);
 			if(nxNext(&state) & 1)
@@ -2254,20 +2289,20 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 			{
 			for(int k = 0; k < 3; ++k)
 				{
-				const float c = nxUnit(&state) * 4.0f - 2.0f;
-				const float e = nxUnit(&state) * 2.0f;
+				const float c = nxUnit(&state).value * 4.0f - 2.0f;
+				const float e = nxUnit(&state).value * 2.0f;
 				boxMin[k] = c - e;
 				boxMax[k] = c + e;
-				origin[k] = c + (nxUnit(&state) * 2.0f - 1.0f) * e * 2.0f;
+				origin[k] = c + (nxUnit(&state).value * 2.0f - 1.0f) * e * 2.0f;
 				const unsigned kind = nxNext(&state) % 8;
 				if(kind == 0)
 					dir[k] = (nxNext(&state) & 1) ? -0.0f : 0.0f;
 				else if(kind == 1)
-					dir[k] = (nxUnit(&state) * 2.0f - 1.0f) * 1.1920928e-7f * 0.99f;
+					dir[k] = (nxUnit(&state).value * 2.0f - 1.0f) * 1.1920928e-7f * 0.99f;
 				else if(kind == 2)
 					dir[k] = (nxNext(&state) & 1) ? -1.1920928955078125e-7f : 1.1920928955078125e-7f;
 				else
-					dir[k] = nxUnit(&state) * 4.0f - 2.0f;
+					dir[k] = nxUnit(&state).value * 4.0f - 2.0f;
 				if(kind <= 1)
 					++parallelAxes;
 				else if(kind == 2)
@@ -2420,17 +2455,17 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 				edge[1] * axis[2] - edge[2] * axis[1],
 				edge[2] * axis[0] - edge[0] * axis[2],
 				edge[0] * axis[1] - edge[1] * axis[0] };
-			const float along = nxUnit(&state) * 2.0f - 0.5f;
+			const float along = nxUnit(&state).value * 2.0f - 0.5f;
 			// Sequenced: as one expression the draws' order was the compiler's.
 			const bool upFull = (nxNext(&state) & 1) != 0;
-			const float upDraw = nxUnit(&state);
+			const float upDraw = nxUnit(&state).value;
 			const float up = (upDraw * 2.0f - 1.0f) * (upFull ? 1.0f : 0.1f);
 			float p[3];
 			for(int k = 0; k < 3; ++k)
 				p[k] = v[a][k] + along * edge[k] + up * axis[k];
 			float d[3];
 			for(int k = 0; k < 3; ++k)
-				d[k] = nxUnit(&state) * 2.0f - 1.0f;
+				d[k] = nxUnit(&state).value * 2.0f - 1.0f;
 			const unsigned kind = nxNext(&state) & 15;
 			if(kind < 2)
 				{
@@ -2446,9 +2481,9 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 				}
 			else
 				for(int k = 0; k < 3; ++k)
-					d[k] += across[k] * (nxUnit(&state) * 4.0f - 2.0f);
-			const float l0 = nxUnit(&state) * 1.5f + 0.05f;
-			const float l1 = nxUnit(&state) * 1.5f + 0.05f;
+					d[k] += across[k] * (nxUnit(&state).value * 4.0f - 2.0f);
+			const float l0 = nxUnit(&state).value * 1.5f + 0.05f;
+			const float l1 = nxUnit(&state).value * 1.5f + 0.05f;
 			for(int k = 0; k < 3; ++k)
 				{
 				s0[k] = p[k] + d[k] * l0;
@@ -2666,9 +2701,8 @@ static __declspec(noinline) unsigned nxDriveFuzzSnan(HMODULE physics)
 	return totalMismatch;
 	}
 
-// convex-mesh gap Task 2g's families, defined after wmain: their block includes
-// the ICE headers (TriangleMeshPolygons.h), whose pragmas would otherwise change
-// how wmain's generators are compiled (see the block).
+// convex-mesh gap Task 2g's families, defined at the end of the file (see the
+// block).
 static unsigned nxDriveTask2g(unsigned char* base);
 
 int wmain(int argc, wchar_t** argv)
@@ -2878,11 +2912,11 @@ int wmain(int argc, wchar_t** argv)
 			for(int k = 0; k < 3; ++k)
 				{
 				if(tame)
-					shape0->translation[k] = nxUnit(&state) * 6.0f - 3.0f;
+					shape0->translation[k] = nxUnit(&state).value * 6.0f - 3.0f;
 				else
 					nxPickWord(&state, &shape0->translation[k]);
 				if(tame)
-					shape1->translation[k] = nxUnit(&state) * 6.0f - 3.0f;
+					shape1->translation[k] = nxUnit(&state).value * 6.0f - 3.0f;
 				else
 					nxPickWord(&state, &shape1->translation[k]);
 				}
@@ -2903,7 +2937,7 @@ int wmain(int argc, wchar_t** argv)
 			nxRandomRotation(&state, shape0);
 			nxRandomRotation(&state, shape1);
 			for(int k = 0; k < 3; ++k)
-				shape0->translation[k] = nxUnit(&state) * 2.0f - 1.0f;
+				shape0->translation[k] = nxUnit(&state).value * 2.0f - 1.0f;
 			nxFillGeometry(&state, shape0, type0, true);
 			nxFillGeometry(&state, shape1, type1, true);
 
@@ -2911,7 +2945,7 @@ int wmain(int argc, wchar_t** argv)
 			float length = 0.0f;
 			for(int k = 0; k < 3; ++k)
 				{
-				direction[k] = nxUnit(&state) * 2.0f - 1.0f;
+				direction[k] = nxUnit(&state).value * 2.0f - 1.0f;
 				length += direction[k] * direction[k];
 				}
 			length = (float) sqrt((double) length);
@@ -2920,19 +2954,28 @@ int wmain(int argc, wchar_t** argv)
 			for(int k = 0; k < 3; ++k)
 				direction[k] /= length;
 
-			float reach = nxReach(shape0) + nxReach(shape1);
+			// shape1's reach was stored narrow before shape0's, still wide in
+			// st(0), was added to it (x87, 53 bits) and the sum narrowed.
+			double reach0, reach1;
+			nxReach(shape1, &reach1);
+			nxReach(shape0, &reach0);
+			float reach = (float) (reach0 + (double) (float) reach1);
 			if(type0 == 0)
 				{
 				// Against a plane the interesting family is a shape straddling
 				// the plane, so aim along the normal from a point on it.
 				const float* n = shape0->geometry;
-				float offset = (nxUnit(&state) * 2.0f - 1.0f) * (nxReach(shape1) * 1.5f + 0.25f);
+				const float unit = nxUnit(&state).value;
+				double reachWide;
+				nxReach(shape1, &reachWide);
+				const float reachNarrow = (float) reachWide;
+				float offset = (unit * 2.0f - 1.0f) * (reachNarrow * 1.5f + 0.25f);
 				for(int k = 0; k < 3; ++k)
 					shape1->translation[k] = n[k] * (offset - shape0->geometry[3]);
 				}
 			else
 				{
-				float separation = reach * (0.2f + nxUnit(&state) * 1.4f);
+				float separation = reach * (0.2f + nxUnit(&state).value * 1.4f);
 				for(int k = 0; k < 3; ++k)
 					shape1->translation[k] = shape0->translation[k] + direction[k] * separation;
 				}
@@ -2997,7 +3040,7 @@ int wmain(int argc, wchar_t** argv)
 		nxRandomRotation(&state, shape0);
 		for(int k = 0; k < 3; ++k)
 			if(tame)
-				shape0->translation[k] = nxUnit(&state) * 6.0f - 3.0f;
+				shape0->translation[k] = nxUnit(&state).value * 6.0f - 3.0f;
 			else
 				nxPickWord(&state, &shape0->translation[k]);
 		nxFillGeometry(&state, shape0, 2, tame);
@@ -3070,7 +3113,7 @@ int wmain(int argc, wchar_t** argv)
 		for(int k = 0; k < 3; ++k)
 			{
 			if(tame)
-				box.center[k] = nxUnit(&state) * 2.0f - 1.0f;
+				box.center[k] = nxUnit(&state).value * 2.0f - 1.0f;
 			else
 				nxPickWord(&state, &box.center[k]);
 			box.extents[k] = shape1->geometry[k + 1];
@@ -3078,7 +3121,7 @@ int wmain(int argc, wchar_t** argv)
 		for(int k = 0; k < 9; ++k)
 			box.rotation[k] = shape1->rotation[k];
 		if(tame)
-			sphere.radius = nxUnit(&state) * 1.5f + 0.02f;
+			sphere.radius = nxUnit(&state).value * 1.5f + 0.02f;
 		else
 			nxPickWord(&state, &sphere.radius);
 
@@ -3089,13 +3132,13 @@ int wmain(int argc, wchar_t** argv)
 			{
 			++insideCount;
 			for(int k = 0; k < 3; ++k)
-				sphere.center[k] = box.center[k] + (nxUnit(&state) * 2.0f - 1.0f) * box.extents[k] * 0.5f;
+				sphere.center[k] = box.center[k] + (nxUnit(&state).value * 2.0f - 1.0f) * box.extents[k] * 0.5f;
 			}
 		else
 			{
 			for(int k = 0; k < 3; ++k)
 				if(tame)
-					sphere.center[k] = nxUnit(&state) * 4.0f - 2.0f;
+					sphere.center[k] = nxUnit(&state).value * 4.0f - 2.0f;
 				else
 					nxPickWord(&state, &sphere.center[k]);
 			}
@@ -3164,10 +3207,10 @@ int wmain(int argc, wchar_t** argv)
 			{
 			// Every operand below is finite by construction, so nothing here
 			// multiplies a value it also allows to be non-finite.
-			const NxReal y0 = nxUnit(&state) * 4.0f - 2.0f;
-			const NxReal z0 = nxUnit(&state) * 4.0f - 2.0f;
-			const NxReal y1 = y0 + nxUnit(&state) * 3.0f + 0.05f;
-			const NxReal z1 = z0 + nxUnit(&state) * 3.0f + 0.05f;
+			const NxReal y0 = nxUnit(&state).value * 4.0f - 2.0f;
+			const NxReal z0 = nxUnit(&state).value * 4.0f - 2.0f;
+			const NxReal y1 = y0 + nxUnit(&state).value * 3.0f + 0.05f;
+			const NxReal z1 = z0 + nxUnit(&state).value * 3.0f + 0.05f;
 			const bool accepted = (nxNext(&state) & 1) != 0;
 			// quad[0] (y0,z0), quad[1] (y0,z1), quad[2] (y1,z1), quad[3] (y1,z0)
 			// is the winding whose four cross products are all negative for an
@@ -3177,7 +3220,7 @@ int wmain(int argc, wchar_t** argv)
 			for(int k = 0; k < 4; ++k)
 				{
 				const int slot = accepted ? k : (3 - k);
-				corner[slot].x = nxUnit(&state) * 4.0f - 2.0f;
+				corner[slot].x = nxUnit(&state).value * 4.0f - 2.0f;
 				corner[slot].y = ys[k];
 				corner[slot].z = zs[k];
 				}
@@ -3186,8 +3229,8 @@ int wmain(int argc, wchar_t** argv)
 
 			if((nxNext(&state) & 1) != 0)
 				{
-				pointY = y0 + nxUnit(&state) * (y1 - y0);
-				pointZ = z0 + nxUnit(&state) * (z1 - z0);
+				pointY = y0 + nxUnit(&state).value * (y1 - y0);
+				pointZ = z0 + nxUnit(&state).value * (z1 - z0);
 				if(accepted)
 					++aimedInside;
 				}
@@ -3195,8 +3238,8 @@ int wmain(int argc, wchar_t** argv)
 				{
 				// Outside on a random side, which is what walks the loop to a
 				// different index before it leaves.
-				pointY = nxUnit(&state) * 8.0f - 4.0f;
-				pointZ = nxUnit(&state) * 8.0f - 4.0f;
+				pointY = nxUnit(&state).value * 8.0f - 4.0f;
+				pointZ = nxUnit(&state).value * 8.0f - 4.0f;
 				}
 			}
 		else
@@ -3348,7 +3391,7 @@ int wmain(int argc, wchar_t** argv)
 				// multiplies a value it also allows to be non-finite.
 				aimedMode = (int) (nxNext(&state) & 3);
 				for(int k = 0; k < 3; ++k)
-					extentA[k] = nxUnit(&state) * 1.5f + 0.25f;
+					extentA[k] = nxUnit(&state).value * 1.5f + 0.25f;
 
 				// mode 0 -- an incident box small enough to sit wholly inside
 				//           the reference face: stage 2 alone.
@@ -3362,7 +3405,7 @@ int wmain(int argc, wchar_t** argv)
 				const float scale = (aimedMode == 0) ? 0.35f
 					: (aimedMode == 2) ? 3.0f : 1.0f;
 				for(int k = 0; k < 3; ++k)
-					extentB[k] = extentA[k] * scale * (nxUnit(&state) * 0.6f + 0.7f);
+					extentB[k] = extentA[k] * scale * (nxUnit(&state).value * 0.6f + 0.7f);
 
 				unsigned char rotationStore[kShapeBytes];
 				NxCollisionShape* const rotation = (NxCollisionShape*) rotationStore;
@@ -3373,7 +3416,7 @@ int wmain(int argc, wchar_t** argv)
 					{
 					// A small tilt, so the face pair is nearly parallel and the
 					// corners really do land inside.
-					const float t = (nxUnit(&state) * 2.0f - 1.0f) * 0.15f;
+					const float t = (nxUnit(&state).value * 2.0f - 1.0f) * 0.15f;
 					rotation->rotation[4] = (float) cos((double) t);
 					rotation->rotation[5] = -(float) sin((double) t);
 					rotation->rotation[7] = (float) sin((double) t);
@@ -3389,12 +3432,12 @@ int wmain(int argc, wchar_t** argv)
 				for(int k = 0; k < 9; ++k)
 					poseB[k] = rotation->rotation[k];
 				const float depth = (aimedMode == 3)
-					? (nxUnit(&state) * 6.0f - 3.0f)
-					: (nxUnit(&state) * 0.8f - 0.1f) * extentA[0];
+					? (nxUnit(&state).value * 6.0f - 3.0f)
+					: (nxUnit(&state).value * 0.8f - 0.1f) * extentA[0];
 				const float spread = (aimedMode == 3) ? 3.0f : 1.2f;
 				poseB[9] = depth;
-				poseB[10] = (nxUnit(&state) * 2.0f - 1.0f) * extentA[1] * spread;
-				poseB[11] = (nxUnit(&state) * 2.0f - 1.0f) * extentA[2] * spread;
+				poseB[10] = (nxUnit(&state).value * 2.0f - 1.0f) * extentA[1] * spread;
+				poseB[11] = (nxUnit(&state).value * 2.0f - 1.0f) * extentA[2] * spread;
 				}
 			nxFoldInput(&inputDigest[family], poseA, sizeof(poseA));
 			nxFoldInput(&inputDigest[family], poseB, sizeof(poseB));
@@ -3644,7 +3687,7 @@ int wmain(int argc, wchar_t** argv)
 							// 0x10106880 is added for.
 							if(boxIndex == 1)
 								{
-								const float t = (nxUnit(&state) * 2.0f - 1.0f) * 0.05f;
+								const float t = (nxUnit(&state).value * 2.0f - 1.0f) * 0.05f;
 								rotation->rotation[0] = (float) cos((double) t);
 								rotation->rotation[1] = -(float) sin((double) t);
 								rotation->rotation[3] = (float) sin((double) t);
@@ -3657,7 +3700,7 @@ int wmain(int argc, wchar_t** argv)
 						for(int k = 0; k < 9; ++k)
 							pose[p][boxIndex][k] = rotation->rotation[k];
 						for(int k = 0; k < 3; ++k)
-							extent[p][boxIndex][k] = nxUnit(&state) * 1.4f + 0.3f;
+							extent[p][boxIndex][k] = nxUnit(&state).value * 1.4f + 0.3f;
 						}
 
 					// Mode 2 makes box B much the larger, so its faces win the
@@ -3681,9 +3724,9 @@ int wmain(int argc, wchar_t** argv)
 					for(int k = 0; k < 3; ++k)
 						{
 						const float reach = (extent[p][0][k] + extent[p][1][k]) * spread;
-						pose[p][0][9 + k] = nxUnit(&state) * 4.0f - 2.0f;
+						pose[p][0][9 + k] = nxUnit(&state).value * 4.0f - 2.0f;
 						pose[p][1][9 + k] = pose[p][0][9 + k]
-							+ (nxUnit(&state) * 2.0f - 1.0f) * reach;
+							+ (nxUnit(&state).value * 2.0f - 1.0f) * reach;
 						}
 					}
 				}
@@ -3945,10 +3988,10 @@ int wmain(int argc, wchar_t** argv)
 						pose[p][boxIndex][k] = rotation->rotation[k];
 					for(int k = 0; k < 3; ++k)
 						{
-						extent[p][boxIndex][k] = nxUnit(&state) * 1.4f + 0.3f;
+						extent[p][boxIndex][k] = nxUnit(&state).value * 1.4f + 0.3f;
 						pose[p][boxIndex][9 + k] = boxIndex == 0
-							? nxUnit(&state) * 2.0f - 1.0f
-							: pose[p][0][9 + k] + (nxUnit(&state) * 2.0f - 1.0f)
+							? nxUnit(&state).value * 2.0f - 1.0f
+							: pose[p][0][9 + k] + (nxUnit(&state).value * 2.0f - 1.0f)
 								* (extent[p][0][k] + extent[p][1][k]) * 0.9f;
 						}
 					}
@@ -4173,7 +4216,7 @@ int wmain(int argc, wchar_t** argv)
 				nxRandomRotation(&local, box1Shape);
 				for(int k = 0; k < 3; ++k)
 					if(tame)
-						box0Shape->translation[k] = nxUnit(&local) * 2.0f - 1.0f;
+						box0Shape->translation[k] = nxUnit(&local).value * 2.0f - 1.0f;
 					else
 						nxPickWord(&local, &box0Shape->translation[k]);
 				if(tame)
@@ -4187,7 +4230,7 @@ int wmain(int argc, wchar_t** argv)
 					const float spread = deep ? 0.6f : 1.2f;
 					for(int k = 0; k < 3; ++k)
 						box1Shape->translation[k] = box0Shape->translation[k]
-							+ (nxUnit(&local) * 2.0f - 1.0f) * spread
+							+ (nxUnit(&local).value * 2.0f - 1.0f) * spread
 								* (box0Shape->geometry[k + 1] + box1Shape->geometry[k + 1]);
 					}
 				else
@@ -4362,7 +4405,7 @@ int wmain(int argc, wchar_t** argv)
 		for(int k = 0; k < 5; ++k)
 			for(int c = 0; c < 3; ++c)
 				if(tame)
-					(&v[k].x)[c] = nxUnit(&state) * 4.0f - 2.0f;
+					(&v[k].x)[c] = nxUnit(&state).value * 4.0f - 2.0f;
 				else
 					nxPickRawWord(&state, &(&v[k].x)[c]);
 		// Half of the tame iterations aim the ray through a random barycentric
@@ -4371,7 +4414,7 @@ int wmain(int argc, wchar_t** argv)
 		// needed for this export.
 		if(tame && (nxNext(&state) & 1))
 			{
-			float a = nxUnit(&state), b = nxUnit(&state) * (1.0f - a);
+			float a = nxUnit(&state).value, b = nxUnit(&state).value * (1.0f - a);
 			for(int c = 0; c < 3; ++c)
 				{
 				float target = (&v[2].x)[c] + a * ((&v[3].x)[c] - (&v[2].x)[c])
@@ -4452,7 +4495,7 @@ int wmain(int argc, wchar_t** argv)
 		for(NxU32 vertex = 0; vertex < nbVerts; ++vertex)
 			for(int c = 0; c < 3; ++c)
 				if(tame)
-					(&verts[vertex].x)[c] = nxUnit(&state) * 4.0f - 2.0f;
+					(&verts[vertex].x)[c] = nxUnit(&state).value * 4.0f - 2.0f;
 				else
 					nxPickWord(&state, &(&verts[vertex].x)[c]);
 		// Indices stay in range: the export bounds-checks none of them and an
@@ -4602,7 +4645,7 @@ int wmain(int argc, wchar_t** argv)
 				nxFillGeometry(&local, sphereShape, 1, tame);
 				for(int k = 0; k < 3; ++k)
 					if(tame)
-						sphereShape->translation[k] = nxUnit(&local) * 3.0f - 1.5f;
+						sphereShape->translation[k] = nxUnit(&local).value * 3.0f - 1.5f;
 					else
 						nxPickWord(&local, &sphereShape->translation[k]);
 				// One pair in four starts a new shape identity, so both the
@@ -4750,11 +4793,11 @@ int wmain(int argc, wchar_t** argv)
 				for(int k = 0; k < 3; ++k)
 					{
 					if(tame)
-						(&point.x)[k] = nxUnit(&local) * 4.0f - 2.0f;
+						(&point.x)[k] = nxUnit(&local).value * 4.0f - 2.0f;
 					else
 						nxPickWord(&local, &(&point.x)[k]);
 					if(tame)
-						(&normal.x)[k] = nxUnit(&local) * 2.0f - 1.0f;
+						(&normal.x)[k] = nxUnit(&local).value * 2.0f - 1.0f;
 					else
 						nxPickWord(&local, &(&normal.x)[k]);
 					}
@@ -4848,7 +4891,7 @@ int wmain(int argc, wchar_t** argv)
 		NxRay ray;
 		for(int k = 0; k < 3; ++k)
 			if(tame)
-				(&ray.orig.x)[k] = nxUnit(&state) * 4.0f - 2.0f;
+				(&ray.orig.x)[k] = nxUnit(&state).value * 4.0f - 2.0f;
 			else
 				nxPickWord(&state, &(&ray.orig.x)[k]);
 
@@ -4866,7 +4909,7 @@ int wmain(int argc, wchar_t** argv)
 			float projection = 0.0f;
 			for(int k = 0; k < 3; ++k)
 				{
-				tangent[k] = nxUnit(&state) * 6.0f - 3.0f;
+				tangent[k] = nxUnit(&state).value * 6.0f - 3.0f;
 				projection += tangent[k] * n[k];
 				}
 			float delta[3];
@@ -4882,17 +4925,17 @@ int wmain(int argc, wchar_t** argv)
 				{ delta[0] = 1.0f; delta[1] = 0.0f; delta[2] = 0.0f; length = 1.0f; }
 			for(int k = 0; k < 3; ++k)
 				(&ray.dir.x)[k] = delta[k] / length;
-			maxDistance = length * (0.2f + nxUnit(&state) * 1.6f);
+			maxDistance = length * (0.2f + nxUnit(&state).value * 1.6f);
 			}
 		else
 			{
 			for(int k = 0; k < 3; ++k)
 				if(tame)
-					(&ray.dir.x)[k] = nxUnit(&state) * 2.0f - 1.0f;
+					(&ray.dir.x)[k] = nxUnit(&state).value * 2.0f - 1.0f;
 				else
 					nxPickWord(&state, &(&ray.dir.x)[k]);
 			if(tame)
-				maxDistance = nxUnit(&state) * 6.0f;
+				maxDistance = nxUnit(&state).value * 6.0f;
 			else
 				nxPickWord(&state, &maxDistance);
 			}
@@ -5067,7 +5110,7 @@ int wmain(int argc, wchar_t** argv)
 					float projection = 0.0f;
 					for(int k = 0; k < 3; ++k)
 						{
-						pick[k] = nxUnit(&local) * 2.0f - 1.0f;
+						pick[k] = nxUnit(&local).value * 2.0f - 1.0f;
 						projection += pick[k] * planeNormal[k];
 						}
 					capsuleShape->rotation[1] = pick[0] - projection * planeNormal[0];
@@ -5103,7 +5146,7 @@ int wmain(int argc, wchar_t** argv)
 				if(aimable && (nxNext(&local) & 3) != 0)
 					{
 					const float span = capsuleShape->geometry[0] + capsuleShape->geometry[1];
-					const float offset = (nxUnit(&local) * 2.0f - 1.0f) * (span * 1.5f + 0.25f);
+					const float offset = (nxUnit(&local).value * 2.0f - 1.0f) * (span * 1.5f + 0.25f);
 					for(int k = 0; k < 3; ++k)
 						capsuleShape->translation[k] =
 							planeNormal[k] * (offset - planeShape->geometry[3]);
@@ -5111,7 +5154,7 @@ int wmain(int argc, wchar_t** argv)
 				else
 					for(int k = 0; k < 3; ++k)
 						if(tame)
-							capsuleShape->translation[k] = nxUnit(&local) * 3.0f - 1.5f;
+							capsuleShape->translation[k] = nxUnit(&local).value * 3.0f - 1.5f;
 						else
 							nxPickWord(&local, &capsuleShape->translation[k]);
 
@@ -5223,7 +5266,7 @@ int wmain(int argc, wchar_t** argv)
 		nxFillGeometry(&state, shape0, 1, tame);
 		for(int k = 0; k < 3; ++k)
 			if(tame)
-				shape0->translation[k] = nxUnit(&state) * 4.0f - 2.0f;
+				shape0->translation[k] = nxUnit(&state).value * 4.0f - 2.0f;
 			else
 				nxPickWord(&state, &shape0->translation[k]);
 		shape0->collisionObject = kFakeCollisionObject;
@@ -5238,7 +5281,7 @@ int wmain(int argc, wchar_t** argv)
 			float length = 0.0f;
 			for(int k = 0; k < 3; ++k)
 				{
-				direction[k] = nxUnit(&state) * 2.0f - 1.0f;
+				direction[k] = nxUnit(&state).value * 2.0f - 1.0f;
 				length += direction[k] * direction[k];
 				}
 			length = (float) sqrt((double) length);
@@ -5252,30 +5295,30 @@ int wmain(int argc, wchar_t** argv)
 			const bool behind = (nxNext(&state) & 3) == 0;
 			if(behind)
 				++behindRays;
-			const float along = (nxUnit(&state) * 3.0f + 0.5f) * (behind ? -1.0f : 1.0f);
+			const float along = (nxUnit(&state).value * 3.0f + 0.5f) * (behind ? -1.0f : 1.0f);
 			// An offset across the ray, so the sphere is grazed as well as hit
 			// through the middle and missed outright.
-			const float across = (nxUnit(&state) * 2.0f - 1.0f) * shape0->geometry[0] * 1.4f;
+			const float across = (nxUnit(&state).value * 2.0f - 1.0f) * shape0->geometry[0] * 1.4f;
 			for(int k = 0; k < 3; ++k)
 				(&ray.orig.x)[k] = shape0->translation[k] - (&ray.dir.x)[k] * along
 					+ ((k + 1) % 3 == 0 ? across : -across) * 0.5f;
-			maxDistance = (along < 0.0f ? -along : along) * (0.2f + nxUnit(&state) * 1.6f);
+			maxDistance = (along < 0.0f ? -along : along) * (0.2f + nxUnit(&state).value * 1.6f);
 			}
 		else
 			{
 			for(int k = 0; k < 3; ++k)
 				{
 				if(tame)
-					(&ray.orig.x)[k] = nxUnit(&state) * 4.0f - 2.0f;
+					(&ray.orig.x)[k] = nxUnit(&state).value * 4.0f - 2.0f;
 				else
 					nxPickWord(&state, &(&ray.orig.x)[k]);
 				if(tame)
-					(&ray.dir.x)[k] = nxUnit(&state) * 2.0f - 1.0f;
+					(&ray.dir.x)[k] = nxUnit(&state).value * 2.0f - 1.0f;
 				else
 					nxPickWord(&state, &(&ray.dir.x)[k]);
 				}
 			if(tame)
-				maxDistance = nxUnit(&state) * 6.0f;
+				maxDistance = nxUnit(&state).value * 6.0f;
 			else
 				nxPickWord(&state, &maxDistance);
 			}
@@ -5415,7 +5458,7 @@ int wmain(int argc, wchar_t** argv)
 				nxFillGeometry(&local, capsuleShape, 3, tame);
 				for(int k = 0; k < 3; ++k)
 					if(tame)
-						capsuleShape->translation[k] = nxUnit(&local) * 3.0f - 1.5f;
+						capsuleShape->translation[k] = nxUnit(&local).value * 3.0f - 1.5f;
 					else
 						nxPickWord(&local, &capsuleShape->translation[k]);
 
@@ -5427,9 +5470,9 @@ int wmain(int argc, wchar_t** argv)
 					// A skew axis that is not a rotation column at all: only
 					// m[1], m[4] and m[7] are read and nothing requires them to
 					// be unit, so a drifted pose is a state this can be in.
-					capsuleShape->rotation[1] = nxUnit(&local) * 4.0f - 2.0f;
-					capsuleShape->rotation[4] = nxUnit(&local) * 4.0f - 2.0f;
-					capsuleShape->rotation[7] = nxUnit(&local) * 4.0f - 2.0f;
+					capsuleShape->rotation[1] = nxUnit(&local).value * 4.0f - 2.0f;
+					capsuleShape->rotation[4] = nxUnit(&local).value * 4.0f - 2.0f;
+					capsuleShape->rotation[7] = nxUnit(&local).value * 4.0f - 2.0f;
 					}
 				else if(axisMode == 3)
 					memset(capsuleShape->rotation, 0, sizeof(capsuleShape->rotation));
@@ -5473,11 +5516,11 @@ int wmain(int argc, wchar_t** argv)
 						+ perp[1] * perp[1] + perp[2] * perp[2]));
 					if(norm > 1e-6f)
 						{
-						const float along = nxUnit(&local) * 3.0f - 1.5f;
+						const float along = nxUnit(&local).value * 3.0f - 1.5f;
 						const bool onAxis = (nxNext(&local) & 7) == 0;
 						const float span = sphereShape->geometry[0] + capsuleShape->geometry[0];
 						const float across = onAxis ? 0.0f
-							: (nxUnit(&local) * 1.8f + 0.05f) * span;
+							: (nxUnit(&local).value * 1.8f + 0.05f) * span;
 						if(onAxis)
 							++coincident;
 						if(along < -1.0f || along > 1.0f)
@@ -5491,7 +5534,7 @@ int wmain(int argc, wchar_t** argv)
 				if(!placed)
 					for(int k = 0; k < 3; ++k)
 						if(tame)
-							sphereShape->translation[k] = nxUnit(&local) * 3.0f - 1.5f;
+							sphereShape->translation[k] = nxUnit(&local).value * 3.0f - 1.5f;
 						else
 							nxPickWord(&local, &sphereShape->translation[k]);
 
@@ -5645,8 +5688,8 @@ int wmain(int argc, wchar_t** argv)
 						++belowPlane;
 					if(finite)
 						{
-						const float offset = sink6 ? -(reach + nxUnit(&local) * 2.0f)
-							: (nxUnit(&local) * 2.4f - 1.2f) * reach;
+						const float offset = sink6 ? -(reach + nxUnit(&local).value * 2.0f)
+							: (nxUnit(&local).value * 2.4f - 1.2f) * reach;
 						for(int k = 0; k < 3; ++k)
 							boxShape->translation[k] =
 								planeShape->geometry[k] * (offset - planeShape->geometry[3]);
@@ -5755,7 +5798,7 @@ int wmain(int argc, wchar_t** argv)
 		nxFillGeometry(&state, shape0, 3, tame);
 		for(int k = 0; k < 3; ++k)
 			if(tame)
-				shape0->translation[k] = nxUnit(&state) * 4.0f - 2.0f;
+				shape0->translation[k] = nxUnit(&state).value * 4.0f - 2.0f;
 			else
 				nxPickWord(&state, &shape0->translation[k]);
 		shape0->collisionObject = kFakeCollisionObject;
@@ -5778,7 +5821,7 @@ int wmain(int argc, wchar_t** argv)
 			float length = 0.0f;
 			for(int k = 0; k < 3; ++k)
 				{
-				direction[k] = nxUnit(&state) * 2.0f - 1.0f;
+				direction[k] = nxUnit(&state).value * 2.0f - 1.0f;
 				length += direction[k] * direction[k];
 				}
 			length = (float) sqrt((double) length);
@@ -5786,28 +5829,28 @@ int wmain(int argc, wchar_t** argv)
 				{ direction[0] = 1.0f; direction[1] = 0.0f; direction[2] = 0.0f; length = 1.0f; }
 			for(int k = 0; k < 3; ++k)
 				(&ray.dir.x)[k] = direction[k] / length;
-			const float along = nxUnit(&state) * 4.0f + 0.5f;
-			const float across = (nxUnit(&state) * 2.0f - 1.0f) * shape0->geometry[0] * 1.4f;
+			const float along = nxUnit(&state).value * 4.0f + 0.5f;
+			const float across = (nxUnit(&state).value * 2.0f - 1.0f) * shape0->geometry[0] * 1.4f;
 			for(int k = 0; k < 3; ++k)
 				(&ray.orig.x)[k] = shape0->translation[k] - (&ray.dir.x)[k] * along
 					+ ((k + 1) % 3 == 0 ? across : -across) * 0.5f;
-			maxDistance = along * (0.2f + nxUnit(&state) * 1.6f);
+			maxDistance = along * (0.2f + nxUnit(&state).value * 1.6f);
 			}
 		else
 			{
 			for(int k = 0; k < 3; ++k)
 				{
 				if(tame)
-					(&ray.orig.x)[k] = nxUnit(&state) * 4.0f - 2.0f;
+					(&ray.orig.x)[k] = nxUnit(&state).value * 4.0f - 2.0f;
 				else
 					nxPickWord(&state, &(&ray.orig.x)[k]);
 				if(tame)
-					(&ray.dir.x)[k] = nxUnit(&state) * 2.0f - 1.0f;
+					(&ray.dir.x)[k] = nxUnit(&state).value * 2.0f - 1.0f;
 				else
 					nxPickWord(&state, &(&ray.dir.x)[k]);
 				}
 			if(tame)
-				maxDistance = nxUnit(&state) * 8.0f;
+				maxDistance = nxUnit(&state).value * 8.0f;
 			else
 				nxPickWord(&state, &maxDistance);
 			}
@@ -5957,7 +6000,7 @@ int wmain(int argc, wchar_t** argv)
 				nxFillGeometry(&local, second, 3, tame);
 				for(int k = 0; k < 3; ++k)
 					if(tame)
-						first->translation[k] = nxUnit(&local) * 3.0f - 1.5f;
+						first->translation[k] = nxUnit(&local).value * 3.0f - 1.5f;
 					else
 						nxPickWord(&local, &first->translation[k]);
 
@@ -5966,9 +6009,9 @@ int wmain(int argc, wchar_t** argv)
 					nxRandomRotation(&local, first);
 				else if(axisMode == 2)
 					{
-					first->rotation[1] = nxUnit(&local) * 4.0f - 2.0f;
-					first->rotation[4] = nxUnit(&local) * 4.0f - 2.0f;
-					first->rotation[7] = nxUnit(&local) * 4.0f - 2.0f;
+					first->rotation[1] = nxUnit(&local).value * 4.0f - 2.0f;
+					first->rotation[4] = nxUnit(&local).value * 4.0f - 2.0f;
+					first->rotation[7] = nxUnit(&local).value * 4.0f - 2.0f;
 					}
 				else if(axisMode == 3)
 					memset(first->rotation, 0, sizeof(first->rotation));
@@ -5996,10 +6039,10 @@ int wmain(int argc, wchar_t** argv)
 						// A small perturbation, so pairs land either side of the
 						// threshold rather than all above it.
 						const float sign = (nxNext(&local) & 1) ? 1.0f : -1.0f;
-						const float wobble = nxUnit(&local) * 0.05f;
+						const float wobble = nxUnit(&local).value * 0.05f;
 						for(int k = 0; k < 3; ++k)
 							second->rotation[1 + k * 3] =
-								axis[k] * sign + (nxUnit(&local) * 2.0f - 1.0f) * wobble;
+								axis[k] * sign + (nxUnit(&local).value * 2.0f - 1.0f) * wobble;
 						axisPlaced = true;
 						++parallelAxes;
 						}
@@ -6077,13 +6120,13 @@ int wmain(int argc, wchar_t** argv)
 						// exactly.
 						const bool aligned = matched && (nxNext(&local) & 3) == 0;
 						const float along = aligned ? 0.0f
-							: matched ? nxUnit(&local) * 0.7f - 0.35f
-							: nxUnit(&local) * 3.2f - 1.6f;
+							: matched ? nxUnit(&local).value * 0.7f - 0.35f
+							: nxUnit(&local).value * 3.2f - 1.6f;
 						const bool onAxis = (nxNext(&local) & 7) == 0;
 						const float span = first->geometry[0] + second->geometry[0];
 						const float across = onAxis ? 0.0f
-							: (matched ? nxUnit(&local) * 0.9f
-								: nxUnit(&local) * 1.9f + 0.02f) * span;
+							: (matched ? nxUnit(&local).value * 0.9f
+								: nxUnit(&local).value * 1.9f + 0.02f) * span;
 						if(onAxis)
 							++coincident;
 						if(along < -1.0f || along > 1.0f)
@@ -6097,7 +6140,7 @@ int wmain(int argc, wchar_t** argv)
 				if(!placed)
 					for(int k = 0; k < 3; ++k)
 						if(tame)
-							second->translation[k] = nxUnit(&local) * 3.0f - 1.5f;
+							second->translation[k] = nxUnit(&local).value * 3.0f - 1.5f;
 						else
 							nxPickWord(&local, &second->translation[k]);
 
@@ -6238,11 +6281,11 @@ int wmain(int argc, wchar_t** argv)
 		for(int k = 0; k < 6; ++k)
 			{
 			if(tame)
-				words0[k] = nxUnit(&state) * 6.0f - 3.0f;
+				words0[k] = nxUnit(&state).value * 6.0f - 3.0f;
 			else
 				nxPickWord(&state, &words0[k]);
 			if(tame)
-				words1[k] = nxUnit(&state) * 6.0f - 3.0f;
+				words1[k] = nxUnit(&state).value * 6.0f - 3.0f;
 			else
 				nxPickWord(&state, &words1[k]);
 			}
@@ -6273,14 +6316,14 @@ int wmain(int argc, wchar_t** argv)
 			// one expression they used to share: the sign word, then the
 			// magnitude (every registered segment_segment line reproduces).
 			const unsigned signWord = nxNext(&state);
-			const float magnitude = nxUnit(&state) * 1.8f + 0.2f;
+			const float magnitude = nxUnit(&state).value * 1.8f + 0.2f;
 			const float scale = magnitude * ((signWord & 1) ? 1.0f : -1.0f);
-			const float jitter = nxUnit(&state) * 4e-3f;
+			const float jitter = nxUnit(&state).value * 4e-3f;
 			for(int k = 0; k < 3; ++k)
 				{
-				segment[1].p0[k] = segment[0].p0[k] + (nxUnit(&state) * 2.0f - 1.0f);
+				segment[1].p0[k] = segment[0].p0[k] + (nxUnit(&state).value * 2.0f - 1.0f);
 				segment[1].p1[k] = segment[1].p0[k] + direction[k] * scale
-					+ (nxUnit(&state) * 2.0f - 1.0f) * jitter;
+					+ (nxUnit(&state).value * 2.0f - 1.0f) * jitter;
 				}
 			}
 		else if(shape == 2)
@@ -6303,7 +6346,7 @@ int wmain(int argc, wchar_t** argv)
 			// Aimed through a point on segment0, so the closest points land in
 			// the interior of both and the leaf at 0x0003402d is reached
 			// rather than a corner.
-			const float along = nxUnit(&state);
+			const float along = nxUnit(&state).value;
 			float target[3];
 			for(int k = 0; k < 3; ++k)
 				target[k] = segment[0].p0[k] + direction[k] * along;
@@ -6311,10 +6354,10 @@ int wmain(int argc, wchar_t** argv)
 			across[0] = direction[1];
 			across[1] = -direction[0];
 			across[2] = direction[2] * 0.5f + 0.25f;
-			const float offset = nxUnit(&state) * 2.0f - 1.0f;
+			const float offset = nxUnit(&state).value * 2.0f - 1.0f;
 			for(int k = 0; k < 3; ++k)
 				{
-				const float half = (nxUnit(&state) * 2.0f - 1.0f) * 1.5f;
+				const float half = (nxUnit(&state).value * 2.0f - 1.0f) * 1.5f;
 				segment[1].p0[k] = target[k] + across[k] * offset - half;
 				segment[1].p1[k] = target[k] + across[k] * offset + half;
 				}
@@ -6690,7 +6733,7 @@ int wmain(int argc, wchar_t** argv)
 					nxFillGeometry(&local, secondShape, 1, tame);
 					for(int k = 0; k < 3; ++k)
 						if(tame)
-							firstShape->translation[k] = nxUnit(&local) * 4.0f - 2.0f;
+							firstShape->translation[k] = nxUnit(&local).value * 4.0f - 2.0f;
 						else
 							nxPickWord(&local, &firstShape->translation[k]);
 
@@ -6701,7 +6744,7 @@ int wmain(int argc, wchar_t** argv)
 					float length = 0.0f;
 					for(int k = 0; k < 3; ++k)
 						{
-						direction[k] = nxUnit(&local) * 2.0f - 1.0f;
+						direction[k] = nxUnit(&local).value * 2.0f - 1.0f;
 						length += direction[k] * direction[k];
 						}
 					length = (float) sqrt((double) length);
@@ -6721,8 +6764,8 @@ int wmain(int argc, wchar_t** argv)
 						// only entered. Everything else is 0.2 to 1.6 reaches,
 						// which crosses the radius test the same way.
 						const float span = coincidentPair
-							? nxUnit(&local) * 1e-2f
-							: reach * (nxUnit(&local) * 1.4f + 0.2f);
+							? nxUnit(&local).value * 1e-2f
+							: reach * (nxUnit(&local).value * 1.4f + 0.2f);
 						for(int k = 0; k < 3; ++k)
 							secondShape->translation[k] = firstShape->translation[k]
 								+ direction[k] * span;
@@ -6846,7 +6889,7 @@ int wmain(int argc, wchar_t** argv)
 		for(int k = 0; k < 3; ++k)
 			{
 			if(tame)
-				box.center[k] = nxUnit(&state) * 2.0f - 1.0f;
+				box.center[k] = nxUnit(&state).value * 2.0f - 1.0f;
 			else
 				nxPickWord(&state, &box.center[k]);
 			box.extents[k] = boxShape->geometry[k + 1];
@@ -6854,7 +6897,7 @@ int wmain(int argc, wchar_t** argv)
 		for(int k = 0; k < 9; ++k)
 			box.rotation[k] = boxShape->rotation[k];
 		if(tame)
-			sphere.radius = nxUnit(&state) * 1.5f + 0.02f;
+			sphere.radius = nxUnit(&state).value * 1.5f + 0.02f;
 		else
 			nxPickWord(&state, &sphere.radius);
 
@@ -6867,7 +6910,7 @@ int wmain(int argc, wchar_t** argv)
 			// coordinates -- which for a rotated box is not the same thing.
 			float localOffset[3];
 			for(int k = 0; k < 3; ++k)
-				localOffset[k] = (nxUnit(&state) * 2.0f - 1.0f) * box.extents[k] * 0.9f;
+				localOffset[k] = (nxUnit(&state).value * 2.0f - 1.0f) * box.extents[k] * 0.9f;
 			for(int k = 0; k < 3; ++k)
 				sphere.center[k] = box.center[k]
 					+ box.rotation[k * 3 + 0] * localOffset[0]
@@ -6878,7 +6921,7 @@ int wmain(int argc, wchar_t** argv)
 			{
 			for(int k = 0; k < 3; ++k)
 				if(tame)
-					sphere.center[k] = nxUnit(&state) * 4.0f - 2.0f;
+					sphere.center[k] = nxUnit(&state).value * 4.0f - 2.0f;
 				else
 					nxPickWord(&state, &sphere.center[k]);
 			}
@@ -7051,7 +7094,7 @@ int wmain(int argc, wchar_t** argv)
 					nxRandomRotation(&local, boxShape);
 					for(int k = 0; k < 3; ++k)
 						if(tame)
-							boxShape->translation[k] = nxUnit(&local) * 2.0f - 1.0f;
+							boxShape->translation[k] = nxUnit(&local).value * 2.0f - 1.0f;
 						else
 							nxPickWord(&local, &boxShape->translation[k]);
 
@@ -7063,7 +7106,7 @@ int wmain(int argc, wchar_t** argv)
 						// as near the centre in world coordinates.
 						float localOffset[3];
 						for(int k = 0; k < 3; ++k)
-							localOffset[k] = (nxUnit(&local) * 2.0f - 1.0f)
+							localOffset[k] = (nxUnit(&local).value * 2.0f - 1.0f)
 								* boxShape->geometry[k + 1] * (insidePair ? 0.9f : 2.4f);
 						for(int k = 0; k < 3; ++k)
 							sphereShape->translation[k] = boxShape->translation[k]
@@ -7258,7 +7301,7 @@ int wmain(int argc, wchar_t** argv)
 			nxBoxPoint(&box, u, line.origin);
 			float direction[3];
 			for(int k = 0; k < 3; ++k)
-				direction[k] = (nxUnit(&state) * 2.0f - 1.0f) * 3.0f;
+				direction[k] = (nxUnit(&state).value * 2.0f - 1.0f) * 3.0f;
 			if(identity)
 				{
 				// In the identity frame the kernel's direction is this one
@@ -7276,7 +7319,7 @@ int wmain(int argc, wchar_t** argv)
 				float target[3];
 				float v[3];
 				for(int k = 0; k < 3; ++k)
-					v[k] = (nxUnit(&state) * 2.0f - 1.0f) * 0.9f;
+					v[k] = (nxUnit(&state).value * 2.0f - 1.0f) * 0.9f;
 				nxBoxPoint(&box, v, target);
 				for(int k = 0; k < 3; ++k)
 					direction[k] = target[k] - line.origin[k];
@@ -7514,7 +7557,7 @@ int wmain(int argc, wchar_t** argv)
 					nxRandomRotation(&local, box);
 				for(int k = 0; k < 3; ++k)
 					if(tame)
-						box->translation[k] = nxUnit(&local) * 2.0f - 1.0f;
+						box->translation[k] = nxUnit(&local).value * 2.0f - 1.0f;
 					else
 						nxPickWord(&local, &box->translation[k]);
 
@@ -7562,7 +7605,7 @@ int wmain(int argc, wchar_t** argv)
 						// Pushed out along the outward direction by up to a
 						// radius and a half, so separated, grazing and
 						// penetrating placements are all reached.
-						const float push = 1.0f + (nxUnit(&local) * 1.5f - 0.5f)
+						const float push = 1.0f + (nxUnit(&local).value * 1.5f - 0.5f)
 							* capsule->geometry[0] / (data.extents[0] + data.extents[1]
 								+ data.extents[2] + 0.1f);
 						for(int k = 0; k < 3; ++k)
@@ -7610,7 +7653,7 @@ int wmain(int argc, wchar_t** argv)
 				{
 				nxSetControl(mode ? kControlSimulate : kControlDefault);
 				NxReal pseudoExtents[3];
-				pseudoExtents[0] = nxCapsulePseudoExtent(world[0].sphere->geometry[0]);
+				nxCapsulePseudoExtent(world[0].sphere->geometry[0], &pseudoExtents[0]);
 				pseudoExtents[1] = world[0].sphere->geometry[1];
 				pseudoExtents[2] = pseudoExtents[0];
 				unsigned char probeAxis = world[0].sink.separatingAxis;
@@ -7753,8 +7796,8 @@ int wmain(int argc, wchar_t** argv)
 					{
 					if(tame)
 						{
-						const float c = nxUnit(&state) * 4.0f - 2.0f;
-						const float h = nxUnit(&state) * 1.5f + 0.02f;
+						const float c = nxUnit(&state).value * 4.0f - 2.0f;
+						const float h = nxUnit(&state).value * 1.5f + 0.02f;
 						bounds[b][k] = c - h;
 						bounds[b][3 + k] = c + h;
 						}
@@ -7799,7 +7842,7 @@ int wmain(int argc, wchar_t** argv)
 					const float lo = bounds[handle][k];
 					const float hi = bounds[handle][3 + k];
 					const float span = hi - lo;
-					primitive->translation[k] = lo + span * (nxUnit(&state) * 2.4f - 0.7f);
+					primitive->translation[k] = lo + span * (nxUnit(&state).value * 2.4f - 0.7f);
 					}
 				else
 					nxPickWord(&state, &primitive->translation[k]);
@@ -7966,10 +8009,15 @@ int wmain(int argc, wchar_t** argv)
 // with denormals and -0; translations and boxes from lattice and drawn finite
 // words.
 
-// This block is placed after wmain on purpose: the ICE headers it includes set
-// `#pragma inline_depth`, which changed the inlining of the helpers wmain's
-// generators share and with it nine registered input digests when the block
-// stood before wmain.
+// Where this block stands no longer matters. When it was first written before
+// wmain, thirteen registered lines moved (the nine `.random` input digests,
+// box_corner's and box_corner.snan's oracle and input digests). The cause was
+// not the ICE headers (their `#pragma inline_depth(255)` repeats Nx.h's): nxUnit
+// and nxReach returned floats through st(0), and adding code flipped whether
+// they were inlined, so a site's arithmetic ran in x87 at 53 bits or in SSE
+// (see nxUnit). They no longer return floats; with this block moved back before
+// wmain in a throwaway build every line reproduced (evidence/convex-mesh-gap.md,
+// Task 2g review). It stays at the end of the file.
 #pragma push_macro("min")
 #pragma push_macro("max")
 #pragma push_macro("random")

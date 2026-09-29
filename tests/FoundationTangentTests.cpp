@@ -90,10 +90,22 @@ static NxU32 nxNext()
 	}
 
 // A finite float in [-range, range) with a random sign.
-static float nxUniform(float range)
+// Returned in a four-byte struct, never as a float (convex-mesh gap Task 2g
+// review): a float return travels in st(0), and whether a caller then
+// computes in x87 or SSE follows the compiler's inlining; a four-byte
+// struct comes back in eax either way. Every call site was inlined, so the
+// values are the ones the registered lines were measured on.
+struct NxUniformDraw
+	{
+	float value;
+	};
+
+static NxUniformDraw nxUniform(float range)
 	{
 	const float unit = float(nxNext() >> 8) * (1.0f / 16777216.0f);
-	return (unit * 2.0f - 1.0f) * range;
+	NxUniformDraw draw;
+	draw.value = (unit * 2.0f - 1.0f) * range;
+	return draw;
 	}
 
 static NxU32 nxFold(NxU32 digest, NxU32 word)
@@ -195,9 +207,9 @@ int wmain(int argc, wchar_t** argv)
 	for(NxU32 i = 0; i < unitCount; ++i)
 		{
 		// Sequenced: as one expression the draws' order was the compiler's.
-		const float unitZ = nxUniform(1.0f);
-		const float unitY = nxUniform(1.0f);
-		const float unitX = nxUniform(1.0f);
+		const float unitZ = nxUniform(1.0f).value;
+		const float unitY = nxUniform(1.0f).value;
+		const float unitX = nxUniform(1.0f).value;
 		digest = nxFoldCase(digest, NxVec3(unitX, unitY, unitZ));
 		}
 	for(NxU32 i = 0; i < thresholdCount; ++i)
@@ -205,10 +217,10 @@ int wmain(int argc, wchar_t** argv)
 		NxU32 zBits = nxBelowThreshold - 64u + (nxNext() & 127u);
 		if(nxNext() & 1u)
 			zBits |= 0x80000000u;
-		const float x = (nxNext() & 3u) == 0u ? 0.0f : nxUniform(0.7f);
+		const float x = (nxNext() & 3u) == 0u ? 0.0f : nxUniform(0.7f).value;
 		float z;
 		nxSetBits(&z, zBits);
-		digest = nxFoldCase(digest, NxVec3(x, nxUniform(0.7f), z));
+		digest = nxFoldCase(digest, NxVec3(x, nxUniform(0.7f).value, z));
 		}
 	for(NxU32 i = 0; i < scaledCount; ++i)
 		{
@@ -217,9 +229,9 @@ int wmain(int argc, wchar_t** argv)
 		float scale;
 		nxSetBits(&scale, (127u - 40u + (nxNext() % 81u)) << 23);
 		// Sequenced: as one expression the draws' order was the compiler's.
-		const float scaledZ = nxUniform(scale);
-		const float scaledY = nxUniform(scale);
-		const float scaledX = nxUniform(scale);
+		const float scaledZ = nxUniform(scale).value;
+		const float scaledY = nxUniform(scale).value;
+		const float scaledX = nxUniform(scale).value;
 		digest = nxFoldCase(digest, NxVec3(scaledX, scaledY, scaledZ));
 		}
 	printf("tangent sweep unit=%u threshold=%u scaled=%u digest=%08x\n",

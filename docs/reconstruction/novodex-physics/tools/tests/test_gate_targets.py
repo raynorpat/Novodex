@@ -187,7 +187,21 @@ RAW_BIT_FLOAT_INTERFACE_SLOTS = {
     ("PhysicsAssetTests.cpp", "nxStreamReadFloat"),
 }
 
-FLOAT_TYPES = r"(?:float|double|NxReal|NxF32|NxF64)"
+# Every function in the harnesses that returns a float type at all (convex-mesh
+# gap Task 2g review). A float return travels in st(0) under the x86 ABI, and
+# whether the caller then computes in x87 or SSE follows the compiler's
+# inlining, which moves with the size of the translation unit: the collision
+# harness's nxUnit and nxReach moved thirteen registered lines that way when code
+# was added elsewhere in the file. Helpers return a four-byte struct or write
+# through a pointer instead. The interface slots below return a float because
+# the interface does: the harness stream's NxStream::readFloat and readDouble
+# (PhysicsAssetTests.cpp), which both readers call through the vtable.
+FLOAT_RETURN_INTERFACE_SLOTS = {
+    ("PhysicsAssetTests.cpp", "nxStreamReadFloat"),
+    ("PhysicsAssetTests.cpp", "nxStreamReadDouble"),
+}
+
+FLOAT_TYPES = r"(?:float|double|NxReal|NxF32|NxF64|realT)"
 # Specifiers before the return type, and calling conventions or qualifiers
 # between it and the name, in any order: `static float __cdecl f(`,
 # `static const float f(`, `float const f(`, `__declspec(noinline) double f(`.
@@ -611,6 +625,30 @@ class OracleDifferentialCoverageLines(unittest.TestCase):
                     % (path.name, name))
         self.assertEqual(exempt_seen, set(RAW_BIT_FLOAT_INTERFACE_SLOTS),
             "an exempt interface slot is gone or no longer matches; remove its entry")
+
+    def test_no_harness_helper_returns_a_float_type(self):
+        """Any float- or double-returning function in a harness, whatever its body."""
+        sources = harness_sources()
+        exempt_seen = set()
+        for path in sources:
+            text = path.read_text(encoding="utf-8", errors="replace")
+            for match in FLOAT_FUNCTION.finditer(text):
+                name = match.group(1)
+                if (path.name, name) in FLOAT_RETURN_INTERFACE_SLOTS:
+                    exempt_seen.add((path.name, name))
+                    continue
+                self.fail("%s: %s returns a float type, which travels in st(0); return a four-byte "
+                    "struct or write through a pointer instead" % (path.name, name))
+        self.assertEqual(exempt_seen, set(FLOAT_RETURN_INTERFACE_SLOTS),
+            "an exempt interface slot is gone or no longer matches; remove its entry")
+
+    def test_the_float_return_scan_fires(self):
+        for text in ("static float nxProbe(unsigned* s)\n\t{\n\treturn 1.0f;\n\t}\n",
+                     "static double __cdecl nxProbe(double a)\n\t{\n\treturn a;\n\t}\n",
+                     "static NxReal nxProbe(NxReal r)\n\t{\n\treturn r;\n\t}\n"):
+            self.assertEqual([m.group(1) for m in FLOAT_FUNCTION.finditer(text)], ["nxProbe"], text)
+        self.assertEqual([m.group(1) for m in FLOAT_FUNCTION.finditer(
+            "struct NxUnitDraw { float value; };\nstatic NxUnitDraw nxUnit(unsigned* s)\n\t{\n\t}\n")], [])
 
     # The scan has to be able to fire. Each probe is a helper of one shape the
     # hazard can take; each must be found, and an ordinary float function not.

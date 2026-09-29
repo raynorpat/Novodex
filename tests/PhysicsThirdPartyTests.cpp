@@ -463,11 +463,15 @@ struct NxTapeDifference
 	};
 
 // |a - b| for two words of one kind; +inf when either is an infinity or a NaN.
-static double nxAbsDifference(double a, double b)
+// Written through a pointer, never returned as a double (convex-mesh gap Task
+// 2g review): a floating return travels in st(0), and what the caller does
+// with it then follows the compiler's inlining.
+static void nxAbsDifference(double a, double b, double* out)
 	{
 	if(!_finite(a) || !_finite(b))
-		return HUGE_VAL;
-	return fabs(a - b);
+		*out = HUGE_VAL;
+	else
+		*out = fabs(a - b);
 	}
 
 // Each float or double more than kLastBitUlp apart, on stderr (the first 160
@@ -552,7 +556,8 @@ static NxTapeDifference nxCompareTapes(const NxTape& oracle, const NxTape& candi
 					double x, y;
 					memcpy(&x, &a, sizeof(x));
 					memcpy(&y, &b, sizeof(y));
-					const double gap = nxAbsDifference(x, y);
+					double gap;
+					nxAbsDifference(x, y, &gap);
 					if(gap > d.beyondAbs)
 						d.beyondAbs = gap;
 					}
@@ -581,7 +586,8 @@ static NxTapeDifference nxCompareTapes(const NxTape& oracle, const NxTape& candi
 				float x, y;
 				memcpy(&x, &oracle.words[i], sizeof(x));
 				memcpy(&y, &candidate.words[i], sizeof(y));
-				const double gap = nxAbsDifference(x, y);
+				double gap;
+				nxAbsDifference(x, y, &gap);
 				if(gap > d.beyondAbs)
 					d.beyondAbs = gap;
 				}
@@ -2184,14 +2190,29 @@ struct NxMesh
 static const int kNbMeshes = 6;
 static NxMesh gMeshes[kNbMeshes];
 
-static float nxUnit()	// [0, 1)
+// [0, 1), and [lo, hi). Returned in four-byte structs, never as floats
+// (convex-mesh gap Task 2g review): a float return travels in st(0), and how the
+// caller then computes follows the compiler's inlining; a four-byte struct comes
+// back in eax either way. This file is x87 (/arch:IA32) and both helpers already
+// narrowed their result to a float before returning it, so the values are the
+// ones the registered lines were measured on.
+struct NxUnitDraw
 	{
-	return (float) (nxNext() >> 8) * (1.0f / 16777216.0f);
+	float value;
+	};
+
+static NxUnitDraw nxUnit()
+	{
+	NxUnitDraw draw;
+	draw.value = (float) (nxNext() >> 8) * (1.0f / 16777216.0f);
+	return draw;
 	}
 
-static float nxRange(float lo, float hi)
+static NxUnitDraw nxRange(float lo, float hi)
 	{
-	return lo + (hi - lo) * nxUnit();
+	NxUnitDraw draw;
+	draw.value = lo + (hi - lo) * nxUnit().value;
+	return draw;
 	}
 
 static void nxMeshBounds(NxMesh& m)
@@ -2218,7 +2239,7 @@ static void nxGridMesh(NxMesh& m, int n, bool flat)
 			float* v = &m.verts[(j * (n + 1) + i) * 3];
 			v[0] = (float) i - n * 0.5f;
 			v[1] = (float) j - n * 0.5f;
-			v[2] = flat ? 0.0f : nxRange(-0.75f, 0.75f);
+			v[2] = flat ? 0.0f : nxRange(-0.75f, 0.75f).value;
 			}
 	m.nbTris = 0;
 	for(int j = 0; j < n; ++j)
@@ -2243,13 +2264,13 @@ static void nxBuildMeshes()
 	soup.nbVerts = 360;
 	for(unsigned t = 0; t < soup.nbTris; ++t)
 		{
-		const float cx = nxRange(-6.0f, 6.0f), cy = nxRange(-6.0f, 6.0f), cz = nxRange(-6.0f, 6.0f);
+		const float cx = nxRange(-6.0f, 6.0f).value, cy = nxRange(-6.0f, 6.0f).value, cz = nxRange(-6.0f, 6.0f).value;
 		for(int k = 0; k < 3; ++k)
 			{
 			float* v = &soup.verts[(t * 3 + k) * 3];
-			v[0] = cx + nxRange(-1.5f, 1.5f);
-			v[1] = cy + nxRange(-1.5f, 1.5f);
-			v[2] = cz + nxRange(-1.5f, 1.5f);
+			v[0] = cx + nxRange(-1.5f, 1.5f).value;
+			v[1] = cy + nxRange(-1.5f, 1.5f).value;
+			v[2] = cz + nxRange(-1.5f, 1.5f).value;
 			soup.tris[t * 3 + k] = t * 3 + (unsigned) k;
 			}
 		}
@@ -2266,7 +2287,7 @@ static void nxBuildMeshes()
 		}
 	for(unsigned v = 8; v < 16; ++v)
 		for(int k = 0; k < 3; ++k)
-			degen.verts[v * 3 + k] = nxRange(-2.0f, 2.0f);
+			degen.verts[v * 3 + k] = nxRange(-2.0f, 2.0f).value;
 	degen.nbTris = 24;
 	for(unsigned t = 0; t < 24; ++t)
 		{
@@ -2673,7 +2694,7 @@ static void nxRotation(float m[3][3])
 	double len = 0.0;
 	for(int k = 0; k < 4; ++k)
 		{
-		q[k] = nxRange(-1.0f, 1.0f);
+		q[k] = nxRange(-1.0f, 1.0f).value;
 		len += (double) q[k] * q[k];
 		}
 	if(len < 1e-6)
@@ -2710,9 +2731,9 @@ static void nxWorld(Matrix4x4& m, int which)
 static Point nxInside(const NxMesh& m, float grow)
 	{
 	// Sequenced: as one expression the draws' order was the compiler's.
-	const float insideZ = nxRange(m.minB[2] - grow, m.maxB[2] + grow);
-	const float insideY = nxRange(m.minB[1] - grow, m.maxB[1] + grow);
-	const float insideX = nxRange(m.minB[0] - grow, m.maxB[0] + grow);
+	const float insideZ = nxRange(m.minB[2] - grow, m.maxB[2] + grow).value;
+	const float insideY = nxRange(m.minB[1] - grow, m.maxB[1] + grow).value;
+	const float insideX = nxRange(m.minB[0] - grow, m.maxB[0] + grow).value;
 	return Point(insideX, insideY, insideZ);
 	}
 
@@ -2772,8 +2793,8 @@ static void nxMakeRay(const NxMesh& m, int r, Ray& ray, float& length)
 			from.z = (r & 8) ? m.minB[2] : 0.0f;
 				// Sequenced: as one expression the draws' order was the compiler's.
 				{
-				const float toX = nxRange(-1.0f, 1.0f);
-				const float toY = nxRange(-1.0f, 1.0f);
+				const float toX = nxRange(-1.0f, 1.0f).value;
+				const float toY = nxRange(-1.0f, 1.0f).value;
 				to = from + Point(toX, toY, 0.0f);
 				}
 			from.x = m.minB[0] - 3.0f;
@@ -2790,8 +2811,8 @@ static void nxMakeRay(const NxMesh& m, int r, Ray& ray, float& length)
 			to = Point((a[0] + b[0]) * 0.5f, (a[1] + b[1]) * 0.5f, (a[2] + b[2]) * 0.5f);
 				// Sequenced: as one expression the draws' order was the compiler's.
 				{
-				const float fromX = nxRange(-3.0f, 3.0f);
-				const float fromY = nxRange(-3.0f, 3.0f);
+				const float fromX = nxRange(-3.0f, 3.0f).value;
+				const float fromY = nxRange(-3.0f, 3.0f).value;
 				from = to + Point(fromX, fromY, 5.0f);
 				}
 			break;
@@ -2982,9 +3003,9 @@ static void nxMakeVolume(NxVolumeKind kind, const NxMesh& m, int q, NxVolumeQuer
 			for(udword k = 0; k < v.nbPlanes; ++k)
 				{
 				// Sequenced: as one expression the draws' order was the compiler's.
-				const float normalZ = nxRange(-1.0f, 1.0f);
-				const float normalY = nxRange(-1.0f, 1.0f);
-				const float normalX = nxRange(-1.0f, 1.0f);
+				const float normalZ = nxRange(-1.0f, 1.0f).value;
+				const float normalY = nxRange(-1.0f, 1.0f).value;
+				const float normalX = nxRange(-1.0f, 1.0f).value;
 				Point n(normalX, normalY, normalZ);
 				if(n.Magnitude() < 1e-3f)
 					n = Point(0.0f, 0.0f, 1.0f);
@@ -3366,7 +3387,7 @@ static void nxDriveVanilla(const NxOracleRows& o, bool selfOnly)
 		{
 		NxMesh& m = gMeshes[mesh];
 		for(unsigned v = 0; v < m.nbVerts * 3; ++v)
-			m.verts[v] += nxRange(-0.25f, 0.25f);
+			m.verts[v] += nxRange(-0.25f, 0.25f).value;
 		const bool refit = ((NxTreeBuildFn) nxAt(o, kOpcTreeRefit2))(trees[mesh].oracle, trees[mesh].oracleBuilder);
 		gOracleTape.push(refit ? 1u : 0u);
 		nxTapeVanillaTree(gOracleTape, (const AABBTree*) trees[mesh].oracle);
@@ -3520,7 +3541,7 @@ static void nxDriveRefit(const NxOracleRows& o, bool selfOnly)
 		const NxMesh& m = gMeshes[p.mesh];
 		for(unsigned v = 0; v < m.nbVerts * 3; ++v)
 			{
-			const float d = nxRange(-0.25f, 0.25f);
+			const float d = nxRange(-0.25f, 0.25f).value;
 			p.oracleMesh.verts[v] += d;
 			p.candidateMesh.verts[v] += d;
 			}
@@ -3564,14 +3585,14 @@ static void nxDriveSap(const NxOracleRows& o, bool selfOnly)
 		for(udword i = 0; i < n; ++i)
 			{
 			// Sequenced: as one expression the draws' order was the compiler's.
-			const float centerX = nxRange(-4.0f, 4.0f);
-			const float centerY = nxRange(-4.0f, 4.0f);
-			const float centerZ = nxRange(-4.0f, 4.0f);
+			const float centerX = nxRange(-4.0f, 4.0f).value;
+			const float centerY = nxRange(-4.0f, 4.0f).value;
+			const float centerZ = nxRange(-4.0f, 4.0f).value;
 			Point center(centerX, centerY, centerZ);
 			// Sequenced: as one expression the draws' order was the compiler's.
-			const float extentZ = (i % 7 == 3) ? 0.0f : nxRange(0.0f, 1.5f);
-			const float extentX = nxRange(0.0f, 1.5f);
-			const float extentY = nxRange(0.0f, 1.5f);
+			const float extentZ = (i % 7 == 3) ? 0.0f : nxRange(0.0f, 1.5f).value;
+			const float extentX = nxRange(0.0f, 1.5f).value;
+			const float extentY = nxRange(0.0f, 1.5f).value;
 			Point extents(extentX, extentY, extentZ);
 			boxes[i].SetCenterExtents(center, extents);
 			boxPtrs[i] = &boxes[i];
@@ -3583,14 +3604,14 @@ static void nxDriveSap(const NxOracleRows& o, bool selfOnly)
 			{
 			moveIds[k] = nxNext() % n;
 			// Sequenced: as one expression the draws' order was the compiler's.
-			const float centerZ = nxRange(-4.0f, 4.0f);
-			const float centerX = nxRange(-4.0f, 4.0f);
-			const float centerY = nxRange(-4.0f, 4.0f);
+			const float centerZ = nxRange(-4.0f, 4.0f).value;
+			const float centerX = nxRange(-4.0f, 4.0f).value;
+			const float centerY = nxRange(-4.0f, 4.0f).value;
 			Point center(centerX, centerY, centerZ);
 			// Sequenced: as one expression the draws' order was the compiler's.
-			const float extentZ = nxRange(0.1f, 2.0f);
-			const float extentY = nxRange(0.1f, 2.0f);
-			const float extentX = nxRange(0.1f, 2.0f);
+			const float extentZ = nxRange(0.1f, 2.0f).value;
+			const float extentY = nxRange(0.1f, 2.0f).value;
+			const float extentX = nxRange(0.1f, 2.0f).value;
 			moves[k].SetCenterExtents(center, Point(extentX, extentY, extentZ));
 			}
 		for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
@@ -3686,20 +3707,20 @@ static void nxDriveIcePart(const NxOracleRows& o, int part, bool selfOnly, unsig
 		// AABB
 		AABB a, b;
 		// Sequenced: as one expression the draws' order was the compiler's.
-		const float aExtentY = (c % 9 == 4) ? 0.0f : nxRange(0, 3);
-		const float aCenterX = nxRange(-5, 5);
-		const float aCenterY = nxRange(-5, 5);
-		const float aCenterZ = nxRange(-5, 5);
-		const float aExtentX = nxRange(0, 3);
-		const float aExtentZ = nxRange(0, 3);
+		const float aExtentY = (c % 9 == 4) ? 0.0f : nxRange(0, 3).value;
+		const float aCenterX = nxRange(-5, 5).value;
+		const float aCenterY = nxRange(-5, 5).value;
+		const float aCenterZ = nxRange(-5, 5).value;
+		const float aExtentX = nxRange(0, 3).value;
+		const float aExtentZ = nxRange(0, 3).value;
 		a.SetCenterExtents(Point(aCenterX, aCenterY, aCenterZ), Point(aExtentX, aExtentY, aExtentZ));
 		// Sequenced: as one expression the draws' order was the compiler's.
-		const float bExtentX = nxRange(0, 3);
-		const float bExtentY = nxRange(0, 3);
-		const float bExtentZ = nxRange(0, 3);
-		const float bCenterX = nxRange(-5, 5);
-		const float bCenterY = nxRange(-5, 5);
-		const float bCenterZ = nxRange(-5, 5);
+		const float bExtentX = nxRange(0, 3).value;
+		const float bExtentY = nxRange(0, 3).value;
+		const float bExtentZ = nxRange(0, 3).value;
+		const float bCenterX = nxRange(-5, 5).value;
+		const float bCenterY = nxRange(-5, 5).value;
+		const float bCenterZ = nxRange(-5, 5).value;
 		b.SetCenterExtents(Point(bCenterX, bCenterY, bCenterZ), Point(bExtentX, bExtentY, bExtentZ));
 		if(c % 11 == 0)
 			b = a;
@@ -3729,26 +3750,26 @@ static void nxDriveIcePart(const NxOracleRows& o, int part, bool selfOnly, unsig
 
 		// Plane and Triangle
 		// Sequenced: as one expression the draws' order was the compiler's.
-		const float p0X = nxRange(-5, 5);
-		const float p0Y = nxRange(-5, 5);
-		const float p0Z = nxRange(-5, 5);
+		const float p0X = nxRange(-5, 5).value;
+		const float p0Y = nxRange(-5, 5).value;
+		const float p0Z = nxRange(-5, 5).value;
 		Point p0(p0X, p0Y, p0Z);
 		// Sequenced: as one expression the draws' order was the compiler's.
 		Point p1 = p0;
 		if(!(c % 7 == 2))
 			{
-			const float p1X = nxRange(-5, 5);
-			const float p1Y = nxRange(-5, 5);
-			const float p1Z = nxRange(-5, 5);
+			const float p1X = nxRange(-5, 5).value;
+			const float p1Y = nxRange(-5, 5).value;
+			const float p1Z = nxRange(-5, 5).value;
 			p1 = Point(p1X, p1Y, p1Z);
 			}
 		// Sequenced: as one expression the draws' order was the compiler's.
 		Point p2 = p0 + (p1 - p0) * 2.0f;
 		if(!(c % 13 == 5))
 			{
-			const float p2X = nxRange(-5, 5);
-			const float p2Y = nxRange(-5, 5);
-			const float p2Z = nxRange(-5, 5);
+			const float p2X = nxRange(-5, 5).value;
+			const float p2Y = nxRange(-5, 5).value;
+			const float p2Z = nxRange(-5, 5).value;
 			p2 = Point(p2X, p2Y, p2Z);
 			}
 		// The zero-area inputs: a repeated vertex, and three collinear points.
@@ -3814,12 +3835,12 @@ static void nxDriveIcePart(const NxOracleRows& o, int part, bool selfOnly, unsig
 		Matrix4x4 g, pr;
 		for(int i = 0; i < 4; ++i)
 			for(int j = 0; j < 4; ++j)
-				g.m[i][j] = nxRange(-2, 2);
+				g.m[i][j] = nxRange(-2, 2).value;
 		if(c % 8 == 3)
 			for(int j = 0; j < 4; ++j)
 				g.m[2][j] = g.m[1][j] * 2.0f;
 		nxWorld(pr, 2);
-		pr.m[3][0] = nxRange(-9, 9);
+		pr.m[3][0] = nxRange(-9, 9).value;
 		const udword row = nxNext() % 4, col = nxNext() % 4;
 		const bool singular = c % 8 == 3;	// row 2 is twice row 1
 		for(int side = 0; side < (part == 3 ? all : 0); ++side)
@@ -3852,24 +3873,24 @@ static void nxDriveIcePart(const NxOracleRows& o, int part, bool selfOnly, unsig
 		// OBB
 		OBB box, other;
 		// Sequenced: as one expression the draws' order was the compiler's.
-		const float boxCenterX = nxRange(-3, 3);
-		const float boxCenterY = nxRange(-3, 3);
-		const float boxCenterZ = nxRange(-3, 3);
+		const float boxCenterX = nxRange(-3, 3).value;
+		const float boxCenterY = nxRange(-3, 3).value;
+		const float boxCenterZ = nxRange(-3, 3).value;
 		box.mCenter = Point(boxCenterX, boxCenterY, boxCenterZ);
 		// Sequenced: as one expression the draws' order was the compiler's.
-		const float boxExtentY = (c % 6 == 1) ? 0.0f : nxRange(0, 2);
-		const float boxExtentX = nxRange(0, 2);
-		const float boxExtentZ = nxRange(0, 2);
+		const float boxExtentY = (c % 6 == 1) ? 0.0f : nxRange(0, 2).value;
+		const float boxExtentX = nxRange(0, 2).value;
+		const float boxExtentZ = nxRange(0, 2).value;
 		box.mExtents = Point(boxExtentX, boxExtentY, boxExtentZ);
 		// Sequenced: as one expression the draws' order was the compiler's.
-		const float otherOffsetX = nxRange(-1, 1);
-		const float otherOffsetY = nxRange(-1, 1);
-		const float otherOffsetZ = nxRange(-1, 1);
+		const float otherOffsetX = nxRange(-1, 1).value;
+		const float otherOffsetY = nxRange(-1, 1).value;
+		const float otherOffsetZ = nxRange(-1, 1).value;
 		other.mCenter = box.mCenter + Point(otherOffsetX, otherOffsetY, otherOffsetZ);
 		// Sequenced: as one expression the draws' order was the compiler's.
-		const float otherExtentX = nxRange(0, 3);
-		const float otherExtentY = nxRange(0, 3);
-		const float otherExtentZ = nxRange(0, 3);
+		const float otherExtentX = nxRange(0, 3).value;
+		const float otherExtentY = nxRange(0, 3).value;
+		const float otherExtentZ = nxRange(0, 3).value;
 		other.mExtents = Point(otherExtentX, otherExtentY, otherExtentZ);
 		{
 		float r[3][3];
@@ -4056,9 +4077,9 @@ static unsigned nxQhullPoints(int set, float* out)
 			for(int i = 0; i < (set == 3 ? 96 : 200); ++i)
 				{
 				// Sequenced: as one expression the draws' order was the compiler's.
-				const float pointZ = nxRange(-1, 1);
-				const float pointY = nxRange(-1, 1);
-				const float pointX = nxRange(-1, 1);
+				const float pointZ = nxRange(-1, 1).value;
+				const float pointY = nxRange(-1, 1).value;
+				const float pointX = nxRange(-1, 1).value;
 				Point p(pointX, pointY, pointZ);
 				if(set == 3 && p.Magnitude() > 1e-3f)
 					p.Normalize();
@@ -4069,9 +4090,9 @@ static unsigned nxQhullPoints(int set, float* out)
 		case 5:		// a thin slab: a jittered plane and two points above it
 			for(int i = 0; i < 60; ++i)
 				{
-				out[n * 3 + 0] = nxRange(-2, 2);
-				out[n * 3 + 1] = nxRange(-2, 2);
-				out[n * 3 + 2] = nxRange(-1e-5f, 1e-5f);
+				out[n * 3 + 0] = nxRange(-2, 2).value;
+				out[n * 3 + 1] = nxRange(-2, 2).value;
+				out[n * 3 + 2] = nxRange(-1e-5f, 1e-5f).value;
 				++n;
 				}
 			out[n * 3 + 0] = 0.25f; out[n * 3 + 1] = 0.5f; out[n * 3 + 2] = 0.5f; ++n;
@@ -4080,7 +4101,7 @@ static unsigned nxQhullPoints(int set, float* out)
 		case 6:		// every point three times, plus the cube
 			for(int i = 0; i < 20; ++i)
 				{
-				const float x = nxRange(-1, 1), y = nxRange(-1, 1), z = nxRange(-1, 1);
+				const float x = nxRange(-1, 1).value, y = nxRange(-1, 1).value, z = nxRange(-1, 1).value;
 				for(int k = 0; k < 3; ++k)
 					{
 					out[n * 3 + 0] = x; out[n * 3 + 1] = y; out[n * 3 + 2] = z;
@@ -4103,17 +4124,17 @@ static unsigned nxQhullPoints(int set, float* out)
 		case 8:		// far from the origin: a small box at 1e5
 			for(int i = 0; i < 40; ++i)
 				{
-				out[n * 3 + 0] = 100000.0f + nxRange(-1, 1);
-				out[n * 3 + 1] = -50000.0f + nxRange(-1, 1);
-				out[n * 3 + 2] = 25000.0f + nxRange(-1, 1);
+				out[n * 3 + 0] = 100000.0f + nxRange(-1, 1).value;
+				out[n * 3 + 1] = -50000.0f + nxRange(-1, 1).value;
+				out[n * 3 + 2] = 25000.0f + nxRange(-1, 1).value;
 				++n;
 				}
 			return n;
 		case 9:		// flat: every point on z = 0.5 (qhull's flat-simplex exit)
 			for(int i = 0; i < 16; ++i)
 				{
-				out[n * 3 + 0] = nxRange(-1, 1);
-				out[n * 3 + 1] = nxRange(-1, 1);
+				out[n * 3 + 0] = nxRange(-1, 1).value;
+				out[n * 3 + 1] = nxRange(-1, 1).value;
 				out[n * 3 + 2] = 0.5f;
 				++n;
 				}
@@ -5425,7 +5446,7 @@ static void nxQhGapPoints(int set, NxQhGapSet& s)
 				}
 			for(int i = 0; i < 12; ++i)
 				{
-				out[n * 2] = nxRange(-0.9f, 0.9f); out[n * 2 + 1] = nxRange(-0.9f, 0.9f); ++n;
+				out[n * 2] = nxRange(-0.9f, 0.9f).value; out[n * 2 + 1] = nxRange(-0.9f, 0.9f).value; ++n;
 				}
 			break;
 		case 13:	// 2-d: a jittered circle
@@ -5433,8 +5454,8 @@ static void nxQhGapPoints(int set, NxQhGapSet& s)
 			for(int i = 0; i < 40; ++i)
 				{
 				const double a = i * (6.283185307179586 / 40.0);
-				out[n * 2] = (float) cos(a) + nxRange(-1e-6f, 1e-6f);
-				out[n * 2 + 1] = (float) sin(a) + nxRange(-1e-6f, 1e-6f);
+				out[n * 2] = (float) cos(a) + nxRange(-1e-6f, 1e-6f).value;
+				out[n * 2 + 1] = (float) sin(a) + nxRange(-1e-6f, 1e-6f).value;
 				++n;
 				}
 			break;
@@ -5455,7 +5476,7 @@ static void nxQhGapPoints(int set, NxQhGapSet& s)
 			for(int i = 0; i < 40; ++i)
 				{
 				for(int k = 0; k < 4; ++k)
-					out[n * 4 + k] = nxRange(-1, 1);
+					out[n * 4 + k] = nxRange(-1, 1).value;
 				++n;
 				}
 			break;
@@ -5477,8 +5498,8 @@ static void nxQhGapPoints(int set, NxQhGapSet& s)
 				{
 				const int face = i % 6;
 				const int axis = face >> 1;
-				float p[3] = { nxRange(-1, 1), nxRange(-1, 1), nxRange(-1, 1) };
-				p[axis] = (face & 1 ? 1.0f : -1.0f) + nxRange(-1e-6f, 1e-6f);
+				float p[3] = { nxRange(-1, 1).value, nxRange(-1, 1).value, nxRange(-1, 1).value };
+				p[axis] = (face & 1 ? 1.0f : -1.0f) + nxRange(-1e-6f, 1e-6f).value;
 				memcpy(out + n * 3, p, sizeof(p));
 				++n;
 				}
@@ -5487,9 +5508,9 @@ static void nxQhGapPoints(int set, NxQhGapSet& s)
 			for(int i = 0; i < 500; ++i)
 				{
 				// Sequenced: as one expression the draws' order was the compiler's.
-				const float pointZ = nxRange(-1, 1);
-				const float pointY = nxRange(-1, 1);
-				const float pointX = nxRange(-1, 1);
+				const float pointZ = nxRange(-1, 1).value;
+				const float pointY = nxRange(-1, 1).value;
+				const float pointX = nxRange(-1, 1).value;
 				Point p(pointX, pointY, pointZ);
 				if(p.Magnitude() > 1e-3f)
 					p.Normalize();
@@ -5501,9 +5522,9 @@ static void nxQhGapPoints(int set, NxQhGapSet& s)
 			for(int c = 0; c < 8; ++c)
 				for(int i = 0; i < 20; ++i)
 					{
-					out[n * 3] = (c & 1 ? 1.0f : -1.0f) + nxRange(-1e-4f, 1e-4f);
-					out[n * 3 + 1] = (c & 2 ? 1.0f : -1.0f) + nxRange(-1e-4f, 1e-4f);
-					out[n * 3 + 2] = (c & 4 ? 1.0f : -1.0f) + nxRange(-1e-4f, 1e-4f);
+					out[n * 3] = (c & 1 ? 1.0f : -1.0f) + nxRange(-1e-4f, 1e-4f).value;
+					out[n * 3 + 1] = (c & 2 ? 1.0f : -1.0f) + nxRange(-1e-4f, 1e-4f).value;
+					out[n * 3 + 2] = (c & 4 ? 1.0f : -1.0f) + nxRange(-1e-4f, 1e-4f).value;
 					++n;
 					}
 			break;
@@ -5512,7 +5533,7 @@ static void nxQhGapPoints(int set, NxQhGapSet& s)
 				{
 				const double a = i * (6.283185307179586 / 24.0);
 				out[n * 3] = (float) cos(a); out[n * 3 + 1] = (float) sin(a); out[n * 3 + 2] = 0.0f; ++n;
-				const float t = nxUnit();
+				const float t = nxUnit().value;
 				out[n * 3] = (float) cos(a) * (1 - t); out[n * 3 + 1] = (float) sin(a) * (1 - t);
 				out[n * 3 + 2] = 2.0f * t; ++n;
 				}
@@ -5521,14 +5542,14 @@ static void nxQhGapPoints(int set, NxQhGapSet& s)
 		case 21:	// 1000 points in a box
 			for(int i = 0; i < 1000; ++i)
 				{
-				out[n * 3] = nxRange(-1, 1); out[n * 3 + 1] = nxRange(-1, 1); out[n * 3 + 2] = nxRange(-1, 1);
+				out[n * 3] = nxRange(-1, 1).value; out[n * 3 + 1] = nxRange(-1, 1).value; out[n * 3 + 2] = nxRange(-1, 1).value;
 				++n;
 				}
 			break;
 		case 23:	// 3-d: 30 random points in a box (Delaunay input)
 			for(int i = 0; i < 30; ++i)
 				{
-				out[n * 3] = nxRange(-1, 1); out[n * 3 + 1] = nxRange(-1, 1); out[n * 3 + 2] = nxRange(-1, 1);
+				out[n * 3] = nxRange(-1, 1).value; out[n * 3 + 1] = nxRange(-1, 1).value; out[n * 3 + 2] = nxRange(-1, 1).value;
 				++n;
 				}
 			break;
@@ -5536,7 +5557,7 @@ static void nxQhGapPoints(int set, NxQhGapSet& s)
 			s.dim = 2;
 			for(int i = 0; i < 30; ++i)
 				{
-				out[n * 2] = nxRange(-1, 1); out[n * 2 + 1] = nxRange(-1, 1);
+				out[n * 2] = nxRange(-1, 1).value; out[n * 2 + 1] = nxRange(-1, 1).value;
 				++n;
 				}
 			break;
@@ -6191,7 +6212,7 @@ static void nxIceBuildMeshes()
 		NxMesh& m = nxIceNewMesh(0, 0);
 		nxGridMesh(m, 6, true);
 		for(unsigned v = 0; v < m.nbVerts; ++v)
-			m.verts[v * 3 + 2] = kAmplitudes[a] * nxRange(-1.0f, 1.0f);
+			m.verts[v * 3 + 2] = kAmplitudes[a] * nxRange(-1.0f, 1.0f).value;
 		}
 
 	static const float kFolds[8] = { 0.05f, 0.0705f, 0.0707f, 0.071f, 0.1f, 0.2f, 0.7f, 3.0f };
@@ -6297,9 +6318,9 @@ static void nxIceBuildMeshes()
 		NxMesh& m = nxIceNewMesh(nbVerts, nbTris);
 		for(unsigned v = 0; v < nbVerts; ++v)
 			{
-			const float x = nxRange(-2.0f, 2.0f);
-			const float y = nxRange(-2.0f, 2.0f);
-			const float z = nxRange(-2.0f, 2.0f);
+			const float x = nxRange(-2.0f, 2.0f).value;
+			const float y = nxRange(-2.0f, 2.0f).value;
+			const float z = nxRange(-2.0f, 2.0f).value;
 			nxIceSetVertex(m, v, x, y, z);
 			}
 		for(unsigned i = 0; i < nbTris * 3; ++i)
@@ -6317,7 +6338,7 @@ static void nxIceBuildMeshes()
 			mesh = &nxIceNewMesh(0, 0);
 			nxGridMesh(*mesh, 5, true);
 			for(unsigned v = 0; v < mesh->nbVerts; ++v)
-				mesh->verts[v * 3 + 2] = nxRange(-0.3f, 0.3f);
+				mesh->verts[v * 3 + 2] = nxRange(-0.3f, 0.3f).value;
 			}
 		else
 			{
@@ -6325,7 +6346,7 @@ static void nxIceBuildMeshes()
 			const unsigned nbTris = 4 + nxNext() % 24;
 			mesh = &nxIceNewMesh(nbVerts, nbTris);
 			for(unsigned v = 0; v < 3 * nbVerts; ++v)
-				mesh->verts[v] = nxRange(-2.0f, 2.0f);
+				mesh->verts[v] = nxRange(-2.0f, 2.0f).value;
 			for(unsigned i = 0; i < nbTris * 3; ++i)
 				mesh->tris[i] = nxNext() % nbVerts;
 			}
@@ -6685,14 +6706,17 @@ static bool nxIceBelow(const float* plane, const float* p)
 	return d < 0.0;
 	}
 
-static double nxIceAngle(const float* n0, const float* n1)
+// Written through a pointer, never returned as a double (convex-mesh gap Task
+// 2g review): a floating return travels in st(0), and what the caller does
+// with it then follows the compiler's inlining.
+static void nxIceAngle(const float* n0, const float* n1, double* out)
 	{
 	const double cx = (double) n1[2] * n0[1] - (double) n0[2] * n1[1];
 	const double cy = (double) n0[2] * n1[0] - (double) n1[2] * n0[0];
 	const double cz = (double) n1[1] * n0[0] - (double) n0[1] * n1[0];
 	const double cross = sqrt((cx * cx + cz * cz) + cy * cy);
 	const double dot = ((double) n1[0] * n0[0] + (double) n1[2] * n0[2]) + (double) n1[1] * n0[1];
-	return fabs(atan2(cross, dot));
+	*out = fabs(atan2(cross, dot));
 	}
 
 static void nxIcePlanePreflight(const NxOracleRows& o)
@@ -6767,8 +6791,9 @@ static void nxIcePlanePreflight(const NxOracleRows& o)
 					((const Triangle*) t0)->Normal(*(Point*) nc0);
 					((const Triangle*) t1)->Normal(*(Point*) nc1);
 					const double threshold = 0.1f;
-					const double ao = nxIceAngle(no0, no1);
-					const double ac = nxIceAngle(nc0, nc1);
+					double ao, ac;
+					nxIceAngle(no0, no1, &ao);
+					nxIceAngle(nc0, nc1, &ac);
 					if((ao > threshold) != (ac > threshold) || fabs(ao - threshold) < 1e-6
 						|| fabs(ac - threshold) < 1e-6)
 						{
@@ -9137,7 +9162,8 @@ static unsigned nxChCall2(const void* fn, const void* self, unsigned a0, unsigne
 	}
 // 001441 returns in st(0): kept as a double, so a result that the float store
 // would round is still compared whole.
-static double nxChCallSt1(const void* fn, const void* self, unsigned a0)
+// Written through a pointer (Task 2g review): the spill is the asm's own.
+static void nxChCallSt1(const void* fn, const void* self, unsigned a0, double* out)
 	{
 	double r;
 	__asm
@@ -9148,7 +9174,7 @@ static double nxChCallSt1(const void* fn, const void* self, unsigned a0)
 		call	fn
 		fstp	qword ptr r
 		}
-	return r;
+	*out = r;
 	}
 
 static const void* nxChRow(const NxIceSide& s, unsigned rva, const void* candidate)
@@ -9234,7 +9260,8 @@ static void nxChLeafTriangles(const NxIceSide& s)
 		const unsigned vp = noVerts ? 0u : nxChPtr(verts);
 		unsigned center[4] = { 0xcdcd0001u, 0xcdcd0002u, 0xcdcd0003u, 0xcdcd0004u };
 		const unsigned short saved = nxMb2SetControlWord(cw);
-		const double area = nxChCallSt1(nxChRow(s, kChArea, (const void*) &nxHullTriangleArea), tri, vp);
+		double area;
+		nxChCallSt1(nxChRow(s, kChArea, (const void*) &nxHullTriangleArea), tri, vp, &area);
 		nxChCall2(nxChRow(s, kChCenter, (const void*) &nxHullTriangleCenter), tri, vp, nxChPtr(center));
 		nxMb2SetControlWord(saved);
 		nxChTapeDouble(area);
