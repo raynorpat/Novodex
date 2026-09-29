@@ -159,6 +159,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/IceSupportMaps.cpp
 		Physics/src/TriangleMeshPolygons.cpp
 		Physics/src/ContactConvexConvex.cpp
+		Physics/src/ContactConvexHeightfield.cpp
 		Physics/src/ShapeRaycast.cpp
 		Physics/src/core/Joint.cpp
 		Physics/src/core/RevoluteJoint.cpp
@@ -227,7 +228,8 @@ endif()
 # (the support-map rows are frameless; its C++ rows hold no object with a
 # destructor, so the flag only keeps the file with its neighbours). Task 2g adds
 # TriangleMeshPolygons.cpp and ContactConvexConvex.cpp, whose rows are all naked
-# (the flag keeps them with their neighbours).
+# (the flag keeps them with their neighbours). Task 2h adds
+# ContactConvexHeightfield.cpp, whose rows are all naked too.
 if(MSVC)
 	set_property(SOURCE
 		Physics/src/EdgeList.cpp
@@ -239,6 +241,7 @@ if(MSVC)
 		Physics/src/IceSupportMaps.cpp
 		Physics/src/TriangleMeshPolygons.cpp
 		Physics/src/ContactConvexConvex.cpp
+		Physics/src/ContactConvexHeightfield.cpp
 		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
 endif()
 
@@ -698,6 +701,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp
 		Physics/src/ContactBoxMeshICE.cpp Physics/src/ContactMeshHeightfield.cpp
 		Physics/src/ContactConvexConvex.cpp Physics/src/TriangleMeshPolygons.cpp
+		Physics/src/ContactConvexHeightfield.cpp Physics/src/TriangleMeshTopology.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
