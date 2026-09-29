@@ -53,7 +53,12 @@
 // spilled copy. The remedy X87Sqrt.h records for 001760 -- the span as one x87
 // assembly block -- would be two blocks of about 131 instructions here, and is
 // not judged proportionate.
-__declspec(noinline) bool __cdecl NxSegmentTriangleEdge(const NxReal* e0, const NxReal* e1,
+//
+// The result is 0 or 1 in the whole of eax, as the listing returns it (`xor eax,
+// eax` at 0x000446d7 and 0x00044798, `mov eax, 1` at 0x0004477d and 0x0004484b):
+// 001844's naked caller tests eax, not al (`test eax, eax` at 0x000430b2; a
+// bool left the upper bytes undefined, convex-mesh gap Task 2i).
+__declspec(noinline) NxU32 __cdecl NxSegmentTriangleEdge(const NxReal* e0, const NxReal* e1,
 	const NxReal* axis, const NxReal* s0, const NxReal* s1, NxReal* t, NxReal* hit)
 	{
 	NxReal edge[3];
@@ -85,7 +90,7 @@ __declspec(noinline) bool __cdecl NxSegmentTriangleEdge(const NxReal* e0, const 
 	const double distance0 = (((double) normal[2] * s0[2] + (double) normal[1] * s0[1])
 		+ startX) - d;
 	if(distance1 * distance0 > 0.0)
-		return false;
+		return 0;
 
 	double dirX = (double) s1[0] - s0[0];
 	NxReal dirY = (NxReal) ((double) s1[1] - s0[1]);
@@ -102,7 +107,7 @@ __declspec(noinline) bool __cdecl NxSegmentTriangleEdge(const NxReal* e0, const 
 	const double denominator = ((double) dirZ * normal[2] + (double) dirY * normal[1])
 		+ dirX * normal[0];
 	if(denominator == 0.0)
-		return false;
+		return 0;
 
 	const NxReal along = (NxReal) (((double) d - (((double) normal[2] * s0[2]
 		+ (double) normal[1] * s0[1]) + startX)) / denominator);
@@ -140,7 +145,7 @@ __declspec(noinline) bool __cdecl NxSegmentTriangleEdge(const NxReal* e0, const 
 		/ ((double) axis[i1] * edge[i0] - (double) axis[i0] * edge[i1]);
 	*t = (NxReal) q;
 	if(q < 0.0)
-		return false;
+		return 0;
 
 	const double backX = q * axis[0];
 	const NxReal backY = (NxReal) (q * axis[1]);
@@ -155,5 +160,5 @@ __declspec(noinline) bool __cdecl NxSegmentTriangleEdge(const NxReal* e0, const 
 	const double inside = (((double) e1[2] - pz) * ((double) e0[2] - pz)
 		+ ((double) e0[0] - px) * ((double) e1[0] - px))
 		+ ((double) e1[1] - py) * ((double) e0[1] - py);
-	return inside < 0.0;
+	return inside < 0.0 ? 1u : 0u;
 	}

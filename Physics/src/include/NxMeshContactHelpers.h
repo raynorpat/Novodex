@@ -24,7 +24,8 @@ NxPlane* __fastcall NxTrianglePlane(NxPlane* plane, void* unusedEdx,
 // `axis` from the edge's line to it to `t` (in the triangle's dominant plane),
 // and `hit` moved back along `axis` by that distance; true if the moved point
 // lies between e0 and e1. `t` and `hit` are written on some false returns too.
-bool __cdecl NxSegmentTriangleEdge(const NxReal* e0, const NxReal* e1, const NxReal* axis,
+// The result is 0 or 1 in the whole of eax, as the listing returns it (Task 2i).
+NxU32 __cdecl NxSegmentTriangleEdge(const NxReal* e0, const NxReal* e1, const NxReal* axis,
 	const NxReal* s0, const NxReal* s1, NxReal* t, NxReal* hit);
 
 #endif
