@@ -8166,6 +8166,19 @@ static const unsigned kSpans2g[44][2] =
 	};
 static const unsigned kNbSmallSpans2g = 30;
 
+// Each pair's midpoint (the pairs are exact, so each midpoint is a float): the
+// hull's centre in three boxes of four, so that when one box's centre lies inside
+// the other no face of it passes 001809's centre test and 001807 runs.
+static const unsigned kSpanMid2g[44] =
+	{
+	0x3f000000u, 0x3f800000u, 0x40000000u, 0x3fc00000u, 0x40000000u, 0x40200000u, 0x40400000u, 0x40600000u,
+	0xbf800000u, 0x3e800000u, 0x3ec00000u, 0x3ee00000u, 0x3f000000u, 0x3f100000u, 0xc0600000u, 0xc0400000u,
+	0xc0000000u, 0xc0200000u, 0xc0000000u, 0xbfc00000u, 0xbf800000u, 0xbf000000u, 0x3e800000u, 0x3f800000u,
+	0x3fc00000u, 0x40000000u, 0xc0e00000u, 0xc0800000u, 0xbfc00000u, 0xbf600000u, 0x42e00000u, 0x43000000u,
+	0x43200000u, 0x43100000u, 0x43400000u, 0x43400000u, 0x43700000u, 0x45200000u, 0x45400000u, 0x45800000u,
+	0x45600000u, 0x45a00000u, 0x45c00000u, 0x45e00000u
+	};
+
 // The lattice rows of small words (0..10), for the translations.
 static const unsigned kSmallRows2g[6] = { 0, 1, 3, 4, 5, 6 };
 static const unsigned kNearRows2g[3] = { 0, 3, 5 };
@@ -8179,7 +8192,8 @@ static void nx2gBuildBox(unsigned* state, Nx2gBox& box, bool large)
 		const unsigned span = large ? kNbSmallSpans2g + spanDraw % (nbSpans - kNbSmallSpans2g)
 			: spanDraw % kNbSmallSpans2g;
 		const unsigned centreDraw = nxNext(state);
-		box.centre[axis] = kSpans2g[(span + centreDraw % 3) % nbSpans][centreDraw & 1];
+		box.centre[axis] = centreDraw % 4 == 0 ? kSpans2g[(span + centreDraw % 3) % nbSpans][(centreDraw >> 2) & 1]
+			: kSpanMid2g[span];
 		box.lo[axis] = kSpans2g[span][0];
 		box.hi[axis] = kSpans2g[span][1];
 		}

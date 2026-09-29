@@ -2066,10 +2066,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision name=contact_emit_ext index=- rva=0x0001d8e0 owner=phys_fn_000875 checks=1929864 oracle=4204d51093cb3aa1',
         'collision input name=contact_emit_ext words=230000 input=f9469769b399c7e5',
         'collision coverage name=contact_emit_ext calls=20000 headers=15542 flag_ids=5111 flag_words=14892 wide_words=6439 swapped=10069 repeated_normal=2998 input_snan=7452',
-        'collision name=contact_convex_convex index=- rva=0x000411a0 owner=phys_fn_001820 checks=778668 oracle=9b0ac3ce57a9a358',
-        'collision name=contact_convex_convex.pose_divergent index=- rva=0x000411a0 owner=phys_fn_001820 checks=74388 oracle=b0142ff04d77457f',
-        'collision input name=contact_convex_convex words=420552 input=e896f6663efd62fe',
-        'collision coverage name=contact_convex_convex hulls=12 polygons=72 edges=144 pairs=10000 pairs_with_contacts=1444 contacts=6327 headers=1444 map_pairs=6228 graph_pairs=6234 null_holders=2577 stamp_wraps=395 axes=27180 split_pairs=2681'
+        'collision name=contact_convex_convex index=- rva=0x000411a0 owner=phys_fn_001820 checks=758960 oracle=c4e3960c6cba3de5',
+        'collision name=contact_convex_convex.pose_divergent index=- rva=0x000411a0 owner=phys_fn_001820 checks=71448 oracle=658c566aec79d1c4',
+        'collision input name=contact_convex_convex words=420552 input=8c6535dc797e8cc6',
+        'collision coverage name=contact_convex_convex hulls=12 polygons=72 edges=144 pairs=10000 pairs_with_contacts=1446 contacts=6247 headers=1446 map_pairs=6228 graph_pairs=6234 null_holders=2577 stamp_wraps=395 axes=24519 split_pairs=2681'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
