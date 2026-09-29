@@ -11386,6 +11386,18 @@ static unsigned nxDriveTask2lEdgeNormal(unsigned char* base, Nx2iSide* sides)
 
 // Task 2l's mesh/mesh matrix-B entry (001870), compared directly because the
 // out-of-range 001876 dispatcher is not part of this plan.
+static void nx2lFoldMeshShape(NxDigest* input, const NxCollisionShape* shape)
+	{
+	nxFoldInput(input, shape->rotation, sizeof(shape->rotation));
+	nxFoldInput(input, shape->translation, sizeof(shape->translation));
+	nxFoldInput(input, (const unsigned char*) shape + 0xdc, 4);
+	nxFoldInput(input, &shape->type, sizeof(shape->type));
+	// geometry[0] is the side-local InternalTriangleMesh pointer. Its vertices
+	// and indices are folded separately, so folding this process address would
+	// make an identical semantic input produce a different pin after relinking.
+	nxFoldInput(input, shape->geometry + 1, 3 * sizeof(shape->geometry[0]));
+	}
+
 static unsigned nxDriveTask2lMeshOverlap(unsigned char* base, Nx2iSide* sides)
 	{
 	typedef bool (__cdecl * OracleFn)(const NxCollisionShape*, const NxCollisionShape*, void*);
@@ -11428,14 +11440,32 @@ static unsigned nxDriveTask2lMeshOverlap(unsigned char* base, Nx2iSide* sides)
 			}
 		const unsigned in[3] = { pairs[p][0], pairs[p][1], mode };
 		nxFoldInput(&inputDigest, in, sizeof(in));
+		if(p == 0 && mode == 0)
+			{
+			NxCollisionShape addressVariant[2];
+			NxDigest addressDigest[2];
+			memcpy(&addressVariant[0], shapeStore[0][0], sizeof(NxCollisionShape));
+			memcpy(&addressVariant[1], shapeStore[0][0], sizeof(NxCollisionShape));
+			*(unsigned*) addressVariant[0].geometry = 0x11110000u;
+			*(unsigned*) addressVariant[1].geometry = 0x22220000u;
+			nxDigestInit(&addressDigest[0]);
+			nxDigestInit(&addressDigest[1]);
+			nx2lFoldMeshShape(&addressDigest[0], &addressVariant[0]);
+			nx2lFoldMeshShape(&addressDigest[1], &addressVariant[1]);
+			if(addressDigest[0].state != addressDigest[1].state)
+				{
+				fprintf(stderr, "FAIL overlap_mesh_mesh input digest includes its mesh-image address\n");
+				++mismatches;
+				}
+			}
 		const Nx2hMesh& mesh0 = nx2iMesh(pairs[p][0]);
 		const Nx2hMesh& mesh1 = nx2iMesh(pairs[p][1]);
 		nxFoldInput(&inputDigest, mesh0.verts, 12 * mesh0.nbVerts);
 		nxFoldInput(&inputDigest, mesh0.tris, 12 * mesh0.nbTris);
 		nxFoldInput(&inputDigest, mesh1.verts, 12 * mesh1.nbVerts);
 		nxFoldInput(&inputDigest, mesh1.tris, 12 * mesh1.nbTris);
-		nxFoldInputShape(&inputDigest, (const NxCollisionShape*) shapeStore[0][0]);
-		nxFoldInputShape(&inputDigest, (const NxCollisionShape*) shapeStore[0][1]);
+		nx2lFoldMeshShape(&inputDigest, (const NxCollisionShape*) shapeStore[0][0]);
+		nx2lFoldMeshShape(&inputDigest, (const NxCollisionShape*) shapeStore[0][1]);
 		const unsigned out[2][2] = { { result[0], flags[0] }, { result[1], flags[1] } };
 		nxFoldInput(&oracleDigest, out[0], sizeof(out[0]));
 		nxFoldInput(&candidateDigest, out[1], sizeof(out[1]));

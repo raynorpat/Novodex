@@ -2172,7 +2172,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # independently built model pairs under both x87 control words.
         'collision name=overlap_mesh_mesh index=- rva=0x00046550 checks=48 oracle=d5db216e1ca74a85',
         'collision coverage name=overlap_mesh_mesh pairs=3 cases=6 control_words=2',
-        'collision input name=overlap_mesh_mesh words=6870 input=58411e741c134200'
+        'collision input name=overlap_mesh_mesh words=6858 input=406d6f5a90b507c0'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
