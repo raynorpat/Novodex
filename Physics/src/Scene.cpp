@@ -74,6 +74,30 @@ void nxContainerAddThunk(void* innerThis);
 #include <string.h>
 #include <new>
 
+// phys_data_000980 (0x1012718c): the largest 000611 island-body count seen by
+// the joint-record solver. The original global remains zero until a live
+// island contributes bodies.
+static NxU32 nxSceneMaximumStepBodies = 0;
+
+static void nxSceneEnsureStepBodies(NxSceneInternal* scene, NxU32 count)
+	{
+	scene->at<NxU32>(0x5b0) = count;
+	if(scene->at<NxU32>(0x5b4) >= count)
+		return;
+	NxU8* oldRecords = scene->at<NxU8*>(0x5ac);
+	if(oldRecords)
+		nxFoundationSDKAllocator->free(oldRecords - sizeof(NxU32));
+	NxU8* allocation = static_cast<NxU8*>(nxFoundationSDKAllocator->malloc(
+		count * sizeof(JointSupportBody) + sizeof(NxU32), NX_MEMORY_PERSISTENT));
+	scene->at<NxU8*>(0x5ac) = allocation ? allocation + sizeof(NxU32) : 0;
+	scene->at<NxU32>(0x5b4) = count;
+	if(allocation)
+		{
+		*reinterpret_cast<NxU32*>(allocation) = count;
+		memset(allocation + sizeof(NxU32), 0, count * sizeof(JointSupportBody));
+		}
+	}
+
 // phys_fn_000517 (0x00010370, 24 B). The oracle body has a separate loop
 // extent at 0x10390; removing a record compacts the last live pair into this
 // slot, so the cursor advances only when the current pair is retained.
@@ -3877,6 +3901,35 @@ void NxSceneInternal::simulateFrame()
 			for(unsigned char* body = static_cast<unsigned char*>(*root); body;
 				body = *reinterpret_cast<unsigned char**>(body + 0x1fc))
 				reinterpret_cast<Row000726Fixture*>(body)->row000726(timestep, inverseTimestep);
+
+		// phys_fn_000611 (0x11260): build the per-island JointSupportBody view
+		// and run the island contact rows (000730 -> 000728/000897).
+		at<NxU32>(0x70c) |= 4u;
+		for(void** root = roots; root && root != rootsEnd; ++root)
+			{
+			unsigned char* island = static_cast<unsigned char*>(*root);
+			if(*reinterpret_cast<NxU32*>(island + 0x1f0) == 0)
+				continue;
+			const NxU32 bodyCount = *reinterpret_cast<NxU32*>(island + 0x1f4);
+			nxSceneEnsureStepBodies(this, bodyCount);
+			JointSupportBody* records = at<JointSupportBody*>(0x5ac);
+			for(unsigned char* body = island; body;
+				body = *reinterpret_cast<unsigned char**>(body + 0x1fc))
+				{
+				JointSupportBody* record = records++;
+				memcpy(&record->mUnknown000, body + 0x34, sizeof(NxVec3));
+				memcpy(&record->mUnknown00c, body + 0xc0, sizeof(NxReal));
+				memcpy(&record->mUnknown010, body + 0x40, sizeof(NxVec3));
+				record->mUnknown01c = body;
+				memcpy(record->mUnknown020, body + 0x164, sizeof(record->mUnknown020));
+				memcpy(&record->mUnknown05c, body + 0x110, sizeof(NxU32));
+				*reinterpret_cast<JointSupportBody**>(body + 0x204) = record;
+				if(nxSceneMaximumStepBodies < record->mUnknown05c)
+					nxSceneMaximumStepBodies = record->mUnknown05c;
+				}
+			reinterpret_cast<Row000730Fixture*>(island)->row000730(timestep, inverseTimestep);
+			}
+		at<NxU32>(0x70c) &= ~4u;
 
 		// 000636 performs post-step velocity bookkeeping and clears the active
 		// root range before 000615 advances each body's COM/quaternion.
