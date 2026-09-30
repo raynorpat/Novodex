@@ -2716,6 +2716,7 @@ static unsigned nxDriveTask2i(unsigned char* base);
 static unsigned nxDriveTask2j(unsigned char* base);
 static unsigned nxDriveTask2k(unsigned char* base);
 static unsigned nxDriveTask2lAccumulator(unsigned char* base);
+static unsigned nxDriveTask2lSphereCallback(unsigned char* base);
 struct Nx2iSide;
 static unsigned nxDriveTask2lEdgeNormal(unsigned char* base, Nx2iSide* sides);
 
@@ -7985,6 +7986,7 @@ int wmain(int argc, wchar_t** argv)
 	// Task 2l's callback has a direct accumulator differential before the mesh
 	// pair entry is added.
 	totalMismatch += nxDriveTask2lAccumulator(base);
+	totalMismatch += nxDriveTask2lSphereCallback(base);
 
 	// What is not covered, named rather than left as an absence.
 	for(unsigned index = 0; index < 36; ++index)
@@ -12721,5 +12723,133 @@ static unsigned nxDriveTask2lAccumulator(unsigned char* base)
 		oracleDigest.state, candidateDigest.state, mismatches, oracleCount);
 	printf("collision coverage name=mesh_contact_accumulator calls=40 stored=%u cap=32 sums_after_cap=40\n", oracleCount);
 	nxPrintInput("mesh_contact_accumulator", &inputDigest);
+	return mismatches;
+	}
+
+extern "C" bool __cdecl nxMeshMeshSphereCallback(const float*, const float*);
+extern "C" unsigned* nxTask2lSphereMatrixA;
+extern "C" unsigned* nxTask2lSphereMatrixB;
+
+// Drive the 001874 sphere/sphere callback with the two transforms supplied by
+// its caller. This isolates the callback ABI from the still-unwritten 001876
+// matrix-A dispatcher and compares the accumulated contact state, not just the
+// return value.
+static unsigned nxDriveTask2lSphereCallback(unsigned char* base)
+	{
+	typedef bool (__cdecl * OracleFn)(const float*, const float*);
+	const OracleFn oracle = (OracleFn)(base + 0x00046780);
+	static const unsigned cases[][12] = {
+		{ 0, 0, 0, 0x3f000000, 0x3f000000, 0x3f000000, 0x3f000000, 0, 0, 0x3f000000, 0x3f000000, 0x3f000000 },
+		{ 0, 0, 0, 0x3f000000, 0x3f000000, 0x3f000000, 0x3f800000, 0, 0, 0x3f000000, 0x3f000000, 0x3f000000 },
+		{ 0, 0, 0, 0x3f000000, 0x3f000000, 0x3f000000, 0x3fa00000, 0, 0, 0x3f000000, 0x3f000000, 0x3f000000 },
+		{ 0, 0, 0, 0x3f800000, 0x3f000000, 0x3f000000, 0x3f400000, 0, 0, 0x3f000000, 0x3f000000, 0x3f000000 },
+		{ 0x3f000000, 0, 0, 0x3f000000, 0x3f000000, 0x3f000000, 0x3f800000, 0x3f000000, 0, 0x3f000000, 0x3f000000, 0x3f000000 },
+		{ 0, 0, 0, 0x3e800000, 0x3f000000, 0x3f000000, 0x3f400000, 0x3f000000, 0, 0x3f000000, 0x3e800000, 0x3f000000 },
+	};
+	unsigned oracleMatrices[2][16] = {}, candidateMatrices[2][16] = {};
+	for(unsigned side = 0; side < 2; ++side)
+		{
+		oracleMatrices[side][3] = candidateMatrices[side][3] = 0x3f800000;
+		oracleMatrices[side][7] = candidateMatrices[side][7] = 0x3f800000;
+		oracleMatrices[side][11] = candidateMatrices[side][11] = 0x3f800000;
+		}
+	unsigned mismatches = 0, checks = 0, contacts = 0;
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest); nxDigestInit(&candidateDigest); nxDigestInit(&inputDigest);
+	if(!nx2iFoundationBegin())
+		return 1;
+	*(unsigned**)(base + 0x00123d78) = oracleMatrices[0];
+	*(unsigned**)(base + 0x00123d7c) = oracleMatrices[1];
+	nxTask2lSphereMatrixA = candidateMatrices[0];
+	nxTask2lSphereMatrixB = candidateMatrices[1];
+	for(unsigned c = 0; c < sizeof(cases) / sizeof(cases[0]); ++c)
+		for(unsigned mode = 0; mode < 2; ++mode)
+			{
+			static const unsigned matrixTranslations[6][6] = {
+				{ 0, 0, 0, 0, 0, 0 }, { 0x3f000000, 0, 0, 0xbf000000, 0, 0 },
+				{ 0, 0x3f000000, 0, 0, 0xbf000000, 0 }, { 0, 0, 0x3f000000, 0, 0, 0xbf000000 },
+				{ 0xbf000000, 0x3e800000, 0, 0x3f000000, 0, 0x3e800000 },
+				{ 0x3e800000, 0xbf000000, 0x3f000000, 0, 0x3f000000, 0xbf000000 },
+			};
+			for(unsigned k = 0; k < 3; ++k)
+				{
+				oracleMatrices[0][12 + k] = candidateMatrices[0][12 + k] = matrixTranslations[c][k];
+				oracleMatrices[1][12 + k] = candidateMatrices[1][12 + k] = matrixTranslations[c][k + 3];
+				}
+			const float* left = (const float*)cases[c];
+			const float* right = (const float*)(cases[c] + 6);
+			unsigned char* oracleGlobals = base + 0x00123d8c;
+			memset(base + 0x00123cf8, 0, 0x80);
+			memset(base + 0x00123d8c, 0, 0x14);
+			memset(base + 0x00123da0, 0, 0x180);
+			memset(base + 0x00123f20, 0, 0x180);
+			nxMeshContactCount = 0;
+			memset(nxMeshContactSums, 0, sizeof(nxMeshContactSums));
+			memset(nxMeshContactNormalAndMaterial, 0, sizeof(nxMeshContactNormalAndMaterial));
+			memset(nxMeshContactVertices, 0, sizeof(nxMeshContactVertices));
+			memset(nxMeshContactNormals, 0, sizeof(nxMeshContactNormals));
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			bool oracleResult = oracle(left, right);
+			const unsigned oracleCount = *(unsigned*)oracleGlobals;
+			const unsigned oracleSums[3] = {
+				*(unsigned*)(oracleGlobals + 4), *(unsigned*)(oracleGlobals + 8), *(unsigned*)(oracleGlobals + 12) };
+			const unsigned* oracleVertices = (const unsigned*)(base + 0x00123f20);
+			const unsigned* oracleNormals = (const unsigned*)(base + 0x00123da0);
+			const unsigned* oracleMaterial = (const unsigned*)(base + 0x00123cf8);
+			unsigned oracleVertexWords[96], oracleNormalWords[96], oracleMaterialWords[32];
+			memcpy(oracleVertexWords, oracleVertices, sizeof(oracleVertexWords));
+			memcpy(oracleNormalWords, oracleNormals, sizeof(oracleNormalWords));
+			memcpy(oracleMaterialWords, oracleMaterial, sizeof(oracleMaterialWords));
+			memset(base + 0x00123cf8, 0, 0x80);
+			memset(base + 0x00123d8c, 0, 0x14);
+			memset(base + 0x00123da0, 0, 0x180);
+			memset(base + 0x00123f20, 0, 0x180);
+			nxMeshContactCount = 0;
+			memset(nxMeshContactSums, 0, sizeof(nxMeshContactSums));
+			memset(nxMeshContactNormalAndMaterial, 0, sizeof(nxMeshContactNormalAndMaterial));
+			memset(nxMeshContactVertices, 0, sizeof(nxMeshContactVertices));
+			memset(nxMeshContactNormals, 0, sizeof(nxMeshContactNormals));
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			const bool candidateResult = nxMeshMeshSphereCallback(left, right);
+			nxSetControl(kControlDefault);
+			mismatches += oracleResult != candidateResult;
+			mismatches += oracleCount != nxMeshContactCount;
+			contacts += oracleCount;
+			nxFoldInput(&inputDigest, cases[c], sizeof(cases[c]));
+			nxFoldInput(&inputDigest, matrixTranslations[c], sizeof(matrixTranslations[c]));
+			nxFoldInput(&inputDigest, &mode, sizeof(mode));
+			nxFoldInput(&oracleDigest, &oracleResult, sizeof(oracleResult));
+			nxFoldInput(&candidateDigest, &candidateResult, sizeof(candidateResult));
+			nxFoldInput(&oracleDigest, &oracleCount, sizeof(oracleCount));
+			nxFoldInput(&candidateDigest, &nxMeshContactCount, sizeof(nxMeshContactCount));
+			for(unsigned i = 0; i < 3; ++i)
+				{
+				mismatches += oracleSums[i] != ((unsigned*)nxMeshContactSums)[i];
+				nxFoldInput(&oracleDigest, &oracleSums[i], sizeof(unsigned));
+				nxFoldInput(&candidateDigest, &nxMeshContactSums[i], sizeof(float));
+				}
+			for(unsigned i = 0; i < 96; ++i)
+				{
+				mismatches += oracleVertexWords[i] != ((unsigned*)nxMeshContactVertices)[i];
+				mismatches += oracleNormalWords[i] != ((unsigned*)nxMeshContactNormals)[i];
+				nxFoldInput(&oracleDigest, &oracleVertexWords[i], sizeof(unsigned));
+				nxFoldInput(&candidateDigest, &nxMeshContactVertices[i], sizeof(float));
+				nxFoldInput(&oracleDigest, &oracleNormalWords[i], sizeof(unsigned));
+				nxFoldInput(&candidateDigest, &nxMeshContactNormals[i], sizeof(float));
+				}
+			for(unsigned i = 0; i < 32; ++i)
+				{
+				mismatches += oracleMaterialWords[i] != ((unsigned*)nxMeshContactNormalAndMaterial)[i];
+				nxFoldInput(&oracleDigest, &oracleMaterialWords[i], sizeof(unsigned));
+				nxFoldInput(&candidateDigest, &nxMeshContactNormalAndMaterial[i], sizeof(float));
+				}
+			++checks;
+			}
+	nx2iFoundationEnd();
+	printf("collision name=contact_mesh_mesh_sphere_callback index=- rva=0x00046780 checks=%u oracle=%016llx candidate=%016llx mismatches=%u contacts=%u\n",
+		checks, oracleDigest.state, candidateDigest.state, mismatches, contacts);
+	printf("collision coverage name=contact_mesh_mesh_sphere_callback cases=%u control_words=2\n",
+		(unsigned)(sizeof(cases) / sizeof(cases[0])));
+	nxPrintInput("contact_mesh_mesh_sphere_callback", &inputDigest);
 	return mismatches;
 	}

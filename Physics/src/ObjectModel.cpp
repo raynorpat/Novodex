@@ -4251,6 +4251,18 @@ void SphereShape::nxSphereSetRadius(float radius)
 			nxMsgSetRadiusPositive);
 	}
 
+// The 001874 narrow-phase callback constructs two temporary SphereShapes and
+// explicitly invokes the non-scalar destructor (001351) before returning.
+// Its BASE destructor tail (001323) removes owner arms and destroys Prunable.
+void SphereShape::nxSphereCallbackDtor(void)
+	{
+	mBase.mVptrSlot = nxSphereShapeInternalVtable();
+	if(mBase.mWord9C != 0)
+		reinterpret_cast<CollisionObject*>(mBase.mWord9C)->nxScalarDeletingDtor(1);
+	mBase.nxBaseDtorOwnerArms();
+	mBase.mPrunable.~Prunable();
+	}
+
 // phys_fn_001329 (0x00026d90): apply a GROUP. See ObjectModel.h.
 void ShapeBase::nxApplyGroup(unsigned short group)
 	{

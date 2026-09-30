@@ -1,0 +1,14 @@
+Task 2l: mesh/mesh sphere callback 001874
+========================================
+Pinned oracle NxPhysics.dll SHA-256: 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate NxPhysicsCollisionTests.exe SHA-256: BB22A22EC0E0364D4699D764A99F5CDAC879D304CB1763B3C4C3AAEFD0584EE0
+Candidate NxPhysics.dll SHA-256: 6FDD072B2AB55F29B709FF2CB39114D9EC3F66B178702C0008FB0CA66163BF42
+
+The direct differential calls oracle RVA 0x46780 and candidate nxMeshMeshSphereCallback with the listing's two six-float vector arguments. Six vector pairs include separated, touching, overlapping, zero-distance, asymmetric-radius, and translated cases; each runs at x87 control words 0x027f and 0x0f7f. Both caller-owned transform slots are independently installed per side and included in the input digest. The test compares result, count, sums, per-contact vertices, normals, and material words. All 12 runs match, with four accumulated contacts.
+
+collision name=contact_mesh_mesh_sphere_callback index=- rva=0x00046780 checks=12 oracle=316dab8fdfe009b8 candidate=316dab8fdfe009b8 mismatches=0 contacts=4
+collision coverage name=contact_mesh_mesh_sphere_callback cases=6 control_words=2
+collision input name=contact_mesh_mesh_sphere_callback words=228 input=57f6a8b9905fbdb5
+collision=pass
+
+A one-shot cdb run hit oracle 001874, oracle 001351, and candidate 001874. The candidate entry breakpoint used the address from the rebuilt NxPhysicsCollisionTests.map; the test executable SHA-256 is pinned above.

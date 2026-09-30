@@ -34223,13 +34223,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactMeshMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/915",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5609",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "naked x86 inline assembly transcribed from the pinned listing; evidence/convex-mesh-gap-2l-listing-compare.py matches all 226 instructions across the full 801-byte extent, maps all nine direct calls, and resolves the four caller-owned pointer/literal operands",
+      "dynamic_proof": "Task 2l direct oracle/candidate differential: six vector pairs with independently translated transforms under both x87 control words; 12 checks compare return values and all accumulator outputs exactly, zero mismatches, four contacts; input digest 57f6a8b9905fbdb5; pinned oracle SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; candidate NxPhysicsCollisionTests.exe SHA-256 BB22A22EC0E0364D4699D764A99F5CDAC879D304CB1763B3C4C3AAEFD0584EE0; see evidence/convex-mesh-gap-2l-sphere-run.txt and evidence/convex-mesh-gap-trace-2l-sphere.txt",
+      "notes": "reconstructed_not_falsified; no mutation probe run"
     },
     {
       "id": "phys_fn_001875",

@@ -114,3 +114,257 @@ extern "C" __declspec(naked) bool __cdecl nxOverlapMeshMesh(const void*, const v
 		ret
 	}
 }
+
+
+// Transform pointers installed by the caller before phys_fn_001874.
+extern "C" unsigned* nxTask2lSphereMatrixA = 0;
+extern "C" unsigned* nxTask2lSphereMatrixB = 0;
+static const float nxTask2lSphereOne = 1.0f;
+static const float nxTask2lSphereEpsilon = 0.00001f;
+extern "C" void nxTask2lCallSphereCtor(void*, unsigned);
+extern "C" void nxTask2lCallSphereSetRadius(float);
+extern "C" void nxTask2lCallSphereDtor();
+#pragma comment(linker, "/alternatename:_nxTask2lCallSphereCtor=??0SphereShape@@QAE@PAXI@Z")
+#pragma comment(linker, "/alternatename:_nxTask2lCallSphereSetRadius=?nxSphereSetRadius@SphereShape@@QAEXM@Z")
+#pragma comment(linker, "/alternatename:_nxTask2lCallSphereDtor=?nxSphereCallbackDtor@SphereShape@@QAEXXZ")
+extern "C" void __stdcall nxMeshContactAccumulate(unsigned, unsigned, unsigned, const unsigned*, const float*);
+
+// phys_fn_001874 (0x00046780, 801 B)
+// Mesh/mesh sphere callback, transcribed from the pinned x86 listing.
+extern "C" __declspec(naked) bool __cdecl nxMeshMeshSphereCallback(const float*, const float*)
+{
+    __asm {
+        sub esp, 0x1f4
+        push esi
+        push 0xffffff
+        push 0
+        lea ecx, [esp + 0x38]
+        call nxTask2lCallSphereCtor
+        push -1
+        push 0
+        lea ecx, [esp + 0x11c]
+        call nxTask2lCallSphereCtor
+        mov esi, dword ptr [esp + 0x200]
+        mov ecx, dword ptr [esp + 0x1fc]
+        mov eax, dword ptr [esi]
+        fld dword ptr [ecx]
+        fld dword ptr [ecx + 4]
+        mov dword ptr [esp + 8], eax
+        mov eax, dword ptr [esi + 8]
+        fld dword ptr [ecx + 8]
+        fld st(0)
+        mov dword ptr [esp + 0x10], eax
+        mov eax, dword ptr [nxTask2lSphereMatrixA]
+        fmul dword ptr [eax + 0x14]
+        mov edx, dword ptr [esi + 4]
+        fld st(2)
+        mov dword ptr [esp + 0xc], edx
+        fmul dword ptr [eax + 0x10]
+        faddp st(1), st(0)
+        fld st(3)
+        fmul dword ptr [eax + 0xc]
+        faddp st(1), st(0)
+        fstp dword ptr [esp + 0x14]
+        fld st(0)
+        fmul dword ptr [eax + 0x20]
+        fld st(2)
+        fmul dword ptr [eax + 0x1c]
+        faddp st(1), st(0)
+        fld st(3)
+        fmul dword ptr [eax + 0x18]
+        faddp st(1), st(0)
+        fstp dword ptr [esp + 0x18]
+        fmul dword ptr [eax + 0x2c]
+        fxch st(1)
+        fmul dword ptr [eax + 0x28]
+        faddp st(1), st(0)
+        fxch st(1)
+        fmul dword ptr [eax + 0x24]
+        faddp st(1), st(0)
+        fld dword ptr [esp + 0x14]
+        fadd dword ptr [eax + 0x30]
+        fld dword ptr [esp + 0x18]
+        fadd dword ptr [eax + 0x34]
+        fxch st(2)
+        fadd dword ptr [eax + 0x38]
+        mov eax, dword ptr [nxTask2lSphereMatrixB]
+        fstp dword ptr [esp + 0x1c]
+        mov edx, dword ptr [esp + 0x1c]
+        mov dword ptr [esp + 0x68], edx
+        fstp dword ptr [esp + 0x60]
+        fstp dword ptr [esp + 0x64]
+        fld dword ptr [esp + 0x10]
+        fmul dword ptr [eax + 0x14]
+        fld dword ptr [esp + 0xc]
+        fmul dword ptr [eax + 0x10]
+        faddp st(1), st(0)
+        fld dword ptr [esp + 8]
+        fmul dword ptr [eax + 0xc]
+        faddp st(1), st(0)
+        fld dword ptr [esp + 0x10]
+        fmul dword ptr [eax + 0x20]
+        fld dword ptr [esp + 0xc]
+        fmul dword ptr [eax + 0x1c]
+        faddp st(1), st(0)
+        fld dword ptr [esp + 8]
+        fmul dword ptr [eax + 0x18]
+        faddp st(1), st(0)
+        fstp dword ptr [esp + 0x18]
+        fld dword ptr [esp + 0x10]
+        fmul dword ptr [eax + 0x2c]
+        fld dword ptr [esp + 0xc]
+        fmul dword ptr [eax + 0x28]
+        faddp st(1), st(0)
+        fld dword ptr [esp + 8]
+        fmul dword ptr [eax + 0x24]
+        mov edx, dword ptr [ecx + 0xc]
+        mov dword ptr [esp + 4], edx
+        faddp st(1), st(0)
+        fstp dword ptr [esp + 0x1c]
+        fadd dword ptr [eax + 0x30]
+        fld dword ptr [esp + 0x18]
+        fadd dword ptr [eax + 0x34]
+        fld dword ptr [esp + 0x1c]
+        fadd dword ptr [eax + 0x38]
+        fstp dword ptr [esp + 0x1c]
+        mov eax, dword ptr [esp + 0x1c]
+        fxch st(1)
+        mov dword ptr [esp + 0x14c], eax
+        fstp dword ptr [esp + 0x144]
+        fstp dword ptr [esp + 0x148]
+        fld dword ptr [ecx + 0x10]
+        fcomp dword ptr [esp + 4]
+        fnstsw ax
+        test ah, 0x41
+        jne L_100468e0
+        mov eax, dword ptr [ecx + 0x10]
+        mov dword ptr [esp + 4], eax
+L_100468e0:
+        fld dword ptr [ecx + 0x14]
+        fcomp dword ptr [esp + 4]
+        fnstsw ax
+        test ah, 0x41
+        jne L_100468f5
+        mov ecx, dword ptr [ecx + 0x14]
+        mov dword ptr [esp + 4], ecx
+L_100468f5:
+        mov edx, dword ptr [esp + 4]
+        push edx
+        lea ecx, [esp + 0x34]
+        call nxTask2lCallSphereSetRadius
+        fld dword ptr [esi + 0x10]
+        mov eax, dword ptr [esi + 0xc]
+        mov dword ptr [esp + 4], eax
+        fcomp dword ptr [esp + 4]
+        fnstsw ax
+        test ah, 0x41
+        jne L_1004691f
+        mov ecx, dword ptr [esi + 0x10]
+        mov dword ptr [esp + 4], ecx
+L_1004691f:
+        fld dword ptr [esi + 0x14]
+        fcomp dword ptr [esp + 4]
+        fnstsw ax
+        test ah, 0x41
+        jne L_10046934
+        mov edx, dword ptr [esi + 0x14]
+        mov dword ptr [esp + 4], edx
+L_10046934:
+        mov eax, dword ptr [esp + 4]
+        push eax
+        lea ecx, [esp + 0x118]
+        call nxTask2lCallSphereSetRadius
+        fld dword ptr [esp + 0x144]
+        fsub dword ptr [esp + 0x60]
+        pop esi
+        fstp dword ptr [esp + 4]
+        fld dword ptr [esp + 0x144]
+        fsub dword ptr [esp + 0x60]
+        fstp dword ptr [esp + 8]
+        fld dword ptr [esp + 0x148]
+        fsub dword ptr [esp + 0x64]
+        fst dword ptr [esp + 0xc]
+        fmul dword ptr [esp + 0xc]
+        fld dword ptr [esp + 8]
+        fmul dword ptr [esp + 8]
+        faddp st(1), st(0)
+        fld dword ptr [esp + 4]
+        fmul dword ptr [esp + 4]
+        faddp st(1), st(0)
+        fstp dword ptr [esp]
+        fld dword ptr [esp + 0x10c]
+        fadd dword ptr [esp + 0x1f0]
+        fst dword ptr [esp + 0x1c]
+        fmul dword ptr [esp + 0x1c]
+        fcomp dword ptr [esp]
+        fnstsw ax
+        test ah, 0x41
+        jne L_10046a83
+        fld dword ptr [esp]
+        fcomp dword ptr [nxTask2lSphereEpsilon]
+        fnstsw ax
+        test ah, 0x41
+        jp L_100469e0
+        lea ecx, [esp + 0x110]
+        call nxTask2lCallSphereDtor
+        lea ecx, [esp + 0x2c]
+        call nxTask2lCallSphereDtor
+        xor al, al
+        add esp, 0x1f4
+        ret
+L_100469e0:
+        fld dword ptr [esp]
+        mov eax, dword ptr [esp + 0xc8]
+        fsqrt
+        lea ecx, [esp + 4]
+        push ecx
+        lea edx, [esp + 0x14]
+        push edx
+        push ecx
+        mov ecx, dword ptr [esp + 0x1b8]
+        fld dword ptr [nxTask2lSphereOne]
+        fdiv st(0), st(1)
+        fld dword ptr [esp + 0x10]
+        fmul st(0), st(1)
+        fstp dword ptr [esp + 0x10]
+        fld dword ptr [esp + 0x14]
+        fmul st(0), st(1)
+        fstp dword ptr [esp + 0x14]
+        fld dword ptr [esp + 0x18]
+        fmul st(0), st(1)
+        fstp dword ptr [esp + 0x18]
+        fstp st(0)
+        fld dword ptr [esp + 0x118]
+        fmul dword ptr [esp + 0x10]
+        fld dword ptr [esp + 0x118]
+        fmul dword ptr [esp + 0x14]
+        fld dword ptr [esp + 0x118]
+        fmul dword ptr [esp + 0x18]
+        fstp dword ptr [esp + 0x34]
+        fld dword ptr [esp + 0x68]
+        fadd st(0), st(2)
+        fstp dword ptr [esp + 0x1c]
+        fld dword ptr [esp + 0x6c]
+        fadd st(0), st(1)
+        fstp dword ptr [esp + 0x20]
+        fstp st(0)
+        fstp st(0)
+        fld dword ptr [esp + 0x70]
+        fadd dword ptr [esp + 0x34]
+        fstp dword ptr [esp + 0x24]
+        fsub dword ptr [esp + 0x28]
+        fstp dword ptr [esp]
+        push eax
+        push ecx
+        mov ecx, dword ptr [nxTask2lSphereMatrixA]
+        call nxMeshContactAccumulate
+L_10046a83:
+        lea ecx, [esp + 0x110]
+        call nxTask2lCallSphereDtor
+        lea ecx, [esp + 0x2c]
+        call nxTask2lCallSphereDtor
+        mov al, 1
+        add esp, 0x1f4
+        ret
+    }
+}

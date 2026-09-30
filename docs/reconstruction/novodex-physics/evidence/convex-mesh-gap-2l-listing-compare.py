@@ -19,6 +19,7 @@ rows = [
     ("phys_fn_001861", "_nxMeshHeightfieldAabbPass", 0x456c0, 1693, None),
     ("phys_fn_001865", "_nxMeshHeightfieldObbPass", 0x45d70, 1937, None),
     ("phys_fn_001869", "_nxMeshHeightfieldContact", 0x46510, 64, None),
+    ("phys_fn_001874", "_nxMeshMeshSphereCallback", 0x46780, 801, None),
     ("phys_fn_001857", "_nxMeshTriangleEdgeNormal", 0x44860, 774, None),
     ("phys_fn_001872", "_nxMeshContactAccumulate@20", 0x466e0, 146, None),
     ("phys_fn_001870", "_nxOverlapMeshMesh", 0x46550, 394,
@@ -183,6 +184,30 @@ for stable_id, symbol, row_rva, row_size, external_call in rows:
                 next((name for name, address in symbols.items() if address == candidate_target), "?"),
                 "" if matched else " UNEXPECTED"))
             all_equal &= matched
+    if stable_id == "phys_fn_001874":
+        call_map = {
+            0x277c0: "??0SphereShape@@QAE@PAXI@Z",
+            0x278c0: "?nxSphereSetRadius@SphereShape@@QAEXM@Z",
+            0x27820: "?nxSphereCallbackDtor@SphereShape@@QAEXXZ",
+            0x466e0: "_nxMeshContactAccumulate@20",
+        }
+        call_count = 0
+        for expected, actual in zip(oracle_items, candidate_items):
+            if expected.mnemonic != "call" or not expected.op_str.startswith("0x"):
+                continue
+            oracle_target = int(expected.op_str, 16) - 0x10000000
+            candidate_target = int(actual.op_str, 16) if actual.op_str.startswith("0x") else -1
+            wanted = call_map.get(oracle_target)
+            matched = wanted is not None and symbols.get(wanted) == candidate_target
+            print("001874 direct call oracle_rva=0x%08x candidate=%s%s" % (
+                oracle_target,
+                next((name for name, address in symbols.items() if address == candidate_target), "?"),
+                "" if matched else " UNEXPECTED"))
+            call_count += 1
+            all_equal &= matched
+        if call_count != 9:
+            print("001874 direct call count=%d expected=9" % call_count)
+            all_equal = False
     oracle_addresses = {}
     candidate_addresses = {}
     if stable_id == "phys_fn_001861":
@@ -204,6 +229,17 @@ for stable_id, symbol, row_rva, row_size, external_call in rows:
             symbols["?nxTask2lSourceFile@@3QBDB"]: "source-file",
             symbols["_nxConvexMeshFoundationInstanceSlot"]: "foundation-instance-slot",
             symbols["_nxConvexMeshFoundationErrorSlot"]: "foundation-error-slot",
+        }
+    if stable_id == "phys_fn_001874":
+        oracle_addresses = {
+            0x10123d78: "matrix-a-slot", 0x10123d7c: "matrix-b-slot",
+            0x10107a08: "distance-epsilon", 0x101041ec: "one",
+        }
+        candidate_addresses = {
+            symbols["_nxTask2lSphereMatrixA"]: "matrix-a-slot",
+            symbols["_nxTask2lSphereMatrixB"]: "matrix-b-slot",
+            symbols["?nxTask2lSphereEpsilon@@3MB"]: "distance-epsilon",
+            symbols["?nxTask2lSphereOne@@3MB"]: "one",
         }
     left = normalized(oracle_items, oracle_calls, oracle_addresses)
     right = normalized(candidate_items, candidate_calls, candidate_addresses)

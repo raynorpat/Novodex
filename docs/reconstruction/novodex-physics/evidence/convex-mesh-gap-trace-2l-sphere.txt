@@ -1,0 +1,17 @@
+Task 2l cdb trace: 001874 mesh/mesh sphere callback
+====================================================
+Pinned oracle NxPhysics.dll SHA-256: 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate NxPhysicsCollisionTests.exe SHA-256: BB22A22EC0E0364D4699D764A99F5CDAC879D304CB1763B3C4C3AAEFD0584EE0
+Debugger: Windows Kits x86 cdb, one-shot breakpoints during the full NxPhysicsCollisionTests run.
+
+Commands:
+0:000> bp /1 NxPhysics+0x46780 ".echo HIT_ORACLE_001874; gc"
+0:000> bp /1 NxPhysics+0x27820 ".echo HIT_ORACLE_001351; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x49bc0 ".echo HIT_CANDIDATE_001874; gc"
+
+First-hit records:
+HIT_ORACLE_001874
+HIT_ORACLE_001351
+HIT_CANDIDATE_001874
+
+The differential output is in evidence/convex-mesh-gap-2l-sphere-run.txt and closes with collision=pass.

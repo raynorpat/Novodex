@@ -1814,6 +1814,8 @@ class SphereShape
 	//! dirty-flag 0x20 -- all three null-owner/Task-4 no-ops on a fresh
 	//! shape.
 	void				nxSphereSetRadius(float radius);
+	//! Task 2l's temporary sphere cleanup path (001351 followed by BASE dtor 001323).
+	void				nxSphereCallbackDtor(void);
 
 	//! SPHERE-table slot 0, phys_fn_001375 (0x00027c30): scalar deleting
 	//! destructor -- destroys the embedded collision object unconditionally,
