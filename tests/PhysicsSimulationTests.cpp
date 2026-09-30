@@ -74,6 +74,18 @@ int wmain(int argc, wchar_t** argv)
 		nxFloatBits(observedGravity.x), nxFloatBits(observedGravity.y), nxFloatBits(observedGravity.z));
 	scene->setGravity(sceneDesc.gravity);
 
+	NxReal maxTimestep = 0.0f;
+	NxU32 maxIter = 0;
+	NxTimeStepMethod method = NX_TIMESTEP_VARIABLE;
+	scene->getTiming(maxTimestep, maxIter, method);
+	printf("simulation timing=initial %08x.%u.%u\n",
+		nxFloatBits(maxTimestep), maxIter, static_cast<unsigned>(method));
+	scene->setTiming(0.125f, 4, NX_TIMESTEP_VARIABLE);
+	scene->getTiming(maxTimestep, maxIter, method);
+	printf("simulation timing=changed %08x.%u.%u\n",
+		nxFloatBits(maxTimestep), maxIter, static_cast<unsigned>(method));
+	scene->setTiming(sceneDesc.maxTimestep, sceneDesc.maxIter, sceneDesc.timeStepMethod);
+
 	NxSphereShapeDesc sphere;
 	sphere.radius = 0.5f;
 	NxBodyDesc body;

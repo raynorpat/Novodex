@@ -3722,7 +3722,7 @@ void NxSceneInternal::getGravity(NxVec3& gravity) const
 	out[2] = at<NxU32>(0x528);
 	}
 
-// phys_fn_000508 (0x000101d0, 33 B): stores the three gravity words at
+// phys_fn_000507 (0x000101d0, 33 B): stores the three gravity words at
 // Scene+0x520, +0x524 and +0x528 in order.
 void NxSceneInternal::setGravity(const NxVec3& gravity)
 	{
@@ -3730,6 +3730,22 @@ void NxSceneInternal::setGravity(const NxVec3& gravity)
 	at<NxU32>(0x520) = in[0];
 	at<NxU32>(0x524) = in[1];
 	at<NxU32>(0x528) = in[2];
+	}
+
+// phys_fn_000540/000542 (0x000106f0/0x00010720): copy the timing triplet
+// between the caller's values and Scene+0x52c/+0x530/+0x534.
+void NxSceneInternal::setTiming(NxReal maxTimestep, NxU32 maxIter, NxU32 method)
+	{
+	at<NxReal>(0x52c) = maxTimestep;
+	at<NxU32>(0x530) = maxIter;
+	at<NxU32>(0x534) = method;
+	}
+
+void NxSceneInternal::getTiming(NxReal& maxTimestep, NxU32& maxIter, NxU32& method) const
+	{
+	maxTimestep = at<NxReal>(0x52c);
+	maxIter = at<NxU32>(0x530);
+	method = at<NxU32>(0x534);
 	}
 
 // phys_fn_000523 (0x00010400, 4 B, phase 7): the pair-flag count at +0x3c.

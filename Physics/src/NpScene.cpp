@@ -199,7 +199,7 @@ static void* nxConditionConstruct(void* memory, void* a, void* b, void* c)
 // ---------------------------------------------------------------------------
 
 
-// phys_fn_000297 (0x0000c460, 39 B): read-lock the Scene gravity copy.
+// phys_fn_000291 (0x0000c460, 39 B): read-lock the Scene gravity copy.
 void NpScene::getGravity(NxVec3& gravity)
 	{
 	void* link = mReadLock;
@@ -438,16 +438,30 @@ void NpScene::finishRun()
 	
 	}
 
-// (unimplemented) setTiming
+// phys_fn_000338 (0x0000cae0): write-lock, then forward the timing triplet.
 void NpScene::setTiming(NxReal maxTimestep, NxU32 maxIter, NxTimeStepMethod method)
 	{
-	
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x120, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	void* link = mWriteLock;
+	mScene->setTiming(maxTimestep, maxIter, static_cast<NxU32>(method));
+	nxNpSceneGuardLeave(link);
 	}
 
-// (unimplemented) getTiming
+// phys_fn_000340 (0x0000cb50): read-lock, then copy the timing triplet out.
 void NpScene::getTiming(NxReal & maxTimestep, NxU32 & maxIter, NxTimeStepMethod & method) const
 	{
-	
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	NxU32 methodValue;
+	mScene->getTiming(maxTimestep, maxIter, methodValue);
+	method = static_cast<NxTimeStepMethod>(methodValue);
+	nxNpSceneGuardLeave(link);
 	}
 
 // (unimplemented) runFor
@@ -802,7 +816,7 @@ bool NpScene::fetchResults(NxSimulationStatus, bool block )
 	}
 
 
-// phys_fn_000287 (0x0000c400, 84 B): try the write lock, forward the three
+// phys_fn_000289 (0x0000c400, 84 B): try the write lock, forward the three
 // gravity words to Scene+0x520, then release the same lock link.
 void NpScene::setGravity(const NxVec3& gravity)
 	{
