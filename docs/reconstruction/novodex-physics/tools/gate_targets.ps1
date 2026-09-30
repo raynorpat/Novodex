@@ -2955,7 +2955,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'visualize moved stage=all renderables=1'
         'visualize scene_released renderables=0'
     )
-    # M1 public-path baseline: one dynamic sphere under gravity, eight
+    # M1 public-path baseline: one dynamic sphere under gravity, 1,000
     # blocking simulate/check/fetch cycles. These outputs were captured from
     # the pinned oracle before the candidate step path was implemented.
     'NxPhysicsSimulationTests' = @(
@@ -2982,6 +2982,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation stage=step6 position=00000000.40e5bf58.00000000 velocity=00000000.c0eb7098.00000000'
         'simulation step=7 ready=1 fetched=1'
         'simulation stage=step7 position=00000000.40c7d67b.00000000 velocity=00000000.c108082a.00000000'
+        'simulation soak steps=1000 ready=1 fetched=1'
+        'simulation stage=soak1000 position=00000000.c7955570.00000000 velocity=00000000.c4991681.00000000'
     )
     # Effector-and-coredump Task 2: the spring-and-damper effector differential.
     # NxScene's effector API and every NxSpringAndDamperEffector method over two
@@ -5168,7 +5170,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # family open)
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1152  # 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize
+    '7' = 1154  # 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize + 2 simulation soak assertions
                # + 23 M1 simulation + 79 effector + 374 core-dump; the oracle-differential assertions
     '8' = 0
 }

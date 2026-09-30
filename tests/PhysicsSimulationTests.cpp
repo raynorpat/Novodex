@@ -132,6 +132,16 @@ int wmain(int argc, wchar_t** argv)
 		sprintf_s(stage, "step%u", step);
 		nxPrintActorState(stage, *actor);
 		}
+	for(unsigned step = 8; step < 1000; ++step)
+		{
+		scene->simulate(0.125f);
+		const bool ready = scene->checkResults(NX_RIGID_BODY_FINISHED, true);
+		const bool fetched = scene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		if(!ready || !fetched)
+			return nxFail("simulation soak result was not ready and fetched");
+		}
+	printf("simulation soak steps=1000 ready=1 fetched=1\n");
+	nxPrintActorState("soak1000", *actor);
 
 	scene->startRun(0.01f);
 	scene->finishRun();
