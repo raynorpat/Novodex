@@ -85,6 +85,7 @@ int wmain(int argc, wchar_t** argv)
 	printf("simulation timing=changed %08x.%u.%u\n",
 		nxFloatBits(maxTimestep), maxIter, static_cast<unsigned>(method));
 	scene->setTiming(sceneDesc.maxTimestep, sceneDesc.maxIter, sceneDesc.timeStepMethod);
+	printf("simulation writable=initial %u\n", scene->isWritable() ? 1u : 0u);
 
 	NxSphereShapeDesc sphere;
 	sphere.radius = 0.5f;
