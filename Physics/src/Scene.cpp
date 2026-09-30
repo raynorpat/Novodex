@@ -37,6 +37,9 @@
 #include "NxActor.h"
 #include "NpActor.h"
 #include "NpActorDynamicMath.h"
+#include "BodyStep.h"
+#include "core/JointSupport.h"
+#include "NxFPU.h"
 #include "BodyCreation.h"
 #include "NpScene.h"
 #include "NxJointDesc.h"
@@ -3746,6 +3749,111 @@ void NxSceneInternal::getTiming(NxReal& maxTimestep, NxU32& maxIter, NxU32& meth
 	maxTimestep = at<NxReal>(0x52c);
 	maxIter = at<NxU32>(0x530);
 	method = at<NxU32>(0x534);
+	}
+
+// phys_fn_000659 (0x00013c40): select fixed or variable stepping under the
+// oracle's x87 precision-64/round-toward-zero mode, run each requested body
+// substep, then restore the caller's control word. The scheduler fields are
+// Scene+0x52c..+0x558 as measured in the listing.
+void NxSceneInternal::simulateFrame()
+	{
+	unsigned short savedControlWord = 0;
+	__asm fnstcw savedControlWord
+	NxSetFPURoundingChop();
+	NxSetFPUPrecision64();
+
+	const NxReal elapsedTime = at<NxReal>(0x544);
+	NxReal timestep = 0.0f;
+	NxReal inverseTimestep = 0.0f;
+	NxU32 iterations = 0;
+	if(at<NxU32>(0x534) == 1)
+		{
+		timestep = elapsedTime;
+		inverseTimestep = 1.0f / timestep;
+		at<NxU32>(0x550) = 1;
+		at<NxReal>(0x554) = 1.0f;
+		at<NxU32>(0x558) = 0;
+		at<NxReal>(0x548) = timestep;
+		at<NxReal>(0x54c) = inverseTimestep;
+		at<NxReal>(0x53c) += timestep;
+		++at<NxU32>(0x540);
+		iterations = 1;
+		}
+	else
+		{
+		timestep = at<NxReal>(0x52c);
+		inverseTimestep = 1.0f / timestep;
+		at<NxReal>(0x538) += elapsedTime;
+		const NxReal accumulated = at<NxReal>(0x538);
+		iterations = static_cast<NxU32>(inverseTimestep * accumulated);
+		if(iterations > at<NxU32>(0x530))
+			iterations = at<NxU32>(0x530);
+		at<NxU32>(0x550) = iterations;
+		at<NxReal>(0x554) = iterations ? 1.0f / static_cast<NxReal>(iterations) : 0.0f;
+		at<NxU32>(0x558) = 0;
+		at<NxReal>(0x548) = timestep;
+		at<NxReal>(0x54c) = inverseTimestep;
+		}
+
+	for(NxU32 iteration = 0; iteration < iterations; ++iteration)
+		{
+		// phys_fn_000635 (0x127e0): refresh dirty joint islands, then reset
+		// every body's sleep-group links before collision pairs are rebuilt.
+		Joint** joints = at<Joint**>(0x58c);
+		Joint** jointsEnd = at<Joint**>(0x590);
+		for(Joint** item = joints; item && item != jointsEnd; ++item)
+			{
+				void* joint = *item;
+				void* body = *reinterpret_cast<void**>(static_cast<NxU8*>(joint) + 8);
+				if(!body)
+					body = *reinterpret_cast<void**>(static_cast<NxU8*>(joint) + 0xc);
+				if(body)
+					reinterpret_cast<Row000762Fixture*>(body)->row000762(joint);
+			}
+		void** bodies = at<void**>(0x56c);
+		void** bodiesEnd = at<void**>(0x570);
+		for(void** item = bodies; item && item != bodiesEnd; ++item)
+			reinterpret_cast<Row000764Fixture*>(*item)->row000764();
+
+		// 000619 prepares gravity and the prior pose for each scene body.
+		for(void** item = bodies; item && item != bodiesEnd; ++item)
+			{
+				unsigned char* body = static_cast<unsigned char*>(*item);
+				reinterpret_cast<Row000710Fixture*>(body)->row000710(&at<NxVec3>(0x520));
+				if(*reinterpret_cast<NxReal*>(body + 0x84)
+					+ *reinterpret_cast<NxReal*>(body + 0x4c) != 0.0f)
+					for(NxU32 offset = 0x18; offset <= 0x4c; offset += 4)
+						*reinterpret_cast<NxU32*>(body + 0x50 + offset - 0x18)
+							= *reinterpret_cast<NxU32*>(body + offset);
+			}
+
+		// phys_fn_000610 walks active island roots (+0x57c) and each root's
+		// sleep-group chain (+0x1fc); inactive bodies must not be integrated.
+		void** roots = at<void**>(0x57c);
+		void** rootsEnd = at<void**>(0x580);
+		for(void** root = roots; root && root != rootsEnd; ++root)
+			for(unsigned char* body = static_cast<unsigned char*>(*root); body;
+				body = *reinterpret_cast<unsigned char**>(body + 0x1fc))
+				reinterpret_cast<Row000726Fixture*>(body)->row000726(timestep, inverseTimestep);
+
+		// 000615 advances each body's COM/quaternion and sends the public-pose
+		// notification; 000636 performs the post-step velocity bookkeeping.
+		for(void** item = bodies; item && item != bodiesEnd; ++item)
+			{
+				unsigned char* body = static_cast<unsigned char*>(*item);
+				reinterpret_cast<Row000770Fixture*>(body)->row000770(timestep, 0.0f);
+				reinterpret_cast<Row000022Fixture*>(
+					*reinterpret_cast<void**>(body + 0x19c))->row000022(0);
+			}
+
+		for(void** item = bodies; item && item != bodiesEnd; ++item)
+			reinterpret_cast<Row000732Fixture*>(*item)->row000732(timestep, 0.0f);
+		++at<NxU32>(0x558);
+		at<NxReal>(0x538) -= timestep;
+		}
+	if(at<NxU32>(0x534) != 1 && timestep < at<NxReal>(0x538))
+		at<NxReal>(0x538) = timestep;
+	__asm fldcw savedControlWord
 	}
 
 // phys_fn_000523 (0x00010400, 4 B, phase 7): the pair-flag count at +0x3c.
