@@ -87,6 +87,22 @@ int wmain(int argc, wchar_t** argv)
 	scene->setTiming(sceneDesc.maxTimestep, sceneDesc.maxIter, sceneDesc.timeStepMethod);
 	printf("simulation writable=initial %u\n", scene->isWritable() ? 1u : 0u);
 
+	// Pin the worker/event completion path independently of body integration.
+	NxScene* emptyScene = sdk->createScene(sceneDesc);
+	if(!emptyScene)
+		{
+		sdk->releaseScene(*scene);
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("empty worker scene creation failed");
+		}
+	emptyScene->simulate(0.125f);
+	const bool emptyReady = emptyScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+	const bool emptyFetched = emptyScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+	printf("simulation empty-step ready=%u fetched=%u\n",
+		emptyReady ? 1u : 0u, emptyFetched ? 1u : 0u);
+	sdk->releaseScene(*emptyScene);
+
 	NxSphereShapeDesc sphere;
 	sphere.radius = 0.5f;
 	NxBodyDesc body;
