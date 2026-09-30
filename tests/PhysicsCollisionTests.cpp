@@ -2718,6 +2718,7 @@ static unsigned nxDriveTask2k(unsigned char* base);
 static unsigned nxDriveTask2lAccumulator(unsigned char* base);
 static unsigned nxDriveTask2lSphereCallback(unsigned char* base);
 struct Nx2iSide;
+static unsigned nxDriveTask2lMeshHeightfield(unsigned char* base, Nx2iSide* sides);
 static unsigned nxDriveTask2lEdgeNormal(unsigned char* base, Nx2iSide* sides);
 
 // Candidate box/mesh entries implemented from the listing in ContactBoxMeshICE.cpp.
@@ -11307,6 +11308,7 @@ static unsigned nx2iCompareModels(const Nx2iSide& a, const Nx2iSide& b)
 
 extern "C" void __cdecl nxMeshTriangleEdgeNormal(float*, const void*, const float*,
 	const float*, const void*, unsigned, unsigned);
+extern "C" void __cdecl nxMeshHeightfieldContact(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
 
 // Task 2l's 001857 helper over independently built adjacency words derived
 // from each side's identical mesh indices. Test shared and boundary edges.
@@ -11479,6 +11481,77 @@ static unsigned nxDriveTask2lMeshOverlap(unsigned char* base, Nx2iSide* sides)
 	nxPrintInput("overlap_mesh_mesh", &inputDigest);
 	printf("collision coverage name=overlap_mesh_mesh pairs=%u cases=%u control_words=2\n",
 		(unsigned) (sizeof(pairs) / sizeof(pairs[0])), cases);
+	for(unsigned side = 0; side < 2; ++side)
+		nx2lCandidateAabbTreeColliderDestruct(sides[side].context + 0x32c);
+	return mismatches;
+	}
+
+// Drive the complete mesh/height-field entry so 001861 supplies the callback's
+// implicit ESI pair Container and 001865 runs with its caller-owned OBB state.
+static unsigned nxDriveTask2lMeshHeightfield(unsigned char* base, Nx2iSide* sides)
+	{
+	typedef void (__cdecl * EntryFn)(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
+	const EntryFn oracle = (EntryFn)(base + 0x00046510);
+	static unsigned char shapeStore[2][2][kShapeBytes];
+	static NxContactWorld world[2];
+	static const unsigned pairMeshes[2] = { 8, 9 };
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest); nxDigestInit(&candidateDigest); nxDigestInit(&inputDigest);
+	unsigned mismatches = 0, cases = 0, withContacts = 0;
+	for(unsigned side = 0; side < 2; ++side)
+		nx2lCandidateAabbTreeColliderConstruct(sides[side].context + 0x32c);
+	for(unsigned mode = 0; mode < 2; ++mode)
+		{
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			NxCollisionShape* meshShape = (NxCollisionShape*)shapeStore[side][0];
+			NxCollisionShape* heightfieldShape = (NxCollisionShape*)shapeStore[side][1];
+			nxIdentity(meshShape); nxIdentity(heightfieldShape);
+			meshShape->type = heightfieldShape->type = 4;
+			*(unsigned**) (shapeStore[side][0] + 0xe0) = sides[side].meshes[pairMeshes[0]].image;
+			*(unsigned**) (shapeStore[side][1] + 0xe0) = sides[side].meshes[pairMeshes[1]].image;
+			*(unsigned*) (shapeStore[side][0] + 0x38) = 0xbf000000u;
+			// Both are z-up meshes. The second image is interpreted as the terrain
+			// and its extent is consumed by the OBB pass.
+			*(unsigned*) (sides[side].meshes[pairMeshes[0]].image + 0x78) = 2;
+			*(unsigned*) (sides[side].meshes[pairMeshes[0]].image + 0x7c) = 2;
+			*(unsigned*) (sides[side].meshes[pairMeshes[0]].image + 0x80) = 0x40400000u;
+			*(unsigned*) (sides[side].meshes[pairMeshes[1]].image + 0x78) = 2;
+			*(unsigned*) (sides[side].meshes[pairMeshes[1]].image + 0x7c) = 2;
+			*(unsigned*) (sides[side].meshes[pairMeshes[1]].image + 0x80) = 0x40400000u;
+			memset(sides[side].context + 0x330, 0, 4);
+			memset(sides[side].context + 0x440, 0, 0x30);
+			nxResetWorld(&world[side]);
+			nxStageWorld(&world[side], meshShape, heightfieldShape, true, true, 3, 5, false, false, false);
+			}
+		const unsigned control = mode ? kControlSimulate : kControlDefault;
+		nxSetControl(control);
+		oracle(world[0].plane, world[0].sphere, &world[0].sink, sides[0].context);
+		nxSetControl(kControlDefault);
+		nxSetControl(control);
+		nxMeshHeightfieldContact(world[1].plane, world[1].sphere, &world[1].sink, sides[1].context);
+		nxSetControl(kControlDefault);
+		const unsigned different = nxCompareStreams(&world[0], &world[1], mode);
+		mismatches += different;
+		const unsigned pairWords[2] = { pairMeshes[0], mode };
+		nxFoldInput(&inputDigest, pairWords, sizeof(pairWords));
+		nxFoldInput(&inputDigest, shapeStore[0][0] + 0x30, 12);
+		nxFoldInput(&inputDigest, shapeStore[0][1] + 0x30, 12);
+		for(unsigned slot = 0; slot < 2; ++slot)
+			{
+			const Nx2hMesh& mesh = nx2iMesh(pairMeshes[slot]);
+			nxFoldInput(&inputDigest, mesh.verts, 12 * mesh.nbVerts);
+			nxFoldInput(&inputDigest, mesh.tris, 12 * mesh.nbTris);
+			}
+		nxFoldInput(&oracleDigest, world[0].stream, world[0].sink.streamCount * 4);
+		nxFoldInput(&candidateDigest, world[1].stream, world[1].sink.streamCount * 4);
+		if(world[0].sink.contactCount) ++withContacts;
+		++cases;
+		}
+	printf("collision name=contact_mesh_heightfield index=- rva=0x00046510 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=contact_mesh_heightfield pairs=1 cases=%u control_words=2 cases_with_contacts=%u\n", cases, withContacts);
+	nxPrintInput("contact_mesh_heightfield", &inputDigest);
 	for(unsigned side = 0; side < 2; ++side)
 		nx2lCandidateAabbTreeColliderDestruct(sides[side].context + 0x32c);
 	return mismatches;
@@ -12293,6 +12366,8 @@ static __declspec(noinline) unsigned nxDriveTask2i(unsigned char* base)
 	// The Task 2l mesh/mesh overlap row consumes each side's independently built
 	// OPCODE models and its own scene OBB collider state.
 	total += nxDriveTask2lMeshOverlap(base, sides);
+	// Exercise the mesh/height-field entry through its AABB callback and OBB pass.
+	total += nxDriveTask2lMeshHeightfield(base, sides);
 	unsigned edgeListsBuilt = 0;
 	buildMismatches += nx2iCompareEdgeLists(sides[0], sides[1], &edgeListsBuilt);
 	// The hulls' vertex normals 001461 built inside 001844, word for word.

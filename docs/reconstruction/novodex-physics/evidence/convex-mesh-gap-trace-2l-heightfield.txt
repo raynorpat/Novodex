@@ -1,0 +1,15 @@
+Task 2l cdb trace: mesh/height-field pass rows
+=============================================
+Pinned oracle NxPhysics.dll SHA-256: 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate NxPhysicsCollisionTests.exe SHA-256: 273910EA8ABFFB4F1D12EF12B815DF5F72F7BFC1D318835C2A7F638F411D4479
+
+One-shot breakpoints were set on oracle 001869/001861/001865/001859 and candidate 001869/001861/001865/001859 using module-relative addresses from the pinned image and build/Release/NxPhysicsCollisionTests.map. First-hit records:
+
+HIT_ORACLE_001869
+HIT_ORACLE_001861
+HIT_ORACLE_001865
+HIT_CANDIDATE_001869
+HIT_CANDIDATE_001861
+HIT_CANDIDATE_001865
+
+Neither 001859 breakpoint was hit. The trace and matching two-case entry differential are recorded in evidence/convex-mesh-gap-2l-heightfield-run.txt. This trace proves execution of the entry and both passes; it does not claim callback coverage.

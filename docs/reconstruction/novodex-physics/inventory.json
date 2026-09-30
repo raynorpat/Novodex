@@ -17411,7 +17411,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/466",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2982",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` — the vertex array |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` \u2014 the vertex array |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17520,7 +17520,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/469",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3018",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 3 | `phys_fn_000961` | `mov eax,6` — six faces |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 3 | `phys_fn_000961` | `mov eax,6` \u2014 six faces |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17557,7 +17557,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/470",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3019",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 4 | `phys_fn_000963` | `index*36 + this+0x70` — face-record[k] |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 4 | `phys_fn_000963` | `index*36 + this+0x70` \u2014 face-record[k] |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -33990,7 +33990,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/733",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5582",
       "static_proof": "naked x86 inline assembly transcribed from both pinned listing fragments; evidence/convex-mesh-gap-2l-listing-compare.py compares all 430 instructions across the complete 1,693-byte body, normalizes the two relocatable globals, and checks all four direct call targets",
-      "dynamic_proof": null,
+      "dynamic_proof": "Task 2l full 001869 mesh/height-field entry differential: two x87 control words, independently built oracle/candidate terrain models, exact stream match and zero mismatches; cdb hit this pass row. Fixture produced no contacts; see evidence/convex-mesh-gap-2l-heightfield-run.txt and evidence/convex-mesh-gap-trace-2l-heightfield.txt. Candidate exe SHA-256 273910EA8ABFFB4F1D12EF12B815DF5F72F7BFC1D318835C2A7F638F411D4479.",
       "notes": "reconstructed_not_falsified; dynamic proof is pending the complete 001869 caller path"
     },
     {
@@ -34026,7 +34026,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/733",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5585",
       "static_proof": "continuation transcribed in the same naked x86 AABB-pass body as 001861; evidence/convex-mesh-gap-2l-listing-compare.py matches all 430 instructions across both listing fragments (538 + 1,155 bytes) and checks four direct call targets",
-      "dynamic_proof": null,
+      "dynamic_proof": "Task 2l full 001869 mesh/height-field entry differential: two x87 control words, independently built oracle/candidate terrain models, exact stream match and zero mismatches; cdb hit this pass row. Fixture produced no contacts; see evidence/convex-mesh-gap-2l-heightfield-run.txt and evidence/convex-mesh-gap-trace-2l-heightfield.txt. Candidate exe SHA-256 273910EA8ABFFB4F1D12EF12B815DF5F72F7BFC1D318835C2A7F638F411D4479.",
       "notes": "reconstructed_not_falsified; dynamic proof is pending the full mesh/height-field entry differential"
     },
     {
@@ -34062,7 +34062,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/734",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5588",
       "static_proof": "naked x86 inline assembly transcribed from the pinned listing; evidence/convex-mesh-gap-2l-listing-compare.py matches all 640 instructions across the complete two-fragment 1,937-byte extent, maps six relocatable constants/slots and checks all seven direct calls",
-      "dynamic_proof": null,
+      "dynamic_proof": "Task 2l full 001869 mesh/height-field entry differential: two x87 control words, independently built oracle/candidate terrain models, exact stream match and zero mismatches; cdb hit this pass row. Fixture produced no contacts; see evidence/convex-mesh-gap-2l-heightfield-run.txt and evidence/convex-mesh-gap-trace-2l-heightfield.txt. Candidate exe SHA-256 273910EA8ABFFB4F1D12EF12B815DF5F72F7BFC1D318835C2A7F638F411D4479.",
       "notes": "reconstructed_not_falsified; dynamic proof is pending the full mesh/height-field entry differential"
     },
     {
@@ -34098,7 +34098,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/734",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5599",
       "static_proof": "continuation transcribed in the same naked x86 OBB-pass body as 001865; evidence/convex-mesh-gap-2l-listing-compare.py matches all 640 instructions across both listing fragments (1,498 + 439 bytes), maps six relocatable constants/slots and checks all seven direct calls",
-      "dynamic_proof": null,
+      "dynamic_proof": "Task 2l full 001869 mesh/height-field entry differential: two x87 control words, independently built oracle/candidate terrain models, exact stream match and zero mismatches; cdb hit this pass row. Fixture produced no contacts; see evidence/convex-mesh-gap-2l-heightfield-run.txt and evidence/convex-mesh-gap-trace-2l-heightfield.txt. Candidate exe SHA-256 273910EA8ABFFB4F1D12EF12B815DF5F72F7BFC1D318835C2A7F638F411D4479.",
       "notes": "reconstructed_not_falsified; dynamic proof is pending the full mesh/height-field entry differential"
     },
     {
@@ -34134,7 +34134,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/735",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5604",
       "static_proof": "naked x86 inline assembly transcribed from the pinned listing; evidence/convex-mesh-gap-2l-listing-compare.py matches all 29 instructions across the complete 64-byte extent and checks both direct call targets",
-      "dynamic_proof": null,
+      "dynamic_proof": "Task 2l full 001869 mesh/height-field entry differential: two x87 control words, independently built oracle/candidate terrain models, exact stream match and zero mismatches; cdb hit this pass row. Fixture produced no contacts; see evidence/convex-mesh-gap-2l-heightfield-run.txt and evidence/convex-mesh-gap-trace-2l-heightfield.txt. Candidate exe SHA-256 273910EA8ABFFB4F1D12EF12B815DF5F72F7BFC1D318835C2A7F638F411D4479.",
       "notes": "reconstructed_not_falsified; dynamic proof is pending the full mesh/height-field entry differential"
     },
     {
