@@ -251,9 +251,8 @@ static DWORD WINAPI nxSceneWorker(void* parameter)
 		const bool sceneLocked = wrapper && wrapper->writeLink()
 			&& nxNpSceneGuardWriteTry(wrapper->writeLink());
 
-		// The worker handshake is reconstructed here. The actual row 000659
-		// stepper is the next simulation slice; keep this gap explicit rather
-		// than substituting an approximate integration path.
+		if(sceneLocked && scene)
+			scene->simulateFrame();
 
 		if(sceneLocked)
 			nxNpSceneGuardLeave(wrapper->writeLink());
