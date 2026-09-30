@@ -20,13 +20,13 @@ The assessment used the current source and inventory on main, not the older `cod
 |---|---|---|
 | CMake Win32 Release DLL build | Fresh invocation of `cmake --build build --config Release --target NxPhysics` succeeds; existing build cache uses Visual Studio 18 2026 / Win32 | Preserve the working build; avoid build-system replacement |
 | Public Physics headers | Manifest verification passes for all 80 files | Keep the hash check mandatory |
-| Phase 5 | On baseline `b942f01`, 13 staged-pair targets matched (2,037/2,037 assertions), but the object-layout differential reported one candidate mismatch; the gate remains intentionally red pending object/vtable closure | Close the actual vtable/lifecycle obligations and mismatch before removing the marker |
+| Phase 5 | The baseline run passed 13 staged-pair targets (2,037/2,037 assertions). The object-layout target still emits one explicit `CANDIDATE-MISSING family=vtables` marker and exits red; the marker names final shape/actor vtables. `NpActorVtable` confirms that most actor virtuals are still unimplemented. | Reconstruct and differentially exercise the concrete actor and shape dispatch tables. Remove the marker only after real candidate dispatch checks cover the represented families; do not waive the red status. |
 | Inventory validation | Pass; 6,338 function records, 5,138 data records, zero unexplained rows | This proves ledger consistency, not completion |
 | Executable code census | 2,787 code rows / 938,498 bytes: 749 discovered, 1,887 reconstructed, 145 dynamically gated, 6 statically reviewed | Separate missing implementation from verification debt |
 | Discovered code | 218,282 bytes across 749 unique IDs | This is an audit queue, not a claim that every byte is unwritten |
 | Data | All 5,138 records are classified | Prove candidate ownership and relocation for required tables/globals; classification alone is insufficient |
 | Work-unit map | Committed map has 143 records, 31 duplicate names and 2,023 multiply assigned IDs; regeneration in `build/main-planning-work-units.json` produces 109 units, 60 named and 49 gaps | Repair generated scheduling data before assigning work |
-| Scene simulation API | `getGravity`/`setGravity`, `getTiming`/`setTiming`, and the write-lock `isWritable` probe now match oracle outputs in the registered standalone fixture; `simulate`, old run APIs, and result/fence APIs remain open | The worker/event lifecycle and real stepper are the immediate blockers to useful physics simulation tests |
+| Scene simulation API | `getGravity`/`setGravity`, `getTiming`/`setTiming`, and the write-lock `isWritable` probe match oracle outputs; `startRun`/`finishRun`/`runFor` follow the oracle's deprecated-warning and call sequences. `simulate`, `checkResults`, `fetchResults`, and fence APIs remain open. | The worker/event lifecycle and real stepper are the immediate blockers to useful physics simulation tests |
 | Final gate | Phase 8 has no registered test targets and coverage floor zero | A separate whole-DLL acceptance gate must be built |
 
 Build and Phase 5 logs from this assessment are local artifacts at `build/main-planning-build.log` and `build/main-planning-phase5.log`. Other phases and the full Python suite were not rerun for this planning assessment. Older branch reports have different coverage floors and must not be presented as current-main verification.
@@ -73,6 +73,7 @@ Primary code: `Physics/src/NpScene.cpp`, `Physics/src/Scene.cpp`, their private 
 
 - Reconstruct scene gravity, timing, writable/running state, lock and result semantics, and error paths from the oracle. Follow the oracle's relationship between old run APIs and newer simulate/fetch APIs rather than imposing a new engine design.
 - Gravity and timing reads/writes have been implemented and pinned at bit level; keep this verified slice while completing the remaining scene methods.
+- The current standalone fixture reaches the public scene API but the candidate leaves result flags false and the body stationary. First copy the oracle's worker/event ownership and simulate/check/fetch transitions; then wire the actual stepper. Keep this as the critical path for starting useful tests.
 - Wire the recovered body state, forces, and joint implementations through the real stepping path. Complete missing solver and integration callees as a dependency cluster; do not create a substitute Euler integrator just to pass a falling-box test.
 - Build independent oracle and candidate processes from identical serialized fixtures. Compare per-step poses, velocities, forces, wake state, result status, callbacks, and allocation/lifetime events.
 - Start with an empty scene and one body under gravity/force, then static contact, two-body collision, kinematic interaction, sleep/wake, a small stack, and a jointed pair. Include variable step sizes and the oracle's FP control-word transitions.
@@ -85,10 +86,11 @@ Exit / **T1: standalone testing begins**: the candidate runs the genuine public 
 Primary code: `NpActor.cpp`, `Scene.cpp`, `ObjectModel.cpp`, `TriangleMesh.cpp`, shape and pruning units. Coordinate edits to `Scene.cpp` through its owner.
 
 - Audit the eight Phase 5 discovered rows and the real factory-to-wrapper-to-final-vtable paths for every shape family, static/dynamic bodies, meshes, compounds, controllers, and release/rollback.
+- Phase 5's current red gate is specifically blocked by the missing concrete actor/shape vtable family. `NpActorVtable` has placeholder defaults for most public slots; use the pinned vtable census (`phys_data_000678` and `phys_data_000679`) to inventory all 87/88 entries, group inherited/common slots, and implement oracle-backed targets to make the concrete dispatch contract real. Drive slots through constructed candidate objects and a pinned-oracle process. The existing `NxPhysicsShapeVtableTests` covers shape cases but does not replace the actor table contract.
 - Replace remaining parameterized stand-ins or incomplete constructors on product paths with recovered implementations. Verify all vtable slots against the pinned oracle, including deleting destructors, base adjustments, and return ABI.
 - Complete mesh loading/serialization and actual asset ownership where current tests assemble internal fixtures directly. Round-trip real asset data through the public API, not only synthetic internal objects.
 - Drive dynamic shape mutation, mass recomputation, callbacks, shared ownership, allocation failure, and populated-scene teardown through the rebuilt DLL. Verify allocator choice and ordering.
-- Regenerate the vtable census and attach current execution evidence. Replace the unconditional Phase 5 marker with executable dispatch/ownership assertions only when the whole family it represents is covered.
+- Regenerate the vtable census and attach current execution evidence. Replace the unconditional Phase 5 marker with executable dispatch/ownership assertions only when the whole family it represents is covered. A passing count or a deleted marker alone does not close Phase 5.
 
 Exit: Phase 5 passes honestly, required object/mesh/pruner paths have no unknown dispatch, and M1's lifecycle and contact scenarios pass through these real objects. M1 and M2 exchange fixtures early; M1 does not wait for unrelated closure paperwork.
 

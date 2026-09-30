@@ -117,6 +117,12 @@ int wmain(int argc, wchar_t** argv)
 		nxPrintActorState(stage, *actor);
 		}
 
+	scene->startRun(0.01f);
+	scene->finishRun();
+	printf("simulation legacy=start-finish returned\n");
+	scene->runFor(0.01f, 0.1f, 1, NX_TIMESTEP_VARIABLE);
+	printf("simulation legacy=runFor returned\n");
+
 	sdk->releaseScene(*scene);
 	sdk->release();
 	status = nxReportPairIdentity(pairDirectory);
