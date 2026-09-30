@@ -1151,7 +1151,7 @@ L_10046350:
         push     eax
         push     ecx
         mov      ecx, dword ptr [ebp + 0x78]
-        call     NxEmitContact
+        call     NxEmitContactThiscall
         mov      edx, dword ptr [ebp + 0x7c]
         mov      ecx, dword ptr [ebp + 8]
         mov      eax, dword ptr [edx + 8]
@@ -2473,7 +2473,7 @@ L_10045587:
         push edx
         push ecx
         mov ecx, dword ptr [esp + 0x194]
-        call NxEmitContact
+        call NxEmitContactThiscall
         jmp L_10045669
 L_1004565e:
         mov ebp, dword ptr [esp + 0x6c]

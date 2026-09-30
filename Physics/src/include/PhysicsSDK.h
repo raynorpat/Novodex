@@ -19,6 +19,9 @@ class NxSceneDesc;
 class NxDebugRenderable;
 class NxUserDebugRenderer;
 
+const NxU32* nxPhysicsSDKGroupCollisionMasks();
+void* nxPhysicsSDKShapePairTable();
+
 /**
 The SDK-side singleton. The public NxPhysicsSDK the user is handed is the
 NpPhysicsSDK this object owns; this class holds no user-visible interface of its

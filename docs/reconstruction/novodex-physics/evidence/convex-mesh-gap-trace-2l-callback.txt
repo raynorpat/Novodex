@@ -1,0 +1,19 @@
+Task 2l callback trace: 001859 entered by the candidate
+=====================================================
+
+Pinned oracle NxPhysics.dll SHA-256: 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate NxPhysicsCollisionTests.exe SHA-256: ebf7014fbd8642fa913dbc0fd14c8ec663640f7de244e50fee29c4595982145b
+Candidate callback address: NxPhysicsCollisionTests+0x0c500 (from build/Release/NxPhysicsCollisionTests.map, preferred VA 0x004c500)
+Oracle callback address: NxPhysics.dll+0x44b70 (preferred VA 0x10044b70)
+
+The one-shot candidate breakpoint fired during the full 001869 differential. The oracle breakpoint at its listed 001859 RVA did not fire in this run; the oracle path therefore is not claimed as an entry trace. The differential itself ended with collision=pass and compared the oracle and candidate contact streams exactly (528 checks, digest 9c87a6d409f98333; 2 of 6 cases emitted contacts; input digest 27d2e99a4f0f02fc). The listing comparator reports all 768 instructions and all 14 direct-call mappings equal, including 001861's callback target. This establishes candidate dynamic execution and paired output agreement for the callback-containing entry path.
+
+Raw debugger excerpt:
+
+    HIT_CANDIDATE_001859
+    00af8bc0 001c92b0 00aff8a0 001c92b0 10000000 NxPhysicsCollisionTests+0xc500
+    collision name=contact_mesh_heightfield index=- rva=0x00046510 checks=528 oracle=9c87a6d409f98333 candidate=9c87a6d409f98333 mismatches=0
+    collision coverage name=contact_mesh_heightfield pairs=3 cases=6 control_words=2 cases_with_contacts=2
+    collision input name=contact_mesh_heightfield words=6690 input=27d2e99a4f0f02fc
+    collision=pass
+

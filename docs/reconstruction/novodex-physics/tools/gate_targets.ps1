@@ -1472,6 +1472,8 @@ $NxRequiredCoverageLines = [ordered] @{
         # version of this check did not -- it compared the index function
         # against its own body.
         'matrix index_rule probes=2592 wrong=0',
+        'matrix contact_filter checks=7 wrong=0',
+        'matrix contact_compound calls_oracle=3 calls_candidate=3 wrong=0',
 
         'collision name=plane_sphere.random index=1 rva=0x00048a20 owner=phys_fn_001899 checks=120000 oracle=4513405a6ba24fb9',
         'collision name=plane_sphere.aimed index=1 rva=0x00048a20 owner=phys_fn_001899 checks=120000 oracle=ed8746bf83b7801f',
@@ -2177,10 +2179,62 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision name=contact_mesh_mesh_sphere_callback index=- rva=0x00046780 checks=12 oracle=316dab8fdfe009b8',
         'collision coverage name=contact_mesh_mesh_sphere_callback cases=6 control_words=2',
         'collision input name=contact_mesh_mesh_sphere_callback words=228 input=57f6a8b9905fbdb5',
-        # convex-mesh gap Task 2l: complete mesh/heightfield entry on the paired terrain fixture.
-        'collision name=contact_mesh_heightfield index=- rva=0x00046510 checks=8 oracle=a8c7f832281a39c5',
-        'collision coverage name=contact_mesh_heightfield pairs=1 cases=2 control_words=2 cases_with_contacts=0',
-        'collision input name=contact_mesh_heightfield words=6226 input=ee82a3a9998cb4b4'
+        # convex-mesh gap Task 2l: complete mesh/heightfield entry on three independently-built fixture pairs.
+        'collision name=contact_mesh_heightfield index=- rva=0x00046510 checks=528 oracle=9c87a6d409f98333',
+        'collision coverage name=contact_mesh_heightfield pairs=3 cases=6 control_words=2 cases_with_contacts=2',
+        'collision input name=contact_mesh_heightfield words=6690 input=27d2e99a4f0f02fc',
+        # convex-mesh gap Task 2m: P-Sphere sink reset, preallocated and growth paths.
+        'collision name=contact_sink_reset index=- rva=0x0005b620 checks=416 oracle=80effc8beac4d285',
+        'collision coverage name=contact_sink_reset preallocated_cases=6 growth_cases=2 control_words=2',
+        'collision input name=contact_sink_reset words=24 input=2bf9ab837a384435',
+        # convex-mesh gap P-Sphere follow-up: scene pair-map removal, including
+        # cross-bucket compaction, reversed keys, final-slot trim, and misses.
+        'collision name=scene_owner_pair_remove index=- rva=0x0009a920 checks=616 oracle=f100e37b38af4b3c',
+        'collision coverage name=scene_owner_pair_remove case=remove_head',
+        'collision coverage name=scene_owner_pair_remove case=remove_middle',
+        'collision coverage name=scene_owner_pair_remove case=remove_chain_tail',
+        'collision coverage name=scene_owner_pair_remove case=remove_reversed',
+        'collision coverage name=scene_owner_pair_remove case=remove_last_slot',
+        'collision coverage name=scene_owner_pair_remove case=remove_absent',
+        'collision coverage name=scene_owner_pair_remove case=remove_same_bucket_compaction',
+        'collision input name=scene_owner_pair_remove words=7 input=023ef4155d13f542'
+        'collision name=scene_owner_pair_records index=- rva=0x00010370 checks=352 oracle=70c14cd0779b5bf3'
+        'collision coverage name=scene_owner_pair_records case=remove_owned_pairs_keep_unrelated_record'
+        'collision coverage name=scene_owner_pair_records case=no_matching_owner_is_noop'
+        'collision coverage name=scene_owner_pair_records case=free_owned_payload_and_remove_record'
+        'collision coverage name=scene_owner_pair_records case=remove_pair_when_owner_is_second_key'
+        'collision input name=scene_owner_pair_records words=24 input=9ef095ee83495ec3',
+        'collision name=scene_pruner_node_remove index=- rva=0x0001fb30 checks=8922 oracle=a55d9c578b076aa2',
+        'collision coverage name=scene_pruner_node_remove case=singleton',
+        'collision coverage name=scene_pruner_node_remove case=head',
+        'collision coverage name=scene_pruner_node_remove case=middle',
+        'collision coverage name=scene_pruner_node_remove case=tail',
+        'collision coverage name=scene_pruner_node_remove case=one_payload',
+        'collision coverage name=scene_pruner_node_remove case=two_payloads',
+        'scene_pruner_node_remove_allocator_frees=10',
+        'collision input name=scene_pruner_node_remove words=12 input=8a1c9b9ab83229a4',
+        'collision name=scene_pruner_node_destroy index=- rva=0x00020020 checks=4 oracle=4d25767f9dce13f5',
+        'collision scene_pruner_node_destroy mismatches=0',
+        'scene_pruner_node_destroy_allocator_frees=2',
+        'collision coverage name=scene_pruner_node_destroy case=nonnull_unlink_and_free',
+        'collision coverage name=scene_pruner_node_destroy case=null_noop',
+        'collision input name=scene_pruner_node_destroy words=2 input=08cd4c29d1e47d34',
+        'collision name=scene_pruner_shape_remove index=- rva=0x0004bde0 checks=180 oracle=70e0432da4d1d57a',
+        'collision scene_pruner_shape_remove mismatches=0',
+        'scene_pruner_shape_remove_allocator_frees=16',
+        'collision coverage name=scene_pruner_shape_remove case=multiple_matches_and_compaction',
+        'collision coverage name=scene_pruner_shape_remove case=no_matching_owner',
+        'collision input name=scene_pruner_shape_remove words=2 input=08cd4c29d1e47d34',
+        'collision name=scene_base_dtor_registry index=- rva=0x00026bd0 checks=4 oracle=8d1ace904a398d17',
+        'collision coverage name=scene_base_dtor_registry case=detached_registered_shape',
+        'collision input name=scene_base_dtor_registry words=1 input=4d25767f9dce13f5',
+        'collision name=scene_pruner_owner_destroy index=- rva=0x0004bbd0 checks=24 oracle=a207b4f5efd178f2',
+        'collision coverage name=scene_pruner_owner_destroy case=null_sap_owner_reset',
+        'collision coverage name=scene_pruner_owner_destroy case=sap_arrays_and_compound_children',
+        'collision input name=scene_pruner_owner_destroy words=2 input=08cd4c29d1e47d34',
+        'collision name=scene_base_dtor_owner index=- rva=0x00026bd0 checks=24 oracle=912abab5feb00ab4',
+        'collision coverage name=scene_base_dtor_owner case=owner_scene_pruner_and_slot_cleanup',
+        'collision input name=scene_base_dtor_owner words=1 input=ad2aca7747985764'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
@@ -2572,6 +2626,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=prunable_ctor rva=0x000b54a0 owner=phys_fn_004874 source=IcePrunable.cpp words=42 oracle=676afd9a mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=prunable_flags rva=0x000b54f0 owner=phys_fn_004876 source=IcePrunable.cpp words=5760 oracle=849bed75 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=prunable_pruner rva=0x000b5590 owner=phys_fn_004884 source=IcePrunable.cpp words=20900 oracle=75538179 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=prunable_dispatch rva=0x000b5260 owner=phys_fn_004859 source=IcePrunable.cpp words=120 oracle=fc84e590',
+        'thirdparty coverage name=prunable_dispatch cases=20 dispatch=11 invalid_or_null=9 null_slot=1',
+        'thirdparty input name=prunable_dispatch words=60 input=cd7176ae',
         'thirdparty name=prunable_ranges rva=0x000b55e0 owner=phys_fn_004888 source=IcePrunable.cpp:152,174 words=304 oracle=f3da15ff mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=radix_setrankbuffers rva=0x000e3ea0 owner=phys_fn_005177 source=Ice/IceRevisitedRadix.h words=56 oracle=d8046a75 mismatches=0 worst_ulp=0 verdict=exact',
 
@@ -2839,13 +2896,18 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
-    '3' = 308  # 18 for NxPhysicsKernelFuzzTests, 290 for NxPhysicsCollisionTests (85 + 23 from
+    '3' = 359  # 18 for NxPhysicsKernelFuzzTests, 341 for NxPhysicsCollisionTests (85 + 23 from
                # convex-mesh gap Task 2a + 14 from its Task 2b + 59 + 44 from its harness hardening
                # + 7 from its Task 2g + 4 from its review + 16 from its Task 2h + 11 from its Task 2i
                # + 6 from its Task 2j + 6 from its Task 2k + 3 from its Task 2l accumulator
                # + 3 from its Task 2l edge-normal helper + 3 from its sphere callback
-               # + 3 from its mesh/heightfield entry)
-    '4' = 219  # 34 for NxPhysicsAssetTests, 185 for NxPhysicsThirdPartyTests (67 + 29 from
+               # + 3 from its mesh/heightfield entry + 1 compound matrix differential
+               # + 3 from its P-Sphere sink reset + 9 from scene owner-pair removal
+               # + 6 from scene owner-pair records + 9 from pruner-node removal
+               # + 6 from pruner-node destroy + 6 from pruner-shape removal
+               # + 3 from the 001323 base-dtor registry check
+               # + 4 from the 001945 pruner-owner destructor differential)
+    '4' = 222  # 34 for NxPhysicsAssetTests, 188 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 26 from qhull-gap Task 1
                # + 14 from convex-mesh gap Task 2c + 8 from its Task 2d + 19 from its Task 2e
                # + 12 from its Task 2f + 5 from its Task 2g)

@@ -581,14 +581,14 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 56,
+    "discovered": 53,
     "dynamically_gated": 3,
-    "reconstructed": 24
+    "reconstructed": 27
    },
    "bytes": {
-    "discovered": 8836,
+    "discovered": 8600,
     "dynamically_gated": 5715,
-    "reconstructed": 2217
+    "reconstructed": 2453
    },
    "phases": {
     "7": 83
@@ -797,14 +797,14 @@
     "phys_fn_000985"
    ],
    "rows": {
-    "discovered": 80,
+    "discovered": 75,
     "dynamically_gated": 14,
-    "reconstructed": 47
+    "reconstructed": 52
    },
    "bytes": {
-    "discovered": 39744,
+    "discovered": 38536,
     "dynamically_gated": 1316,
-    "reconstructed": 6534
+    "reconstructed": 7742
    },
    "phases": {
     "2": 20,
@@ -1266,12 +1266,10 @@
     "phys_fn_001351"
    ],
    "rows": {
-    "discovered": 1,
-    "reconstructed": 2
+    "reconstructed": 3
    },
    "bytes": {
-    "discovered": 33,
-    "reconstructed": 210
+    "reconstructed": 243
    },
    "phases": {
     "3": 1,
@@ -1361,14 +1359,14 @@
     "phys_fn_001463"
    ],
    "rows": {
-    "discovered": 28,
+    "discovered": 22,
     "dynamically_gated": 1,
-    "reconstructed": 25
+    "reconstructed": 31
    },
    "bytes": {
-    "discovered": 11256,
+    "discovered": 10004,
     "dynamically_gated": 314,
-    "reconstructed": 2179
+    "reconstructed": 3431
    },
    "phases": {
     "3": 40,
@@ -1386,10 +1384,10 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 1
+    "reconstructed": 1
    },
    "bytes": {
-    "discovered": 791
+    "reconstructed": 791
    },
    "phases": {
     "3": 1
@@ -1439,12 +1437,12 @@
     "phys_fn_001537"
    ],
    "rows": {
-    "discovered": 35,
-    "reconstructed": 2
+    "discovered": 16,
+    "reconstructed": 21
    },
    "bytes": {
-    "discovered": 10009,
-    "reconstructed": 25
+    "discovered": 4786,
+    "reconstructed": 5248
    },
    "phases": {
     "2": 11,
@@ -1464,17 +1462,17 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 2
+    "reconstructed": 2
    },
    "bytes": {
-    "discovered": 661
+    "reconstructed": 661
    },
    "phases": {
     "4": 2
    }
   },
   {
-   "unit": "gap:IceAdjacencies.cpp..ContactConvexHeightfield.cpp",
+   "unit": "gap:IceAdjacencies.cpp..ContactBoxMeshICE.cpp",
    "evidenced_span": null,
    "inferred_extent": [],
    "ambiguous_rows": [
@@ -1593,9 +1591,49 @@
     "phys_fn_001762",
     "phys_fn_001764",
     "phys_fn_001766",
-    "phys_fn_001768",
+    "phys_fn_001768"
+   ],
+   "rows": {
+    "dynamically_gated": 27,
+    "reconstructed": 89
+   },
+   "bytes": {
+    "dynamically_gated": 21474,
+    "reconstructed": 39662
+   },
+   "phases": {
+    "2": 13,
+    "3": 48,
+    "4": 54,
+    "7": 1
+   }
+  },
+  {
+   "unit": "ContactBoxMeshICE.cpp",
+   "evidenced_span": [
+    "0x0003d500",
+    "0x0003d500"
+   ],
+   "inferred_extent": [
     "phys_fn_001770",
-    "phys_fn_001772",
+    "phys_fn_001772"
+   ],
+   "ambiguous_rows": [],
+   "rows": {
+    "reconstructed": 2
+   },
+   "bytes": {
+    "reconstructed": 1965
+   },
+   "phases": {
+    "3": 2
+   }
+  },
+  {
+   "unit": "gap:ContactBoxMeshICE.cpp..ContactConvexHeightfield.cpp",
+   "evidenced_span": null,
+   "inferred_extent": [],
+   "ambiguous_rows": [
     "phys_fn_001774",
     "phys_fn_001775",
     "phys_fn_001777",
@@ -1637,20 +1675,15 @@
     "phys_fn_001846"
    ],
    "rows": {
-    "discovered": 109,
-    "dynamically_gated": 28,
-    "reconstructed": 20
+    "dynamically_gated": 1,
+    "reconstructed": 38
    },
    "bytes": {
-    "discovered": 61083,
-    "dynamically_gated": 23937,
-    "reconstructed": 945
+    "dynamically_gated": 2463,
+    "reconstructed": 20401
    },
    "phases": {
-    "2": 13,
-    "3": 89,
-    "4": 54,
-    "7": 1
+    "3": 39
    }
   },
   {
@@ -1662,31 +1695,66 @@
    "inferred_extent": [
     "phys_fn_001847",
     "phys_fn_001849",
-    "phys_fn_001851"
+    "phys_fn_001851",
+    "phys_fn_001853"
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 3
+    "reconstructed": 4
    },
    "bytes": {
-    "discovered": 4632
+    "reconstructed": 4637
    },
    "phases": {
-    "3": 3
+    "3": 4
    }
   },
   {
-   "unit": "gap:ContactConvexHeightfield.cpp..ContactMeshMesh.cpp",
+   "unit": "gap:ContactConvexHeightfield.cpp..ContactMeshHeightfield.cpp",
    "evidenced_span": null,
    "inferred_extent": [],
    "ambiguous_rows": [
-    "phys_fn_001853",
     "phys_fn_001855",
     "phys_fn_001857",
     "phys_fn_001859",
     "phys_fn_001861",
-    "phys_fn_001863",
-    "phys_fn_001865",
+    "phys_fn_001863"
+   ],
+   "rows": {
+    "reconstructed": 5
+   },
+   "bytes": {
+    "reconstructed": 6196
+   },
+   "phases": {
+    "3": 5
+   }
+  },
+  {
+   "unit": "ContactMeshHeightfield.cpp",
+   "evidenced_span": [
+    "0x00045d70",
+    "0x00045d70"
+   ],
+   "inferred_extent": [
+    "phys_fn_001865"
+   ],
+   "ambiguous_rows": [],
+   "rows": {
+    "reconstructed": 1
+   },
+   "bytes": {
+    "reconstructed": 1498
+   },
+   "phases": {
+    "3": 1
+   }
+  },
+  {
+   "unit": "gap:ContactMeshHeightfield.cpp..ContactMeshMesh.cpp",
+   "evidenced_span": null,
+   "inferred_extent": [],
+   "ambiguous_rows": [
     "phys_fn_001867",
     "phys_fn_001869",
     "phys_fn_001870",
@@ -1694,13 +1762,13 @@
     "phys_fn_001874"
    ],
    "rows": {
-    "discovered": 12
+    "reconstructed": 5
    },
    "bytes": {
-    "discovered": 9543
+    "reconstructed": 1844
    },
    "phases": {
-    "3": 12
+    "3": 5
    }
   },
   {
@@ -1853,14 +1921,14 @@
     "phys_fn_002045"
    ],
    "rows": {
-    "discovered": 51,
+    "discovered": 45,
     "dynamically_gated": 12,
-    "reconstructed": 13
+    "reconstructed": 19
    },
    "bytes": {
-    "discovered": 24947,
+    "discovered": 20346,
     "dynamically_gated": 4293,
-    "reconstructed": 2185
+    "reconstructed": 6786
    },
    "phases": {
     "2": 2,
@@ -1929,12 +1997,10 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 5,
-    "reconstructed": 1
+    "reconstructed": 6
    },
    "bytes": {
-    "discovered": 3492,
-    "reconstructed": 112
+    "reconstructed": 3604
    },
    "phases": {
     "4": 6
@@ -1956,12 +2022,12 @@
     "phys_fn_002081"
    ],
    "rows": {
-    "discovered": 8,
-    "reconstructed": 1
+    "discovered": 7,
+    "reconstructed": 2
    },
    "bytes": {
-    "discovered": 840,
-    "reconstructed": 43
+    "discovered": 781,
+    "reconstructed": 102
    },
    "phases": {
     "4": 9
@@ -2066,14 +2132,14 @@
     "phys_fn_002154"
    ],
    "rows": {
-    "discovered": 19,
+    "discovered": 18,
     "dynamically_gated": 1,
-    "reconstructed": 6
+    "reconstructed": 7
    },
    "bytes": {
-    "discovered": 1534,
+    "discovered": 1317,
     "dynamically_gated": 1096,
-    "reconstructed": 224
+    "reconstructed": 441
    },
    "phases": {
     "3": 1,
@@ -2143,14 +2209,14 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 39,
+    "discovered": 28,
     "dynamically_gated": 2,
-    "reconstructed": 12
+    "reconstructed": 23
    },
    "bytes": {
-    "discovered": 7918,
+    "discovered": 6974,
     "dynamically_gated": 924,
-    "reconstructed": 381
+    "reconstructed": 1325
    },
    "phases": {
     "4": 53
@@ -2812,15 +2878,15 @@
     "phys_fn_003479"
    ],
    "rows": {
-    "discovered": 292,
+    "discovered": 289,
     "dynamically_gated": 3,
-    "reconstructed": 270,
+    "reconstructed": 273,
     "statically_reviewed": 3
    },
    "bytes": {
-    "discovered": 102552,
+    "discovered": 101709,
     "dynamically_gated": 452,
-    "reconstructed": 66988,
+    "reconstructed": 67831,
     "statically_reviewed": 157
    },
    "phases": {
@@ -3464,7 +3530,7 @@
    }
   },
   {
-   "unit": "gap:Joint.cpp..D6Joint.cpp",
+   "unit": "gap:Joint.cpp..core\\Articulation.cpp",
    "evidenced_span": null,
    "inferred_extent": [],
    "ambiguous_rows": [
@@ -3480,21 +3546,56 @@
     "phys_fn_004165",
     "phys_fn_004167",
     "phys_fn_004169",
-    "phys_fn_004171",
-    "phys_fn_004172",
+    "phys_fn_004171"
+   ],
+   "rows": {
+    "discovered": 7,
+    "reconstructed": 6
+   },
+   "bytes": {
+    "discovered": 2123,
+    "reconstructed": 853
+   },
+   "phases": {
+    "6": 13
+   }
+  },
+  {
+   "unit": "core\\Articulation.cpp",
+   "evidenced_span": [
+    "0x0009b0d0",
+    "0x0009b0d0"
+   ],
+   "inferred_extent": [
+    "phys_fn_004172"
+   ],
+   "ambiguous_rows": [],
+   "rows": {
+    "discovered": 1
+   },
+   "bytes": {
+    "discovered": 69
+   },
+   "phases": {
+    "6": 1
+   }
+  },
+  {
+   "unit": "gap:core\\Articulation.cpp..D6Joint.cpp",
+   "evidenced_span": null,
+   "inferred_extent": [],
+   "ambiguous_rows": [
     "phys_fn_004174",
     "phys_fn_004176"
    ],
    "rows": {
-    "discovered": 12,
-    "reconstructed": 4
+    "discovered": 2
    },
    "bytes": {
-    "discovered": 3135,
-    "reconstructed": 221
+    "discovered": 311
    },
    "phases": {
-    "6": 16
+    "6": 2
    }
   },
   {
@@ -4359,15 +4460,15 @@
     "phys_fn_004886"
    ],
    "rows": {
-    "discovered": 28,
+    "discovered": 27,
     "dynamically_gated": 13,
-    "reconstructed": 25,
+    "reconstructed": 26,
     "statically_reviewed": 1
    },
    "bytes": {
-    "discovered": 4116,
+    "discovered": 4061,
     "dynamically_gated": 1167,
-    "reconstructed": 1729,
+    "reconstructed": 1784,
     "statically_reviewed": 20
    },
    "phases": {

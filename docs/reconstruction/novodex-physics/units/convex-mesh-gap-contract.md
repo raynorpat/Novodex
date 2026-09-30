@@ -930,7 +930,7 @@ differential. Caller chains come from `oracle/dependencies.dot`.
 | P-Emit | 000875 (915) | 915 | `gap:SceneRaycast.cpp..CapsuleShape.cpp` | 001762, 001779, 001844, 001909 -> 000875 |
 | P-Plane | 001909 (733), 001903 (45), 001907 (607) | 1,385 | `gap:ContactPlaneMesh.cpp..PenetrationMap.cpp` | 001818, 001842 -> 001909 -> 001903, 001907, 000875 |
 | 002081 | 002081 (59) | 59 | TriangleMesh span | 001762, 001844, 001865 -> 002081 -> 002146 (`NxBuildSmoothNormals`, dynamically_gated, in `SmoothNormals.cpp`) |
-| P-Sphere | 001351 (33) and its closure 000517, 000887, 000903, 000915, 001323, 001945, 001955, 002354, 002413, 004157, 004859 | 1,315 | phases 3 and 5 | 001874 -> 001351 -> 001323 -> ... |
+| P-Sphere | 001351 (33; reconstructed in the 2l follow-up), 002413 (38; reconstructed as `nxSceneRemoveShape` in ObjectModel.cpp), 002354 (86; reconstructed in the sink-reset follow-up), 004157 (476; reconstructed as `NxRemoveCollisionPairRecord` in NarrowPhase.cpp), and remaining closure 000887, 000903, 000915, 001323, 001945, 001955 | 1,315 | phases 3 and 5 | 001874 -> 001351 -> 001323 -> ... |
 | P-Dispatch | 002348 (719, phase 2), 000529 (134, phase 7), 004153 (156, phase 6) | 1,009 | `gap:Controller.cpp..fluids\Fluid.cpp`, `Scene.cpp` area | 001793, 001797 -> 002348; 001793, 001797 -> 000529 -> 004153 |
 
 Dependencies between the prerequisites:
@@ -1075,19 +1075,15 @@ Notes on the split:
 
 ## Open items
 
-1. **The census early-string bug is in two tools.**
-   - `tools/work_units.py` misses three translation units whose Ghidra string entries start
-     early: ContactBoxMeshICE.cpp, ContactMeshHeightfield.cpp and core\Articulation.cpp.
-   - `tools/reconcile_analysis.py` (the same `files` keying at lines 709-716) has the same bug.
-     It shows in the inventory's phase provenance: 001772 is `layout_adjacency` and 001865 is
-     `enclosed_by_one_phase`, where each should have been seeded by its own `__FILE__`.
-   - The work_units.py fix renames `gap:IceAdjacencies.cpp..ContactConvexHeightfield.cpp` and
-     `gap:ContactConvexHeightfield.cpp..ContactMeshMesh.cpp`. It also splits or renames
-     `gap:Joint.cpp..D6Joint.cpp`, because core\Articulation.cpp's string (it starts at 0x101194d0) is referenced at
-     0x0009b0f8 in 004172.
-   - Recommendation: fix both tools as a step of their own at the end, in Task 3, and regenerate
-     `work_units.json`, the affected bundles and any provenance change there. Do not fix them
-     now.
+1. **Closed in Task 3: the census early-string bug in both tools.**
+   `work_units.py` and `reconcile_analysis.py` now resolve a `__FILE__` reference anywhere
+   inside the encoded string span, including interior-byte references. The regenerated map has
+   109 units: 60 named translation units and 49 gaps. It now includes
+   `ContactBoxMeshICE.cpp`, `ContactMeshHeightfield.cpp` and `core\\Articulation.cpp`, splitting
+   the surrounding gaps and `gap:Joint.cpp..D6Joint.cpp` at the evidenced boundaries. The four
+   corrected inventory seeds are 001772, 001865, 001867 and 004172; their phases and reconstruction
+   states were preserved. Regression coverage is in `tools/tests/test_work_units.py` and
+   `tools/tests/test_reconcile_analysis.py`; affected bundles and work-unit records were regenerated.
 2. Two indirect calls were unresolved; 001753's is resolved (Task 2a: the box's slot 5, 000949,
    see sub-unit G). For 001753's `[eax+0x14]` (0x0003b3da) and 001779's
    (0x0003e6c8), resolve the receiver from the listing.

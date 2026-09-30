@@ -12,11 +12,11 @@ Evidenced span: ['0x0002dbc0', '0x0002dcf0']. Rows: 2 (0 ambiguous). Generated b
 - gap:opcode\IcePrunable.cpp..opcode\OPC_MeshInterface.cpp: phys_fn_005157, phys_fn_005159, phys_fn_005163, phys_fn_005189
 - unassigned: phys_fn_005695
 
-## phys_fn_001539 (0x0002dbc0, 293 B, discovered)
+## phys_fn_001539 (0x0002dbc0, 293 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/IceAdjacencies.cpp
-- implementation: None
+- implementation: Physics/src/IceAdjacencies.cpp
 - prototype: undefined4 __thiscall FUN_1002dbc0(int param_1, int param_2, int param_3)
 - calling convention: __thiscall, stack purge: 0
 - callers: phys_fn_001541 (0x0002dcf0)
@@ -89,11 +89,11 @@ undefined4 __thiscall FUN_1002dbc0(void *this,int param_1,int param_2,int param_
 
 ```
 
-## phys_fn_001541 (0x0002dcf0, 368 B, discovered)
+## phys_fn_001541 (0x0002dcf0, 368 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/IceAdjacencies.cpp
-- implementation: None
+- implementation: Physics/src/IceAdjacencies.cpp
 - prototype: undefined1 __cdecl FUN_1002dcf0(undefined4 param_1, undefined4 * param_2, void * param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_001546 (0x0002def0)

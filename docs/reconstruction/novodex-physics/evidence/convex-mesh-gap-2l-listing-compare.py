@@ -33,7 +33,7 @@ CALL_MAPPINGS_001859 = {
     0x345b0: "?NxLineLineClosestPoints@@",
     0xb4de0: "_nxTask2lCallContainerResize",
     0x0deb0: "_nxTask2lCallGetDebugRenderable",
-    0x1d610: "?NxEmitContact@@",
+    0x1d610: "?NxEmitContactThiscall@@",
 }
 decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
 
@@ -65,8 +65,11 @@ def normalized(items, call_targets=None, address_values=None):
         elif item.mnemonic == "call" and operands.startswith("0x"):
             operands = call_targets.get(int(operands, 16), "external-call")
         else:
-            for address, label in address_values.items():
-                operands = operands.replace("0x%08x" % address, label)
+            operands = re.sub(
+                r"0x[0-9a-f]+",
+                lambda match: address_values.get(int(match.group(0), 16), match.group(0)),
+                operands,
+            )
             operands = re.sub(r"\[0x[0-9a-f]+\]", "[absolute]", operands)
             operands = re.sub(r"\[([^]]*)\+ 0x[0-9a-f]+\]", r"[\1+ absolute]", operands)
         output.append((item.mnemonic, operands))
@@ -144,7 +147,7 @@ for stable_id, symbol, row_rva, row_size, external_call in rows:
             0x52240: "?nxMeshComputeVertexNormals@@YAXXZ",
             0xf47b0: "__alloca_probe",
             0x3c160: "?NxTrianglePlane@@YIPAVNxPlane@@PAV1@PAXPBVNxVec3@@22@Z",
-            0x1d610: "?NxEmitContact@@YAXPAUNxContactSink@@PAX1IPBVNxVec3@@2GG@Z",
+            0x1d610: "?NxEmitContactThiscall@@YIXPAUNxContactSink@@IPAX1IPBVNxVec3@@2GG@Z",
         }
         call_count = 0
         for expected, actual in zip(oracle_items, candidate_items):

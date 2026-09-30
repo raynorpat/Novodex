@@ -1,0 +1,16 @@
+oracle sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+candidate NxPhysicsCollisionTests.exe sha256=fff6f70846e8b22018c037446194b7dafc59e7f16836d3831707e134e145b482
+
+collision name=scene_owner_pair_remove index=- rva=0x0009a920 checks=616 oracle=f100e37b38af4b3c candidate=f100e37b38af4b3c mismatches=0 cases=7
+collision input name=scene_owner_pair_remove words=7 input=023ef4155d13f542
+collision coverage name=scene_owner_pair_remove case=remove_head
+collision coverage name=scene_owner_pair_remove case=remove_middle
+collision coverage name=scene_owner_pair_remove case=remove_chain_tail
+collision coverage name=scene_owner_pair_remove case=remove_reversed
+collision coverage name=scene_owner_pair_remove case=remove_last_slot
+collision coverage name=scene_owner_pair_remove case=remove_absent
+collision coverage name=scene_owner_pair_remove case=remove_same_bucket_compaction
+
+The fixtures use three linked owner pairs in one bucket plus a live last-slot record in a different bucket; a seventh case puts the last-slot record in the same bucket to exercise in-bucket reinsertion. Each case starts from an independent map image; compared state includes mask, count, free head, bucket heads, link array, all five record slots, and the return byte. The differential's 616 checks are all exact. The cases cover unlink at chain head, middle and tail; same- and cross-bucket compaction; reversed key order; trimming the last active slot; and an absent pair.
+
+Negative control: before adding the seventh same-bucket case, temporarily replaced the candidate body with `return false`. The six-case isolated runner rejected it with 10 mismatches (state and return-value divergences); the source was restored, the seventh case was added, and the current passing build above was produced afterward.

@@ -6,6 +6,7 @@
 |
 \*----------------------------------------------------------------------------*/
 #include "PhysicsInternal.h"
+#include "ContactGeneration.h"
 #include "NxArray.h"
 
 #define WIN32_LEAN_AND_MEAN
@@ -102,6 +103,11 @@ ShapePairFunctionTable::ShapePairFunctionTable()
 		for(unsigned i = 0; i < 6; i++)
 			for(unsigned j = 0; j < 6; j++)
 				mFunction[block][i][j] = 0;
+	// Task 2m: the shared [*][COMPOUND] matrix-A expander and the
+	// [COMPOUND][COMPOUND] child-pair walk.
+	for(unsigned type = 0; type < 5; ++type)
+		mFunction[0][type][5] = (void*) NxContactCompoundShape;
+	mFunction[0][5][5] = (void*) NxContactCompoundCompound;
 	}
 
 ShapePairFunctionTable::~ShapePairFunctionTable()

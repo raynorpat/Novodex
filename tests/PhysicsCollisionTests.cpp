@@ -50,6 +50,15 @@
 #include "NxPlane.h"
 #include "NxIntersectionRayPlane.h"
 #include "NxIntersectionSegmentBox.h"
+#include "NxUserAllocator.h"
+#pragma push_macro("ARRAYSIZE")
+#undef ARRAYSIZE
+#include "ObjectModel.h"
+#pragma pop_macro("ARRAYSIZE")
+
+// convex-mesh gap Task 2m candidate dispatch entry, implemented in the
+// production narrow-phase dispatcher.
+void __cdecl NxDispatchShapePair(void*, const NxCollisionShape*, const NxCollisionShape*, void*, void*);
 
 // ---------------------------------------------------------------------------
 // The recovered dispatch matrix.
@@ -2717,10 +2726,560 @@ static unsigned nxDriveTask2j(unsigned char* base);
 static unsigned nxDriveTask2k(unsigned char* base);
 static unsigned nxDriveTask2lAccumulator(unsigned char* base);
 static unsigned nxDriveTask2lSphereCallback(unsigned char* base);
+static unsigned nxDriveTask2lSinkReset(unsigned char* base);
+static unsigned nxDrivePSceneOwnerRecordRemove(unsigned char* base);
+static unsigned nxDrivePSceneOwnerPairRecords(unsigned char* base);
+static unsigned nxDrivePScenePrunerNodeRemove(unsigned char* base);
+static unsigned nxDrivePScenePrunerNodeDestroy(unsigned char* base);
+static unsigned nxDrivePScenePrunerShapeRemove(unsigned char* base);
+static unsigned nxDrivePSceneBaseDtorRegistry(unsigned char* base);
+static unsigned nxDrivePSceneBaseDtorOwner(unsigned char* base);
+static unsigned nxDrivePScenePrunerOwnerDestroy(unsigned char* base);
+extern "C" void __fastcall NxScenePrunerNodeRemove(void* node);
+extern "C" void __stdcall NxScenePrunerNodeDestroy(void* node);
+extern "C" void __fastcall NxScenePrunerShapeRemove(void* group, void* owner);
+extern "C" void __fastcall NxScenePrunerRecordCleanup(void* record);
+extern "C" void __fastcall NxScenePrunerRecordCleanupTail(void* record);
+extern "C" void __fastcall NxScenePrunerOwnerDestroy(void* manager, void* owner);
+extern "C" void nxIceCallContainerCtor();
+static unsigned nx2gCall0(const void* fn, void* self);
+void nx2iFoundationEnd();
+unsigned nx2iFoundationBegin();
+typedef void (__cdecl* NxSceneOwnerPairRecordsCandidate)(void*, const void*);
+static NxSceneOwnerPairRecordsCandidate nxSceneOwnerPairRecordsCandidate = nullptr;
 struct Nx2iSide;
 static unsigned nxDriveTask2lMeshHeightfield(unsigned char* base, Nx2iSide* sides);
 static unsigned nxDriveTask2lEdgeNormal(unsigned char* base, Nx2iSide* sides);
+static int nxFail(const char* message);
 
+struct NxPairMapFixture
+	{
+	NxU8 map[0x1c];
+	NxI32 buckets[4];
+	NxI32 links[5];
+	NxU8 entries[40];
+	};
+
+static NxU32 nxPairMapTestBucket(NxU16 owner0, NxU16 owner1, NxU32 mask)
+	{
+	if(owner1 < owner0)
+		{
+		const NxU16 swap = owner0; owner0 = owner1; owner1 = swap;
+		}
+	NxU32 hash = ((NxU32) owner1 << 16) | owner0;
+	hash += ~(hash << 15);
+	hash = (((NxU32) ((NxI32) hash >> 10) ^ hash) * 9);
+	hash ^= (NxU32) ((NxI32) hash >> 6);
+	hash += ~(hash << 11);
+	return (((NxU32) ((NxI32) hash >> 16) ^ hash) & mask);
+	}
+
+static void nxInitPairMapFixture(NxPairMapFixture* fixture,
+	const NxU16 owners[4][2], NxU32 sharedBucket, NxU32 separateBucket)
+	{
+	memset(fixture, 0, sizeof(*fixture));
+	*(NxU32*) (fixture->map + 4) = 3;
+	*(NxI32**) (fixture->map + 8) = fixture->buckets;
+	*(NxI32**) (fixture->map + 0x0c) = fixture->links;
+	*(NxU32*) (fixture->map + 0x10) = 4;
+	*(NxU8**) (fixture->map + 0x14) = fixture->entries;
+	*(NxU32*) (fixture->map + 0x18) = 4;
+	for(unsigned i = 0; i < 4; ++i)
+		{
+		fixture->buckets[i] = -1;
+		fixture->links[i] = -1;
+		}
+	memset(fixture->entries, 0xcd, sizeof(fixture->entries));
+	fixture->buckets[sharedBucket] = 0;
+	if(separateBucket != sharedBucket)
+		fixture->buckets[separateBucket] = 3;
+	for(unsigned i = 0; i < 4; ++i)
+		{
+		*(NxU16*) (fixture->entries + i * 8) = owners[i][0];
+		*(NxU16*) (fixture->entries + i * 8 + 2) = owners[i][1];
+		*(NxU32*) (fixture->entries + i * 8 + 4) = 0xabc00000u + i;
+		fixture->links[i] = i == 0 ? 1 : (i == 1 ? 2 : -1);
+		}
+	}
+
+static void nxDigestPairMapState(NxDigest* digest, const NxPairMapFixture* fixture)
+	{
+	nxFoldInput(digest, fixture->map + 4, 4);
+	nxFoldInput(digest, fixture->map + 0x10, 4);
+	nxFoldInput(digest, fixture->map + 0x18, 4);
+	nxFoldInput(digest, fixture->buckets, sizeof(fixture->buckets));
+	nxFoldInput(digest, fixture->links, sizeof(fixture->links));
+	nxFoldInput(digest, fixture->entries, sizeof(fixture->entries));
+	}
+
+static bool nxSamePairMapState(const NxPairMapFixture* a, const NxPairMapFixture* b)
+	{
+	return memcmp(a->map + 4, b->map + 4, 4) == 0 &&
+		memcmp(a->map + 0x10, b->map + 0x10, 4) == 0 &&
+		memcmp(a->map + 0x18, b->map + 0x18, 4) == 0 &&
+		memcmp(a->buckets, b->buckets, sizeof(a->buckets)) == 0 &&
+		memcmp(a->links, b->links, sizeof(a->links)) == 0 &&
+		memcmp(a->entries, b->entries, sizeof(a->entries)) == 0;
+	}
+
+static unsigned nxDrivePSceneOwnerRecordRemove(unsigned char* base)
+	{
+	typedef NxU32 (__thiscall* NxOraclePairRemoveFn)(void*, NxU16, NxU16);
+	const NxOraclePairRemoveFn oracle = (NxOraclePairRemoveFn) (base + 0x0009a920);
+	NxU16 owners[5][2];
+	memset(owners, 0, sizeof(owners));
+	unsigned sharedCount = 0;
+	bool haveSeparate = false;
+	NxU32 targetBucket = 0;
+	NxU32 separateBucket = 0;
+	for(NxU32 candidate = 0x101; candidate < 0xffff && (sharedCount < 3 || !owners[4][1] || !haveSeparate); ++candidate)
+		{
+		const NxU32 bucket = nxPairMapTestBucket(0x100, (NxU16) candidate, 3);
+		if(sharedCount == 0)
+			targetBucket = bucket;
+		if(bucket == targetBucket && sharedCount < 3)
+			{
+			owners[sharedCount][0] = 0x100;
+			owners[sharedCount][1] = (NxU16) candidate;
+			++sharedCount;
+			}
+		else if(bucket == targetBucket && !owners[4][1])
+			{
+			owners[4][0] = 0x100;
+			owners[4][1] = (NxU16) candidate;
+			}
+		else if(!haveSeparate)
+			{
+			owners[3][0] = 0x100;
+			owners[3][1] = (NxU16) candidate;
+			separateBucket = bucket;
+			haveSeparate = true;
+			}
+		}
+	if(sharedCount != 3 || !owners[4][1] || !haveSeparate)
+		return nxFail("could not create colliding owner-pair fixture");
+	owners[4][0] = 0x100;
+	static const unsigned removeIndex[7] = { 0, 1, 2, 1, 3, 4, 0 };
+	static const char* const names[7] = {
+		"remove_head", "remove_middle", "remove_chain_tail", "remove_reversed",
+		"remove_last_slot", "remove_absent", "remove_same_bucket_compaction" };
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest); nxDigestInit(&candidateDigest); nxDigestInit(&inputDigest);
+	unsigned mismatches = 0;
+	for(unsigned test = 0; test < 7; ++test)
+		{
+		NxPairMapFixture oracleFixture, candidateFixture;
+		if(test == 6)
+			{
+			NxU16 sameBucketOwners[4][2];
+			for(unsigned i = 0; i < 3; ++i)
+				{
+				sameBucketOwners[i][0] = owners[i][0];
+				sameBucketOwners[i][1] = owners[i][1];
+				}
+			sameBucketOwners[3][0] = owners[4][0];
+			sameBucketOwners[3][1] = owners[4][1];
+			nxInitPairMapFixture(&oracleFixture, sameBucketOwners, targetBucket, targetBucket);
+			nxInitPairMapFixture(&candidateFixture, sameBucketOwners, targetBucket, targetBucket);
+			oracleFixture.links[2] = candidateFixture.links[2] = 3;
+			}
+		else
+			{
+			nxInitPairMapFixture(&oracleFixture, owners, targetBucket, separateBucket);
+			nxInitPairMapFixture(&candidateFixture, owners, targetBucket, separateBucket);
+			}
+		NxU16 owner0 = owners[removeIndex[test]][0];
+		NxU16 owner1 = owners[removeIndex[test]][1];
+		if(test == 3)
+			{
+			const NxU16 swap = owner0; owner0 = owner1; owner1 = swap;
+			}
+		nxFoldInput(&inputDigest, &owner0, sizeof(owner0));
+		nxFoldInput(&inputDigest, &owner1, sizeof(owner1));
+		const NxU32 oracleResult = oracle(oracleFixture.map, owner0, owner1);
+		const bool candidateResult = NxRemoveCollisionPairRecord(candidateFixture.map, owner0, owner1);
+		const bool resultMismatch = (oracleResult & 0xff) != (candidateResult ? 1u : 0u);
+		const bool stateMismatch = !nxSamePairMapState(&oracleFixture, &candidateFixture);
+		mismatches += resultMismatch + stateMismatch;
+		if(resultMismatch || stateMismatch)
+			{
+			printf("collision mismatch name=scene_owner_pair_remove case=%s oracle_result=%08x candidate_result=%u oracle_count=%u candidate_count=%u oracle_free=%u candidate_free=%u\n",
+				names[test], oracleResult, candidateResult ? 1u : 0u,
+				*(NxU32*) (oracleFixture.map + 0x10), *(NxU32*) (candidateFixture.map + 0x10),
+				*(NxU32*) (oracleFixture.map + 0x18), *(NxU32*) (candidateFixture.map + 0x18));
+			for(unsigned i = 0; i < 4; ++i)
+				printf("collision mismatch name=scene_owner_pair_remove case=%s bucket=%u oracle=%d candidate=%d\n",
+					names[test], i, oracleFixture.buckets[i], candidateFixture.buckets[i]);
+			for(unsigned i = 0; i < 5; ++i)
+				printf("collision mismatch name=scene_owner_pair_remove case=%s link=%u oracle=%d candidate=%d\n",
+					names[test], i, oracleFixture.links[i], candidateFixture.links[i]);
+			for(unsigned i = 0; i < 4; ++i)
+				printf("collision mismatch name=scene_owner_pair_remove case=%s record=%u oracle=%04x:%04x/%08x candidate=%04x:%04x/%08x\n",
+					names[test], i,
+					*(NxU16*) (oracleFixture.entries + i * 8), *(NxU16*) (oracleFixture.entries + i * 8 + 2),
+					*(NxU32*) (oracleFixture.entries + i * 8 + 4),
+					*(NxU16*) (candidateFixture.entries + i * 8), *(NxU16*) (candidateFixture.entries + i * 8 + 2),
+					*(NxU32*) (candidateFixture.entries + i * 8 + 4));
+			}
+		nxDigestPairMapState(&oracleDigest, &oracleFixture);
+		nxDigestPairMapState(&candidateDigest, &candidateFixture);
+		}
+		printf("collision name=scene_owner_pair_remove index=- rva=0x0009a920 checks=%u oracle=%016llx candidate=%016llx mismatches=%u cases=%u\n",
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches,
+		(unsigned) (sizeof(names) / sizeof(names[0])));
+	nxPrintInput("scene_owner_pair_remove", &inputDigest);
+	for(unsigned test = 0; test < sizeof(names) / sizeof(names[0]); ++test)
+		printf("collision coverage name=scene_owner_pair_remove case=%s\n", names[test]);
+	return mismatches;
+	}
+
+struct NxSceneOwnerPairRecordsFixture
+	{
+	NxU8 scenePrefix[0x2c];
+	NxPairMapFixture pairMap;
+	};
+
+class NxScenePairTestAllocator : public NxUserAllocator
+	{
+	public:
+	unsigned frees = 0;
+	void* mallocDEBUG(size_t size, const char*, int) override { return ::malloc(size); }
+	void* malloc(size_t size) override { return ::malloc(size); }
+	void* realloc(void* memory, size_t size) override { return ::realloc(memory, size); }
+	void free(void* memory) override
+		{
+		if(memory)
+			{
+			++frees;
+			::free(memory);
+			}
+		}
+	};
+
+static unsigned nxDrivePSceneOwnerPairRecords(unsigned char* base)
+	{
+	typedef void (__thiscall* NxOracleSceneOwnerPairRecordsFn)(void*, const void*);
+	const NxOracleSceneOwnerPairRecordsFn oracle =
+		(NxOracleSceneOwnerPairRecordsFn) (base + 0x00010370);
+	NxU16 owners[5][2] = {};
+	unsigned sharedCount = 0;
+	bool haveSeparate = false;
+	NxU32 sharedBucket = 0;
+	NxU32 separateBucket = 0;
+	for(NxU32 candidate = 0x101; candidate < 0xffff && (sharedCount < 3 || !haveSeparate); ++candidate)
+		{
+		const NxU32 bucket = nxPairMapTestBucket(0x100, (NxU16) candidate, 3);
+		if(sharedCount == 0) sharedBucket = bucket;
+		if(bucket == sharedBucket && sharedCount < 3)
+			{
+		owners[sharedCount][0] = 0x100;
+		owners[sharedCount][1] = (NxU16) candidate;
+		++sharedCount;
+			}
+		else if(bucket != sharedBucket && !haveSeparate &&
+		nxPairMapTestBucket(0x200, (NxU16) candidate, 3) != sharedBucket)
+			{
+		owners[3][0] = (NxU16) candidate;
+		owners[3][1] = 0x200;
+		separateBucket = nxPairMapTestBucket(0x200, (NxU16) candidate, 3);
+		haveSeparate = true;
+			}
+		}
+	if(sharedCount != 3 || !haveSeparate)
+		return nxFail("could not create scene owner-pair fixture");
+	owners[4][0] = 0x100;
+	owners[4][1] = owners[0][1];
+	static const char* const names[] = {
+		"remove_owned_pairs_keep_unrelated_record", "no_matching_owner_is_noop",
+		"free_owned_payload_and_remove_record", "remove_pair_when_owner_is_second_key" };
+	NxDigest oracleDigest, candidateDigest;
+	NxDigest inputDigest;
+	nxDigestInit(&oracleDigest); nxDigestInit(&candidateDigest); nxDigestInit(&inputDigest);
+	unsigned mismatches = 0;
+	nxSceneOwnerPairRecordsCandidate = NxSceneRemoveOwnerPairRecords;
+	for(unsigned test = 0; test < sizeof(names) / sizeof(names[0]); ++test)
+		{
+		NxSceneOwnerPairRecordsFixture oracleFixture, candidateFixture;
+		memset(&oracleFixture, 0, sizeof(oracleFixture));
+		memset(&candidateFixture, 0, sizeof(candidateFixture));
+		nxInitPairMapFixture(&oracleFixture.pairMap, owners, sharedBucket, separateBucket);
+		nxInitPairMapFixture(&candidateFixture.pairMap, owners, sharedBucket, separateBucket);
+		for(unsigned i = 0; i < 4; ++i)
+			{
+			*(NxU32*) (oracleFixture.pairMap.entries + i * 8 + 4) = 1;
+			*(NxU32*) (candidateFixture.pairMap.entries + i * 8 + 4) = 1;
+			}
+		NxScenePairTestAllocator testAllocator;
+		NxUserAllocator* savedAllocator = nullptr;
+		if(test == 2)
+			{
+			savedAllocator = nxFoundationSDKAllocator;
+			nxFoundationSDKAllocator = &testAllocator;
+			void* oraclePayload = testAllocator.malloc(16);
+			void* candidatePayload = testAllocator.malloc(16);
+			if(!oraclePayload || !candidatePayload)
+				return nxFail("could not allocate scene pair payload fixture");
+			*(void**) (oracleFixture.pairMap.entries + 4) = oraclePayload;
+			*(void**) (candidateFixture.pairMap.entries + 4) = candidatePayload;
+			}
+		NxU8 oracleShape[0xd8] = {}, candidateShape[0xd8] = {};
+		const NxU32 owner = test == 1 ? 0x300u
+			: test == 3 ? owners[0][1] : 0x100u;
+		nxFoldInput(&inputDigest, &owner, sizeof(owner));
+		nxFoldInput(&inputDigest, owners, sizeof(NxU16) * 8);
+		const NxU32 payloadMode = test == 2 ? 1u : 0u;
+		nxFoldInput(&inputDigest, &payloadMode, sizeof(payloadMode));
+		*(NxU32*) (oracleShape + 0xd4) = owner;
+		*(NxU32*) (candidateShape + 0xd4) = owner;
+		oracle(&oracleFixture, oracleShape);
+		const unsigned oracleFrees = testAllocator.frees;
+		if(nxSceneOwnerPairRecordsCandidate)
+			nxSceneOwnerPairRecordsCandidate(&candidateFixture, candidateShape);
+		const unsigned candidateFrees = testAllocator.frees - oracleFrees;
+		if(test == 2)
+			{
+			if(oracleFrees != 1 || candidateFrees != 1)
+				++mismatches;
+			nxFoundationSDKAllocator = savedAllocator;
+			}
+		const bool same = nxSamePairMapState(&oracleFixture.pairMap, &candidateFixture.pairMap);
+		mismatches += same ? 0u : 1u;
+		if(!same)
+			printf("collision mismatch name=scene_owner_pair_records case=%s oracle_count=%u candidate_count=%u\n",
+				names[test], *(NxU32*) (oracleFixture.pairMap.map + 0x10),
+				*(NxU32*) (candidateFixture.pairMap.map + 0x10));
+		nxDigestPairMapState(&oracleDigest, &oracleFixture.pairMap);
+		nxDigestPairMapState(&candidateDigest, &candidateFixture.pairMap);
+		}
+	printf("collision name=scene_owner_pair_records index=- rva=0x00010370 checks=%u oracle=%016llx candidate=%016llx mismatches=%u cases=%u\n",
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches,
+		(unsigned) (sizeof(names) / sizeof(names[0])));
+	for(unsigned i = 0; i < sizeof(names) / sizeof(names[0]); ++i)
+		printf("collision coverage name=scene_owner_pair_records case=%s\n", names[i]);
+	nxPrintInput("scene_owner_pair_records", &inputDigest);
+	return mismatches;
+	}
+
+struct NxPrunerFixture { NxU8 owner[8]; NxU8 nodes[3][0x200]; };
+static int nxPrunerFixtureIndex(const NxPrunerFixture& f, const void* p) {
+ if(!p) return -1; for(int i=0;i<3;++i) if(p==f.nodes[i]) return i; return -2;
+}
+static void nxInitPrunerFixture(NxPrunerFixture& f,unsigned kind) {
+ memset(&f,0,sizeof(f)); static const unsigned first[6]={0,0,0,1,0,1},last[6]={0,1,2,2,2,2};
+ *(void**)f.owner=f.nodes[first[kind]]; *(void**)(f.owner+4)=f.nodes[last[kind]];
+ for(unsigned i=first[kind];i<=last[kind];++i){*(void**)(f.nodes[i]+0x10)=f.owner;
+ if(i>first[kind]) *(void**)(f.nodes[i]+0x0c)=f.nodes[i-1];
+ if(i<last[kind]) *(void**)(f.nodes[i]+8)=f.nodes[i+1];}
+}
+static void nxInitPrunerSink(NxPrunerFixture& f,unsigned n,unsigned char* base,bool oracleSide) {
+ NxU8* node=f.nodes[n]; if(oracleSide) nx2gCall0(base+0x0005b680,node+0x24);
+ else { nx2gCall0((const void*)nxIceCallContainerCtor,node+0x4c); NxContactSinkResetState((NxU32*)(node+0x24)); }
+}
+static void nxFoldPrunerFixture(NxDigest* d,const NxPrunerFixture& f) {
+ nxDigestByte(d,(unsigned char)(nxPrunerFixtureIndex(f,*(void**)f.owner)+1));
+ nxDigestByte(d,(unsigned char)(nxPrunerFixtureIndex(f,*(void**)(f.owner+4))+1));
+ for(unsigned i=0;i<3;++i){NxU8 b[0x200]; memcpy(b,f.nodes[i],sizeof(b));
+ nxDigestByte(d,(unsigned char)(nxPrunerFixtureIndex(f,*(void**)(f.nodes[i]+8))+1));
+ nxDigestByte(d,(unsigned char)(nxPrunerFixtureIndex(f,*(void**)(f.nodes[i]+0x0c))+1));
+ nxDigestByte(d,*(void**)(f.nodes[i]+0x10)?1:0); memset(b+0x54,0,4);
+ for(unsigned j=0x14;j<sizeof(b);++j) nxDigestByte(d,b[j]); }
+}
+static unsigned nxDrivePScenePrunerNodeRemove(unsigned char* base) {
+ typedef void (__fastcall* Fn)(void*); const Fn oracle=(Fn)(base+0x0001fb30);
+ if(!nx2iFoundationBegin()) return nxFail("pruner-node fixture could not initialize foundation");
+ NxScenePairTestAllocator testAllocator; NxUserAllocator* savedAllocator=nxFoundationSDKAllocator; nxFoundationSDKAllocator=&testAllocator;
+ static const char* names[6]={"singleton","head","middle","tail","one_payload","two_payloads"};
+ NxDigest od,cd,id; nxDigestInit(&od);nxDigestInit(&cd);nxDigestInit(&id);unsigned mismatches=0;
+ for(unsigned kind=0;kind<6;++kind){NxPrunerFixture o,c;nxInitPrunerFixture(o,kind);nxInitPrunerFixture(c,kind);
+ unsigned removed=kind<2?0:kind==2||kind==4?1:2; nxInitPrunerSink(o,removed,base,true);nxInitPrunerSink(c,removed,base,false);
+ if(kind>=4){const unsigned count=kind==4?1u:2u; NxPrunerFixture* fixtures[2]={&o,&c}; for(unsigned side=0;side<2;++side){NxU8* record=fixtures[side]->nodes[removed]+0x14; void** array=(void**)testAllocator.malloc(count*sizeof(void*)); for(unsigned j=0;j<count;++j) array[j]=testAllocator.malloc(16); *(void***)(record+0xc4)=array; *(void***)(record+0xc8)=array+count; *(NxU32*)(record+0xcc)=0xcdcd0000u+side;}}
+ unsigned words[2]={kind,removed};nxFoldInput(&id,words,sizeof(words)); oracle(o.nodes[removed]);NxScenePrunerNodeRemove(c.nodes[removed]);
+ nxFoldPrunerFixture(&od,o);nxFoldPrunerFixture(&cd,c);
+ if(nxPrunerFixtureIndex(o,*(void**)o.owner)!=nxPrunerFixtureIndex(c,*(void**)c.owner)||nxPrunerFixtureIndex(o,*(void**)(o.owner+4))!=nxPrunerFixtureIndex(c,*(void**)(c.owner+4))) ++mismatches;
+ for(unsigned i=0;i<3;++i){NxU8 a[0x200],b[0x200];memcpy(a,o.nodes[i],sizeof(a));memcpy(b,c.nodes[i],sizeof(b));memset(a+0x54,0,4);memset(b+0x54,0,4);
+ if(nxPrunerFixtureIndex(o,*(void**)(o.nodes[i]+8))!=nxPrunerFixtureIndex(c,*(void**)(c.nodes[i]+8))||nxPrunerFixtureIndex(o,*(void**)(o.nodes[i]+0x0c))!=nxPrunerFixtureIndex(c,*(void**)(c.nodes[i]+0x0c))||((*(void**)(o.nodes[i]+0x10)!=0)!=(*(void**)(c.nodes[i]+0x10)!=0))||memcmp(a+0x14,b+0x14,0x1ec)) ++mismatches;}
+ }
+ printf("collision name=scene_pruner_node_remove index=- rva=0x0001fb30 checks=%u oracle=%016llx candidate=%016llx mismatches=%u cases=6 frees=%u\n",od.checks,od.state,cd.state,mismatches,testAllocator.frees);
+ nxFoundationSDKAllocator=savedAllocator; nx2iFoundationEnd(); printf("scene_pruner_node_remove_allocator_frees=%u\n",testAllocator.frees); nxPrintInput("scene_pruner_node_remove",&id);for(unsigned i=0;i<6;++i)printf("collision coverage name=scene_pruner_node_remove case=%s\n",names[i]);
+ return mismatches + nxDrivePScenePrunerNodeDestroy(base);
+}
+static unsigned nxDrivePScenePrunerNodeDestroy(unsigned char* base) {
+ typedef void (__stdcall* Fn)(void*); const Fn oracle=(Fn)(base+0x00020020);
+ if(!nx2iFoundationBegin()) return nxFail("pruner-node destroy fixture could not initialize foundation");
+ NxScenePairTestAllocator testAllocator; NxUserAllocator* savedAllocator=nxFoundationSDKAllocator; nxFoundationSDKAllocator=&testAllocator;
+ NxDigest od,cd,id;nxDigestInit(&od);nxDigestInit(&cd);nxDigestInit(&id);unsigned mismatches=0;
+ for(unsigned kind=0;kind<2;++kind){
+  NxU8 ownerO[8]={},ownerC[8]={}; NxU8* nodeO=0;NxU8* nodeC=0;
+  if(kind==0){nodeO=(NxU8*)testAllocator.malloc(0x200);nodeC=(NxU8*)testAllocator.malloc(0x200);memset(nodeO,0,0x200);memset(nodeC,0,0x200);*(void**)(ownerO)=nodeO;*(void**)(ownerO+4)=nodeO;*(void**)(ownerC)=nodeC;*(void**)(ownerC+4)=nodeC;*(void**)(nodeO+0x10)=ownerO;*(void**)(nodeC+0x10)=ownerC;}
+  if(kind==0){nx2gCall0(base+0x0005b680,nodeO+0x24);nx2gCall0((const void*)nxIceCallContainerCtor,nodeC+0x4c);NxContactSinkResetState((NxU32*)(nodeC+0x24));}
+  const unsigned before=testAllocator.frees;unsigned word=kind;nxFoldInput(&id,&word,sizeof(word));
+  oracle(kind?0:nodeO);NxScenePrunerNodeDestroy(kind?0:nodeC);
+  nxDigestByte(&od,*(void**)ownerO?1:0);nxDigestByte(&od,*(void**)(ownerO+4)?1:0);
+  nxDigestByte(&cd,*(void**)ownerC?1:0);nxDigestByte(&cd,*(void**)(ownerC+4)?1:0);
+  if(*(void**)ownerO!=*(void**)ownerC||*(void**)(ownerO+4)!=*(void**)(ownerC+4)||testAllocator.frees-before!=(kind?0u:2u)){++mismatches;printf("collision mismatch name=scene_pruner_node_destroy case=%u oracle_head=%p candidate_head=%p oracle_tail=%p candidate_tail=%p free_delta=%u\n",kind,*(void**)ownerO,*(void**)ownerC,*(void**)(ownerO+4),*(void**)(ownerC+4),testAllocator.frees-before);}
+ }
+ printf("collision name=scene_pruner_node_destroy index=- rva=0x00020020 checks=%u oracle=%016llx candidate=%016llx mismatches=%u cases=2 frees=%u\n",od.checks,od.state,cd.state,mismatches,testAllocator.frees);
+ printf("collision scene_pruner_node_destroy mismatches=%u\n",mismatches);
+ nxFoundationSDKAllocator=savedAllocator;nx2iFoundationEnd();printf("scene_pruner_node_destroy_allocator_frees=%u\n",testAllocator.frees);nxPrintInput("scene_pruner_node_destroy",&id);
+ printf("collision coverage name=scene_pruner_node_destroy case=nonnull_unlink_and_free\n");printf("collision coverage name=scene_pruner_node_destroy case=null_noop\n");return mismatches;
+}
+static unsigned nxDrivePScenePrunerShapeRemove(unsigned char* base) {
+ typedef void (__thiscall* OracleFn)(void*,void*);const OracleFn oracle=(OracleFn)(base+0x0004bde0);
+ if(!nx2iFoundationBegin())return nxFail("pruner-shape fixture could not initialize foundation");
+ NxScenePairTestAllocator allocator;NxUserAllocator* saved=nxFoundationSDKAllocator;nxFoundationSDKAllocator=&allocator;
+ NxU16 pairKeys[4][2]={};NxU32 shared=0,separate=0;unsigned grouped=0;bool haveSeparate=false;
+ for(NxU32 key=0x101;key<0xffff&&(grouped<3||!haveSeparate);++key){NxU32 bucket=nxPairMapTestBucket(0x100,(NxU16)key,3);if(grouped==0)shared=bucket;if(bucket==shared&&grouped<3){pairKeys[grouped][0]=0x100;pairKeys[grouped][1]=(NxU16)key;++grouped;}else if(!haveSeparate&&bucket!=shared){pairKeys[3][0]=(NxU16)key;pairKeys[3][1]=0x200;separate=nxPairMapTestBucket(0x200,(NxU16)key,3);if(separate!=shared)haveSeparate=true;}}
+ NxDigest od,cd,id;nxDigestInit(&od);nxDigestInit(&cd);nxDigestInit(&id);unsigned mismatches=0;
+ for(unsigned kind=0;kind<2;++kind){
+  NxPairMapFixture maps[2];NxU8 groups[2][0x100]={},owners[2][0x14]={},ownerRecords[2][4][2][0x14]={};NxU32 ids[2][3]={{0x300,0x100,0x400},{0x300,0x100,0x400}};NxU8 ownerPruners[2][8]={};NxU8* nodes[2][4]={};
+  for(unsigned side=0;side<2;++side){
+   nxInitPairMapFixture(&maps[side],pairKeys,shared,separate);memcpy(groups[side]+0x34,maps[side].map,0x1c);*(NxU32*)(groups[side]+0x7c)=3;*(NxU32**)(groups[side]+0x80)=ids[side];*(NxU32*)(owners[side]+0x10)=kind?0x999u:0x100u;
+   for(unsigned i=0;i<4;++i){nodes[side][i]=(NxU8*)allocator.malloc(0x200);memset(nodes[side][i],0,0x200);*(void**)(nodes[side][i]+0x10)=ownerPruners[side];if(i)*(void**)(nodes[side][i]+0x0c)=nodes[side][i-1];if(i<3)*(void**)(nodes[side][i]+8)=0;}
+   *(void**)ownerPruners[side]=nodes[side][0];*(void**)(ownerPruners[side]+4)=nodes[side][3];
+   for(unsigned i=0;i<3;++i)*(void**)(nodes[side][i]+8)=nodes[side][i+1];
+   for(unsigned i=0;i<4;++i){
+    *(NxU32*)(ownerRecords[side][i][0]+0x10)=i==0||i==2?0x100u:0x200u;*(NxU32*)(ownerRecords[side][i][1]+0x10)=0x300u;
+    *(NxU8**)(nodes[side][i]+0x14)=ownerRecords[side][i][0];*(NxU8**)(nodes[side][i]+0x18)=ownerRecords[side][i][1];
+    if(side==0)nx2gCall0(base+0x0005b680,nodes[side][i]+0x24);else{nx2gCall0((const void*)nxIceCallContainerCtor,nodes[side][i]+0x4c);NxContactSinkResetState((NxU32*)(nodes[side][i]+0x24));}
+    *(void**)(maps[side].entries+i*8+4)=nodes[side][i];
+   }
+  }
+  // Pair-map records live at this+0x48; place them at the end of each group.
+  for(unsigned side=0;side<2;++side){NxU8* records=groups[side]+0xd8;memcpy(records,maps[side].entries,sizeof(maps[side].entries));*(void***)(groups[side]+0x48)=(void**)(records);*(void***)(groups[side]+0x34+0x14)=(void**)(records);}
+  unsigned word=kind;nxFoldInput(&id,&word,sizeof(word));const unsigned before=allocator.frees;
+  oracle(groups[0],owners[0]);NxScenePrunerShapeRemove(groups[1],owners[1]);
+  if(allocator.frees-before!=(kind?0u:4u))++mismatches;
+  for(unsigned side=0;side<2;++side){
+   NxDigest* d=side?&cd:&od;NxU32 count=*(NxU32*)(groups[side]+0x44);nxDigestByte(d,(NxU8)count);nxDigestByte(d,(NxU8)*(NxU32*)(groups[side]+0x7c));nxFoldInput(d,ids[side],sizeof(ids[side]));
+   NxU8 recCopy[40];memcpy(recCopy,groups[side]+0xd8,sizeof(recCopy));for(unsigned j=0;j<4;++j)for(unsigned i=0;i<4;++i)if(*(void**)(recCopy+j*8+4)==nodes[side][i])*(NxU32*)(recCopy+j*8+4)=i+1;nxFoldInput(d,recCopy,sizeof(recCopy));
+   nxFoldInput(d,maps[side].buckets,sizeof(maps[side].buckets));nxFoldInput(d,maps[side].links,sizeof(maps[side].links));
+  }
+  if(*(NxU32*)(groups[0]+0x44)!=*(NxU32*)(groups[1]+0x44)||*(NxU32*)(groups[0]+0x7c)!=*(NxU32*)(groups[1]+0x7c)||memcmp(ids[0],ids[1],sizeof(ids[0]))||memcmp(maps[0].buckets,maps[1].buckets,sizeof(maps[0].buckets))||memcmp(maps[0].links,maps[1].links,sizeof(maps[0].links)))++mismatches;
+  for(unsigned side=0;side<2;++side)for(unsigned i=0;i<4;++i)if(nodes[side][i]&&(kind||i==1||i==3))allocator.free(nodes[side][i]);
+ }
+ printf("collision name=scene_pruner_shape_remove index=- rva=0x0004bde0 checks=%u oracle=%016llx candidate=%016llx mismatches=%u cases=2 frees=%u\n",od.checks,od.state,cd.state,mismatches,allocator.frees);
+ printf("collision scene_pruner_shape_remove mismatches=%u\n",mismatches);nxFoundationSDKAllocator=saved;nx2iFoundationEnd();printf("scene_pruner_shape_remove_allocator_frees=%u\n",allocator.frees);nxPrintInput("scene_pruner_shape_remove",&id);
+ printf("collision coverage name=scene_pruner_shape_remove case=multiple_matches_and_compaction\n");printf("collision coverage name=scene_pruner_shape_remove case=no_matching_owner\n");return mismatches;
+}
+struct NxSceneSdkTestAllocator : SdkAllocator {
+ NxUserAllocator* inner;
+ explicit NxSceneSdkTestAllocator(NxUserAllocator* a):inner(a){}
+ void* malloc(size_t n,NxMemoryType t) override{return inner->malloc(n,t);}
+ void* mallocDEBUG(size_t n,const char* f,int l,const char* c,NxMemoryType t) override{return inner->mallocDEBUG(n,f,l,c,t);}
+ void* realloc(void* p,size_t n) override{return inner->realloc(p,n);}
+ void free(void* p) override{inner->free(p);}
+};
+static unsigned nxDrivePSceneBaseDtorRegistry(unsigned char* base) {
+ if(!nx2iFoundationBegin())return nxFail("base-dtor registry fixture could not initialize foundation");
+ NxScenePairTestAllocator allocator;NxUserAllocator* saved=nxFoundationSDKAllocator;nxFoundationSDKAllocator=&allocator;
+ typedef void(__cdecl* NameFn)(void*,void*);typedef void(__fastcall* DtorFn)(void*);
+	const NameFn oracleName=(NameFn)(base+0x0000edc0);const DtorFn oracleDtor=(DtorFn)(base+0x00026bd0);
+ NxU8 oracleShape[0xe0]={};*(NxU32*)(oracleShape+0xcc)=0xffffu;*(void**)(oracleShape+0xc4)=0;
+ static int oracleNameToken=1,candidateNameToken=2;
+ const unsigned oracleBefore=allocator.frees;oracleName(oracleShape,&oracleNameToken);oracleDtor(oracleShape);
+ const unsigned oracleFrees=allocator.frees-oracleBefore;
+ SdkAllocator* savedSdk=nxGetSdkAllocator();SdkAllocatorBridge candidateBridge;candidateBridge.mAllocator=&allocator;nxSetSdkAllocatorBridge(&candidateBridge);
+ ShapeBase candidateShape(0,0);const unsigned candidateBefore=allocator.frees;
+ candidateShape.nxShapeNameRegistry(&candidateShape,&candidateNameToken);
+ candidateShape.nxBaseDtorOwnerArms();candidateShape.mPrunable.~Prunable();
+ const unsigned candidateFrees=allocator.frees-candidateBefore;
+ const unsigned mismatches=oracleFrees==candidateFrees?0u:1u;
+ NxDigest od,cd,id;nxDigestInit(&od);nxDigestInit(&cd);nxDigestInit(&id);
+ nxFoldInput(&od,&oracleFrees,sizeof(oracleFrees));nxFoldInput(&cd,&candidateFrees,sizeof(candidateFrees));
+ const unsigned input=0;nxFoldInput(&id,&input,sizeof(input));
+ printf("collision name=scene_base_dtor_registry index=- rva=0x00026bd0 checks=%u oracle=%016llx candidate=%016llx mismatches=%u oracle_frees=%u candidate_frees=%u\n",
+  od.checks,od.state,cd.state,mismatches,oracleFrees,candidateFrees);
+ candidateShape.nxShapeNameRegistry(&candidateShape,0);
+ nxSetSdkAllocatorBridge(savedSdk);
+ nxFoundationSDKAllocator=saved;nx2iFoundationEnd();
+ printf("collision coverage name=scene_base_dtor_registry case=detached_registered_shape\n");
+ nxPrintInput("scene_base_dtor_registry",&id);
+ return mismatches;
+}
+static unsigned nxDrivePSceneBaseDtorOwner(unsigned char* base) {
+ if(!nx2iFoundationBegin())return nxFail("base-dtor owner fixture could not initialize foundation");
+ NxScenePairTestAllocator allocator;NxUserAllocator* saved=nxFoundationSDKAllocator;nxFoundationSDKAllocator=&allocator;
+ struct Fixture { NxU8 scene[0x800],owner[0xb0],shape[0xe0],container[0xa0],group[0xa0]; NxU32 sent[2],freeSlots[4],shapes[2],pairHeader[2],pairData[2],slotItems[4]; };
+ Fixture o={},c={};
+ auto init=[&](Fixture& f,void* shape){
+  *(void**)(f.owner+4)=f.scene;*(void**)(f.owner+0x10)=shape;*(void**)((NxU8*)shape+4)=f.owner;
+  *(void**)(f.scene+0x48)=f.container;*(void**)(f.scene+0x5d4)=f.pairHeader;
+  *(NxU32*)(f.scene+0x3c)=0;*(void**)(f.scene+0x40)=f.pairData;
+  *(void**)f.container=f.sent;*(void**)(f.container+4)=f.freeSlots;
+  *(void**)(f.container+8)=f.freeSlots;*(void**)(f.container+0xc)=f.freeSlots+4;
+  *(void**)(f.container+0x90)=f.shapes;f.sent[1]=0;f.shapes[1]=(NxU32)shape;
+  *(void**)(f.scene+0x6e4+4)=f.slotItems;*(void**)(f.scene+0x6e4+8)=f.slotItems;
+  *(void**)(f.scene+0x6e4+0xc)=f.slotItems+4;
+  f.pairHeader[0]=(NxU32)f.pairData;f.pairHeader[1]=(NxU32)f.pairData;
+  *(NxU32*)((NxU8*)shape+0xa0)=(NxU32)f.group;*(NxU32*)((NxU8*)shape+0xd4)=1;
+  *(NxU32*)(f.group+0x44)=0;*(NxU32*)(f.group+0x7c)=0;
+ };
+ NxU32 nameToken=0x12345678;typedef void(__cdecl* NameFn)(void*,void*);typedef void(__fastcall* DtorFn)(void*);
+ const NameFn oracleName=(NameFn)(base+0x0000edc0);const DtorFn oracleDtor=(DtorFn)(base+0x00026bd0);
+ NxU8 oracleShape[0xe0]={};*(NxU32*)(oracleShape+0xcc)=0xffffu;*(NxU32*)(oracleShape+0xd0)=0x7fffffffu;init(o,oracleShape);
+ // The oracle uses the same SDK allocator interface as the candidate's vector helpers.
+ typedef bool(__cdecl* OracleSetAllocatorFn)(void*);OracleSetAllocatorFn oracleSetAllocator=(OracleSetAllocatorFn)(base+0x000b4020);
+ SdkAllocator* savedOracleSdk=*(SdkAllocator**)(base+0x0012845c);NxSceneSdkTestAllocator oracleBridge(&allocator);oracleSetAllocator(&oracleBridge);
+ const unsigned oracleBefore=allocator.frees;oracleName(oracleShape,&nameToken);oracleDtor(oracleShape);const unsigned oracleFrees=allocator.frees-oracleBefore;
+ SdkAllocator* savedSdk=nxGetSdkAllocator();SdkAllocatorBridge candidateBridge;candidateBridge.mAllocator=&allocator;nxSetSdkAllocatorBridge(&candidateBridge);
+ ShapeBase candidateShape(0,1);init(c,&candidateShape);candidateShape.mOwner04=c.owner;
+ const unsigned candidateBefore=allocator.frees;candidateShape.nxShapeNameRegistry(&candidateShape,&nameToken);
+ candidateShape.nxBaseDtorOwnerArms();const unsigned candidateFrees=allocator.frees-candidateBefore;
+ const NxU32 oracleLive=*(NxU32*)(oracleShape+0xa0),candidateLive=candidateShape.mWordA0;
+ const unsigned oracleFlag=*(NxU32*)(o.scene+0x70c),candidateFlag=*(NxU32*)(c.scene+0x70c);
+ const unsigned oracleShapeSlot=o.shapes[1],candidateShapeSlot=c.shapes[1];
+ const unsigned oracleFreeCount=(unsigned)(o.freeSlots[1]!=0),candidateFreeCount=(unsigned)(c.freeSlots[1]!=0);
+ const unsigned oracleSceneSlot=(unsigned)(o.slotItems[0]!=0),candidateSceneSlot=(unsigned)(c.slotItems[0]!=0);
+ unsigned mismatches=(oracleFrees!=candidateFrees||oracleLive!=candidateLive||oracleFlag!=candidateFlag||
+  oracleShapeSlot!=candidateShapeSlot||oracleFreeCount!=candidateFreeCount||oracleSceneSlot!=candidateSceneSlot)?1u:0u;
+ if(mismatches)printf("collision mismatch name=scene_base_dtor_owner oracle_frees=%u candidate_frees=%u oracle_group=%08x candidate_group=%08x oracle_flag=%08x candidate_flag=%08x oracle_shape_slot=%08x candidate_shape_slot=%08x oracle_free_slot=%u candidate_free_slot=%u oracle_scene_slot=%u candidate_scene_slot=%u\n",oracleFrees,candidateFrees,oracleLive,candidateLive,oracleFlag,candidateFlag,oracleShapeSlot,candidateShapeSlot,oracleFreeCount,candidateFreeCount,oracleSceneSlot,candidateSceneSlot);
+ NxDigest od,cd,id;nxDigestInit(&od);nxDigestInit(&cd);nxDigestInit(&id);
+ const unsigned ov[6]={oracleFrees,oracleLive,oracleFlag,oracleShapeSlot,oracleFreeCount,oracleSceneSlot};
+ const unsigned cv[6]={candidateFrees,candidateLive,candidateFlag,candidateShapeSlot,candidateFreeCount,candidateSceneSlot};
+ nxFoldInput(&od,ov,sizeof(ov));nxFoldInput(&cd,cv,sizeof(cv));const unsigned input=1;nxFoldInput(&id,&input,4);
+ printf("collision name=scene_base_dtor_owner index=- rva=0x00026bd0 checks=%u oracle=%016llx candidate=%016llx mismatches=%u frees=%u\n",od.checks,od.state,cd.state,mismatches,oracleFrees);
+ printf("collision coverage name=scene_base_dtor_owner case=owner_scene_pruner_and_slot_cleanup\n");nxPrintInput("scene_base_dtor_owner",&id);
+ candidateShape.nxShapeNameRegistry(&candidateShape,0);oracleSetAllocator(savedOracleSdk);nxSetSdkAllocatorBridge(savedSdk);nxFoundationSDKAllocator=saved;nx2iFoundationEnd();return mismatches;
+}
+static unsigned nxDrivePScenePrunerOwnerDestroy(unsigned char* base) {
+ if(!nx2iFoundationBegin())return nxFail("pruner-owner fixture could not initialize foundation");
+ NxScenePairTestAllocator allocator;NxUserAllocator* saved=nxFoundationSDKAllocator;nxFoundationSDKAllocator=&allocator;
+ struct Fixture { NxU8 manager[0x90],owner[0xb0],shape[0x100],child[0x100]; void* children[4]; void* sap; };
+ Fixture oracleCases[2]={},candidateCases[2]={};
+ auto init=[&](Fixture& f,bool withSap,bool compound){
+  *(void**)(f.owner+0x10)=f.shape;*(NxU32*)(f.shape+0xa0)=0xabcdef01u;
+  *(NxU32*)(f.shape+0xcc)=0xffffu;*(NxU32*)(f.child+0xcc)=0xffffu;
+  *(NxU32*)(f.shape+0xd0)=compound?5u:0x7fffffffu;
+  if(compound){f.children[0]=f.child;*(void***)(f.shape+0xe0)=f.children;*(void***)(f.shape+0xe4)=f.children+1;}
+  if(withSap){f.sap=allocator.malloc(0x30);memset(f.sap,0,0x30);*(void**)(f.manager+0x2c)=f.sap;
+   NxU8* sap=(NxU8*)f.sap;*(void**)(sap+0x1c)=allocator.malloc(8);
+   *(void**)(sap+0x20)=allocator.malloc(8);*(void**)(sap+0x24)=allocator.malloc(8);*(void**)(sap+0x28)=allocator.malloc(8);
+   NxU8* pairAllocation=(NxU8*)allocator.malloc(8);*(void**)(sap+8)=pairAllocation+4;*(void**)(sap+0x14)=allocator.malloc(8);}
+ };
+ for(unsigned kind=0;kind<2;++kind){init(oracleCases[kind],kind!=0,kind!=0);init(candidateCases[kind],kind!=0,kind!=0);}
+ // The test compares the null-owner teardown and a populated sweep-and-prune
+ // destructor with the compound-owner child dispatch arm.
+ typedef void(__thiscall* OracleFn)(void*,void*);const OracleFn oracle=(OracleFn)(base+0x0004bbd0);
+ SdkAllocator* savedSdk=nxGetSdkAllocator();SdkAllocatorBridge bridge;bridge.mAllocator=&allocator;nxSetSdkAllocatorBridge(&bridge);
+ typedef bool(__cdecl* OracleSetAllocatorFn)(void*);OracleSetAllocatorFn oracleSetAllocator=(OracleSetAllocatorFn)(base+0x000b4020);
+ SdkAllocator* savedOracleSdk=*(SdkAllocator**)(base+0x0012845c);NxSceneSdkTestAllocator oracleBridge(&allocator);oracleSetAllocator(&oracleBridge);
+ NxDigest od,cd,id;nxDigestInit(&od);nxDigestInit(&cd);nxDigestInit(&id);
+ unsigned mismatches=0,oracleFrees=0,candidateFrees=0;
+ for(unsigned kind=0;kind<2;++kind){Fixture& o=oracleCases[kind];Fixture& c=candidateCases[kind];
+  const unsigned ob=allocator.frees;oracle(o.manager,o.owner);const unsigned of=allocator.frees-ob;oracleFrees+=of;
+  const unsigned cb=allocator.frees;NxScenePrunerOwnerDestroy(c.manager,c.owner);const unsigned cf=allocator.frees-cb;candidateFrees+=cf;
+  const NxU32 oo=*(NxU32*)(o.shape+0xa0),co=*(NxU32*)(c.shape+0xa0);
+  const NxU32 os=*(void**)(o.manager+0x2c)?1u:0u,cs=*(void**)(c.manager+0x2c)?1u:0u;
+  if(of!=cf||oo!=co||os!=cs){++mismatches;printf("collision mismatch name=scene_pruner_owner_destroy case=%u oracle_frees=%u candidate_frees=%u oracle_owner_a0=%08x candidate_owner_a0=%08x oracle_sap=%u candidate_sap=%u\n",kind,of,cf,oo,co,os,cs);}
+  nxFoldInput(&od,&of,4);nxFoldInput(&od,&oo,4);nxFoldInput(&od,&os,4);
+  nxFoldInput(&cd,&cf,4);nxFoldInput(&cd,&co,4);nxFoldInput(&cd,&cs,4);
+  nxFoldInput(&id,&kind,sizeof(kind));}
+ printf("collision name=scene_pruner_owner_destroy index=- rva=0x0004bbd0 checks=%u oracle=%016llx candidate=%016llx mismatches=%u cases=2 oracle_frees=%u candidate_frees=%u\n",
+  od.checks,od.state,cd.state,mismatches,oracleFrees,candidateFrees);
+ printf("collision coverage name=scene_pruner_owner_destroy case=null_sap_owner_reset\n");
+ printf("collision coverage name=scene_pruner_owner_destroy case=sap_arrays_and_compound_children\n");
+ nxPrintInput("scene_pruner_owner_destroy",&id);oracleSetAllocator(savedOracleSdk);nxSetSdkAllocatorBridge(savedSdk);nxFoundationSDKAllocator=saved;nx2iFoundationEnd();return mismatches;
+}
 // Candidate box/mesh entries implemented from the listing in ContactBoxMeshICE.cpp.
 void __cdecl NxContactBoxMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
 bool __cdecl NxOverlapBoxMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
@@ -2732,12 +3291,18 @@ int wmain(int argc, wchar_t** argv)
 	{
 	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
 	const bool task2kOnly = argc == 4 && wcscmp(argv[3], L"--task2k-only") == 0;
-	if(argc != 3 && !task2jOnly && !task2kOnly)
+	const bool ownerPairOnly = argc == 4 && wcscmp(argv[3], L"--owner-pair-only") == 0;
+	const bool sceneOwnerPairRecordsOnly = argc == 4 && wcscmp(argv[3], L"--scene-owner-pair-records-only") == 0;
+	const bool scenePrunerNodeOnly = argc == 4 && wcscmp(argv[3], L"--scene-pruner-node-only") == 0;
+	const bool scenePrunerShapeOnly = argc == 4 && wcscmp(argv[3], L"--scene-pruner-shape-only") == 0;
+	const bool sceneBaseDtorOnly = argc == 4 && wcscmp(argv[3], L"--scene-base-dtor-only") == 0;
+	const bool scenePrunerOwnerOnly = argc == 4 && wcscmp(argv[3], L"--scene-pruner-owner-only") == 0;
+	const bool sceneBaseDtorOwnerOnly = argc == 4 && wcscmp(argv[3], L"--scene-base-dtor-owner-only") == 0;
+	if(argc != 3 && !task2jOnly && !task2kOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly)
 		{
-		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only]\n");
+		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only]\n");
 		return 2;
 		}
-
 	wchar_t physicsPath[MAX_PATH];
 	if(swprintf_s(physicsPath, L"%s\\NxPhysics.dll", argv[1]) < 0)
 		return nxFail("cannot form the oracle path");
@@ -2789,6 +3354,45 @@ int wmain(int argc, wchar_t** argv)
 		{
 		const unsigned mismatches = nxDriveTask2k(base);
 		printf("collision capsule_mesh mismatches=%u\n", mismatches);
+		return mismatches ? 1 : 0;
+		}
+	if(ownerPairOnly)
+		{
+		const unsigned mismatches = nxDrivePSceneOwnerRecordRemove(base);
+		printf("collision owner_pair_remove mismatches=%u\n", mismatches);
+		return mismatches ? 1 : 0;
+		}
+	if(scenePrunerNodeOnly)
+		{
+		const unsigned mismatches = nxDrivePScenePrunerNodeRemove(base);
+		printf("collision scene_pruner_node_remove mismatches=%u\n", mismatches);
+		const unsigned shapeMismatches = nxDrivePScenePrunerShapeRemove(base);
+		return (mismatches || shapeMismatches) ? 1 : 0;
+		}
+	if(scenePrunerShapeOnly)
+		{
+		const unsigned mismatches = nxDrivePScenePrunerShapeRemove(base);
+		return mismatches ? 1 : 0;
+		}
+	if(sceneBaseDtorOnly)
+		{
+		const unsigned mismatches = nxDrivePSceneBaseDtorRegistry(base);
+		return mismatches ? 1 : 0;
+		}
+	if(scenePrunerOwnerOnly)
+		{
+		const unsigned mismatches = nxDrivePScenePrunerOwnerDestroy(base);
+		return mismatches ? 1 : 0;
+		}
+	if(sceneBaseDtorOwnerOnly)
+		{
+		const unsigned mismatches = nxDrivePSceneBaseDtorOwner(base);
+		return mismatches ? 1 : 0;
+		}
+	if(sceneOwnerPairRecordsOnly)
+		{
+		const unsigned mismatches = nxDrivePSceneOwnerPairRecords(base);
+		printf("collision scene_owner_pair_records mismatches=%u\n", mismatches);
 		return mismatches ? 1 : 0;
 		}
 
@@ -2895,20 +3499,193 @@ int wmain(int argc, wchar_t** argv)
 
 					nxProbeCalls = 0;
 					dispatch(probeObject, probeShape0, probeShape1, probeContext, probeContext);
+					const unsigned oracleCalls = nxProbeCalls;
+					nxProbeCalls = 0;
+					NxDispatchShapePair(probeObject, p0, p1, probeContext, probeContext);
+					const unsigned candidateCalls = nxProbeCalls;
 					++indexProbes;
 					unsigned wanted = (slot == expected) ? 1u : 0u;
-					if(nxProbeCalls != wanted)
+					if(oracleCalls != wanted || candidateCalls != oracleCalls)
 						{
 						++indexWrong;
 						if(indexWrong <= 4)
-							printf("matrix INDEX-MISMATCH half=%c t0=%u t1=%u slot=%u expected_calls=%u actual=%u\n",
-								half ? 'B' : 'A', t0, t1, slot, wanted, nxProbeCalls);
+							printf("matrix INDEX-MISMATCH half=%c t0=%u t1=%u slot=%u expected_calls=%u oracle=%u candidate=%u\n",
+								half ? 'B' : 'A', t0, t1, slot, wanted, oracleCalls, candidateCalls);
 						}
 					}
 				}
 		}
 	}
 	printf("matrix index_rule probes=%u wrong=%u\n", indexProbes, indexWrong);
+
+	// Task 2m filtering: default/sentinel groups, an enabled group pair, a
+	// disabled group pair, and the high filter bit all go through the oracle row.
+	unsigned filterWrong = 0;
+	{
+	unsigned char scene[0x50];
+	unsigned char* pairMap = scene + 0x2c;
+	unsigned char shape0Storage[kShapeBytes];
+	unsigned char shape1Storage[kShapeBytes];
+	NxU32 groupMasks[32];
+	NxU32 originalOracleMasks[32];
+	NxU32* oracleMasks = (NxU32*) (base + 0x00123a98);
+	memcpy(originalOracleMasks, oracleMasks, sizeof(originalOracleMasks));
+	NxU32 buckets[1] = { 0xffffffffu };
+	NxU32 next[1] = { 0xffffffffu };
+	NxU32 entries[2] = {};
+	memset(scene, 0, sizeof(scene));
+	memset(shape0Storage, 0, sizeof(shape0Storage));
+	memset(shape1Storage, 0, sizeof(shape1Storage));
+	for(unsigned i = 0; i < 32; ++i)
+		groupMasks[i] = 0xffffffffu;
+	*(NxU32*) (pairMap + 4) = 0;
+	*(NxU32**) (pairMap + 8) = buckets;
+	*(NxU32**) (pairMap + 0xc) = next;
+	*(NxU32*) (pairMap + 0x10) = 0;
+	*(void**) (pairMap + 0x14) = entries;
+	NxCollisionShape* filter0 = (NxCollisionShape*) shape0Storage;
+	NxCollisionShape* filter1 = (NxCollisionShape*) shape1Storage;
+	*(NxU16*) (shape0Storage + 0xd8) = 0xffff;
+	*(NxU16*) (shape1Storage + 0xd8) = 0xffff;
+	*(NxU16*) (shape0Storage + 0xd4) = 11;
+	*(NxU16*) (shape1Storage + 0xd4) = 22;
+	typedef bool(__thiscall* NxOraclePairFilterFn)(void*, const void*, const void*);
+	NxOraclePairFilterFn oracleFilter = (NxOraclePairFilterFn) (base + 0x00010570);
+	for(unsigned c = 0; c < 5; ++c)
+		{
+		*(NxU16*) (shape0Storage + 0xd8) = (c < 2) ? 0xffff : 3;
+		*(NxU16*) (shape1Storage + 0xd8) = (c < 2) ? 0xffff : 5;
+		shape0Storage[0xde] = (c == 4) ? 0x10 : 0;
+		groupMasks[3] = (c == 2) ? (1u << 5) : 0;
+		oracleMasks[3] = groupMasks[3];
+		const bool oracleAllowed = oracleFilter(scene, filter0, filter1);
+		const bool candidateAllowed = NxFilterShapePair(groupMasks, pairMap, filter0, filter1);
+		if(oracleAllowed != candidateAllowed)
+			{
+			++filterWrong;
+			printf("matrix contact_filter record=%u oracle=%u candidate=%u\n",
+				c, oracleAllowed ? 1u : 0u, candidateAllowed ? 1u : 0u);
+			}
+		}
+	*(NxU16*) (shape0Storage + 0xd8) = 0xffff;
+	*(NxU16*) (shape1Storage + 0xd8) = 0xffff;
+	shape0Storage[0xde] = 0;
+	*(NxU32*) (pairMap + 0x10) = 1;
+	buckets[0] = 0;
+	next[0] = 0xffffffffu;
+	*(NxU16*) &entries[0] = 11;
+	*(NxU16*) ((NxU8*) entries + 2) = 22;
+	entries[1] = 0;
+	for(unsigned c = 0; c < 2; ++c)
+		{
+		entries[1] = c;
+		const bool oracleAllowed = oracleFilter(scene, filter0, filter1);
+		const bool candidateAllowed = NxFilterShapePair(groupMasks, pairMap, filter0, filter1);
+		if(oracleAllowed != candidateAllowed)
+			{
+			++filterWrong;
+			printf("matrix contact_filter pair_record=%u oracle=%u candidate=%u\n",
+				c, oracleAllowed ? 1u : 0u, candidateAllowed ? 1u : 0u);
+			}
+		}
+	memcpy(oracleMasks, originalOracleMasks, sizeof(originalOracleMasks));
+	}
+	printf("matrix contact_filter checks=7 wrong=%u\n", filterWrong);
+
+	// The matrix-A compound wrapper updates no geometry itself: it uses the
+	// compound and child Prunable world boxes, rejects a disjoint child, applies
+	// the scene filter, then redispatches the intersecting child pair.
+	unsigned oracleCompoundDispatchCalls = 0;
+	unsigned candidateCompoundDispatchCalls = 0;
+	unsigned compoundDispatchWrong = 0;
+	{
+	unsigned char matrix[kMatrixObjectSize];
+	unsigned char scene[0x100];
+	unsigned char compoundStorage[kShapeBytes];
+	unsigned char compoundStorage1[kShapeBytes];
+	unsigned char otherStorage[kShapeBytes];
+	unsigned char childStorage[2][kShapeBytes];
+	unsigned char childStorage1[2][kShapeBytes];
+	unsigned char pruner[0x18];
+	NxReal worldBounds[36] = {
+		0,0,0,1,1,1, 10,10,10,11,11,11,
+		0,0,0,1,1,1, 10,10,10,11,11,11,
+		-2,-2,-2,2,2,2, -2,-2,-2,2,2,2
+	};
+	memset(matrix, 0, sizeof(matrix));
+	memset(scene, 0, sizeof(scene));
+	memset(compoundStorage, 0, sizeof(compoundStorage));
+	memset(compoundStorage1, 0, sizeof(compoundStorage1));
+	memset(otherStorage, 0, sizeof(otherStorage));
+	memset(childStorage, 0, sizeof(childStorage));
+	memset(childStorage1, 0, sizeof(childStorage1));
+	memset(pruner, 0, sizeof(pruner));
+	NxCollisionShape* compound = (NxCollisionShape*) compoundStorage;
+	NxCollisionShape* compound1 = (NxCollisionShape*) compoundStorage1;
+	NxCollisionShape* other = (NxCollisionShape*) otherStorage;
+	NxCollisionShape* child0 = (NxCollisionShape*) childStorage[0];
+	NxCollisionShape* child1 = (NxCollisionShape*) childStorage[1];
+	NxCollisionShape* child2 = (NxCollisionShape*) childStorage1[0];
+	NxCollisionShape* child3 = (NxCollisionShape*) childStorage1[1];
+	compound->type = 5;
+	compound1->type = 5;
+	other->type = 1;
+	child0->type = 0;
+	child1->type = 0;
+	child2->type = child3->type = 1;
+	*(NxCollisionShape***) (compoundStorage + 0xe0) = (NxCollisionShape**) (scene + 0x80);
+	*(NxCollisionShape***) (compoundStorage + 0xe4) = (NxCollisionShape**) (scene + 0x88);
+	*(NxCollisionShape**) (scene + 0x80) = child0;
+	*(NxCollisionShape**) (scene + 0x84) = child1;
+	*(NxCollisionShape***) (compoundStorage1 + 0xe0) = (NxCollisionShape**) (scene + 0x90);
+	*(NxCollisionShape***) (compoundStorage1 + 0xe4) = (NxCollisionShape**) (scene + 0x98);
+	*(NxCollisionShape**) (scene + 0x90) = child2;
+	*(NxCollisionShape**) (scene + 0x94) = child3;
+	*(NxReal**) (pruner + 0x14) = worldBounds;
+	NxCollisionShape* prunableShapes[6] = { compound, other, child0, child1, child2, child3 };
+	for(unsigned i = 0; i < 6; ++i)
+		{
+		NxU8* prunable = (NxU8*) prunableShapes[i] + 0xa4;
+		*(NxU32*) (prunable + 8) = 2;
+		*(void**) (prunable + 0x20) = pruner;
+		*(NxU16*) (prunable + 0x28) = (i == 0) ? 2 : (i == 1) ? 0 : (i == 5) ? 3 : i - 2;
+		*(NxU16*) ((NxU8*) prunableShapes[i] + 0xd8) = 0xffff;
+		}
+	*(NxU16*) ((NxU8*) compound1 + 0xa4 + 0x28) = 5;
+	*(void**) (matrix + kMatrixOffsetA + 1 * 4) = (void*) nxProbeContact;
+	*(void**) (matrix + kMatrixOffsetA + 7 * 4) = (void*) nxProbeContact;
+	void** oracleMatrixSlot = (void**) (base + 0x00123c18);
+	void* savedOracleMatrix = *oracleMatrixSlot;
+	*oracleMatrixSlot = matrix;
+	void* savedCandidateMatrix = NxGetCollisionDispatchMatrix();
+	NxSetCollisionDispatchMatrix(matrix);
+	typedef void(__cdecl* NxCompoundOracleFn)(const void*, const void*, void*, void*);
+	NxCompoundOracleFn oracleCompound = (NxCompoundOracleFn) (base + 0x0003fa10);
+	nxProbeCalls = 0;
+	oracleCompound(other, compound, 0, scene);
+	oracleCompoundDispatchCalls = nxProbeCalls;
+	nxProbeCalls = 0;
+	NxContactCompoundShape(other, compound, 0, scene);
+	candidateCompoundDispatchCalls = nxProbeCalls;
+	if(oracleCompoundDispatchCalls != 1 || candidateCompoundDispatchCalls != 1 ||
+		oracleCompoundDispatchCalls != candidateCompoundDispatchCalls)
+		compoundDispatchWrong = 1;
+	typedef void(__cdecl* NxCompoundCompoundOracleFn)(const void*, const void*, void*, void*);
+	NxCompoundCompoundOracleFn oracleCompoundCompound = (NxCompoundCompoundOracleFn) (base + 0x0003fa30);
+	nxProbeCalls = 0;
+	oracleCompoundCompound(compound, compound1, 0, scene);
+	oracleCompoundDispatchCalls += nxProbeCalls;
+	nxProbeCalls = 0;
+	NxContactCompoundCompound(compound, compound1, 0, scene);
+	candidateCompoundDispatchCalls += nxProbeCalls;
+	if(oracleCompoundDispatchCalls != 3 || candidateCompoundDispatchCalls != 3 ||
+		oracleCompoundDispatchCalls != candidateCompoundDispatchCalls)
+		compoundDispatchWrong = 1;
+	*oracleMatrixSlot = savedOracleMatrix;
+	NxSetCollisionDispatchMatrix(savedCandidateMatrix);
+	}
+	printf("matrix contact_compound calls_oracle=%u calls_candidate=%u wrong=%u\n",
+		oracleCompoundDispatchCalls, candidateCompoundDispatchCalls, compoundDispatchWrong);
 
 	// -----------------------------------------------------------------------
 	// The kernels.
@@ -7988,6 +8765,14 @@ int wmain(int argc, wchar_t** argv)
 	// pair entry is added.
 	totalMismatch += nxDriveTask2lAccumulator(base);
 	totalMismatch += nxDriveTask2lSphereCallback(base);
+	totalMismatch += nxDriveTask2lSinkReset(base);
+	totalMismatch += nxDrivePSceneOwnerRecordRemove(base);
+	totalMismatch += nxDrivePSceneOwnerPairRecords(base);
+totalMismatch += nxDrivePScenePrunerNodeRemove(base);
+totalMismatch += nxDrivePScenePrunerShapeRemove(base);
+totalMismatch += nxDrivePSceneBaseDtorRegistry(base);
+totalMismatch += nxDrivePScenePrunerOwnerDestroy(base);
+totalMismatch += nxDrivePSceneBaseDtorOwner(base);
 
 	// What is not covered, named rather than left as an absence.
 	for(unsigned index = 0; index < 36; ++index)
@@ -8411,6 +9196,88 @@ static void nx2gContainerDtor(Nx2gSide& s, void* object)
 		nx2gCall0(s.base + kIceContainerDtorRva, object);
 	else
 		((IceCore::Container*) object)->~Container();
+	}
+
+// Direct 002354 differential over a caller-preallocated stream and an empty
+// Container that must grow for the first pair-counter word.
+static unsigned nxDriveTask2lSinkReset(unsigned char* base)
+	{
+	typedef void (__fastcall * ResetFn)(NxU32*);
+	const ResetFn oracle = (ResetFn) (base + 0x0005b620);
+	const ResetFn candidate = &NxContactSinkResetState;
+	static Nx2gSide owners[2];
+	static unsigned char sinks[2][0x60];
+	static unsigned streams[2][8];
+	for(unsigned side = 0; side < 2; ++side)
+		{
+		owners[side].oracle = side == 0;
+		owners[side].base = base;
+		}
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	unsigned mismatches = 0, checks = 0, growthCases = 0;
+	static const unsigned initialCounts[] = { 0, 1, 7 };
+	for(unsigned capacityCase = 0; capacityCase < 2; ++capacityCase)
+	for(unsigned n = 0; n < (capacityCase ? 1u : sizeof(initialCounts) / sizeof(initialCounts[0])); ++n)
+	for(unsigned mode = 0; mode < 2; ++mode)
+		{
+		const unsigned initialCount = capacityCase ? 0 : initialCounts[n];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			memset(sinks[side], 0xcd, sizeof(sinks[side]));
+			NxU32* state = (NxU32*) (sinks[side] + 0x10);
+			if(capacityCase)
+				nx2gContainerCtor(owners[side], state + 10);
+			for(unsigned word = 0; word < 10; ++word)
+				state[word] = 0xa5100000u + word;
+			state[10] = capacityCase ? 0 : 8;
+			state[11] = initialCount;
+			state[12] = capacityCase ? 0 : (unsigned) (size_t) streams[side];
+			if(!capacityCase)
+				for(unsigned i = 0; i < 8; ++i)
+					streams[side][i] = 0xdead0000u + i;
+			}
+		const unsigned control = mode ? kControlSimulate : kControlDefault;
+		nxSetControl(control);
+		oracle((NxU32*) (sinks[0] + 0x10));
+		nxSetControl(kControlDefault);
+		nxSetControl(control);
+		candidate((NxU32*) (sinks[1] + 0x10));
+		nxSetControl(kControlDefault);
+		NxU32* a = (NxU32*) (sinks[0] + 0x10);
+		NxU32* b = (NxU32*) (sinks[1] + 0x10);
+		unsigned out[13] = {};
+		for(unsigned word = 0; word < 12; ++word)
+			{
+			out[word] = a[word];
+			mismatches += a[word] != b[word];
+			}
+		out[12] = a[12] ? *(unsigned*) (size_t) a[12] : 0xffffffffu;
+		if(b[12] == 0 || *(unsigned*) (size_t) b[12] != out[12])
+			++mismatches;
+		const unsigned inputs[3] = { capacityCase, initialCount, mode };
+		nxFoldInput(&inputDigest, inputs, sizeof(inputs));
+		nxFoldInput(&oracleDigest, out, sizeof(out));
+		unsigned outCandidate[13];
+		memcpy(outCandidate, b, 12 * sizeof(unsigned));
+		outCandidate[12] = b[12] ? *(unsigned*) (size_t) b[12] : 0xffffffffu;
+		nxFoldInput(&candidateDigest, outCandidate, sizeof(outCandidate));
+		++checks;
+		if(capacityCase)
+			{
+			++growthCases;
+			nx2gContainerDtor(owners[0], a + 10);
+			nx2gContainerDtor(owners[1], b + 10);
+			}
+		}
+	printf("collision name=contact_sink_reset index=- rva=0x0005b620 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=contact_sink_reset preallocated_cases=%u growth_cases=%u control_words=2\n",
+		checks - growthCases, growthCases);
+	nxPrintInput("contact_sink_reset", &inputDigest);
+	return mismatches;
 	}
 
 // A block of the side's own 004803 allocator, released through its slot 3.
@@ -11492,16 +12359,20 @@ static unsigned nxDriveTask2lMeshHeightfield(unsigned char* base, Nx2iSide* side
 	{
 	typedef void (__cdecl * EntryFn)(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
 	const EntryFn oracle = (EntryFn)(base + 0x00046510);
+	if(!nx2iFoundationBegin())
+		return 1;
 	static unsigned char shapeStore[2][2][kShapeBytes];
 	static NxContactWorld world[2];
-	static const unsigned pairMeshes[2] = { 8, 9 };
+	static const unsigned pairList[][2] = { { 0, 1 }, { 2, 3 }, { 8, 9 } };
 	NxDigest oracleDigest, candidateDigest, inputDigest;
 	nxDigestInit(&oracleDigest); nxDigestInit(&candidateDigest); nxDigestInit(&inputDigest);
 	unsigned mismatches = 0, cases = 0, withContacts = 0;
 	for(unsigned side = 0; side < 2; ++side)
 		nx2lCandidateAabbTreeColliderConstruct(sides[side].context + 0x32c);
+	for(unsigned p = 0; p < sizeof(pairList) / sizeof(pairList[0]); ++p)
 	for(unsigned mode = 0; mode < 2; ++mode)
 		{
+		const unsigned pairMeshes[2] = { pairList[p][0], pairList[p][1] };
 		for(unsigned side = 0; side < 2; ++side)
 			{
 			NxCollisionShape* meshShape = (NxCollisionShape*)shapeStore[side][0];
@@ -11510,6 +12381,12 @@ static unsigned nxDriveTask2lMeshHeightfield(unsigned char* base, Nx2iSide* side
 			meshShape->type = heightfieldShape->type = 4;
 			*(unsigned**) (shapeStore[side][0] + 0xe0) = sides[side].meshes[pairMeshes[0]].image;
 			*(unsigned**) (shapeStore[side][1] + 0xe0) = sides[side].meshes[pairMeshes[1]].image;
+			// 001861 copies each model pointer from mesh-image +0x28 into its
+			// BVTCache before calling the AABB tree collider.
+			sides[side].meshes[pairMeshes[0]].image[0x28 / 4] =
+				(unsigned) (size_t) sides[side].meshes[pairMeshes[0]].model;
+			sides[side].meshes[pairMeshes[1]].image[0x28 / 4] =
+				(unsigned) (size_t) sides[side].meshes[pairMeshes[1]].model;
 			*(unsigned*) (shapeStore[side][0] + 0x38) = 0xbf000000u;
 			// Both are z-up meshes. The second image is interpreted as the terrain
 			// and its extent is consumed by the OBB pass.
@@ -11519,21 +12396,44 @@ static unsigned nxDriveTask2lMeshHeightfield(unsigned char* base, Nx2iSide* side
 			*(unsigned*) (sides[side].meshes[pairMeshes[1]].image + 0x78) = 2;
 			*(unsigned*) (sides[side].meshes[pairMeshes[1]].image + 0x7c) = 2;
 			*(unsigned*) (sides[side].meshes[pairMeshes[1]].image + 0x80) = 0x40400000u;
+			for(unsigned slot = 0; slot < 2; ++slot)
+				{
+				const Nx2hMesh& mesh = nx2iMesh(pairMeshes[slot]);
+				const float* vertices = (const float*) mesh.verts;
+				float bounds[6] = { vertices[0], vertices[1], vertices[2],
+					vertices[0], vertices[1], vertices[2] };
+				for(unsigned v = 1; v < mesh.nbVerts; ++v)
+					for(unsigned axis = 0; axis < 3; ++axis)
+						{
+						const float value = vertices[3 * v + axis];
+						if(value < bounds[axis]) bounds[axis] = value;
+						if(value > bounds[axis + 3]) bounds[axis + 3] = value;
+						}
+				memcpy((unsigned char*) sides[side].meshes[pairMeshes[slot]].image + 0x44,
+					bounds, sizeof(bounds));
+				}
 			memset(sides[side].context + 0x330, 0, 4);
 			memset(sides[side].context + 0x440, 0, 0x30);
 			nxResetWorld(&world[side]);
 			nxStageWorld(&world[side], meshShape, heightfieldShape, true, true, 3, 5, false, false, false);
 			}
 		const unsigned control = mode ? kControlSimulate : kControlDefault;
+		unsigned reports[2][16];
+		unsigned reportCounts[2] = {};
 		nxSetControl(control);
 		oracle(world[0].plane, world[0].sphere, &world[0].sink, sides[0].context);
+		reportCounts[0] = nx2iTakeReports(reports[0], 4);
 		nxSetControl(kControlDefault);
 		nxSetControl(control);
 		nxMeshHeightfieldContact(world[1].plane, world[1].sphere, &world[1].sink, sides[1].context);
+		reportCounts[1] = nx2iTakeReports(reports[1], 4);
 		nxSetControl(kControlDefault);
+		mismatches += reportCounts[0] != reportCounts[1];
+		for(unsigned r = 0; r < 4 * (reportCounts[0] < reportCounts[1] ? reportCounts[0] : reportCounts[1]); ++r)
+			mismatches += reports[0][r] != reports[1][r];
 		const unsigned different = nxCompareStreams(&world[0], &world[1], mode);
 		mismatches += different;
-		const unsigned pairWords[2] = { pairMeshes[0], mode };
+		const unsigned pairWords[3] = { pairMeshes[0], pairMeshes[1], mode };
 		nxFoldInput(&inputDigest, pairWords, sizeof(pairWords));
 		nxFoldInput(&inputDigest, shapeStore[0][0] + 0x30, 12);
 		nxFoldInput(&inputDigest, shapeStore[0][1] + 0x30, 12);
@@ -11543,17 +12443,19 @@ static unsigned nxDriveTask2lMeshHeightfield(unsigned char* base, Nx2iSide* side
 			nxFoldInput(&inputDigest, mesh.verts, 12 * mesh.nbVerts);
 			nxFoldInput(&inputDigest, mesh.tris, 12 * mesh.nbTris);
 			}
-		nxFoldInput(&oracleDigest, world[0].stream, world[0].sink.streamCount * 4);
-		nxFoldInput(&candidateDigest, world[1].stream, world[1].sink.streamCount * 4);
+		nxFoldStream(&oracleDigest, &world[0]);
+		nxFoldStream(&candidateDigest, &world[1]);
 		if(world[0].sink.contactCount) ++withContacts;
 		++cases;
 		}
 	printf("collision name=contact_mesh_heightfield index=- rva=0x00046510 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
-	printf("collision coverage name=contact_mesh_heightfield pairs=1 cases=%u control_words=2 cases_with_contacts=%u\n", cases, withContacts);
+	printf("collision coverage name=contact_mesh_heightfield pairs=%u cases=%u control_words=2 cases_with_contacts=%u\n",
+		(unsigned) (sizeof(pairList) / sizeof(pairList[0])), cases, withContacts);
 	nxPrintInput("contact_mesh_heightfield", &inputDigest);
 	for(unsigned side = 0; side < 2; ++side)
 		nx2lCandidateAabbTreeColliderDestruct(sides[side].context + 0x32c);
+	nx2iFoundationEnd();
 	return mismatches;
 	}
 

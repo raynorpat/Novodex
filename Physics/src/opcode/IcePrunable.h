@@ -109,6 +109,14 @@ class Pruner
 };
 
 ///////////////////////////////////////////////////////////////////////////////
+//! Thin receiver for phys_fn_004859's four-slot dispatch table. Its layout is
+//! supplied by the caller; the row only reads four pointers beginning at +0x1c.
+class PrunableOwnerDispatcher
+{
+	public:
+		udword	Dispatch(void* object);
+};
+
 //! The unnamed 20-byte polymorphic member at Prunable+0x0c.
 //!
 //! Named for its offset, not guessed at. It is constructed at 0x000e7330 and

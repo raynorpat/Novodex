@@ -1,0 +1,22 @@
+Candidate NxPhysicsCollisionTests.exe SHA-256: fff6f70846e8b22018c037446194b7dafc59e7f16836d3831707e134e145b482
+Pinned NxPhysics.dll SHA-256: 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+
+matrix index_rule probes=2592 wrong=0
+matrix contact_filter checks=7 wrong=0
+matrix contact_compound calls_oracle=3 calls_candidate=3 wrong=0
+collision name=contact_mesh_heightfield index=- rva=0x00046510 checks=528 oracle=9c87a6d409f98333 candidate=9c87a6d409f98333 mismatches=0
+collision coverage name=contact_mesh_heightfield pairs=3 cases=6 control_words=2 cases_with_contacts=2
+collision input name=contact_mesh_heightfield words=6690 input=27d2e99a4f0f02fc
+collision name=scene_owner_pair_remove index=- rva=0x0009a920 checks=616 oracle=f100e37b38af4b3c candidate=f100e37b38af4b3c mismatches=0 cases=7
+collision input name=scene_owner_pair_remove words=7 input=023ef4155d13f542
+collision coverage name=scene_owner_pair_remove case=remove_head
+collision coverage name=scene_owner_pair_remove case=remove_middle
+collision coverage name=scene_owner_pair_remove case=remove_chain_tail
+collision coverage name=scene_owner_pair_remove case=remove_reversed
+collision coverage name=scene_owner_pair_remove case=remove_last_slot
+collision coverage name=scene_owner_pair_remove case=remove_absent
+collision coverage name=scene_owner_pair_remove case=remove_same_bucket_compaction
+collision name=contact_mesh_mesh_sphere_callback index=- rva=0x00046780 checks=12 oracle=316dab8fdfe009b8 candidate=316dab8fdfe009b8 mismatches=0 contacts=4
+collision coverage name=contact_mesh_mesh_sphere_callback cases=6 control_words=2
+collision input name=contact_mesh_mesh_sphere_callback words=228 input=57f6a8b9905fbdb5
+collision=pass

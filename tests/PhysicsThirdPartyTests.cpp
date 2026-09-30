@@ -36,6 +36,8 @@
 #include <stdarg.h>
 
 #include "Opcode.h"
+#include "IcePrunable.h"
+
 
 using namespace Opcode;
 using namespace IceCore;
@@ -1832,6 +1834,93 @@ static void nxDrivePrunablePruner(const NxOracleRows& o, bool selfOnly)
 		}
 	*(PrunableWorldAABBFn*) (o.base + kDataOwnerWorldAABB) = 0;
 	nxReport("prunable_pruner", "0x000b5590", "phys_fn_004884", "IcePrunable.cpp", selfOnly);
+	}
+
+struct NxPrunableDispatchProbe
+	{
+	static unsigned calls[4];
+	static unsigned last;
+	unsigned result;
+	virtual void slot0() {}
+	virtual void slot1() {}
+	virtual unsigned remove()
+		{
+			const unsigned index = result & 3u;
+			++calls[index];
+			last = index;
+			return result;
+		}
+	};
+
+unsigned NxPrunableDispatchProbe::calls[4] = {};
+unsigned NxPrunableDispatchProbe::last = 0xffffffffu;
+
+static void nxDrivePrunableDispatch(const NxOracleRows& o, bool selfOnly)
+	{
+	static const unsigned kHandles[] = { 0, 7, 0xfffe, 0xffff };
+	static const unsigned kResults[] = { 0x10203040u, 0x50607081u, 0x90a0b0c2u, 0xd0e0f003u };
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	unsigned input = 2166136261u;
+	unsigned inputWords = 0;
+	unsigned dispatchCases = 0;
+	unsigned nullSlotCases = 0;
+	for(unsigned h = 0; h < sizeof(kHandles) / sizeof(kHandles[0]); ++h)
+		for(unsigned t = 0; t <= 4; ++t)
+			{
+			unsigned char oracleManager[0x2c] = {};
+			unsigned char oracleObject[0x2c] = {};
+			NxPrunableDispatchProbe oracleTargets[4];
+			const bool selectedSlotPresent = !(h == 0 && t == 0);
+			input = nxFold(input, kHandles[h]); ++inputWords;
+			input = nxFold(input, t); ++inputWords;
+			input = nxFold(input, selectedSlotPresent ? 1u : 0u); ++inputWords;
+			if(kHandles[h] != 0xffffu && t < 4 && selectedSlotPresent) ++dispatchCases;
+			if(kHandles[h] != 0xffffu && t < 4 && !selectedSlotPresent) ++nullSlotCases;
+			for(unsigned i = 0; i < 4; ++i)
+				{
+				oracleTargets[i].result = kResults[i];
+				if(!(i == t && !selectedSlotPresent))
+					*(void**)(oracleManager + 0x1c + i * 4) = &oracleTargets[i];
+				}
+			*(unsigned short*)(oracleObject + 0x28) = (unsigned short)kHandles[h];
+			oracleObject[0x2a] = (unsigned char)t;
+			memset(NxPrunableDispatchProbe::calls, 0, sizeof(NxPrunableDispatchProbe::calls));
+			NxPrunableDispatchProbe::last = 0xffffffffu;
+			const unsigned oracleResult = ((unsigned (__thiscall*)(void*, void*))
+				(o.base + 0x000b5260))(oracleManager, oracleObject);
+			const bool oracleDispatch = kHandles[h] != 0xffffu && t < 4 && selectedSlotPresent;
+			gOracleTape.push(oracleDispatch ? oracleResult
+				: oracleResult - (reinterpret_cast<unsigned>(oracleObject) & 0xffffff00u));
+			for(unsigned i = 0; i < 4; ++i) gOracleTape.push(NxPrunableDispatchProbe::calls[i]);
+			gOracleTape.push(NxPrunableDispatchProbe::last);
+			if(!selfOnly)
+				{
+				unsigned char candidateManager[0x2c] = {};
+				unsigned char candidateObject[0x2c] = {};
+				NxPrunableDispatchProbe candidateTargets[4];
+				for(unsigned i = 0; i < 4; ++i)
+					{
+					candidateTargets[i].result = kResults[i];
+					if(!(i == t && !selectedSlotPresent))
+						*(void**)(candidateManager + 0x1c + i * 4) = &candidateTargets[i];
+					}
+				*(unsigned short*)(candidateObject + 0x28) = (unsigned short)kHandles[h];
+				candidateObject[0x2a] = (unsigned char)t;
+				memset(NxPrunableDispatchProbe::calls, 0, sizeof(NxPrunableDispatchProbe::calls));
+				NxPrunableDispatchProbe::last = 0xffffffffu;
+				const unsigned candidateResult = reinterpret_cast<PrunableOwnerDispatcher*>(candidateManager)->Dispatch(candidateObject);
+				const bool candidateDispatch = kHandles[h] != 0xffffu && t < 4 && selectedSlotPresent;
+				gCandidateTape.push(candidateDispatch ? candidateResult
+					: candidateResult - (reinterpret_cast<unsigned>(candidateObject) & 0xffffff00u));
+				for(unsigned i = 0; i < 4; ++i) gCandidateTape.push(NxPrunableDispatchProbe::calls[i]);
+				gCandidateTape.push(NxPrunableDispatchProbe::last);
+				}
+			}
+	printf("thirdparty coverage name=prunable_dispatch cases=20 dispatch=%u invalid_or_null=%u null_slot=%u\n",
+		dispatchCases, 20u - dispatchCases, nullSlotCases);
+	printf("thirdparty input name=prunable_dispatch words=%u input=%08x\n", inputWords, input);
+	nxReport("prunable_dispatch", "0x000b5260", "phys_fn_004859", "IcePrunable.cpp", selfOnly);
 	}
 
 // A stand-in for NxFoundation's error reporter, installed over the oracle's own
@@ -10694,6 +10783,8 @@ int wmain(int argc, wchar_t** argv)
 	// convex-mesh gap Task 2g: the same two lines after its family, with the
 	// running totals; the pairs above stay where they were printed.
 	nxDrivePolygonInterface(o, selfOnly);
+	nxPrintTotals();
+	nxDrivePrunableDispatch(o, selfOnly);
 	nxPrintTotals();
 	printf("thirdparty candidate mismatches=%u layout_failures=%u\n", gMismatches, gLayoutFailures);
 

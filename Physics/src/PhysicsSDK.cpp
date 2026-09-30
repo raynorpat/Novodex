@@ -53,6 +53,16 @@ static NxFoundationSDK* gFoundation = 0;
 static NxDebugRenderable* gDebugRenderable = 0;
 static ShapePairFunctionTable* gShapePairFunctionTable = 0;
 
+const NxU32* nxPhysicsSDKGroupCollisionMasks()
+	{
+	return gGroupCollisionMask;
+	}
+
+void* nxPhysicsSDKShapePairTable()
+	{
+	return gShapePairFunctionTable;
+	}
+
 PhysicsSDK* PhysicsSDK::instance = 0;
 
 // Bit 31 of NxMaterial::flags. NxMaterial.h reserves bits 16-31 for internal

@@ -9468,13 +9468,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/191",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1412",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Ghidra manifest #/functions/191 contains extents 0x00010370..0x00010388 (24 B) and 0x00010390..0x000103de (78 B, inventory continuation row 000519). The entry loads the scene pair count and record pointer; its continuation reads Shape+0xd4, frees a nonzero even payload through nxFoundationSDKAllocator, removes a matching owner-pair via 004157, and advances the record cursor only when the compacted current record is retained.",
+      "dynamic_proof": "Direct oracle/candidate differential at RVA 0x00010370: four fixtures cover removal with an unrelated compacted tail, absent owners, allocator-backed payload release, and a match through the second owner key. All 352 compared state bytes match (digest 70c14cd0779b5bf3; input digest 9ef095ee83495ec3). Oracle SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; candidate NxPhysicsCollisionTests.exe SHA-256 FDD8F52F1470F80269D6AE84FA1BCE30B557029669E2B644D88D88ED7717A929.",
+      "notes": "reconstructed_not_falsified: differential covers compacted-tail cursor behavior, no match, allocator-backed payload release, and either owner-key position."
     },
     {
       "id": "phys_fn_000518",
@@ -9504,13 +9504,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/191",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1413",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00010370"
+      "static_proof": "Ghidra manifest #/functions/191 identifies 0x00010390..0x000103de (78 B) as the loop continuation of the entry extent 0x00010370..0x00010388. The block compares both 16-bit owner keys, frees an even nonzero payload through nxFoundationSDKAllocator, removes the matching owner pair through 004157, advances the cursor only for retained records, and loops to its entry. It is implemented in the same Scene.cpp routine as 000517.",
+      "dynamic_proof": "Direct oracle/candidate differential enters the 000517 body and its 000519 continuation in four fixtures: compacted tail retained, absent owner, allocator-backed payload release, and second-key match. All 352 compared state bytes match (digest 70c14cd0779b5bf3; input digest 9ef095ee83495ec3). Oracle SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; candidate NxPhysicsCollisionTests.exe SHA-256 FDD8F52F1470F80269D6AE84FA1BCE30B557029669E2B644D88D88ED7717A929.",
+      "notes": "reconstructed_not_falsified: branch-through differential covers matching and unmatched loop paths, compaction retry, owner-key position, and payload release; this is a continuation block, not a separate callable."
     },
     {
       "id": "phys_fn_000520",
@@ -9684,12 +9684,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NarrowPhase.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/195",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1433",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "Reconstructed from the pinned Capstone listing: test flag 0x10, collision group masks, then owner-pair record bit; seven oracle-vs-candidate filter cases exercise the branches.",
+      "dynamic_proof": "Seven direct filter cases, including enabled/disabled group pairs and owner-pair hash records, match exactly; see evidence/convex-mesh-gap-2m-run.txt. Pinned NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; candidate NxPhysicsCollisionTests.exe SHA-256 EBF7014FBD8642FA913DBC0FD14C8EC663640F7DE244E50FEE29C4595982145B.",
       "notes": ""
     },
     {
@@ -16177,13 +16177,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/367",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2772",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Transcribed from oracle/capstone/manifest.json extents and listing; Ghidra manifest cross-check; implementation and field offsets recorded in evidence/convex-mesh-gap.md (P-Sphere/scene follow-up).",
+      "dynamic_proof": "Direct oracle/candidate differential in NxPhysicsCollisionTests, registered Phase 3 target; candidate executable SHA-256 E140B0F73F89A1DAC4B5A956C4468BF68440F09A0ADA508FF0652D921029961B; pinned oracle NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c. Exact matching digests, allocator counts, and candidate cdb call hits are recorded in evidence/convex-mesh-gap-001955-phase3.txt and evidence/convex-mesh-gap-pruner-final-cdb.txt.",
+      "notes": "reconstructed_not_falsified: reconstructed and driven against the pinned oracle; no mutation aimed at this row is recorded."
     },
     {
       "id": "phys_fn_000888",
@@ -16213,13 +16213,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/367",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2773",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0001e910"
+      "static_proof": "Transcribed from oracle/capstone/manifest.json extents and listing; Ghidra manifest cross-check; implementation and field offsets recorded in evidence/convex-mesh-gap.md (P-Sphere/scene follow-up).",
+      "dynamic_proof": "Direct oracle/candidate differential in NxPhysicsCollisionTests, registered Phase 3 target; candidate executable SHA-256 E140B0F73F89A1DAC4B5A956C4468BF68440F09A0ADA508FF0652D921029961B; pinned oracle NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c. Exact matching digests, allocator counts, and candidate cdb call hits are recorded in evidence/convex-mesh-gap-001955-phase3.txt and evidence/convex-mesh-gap-pruner-final-cdb.txt.",
+      "notes": "reconstructed_not_falsified: reconstructed and driven against the pinned oracle; no mutation aimed at this row is recorded."
     },
     {
       "id": "phys_fn_000890",
@@ -16465,13 +16465,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/373",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2887",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Transcribed from oracle/capstone/manifest.json extents and listing; Ghidra manifest cross-check; implementation and field offsets recorded in evidence/convex-mesh-gap.md (P-Sphere/scene follow-up).",
+      "dynamic_proof": "Direct oracle/candidate differential in NxPhysicsCollisionTests, registered Phase 3 target; candidate executable SHA-256 E140B0F73F89A1DAC4B5A956C4468BF68440F09A0ADA508FF0652D921029961B; pinned oracle NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c. Exact matching digests, allocator counts, and candidate cdb call hits are recorded in evidence/convex-mesh-gap-001955-phase3.txt and evidence/convex-mesh-gap-pruner-final-cdb.txt.",
+      "notes": "reconstructed_not_falsified: reconstructed and driven against the pinned oracle; no mutation aimed at this row is recorded."
     },
     {
       "id": "phys_fn_000904",
@@ -16681,13 +16681,13 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/379",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2936",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Transcribed from oracle/capstone/manifest.json extents and listing; Ghidra manifest cross-check; implementation and field offsets recorded in evidence/convex-mesh-gap.md (P-Sphere/scene follow-up).",
+      "dynamic_proof": "Direct oracle/candidate differential, NxPhysicsCollisionTests Phase 3 target: non-null unlink-and-free and null no-op match (4 checks, digest 4d25767f9dce13f5, two frees). Candidate executable SHA-256 E140B0F73F89A1DAC4B5A956C4468BF68440F09A0ADA508FF0652D921029961B; pinned oracle NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c. Candidate breakpoint hit; see evidence/convex-mesh-gap-pruner-final-cdb.txt and evidence/convex-mesh-gap-001955-phase3.txt.",
+      "notes": "reconstructed_not_falsified: reconstructed and driven against the pinned oracle; no mutation aimed at this row is recorded."
     },
     {
       "id": "phys_fn_000916",
@@ -17411,7 +17411,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/466",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2982",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` \u2014 the vertex array |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` — the vertex array |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17520,7 +17520,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/469",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3018",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 3 | `phys_fn_000961` | `mov eax,6` \u2014 six faces |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 3 | `phys_fn_000961` | `mov eax,6` — six faces |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17557,7 +17557,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/470",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3019",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 4 | `phys_fn_000963` | `index*36 + this+0x70` \u2014 face-record[k] |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 4 | `phys_fn_000963` | `index*36 + this+0x70` — face-record[k] |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -24080,13 +24080,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/539",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3463",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Transcribed the 182-byte base-destructor body at 0x00026bd0 from oracle/capstone/manifest.json and cross-checked Ghidra manifest function 539. ShapeBase::nxBaseDtorOwnerArms reproduces the name-registry removal, owner-gated scene slot/pair/pruner cleanup, and final owner-pair records; the embedded Prunable destructor tail is invoked by the owning shape destructor after the helper.",
+      "dynamic_proof": "Direct owner-present oracle/candidate differential in NxPhysicsCollisionTests at RVA 0x00026bd0: 24 compared state bytes match (digest 912abab5feb00ab4; input digest ad2aca7747985764; two allocator frees). Candidate executable SHA-256 16EEEECD4ACF478FBAC98BE3DC379F4539EA7D526CF33F9FFD2AEB70F6418063; pinned oracle NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c. Candidate breakpoints hit for the owner-arm entry and linked pruner rows 001955/001945; see evidence/convex-mesh-gap-001323-owner-cdb-raw.txt.",
+      "notes": "reconstructed_not_falsified: owner-present scene teardown and pruner calls match the pinned oracle; no mutation aimed at this row is recorded."
     },
     {
       "id": "phys_fn_001324",
@@ -24587,13 +24587,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/552",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3513",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Oracle 001874 listing calls 001351 at 0x27820; the Task 2l listing comparator maps that call to SphereShape::nxSphereCallbackDtor. Its source body in ObjectModel.cpp installs the SphereShape vtable, deletes the optional embedded CollisionObject, removes BASE owner arms, and destroys Prunable, matching the 001351 non-scalar cleanup path and BASE tail.",
+      "dynamic_proof": "evidence/convex-mesh-gap-2l-sphere-dtor-trace.txt: cdb hit candidate SphereShape::nxSphereCallbackDtor at RVA 0x64c40 during the 001874 differential; 12 checks match and four contacts are accumulated.",
+      "notes": "reconstructed_not_falsified: candidate 001874 invokes this cleanup path; the remaining P-Sphere closure rows are still unresolved."
     },
     {
       "id": "phys_fn_001352",
@@ -32337,9 +32337,9 @@
       "label_confidence": "stable-id",
       "section": ".text",
       "phase": 3,
-      "phase_provenance": "layout_adjacency",
+      "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": null,
+      "source": "Physics/src/ContactBoxMeshICE.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/867",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5169",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit I, Task 2j); listing 0x0003d500..0x0003d88e; naked x86 bytes with rebased data references and calls mapped to the corresponding candidate entry or vendored OPCODE 1.3; byte-for-byte instruction comparison against the linked candidate in evidence/convex-mesh-gap-2j-listing-compare.py; no oracle module access or forwarding",
@@ -32730,12 +32730,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactGeneration.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/703",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5243",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "Shared matrix-A compound expander follows the pinned listing: iterates child range, compares world AABBs, filters and redispatches surviving child pairs.",
+      "dynamic_proof": "Oracle and candidate matrix-A compound shape differential each dispatch one intersecting child; see evidence/convex-mesh-gap-2m-run.txt. Pinned NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; candidate NxPhysicsCollisionTests.exe SHA-256 EBF7014FBD8642FA913DBC0FD14C8EC663640F7DE244E50FEE29C4595982145B.",
       "notes": ""
     },
     {
@@ -32766,12 +32766,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactGeneration.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/878",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5254",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "Wrapper argument order and call into the shared 001793 expander follow the pinned listing.",
+      "dynamic_proof": "Oracle and candidate matrix-A compound shape differential each dispatch one intersecting child; see evidence/convex-mesh-gap-2m-run.txt. Pinned NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; candidate NxPhysicsCollisionTests.exe SHA-256 EBF7014FBD8642FA913DBC0FD14C8EC663640F7DE244E50FEE29C4595982145B.",
       "notes": ""
     },
     {
@@ -32802,12 +32802,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactGeneration.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/704",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5255",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "Compound/compound entry follows the pinned listing and delegates the two child-pair walks to its continuations.",
+      "dynamic_proof": "Two overlapping child pairs are dispatched and separated pairs are culled identically by oracle and candidate; see evidence/convex-mesh-gap-2m-run.txt. Pinned NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; candidate NxPhysicsCollisionTests.exe SHA-256 EBF7014FBD8642FA913DBC0FD14C8EC663640F7DE244E50FEE29C4595982145B.",
       "notes": ""
     },
     {
@@ -32838,12 +32838,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactGeneration.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/704",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5256",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "Compound/compound child-pair traversal continuation follows the pinned Capstone listing and the parent entry layout.",
+      "dynamic_proof": "Reached by the compound/compound oracle-vs-candidate differential; see evidence/convex-mesh-gap-2m-run.txt. Pinned NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; candidate NxPhysicsCollisionTests.exe SHA-256 EBF7014FBD8642FA913DBC0FD14C8EC663640F7DE244E50FEE29C4595982145B.",
       "notes": "continuation of the entry at 0x0003fa30"
     },
     {
@@ -32874,12 +32874,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactGeneration.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/704",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5268",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "Compound/compound child-pair traversal continuation follows the pinned Capstone listing and the parent entry layout.",
+      "dynamic_proof": "Reached by the compound/compound oracle-vs-candidate differential; see evidence/convex-mesh-gap-2m-run.txt. Pinned NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; candidate NxPhysicsCollisionTests.exe SHA-256 EBF7014FBD8642FA913DBC0FD14C8EC663640F7DE244E50FEE29C4595982145B.",
       "notes": "continuation of the entry at 0x0003fa30"
     },
     {
@@ -33954,8 +33954,8 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/732",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5545",
       "static_proof": "naked x86 inline assembly transcribed from the pinned listing; evidence/convex-mesh-gap-2l-listing-compare.py compares all 768 instructions across the complete 2,892-byte extent and checks all 14 direct call targets",
-      "dynamic_proof": null,
-      "notes": "reconstructed_not_falsified; dynamic proof is pending the complete 001869 caller path"
+      "dynamic_proof": "Candidate one-shot cdb breakpoint at the function entry fired during the paired 001869 oracle/candidate differential on the clean-built executable; evidence/convex-mesh-gap-trace-2l-callback.txt pins both binaries and records exact stream agreement over contact-producing inputs (528 checks). The oracle entry breakpoint did not fire, so only candidate entry is claimed.",
+      "notes": "reconstructed_not_falsified; candidate entry is dynamically proven on the 001869 contact-producing differential; oracle callback entry itself was not observed"
     },
     {
       "id": "phys_fn_001860",
@@ -33990,7 +33990,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/733",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5582",
       "static_proof": "naked x86 inline assembly transcribed from both pinned listing fragments; evidence/convex-mesh-gap-2l-listing-compare.py compares all 430 instructions across the complete 1,693-byte body, normalizes the two relocatable globals, and checks all four direct call targets",
-      "dynamic_proof": "Task 2l full 001869 mesh/height-field entry differential: two x87 control words, independently built oracle/candidate terrain models, exact stream match and zero mismatches; cdb hit this pass row. Fixture produced no contacts; see evidence/convex-mesh-gap-2l-heightfield-run.txt and evidence/convex-mesh-gap-trace-2l-heightfield.txt. Candidate exe SHA-256 273910EA8ABFFB4F1D12EF12B815DF5F72F7BFC1D318835C2A7F638F411D4479.",
+      "dynamic_proof": "Task 2l full 001869 mesh/height-field entry differential: two x87 control words, independently built oracle/candidate terrain models, exact stream match and zero mismatches; cdb hit this pass row. The corrected fixture produces contacts in 2 of 6 runs with zero oracle/candidate stream mismatches; see evidence/convex-mesh-gap-2l-heightfield-run.txt and evidence/convex-mesh-gap-current-run.txt. Candidate exe SHA-256 11AF8AA6A4450F152BB0E12F897B3BA2868BD551FD906B6840245B37D4782AC6.",
       "notes": "reconstructed_not_falsified; dynamic proof is pending the complete 001869 caller path"
     },
     {
@@ -34026,7 +34026,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/733",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5585",
       "static_proof": "continuation transcribed in the same naked x86 AABB-pass body as 001861; evidence/convex-mesh-gap-2l-listing-compare.py matches all 430 instructions across both listing fragments (538 + 1,155 bytes) and checks four direct call targets",
-      "dynamic_proof": "Task 2l full 001869 mesh/height-field entry differential: two x87 control words, independently built oracle/candidate terrain models, exact stream match and zero mismatches; cdb hit this pass row. Fixture produced no contacts; see evidence/convex-mesh-gap-2l-heightfield-run.txt and evidence/convex-mesh-gap-trace-2l-heightfield.txt. Candidate exe SHA-256 273910EA8ABFFB4F1D12EF12B815DF5F72F7BFC1D318835C2A7F638F411D4479.",
+      "dynamic_proof": "Task 2l full 001869 mesh/height-field entry differential: two x87 control words, independently built oracle/candidate terrain models, exact stream match and zero mismatches; cdb hit this pass row. The corrected fixture produces contacts in 2 of 6 runs with zero oracle/candidate stream mismatches; see evidence/convex-mesh-gap-2l-heightfield-run.txt and evidence/convex-mesh-gap-current-run.txt. Candidate exe SHA-256 11AF8AA6A4450F152BB0E12F897B3BA2868BD551FD906B6840245B37D4782AC6.",
       "notes": "reconstructed_not_falsified; dynamic proof is pending the full mesh/height-field entry differential"
     },
     {
@@ -34056,13 +34056,13 @@
       "label_confidence": "stable-id",
       "section": ".text",
       "phase": 3,
-      "phase_provenance": "enclosed_by_one_phase",
+      "phase_provenance": "translation_unit",
       "state": "reconstructed",
       "source": "Physics/src/ContactMeshHeightfield.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/734",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5588",
       "static_proof": "naked x86 inline assembly transcribed from the pinned listing; evidence/convex-mesh-gap-2l-listing-compare.py matches all 640 instructions across the complete two-fragment 1,937-byte extent, maps six relocatable constants/slots and checks all seven direct calls",
-      "dynamic_proof": "Task 2l full 001869 mesh/height-field entry differential: two x87 control words, independently built oracle/candidate terrain models, exact stream match and zero mismatches; cdb hit this pass row. Fixture produced no contacts; see evidence/convex-mesh-gap-2l-heightfield-run.txt and evidence/convex-mesh-gap-trace-2l-heightfield.txt. Candidate exe SHA-256 273910EA8ABFFB4F1D12EF12B815DF5F72F7BFC1D318835C2A7F638F411D4479.",
+      "dynamic_proof": "Task 2l full 001869 mesh/height-field entry differential: two x87 control words, independently built oracle/candidate terrain models, exact stream match and zero mismatches; cdb hit this pass row. The corrected fixture produces contacts in 2 of 6 runs with zero oracle/candidate stream mismatches; see evidence/convex-mesh-gap-2l-heightfield-run.txt and evidence/convex-mesh-gap-current-run.txt. Candidate exe SHA-256 11AF8AA6A4450F152BB0E12F897B3BA2868BD551FD906B6840245B37D4782AC6.",
       "notes": "reconstructed_not_falsified; dynamic proof is pending the full mesh/height-field entry differential"
     },
     {
@@ -34092,13 +34092,13 @@
       "label_confidence": "stable-id",
       "section": ".text",
       "phase": 3,
-      "phase_provenance": "enclosed_by_one_phase",
+      "phase_provenance": "translation_unit",
       "state": "reconstructed",
       "source": "Physics/src/ContactMeshHeightfield.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/734",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5599",
       "static_proof": "continuation transcribed in the same naked x86 OBB-pass body as 001865; evidence/convex-mesh-gap-2l-listing-compare.py matches all 640 instructions across both listing fragments (1,498 + 439 bytes), maps six relocatable constants/slots and checks all seven direct calls",
-      "dynamic_proof": "Task 2l full 001869 mesh/height-field entry differential: two x87 control words, independently built oracle/candidate terrain models, exact stream match and zero mismatches; cdb hit this pass row. Fixture produced no contacts; see evidence/convex-mesh-gap-2l-heightfield-run.txt and evidence/convex-mesh-gap-trace-2l-heightfield.txt. Candidate exe SHA-256 273910EA8ABFFB4F1D12EF12B815DF5F72F7BFC1D318835C2A7F638F411D4479.",
+      "dynamic_proof": "Task 2l full 001869 mesh/height-field entry differential: two x87 control words, independently built oracle/candidate terrain models, exact stream match and zero mismatches; cdb hit this pass row. The corrected fixture produces contacts in 2 of 6 runs with zero oracle/candidate stream mismatches; see evidence/convex-mesh-gap-2l-heightfield-run.txt and evidence/convex-mesh-gap-current-run.txt. Candidate exe SHA-256 11AF8AA6A4450F152BB0E12F897B3BA2868BD551FD906B6840245B37D4782AC6.",
       "notes": "reconstructed_not_falsified; dynamic proof is pending the full mesh/height-field entry differential"
     },
     {
@@ -34134,7 +34134,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/735",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5604",
       "static_proof": "naked x86 inline assembly transcribed from the pinned listing; evidence/convex-mesh-gap-2l-listing-compare.py matches all 29 instructions across the complete 64-byte extent and checks both direct call targets",
-      "dynamic_proof": "Task 2l full 001869 mesh/height-field entry differential: two x87 control words, independently built oracle/candidate terrain models, exact stream match and zero mismatches; cdb hit this pass row. Fixture produced no contacts; see evidence/convex-mesh-gap-2l-heightfield-run.txt and evidence/convex-mesh-gap-trace-2l-heightfield.txt. Candidate exe SHA-256 273910EA8ABFFB4F1D12EF12B815DF5F72F7BFC1D318835C2A7F638F411D4479.",
+      "dynamic_proof": "Task 2l full 001869 mesh/height-field entry differential: two x87 control words, independently built oracle/candidate terrain models, exact stream match and zero mismatches; cdb hit this pass row. The corrected fixture produces contacts in 2 of 6 runs with zero oracle/candidate stream mismatches; see evidence/convex-mesh-gap-2l-heightfield-run.txt and evidence/convex-mesh-gap-current-run.txt. Candidate exe SHA-256 11AF8AA6A4450F152BB0E12F897B3BA2868BD551FD906B6840245B37D4782AC6.",
       "notes": "reconstructed_not_falsified; dynamic proof is pending the full mesh/height-field entry differential"
     },
     {
@@ -35506,13 +35506,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/IcePrunable.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/760",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5894",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Transcribed the 74-byte body at 0x0004bbd0: dispatch the primary owner's prunable and, for compound type 5, each child; destroy the inlined SweepAndPrune arrays and pair-data allocations through the SDK allocator; clear manager and primary-shape fields. Cross-checked against Ghidra manifest function 760 and the 0x000e71b0 SweepAndPrune destructor listing.",
+      "dynamic_proof": "Direct oracle/candidate differential in NxPhysicsCollisionTests: null SweepAndPrune pointer and populated arrays with compound-child dispatch match (24 compared bytes, digest a207b4f5efd178f2; input digest 08cd4c29d1e47d34; seven frees). Candidate executable SHA-256 F6052A275E05F6B955642D14E12B4C4973365322AA9E81F67E44C3BFF82CBBD1; pinned oracle NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c. Candidate breakpoint hit; see evidence/convex-mesh-gap-001945-cdb-raw.txt.",
+      "notes": "reconstructed_not_falsified: directly driven against the pinned oracle over null and allocated teardown cases; no mutation aimed at this row is recorded."
     },
     {
       "id": "phys_fn_001946",
@@ -35686,13 +35686,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/764",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5911",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Transcribed from oracle/capstone/manifest.json instructions 0x0004bde0..0x0004be76, cross-checked against Ghidra manifest; owner-record offsets and compaction semantics recorded in evidence/convex-mesh-gap.md.",
+      "dynamic_proof": "Direct oracle/candidate differential in NxPhysicsCollisionTests: matching-owner compaction and no-match cases agree over 180 compared checks (digest 70e0432da4d1d57a), with 16 total allocator frees. Candidate executable SHA-256 E140B0F73F89A1DAC4B5A956C4468BF68440F09A0ADA508FF0652D921029961B; pinned oracle NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c. Candidate breakpoint hit; see evidence/convex-mesh-gap-pruner-final-cdb.txt and evidence/convex-mesh-gap-001955-phase3.txt.",
+      "notes": "reconstructed_not_falsified: reconstructed and driven against the pinned oracle; no mutation aimed at this row is recorded."
     },
     {
       "id": "phys_fn_001956",
@@ -42825,12 +42825,12 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NarrowPhase.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/874",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7327",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "Phase 3 collision harness sweeps 2,592 oracle-driven dispatcher probes across all 36 ordered shape pairs, 36 contact/overlap matrix slots and both input orders; candidate slot selection and dispatch outcome match exactly.",
+      "dynamic_proof": "contact_compound dispatcher probe and matrix index_rule differential; see evidence/convex-mesh-gap-2m-run.txt. Pinned NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; candidate NxPhysicsCollisionTests.exe SHA-256 EBF7014FBD8642FA913DBC0FD14C8EC663640F7DE244E50FEE29C4595982145B.",
       "notes": ""
     },
     {
@@ -42933,13 +42933,13 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactGeneration.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/877",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7403",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "The 86-byte oracle listing at 0x0005b620 resets sink state at sink+0x10, clears state[0], reserves one Container word at state+0x28 when count equals capacity by calling 004840, zeros the selected word, increments count, and clears state[1..9]. Physics/src/ContactGeneration.cpp::NxContactSinkResetState implements these ordered operations and the 004840 resize call.",
+      "dynamic_proof": "Differential evidence/convex-mesh-gap-current-run.txt: direct oracle call at RVA 0x0005b620 matches candidate over 416 checks, digest 80effc8beac4d285; six preallocated and two growth cases under both x87 control words. Candidate exe SHA-256 A7E530CBC5DAD9BA951289C3B9DDC93B772CD7AA27FB9DB6A458510E48BF4FE2.",
+      "notes": "reconstructed_not_falsified: sink reset fields and empty-container growth path are covered."
     },
     {
       "id": "phys_fn_002355",
@@ -43997,13 +43997,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/906",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7456",
-      "static_proof": null,
+      "static_proof": "38-byte __thiscall ret 4 row: reads shape+0xd4, calls row 002410 with (container, slot), then clears [container+0x90+slot*4]. Physics/src/ObjectModel.cpp::nxSceneRemoveShape performs the same ordered release and clear, with stable-ID comment; its release helper nxSceneReleaseIndex is the existing 002410 body.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "reconstructed_not_falsified: mapped as the scene-removal helper used by ShapeBase destruction; no dynamic proof is claimed because current temporary-sphere fixtures have no owner.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxSceneRemoveShape"
     },
     {
       "id": "phys_fn_002414",
@@ -76233,12 +76235,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NarrowPhase.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1567",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13771",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "Reconstructed from the pinned Capstone listing: sorted 16-bit owner keys, 32-bit avalanche hash, masked bucket lookup and linked record walk.",
+      "dynamic_proof": "The two owner-pair cases reached through NxFilterShapePair match oracle behavior; see evidence/convex-mesh-gap-2m-run.txt. Pinned NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; candidate NxPhysicsCollisionTests.exe SHA-256 EBF7014FBD8642FA913DBC0FD14C8EC663640F7DE244E50FEE29C4595982145B.",
       "notes": ""
     },
     {
@@ -76305,13 +76307,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NarrowPhase.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1569",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13793",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Reconstructed from the 476-byte Capstone/Ghidra listing: sort owner keys, locate and unlink their bucket-chain record, mark the slot with the freelist value, trim a final slot or compact the highest live record into the removed slot and reinsert it at the moved key's bucket head.",
+      "dynamic_proof": "Direct oracle/candidate differential at RVA 0x0009a920: seven fixtures cover bucket-chain head/middle/tail, compaction within and across buckets, reversed keys, final-slot trim, and absence. All 616 compared state bytes match (digest f100e37b38af4b3c; input digest 023ef4155d13f542). Pinned oracle SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; candidate NxPhysicsCollisionTests.exe SHA-256 FFF6F70846E8B22018C037446194B7DAFC59E7F16836D3831707E134E145B482.",
+      "notes": "reconstructed_not_falsified: direct differential covers chain positions, pair order, same- and cross-bucket compaction, final-slot trim, and absent keys."
     },
     {
       "id": "phys_fn_004158",
@@ -76574,9 +76576,9 @@
       "label_confidence": "stable-id",
       "section": ".text",
       "phase": 6,
-      "phase_provenance": "enclosed_by_one_phase",
+      "phase_provenance": "translation_unit",
       "state": "discovered",
-      "source": null,
+      "source": "Physics/src/core/Articulation.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1576",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13878",
       "static_proof": null,
@@ -89269,13 +89271,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/IcePrunable.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1849",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15763",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Reconstructed from the 55-byte listing at 0x000b5260: check the embedded handle at +0x28 against 0xffff, then the type byte at +0x2a against 4; if the selected manager slot at +0x1c+type*4 is nonnull, dispatch its vtable slot 2 and return that result; otherwise return the embedded Prunable pointer with its low byte cleared. PrunableOwnerDispatcher::Dispatch in Physics/src/opcode/IcePrunable.cpp follows those ordered guards and calls as a thiscall member entry.",
+      "dynamic_proof": "Direct oracle/candidate differential in evidence/convex-mesh-gap-004859-phase4.txt: 20 cases cover types 0-3, invalid type, valid and invalid handles, and a null selected slot. Eleven dispatch and nine fallback cases match (120 compared words, oracle digest fc84e590; input digest cd7176ae). The Phase 4 gate passed with 222/222 assertions. Pinned oracle SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; candidate NxPhysicsThirdPartyTests.exe SHA-256 E9E5D74F2D50BD25031A32DC00932540E30BBE2BC62100329E2D5B7D871D3900.",
+      "notes": "reconstructed_not_falsified: dispatch and fallback guards are covered by the direct oracle differential."
     },
     {
       "id": "phys_fn_004860",

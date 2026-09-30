@@ -1,0 +1,121 @@
+CMake is re-running because D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/build/CMakeFiles/generate.stamp is out-of-date.
+  the file 'D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt'
+  is newer than 'D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/build/CMakeFiles/generate.stamp.depend'
+  result='-1'
+-- Configuring done (0.1s)
+-- Generating done (0.6s)
+-- Build files have been written to: D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/build
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  1>Checking Build System
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxFoundation.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxFoundation.dll
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxFoundationClusterTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxFoundationClusterTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxFoundationCustomArrayTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxFoundationCustomArrayTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxFoundationExportTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxFoundationExportTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxFoundationSDKTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxFoundationSDKTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxFoundationTangentTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxFoundationTangentTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxJointDescSyntheticTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxJointDescSyntheticTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxMathSqrtProbe.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxMathSqrtProbe.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxNormalToTangentsProbe.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxNormalToTangentsProbe.exe
+  NxOpcode.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\External\Release\NxOpcode.lib
+  NxQhull.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\External\Release\NxQhull.lib
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysics.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysics.dll
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsActorBodyFlagTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsActorBodyFlagTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsActorCMassTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsActorCMassTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsActorDynamicSetterTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsActorDynamicSetterTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsActorDynamicsTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsActorDynamicsTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsActorForceTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsActorForceTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsActorLifecycleTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsActorLifecycleTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsActorMetadataTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsActorMetadataTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsActorMomentumTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsActorMomentumTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsActorNameTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsActorNameTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsActorShapeMutationTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsActorShapeMutationTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  PhysicsInternalContactStubs.cpp
+     Creating library D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/build/Release/NxPhysicsAssetTests.lib and object D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/build/Release/NxPhysicsAssetTests.exp
+LINK : warning LNK4217: symbol '?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A (class NxUserAllocator * nxFoundationSDKAllocator)' defined in 'PhysicsAssetTests.obj' is imported by 'PhysicsInternal.obj' in function '"public: __thiscall ReadWriteLock::ReadWriteLock(void)" (??0ReadWriteLock@@QAE@XZ)' [D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\NxPhysicsAssetTests.vcxproj]
+  NxPhysicsAssetTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsAssetTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsCollisionTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsCollisionTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsCoreClusterTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsCoreClusterTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsDynamicFirstTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsDynamicFirstTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsEmptySceneTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsEmptySceneTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsExportTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsExportTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsGeometryTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsGeometryTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  PhysicsInternalContactStubs.cpp
+     Creating library D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/build/Release/NxPhysicsInternalTests.lib and object D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/build/Release/NxPhysicsInternalTests.exp
+  NxPhysicsInternalTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsInternalTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsJointAllocatorTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsJointAllocatorTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsJointDescTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsJointDescTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsJointSlotTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsJointSlotTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsJointStagedPairTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsJointStagedPairTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsJointTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsJointTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsKernelFuzzTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsKernelFuzzTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  PhysicsObjectModelSceneStubs.cpp
+  PhysicsInternalContactStubs.cpp
+  Generating Code...
+     Creating library D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/build/Release/NxPhysicsObjectLayoutTests.lib and object D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/build/Release/NxPhysicsObjectLayoutTests.exp
+LINK : warning LNK4217: symbol '_NxRayAABBIntersect2' defined in 'Geometry.obj' is imported by 'ObjectModel.obj' in function '"public: void * __thiscall BoxShape::nxBoxRaycast(float const *,float,unsigned int,unsigned int,void *)const " (?nxBoxRaycast@BoxShape@@QBEPAXPBMMIIPAX@Z)' [D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\NxPhysicsObjectLayoutTests.vcxproj]
+LINK : warning LNK4217: symbol '_NxRayPlaneIntersect' defined in 'Geometry.obj' is imported by 'ObjectModel.obj' in function '"public: bool __thiscall MeshShape::nxMeshSweepPrepared(float *,float const *)const " (?nxMeshSweepPrepared@MeshShape@@QBE_NPAMPBM@Z)' [D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\NxPhysicsObjectLayoutTests.vcxproj]
+LINK : warning LNK4286: symbol '_NxRayPlaneIntersect' defined in 'Geometry.obj' is imported by 'ShapeRaycast.obj' [D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\NxPhysicsObjectLayoutTests.vcxproj]
+LINK : warning LNK4217: symbol '_NxRaySphereIntersect' defined in 'Geometry.obj' is imported by 'ShapeRaycast.obj' in function '"struct NxCollisionShape const * __fastcall NxShapeRaycastSphere(struct NxCollisionShape const *,void *,class NxRay const *,float,unsigned int,unsigned int,struct NxRaycastHit *)" (?NxShapeRaycastSphere@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z)' [D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\NxPhysicsObjectLayoutTests.vcxproj]
+LINK : warning LNK4217: symbol '_NxRayCapsuleIntersect' defined in 'Geometry.obj' is imported by 'ShapeRaycast.obj' in function '"struct NxCollisionShape const * __fastcall NxShapeRaycastCapsule(struct NxCollisionShape const *,void *,class NxRay const *,float,unsigned int,unsigned int,struct NxRaycastHit *)" (?NxShapeRaycastCapsule@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z)' [D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\NxPhysicsObjectLayoutTests.vcxproj]
+  NxPhysicsObjectLayoutTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsObjectLayoutTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsSDKTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsSDKTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  PhysicsObjectModelSceneStubs.cpp
+  PhysicsInternalContactStubs.cpp
+  Generating Code...
+     Creating library D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/build/Release/NxPhysicsShapeVtableTests.lib and object D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/build/Release/NxPhysicsShapeVtableTests.exp
+LINK : warning LNK4217: symbol '_NxRayAABBIntersect2' defined in 'Geometry.obj' is imported by 'ObjectModel.obj' in function '"public: void * __thiscall BoxShape::nxBoxRaycast(float const *,float,unsigned int,unsigned int,void *)const " (?nxBoxRaycast@BoxShape@@QBEPAXPBMMIIPAX@Z)' [D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\NxPhysicsShapeVtableTests.vcxproj]
+LINK : warning LNK4217: symbol '_NxRayPlaneIntersect' defined in 'Geometry.obj' is imported by 'ObjectModel.obj' in function '"public: bool __thiscall MeshShape::nxMeshSweepPrepared(float *,float const *)const " (?nxMeshSweepPrepared@MeshShape@@QBE_NPAMPBM@Z)' [D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\NxPhysicsShapeVtableTests.vcxproj]
+LINK : warning LNK4286: symbol '_NxRayPlaneIntersect' defined in 'Geometry.obj' is imported by 'ShapeRaycast.obj' [D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\NxPhysicsShapeVtableTests.vcxproj]
+LINK : warning LNK4217: symbol '_NxRaySphereIntersect' defined in 'Geometry.obj' is imported by 'ShapeRaycast.obj' in function '"struct NxCollisionShape const * __fastcall NxShapeRaycastSphere(struct NxCollisionShape const *,void *,class NxRay const *,float,unsigned int,unsigned int,struct NxRaycastHit *)" (?NxShapeRaycastSphere@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z)' [D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\NxPhysicsShapeVtableTests.vcxproj]
+LINK : warning LNK4217: symbol '_NxRayCapsuleIntersect' defined in 'Geometry.obj' is imported by 'ShapeRaycast.obj' in function '"struct NxCollisionShape const * __fastcall NxShapeRaycastCapsule(struct NxCollisionShape const *,void *,class NxRay const *,float,unsigned int,unsigned int,struct NxRaycastHit *)" (?NxShapeRaycastCapsule@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z)' [D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\NxPhysicsShapeVtableTests.vcxproj]
+  NxPhysicsShapeVtableTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsShapeVtableTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  PhysicsInternalContactStubs.cpp
+     Creating library D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/build/Release/NxPhysicsThirdPartyTests.lib and object D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/build/Release/NxPhysicsThirdPartyTests.exp
+  NxPhysicsThirdPartyTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsThirdPartyTests.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxSceneGraphProbe.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxSceneGraphProbe.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxSceneStepProbe.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxSceneStepProbe.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxVec3NormalizeProbe.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxVec3NormalizeProbe.exe
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+ALL_BUILD exit=0

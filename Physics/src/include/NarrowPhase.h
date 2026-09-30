@@ -88,6 +88,24 @@ NX_INLINE NxU32 NxCollisionPairIndex(NxU32 lowType, NxU32 highType)
 
 typedef bool (__cdecl* NxShapeOverlapFn)(const NxCollisionShape*, const NxCollisionShape*);
 
+// phys_fn_002348 (0x0005ab80, 719 B)
+// Shape-pair matrix dispatcher. The object
+// begins with a vtable pointer, followed by the contact table at +0x04 and the
+// overlap table at +0x94. The pair is ordered by ascending shape type before
+// either table is indexed.
+void __cdecl NxDispatchShapePair(void* matrix,
+	const NxCollisionShape* shape0, const NxCollisionShape* shape1,
+	void* contactSink, void* context);
+
+bool NxFilterShapePair(const NxU32* groupMasks, const void* pairMap,
+	const NxCollisionShape* shape0, const NxCollisionShape* shape1);
+void* NxFindCollisionPairRecord(const void* pairMap, NxU16 owner0, NxU16 owner1);
+bool NxRemoveCollisionPairRecord(void* pairMap, NxU16 owner0, NxU16 owner1);
+void NxSceneRemoveOwnerPairRecords(void* scene, const void* shape);
+const NxReal* NxShapeWorldBounds(const NxCollisionShape* shape);
+void NxSetCollisionDispatchMatrix(void* matrix);
+void* NxGetCollisionDispatchMatrix();
+
 // The +0x94 matrix entries. Each takes the pair already ordered by ascending
 // shape type, which is what makes the lower triangle unnecessary.
 bool __cdecl NxOverlapPlaneSphere(const NxCollisionShape* plane, const NxCollisionShape* sphere);

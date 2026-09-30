@@ -17,6 +17,7 @@
 // phys_fn_002266 reads NX_CONTINUOUS_CD out of the SDK's live parameter array
 // through phys_fn_000429, so this unit reaches Phase 2's PhysicsSDK.
 #include "PhysicsSDK.h"
+#include "IcePrunable.h"
 
 #include "NxIntersectionRayPlane.h"
 #include "NxIntersectionRaySphere.h"
@@ -36,6 +37,40 @@ static_assert(offsetof(NxContactSink, lastObject1) == 0x20, "sink lastObject1 is
 static_assert(offsetof(NxContactSink, lastNormal) == 0x28, "sink lastNormal is at 0x28");
 static_assert(offsetof(NxContactSink, featurePairValid) == 0x34, "sink featurePairValid is at 0x34");
 static_assert(offsetof(NxContactSink, stream) == 0x40, "sink stream data is at 0x40");
+
+extern "C" void nxContactCallContainerResize();		// 004840, Container::Resize(udword)
+#pragma comment(linker, "/alternatename:_nxContactCallContainerResize=?Resize@Container@IceCore@@AAE_NI@Z")
+
+// phys_fn_002354 (0x0005b620, 86 B)
+void __fastcall NxContactSinkResetState(NxU32* state)
+	{
+	if(state[11] != 0)
+		state[11] = 0;
+	const NxU32 oldCount = state[11];
+	state[0] = 0;
+	if(state[11] == state[10])
+		{
+		NxU32* container = state + 10;
+		__asm
+			{
+			push 1
+			mov ecx, container
+			call nxContactCallContainerResize
+			}
+		}
+	NxU32* stream = reinterpret_cast<NxU32*>(static_cast<size_t>(state[12]));
+	stream[state[11]] = 0;
+	++state[11];
+	state[1] = oldCount;
+	state[2] = 0;
+	state[3] = 0;
+	state[4] = 0;
+	state[5] = 0;
+	state[6] = 0;
+	state[7] = 0;
+	state[8] = 0;
+	state[9] = 0;
+	}
 
 // The stream never reallocates here.
 //
@@ -269,6 +304,14 @@ void NxEmitContact(NxContactSink* sink, void* object1, void* object0,
 
 	nxAppendContactRecord(sink, point, separationBits,
 		((NxU32) featureId1 << 16) | (NxU32) featureId0);
+	}
+
+void __fastcall NxEmitContactThiscall(NxContactSink* sink, NxU32,
+	void* object1, void* object0, NxU32 separationBits,
+	const NxVec3* point, const NxVec3* normal, NxU16 featureId0, NxU16 featureId1)
+	{
+	NxEmitContact(sink, object1, object0, separationBits, point, normal,
+		featureId0, featureId1);
 	}
 
 // phys_fn_001901 at 0x00048a70, matrix A slot [PLANE][SPHERE].
@@ -2791,8 +2834,6 @@ void __cdecl NxContactBoxCapsule(const NxCollisionShape* box,
 // NxFindRotationMatrix through its import slot (`call dword ptr
 // [__imp__NxFindRotationMatrix]`, the listing's `call dword ptr [0x10104174]`).
 
-extern "C" void nxContactCallContainerResize();		// 004840, Container::Resize(udword)
-#pragma comment(linker, "/alternatename:_nxContactCallContainerResize=?Resize@Container@IceCore@@AAE_NI@Z")
 extern "C" void _chkstk();								// 005695, the stack probe
 extern "C" void* _imp__NxFindRotationMatrix;			// the import slot 0x10104174
 
@@ -4867,5 +4908,95 @@ L49c88:
 		mov	esp, ebp		// 0x00049c94
 		pop	ebp		// 0x00049c96
 		ret		// 0x00049c97
+		}
+	}
+
+static bool nxCompoundAabbOverlap(const NxReal* a, const NxReal* b)
+	{
+	return a[0] <= b[3] && b[0] <= a[3] &&
+		a[1] <= b[4] && b[1] <= a[4] &&
+		a[2] <= b[5] && b[2] <= a[5];
+	}
+
+// phys_fn_001793 (0x0003f8b0, 345 B)
+// Shared matrix-A compound expander.
+static void nxContactCompoundPair(const NxCollisionShape* compound,
+	const NxCollisionShape* other, NxContactSink* sink, void* context)
+	{
+	const NxReal* compoundBounds = NxShapeWorldBounds(compound);
+	const NxCollisionShape* const* child =
+		*(const NxCollisionShape* const* const*) ((const NxU8*) compound + 0xe0);
+	const NxCollisionShape* const* childEnd =
+		*(const NxCollisionShape* const* const*) ((const NxU8*) compound + 0xe4);
+	const NxU32* groupMasks = nxPhysicsSDKGroupCollisionMasks();
+	const void* pairMap = (const NxU8*) context + 0x2c;
+	void* matrix = NxGetCollisionDispatchMatrix();
+	if(!matrix)
+		return;
+	for(; child != childEnd; ++child)
+		{
+		const NxCollisionShape* candidate = *child;
+		if(candidate == other)
+			continue;
+		const NxReal* childBounds = NxShapeWorldBounds(candidate);
+		if(nxCompoundAabbOverlap(childBounds, compoundBounds) &&
+			NxFilterShapePair(groupMasks, pairMap, candidate, other))
+			NxDispatchShapePair(matrix, candidate, other, sink, context);
+		}
+	}
+
+// phys_fn_001795 (0x0003fa10, 29 B)
+// The wrapper puts its compound argument first for the shared expander.
+void __cdecl NxContactCompoundShape(const NxCollisionShape* shape,
+	const NxCollisionShape* compound, NxContactSink* sink, void* context)
+	{
+	nxContactCompoundPair(compound, shape, sink, context);
+	}
+
+// phys_fn_001797 (0x0003fa30, 77 B)
+// phys_fn_001799 (0x0003fa80, 409 B)
+// phys_fn_001801 (0x0003fc20, 346 B)
+// The child-pair walks occupy the entry and its two continuations.
+void __cdecl NxContactCompoundCompound(const NxCollisionShape* compound0,
+	const NxCollisionShape* compound1, NxContactSink* sink, void* context)
+	{
+	const NxCollisionShape* const* children0 =
+		*(const NxCollisionShape* const* const*) ((const NxU8*) compound0 + 0xe0);
+	const NxCollisionShape* const* end0 =
+		*(const NxCollisionShape* const* const*) ((const NxU8*) compound0 + 0xe4);
+	const NxCollisionShape* const* children1 =
+		*(const NxCollisionShape* const* const*) ((const NxU8*) compound1 + 0xe0);
+	const NxCollisionShape* const* end1 =
+		*(const NxCollisionShape* const* const*) ((const NxU8*) compound1 + 0xe4);
+	const NxU32* groupMasks = nxPhysicsSDKGroupCollisionMasks();
+	const void* pairMap = (const NxU8*) context + 0x2c;
+	void* matrix = NxGetCollisionDispatchMatrix();
+	if(!matrix)
+		return;
+	if(compound0 == compound1)
+		{
+		for(const NxCollisionShape* const* a = children0; a != end0; ++a)
+			{
+			const NxReal* boundsA = NxShapeWorldBounds(*a);
+			for(const NxCollisionShape* const* b = a + 1; b != end0; ++b)
+				{
+				const NxReal* boundsB = NxShapeWorldBounds(*b);
+				if(nxCompoundAabbOverlap(boundsA, boundsB) &&
+					NxFilterShapePair(groupMasks, pairMap, *a, *b))
+					NxDispatchShapePair(matrix, *a, *b, sink, context);
+				}
+			}
+		return;
+		}
+	for(const NxCollisionShape* const* a = children0; a != end0; ++a)
+		{
+		const NxReal* boundsA = NxShapeWorldBounds(*a);
+		for(const NxCollisionShape* const* b = children1; b != end1; ++b)
+			{
+			const NxReal* boundsB = NxShapeWorldBounds(*b);
+			if(nxCompoundAabbOverlap(boundsA, boundsB) &&
+				NxFilterShapePair(groupMasks, pairMap, *a, *b))
+				NxDispatchShapePair(matrix, *a, *b, sink, context);
+			}
 		}
 	}

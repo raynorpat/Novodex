@@ -1,0 +1,17 @@
+Task 2l: candidate P-Sphere row 001351 runtime trace
+=====================================================
+Pinned oracle NxPhysics.dll SHA-256: 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate NxPhysicsCollisionTests.exe SHA-256: 80139070afc1e82c7ab0cb7fb811a377095c20929217fddde18d01979eb1050
+Candidate map: build/Release/NxPhysicsCollisionTests.map
+Candidate SphereShape::nxSphereCallbackDtor RVA: 0x00064b10
+
+The callback differential exercises 001874 for six vector pairs under both x87 control words; all 12 oracle/candidate checks match and four contacts are accumulated. A one-shot cdb breakpoint at the mapped candidate destructor fired during that run:
+
+0:000> bp /1 NxPhysicsCollisionTests+0x64b10 ".echo HIT_CANDIDATE_SPHERE_DTOR; gc"
+HIT_CANDIDATE_SPHERE_DTOR
+collision name=contact_mesh_mesh_sphere_callback index=- rva=0x00046780 checks=12 oracle=316dab8fdfe009b8 candidate=316dab8fdfe009b8 mismatches=0 contacts=4
+collision=pass
+
+The destructor body in Physics/src/ObjectModel.cpp performs the temporary SphereShape cleanup and delegates through the BASE owner-arm and Prunable destructors. The 001874 listing comparator maps the oracle call at 0x27820 to this candidate symbol. This establishes the candidate implementation for the 001351 cleanup row; it does not establish the remaining P-Sphere closure.
+
+

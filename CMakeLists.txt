@@ -506,7 +506,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# seam is opcNovodeXAlloc/opcNovodeXFree and that reaches nxGetSdkAllocator.
 	add_executable(NxPhysicsAssetTests tests/PhysicsAssetTests.cpp
 		Physics/src/PMap.cpp Physics/src/MemoryStream.cpp Physics/src/TriangleMesh.cpp
-		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp)
+		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
+		tests/PhysicsInternalContactStubs.cpp)
 	target_include_directories(NxPhysicsAssetTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
 		# The generated oracle-RVA to candidate-address table. It is built from the census and the
@@ -555,6 +556,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsThirdPartyTests tests/PhysicsThirdPartyTests.cpp
 		tests/PhysicsThirdPartyQhull.c
 		tests/PhysicsThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
+		tests/PhysicsInternalContactStubs.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/NovodexBoxPruning.cpp
 		Physics/src/EdgeList.cpp Physics/src/IceAdjacencies.cpp Physics/src/IceMeshTools.cpp
 		Physics/src/IceMeshBuilder2.cpp Physics/src/ConvexHull.cpp Physics/src/TriangleMeshTopology.cpp
@@ -607,7 +609,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# units directly because the rows it covers cannot be reached through the
 	# public API. Same shape as NxFoundationCustomArrayTests above.
 	add_executable(NxPhysicsInternalTests tests/PhysicsInternalTests.cpp
-		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
+		Physics/src/PhysicsInternal.cpp tests/PhysicsInternalContactStubs.cpp
+		Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
 		Physics/src/ObjectModel.cpp Physics/src/MemoryStream.cpp
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
@@ -635,10 +638,12 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# failing for them. See evidence/phase5-object-model.md.
 	add_executable(NxPhysicsObjectLayoutTests tests/PhysicsObjectLayoutTests.cpp
 		Physics/src/ObjectModel.cpp Physics/src/Containers.cpp
+		tests/PhysicsObjectModelSceneStubs.cpp
 		Physics/src/MemoryStream.cpp
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
+		tests/PhysicsInternalContactStubs.cpp
 		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp)
 	target_include_directories(NxPhysicsObjectLayoutTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
@@ -670,10 +675,12 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# extended, so vtable probes live in this small executable.
 	add_executable(NxPhysicsShapeVtableTests tests/PhysicsShapeVtableTests.cpp
 		Physics/src/ObjectModel.cpp Physics/src/Containers.cpp
+		tests/PhysicsObjectModelSceneStubs.cpp
 		Physics/src/MemoryStream.cpp Physics/src/Geometry.cpp
 		Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
+		tests/PhysicsInternalContactStubs.cpp
 		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp)
 	target_include_directories(NxPhysicsShapeVtableTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
@@ -708,7 +715,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/ContactConvexConvex.cpp Physics/src/TriangleMeshPolygons.cpp
 		Physics/src/ContactConvexHeightfield.cpp Physics/src/TriangleMeshTopology.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
-		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
+		Physics/src/PhysicsInternal.cpp
+		Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
 		Physics/src/ObjectModel.cpp Physics/src/MemoryStream.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp

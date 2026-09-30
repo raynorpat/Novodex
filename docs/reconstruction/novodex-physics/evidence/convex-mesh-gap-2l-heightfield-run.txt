@@ -1,14 +1,13 @@
-Task 2l: mesh/height-field entry differential 001869
-====================================================
+Task 2l: mesh/height-field entry differential 001869 (expanded fixtures)
+=======================================================================
 Pinned oracle NxPhysics.dll SHA-256: 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-Candidate NxPhysicsCollisionTests.exe SHA-256: 273910EA8ABFFB4F1D12EF12B815DF5F72F7BFC1D318835C2A7F638F411D4479
-Candidate NxPhysics.dll SHA-256: 6FDD072B2AB55F29B709FF2CB39114D9EC3F66B178702C0008FB0CA66163BF42
+Candidate NxPhysicsCollisionTests.exe SHA-256: 11AF8AA6A4450F152BB0E12F897B3BA2868BD551FD906B6840245B37D4782AC6
 
-The fixture calls the complete 001869 entry for a paired large-terrain / steep-terrain image under x87 control words 0x027f and 0x0f7f. Each side builds its own OPCODE models, owns its AABBTreeCollider and OBBCollider context, and receives independent shapes, sinks and streams. The input digest includes each terrain's vertices and indices plus both shape translations.
+The fixture calls the complete 001869 entry for three independently built multi-triangle pairs (terrain/flat, roof/valley and the paired large/steep terrain) under x87 control words 0x027f and 0x0f7f. Each side builds its own OPCODE models, owns its AABBTreeCollider and OBBCollider context, and receives independent shapes, sinks and streams. The single-triangle fixture is excluded because its tree is absent and the oracle query faults.
 
-collision name=contact_mesh_heightfield index=- rva=0x00046510 checks=8 oracle=a8c7f832281a39c5 candidate=a8c7f832281a39c5 mismatches=0
-collision coverage name=contact_mesh_heightfield pairs=1 cases=2 control_words=2 cases_with_contacts=0
-collision input name=contact_mesh_heightfield words=6226 input=ee82a3a9998cb4b4
+collision name=contact_mesh_heightfield index=- rva=0x00046510 checks=528 oracle=9c87a6d409f98333 candidate=9c87a6d409f98333 mismatches=0
+collision coverage name=contact_mesh_heightfield pairs=3 cases=6 control_words=2 cases_with_contacts=2
+collision input name=contact_mesh_heightfield words=6690 input=27d2e99a4f0f02fc
 collision=pass
 
-This is an entry/pass differential only: the chosen fixture produces no contacts and does not enter 001859 on either side. It therefore does not establish dynamic proof for that callback.
+The entry and both pass bodies execute for all three pairs. Correct local bounds let the OBB pass admit candidates; a dedicated thiscall adapter preserves the sink-in-ECX emitter ABI for the two transcribed assembly call sites. Two of the six runs now produce contacts. Oracle and candidate streams match over 528 checks, with zero mismatches. This proves the 001869 entry and both passes over contact-producing inputs; 001859 callback entry is still pending a verified trace.

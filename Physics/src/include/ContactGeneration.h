@@ -69,11 +69,21 @@ struct NxContactSink
 	NxU8   tail[2];
 	};
 
+// phys_fn_002354 (0x0005b620): reset the sink state at +0x10 and reserve its
+// initial pair-counter word in the Container at +0x38.
+void __fastcall NxContactSinkResetState(NxU32* sinkState);
+
 // phys_fn_000873 at 0x0001d610. __thiscall on the sink, seven stack arguments,
 // `ret 0x1c`.
 void NxEmitContact(NxContactSink* sink, void* object1, void* object0,
 	NxU32 separationBits, const NxVec3* point, const NxVec3* normal,
 	NxU16 featureId0, NxU16 featureId1);
+
+// Adapter for oracle-transcribed assembly call sites: sink arrives in ECX and
+// the seven remaining arguments are callee-cleaned from the stack.
+void __fastcall NxEmitContactThiscall(NxContactSink* sink, NxU32 edx,
+	void* object1, void* object0, NxU32 separationBits,
+	const NxVec3* point, const NxVec3* normal, NxU16 featureId0, NxU16 featureId1);
 
 // phys_fn_001901 at 0x00048a70, matrix A slot [PLANE][SPHERE].
 void __cdecl NxContactPlaneSphere(const NxCollisionShape* plane,
@@ -341,6 +351,16 @@ int NxBoxBoxTransposedPair(NxVec3* points, NxReal* separations, NxVec3* normal,
 // nxReserve: it stops rather than overruns.
 void __cdecl NxContactBoxBox(const NxCollisionShape* box0,
 	const NxCollisionShape* box1, NxContactSink* sink, void* context);
+
+// phys_fn_001795 (0x0003fa10, 29 B)
+// phys_fn_001797 (0x0003fa30, 77 B)
+// phys_fn_001799 (0x0003fa80, 409 B)
+// phys_fn_001801 (0x0003fc20, 346 B)
+// These are the matrix-A compound entry and its two child-pair continuations.
+void __cdecl NxContactCompoundShape(const NxCollisionShape* shape,
+	const NxCollisionShape* compound, NxContactSink* sink, void* context);
+void __cdecl NxContactCompoundCompound(const NxCollisionShape* compound0,
+	const NxCollisionShape* compound1, NxContactSink* sink, void* context);
 
 // Row phys_fn_001753 at 0x0003b260, matrix A [BOX][CAPSULE] (convex-mesh gap
 // Task 2a). Its swept path raycasts through the BOX's vtable slot 5, so a box

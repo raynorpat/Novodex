@@ -33,8 +33,8 @@
 
 ### Task 1: Survey and contract
 
-- [ ] Generate bundles for the four units with `tools/unit_bundle.py`. Supplement missing decompiles with the pinned `DecompileSupplement.java`, passing the union of existing requested RVAs as the earlier plans did.
-- [ ] Write `$EV/units/convex-mesh-gap-contract.md` with the following sections.
+- [x] Generate bundles for the four units with `tools/unit_bundle.py`. Supplement missing decompiles with the pinned `DecompileSupplement.java`, passing the union of existing requested RVAs as the earlier plans did.
+- [x] Write `$EV/units/convex-mesh-gap-contract.md` with the following sections.
   - `## Sub-units`: split every code row in the range into probable source files, with evidence for each:
     - call-graph clusters and dispatch tables (vtables installed in the range and their slot owners);
     - asserts and strings, and data objects referenced;
@@ -43,7 +43,7 @@
   - For each sub-unit: rows, bytes, states, phases, what it does, and its callers outside the range, with the candidate code that stands in for those callers today (grep `Physics/src` for the stable IDs and for existing candidate functions that model these rows, e.g. `ContactGeneration.cpp`, `NarrowPhase.cpp`, `Geometry.cpp`, `TriangleMesh.cpp`, `SmoothNormals.cpp`).
   - For each sub-unit: its test route. Which existing differential already reaches it, if any (Phase 3 collision, Phase 4 asset/third-party), or how a new oracle-vs-candidate family would drive it (entry row, inputs, outputs to compare).
   - `## Task split`: an ordered list of sub-unit tasks, each at most about 12 KB, dependencies first.
-- [ ] Commit the contract, the bundles and the timing file.
+- [x] Commit the contract, the bundles and the timing file.
 
 ### Task 2 (template): One sub-unit
 
@@ -55,5 +55,5 @@ Tasks 2a, 2b, … apply this template to each sub-unit in `## Task split`, in or
 
 ### Task 3: Results
 
-- [ ] Regenerate `work_units.json` and the four units' bundles.
-- [ ] Complete `$EV/evidence/convex-mesh-gap.md`: rows and bytes moved per sub-unit, defects found by the differentials, rows left and why, the rate, and verification (fresh configure and clean build, headers, tool tests, validator, gates 2–7).
+- [x] Regenerate `work_units.json` and the four units' bundles. Task 3 also closes the census early-string bug recorded in the contract's Open items: both census consumers now accept interior-byte `__FILE__` references; see the Task 3 census record in `evidence/convex-mesh-gap.md`.
+- [x] Complete `$EV/evidence/convex-mesh-gap.md`: rows and bytes moved per sub-unit, defects found by the differentials, rows left and why, the rate, and verification are recorded there. The pruner teardown follow-ups reconstruct 000887/000889, 000903, 000915, 001323, 001945 and 001955 with direct oracle differentials and candidate cdb hits; the full P-Sphere/scene prerequisite closure is recorded in the latest results entry. Row 001859 is reconstructed and has a candidate-entry trace plus paired contact-stream differential; its oracle entry breakpoint did not fire. Phase 5 remains red only on the known missing vtables family.

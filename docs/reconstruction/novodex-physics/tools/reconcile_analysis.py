@@ -160,6 +160,36 @@ def rva(value):
     return value if isinstance(value, int) else int(value, 16)
 
 
+def source_file_spans(ghidra):
+    """Return the byte ranges of the source-file strings embedded in the image.
+
+    Ghidra references often target an interior byte (commonly the first byte
+    after a one-byte NX_ASSERT prefix), so indexing only the string's start
+    address drops real translation-unit evidence.
+    """
+    spans = []
+    for entry in ghidra["strings"]:
+        value = entry["value"]
+        marker = value.find(SOURCE_MARK)
+        if marker < 0:
+            continue
+        start = rva(entry["rva"])
+        spans.append((start, start + int(entry.get("length", len(value))),
+                      value[marker + len(SOURCE_MARK):]))
+    return sorted(spans)
+
+
+def source_file_at(spans, address):
+    """Resolve an address anywhere inside an embedded source-file string."""
+    starts = [span[0] for span in spans]
+    index = bisect.bisect_right(starts, address) - 1
+    if index >= 0:
+        start, end, name = spans[index]
+        if start <= address < end:
+            return name
+    return None
+
+
 def runs(state, lo, hi, wanted=None):
     """Yield maximal (start, end, value) runs of equal class over state[lo:hi]."""
     start = lo
@@ -704,16 +734,13 @@ def source_seeds(ghidra, owners):
     bytes, and a reference landing in the rest would otherwise be dropped in
     silence. Anything that still resolves to nothing is counted, not discarded.
     """
+    source_strings = source_file_spans(ghidra)
     files = {}
-    for entry in ghidra["strings"]:
-        index = entry["value"].find(SOURCE_MARK)
-        if index >= 0:
-            files[rva(entry["rva"])] = entry["value"][index + len(SOURCE_MARK):]
     seeds, unmapped, unowned, total = {}, set(), 0, 0
     for reference in ghidra["references"]:
         if not reference["to_rva"]:
             continue
-        name = files.get(rva(reference["to_rva"]))
+        name = source_file_at(source_strings, rva(reference["to_rva"]))
         if name is None:
             continue
         total += 1
