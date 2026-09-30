@@ -29,7 +29,7 @@ The assessment used the current source and inventory on main, not the older `cod
 | Scene simulation API | `getGravity`/`setGravity`, `getTiming`/`setTiming`, and the write-lock `isWritable` probe match oracle outputs; `startRun`/`finishRun`/`runFor` follow the oracle's deprecated-warning and call sequences. `simulate`, `checkResults`, `fetchResults`, and fence APIs remain open. | The worker/event lifecycle and real stepper are the immediate blockers to useful physics simulation tests |
 | Final gate | Phase 8 has no registered test targets and coverage floor zero | A separate whole-DLL acceptance gate must be built |
 
-Build and Phase 5 logs from this assessment are local artifacts at `build/main-planning-build.log` and `build/main-planning-phase5.log`. Other phases and the full Python suite were not rerun for this planning assessment. Older branch reports have different coverage floors and must not be presented as current-main verification.
+The original current-main gate artifacts are `build/main-phase5.log` and `build/main-phase7-with-simulation.log`. After this plan was started, the scene compatibility wrappers were added and the CMake build succeeded; rerunning `NxPhysicsSimulationTests` still produces `stdout_delta=30`, because oracle steps report ready/fetched while the candidate remains stationary and reports false. Gravity, timing, writability, and legacy wrapper returns match. Other phases and the full Python suite were not rerun in that follow-up. Older branch reports have different coverage floors and must not be presented as current-main verification.
 
 Current unique code-row states by owning phase:
 
