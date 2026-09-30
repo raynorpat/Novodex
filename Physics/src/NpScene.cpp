@@ -968,6 +968,12 @@ bool NpScene::fetchResults(NxSimulationStatus status, bool block )
 	{
 	if(!checkResults(status, block))
 		return false;
+	if(mScene)
+		{
+		nxNpSceneGuardEnter(mReadLock);
+		mScene->finishSimulation();
+		nxNpSceneGuardLeave(mReadLock);
+		}
 	if(mFlag)
 		{
 		mFlag = 0;

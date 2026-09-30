@@ -3782,10 +3782,29 @@ void NxSceneInternal::simulateFrame()
 	else
 		{
 		timestep = at<NxReal>(0x52c);
-		inverseTimestep = 1.0f / timestep;
-		at<NxReal>(0x538) += elapsedTime;
-		const NxReal accumulated = at<NxReal>(0x538);
-		iterations = static_cast<NxU32>(inverseTimestep * accumulated);
+		// Preserve the oracle's exact x87 order. It stores the rounded sum to
+		// +0x538 while retaining the extended value on the x87 stack, then
+		// computes/stores the rounded inverse and multiplies the extended
+		// reciprocal by that still-extended sum before FISTP.
+		NxReal* accumulatedAddress = &at<NxReal>(0x538);
+		NxReal* inverseAddress = &at<NxReal>(0x54c);
+		unsigned __int64 rawIterations = 0;
+		__asm
+			{
+			mov eax, accumulatedAddress
+			mov edx, inverseAddress
+			fld elapsedTime
+			fadd dword ptr [eax]
+			fst dword ptr [eax]
+			fld1
+			fdiv dword ptr [timestep]
+			fst dword ptr [edx]
+			fmul st(0), st(1)
+			fistp qword ptr [rawIterations]
+			fstp st(0)
+			}
+		inverseTimestep = *inverseAddress;
+		iterations = static_cast<NxU32>(rawIterations);
 		if(iterations > at<NxU32>(0x530))
 			iterations = at<NxU32>(0x530);
 		at<NxU32>(0x550) = iterations;
@@ -3815,16 +3834,39 @@ void NxSceneInternal::simulateFrame()
 		for(void** item = bodies; item && item != bodiesEnd; ++item)
 			reinterpret_cast<Row000764Fixture*>(*item)->row000764();
 
-		// 000619 prepares gravity and the prior pose for each scene body.
+		// 000655's active-island collection follows 000608. Keep only the
+		// self-parented, awake sleep-group roots in Scene+0x57c..+0x580.
+		void**& rootFirst = at<void**>(0x57c);
+		void**& rootLast = at<void**>(0x580);
+		void**& rootEnd = at<void**>(0x584);
 		for(void** item = bodies; item && item != bodiesEnd; ++item)
 			{
-				unsigned char* body = static_cast<unsigned char*>(*item);
-				reinterpret_cast<Row000710Fixture*>(body)->row000710(&at<NxVec3>(0x520));
-				if(*reinterpret_cast<NxReal*>(body + 0x84)
-					+ *reinterpret_cast<NxReal*>(body + 0x4c) != 0.0f)
-					for(NxU32 offset = 0x18; offset <= 0x4c; offset += 4)
-						*reinterpret_cast<NxU32*>(body + 0x50 + offset - 0x18)
-							= *reinterpret_cast<NxU32*>(body + offset);
+				void* body = *item;
+				void* root = reinterpret_cast<Row000713Fixture*>(body)->row000713();
+				if(root != body || *reinterpret_cast<NxReal*>(
+					static_cast<NxU8*>(root) + 0x1f8) == 0.0f)
+					continue;
+				if(rootEnd <= rootLast)
+					{
+					const NxU32 count = rootFirst
+						? static_cast<NxU32>(rootLast - rootFirst) : 0;
+					const NxU32 capacity = count * 2 + 2;
+					const NxU32 held = rootFirst
+						? static_cast<NxU32>(rootEnd - rootFirst) : 0;
+					if(held < capacity)
+						{
+						void** grown = static_cast<void**>(nxFoundationSDKAllocator->malloc(
+							capacity * sizeof(void*), NX_MEMORY_PERSISTENT));
+						for(NxU32 i = 0; i < count; ++i)
+							grown[i] = rootFirst[i];
+						if(rootFirst)
+							nxFoundationSDKAllocator->free(rootFirst);
+						rootFirst = grown;
+						rootLast = grown + count;
+						rootEnd = grown + capacity;
+						}
+					}
+				*rootLast++ = body;
 			}
 
 		// phys_fn_000610 walks active island roots (+0x57c) and each root's
@@ -3836,8 +3878,13 @@ void NxSceneInternal::simulateFrame()
 				body = *reinterpret_cast<unsigned char**>(body + 0x1fc))
 				reinterpret_cast<Row000726Fixture*>(body)->row000726(timestep, inverseTimestep);
 
-		// 000615 advances each body's COM/quaternion and sends the public-pose
-		// notification; 000636 performs the post-step velocity bookkeeping.
+		// 000636 performs post-step velocity bookkeeping and clears the active
+		// root range before 000615 advances each body's COM/quaternion.
+		for(void** item = bodies; item && item != bodiesEnd; ++item)
+			reinterpret_cast<Row000732Fixture*>(*item)->row000732(timestep, 0.0f);
+		rootLast = rootFirst;
+
+		// 000615 also sends the public-pose notification after each body update.
 		for(void** item = bodies; item && item != bodiesEnd; ++item)
 			{
 				unsigned char* body = static_cast<unsigned char*>(*item);
@@ -3845,15 +3892,30 @@ void NxSceneInternal::simulateFrame()
 				reinterpret_cast<Row000022Fixture*>(
 					*reinterpret_cast<void**>(body + 0x19c))->row000022(0);
 			}
-
-		for(void** item = bodies; item && item != bodiesEnd; ++item)
-			reinterpret_cast<Row000732Fixture*>(*item)->row000732(timestep, 0.0f);
 		++at<NxU32>(0x558);
 		at<NxReal>(0x538) -= timestep;
 		}
 	if(at<NxU32>(0x534) != 1 && timestep < at<NxReal>(0x538))
 		at<NxReal>(0x538) = timestep;
 	__asm fldcw savedControlWord
+	}
+
+// phys_fn_000619 (0x000114b0): refresh each body's gravity and preserve the
+// completed pose for the next fetch/simulation cycle.
+void NxSceneInternal::finishSimulation()
+	{
+	void** bodies = at<void**>(0x56c);
+	void** bodiesEnd = at<void**>(0x570);
+	for(void** item = bodies; item && item != bodiesEnd; ++item)
+		{
+			unsigned char* body = static_cast<unsigned char*>(*item);
+			reinterpret_cast<Row000710Fixture*>(body)->row000710(&at<NxVec3>(0x520));
+			if(*reinterpret_cast<NxReal*>(body + 0x84)
+				+ *reinterpret_cast<NxReal*>(body + 0x4c) != 0.0f)
+				for(NxU32 offset = 0x18; offset <= 0x4c; offset += 4)
+					*reinterpret_cast<NxU32*>(body + 0x50 + offset - 0x18)
+						= *reinterpret_cast<NxU32*>(body + offset);
+		}
 	}
 
 // phys_fn_000523 (0x00010400, 4 B, phase 7): the pair-flag count at +0x3c.
