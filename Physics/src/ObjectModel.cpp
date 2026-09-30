@@ -6,6 +6,9 @@
 |
 \*----------------------------------------------------------------------------*/
 #include "ObjectModel.h"
+
+extern "C" void __fastcall NxScenePrunerShapeRemove(void* group, void* owner);
+extern "C" void __fastcall NxScenePrunerOwnerDestroy(void* manager, void* owner);
 #include "Containers.h"
 #include "MemoryStream.h"
 #include "NxIntersectionSegmentBox.h"
@@ -13,12 +16,14 @@
 #include "NxRay.h"
 #include "NxPlane.h"
 #include "ContactGeneration.h"
+#include "NarrowPhase.h"
 #include "NxUtilities.h"
 #include "X87Sqrt.h"
 #include "PhysicsSDK.h"
 #include "NxDebugRenderable.h"
 #include "NxBox.h"
 #include "NpActorDynamicMath.h"
+#include "NxGeometryHelpers.h"
 
 #include <float.h>
 #include <math.h>
@@ -689,7 +694,6 @@ void* BoxShape::nxBoxRaycast(const float* ray, float maxDistance,
 // Row 000951 (BOX slot 7) is reached only from the continuous-collision
 // sweep inside the simulation step; it is in StepOnlyRows.cpp, built
 // /arch:IA32.
-
 // Candidate guard bindings: the candidate reads the SAME live storage the
 // drive mutates (oracle .data via the rendercap driver), not its own copy.
 static float* g_nxGuardA = nullptr;		// 0x10123bc8
@@ -857,6 +861,9 @@ void nxSceneInsertShape(void* container, void* shape, NxU32 slot)
 // The base dtor's owner arms, image order (0x00026be1..0x00026c35).
 void ShapeBase::nxBaseDtorOwnerArms(void)
 	{
+	// phys_fn_001323 first removes this shape from the debug-name registry,
+	// before taking the owner-null early exit at 0x00026be1.
+	nxShapeNameRegistry(this, nullptr);
 	if(mOwner04 == nullptr)
 		return;
 	unsigned scene = *reinterpret_cast<const NxU32*>(
@@ -872,8 +879,18 @@ void ShapeBase::nxBaseDtorOwnerArms(void)
 	// header. Not the field's value.
 	nxSceneRemovePairs(reinterpret_cast<unsigned char*>(scene) + 0x5d4, this);
 
-	void* c3 = *reinterpret_cast<void* const*>(sc + 0x6e4);
+	void* c3 = sc + 0x6e4; // phys_fn_000028 receives the embedded vector address
 	nxSceneSlotFree(c3, mArgumentD4);
+	// 0x00026c20..3d: remove the owner's pruning records, then destroy the
+	// scene's pruner storage. Both calls are gated by the shape's +0xa0 group.
+	if(mWordA0 != 0)
+		{
+		NxScenePrunerShapeRemove(reinterpret_cast<void*>(mWordA0), mOwner04);
+		NxScenePrunerOwnerDestroy(reinterpret_cast<void*>(mWordA0), mOwner04);
+		}
+	// The BASE dtor's final owner arm removes scene collision-pair map records
+	// for either 16-bit shape key before the embedded Prunable is destroyed.
+	NxSceneRemoveOwnerPairRecords(sc, this);
 	}
 
 // Task 4 scaffolding: remover chain, decoded in full this round.
@@ -914,6 +931,7 @@ void nxSceneReleaseIndex(void* hdr, NxU32 idx)
 // Remover #1: the deregistration chain's shape-side wrapper -- the slot
 // read off Shape+0xd4, released through phys_fn_002410, then the
 // shapes-array clear that lives one call over at 0x5bbe0.
+// phys_fn_002413 (0x0005bbe0, 38 B)
 void nxSceneRemoveShape(void* container, void* shape)
 	{
 	unsigned c = reinterpret_cast<unsigned>(container);
@@ -4539,6 +4557,18 @@ void SphereShape::nxSphereSetRadius(float radius)
 			nxMsgSetRadiusPositive);
 	}
 
+// The 001874 narrow-phase callback constructs two temporary SphereShapes and
+// explicitly invokes the non-scalar destructor (001351) before returning.
+// Its BASE destructor tail (001323) removes owner arms and destroys Prunable.
+void SphereShape::nxSphereCallbackDtor(void)
+	{
+	mBase.mVptrSlot = nxSphereShapeInternalVtable();
+	if(mBase.mWord9C != 0)
+		reinterpret_cast<CollisionObject*>(mBase.mWord9C)->nxScalarDeletingDtor(1);
+	mBase.nxBaseDtorOwnerArms();
+	mBase.mPrunable.~Prunable();
+	}
+
 // phys_fn_001329 (0x00026d90): apply a GROUP. See ObjectModel.h.
 void ShapeBase::nxApplyGroup(unsigned short group)
 	{
@@ -4900,42 +4930,72 @@ void nxShapeFactoryInitializePlane(void* shape, const float* normal,
 // exhausted.
 static void* gShapeNameList = nullptr;
 
-// phys_fn_000480 (0x000edc0): associate or dissociate a shape with a name.
-static const unsigned NX_REG_CAP = 32;
-static void* sRegShapes[NX_REG_CAP] = {};
-static void* sRegNames[NX_REG_CAP] = {};
-static unsigned sRegCount = 0;
+// phys_fn_000480 (0x000edc0): the three-word VC9 vector header follows the
+// image's initial 0x10-byte header allocation and grows by 2*n+2 records.
+struct NxShapeNameList { void** begin; void** end; void** capacity; };
 
 bool ShapeBase::nxShapeNameRegistry(void* shape, void* name)
 	{
 	if(shape == nullptr)
 		return false;
-	for(unsigned i = 0; i < sRegCount; ++i)
+	NxShapeNameList* list = static_cast<NxShapeNameList*>(gShapeNameList);
+	if(name == nullptr && list == nullptr)
+		return true;
+	if(name != nullptr && list == nullptr)
 		{
-		if(sRegShapes[i] == shape)
+		list = static_cast<NxShapeNameList*>(nxGetSdkAllocator()->malloc(
+		0x10, NX_MEMORY_PERSISTENT));
+		if(list == nullptr)
+			return false;
+		list->begin = list->end = list->capacity = nullptr;
+		gShapeNameList = list;
+		}
+	NxU32 count = list->begin == nullptr ? 0u : static_cast<NxU32>(
+		(reinterpret_cast<NxU32>(list->end) - reinterpret_cast<NxU32>(list->begin)) >> 3);
+	for(NxU32 i = 0; i < count; ++i)
+		{
+		void** pair = list->begin + i * 2;
+		if(pair[0] == shape)
 			{
 			if(name != nullptr)
 				{
-				sRegNames[i] = name;
+				pair[1] = name;
 				return true;
 				}
-			if(i < sRegCount - 1)
+			if(i + 1 < count)
 				{
-				sRegShapes[i] = sRegShapes[sRegCount - 1];
-				sRegNames[i] = sRegNames[sRegCount - 1];
+				pair[0] = list->end[-2];
+				pair[1] = list->end[-1];
 				}
-			--sRegCount;
+			list->end -= 2;
+			if(list->begin == list->end)
+				{
+				if(list->begin)
+					nxGetSdkAllocator()->free(list->begin);
+				gShapeNameList = nullptr;
+				nxGetSdkAllocator()->free(list);
+				}
 			return true;
 			}
 		}
-	if(name != nullptr && sRegCount < NX_REG_CAP)
+	if(list->capacity <= list->end)
 		{
-		sRegShapes[sRegCount] = shape;
-		sRegNames[sRegCount] = name;
-		++sRegCount;
-		return true;
+		const NxU32 newCapacity = count * 2 + 2;
+		void** fresh = static_cast<void**>(nxGetSdkAllocator()->malloc(
+			newCapacity * 8, NX_MEMORY_PERSISTENT));
+		if(fresh == nullptr)
+			return false;
+		for(NxU32 i = 0; i < count * 2; ++i)
+			fresh[i] = list->begin[i];
+		if(list->begin)
+			nxGetSdkAllocator()->free(list->begin);
+		list->begin = fresh;
+		list->end = fresh + count * 2;
+		list->capacity = fresh + newCapacity * 2;
 		}
-	return name == nullptr;
+	*list->end++ = shape;
+	*list->end++ = name;
+	return true;
 	}
 
 // phys_fn_001347 (0x00027740), BASE-table slot 1. See ObjectModel.h.
@@ -6669,11 +6729,20 @@ bool MeshShape::nxMeshAccumulateMassCached(MassFrame* destination,
 	return true;
 	}
 
+// The product rows slot 7 calls (convex-mesh gap Task 2f): 001556 in
+// IceSupportMaps.cpp and 001472 in ConvexHull.cpp.
+struct IceSupportMap;
+class ConvexHull;
+namespace IceMaths { class Point; }
+NxU32 __fastcall nxSupportMapLookup(const IceSupportMap* map, NxU32 edx, const IceMaths::Point* dir);
+bool __fastcall nxHullComputePolygons(ConvexHull* hull);
+
 // phys_fn_001407 (0x00029610), MESH-table slot 7. The prepared-tree arm
-// chooses a plane from the direction lattice at mesh+0xac and computes a
-// ray/plane distance. The separate lazy plane-table builder at 0x2b6f0 is
-// not part of this member yet; callers must supply tree+0x28 when the
-// classifier is non-null.
+// chooses a plane from the support map at mesh+0xac and computes a ray/plane
+// distance. Since convex-mesh gap Task 2f the map's sample comes from the
+// product lookup 001556 (IceSupportMaps.cpp) and the hull's polygons are built
+// when absent by the product 001472 (ConvexHull.cpp), as the listing calls
+// them (0x000296a7, 0x000296c8).
 bool MeshShape::nxMeshSweepPrepared(float* out, const float* point) const
 	{
 	const unsigned char* mesh = reinterpret_cast<const unsigned char*>(mWordE0);
@@ -6699,33 +6768,16 @@ bool MeshShape::nxMeshSweepPrepared(float* out, const float* point) const
 	direction[2] = static_cast<float>(
 		static_cast<double>(dz) * r[8] + dx * r[2] +
 		static_cast<double>(dy) * r[5]);
-	unsigned axis = 0;
-	if(fabsf(direction[axis]) < fabsf(direction[1]))
-		axis = 1;
-	if(fabsf(direction[axis]) < fabsf(direction[2]))
-		axis = 2;
-	const unsigned face = axis * 2 + (signbit(direction[axis]) ? 1u : 0u);
-	const unsigned first = (axis + 1) % 3;
-	const unsigned second = (axis + 2) % 3;
-	const unsigned bins = *reinterpret_cast<const unsigned*>(classifier + 4);
-	const double scale = static_cast<double>(bins - 1u) * 0.5;
-	const double inv = 1.0 / fabs(static_cast<double>(direction[axis]));
-	const float a = static_cast<float>(direction[first] * inv);
-	const float b = static_cast<float>(direction[second] * inv);
-	const float scaledA = static_cast<float>((static_cast<double>(a) + 1.0) * scale);
-	const float scaledB = static_cast<float>((static_cast<double>(b) + 1.0) * scale);
-	unsigned bucketA = static_cast<unsigned>(nearbyintf(scaledA));
-	unsigned bucketB = static_cast<unsigned>(nearbyintf(scaledB));
-	if(static_cast<double>(scaledA) - bucketA > 0.5)
-		++bucketA;
-	if(static_cast<double>(scaledB) - bucketB > 0.5)
-		++bucketB;
-	const unsigned index = (face * bins + bucketA) * bins + bucketB;
+	const NxU32 index = nxSupportMapLookup(
+		reinterpret_cast<const IceSupportMap*>(classifier), 0,
+		reinterpret_cast<const IceMaths::Point*>(direction));
 	const unsigned char* map =
 		*reinterpret_cast<const unsigned char* const*>(classifier + 0x0c);
 	const unsigned planeIndex = map[index];
-	const unsigned char* tree =
-		*reinterpret_cast<const unsigned char* const*>(mesh + 0xa0);
+	ConvexHull* hull = *reinterpret_cast<ConvexHull* const*>(mesh + 0xa0);
+	if(*reinterpret_cast<void* const*>(reinterpret_cast<unsigned char*>(hull) + 0x28) == nullptr)
+		nxHullComputePolygons(hull);
+	const unsigned char* tree = reinterpret_cast<const unsigned char*>(hull);
 	const unsigned char* planes =
 		*reinterpret_cast<const unsigned char* const*>(tree + 0x28);
 	const NxPlane& plane = *reinterpret_cast<const NxPlane*>(

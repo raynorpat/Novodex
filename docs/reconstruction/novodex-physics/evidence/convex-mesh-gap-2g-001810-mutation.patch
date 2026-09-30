@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ContactConvexConvex.cpp b/Physics/src/ContactConvexConvex.cpp
+index a0bb17a..2ed6e94 100644
+--- a/Physics/src/ContactConvexConvex.cpp
++++ b/Physics/src/ContactConvexConvex.cpp
+@@ -538,7 +538,7 @@ __declspec(naked) bool nxConvexEdgeBoxOverlap()
+ 		fld	dword ptr [esp + 0x3c]		// 0x000401a4
+ 		fmul	dword ptr [ecx]		// 0x000401a8
+ 		faddp	st(1), st		// 0x000401aa
+-		fmul	dword ptr kConvexHalf		// 0x000401ac
++		fdiv	dword ptr kConvexHalf		// 0x000401ac
+ 		fstp	dword ptr [esp + 8]		// 0x000401b2
+ 		fld	dword ptr [edi]		// 0x000401b6
+ 		fsub	dword ptr [ebx]		// 0x000401b8

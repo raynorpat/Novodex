@@ -1,0 +1,18 @@
+diff --git a/Physics/src/IceMeshBuilder2.cpp b/Physics/src/IceMeshBuilder2.cpp
+index 4adb8d1..6ed311f 100644
+--- a/Physics/src/IceMeshBuilder2.cpp
++++ b/Physics/src/IceMeshBuilder2.cpp
+@@ -528,12 +528,7 @@ __declspec(noinline) bool MeshBuilder2::ComputeNormals()
+ static NxU32 nxMb2X87Word(const float* p)
+ 	{
+ 	NxU32 Bits;
+-	__asm
+-		{
+-		mov		eax, p
+-		fld		dword ptr [eax]
+-		fstp	Bits
+-		}
++	memcpy(&Bits, p, 4);
+ 	return Bits;
+ 	}
+ 

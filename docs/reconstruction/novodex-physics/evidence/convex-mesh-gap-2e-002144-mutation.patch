@@ -1,0 +1,13 @@
+diff --git a/Physics/src/SmoothNormals.cpp b/Physics/src/SmoothNormals.cpp
+index 8f075c0..b441138 100644
+--- a/Physics/src/SmoothNormals.cpp
++++ b/Physics/src/SmoothNormals.cpp
+@@ -174,7 +174,7 @@ L53310:
+ 		faddp	st(2), st		// 0x0005339f
+ 		fxch	st(2)		// 0x000533a1
+ 		fmul	st, st(5)		// 0x000533a3
+-		faddp	st(1), st		// 0x000533a5
++		fsubp	st(1), st		// 0x000533a5
+ 		fpatan		// 0x000533a7
+ 		fstp	dword ptr [esp]		// 0x000533a9
+ 		fstp	st(0)		// 0x000533ac

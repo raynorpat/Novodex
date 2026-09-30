@@ -41,9 +41,93 @@
 #include "NxSegment.h"
 #include "NxMat33.h"
 #include "NxIntersectionBoxBox.h"
+#include "NxUserAllocator.h"
+#include "PhysicsSDK.h"
+#include "NxBoxDistance.h"
+#include "IcePrunable.h"
 
 #include <math.h>
 #include <stddef.h>
+
+static void nxAppendTriggerPair(void* context, const NxCollisionShape* shape0,
+	const NxCollisionShape* shape1);
+
+static void* gNxCollisionDispatchMatrix = 0;
+
+void NxSetCollisionDispatchMatrix(void* matrix)
+	{
+	gNxCollisionDispatchMatrix = matrix;
+	}
+
+void* NxGetCollisionDispatchMatrix()
+	{
+	return gNxCollisionDispatchMatrix ? gNxCollisionDispatchMatrix : nxPhysicsSDKShapePairTable();
+	}
+
+// phys_fn_002348 (0x0005ab80, 719 B)
+// The matrix object has its contact slots at +0x04 and overlap slots at +0x94.
+// The oracle orders by the shape tags before using 6 * low + high; either of
+// the low three bits in either flag byte selects overlap testing.
+void __cdecl NxDispatchShapePair(void* matrix,
+	const NxCollisionShape* shape0, const NxCollisionShape* shape1,
+	void* contactSink, void* context)
+	{
+	if(shape0->type > shape1->type)
+		{
+		const NxCollisionShape* swap = shape0;
+		shape0 = shape1;
+		shape1 = swap;
+		}
+	const NxU32 index = NxCollisionPairIndex(shape0->type, shape1->type);
+	const NxU8 flags0 = *((const NxU8*) shape0 + 0xde);
+	const NxU8 flags1 = *((const NxU8*) shape1 + 0xde);
+	if((flags0 & 7) || (flags1 & 7))
+		{
+		NxShapeOverlapFn* table = (NxShapeOverlapFn*) ((NxU8*) matrix + 0x94);
+		NxShapeOverlapFn overlap = table[index];
+		typedef bool (__cdecl* NxShapeOverlapContextFn)(const NxCollisionShape*,
+			const NxCollisionShape*, void*);
+		if(!overlap || !((NxShapeOverlapContextFn) overlap)(shape0, shape1, context))
+			return;
+
+		// The dispatcher expands the untriggered compound against the triggered
+		// shape. A plain overlap pair is appended as-is; compound children are
+		// independently looked up and successful pairs are appended in order.
+		const NxCollisionShape* compound = (flags1 & 7) ? shape0 : shape1;
+		const NxCollisionShape* other = (flags1 & 7) ? shape1 : shape0;
+		if(compound->type != 5)
+			{
+			nxAppendTriggerPair(context, other, compound);
+			return;
+			}
+		const NxCollisionShape* const* child =
+			*(const NxCollisionShape* const* const*) ((const NxU8*) compound + 0xe0);
+		const NxCollisionShape* const* childEnd =
+			*(const NxCollisionShape* const* const*) ((const NxU8*) compound + 0xe4);
+		for(; child != childEnd; ++child)
+			{
+			const NxCollisionShape* low = other;
+			const NxCollisionShape* high = *child;
+			if(low->type > high->type)
+				{
+				const NxCollisionShape* swap = low;
+				low = high;
+				high = swap;
+				}
+			NxShapeOverlapFn childOverlap = table[NxCollisionPairIndex(low->type, high->type)];
+			if(childOverlap && ((NxShapeOverlapContextFn) childOverlap)(low, high, context))
+				nxAppendTriggerPair(context, low, high);
+			}
+		return;
+		}
+
+	typedef void (__cdecl* NxShapeContactFn)(const NxCollisionShape*,
+		const NxCollisionShape*, void*, void*);
+	NxShapeContactFn* table = (NxShapeContactFn*) ((NxU8*) matrix + 0x04);
+	NxShapeContactFn contact = table[index];
+	if(contact)
+		contact(shape0, shape1, contactSink, context);
+	}
 
 // The four offsets every kernel below reads out of a shape. They are the
 // oracle's, so they are asserted rather than commented.
@@ -54,12 +138,185 @@ static_assert(offsetof(NxCollisionShape, translation) == 0x30, "shape translatio
 static_assert(offsetof(NxCollisionShape, type) == 0xd0, "shape type is at 0xd0");
 static_assert(offsetof(NxCollisionShape, geometry) == 0xe0, "shape geometry union is at 0xe0");
 
-// phys_fn_000943 (0x00020750, 139 B)
-//
-// The row is thiscall on the box (ecx) with four stack arguments, `ret 0x10`
-// (0x100207d8); this is a cdecl free function taking the box first. Its
-// oracle callers 001881 ([PLANE][BOX]) and 001883 call it directly and no
-// table holds it, so the convention is a code-shape difference only.
+// phys_fn_004153 (0x0009a570, 156 B)
+// The scene's pair-key hash uses an ascending 16-bit key pair, a 32-bit avalanche hash, bucket mask at +0x04,
+// bucket heads at +0x08, links at +0x0c and eight-byte records at +0x14.
+void* NxFindCollisionPairRecord(const void* pairMap, NxU16 owner0, NxU16 owner1)
+	{
+	const NxU8* map = (const NxU8*) pairMap;
+	if(!*(const NxU32*) (map + 8))
+		return 0;
+	if(owner1 < owner0)
+		{
+		const NxU16 swap = owner0;
+		owner0 = owner1;
+		owner1 = swap;
+		}
+	NxU32 hash = ((NxU32) owner1 << 16) | owner0;
+	hash += ~(hash << 15);
+	hash = ((NxU32) ((NxI32) hash >> 10) ^ hash) * 9;
+	hash ^= (NxU32) ((NxI32) hash >> 6);
+	hash += ~(hash << 11);
+	const NxU32 bucket = ((NxU32) ((NxI32) hash >> 16) ^ hash) & *(const NxU32*) (map + 4);
+	NxI32 index = ((const NxI32*) *(void* const*) (map + 8))[bucket];
+	if(index == -1)
+		return 0;
+	const NxU8* entries = (const NxU8*) *(void* const*) (map + 0x14);
+	const NxI32* links = (const NxI32*) *(void* const*) (map + 0x0c);
+	while(index != -1)
+		{
+		const NxU8* entry = entries + index * 8;
+		if(*(const NxU16*) entry == owner0 && *(const NxU16*) (entry + 2) == owner1)
+			return (void*) entry;
+		index = links[index];
+		}
+	return 0;
+	}
+
+// phys_fn_004157 (0x0009a920, 476 B)
+// Remove a sorted owner pair from the scene map, preserving its bucket chains
+// while compacting the final live record into the released slot.
+bool NxRemoveCollisionPairRecord(void* pairMap, NxU16 owner0, NxU16 owner1)
+	{
+	NxU8* map = (NxU8*) pairMap;
+	NxI32* buckets = *(NxI32**) (map + 8);
+	if(!buckets)
+		return false;
+	if(owner1 < owner0)
+		{
+		const NxU16 swap = owner0;
+		owner0 = owner1;
+		owner1 = swap;
+		}
+	NxU32 hash = ((NxU32) owner1 << 16) | owner0;
+	hash += ~(hash << 15);
+	hash = (((NxU32) ((NxI32) hash >> 10) ^ hash) * 9);
+	hash ^= (NxU32) ((NxI32) hash >> 6);
+	hash += ~(hash << 11);
+	const NxU32 bucket = (((NxU32) ((NxI32) hash >> 16) ^ hash) & *(NxU32*) (map + 4));
+	NxI32* links = *(NxI32**) (map + 0x0c);
+	NxU32* count = (NxU32*) (map + 0x10);
+	NxU8* entries = (NxU8*) *(void**) (map + 0x14);
+	NxI32 index = buckets[bucket];
+	if(index == -1)
+		return false;
+	const NxI32 bucketHead = index;
+	while(index != -1)
+		{
+		NxU8* entry = entries + index * 8;
+		if(*(NxU16*) entry == owner0 && *(NxU16*) (entry + 2) == owner1)
+			break;
+		index = links[index];
+		}
+	if(index == -1)
+		return false;
+	const NxU32 freeHeadOffset = 0x18;
+	const NxU32 oldFreeHead = *(NxU32*) (map + freeHeadOffset);
+	const NxU32 newCount = *count - 1;
+	if(index == bucketHead)
+		buckets[bucket] = links[index];
+	else
+		{
+		NxI32 previous = bucketHead;
+		while(links[previous] != index)
+			previous = links[previous];
+		links[previous] = links[index];
+		}
+	*(NxU32*) (entries + index * 8 + 4) = oldFreeHead;
+	*(NxU16*) (entries + index * 8) = 0xffff;
+	*(NxU16*) (entries + index * 8 + 2) = 0xffff;
+	*(NxU32*) (map + freeHeadOffset) = (NxU32) index;
+	if(index == newCount)
+		{
+		*(NxU32*) (map + freeHeadOffset) = oldFreeHead;
+		*count = newCount;
+		return true;
+		}
+	const NxU32 last = newCount;
+	NxU8* lastEntry = entries + last * 8;
+	NxU16 moved0 = *(NxU16*) lastEntry;
+	NxU16 moved1 = *(NxU16*) (lastEntry + 2);
+	if(moved1 < moved0)
+		{
+		const NxU16 swap = moved0;
+		moved0 = moved1;
+		moved1 = swap;
+		}
+	NxU32 movedHash = ((NxU32) moved1 << 16) | moved0;
+	movedHash += ~(movedHash << 15);
+	movedHash = (((NxU32) ((NxI32) movedHash >> 10) ^ movedHash) * 9);
+	movedHash ^= (NxU32) ((NxI32) movedHash >> 6);
+	movedHash += ~(movedHash << 11);
+	const NxU32 movedBucket = (((NxU32) ((NxI32) movedHash >> 16) ^ movedHash) & *(NxU32*) (map + 4));
+	NxI32* predecessor = &buckets[movedBucket];
+	while(*predecessor != (NxI32) last)
+		predecessor = &links[*predecessor];
+	*predecessor = links[last];
+	memcpy(entries + index * 8, lastEntry, 8);
+	links[index] = buckets[movedBucket];
+	buckets[movedBucket] = index;
+	*(NxU32*) (map + freeHeadOffset) = oldFreeHead;
+	*count = newCount;
+	return true;
+	}
+
+// phys_fn_000529 (0x00010570, 134 B)
+// Filter flags, symmetric collision-group masks and the scene's owner-pair record in that order.
+bool NxFilterShapePair(const NxU32* groupMasks, const void* pairMap,
+	const NxCollisionShape* shape0, const NxCollisionShape* shape1)
+	{
+	if((*((const NxU8*) shape0 + 0xde) & 0x10) || (*((const NxU8*) shape1 + 0xde) & 0x10))
+		return false;
+	const NxU16 group0 = *(const NxU16*) ((const NxU8*) shape0 + 0xd8);
+	const NxU16 group1 = *(const NxU16*) ((const NxU8*) shape1 + 0xd8);
+	if(group0 != 0xffff && group1 != 0xffff &&
+		!(groupMasks[group0] & (1u << (group1 & 0x1f))))
+		return false;
+	void* record = NxFindCollisionPairRecord(pairMap,
+		*(const NxU16*) ((const NxU8*) shape0 + 0xd4),
+		*(const NxU16*) ((const NxU8*) shape1 + 0xd4));
+	return !record || ((~*(const NxU32*) ((const NxU8*) record + 4) & 1) != 0);
+	}
+
+static void nxAppendTriggerPair(void* context, const NxCollisionShape* shape0,
+	const NxCollisionShape* shape1);
+
+struct NxTriggerPairArray
+	{
+	NxCollisionShape** begin;
+	NxCollisionShape** end;
+	NxCollisionShape** capacity;
+	};
+
+static void nxAppendTriggerPair(void* context, const NxCollisionShape* shape0,
+	const NxCollisionShape* shape1)
+	{
+	NxTriggerPairArray* array = (NxTriggerPairArray*) ((NxU8*) context + 0x5d8);
+	if(array->capacity <= array->end)
+		{
+		const NxU32 count = array->begin
+			? (NxU32) ((NxU8*) array->end - (NxU8*) array->begin) / 8 : 0;
+		const NxU32 held = array->begin
+			? (NxU32) ((NxU8*) array->capacity - (NxU8*) array->begin) / 8 : 0;
+		const NxU32 wanted = count * 2 + 2;
+		if(held < wanted)
+			{
+			NxCollisionShape** block = (NxCollisionShape**) nxFoundationSDKAllocator->malloc(
+				(size_t) wanted * 8, NX_MEMORY_PERSISTENT);
+			for(NxU32 i = 0; i < count * 2; ++i)
+				block[i] = array->begin[i];
+			if(array->begin)
+				nxFoundationSDKAllocator->free(array->begin);
+			array->begin = block;
+			array->end = block + count * 2;
+			array->capacity = block + wanted * 2;
+			}
+		}
+	*array->end++ = (NxCollisionShape*) shape0;
+	*array->end++ = (NxCollisionShape*) shape1;
+	}
+
+// phys_fn_000943 at 0x00020750.
 //
 // The signs arrive as full ints and are converted with `fild`, not folded into
 // the constant, so the caller is free to pass anything; the plane/box entry
@@ -753,4 +1010,206 @@ double __cdecl NxSegmentSegmentSquareDistance(const NxSegment* segment0,
 	// 0x000345a6, and it is a sign clear rather than a test, which is what
 	// makes a negative NaN come back positive.
 	return fabs(result);
+	}
+
+// ---------------------------------------------------------------------------
+// convex-mesh gap Task 2a: the matrix B entries that reach the box distance
+// kernels of Distance.cpp (units/convex-mesh-gap-contract.md, sub-units G, J
+// and K), and matrix B [CAPSULE][CAPSULE].
+
+// The capsule's axis segment, the construction phys_fn_001921 above writes out
+// in place. 0x0003b0e7..0x0003b175 (001751), 0x0003d898..0x0003d932 and
+// 0x0003d936..0x0003d996 (001774, once per capsule) and 0x0003f39d..0x0003f427
+// (001785) are the same instructions over different frame slots: the x
+// component of the half axis is narrowed and read back, y and z stay in
+// registers, and -z is narrowed before it is added.
+static __forceinline void nxCapsuleSegment(const NxCollisionShape* capsule, NxSegment* segment)
+	{
+	const NxReal* m = capsule->rotation;
+	const NxReal* t = capsule->translation;
+
+	const NxReal halfHeight = capsule->geometry[1];
+	const NxReal axisX = (NxReal) ((double) m[1] * halfHeight);
+	const double axisY = (double) m[4] * halfHeight;
+	const double axisZ = (double) m[7] * halfHeight;
+	const NxReal negatedAxisZ = (NxReal) (-axisZ);
+
+	segment->p0.x = (NxReal) (-(double) axisX + t[0]);
+	segment->p0.y = (NxReal) (-axisY + t[1]);
+	segment->p0.z = (NxReal) ((double) negatedAxisZ + t[2]);
+	segment->p1.x = (NxReal) ((double) axisX + t[0]);
+	segment->p1.y = (NxReal) (axisY + t[1]);
+	segment->p1.z = (NxReal) (axisZ + t[2]);
+	}
+
+// The world box of a shape's pruning handle: the Prunable at Shape+0xa4
+// (Physics/src/opcode/IcePrunable.h), i.e. Prunable::GetUpdatedWorldAABB
+// inlined with its UpdateWorldAABB left as a call -- 0x0003f413..0x0003f45f in
+// 001785, 0x0003f5b8..0x0003f5fd in 001789, 0x0003f718..0x0003f765 in 001791,
+// each `call 0x100b55b0` (phys_fn_004886). The pruner is loaded before the
+// handle is tested. An invalid handle gives a null box, which all three
+// entries then dereference, as the oracle does.
+const NxReal* NxShapeWorldBounds(const NxCollisionShape* shape)
+	{
+	Prunable* prunable = (Prunable*) ((NxU8*) shape + 0xa4);
+	Pruner* pruner = prunable->mPruner;
+	if(prunable->mHandle == PRUNABLE_INVALID_HANDLE)
+		return 0;
+	if(!(prunable->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
+		prunable->UpdateWorldAABB(&pruner->mPool.mWorldBoxes[prunable->mHandle]);
+	return (const NxReal*) &pruner->mPool.mWorldBoxes[prunable->mHandle];
+	}
+
+// The box the three compound entries build from those bounds (min at +0,
+// max at +0xc): centre and half size, each of x and y narrowed before the
+// halving and z halved in the register it was formed in, with an identity
+// rotation written as nine immediates. 001785 and 001789 form each centre sum
+// as max + min, 001791 as min + max; the sum is the same.
+static __forceinline void nxBoundsBox(const NxReal* bounds, NxCollisionBoxData* box)
+	{
+	const NxReal sumX = (NxReal) ((double) bounds[3] + bounds[0]);
+	const NxReal sumY = (NxReal) ((double) bounds[4] + bounds[1]);
+	const double sumZ = (double) bounds[5] + bounds[2];
+	box->center[0] = (NxReal) ((double) sumX * 0.5f);
+	box->center[1] = (NxReal) ((double) sumY * 0.5f);
+	box->center[2] = (NxReal) (sumZ * 0.5f);
+
+	const NxReal sizeX = (NxReal) ((double) bounds[3] - bounds[0]);
+	const NxReal sizeY = (NxReal) ((double) bounds[4] - bounds[1]);
+	const double sizeZ = (double) bounds[5] - bounds[2];
+	box->extents[0] = (NxReal) ((double) sizeX * 0.5f);
+	box->extents[1] = (NxReal) ((double) sizeY * 0.5f);
+	box->extents[2] = (NxReal) (sizeZ * 0.5f);
+
+	for(int i = 0; i < 9; ++i)
+		box->rotation[i] = (i % 4 == 0) ? 1.0f : 0.0f;
+	}
+
+// phys_fn_001751 (0x0003b0e0, 370 B)
+// Matrix B [BOX][CAPSULE]. A sphere of the capsule's radius at each end of its
+// axis against the box through phys_fn_001913, and only when neither overlaps
+// the axis segment against the box through phys_fn_001688 (null parameter
+// and point), against the squared radius. The radius is narrowed into two
+// slots (0x0003b0f3 and 0x0003b180); the squared distance is compared as the
+// register the kernel returned (0x0003b23d `fcompp`), strictly.
+bool __cdecl NxOverlapBoxCapsule(const NxCollisionShape* box, const NxCollisionShape* capsule)
+	{
+	const NxReal radius = capsule->geometry[0];
+
+	NxSegment segment;
+	nxCapsuleSegment(capsule, &segment);
+
+	NxCollisionBoxData boxData;
+	boxData.center[0] = box->translation[0];
+	boxData.center[1] = box->translation[1];
+	boxData.center[2] = box->translation[2];
+	boxData.extents[0] = box->geometry[1];
+	boxData.extents[1] = box->geometry[2];
+	boxData.extents[2] = box->geometry[3];
+	for(int i = 0; i < 9; ++i)
+		boxData.rotation[i] = box->rotation[i];
+
+	NxCollisionSphereData sphere;
+	sphere.center[0] = segment.p0.x;
+	sphere.center[1] = segment.p0.y;
+	sphere.center[2] = segment.p0.z;
+	sphere.radius = radius;
+	if(NxOverlapSphereBoxData(&sphere, &boxData))
+		return true;
+
+	sphere.center[0] = segment.p1.x;
+	sphere.center[1] = segment.p1.y;
+	sphere.center[2] = segment.p1.z;
+	sphere.radius = radius;
+	if(NxOverlapSphereBoxData(&sphere, &boxData))
+		return true;
+
+	const double squared = NxSegmentBoxSquareDistance(&segment, boxData.center,
+		boxData.extents, boxData.rotation, 0, 0);
+	return (double) radius * radius > squared;
+	}
+
+// phys_fn_001774 (0x0003d890, 320 B)
+// Matrix B [CAPSULE][CAPSULE]. The two axis segments through phys_fn_001690,
+// whose parameters go to the caller's two argument slots, against the sum of
+// the radii squared -- and unlike [SPHERE][CAPSULE] the sum is NOT narrowed:
+// `fld [esi+0xe0]; fadd [edi+0xe0]; fld st(0); fmul st(1)` at 0x0003d9a0 keeps
+// it on the stack. Strict, and an unordered compare is false (0x0003d9bf
+// `test ah,5; jp`).
+bool __cdecl NxOverlapCapsuleCapsule(const NxCollisionShape* capsule0, const NxCollisionShape* capsule1)
+	{
+	NxSegment segment0;
+	NxSegment segment1;
+	nxCapsuleSegment(capsule0, &segment0);
+	nxCapsuleSegment(capsule1, &segment1);
+
+	NxReal parameter0;
+	NxReal parameter1;
+	const double squared = NxSegmentSegmentSquareDistance(&segment0, &segment1,
+		&parameter0, &parameter1);
+	const double radiusSum = (double) capsule0->geometry[0] + capsule1->geometry[0];
+	return squared < radiusSum * radiusSum;
+	}
+
+// phys_fn_001785 (0x0003f390, 471 B)
+// Matrix B [CAPSULE][COMPOUND]. Not a walk over children: the capsule's axis
+// against ONE box, the compound shape's own world bounds, through segment/box
+// (phys_fn_001688) with null outputs, against the squared radius (copied as a
+// word at 0x0003f3a6 and squared from that copy at 0x0003f545).
+bool __cdecl NxOverlapCapsuleCompound(const NxCollisionShape* capsule, const NxCollisionShape* compound)
+	{
+	const NxReal radius = capsule->geometry[0];
+
+	NxSegment segment;
+	nxCapsuleSegment(capsule, &segment);
+
+	NxCollisionBoxData boxData;
+	nxBoundsBox(NxShapeWorldBounds(compound), &boxData);
+
+	const double squared = NxSegmentBoxSquareDistance(&segment, boxData.center,
+		boxData.extents, boxData.rotation, 0, 0);
+	return (double) radius * radius > squared;
+	}
+
+// phys_fn_001789 (0x0003f5b0, 334 B)
+// Matrix B [SPHERE][COMPOUND]. The sphere against the compound's world bounds
+// through phys_fn_001913.
+bool __cdecl NxOverlapSphereCompound(const NxCollisionShape* sphere, const NxCollisionShape* compound)
+	{
+	NxCollisionBoxData boxData;
+	nxBoundsBox(NxShapeWorldBounds(compound), &boxData);
+
+	NxCollisionSphereData sphereData;
+	sphereData.center[0] = sphere->translation[0];
+	sphereData.center[1] = sphere->translation[1];
+	sphereData.center[2] = sphere->translation[2];
+	sphereData.radius = sphere->geometry[0];
+
+	return NxOverlapSphereBoxData(&sphereData, &boxData);
+	}
+
+// phys_fn_001791 (0x0003f700, 418 B)
+// Matrix B [BOX][COMPOUND]. False at once unless the box carries one of the
+// three low bits of its flag word at Shape+0xde (0x0003f70b `test byte ptr
+// [ebx+0xde], 7`), and otherwise the compound's world bounds against the box
+// through NxBoxBoxIntersect (phys_fn_001702, 0x00036690) with the BOUNDS as
+// the first box, the identity as its rotation, and `fullTest` set.
+bool __cdecl NxOverlapBoxCompound(const NxCollisionShape* box, const NxCollisionShape* compound)
+	{
+	if(!(*((const NxU8*) box + 0xde) & 7))
+		return false;
+
+	NxCollisionBoxData boundsData;
+	nxBoundsBox(NxShapeWorldBounds(compound), &boundsData);
+
+	NxVec3 extents0(boundsData.extents[0], boundsData.extents[1], boundsData.extents[2]);
+	NxVec3 center0(boundsData.center[0], boundsData.center[1], boundsData.center[2]);
+	NxMat33 rotation0;
+	rotation0.setRowMajor(boundsData.rotation);
+	NxVec3 extents1(box->geometry[1], box->geometry[2], box->geometry[3]);
+	NxVec3 center1(box->translation[0], box->translation[1], box->translation[2]);
+	NxMat33 rotation1;
+	rotation1.setRowMajor(box->rotation);
+
+	return NxBoxBoxIntersect(extents0, center0, rotation0, extents1, center1, rotation1, true);
 	}

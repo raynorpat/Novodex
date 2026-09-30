@@ -27,7 +27,11 @@ typedef void (NX_CALL_CONV *NormalToTangentsFn)(const NxVec3&, NxVec3&, NxVec3&)
 static NormalToTangentsFn nxNormalToTangents = 0;
 
 static NxU32 nxBits(float v) { NxU32 b; memcpy(&b, &v, 4); return b; }
-static float nxFloat(NxU32 b) { float v; memcpy(&v, &b, 4); return v; }
+// A word written into a float slot as bits. Never a float return value: under the
+// x86 ABI that travels in st(0), where a signalling NaN -- the output poison below
+// is one -- would be quieted, or not, as the call site happened to be inlined
+// (convex-mesh gap harness hardening).
+static void nxSetBits(float* slot, NxU32 b) { memcpy(slot, &b, 4); }
 
 // The oracle's threshold is a double; these are the floats either side of it.
 static const NxU32 nxBelowThreshold = 0x3f3504f3u;	// 0.70710677 -- takes the n.x/n.y arm
@@ -48,8 +52,12 @@ static void nxRun(const NxVec3& n, NxVec3& t1, NxVec3& t2)
 	{
 	// Poisoned outputs, so a store the function skips shows up as a word
 	// rather than as whatever the previous case left behind.
-	t1.x = t1.y = t1.z = nxFloat(0x7fa5a5a5u);
-	t2.x = t2.y = t2.z = nxFloat(0x7fa5a5a5u);
+	nxSetBits(&t1.x, 0x7fa5a5a5u);
+	nxSetBits(&t1.y, 0x7fa5a5a5u);
+	nxSetBits(&t1.z, 0x7fa5a5a5u);
+	nxSetBits(&t2.x, 0x7fa5a5a5u);
+	nxSetBits(&t2.y, 0x7fa5a5a5u);
+	nxSetBits(&t2.z, 0x7fa5a5a5u);
 	nxNormalToTangents(n, t1, t2);
 	if(nxTakesZArm(n))
 		nxArmZ++;
@@ -59,7 +67,10 @@ static void nxRun(const NxVec3& n, NxVec3& t1, NxVec3& t2)
 
 static void nxShow(const char* tag, NxU32 x, NxU32 y, NxU32 z)
 	{
-	const NxVec3 n(nxFloat(x), nxFloat(y), nxFloat(z));
+	NxVec3 n;
+	nxSetBits(&n.x, x);
+	nxSetBits(&n.y, y);
+	nxSetBits(&n.z, z);
 	NxVec3 t1, t2;
 	nxRun(n, t1, t2);
 	printf("tangent case=%s arm=%s n=%08x.%08x.%08x t1=%08x.%08x.%08x t2=%08x.%08x.%08x\n",
@@ -79,10 +90,22 @@ static NxU32 nxNext()
 	}
 
 // A finite float in [-range, range) with a random sign.
-static float nxUniform(float range)
+// Returned in a four-byte struct, never as a float (convex-mesh gap Task 2g
+// review): a float return travels in st(0), and whether a caller then
+// computes in x87 or SSE follows the compiler's inlining; a four-byte
+// struct comes back in eax either way. Every call site was inlined, so the
+// values are the ones the registered lines were measured on.
+struct NxUniformDraw
+	{
+	float value;
+	};
+
+static NxUniformDraw nxUniform(float range)
 	{
 	const float unit = float(nxNext() >> 8) * (1.0f / 16777216.0f);
-	return (unit * 2.0f - 1.0f) * range;
+	NxUniformDraw draw;
+	draw.value = (unit * 2.0f - 1.0f) * range;
+	return draw;
 	}
 
 static NxU32 nxFold(NxU32 digest, NxU32 word)
@@ -182,21 +205,34 @@ int wmain(int argc, wchar_t** argv)
 	const NxU32 scaledCount = 60000;
 	NxU32 digest = 2166136261u;
 	for(NxU32 i = 0; i < unitCount; ++i)
-		digest = nxFoldCase(digest, NxVec3(nxUniform(1.0f), nxUniform(1.0f), nxUniform(1.0f)));
+		{
+		// Sequenced: as one expression the draws' order was the compiler's.
+		const float unitZ = nxUniform(1.0f).value;
+		const float unitY = nxUniform(1.0f).value;
+		const float unitX = nxUniform(1.0f).value;
+		digest = nxFoldCase(digest, NxVec3(unitX, unitY, unitZ));
+		}
 	for(NxU32 i = 0; i < thresholdCount; ++i)
 		{
 		NxU32 zBits = nxBelowThreshold - 64u + (nxNext() & 127u);
 		if(nxNext() & 1u)
 			zBits |= 0x80000000u;
-		const float x = (nxNext() & 3u) == 0u ? 0.0f : nxUniform(0.7f);
-		digest = nxFoldCase(digest, NxVec3(x, nxUniform(0.7f), nxFloat(zBits)));
+		const float x = (nxNext() & 3u) == 0u ? 0.0f : nxUniform(0.7f).value;
+		float z;
+		nxSetBits(&z, zBits);
+		digest = nxFoldCase(digest, NxVec3(x, nxUniform(0.7f).value, z));
 		}
 	for(NxU32 i = 0; i < scaledCount; ++i)
 		{
 		// A power of two between 2^-40 and 2^40, so the products stay finite
 		// in a double and the arm split is the same as at unit scale.
-		const float scale = nxFloat((127u - 40u + (nxNext() % 81u)) << 23);
-		digest = nxFoldCase(digest, NxVec3(nxUniform(scale), nxUniform(scale), nxUniform(scale)));
+		float scale;
+		nxSetBits(&scale, (127u - 40u + (nxNext() % 81u)) << 23);
+		// Sequenced: as one expression the draws' order was the compiler's.
+		const float scaledZ = nxUniform(scale).value;
+		const float scaledY = nxUniform(scale).value;
+		const float scaledX = nxUniform(scale).value;
+		digest = nxFoldCase(digest, NxVec3(scaledX, scaledY, scaledZ));
 		}
 	printf("tangent sweep unit=%u threshold=%u scaled=%u digest=%08x\n",
 		unitCount, thresholdCount, scaledCount, digest);

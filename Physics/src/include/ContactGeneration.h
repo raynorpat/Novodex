@@ -69,11 +69,21 @@ struct NxContactSink
 	NxU8   tail[2];
 	};
 
-// Row 000873 at 0x0001d610. __thiscall on the sink, seven stack arguments,
+// phys_fn_002354 (0x0005b620): reset the sink state at +0x10 and reserve its
+// initial pair-counter word in the Container at +0x38.
+void __fastcall NxContactSinkResetState(NxU32* sinkState);
+
+// phys_fn_000873 at 0x0001d610. __thiscall on the sink, seven stack arguments,
 // `ret 0x1c`.
 void NxEmitContact(NxContactSink* sink, void* object1, void* object0,
 	NxU32 separationBits, const NxVec3* point, const NxVec3* normal,
 	NxU16 featureId0, NxU16 featureId1);
+
+// Adapter for oracle-transcribed assembly call sites: sink arrives in ECX and
+// the seven remaining arguments are callee-cleaned from the stack.
+void __fastcall NxEmitContactThiscall(NxContactSink* sink, NxU32 edx,
+	void* object1, void* object0, NxU32 separationBits,
+	const NxVec3* point, const NxVec3* normal, NxU16 featureId0, NxU16 featureId1);
 
 // phys_fn_001901 at 0x00048a70, matrix A slot [PLANE][SPHERE].
 void __cdecl NxContactPlaneSphere(const NxCollisionShape* plane,
@@ -348,5 +358,72 @@ int NxBoxBoxTransposedPair(NxVec3* points, NxReal* separations, NxVec3* normal,
 // nxReserve: it stops rather than overruns.
 void __cdecl NxContactBoxBox(const NxCollisionShape* box0,
 	const NxCollisionShape* box1, NxContactSink* sink, void* context);
+
+// phys_fn_001795 (0x0003fa10, 29 B)
+// phys_fn_001797 (0x0003fa30, 77 B)
+// phys_fn_001799 (0x0003fa80, 409 B)
+// phys_fn_001801 (0x0003fc20, 346 B)
+// These are the matrix-A compound entry and its two child-pair continuations.
+void __cdecl NxContactCompoundShape(const NxCollisionShape* shape,
+	const NxCollisionShape* compound, NxContactSink* sink, void* context);
+void __cdecl NxContactCompoundCompound(const NxCollisionShape* compound0,
+	const NxCollisionShape* compound1, NxContactSink* sink, void* context);
+
+// Row phys_fn_001753 at 0x0003b260, matrix A [BOX][CAPSULE] (convex-mesh gap
+// Task 2a). Its swept path raycasts through the BOX's vtable slot 5, so a box
+// driven into it needs a vtable, as a plane driven into phys_fn_001891 does.
+void __cdecl NxContactBoxCapsule(const NxCollisionShape* box,
+	const NxCollisionShape* capsule, NxContactSink* sink, void* context);
+
+// convex-mesh gap Task 2g (ContactGeneration.cpp and ContactConvexConvex.cpp;
+// units/convex-mesh-gap-contract.md, P-Emit, P-Plane and sub-unit L). All are
+// the listing's instructions, naked; the register-argument rows are declared
+// without parameters and are only called from naked rows.
+
+// 000875 at 0x0001d8e0: the emitter with feature words, thiscall on
+// the sink with nine stack arguments (`ret 0x24`).
+void __fastcall NxEmitContactFeatures(NxContactSink* sink, NxU32 edx, void* object1, void* object0,
+	NxU32 separationBits, const NxVec3* point, const NxVec3* normal, NxU32 featureId0, NxU32 featureId1,
+	NxU32 featureWord0, NxU32 featureWord1);
+
+// 001903 at 0x00048b30: eax the count, ecx the vertices; caller cleans.
+NxU32 nxPolygonContainsPoint(float x, float y);
+
+// 001907 at 0x00048bd0: register arguments edx, ecx, esi, ebx.
+NxU32 nxClipEdgeToPolygonPlane();
+
+// 001909 at 0x00048e30: cdecl, 22 arguments (see the definition).
+void NxConvexPolygonContacts();
+
+// 001820 at 0x000411a0: the convex/convex entry, matrix-A signature.
+void NxContactConvexConvex(const NxCollisionShape* shape0, const NxCollisionShape* shape1,
+	NxContactSink* sink, void* context);
+
+// convex-mesh gap Task 2h (ContactConvexHeightfield.cpp; sub-unit M's first
+// half, 0x00041360..0x000427cf). Every row takes register arguments with the
+// caller cleaning the stack (see the definitions), so they are declared without
+// parameters; their callers are 001844 and 001849 (Task 2i).
+bool nxConvexMeshRay();					// 001822: ecx origin, eax direction, ebx hull; 3 stack
+void nxConvexMeshProject();				// 001824: ebx, esi, edi; 4 stack
+bool nxConvexMeshAxis();				// 001826: ecx, eax, edx; 6 stack
+bool nxConvexMeshFaceAxesAll();			// 001828: edi, esi; 8 stack
+bool nxConvexMeshInterval();			// 001830: ecx, eax, esi, edi; 4 stack
+bool nxConvexMeshFaceAxes();			// 001832: ebx; 12 stack
+bool nxConvexMeshTriangleAxis();		// 001833: ecx, edx, esi, edi; 7 stack
+void nxConvexMeshEdgeDirections();		// 001834: ecx, eax; 5 stack
+bool nxConvexMeshCrossAxes();			// 001836 with 001838: eax, ebx, edx; 11 stack
+bool nxConvexMeshEdgeAxes();			// 001840: ebx; 16 stack
+void nxConvexMeshContacts();			// 001842: edx, ebx, esi, edi; 13 stack
+
+// convex-mesh gap Task 2i (ContactConvexHeightfield.cpp; sub-unit M's second
+// half). The entries have the matrix-A signature; 001844, 001849 and 001851 are
+// cdecl and only called from naked rows (see the definitions).
+void nxConvexHeightfieldContacts();		// 001844 with 001846: cdecl, 8 arguments
+void __cdecl NxContactConvexHeightfield(const NxCollisionShape* convex, const NxCollisionShape* heightfield,
+	NxContactSink* sink, void* context);	// 001847
+void nxConvexMeshContact();				// 001849: cdecl, 9 arguments
+void nxContactConvexMeshEntry();		// 001851: cdecl, the matrix-A signature
+void __cdecl NxContactConvexMesh(const NxCollisionShape* convex, const NxCollisionShape* mesh,
+	NxContactSink* sink, void* context);	// 001853, a jmp to 001851
 
 #endif

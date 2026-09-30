@@ -1,0 +1,221 @@
+diff --git a/Physics/src/ContactConvexHeightfield.cpp b/Physics/src/ContactConvexHeightfield.cpp
+index 69d13a7..ca4a378 100644
+--- a/Physics/src/ContactConvexHeightfield.cpp
++++ b/Physics/src/ContactConvexHeightfield.cpp
+@@ -64,6 +64,10 @@ extern "C" void _chkstk();								// 005695, the stack probe
+ 
+ // .rdata 0x101041f0 (0.0f), 0x101041ec (1.0f) and the double 1e-6 at
+ // 0x10107c58 (shared with 001816).
++
++// THROWAWAY bind hooks (Task 2i attribution); never commit.
++void* gNxDbgObb2i = 0; void* gNxDbgSeg2i = 0; void* gNxDbgLine2i = 0; void* gNxDbgArea2i = 0;
++void* gNxDbgCenter2i = 0; void* gNxDbgInvert2i = 0; void* gNxDbgPlane2i = 0;
+ static const float kConvexMeshZero = 0.0f;
+ static const float kConvexMeshOne = 1.0f;
+ static const double kConvexMeshMicro = 1e-6;
+@@ -111,7 +115,13 @@ __declspec(naked) bool nxConvexMeshRay()
+ 		lea	edi, [esp + 0x54]		// 0x000413a6
+ 		rep movsd		// 0x000413aa
+ 		lea	ecx, [esp + 0x54]		// 0x000413ac
++		cmp	dword ptr gNxDbgInvert2i, 0
++		je	DbgInvert1V
++		call	gNxDbgInvert2i
++		jmp	DbgInvert1D
++DbgInvert1V:
+ 		call	nxConvexMeshCallInvert		// 0x000413b0
++DbgInvert1D:
+ 		mov	ecx, dword ptr [esp + 0x58]		// 0x000413b5
+ 		fld	dword ptr [esp + 0x68]		// 0x000413b9
+ 		mov	eax, dword ptr [esp + 0x54]		// 0x000413bd
+@@ -2593,7 +2603,13 @@ L42b12:
+ 		lea	edx, [ebp - 0x2c]		// 0x00042c8d
+ 		push	edx		// 0x00042c90
+ 		fstp	dword ptr [ebp - 0x10]		// 0x00042c91
++		cmp	dword ptr gNxDbgPlane2i, 0
++		je	DbgPlane1V
++		call	gNxDbgPlane2i
++		jmp	DbgPlane1D
++DbgPlane1V:
+ 		call	NxTrianglePlane		// 0x00042c94
++DbgPlane1D:
+ 		mov	eax, dword ptr [ebp + 0x2c]		// 0x00042c99
+ 		xor	esi, esi		// 0x00042c9c
+ 		test	eax, eax		// 0x00042c9e
+@@ -2962,7 +2978,13 @@ L43063:
+ 		push	edx		// 0x000430a7
+ 		push	eax		// 0x000430a8
+ 		push	ecx		// 0x000430a9
++		cmp	dword ptr gNxDbgSeg2i, 0
++		je	DbgSeg1V
++		call	gNxDbgSeg2i
++		jmp	DbgSeg1D
++DbgSeg1V:
+ 		call	NxSegmentTriangleEdge		// 0x000430aa
++DbgSeg1D:
+ 		add	esp, 0x1c		// 0x000430af
+ 		test	eax, eax		// 0x000430b2
+ 		je	L43285		// 0x000430b4
+@@ -2996,7 +3018,13 @@ L43063:
+ 		fld	dword ptr [esi + 8]		// 0x00043110
+ 		fsub	dword ptr [edi + 8]		// 0x00043113
+ 		fstp	dword ptr [ebp - 0xa8]		// 0x00043116
++		cmp	dword ptr gNxDbgLine2i, 0
++		je	DbgLine1V
++		call	gNxDbgLine2i
++		jmp	DbgLine1D
++DbgLine1V:
+ 		call	NxLineLineClosestPoints		// 0x0004311c
++DbgLine1D:
+ 		fld	dword ptr [edi]		// 0x00043121
+ 		mov	eax, dword ptr [ebp - 0x90]		// 0x00043123
+ 		fsub	dword ptr [esi]		// 0x00043129
+@@ -3358,7 +3386,13 @@ L434ab:
+ 		add	eax, 0x244		// 0x000435e2
+ 		push	eax		// 0x000435e7
+ 		mov	ecx, ebx		// 0x000435e8
++		cmp	dword ptr gNxDbgObb2i, 0
++		je	DbgObb1V
++		call	gNxDbgObb2i
++		jmp	DbgObb1D
++DbgObb1V:
+ 		call	nxConvexMeshCallObbCollide		// 0x000435ea
++DbgObb1D:
+ 		test	al, al		// 0x000435ef
+ 		jne	L43626		// 0x000435f1
+ 		mov	ecx, dword ptr nxConvexMeshFoundationInstanceSlot		// 0x000435f3
+@@ -3490,7 +3524,13 @@ __declspec(naked) void nxConvexMeshContact()
+ 		push	eax		// 0x000436f8
+ 		push	ecx		// 0x000436f9
+ 		mov	ecx, ebx		// 0x000436fa
++		cmp	dword ptr gNxDbgObb2i, 0
++		je	DbgObb2V
++		call	gNxDbgObb2i
++		jmp	DbgObb2D
++DbgObb2V:
+ 		call	nxConvexMeshCallObbCollide		// 0x000436fc
++DbgObb2D:
+ 		test	al, al		// 0x00043701
+ 		jne	L4373d		// 0x00043703
+ 		mov	edx, dword ptr nxConvexMeshFoundationInstanceSlot		// 0x00043705
+@@ -3771,12 +3811,24 @@ L439e2:
+ 		mov	eax, dword ptr [eax + 8]		// 0x00043a6e
+ 		lea	ecx, [ebp - 0xd4]		// 0x00043a71
+ 		mov	dword ptr [ebp - 0xb4], eax		// 0x00043a77
++		cmp	dword ptr gNxDbgArea2i, 0
++		je	DbgArea1V
++		call	gNxDbgArea2i
++		jmp	DbgArea1D
++DbgArea1V:
+ 		call	nxConvexMeshCallTriangleArea		// 0x00043a7d
++DbgArea1D:
+ 		fstp	dword ptr [ebp + 0x50]		// 0x00043a82
+ 		lea	ecx, [ebp - 0xa0]		// 0x00043a85
+ 		push	ecx		// 0x00043a8b
+ 		lea	ecx, [ebp - 0xd4]		// 0x00043a8c
++		cmp	dword ptr gNxDbgCenter2i, 0
++		je	DbgCenter1V
++		call	gNxDbgCenter2i
++		jmp	DbgCenter1D
++DbgCenter1V:
+ 		call	nxConvexMeshCallTriangleCenter		// 0x00043a92
++DbgCenter1D:
+ 		fld	dword ptr [ebp - 0xa0]		// 0x00043a97
+ 		fmul	dword ptr [ebp + 0x50]		// 0x00043a9d
+ 		mov	ecx, dword ptr [ebp + 0x38]		// 0x00043aa0
+diff --git a/Physics/src/Geometry.cpp b/Physics/src/Geometry.cpp
+index b47c94c..33ab9f2 100644
+--- a/Physics/src/Geometry.cpp
++++ b/Physics/src/Geometry.cpp
+@@ -603,6 +603,7 @@ returnFalse:
+ // before the first compare only through `add ebp, -2; je` (0x00036d99), so a
+ // count below 2 is an unsigned loop, as in the oracle. u and v land in the
+ // caller's first two argument slots there; they are locals here.
++void* gNxDbgInflate2i = 0;
+ bool __cdecl NxRayInflatedTriangleFan(NxU32 count, const NxVec3* vertices, const NxU32* indices,
+ 	const NxRay* ray, NxReal* t)
+ 	{
+@@ -627,6 +628,9 @@ bool __cdecl NxRayInflatedTriangleFan(NxU32 count, const NxVec3* vertices, const
+ 		const NxVec3& third = vertices[indices[1]];
+ 		memcpy(&corners[2], &third, sizeof(NxVec3));
+ 		--remaining;
++		if(gNxDbgInflate2i)
++			((void(__thiscall*)(void*, float, bool)) gNxDbgInflate2i)(corners, 0.02f, false);
++		else
+ 		reinterpret_cast<IceMaths::Triangle*>(corners)->Inflate(0.02f, false);
+ 		float u;
+ 		float v;
+diff --git a/Physics/src/IceMeshTools.cpp b/Physics/src/IceMeshTools.cpp
+index 4ebef2b..986bbd8 100644
+--- a/Physics/src/IceMeshTools.cpp
++++ b/Physics/src/IceMeshTools.cpp
+@@ -818,6 +818,7 @@ L31d9c:
+ // sets per element (the 2003 compiler reassociated them), formed in a register
+ // and stored as a float into a 16-float local that is then copied out (rep
+ // movsd). The listing also zeroes one local dword it never reads (0x00031dc2).
++void* gNxDbgInvertPR2i = 0;
+ // The listing's instructions, naked (see the top of the file).
+ __declspec(naked) void __cdecl nxIcePosePair(IceMaths::Matrix4x4* /*relative0*/,
+ 	IceMaths::Matrix4x4* /*relative1*/, const IceMaths::Matrix4x4* /*pose0*/,
+@@ -836,7 +837,13 @@ __declspec(naked) void __cdecl nxIcePosePair(IceMaths::Matrix4x4* /*relative0*/,
+ 		lea	eax, [esp + 0x4c]		// 0x00031dcf
+ 		push	esi		// 0x00031dd3
+ 		push	eax		// 0x00031dd4
++		cmp	dword ptr gNxDbgInvertPR2i, 0
++		je	DbgInvPR1V
++		call	gNxDbgInvertPR2i
++		jmp	DbgInvPR1D
++DbgInvPR1V:
+ 		call	IceMaths::InvertPRMatrix		// 0x00031dd5
++DbgInvPR1D:
+ 		add	esp, 8		// 0x00031dda
+ 		jmp	L31e0f		// 0x00031ddd
+ L31ddf:
+@@ -855,7 +862,13 @@ L31e0f:
+ 		lea	ecx, [esp + 0xc]		// 0x00031e1a
+ 		push	ebx		// 0x00031e1e
+ 		push	ecx		// 0x00031e1f
++		cmp	dword ptr gNxDbgInvertPR2i, 0
++		je	DbgInvPR2V
++		call	gNxDbgInvertPR2i
++		jmp	DbgInvPR2D
++DbgInvPR2V:
+ 		call	IceMaths::InvertPRMatrix		// 0x00031e20
++DbgInvPR2D:
+ 		add	esp, 8		// 0x00031e25
+ 		jmp	L31e57		// 0x00031e28
+ L31e2a:
+diff --git a/tests/PhysicsCollisionTests.cpp b/tests/PhysicsCollisionTests.cpp
+index 03ef8b0..9da12b5 100644
+--- a/tests/PhysicsCollisionTests.cpp
++++ b/tests/PhysicsCollisionTests.cpp
+@@ -11195,7 +11195,7 @@ static void nx2iReleaseSide(Nx2gSide& owner, Nx2iSide& s)
+ 		nx2gCall0(s.base + kOpcObbDtor2i, s.context + 0x110);
+ 	else
+ 		nx2iCandidateObbColliderDestruct(s.context + 0x110);
+-	nx2gContainerDtor(owner, s.touched);
++	{ extern void* gNxDbgObb2i; if(s.oracle || !gNxDbgObb2i) nx2gContainerDtor(owner, s.touched); }
+ 	nx2gContainerDtor(owner, s.context + 0x4e0);
+ 	nx2gContainerDtor(owner, s.context + 0x4f0);
+ 	}
+@@ -11467,6 +11467,21 @@ static __declspec(noinline) unsigned nxDriveTask2i(unsigned char* base)
+ 	static Nx2iMeshWords meshWords[kNb2iMeshes];
+ 	static const unsigned kSubdiv[5] = { 1, 2, 3, 5, 8 };
+ 
++	{
++	extern void* gNxDbgObb2i; extern void* gNxDbgSeg2i; extern void* gNxDbgLine2i; extern void* gNxDbgArea2i;
++	extern void* gNxDbgCenter2i; extern void* gNxDbgInvert2i; extern void* gNxDbgPlane2i; extern void* gNxDbgInvertPR2i;
++	extern void* gNxDbgInflate2i;
++	const int bind = getenv("NX_ICE_BIND") ? atoi(getenv("NX_ICE_BIND")) : 0;
++	gNxDbgObb2i = (bind & 1) ? (void*) (base + 0x000de0d0) : 0;
++	gNxDbgSeg2i = (bind & 2) ? (void*) (base + 0x00044510) : 0;
++	gNxDbgLine2i = (bind & 4) ? (void*) (base + 0x000345b0) : 0;
++	gNxDbgArea2i = (bind & 8) ? (void*) (base + 0x000e3ed0) : 0;
++	gNxDbgCenter2i = (bind & 8) ? (void*) (base + 0x000e4020) : 0;
++	gNxDbgInvert2i = (bind & 16) ? (void*) (base + 0x000e4400) : 0;
++	gNxDbgInflate2i = (bind & 32) ? (void*) (base + 0x000e4090) : 0;
++	gNxDbgInvertPR2i = (bind & 64) ? (void*) (base + 0x000e4200) : 0;
++	gNxDbgPlane2i = (bind & 128) ? (void*) (base + 0x0003c160) : 0;
++	}
+ 	if(nx2iObbColliderSize() > 0x244 - 0x110 || !nx2iObbColliderLayoutOk())
+ 		{
+ 		fprintf(stderr, "FAIL task 2i: the vendored OBBCollider (%u bytes) does not fit the context's +0x110..+0x244 or its flags word\n",

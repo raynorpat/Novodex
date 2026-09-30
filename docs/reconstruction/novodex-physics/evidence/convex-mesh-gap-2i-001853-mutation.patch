@@ -1,0 +1,12 @@
+diff --git a/Physics/src/ContactConvexHeightfield.cpp b/Physics/src/ContactConvexHeightfield.cpp
+index 69d13a7..467906c 100644
+--- a/Physics/src/ContactConvexHeightfield.cpp
++++ b/Physics/src/ContactConvexHeightfield.cpp
+@@ -4656,6 +4656,6 @@ __declspec(naked) void __cdecl NxContactConvexMesh(const NxCollisionShape* /*con
+ 	{
+ 	__asm
+ 		{
+-		jmp	nxContactConvexMeshEntry		// 0x00044500
++		ret		// 0x00044500
+ 		}
+ 	}

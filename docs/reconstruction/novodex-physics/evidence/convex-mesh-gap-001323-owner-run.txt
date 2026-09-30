@@ -1,0 +1,7 @@
+oracle module path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+oracle base=10000000 control_word=027f
+oracle pin=matched
+binding NxComputeSquareDistance path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxFoundation.dll sha256=c582b00c61a6840fb6fe4a0561530ee7ce00e3bc36d42dadcab6a79607742d9f
+collision name=scene_base_dtor_owner index=- rva=0x00026bd0 checks=24 oracle=912abab5feb00ab4 candidate=912abab5feb00ab4 mismatches=0 frees=2
+collision coverage name=scene_base_dtor_owner case=owner_scene_pruner_and_slot_cleanup
+collision input name=scene_base_dtor_owner words=1 input=ad2aca7747985764

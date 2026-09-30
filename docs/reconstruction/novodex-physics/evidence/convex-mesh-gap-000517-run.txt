@@ -1,0 +1,12 @@
+oracle module path=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+oracle base=10000000 control_word=027f
+oracle pin=matched
+binding NxComputeSquareDistance path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxFoundation.dll sha256=c582b00c61a6840fb6fe4a0561530ee7ce00e3bc36d42dadcab6a79607742d9f
+collision name=scene_owner_pair_records index=- rva=0x00010370 checks=352 oracle=70c14cd0779b5bf3 candidate=70c14cd0779b5bf3 mismatches=0 cases=4
+collision coverage name=scene_owner_pair_records case=remove_owned_pairs_keep_unrelated_record
+collision coverage name=scene_owner_pair_records case=no_matching_owner_is_noop
+collision coverage name=scene_owner_pair_records case=free_owned_payload_and_remove_record
+collision coverage name=scene_owner_pair_records case=remove_pair_when_owner_is_second_key
+collision input name=scene_owner_pair_records words=24 input=9ef095ee83495ec3
+collision scene_owner_pair_records mismatches=0
+candidate_sha256=FDD8F52F1470F80269D6AE84FA1BCE30B557029669E2B644D88D88ED7717A929

@@ -575,7 +575,7 @@ IMPLEMENTATION_MISMATCHES = frozenset((
     'phys_fn_000825', 'phys_fn_000937', 'phys_fn_000953', 'phys_fn_000955', 'phys_fn_000961', 'phys_fn_000963',
     'phys_fn_000967', 'phys_fn_000969', 'phys_fn_000971', 'phys_fn_000977', 'phys_fn_000987', 'phys_fn_001247',
     'phys_fn_001273', 'phys_fn_001349', 'phys_fn_001359', 'phys_fn_001379', 'phys_fn_001381', 'phys_fn_001391',
-    'phys_fn_001571', 'phys_fn_001575', 'phys_fn_001704', 'phys_fn_001706', 'phys_fn_001712', 'phys_fn_002262',
+    'phys_fn_001571', 'phys_fn_001575', 'phys_fn_001704', 'phys_fn_001706', 'phys_fn_002262',
     'phys_fn_004772', 'phys_fn_004774',
     ))
 
@@ -1918,17 +1918,23 @@ def plan_path(evidence_root, plan):
 # the row. Adding one is a regression that has to be argued.
 UNRESOLVED_SOURCE_PATHS = (
     'Physics/src/Actor.cpp',                         # 3 rows
-    'Physics/src/ContactConvexHeightfield.cpp',      # 2 rows
-    'Physics/src/ContactMeshMesh.cpp',               # 1 rows
+    'Physics/src/core/Articulation.cpp',             # 1 row (phys_fn_004172)
+    # 'Physics/src/ContactConvexHeightfield.cpp' (2 rows: 001847, 001849) was here,
+    # and was REMOVED when convex-mesh gap Task 2h created the file (001822..001842);
+    # the check said so itself.
     'Physics/src/ContactPlaneMesh.cpp',              # 2 rows
     'Physics/src/Controller.cpp',                    # 2 rows
-    'Physics/src/ConvexHull.cpp',                    # 1 rows
+    # 'Physics/src/ConvexHull.cpp' (1 row) was here, and was REMOVED when
+    # convex-mesh gap Task 2e created the file (001461); the check said so
+    # itself: "is on the allowlist but no longer unresolved; remove the entry".
     # 'Physics/src/D6Joint.cpp' was here with 3 rows (004182 004184 004212), and
     # was REMOVED when joint-families Task 3i wrote the unit in
     # Physics/src/core/D6Joint.cpp (the rows' notes keep the oracle path), as
     # Physics/src/Joint.cpp below was.
-    'Physics/src/EdgeList.cpp',                      # 3 rows
-    'Physics/src/IceAdjacencies.cpp',                # 2 rows
+    # 'Physics/src/EdgeList.cpp' (3 rows) and 'Physics/src/IceAdjacencies.cpp'
+    # (2 rows) were here, and were REMOVED when convex-mesh gap Task 2c wrote
+    # both files. The check said so itself: "is on the allowlist but no longer
+    # unresolved; remove the entry".
     'Physics/src/InternalTriangleMesh.cpp',          # 1 rows
     # 'Physics/src/Joint.cpp' was here with 4 rows (004099 004101 004109 004143),
     # and was REMOVED when joint-families Task 2 wrote those rows in
@@ -1953,8 +1959,6 @@ UNRESOLVED_SOURCE_PATHS = (
     # field resolves and the allowlist entry would be a claim that a real file is
     # missing. The validator says so itself -- "is on the allowlist but no longer
     # unresolved; remove the entry" -- which is the check working.
-    # 'Physics/src/SceneRaycast.cpp' was here with 6 rows against it, and is
-    # REMOVED: scene-raycast Task 3 created the file for the Scene raycasts.
     'Physics/src/Shape.cpp',                         # 6 rows
     # 'Physics/src/core/CylindricalJoint.cpp' was here with 2 rows against it,
     # and is REMOVED: joint-families Task 3b created the file.

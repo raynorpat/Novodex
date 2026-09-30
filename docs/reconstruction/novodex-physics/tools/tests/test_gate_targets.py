@@ -29,10 +29,14 @@ from pathlib import Path
 TOOLS_DIR = Path(__file__).resolve().parents[1]
 GATE_TARGETS = TOOLS_DIR / "gate_targets.ps1"
 RUN_DIFFERENTIAL = TOOLS_DIR / "run_differential.ps1"
-FUZZ_SOURCE = Path(r"D:/github/Novodex/tests/PhysicsKernelFuzzTests.cpp")
-COLLISION_SOURCE = Path(r"D:/github/Novodex/tests/PhysicsCollisionTests.cpp")
-ASSET_SOURCE = Path(r"D:/github/Novodex/tests/PhysicsAssetTests.cpp")
-THIRDPARTY_SOURCE = Path(r"D:/github/Novodex/tests/PhysicsThirdPartyTests.cpp")
+# The harness sources of THIS tree. They were absolute paths into the main
+# checkout, so a worktree's registry was checked against another tree's
+# harness (convex-mesh gap Task 2a: the blocks it adds are in its own harness).
+REPO_ROOT = TOOLS_DIR.parents[3]
+FUZZ_SOURCE = REPO_ROOT / "tests" / "PhysicsKernelFuzzTests.cpp"
+COLLISION_SOURCE = REPO_ROOT / "tests" / "PhysicsCollisionTests.cpp"
+ASSET_SOURCE = REPO_ROOT / "tests" / "PhysicsAssetTests.cpp"
+THIRDPARTY_SOURCE = REPO_ROOT / "tests" / "PhysicsThirdPartyTests.cpp"
 
 # The blocks NxPhysicsCollisionTests drives directly rather than through a
 # dispatch-matrix slot, so they have no entry in the driven table to parse. The
@@ -49,9 +53,53 @@ COLLISION_DIRECT_BLOCKS = ("box_corner", "sphere_box_data",
                            "shape_owner", "ccd_guard",
                            "contact_sphere_sphere", "sphere_box_contact",
                            "contact_sphere_box", "box_quad_depth",
+                           "overlap_box_mesh", "contact_box_mesh",
+                           "overlap_capsule_mesh", "contact_capsule_mesh",
                            "box_clip.random", "box_clip.aimed",
                            "box_axis.random", "box_axis.aimed",
-                           "box_shim", "contact_box_box")
+                           "box_shim", "contact_box_box",
+                           # convex-mesh gap Task 2a
+                           "point_box", "line_box", "segment_box",
+                           "contact_box_capsule", "sphere_compound",
+                           "box_compound", "capsule_compound",
+                           # convex-mesh gap Task 2b
+                           "point_triangle", "line_line", "segment_triangle",
+                           "ray_inflated_tris", "aabb_slab", "triangle_plane",
+                           "segment_triangle_edges",
+                           # convex-mesh gap Task 2g
+                           "contact_emit_ext", "contact_convex_convex", "contact_convex_hulls",
+                           # convex-mesh gap Task 2h
+                           "convex_mesh_ray", "convex_mesh_faces", "convex_mesh_edges",
+                           "convex_mesh_cross", "convex_mesh_contacts",
+                           # convex-mesh gap Task 2i
+                           "contact_convex_heightfield", "contact_convex_mesh", "mesh_vertex_normals",
+                           # convex-mesh gap Task 2l
+                           "mesh_contact_accumulator", "mesh_adjacent_normal",
+                           "overlap_mesh_mesh", "contact_mesh_mesh_sphere_callback",
+                           "contact_mesh_heightfield", "contact_sink_reset",
+                           # convex-mesh gap P-Sphere closure
+                           "scene_owner_pair_remove", "scene_owner_pair_records", "scene_pruner_node_remove",
+                           "scene_pruner_node_destroy", "scene_pruner_shape_remove",
+                           "scene_base_dtor_registry", "scene_pruner_owner_destroy",
+                           "scene_base_dtor_owner")
+
+# Fixed-input splits of a direct block, divergent under an enforced ceiling:
+# registered up to their oracle digest, with no input or coverage line of their
+# own (the block's lines cover their inputs).
+COLLISION_SPLIT_BLOCKS = ("contact_convex_convex.pose_divergent", "contact_convex_hulls.pose_divergent",
+                         "convex_mesh_ray.callee_divergent", "contact_convex_heightfield.callee_divergent",
+                         "contact_convex_mesh.callee_divergent")
+
+# The `.snan` variants of the harness hardening: the same blocks re-run with
+# their signalling NaNs kept, divergent under enforced ceilings. Each registers
+# its oracle digest and its input digest (and coverage only where no candidate
+# count is in it), so they are required separately from the blocks above.
+COLLISION_SNAN_BLOCKS = tuple("%s.snan" % name for name in (
+    "box_corner", "box_quad_depth", "box_clip.random", "box_axis.random",
+    "box_shim", "contact_box_box", "step_smooth_normals", "contact_emit",
+    "shape_raycast_plane", "contact_plane_capsule", "shape_raycast_sphere",
+    "contact_sphere_capsule", "sphere_box_contact", "contact_sphere_box",
+    "contact_box_capsule", "fuzz_ray_plane", "fuzz_ray_aabb", "fuzz_segment_box"))
 
 
 def registered_lines():
@@ -138,6 +186,89 @@ class RegisteredCoverageLines(unittest.TestCase):
                 self.assertIn(match.group(1), emitted,
                     "gate_targets.ps1 registers coverage for %s but the harness no longer "
                     "reports it" % match.group(1))
+
+
+def harness_sources():
+    """Every harness source file: tests/*.cpp, *.h and *.c."""
+    tests = REPO_ROOT / "tests"
+    return sorted(tests.glob("*.cpp")) + sorted(tests.glob("*.h")) + sorted(tests.glob("*.c"))
+
+
+# Functions the scan finds that must return a float by their interface, not by
+# a generator's choice. nxStreamReadFloat is the harness stream's
+# NxStream::readFloat slot (PhysicsAssetTests.cpp): the oracle's and the
+# candidate's readers both call it through the vtable and take its float from
+# st(0), as they would from any user stream, so both sides see the same word.
+# Found when the scan learned to see `__fastcall` between type and name
+# (convex-mesh gap Task 2c).
+RAW_BIT_FLOAT_INTERFACE_SLOTS = {
+    ("PhysicsAssetTests.cpp", "nxStreamReadFloat"),
+}
+
+# Every function in the harnesses that returns a float type at all (convex-mesh
+# gap Task 2g review). A float return travels in st(0) under the x86 ABI, and
+# whether the caller then computes in x87 or SSE follows the compiler's
+# inlining, which moves with the size of the translation unit: the collision
+# harness's nxUnit and nxReach moved thirteen registered lines that way when code
+# was added elsewhere in the file. Helpers return a four-byte struct or write
+# through a pointer instead. The interface slots below return a float because
+# the interface does: the harness stream's NxStream::readFloat and readDouble
+# (PhysicsAssetTests.cpp), which both readers call through the vtable.
+FLOAT_RETURN_INTERFACE_SLOTS = {
+    ("PhysicsAssetTests.cpp", "nxStreamReadFloat"),
+    ("PhysicsAssetTests.cpp", "nxStreamReadDouble"),
+}
+
+FLOAT_TYPES = r"(?:float|double|NxReal|NxF32|NxF64|realT)"
+# Specifiers before the return type, and calling conventions or qualifiers
+# between it and the name, in any order: `static float __cdecl f(`,
+# `static const float f(`, `float const f(`, `__declspec(noinline) double f(`.
+FLOAT_FUNCTION = re.compile(
+    r"(?m)^[ \t]*(?:(?:static|inline|__inline|__forceinline|extern|const|volatile|NX_INLINE"
+    r"|__declspec\s*\([^)]*\))\s+)*"
+    + FLOAT_TYPES +
+    r"\s+(?:(?:const|volatile|__cdecl|__stdcall|__fastcall|__thiscall|__vectorcall|WINAPI)\s+)*"
+    r"(\w+)\s*\([^;{)]*\)\s*\{")
+POINTER_PUN = re.compile(r"\*\s*\(\s*(?:const\s+)?" + FLOAT_TYPES + r"\s*(?:const\s*)?\*\s*\)")
+CAST_PUN = re.compile(r"reinterpret_cast\s*<\s*(?:const\s+)?" + FLOAT_TYPES + r"\s*(?:const\s*)?[&*]")
+
+
+def raw_bit_float_returners(text):
+    """The functions in `text` that return a float type built from raw bits."""
+    unions = set()
+    for match in re.finditer(r"\bunion\s+(\w+)?\s*\{", text):
+        if match.group(1):
+            unions.add(match.group(1))
+        # `typedef union [tag] { ... } Name;`: the name after the closing brace.
+        depth, end = 0, match.end() - 1
+        while end < len(text):
+            if text[end] == "{":
+                depth += 1
+            elif text[end] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            end += 1
+        tail = re.match(r"\}\s*(\w+)\s*;", text[end:])
+        if tail and text[max(0, match.start() - 8):match.start()].strip().endswith("typedef"):
+            unions.add(tail.group(1))
+    found = []
+    for match in FLOAT_FUNCTION.finditer(text):
+        depth, end = 0, match.end() - 1
+        while end < len(text):
+            if text[end] == "{":
+                depth += 1
+            elif text[end] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            end += 1
+        body = text[match.end() - 1:end]
+        if ("memcpy" in body or POINTER_PUN.search(body) or CAST_PUN.search(body)
+                or re.search(r"\bunion\b", body)
+                or any(re.search(r"\b%s\b" % re.escape(name), body) for name in unions)):
+            found.append(match.group(1))
+    return found
 
 
 FORMAT_SPEC = re.compile(r"%(?:0[0-9]+)?(?:l{0,2}[udx]|s|c|f|g|e|016llx)")
@@ -368,7 +499,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"3": 103, "4": 188, "5": 2037, "6": 856, "7": 1129}
+    MINIMUM = {"3": 359, "4": 251, "5": 2037, "6": 856, "7": 1129}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
@@ -449,12 +580,153 @@ class OracleDifferentialCoverageLines(unittest.TestCase):
                 "the harness reports coverage for %s but gate_targets.ps1 registers no "
                 "line for it" % block)
 
+    def test_every_driven_block_has_an_input_digest_line(self):
+        """Each block's inputs are pinned apart from its oracle's answers.
+
+        An oracle digest moves when the inputs move as well as when the oracle
+        does. The harness hardening between convex-mesh gap Tasks 2b and 2c found
+        that the inputs themselves had depended on code generation (a raw word
+        returned as a float passes st(0), which quiets a signalling NaN), so
+        every block prints the digest of the words it hands the oracle and every
+        one of those is registered.
+        """
+        names = list(collision_driven_names())
+        blocks = ["%s.%s" % (name, kind) for name in names for kind in ("random", "aimed")]
+        blocks += list(COLLISION_DIRECT_BLOCKS)
+        for block in blocks:
+            prefix = "collision input name=%s " % block
+            self.assertTrue(any(line.startswith(prefix) for line in self.registered),
+                "the harness drives %s but gate_targets.ps1 registers no input digest "
+                "line for it" % block)
+
+    def test_every_snan_variant_registers_its_digest_and_inputs(self):
+        for block in COLLISION_SNAN_BLOCKS:
+            for prefix in ("collision name=%s " % block, "collision input name=%s " % block):
+                self.assertTrue(any(line.startswith(prefix) for line in self.registered),
+                    "gate_targets.ps1 registers no `%s` line" % prefix.strip())
+            for line in self.registered:
+                if line.startswith("collision coverage name=%s " % block):
+                    self.assertNotIn("mismatches=", line,
+                        "a .snan coverage registration pins a candidate count")
+        source = COLLISION_SOURCE.read_text(encoding="utf-8")
+        for block in COLLISION_SNAN_BLOCKS:
+            self.assertIn('{ "%s",' % block[:-len(".snan")], source,
+                "%s has no entry in kSnanCeilings" % block)
+
+    def test_no_generator_returns_a_raw_word_as_a_float(self):
+        """Raw words are written into their slots as bits.
+
+        A float return value travels in st(0) under the x86 ABI, and loading a
+        signalling NaN there quiets it; whether a call site goes through st(0) is
+        an inlining decision. So no function in the harness that can produce a
+        raw word may return it as a float.
+        """
+        source = COLLISION_SOURCE.read_text(encoding="utf-8")
+        self.assertIsNone(re.search(r"static\s+(?:float|NxReal)\s+nxPick\w*\s*\(", source),
+            "a raw-word generator returns its word as a float again")
+        self.assertIn("static void nxPickWord(unsigned* state, float* out)", source)
+        # Every harness, and any helper, not only the generators by name: a
+        # function that returns a float type and builds it from raw bits (a
+        # memcpy, a pointer pun, a reinterpret_cast or a union into the value it
+        # returns) is the same hazard. C sources too (PhysicsThirdPartyQhull.c).
+        sources = harness_sources()
+        self.assertTrue(any(path.suffix == ".c" for path in sources),
+            "the scan no longer reaches the C harness sources")
+        exempt_seen = set()
+        for path in sources:
+            text = path.read_text(encoding="utf-8", errors="replace")
+            for name in raw_bit_float_returners(text):
+                if (path.name, name) in RAW_BIT_FLOAT_INTERFACE_SLOTS:
+                    exempt_seen.add((path.name, name))
+                    continue
+                self.fail("%s: %s returns a float built from raw bits; write it into its slot instead"
+                    % (path.name, name))
+        self.assertEqual(exempt_seen, set(RAW_BIT_FLOAT_INTERFACE_SLOTS),
+            "an exempt interface slot is gone or no longer matches; remove its entry")
+
+    def test_no_harness_helper_returns_a_float_type(self):
+        """Any float- or double-returning function in a harness, whatever its body."""
+        sources = harness_sources()
+        exempt_seen = set()
+        for path in sources:
+            text = path.read_text(encoding="utf-8", errors="replace")
+            for match in FLOAT_FUNCTION.finditer(text):
+                name = match.group(1)
+                if (path.name, name) in FLOAT_RETURN_INTERFACE_SLOTS:
+                    exempt_seen.add((path.name, name))
+                    continue
+                self.fail("%s: %s returns a float type, which travels in st(0); return a four-byte "
+                    "struct or write through a pointer instead" % (path.name, name))
+        self.assertEqual(exempt_seen, set(FLOAT_RETURN_INTERFACE_SLOTS),
+            "an exempt interface slot is gone or no longer matches; remove its entry")
+
+    def test_the_float_return_scan_fires(self):
+        for text in ("static float nxProbe(unsigned* s)\n\t{\n\treturn 1.0f;\n\t}\n",
+                     "static double __cdecl nxProbe(double a)\n\t{\n\treturn a;\n\t}\n",
+                     "static NxReal nxProbe(NxReal r)\n\t{\n\treturn r;\n\t}\n"):
+            self.assertEqual([m.group(1) for m in FLOAT_FUNCTION.finditer(text)], ["nxProbe"], text)
+        self.assertEqual([m.group(1) for m in FLOAT_FUNCTION.finditer(
+            "struct NxUnitDraw { float value; };\nstatic NxUnitDraw nxUnit(unsigned* s)\n\t{\n\t}\n")], [])
+
+    # The scan has to be able to fire. Each probe is a helper of one shape the
+    # hazard can take; each must be found, and an ordinary float function not.
+    def test_the_raw_bit_scan_finds_a_memcpy(self):
+        self.assertEqual(raw_bit_float_returners(
+            "static float nxProbe(unsigned w)\n{\n\tfloat f;\n\tmemcpy(&f, &w, 4);\n\treturn f;\n}\n"),
+            ["nxProbe"])
+
+    def test_the_raw_bit_scan_finds_a_pointer_pun(self):
+        self.assertEqual(raw_bit_float_returners(
+            "static NxReal nxProbe(unsigned w)\n\t{\n\treturn *(const NxReal*) &w;\n\t}\n"),
+            ["nxProbe"])
+
+    def test_the_raw_bit_scan_finds_a_reinterpret_cast(self):
+        self.assertEqual(raw_bit_float_returners(
+            "static inline float nxProbe(unsigned w)\n\t{\n\treturn reinterpret_cast<float&>(w);\n\t}\n"),
+            ["nxProbe"])
+        self.assertEqual(raw_bit_float_returners(
+            "double nxProbe(const unsigned* w)\n\t{\n\treturn *reinterpret_cast<const double*>(w);\n\t}\n"),
+            ["nxProbe"])
+
+    def test_the_raw_bit_scan_finds_a_local_union(self):
+        self.assertEqual(raw_bit_float_returners(
+            "static float nxProbe(unsigned w)\n\t{\n\tunion { unsigned u; float f; } pun;\n"
+            "\tpun.u = w;\n\treturn pun.f;\n\t}\n"),
+            ["nxProbe"])
+
+    def test_the_raw_bit_scan_finds_a_named_union(self):
+        text = ("typedef union NxProbeBits { unsigned u; float f; } NxProbeBits;\n"
+                "union NxOtherBits { unsigned u; float f; };\n"
+                "static float nxProbeA(unsigned w)\n\t{\n\tNxProbeBits b;\n\tb.u = w;\n\treturn b.f;\n\t}\n"
+                "static float nxProbeB(unsigned w)\n\t{\n\tNxOtherBits b;\n\tb.u = w;\n\treturn b.f;\n\t}\n")
+        self.assertEqual(raw_bit_float_returners(text), ["nxProbeA", "nxProbeB"])
+
+    def test_the_raw_bit_scan_sees_through_conventions_and_qualifiers(self):
+        for header in ("static float __cdecl nxProbe(unsigned w)",
+                       "static float __fastcall nxProbe(unsigned w)",
+                       "float __stdcall nxProbe(unsigned w)",
+                       "static const float nxProbe(unsigned w)",
+                       "static float const nxProbe(unsigned w)",
+                       "static __forceinline const NxF32 __cdecl nxProbe(unsigned w)",
+                       "__declspec(noinline) static double nxProbe(unsigned w)"):
+            self.assertEqual(raw_bit_float_returners(
+                header + "\n\t{\n\tfloat f;\n\tmemcpy(&f, &w, 4);\n\treturn f;\n\t}\n"),
+                ["nxProbe"], header)
+
+    def test_the_raw_bit_scan_passes_ordinary_arithmetic(self):
+        self.assertEqual(raw_bit_float_returners(
+            "static float nxUnit(unsigned* s)\n\t{\n\treturn (float) (nxNext(s) >> 8) * (1.0f / 16777216.0f);\n\t}\n"
+            "static float __cdecl nxRange(float lo, float hi)\n\t{\n\treturn lo + (hi - lo) * nxUnit(0);\n\t}\n"),
+            [])
+
     def test_every_registration_names_a_block_the_harness_still_drives(self):
         names = list(collision_driven_names())
         live = {"%s.%s" % (name, kind) for name in names for kind in ("random", "aimed")}
         live |= set(COLLISION_DIRECT_BLOCKS)
+        live |= set(COLLISION_SNAN_BLOCKS)
+        live |= set(COLLISION_SPLIT_BLOCKS)
         for line in self.registered:
-            match = re.match(r"collision (?:coverage )?name=(\S+) ", line)
+            match = re.match(r"collision (?:coverage |input )?name=(\S+) ", line)
             if match:
                 self.assertIn(match.group(1), live,
                     "gate_targets.ps1 registers %s but the harness no longer drives it"

@@ -1,0 +1,7 @@
+ALL_BUILD exit=0
+phase=2 exit=0
+phase=3 exit=0 coverage=328/328
+phase=4 exit=0
+phase=6 exit=0
+phase=7 exit=0
+phase=5 expected-red exit=1 reason=missing-vtables assertions=871/871

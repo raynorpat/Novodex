@@ -1,0 +1,114 @@
+diff --git a/Physics/src/EdgeList.cpp b/Physics/src/EdgeList.cpp
+index 8fadd74..6df1348 100644
+--- a/Physics/src/EdgeList.cpp
++++ b/Physics/src/EdgeList.cpp
+@@ -30,6 +30,13 @@
+ #include <string.h>
+ 
+ // .rdata 0x101080cc.
++// THROWAWAY (evidence/convex-mesh-gap-2c-bind-oracle-callees.patch): hooks the
++// harness fills with the oracle's 005155 / 005181. Never commit.
++typedef void* (__thiscall* NxDbgPlaneSetFn)(void*, const void*, const void*, const void*);
++typedef void (__thiscall* NxDbgNormalFn)(const void*, void*);
++NxDbgPlaneSetFn gNxDbgPlaneSet = 0;
++NxDbgNormalFn gNxDbgNormal = 0;
++
+ static const char gEdgeListFile[] = "\\Epic\\Novodex\\SDKs\\Physics\\src\\EdgeList.cpp";
+ 
+ // 0x101041f0 and 0x10106954, the two dword constants 002061 compares with.
+@@ -341,7 +348,10 @@ bool EdgeList::ComputeActiveEdges(NxU32 nb_faces, const NxU32* dfaces, const NxU
+ 			// plain block, so that no object with a declared destructor is
+ 			// constructed here.
+ 			float PL[4];
+-			((IceMaths::Plane*) PL)->Set(verts[VRef10], verts[VRef11], verts[VRef12]);
++			if(gNxDbgPlaneSet)
++				gNxDbgPlaneSet(PL, &verts[VRef10], &verts[VRef11], &verts[VRef12]);
++			else
++				((IceMaths::Plane*) PL)->Set(verts[VRef10], verts[VRef11], verts[VRef12]);
+ 
+ 			// 0x0005189f..0x000518d4: the distance of verts[Op] to that plane,
+ 			// (n.y p.y + n.z p.z) + n.x p.x + d, compared below zero.
+@@ -379,8 +389,16 @@ bool EdgeList::ComputeActiveEdges(NxU32 nb_faces, const NxU32* dfaces, const NxU
+ 				memcpy(&T1[3], &verts[VRef11], 12);
+ 				memcpy(&T1[6], &verts[VRef12], 12);
+ 				float N0[3], N1[3];
+-				((const IceMaths::Triangle*) T0)->Normal(*(IceMaths::Point*) N0);
+-				((const IceMaths::Triangle*) T1)->Normal(*(IceMaths::Point*) N1);
++				if(gNxDbgNormal)
++					{
++					gNxDbgNormal(T0, N0);
++					gNxDbgNormal(T1, N1);
++					}
++				else
++					{
++					((const IceMaths::Triangle*) T0)->Normal(*(IceMaths::Point*) N0);
++					((const IceMaths::Triangle*) T1)->Normal(*(IceMaths::Point*) N1);
++					}
+ 
+ 				// 0x000519c1..0x00051a3a: atan2(|N0 x N1|, N0 . N1), the cross
+ 				// product's length ((x^2 + z^2) + y^2) square-rooted and kept on
+diff --git a/Physics/src/IceMeshTools.cpp b/Physics/src/IceMeshTools.cpp
+index a3b231e..2e7a65a 100644
+--- a/Physics/src/IceMeshTools.cpp
++++ b/Physics/src/IceMeshTools.cpp
+@@ -43,6 +43,10 @@ static const float kIceMeshToolsZero = 0.0f;
+ static const float kIceMeshToolsOne = 1.0f;
+ static const float kIceMeshToolsAxisLimit = 0.9999f;
+ 
++// THROWAWAY (evidence/convex-mesh-gap-2e-bind-oracle-callees.patch): a hook the
++// harness fills with the oracle's 005191. Never commit.
++void* gNxDbgInvert = 0;
++
+ // phys_fn_001639 (0x000313e0, 157 B)
+ // A function-static pair of identities, built once: the guard byte 0x10123c78
+ // tested, then the 4x4 at 0x10123ca0 zeroed (rep stosd of 16 dwords) and the
+@@ -836,7 +840,13 @@ __declspec(naked) void __cdecl nxIcePosePair(IceMaths::Matrix4x4* /*relative0*/,
+ 		lea	eax, [esp + 0x4c]		// 0x00031dcf
+ 		push	esi		// 0x00031dd3
+ 		push	eax		// 0x00031dd4
++		cmp	gNxDbgInvert, 0
++		je	Dbg31dd5V
++		call	gNxDbgInvert
++		jmp	Dbg31dd5D
++Dbg31dd5V:
+ 		call	IceMaths::InvertPRMatrix		// 0x00031dd5
++Dbg31dd5D:
+ 		add	esp, 8		// 0x00031dda
+ 		jmp	L31e0f		// 0x00031ddd
+ L31ddf:
+@@ -855,7 +865,13 @@ L31e0f:
+ 		lea	ecx, [esp + 0xc]		// 0x00031e1a
+ 		push	ebx		// 0x00031e1e
+ 		push	ecx		// 0x00031e1f
++		cmp	gNxDbgInvert, 0
++		je	Dbg31e20V
++		call	gNxDbgInvert
++		jmp	Dbg31e20D
++Dbg31e20V:
+ 		call	IceMaths::InvertPRMatrix		// 0x00031e20
++Dbg31e20D:
+ 		add	esp, 8		// 0x00031e25
+ 		jmp	L31e57		// 0x00031e28
+ L31e2a:
+diff --git a/tests/PhysicsThirdPartyTests.cpp b/tests/PhysicsThirdPartyTests.cpp
+index 342943e..93f938b 100644
+--- a/tests/PhysicsThirdPartyTests.cpp
++++ b/tests/PhysicsThirdPartyTests.cpp
+@@ -7084,6 +7084,17 @@ static void nxIceFamily(const NxOracleRows& o, bool selfOnly, NxIceDriver driver
+ 		gIceAllocator.reset();
+ 		gIceTape = &gCandidateTape;
+ 		NxIceSide candidate = { &o, false, &gCandidateTape, &gCandidateTapeB };
++		// THROWAWAY: NX_ICE_BIND=1 binds the oracle's 005155, 2 its 005181, 3 both.
++		typedef void* (__thiscall* NxDbgPlaneSetFn)(void*, const void*, const void*, const void*);
++		typedef void (__thiscall* NxDbgNormalFn)(const void*, void*);
++		extern NxDbgPlaneSetFn gNxDbgPlaneSet;
++		extern NxDbgNormalFn gNxDbgNormal;
++		const int bind = getenv("NX_ICE_BIND") ? atoi(getenv("NX_ICE_BIND")) : 0;
++		gNxDbgPlaneSet = (bind & 1) ? (NxDbgPlaneSetFn) (o.base + 0x000e31c0) : 0;
++		gNxDbgNormal = (bind & 2) ? (NxDbgNormalFn) (o.base + 0x000e3f50) : 0;
++		// THROWAWAY (Task 2e): 4 binds the oracle's 005191 into 001653.
++		extern void* gNxDbgInvert;
++		gNxDbgInvert = (bind & 4) ? (void*) (o.base + 0x000e4200) : 0;
+ 		driver(candidate);
+ 		gNxIceErrorSink = 0;
+ 		nxSetSdkAllocatorBridge(shipped);

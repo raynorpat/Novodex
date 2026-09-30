@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ContactConvexConvex.cpp b/Physics/src/ContactConvexConvex.cpp
+index a0bb17a..8bdeff9 100644
+--- a/Physics/src/ContactConvexConvex.cpp
++++ b/Physics/src/ContactConvexConvex.cpp
+@@ -1763,7 +1763,7 @@ L40e12:
+ 		test	ah, 5		// 0x00040e95
+ 		jp	L40eac		// 0x00040e98
+ 		fxch	st(1)		// 0x00040e9a
+-		fchs		// 0x00040e9c
++		fnop		// 0x00040e9c
+ 		fxch	st(1)		// 0x00040e9e
+ 		fchs		// 0x00040ea0
+ 		fld	dword ptr [esp + 0x28]		// 0x00040ea2

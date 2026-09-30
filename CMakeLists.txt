@@ -180,6 +180,19 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/SmoothNormals.cpp
 		Physics/src/NarrowPhase.cpp
 		Physics/src/ContactGeneration.cpp
+		Physics/src/Distance.cpp
+		Physics/src/ContactBoxMeshICE.cpp
+		Physics/src/ContactCapsuleMesh.cpp
+		Physics/src/ContactMeshHeightfield.cpp
+		Physics/src/ContactMeshMesh.cpp
+		Physics/src/EdgeList.cpp
+		Physics/src/IceMeshTools.cpp
+		Physics/src/IceMeshBuilder2.cpp
+		Physics/src/ConvexHull.cpp
+		Physics/src/IceSupportMaps.cpp
+		Physics/src/TriangleMeshPolygons.cpp
+		Physics/src/ContactConvexConvex.cpp
+		Physics/src/ContactConvexHeightfield.cpp
 		Physics/src/ShapeRaycast.cpp
 		Physics/src/NpActor.cpp
 		Physics/src/core/Joint.cpp
@@ -266,6 +279,37 @@ if(MSVC)
 		Physics/src/BodyCreation.cpp
 		Physics/src/opcode/IcePruner.cpp
 		Physics/src/opcode/IcePruningEngine.cpp
+		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
+endif()
+
+# The same for the ICE-shaped mesh rows (convex-mesh gap Task 2c). Their
+# listings are frameless (0x00051080, 0x0002dcf0, 0x0002def0, 0x00032610 set up
+# no fs:[0] record); under /EHsc the RadixSort and EdgeList locals and the
+# noexcept destructors gave CreateFacesToEdges, CreateDatabase, Adjacencies::
+# Init, Valencies::Compute and the three destructors unwind frames the oracle
+# lacks. None of the three files uses try, catch or throw. Task 2d adds
+# IceMeshBuilder2.cpp for the same reason (0x0002f290, 0x0002fc50, 0x00030620,
+# 0x00030d90 are frameless with their Container, reducer and RadixSort locals).
+# Task 2e adds ConvexHull.cpp and TriangleMeshTopology.cpp (0x0002ae60,
+# 0x000543d0 and 0x00054460 are frameless around their MeshNormals local and
+# the objects they construct with placement new). Task 2f adds IceSupportMaps.cpp
+# (the support-map rows are frameless; its C++ rows hold no object with a
+# destructor, so the flag only keeps the file with its neighbours). Task 2g adds
+# TriangleMeshPolygons.cpp and ContactConvexConvex.cpp, whose rows are all naked
+# (the flag keeps them with their neighbours). Task 2h adds
+# ContactConvexHeightfield.cpp, whose rows are all naked too.
+if(MSVC)
+	set_property(SOURCE
+		Physics/src/EdgeList.cpp
+		Physics/src/IceAdjacencies.cpp
+		Physics/src/IceMeshTools.cpp
+		Physics/src/IceMeshBuilder2.cpp
+		Physics/src/ConvexHull.cpp
+		Physics/src/TriangleMeshTopology.cpp
+		Physics/src/IceSupportMaps.cpp
+		Physics/src/TriangleMeshPolygons.cpp
+		Physics/src/ContactConvexConvex.cpp
+		Physics/src/ContactConvexHeightfield.cpp
 		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
 endif()
 
@@ -573,7 +617,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsAssetTests tests/PhysicsAssetTests.cpp
 		Physics/src/PMap.cpp Physics/src/MemoryStream.cpp Physics/src/TriangleMesh.cpp
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
-		Physics/src/QhullHost.cpp Physics/src/Quantizer.cpp)
+		Physics/src/QhullHost.cpp Physics/src/Quantizer.cpp
+		tests/PhysicsInternalContactStubs.cpp)
 	target_include_directories(NxPhysicsAssetTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
 		# The generated oracle-RVA to candidate-address table. It is built from the census and the
@@ -627,10 +672,23 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsThirdPartyTests tests/PhysicsThirdPartyTests.cpp
 		tests/PhysicsThirdPartyQhull.c
 		tests/PhysicsThirdPartyHost.cpp Physics/src/Quantizer.cpp Physics/src/PhysicsInternal.cpp
-		Physics/src/Containers.cpp
+		Physics/src/Containers.cpp tests/PhysicsInternalContactStubs.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/IcePruner.cpp
 		Physics/src/opcode/NovodexBoxPruning.cpp
-		Physics/src/TriangleMesh.cpp Physics/src/MemoryStream.cpp)
+		Physics/src/TriangleMesh.cpp Physics/src/MemoryStream.cpp
+		Physics/src/EdgeList.cpp Physics/src/IceAdjacencies.cpp Physics/src/IceMeshTools.cpp
+		Physics/src/IceMeshBuilder2.cpp Physics/src/ConvexHull.cpp Physics/src/TriangleMeshTopology.cpp
+		Physics/src/IceSupportMaps.cpp Physics/src/SmoothNormals.cpp
+		Physics/src/TriangleMeshPolygons.cpp)
+	# TriangleMeshPolygons.cpp since convex-mesh gap Task 2g: the polygon_interface
+	# family drives the TriangleMesh polygon interface (P-Mesh) over hull images.
+	# SmoothNormals.cpp comes with IceMeshTools.cpp since convex-mesh gap Task 2e:
+	# 001651 calls the angle helper 002144, which is written there, beside the
+	# export that also calls it. The export is declared NXP_DLL_EXPORT, so the file
+	# is compiled with the DLL's linkage in every target that links it (as
+	# NxPhysicsCollisionTests does for the whole target); here only the file gets
+	# it, so the harness's own translation units keep theirs.
+	set_source_files_properties(Physics/src/SmoothNormals.cpp PROPERTIES COMPILE_DEFINITIONS NX_PHYSICS_DLL=1)
 	# The hull family's C half reads qhull's own structs, so it and only it sees the
 	# merged tree's headers (their fprintf redirection stays out of the C++ harness).
 	set_source_files_properties(tests/PhysicsThirdPartyQhull.c PROPERTIES
@@ -656,11 +714,21 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		target_link_options(NxPhysicsThirdPartyTests PRIVATE legacy_stdio_float_rounding.obj)
 	endif()
 
+	# ObjectModel.cpp's MESH slot 7 (the 001407 model) calls the support-map
+	# lookup 001556 and the hull's polygons 001472 (convex-mesh gap Task 2f), and
+	# they bring the ICE rows they call, so every target that compiles
+	# ObjectModel.cpp links these (SmoothNormals.cpp too, where the target does
+	# not already have it; 001651 calls its angle helper 002144).
+	set(NX_ICE_MESH_ROW_SOURCES
+		Physics/src/IceSupportMaps.cpp Physics/src/ConvexHull.cpp Physics/src/IceAdjacencies.cpp
+		Physics/src/EdgeList.cpp Physics/src/IceMeshTools.cpp Physics/src/IceMeshBuilder2.cpp)
+
 	# A static-proof gate, not a differential: it links the private translation
 	# units directly because the rows it covers cannot be reached through the
 	# public API. Same shape as NxFoundationCustomArrayTests above.
 	add_executable(NxPhysicsInternalTests tests/PhysicsInternalTests.cpp
-		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
+		Physics/src/PhysicsInternal.cpp
+		Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
 		Physics/src/SceneRaycast.cpp Physics/src/BodyCreation.cpp Physics/src/SceneVisualize.cpp
 		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
@@ -668,7 +736,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
-		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp
+		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp Physics/src/Distance.cpp
+		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp
 		${PHYSICS_CORE_SOURCES})
 	target_include_directories(NxPhysicsInternalTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
@@ -692,10 +761,13 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# failing for them. See evidence/phase5-object-model.md.
 	add_executable(NxPhysicsObjectLayoutTests tests/PhysicsObjectLayoutTests.cpp
 		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/Containers.cpp
+		tests/PhysicsObjectModelSceneStubs.cpp
 		Physics/src/MemoryStream.cpp
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp
-		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp)
+		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
+		tests/PhysicsInternalContactStubs.cpp
+		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp)
 	target_include_directories(NxPhysicsObjectLayoutTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
 		Physics/src/opcode)
@@ -726,10 +798,13 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# extended, so vtable probes live in this small executable.
 	add_executable(NxPhysicsShapeVtableTests tests/PhysicsShapeVtableTests.cpp
 		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/Containers.cpp
+		tests/PhysicsObjectModelSceneStubs.cpp
 		Physics/src/MemoryStream.cpp Physics/src/Geometry.cpp
 		Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp
-		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp)
+		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
+		tests/PhysicsInternalContactStubs.cpp
+		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp)
 	target_include_directories(NxPhysicsShapeVtableTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
 		Physics/src/opcode)
@@ -756,17 +831,25 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# reconstruction of that guard has to reach the same array the oracle does
 	# rather than a copy of it. PhysicsSDK.cpp owns it and drags its own
 	# neighbours in with it.
-	add_executable(NxPhysicsCollisionTests tests/PhysicsCollisionTests.cpp
+	# tests/PhysicsCollisionOpcode.cpp (convex-mesh gap Task 2i) holds the candidate
+	# side's OPCODE models, OBBCollider and the Foundation SDK the Task 2i
+	# families need, apart from Opcode.h's pragmas (see PhysicsCollisionInflate.cpp).
+	add_executable(NxPhysicsCollisionTests tests/PhysicsCollisionTests.cpp tests/PhysicsCollisionInflate.cpp tests/PhysicsCollisionOpcode.cpp
 		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp
-		Physics/src/ShapeRaycast.cpp
+		Physics/src/Distance.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp
+		Physics/src/ContactBoxMeshICE.cpp Physics/src/ContactCapsuleMesh.cpp Physics/src/ContactMeshHeightfield.cpp Physics/src/ContactMeshMesh.cpp
+		Physics/src/ContactConvexConvex.cpp Physics/src/TriangleMeshPolygons.cpp
+		Physics/src/ContactConvexHeightfield.cpp Physics/src/TriangleMeshTopology.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
-		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
+		Physics/src/PhysicsInternal.cpp
+		Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
 		Physics/src/SceneRaycast.cpp Physics/src/BodyCreation.cpp Physics/src/SceneVisualize.cpp
 		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
+		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp
 		${PHYSICS_CORE_SOURCES})
 	target_include_directories(NxPhysicsCollisionTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
@@ -775,8 +858,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# linkage here as in the DLL or every one of them warns.
 	target_compile_definitions(NxPhysicsCollisionTests PRIVATE NX_PHYSICS_DLL=1)
 	target_link_libraries(NxPhysicsCollisionTests NxFoundation NxOpcode bcrypt)
-	# A linker map for the cdb traces of the candidate code in this exe (as for
-	# NxPhysicsShapeVtableTests above); it changes nothing in the exe.
+	# A linker map supports scene-raycast and convex-mesh-gap candidate traces;
+	# it changes nothing in the executable.
 	if(MSVC)
 		target_link_options(NxPhysicsCollisionTests PRIVATE /MAP)
 	endif()

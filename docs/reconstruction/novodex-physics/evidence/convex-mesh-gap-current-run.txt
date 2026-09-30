@@ -1,0 +1,6 @@
+Current collision differential after the mesh/heightfield emitter ABI correction
+=========================================================================
+Pinned oracle NxPhysics.dll SHA-256: 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate NxPhysicsCollisionTests.exe SHA-256: 11AF8AA6A4450F152BB0E12F897B3BA2868BD551FD906B6840245B37D4782AC6
+
+The complete NxPhysicsCollisionTests executable ran against the pinned oracle and ended with collision=pass. The mesh/heightfield family exercised 3 independently built model pairs under 2 control words; the bounds-enabled OBB pass emitted contacts in 2 of 6 runs, and the oracle/candidate streams matched with 0 mismatches across 528 checks. The input digest remains 27d2e99a4f0f02fc. Other registered collision families completed in the same run; this transcript's main purpose is the updated mesh/heightfield result. The direct emitter calls in the transcribed OBB and callback bodies now use NxEmitContactThiscall, which forwards the ECX sink and seven stack arguments to the existing cdecl emitter.

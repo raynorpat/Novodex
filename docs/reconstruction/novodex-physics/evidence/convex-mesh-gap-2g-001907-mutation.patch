@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ContactGeneration.cpp b/Physics/src/ContactGeneration.cpp
+index 3a968a9..6ef001f 100644
+--- a/Physics/src/ContactGeneration.cpp
++++ b/Physics/src/ContactGeneration.cpp
+@@ -3321,7 +3321,7 @@ __declspec(naked) NxU32 nxClipEdgeToPolygonPlane()
+ 		test	ah, 0x41		// 0x00048c1b
+ 		je	L48cb0		// 0x00048c1e
+ 		fld	dword ptr [edi]		// 0x00048c24
+-		fsub	dword ptr [edx]		// 0x00048c26
++		fadd	dword ptr [edx]		// 0x00048c26
+ 		fld	dword ptr [edi + 4]		// 0x00048c28
+ 		fsub	dword ptr [edx + 4]		// 0x00048c2b
+ 		fstp	dword ptr [esp + 0xc]		// 0x00048c2e

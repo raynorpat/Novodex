@@ -1,0 +1,25 @@
+diff --git a/Physics/src/IceMeshTools.cpp b/Physics/src/IceMeshTools.cpp
+index a3b231e..41dc81e 100644
+--- a/Physics/src/IceMeshTools.cpp
++++ b/Physics/src/IceMeshTools.cpp
+@@ -873,16 +873,16 @@ L31e57:
+ 		je	L3210e		// 0x00031e60
+ 		test	esi, esi		// 0x00031e66
+ 		je	L32103		// 0x00031e68
+-		fld	dword ptr [esp + 0x1c]		// 0x00031e6e
+-		fmul	dword ptr [esi + 4]		// 0x00031e72
++		fld	dword ptr [esp + 0xc]		// 0x00031e87
++		fmul	dword ptr [esi]		// 0x00031e8b
+ 		fld	dword ptr [esp + 0x2c]		// 0x00031e75
+ 		fmul	dword ptr [esi + 8]		// 0x00031e79
+ 		faddp	st(1), st		// 0x00031e7c
+ 		fld	dword ptr [esp + 0x3c]		// 0x00031e7e
+ 		fmul	dword ptr [esi + 0xc]		// 0x00031e82
+ 		faddp	st(1), st		// 0x00031e85
+-		fld	dword ptr [esp + 0xc]		// 0x00031e87
+-		fmul	dword ptr [esi]		// 0x00031e8b
++		fld	dword ptr [esp + 0x1c]		// 0x00031e6e
++		fmul	dword ptr [esi + 4]		// 0x00031e72
+ 		faddp	st(1), st		// 0x00031e8d
+ 		fstp	dword ptr [esp + 0x8c]		// 0x00031e8f
+ 		fld	dword ptr [esp + 0x10]		// 0x00031e96

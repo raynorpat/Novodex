@@ -460,11 +460,9 @@ static void t5UseDynamic(const char* label, NxActor* actor)
 	printf("\n");
 	}
 
-static NxReal t5Bits(unsigned bits)
+static void t5SetBits(NxReal* out, unsigned bits)
 	{
-	NxReal value;
-	memcpy(&value, &bits, 4);
-	return value;
+	memcpy(out, &bits, 4);
 	}
 
 static void runTask5Cases(NxPhysicsSDK* sdk, NxPageGuardedAllocator& allocator,
@@ -475,6 +473,13 @@ static void runTask5Cases(NxPhysicsSDK* sdk, NxPageGuardedAllocator& allocator,
 	sceneDesc.setToDefault();
 	NxScene* scene = sdk->createScene(sceneDesc);
 	if(!scene) { printf("shape_mutation t5_scene=0\n"); return; }
+	NxReal nanDensity, nanTotal, negativeZero, tinyDensity, infiniteDensity, hugeTotal;
+	t5SetBits(&nanDensity, 0x7fc00000u);
+	t5SetBits(&nanTotal, 0xffc00001u);
+	t5SetBits(&negativeZero, 0x80000000u);
+	t5SetBits(&tinyDensity, 0x00000010u);
+	t5SetBits(&infiniteDensity, 0x7f800000u);
+	t5SetBits(&hugeTotal, 0x7f7fffffu);
 
 	NxMat34 identity;
 	identity.id();
@@ -560,10 +565,10 @@ static void runTask5Cases(NxPhysicsSDK* sdk, NxPageGuardedAllocator& allocator,
 	// dynamic (0x9d), shapes (0x9e), both zero (0x9f), both nonzero (0xa0).
 	MASS_CASE("t5_negative_density", boxActor, -1.0f, 0.0f);
 	MASS_CASE("t5_negative_total", boxActor, 0.0f, -2.0f);
-	MASS_CASE("t5_nan_density", boxActor, t5Bits(0x7fc00000u), 0.0f);
-	MASS_CASE("t5_nan_total", boxActor, 0.0f, t5Bits(0xffc00001u));
+	MASS_CASE("t5_nan_density", boxActor, nanDensity, 0.0f);
+	MASS_CASE("t5_nan_total", boxActor, 0.0f, nanTotal);
 	MASS_CASE("t5_both_zero", boxActor, 0.0f, 0.0f);
-	MASS_CASE("t5_negative_zero", boxActor, t5Bits(0x80000000u), 0.0f);
+	MASS_CASE("t5_negative_zero", boxActor, negativeZero, 0.0f);
 	MASS_CASE("t5_both_nonzero", boxActor, 1.0f, 1.0f);
 	MASS_CASE("t5_static", staticActor, 1.0f, 0.0f);
 	MASS_CASE("t5_static_negative", staticActor, -1.0f, 0.0f);
@@ -571,9 +576,9 @@ static void runTask5Cases(NxPhysicsSDK* sdk, NxPageGuardedAllocator& allocator,
 	MASS_CASE("t5_bare_zero", bare, 0.0f, 0.0f);
 	// Extreme densities: a denormal mass, an infinite density and a huge
 	// total mass (the inverses and the NaN/infinity zeroing).
-	MASS_CASE("t5_tiny_density", centredActor, t5Bits(0x00000010u), 0.0f);
-	MASS_CASE("t5_inf_density", centredActor, t5Bits(0x7f800000u), 0.0f);
-	MASS_CASE("t5_huge_total", centredActor, 0.0f, t5Bits(0x7f7fffffu));
+	MASS_CASE("t5_tiny_density", centredActor, tinyDensity, 0.0f);
+	MASS_CASE("t5_inf_density", centredActor, infiniteDensity, 0.0f);
+	MASS_CASE("t5_huge_total", centredActor, 0.0f, hugeTotal);
 	MASS_CASE("t5_centred_again", centredActor, 0.5f, 0.0f);
 	{
 	NxActorWriteLockHolder lock(boxActor);
@@ -727,7 +732,7 @@ static void runTask5DynamicCases(NxPhysicsSDK* sdk, NxPageGuardedAllocator& allo
 	negative.massSpaceInertia = given;
 	DYNAMIC_CASE("t5_negative_mass", staticActor, negative);
 	NxBodyDesc nanPose = given2;
-	nanPose.massLocalPose.t.y = t5Bits(0x7fc00000u);
+	t5SetBits(&nanPose.massLocalPose.t.y, 0x7fc00000u);
 	DYNAMIC_CASE("t5_nan_pose", staticActor, nanPose);
 	// A trigger-only static actor: 000008 returns 2 (E1 0x7d) and the shape
 	// 000533 removed is not added back; a plane: 000008 returns 1 (E1 0x7c).

@@ -50,6 +50,7 @@ are not null after it -- which is the whole of what the two writes do that
 survives a change of module.
 */
 
+#include "PhysicsInternal.h"
 #include "IcePrunable.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -88,6 +89,92 @@ static void nxPrunableAdapterNotify(Prunable* prunable, AABB* box)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// phys_fn_004859 (0x000b5260, 55 B)
+// Scene-side dispatch shared by the four per-type pruner slots. The listing
+// checks the embedded handle before its type byte, then dispatches slot 2 on
+// the selected pruner. Its fallback preserves the input with the low byte clear.
+udword PrunableOwnerDispatcher::Dispatch(void* object)
+{
+	unsigned char* bytes = static_cast<unsigned char*>(object);
+	const uword handle = *reinterpret_cast<const uword*>(bytes + 0x28);
+	const ubyte type = *(bytes + 0x2a);
+	if(handle != PRUNABLE_INVALID_HANDLE && type < 4)
+		{
+		void* selected = *reinterpret_cast<void**>(
+			reinterpret_cast<unsigned char*>(this) + 0x1c + type * 4);
+		if(selected)
+			{
+			void** vtable = *reinterpret_cast<void***>(selected);
+			using Dispatch = udword (__thiscall*)(void*);
+			return reinterpret_cast<Dispatch>(vtable[2])(selected);
+			}
+		}
+	return reinterpret_cast<udword>(object) & 0xffffff00u;
+}
+
+// phys_fn_001945 (0x0004bbd0, 74 B): remove the owner's primary and compound
+// child prunables, then destroy the SweepAndPrune storage owned by the scene.
+extern "C" __declspec(noinline) void __fastcall NxScenePrunerOwnerDestroy(
+	void* manager, void* owner)
+	{
+	NxU8* managerBytes = static_cast<NxU8*>(manager);
+	NxU8* ownerBytes = static_cast<NxU8*>(owner);
+	NxU8* primary = *reinterpret_cast<NxU8**>(ownerBytes + 0x10);
+	PrunableOwnerDispatcher* dispatcher =
+		reinterpret_cast<PrunableOwnerDispatcher*>(manager);
+	dispatcher->Dispatch(primary + 0xa4);
+	if(*reinterpret_cast<NxU32*>(primary + 0xd0) == 5)
+		{
+		NxU8** begin = *reinterpret_cast<NxU8***>(primary + 0xe0);
+		NxU8** end = *reinterpret_cast<NxU8***>(primary + 0xe4);
+		const NxU32 count = static_cast<NxU32>(
+			(reinterpret_cast<NxU32>(end) - reinterpret_cast<NxU32>(begin)) >> 2);
+		for(NxU32 i = 0; i < count; ++i)
+			dispatcher->Dispatch(begin[i] + 0xa4);
+		}
+	NxU8* sweep = *reinterpret_cast<NxU8**>(managerBytes + 0x2c);
+	if(sweep == nullptr)
+		{
+		*reinterpret_cast<void**>(primary + 0xa0) = nullptr;
+		return;
+		}
+	// phys_fn_005291 (0x000e71b0), SweepAndPrune::~SweepAndPrune, is inlined
+	// into the image row here: arrays first, then SAP_PairData's backing stores.
+	void** allocation = *reinterpret_cast<void***>(sweep + 0x1c);
+	if(allocation)
+		{
+		nxGetSdkAllocator()->free(allocation);
+		*reinterpret_cast<void***>(sweep + 0x1c) = nullptr;
+		}
+	for(NxU32 offset = 0x20; offset <= 0x28; offset += 4)
+		{
+		allocation = *reinterpret_cast<void***>(sweep + offset);
+		if(allocation)
+			{
+			nxGetSdkAllocator()->free(allocation);
+			*reinterpret_cast<void***>(sweep + offset) = nullptr;
+			}
+		}
+	void* pairData = *reinterpret_cast<void**>(sweep + 8);
+	*reinterpret_cast<void**>(sweep) = nullptr;
+	*reinterpret_cast<void**>(sweep + 4) = nullptr;
+	*reinterpret_cast<void**>(sweep + 0x10) = nullptr;
+	if(pairData)
+		{
+		nxGetSdkAllocator()->free(static_cast<NxU8*>(pairData) - 4);
+		*reinterpret_cast<void**>(sweep + 8) = nullptr;
+		}
+	allocation = *reinterpret_cast<void***>(sweep + 0x14);
+	if(allocation)
+		{
+		nxGetSdkAllocator()->free(allocation);
+		*reinterpret_cast<void***>(sweep + 0x14) = nullptr;
+		}
+	nxGetSdkAllocator()->free(sweep);
+	*reinterpret_cast<void**>(managerBytes + 0x2c) = nullptr;
+	*reinterpret_cast<void**>(primary + 0xa0) = nullptr;
+	}
+
 // The member at +0x0c.
 
 //! 0x000e7330. Installs the vptr and zeroes four dwords. 23 bytes, no purge.

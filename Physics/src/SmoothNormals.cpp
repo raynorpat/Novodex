@@ -62,87 +62,146 @@ static double nxSqrt(double value)
 	return result;
 	}
 
-// And the angle is `fpatan` at 0x000533a7, not the CRT's atan2. `fpatan`
-// computes atan(st(1)/st(0)) and pops, so st(1) is the y argument.
-static double nxAtan2(double y, double x)
+// phys_fn_002144 (0x000532e0, 217 B)
+// The angle helper NxBuildSmoothNormals calls three times per triangle, and
+// MeshNormals::Compute (phys_fn_001651, IceMeshTools.cpp) through the same
+// register convention: the vertex in eax, the triangle's three indices at edx,
+// the vertex array in esi; ebx and edi are preserved, ecx is not; the result
+// comes back in st(0). The weight is the triangle's interior angle at the
+// vertex, atan2(|A x B|, A.B) with A and B the two edges leaving it (the
+// "first" and "second" vertices below), formed with `fpatan`:
+//
+//   vertex == index[0]: first index[2], second index[1]
+//   vertex == index[1]: first index[2], second index[0]
+//   vertex == index[2]: first index[0], second index[1]
+//   otherwise:          first index[0], second index[0]
+//
+// The listing keeps all six edge differences in st(1)..st(7) from 0x00053325 to
+// 0x000533a5 and stores only B.z (a non-popping `fst` at 0x0005334d, reused
+// narrowed for C.x and the dot product), C.y (0x00053365) and C.z (0x00053373,
+// squared as the register value times the narrowed one); the cross product's
+// length is square-rooted and rounded to a float (0x0005338d) before `fpatan`,
+// and the angle is rounded to a float (0x000533a9) and reloaded.
+//
+// Convex-mesh gap Task 2e writes it as the listing's instructions, naked, so
+// the frame, the register convention and every operand (which are loaded and
+// which are used from memory, which decides the payload a signalling NaN
+// propagates) are the oracle's. The C++ angle helper this file had before
+// modelled it with the same groupings in C++ and agreed with the oracle on
+// every quiet input (step_smooth_normals); it now calls this row
+// (angleAtVertex below).
+__declspec(naked) void nxSmoothNormalsAngleAtVertex()
 	{
-	double result;
 	__asm
 		{
-		fld y
-		fld x
-		fpatan
-		fstp result
+		sub	esp, 0x1c		// 0x000532e0
+		push	ebx		// 0x000532e3
+		mov	ebx, dword ptr [edx]		// 0x000532e4
+		push	edi		// 0x000532e6
+		xor	ecx, ecx		// 0x000532e7
+		xor	edi, edi		// 0x000532e9
+		cmp	eax, ebx		// 0x000532eb
+		jne	L532f6		// 0x000532ed
+		mov	ecx, 2		// 0x000532ef
+		jmp	L5330b		// 0x000532f4
+L532f6:
+		cmp	eax, dword ptr [edx + 4]		// 0x000532f6
+		jne	L53304		// 0x000532f9
+		mov	ecx, 2		// 0x000532fb
+		xor	edi, edi		// 0x00053300
+		jmp	L53310		// 0x00053302
+L53304:
+		cmp	eax, dword ptr [edx + 8]		// 0x00053304
+		jne	L53310		// 0x00053307
+		xor	ecx, ecx		// 0x00053309
+L5330b:
+		mov	edi, 1		// 0x0005330b
+L53310:
+		mov	ecx, dword ptr [edx + ecx*4]		// 0x00053310
+		lea	ecx, [ecx + ecx*2]		// 0x00053313
+		fld	dword ptr [esi + ecx*4]		// 0x00053316
+		lea	ecx, [esi + ecx*4]		// 0x00053319
+		lea	eax, [eax + eax*2]		// 0x0005331c
+		fsub	dword ptr [esi + eax*4]		// 0x0005331f
+		lea	eax, [esi + eax*4]		// 0x00053322
+		fld	dword ptr [ecx + 4]		// 0x00053325
+		fsub	dword ptr [eax + 4]		// 0x00053328
+		fld	dword ptr [ecx + 8]		// 0x0005332b
+		mov	ecx, dword ptr [edx + edi*4]		// 0x0005332e
+		fsub	dword ptr [eax + 8]		// 0x00053331
+		lea	edx, [ecx + ecx*2]		// 0x00053334
+		fld	dword ptr [esi + edx*4]		// 0x00053337
+		lea	ecx, [esi + edx*4]		// 0x0005333a
+		fsub	dword ptr [eax]		// 0x0005333d
+		pop	edi		// 0x0005333f
+		fld	dword ptr [ecx + 4]		// 0x00053340
+		pop	ebx		// 0x00053343
+		fsub	dword ptr [eax + 4]		// 0x00053344
+		fld	dword ptr [ecx + 8]		// 0x00053347
+		fsub	dword ptr [eax + 8]		// 0x0005334a
+		fst	dword ptr [esp + 0x18]		// 0x0005334d
+		fmul	st, st(4)		// 0x00053351
+		fld	st(1)		// 0x00053353
+		fmul	st, st(4)		// 0x00053355
+		fsubp	st(1), st		// 0x00053357
+		fld	st(3)		// 0x00053359
+		fmul	st, st(3)		// 0x0005335b
+		fld	dword ptr [esp + 0x18]		// 0x0005335d
+		fmul	st, st(7)		// 0x00053361
+		fsubp	st(1), st		// 0x00053363
+		fstp	dword ptr [esp + 8]		// 0x00053365
+		fld	st(1)		// 0x00053369
+		fmul	st, st(6)		// 0x0005336b
+		fld	st(3)		// 0x0005336d
+		fmul	st, st(6)		// 0x0005336f
+		fsubp	st(1), st		// 0x00053371
+		fst	dword ptr [esp + 0xc]		// 0x00053373
+		fmul	dword ptr [esp + 0xc]		// 0x00053377
+		fld	dword ptr [esp + 8]		// 0x0005337b
+		fmul	dword ptr [esp + 8]		// 0x0005337f
+		faddp	st(1), st		// 0x00053383
+		fld	st(1)		// 0x00053385
+		fmul	st, st(2)		// 0x00053387
+		faddp	st(1), st		// 0x00053389
+		fsqrt		// 0x0005338b
+		fstp	dword ptr [esp]		// 0x0005338d
+		fstp	st(0)		// 0x00053390
+		fld	dword ptr [esp]		// 0x00053392
+		fld	dword ptr [esp + 0x18]		// 0x00053395
+		fmul	st, st(4)		// 0x00053399
+		fxch	st(2)		// 0x0005339b
+		fmul	st, st(5)		// 0x0005339d
+		faddp	st(2), st		// 0x0005339f
+		fxch	st(2)		// 0x000533a1
+		fmul	st, st(5)		// 0x000533a3
+		faddp	st(1), st		// 0x000533a5
+		fpatan		// 0x000533a7
+		fstp	dword ptr [esp]		// 0x000533a9
+		fstp	st(0)		// 0x000533ac
+		fstp	st(0)		// 0x000533ae
+		fstp	st(0)		// 0x000533b0
+		fld	dword ptr [esp]		// 0x000533b2
+		add	esp, 0x1c		// 0x000533b5
+		ret		// 0x000533b8
 		}
-	return result;
 	}
 
-// The dot product half of the angle, at 0x00053395..0x000533a5. See the call
-// site for why it is not written beside the cross product it shares its
-// operands with.
-static __declspec(noinline) double nxAngleDot(const NxVec3& a, const NxVec3& b,
-	const NxVec3& origin, NxReal bz)
-	{
-	return (((double) bz * (a.z - (double) origin.z))
-		+ (b.y - (double) origin.y) * (a.y - (double) origin.y))
-		+ (b.x - (double) origin.x) * (a.x - (double) origin.x);
-	}
-
-// 0x000532e0. The weight the accumulation uses is the triangle's interior angle
-// at the vertex, formed as atan2(|A x B|, A.B) -- the header's claim that it
-// "takes angles into account" is literally true. The oracle computes it with
-// the x87 `fpatan` instruction.
-//
-// Three values appear at two precisions inside one expression here, which is
-// what makes this helper worth its own function rather than being folded in:
-// B.z is stored with a non-popping `fst` at 0x0005334d and then used as the
-// register copy for C.x and as the narrowed copy for C.y and for the dot
-// product; C.z is stored the same way at 0x00053373 and then squared as the
-// register value times the narrowed one.
+// The C++ entry NxBuildSmoothNormals calls: phys_fn_002144 with the listing's
+// registers, its st(0) result stored as the float it already is.
 static NxReal angleAtVertex(NxU32 vertex, const NxU32* index, const NxVec3* verts)
 	{
-	NxU32 first, second;
-	if(vertex == index[0])      { first = index[2]; second = index[1]; }
-	else if(vertex == index[1]) { first = index[2]; second = index[0]; }
-	else if(vertex == index[2]) { first = index[0]; second = index[1]; }
-	else                        { first = index[0]; second = index[0]; }
-
-	const double ax = verts[first].x - (double) verts[vertex].x;
-	const double ay = verts[first].y - (double) verts[vertex].y;
-	const double az = verts[first].z - (double) verts[vertex].z;
-
-	const double bx = verts[second].x - (double) verts[vertex].x;
-	const double by = verts[second].y - (double) verts[vertex].y;
-	const double bzRegister = verts[second].z - (double) verts[vertex].z;
-	const NxReal bz = (NxReal) bzRegister;
-
-	const double cx = bzRegister * ay - by * az;
-	// The narrowing of C.y here, and the narrowed B.z in the dot product below,
-	// are each independently observable: removing either one alone moves the
-	// NxBuildSmoothNormals digest, and removing both moves it too. Neither
-	// moves a single matrix case, so the randomized block is the only evidence
-	// for either -- and only since it began generating non-finite vertices.
-	// Against the earlier finite-only generator both mutations were silent.
-	const NxReal cy = (NxReal) (az * bx - bz * ax);
-	const double czRegister = by * ax - bx * ay;
-	const NxReal cz = (NxReal) czRegister;
-
-	// z, then y, then x -- and the z term is the register value times the
-	// narrowed one.
-	const NxReal length = (NxReal) nxSqrt((czRegister * cz + cy * (double) cy) + cx * cx);
-
-	// Same z, y, x order, and the z term uses the narrowed B.z.
-	//
-	// ITS OWN FUNCTION, AND THAT IS THE POINT. The oracle holds all six
-	// differences in st(1)..st(7) from 0x00053325 to 0x000533a5 and stores none
-	// of them; MSVC spills five to 8-byte slots, which truncates a 64-bit
-	// significand to 53. The cross product above survives that because every one
-	// of its outputs is narrowed to `NxReal` anyway -- but `dot` reaches `fpatan`
-	// wide, so it is the one place in this row where the spill is observable.
-	// Recomputing the three pairs here costs one `fsub` each, gives the same
-	// numbers, and leaves nothing that needs a slot.
-	return (NxReal) nxAtan2((double) length,
-		nxAngleDot(verts[first], verts[second], verts[vertex], bz));
+	NxReal angle;
+	__asm
+		{
+		push	esi
+		mov		eax, vertex
+		mov		edx, index
+		mov		esi, verts
+		call	nxSmoothNormalsAngleAtVertex
+		fstp	angle
+		pop		esi
+		}
+	return angle;
 	}
 
 // 0x000533c0. Three passes: unit face normals into a scratch array, an

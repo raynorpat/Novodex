@@ -130,10 +130,10 @@ struct HullFakeSlots {
     static unsigned __fastcall vertexCount(void*, void*) { return gHullVertexCount; }
 };
 static unsigned gHullSeed = 0x2468ace1u;
-static float hullRandom(float scale) {
+static void hullRandom(float scale, float* out) {
     gHullSeed = gHullSeed * 1664525u + 1013904223u;
     const int value = static_cast<int>(gHullSeed >> 8) - 0x800000;
-    return static_cast<float>(value) * (scale / 8388608.0f);
+    *out = static_cast<float>(value) * (scale / 8388608.0f);
 }
 // The hull's words with each face record's two list pointers replaced by the
 // four words each points at (the two DLLs keep the lists at different
@@ -287,7 +287,7 @@ static BoxHullResult runBoxHullCases(const unsigned char* base) {
     poses[1][0] = poses[1][5] = poses[1][10] = 1.0f;                // identity, 4-word rows
     const float rotation[12] = {0,-1,0,9, 1,0,0,9, 0,0,1,9};
     memcpy(poses[2], rotation, sizeof(rotation));
-    for(unsigned k = 0; k < 12; ++k) poses[3][k] = hullRandom(1.5f);
+    for(unsigned k = 0; k < 12; ++k) hullRandom(1.5f, &poses[3][k]);
     auto driveSlots = [&](const char* what, unsigned index, const float* direction,
             const float* pose) {
         FaceSlot oracleFace = reinterpret_cast<FaceSlot>((*reinterpret_cast<void***>(o + 0xe0))[9]);
@@ -392,15 +392,15 @@ static BoxHullResult runBoxHullCases(const unsigned char* base) {
         float normals[6][3];
         for(unsigned r = 0; r < 6; ++r)
             for(unsigned k = 0; k < 3; ++k)
-                normals[r][k] = hullRandom(1.25f);
+                hullRandom(1.25f, &normals[r][k]);
         if(s % 8 == 3) memcpy(normals[4], normals[2], 12);   // a tie
         for(unsigned r = 0; r < 6; ++r) {
             memcpy(o + 0x15c + 0x24*r, normals[r], 12);
             memcpy(c + 0x15c + 0x24*r, normals[r], 12);
         }
         float direction[3], pose[12];
-        for(unsigned k = 0; k < 3; ++k) direction[k] = hullRandom(2.0f);
-        for(unsigned k = 0; k < 12; ++k) pose[k] = hullRandom(1.0f);
+        for(unsigned k = 0; k < 3; ++k) hullRandom(2.0f, &direction[k]);
+        for(unsigned k = 0; k < 12; ++k) hullRandom(1.0f, &pose[k]);
         const bool fake = s >= samples / 2;
         if(fake) {
             gHullFaceCount = s % 7;

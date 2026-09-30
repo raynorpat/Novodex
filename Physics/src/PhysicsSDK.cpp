@@ -53,6 +53,11 @@ static NxFoundationSDK* gFoundation = 0;
 static NxDebugRenderable* gDebugRenderable = 0;
 static ShapePairFunctionTable* gShapePairFunctionTable = 0;
 
+void* nxPhysicsSDKShapePairTable()
+	{
+	return gShapePairFunctionTable;
+	}
+
 PhysicsSDK* PhysicsSDK::instance = 0;
 
 // The view of the two file-static arrays above (PhysicsSDK.h) for the rows that

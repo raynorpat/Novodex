@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ContactGeneration.cpp b/Physics/src/ContactGeneration.cpp
+index 3a968a9..211a682 100644
+--- a/Physics/src/ContactGeneration.cpp
++++ b/Physics/src/ContactGeneration.cpp
+@@ -2859,7 +2859,7 @@ __declspec(naked) void __fastcall NxEmitContactFeatures(NxContactSink* /*sink*/,
+ 		mov	eax, dword ptr [esp + 0x30]		// 0x0001d920
+ 		fld	dword ptr [eax]		// 0x0001d924
+ 		mov	dword ptr [esp + 0x3c], ecx		// 0x0001d926
+-		fchs		// 0x0001d92a
++		fnop		// 0x0001d92a
+ 		mov	dword ptr [esp + 0x34], edx		// 0x0001d92c
+ 		fstp	dword ptr [esp + 0x10]		// 0x0001d930
+ 		fld	dword ptr [eax + 4]		// 0x0001d934

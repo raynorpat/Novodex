@@ -83,13 +83,6 @@ static NxU32 nxU(NxReal value)
 	return bits;
 	}
 
-static NxReal nxF(NxU32 bits)
-	{
-	NxReal value;
-	memcpy(&value, &bits, 4);
-	return value;
-	}
-
 // A vector is printed as three raw words, never as decimal.
 static void nxPrintVec(const char* tag, const NxVec3& v)
 	{

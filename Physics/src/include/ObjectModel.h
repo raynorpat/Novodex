@@ -457,12 +457,12 @@ class BoxShape
 	void* nxBoxRaycast(const float* ray, float maxDistance,
 		unsigned reserved, unsigned flags, void* hit) const;
 
-	//! phys_fn_000951 (BOX slot 7, 0x20b20, ret 8), StepOnlyRows.cpp: the
-	//! exit distance from the box centre along `direction` (arg2), through
-	//! the slab test 001730 against [-dims, dims]; *out = |tfar| and true
-	//! on a hit, false when the test returns -1. Called only by the CCD
-	//! sweep 002264 inside the step.
-	bool nxBoxSweep(void* out, const float* direction) const;
+	//! phys_fn_000951 (BOX slot 7, 0x20b20, ret 8): swept-AABB entry.
+	//! `out` (arg1) receives |tFar| of the slab test phys_fn_001730 of the
+	//! ray (box translation round-tripped through the box frame, R^T swept)
+	//! against the box's own AABB; false on a miss. Written from the listing
+	//! (convex-mesh gap Task 2b); stays discovered (a Phase 5 row).
+	bool nxBoxSweep(void* out, const float* swept) const;
 
 	//! BOX-table slot 10, phys_fn_000937 (0x00020670): writes the pose-one
 	//! translation (+0x30/+0x34/+0x38) to out[0..2] and a sqrt-of-squared-
@@ -1882,6 +1882,8 @@ class SphereShape
 	//! dirty-flag 0x20 -- all three null-owner/Task-4 no-ops on a fresh
 	//! shape.
 	void				nxSphereSetRadius(float radius);
+	//! Task 2l's temporary sphere cleanup path (001351 followed by BASE dtor 001323).
+	void				nxSphereCallbackDtor(void);
 
 	//! SPHERE-table slot 0, phys_fn_001375 (0x00027c30): scalar deleting
 	//! destructor -- destroys the embedded collision object unconditionally,
@@ -2209,8 +2211,8 @@ class MeshShape
 	//! the mesh's neighbor graph when present, otherwise the local bounds.
 	void				nxMeshWorldAABB(float* out) const;
 
-	//! MESH-table slot 7, phys_fn_001407 (0x00029610), for a null
-	//! classifier or a classifier whose tree plane table is already built.
+	//! MESH-table slot 7, phys_fn_001407 (0x00029610): the null-classifier
+	//! arm and the prepared arm, through the product 001556 and 001472.
 	bool				nxMeshSweepPrepared(float* out, const float* point) const;
 
 	//! MESH-table slot 4, phys_fn_001397 (0x00028e10), for a mesh whose

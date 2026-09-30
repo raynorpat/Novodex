@@ -1,0 +1,16 @@
+Task 2l: P-Sphere oracle/candidate destructor call-chain trace
+===========================================================
+Pinned oracle NxPhysics.dll SHA-256: 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate NxPhysicsCollisionTests.exe SHA-256: 80139070afc1e82c7ab0cb7fb811a377095c20929217fddde18d01979eb1050
+Candidate map: build/Release/NxPhysicsCollisionTests.map
+Candidate SphereShape::nxSphereCallbackDtor RVA: 0x00064b10
+Candidate ShapeBase::nxBaseDtorOwnerArms RVA: 0x00060c20
+
+One-shot cdb breakpoints were installed for oracle 001323 and the two candidate symbols above. All fired during the 001874 differential:
+
+HIT_ORACLE_001323
+HIT_CANDIDATE_SPHERE_DTOR
+HIT_CANDIDATE_BASE_OWNER_ARMS
+
+The enclosing 001874 differential reports 12 checks, zero mismatches, and four contacts (`collision=pass`). Candidate Prunable destruction is inlined into the sphere callback destructor; its standalone mapped destructor breakpoint did not fire. This trace proves the exercised detached temporary-sphere cleanup path and its owner-arm helper. It does not prove every owner-present arm or the remaining P-Sphere closure callers, so 001323 remains unpromoted.
+

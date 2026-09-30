@@ -1,0 +1,88 @@
+convex-mesh gap Task 2a: cdb breakpoint trace of the box distance rows
+=====================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/joint-open-items-trace-slots.txt.
+Banners, ModLoad lines and the program's own output are removed except the harness's closing
+lines; the echoed breakpoint commands and the HIT lines are kept in order and unedited. It is the
+evidence behind the dynamic_proof this task records in inventory.json for the rows below
+(see evidence/convex-mesh-gap.md, Task 2a).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\NxPhysicsCollisionTests.exe
+           D:\FlamingEnt__\Unreal_3\Binaries 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+           (the script is the bp lines below, then `g` and `q`)
+Recorded:  2026-09-28, on the build of the Task 2a differential (commit 26009e9, plus the /MAP
+           link option this commit adds, which changes no code).
+Binary:    build\Release\NxPhysicsCollisionTests.exe
+           sha256=4442c4767cfc46f7b171901719e44654aae335d71b8bf05aba0781666f8ac31a
+Oracle:    D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+           sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c (the pin; the
+           harness re-hashes it and refuses to run otherwise)
+Offsets:   module-relative, from build\Release\NxPhysicsCollisionTests.map of that build (the exe
+           has no PDB; the collision harness links the candidate sources, so the exe is what runs
+           candidate code). One one-shot breakpoint (`bp /1`) per candidate function carrying one
+           of this task's stable IDs, plus the ten out-of-line leaves of Face (001674), which the
+           source splits into functions of their own (Physics/src/Distance.cpp). 001686 is the
+           continuation of 001684 in the oracle and the second half of NxLineBoxSquareDistance
+           here: the candidate has no separate address for it, and every call of 001684 runs it.
+
+Result: every one of the 24 breakpoints was hit, so all fourteen functions (fifteen rows with
+001686) and all ten Face leaves executed in the run; the harness then closed with
+`collision matrix_wrong=0 index_wrong=0 mismatches=0` and `collision=pass`. The first hit of each
+comes from the first family that reaches it: box_capsule.random (001751 -> 001688 -> 001684 ->
+Face ... -> 001670), capsule_capsule (001774), line_box (Case0, Case00), contact_box_capsule (001753)
+and the three compound families.
+
+(One HIT line is printed by cdb in the middle of a program line the CRT had buffered; it is
+kept here on its own line, unedited.)
+
+0:000> bp /1 NxPhysicsCollisionTests+0x1ddc0 ".echo HIT 001670 NxPointBoxSquareDistance +0x1ddc0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1edb0 ".echo HIT 001674 nxLineBoxFace +0x1edb0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1ecf0 ".echo HIT 001676 nxLineBoxCaseNoZeros +0x1ecf0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1ead0 ".echo HIT 001678 nxLineBoxCase0 +0x1ead0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1e9f0 ".echo HIT 001680 nxLineBoxCase00 +0x1e9f0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1e900 ".echo HIT 001682 nxLineBoxCase000 +0x1e900; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1db40 ".echo HIT 001684 NxLineBoxSquareDistance +0x1db40; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1df30 ".echo HIT 001688 NxSegmentBoxSquareDistance +0x1df30; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x16e30 ".echo HIT 001751 NxOverlapBoxCapsule +0x16e30; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1ac10 ".echo HIT 001753 NxContactBoxCapsule +0x1ac10; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x17170 ".echo HIT 001774 NxOverlapCapsuleCapsule +0x17170; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x17270 ".echo HIT 001785 NxOverlapCapsuleCompound +0x17270; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x17cb0 ".echo HIT 001789 NxOverlapSphereCompound +0x17cb0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x16fb0 ".echo HIT 001791 NxOverlapBoxCompound +0x16fb0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1e6c0 ".echo HIT 001674 nxFaceSlab1 +0x1e6c0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1e7e0 ".echo HIT 001674 nxFaceSlab2 +0x1e7e0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1e120 ".echo HIT 001674 nxFaceCornerArm +0x1e120; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1e540 ".echo HIT 001674 nxFaceNearEdge1Narrow +0x1e540; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1e600 ".echo HIT 001674 nxFaceNearEdge2Narrow +0x1e600; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1e400 ".echo HIT 001674 nxFaceFarEdge1 +0x1e400; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1e4a0 ".echo HIT 001674 nxFaceFarEdge2 +0x1e4a0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1e2c0 ".echo HIT 001674 nxFaceCornerFarEdge1 +0x1e2c0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1e360 ".echo HIT 001674 nxFaceCornerFarEdge2 +0x1e360; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x1e080 ".echo HIT 001674 nxFaceCorner +0x1e080; gc"
+HIT 001751 NxOverlapBoxCapsule +0x16e30
+HIT 001688 NxSegmentBoxSquareDistance +0x1df30
+HIT 001684 NxLineBoxSquareDistance +0x1db40
+HIT 001676 nxLineBoxCaseNoZeros +0x1ecf0
+HIT 001674 nxLineBoxFace +0x1edb0
+HIT 001674 nxFaceSlab1 +0x1e6c0
+HIT 001670 NxPointBoxSquareDistance +0x1ddc0
+HIT 001674 nxFaceCornerArm +0x1e120
+HIT 001674 nxFaceCorner +0x1e080
+HIT 001674 nxFaceNearEdge2Narrow +0x1e600
+HIT 001674 nxFaceNearEdge1Narrow +0x1e540
+HIT 001674 nxFaceCornerFarEdge1 +0x1e2c0
+HIT 001674 nxFaceFarEdge1 +0x1e400
+HIT 001674 nxFaceCornerFarEdge2 +0x1e360
+HIT 001674 nxFaceSlab2 +0x1e7e0
+HIT 001682 nxLineBoxCase000 +0x1e900
+HIT 001674 nxFaceFarEdge2 +0x1e4a0
+HIT 001774 NxOverlapCapsuleCapsule +0x17170
+HIT 001678 nxLineBoxCase0 +0x1ead0
+HIT 001680 nxLineBoxCase00 +0x1e9f0
+HIT 001753 NxContactBoxCapsule +0x1ac10
+HIT 001789 NxOverlapSphereCompound +0x17cb0
+HIT 001791 NxOverlapBoxCompound +0x16fb0
+HIT 001785 NxOverlapCapsuleCompound +0x17270
+  | collision matrix_wrong=0 index_wrong=0 mismatches=0
+  | collision=pass

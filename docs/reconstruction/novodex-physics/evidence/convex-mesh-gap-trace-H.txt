@@ -1,0 +1,61 @@
+convex-mesh gap harness hardening: cdb breakpoint trace of the rows whose code changed
+======================================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/convex-mesh-gap-trace-2b.txt.
+Banners, ModLoad lines and the program's own output are removed except the harness's closing
+lines; the echoed breakpoint commands and the HIT lines are kept in order and unedited. It is the
+evidence behind the dynamic_proof the harness hardening records in inventory.json for
+phys_fn_001712 (NxRayTriIntersect, now a naked x87 transcription of its listing) and phys_fn_001694
+(whose interior leaf is now an x87 block) -- see evidence/convex-mesh-gap.md, Harness hardening.
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\NxPhysicsCollisionTests.exe
+           D:\FlamingEnt__\Unreal_3\Binaries 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+           (the script is the bp lines below, then `g` and `q`)
+Recorded:  2026-09-28, on the build of commit a8df0e8 (the harness hardening's code).
+Binary:    build\Release\NxPhysicsCollisionTests.exe
+           sha256=7fc1fb881dafd6893faec33c838209b2677319b6c647a8bf9f310e7796a0d750
+Oracle:    D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+           sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c (the pin; the
+           harness re-hashes it and refuses to run otherwise)
+Offsets:   module-relative, from build\Release\NxPhysicsCollisionTests.map of that build (the exe
+           has no PDB). One one-shot breakpoint (`bp /1`) on NxRayTriIntersect, on
+           NxSegmentTriangleSquareDistance and on the ten out-of-line leaves Physics/src/Distance.cpp
+           splits 001694 into (nxSegmentTriangleInterior is the new x87 block).
+
+Result: every one of the 12 breakpoints was hit; the harness then closed with
+`collision matrix_wrong=0 index_wrong=0 mismatches=0` and `collision=pass`. 001712's first hit is
+step_ray_tri's (in wmain), 001694's is segment_triangle's (nxDriveTask2b). The traced
+NxRayTriIntersect disassembles to the listing's 0x00036f50..0x0003725d instruction for
+instruction (the three constants' addresses and the branch targets aside; the branch offsets are
+equal), and nxSegmentTriangleInterior makes no 8-byte access.
+
+(One HIT line is printed by cdb in the middle of a program line the CRT had buffered; it is
+kept here on its own line, unedited.)
+
+0:000> bp /1 NxPhysicsCollisionTests+0x2abc0 ".echo HIT 001712 NxRayTriIntersect +0x2abc0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x26ed0 ".echo HIT 001694 NxSegmentTriangleSquareDistance +0x26ed0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x28c30 ".echo HIT 001694 nxSegmentTriangleDeterminant +0x28c30; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x28c80 ".echo HIT 001694 nxSegmentTriangleInterior +0x28c80; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x28d30 ".echo HIT 001694 nxSegmentTriangleRegion +0x28d30; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x28e00 ".echo HIT 001694 nxSegmentTriangleST +0x28e00; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x28e70 ".echo HIT 001694 nxSegmentTriangleSolve +0x28e70; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x28f10 ".echo HIT 001694 nxSegmentTriangleTerms +0x28f10; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x28910 ".echo HIT 001694 nxSegTriEdge0 +0x28910; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x289d0 ".echo HIT 001694 nxSegTriEdge1 +0x289d0; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x28a90 ".echo HIT 001694 nxSegTriEdge2 +0x28a90; gc"
+0:000> bp /1 NxPhysicsCollisionTests+0x28b60 ".echo HIT 001694 nxSegTriEnd +0x28b60; gc"
+HIT 001712 NxRayTriIntersect +0x2abc0
+HIT 001694 NxSegmentTriangleSquareDistance +0x26ed0
+HIT 001694 nxSegmentTriangleTerms +0x28f10
+HIT 001694 nxSegmentTriangleSolve +0x28e70
+HIT 001694 nxSegmentTriangleDeterminant +0x28c30
+HIT 001694 nxSegTriEdge1 +0x289d0
+HIT 001694 nxSegTriEdge2 +0x28a90
+HIT 001694 nxSegmentTriangleST +0x28e00
+HIT 001694 nxSegmentTriangleRegion +0x28d30
+HIT 001694 nxSegTriEnd +0x28b60
+HIT 001694 nxSegmentTriangleInterior +0x28c80
+HIT 001694 nxSegTriEdge0 +0x28910
+  | collision matrix_wrong=0 index_wrong=0 mismatches=0
+  | collision=pass

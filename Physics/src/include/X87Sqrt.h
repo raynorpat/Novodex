@@ -85,6 +85,27 @@
 //   x87CIacos(x)                    the oracle CRT's _CIacos (see its note)
 //   x87AcosRateOverRoot(w, r)       x87RateOverRoot(x87CIacos(w), r, w), the
 //                                   arc cosine kept in st(0)
+//
+// Where these helpers are not enough. A helper takes its operands through qwords
+// and returns through st(0), so a row whose listing keeps a WIDE value both as an
+// operand of the root and for use after it (the value is squared into the root,
+// then scaled by 1/root) cannot be reproduced under 0x0f7f through them: the
+// operand is cut to 53 bits on the way in, and the value itself is held in an
+// 8-byte slot across the call. The per-site precedent (convex-mesh gap Task 2b)
+// is to write that row's span -- the wide value, the root and its reuse -- as one
+// x87 `__asm` block transcribed instruction for instruction from the listing,
+// keeping the rest of the row in C++: phys_fn_001760 in ContactBoxMeshICE.cpp
+// (0x0003c163..0x0003c21b, 0 differing words where the C++ form had 51). It is a
+// per-row judgement of proportion, not a rule: phys_fn_001855 has the same shape
+// twice (about 131 instructions) and keeps the C++ form with its measured
+// divergence pinned.
+//
+// Two more uses of the same device, not about square roots (convex-mesh gap harness
+// hardening): phys_fn_001694's interior leaf in Distance.cpp, whose wide s MSVC
+// spilled to an 8-byte slot (2 words under 0x0f7f on the Task 2b review's draws,
+// 0 since), and phys_fn_001712 (NxRayTriIntersect) in Geometry.cpp, written whole
+// and naked because which operands its listing loads (quieting a signalling NaN)
+// and which it uses from memory decides the NaN it propagates.
 
 #include "Nxp.h"
 

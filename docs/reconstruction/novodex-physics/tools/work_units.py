@@ -1,6 +1,6 @@
 """Group the census's code rows into the translation units the linker laid out.
 
-The image names 57 translation units through NX_ASSERT __FILE__ strings, and each
+The image names 60 translation units through NX_ASSERT __FILE__ strings, and each
 unit's code was emitted contiguously, so a unit's first and last asserting rows
 bound an evidenced span. This tool grows each span outward one row at a time while
 the next row has a direct call edge into the unit's current rows and none into the
@@ -26,7 +26,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from reconcile_analysis import SOURCE_MARK, translation_unit_spans  # noqa: E402
+from reconcile_analysis import (source_file_at, source_file_spans,
+                                translation_unit_spans)  # noqa: E402
 
 
 EDGE = re.compile(r'^\s*"(phys_fn_\d+)"\s*->\s*"(phys_fn_\d+)"')
@@ -56,17 +57,13 @@ def load_rows(inventory):
 
 def source_seeds(ghidra, rows):
     """Every row referencing a __FILE__ string names its own unit."""
-    files = {}
-    for entry in ghidra["strings"]:
-        index = entry["value"].find(SOURCE_MARK)
-        if index >= 0:
-            files[int(entry["rva"], 16)] = entry["value"][index + len(SOURCE_MARK):]
+    files = source_file_spans(ghidra)
     starts = [r["rva"] for r in rows]
     seeds = {}
     for reference in ghidra["references"]:
         if not reference["to_rva"]:
             continue
-        name = files.get(int(reference["to_rva"], 16))
+        name = source_file_at(files, int(reference["to_rva"], 16))
         if name is None:
             continue
         source = int(reference["from_rva"], 16)

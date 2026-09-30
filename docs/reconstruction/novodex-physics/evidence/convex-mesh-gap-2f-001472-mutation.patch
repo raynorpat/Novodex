@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ConvexHull.cpp b/Physics/src/ConvexHull.cpp
+index a659b03..58663b8 100644
+--- a/Physics/src/ConvexHull.cpp
++++ b/Physics/src/ConvexHull.cpp
+@@ -824,7 +824,7 @@ L2b800:
+ 		mov	edx, dword ptr [ebx + 0x28]		// 0x0002b88d
+ 		fld	dword ptr [edx + ebp + 0xc]		// 0x0002b890
+ 		lea	eax, [edx + ebp + 0xc]		// 0x0002b894
+-		fchs		// 0x0002b898
++		nop		// 0x0002b898
+ 		add	esp, 8		// 0x0002b89a
+ 		fstp	dword ptr [eax]		// 0x0002b89d
+ 		fld	dword ptr [eax + 4]		// 0x0002b89f

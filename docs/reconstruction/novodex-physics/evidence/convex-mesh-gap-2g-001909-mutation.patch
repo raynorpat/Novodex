@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ContactGeneration.cpp b/Physics/src/ContactGeneration.cpp
+index 3a968a9..2233d88 100644
+--- a/Physics/src/ContactGeneration.cpp
++++ b/Physics/src/ContactGeneration.cpp
+@@ -3585,7 +3585,7 @@ L48ec6:
+ 		fld	dword ptr [ebp - 0xc]		// 0x00048ec9
+ 		mov	esi, dword ptr [ebp + 0x40]		// 0x00048ecc
+ 		lea	ecx, [ecx + ecx*2]		// 0x00048ecf
+-		fmul	dword ptr [esi + ecx*4 + 4]		// 0x00048ed2
++		fadd	dword ptr [esi + ecx*4 + 4]		// 0x00048ed2
+ 		lea	ecx, [esi + ecx*4]		// 0x00048ed6
+ 		fld	dword ptr [ebp - 8]		// 0x00048ed9
+ 		fmul	dword ptr [ecx + 8]		// 0x00048edc

@@ -1,0 +1,68 @@
+diff --git a/Physics/src/EdgeList.cpp b/Physics/src/EdgeList.cpp
+index 8fadd74..6df1348 100644
+--- a/Physics/src/EdgeList.cpp
++++ b/Physics/src/EdgeList.cpp
+@@ -30,6 +30,13 @@
+ #include <string.h>
+ 
+ // .rdata 0x101080cc.
++// THROWAWAY (evidence/convex-mesh-gap-2c-bind-oracle-callees.patch): hooks the
++// harness fills with the oracle's 005155 / 005181. Never commit.
++typedef void* (__thiscall* NxDbgPlaneSetFn)(void*, const void*, const void*, const void*);
++typedef void (__thiscall* NxDbgNormalFn)(const void*, void*);
++NxDbgPlaneSetFn gNxDbgPlaneSet = 0;
++NxDbgNormalFn gNxDbgNormal = 0;
++
+ static const char gEdgeListFile[] = "\\Epic\\Novodex\\SDKs\\Physics\\src\\EdgeList.cpp";
+ 
+ // 0x101041f0 and 0x10106954, the two dword constants 002061 compares with.
+@@ -341,7 +348,10 @@ bool EdgeList::ComputeActiveEdges(NxU32 nb_faces, const NxU32* dfaces, const NxU
+ 			// plain block, so that no object with a declared destructor is
+ 			// constructed here.
+ 			float PL[4];
+-			((IceMaths::Plane*) PL)->Set(verts[VRef10], verts[VRef11], verts[VRef12]);
++			if(gNxDbgPlaneSet)
++				gNxDbgPlaneSet(PL, &verts[VRef10], &verts[VRef11], &verts[VRef12]);
++			else
++				((IceMaths::Plane*) PL)->Set(verts[VRef10], verts[VRef11], verts[VRef12]);
+ 
+ 			// 0x0005189f..0x000518d4: the distance of verts[Op] to that plane,
+ 			// (n.y p.y + n.z p.z) + n.x p.x + d, compared below zero.
+@@ -379,8 +389,16 @@ bool EdgeList::ComputeActiveEdges(NxU32 nb_faces, const NxU32* dfaces, const NxU
+ 				memcpy(&T1[3], &verts[VRef11], 12);
+ 				memcpy(&T1[6], &verts[VRef12], 12);
+ 				float N0[3], N1[3];
+-				((const IceMaths::Triangle*) T0)->Normal(*(IceMaths::Point*) N0);
+-				((const IceMaths::Triangle*) T1)->Normal(*(IceMaths::Point*) N1);
++				if(gNxDbgNormal)
++					{
++					gNxDbgNormal(T0, N0);
++					gNxDbgNormal(T1, N1);
++					}
++				else
++					{
++					((const IceMaths::Triangle*) T0)->Normal(*(IceMaths::Point*) N0);
++					((const IceMaths::Triangle*) T1)->Normal(*(IceMaths::Point*) N1);
++					}
+ 
+ 				// 0x000519c1..0x00051a3a: atan2(|N0 x N1|, N0 . N1), the cross
+ 				// product's length ((x^2 + z^2) + y^2) square-rooted and kept on
+diff --git a/tests/PhysicsThirdPartyTests.cpp b/tests/PhysicsThirdPartyTests.cpp
+index 5eb6141..dca3e47 100644
+--- a/tests/PhysicsThirdPartyTests.cpp
++++ b/tests/PhysicsThirdPartyTests.cpp
+@@ -7079,6 +7079,14 @@ static void nxIceFamily(const NxOracleRows& o, bool selfOnly, NxIceDriver driver
+ 		gIceAllocator.reset();
+ 		gIceTape = &gCandidateTape;
+ 		NxIceSide candidate = { &o, false, &gCandidateTape, &gCandidateTapeB };
++		// THROWAWAY: NX_ICE_BIND=1 binds the oracle's 005155, 2 its 005181, 3 both.
++		typedef void* (__thiscall* NxDbgPlaneSetFn)(void*, const void*, const void*, const void*);
++		typedef void (__thiscall* NxDbgNormalFn)(const void*, void*);
++		extern NxDbgPlaneSetFn gNxDbgPlaneSet;
++		extern NxDbgNormalFn gNxDbgNormal;
++		const int bind = getenv("NX_ICE_BIND") ? atoi(getenv("NX_ICE_BIND")) : 0;
++		gNxDbgPlaneSet = (bind & 1) ? (NxDbgPlaneSetFn) (o.base + 0x000e31c0) : 0;
++		gNxDbgNormal = (bind & 2) ? (NxDbgNormalFn) (o.base + 0x000e3f50) : 0;
+ 		driver(candidate);
+ 		gNxIceErrorSink = 0;
+ 		nxSetSdkAllocatorBridge(shipped);

@@ -1,0 +1,76 @@
+convex-mesh gap Task 2e: cdb breakpoint trace of sub-unit D's remaining rows and P-Small
+======================================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/convex-mesh-gap-trace-2d.txt.
+Banners, ModLoad lines and the program's own output are removed except the Task 2e families' lines
+and the harness's closing line (marked `  | `); the echoed breakpoint commands and the HIT lines
+are kept in order and unedited. It is the evidence behind the dynamic_proof this task records in
+inventory.json for the rows below (see evidence/convex-mesh-gap.md, Task 2e).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsThirdPartyTests.exe
+           D:\FlamingEnt__\Unreal_3\Binaries 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+           (the script is the bp lines below, then `g` and `q`)
+Recorded:  2026-09-28, on the build of commit 5aad0c8 (the Task 2e rows and families).
+Binary:    build\Release\NxPhysicsThirdPartyTests.exe
+           sha256=1a3476b96506cb0ece3c7c1e173143de585e5f5e6481a91097ec7914bcbeb242
+Oracle:    D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+           sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c (the pin; the
+           harness re-hashes it and refuses to run otherwise)
+Offsets:   module-relative, from build\Release\NxPhysicsThirdPartyTests.map of that build (the exe
+           has no PDB). As in the Task 2c and 2d traces, each breakpoint is written against the
+           entry point: `@$exentry - 0x8a120` is the image base (entry point RVA 0x8a120). One
+           one-shot breakpoint (`bp /1`) per candidate function carrying one of this task's stable
+           IDs: the nine rows with an address of their own (001643 is the body of 001641 past its
+           copy constructor call and has none), and the product forms of the already-reconstructed
+           001536 (Adjacencies::Adjacencies) and 001649 (MeshNormals::~MeshNormals).
+
+Result: every one of the 11 breakpoints was hit, so all 11 functions (12 rows with 001643)
+executed in the run; the harness then closed with
+`thirdparty candidate mismatches=0 layout_failures=0`. Each breakpoint fires on the candidate pass
+of its family, which follows the oracle pass: 001639 and 001653 in pose_pair, 001661 in
+unique_axis, 001641 in edge_dedupe, 001651, 001649, 002144 and 001461 in mesh_normals (002144 from
+the first angle-weighted create block), 002186, 001536 and 002188 in adjacency_owner.
+
+0:000> bp /1 @$exentry-0x8a120+0x23f00 ".echo HIT 001536 Adjacencies::Adjacencies +0x23f00; gc"
+0:000> bp /1 @$exentry-0x8a120+0x28000 ".echo HIT 001461 ConvexHull::ComputeVertexNormals +0x28000; gc"
+0:000> bp /1 @$exentry-0x8a120+0x24dc0 ".echo HIT 001639 nxIceIdentityPoses +0x24dc0; gc"
+0:000> bp /1 @$exentry-0x8a120+0x24bb0 ".echo HIT 001641 nxIceEdgeLoop +0x24bb0; gc"
+0:000> bp /1 @$exentry-0x8a120+0x24640 ".echo HIT 001649 MeshNormals::~MeshNormals +0x24640; gc"
+0:000> bp /1 @$exentry-0x8a120+0x254d0 ".echo HIT 001651 nxMeshNormalsCompute +0x254d0; gc"
+0:000> bp /1 @$exentry-0x8a120+0x24e70 ".echo HIT 001653 nxIcePosePair +0x24e70; gc"
+0:000> bp /1 @$exentry-0x8a120+0x24b10 ".echo HIT 001661 nxIceAddUniqueAxis +0x24b10; gc"
+0:000> bp /1 @$exentry-0x8a120+0x28200 ".echo HIT 002144 nxSmoothNormalsAngleAtVertex +0x28200; gc"
+0:000> bp /1 @$exentry-0x8a120+0x280c0 ".echo HIT 002186 TriangleMesh::createAdjacencies +0x280c0; gc"
+0:000> bp /1 @$exentry-0x8a120+0x28160 ".echo HIT 002188 TriangleMesh::createEdgeList +0x28160; gc"
+0:000> g
+HIT 001639 nxIceIdentityPoses +0x24dc0
+HIT 001653 nxIcePosePair +0x24e70
+  | thirdparty input name=pose_pair words=80640 input=fa36d674
+  | thirdparty name=pose_pair rva=0x00031db0 owner=phys_fn_001653 source=IceMeshTools.cpp words=127828 oracle=5daac11c mismatches=0 worst_ulp=0 verdict=exact
+  | thirdparty name=pose_pair.inverse_divergent rva=0x00031db0 owner=phys_fn_001653 source=IceMeshTools.cpp words=24288 oracle=f698d5e5 mismatches=944 discrete=0 float_ulp=inf double_ulp=0 beyond=944 inf_words=944 degenerate=0 finite_ulp=0 beyond_abs=inf first_diff=9 length_delta=0 ceiling=944/0 verdict=divergent
+  | thirdparty coverage name=pose_pair calls=4608 exact=3872 inverse_divergent=736 x87_0f7f=2304 identity_guard_before=0 identity_at_block=1 identity_kept=1 reports=0
+HIT 001661 nxIceAddUniqueAxis +0x24b10
+  | thirdparty input name=unique_axis words=3783 input=95bee3a5
+  | thirdparty name=unique_axis rva=0x000324f0 owner=phys_fn_001661 source=IceMeshTools.cpp,IceMeshBuilder2.cpp words=13830 oracle=fb7a8219 mismatches=0 worst_ulp=0 verdict=exact
+  | thirdparty coverage name=unique_axis cases=320 calls=2202 added=1652 rejected=550 negated=1070 input_snan=320 reports=0
+HIT 001641 nxIceEdgeLoop +0x24bb0
+  | thirdparty input name=edge_dedupe words=21708 input=3d4ad949
+  | thirdparty name=edge_dedupe rva=0x00031480 owner=phys_fn_001641 source=IceMeshTools.cpp words=30416 oracle=2185bb03 mismatches=0 worst_ulp=0 verdict=exact
+  | thirdparty coverage name=edge_dedupe cases=216 closed=127 open=89 skipped=4 loop_words=2792 reports=0
+HIT 001651 nxMeshNormalsCompute +0x254d0
+HIT 001649 MeshNormals::~MeshNormals +0x24640
+HIT 002144 nxSmoothNormalsAngleAtVertex +0x28200
+HIT 001461 ConvexHull::ComputeVertexNormals +0x28000
+  | thirdparty input name=mesh_normals words=158976 input=c6769b78
+  | thirdparty name=mesh_normals rva=0x000318d0 owner=phys_fn_001651 source=IceMeshTools.cpp,SmoothNormals.cpp,ConvexHull.cpp words=36260 oracle=8ac07cc2 mismatches=0 worst_ulp=0 verdict=exact
+  | thirdparty coverage name=mesh_normals meshes=65 cases=381 true=380 false=1 weighted=190 x87_0f7f=190 vertex_snan=1089 hull_cases=139 hull_true=130 hull_false=9 reports=0
+HIT 002186 TriangleMesh::createAdjacencies +0x280c0
+HIT 001536 Adjacencies::Adjacencies +0x23f00
+HIT 002188 TriangleMesh::createEdgeList +0x28160
+  | thirdparty input name=adjacency_owner words=9948 input=4ddc1540
+  | thirdparty name=adjacency_owner rva=0x000543d0 owner=phys_fn_002186 source=TriangleMeshTopology.cpp,IceAdjacencies.cpp,EdgeList.cpp words=28728 oracle=b9df247a mismatches=0 worst_ulp=0 verdict=exact
+  | thirdparty name=adjacency_owner.plane_divergent rva=0x000543d0 owner=phys_fn_002186 source=TriangleMeshTopology.cpp,IceAdjacencies.cpp,EdgeList.cpp words=6300 oracle=50e4dd46 mismatches=155 discrete=155 float_ulp=0 double_ulp=0 beyond=0 inf_words=0 degenerate=0 finite_ulp=0 beyond_abs=0 first_diff=247 length_delta=0 ceiling=155/155 verdict=divergent
+  | thirdparty coverage name=adjacency_owner meshes=65 adjacencies=66 adjacencies_built=36 edge_lists=66 edge_lists_built=65 frozen_split_runs=13 reports=30 line72=1 line321=29
+  | thirdparty candidate mismatches=0 layout_failures=0
+0:000> q

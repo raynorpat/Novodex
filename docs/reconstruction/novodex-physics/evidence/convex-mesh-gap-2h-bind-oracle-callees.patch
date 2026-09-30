@@ -1,0 +1,83 @@
+diff --git a/Physics/src/ContactConvexHeightfield.cpp b/Physics/src/ContactConvexHeightfield.cpp
+index c5c37e5..506a2e7 100644
+--- a/Physics/src/ContactConvexHeightfield.cpp
++++ b/Physics/src/ContactConvexHeightfield.cpp
+@@ -63,6 +63,10 @@ static const float kConvexMeshZero = 0.0f;
+ static const float kConvexMeshOne = 1.0f;
+ static const double kConvexMeshMicro = 1e-6;
+ 
++// THROWAWAY (evidence/convex-mesh-gap-2h-bind-oracle-callees.patch): a hook the
++// harness fills with the oracle's 005197. Never commit.
++void* gNxDbgInvert2h = 0;
++
+ // phys_fn_001822 (0x00041360, 717 B)
+ // A ray from inside a hull out through its polygons (register arguments: ecx
+ // the origin, eax the direction, ebx the ConvexHull; three stack arguments:
+@@ -106,7 +110,13 @@ __declspec(naked) bool nxConvexMeshRay()
+ 		lea	edi, [esp + 0x54]		// 0x000413a6
+ 		rep movsd		// 0x000413aa
+ 		lea	ecx, [esp + 0x54]		// 0x000413ac
++		cmp	gNxDbgInvert2h, 0
++		je	Dbg413b0V
++		call	gNxDbgInvert2h
++		jmp	Dbg413b0D
++Dbg413b0V:
+ 		call	nxConvexMeshCallInvert		// 0x000413b0
++Dbg413b0D:
+ 		mov	ecx, dword ptr [esp + 0x58]		// 0x000413b5
+ 		fld	dword ptr [esp + 0x68]		// 0x000413b9
+ 		mov	eax, dword ptr [esp + 0x54]		// 0x000413bd
+diff --git a/Physics/src/Geometry.cpp b/Physics/src/Geometry.cpp
+index b47c94c..fbbb355 100644
+--- a/Physics/src/Geometry.cpp
++++ b/Physics/src/Geometry.cpp
+@@ -603,6 +603,10 @@ returnFalse:
+ // before the first compare only through `add ebp, -2; je` (0x00036d99), so a
+ // count below 2 is an unsigned loop, as in the oracle. u and v land in the
+ // caller's first two argument slots there; they are locals here.
++// THROWAWAY (evidence/convex-mesh-gap-2h-bind-oracle-callees.patch): a hook the
++// harness fills with the oracle's 005185. Never commit.
++void* gNxDbgInflate2h = 0;
++
+ bool __cdecl NxRayInflatedTriangleFan(NxU32 count, const NxVec3* vertices, const NxU32* indices,
+ 	const NxRay* ray, NxReal* t)
+ 	{
+@@ -627,6 +631,9 @@ bool __cdecl NxRayInflatedTriangleFan(NxU32 count, const NxVec3* vertices, const
+ 		const NxVec3& third = vertices[indices[1]];
+ 		memcpy(&corners[2], &third, sizeof(NxVec3));
+ 		--remaining;
++		if(gNxDbgInflate2h)
++			((void(__thiscall*)(void*, float, bool)) gNxDbgInflate2h)(corners, 0.02f, false);
++		else
+ 		reinterpret_cast<IceMaths::Triangle*>(corners)->Inflate(0.02f, false);
+ 		float u;
+ 		float v;
+diff --git a/tests/PhysicsCollisionTests.cpp b/tests/PhysicsCollisionTests.cpp
+index 195b296..ec98433 100644
+--- a/tests/PhysicsCollisionTests.cpp
++++ b/tests/PhysicsCollisionTests.cpp
+@@ -10115,6 +10115,14 @@ static __declspec(noinline) unsigned nxDriveTask2h(unsigned char* base)
+ 	}
+ 	unsigned invertImproved = 0;
+ 	static Nx2gHullSide lazyHull[2];
++	// THROWAWAY (evidence/convex-mesh-gap-2h-bind-oracle-callees.patch): NX_ICE_BIND=16 (Invert) and 32 (Inflate)
++	// binds the oracle's 005197 (Matrix4x4::Invert) into the candidate's 001822 and
++	// its 005185 (Triangle::Inflate) into the candidate's 001708.
++	extern void* gNxDbgInvert2h;
++	extern void* gNxDbgInflate2h;
++	const int bind2h = getenv("NX_ICE_BIND") ? atoi(getenv("NX_ICE_BIND")) : 0;
++	gNxDbgInvert2h = (bind2h & 16) ? (void*) (base + 0x000e4400) : 0;
++	gNxDbgInflate2h = (bind2h & 32) ? (void*) (base + kIceTriangleInflateRva) : 0;
+ 	NxDigest splitOracle, splitCandidate;
+ 	nxDigestInit(&splitOracle);
+ 	nxDigestInit(&splitCandidate);
+@@ -10240,6 +10248,9 @@ static __declspec(noinline) unsigned nxDriveTask2h(unsigned char* base)
+ 				memcpy(inverted[1], pose, 64);
+ 				nxSetControl(mode ? kControlSimulate : kControlDefault);
+ 				oracleInvert(inverted[0]);
++				if(gNxDbgInvert2h)
++					((void*(__thiscall*)(void*)) gNxDbgInvert2h)(inverted[1]);
++				else
+ 				nxCandidateMatrixInvert((float*) inverted[1]);
+ 				nxSetControl(kControlDefault);
+ 				live = memcmp(inverted[0], inverted[1], 64) != 0;

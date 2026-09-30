@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ContactConvexConvex.cpp b/Physics/src/ContactConvexConvex.cpp
+index a0bb17a..fded41d 100644
+--- a/Physics/src/ContactConvexConvex.cpp
++++ b/Physics/src/ContactConvexConvex.cpp
+@@ -245,7 +245,7 @@ L3fed8:
+ 		mov	edx, dword ptr [esp + 0x34]		// 0x0003fef7
+ 		push	ecx		// 0x0003fefb
+ 		mov	ecx, dword ptr [esp + 0x3c]		// 0x0003fefc
+-		faddp	st(1), st		// 0x0003ff00
++		fsubp	st(1), st		// 0x0003ff00
+ 		push	edx		// 0x0003ff02
+ 		fld	dword ptr [eax]		// 0x0003ff03
+ 		fmul	dword ptr [ebp]		// 0x0003ff05

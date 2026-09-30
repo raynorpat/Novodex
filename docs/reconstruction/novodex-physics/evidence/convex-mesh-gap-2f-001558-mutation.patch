@@ -1,0 +1,13 @@
+diff --git a/Physics/src/IceSupportMaps.cpp b/Physics/src/IceSupportMaps.cpp
+index e191126..f174111 100644
+--- a/Physics/src/IceSupportMaps.cpp
++++ b/Physics/src/IceSupportMaps.cpp
+@@ -338,7 +338,7 @@ L2e3b0:
+ 		test	edi, edi		// 0x0002e3b0
+ 		fmul	st, st(1)		// 0x0002e3b2
+ 		mov	dword ptr [esp + 0x1c], edi		// 0x0002e3b4
+-		fsubr	dword ptr kIceSupportMapOne		// 0x0002e3b8
++		fsub	dword ptr kIceSupportMapOne		// 0x0002e3b8
+ 		fstp	dword ptr [esp + 0x24]		// 0x0002e3be
+ 		fild	dword ptr [esp + 0x1c]		// 0x0002e3c2
+ 		jge	L2e3ce		// 0x0002e3c6

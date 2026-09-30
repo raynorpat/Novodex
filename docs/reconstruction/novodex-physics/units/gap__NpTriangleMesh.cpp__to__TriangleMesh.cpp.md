@@ -861,11 +861,11 @@ Decompile (capstone disassembly):
 0x000532d0  ret 4
 ```
 
-## phys_fn_002144 (0x000532e0, 217 B, discovered)
+## phys_fn_002144 (0x000532e0, 217 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/SmoothNormals.cpp
+- implementation: Physics/src/SmoothNormals.cpp
 - prototype: float10 __fastcall FUN_100532e0(undefined4 param_1, int * param_2)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_001651 (0x000318d0), phys_fn_002146 (0x000533c0)

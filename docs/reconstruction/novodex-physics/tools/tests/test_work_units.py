@@ -90,5 +90,16 @@ class LoadEdgesTest(unittest.TestCase):
         self.assertEqual(work_units.load_edges(dot), {(fn(1), fn(2))})
 
 
+class SourceSeedTest(unittest.TestCase):
+    def test_resolves_a_reference_to_the_second_byte_of_a_file_string(self):
+        value = "=\\Epic\\Novodex\\SDKs\\Physics\\src\\ContactMeshHeightfield.cpp"
+        ghidra = {
+            "strings": [{"rva": "0x00107cff", "length": len(value), "value": value}],
+            "references": [{"from_rva": "0x00045f70", "to_rva": "0x00107d00"}],
+        }
+        seeds = work_units.source_seeds(ghidra, [row(7, 0x45f70)])
+        self.assertEqual(seeds, {0x45f70: "ContactMeshHeightfield.cpp"})
+
+
 if __name__ == "__main__":
     unittest.main()

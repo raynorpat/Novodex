@@ -1,0 +1,15 @@
+Task 2l cdb trace: expanded mesh/height-field fixture pairs
+===========================================================
+Pinned oracle NxPhysics.dll SHA-256: 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate NxPhysicsCollisionTests.exe SHA-256: D32D180678B2A851CBC990B111D15974EA8ABAD905E0FEEB0A715D990251EB1E
+Candidate addresses from build/Release/NxPhysicsCollisionTests.map: 001861=0x0044a0d0, 001869=0x0044a770, 001865=0x0044a7b0, 001859=0x0044af50.
+
+One-shot cdb breakpoints were set on oracle 001859/001861/001865 and candidate 001859/001861/001865/001869 during a full NxPhysicsCollisionTests run. The differential ended with collision=pass; the entry reported 24 exact checks across three fixture pairs and 0 cases with contacts.
+
+HIT_ORACLE_001861
+HIT_ORACLE_001865
+HIT_CANDIDATE_001869
+HIT_CANDIDATE_001861
+HIT_CANDIDATE_001865
+
+Neither 001859 breakpoint was hit. The trace covers 001869 and both pass bodies on both sides; it does not dynamically prove callback 001859.

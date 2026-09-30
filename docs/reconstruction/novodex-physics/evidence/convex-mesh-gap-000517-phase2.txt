@@ -1,0 +1,478 @@
+pass: program pin file exists: D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\docs\reconstruction\novodex-physics\program.json
+pass: program.json registers exactly one build_configure gate
+pass: build_configure names no generator, leaving this runner the only authority
+pass: the export/identity target is registered to a phase: NxPhysicsExportTests
+pass: phase is registered in gate_targets.ps1: 2
+pass: selected test target is registered: NxPhysicsCoreClusterTests
+pass: selected test target is registered: NxPhysicsExportTests
+pass: selected test target is registered: NxPhysicsSDKTests
+selected_targets=NxPhysicsCoreClusterTests,NxPhysicsExportTests,NxPhysicsSDKTests
+pass: selected static-proof target is registered: NxPhysicsInternalTests
+pass: a static-proof target is not also a differential: NxPhysicsInternalTests
+selected_static_proof_targets=NxPhysicsInternalTests
+selected_oracle_differential_targets=
+
+=== immutable public headers ===
+
+gate=immutable_headers:D:\FlamingEnt__\Unreal_3\Development\External\Novodex\Physics\include command="python.exe" -B D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\docs\reconstruction\novodex-physics\tools\verify_public_headers.py --root D:\FlamingEnt__\Unreal_3\Development\External\Novodex\Physics\include --manifest D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\docs\reconstruction\novodex-physics\public_header_hashes.json
+public_headers=pass
+files=80
+gate=immutable_headers:D:\FlamingEnt__\Unreal_3\Development\External\Novodex\Physics\include exit=0
+
+gate=immutable_headers:D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\Physics\include command="python.exe" -B D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\docs\reconstruction\novodex-physics\tools\verify_public_headers.py --root D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\Physics\include --manifest D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\docs\reconstruction\novodex-physics\public_header_hashes.json
+public_headers=pass
+files=80
+gate=immutable_headers:D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\Physics\include exit=0
+
+=== inventory ===
+
+gate=validate_inventory command="python.exe" -B D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\docs\reconstruction\novodex-physics\tools\validate_inventory.py D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\docs\reconstruction\novodex-physics\inventory.json
+inventory=pass
+closure phase=2 closed=56 deferred=87
+closure phase=3 closed=61 deferred=331
+closure phase=4 closed=28 deferred=1025
+closure phase=5 closed=0 deferred=205
+closure phase=6 closed=2 deferred=431
+closure phase=7 closed=4 deferred=557
+functions=6338
+data_objects=5138
+unexplained=0
+gate=validate_inventory exit=0
+
+=== vendored third-party sources ===
+
+gate=verify_vendored_sources command="python.exe" -B D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\docs\reconstruction\novodex-physics\tools\verify_vendored_sources.py --repo D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69
+vendored repo=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69 pinned=D:\github\Novodex\.analysis\novodex-physics\thirdparty
+vendored upstream files checked=148 locally modified=36
+vendored status=pass failures=0
+gate=verify_vendored_sources exit=0
+
+=== build ===
+
+gate=build_configure command="cmake.exe" -S D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69 -B D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build -G Visual Studio 18 2026 -A Win32 --fresh
+-- The C compiler identification is MSVC 19.51.36260.0
+-- The CXX compiler identification is MSVC 19.51.36260.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/Program Files/Microsoft Visual Studio/18/Professional/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x86/cl.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/18/Professional/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x86/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (4.6s)
+-- Generating done (0.6s)
+-- Build files have been written to: D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/build
+gate=build_configure exit=0
+configured_generator=Visual Studio 18 2026 configured_platform=Win32
+pass: the configured generator is the installed one: Visual Studio 18 2026
+pass: the configured platform is Win32
+
+gate=build_physics command="cmake.exe" --build D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build --config Release --target NxPhysics NxPhysicsCoreClusterTests NxPhysicsExportTests NxPhysicsSDKTests NxPhysicsInternalTests
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  1>Checking Build System
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxFoundation.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxFoundation.dll
+  NxOpcode.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\External\Release\NxOpcode.lib
+  NxQhull.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\External\Release\NxQhull.lib
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysics.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysics.dll
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsCoreClusterTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsCoreClusterTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsExportTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsExportTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsSDKTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsSDKTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  NxFoundation.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxFoundation.dll
+  NxOpcode.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\External\Release\NxOpcode.lib
+  Building Custom Rule D:/github/Novodex/.claude/worktrees/trusting-shaw-883d69/CMakeLists.txt
+  NxPhysicsInternalTests.vcxproj -> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsInternalTests.exe
+gate=build_physics exit=0
+pass: built test target exists: D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsCoreClusterTests.exe
+pass: built test target exists: D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsExportTests.exe
+pass: built test target exists: D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsSDKTests.exe
+pass: built test target exists: D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsInternalTests.exe
+
+=== static proof (not a differential) ===
+
+gate=static_proof:NxPhysicsInternalTests command="D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsInternalTests.exe" 
+static_proof checks=51 status=pass
+gate=static_proof:NxPhysicsInternalTests exit=0
+
+=== export, isolated pair identity, and differential ===
+gate=run_differential phase=2
+phase=2 resolved_targets=NxPhysicsExportTests,NxPhysicsSDKTests,NxPhysicsCoreClusterTests
+pass: at least one test target was requested
+pass: test target is registered in gate_targets.ps1: NxPhysicsExportTests
+pass: test target is registered in gate_targets.ps1: NxPhysicsSDKTests
+pass: test target is registered in gate_targets.ps1: NxPhysicsCoreClusterTests
+pass: program pin file exists: D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\docs\reconstruction\novodex-physics\program.json
+pass: shipped NxPhysics.dll matches the pinned oracle hash
+pass: shipped NxPhysics.dll matches the pinned oracle size
+pass: shipped NxFoundation.dll matches the pinned oracle hash
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle
+staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: staged oracle/NxPhysics.dll byte-matches its source
+staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: staged oracle/NxFoundation.dll byte-matches its source
+pass: source exists: D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysics.dll
+pass: source exists: D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate
+staged pair=candidate module=NxPhysics.dll source=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysics.dll source_sha256=f986a6ce1fb43233eca6540e5f3547b0e89f9238c50cfa3bdfd03c7eca27a0c8 staged=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate\NxPhysics.dll staged_sha256=f986a6ce1fb43233eca6540e5f3547b0e89f9238c50cfa3bdfd03c7eca27a0c8
+pass: staged candidate/NxPhysics.dll byte-matches its source
+staged pair=candidate module=NxFoundation.dll source=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxFoundation.dll source_sha256=c582b00c61a6840fb6fe4a0561530ee7ce00e3bc36d42dadcab6a79607742d9f staged=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate\NxFoundation.dll staged_sha256=c582b00c61a6840fb6fe4a0561530ee7ce00e3bc36d42dadcab6a79607742d9f
+pass: staged candidate/NxFoundation.dll byte-matches its source
+pass: candidate NxPhysics.dll is not the shipped oracle file
+pass: test target is built: D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsExportTests.exe
+child target=NxPhysicsExportTests pair=oracle command="D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsExportTests.exe" "D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle" exit=0
+child_stdout_begin
+pair_directory=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle
+modules pair=2 trusted_system=10 rejected=0
+pe32 machine=0x014c magic=0x010b
+exports expected=10 found=10
+imports dlls=3 resolved=110 unresolved=0
+modules pair=2 trusted_system=10 rejected=0
+loaded module=NxPhysics.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsExportTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsExportTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: test target is built: D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsExportTests.exe
+child target=NxPhysicsExportTests pair=candidate command="D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsExportTests.exe" "D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate" exit=0
+child_stdout_begin
+pair_directory=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate
+modules pair=2 trusted_system=7 rejected=0
+pe32 machine=0x014c magic=0x010b
+exports expected=10 found=10
+imports dlls=11 resolved=96 unresolved=0
+modules pair=2 trusted_system=7 rejected=0
+loaded module=NxPhysics.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate\NxPhysics.dll sha256=f986a6ce1fb43233eca6540e5f3547b0e89f9238c50cfa3bdfd03c7eca27a0c8
+loaded module=NxFoundation.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate\NxFoundation.dll sha256=c582b00c61a6840fb6fe4a0561530ee7ce00e3bc36d42dadcab6a79607742d9f
+
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsExportTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate\NxPhysics.dll sha256=f986a6ce1fb43233eca6540e5f3547b0e89f9238c50cfa3bdfd03c7eca27a0c8
+pass: NxPhysicsExportTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate\NxFoundation.dll sha256=c582b00c61a6840fb6fe4a0561530ee7ce00e3bc36d42dadcab6a79607742d9f
+differential target=NxPhysicsExportTests oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True
+pass: test target is built: D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsSDKTests.exe
+child target=NxPhysicsSDKTests pair=oracle command="D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsSDKTests.exe" "D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle" exit=0
+child_stdout_begin
+pair_directory=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle
+modules pair=2 trusted_system=10 rejected=0
+export=NxCreatePhysicsSDK present=yes
+version=0x02010200
+step=wrong_version sdk=null
+step=create_default_default sdk=nonnull
+step=release_default_default
+step=create_allocator_default sdk=nonnull
+step=create_allocator_default.allocator alloc_calls=6 typed_calls=6 realloc_calls=0 free_calls=0 first_size=56
+step=release_allocator_default
+step=release_allocator_default.allocator alloc_calls=6 typed_calls=6 realloc_calls=0 free_calls=6 first_size=56
+step=create_default_stream sdk=nonnull
+step=create_default_stream.stream errors=0 asserts=0 prints=0 code=0 line=0 message= file=
+step=release_default_stream
+step=create_allocator_stream sdk=nonnull
+step=create_allocator_stream.allocator alloc_calls=6 typed_calls=6 realloc_calls=0 free_calls=0 first_size=56
+step=create_allocator_stream.stream errors=0 asserts=0 prints=0 code=0 line=0 message= file=
+step=release_allocator_stream
+step=release_allocator_stream.allocator alloc_calls=6 typed_calls=6 realloc_calls=0 free_calls=6 first_size=56
+step=create sdk=nonnull
+step=create.allocator alloc_calls=6 typed_calls=6 realloc_calls=0 free_calls=0 first_size=56
+step=create.stream errors=0 asserts=0 prints=0 code=0 line=0 message= file=
+step=second_create sdk=nonnull identity=same
+step=second_create.allocator alloc_calls=0 typed_calls=0 realloc_calls=0 free_calls=0 first_size=0
+step=parameters out_of_range=0 in_range=1 value=0.500000 scenes=0 materials=1
+step=parameters.stream errors=1 asserts=0 prints=0 code=1 line=292 message=setParameter: parameter value out of range. file=\Epic\Novodex\SDKs\Physics\src\PhysicsSDK.cpp
+step=release
+step=release.allocator alloc_calls=6 typed_calls=6 realloc_calls=0 free_calls=6 first_size=56
+step=release.stream errors=1 asserts=0 prints=0 code=1 line=292 message=setParameter: parameter value out of range. file=\Epic\Novodex\SDKs\Physics\src\PhysicsSDK.cpp
+step=recreate sdk=nonnull
+step=recreate.allocator alloc_calls=6 typed_calls=6 realloc_calls=0 free_calls=0 first_size=56
+step=recreate.stream errors=0 asserts=0 prints=0 code=0 line=0 message= file=
+step=recreate_second sdk=nonnull identity=same
+step=recreate_release
+step=recreate_release.allocator alloc_calls=6 typed_calls=6 realloc_calls=0 free_calls=6 first_size=56
+modules pair=2 trusted_system=10 rejected=0
+loaded module=NxPhysics.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsSDKTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsSDKTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: test target is built: D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsSDKTests.exe
+child target=NxPhysicsSDKTests pair=candidate command="D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsSDKTests.exe" "D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate" exit=0
+child_stdout_begin
+pair_directory=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate
+modules pair=2 trusted_system=7 rejected=0
+export=NxCreatePhysicsSDK present=yes
+version=0x02010200
+step=wrong_version sdk=null
+step=create_default_default sdk=nonnull
+step=release_default_default
+step=create_allocator_default sdk=nonnull
+step=create_allocator_default.allocator alloc_calls=6 typed_calls=6 realloc_calls=0 free_calls=0 first_size=56
+step=release_allocator_default
+step=release_allocator_default.allocator alloc_calls=6 typed_calls=6 realloc_calls=0 free_calls=6 first_size=56
+step=create_default_stream sdk=nonnull
+step=create_default_stream.stream errors=0 asserts=0 prints=0 code=0 line=0 message= file=
+step=release_default_stream
+step=create_allocator_stream sdk=nonnull
+step=create_allocator_stream.allocator alloc_calls=6 typed_calls=6 realloc_calls=0 free_calls=0 first_size=56
+step=create_allocator_stream.stream errors=0 asserts=0 prints=0 code=0 line=0 message= file=
+step=release_allocator_stream
+step=release_allocator_stream.allocator alloc_calls=6 typed_calls=6 realloc_calls=0 free_calls=6 first_size=56
+step=create sdk=nonnull
+step=create.allocator alloc_calls=6 typed_calls=6 realloc_calls=0 free_calls=0 first_size=56
+step=create.stream errors=0 asserts=0 prints=0 code=0 line=0 message= file=
+step=second_create sdk=nonnull identity=same
+step=second_create.allocator alloc_calls=0 typed_calls=0 realloc_calls=0 free_calls=0 first_size=0
+step=parameters out_of_range=0 in_range=1 value=0.500000 scenes=0 materials=1
+step=parameters.stream errors=1 asserts=0 prints=0 code=1 line=292 message=setParameter: parameter value out of range. file=\Epic\Novodex\SDKs\Physics\src\PhysicsSDK.cpp
+step=release
+step=release.allocator alloc_calls=6 typed_calls=6 realloc_calls=0 free_calls=6 first_size=56
+step=release.stream errors=1 asserts=0 prints=0 code=1 line=292 message=setParameter: parameter value out of range. file=\Epic\Novodex\SDKs\Physics\src\PhysicsSDK.cpp
+step=recreate sdk=nonnull
+step=recreate.allocator alloc_calls=6 typed_calls=6 realloc_calls=0 free_calls=0 first_size=56
+step=recreate.stream errors=0 asserts=0 prints=0 code=0 line=0 message= file=
+step=recreate_second sdk=nonnull identity=same
+step=recreate_release
+step=recreate_release.allocator alloc_calls=6 typed_calls=6 realloc_calls=0 free_calls=6 first_size=56
+modules pair=2 trusted_system=7 rejected=0
+loaded module=NxPhysics.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate\NxPhysics.dll sha256=f986a6ce1fb43233eca6540e5f3547b0e89f9238c50cfa3bdfd03c7eca27a0c8
+loaded module=NxFoundation.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate\NxFoundation.dll sha256=c582b00c61a6840fb6fe4a0561530ee7ce00e3bc36d42dadcab6a79607742d9f
+
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsSDKTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate\NxPhysics.dll sha256=f986a6ce1fb43233eca6540e5f3547b0e89f9238c50cfa3bdfd03c7eca27a0c8
+pass: NxPhysicsSDKTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate\NxFoundation.dll sha256=c582b00c61a6840fb6fe4a0561530ee7ce00e3bc36d42dadcab6a79607742d9f
+differential target=NxPhysicsSDKTests oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True
+pass: test target is built: D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsCoreClusterTests.exe
+child target=NxPhysicsCoreClusterTests pair=oracle command="D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsCoreClusterTests.exe" "D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle" exit=0
+child_stdout_begin
+pair_directory=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle
+modules pair=2 trusted_system=10 rejected=0
+resolved create=1 assert=1 palloc=1 free=1 line=1 triangle=1 point=1 sphere=1 arrow=1 aabb=1
+step=assert_before_create returned=1
+step=create sdk=nonnull
+step=visualize_before_any_draw datas=0 points=0 lines=0 triangles=0 digest=0x811c9dc5
+step=line datas=1 points=0 lines=1 triangles=0 digest=0xc8c7dc76
+  line=0 p0=1.000000,2.000000,3.000000 p1=4.000000,5.000000,6.000000 color=0xff0000ff
+step=triangle datas=1 points=0 lines=4 triangles=0 digest=0x9283419d
+  line=1 p0=0.000000,0.000000,0.000000 p1=1.000000,0.000000,0.000000 color=0xff00ff00
+  line=2 p0=1.000000,0.000000,0.000000 p1=0.000000,1.000000,0.000000 color=0xff00ff00
+  line=3 p0=0.000000,1.000000,0.000000 p1=0.000000,0.000000,0.000000 color=0xff00ff00
+step=point datas=1 points=0 lines=7 triangles=0 digest=0x47cacccf
+  line=4 p0=10.500000,20.000000,30.000000 p1=9.500000,20.000000,30.000000 color=0xffff0000
+  line=5 p0=10.000000,20.500000,30.000000 p1=10.000000,19.500000,30.000000 color=0xffff0000
+  line=6 p0=10.000000,20.000000,30.500000 p1=10.000000,20.000000,29.500000 color=0xffff0000
+step=aabb datas=1 points=0 lines=19 triangles=0 digest=0x93afa565
+  line=7 p0=-1.000000,-2.000000,-3.000000 p1=4.000000,-2.000000,-3.000000 color=0xffffff00
+  line=8 p0=4.000000,-2.000000,-3.000000 p1=4.000000,5.000000,-3.000000 color=0xffffff00
+  line=9 p0=4.000000,5.000000,-3.000000 p1=-1.000000,5.000000,-3.000000 color=0xffffff00
+  line=10 p0=-1.000000,5.000000,-3.000000 p1=-1.000000,-2.000000,-3.000000 color=0xffffff00
+step=arrow datas=1 points=0 lines=24 triangles=0 digest=0x57f690e2
+  line=19 p0=1.000000,1.000000,1.000000 p1=1.000000,1.500000,1.000000 color=0xff00ffff
+  line=20 p0=1.000000,1.500000,1.000000 p1=0.925000,1.425000,1.000000 color=0xff00ffff
+  line=21 p0=1.000000,1.500000,1.000000 p1=1.075000,1.425000,1.000000 color=0xff00ffff
+  line=22 p0=1.000000,1.500000,1.000000 p1=1.000000,1.425000,1.075000 color=0xff00ffff
+step=sphere datas=1 points=0 lines=144 triangles=0 digest=0x811c9dc5
+step=sphere_replay datas=1 points=0 lines=264 triangles=0 digest=0x811c9dc5
+step=sphere_arguments drawn=120 replayed=120 mismatches=0
+step=draws.allocator alloc_calls=16 refused_calls=0 realloc_calls=0 free_calls=7
+step=palloc block=nonnull
+step=palloc.allocator alloc_calls=17 refused_calls=0 realloc_calls=0 free_calls=7
+step=free.allocator alloc_calls=17 refused_calls=0 realloc_calls=0 free_calls=8
+step=palloc_refused block=null
+step=palloc_refused.allocator alloc_calls=17 refused_calls=1 realloc_calls=0 free_calls=8
+step=release
+step=release.allocator alloc_calls=17 refused_calls=1 realloc_calls=0 free_calls=17
+step=recreate sdk=nonnull
+step=visualize_after_recreate datas=0 points=0 lines=0 triangles=0 digest=0x811c9dc5
+step=line_after_recreate datas=1 points=0 lines=1 triangles=0 digest=0xc8c7dc76
+  line=0 p0=1.000000,2.000000,3.000000 p1=4.000000,5.000000,6.000000 color=0xff0000ff
+step=groups_default self=1 pair=1 high=1 cross=1
+step=groups_disabled forward=0 reverse=0 neighbour=1 unrelated=1
+step=groups_reenabled forward=1 reverse=1
+step=groups_get_out_of_range errors=1 code=1 line=584 file=\Epic\Novodex\SDKs\Physics\src\PhysicsSDK.cpp message=PhysicsSDK::getGroupCollisionFlag: invalid params!  Group must be <= 31!
+step=groups_get_out_of_range value=0
+step=groups_get_sentinel value=0
+step=groups_get_sentinel errors=3 code=1 line=584 file=\Epic\Novodex\SDKs\Physics\src\PhysicsSDK.cpp message=PhysicsSDK::getGroupCollisionFlag: invalid params!  Group must be <= 31!
+step=groups_set_out_of_range errors=4 code=1 line=576 file=\Epic\Novodex\SDKs\Physics\src\PhysicsSDK.cpp message=PhysicsSDK::setGroupCollisionFlag: invalid params!  Group must be <= 31!
+step=groups_unchanged_after_error pair=1
+step=materials_initial count=1
+step=material_default nonnull=1 dynamic=0.000000 static=0.000000 restitution=0.000000 flags=0x00000000
+step=material_out_of_range is_default=1
+step=materials_added count=10 indices=1,2,3,4,5,6,7,8,9
+  material=1 dynamic=0.125000 static=0.250000 restitution=0.062500 is_default=0
+  material=2 dynamic=0.250000 static=0.500000 restitution=0.125000 is_default=0
+  material=3 dynamic=0.375000 static=0.750000 restitution=0.187500 is_default=0
+  material=4 dynamic=0.500000 static=1.000000 restitution=0.250000 is_default=0
+  material=5 dynamic=0.625000 static=1.250000 restitution=0.312500 is_default=0
+  material=6 dynamic=0.750000 static=1.500000 restitution=0.375000 is_default=0
+  material=7 dynamic=0.875000 static=1.750000 restitution=0.437500 is_default=0
+  material=8 dynamic=1.000000 static=2.000000 restitution=0.500000 is_default=0
+  material=9 dynamic=1.125000 static=2.250000 restitution=0.562500 is_default=0
+step=material_default_still_reads dynamic=0.000000
+step=materials.allocator alloc_calls=28 refused_calls=1 realloc_calls=0 free_calls=19
+step=material_bit31 index=10 count=11 is_default=1 dynamic=0.000000
+step=material_bit31 errors=4 code=1 line=576 file=\Epic\Novodex\SDKs\Physics\src\PhysicsSDK.cpp message=PhysicsSDK::setGroupCollisionFlag: invalid params!  Group must be <= 31!
+step=set_in_range count=11 dynamic=42.000000 is_default=0
+step=set_null_retires count=11 is_default=1
+step=set_null_index0 count=11 flags=0x00000000 dynamic=0.000000
+step=set_past_end before=11 count=17 placed_dynamic=3.500000 placed_restitution=0.750000
+step=set_past_end_gap gap12_is_default=1 gap15_is_default=1 last_live=1
+step=set_past_end_null count=17
+step=set_at_end before=17 count=18 static=6.250000
+step=set_material.allocator alloc_calls=31 refused_calls=1 realloc_calls=2 free_calls=22
+step=purge count=1 dynamic=7.500000 restitution=0.375000 flags=0x00000000
+step=purge.allocator alloc_calls=31 refused_calls=1 realloc_calls=3 free_calls=22
+step=purge_again count=1 dynamic=7.500000
+step=purge_then_add index=1 count=2
+step=purge_then_add.allocator alloc_calls=32 refused_calls=1 realloc_calls=3 free_calls=23
+step=performance_inspector null=1 nonnull=1
+step=fluid_pair_set errors=5 code=206 line=257 file=\Epic\Novodex\SDKs\Physics\src\NpPhysicsSDK.cpp message=NxFluid::setFluidGroupPairFlags(): Feature not available!
+step=fluid_pair_get value=0
+step=fluid_pair_get errors=6 code=206 line=265 file=\Epic\Novodex\SDKs\Physics\src\NpPhysicsSDK.cpp message=NxFluid::getFluidGroupPairFlags(): Feature not available!
+step=recreate_release
+step=recreate_release.allocator alloc_calls=32 refused_calls=1 realloc_calls=3 free_calls=32
+stream errors=6 asserts=0 prints=0
+modules pair=2 trusted_system=10 rejected=0
+loaded module=NxPhysics.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsCoreClusterTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsCoreClusterTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: test target is built: D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsCoreClusterTests.exe
+child target=NxPhysicsCoreClusterTests pair=candidate command="D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsCoreClusterTests.exe" "D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate" exit=0
+child_stdout_begin
+pair_directory=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate
+modules pair=2 trusted_system=7 rejected=0
+resolved create=1 assert=1 palloc=1 free=1 line=1 triangle=1 point=1 sphere=1 arrow=1 aabb=1
+step=assert_before_create returned=1
+step=create sdk=nonnull
+step=visualize_before_any_draw datas=0 points=0 lines=0 triangles=0 digest=0x811c9dc5
+step=line datas=1 points=0 lines=1 triangles=0 digest=0xc8c7dc76
+  line=0 p0=1.000000,2.000000,3.000000 p1=4.000000,5.000000,6.000000 color=0xff0000ff
+step=triangle datas=1 points=0 lines=4 triangles=0 digest=0x9283419d
+  line=1 p0=0.000000,0.000000,0.000000 p1=1.000000,0.000000,0.000000 color=0xff00ff00
+  line=2 p0=1.000000,0.000000,0.000000 p1=0.000000,1.000000,0.000000 color=0xff00ff00
+  line=3 p0=0.000000,1.000000,0.000000 p1=0.000000,0.000000,0.000000 color=0xff00ff00
+step=point datas=1 points=0 lines=7 triangles=0 digest=0x47cacccf
+  line=4 p0=10.500000,20.000000,30.000000 p1=9.500000,20.000000,30.000000 color=0xffff0000
+  line=5 p0=10.000000,20.500000,30.000000 p1=10.000000,19.500000,30.000000 color=0xffff0000
+  line=6 p0=10.000000,20.000000,30.500000 p1=10.000000,20.000000,29.500000 color=0xffff0000
+step=aabb datas=1 points=0 lines=19 triangles=0 digest=0x93afa565
+  line=7 p0=-1.000000,-2.000000,-3.000000 p1=4.000000,-2.000000,-3.000000 color=0xffffff00
+  line=8 p0=4.000000,-2.000000,-3.000000 p1=4.000000,5.000000,-3.000000 color=0xffffff00
+  line=9 p0=4.000000,5.000000,-3.000000 p1=-1.000000,5.000000,-3.000000 color=0xffffff00
+  line=10 p0=-1.000000,5.000000,-3.000000 p1=-1.000000,-2.000000,-3.000000 color=0xffffff00
+step=arrow datas=1 points=0 lines=24 triangles=0 digest=0x57f690e2
+  line=19 p0=1.000000,1.000000,1.000000 p1=1.000000,1.500000,1.000000 color=0xff00ffff
+  line=20 p0=1.000000,1.500000,1.000000 p1=0.925000,1.425000,1.000000 color=0xff00ffff
+  line=21 p0=1.000000,1.500000,1.000000 p1=1.075000,1.425000,1.000000 color=0xff00ffff
+  line=22 p0=1.000000,1.500000,1.000000 p1=1.000000,1.425000,1.075000 color=0xff00ffff
+step=sphere datas=1 points=0 lines=144 triangles=0 digest=0x811c9dc5
+step=sphere_replay datas=1 points=0 lines=264 triangles=0 digest=0x811c9dc5
+step=sphere_arguments drawn=120 replayed=120 mismatches=0
+step=draws.allocator alloc_calls=16 refused_calls=0 realloc_calls=0 free_calls=7
+step=palloc block=nonnull
+step=palloc.allocator alloc_calls=17 refused_calls=0 realloc_calls=0 free_calls=7
+step=free.allocator alloc_calls=17 refused_calls=0 realloc_calls=0 free_calls=8
+step=palloc_refused block=null
+step=palloc_refused.allocator alloc_calls=17 refused_calls=1 realloc_calls=0 free_calls=8
+step=release
+step=release.allocator alloc_calls=17 refused_calls=1 realloc_calls=0 free_calls=17
+step=recreate sdk=nonnull
+step=visualize_after_recreate datas=0 points=0 lines=0 triangles=0 digest=0x811c9dc5
+step=line_after_recreate datas=1 points=0 lines=1 triangles=0 digest=0xc8c7dc76
+  line=0 p0=1.000000,2.000000,3.000000 p1=4.000000,5.000000,6.000000 color=0xff0000ff
+step=groups_default self=1 pair=1 high=1 cross=1
+step=groups_disabled forward=0 reverse=0 neighbour=1 unrelated=1
+step=groups_reenabled forward=1 reverse=1
+step=groups_get_out_of_range errors=1 code=1 line=584 file=\Epic\Novodex\SDKs\Physics\src\PhysicsSDK.cpp message=PhysicsSDK::getGroupCollisionFlag: invalid params!  Group must be <= 31!
+step=groups_get_out_of_range value=0
+step=groups_get_sentinel value=0
+step=groups_get_sentinel errors=3 code=1 line=584 file=\Epic\Novodex\SDKs\Physics\src\PhysicsSDK.cpp message=PhysicsSDK::getGroupCollisionFlag: invalid params!  Group must be <= 31!
+step=groups_set_out_of_range errors=4 code=1 line=576 file=\Epic\Novodex\SDKs\Physics\src\PhysicsSDK.cpp message=PhysicsSDK::setGroupCollisionFlag: invalid params!  Group must be <= 31!
+step=groups_unchanged_after_error pair=1
+step=materials_initial count=1
+step=material_default nonnull=1 dynamic=0.000000 static=0.000000 restitution=0.000000 flags=0x00000000
+step=material_out_of_range is_default=1
+step=materials_added count=10 indices=1,2,3,4,5,6,7,8,9
+  material=1 dynamic=0.125000 static=0.250000 restitution=0.062500 is_default=0
+  material=2 dynamic=0.250000 static=0.500000 restitution=0.125000 is_default=0
+  material=3 dynamic=0.375000 static=0.750000 restitution=0.187500 is_default=0
+  material=4 dynamic=0.500000 static=1.000000 restitution=0.250000 is_default=0
+  material=5 dynamic=0.625000 static=1.250000 restitution=0.312500 is_default=0
+  material=6 dynamic=0.750000 static=1.500000 restitution=0.375000 is_default=0
+  material=7 dynamic=0.875000 static=1.750000 restitution=0.437500 is_default=0
+  material=8 dynamic=1.000000 static=2.000000 restitution=0.500000 is_default=0
+  material=9 dynamic=1.125000 static=2.250000 restitution=0.562500 is_default=0
+step=material_default_still_reads dynamic=0.000000
+step=materials.allocator alloc_calls=28 refused_calls=1 realloc_calls=0 free_calls=19
+step=material_bit31 index=10 count=11 is_default=1 dynamic=0.000000
+step=material_bit31 errors=4 code=1 line=576 file=\Epic\Novodex\SDKs\Physics\src\PhysicsSDK.cpp message=PhysicsSDK::setGroupCollisionFlag: invalid params!  Group must be <= 31!
+step=set_in_range count=11 dynamic=42.000000 is_default=0
+step=set_null_retires count=11 is_default=1
+step=set_null_index0 count=11 flags=0x00000000 dynamic=0.000000
+step=set_past_end before=11 count=17 placed_dynamic=3.500000 placed_restitution=0.750000
+step=set_past_end_gap gap12_is_default=1 gap15_is_default=1 last_live=1
+step=set_past_end_null count=17
+step=set_at_end before=17 count=18 static=6.250000
+step=set_material.allocator alloc_calls=31 refused_calls=1 realloc_calls=2 free_calls=22
+step=purge count=1 dynamic=7.500000 restitution=0.375000 flags=0x00000000
+step=purge.allocator alloc_calls=31 refused_calls=1 realloc_calls=3 free_calls=22
+step=purge_again count=1 dynamic=7.500000
+step=purge_then_add index=1 count=2
+step=purge_then_add.allocator alloc_calls=32 refused_calls=1 realloc_calls=3 free_calls=23
+step=performance_inspector null=1 nonnull=1
+step=fluid_pair_set errors=5 code=206 line=257 file=\Epic\Novodex\SDKs\Physics\src\NpPhysicsSDK.cpp message=NxFluid::setFluidGroupPairFlags(): Feature not available!
+step=fluid_pair_get value=0
+step=fluid_pair_get errors=6 code=206 line=265 file=\Epic\Novodex\SDKs\Physics\src\NpPhysicsSDK.cpp message=NxFluid::getFluidGroupPairFlags(): Feature not available!
+step=recreate_release
+step=recreate_release.allocator alloc_calls=32 refused_calls=1 realloc_calls=3 free_calls=32
+stream errors=6 asserts=0 prints=0
+modules pair=2 trusted_system=7 rejected=0
+loaded module=NxPhysics.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate\NxPhysics.dll sha256=f986a6ce1fb43233eca6540e5f3547b0e89f9238c50cfa3bdfd03c7eca27a0c8
+loaded module=NxFoundation.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate\NxFoundation.dll sha256=c582b00c61a6840fb6fe4a0561530ee7ce00e3bc36d42dadcab6a79607742d9f
+
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsCoreClusterTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate\NxPhysics.dll sha256=f986a6ce1fb43233eca6540e5f3547b0e89f9238c50cfa3bdfd03c7eca27a0c8
+pass: NxPhysicsCoreClusterTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate\NxFoundation.dll sha256=c582b00c61a6840fb6fe4a0561530ee7ce00e3bc36d42dadcab6a79607742d9f
+differential target=NxPhysicsCoreClusterTests oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True
+differential_targets=NxPhysicsExportTests,NxPhysicsSDKTests,NxPhysicsCoreClusterTests
+differential_pairs=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\oracle,D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\pairs\candidate
+pass: every requested target produces identical oracle and candidate results
+differential=pass
+gate=run_differential exit=0
+
+=== differential coverage ===
+coverage_assertions_evaluated=0 floor=0
+pass: at least the recorded number of coverage assertions ran (0 of 0); a target list that has been emptied evaluates none of them
+
+phase_gate=2 status=pass

@@ -32,7 +32,7 @@ Evidenced span: ['0x00053910', '0x00055890']. Rows: 53 (0 ambiguous). Generated 
 - gap:Controller.cpp..fluids\Fluid.cpp: phys_fn_003255, phys_fn_003279
 - gap:ConvexHull.cpp..IceAdjacencies.cpp: phys_fn_001472, phys_fn_001496, phys_fn_001502, phys_fn_001514, phys_fn_001516, phys_fn_001524, phys_fn_001530, phys_fn_001536
 - gap:EdgeList.cpp..InternalTriangleMesh.cpp: phys_fn_002065, phys_fn_002067, phys_fn_002069, phys_fn_002071, phys_fn_002073, phys_fn_002075, phys_fn_002077, phys_fn_002081
-- gap:IceAdjacencies.cpp..ContactConvexHeightfield.cpp: phys_fn_001544, phys_fn_001546, phys_fn_001556, phys_fn_001558, phys_fn_001565, phys_fn_001571, phys_fn_001575
+- gap:IceAdjacencies.cpp..ContactBoxMeshICE.cpp: phys_fn_001544, phys_fn_001546, phys_fn_001556, phys_fn_001558, phys_fn_001565, phys_fn_001571, phys_fn_001575
 - gap:InternalTriangleMesh.cpp..NpTriangleMesh.cpp: phys_fn_002085, phys_fn_002087
 - gap:NpTriangleMesh.cpp..TriangleMesh.cpp: phys_fn_002140
 - gap:PenetrationMap.cpp..EdgeList.cpp: phys_fn_002052
@@ -1066,11 +1066,11 @@ void __thiscall FUN_10054270(void *this,int param_1)
 
 ```
 
-## phys_fn_002186 (0x000543d0, 143 B, discovered)
+## phys_fn_002186 (0x000543d0, 143 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/TriangleMeshTopology.cpp
+- implementation: Physics/src/TriangleMeshTopology.cpp
 - prototype: undefined __fastcall FUN_100543d0(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_001859 (0x00044b70)
@@ -1116,11 +1116,11 @@ void __fastcall FUN_100543d0(int param_1)
 
 ```
 
-## phys_fn_002188 (0x00054460, 152 B, discovered)
+## phys_fn_002188 (0x00054460, 152 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/TriangleMeshTopology.cpp
+- implementation: Physics/src/TriangleMeshTopology.cpp
 - prototype: undefined __fastcall FUN_10054460(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_001393 (0x00027f10), phys_fn_001834 (0x00041c10), phys_fn_001844 (0x000427d0), phys_fn_001849 (0x00043680), phys_fn_001859 (0x00044b70), phys_fn_002247 (0x00055180), phys_fn_002310 (0x000597c0)
@@ -1557,7 +1557,7 @@ Decompile (capstone disassembly):
 
 - ambiguous: no
 - source: getter: *[this+0x9c] + 0x18 (0x54800)
-- implementation: None
+- implementation: Physics/src/TriangleMeshPolygons.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_002251 (0x00055490)
@@ -1577,7 +1577,7 @@ Decompile (capstone disassembly):
 
 - ambiguous: no
 - source: getter: *[*[this+0x9c]+0xc] (0x54810)
-- implementation: None
+- implementation: Physics/src/TriangleMeshPolygons.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_002251 (0x00055490)
@@ -1597,7 +1597,7 @@ Decompile (capstone disassembly):
 
 - ambiguous: no
 - source: getter: *[*[this+0x9c]+0x10] (0x54820)
-- implementation: None
+- implementation: Physics/src/TriangleMeshPolygons.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_002251 (0x00055490)
@@ -1613,11 +1613,11 @@ Decompile (capstone disassembly):
 0x00054829  ret
 ```
 
-## phys_fn_002217 (0x00054830, 11 B, discovered)
+## phys_fn_002217 (0x00054830, 11 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/TriangleMeshPolygons.cpp
+- implementation: Physics/src/TriangleMeshPolygons.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_002251 (0x00055490)
@@ -1632,11 +1632,11 @@ Decompile (capstone disassembly):
 0x00054836  jmp 0x1002c8f0
 ```
 
-## phys_fn_002219 (0x00054840, 11 B, discovered)
+## phys_fn_002219 (0x00054840, 11 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/TriangleMeshPolygons.cpp
+- implementation: Physics/src/TriangleMeshPolygons.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_002251 (0x00055490)
@@ -1651,11 +1651,11 @@ Decompile (capstone disassembly):
 0x00054846  jmp 0x1002d4a0
 ```
 
-## phys_fn_002221 (0x00054850, 26 B, discovered)
+## phys_fn_002221 (0x00054850, 26 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/TriangleMeshPolygons.cpp
+- implementation: Physics/src/TriangleMeshPolygons.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_002251 (0x00055490)
@@ -1678,11 +1678,11 @@ Decompile (capstone disassembly):
 0x00054869  ret
 ```
 
-## phys_fn_002223 (0x00054870, 38 B, discovered)
+## phys_fn_002223 (0x00054870, 38 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/TriangleMeshPolygons.cpp
+- implementation: Physics/src/TriangleMeshPolygons.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_002251 (0x00055490)
@@ -1708,11 +1708,11 @@ Decompile (capstone disassembly):
 0x00054893  ret 4
 ```
 
-## phys_fn_002225 (0x000548a0, 26 B, discovered)
+## phys_fn_002225 (0x000548a0, 26 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/TriangleMeshPolygons.cpp
+- implementation: Physics/src/TriangleMeshPolygons.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_002251 (0x00055490)
@@ -1735,11 +1735,11 @@ Decompile (capstone disassembly):
 0x000548b9  ret
 ```
 
-## phys_fn_002227 (0x000548c0, 26 B, discovered)
+## phys_fn_002227 (0x000548c0, 26 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/TriangleMeshPolygons.cpp
+- implementation: Physics/src/TriangleMeshPolygons.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_002251 (0x00055490)
@@ -1762,11 +1762,11 @@ Decompile (capstone disassembly):
 0x000548d9  ret
 ```
 
-## phys_fn_002229 (0x000548e0, 26 B, discovered)
+## phys_fn_002229 (0x000548e0, 26 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/TriangleMeshPolygons.cpp
+- implementation: Physics/src/TriangleMeshPolygons.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_002251 (0x00055490)
@@ -1789,11 +1789,11 @@ Decompile (capstone disassembly):
 0x000548f9  ret
 ```
 
-## phys_fn_002231 (0x00054900, 26 B, discovered)
+## phys_fn_002231 (0x00054900, 26 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/TriangleMeshPolygons.cpp
+- implementation: Physics/src/TriangleMeshPolygons.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_002251 (0x00055490)
@@ -1816,11 +1816,11 @@ Decompile (capstone disassembly):
 0x00054919  ret
 ```
 
-## phys_fn_002233 (0x00054920, 277 B, reconstructed)
+## phys_fn_002233 (0x00054920, 277 B, discovered)
 
 - ambiguous: no
-- source: Physics/src/TriangleMesh.cpp
-- implementation: Physics/src/TriangleMesh.cpp
+- source: None
+- implementation: None
 - prototype: undefined4 __stdcall FUN_10054920(int * param_1, int * param_2)
 - calling convention: __stdcall, stack purge: 8
 - callers: phys_fn_002260 (0x00055890)
@@ -1916,11 +1916,11 @@ undefined4 FUN_10054920(int *param_1,int *param_2)
 
 ```
 
-## phys_fn_002235 (0x00054a40, 22 B, reconstructed)
+## phys_fn_002235 (0x00054a40, 22 B, discovered)
 
 - ambiguous: no
-- source: Physics/src/TriangleMesh.cpp
-- implementation: Physics/src/TriangleMesh.cpp
+- source: None
+- implementation: None
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_002251 (0x00055490)
@@ -1941,11 +1941,11 @@ Decompile (capstone disassembly):
 0x00054a53  ret 4
 ```
 
-## phys_fn_002237 (0x00054a60, 28 B, reconstructed)
+## phys_fn_002237 (0x00054a60, 28 B, discovered)
 
 - ambiguous: no
-- source: Physics/src/TriangleMesh.cpp
-- implementation: Physics/src/TriangleMesh.cpp
+- source: None
+- implementation: None
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_002251 (0x00055490)
@@ -2671,11 +2671,11 @@ void __fastcall FUN_10055180(void *param_1)
 
 ```
 
-## phys_fn_002249 (0x000552c0, 459 B, discovered)
+## phys_fn_002249 (0x000552c0, 459 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/TriangleMeshPolygons.cpp
+- implementation: Physics/src/TriangleMeshPolygons.cpp
 - prototype: undefined __thiscall FUN_100552c0(int param_1, float * param_2, float * param_3, float * param_4, float * param_5, void * param_6)
 - calling convention: __thiscall, stack purge: 24
 - callers: phys_fn_002251 (0x00055490)

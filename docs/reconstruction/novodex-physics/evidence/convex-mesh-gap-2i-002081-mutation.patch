@@ -1,0 +1,13 @@
+diff --git a/Physics/src/TriangleMeshTopology.cpp b/Physics/src/TriangleMeshTopology.cpp
+index 0c42fb0..2e8e26e 100644
+--- a/Physics/src/TriangleMeshTopology.cpp
++++ b/Physics/src/TriangleMeshTopology.cpp
+@@ -133,7 +133,7 @@ __declspec(naked) void nxMeshComputeVertexNormals()
+ 		call	dword ptr [edx + 8]		// 0x00052257
+ 		mov	ecx, dword ptr [esi + 0xc]		// 0x0005225a
+ 		mov	edx, dword ptr [esi + 8]		// 0x0005225d
+-		push	1		// 0x00052260
++		push	0		// 0x00052260
+ 		push	eax		// 0x00052262
+ 		push	0		// 0x00052263
+ 		push	ecx		// 0x00052265

@@ -1102,5 +1102,24 @@ class RaiseSiteCensusTests(unittest.TestCase):
         self.assertEqual(named, defined)
 
 
+class SourceSeedRangeTests(unittest.TestCase):
+    def test_resolves_a_reference_to_the_second_byte_of_a_file_string(self):
+        value = "=\\Epic\\Novodex\\SDKs\\Physics\\src\\ContactMeshHeightfield.cpp"
+        ghidra = {
+            "strings": [{"rva": "0x00107cff", "length": len(value), "value": value}],
+            "references": [{"from_rva": "0x00045f70", "to_rva": "0x00107d00"}],
+        }
+
+        class Owners:
+            @staticmethod
+            def at(_address):
+                return 0x45f70
+
+        files, unmapped, census = reconcile_analysis.source_seeds(ghidra, Owners())
+        self.assertEqual(files, {0x45f70: "ContactMeshHeightfield.cpp"})
+        self.assertEqual(unmapped, [])
+        self.assertEqual(census["source_references"], 1)
+
+
 if __name__ == "__main__":
     unittest.main()

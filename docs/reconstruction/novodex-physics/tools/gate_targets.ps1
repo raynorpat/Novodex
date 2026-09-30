@@ -3656,6 +3656,8 @@ $NxRequiredCoverageLines = [ordered] @{
         # version of this check did not -- it compared the index function
         # against its own body.
         'matrix index_rule probes=2592 wrong=0',
+        'matrix contact_filter checks=7 wrong=0',
+        'matrix contact_compound calls_oracle=3 calls_candidate=3 wrong=0',
 
         'collision name=plane_sphere.random index=1 rva=0x00048a20 owner=phys_fn_001899 checks=120000 oracle=4513405a6ba24fb9',
         'collision name=plane_sphere.aimed index=1 rva=0x00048a20 owner=phys_fn_001899 checks=120000 oracle=ed8746bf83b7801f',
@@ -3777,11 +3779,13 @@ $NxRequiredCoverageLines = [ordered] @{
         # Two of Task 2's exports, driven here because the recovered matrix put
         # them inside the simulation step and their own differential runs under
         # the CRT default control word only. NxRayTriIntersect agrees under
-        # both. NxBuildSmoothNormals agrees under the default and differs on 24
+        # both, and since the harness hardening on draws that keep their signalling
+        # NaNs (nxPickRawWord; its row is now the listing's instructions, and these
+        # lines were re-registered once for that). NxBuildSmoothNormals agrees under the default and differs on 24
         # of 459,676 checks under 0x0f7f; that 24 is pinned in its coverage line
         # below rather than dropped, so it fails if it moves in either
         # direction, including toward zero.
-        'collision name=step_ray_tri index=- rva=export owner=phys_fn_001712 checks=1560000 oracle=2bb3aaedbd4ac9ed',
+        'collision name=step_ray_tri index=- rva=export owner=phys_fn_001712 checks=1560000 oracle=fdbc6163470513f9',
         'collision name=step_smooth_normals index=- rva=export owner=phys_fn_002146 checks=919352 oracle=6d5d4be60a607d94',
 
         # The branch mix behind each digest. A digest moving tells you the run
@@ -3819,7 +3823,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # segment_segment this block does NOT canonicalise them: removing the
         # canonicalisation leaves mismatches=0, so the payloads agree too.
         'collision coverage name=box_quad_depth aimed_inside=11250 reversed=22482 interpolated=36640 non_finite=12737 default_mismatches=0 simulate_mismatches=0',
-        'collision coverage name=step_ray_tri hits=47907 non_finite_words=97007 default_mismatches=0 simulate_mismatches=0',
+        'collision coverage name=step_ray_tri hits=47643 non_finite_words=96735 default_mismatches=0 simulate_mismatches=0',
         'collision coverage name=step_smooth_normals non_finite_words=65973 default_mismatches=0 simulate_mismatches=0',
 
         # The first contact-generation entry. The digest is over the whole
@@ -3998,7 +4002,423 @@ $NxRequiredCoverageLines = [ordered] @{
         # plane/sphere gives shape1; the two materials and the two identities are
         # driven apart so that swapping them moves words.
         'collision name=contact_sphere_box index=8 rva=0x0004a2d0 owner=phys_fn_001919 checks=2453136 oracle=966d357901d1dba9',
-        'collision coverage name=contact_sphere_box emitted=65826 centre_inside=8638 repeated=15287 static0=4173 static1=4171 negated=25490 w4=18442 w8=7236 w11=40148 default_mismatches=0 simulate_mismatches=0'
+        'collision coverage name=contact_sphere_box emitted=65826 centre_inside=8638 repeated=15287 static0=4173 static1=4171 negated=25490 w4=18442 w8=7236 w11=40148 default_mismatches=0 simulate_mismatches=0',
+
+        # convex-mesh gap Task 2a (units/convex-mesh-gap-contract.md, sub-units E, G,
+        # J and K). Matrix B [BOX][CAPSULE] (phys_fn_001751) and [CAPSULE][CAPSULE]
+        # (phys_fn_001774) through the random and aimed generator; both agree on
+        # every check under both control words.
+        'collision name=box_capsule.random index=15 rva=0x0003b0e0 owner=phys_fn_001751 checks=120000 oracle=4c87ecf1a0a119e4',
+        'collision coverage name=box_capsule.random true=39319 false=80681',
+        'collision name=box_capsule.aimed index=15 rva=0x0003b0e0 owner=phys_fn_001751 checks=120000 oracle=939b2c65bec73969',
+        'collision coverage name=box_capsule.aimed true=55396 false=64604 swap_differs=27698',
+        'collision name=capsule_capsule.random index=21 rva=0x0003d890 owner=phys_fn_001774 checks=120000 oracle=e2e1899bb6f06943',
+        'collision coverage name=capsule_capsule.random true=17928 false=102072',
+        'collision name=capsule_capsule.aimed index=21 rva=0x0003d890 owner=phys_fn_001774 checks=120000 oracle=dd8b1523c2c36ab9',
+        'collision coverage name=capsule_capsule.aimed true=36500 false=83500 swap_differs=0',
+
+        # The box distance kernels at their own addresses (Physics/src/Distance.cpp):
+        # point/box 001670, line/box 001684 (through it 001686 and the five
+        # register-convention helpers 001674..001682) and segment/box 001688. Half
+        # raw draws, half aimed. `zeros0..zeros3` are line/box's four dispatch arms,
+        # counted by construction (identity frame, that many zero direction
+        # components); `boundary0..3` are how many box-frame coordinates the oracle
+        # itself put on the box -- face, edge and corner leaves of Face; `at_start`,
+        # `at_end` and `interior` are segment/box's three arms read off the oracle's
+        # own parameter. simulate_mismatches is 0 and pinned: Face written as one
+        # function differed on 16 segment_box words under 0x0f7f (spilled doubles
+        # across its branches, the phys_fn_001690 class), and splitting its leaves
+        # removed them.
+        'collision name=point_box index=- rva=0x00032840 owner=phys_fn_001670 checks=2640000 oracle=ead6c821b01308b8',
+        'collision coverage name=point_box inside=30047 boundary0=22333 boundary1=9411 boundary2=11352 boundary3=9435 null_closest=7469 canonical_nan=87174 default_mismatches=0 simulate_mismatches=0',
+        'collision name=line_box index=- rva=0x00033a50 owner=phys_fn_001684 checks=3120000 oracle=f1398dd50ddbbb3b',
+        'collision coverage name=line_box zeros0=3696 zeros1=3819 zeros2=3832 zeros3=3814 through=7392 intersecting=28430 boundary0=5515 boundary1=17675 boundary2=14320 boundary3=14986 null_param=7504 canonical_nan=94785 default_mismatches=0 simulate_mismatches=0',
+        'collision name=segment_box index=- rva=0x00033d00 owner=phys_fn_001688 checks=3120000 oracle=b1be995ba7339455',
+        'collision coverage name=segment_box at_start=30512 at_end=13496 interior=10973 intersecting=39187 zero_length=4918 null_outputs=7512 canonical_nan=89899 default_mismatches=0 simulate_mismatches=0',
+
+        # Matrix A [BOX][CAPSULE], phys_fn_001753. The box's vtable slot 5 is the
+        # oracle's own box raycast (phys_fn_000949) on BOTH sides, because that row is
+        # not this task's; what is compared is the entry. `swept_emitted` is the
+        # raycast path, c1/c2 the end-sphere and segment/box contacts, c3 and up
+        # the crossing branch's box/box manifold. `overflow_skipped` and
+        # `probe_max` are the pre-flight contact_box_box uses: a pair whose
+        # phys_fn_001748 manifold would overrun the entry's sixteen slots is counted
+        # and not driven.
+        'collision name=contact_box_capsule index=15 rva=0x0003b260 owner=phys_fn_001753 checks=6532012 oracle=02a88c53ea2676a3',
+        'collision coverage name=contact_box_capsule emitted=34933 swept=19896 swept_emitted=2570 centred=20944 parallel=25838 zero_axis=24738 c0=14994 c1=7653 c2=13335 c3=499 c4=2376 c5=1970 c6=2113 c7plus=6987 max_contacts=16 overflow_skipped=21 probe_max=18 default_mismatches=0 simulate_mismatches=0',
+
+        # The three matrix B compound entries, 001789 [SPHERE][COMPOUND], 001791
+        # [BOX][COMPOUND] and 001785 [CAPSULE][COMPOUND]: each tests its primitive
+        # against the compound shape's own world bounds (the Prunable at Shape+0xa4),
+        # and `refreshed` is the arm that calls phys_fn_004886 to set the valid bit,
+        # which is compared too. The callback line pins that the oracle's owner
+        # callback is null, the state both sides are compared in. Re-registered once in
+        # the harness hardening: a raw draw's bounds are now the two drawn words, not
+        # c - h and c + h (SSE keeps the first operand's NaN, and which operand of the
+        # commutative sum came first was the compiler's choice).
+        'collision compound owner_world_aabb_callback=null',
+        'collision name=sphere_compound index=11 rva=0x0003f5b0 owner=phys_fn_001789 checks=600000 oracle=306d6cb8c80ea48f',
+        'collision coverage name=sphere_compound true=35933 false=24067 refreshed=30007 inverted=6653 unflagged=0 default_mismatches=0 simulate_mismatches=0',
+        'collision name=box_compound index=17 rva=0x0003f700 owner=phys_fn_001791 checks=600000 oracle=8ae3e6725ef7706e',
+        'collision coverage name=box_compound true=32111 false=27889 refreshed=30012 inverted=6656 unflagged=7660 default_mismatches=0 simulate_mismatches=0',
+        'collision name=capsule_compound index=23 rva=0x0003f390 owner=phys_fn_001785 checks=600000 oracle=97318ad61948798e',
+        'collision coverage name=capsule_compound true=35461 false=24539 refreshed=30096 inverted=6433 unflagged=0 default_mismatches=0 simulate_mismatches=0',
+
+        # convex-mesh gap Task 2b (units/convex-mesh-gap-contract.md, sub-units E, F, I
+        # and N). Each family draws a third raw (nxPickBits: every word written as bits,
+        # never returned as a float), a third aimed and a third of mixed exponents
+        # (nxMixedBits, magnitudes 2^-27..2^72; `mixed` counts them), re-registered after
+        # the Task 2b review. The triangle distance kernels of Distance.cpp at their own
+        # addresses -- point/triangle 001672 (`vertex*`, `edge_*` and `open` are the leaf
+        # its own parameters say ran, `flt_max` the determinant-zero interior), line/line
+        # 001692, segment/triangle 001694 (r at the start, the end or between; `parallel`
+        # the singular branch) -- exact under 0x027f, and 001672/001692 under 0x0f7f too.
+        # segment/triangle also replays the Task 2b review's 250,000 draws (a quarter of
+        # the words of mixed exponent), the ones that reach the interior's wide s; with
+        # them its simulate_mismatches=940 are all phys_fn_001690's own 0x0f7f divergence
+        # reached through it: 0 with the oracle's 001690 bound in (a throwaway build, this
+        # draw), where the C++ interior before the harness hardening gave 2.
+        'collision name=point_triangle index=- rva=0x000329e0 owner=phys_fn_001672 checks=2160000 oracle=a411b7cd3688cb25',
+        'collision coverage name=point_triangle degenerate=3697 on_feature=4904 vertex0=9862 vertex1=5282 vertex2=4926 edge_s0=3069 edge_t0=5806 open=23695 flt_max=3998 null_outputs=7360 mixed=20088 canonical_nan=118358 default_mismatches=0 simulate_mismatches=0',
+        'collision name=line_line index=- rva=0x000345b0 owner=phys_fn_001692 checks=2880000 oracle=06550ebac920b252',
+        'collision coverage name=line_line parallel=2557 zero_direction=1222 crossing=1261 at_origin0=31897 at_origin1=31372 mixed=19874 canonical_nan=57066 default_mismatches=0 simulate_mismatches=0',
+        'collision name=segment_triangle index=- rva=0x00034860 owner=phys_fn_001694 checks=13640000 oracle=c77590b1ba895124',
+        'collision coverage name=segment_triangle degenerate=3775 parallel=2534 zero_length=1221 crossing=1235 r_start=22940 r_end=10039 r_open=11602 s_zero=17297 t_zero=37970 intersecting=1538 null_outputs=7496 mixed=19944 canonical_nan=255260 default_mismatches=0 simulate_mismatches=940',
+
+        # Geometry.cpp's two helpers: the ray against an inflated triangle fan 001708,
+        # gated on the fans on which both callees -- Triangle::Inflate (phys_fn_005185,
+        # vendored, known to differ) and NxRayTriIntersect (phys_fn_001712, compared as a
+        # NaN is folded, and agreeing on every fan since the harness hardening) -- agree
+        # between the two sides under that word; the other
+        # fans are counted per word (`inflate_divergent*`, `raytri_divergent*`) and their
+        # words sit under the harness's enforced ceilings (kCalleeDivergentFanCeiling,
+        # kCalleeDivergentWordCeiling). The slab test 001730/001732, exact under both
+        # words; `parallel_axes` and `boundary_axes` are direction components inside
+        # and exactly on +-FLT_EPSILON.
+        'collision name=ray_inflated_tris index=- rva=0x00036d90 owner=phys_fn_001708 checks=600000 oracle=9604e3071aae4c41',
+        'collision coverage name=ray_inflated_tris hits=27976 misses=32024 count_two=3653 in_plane=2468 inflate_divergent=28725 inflate_divergent_simulate=41198 raytri_divergent=0 raytri_divergent_simulate=0 mixed=20017 canonical_nan=18130 default_mismatches=0 simulate_mismatches=0',
+        'collision name=aabb_slab index=- rva=0x00038050 owner=phys_fn_001730 checks=1080000 oracle=25d802c82f8405bf',
+        'collision coverage name=aabb_slab miss=51649 face0=1515 face1=1458 face2=1522 face3=1283 face4=1303 face5=1270 parallel_axes=15029 boundary_axes=7445 inverted=2441 mixed=19994 canonical_nan=0 default_mismatches=0 simulate_mismatches=0',
+
+        # The triangle plane 001760 (ContactBoxMeshICE.cpp; its normal and normalisation
+        # are an x87 assembly block, the X87Sqrt.h per-site precedent) exact under both
+        # words, and the segment/triangle-edge test 001855 (ContactMeshHeightfield.cpp),
+        # exact under 0x027f; its simulate_mismatches are the wide intermediates (the
+        # normal's x and z, the direction's x and z) cut to 53 bits as square-root
+        # operands and in their reuse after the root, pinned.
+        'collision name=triangle_plane index=- rva=0x0003c160 owner=phys_fn_001760 checks=1920000 oracle=0da910f4d8eb468b',
+        'collision coverage name=triangle_plane degenerate=3753 zero_normal=3628 wrong_return=0 mixed=19862 canonical_nan=119068 default_mismatches=0 simulate_mismatches=0',
+        'collision name=segment_triangle_edges index=- rva=0x00044510 owner=phys_fn_001855 checks=2040000 oracle=35f7ec3d9a18472d',
+        'collision coverage name=segment_triangle_edges on_edge=5853 exit_early=16188 exit_behind=12710 exit_outside=25249 parallel=2517 zero_length=1206 mixed=20246 canonical_nan=142688 default_mismatches=0 simulate_mismatches=215',
+
+        # Harness hardening (between convex-mesh gap Tasks 2b and 2c). One input line per
+        # block: a digest of the exact words the family hands the oracle, once per draw.
+        # An oracle digest moves when its inputs move as well as when the oracle's answers
+        # do; these say which. They were added when the generators stopped returning raw
+        # words as floats (a float return passes st(0), which quiets a signalling NaN
+        # depending on inlining), and the one-time re-registration that went with it is
+        # recorded in evidence/convex-mesh-gap.md, `Harness hardening`.
+        'collision input name=plane_sphere.random words=2160000 input=5a946a422dbc8ee6',
+        'collision input name=plane_sphere.aimed words=2160000 input=d2efd5953ca38ea7',
+        'collision input name=plane_box.random words=2160000 input=c428f123f2397292',
+        'collision input name=plane_box.aimed words=2160000 input=2576fff8dbcb8545',
+        'collision input name=plane_capsule.random words=2160000 input=ed2713a56187cb0b',
+        'collision input name=plane_capsule.aimed words=2160000 input=0b0211aa3cca347b',
+        'collision input name=sphere_sphere.random words=2160000 input=b2816248c46be25c',
+        'collision input name=sphere_sphere.aimed words=2160000 input=eefa1d60ee2cfa03',
+        'collision input name=sphere_box.random words=2160000 input=f65a5bcb3bc938e8',
+        'collision input name=sphere_box.aimed words=2160000 input=03612b4b8a9f8e10',
+        'collision input name=sphere_capsule.random words=2160000 input=46dd2b65f043bf6a',
+        'collision input name=sphere_capsule.aimed words=2160000 input=588fb878efc1f8e2',
+        'collision input name=box_box.random words=2160000 input=1e82b9493ebcdb46',
+        'collision input name=box_box.aimed words=2160000 input=26bfaad86775de9a',
+        'collision input name=box_capsule.random words=2160000 input=e9993f8e06148d24',
+        'collision input name=box_capsule.aimed words=2160000 input=71f58de47c76808a',
+        'collision input name=capsule_capsule.random words=2160000 input=d6f5a9557de84bd5',
+        'collision input name=capsule_capsule.aimed words=2160000 input=6edd851872f6c592',
+        'collision input name=box_corner words=1260000 input=48396a2521d8159b',
+        'collision input name=sphere_box_data words=1140000 input=a6ebc680195562f2',
+        'collision input name=box_quad_depth words=840000 input=f1a709236bfac7e7',
+        'collision input name=box_clip.random words=1800000 input=689b5625fe2b011e',
+        'collision input name=box_clip.aimed words=1800000 input=9f210f8d37f5f0ef',
+        'collision input name=box_axis.random words=1446000 input=2606e19588609a6d',
+        'collision input name=box_axis.aimed words=1446000 input=8e5139fdbc976042',
+        'collision input name=box_shim words=964000 input=ecf189bce8f91d7e',
+        'collision input name=contact_box_box words=1803996 input=b78baa3323e5acc7',
+        'collision input name=step_ray_tri words=915000 input=b3af9202902cf7ca',
+        'collision input name=step_smooth_normals words=200049 input=8b825b784684671f',
+        'collision input name=contact_plane_sphere words=1810476 input=3c9ca6e31e4cd03c',
+        'collision input name=contact_emit words=2196392 input=1c52c378f9ad8c86',
+        'collision input name=shape_raycast_plane words=1560000 input=225f623bff038d1f',
+        'collision input name=contact_plane_capsule words=1793520 input=da540d4323868023',
+        'collision input name=shape_raycast_sphere words=1560000 input=76699c958b60f670',
+        'collision input name=contact_sphere_capsule words=1799928 input=7a272f915af5472e',
+        'collision input name=contact_plane_box words=1805148 input=65fb9cea3818f1b7',
+        'collision input name=shape_raycast_capsule words=1560000 input=15f8356722f357f3',
+        'collision input name=contact_capsule_capsule words=1810728 input=ab89805d2fe1812c',
+        'collision input name=segment_segment words=780000 input=6d8dac20719a5757',
+        'collision input name=shape_owner words=148000 input=e113380f9d5db4b9',
+        'collision input name=ccd_guard words=148000 input=e113380f9d5db4b9',
+        'collision input name=contact_sphere_sphere words=1794276 input=935c1ff0d4b059ac',
+        'collision input name=sphere_box_contact words=1140000 input=99a393fa5e402360',
+        'collision input name=contact_sphere_box words=1807056 input=ed53dd9f59188ab9',
+        'collision input name=point_box words=1095000 input=4b87a89db12346fa',
+        'collision input name=line_box words=1275000 input=5b06ae84b677740e',
+        'collision input name=segment_box words=1320000 input=84ba14296dc2569a',
+        'collision input name=contact_box_capsule words=1797372 input=4f98b719d8ae29d5',
+        'collision input name=sphere_compound words=2640000 input=ee0e412b089ffc8c',
+        'collision input name=box_compound words=2640000 input=9a3dac417a7bf45c',
+        'collision input name=capsule_compound words=2640000 input=54afd91ea4c41c1e',
+        'collision input name=point_triangle words=780000 input=830bc841098b4ff3',
+        'collision input name=line_line words=720000 input=3b198818353acdb1',
+        'collision input name=segment_triangle words=4710000 input=0e8f31c39ee53daf',
+        'collision input name=ray_inflated_tris words=2340000 input=b96f8d70443d0ad3',
+        'collision input name=aabb_slab words=720000 input=0435faabb71adfc3',
+        'collision input name=triangle_plane words=540000 input=06e847b15680af49',
+        'collision input name=segment_triangle_edges words=900000 input=f90e10afd6e2b5ba',
+
+        # ray_inflated_tris' gating fans per control word and draw kind: the fans on which
+        # both callees (Triangle::Inflate and NxRayTriIntersect) agree between the sides.
+        'collision gated name=ray_inflated_tris raw=10778 aimed=14293 mixed=6204 raw_simulate=3727 aimed_simulate=13581 mixed_simulate=1494',
+
+        # The `.snan` variants (harness hardening, controller decision): fifteen pre-Task-2b
+        # blocks re-run on the same draws with their signalling NaNs kept. Their candidates
+        # differ from the oracle there -- NaN propagation under x87's operand rules, since the
+        # candidates load (and quiet) operands the listings use from memory -- so these do not
+        # gate on equality: the harness enforces per-word ceilings (kSnanCeilings: differing,
+        # discrete and non-NaN words under each control word). Only oracle-side lines are
+        # registered: the digest, the input digest and coverage lines that carry no
+        # candidate count. See evidence/convex-mesh-gap.md, Harness hardening.
+        'collision name=box_corner.snan index=- rva=0x00020750 owner=phys_fn_000943 checks=1440000 oracle=2ed93033dd627a73',
+        'collision input name=box_corner.snan words=1260000 input=1b330a32752715db',
+        'collision coverage name=box_corner.snan non_finite_words=37792',
+        'collision name=box_quad_depth.snan index=- rva=0x00038a90 owner=phys_fn_001739 checks=1200000 oracle=addbbb55befee36b',
+        'collision input name=box_quad_depth.snan words=840000 input=d4b9d0e89d892667',
+        'collision name=box_clip.random.snan index=- rva=0x00038ba0 owner=phys_fn_001741 checks=2668096 oracle=9f2da01a5e545ea6',
+        'collision input name=box_clip.random.snan words=1800000 input=eb8b706c453d9ade',
+        'collision name=box_axis.random.snan index=- rva=0x00039c10 owner=phys_fn_001745 checks=2911952 oracle=c8841fd268d4a000',
+        'collision input name=box_axis.random.snan words=1446000 input=09273ced2c5dc9ad',
+        'collision name=box_shim.snan index=- rva=0x0003ace0 owner=phys_fn_001748 checks=2987808 oracle=72387ed80ea96392',
+        'collision input name=box_shim.snan words=964000 input=a3a06d965694a4fe',
+        'collision name=contact_box_box.snan index=14 rva=0x0003add0 owner=phys_fn_001749 checks=5996662 oracle=10da3b07497beb38',
+        'collision input name=contact_box_box.snan words=1803996 input=cfebc2a170aa5707',
+        'collision name=step_smooth_normals.snan index=- rva=export owner=phys_fn_002146 checks=919352 oracle=d1dd1830b3d92626',
+        'collision input name=step_smooth_normals.snan words=200049 input=a33800bfc184161f',
+        'collision name=contact_emit.snan index=- rva=0x0001d610 owner=phys_fn_000873 checks=4453104 oracle=d0fa2678c7090891',
+        'collision input name=contact_emit.snan words=2196392 input=4bde64778acade06',
+        'collision coverage name=contact_emit.snan real_feature_pairs=25106 fifth_words=25276',
+        'collision name=shape_raycast_plane.snan index=- rva=0x00025350 owner=phys_fn_001261 checks=5880000 oracle=cc2eae87e1884d1c',
+        'collision input name=shape_raycast_plane.snan words=1560000 input=31c4940c9db34cdf',
+        'collision coverage name=shape_raycast_plane.snan hits=36662 wrote_normal=18252 aimed=22353',
+        'collision name=contact_plane_capsule.snan index=3 rva=0x00048370 owner=phys_fn_001891 checks=2161616 oracle=43a7f3eb813411d5',
+        'collision input name=contact_plane_capsule.snan words=1793520 input=b6ee6c781b7d6ba3',
+        'collision coverage name=contact_plane_capsule.snan emitted=38322 one=14258 two=24064 swept=49582 swept_emitted=9242 zero_axis=40868 w4=710 w8=1694 w11=13166 w15=22054',
+        'collision name=shape_raycast_sphere.snan index=- rva=0x00027c70 owner=phys_fn_001377 checks=5880000 oracle=672f5d70efa6ac62',
+        'collision input name=shape_raycast_sphere.snan words=1560000 input=353aae5f6328fe70',
+        'collision name=contact_sphere_capsule.snan index=9 rva=0x0004a4b0 owner=phys_fn_001923 checks=1802896 oracle=2db2dedd6b554b45',
+        'collision input name=contact_sphere_capsule.snan words=1799928 input=922750234e014dee',
+        'collision coverage name=contact_sphere_capsule.snan emitted=38192 swept=50378 swept_emitted=17834 zero_axis=34458 coincident=4074 beyond_end=11046 w4=1 w8=3127 w11=35064',
+        'collision name=sphere_box_contact.snan index=- rva=0x00049f00 owner=phys_fn_001917 checks=3480000 oracle=b5e77c1b2d4cded9',
+        'collision input name=sphere_box_contact.snan words=1140000 input=8e3cfaf73b680120',
+        'collision name=contact_sphere_box.snan index=8 rva=0x0004a2d0 owner=phys_fn_001919 checks=2453136 oracle=aea04356bbe21b21',
+        'collision input name=contact_sphere_box.snan words=1807056 input=0bec74210f5b4779',
+        'collision name=contact_box_capsule.snan index=15 rva=0x0003b260 owner=phys_fn_001753 checks=6530764 oracle=2a16f2bc09199cc1',
+        'collision input name=contact_box_capsule.snan words=1797372 input=fa667f1771221c95',
+
+        # The kernel fuzz harness's three: a staged-pair differential cannot carry a line on
+        # which its two pairs differ, so its signalling-NaN draws are replayed here, where the
+        # oracle is in process (nxDriveFuzzSnan), under the same ceilings rule.
+        'collision name=fuzz_ray_plane.snan index=- rva=export owner=phys_fn_001704 checks=1360000 oracle=1e5f1c12b433895a',
+        'collision input name=fuzz_ray_plane.snan words=600000 input=1836a2154a685afc',
+        'collision coverage name=fuzz_ray_plane.snan hits=39118',
+        'collision name=fuzz_ray_aabb.snan index=- rva=export owner=phys_fn_001722 checks=1040000 oracle=371bb0fec7ea600c',
+        'collision input name=fuzz_ray_aabb.snan words=960000 input=fa0bf57a1d24ad6a',
+        'collision coverage name=fuzz_ray_aabb.snan hits=802',
+        'collision name=fuzz_segment_box.snan index=- rva=export owner=phys_fn_001714 checks=1040000 oracle=f8fc7328318f7628',
+        'collision input name=fuzz_segment_box.snan words=960000 input=fa0bf57a1d24ad6a',
+        'collision coverage name=fuzz_segment_box.snan hits=995',
+
+        # convex-mesh gap Task 2g (nxDriveTask2g, defined after wmain): contact_emit_ext drives
+        # 000875 (the emitter with feature words; ContactGeneration.cpp) at its address on bit-
+        # written draws, signalling NaNs kept; contact_convex_convex drives 001820 and through it
+        # sub-unit L (ContactConvexConvex.cpp), 001909 / 001907 / 001903 and 000875
+        # (ContactGeneration.cpp) and the polygon interface (TriangleMeshPolygons.cpp) with the
+        # hull helpers, over box hulls each side builds with its own rows. Its split
+        # (.pose_divergent) is a rule on the fixed input -- a pose with a denormal word, under
+        # 0x0f7f -- where the candidate's 001653 reaches the vendored InvertPRMatrix, held by
+        # kConvexPoseDivergentWords / Runs; registered up to its oracle digest. Every line is
+        # copied from the oracle side (evidence/convex-mesh-gap.md, Task 2g); the coverage lines
+        # count oracle-side values and fixed inputs only.
+        'collision name=contact_emit_ext index=- rva=0x0001d8e0 owner=phys_fn_000875 checks=1929864 oracle=4204d51093cb3aa1',
+        'collision input name=contact_emit_ext words=358000 input=f37b3ffb3a0d61b6',
+        'collision coverage name=contact_emit_ext calls=20000 headers=15542 flag_ids=5111 flag_words=14892 wide_words=6439 swapped=10069 repeated_normal=2998 input_snan=7452 grown=1000',
+        'collision name=contact_convex_convex index=- rva=0x000411a0 owner=phys_fn_001820 checks=758960 oracle=c4e3960c6cba3de5',
+        'collision name=contact_convex_convex.pose_divergent index=- rva=0x000411a0 owner=phys_fn_001820 checks=71448 oracle=658c566aec79d1c4',
+        'collision input name=contact_convex_convex words=450552 input=1bd415c2c85d70f5',
+        'collision coverage name=contact_convex_convex hulls=12 polygons=72 edges=144 pairs=10000 pairs_with_contacts=1446 contacts=6247 headers=1446 map_pairs=6228 graph_pairs=6234 null_holders=2577 stamp_wraps=395 axes=24519 split_pairs=2681',
+        # Task 2g review: contact_convex_hulls, the same pairs over hand-built polytopes (prisms of
+        # three, five and six sides, an octahedron, an icosphere of 80 triangles; each side builds
+        # its own edges with 001502), and its .pose_divergent split on the same rule (a pose with a
+        # denormal word under 0x0f7f; 0 with the oracle's 005191 bound into 001653).
+        'collision name=contact_convex_hulls index=- rva=0x000411a0 owner=phys_fn_001820 checks=2018272 oracle=ce182fdd7d71baca',
+        'collision name=contact_convex_hulls.pose_divergent index=- rva=0x000411a0 owner=phys_fn_001820 checks=288116 oracle=1f382fe009ff0ad8',
+        'collision input name=contact_convex_hulls words=271445 input=c8aa86d39513ec0c',
+        'collision coverage name=contact_convex_hulls hulls=10 polygons=216 edges=348 pairs=6000 pairs_with_contacts=3989 contacts=18148 headers=3989 map_pairs=3714 graph_pairs=3762 null_holders=1479 stamp_wraps=223 axes=155964 split_pairs=1731',
+        # convex-mesh gap Task 2h (nxDriveTask2h, after nxDriveTask2g, whose fixture it reuses):
+        # sub-unit M's first half (ContactConvexHeightfield.cpp), each entry row at its own address
+        # through a register thunk with the registers and caller-cleaned stack its Task 2i callers
+        # give it, over each side's own images (the Task 2g box hulls and polytopes, TriangleMesh
+        # images of six fixed triangle meshes whose EdgeLists each side's 002188 builds, a scratch
+        # record): convex_mesh_ray (001822 with 001472, 001708 and the vendored Invert),
+        # convex_mesh_faces (001832 with 001830, 001828, 001826, 001824), convex_mesh_edges (001840
+        # with 001833, 001834, 002188, 001661), convex_mesh_cross (001836 with 001838) and
+        # convex_mesh_contacts (001842 with 001909 and 000875); raw-word inputs, both control words.
+        # convex_mesh_ray's split (.callee_divergent) is a frozen list of hulls whose fans the
+        # oracle's and the vendored Triangle::Inflate (005185) inflate differently under the word,
+        # re-derived by a pre-flight that fails when it no longer matches, and any pose that is not a
+        # signed permutation (the vendored Matrix4x4::Invert, 005197) -- since the Task 2h review a
+        # second frozen list, the runs whose pose the two Inverts invert to different words (a
+        # pre-flight per case); held by kRay2hCalleeDivergentWords / Runs, 0 with the oracle's pair
+        # bound in (one bind bit each); registered up to its oracle digest. The Task 2h review
+        # re-registered all 16 lines (dyadic exact-inverse poses, two more meshes, 001842's own world
+        # pose, the cross family's inputs). Every line is copied from the oracle side (evidence/convex-mesh-gap.md,
+        # Task 2h); the coverage lines count oracle-side values and fixed inputs only.
+        'collision name=convex_mesh_ray index=- rva=0x00041360 owner=phys_fn_001822 checks=1213440 oracle=c60b31b66fcb3424',
+        'collision name=convex_mesh_ray.callee_divergent index=- rva=0x00041360 owner=phys_fn_001822 checks=834560 oracle=f90e10499b9a9e86',
+        'collision input name=convex_mesh_ray words=466510 input=0368f06f352174fd',
+        'collision coverage name=convex_mesh_ray hulls=22 cases=8000 hits=2380 misses=5620 lazy=537 lazy_polygons=3222 posed=5009 posed_exact=1957 posed_dyadic=979 invert_split_runs=2963 split_runs=6520 input_snan=363',
+        'collision name=convex_mesh_faces index=- rva=0x000419b0 owner=phys_fn_001832 checks=4992000 oracle=073689c31d0394d9',
+        'collision input name=convex_mesh_faces words=296312 input=dc4fe87f0a4a2dcf',
+        'collision coverage name=convex_mesh_faces meshes=8 cases=6000 overlapping=3325 separated=2675 best_set=2576 listed_all=1980 map_cases=2974 stamp_wraps=273 input_snan=136',
+        'collision name=convex_mesh_edges index=- rva=0x00042460 owner=phys_fn_001840 checks=2169480 oracle=83852b0107c2a134',
+        'collision input name=convex_mesh_edges words=365996 input=408639aaec7eea06',
+        'collision coverage name=convex_mesh_edges meshes=8 cases=6000 true=3184 false=2816 directions=25044 kept=1541 input_snan=45',
+        'collision name=convex_mesh_cross index=- rva=0x00041fe0 owner=phys_fn_001836 checks=1273848 oracle=5c36165879438a55',
+        'collision input name=convex_mesh_cross words=462838 input=4c67d88ec36f88c7',
+        'collision coverage name=convex_mesh_cross cases=6000 true=4976 false=1024 axes=105189 runs_with_axes=2122 input_snan=33',
+        'collision name=convex_mesh_contacts index=- rva=0x00042560 owner=phys_fn_001842 checks=185684 oracle=4273cba8615346bb',
+        'collision input name=convex_mesh_contacts words=585830 input=0a4f63d137c1f4c8',
+        'collision coverage name=convex_mesh_contacts calls=5000 calls_with_contacts=684 contacts=2117 headers=684 mesh_posed=1255 swapped=2487',
+        # convex-mesh gap Task 2i (nxDriveTask2i, after nxDriveTask2h, whose helpers it reuses): sub-unit
+        # M's second half, each entry at its own address with the matrix-A signature over each side's
+        # own images (the Task 2g box hulls and polytopes with their local bounds; TriangleMesh images of
+        # ten meshes -- the Task 2h eight and two larger height fields -- each with an OPCODE Model the
+        # side's own Model::Build built, its EdgeList, vertex normals and part arrays; a context with an
+        # OBBCollider and OBBCache the side's own constructor built; a Foundation SDK for the report arms
+        # and 002081's allocations): contact_convex_heightfield (001847 -> 001844/001846, 002081,
+        # 001822, 001855, 001692, 001760, 000875), contact_convex_mesh (001853 -> 001851 -> 001849 ->
+        # 001653, 001832, 001836, 001840, 001842, RadixSort, Triangle::Area/Center) and
+        # mesh_vertex_normals (002081 -> 002146); both control words, raw-word inputs. The two
+        # .callee_divergent splits are frozen run lists (2 runs: Triangle::Inflate, 005185; 44 runs:
+        # OBBCollider::Collide, 005067), attributed by a bind build and 0 with the oracle's callee bound
+        # in; the families' live comparisons only guard them. Every line is copied from the oracle side
+        # (evidence/convex-mesh-gap.md, Task 2i); the coverage lines count oracle-side values and fixed
+        # inputs only.
+        'collision name=contact_convex_heightfield index=- rva=0x000432d0 owner=phys_fn_001847 checks=10307868 oracle=a0bad27e2ad09616',
+        'collision name=contact_convex_heightfield.callee_divergent index=- rva=0x000432d0 owner=phys_fn_001847 checks=2856 oracle=dca8b33818338ae4',
+        'collision input name=contact_convex_heightfield words=456146 input=b989eb6aa41d8a19',
+        'collision coverage name=contact_convex_heightfield hulls=22 meshes=10 cases=6000 cases_with_contacts=680 contacts=8341 headers=680 touched=38177 normals_built=652 failed=98 polytope_cases=2734 dyadic=2008 other_axes=2195 flipped=810 mesh_posed=4546 large_mesh=1322 raw_box=382 simulate_runs_with_contacts=680 max_stream=1786 input_snan=41',
+        'collision name=contact_convex_mesh index=- rva=0x00044500 owner=phys_fn_001853 checks=7964768 oracle=f33a1f09afe5de4c',
+        'collision name=contact_convex_mesh.callee_divergent index=- rva=0x00044500 owner=phys_fn_001853 checks=63316 oracle=ede64a9b7519f9e2',
+        'collision input name=contact_convex_mesh words=305002 input=c583b56ee11c4382',
+        'collision coverage name=contact_convex_mesh hulls=22 meshes=10 cases=5000 cases_with_contacts=417 contacts=3014 headers=481 touched=6258 axes=19164 failed=76 polytope_cases=2520 rotated=3124 layouts=1686/1612/1702 large_mesh=968 ccd_pairs=632 simulate_runs_with_contacts=404 max_stream=632',
+        'collision name=mesh_vertex_normals index=- rva=0x00052240 owner=phys_fn_002081 checks=45408 oracle=4ac98b29b7f5d50f',
+        'collision input name=mesh_vertex_normals words=14574 input=5cb05b03a5962493',
+        'collision coverage name=mesh_vertex_normals meshes=10 variants=4 runs=80 normals=1852 raw_words=90 input_snan=6',
+        # convex-mesh gap Task 2j: 001757 and 001772 on each side's own mesh models,
+        # OBBCollider/OBBCache and Foundation SDK; inside/resting/straddling boxes,
+        # both control words. Listing equality and call mappings are checked by
+        # evidence/convex-mesh-gap-2j-listing-compare.py.
+        'collision name=overlap_box_mesh index=- rva=0x0003bcd0 owner=phys_fn_001757 checks=36 oracle=caeffa7eb05312e5',
+        'collision name=contact_box_mesh index=- rva=0x0003d500 owner=phys_fn_001772 checks=36 oracle=fffc01e364a4fa8b',
+        'collision input name=overlap_box_mesh words=788 input=74a6fc50c06a045e',
+        'collision input name=contact_box_mesh words=788 input=74a6fc50c06a045e',
+        'collision coverage name=overlap_box_mesh meshes=6 cases=36 true=16 false=20',
+        'collision coverage name=contact_box_mesh meshes=6 cases=18 inside=6 resting=6 straddling=6 oracle_contacts=334',
+        # convex-mesh gap Task 2k: capsule/mesh overlap and contact over the
+        # same six independently built mesh models, with inside, resting and
+        # side-straddling capsule poses.
+        'collision name=overlap_capsule_mesh index=- rva=0x0003e370 checks=18 oracle=8190a8953018a8af',
+        'collision name=contact_capsule_mesh index=- rva=0x0003e530 checks=18 oracle=6ac3ddf8da4861be',
+        'collision input name=overlap_capsule_mesh words=440 input=2488b42d3079cbfb',
+        'collision input name=contact_capsule_mesh words=440 input=2488b42d3079cbfb',
+        'collision coverage name=overlap_capsule_mesh meshes=6 cases=18 true=8 false=10',
+        'collision coverage name=contact_capsule_mesh meshes=6 cases=18 inside=6 resting=6 straddling=6 oracle_contacts=16',
+        # convex-mesh gap Task 2l: exercise the mesh contact accumulator directly
+        # through both the pinned oracle and the reconstructed stdcall callback.
+        'collision name=mesh_contact_accumulator index=- rva=0x000466e0 checks=40 oracle=6299a0c8f1109f5a',
+        'collision coverage name=mesh_contact_accumulator calls=40 stored=32 cap=32 sums_after_cap=40',
+        'collision input name=mesh_contact_accumulator words=360 input=164a783f6b3daae0',
+        # convex-mesh gap Task 2l: the edge-normal helper on shared and boundary
+        # triangle edges with independently built adjacency words.
+        'collision name=mesh_adjacent_normal index=- rva=0x00044860 checks=372 oracle=369538c8a82202ee',
+        'collision coverage name=mesh_adjacent_normal meshes=10 cases=372 adjacent=266 boundary=106 control_words=2',
+        'collision input name=mesh_adjacent_normal words=2976 input=4d27271fa9633845',
+        # convex-mesh gap Task 2l: AABBTreeCollider mesh/mesh overlap over
+        # independently built model pairs under both x87 control words.
+        'collision name=overlap_mesh_mesh index=- rva=0x00046550 checks=48 oracle=d5db216e1ca74a85',
+        'collision coverage name=overlap_mesh_mesh pairs=3 cases=6 control_words=2',
+        'collision input name=overlap_mesh_mesh words=6858 input=406d6f5a90b507c0',
+        # convex-mesh gap Task 2l: sphere callback with translated vector pairs.
+        'collision name=contact_mesh_mesh_sphere_callback index=- rva=0x00046780 checks=12 oracle=316dab8fdfe009b8',
+        'collision coverage name=contact_mesh_mesh_sphere_callback cases=6 control_words=2',
+        'collision input name=contact_mesh_mesh_sphere_callback words=228 input=57f6a8b9905fbdb5',
+        # convex-mesh gap Task 2l: complete mesh/heightfield entry on three independently-built fixture pairs.
+        'collision name=contact_mesh_heightfield index=- rva=0x00046510 checks=528 oracle=9c87a6d409f98333',
+        'collision coverage name=contact_mesh_heightfield pairs=3 cases=6 control_words=2 cases_with_contacts=2',
+        'collision input name=contact_mesh_heightfield words=6690 input=27d2e99a4f0f02fc',
+        # convex-mesh gap Task 2m: P-Sphere sink reset, preallocated and growth paths.
+        'collision name=contact_sink_reset index=- rva=0x0005b620 checks=416 oracle=80effc8beac4d285',
+        'collision coverage name=contact_sink_reset preallocated_cases=6 growth_cases=2 control_words=2',
+        'collision input name=contact_sink_reset words=24 input=2bf9ab837a384435',
+        # convex-mesh gap P-Sphere follow-up: scene pair-map removal, including
+        # cross-bucket compaction, reversed keys, final-slot trim, and misses.
+        'collision name=scene_owner_pair_remove index=- rva=0x0009a920 checks=616 oracle=f100e37b38af4b3c',
+        'collision coverage name=scene_owner_pair_remove case=remove_head',
+        'collision coverage name=scene_owner_pair_remove case=remove_middle',
+        'collision coverage name=scene_owner_pair_remove case=remove_chain_tail',
+        'collision coverage name=scene_owner_pair_remove case=remove_reversed',
+        'collision coverage name=scene_owner_pair_remove case=remove_last_slot',
+        'collision coverage name=scene_owner_pair_remove case=remove_absent',
+        'collision coverage name=scene_owner_pair_remove case=remove_same_bucket_compaction',
+        'collision input name=scene_owner_pair_remove words=7 input=023ef4155d13f542'
+        'collision name=scene_owner_pair_records index=- rva=0x00010370 checks=352 oracle=70c14cd0779b5bf3'
+        'collision coverage name=scene_owner_pair_records case=remove_owned_pairs_keep_unrelated_record'
+        'collision coverage name=scene_owner_pair_records case=no_matching_owner_is_noop'
+        'collision coverage name=scene_owner_pair_records case=free_owned_payload_and_remove_record'
+        'collision coverage name=scene_owner_pair_records case=remove_pair_when_owner_is_second_key'
+        'collision input name=scene_owner_pair_records words=24 input=9ef095ee83495ec3',
+        'collision name=scene_pruner_node_remove index=- rva=0x0001fb30 checks=8922 oracle=a55d9c578b076aa2',
+        'collision coverage name=scene_pruner_node_remove case=singleton',
+        'collision coverage name=scene_pruner_node_remove case=head',
+        'collision coverage name=scene_pruner_node_remove case=middle',
+        'collision coverage name=scene_pruner_node_remove case=tail',
+        'collision coverage name=scene_pruner_node_remove case=one_payload',
+        'collision coverage name=scene_pruner_node_remove case=two_payloads',
+        'scene_pruner_node_remove_allocator_frees=10',
+        'collision input name=scene_pruner_node_remove words=12 input=8a1c9b9ab83229a4',
+        'collision name=scene_pruner_node_destroy index=- rva=0x00020020 checks=4 oracle=4d25767f9dce13f5',
+        'collision scene_pruner_node_destroy mismatches=0',
+        'scene_pruner_node_destroy_allocator_frees=2',
+        'collision coverage name=scene_pruner_node_destroy case=nonnull_unlink_and_free',
+        'collision coverage name=scene_pruner_node_destroy case=null_noop',
+        'collision input name=scene_pruner_node_destroy words=2 input=08cd4c29d1e47d34',
+        'collision name=scene_pruner_shape_remove index=- rva=0x0004bde0 checks=180 oracle=70e0432da4d1d57a',
+        'collision scene_pruner_shape_remove mismatches=0',
+        'scene_pruner_shape_remove_allocator_frees=16',
+        'collision coverage name=scene_pruner_shape_remove case=multiple_matches_and_compaction',
+        'collision coverage name=scene_pruner_shape_remove case=no_matching_owner',
+        'collision input name=scene_pruner_shape_remove words=2 input=08cd4c29d1e47d34',
+        'collision name=scene_base_dtor_registry index=- rva=0x00026bd0 checks=4 oracle=8d1ace904a398d17',
+        'collision coverage name=scene_base_dtor_registry case=detached_registered_shape',
+        'collision input name=scene_base_dtor_registry words=1 input=4d25767f9dce13f5',
+        'collision name=scene_pruner_owner_destroy index=- rva=0x0004bbd0 checks=24 oracle=a207b4f5efd178f2',
+        'collision coverage name=scene_pruner_owner_destroy case=null_sap_owner_reset',
+        'collision coverage name=scene_pruner_owner_destroy case=sap_arrays_and_compound_children',
+        'collision input name=scene_pruner_owner_destroy words=2 input=08cd4c29d1e47d34',
+        'collision name=scene_base_dtor_owner index=- rva=0x00026bd0 checks=24 oracle=912abab5feb00ab4',
+        'collision coverage name=scene_base_dtor_owner case=owner_scene_pruner_and_slot_cleanup',
+        'collision input name=scene_base_dtor_owner words=1 input=ad2aca7747985764'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
@@ -4390,6 +4810,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=prunable_ctor rva=0x000b54a0 owner=phys_fn_004874 source=IcePrunable.cpp words=42 oracle=676afd9a mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=prunable_flags rva=0x000b54f0 owner=phys_fn_004876 source=IcePrunable.cpp words=5760 oracle=849bed75 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=prunable_pruner rva=0x000b5590 owner=phys_fn_004884 source=IcePrunable.cpp words=20900 oracle=75538179 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=prunable_dispatch rva=0x000b5260 owner=phys_fn_004859 source=IcePrunable.cpp words=120 oracle=fc84e590',
+        'thirdparty coverage name=prunable_dispatch cases=20 dispatch=11 invalid_or_null=9 null_slot=1',
+        'thirdparty input name=prunable_dispatch words=60 input=cd7176ae',
         'thirdparty name=prunable_ranges rva=0x000b55e0 owner=phys_fn_004888 source=IcePrunable.cpp:152,174 words=304 oracle=f3da15ff mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=radix_setrankbuffers rva=0x000e3ea0 owner=phys_fn_005177 source=Ice/IceRevisitedRadix.h words=56 oracle=d8046a75 mismatches=0 worst_ulp=0 verdict=exact',
 
@@ -4559,6 +4982,132 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=hull_qhull_direct_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=410 oracle=27d5b5e1',
         'thirdparty coverage driven=94 divergent=35 words=1720807 layout_checks=47',
         'thirdparty oracle digest=5d3c9ff1'
+        'thirdparty coverage driven=71 divergent=25 words=1500640 layout_checks=47',
+        'thirdparty oracle digest=a6ae0830',
+        # convex-mesh gap Task 2c: the ICE-shaped rows with no vendored source,
+        # reconstructed in Physics/src (EdgeList.cpp, IceAdjacencies.cpp, IceMeshTools.cpp)
+        # and linked into the harness. Each family drives the oracle's entry row at its
+        # RVA and the candidate's over the same meshes, comparing the return value, the
+        # whole object image, every allocation and release through the 004803 getter
+        # and every report. The input line pins the words handed to the oracle. The
+        # exact families are registered whole; `.plane_divergent` holds the vertex runs
+        # of the meshes whose active-edge decisions follow the vendored Plane::Set /
+        # Triangle::Normal (005155, 005181; pre-flighted edge by edge), registered up
+        # to the oracle digest and held by kDivergentCeilings. The pairs above keep
+        # printing where they were; the pair below carries the totals. The split is a
+        # frozen list of 13 meshes in the harness (kIcePlaneDivergentMeshes), so no line
+        # here depends on the candidate's callees; the candidate pre-flight only checks
+        # that no other mesh diverges (Task 2c review; it replaced the pre-flight's
+        # `pairs=1487 side=40 angle=9 meshes=13` coverage line, every digest unchanged).
+        'thirdparty input name=edge_list words=11703 input=466037b8',
+        'thirdparty name=edge_list rva=0x00051dd0 owner=phys_fn_002063 source=EdgeList.cpp words=160261 oracle=76644d57 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=edge_list.plane_divergent rva=0x00051dd0 owner=phys_fn_002063 source=EdgeList.cpp words=23225 oracle=18406f6d',
+        'thirdparty coverage name=edge_list meshes=65 runs=650 succeeded=650 failed=0 edges=27045 active_edge_links=6714 active_vertex_links=12384 reports=8 line72=2 line10a=1 line10b=1 line10e=1 line111=1 line114=1 line117=1',
+        'thirdparty coverage name=edge_list.plane_divergent frozen_meshes=13',
+        'thirdparty input name=ice_adjacencies words=11478 input=3ce4907d',
+        'thirdparty name=ice_adjacencies rva=0x0002def0 owner=phys_fn_001546 source=IceAdjacencies.cpp words=35084 oracle=39b6cbc7 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=ice_adjacencies.plane_divergent rva=0x0002def0 owner=phys_fn_001546 source=IceAdjacencies.cpp words=3528 oracle=b67b88e0',
+        'thirdparty coverage name=ice_adjacencies meshes=65 runs=335 succeeded=182 failed=153 links=12821 boundary=14323 active=15877 reports=153 line266=2 line267=5 line321=146 line72=1',
+        'thirdparty input name=ice_valencies words=10533 input=0863cbf9',
+        'thirdparty name=ice_valencies rva=0x00032610 owner=phys_fn_001667 source=IceMeshTools.cpp,EdgeList.cpp words=32709 oracle=2cbd6dee mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=ice_valencies meshes=65 runs=261 succeeded=260 failed=1 adjacent=12020 reports=1 line72=1',
+        'thirdparty coverage driven=76 divergent=27 words=1755447 layout_checks=47',
+        'thirdparty oracle digest=4a282660',
+        # convex-mesh gap Task 2d: MeshBuilder2 (IceMeshBuilder2.cpp, 001591..001637) and the
+        # vertex reduction (IceMeshTools.cpp, 001645/001647/001659), linked into the harness.
+        # ice_meshbuilder2 drives the oracle's 001593 / 001623 / 001597 / 001633 / 001629 at
+        # their RVAs as 002087 drives them, and the candidate's, over the meshes above and three
+        # of its own under eight create-block configurations and both x87 control words;
+        # vertex_reduction drives 001645 / 001647 / 001659. The tapes hold every return value,
+        # the Containers, counts, flags and owned arrays (as digests) after Build, the result
+        # block (its pointers as which array they point at), and every allocation and release
+        # through the 004803 getter. Both families are exact and registered whole; every line
+        # below is copied from the oracle side (the name lines' agreement fields are the gate's
+        # assertion); the coverage lines count oracle-side values and fixed inputs only. The
+        # pairs above keep printing where they were; the pair below carries the totals.
+        'thirdparty input name=ice_meshbuilder2 words=125178 input=333baf0f',
+        'thirdparty name=ice_meshbuilder2 rva=0x00030f50 owner=phys_fn_001633 source=IceMeshBuilder2.cpp,IceMeshTools.cpp words=178141 oracle=ae71cdd4 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=ice_meshbuilder2 meshes=65+3 cases=249 x87_0f7f=154 init_ok=249 init_failed=0 faces_added=6695 faces_dropped=445 faces_rejected=0 built=241 build_failed=0 skipped=8 out_faces=6689 out_verts=18031 submeshes=1040 materials=515 killed=3 norm_info=34694 remapped=177 probes=453 probes_false=453 uvw_snan=510 colour_snan=347 reports=0',
+        'thirdparty input name=vertex_reduction words=13893 input=db8a41b6',
+        'thirdparty name=vertex_reduction rva=0x000316a0 owner=phys_fn_001647 source=IceMeshTools.cpp words=24313 oracle=9d4e0115 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=vertex_reduction meshes=65 runs=178 verts=5457 reduced=4331 reports=0',
+        'thirdparty coverage driven=78 divergent=27 words=1957901 layout_checks=47',
+        'thirdparty oracle digest=c2e747eb',
+        # convex-mesh gap Task 2e: the rest of sub-unit D (IceMeshTools.cpp: 001639, 001641/001643,
+        # 001649, 001651, 001653, 001661) and P-Small (002144 in SmoothNormals.cpp, 001461 in
+        # ConvexHull.cpp, 002186 / 002188 in TriangleMeshTopology.cpp), linked into the harness.
+        # pose_pair drives 001653 (and 001639's block), unique_axis 001661, edge_dedupe 001641,
+        # mesh_normals 001651 (through 001536 / 001649; angle-weighted cases reach 002144) and
+        # 001461, adjacency_owner 002186 and 002188, each oracle row at its RVA against the
+        # candidate's over the same inputs; every float input is written as bits (signalling and
+        # quiet NaNs, infinities, denormals, -0). The exact families are registered whole. The two
+        # splits are rules on the fixed inputs: pose_pair.inverse_divergent holds the calls that use
+        # the inverse of a raw pose (the vendored InvertPRMatrix, 005191, quiets signalling NaNs
+        # the oracle's copies as integers, and the quieted inverse propagates to other NaN
+        # payloads and signs downstream), adjacency_owner.plane_divergent 002188's runs on Task
+        # 2c's 13 frozen meshes; both are registered up to the oracle digest and held by
+        # kDivergentCeilings. Every line below is copied from the oracle side of a run
+        # (evidence/convex-mesh-gap.md, Task 2e): the name lines' agreement fields are the gate's
+        # assertion, and the coverage lines count oracle-side values and fixed inputs only. The
+        # pairs above keep printing where they were; the pair below carries the totals.
+        'thirdparty input name=pose_pair words=80640 input=fa36d674',
+        'thirdparty name=pose_pair rva=0x00031db0 owner=phys_fn_001653 source=IceMeshTools.cpp words=127828 oracle=5daac11c mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=pose_pair.inverse_divergent rva=0x00031db0 owner=phys_fn_001653 source=IceMeshTools.cpp words=24288 oracle=f698d5e5',
+        'thirdparty coverage name=pose_pair calls=4608 exact=3872 inverse_divergent=736 x87_0f7f=2304 identity_guard_before=0 identity_at_block=1 identity_kept=1 reports=0',
+        'thirdparty input name=unique_axis words=3783 input=95bee3a5',
+        'thirdparty name=unique_axis rva=0x000324f0 owner=phys_fn_001661 source=IceMeshTools.cpp,IceMeshBuilder2.cpp words=13830 oracle=fb7a8219 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=unique_axis cases=320 calls=2202 added=1652 rejected=550 negated=1070 input_snan=320 reports=0',
+        'thirdparty input name=edge_dedupe words=21708 input=3d4ad949',
+        'thirdparty name=edge_dedupe rva=0x00031480 owner=phys_fn_001641 source=IceMeshTools.cpp words=30416 oracle=2185bb03 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=edge_dedupe cases=216 closed=127 open=89 skipped=4 loop_words=2792 reports=0',
+        'thirdparty input name=mesh_normals words=158976 input=c6769b78',
+        'thirdparty name=mesh_normals rva=0x000318d0 owner=phys_fn_001651 source=IceMeshTools.cpp,SmoothNormals.cpp,ConvexHull.cpp words=36260 oracle=8ac07cc2 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=mesh_normals meshes=65 cases=381 true=380 false=1 weighted=190 x87_0f7f=190 vertex_snan=1089 hull_cases=139 hull_true=130 hull_false=9 reports=0',
+        'thirdparty input name=adjacency_owner words=9948 input=4ddc1540',
+        'thirdparty name=adjacency_owner rva=0x000543d0 owner=phys_fn_002186 source=TriangleMeshTopology.cpp,IceAdjacencies.cpp,EdgeList.cpp words=28728 oracle=b9df247a mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=adjacency_owner.plane_divergent rva=0x000543d0 owner=phys_fn_002186 source=TriangleMeshTopology.cpp,IceAdjacencies.cpp,EdgeList.cpp words=6300 oracle=50e4dd46',
+        'thirdparty coverage name=adjacency_owner meshes=65 adjacencies=66 adjacencies_built=36 edge_lists=66 edge_lists_built=65 frozen_split_runs=13 reports=30 line72=1 line321=29',
+        'thirdparty coverage driven=85 divergent=29 words=2225551 layout_checks=47',
+        'thirdparty oracle digest=a1b4f9a6',
+        # convex-mesh gap Task 2f: P-Hull (ConvexHull.cpp: 001441, 001445, 001449, 001459, 001463, 001465,
+        # 001472, 001496, 001502, and the helpers 000001, 000925, 001391, 001439; 001657 in
+        # IceMeshTools.cpp) and the support maps (IceSupportMaps.cpp: 001550..001589), linked into the
+        # harness. hull_leaf drives the rows no vendored code reaches (001441, 001445, 001459, 001496 on
+        # hand-built polygons, 001449, 001657, 000001 with the three element constructors) over drawn
+        # words; convex_hull drives 001472, 001502 and 001496 over polycube hull images and 001463
+        # directly; support_maps drives 001550, 001556 and the three map kinds (001565/001571/001575,
+        # 001558, the slots, the deleting destructors) over built and hand-built hulls. Every float
+        # input is written as bits (signalling and quiet NaNs, infinities, denormals, -0). The exact
+        # families are registered whole. convex_hull.plane_divergent is a rule on the fixed inputs
+        # (concave sets, nudged words, lattice meshes under 0x0f7f whose steps are not powers of two, and 001463's drawn points: the planes 001463
+        # takes through the vendored Plane::Set / Triangle::Area, 005155 / 005179), registered up to
+        # the oracle digest and held by kDivergentCeilings. Every line below is copied from the oracle
+        # side of a run (evidence/convex-mesh-gap.md, Task 2f): the name lines' agreement fields are
+        # the gate's assertion, and the coverage lines count oracle-side values and fixed inputs only.
+        # The pairs above keep printing where they were; the pair below carries the totals.
+        'thirdparty input name=hull_leaf words=181380 input=9279a52e',
+        'thirdparty name=hull_leaf rva=0x0002a620 owner=phys_fn_001441 source=ConvexHull.cpp,IceMeshTools.cpp words=21813 oracle=106d7907 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=hull_leaf area=900 center=900 centroid=400 centroid_true=379 support=1500 support_posed=752 gather=300 gather_faces=1639 reverse=24 vector=18 input_snan=7706 x87_0f7f=450 reports=0',
+        'thirdparty input name=convex_hull words=74098 input=d03735ea',
+        'thirdparty name=convex_hull rva=0x0002b6f0 owner=phys_fn_001472 source=ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp words=32993 oracle=c722f53c mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=convex_hull.plane_divergent rva=0x0002b6f0 owner=phys_fn_001472 source=ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp words=56808 oracle=87dd3578',
+        'thirdparty coverage name=convex_hull meshes=102 split_meshes=68 polygons_true=63 polygons_false=36 edges_alone=3 polygons=583 edges_true=66 edges_false=0 edges=1735 rebuilt=25 support=1584 plane=700 plane_split=175 reports=24 line318=9 line321=15',
+        'thirdparty input name=support_maps words=26184 input=caa5f9eb',
+        'thirdparty name=support_maps rva=0x0002e2f0 owner=phys_fn_001558 source=IceSupportMaps.cpp,ConvexHull.cpp words=26162 oracle=79d50caf mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=support_maps faces=2400 lookups=2400 maps=138 init_true=135 init_false=3 samples=11844 map_lookups=1620 freed=66 input_snan=625 reports=4',
+        'thirdparty coverage driven=89 divergent=30 words=2363327 layout_checks=47',
+        'thirdparty oracle digest=781af325',
+        # convex-mesh gap Task 2g: polygon_interface drives the TriangleMesh polygon interface
+        # (TriangleMeshPolygons.cpp: the twelve slots of 0x101085d4 and 000505) through each
+        # side's own table over hull images of convex_hull's exact meshes, and with it 001514
+        # (again directly: the CRT release), 001516, 001530 (ConvexHull.cpp) and the kind C map;
+        # every float input written as bits. Registered whole; copied from the oracle side of
+        # the run (evidence/convex-mesh-gap.md, Task 2g). The pair below carries the totals.
+        'thirdparty input name=polygon_interface words=20733 input=4df6a369',
+        'thirdparty name=polygon_interface rva=0x000552c0 owner=phys_fn_002249 source=TriangleMeshPolygons.cpp,ConvexHull.cpp,IceSupportMaps.cpp words=31253 oracle=28edec7b mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=polygon_interface hulls=34 built=25 polygons=234 edges=604 axes=333 axes_rebuilt=18 support=400 support_posed=200 faces=400 faces_edge=33 face_kind_null=50 projects=544 projects_map=272 projects_graph=272 climbs_failed=48 stamp_wraps=65 input_snan=823 reports=10',
+        'thirdparty coverage driven=90 divergent=30 words=2394580 layout_checks=47',
+        'thirdparty oracle digest=8f91122f'
     )
 }
 
@@ -4580,10 +5129,8 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
-    '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
-    '4' = 188  # 34 for NxPhysicsAssetTests, 154 for NxPhysicsThirdPartyTests (67 + 29 from
-               # vendored-correspondence Task 4 + 5 from its Task 5a + 32 from qhull-gap Task 1
-               # + 13 from qhull-gap Task 4e + 8 from qhull-gap Task 5)
+    '3' = 359  # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
+    '4' = 251  # 34 asset and 217 third-party assertions, including qhull and convex-mesh gap
     '5' = 2037  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # + 175 from scene-raycast Task 4 (149 body-creation, 13 setters, 9 dynamic-setter
                # and 3 shape-vtable from its shape sub-area, 1 shape-vtable from its box hull)
@@ -4595,8 +5142,6 @@ $NxPhaseCoverageFloor = [ordered] @{
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
     '7' = 1129  # the 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize
                # + 79 effector + 374 core-dump; the oracle-differential assertions
-               # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
-               # does not run
     '8' = 0
 }
 
@@ -4655,3 +5200,4 @@ $NxRegisteredOracleDifferentialTargets = @(
     'NxPhysicsThirdPartyTests'
 )
 $NxSkippedExitCode = 3
+

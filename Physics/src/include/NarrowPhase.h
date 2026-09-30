@@ -88,6 +88,24 @@ NX_INLINE NxU32 NxCollisionPairIndex(NxU32 lowType, NxU32 highType)
 
 typedef bool (__cdecl* NxShapeOverlapFn)(const NxCollisionShape*, const NxCollisionShape*);
 
+// phys_fn_002348 (0x0005ab80, 719 B)
+// Shape-pair matrix dispatcher. The object
+// begins with a vtable pointer, followed by the contact table at +0x04 and the
+// overlap table at +0x94. The pair is ordered by ascending shape type before
+// either table is indexed.
+void __cdecl NxDispatchShapePair(void* matrix,
+	const NxCollisionShape* shape0, const NxCollisionShape* shape1,
+	void* contactSink, void* context);
+
+bool NxFilterShapePair(const NxU32* groupMasks, const void* pairMap,
+	const NxCollisionShape* shape0, const NxCollisionShape* shape1);
+void* NxFindCollisionPairRecord(const void* pairMap, NxU16 owner0, NxU16 owner1);
+bool NxRemoveCollisionPairRecord(void* pairMap, NxU16 owner0, NxU16 owner1);
+void NxSceneRemoveOwnerPairRecords(void* scene, const void* shape);
+const NxReal* NxShapeWorldBounds(const NxCollisionShape* shape);
+void NxSetCollisionDispatchMatrix(void* matrix);
+void* NxGetCollisionDispatchMatrix();
+
 // The +0x94 matrix entries. Each takes the pair already ordered by ascending
 // shape type, which is what makes the lower triangle unnecessary.
 bool __cdecl NxOverlapPlaneSphere(const NxCollisionShape* plane, const NxCollisionShape* sphere);
@@ -97,6 +115,18 @@ bool __cdecl NxOverlapSphereSphere(const NxCollisionShape* sphere0, const NxColl
 bool __cdecl NxOverlapSphereBox(const NxCollisionShape* sphere, const NxCollisionShape* box);
 bool __cdecl NxOverlapSphereCapsule(const NxCollisionShape* sphere, const NxCollisionShape* capsule);
 bool __cdecl NxOverlapBoxBox(const NxCollisionShape* box0, const NxCollisionShape* box1);
+
+// convex-mesh gap Task 2a (units/convex-mesh-gap-contract.md, sub-units G, J
+// and K): matrix B [BOX][CAPSULE] (phys_fn_001751, index 15), [CAPSULE][CAPSULE]
+// (phys_fn_001774, index 21), and the three compound entries [CAPSULE][COMPOUND]
+// (phys_fn_001785, 23), [SPHERE][COMPOUND] (phys_fn_001789, 11) and
+// [BOX][COMPOUND] (phys_fn_001791, 17). The compound entries read the second
+// shape's pruning handle, a Prunable embedded at Shape+0xa4.
+bool __cdecl NxOverlapBoxCapsule(const NxCollisionShape* box, const NxCollisionShape* capsule);
+bool __cdecl NxOverlapCapsuleCapsule(const NxCollisionShape* capsule0, const NxCollisionShape* capsule1);
+bool __cdecl NxOverlapCapsuleCompound(const NxCollisionShape* capsule, const NxCollisionShape* compound);
+bool __cdecl NxOverlapSphereCompound(const NxCollisionShape* sphere, const NxCollisionShape* compound);
+bool __cdecl NxOverlapBoxCompound(const NxCollisionShape* box, const NxCollisionShape* compound);
 
 // phys_fn_001690 at 0x00033e80, 1,836 bytes -- and a PHASE 2 row, written here
 // because it has no translation unit of its own and both capsule/capsule

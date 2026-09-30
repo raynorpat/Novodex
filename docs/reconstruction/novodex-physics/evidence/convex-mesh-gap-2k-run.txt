@@ -1,0 +1,11 @@
+oracle module path=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+oracle base=10000000 control_word=027f
+oracle pin=matched
+binding NxComputeSquareDistance path=D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxFoundation.dll sha256=f1c28b51150dd772166c4c65e026146944b693308650d3bc2688907d6e41f23f
+collision name=overlap_capsule_mesh index=- rva=0x0003e370 checks=18 oracle=8190a8953018a8af candidate=8190a8953018a8af mismatches=0
+collision name=contact_capsule_mesh index=- rva=0x0003e530 checks=18 oracle=6ac3ddf8da4861be candidate=6ac3ddf8da4861be oracle_contacts=16 mismatches=0
+collision coverage name=overlap_capsule_mesh meshes=6 cases=18 true=8 false=10
+collision coverage name=contact_capsule_mesh meshes=6 cases=18 inside=6 resting=6 straddling=6 oracle_contacts=16
+collision input name=overlap_capsule_mesh words=440 input=2488b42d3079cbfb
+collision input name=contact_capsule_mesh words=440 input=2488b42d3079cbfb
+collision capsule_mesh mismatches=0

@@ -21,6 +21,8 @@
 #include "NxTriangleMeshDesc.h"
 
 class NxStream;
+class Adjacencies;
+class EdgeList;
 
 /**
 The triangle-mesh stream format's reader and writer, and ONLY the parts of them
@@ -133,10 +135,20 @@ class TriangleMesh
 	//! literal 1; there is no error path in it (mov al,1 at 0x00053b64).
 	bool					save(NxStream& stream) const;
 
+	//! phys_fn_002186 (0x000543d0) and phys_fn_002188 (0x00054460): build the
+	//! adjacencies (+0x84) and the edge list (+0x88) of the triangles.
+	void					createAdjacencies();
+	void					createEdgeList();
+
 	//! +0x00, the vtable slot. Not a C++ vtable; see the class comment.
 	void*					mVtableSlot;
-	//! +0x04, unestablished.
-	NxU32					mWord04;
+	//! +0x04, the polygon interface table (0x101085d4: the constructor stores
+	//! it at 0x000554a4 over the abstract table it stored at 0x00055493, the
+	//! destructor again at 0x00055581). Its twelve slots take the mesh plus
+	//! four as `this` and read the convex mesh at +0xa0; the candidate's slots
+	//! are gTriangleMeshPolygonTable (TriangleMeshPolygons.cpp, convex-mesh gap
+	//! Task 2g). No candidate constructor exists yet to store it.
+	const void* const*		mPolygonTable;
 	//! +0x08, the embedded internal mesh -- which reaches exactly to +0x40.
 	InternalTriangleMesh	mInternal;
 	//! +0x40, the hull-construction flags. Only bit 0 is established.
@@ -151,8 +163,15 @@ class TriangleMesh
 	NxU32					mHeightFieldVerticalAxis;
 	//! +0x80, heightFieldVerticalExtent.
 	float					mHeightFieldVerticalExtent;
-	//! +0x84..+0x88, unestablished.
-	NxU8					mGap84[0x08];
+	//! +0x84, the adjacencies, built on demand by phys_fn_002186
+	//! (createAdjacencies, TriangleMeshTopology.cpp). The mesh/height-field
+	//! pass 001859 builds them when the word is 0 and stores 1 when that fails
+	//! (0x00044b8e..0x00044bb1), so 1 means "could not be built".
+	Adjacencies*			mAdjacencies;
+	//! +0x88, the edge list, built on demand by phys_fn_002188
+	//! (createEdgeList, TriangleMeshTopology.cpp) when 001834 finds it null
+	//! (0x00041c23..0x00041c31).
+	EdgeList*				mEdgeList;
 	//! +0x8c, presence flag A for the array at +0x94.
 	NxU32					mPresenceFlagA;
 	//! +0x90, presence flag B for the array at +0x98.
@@ -164,13 +183,18 @@ class TriangleMesh
 	//! +0x9c, unestablished; the next measured store is the hull at +0xa0.
 	NxU32					mWord9C;
 	//! +0xa0, the convex mesh. Released through its slot 0 by
-	//! phys_fn_002164; no type is established beyond that.
+	//! phys_fn_002164. The polygon interface reads it as the hull of
+	//! ConvexHull.h (+0x0c..+0x48) with a vertex graph at +0x64 (002249).
+	//! The words after it, +0xa4 (passed to 001818, which never reads it) and
+	//! +0xa8 (the kind C support map slot 11 takes; 001820 at 0x000411f1 /
+	//! 0x000411f7), are outside this class's measured size.
 	void*					mConvexMesh;
 	};
 
 // The measured offsets, pinned so a field added in the wrong place fails here
 // rather than in a differential.
 static_assert(offsetof(TriangleMesh, mVtableSlot) == 0x00, "the vtable slot is first");
+static_assert(offsetof(TriangleMesh, mPolygonTable) == 0x04, "the polygon interface table is at +0x04");
 static_assert(offsetof(TriangleMesh, mInternal) == 0x08, "the internal mesh is embedded at +0x08");
 static_assert(offsetof(TriangleMesh, mInternal.mVertexCount) == 0x08, "vertex count is internal+0x00");
 static_assert(offsetof(TriangleMesh, mInternal.mTriangleCount) == 0x0c, "triangle count is internal+0x04");
@@ -184,6 +208,8 @@ static_assert(offsetof(TriangleMesh, mHullFlags) == 0x40, "the hull flags are at
 static_assert(offsetof(TriangleMesh, mConvexEdgeThreshold) == 0x6c, "the threshold is at +0x6c");
 static_assert(offsetof(TriangleMesh, mHeightFieldVerticalAxis) == 0x7c, "the height-field axis is at +0x7c");
 static_assert(offsetof(TriangleMesh, mHeightFieldVerticalExtent) == 0x80, "the height-field extent is at +0x80");
+static_assert(offsetof(TriangleMesh, mAdjacencies) == 0x84, "the adjacencies are at +0x84");
+static_assert(offsetof(TriangleMesh, mEdgeList) == 0x88, "the edge list is at +0x88");
 static_assert(offsetof(TriangleMesh, mPresenceFlagA) == 0x8c, "presence flag A is at +0x8c");
 static_assert(offsetof(TriangleMesh, mPresenceFlagB) == 0x90, "presence flag B is at +0x90");
 static_assert(offsetof(TriangleMesh, mArrayA) == 0x94, "array A is at +0x94");
@@ -220,4 +246,9 @@ class TriangleMeshHullAllocator : public HullAllocator
 	//! CreateConvexHull fails.
 	bool					computeHull(const NxTriangleMeshDesc& desc, NxTriangleMeshDesc& out);
 	};
+//! The internal mesh's vertex normals (phys_fn_002081, 0x00052240), built on
+//! demand (TriangleMeshTopology.cpp, convex-mesh gap Task 2i). Thiscall on the
+//! InternalTriangleMesh with no argument; naked, so declared without parameters
+//! and called from naked code (001844) or through a register thunk.
+void nxMeshComputeVertexNormals();
 #endif

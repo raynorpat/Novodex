@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ContactGeneration.cpp b/Physics/src/ContactGeneration.cpp
+index 3a968a9..cd10f51 100644
+--- a/Physics/src/ContactGeneration.cpp
++++ b/Physics/src/ContactGeneration.cpp
+@@ -3240,7 +3240,7 @@ L48b78:
+ 		fcompp		// 0x00048b97
+ 		fnstsw	ax		// 0x00048b99
+ 		test	ah, 0x41		// 0x00048b9b
+-		jp	L48ba7		// 0x00048b9e
++		jnp	L48ba7		// 0x00048b9e
+ 		mov	eax, 1		// 0x00048ba0
+ 		jmp	L48ba9		// 0x00048ba5
+ L48ba7:

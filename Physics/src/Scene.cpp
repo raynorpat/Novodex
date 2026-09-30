@@ -63,11 +63,150 @@
 #include "SceneVisualize.h"
 #include "ContactPairManager.h"
 #include "NxDebugRenderable.h"
+#include "NarrowPhase.h"
+#include "ContactGeneration.h"
+void nxContainerAddThunk(void* innerThis);
 
 #include <stdio.h>
 #include <string.h>
 #include <new>
 
+// phys_fn_000517 (0x00010370, 24 B). The oracle body has a separate loop
+// extent at 0x10390; removing a record compacts the last live pair into this
+// slot, so the cursor advances only when the current pair is retained.
+void NxSceneRemoveOwnerPairRecords(void* scene, const void* shape)
+	{
+	NxU8* bytes = (NxU8*) scene;
+	NxU8* pairMap = bytes + 0x2c;
+	NxU8* shapeBytes = (NxU8*) shape;
+	const NxU16 owner = (NxU16) *(const NxU32*) (shapeBytes + 0xd4);
+	NxU8* record = (NxU8*) *(void**) (pairMap + 0x14);
+	NxU32 remaining = *(NxU32*) (pairMap + 0x10);
+	// phys_fn_000519 (0x00010390, 78 B), the loop continuation in the oracle body.
+	while(remaining--)
+		{
+		const NxU16 owner0 = *(NxU16*) record;
+		const NxU16 owner1 = *(NxU16*) (record + 2);
+		if(owner0 == owner || owner1 == owner)
+			{
+			void* payload = *(void**) (record + 4);
+			if(payload && ((NxU32) payload & 1u) == 0)
+				nxFoundationSDKAllocator->free(payload);
+			NxRemoveCollisionPairRecord(pairMap, owner0, owner1);
+			}
+		else
+			record += 8;
+		}
+	}
+
+// phys_fn_000889 (0x0001e940, 99 B)
+// Continuation of 000887: release the pruner's object vector and empty its
+// embedded sink Container. The oracle's register epilogue belongs to 000887.
+extern "C" __declspec(noinline) void __fastcall NxScenePrunerRecordCleanupTail(void* record)
+	{
+	NxU8* bytes = static_cast<NxU8*>(record);
+	void** begin = *reinterpret_cast<void***>(bytes + 0xc4);
+	void** end = *reinterpret_cast<void***>(bytes + 0xc8);
+	const NxI32 byteDistance = static_cast<NxI32>(reinterpret_cast<NxU32>(end) - reinterpret_cast<NxU32>(begin));
+	const NxU32 count = static_cast<NxU32>(byteDistance >> 2);
+	for(NxU32 i = 0; i < count; ++i)
+		if(begin[i]) nxFoundationSDKAllocator->free(begin[i]);
+	*reinterpret_cast<NxU32*>(bytes + 0x48) = 0;
+	if(begin) nxFoundationSDKAllocator->free(begin);
+	*reinterpret_cast<void**>(bytes + 0xc4) = 0;
+	*reinterpret_cast<void**>(bytes + 0xc8) = 0;
+	*reinterpret_cast<NxU32*>(bytes + 0xcc) = 0;
+	nxContainerAddThunk(bytes + 0x10);
+	}
+
+// phys_fn_000887 (0x0001e910, 41 B)
+// 000887's entry and 000889 continuation together clean the embedded pruner sink.
+extern "C" __declspec(noinline) void __fastcall NxScenePrunerRecordCleanup(void* record)
+	{
+	NxU8* bytes = static_cast<NxU8*>(record);
+	NxContactSinkResetState(reinterpret_cast<NxU32*>(bytes + 0x10));
+	NxScenePrunerRecordCleanupTail(record);
+	}
+
+extern "C" void __fastcall NxScenePrunerNodeRemove(void* node);
+
+// phys_fn_000915 (0x00020020, 33 B)
+// Release a pruner node: unlink and clean it before returning its storage to
+// the Foundation SDK allocator used by the pruner.
+extern "C" __declspec(noinline) void __stdcall NxScenePrunerNodeDestroy(void* node)
+	{
+	if(!node) return;
+	NxScenePrunerNodeRemove(node);
+	nxFoundationSDKAllocator->free(node);
+	}
+
+// phys_fn_001955 (0x0004bde0, 153 B)
+// Remove every pruning pair whose embedded node belongs to this shape owner,
+// releasing its node and pair-map key, then compact the owner's live shape IDs.
+extern "C" __declspec(noinline) void __fastcall NxScenePrunerShapeRemove(void* group, void* owner)
+	{
+	NxU8* bytes = static_cast<NxU8*>(group);
+	const NxU32 ownerWord = *reinterpret_cast<const NxU32*>(static_cast<const NxU8*>(owner) + 0x10);
+	NxU16* record = *reinterpret_cast<NxU16**>(bytes + 0x48);
+	for(NxU32 remaining = *reinterpret_cast<NxU32*>(bytes + 0x44); remaining; --remaining)
+		{
+		void* node = *reinterpret_cast<void**>(record + 2);
+		const NxU8* nodeBytes = static_cast<const NxU8*>(node);
+		const NxU8* firstOwner = *reinterpret_cast<const NxU8* const*>(nodeBytes + 0x14);
+		const NxU8* secondOwner = *reinterpret_cast<const NxU8* const*>(nodeBytes + 0x18);
+		if(*reinterpret_cast<const NxU32*>(firstOwner + 0x10) == ownerWord ||
+			*reinterpret_cast<const NxU32*>(secondOwner + 0x10) == ownerWord)
+			{
+			NxScenePrunerNodeDestroy(node);
+			NxRemoveCollisionPairRecord(bytes + 0x34, record[0], record[1]);
+			}
+		else
+			record += 4;
+		}
+	NxU32 index = 0;
+	NxU32 count = *reinterpret_cast<NxU32*>(bytes + 0x7c);
+	NxU32* owners = *reinterpret_cast<NxU32**>(bytes + 0x80);
+	while(index < count && owners[index] != ownerWord)
+		++index;
+	if(index < count)
+		{
+		--count;
+		*reinterpret_cast<NxU32*>(bytes + 0x7c) = count;
+		owners[index] = owners[count];
+		}
+	}
+
+// phys_fn_000903 (0x0001fb30, 120 B)
+// Unlink a pruner node from its owning intrusive list before cleaning its payload.
+extern "C" __declspec(noinline) void __fastcall NxScenePrunerNodeRemove(void* node)
+	{
+	NxU8* bytes = static_cast<NxU8*>(node);
+	NxU8* previous = *reinterpret_cast<NxU8**>(bytes + 0x0c);
+	NxU8* next = *reinterpret_cast<NxU8**>(bytes + 8);
+	NxU8* owner = *reinterpret_cast<NxU8**>(bytes + 0x10);
+	if(!previous)
+		{
+		if(*reinterpret_cast<NxU8**>(owner + 4) == bytes)
+			*reinterpret_cast<NxU8**>(owner + 4) = 0;
+		*reinterpret_cast<NxU8**>(owner) = next;
+		if(next)
+			*reinterpret_cast<NxU8**>(next + 0x0c) = 0;
+		}
+	else if(!next)
+		{
+		if(*reinterpret_cast<NxU8**>(owner + 4) == bytes)
+			*reinterpret_cast<NxU8**>(owner + 4) = previous;
+		*reinterpret_cast<NxU8**>(previous + 8) = 0;
+		}
+	else
+		{
+		*reinterpret_cast<NxU8**>(previous + 8) = next;
+		*reinterpret_cast<NxU8**>(next + 0x0c) = previous;
+		}
+	*reinterpret_cast<NxU8**>(bytes + 0x0c) = 0;
+	*reinterpret_cast<NxU8**>(bytes + 8) = 0;
+	NxScenePrunerRecordCleanup(bytes + 0x14);
+	}
 // Public shape final and descriptor loader share the oracle's global name map.
 void nxShapeSetName(void* shape, const char* name);
 void nxShapeFactoryInitializePose(void* shape, const void* localPose);
