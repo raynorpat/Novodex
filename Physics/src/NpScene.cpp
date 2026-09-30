@@ -53,6 +53,11 @@ static void* nxConditionConstruct(void* memory, void* a, void* b, void* c);
 // The deadlock report, defined in Scene.cpp.
 void nxSceneDeadlockReport();
 
+// The oracle emits each compatibility warning once per module lifetime.
+static bool gStartRunWarningEmitted = false;
+static bool gFinishRunWarningEmitted = false;
+static bool gRunForWarningEmitted = false;
+
 NpScene::NpScene(NxSceneInternal* scene)
 	{
 	mWriteLock = 0;
@@ -426,16 +431,30 @@ void NpScene::flushStream()
 	
 	}
 
-// (unimplemented) startRun
+// phys_fn_000335 (0x0000ca40): warn once, then use the public simulate slot.
 void NpScene::startRun(NxReal elapsedTime)
 	{
-	
+	if(!gStartRunWarningEmitted)
+		{
+		gStartRunWarningEmitted = true;
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_PRINT,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x114, 0,
+			"Warning: deprecated method: \nScene::startRun(). Use the new  simulate() instead!\n\n");
+		}
+	simulate(elapsedTime);
 	}
 
-// (unimplemented) finishRun
+// phys_fn_000336 (0x0000ca90): warn once, then fetch the finished rigid-body run.
 void NpScene::finishRun()
 	{
-	
+	if(!gFinishRunWarningEmitted)
+		{
+		gFinishRunWarningEmitted = true;
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_PRINT,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x11a, 0,
+			"Warning: deprecated method: \nScene::finishRun(). Use the new  fetchResults() instead!\n\n");
+		}
+	fetchResults(NX_RIGID_BODY_FINISHED, true);
 	}
 
 // phys_fn_000338 (0x0000cae0): write-lock, then forward the timing triplet.
@@ -464,10 +483,21 @@ void NpScene::getTiming(NxReal & maxTimestep, NxU32 & maxIter, NxTimeStepMethod 
 	nxNpSceneGuardLeave(link);
 	}
 
-// (unimplemented) runFor
+// phys_fn_000342 (0x0000cb90): the legacy sequence is setTiming, simulate,
+// flushStream, and blocking fetchResults, with its deprecation warning once.
 void NpScene::runFor(NxReal elapsedTime, NxReal maxTimestep, NxU32 maxIter, NxTimeStepMethod method)
 	{
-	
+	if(!gRunForWarningEmitted)
+		{
+		gRunForWarningEmitted = true;
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_PRINT,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x12e, 0,
+			"Warning: deprecated method: \nScene::runFor. Use the new setTiming(), simulate(), flushStream(), fetchResults() sequence instead!\n\n");
+		}
+	setTiming(maxTimestep, maxIter, method);
+	simulate(elapsedTime);
+	flushStream();
+	fetchResults(NX_RIGID_BODY_FINISHED, true);
 	}
 
 // phys_fn_000344 (0x0000cc10, 77 B)
