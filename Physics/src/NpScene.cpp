@@ -198,10 +198,14 @@ static void* nxConditionConstruct(void* memory, void* a, void* b, void* c)
 // reconstructed and none is gated.
 // ---------------------------------------------------------------------------
 
-// (unimplemented) getGravity
-void NpScene::getGravity(NxVec3&)
+
+// phys_fn_000297 (0x0000c460, 39 B): read-lock the Scene gravity copy.
+void NpScene::getGravity(NxVec3& gravity)
 	{
-	
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	mScene->getGravity(gravity);
+	nxNpSceneGuardLeave(link);
 	}
 
 // phys_fn_000299 (0x0000c5d0, 87 B, phase 7): NxScene::releaseJoint. The
@@ -797,10 +801,21 @@ bool NpScene::fetchResults(NxSimulationStatus, bool block )
 	return 0;
 	}
 
-// (unimplemented) setGravity
-void NpScene::setGravity(const NxVec3&)
+
+// phys_fn_000287 (0x0000c400, 84 B): try the write lock, forward the three
+// gravity words to Scene+0x520, then release the same lock link.
+void NpScene::setGravity(const NxVec3& gravity)
 	{
-	
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x5b, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	void* link = mWriteLock;
+	mScene->setGravity(gravity);
+	nxNpSceneGuardLeave(link);
 	}
 
 // phys_fn_000295's shape: the write lock, the forward, the release.

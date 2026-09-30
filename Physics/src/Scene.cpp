@@ -3722,6 +3722,16 @@ void NxSceneInternal::getGravity(NxVec3& gravity) const
 	out[2] = at<NxU32>(0x528);
 	}
 
+// phys_fn_000508 (0x000101d0, 33 B): stores the three gravity words at
+// Scene+0x520, +0x524 and +0x528 in order.
+void NxSceneInternal::setGravity(const NxVec3& gravity)
+	{
+	const NxU32* in = reinterpret_cast<const NxU32*>(&gravity.x);
+	at<NxU32>(0x520) = in[0];
+	at<NxU32>(0x524) = in[1];
+	at<NxU32>(0x528) = in[2];
+	}
+
 // phys_fn_000523 (0x00010400, 4 B, phase 7): the pair-flag count at +0x3c.
 // The candidate never raises a pair flag, so it stays 0 and the core dump
 // never reaches getPairFlagArray.
