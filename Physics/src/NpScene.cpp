@@ -791,10 +791,15 @@ bool NpScene::wait(NxStandardFences, bool block)
 	return 0;
 	}
 
-// (unimplemented) isWritable
+// phys_fn_000392 (0x0000d660): a successful write-lock probe is immediately
+// released; failure reports the scene as non-writable.
 bool NpScene::isWritable()
 	{
-	return 0;
+	void* link = mWriteLock;
+	if(!nxNpSceneGuardWriteTry(link))
+		return false;
+	nxNpSceneGuardLeave(link);
+	return true;
 	}
 
 // (unimplemented) simulate

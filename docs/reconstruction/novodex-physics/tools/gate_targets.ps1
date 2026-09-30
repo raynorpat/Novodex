@@ -2963,6 +2963,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation gravity=changed 00000000.c1a00000.00000000'
         'simulation timing=initial 3c888889.8.0'
         'simulation timing=changed 3e000000.4.1'
+        'simulation writable=initial 1'
         'simulation stage=initial position=00000000.41200000.00000000 velocity=00000000.00000000.00000000'
         'simulation step=0 ready=1 fetched=1'
         'simulation stage=step0 position=00000000.41200000.00000000 velocity=00000000.00000000.00000000'
@@ -5166,8 +5167,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # family open)
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1150  # 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize
-               # + 21 M1 simulation + 79 effector + 374 core-dump; the oracle-differential assertions
+    '7' = 1151  # 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize
+               # + 22 M1 simulation + 79 effector + 374 core-dump; the oracle-differential assertions
     '8' = 0
 }
 
