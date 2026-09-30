@@ -16,7 +16,7 @@ $NxPhaseTestTargets = [ordered] @{
     '4' = @()
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsBodyCreationTests')
     '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
-    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
+    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
     '8' = @()
 }
 
@@ -2955,6 +2955,28 @@ $NxRequiredCoverageLines = [ordered] @{
         'visualize moved stage=all renderables=1'
         'visualize scene_released renderables=0'
     )
+    # M1 public-path baseline: one dynamic sphere under gravity, eight
+    # blocking simulate/check/fetch cycles. These outputs were captured from
+    # the pinned oracle before the candidate step path was implemented.
+    'NxPhysicsSimulationTests' = @(
+        'simulation stage=initial position=00000000.41200000.00000000 velocity=00000000.00000000.00000000'
+        'simulation step=0 ready=1 fetched=1'
+        'simulation stage=step0 position=00000000.41200000.00000000 velocity=00000000.00000000.00000000'
+        'simulation step=1 ready=1 fetched=1'
+        'simulation stage=step1 position=00000000.411ec776.00000000 velocity=00000000.bf927efa.00000000'
+        'simulation step=2 ready=1 fetched=1'
+        'simulation stage=step2 position=00000000.411ac494.00000000 velocity=00000000.c01cf5c0.00000000'
+        'simulation step=3 ready=1 fetched=1'
+        'simulation stage=step3 position=00000000.4114f813.00000000 velocity=00000000.c0663538.00000000'
+        'simulation step=4 ready=1 fetched=1'
+        'simulation stage=step4 position=00000000.410bb9cd.00000000 velocity=00000000.c09cf5bc.00000000'
+        'simulation step=5 ready=1 fetched=1'
+        'simulation stage=step5 position=00000000.41015954.00000000 velocity=00000000.c0c19578.00000000'
+        'simulation step=6 ready=1 fetched=1'
+        'simulation stage=step6 position=00000000.40e5bf58.00000000 velocity=00000000.c0eb7098.00000000'
+        'simulation step=7 ready=1 fetched=1'
+        'simulation stage=step7 position=00000000.40c7d67b.00000000 velocity=00000000.c108082a.00000000'
+    )
     # Effector-and-coredump Task 2: the spring-and-damper effector differential.
     # NxScene's effector API and every NxSpringAndDamperEffector method over two
     # dynamic actors; the internal effector's slots 2 and 3 by index (each root's
@@ -5140,8 +5162,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # family open)
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1129  # the 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize
-               # + 79 effector + 374 core-dump; the oracle-differential assertions
+    '7' = 1146  # the 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize
+               # + 17 M1 simulation + 79 effector + 374 core-dump; the oracle-differential assertions
     '8' = 0
 }
 
@@ -5185,6 +5207,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsKernelFuzzTests',
     'NxPhysicsSceneRaycastTests',
     'NxPhysicsSceneVisualizeTests',
+    'NxPhysicsSimulationTests',
     'NxPhysicsSDKTests'
 )
 $NxRegisteredStaticProofTargets = @(
