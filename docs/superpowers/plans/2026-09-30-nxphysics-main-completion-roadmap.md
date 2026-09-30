@@ -20,13 +20,13 @@ The assessment used the current source and inventory on main, not the older `cod
 |---|---|---|
 | CMake Win32 Release DLL build | Fresh invocation of `cmake --build build --config Release --target NxPhysics` succeeds; existing build cache uses Visual Studio 18 2026 / Win32 | Preserve the working build; avoid build-system replacement |
 | Public Physics headers | Manifest verification passes for all 80 files | Keep the hash check mandatory |
-| Phase 5 | Fresh main run: 2,037/2,037 assertions, 13 staged-pair targets with zero stdout delta; exit 1 only at `CANDIDATE-MISSING family=vtables` | Close the actual vtable/lifecycle obligations before removing the marker |
+| Phase 5 | On baseline `b942f01`, 13 staged-pair targets matched (2,037/2,037 assertions), but the object-layout differential reported one candidate mismatch; the gate remains intentionally red pending object/vtable closure | Close the actual vtable/lifecycle obligations and mismatch before removing the marker |
 | Inventory validation | Pass; 6,338 function records, 5,138 data records, zero unexplained rows | This proves ledger consistency, not completion |
 | Executable code census | 2,787 code rows / 938,498 bytes: 749 discovered, 1,887 reconstructed, 145 dynamically gated, 6 statically reviewed | Separate missing implementation from verification debt |
 | Discovered code | 218,282 bytes across 749 unique IDs | This is an audit queue, not a claim that every byte is unwritten |
 | Data | All 5,138 records are classified | Prove candidate ownership and relocation for required tables/globals; classification alone is insufficient |
 | Work-unit map | Committed map has 143 records, 31 duplicate names and 2,023 multiply assigned IDs; regeneration in `build/main-planning-work-units.json` produces 109 units, 60 named and 49 gaps | Repair generated scheduling data before assigning work |
-| Scene simulation API | `NpScene.cpp` still contains empty `simulate`, `setGravity`, `startRun`, `finishRun`, and `runFor`, with fixed-false `checkResults`/`fetchResults`/`wait` | This is the immediate blocker to meaningful physics simulation tests |
+| Scene simulation API | `simulate`, timing/run APIs, and result/fence APIs remain open; `getGravity`/`setGravity` now match the oracle in the registered standalone fixture | The worker/event lifecycle and real stepper are the immediate blockers to useful physics simulation tests |
 | Final gate | Phase 8 has no registered test targets and coverage floor zero | A separate whole-DLL acceptance gate must be built |
 
 Build and Phase 5 logs from this assessment are local artifacts at `build/main-planning-build.log` and `build/main-planning-phase5.log`. Other phases and the full Python suite were not rerun for this planning assessment. Older branch reports have different coverage floors and must not be presented as current-main verification.
@@ -72,6 +72,7 @@ Exit: every remaining ID and unresolved dependency has one owner and a test rout
 Primary code: `Physics/src/NpScene.cpp`, `Physics/src/Scene.cpp`, their private headers, and the actual solver/scheduler units identified by M0. Proposed test target: `NxPhysicsSimulationTests`.
 
 - Reconstruct scene gravity, timing, writable/running state, lock and result semantics, and error paths from the oracle. Follow the oracle's relationship between old run APIs and newer simulate/fetch APIs rather than imposing a new engine design.
+- Gravity reads/writes have been implemented and pinned at bit level; keep this verified slice while completing the remaining methods.
 - Wire the recovered body state, forces, and joint implementations through the real stepping path. Complete missing solver and integration callees as a dependency cluster; do not create a substitute Euler integrator just to pass a falling-box test.
 - Build independent oracle and candidate processes from identical serialized fixtures. Compare per-step poses, velocities, forces, wake state, result status, callbacks, and allocation/lifetime events.
 - Start with an empty scene and one body under gravity/force, then static contact, two-body collision, kinematic interaction, sleep/wake, a small stack, and a jointed pair. Include variable step sizes and the oracle's FP control-word transitions.

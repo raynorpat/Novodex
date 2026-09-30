@@ -144,6 +144,8 @@ class NxSceneInternal
 	// Task 3b).
 	// phys_fn_000509 (0x00010200). The gravity at +0x520..+0x528.
 	void getGravity(NxVec3& gravity) const;
+	// phys_fn_000508 (0x000101d0), the internal gravity setter.
+	void setGravity(const NxVec3& gravity);
 	// phys_fn_000523 (0x00010400). The pair-flag count at +0x3c.
 	NxU32 getNbPairs() const;
 	// phys_fn_000525 (0x00010410), with its continuation phys_fn_000527. The

@@ -63,6 +63,17 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("scene creation failed");
 		}
 
+	NxVec3 observedGravity;
+	scene->getGravity(observedGravity);
+	printf("simulation gravity=initial %08x.%08x.%08x\n",
+		nxFloatBits(observedGravity.x), nxFloatBits(observedGravity.y), nxFloatBits(observedGravity.z));
+	const NxVec3 changedGravity(0.0f, -20.0f, 0.0f);
+	scene->setGravity(changedGravity);
+	scene->getGravity(observedGravity);
+	printf("simulation gravity=changed %08x.%08x.%08x\n",
+		nxFloatBits(observedGravity.x), nxFloatBits(observedGravity.y), nxFloatBits(observedGravity.z));
+	scene->setGravity(sceneDesc.gravity);
+
 	NxSphereShapeDesc sphere;
 	sphere.radius = 0.5f;
 	NxBodyDesc body;
