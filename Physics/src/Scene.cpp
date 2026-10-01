@@ -37,6 +37,9 @@
 #include "NxActor.h"
 #include "NpActor.h"
 #include "NpActorDynamicMath.h"
+#include "BodyStep.h"
+#include "core/JointSupport.h"
+#include "NxFPU.h"
 #include "BodyCreation.h"
 #include "NpScene.h"
 #include "NxJointDesc.h"
@@ -70,6 +73,30 @@ void nxContainerAddThunk(void* innerThis);
 #include <stdio.h>
 #include <string.h>
 #include <new>
+
+// phys_data_000980 (0x1012718c): the largest 000611 island-body count seen by
+// the joint-record solver. The original global remains zero until a live
+// island contributes bodies.
+static NxU32 nxSceneMaximumStepBodies = 0;
+
+static void nxSceneEnsureStepBodies(NxSceneInternal* scene, NxU32 count)
+	{
+	scene->at<NxU32>(0x5b0) = count;
+	if(scene->at<NxU32>(0x5b4) >= count)
+		return;
+	NxU8* oldRecords = scene->at<NxU8*>(0x5ac);
+	if(oldRecords)
+		nxFoundationSDKAllocator->free(oldRecords - sizeof(NxU32));
+	NxU8* allocation = static_cast<NxU8*>(nxFoundationSDKAllocator->malloc(
+		count * sizeof(JointSupportBody) + sizeof(NxU32), NX_MEMORY_PERSISTENT));
+	scene->at<NxU8*>(0x5ac) = allocation ? allocation + sizeof(NxU32) : 0;
+	scene->at<NxU32>(0x5b4) = count;
+	if(allocation)
+		{
+		*reinterpret_cast<NxU32*>(allocation) = count;
+		memset(allocation + sizeof(NxU32), 0, count * sizeof(JointSupportBody));
+		}
+	}
 
 // phys_fn_000517 (0x00010370, 24 B). The oracle body has a separate loop
 // extent at 0x10390; removing a record compacts the last live pair into this
@@ -3720,6 +3747,228 @@ void NxSceneInternal::getGravity(NxVec3& gravity) const
 	out[0] = at<NxU32>(0x520);
 	out[1] = at<NxU32>(0x524);
 	out[2] = at<NxU32>(0x528);
+	}
+
+// phys_fn_000507 (0x000101d0, 33 B): stores the three gravity words at
+// Scene+0x520, +0x524 and +0x528 in order.
+void NxSceneInternal::setGravity(const NxVec3& gravity)
+	{
+	const NxU32* in = reinterpret_cast<const NxU32*>(&gravity.x);
+	at<NxU32>(0x520) = in[0];
+	at<NxU32>(0x524) = in[1];
+	at<NxU32>(0x528) = in[2];
+	}
+
+// phys_fn_000540/000542 (0x000106f0/0x00010720): copy the timing triplet
+// between the caller's values and Scene+0x52c/+0x530/+0x534.
+void NxSceneInternal::setTiming(NxReal maxTimestep, NxU32 maxIter, NxU32 method)
+	{
+	at<NxReal>(0x52c) = maxTimestep;
+	at<NxU32>(0x530) = maxIter;
+	at<NxU32>(0x534) = method;
+	}
+
+void NxSceneInternal::getTiming(NxReal& maxTimestep, NxU32& maxIter, NxU32& method) const
+	{
+	maxTimestep = at<NxReal>(0x52c);
+	maxIter = at<NxU32>(0x530);
+	method = at<NxU32>(0x534);
+	}
+
+// phys_fn_000659 (0x00013c40): select fixed or variable stepping under the
+// oracle's x87 precision-64/round-toward-zero mode, run each requested body
+// substep, then restore the caller's control word. The scheduler fields are
+// Scene+0x52c..+0x558 as measured in the listing.
+void NxSceneInternal::simulateFrame()
+	{
+	unsigned short savedControlWord = 0;
+	__asm fnstcw savedControlWord
+	NxSetFPURoundingChop();
+	NxSetFPUPrecision64();
+
+	const NxReal elapsedTime = at<NxReal>(0x544);
+	NxReal timestep = 0.0f;
+	NxReal inverseTimestep = 0.0f;
+	NxU32 iterations = 0;
+	if(at<NxU32>(0x534) == 1)
+		{
+		timestep = elapsedTime;
+		inverseTimestep = 1.0f / timestep;
+		at<NxU32>(0x550) = 1;
+		at<NxReal>(0x554) = 1.0f;
+		at<NxU32>(0x558) = 0;
+		at<NxReal>(0x548) = timestep;
+		at<NxReal>(0x54c) = inverseTimestep;
+		at<NxReal>(0x53c) += timestep;
+		++at<NxU32>(0x540);
+		iterations = 1;
+		}
+	else
+		{
+		timestep = at<NxReal>(0x52c);
+		// Preserve the oracle's exact x87 order. It stores the rounded sum to
+		// +0x538 while retaining the extended value on the x87 stack, then
+		// computes/stores the rounded inverse and multiplies the extended
+		// reciprocal by that still-extended sum before FISTP.
+		NxReal* accumulatedAddress = &at<NxReal>(0x538);
+		NxReal* inverseAddress = &at<NxReal>(0x54c);
+		unsigned __int64 rawIterations = 0;
+		__asm
+			{
+			mov eax, accumulatedAddress
+			mov edx, inverseAddress
+			fld elapsedTime
+			fadd dword ptr [eax]
+			fst dword ptr [eax]
+			fld1
+			fdiv dword ptr [timestep]
+			fst dword ptr [edx]
+			fmul st(0), st(1)
+			fistp qword ptr [rawIterations]
+			fstp st(0)
+			}
+		inverseTimestep = *inverseAddress;
+		iterations = static_cast<NxU32>(rawIterations);
+		if(iterations > at<NxU32>(0x530))
+			iterations = at<NxU32>(0x530);
+		at<NxU32>(0x550) = iterations;
+		at<NxReal>(0x554) = iterations ? 1.0f / static_cast<NxReal>(iterations) : 0.0f;
+		at<NxU32>(0x558) = 0;
+		at<NxReal>(0x548) = timestep;
+		at<NxReal>(0x54c) = inverseTimestep;
+		}
+
+	for(NxU32 iteration = 0; iteration < iterations; ++iteration)
+		{
+		// phys_fn_000635 (0x127e0): refresh dirty joint islands, then reset
+		// every body's sleep-group links before collision pairs are rebuilt.
+		Joint** joints = at<Joint**>(0x58c);
+		Joint** jointsEnd = at<Joint**>(0x590);
+		for(Joint** item = joints; item && item != jointsEnd; ++item)
+			{
+				void* joint = *item;
+				void* body = *reinterpret_cast<void**>(static_cast<NxU8*>(joint) + 8);
+				if(!body)
+					body = *reinterpret_cast<void**>(static_cast<NxU8*>(joint) + 0xc);
+				if(body)
+					reinterpret_cast<Row000762Fixture*>(body)->row000762(joint);
+			}
+		void** bodies = at<void**>(0x56c);
+		void** bodiesEnd = at<void**>(0x570);
+		for(void** item = bodies; item && item != bodiesEnd; ++item)
+			reinterpret_cast<Row000764Fixture*>(*item)->row000764();
+
+		// 000655's active-island collection follows 000608. Keep only the
+		// self-parented, awake sleep-group roots in Scene+0x57c..+0x580.
+		void**& rootFirst = at<void**>(0x57c);
+		void**& rootLast = at<void**>(0x580);
+		void**& rootEnd = at<void**>(0x584);
+		for(void** item = bodies; item && item != bodiesEnd; ++item)
+			{
+				void* body = *item;
+				void* root = reinterpret_cast<Row000713Fixture*>(body)->row000713();
+				if(root != body || *reinterpret_cast<NxReal*>(
+					static_cast<NxU8*>(root) + 0x1f8) == 0.0f)
+					continue;
+				if(rootEnd <= rootLast)
+					{
+					const NxU32 count = rootFirst
+						? static_cast<NxU32>(rootLast - rootFirst) : 0;
+					const NxU32 capacity = count * 2 + 2;
+					const NxU32 held = rootFirst
+						? static_cast<NxU32>(rootEnd - rootFirst) : 0;
+					if(held < capacity)
+						{
+						void** grown = static_cast<void**>(nxFoundationSDKAllocator->malloc(
+							capacity * sizeof(void*), NX_MEMORY_PERSISTENT));
+						for(NxU32 i = 0; i < count; ++i)
+							grown[i] = rootFirst[i];
+						if(rootFirst)
+							nxFoundationSDKAllocator->free(rootFirst);
+						rootFirst = grown;
+						rootLast = grown + count;
+						rootEnd = grown + capacity;
+						}
+					}
+				*rootLast++ = body;
+			}
+
+		// phys_fn_000610 walks active island roots (+0x57c) and each root's
+		// sleep-group chain (+0x1fc); inactive bodies must not be integrated.
+		void** roots = at<void**>(0x57c);
+		void** rootsEnd = at<void**>(0x580);
+		for(void** root = roots; root && root != rootsEnd; ++root)
+			for(unsigned char* body = static_cast<unsigned char*>(*root); body;
+				body = *reinterpret_cast<unsigned char**>(body + 0x1fc))
+				reinterpret_cast<Row000726Fixture*>(body)->row000726(timestep, inverseTimestep);
+
+		// phys_fn_000611 (0x11260): build the per-island JointSupportBody view
+		// and run the island contact rows (000730 -> 000728/000897).
+		at<NxU32>(0x70c) |= 4u;
+		for(void** root = roots; root && root != rootsEnd; ++root)
+			{
+			unsigned char* island = static_cast<unsigned char*>(*root);
+			if(*reinterpret_cast<NxU32*>(island + 0x1f0) == 0)
+				continue;
+			const NxU32 bodyCount = *reinterpret_cast<NxU32*>(island + 0x1f4);
+			nxSceneEnsureStepBodies(this, bodyCount);
+			JointSupportBody* records = at<JointSupportBody*>(0x5ac);
+			for(unsigned char* body = island; body;
+				body = *reinterpret_cast<unsigned char**>(body + 0x1fc))
+				{
+				JointSupportBody* record = records++;
+				memcpy(&record->mUnknown000, body + 0x34, sizeof(NxVec3));
+				memcpy(&record->mUnknown00c, body + 0xc0, sizeof(NxReal));
+				memcpy(&record->mUnknown010, body + 0x40, sizeof(NxVec3));
+				record->mUnknown01c = body;
+				memcpy(record->mUnknown020, body + 0x164, sizeof(record->mUnknown020));
+				memcpy(&record->mUnknown05c, body + 0x110, sizeof(NxU32));
+				*reinterpret_cast<JointSupportBody**>(body + 0x204) = record;
+				if(nxSceneMaximumStepBodies < record->mUnknown05c)
+					nxSceneMaximumStepBodies = record->mUnknown05c;
+				}
+			reinterpret_cast<Row000730Fixture*>(island)->row000730(timestep, inverseTimestep);
+			}
+		at<NxU32>(0x70c) &= ~4u;
+
+		// 000636 performs post-step velocity bookkeeping and clears the active
+		// root range before 000615 advances each body's COM/quaternion.
+		for(void** item = bodies; item && item != bodiesEnd; ++item)
+			reinterpret_cast<Row000732Fixture*>(*item)->row000732(timestep, 0.0f);
+		rootLast = rootFirst;
+
+		// 000615 also sends the public-pose notification after each body update.
+		for(void** item = bodies; item && item != bodiesEnd; ++item)
+			{
+				unsigned char* body = static_cast<unsigned char*>(*item);
+				reinterpret_cast<Row000770Fixture*>(body)->row000770(timestep, 0.0f);
+				reinterpret_cast<Row000022Fixture*>(
+					*reinterpret_cast<void**>(body + 0x19c))->row000022(0);
+			}
+		++at<NxU32>(0x558);
+		at<NxReal>(0x538) -= timestep;
+		}
+	if(at<NxU32>(0x534) != 1 && timestep < at<NxReal>(0x538))
+		at<NxReal>(0x538) = timestep;
+	__asm fldcw savedControlWord
+	}
+
+// phys_fn_000619 (0x000114b0): refresh each body's gravity and preserve the
+// completed pose for the next fetch/simulation cycle.
+void NxSceneInternal::finishSimulation()
+	{
+	void** bodies = at<void**>(0x56c);
+	void** bodiesEnd = at<void**>(0x570);
+	for(void** item = bodies; item && item != bodiesEnd; ++item)
+		{
+			unsigned char* body = static_cast<unsigned char*>(*item);
+			reinterpret_cast<Row000710Fixture*>(body)->row000710(&at<NxVec3>(0x520));
+			if(*reinterpret_cast<NxReal*>(body + 0x84)
+				+ *reinterpret_cast<NxReal*>(body + 0x4c) != 0.0f)
+				for(NxU32 offset = 0x18; offset <= 0x4c; offset += 4)
+					*reinterpret_cast<NxU32*>(body + 0x50 + offset - 0x18)
+						= *reinterpret_cast<NxU32*>(body + offset);
+		}
 	}
 
 // phys_fn_000523 (0x00010400, 4 B, phase 7): the pair-flag count at +0x3c.

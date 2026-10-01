@@ -560,6 +560,9 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxSceneStepProbe tests/NxSceneStepProbe.cpp)
 	target_include_directories(NxSceneStepProbe PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxSceneStepProbe bcrypt)
+	add_executable(NxPhysicsSimulationTests tests/PhysicsSimulationTests.cpp)
+	target_include_directories(NxPhysicsSimulationTests PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsSimulationTests bcrypt)
 	# A measurement probe, not a gate: it prints what the pinned
 	# NxNormalToTangents returns so a joint row's localNormal can be attributed
 	# to a specific output rather than guessed at.
