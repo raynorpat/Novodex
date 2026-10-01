@@ -4501,10 +4501,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'release case=null_data returned=1 data_size=5a5a5a5a data=00000000'
     )
 
-    # The Phase 5 object-layout gate. RED on purpose until Tasks 2 and 3
-    # transcribe the object-model classes; its own exit code fails the phase
-    # until then, exactly the way the asset gate was born. Every line below is
-    # a fact about the shipped DLL alone:
+    # The Phase 5 object-layout gate exercises the implemented object/layout rows.
+    # Concrete candidate shape dispatch is checked by NxPhysicsShapeVtableTests,
+    # while actor behavior and ownership are covered by the staged-pair targets.
+    # Remaining entries are coverage facts captured from the shipped DLL:
     #
     #   * eight `vt` digests over the loaded oracle's slot words -- the two
     #     actor tables in full (87 and 88 slots; the dynamic table's window

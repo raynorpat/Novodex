@@ -1,5 +1,7 @@
+import json
 import sys
 import unittest
+from collections import Counter
 from pathlib import Path
 
 
@@ -99,6 +101,36 @@ class SourceSeedTest(unittest.TestCase):
         }
         seeds = work_units.source_seeds(ghidra, [row(7, 0x45f70)])
         self.assertEqual(seeds, {0x45f70: "ContactMeshHeightfield.cpp"})
+
+
+class CommittedMapTest(unittest.TestCase):
+    def test_committed_map_matches_regenerated_unique_code_ownership(self):
+        evidence = TOOLS_DIR.parent
+        inventory = json.loads((evidence / "inventory.json").read_text(encoding="utf-8"))
+        ghidra = json.loads((evidence / "oracle" / "ghidra" / "manifest.json").read_text(
+            encoding="utf-8"))
+        dependencies = (evidence / "oracle" / "dependencies.dot").read_text(
+            encoding="utf-8")
+        rows = work_units.load_rows(inventory)
+        generated = {
+            "schema_version": 1,
+            "units": work_units.build_units(
+                rows, work_units.source_seeds(ghidra, rows),
+                work_units.load_edges(dependencies)),
+        }
+        committed = json.loads((evidence / "work_units.json").read_text(encoding="utf-8"))
+
+        names = [unit["unit"] for unit in committed["units"]]
+        ownership = Counter(
+            row_id for unit in committed["units"]
+            for row_id in unit["inferred_extent"] + unit["ambiguous_rows"])
+        code_rows = {item["id"] for item in inventory["functions"] if item["kind"] == "code"}
+
+        self.assertEqual(len(names), len(set(names)), "unit names must be unique")
+        self.assertEqual(set(ownership), code_rows, "every code row must be assigned")
+        self.assertTrue(all(count == 1 for count in ownership.values()),
+                        "each code row must have exactly one owner")
+        self.assertEqual(committed, generated, "regenerate work_units.json after source changes")
 
 
 if __name__ == "__main__":
