@@ -914,6 +914,52 @@ int wmain(int argc, wchar_t** argv)
 
 	sdk->releaseScene(*scene);
 	sdk->release();
+	for(unsigned sdkCycle = 0; sdkCycle != 2; ++sdkCycle)
+		{
+		NxPhysicsSDK* const cycleSdk = createSDK(NX_PHYSICS_SDK_VERSION, 0, 0);
+		if(!cycleSdk)
+			return nxFail("repeated lifecycle SDK creation failed");
+		for(unsigned sceneCycle = 0; sceneCycle != 2; ++sceneCycle)
+			{
+			NxSceneDesc cycleSceneDesc;
+			cycleSceneDesc.setToDefault();
+			cycleSceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
+			NxScene* const cycleScene = cycleSdk->createScene(cycleSceneDesc);
+			if(!cycleScene)
+				return nxFail("repeated lifecycle scene creation failed");
+			cycleScene->setTiming(0.02f, 1, NX_TIMESTEP_FIXED);
+			NxSphereShapeDesc cycleSphere;
+			cycleSphere.radius = 0.25f;
+			NxBodyDesc cycleBody;
+			NxActorDesc cycleActorDesc;
+			cycleActorDesc.body = &cycleBody;
+			cycleActorDesc.density = 1.0f;
+			cycleActorDesc.globalPose.t = NxVec3((NxReal)(sdkCycle * 4 + sceneCycle), 1.0f, 0.0f);
+			cycleActorDesc.shapes.pushBack(&cycleSphere);
+			NxActor* const cycleActor = cycleScene->createActor(cycleActorDesc);
+			if(!cycleActor)
+				return nxFail("repeated lifecycle actor creation failed");
+			for(unsigned step = 0; step != 4; ++step)
+				{
+				cycleScene->simulate(0.02f);
+				const bool ready = cycleScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+				const bool fetched = cycleScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+				if(!ready || !fetched)
+					return nxFail("repeated lifecycle simulation result was not ready and fetched");
+				}
+			const NxVec3& position = cycleActor->getGlobalPosition();
+			NxVec3 velocity;
+			cycleActor->getLinearVelocity(velocity);
+			printf("simulation lifecycle state sdk=%u scene=%u p=%08x.%08x.%08x v=%08x.%08x.%08x\n",
+				sdkCycle, sceneCycle,
+				nxFloatBits(position.x), nxFloatBits(position.y), nxFloatBits(position.z),
+				nxFloatBits(velocity.x), nxFloatBits(velocity.y), nxFloatBits(velocity.z));
+			cycleSdk->releaseScene(*cycleScene);
+			printf("simulation lifecycle scene_released sdk=%u scene=%u\n", sdkCycle, sceneCycle);
+			}
+		cycleSdk->release();
+		printf("simulation lifecycle sdk_released cycle=%u\n", sdkCycle);
+		}
 	status = nxReportPairIdentity(pairDirectory);
 	FreeLibrary(physics);
 	return status;

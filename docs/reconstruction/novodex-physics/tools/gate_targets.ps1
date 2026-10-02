@@ -3060,6 +3060,16 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation break-joint steps=4 ready=1 fetched=1'
         'simulation soak steps=1000 ready=1 fetched=1'
         'simulation stage=soak1000 position=00000000.3ee66666.00000000 velocity=00000000.00000000.00000000'
+        'simulation lifecycle state sdk=0 scene=0 p=00000000.3f79f904.00000000 v=00000000.bf16ae7d.00000000'
+        'simulation lifecycle scene_released sdk=0 scene=0'
+        'simulation lifecycle state sdk=0 scene=1 p=3f800000.3f79f904.00000000 v=00000000.bf16ae7d.00000000'
+        'simulation lifecycle scene_released sdk=0 scene=1'
+        'simulation lifecycle sdk_released cycle=0'
+        'simulation lifecycle state sdk=1 scene=0 p=40800000.3f79f904.00000000 v=00000000.bf16ae7d.00000000'
+        'simulation lifecycle scene_released sdk=1 scene=0'
+        'simulation lifecycle state sdk=1 scene=1 p=40a00000.3f79f904.00000000 v=00000000.bf16ae7d.00000000'
+        'simulation lifecycle scene_released sdk=1 scene=1'
+        'simulation lifecycle sdk_released cycle=1'
         'simulation pair=created'
         'simulation stage=pair11 p0=bf587c8e.00000000.3ea0bde5 v0=4013df79.00000000.3fc213dd p1=3d3afc59.00000000.bc6489c3 v1=3fd84107.00000000.bf0427bd'
         'simulation pair steps=40 ready=1 fetched=1'
@@ -5250,7 +5260,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1227  # previous 1,218 plus 9 fixed-joint break-event observations
+    '7' = 1237  # previous 1,227 plus 10 repeated SDK/scene lifecycle observations
     '8' = 0
 }
 
