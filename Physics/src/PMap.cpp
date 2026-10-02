@@ -551,15 +551,13 @@ static void nxPMapNearestFace(const InternalTriangleMesh& mesh, const NxF32 poin
 	distanceSquaredOut = static_cast<NxF32>(bestDistanceSquared);
 	}
 
-// The oracle stores the product and the translated coordinate to float before
-// the next x87 operation. A single C++ expression can retain excess precision
-// in registers and move grid samples by one ULP, changing nearest-face ties.
+// The oracle keeps the multiply, subtract, and add in the x87 register stack,
+// then rounds the final coordinate when it stores the point. Volatile float
+// temporaries round too early and shift surface-adjacent ray origins.
 static __declspec(noinline) NxF32 nxPMapCellCoordinate(NxU32 index, NxF32 unitsPerCell,
 	NxF32 halfExtent, NxF32 centre)
 	{
-	volatile NxF32 scaled = static_cast<NxF32>(index) * unitsPerCell;
-	volatile NxF32 translated = scaled - halfExtent;
-	return translated + centre;
+	return (static_cast<NxF32>(index) * unitsPerCell - halfExtent) + centre;
 	}
 
 // ---------------------------------------------------------------------------
@@ -1194,15 +1192,40 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 						{
 						NxF32 direction[3];
 						for(unsigned axis = 0; axis < 3; ++axis)
-							direction[axis] = static_cast<NxF32>(rand()) * 3.051851e-05f - 0.5f;
-						const NxF32 lengthSquared = direction[0] * direction[0] +
-							direction[1] * direction[1] + direction[2] * direction[2];
-						if(lengthSquared != 0.0f)
 							{
-							const NxF32 inverseLength = 1.0f / static_cast<NxF32>(sqrt(
-								static_cast<double>(lengthSquared)));
-							for(unsigned axis = 0; axis < 3; ++axis)
-								direction[axis] *= inverseLength;
+							volatile NxF32 scaledRandom =
+								static_cast<NxF32>(rand()) * 3.051851e-05f;
+							direction[axis] = scaledRandom - 0.5f;
+							}
+						if(direction[0] != 0.0f || direction[1] != 0.0f || direction[2] != 0.0f)
+							{
+							const NxF32 one = 1.0f;
+							// FUN_1004e5d0 sums z², y², then x² in extended x87
+							// precision, and keeps 1/sqrt(sum) extended while storing
+							// each normalized component back to its float slot.
+							__asm
+								{
+								fld dword ptr [direction + 8]
+								fmul st(0), st(0)
+								fld dword ptr [direction + 4]
+								fmul st(0), st(0)
+								faddp st(1), st
+								fld dword ptr [direction]
+								fmul st(0), st(0)
+								faddp st(1), st
+								fsqrt
+								fdivr dword ptr [one]
+								fld dword ptr [direction]
+								fmul st(0), st(1)
+								fstp dword ptr [direction]
+								fld dword ptr [direction + 4]
+								fmul st(0), st(1)
+								fstp dword ptr [direction + 4]
+								fld dword ptr [direction + 8]
+								fmul st(0), st(1)
+								fstp dword ptr [direction + 8]
+								fstp st(0)
+								}
 							}
 						const Ray ray(Point(point[0], point[1], point[2]),
 							Point(direction[0], direction[1], direction[2]));
