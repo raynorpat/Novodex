@@ -1162,6 +1162,10 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 	rayCollider.SetTemporalCoherence(false);
 	rayCollider.SetCulling(false);
 	const Opcode::Model& model = pmapModel;
+	// The oracle's random-ray helper reads TriangleMesh+0x28, the cached mesh
+	// model. Its nearest-distance query uses the temporary model above, but the
+	// classifier does not.
+	const Opcode::Model& rayModel = *static_cast<const Opcode::Model*>(source->mModel);
 
 	for(NxU32 z = 0; z < mResolution; ++z)
 		for(NxU32 y = 0; y < mResolution; ++y)
@@ -1229,15 +1233,11 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 							}
 						const Ray ray(Point(point[0], point[1], point[2]),
 							Point(direction[0], direction[1], direction[2]));
-						if(rayCollider.Collide(ray, model) && (rayCollider.GetNbIntersections() & 1))
+						if(rayCollider.Collide(ray, rayModel) && (rayCollider.GetNbIntersections() & 1))
 							++insideVotes;
 						}
 					inside = insideVotes != 0;
 					}
-				// A zero nearest-triangle distance means the sample is exactly on
-				// the surface; the oracle's boundary path treats it as inside.
-				if(bestDistanceSquared == 0.0f)
-					inside = true;
 				classified[index] = static_cast<NxU8>(inside ? 2 : 1);
 				if(inside)
 					mGrid[index] = nearestFace;
