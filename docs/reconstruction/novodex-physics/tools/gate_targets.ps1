@@ -16,7 +16,7 @@ $NxPhaseTestTargets = [ordered] @{
     '4' = @()
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsBodyCreationTests')
     '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
-    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
+    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
     '8' = @()
 }
 
@@ -3080,6 +3080,17 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.80000000.80000000'
         'simulation generated-contact summary flags=0000000a calls=6 events=00000008 ready=1 fetched=1'
     )
+    'NxPhysicsTriggerSimulationTests' = @(
+        # A dynamic sphere crosses a public static trigger box under real motion.
+        # Pin enter, per-substep stay, and leave callbacks plus end-of-frame poses.
+        'trigger callback trigger=1 other=1 event=1'
+        'trigger callback trigger=1 other=1 event=4'
+        'trigger callback trigger=1 other=1 event=2'
+        'trigger step=0 pos=bfdddddc calls=0 last=0 ready=1 fetched=1'
+        'trigger step=2 pos=bf6eeee1 calls=2 last=4 ready=1 fetched=1'
+        'trigger step=7 pos=3f888891 calls=17 last=4 ready=1 fetched=1'
+        'trigger step=8 pos=3fbbbbc4 calls=20 last=2 ready=1 fetched=1'
+    )
     # Effector-and-coredump Task 2: the spring-and-damper effector differential.
     # NxScene's effector API and every NxSpringAndDamperEffector method over two
     # dynamic actors; the internal effector's slots 2 and 3 by index (each root's
@@ -5266,7 +5277,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1243  # previous 1,240 plus three generated-contact observations
+    '7' = 1250  # previous 1,240 plus three generated-contact observations and 7 trigger observations
     '8' = 0
 }
 
@@ -5311,6 +5322,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsSceneRaycastTests',
     'NxPhysicsSceneVisualizeTests',
     'NxPhysicsSimulationTests',
+    'NxPhysicsTriggerSimulationTests',
     'NxPhysicsSDKTests'
 )
 $NxRegisteredStaticProofTargets = @(

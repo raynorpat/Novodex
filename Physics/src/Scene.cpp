@@ -248,6 +248,7 @@ void nxShapeApplyOwnerUpdate(void* shape, unsigned flags);
 unsigned nxIdAllocNext(void* container);
 void nxU32VectorPushBack(void* vecHeader, NxU32 value);
 void nxSceneRemovePairs(void* container, void* shape);
+void nxSceneProcessTriggerPairs(NxSceneInternal* scene);
 void nxShapeFactoryInitializePlane(void* shape, const float* normal,
 	float distance);
 
@@ -3902,6 +3903,96 @@ void NxSceneInternal::getTiming(NxReal& maxTimestep, NxU32& maxIter, NxU32& meth
 	method = at<NxU32>(0x534);
 	}
 
+namespace
+	{
+struct NxSceneTriggerPairs
+	{
+	NxCollisionShape** begin;
+	NxCollisionShape** end;
+	NxCollisionShape** capacity;
+	};
+
+struct NxSceneTriggerEvent
+	{
+	NxShape* trigger;
+	NxShape* other;
+	NxU32 event;
+	};
+
+static void nxSceneAppendTriggerEvent(NxSceneInternal* scene, NxShape* trigger,
+	NxShape* other, NxU32 event)
+	{
+	NxU8* bytes = scene->bytes();
+	NxSceneTriggerEvent*& begin = *reinterpret_cast<NxSceneTriggerEvent**>(bytes + 0x5fc);
+	NxSceneTriggerEvent*& end = *reinterpret_cast<NxSceneTriggerEvent**>(bytes + 0x600);
+	NxSceneTriggerEvent*& capacity = *reinterpret_cast<NxSceneTriggerEvent**>(bytes + 0x604);
+	if(capacity <= end)
+		{
+		const NxU32 count = begin ? static_cast<NxU32>(end - begin) : 0;
+		const NxU32 held = begin ? static_cast<NxU32>(capacity - begin) : 0;
+		const NxU32 wanted = count * 2 + 2;
+		if(held < wanted)
+			{
+			NxSceneTriggerEvent* grown = static_cast<NxSceneTriggerEvent*>(
+				nxFoundationSDKAllocator->malloc(wanted * sizeof(*grown), NX_MEMORY_PERSISTENT));
+			for(NxU32 index = 0; index < count; ++index)
+				grown[index] = begin[index];
+			if(begin)
+				nxFoundationSDKAllocator->free(begin);
+			begin = grown;
+			end = grown + count;
+			capacity = grown + wanted;
+			}
+		}
+	end->trigger = trigger;
+	end->other = other;
+	end->event = event;
+	++end;
+	}
+
+static bool nxSceneTriggerPairContains(const NxSceneTriggerPairs* pairs,
+	const NxCollisionShape* first, const NxCollisionShape* second)
+	{
+	for(NxCollisionShape** item = pairs->begin; item && item != pairs->end; item += 2)
+		if(item[0] == first && item[1] == second)
+			return true;
+	return false;
+	}
+
+static void nxSceneReportTriggerTransition(NxSceneInternal* scene,
+	NxCollisionShape* first, NxCollisionShape* second, NxU32 event)
+	{
+	NxCollisionShape* trigger = (*(reinterpret_cast<NxU8*>(first) + 0xde) & 7) ? first : second;
+	NxCollisionShape* other = trigger == first ? second : first;
+	const NxU8 flags = *(reinterpret_cast<NxU8*>(trigger) + 0xde);
+	if((flags & event) != 0)
+		nxSceneAppendTriggerEvent(scene, reinterpret_cast<NxShape*>(trigger),
+			reinterpret_cast<NxShape*>(other), event);
+	}
+	}
+
+void nxSceneProcessTriggerPairs(NxSceneInternal* scene)
+	{
+	NxU8* const bytes = scene->bytes();
+	NxSceneTriggerPairs* const previous = *reinterpret_cast<NxSceneTriggerPairs**>(bytes + 0x5d4);
+	NxSceneTriggerPairs* const current = *reinterpret_cast<NxSceneTriggerPairs**>(bytes + 0x5d8);
+	if(!previous || !current)
+		return;
+	for(NxCollisionShape** item = current->begin; item && item != current->end; item += 2)
+		nxSceneReportTriggerTransition(scene, item[0], item[1],
+			nxSceneTriggerPairContains(previous, item[0], item[1]) ? 4u : 1u);
+	for(NxCollisionShape** item = previous->begin; item && item != previous->end; item += 2)
+		if(!nxSceneTriggerPairContains(current, item[0], item[1]))
+			nxSceneReportTriggerTransition(scene, item[0], item[1], 2u);
+
+	// phys_fn_002350 consumes the second pair list, then swaps the two embedded
+	// list headers and resets the new current list for the next substep.
+	NxSceneTriggerPairs* const oldPrevious = previous;
+	*reinterpret_cast<NxSceneTriggerPairs**>(bytes + 0x5d4) = current;
+	*reinterpret_cast<NxSceneTriggerPairs**>(bytes + 0x5d8) = oldPrevious;
+	oldPrevious->end = oldPrevious->begin;
+	}
+
 // phys_fn_000659 (0x00013c40): select fixed or variable stepping under the
 // oracle's x87 precision-64/round-toward-zero mode, run each requested body
 // substep, then restore the caller's control word. The scheduler fields are
@@ -4128,6 +4219,7 @@ void NxSceneInternal::simulateFrame()
 		// phys_fn_000655 calls 000917 once per completed substep. 000905 has
 		// stamped active contact-report records during the broadphase refresh;
 		// buffer their event flags and solved force totals for fetchResults.
+		nxSceneProcessTriggerPairs(this);
 		if(at<NxUserContactReport*>(0x6b4))
 			{
 			CpmPairHash* const reportHash = reinterpret_cast<CpmPairHash*>(mBytes + 0x2c);

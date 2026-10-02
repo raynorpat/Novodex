@@ -291,7 +291,9 @@ struct NxTriggerPairArray
 static void nxAppendTriggerPair(void* context, const NxCollisionShape* shape0,
 	const NxCollisionShape* shape1)
 	{
-	NxTriggerPairArray* array = (NxTriggerPairArray*) ((NxU8*) context + 0x5d8);
+	// Scene+0x5d8 points to the second embedded pair-list header at +0x5ec.
+	// phys_fn_002350 dereferences this pointer before reading begin/end/capacity.
+	NxTriggerPairArray* array = *(NxTriggerPairArray**) ((NxU8*) context + 0x5d8);
 	if(array->capacity <= array->end)
 		{
 		const NxU32 count = array->begin
