@@ -551,6 +551,17 @@ static void nxPMapNearestFace(const InternalTriangleMesh& mesh, const NxF32 poin
 	distanceSquaredOut = static_cast<NxF32>(bestDistanceSquared);
 	}
 
+// The oracle stores the product and the translated coordinate to float before
+// the next x87 operation. A single C++ expression can retain excess precision
+// in registers and move grid samples by one ULP, changing nearest-face ties.
+static __declspec(noinline) NxF32 nxPMapCellCoordinate(NxU32 index, NxF32 unitsPerCell,
+	NxF32 halfExtent, NxF32 centre)
+	{
+	volatile NxF32 scaled = static_cast<NxF32>(index) * unitsPerCell;
+	volatile NxF32 translated = scaled - halfExtent;
+	return translated + centre;
+	}
+
 // ---------------------------------------------------------------------------
 
 // phys_fn_002045 at 0x000505f0. The AABB is seeded with FLT_MAX/-FLT_MAX and
@@ -643,7 +654,11 @@ bool PenetrationMap::setup(NxU32 resolution, const NxF32* bounds)
 	for(int axis = 0; axis < 3; ++axis)
 		{
 		mCellsPerUnit[axis] = mLastIndex / mExtents[axis];
-		mUnitsPerCell[axis] = mInvLastIndex * mExtents[axis];
+		// The oracle recomputes 1/lastIndex for this product; it does not reuse
+		// the float-rounded mInvLastIndex stored at +0x68. Keeping the reciprocal
+		// in the x87 register through the multiply avoids a one-ULP grid-scale
+		// difference on resolutions such as 64.
+		mUnitsPerCell[axis] = (1.0f / mLastIndex) * mExtents[axis];
 		}
 
 	// `imul edi,ecx` at 0x000500b6 makes the third power out of the square, and
@@ -1156,9 +1171,9 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 				{
 				const NxU32 index = z * mResolutionSquared + y * mResolution + x;
 				NxF32 point[3] = {
-					(static_cast<NxF32>(x) * mUnitsPerCell[0] - mHalfExtents[0]) + mCentre[0],
-					(static_cast<NxF32>(y) * mUnitsPerCell[1] - mHalfExtents[1]) + mCentre[1],
-					(static_cast<NxF32>(z) * mUnitsPerCell[2] - mHalfExtents[2]) + mCentre[2]
+					nxPMapCellCoordinate(x, mUnitsPerCell[0], mHalfExtents[0], mCentre[0]),
+					nxPMapCellCoordinate(y, mUnitsPerCell[1], mHalfExtents[1], mCentre[1]),
+					nxPMapCellCoordinate(z, mUnitsPerCell[2], mHalfExtents[2], mCentre[2])
 					};
 				NxF32 bestDistanceSquared = 3.402823466e+38F;
 				double bestDistance = 3.402823466e+38F;
