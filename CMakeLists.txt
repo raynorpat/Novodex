@@ -734,6 +734,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# public API. Same shape as NxFoundationCustomArrayTests above.
 	add_executable(NxPhysicsInternalTests tests/PhysicsInternalTests.cpp
 		tests/PhysicsInternalGroupPairStubs.cpp
+		tests/PhysicsInternalSceneStubs.cpp
 		Physics/src/PhysicsInternal.cpp
 		Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
@@ -744,6 +745,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp Physics/src/Distance.cpp
+		Physics/src/opcode/NovodexBoxPruning.cpp
 		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp
 		${PHYSICS_CORE_SOURCES})
 	target_include_directories(NxPhysicsInternalTests PRIVATE
