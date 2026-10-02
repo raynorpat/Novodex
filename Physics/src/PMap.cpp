@@ -1241,10 +1241,15 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 							const NxU32 neighbor = static_cast<NxU32>(nz) * mResolutionSquared +
 								static_cast<NxU32>(ny) * mResolution + static_cast<NxU32>(nx);
 							if(classified[neighbor]) continue;
-							const NxF32 dx = (static_cast<NxF32>(nx) * mUnitsPerCell[0] - mHalfExtents[0] + mCentre[0]) - point[0];
-							const NxF32 dy = (static_cast<NxF32>(ny) * mUnitsPerCell[1] - mHalfExtents[1] + mCentre[1]) - point[1];
-							const NxF32 dz = (static_cast<NxF32>(nz) * mUnitsPerCell[2] - mHalfExtents[2] + mCentre[2]) - point[2];
-							if(dx * dx + dy * dy + dz * dz < bestDistanceSquared)
+							volatile NxF32 dx = nxPMapCellCoordinate(static_cast<NxU32>(nx),
+								mUnitsPerCell[0], mHalfExtents[0], mCentre[0]) - point[0];
+							volatile NxF32 dy = nxPMapCellCoordinate(static_cast<NxU32>(ny),
+								mUnitsPerCell[1], mHalfExtents[1], mCentre[1]) - point[1];
+							volatile NxF32 dz = nxPMapCellCoordinate(static_cast<NxU32>(nz),
+								mUnitsPerCell[2], mHalfExtents[2], mCentre[2]) - point[2];
+							// FUN_10050640 tests z, then y, then x; reversing the sum can
+							// change a propagated classification at the surface threshold.
+							if((dz * dz + dy * dy) + dx * dx < distance * distance)
 								classified[neighbor] = static_cast<NxU8>(inside ? 2 : 1);
 							}
 				}
