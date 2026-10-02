@@ -4125,6 +4125,14 @@ void NxSceneInternal::simulateFrame()
 				reinterpret_cast<Row000022Fixture*>(
 					*reinterpret_cast<void**>(body + 0x19c))->row000022(1);
 			}
+		// phys_fn_000655 calls 000917 once per completed substep. 000905 has
+		// stamped active contact-report records during the broadphase refresh;
+		// buffer their event flags and solved force totals for fetchResults.
+		if(at<NxUserContactReport*>(0x6b4))
+			{
+			CpmPairHash* const reportHash = reinterpret_cast<CpmPairHash*>(mBytes + 0x2c);
+			cpmBufferContactReports0917(this, reportHash);
+			}
 		++at<NxU32>(0x558);
 		at<NxReal>(0x538) -= timestep;
 		}

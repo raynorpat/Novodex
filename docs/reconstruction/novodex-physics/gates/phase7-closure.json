@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 4 functions are closed, 278 reconstructed functions remain unfalsified, 279 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 4 functions are closed, 284 reconstructed functions remain unfalsified, 273 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through NxPhysicsJointStagedPairTests, a REGISTERED Phase 7 STAGED-PAIR target. The mutation is to the row's CONTROL FLOW, because the harness drives identity poses and identity quaternions -- arithmetic mutations cancel on those inputs (evidence 12d) -- while a mutation that breaks a construction moves the `created=yes` line the harness prints (12h).",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
@@ -20,8 +20,8 @@
   },
   "counts": {
     "differential_falsified": 4,
-    "deferred_reconstructed_not_falsified": 278,
-    "deferred_not_reconstructed_in_phase": 279
+    "deferred_reconstructed_not_falsified": 284,
+    "deferred_not_reconstructed_in_phase": 273
   },
   "closed": [
     {
@@ -425,25 +425,28 @@
       "id": "phys_fn_000511",
       "rva": "0x00010230",
       "size": 97,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Implemented and exercised on the valid distinct single-shape actor-pair contact-report path; this differential does not mutation-falsify the row."
     },
     {
       "id": "phys_fn_000513",
       "rva": "0x000102a0",
       "size": 107,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Implemented and exercised on the valid distinct single-shape actor-pair contact-report path; this differential does not mutation-falsify the row."
     },
     {
       "id": "phys_fn_000515",
       "rva": "0x00010310",
       "size": 83,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Implemented and exercised on the valid distinct single-shape actor-pair contact-report path; this differential does not mutation-falsify the row."
     },
     {
       "id": "phys_fn_000517",
@@ -600,25 +603,28 @@
       "id": "phys_fn_000589",
       "rva": "0x00010d50",
       "size": 112,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Implemented and exercised on the valid distinct single-shape actor-pair contact-report path; this differential does not mutation-falsify the row."
     },
     {
       "id": "phys_fn_000590",
       "rva": "0x00010dc0",
       "size": 86,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Implemented and exercised on the valid distinct single-shape actor-pair contact-report path; this differential does not mutation-falsify the row."
     },
     {
       "id": "phys_fn_000592",
       "rva": "0x00010e20",
       "size": 85,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Implemented and exercised on the valid distinct single-shape actor-pair contact-report path; this differential does not mutation-falsify the row."
     },
     {
       "id": "phys_fn_000594",

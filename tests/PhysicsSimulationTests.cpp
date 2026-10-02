@@ -952,6 +952,45 @@ int wmain(int argc, wchar_t** argv)
 	printf("simulation pair steps=40 ready=1 fetched=1\n");
 	sdk->releaseScene(*pairScene);
 
+	// Exercise contact-report generation through the public pair-flag API and
+	// the real overlap/contact path (unlike the queue-injection dispatch fixture
+	// below). The first frame must report the new touch at fetchResults.
+	NxSceneDesc reportSceneDesc;
+	reportSceneDesc.setToDefault();
+	reportSceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
+	NxScene* reportScene = sdk->createScene(reportSceneDesc);
+	if(!reportScene)
+		return nxFail("contact-report scene creation failed");
+	NxPlaneShapeDesc reportPlane;
+	NxActorDesc reportGroundDesc;
+	reportGroundDesc.shapes.pushBack(&reportPlane);
+	NxActor* reportGround = reportScene->createActor(reportGroundDesc);
+	NxSphereShapeDesc reportSphere;
+	reportSphere.radius = 0.5f;
+	NxBodyDesc reportBody;
+	NxActorDesc reportDynamicDesc;
+	reportDynamicDesc.body = &reportBody;
+	reportDynamicDesc.density = 1.0f;
+	reportDynamicDesc.globalPose.t = NxVec3(0.0f, 0.5f, 0.0f);
+	reportDynamicDesc.shapes.pushBack(&reportSphere);
+	NxActor* reportDynamic = reportScene->createActor(reportDynamicDesc);
+	if(!reportGround || !reportDynamic)
+		return nxFail("contact-report actors creation failed");
+	NxSimulationContactReport generatedContactReport(reportGround, reportDynamic);
+	reportScene->setUserContactReport(&generatedContactReport);
+	reportScene->setActorPairFlags(*reportGround, *reportDynamic,
+		NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH);
+	const NxU32 reportFlags = reportScene->getActorPairFlags(*reportGround, *reportDynamic);
+	reportScene->simulate(0.125f);
+	const bool reportReady = reportScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+	const bool reportFetched = reportScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+	if(!reportReady || !reportFetched)
+		return nxFail("contact-report simulation result was not ready and fetched");
+	printf("simulation generated-contact summary flags=%08x calls=%u events=%08x ready=%u fetched=%u\n",
+		reportFlags, generatedContactReport.calls, generatedContactReport.events,
+		reportReady, reportFetched);
+	sdk->releaseScene(*reportScene);
+
 	// Seed the oracle-shaped fetch callback queues after a completed empty step.
 	// This isolates the 000640 callback dispatch/list-reset contract from pair
 	// generation, which is covered by the collision/contact reconstruction.

@@ -44,6 +44,7 @@
 #include "core/Joint.h"
 #include "core/SpringAndDamperEffector.h"
 #include "core/NpSpringAndDamperEffector.h"
+#include "ContactPairManager.h"
 
 // ---------------------------------------------------------------------------
 // Lock helpers and the remaining condition-object reproduction hole.
@@ -402,16 +403,17 @@ void NpScene::releaseController(NxController&)
 	
 	}
 
-// (unimplemented) setActorPairFlags
-void NpScene::setActorPairFlags(NxActor&, NxActor&, NxU32 nxContactPairFlag)
+// Store contact-report flags for the two actors' current root shapes.
+void NpScene::setActorPairFlags(NxActor& actor0, NxActor& actor1, NxU32 nxContactPairFlag)
 	{
-	
+	if(mScene)
+		cpmSetActorPairFlags(mScene, &actor0, &actor1, nxContactPairFlag);
 	}
 
-// (unimplemented) getActorPairFlags
-NxU32 NpScene::getActorPairFlags(NxActor&, NxActor&) const
+// Return the flags stored by setActorPairFlags.
+NxU32 NpScene::getActorPairFlags(NxActor& actor0, NxActor& actor1) const
 	{
-	return 0;
+	return mScene ? cpmGetActorPairFlags(mScene, &actor0, &actor1) : 0;
 	}
 
 // (unimplemented) setShapePairFlags

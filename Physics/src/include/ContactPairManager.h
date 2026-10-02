@@ -265,5 +265,7 @@ void __cdecl cpmFireContactReports0913(NxSceneInternal* scene, NxUserContactRepo
 void __stdcall cpmDeletePairNode0915(NxPairNode* node);
 // Rows 000917 + 000919 + 000921. cdecl.
 void __cdecl cpmBufferContactReports0917(NxSceneInternal* scene, CpmPairHash* hash);
+void cpmSetActorPairFlags(NxSceneInternal* scene, void* actor0, void* actor1, NxU32 flags);
+NxU32 cpmGetActorPairFlags(const NxSceneInternal* scene, const void* actor0, const void* actor1);
 
 #endif

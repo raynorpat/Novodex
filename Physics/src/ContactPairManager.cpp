@@ -390,6 +390,65 @@ static __declspec(noinline) void cpmOpen004157(CpmPairHash* hash, NxU32 key0, Nx
 // candidate has no such object.
 static CpmPairHash* const kCpmActorGroupPairFlags = 0;
 
+static bool cpmActorFirstShapeIds(const void* actor, NxU32& shapeId)
+	{
+	if(!actor) return false;
+	const NxU8* const body = *reinterpret_cast<NxU8* const*>(
+		static_cast<const NxU8*>(actor) + 0x14);
+	const NxU8* const shape = body ? *reinterpret_cast<NxU8* const*>(body + 0x10) : 0;
+	if(!shape) return false;
+	shapeId = cpmAt<NxU32>(shape, 0xd4);
+	return true;
+	}
+
+static void cpmClearActorPairFlags(NxSceneInternal* scene, NxU32 shape0, NxU32 shape1)
+	{
+	CpmPairHash* const hash = reinterpret_cast<CpmPairHash*>(scene->bytes() + 0x2c);
+	CpmPairHashEntry* const entry = cpmOpen004153(hash, shape0, shape1);
+	if(!entry) return;
+	if(!(entry->value & 1) && entry->value)
+		nxFoundationSDKAllocator->free(cpmPointer(entry->value));
+	cpmOpen004157(hash, shape0, shape1);
+	}
+
+void cpmSetActorPairFlags(NxSceneInternal* scene, void* actor0, void* actor1, NxU32 flags)
+	{
+	NxU32 shape0 = 0, shape1 = 0;
+	if(!scene || !cpmActorFirstShapeIds(actor0, shape0) ||
+		!cpmActorFirstShapeIds(actor1, shape1))
+		return;
+	CpmPairHash* const hash = reinterpret_cast<CpmPairHash*>(scene->bytes() + 0x2c);
+	cpmClearActorPairFlags(scene, shape0, shape1);
+	if(!flags) return;
+	const NxU32 storedFlags = (flags & 0x1fffffffu) | 0x20000000u;
+	void* value = reinterpret_cast<void*>(static_cast<size_t>(storedFlags));
+	if(!(flags & 1))
+		{
+		NxU32* record = static_cast<NxU32*>(nxFoundationSDKAllocator->malloc(0x14, NX_MEMORY_PERSISTENT));
+		if(!record) return;
+		record[0] = storedFlags;
+		record[1] = scene->at<NxU32>(0x540);
+		record[2] = record[3] = record[4] = 0;
+		value = record;
+		}
+	if(!cpmOpen004155(hash, shape0, shape1, value) && !(flags & 1))
+		nxFoundationSDKAllocator->free(value);
+	}
+
+NxU32 cpmGetActorPairFlags(const NxSceneInternal* scene, const void* actor0, const void* actor1)
+	{
+	NxU32 shape0 = 0, shape1 = 0;
+	if(!scene || !cpmActorFirstShapeIds(actor0, shape0) ||
+		!cpmActorFirstShapeIds(actor1, shape1))
+		return 0;
+	CpmPairHash* const hash = reinterpret_cast<CpmPairHash*>(
+		const_cast<NxU8*>(scene->bytes()) + 0x2c);
+	CpmPairHashEntry* const entry = cpmOpen004153(hash, shape0, shape1);
+	if(!entry) return 0;
+	if(entry->value & 1) return entry->value & 0x1fffffffu;
+	return *static_cast<NxU32*>(cpmPointer(entry->value)) & 0x1fffffffu;
+	}
+
 // ---------------------------------------------------------------------------
 // The rows
 // ---------------------------------------------------------------------------
@@ -2056,7 +2115,7 @@ static NX_INLINE NxU32 cpmReportEvents(NxSceneInternal* scene, NxU32* record, Nx
 			}
 		else
 			lookup = false;
-		if(lookup)
+		if(lookup && kCpmActorGroupPairFlags)
 			{
 			const CpmPairHashEntry* flags = cpmOpen004153(kCpmActorGroupPairFlags,
 				cpmAt<NxU16>(cpmPointer(record[3]), 0x1c),

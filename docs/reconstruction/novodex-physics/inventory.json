@@ -9434,13 +9434,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/188",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1400",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "evidence/contact-reporting.md: the standalone public actor-pair fixture matches the pinned oracle transcript exactly (six contact callbacks, start/touch flags, actor identity and force words; stdout_delta=0, stderr_exact=True).",
+      "notes": "Removes the prior per-shape-pair report record before applying actor-pair flags; verified on a valid, distinct, single-shape actor pair.",
+      "implementation": "Physics/src/ContactPairManager.cpp",
+      "implementation_symbol": "cpmClearActorPairFlags"
     },
     {
       "id": "phys_fn_000512",
@@ -9470,13 +9472,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/Scene.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/189",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1403",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "evidence/contact-reporting.md: the standalone public actor-pair fixture matches the pinned oracle transcript exactly (six contact callbacks, start/touch flags, actor identity and force words; stdout_delta=0, stderr_exact=True).",
+      "notes": "Reads notification flags from the shape-pair report record; verified through NxScene::getActorPairFlags for a single-shape pair.",
+      "implementation": "Physics/src/ContactPairManager.cpp",
+      "implementation_symbol": "cpmGetActorPairFlags"
     },
     {
       "id": "phys_fn_000514",
@@ -9506,13 +9510,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/Scene.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/190",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1408",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "evidence/contact-reporting.md: the standalone public actor-pair fixture matches the pinned oracle transcript exactly (six contact callbacks, start/touch flags, actor identity and force words; stdout_delta=0, stderr_exact=True).",
+      "notes": "Forwards the actor pair through its internal root shapes and returns the configured flags; same-actor error handling remains open.",
+      "implementation": "Physics/src/ContactPairManager.cpp",
+      "implementation_symbol": "cpmGetActorPairFlags"
     },
     {
       "id": "phys_fn_000516",
@@ -10854,13 +10860,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/225",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1498",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "evidence/contact-reporting.md: the standalone public actor-pair fixture matches the pinned oracle transcript exactly (six contact callbacks, start/touch flags, actor identity and force words; stdout_delta=0, stderr_exact=True).",
+      "notes": "Stores notification flags and the keep-while-stale marker in the per-shape-pair report record; valid distinct single-shape path is verified.",
+      "implementation": "Physics/src/ContactPairManager.cpp",
+      "implementation_symbol": "cpmSetActorPairFlags"
     },
     {
       "id": "phys_fn_000590",
@@ -10872,13 +10880,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/Scene.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/226",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1500",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "evidence/contact-reporting.md: the standalone public actor-pair fixture matches the pinned oracle transcript exactly (six contact callbacks, start/touch flags, actor identity and force words; stdout_delta=0, stderr_exact=True).",
+      "notes": "Implements the nonzero per-shape-pair flag update used by actor-pair flag forwarding; zero/ignore and invalid-input edges remain open.",
+      "implementation": "Physics/src/ContactPairManager.cpp",
+      "implementation_symbol": "cpmSetActorPairFlags"
     },
     {
       "id": "phys_fn_000591",
@@ -10908,13 +10918,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/Scene.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/227",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1504",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "evidence/contact-reporting.md: the standalone public actor-pair fixture matches the pinned oracle transcript exactly (six contact callbacks, start/touch flags, actor identity and force words; stdout_delta=0, stderr_exact=True).",
+      "notes": "Forwards actor-pair flags through internal root shapes; multi-shape expansion and same-actor error handling remain open.",
+      "implementation": "Physics/src/ContactPairManager.cpp",
+      "implementation_symbol": "cpmSetActorPairFlags"
     },
     {
       "id": "phys_fn_000593",
@@ -11783,8 +11795,8 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/251",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1703",
       "static_proof": null,
-      "dynamic_proof": "NxPhysicsSimulationTests public-pair differential (\build/fetch-callback-green2.log): exact oracle/candidate transcript (stdout_delta=0, stderr_exact=True). The fixture preloads one oracle-layout trigger record and one 0x2c contact report after a completed step, sets both public report callbacks, and verifies callback arguments plus end-pointer resets; it isolates the fetch dispatcher and does not claim event-generation coverage.",
-      "notes": "Oracle row phys_fn_000640 is transcribed as the fetch callback-list drain. The public-pair differential injects oracle-shaped trigger and contact records and verifies callback arguments, callback order around the joint-break drain, and list-end resets; the closure ledger still requires a mutation falsification before this row can be closed.",
+      "dynamic_proof": "evidence/contact-reporting.md: the synthetic queue fixture verifies fetch dispatch order and list reset; it remains isolated from trigger-event generation.",
+      "notes": "Reached by the public fetch callback differential. Contact report generation is separately exercised by evidence/contact-reporting.md; trigger generation remains open. This row remains unfalsified by a mutation.",
       "implementation": "Physics/src/Scene.cpp",
       "implementation_symbol": "NxSceneInternal::processSimulationCallbacks"
     },
@@ -16687,10 +16699,11 @@
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/374",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2893",
-      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1fbb0-0x1fd98) in scene-raycast Task 4 (contact-pair manager): thiscall(scene), `ret 4`; the cached body words, 000750 for jointed pairs, the pair's report record found or inserted in Scene+0x2c's hash, 000863 and the narrow-phase dispatch; the `scene+0x2c` null test at 0x1001fc70 (the address of a member, never null) is not written. Candidate NxPairNode::row000905 (Physics/src/ContactPairManager.cpp). Open callees: 002348, 004153 and 004155 are not in the candidate (no-op stand-ins cpmOpen002348/004153/004155; the find and insert return null, no stable-ID lines). Reachable only from the simulation step (000909 <- 001976 <- 000608 <- 000655); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
-      "implementation": "Physics/src/ContactPairManager.cpp"
+      "static_proof": "Oracle Capstone listing cross-checked against the current implementation and the contact-reporting public differential.",
+      "dynamic_proof": "evidence/contact-reporting.md: the standalone public actor-pair fixture matches the pinned oracle transcript exactly (six contact callbacks, start/touch flags, actor identity and force words; stdout_delta=0, stderr_exact=True).",
+      "notes": "Reached through real plane/sphere contact generation, per-substep report buffering, and fetchResults callback delivery. The recorded fixture covers one-shape actors and touch/start-touch events only.",
+      "implementation": "Physics/src/ContactPairManager.cpp",
+      "implementation_symbol": "NxPairNode::row000905"
     },
     {
       "id": "phys_fn_000906",
@@ -16909,10 +16922,11 @@
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/380",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2938",
-      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x20050-0x20075; 000919 = 0x20080-0x2025b, 000921 = 0x20260-0x203b2) in scene-raycast Task 4 (contact-pair manager): cdecl(scene, hash); the 000913 event logic, 0x2c-byte records appended to Scene+0x60c (grown 2n+2 on [0x101041bc], copied, the old block freed); /GS gives the candidate a stack cookie the image does not have (local array). Candidate cpmBufferContactReports0917 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Open callees: 004153 and 004157 are not in the candidate (no-op stand-ins), and the pair-flags hash .data 0x10123c28 is absent. Reachable only from the simulation step (000655); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
-      "implementation": "Physics/src/ContactPairManager.cpp"
+      "static_proof": "Oracle Capstone listing cross-checked against the current implementation and the contact-reporting public differential.",
+      "dynamic_proof": "evidence/contact-reporting.md: the standalone public actor-pair fixture matches the pinned oracle transcript exactly (six contact callbacks, start/touch flags, actor identity and force words; stdout_delta=0, stderr_exact=True).",
+      "notes": "Reached through real plane/sphere contact generation, per-substep report buffering, and fetchResults callback delivery. The recorded fixture covers one-shape actors and touch/start-touch events only.",
+      "implementation": "Physics/src/ContactPairManager.cpp",
+      "implementation_symbol": "cpmBufferContactReports0917"
     },
     {
       "id": "phys_fn_000918",
@@ -16946,10 +16960,11 @@
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/380",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2939",
-      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x20050-0x20075; 000919 = 0x20080-0x2025b, 000921 = 0x20260-0x203b2) in scene-raycast Task 4 (contact-pair manager): cdecl(scene, hash); the 000913 event logic, 0x2c-byte records appended to Scene+0x60c (grown 2n+2 on [0x101041bc], copied, the old block freed); /GS gives the candidate a stack cookie the image does not have (local array). Candidate cpmBufferContactReports0917 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Open callees: 004153 and 004157 are not in the candidate (no-op stand-ins), and the pair-flags hash .data 0x10123c28 is absent. Reachable only from the simulation step (000655); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00020050 Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
-      "implementation": "Physics/src/ContactPairManager.cpp"
+      "static_proof": "Oracle Capstone listing cross-checked against the current implementation and the contact-reporting public differential.",
+      "dynamic_proof": "evidence/contact-reporting.md: the standalone public actor-pair fixture matches the pinned oracle transcript exactly (six contact callbacks, start/touch flags, actor identity and force words; stdout_delta=0, stderr_exact=True).",
+      "notes": "Reached through real plane/sphere contact generation, per-substep report buffering, and fetchResults callback delivery. The recorded fixture covers one-shape actors and touch/start-touch events only.",
+      "implementation": "Physics/src/ContactPairManager.cpp",
+      "implementation_symbol": "cpmBufferContactReports0917"
     },
     {
       "id": "phys_fn_000920",
@@ -16983,10 +16998,11 @@
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/380",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2951",
-      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x20050-0x20075; 000919 = 0x20080-0x2025b, 000921 = 0x20260-0x203b2) in scene-raycast Task 4 (contact-pair manager): cdecl(scene, hash); the 000913 event logic, 0x2c-byte records appended to Scene+0x60c (grown 2n+2 on [0x101041bc], copied, the old block freed); /GS gives the candidate a stack cookie the image does not have (local array). Candidate cpmBufferContactReports0917 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Open callees: 004153 and 004157 are not in the candidate (no-op stand-ins), and the pair-flags hash .data 0x10123c28 is absent. Reachable only from the simulation step (000655); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00020050 Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
-      "implementation": "Physics/src/ContactPairManager.cpp"
+      "static_proof": "Oracle Capstone listing cross-checked against the current implementation and the contact-reporting public differential.",
+      "dynamic_proof": "evidence/contact-reporting.md: the standalone public actor-pair fixture matches the pinned oracle transcript exactly (six contact callbacks, start/touch flags, actor identity and force words; stdout_delta=0, stderr_exact=True).",
+      "notes": "Reached through real plane/sphere contact generation, per-substep report buffering, and fetchResults callback delivery. The recorded fixture covers one-shape actors and touch/start-touch events only.",
+      "implementation": "Physics/src/ContactPairManager.cpp",
+      "implementation_symbol": "cpmBufferContactReports0917"
     },
     {
       "id": "phys_fn_000922",
