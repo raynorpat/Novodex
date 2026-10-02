@@ -1080,6 +1080,21 @@ void Joint::row004103(void* bodyRecord)
 	scene->pushJointWithoutBodies(this);
 	}
 
+// phys_fn_004105 (0x00097ca0): remove the joint while its body pointers still
+// identify the active island, mark it broken, wake both bodies, then move it
+// to the Scene's no-body joint list.
+void Joint::handleBreakEvent()
+	{
+	NxSceneInternal* scene = static_cast<NxSceneInternal*>(mScene);
+	scene->removeJoint(this);
+	mFlags = (mFlags & ~8u) | 0x10u;
+	jointRaiseWakeCounter(mBody[0]);
+	jointRaiseWakeCounter(mBody[1]);
+	mBody[0] = 0;
+	mBody[1] = 0;
+	scene->pushJointWithoutBodies(this);
+	}
+
 // phys_fn_004109 (0x00097e60, 366 B)
 // The report is the imported error call alone (no instance test), code 1,
 // line 0x285. pointIsOnBody2 clears flag bit 1 and puts body 1 first in

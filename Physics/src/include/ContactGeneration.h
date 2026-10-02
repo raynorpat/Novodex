@@ -426,4 +426,8 @@ void nxContactConvexMeshEntry();		// 001851: cdecl, the matrix-A signature
 void __cdecl NxContactConvexMesh(const NxCollisionShape* convex, const NxCollisionShape* mesh,
 	NxContactSink* sink, void* context);	// 001853, a jmp to 001851
 
+// phys_fn_001895 (0x00048760), matrix A [PLANE][MESH].
+void __cdecl NxContactPlaneMesh(const NxCollisionShape* plane, const NxCollisionShape* mesh,
+	NxContactSink* sink, void* context);
+
 #endif

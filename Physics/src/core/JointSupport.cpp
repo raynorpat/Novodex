@@ -7,8 +7,13 @@
 \*----------------------------------------------------------------------------*/
 #include "core/JointSupport.h"
 #include "core/Joint.h"
+#include "ContactPairManager.h"
+#include "Scene.h"
 #include "PhysicsInternal.h"
 #include "X87Sqrt.h"
+
+#include <math.h>
+#include <string.h>
 
 // Rows phys_fn_004389/004391/004393 are not Joint or RevoluteJoint members: they
 // run on JointSupportRecord (see core/JointSupport.h and revolute-contract.md
@@ -46,6 +51,429 @@ NxVec3 gJointZeroVector(0.0f, 0.0f, 0.0f);
 static NX_INLINE double supportMul(NxReal a, NxReal b)
 	{
 	return (double)a * (double)b;
+	}
+
+static NX_INLINE NxReal supportFloat(NxU32 bits)
+	{
+	NxReal value;
+	memcpy(&value, &bits, sizeof(value));
+	return value;
+	}
+
+static NX_INLINE NxU32 supportBits(NxReal value)
+	{
+	NxU32 bits;
+	memcpy(&bits, &value, sizeof(bits));
+	return bits;
+	}
+
+// phys_fn_004403 (0x000affe0), normal contact row. The listing first forms
+// the relative support velocity, scales its target error by the effective
+// inverse mass prepared by 004391, accumulates/clamps the nonnegative normal
+// impulse, then applies only the change to each body's linear and angular
+// support velocities. The patch callback is the final-iteration normal-force
+// accumulator used by 000879's friction rows.
+static void supportSolveNormal004403(NxReal step, NxU32 pass, JointSupportRecord* record)
+	{
+	const double relativeVelocity = record->row004389();
+	const double lambda = ((double)record->mUnknown038 - relativeVelocity)
+		* record->mUnknown03c;
+	NxReal rawAccumulation = (NxReal)((double)supportFloat(record->mUnknown04c) + lambda);
+	record->mUnknown04c = supportBits(rawAccumulation);
+	const double bias = (double)record->mUnknown040 * record->mUnknown034;
+	NxReal applied = (NxReal)(lambda - bias);
+	const NxReal previous = supportFloat(record->mUnknown044);
+	const NxReal accumulated = (NxReal)((double)applied + previous);
+	if(accumulated <= 0.0f)
+		{
+		applied = -previous;
+		record->mUnknown044 = supportBits(0.0f);
+		}
+	else
+		record->mUnknown044 = supportBits(accumulated);
+
+	auto apply = [&](JointSupportBody* body, const NxVec3& angularJacobian, NxReal sign)
+		{
+		if(!body)
+			return;
+		// The oracle's first-body X path scales before projection, while its
+		// second-body path projects before scaling. Both stay in x87 precision
+		// through the velocity add; preserve the distinct operation order.
+		const NxReal signedApplied = sign < 0.0f ? -applied : applied;
+		const double scaledImpulse = (double)signedApplied * body->mUnknown00c;
+		double linearX;
+		if(sign < 0.0f)
+			{
+			const NxReal projectedX = (NxReal)((double)signedApplied
+				* record->mUnknown000.x);
+			linearX = (double)projectedX * body->mUnknown00c;
+			}
+		else
+			linearX = scaledImpulse * record->mUnknown000.x;
+		const NxReal linearY = (NxReal)(scaledImpulse * record->mUnknown000.y);
+		const NxReal linearZ = (NxReal)(scaledImpulse * record->mUnknown000.z);
+		body->mUnknown000.x = (NxReal)((double)body->mUnknown000.x
+			+ linearX);
+		body->mUnknown000.y = (NxReal)((double)body->mUnknown000.y + linearY);
+		body->mUnknown000.z = (NxReal)((double)body->mUnknown000.z + linearZ);
+
+		const NxReal torque[3] = {
+			(NxReal)((double)angularJacobian.x * applied * sign),
+			(NxReal)((double)angularJacobian.y * applied * sign),
+			(NxReal)((double)angularJacobian.z * applied * sign)
+		};
+		NxReal delta[3];
+		for(unsigned row = 0; row != 3; ++row)
+			delta[row] = (NxReal)(((double)body->mUnknown020[row * 3] * torque[0]
+				+ (double)body->mUnknown020[row * 3 + 1] * torque[1])
+				+ (double)body->mUnknown020[row * 3 + 2] * torque[2]);
+		body->mUnknown010.x = (NxReal)((double)body->mUnknown010.x + delta[0]);
+		body->mUnknown010.y = (NxReal)((double)body->mUnknown010.y + delta[1]);
+		body->mUnknown010.z = (NxReal)((double)body->mUnknown010.z + delta[2]);
+		};
+	apply(record->mBody[0], record->mUnknown018, 1.0f);
+	apply(record->mBody[1], record->mUnknown024, -1.0f);
+	if(pass == 1 && record->mUnknown030)
+		{
+		NxFrictionPatch* const patch = static_cast<NxFrictionPatch*>(record->mUnknown030);
+		patch->accumulate(supportFloat(record->mUnknown044), record, step);
+		}
+	}
+
+// phys_fn_004401 (0x000afcc0), the bounded tangent-friction row. The row
+// accumulates the unconstrained tangent impulse, keeps it within the static
+// limit, and once that limit is crossed clamps to the dynamic limit. +0x48
+// and +0x4c already include the patch's normal force (000879/000861).
+static void supportSolveFriction004401(NxReal step, NxU32 pass, JointSupportRecord* record)
+	{
+	if((record->mFlags & 0x20) && (record->mFlags & 0x1f) == 6)
+		{
+		void* const joint = record->mUnknown030;
+		void** const vtable = *reinterpret_cast<void***>(joint);
+		typedef void (__thiscall *JointFrictionCallback)(void*, NxReal);
+		reinterpret_cast<JointFrictionCallback>(vtable[0])(joint, step);
+		return;
+		}
+
+	const NxReal previous = supportFloat(record->mUnknown044);
+	const double candidate = -((record->row004389() + record->mUnknown034)
+		* record->mUnknown03c);
+	const NxReal candidateFloat = (NxReal)candidate;
+	const double accumulated = (double)candidateFloat + previous;
+	NxReal applied;
+	if(fabs(accumulated) > record->mUnknown048)
+		{
+		const double bounded = ((double)supportFloat(record->mUnknown04c) / fabs(accumulated)
+			* record->mUnknown048) * accumulated;
+		applied = (NxReal)(bounded - previous);
+		record->mUnknown044 = supportBits((NxReal)bounded);
+		record->mFlags |= 0x40;
+		}
+	else
+		{
+		applied = candidateFloat;
+		record->mUnknown044 = supportBits((NxReal)accumulated);
+		}
+
+	if(applied != 0.0f)
+		{
+		auto apply = [&](JointSupportBody* body, const NxVec3& angularJacobian, NxReal sign)
+			{
+			if(!body)
+				return;
+		const NxReal signedApplied = sign < 0.0f ? -applied : applied;
+		const double scaledImpulse = (double)signedApplied * body->mUnknown00c;
+		const NxReal linearY = (NxReal)(scaledImpulse * record->mUnknown000.y);
+		const NxReal linearZ = (NxReal)(scaledImpulse * record->mUnknown000.z);
+			body->mUnknown000.x = (NxReal)((double)body->mUnknown000.x
+				+ scaledImpulse * record->mUnknown000.x);
+			body->mUnknown000.y = (NxReal)((double)body->mUnknown000.y + linearY);
+			body->mUnknown000.z = (NxReal)((double)body->mUnknown000.z + linearZ);
+
+			const NxReal torque[3] = {
+				(NxReal)((double)angularJacobian.x * applied * sign),
+				(NxReal)((double)angularJacobian.y * applied * sign),
+				(NxReal)((double)angularJacobian.z * applied * sign)
+			};
+			NxReal delta[3];
+			for(unsigned row = 0; row != 3; ++row)
+				delta[row] = (NxReal)(((double)body->mUnknown020[row * 3] * torque[0]
+					+ (double)body->mUnknown020[row * 3 + 1] * torque[1])
+					+ (double)body->mUnknown020[row * 3 + 2] * torque[2]);
+			body->mUnknown010.x = (NxReal)((double)body->mUnknown010.x + delta[0]);
+			body->mUnknown010.y = (NxReal)((double)body->mUnknown010.y + delta[1]);
+			body->mUnknown010.z = (NxReal)((double)body->mUnknown010.z + delta[2]);
+			};
+		apply(record->mBody[0], record->mUnknown018, 1.0f);
+		apply(record->mBody[1], record->mUnknown024, -1.0f);
+		}
+
+	if(pass == 1 && record->mUnknown030)
+		static_cast<NxFrictionPatch*>(record->mUnknown030)->accumulate(
+		supportFloat(record->mUnknown044), record, step);
+	}
+
+// phys_fn_004395 (0x000af790), shared support-impulse application for the
+// bounded joint rows 004397/004399. Bit 10 selects a pure angular Jacobian;
+// otherwise both the linear direction and each body's angular Jacobian are
+// applied through its prepared inverse-mass/inertia record.
+
+// The oracle calls 004395 as a thiscall on the support record and passes both
+// the applied impulse and timestep on the stack (`ret 8`). Keep this as a
+// member on a pointer-bit fixture so MSVC emits that ABI even though the
+// helper is implemented outside JointSupportRecord's public internal layout.
+struct JointSupportApplyFixture
+	{
+	void applyImpulse004395(NxReal impulse, NxReal step);
+	};
+
+#if defined(_MSC_VER)
+__declspec(noinline)
+#endif
+void JointSupportApplyFixture::applyImpulse004395(NxReal impulse, NxReal step)
+	{
+	(void)step; // 004395 receives the timestep but never reads it.
+	JointSupportRecord* const record = reinterpret_cast<JointSupportRecord*>(this);
+	const bool angularOnly = (record->mFlags & 0x400) != 0;
+	auto apply = [&](JointSupportBody* body, const NxVec3& angularJacobian, NxReal sign)
+		{
+		if(!body || body->mUnknown00c == 0.0f)
+			return;
+		const NxReal signedImpulse = sign < 0.0f ? -impulse : impulse;
+		NxReal torque[3];
+		if(angularOnly)
+			{
+			torque[0] = (NxReal)((double)record->mUnknown000.x * signedImpulse);
+			torque[1] = (NxReal)((double)record->mUnknown000.y * signedImpulse);
+			torque[2] = (NxReal)((double)record->mUnknown000.z * signedImpulse);
+			}
+		else
+			{
+			const NxReal projected[3] = {
+				(NxReal)((double)signedImpulse * record->mUnknown000.x),
+				(NxReal)((double)signedImpulse * record->mUnknown000.y),
+				(NxReal)((double)signedImpulse * record->mUnknown000.z)
+			};
+			const NxReal scaledYZ[2] = {
+				(NxReal)((double)projected[1] * body->mUnknown00c),
+				(NxReal)((double)projected[2] * body->mUnknown00c)
+			};
+			body->mUnknown000.x = (NxReal)((double)body->mUnknown000.x
+				+ (double)projected[0] * body->mUnknown00c);
+			body->mUnknown000.y = (NxReal)((double)body->mUnknown000.y + scaledYZ[0]);
+			body->mUnknown000.z = (NxReal)((double)body->mUnknown000.z + scaledYZ[1]);
+			torque[0] = (NxReal)((double)angularJacobian.x * signedImpulse);
+			torque[1] = (NxReal)((double)angularJacobian.y * signedImpulse);
+			torque[2] = (NxReal)((double)angularJacobian.z * signedImpulse);
+			}
+		NxReal delta[3];
+		for(unsigned row = 0; row != 3; ++row)
+			// The oracle accumulates inertia rows from column 2 down to
+			// column 0 in x87 precision before storing each angular delta.
+			delta[row] = (NxReal)(((double)body->mUnknown020[row * 3 + 2] * torque[2]
+				+ (double)body->mUnknown020[row * 3 + 1] * torque[1])
+				+ (double)body->mUnknown020[row * 3] * torque[0]);
+		body->mUnknown010.x = (NxReal)((double)body->mUnknown010.x + delta[0]);
+		body->mUnknown010.y = (NxReal)((double)body->mUnknown010.y + delta[1]);
+		body->mUnknown010.z = (NxReal)((double)body->mUnknown010.z + delta[2]);
+		};
+	apply(record->mBody[0], record->mUnknown018, 1.0f);
+	apply(record->mBody[1], record->mUnknown024, -1.0f);
+	}
+
+// phys_fn_004399 (0x000afc10), bounded joint row selected for kind 5.
+// It has the contact-friction accumulator behavior but reports the final
+// accumulated impulse through the joint's slot 3 callback.
+static void supportSolveJoint004399(NxReal step, NxU32 pass, JointSupportRecord* record)
+	{
+	if(record->mFlags & 0x20)
+		{
+		if((record->mFlags & 0x1f) == 6)
+			{
+			void* const joint = record->mUnknown030;
+			void** const vtable = *reinterpret_cast<void***>(joint);
+			typedef void (__thiscall *JointRowCallback)(void*, NxReal);
+			reinterpret_cast<JointRowCallback>(vtable[0])(joint, step);
+			}
+		return;
+		}
+
+	const NxReal previous = supportFloat(record->mUnknown044);
+	const NxReal candidate = (NxReal)(-((record->row004389() + record->mUnknown034)
+		* record->mUnknown03c));
+	const NxReal accumulated = (NxReal)((double)candidate + previous);
+	NxReal applied;
+	if(fabs(accumulated) > record->mUnknown048)
+		{
+		const double bounded = ((double)supportFloat(record->mUnknown04c) / fabs(accumulated)
+			* record->mUnknown048) * accumulated;
+		applied = (NxReal)(bounded - previous);
+		record->mUnknown044 = supportBits((NxReal)bounded);
+		record->mFlags |= 0x40;
+		}
+	else
+		{
+		applied = candidate;
+		record->mUnknown044 = supportBits(accumulated);
+		}
+	if(applied != 0.0f)
+		reinterpret_cast<JointSupportApplyFixture*>(record)->applyImpulse004395(applied, step);
+	if(pass == 1 && record->mUnknown030)
+		{
+		void** const vtable = *reinterpret_cast<void***>(record->mUnknown030);
+		typedef void (__thiscall *JointAccumulatedForceCallback)(void*, NxReal, const NxVec3&, NxReal);
+		reinterpret_cast<JointAccumulatedForceCallback>(vtable[3])(record->mUnknown030,
+			supportFloat(record->mUnknown044), record->mUnknown000, step);
+		}
+	}
+
+// 004397 forms the force sum in one x87 lifetime: row004389's extended result
+// is subtracted from the target, multiplied by the effective mass, and added
+// to the prior force before the single float store. Keeping this in a helper
+// prevents MSVC from spilling the intermediate lambda to a 64-bit local.
+static NxReal supportJointForceSum004397(const JointSupportRecord* record, NxReal previousForce)
+	{
+	const double relativeVelocity = record->row004389();
+	return (NxReal)((((double)record->mUnknown038 - relativeVelocity)
+		* record->mUnknown03c) + previousForce);
+	}
+
+// Re-form lambda only on the unclamped path, where 004397 uses it at x87
+// precision rather than the float-rounded accumulated-force sum.
+static NxF64 supportJointLambda004397(const JointSupportRecord* record)
+	{
+	const double relativeVelocity = record->row004389();
+	return ((double)record->mUnknown038 - relativeVelocity) * record->mUnknown03c;
+	}
+
+// phys_fn_004397 (0x000afae0), bounded joint support row. Kind 6 custom
+// callbacks are routed through the joint's slot 0; ordinary rows form the
+// relative-velocity impulse, honor unilateral bit 9, and apply the delta.
+static void supportSolveJoint004397(NxReal step, NxU32 pass, JointSupportRecord* record)
+	{
+	const NxU32 kind = record->mFlags & 0x1f;
+	if(record->mFlags & 0x20)
+		{
+		if(kind == 6)
+			{
+			void* const joint = record->mUnknown030;
+			void** const vtable = *reinterpret_cast<void***>(joint);
+			typedef void (__thiscall *JointRowCallback)(void*, NxReal);
+			reinterpret_cast<JointRowCallback>(vtable[0])(joint, step);
+			}
+		return;
+		}
+
+	const NxReal previousForce = supportFloat(record->mUnknown04c);
+	NxReal force = supportJointForceSum004397(record, previousForce);
+	bool forceClamped = false;
+	if(force < -record->mUnknown048)
+		{
+		if(record->mUnknown030)
+			{
+			void** const vtable = *reinterpret_cast<void***>(record->mUnknown030);
+			typedef void (__thiscall *JointBreakCallback)(void*, const JointSupportRecord*, NxReal);
+			reinterpret_cast<JointBreakCallback>(vtable[2])(record->mUnknown030, record, force);
+			}
+		force = -record->mUnknown048;
+		forceClamped = true;
+		}
+	else if(force > record->mUnknown048)
+		{
+		if(record->mUnknown030)
+			{
+			void** const vtable = *reinterpret_cast<void***>(record->mUnknown030);
+			typedef void (__thiscall *JointBreakCallback)(void*, const JointSupportRecord*, NxReal);
+			reinterpret_cast<JointBreakCallback>(vtable[2])(record->mUnknown030, record, force);
+			}
+		force = record->mUnknown048;
+		forceClamped = true;
+		}
+	record->mUnknown04c = supportBits(force);
+	const double forceCorrection = (double)record->mUnknown040 * record->mUnknown034;
+	NxReal applied = forceClamped
+		? (NxReal)(((double)force - previousForce) - forceCorrection)
+		: (NxReal)(supportJointLambda004397(record) - forceCorrection);
+	const NxReal previous = supportFloat(record->mUnknown044);
+	NxReal accumulated = (NxReal)((double)applied + previous);
+	if(record->mFlags & 0x200)
+		{
+		if(accumulated < 0.0f)
+			{
+			applied = -previous;
+			accumulated = 0.0f;
+			}
+		}
+	record->mUnknown044 = supportBits(accumulated);
+	if(applied != 0.0f)
+		reinterpret_cast<JointSupportApplyFixture*>(record)->applyImpulse004395(applied, step);
+	if(pass == 1 && record->mUnknown030)
+		{
+		void** const vtable = *reinterpret_cast<void***>(record->mUnknown030);
+		typedef void (__thiscall *JointAccumulatedForceCallback)(void*, NxReal, const NxVec3&, NxReal);
+		reinterpret_cast<JointAccumulatedForceCallback>(vtable[3])(record->mUnknown030,
+			supportFloat(record->mUnknown044), record->mUnknown000, step);
+		}
+	}
+
+// phys_fn_004174/004176 (0x0009b120/0x0009b240), the per-island solver
+// wrapper. Dispatch table kinds 1/2/3/6 share 004397, kind 4 is 004401,
+// kind 5 is 004399, and kind 0 is 004403.
+void nxSolveJointSupportRecords(NxSceneInternal* scene, NxReal step, NxU32 iterations)
+	{
+	JointSupportRecord* const first = scene->at<JointSupportRecord*>(0x5b8);
+	const NxU32 count = scene->at<NxU32>(0x5bc);
+	for(NxU32 pass = iterations; pass != 0; --pass)
+		for(NxU32 i = 0; i != count; ++i)
+			{
+			JointSupportRecord* record = first + i;
+			const bool body0 = record->mBody[0] && pass <= record->mBody[0]->mUnknown05c;
+			const bool body1 = record->mBody[1] && pass <= record->mBody[1]->mUnknown05c;
+			if(!body0 && !body1)
+				continue;
+			const NxU32 kind = record->mFlags & 0x1f;
+			if(kind == 0)
+				supportSolveNormal004403(step, pass, record);
+			else if(kind == 1 || kind == 2 || kind == 3 || kind == 6)
+				supportSolveJoint004397(step, pass, record);
+			else if(kind == 4)
+				supportSolveFriction004401(step, pass, record);
+			else if(kind == 5)
+				supportSolveJoint004399(step, pass, record);
+			}
+
+	JointSupportBody* const bodies = scene->at<JointSupportBody*>(0x5ac);
+	const NxU32 bodyCount = scene->at<NxU32>(0x5b0);
+	for(NxU32 i = 0; i != bodyCount; ++i)
+		{
+		bodies[i].mUnknown044 = bodies[i].mUnknown000;
+		bodies[i].mUnknown050 = bodies[i].mUnknown010;
+		}
+
+	for(NxU32 i = 0; i != count; ++i)
+		{
+		JointSupportRecord* record = first + i;
+		const NxU32 kind = record->mFlags & 0x1f;
+		if(kind != 0 || record->mUnknown034 <= 0.0f)
+			record->mUnknown034 = 0.0f;
+		if(kind == 6)
+			{
+			// phys_fn_004176 clears the custom row's target and dispatches
+			// joint slot 1 before its final slot-0 solve (0x9b1fc-0x9b210).
+			void* const joint = record->mUnknown030;
+			void** const vtable = *reinterpret_cast<void***>(joint);
+			typedef void (__thiscall *JointResetCallback)(void*);
+			reinterpret_cast<JointResetCallback>(vtable[1])(joint);
+			}
+		if(kind == 0)
+			supportSolveNormal004403(step, 0xffffffffu, record);
+		else if(kind == 1 || kind == 2 || kind == 3 || kind == 6)
+			supportSolveJoint004397(step, 0xffffffffu, record);
+		else if(kind == 4)
+			supportSolveFriction004401(step, 0xffffffffu, record);
+		else if(kind == 5)
+			supportSolveJoint004399(step, 0xffffffffu, record);
+		}
 	}
 
 // phys_fn_004389 (0x000af2d0, 227 B)

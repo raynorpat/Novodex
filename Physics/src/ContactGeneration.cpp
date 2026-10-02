@@ -4928,7 +4928,10 @@ static bool nxCompoundAabbOverlap(const NxReal* a, const NxReal* b)
 static void nxContactCompoundPair(const NxCollisionShape* compound,
 	const NxCollisionShape* other, NxContactSink* sink, void* context)
 	{
-	const NxReal* compoundBounds = NxShapeWorldBounds(compound);
+	// A compound is a shape group, not a leaf shape. Its oracle vtable has no
+	// world-AABB slot, so test each child against the other leaf's bounds rather
+	// than asking the group to produce an aggregate box.
+	const NxReal* otherBounds = NxShapeWorldBounds(other);
 	const NxCollisionShape* const* child =
 		*(const NxCollisionShape* const* const*) ((const NxU8*) compound + 0xe0);
 	const NxCollisionShape* const* childEnd =
@@ -4944,7 +4947,7 @@ static void nxContactCompoundPair(const NxCollisionShape* compound,
 		if(candidate == other)
 			continue;
 		const NxReal* childBounds = NxShapeWorldBounds(candidate);
-		if(nxCompoundAabbOverlap(childBounds, compoundBounds) &&
+		if(nxCompoundAabbOverlap(childBounds, otherBounds) &&
 			NxFilterShapePair(groupMasks, pairMap, candidate, other))
 			NxDispatchShapePair(matrix, candidate, other, sink, context);
 		}

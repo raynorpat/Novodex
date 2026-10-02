@@ -971,6 +971,7 @@ bool NpScene::fetchResults(NxSimulationStatus status, bool block )
 	if(mScene)
 		{
 		nxNpSceneGuardEnter(mReadLock);
+		mScene->processJointBreakEvents();
 		mScene->finishSimulation();
 		nxNpSceneGuardLeave(mReadLock);
 		}

@@ -24,6 +24,7 @@ extern "C" void __fastcall NxScenePrunerOwnerDestroy(void* manager, void* owner)
 #include "NxBox.h"
 #include "NpActorDynamicMath.h"
 #include "NxGeometryHelpers.h"
+#include "TriangleMesh.h"
 
 #include <float.h>
 #include <math.h>
@@ -4261,6 +4262,37 @@ static void** nxPlaneShapeInternalVtable()
 	return table.slot;
 	}
 
+static void** nxMeshShapeInternalVtable()
+	{
+	struct Table
+		{
+	void* slot[18];
+	Table()
+			{
+		slot[0] = nxShapeMethodAddress(&MeshShape::nxMeshScalarDeletingDtor);
+		slot[1] = nxShapeMethodAddress(&ShapeBase::nxApplyDescriptor);
+		slot[2] = nxShapeMethodAddress(&ShapeBase::nxBaseSaveState);
+		slot[3] = nxShapeMethodAddress(&ShapeBase::nxSelf);
+		slot[4] = nxShapeMethodAddress(&MeshShape::nxMeshAccumulateMassCached);
+		slot[5] = nxShapeMethodAddress(&ShapeBase::nxSelf);
+		slot[6] = nxShapeMethodAddress(&ShapeBase::nxApplyOwnerUpdate);
+		slot[7] = nxShapeMethodAddress(&MeshShape::nxMeshSweepPrepared);
+		slot[8] = nxShapeMethodAddress(&MeshShape::nxMeshGetWords44);
+		slot[9] = nxShapeMethodAddress(&MeshShape::nxMeshWorldAABB);
+		slot[10] = nxShapeMethodAddress(&MeshShape::nxMeshTransformCenter);
+		slot[11] = nxShapeMethodAddress(&MeshShape::nxMeshGetWords5C);
+		slot[12] = nxShapeMethodAddress(&MeshShape::nxMeshLoadFromDesc);
+		slot[13] = nxShapeMethodAddress(&MeshShape::nxMeshSaveState);
+		slot[14] = nxShapeMethodAddress(&ShapeBase::nxSelf);
+		slot[15] = slot[14];
+		slot[16] = slot[14];
+		slot[17] = nxShapeMethodAddress(&MeshShape::nxMeshGetMeshWord);
+		}
+		};
+	static Table table;
+	return table.slot;
+	}
+
 // ShapeBase::ShapeBase's prunable, for Scene.cpp's raw shape allocations (the
 // factory does not run the shape constructors): the member built in place
 // (Prunable::Prunable at 0x000255df), the three owner hooks in the image's
@@ -4290,6 +4322,7 @@ void nxShapeFactoryInstallVtable(void* shape, unsigned type)
 		case 1: table = nxSphereShapeInternalVtable(); break;
 		case 2: table = nxBoxShapeInternalVtable(); break;
 		case 3: table = nxCapsuleShapeInternalVtable(); break;
+		case 4: table = nxMeshShapeInternalVtable(); break;
 		default: break;
 		}
 	if(table) *reinterpret_cast<void***>(shape) = table;
@@ -6713,8 +6746,13 @@ bool MeshShape::nxMeshAccumulateMassCached(MassFrame* destination,
 	{
 	if(mBase.mHalfwordDE & 7u)
 		return true;
-	const unsigned char* mesh = reinterpret_cast<const unsigned char*>(mWordE0);
-	const float cachedMass = *reinterpret_cast<const float*>(mesh + 0xb0);
+	TriangleMesh* triangleMesh = reinterpret_cast<TriangleMesh*>(mWordE0);
+	if(!triangleMesh)
+		return false;
+	if(triangleMesh->mCachedMass < 0.0f && !triangleMesh->computeMassProperties())
+		return false;
+	const unsigned char* mesh = reinterpret_cast<const unsigned char*>(triangleMesh);
+	const float cachedMass = triangleMesh->mCachedMass;
 	if(!(cachedMass >= 0.0f))
 		return false;
 	MassFrame local;

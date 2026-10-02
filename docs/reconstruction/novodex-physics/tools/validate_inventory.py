@@ -1922,7 +1922,6 @@ UNRESOLVED_SOURCE_PATHS = (
     # 'Physics/src/ContactConvexHeightfield.cpp' (2 rows: 001847, 001849) was here,
     # and was REMOVED when convex-mesh gap Task 2h created the file (001822..001842);
     # the check said so itself.
-    'Physics/src/ContactPlaneMesh.cpp',              # 2 rows
     'Physics/src/Controller.cpp',                    # 2 rows
     # 'Physics/src/ConvexHull.cpp' (1 row) was here, and was REMOVED when
     # convex-mesh gap Task 2e created the file (001461); the check said so

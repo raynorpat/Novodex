@@ -21,6 +21,7 @@ Runs at API time under 0x027f like IcePruner.cpp; default architecture.
 */
 
 #include "IcePruner.h"
+#include "Opcode.h"
 
 #include <string.h>
 #include <new>
@@ -38,7 +39,7 @@ static inline_ Pruner*& nxEnginePruner(void* engine, udword type)
 	return *reinterpret_cast<Pruner**>(static_cast<ubyte*>(engine) + 0x1c + type*4);
 }
 
-// The factory, types 0 and 2 (see the file comment). The base constructor's
+// The factory, types 0, 1 and 2 (see the file comment). The base constructor's
 // first-use creation of the process-wide object (0x000b4cc0) is Scene.cpp's
 // emulation, run where the constructor would run it: after the pruner's own
 // allocation.
@@ -51,6 +52,14 @@ Pruner* nxPruningEngineCreatePruner(udword type)
 			return null;
 		nxOpcodeEnsurePool();
 		return new(memory) StaticPruner;
+	}
+	if(type == 1)
+	{
+		void* memory = opcNovodeXAlloc(sizeof(BoundedDynamicPruner));
+		if(!memory)
+			return null;
+		nxOpcodeEnsurePool();
+		return new(memory) BoundedDynamicPruner;
 	}
 	if(type == 2)
 	{
@@ -81,6 +90,7 @@ __declspec(noinline) bool nxPruningEngineAddObject(void* engine, Prunable* objec
 {
 	if(object->mHandle != PRUNABLE_INVALID_HANDLE || object->mPruningType >= 4)
 		return false;
+	nxSceneEngineReleaseCoherent(engine);
 
 	if(!nxEnginePruner(engine, object->mPruningType))
 		nxEnginePruner(engine, object->mPruningType) = nxPruningEngineCreatePruner(object->mPruningType);
@@ -107,6 +117,7 @@ __declspec(noinline) bool nxPruningEngineRemoveObject(void* engine, Prunable* ob
 	Pruner* pruner = nxEnginePruner(engine, object->mPruningType);
 	if(!pruner)
 		return false;
+	nxSceneEngineReleaseCoherent(engine);
 	return pruner->RemoveObject(object);
 }
 
@@ -158,11 +169,23 @@ bool nxSceneEngineRemoveShape(void* engine, void* shape)
 
 void nxSceneEngineDestroyPruners(void* engine)
 {
+	nxSceneEngineReleaseCoherent(engine);
 	for(udword type = 0; type < 4; type++)
 	{
 		nxPruningEngineDestroyPruner(nxEnginePruner(engine, type));
 		nxEnginePruner(engine, type) = null;
 	}
+}
+
+void nxSceneEngineReleaseCoherent(void* engine)
+{
+	void*& cache = *reinterpret_cast<void**>(static_cast<ubyte*>(engine) + 0x2c);
+	if(!cache)
+		return;
+	Opcode::SweepAndPrune* coherent = static_cast<Opcode::SweepAndPrune*>(cache);
+	coherent->~SweepAndPrune();
+	opcNovodeXFree(coherent);
+	cache = null;
 }
 
 // Row 000503's last call (0x0001017e): the engine's four-pointer loop

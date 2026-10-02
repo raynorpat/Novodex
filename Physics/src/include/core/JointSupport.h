@@ -106,6 +106,12 @@ struct JointSupportRecord
 	void				row004393(NxReal arg0, NxReal arg1);
 	};
 
+class NxSceneInternal;
+
+// The 000611/004176 per-island support pass. This is separate from record
+// creation: the contact and joint rows append records before this pass runs.
+void nxSolveJointSupportRecords(NxSceneInternal* scene, NxReal step, NxU32 iterations);
+
 static_assert(offsetof(JointSupportRecord, mFlags) == 0x0c, "flags at +0x0c");
 static_assert(offsetof(JointSupportRecord, mBody) == 0x10, "body pointers at +0x10");
 static_assert(offsetof(JointSupportRecord, mUnknown018) == 0x18, "vector at +0x18");

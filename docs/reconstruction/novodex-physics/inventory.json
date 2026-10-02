@@ -4501,8 +4501,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/883",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/NpPhysicsSDK.cpp"
+      "notes": ""
     },
     {
       "id": "phys_fn_000243",
@@ -4538,8 +4537,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/893",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/NpPhysicsSDK.cpp"
+      "notes": ""
     },
     {
       "id": "phys_fn_000245",
@@ -10636,13 +10634,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/220",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1477",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Transcribed from the Ghidra decompile at oracle/ghidra/manifest.json#/functions/220 and checked against the Capstone listing: repeatedly dispatch Scene+0x620 head slot 0, advance to the event +4 link, free through the Foundation allocator slot +0x14, then clear the list. Implemented as NxSceneInternal::processJointBreakEvents; invoked from NpScene::fetchResults in oracle call order.",
+      "dynamic_proof": "Candidate break-event trace and staged differential recorded in evidence/joint-break-events.md: processJointBreakEvents and row004113/handleBreakEvent execute on the low-force fixed-joint fixture; the fixture is byte-identical to the oracle and all eight Phase 7 staged targets pass (stdout_delta=0, stderr_exact=True).",
+      "notes": "Reconstructs phys_fn_000577. The tested path is the default no-notify branch; the NxUserNotify handled/release path is tracked separately."
     },
     {
       "id": "phys_fn_000578",
@@ -76017,13 +76015,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1544",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13585",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Transcribed from the Ghidra decompile at oracle/ghidra/manifest.json#/functions/1544: save Scene, removeJoint while body pointers are live, set (mFlags & ~8) | 0x10, raise both wake counters, clear both body pointers, and push the joint onto Scene+0x5a0. Implemented as Joint::handleBreakEvent.",
+      "dynamic_proof": "Candidate breakpoint on Joint::handleBreakEvent hits once on the staged low-force fixed-joint fixture; the four-step body trajectory matches the oracle exactly. See evidence/joint-break-events.md and the Phase 7 registered differential.",
+      "notes": "The remove-before-clear order is required to dissolve the joint from the active island correctly; row004103 has a different order because it is the body-removal path."
     },
     {
       "id": "phys_fn_004106",
@@ -76164,13 +76162,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1547",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13615",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Transcribed from the Ghidra decompile at oracle/ghidra/manifest.json#/functions/1547: if Scene+0x6ac is null, call 004105; otherwise set API re-entry, invoke NxUserNotify::onJointBreak(breakForce, publicJoint), clear re-entry, release the joint when the callback returns true, or call 004105 when it returns false.",
+      "dynamic_proof": "Candidate breakpoint on JointBreakEvent::row004113 hits once in the default no-notify break fixture; the no-notify branch reaches Joint::handleBreakEvent and the resulting four-step transcript is exact. See evidence/joint-break-events.md. Callback-return outcomes need a dedicated fixture.",
+      "notes": "Event slot implementation is defined in Scene.cpp beside the Scene queue dispatcher so the shared API re-entry guard remains accessible."
     },
     {
       "id": "phys_fn_004114",
@@ -81439,13 +81437,15 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2127",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15084",
-      "static_proof": null,
+      "static_proof": "The Capstone listing for 0x000afc10 is transcribed into supportSolveJoint004399 and wired into both iterative and final-record dispatch for kind 5. The bit-5/kind-6 callback uses joint slot 0; the bounded impulse path uses the shared 004395 application; pass 1 reports the accumulated impulse, axis and timestep through joint slot 3. Product simulation fixtures do not currently generate kind 5, so dynamic coverage remains open.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Transcribed from Capstone; kind-5 product-path fixture remains open.",
+      "implementation": "Physics/src/core/JointSupport.cpp",
+      "implementation_symbol": "supportSolveJoint004399"
     },
     {
       "id": "phys_fn_004400",

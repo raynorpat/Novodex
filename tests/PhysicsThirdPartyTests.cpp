@@ -1829,6 +1829,9 @@ static void nxDrivePrunablePruner(const NxOracleRows& o, bool selfOnly)
 						for(int b = 0; b < 8 * 6; ++b)
 							gCandidateTape.pushFloat(((float*) candidateBoxes)[b]);
 						}
+		// The pool borrows candidateBoxes above. Detach that stack buffer before
+		// the Pruner base destructor frees buffers it owns.
+		candidatePruner->mPool.mWorldBoxes = 0;
 		candidatePruner->~NxCandidatePruner();
 		gPrunableOwnerWorldAABB = 0;
 		}

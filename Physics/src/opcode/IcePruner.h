@@ -8,8 +8,9 @@
 
 /*
 NovodeX's scene-query pruners: the static pruner (type 0, 0x90 bytes, table
-.rdata:0x0011b9c8), the dynamic pruner (type 2, 0x3c bytes, table
-.rdata:0x0011bbc0) and the Scene's pruning engine that owns one pruner per
+.rdata:0x0011b9c8), the bounded dynamic pruner (type 1, 0x40 bytes, table
+.rdata:0x0011b9f0), the unbounded dynamic pruner (type 2, 0x3c bytes, table
+.rdata:0x0011bbc0), and the Scene's pruning engine that owns one pruner per
 type (the object at Scene+0x624; the pruners are its words +0x1c..+0x28).
 
 Like IcePrunable.h this is NovodeX's own code, not OPCODE: neither pinned
@@ -64,6 +65,21 @@ class DynamicPruner : public Pruner
 									bool first_contact, udword mask);
 };
 
+// phys_fn_004852 creates the bounded dynamic pruner for type 1 (0x40 bytes).
+// Its tree-backed query overrides are still reconstructed separately; scene
+// registration uses the inherited pool operations while this tree is empty.
+class BoundedDynamicPruner : public DynamicPruner
+{
+	public:
+								BoundedDynamicPruner();
+								~BoundedDynamicPruner();
+
+		void*					mTree;				//!< +0x3c
+};
+
+static_assert(sizeof(BoundedDynamicPruner) == 0x40,
+	"bounded dynamic pruner type 1 is a 0x40-byte object");
+
 // The engine's two entry points the Scene's shape registration uses, and its
 // pruner factory for the two pruning types shapes use.
 bool		nxPruningEngineAddObject(void* engine, Prunable* object);
@@ -71,6 +87,9 @@ bool		nxPruningEngineRemoveObject(void* engine, Prunable* object);
 Pruner*		nxPruningEngineCreatePruner(udword type);
 // Destroys a pruner the engine created (its destructor, then its storage).
 void		nxPruningEngineDestroyPruner(Pruner* pruner);
+// Release the scene-owned coherent broadphase cache before pool mutation or
+// engine destruction.
+void		nxSceneEngineReleaseCoherent(void* engine);
 
 // Ray and segment against an AABB, the separating-axis tests the dynamic
 // pruner's raycast uses.

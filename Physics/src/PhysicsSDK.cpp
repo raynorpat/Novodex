@@ -11,6 +11,8 @@
 #include "NpPhysicsSDK.h"
 #include "NxDebugRenderable.h"
 #include "NxUserOutputStream.h"
+#include "TriangleMesh.h"
+#include "NxTriangleMeshDesc.h"
 
 #include <stddef.h>
 #include <new>
@@ -195,6 +197,15 @@ void nxReleaseSdkPointerBindings();
 PhysicsSDK::~PhysicsSDK()
 	{
 	NX_DELETE_SINGLE(mNp);
+	for(NxU32 i = 0; i < mTriangleMeshes.size(); ++i)
+		{
+		TriangleMesh* mesh = mTriangleMeshes[i];
+		if(mesh)
+			{
+			mesh->~TriangleMesh();
+			nxFoundationSDKAllocator->free(mesh);
+			}
+		}
 	nxReleaseSdkPointerBindings();
 
 	// The global name map at .data 0x00123c0c is released above, and the
@@ -212,6 +223,35 @@ PhysicsSDK::~PhysicsSDK()
 		}
 	NX_DELETE_SINGLE(gShapePairFunctionTable);
 	nxOpcodeReleasePool();
+	}
+
+TriangleMesh* PhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc& desc)
+	{
+	if(!nxFoundationSDKAllocator || !desc.isValid()) return 0;
+	void* memory = nxFoundationSDKAllocator->malloc(sizeof(TriangleMesh), NX_MEMORY_PERSISTENT);
+	if(!memory) return 0;
+	TriangleMesh* mesh = new(memory) TriangleMesh();
+	if(!mesh->publicHandle() || !mesh->loadFromDesc(desc))
+		{
+		mesh->~TriangleMesh();
+		nxFoundationSDKAllocator->free(memory);
+		return 0;
+		}
+	mTriangleMeshes.pushBack(mesh);
+	return mesh;
+	}
+
+void PhysicsSDK::releaseTriangleMesh(TriangleMesh* mesh)
+	{
+	if(!mesh) return;
+	for(NxU32 i = 0; i < mTriangleMeshes.size(); ++i)
+		if(mTriangleMeshes[i] == mesh)
+			{
+			mTriangleMeshes.erase(mTriangleMeshes.begin() + i, mTriangleMeshes.begin() + i + 1);
+			mesh->~TriangleMesh();
+			nxFoundationSDKAllocator->free(mesh);
+			return;
+			}
 	}
 
 void PhysicsSDK::release()

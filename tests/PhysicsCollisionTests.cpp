@@ -1079,6 +1079,13 @@ static void __cdecl nxProbeContact(const void*, const void*, void*, void*)
 	++nxProbeCalls;
 	}
 
+static unsigned nxCompoundOwnerAabbRefreshes = 0;
+
+static void __cdecl nxCountCompoundOwnerAabbRefresh(void*, AABB*)
+	{
+	++nxCompoundOwnerAabbRefreshes;
+	}
+
 // One side's world for the contact-generation differential: two shapes, the
 // borrowed Phase 5 graph each needs before the emitter will write, a sink and a
 // stream. Two are built, one per side, so neither can observe the other's
@@ -3592,9 +3599,9 @@ int wmain(int argc, wchar_t** argv)
 	}
 	printf("matrix contact_filter checks=7 wrong=%u\n", filterWrong);
 
-	// The matrix-A compound wrapper updates no geometry itself: it uses the
-	// compound and child Prunable world boxes, rejects a disjoint child, applies
-	// the scene filter, then redispatches the intersecting child pair.
+	// The matrix-A compound wrapper walks child boxes and redispatches matching
+	// pairs. A shape group has no slot 9 (world AABB), so treating the group as
+	// a leaf and refreshing its own bounds is an invalid dispatch.
 	unsigned oracleCompoundDispatchCalls = 0;
 	unsigned candidateCompoundDispatchCalls = 0;
 	unsigned compoundDispatchWrong = 0;
@@ -3629,6 +3636,9 @@ int wmain(int argc, wchar_t** argv)
 	NxCollisionShape* child3 = (NxCollisionShape*) childStorage1[1];
 	compound->type = 5;
 	compound1->type = 5;
+	void* groupVtable[15] = {};
+	*reinterpret_cast<void***>(compoundStorage) = groupVtable;
+	*reinterpret_cast<void***>(compoundStorage1) = groupVtable;
 	other->type = 1;
 	child0->type = 0;
 	child1->type = 0;
@@ -3664,9 +3674,17 @@ int wmain(int argc, wchar_t** argv)
 	nxProbeCalls = 0;
 	oracleCompound(other, compound, 0, scene);
 	oracleCompoundDispatchCalls = nxProbeCalls;
+	void (*savedOwnerWorldAabb)(void*, AABB*) = gPrunableOwnerWorldAABB;
+	gPrunableOwnerWorldAABB = nxCountCompoundOwnerAabbRefresh;
+	nxCompoundOwnerAabbRefreshes = 0;
+	*(NxU32*) (compoundStorage + 0xac) = 0;
 	nxProbeCalls = 0;
 	NxContactCompoundShape(other, compound, 0, scene);
 	candidateCompoundDispatchCalls = nxProbeCalls;
+	const unsigned groupWorldAabbRefreshes = nxCompoundOwnerAabbRefreshes;
+	gPrunableOwnerWorldAABB = savedOwnerWorldAabb;
+	if(groupWorldAabbRefreshes != 0)
+		compoundDispatchWrong = 1;
 	if(oracleCompoundDispatchCalls != 1 || candidateCompoundDispatchCalls != 1 ||
 		oracleCompoundDispatchCalls != candidateCompoundDispatchCalls)
 		compoundDispatchWrong = 1;
@@ -3695,6 +3713,7 @@ int wmain(int argc, wchar_t** argv)
 	printf("collision control_words default=%04x simulate=%04x\n", kControlDefault, kControlSimulate);
 
 	unsigned totalMismatch = 0;
+	totalMismatch += compoundDispatchWrong;
 	unsigned char storage0[kShapeBytes];
 	unsigned char storage1[kShapeBytes];
 	NxCollisionShape* shape0 = (NxCollisionShape*) storage0;

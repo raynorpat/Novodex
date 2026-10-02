@@ -937,7 +937,9 @@ rows was compared mechanically between the listing and the objects: equal. `dump
 BodyStep.obj and ContactPairManager.obj: no UNDEF sqrt/sin/cos/acos/_CI*/__libm_sse2_* (the roots, fsin/fcos and
 _CIacos go through X87Sqrt.h's naked helpers). Recorded code-shape differences, none changing a stored value:
 - 000726: the compiler drops the intermediate +0x34..+0x48 stores that both damping arms overwrite, and keeps the
-  pair scale (1 / +0x25c) in a qword spill; the scale is 1.0 exactly while .data 0x10123c00 is 0, as in the image.
+  pair scale (1 / +0x25c) in a qword spill. The oracle's live word at .data 0x10123c00 is populated from the SDK
+  parameter defaults during SDK creation (1.0); the candidate reads NX_ADAPTIVE_FORCE from its live parameter table.
+  The three-body stack differential verifies the enabled pair-count scaling across contact islands.
 - /GS stack cookies in 000740, 000879 and 000917 (local arrays), the joint rows' accepted difference.
 - x87CIacos does not reproduce _CIacos's _87except error reporting; 000893's patch vptr is the candidate's
   compiler-generated NxFrictionPatch table, not 0x10106944.

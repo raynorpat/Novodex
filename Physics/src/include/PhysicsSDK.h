@@ -16,6 +16,7 @@ class NpPhysicsSDK;
 class NxSceneInternal;
 class Scene;
 class NxSceneDesc;
+class NxTriangleMeshDesc;
 class NxDebugRenderable;
 class NxUserDebugRenderer;
 
@@ -49,6 +50,8 @@ class PhysicsSDK : public NxAllocateable
 	// mScenes; returns the Scene, which NpPhysicsSDK wraps.
 	NxSceneInternal* createScene(const NxSceneDesc& desc);
 	void releaseScene(NxSceneInternal* scene);
+	TriangleMesh* createTriangleMesh(const NxTriangleMeshDesc& desc);
+	void releaseTriangleMesh(TriangleMesh* mesh);
 	// phys_fn_000448 (0x0000def0)
 	NxU32 getNbScenes() const;
 	// phys_fn_000450 (0x0000df00)

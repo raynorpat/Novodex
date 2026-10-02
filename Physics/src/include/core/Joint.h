@@ -193,10 +193,9 @@ class JointBreakEvent
 	public:
 	JointBreakEvent(Joint* joint, NxReal value) : mJoint(joint), mUnknown00c(value) {}
 
-	//! Slot 0: the oracle's row 004113 (fires the user notify, else frees
-	//! the event). Out of the pilot's scope -- no pilot path dispatches it --
-	//! so the body only asserts; declared so the object carries a vtable.
-	virtual void row004113() { NX_ASSERT(0); }
+	//! Slot 0: phys_fn_004113 (0x00098050), dispatched from the Scene's
+	//! break-event list at fetchResults.
+	virtual void row004113();
 
 	JointBreakEvent*	mNext;			//!< +0x04; written by phys_fn_000571
 	Joint*				mJoint;			//!< +0x08
@@ -383,6 +382,8 @@ class Joint
 	//! (phys_fn_000632) calls it for each joint of the Scene's +0x58c array
 	//! with the body record being removed.
 	void row004103(void* bodyRecord);
+	//! phys_fn_004105 (0x00097ca0), default joint-break event detach path.
+	void handleBreakEvent();
 
 	//! phys_fn_004109 (0x00097e60, 366 B; write). Np slot 11 setLimitPoint
 	//! body (every family's slot-11 row, e.g. 004687).

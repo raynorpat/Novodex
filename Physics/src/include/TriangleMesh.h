@@ -98,7 +98,8 @@ struct InternalTriangleMesh
 	void*					mVertexNormals;		//!< +0x18, 12 bytes each
 	NxU32					mWord1C;			//!< +0x1c, unestablished; the allocation-site table jumps from +0x18 to +0x20
 	Opcode::BaseModel*		mModel;				//!< +0x20
-	NxU8					mInterfaceRegion[0x14];	//!< +0x24, the MeshInterface region, unestablished
+	Opcode::MeshInterface	mMeshInterface;	//!< +0x24, OPCODE's four-word mesh interface
+	NxU32					mInterfaceWord34;	//!< +0x34, not read by the recovered build path
 	};
 
 /**
@@ -131,6 +132,18 @@ established it.
 class TriangleMesh
 	{
 	public:
+	TriangleMesh();
+	~TriangleMesh();
+
+	bool loadFromDesc(const NxTriangleMeshDesc& desc);
+	bool buildModel();
+	bool computeMassProperties();
+	bool saveToDesc(NxTriangleMeshDesc& desc) const;
+	NxU32 getCount(NxInternalArray array) const;
+	NxInternalFormat getFormat(NxInternalArray array) const;
+	const void* getBase(NxInternalArray array) const;
+	NxU32 getStride(NxInternalArray array) const;
+	NxTriangleMesh* publicHandle() const;
 	//! phys_fn_002162 (0x000539d0), the whole of the writer. Returns the
 	//! literal 1; there is no error path in it (mov al,1 at 0x00053b64).
 	bool					save(NxStream& stream) const;
@@ -153,12 +166,16 @@ class TriangleMesh
 	InternalTriangleMesh	mInternal;
 	//! +0x40, the hull-construction flags. Only bit 0 is established.
 	NxU32					mHullFlags;
-	//! +0x44..+0x68, unestablished.
-	NxU8					mGap44[0x28];
+	//! +0x44..+0x5b, local bounds used by mesh-shape AABB queries.
+	float					mBounds44[6];
+	//! +0x5c..+0x68, additional hull/mass metadata not yet named.
+	NxU8					mGap5C[0x10];
 	//! +0x6c, NxTriangleMeshDesc::convexEdgeThreshold's image value.
 	float					mConvexEdgeThreshold;
 	//! +0x70..+0x78, unestablished.
-	NxU8					mGap70[0x0c];
+	NxU8					mGap70[4];
+	NxU32					mReferenceCount;
+	NxU32					mWord78;
 	//! +0x7c, heightFieldVerticalAxis; 0xff is NX_NOT_HEIGHTFIELD.
 	NxU32					mHeightFieldVerticalAxis;
 	//! +0x80, heightFieldVerticalExtent.
@@ -189,6 +206,14 @@ class TriangleMesh
 	//! +0xa8 (the kind C support map slot 11 takes; 001820 at 0x000411f1 /
 	//! 0x000411f7), are outside this class's measured size.
 	void*					mConvexMesh;
+	//! +0xa4..+0xaf, reserved.
+	NxU8					mGapA4[0x0c];
+	//! +0xb0, lazy mass/inertia cache consumed by MeshShape's mass path.
+	float					mCachedMass;
+	float					mCachedInertia[9];
+	float					mCachedCenter[3];
+	//! +0xe4, the separately allocated eight-byte NxTriangleMesh wrapper.
+	void*					mPublicObject;
 	};
 
 // The measured offsets, pinned so a field added in the wrong place fails here
@@ -215,6 +240,8 @@ static_assert(offsetof(TriangleMesh, mPresenceFlagB) == 0x90, "presence flag B i
 static_assert(offsetof(TriangleMesh, mArrayA) == 0x94, "array A is at +0x94");
 static_assert(offsetof(TriangleMesh, mArrayB) == 0x98, "array B is at +0x98");
 static_assert(offsetof(TriangleMesh, mConvexMesh) == 0xa0, "the convex mesh is at +0xa0");
+static_assert(offsetof(TriangleMesh, mPublicObject) == 0xe4, "the public wrapper is at +0xe4");
+static_assert(sizeof(TriangleMesh) == 0xe8, "the SDK allocates a 0xe8-byte triangle mesh");
 
 /**
 TriangleMesh's first two virtuals, slots 0 and 1 of .rdata:0x00108608, are an

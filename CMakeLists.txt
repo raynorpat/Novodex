@@ -185,6 +185,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/ContactCapsuleMesh.cpp
 		Physics/src/ContactMeshHeightfield.cpp
 		Physics/src/ContactMeshMesh.cpp
+		Physics/src/ContactPlaneMesh.cpp
 		Physics/src/EdgeList.cpp
 		Physics/src/IceMeshTools.cpp
 		Physics/src/IceMeshBuilder2.cpp
@@ -439,6 +440,13 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsActorShapeMutationTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsActorShapeMutationTests bcrypt)
+	# Public convex-mesh cooking regression. This is the front door for the
+	# TriangleMesh reconstruction packet and must pass before the Unreal KActor
+	# convex-element smoke can pass.
+	add_executable(NxPhysicsTriangleMeshApiTests tests/PhysicsTriangleMeshApiTests.cpp)
+	target_include_directories(NxPhysicsTriangleMeshApiTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsTriangleMeshApiTests bcrypt)
 	add_executable(NxPhysicsActorMomentumTests tests/PhysicsActorMomentumTests.cpp)
 	target_include_directories(NxPhysicsActorMomentumTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
@@ -734,10 +742,12 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
 		Physics/src/SceneRaycast.cpp Physics/src/BodyCreation.cpp Physics/src/SceneVisualize.cpp
-		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
+		Physics/src/ObjectModel.cpp Physics/src/BodyStep.cpp Physics/src/Island.cpp
+		Physics/src/ContactPairManager.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
+		Physics/src/opcode/NovodexBoxPruning.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp Physics/src/Distance.cpp
 		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp
@@ -841,17 +851,20 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp
 		Physics/src/Distance.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp
-		Physics/src/ContactBoxMeshICE.cpp Physics/src/ContactCapsuleMesh.cpp Physics/src/ContactMeshHeightfield.cpp Physics/src/ContactMeshMesh.cpp
+		Physics/src/ContactBoxMeshICE.cpp Physics/src/ContactCapsuleMesh.cpp Physics/src/ContactMeshHeightfield.cpp Physics/src/ContactMeshMesh.cpp Physics/src/ContactPlaneMesh.cpp
 		Physics/src/ContactConvexConvex.cpp Physics/src/TriangleMeshPolygons.cpp
-		Physics/src/ContactConvexHeightfield.cpp Physics/src/TriangleMeshTopology.cpp
+		Physics/src/ContactConvexHeightfield.cpp Physics/src/TriangleMeshTopology.cpp Physics/src/TriangleMesh.cpp
+		Physics/src/QhullHost.cpp Physics/src/Quantizer.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/PhysicsInternal.cpp
 		Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
 		Physics/src/SceneRaycast.cpp Physics/src/BodyCreation.cpp Physics/src/SceneVisualize.cpp
-		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
+		Physics/src/ObjectModel.cpp Physics/src/BodyStep.cpp Physics/src/Island.cpp
+		Physics/src/ContactPairManager.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
+		Physics/src/opcode/NovodexBoxPruning.cpp
 		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp
 		${PHYSICS_CORE_SOURCES})
 	target_include_directories(NxPhysicsCollisionTests PRIVATE
@@ -860,7 +873,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# Geometry.cpp defines exports, so it has to be compiled with the same
 	# linkage here as in the DLL or every one of them warns.
 	target_compile_definitions(NxPhysicsCollisionTests PRIVATE NX_PHYSICS_DLL=1)
-	target_link_libraries(NxPhysicsCollisionTests NxFoundation NxOpcode bcrypt)
+	target_link_libraries(NxPhysicsCollisionTests NxFoundation NxOpcode NxQhull bcrypt)
 	# A linker map supports scene-raycast and convex-mesh-gap candidate traces;
 	# it changes nothing in the executable.
 	if(MSVC)

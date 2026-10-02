@@ -39,9 +39,9 @@ PHASE_TARGETS = {
     # NxFoundationTangentTests joined it when NxNormalToTangents, which
     # NxJointDesc::setGlobalAxis calls, was brought to the oracle's words.
     "6": "NxPhysicsJointStagedPairTests,NxFoundationTangentTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests",
-    # Phase 7 registered the same target for the same reason: five of the six rows
-    # recorded in 11u are Phase 7's own and execute in that harness.
-    "7": "NxPhysicsJointStagedPairTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsSceneRaycastTests,NxPhysicsSceneVisualizeTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests",
+    # Phase 7 also runs the scene simulation target, which now exercises force,
+    # contact, integration, and explicit-friction paths end to end.
+    "7": "NxPhysicsJointStagedPairTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsSceneRaycastTests,NxPhysicsSceneVisualizeTests,NxPhysicsSimulationTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests",
 }
 # Phases 6 and 7 moved out of this set when NxPhysicsJointStagedPairTests was
 # registered on them.

@@ -15,6 +15,7 @@
 #include "Scene.h"
 #include "NpSceneGuard.h"
 #include "FoundationSDK.h"
+#include "TriangleMesh.h"
 
 // 0x0000ea05 allocates 0xc bytes for this object, phys_fn_000226 stores the SDK
 // pointer at +4 and constructs the lock at +8.
@@ -108,15 +109,22 @@ NxScene* NpPhysicsSDK::getScene(NxU32)
 	return 0;
 	}
 
-NxTriangleMesh* NpPhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc&)
+NxTriangleMesh* NpPhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc& desc)
 	{
-	// phys_fn_000242 -> phys_fn_000478; needs TriangleMesh, Phase 4.
-	return 0;
+	TriangleMesh* mesh = mSdk->createTriangleMesh(desc);
+	return mesh ? mesh->publicHandle() : 0;
 	}
 
-void NpPhysicsSDK::releaseTriangleMesh(NxTriangleMesh&)
+void NpPhysicsSDK::releaseTriangleMesh(NxTriangleMesh& mesh)
 	{
-	// phys_fn_000244 -> phys_fn_000470; needs TriangleMesh, Phase 4.
+	TriangleMesh* internal = 0;
+	for(NxU32 i = 0; i < mSdk->mTriangleMeshes.size(); ++i)
+		if(mSdk->mTriangleMeshes[i]->publicHandle() == &mesh)
+			{
+			internal = mSdk->mTriangleMeshes[i];
+			break;
+			}
+	mSdk->releaseTriangleMesh(internal);
 	}
 
 // phys_fn_000248 and phys_fn_000250. The mutating slot walks the scenes taking

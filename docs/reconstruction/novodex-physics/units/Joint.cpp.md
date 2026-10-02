@@ -43,7 +43,7 @@ Evidenced span: ['0x00095ab0', '0x0009a430']. Rows: 37 (0 ambiguous). Generated 
 - PhysicsSDK.cpp: phys_fn_000454, phys_fn_000480
 - Scene.cpp: phys_fn_000557, phys_fn_000571, phys_fn_000598, phys_fn_000633, phys_fn_000653, phys_fn_000661
 - core\FixedJoint.cpp: phys_fn_004248
-- gap:IceAdjacencies.cpp..ContactConvexHeightfield.cpp: phys_fn_001583
+- gap:IceAdjacencies.cpp..ContactBoxMeshICE.cpp: phys_fn_001583
 - gap:core\PrismaticJoint.cpp..core\NpD6Joint.cpp: phys_fn_004391
 - unassigned: phys_fn_005667
 
@@ -280,8 +280,8 @@ bool FUN_10095ca0(void)
 ## phys_fn_004085 (0x00095cb0, 10 B, reconstructed)
 
 - ambiguous: no
-- source: registry lookup with its own this (0x95cb0)
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: undefined __fastcall FUN_10095cb0(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_001183 (0x00024640), phys_fn_003860 (0x0008d060), phys_fn_004004 (0x00090e10), phys_fn_004007 (0x00090fb0)
@@ -1549,11 +1549,11 @@ void __thiscall FUN_10096750(void *this,float *param_1)
 
 ```
 
-## phys_fn_004103 (0x00097c10, 142 B, discovered)
+## phys_fn_004103 (0x00097c10, 142 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: undefined __thiscall FUN_10097c10(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000632 (0x000125c0)
@@ -1595,10 +1595,10 @@ void __thiscall FUN_10097c10(void *this,int param_1)
 
 ```
 
-## phys_fn_004105 (0x00097ca0, 133 B, discovered)
+## phys_fn_004105 (0x00097ca0, 133 B, reconstructed)
 
 - ambiguous: no
-- source: None
+- source: Physics/src/core/Joint.cpp
 - implementation: None
 - prototype: undefined __fastcall FUN_10097ca0(int param_1)
 - calling convention: __fastcall, stack purge: 0
@@ -1855,10 +1855,10 @@ void FUN_10097fd0(int param_1)
 
 ```
 
-## phys_fn_004113 (0x00098050, 81 B, discovered)
+## phys_fn_004113 (0x00098050, 81 B, reconstructed)
 
 - ambiguous: no
-- source: None
+- source: Physics/src/Scene.cpp
 - implementation: None
 - prototype: undefined __fastcall FUN_10098050(int param_1)
 - calling convention: __fastcall, stack purge: 0
