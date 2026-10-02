@@ -2959,12 +2959,63 @@ $NxRequiredCoverageLines = [ordered] @{
     # blocking simulate/check/fetch cycles. These outputs were captured from
     # the pinned oracle before the candidate step path was implemented.
     'NxPhysicsSimulationTests' = @(
+        # Scene descriptor selectors 0/1/2 map to pruning-engine modes 1/2/3
+        # (phys_fn_000544 -> phys_fn_001973). These observations guard that
+        # the public broadPhase choice reaches the internal engine state.
+        'simulation broadphase selector=0 mode=1'
+        'simulation broadphase selector=1 mode=2'
+        'simulation broadphase selector=2 mode=3'
+        'simulation broadphase plane selector=1 pairs=1'
+        'simulation broadphase separated selector=0 pairs=0'
+        'simulation broadphase separated selector=1 pairs=0'
+        'simulation broadphase separated selector=2 pairs=0'
+        'simulation broadphase static-static selector=0 pairs=0'
+        'simulation broadphase static-static selector=1 pairs=0'
+        'simulation broadphase static-static selector=2 pairs=0'
+        'simulation broadphase overlapping selector=0 pairs=2'
+        'simulation broadphase overlapping selector=1 pairs=2'
+        'simulation broadphase overlapping selector=2 pairs=2'
+        'simulation stage=broadphase0-chain0 position=40c00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase0-chain1 position=40d80000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase0-chain2 position=40f00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation broadphase order selector=0 pairs=0-1,1-2'
+        'simulation stage=broadphase1-chain0 position=40c00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase1-chain1 position=40d80000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase1-chain2 position=40f00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation broadphase order selector=1 pairs=0-1,1-2'
+        'simulation stage=broadphase2-chain0 position=40c00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase2-chain1 position=40d80000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase2-chain2 position=40f00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation broadphase order selector=2 pairs=0-1,1-2'
+        'simulation broadphase dense selector=0 pairs=6'
+        'simulation broadphase order selector=0 pairs=0-1,0-2,0-3,1-2,1-3,2-3'
+        'simulation broadphase dense selector=1 pairs=6'
+        'simulation broadphase order selector=1 pairs=0-1,0-2,0-3,1-2,1-3,2-3'
+        'simulation broadphase dense selector=2 pairs=6'
+        'simulation broadphase order selector=2 pairs=0-1,0-2,0-3,1-2,1-3,2-3'
+        'simulation broadphase bounded selector=0 pairs=2'
+        'simulation broadphase bounded selector=1 pairs=2'
+        'simulation broadphase bounded selector=2 pairs=2'
+        'simulation broadphase moved-apart selector=2 pairs=1'
+        'simulation body-state=broadphase2-separated1 velocity=b5e06397.00000000.00000000'
+        'simulation body-state=broadphase2-separated2 velocity=35da9eba.00000000.00000000'
+        'simulation body-state=broadphase2-rejoin1 velocity=c07f0007.00000000.00000000'
+        'simulation body-state=broadphase2-rejoin2 velocity=40ff000a.00000000.00000000'
+        'simulation broadphase moved-together selector=2 pairs=2'
         'simulation gravity=initial 00000000.c11cf5c3.00000000'
         'simulation gravity=changed 00000000.c1a00000.00000000'
         'simulation timing=initial 3c888889.8.0'
         'simulation timing=changed 3e000000.4.1'
         'simulation writable=initial 1'
+        'simulation nonblocking=idle ready=0 fetched=0'
         'simulation empty-step ready=1 fetched=1'
+        'simulation nonblocking=finished ready=1 fetched=1'
+        'simulation stage=force1 position=3d747645.00000000.00000000 velocity=3ef47645.00000000.00000000'
+        'simulation stage=kinematic1 position=3f800000.00000000.3f000000 velocity=00000000.00000000.00000000'
+        'simulation kinematic flag=1'
+        'simulation sleep=automatic sleeping=1'
+        'simulation sleep=woken sleeping=0'
+        'simulation ground=created'
         'simulation stage=initial position=00000000.41200000.00000000 velocity=00000000.00000000.00000000'
         'simulation step=0 ready=1 fetched=1'
         'simulation stage=step0 position=00000000.41200000.00000000 velocity=00000000.00000000.00000000'
@@ -2982,8 +3033,36 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation stage=step6 position=00000000.40e5bf58.00000000 velocity=00000000.c0eb7098.00000000'
         'simulation step=7 ready=1 fetched=1'
         'simulation stage=step7 position=00000000.40c7d67b.00000000 velocity=00000000.c108082a.00000000'
+        'simulation stage=distance0 position=40800000.40000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=distance1 position=40800000.3fff7f6b.00000000 velocity=00000000.be48e8a7.00000000'
+        'simulation stage=distance2 position=40800000.3fffd96c.00000000 velocity=00000000.33000000.00000000'
+        'simulation stage=distance3 position=40800000.3ffff46d.00000000 velocity=00000000.32000000.00000000'
+        'simulation stage=distance4 position=40800000.3ffffc87.00000000 velocity=00000000.31000000.00000000'
+        'simulation stage=distance5 position=40800000.3ffffef5.00000000 velocity=00000000.30400000.00000000'
+        'simulation stage=distance6 position=40800000.3fffffaf.00000000 velocity=00000000.2f800000.00000000'
+        'simulation stage=distance7 position=40800000.3fffffe7.00000000 velocity=00000000.2e800000.00000000'
+        'simulation stage=distance8 position=40800000.3ffffff8.00000000 velocity=00000000.2dc00000.00000000'
+        'simulation stage=distance9 position=40800000.3ffffffd.00000000 velocity=00000000.2d000000.00000000'
+        'simulation stage=distance10 position=40800000.3fffffff.00000000 velocity=00000000.2c400000.00000000'
+        'simulation stage=distance11 position=40800000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation distance-joint steps=12 ready=1 fetched=1'
+        # A fixed joint with a deliberately tiny maxForce queues a break event;
+        # fetchResults must dispatch it, detach the joint, and leave the actor
+        # in the same free-fall trajectory as the oracle on later steps.
+        'simulation stage=break0 position=40c00000.40000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation break-state step=0 state=0'
+        'simulation stage=break1 position=40c00000.3fff80ab.00000000 velocity=3041c5ce.be46f3fc.00000000'
+        'simulation break-state step=1 state=2'
+        'simulation stage=break2 position=40c00000.3ffe80c1.00000000 velocity=3041c5ce.bec7ee51.00000000'
+        'simulation break-state step=2 state=2'
+        'simulation stage=break3 position=40c00000.3ffd0042.00000000 velocity=3041c5ce.bf163152.00000000'
+        'simulation break-state step=3 state=2'
+        'simulation break-joint steps=4 ready=1 fetched=1'
         'simulation soak steps=1000 ready=1 fetched=1'
-        'simulation stage=soak1000 position=00000000.c7955570.00000000 velocity=00000000.c4991681.00000000'
+        'simulation stage=soak1000 position=00000000.3ee66666.00000000 velocity=00000000.00000000.00000000'
+        'simulation pair=created'
+        'simulation stage=pair11 p0=bf587c8e.00000000.3ea0bde5 v0=4013df79.00000000.3fc213dd p1=3d3afc59.00000000.bc6489c3 v1=3fd84107.00000000.bf0427bd'
+        'simulation pair steps=40 ready=1 fetched=1'
     )
     # Effector-and-coredump Task 2: the spring-and-damper effector differential.
     # NxScene's effector API and every NxSpringAndDamperEffector method over two
@@ -5166,12 +5245,12 @@ $NxPhaseCoverageFloor = [ordered] @{
                # and 3 shape-vtable from its shape sub-area, 1 shape-vtable from its box hull)
                # + 991 from the NpActor.cpp completion (251 Task 2, 446 + 3 Task 3 and review,
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
-               # second merge of main into the scene-raycast block (RED on purpose: vtables
-               # family open)
+               # second merge of main into the scene-raycast block. Phase 5 now passes its
+               # current 2,037 recorded assertions; the broader full-DLL vtable audit remains
+               # tracked in the completion roadmap.
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1154  # 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize + 2 simulation soak assertions
-               # + 23 M1 simulation + 79 effector + 374 core-dump; the oracle-differential assertions
+    '7' = 1227  # previous 1,218 plus 9 fixed-joint break-event observations
     '8' = 0
 }
 

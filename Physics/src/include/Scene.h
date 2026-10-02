@@ -94,6 +94,8 @@ class NxSceneInternal
 	void growJointRecords();
 	// phys_fn_000571 (0x000108e0). Links a break event into the list at +0x620.
 	void addJointBreakEvent(JointBreakEvent* event);
+	// phys_fn_000577 (0x000109c0). Dispatches and frees queued break events.
+	void processJointBreakEvents();
 	// phys_fn_000559 (0x00010860), phys_fn_000563 (0x00010880) and
 	// phys_fn_000567 (0x000108a0).
 	NxU32 getNbJoints() const;

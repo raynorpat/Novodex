@@ -77,13 +77,6 @@ static const NxReal gStepEpsilon = 1e-6f;			// 0x10106880 (0x358637bd)
 static const NxReal gStepMinusOne = -1.0f;			// 0x1010687c
 static const NxReal gStepPi = 3.14159274f;			// 0x10106870 (0x40490fdb)
 
-// .data 0x10123c00: a float zero in the image that 000726 reads (0x16552)
-// and no instruction writes (no other reference in the listing; the image's
-// relocations name it only there). While it is 0 a dynamic body's integrated
-// impulse is not divided by its contact-pair count. Kept as data so the read
-// is not folded away.
-NxReal gBodyStepPairDivide = 0.0f;
-
 // phys_fn_000710 (0x00015cb0, 122 B)
 // Byte +0x10c bit 0 clear: +0x88..+0x90 = *gravity (dword moves); set: 0.
 // Then the nine words +0x94..+0xb4 are zeroed.
@@ -209,7 +202,7 @@ void Row000726Fixture::row000726(NxReal dt, NxReal invDt)
 
 	const NxU32 pairs = stepWord(this, 0x25c);
 	double scale;
-	if(pairs > 1 && !(gBodyStepPairDivide == gStepZero))
+	if(pairs > 1 && !(nxPhysicsSDKParameters()[NX_ADAPTIVE_FORCE] == gStepZero))
 		scale = gStepOne / (double)pairs;
 	else
 		scale = gStepOne;

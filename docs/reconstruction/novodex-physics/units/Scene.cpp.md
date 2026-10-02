@@ -295,8 +295,8 @@ void __thiscall FUN_100103e0(void *this,int param_1)
 ## phys_fn_000523 (0x00010400, 4 B, reconstructed)
 
 - ambiguous: no
-- source: field getter [this+0x3c] (0x10400)
-- implementation: None
+- source: Physics/src/Scene.cpp
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined4 __fastcall FUN_10010400(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000317 (0x0000c8a0), phys_fn_004051 (0x00094130)
@@ -571,11 +571,11 @@ LAB_100105ef:
 
 ```
 
-## phys_fn_000531 (0x00010600, 97 B, discovered)
+## phys_fn_000531 (0x00010600, 97 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/Scene.cpp
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined __thiscall FUN_10010600(int * param_1)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_000034 (0x00002010), phys_fn_000036 (0x00002250), phys_fn_000122 (0x00003840)
@@ -609,11 +609,11 @@ void __thiscall FUN_10010600(void *this,int *param_1)
 
 ```
 
-## phys_fn_000533 (0x00010670, 40 B, discovered)
+## phys_fn_000533 (0x00010670, 40 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/Scene.cpp
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined1 __thiscall FUN_10010670(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000006 (0x00001080), phys_fn_000030 (0x00001c40), phys_fn_000036 (0x00002250), phys_fn_000122 (0x00003840)
@@ -638,11 +638,11 @@ undefined1 __thiscall FUN_10010670(void *this,int param_1)
 
 ```
 
-## phys_fn_000535 (0x000106a0, 40 B, discovered)
+## phys_fn_000535 (0x000106a0, 40 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/Scene.cpp
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined1 __thiscall FUN_100106a0(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000006 (0x00001080), phys_fn_000030 (0x00001c40), phys_fn_000036 (0x00002250)
@@ -980,7 +980,7 @@ undefined4 __fastcall FUN_10010830(int param_1)
 
 - ambiguous: no
 - source: link-insert: [arg+0x10]=old head, [this+0x5a0]=arg (0x10840, ret 4)
-- implementation: None
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined __thiscall FUN_10010840(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004103 (0x00097c10), phys_fn_004105 (0x00097ca0)
@@ -1031,8 +1031,8 @@ undefined4 __fastcall FUN_10010860(int param_1)
 ## phys_fn_000561 (0x00010870, 7 B, reconstructed)
 
 - ambiguous: no
-- source: field getter [this+0x6c4] (0x10870)
-- implementation: None
+- source: Physics/src/Scene.cpp
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined4 __fastcall FUN_10010870(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000327 (0x0000c9a0)
@@ -1082,8 +1082,8 @@ void __fastcall FUN_10010880(int param_1)
 ## phys_fn_000565 (0x00010890, 13 B, reconstructed)
 
 - ambiguous: no
-- source: copy [this+0x5a4] -> [this+0x6c0] (0x10890)
-- implementation: None
+- source: Physics/src/Scene.cpp
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined __fastcall FUN_10010890(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000329 (0x0000c9d0)
@@ -1140,8 +1140,8 @@ int __fastcall FUN_100108a0(int param_1)
 ## phys_fn_000569 (0x000108c0, 23 B, reconstructed)
 
 - ambiguous: no
-- source: link-advance (0x108c0)
-- implementation: None
+- source: Physics/src/Scene.cpp
+- implementation: Physics/src/Scene.cpp
 - prototype: int __fastcall FUN_100108c0(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000331 (0x0000c9f0)
@@ -1196,11 +1196,11 @@ void __thiscall FUN_100108e0(void *this,int param_1)
 
 ```
 
-## phys_fn_000573 (0x00010900, 109 B, discovered)
+## phys_fn_000573 (0x00010900, 109 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/Scene.cpp
-- implementation: None
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined __thiscall FUN_10010900(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000594 (0x00010e80)
@@ -1247,11 +1247,11 @@ void __thiscall FUN_10010900(void *this,int param_1)
 
 ```
 
-## phys_fn_000575 (0x00010970, 68 B, discovered)
+## phys_fn_000575 (0x00010970, 68 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/Scene.cpp
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined __fastcall FUN_10010970(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000663 (0x00013f30)
@@ -1284,10 +1284,10 @@ void __fastcall FUN_10010970(int param_1)
 
 ```
 
-## phys_fn_000577 (0x000109c0, 79 B, discovered)
+## phys_fn_000577 (0x000109c0, 79 B, reconstructed)
 
 - ambiguous: no
-- source: None
+- source: Physics/src/Scene.cpp
 - implementation: None
 - prototype: undefined __fastcall FUN_100109c0(int param_1)
 - calling convention: __fastcall, stack purge: 0
@@ -1321,11 +1321,11 @@ void __fastcall FUN_100109c0(int param_1)
 
 ```
 
-## phys_fn_000579 (0x00010a10, 55 B, discovered)
+## phys_fn_000579 (0x00010a10, 55 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/Scene.cpp
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined4 __fastcall FUN_10010a10(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000657 (0x000139c0)
@@ -1531,11 +1531,11 @@ bool __fastcall FUN_10010ab0(int param_1)
 
 ```
 
-## phys_fn_000587 (0x00010c90, 187 B, discovered)
+## phys_fn_000587 (0x00010c90, 187 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/Scene.cpp
+- implementation: Physics/src/Scene.cpp
 - prototype: void * __fastcall FUN_10010c90(int param_1)
 - calling convention: __fastcall, stack purge: 4
 - callers: phys_fn_000301 (0x0000c630)
@@ -1716,11 +1716,11 @@ void __thiscall FUN_10010e20(void *this,int param_1,int param_2,uint param_3)
 
 ```
 
-## phys_fn_000594 (0x00010e80, 126 B, discovered)
+## phys_fn_000594 (0x00010e80, 126 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/Scene.cpp
-- implementation: None
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined __thiscall FUN_10010e80(int * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000301 (0x0000c630), phys_fn_000303 (0x0000c6c0)
@@ -2969,11 +2969,11 @@ void __thiscall FUN_100123d0(void *this,int *param_1)
 
 ```
 
-## phys_fn_000630 (0x000124d0, 233 B, discovered)
+## phys_fn_000630 (0x000124d0, 233 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/Scene.cpp
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined __thiscall FUN_100124d0(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000026 (0x000019b0)
@@ -3033,11 +3033,11 @@ void __thiscall FUN_100124d0(void *this,undefined4 param_1)
 
 ```
 
-## phys_fn_000632 (0x000125c0, 160 B, discovered)
+## phys_fn_000632 (0x000125c0, 160 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/Scene.cpp
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined __thiscall FUN_100125c0(void * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000030 (0x00001c40), phys_fn_000122 (0x00003840)
@@ -4235,11 +4235,11 @@ void __fastcall FUN_100137e0(ushort *param_1)
 
 ```
 
-## phys_fn_000657 (0x000139c0, 636 B, discovered)
+## phys_fn_000657 (0x000139c0, 636 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/Scene.cpp
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined __fastcall FUN_100139c0(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000344 (0x0000cc10)
