@@ -8,6 +8,7 @@
 #include "PMap.h"
 
 #include "NxUserOutputStream.h"
+#include "NxTriangleDistance.h"
 #include "TriangleMesh.h"
 
 // The pinned public NxPMap.h names both of these in NxCreatePMap's signature and
@@ -16,11 +17,6 @@ class NxTriangleMesh;
 #include "NxPMap.h"
 
 #include "Opcode.h"
-
-namespace Opcode
-	{
-#include "../../External/Opcode/upstream/Opcode/OPC_LSSTriOverlap.h"
-	}
 
 static void nxPMapCollectFaceOrder(const Opcode::AABBQuantizedNoLeafNode* node,
 	NxU32* faces, NxU32& count)
@@ -140,158 +136,6 @@ static int comparePMapValueCell(const void* lhs, const void* rhs)
 
 static_assert(sizeof(NxU32) == 4, "the grid is dwords");
 
-// FUN_100e7c50 is OPCODE's point-to-triangle squared-distance routine. Use its
-// exact Voronoi-region ordering for both PMap passes; the simpler Ericson form
-// changes near-tie face assignments on this grid.
-static double nxPMapPointTriangleSqrDistance(const IceMaths::Point& point,
-	const IceMaths::Point& p0, const IceMaths::Point& p1, const IceMaths::Point& p2)
-{
-	// Hook
-	IceMaths::Point TriEdge0 = p1 - p0;
-	IceMaths::Point TriEdge1 = p2 - p0;
-
-	IceMaths::Point kDiff	= p0 - point;
-	float fA00	= TriEdge0.SquareMagnitude();
-	float fA01	= TriEdge0 | TriEdge1;
-	float fA11	= TriEdge1.SquareMagnitude();
-	float fB0	= kDiff | TriEdge0;
-	float fB1	= kDiff | TriEdge1;
-	double fC	= static_cast<double>(kDiff.x) * kDiff.x +
-		static_cast<double>(kDiff.y) * kDiff.y + static_cast<double>(kDiff.z) * kDiff.z;
-	float fDet	= fabsf(fA00*fA11 - fA01*fA01);
-	float fS	= fA01*fB1-fA11*fB0;
-	float fT	= fA01*fB0-fA00*fB1;
-	double fSqrDist;
-
-	if(fS + fT <= fDet)
-	{
-		if(fS < 0.0f)
-		{
-			if(fT < 0.0f)  // region 4
-			{
-				if(fB0 < 0.0f)
-				{
-					if(-fB0 >= fA00)		fSqrDist = fA00+2.0f*fB0+fC;
-					else					fSqrDist = fB0*(-fB0/fA00)+fC;
-				}
-				else
-				{
-					if(fB1 >= 0.0f)			fSqrDist = fC;
-					else if(-fB1 >= fA11)	fSqrDist = fA11+2.0f*fB1+fC;
-					else					fSqrDist = fB1*(-fB1/fA11)+fC;
-				}
-			}
-			else  // region 3
-			{
-				if(fB1 >= 0.0f)				fSqrDist = fC;
-				else if(-fB1 >= fA11)		fSqrDist = fA11+2.0f*fB1+fC;
-				else						fSqrDist = fB1*(-fB1/fA11)+fC;
-			}
-		}
-		else if(fT < 0.0f)  // region 5
-		{
-			if(fB0 >= 0.0f)					fSqrDist = fC;
-			else if(-fB0 >= fA00)			fSqrDist = fA00+2.0f*fB0+fC;
-			else							fSqrDist = fB0*(-fB0/fA00)+fC;
-		}
-		else  // region 0
-		{
-			// minimum at interior point
-			if(fDet==0.0f)
-			{
-				fSqrDist = MAX_FLOAT;
-			}
-			else
-			{
-				float fInvDet = 1.0f/fDet;
-				fS *= fInvDet;
-				fT *= fInvDet;
-				fSqrDist = fS*(fA00*fS+fA01*fT+2.0f*fB0) + fT*(fA01*fS+fA11*fT+2.0f*fB1)+fC;
-			}
-		}
-	}
-	else
-	{
-		float fTmp0, fTmp1, fNumer, fDenom;
-
-		if(fS < 0.0f)  // region 2
-		{
-			fTmp0 = fA01 + fB0;
-			fTmp1 = fA11 + fB1;
-			if(fTmp1 > fTmp0)
-			{
-				fNumer = fTmp1 - fTmp0;
-				fDenom = fA00-2.0f*fA01+fA11;
-				if(fNumer >= fDenom)
-				{
-					fSqrDist = fA00+2.0f*fB0+fC;
-				}
-				else
-				{
-					fS = fNumer/fDenom;
-					fT = 1.0f - fS;
-					fSqrDist = fS*(fA00*fS+fA01*fT+2.0f*fB0) + fT*(fA01*fS+fA11*fT+2.0f*fB1)+fC;
-				}
-			}
-			else
-			{
-				if(fTmp1 <= 0.0f)		fSqrDist = fA11+2.0f*fB1+fC;
-				else if(fB1 >= 0.0f)	fSqrDist = fC;
-				else					fSqrDist = fB1*(-fB1/fA11)+fC;
-			}
-		}
-		else if(fT < 0.0f)  // region 6
-		{
-			fTmp0 = fA01 + fB1;
-			fTmp1 = fA00 + fB0;
-			if(fTmp1 > fTmp0)
-			{
-				fNumer = fTmp1 - fTmp0;
-				fDenom = fA00-2.0f*fA01+fA11;
-				if(fNumer >= fDenom)
-				{
-					fSqrDist = fA11+2.0f*fB1+fC;
-				}
-				else
-				{
-					fT = fNumer/fDenom;
-					fS = 1.0f - fT;
-					fSqrDist = fS*(fA00*fS+fA01*fT+2.0f*fB0) + fT*(fA01*fS+fA11*fT+2.0f*fB1)+fC;
-				}
-			}
-			else
-			{
-				if(fTmp1 <= 0.0f)		fSqrDist = fA00+2.0f*fB0+fC;
-				else if(fB0 >= 0.0f)	fSqrDist = fC;
-				else					fSqrDist = fB0*(-fB0/fA00)+fC;
-			}
-		}
-		else  // region 1
-		{
-			fNumer = fA11 + fB1 - fA01 - fB0;
-			if(fNumer <= 0.0f)
-			{
-				fSqrDist = fA11+2.0f*fB1+fC;
-			}
-			else
-			{
-				fDenom = fA00-2.0f*fA01+fA11;
-				if(fNumer >= fDenom)
-				{
-					fSqrDist = fA00+2.0f*fB0+fC;
-				}
-				else
-				{
-					fS = fNumer/fDenom;
-					fT = 1.0f - fS;
-					fSqrDist = fS*(fA00*fS+fA01*fT+2.0f*fB0) + fT*(fA01*fS+fA11*fT+2.0f*fB1)+fC;
-				}
-			}
-		}
-	}
-	return fabs(fSqrDist);
-}
-
 static double nxPMapTriangleDistance(const InternalTriangleMesh& mesh,
 	const NxF32 point[3], NxU32 face)
 	{
@@ -300,32 +144,83 @@ static double nxPMapTriangleDistance(const InternalTriangleMesh& mesh,
 	const NxVec3& a = vertices[triangles[face * 3 + 0]];
 	const NxVec3& b = vertices[triangles[face * 3 + 1]];
 	const NxVec3& c = vertices[triangles[face * 3 + 2]];
-	const IceMaths::Point query(point[0], point[1], point[2]);
-	const IceMaths::Point p0(a.x, a.y, a.z);
-	const IceMaths::Point p1(b.x, b.y, b.z);
-	const IceMaths::Point p2(c.x, c.y, c.z);
-	return nxPMapPointTriangleSqrDistance(query, p2, p1, p0);
+	return NxPointTriangleSquareDistance(point, &a.x, &b.x, &c.x, 0, 0);
 	}
 
-// The strict-update query keeps the first face in optimized-tree traversal
-// order when two triangles have equal distance.
+static double nxPMapPointAABBDistanceSquared(const IceMaths::Point& point,
+	const Opcode::CollisionAABB& bounds)
+	{
+	const IceMaths::Point delta = point - bounds.mCenter;
+	const IceMaths::Point& extents = bounds.mExtents;
+	double dx = 0.0;
+	double dy = 0.0;
+	double dz = 0.0;
+	if(delta.x < -extents.x) dx = static_cast<double>(delta.x) + extents.x;
+	else if(delta.x > extents.x) dx = static_cast<double>(delta.x) - extents.x;
+	if(delta.y < -extents.y) dy = static_cast<double>(delta.y) + extents.y;
+	else if(delta.y > extents.y) dy = static_cast<double>(delta.y) - extents.y;
+	if(delta.z < -extents.z) dz = static_cast<double>(delta.z) + extents.z;
+	else if(delta.z > extents.z) dz = static_cast<double>(delta.z) - extents.z;
+	return (dx * dx + dy * dy) + dz * dz;
+	}
+
+static void nxPMapNearestNoLeafNode(const InternalTriangleMesh& mesh,
+	const IceMaths::Point& point, const Opcode::AABBNoLeafNode* node,
+	double& bestDistanceSquared, NxU32& faceOut)
+	{
+	if(!node || nxPMapPointAABBDistanceSquared(point, node->mAABB) > bestDistanceSquared)
+		return;
+	const NxU32 children[2] = { node->mPosData, node->mNegData };
+	for(unsigned child = 0; child < 2; ++child)
+		{
+		if(children[child] & 1)
+			{
+			const NxU32 face = children[child] >> 1;
+			const NxF32 pointValues[3] = { point.x, point.y, point.z };
+			const double distanceSquared = nxPMapTriangleDistance(mesh, pointValues, face);
+			if(distanceSquared < bestDistanceSquared)
+				{
+				bestDistanceSquared = static_cast<NxF32>(distanceSquared);
+				faceOut = face;
+				}
+			}
+		else
+			nxPMapNearestNoLeafNode(mesh, point,
+				reinterpret_cast<const Opcode::AABBNoLeafNode*>(static_cast<size_t>(children[child])),
+				bestDistanceSquared, faceOut);
+		}
+	}
+
+// Match the oracle's point-distance collider: test each no-leaf node's AABB,
+// visit its positive child before its negative child, and prune against the
+// best squared distance. A flat face scan changes which equal-distance face
+// wins because it ignores the tree's data-dependent traversal order.
 static void nxPMapNearestFace(const InternalTriangleMesh& mesh, const NxF32 point[3],
-	const NxU32* faceOrder, NxU32& faceOut, NxF32& distanceSquaredOut)
+	const Opcode::Model& model, const NxU32* faceOrder, NxU32& faceOut,
+	NxF32& distanceSquaredOut)
 	{
 	double bestDistanceSquared = 3.402823466e+38F;
-	distanceSquaredOut = 3.402823466e+38F;
 	faceOut = 0;
-	for(NxU32 order = 0; order < mesh.mTriangleCount; ++order)
+	if(!model.HasLeafNodes() && !model.IsQuantized() && !model.HasSingleNode())
 		{
-		const NxU32 face = faceOrder[order];
-		const double distanceSquared = nxPMapTriangleDistance(mesh, point, face);
-		if(distanceSquared < bestDistanceSquared)
-			{
-			bestDistanceSquared = static_cast<NxF32>(distanceSquared);
-			distanceSquaredOut = static_cast<NxF32>(distanceSquared);
-			faceOut = face;
-			}
+		const Opcode::AABBNoLeafTree* tree =
+			static_cast<const Opcode::AABBNoLeafTree*>(model.GetTree());
+		if(tree && tree->GetNodes())
+			nxPMapNearestNoLeafNode(mesh, IceMaths::Point(point[0], point[1], point[2]),
+				tree->GetNodes(), bestDistanceSquared, faceOut);
 		}
+	else
+		for(NxU32 order = 0; order < mesh.mTriangleCount; ++order)
+			{
+			const NxU32 face = faceOrder[order];
+			const double distanceSquared = nxPMapTriangleDistance(mesh, point, face);
+			if(distanceSquared < bestDistanceSquared)
+				{
+				bestDistanceSquared = static_cast<NxF32>(distanceSquared);
+				faceOut = face;
+				}
+			}
+	distanceSquaredOut = static_cast<NxF32>(bestDistanceSquared);
 	}
 
 // ---------------------------------------------------------------------------
@@ -937,17 +832,9 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 				NxF32 bestDistanceSquared = 3.402823466e+38F;
 				double bestDistance = 3.402823466e+38F;
 				NxU32 nearestFace = 0;
-				for(NxU32 facePosition = 0; facePosition < source->mTriangleCount; ++facePosition)
-					{
-					const NxU32 face = faceOrder[facePosition];
-					const double distanceSquared = nxPMapTriangleDistance(*source, point, face);
-					if(distanceSquared < bestDistance)
-						{
-						bestDistance = static_cast<NxF32>(distanceSquared);
-						bestDistanceSquared = static_cast<NxF32>(distanceSquared);
-						nearestFace = face;
-						}
-					}
+				nxPMapNearestFace(*source, point, pmapModel, faceOrder,
+					nearestFace, bestDistanceSquared);
+				bestDistance = bestDistanceSquared;
 				NxF32 distance = static_cast<NxF32>(sqrt(static_cast<double>(bestDistanceSquared)));
 				bool inside;
 				if(classified[index])
@@ -955,7 +842,9 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 				else
 					{
 					unsigned insideVotes = 0;
-					for(unsigned sample = 0; sample < 3; ++sample)
+					// FUN_1004e5d0 is entered with EAX=3 by the oracle's PMap
+					// loop. That mode casts one random ray and uses its parity.
+					for(unsigned sample = 0; sample < 1; ++sample)
 						{
 						NxF32 direction[3];
 						for(unsigned axis = 0; axis < 3; ++axis)
@@ -974,7 +863,7 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 						if(rayCollider.Collide(ray, model) && (rayCollider.GetNbIntersections() & 1))
 							++insideVotes;
 						}
-					inside = insideVotes >= 2;
+					inside = insideVotes != 0;
 					}
 				// The oracle's ray query classifies samples exactly on a triangle
 				// surface as inside. Its boundary-ray callback reports this on the
@@ -1058,7 +947,7 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 						};
 					NxU32 face;
 					NxF32 distanceSquared;
-					nxPMapNearestFace(*source, point, faceOrder, face, distanceSquared);
+						nxPMapNearestFace(*source, point, pmapModel, faceOrder, face, distanceSquared);
 					mGrid[corner] = face | kPMapCellFilled;
 					}
 				}
