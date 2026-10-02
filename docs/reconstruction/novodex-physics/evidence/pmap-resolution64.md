@@ -24,10 +24,18 @@ The test pins the mesh's cooked vertex and triangle arrays to the same four-poin
 
 The existing default density-32 path passes both DLLs with size 10,444 and hash `9a70de00aaf0edd4`.
 
-An offline decoder found 178 differing stored face labels across the density-64 maps. These values are face identifiers; mismatches inspected so far occur where adjacent faces have equal point distance. The stream's sign plane is not used as proof of identical occupancy because the final byte is bit-packed and the quick decoder does not model the stream's final-byte length behavior.
+An offline decoder found 178 differing stored face labels across the density-64 maps. These values are face identifiers. An earlier coordinate-level inspection suggested tie cases, but the Morton-axis mapping used for that inspection was wrong, so it does not establish equal-distance ownership. The stream's sign plane is not used as proof of identical occupancy because the final byte is bit-packed and the quick decoder does not model the stream's final-byte length behavior.
 
 ## Current diagnosis
 
 The oracle PMap builder calls its OPCODE point-distance query (`phys_fn_005337`, `FUN_100e8650`) and triangle-distance helper (`FUN_100e7c50`). The candidate currently selects labels in `nxPMapNearestNoLeafNode` using the local `nxPMapPointTriangleSquareDistance` scan. Reversing the candidate's fixed positive/negative child order raised the label mismatch count from 178 to 288 and was reverted. The exact oracle traversal, distance precision, and tie ownership remain to be reconstructed; this evidence does not establish which one is causal.
 
 `NxPhysicsTriangleMeshApiTests.exe <pair-directory> 64` is a focused red repro on the candidate and green on the pinned oracle. No Physics source changed while collecting this evidence.
+
+## Follow-up checks
+
+An IDA decompilation of oracle `sub_100E8650` (RVA `0x000e8650`) confirms the no-leaf traversal shape: check the current node AABB, visit its `+0x18` child first (recurse if internal), then process or descend the `+0x1c` sibling. Candidate `nxPMapNearestNoLeafNode` currently visits `mPosData` before `mNegData` and applies the same AABB pruning rule. This makes a simple positive/negative child-order reversal an unlikely explanation, though it does not prove the two built trees are byte-for-byte identical.
+
+Two additional candidate-only tie experiments were rejected and reverted. Updating on `distance <= best` (or preferring the smaller face ID only on exact candidate-distance equality) produced density-64 size/hash `74574 / abfedae03fe9973b`, still different from the oracle; the smaller-face rule also broke the density-32 fixture. Re-evaluating the existing closest-point parameters with a widened final quadratic produced `74573 / 331649a5849dcb5f` at density 64 and broke density 32 (`10446 / 358d922e23c58b0f`). Neither is a valid fix.
+
+The working source was restored after these experiments. A fresh Release build from the committed source passes the default density-32 candidate probe (`10444 / 9a70de00aaf0edd4`) and retains the density-64 red result (`74576 / 6a2ccf683df333aa`); the isolated oracle probe remains green (`74563 / 2c38820e277e9465`).
