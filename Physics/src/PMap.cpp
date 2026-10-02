@@ -1234,11 +1234,9 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 						}
 					inside = insideVotes != 0;
 					}
-				// The oracle's ray query classifies samples exactly on a triangle
-				// surface as inside. Its boundary-ray callback reports this on the
-				// deterministic cube fixture; parity from a plain RayCollider alone
-				// can alternate there because the origin is already a hit.
-				if(bestDistanceSquared <= 1.0e-12f)
+				// A zero nearest-triangle distance means the sample is exactly on
+				// the surface; the oracle's boundary path treats it as inside.
+				if(bestDistanceSquared == 0.0f)
 					inside = true;
 				classified[index] = static_cast<NxU8>(inside ? 2 : 1);
 				if(inside)
