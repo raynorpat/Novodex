@@ -1,6 +1,7 @@
 # PMap resolution-64 compute differential
 
-Date: 2026-10-02  
+Date: 2026-10-02
+
 Scope: one authored tetrahedron, isolated `NxCreatePMap` call at density 64.
 
 ## Reproduction
