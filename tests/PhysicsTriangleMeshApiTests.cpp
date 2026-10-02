@@ -20,6 +20,9 @@
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(
 	NxU32, NxUserAllocator*, NxUserOutputStream*);
+typedef bool (NX_CALL_CONV *CreatePMapFn)(
+	NxPMap&, const NxTriangleMesh&, NxU32, NxUserOutputStream*);
+typedef bool (NX_CALL_CONV *ReleasePMapFn)(NxPMap&);
 
 static NxU32 nxMeshFloatBits(NxReal value)
 	{
@@ -252,6 +255,47 @@ int wmain(int argc, wchar_t** argv)
 		sdk->releaseTriangleMesh(*mesh);
 		sdk->release();
 		return nxFail("convex mesh did not expose cooked geometry");
+		}
+	CreatePMapFn createPMap = reinterpret_cast<CreatePMapFn>(
+		GetProcAddress(physics, "NxCreatePMap"));
+	ReleasePMapFn releasePMap = reinterpret_cast<ReleasePMapFn>(
+		GetProcAddress(physics, "NxReleasePMap"));
+	if(!createPMap || !releasePMap)
+		{
+		sdk->releaseTriangleMesh(*mesh);
+		sdk->release();
+		return nxFail("PMap creation or release export is missing");
+		}
+	srand(1);
+	NxPMap computedPMap = { 0, 0 };
+	const bool computed = createPMap(computedPMap, *mesh, 32, 0);
+	const unsigned long long computedHash = computed ? nxPMapByteHash(
+		static_cast<const unsigned char*>(computedPMap.data), computedPMap.dataSize) : 0ull;
+	if(computed && getenv("NX_PMAP_COMPUTE_DUMP"))
+		{
+		FILE* dump = fopen(getenv("NX_PMAP_COMPUTE_DUMP"), "wb");
+		if(dump)
+			{
+			fwrite(computedPMap.data, 1, computedPMap.dataSize, dump);
+			fclose(dump);
+			}
+		}
+	printf("triangle_mesh pmap compute success=%u size=%u data=%u hash=%016llx\n",
+		computed ? 1u : 0u, computedPMap.dataSize, computedPMap.data ? 1u : 0u,
+		computedHash);
+	if(!computed || computedPMap.dataSize != 29537 || !computedPMap.data ||
+		computedHash != 0xf2481c44860c9a12ull)
+		{
+		if(computedPMap.data) releasePMap(computedPMap);
+		sdk->releaseTriangleMesh(*mesh);
+		sdk->release();
+		return nxFail("public NxCreatePMap did not compute a serialized map");
+		}
+	if(!releasePMap(computedPMap))
+		{
+		sdk->releaseTriangleMesh(*mesh);
+		sdk->release();
+		return nxFail("public NxReleasePMap failed for computed map");
 		}
 	NxTriangleMeshDesc roundTrip;
 	roundTrip.setToDefault();
