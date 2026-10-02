@@ -60,6 +60,9 @@ class PhysicsSDK : public NxAllocateable
 	void setGroupCollisionFlag(NxCollisionGroup group1, NxCollisionGroup group2, bool enable);
 	// phys_fn_000431 (0x0000dc50)
 	bool getGroupCollisionFlag(NxCollisionGroup group1, NxCollisionGroup group2) const;
+	// phys_fn_000433/000435, backed by the SDK actor-group pair hash at .data +0x123c28.
+	void setActorGroupPairFlags(NxActorGroup group1, NxActorGroup group2, NxU32 flags);
+	NxU32 getActorGroupPairFlags(NxActorGroup group1, NxActorGroup group2) const;
 	// phys_fn_000482 (0x0000ef50)
 	NxMaterialIndex addMaterial(const NxMaterial& material);
 	// phys_fn_000456 (0x0000dfd0). Reads the singleton rather than this object.

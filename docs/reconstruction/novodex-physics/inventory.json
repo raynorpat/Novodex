@@ -5002,12 +5002,12 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpPhysicsSDK.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/93",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/967",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "The wrapper takes every scene write lock, forwards setActorGroupPairFlags to PhysicsSDK, and unwinds acquired locks on failure or return.",
+      "dynamic_proof": "NxPhysicsSDKTests round-trips (7,3)=0xA and reads the same value in reverse key order; the complete public transcript matches the pinned oracle.",
       "notes": "",
       "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
@@ -5039,13 +5039,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/94",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/976",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "The wrapper takes every scene read lock, forwards getActorGroupPairFlags to PhysicsSDK, then unwinds all acquired locks.",
+      "dynamic_proof": "NxPhysicsSDKTests observes initial=0, forward=10, reverse=10, cleared=0; the complete public transcript matches the pinned oracle.",
+      "notes": "",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000272",
@@ -7992,14 +7993,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/PhysicsSDK.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/155",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1194",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "Valid actor groups are inserted as sorted 16-bit pair keys into the process-wide sparse hash; 0xffff is rejected.",
+      "dynamic_proof": "NxPhysicsSDKTests round-trips and clears actor-group pair flags with an exact pinned-oracle transcript.",
       "notes": "",
-      "implementation": null
+      "implementation": "Physics/src/PhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000434",
@@ -8029,14 +8030,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/PhysicsSDK.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/156",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1197",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "Valid actor groups are looked up as sorted 16-bit pair keys in the process-wide sparse hash; invalid 0xffff groups return zero.",
+      "dynamic_proof": "NxPhysicsSDKTests verifies both key orders, initial and cleared defaults, with an exact pinned-oracle transcript.",
       "notes": "",
-      "implementation": null
+      "implementation": "Physics/src/PhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000436",
@@ -76922,8 +76923,9 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1567",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13771",
       "static_proof": "Reconstructed from the pinned Capstone listing: sorted 16-bit owner keys, 32-bit avalanche hash, masked bucket lookup and linked record walk.",
-      "dynamic_proof": "The two owner-pair cases reached through NxFilterShapePair match oracle behavior; see evidence/convex-mesh-gap-2m-run.txt. Pinned NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; candidate NxPhysicsCollisionTests.exe SHA-256 EBF7014FBD8642FA913DBC0FD14C8EC663640F7DE244E50FEE29C4595982145B.",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSDKTests verifies the actor-group pair table lookup in both key orders and after zero replacement; its public transcript matches the pinned oracle.",
+      "notes": "",
+      "implementation": "Physics/src/NarrowPhase.cpp"
     },
     {
       "id": "phys_fn_004154",
@@ -76953,13 +76955,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1568",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13779",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "The recovered insertion routine sorts 16-bit keys, hashes into masked buckets, grows and rethreads entries, and reuses the free list; actor-group calls now pass the oracle-owned global table.",
+      "dynamic_proof": "NxPhysicsSDKTests exercises insertion, reverse-order lookup, replacement with zero, and release; allocator and API transcripts match the pinned oracle.",
+      "notes": "",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_004156",

@@ -229,6 +229,16 @@ int wmain(int argc, wchar_t** argv)
 	printf("step=parameters out_of_range=%d in_range=%d value=%.6f scenes=%u materials=%u\n",
 		rejected ? 1 : 0, accepted ? 1 : 0, first->getParameter(NX_PENALTY_FORCE),
 		first->getNbScenes(), first->getNbMaterials());
+	const NxActorGroup groupA = 7;
+	const NxActorGroup groupB = 3;
+	const NxU32 initialPairFlags = first->getActorGroupPairFlags(groupA, groupB);
+	first->setActorGroupPairFlags(groupA, groupB, 0x0000000a);
+	const NxU32 forwardPairFlags = first->getActorGroupPairFlags(groupA, groupB);
+	const NxU32 reversePairFlags = first->getActorGroupPairFlags(groupB, groupA);
+	first->setActorGroupPairFlags(groupA, groupB, 0);
+	const NxU32 clearedPairFlags = first->getActorGroupPairFlags(groupA, groupB);
+	printf("step=actor_group_pair_flags initial=%u forward=%u reverse=%u cleared=%u\n",
+		initialPairFlags, forwardPairFlags, reversePairFlags, clearedPairFlags);
 	reportStream("step=parameters.stream", streamFirst);
 
 	first->release();

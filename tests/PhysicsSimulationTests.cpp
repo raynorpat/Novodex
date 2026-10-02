@@ -978,8 +978,9 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("contact-report actors creation failed");
 	NxSimulationContactReport generatedContactReport(reportGround, reportDynamic);
 	reportScene->setUserContactReport(&generatedContactReport);
-	reportScene->setActorPairFlags(*reportGround, *reportDynamic,
-		NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH);
+	reportGround->setGroup(7);
+	reportDynamic->setGroup(3);
+	sdk->setActorGroupPairFlags(7, 3, NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH);
 	const NxU32 reportFlags = reportScene->getActorPairFlags(*reportGround, *reportDynamic);
 	reportScene->simulate(0.125f);
 	const bool reportReady = reportScene->checkResults(NX_RIGID_BODY_FINISHED, true);
@@ -989,6 +990,7 @@ int wmain(int argc, wchar_t** argv)
 	printf("simulation generated-contact summary flags=%08x calls=%u events=%08x ready=%u fetched=%u\n",
 		reportFlags, generatedContactReport.calls, generatedContactReport.events,
 		reportReady, reportFetched);
+	sdk->setActorGroupPairFlags(7, 3, 0);
 	sdk->releaseScene(*reportScene);
 
 	// Seed the oracle-shaped fetch callback queues after a completed empty step.

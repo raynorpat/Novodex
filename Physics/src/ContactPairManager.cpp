@@ -296,7 +296,7 @@ static __declspec(noinline) CpmPairHashEntry* cpmOpen004153(CpmPairHash* hash, N
 		static_cast<NxU16>(key0), static_cast<NxU16>(key1)));
 	}
 
-// Row 004155 (0x0009a610, 772 B): insert (key0, key1) -> value; returns
+// phys_fn_004155 / Row 004155 (0x0009a610, 772 B): insert (key0, key1) -> value; returns
 // the entry. thiscall on the hash.
 static __declspec(noinline) CpmPairHashEntry* cpmOpen004155(CpmPairHash* hash, NxU32 key0, NxU32 key1, void* value)
 	{
@@ -377,18 +377,38 @@ static __declspec(noinline) CpmPairHashEntry* cpmOpen004155(CpmPairHash* hash, N
 	return slot;
 	}
 
+// .data 0x10123c28: process-wide actor-group pair flags. The SDK's lookup and
+// insertion rows use the same sparse hash layout as scene shape-pair records.
+static CpmPairHash gCpmActorGroupPairFlags = {};
+static CpmPairHash* const kCpmActorGroupPairFlags = &gCpmActorGroupPairFlags;
+
+void cpmSetActorGroupPairFlags(NxU16 group0, NxU16 group1, NxU32 flags)
+	{
+	cpmOpen004155(kCpmActorGroupPairFlags, group0, group1,
+		reinterpret_cast<void*>(static_cast<size_t>(flags)));
+	}
+
+NxU32 cpmGetActorGroupPairFlags(NxU16 group0, NxU16 group1)
+	{
+	const CpmPairHashEntry* entry = cpmOpen004153(kCpmActorGroupPairFlags, group0, group1);
+	return entry ? entry->value : 0;
+	}
+
+void cpmResetActorGroupPairFlags()
+	{
+	NxU32* words = reinterpret_cast<NxU32*>(kCpmActorGroupPairFlags);
+	if(words[2]) nxFoundationSDKAllocator->free(reinterpret_cast<void*>(words[2]));
+	if(words[3]) nxFoundationSDKAllocator->free(reinterpret_cast<void*>(words[3]));
+	if(words[5]) nxFoundationSDKAllocator->free(reinterpret_cast<void*>(words[5]));
+	memset(kCpmActorGroupPairFlags, 0, sizeof(*kCpmActorGroupPairFlags));
+	}
+
 // Row 004157 (0x0009a920, 476 B): erase (key0, key1). thiscall on the
 // hash.
 static __declspec(noinline) void cpmOpen004157(CpmPairHash* hash, NxU32 key0, NxU32 key1)
 	{
 	NxRemoveCollisionPairRecord(hash, static_cast<NxU16>(key0), static_cast<NxU16>(key1));
 	}
-
-// .data 0x10123c28: the SDK's actor-group pair-flags hash (NpPhysicsSDK.cpp's
-// setActorGroupPairFlags is blocked on the same object). The oracle passes its
-// address to 004153 (`mov ecx,0x10123c28`, 0x1001ffa4 and 0x10020156); the
-// candidate has no such object.
-static CpmPairHash* const kCpmActorGroupPairFlags = 0;
 
 static bool cpmActorFirstShapeIds(const void* actor, NxU32& shapeId)
 	{

@@ -24,8 +24,8 @@
   },
   "counts": {
     "differential_falsified": 2,
-    "deferred_not_reconstructed_in_phase": 29,
-    "deferred_reconstructed_not_falsified": 402
+    "deferred_reconstructed_not_falsified": 403,
+    "deferred_not_reconstructed_in_phase": 28
   },
   "closed": [
     {
@@ -805,9 +805,10 @@
       "id": "phys_fn_004155",
       "rva": "0x0009a610",
       "size": 772,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "The implementation and oracle differential now cover actor-group pair insertion and lookup; a row-targeted mutation closure remains open."
     },
     {
       "id": "phys_fn_004157",

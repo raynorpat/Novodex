@@ -51,6 +51,10 @@ struct CpmPairHash
 	CpmPairHashEntry*	entries;	//!< +0x14
 	};
 
+void cpmSetActorGroupPairFlags(NxU16 group0, NxU16 group1, NxU32 flags);
+NxU32 cpmGetActorGroupPairFlags(NxU16 group0, NxU16 group1);
+void cpmResetActorGroupPairFlags();
+
 // The per-actor-pair report record (0x14 bytes, allocated by 000905 through
 // nxFoundationSDKAllocator and freed by 000913/000917): +0x00 state (bit 31
 // touching this step, bit 30 touching last report, bit 29 kept while stale,

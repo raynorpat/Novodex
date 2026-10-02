@@ -15,7 +15,7 @@ Evidenced span: ['0x0000db50', '0x0000ebe0']. Rows: 31 (0 ambiguous). Generated 
 - Scene.cpp: phys_fn_000647, phys_fn_000651
 - TriangleMesh.cpp: phys_fn_002251, phys_fn_002253, phys_fn_002258
 - gap:Controller.cpp..fluids\Fluid.cpp: phys_fn_002338
-- gap:Joint.cpp..D6Joint.cpp: phys_fn_004153, phys_fn_004155
+- gap:Joint.cpp..core\Articulation.cpp: phys_fn_004153, phys_fn_004155
 - gap:NpActor.cpp..NpPhysicsSDK.cpp: phys_fn_000226
 - gap:NpTriangleMeshShape.cpp..Shape.cpp: phys_fn_001275
 
@@ -172,11 +172,11 @@ bool FUN_1000dc50(ushort param_1,ushort param_2)
 
 ```
 
-## phys_fn_000433 (0x0000dce0, 81 B, discovered)
+## phys_fn_000433 (0x0000dce0, 81 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/PhysicsSDK.cpp
-- implementation: None
+- implementation: Physics/src/PhysicsSDK.cpp
 - prototype: undefined __stdcall FUN_1000dce0(ushort param_1, ushort param_2, undefined4 param_3)
 - calling convention: __stdcall, stack purge: 12
 - callers: phys_fn_000269 (0x0000c000)
@@ -211,11 +211,11 @@ void FUN_1000dce0(ushort param_1,ushort param_2,undefined4 param_3)
 
 ```
 
-## phys_fn_000435 (0x0000dd40, 87 B, discovered)
+## phys_fn_000435 (0x0000dd40, 87 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/PhysicsSDK.cpp
-- implementation: None
+- implementation: Physics/src/PhysicsSDK.cpp
 - prototype: undefined4 __stdcall FUN_1000dd40(ushort param_1, ushort param_2)
 - calling convention: __stdcall, stack purge: 8
 - callers: phys_fn_000271 (0x0000c0e0)

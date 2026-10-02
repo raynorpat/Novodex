@@ -733,6 +733,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# units directly because the rows it covers cannot be reached through the
 	# public API. Same shape as NxFoundationCustomArrayTests above.
 	add_executable(NxPhysicsInternalTests tests/PhysicsInternalTests.cpp
+		tests/PhysicsInternalGroupPairStubs.cpp
 		Physics/src/PhysicsInternal.cpp
 		Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp

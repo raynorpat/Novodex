@@ -6,6 +6,7 @@
 |
 \*----------------------------------------------------------------------------*/
 #include "PhysicsSDK.h"
+#include "ContactPairManager.h"
 #include "Scene.h"
 #include "NxSceneDesc.h"
 #include "NpPhysicsSDK.h"
@@ -27,6 +28,8 @@ static const int gGetParameterEnumErrorLine = 306;
 // and 0x0000dc9b. Both push an error code of 1, NXE_INVALID_PARAMETER.
 static const int gSetGroupCollisionFlagErrorLine = 576;
 static const int gGetGroupCollisionFlagErrorLine = 584;
+static const int gSetActorGroupPairFlagsErrorLine = 593;
+static const int gGetActorGroupPairFlagsErrorLine = 601;
 
 // .data 0x001238b8, 0x001239a8 and 0x001237c8. The constructor fills all three,
 // then copies the defaults into the live values at .data 0x00123b18.
@@ -196,6 +199,7 @@ PhysicsSDK::~PhysicsSDK()
 	{
 	NX_DELETE_SINGLE(mNp);
 	nxReleaseSdkPointerBindings();
+	cpmResetActorGroupPairFlags();
 
 	// The global name map at .data 0x00123c0c is released above, and the
 	// process-wide OPCODE pool below. Other ownership paths remain open:
@@ -377,6 +381,32 @@ bool PhysicsSDK::getGroupCollisionFlag(NxCollisionGroup group1, NxCollisionGroup
 	if(group1 != 0xffff && group2 != 0xffff)
 		return (gGroupCollisionMask[group1] & (1 << group2)) != 0;
 	return true;
+	}
+
+// phys_fn_000433: validated insertion into the actor-group pair map.
+void PhysicsSDK::setActorGroupPairFlags(NxActorGroup group1, NxActorGroup group2, NxU32 flags)
+	{
+	if(group1 != 0xffff && group2 != 0xffff)
+		{
+		cpmSetActorGroupPairFlags(group1, group2, flags);
+		return;
+		}
+	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER, NX_PHYSICS_SDK_CPP,
+		gSetActorGroupPairFlagsErrorLine, 0,
+		"PhysicsSDK::setGroupCollisionFlag: invalid params!  Group must be < 0xffff!");
+	}
+
+// phys_fn_000435: validated lookup in the actor-group pair map.
+NxU32 PhysicsSDK::getActorGroupPairFlags(NxActorGroup group1, NxActorGroup group2) const
+	{
+	if(group1 == 0xffff || group2 == 0xffff)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER, NX_PHYSICS_SDK_CPP,
+			gGetActorGroupPairFlagsErrorLine, 0,
+			"PhysicsSDK::getGroupCollisionFlag: invalid params!  Group must be < 0xffff!");
+		return 0;
+		}
+	return cpmGetActorGroupPairFlags(group1, group2);
 	}
 
 // phys_fn_000482 (0x0000ef50). The growth the oracle performs is exactly

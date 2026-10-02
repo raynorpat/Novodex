@@ -87,6 +87,10 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from 89978 to 3521 and leaves stdout_delta at 0, and this is what turns that
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
+    'NxPhysicsSDKTests' = @(
+        # Public SDK-side sparse actor-group flag hash, queried in both key orders and cleared.
+        'step=actor_group_pair_flags initial=0 forward=10 reverse=10 cleared=0'
+    )
     'NxPhysicsActorShapeMutationTests' = @(
         # NpActor.cpp completion Task 4: createShape (000070 -> Actor.cpp 000036)
         # and releaseShape (000072 -> 000024) on a static and a dynamic actor, every
@@ -3078,7 +3082,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation fetch-callback summary ready=1 fetched=1 trigger_get=1 trigger_calls=1 contact_get=1 contact_calls=1'
         'simulation fetch-contact actor0=1 actor1=1 events=0000000a force=80000000.80000000.80000000'
         'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.80000000.80000000'
-        'simulation generated-contact summary flags=0000000a calls=6 events=00000008 ready=1 fetched=1'
+        'simulation generated-contact summary flags=00000000 calls=6 events=00000008 ready=1 fetched=1'
     )
     'NxPhysicsTriggerSimulationTests' = @(
         # A dynamic sphere crosses a public static trigger box under real motion.
@@ -5264,7 +5268,7 @@ $NxRequiredCoverageLines = [ordered] @{
 # independently, so the two edits have to appear together in a diff.
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
-    '2' = 0
+    '2' = 1  # one public actor-group pair-flag hash round-trip and clear
     '3' = 359  # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 251  # 34 asset and 217 third-party assertions, including qhull and convex-mesh gap
     '5' = 2037  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines

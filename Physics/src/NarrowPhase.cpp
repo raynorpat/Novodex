@@ -141,6 +141,7 @@ static_assert(offsetof(NxCollisionShape, geometry) == 0xe0, "shape geometry unio
 // phys_fn_004153 (0x0009a570, 156 B)
 // The scene's pair-key hash uses an ascending 16-bit key pair, a 32-bit avalanche hash, bucket mask at +0x04,
 // bucket heads at +0x08, links at +0x0c and eight-byte records at +0x14.
+// phys_fn_004153: sorted-key lookup in the sparse pair map.
 void* NxFindCollisionPairRecord(const void* pairMap, NxU16 owner0, NxU16 owner1)
 	{
 	const NxU8* map = (const NxU8*) pairMap;
