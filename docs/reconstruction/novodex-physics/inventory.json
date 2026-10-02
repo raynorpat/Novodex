@@ -11778,13 +11778,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/251",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1703",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSimulationTests public-pair differential (\build/fetch-callback-green2.log): exact oracle/candidate transcript (stdout_delta=0, stderr_exact=True). The fixture preloads one oracle-layout trigger record and one 0x2c contact report after a completed step, sets both public report callbacks, and verifies callback arguments plus end-pointer resets; it isolates the fetch dispatcher and does not claim event-generation coverage.",
+      "notes": "Oracle row phys_fn_000640 is transcribed as the fetch callback-list drain. The public-pair differential injects oracle-shaped trigger and contact records and verifies callback arguments, callback order around the joint-break drain, and list-end resets; the closure ledger still requires a mutation falsification before this row can be closed.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "NxSceneInternal::processSimulationCallbacks"
     },
     {
       "id": "phys_fn_000641",

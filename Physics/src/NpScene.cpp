@@ -632,40 +632,43 @@ void NpScene::getLimits(NxSceneLimits& limits) const
 	
 	}
 
-// (unimplemented) setUserNotify
+// phys_fn_000350: store the callback consumed by joint-break events.
 void NpScene::setUserNotify(NxUserNotify* callback)
 	{
-	
+	if(mScene)
+		mScene->at<NxUserNotify*>(0x6ac) = callback;
 	}
 
-// (unimplemented) getUserNotify
+// phys_fn_000352: read the callback stored at Scene+0x6ac.
 NxUserNotify* NpScene::getUserNotify() const
 	{
-	return 0;
+	return mScene ? mScene->at<NxUserNotify*>(0x6ac) : 0;
 	}
 
-// (unimplemented) setUserTriggerReport
+// phys_fn_000354: store the trigger callback consumed by phys_fn_000640.
 void NpScene::setUserTriggerReport(NxUserTriggerReport* callback)
 	{
-	
+	if(mScene)
+		mScene->at<NxUserTriggerReport*>(0x6b0) = callback;
 	}
 
-// (unimplemented) getUserTriggerReport
+// phys_fn_000356: read the callback stored at Scene+0x6b0.
 NxUserTriggerReport* NpScene::getUserTriggerReport() const
 	{
-	return 0;
+	return mScene ? mScene->at<NxUserTriggerReport*>(0x6b0) : 0;
 	}
 
-// (unimplemented) setUserContactReport
+// phys_fn_000358: store the actor-contact callback consumed by phys_fn_000640.
 void NpScene::setUserContactReport(NxUserContactReport* callback)
 	{
-	
+	if(mScene)
+		mScene->at<NxUserContactReport*>(0x6b4) = callback;
 	}
 
-// (unimplemented) getUserContactReport
+// phys_fn_000360: read the callback stored at Scene+0x6b4.
 NxUserContactReport* NpScene::getUserContactReport() const
 	{
-	return 0;
+	return mScene ? mScene->at<NxUserContactReport*>(0x6b4) : 0;
 	}
 
 // (unimplemented) setUserFluidContactReport
@@ -963,7 +966,7 @@ bool NpScene::checkResults(NxSimulationStatus status, bool block )
 	return ::WaitForSingleObject(done, block ? INFINITE : 0) == WAIT_OBJECT_0;
 	}
 
-// (unimplemented) fetchResults
+// phys_fn_000398 fetch-side path: wait for the worker, dispatch queued trigger/break/contact reports, refresh body gravity/snapshots, then clear the completion event.
 bool NpScene::fetchResults(NxSimulationStatus status, bool block )
 	{
 	if(!checkResults(status, block))
@@ -971,7 +974,7 @@ bool NpScene::fetchResults(NxSimulationStatus status, bool block )
 	if(mScene)
 		{
 		nxNpSceneGuardEnter(mReadLock);
-		mScene->processJointBreakEvents();
+		mScene->processSimulationCallbacks();
 		mScene->finishSimulation();
 		nxNpSceneGuardLeave(mReadLock);
 		}

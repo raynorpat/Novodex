@@ -3073,6 +3073,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation pair=created'
         'simulation stage=pair11 p0=bf587c8e.00000000.3ea0bde5 v0=4013df79.00000000.3fc213dd p1=3d3afc59.00000000.bc6489c3 v1=3fd84107.00000000.bf0427bd'
         'simulation pair steps=40 ready=1 fetched=1'
+        'simulation fetch-trigger trigger=1 other=1 status=1'
+        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=3f800000.40000000.40400000'
+        'simulation fetch-callback summary ready=1 fetched=1 trigger_get=1 trigger_calls=1 contact_get=1 contact_calls=1'
     )
     # Effector-and-coredump Task 2: the spring-and-damper effector differential.
     # NxScene's effector API and every NxSpringAndDamperEffector method over two
@@ -5260,7 +5263,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1237  # previous 1,227 plus 10 repeated SDK/scene lifecycle observations
+    '7' = 1240  # previous 1,237 plus three fetch-callback observations
     '8' = 0
 }
 

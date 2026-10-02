@@ -96,6 +96,9 @@ class NxSceneInternal
 	void addJointBreakEvent(JointBreakEvent* event);
 	// phys_fn_000577 (0x000109c0). Dispatches and frees queued break events.
 	void processJointBreakEvents();
+	// phys_fn_000640 (0x00012a90). Flushes trigger callbacks, break events,
+	// then buffered contact callbacks in oracle order.
+	void processSimulationCallbacks();
 	// phys_fn_000559 (0x00010860), phys_fn_000563 (0x00010880) and
 	// phys_fn_000567 (0x000108a0).
 	NxU32 getNbJoints() const;

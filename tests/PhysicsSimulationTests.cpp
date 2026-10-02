@@ -17,10 +17,50 @@
 #include "NxJoint.h"
 #include "NxMaterial.h"
 #include "NxBounds3.h"
+#include "NxUserContactReport.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 typedef void (NX_CALL_CONV *JointDescSetGlobalAnchorFn)(NxJointDesc&, const NxVec3&);
 typedef void (NX_CALL_CONV *JointDescSetGlobalAxisFn)(NxJointDesc&, const NxVec3&);
+static unsigned nxFloatBits(NxReal value);
+
+class NxSimulationTriggerReport : public NxUserTriggerReport
+	{
+	public:
+	NxShape* expectedTrigger;
+	NxShape* expectedOther;
+	unsigned calls;
+	unsigned status;
+	NxSimulationTriggerReport(NxShape* trigger, NxShape* other)
+		: expectedTrigger(trigger), expectedOther(other), calls(0), status(0) {}
+	virtual void onTrigger(NxShape& trigger, NxShape& other, NxTriggerFlag event)
+		{
+		++calls;
+		status = static_cast<unsigned>(event);
+		printf("simulation fetch-trigger trigger=%u other=%u status=%u\n",
+			&trigger == expectedTrigger, &other == expectedOther, status);
+		}
+	};
+
+class NxSimulationContactReport : public NxUserContactReport
+	{
+	public:
+	NxActor* expectedActor0;
+	NxActor* expectedActor1;
+	unsigned calls;
+	unsigned events;
+	NxSimulationContactReport(NxActor* actor0, NxActor* actor1)
+		: expectedActor0(actor0), expectedActor1(actor1), calls(0), events(0) {}
+	virtual void onContactNotify(NxContactPair& pair, NxU32 eventFlags)
+		{
+		++calls;
+		events = eventFlags;
+		printf("simulation fetch-contact actor0=%u actor1=%u events=%08x force=%08x.%08x.%08x\n",
+			pair.actors[0] == expectedActor0, pair.actors[1] == expectedActor1,
+			eventFlags, nxFloatBits(pair.sumNormalForce.x),
+			nxFloatBits(pair.sumNormalForce.y), nxFloatBits(pair.sumNormalForce.z));
+		}
+	};
 
 static unsigned nxFloatBits(NxReal value)
 	{
@@ -911,6 +951,77 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("simulation pair steps=40 ready=1 fetched=1\n");
 	sdk->releaseScene(*pairScene);
+
+	// Seed the oracle-shaped fetch callback queues after a completed empty step.
+	// This isolates the 000640 callback dispatch/list-reset contract from pair
+	// generation, which is covered by the collision/contact reconstruction.
+	NxSceneDesc callbackSceneDesc;
+	callbackSceneDesc.setToDefault();
+	NxScene* callbackScene = sdk->createScene(callbackSceneDesc);
+	if(!callbackScene)
+		return nxFail("fetch-callback scene creation failed");
+	unsigned char callbackWrapper[0x28];
+	memcpy(callbackWrapper, callbackScene, sizeof(callbackWrapper));
+	unsigned char* const callbackInternal = *reinterpret_cast<unsigned char**>(callbackWrapper + 0x24);
+	unsigned char internalShapes[2][0xa0];
+	unsigned char publicShapeTokens[2];
+	memset(internalShapes, 0, sizeof(internalShapes));
+	memset(publicShapeTokens, 0, sizeof(publicShapeTokens));
+	NxShape* const expectedTrigger = reinterpret_cast<NxShape*>(&publicShapeTokens[0]);
+	NxShape* const expectedOther = reinterpret_cast<NxShape*>(&publicShapeTokens[1]);
+	*reinterpret_cast<NxShape**>(internalShapes[0] + 0x9c) = expectedTrigger;
+	*reinterpret_cast<NxShape**>(internalShapes[1] + 0x9c) = expectedOther;
+	NxSimulationTriggerReport triggerReport(expectedTrigger, expectedOther);
+	NxSimulationContactReport contactReport(reinterpret_cast<NxActor*>(&publicShapeTokens[0]),
+		reinterpret_cast<NxActor*>(&publicShapeTokens[1]));
+	callbackScene->setUserTriggerReport(&triggerReport);
+	callbackScene->setUserContactReport(&contactReport);
+	const bool triggerGetter = callbackScene->getUserTriggerReport() == &triggerReport;
+	const bool contactGetter = callbackScene->getUserContactReport() == &contactReport;
+	unsigned char triggerQueue[0x0c];
+	*reinterpret_cast<void**>(triggerQueue + 0x00) = internalShapes[0];
+	*reinterpret_cast<void**>(triggerQueue + 0x04) = internalShapes[1];
+	*reinterpret_cast<NxU32*>(triggerQueue + 0x08) = NX_TRIGGER_ON_ENTER;
+	unsigned char contactQueue[0x2c];
+	memset(contactQueue, 0, sizeof(contactQueue));
+	NxContactPair* const contactPair = reinterpret_cast<NxContactPair*>(contactQueue);
+	contactPair->actors[0] = contactReport.expectedActor0;
+	contactPair->actors[1] = contactReport.expectedActor1;
+	contactPair->sumNormalForce = NxVec3(1.0f, 2.0f, 3.0f);
+	*reinterpret_cast<NxU32*>(contactQueue + 0x28) = NX_NOTIFY_ON_TOUCH;
+	void** const triggerBeginField = reinterpret_cast<void**>(callbackInternal + 0x5fc);
+	void** const triggerEndField = reinterpret_cast<void**>(callbackInternal + 0x600);
+	void** const triggerCapacityField = reinterpret_cast<void**>(callbackInternal + 0x604);
+	void** const contactBeginField = reinterpret_cast<void**>(callbackInternal + 0x60c);
+	void** const contactEndField = reinterpret_cast<void**>(callbackInternal + 0x610);
+	void** const contactCapacityField = reinterpret_cast<void**>(callbackInternal + 0x614);
+	void* const savedTriggerBegin = *triggerBeginField;
+	void* const savedTriggerEnd = *triggerEndField;
+	void* const savedTriggerCapacity = *triggerCapacityField;
+	void* const savedContactBegin = *contactBeginField;
+	void* const savedContactEnd = *contactEndField;
+	void* const savedContactCapacity = *contactCapacityField;
+	*triggerBeginField = triggerQueue;
+	*triggerEndField = triggerQueue + sizeof(triggerQueue);
+	*triggerCapacityField = triggerQueue + sizeof(triggerQueue);
+	*contactBeginField = contactQueue;
+	*contactEndField = contactQueue + sizeof(contactQueue);
+	*contactCapacityField = contactQueue + sizeof(contactQueue);
+	callbackScene->simulate(0.01f);
+	const bool callbackReady = callbackScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+	const bool callbackFetched = callbackScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+	*triggerBeginField = savedTriggerBegin;
+	*triggerEndField = savedTriggerEnd;
+	*triggerCapacityField = savedTriggerCapacity;
+	*contactBeginField = savedContactBegin;
+	*contactEndField = savedContactEnd;
+	*contactCapacityField = savedContactCapacity;
+	if(!callbackReady || !callbackFetched)
+		return nxFail("fetch-callback simulation result was not ready and fetched");
+	printf("simulation fetch-callback summary ready=%u fetched=%u trigger_get=%u trigger_calls=%u contact_get=%u contact_calls=%u\n",
+		callbackReady, callbackFetched, triggerGetter, triggerReport.calls,
+		contactGetter, contactReport.calls);
+	sdk->releaseScene(*callbackScene);
 
 	sdk->releaseScene(*scene);
 	sdk->release();

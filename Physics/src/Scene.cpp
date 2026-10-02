@@ -46,6 +46,7 @@
 #include "NxJointDesc.h"
 #include "NxJoint.h"
 #include "NxUserNotify.h"
+#include "NxUserContactReport.h"
 #include "core/RevoluteJoint.h"
 #include "core/PrismaticJoint.h"
 #include "core/CylindricalJoint.h"
@@ -3557,6 +3558,52 @@ void NxSceneInternal::processJointBreakEvents()
 		event = at<JointBreakEvent*>(0x620);
 		}
 	at<JointBreakEvent*>(0x620) = 0;
+	}
+
+// phys_fn_000640 (0x00012a90): deliver trigger callbacks, drain joint-break
+// events, then deliver buffered actor-contact callbacks. The end pointers are
+// reset only when the corresponding user callback is installed, matching the
+// oracle's guarded list-clearing behavior.
+void NxSceneInternal::processSimulationCallbacks()
+	{
+	NxU8* const triggerBegin = at<NxU8*>(0x5fc);
+	NxU8* const triggerEnd = at<NxU8*>(0x600);
+	NxUserTriggerReport* const triggerReport = at<NxUserTriggerReport*>(0x6b0);
+	const NxU32 triggerCount = triggerBegin && triggerEnd
+		? (NxU32)(triggerEnd - triggerBegin) / 0x0c : 0;
+	if(triggerReport && triggerCount)
+		{
+		for(NxU32 index = 0; index != triggerCount; ++index)
+			{
+			NxU8* const event = triggerBegin + index * 0x0c;
+			NxShape* const trigger = *reinterpret_cast<NxShape**>(
+				*reinterpret_cast<NxU8**>(event + 0x00) + 0x9c);
+			NxShape* const other = *reinterpret_cast<NxShape**>(
+				*reinterpret_cast<NxU8**>(event + 0x04) + 0x9c);
+			const NxTriggerFlag flags = (NxTriggerFlag)*reinterpret_cast<NxU32*>(event + 0x08);
+			triggerReport->onTrigger(*trigger, *other, flags);
+			}
+		at<NxU8*>(0x600) = triggerBegin;
+		}
+
+	processJointBreakEvents();
+
+	NxU8* const contactBegin = at<NxU8*>(0x60c);
+	NxU8* const contactEnd = at<NxU8*>(0x610);
+	NxUserContactReport* const contactReport = at<NxUserContactReport*>(0x6b4);
+	const NxU32 contactCount = contactBegin && contactEnd
+		? (NxU32)(contactEnd - contactBegin) / 0x2c : 0;
+	if(contactReport && contactCount)
+		{
+		for(NxU32 index = 0; index != contactCount; ++index)
+			{
+			NxU8* const record = contactBegin + index * 0x2c;
+			NxContactPair& pair = *reinterpret_cast<NxContactPair*>(record);
+			const NxU32 events = *reinterpret_cast<NxU32*>(record + 0x28);
+			contactReport->onContactNotify(pair, events);
+			}
+		at<NxU8*>(0x610) = contactBegin;
+		}
 	}
 
 // phys_fn_004113 (0x00098050): offer the break to the Scene user notify. A
