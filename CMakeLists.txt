@@ -165,6 +165,10 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # QhullHost.cpp is NovodeX's hull library around qhull (qhull-gap Task 4): x87 in the oracle
 # (the box fallback, the OBJ writers' widening, the rescale) and run under the caller's word.
 # Quantizer.cpp is the same library's band B (Wu's quantizer and reduceVertices, piece 4d), x87 too.
+# PMap.cpp's point-to-triangle query is the x87 OPCODE row 005324 (0x000e7c50):
+# the oracle compares its extended result against a float best distance. SSE2
+# rounded the near-tied face distances before that comparison, changing 61 face
+# labels in the exact-byte PMap fixture.
 # core/SpringAndDamperEffector.cpp (effector-and-coredump Task 2) does x87
 # work in 003962/003964/003970/003972 and its solver slot 003979 runs inside
 # the step; core/NpSpringAndDamperEffector.cpp does none and stays default.
@@ -181,6 +185,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/NarrowPhase.cpp
 		Physics/src/ContactGeneration.cpp
 		Physics/src/Distance.cpp
+		Physics/src/PMap.cpp
 		Physics/src/ContactBoxMeshICE.cpp
 		Physics/src/ContactCapsuleMesh.cpp
 		Physics/src/ContactMeshHeightfield.cpp

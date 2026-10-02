@@ -136,6 +136,158 @@ static int comparePMapValueCell(const void* lhs, const void* rhs)
 
 static_assert(sizeof(NxU32) == 4, "the grid is dwords");
 
+static double nxPMapPointTriangleSqrDistance(const IceMaths::Point& point,
+	const IceMaths::Point& p0, const IceMaths::Point& p1, const IceMaths::Point& p2)
+{
+	// Hook
+	IceMaths::Point TriEdge0 = p1 - p0;
+	IceMaths::Point TriEdge1 = p2 - p0;
+
+	IceMaths::Point kDiff	= p0 - point;
+	// FUN_100e7c50's x87 listing accumulates edge-zero terms as y, z, x,
+	// while its edge-one terms use x, y, z. Preserve that order at the tied-face
+	// comparison boundary.
+	float fA00	= TriEdge0.y * TriEdge0.y + TriEdge0.z * TriEdge0.z + TriEdge0.x * TriEdge0.x;
+	float fA01	= TriEdge1.y * TriEdge0.y + TriEdge1.z * TriEdge0.z + TriEdge1.x * TriEdge0.x;
+	float fA11	= TriEdge1.z * TriEdge1.z + TriEdge1.y * TriEdge1.y + TriEdge1.x * TriEdge1.x;
+	float fB0	= kDiff.y * TriEdge0.y + kDiff.z * TriEdge0.z + kDiff.x * TriEdge0.x;
+	float fB1	= kDiff.x * TriEdge1.x + kDiff.y * TriEdge1.y + kDiff.z * TriEdge1.z;
+	double fC	= static_cast<double>(kDiff.z) * kDiff.z +
+		static_cast<double>(kDiff.y) * kDiff.y + static_cast<double>(kDiff.x) * kDiff.x;
+	float fDet	= fabsf(fA00*fA11 - fA01*fA01);
+	float fS	= fA01*fB1-fA11*fB0;
+	float fT	= fA01*fB0-fA00*fB1;
+	double fSqrDist;
+
+	if(fS + fT <= fDet)
+	{
+		if(fS < 0.0f)
+		{
+			if(fT < 0.0f)  // region 4
+			{
+				if(fB0 < 0.0f)
+				{
+					if(-fB0 >= fA00)		fSqrDist = fA00+2.0f*fB0+fC;
+					else					fSqrDist = fB0*(-fB0/fA00)+fC;
+				}
+				else
+				{
+					if(fB1 >= 0.0f)			fSqrDist = fC;
+					else if(-fB1 >= fA11)	fSqrDist = fA11+2.0f*fB1+fC;
+					else					fSqrDist = fB1*(-fB1/fA11)+fC;
+				}
+			}
+			else  // region 3
+			{
+				if(fB1 >= 0.0f)				fSqrDist = fC;
+				else if(-fB1 >= fA11)		fSqrDist = fA11+2.0f*fB1+fC;
+				else						fSqrDist = fB1*(-fB1/fA11)+fC;
+			}
+		}
+		else if(fT < 0.0f)  // region 5
+		{
+			if(fB0 >= 0.0f)					fSqrDist = fC;
+			else if(-fB0 >= fA00)			fSqrDist = fA00+2.0f*fB0+fC;
+			else							fSqrDist = fB0*(-fB0/fA00)+fC;
+		}
+		else  // region 0
+		{
+			// minimum at interior point
+			if(fDet==0.0f)
+			{
+				fSqrDist = MAX_FLOAT;
+			}
+			else
+			{
+				float fInvDet = 1.0f/fDet;
+				fS *= fInvDet;
+				fT *= fInvDet;
+				fSqrDist = fS*(fA00*fS+fA01*fT+2.0f*fB0) + fT*(fA01*fS+fA11*fT+2.0f*fB1)+fC;
+			}
+		}
+	}
+	else
+	{
+		float fTmp0, fTmp1, fNumer, fDenom;
+
+		if(fS < 0.0f)  // region 2
+		{
+			fTmp0 = fA01 + fB0;
+			fTmp1 = fA11 + fB1;
+			if(fTmp1 > fTmp0)
+			{
+				fNumer = fTmp1 - fTmp0;
+				fDenom = fA00-2.0f*fA01+fA11;
+				if(fNumer >= fDenom)
+				{
+					fSqrDist = fA00+2.0f*fB0+fC;
+				}
+				else
+				{
+					fS = fNumer/fDenom;
+					fT = 1.0f - fS;
+					fSqrDist = fS*(fA00*fS+fA01*fT+2.0f*fB0) + fT*(fA01*fS+fA11*fT+2.0f*fB1)+fC;
+				}
+			}
+			else
+			{
+				if(fTmp1 <= 0.0f)		fSqrDist = fA11+2.0f*fB1+fC;
+				else if(fB1 >= 0.0f)	fSqrDist = fC;
+				else					fSqrDist = fB1*(-fB1/fA11)+fC;
+			}
+		}
+		else if(fT < 0.0f)  // region 6
+		{
+			fTmp0 = fA01 + fB1;
+			fTmp1 = fA00 + fB0;
+			if(fTmp1 > fTmp0)
+			{
+				fNumer = fTmp1 - fTmp0;
+				fDenom = fA00-2.0f*fA01+fA11;
+				if(fNumer >= fDenom)
+				{
+					fSqrDist = fA11+2.0f*fB1+fC;
+				}
+				else
+				{
+					fT = fNumer/fDenom;
+					fS = 1.0f - fT;
+					fSqrDist = fS*(fA00*fS+fA01*fT+2.0f*fB0) + fT*(fA01*fS+fA11*fT+2.0f*fB1)+fC;
+				}
+			}
+			else
+			{
+				if(fTmp1 <= 0.0f)		fSqrDist = fA00+2.0f*fB0+fC;
+				else if(fB0 >= 0.0f)	fSqrDist = fC;
+				else					fSqrDist = fB0*(-fB0/fA00)+fC;
+			}
+		}
+		else  // region 1
+		{
+			fNumer = fA11 + fB1 - fA01 - fB0;
+			if(fNumer <= 0.0f)
+			{
+				fSqrDist = fA11+2.0f*fB1+fC;
+			}
+			else
+			{
+				fDenom = fA00-2.0f*fA01+fA11;
+				if(fNumer >= fDenom)
+				{
+					fSqrDist = fA00+2.0f*fB0+fC;
+				}
+				else
+				{
+					fS = fNumer/fDenom;
+					fT = 1.0f - fS;
+					fSqrDist = fS*(fA00*fS+fA01*fT+2.0f*fB0) + fT*(fA01*fS+fA11*fT+2.0f*fB1)+fC;
+				}
+			}
+		}
+	}
+	return fabs(fSqrDist);
+}
+
 static double nxPMapTriangleDistance(const InternalTriangleMesh& mesh,
 	const NxF32 point[3], NxU32 face)
 	{
@@ -144,7 +296,11 @@ static double nxPMapTriangleDistance(const InternalTriangleMesh& mesh,
 	const NxVec3& a = vertices[triangles[face * 3 + 0]];
 	const NxVec3& b = vertices[triangles[face * 3 + 1]];
 	const NxVec3& c = vertices[triangles[face * 3 + 2]];
-	return NxPointTriangleSquareDistance(point, &a.x, &b.x, &c.x, 0, 0);
+	const IceMaths::Point query(point[0], point[1], point[2]);
+	const IceMaths::Point p0(a.x, a.y, a.z);
+	const IceMaths::Point p1(b.x, b.y, b.z);
+	const IceMaths::Point p2(c.x, c.y, c.z);
+	return nxPMapPointTriangleSqrDistance(query, p0, p1, p2);
 	}
 
 static double nxPMapPointAABBDistanceSquared(const IceMaths::Point& point,
