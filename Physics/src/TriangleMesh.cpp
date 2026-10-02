@@ -58,8 +58,8 @@ namespace
 			{ return submesh == 0 ? mMesh->getStride(array) : 0; }
 		bool loadPMap(const NxPMap& pmap) override { return mMesh->loadPMap(pmap); }
 		bool hasPMap() const override { return mMesh->hasPMap(); }
-		NxU32 getPMapSize() const override { return 0; }
-		bool getPMapData(NxPMap&) const override { return false; }
+		NxU32 getPMapSize() const override { return mMesh->getPMapSize(); }
+		bool getPMapData(NxPMap& pmap) const override { return mMesh->getPMapData(pmap); }
 		NxU32 getPMapDensity() const override { return 0; }
 		private:
 		TriangleMesh* mMesh;
@@ -183,6 +183,30 @@ bool TriangleMesh::loadPMap(const NxPMap& pmap)
 bool TriangleMesh::hasPMap() const
 	{
 	return mPMap != 0;
+	}
+
+NxU32 TriangleMesh::getPMapSize() const
+	{
+	if(!mPMap)
+		return 0;
+	MemoryStream stream(0x1000, 0);
+	if(!mPMap->serialize(stream))
+		return 0;
+	return stream.getLength();
+	}
+
+bool TriangleMesh::getPMapData(NxPMap& pmap) const
+	{
+	if(!mPMap || !pmap.data)
+		return false;
+	MemoryStream stream(0x1000, 0);
+	if(!mPMap->serialize(stream))
+		return false;
+	const NxU32 size = stream.getLength();
+	if(pmap.dataSize != size)
+		return false;
+	stream.collapse(pmap.data);
+	return true;
 	}
 
 NxTriangleMesh* TriangleMesh::publicHandle() const

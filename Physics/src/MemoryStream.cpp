@@ -172,6 +172,26 @@ NxU32 MemoryStream::readBitsMsbFirst(NxU32 count)
 	return value;
 	}
 
+// The writer in phys_fn_002017 and phys_fn_001990 inlines this same
+// MSB-first accumulator. A completed byte clears the bit count before entering
+// storeByte, whose own flush therefore returns without altering the byte.
+void MemoryStream::storeBit(NxU32 bit)
+	{
+	mBitAccumulator = static_cast<NxU8>((mBitAccumulator << 1) | (bit & 1));
+	++mBitMask;
+	if(mBitMask == 8)
+		{
+		mBitMask = 0;
+		storeByte(mBitAccumulator);
+		}
+	}
+
+void MemoryStream::storeBitsMsbFirst(NxU32 value, NxU32 count)
+	{
+	for(NxU32 i = count; i != 0; --i)
+		storeBit((value >> (i - 1)) & 1);
+	}
+
 // ---------------------------------------------------------------------------
 // The store half.
 

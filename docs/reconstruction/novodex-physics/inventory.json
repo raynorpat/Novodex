@@ -36532,13 +36532,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/PMap.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/782",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6052",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Reconstructed the 0x0004cc60 Morton cell-run encoder from the Capstone listing; writes a 32-bit count, the 26 neighbor codes, and resolution-width coordinate escapes. See evidence/phase4-pmap-serialization.md.",
+      "dynamic_proof": "NxPhysicsTriangleMeshApiTests exercises codes 19, 1, 8, and 26 on the pinned resolution-32 map; candidate serialized size and hash match the oracle at 4124 and 575faca3773bc417.",
+      "notes": "",
+      "implementation": "Physics/src/PMap.cpp",
+      "implementation_symbol": "PenetrationMap::encodeCellRun"
     },
     {
       "id": "phys_fn_001991",
@@ -36861,7 +36863,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/783",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6199",
       "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-pmap-reconstruction.md sections 3 to 5 -- the cell-run decoder, reconstructed by P4 Task 3 in Physics/src/PMap.cpp as PenetrationMap::decodeCellRun as far as the recorded fixtures establish it (the resolution-to-code-width selection and the 32-bit count read; the 5-bit walk is written as a refusal, not reconstructed), and driven by every accepted NxPhysicsAssetTests pmap fixture. Raised from `discovered` when the Phase 4 close was ported: the implementation was written at bcf544f and the census never recorded it",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsTriangleMeshApiTests loads a non-empty resolution-32 run with neighbor and absolute-coordinate codes and exports the same size/hash as the pinned oracle.",
       "notes": "",
       "implementation": "Physics/src/PMap.cpp",
       "implementation_symbol": "PenetrationMap::decodeCellRun"
@@ -37020,13 +37022,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/PMap.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/784",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6277",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Reconstructed the value grouping, repeat/absolute value coding, cell-run calls, terminator, sign plane, and header writes from the 0x0004e1a0 listing; see evidence/phase4-pmap-serialization.md.",
+      "dynamic_proof": "NxPhysicsTriangleMeshApiTests verifies exact minimal-map bytes and oracle-pinned resolution-32 serialized size/hash.",
+      "notes": "",
+      "implementation": "Physics/src/PMap.cpp",
+      "implementation_symbol": "PenetrationMap::serialize"
     },
     {
       "id": "phys_fn_002018",
@@ -39845,13 +39849,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/826",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6864",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Reconstructed the 0x00053e20 temporary stream, serializer call, and getLength return from the Capstone listing; see evidence/phase4-pmap-serialization.md.",
+      "dynamic_proof": "Candidate and pinned oracle both report size 24 for the minimal map and 4124 for the resolution-32 cell-run map; both report zero after a malformed reload.",
+      "notes": "",
+      "implementation": "Physics/src/TriangleMesh.cpp",
+      "implementation_symbol": "TriangleMesh::getPMapSize"
     },
     {
       "id": "phys_fn_002173",
@@ -39881,13 +39887,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/827",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6866",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Reconstructed the 0x00053e80 exact-size check and collapsed stream copy from the Capstone listing; see evidence/phase4-pmap-serialization.md.",
+      "dynamic_proof": "Candidate matches oracle bytes/hash for minimal and resolution-32 maps, rejects buffers of adjacent sizes, and returns false when no PMap is attached.",
+      "notes": "",
+      "implementation": "Physics/src/TriangleMesh.cpp",
+      "implementation_symbol": "TriangleMesh::getPMapData"
     },
     {
       "id": "phys_fn_002175",

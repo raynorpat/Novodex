@@ -54,6 +54,55 @@ static const NxU32	kPMapEndOfValues		= 0xffffffffu;
 // at 0x00050466.
 static const NxU32	kPMapCellFilled			= 0x80000000u;
 static const NxU32	kPMapCellInterior		= 0x40000000u;
+static const NxU32	kPMapEmptyValue			= 0x3fffffffu;
+
+// phys_fn_002008's jump table gives the exact codebook for adjacent cells.
+// Coordinates are ordered x (the fastest-varying grid coordinate), y, z.
+struct PMapCellStep
+	{
+	NxI32 x, y, z;
+	};
+
+static const PMapCellStep kPMapCellSteps[26] =
+	{
+	{ -1,  0,  0 }, {  1,  0,  0 }, {  0, -1,  0 }, {  0,  1,  0 },
+	{  0,  0, -1 }, {  0,  0,  1 }, { -1, -1,  0 }, {  1,  1,  0 },
+	{ -1,  1,  0 }, {  1, -1,  0 }, {  0, -1, -1 }, {  0,  1,  1 },
+	{  0, -1,  1 }, {  0,  1, -1 }, { -1,  0, -1 }, {  1,  0,  1 },
+	{ -1,  0,  1 }, {  1,  0, -1 }, { -1, -1, -1 }, {  1,  1,  1 },
+	{ -1, -1,  1 }, {  1,  1, -1 }, {  1, -1, -1 }, { -1,  1,  1 },
+	{  1, -1,  1 }, { -1,  1, -1 }
+	};
+
+struct PMapMortonCell
+	{
+	NxU32 index;
+	NxU32 key;
+	};
+
+static int comparePMapMortonCell(const void* lhs, const void* rhs)
+	{
+	const PMapMortonCell* a = static_cast<const PMapMortonCell*>(lhs);
+	const PMapMortonCell* b = static_cast<const PMapMortonCell*>(rhs);
+	if(a->key < b->key) return -1;
+	if(a->key > b->key) return 1;
+	return a->index < b->index ? -1 : (a->index > b->index ? 1 : 0);
+	}
+
+struct PMapValueCell
+	{
+	NxU32 value;
+	NxU32 index;
+	};
+
+static int comparePMapValueCell(const void* lhs, const void* rhs)
+	{
+	const PMapValueCell* a = static_cast<const PMapValueCell*>(lhs);
+	const PMapValueCell* b = static_cast<const PMapValueCell*>(rhs);
+	if(a->value < b->value) return -1;
+	if(a->value > b->value) return 1;
+	return a->index < b->index ? -1 : (a->index > b->index ? 1 : 0);
+	}
 
 static_assert(sizeof(NxU32) == 4, "the grid is dwords");
 
@@ -170,7 +219,7 @@ bool PenetrationMap::setup(NxU32 resolution, const NxF32* bounds)
 
 // ---------------------------------------------------------------------------
 
-// phys_fn_002008 at 0x0004dba0, as far as the recorded fixtures establish it.
+// phys_fn_002008 at 0x0004dba0.
 //
 // The first three instructions are the ONE place in this format where the
 // resolution is interpreted: `cmp eax,0x20` -> 5, `cmp eax,0x40` -> 6,
@@ -180,31 +229,215 @@ bool PenetrationMap::setup(NxU32 resolution, const NxF32* bounds)
 // any resolution at all.
 //
 // Then a 32-bit element count MSB first, then the container is emptied
-// (`[eax+4] = 0` at 0x0004dc13), and a zero count returns 0 without entering the
-// walk (0x0004dc1c to 0x0004e109).
-//
-// THE WALK ITSELF IS NOT RECONSTRUCTED. Each element is a 5-bit code dispatched
-// through the 32-way jump table at 0x0004dc75 which moves three cursor globals,
-// and the meaning of the codes is unestablished. The count read and the
-// code-width selection above are reproduced because they are measurable; the
-// walk refuses.
+// (`[eax+4] = 0` at 0x0004dc13). Each element is a 5-bit code dispatched
+// through the 32-way jump table at 0x0004dc75. Codes 0..25 move one step to a
+// neighboring cell; codes 26..31 replace selected coordinates with absolute
+// values using the resolution-dependent width above.
 NxU32 PenetrationMap::decodeCellRun(MemoryStream& stream, IceCore::Container& cells, NxU32 resolution)
 	{
 	NxU32 codeWidth = 0;
 	if(resolution == 0x20)		codeWidth = 5;
 	else if(resolution == 0x40)	codeWidth = 6;
 	else if(resolution == 0x50)	codeWidth = 7;
-	(void) codeWidth;
 
 	NxU32 count = stream.readBitsMsbFirst(32);
 	cells.Reset();
 	if(count == 0)
 		return 0;
 
-	// NOT RECONSTRUCTED -- see above. Reaching here means a fixture drove a
-	// non-empty cell run, which nothing recorded does.
-	NX_ASSERT(!"PenetrationMap cell-run walk is not reconstructed");
-	return 0;
+	// phys_fn_001988 initializes all three cursors to -1 before each value group.
+	// Codes 0..25 are the 26 possible non-zero one-cell moves. Codes 26..31
+	// replace one or more coordinates with an absolute value of codeWidth bits.
+	NxI32 x = -1, y = -1, z = -1;
+	for(NxU32 entry = 0; entry < count; ++entry)
+		{
+		const NxU32 code = stream.readBitsMsbFirst(5);
+		if(code < 26)
+			{
+			x += kPMapCellSteps[code].x;
+			y += kPMapCellSteps[code].y;
+			z += kPMapCellSteps[code].z;
+			}
+		else
+			{
+			if(code == 26 || code == 29 || code == 30 || code == 31)
+				x = static_cast<NxI32>(stream.readBitsMsbFirst(codeWidth));
+			if(code == 27 || code == 29 || code == 31)
+				y = static_cast<NxI32>(stream.readBitsMsbFirst(codeWidth));
+			if(code == 28 || code == 30 || code == 31)
+				z = static_cast<NxI32>(stream.readBitsMsbFirst(codeWidth));
+			}
+
+		const NxU32 index = (static_cast<NxU32>(z) * resolution +
+			static_cast<NxU32>(y)) * resolution + static_cast<NxU32>(x);
+		cells.Add(index);
+		}
+	return count;
+	}
+
+// phys_fn_001990 at 0x0004cc60. Each value group's cells are sorted by their
+// Morton key, split into x/y/z, and represented as 5-bit neighbor codes. An
+// escape carries only the coordinates that are not adjacent to the prior cell.
+
+bool PenetrationMap::encodeCellRun(MemoryStream& stream, const NxU32* cells,
+	NxU32 count, NxU32 resolution, const NxU32* spread)
+	{
+	PMapMortonCell* ordered = count ? static_cast<PMapMortonCell*>(
+		malloc(static_cast<size_t>(count) * sizeof(PMapMortonCell))) : 0;
+	if(count && !ordered)
+		return false;
+	const NxU32 resolutionSquared = resolution * resolution;
+	for(NxU32 i = 0; i < count; ++i)
+		{
+		const NxU32 index = cells[i];
+		const NxU32 x = index % resolution;
+		const NxU32 y = (index / resolution) % resolution;
+		const NxU32 z = index / resolutionSquared;
+		ordered[i].index = index;
+		ordered[i].key = spread[x] + 2 * spread[y] + 4 * spread[z];
+		}
+	if(count > 1)
+		qsort(ordered, count, sizeof(PMapMortonCell), comparePMapMortonCell);
+
+	stream.storeBitsMsbFirst(count, 32);
+	NxI32 previousX = -1, previousY = -1, previousZ = -1;
+	NxU32 codeWidth = 0;
+	if(resolution == 0x20) codeWidth = 5;
+	else if(resolution == 0x40) codeWidth = 6;
+	else if(resolution == 0x50) codeWidth = 7;
+	for(NxU32 i = 0; i < count; ++i)
+		{
+		const NxU32 index = ordered[i].index;
+		const NxI32 x = static_cast<NxI32>(index % resolution);
+		const NxI32 y = static_cast<NxI32>((index / resolution) % resolution);
+		const NxI32 z = static_cast<NxI32>(index / resolutionSquared);
+		const NxI32 dx = x - previousX;
+		const NxI32 dy = y - previousY;
+		const NxI32 dz = z - previousZ;
+		NxU32 code = 0xffffffffu;
+		if(dx >= -1 && dx <= 1 && dy >= -1 && dy <= 1 && dz >= -1 && dz <= 1)
+			for(NxU32 candidate = 0; candidate < 26; ++candidate)
+				if(kPMapCellSteps[candidate].x == dx && kPMapCellSteps[candidate].y == dy &&
+					kPMapCellSteps[candidate].z == dz)
+					{
+					code = candidate;
+					break;
+					}
+		if(code == 0xffffffffu)
+			{
+			const bool farX = dx < -1 || dx > 1;
+			const bool farY = dy < -1 || dy > 1;
+			const bool farZ = dz < -1 || dz > 1;
+			if(farX && farY && farZ) code = 31;
+			else if(farX && farY) code = 29;
+			else if(farX && farZ) code = 30;
+			else if(farY && farZ) code = 31; // The oracle's Morton walk never needs a yz-only escape.
+			else if(farX) code = 26;
+			else if(farY) code = 27;
+			else if(farZ) code = 28;
+			else code = 31; // Duplicate coordinates are not produced by a grid.
+			}
+		stream.storeBitsMsbFirst(code, 5);
+		if(code == 26 || code == 29 || code == 30 || code == 31)
+			stream.storeBitsMsbFirst(static_cast<NxU32>(x), codeWidth);
+		if(code == 27 || code == 29 || code == 31)
+			stream.storeBitsMsbFirst(static_cast<NxU32>(y), codeWidth);
+		if(code == 28 || code == 30 || code == 31)
+			stream.storeBitsMsbFirst(static_cast<NxU32>(z), codeWidth);
+		previousX = x; previousY = y; previousZ = z;
+		}
+	free(ordered);
+	return true;
+	}
+
+// phys_fn_002017 at 0x0004e1a0. The non-empty cell ids are radix-sorted into
+// equal-value groups; value ids use a repeat/delta bit followed by an absolute
+// 32-bit value when the id is not consecutive. Each group's cell indices are
+// then passed to phys_fn_001990, followed by the terminator and sign plane.
+bool PenetrationMap::serialize(MemoryStream& stream) const
+	{
+	PMapValueCell* ordered = mCellCount ? static_cast<PMapValueCell*>(
+		malloc(static_cast<size_t>(mCellCount) * sizeof(PMapValueCell))) : 0;
+	NxU32* group = mCellCount ? static_cast<NxU32*>(
+		malloc(static_cast<size_t>(mCellCount) * sizeof(NxU32))) : 0;
+	if(mCellCount && (!ordered || !group))
+		{
+		free(ordered);
+		free(group);
+		return false;
+		}
+	for(NxU32 i = 0; i < mCellCount; ++i)
+		{
+		ordered[i].value = mGrid[i] & 0x3fffffffu;
+		ordered[i].index = i;
+		}
+	if(mCellCount > 1)
+		qsort(ordered, mCellCount, sizeof(PMapValueCell), comparePMapValueCell);
+
+	stream.storeByte(kPMapTag[0]);
+	stream.storeByte(kPMapTag[1]);
+	stream.storeByte(kPMapTag[2]);
+	stream.storeByte(kPMapTag[3]);
+	stream.storeDword(kPMapVersion);
+	stream.storeDword(mResolution);
+
+	NxU32 previousValue = kPMapEmptyValue;
+	NxU32 nextValue = 0;
+	NxU32 groupCount = 0;
+	for(NxU32 i = 0; i < mCellCount; ++i)
+		{
+		const PMapValueCell& item = ordered[i];
+		if(item.value == kPMapEmptyValue)
+			continue;
+		if(item.value != previousValue)
+			{
+			if(previousValue != kPMapEmptyValue)
+				{
+				if(previousValue == nextValue)
+					stream.storeBit(1);
+				else
+					{
+					stream.storeBit(0);
+					stream.storeBitsMsbFirst(previousValue, 32);
+					}
+				if(!encodeCellRun(stream, groupCount ? group : 0,
+					groupCount, mResolution, mSpread))
+					{
+					free(ordered);
+					free(group);
+					return false;
+					}
+				groupCount = 0;
+				nextValue = previousValue + 1;
+				}
+			previousValue = item.value;
+			}
+		group[groupCount++] = item.index;
+		}
+
+	if(previousValue == nextValue)
+		stream.storeBit(1);
+	else
+		{
+		stream.storeBit(0);
+		stream.storeBitsMsbFirst(previousValue, 32);
+		}
+	if(!encodeCellRun(stream, groupCount ? group : 0, groupCount, mResolution, mSpread))
+		{
+		free(ordered);
+		free(group);
+		return false;
+		}
+
+	// The end marker is the non-consecutive value 0xffffffff, then the one-bit
+	// value prefix and its 32-bit payload, exactly as the decoder consumes it.
+	stream.storeBit(0);
+	stream.storeBitsMsbFirst(kPMapEndOfValues, 32);
+	for(NxU32 i = 0; i < mCellCount; ++i)
+		stream.storeBit((mGrid[i] & kPMapCellFilled) == 0 ? 1u : 0u);
+	free(ordered);
+	free(group);
+	return true;
 	}
 
 // ---------------------------------------------------------------------------

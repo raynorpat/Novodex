@@ -46,6 +46,25 @@ static unsigned long long nxMeshArrayHash(const NxTriangleMesh& mesh, NxInternal
 	return hash;
 	}
 
+static void nxPMapStoreBits(unsigned char* data, unsigned& bitOffset, NxU32 value,
+	unsigned bitCount)
+	{
+	for(unsigned i = bitCount; i != 0; --i, ++bitOffset)
+		if((value >> (i - 1)) & 1u)
+			data[bitOffset >> 3] |= static_cast<unsigned char>(0x80u >> (bitOffset & 7));
+	}
+
+static unsigned long long nxPMapByteHash(const unsigned char* bytes, NxU32 count)
+	{
+	unsigned long long hash = 14695981039346656037ull;
+	for(NxU32 i = 0; i < count; ++i)
+		{
+		hash ^= bytes[i];
+		hash *= 1099511628211ull;
+		}
+	return hash;
+	}
+
 class TriangleMeshApiAllocator : public NxUserAllocator
 	{
 	public:
@@ -138,15 +157,91 @@ int wmain(int argc, wchar_t** argv)
 	const bool pmapPresent = mesh->hasPMap();
 	printf("triangle_mesh pmap valid_load=%u has=%u\n", pmapLoaded ? 1u : 0u,
 		pmapPresent ? 1u : 0u);
+	const NxU32 pmapSize = mesh->getPMapSize();
+	unsigned char exportedPmapBytes[24] = {};
+	NxPMap exportedPmap = { sizeof(exportedPmapBytes), exportedPmapBytes };
+	const bool pmapExported = mesh->getPMapData(exportedPmap);
+	static const unsigned char expectedPmapBytes[] = {
+		0x50, 0x4d, 0x41, 0x50, 0x04, 0x00, 0x00, 0x00,
+		0x01, 0x00, 0x00, 0x00, 0x1f, 0xff, 0xff, 0xff,
+		0x80, 0x00, 0x00, 0x00, 0x3f, 0xff, 0xff, 0xff
+		};
+	printf("triangle_mesh pmap export size=%u success=%u bytes=", pmapSize,
+		pmapExported ? 1u : 0u);
+	for(unsigned i = 0; i < sizeof(exportedPmapBytes); ++i)
+		printf("%02x", exportedPmapBytes[i]);
+	printf("\n");
+	if(pmapSize != sizeof(exportedPmapBytes) || !pmapExported ||
+		memcmp(exportedPmapBytes, expectedPmapBytes, sizeof(expectedPmapBytes)) != 0)
+		{
+		sdk->releaseTriangleMesh(*mesh);
+		sdk->release();
+		return nxFail("triangle-mesh PMap serialization disagrees with the oracle");
+		}
+	NxPMap undersizedExport = { pmapSize - 1, exportedPmapBytes };
+	NxPMap oversizedExport = { pmapSize + 1, exportedPmapBytes };
+	if(mesh->getPMapData(undersizedExport) || mesh->getPMapData(oversizedExport))
+		{
+		sdk->releaseTriangleMesh(*mesh);
+		sdk->release();
+		return nxFail("PMap export accepted a buffer size different from getPMapSize");
+		}
+
+	// A four-cell value group at resolution 32 covers several neighbor steps and
+	// an absolute-coordinate escape in the cell-run decoder and Morton serializer.
+	// All untouched cells retain the serialized empty marker, while their sign
+	// plane is one.
+	unsigned char cellRunPmapBytes[12 + 4200] = {};
+	static const unsigned char pmapHeader[] = {
+		0x50, 0x4d, 0x41, 0x50, 0x04, 0x00, 0x00, 0x00,
+		0x20, 0x00, 0x00, 0x00
+		};
+	memcpy(cellRunPmapBytes, pmapHeader, sizeof(pmapHeader));
+	unsigned cellRunBitOffset = 12 * 8;
+	nxPMapStoreBits(cellRunPmapBytes, cellRunBitOffset, 0, 1); // absolute value follows
+	nxPMapStoreBits(cellRunPmapBytes, cellRunBitOffset, 1, 32); // value id
+	nxPMapStoreBits(cellRunPmapBytes, cellRunBitOffset, 4, 32); // four cells in this group
+	nxPMapStoreBits(cellRunPmapBytes, cellRunBitOffset, 19, 5); // (+1,+1,+1) from (-1,-1,-1)
+	nxPMapStoreBits(cellRunPmapBytes, cellRunBitOffset, 1, 5); // x increases by one
+	nxPMapStoreBits(cellRunPmapBytes, cellRunBitOffset, 8, 5); // x decreases as y increases
+	nxPMapStoreBits(cellRunPmapBytes, cellRunBitOffset, 26, 5); // absolute x coordinate follows
+	nxPMapStoreBits(cellRunPmapBytes, cellRunBitOffset, 31, 5); // x = 31, y = 1, z = 0
+	nxPMapStoreBits(cellRunPmapBytes, cellRunBitOffset, 0, 1); // absolute terminator follows
+	nxPMapStoreBits(cellRunPmapBytes, cellRunBitOffset, 0xffffffffu, 32);
+	for(unsigned cell = 0; cell < 32u * 32u * 32u; ++cell)
+		nxPMapStoreBits(cellRunPmapBytes, cellRunBitOffset, 1, 1);
+	const NxU32 cellRunInputSize = 12 + (cellRunBitOffset - 12 * 8 + 7) / 8;
+	NxPMap cellRunPmap = { cellRunInputSize, cellRunPmapBytes };
+	const bool cellRunLoaded = mesh->loadPMap(cellRunPmap);
+	const NxU32 cellRunOutputSize = mesh->getPMapSize();
+	unsigned char cellRunOutput[8192] = {};
+	NxPMap cellRunOutputPmap = { cellRunOutputSize, cellRunOutput };
+	const bool cellRunExported = mesh->getPMapData(cellRunOutputPmap);
+	printf("triangle_mesh pmap cell_run load=%u export=%u size=%u hash=%016llx\n",
+		cellRunLoaded ? 1u : 0u, cellRunExported ? 1u : 0u, cellRunOutputSize,
+		cellRunExported ? nxPMapByteHash(cellRunOutput, cellRunOutputSize) : 0ull);
+	if(!cellRunLoaded || !cellRunExported || cellRunOutputSize <= pmapSize ||
+		cellRunOutputSize != 4124 || cellRunOutputSize > sizeof(cellRunOutput) ||
+		nxPMapByteHash(cellRunOutput, cellRunOutputSize) != 0x575faca3773bc417ull)
+		{
+		sdk->releaseTriangleMesh(*mesh);
+		sdk->release();
+		return nxFail("non-empty PMap cell run diverged from the oracle");
+		}
 	unsigned char badPmapBytes[sizeof(pmapBytes)];
 	memcpy(badPmapBytes, pmapBytes, sizeof(pmapBytes));
 	badPmapBytes[0] = 0x58;	// Invalid magic; the oracle drops the previous map on this failed reload.
 	NxPMap badPmap = { sizeof(badPmapBytes), badPmapBytes };
 	const bool badPmapLoaded = mesh->loadPMap(badPmap);
 	const bool badPmapPresent = mesh->hasPMap();
-	printf("triangle_mesh pmap invalid_load=%u has=%u\n", badPmapLoaded ? 1u : 0u,
-		badPmapPresent ? 1u : 0u);
-	if(!pmapLoaded || !pmapPresent || badPmapLoaded || badPmapPresent)
+	const NxU32 sizeAfterBadLoad = mesh->getPMapSize();
+	NxPMap dataAfterBadLoad = { 0, exportedPmapBytes };
+	const bool dataAfterBadLoadResult = mesh->getPMapData(dataAfterBadLoad);
+	printf("triangle_mesh pmap invalid_load=%u has=%u size=%u export=%u\n",
+		badPmapLoaded ? 1u : 0u, badPmapPresent ? 1u : 0u,
+		sizeAfterBadLoad, dataAfterBadLoadResult ? 1u : 0u);
+	if(!pmapLoaded || !pmapPresent || badPmapLoaded || badPmapPresent ||
+		sizeAfterBadLoad != 0 || dataAfterBadLoadResult)
 		{
 		sdk->releaseTriangleMesh(*mesh);
 		sdk->release();

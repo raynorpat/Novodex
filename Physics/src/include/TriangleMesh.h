@@ -148,6 +148,8 @@ class TriangleMesh
 	NxTriangleMesh* publicHandle() const;
 	bool loadPMap(const NxPMap& pmap);
 	bool hasPMap() const;
+	NxU32 getPMapSize() const;
+	bool getPMapData(NxPMap& pmap) const;
 	//! phys_fn_002162 (0x000539d0), the whole of the writer. Returns the
 	//! literal 1; there is no error path in it (mov al,1 at 0x00053b64).
 	bool					save(NxStream& stream) const;
