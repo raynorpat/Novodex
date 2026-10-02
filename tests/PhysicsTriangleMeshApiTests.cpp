@@ -193,8 +193,8 @@ static int nxTestDisconnectedPMap(HMODULE physics, NxPhysicsSDK* sdk)
 		sdk->releaseTriangleMesh(*mesh);
 		return nxFail("disconnected-component PMap fixture changed topology during cooking");
 		}
-	memcpy(const_cast<void*>(mesh->getBase(0, NX_ARRAY_VERTICES)), vertices, sizeof(vertices));
-	memcpy(const_cast<void*>(mesh->getBase(0, NX_ARRAY_TRIANGLES)), triangles, sizeof(triangles));
+	// Keep the cooked arrays intact: the PMap ray classifier uses the cached
+	// Opcode model built from them during createTriangleMesh().
 	srand(1);
 	NxPMap pmap = { 0, 0 };
 	const bool computed = createPMap(pmap, *mesh, 32, 0);
@@ -202,8 +202,8 @@ static int nxTestDisconnectedPMap(HMODULE physics, NxPhysicsSDK* sdk)
 		static_cast<const unsigned char*>(pmap.data), pmap.dataSize) : 0ull;
 	printf("pmap_compute topology=disconnected-tetrahedra density=32 created=%u size=%u hash=%016llx\n",
 		computed ? 1u : 0u, pmap.dataSize, hash);
-	const bool expected = computed && pmap.data && pmap.dataSize == 4490 &&
-		hash == 0xc2276558dc4be981ull;
+	const bool expected = computed && pmap.data && pmap.dataSize == 9522 &&
+		hash == 0x847baf05835be7ceull;
 	if(pmap.data && !releasePMap(pmap))
 		{
 		sdk->releaseTriangleMesh(*mesh);
