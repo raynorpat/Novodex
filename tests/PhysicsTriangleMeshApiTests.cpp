@@ -79,7 +79,7 @@ class TriangleMeshApiAllocator : public NxUserAllocator
 
 static TriangleMeshApiAllocator gAllocator;
 
-static int nxTestPMapComputeFirst(HMODULE physics, NxPhysicsSDK* sdk)
+static int nxTestPMapComputeFirst(HMODULE physics, NxPhysicsSDK* sdk, NxU32 density)
 	{
 	CreatePMapFn createPMap = reinterpret_cast<CreatePMapFn>(
 		GetProcAddress(physics, "NxCreatePMap"));
@@ -118,12 +118,20 @@ static int nxTestPMapComputeFirst(HMODULE physics, NxPhysicsSDK* sdk)
 	memcpy(const_cast<void*>(mesh->getBase(0, NX_ARRAY_TRIANGLES)), triangles, sizeof(triangles));
 	srand(1);
 	NxPMap pmap = { 0, 0 };
-	const bool computed = createPMap(pmap, *mesh, 32, 0);
+	const bool computed = createPMap(pmap, *mesh, density, 0);
 	const unsigned long long hash = computed ? nxPMapByteHash(
 		static_cast<const unsigned char*>(pmap.data), pmap.dataSize) : 0ull;
-	printf("pmap_compute created=%u size=%u hash=%016llx\n",
-		computed ? 1u : 0u, pmap.dataSize, hash);
-	const bool valid = computed && pmap.data && pmap.dataSize == 10444 &&
+	printf("pmap_compute density=%u created=%u size=%u hash=%016llx\n",
+		density, computed ? 1u : 0u, pmap.dataSize, hash);
+	// Density 32 is the checked-in compute fixture. Density 64 is an isolated
+	// oracle probe exposed by the optional CLI argument so its rand stream starts
+	// in a fresh process; it currently records an open nearest-face tie mismatch.
+	const NxU32 expectedSize = density == 32 ? 10444 : density == 64 ? 74563 : 0;
+	const unsigned long long expectedHash = density == 32 ? 0x9a70de00aaf0edd4ull :
+		density == 64 ? 0x2c38820e277e9465ull : 0ull;
+	const bool expected = computed && pmap.data && pmap.dataSize == expectedSize &&
+		hash == expectedHash;
+	const bool valid = expected && density == 32 &&
 		memcmp(pmap.data, "PMAP", 4) == 0 &&
 		static_cast<const NxU8*>(pmap.data)[4] == 4 &&
 		static_cast<const NxU8*>(pmap.data)[8] == 32 &&
@@ -140,6 +148,11 @@ static int nxTestPMapComputeFirst(HMODULE physics, NxPhysicsSDK* sdk)
 		sdk->releaseTriangleMesh(*mesh);
 		return nxFail("NxReleasePMap failed for computed map");
 		}
+	if(density != 32)
+		{
+		sdk->releaseTriangleMesh(*mesh);
+		return expected ? 0 : nxFail("alternate-resolution PMap differs from the oracle");
+		}
 	sdk->releaseTriangleMesh(*mesh);
 	return roundTripValid ? 0 : nxFail("computed PMap did not survive load and export");
 	}
@@ -147,9 +160,20 @@ static int nxTestPMapComputeFirst(HMODULE physics, NxPhysicsSDK* sdk)
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
+	NxU32 density = 32;
+	const bool isolatedPMap = argc == 3;
+	if(argc != 2 && !isolatedPMap)
+		return nxFail("usage: NxPhysicsTriangleMeshApiTests <absolute pair directory> [64]");
+	if(isolatedPMap)
+		{
+		const unsigned long parsedDensity = wcstoul(argv[2], 0, 10);
+		if(parsedDensity != 64)
+			return nxFail("isolated PMap mode accepts only density 64");
+		density = static_cast<NxU32>(parsedDensity);
+		}
 	wchar_t pairDirectory[MAX_PATH];
 	HMODULE physics = 0;
-	int status = nxOpenPair(argc, argv, "NxPhysicsTriangleMeshApiTests",
+	int status = nxOpenPair(2, argv, "NxPhysicsTriangleMeshApiTests",
 		pairDirectory, &physics);
 	if(status) return status;
 
@@ -158,11 +182,16 @@ int wmain(int argc, wchar_t** argv)
 	if(!createSDK) return nxFail("NxCreatePhysicsSDK is missing");
 	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, &gAllocator, 0);
 	if(!sdk) return nxFail("SDK creation failed");
-	status = nxTestPMapComputeFirst(physics, sdk);
+	status = nxTestPMapComputeFirst(physics, sdk, density);
 	if(status)
 		{
 		sdk->release();
 		return status;
+		}
+	if(isolatedPMap)
+		{
+		sdk->release();
+		return nxReportPairIdentity(pairDirectory);
 		}
 
 	const NxVec3 vertices[] = {
