@@ -641,7 +641,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# and leaves NXF import, which is what PhysicsInternal.cpp needs to reach
 	# nxFoundationSDKAllocator in NxFoundation.dll. NX_PHYSICS_STATICLIB would
 	# clear both and break that import.
-	target_compile_definitions(NxPhysicsAssetTests PRIVATE NX_PHYSICS_DLL=1)
+	target_compile_definitions(NxPhysicsAssetTests PRIVATE NX_PHYSICS_DLL=1 NX_TEST_REAL_TRIANGLE_MESH=1 NX_TEST_STUB_TRIANGLE_MESH_POLYGON_TABLE=1)
 	# NxFoundation stays linked FOR NOW. Removing it was tried in round 76 and fails at link time on one
 	# imported variable, `nxFoundationSDKAllocator`, reached through the local nxGetSdkAllocator helper
 	# by MemoryStream.cpp, ThirdPartyHost.cpp and PhysicsInternal.cpp. The dependency is one symbol and
@@ -649,7 +649,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# nxSetSdkAllocatorBridge -- but the definition has to be in place before the link comes out, or the
 	# tree stops building. Round 75 measured why it matters: linking the Foundation makes the loader
 	# resolve it as an import before any harness code runs, so the PAIR's copy is never the one loaded.
-	target_link_libraries(NxPhysicsAssetTests NxQhull NxOpcode bcrypt)
+	target_link_libraries(NxPhysicsAssetTests NxFoundation NxQhull NxOpcode bcrypt)
 	# A linker map, so the vendored-correspondence execution trace can resolve the vendored
 	# functions linked into this exe by name (evidence/vendored-trace-*.txt). /MAP writes a
 	# file beside the exe and changes nothing in it.
@@ -707,6 +707,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsThirdPartyTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
 		Physics/src/opcode)
+	target_compile_definitions(NxPhysicsThirdPartyTests PRIVATE NX_TEST_REAL_TRIANGLE_MESH=1)
 	target_link_libraries(NxPhysicsThirdPartyTests NxFoundation NxQhull NxOpcode bcrypt)
 	# The harness itself compares x87 results the vendored libraries produce, so
 	# it follows the same architecture rule they do. A target option rather than

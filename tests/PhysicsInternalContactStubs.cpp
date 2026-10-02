@@ -7,7 +7,14 @@
 
 // Object-model layout and shape-vtable fixtures never cook or consume mesh
 // mass properties; keep this model-only dependency local to the focused tests.
+#if !defined(NX_TEST_REAL_TRIANGLE_MESH)
 bool TriangleMesh::computeMassProperties() { return false; }
+#endif
+
+#if defined(NX_TEST_STUB_TRIANGLE_MESH_POLYGON_TABLE)
+extern const void* const gTriangleMeshPolygonTable[12];
+const void* const gTriangleMeshPolygonTable[12] = {};
+#endif
 
 void __cdecl NxContactCompoundShape(const NxCollisionShape*, const NxCollisionShape*,
 	NxContactSink*, void*) {}
