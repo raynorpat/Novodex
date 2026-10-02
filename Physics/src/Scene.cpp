@@ -76,6 +76,8 @@ void nxContainerAddThunk(void* innerThis);
 #include <string.h>
 #include <new>
 
+void nxAggregateAABB1030(void* self, float* out);
+
 // phys_data_000980 (0x1012718c): the largest 000611 island-body count seen by
 // the joint-record solver. The original global remains zero until a live
 // island contributes bodies.
@@ -2751,6 +2753,7 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 
 static void* __fastcall nxShapeGroupDeletingDtor(void* self, void*, unsigned flags);
 static void __fastcall nxShapeGroupOwnerUpdate(void* self, void*, unsigned flags);
+static void __fastcall nxShapeGroupAggregateAABB(void* self, void*, float* out);
 
 // The group's slot 4 is 001024 (ObjectModel.cpp nxArrayVtCall3Args1024,
 // thiscall `ret 0xc`): each child whose +0xde has none of the low three bits
@@ -2765,12 +2768,21 @@ static bool __fastcall nxShapeGroupAccumulateMass(void* self, void*, void* frame
 		reinterpret_cast<unsigned>(reserved)) != 0;
 	}
 
+// Shape-group slot 9 is phys_fn_001030 (0x22bf0): aggregate the six-float
+// bounds from every child. The oracle's table has this entry at slot 9;
+// leaving it null crashes when a compound actor enters the scene update path.
+static void __fastcall nxShapeGroupAggregateAABB(void* self, void*, float* out)
+	{
+	nxAggregateAABB1030(self, out);
+	}
+
 static void** nxShapeGroupTable()
 	{
 	static void* table[15] = {
 		reinterpret_cast<void*>(&nxShapeGroupDeletingDtor), 0, 0, 0,
 		reinterpret_cast<void*>(&nxShapeGroupAccumulateMass), 0,
-		reinterpret_cast<void*>(&nxShapeGroupOwnerUpdate), 0, 0, 0, 0, 0, 0, 0, 0 };
+		reinterpret_cast<void*>(&nxShapeGroupOwnerUpdate), 0, 0,
+		reinterpret_cast<void*>(&nxShapeGroupAggregateAABB), 0, 0, 0, 0, 0 };
 	return table;
 	}
 

@@ -3588,9 +3588,10 @@ void nxDoubleToFloat9_2156(void* self, float* out)
 		}
 	}
 
-// phys_fn_001030 (0x22bf0, ret 4): aggregate the local AABBs of the shape list
+// phys_fn_001030 (0x22bf0, ret 4): aggregate the child AABBs of the shape list
 // at [self+0xe0]..[self+0xe4] into out. Seeded FLT_MAX / -FLT_MAX; each shape
-// contributes the 6-dword record selected by the PLANE slot-8 row, merged
+// contributes the six-float AABB returned by its slot-9 world-bounds method,
+// merged
 // with min on the low triple and max on the high triple.
 void nxAggregateAABB1030(void* self, float* out)
 	{
@@ -3609,7 +3610,10 @@ void nxAggregateAABB1030(void* self, float* out)
 		unsigned char* shape = reinterpret_cast<unsigned char*>(it[i]);
 		unsigned rec[6];
 		memcpy(rec, seed, sizeof(rec));
-		reinterpret_cast<PlaneShape*>(shape)->nxPlaneIndexed6_1267(rec);
+		typedef void (__thiscall* ShapeAabbFn)(void*, float*);
+		void** shapeVtable = *reinterpret_cast<void***>(shape);
+		reinterpret_cast<ShapeAabbFn>(shapeVtable[9])(shape,
+			reinterpret_cast<float*>(rec));
 		float f[6];
 		memcpy(f, rec, sizeof(f));
 		if(!(out[0] <= f[0])) out[0] = f[0];
