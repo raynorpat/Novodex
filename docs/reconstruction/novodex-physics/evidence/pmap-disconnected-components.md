@@ -24,17 +24,29 @@ uses that model. Oracle and candidate bounds are identical:
 | Pair | Physics SHA-256 | Result | Size | FNV-1a |
 |---|---|---:|---:|---|
 | Oracle | `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c` | pass | 9,522 | `847baf05835be7ce` |
-| Candidate | `c29be3942e3dbefee3241191014c853a732b54fc78dfdd85b79b4d76cb24f06f` | fail | 9,567 | `3345ee85533724e0` |
+| Candidate after the ray/AABB precision correction | `68b9c31e4453805abcd05cb3138ffe5cd434fb5b8c02b003a9143b6ffabbdc62` | fail | 9,567 | `7d53f520a22044cc` |
 
 The cooker emits the same eight triangle geometries in a different face order:
 the candidate orders the first tetrahedron before the second, while the oracle
-orders the second before the first. Normalizing each assigned face id to its
-triangle's vertex geometry leaves 30 of 32,768 cell occupancy bits different;
-among cells whose inside/outside bit agrees, 94 have a different semantic face
-assignment. Thus raw payload comparison includes the separately open cooker
-ordering difference, but there is also a PMap classification/label residual.
-The density-64 authored single-tetrahedron fixture remains exact
-(`74,563`, `2c38820e277e9465`).
+orders the second before the first. Before the ray/AABB precision correction,
+normalizing each assigned face id to its triangle's vertex geometry left 30 of
+32,768 cell occupancy bits different and 94 semantic face assignments differed
+among cells with matching inside/outside state. The current correction changes
+the candidate payload hash but the classification/label comparison has not yet
+been rerun, so those counts describe the prior candidate build only.
+
+The first directly sampled valid-fixture cell is `(0,0,0)`, at `(-1,-1,-1)`,
+exactly a mesh vertex. The prior candidate rejected its random ray at the root
+AABB and counted zero hits, while the oracle classifies the cell inside.
+`RayAABBOverlap` now keeps each cross-axis expression and radius sum in the
+oracle's x87 extended precision through comparison (oracle instructions
+`0x000b912d..0x000b913f`). With this change, the candidate traverses the cached
+root and reports one ray hit for that sample. This fixes the observed
+root-boundary divergence, but the full disconnected fixture remains red at
+9,567 / `7d53f520a22044cc`; the next step is to decode and compare the current
+raw maps and trace the next divergent sample. The single-tetrahedron density-32
+and density-64 fixtures remain exact (`10,444` / `9a70de00aaf0edd4` and
+`74,563` / `2c38820e277e9465`).
 
 ## Triage
 
@@ -48,21 +60,22 @@ unchanged. Enabling ray backface culling on the inconsistent fixture changed
 the result to `30,792 / f93a38a59cc17dcf`; this is not valid evidence for the
 correct culling state. The current candidate source retains `mNoLeaf=true`,
 `mQuantized=false`, and backface culling disabled. The residual remains
-unresolved. Trace the first divergent unclassified cell through random-ray
-generation, Opcode traversal, and hit parity before changing the implementation.
+unresolved. The first root AABB rejection at cell 0 is corrected; decode the
+current maps to identify the next semantic divergence, then trace that cell
+through random-ray generation, Opcode traversal, and hit parity before
+changing the implementation.
 
-For the first normalized occupancy difference, serialized cell 455 was already
-classified by propagation from cell 423, which was propagated from directly
-sampled cell 391. Candidate cell 391 has sample point bits
-`3eb5ad6a/be6739d0/bf800000`, nearest face 3, squared distance `0.00832457`,
-ray direction bits `bea1b385/3f2f7cda/bf27f02e`, and zero ray hits, so it seeds
-the propagated outside label. Oracle decompilation resolves the collider state:
+An earlier trace focused on cell 455 and its propagation chain through cells
+423 and 391. That was not the first inside/outside divergence: cell 0 is a
+directly sampled boundary case and the root AABB rejection described above is
+now corrected. Do not treat the older cell-391 observation as the primary
+remaining cause. Oracle decompilation resolves the collider state:
 `FUN_100b5720` initializes culling at byte `+0x8d` to one, then
 `FUN_1004e540` writes zero to that byte and masks the base flags at `+0x4` with
 `0xfffffffc`. Candidate first-contact, temporal-coherence, and culling settings
 therefore match this oracle helper; those options are not the current cause.
-The next trace target is the oracle helper's hit count for this sample and the
-OPCODE traversal/triangle calculation that produced it.
+The old cell-455/423/391 propagation chain is not the first divergence and
+should not guide the remaining fix.
 
 This is a pinned red fixture for the PMap work queue, not a closed compute
 path. Public Physics headers remain unchanged.
