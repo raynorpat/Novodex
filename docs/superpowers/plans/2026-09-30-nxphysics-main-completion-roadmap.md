@@ -2,7 +2,7 @@
 
 Date: 2026-09-30
 Baseline: `main` at `b942f01` (Merge convex-mesh gap reconstruction into main)
-Status: Active execution. The user selected full-DLL reconstruction and standalone simulation tests before Unreal integration. Phase 5 passes its 2,037-assertion gate. The candidate now passes the standalone simulation differential and runs `DemoGame.exe Physics.war -windowed -benchmark -seconds=6` to a normal exit. This clears the first Unreal test blocker and starts T2; full-DLL closure and broader Unreal coverage remain open.
+Status: Active execution. The user selected full-DLL reconstruction and standalone simulation tests before Unreal integration. Phases 4 and 5 pass at 249/249 and 2,037/2,037 assertions. The candidate passes the standalone simulation differential and runs `DemoGame.exe Physics.war -windowed -benchmark -seconds=6` to a normal exit. Public triangle-mesh PMap attachment and load/reject behavior now pass against the oracle; PMap serialization/accessors, qhull/mesh output fidelity, full-DLL closure, and broader Unreal coverage remain open.
 
 ## Outcome and constraints
 
@@ -245,3 +245,10 @@ Review order:
 4. Review T1 standalone results, then T2 Unreal results, then the full M6 acceptance report.
 
 The original full-DLL goal stays intact throughout these intermediate milestones.
+
+### Execution checkpoint — 2026-10-01 (triangle-mesh PMap load path)
+
+- Added an oracle-backed public `NxTriangleMesh` PMap fixture. The test first failed on the candidate and passed on the pinned DLL. `TriangleMesh` now loads descriptor-supplied PMap data after building the mesh model, supports explicit `loadPMap`, reports `hasPMap`, discards the previous PMap on a malformed non-empty reload, and releases PMap state with the mesh. The candidate now passes the same descriptor attach, valid load, malformed reload, and teardown scenario.
+- The comparison uses the existing 17-byte minimal PMap fixture. Oracle `getPMapSize()` returns 24 bytes and `getPMapData()` requires the caller to preallocate exactly that size; its normalized payload is `504d415004000000010000001fffffff800000003fffffff`. Candidate `getPMapSize`/`getPMapData` are still stubs. Reconstruct serializer row `phys_fn_002017` and the data accessors before claiming the PMap surface complete; do not copy the input buffer as a substitute.
+- Adding the new `TriangleMesh::loadPMap` references exposed a missing `PMap.cpp` dependency in `NxPhysicsThirdPartyTests`. The target now links that source with the DLL-side export definition, matching the existing `NxPhysicsAssetTests` setup.
+- Fresh Release build and triangle-mesh API runs pass against both the candidate pair and installed oracle pair. Phase 4 passes at 249/249 and Phase 5 at 2,037/2,037; both immutable public-header checks pass for all 80 files. The tested candidate still has the separately tracked qhull mesh ordering and one-ULP settle divergences. This closes the load/attachment subpath, not PMap serialization, PMap computation, M2/M4, or full reconstruction.

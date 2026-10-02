@@ -679,14 +679,15 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# and otherwise to the stand-in every qhull family was measured against
 	# (qhull-gap Task 4a). TriangleMesh.cpp (and MemoryStream.cpp, which its
 	# writer uses) is linked for phys_fn_002233/002235/002237, which the
-	# convex-cooking differentials drive (qhull-gap Task 4e).
+	# convex-cooking differentials drive (qhull-gap Task 4e). PMap.cpp is also
+	# needed for TriangleMesh's public PMap attachment and load path.
 	add_executable(NxPhysicsThirdPartyTests tests/PhysicsThirdPartyTests.cpp
 		tests/PhysicsThirdPartyQhull.c
 		tests/PhysicsThirdPartyHost.cpp Physics/src/Quantizer.cpp Physics/src/PhysicsInternal.cpp
 		Physics/src/Containers.cpp tests/PhysicsInternalContactStubs.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/IcePruner.cpp
 		Physics/src/opcode/NovodexBoxPruning.cpp
-		Physics/src/TriangleMesh.cpp Physics/src/MemoryStream.cpp
+		Physics/src/TriangleMesh.cpp Physics/src/PMap.cpp Physics/src/MemoryStream.cpp
 		Physics/src/EdgeList.cpp Physics/src/IceAdjacencies.cpp Physics/src/IceMeshTools.cpp
 		Physics/src/IceMeshBuilder2.cpp Physics/src/ConvexHull.cpp Physics/src/TriangleMeshTopology.cpp
 		Physics/src/IceSupportMaps.cpp Physics/src/SmoothNormals.cpp
@@ -700,6 +701,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# NxPhysicsCollisionTests does for the whole target); here only the file gets
 	# it, so the harness's own translation units keep theirs.
 	set_source_files_properties(Physics/src/SmoothNormals.cpp PROPERTIES COMPILE_DEFINITIONS NX_PHYSICS_DLL=1)
+	set_source_files_properties(Physics/src/PMap.cpp PROPERTIES COMPILE_DEFINITIONS NX_PHYSICS_DLL=1)
 	# The hull family's C half reads qhull's own structs, so it and only it sees the
 	# merged tree's headers (their fprintf redirection stays out of the C++ harness).
 	set_source_files_properties(tests/PhysicsThirdPartyQhull.c PROPERTIES

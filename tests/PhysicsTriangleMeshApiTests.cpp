@@ -16,6 +16,7 @@
 #include "NxSimpleTriangleMesh.h"
 #include "NxTriangleMesh.h"
 #include "NxTriangleMeshDesc.h"
+#include "NxPMap.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(
 	NxU32, NxUserAllocator*, NxUserOutputStream*);
@@ -77,12 +78,18 @@ int wmain(int argc, wchar_t** argv)
 		NxVec3(-1.0f, -1.0f, 1.0f), NxVec3(1.0f, -1.0f, 1.0f),
 		NxVec3(-1.0f, 1.0f, 1.0f), NxVec3(1.0f, 1.0f, 1.0f)
 		};
+	unsigned char pmapBytes[] = {
+		0x50, 0x4d, 0x41, 0x50, 0x04, 0x00, 0x00, 0x00, 0x01,
+		0x00, 0x00, 0x00, 0x7f, 0xff, 0xff, 0xff, 0xc0
+		};
+	NxPMap pmap = { sizeof(pmapBytes), pmapBytes };
 	NxTriangleMeshDesc desc;
 	desc.setToDefault();
 	desc.numVertices = sizeof(vertices) / sizeof(vertices[0]);
 	desc.points = vertices;
 	desc.pointStrideBytes = sizeof(NxVec3);
 	desc.flags = NX_MF_CONVEX | NX_MF_COMPUTE_CONVEX;
+	desc.pmap = &pmap;
 	if(!desc.isValid())
 		{
 		sdk->release();
@@ -95,6 +102,14 @@ int wmain(int argc, wchar_t** argv)
 		{
 		sdk->release();
 		return nxFail("public convex triangle-mesh creation returned null");
+		}
+	const bool pmapFromDesc = mesh->hasPMap();
+	printf("triangle_mesh pmap descriptor_has=%u\n", pmapFromDesc ? 1u : 0u);
+	if(!pmapFromDesc)
+		{
+		sdk->releaseTriangleMesh(*mesh);
+		sdk->release();
+		return nxFail("triangle-mesh descriptor PMap was not loaded");
 		}
 	const NxU32 verticesOut = mesh->getCount(0, NX_ARRAY_VERTICES);
 	const NxU32 trianglesOut = mesh->getCount(0, NX_ARRAY_TRIANGLES);
@@ -115,6 +130,27 @@ int wmain(int argc, wchar_t** argv)
 		for(NxU32 i = 0; i < trianglesOut; ++i)
 			printf("triangle_mesh triangle=%u %u.%u.%u\n", i,
 				cookedTriangles[i * 3], cookedTriangles[i * 3 + 1], cookedTriangles[i * 3 + 2]);
+		}
+	// The public mesh wrapper also owns an optional, loadable penetration map.
+	// This minimal serialized map exercises TriangleMesh::loadPMap's stream
+	// route without depending on the still-unreconstructed map-compute export.
+	const bool pmapLoaded = mesh->loadPMap(pmap);
+	const bool pmapPresent = mesh->hasPMap();
+	printf("triangle_mesh pmap valid_load=%u has=%u\n", pmapLoaded ? 1u : 0u,
+		pmapPresent ? 1u : 0u);
+	unsigned char badPmapBytes[sizeof(pmapBytes)];
+	memcpy(badPmapBytes, pmapBytes, sizeof(pmapBytes));
+	badPmapBytes[0] = 0x58;	// Invalid magic; the oracle drops the previous map on this failed reload.
+	NxPMap badPmap = { sizeof(badPmapBytes), badPmapBytes };
+	const bool badPmapLoaded = mesh->loadPMap(badPmap);
+	const bool badPmapPresent = mesh->hasPMap();
+	printf("triangle_mesh pmap invalid_load=%u has=%u\n", badPmapLoaded ? 1u : 0u,
+		badPmapPresent ? 1u : 0u);
+	if(!pmapLoaded || !pmapPresent || badPmapLoaded || badPmapPresent)
+		{
+		sdk->releaseTriangleMesh(*mesh);
+		sdk->release();
+		return nxFail("triangle-mesh PMap load/reject lifecycle disagrees with the oracle");
 		}
 	if(verticesOut < 4 || trianglesOut < 4)
 		{

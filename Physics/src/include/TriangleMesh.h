@@ -21,8 +21,10 @@
 #include "NxTriangleMeshDesc.h"
 
 class NxStream;
+class NxPMap;
 class Adjacencies;
 class EdgeList;
+class PenetrationMap;
 
 /**
 The triangle-mesh stream format's reader and writer, and ONLY the parts of them
@@ -144,6 +146,8 @@ class TriangleMesh
 	const void* getBase(NxInternalArray array) const;
 	NxU32 getStride(NxInternalArray array) const;
 	NxTriangleMesh* publicHandle() const;
+	bool loadPMap(const NxPMap& pmap);
+	bool hasPMap() const;
 	//! phys_fn_002162 (0x000539d0), the whole of the writer. Returns the
 	//! literal 1; there is no error path in it (mov al,1 at 0x00053b64).
 	bool					save(NxStream& stream) const;
@@ -197,8 +201,8 @@ class TriangleMesh
 	NxU32*					mArrayA;
 	//! +0x98, triangleCount dwords when flag B is non-zero.
 	NxU32*					mArrayB;
-	//! +0x9c, unestablished; the next measured store is the hull at +0xa0.
-	NxU32					mWord9C;
+	//! +0x9c, PenetrationMap, released by the TriangleMesh destructor.
+	PenetrationMap*			mPMap;
 	//! +0xa0, the convex mesh. Released through its slot 0 by
 	//! phys_fn_002164. The polygon interface reads it as the hull of
 	//! ConvexHull.h (+0x0c..+0x48) with a vertex graph at +0x64 (002249).
@@ -239,6 +243,7 @@ static_assert(offsetof(TriangleMesh, mPresenceFlagA) == 0x8c, "presence flag A i
 static_assert(offsetof(TriangleMesh, mPresenceFlagB) == 0x90, "presence flag B is at +0x90");
 static_assert(offsetof(TriangleMesh, mArrayA) == 0x94, "array A is at +0x94");
 static_assert(offsetof(TriangleMesh, mArrayB) == 0x98, "array B is at +0x98");
+static_assert(offsetof(TriangleMesh, mPMap) == 0x9c, "the penetration map is at +0x9c");
 static_assert(offsetof(TriangleMesh, mConvexMesh) == 0xa0, "the convex mesh is at +0xa0");
 static_assert(offsetof(TriangleMesh, mPublicObject) == 0xe4, "the public wrapper is at +0xe4");
 static_assert(sizeof(TriangleMesh) == 0xe8, "the SDK allocates a 0xe8-byte triangle mesh");

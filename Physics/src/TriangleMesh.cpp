@@ -6,8 +6,10 @@
 |
 \*----------------------------------------------------------------------------*/
 #include "TriangleMesh.h"
+#include "PMap.h"
 
 #include "NxStream.h"
+#include "NxPMap.h"
 #include "NxTriangleMesh.h"
 #include "TriangleMeshPolygons.h"
 #include "OPC_Model.h"
@@ -16,6 +18,13 @@
 #include <new>
 #include <float.h>
 #include <string.h>
+
+#define NX_TRIANGLE_MESH_CPP "\\Epic\\Novodex\\SDKs\\Physics\\src\\TriangleMesh.cpp"
+
+static const NxI32 kTriangleMeshInvalidPMapLine = 0x30b;
+static const NxI32 kTriangleMeshPMapCreateFailedLine = 0x318;
+static const char* const kTriangleMeshInvalidPMapMessage = "TriangleMesh::loadPMap: invalid pmap data!";
+static const char* const kTriangleMeshPMapCreateFailedMessage = "TriangleMesh::loadPMap: pmap creation failed!";
 
 // The two tags are read and written as DWORDS, so on the little-endian target
 // the bytes on disc are 54 53 58 4e and 48 53 45 4d. Written most significant
@@ -47,8 +56,8 @@ namespace
 			{ return submesh == 0 ? mMesh->getBase(array) : 0; }
 		NxU32 getStride(NxSubmeshIndex submesh, NxInternalArray array) const override
 			{ return submesh == 0 ? mMesh->getStride(array) : 0; }
-		bool loadPMap(const NxPMap&) override { return false; }
-		bool hasPMap() const override { return false; }
+		bool loadPMap(const NxPMap& pmap) override { return mMesh->loadPMap(pmap); }
+		bool hasPMap() const override { return mMesh->hasPMap(); }
 		NxU32 getPMapSize() const override { return 0; }
 		bool getPMapData(NxPMap&) const override { return false; }
 		NxU32 getPMapDensity() const override { return 0; }
@@ -111,6 +120,12 @@ TriangleMesh::TriangleMesh()
 
 TriangleMesh::~TriangleMesh()
 	{
+	if(mPMap)
+		{
+		mPMap->~PenetrationMap();
+		nxFoundationSDKAllocator->free(mPMap);
+		mPMap = 0;
+		}
 	nxTriangleMeshFree(mInternal.mVertices);
 	nxTriangleMeshFree(mInternal.mTriangles);
 	nxTriangleMeshFreeTyped(mInternal.mMaterialIndices);
@@ -128,6 +143,46 @@ TriangleMesh::~TriangleMesh()
 		nxFoundationSDKAllocator->free(wrapper);
 		mPublicObject = 0;
 		}
+	}
+
+bool TriangleMesh::loadPMap(const NxPMap& pmap)
+	{
+	if(!pmap.data || !pmap.dataSize)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,
+			NX_TRIANGLE_MESH_CPP, kTriangleMeshInvalidPMapLine, 0, "%s", kTriangleMeshInvalidPMapMessage);
+		return false;
+		}
+
+	if(mPMap)
+		{
+		mPMap->~PenetrationMap();
+		nxFoundationSDKAllocator->free(mPMap);
+		mPMap = 0;
+		}
+	if(!nxFoundationSDKAllocator)
+		return false;
+	void* memory = nxFoundationSDKAllocator->malloc(sizeof(PenetrationMap), NX_MEMORY_PERSISTENT);
+	if(!memory)
+		return false;
+	PenetrationMap* penetrationMap = new(memory) PenetrationMap;
+	MemoryStream stream(pmap.dataSize, pmap.data);
+	stream.seek(0);
+	if(!penetrationMap->create(this, 0, 0, &stream, true, 0))
+		{
+		penetrationMap->~PenetrationMap();
+		nxFoundationSDKAllocator->free(penetrationMap);
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,
+			NX_TRIANGLE_MESH_CPP, kTriangleMeshPMapCreateFailedLine, 0, "%s", kTriangleMeshPMapCreateFailedMessage);
+		return false;
+		}
+	mPMap = penetrationMap;
+	return true;
+	}
+
+bool TriangleMesh::hasPMap() const
+	{
+	return mPMap != 0;
 	}
 
 NxTriangleMesh* TriangleMesh::publicHandle() const
@@ -281,7 +336,11 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& source)
 			source.numTriangles, source.materialIndexStride, sizeof(NxU16)));
 	nxTriangleMeshFree(cookedPoints);
 	nxTriangleMeshFree(cookedTriangles);
-	return buildModel();
+	if(!buildModel())
+		return false;
+	if(source.pmap && !loadPMap(*source.pmap))
+		return false;
+	return true;
 	}
 
 bool TriangleMesh::saveToDesc(NxTriangleMeshDesc& desc) const
