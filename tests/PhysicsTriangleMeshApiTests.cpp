@@ -104,7 +104,18 @@ static int nxTestPMapComputeFirst(HMODULE physics, NxPhysicsSDK* sdk)
 	NxTriangleMesh* mesh = sdk->createTriangleMesh(desc);
 	if(!mesh)
 		return nxFail("authored PMap fixture mesh creation failed");
-
+	if(mesh->getCount(0, NX_ARRAY_VERTICES) != 4 ||
+		mesh->getCount(0, NX_ARRAY_TRIANGLES) != 4 ||
+		mesh->getStride(0, NX_ARRAY_VERTICES) != sizeof(NxVec3) ||
+		mesh->getStride(0, NX_ARRAY_TRIANGLES) != 3 * sizeof(NxU32))
+		{
+		sdk->releaseTriangleMesh(*mesh);
+		return nxFail("authored PMap fixture did not cook to its expected four-triangle layout");
+		}
+	// Pin the raw arrays after the cooker runs so this test measures PMap over
+	// the same topology on both DLLs; qhull/cooking order has its own differential.
+	memcpy(const_cast<void*>(mesh->getBase(0, NX_ARRAY_VERTICES)), vertices, sizeof(vertices));
+	memcpy(const_cast<void*>(mesh->getBase(0, NX_ARRAY_TRIANGLES)), triangles, sizeof(triangles));
 	srand(1);
 	NxPMap pmap = { 0, 0 };
 	const bool computed = createPMap(pmap, *mesh, 32, 0);
@@ -112,10 +123,11 @@ static int nxTestPMapComputeFirst(HMODULE physics, NxPhysicsSDK* sdk)
 		static_cast<const unsigned char*>(pmap.data), pmap.dataSize) : 0ull;
 	printf("pmap_compute created=%u size=%u hash=%016llx\n",
 		computed ? 1u : 0u, pmap.dataSize, hash);
-	const bool valid = computed && pmap.data && pmap.dataSize >= 12 &&
+	const bool valid = computed && pmap.data && pmap.dataSize == 10444 &&
 		memcmp(pmap.data, "PMAP", 4) == 0 &&
 		static_cast<const NxU8*>(pmap.data)[4] == 4 &&
-		static_cast<const NxU8*>(pmap.data)[8] == 32;
+		static_cast<const NxU8*>(pmap.data)[8] == 32 &&
+		hash == 0x9a70de00aaf0edd4ull;
 	const bool loaded = valid && mesh->loadPMap(pmap);
 	const NxU32 roundTripSize = loaded ? mesh->getPMapSize() : 0;
 	void* roundTripBytes = roundTripSize ? malloc(roundTripSize) : 0;
