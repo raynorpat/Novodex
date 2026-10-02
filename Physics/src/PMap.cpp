@@ -8,7 +8,6 @@
 #include "PMap.h"
 
 #include "NxUserOutputStream.h"
-#include "NxTriangleDistance.h"
 #include "TriangleMesh.h"
 
 // The pinned public NxPMap.h names both of these in NxCreatePMap's signature and
@@ -136,157 +135,326 @@ static int comparePMapValueCell(const void* lhs, const void* rhs)
 
 static_assert(sizeof(NxU32) == 4, "the grid is dwords");
 
-static double nxPMapPointTriangleSqrDistance(const IceMaths::Point& point,
-	const IceMaths::Point& p0, const IceMaths::Point& p1, const IceMaths::Point& p2)
-{
-	// Hook
-	IceMaths::Point TriEdge0 = p1 - p0;
-	IceMaths::Point TriEdge1 = p2 - p0;
-
-	IceMaths::Point kDiff	= p0 - point;
-	// FUN_100e7c50's x87 listing accumulates edge-zero terms as y, z, x,
-	// while its edge-one terms use x, y, z. Preserve that order at the tied-face
-	// comparison boundary.
-	float fA00	= TriEdge0.y * TriEdge0.y + TriEdge0.z * TriEdge0.z + TriEdge0.x * TriEdge0.x;
-	float fA01	= TriEdge1.y * TriEdge0.y + TriEdge1.z * TriEdge0.z + TriEdge1.x * TriEdge0.x;
-	float fA11	= TriEdge1.z * TriEdge1.z + TriEdge1.y * TriEdge1.y + TriEdge1.x * TriEdge1.x;
-	float fB0	= kDiff.y * TriEdge0.y + kDiff.z * TriEdge0.z + kDiff.x * TriEdge0.x;
-	float fB1	= kDiff.x * TriEdge1.x + kDiff.y * TriEdge1.y + kDiff.z * TriEdge1.z;
-	double fC	= static_cast<double>(kDiff.z) * kDiff.z +
-		static_cast<double>(kDiff.y) * kDiff.y + static_cast<double>(kDiff.x) * kDiff.x;
-	float fDet	= fabsf(fA00*fA11 - fA01*fA01);
-	float fS	= fA01*fB1-fA11*fB0;
-	float fT	= fA01*fB0-fA00*fB1;
-	double fSqrDist;
-
-	if(fS + fT <= fDet)
+struct NxPMapPointTriangleTerms
 	{
-		if(fS < 0.0f)
+	NxReal a00;
+	NxReal a01;
+	NxReal a11;
+	NxReal b0;
+	NxReal b1;
+	NxReal det;
+	NxReal s;
+	NxReal dx;
+	NxReal dy;
+	NxReal dz;
+	NxReal e1x;
+	NxReal e1y;
+	NxReal e1z;
+	};
+
+// The first edge's three products (0x000329eb..0x00032a9e): a00 = (x^2 + z^2)
+// + y^2, a01 = (e1.x x + e1.z z) + e1.y y and b0 = (d.x x + d.z z) + d.y y,
+// with the first edge on the FPU stack throughout. A function of its own, entered
+// only with stored floats: written inside the whole setup, MSVC held the edge in
+// three 8-byte slots (cutting it to 53 bits under 0x0f7f) and read a01 and b0
+// from those copies.
+static __declspec(noinline) void nxPMapPointTriangleFirstEdge(const NxReal* v0, const NxReal* v1,
+	NxPMapPointTriangleTerms* k)
+	{
+	const double e0x = (double) v1[0] - v0[0];
+	const double e0y = (double) v1[1] - v0[1];
+	const double e0z = (double) v1[2] - v0[2];
+	k->a00 = (NxReal) ((e0x * e0x + e0z * e0z) + e0y * e0y);
+	k->a01 = (NxReal) (((double) k->e1x * e0x + (double) k->e1z * e0z) + (double) k->e1y * e0y);
+	k->b0 = (NxReal) (((double) k->dx * e0x + (double) k->dz * e0z) + (double) k->dy * e0y);
+	}
+
+// 0x000329e0..0x00032b0c. The first edge is on the FPU stack; the second edge
+// and the offset are stored. a00 is (x^2 + z^2) + y^2 of the first edge.
+static __declspec(noinline) void nxPMapPointTriangleTerms(const NxReal* point, const NxReal* v0,
+	const NxReal* v1, const NxReal* v2, NxPMapPointTriangleTerms* k)
+	{
+	k->e1x = (NxReal) ((double) v2[0] - v0[0]);
+	k->e1y = (NxReal) ((double) v2[1] - v0[1]);
+	k->e1z = (NxReal) ((double) v2[2] - v0[2]);
+	k->dx = (NxReal) ((double) v0[0] - point[0]);
+	k->dy = (NxReal) ((double) v0[1] - point[1]);
+	k->dz = (NxReal) ((double) v0[2] - point[2]);
+	nxPMapPointTriangleFirstEdge(v0, v1, k);
+
+	const NxReal e1x = k->e1x;
+	const NxReal e1y = k->e1y;
+	const NxReal e1z = k->e1z;
+	k->a11 = (NxReal) (((double) e1z * e1z + (double) e1y * e1y) + (double) e1x * e1x);
+	k->b1 = (NxReal) (((double) k->dz * e1z + (double) k->dy * e1y) + (double) k->dx * e1x);
+	k->det = (NxReal) fabs((double) k->a11 * k->a00 - (double) k->a01 * k->a01);
+	k->s = (NxReal) ((double) k->b1 * k->a01 - (double) k->b0 * k->a11);
+	}
+
+// c, the squared offset (0x00032ac8..0x00032ae2): (z^2 + y^2) + x^2.
+static __forceinline double nxPMapPointTriangleC(const NxPMapPointTriangleTerms* k)
+	{
+	return ((double) k->dz * k->dz + (double) k->dy * k->dy) + (double) k->dx * k->dx;
+	}
+
+// t before any division (0x00032b10..0x00032b20): b0 a01 - b1 a00.
+static __forceinline double nxPMapPointTriangleT(const NxPMapPointTriangleTerms* k)
+	{
+	return (double) k->b0 * k->a01 - (double) k->b1 * k->a00;
+	}
+
+// The denominator of the three quotient leaves: (a00 - (a01 + a01)) + a11.
+static __forceinline double nxPMapPointTriangleDenominator(const NxPMapPointTriangleTerms* k)
+	{
+	return ((double) k->a00 - ((double) k->a01 + k->a01)) + k->a11;
+	}
+
+// 0x00032eec: the parameters, then |squared|.
+static __forceinline double nxPMapPointTriangleFinish(NxReal* sParam, NxReal* tParam,
+	NxReal s, NxReal t, double squared)
+	{
+	if(sParam)
+		*sParam = s;
+	if(tParam)
+		*tParam = t;
+	return fabs(squared);
+	}
+
+// Vertex 1 (0x00032cc9): s = 1, t = 0, ((b0 + b0) + c) + a00.
+static __declspec(noinline) double nxPMapPointTriangleVertex1(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	return nxPMapPointTriangleFinish(sParam, tParam, 1.0f, 0.0f,
+		(((double) k->b0 + k->b0) + nxPMapPointTriangleC(k)) + k->a00);
+	}
+
+// Vertex 2 (0x00032d0c, 0x00032d9e, 0x00032e5c): s = 0, t = 1,
+// ((b1 + b1) + c) + a11.
+static __declspec(noinline) double nxPMapPointTriangleVertex2(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	return nxPMapPointTriangleFinish(sParam, tParam, 0.0f, 1.0f,
+		(((double) k->b1 + k->b1) + nxPMapPointTriangleC(k)) + k->a11);
+	}
+
+// Vertex 0 (0x00032bb9, 0x00032c01 with 0x00032c1e, 0x00032d2d, 0x00032e1c):
+// both parameters 0 and the squared distance c.
+static __declspec(noinline) double nxPMapPointTriangleVertex0(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	return nxPMapPointTriangleFinish(sParam, tParam, 0.0f, 0.0f, nxPMapPointTriangleC(k));
+	}
+
+// Edge 0's quotient (0x00032e2d): s = -(b0 / a00), kept wide for s b0 + c.
+static __declspec(noinline) double nxPMapPointTriangleEdge0Quotient(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	const double s = -((double) k->b0 / k->a00);
+	return nxPMapPointTriangleFinish(sParam, tParam, (NxReal) s, 0.0f, s * k->b0 + nxPMapPointTriangleC(k));
+	}
+
+// Edge 1's quotient (0x00032d3a/0x00032d3e): t = -(b1 / a11), kept wide.
+static __declspec(noinline) double nxPMapPointTriangleEdge1Quotient(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	const double t = -((double) k->b1 / k->a11);
+	return nxPMapPointTriangleFinish(sParam, tParam, 0.0f, (NxReal) t, t * k->b1 + nxPMapPointTriangleC(k));
+	}
+
+// Edge 0, t = 0 (0x00032b72, from regions 4 and 5): past the far vertex when
+// -b0 >= a00.
+static __declspec(noinline) double nxPMapPointTriangleEdge0(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	if(-k->b0 >= k->a00)
+		return nxPMapPointTriangleVertex1(k, sParam, tParam);
+	return nxPMapPointTriangleEdge0Quotient(k, sParam, tParam);
+	}
+
+// Edge 1, s = 0 (0x00032ba0, regions 3 and 4).
+static __declspec(noinline) double nxPMapPointTriangleEdge1(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	if(k->b1 >= 0.0f)
+		return nxPMapPointTriangleVertex0(k, sParam, tParam);
+	if(-k->b1 >= k->a11)
+		return nxPMapPointTriangleVertex2(k, sParam, tParam);
+	return nxPMapPointTriangleEdge1Quotient(k, sParam, tParam);
+	}
+
+// The interior sum (0x00032eb1): the first t is `first`, every later read of
+// t and s is the narrowed copy; ((X + Y) + c) with
+// X = t ((first a11 + s a01) + (b1 + b1)) and Y = s ((t a01 + s a00) + (b0 + b0)).
+static __forceinline double nxPMapPointTriangleInterior(const NxPMapPointTriangleTerms* k,
+	NxReal s, NxReal t, double first)
+	{
+	return ((first * k->a11 + (double) s * k->a01) + ((double) k->b1 + k->b1)) * t
+		+ (((double) t * k->a01 + (double) s * k->a00) + ((double) k->b0 + k->b0)) * s
+		+ nxPMapPointTriangleC(k);
+	}
+
+// The interior entered from a quotient s (0x00032e9b..0x00032ead): t = 1 - s
+// stored with `fst` and its wide value used first.
+static __declspec(noinline) double nxPMapPointTriangleInteriorFromS(const NxPMapPointTriangleTerms* k,
+	NxReal s, NxReal* sParam, NxReal* tParam)
+	{
+	const double first = 1.0f - (double) s;
+	const NxReal t = (NxReal) first;
+	return nxPMapPointTriangleFinish(sParam, tParam, s, t, nxPMapPointTriangleInterior(k, s, t, first));
+	}
+
+// The interior entered with t reloaded (0x00032c79, 0x00032dd8).
+static __declspec(noinline) double nxPMapPointTriangleInteriorNarrow(const NxPMapPointTriangleTerms* k,
+	NxReal s, NxReal t, NxReal* sParam, NxReal* tParam)
+	{
+	return nxPMapPointTriangleFinish(sParam, tParam, s, t, nxPMapPointTriangleInterior(k, s, t, t));
+	}
+
+// Region 0 (0x00032c2b): the determinant-zero interior returns FLT_MAX
+// (0x10106858) with both parameters 0; otherwise s and t are scaled by the
+// wide reciprocal and narrowed.
+static __declspec(noinline) double nxPMapPointTriangleRegion0(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	if(k->det == 0.0f)
+		return nxPMapPointTriangleFinish(sParam, tParam, 0.0f, 0.0f, 3.402823466e+38f);
+	const double inverse = 1.0f / (double) k->det;
+	const NxReal s = (NxReal) ((double) k->s * inverse);
+	const NxReal t = (NxReal) (inverse * nxPMapPointTriangleT(k));
+	return nxPMapPointTriangleInteriorNarrow(k, s, t, sParam, tParam);
+	}
+
+// Region 2's quotient (0x00032cab..0x00032cc5): numer = (b1 + a11) - tmp0.
+static __declspec(noinline) double nxPMapPointTriangleRegion2Quotient(const NxPMapPointTriangleTerms* k,
+	NxReal tmp0, NxReal* sParam, NxReal* tParam)
+	{
+	const double numer = ((double) k->b1 + k->a11) - tmp0;
+	const double denom = nxPMapPointTriangleDenominator(k);
+	if(numer >= denom)
+		return nxPMapPointTriangleVertex1(k, sParam, tParam);
+	return nxPMapPointTriangleInteriorFromS(k, (NxReal) (numer / denom), sParam, tParam);
+	}
+
+// Region 2 (0x00032c8b): tmp0 = b0 + a01 narrowed into the t slot, tmp1 =
+// b1 + a11 wide.
+static __declspec(noinline) double nxPMapPointTriangleRegion2(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	const NxReal tmp0 = (NxReal) ((double) k->b0 + k->a01);
+	const double tmp1 = (double) k->b1 + k->a11;
+	if(tmp1 > tmp0)
+		return nxPMapPointTriangleRegion2Quotient(k, tmp0, sParam, tParam);
+	if(tmp1 <= 0.0)
+		return nxPMapPointTriangleVertex2(k, sParam, tParam);
+	if(k->b1 >= 0.0f)
+		return nxPMapPointTriangleVertex0(k, sParam, tParam);
+	return nxPMapPointTriangleEdge1Quotient(k, sParam, tParam);
+	}
+
+// Region 6's quotient (0x00032d80..0x00032dd8): t = numer / denom narrowed,
+// s = 1 - t narrowed, and the interior entered with t reloaded.
+static __declspec(noinline) double nxPMapPointTriangleRegion6Quotient(const NxPMapPointTriangleTerms* k,
+	NxReal tmp0, NxReal* sParam, NxReal* tParam)
+	{
+	const double numer = ((double) k->b0 + k->a00) - tmp0;
+	const double denom = nxPMapPointTriangleDenominator(k);
+	if(numer >= denom)
+		return nxPMapPointTriangleVertex2(k, sParam, tParam);
+	const NxReal t = (NxReal) (numer / denom);
+	const NxReal s = (NxReal) (1.0f - (double) t);
+	return nxPMapPointTriangleInteriorNarrow(k, s, t, sParam, tParam);
+	}
+
+// Region 6 (0x00032d65): tmp0 = b1 + a01 narrowed, tmp1 = b0 + a00 wide.
+static __declspec(noinline) double nxPMapPointTriangleRegion6(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	const NxReal tmp0 = (NxReal) ((double) k->b1 + k->a01);
+	const double tmp1 = (double) k->b0 + k->a00;
+	if(tmp1 > tmp0)
+		return nxPMapPointTriangleRegion6Quotient(k, tmp0, sParam, tParam);
+	if(tmp1 <= 0.0)
+		return nxPMapPointTriangleVertex1(k, sParam, tParam);
+	if(k->b0 >= 0.0f)
+		return nxPMapPointTriangleVertex0(k, sParam, tParam);
+	return nxPMapPointTriangleEdge0Quotient(k, sParam, tParam);
+	}
+
+// Region 1 (0x00032e40): numer = ((b1 + a11) - a01) - b0, stored narrowed
+// into the t slot and tested wide against 0; the division reads the narrowed
+// copy.
+static __declspec(noinline) double nxPMapPointTriangleRegion1(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	const double numerWide = (((double) k->b1 + k->a11) - k->a01) - k->b0;
+	const NxReal numer = (NxReal) numerWide;
+	if(numerWide <= 0.0)
+		return nxPMapPointTriangleVertex2(k, sParam, tParam);
+	const double denom = nxPMapPointTriangleDenominator(k);
+	if(numer >= denom)
+		return nxPMapPointTriangleVertex1(k, sParam, tParam);
+	return nxPMapPointTriangleInteriorFromS(k, (NxReal) (numer / denom), sParam, tParam);
+	}
+
+// The region decision (0x00032b10..0x00032b68, 0x00032bf2, 0x00032c82,
+// 0x00032d50): s + t against the determinant, then the signs of s, t and b0.
+// Returns Eberly's region number.
+static __declspec(noinline) int nxPMapPointTriangleRegion(const NxPMapPointTriangleTerms* k)
+	{
+	const double t = nxPMapPointTriangleT(k);
+	if((double) k->s + t <= k->det)
 		{
-			if(fT < 0.0f)  // region 4
-			{
-				if(fB0 < 0.0f)
-				{
-					if(-fB0 >= fA00)		fSqrDist = fA00+2.0f*fB0+fC;
-					else					fSqrDist = fB0*(-fB0/fA00)+fC;
-				}
-				else
-				{
-					if(fB1 >= 0.0f)			fSqrDist = fC;
-					else if(-fB1 >= fA11)	fSqrDist = fA11+2.0f*fB1+fC;
-					else					fSqrDist = fB1*(-fB1/fA11)+fC;
-				}
-			}
-			else  // region 3
-			{
-				if(fB1 >= 0.0f)				fSqrDist = fC;
-				else if(-fB1 >= fA11)		fSqrDist = fA11+2.0f*fB1+fC;
-				else						fSqrDist = fB1*(-fB1/fA11)+fC;
-			}
+		if(k->s < 0.0f)
+			return (t < 0.0 && k->b0 < 0.0f) ? 4 : 3;
+		return t < 0.0 ? 5 : 0;
 		}
-		else if(fT < 0.0f)  // region 5
+	if(k->s < 0.0f)
+		return 2;
+	return t < 0.0 ? 6 : 1;
+	}
+
+// phys_fn_001672 (0x000329e0, 1326 B)
+// Point to triangle (origin v0, edges v1 - v0 and v2 - v0), with the two edge
+// parameters written through optional pointers. The first edge stays on the
+// FPU stack (0x000329eb..0x000329fc) and is squared and dotted from there; the
+// second edge and the offset v0 - p are stored. a00, a01, a11, b0, b1, the
+// determinant and s are narrowed -- b0, the determinant and s into the
+// caller's first three argument slots, b1 into the fourth -- while c (the
+// squared offset, 0x00032ac8..0x00032ae2) and t stay in registers; c is added
+// last in every leaf. The quotient leaves keep the parameter they just divided
+// in st(0) (`fst` at 0x00032d43, 0x00032e33, 0x00032ead) and use it wide; the
+// interior leaf (0x00032eb1) reads its first t either wide or reloaded, by
+// entry. The determinant-zero interior returns FLT_MAX (0x10106858) with both
+// parameters 0. Every comparison keeps the listing's NaN side: a NaN takes the
+// branch the `test ah` pattern gives it (for example b1 NaN at 0x00032bb7 is
+// "b1 < 0", the quotient). Regions 3 and 4 share the edge-1 leaf and regions 4
+// and 5 the edge-0 leaf, as the listing's jumps do.
+__declspec(noinline) double __cdecl nxPMapPointTriangleSquareDistance(const NxReal* point,
+	const NxReal* v0, const NxReal* v1, const NxReal* v2, NxReal* sParam, NxReal* tParam)
+	{
+	NxPMapPointTriangleTerms k;
+	nxPMapPointTriangleTerms(point, v0, v1, v2, &k);
+	switch(nxPMapPointTriangleRegion(&k))
 		{
-			if(fB0 >= 0.0f)					fSqrDist = fC;
-			else if(-fB0 >= fA00)			fSqrDist = fA00+2.0f*fB0+fC;
-			else							fSqrDist = fB0*(-fB0/fA00)+fC;
-		}
-		else  // region 0
-		{
-			// minimum at interior point
-			if(fDet==0.0f)
-			{
-				fSqrDist = MAX_FLOAT;
-			}
-			else
-			{
-				float fInvDet = 1.0f/fDet;
-				fS *= fInvDet;
-				fT *= fInvDet;
-				fSqrDist = fS*(fA00*fS+fA01*fT+2.0f*fB0) + fT*(fA01*fS+fA11*fT+2.0f*fB1)+fC;
-			}
+		case 0:
+			return nxPMapPointTriangleRegion0(&k, sParam, tParam);
+		case 1:
+			return nxPMapPointTriangleRegion1(&k, sParam, tParam);
+		case 2:
+			return nxPMapPointTriangleRegion2(&k, sParam, tParam);
+		case 3:
+			return nxPMapPointTriangleEdge1(&k, sParam, tParam);
+		case 4:
+			return nxPMapPointTriangleEdge0(&k, sParam, tParam);
+		case 5:
+			if(k.b0 >= 0.0f)
+				return nxPMapPointTriangleVertex0(&k, sParam, tParam);
+			return nxPMapPointTriangleEdge0(&k, sParam, tParam);
+		default:
+			return nxPMapPointTriangleRegion6(&k, sParam, tParam);
 		}
 	}
-	else
-	{
-		float fTmp0, fTmp1, fNumer, fDenom;
 
-		if(fS < 0.0f)  // region 2
-		{
-			fTmp0 = fA01 + fB0;
-			fTmp1 = fA11 + fB1;
-			if(fTmp1 > fTmp0)
-			{
-				fNumer = fTmp1 - fTmp0;
-				fDenom = fA00-2.0f*fA01+fA11;
-				if(fNumer >= fDenom)
-				{
-					fSqrDist = fA00+2.0f*fB0+fC;
-				}
-				else
-				{
-					fS = fNumer/fDenom;
-					fT = 1.0f - fS;
-					fSqrDist = fS*(fA00*fS+fA01*fT+2.0f*fB0) + fT*(fA01*fS+fA11*fT+2.0f*fB1)+fC;
-				}
-			}
-			else
-			{
-				if(fTmp1 <= 0.0f)		fSqrDist = fA11+2.0f*fB1+fC;
-				else if(fB1 >= 0.0f)	fSqrDist = fC;
-				else					fSqrDist = fB1*(-fB1/fA11)+fC;
-			}
-		}
-		else if(fT < 0.0f)  // region 6
-		{
-			fTmp0 = fA01 + fB1;
-			fTmp1 = fA00 + fB0;
-			if(fTmp1 > fTmp0)
-			{
-				fNumer = fTmp1 - fTmp0;
-				fDenom = fA00-2.0f*fA01+fA11;
-				if(fNumer >= fDenom)
-				{
-					fSqrDist = fA11+2.0f*fB1+fC;
-				}
-				else
-				{
-					fT = fNumer/fDenom;
-					fS = 1.0f - fT;
-					fSqrDist = fS*(fA00*fS+fA01*fT+2.0f*fB0) + fT*(fA01*fS+fA11*fT+2.0f*fB1)+fC;
-				}
-			}
-			else
-			{
-				if(fTmp1 <= 0.0f)		fSqrDist = fA00+2.0f*fB0+fC;
-				else if(fB0 >= 0.0f)	fSqrDist = fC;
-				else					fSqrDist = fB0*(-fB0/fA00)+fC;
-			}
-		}
-		else  // region 1
-		{
-			fNumer = fA11 + fB1 - fA01 - fB0;
-			if(fNumer <= 0.0f)
-			{
-				fSqrDist = fA11+2.0f*fB1+fC;
-			}
-			else
-			{
-				fDenom = fA00-2.0f*fA01+fA11;
-				if(fNumer >= fDenom)
-				{
-					fSqrDist = fA00+2.0f*fB0+fC;
-				}
-				else
-				{
-					fS = fNumer/fDenom;
-					fT = 1.0f - fS;
-					fSqrDist = fS*(fA00*fS+fA01*fT+2.0f*fB0) + fT*(fA01*fS+fA11*fT+2.0f*fB1)+fC;
-				}
-			}
-		}
-	}
-	return fabs(fSqrDist);
-}
 
 static double nxPMapTriangleDistance(const InternalTriangleMesh& mesh,
 	const NxF32 point[3], NxU32 face)
@@ -300,7 +468,11 @@ static double nxPMapTriangleDistance(const InternalTriangleMesh& mesh,
 	const IceMaths::Point p0(a.x, a.y, a.z);
 	const IceMaths::Point p1(b.x, b.y, b.z);
 	const IceMaths::Point p2(c.x, c.y, c.z);
-	return nxPMapPointTriangleSqrDistance(query, p0, p1, p2);
+	const NxF32 queryValues[3] = { query.x, query.y, query.z };
+	const NxF32 p0Values[3] = { p0.x, p0.y, p0.z };
+	const NxF32 p1Values[3] = { p1.x, p1.y, p1.z };
+	const NxF32 p2Values[3] = { p2.x, p2.y, p2.z };
+	return nxPMapPointTriangleSquareDistance(queryValues, p0Values, p1Values, p2Values, 0, 0);
 	}
 
 static double nxPMapPointAABBDistanceSquared(const IceMaths::Point& point,
@@ -567,7 +739,10 @@ bool PenetrationMap::encodeCellRun(MemoryStream& stream, const NxU32* cells,
 		const NxU32 y = (index / resolution) % resolution;
 		const NxU32 z = index / resolutionSquared;
 		ordered[i].index = index;
-		ordered[i].key = spread[x] + 2 * spread[y] + 4 * spread[z];
+		// phys_fn_001990 spreads z into the low three-bit lanes, y into the
+		// middle lanes, and x into the high lanes (its bit loop shifts x by
+		// bit*3+2 and z by bit*3).
+		ordered[i].key = spread[z] + 2 * spread[y] + 4 * spread[x];
 		}
 	if(count > 1)
 		qsort(ordered, count, sizeof(PMapMortonCell), comparePMapMortonCell);
