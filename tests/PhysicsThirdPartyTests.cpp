@@ -390,8 +390,10 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "qhull_random_x87", 317, 0, 0, 3197379813572608ull, 14, 0, 0, 3197379813572608ull, 1.3877787807814457e-14 },	// qhull-gap: QJ/Qr/R: the qhull_hull_x87 class over joggled and perturbed input
 	{ "qhull_direct_x87", 1062, 0, 0, kInf64, 43, 7, 0, 18858823439613952ull, 2.2204460492503131e-16 },	// qhull-gap: out-of-line printers and helpers; the inf words are distances next to 0
 	{ "qhull_merge2_x87", 1700, 0, 0, 2814749767106560ull, 103, 0, 0, 2814749767106560ull, 5.5511151231257827e-15 },	// qhull-gap: the Qn switches, larger thresholds, Qf, Delaunay Qt
-	{ "qhull_paths", 3212, 3204, 0, 0ull, 0, 0, 0, 0ull, 0.0 },	// qhull-gap: distance-test counts and a trace-4 search path; the T4 run is 9 words longer
-	{ "qhull_paths_x87", 644, 1, 0, kInf64, 348, 85, 0, 4616189618054758400ull, HUGE_VAL },	// qhull-gap: the same runs; misaligned after the T4 run's extra lines
+	{ "qhull_paths", 10, 10, 0, 0ull, 0, 0, 0, 0ull, 0.0 },	// the ten non-T4 runs; all tapes align
+	{ "qhull_paths_x87", 186, 0, 0, 1618481116086272ull, 14, 0, 0, 1618481116086272ull, 1.9984014443252818e-15 },	// same runs' doubles
+	{ "qhull_paths_t4", 3202, 3194, 0, 0ull, 0, 0, 0, 0ull, 0.0 },	// T4 adds one qh_findbest line
+	{ "qhull_paths_t4_x87", 458, 1, 0, kInf64, 334, 85, 0, 4616189618054758400ull, HUGE_VAL },	// same T4 run's doubles
 	{ "qhull_rotation", 268, 268, 0, 0ull, 0, 0, 0, 0ull, 0.0 },	// qhull-gap: "QRn": the merges differ, as qhull_hull_rotated
 	{ "qhull_rotation_x87", 2001, 0, 0, kInf64, 547, 20, 0, 4611686018427387904ull, 2.0 },	// qhull-gap: "QRn"
 	{ "hull_create_qhull", 242, 179, 0xffffffffu, 0, 16, 12, 0, 18874368ull, 14.0 },	// 0x027f box facet topology and short-quantization doubles; inputs and per-set effects are measured by hull_qhull_direct
@@ -405,6 +407,28 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "convex_hull.plane_divergent", 1595, 52, 0xffffffffu, 0, 512, 118, 0, 1074731964ull, HUGE_VAL },	// convex-mesh gap Task 2f: the concave, nudged and 0x0f7f polycube meshes and 001463's drawn points, whose planes 001463 takes through the vendored Plane::Set / Triangle::Area (005155, 005179); 0 with the oracle's pair bound into 001463
 	};
 
+// Keep the trace length changes attributed to the measured qhull search paths.
+struct NxLengthCeiling
+	{
+	const char* name;
+	int lengthDelta;
+	};
+
+static const NxLengthCeiling kLengthCeilings[] =
+	{
+	{ "qhull_paths", 0 },
+	{ "qhull_paths_x87", 0 },
+	{ "qhull_paths_t4", 9 },
+	{ "qhull_paths_t4_x87", 2 },
+	};
+
+static int nxFindLengthCeiling(const char* name)
+	{
+	for(unsigned i = 0; i < sizeof(kLengthCeilings) / sizeof(kLengthCeilings[0]); ++i)
+		if(!strcmp(kLengthCeilings[i].name, name))
+			return kLengthCeilings[i].lengthDelta;
+	return 0x7fffffff;
+	}
 static const NxDivergentCeiling* nxFindCeiling(const char* name)
 	{
 	for(unsigned i = 0; i < sizeof(kDivergentCeilings) / sizeof(kDivergentCeilings[0]); ++i)
@@ -664,6 +688,12 @@ static void nxReport(const char* name, const char* rva, const char* owner, const
 				name, d.words, ceiling->words, d.discrete, ceiling->discrete, d.floatUlp, ceiling->floatUlp,
 				d.doubleUlp, ceiling->doubleUlp, d.beyond, ceiling->beyond, d.infWords, ceiling->infWords,
 				d.degenerate, ceiling->degenerate, d.finiteUlp, ceiling->finiteUlp, d.beyondAbs, ceiling->beyondAbs);
+			fatal = 1;
+			}
+		else if(nxFindLengthCeiling(name) != 0x7fffffff && d.lengthDelta != nxFindLengthCeiling(name))
+			{
+			fprintf(stderr, "FAIL %s length_delta %d is not its recorded %d\n", name, d.lengthDelta,
+				nxFindLengthCeiling(name));
 			fatal = 1;
 			}
 		else if(d.words < ceiling->words || d.discrete < ceiling->discrete || d.floatUlp < ceiling->floatUlp
@@ -6055,7 +6085,51 @@ static void nxDriveQhullGap(const NxOracleRows& o, bool selfOnly)
 		"0x00068ce0", "phys_fn_002779", "io.c,geom.c,geom2.c", kDirect, sizeof(kDirect) / sizeof(kDirect[0]),
 		selfOnly, 0, kDivergent);
 
-	// DIVERGENT, discrete: the runs whose search path differs. The hull each
+	// EXACT on both tapes: the runs of the families above whose discrete AND
+	// float tapes compare exactly, run again as families of their own, so that
+	// a group they reach has an execution whose every output word matches
+	// (execution class `exact`, not only outcome-exact). The selection is by
+	// measurement (NXQHGAP_RUNS=1 lists each run's result) and deterministic; a
+	// run that stopped matching would fail these families.
+	static const NxQhGapRun kExactOutput[] =
+		{
+		{ 2, "s", 0, 0 }, { 2, "f", 0, 0 }, { 2, "i", 0, 0 }, { 2, "n", 0, 0 }, { 2, "p", 0, 0 }, { 2, "m", 0, 0 },
+		{ 2, "G", 0, 0 }, { 2, "FF Fi Fn", 0, 0 }, { 2, "Fa FA", 0, 0 }, { 2, "Fc FC", 0, 0 }, { 2, "FD", 0, 0 }, { 2, "Fo FI FN", 0, 0 },
+		{ 2, "FO FP", 0, 0 }, { 2, "FQ FS", 0, 0 }, { 2, "Fs Ft", 0, 0 }, { 2, "Fv FV", 0, 0 }, { 2, "Fx", 0, 0 }, { 2, "FM", 0, 0 },
+		{ 2, "Fm", 0, 0 }, { 2, "Gv Gp", 0, 0 }, { 2, "Gc Gh Gr", 0, 0 }, { 2, "Gi Gn", 0, 0 }, { 2, "Go", 0, 0 }, { 2, "Gt", 0, 0 },
+		{ 2, "PG", 0, 0 }, { 2, "Ts", 0, 0 }, { 1, "s", 0, 0 }, { 1, "f", 0, 0 }, { 1, "i", 0, 0 }, { 1, "G", 0, 0 },
+		{ 1, "m", 0, 0 }, { 1, "Fx", 0, 0 }, { 1, "Fc FN Fv", 0, 0 }, { 1, "Ts", 0, 0 }, { 1, "i Qt", 0, 0 }, { 1, "G Qt", 0, 0 },
+		{ 1, "m Qt", 0, 0 }, { 6, "s", 0, 0 }, { 6, "f", 0, 0 }, { 6, "Fc FP", 0, 0 }, { 6, "G", 0, 0 }, { 7, "f", 0, 0 },
+		{ 7, "i", 0, 0 }, { 0, "s", 0, 0 }, { 0, "f", 0, 0 }, { 0, "G", 0, 0 }, { 0, "Ts", 0, 0 }, { 9, "s", 0, 0 },
+		{ 10, "s", 0, 0 }, { 11, "s", 0, 0 }, { 12, "o", 0, 0 }, { 12, "s", 0, 0 }, { 12, "f", 0, 0 }, { 12, "i", 0, 0 },
+		{ 12, "m", 0, 0 }, { 12, "G", 0, 0 }, { 12, "Fx", 0, 0 }, { 12, "n p", 0, 0 }, { 12, "FN Fv", 0, 0 }, { 12, "Ts", 0, 0 },
+		{ 13, "o", 0, 0 }, { 13, "s", 0, 0 }, { 13, "Fx", 0, 0 }, { 22, "o", 0, 0 }, { 22, "i", 0, 0 }, { 14, "o", 0, 0 },
+		{ 14, "s", 0, 0 }, { 14, "f", 0, 0 }, { 14, "i", 0, 0 }, { 14, "G", 0, 0 }, { 14, "Fx", 0, 0 }, { 14, "n", 0, 0 },
+		{ 16, "G", 0, 0 }, { 16, "i", 0, 0 }, { 23, "v G", 1, 0 }, { 23, "d m", 1, 0 },
+		};
+	nxQhGapFamily(o, "qhull_exact_output", "qhull_exact_output_x87", "0x0006d800", "phys_fn_002866",
+		"io.c,geom2.c,poly2.c,stat.c", "0x0006d800", "phys_fn_002866", "io.c,geom.c,geom2.c",
+		kExactOutput, sizeof(kExactOutput) / sizeof(kExactOutput[0]), selfOnly, 0, 0);
+
+	static const NxQhGapRun kExactOther[] =
+		{
+		{ 0, "T1", 0, 0 }, { 0, "T2", 0, 0 }, { 0, "T3", 0, 0 }, { 2, "Tc", 0, 0 }, { 2, "T1 TP3", 0, 0 }, { 2, "T1 TC2", 0, 0 },
+		{ 2, "T1 TW0.1", 0, 0 }, { 12, "T3", 0, 0 }, { 14, "T2", 0, 0 }, { 10, "T1", 0, 0 }, { 11, "T1", 0, 0 }, { 2, "C-0.02", 0, 0 },
+		{ 2, "C0.02", 0, 0 }, { 2, "A-0.99", 0, 0 }, { 2, "A0.99", 0, 0 }, { 2, "W0.1", 0, 0 }, { 2, "V0.1", 0, 0 }, { 2, "U0.1", 0, 0 },
+		{ 2, "E0.001", 0, 0 }, { 2, "Qc", 0, 0 }, { 2, "Qi", 0, 0 }, { 2, "Qc Qi", 0, 0 }, { 2, "Q0", 0, 0 }, { 2, "Q1", 0, 0 },
+		{ 2, "Q2", 0, 0 }, { 2, "Q3", 0, 0 }, { 2, "Q4", 0, 0 }, { 2, "Q5", 0, 0 }, { 2, "Q6", 0, 0 }, { 2, "Q7", 0, 0 },
+		{ 2, "Q8", 0, 0 }, { 2, "Q9", 0, 0 }, { 2, "Qv", 0, 0 }, { 2, "Qm", 0, 0 }, { 2, "Qg QG0", 0, 0 }, { 2, "Qg QV0", 0, 0 },
+		{ 2, "QG0 Pg", 0, 0 }, { 2, "QV0 Pg", 0, 0 }, { 2, "QG-0 Pg", 0, 0 }, { 2, "Pd0:0.5", 0, 0 }, { 2, "PD0:0.5", 0, 0 }, { 2, "PA2", 0, 0 },
+		{ 2, "PM1", 0, 0 }, { 2, "PF0.1", 0, 0 }, { 2, "Qb0:0B0:0", 0, 0 }, { 2, "Qb0:-1B0:1", 0, 0 }, { 2, "Qf", 0, 0 }, { 6, "Qv", 0, 0 },
+		{ 6, "Qc Qi", 0, 0 }, { 12, "C-0.01", 0, 0 }, { 12, "Qc", 0, 0 }, { 6, "C-0", 0, 0 }, { 6, "Q0", 0, 0 }, { 2, "Q1 C-0", 0, 0 },
+		{ 2, "QG-0 Pg", 0, 0 }, { 13, "C-0", 0, 0 }, { 13, "Qx", 0, 0 }, { 2, "o", 0, 1 }, { 0, "Qt", 0, 1 }, { 1, "o", 0, 1 },
+		{ 12, "o", 0, 1 }, { 14, "o", 0, 1 },
+		};
+	nxQhGapFamily(o, "qhull_exact_other", "qhull_exact_other_x87", "0x0007d180", "phys_fn_003234",
+		"qhull.c,poly.c,poly2.c,merge.c,global.c,io.c,qset.c", "0x0007d180", "phys_fn_003234", "geom.c,geom2.c,merge.c,io.c",
+		kExactOther, sizeof(kExactOther) / sizeof(kExactOther[0]), selfOnly, 0, 0);
+
+// DIVERGENT, discrete: the runs whose search path differs. The hull each
 	// builds is the same on both sides; what differs is how many distance tests
 	// it took (qh_printsummary's counters, a statistic printed or skipped) or,
 	// at trace level 4, which neighbours qh_findbest visited: a distance that
@@ -6065,10 +6139,19 @@ static void nxDriveQhullGap(const NxOracleRows& o, bool selfOnly)
 		{
 		{ 16, "s", 0 }, { 12, "d Qbb", 1 }, { 16, "C-0", 0 }, { 16, "Qx", 0 }, { 16, "Qv", 0 },
 		{ 18, "C0.01", 0 }, { 21, "C0.01", 0 }, { 2, "Qr", 0 }, { 2, "QR-5 Qr", 0 }, { 12, "d Qt", 1 },
-		{ 1, "T4", 0 },	// last: its tape is 9 words longer on the candidate side
 		};
 	nxQhGapFamily(o, "qhull_paths", "qhull_paths_x87", "0x0005c5c0", "phys_fn_002425", "geom.c,qhull.c,poly2.c,merge.c,io.c",
 		"0x0005c5c0", "phys_fn_002425", "geom.c,geom2.c,merge.c", kPaths, sizeof(kPaths) / sizeof(kPaths[0]),
+		selfOnly, kDivergent, kDivergent);
+
+	// Keep trace level 4 separate: its candidate visits one extra neighbour,
+	// shifting the remaining tape, while the ordinary path cases remain aligned.
+	static const NxQhGapRun kPathsT4[] =
+		{
+		{ 1, "T4", 0 },
+		};
+	nxQhGapFamily(o, "qhull_paths_t4", "qhull_paths_t4_x87", "0x0005dfb0", "phys_fn_002454", "geom.c,qhull.c,poly2.c,merge.c,io.c",
+		"0x0005dfb0", "phys_fn_002454", "geom.c,geom2.c,merge.c", kPathsT4, sizeof(kPathsT4) / sizeof(kPathsT4[0]),
 		selfOnly, kDivergent, kDivergent);
 
 	// DIVERGENT, as qhull_hull_rotated: "QRn" rotates the input by qhull's own
