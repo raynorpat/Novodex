@@ -125,7 +125,7 @@ static int nxTestPMapComputeFirst(HMODULE physics, NxPhysicsSDK* sdk, NxU32 dens
 		density, computed ? 1u : 0u, pmap.dataSize, hash);
 	// Density 32 is the checked-in compute fixture. Density 64 is an isolated
 	// oracle probe exposed by the optional CLI argument so its rand stream starts
-	// in a fresh process; it currently records an open nearest-face tie mismatch.
+	// in a fresh process; disconnected32 isolates a separate-components topology.
 	const NxU32 expectedSize = density == 32 ? 10444 : density == 64 ? 74563 : 0;
 	const unsigned long long expectedHash = density == 32 ? 0x9a70de00aaf0edd4ull :
 		density == 64 ? 0x2c38820e277e9465ull : 0ull;
@@ -157,19 +157,78 @@ static int nxTestPMapComputeFirst(HMODULE physics, NxPhysicsSDK* sdk, NxU32 dens
 	return roundTripValid ? 0 : nxFail("computed PMap did not survive load and export");
 	}
 
+static int nxTestDisconnectedPMap(HMODULE physics, NxPhysicsSDK* sdk)
+	{
+	CreatePMapFn createPMap = reinterpret_cast<CreatePMapFn>(
+		GetProcAddress(physics, "NxCreatePMap"));
+	ReleasePMapFn releasePMap = reinterpret_cast<ReleasePMapFn>(
+		GetProcAddress(physics, "NxReleasePMap"));
+	if(!createPMap || !releasePMap)
+		return nxFail("PMap creation or release export is missing");
+
+	const NxVec3 vertices[] = {
+		NxVec3(-1.0f, -1.0f, -1.0f), NxVec3(1.0f, -1.0f, -1.0f),
+		NxVec3(-1.0f, 1.0f, -1.0f), NxVec3(-1.0f, -1.0f, 1.0f),
+		NxVec3(3.0f, -1.0f, -1.0f), NxVec3(5.0f, -1.0f, -1.0f),
+		NxVec3(3.0f, 1.0f, -1.0f), NxVec3(3.0f, -1.0f, 1.0f)
+		};
+	const NxU32 triangles[] = {
+		0, 2, 1, 0, 1, 3, 0, 3, 2, 1, 2, 3,
+		4, 6, 5, 4, 5, 7, 4, 7, 6, 5, 6, 7
+		};
+	NxTriangleMeshDesc desc;
+	desc.setToDefault();
+	desc.numVertices = sizeof(vertices) / sizeof(vertices[0]);
+	desc.points = vertices;
+	desc.pointStrideBytes = sizeof(NxVec3);
+	desc.numTriangles = sizeof(triangles) / (3 * sizeof(NxU32));
+	desc.triangles = triangles;
+	desc.triangleStrideBytes = 3 * sizeof(NxU32);
+	NxTriangleMesh* mesh = sdk->createTriangleMesh(desc);
+	if(!mesh)
+		return nxFail("disconnected-component PMap fixture mesh creation failed");
+	if(mesh->getCount(0, NX_ARRAY_VERTICES) != 8 ||
+		mesh->getCount(0, NX_ARRAY_TRIANGLES) != 8)
+		{
+		sdk->releaseTriangleMesh(*mesh);
+		return nxFail("disconnected-component PMap fixture changed topology during cooking");
+		}
+	memcpy(const_cast<void*>(mesh->getBase(0, NX_ARRAY_VERTICES)), vertices, sizeof(vertices));
+	memcpy(const_cast<void*>(mesh->getBase(0, NX_ARRAY_TRIANGLES)), triangles, sizeof(triangles));
+	srand(1);
+	NxPMap pmap = { 0, 0 };
+	const bool computed = createPMap(pmap, *mesh, 32, 0);
+	const unsigned long long hash = computed ? nxPMapByteHash(
+		static_cast<const unsigned char*>(pmap.data), pmap.dataSize) : 0ull;
+	printf("pmap_compute topology=disconnected-tetrahedra density=32 created=%u size=%u hash=%016llx\n",
+		computed ? 1u : 0u, pmap.dataSize, hash);
+	const bool expected = computed && pmap.data && pmap.dataSize == 4490 &&
+		hash == 0xc2276558dc4be981ull;
+	if(pmap.data && !releasePMap(pmap))
+		{
+		sdk->releaseTriangleMesh(*mesh);
+		return nxFail("NxReleasePMap failed for disconnected-component map");
+		}
+	sdk->releaseTriangleMesh(*mesh);
+	return expected ? 0 : nxFail("disconnected-component PMap differs from the oracle");
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
 	NxU32 density = 32;
 	const bool isolatedPMap = argc == 3;
 	if(argc != 2 && !isolatedPMap)
-		return nxFail("usage: NxPhysicsTriangleMeshApiTests <absolute pair directory> [64]");
+		return nxFail("usage: NxPhysicsTriangleMeshApiTests <absolute pair directory> [64|disconnected32]");
 	if(isolatedPMap)
 		{
-		const unsigned long parsedDensity = wcstoul(argv[2], 0, 10);
-		if(parsedDensity != 64)
-			return nxFail("isolated PMap mode accepts only density 64");
-		density = static_cast<NxU32>(parsedDensity);
+		if(wcscmp(argv[2], L"disconnected32") != 0)
+			{
+			const unsigned long parsedDensity = wcstoul(argv[2], 0, 10);
+			if(parsedDensity != 64)
+				return nxFail("isolated PMap mode accepts only density 64 or disconnected32");
+			density = static_cast<NxU32>(parsedDensity);
+			}
 		}
 	wchar_t pairDirectory[MAX_PATH];
 	HMODULE physics = 0;
@@ -182,7 +241,9 @@ int wmain(int argc, wchar_t** argv)
 	if(!createSDK) return nxFail("NxCreatePhysicsSDK is missing");
 	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, &gAllocator, 0);
 	if(!sdk) return nxFail("SDK creation failed");
-	status = nxTestPMapComputeFirst(physics, sdk, density);
+	const bool disconnectedPMap = isolatedPMap && wcscmp(argv[2], L"disconnected32") == 0;
+	status = disconnectedPMap ? nxTestDisconnectedPMap(physics, sdk) :
+		nxTestPMapComputeFirst(physics, sdk, density);
 	if(status)
 		{
 		sdk->release();
