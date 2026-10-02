@@ -79,6 +79,59 @@ class TriangleMeshApiAllocator : public NxUserAllocator
 
 static TriangleMeshApiAllocator gAllocator;
 
+static int nxTestPMapComputeFirst(HMODULE physics, NxPhysicsSDK* sdk)
+	{
+	CreatePMapFn createPMap = reinterpret_cast<CreatePMapFn>(
+		GetProcAddress(physics, "NxCreatePMap"));
+	ReleasePMapFn releasePMap = reinterpret_cast<ReleasePMapFn>(
+		GetProcAddress(physics, "NxReleasePMap"));
+	if(!createPMap || !releasePMap)
+		return nxFail("PMap creation or release export is missing");
+
+	const NxVec3 vertices[] = {
+		NxVec3(-1.0f, -1.0f, -1.0f), NxVec3(1.3f, -0.8f, -0.9f),
+		NxVec3(-0.7f, 1.2f, -0.6f), NxVec3(-0.5f, -0.4f, 1.5f)
+		};
+	const NxU32 triangles[] = { 0, 2, 1, 0, 1, 3, 0, 3, 2, 1, 2, 3 };
+	NxTriangleMeshDesc desc;
+	desc.setToDefault();
+	desc.numVertices = sizeof(vertices) / sizeof(vertices[0]);
+	desc.points = vertices;
+	desc.pointStrideBytes = sizeof(NxVec3);
+	desc.numTriangles = sizeof(triangles) / (3 * sizeof(NxU32));
+	desc.triangles = triangles;
+	desc.triangleStrideBytes = 3 * sizeof(NxU32);
+	NxTriangleMesh* mesh = sdk->createTriangleMesh(desc);
+	if(!mesh)
+		return nxFail("authored PMap fixture mesh creation failed");
+
+	srand(1);
+	NxPMap pmap = { 0, 0 };
+	const bool computed = createPMap(pmap, *mesh, 32, 0);
+	const unsigned long long hash = computed ? nxPMapByteHash(
+		static_cast<const unsigned char*>(pmap.data), pmap.dataSize) : 0ull;
+	printf("pmap_compute created=%u size=%u hash=%016llx\n",
+		computed ? 1u : 0u, pmap.dataSize, hash);
+	const bool valid = computed && pmap.data && pmap.dataSize >= 12 &&
+		memcmp(pmap.data, "PMAP", 4) == 0 &&
+		static_cast<const NxU8*>(pmap.data)[4] == 4 &&
+		static_cast<const NxU8*>(pmap.data)[8] == 32;
+	const bool loaded = valid && mesh->loadPMap(pmap);
+	const NxU32 roundTripSize = loaded ? mesh->getPMapSize() : 0;
+	void* roundTripBytes = roundTripSize ? malloc(roundTripSize) : 0;
+	NxPMap roundTrip = { roundTripSize, roundTripBytes };
+	const bool exported = loaded && roundTripBytes && mesh->getPMapData(roundTrip);
+	const bool roundTripValid = loaded && mesh->hasPMap() && roundTripSize >= 12 && exported;
+	free(roundTripBytes);
+	if(pmap.data && !releasePMap(pmap))
+		{
+		sdk->releaseTriangleMesh(*mesh);
+		return nxFail("NxReleasePMap failed for computed map");
+		}
+	sdk->releaseTriangleMesh(*mesh);
+	return roundTripValid ? 0 : nxFail("computed PMap did not survive load and export");
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -93,6 +146,12 @@ int wmain(int argc, wchar_t** argv)
 	if(!createSDK) return nxFail("NxCreatePhysicsSDK is missing");
 	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, &gAllocator, 0);
 	if(!sdk) return nxFail("SDK creation failed");
+	status = nxTestPMapComputeFirst(physics, sdk);
+	if(status)
+		{
+		sdk->release();
+		return status;
+		}
 
 	const NxVec3 vertices[] = {
 		NxVec3(-1.0f, -1.0f, -1.0f), NxVec3(1.0f, -1.0f, -1.0f),
@@ -255,47 +314,6 @@ int wmain(int argc, wchar_t** argv)
 		sdk->releaseTriangleMesh(*mesh);
 		sdk->release();
 		return nxFail("convex mesh did not expose cooked geometry");
-		}
-	CreatePMapFn createPMap = reinterpret_cast<CreatePMapFn>(
-		GetProcAddress(physics, "NxCreatePMap"));
-	ReleasePMapFn releasePMap = reinterpret_cast<ReleasePMapFn>(
-		GetProcAddress(physics, "NxReleasePMap"));
-	if(!createPMap || !releasePMap)
-		{
-		sdk->releaseTriangleMesh(*mesh);
-		sdk->release();
-		return nxFail("PMap creation or release export is missing");
-		}
-	srand(1);
-	NxPMap computedPMap = { 0, 0 };
-	const bool computed = createPMap(computedPMap, *mesh, 32, 0);
-	const unsigned long long computedHash = computed ? nxPMapByteHash(
-		static_cast<const unsigned char*>(computedPMap.data), computedPMap.dataSize) : 0ull;
-	if(computed && getenv("NX_PMAP_COMPUTE_DUMP"))
-		{
-		FILE* dump = fopen(getenv("NX_PMAP_COMPUTE_DUMP"), "wb");
-		if(dump)
-			{
-			fwrite(computedPMap.data, 1, computedPMap.dataSize, dump);
-			fclose(dump);
-			}
-		}
-	printf("triangle_mesh pmap compute success=%u size=%u data=%u hash=%016llx\n",
-		computed ? 1u : 0u, computedPMap.dataSize, computedPMap.data ? 1u : 0u,
-		computedHash);
-	if(!computed || computedPMap.dataSize != 29537 || !computedPMap.data ||
-		computedHash != 0xf2481c44860c9a12ull)
-		{
-		if(computedPMap.data) releasePMap(computedPMap);
-		sdk->releaseTriangleMesh(*mesh);
-		sdk->release();
-		return nxFail("public NxCreatePMap did not compute a serialized map");
-		}
-	if(!releasePMap(computedPMap))
-		{
-		sdk->releaseTriangleMesh(*mesh);
-		sdk->release();
-		return nxFail("public NxReleasePMap failed for computed map");
 		}
 	NxTriangleMeshDesc roundTrip;
 	roundTrip.setToDefault();

@@ -13,6 +13,11 @@
 class NxUserOutputStream;
 namespace IceCore { class Container; }
 
+struct PMapCellCursor
+	{
+	NxI32 x, y, z;
+	};
+
 /**
 The penetration map: a cubic occupancy grid a triangle mesh carries so that
 deep-penetration queries have somewhere to look. The file format and every
@@ -105,11 +110,13 @@ class PenetrationMap
 	// phys_fn_002035 (0x00050110), the arm that reads from a supplied stream.
 	bool				loadPayload(MemoryStream& stream);
 	// phys_fn_002008 (0x0004dba0). Returns the number of cell indices appended.
-	static NxU32		decodeCellRun(MemoryStream& stream, IceCore::Container& cells, NxU32 resolution);
+	static NxU32		decodeCellRun(MemoryStream& stream, IceCore::Container& cells, NxU32 resolution,
+							PMapCellCursor& cursor);
 	// phys_fn_001990 (0x0004cc60). Writes a cell list in Morton order as local
 	// 3D steps with absolute-coordinate escapes.
 	static bool			encodeCellRun(MemoryStream& stream, const NxU32* cells,
-							NxU32 count, NxU32 resolution, const NxU32* spread);
+							NxU32 count, NxU32 resolution, const NxU32* spread,
+							PMapCellCursor& cursor);
 	// phys_fn_002037/002039/002041/002043 (0x000502d0..0x000505e8).
 	bool				finish();
 

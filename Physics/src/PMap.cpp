@@ -317,7 +317,8 @@ bool PenetrationMap::setup(NxU32 resolution, const NxF32* bounds)
 // through the 32-way jump table at 0x0004dc75. Codes 0..25 move one step to a
 // neighboring cell; codes 26..31 replace selected coordinates with absolute
 // values using the resolution-dependent width above.
-NxU32 PenetrationMap::decodeCellRun(MemoryStream& stream, IceCore::Container& cells, NxU32 resolution)
+NxU32 PenetrationMap::decodeCellRun(MemoryStream& stream, IceCore::Container& cells,
+	NxU32 resolution, PMapCellCursor& cursor)
 	{
 	NxU32 codeWidth = 0;
 	if(resolution == 0x20)		codeWidth = 5;
@@ -332,28 +333,27 @@ NxU32 PenetrationMap::decodeCellRun(MemoryStream& stream, IceCore::Container& ce
 	// phys_fn_001988 initializes all three cursors to -1 before each value group.
 	// Codes 0..25 are the 26 possible non-zero one-cell moves. Codes 26..31
 	// replace one or more coordinates with an absolute value of codeWidth bits.
-	NxI32 x = -1, y = -1, z = -1;
 	for(NxU32 entry = 0; entry < count; ++entry)
 		{
 		const NxU32 code = stream.readBitsMsbFirst(5);
 		if(code < 26)
 			{
-			x += kPMapCellSteps[code].x;
-			y += kPMapCellSteps[code].y;
-			z += kPMapCellSteps[code].z;
+			cursor.x += kPMapCellSteps[code].x;
+			cursor.y += kPMapCellSteps[code].y;
+			cursor.z += kPMapCellSteps[code].z;
 			}
 		else
 			{
 			if(code == 26 || code == 29 || code == 30 || code == 31)
-				x = static_cast<NxI32>(stream.readBitsMsbFirst(codeWidth));
+				cursor.x = static_cast<NxI32>(stream.readBitsMsbFirst(codeWidth));
 			if(code == 27 || code == 29 || code == 31)
-				y = static_cast<NxI32>(stream.readBitsMsbFirst(codeWidth));
+				cursor.y = static_cast<NxI32>(stream.readBitsMsbFirst(codeWidth));
 			if(code == 28 || code == 30 || code == 31)
-				z = static_cast<NxI32>(stream.readBitsMsbFirst(codeWidth));
+				cursor.z = static_cast<NxI32>(stream.readBitsMsbFirst(codeWidth));
 			}
 
-		const NxU32 index = (static_cast<NxU32>(z) * resolution +
-			static_cast<NxU32>(y)) * resolution + static_cast<NxU32>(x);
+		const NxU32 index = (static_cast<NxU32>(cursor.z) * resolution +
+			static_cast<NxU32>(cursor.y)) * resolution + static_cast<NxU32>(cursor.x);
 		cells.Add(index);
 		}
 	return count;
@@ -364,7 +364,7 @@ NxU32 PenetrationMap::decodeCellRun(MemoryStream& stream, IceCore::Container& ce
 // escape carries only the coordinates that are not adjacent to the prior cell.
 
 bool PenetrationMap::encodeCellRun(MemoryStream& stream, const NxU32* cells,
-	NxU32 count, NxU32 resolution, const NxU32* spread)
+	NxU32 count, NxU32 resolution, const NxU32* spread, PMapCellCursor& cursor)
 	{
 	PMapMortonCell* ordered = count ? static_cast<PMapMortonCell*>(
 		malloc(static_cast<size_t>(count) * sizeof(PMapMortonCell))) : 0;
@@ -384,7 +384,6 @@ bool PenetrationMap::encodeCellRun(MemoryStream& stream, const NxU32* cells,
 		qsort(ordered, count, sizeof(PMapMortonCell), comparePMapMortonCell);
 
 	stream.storeBitsMsbFirst(count, 32);
-	NxI32 previousX = -1, previousY = -1, previousZ = -1;
 	NxU32 codeWidth = 0;
 	if(resolution == 0x20) codeWidth = 5;
 	else if(resolution == 0x40) codeWidth = 6;
@@ -395,9 +394,9 @@ bool PenetrationMap::encodeCellRun(MemoryStream& stream, const NxU32* cells,
 		const NxI32 x = static_cast<NxI32>(index % resolution);
 		const NxI32 y = static_cast<NxI32>((index / resolution) % resolution);
 		const NxI32 z = static_cast<NxI32>(index / resolutionSquared);
-		const NxI32 dx = x - previousX;
-		const NxI32 dy = y - previousY;
-		const NxI32 dz = z - previousZ;
+		const NxI32 dx = x - cursor.x;
+		const NxI32 dy = y - cursor.y;
+		const NxI32 dz = z - cursor.z;
 		NxU32 code = 0xffffffffu;
 		if(dx >= -1 && dx <= 1 && dy >= -1 && dy <= 1 && dz >= -1 && dz <= 1)
 			for(NxU32 candidate = 0; candidate < 26; ++candidate)
@@ -409,17 +408,15 @@ bool PenetrationMap::encodeCellRun(MemoryStream& stream, const NxU32* cells,
 					}
 		if(code == 0xffffffffu)
 			{
-			const bool farX = dx < -1 || dx > 1;
-			const bool farY = dy < -1 || dy > 1;
-			const bool farZ = dz < -1 || dz > 1;
-			if(farX && farY && farZ) code = 31;
-			else if(farX && farY) code = 29;
-			else if(farX && farZ) code = 30;
-			else if(farY && farZ) code = 31; // The oracle's Morton walk never needs a yz-only escape.
-			else if(farX) code = 26;
-			else if(farY) code = 27;
-			else if(farZ) code = 28;
-			else code = 31; // Duplicate coordinates are not produced by a grid.
+			const bool changeX = dx != 0;
+			const bool changeY = dy != 0;
+			const bool changeZ = dz != 0;
+			if(changeX && !changeY && !changeZ) code = 26;
+			else if(!changeX && changeY && !changeZ) code = 27;
+			else if(!changeX && !changeY && changeZ) code = 28;
+			else if(changeX && changeY && !changeZ) code = 29;
+			else if(changeX && !changeY && changeZ) code = 30;
+			else code = 31; // Includes y/z-only escapes; there is no narrower code.
 			}
 		stream.storeBitsMsbFirst(code, 5);
 		if(code == 26 || code == 29 || code == 30 || code == 31)
@@ -428,7 +425,7 @@ bool PenetrationMap::encodeCellRun(MemoryStream& stream, const NxU32* cells,
 			stream.storeBitsMsbFirst(static_cast<NxU32>(y), codeWidth);
 		if(code == 28 || code == 30 || code == 31)
 			stream.storeBitsMsbFirst(static_cast<NxU32>(z), codeWidth);
-		previousX = x; previousY = y; previousZ = z;
+		cursor.x = x; cursor.y = y; cursor.z = z;
 		}
 	free(ordered);
 	return true;
@@ -468,6 +465,7 @@ bool PenetrationMap::serialize(MemoryStream& stream) const
 	NxU32 previousValue = kPMapEmptyValue;
 	NxU32 nextValue = 0;
 	NxU32 groupCount = 0;
+	PMapCellCursor cursor = { -1, -1, -1 };
 	for(NxU32 i = 0; i < mCellCount; ++i)
 		{
 		const PMapValueCell& item = ordered[i];
@@ -485,7 +483,7 @@ bool PenetrationMap::serialize(MemoryStream& stream) const
 					stream.storeBitsMsbFirst(previousValue, 32);
 					}
 				if(!encodeCellRun(stream, groupCount ? group : 0,
-					groupCount, mResolution, mSpread))
+					groupCount, mResolution, mSpread, cursor))
 					{
 					free(ordered);
 					free(group);
@@ -506,7 +504,7 @@ bool PenetrationMap::serialize(MemoryStream& stream) const
 		stream.storeBit(0);
 		stream.storeBitsMsbFirst(previousValue, 32);
 		}
-	if(!encodeCellRun(stream, groupCount ? group : 0, groupCount, mResolution, mSpread))
+	if(!encodeCellRun(stream, groupCount ? group : 0, groupCount, mResolution, mSpread, cursor))
 		{
 		free(ordered);
 		free(group);
@@ -552,6 +550,7 @@ bool PenetrationMap::loadPayload(MemoryStream& stream)
 	// and never reset, so a set flag bit means "the value before this one, plus
 	// one" and the first record's implicit predecessor is -1.
 	NxU32 next = 0;
+	PMapCellCursor cursor = { -1, -1, -1 };
 	for(;;)
 		{
 		NxU32 value;
@@ -565,7 +564,7 @@ bool PenetrationMap::loadPayload(MemoryStream& stream)
 			break;
 
 		IceCore::Container cells;
-		NxU32 count = decodeCellRun(stream, cells, mResolution);
+		NxU32 count = decodeCellRun(stream, cells, mResolution, cursor);
 		const udword* entries = cells.GetEntries();
 		for(NxU32 i = 0; i < count; ++i)
 			mGrid[entries[i]] = value;
@@ -709,10 +708,12 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 	if(load && loadPayload(*stream))
 		return finish();
 
-	// 0x00050768. Build the grid from the source triangles. The nearest-face
-	// query below follows the image's per-voxel nearest point query; ray parity
-	// uses the same Opcode model retained by InternalTriangleMesh.
-	const InternalTriangleMesh* source = static_cast<const InternalTriangleMesh*>(mesh);
+	// 0x00050768. The routine's mesh argument is the concrete TriangleMesh
+	// object: setup reads its bounds at +0x44, and the Opcode interface is built
+	// from the counts and arrays at +0x08..+0x1c. The arrays also back the
+	// per-voxel nearest-face query below.
+	const TriangleMesh* sourceMesh = static_cast<const TriangleMesh*>(mesh);
+	const InternalTriangleMesh* source = &sourceMesh->mInternal;
 	if(!source->mVertices || !source->mTriangles || !source->mTriangleCount || !source->mModel ||
 		!mGrid || !stream)
 		return false;
@@ -724,15 +725,32 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 		return false;
 	memset(classified, 0, mCellCount);
 
+	// The oracle builds a short-lived Opcode model directly over the source
+	// arrays for this compute operation; it does not reuse the mesh's cached
+	// model. Keep the interface alive until the local model is destroyed.
+	Opcode::MeshInterface pmapInterface;
+	pmapInterface.SetNbTriangles(source->mTriangleCount);
+	pmapInterface.SetNbVertices(source->mVertexCount);
+	if(!pmapInterface.SetPointers(static_cast<const IndexedTriangle*>(source->mTriangles),
+		static_cast<const Point*>(source->mVertices)))
+		{
+		free(classified);
+		return false;
+		}
+	Opcode::OPCODECREATE modelCreate;
+	modelCreate.mIMesh = &pmapInterface;
+	Opcode::Model pmapModel;
+	if(!pmapModel.Build(modelCreate))
+		{
+		free(classified);
+		return false;
+		}
+
 	Opcode::RayCollider rayCollider;
 	rayCollider.SetFirstContact(false);
 	rayCollider.SetTemporalCoherence(false);
 	rayCollider.SetCulling(false);
-	const Opcode::Model& model = *static_cast<const Opcode::Model*>(source->mModel);
-	NxU32 insideCount = 0;
-	NxU32 nonemptyCount = 0;
-	NxU32 initialFaceCounts[16] = {};
-	NxU32 boundaryFaceCounts[16] = {};
+	const Opcode::Model& model = pmapModel;
 
 	for(NxU32 z = 0; z < mResolution; ++z)
 		for(NxU32 y = 0; y < mResolution; ++y)
@@ -846,10 +864,15 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 						}
 					inside = insideVotes >= 2;
 					}
+				// The oracle's ray query classifies samples exactly on a triangle
+				// surface as inside. Its boundary-ray callback reports this on the
+				// deterministic cube fixture; parity from a plain RayCollider alone
+				// can alternate there because the origin is already a hit.
+				if(bestDistanceSquared <= 1.0e-12f)
+					inside = true;
 				classified[index] = static_cast<NxU8>(inside ? 2 : 1);
-				mGrid[index] = nearestFace;
-				if(nearestFace < 16) ++initialFaceCounts[nearestFace];
-				if(inside) ++insideCount;
+				if(inside)
+					mGrid[index] = nearestFace + 1;
 
 				const NxI32 radius[3] = {
 					static_cast<NxI32>(nearbyint(distance * mCellsPerUnit[0])),
@@ -911,7 +934,7 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 				if(!touchesSurface) continue;
 				for(unsigned c = 0; c < 8; ++c)
 					{
-					if(corners[c] == -1 || (mGrid[corners[c]] & kPMapCellFilled)) continue;
+					if(corners[c] == -1 || !(mGrid[corners[c]] & kPMapCellFilled)) continue;
 					const NxU32 corner = static_cast<NxU32>(corners[c]);
 					const NxU32 cx = corner % mResolution;
 					const NxU32 cy = (corner / mResolution) % mResolution;
@@ -924,20 +947,9 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 					NxU32 face;
 					NxF32 distanceSquared;
 					nxPMapNearestFace(*source, point, face, distanceSquared);
-					if(face < 16) ++boundaryFaceCounts[face];
-					mGrid[corner] = face | kPMapCellFilled;
+					mGrid[corner] = (face + 1) | kPMapCellFilled;
 					}
 				}
-	if(getenv("NX_PMAP_TRACE"))
-		{
-		for(NxU32 i = 0; i < mCellCount; ++i)
-			if((mGrid[i] & 0x3fffffffu) != kPMapEmptyValue) ++nonemptyCount;
-		printf("pmap_trace cells=%u inside=%u nonempty=%u\n", mCellCount, insideCount, nonemptyCount);
-		printf("pmap_trace initial_faces=");
-		for(unsigned i = 0; i < 16; ++i) printf("%u%s", initialFaceCounts[i], i == 15 ? "\\n" : ".");
-		printf("pmap_trace boundary_faces=");
-		for(unsigned i = 0; i < 16; ++i) printf("%u%s", boundaryFaceCounts[i], i == 15 ? "\\n" : ".");
-		}
 	const bool serialized = serialize(*stream);
 	const bool finished = finish();
 	return serialized && finished;
@@ -958,7 +970,7 @@ NX_C_EXPORT NXP_DLL_EXPORT bool NX_CALL_CONV NxCreatePMap(NxPMap& pmap,
 		return false;
 	MemoryStream stream(0x1000, 0);
 	PenetrationMap penetrationMap;
-	if(!penetrationMap.create(&concrete->mInternal, density, 0, &stream, false, outputStream))
+	if(!penetrationMap.create(concrete, density, 0, &stream, false, outputStream))
 		return false;
 	const NxU32 size = stream.getLength();
 	void* data = malloc(size);
