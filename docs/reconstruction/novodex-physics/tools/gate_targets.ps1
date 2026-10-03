@@ -3083,6 +3083,16 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation fetch-contact actor0=1 actor1=1 events=0000000a force=80000000.80000000.80000000'
         'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.80000000.80000000'
         'simulation generated-contact summary flags=00000000 calls=6 events=00000008 ready=1 fetched=1'
+        'simulation compound-root-pose actor=00000000.3f000000.00000000 root=00000000.3f000000.00000000'
+        'simulation compound-generated-contact step=0 calls=0 events=00000000'
+        'simulation compound-generated-contact step=1 calls=0 events=00000000'
+        'simulation compound-generated-contact step=2 calls=1 events=0000000a'
+        'simulation compound-generated-contact step=3 calls=2 events=00000008'
+        'simulation compound-generated-contact step=4 calls=3 events=00000008'
+        'simulation compound-generated-contact step=5 calls=4 events=00000008'
+        'simulation compound-generated-contact step=6 calls=5 events=00000008'
+        'simulation compound-generated-contact step=7 calls=6 events=00000008'
+        'simulation compound-generated-contact summary calls=6 events=00000008'
     )
     'NxPhysicsTriggerSimulationTests' = @(
         # A dynamic sphere crosses a public static trigger box under real motion.
@@ -5281,7 +5291,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1250  # previous 1,240 plus three generated-contact observations and 7 trigger observations
+    '7' = 1260  # previous 1,250 plus one compound root-pose and nine contact observations
     '8' = 0
 }
 

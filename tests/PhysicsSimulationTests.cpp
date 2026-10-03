@@ -993,6 +993,63 @@ int wmain(int argc, wchar_t** argv)
 	sdk->setActorGroupPairFlags(7, 3, 0);
 	sdk->releaseScene(*reportScene);
 
+	// Exercise report timing for a dynamic compound that makes contact through
+	// two independently pruned sphere children.
+	NxSceneDesc compoundReportSceneDesc;
+	compoundReportSceneDesc.setToDefault();
+	compoundReportSceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
+	NxScene* compoundReportScene = sdk->createScene(compoundReportSceneDesc);
+	if(!compoundReportScene)
+		return nxFail("compound contact-report scene creation failed");
+	compoundReportScene->setTiming(1.0f / 60.0f, 8, NX_TIMESTEP_FIXED);
+	NxActorDesc compoundGroundDesc;
+	compoundGroundDesc.shapes.pushBack(&reportPlane);
+	NxActor* compoundGround = compoundReportScene->createActor(compoundGroundDesc);
+	NxSphereShapeDesc compoundSphere0;
+	compoundSphere0.radius = 0.5f;
+	compoundSphere0.localPose.t = NxVec3(-0.25f, 0.0f, 0.0f);
+	NxSphereShapeDesc compoundSphere1;
+	compoundSphere1.radius = 0.5f;
+	compoundSphere1.localPose.t = NxVec3(0.25f, 0.0f, 0.0f);
+	NxBodyDesc compoundReportBody;
+	NxActorDesc compoundReportActorDesc;
+	compoundReportActorDesc.body = &compoundReportBody;
+	compoundReportActorDesc.density = 1.0f;
+	compoundReportActorDesc.globalPose.t = NxVec3(0.0f, 0.5f, 0.0f);
+	compoundReportActorDesc.shapes.pushBack(&compoundSphere0);
+	compoundReportActorDesc.shapes.pushBack(&compoundSphere1);
+	NxActor* compoundReportActor = compoundReportScene->createActor(compoundReportActorDesc);
+	if(!compoundGround || !compoundReportActor)
+		return nxFail("compound contact-report actors creation failed");
+	unsigned char* const compoundBody = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(compoundReportActor) + 0x14);
+	unsigned char* const compoundRoot = *reinterpret_cast<unsigned char**>(compoundBody + 0x10);
+	const NxVec3 actorStart = compoundReportActor->getGlobalPositionVal();
+	printf("simulation compound-root-pose actor=%08x.%08x.%08x root=%08x.%08x.%08x\n",
+		nxFloatBits(actorStart.x), nxFloatBits(actorStart.y), nxFloatBits(actorStart.z),
+		nxFloatBits(*reinterpret_cast<float*>(compoundRoot + 0x30)),
+		nxFloatBits(*reinterpret_cast<float*>(compoundRoot + 0x34)),
+		nxFloatBits(*reinterpret_cast<float*>(compoundRoot + 0x38)));
+	NxSimulationContactReport compoundReport(compoundGround, compoundReportActor);
+	compoundReportScene->setUserContactReport(&compoundReport);
+	compoundGround->setGroup(7);
+	compoundReportActor->setGroup(3);
+	sdk->setActorGroupPairFlags(7, 3, NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH);
+	for(unsigned step = 0; step < 8; ++step)
+		{
+		compoundReportScene->simulate(1.0f / 60.0f);
+		const bool ready = compoundReportScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+		const bool fetched = compoundReportScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		if(!ready || !fetched)
+			return nxFail("compound contact-report result was not ready and fetched");
+		printf("simulation compound-generated-contact step=%u calls=%u events=%08x\n",
+			step, compoundReport.calls, compoundReport.events);
+		}
+	printf("simulation compound-generated-contact summary calls=%u events=%08x\n",
+		compoundReport.calls, compoundReport.events);
+	sdk->setActorGroupPairFlags(7, 3, 0);
+	sdk->releaseScene(*compoundReportScene);
+
 	// Seed the oracle-shaped fetch callback queues after a completed empty step.
 	// This isolates the 000640 callback dispatch/list-reset contract from pair
 	// generation, which is covered by the collision/contact reconstruction.
