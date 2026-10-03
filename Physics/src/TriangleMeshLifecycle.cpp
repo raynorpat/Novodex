@@ -226,6 +226,11 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& desc)
 		// itself ends at +0x4c, so initialize the graph slot explicitly before
 		// any allocation can fail or the support path can observe the hull.
 		nxSetConvexHullVertexGraph(hull, 0);
+		// The six support directions cache a starting vertex immediately after
+		// the graph pointer. The allocator's debug fill (0xbaadf00d) is not a
+		// valid vertex index; the first world-AABB query otherwise walks outside
+		// the visited array when a dynamic convex mesh is simulated.
+		memset(reinterpret_cast<NxU8*>(hull) + 0x68, 0, 6 * sizeof(NxU32));
 		hull->mNbFaces = mInternal.mTriangleCount;
 		hull->mNbVerts = mInternal.mVertexCount;
 		hull->mVerts = static_cast<const IceMaths::Point*>(mInternal.mVertices);

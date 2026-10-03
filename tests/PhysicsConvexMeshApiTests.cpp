@@ -172,6 +172,15 @@ static bool runTriangleMeshActorCase(NxPhysicsSDK& sdk, const NxTriangleMeshDesc
 	printf("mesh-actor name=dynamic_tetra mesh=1 scene=1 actor=%u shapes=%u type=%u dynamic=%u\n",
 		dynamicActor ? 1u : 0u, dynamicShapeCount, dynamicShapeType,
 		dynamic);
+	if(dynamicActor && dynamicShapeCount)
+		{
+		NxBounds3 bounds;
+		dynamicActor->getShapes()[0]->getWorldBounds(bounds);
+		NxU32 words[6];
+		memcpy(words, &bounds, sizeof(words));
+		printf("mesh-actor-bounds=%08x:%08x:%08x:%08x:%08x:%08x\n",
+			words[0], words[1], words[2], words[3], words[4], words[5]);
+		}
 	if(dynamicActor)
 		{
 		const NxReal mass = dynamicActor->getMass();

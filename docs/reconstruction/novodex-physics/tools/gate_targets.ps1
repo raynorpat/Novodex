@@ -3244,6 +3244,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'mesh-actor name=static_tetra mesh=1 scene=1 actor=1 shapes=1 type=4',
         'mesh-graph-tetra=valid/4/12/d76d4b25/de3b8609/d32294c5',
         'mesh-actor name=dynamic_tetra mesh=1 scene=1 actor=1 shapes=1 type=4 dynamic=1',
+        'mesh-actor-bounds=00000000:00000000:00000000:3f800000:3f800000:3f800000',
         'mesh-actor-mass mass=3e2aaaab center=3e800000:3e800000:3e800000 inertia=3c2aaaac:3c888889:3c2aaaac',
         'mesh-graph-octa=valid/6/24/40d43be5/0656b781/d4d21aa5'
     )
@@ -5314,7 +5315,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
     '3' = 359  # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 250  # 34 asset + 209 third-party + 7 public convex-mesh coverage assertions
+    '4' = 251  # 34 asset + 209 third-party + 8 public convex-mesh coverage assertions
     '5' = 2037  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # + 175 from scene-raycast Task 4 (149 body-creation, 13 setters, 9 dynamic-setter
                # and 3 shape-vtable from its shape sub-area, 1 shape-vtable from its box hull)
