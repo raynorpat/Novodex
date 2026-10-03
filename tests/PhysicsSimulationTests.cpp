@@ -254,6 +254,9 @@ int wmain(int argc, wchar_t** argv)
 			FreeLibrary(physics);
 			return nxFail("contact scene result was not ready and fetched");
 			}
+		char contactStage[16];
+		sprintf_s(contactStage, "contact%u", step);
+		nxPrintActorState(contactStage, *fallingActor);
 		}
 	printf("simulation contact callbacks=%u events=%08x pairs=%u patches=%u points=%u normal=%08x.%08x.%08x point=%08x.%08x.%08x separation=%08x\n",
 		contactReport.calls, contactReport.events, contactReport.pairs,

@@ -239,25 +239,97 @@ static NX_INLINE void cpmSolveRecord(JointSupportRecord* record, const NxReal* p
 		record->mUnknown040 = (NxReal)((double)record->mUnknown040 * 0.7f);
 	}
 
-// Partial semantic model of phys_fn_004403 for the contact kind used by M1.
-// The first plane/sphere differential currently diverges by two ULPs at step
-// 22; retain that boundary as an explicit open item until the listing's exact
-// x87 operation order is transcribed. Each pass computes a projected normal
-// impulse and applies its change to each present body.
+// Semantic model of phys_fn_004403. The velocity error accumulates separately
+// in +0x4c. Its body impulse is reduced by the scaled penetration bias before
+// being accumulated in +0x44; the listing stores that change as a float and
+// clamps the accumulated impulse at zero.
 static void cpmSolveContactRecord0403(NxReal, NxI32, JointSupportRecord* record)
 	{
-	const NxReal relativeVelocity = (NxReal)record->row004389();
-	const NxReal penetrationBias = (NxReal)(-(double)record->mUnknown034 * record->mUnknown040);
-	const NxReal targetVelocity = (NxReal)((double)record->mUnknown038 + penetrationBias);
-	const NxReal delta = (NxReal)(((double)targetVelocity - relativeVelocity) * record->mUnknown03c);
-	const NxReal oldImpulse = (NxReal)record->mUnknown044;
-	NxReal newImpulse = (NxReal)((double)oldImpulse + delta);
-	if(newImpulse < 0.0f) newImpulse = 0.0f;
-	if(newImpulse > record->mUnknown048) newImpulse = record->mUnknown048;
-	const NxReal applied = (NxReal)((double)newImpulse - oldImpulse);
-	record->mUnknown044 = cpmBits(newImpulse);
-	record->mUnknown04c = cpmBits((NxReal)((double)record->mUnknown04c + applied));
-	if(applied == 0.0f)
+	NxReal applied;
+	static const NxReal zero = 0.0f;
+	__asm
+		{
+		mov edx, record
+		mov ecx, dword ptr [edx + 10h]
+		test ecx, ecx
+		jz cpm_solve_no_body0
+		fld dword ptr [ecx + 18h]
+		fmul dword ptr [edx + 20h]
+		fld dword ptr [ecx + 14h]
+		fmul dword ptr [edx + 1ch]
+		faddp st(1), st(0)
+		fld dword ptr [ecx + 8]
+		fmul dword ptr [edx + 8]
+		faddp st(1), st(0)
+		fld dword ptr [ecx + 4]
+		fmul dword ptr [edx + 4]
+		faddp st(1), st(0)
+		fld dword ptr [ecx]
+		fmul dword ptr [edx]
+		faddp st(1), st(0)
+		fld dword ptr [ecx + 10h]
+		fmul dword ptr [edx + 18h]
+		faddp st(1), st(0)
+		jmp cpm_solve_body1
+	cpm_solve_no_body0:
+		fldz
+	cpm_solve_body1:
+		mov eax, dword ptr [edx + 14h]
+		test eax, eax
+		jz cpm_solve_relative_ready
+		fld dword ptr [eax + 18h]
+		fmul dword ptr [edx + 2ch]
+		fld dword ptr [eax + 14h]
+		fmul dword ptr [edx + 28h]
+		faddp st(1), st(0)
+		fld dword ptr [eax + 8]
+		fmul dword ptr [edx + 8]
+		faddp st(1), st(0)
+		fld dword ptr [eax + 4]
+		fmul dword ptr [edx + 4]
+		faddp st(1), st(0)
+		fld dword ptr [eax + 10h]
+		fmul dword ptr [edx + 24h]
+		faddp st(1), st(0)
+		fld dword ptr [eax]
+		fmul dword ptr [edx]
+		faddp st(1), st(0)
+		fsubp st(1), st(0)
+	cpm_solve_relative_ready:
+		fsubr dword ptr [edx + 38h]
+		fmul dword ptr [edx + 3ch]
+		fld st(0)
+		fadd dword ptr [edx + 4ch]
+		fstp dword ptr [edx + 4ch]
+		fld dword ptr [edx + 40h]
+		fmul dword ptr [edx + 34h]
+		fsubr st(0), st(1)
+		fstp dword ptr [applied]
+		fstp st(0)
+		fld dword ptr [applied]
+		fadd dword ptr [edx + 44h]
+		fcom dword ptr [zero]
+		fnstsw ax
+		test ah, 5
+		jp cpm_solve_store_impulse
+		fstp st(0)
+		fld dword ptr [edx + 44h]
+		mov dword ptr [edx + 44h], 0
+		fchs
+		fstp dword ptr [applied]
+		jmp cpm_solve_impulse_ready
+	cpm_solve_store_impulse:
+		fstp dword ptr [edx + 44h]
+	cpm_solve_impulse_ready:
+		fldz
+		fld dword ptr [applied]
+		fucompp
+		fnstsw ax
+		test ah, 44h
+		jnp cpm_solve_no_apply
+	cpm_solve_no_apply:
+		}
+	if(!(applied > 0.0f))
 		return;
 
 	const NxVec3& n = record->mUnknown000;
@@ -267,10 +339,39 @@ static void cpmSolveContactRecord0403(NxReal, NxI32, JointSupportRecord* record)
 		if(!body || body->mUnknown00c <= 0.0f)
 			continue;
 		const NxReal sign = side == 0 ? applied : -applied;
-		const NxReal linearScale = (NxReal)((double)sign * body->mUnknown00c);
-		body->mUnknown000.x = (NxReal)((double)body->mUnknown000.x + (double)n.x * linearScale);
-		body->mUnknown000.y = (NxReal)((double)body->mUnknown000.y + (double)n.y * linearScale);
-		body->mUnknown000.z = (NxReal)((double)body->mUnknown000.z + (double)n.z * linearScale);
+		NxReal scaledImpulseY, scaledImpulseZ;
+		__asm
+			{
+			mov edx, record
+			mov ecx, body
+			fld sign
+			fmul dword ptr [edx + 4]
+			fstp dword ptr [scaledImpulseY]
+			fld sign
+			fmul dword ptr [edx + 8]
+			fstp dword ptr [scaledImpulseZ]
+			fld sign
+			fmul dword ptr [edx]
+			fld dword ptr [ecx + 0ch]
+			fld st(0)
+			fmul st(0), st(2)
+			fld dword ptr [scaledImpulseY]
+			fmul st(0), st(2)
+			fstp dword ptr [scaledImpulseY]
+			fld dword ptr [scaledImpulseZ]
+			fmul st(0), st(2)
+			fstp dword ptr [scaledImpulseZ]
+			fadd dword ptr [ecx]
+			fstp dword ptr [ecx]
+			fld dword ptr [scaledImpulseY]
+			fadd dword ptr [ecx + 4]
+			fstp dword ptr [ecx + 4]
+			fld dword ptr [scaledImpulseZ]
+			fadd dword ptr [ecx + 8]
+			fstp dword ptr [ecx + 8]
+			fstp st(0)
+			fstp st(0)
+			}
 		const NxVec3& arm = side == 0 ? record->mUnknown018 : record->mUnknown024;
 		const NxReal angularInput[3] = {
 			(NxReal)((double)arm.x * sign),
