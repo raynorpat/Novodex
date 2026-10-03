@@ -293,9 +293,16 @@ int wmain(int argc, wchar_t** argv)
 					actorShape ? actorShape->isTriangleMesh() : 0;
 				NxTriangleMesh* const recoveredMesh = publicMeshShape
 					? &publicMeshShape->getTriangleMesh() : 0;
+				NxBounds3 meshWorldBounds;
+				if(actorShape)
+					actorShape->getWorldBounds(meshWorldBounds);
 				printf("simulation triangle-mesh handle type=%u mesh_same=%u\n",
 					actorShape ? actorShape->getType() : NX_SHAPE_COUNT,
 					recoveredMesh == sceneMesh);
+				printf("simulation triangle-mesh world_bounds=%08x.%08x.%08x.%08x.%08x.%08x\n",
+					nxFloatBits(meshWorldBounds.getMin().x), nxFloatBits(meshWorldBounds.getMin().y),
+					nxFloatBits(meshWorldBounds.getMin().z), nxFloatBits(meshWorldBounds.getMax().x),
+					nxFloatBits(meshWorldBounds.getMax().y), nxFloatBits(meshWorldBounds.getMax().z));
 				if(meshActor)
 					broadPhaseScene->releaseActor(*meshActor);
 				sdk->releaseTriangleMesh(*sceneMesh);
