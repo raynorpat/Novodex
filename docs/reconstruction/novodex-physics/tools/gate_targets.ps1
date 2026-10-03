@@ -3084,6 +3084,14 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.80000000.80000000'
         'simulation generated-contact summary flags=00000000 calls=6 events=00000008 ready=1 fetched=1'
         'simulation compound-root-pose actor=00000000.3f000000.00000000 root=00000000.3f000000.00000000'
+        'simulation compound-state step=0 position=00000000.3f000000.00000000 velocity=00000000.00000000.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.00000000.3f800000'
+        'simulation compound-state step=1 position=00000000.3efe9ad4.00000000 velocity=00000000.be276c8c.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.00000000.3f800000'
+        'simulation compound-state step=2 position=00000000.3efbd07c.00000000 velocity=00000000.bea76c8c.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.00000000.3f800000'
+        'simulation compound-state step=3 position=00000000.3ef7a0f8.00000000 velocity=00000000.befb22d2.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.00000000.3f800000'
+        'simulation compound-state step=4 position=00000000.3ef20c48.00000000 velocity=00000000.bf276c8c.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.00000000.3f800000'
+        'simulation compound-state step=5 position=00000000.3eeb126c.00000000 velocity=00000000.bf5147af.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.00000000.3f800000'
+        'simulation compound-state step=6 position=00000000.3ee756bb.00000000 velocity=00000000.bee033aa.00000000 angular=00000000.00000000.b9d60ca6 orientation=00000000.00000000.b79079d3.3f7fffff'
+        'simulation compound-state step=7 position=00000000.3ee69789.00000000 velocity=00000000.bdb40c5d.00000000 angular=00000000.00000000.3aa5a6fd orientation=00000000.00000000.b7a606b9.3f7fffff'
         'simulation compound-generated-contact step=0 calls=0 events=00000000'
         'simulation compound-generated-contact step=1 calls=0 events=00000000'
         'simulation compound-generated-contact step=2 calls=1 events=0000000a'
@@ -3093,6 +3101,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation compound-generated-contact step=6 calls=5 events=00000008'
         'simulation compound-generated-contact step=7 calls=6 events=00000008'
         'simulation compound-generated-contact summary calls=6 events=00000008'
+        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.c20899ff.80000000'
+        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.c201267c.80000000'
     )
     'NxPhysicsTriggerSimulationTests' = @(
         # A dynamic sphere crosses a public static trigger box under real motion.
@@ -5291,7 +5301,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1260  # previous 1,250 plus one compound root-pose and nine contact observations
+    '7' = 1270  # previous 1,250 plus compound pose/state, callbacks and force observations
     '8' = 0
 }
 

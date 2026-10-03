@@ -1042,6 +1042,18 @@ int wmain(int argc, wchar_t** argv)
 		const bool fetched = compoundReportScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
 		if(!ready || !fetched)
 			return nxFail("compound contact-report result was not ready and fetched");
+		const NxVec3 compoundPosition = compoundReportActor->getGlobalPositionVal();
+		const NxVec3 compoundVelocity = compoundReportActor->getLinearVelocityVal();
+		const NxVec3 compoundAngularVelocity = compoundReportActor->getAngularVelocityVal();
+		const NxQuat compoundOrientation = compoundReportActor->getGlobalOrientationQuatVal();
+		printf("simulation compound-state step=%u position=%08x.%08x.%08x velocity=%08x.%08x.%08x angular=%08x.%08x.%08x orientation=%08x.%08x.%08x.%08x\n",
+			step, nxFloatBits(compoundPosition.x), nxFloatBits(compoundPosition.y),
+			nxFloatBits(compoundPosition.z), nxFloatBits(compoundVelocity.x),
+			nxFloatBits(compoundVelocity.y), nxFloatBits(compoundVelocity.z),
+			nxFloatBits(compoundAngularVelocity.x), nxFloatBits(compoundAngularVelocity.y),
+			nxFloatBits(compoundAngularVelocity.z), nxFloatBits(compoundOrientation.x),
+			nxFloatBits(compoundOrientation.y), nxFloatBits(compoundOrientation.z),
+			nxFloatBits(compoundOrientation.w));
 		printf("simulation compound-generated-contact step=%u calls=%u events=%08x\n",
 			step, compoundReport.calls, compoundReport.events);
 		}

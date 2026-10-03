@@ -2435,12 +2435,10 @@ void nxSceneAddActorObject(void* scene, void* object, void* actorPointer)
 	if(shape)
 		{
 		if(*reinterpret_cast<unsigned*>(shape + 0xd0) == 5u)
-			{
-			void** first = *reinterpret_cast<void***>(shape + 0xe0);
-			void** last = *reinterpret_cast<void***>(shape + 0xe4);
-			for(void** child = first; child && child != last; ++child)
-				nxShapeFactoryRefreshPose(*child);
-			}
+			// The dynamic actor record is installed after the group's constructor.
+			// Refresh through the group slot so its children and root both compose
+			// against the live body pose before the root enters the broadphase.
+			nxRuntimeShapeSlot6(shape, 1);
 		else
 			nxShapeFactoryRefreshPose(shape);
 		}
