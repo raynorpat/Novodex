@@ -3144,6 +3144,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation mesh-backface calls=0 events=00000000 y=bfc2311b vy=c09cf5bc'
         # A sphere outside the footprint reports the oracle's closest edge point.
         'simulation mesh-edge steps=29 calls=1 events=0000000a points=1 point=40000000.00000000.00000000'
+        # Contact-point coordinates are transformed into world space.
+        'simulation mesh-transformed calls=1 events=00000008 points=2 point=c1200000.40a00000.00000000'
         # Matrix-B sphere/mesh overlap drives the public trigger enter callback.
         'simulation mesh-trigger calls=1 event=1 unexpected=0'
     )
@@ -5344,7 +5346,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1304  # previous 1,303 plus the first mesh-boundary contact-stream fixture
+    '7' = 1305  # previous 1,304 plus the rotated and translated mesh-contact fixture
     '8' = 0
 }
 

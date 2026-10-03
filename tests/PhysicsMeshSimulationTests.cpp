@@ -204,6 +204,35 @@ int wmain(int argc, wchar_t** argv)
 	sphere->setGlobalPosition(NxVec3(-30.0f, 20.0f, 20.0f));
 	sphere->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
 
+	// Rotate the mesh 90 degrees and translate it. With gravity disabled, an
+	// overlapping sphere on the transformed front face exposes point-space errors.
+	NxMat34 rotatedMeshPose;
+	rotatedMeshPose.id();
+	rotatedMeshPose.M.setRow(0, NxVec3(0.0f, -1.0f, 0.0f));
+	rotatedMeshPose.M.setRow(1, NxVec3(1.0f, 0.0f, 0.0f));
+	rotatedMeshPose.M.setRow(2, NxVec3(0.0f, 0.0f, 1.0f));
+	rotatedMeshPose.t = NxVec3(-10.0f, 5.0f, 0.0f);
+	ground->setGlobalPose(rotatedMeshPose);
+	scene->setGravity(NxVec3(0.0f, 0.0f, 0.0f));
+	sphere->setGlobalPosition(NxVec3(-10.25f, 5.0f, 0.0f));
+	sphere->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
+	report.calls = 0;
+	report.events = 0;
+	report.pointCount = 0;
+	scene->simulate(1.0f / 60.0f);
+	if(!scene->checkResults(NX_RIGID_BODY_FINISHED, true)
+		|| !scene->fetchResults(NX_RIGID_BODY_FINISHED, true))
+		return nxFail("transformed mesh-contact simulation results failed");
+	printf("simulation mesh-transformed calls=%u events=%08x points=%u point=%08x.%08x.%08x\n",
+		report.calls, report.events, report.pointCount,
+		report.firstPoint[0], report.firstPoint[1], report.firstPoint[2]);
+	sphere->setGlobalPosition(NxVec3(-30.0f, 20.0f, 20.0f));
+	sphere->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
+	rotatedMeshPose.id();
+	rotatedMeshPose.t = NxVec3(0.0f, 0.0f, 0.0f);
+	ground->setGlobalPose(rotatedMeshPose);
+	scene->setGravity(NxVec3(0.0f, -9.81f, 0.0f));
+
 	// Matrix-B sphere/mesh overlap drives a trigger sphere placed across the
 	// mesh's front face. The oracle should emit one enter event.
 	NxTriangleMeshShapeDesc triggerMeshShape;
