@@ -4790,6 +4790,46 @@ void PlaneShape::nxPlaneSetEquation(const float* normal, float distance)
 //   call with a nonzero argument sets bit 2, and nothing in the candidate
 //   clears it -- and the add paths (000531, 000036) run slot 6 before the
 //   prunable is inserted, so they do not reach the slot-3 call either.
+// phys_fn_001315 stores its owner-composed rotation through x87 fstp. During
+// simulateFrame the oracle sets x87 to chop; SSE2 double-to-float casts follow
+// MXCSR instead. Keep this conversion local to the owner-update implementation
+// so shape pose queries continue to use their separately reconstructed path.
+static __declspec(noinline) float nxShapeOwnerX87StoreFloat(double value)
+	{
+	float result;
+	__asm
+		{
+		fld qword ptr [value]
+		fstp dword ptr [result]
+		}
+	return result;
+	}
+
+static __declspec(noinline) void nxShapeOwnerComposeRotationX87(const float* q, float* r)
+	{
+	const double x = q[0], y = q[1], z = q[2], w = q[3];
+	const float yy2 = nxShapeOwnerX87StoreFloat(y * y + y * y);
+	const double zz2 = z * z + z * z;
+	r[0] = nxShapeOwnerX87StoreFloat((1.0 - yy2) - zz2);
+	const double xy2 = y * x + y * x;
+	const double zw2 = z * w + z * w;
+	r[1] = nxShapeOwnerX87StoreFloat(xy2 - zw2);
+	const float xz2 = nxShapeOwnerX87StoreFloat(z * x + z * x);
+	const double yw2 = y * w + y * w;
+	const float yw2Spill = nxShapeOwnerX87StoreFloat(yw2);
+	r[2] = nxShapeOwnerX87StoreFloat(yw2 + xz2);
+	r[3] = nxShapeOwnerX87StoreFloat(zw2 + xy2);
+	const double xx1 = 1.0 - (x * x + x * x);
+	const float xx1Spill = nxShapeOwnerX87StoreFloat(xx1);
+	r[4] = nxShapeOwnerX87StoreFloat(xx1 - zz2);
+	const float yz2 = nxShapeOwnerX87StoreFloat(z * y + z * y);
+	const double xw2 = x * w + x * w;
+	r[5] = nxShapeOwnerX87StoreFloat(static_cast<double>(yz2) - xw2);
+	r[6] = nxShapeOwnerX87StoreFloat(static_cast<double>(xz2) - yw2Spill);
+	r[7] = nxShapeOwnerX87StoreFloat(xw2 + yz2);
+	r[8] = nxShapeOwnerX87StoreFloat(static_cast<double>(xx1Spill) - yy2);
+	}
+
 void ShapeBase::nxApplyOwnerUpdate(unsigned flags)
 	{
 	if(mOwner04 == nullptr)
@@ -4810,7 +4850,7 @@ void ShapeBase::nxApplyOwnerUpdate(unsigned flags)
 	float t[3];
 	if(record)
 		{
-		nxNpActorComposeRotationX87(reinterpret_cast<const float*>(record + 0x24), r);
+		nxShapeOwnerComposeRotationX87(reinterpret_cast<const float*>(record + 0x24), r);
 		memcpy(t, record + 0x18, sizeof(t));
 		}
 	else
