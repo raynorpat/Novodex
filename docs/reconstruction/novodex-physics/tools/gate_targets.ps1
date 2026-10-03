@@ -2984,10 +2984,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation stage=step7 position=00000000.40c7d67b.00000000 velocity=00000000.c108082a.00000000'
         'simulation soak steps=1000 ready=1 fetched=1'
         'simulation stage=soak1000 position=00000000.c7955570.00000000 velocity=00000000.c4991681.00000000'
-        # Two-box contact regression: the public state agrees through step 20,
-        # but the next callback's first manifold point and resulting body pose
-        # expose the current candidate pose-refresh divergence.
+        # Two-box contact regression: pin both the queried NxShape pose (which
+        # recomputes from the actor quaternion) and the following manifold.
+        'simulation box-state stage=boxcontact20 orientation=36dc8f3b.00000000.372f6481.3f7fffff angular=3707f92d.00000000.b938fc3e matrix=3f800000.b7af6480.2f171c80.37af6480.3f800000.b75c8f3a.2f171c80.375c8f3a.3f800000 shape=00000000.3ee9b34b.00000000.3f800000.b7af6480.2f171c80.37af6480.3f800000.b75c8f3a.2f171c80.375c8f3a.3f800000'
         'simulation stage=boxcontact21 position=00000000.3ee70ef5.00000000 velocity=00000000.be9e615a.00000000'
+        'simulation box-state stage=boxcontact21 orientation=36dfab5f.a88f6800.3731d335.3f7fffff angular=ba23b29f.a6abeae9.ba965b46 matrix=3f800000.b7b1d334.2f1b550f.37b1d334.3f800000.b75fab5e.2f1b66fb.375fab5e.3f800000 shape=00000000.3ee70ef5.00000000.3f800000.b7b1d334.2f1b550f.37b1d334.3f800000.b75fab5e.2f1b66fb.375fab5e.3f800000'
         'simulation box-contact callback=1 point=0 xyzs=befffea0.bd3269a8.bf00006d.bd3269a8'
         'simulation contact callbacks=26 events=0000000a pairs=26 patches=26 points=26 normal=80000000.bf800000.80000000 point=00000000.bc916940.00000000 separation=bc916940'
         'simulation stage=contact60 position=00000000.3ee66666.00000000 velocity=00000000.00000000.00000000'
@@ -5177,7 +5178,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # family open)
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1158  # 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize + 2 simulation soak assertions + 2 box-contact assertions
+    '7' = 1160  # 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize + 2 simulation soak assertions + 4 box-contact assertions
                # + 23 M1 simulation + 79 effector + 374 core-dump; the oracle-differential assertions
     '8' = 0
 }
