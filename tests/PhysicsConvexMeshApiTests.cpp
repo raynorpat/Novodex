@@ -5,6 +5,7 @@
 #include "NxPhysicsSDK.h"
 #include "NxActor.h"
 #include "NxActorDesc.h"
+#include "NxBodyDesc.h"
 #include "NxScene.h"
 #include "NxSceneDesc.h"
 #include "NxSimpleTriangleMesh.h"
@@ -111,9 +112,36 @@ static bool runTriangleMeshActorCase(NxPhysicsSDK& sdk, const NxTriangleMeshDesc
 		? staticActor->getShapes()[0]->getType() : NX_SHAPE_COUNT;
 	printf("mesh-actor name=static_tetra mesh=1 scene=1 actor=%u shapes=%u type=%u\n",
 		staticActor ? 1u : 0u, staticShapeCount, staticShapeType);
+	NxBodyDesc bodyDesc;
+	NxActorDesc dynamicDesc;
+	dynamicDesc.body = &bodyDesc;
+	dynamicDesc.density = 1.0f;
+	dynamicDesc.shapes.pushBack(&shapeDesc);
+	NxActor* dynamicActor = scene->createActor(dynamicDesc);
+	NxU32 dynamicShapeCount = dynamicActor ? dynamicActor->getNbShapes() : 0;
+	NxU32 dynamicShapeType = dynamicActor && dynamicShapeCount
+		? dynamicActor->getShapes()[0]->getType() : NX_SHAPE_COUNT;
+	NxU32 dynamic = dynamicActor && dynamicActor->isDynamic() ? 1u : 0u;
+	printf("mesh-actor name=dynamic_tetra mesh=1 scene=1 actor=%u shapes=%u type=%u dynamic=%u\n",
+		dynamicActor ? 1u : 0u, dynamicShapeCount, dynamicShapeType,
+		dynamic);
+	if(dynamicActor)
+		{
+		const NxReal mass = dynamicActor->getMass();
+		const NxVec3 center = dynamicActor->getCMassLocalPositionVal();
+		const NxVec3 inertia = dynamicActor->getMassSpaceInertiaTensorVal();
+		NxU32 bits[7];
+		memcpy(bits, &mass, sizeof(mass));
+		memcpy(bits + 1, &center, sizeof(center));
+		memcpy(bits + 4, &inertia, sizeof(inertia));
+		printf("mesh-actor-mass mass=%08x center=%08x:%08x:%08x inertia=%08x:%08x:%08x\n",
+			bits[0], bits[1], bits[2], bits[3], bits[4], bits[5], bits[6]);
+		}
 	sdk.releaseScene(*scene);
 	sdk.releaseTriangleMesh(*mesh);
-	return staticActor != 0 && staticShapeCount == 1 && staticShapeType == NX_SHAPE_MESH;
+	return staticActor != 0 && staticShapeCount == 1 && staticShapeType == NX_SHAPE_MESH
+		&& dynamicActor != 0 && dynamicShapeCount == 1 && dynamicShapeType == NX_SHAPE_MESH
+		&& dynamic;
 	}
 
 int wmain(int argc, wchar_t** argv)

@@ -4734,7 +4734,9 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsConvexMeshTests' = @(
         'mesh-case name=precomputed_tetra_first repeat=0 flags=00000004 created=1 submeshes=4',
         'mesh-case name=computed_tetra repeat=0 flags=0000000c created=1 submeshes=4',
-        'mesh-actor name=static_tetra mesh=1 scene=1 actor=1 shapes=1 type=4'
+        'mesh-actor name=static_tetra mesh=1 scene=1 actor=1 shapes=1 type=4',
+        'mesh-actor name=dynamic_tetra mesh=1 scene=1 actor=1 shapes=1 type=4 dynamic=1',
+        'mesh-actor-mass mass=3e2aaaab center=3e800000:3e800000:3e800000 inertia=3c2aaaac:3c888889:3c2aaaac'
     )
 
     # The Phase 5 object-layout gate. RED on purpose until Tasks 2 and 3
@@ -5362,7 +5364,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 1  # one public actor-group pair-flag hash round-trip and clear
     '3' = 359  # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 254  # 36 asset, 215 third-party and 3 convex-mesh actor assertions
+    '4' = 256  # 36 asset, 215 third-party and 5 convex-mesh actor/mass assertions
     '5' = 2037  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # + 175 from scene-raycast Task 4 (149 body-creation, 13 setters, 9 dynamic-setter
                # and 3 shape-vtable from its shape sub-area, 1 shape-vtable from its box hull)

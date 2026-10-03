@@ -24,6 +24,8 @@ extern "C" void __fastcall NxScenePrunerOwnerDestroy(void* manager, void* owner)
 #include "NxBox.h"
 #include "NpActorDynamicMath.h"
 #include "NxGeometryHelpers.h"
+#include "NxVolumeIntegration.h"
+#include "NxSimpleTriangleMesh.h"
 
 #include <float.h>
 #include <math.h>
@@ -6757,18 +6759,58 @@ void MeshShape::nxMeshWorldAABB(float* out) const
 		}
 	}
 
-// phys_fn_001397 (0x00028e10), MESH-table slot 4. This covers the bypass
-// and nonnegative cached-mass arms; the mesh volume-integral recomputation
-// for a negative cache is a separate dependency at 0x54bb0.
+// phys_fn_001397 (0x00028e10), MESH-table slot 4. A negative cache delegates
+// to phys_fn_002241 (TriangleMesh.cpp, 0x54bb0), which computes the mesh's
+// volume, COM, and inertia once through the Foundation volume integrator.
 bool MeshShape::nxMeshAccumulateMassCached(MassFrame* destination,
 	float /*density*/, unsigned /*reserved*/) const
 	{
 	if(mBase.mHalfwordDE & 7u)
 		return true;
-	const unsigned char* mesh = reinterpret_cast<const unsigned char*>(mWordE0);
-	const float cachedMass = *reinterpret_cast<const float*>(mesh + 0xb0);
+	unsigned char* mesh = reinterpret_cast<unsigned char*>(mWordE0);
+	float cachedMass = *reinterpret_cast<float*>(mesh + 0xb0);
 	if(!(cachedMass >= 0.0f))
-		return false;
+		{
+		NxSimpleTriangleMesh source;
+		source.numVertices = *reinterpret_cast<NxU32*>(mesh + 0x08);
+		source.numTriangles = *reinterpret_cast<NxU32*>(mesh + 0x0c);
+		source.pointStrideBytes = 0x0c;
+		source.triangleStrideBytes = 0x0c;
+		source.points = *reinterpret_cast<void**>(mesh + 0x10);
+		source.triangles = *reinterpret_cast<void**>(mesh + 0x14);
+		source.flags = 0;
+		NxIntegrals integrals;
+		memset(&integrals, 0, sizeof(integrals));
+		if(!NxComputeVolumeIntegrals(source, 1.0f, integrals))
+			return false;
+
+		float inertia[9];
+		for(unsigned i = 0; i < 9; ++i)
+			inertia[i] = static_cast<float>(
+				reinterpret_cast<const double*>(integrals.inertiaTensor)[i]);
+		float center[3] = { integrals.COM.x, integrals.COM.y, integrals.COM.z };
+		float volume = static_cast<float>(integrals.mass);
+		if(!_finite(integrals.mass) || !_finite(volume))
+			return false;
+		for(unsigned i = 0; i < 9; ++i)
+			if(!_finite(inertia[i])) return false;
+		for(unsigned i = 0; i < 3; ++i)
+			if(!_finite(center[i])) return false;
+		if(volume < 0.0f)
+			{
+			nxReport(1,
+				"\\Epic\\Novodex\\SDKs\\Physics\\src\\TriangleMesh.cpp",
+				0x2f7, 0xce,
+				"TriangleMesh: Mesh has a negative volume!  Is it open or do (some) faces have reversed winding? (Taking absolute value.)");
+			volume = -volume;
+			for(unsigned i = 0; i < 9; ++i)
+				inertia[i] = -inertia[i];
+			}
+		memcpy(mesh + 0xb4, inertia, sizeof(inertia));
+		memcpy(mesh + 0xd8, center, sizeof(center));
+		memcpy(mesh + 0xb0, &volume, sizeof(volume));
+		cachedMass = volume;
+		}
 	MassFrame local;
 	memcpy(local.mInertia, mesh + 0xb4, 36);
 	memcpy(&local.mOffset, mesh + 0xd8, 12);
