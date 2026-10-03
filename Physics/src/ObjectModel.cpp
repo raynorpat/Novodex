@@ -4805,6 +4805,21 @@ static __declspec(noinline) float nxShapeOwnerX87StoreFloat(double value)
 	return result;
 	}
 
+static __declspec(noinline) float nxShapeOwnerX87SubtractFloat(float left, float right)
+	{
+	float result;
+	// 001315 performs this subtraction in x87 extended precision with chop.
+	// A tiny positive right operand moves an exactly representable float just
+	// below that value; SSE double subtraction can round the change away first.
+	__asm
+		{
+		fld dword ptr left
+		fsub dword ptr right
+		fstp dword ptr result
+		}
+	return result;
+	}
+
 static __declspec(noinline) void nxShapeOwnerComposeRotationX87(const float* q, float* r)
 	{
 	const double x = q[0], y = q[1], z = q[2], w = q[3];
@@ -4827,7 +4842,7 @@ static __declspec(noinline) void nxShapeOwnerComposeRotationX87(const float* q, 
 	r[5] = nxShapeOwnerX87StoreFloat(static_cast<double>(yz2) - xw2);
 	r[6] = nxShapeOwnerX87StoreFloat(static_cast<double>(xz2) - yw2Spill);
 	r[7] = nxShapeOwnerX87StoreFloat(xw2 + yz2);
-	r[8] = nxShapeOwnerX87StoreFloat(static_cast<double>(xx1Spill) - yy2);
+	r[8] = nxShapeOwnerX87SubtractFloat(xx1Spill, yy2);
 	}
 
 void ShapeBase::nxApplyOwnerUpdate(unsigned flags)
