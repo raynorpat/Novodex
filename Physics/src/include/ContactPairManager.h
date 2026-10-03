@@ -260,5 +260,8 @@ void __cdecl cpmFireContactReports0913(NxSceneInternal* scene, NxUserContactRepo
 void __stdcall cpmDeletePairNode0915(NxPairNode* node);
 // Rows 000917 + 000919 + 000921. cdecl.
 void __cdecl cpmBufferContactReports0917(NxSceneInternal* scene, CpmPairHash* hash);
+// The island step's 004176/004174 pass for the contact record kind (0).
+// Joint record kinds remain independently scheduled as their handlers close.
+void __cdecl cpmSolveSceneContactRecords(NxSceneInternal* scene, NxU32 maxIterations);
 
 #endif

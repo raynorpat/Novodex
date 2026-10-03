@@ -239,6 +239,90 @@ static NX_INLINE void cpmSolveRecord(JointSupportRecord* record, const NxReal* p
 		record->mUnknown040 = (NxReal)((double)record->mUnknown040 * 0.7f);
 	}
 
+// Partial semantic model of phys_fn_004403 for the contact kind used by M1.
+// The first plane/sphere differential currently diverges by two ULPs at step
+// 22; retain that boundary as an explicit open item until the listing's exact
+// x87 operation order is transcribed. Each pass computes a projected normal
+// impulse and applies its change to each present body.
+static void cpmSolveContactRecord0403(NxReal, NxI32, JointSupportRecord* record)
+	{
+	const NxReal relativeVelocity = (NxReal)record->row004389();
+	const NxReal penetrationBias = (NxReal)(-(double)record->mUnknown034 * record->mUnknown040);
+	const NxReal targetVelocity = (NxReal)((double)record->mUnknown038 + penetrationBias);
+	const NxReal delta = (NxReal)(((double)targetVelocity - relativeVelocity) * record->mUnknown03c);
+	const NxReal oldImpulse = (NxReal)record->mUnknown044;
+	NxReal newImpulse = (NxReal)((double)oldImpulse + delta);
+	if(newImpulse < 0.0f) newImpulse = 0.0f;
+	if(newImpulse > record->mUnknown048) newImpulse = record->mUnknown048;
+	const NxReal applied = (NxReal)((double)newImpulse - oldImpulse);
+	record->mUnknown044 = cpmBits(newImpulse);
+	record->mUnknown04c = cpmBits((NxReal)((double)record->mUnknown04c + applied));
+	if(applied == 0.0f)
+		return;
+
+	const NxVec3& n = record->mUnknown000;
+	for(unsigned side = 0; side < 2; ++side)
+		{
+		JointSupportBody* body = record->mBody[side];
+		if(!body || body->mUnknown00c <= 0.0f)
+			continue;
+		const NxReal sign = side == 0 ? applied : -applied;
+		const NxReal linearScale = (NxReal)((double)sign * body->mUnknown00c);
+		body->mUnknown000.x = (NxReal)((double)body->mUnknown000.x + (double)n.x * linearScale);
+		body->mUnknown000.y = (NxReal)((double)body->mUnknown000.y + (double)n.y * linearScale);
+		body->mUnknown000.z = (NxReal)((double)body->mUnknown000.z + (double)n.z * linearScale);
+		const NxVec3& arm = side == 0 ? record->mUnknown018 : record->mUnknown024;
+		const NxReal angularInput[3] = {
+			(NxReal)((double)arm.x * sign),
+			(NxReal)((double)arm.y * sign),
+			(NxReal)((double)arm.z * sign) };
+		NxReal angularDelta[3];
+		for(unsigned row = 0; row < 3; ++row)
+			angularDelta[row] = (NxReal)(((double)body->mUnknown020[row * 3] * angularInput[0]
+				+ (double)body->mUnknown020[row * 3 + 1] * angularInput[1])
+				+ (double)body->mUnknown020[row * 3 + 2] * angularInput[2]);
+		body->mUnknown010.x = (NxReal)((double)body->mUnknown010.x + angularDelta[0]);
+		body->mUnknown010.y = (NxReal)((double)body->mUnknown010.y + angularDelta[1]);
+		body->mUnknown010.z = (NxReal)((double)body->mUnknown010.z + angularDelta[2]);
+		}
+	}
+
+// phys_fn_004176's record pass for the live contact kind. The schedule and
+// body-view writeback remain at the exact 000611 island boundary.
+void __cdecl cpmSolveSceneContactRecords(NxSceneInternal* scene, NxU32 maxIterations)
+	{
+	const NxReal dt = scene->at<NxReal>(0x548);
+	const NxU32 count = scene->at<NxU32>(0x5bc);
+	JointSupportRecord* records = scene->at<JointSupportRecord*>(0x5b8);
+	for(NxI32 pass = (NxI32)maxIterations; pass > 0; --pass)
+		for(NxU32 i = 0; i < count; ++i)
+			{
+			JointSupportRecord* record = records + i;
+			if((record->mFlags & 0x1f) != 0)
+				continue;
+			const JointSupportBody* a = record->mBody[0];
+			const JointSupportBody* b = record->mBody[1];
+			if((a && a->mUnknown05c >= (NxU32)pass)
+				|| (b && b->mUnknown05c >= (NxU32)pass))
+				cpmSolveContactRecord0403(dt, pass, record);
+			}
+	for(NxU32 i = 0; i < scene->at<NxU32>(0x5b0); ++i)
+		{
+		JointSupportBody* body = scene->at<JointSupportBody*>(0x5ac) + i;
+		body->mUnknown044 = body->mUnknown000;
+		body->mUnknown050 = body->mUnknown010;
+		}
+	for(NxU32 i = 0; i < count; ++i)
+		{
+		JointSupportRecord* record = records + i;
+		if((record->mFlags & 0x1f) != 0)
+			continue;
+		if(record->mUnknown034 <= 0.0f)
+			record->mUnknown034 = 0.0f;
+		cpmSolveContactRecord0403(dt, -1, record);
+		}
+	}
+
 // The Scene's 0x50-byte record array (+0x5b8 records, +0x5bc count, +0x5c0
 // capacity), grown by 000598 when full: the inline sequence at 0x1001e175,
 // 0x1001e314, 0x1001e735 and 0x1001f76d.
@@ -280,7 +364,7 @@ static __declspec(noinline) void cpmOpen002348(NxU8* shape0, NxU8* shape1, NxAct
 	NxDispatchShapePair(NxGetCollisionDispatchMatrix(),
 		reinterpret_cast<const NxCollisionShape*>(shape0),
 		reinterpret_cast<const NxCollisionShape*>(shape1),
-		reinterpret_cast<NxU8*>(pair) + 0x10, 0);
+		pair, 0);
 	}
 
 static NxU32 cpmPairHash(const CpmPairHash* hash, NxU32 key0, NxU32 key1)

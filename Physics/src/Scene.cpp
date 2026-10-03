@@ -3857,6 +3857,14 @@ void NxSceneInternal::simulateFrame()
 		void** bodiesEnd = at<void**>(0x570);
 		for(void** item = bodies; item && item != bodiesEnd; ++item)
 			reinterpret_cast<Row000764Fixture*>(*item)->row000764();
+		// 001976's dirty-prunable prepass reaches 001949/001303 before the
+		// pair-list refresh. The public shape slot 6 refreshes its world pose and
+		// advances ShapeBase+0x08 to this Scene frame; 000905 uses that stamp to
+		// detect the changed pair geometry and dispatch narrow phase.
+		void** trackedShapes = at<void**>(0x6a4);
+		const NxU32 trackedShapeCount = at<NxU32>(0x6a0);
+		for(NxU32 i = 0; trackedShapes && i < trackedShapeCount; ++i)
+			nxRuntimeShapeSlot6(static_cast<unsigned char*>(trackedShapes[i]), 1);
 
 		// The current Scene+0x624 pruning engine carries mode 0. For single-root
 		// shapes, refresh the same all-pairs contact nodes that mode 0 feeds into
@@ -3979,6 +3987,15 @@ void NxSceneInternal::simulateFrame()
 					nxSceneMaximumStepBodies = record->mUnknown05c;
 				}
 			reinterpret_cast<Row000730Fixture*>(island)->row000730(timestep, inverseTimestep);
+			if(at<NxU32>(0x5bc))
+				{
+				cpmSolveSceneContactRecords(this, nxSceneMaximumStepBodies);
+				nxSceneMaximumStepBodies = 0;
+				}
+			for(unsigned char* body = island; body;
+				body = *reinterpret_cast<unsigned char**>(body + 0x1fc))
+				reinterpret_cast<Row000708Fixture*>(body)->row000708();
+			at<NxU32>(0x5bc) = 0;
 			}
 		at<NxU32>(0x70c) &= ~4u;
 
