@@ -122,14 +122,16 @@ static void supportSolveNormal004403(NxReal step, NxU32 pass, JointSupportRecord
 			(NxReal)((double)angularJacobian.y * applied * sign),
 			(NxReal)((double)angularJacobian.z * applied * sign)
 		};
-		NxReal delta[3];
+		NxReal* const angularVelocity = &body->mUnknown010.x;
 		for(unsigned row = 0; row != 3; ++row)
-			delta[row] = (NxReal)(((double)body->mUnknown020[row * 3] * torque[0]
+			{
+			// phys_fn_004403 accumulates each inertia row from column 2 down
+			// to column 0 into a float temporary before adding it to velocity.
+			const NxReal delta = (NxReal)(((double)body->mUnknown020[row * 3 + 2] * torque[2]
 				+ (double)body->mUnknown020[row * 3 + 1] * torque[1])
-				+ (double)body->mUnknown020[row * 3 + 2] * torque[2]);
-		body->mUnknown010.x = (NxReal)((double)body->mUnknown010.x + delta[0]);
-		body->mUnknown010.y = (NxReal)((double)body->mUnknown010.y + delta[1]);
-		body->mUnknown010.z = (NxReal)((double)body->mUnknown010.z + delta[2]);
+				+ (double)body->mUnknown020[row * 3] * torque[0]);
+			angularVelocity[row] = (NxReal)((double)angularVelocity[row] + delta);
+			}
 		};
 	apply(record->mBody[0], record->mUnknown018, 1.0f);
 	apply(record->mBody[1], record->mUnknown024, -1.0f);
@@ -197,9 +199,11 @@ static void supportSolveFriction004401(NxReal step, NxU32 pass, JointSupportReco
 			};
 			NxReal delta[3];
 			for(unsigned row = 0; row != 3; ++row)
-				delta[row] = (NxReal)(((double)body->mUnknown020[row * 3] * torque[0]
+				// phys_fn_004401 accumulates its inertia rows from column 2 down
+				// to column 0 before storing each angular delta.
+				delta[row] = (NxReal)(((double)body->mUnknown020[row * 3 + 2] * torque[2]
 					+ (double)body->mUnknown020[row * 3 + 1] * torque[1])
-					+ (double)body->mUnknown020[row * 3 + 2] * torque[2]);
+					+ (double)body->mUnknown020[row * 3] * torque[0]);
 			body->mUnknown010.x = (NxReal)((double)body->mUnknown010.x + delta[0]);
 			body->mUnknown010.y = (NxReal)((double)body->mUnknown010.y + delta[1]);
 			body->mUnknown010.z = (NxReal)((double)body->mUnknown010.z + delta[2]);
