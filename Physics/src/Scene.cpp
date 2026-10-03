@@ -1293,11 +1293,12 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 		{
 		if(shapeCount == 1)
 			{
-			void* shape = nxShapeFactory(
-				reinterpret_cast<void*>(*reinterpret_cast<const unsigned*>(d[0x13])), actor);
+			const NxShapeDesc* shapeDesc = reinterpret_cast<const NxShapeDesc*>(
+				*reinterpret_cast<const unsigned*>(d[0x13]));
+			void* shape = nxShapeFactory(const_cast<NxShapeDesc*>(shapeDesc), actor);
 			a[0x10 / 4] = reinterpret_cast<unsigned>(shape);
 			if(!shape)
-					return 0;
+				return 0;
 			}
 		else if(shapeCount > 1)
 			{
@@ -1307,7 +1308,7 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 				reinterpret_cast<const unsigned*>(d[0x13]), shapeCount);
 			a[0x10 / 4] = reinterpret_cast<unsigned>(group);
 			if(!group)
-					return 0;
+				return 0;
 			}
 		}
 

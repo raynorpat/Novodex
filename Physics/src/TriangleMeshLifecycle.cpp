@@ -46,6 +46,10 @@ TriangleMesh::TriangleMesh() : mPublicMesh(0)
 	mWord9C = 0;
 	mConvexMesh = 0;
 	memset(mGapA4, 0, sizeof(mGapA4));
+	// phys_fn_002251 writes -1.0f at TriangleMesh+0xb0. The mass slot treats
+	// this as the lazy-compute sentinel before calling the volume integrator.
+	const NxU32 massNotComputed = 0xbf800000u;
+	memcpy(mGapA4 + 0x0c, &massNotComputed, sizeof(massNotComputed));
 	void* memory = nxFoundationSDKAllocator->malloc(sizeof(NpTriangleMesh), NX_MEMORY_PERSISTENT);
 	if(memory)
 		mPublicMesh = new(memory) NpTriangleMesh(this);
