@@ -1015,7 +1015,12 @@ int wmain(int argc, wchar_t** argv)
 	NxActorDesc compoundReportActorDesc;
 	compoundReportActorDesc.body = &compoundReportBody;
 	compoundReportActorDesc.density = 1.0f;
-	compoundReportActorDesc.globalPose.t = NxVec3(0.0f, 0.5f, 0.0f);
+	// An elevated, rotated compound reaches an off-center contact and exercises
+	// the child-pose refresh and angular solver state in the differential.
+	compoundReportActorDesc.globalPose.t = NxVec3(0.0f, 0.7f, 0.0f);
+	const NxReal compoundStartRotation[9] = {
+		0.8660254f, -0.5f, 0.0f, 0.5f, 0.8660254f, 0.0f, 0.0f, 0.0f, 1.0f };
+	compoundReportActorDesc.globalPose.M.setRowMajor(compoundStartRotation);
 	compoundReportActorDesc.shapes.pushBack(&compoundSphere0);
 	compoundReportActorDesc.shapes.pushBack(&compoundSphere1);
 	NxActor* compoundReportActor = compoundReportScene->createActor(compoundReportActorDesc);
@@ -1035,7 +1040,7 @@ int wmain(int argc, wchar_t** argv)
 	compoundGround->setGroup(7);
 	compoundReportActor->setGroup(3);
 	sdk->setActorGroupPairFlags(7, 3, NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH);
-	for(unsigned step = 0; step < 8; ++step)
+	for(unsigned step = 0; step < 16; ++step)
 		{
 		compoundReportScene->simulate(1.0f / 60.0f);
 		const bool ready = compoundReportScene->checkResults(NX_RIGID_BODY_FINISHED, true);
