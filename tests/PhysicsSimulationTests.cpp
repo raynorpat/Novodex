@@ -11,6 +11,7 @@
 #include "NxSphereShapeDesc.h"
 #include "NxBoxShapeDesc.h"
 #include "NxPlaneShapeDesc.h"
+#include "NxMaterial.h"
 #include "NxUserContactReport.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
@@ -54,6 +55,19 @@ static void nxPrintBoxActorState(const char* stage, NxActor& actor)
 		nxFloatBits(shapeRotation[0]), nxFloatBits(shapeRotation[1]), nxFloatBits(shapeRotation[2]),
 		nxFloatBits(shapeRotation[3]), nxFloatBits(shapeRotation[4]), nxFloatBits(shapeRotation[5]),
 		nxFloatBits(shapeRotation[6]), nxFloatBits(shapeRotation[7]), nxFloatBits(shapeRotation[8]));
+	}
+
+static void nxPrintActorMotionState(const char* stage, NxActor& actor)
+	{
+	const NxVec3& p = actor.getGlobalPosition();
+	NxVec3 v;
+	NxVec3 w;
+	actor.getLinearVelocity(v);
+	actor.getAngularVelocity(w);
+	printf("simulation motion stage=%s position=%08x.%08x.%08x velocity=%08x.%08x.%08x angular=%08x.%08x.%08x\n",
+		stage, nxFloatBits(p.x), nxFloatBits(p.y), nxFloatBits(p.z),
+		nxFloatBits(v.x), nxFloatBits(v.y), nxFloatBits(v.z),
+		nxFloatBits(w.x), nxFloatBits(w.y), nxFloatBits(w.z));
 	}
 
 struct NxSimulationContactReport : NxUserContactReport
@@ -455,6 +469,79 @@ int wmain(int argc, wchar_t** argv)
 	nxPrintActorState("spherepair60-a", *pairActorA);
 	nxPrintActorState("spherepair60-b", *pairActorB);
 	sdk->releaseScene(*spherePairScene);
+
+	// Tangential contact response: a moving sphere settles onto a plane and
+	// loses horizontal speed while gaining angular velocity through friction.
+	NxMaterial frictionMaterial;
+	frictionMaterial.staticFriction = 0.8f;
+	frictionMaterial.dynamicFriction = 0.6f;
+	const NxMaterialIndex frictionIndex = sdk->addMaterial(frictionMaterial);
+	NxSimulationContactReport frictionReport;
+	NxSceneDesc frictionSceneDesc;
+	frictionSceneDesc.setToDefault();
+	frictionSceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
+	frictionSceneDesc.timeStepMethod = NX_TIMESTEP_VARIABLE;
+	frictionSceneDesc.userContactReport = &frictionReport;
+	NxScene* frictionScene = sdk->createScene(frictionSceneDesc);
+	if(!frictionScene)
+		{
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("friction scene creation failed");
+		}
+	NxPlaneShapeDesc frictionGround;
+	frictionGround.materialIndex = frictionIndex;
+	NxActorDesc frictionGroundDesc;
+	frictionGroundDesc.shapes.pushBack(&frictionGround);
+	NxActor* frictionGroundActor = frictionScene->createActor(frictionGroundDesc);
+	NxSphereShapeDesc slidingSphere;
+	slidingSphere.radius = 0.5f;
+	slidingSphere.materialIndex = frictionIndex;
+	NxBodyDesc slidingBody;
+	slidingBody.mass = 1.0f;
+	slidingBody.massSpaceInertia = NxVec3(0.1f, 0.1f, 0.1f);
+	slidingBody.linearVelocity = NxVec3(2.0f, 0.0f, 0.0f);
+	NxActorDesc slidingDesc;
+	slidingDesc.body = &slidingBody;
+	slidingDesc.globalPose.t = NxVec3(0.0f, 0.5f, 0.0f);
+	slidingDesc.shapes.pushBack(&slidingSphere);
+	NxActor* slidingActor = frictionScene->createActor(slidingDesc);
+	printf("simulation friction setup material=%u material_valid=%u ground_valid=%u desc_valid=%u actors=%u.%u\n",
+		(unsigned)frictionIndex, frictionMaterial.isValid() ? 1u : 0u,
+		frictionGround.isValid() ? 1u : 0u, slidingDesc.isValid() ? 1u : 0u,
+		frictionGroundActor ? 1u : 0u, slidingActor ? 1u : 0u);
+	if(!frictionGroundActor || !slidingActor)
+		{
+		sdk->releaseScene(*frictionScene);
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("friction actors creation failed");
+		}
+	frictionScene->setActorPairFlags(*frictionGroundActor, *slidingActor,
+			NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH);
+	nxPrintActorMotionState("friction-init", *slidingActor);
+	for(unsigned step = 0; step < 60; ++step)
+		{
+		frictionScene->simulate(1.0f / 60.0f);
+		const bool ready = frictionScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+		const bool fetched = frictionScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		if(!ready || !fetched)
+			{
+			sdk->releaseScene(*frictionScene);
+			sdk->release();
+			FreeLibrary(physics);
+			return nxFail("friction scene result was not ready and fetched");
+			}
+		char frictionStage[24];
+		sprintf_s(frictionStage, "friction%u", step);
+		nxPrintActorMotionState(frictionStage, *slidingActor);
+		}
+	printf("simulation friction callbacks=%u events=%08x pairs=%u patches=%u points=%u coefficients=%08x.%08x\n",
+		frictionReport.calls, frictionReport.events, frictionReport.pairs,
+		frictionReport.patches, frictionReport.points,
+		nxFloatBits(frictionMaterial.staticFriction), nxFloatBits(frictionMaterial.dynamicFriction));
+	nxPrintActorMotionState("friction60", *slidingActor);
+	sdk->releaseScene(*frictionScene);
 
 	sdk->release();
 	status = nxReportPairIdentity(pairDirectory);
