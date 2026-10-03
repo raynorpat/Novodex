@@ -48,11 +48,15 @@ class NxMeshTriggerReport : public NxUserTriggerReport
 	NxShape* expectedOther;
 	unsigned calls;
 	unsigned lastEvent;
-	NxMeshTriggerReport() : expectedTrigger(0), expectedOther(0), calls(0), lastEvent(0) {}
+	unsigned unexpectedCalls;
+	NxMeshTriggerReport() : expectedTrigger(0), expectedOther(0), calls(0), lastEvent(0), unexpectedCalls(0) {}
 	virtual void onTrigger(NxShape& trigger, NxShape& other, NxTriggerFlag event)
 		{
 		if(&trigger != expectedTrigger || &other != expectedOther)
+			{
+			++unexpectedCalls;
 			return;
+			}
 		++calls;
 		lastEvent = static_cast<unsigned>(event);
 		}
@@ -179,14 +183,53 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("mesh trigger actor creation failed");
 	triggerReport.expectedTrigger = triggerActor->getShapes()[0];
 	triggerReport.expectedOther = meshTriggerOther->getShapes()[0];
+
+	// This sphere's AABB overlaps the trigger mesh's bounds, but its center and
+	// radius miss the single triangle. The overlap row must not emit a callback.
+	const NxPoint missVertices[] = {
+		NxPoint(-2.0f, 0.0f, -2.0f), NxPoint(-1.0f, 0.0f, -2.0f), NxPoint(-2.0f, 0.0f, -1.0f),
+		NxPoint(2.0f, 0.0f, 2.0f), NxPoint(1.0f, 0.0f, 2.0f), NxPoint(2.0f, 0.0f, 1.0f)
+		};
+	const NxU32 missTriangles[] = { 0, 2, 1, 3, 5, 4 };
+	NxTriangleMeshDesc missMeshDesc;
+	missMeshDesc.numVertices = sizeof(missVertices) / sizeof(missVertices[0]);
+	missMeshDesc.numTriangles = 2;
+	missMeshDesc.pointStrideBytes = sizeof(NxPoint);
+	missMeshDesc.triangleStrideBytes = 3 * sizeof(NxU32);
+	missMeshDesc.points = missVertices;
+	missMeshDesc.triangles = missTriangles;
+	NxTriangleMesh* const missMesh = sdk->createTriangleMesh(missMeshDesc);
+	if(!missMesh)
+		return nxFail("miss triangle-mesh creation failed");
+	NxTriangleMeshShapeDesc missTriggerShape;
+	missTriggerShape.meshData = missMesh;
+	missTriggerShape.shapeFlags = NX_TRIGGER_ON_ENTER;
+	NxActorDesc missTriggerDesc;
+	missTriggerDesc.globalPose.t = NxVec3(-10.0f, 0.0f, 0.0f);
+	missTriggerDesc.shapes.pushBack(&missTriggerShape);
+	NxActor* const missTriggerActor = scene->createActor(missTriggerDesc);
+	NxSphereShapeDesc missSphereShape;
+	missSphereShape.radius = 0.5f;
+	NxBodyDesc missSphereBody;
+	NxActorDesc missSphereDesc;
+	missSphereDesc.body = &missSphereBody;
+	missSphereDesc.density = 1.0f;
+	missSphereDesc.globalPose.t = NxVec3(-7.6f, 0.25f, 2.4f);
+	missSphereDesc.shapes.pushBack(&missSphereShape);
+	NxActor* const missSphereActor = scene->createActor(missSphereDesc);
+	if(!missTriggerActor || !missSphereActor)
+		return nxFail("miss mesh-trigger actor creation failed");
 	scene->simulate(1.0f / 60.0f);
 	if(!scene->checkResults(NX_RIGID_BODY_FINISHED, true)
 		|| !scene->fetchResults(NX_RIGID_BODY_FINISHED, true))
 		return nxFail("mesh trigger simulation results failed");
-	printf("simulation mesh-trigger calls=%u event=%u\n",
-		triggerReport.calls, triggerReport.lastEvent);
+	printf("simulation mesh-trigger calls=%u event=%u unexpected=%u\n",
+		triggerReport.calls, triggerReport.lastEvent, triggerReport.unexpectedCalls);
 
 	sdk->setActorGroupPairFlags(7, 3, 0);
+	scene->releaseActor(*missSphereActor);
+	scene->releaseActor(*missTriggerActor);
+	sdk->releaseTriangleMesh(*missMesh);
 	scene->releaseActor(*meshTriggerOther);
 	scene->releaseActor(*triggerActor);
 	scene->releaseActor(*sphere);

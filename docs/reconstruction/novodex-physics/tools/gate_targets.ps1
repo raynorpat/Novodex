@@ -3143,7 +3143,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # The same upward-facing mesh must not generate contacts from below.
         'simulation mesh-backface calls=0 events=00000000 y=bfc2311b vy=c09cf5bc'
         # Matrix-B sphere/mesh overlap drives the public trigger enter callback.
-        'simulation mesh-trigger calls=1 event=1'
+        'simulation mesh-trigger calls=1 event=1 unexpected=0'
     )
     'NxPhysicsTriggerSimulationTests' = @(
         # A dynamic sphere crosses a public static trigger box under real motion.
