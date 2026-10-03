@@ -11,7 +11,7 @@ param(
     [Parameter(Mandatory = $true, ParameterSetName = 'Targets')]
     [string[]] $Targets,
 
-    [string] $RepoRoot = 'D:\github\Novodex',
+    [string] $RepoRoot,
     [string] $BuildRoot,
     [string] $OracleRoot = 'D:\FlamingEnt__\Unreal_3',
     [string] $PairsRoot = 'D:\FlamingEnt__\novodex-analysis\pairs'
@@ -26,6 +26,9 @@ $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 
 $toolsRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+if (-not $RepoRoot) {
+    $RepoRoot = (Resolve-Path -LiteralPath (Join-Path $toolsRoot '..\..\..\..')).Path
+}
 $evidenceRoot = Split-Path -Parent $toolsRoot
 $programPath = Join-Path $evidenceRoot 'program.json'
 $ue3Root = $OracleRoot

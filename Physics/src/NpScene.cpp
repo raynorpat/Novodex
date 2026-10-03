@@ -62,6 +62,7 @@ void nxSceneDeadlockReport();
 static bool gStartRunWarningEmitted = false;
 static bool gFinishRunWarningEmitted = false;
 static bool gRunForWarningEmitted = false;
+static bool gWaitWarningEmitted = false;
 
 NpScene::NpScene(NxSceneInternal* scene)
 	{
@@ -920,10 +921,18 @@ NxImplicitMesh** NpScene::getImplicitMeshes()
 	return 0;
 	}
 
-// (unimplemented) wait
+// phys_fn_000390 (0x0000d600): warn once, then forward the run-finished fence
+// to the same checkResults virtual slot used by the public replacement API.
 bool NpScene::wait(NxStandardFences, bool block)
 	{
-	return 0;
+	if(!gWaitWarningEmitted)
+		{
+		gWaitWarningEmitted = true;
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_PRINT,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x204, 0,
+			"Warning: deprecated method: \nScene::wait(). Use the new  checkResults() instead!\n\n");
+		}
+	return checkResults(NX_RIGID_BODY_FINISHED, block);
 	}
 
 // phys_fn_000392 (0x0000d660): a successful write-lock probe is immediately

@@ -7215,8 +7215,8 @@
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/192",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1134",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via oncedispatch differential (3z170): both the gate-clear and gate-set passes failures=0 for all three rows, with the report slot and each gate byte bound and the slots pointed at recorders",
+      "static_proof": "IDA decompile at 0x1000d600 shows a once-per-module NXE_DB_PRINT warning, then a virtual call at vtable byte offset 260 with status 1 and the caller's block argument; this is checkResults(NX_RIGID_BODY_FINISHED, block)",
+      "dynamic_proof": "NxPhysicsSimulationTests (build/scene-wait-green.log) matches the pinned oracle exactly: NX_FENCE_RUN_FINISHED is false before submitted work and true after a blocking wait on a completed run; stdout_delta=0, stderr exact",
       "notes": ""
     },
     {

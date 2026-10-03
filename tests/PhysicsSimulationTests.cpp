@@ -476,14 +476,18 @@ int wmain(int argc, wchar_t** argv)
 		}
 	const bool idleReady = emptyScene->checkResults(NX_RIGID_BODY_FINISHED, false);
 	const bool idleFetched = emptyScene->fetchResults(NX_RIGID_BODY_FINISHED, false);
+	const bool idleFence = emptyScene->wait(NX_FENCE_RUN_FINISHED, false);
 	printf("simulation nonblocking=idle ready=%u fetched=%u\n",
 		idleReady ? 1u : 0u, idleFetched ? 1u : 0u);
+	printf("simulation fence=idle ready=%u\n", idleFence ? 1u : 0u);
 	emptyScene->simulate(0.125f);
+	const bool submittedFence = emptyScene->wait(NX_FENCE_RUN_FINISHED, true);
 	const bool emptyReady = emptyScene->checkResults(NX_RIGID_BODY_FINISHED, true);
 	const bool emptyReadyNonblocking = emptyScene->checkResults(NX_RIGID_BODY_FINISHED, false);
 	const bool emptyFetchedNonblocking = emptyScene->fetchResults(NX_RIGID_BODY_FINISHED, false);
 	printf("simulation empty-step ready=%u fetched=%u\n",
 		emptyReady ? 1u : 0u, emptyFetchedNonblocking ? 1u : 0u);
+	printf("simulation fence=submitted ready=%u\n", submittedFence ? 1u : 0u);
 	printf("simulation nonblocking=finished ready=%u fetched=%u\n",
 		emptyReadyNonblocking ? 1u : 0u, emptyFetchedNonblocking ? 1u : 0u);
 	sdk->releaseScene(*emptyScene);
