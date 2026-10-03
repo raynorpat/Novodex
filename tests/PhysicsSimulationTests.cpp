@@ -67,8 +67,8 @@ struct NxSimulationContactReport : NxUserContactReport
 	unsigned point[3];
 	unsigned separation;
 	unsigned capturedCallbacks;
-	unsigned callbackPointCount[2];
-	unsigned callbackPoint[2][8][4];
+	unsigned callbackPointCount[8];
+	unsigned callbackPoint[8][8][4];
 
 	NxSimulationContactReport()
 		: calls(0), events(0), pairs(0), patches(0), points(0), separation(0),
@@ -84,7 +84,7 @@ struct NxSimulationContactReport : NxUserContactReport
 		{
 		const unsigned callback = calls;
 		++calls;
-		if(callback < 2)
+		if(callback < 8)
 			capturedCallbacks = callback + 1;
 		events |= eventFlags;
 		NxContactStreamIterator iterator(pair.stream);
@@ -108,7 +108,7 @@ struct NxSimulationContactReport : NxUserContactReport
 							}
 						separation = nxFloatBits(iterator.getSeparation());
 						}
-					if(callback < 2 && callbackPointCount[callback] < 8)
+					if(callback < 8 && callbackPointCount[callback] < 8)
 						{
 						const NxVec3& p = iterator.getPoint();
 						unsigned* out = callbackPoint[callback][callbackPointCount[callback]++];
@@ -379,6 +379,82 @@ int wmain(int argc, wchar_t** argv)
 				boxContactReport.callbackPoint[callback][i][2], boxContactReport.callbackPoint[callback][i][3]);
 	nxPrintBoxActorState("box-contact60", *fallingBoxActor);
 	sdk->releaseScene(*boxContactScene);
+
+	// A two-dynamic-body impact exercises pair ownership and impulse sharing;
+	// the plane fixtures above only cover one movable body against static geometry.
+	NxSimulationContactReport spherePairReport;
+	NxSceneDesc spherePairSceneDesc;
+	spherePairSceneDesc.setToDefault();
+	spherePairSceneDesc.gravity = NxVec3(0.0f, 0.0f, 0.0f);
+	spherePairSceneDesc.timeStepMethod = NX_TIMESTEP_VARIABLE;
+	spherePairSceneDesc.userContactReport = &spherePairReport;
+	NxScene* spherePairScene = sdk->createScene(spherePairSceneDesc);
+	if(!spherePairScene)
+		{
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("sphere-pair scene creation failed");
+		}
+	NxSphereShapeDesc pairSphereA;
+	NxSphereShapeDesc pairSphereB;
+	pairSphereA.radius = 0.5f;
+	pairSphereB.radius = 0.5f;
+	NxBodyDesc pairBodyA;
+	pairBodyA.mass = 1.0f;
+	pairBodyA.massSpaceInertia = NxVec3(0.1f, 0.1f, 0.1f);
+	pairBodyA.linearVelocity = NxVec3(1.0f, 0.0f, 0.0f);
+	NxActorDesc pairActorDescA;
+	pairActorDescA.body = &pairBodyA;
+	pairActorDescA.globalPose.t = NxVec3(-1.0f, 0.0f, 0.0f);
+	pairActorDescA.shapes.pushBack(&pairSphereA);
+	NxBodyDesc pairBodyB;
+	pairBodyB.mass = 1.0f;
+	pairBodyB.massSpaceInertia = NxVec3(0.1f, 0.1f, 0.1f);
+	pairBodyB.linearVelocity = NxVec3(-1.0f, 0.0f, 0.0f);
+	NxActorDesc pairActorDescB;
+	pairActorDescB.body = &pairBodyB;
+	pairActorDescB.globalPose.t = NxVec3(1.0f, 0.0f, 0.0f);
+	pairActorDescB.shapes.pushBack(&pairSphereB);
+	NxActor* pairActorA = spherePairScene->createActor(pairActorDescA);
+	NxActor* pairActorB = spherePairScene->createActor(pairActorDescB);
+	printf("simulation sphere-pair creation valid=%u.%u actors=%u.%u\n",
+		pairActorDescA.isValid() ? 1u : 0u, pairActorDescB.isValid() ? 1u : 0u,
+		pairActorA ? 1u : 0u, pairActorB ? 1u : 0u);
+	if(!pairActorA || !pairActorB)
+		{
+		sdk->releaseScene(*spherePairScene);
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("sphere-pair actors creation failed");
+		}
+	spherePairScene->setActorPairFlags(*pairActorA, *pairActorB,
+			NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH);
+	nxPrintActorState("spherepair-init-a", *pairActorA);
+	nxPrintActorState("spherepair-init-b", *pairActorB);
+	for(unsigned step = 0; step < 60; ++step)
+		{
+		spherePairScene->simulate(1.0f / 60.0f);
+		const bool ready = spherePairScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+		const bool fetched = spherePairScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		if(!ready || !fetched)
+			{
+			sdk->releaseScene(*spherePairScene);
+			sdk->release();
+			FreeLibrary(physics);
+			return nxFail("sphere-pair scene result was not ready and fetched");
+			}
+		char pairStage[24];
+		sprintf_s(pairStage, "spherepair%u-a", step);
+		nxPrintActorState(pairStage, *pairActorA);
+		sprintf_s(pairStage, "spherepair%u-b", step);
+		nxPrintActorState(pairStage, *pairActorB);
+		}
+	printf("simulation sphere-pair callbacks=%u events=%08x pairs=%u patches=%u points=%u\n",
+		spherePairReport.calls, spherePairReport.events, spherePairReport.pairs,
+		spherePairReport.patches, spherePairReport.points);
+	nxPrintActorState("spherepair60-a", *pairActorA);
+	nxPrintActorState("spherepair60-b", *pairActorB);
+	sdk->releaseScene(*spherePairScene);
 
 	sdk->release();
 	status = nxReportPairIdentity(pairDirectory);

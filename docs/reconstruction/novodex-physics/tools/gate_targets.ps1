@@ -2990,6 +2990,15 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation stage=boxcontact21 position=00000000.3ee70ef5.00000000 velocity=00000000.be9e615a.00000000'
         'simulation box-state stage=boxcontact21 orientation=36dfab5f.a88f6800.3731d335.3f7fffff angular=ba23b29f.a6abeae9.ba965b46 matrix=3f800000.b7b1d334.2f1b550f.37b1d334.3f800000.b75fab5e.2f1b66fb.375fab5e.3f800000 shape=00000000.3ee70ef5.00000000.3f800000.b7b1d334.2f1b550f.37b1d334.3f800000.b75fab5e.2f1b66fb.375fab5e.3f800000'
         'simulation box-contact callback=1 point=0 xyzs=befffea0.bd3269a8.bf00006d.bd3269a8'
+        # Two moving bodies reach the sphere-sphere solver and exchange impulse.
+        'simulation sphere-pair creation valid=1.1 actors=1.1'
+        'simulation stage=spherepair-init-a position=bf800000.00000000.00000000 velocity=3f800000.00000000.00000000'
+        'simulation stage=spherepair-init-b position=3f800000.00000000.00000000 velocity=bf800000.00000000.00000000'
+        'simulation stage=spherepair31-a position=bef40d9e.00000000.00000000 velocity=3eccc4a0.00000000.00000000'
+        'simulation stage=spherepair31-b position=3ef40d9e.00000000.00000000 velocity=beccc4a0.00000000.00000000'
+        'simulation sphere-pair callbacks=26 events=0000000a pairs=26 patches=26 points=26'
+        'simulation stage=spherepair60-a position=bef33333.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=spherepair60-b position=3ef33333.00000000.00000000 velocity=00000000.00000000.00000000'
         'simulation contact callbacks=26 events=0000000a pairs=26 patches=26 points=26 normal=80000000.bf800000.80000000 point=00000000.bc916940.00000000 separation=bc916940'
         'simulation stage=contact60 position=00000000.3ee66666.00000000 velocity=00000000.00000000.00000000'
     )
@@ -5178,7 +5187,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # family open)
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1160  # 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize + 2 simulation soak assertions + 4 box-contact assertions
+    '7' = 1168  # 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize + 2 simulation soak assertions + 4 box-contact + 8 sphere-pair assertions
                # + 23 M1 simulation + 79 effector + 374 core-dump; the oracle-differential assertions
     '8' = 0
 }
