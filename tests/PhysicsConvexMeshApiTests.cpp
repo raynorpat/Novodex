@@ -3,9 +3,15 @@
 #include <stdio.h>
 
 #include "NxPhysicsSDK.h"
+#include "NxActor.h"
+#include "NxActorDesc.h"
+#include "NxScene.h"
+#include "NxSceneDesc.h"
 #include "NxSimpleTriangleMesh.h"
 #include "NxTriangleMesh.h"
 #include "NxTriangleMeshDesc.h"
+#include "NxTriangleMeshShape.h"
+#include "NxTriangleMeshShapeDesc.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -77,6 +83,37 @@ static bool runMeshCase(NxPhysicsSDK& sdk, const char* name, const NxTriangleMes
 		sdk.releaseTriangleMesh(*mesh);
 		}
 	return true;
+	}
+
+static bool runTriangleMeshActorCase(NxPhysicsSDK& sdk, const NxTriangleMeshDesc& meshDesc)
+	{
+	NxTriangleMesh* mesh = sdk.createTriangleMesh(meshDesc);
+	if(!mesh)
+		{
+		printf("mesh-actor name=static_tetra mesh=0 actor=0\n");
+		return false;
+		}
+	NxSceneDesc sceneDesc;
+	NxScene* scene = sdk.createScene(sceneDesc);
+	if(!scene)
+		{
+		sdk.releaseTriangleMesh(*mesh);
+		printf("mesh-actor name=static_tetra mesh=1 scene=0 actor=0\n");
+		return false;
+		}
+	NxTriangleMeshShapeDesc shapeDesc;
+	shapeDesc.meshData = mesh;
+	NxActorDesc staticDesc;
+	staticDesc.shapes.pushBack(&shapeDesc);
+	NxActor* staticActor = scene->createActor(staticDesc);
+	NxU32 staticShapeCount = staticActor ? staticActor->getNbShapes() : 0;
+	NxU32 staticShapeType = staticActor && staticShapeCount
+		? staticActor->getShapes()[0]->getType() : NX_SHAPE_COUNT;
+	printf("mesh-actor name=static_tetra mesh=1 scene=1 actor=%u shapes=%u type=%u\n",
+		staticActor ? 1u : 0u, staticShapeCount, staticShapeType);
+	sdk.releaseScene(*scene);
+	sdk.releaseTriangleMesh(*mesh);
+	return staticActor != 0 && staticShapeCount == 1 && staticShapeType == NX_SHAPE_MESH;
 	}
 
 int wmain(int argc, wchar_t** argv)
@@ -165,6 +202,7 @@ int wmain(int argc, wchar_t** argv)
 	ok = runMeshCase(*sdk, "computed_tetra_padded_points", computedPadded, 1) && ok;
 	ok = runMeshCase(*sdk, "precomputed_tetra", precomputed, 1) && ok;
 	ok = runMeshCase(*sdk, "precomputed_tetra_padded16_materials", padded16, 1) && ok;
+	ok = runTriangleMeshActorCase(*sdk, precomputed) && ok;
 
 	sdk->release();
 	const int identityStatus = nxReportPairIdentity(pairDirectory);

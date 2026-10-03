@@ -3240,7 +3240,8 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsConvexMeshTests' = @(
         'mesh-case name=precomputed_tetra_first repeat=0 flags=00000004 created=1 submeshes=4',
-        'mesh-case name=computed_tetra repeat=0 flags=0000000c created=1 submeshes=4'
+        'mesh-case name=computed_tetra repeat=0 flags=0000000c created=1 submeshes=4',
+        'mesh-actor name=static_tetra mesh=1 scene=1 actor=1 shapes=1 type=4'
     )
     # Effector-and-coredump Task 4: the scene core-dump differential. Two populated
     # scenes dumped through NxPhysicsSDK::coreDump (000267 -> 004062) in text and
@@ -5309,7 +5310,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
     '3' = 359  # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 245  # 34 asset + 209 third-party + 2 public convex-mesh coverage assertions
+    '4' = 246  # 34 asset + 209 third-party + 3 public convex-mesh coverage assertions
     '5' = 2037  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # + 175 from scene-raycast Task 4 (149 body-creation, 13 setters, 9 dynamic-setter
                # and 3 shape-vtable from its shape sub-area, 1 shape-vtable from its box hull)

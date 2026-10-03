@@ -35,6 +35,9 @@
 #include "NxSphereShapeDesc.h"
 #include "NxCapsuleShapeDesc.h"
 #include "NxPlaneShapeDesc.h"
+#include "NxTriangleMeshShapeDesc.h"
+#include "ObjectModel.h"
+#include "TriangleMesh.h"
 #include "NxActor.h"
 #include "NpActor.h"
 #include "NpActorDynamicMath.h"
@@ -553,7 +556,7 @@ void nxSceneReportErrorA(const char* message);
 // and 1 on success, matching the oracle's return contract.
 int nxActorLoadFromDescInternal(void* actor, const unsigned* descWords);
 // phys_fn_000013 (0x00001450), the actor constructor.
-void* nxActorConstruct(void* memory, void* scene);
+void* nxSceneCreateActorBody(void* memory, void* scene);
 
 NxActor* nxSceneActorConstruct(void* memory, void* scene);
 // phys_fn_00002010 (0x00002010, phase 2): applies the descriptor to the actor and
@@ -1346,7 +1349,7 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 	}
 
 // phys_fn_000013 (0x00001450) is the actor constructor.
-void* nxActorConstruct(void* memory, void* scene)
+void* nxSceneCreateActorBody(void* memory, void* scene)
 	{
 	unsigned* a = static_cast<unsigned*>(memory);
 	unsigned* s = static_cast<unsigned*>(scene);
@@ -1424,7 +1427,7 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 	// The earlier 0x50-byte actor assumption was wrong: the guarded oracle probe
 	// measured 0x18 for this wrapper and 0x50 for its outer body.
 	static_cast<NpActorObject*>(actorMemory)->installVtable();
-	NxActor* actor = static_cast<NxActor*>(nxActorConstruct(actorMemory, this));
+	NxActor* actor = static_cast<NxActor*>(nxSceneCreateActorBody(actorMemory, this));
 	if(!actor)
 		{
 		nxGetSdkAllocator()->free(actorMemory);
@@ -2073,7 +2076,7 @@ void NxSceneInternal::scalarDeletingDestructor(int flags)
 
 NxActor* nxSceneActorConstruct(void* memory, void* scene)
 	{
-	return reinterpret_cast<NxActor*>(nxActorConstruct(memory, scene));
+	return reinterpret_cast<NxActor*>(nxSceneCreateActorBody(memory, scene));
 	}
 
 void* nxSceneActorInitialise(NxActor* actor, const void* desc)
@@ -2672,9 +2675,8 @@ static void nxRuntimeShapeDelete(unsigned char* shape)
 // with 1). A built shape's handle takes the NpScene's two lock links
 // ([[scene+0x6cc]+0xc]/+0x10 to handle +0x10/+0x14, 0x1f16-0x1f31) and the
 // shape +8 = [scene+0x540] - 1 (0x1fd1-0x1fdc); without a shape the id goes
-// back to the pool (000028, 0x1fe5). Type 4 (the triangle mesh, 0xe8 B,
-// 001379, which also counts Scene+0x10 and calls 000503) has no runtime
-// family in the candidate and takes the no-shape arm, like types above 4.
+// back to the pool (000028, 0x1fe5). Type 4 uses the reconstructed MeshShape
+// family; types above it still take the no-shape arm.
 static unsigned char* nxActorShapeFactory(const NxShapeDesc* descriptor, unsigned char* body)
 	{
 	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(body + 4);
@@ -2707,6 +2709,40 @@ static unsigned char* nxActorShapeFactory(const NxShapeDesc* descriptor, unsigne
 				unsigned char* npScene = scene->at<unsigned char*>(0x6cc);
 				*reinterpret_cast<unsigned*>(handle + 0x10) = *reinterpret_cast<unsigned*>(npScene + 0xc);
 				*reinterpret_cast<unsigned*>(handle + 0x14) = *reinterpret_cast<unsigned*>(npScene + 0x10);
+				}
+			}
+		}
+	else if(type == NX_SHAPE_MESH)
+		{
+		void* memory = nxFoundationSDKAllocator->malloc(sizeof(MeshShape), NX_MEMORY_PERSISTENT);
+		if(memory)
+			{
+			shape = nxRuntimeShapeConstruct(memory, sizeof(MeshShape), type, body, id);
+			MeshShape* meshShape = reinterpret_cast<MeshShape*>(shape);
+			void* handle = *reinterpret_cast<void**>(shape + 0x9c);
+			if(handle)
+				{
+				// Runtime shapes are built from the verified raw-allocation path above.
+				// Construct the embedded hook member so the recovered deleting dtor can
+				// tear it down, then install the public family table and back-pointers.
+				new(handle) CollisionObject(shape);
+				*reinterpret_cast<void**>(handle) = nxShapePublicVtable(type);
+				*reinterpret_cast<void**>(static_cast<unsigned char*>(handle) + 8) = shape;
+				*reinterpret_cast<void**>(static_cast<unsigned char*>(handle) + 0x18) = shape;
+				}
+			const bool loaded = handle && meshShape->nxMeshLoadFromDesc(descriptor);
+			if(!loaded)
+				{
+				meshShape->nxMeshScalarDeletingDtor(0);
+				nxFoundationSDKAllocator->free(meshShape);
+				shape = 0;
+				}
+			else
+				{
+				unsigned char* npScene = scene->at<unsigned char*>(0x6cc);
+				unsigned char* handleBytes = static_cast<unsigned char*>(handle);
+				*reinterpret_cast<unsigned*>(handleBytes + 0x10) = *reinterpret_cast<unsigned*>(npScene + 0xc);
+				*reinterpret_cast<unsigned*>(handleBytes + 0x14) = *reinterpret_cast<unsigned*>(npScene + 0x10);
 				}
 			}
 		}

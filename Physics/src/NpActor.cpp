@@ -13,6 +13,9 @@
 #include "NpSceneGuard.h"
 #include "PhysicsInternal.h"
 #include "ObjectModel.h"
+#include "NxTriangleMeshShape.h"
+#include "NxTriangleMeshShapeDesc.h"
+#include "TriangleMesh.h"
 #include "FoundationSDK.h"
 #include "BodyCreation.h"
 #include "core/JointSupport.h"
@@ -649,6 +652,20 @@ static void __fastcall nxPlaneHandleSetPlane(void* self, void*,
 	nxSceneMarkShapeDirty(shape, 0x80);
 	}
 
+static bool __fastcall nxMeshHandleSaveToDesc(void* self, void*,
+	NxTriangleMeshShapeDesc& descriptor)
+	{
+	MeshShape* shape = reinterpret_cast<MeshShape*>(nxBoxHandleInternal(self));
+	return shape->nxMeshSaveState(&descriptor);
+	}
+
+static NxTriangleMesh& __fastcall nxMeshHandleGetTriangleMesh(void* self, void*)
+	{
+	MeshShape* shape = reinterpret_cast<MeshShape*>(nxBoxHandleInternal(self));
+	TriangleMesh* mesh = reinterpret_cast<TriangleMesh*>(shape->mWordE0);
+	return *mesh->publicMesh();
+	}
+
 void* nxBoxShapePublicVtable()
 	{
 	struct Table
@@ -698,12 +715,31 @@ void* nxBoxShapePublicVtable()
 	return table.slots;
 	}
 
+static void** nxMeshShapePublicVtable()
+	{
+	struct Table
+		{
+		void* slots[33];
+		Table()
+			{
+			void** box = static_cast<void**>(nxBoxShapePublicVtable());
+			for(unsigned slot = 0; slot < 31; ++slot)
+				slots[slot] = box[slot];
+			slots[31] = reinterpret_cast<void*>(&nxMeshHandleSaveToDesc);
+			slots[32] = reinterpret_cast<void*>(&nxMeshHandleGetTriangleMesh);
+			}
+		};
+	static Table table;
+	return table.slots;
+	}
+
 // Public shape handles share the NxShape prefix through slot 30. The final
 // geometry slots differ by family and remain explicit unsupported entries
 // until their individual implementations are reconstructed.
 void* nxShapePublicVtable(unsigned type)
 	{
 	if(type == 2u) return nxBoxShapePublicVtable();
+	if(type == 4u) return nxMeshShapePublicVtable();
 	struct Tables
 		{
 		void* slots[3][37];

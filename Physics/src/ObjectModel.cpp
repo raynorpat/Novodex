@@ -4261,6 +4261,40 @@ static void** nxPlaneShapeInternalVtable()
 	return table.slot;
 	}
 
+// MESH-table rows recovered from the pinned image. Debug rendering and
+// raycasting remain explicit holes; actor construction, cached mass, bounds,
+// descriptor IO, and the self/mesh accessors are implemented here.
+static void** nxMeshShapeInternalVtable()
+	{
+	struct Table
+		{
+		void* slot[18];
+		Table()
+			{
+			slot[0] = nxShapeMethodAddress(&MeshShape::nxMeshScalarDeletingDtor);
+			slot[1] = nxShapeMethodAddress(&ShapeBase::nxApplyDescriptor);
+			slot[2] = nxShapeMethodAddress(&ShapeBase::nxBaseSaveState);
+			slot[3] = nullptr;
+			slot[4] = nxShapeMethodAddress(&MeshShape::nxMeshAccumulateMassCached);
+			slot[5] = nullptr;
+			slot[6] = nxShapeMethodAddress(&ShapeBase::nxApplyOwnerUpdate);
+			slot[7] = nxShapeMethodAddress(&MeshShape::nxMeshSweepPrepared);
+			slot[8] = nxShapeMethodAddress(&MeshShape::nxMeshGetWords44);
+			slot[9] = nxShapeMethodAddress(&MeshShape::nxMeshWorldAABB);
+			slot[10] = nxShapeMethodAddress(&MeshShape::nxMeshTransformCenter);
+			slot[11] = nxShapeMethodAddress(&MeshShape::nxMeshGetWords5C);
+			slot[12] = nxShapeMethodAddress(&MeshShape::nxMeshLoadFromDesc);
+			slot[13] = nxShapeMethodAddress(&MeshShape::nxMeshSaveState);
+			slot[14] = nxShapeMethodAddress(&ShapeBase::nxSelf);
+			slot[15] = slot[14];
+			slot[16] = slot[14];
+			slot[17] = nxShapeMethodAddress(&MeshShape::nxMeshGetMeshWord);
+			}
+		};
+	static Table table;
+	return table.slot;
+	}
+
 // ShapeBase::ShapeBase's prunable, for Scene.cpp's raw shape allocations (the
 // factory does not run the shape constructors): the member built in place
 // (Prunable::Prunable at 0x000255df), the three owner hooks in the image's
@@ -4290,6 +4324,7 @@ void nxShapeFactoryInstallVtable(void* shape, unsigned type)
 		case 1: table = nxSphereShapeInternalVtable(); break;
 		case 2: table = nxBoxShapeInternalVtable(); break;
 		case 3: table = nxCapsuleShapeInternalVtable(); break;
+		case 4: table = nxMeshShapeInternalVtable(); break;
 		default: break;
 		}
 	if(table) *reinterpret_cast<void***>(shape) = table;
