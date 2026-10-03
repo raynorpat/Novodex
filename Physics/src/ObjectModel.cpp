@@ -3588,10 +3588,9 @@ void nxDoubleToFloat9_2156(void* self, float* out)
 		}
 	}
 
-// phys_fn_001030 (0x22bf0, ret 4): aggregate the child AABBs of the shape list
+// phys_fn_001030 (0x22bf0, ret 4): aggregate the local AABBs of the shape list
 // at [self+0xe0]..[self+0xe4] into out. Seeded FLT_MAX / -FLT_MAX; each shape
-// contributes the six-float AABB returned by its slot-9 world-bounds method,
-// merged
+// contributes the 6-dword record selected by the PLANE slot-8 row, merged
 // with min on the low triple and max on the high triple.
 void nxAggregateAABB1030(void* self, float* out)
 	{
@@ -3610,10 +3609,7 @@ void nxAggregateAABB1030(void* self, float* out)
 		unsigned char* shape = reinterpret_cast<unsigned char*>(it[i]);
 		unsigned rec[6];
 		memcpy(rec, seed, sizeof(rec));
-		typedef void (__thiscall* ShapeAabbFn)(void*, float*);
-		void** shapeVtable = *reinterpret_cast<void***>(shape);
-		reinterpret_cast<ShapeAabbFn>(shapeVtable[9])(shape,
-			reinterpret_cast<float*>(rec));
+		reinterpret_cast<PlaneShape*>(shape)->nxPlaneIndexed6_1267(rec);
 		float f[6];
 		memcpy(f, rec, sizeof(f));
 		if(!(out[0] <= f[0])) out[0] = f[0];
@@ -5721,8 +5717,8 @@ void CapsuleShape::nxCapsuleWorldAABB1016(float* out) const
 // phys_fn_001267 (0x25490, PLANE vtable slot 8, ret 4): selects a 6-dword
 // record from the table at *([this+0xc4]+0x14), indexed by
 // [this+0xa4+0x28], and copies it to out. When [this+0xcc] != 0xffff and
-// [this+0xa4+8] lacks bit 2, the 004886 init runs first on the
-// [this+0xcc]-indexed record (its only observable being [rec+8] |= 2).
+// [this+0xa4+8] lacks bit 2, 004886 recomputes that indexed pruner box through
+// the owner hook and marks the resulting AABB valid before it is copied.
 void PlaneShape::nxPlaneIndexed6_1267(unsigned* out) const
 	{
 	const unsigned char* p = reinterpret_cast<const unsigned char*>(this);
@@ -5732,8 +5728,9 @@ void PlaneShape::nxPlaneIndexed6_1267(unsigned* out) const
 		{
 		unsigned char* inner = *reinterpret_cast<unsigned char* const*>(p + 0xc4);
 		unsigned char* base = *reinterpret_cast<unsigned char**>(inner + 0x14);
-		unsigned char* rec = base + static_cast<unsigned>(ax) * 24u;
-		*(unsigned*)(rec + 8) |= 2u;		// 004886 observable
+		AABB* rec = reinterpret_cast<AABB*>(base + static_cast<unsigned>(ax) * 24u);
+		reinterpret_cast<Prunable*>(const_cast<unsigned char*>(p + 0xa4))
+			->UpdateWorldAABB(rec);
 		}
 	unsigned short ax2;
 	memcpy(&ax2, p + 0xa4 + 0x28, 2);
