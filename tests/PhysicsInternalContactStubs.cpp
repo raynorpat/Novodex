@@ -28,6 +28,8 @@ void __cdecl NxContactCapsuleCapsule(const NxCollisionShape*, const NxCollisionS
 	NxContactSink*, void*) {}
 void __cdecl NxContactBoxBox(const NxCollisionShape*, const NxCollisionShape*,
 	NxContactSink*, void*) {}
+void __cdecl NxContactBoxCapsule(const NxCollisionShape*, const NxCollisionShape*,
+	NxContactSink*, void*) {}
 
 // NxPhysicsInternalTests links Scene.cpp without NarrowPhase.cpp. That target
 // never drives scene pair-map teardown; the product and differential targets
