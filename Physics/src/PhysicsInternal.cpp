@@ -15,6 +15,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+void __cdecl NxContactSphereMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
+
 // The heap block phys_fn_002358 allocates. The critical section starts at zero,
 // the interlocked owner flag is the word at +0x18 the constructor clears, and
 // the owning thread id is the word at +0x1c that only the lock entry points
@@ -111,13 +113,14 @@ ShapePairFunctionTable::ShapePairFunctionTable()
 
 	// phys_fn_002338's primitive contact entries, transcribed from its stores.
 	// The type order is Plane, Sphere, Box, Capsule, Mesh, Compound; the table
-	// uses only the upper triangle. Mesh handlers remain outside this unit.
+	// uses only the upper triangle.
 	mFunction[0][0][1] = (void*) NxContactPlaneSphere;
 	mFunction[0][0][2] = (void*) NxContactPlaneBox;
 	mFunction[0][0][3] = (void*) NxContactPlaneCapsule;
 	mFunction[0][1][1] = (void*) NxContactSphereSphere;
 	mFunction[0][1][2] = (void*) NxContactSphereBox;
 	mFunction[0][1][3] = (void*) NxContactSphereCapsule;
+	mFunction[0][1][4] = (void*) NxContactSphereMesh;
 	mFunction[0][2][2] = (void*) NxContactBoxBox;
 	mFunction[0][2][3] = (void*) NxContactBoxCapsule;
 	mFunction[0][3][3] = (void*) NxContactCapsuleCapsule;

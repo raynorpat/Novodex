@@ -16,7 +16,7 @@ $NxPhaseTestTargets = [ordered] @{
     '4' = @()
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsBodyCreationTests')
     '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
-    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
+    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
     '8' = @()
 }
 
@@ -3136,6 +3136,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation compound-generated-contact step=15 calls=8 events=00000008'
         'simulation compound-generated-contact summary calls=8 events=00000008'
     )
+    'NxPhysicsMeshSimulationTests' = @(
+        # Full public path: construct a static triangle mesh, drop a sphere,
+        # generate contact reports and settle through the real solver.
+        'simulation mesh-contact calls=2 events=0000000a y=3ee6cefd vy=be441bbb'
+    )
     'NxPhysicsTriggerSimulationTests' = @(
         # A dynamic sphere crosses a public static trigger box under real motion.
         # Pin enter, per-substep stay, and leave callbacks plus end-of-frame poses.
@@ -5333,7 +5338,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1300  # previous 1,298 plus mesh actor creation and public handle observations
+    '7' = 1301  # previous 1,300 plus the isolated public sphere/mesh drop fixture
     '8' = 0
 }
 
@@ -5378,6 +5383,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsSceneRaycastTests',
     'NxPhysicsSceneVisualizeTests',
     'NxPhysicsSimulationTests',
+    'NxPhysicsMeshSimulationTests',
     'NxPhysicsTriggerSimulationTests',
     'NxPhysicsSDKTests'
 )

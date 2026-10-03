@@ -188,6 +188,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Distance.cpp
 		Physics/src/ContactBoxMeshICE.cpp
 		Physics/src/ContactCapsuleMesh.cpp
+		Physics/src/ContactSphereMesh.cpp
 		Physics/src/ContactMeshHeightfield.cpp
 		Physics/src/ContactMeshMesh.cpp
 		Physics/src/EdgeList.cpp
@@ -569,6 +570,9 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsSimulationTests tests/PhysicsSimulationTests.cpp)
 	target_include_directories(NxPhysicsSimulationTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsSimulationTests bcrypt)
+	add_executable(NxPhysicsMeshSimulationTests tests/PhysicsMeshSimulationTests.cpp)
+	target_include_directories(NxPhysicsMeshSimulationTests PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsMeshSimulationTests bcrypt)
 	add_executable(NxPhysicsTriggerSimulationTests tests/PhysicsTriggerSimulationTests.cpp)
 	target_include_directories(NxPhysicsTriggerSimulationTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsTriggerSimulationTests bcrypt)

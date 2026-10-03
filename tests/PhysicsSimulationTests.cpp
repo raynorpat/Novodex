@@ -307,64 +307,6 @@ int wmain(int argc, wchar_t** argv)
 					broadPhaseScene->releaseActor(*meshActor);
 				sdk->releaseTriangleMesh(*sceneMesh);
 				}
-			// A public static-mesh contact case is the next gate after mesh
-			// construction and actor dispatch. Reverse the winding so the upper
-			// hemisphere approaches the front side of the two-triangle plane.
-			const NxU32 contactMeshTriangles[] = { 0, 2, 1, 3, 5, 4 };
-			NxTriangleMeshDesc contactMeshDesc = meshDesc;
-			contactMeshDesc.triangles = contactMeshTriangles;
-			NxTriangleMesh* const contactMesh = sdk->createTriangleMesh(contactMeshDesc);
-			NxSceneDesc meshContactSceneDesc;
-			meshContactSceneDesc.setToDefault();
-			meshContactSceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
-			NxScene* const meshContactScene = sdk->createScene(meshContactSceneDesc);
-			if(!contactMesh || !meshContactScene)
-				return nxFail("triangle-mesh contact fixture setup failed");
-			meshContactScene->setTiming(1.0f / 60.0f, 8, NX_TIMESTEP_FIXED);
-			NxTriangleMeshShapeDesc contactMeshShapeDesc;
-			contactMeshShapeDesc.meshData = contactMesh;
-			NxActorDesc contactGroundDesc;
-			contactGroundDesc.shapes.pushBack(&contactMeshShapeDesc);
-			NxActor* const contactGround = meshContactScene->createActor(contactGroundDesc);
-			NxSphereShapeDesc contactSphereDesc;
-			contactSphereDesc.radius = 0.5f;
-			NxBodyDesc contactBodyDesc;
-			NxActorDesc contactSphereActorDesc;
-			contactSphereActorDesc.body = &contactBodyDesc;
-			contactSphereActorDesc.density = 1.0f;
-			contactSphereActorDesc.globalPose.t = NxVec3(0.0f, 1.5f, 0.0f);
-			contactSphereActorDesc.shapes.pushBack(&contactSphereDesc);
-			NxActor* const contactSphere = meshContactScene->createActor(contactSphereActorDesc);
-			if(!contactGround || !contactSphere)
-				return nxFail("triangle-mesh contact actors creation failed");
-			NxSimulationContactReport meshContactReport(contactGround, contactSphere);
-			meshContactScene->setUserContactReport(&meshContactReport);
-			contactGround->setGroup(7);
-			contactSphere->setGroup(3);
-			sdk->setActorGroupPairFlags(7, 3, NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH);
-			bool meshContactReady = true;
-			bool meshContactFetched = true;
-			for(unsigned step = 0; step < 30; ++step)
-				{
-				meshContactScene->simulate(1.0f / 60.0f);
-				meshContactReady = meshContactScene->checkResults(NX_RIGID_BODY_FINISHED, true);
-				meshContactFetched = meshContactScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
-				if(!meshContactReady || !meshContactFetched)
-					return nxFail("triangle-mesh contact simulation results failed");
-				}
-			NxVec3 meshContactPosition;
-			NxVec3 meshContactVelocity;
-			contactSphere->getGlobalPosition(meshContactPosition);
-			contactSphere->getLinearVelocity(meshContactVelocity);
-			printf("simulation triangle-mesh contact calls=%u events=%08x y=%08x vy=%08x ready=%u fetched=%u\n",
-				meshContactReport.calls, meshContactReport.events,
-				nxFloatBits(meshContactPosition.y), nxFloatBits(meshContactVelocity.y),
-				meshContactReady, meshContactFetched);
-			sdk->setActorGroupPairFlags(7, 3, 0);
-			meshContactScene->releaseActor(*contactSphere);
-			meshContactScene->releaseActor(*contactGround);
-			sdk->releaseScene(*meshContactScene);
-			sdk->releaseTriangleMesh(*contactMesh);
 			NxSimulationHeldSceneWriteLock held = {
 				*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(broadPhaseScene) + 0x0c),
 				CreateEventA(0, TRUE, FALSE, 0), CreateEventA(0, TRUE, FALSE, 0) };
