@@ -33,6 +33,7 @@
 #include "Containers.h"
 #include "NxMaterial.h"
 #include "NxUserContactReport.h"
+#include "NxActor.h"
 #include "NxUtilities.h"
 #include "ObjectModel.h"
 #include "ContactGeneration.h"
@@ -329,7 +330,7 @@ static void cpmSolveContactRecord0403(NxReal, NxI32, JointSupportRecord* record)
 		jnp cpm_solve_no_apply
 	cpm_solve_no_apply:
 		}
-	if(!(applied > 0.0f))
+	if(applied == 0.0f)
 		return;
 
 	const NxVec3& n = record->mUnknown000;
@@ -2079,11 +2080,14 @@ static NX_INLINE NxU32 cpmReportEvents(NxSceneInternal* scene, NxU32* record, Nx
 			lookup = false;
 		if(lookup)
 			{
-			const CpmPairHashEntry* flags = cpmOpen004153(kCpmActorGroupPairFlags,
-				cpmAt<NxU16>(cpmPointer(record[3]), 0x1c),
-				cpmAt<NxU16>(cpmPointer(record[4]), 0x1c));
-			if(flags)
-				return (record[0] | flags->value) & events;
+			if(kCpmActorGroupPairFlags)
+				{
+				const CpmPairHashEntry* flags = cpmOpen004153(kCpmActorGroupPairFlags,
+					cpmAt<NxU16>(cpmPointer(record[3]), 0x1c),
+					cpmAt<NxU16>(cpmPointer(record[4]), 0x1c));
+				if(flags)
+					return (record[0] | flags->value) & events;
+				}
 			}
 		}
 	return record[0] & events;
@@ -2223,4 +2227,59 @@ __declspec(noinline) void __cdecl cpmBufferContactReports0917(NxSceneInternal* s
 		entry++;
 		}
 	while(--count);
+	}
+
+// phys_fn_000589 (0x00010d50): replace a shape-pair flag record in the Scene
+// hash. Ignore-pair is stored as the tagged flag word itself; report flags use
+// a 0x14-byte state record so 000905/000917 can track contact transitions.
+void cpmSetShapePairFlags(NxSceneInternal* scene, const NxU8* shape0,
+	const NxU8* shape1, NxU32 flags)
+	{
+	CpmPairHash* hash = reinterpret_cast<CpmPairHash*>(scene->bytes() + 0x2c);
+	const NxU32 id0 = cpmAt<NxU32>(shape0, 0xd4);
+	const NxU32 id1 = cpmAt<NxU32>(shape1, 0xd4);
+	CpmPairHashEntry* old = cpmOpen004153(hash, id0, id1);
+	if(old)
+		{
+		if(!(old->value & 1) && old->value)
+			nxFoundationSDKAllocator->free(cpmPointer(old->value));
+		cpmOpen004157(hash, id0, id1);
+		}
+	if(!flags)
+		return;
+
+	NxU32 value = (flags & 0x1fffffffu) | 0x20000000u;
+	if(!(flags & 1))
+		{
+		NxU32* record = static_cast<NxU32*>(
+			nxFoundationSDKAllocator->malloc(0x14, NX_MEMORY_PERSISTENT));
+		if(!record)
+			return;
+		record[0] = value;
+		record[1] = scene->at<NxU32>(0x540);
+		record[2] = record[3] = record[4] = 0;
+		value = reinterpret_cast<NxU32>(record);
+		}
+	cpmOpen004155(hash, id0, id1, reinterpret_cast<void*>(value));
+	}
+
+// The fetch-results path delivers 000917's per-step buffer. Keep the event and
+// stream values exactly as captured by the simulation worker and reset the
+// vector only after the callbacks have returned.
+void cpmDeliverBufferedContactReports(NxSceneInternal* scene, NxUserContactReport* report)
+	{
+	CpmBufferedContact* begin = scene->at<CpmBufferedContact*>(0x60c);
+	CpmBufferedContact* end = scene->at<CpmBufferedContact*>(0x610);
+	if(report && begin)
+		for(CpmBufferedContact* item = begin; item && item != end; ++item)
+			{
+			NxContactPair pair;
+			pair.actors[0] = static_cast<NxActor*>(item->actors[0]);
+			pair.actors[1] = static_cast<NxActor*>(item->actors[1]);
+			pair.stream = static_cast<NxConstContactStream>(item->stream);
+			memcpy(&pair.sumNormalForce, item->sumNormalForce, sizeof(pair.sumNormalForce));
+			memcpy(&pair.sumFrictionForce, item->sumFrictionForce, sizeof(pair.sumFrictionForce));
+			report->onContactNotify(pair, item->events);
+			}
+	scene->at<CpmBufferedContact*>(0x610) = begin;
 	}

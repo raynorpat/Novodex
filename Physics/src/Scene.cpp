@@ -24,6 +24,7 @@
 //     not model.
 
 #include "Scene.h"
+#include "ContactPairManager.h"
 
 #include "Containers.h"
 #include "NxSceneDesc.h"
@@ -4013,6 +4014,9 @@ void NxSceneInternal::simulateFrame()
 				reinterpret_cast<Row000022Fixture*>(
 					*reinterpret_cast<void**>(body + 0x19c))->row000022(0);
 			}
+		if(at<void*>(0x6b4))
+			cpmBufferContactReports0917(this,
+				reinterpret_cast<CpmPairHash*>(mBytes + 0x2c));
 		++at<NxU32>(0x558);
 		at<NxReal>(0x538) -= timestep;
 		}
