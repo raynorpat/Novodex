@@ -1,10 +1,8 @@
 // Sphere/triangle-mesh contact generation (matrix A [SPHERE][MESH]).
-// The oracle's 001929 walks the sphere's OPCODE candidates, performs the
-// one-sided face pass for height-field-backed meshes, and sends each remaining
-// triangle through 001927. This first reconstruction preserves that triangle
-// kernel contract and contact stream while using the owned mesh arrays as the
-// candidate source; tree pruning is a follow-up once this public route is
-// pinned.
+// Matrix A [SPHERE][MESH]. The handler queries the owned OPCODE model for
+// sphere candidates and reproduces the ordinary-mesh face-side rejection
+// before constructing the point/triangle contact stream. Heightfield-specific
+// normals, all of 001927's edge cases and matrix-B overlap remain open.
 
 #include "ContactGeneration.h"
 #include "NxTriangleDistance.h"
@@ -80,13 +78,50 @@ void __cdecl NxContactSphereMesh(const NxCollisionShape* sphere,
 	const NxReal* const vertices = static_cast<const NxReal*>(mesh->mInternal.mVertices);
 	const NxU32* const triangles = static_cast<const NxU32*>(mesh->mInternal.mTriangles);
 	const NxU32 sphereFeature = *(const NxU16*)((const NxU8*) sphere + 0xda);
+	IceCore::Container candidates;
+	Opcode::SphereCache cache;
+	cache.TouchedPrimitives = &candidates;
+	IceMaths::Sphere querySphere(
+		IceMaths::Point(centerLocal.x, centerLocal.y, centerLocal.z), radius);
+	Opcode::SphereCollider collider;
+	if(!mesh->mInternal.mModel
+		|| !collider.Collide(cache, querySphere,
+			*static_cast<const Opcode::Model*>(mesh->mInternal.mModel)))
+		return;
 
-	for(NxU32 face = 0; face < mesh->mInternal.mTriangleCount; ++face)
+	const NxU32 candidateCount = candidates.GetNbEntries();
+	const NxU32* const candidateFaces = candidates.GetEntries();
+	for(NxU32 candidate = 0; candidate < candidateCount; ++candidate)
 		{
+		const NxU32 face = candidateFaces[candidate];
 		const NxU32* const tri = triangles + face * 3;
 		const NxReal* const v0 = vertices + tri[0] * 3;
 		const NxReal* const v1 = vertices + tri[1] * 3;
 		const NxReal* const v2 = vertices + tri[2] * 3;
+		const NxReal e10 = v1[0] - v0[0];
+		const NxReal e11 = v1[1] - v0[1];
+		const NxReal e12 = v1[2] - v0[2];
+		const NxReal e20 = v2[0] - v0[0];
+		const NxReal e21 = v2[1] - v0[1];
+		const NxReal e22 = v2[2] - v0[2];
+		NxVec3 faceNormal(e11 * e22 - e12 * e21,
+			e12 * e20 - e10 * e22, e10 * e21 - e11 * e20);
+		const NxReal faceNormalLength = nxSphereMeshSqrt(
+			(double) faceNormal.x * faceNormal.x
+			+ (double) faceNormal.y * faceNormal.y
+			+ (double) faceNormal.z * faceNormal.z);
+		if(faceNormalLength == 0.0f)
+			continue;
+		faceNormal.x /= faceNormalLength;
+		faceNormal.y /= faceNormalLength;
+		faceNormal.z /= faceNormalLength;
+		const NxReal signedFaceDistance =
+			(centerLocal.x - v0[0]) * faceNormal.x
+			+ (centerLocal.y - v0[1]) * faceNormal.y
+			+ (centerLocal.z - v0[2]) * faceNormal.z;
+		if(signedFaceDistance < 0.0f || signedFaceDistance > radius)
+			continue;
+
 		NxReal s = 0.0f;
 		NxReal t = 0.0f;
 		const double distanceSquared = NxPointTriangleSquareDistance(

@@ -117,6 +117,24 @@ int wmain(int argc, wchar_t** argv)
 	printf("simulation mesh-contact calls=%u events=%08x y=%08x vy=%08x\n",
 		report.calls, report.events, nxFloatBits(position.y), nxFloatBits(velocity.y));
 
+	// The indexed triangles wind their front faces upward. The shipped sphere/
+	// mesh row rejects an overlapping sphere below an ordinary mesh.
+	sphere->setGlobalPosition(NxVec3(0.0f, -0.25f, 0.0f));
+	sphere->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
+	report.calls = 0;
+	report.events = 0;
+	for(unsigned step = 0; step < 30; ++step)
+		{
+		scene->simulate(1.0f / 60.0f);
+		if(!scene->checkResults(NX_RIGID_BODY_FINISHED, true)
+			|| !scene->fetchResults(NX_RIGID_BODY_FINISHED, true))
+			return nxFail("backface mesh-contact simulation results failed");
+		}
+	sphere->getGlobalPosition(position);
+	sphere->getLinearVelocity(velocity);
+	printf("simulation mesh-backface calls=%u events=%08x y=%08x vy=%08x\n",
+		report.calls, report.events, nxFloatBits(position.y), nxFloatBits(velocity.y));
+
 	sdk->setActorGroupPairFlags(7, 3, 0);
 	scene->releaseActor(*sphere);
 	scene->releaseActor(*ground);

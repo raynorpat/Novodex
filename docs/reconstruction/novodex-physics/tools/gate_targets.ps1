@@ -3140,6 +3140,8 @@ $NxRequiredCoverageLines = [ordered] @{
         # Full public path: construct a static triangle mesh, drop a sphere,
         # generate contact reports and settle through the real solver.
         'simulation mesh-contact calls=2 events=0000000a y=3ee6cefd vy=be441bbb'
+        # The same upward-facing mesh must not generate contacts from below.
+        'simulation mesh-backface calls=0 events=00000000 y=bfc2311b vy=c09cf5bc'
     )
     'NxPhysicsTriggerSimulationTests' = @(
         # A dynamic sphere crosses a public static trigger box under real motion.
@@ -5338,7 +5340,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1301  # previous 1,300 plus the isolated public sphere/mesh drop fixture
+    '7' = 1302  # previous 1,300 plus the sphere/mesh drop and backface fixtures
     '8' = 0
 }
 
