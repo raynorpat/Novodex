@@ -2984,6 +2984,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation stage=step7 position=00000000.40c7d67b.00000000 velocity=00000000.c108082a.00000000'
         'simulation soak steps=1000 ready=1 fetched=1'
         'simulation stage=soak1000 position=00000000.c7955570.00000000 velocity=00000000.c4991681.00000000'
+        # Two-box contact regression: the public state agrees through step 20,
+        # but the next callback's first manifold point and resulting body pose
+        # expose the current candidate pose-refresh divergence.
+        'simulation stage=boxcontact21 position=00000000.3ee70ef5.00000000 velocity=00000000.be9e615a.00000000'
+        'simulation box-contact callback=1 point=0 xyzs=befffea0.bd3269a8.bf00006d.bd3269a8'
         'simulation contact callbacks=26 events=0000000a pairs=26 patches=26 points=26 normal=80000000.bf800000.80000000 point=00000000.bc916940.00000000 separation=bc916940'
         'simulation stage=contact60 position=00000000.3ee66666.00000000 velocity=00000000.00000000.00000000'
     )
@@ -5172,7 +5177,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # family open)
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1154  # 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize + 2 simulation soak assertions
+    '7' = 1158  # 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize + 2 simulation soak assertions + 2 box-contact assertions
                # + 23 M1 simulation + 79 effector + 374 core-dump; the oracle-differential assertions
     '8' = 0
 }

@@ -4810,7 +4810,7 @@ void ShapeBase::nxApplyOwnerUpdate(unsigned flags)
 	float t[3];
 	if(record)
 		{
-		nxNpActorComposeRotation(reinterpret_cast<const float*>(record + 0x24), r);
+		nxNpActorComposeRotationX87(reinterpret_cast<const float*>(record + 0x24), r);
 		memcpy(t, record + 0x18, sizeof(t));
 		}
 	else

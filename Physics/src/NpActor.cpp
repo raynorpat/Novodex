@@ -38,6 +38,47 @@
 #include <math.h>
 #include <float.h>
 
+// phys_fn_001315 forms this matrix inline and stores its float results with
+// x87 fstp. During simulateFrame the oracle sets the x87 rounding mode to
+// chop; SSE2 double-to-float casts instead follow MXCSR's rounding mode. Keep
+// this owner-update variant out of ObjectModel.cpp so its public pose getters
+// retain their separate conversion path.
+static __declspec(noinline) float nxNpActorX87StoreFloat(double value)
+	{
+	float result;
+	__asm
+		{
+		fld qword ptr [value]
+		fstp dword ptr [result]
+		}
+	return result;
+	}
+
+__declspec(noinline) void nxNpActorComposeRotationX87(const float* q, float* r)
+	{
+	const double x = q[0], y = q[1], z = q[2], w = q[3];
+	const float yy2 = nxNpActorX87StoreFloat(y * y + y * y);
+	const double zz2 = z * z + z * z;
+	r[0] = nxNpActorX87StoreFloat((1.0 - yy2) - zz2);
+	const double xy2 = y * x + y * x;
+	const double zw2 = z * w + z * w;
+	r[1] = nxNpActorX87StoreFloat(xy2 - zw2);
+	const float xz2 = nxNpActorX87StoreFloat(z * x + z * x);
+	const double yw2 = y * w + y * w;
+	const float yw2Spill = nxNpActorX87StoreFloat(yw2);
+	r[2] = nxNpActorX87StoreFloat(yw2 + xz2);
+	r[3] = nxNpActorX87StoreFloat(zw2 + xy2);
+	const double xx1 = 1.0 - (x * x + x * x);
+	const float xx1Spill = nxNpActorX87StoreFloat(xx1);
+	r[4] = nxNpActorX87StoreFloat(xx1 - zz2);
+	const float yz2 = nxNpActorX87StoreFloat(z * y + z * y);
+	const double xw2 = x * w + x * w;
+	r[5] = nxNpActorX87StoreFloat(static_cast<double>(yz2) - xw2);
+	r[6] = nxNpActorX87StoreFloat(static_cast<double>(xz2) - yw2Spill);
+	r[7] = nxNpActorX87StoreFloat(xw2 + yz2);
+	r[8] = nxNpActorX87StoreFloat(static_cast<double>(xx1Spill) - yy2);
+	}
+
 
 static unsigned char* nxNpActorBody(void* actor)
 	{

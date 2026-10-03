@@ -282,6 +282,8 @@ static inline void nxNpActorComposeRotation(const float* q, float* r)
 	r[8] = static_cast<float>(static_cast<double>(xx1Spill) - yy2);
 	}
 
+void nxNpActorComposeRotationX87(const float* q, float* r);
+
 // phys_fn_000768 (0x00017f10, 1164 B)
 // The mass-frame refresh phys_fn_000768 (0x17f10, 1164 B, thiscall on the
 // record, joint-open-items Task 4). From the pose quaternion at +0x24 (w
