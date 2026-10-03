@@ -40,12 +40,20 @@ static void nxPrintBoxActorState(const char* stage, NxActor& actor)
 	const NxMat34 pose = actor.getGlobalPose();
 	NxReal rotation[9];
 	pose.M.getRowMajor(rotation);
-	printf("simulation box-state stage=%s orientation=%08x.%08x.%08x.%08x angular=%08x.%08x.%08x matrix=%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x\n",
+	NxShape** shapes = actor.getShapes();
+	const NxMat34 shapePose = shapes[0]->getGlobalPose();
+	NxReal shapeRotation[9];
+	shapePose.M.getRowMajor(shapeRotation);
+	printf("simulation box-state stage=%s orientation=%08x.%08x.%08x.%08x angular=%08x.%08x.%08x matrix=%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x shape=%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x\n",
 		stage, nxFloatBits(q.x), nxFloatBits(q.y), nxFloatBits(q.z), nxFloatBits(q.w),
 		nxFloatBits(w.x), nxFloatBits(w.y), nxFloatBits(w.z),
 		nxFloatBits(rotation[0]), nxFloatBits(rotation[1]), nxFloatBits(rotation[2]),
 		nxFloatBits(rotation[3]), nxFloatBits(rotation[4]), nxFloatBits(rotation[5]),
-		nxFloatBits(rotation[6]), nxFloatBits(rotation[7]), nxFloatBits(rotation[8]));
+		nxFloatBits(rotation[6]), nxFloatBits(rotation[7]), nxFloatBits(rotation[8]),
+		nxFloatBits(shapePose.t.x), nxFloatBits(shapePose.t.y), nxFloatBits(shapePose.t.z),
+		nxFloatBits(shapeRotation[0]), nxFloatBits(shapeRotation[1]), nxFloatBits(shapeRotation[2]),
+		nxFloatBits(shapeRotation[3]), nxFloatBits(shapeRotation[4]), nxFloatBits(shapeRotation[5]),
+		nxFloatBits(shapeRotation[6]), nxFloatBits(shapeRotation[7]), nxFloatBits(shapeRotation[8]));
 	}
 
 struct NxSimulationContactReport : NxUserContactReport
@@ -58,22 +66,26 @@ struct NxSimulationContactReport : NxUserContactReport
 	unsigned normal[3];
 	unsigned point[3];
 	unsigned separation;
-	unsigned firstCallbackPoints;
-	unsigned firstCallbackPoint[8][4];
+	unsigned capturedCallbacks;
+	unsigned callbackPointCount[2];
+	unsigned callbackPoint[2][8][4];
 
 	NxSimulationContactReport()
 		: calls(0), events(0), pairs(0), patches(0), points(0), separation(0),
-			firstCallbackPoints(0)
+			capturedCallbacks(0)
 		{
 		memset(normal, 0, sizeof(normal));
 		memset(point, 0, sizeof(point));
-		memset(firstCallbackPoint, 0, sizeof(firstCallbackPoint));
+		memset(callbackPointCount, 0, sizeof(callbackPointCount));
+		memset(callbackPoint, 0, sizeof(callbackPoint));
 		}
 
 	void onContactNotify(NxContactPair& pair, NxU32 eventFlags)
 		{
 		const unsigned callback = calls;
 		++calls;
+		if(callback < 2)
+			capturedCallbacks = callback + 1;
 		events |= eventFlags;
 		NxContactStreamIterator iterator(pair.stream);
 		while(iterator.goNextPair())
@@ -96,10 +108,10 @@ struct NxSimulationContactReport : NxUserContactReport
 							}
 						separation = nxFloatBits(iterator.getSeparation());
 						}
-					if(callback == 0 && firstCallbackPoints < 8)
+					if(callback < 2 && callbackPointCount[callback] < 8)
 						{
 						const NxVec3& p = iterator.getPoint();
-						unsigned* out = firstCallbackPoint[firstCallbackPoints++];
+						unsigned* out = callbackPoint[callback][callbackPointCount[callback]++];
 						out[0] = nxFloatBits(p.x);
 						out[1] = nxFloatBits(p.y);
 						out[2] = nxFloatBits(p.z);
@@ -360,10 +372,11 @@ int wmain(int argc, wchar_t** argv)
 		boxContactReport.normal[0], boxContactReport.normal[1], boxContactReport.normal[2],
 		boxContactReport.point[0], boxContactReport.point[1], boxContactReport.point[2],
 		boxContactReport.separation);
-	for(unsigned i = 0; i < boxContactReport.firstCallbackPoints; ++i)
-		printf("simulation box-contact first-point=%u xyzs=%08x.%08x.%08x.%08x\n", i,
-			boxContactReport.firstCallbackPoint[i][0], boxContactReport.firstCallbackPoint[i][1],
-			boxContactReport.firstCallbackPoint[i][2], boxContactReport.firstCallbackPoint[i][3]);
+	for(unsigned callback = 0; callback < boxContactReport.capturedCallbacks; ++callback)
+		for(unsigned i = 0; i < boxContactReport.callbackPointCount[callback]; ++i)
+			printf("simulation box-contact callback=%u point=%u xyzs=%08x.%08x.%08x.%08x\n", callback, i,
+				boxContactReport.callbackPoint[callback][i][0], boxContactReport.callbackPoint[callback][i][1],
+				boxContactReport.callbackPoint[callback][i][2], boxContactReport.callbackPoint[callback][i][3]);
 	nxPrintBoxActorState("box-contact60", *fallingBoxActor);
 	sdk->releaseScene(*boxContactScene);
 
