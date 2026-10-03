@@ -1816,11 +1816,11 @@ Decompile (capstone disassembly):
 0x00054919  ret
 ```
 
-## phys_fn_002233 (0x00054920, 277 B, discovered)
+## phys_fn_002233 (0x00054920, 277 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/TriangleMesh.cpp
+- implementation: Physics/src/TriangleMesh.cpp
 - prototype: undefined4 __stdcall FUN_10054920(int * param_1, int * param_2)
 - calling convention: __stdcall, stack purge: 8
 - callers: phys_fn_002260 (0x00055890)
@@ -1916,11 +1916,11 @@ undefined4 FUN_10054920(int *param_1,int *param_2)
 
 ```
 
-## phys_fn_002235 (0x00054a40, 22 B, discovered)
+## phys_fn_002235 (0x00054a40, 22 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/TriangleMesh.cpp
+- implementation: Physics/src/TriangleMesh.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_002251 (0x00055490)
@@ -1941,11 +1941,11 @@ Decompile (capstone disassembly):
 0x00054a53  ret 4
 ```
 
-## phys_fn_002237 (0x00054a60, 28 B, discovered)
+## phys_fn_002237 (0x00054a60, 28 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/TriangleMesh.cpp
+- implementation: Physics/src/TriangleMesh.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_002251 (0x00055490)

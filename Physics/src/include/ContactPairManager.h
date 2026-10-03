@@ -227,6 +227,11 @@ struct NxPairList
 	NxPairNode* row000911(NxU8* element0, NxU8* element1);
 	};
 
+// phys_fn_001976's default all-pairs scene path, backed by the current static
+// and dynamic pruning pools. Refreshes this Scene's persistent pair map/list
+// and generates narrow-phase contacts for live pairs.
+void nxSceneRefreshPairs(NxSceneInternal* scene);
+
 // The body the joint-list test runs on (`this` = a body record, +0x1d8 its
 // joint list).
 struct CpmJointedBody

@@ -473,6 +473,16 @@ DynamicPruner::DynamicPruner()
 {
 }
 
+// phys_fn_005240 (0x000e5870): Pruner base, type-1 vtable, null tree.
+BoundedDynamicPruner::BoundedDynamicPruner()
+	: DynamicPruner(), mTree(0)
+{
+}
+
+BoundedDynamicPruner::~BoundedDynamicPruner()
+{
+}
+
 // 0x000efe80 (not claimed): the base only.
 DynamicPruner::~DynamicPruner()
 {

@@ -1935,7 +1935,8 @@ UNRESOLVED_SOURCE_PATHS = (
     # (2 rows) were here, and were REMOVED when convex-mesh gap Task 2c wrote
     # both files. The check said so itself: "is on the allowlist but no longer
     # unresolved; remove the entry".
-    'Physics/src/InternalTriangleMesh.cpp',          # 1 rows
+    # 'Physics/src/InternalTriangleMesh.cpp' (6 rows) was removed when the
+    # allocator and teardown packet was implemented in that unit.
     # 'Physics/src/Joint.cpp' was here with 4 rows (004099 004101 004109 004143),
     # and was REMOVED when joint-families Task 2 wrote those rows in
     # Physics/src/core/Joint.cpp (their notes keep the oracle path). The check

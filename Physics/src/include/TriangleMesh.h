@@ -19,10 +19,38 @@
 #include "QhullHost.h"
 #include "NxSimpleTriangleMesh.h"
 #include "NxTriangleMeshDesc.h"
+#include "NxTriangleMesh.h"
 
 class NxStream;
 class Adjacencies;
 class EdgeList;
+class ConvexHull;
+class TriangleMesh;
+
+// The public interface is embedded at TriangleMesh+0xe0. Its two-word image
+// shape is a vptr followed by the owning internal mesh pointer.
+class NpTriangleMesh : public NxTriangleMesh
+	{
+	public:
+	explicit NpTriangleMesh(TriangleMesh* mesh);
+	virtual ~NpTriangleMesh();
+	virtual bool loadFromDesc(const NxTriangleMeshDesc& desc);
+	virtual bool saveToDesc(NxTriangleMeshDesc& desc) const;
+	virtual NxU32 getSubmeshCount() const;
+	virtual NxU32 getCount(NxSubmeshIndex submesh, NxInternalArray array) const;
+	virtual NxInternalFormat getFormat(NxSubmeshIndex submesh, NxInternalArray array) const;
+	virtual const void* getBase(NxSubmeshIndex submesh, NxInternalArray array) const;
+	virtual NxU32 getStride(NxSubmeshIndex submesh, NxInternalArray array) const;
+	virtual bool loadPMap(const NxPMap& pmap);
+	virtual bool hasPMap() const;
+	virtual NxU32 getPMapSize() const;
+	virtual bool getPMapData(NxPMap& pmap) const;
+	virtual NxU32 getPMapDensity() const;
+
+	TriangleMesh* mMesh;
+	};
+
+static_assert(sizeof(NpTriangleMesh) == 8, "the embedded public mesh wrapper is eight bytes");
 
 /**
 The triangle-mesh stream format's reader and writer, and ONLY the parts of them
@@ -82,10 +110,11 @@ reads them at TriangleMesh+0x08/+0x0c/+0x10/+0x14/+0x18/+0x1c because the
 internal mesh is embedded at TriangleMesh+0x08 (`lea ebp,[edi+8]` at
 0x00055d18).
 
-The region from +0x24 onward belongs to the MeshInterface and whatever follows
-it; nothing the writer or the reconstructed reader touches reaches past
-internal+0x20, so it is carried as opaque bytes here and named rather than
-invented.
+The +0x1c word is an owned per-triangle allocation: phys_fn_002079 allocates
+16 bytes per triangle there and phys_fn_002067 releases it. Its record contents
+are still opaque. The embedded MeshInterface begins at +0x24; its first four
+words are initialized by the constructor at 0x000e8fa0. The remaining bytes are
+carried as opaque storage.
 */
 struct InternalTriangleMesh
 	{
@@ -96,10 +125,26 @@ struct InternalTriangleMesh
 	NxU16*					mMaterialIndices;	//!< +0x10, 2 bytes each, optional
 	NxU32*					mFaceRemap;			//!< +0x14, 4 bytes each, optional
 	void*					mVertexNormals;		//!< +0x18, 12 bytes each
-	NxU32					mWord1C;			//!< +0x1c, unestablished; the allocation-site table jumps from +0x18 to +0x20
+	void*					mTriangleData;		//!< +0x1c, 16 bytes per triangle, allocated by 002079 and released by 002067
 	Opcode::BaseModel*		mModel;				//!< +0x20
 	NxU8					mInterfaceRegion[0x14];	//!< +0x24, the MeshInterface region, unestablished
 	};
+
+// InternalTriangleMesh rows recovered from the allocation/teardown paths in
+// gap__EdgeList.cpp__to__InternalTriangleMesh.cpp. Kept as explicit rows so
+// TriangleMesh construction, load, and destruction can share the exact memory
+// ownership rules without giving the measured data structure an invented C++
+// vtable or destructor.
+void nxInternalMeshInit(InternalTriangleMesh* mesh);                         // 002065
+void nxInternalMeshRelease(InternalTriangleMesh* mesh);                      // 002067
+void nxInternalMeshAllocateVertices(InternalTriangleMesh* mesh, NxU32 count); // 002069
+void nxInternalMeshAllocateTriangles(InternalTriangleMesh* mesh, NxU32 count);// 002071
+void nxInternalMeshAllocateMaterials(InternalTriangleMesh* mesh);             // 002073
+void nxInternalMeshAllocateFaceRemap(InternalTriangleMesh* mesh);             // 002075
+void nxInternalMeshBuildTriangleData(InternalTriangleMesh* mesh);              // 002079
+bool nxInternalMeshBuildTopology(InternalTriangleMesh* mesh);                  // 002087
+bool nxInternalMeshBuildModel(InternalTriangleMesh* mesh, NxU32 extendAxis, NxReal extendValue,
+	const void* deserializeFrom);                                                  // 002083
 
 /**
 The TriangleMesh layout at the offsets the two stream rows touch. The class is
@@ -189,6 +234,16 @@ class TriangleMesh
 	//! +0xa8 (the kind C support map slot 11 takes; 001820 at 0x000411f1 /
 	//! 0x000411f7), are outside this class's measured size.
 	void*					mConvexMesh;
+	//! +0xa4..+0xe3, fields not yet assigned to recovered rows.
+	NxU8					mGapA4[0x40];
+	//! +0xe4, pointer to the separately allocated eight-byte public wrapper.
+	NpTriangleMesh*			mPublicMesh;
+
+	TriangleMesh();
+	~TriangleMesh();
+	bool loadFromDesc(const NxTriangleMeshDesc& desc);
+	void releaseContents();
+	NxTriangleMesh* publicMesh() { return mPublicMesh; }
 	};
 
 // The measured offsets, pinned so a field added in the wrong place fails here
@@ -203,6 +258,7 @@ static_assert(offsetof(TriangleMesh, mInternal.mTriangles) == 0x14, "triangles a
 static_assert(offsetof(TriangleMesh, mInternal.mMaterialIndices) == 0x18, "material indices are internal+0x10");
 static_assert(offsetof(TriangleMesh, mInternal.mFaceRemap) == 0x1c, "face remap is internal+0x14");
 static_assert(offsetof(TriangleMesh, mInternal.mVertexNormals) == 0x20, "vertex normals are internal+0x18");
+static_assert(offsetof(TriangleMesh, mInternal.mTriangleData) == 0x24, "per-triangle data pointer is internal+0x1c / TriangleMesh+0x24");
 static_assert(offsetof(TriangleMesh, mInternal.mModel) == 0x28, "the model is internal+0x20 / TriangleMesh+0x28");
 static_assert(offsetof(TriangleMesh, mHullFlags) == 0x40, "the hull flags are at +0x40");
 static_assert(offsetof(TriangleMesh, mConvexEdgeThreshold) == 0x6c, "the threshold is at +0x6c");
@@ -215,6 +271,8 @@ static_assert(offsetof(TriangleMesh, mPresenceFlagB) == 0x90, "presence flag B i
 static_assert(offsetof(TriangleMesh, mArrayA) == 0x94, "array A is at +0x94");
 static_assert(offsetof(TriangleMesh, mArrayB) == 0x98, "array B is at +0x98");
 static_assert(offsetof(TriangleMesh, mConvexMesh) == 0xa0, "the convex mesh is at +0xa0");
+static_assert(offsetof(TriangleMesh, mPublicMesh) == 0xe4, "the public mesh wrapper pointer is at +0xe4");
+static_assert(sizeof(TriangleMesh) == 0xe8, "TriangleMesh occupies 0xe8 bytes");
 
 /**
 TriangleMesh's first two virtuals, slots 0 and 1 of .rdata:0x00108608, are an

@@ -36,7 +36,16 @@ $releaseRoot = Join-Path $BuildRoot 'Release'
 $pairsRoot = $PairsRoot
 
 function Get-FileSha256([string] $Path) {
-    return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+    $sha256 = [System.Security.Cryptography.SHA256]::Create()
+    $stream = [System.IO.File]::OpenRead($Path)
+    try {
+        $digest = $sha256.ComputeHash($stream)
+        return [System.BitConverter]::ToString($digest).Replace('-', '').ToLowerInvariant()
+    }
+    finally {
+        $stream.Dispose()
+        $sha256.Dispose()
+    }
 }
 
 function Assert-True([bool] $Condition, [string] $Requirement) {

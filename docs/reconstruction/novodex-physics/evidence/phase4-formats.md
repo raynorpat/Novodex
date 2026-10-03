@@ -617,6 +617,7 @@ The `InternalTriangleMesh` layout, from the allocation sites:
 | `+0x10` | material indices, 2 bytes each | size `add eax, eax` `0x00052018`, allocate `0x0005201b`, store `0x0005201e` |
 | `+0x14` | face remap, 4 bytes each | size `shl eax, 2` `0x00052048`, allocate `0x0005204c`, store `0x0005204f` |
 | `+0x18` | vertex normals, 12 bytes each | size `0x0005224e`, allocate `0x00052257`, store `0x00052269`, filled by `NxBuildSmoothNormals` |
+| `+0x1c` | owned per-triangle records, 16 bytes each; record contents opaque | allocation `shl eax, 4` `0x000521db`, store `0x000521e2`; each record built by `phys_fn_005155`; released by `phys_fn_002067` |
 | `+0x20` | the OPCODE model | released and cleared `0x00052296`, installed `0x00052360` |
 | `+0x24` | the embedded `MeshInterface` | `lea` `0x000522a9`, `SetPointers` `0x000522b1` into `0x000e9020` |
 

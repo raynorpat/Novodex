@@ -1829,6 +1829,10 @@ static void nxDrivePrunablePruner(const NxOracleRows& o, bool selfOnly)
 						for(int b = 0; b < 8 * 6; ++b)
 							gCandidateTape.pushFloat(((float*) candidateBoxes)[b]);
 						}
+		// The fixture borrowed this stack array as its world-box storage. Pruner's
+		// base destructor owns and frees mPool.mWorldBoxes, so clear the borrowed
+		// pointer before teardown to avoid passing stack memory to opcNovodexFree.
+		candidatePruner->mPool.mWorldBoxes = 0;
 		candidatePruner->~NxCandidatePruner();
 		gPrunableOwnerWorldAABB = 0;
 		}
@@ -1887,8 +1891,24 @@ static void nxDrivePrunableDispatch(const NxOracleRows& o, bool selfOnly)
 			oracleObject[0x2a] = (unsigned char)t;
 			memset(NxPrunableDispatchProbe::calls, 0, sizeof(NxPrunableDispatchProbe::calls));
 			NxPrunableDispatchProbe::last = 0xffffffffu;
-			const unsigned oracleResult = ((unsigned (__thiscall*)(void*, void*))
-				(o.base + 0x000b5260))(oracleManager, oracleObject);
+			// The oracle row ends in `ret 8`: although it reads `this` from ECX
+			// and the object from [esp+4], it also pops one additional stack word.
+			// Calling it as a normal one-argument __thiscall shifts this caller's
+			// stack by four bytes per valid dispatch and corrupts main's mode flag.
+			// Supply a padding word below the object so the measured cleanup is
+			// balanced without changing either argument the oracle reads.
+			unsigned oracleResult;
+			void* oracleDispatchFn = o.base + 0x000b5260;
+			__asm
+				{
+				lea ecx, oracleManager
+				lea eax, oracleObject
+				push 0
+				push eax
+				mov eax, oracleDispatchFn
+				call eax
+				mov oracleResult, eax
+				}
 			const bool oracleDispatch = kHandles[h] != 0xffffu && t < 4 && selectedSlotPresent;
 			gOracleTape.push(oracleDispatch ? oracleResult
 				: oracleResult - (reinterpret_cast<unsigned>(oracleObject) & 0xffffff00u));
@@ -2177,6 +2197,8 @@ static const unsigned kIceOBBIsInside		= 0x000e4d30;
 static const unsigned kQhInitA				= 0x000626c0;	// global.c:397
 static const unsigned kQhInitflags			= 0x000626f0;	// global.c:540
 static const unsigned kQhInitB				= 0x000660a0;	// global.c:444
+static const unsigned kQhInitBuild			= 0x0007a330;	// poly2.c:1645
+static const unsigned kQhDistplane			= 0x0005c5c0;	// geom.c:63
 static const unsigned kQhQhull				= 0x0007d180;	// qhull.c:58, phys_fn_003234
 static const unsigned kQhCheckOutput		= 0x0007a2a0;	// poly2.c:250
 static const unsigned kQhProduceOutput		= 0x0006d800;	// io.c:35
@@ -4074,9 +4096,22 @@ typedef struct NxQhullEntries
 typedef void (*NxQhPush)(void* tape, unsigned word);
 typedef void (*NxQhPushDouble)(void* tape, double value);
 int		nxQhullRun(const NxQhullEntries* e, double* points, int numpoints, const char* options);
+int		nxQhullRunInitBuild(const NxQhullEntries* e, void* initbuild, double* points, int numpoints,
+		const char* options);
 void	nxQhullTape(const void* state, const double* points, int numpoints, NxQhPush push, void* tape,
 	NxQhPushDouble pushDouble, void* floats);
-void*	nxQhullCandidateState(void);
+void	nxQhullAddressProbe(const void* state, const double* points, int numpoints, int set, int side);
+void	nxQhullPlaneProbe(const void* state, int facetId, void* oracleSetPlane, void* candidateSetPlane,
+		void* oracleNormalize, void* candidateNormalize);
+void	qh_sethyperplane_det(int dim, double** rows, double* point0, int toporient, double* normal,
+		double* offset, int* nearzero);
+void	qh_normalize2(double* normal, int dim, int toporient, double* norm, int* nearzero);
+void	nxQhullFurthestProbe(const void* state, const double* points, int numpoints, int set, int side);
+void	nxQhullDistanceProbe(const void* state, const double* points, int numpoints, int set, int side,
+		void* distplane);
+void* nxQhullCandidateState(void);
+void	qh_initbuild(void);
+void	qh_distplane(double* point, void* facet, double* distance);
 void	nxQhullErrorExit(int exitcode);
 void	qh_init_A(FILE* infile, FILE* outfile, FILE* errfile, int argc, char* argv[]);
 void	qh_initflags(char* command);
@@ -10720,6 +10755,10 @@ struct NxHullBlocks
 			for(unsigned i = 0; i < n * 3; ++i)
 				d = nxFold(d, v[i]);
 			fprintf(stderr, "PROBE run=%x n=%u digest=%08x first=%08x %08x %08x\n", run, n, d, v[0], v[1], v[2]);
+			if(getenv("NXHULL_POINTS_PROBE"))
+				for(unsigned i = 0; i < n; ++i)
+					fprintf(stderr, "PROBE_POINT run=%x index=%u bits=%08x,%08x,%08x\n", run, i,
+						v[i * 3], v[i * 3 + 1], v[i * 3 + 2]);
 			}
 		if(tape)
 			{
@@ -11218,7 +11257,9 @@ static void nxHullCreateRun(const NxOracleRows& o, const NxHullRun& run, unsigne
 		const unsigned old = nxHullSetWord(word);
 		int ret;
 		if(side == 0)
+			{
 			ret = ((HullCreateFn) (o.base + kHullCreate))(&library, &desc, &result);
+			}
 		else
 			{
 			ret = library.CreateConvexHull(desc, result);
@@ -11476,7 +11517,7 @@ static void nxDriveConvexCooking(const NxOracleRows& o, bool selfOnly)
 				"QhullHost.cpp,Quantizer.cpp", selfOnly, kDivergent);
 			}
 		nxReportTapes(gHullText[0], gHullText[1], kCreateTextNames[w], "0x0007dea0", "phys_fn_003247",
-			"QhullHost.cpp", selfOnly, kDivergent);
+			"QhullHost.cpp", selfOnly, 0);
 		}
 
 	// B. Every set but the empty one as an NxTriangleMeshDesc with
@@ -11520,7 +11561,27 @@ static void nxDriveConvexCooking(const NxOracleRows& o, bool selfOnly)
 				"TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp", selfOnly, kDivergent);
 			}
 		nxReportTapes(gHullText[0], gHullText[1], kComputeTextNames[w], "0x0007e050", "phys_fn_003251",
-			"QhullHost.cpp", selfOnly, kDivergent);
+			"QhullHost.cpp", selfOnly, 0);
+		}
+
+	// Isolate the two-point welded-box cleanup from normalization and welding.
+	// These probe-only runs do not enter any comparison tape or registered gate.
+	if(getenv("NXHULL_POINTS_PROBE") && !selfOnly)
+		{
+		static const NxHullRun kCleanupProbes[] =
+			{
+			{ 12, 0xb5, 0, 0 },	// same welding and fallback, without normalization
+			{ 12, 0xb6, 0, 0 },	// normalization enabled, welding disabled
+			};
+		for(unsigned i = 0; i < sizeof(kCleanupProbes) / sizeof(kCleanupProbes[0]); ++i)
+			{
+			gHullTape[0].reset();
+			gHullTape[1].reset();
+			gHullText[0].reset();
+			gHullText[1].reset();
+			fprintf(stderr, "NXHULL_CLEANUP_FLAGS flags=%02x\n", kCleanupProbes[i].flags);
+			nxHullCreateRun(o, kCleanupProbes[i], 0x027f, 0x3e0 + (int) i, false);
+			}
 		}
 
 	*hostSlot = shippedHost;
@@ -11605,11 +11666,49 @@ static void nxDriveConvexCookingBytes(const NxOracleRows& o, bool selfOnly)
 			double* coords = (double*) malloc(sizeof(double) * 3 * (count ? count : 1));
 			for(unsigned i = 0; i < 3 * count; ++i)
 				coords[i] = cleaned[i];
+			if(getenv("NXHULL_PROBE") && s == 0)
+				{
+				void* initbuild = side == 0 ? (void*) (o.base + kQhInitBuild) : (void*) &qh_initbuild;
+				const int initialResult = nxQhullRunInitBuild(side == 0 ? &oracle : &candidate,
+					initbuild, coords, (int) count, "o");
+				fprintf(stderr, "NXHULL_INITBUILD set=%d side=%d result=%d\n", kSets[s], side, initialResult);
+				if(initialResult == 0)
+					{
+					const void* state = side == 0 ? (const void*) (o.base + kQhState) : nxQhullCandidateState();
+					nxQhullFurthestProbe(state, coords, (int) count, kSets[s], side);
+					nxQhullDistanceProbe(state, coords, (int) count, kSets[s], side,
+						side == 0 ? (void*) (o.base + kQhDistplane) : (void*) &qh_distplane);
+					}
+				if(side == 0)
+					while(gQhOracleNbBlocks)
+						free(gQhOracleBlocks[--gQhOracleNbBlocks]);
+				}
+			// Optional qhull trace of the box input, run separately from the
+			// ordinary tape pass so T4 cannot change the measured transcript.
+			if(getenv("NXHULL_TRACE_PROBE") && s == 0)
+				{
+				fprintf(stderr, "NXHULL_TRACE_START set=%d side=%d\n", kSets[s], side);
+				const int traceResult = nxQhullRun(side == 0 ? &oracle : &candidate, coords, (int) count, "o T4");
+				fprintf(stderr, "NXHULL_TRACE_END set=%d side=%d result=%d\n", kSets[s], side, traceResult);
+				if(side == 0)
+					while(gQhOracleNbBlocks)
+						free(gQhOracleBlocks[--gQhOracleNbBlocks]);
+				}
 			const int result = nxQhullRun(side == 0 ? &oracle : &candidate, coords, (int) count, "o");
 			tape.push(result ? 1u : 0u);
 			if(result == 0)
-				nxQhullTape(side == 0 ? (const void*) (o.base + kQhState) : nxQhullCandidateState(),
-					coords, (int) count, nxQhPushTape, &tape, nxQhPushTapeDouble, &floats);
+				{
+				const void* state = side == 0 ? (const void*) (o.base + kQhState) : nxQhullCandidateState();
+				if(getenv("NXHULL_PROBE"))
+					{
+					fprintf(stderr, "NXHULL_ADDR_CALL set=%d side=%d state=%p\n", kSets[s], side, state);
+					nxQhullAddressProbe(state, coords, (int) count, kSets[s], side);
+					}
+				nxQhullTape(state, coords, (int) count, nxQhPushTape, &tape, nxQhPushTapeDouble, &floats);
+				if(getenv("NXHULL_PLANE_PROBE") && s == 1 && side == 1)
+					nxQhullPlaneProbe(state, 4, (void*) (o.base + 0x0005d9f0), (void*) &qh_sethyperplane_det,
+						(void*) (o.base + 0x0005d670), (void*) &qh_normalize2);
+				}
 			if(side == 0)
 				{
 				while(gQhOracleNbBlocks)
@@ -11618,6 +11717,8 @@ static void nxDriveConvexCookingBytes(const NxOracleRows& o, bool selfOnly)
 			free(coords);
 			}
 		// Which of the two inputs differs, on stderr (NXHULL_PROBE=1).
+		// The optional word listing separates address/order-sensitive topology
+		// from low-word geometry drift without changing the normal tape output.
 		if(getenv("NXHULL_PROBE") && !selfOnly)
 			{
 			unsigned words = 0, doubles = 0;
@@ -11628,6 +11729,15 @@ static void nxDriveConvexCookingBytes(const NxOracleRows& o, bool selfOnly)
 			fprintf(stderr, "PROBE direct set=%d points=%u words=%u/%u differ=%u x87=%u/%u differ=%u\n", kSets[s], count,
 				gOracleTape.count - from[0], gCandidateTape.count - from[1], words,
 				gOracleTapeX87.count - fromX87[0], gCandidateTapeX87.count - fromX87[1], doubles);
+			for(unsigned i = 0; i < gOracleTapeX87.count - fromX87[0] &&
+				fromX87[1] + i < gCandidateTapeX87.count; ++i)
+				{
+				const unsigned oracleWord = gOracleTapeX87.words[fromX87[0] + i];
+				const unsigned candidateWord = gCandidateTapeX87.words[fromX87[1] + i];
+				if(oracleWord != candidateWord)
+					fprintf(stderr, "PROBE x87 set=%d word=%u kind=%u oracle=%08x candidate=%08x\n",
+						kSets[s], i, (unsigned) gOracleTapeX87.kinds[fromX87[0] + i], oracleWord, candidateWord);
+				}
 			}
 		}
 	*hostSlot = shippedHost;

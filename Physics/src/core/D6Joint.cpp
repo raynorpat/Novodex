@@ -173,6 +173,116 @@ D6JointPose* D6JointPose::row004178(D6JointPose& out, const D6JointPose& other) 
 // Returns `out` in eax (004206 uses it as the next call's `this`, 0x9d02a).
 D6JointPose* D6JointPose::row004180(D6JointPose& out) const
 	{
+	NxReal rx;
+	NxReal ry;
+	NxReal rz;
+#if defined(_MSC_VER) && defined(_M_IX86)
+	// The oracle keeps ty and tz as 80-bit x87 values across the final three
+	// components. C++ double temporaries force MSVC to spill them as qwords.
+	const NxReal* const posePosition = &p.x;
+	const NxReal* const poseQuaternion = q;
+	NxReal npx, npy, npz, nx, ny, nz, w, tw, tx;
+	unsigned char ty80[10];
+	unsigned char tz80[10];
+	__asm
+		{
+		mov		eax, posePosition
+		mov		edx, poseQuaternion
+		fld		dword ptr [eax]
+		fchs
+		fstp	npx
+		fld		dword ptr [eax+4]
+		fchs
+		fstp	npy
+		fld		dword ptr [eax+8]
+		fchs
+		fstp	npz
+		fld		dword ptr [edx]
+		fchs
+		fstp	nx
+		fld		dword ptr [edx+4]
+		fchs
+		fstp	ny
+		fld		dword ptr [edx+8]
+		fchs
+		fstp	nz
+		fld		dword ptr [edx+12]
+		fstp	w
+		fld		nx
+		fmul	npx
+		fchs
+		fld		ny
+		fmul	npy
+		fsubp	st(1), st(0)
+		fld		npz
+		fmul	nz
+		fsubp	st(1), st(0)
+		fstp	tw
+		fld		npz
+		fmul	ny
+		fld		w
+		fmul	npx
+		faddp	st(1), st(0)
+		fld		nz
+		fmul	npy
+		fsubp	st(1), st(0)
+		fstp	tx
+		fld		nz
+		fmul	npx
+		fld		w
+		fmul	npy
+		faddp	st(1), st(0)
+		fld		npz
+		fmul	nx
+		fsubp	st(1), st(0)
+		fstp	tbyte ptr ty80
+		fld		npz
+		fmul	w
+		fld		nx
+		fmul	npy
+		faddp	st(1), st(0)
+		fld		ny
+		fmul	npx
+		fsubp	st(1), st(0)
+		fstp	tbyte ptr tz80
+		fld		tbyte ptr ty80
+		fmul	dword ptr [edx+8]
+		fld		tx
+		fmul	w
+		faddp	st(1), st(0)
+		fld		tw
+		fmul	dword ptr [edx]
+		faddp	st(1), st(0)
+		fld		tbyte ptr tz80
+		fmul	dword ptr [edx+4]
+		fsubp	st(1), st(0)
+		fstp	rx
+		fld		tbyte ptr ty80
+		fmul	w
+		fld		tw
+		fmul	dword ptr [edx+4]
+		faddp	st(1), st(0)
+		fld		tbyte ptr tz80
+		fmul	dword ptr [edx]
+		faddp	st(1), st(0)
+		fld		tx
+		fmul	dword ptr [edx+8]
+		fsubp	st(1), st(0)
+		fstp	ry
+		fld		tx
+		fmul	dword ptr [edx+4]
+		fld		tbyte ptr tz80
+		fmul	w
+		faddp	st(1), st(0)
+		fld		tw
+		fmul	dword ptr [edx+8]
+		faddp	st(1), st(0)
+		fld		tbyte ptr ty80
+		fmul	dword ptr [edx]
+		fsubp	st(1), st(0)
+		fstp	rz
+		}
+#else
 	const NxReal npx = -p.x;
 	const NxReal npy = -p.y;
 	const NxReal npz = -p.z;
@@ -184,9 +294,10 @@ D6JointPose* D6JointPose::row004180(D6JointPose& out) const
 	const NxReal tx = (NxReal)((npz * ny + d6Mul(w, npx)) - d6Mul(nz, npy));
 	const double ty = (d6Mul(nz, npx) + d6Mul(w, npy)) - d6Mul(npz, nx);
 	const double tz = (d6Mul(npz, w) + d6Mul(nx, npy)) - ny * npx;
-	const NxReal rx = (NxReal)(((ty * q[2] + d6Mul(tx, q[3])) + d6Mul(tw, q[0])) - tz * q[1]);
-	const NxReal ry = (NxReal)(((ty * q[3] + d6Mul(tw, q[1])) + tz * q[0]) - d6Mul(tx, q[2]));
-	const NxReal rz = (NxReal)(((d6Mul(tx, q[1]) + tz * q[3]) + d6Mul(tw, q[2])) - ty * q[0]);
+	rx = (NxReal)(((ty * q[2] + d6Mul(tx, q[3])) + d6Mul(tw, q[0])) - tz * q[1]);
+	ry = (NxReal)(((ty * q[3] + d6Mul(tw, q[1])) + tz * q[0]) - d6Mul(tx, q[2]));
+	rz = (NxReal)(((d6Mul(tx, q[1]) + tz * q[3]) + d6Mul(tw, q[2])) - ty * q[0]);
+#endif
 	out.q[3] = w;
 	out.q[0] = nx;
 	out.q[1] = (NxReal)ny;

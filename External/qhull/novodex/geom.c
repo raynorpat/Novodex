@@ -69,7 +69,7 @@ void qh_distplane (pointT *point, facetT *facet, realT *dist) {
     *dist= facet->offset + point[0] * normal[0] + point[1] * normal[1];
     break;
   case 3:
-    *dist= facet->offset + point[0] * normal[0] + point[1] * normal[1] + point[2] * normal[2];
+    *dist= point[0] * normal[0] + (point[1] * normal[1] + point[2] * normal[2]) + facet->offset;
     break;
   case 4:
     *dist= facet->offset+point[0]*normal[0]+point[1]*normal[1]+point[2]*normal[2]+point[3]*normal[3];
@@ -845,7 +845,7 @@ void qh_normalize2 (coordT *normal, int dim, boolT toporient,
   if (dim == 2)
     norm= sqrt((*normal)*(*normal) + (*norm1)*(*norm1));
   else if (dim == 3)
-    norm= sqrt((*normal)*(*normal) + (*norm1)*(*norm1) + (*norm2)*(*norm2));
+    norm= sqrt((*normal)*(*normal) + ((*norm1)*(*norm1) + (*norm2)*(*norm2)));
   else if (dim == 4) {
     norm= sqrt((*normal)*(*normal) + (*norm1)*(*norm1) + (*norm2)*(*norm2) 
                + (*norm3)*(*norm3));

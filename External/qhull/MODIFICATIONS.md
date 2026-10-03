@@ -32,7 +32,8 @@ what the oracle evaluates.
 |---|---|---|
 | `geom.c` | `qh_gausselim`: `n = *ai * (1/pivot)` | `0x0005d363` (`fdivr [1.0]`), `0x0005d373` |
 | `geom.c` | `qh_getcenter`: `*coord *= 1/count` | `0x0005d4fa`/`0x0005d501`, `0x0005d539` |
-| `geom.c` | `qh_normalize2`: each component `*= 1/norm` | `0x0005d7ca`/`0x0005d7d0`, `0x0005d7d4`-`0x0005d839` |
+| `geom.c` | `qh_normalize2`: 3D norm is `x*x + (y*y + z*z)` before `sqrt`, then each component multiplies by one reciprocal | 3D accumulation at `0x0005d6b4`-`0x0005d6cc`; reciprocal/component stores at `0x0005d7ca`/`0x0005d7d0`, `0x0005d7d4`-`0x0005d839` |
+| `geom.c` | `qh_distplane` in 3D evaluates `x*nx + (y*ny + z*nz) + offset` to preserve the oracle's x87 rounding sequence | `0x0005c5c0`; verified candidate instructions match the pinned DLL |
 
 The same transformation appears on paths the NovodeX driver never enables
 (its only option string is `"o"`, `.rdata:0x0011363c`) and is left stock:

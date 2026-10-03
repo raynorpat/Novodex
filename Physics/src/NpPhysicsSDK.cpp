@@ -8,6 +8,7 @@
 #include "NpPhysicsSDK.h"
 #include "PhysicsSDK.h"
 #include "NpScene.h"
+#include "TriangleMesh.h"
 
 #include <stddef.h>
 #include <stdio.h>
@@ -84,6 +85,7 @@ void NpPhysicsSDK::visualize(const NxUserDebugRenderer& renderer)
 
 // Everything below stands in for an oracle row this component does not own. The
 // stable IDs are the wrapper row and the SDK-side row it forwards to.
+static void* nxSdkSceneWriteLink(PhysicsSDK* sdk, NxU32 index);
 
 // phys_fn_000234 (0x0000b770): forwards to the SDK-side row and returns the
 // public wrapper built inside the internal Scene constructor.
@@ -108,15 +110,52 @@ NxScene* NpPhysicsSDK::getScene(NxU32)
 	return 0;
 	}
 
-NxTriangleMesh* NpPhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc&)
+
+// phys_fn_000242, the scene-locked public mesh factory wrapper.
+NxTriangleMesh* NpPhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc& desc)
 	{
-	// phys_fn_000242 -> phys_fn_000478; needs TriangleMesh, Phase 4.
-	return 0;
+	NxU32 i = 0;
+	for(; i < mSdk->getNbScenes(); ++i)
+		if(!nxNpSceneGuardWriteTry(nxSdkSceneWriteLink(mSdk, i)))
+			{
+			while(i)
+				{
+				--i;
+				nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, i));
+				}
+			NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+				NX_NP_PHYSICS_SDK_CPP, 0x6f, 0,
+				"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+			return 0;
+			}
+	TriangleMesh* mesh = mSdk->createTriangleMesh(desc);
+	NxTriangleMesh* result = mesh ? mesh->publicMesh() : 0;
+	for(i = 0; i < mSdk->getNbScenes(); ++i)
+		nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, i));
+	return result;
 	}
 
-void NpPhysicsSDK::releaseTriangleMesh(NxTriangleMesh&)
+// phys_fn_000244, the scene-locked public mesh release wrapper.
+void NpPhysicsSDK::releaseTriangleMesh(NxTriangleMesh& mesh)
 	{
-	// phys_fn_000244 -> phys_fn_000470; needs TriangleMesh, Phase 4.
+	NpTriangleMesh& wrapper = static_cast<NpTriangleMesh&>(mesh);
+	NxU32 i = 0;
+	for(; i < mSdk->getNbScenes(); ++i)
+		if(!nxNpSceneGuardWriteTry(nxSdkSceneWriteLink(mSdk, i)))
+			{
+			while(i)
+				{
+				--i;
+				nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, i));
+				}
+			NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+				NX_NP_PHYSICS_SDK_CPP, 0x7f, 0,
+				"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+			return;
+			}
+	mSdk->releaseTriangleMesh(wrapper.mMesh);
+	for(i = 0; i < mSdk->getNbScenes(); ++i)
+		nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, i));
 	}
 
 // phys_fn_000248 and phys_fn_000250. The mutating slot walks the scenes taking

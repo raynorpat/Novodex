@@ -186,6 +186,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/ContactMeshHeightfield.cpp
 		Physics/src/ContactMeshMesh.cpp
 		Physics/src/EdgeList.cpp
+		Physics/src/InternalTriangleMesh.cpp
 		Physics/src/IceMeshTools.cpp
 		Physics/src/IceMeshBuilder2.cpp
 		Physics/src/ConvexHull.cpp
@@ -563,6 +564,9 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsSimulationTests tests/PhysicsSimulationTests.cpp)
 	target_include_directories(NxPhysicsSimulationTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsSimulationTests bcrypt)
+	add_executable(NxPhysicsConvexMeshTests tests/PhysicsConvexMeshApiTests.cpp)
+	target_include_directories(NxPhysicsConvexMeshTests PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsConvexMeshTests bcrypt)
 	# A measurement probe, not a gate: it prints what the pinned
 	# NxNormalToTangents returns so a joint row's localNormal can be attributed
 	# to a specific output rather than guessed at.
@@ -618,6 +622,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# TriangleMesh.cpp holds phys_fn_002233, the hull computation, which calls the hull
 	# library (qhull-gap Task 4e), so QhullHost.cpp, Quantizer.cpp and NxQhull come with it.
 	add_executable(NxPhysicsAssetTests tests/PhysicsAssetTests.cpp
+		tests/TriangleMeshLifecycleTestStubs.cpp
 		Physics/src/PMap.cpp Physics/src/MemoryStream.cpp Physics/src/TriangleMesh.cpp
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
 		Physics/src/QhullHost.cpp Physics/src/Quantizer.cpp
@@ -734,10 +739,16 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
 		Physics/src/SceneRaycast.cpp Physics/src/BodyCreation.cpp Physics/src/SceneVisualize.cpp
+		Physics/src/BodyStep.cpp Physics/src/Island.cpp Physics/src/ContactPairManager.cpp
 		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
+		Physics/src/InternalTriangleMesh.cpp
+		Physics/src/TriangleMesh.cpp Physics/src/TriangleMeshLifecycle.cpp
+		Physics/src/TriangleMeshPolygons.cpp Physics/src/MemoryStream.cpp Physics/src/PMap.cpp
+		Physics/src/QhullHost.cpp Physics/src/Quantizer.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
+		Physics/src/opcode/NovodexBoxPruning.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp Physics/src/Distance.cpp
 		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp
@@ -755,7 +766,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# needs NarrowPhase.cpp. The /arch:IA32 rule above is per directory, so it
 	# gives the internal joint files NoExtensions here too.
 	target_compile_definitions(NxPhysicsInternalTests PRIVATE NX_PHYSICS_DLL=1)
-	target_link_libraries(NxPhysicsInternalTests NxFoundation NxOpcode)
+	target_link_libraries(NxPhysicsInternalTests NxFoundation NxOpcode NxQhull)
 
 	# The Phase 5 object-layout gate. RED on purpose until Tasks 2 and 3
 	# transcribe the object-model classes: it pins vtable identity, the

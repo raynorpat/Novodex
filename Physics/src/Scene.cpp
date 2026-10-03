@@ -27,6 +27,7 @@
 
 #include "Containers.h"
 #include "NxSceneDesc.h"
+#include "NxBounds3.h"
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
 #include "NxShapeDesc.h"
@@ -44,6 +45,7 @@
 #include "NpScene.h"
 #include "NxJointDesc.h"
 #include "NxJoint.h"
+#include "NxUserNotify.h"
 #include "core/RevoluteJoint.h"
 #include "core/PrismaticJoint.h"
 #include "core/CylindricalJoint.h"
@@ -70,7 +72,6 @@
 #include "ContactGeneration.h"
 void nxContainerAddThunk(void* innerThis);
 
-#include <stdio.h>
 #include <string.h>
 #include <new>
 
@@ -278,7 +279,9 @@ static inline unsigned char* nxAt(unsigned* p, unsigned byteOffset);
 // install are not written; see the comment above nxSceneSubobjectRootInit.
 
 // phys_fn_000544 (0x00010750, phase 7): applies the descriptor's flags.
-void nxSceneApplyDescriptorFlags(void* scene, const unsigned* descWords, unsigned debug);
+void nxSceneApplyDescriptorFlags(NxSceneInternal* scene, NxU32 broadPhase,
+	const NxBounds3* bounds);
+void nxReport(int kind, const char* file, int line, int code, const char* message);
 // phys_fn_000626 (0x00011730, phase 7) with phys_fn_000501 (0x0000ff10, phase 7):
 // the ground-plane expansion.
 void nxSceneBuildGroundPlane(void* scene);
@@ -1179,8 +1182,9 @@ static void nxScenePrunerErase(NxSceneInternal* scene, unsigned char* shape)
 
 // The actor-creation registration of a dynamic body (this file's model of
 // the 000034 -> 000531 path): the root takes the pruning collection at +0xa0
-// and joins its +0x78 list; a group's children enter the dynamic pruner in
-// section 0 before the group in section 2, a single root goes in section 1.
+// and joins its +0x78 list; its pruner type comes from the descriptor-selected
+// bounded/unbounded dynamic pool. A group's children enter section 0 before
+// the group in section 2; a single root goes in section 1.
 void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* bodyPointer)
 	{
 	unsigned char* body = static_cast<unsigned char*>(bodyPointer);
@@ -1188,7 +1192,8 @@ void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* bodyPointer)
 	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
 	if(!shape) return;
 	*reinterpret_cast<void**>(shape + 0xa0) = scene->bytes() + 0x624;
-	nxSceneEngineAddRoot(scene, shape, 2);
+	const unsigned type = scene->at<unsigned>(0x624 + 0x70);
+	nxSceneEngineAddRoot(scene, shape, type);
 	nxSceneTrackShape(scene, shape);
 	}
 
@@ -1832,7 +1837,7 @@ bool NxSceneInternal::initialise(const NxSceneDesc& desc)
 
 	// phys_fn_000544 (0x00010750, phase 7) applies the flags and the debug word.
 	// It is a reproduction hole.
-	nxSceneApplyDescriptorFlags(this, d, d[0x0a]);
+	nxSceneApplyDescriptorFlags(this, d[0], reinterpret_cast<const NxBounds3*>(d[0x0a]));
 
 	// The ground-plane expansion. REPRODUCTION HOLE: the oracle builds a default
 	// ground-plane shape descriptor on the stack, feeds it to phys_fn_000626 and
@@ -1869,9 +1874,45 @@ bool NxSceneInternal::initialise(const NxSceneDesc& desc)
 // phys_fn_000544 (0x00010750, phase 7). REPRODUCTION HOLE. The oracle's body
 // applies the descriptor's flag words and its debug value; it is 144 bytes and is
 // not reconstructed. This reproduces the call and nothing else.
-void nxSceneApplyDescriptorFlags(void* scene, const unsigned* descWords, unsigned debug)
+// phys_fn_000544 (0x00010750) and phys_fn_001973 (0x0004c1b0): map the public
+// broad-phase enum to the pruning-engine selector and copy an optional scene
+// bounds box into both engine bounds records. The engine selector uses 1 for
+// quadratic, 2 for full and 3 for coherent; zero is the internal all-pairs
+// path and is not a public NxBroadPhaseType.
+void nxSceneApplyDescriptorFlags(NxSceneInternal* scene, NxU32 broadPhase,
+	const NxBounds3* bounds)
 	{
-	(void)scene; (void)descWords; (void)debug;
+	unsigned char* const engine = scene->bytes() + 0x624;
+	NxU32 engineMode;
+	if(broadPhase == NX_BROADPHASE_QUADRATIC)
+		engineMode = 1;
+	else if(broadPhase == NX_BROADPHASE_FULL)
+		engineMode = 2;
+	else if(broadPhase == NX_BROADPHASE_COHERENT)
+		engineMode = 3;
+	else
+		{
+		nxReport(1, "\\Epic\\Novodex\\SDKs\\Physics\\src\\Scene.cpp", 0x63e, 0,
+			"Scene::createBroadPhase: invalid broad phase type!");
+		return;
+		}
+	*reinterpret_cast<NxU32*>(engine + 0x30) = engineMode;
+	*reinterpret_cast<void**>(engine + 0x2c) = 0;
+	if(bounds)
+		{
+		memcpy(engine + 0x04, bounds, sizeof(NxBounds3));
+		memcpy(engine + 0x58, bounds, sizeof(NxBounds3));
+		*reinterpret_cast<NxU32*>(engine + 0x70) = 1;
+		}
+	else
+		{
+		const NxU32 unbounded[6] = {
+			0x7f7fffffu, 0x7f7fffffu, 0x7f7fffffu,
+			0xff7fffffu, 0xff7fffffu, 0xff7fffffu };
+		memcpy(engine + 0x58, unbounded, sizeof(unbounded));
+		*reinterpret_cast<NxU32*>(engine + 0x70) = 2;
+		}
+	*reinterpret_cast<NxU32*>(engine + 0x74) = 0;
 	}
 
 // phys_fn_000626 (0x00011730, phase 7) and phys_fn_000501 (0x0000ff10, phase 7).
@@ -3502,6 +3543,45 @@ __declspec(noinline) void NxSceneInternal::addJointBreakEvent(JointBreakEvent* e
 	at<JointBreakEvent*>(0x620) = event;
 	}
 
+// phys_fn_000577 (0x000109c0): dispatch each queued joint break before
+// freeing its event object. The event callback can enqueue another event, so
+// advance from the current Scene head after dispatch, as the oracle does.
+void NxSceneInternal::processJointBreakEvents()
+	{
+	JointBreakEvent* event = at<JointBreakEvent*>(0x620);
+	while(event)
+		{
+		event->row004113();
+		at<JointBreakEvent*>(0x620) = event->mNext;
+		nxFoundationSDKAllocator->free(event);
+		event = at<JointBreakEvent*>(0x620);
+		}
+	at<JointBreakEvent*>(0x620) = 0;
+	}
+
+// phys_fn_004113 (0x00098050): offer the break to the Scene user notify. A
+// handled break releases the joint; otherwise detach it from its bodies and
+// keep the broken joint on the Scene's no-body list.
+void JointBreakEvent::row004113()
+	{
+	Joint* joint = mJoint;
+	NxSceneInternal* scene = static_cast<NxSceneInternal*>(joint->mScene);
+	NxUserNotify* notify = scene->at<NxUserNotify*>(0x6ac);
+	if(notify)
+		{
+		gNxApiReentry = true;
+		const bool handled = notify->onJointBreak(mUnknown00c,
+			*static_cast<NxJoint*>(joint->mPublicObject));
+		gNxApiReentry = false;
+		if(handled)
+			{
+			scene->releaseJoint(joint);
+			return;
+			}
+		}
+	joint->handleBreakEvent();
+	}
+
 // phys_fn_000559 (0x00010860, 7 B, phase 7): the joint count at +0x6c8. It
 // counts createJoint's calls that reach the type switch (every exit after it
 // increments the count, 0x14529) less releaseJoint's, not the list.
@@ -3800,7 +3880,6 @@ void NxSceneInternal::simulateFrame()
 		at<NxReal>(0x548) = timestep;
 		at<NxReal>(0x54c) = inverseTimestep;
 		at<NxReal>(0x53c) += timestep;
-		++at<NxU32>(0x540);
 		iterations = 1;
 		}
 	else
@@ -3840,6 +3919,13 @@ void NxSceneInternal::simulateFrame()
 
 	for(NxU32 iteration = 0; iteration < iterations; ++iteration)
 		{
+		// The contact-patch cache stamps each pair against this per-substep
+		// counter. Advance it for both variable and fixed timestep methods.
+		++at<NxU32>(0x540);
+		// phys_fn_000608 -> 001976 refreshes broadphase pairs and their contact
+		// streams before the active islands build their solver rows.
+		nxSceneRefreshPairs(this);
+
 		// phys_fn_000635 (0x127e0): refresh dirty joint islands, then reset
 		// every body's sleep-group links before collision pairs are rebuilt.
 		Joint** joints = at<Joint**>(0x58c);
@@ -3853,10 +3939,37 @@ void NxSceneInternal::simulateFrame()
 				if(body)
 					reinterpret_cast<Row000762Fixture*>(body)->row000762(joint);
 			}
+		for(Joint** item = joints; item && item != jointsEnd; ++item)
+			{
+				void* joint = *item;
+				void* body = *reinterpret_cast<void**>(static_cast<NxU8*>(joint) + 8);
+				if(!body)
+					body = *reinterpret_cast<void**>(static_cast<NxU8*>(joint) + 0xc);
+				reinterpret_cast<Row000720Fixture*>(body)->row000720();
+			}
+		at<Joint**>(0x590) = joints;
 		void** bodies = at<void**>(0x56c);
 		void** bodiesEnd = at<void**>(0x570);
 		for(void** item = bodies; item && item != bodiesEnd; ++item)
 			reinterpret_cast<Row000764Fixture*>(*item)->row000764();
+
+		// phys_fn_000608's post-broadphase auxiliary-pair walk calls 000724 for
+		// each live pair with contacts. Rebuild those per-body links after 000764
+		// clears them and before active roots are collected for 000611.
+		NxPairList* contactPairs = reinterpret_cast<NxPairList*>(mBytes + 0x674);
+		for(NxPairNode* node = contactPairs->head; node;
+			node = node->at<NxPairNode*>(8))
+			{
+			NxActorPair* pair = node->pair();
+			if(!pair->at<NxU32>(0x10))
+				continue;
+			void* body0 = pair->at<void*>(8);
+			void* body1 = pair->at<void*>(0xc);
+			if(body0)
+				reinterpret_cast<Row000724Fixture*>(body0)->row000724(body1, node);
+			else if(body1)
+				reinterpret_cast<Row000724Fixture*>(body1)->row000724(0, node);
+			}
 
 		// 000655's active-island collection follows 000608. Keep only the
 		// self-parented, awake sleep-group roots in Scene+0x57c..+0x580.
@@ -3928,6 +4041,26 @@ void NxSceneInternal::simulateFrame()
 					nxSceneMaximumStepBodies = record->mUnknown05c;
 				}
 			reinterpret_cast<Row000730Fixture*>(island)->row000730(timestep, inverseTimestep);
+			if(at<NxU32>(0x5bc) != 0)
+				nxSolveJointSupportRecords(this, at<NxReal>(0x548), nxSceneMaximumStepBodies);
+			nxSceneMaximumStepBodies = 0;
+
+			// phys_fn_000613 copies the solved per-island support velocities back
+			// to each body record and marks the solver result dirty before the next
+			// island reuses the Scene's step-body array.
+			for(unsigned char* body = island; body;
+				body = *reinterpret_cast<unsigned char**>(body + 0x1fc))
+				{
+			JointSupportBody* const support = *reinterpret_cast<JointSupportBody**>(body + 0x204);
+				if(!support)
+					continue;
+				memcpy(body + 0x34, &support->mUnknown000, sizeof(NxVec3));
+				memcpy(body + 0x40, &support->mUnknown010, sizeof(NxVec3));
+				memcpy(body + 0x1a0, &support->mUnknown044, sizeof(NxVec3));
+				memcpy(body + 0x1ac, &support->mUnknown050, sizeof(NxVec3));
+				*reinterpret_cast<NxU32*>(body + 0x1e4) |= 0x20;
+				}
+			at<NxU32>(0x5bc) = 0;
 			}
 		at<NxU32>(0x70c) &= ~4u;
 
@@ -3943,7 +4076,7 @@ void NxSceneInternal::simulateFrame()
 				unsigned char* body = static_cast<unsigned char*>(*item);
 				reinterpret_cast<Row000770Fixture*>(body)->row000770(timestep, 0.0f);
 				reinterpret_cast<Row000022Fixture*>(
-					*reinterpret_cast<void**>(body + 0x19c))->row000022(0);
+					*reinterpret_cast<void**>(body + 0x19c))->row000022(1);
 			}
 		++at<NxU32>(0x558);
 		at<NxReal>(0x538) -= timestep;

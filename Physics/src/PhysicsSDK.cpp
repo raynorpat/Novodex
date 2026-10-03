@@ -11,6 +11,8 @@
 #include "NpPhysicsSDK.h"
 #include "NxDebugRenderable.h"
 #include "NxUserOutputStream.h"
+#include "TriangleMesh.h"
+#include "FoundationSDK.h"
 
 #include <stddef.h>
 #include <new>
@@ -298,6 +300,43 @@ NxSceneInternal* PhysicsSDK::createScene(const NxSceneDesc& desc)
 	// +0x10 -- the offsets the oracle's inline growth reads.
 	mScenes.pushBack(reinterpret_cast<Scene*>(scene));
 	return scene;
+	}
+
+// phys_fn_000478 (0x0000ebe0): validate, allocate/construct the internal mesh,
+// cook it, then append it to the SDK-owned mesh array.
+TriangleMesh* PhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc& desc)
+	{
+	if(!desc.isValid())
+		{
+		NxFoundation::FoundationSDK::error(NXE_INVALID_PARAMETER,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\PhysicsSDK.cpp", 0x1f2, 0,
+			"PhysicsSDK::createTriangleMesh: desc.isValid() is false!");
+		return 0;
+		}
+	void* memory = nxFoundationSDKAllocator->malloc(sizeof(TriangleMesh), NX_MEMORY_PERSISTENT);
+	if(!memory)
+		return 0;
+	TriangleMesh* mesh = new(memory) TriangleMesh();
+	if(!mesh->publicMesh() || !mesh->loadFromDesc(desc))
+		{
+		mesh->~TriangleMesh();
+		nxFoundationSDKAllocator->free(mesh);
+		return 0;
+		}
+	mTriangleMeshes.pushBack(mesh);
+	return mesh;
+	}
+
+void PhysicsSDK::releaseTriangleMesh(TriangleMesh* mesh)
+	{
+	for(NxU32 i = 0; i < mTriangleMeshes.size(); ++i)
+		if(mTriangleMeshes[i] == mesh)
+			{
+			mTriangleMeshes.replaceWithLast(i);
+			mesh->~TriangleMesh();
+			nxFoundationSDKAllocator->free(mesh);
+			return;
+			}
 	}
 
 // phys_fn_000468: remove the internal Scene from the SDK's unsorted array,

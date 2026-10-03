@@ -8,8 +8,13 @@
 #include "TriangleMesh.h"
 
 #include "NxStream.h"
+#include "ConvexHull.h"
+#include "TriangleMeshPolygons.h"
+#include "PhysicsSDK.h"
+#include "FoundationSDK.h"
 
 #include <string.h>
+#include <new>
 
 // The two tags are read and written as DWORDS, so on the little-endian target
 // the bytes on disc are 54 53 58 4e and 48 53 45 4d. Written most significant

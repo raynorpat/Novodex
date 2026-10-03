@@ -3,17 +3,16 @@
 # neither keeps a second list, so target registration is centralized here.
 # The phase plans address it through `run_differential.ps1 -Phase N`.
 #
-# Phase 1 is evidence-only. A phase with
-# no targets cannot be gated, so both runners report it skipped and exit 3
-# rather than reporting a pass. Phase 4 registers an oracle differential and no
-# staged-pair differential, which is why run_phase_gate.ps1 counts all three
-# lists before it decides a phase is ungated.
+# Phase 1 is evidence-only. A phase with no targets cannot be gated, so both
+# runners report it skipped and exit 3 rather than reporting a pass. Phase 4
+# now includes the public convex-cooking staged-pair differential alongside its
+# asset and third-party oracle differentials.
 
 $NxPhaseTestTargets = [ordered] @{
     '1' = @()
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
-    '4' = @()
+    '4' = @('NxPhysicsConvexMeshTests')
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsBodyCreationTests')
     '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
     '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
@@ -2959,12 +2958,63 @@ $NxRequiredCoverageLines = [ordered] @{
     # blocking simulate/check/fetch cycles. These outputs were captured from
     # the pinned oracle before the candidate step path was implemented.
     'NxPhysicsSimulationTests' = @(
+        # Scene descriptor selectors 0/1/2 map to pruning-engine modes 1/2/3
+        # (phys_fn_000544 -> phys_fn_001973). These observations guard that
+        # the public broadPhase choice reaches the internal engine state.
+        'simulation broadphase selector=0 mode=1'
+        'simulation broadphase selector=1 mode=2'
+        'simulation broadphase selector=2 mode=3'
+        'simulation broadphase plane selector=1 pairs=1'
+        'simulation broadphase separated selector=0 pairs=0'
+        'simulation broadphase separated selector=1 pairs=0'
+        'simulation broadphase separated selector=2 pairs=0'
+        'simulation broadphase static-static selector=0 pairs=0'
+        'simulation broadphase static-static selector=1 pairs=0'
+        'simulation broadphase static-static selector=2 pairs=0'
+        'simulation broadphase overlapping selector=0 pairs=2'
+        'simulation broadphase overlapping selector=1 pairs=2'
+        'simulation broadphase overlapping selector=2 pairs=2'
+        'simulation stage=broadphase0-chain0 position=40c00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase0-chain1 position=40d80000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase0-chain2 position=40f00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation broadphase order selector=0 pairs=0-1,1-2'
+        'simulation stage=broadphase1-chain0 position=40c00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase1-chain1 position=40d80000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase1-chain2 position=40f00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation broadphase order selector=1 pairs=0-1,1-2'
+        'simulation stage=broadphase2-chain0 position=40c00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase2-chain1 position=40d80000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase2-chain2 position=40f00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation broadphase order selector=2 pairs=0-1,1-2'
+        'simulation broadphase dense selector=0 pairs=6'
+        'simulation broadphase order selector=0 pairs=0-1,0-2,0-3,1-2,1-3,2-3'
+        'simulation broadphase dense selector=1 pairs=6'
+        'simulation broadphase order selector=1 pairs=0-1,0-2,0-3,1-2,1-3,2-3'
+        'simulation broadphase dense selector=2 pairs=6'
+        'simulation broadphase order selector=2 pairs=0-1,0-2,0-3,1-2,1-3,2-3'
+        'simulation broadphase bounded selector=0 pairs=2'
+        'simulation broadphase bounded selector=1 pairs=2'
+        'simulation broadphase bounded selector=2 pairs=2'
+        'simulation broadphase moved-apart selector=2 pairs=1'
+        'simulation body-state=broadphase2-separated1 velocity=b5e06397.00000000.00000000'
+        'simulation body-state=broadphase2-separated2 velocity=35da9eba.00000000.00000000'
+        'simulation body-state=broadphase2-rejoin1 velocity=c07f0007.00000000.00000000'
+        'simulation body-state=broadphase2-rejoin2 velocity=40ff000a.00000000.00000000'
+        'simulation broadphase moved-together selector=2 pairs=2'
         'simulation gravity=initial 00000000.c11cf5c3.00000000'
         'simulation gravity=changed 00000000.c1a00000.00000000'
         'simulation timing=initial 3c888889.8.0'
         'simulation timing=changed 3e000000.4.1'
         'simulation writable=initial 1'
+        'simulation nonblocking=idle ready=0 fetched=0'
         'simulation empty-step ready=1 fetched=1'
+        'simulation nonblocking=finished ready=1 fetched=1'
+        'simulation stage=force1 position=3d747645.00000000.00000000 velocity=3ef47645.00000000.00000000'
+        'simulation stage=kinematic1 position=3f800000.00000000.3f000000 velocity=00000000.00000000.00000000'
+        'simulation kinematic flag=1'
+        'simulation sleep=automatic sleeping=1'
+        'simulation sleep=woken sleeping=0'
+        'simulation ground=created'
         'simulation stage=initial position=00000000.41200000.00000000 velocity=00000000.00000000.00000000'
         'simulation step=0 ready=1 fetched=1'
         'simulation stage=step0 position=00000000.41200000.00000000 velocity=00000000.00000000.00000000'
@@ -2982,8 +3032,117 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation stage=step6 position=00000000.40e5bf58.00000000 velocity=00000000.c0eb7098.00000000'
         'simulation step=7 ready=1 fetched=1'
         'simulation stage=step7 position=00000000.40c7d67b.00000000 velocity=00000000.c108082a.00000000'
+        'simulation stage=distance0 position=40800000.40000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=distance1 position=40800000.3fff7f6b.00000000 velocity=00000000.be48e8a7.00000000'
+        'simulation stage=distance2 position=40800000.3fffd96c.00000000 velocity=00000000.33000000.00000000'
+        'simulation stage=distance3 position=40800000.3ffff46d.00000000 velocity=00000000.32000000.00000000'
+        'simulation stage=distance4 position=40800000.3ffffc87.00000000 velocity=00000000.31000000.00000000'
+        'simulation stage=distance5 position=40800000.3ffffef5.00000000 velocity=00000000.30400000.00000000'
+        'simulation stage=distance6 position=40800000.3fffffaf.00000000 velocity=00000000.2f800000.00000000'
+        'simulation stage=distance7 position=40800000.3fffffe7.00000000 velocity=00000000.2e800000.00000000'
+        'simulation stage=distance8 position=40800000.3ffffff8.00000000 velocity=00000000.2dc00000.00000000'
+        'simulation stage=distance9 position=40800000.3ffffffd.00000000 velocity=00000000.2d000000.00000000'
+        'simulation stage=distance10 position=40800000.3fffffff.00000000 velocity=00000000.2c400000.00000000'
+        'simulation stage=distance11 position=40800000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation distance-joint steps=12 ready=1 fetched=1'
+        # Exercise public point-in-plane type and kind-2 support solve across
+        # 12 fixed steps under gravity.
+        'simulation stage=pointInPlane0 position=41100000.40000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=pointInPlane1 position=41100000.3fffffff.00000000 velocity=00000000.85000000.00000000'
+        'simulation stage=pointInPlane2 position=41100000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=pointInPlane3 position=41100000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=pointInPlane4 position=41100000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=pointInPlane5 position=41100000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=pointInPlane6 position=41100000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=pointInPlane7 position=41100000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=pointInPlane8 position=41100000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=pointInPlane9 position=41100000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=pointInPlane10 position=41100000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=pointInPlane11 position=41100000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation point-in-plane-joint steps=12 ready=1 fetched=1'
+        # Public D6 one-axis linear constraint under gravity, driven through
+        # the scheduler for 12 fixed steps.
+        'simulation stage=d6Locked0 position=00000000.40000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=d6Locked1 position=00000000.3fffffff.00000000 velocity=00000000.85000000.00000000'
+        'simulation stage=d6Locked2 position=00000000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=d6Locked3 position=00000000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=d6Locked4 position=00000000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=d6Locked5 position=00000000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=d6Locked6 position=00000000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=d6Locked7 position=00000000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=d6Locked8 position=00000000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=d6Locked9 position=00000000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=d6Locked10 position=00000000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation stage=d6Locked11 position=00000000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation d6-locked-joint steps=12 ready=1 fetched=1'
+        # Three-axis D6 constraint with a rotated world frame, driven through
+        # twelve fixed steps to exercise the inverse-pose x87 precision path.
+        'simulation stage=d6Rotated0 position=40400000.40000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=d6Rotated1 position=40400000.40000000.27f1f52b velocity=2b931b59.2b900000.299f28aa'
+        'simulation stage=d6Rotated2 position=40400000.40000000.2829ac7f velocity=2b691922.2b400000.299f289e'
+        'simulation stage=d6Rotated3 position=40400000.40000000.283d4669 velocity=2b691922.2b400000.299f289a'
+        'simulation stage=d6Rotated4 position=40400000.40000000.28452a3a velocity=2b691922.2b400000.299f289b'
+        'simulation stage=d6Rotated5 position=40400000.40000000.2848573e velocity=2b691922.2b400000.299f289b'
+        'simulation stage=d6Rotated6 position=40400000.40000000.28499e48 velocity=2b691922.2b400000.299f289b'
+        'simulation stage=d6Rotated7 position=40400000.40000000.284a2206 velocity=2b691922.2b400000.299f289a'
+        'simulation stage=d6Rotated8 position=40400000.40000000.284a5731 velocity=2b691922.2b400000.299f2899'
+        'simulation stage=d6Rotated9 position=40400000.40000000.284a6c82 velocity=2b691922.2b400000.299f289a'
+        'simulation stage=d6Rotated10 position=40400000.40000000.284a7539 velocity=2b691922.2b400000.299f289a'
+        'simulation stage=d6Rotated11 position=40400000.40000000.284a78b0 velocity=2b691922.2b400000.299f289a'
+        'simulation d6-rotated-locked-joint steps=12 ready=1 fetched=1'
+        # All-axis angular lock with initial angular velocity exercises the
+        # x87 precision boundary in the angular-only support impulse update.
+        'simulation rotation-state=d6Angular0 orientation=00000000.00000000.00000000.3f800000 angular=00000000.00000000.40000000'
+        'simulation rotation-state=d6Angular1 orientation=00000000.00000000.0ea3d708.3f7fffff angular=00000000.00000000.06800000'
+        'simulation rotation-state=d6Angular2 orientation=a5b33333.99333334.b2b33330.3f7fffff angular=9da44ad6.91244ad8.aa800000'
+        'simulation rotation-state=d6Angular3 orientation=9aaccccb.99b33334.a6b3332f.3f7fffff angular=1cf45300.90745304.1c0bffff'
+        'simulation rotation-state=d6Angular4 orientation=25b33330.9a066667.32b3332f.3f7fffff angular=1c912b5b.90112b5d.1c0c0000'
+        'simulation rotation-state=d6Angular5 orientation=9919999c.9a333334.a619999d.3f7fffff angular=9dd5dea9.9155deab.aa800000'
+        'simulation rotation-state=d6Angular6 orientation=25b33330.9a600002.32b3332f.3f7fffff angular=1cf45300.90745306.1c0bfffe'
+        'simulation rotation-state=d6Angular7 orientation=9919999c.9a866667.a619999d.3f7fffff angular=9dd5dea9.9155deab.aa800000'
+        'simulation rotation-state=d6Angular8 orientation=25b33331.9a9cccce.32b3332f.3f7fffff angular=1cf45300.90745306.1c0bfffe'
+        'simulation rotation-state=d6Angular9 orientation=19b3332f.9ab33333.a619999d.3f7fffff angular=9dd5dea9.9155deab.aa800000'
+        'simulation rotation-state=d6Angular10 orientation=25b33331.9ac9999b.32b33330.3f7fffff angular=1c912b5c.90112b60.1c0bffff'
+        'simulation rotation-state=d6Angular11 orientation=19b3332f.9ae00001.26b3332f.3f7fffff angular=9dd5dea9.9155deab.aa800000'
+        'simulation d6-angular-locked-joint steps=12 ready=1 fetched=1'
+        # A fixed joint with a deliberately tiny maxForce queues a break event;
+        # fetchResults must dispatch it, detach the joint, and leave the actor
+        # in the same free-fall trajectory as the oracle on later steps.
+        'simulation stage=break0 position=40c00000.40000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation break-state step=0 state=0'
+        'simulation stage=break1 position=40c00000.3fff80ab.00000000 velocity=3041c5ce.be46f3fc.00000000'
+        'simulation break-state step=1 state=2'
+        'simulation stage=break2 position=40c00000.3ffe80c1.00000000 velocity=3041c5ce.bec7ee51.00000000'
+        'simulation break-state step=2 state=2'
+        'simulation stage=break3 position=40c00000.3ffd0042.00000000 velocity=3041c5ce.bf163152.00000000'
+        'simulation break-state step=3 state=2'
+        'simulation break-joint steps=4 ready=1 fetched=1'
+        # A true callback return releases the broken joint after dispatch;
+        # the callback receives the matching public joint and exact force.
+        'simulation break-notify retrieved=1'
+        'simulation break-notify step=0 calls=0 matched=0 force=00000000 joints=1'
+        'simulation break-notify step=1 calls=1 matched=1 force=3a94940a joints=0'
+        'simulation break-notify step=2 calls=1 matched=1 force=3a94940a joints=0'
+        'simulation break-notify step=3 calls=1 matched=1 force=3a94940a joints=0'
+        # A false return still reports the break but retains the broken joint
+        # on the scene for application-managed release.
+        'simulation break-notify-false step=0 calls=0 matched=0 force=00000000 joints=1 state=0'
+        'simulation break-notify-false step=1 calls=1 matched=1 force=3a94940a joints=1 state=2'
+        'simulation break-notify-false step=2 calls=1 matched=1 force=3a94940a joints=1 state=2'
+        'simulation break-notify-false step=3 calls=1 matched=1 force=3a94940a joints=1 state=2'
         'simulation soak steps=1000 ready=1 fetched=1'
-        'simulation stage=soak1000 position=00000000.c7955570.00000000 velocity=00000000.c4991681.00000000'
+        'simulation stage=soak1000 position=00000000.3ee66666.00000000 velocity=00000000.00000000.00000000'
+        'simulation pair=created'
+        'simulation stage=pair11 p0=bf587c8e.00000000.3ea0bde5 v0=4013df79.00000000.3fc213dd p1=3d3afc59.00000000.bc6489c3 v1=3fd84107.00000000.bf0427bd'
+        'simulation pair steps=40 ready=1 fetched=1'
+        'simulation lifecycle cycle=0 actors=1 scenes=1.0 ready=1 fetched=1'
+        'simulation lifecycle cycle=1 actors=1 scenes=1.0 ready=1 fetched=1'
+        'simulation lifecycle cycle=2 actors=1 scenes=1.0 ready=1 fetched=1'
+        # Release after a fetched step with dynamic actors and their live joint
+        # still owned by the scene.
+        'simulation lifecycle populated actors=2 joints=1 scenes=1.0 ready=1 fetched=1'
+        # Release two populated scenes from one SDK in reverse creation order.
+        'simulation lifecycle multi-scene actors=2.2 joints=1.1 scenes=2.1.0 ready=1 fetched=1'
     )
     # Effector-and-coredump Task 2: the spring-and-damper effector differential.
     # NxScene's effector API and every NxSpringAndDamperEffector method over two
@@ -3078,6 +3237,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'effector live internal words=eff2.scene.np.rec_c.rec_d.3fdab1cb.bfa9b3b6.c009a579.3fcccccc.c0333333.c0366666.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000',
         'effector live count=2 iterator=np4.np2',
         'effector scene_release allocs=3 sizes=18,18,18 frees=55 sizes=14,18,20,4,20,4,28,18,8,260,1c,228,50,18,8,260,1c,228,50,18,8,8,260,8,1c,8,228,50,18,68,18,68,400,400,400,400,400,400,400,400,400,400,400,400,a8,18,18,18,10,60,10,3c,18,18,710'
+    )
+    'NxPhysicsConvexMeshTests' = @(
+        'mesh-case name=precomputed_tetra_first repeat=0 flags=00000004 created=1 submeshes=4',
+        'mesh-case name=computed_tetra repeat=0 flags=0000000c created=1 submeshes=4'
     )
     # Effector-and-coredump Task 4: the scene core-dump differential. Two populated
     # scenes dumped through NxPhysicsSDK::coreDump (000267 -> 004062) in text and
@@ -5160,18 +5323,18 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
     '3' = 359  # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 251  # 34 asset and 217 third-party assertions, including qhull and convex-mesh gap
+    '4' = 253  # 34 asset + 217 third-party + 2 public convex-mesh coverage assertions
     '5' = 2037  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # + 175 from scene-raycast Task 4 (149 body-creation, 13 setters, 9 dynamic-setter
                # and 3 shape-vtable from its shape sub-area, 1 shape-vtable from its box hull)
                # + 991 from the NpActor.cpp completion (251 Task 2, 446 + 3 Task 3 and review,
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
-               # second merge of main into the scene-raycast block (RED on purpose: vtables
-               # family open)
+               # second merge of main into the scene-raycast block. Phase 5 now passes its
+               # current 2,037 recorded assertions; the broader full-DLL vtable audit remains
+               # tracked in the completion roadmap.
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1154  # 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize + 2 simulation soak assertions
-               # + 23 M1 simulation + 79 effector + 374 core-dump; the oracle-differential assertions
+    '7' = 1293  # previous 1,292 plus the multi-scene lifecycle observation
     '8' = 0
 }
 
@@ -5216,6 +5379,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsSceneRaycastTests',
     'NxPhysicsSceneVisualizeTests',
     'NxPhysicsSimulationTests',
+    'NxPhysicsConvexMeshTests',
     'NxPhysicsSDKTests'
 )
 $NxRegisteredStaticProofTargets = @(

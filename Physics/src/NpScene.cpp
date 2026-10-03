@@ -632,16 +632,29 @@ void NpScene::getLimits(NxSceneLimits& limits) const
 	
 	}
 
-// (unimplemented) setUserNotify
+// Scene descriptor initialization and phys_fn_004113 both identify +0x6ac as
+// the user-notify pointer.
 void NpScene::setUserNotify(NxUserNotify* callback)
 	{
-	
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x169, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	void* link = mWriteLock;
+	mScene->at<NxUserNotify*>(0x6ac) = callback;
+	nxNpSceneGuardLeave(link);
 	}
 
-// (unimplemented) getUserNotify
 NxUserNotify* NpScene::getUserNotify() const
 	{
-	return 0;
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	NxUserNotify* callback = mScene->at<NxUserNotify*>(0x6ac);
+	nxNpSceneGuardLeave(link);
+	return callback;
 	}
 
 // (unimplemented) setUserTriggerReport
@@ -971,6 +984,7 @@ bool NpScene::fetchResults(NxSimulationStatus status, bool block )
 	if(mScene)
 		{
 		nxNpSceneGuardEnter(mReadLock);
+		mScene->processJointBreakEvents();
 		mScene->finishSimulation();
 		nxNpSceneGuardLeave(mReadLock);
 		}
