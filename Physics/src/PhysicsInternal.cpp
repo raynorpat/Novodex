@@ -108,6 +108,16 @@ ShapePairFunctionTable::ShapePairFunctionTable()
 	for(unsigned type = 0; type < 5; ++type)
 		mFunction[0][type][5] = (void*) NxContactCompoundShape;
 	mFunction[0][5][5] = (void*) NxContactCompoundCompound;
+	// phys_fn_002338's primitive contact slots are the kernels reconstructed in
+	// ContactGeneration.cpp. Keep the upper-triangle indexing used by 002348.
+	mFunction[0][0][1] = (void*) NxContactPlaneSphere;
+	mFunction[0][0][2] = (void*) NxContactPlaneCapsule;
+	mFunction[0][0][3] = (void*) NxContactPlaneBox;
+	mFunction[0][1][1] = (void*) NxContactSphereSphere;
+	mFunction[0][1][2] = (void*) NxContactSphereCapsule;
+	mFunction[0][1][3] = (void*) NxContactSphereBox;
+	mFunction[0][2][2] = (void*) NxContactCapsuleCapsule;
+	mFunction[0][3][3] = (void*) NxContactBoxBox;
 	}
 
 ShapePairFunctionTable::~ShapePairFunctionTable()

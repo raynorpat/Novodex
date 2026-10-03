@@ -9,6 +9,26 @@ void __cdecl NxContactCompoundShape(const NxCollisionShape*, const NxCollisionSh
 void __cdecl NxContactCompoundCompound(const NxCollisionShape*, const NxCollisionShape*,
 	NxContactSink*, void*) {}
 
+// NxPhysicsObjectLayoutTests constructs the dispatch matrix but does not drive
+// any contact pair. Keep its private collision-unit stubs link-only as the
+// production and differential targets bind the real ContactGeneration.cpp.
+void __cdecl NxContactPlaneSphere(const NxCollisionShape*, const NxCollisionShape*,
+	NxContactSink*, void*) {}
+void __cdecl NxContactPlaneCapsule(const NxCollisionShape*, const NxCollisionShape*,
+	NxContactSink*, void*) {}
+void __cdecl NxContactPlaneBox(const NxCollisionShape*, const NxCollisionShape*,
+	NxContactSink*, void*) {}
+void __cdecl NxContactSphereSphere(const NxCollisionShape*, const NxCollisionShape*,
+	NxContactSink*, void*) {}
+void __cdecl NxContactSphereCapsule(const NxCollisionShape*, const NxCollisionShape*,
+	NxContactSink*, void*) {}
+void __cdecl NxContactSphereBox(const NxCollisionShape*, const NxCollisionShape*,
+	NxContactSink*, void*) {}
+void __cdecl NxContactCapsuleCapsule(const NxCollisionShape*, const NxCollisionShape*,
+	NxContactSink*, void*) {}
+void __cdecl NxContactBoxBox(const NxCollisionShape*, const NxCollisionShape*,
+	NxContactSink*, void*) {}
+
 // NxPhysicsInternalTests links Scene.cpp without NarrowPhase.cpp. That target
 // never drives scene pair-map teardown; the product and differential targets
 // link the real 004157 implementation.

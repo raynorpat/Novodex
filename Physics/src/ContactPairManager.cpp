@@ -35,6 +35,8 @@
 #include "NxUserContactReport.h"
 #include "NxUtilities.h"
 #include "ObjectModel.h"
+#include "ContactGeneration.h"
+#include "NarrowPhase.h"
 #include "PhysicsSDK.h"
 #include "Scene.h"
 #include "X87Sqrt.h"
@@ -258,14 +260,15 @@ static NX_INLINE JointSupportRecord* cpmTakeRecord(NxSceneInternal* scene)
 // +0x10 (its SdkContainer at +0x28 through 004836, then 002354). thiscall.
 static __declspec(noinline) void cpmOpen002356(void* streamObject)
 	{
-	(void)streamObject;
+	new (static_cast<NxU8*>(streamObject) + 0x28) SdkContainer();
+	NxContactSinkResetState(reinterpret_cast<NxU32*>(streamObject));
 	}
 
 // Row 002354 (0x0005b620, 86 B): resets the stream sub-object (zeroes
 // +0x00..+0x33, reserves the pair-count word). thiscall.
 static __declspec(noinline) void cpmOpen002354(void* streamObject)
 	{
-	(void)streamObject;
+	NxContactSinkResetState(reinterpret_cast<NxU32*>(streamObject));
 	}
 
 // Row 002348 (0x0005ab80, 719 B): the narrow-phase pair dispatcher,
@@ -273,30 +276,133 @@ static __declspec(noinline) void cpmOpen002354(void* streamObject)
 // (PhysicsSDK.cpp gShapePairFunctionTable), (shape0, shape1, pair, scene).
 static __declspec(noinline) void cpmOpen002348(NxU8* shape0, NxU8* shape1, NxActorPair* pair, NxSceneInternal* scene)
 	{
-	(void)shape0; (void)shape1; (void)pair; (void)scene;
+	(void)scene;
+	NxDispatchShapePair(NxGetCollisionDispatchMatrix(),
+		reinterpret_cast<const NxCollisionShape*>(shape0),
+		reinterpret_cast<const NxCollisionShape*>(shape1),
+		reinterpret_cast<NxU8*>(pair) + 0x10, 0);
+	}
+
+static NxU32 cpmPairHash(const CpmPairHash* hash, NxU32 key0, NxU32 key1)
+	{
+	if(key1 < key0)
+		{
+		const NxU32 swap = key0;
+		key0 = key1;
+		key1 = swap;
+		}
+	NxU32 value = ((key1 & 0xffffu) << 16) | (key0 & 0xffffu);
+	value += ~(value << 15);
+	value = (static_cast<NxU32>(static_cast<NxI32>(value) >> 10) ^ value) * 9;
+	value ^= static_cast<NxU32>(static_cast<NxI32>(value) >> 6);
+	value += ~(value << 11);
+	return (static_cast<NxU32>(static_cast<NxI32>(value) >> 16) ^ value)
+		& *reinterpret_cast<const NxU32*>(reinterpret_cast<const NxU8*>(hash) + 4);
+	}
+
+static void cpmPairHashEnsure(CpmPairHash* hash)
+	{
+	if(hash->entries || hash->count)
+		return;
+	*reinterpret_cast<NxU32*>(reinterpret_cast<NxU8*>(hash) + 0x18) = 0xffffffffu;
+	}
+
+static void cpmPairHashGrow(CpmPairHash* hash)
+	{
+	NxU8* bytes = reinterpret_cast<NxU8*>(hash);
+	const NxU32 oldCapacity = *reinterpret_cast<NxU32*>(bytes + 4) + 1;
+	const NxU32 newCapacity = oldCapacity > 1 ? oldCapacity * 2 : 8;
+	NxI32* buckets = static_cast<NxI32*>(nxFoundationSDKAllocator->malloc(
+		newCapacity * sizeof(NxI32), NX_MEMORY_PERSISTENT));
+	NxI32* links = static_cast<NxI32*>(nxFoundationSDKAllocator->malloc(
+		newCapacity * sizeof(NxI32), NX_MEMORY_PERSISTENT));
+	CpmPairHashEntry* entries = static_cast<CpmPairHashEntry*>(nxFoundationSDKAllocator->malloc(
+		newCapacity * sizeof(CpmPairHashEntry), NX_MEMORY_PERSISTENT));
+	if(!buckets || !links || !entries)
+		{
+		if(buckets) nxFoundationSDKAllocator->free(buckets);
+		if(links) nxFoundationSDKAllocator->free(links);
+		if(entries) nxFoundationSDKAllocator->free(entries);
+		return;
+		}
+	for(NxU32 i = 0; i < newCapacity; ++i)
+		buckets[i] = links[i] = -1;
+	const NxU32 count = hash->count;
+	*reinterpret_cast<NxU32*>(bytes + 4) = newCapacity - 1;
+	for(NxU32 i = 0; i < count; ++i)
+		{
+		entries[i] = hash->entries[i];
+		const NxU32 bucket = cpmPairHash(hash, entries[i].key0, entries[i].key1)
+			& (newCapacity - 1);
+		links[i] = buckets[bucket];
+		buckets[bucket] = static_cast<NxI32>(i);
+		}
+	NxI32* oldBuckets = *reinterpret_cast<NxI32**>(bytes + 8);
+	NxI32* oldLinks = *reinterpret_cast<NxI32**>(bytes + 0x0c);
+	CpmPairHashEntry* oldEntries = hash->entries;
+	*reinterpret_cast<NxI32**>(bytes + 8) = buckets;
+	*reinterpret_cast<NxI32**>(bytes + 0x0c) = links;
+	hash->entries = entries;
+	if(oldBuckets) nxFoundationSDKAllocator->free(oldBuckets);
+	if(oldLinks) nxFoundationSDKAllocator->free(oldLinks);
+	if(oldEntries) nxFoundationSDKAllocator->free(oldEntries);
 	}
 
 // Row 004153 (0x0009a570, 156 B): find (key0, key1). thiscall on the
 // hash; returns the entry or null.
 static __declspec(noinline) CpmPairHashEntry* cpmOpen004153(CpmPairHash* hash, NxU32 key0, NxU32 key1)
 	{
-	(void)hash; (void)key0; (void)key1;
-	return 0;
+	if(key1 < key0)
+		{
+		const NxU32 swap = key0;
+		key0 = key1;
+		key1 = swap;
+		}
+	return static_cast<CpmPairHashEntry*>(NxFindCollisionPairRecord(hash,
+		static_cast<NxU16>(key0), static_cast<NxU16>(key1)));
 	}
 
 // Row 004155 (0x0009a610, 772 B): insert (key0, key1) -> value; returns
 // the entry. thiscall on the hash.
 static __declspec(noinline) CpmPairHashEntry* cpmOpen004155(CpmPairHash* hash, NxU32 key0, NxU32 key1, void* value)
 	{
-	(void)hash; (void)key0; (void)key1; (void)value;
-	return 0;
+	if(key1 < key0)
+		{
+		const NxU32 swap = key0;
+		key0 = key1;
+		key1 = swap;
+		}
+	cpmPairHashEnsure(hash);
+	if(CpmPairHashEntry* found = cpmOpen004153(hash, key0, key1))
+		{
+		found->value = reinterpret_cast<NxU32>(value);
+		return found;
+		}
+	if(!*reinterpret_cast<NxU32*>(reinterpret_cast<NxU8*>(hash) + 8)
+		|| hash->count >= *reinterpret_cast<NxU32*>(reinterpret_cast<NxU8*>(hash) + 4) + 1)
+		cpmPairHashGrow(hash);
+	NxU8* bytes = reinterpret_cast<NxU8*>(hash);
+	NxI32* buckets = *reinterpret_cast<NxI32**>(bytes + 8);
+	NxI32* links = *reinterpret_cast<NxI32**>(bytes + 0x0c);
+	if(!buckets || !links || !hash->entries)
+		return 0;
+	const NxU32 index = hash->count;
+	CpmPairHashEntry* entry = hash->entries + index;
+	entry->key0 = static_cast<NxU16>(key0);
+	entry->key1 = static_cast<NxU16>(key1);
+	entry->value = reinterpret_cast<NxU32>(value);
+	const NxU32 bucket = cpmPairHash(hash, key0, key1);
+	links[index] = buckets[bucket];
+	buckets[bucket] = static_cast<NxI32>(index);
+	++hash->count;
+	return entry;
 	}
 
 // Row 004157 (0x0009a920, 476 B): erase (key0, key1). thiscall on the
 // hash.
 static __declspec(noinline) void cpmOpen004157(CpmPairHash* hash, NxU32 key0, NxU32 key1)
 	{
-	(void)hash; (void)key0; (void)key1;
+	NxRemoveCollisionPairRecord(hash, static_cast<NxU16>(key0), static_cast<NxU16>(key1));
 	}
 
 // .data 0x10123c28: the SDK's actor-group pair-flags hash (NpPhysicsSDK.cpp's

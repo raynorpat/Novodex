@@ -3858,6 +3858,57 @@ void NxSceneInternal::simulateFrame()
 		for(void** item = bodies; item && item != bodiesEnd; ++item)
 			reinterpret_cast<Row000764Fixture*>(*item)->row000764();
 
+		// The current Scene+0x624 pruning engine carries mode 0. For single-root
+		// shapes, refresh the same all-pairs contact nodes that mode 0 feeds into
+		// 000608; compound expansion and the other broadphase modes remain open.
+		NxPairList* pairList = reinterpret_cast<NxPairList*>(mBytes + 0x674);
+		NxActor** actors = at<NxActor**>(0x55c);
+		NxActor** actorsEnd = at<NxActor**>(0x560);
+		for(NxActor** first = actors; first && first != actorsEnd; ++first)
+			{
+			NxU8* actor0 = reinterpret_cast<NxU8*>(*first);
+			NxU8* body0 = *reinterpret_cast<NxU8**>(actor0 + 0x14);
+			NxU8* shape0 = body0 ? *reinterpret_cast<NxU8**>(body0 + 0x10) : 0;
+			if(!shape0) continue;
+			NxU8* owner0 = *reinterpret_cast<NxU8**>(shape0 + 4);
+			if(!owner0) continue;
+			for(NxActor** second = first + 1; second && second != actorsEnd; ++second)
+				{
+				NxU8* actor1 = reinterpret_cast<NxU8*>(*second);
+				NxU8* body1 = *reinterpret_cast<NxU8**>(actor1 + 0x14);
+				NxU8* shape1 = body1 ? *reinterpret_cast<NxU8**>(body1 + 0x10) : 0;
+				if(!shape1 || shape0 == shape1) continue;
+				NxU8* owner1 = *reinterpret_cast<NxU8**>(shape1 + 4);
+				if(!owner1) continue;
+
+				NxPairNode* node = pairList->head;
+				for(; node; node = node->at<NxPairNode*>(8))
+					{
+					NxActorPair* existing = node->pair();
+					if((existing->at<NxU8*>(0) == owner0 && existing->at<NxU8*>(4) == owner1)
+						|| (existing->at<NxU8*>(0) == owner1 && existing->at<NxU8*>(4) == owner0))
+						break;
+					}
+				if(!node)
+					node = pairList->row000911(owner0, owner1);
+				if(!node) continue;
+				node->at<NxU32>(0x104) = at<NxU32>(0x2a0);
+				NxU8* pairBody0 = *reinterpret_cast<NxU8**>(owner0 + 8);
+				NxU8* pairBody1 = *reinterpret_cast<NxU8**>(owner1 + 8);
+				if((pairBody0 && *reinterpret_cast<NxU32*>(pairBody0 + 0x4c) != 0)
+					|| (pairBody1 && *reinterpret_cast<NxU32*>(pairBody1 + 0x4c) != 0))
+					node->row000905(this);
+				if(node->at<NxU32>(0x104) == at<NxU32>(0x2a0)
+					&& node->pair()->at<NxU32>(0x24) != 0)
+					{
+					NxU8* islandBody = pairBody0 ? pairBody0 : pairBody1;
+					NxU8* otherBody = pairBody0 ? pairBody1 : 0;
+					if(islandBody)
+						reinterpret_cast<Row000724Fixture*>(islandBody)->row000724(otherBody, node);
+					}
+				}
+			}
+
 		// 000655's active-island collection follows 000608. Keep only the
 		// self-parented, awake sleep-group roots in Scene+0x57c..+0x580.
 		void**& rootFirst = at<void**>(0x57c);
