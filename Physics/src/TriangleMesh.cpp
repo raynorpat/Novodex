@@ -11,13 +11,39 @@
 #include "NxStream.h"
 
 #include <float.h>
+#include <new>
 #include <string.h>
+
+static Opcode::Model* nxBuildTriangleMeshModel(InternalTriangleMesh& mesh)
+	{
+	new (&mesh.mMeshInterface) Opcode::MeshInterface();
+	mesh.mMeshInterface.SetNbTriangles(mesh.mTriangleCount);
+	mesh.mMeshInterface.SetNbVertices(mesh.mVertexCount);
+	if(!mesh.mMeshInterface.SetPointers(
+		static_cast<const IceMaths::IndexedTriangle*>(mesh.mTriangles),
+		static_cast<const IceMaths::Point*>(mesh.mVertices)))
+		return 0;
+
+	Opcode::OPCODECREATE create;
+	create.mIMesh = &mesh.mMeshInterface;
+	create.mQuantized = false;
+	Opcode::Model* const model = new Opcode::Model();
+	if(!model)
+		return 0;
+	if(!model->Build(create))
+		{
+		delete model;
+		return 0;
+		}
+	return model;
+	}
 
 TriangleMesh::TriangleMesh()
 	{
 	memset(this, 0, sizeof(*this));
 	mVtableSlot = 0;
 	mPolygonTable = gTriangleMeshPolygonTable;
+	new (&mInternal.mMeshInterface) Opcode::MeshInterface();
 	mBounds[0] = mBounds[1] = mBounds[2] = FLT_MAX;
 	mBounds[3] = mBounds[4] = mBounds[5] = -FLT_MAX;
 	mConvexEdgeThreshold = 0.001f;
@@ -30,9 +56,9 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& desc)
 	if(!desc.isValid() || (desc.flags & (NX_MF_CONVEX | NX_MF_COMPUTE_CONVEX)))
 		return false;
 
-	// The ordinary indexed 32-bit route (002260) owns compact copies of both
-	// caller arrays. The model-building continuation is deliberately kept
-	// separate until the mesh interface and OPCODE tree are reconstructed.
+	// The ordinary indexed route owns compact copies of both caller arrays,
+	// then builds the embedded OPCODE MeshInterface and unquantized no-leaf model
+	// used by triangle-mesh queries and contact dispatch.
 	const bool indices16 = (desc.flags & NX_MF_16_BIT_INDICES) != 0;
 	const NxU32 inputTriangleBytes = indices16 ? 3 * sizeof(NxU16) : sizeof(NxTriangle32);
 	if(!desc.triangles || desc.triangleStrideBytes < inputTriangleBytes)
@@ -111,6 +137,11 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& desc)
 		}
 	allocator->free(remap);
 
+	if(mInternal.mModel)
+		{
+		delete mInternal.mModel;
+		mInternal.mModel = 0;
+		}
 	if(mInternal.mVertices) allocator->free(mInternal.mVertices);
 	if(mInternal.mTriangles) allocator->free(mInternal.mTriangles);
 	mInternal.mVertexCount = uniqueVertices;
@@ -125,6 +156,9 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& desc)
 	mConvexEdgeThreshold = desc.convexEdgeThreshold;
 	mHeightFieldVerticalAxis = desc.heightFieldVerticalAxis;
 	mHeightFieldVerticalExtent = desc.heightFieldVerticalExtent;
+	mInternal.mModel = nxBuildTriangleMeshModel(mInternal);
+	if(!mInternal.mModel)
+		return false;
 	return true;
 	}
 
@@ -137,6 +171,11 @@ void TriangleMesh::release()
 		NX_DELETE_SINGLE(publicMesh);
 		}
 	NxUserAllocator* const allocator = nxFoundationSDKAllocator;
+	if(mInternal.mModel)
+		{
+		delete mInternal.mModel;
+		mInternal.mModel = 0;
+		}
 	if(mInternal.mVertices) allocator->free(mInternal.mVertices);
 	if(mInternal.mTriangles) allocator->free(mInternal.mTriangles);
 	if(mInternal.mMaterialIndices) allocator->free(mInternal.mMaterialIndices);

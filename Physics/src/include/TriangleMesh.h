@@ -83,15 +83,14 @@ reads them at TriangleMesh+0x08/+0x0c/+0x10/+0x14/+0x18/+0x1c because the
 internal mesh is embedded at TriangleMesh+0x08 (`lea ebp,[edi+8]` at
 0x00055d18).
 
-The region from +0x24 onward belongs to the MeshInterface and whatever follows
-it; nothing the writer or the reconstructed reader touches reaches past
-internal+0x20, so it is carried as opaque bytes here and named rather than
-invented.
+The +0x24 region is the OPCODE MeshInterface: phys_fn_002083 copies the
+triangle and vertex counts there and calls SetPointers on its two array fields.
+The final four bytes at +0x34..+0x37 remain opaque.
 */
 struct InternalTriangleMesh
 	{
-	NxU32					mVertexCount;		//!< +0x00
-	NxU32					mTriangleCount;		//!< +0x04
+	NxU32					mVertexCount;		//!< +0x00 (TriangleMesh stream reader/writer)
+	NxU32					mTriangleCount;		//!< +0x04 (TriangleMesh stream reader/writer)
 	void*					mVertices;			//!< +0x08, 12 bytes each
 	void*					mTriangles;			//!< +0x0c, 12 bytes each, 32-bit indices
 	NxU16*					mMaterialIndices;	//!< +0x10, 2 bytes each, optional
@@ -99,7 +98,8 @@ struct InternalTriangleMesh
 	void*					mVertexNormals;		//!< +0x18, 12 bytes each
 	NxU32					mWord1C;			//!< +0x1c, unestablished; the allocation-site table jumps from +0x18 to +0x20
 	Opcode::BaseModel*		mModel;				//!< +0x20
-	NxU8					mInterfaceRegion[0x14];	//!< +0x24, the MeshInterface region, unestablished
+	Opcode::MeshInterface	mMeshInterface;		//!< +0x24, mesh pointers and counts for the OPCODE model
+	NxU8					mInterfaceTail[4];		//!< +0x34..+0x37, unestablished
 	};
 
 /**
@@ -217,6 +217,8 @@ static_assert(offsetof(TriangleMesh, mInternal.mMaterialIndices) == 0x18, "mater
 static_assert(offsetof(TriangleMesh, mInternal.mFaceRemap) == 0x1c, "face remap is internal+0x14");
 static_assert(offsetof(TriangleMesh, mInternal.mVertexNormals) == 0x20, "vertex normals are internal+0x18");
 static_assert(offsetof(TriangleMesh, mInternal.mModel) == 0x28, "the model is internal+0x20 / TriangleMesh+0x28");
+static_assert(offsetof(TriangleMesh, mInternal.mMeshInterface) == 0x2c, "the OPCODE mesh interface is at +0x2c");
+static_assert(sizeof(Opcode::MeshInterface) == 0x10, "the OPCODE mesh interface has four pointer/count words");
 static_assert(offsetof(TriangleMesh, mHullFlags) == 0x40, "the hull flags are at +0x40");
 static_assert(offsetof(TriangleMesh, mBounds) == 0x44, "local mesh bounds start at +0x44");
 static_assert(offsetof(TriangleMesh, mConvexEdgeThreshold) == 0x6c, "the threshold is at +0x6c");
