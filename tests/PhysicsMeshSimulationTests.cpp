@@ -32,8 +32,10 @@ class NxMeshContactReport : public NxUserContactReport
 	unsigned events;
 	unsigned pointCount;
 	unsigned firstPoint[3];
+	unsigned firstSeparation;
 	NxMeshContactReport(NxActor* ground, NxActor* sphere)
-		: expectedGround(ground), expectedSphere(sphere), calls(0), events(0), pointCount(0), firstPoint() {}
+		: expectedGround(ground), expectedSphere(sphere), calls(0), events(0), pointCount(0),
+			firstPoint(), firstSeparation(0) {}
 	virtual void onContactNotify(NxContactPair& pair, NxU32 eventFlags)
 		{
 		if(pair.actors[0] != expectedGround || pair.actors[1] != expectedSphere)
@@ -52,6 +54,7 @@ class NxMeshContactReport : public NxUserContactReport
 						firstPoint[0] = nxFloatBits(point.x);
 						firstPoint[1] = nxFloatBits(point.y);
 						firstPoint[2] = nxFloatBits(point.z);
+						firstSeparation = nxFloatBits(iterator.getSeparation());
 						}
 					++pointCount;
 					}
@@ -198,9 +201,9 @@ int wmain(int argc, wchar_t** argv)
 		}
 	sphere->getGlobalPosition(position);
 	sphere->getLinearVelocity(velocity);
-	printf("simulation mesh-edge steps=%u calls=%u events=%08x points=%u point=%08x.%08x.%08x\n",
+	printf("simulation mesh-edge steps=%u calls=%u events=%08x points=%u point=%08x.%08x.%08x separation=%08x\n",
 		edgeSteps, report.calls, report.events, report.pointCount,
-		report.firstPoint[0], report.firstPoint[1], report.firstPoint[2]);
+		report.firstPoint[0], report.firstPoint[1], report.firstPoint[2], report.firstSeparation);
 	sphere->setGlobalPosition(NxVec3(-30.0f, 20.0f, 20.0f));
 	sphere->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
 

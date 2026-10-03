@@ -140,8 +140,9 @@ void __cdecl NxContactSphereMesh(const NxCollisionShape* sphere,
 			+ (double) s * ((double) v1[2] - v0[2])
 			+ (double) t * ((double) v2[2] - v0[2]));
 
-		NxVec3 normalLocal(centerLocal.x - closestLocal.x,
+		NxVec3 contactDelta(centerLocal.x - closestLocal.x,
 			centerLocal.y - closestLocal.y, centerLocal.z - closestLocal.z);
+		NxVec3 normalLocal(contactDelta);
 		const NxReal distance = nxSphereMeshSqrt(distanceSquared);
 		const NxReal inverseDistance = 1.0f / distance;
 		normalLocal.x *= inverseDistance;
@@ -155,7 +156,25 @@ void __cdecl NxContactSphereMesh(const NxCollisionShape* sphere,
 		point.x += meshShape->translation[0];
 		point.y += meshShape->translation[1];
 		point.z += meshShape->translation[2];
-		const NxReal separation = distance - radius;
+		NxReal contactDistanceSquared;
+		NxReal separation;
+		__asm
+			{
+			// 001927 stores the squared local delta before taking sqrt and subtracting r.
+			fld contactDelta.x
+			fmul contactDelta.x
+			fld contactDelta.y
+			fmul contactDelta.y
+			faddp st(1), st(0)
+			fld contactDelta.z
+			fmul contactDelta.z
+			faddp st(1), st(0)
+			fstp contactDistanceSquared
+			fld contactDistanceSquared
+			fsqrt
+			fsub radius
+			fstp separation
+			}
 		const NxU32 material = mesh->mInternal.mMaterialIndices
 			? mesh->mInternal.mMaterialIndices[face] : 0xffff;
 		const NxU32 remappedFace = mesh->mInternal.mFaceRemap

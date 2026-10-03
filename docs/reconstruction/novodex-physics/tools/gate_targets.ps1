@@ -3143,7 +3143,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # The same upward-facing mesh must not generate contacts from below.
         'simulation mesh-backface calls=0 events=00000000 y=bfc2311b vy=c09cf5bc'
         # A sphere outside the footprint reports the oracle's closest edge point.
-        'simulation mesh-edge steps=29 calls=1 events=0000000a points=1 point=40000000.00000000.00000000'
+        'simulation mesh-edge steps=29 calls=1 events=0000000a points=1 point=40000000.00000000.00000000 separation=bd09ee01'
         # Contact-point coordinates are transformed into world space.
         'simulation mesh-transformed calls=1 events=00000008 points=2 point=c1200000.40a00000.00000000'
         # Matrix-B sphere/mesh overlap drives the public trigger enter callback.
