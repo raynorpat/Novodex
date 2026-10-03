@@ -2984,6 +2984,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation stage=step7 position=00000000.40c7d67b.00000000 velocity=00000000.c108082a.00000000'
         'simulation soak steps=1000 ready=1 fetched=1'
         'simulation stage=soak1000 position=00000000.c7955570.00000000 velocity=00000000.c4991681.00000000'
+        'simulation contact callbacks=26 events=0000000a pairs=26 patches=26 points=26 normal=80000000.bf800000.80000000 point=00000000.bc916940.00000000 separation=bc916940'
+        'simulation stage=contact60 position=00000000.3ee66666.00000000 velocity=00000000.00000000.00000000'
     )
     # Effector-and-coredump Task 2: the spring-and-damper effector differential.
     # NxScene's effector API and every NxSpringAndDamperEffector method over two

@@ -9,6 +9,8 @@
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
 #include "NxSphereShapeDesc.h"
+#include "NxPlaneShapeDesc.h"
+#include "NxUserContactReport.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -28,6 +30,55 @@ static void nxPrintActorState(const char* stage, NxActor& actor)
 		stage, nxFloatBits(p.x), nxFloatBits(p.y), nxFloatBits(p.z),
 		nxFloatBits(v.x), nxFloatBits(v.y), nxFloatBits(v.z));
 	}
+
+struct NxSimulationContactReport : NxUserContactReport
+	{
+	unsigned calls;
+	unsigned events;
+	unsigned pairs;
+	unsigned patches;
+	unsigned points;
+	unsigned normal[3];
+	unsigned point[3];
+	unsigned separation;
+
+	NxSimulationContactReport()
+		: calls(0), events(0), pairs(0), patches(0), points(0), separation(0)
+		{
+		memset(normal, 0, sizeof(normal));
+		memset(point, 0, sizeof(point));
+		}
+
+	void onContactNotify(NxContactPair& pair, NxU32 eventFlags)
+		{
+		++calls;
+		events |= eventFlags;
+		NxContactStreamIterator iterator(pair.stream);
+		while(iterator.goNextPair())
+			{
+			++pairs;
+			while(iterator.goNextPatch())
+				{
+				++patches;
+				while(iterator.goNextPoint())
+					{
+					++points;
+					if(points == 1)
+						{
+						const NxVec3& n = iterator.getPatchNormal();
+						const NxVec3& p = iterator.getPoint();
+						for(unsigned axis = 0; axis < 3; ++axis)
+							{
+							normal[axis] = nxFloatBits(n[axis]);
+							point[axis] = nxFloatBits(p[axis]);
+							}
+						separation = nxFloatBits(iterator.getSeparation());
+						}
+					}
+				}
+			}
+		}
+	};
 
 int wmain(int argc, wchar_t** argv)
 	{
@@ -150,6 +201,69 @@ int wmain(int argc, wchar_t** argv)
 	printf("simulation legacy=runFor returned\n");
 
 	sdk->releaseScene(*scene);
+
+	// Exercise contact generation, reporting and response through the same
+	// public scene step/result path. Keep this in its own scene so the 1,000-step
+	// gravity soak above cannot affect the collision fixture.
+	NxSimulationContactReport contactReport;
+	NxSceneDesc contactSceneDesc;
+	contactSceneDesc.setToDefault();
+	contactSceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
+	contactSceneDesc.timeStepMethod = NX_TIMESTEP_VARIABLE;
+	contactSceneDesc.userContactReport = &contactReport;
+	NxScene* contactScene = sdk->createScene(contactSceneDesc);
+	if(!contactScene)
+		{
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("contact scene creation failed");
+		}
+
+	NxPlaneShapeDesc ground;
+	NxActorDesc groundDesc;
+	groundDesc.shapes.pushBack(&ground);
+	NxActor* groundActor = contactScene->createActor(groundDesc);
+	NxSphereShapeDesc fallingSphere;
+	fallingSphere.radius = 0.5f;
+	NxBodyDesc fallingBody;
+	fallingBody.mass = 1.0f;
+	fallingBody.massSpaceInertia = NxVec3(0.1f, 0.1f, 0.1f);
+	NxActorDesc fallingDesc;
+	fallingDesc.body = &fallingBody;
+	fallingDesc.shapes.pushBack(&fallingSphere);
+	fallingDesc.globalPose.t = NxVec3(0.0f, 1.0f, 0.0f);
+	NxActor* fallingActor = contactScene->createActor(fallingDesc);
+	if(!groundActor || !fallingActor)
+		{
+		sdk->releaseScene(*contactScene);
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("contact actors creation failed");
+		}
+	contactScene->setActorPairFlags(*groundActor, *fallingActor,
+			NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH);
+	for(unsigned step = 0; step < 60; ++step)
+		{
+		contactScene->simulate(1.0f / 60.0f);
+		const bool ready = contactScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+		const bool fetched = contactScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		if(!ready || !fetched)
+			{
+			sdk->releaseScene(*contactScene);
+			sdk->release();
+			FreeLibrary(physics);
+			return nxFail("contact scene result was not ready and fetched");
+			}
+		}
+	printf("simulation contact callbacks=%u events=%08x pairs=%u patches=%u points=%u normal=%08x.%08x.%08x point=%08x.%08x.%08x separation=%08x\n",
+		contactReport.calls, contactReport.events, contactReport.pairs,
+		contactReport.patches, contactReport.points,
+		contactReport.normal[0], contactReport.normal[1], contactReport.normal[2],
+		contactReport.point[0], contactReport.point[1], contactReport.point[2],
+		contactReport.separation);
+	nxPrintActorState("contact60", *fallingActor);
+	sdk->releaseScene(*contactScene);
+
 	sdk->release();
 	status = nxReportPairIdentity(pairDirectory);
 	FreeLibrary(physics);
