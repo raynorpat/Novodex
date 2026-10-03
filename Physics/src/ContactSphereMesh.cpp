@@ -150,9 +150,11 @@ void __cdecl NxContactSphereMesh(const NxCollisionShape* sphere,
 		NxVec3 normalWorld;
 		nxSphereMeshToWorldVector(meshShape, normalLocal, normalWorld);
 
-		NxVec3 point(sphere->translation[0] - radius * normalWorld.x,
-			sphere->translation[1] - radius * normalWorld.y,
-			sphere->translation[2] - radius * normalWorld.z);
+		NxVec3 point;
+		nxSphereMeshToWorldVector(meshShape, closestLocal, point);
+		point.x += meshShape->translation[0];
+		point.y += meshShape->translation[1];
+		point.z += meshShape->translation[2];
 		const NxReal separation = distance - radius;
 		const NxU32 material = mesh->mInternal.mMaterialIndices
 			? mesh->mInternal.mMaterialIndices[face] : 0xffff;

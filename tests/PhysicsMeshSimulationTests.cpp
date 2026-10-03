@@ -30,14 +30,32 @@ class NxMeshContactReport : public NxUserContactReport
 	NxActor* expectedSphere;
 	unsigned calls;
 	unsigned events;
+	unsigned pointCount;
+	unsigned firstPoint[3];
 	NxMeshContactReport(NxActor* ground, NxActor* sphere)
-		: expectedGround(ground), expectedSphere(sphere), calls(0), events(0) {}
+		: expectedGround(ground), expectedSphere(sphere), calls(0), events(0), pointCount(0), firstPoint() {}
 	virtual void onContactNotify(NxContactPair& pair, NxU32 eventFlags)
 		{
 		if(pair.actors[0] != expectedGround || pair.actors[1] != expectedSphere)
 			return;
 		++calls;
 		events |= eventFlags;
+		NxContactStreamIterator iterator(pair.stream);
+		while(iterator.goNextPair())
+			while(iterator.goNextPatch())
+				{
+				while(iterator.goNextPoint())
+					{
+					const NxVec3 point = iterator.getPoint();
+					if(pointCount == 0)
+						{
+						firstPoint[0] = nxFloatBits(point.x);
+						firstPoint[1] = nxFloatBits(point.y);
+						firstPoint[2] = nxFloatBits(point.z);
+						}
+					++pointCount;
+					}
+				}
 		}
 	};
 
@@ -146,6 +164,7 @@ int wmain(int argc, wchar_t** argv)
 	sphere->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
 	report.calls = 0;
 	report.events = 0;
+	report.pointCount = 0;
 	for(unsigned step = 0; step < 30; ++step)
 		{
 		scene->simulate(1.0f / 60.0f);
@@ -157,6 +176,33 @@ int wmain(int argc, wchar_t** argv)
 	sphere->getLinearVelocity(velocity);
 	printf("simulation mesh-backface calls=%u events=%08x y=%08x vy=%08x\n",
 		report.calls, report.events, nxFloatBits(position.y), nxFloatBits(velocity.y));
+
+	// A sphere whose center remains outside the mesh footprint exercises the
+	// boundary-edge contact branch rather than only the interior face path.
+	sphere->setGlobalPosition(NxVec3(2.25f, 1.5f, 0.0f));
+	sphere->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
+	report.calls = 0;
+	report.events = 0;
+	unsigned edgeSteps = 0;
+	for(; edgeSteps < 60; ++edgeSteps)
+		{
+		scene->simulate(1.0f / 60.0f);
+		if(!scene->checkResults(NX_RIGID_BODY_FINISHED, true)
+			|| !scene->fetchResults(NX_RIGID_BODY_FINISHED, true))
+			return nxFail("edge mesh-contact simulation results failed");
+		if(report.calls != 0)
+			{
+			++edgeSteps;
+			break;
+			}
+		}
+	sphere->getGlobalPosition(position);
+	sphere->getLinearVelocity(velocity);
+	printf("simulation mesh-edge steps=%u calls=%u events=%08x points=%u point=%08x.%08x.%08x\n",
+		edgeSteps, report.calls, report.events, report.pointCount,
+		report.firstPoint[0], report.firstPoint[1], report.firstPoint[2]);
+	sphere->setGlobalPosition(NxVec3(-30.0f, 20.0f, 20.0f));
+	sphere->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
 
 	// Matrix-B sphere/mesh overlap drives a trigger sphere placed across the
 	// mesh's front face. The oracle should emit one enter event.
