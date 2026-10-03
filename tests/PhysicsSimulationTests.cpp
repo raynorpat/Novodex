@@ -1,5 +1,8 @@
 #include "PhysicsPairLoader.h"
 
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>
 #include <string.h>
 
 #include "NxPhysicsSDK.h"
@@ -20,11 +23,29 @@
 #include "NxTriangleMeshDesc.h"
 #include "NxBounds3.h"
 #include "NxUserContactReport.h"
+#include "../Physics/src/include/NpSceneGuard.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 typedef void (NX_CALL_CONV *JointDescSetGlobalAnchorFn)(NxJointDesc&, const NxVec3&);
 typedef void (NX_CALL_CONV *JointDescSetGlobalAxisFn)(NxJointDesc&, const NxVec3&);
 static unsigned nxFloatBits(NxReal value);
+
+struct NxSimulationHeldSceneWriteLock
+	{
+	void* link;
+	HANDLE ready;
+	HANDLE release;
+	};
+
+static DWORD WINAPI nxSimulationHoldSceneWriteLock(void* context)
+	{
+	NxSimulationHeldSceneWriteLock* held = static_cast<NxSimulationHeldSceneWriteLock*>(context);
+	nxNpSceneGuardEnter(held->link);
+	SetEvent(held->ready);
+	WaitForSingleObject(held->release, INFINITE);
+	nxNpSceneGuardLeave(held->link);
+	return 0;
+	}
 
 class NxSimulationTriggerReport : public NxUserTriggerReport
 	{
@@ -213,6 +234,30 @@ int wmain(int argc, wchar_t** argv)
 		}
 	if(publicMesh)
 		sdk->releaseTriangleMesh(*publicMesh);
+	// 16-bit input indices are part of the public descriptor contract. The
+	// triangle-mesh implementation must normalize them into the same public
+	// indexed representation while preserving the caller's vertex ordering.
+	const NxU16 meshTriangles16[] = { 0, 1, 2, 3, 4, 5 };
+	NxTriangleMeshDesc mesh16Desc;
+	mesh16Desc.numVertices = sizeof(meshPoints) / sizeof(meshPoints[0]);
+	mesh16Desc.numTriangles = 2;
+	mesh16Desc.pointStrideBytes = sizeof(NxPoint);
+	mesh16Desc.triangleStrideBytes = 3 * sizeof(NxU16);
+	mesh16Desc.points = meshPoints;
+	mesh16Desc.triangles = meshTriangles16;
+	mesh16Desc.flags = NX_MF_16_BIT_INDICES;
+	NxTriangleMesh* const publicMesh16 = sdk->createTriangleMesh(mesh16Desc);
+	printf("simulation triangle-mesh16 create=%u", publicMesh16 != 0);
+	if(publicMesh16)
+		{
+		const NxU32* const indices16 = static_cast<const NxU32*>(publicMesh16->getBase(0, NX_ARRAY_TRIANGLES));
+		printf(" vertices=%u triangles=%u index_format=%u index_stride=%u first_index=%u last_index=%u",
+			publicMesh16->getCount(0, NX_ARRAY_VERTICES), publicMesh16->getCount(0, NX_ARRAY_TRIANGLES),
+			publicMesh16->getFormat(0, NX_ARRAY_TRIANGLES), publicMesh16->getStride(0, NX_ARRAY_TRIANGLES),
+			indices16 ? indices16[0] : 0, indices16 ? indices16[5] : 0);
+		sdk->releaseTriangleMesh(*publicMesh16);
+		}
+	printf("\n");
 	JointDescSetGlobalAnchorFn setGlobalAnchor = reinterpret_cast<JointDescSetGlobalAnchorFn>(
 		GetProcAddress(physics, "NxJointDesc_SetGlobalAnchor"));
 	JointDescSetGlobalAxisFn setGlobalAxis = reinterpret_cast<JointDescSetGlobalAxisFn>(
@@ -228,6 +273,32 @@ int wmain(int argc, wchar_t** argv)
 		NxScene* broadPhaseScene = sdk->createScene(broadPhaseDesc);
 		if(!broadPhaseScene)
 			return nxFail("broadphase selector scene creation failed");
+		if(selector == NX_BROADPHASE_QUADRATIC)
+			{
+			NxTriangleMesh* const sceneMesh = sdk->createTriangleMesh(meshDesc);
+			printf("simulation triangle-mesh scene_owner create=%u\n", sceneMesh != 0);
+			if(sceneMesh)
+				{
+				sdk->releaseTriangleMesh(*sceneMesh);
+				}
+			NxSimulationHeldSceneWriteLock held = {
+				*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(broadPhaseScene) + 0x0c),
+				CreateEventA(0, TRUE, FALSE, 0), CreateEventA(0, TRUE, FALSE, 0) };
+			if(!held.link || !held.ready || !held.release)
+				return nxFail("triangle-mesh scene-lock fixture setup failed");
+			HANDLE lockThread = CreateThread(0, 0, nxSimulationHoldSceneWriteLock, &held, 0, 0);
+			if(!lockThread || WaitForSingleObject(held.ready, 5000) != WAIT_OBJECT_0)
+				return nxFail("triangle-mesh scene-lock fixture did not acquire the lock");
+			NxTriangleMesh* const lockedMesh = sdk->createTriangleMesh(meshDesc);
+			printf("simulation triangle-mesh locked_create=%u\n", lockedMesh != 0);
+			SetEvent(held.release);
+			WaitForSingleObject(lockThread, INFINITE);
+			CloseHandle(lockThread);
+			CloseHandle(held.ready);
+			CloseHandle(held.release);
+			if(lockedMesh)
+				sdk->releaseTriangleMesh(*lockedMesh);
+			}
 		printf("simulation broadphase selector=%u mode=%u\n",
 			selector, nxReadSceneBroadPhaseMode(broadPhaseScene));
 		broadPhaseScene->setTiming(0.01f, 1, NX_TIMESTEP_VARIABLE);

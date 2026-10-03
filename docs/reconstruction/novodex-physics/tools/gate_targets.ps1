@@ -2967,6 +2967,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # ordinary 32-bit indexed descriptor through SDK ownership.
         'simulation triangle-mesh create=1'
         'simulation triangle-mesh data submeshes=2 vertices=4 triangles=2 vertex_format=1 vertex_stride=12 index_format=4 index_stride=12 first_index=0 last_index=2 first_vertex=c0000000.00000000.c0000000 save=1 saved_counts=4.2 saved_strides=12.12'
+        'simulation triangle-mesh16 create=1 vertices=4 triangles=2 index_format=4 index_stride=12 first_index=0 last_index=2'
+        'simulation triangle-mesh scene_owner create=1'
+        'simulation triangle-mesh locked_create=0'
         # Scene descriptor selectors 0/1/2 map to pruning-engine modes 1/2/3
         # (phys_fn_000544 -> phys_fn_001973). These observations guard that
         # the public broadPhase choice reaches the internal engine state.
@@ -5328,7 +5331,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1295  # previous 1,293 plus two public triangle-mesh creation/data observations
+    '7' = 1298  # previous 1,295 plus the 16-bit, scene-owner, and write-lock mesh observations
     '8' = 0
 }
 

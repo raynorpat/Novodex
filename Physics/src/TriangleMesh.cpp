@@ -24,13 +24,15 @@ TriangleMesh::TriangleMesh()
 
 bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& desc)
 	{
-	if(!desc.isValid() || (desc.flags & (NX_MF_16_BIT_INDICES | NX_MF_CONVEX | NX_MF_COMPUTE_CONVEX)))
+	if(!desc.isValid() || (desc.flags & (NX_MF_CONVEX | NX_MF_COMPUTE_CONVEX)))
 		return false;
 
 	// The ordinary indexed 32-bit route (002260) owns compact copies of both
 	// caller arrays. The model-building continuation is deliberately kept
 	// separate until the mesh interface and OPCODE tree are reconstructed.
-	if(!desc.triangles || desc.triangleStrideBytes < sizeof(NxTriangle32))
+	const bool indices16 = (desc.flags & NX_MF_16_BIT_INDICES) != 0;
+	const NxU32 inputTriangleBytes = indices16 ? 3 * sizeof(NxU16) : sizeof(NxTriangle32);
+	if(!desc.triangles || desc.triangleStrideBytes < inputTriangleBytes)
 		return false;
 
 	NxUserAllocator* const allocator = nxFoundationSDKAllocator;
@@ -75,7 +77,15 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& desc)
 	for(NxU32 i = 0; i < desc.numTriangles; ++i)
 		{
 		NxTriangle32 triangle;
-		memcpy(&triangle, triangleIn + i * desc.triangleStrideBytes, sizeof(triangle));
+		if(indices16)
+			{
+			NxU16 inputTriangle[3];
+			memcpy(inputTriangle, triangleIn + i * desc.triangleStrideBytes, sizeof(inputTriangle));
+			for(NxU32 corner = 0; corner < 3; ++corner)
+				triangle.v[corner] = inputTriangle[corner];
+			}
+		else
+			memcpy(&triangle, triangleIn + i * desc.triangleStrideBytes, sizeof(triangle));
 		for(NxU32 corner = 0; corner < 3; ++corner)
 			{
 			if(triangle.v[corner] >= desc.numVertices)

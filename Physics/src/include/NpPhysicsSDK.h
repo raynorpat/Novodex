@@ -32,12 +32,14 @@ component does not own; each one names the oracle rows it stands in for, and
 none of them returns a value the oracle would not -- the two placeholders that
 did, getGroupCollisionFlag and addMaterial, are now the real thing.
 
-The remaining placeholders are blocked rather than unwritten. getScene,
-releaseScene, createScene, createTriangleMesh and releaseTriangleMesh all need
-the Scene or TriangleMesh layout that Phases 3 and 4 own; setActorGroupPairFlags
-and getActorGroupPairFlags need phys_fn_004155 and phys_fn_004153, which the
-census places in Phase 6. coreDump (phys_fn_000267) is reconstructed: it takes every
-scene's write lock and calls the core dump phys_fn_004062 (core/SceneDump.cpp).
+The remaining placeholders are blocked rather than unwritten. getScene and
+releaseScene still need the Scene wrapper lifecycle; createScene needs its
+factory continuation. Triangle-mesh creation and release are reconstructed
+through PhysicsSDK and TriangleMesh, including the scene-wide write-lock walk.
+setActorGroupPairFlags and getActorGroupPairFlags still need phys_fn_004155 and
+phys_fn_004153, which the census places in Phase 6. coreDump (phys_fn_000267)
+is reconstructed: it takes every scene's write lock and calls the core dump
+phys_fn_004062 (core/SceneDump.cpp).
 */
 class NpPhysicsSDK : public NxPhysicsSDK, public NxAllocateable
 	{
@@ -56,8 +58,8 @@ class NpPhysicsSDK : public NxPhysicsSDK, public NxAllocateable
 	NxU32 getNbScenes() const;
 	NxU32 getNbMaterials();
 
-	// Placeholders. Each definition names what blocks it, and every one of them
-	// is deferred in gates/phase2-closure.json rather than counted as closed.
+	// SDK and scene lifecycle methods. Bodies still deferred in
+	// gates/phase2-closure.json are individually identified by their comments.
 	NxScene* createScene(const NxSceneDesc& desc);
 	void releaseScene(NxScene& scene);
 	NxScene* getScene(NxU32 index);

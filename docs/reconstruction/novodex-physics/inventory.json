@@ -4495,14 +4495,15 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpPhysicsSDK.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/82",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/883",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/NpPhysicsSDK.cpp"
+      "dynamic_proof": "NxPhysicsSimulationTests, registered Phase 7 differential: the factory is exercised with one live scene and with a second thread holding that scene's write lock. The oracle rejects the contended call and the candidate matches it after implementing the ordered lock walk, reverse unwind, and line-111 error; the pre-fix run differed (oracle locked_create=0, candidate locked_create=1). This tests the wrapper path, not the separate internal mesh implementation, which remains deferred.",
+      "notes": "wrapper behavior reconstructed; internal TriangleMesh factory remains a separate deferred row",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp",
+      "implementation_symbol": "NpPhysicsSDK::createTriangleMesh"
     },
     {
       "id": "phys_fn_000243",
@@ -4532,14 +4533,15 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpPhysicsSDK.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/83",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/893",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/NpPhysicsSDK.cpp"
+      "dynamic_proof": "NxPhysicsSimulationTests, registered Phase 7 differential: release is exercised through the SDK while a scene is live after a successful mesh creation; oracle and candidate transcripts match. The implementation takes the scene write locks in order, dispatches release, and unlocks in order. The contention arm is separately exercised for the paired factory wrapper; release's own contention arm remains to be mutation-tested before this row can be dynamically_gated.",
+      "notes": "wrapper behavior reconstructed; internal TriangleMesh release remains a separate deferred row",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp",
+      "implementation_symbol": "NpPhysicsSDK::releaseTriangleMesh"
     },
     {
       "id": "phys_fn_000245",
