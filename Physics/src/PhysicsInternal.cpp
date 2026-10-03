@@ -133,6 +133,7 @@ ShapePairFunctionTable::ShapePairFunctionTable()
 	mFunction[1][1][1] = (void*) NxOverlapSphereSphere;
 	mFunction[1][1][2] = (void*) NxOverlapSphereBox;
 	mFunction[1][1][3] = (void*) NxOverlapSphereCapsule;
+	mFunction[1][1][4] = (void*) NxOverlapSphereMesh;
 	mFunction[1][2][2] = (void*) NxOverlapBoxBox;
 	mFunction[1][2][3] = (void*) NxOverlapBoxCapsule;
 	mFunction[1][3][3] = (void*) NxOverlapCapsuleCapsule;

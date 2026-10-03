@@ -41,6 +41,23 @@ class NxMeshContactReport : public NxUserContactReport
 		}
 	};
 
+class NxMeshTriggerReport : public NxUserTriggerReport
+	{
+	public:
+	NxShape* expectedTrigger;
+	NxShape* expectedOther;
+	unsigned calls;
+	unsigned lastEvent;
+	NxMeshTriggerReport() : expectedTrigger(0), expectedOther(0), calls(0), lastEvent(0) {}
+	virtual void onTrigger(NxShape& trigger, NxShape& other, NxTriggerFlag event)
+		{
+		if(&trigger != expectedTrigger || &other != expectedOther)
+			return;
+		++calls;
+		lastEvent = static_cast<unsigned>(event);
+		}
+	};
+
 int wmain(int argc, wchar_t** argv)
 	{
 	if(argc != 2)
@@ -77,6 +94,8 @@ int wmain(int argc, wchar_t** argv)
 	NxSceneDesc sceneDesc;
 	sceneDesc.setToDefault();
 	sceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
+	NxMeshTriggerReport triggerReport;
+	sceneDesc.userTriggerReport = &triggerReport;
 	NxScene* const scene = sdk->createScene(sceneDesc);
 	if(!scene)
 		return nxFail("mesh-contact scene creation failed");
@@ -135,7 +154,41 @@ int wmain(int argc, wchar_t** argv)
 	printf("simulation mesh-backface calls=%u events=%08x y=%08x vy=%08x\n",
 		report.calls, report.events, nxFloatBits(position.y), nxFloatBits(velocity.y));
 
+	// Matrix-B sphere/mesh overlap drives a trigger sphere placed across the
+	// mesh's front face. The oracle should emit one enter event.
+	NxTriangleMeshShapeDesc triggerMeshShape;
+	triggerMeshShape.meshData = mesh;
+	triggerMeshShape.shapeFlags = NX_TRIGGER_ON_ENTER;
+	NxActorDesc triggerDesc;
+	triggerDesc.globalPose.M.setRow(0, NxVec3(0.0f, -1.0f, 0.0f));
+	triggerDesc.globalPose.M.setRow(1, NxVec3(1.0f, 0.0f, 0.0f));
+	triggerDesc.globalPose.M.setRow(2, NxVec3(0.0f, 0.0f, 1.0f));
+	triggerDesc.globalPose.t = NxVec3(3.0f, 0.0f, 0.0f);
+	triggerDesc.shapes.pushBack(&triggerMeshShape);
+	NxActor* const triggerActor = scene->createActor(triggerDesc);
+	NxSphereShapeDesc meshOtherShape;
+	meshOtherShape.radius = 0.5f;
+	NxBodyDesc meshOtherBody;
+	NxActorDesc meshTriggerOtherDesc;
+	meshTriggerOtherDesc.body = &meshOtherBody;
+	meshTriggerOtherDesc.density = 1.0f;
+	meshTriggerOtherDesc.globalPose.t = NxVec3(2.75f, 0.0f, 0.0f);
+	meshTriggerOtherDesc.shapes.pushBack(&meshOtherShape);
+	NxActor* const meshTriggerOther = scene->createActor(meshTriggerOtherDesc);
+	if(!triggerActor || !meshTriggerOther)
+		return nxFail("mesh trigger actor creation failed");
+	triggerReport.expectedTrigger = triggerActor->getShapes()[0];
+	triggerReport.expectedOther = meshTriggerOther->getShapes()[0];
+	scene->simulate(1.0f / 60.0f);
+	if(!scene->checkResults(NX_RIGID_BODY_FINISHED, true)
+		|| !scene->fetchResults(NX_RIGID_BODY_FINISHED, true))
+		return nxFail("mesh trigger simulation results failed");
+	printf("simulation mesh-trigger calls=%u event=%u\n",
+		triggerReport.calls, triggerReport.lastEvent);
+
 	sdk->setActorGroupPairFlags(7, 3, 0);
+	scene->releaseActor(*meshTriggerOther);
+	scene->releaseActor(*triggerActor);
 	scene->releaseActor(*sphere);
 	scene->releaseActor(*ground);
 	sdk->releaseScene(*scene);

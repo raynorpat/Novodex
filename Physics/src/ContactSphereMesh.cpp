@@ -164,3 +164,42 @@ void __cdecl NxContactSphereMesh(const NxCollisionShape* sphere,
 			sphereFeature, material, 0xffffffff, remappedFace);
 		}
 	}
+
+// phys_fn_001925 (0x0004a820), matrix B [SPHERE][MESH]. The oracle selects
+// first-contact mode, disables temporal coherence and primitive-test skipping,
+// then reports OPCODE's sphere/model contact bit.
+bool __cdecl NxOverlapSphereMesh(const NxCollisionShape* sphere,
+	const NxCollisionShape* meshShape, void* context)
+	{
+	NxU32& contextFlags = *reinterpret_cast<NxU32*>(static_cast<NxU8*>(context) + 0xb4);
+	contextFlags |= 1;
+	contextFlags &= ~NxU32(2 | 0x10);
+	const TriangleMesh* const mesh = reinterpret_cast<const TriangleMesh*>(
+		static_cast<size_t>(*(const NxU32*) &meshShape->geometry[0]));
+	if(!mesh || !mesh->mInternal.mModel)
+		{
+		contextFlags &= ~NxU32(4);
+		return false;
+		}
+
+	NxVec3 centerLocal;
+	nxSphereMeshToLocal(meshShape,
+		NxVec3(sphere->translation[0], sphere->translation[1], sphere->translation[2]), centerLocal);
+	IceCore::Container candidates;
+	Opcode::SphereCache cache;
+	cache.TouchedPrimitives = &candidates;
+	IceMaths::Sphere querySphere(
+		IceMaths::Point(centerLocal.x, centerLocal.y, centerLocal.z), sphere->geometry[0]);
+	Opcode::SphereCollider collider;
+	collider.SetFirstContact(true);
+	collider.SetTemporalCoherence(false);
+	collider.SetPrimitiveTests(true);
+	const bool querySucceeded = collider.Collide(cache, querySphere,
+		*static_cast<const Opcode::Model*>(mesh->mInternal.mModel));
+	const bool overlap = querySucceeded && collider.GetContactStatus() != 0;
+	if(overlap)
+		contextFlags |= 4;
+	else
+		contextFlags &= ~NxU32(4);
+	return overlap && (contextFlags & 4) != 0;
+	}
