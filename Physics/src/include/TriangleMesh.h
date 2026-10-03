@@ -159,8 +159,12 @@ class TriangleMesh : public NxAllocateable
 	InternalTriangleMesh	mInternal;
 	//! +0x40, the hull-construction flags. Only bit 0 is established.
 	NxU32					mHullFlags;
-	//! +0x44..+0x68, unestablished.
-	NxU8					mGap44[0x28];
+	//! +0x44..+0x58, local bounds: min xyz then max xyz. The constructor
+	//! initializes the minima to FLT_MAX and maxima to -FLT_MAX at 0x000554d4
+	//! onward; MeshShape::nxMeshWorldAABBNoTree reads these six floats directly.
+	float					mBounds[6];
+	//! +0x5c..+0x68, still unestablished.
+	NxU8					mGap5C[0x10];
 	//! +0x6c, NxTriangleMeshDesc::convexEdgeThreshold's image value.
 	float					mConvexEdgeThreshold;
 	//! +0x70..+0x78, unestablished.
@@ -214,6 +218,7 @@ static_assert(offsetof(TriangleMesh, mInternal.mFaceRemap) == 0x1c, "face remap 
 static_assert(offsetof(TriangleMesh, mInternal.mVertexNormals) == 0x20, "vertex normals are internal+0x18");
 static_assert(offsetof(TriangleMesh, mInternal.mModel) == 0x28, "the model is internal+0x20 / TriangleMesh+0x28");
 static_assert(offsetof(TriangleMesh, mHullFlags) == 0x40, "the hull flags are at +0x40");
+static_assert(offsetof(TriangleMesh, mBounds) == 0x44, "local mesh bounds start at +0x44");
 static_assert(offsetof(TriangleMesh, mConvexEdgeThreshold) == 0x6c, "the threshold is at +0x6c");
 static_assert(offsetof(TriangleMesh, mHeightFieldVerticalAxis) == 0x7c, "the height-field axis is at +0x7c");
 static_assert(offsetof(TriangleMesh, mHeightFieldVerticalExtent) == 0x80, "the height-field extent is at +0x80");

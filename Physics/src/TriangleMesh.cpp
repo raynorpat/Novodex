@@ -10,6 +10,7 @@
 
 #include "NxStream.h"
 
+#include <float.h>
 #include <string.h>
 
 TriangleMesh::TriangleMesh()
@@ -17,6 +18,8 @@ TriangleMesh::TriangleMesh()
 	memset(this, 0, sizeof(*this));
 	mVtableSlot = 0;
 	mPolygonTable = gTriangleMeshPolygonTable;
+	mBounds[0] = mBounds[1] = mBounds[2] = FLT_MAX;
+	mBounds[3] = mBounds[4] = mBounds[5] = -FLT_MAX;
 	mConvexEdgeThreshold = 0.001f;
 	mHeightFieldVerticalAxis = NX_NOT_HEIGHTFIELD;
 	mPublicMesh = NX_NEW(NxTriangleMeshAdapter)(this);
@@ -56,10 +59,17 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& desc)
 		return false;
 		}
 	NxU32 uniqueVertices = 0;
+	float bounds[6] = { FLT_MAX, FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX };
 	for(NxU32 i = 0; i < desc.numVertices; ++i)
 		{
 		NxPoint point;
 		memcpy(&point, vertexIn + i * desc.pointStrideBytes, sizeof(point));
+		if(point.x < bounds[0]) bounds[0] = point.x;
+		if(point.y < bounds[1]) bounds[1] = point.y;
+		if(point.z < bounds[2]) bounds[2] = point.z;
+		if(point.x > bounds[3]) bounds[3] = point.x;
+		if(point.y > bounds[4]) bounds[4] = point.y;
+		if(point.z > bounds[5]) bounds[5] = point.z;
 		NxU32 existing = 0;
 		for(; existing < uniqueVertices; ++existing)
 			if(memcmp(vertexOut + existing * sizeof(NxPoint), &point, sizeof(point)) == 0)
@@ -111,6 +121,7 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& desc)
 	mInternal.mFaceRemap = 0;
 	mInternal.mVertexNormals = 0;
 	mInternal.mModel = 0;
+	memcpy(mBounds, bounds, sizeof(mBounds));
 	mConvexEdgeThreshold = desc.convexEdgeThreshold;
 	mHeightFieldVerticalAxis = desc.heightFieldVerticalAxis;
 	mHeightFieldVerticalExtent = desc.heightFieldVerticalExtent;
