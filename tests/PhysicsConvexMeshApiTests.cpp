@@ -56,6 +56,51 @@ static void reportMeshGeometry(const NxTriangleMesh& mesh)
 		}
 	}
 
+// The polygon support path reads the vertex graph pointer at
+// TriangleMesh+0xa0 -> hull+0x64. Keep this observation independent of pointer
+// addresses so the paired oracle run can tell a constructed graph from an
+// unset/sentinel field without making assumptions about allocator locations.
+static bool reportConvexVertexGraph(const NxTriangleMesh& mesh, const char* name)
+	{
+	const unsigned char* wrapper = reinterpret_cast<const unsigned char*>(&mesh);
+	NxU32 meshImage = 0;
+	memcpy(&meshImage, wrapper + 4, sizeof(meshImage));
+	NxU32 hullImage = 0;
+	if(meshImage)
+		memcpy(&hullImage, reinterpret_cast<const unsigned char*>(meshImage) + 0xa0, sizeof(hullImage));
+	NxU32 graphImage = 0;
+	if(hullImage)
+		memcpy(&graphImage, reinterpret_cast<const unsigned char*>(hullImage) + 0x64, sizeof(graphImage));
+	if(!graphImage)
+		{
+		printf("mesh-graph-%s=none", name);
+		return false;
+		}
+	if(graphImage < 0x10000)
+		{
+		printf("mesh-graph-%s=sentinel:%u", name, graphImage);
+		return false;
+		}
+	const unsigned char* graph = reinterpret_cast<const unsigned char*>(graphImage);
+	NxU32 counts = 0, offsets = 0, neighbours = 0, vertexCount = 0, adjacentCount = 0;
+	memcpy(&vertexCount, graph, sizeof(vertexCount));
+	memcpy(&adjacentCount, graph + 4, sizeof(adjacentCount));
+	memcpy(&counts, graph + 8, sizeof(counts));
+	memcpy(&offsets, graph + 0xc, sizeof(offsets));
+	memcpy(&neighbours, graph + 0x10, sizeof(neighbours));
+	if(vertexCount > 65536 || adjacentCount > 1048576 || !counts || !offsets || !neighbours)
+		{
+		printf("mesh-graph-%s=malformed", name);
+		return false;
+		}
+	const NxU32 countsHash = hashBytes(reinterpret_cast<const void*>(counts), vertexCount * 4);
+	const NxU32 offsetsHash = hashBytes(reinterpret_cast<const void*>(offsets), vertexCount * 4);
+	const NxU32 neighboursHash = hashBytes(reinterpret_cast<const void*>(neighbours), adjacentCount * 4);
+	printf("mesh-graph-%s=valid/%u/%u/%08x/%08x/%08x", name, vertexCount, adjacentCount,
+		countsHash, offsetsHash, neighboursHash);
+	return true;
+	}
+
 static bool runMeshCase(NxPhysicsSDK& sdk, const char* name, const NxTriangleMeshDesc& desc,
 	NxU32 repeats)
 	{
@@ -112,6 +157,8 @@ static bool runTriangleMeshActorCase(NxPhysicsSDK& sdk, const NxTriangleMeshDesc
 		? staticActor->getShapes()[0]->getType() : NX_SHAPE_COUNT;
 	printf("mesh-actor name=static_tetra mesh=1 scene=1 actor=%u shapes=%u type=%u\n",
 		staticActor ? 1u : 0u, staticShapeCount, staticShapeType);
+	const bool graphBuilt = reportConvexVertexGraph(*mesh, "tetra");
+	printf("\n");
 	NxBodyDesc bodyDesc;
 	NxActorDesc dynamicDesc;
 	dynamicDesc.body = &bodyDesc;
@@ -137,11 +184,28 @@ static bool runTriangleMeshActorCase(NxPhysicsSDK& sdk, const NxTriangleMeshDesc
 		printf("mesh-actor-mass mass=%08x center=%08x:%08x:%08x inertia=%08x:%08x:%08x\n",
 			bits[0], bits[1], bits[2], bits[3], bits[4], bits[5], bits[6]);
 		}
+	scene->simulate(1.0f / 60.0f);
+	const bool fetched = scene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+	printf("mesh-actor-sim fetched=%u\n", fetched ? 1u : 0u);
 	sdk.releaseScene(*scene);
 	sdk.releaseTriangleMesh(*mesh);
 	return staticActor != 0 && staticShapeCount == 1 && staticShapeType == NX_SHAPE_MESH
 		&& dynamicActor != 0 && dynamicShapeCount == 1 && dynamicShapeType == NX_SHAPE_MESH
-		&& dynamic;
+		&& dynamic && fetched && graphBuilt;
+	}
+
+static bool runMeshGraphCase(NxPhysicsSDK& sdk, const NxTriangleMeshDesc& desc)
+	{
+	NxTriangleMesh* mesh = sdk.createTriangleMesh(desc);
+	if(!mesh)
+		{
+		printf("mesh-graph-octa=mesh-create-failed\n");
+		return false;
+		}
+	const bool graphBuilt = reportConvexVertexGraph(*mesh, "octa");
+	printf("\n");
+	sdk.releaseTriangleMesh(*mesh);
+	return graphBuilt;
 	}
 
 int wmain(int argc, wchar_t** argv)
@@ -180,6 +244,15 @@ int wmain(int argc, wchar_t** argv)
 		0, 2, 1, 0, 1, 3, 0, 3, 2, 1, 2, 3
 		};
 	const NxU16 tetraMaterials[] = { 2, 5, 7, 11 };
+	const NxVec3 octaPoints[] = {
+		NxVec3(0.0f, 1.0f, 0.0f), NxVec3(0.0f, -1.0f, 0.0f),
+		NxVec3(1.0f, 0.0f, 0.0f), NxVec3(0.0f, 0.0f, 1.0f),
+		NxVec3(-1.0f, 0.0f, 0.0f), NxVec3(0.0f, 0.0f, -1.0f)
+		};
+	const NxU32 octaTriangles[] = {
+		0,3,2, 0,4,3, 0,5,4, 0,2,5,
+		1,2,3, 1,3,4, 1,4,5, 1,5,2
+		};
 	struct PaddedPoint { NxVec3 point; NxReal padding; };
 	const PaddedPoint paddedPoints[] = {
 		{ NxVec3(0.0f, 0.0f, 0.0f), 101.0f }, { NxVec3(1.0f, 0.0f, 0.0f), 102.0f },
@@ -222,6 +295,14 @@ int wmain(int argc, wchar_t** argv)
 
 	NxTriangleMeshDesc flipped = precomputed;
 	flipped.flags |= NX_MF_FLIPNORMALS;
+	NxTriangleMeshDesc octa;
+	octa.numVertices = sizeof(octaPoints) / sizeof(octaPoints[0]);
+	octa.pointStrideBytes = sizeof(NxVec3);
+	octa.points = octaPoints;
+	octa.numTriangles = sizeof(octaTriangles) / (3 * sizeof(NxU32));
+	octa.triangleStrideBytes = sizeof(NxTriangle32);
+	octa.triangles = octaTriangles;
+	octa.flags = NX_MF_CONVEX;
 
 	bool ok = true;
 	ok = runMeshCase(*sdk, "precomputed_tetra_first", precomputed, 1) && ok;
@@ -231,6 +312,7 @@ int wmain(int argc, wchar_t** argv)
 	ok = runMeshCase(*sdk, "precomputed_tetra", precomputed, 1) && ok;
 	ok = runMeshCase(*sdk, "precomputed_tetra_padded16_materials", padded16, 1) && ok;
 	ok = runTriangleMeshActorCase(*sdk, precomputed) && ok;
+	ok = runMeshGraphCase(*sdk, octa) && ok;
 
 	sdk->release();
 	const int identityStatus = nxReportPairIdentity(pairDirectory);

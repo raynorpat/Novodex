@@ -12,6 +12,44 @@
 #include <string.h>
 #include <new>
 
+static const NxU32 kConvexHullVertexGraphOffset = 0x64;
+
+static Valencies* nxConvexHullVertexGraph(ConvexHull* hull)
+	{
+	Valencies* graph = 0;
+	memcpy(&graph, reinterpret_cast<NxU8*>(hull) + kConvexHullVertexGraphOffset,
+		sizeof(graph));
+	return graph;
+	}
+
+static void nxSetConvexHullVertexGraph(ConvexHull* hull, Valencies* graph)
+	{
+	memcpy(reinterpret_cast<NxU8*>(hull) + kConvexHullVertexGraphOffset, &graph,
+		sizeof(graph));
+	}
+
+static bool nxBuildConvexHullVertexGraph(ConvexHull* hull)
+	{
+	void* memory = nxGetSdkAllocator()->malloc(sizeof(Valencies), NX_MEMORY_PERSISTENT);
+	if(!memory)
+		return false;
+	Valencies* graph = new(memory) Valencies;
+	VALENCESCREATE create;
+	create.NbVerts = hull->mNbVerts;
+	create.NbFaces = hull->mNbFaces;
+	create.DFaces = 0;
+	create.WFaces = hull->mFaces;
+	create.AdjacentList = true;
+	if(!graph->Compute(create))
+		{
+		graph->~Valencies();
+		nxGetSdkAllocator()->free(graph);
+		return false;
+		}
+	nxSetConvexHullVertexGraph(hull, graph);
+	return true;
+	}
+
 static void __fastcall nxEnsureInternalVertexNormals(InternalTriangleMesh* mesh)
 	{
 	if(!mesh->mVertexNormals)
@@ -71,6 +109,13 @@ void TriangleMesh::releaseContents()
 	if(mConvexMesh)
 		{
 		ConvexHull* hull = static_cast<ConvexHull*>(mConvexMesh);
+		Valencies* graph = nxConvexHullVertexGraph(hull);
+		if(graph)
+			{
+			graph->~Valencies();
+			nxGetSdkAllocator()->free(graph);
+			nxSetConvexHullVertexGraph(hull, 0);
+			}
 		if(hull->mVertexNormals)
 			nxGetSdkAllocator()->free(hull->mVertexNormals);
 		if(hull->mFaces)
@@ -177,6 +222,10 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& desc)
 			return false;
 		ConvexHull* hull = new(memory) ConvexHull();
 		memset(hull, 0, sizeof(*hull));
+		// The 0x98-byte hull allocation includes this pointer sidecar. The class
+		// itself ends at +0x4c, so initialize the graph slot explicitly before
+		// any allocation can fail or the support path can observe the hull.
+		nxSetConvexHullVertexGraph(hull, 0);
 		hull->mNbFaces = mInternal.mTriangleCount;
 		hull->mNbVerts = mInternal.mVertexCount;
 		hull->mVerts = static_cast<const IceMaths::Point*>(mInternal.mVertices);
@@ -202,6 +251,8 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& desc)
 		hull->mFaces = faces;
 		mConvexMesh = hull;
 		hull->ComputeVertexNormals();
+		if(!nxBuildConvexHullVertexGraph(hull))
+			return false;
 		}
 	return true;
 	}
