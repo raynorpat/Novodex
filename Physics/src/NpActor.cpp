@@ -26,6 +26,7 @@
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
 #include "NxShape.h"
+#include "NxTriangleMeshShape.h"
 #include "NxBoxShape.h"
 #include "NxBoxShapeDesc.h"
 #include "NxSphereShapeDesc.h"
@@ -541,6 +542,19 @@ static bool __fastcall nxShapeHandleSaveToDesc(void* self, void*,
 	return saved;
 	}
 
+static NxTriangleMesh& __fastcall nxMeshHandleGetTriangleMesh(void* self, void*)
+	{
+	unsigned char* shape = nxBoxHandleInternal(self);
+	const unsigned char* meshObject =
+		*reinterpret_cast<const unsigned char* const*>(shape + 0xe0);
+	if(!meshObject) abort();
+	// MeshShape::nxMeshLoadFromDesc stores the TriangleMesh object pointer in
+	// +0xe0; its public NxTriangleMesh wrapper is at TriangleMesh+0xe4.
+	NxTriangleMesh* mesh = *reinterpret_cast<NxTriangleMesh* const*>(meshObject + 0xe4);
+	if(!mesh) abort();
+	return *mesh;
+	}
+
 static NxReal __fastcall nxShapeHandleGetRadius(void* self, void*)
 	{
 	return *reinterpret_cast<const NxReal*>(nxBoxHandleInternal(self) + 0xe0);
@@ -706,11 +720,11 @@ void* nxShapePublicVtable(unsigned type)
 	if(type == 2u) return nxBoxShapePublicVtable();
 	struct Tables
 		{
-		void* slots[3][37];
+		void* slots[4][37];
 		Tables()
 			{
 			void** box = static_cast<void**>(nxBoxShapePublicVtable());
-			for(unsigned family = 0; family < 3; ++family)
+			for(unsigned family = 0; family < 4; ++family)
 				{
 				for(unsigned slot = 0; slot < 37; ++slot)
 					slots[family][slot] =
@@ -728,6 +742,10 @@ void* nxShapePublicVtable(unsigned type)
 			slots[2][34] = reinterpret_cast<void*>(&nxCapsuleHandleSetHeight);
 			slots[2][35] = reinterpret_cast<void*>(&nxCapsuleHandleGetHeight);
 			slots[2][36] = reinterpret_cast<void*>(&nxShapeHandleSaveToDesc);
+			// NxTriangleMeshShape extends NxShape with saveToDesc and
+			// getTriangleMesh at slots 31 and 32.
+			slots[3][31] = reinterpret_cast<void*>(&nxShapeHandleSaveToDesc);
+			slots[3][32] = reinterpret_cast<void*>(&nxMeshHandleGetTriangleMesh);
 			}
 		};
 	static Tables tables;
@@ -736,6 +754,7 @@ void* nxShapePublicVtable(unsigned type)
 		case 0u: return tables.slots[0];
 		case 1u: return tables.slots[1];
 		case 3u: return tables.slots[2];
+		case 4u: return tables.slots[3];
 		default: return nullptr;
 		}
 	}

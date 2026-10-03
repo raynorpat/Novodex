@@ -652,7 +652,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/78",
       "static_proof": "Partial: Ghidra shows the per-shape-type constructor, descriptor load and public handle allocation. The candidate's factory initializes local pose, composes owner world pose, refreshes it after dynamic record construction, installs reconstructed internal final tables for plane/sphere/box/capsule, and copies their basic descriptor fields. Full constructor and descriptor branches remain open.",
       "dynamic_proof": "Public actor creation probes compare default and rotated shape poses, four internal final-table self-return and center/extent slots, common public shape-handle getters, sphere/capsule public geometry getters, and descriptor fields including the plane tangent basis on the pinned oracle and candidate.",
-      "notes": "Partial factory transcription; mesh and compound vtables and full shape-family behavior remain a Phase 5 gate blocker."
+      "notes": "The single-mesh actor arm now allocates the 0xe8 runtime shape, loads through MESH slot 12, exposes a type-4 public handle, and releases through MESH slot 0. Compound type 5 and other full shape-family branches remain open."
     },
     {
       "id": "phys_fn_000033",
@@ -25415,7 +25415,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/679",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3545",
       "static_proof": "wrapper indirection: stores *(wrapper+4) at +0xe0, increments inner refcount +0x74, stores flags, tail-jumps to BASE slot 1",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsSimulationTests Phase 7 differential creates one NxTriangleMeshShapeDesc through NxScene::createActor, reads the returned NxShape as type 4, calls NxTriangleMeshShape::getTriangleMesh and verifies it is the same public mesh, then releases the actor and mesh. Oracle and candidate transcripts match exactly (stdout_delta=0, stderr_exact=True); this proves the exercised descriptor load and ownership path only.",
       "notes": "",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
@@ -25708,8 +25708,8 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/560",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3590",
       "static_proof": "__thiscall: destroys the embedded collision object through [colobj-vtbl+0] with flag 1 UNCONDITIONALLY (0x00028e93..97), DECREMENTS the bound mesh refcount at mesh+0x74 when non-null (0x00028e99..a6), runs the base-dtor chain, frees this through allocator slot +0x14 when flag&1; MESH vtable .rdata 0x107630 slot 0",
-      "dynamic_proof": "layout dtors2 post-dtor digest b3c6ab70; shape vtable harness flags 0/1 compares allocator free deltas 1/2 and bound mesh refcount decrement 7->6, digest 73b85375 failures=0",
-      "notes": "Destructor vptr restoration awaits installation of the complete candidate mesh table.",
+      "dynamic_proof": "layout dtors2 post-dtor digest b3c6ab70; shape vtable harness flags 0/1 compares allocator free deltas 1/2 and bound mesh refcount decrement 7->6, digest 73b85375 failures=0. NxPhysicsSimulationTests Phase 7 also creates a public mesh shape through NxScene::createActor, retrieves its same mesh through the public handle, then releases actor and mesh with exact oracle/candidate transcripts (stdout_delta=0, stderr_exact=True).",
+      "notes": "The exercised runtime path now installs the candidate MESH table before slot-0 teardown; the rest of the mesh virtual family remains open.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {

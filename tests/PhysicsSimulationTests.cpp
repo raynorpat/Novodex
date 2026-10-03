@@ -21,6 +21,7 @@
 #include "NxMaterial.h"
 #include "NxSimpleTriangleMesh.h"
 #include "NxTriangleMeshDesc.h"
+#include "NxTriangleMeshShapeDesc.h"
 #include "NxBounds3.h"
 #include "NxUserContactReport.h"
 #include "../Physics/src/include/NpSceneGuard.h"
@@ -279,6 +280,24 @@ int wmain(int argc, wchar_t** argv)
 			printf("simulation triangle-mesh scene_owner create=%u\n", sceneMesh != 0);
 			if(sceneMesh)
 				{
+				NxTriangleMeshShapeDesc meshShapeDesc;
+				meshShapeDesc.meshData = sceneMesh;
+				NxActorDesc meshActorDesc;
+				meshActorDesc.shapes.pushBack(&meshShapeDesc);
+				NxActor* const meshActor = broadPhaseScene->createActor(meshActorDesc);
+				printf("simulation triangle-mesh actor=%u shapes=%u\n",
+					meshActor != 0, meshActor ? meshActor->getNbShapes() : 0);
+				NxShape** const actorShapes = meshActor ? meshActor->getShapes() : 0;
+				NxShape* const actorShape = actorShapes ? actorShapes[0] : 0;
+				NxTriangleMeshShape* const publicMeshShape =
+					actorShape ? actorShape->isTriangleMesh() : 0;
+				NxTriangleMesh* const recoveredMesh = publicMeshShape
+					? &publicMeshShape->getTriangleMesh() : 0;
+				printf("simulation triangle-mesh handle type=%u mesh_same=%u\n",
+					actorShape ? actorShape->getType() : NX_SHAPE_COUNT,
+					recoveredMesh == sceneMesh);
+				if(meshActor)
+					broadPhaseScene->releaseActor(*meshActor);
 				sdk->releaseTriangleMesh(*sceneMesh);
 				}
 			NxSimulationHeldSceneWriteLock held = {

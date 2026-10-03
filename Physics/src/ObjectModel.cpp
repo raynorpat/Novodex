@@ -27,6 +27,7 @@ extern "C" void __fastcall NxScenePrunerOwnerDestroy(void* manager, void* owner)
 
 #include <float.h>
 #include <math.h>
+#include <stdlib.h>
 #include <string.h>
 
 // The scene guard pair runs real Foundation-side primitives -- the image
@@ -4261,6 +4262,47 @@ static void** nxPlaneShapeInternalVtable()
 	return table.slot;
 	}
 
+// MESH's 18-entry primary table at .rdata:0x00107630. The actor construction
+// path needs slots 0/1/6/9/12/13/17; the debug and raycast rows remain explicit
+// unsupported entries until their Phase 3 implementations are wired here.
+static void __fastcall nxUnsupportedMeshShapeMethod(void*, void*)
+	{
+	abort();
+	}
+
+static void** nxMeshShapeInternalVtable()
+	{
+	struct Table
+		{
+		void* slot[18];
+		Table()
+			{
+			for(unsigned i = 0; i < 18; ++i)
+				slot[i] = reinterpret_cast<void*>(&nxUnsupportedMeshShapeMethod);
+			slot[0] = nxShapeMethodAddress(&MeshShape::nxMeshScalarDeletingDtor);
+			slot[1] = nxShapeMethodAddress(&ShapeBase::nxApplyDescriptor);
+			slot[2] = nxShapeMethodAddress(&ShapeBase::nxBaseSaveState);
+			slot[3] = reinterpret_cast<void*>(&nxUnsupportedMeshShapeMethod);
+			slot[4] = nxShapeMethodAddress(&MeshShape::nxMeshAccumulateMassCached);
+			slot[5] = reinterpret_cast<void*>(&nxUnsupportedMeshShapeMethod);
+			slot[6] = nxShapeMethodAddress(&ShapeBase::nxApplyOwnerUpdate);
+			slot[7] = nxShapeMethodAddress(&MeshShape::nxMeshSweepPrepared);
+			slot[8] = nxShapeMethodAddress(&MeshShape::nxMeshGetWords44);
+			slot[9] = nxShapeMethodAddress(&MeshShape::nxMeshWorldAABB);
+			slot[10] = nxShapeMethodAddress(&MeshShape::nxMeshTransformCenter);
+			slot[11] = nxShapeMethodAddress(&MeshShape::nxMeshGetWords5C);
+			slot[12] = nxShapeMethodAddress(&MeshShape::nxMeshLoadFromDesc);
+			slot[13] = nxShapeMethodAddress(&MeshShape::nxMeshSaveState);
+			slot[14] = nxShapeMethodAddress(&ShapeBase::nxSelf);
+			slot[15] = slot[14];
+			slot[16] = slot[14];
+			slot[17] = nxShapeMethodAddress(&MeshShape::nxMeshGetMeshWord);
+			}
+		};
+	static Table table;
+	return table.slot;
+	}
+
 // ShapeBase::ShapeBase's prunable, for Scene.cpp's raw shape allocations (the
 // factory does not run the shape constructors): the member built in place
 // (Prunable::Prunable at 0x000255df), the three owner hooks in the image's
@@ -4278,9 +4320,8 @@ void nxShapeFactoryInstallPrunable(void* shape)
 	}
 
 // Install the reconstructed final table on Scene's raw shape allocation.
-// The factory's full per-family constructor and descriptor path remain open;
-// this makes the already reconstructed virtual dispatch reachable on the
-// objects handed to actors.
+// MESH's product path now reaches its recovered descriptor, owner-update,
+// world-bounds, save-state and deletion slots; other family gaps remain open.
 void nxShapeFactoryInstallVtable(void* shape, unsigned type)
 	{
 	void** table = nullptr;
@@ -4290,6 +4331,7 @@ void nxShapeFactoryInstallVtable(void* shape, unsigned type)
 		case 1: table = nxSphereShapeInternalVtable(); break;
 		case 2: table = nxBoxShapeInternalVtable(); break;
 		case 3: table = nxCapsuleShapeInternalVtable(); break;
+		case 4: table = nxMeshShapeInternalVtable(); break;
 		default: break;
 		}
 	if(table) *reinterpret_cast<void***>(shape) = table;
@@ -6520,6 +6562,7 @@ void PlaneShape::nxPlaneDebugRenderDispatch(const void* renderer) const
 MeshShape::MeshShape(void* owner, unsigned argument)
 	: mBase(owner, argument)				// forwarded unchanged: 0x00027dbb..bf
 	{
+	mBase.mVptrSlot = nxMeshShapeInternalVtable();	// .rdata:0x00107630, 0x00027dc4
 	mWordE0 = 0;							// mov [esi+0xe0],0 at 0x00027dca
 	mWordE4 = 0;							// mov [esi+0xe4],0 at 0x00027dd4
 
@@ -6534,6 +6577,14 @@ MeshShape::MeshShape(void* owner, unsigned argument)
 	mBase.mWord9C = reinterpret_cast<NxU32>(object);	// 0x00027dff
 
 	mBase.mSentinelD0 = 4;					// NX_SHAPE_MESH: 0x00027e05
+	}
+
+// Scene.cpp's raw actor-shape factory delegates construction of the embedded
+// collision object here, keeping its allocator-backed hook member valid while
+// the scene unit assigns the public shape-handle table.
+void* nxShapeFactoryConstructMeshHandle(void* memory, void* shape)
+	{
+	return ::new(memory) CollisionObject(shape);
 	}
 
 // phys_fn_001385 (0x00027e60), MESH-table slot 13.

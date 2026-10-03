@@ -243,6 +243,7 @@ void nxShapeSetName(void* shape, const char* name);
 void nxShapeFactoryInitializePose(void* shape, const void* localPose);
 void nxShapeFactoryRefreshPose(void* shape);
 void nxShapeFactoryInstallVtable(void* shape, unsigned type);
+void* nxShapeFactoryConstructMeshHandle(void* memory, void* shape);
 // ShapeBase::nxApplyOwnerUpdate (phys_fn_001315, ObjectModel.cpp) on a shape.
 void nxShapeApplyOwnerUpdate(void* shape, unsigned flags);
 // ObjectModel.cpp's rows the Task 4 chain calls: phys_fn_000012 (the id pool),
@@ -2561,7 +2562,10 @@ static unsigned char* nxRuntimeShapeConstruct(void* memory, unsigned size, unsig
 	void* handle = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	if(handle)
 		{
-		memset(handle, 0, 0x1c);
+		if(type == NX_SHAPE_MESH)
+			nxShapeFactoryConstructMeshHandle(handle, shape);
+		else
+			memset(handle, 0, 0x1c);
 		*reinterpret_cast<void**>(handle) = nxShapePublicVtable(type);
 		*reinterpret_cast<void**>(static_cast<unsigned char*>(handle) + 8) = shape;
 		*reinterpret_cast<void**>(static_cast<unsigned char*>(handle) + 0x18) = shape;
@@ -2585,6 +2589,12 @@ static unsigned char* nxRuntimeShapeConstruct(void* memory, unsigned size, unsig
 // SphereShape::nxSphereLoadFromDesc and its siblings are the listing models.
 static bool nxRuntimeShapeLoad(unsigned char* shape, const NxShapeDesc* descriptor)
 	{
+	if(descriptor->getType() == NX_SHAPE_MESH)
+		{
+		void** table = *reinterpret_cast<void***>(shape);
+		typedef bool (__thiscall* LoadFn)(void*, const void*);
+		return reinterpret_cast<LoadFn>(table[12])(shape, descriptor);
+		}
 	*reinterpret_cast<NxCollisionGroup*>(shape + 0xd8) = descriptor->group;
 	*reinterpret_cast<NxMaterialIndex*>(shape + 0xda) = descriptor->materialIndex;
 	*reinterpret_cast<unsigned*>(shape + 0xc8) = 1u << descriptor->group;
@@ -2658,6 +2668,12 @@ static void nxRuntimeShapeBaseDestroy(unsigned char* shape)
 // then the shape freed through [0x101041bc].
 static void nxRuntimeShapeDelete(unsigned char* shape)
 	{
+	if(*reinterpret_cast<unsigned*>(shape + 0xd0) == NX_SHAPE_MESH)
+		{
+		void** table = *reinterpret_cast<void***>(shape);
+		reinterpret_cast<NxRuntimeShapeDeleteFn>(table[0])(shape, 1);
+		return;
+		}
 	void* handle = *reinterpret_cast<void**>(shape + 0x9c);
 	if(handle)
 		nxFoundationSDKAllocator->free(handle);
@@ -2674,23 +2690,24 @@ static void nxRuntimeShapeDelete(unsigned char* shape)
 // with 1). A built shape's handle takes the NpScene's two lock links
 // ([[scene+0x6cc]+0xc]/+0x10 to handle +0x10/+0x14, 0x1f16-0x1f31) and the
 // shape +8 = [scene+0x540] - 1 (0x1fd1-0x1fdc); without a shape the id goes
-// back to the pool (000028, 0x1fe5). Type 4 (the triangle mesh, 0xe8 B,
-// 001379, which also counts Scene+0x10 and calls 000503) has no runtime
-// family in the candidate and takes the no-shape arm, like types above 4.
+// back to the pool (000028, 0x1fe5). Type 4 uses its 0xe8-byte shape, final
+// MESH table and slot-12 descriptor loader. Compound type 5 and types above
+// it still take the no-shape arm.
 static unsigned char* nxActorShapeFactory(const NxShapeDesc* descriptor, unsigned char* body)
 	{
 	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(body + 4);
 	const unsigned id = nxIdAllocNext(scene->bytes() + 0x6e4);
 	const unsigned type = static_cast<unsigned>(descriptor->getType());
 	unsigned char* shape = 0;
-	if(type <= 3)
+	if(type <= NX_SHAPE_MESH)
 		{
-		static const unsigned sizes[4] = { 0x10c, 0xe4, 0x228, 0xec };
+		static const unsigned sizes[5] = { 0x10c, 0xe4, 0x228, 0xec, 0xe8 };
 		void* memory = nxFoundationSDKAllocator->malloc(sizes[type], NX_MEMORY_PERSISTENT);
 		if(memory)
 			{
 			shape = nxRuntimeShapeConstruct(memory, sizes[type], type, body, id);
-			// The box's slot 12 is 000981 (ObjectModel.cpp nxBoxLoadFromDesc, through
+			// The MESH path uses its final-family slot 12, while the box's slot 12
+			// is 000981 (ObjectModel.cpp nxBoxLoadFromDesc, through
 			// nxShapeFactoryLoadBox, which also stores 000977's facade table at
 			// +0xe0): the dims, the hull rebuild 000973 and BASE slot 1, its al the
 			// load's result (0x10001efd-0x10001f02; scene-raycast block Task 4, box
