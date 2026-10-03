@@ -378,14 +378,55 @@ static void cpmSolveContactRecord0403(NxReal, NxI32, JointSupportRecord* record)
 			(NxReal)((double)arm.x * sign),
 			(NxReal)((double)arm.y * sign),
 			(NxReal)((double)arm.z * sign) };
-		NxReal angularDelta[3];
 		for(unsigned row = 0; row < 3; ++row)
-			angularDelta[row] = (NxReal)(((double)body->mUnknown020[row * 3] * angularInput[0]
-				+ (double)body->mUnknown020[row * 3 + 1] * angularInput[1])
-				+ (double)body->mUnknown020[row * 3 + 2] * angularInput[2]);
-		body->mUnknown010.x = (NxReal)((double)body->mUnknown010.x + angularDelta[0]);
-		body->mUnknown010.y = (NxReal)((double)body->mUnknown010.y + angularDelta[1]);
-		body->mUnknown010.z = (NxReal)((double)body->mUnknown010.z + angularDelta[2]);
+			{
+			const NxReal* matrixRow = body->mUnknown020 + row * 3;
+			NxReal* angularComponent = (&body->mUnknown010.x) + row;
+			if(row == 2)
+				{
+				NxReal angularDelta;
+				__asm
+					{
+					lea eax, angularInput
+					mov edx, matrixRow
+					fld dword ptr [eax + 8]
+					fmul dword ptr [edx + 8]
+					fld dword ptr [eax + 4]
+					fmul dword ptr [edx + 4]
+					faddp st(1), st(0)
+					fld dword ptr [eax]
+					fmul dword ptr [edx]
+					faddp st(1), st(0)
+					fstp angularDelta
+					}
+				*angularComponent = (NxReal)((double)*angularComponent + angularDelta);
+				}
+			else
+				{
+				__asm
+					{
+					lea eax, angularInput
+					mov edx, matrixRow
+					mov ecx, angularComponent
+					push eax
+					push edx
+					push ecx
+					fld dword ptr [eax + 8]
+					fmul dword ptr [edx + 8]
+					fld dword ptr [eax + 4]
+					fmul dword ptr [edx + 4]
+					faddp st(1), st(0)
+					fld dword ptr [eax]
+					fmul dword ptr [edx]
+					faddp st(1), st(0)
+					fadd dword ptr [ecx]
+					fstp dword ptr [ecx]
+					pop ecx
+					pop edx
+					pop eax
+					}
+				}
+			}
 		}
 	}
 

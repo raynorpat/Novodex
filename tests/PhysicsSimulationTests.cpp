@@ -9,6 +9,7 @@
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
 #include "NxSphereShapeDesc.h"
+#include "NxBoxShapeDesc.h"
 #include "NxPlaneShapeDesc.h"
 #include "NxUserContactReport.h"
 
@@ -31,6 +32,22 @@ static void nxPrintActorState(const char* stage, NxActor& actor)
 		nxFloatBits(v.x), nxFloatBits(v.y), nxFloatBits(v.z));
 	}
 
+static void nxPrintBoxActorState(const char* stage, NxActor& actor)
+	{
+	nxPrintActorState(stage, actor);
+	const NxQuat q = actor.getGlobalOrientationQuat();
+	const NxVec3 w = actor.getAngularVelocity();
+	const NxMat34 pose = actor.getGlobalPose();
+	NxReal rotation[9];
+	pose.M.getRowMajor(rotation);
+	printf("simulation box-state stage=%s orientation=%08x.%08x.%08x.%08x angular=%08x.%08x.%08x matrix=%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x\n",
+		stage, nxFloatBits(q.x), nxFloatBits(q.y), nxFloatBits(q.z), nxFloatBits(q.w),
+		nxFloatBits(w.x), nxFloatBits(w.y), nxFloatBits(w.z),
+		nxFloatBits(rotation[0]), nxFloatBits(rotation[1]), nxFloatBits(rotation[2]),
+		nxFloatBits(rotation[3]), nxFloatBits(rotation[4]), nxFloatBits(rotation[5]),
+		nxFloatBits(rotation[6]), nxFloatBits(rotation[7]), nxFloatBits(rotation[8]));
+	}
+
 struct NxSimulationContactReport : NxUserContactReport
 	{
 	unsigned calls;
@@ -41,16 +58,21 @@ struct NxSimulationContactReport : NxUserContactReport
 	unsigned normal[3];
 	unsigned point[3];
 	unsigned separation;
+	unsigned firstCallbackPoints;
+	unsigned firstCallbackPoint[8][4];
 
 	NxSimulationContactReport()
-		: calls(0), events(0), pairs(0), patches(0), points(0), separation(0)
+		: calls(0), events(0), pairs(0), patches(0), points(0), separation(0),
+			firstCallbackPoints(0)
 		{
 		memset(normal, 0, sizeof(normal));
 		memset(point, 0, sizeof(point));
+		memset(firstCallbackPoint, 0, sizeof(firstCallbackPoint));
 		}
 
 	void onContactNotify(NxContactPair& pair, NxU32 eventFlags)
 		{
+		const unsigned callback = calls;
 		++calls;
 		events |= eventFlags;
 		NxContactStreamIterator iterator(pair.stream);
@@ -73,6 +95,15 @@ struct NxSimulationContactReport : NxUserContactReport
 							point[axis] = nxFloatBits(p[axis]);
 							}
 						separation = nxFloatBits(iterator.getSeparation());
+						}
+					if(callback == 0 && firstCallbackPoints < 8)
+						{
+						const NxVec3& p = iterator.getPoint();
+						unsigned* out = firstCallbackPoint[firstCallbackPoints++];
+						out[0] = nxFloatBits(p.x);
+						out[1] = nxFloatBits(p.y);
+						out[2] = nxFloatBits(p.z);
+						out[3] = nxFloatBits(iterator.getSeparation());
 						}
 					}
 				}
@@ -266,6 +297,75 @@ int wmain(int argc, wchar_t** argv)
 		contactReport.separation);
 	nxPrintActorState("contact60", *fallingActor);
 	sdk->releaseScene(*contactScene);
+
+	// The box-plane path exercises a distinct narrow-phase emitter and the
+	// angular contact response. Keep every step in the differential transcript
+	// so the first divergence identifies the responsible solver stage.
+	NxSimulationContactReport boxContactReport;
+	NxSceneDesc boxContactSceneDesc;
+	boxContactSceneDesc.setToDefault();
+	boxContactSceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
+	boxContactSceneDesc.timeStepMethod = NX_TIMESTEP_VARIABLE;
+	boxContactSceneDesc.userContactReport = &boxContactReport;
+	NxScene* boxContactScene = sdk->createScene(boxContactSceneDesc);
+	if(!boxContactScene)
+		{
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("box contact scene creation failed");
+		}
+	NxPlaneShapeDesc boxGround;
+	NxActorDesc boxGroundDesc;
+	boxGroundDesc.shapes.pushBack(&boxGround);
+	NxActor* boxGroundActor = boxContactScene->createActor(boxGroundDesc);
+	NxBoxShapeDesc fallingBox;
+	fallingBox.dimensions = NxVec3(0.5f, 0.5f, 0.5f);
+	NxBodyDesc fallingBoxBody;
+	fallingBoxBody.mass = 1.0f;
+	fallingBoxBody.massSpaceInertia = NxVec3(1.0f / 6.0f, 1.0f / 6.0f, 1.0f / 6.0f);
+	NxActorDesc fallingBoxDesc;
+	fallingBoxDesc.body = &fallingBoxBody;
+	fallingBoxDesc.shapes.pushBack(&fallingBox);
+	fallingBoxDesc.globalPose.t = NxVec3(0.0f, 1.0f, 0.0f);
+	NxActor* fallingBoxActor = boxContactScene->createActor(fallingBoxDesc);
+	if(!boxGroundActor || !fallingBoxActor)
+		{
+		sdk->releaseScene(*boxContactScene);
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("box contact actors creation failed");
+		}
+	boxContactScene->setActorPairFlags(*boxGroundActor, *fallingBoxActor,
+			NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH);
+	nxPrintBoxActorState("boxcontact-init", *fallingBoxActor);
+	for(unsigned step = 0; step < 60; ++step)
+		{
+		boxContactScene->simulate(1.0f / 60.0f);
+		const bool ready = boxContactScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+		const bool fetched = boxContactScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		if(!ready || !fetched)
+			{
+			sdk->releaseScene(*boxContactScene);
+			sdk->release();
+			FreeLibrary(physics);
+			return nxFail("box contact scene result was not ready and fetched");
+			}
+		char boxContactStage[20];
+		sprintf_s(boxContactStage, "boxcontact%u", step);
+		nxPrintBoxActorState(boxContactStage, *fallingBoxActor);
+		}
+	printf("simulation box-contact callbacks=%u events=%08x pairs=%u patches=%u points=%u normal=%08x.%08x.%08x point=%08x.%08x.%08x separation=%08x\n",
+		boxContactReport.calls, boxContactReport.events, boxContactReport.pairs,
+		boxContactReport.patches, boxContactReport.points,
+		boxContactReport.normal[0], boxContactReport.normal[1], boxContactReport.normal[2],
+		boxContactReport.point[0], boxContactReport.point[1], boxContactReport.point[2],
+		boxContactReport.separation);
+	for(unsigned i = 0; i < boxContactReport.firstCallbackPoints; ++i)
+		printf("simulation box-contact first-point=%u xyzs=%08x.%08x.%08x.%08x\n", i,
+			boxContactReport.firstCallbackPoint[i][0], boxContactReport.firstCallbackPoint[i][1],
+			boxContactReport.firstCallbackPoint[i][2], boxContactReport.firstCallbackPoint[i][3]);
+	nxPrintBoxActorState("box-contact60", *fallingBoxActor);
+	sdk->releaseScene(*boxContactScene);
 
 	sdk->release();
 	status = nxReportPairIdentity(pairDirectory);
