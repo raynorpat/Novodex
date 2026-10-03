@@ -16,6 +16,8 @@
 #include "NxRevoluteJointDesc.h"
 #include "NxJoint.h"
 #include "NxMaterial.h"
+#include "NxSimpleTriangleMesh.h"
+#include "NxTriangleMeshDesc.h"
 #include "NxBounds3.h"
 #include "NxUserContactReport.h"
 
@@ -173,6 +175,44 @@ int wmain(int argc, wchar_t** argv)
 		FreeLibrary(physics);
 		return nxFail("SDK creation failed");
 		}
+	// A public mesh factory smoke case. The oracle accepts this valid two-face
+	// descriptor; keeping it in the simulation corpus ensures a rebuilt mesh can
+	// become the next real static-contact fixture rather than remaining an
+	// internal-only asset object.
+	const NxPoint meshPoints[] = {
+		NxPoint(-2.0f, 0.0f, -2.0f), NxPoint(2.0f, 0.0f, -2.0f), NxPoint(-2.0f, 0.0f, 2.0f),
+		NxPoint(2.0f, 0.0f, -2.0f), NxPoint(2.0f, 0.0f, 2.0f), NxPoint(-2.0f, 0.0f, 2.0f)
+		};
+	const NxU32 meshTriangles[] = { 0, 1, 2, 3, 4, 5 };
+	NxTriangleMeshDesc meshDesc;
+	meshDesc.numVertices = sizeof(meshPoints) / sizeof(meshPoints[0]);
+	meshDesc.numTriangles = 2;
+	meshDesc.pointStrideBytes = sizeof(NxPoint);
+	meshDesc.triangleStrideBytes = 3 * sizeof(NxU32);
+	meshDesc.points = meshPoints;
+	meshDesc.triangles = meshTriangles;
+	NxTriangleMesh* const publicMesh = sdk->createTriangleMesh(meshDesc);
+	printf("simulation triangle-mesh create=%u\n", publicMesh != 0);
+	if(publicMesh)
+		{
+		const NxU32* const meshIndices = static_cast<const NxU32*>(publicMesh->getBase(0, NX_ARRAY_TRIANGLES));
+	const NxPoint* const copiedMeshPoints = static_cast<const NxPoint*>(publicMesh->getBase(0, NX_ARRAY_VERTICES));
+	NxTriangleMeshDesc savedMeshDesc;
+	const bool savedMesh = publicMesh->saveToDesc(savedMeshDesc);
+	printf("simulation triangle-mesh data submeshes=%u vertices=%u triangles=%u vertex_format=%u vertex_stride=%u index_format=%u index_stride=%u first_index=%u last_index=%u first_vertex=%08x.%08x.%08x save=%u saved_counts=%u.%u saved_strides=%u.%u\n",
+		publicMesh->getSubmeshCount(), publicMesh->getCount(0, NX_ARRAY_VERTICES),
+		publicMesh->getCount(0, NX_ARRAY_TRIANGLES),
+		publicMesh->getFormat(0, NX_ARRAY_VERTICES), publicMesh->getStride(0, NX_ARRAY_VERTICES),
+		publicMesh->getFormat(0, NX_ARRAY_TRIANGLES), publicMesh->getStride(0, NX_ARRAY_TRIANGLES),
+		meshIndices ? meshIndices[0] : 0, meshIndices ? meshIndices[5] : 0,
+		copiedMeshPoints ? nxFloatBits(copiedMeshPoints[0].x) : 0,
+		copiedMeshPoints ? nxFloatBits(copiedMeshPoints[0].y) : 0,
+		copiedMeshPoints ? nxFloatBits(copiedMeshPoints[0].z) : 0,
+		savedMesh, savedMeshDesc.numVertices, savedMeshDesc.numTriangles,
+		savedMeshDesc.pointStrideBytes, savedMeshDesc.triangleStrideBytes);
+		}
+	if(publicMesh)
+		sdk->releaseTriangleMesh(*publicMesh);
 	JointDescSetGlobalAnchorFn setGlobalAnchor = reinterpret_cast<JointDescSetGlobalAnchorFn>(
 		GetProcAddress(physics, "NxJointDesc_SetGlobalAnchor"));
 	JointDescSetGlobalAxisFn setGlobalAxis = reinterpret_cast<JointDescSetGlobalAxisFn>(

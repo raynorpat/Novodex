@@ -19,6 +19,7 @@
 #include "QhullHost.h"
 #include "NxSimpleTriangleMesh.h"
 #include "NxTriangleMeshDesc.h"
+#include "NxTriangleMesh.h"
 
 class NxStream;
 class Adjacencies;
@@ -128,9 +129,14 @@ established it.
 	+0xa0 the convex mesh     phys_fn_002164 releases slot 0 at 0x00053b84 and
 	                          installs at 0x00053bc6; writer test 0x00053a22
 */
-class TriangleMesh
+class NxTriangleMeshAdapter;
+
+class TriangleMesh : public NxAllocateable
 	{
 	public:
+	TriangleMesh();
+	bool					loadFromDesc(const NxTriangleMeshDesc& desc);
+	void					release();
 	//! phys_fn_002162 (0x000539d0), the whole of the writer. Returns the
 	//! literal 1; there is no error path in it (mov al,1 at 0x00053b64).
 	bool					save(NxStream& stream) const;
@@ -189,6 +195,9 @@ class TriangleMesh
 	//! +0xa8 (the kind C support map slot 11 takes; 001820 at 0x000411f1 /
 	//! 0x000411f7), are outside this class's measured size.
 	void*					mConvexMesh;
+	//! The public NxTriangleMesh is a separate 8-byte wrapper in this image.
+	NxU8					mGapA4[0x40];
+	NxTriangleMeshAdapter*	mPublicMesh;
 	};
 
 // The measured offsets, pinned so a field added in the wrong place fails here
@@ -215,6 +224,28 @@ static_assert(offsetof(TriangleMesh, mPresenceFlagB) == 0x90, "presence flag B i
 static_assert(offsetof(TriangleMesh, mArrayA) == 0x94, "array A is at +0x94");
 static_assert(offsetof(TriangleMesh, mArrayB) == 0x98, "array B is at +0x98");
 static_assert(offsetof(TriangleMesh, mConvexMesh) == 0xa0, "the convex mesh is at +0xa0");
+static_assert(offsetof(TriangleMesh, mPublicMesh) == 0xe4, "public mesh wrapper stored at +0xe4");
+static_assert(sizeof(TriangleMesh) == 0xe8, "TriangleMesh allocation is 0xe8 bytes");
+
+//! Public ABI object allocated separately from TriangleMesh (phys_fn_002251).
+class NxTriangleMeshAdapter : public NxTriangleMesh, public NxAllocateable
+	{
+	public:
+	explicit NxTriangleMeshAdapter(TriangleMesh* mesh) : mMesh(mesh) {}
+	bool loadFromDesc(const NxTriangleMeshDesc& desc);
+	bool saveToDesc(NxTriangleMeshDesc& desc) const;
+	NxU32 getSubmeshCount() const;
+	NxU32 getCount(NxSubmeshIndex submesh, NxInternalArray array) const;
+	NxInternalFormat getFormat(NxSubmeshIndex submesh, NxInternalArray array) const;
+	const void* getBase(NxSubmeshIndex submesh, NxInternalArray array) const;
+	NxU32 getStride(NxSubmeshIndex submesh, NxInternalArray array) const;
+	bool loadPMap(const NxPMap& pmap);
+	bool hasPMap() const;
+	NxU32 getPMapSize() const;
+	bool getPMapData(NxPMap& pmap) const;
+	NxU32 getPMapDensity() const;
+	TriangleMesh* mMesh;
+	};
 
 /**
 TriangleMesh's first two virtuals, slots 0 and 1 of .rdata:0x00108608, are an

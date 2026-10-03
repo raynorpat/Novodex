@@ -8,6 +8,7 @@
 #include "NpPhysicsSDK.h"
 #include "PhysicsSDK.h"
 #include "NpScene.h"
+#include "TriangleMesh.h"
 
 #include <stddef.h>
 #include <stdio.h>
@@ -109,15 +110,16 @@ NxScene* NpPhysicsSDK::getScene(NxU32)
 	return 0;
 	}
 
-NxTriangleMesh* NpPhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc&)
+
+NxTriangleMesh* NpPhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc& desc)
 	{
-	// phys_fn_000242 -> phys_fn_000478; needs TriangleMesh, Phase 4.
-	return 0;
+	return mSdk->createTriangleMesh(desc);
 	}
 
-void NpPhysicsSDK::releaseTriangleMesh(NxTriangleMesh&)
+void NpPhysicsSDK::releaseTriangleMesh(NxTriangleMesh& mesh)
 	{
-	// phys_fn_000244 -> phys_fn_000470; needs TriangleMesh, Phase 4.
+	NxTriangleMeshAdapter& adapter = static_cast<NxTriangleMeshAdapter&>(mesh);
+	mSdk->releaseTriangleMesh(adapter.mMesh);
 	}
 
 // phys_fn_000248 and phys_fn_000250. The mutating slot walks the scenes taking

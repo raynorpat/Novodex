@@ -8,6 +8,7 @@
 #include "PhysicsSDK.h"
 #include "ContactPairManager.h"
 #include "Scene.h"
+#include "TriangleMesh.h"
 #include "NxSceneDesc.h"
 #include "NpPhysicsSDK.h"
 #include "NxDebugRenderable.h"
@@ -302,6 +303,40 @@ NxSceneInternal* PhysicsSDK::createScene(const NxSceneDesc& desc)
 	// +0x10 -- the offsets the oracle's inline growth reads.
 	mScenes.pushBack(reinterpret_cast<Scene*>(scene));
 	return scene;
+	}
+
+NxTriangleMesh* PhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc& desc)
+	{
+	if(!desc.isValid())
+		return 0;
+	TriangleMesh* mesh = NX_NEW(TriangleMesh)();
+	if(!mesh || !mesh->mPublicMesh)
+		{
+		if(mesh) { mesh->release(); NX_DELETE_SINGLE(mesh); }
+		return 0;
+		}
+	if(!mesh->loadFromDesc(desc))
+		{
+		mesh->release();
+		NX_DELETE_SINGLE(mesh);
+		return 0;
+		}
+	mTriangleMeshes.pushBack(mesh);
+	return mesh->mPublicMesh;
+	}
+
+void PhysicsSDK::releaseTriangleMesh(TriangleMesh* mesh)
+	{
+	for(NxU32 i = 0; i < mTriangleMeshes.size(); ++i)
+		if(mTriangleMeshes[i] == mesh)
+			{
+			mTriangleMeshes.replaceWithLast(i);
+			mesh->release();
+			NX_DELETE_SINGLE(mesh);
+			return;
+			}
+	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION, NX_PHYSICS_SDK_CPP, 569,
+		0, "PhysicsSDK::releaseTriangleMesh: double deletion detected!");
 	}
 
 // phys_fn_000468: remove the internal Scene from the SDK's unsorted array,

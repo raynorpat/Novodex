@@ -6,10 +6,188 @@
 |
 \*----------------------------------------------------------------------------*/
 #include "TriangleMesh.h"
+#include "TriangleMeshPolygons.h"
 
 #include "NxStream.h"
 
 #include <string.h>
+
+TriangleMesh::TriangleMesh()
+	{
+	memset(this, 0, sizeof(*this));
+	mVtableSlot = 0;
+	mPolygonTable = gTriangleMeshPolygonTable;
+	mConvexEdgeThreshold = 0.001f;
+	mHeightFieldVerticalAxis = NX_NOT_HEIGHTFIELD;
+	mPublicMesh = NX_NEW(NxTriangleMeshAdapter)(this);
+	}
+
+bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& desc)
+	{
+	if(!desc.isValid() || (desc.flags & (NX_MF_16_BIT_INDICES | NX_MF_CONVEX | NX_MF_COMPUTE_CONVEX)))
+		return false;
+
+	// The ordinary indexed 32-bit route (002260) owns compact copies of both
+	// caller arrays. The model-building continuation is deliberately kept
+	// separate until the mesh interface and OPCODE tree are reconstructed.
+	if(!desc.triangles || desc.triangleStrideBytes < sizeof(NxTriangle32))
+		return false;
+
+	NxUserAllocator* const allocator = nxFoundationSDKAllocator;
+	void* vertices = allocator->malloc(static_cast<size_t>(desc.numVertices) * sizeof(NxPoint), NX_MEMORY_PERSISTENT);
+	void* triangles = allocator->malloc(static_cast<size_t>(desc.numTriangles) * sizeof(NxTriangle32), NX_MEMORY_PERSISTENT);
+	if(!vertices || !triangles)
+		{
+		if(vertices) allocator->free(vertices);
+		if(triangles) allocator->free(triangles);
+		return false;
+		}
+
+	NxU8* const vertexOut = static_cast<NxU8*>(vertices);
+	const NxU8* const vertexIn = static_cast<const NxU8*>(desc.points);
+	NxU32* const remap = static_cast<NxU32*>(allocator->malloc(
+		static_cast<size_t>(desc.numVertices) * sizeof(NxU32), NX_MEMORY_TEMP));
+	if(!remap)
+		{
+		allocator->free(vertices);
+		allocator->free(triangles);
+		return false;
+		}
+	NxU32 uniqueVertices = 0;
+	for(NxU32 i = 0; i < desc.numVertices; ++i)
+		{
+		NxPoint point;
+		memcpy(&point, vertexIn + i * desc.pointStrideBytes, sizeof(point));
+		NxU32 existing = 0;
+		for(; existing < uniqueVertices; ++existing)
+			if(memcmp(vertexOut + existing * sizeof(NxPoint), &point, sizeof(point)) == 0)
+				break;
+		if(existing == uniqueVertices)
+			{
+			memcpy(vertexOut + uniqueVertices * sizeof(NxPoint), &point, sizeof(point));
+				++uniqueVertices;
+			}
+		remap[i] = existing;
+		}
+
+	NxU8* const triangleOut = static_cast<NxU8*>(triangles);
+	const NxU8* const triangleIn = static_cast<const NxU8*>(desc.triangles);
+	for(NxU32 i = 0; i < desc.numTriangles; ++i)
+		{
+		NxTriangle32 triangle;
+		memcpy(&triangle, triangleIn + i * desc.triangleStrideBytes, sizeof(triangle));
+		for(NxU32 corner = 0; corner < 3; ++corner)
+			{
+			if(triangle.v[corner] >= desc.numVertices)
+				{
+				allocator->free(remap);
+				allocator->free(vertices);
+				allocator->free(triangles);
+				return false;
+				}
+			triangle.v[corner] = remap[triangle.v[corner]];
+			}
+		memcpy(triangleOut + i * sizeof(NxTriangle32), &triangle, sizeof(triangle));
+		}
+	allocator->free(remap);
+
+	if(mInternal.mVertices) allocator->free(mInternal.mVertices);
+	if(mInternal.mTriangles) allocator->free(mInternal.mTriangles);
+	mInternal.mVertexCount = uniqueVertices;
+	mInternal.mTriangleCount = desc.numTriangles;
+	mInternal.mVertices = vertices;
+	mInternal.mTriangles = triangles;
+	mInternal.mMaterialIndices = 0;
+	mInternal.mFaceRemap = 0;
+	mInternal.mVertexNormals = 0;
+	mInternal.mModel = 0;
+	mConvexEdgeThreshold = desc.convexEdgeThreshold;
+	mHeightFieldVerticalAxis = desc.heightFieldVerticalAxis;
+	mHeightFieldVerticalExtent = desc.heightFieldVerticalExtent;
+	return true;
+	}
+
+void TriangleMesh::release()
+	{
+	if(mPublicMesh)
+		{
+		NxTriangleMeshAdapter* publicMesh = mPublicMesh;
+		mPublicMesh = 0;
+		NX_DELETE_SINGLE(publicMesh);
+		}
+	NxUserAllocator* const allocator = nxFoundationSDKAllocator;
+	if(mInternal.mVertices) allocator->free(mInternal.mVertices);
+	if(mInternal.mTriangles) allocator->free(mInternal.mTriangles);
+	if(mInternal.mMaterialIndices) allocator->free(mInternal.mMaterialIndices);
+	if(mInternal.mFaceRemap) allocator->free(mInternal.mFaceRemap);
+	if(mInternal.mVertexNormals) allocator->free(mInternal.mVertexNormals);
+	}
+
+bool NxTriangleMeshAdapter::loadFromDesc(const NxTriangleMeshDesc& desc)
+	{ return mMesh->loadFromDesc(desc); }
+
+bool NxTriangleMeshAdapter::saveToDesc(NxTriangleMeshDesc& desc) const
+	{
+	desc.setToDefault();
+	desc.numVertices = mMesh->mInternal.mVertexCount;
+	desc.numTriangles = mMesh->mInternal.mTriangleCount;
+	desc.pointStrideBytes = sizeof(NxPoint);
+	desc.triangleStrideBytes = sizeof(NxTriangle32);
+	desc.points = mMesh->mInternal.mVertices;
+	desc.triangles = mMesh->mInternal.mTriangles;
+	desc.convexEdgeThreshold = mMesh->mConvexEdgeThreshold;
+	desc.heightFieldVerticalAxis = static_cast<NxHeightFieldAxis>(mMesh->mHeightFieldVerticalAxis);
+	desc.heightFieldVerticalExtent = mMesh->mHeightFieldVerticalExtent;
+	return true;
+	}
+
+NxU32 NxTriangleMeshAdapter::getSubmeshCount() const { return mMesh->mInternal.mTriangleCount; }
+
+NxU32 NxTriangleMeshAdapter::getCount(NxSubmeshIndex submesh, NxInternalArray array) const
+	{
+	if(submesh != 0) return 0;
+	switch(array)
+		{
+		case NX_ARRAY_TRIANGLES: return mMesh->mInternal.mTriangleCount;
+		case NX_ARRAY_VERTICES: return mMesh->mInternal.mVertexCount;
+		case NX_ARRAY_NORMALS: return mMesh->mInternal.mVertexNormals ? mMesh->mInternal.mVertexCount : 0;
+		default: return 0;
+		}
+	}
+
+NxInternalFormat NxTriangleMeshAdapter::getFormat(NxSubmeshIndex submesh, NxInternalArray array) const
+	{
+	if(submesh != 0) return NX_FORMAT_NODATA;
+	if(array == NX_ARRAY_TRIANGLES) return NX_FORMAT_INT;
+	if(array == NX_ARRAY_VERTICES || array == NX_ARRAY_NORMALS) return NX_FORMAT_FLOAT;
+	return NX_FORMAT_NODATA;
+	}
+
+const void* NxTriangleMeshAdapter::getBase(NxSubmeshIndex submesh, NxInternalArray array) const
+	{
+	if(submesh != 0) return 0;
+	switch(array)
+		{
+		case NX_ARRAY_TRIANGLES: return mMesh->mInternal.mTriangles;
+		case NX_ARRAY_VERTICES: return mMesh->mInternal.mVertices;
+		case NX_ARRAY_NORMALS: return mMesh->mInternal.mVertexNormals;
+		default: return 0;
+		}
+	}
+
+NxU32 NxTriangleMeshAdapter::getStride(NxSubmeshIndex submesh, NxInternalArray array) const
+	{
+	if(submesh != 0) return 0;
+	if(array == NX_ARRAY_TRIANGLES || array == NX_ARRAY_VERTICES || array == NX_ARRAY_NORMALS)
+		return 12;
+	return 0;
+	}
+
+bool NxTriangleMeshAdapter::loadPMap(const NxPMap&) { return false; }
+bool NxTriangleMeshAdapter::hasPMap() const { return false; }
+NxU32 NxTriangleMeshAdapter::getPMapSize() const { return 0; }
+bool NxTriangleMeshAdapter::getPMapData(NxPMap&) const { return false; }
+NxU32 NxTriangleMeshAdapter::getPMapDensity() const { return 0; }
 
 // The two tags are read and written as DWORDS, so on the little-endian target
 // the bytes on disc are 54 53 58 4e and 48 53 45 4d. Written most significant
