@@ -186,15 +186,51 @@ static NX_INLINE void cpmToBodyLocal0891(const NxU8* body, const NxReal* p, NxRe
 	{
 	const NxReal* m = cpmBodyRotation(body);
 	const NxReal* t = cpmBodyPosition(body);
-	const double dx = (double)p[0] - t[0];
-	const NxReal dy = (NxReal)((double)p[1] - t[1]);
-	const NxReal dz = (NxReal)((double)p[2] - t[2]);
-	const double y = (dx * m[1] + (double)dz * m[7]) + (double)dy * m[4];
-	const double z = (dx * m[2] + (double)dz * m[8]) + (double)dy * m[5];
-	const double x = ((double)dz * m[6] + (double)dy * m[3]) + dx * m[0];
-	out[0] = (NxReal)x;
-	out[1] = (NxReal)y;
-	out[2] = (NxReal)z;
+	NxReal* destination = out;
+	NxReal dy, dz;
+	__asm
+		{
+		mov eax, p
+		mov ecx, t
+		mov edx, m
+		mov ebx, destination
+		fld dword ptr [eax]
+		fsub dword ptr [ecx]
+		fld dword ptr [eax + 4]
+		fsub dword ptr [ecx + 4]
+		fstp dword ptr [dy]
+		fld dword ptr [eax + 8]
+		fsub dword ptr [ecx + 8]
+		fstp dword ptr [dz]
+		fld st(0)
+		fmul dword ptr [edx + 4]
+		fld dword ptr [dz]
+		fmul dword ptr [edx + 28]
+		faddp st(1), st(0)
+		fld dword ptr [dy]
+		fmul dword ptr [edx + 16]
+		faddp st(1), st(0)
+		fld st(1)
+		fmul dword ptr [edx + 8]
+		fld dword ptr [dz]
+		fmul dword ptr [edx + 32]
+		faddp st(1), st(0)
+		fld dword ptr [dy]
+		fmul dword ptr [edx + 20]
+		faddp st(1), st(0)
+		fld dword ptr [dz]
+		fmul dword ptr [edx + 24]
+		fld dword ptr [dy]
+		fmul dword ptr [edx + 12]
+		faddp st(1), st(0)
+		fxch st(3)
+		fmul dword ptr [edx]
+		faddp st(3), st(0)
+		fxch st(2)
+		fstp dword ptr [ebx]
+		fstp dword ptr [ebx + 4]
+		fstp dword ptr [ebx + 8]
+		}
 	}
 
 // A world direction into a body's frame, 000895's form (0x1001f026..0x1001f08b).
@@ -240,11 +276,23 @@ static NX_INLINE void cpmSolveRecord(JointSupportRecord* record, const NxReal* p
 		record->mUnknown040 = (NxReal)((double)record->mUnknown040 * 0.7f);
 	}
 
+static NX_INLINE NxReal cpmRecordAccumulatedImpulse(const JointSupportRecord* record)
+	{
+	NxReal value;
+	memcpy(&value, &record->mUnknown044, sizeof(value));
+	return value;
+	}
+
+static NX_INLINE void cpmSetRecordAccumulatedImpulse(JointSupportRecord* record, NxReal value)
+	{
+	memcpy(&record->mUnknown044, &value, sizeof(value));
+	}
+
 // Semantic model of phys_fn_004403. The velocity error accumulates separately
 // in +0x4c. Its body impulse is reduced by the scaled penetration bias before
 // being accumulated in +0x44; the listing stores that change as a float and
 // clamps the accumulated impulse at zero.
-static void cpmSolveContactRecord0403(NxReal, NxI32, JointSupportRecord* record)
+static void cpmSolveContactRecord0403(NxReal dt, NxI32 pass, JointSupportRecord* record)
 	{
 	NxReal applied;
 	static const NxReal zero = 0.0f;
@@ -330,6 +378,119 @@ static void cpmSolveContactRecord0403(NxReal, NxI32, JointSupportRecord* record)
 		jnp cpm_solve_no_apply
 	cpm_solve_no_apply:
 		}
+	if(applied == 0.0f)
+		{
+		if(pass == 1 && record->mUnknown030)
+			reinterpret_cast<NxFrictionPatch*>(record->mUnknown030)->accumulate(
+				cpmRecordAccumulatedImpulse(record), record, dt);
+		return;
+		}
+
+	const NxVec3& n = record->mUnknown000;
+	for(unsigned side = 0; side < 2; ++side)
+		{
+		JointSupportBody* body = record->mBody[side];
+		if(!body || body->mUnknown00c <= 0.0f)
+			continue;
+		const NxReal sign = side == 0 ? applied : -applied;
+		NxReal scaledImpulseY, scaledImpulseZ;
+		__asm
+			{
+			mov edx, record
+			mov ecx, body
+			fld sign
+			fmul dword ptr [edx + 4]
+			fstp dword ptr [scaledImpulseY]
+			fld sign
+			fmul dword ptr [edx + 8]
+			fstp dword ptr [scaledImpulseZ]
+			fld sign
+			fmul dword ptr [edx]
+			fld dword ptr [ecx + 0ch]
+			fld st(0)
+			fmul st(0), st(2)
+			fld dword ptr [scaledImpulseY]
+			fmul st(0), st(2)
+			fstp dword ptr [scaledImpulseY]
+			fld dword ptr [scaledImpulseZ]
+			fmul st(0), st(2)
+			fstp dword ptr [scaledImpulseZ]
+			fadd dword ptr [ecx]
+			fstp dword ptr [ecx]
+			fld dword ptr [scaledImpulseY]
+			fadd dword ptr [ecx + 4]
+			fstp dword ptr [ecx + 4]
+			fld dword ptr [scaledImpulseZ]
+			fadd dword ptr [ecx + 8]
+			fstp dword ptr [ecx + 8]
+			fstp st(0)
+			fstp st(0)
+			}
+		const NxVec3& arm = side == 0 ? record->mUnknown018 : record->mUnknown024;
+		const NxReal angularInput[3] = {
+			(NxReal)((double)arm.x * sign),
+			(NxReal)((double)arm.y * sign),
+			(NxReal)((double)arm.z * sign) };
+		for(unsigned row = 0; row < 3; ++row)
+			{
+			const NxReal* matrixRow = body->mUnknown020 + row * 3;
+			NxReal* angularComponent = (&body->mUnknown010.x) + row;
+			if(row == 2)
+				{
+				NxReal angularDelta;
+				__asm
+					{
+					lea eax, angularInput
+					mov edx, matrixRow
+					fld dword ptr [eax + 8]
+					fmul dword ptr [edx + 8]
+					fld dword ptr [eax + 4]
+					fmul dword ptr [edx + 4]
+					faddp st(1), st(0)
+					fld dword ptr [eax]
+					fmul dword ptr [edx]
+					faddp st(1), st(0)
+					fstp angularDelta
+					}
+				*angularComponent = (NxReal)((double)*angularComponent + angularDelta);
+				}
+			else
+				{
+				__asm
+					{
+					lea eax, angularInput
+					mov edx, matrixRow
+					mov ecx, angularComponent
+					push eax
+					push edx
+					push ecx
+					fld dword ptr [eax + 8]
+					fmul dword ptr [edx + 8]
+					fld dword ptr [eax + 4]
+					fmul dword ptr [edx + 4]
+					faddp st(1), st(0)
+					fld dword ptr [eax]
+					fmul dword ptr [edx]
+					faddp st(1), st(0)
+					fadd dword ptr [ecx]
+					fstp dword ptr [ecx]
+					pop ecx
+					pop edx
+					pop eax
+					}
+				}
+			}
+		}
+	if(pass == 1 && record->mUnknown030)
+		{
+		NxFrictionPatch* patch = reinterpret_cast<NxFrictionPatch*>(record->mUnknown030);
+		patch->accumulate(cpmRecordAccumulatedImpulse(record), record, dt);
+		}
+	}
+
+// Apply a solved record impulse using the scene island's live body view.
+static void cpmApplyContactImpulse(JointSupportRecord* record, NxReal applied)
+	{
 	if(applied == 0.0f)
 		return;
 
@@ -430,8 +591,100 @@ static void cpmSolveContactRecord0403(NxReal, NxI32, JointSupportRecord* record)
 		}
 	}
 
-// phys_fn_004176's record pass for the live contact kind. The schedule and
-// body-view writeback remain at the exact 000611 island boundary.
+// phys_fn_004176 dispatches kind 4 to the tangential-friction row. The
+// accumulated impulse is symmetric about zero; once it exceeds the static
+// bound, it is clamped to the dynamic-friction bound.
+static void cpmSolveFrictionRecord0401(NxReal dt, NxI32 pass, JointSupportRecord* record)
+	{
+	if(record->mFlags & 0x20)
+		return;
+	NxReal applied;
+	__asm
+		{
+		mov edx, record
+		mov ecx, dword ptr [edx + 10h]
+		test ecx, ecx
+		jz cpm_friction_no_body0
+		fld dword ptr [ecx + 18h]
+		fmul dword ptr [edx + 20h]
+		fld dword ptr [ecx + 14h]
+		fmul dword ptr [edx + 1ch]
+		faddp st(1), st(0)
+		fld dword ptr [ecx + 8]
+		fmul dword ptr [edx + 8]
+		faddp st(1), st(0)
+		fld dword ptr [ecx + 4]
+		fmul dword ptr [edx + 4]
+		faddp st(1), st(0)
+		fld dword ptr [ecx]
+		fmul dword ptr [edx]
+		faddp st(1), st(0)
+		fld dword ptr [ecx + 10h]
+		fmul dword ptr [edx + 18h]
+		faddp st(1), st(0)
+		jmp cpm_friction_body1
+	cpm_friction_no_body0:
+		fldz
+	cpm_friction_body1:
+		mov eax, dword ptr [edx + 14h]
+		test eax, eax
+		jz cpm_friction_relative_ready
+		fld dword ptr [eax + 18h]
+		fmul dword ptr [edx + 2ch]
+		fld dword ptr [eax + 14h]
+		fmul dword ptr [edx + 28h]
+		faddp st(1), st(0)
+		fld dword ptr [eax + 8]
+		fmul dword ptr [edx + 8]
+		faddp st(1), st(0)
+		fld dword ptr [eax + 4]
+		fmul dword ptr [edx + 4]
+		faddp st(1), st(0)
+		fld dword ptr [edx + 24h]
+		fmul dword ptr [eax + 10h]
+		faddp st(1), st(0)
+		fld dword ptr [eax]
+		fmul dword ptr [edx]
+		faddp st(1), st(0)
+		fsubp st(1), st(0)
+	cpm_friction_relative_ready:
+		fadd dword ptr [edx + 34h]
+		fmul dword ptr [edx + 3ch]
+		fchs
+		fst dword ptr [applied]
+		fadd dword ptr [edx + 44h]
+		fld st(0)
+		fabs
+		fcom dword ptr [edx + 48h]
+		fnstsw ax
+		test ah, 41h
+		jnz cpm_friction_no_clamp
+		mov ebx, dword ptr [edx + 0ch]
+		fld dword ptr [edx + 4ch]
+		fdiv st(0), st(1)
+		or ebx, 40h
+		mov dword ptr [edx + 0ch], ebx
+		fmul dword ptr [edx + 48h]
+		fmulp st(2), st(0)
+		fstp st(0)
+		fld st(0)
+		fsub dword ptr [edx + 44h]
+		fstp dword ptr [applied]
+		jmp cpm_friction_impulse_ready
+	cpm_friction_no_clamp:
+		fstp st(0)
+	cpm_friction_impulse_ready:
+		fstp dword ptr [edx + 44h]
+		fstp st(0)
+		}
+	cpmApplyContactImpulse(record, applied);
+	if(pass == 1 && record->mUnknown030)
+		reinterpret_cast<NxFrictionPatch*>(record->mUnknown030)->accumulate(
+			cpmRecordAccumulatedImpulse(record), record, dt);
+	}
+
+// phys_fn_004176's record pass for normal and friction contacts. The schedule
+// and body-view writeback remain at the exact 000611 island boundary.
 void __cdecl cpmSolveSceneContactRecords(NxSceneInternal* scene, NxU32 maxIterations)
 	{
 	const NxReal dt = scene->at<NxReal>(0x548);
@@ -441,13 +694,19 @@ void __cdecl cpmSolveSceneContactRecords(NxSceneInternal* scene, NxU32 maxIterat
 		for(NxU32 i = 0; i < count; ++i)
 			{
 			JointSupportRecord* record = records + i;
-			if((record->mFlags & 0x1f) != 0)
+			const NxU32 kind = record->mFlags & 0x1f;
+			if(kind != 0 && kind != 4)
 				continue;
 			const JointSupportBody* a = record->mBody[0];
 			const JointSupportBody* b = record->mBody[1];
 			if((a && a->mUnknown05c >= (NxU32)pass)
 				|| (b && b->mUnknown05c >= (NxU32)pass))
-				cpmSolveContactRecord0403(dt, pass, record);
+				{
+				if(kind == 0)
+					cpmSolveContactRecord0403(dt, pass, record);
+				else
+					cpmSolveFrictionRecord0401(dt, pass, record);
+				}
 			}
 	for(NxU32 i = 0; i < scene->at<NxU32>(0x5b0); ++i)
 		{
@@ -458,11 +717,15 @@ void __cdecl cpmSolveSceneContactRecords(NxSceneInternal* scene, NxU32 maxIterat
 	for(NxU32 i = 0; i < count; ++i)
 		{
 		JointSupportRecord* record = records + i;
-		if((record->mFlags & 0x1f) != 0)
+		const NxU32 kind = record->mFlags & 0x1f;
+		if(kind != 0 && kind != 4)
 			continue;
-		if(record->mUnknown034 <= 0.0f)
+		if(kind != 0 || record->mUnknown034 <= 0.0f)
 			record->mUnknown034 = 0.0f;
-		cpmSolveContactRecord0403(dt, -1, record);
+		if(kind == 0)
+			cpmSolveContactRecord0403(dt, -1, record);
+		else
+			cpmSolveFrictionRecord0401(dt, -1, record);
 		}
 	}
 
