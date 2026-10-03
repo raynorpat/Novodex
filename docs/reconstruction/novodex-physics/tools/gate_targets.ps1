@@ -5140,41 +5140,37 @@ $NxRequiredCoverageLines = [ordered] @{
         # sides, under 0x027f and 0x0f7f, with a zeroing recording allocator, each side's
         # QHULL_*.obj files in a directory of its own (units/convex-cooking-contract.md,
         # differentials A and B), and the host's size slot 003265 called directly. The exact
-        # families are registered whole. hull_create_qhull
-        # and hull_compute_qhull (two inputs that differ under 0x027f -- box: vendored qhull
-        # (reproduced by hull_qhull_direct); clusters: not reproduced by qhull alone, open
-        # (qhull-gap Task 5; candidates: allocation pattern, qh_gethash address hashing))
-        # and the four _obj families (the OBJ text as tokens; the 2003 CRT prints -0.0
-        # without its sign) are DIVERGENT, registered up to the oracle digest, and held by
-        # kDivergentCeilings/kLengthCeilings. The pairs above keep printing where they were;
-        # the pair below carries the totals.
+        # families are registered whole. The two historical 0x027f regression partitions
+        # hull_create_qhull and hull_compute_qhull now compare exact wrapper output; the four
+        # _obj families compare tokenized OBJ text (the 2003 CRT prints -0.0 without its sign).
+        # The pairs above keep printing where they were; the pair below carries the totals.
         'thirdparty name=hull_host_size rva=0x0007e520 owner=phys_fn_003265 source=QhullHost.cpp words=15 oracle=c9faaedb mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_create rva=0x0007ea10 owner=phys_fn_003279 source=QhullHost.cpp,Quantizer.cpp words=23542 oracle=1cf4b7ed mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty name=hull_create_qhull rva=0x0007ea10 owner=phys_fn_003279 source=QhullHost.cpp,Quantizer.cpp words=442 oracle=980dbb03',
+        'thirdparty name=hull_create_qhull rva=0x0007ea10 owner=phys_fn_003279 source=QhullHost.cpp,Quantizer.cpp words=442 oracle=980dbb03 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_create_obj rva=0x0007dea0 owner=phys_fn_003247 source=QhullHost.cpp words=5001 oracle=af04f879',
         'thirdparty name=hull_create_pc64 rva=0x0007ea10 owner=phys_fn_003279 source=QhullHost.cpp,Quantizer.cpp words=24047 oracle=c32b26d1 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_create_pc64_obj rva=0x0007dea0 owner=phys_fn_003247 source=QhullHost.cpp words=5022 oracle=28e98259',
         'thirdparty name=hull_compute rva=0x00054920 owner=phys_fn_002233 source=TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp words=12128 oracle=8a6e6bdb mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty name=hull_compute_qhull rva=0x00054920 owner=phys_fn_002233 source=TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp words=454 oracle=dae9e9bd',
+        'thirdparty name=hull_compute_qhull rva=0x00054920 owner=phys_fn_002233 source=TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp words=454 oracle=dae9e9bd mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_compute_obj rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=122 oracle=bc33134f',
         'thirdparty name=hull_compute_pc64 rva=0x00054920 owner=phys_fn_002233 source=TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp words=12633 oracle=f5a778d6 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_compute_pc64_obj rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=122 oracle=4ebf7157',
-        'thirdparty coverage driven=88 divergent=33 words=1719545 layout_checks=47',
-        'thirdparty oracle digest=87804f45',
+        'thirdparty coverage driven=102 divergent=30 words=2478228 layout_checks=47',
+        'thirdparty oracle digest=0bb73e7d',
         # qhull-gap Task 5 (the Task 4e review): the byte digest of every QHULL_*.obj of
         # the Task 4e families after dropping the sign of a printed -0.000 (the two CRTs'
         # one known difference), exact and registered whole; and hull_qhull_direct(_x87),
-        # the two inputs of hull_create_qhull run through qhull alone (nxQhullRun, "o"),
-        # DIVERGENT, registered up to the oracle digest and held by kDivergentCeilings. The
-        # pairs above keep printing where they were; the pair below carries the totals.
+        # the two inputs of hull_create_qhull run through qhull alone (nxQhullRun, "o"). The
+        # discrete output is exact; the x87 numeric tape remains divergent. The pairs above
+        # keep printing where they were; the pair below carries the totals.
         'thirdparty name=hull_create_objbytes rva=0x0007dea0 owner=phys_fn_003247 source=QhullHost.cpp words=18 oracle=ef34c50f mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_create_pc64_objbytes rva=0x0007dea0 owner=phys_fn_003247 source=QhullHost.cpp words=18 oracle=99ca1d01 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_compute_objbytes rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=2 oracle=eebf5792 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_compute_pc64_objbytes rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=2 oracle=16381ab0 mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty name=hull_qhull_direct rva=0x0007d180 owner=phys_fn_003234 source=qhull.c,poly.c,poly2.c,merge.c,geom.c,geom2.c,qset.c,mem.c,global.c words=812 oracle=12922cc6',
+        'thirdparty name=hull_qhull_direct rva=0x0007d180 owner=phys_fn_003234 source=qhull.c,poly.c,poly2.c,merge.c,geom.c,geom2.c,qset.c,mem.c,global.c words=812 oracle=12922cc6 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_qhull_direct_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=410 oracle=27d5b5e1',
-        'thirdparty coverage driven=94 divergent=35 words=1720807 layout_checks=47',
-        'thirdparty oracle digest=5d3c9ff1'
+        'thirdparty coverage driven=108 divergent=31 words=2479490 layout_checks=47',
+        'thirdparty oracle digest=cabcc2e9'
         'thirdparty coverage driven=71 divergent=25 words=1500640 layout_checks=47',
         'thirdparty oracle digest=a6ae0830',
         # convex-mesh gap Task 2c: the ICE-shaped rows with no vendored source,

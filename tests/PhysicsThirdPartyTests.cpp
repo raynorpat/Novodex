@@ -11182,16 +11182,12 @@ static unsigned nxHullPoints(int set, float* out, unsigned* stride)
 static const int kHullSets = 20;
 static const int kHullComputeSets = 19;		// every set but the empty one (see nxDriveConvexCooking)
 
-// The runs whose hull differs under 0x027f, measured: the box of the set
-// that welds to two points (12) and the short quantization of the clusters
-// (17). qhull's input is the same on both sides, point for point (the stderr
-// probe NXHULL_PROBE=1 prints a digest of the vertex buffer when runQhull
-// allocates its double array, and the two sides print the same). Box:
-// vendored qhull (reproduced by hull_qhull_direct); clusters: not reproduced
-// by qhull alone -- open (qhull-gap Task 5; candidates: allocation pattern,
-// qh_gethash address hashing). Under 0x0f7f both runs are exact, and they
-// stay in the 0x0f7f families.
-static bool nxHullQhullDivergent(int set, unsigned flags)
+// The historical 0x027f regression inputs: the box that welds to two points
+// (12) and the short-quantized clusters (17). Keep them in separate report
+// rows so their wrapper results stay independently pinned even after the
+// CreateConvexHull/computeHull tapes became exact. The direct qhull double
+// tape still has a measured x87 divergence; its discrete output is exact.
+static bool nxHullQhullProbeCase(int set, unsigned flags)
 	{
 	return (set == 12 || set == 17) && flags == 0xb7;
 	}
@@ -11498,23 +11494,23 @@ static void nxDriveConvexCooking(const NxOracleRows& o, bool selfOnly)
 			gHullBytesCur[side] = &gHullBytes[w][side];
 			}
 		for(unsigned r = 0; r < count; ++r)
-			if(!(w == 0 && nxHullQhullDivergent(runs[r].set, runs[r].flags)))
+			if(!(w == 0 && nxHullQhullProbeCase(runs[r].set, runs[r].flags)))
 				nxHullCreateRun(o, runs[r], kWords[w], (int) r, selfOnly);
 		nxHullDump(kCreateNames[w]);
 		nxReportTapes(gHullTape[0], gHullTape[1], kCreateNames[w], "0x0007ea10", "phys_fn_003279",
 			"QhullHost.cpp,Quantizer.cpp", selfOnly, 0);
 		if(w == 0)
 			{
-			// DIVERGENT: the runs whose qhull diverges under 0x027f (see
-			// nxHullQhullDivergent), in a family of their own.
+			// Keep the historical 0x027f qhull regression cases in their own
+			// exact-result family.
 			gHullTape[0].reset();
 			gHullTape[1].reset();
 			for(unsigned r = 0; r < count; ++r)
-				if(nxHullQhullDivergent(runs[r].set, runs[r].flags))
+				if(nxHullQhullProbeCase(runs[r].set, runs[r].flags))
 					nxHullCreateRun(o, runs[r], kWords[w], (int) r, selfOnly);
 			nxHullDump("hull_create_qhull");
 			nxReportTapes(gHullTape[0], gHullTape[1], "hull_create_qhull", "0x0007ea10", "phys_fn_003279",
-				"QhullHost.cpp,Quantizer.cpp", selfOnly, kDivergent);
+				"QhullHost.cpp,Quantizer.cpp", selfOnly, 0);
 			}
 		nxReportTapes(gHullText[0], gHullText[1], kCreateTextNames[w], "0x0007dea0", "phys_fn_003247",
 			"QhullHost.cpp", selfOnly, 0);
@@ -11542,7 +11538,7 @@ static void nxDriveConvexCooking(const NxOracleRows& o, bool selfOnly)
 			}
 		const unsigned meshFlags = NX_MF_CONVEX | NX_MF_COMPUTE_CONVEX;
 		for(int set = 0; set < kHullComputeSets; ++set)
-			if(!(w == 0 && nxHullQhullDivergent(set, 0xb7)))
+			if(!(w == 0 && nxHullQhullProbeCase(set, 0xb7)))
 				nxHullComputeRun(o, set, meshFlags, kWords[w], set, foundation, selfOnly);
 		nxHullComputeRun(o, 1, meshFlags | NX_MF_16_BIT_INDICES, kWords[w], kHullComputeSets, foundation, selfOnly);
 		nxHullComputeRun(o, 3, meshFlags | NX_MF_16_BIT_INDICES, kWords[w], kHullComputeSets + 1, foundation, selfOnly);
@@ -11554,11 +11550,11 @@ static void nxDriveConvexCooking(const NxOracleRows& o, bool selfOnly)
 			gHullTape[0].reset();
 			gHullTape[1].reset();
 			for(int set = 0; set < kHullComputeSets; ++set)
-				if(nxHullQhullDivergent(set, 0xb7))
+				if(nxHullQhullProbeCase(set, 0xb7))
 					nxHullComputeRun(o, set, meshFlags, kWords[w], set, foundation, selfOnly);
 			nxHullDump("hull_compute_qhull");
 			nxReportTapes(gHullTape[0], gHullTape[1], "hull_compute_qhull", "0x00054920", "phys_fn_002233",
-				"TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp", selfOnly, kDivergent);
+				"TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp", selfOnly, 0);
 			}
 		nxReportTapes(gHullText[0], gHullText[1], kComputeTextNames[w], "0x0007e050", "phys_fn_003251",
 			"QhullHost.cpp", selfOnly, 0);
@@ -11602,8 +11598,9 @@ static void nxDriveConvexCooking(const NxOracleRows& o, bool selfOnly)
 // the process's 0x027f. The points are the candidate cleanupVertices' output
 // for each set with NovodeX's arguments (weld, normalise, reduce to 256, a
 // zeroing allocator): the buffer both CreateConvexHull runs hand qhull, which
-// the NXHULL_PROBE digest shows is identical on the two sides. So whatever
-// differs here differs in qhull alone.
+// the NXHULL_PROBE digest shows is identical on the two sides. The discrete
+// output tape is exact; the separate x87 tape pins the remaining numeric drift
+// inside qhull.
 static void nxDriveConvexCookingBytes(const NxOracleRows& o, bool selfOnly)
 	{
 	static const char* const kBytesNames[4] =
@@ -11742,7 +11739,7 @@ static void nxDriveConvexCookingBytes(const NxOracleRows& o, bool selfOnly)
 		}
 	*hostSlot = shippedHost;
 	nxReport("hull_qhull_direct", "0x0007d180", "phys_fn_003234",
-		"qhull.c,poly.c,poly2.c,merge.c,geom.c,geom2.c,qset.c,mem.c,global.c", selfOnly, kDivergent);
+		"qhull.c,poly.c,poly2.c,merge.c,geom.c,geom2.c,qset.c,mem.c,global.c", selfOnly, 0);
 	nxReportTapes(gOracleTapeX87, gCandidateTapeX87, "hull_qhull_direct_x87", "0x0005c5c0", "phys_fn_002425",
 		"geom.c,geom2.c,merge.c", selfOnly, kDivergent);
 	}
