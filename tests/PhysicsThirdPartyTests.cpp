@@ -11741,7 +11741,7 @@ static void nxDriveConvexCookingBytes(const NxOracleRows& o, bool selfOnly)
 	nxReport("hull_qhull_direct", "0x0007d180", "phys_fn_003234",
 		"qhull.c,poly.c,poly2.c,merge.c,geom.c,geom2.c,qset.c,mem.c,global.c", selfOnly, 0);
 	nxReportTapes(gOracleTapeX87, gCandidateTapeX87, "hull_qhull_direct_x87", "0x0005c5c0", "phys_fn_002425",
-		"geom.c,geom2.c,merge.c", selfOnly, kDivergent);
+		"geom.c,geom2.c,merge.c", selfOnly, 0);
 	}
 
 
