@@ -30,12 +30,17 @@ class NxMeshContactReport : public NxUserContactReport
 	NxActor* expectedSphere;
 	unsigned calls;
 	unsigned events;
+	unsigned patchCount;
+	unsigned firstPatchPoints;
 	unsigned pointCount;
 	unsigned firstPoint[3];
+	unsigned firstNormal[3];
+	unsigned secondNormal[3];
 	unsigned firstSeparation;
 	NxMeshContactReport(NxActor* ground, NxActor* sphere)
-		: expectedGround(ground), expectedSphere(sphere), calls(0), events(0), pointCount(0),
-			firstPoint(), firstSeparation(0) {}
+		: expectedGround(ground), expectedSphere(sphere), calls(0), events(0), patchCount(0),
+			firstPatchPoints(0), pointCount(0),
+			firstPoint(), firstNormal(), secondNormal(), firstSeparation(0) {}
 	virtual void onContactNotify(NxContactPair& pair, NxU32 eventFlags)
 		{
 		if(pair.actors[0] != expectedGround || pair.actors[1] != expectedSphere)
@@ -46,6 +51,16 @@ class NxMeshContactReport : public NxUserContactReport
 		while(iterator.goNextPair())
 			while(iterator.goNextPatch())
 				{
+				++patchCount;
+				if(patchCount == 1)
+					firstPatchPoints = iterator.getNumPoints();
+				const NxVec3 normal = iterator.getPatchNormal();
+				if(patchCount == 2)
+					{
+					secondNormal[0] = nxFloatBits(normal.x);
+					secondNormal[1] = nxFloatBits(normal.y);
+					secondNormal[2] = nxFloatBits(normal.z);
+					}
 				while(iterator.goNextPoint())
 					{
 					const NxVec3 point = iterator.getPoint();
@@ -54,6 +69,9 @@ class NxMeshContactReport : public NxUserContactReport
 						firstPoint[0] = nxFloatBits(point.x);
 						firstPoint[1] = nxFloatBits(point.y);
 						firstPoint[2] = nxFloatBits(point.z);
+						firstNormal[0] = nxFloatBits(normal.x);
+						firstNormal[1] = nxFloatBits(normal.y);
+						firstNormal[2] = nxFloatBits(normal.z);
 						firstSeparation = nxFloatBits(iterator.getSeparation());
 						}
 					++pointCount;
@@ -158,8 +176,11 @@ int wmain(int argc, wchar_t** argv)
 	NxVec3 velocity;
 	sphere->getGlobalPosition(position);
 	sphere->getLinearVelocity(velocity);
-	printf("simulation mesh-contact calls=%u events=%08x y=%08x vy=%08x\n",
-		report.calls, report.events, nxFloatBits(position.y), nxFloatBits(velocity.y));
+	printf("simulation mesh-contact calls=%u events=%08x patches=%u firstPatchPoints=%u points=%u normal=%08x.%08x.%08x secondNormal=%08x.%08x.%08x separation=%08x y=%08x vy=%08x\n",
+		report.calls, report.events, report.patchCount, report.firstPatchPoints, report.pointCount,
+		report.firstNormal[0], report.firstNormal[1], report.firstNormal[2],
+		report.secondNormal[0], report.secondNormal[1], report.secondNormal[2],
+		report.firstSeparation, nxFloatBits(position.y), nxFloatBits(velocity.y));
 
 	// The indexed triangles wind their front faces upward. The shipped sphere/
 	// mesh row rejects an overlapping sphere below an ordinary mesh.
@@ -167,6 +188,8 @@ int wmain(int argc, wchar_t** argv)
 	sphere->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
 	report.calls = 0;
 	report.events = 0;
+	report.patchCount = 0;
+	report.firstPatchPoints = 0;
 	report.pointCount = 0;
 	for(unsigned step = 0; step < 30; ++step)
 		{
@@ -201,9 +224,11 @@ int wmain(int argc, wchar_t** argv)
 		}
 	sphere->getGlobalPosition(position);
 	sphere->getLinearVelocity(velocity);
-	printf("simulation mesh-edge steps=%u calls=%u events=%08x points=%u point=%08x.%08x.%08x separation=%08x\n",
+	printf("simulation mesh-edge steps=%u calls=%u events=%08x points=%u point=%08x.%08x.%08x normal=%08x.%08x.%08x separation=%08x y=%08x vy=%08x\n",
 		edgeSteps, report.calls, report.events, report.pointCount,
-		report.firstPoint[0], report.firstPoint[1], report.firstPoint[2], report.firstSeparation);
+		report.firstPoint[0], report.firstPoint[1], report.firstPoint[2],
+		report.firstNormal[0], report.firstNormal[1], report.firstNormal[2],
+		report.firstSeparation, nxFloatBits(position.y), nxFloatBits(velocity.y));
 	sphere->setGlobalPosition(NxVec3(-30.0f, 20.0f, 20.0f));
 	sphere->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
 
@@ -221,6 +246,8 @@ int wmain(int argc, wchar_t** argv)
 	sphere->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
 	report.calls = 0;
 	report.events = 0;
+	report.patchCount = 0;
+	report.firstPatchPoints = 0;
 	report.pointCount = 0;
 	scene->simulate(1.0f / 60.0f);
 	if(!scene->checkResults(NX_RIGID_BODY_FINISHED, true)

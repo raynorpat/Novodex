@@ -1,8 +1,9 @@
 // Sphere/triangle-mesh contact generation (matrix A [SPHERE][MESH]).
 // Matrix A [SPHERE][MESH]. The handler queries the owned OPCODE model for
 // sphere candidates and reproduces the ordinary-mesh face-side rejection
-// before constructing the point/triangle contact stream. Heightfield-specific
-// normals, all of 001927's edge cases and matrix-B overlap remain open.
+// before constructing the point/triangle contact stream. The tested ordinary-
+// mesh face and one boundary-edge normal path are exact. Heightfield-specific
+// normals, remaining edge/corner cases and broader mesh response remain open.
 
 #include "ContactGeneration.h"
 #include "NxTriangleDistance.h"
@@ -27,6 +28,41 @@ static NxU32 nxSphereMeshBits(NxReal value)
 	NxU32 result;
 	memcpy(&result, &value, sizeof(result));
 	return result;
+	}
+
+static void nxSphereMeshNormalizeDelta(const NxVec3& delta,
+	double distanceSquared, NxVec3& normal)
+	{
+	// The oracle-matching path keeps the double squared-distance in x87 through
+	// sqrt, reciprocal and each component product. Narrowing either value changes
+	// the observed patch normal by one or more ULPs.
+	const NxReal deltaX = delta.x;
+	const NxReal deltaY = delta.y;
+	const NxReal deltaZ = delta.z;
+	NxReal nx;
+	NxReal ny;
+	NxReal nz;
+	__asm
+		{
+		fld distanceSquared
+		fsqrt
+		fld1
+		fdiv st(0), st(1)
+		fld deltaX
+		fmul st(0), st(1)
+		fstp nx
+		fld deltaY
+		fmul st(0), st(1)
+		fstp ny
+		fld deltaZ
+		fmul st(0), st(1)
+		fstp nz
+		fstp st(0)
+		fstp st(0)
+		}
+	normal.x = nx;
+	normal.y = ny;
+	normal.z = nz;
 	}
 
 static void nxSphereMeshToLocal(const NxCollisionShape* meshShape,
@@ -142,12 +178,8 @@ void __cdecl NxContactSphereMesh(const NxCollisionShape* sphere,
 
 		NxVec3 contactDelta(centerLocal.x - closestLocal.x,
 			centerLocal.y - closestLocal.y, centerLocal.z - closestLocal.z);
-		NxVec3 normalLocal(contactDelta);
-		const NxReal distance = nxSphereMeshSqrt(distanceSquared);
-		const NxReal inverseDistance = 1.0f / distance;
-		normalLocal.x *= inverseDistance;
-		normalLocal.y *= inverseDistance;
-		normalLocal.z *= inverseDistance;
+		NxVec3 normalLocal;
+		nxSphereMeshNormalizeDelta(contactDelta, distanceSquared, normalLocal);
 		NxVec3 normalWorld;
 		nxSphereMeshToWorldVector(meshShape, normalLocal, normalWorld);
 

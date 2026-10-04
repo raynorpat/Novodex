@@ -18,6 +18,7 @@ void __cdecl NxContactPlaneSphere(const NxCollisionShape*, const NxCollisionShap
 void __cdecl NxContactPlaneBox(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*) {}
 void __cdecl NxContactPlaneCapsule(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*) {}
 void __cdecl NxContactSphereSphere(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*) {}
+void __cdecl NxContactSphereMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*) {}
 void __cdecl NxContactSphereBox(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*) {}
 void __cdecl NxContactSphereCapsule(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*) {}
 void __cdecl NxContactBoxBox(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*) {}
@@ -28,6 +29,7 @@ bool __cdecl NxOverlapPlaneSphere(const NxCollisionShape*, const NxCollisionShap
 bool __cdecl NxOverlapPlaneBox(const NxCollisionShape*, const NxCollisionShape*) { return false; }
 bool __cdecl NxOverlapPlaneCapsule(const NxCollisionShape*, const NxCollisionShape*) { return false; }
 bool __cdecl NxOverlapSphereSphere(const NxCollisionShape*, const NxCollisionShape*) { return false; }
+bool __cdecl NxOverlapSphereMesh(const NxCollisionShape*, const NxCollisionShape*, void*) { return false; }
 bool __cdecl NxOverlapSphereBox(const NxCollisionShape*, const NxCollisionShape*) { return false; }
 bool __cdecl NxOverlapSphereCapsule(const NxCollisionShape*, const NxCollisionShape*) { return false; }
 bool __cdecl NxOverlapBoxBox(const NxCollisionShape*, const NxCollisionShape*) { return false; }

@@ -3139,11 +3139,11 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsMeshSimulationTests' = @(
         # Full public path: construct a static triangle mesh, drop a sphere,
         # generate contact reports and settle through the real solver.
-        'simulation mesh-contact calls=2 events=0000000a y=3ee6cefd vy=be441bbb'
+        'simulation mesh-contact calls=2 events=0000000a patches=2 firstPatchPoints=2 points=4 normal=80000000.bf7fffff.80000000 secondNormal=80000000.bf7fffff.80000000 separation=bcf62d26 y=3ee6cefd vy=be441bbb'
         # The same upward-facing mesh must not generate contacts from below.
         'simulation mesh-backface calls=0 events=00000000 y=bfc2311b vy=c09cf5bc'
         # A sphere outside the footprint reports the oracle's closest edge point.
-        'simulation mesh-edge steps=29 calls=1 events=0000000a points=1 point=40000000.00000000.00000000 separation=bd09ee01'
+        'simulation mesh-edge steps=29 calls=1 events=0000000a points=1 point=40000000.00000000.00000000 normal=bf093e3c.bf581a42.80000000 separation=bd09ee01 y=3eb84654 vy=c0018d73'
         # Contact-point coordinates are transformed into world space.
         'simulation mesh-transformed calls=1 events=00000008 points=2 point=c1200000.40a00000.00000000'
         # Matrix-B sphere/mesh overlap drives the public trigger enter callback.
