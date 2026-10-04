@@ -145,6 +145,20 @@ static inline void addPoint(NxU32& vcount, NxReal* p, NxReal x, NxReal y, NxReal
 	vcount++;
 	}
 
+// The pinned DLL's static CRT formats -0.0 as "0.000000000" for these OBJ
+// writers. The current toolchain's CRT preserves the sign. Normalize only the
+// zero bit pattern at the formatting boundary to retain the oracle's file
+// output without changing the hull data itself.
+static inline NxReal nxQhullObjReal(NxReal value)
+	{
+	NxU32 bits;
+	memcpy(&bits, &value, sizeof(bits));
+	if((bits & 0x7fffffffu) == 0)
+		bits = 0;
+	memcpy(&value, &bits, sizeof(value));
+	return value;
+	}
+
 // phys_fn_003243 (0x0007d5b0, 933 B)
 // phys_fn_003245 (0x0007d960, 1331 B)
 // One function: 003245 starts inside the bounding-box loop over the cleaned
@@ -448,7 +462,8 @@ void QhullHost::writeOkObj(const HullResult& result)
 	for(NxU32 i = 0; i < result.mNumOutputVertices; i++)
 		{
 		const NxReal* v = &result.mOutputVertices[i * 3];
-		::fprintf(fph, "v %0.9f %0.9f %0.9f\r\n", v[0], v[1], v[2]);
+		::fprintf(fph, "v %0.9f %0.9f %0.9f\r\n",
+			nxQhullObjReal(v[0]), nxQhullObjReal(v[1]), nxQhullObjReal(v[2]));
 		}
 	const NxU32* idx = result.mIndices;
 	if(result.mPolygons)
@@ -487,7 +502,8 @@ void QhullHost::writeFailObj(NxU32 vcount, const NxReal* vertices, NxU32 stride)
 	for(NxU32 i = 0; i < vcount; i++)
 		{
 		const NxReal* p = (const NxReal*) vtx;
-		::fprintf(fph, "v %0.9f %0.9f %0.9f\r\n", p[0], p[1], p[2]);
+		::fprintf(fph, "v %0.9f %0.9f %0.9f\r\n",
+			nxQhullObjReal(p[0]), nxQhullObjReal(p[1]), nxQhullObjReal(p[2]));
 		vtx += stride;
 		}
 	fclose(fph);

@@ -18,6 +18,7 @@
 #include <new>
 #include <float.h>
 #include <string.h>
+#include <new>
 
 #define NX_TRIANGLE_MESH_CPP "\\Epic\\Novodex\\SDKs\\Physics\\src\\TriangleMesh.cpp"
 

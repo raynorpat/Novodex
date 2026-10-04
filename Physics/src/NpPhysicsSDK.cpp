@@ -83,6 +83,7 @@ void NpPhysicsSDK::visualize(const NxUserDebugRenderer& renderer)
 
 // Everything below stands in for an oracle row this component does not own. The
 // stable IDs are the wrapper row and the SDK-side row it forwards to.
+static void* nxSdkSceneWriteLink(PhysicsSDK* sdk, NxU32 index);
 
 // phys_fn_000234 (0x0000b770): forwards to the SDK-side row and returns the
 // public wrapper built inside the internal Scene constructor.

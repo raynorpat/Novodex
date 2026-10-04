@@ -947,6 +947,21 @@ took 5 h 27 min for 207 rows / 73,503 bytes, and with Task 5 6 h 00 min (about 1
 755 tool tests OK; `verify_vendored_sources.py` pass; `validate_inventory` exits 0
 (`unexplained=0`); gates 2, 3 (103), 4 (188 of 188, `thirdparty candidate mismatches=0 layout_failures=0`), 6 (403) and 7 (276) pass, and 5 is red only on `CANDIDATE-MISSING family=vtables` (its failure lines identical to Task 4d's), each run with `-RepoRoot`/`-BuildRoot` on the worktree. The trace and the 40 `dynamic_proof`s were regenerated on the clean build's exe (`d2a584a3...`, candidate DLL `a382bd84...`). After the final review's fixes (the attribution wording, the ObjectModel comments) they were regenerated once more on `a4352c79...`, and the checks above were run again.
 
+### Follow-up: current Phase 5 and public cleanup differential (2026-10-01)
+
+The earlier `Phase 5 red only on ... vtables` entry is historical. On the current main-based
+worktree, the explicit Phase 5 runner passes all 13 targets and 2,037/2,037 coverage assertions
+(`build/phase5-current.log`). The red result is the separate Phase 4 third-party differential:
+13 candidate mismatches, zero layout failures (`build/qhull-current-restored.log`).
+
+The set-12 point probe isolates the public cleanup discrepancy to normalized welding: with
+normalization disabled (`0xb5`) the oracle/candidate cleaned buffers are identical; with welding
+disabled (`0xb6`) they are also identical. With both enabled, the first eight cleaned fallback
+corners differ in low x/z bits. A trial forcing each squared-distance product through a volatile
+double spill did not alter those points and was reverted. This rules out that simple spill-boundary
+change as a fix; it does not yet identify whether the selection branch or its inputs differ. No
+comparison ceiling was widened, and no public Physics header was edited.
+
 ## Timing
 
 | Task | Start | End | Rows written | Bytes written | Notes |

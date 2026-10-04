@@ -3,11 +3,10 @@
 # neither keeps a second list, so target registration is centralized here.
 # The phase plans address it through `run_differential.ps1 -Phase N`.
 #
-# Phase 1 is evidence-only. A phase with
-# no targets cannot be gated, so both runners report it skipped and exit 3
-# rather than reporting a pass. Phase 4 registers an oracle differential and no
-# staged-pair differential, which is why run_phase_gate.ps1 counts all three
-# lists before it decides a phase is ungated.
+# Phase 1 is evidence-only. A phase with no targets cannot be gated, so both
+# runners report it skipped and exit 3 rather than reporting a pass. Phase 4
+# now includes the public convex-cooking staged-pair differential alongside its
+# asset and third-party oracle differentials.
 
 $NxPhaseTestTargets = [ordered] @{
     '1' = @()
@@ -3202,6 +3201,16 @@ $NxRequiredCoverageLines = [ordered] @{
         'effector live count=2 iterator=np4.np2',
         'effector scene_release allocs=3 sizes=18,18,18 frees=55 sizes=14,18,20,4,20,4,28,18,8,260,1c,228,50,18,8,260,1c,228,50,18,8,8,260,8,1c,8,228,50,18,68,18,68,400,400,400,400,400,400,400,400,400,400,400,400,a8,18,18,18,10,60,10,3c,18,18,710'
     )
+    'NxPhysicsConvexMeshTests' = @(
+        'mesh-case name=precomputed_tetra_first repeat=0 flags=00000004 created=1 submeshes=4',
+        'mesh-case name=computed_tetra repeat=0 flags=0000000c created=1 submeshes=4',
+        'mesh-actor name=static_tetra mesh=1 scene=1 actor=1 shapes=1 type=4',
+        'mesh-graph-tetra=valid/4/12/d76d4b25/de3b8609/d32294c5',
+        'mesh-actor name=dynamic_tetra mesh=1 scene=1 actor=1 shapes=1 type=4 dynamic=1',
+        'mesh-actor-bounds=00000000:00000000:00000000:3f800000:3f800000:3f800000',
+        'mesh-actor-mass mass=3e2aaaab center=3e800000:3e800000:3e800000 inertia=3c2aaaac:3c888889:3c2aaaac',
+        'mesh-graph-octa=valid/6/24/40d43be5/0656b781/d4d21aa5'
+    )
     # Effector-and-coredump Task 4: the scene core-dump differential. Two populated
     # scenes dumped through NxPhysicsSDK::coreDump (000267 -> 004062) in text and
     # binary mode, with and without an addendum, the deadlock arm of 000267, one
@@ -5060,7 +5069,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=opcode_candidate_trees rva=0x000e9100 owner=phys_fn_005368 source=OPC_Model.cpp,OPC_TreeBuilders.cpp,OPC_OptimizedTree.cpp,OPC_SphereCollider.cpp,OPC_OBBCollider.cpp,OPC_AABBCollider.cpp,OPC_LSSCollider.cpp,OPC_PlanesCollider.cpp,OPC_TreeCollider.cpp words=3674 oracle=1474f5d6 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=opcode_candidate_trees_ray rva=0x000ba6f0 owner=phys_fn_004932 source=OPC_RayCollider.cpp,OPC_RayAABBOverlap.h,OPC_RayTriOverlap.h words=292 oracle=f9c26128',
         'thirdparty name=opcode_candidate_trees_x87 rva=0x000f09b0 owner=phys_fn_005513 source=OPC_AABBTree.cpp,OPC_TreeBuilders.cpp,OPC_OptimizedTree.cpp words=18694 oracle=b7ff4dc5',
-        'thirdparty coverage driven=47 divergent=11 words=486946 layout_checks=47',
+        'thirdparty coverage driven=47 divergent=10 words=486946 layout_checks=47',
         'thirdparty oracle digest=5f87aa37',
         # qhull-gap Task 1: qhull's output, trace, option and merge paths, run through
         # the NovodeX driver sequence with qhull's printing captured on both sides
@@ -5115,12 +5124,12 @@ $NxRequiredCoverageLines = [ordered] @{
         # The pairs above keep printing where they were; the pair below carries the totals.
         'thirdparty name=hull_host_size rva=0x0007e520 owner=phys_fn_003265 source=QhullHost.cpp words=15 oracle=c9faaedb mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_create rva=0x0007ea10 owner=phys_fn_003279 source=QhullHost.cpp,Quantizer.cpp words=23542 oracle=1cf4b7ed mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty name=hull_create_qhull rva=0x0007ea10 owner=phys_fn_003279 source=QhullHost.cpp,Quantizer.cpp words=442 oracle=980dbb03',
+        'thirdparty name=hull_create_qhull rva=0x0007ea10 owner=phys_fn_003279 source=QhullHost.cpp,Quantizer.cpp words=442 oracle=980dbb03 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_create_obj rva=0x0007dea0 owner=phys_fn_003247 source=QhullHost.cpp words=5001 oracle=af04f879',
         'thirdparty name=hull_create_pc64 rva=0x0007ea10 owner=phys_fn_003279 source=QhullHost.cpp,Quantizer.cpp words=24047 oracle=c32b26d1 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_create_pc64_obj rva=0x0007dea0 owner=phys_fn_003247 source=QhullHost.cpp words=5022 oracle=28e98259',
         'thirdparty name=hull_compute rva=0x00054920 owner=phys_fn_002233 source=TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp words=12128 oracle=8a6e6bdb mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty name=hull_compute_qhull rva=0x00054920 owner=phys_fn_002233 source=TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp words=454 oracle=dae9e9bd',
+        'thirdparty name=hull_compute_qhull rva=0x00054920 owner=phys_fn_002233 source=TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp words=454 oracle=dae9e9bd mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_compute_obj rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=122 oracle=bc33134f',
         'thirdparty name=hull_compute_pc64 rva=0x00054920 owner=phys_fn_002233 source=TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp words=12633 oracle=f5a778d6 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_compute_pc64_obj rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=122 oracle=4ebf7157',

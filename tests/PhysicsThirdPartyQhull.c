@@ -125,6 +125,94 @@ int nxQhullRun(const NxQhullEntries* e, coordT* points, int numpoints, const cha
 	return nxQhullRunDim(e, 0, points, numpoints, 3, options, 0);
 	}
 
+static unsigned nxPointId(const pointT* point, const coordT* points, int numpoints);
+
+/* Runs through qh_initbuild only, to inspect initial outside sets before
+   qh_buildhull consumes the first furthest point. Diagnostic harness use. */
+int nxQhullRunInitBuild(const NxQhullEntries* e, void* initbuild, coordT* points, int numpoints,
+	const char* options)
+	{
+	static char* argv[2] = { "qhull", 0 };
+	char command[320];
+	volatile int result = 0;
+	int jumped;
+	void (__cdecl* previous)(int) = signal(SIGABRT, nxQhullAbortHandler);
+	_set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
+	argv[1] = (char*) options;
+	jumped = setjmp(gNxQhullJump);
+	if(jumped == 0)
+		{
+		gNxQhullArmed = 1;
+		e->initA(e->fin, e->fout, e->ferr, 2, argv);
+		strcpy(command, "qhull ");
+		strcat(command, options);
+		e->initflags(command);
+		e->initB(points, numpoints, 3, False);
+		((NxQhVoid) initbuild)();
+		gNxQhullArmed = 0;
+		}
+	else
+		result = jumped;
+	signal(SIGABRT, previous ? previous : SIG_DFL);
+	return result;
+	}
+
+void nxQhullFurthestProbe(const void* state, const coordT* points, int numpoints, int set, int side)
+	{
+	const qhT* q = (const qhT*) state;
+	const facetT* f;
+	for(f = q->facet_list; f && f->next; f = f->next)
+		{
+		unsigned long long bits = 0;
+		unsigned long long nx = 0, ny = 0, nz = 0, offset = 0;
+		memcpy(&bits, &f->furthestdist, sizeof(bits));
+		if(f->normal)
+			{
+			memcpy(&nx, &f->normal[0], sizeof(nx));
+			memcpy(&ny, &f->normal[1], sizeof(ny));
+			memcpy(&nz, &f->normal[2], sizeof(nz));
+			}
+		memcpy(&offset, &f->offset, sizeof(offset));
+		(fprintf)(stderr, "NXHULL_FURTHEST set=%d side=%d facet=%d distance=%016I64x plane=%016I64x,%016I64x,%016I64x,%016I64x points=",
+			set, side, f->id, bits, nx, ny, nz, offset);
+		if(f->outsideset)
+			{
+			pointT* const* pp;
+			for(pp = (pointT* const*) &f->outsideset->e[0].p; *pp; ++pp)
+				(fprintf)(stderr, "%u,", nxPointId(*pp, points, numpoints));
+			}
+		(fprintf)(stderr, "\n");
+		}
+	(fprintf)(stderr, "NXHULL_NEXT set=%d side=%d facet=%d\n", set, side,
+		q->facet_next ? q->facet_next->id : -1);
+	}
+
+void nxQhullDistanceProbe(const void* state, const coordT* points, int numpoints, int set, int side,
+	void* distplane)
+	{
+	const qhT* q = (const qhT*) state;
+	const facetT* f;
+	void (__cdecl* runDistplane)(pointT*, facetT*, realT*) = (void (__cdecl*)(pointT*, facetT*, realT*)) distplane;
+	for(f = q->facet_list; f && f->next; f = f->next)
+		if(f->outsideset)
+			{
+			pointT* const* pp;
+			for(pp = (pointT* const*) &f->outsideset->e[0].p; *pp; ++pp)
+				{
+				realT dist = 0;
+				unsigned long long bits = 0;
+				unsigned long long x = 0, y = 0, z = 0;
+				runDistplane(*pp, (facetT*) f, &dist);
+				memcpy(&bits, &dist, sizeof(bits));
+				memcpy(&x, &(*pp)[0], sizeof(x));
+				memcpy(&y, &(*pp)[1], sizeof(y));
+				memcpy(&z, &(*pp)[2], sizeof(z));
+				(fprintf)(stderr, "NXHULL_DIST set=%d side=%d facet=%d point=%u bits=%016I64x xyz=%016I64x,%016I64x,%016I64x\n",
+					set, side, f->id, nxPointId(*pp, points, numpoints), bits, x, y, z);
+				}
+		}
+	}
+
 static unsigned nxPointId(const pointT* point, const coordT* points, int numpoints)
 	{
 	if(!point)
@@ -172,6 +260,14 @@ void nxQhullTape(const void* state, const coordT* points, int numpoints, NxQhPus
 	const facetT* f;
 	const vertexT* v;
 	int k;
+	unsigned doubleWord = 0;
+	#define NX_QH_PUSH_DOUBLE(label, value, facetid) do { \
+		if(getenv("NXHULL_X87_LABEL")) \
+			(fprintf)(stderr, "NXHULL_DOUBLE points=%d word=%u facet=%d label=%s value=%.17g\n", \
+				q->num_points, doubleWord, facetid, label, (double) (value)); \
+		pushDouble(floats, value); \
+		doubleWord += 2; \
+	} while(0)
 
 	push(tape, (unsigned) q->hull_dim);
 	push(tape, (unsigned) q->num_facets);
@@ -180,36 +276,36 @@ void nxQhullTape(const void* state, const coordT* points, int numpoints, NxQhPus
 	push(tape, q->facet_id);
 	push(tape, q->ridge_id);
 	push(tape, q->vertex_id);
-	pushDouble(floats, q->max_outside);
-	pushDouble(floats, q->min_vertex);
-	pushDouble(floats, q->DISTround);
-	pushDouble(floats, q->ONEmerge);
-	pushDouble(floats, q->MINvisible);
-	pushDouble(floats, q->MAXcoplanar);
-	pushDouble(floats, q->totarea);
-	pushDouble(floats, q->totvol);
+	NX_QH_PUSH_DOUBLE("qh.max_outside", q->max_outside, -1);
+	NX_QH_PUSH_DOUBLE("qh.min_vertex", q->min_vertex, -1);
+	NX_QH_PUSH_DOUBLE("qh.DISTround", q->DISTround, -1);
+	NX_QH_PUSH_DOUBLE("qh.ONEmerge", q->ONEmerge, -1);
+	NX_QH_PUSH_DOUBLE("qh.MINvisible", q->MINvisible, -1);
+	NX_QH_PUSH_DOUBLE("qh.MAXcoplanar", q->MAXcoplanar, -1);
+	NX_QH_PUSH_DOUBLE("qh.totarea", q->totarea, -1);
+	NX_QH_PUSH_DOUBLE("qh.totvol", q->totvol, -1);
 
 	for(f = q->facet_list; f && f->next; f = f->next)
 		{
 		push(tape, f->id);
 		nxPushFacetFlags(push, tape, f);
 #if !qh_COMPUTEfurthest
-		pushDouble(floats, f->furthestdist);
+		NX_QH_PUSH_DOUBLE("facet.furthestdist", f->furthestdist, f->id);
 #endif
 #if qh_MAXoutside
-		pushDouble(floats, f->maxoutside);
+		NX_QH_PUSH_DOUBLE("facet.maxoutside", f->maxoutside, f->id);
 #endif
-		pushDouble(floats, f->offset);
+		NX_QH_PUSH_DOUBLE("facet.offset", f->offset, f->id);
 		if(f->isarea)
-			pushDouble(floats, f->f.area);
+			NX_QH_PUSH_DOUBLE("facet.area", f->f.area, f->id);
 		if(f->normal)
 			for(k = 0; k < 3; ++k)
-				pushDouble(floats, f->normal[k]);
+				NX_QH_PUSH_DOUBLE("facet.normal", f->normal[k], f->id);
 		else
 			push(tape, 0xfffffffcu);
 		if(f->center && !f->tricoplanar)
 			for(k = 0; k < 3; ++k)
-				pushDouble(floats, f->center[k]);
+				NX_QH_PUSH_DOUBLE("facet.center", f->center[k], f->id);
 		else
 			push(tape, 0xfffffffcu);
 		if(f->vertices)
@@ -268,6 +364,76 @@ void nxQhullTape(const void* state, const coordT* points, int numpoints, NxQhPus
 			}
 		push(tape, 0xfffffff6u);
 		}
+	}
+	#undef NX_QH_PUSH_DOUBLE
+
+void nxQhullAddressProbe(const void* state, const coordT* points, int numpoints, int set, int side)
+	{
+	const qhT* q = (const qhT*) state;
+	const facetT* f;
+	(fprintf)(stderr, "NXHULL_ADDR_STATE set=%d side=%d state=%p facets=%p count=%d\n",
+		set, side, state, (const void*) q->facet_list, q->num_facets);
+	for(f = q->facet_list; f && f->next; f = f->next)
+		{
+		vertexT* const* vp;
+		if(!f->vertices)
+			continue;
+		for(vp = (vertexT* const*) &f->vertices->e[0].p; *vp; ++vp)
+			(fprintf)(stderr, "NXHULL_ADDR set=%d side=%d facet=%d vertex=%d point=%u address=%p\n",
+				set, side, f->id, (*vp)->id, nxPointId((*vp)->point, points, numpoints), (const void*) *vp);
+		}
+}
+
+void nxQhullPlaneProbe(const void* state, int facetId, void* oracleSetPlane, void* candidateSetPlane,
+	void* oracleNormalize, void* candidateNormalize)
+	{
+	const qhT* q = (const qhT*) state;
+	const facetT* f;
+	for(f = q->facet_list; f && f->next; f = f->next)
+		if(f->id == facetId && f->vertices)
+			{
+			coordT* rows[4] = { 0, 0, 0, 0 };
+			coordT oracleNormal[4] = { 0, 0, 0, 0 }, candidateNormal[4] = { 0, 0, 0, 0 };
+			realT oracleOffset = 0, candidateOffset = 0;
+		coordT oracleNormalized[4] = { 0, 0, 0, 0 }, candidateNormalized[4] = { 0, 0, 0, 0 };
+			boolT oracleNearzero = False, candidateNearzero = False;
+			vertexT* const* vp = (vertexT* const*) &f->vertices->e[0].p;
+			void (__cdecl* runOracle)(int, coordT**, coordT*, boolT, coordT*, realT*, boolT*) =
+				(void (__cdecl*)(int, coordT**, coordT*, boolT, coordT*, realT*, boolT*)) oracleSetPlane;
+			void (__cdecl* runCandidate)(int, coordT**, coordT*, boolT, coordT*, realT*, boolT*) =
+				(void (__cdecl*)(int, coordT**, coordT*, boolT, coordT*, realT*, boolT*)) candidateSetPlane;
+		void (__cdecl* runOracleNormalize)(coordT*, int, boolT, realT*, boolT*) =
+			(void (__cdecl*)(coordT*, int, boolT, realT*, boolT*)) oracleNormalize;
+		void (__cdecl* runCandidateNormalize)(coordT*, int, boolT, realT*, boolT*) =
+			(void (__cdecl*)(coordT*, int, boolT, realT*, boolT*)) candidateNormalize;
+			int i;
+			for(i = 0; i < q->hull_dim; ++i)
+				rows[i] = vp[i]->point;
+		oracleNormalized[0] = det2_(dY(2,0), dZ(2,0), dY(1,0), dZ(1,0));
+		oracleNormalized[1] = det2_(dX(1,0), dZ(1,0), dX(2,0), dZ(2,0));
+		oracleNormalized[2] = det2_(dX(2,0), dY(2,0), dX(1,0), dY(1,0));
+		candidateNormalized[0] = oracleNormalized[0];
+		candidateNormalized[1] = oracleNormalized[1];
+		candidateNormalized[2] = oracleNormalized[2];
+		(fprintf)(stderr, "NXHULL_PLANE_RAW facet=%d normal=%.17g,%.17g,%.17g\n",
+			facetId, oracleNormalized[0], oracleNormalized[1], oracleNormalized[2]);
+		runOracleNormalize(oracleNormalized, q->hull_dim, f->toporient, NULL, NULL);
+		runCandidateNormalize(candidateNormalized, q->hull_dim, f->toporient, NULL, NULL);
+		(fprintf)(stderr, "NXHULL_NORMALIZE oracle normal=%.17g,%.17g,%.17g candidate normal=%.17g,%.17g,%.17g\n",
+			oracleNormalized[0], oracleNormalized[1], oracleNormalized[2],
+			candidateNormalized[0], candidateNormalized[1], candidateNormalized[2]);
+			(fprintf)(stderr, "NXHULL_PLANE_INPUT facet=%d points=", facetId);
+			for(i = 0; i < q->hull_dim; ++i)
+				(fprintf)(stderr, "%u,", nxPointId(rows[i], q->first_point, q->num_points));
+			(fprintf)(stderr, " toporient=%d\n", f->toporient);
+			runOracle(q->hull_dim, rows, rows[0], f->toporient, oracleNormal, &oracleOffset, &oracleNearzero);
+			runCandidate(q->hull_dim, rows, rows[0], f->toporient, candidateNormal, &candidateOffset, &candidateNearzero);
+			(fprintf)(stderr, "NXHULL_PLANE oracle facet=%d offset=%.17g normal=%.17g,%.17g,%.17g nearzero=%d\n",
+				facetId, oracleOffset, oracleNormal[0], oracleNormal[1], oracleNormal[2], oracleNearzero);
+			(fprintf)(stderr, "NXHULL_PLANE candidate facet=%d offset=%.17g normal=%.17g,%.17g,%.17g nearzero=%d\n",
+				facetId, candidateOffset, candidateNormal[0], candidateNormal[1], candidateNormal[2], candidateNearzero);
+			return;
+			}
 	}
 
 /* The qhull-gap families' walk of a finished hull of any dimension: the same

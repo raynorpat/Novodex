@@ -716,9 +716,11 @@ clusters (a short quantization). qhull's input is the same on both sides, point 
 vertex order; for the clusters eight more tracked allocations, with the same counts). Under
 0x0f7f both are exact. Attribution (corrected in Task 5): box: vendored qhull (reproduced by
 `hull_qhull_direct`); clusters: not reproduced by qhull alone -- open (Task 5; candidates:
-allocation pattern, `qh_gethash` address hashing). The four `_obj` families differ in one word each: the 2003 static CRT prints a float
-`-0.0` as `0.000000000` and the UCRT as `-0.000000000` (the collinear set's FAIL dump of the
-cleaned points).
+allocation pattern, `qh_gethash` address hashing). The four `_obj` families originally differed
+in one word each because the 2003 static CRT prints `-0.0` as `0.000000000`, while UCRT prints
+`-0.000000000` (the collinear set's FAIL dump of the cleaned points). `QhullHost.cpp` now
+normalizes only signed zero at both OBJ formatting boundaries; hull coordinates remain untouched,
+and the text tapes are exact after the fix (`build/qhull-zero-sign-final.log`).
 
 Found by the differential and recorded, not fixed:
 - **`002233`'s result is uninitialised when `CreateConvexHull` returns before `buildResult`**

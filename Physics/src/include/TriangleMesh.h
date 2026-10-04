@@ -19,6 +19,7 @@
 #include "QhullHost.h"
 #include "NxSimpleTriangleMesh.h"
 #include "NxTriangleMeshDesc.h"
+#include "NxTriangleMesh.h"
 
 class NxStream;
 class NxPMap;
@@ -84,10 +85,11 @@ reads them at TriangleMesh+0x08/+0x0c/+0x10/+0x14/+0x18/+0x1c because the
 internal mesh is embedded at TriangleMesh+0x08 (`lea ebp,[edi+8]` at
 0x00055d18).
 
-The region from +0x24 onward belongs to the MeshInterface and whatever follows
-it; nothing the writer or the reconstructed reader touches reaches past
-internal+0x20, so it is carried as opaque bytes here and named rather than
-invented.
+The +0x1c word is an owned per-triangle allocation: phys_fn_002079 allocates
+16 bytes per triangle there and phys_fn_002067 releases it. Its record contents
+are still opaque. The embedded MeshInterface begins at +0x24; its first four
+words are initialized by the constructor at 0x000e8fa0. The remaining bytes are
+carried as opaque storage.
 */
 struct InternalTriangleMesh
 	{
@@ -98,11 +100,27 @@ struct InternalTriangleMesh
 	NxU16*					mMaterialIndices;	//!< +0x10, 2 bytes each, optional
 	NxU32*					mFaceRemap;			//!< +0x14, 4 bytes each, optional
 	void*					mVertexNormals;		//!< +0x18, 12 bytes each
-	NxU32					mWord1C;			//!< +0x1c, unestablished; the allocation-site table jumps from +0x18 to +0x20
+	void*					mTriangleData;		//!< +0x1c, 16 bytes per triangle, allocated by 002079 and released by 002067
 	Opcode::BaseModel*		mModel;				//!< +0x20
 	Opcode::MeshInterface	mMeshInterface;	//!< +0x24, OPCODE's four-word mesh interface
 	NxU32					mInterfaceWord34;	//!< +0x34, not read by the recovered build path
 	};
+
+// InternalTriangleMesh rows recovered from the allocation/teardown paths in
+// gap__EdgeList.cpp__to__InternalTriangleMesh.cpp. Kept as explicit rows so
+// TriangleMesh construction, load, and destruction can share the exact memory
+// ownership rules without giving the measured data structure an invented C++
+// vtable or destructor.
+void nxInternalMeshInit(InternalTriangleMesh* mesh);                         // 002065
+void nxInternalMeshRelease(InternalTriangleMesh* mesh);                      // 002067
+void nxInternalMeshAllocateVertices(InternalTriangleMesh* mesh, NxU32 count); // 002069
+void nxInternalMeshAllocateTriangles(InternalTriangleMesh* mesh, NxU32 count);// 002071
+void nxInternalMeshAllocateMaterials(InternalTriangleMesh* mesh);             // 002073
+void nxInternalMeshAllocateFaceRemap(InternalTriangleMesh* mesh);             // 002075
+void nxInternalMeshBuildTriangleData(InternalTriangleMesh* mesh);              // 002079
+bool nxInternalMeshBuildTopology(InternalTriangleMesh* mesh);                  // 002087
+bool nxInternalMeshBuildModel(InternalTriangleMesh* mesh, NxU32 extendAxis, NxReal extendValue,
+	const void* deserializeFrom);                                                  // 002083
 
 /**
 The TriangleMesh layout at the offsets the two stream rows touch. The class is
@@ -234,6 +252,7 @@ static_assert(offsetof(TriangleMesh, mInternal.mTriangles) == 0x14, "triangles a
 static_assert(offsetof(TriangleMesh, mInternal.mMaterialIndices) == 0x18, "material indices are internal+0x10");
 static_assert(offsetof(TriangleMesh, mInternal.mFaceRemap) == 0x1c, "face remap is internal+0x14");
 static_assert(offsetof(TriangleMesh, mInternal.mVertexNormals) == 0x20, "vertex normals are internal+0x18");
+static_assert(offsetof(TriangleMesh, mInternal.mTriangleData) == 0x24, "per-triangle data pointer is internal+0x1c / TriangleMesh+0x24");
 static_assert(offsetof(TriangleMesh, mInternal.mModel) == 0x28, "the model is internal+0x20 / TriangleMesh+0x28");
 static_assert(offsetof(TriangleMesh, mHullFlags) == 0x40, "the hull flags are at +0x40");
 static_assert(offsetof(TriangleMesh, mConvexEdgeThreshold) == 0x6c, "the threshold is at +0x6c");

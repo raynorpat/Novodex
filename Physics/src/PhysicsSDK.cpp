@@ -13,6 +13,8 @@
 #include "NpPhysicsSDK.h"
 #include "NxDebugRenderable.h"
 #include "NxUserOutputStream.h"
+#include "TriangleMesh.h"
+#include "FoundationSDK.h"
 
 #include <stddef.h>
 #include <new>

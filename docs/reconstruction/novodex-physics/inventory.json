@@ -8830,14 +8830,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/PhysicsSDK.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/174",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1271",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "Validates NxTriangleMeshDesc, allocates the measured 0xe8 TriangleMesh, constructs its separate public facade, cooks it through loadFromDesc, and appends it to mTriangleMeshes; paired tetrahedron proves the success path and release.",
+      "dynamic_proof": "Official Phase 4 NxPhysicsConvexMeshTests paired differential matches create/count/release output exactly (stdout_delta=0, stderr_exact=True).",
       "notes": "",
-      "implementation": null
+      "implementation": "Physics/src/PhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000479",
@@ -17629,7 +17629,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/466",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2982",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` — the vertex array |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` \u00e2\u20ac\u201d the vertex array |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17777,7 +17777,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/470",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3019",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 4 | `phys_fn_000963` | `index*36 + this+0x70` — face-record[k] |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 4 | `phys_fn_000963` | `index*36 + this+0x70` \u00e2\u20ac\u201d face-record[k] |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -37930,12 +37930,13 @@
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "zero-init wrapper (0x51ec0, ret 0)",
+      "source": "Physics/src/InternalTriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/803",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6645",
-      "static_proof": "zeroes [this+0..0x20] then the [this+0x24..0x30] sub-region via the 005355 init; returns this",
+      "static_proof": "The candidate static proof confirms nine zeroed words at internal +0x00..+0x20 and the four MeshInterface constructor words at +0x24..+0x30; the unmeasured +0x34 word is preserved. Existing zerowrap oracle differential remains recorded.",
       "dynamic_proof": "confirmed via zerowrap differential (3z99): failures=0",
-      "notes": ""
+      "notes": "InternalTriangleMesh allocation/lifecycle packet; candidate static proof is exercised by NxPhysicsInternalTests.",
+      "implementation": "Physics/src/InternalTriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002066",
@@ -37965,13 +37966,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/InternalTriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/804",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6646",
-      "static_proof": null,
+      "static_proof": "Candidate static proof verifies release and clearing of the six Foundation-owned pointer fields in listing order for the no-model branch; virtual BaseModel deletion is implemented from slot 0 and awaits a cooked-mesh lifecycle differential.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "InternalTriangleMesh allocation/lifecycle packet; candidate static proof is exercised by NxPhysicsInternalTests.",
+      "implementation": "Physics/src/InternalTriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002068",
@@ -38001,13 +38003,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/InternalTriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/805",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6654",
-      "static_proof": null,
+      "static_proof": "Candidate static proof verifies the count store, non-null allocation, and 12-byte vertex stride from the listing.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "InternalTriangleMesh allocation/lifecycle packet; candidate static proof is exercised by NxPhysicsInternalTests.",
+      "implementation": "Physics/src/InternalTriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002070",
@@ -38037,13 +38040,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/InternalTriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/806",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6655",
-      "static_proof": null,
+      "static_proof": "Candidate static proof verifies the count store, non-null allocation, and 12-byte triangle stride from the listing.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "InternalTriangleMesh allocation/lifecycle packet; candidate static proof is exercised by NxPhysicsInternalTests.",
+      "implementation": "Physics/src/InternalTriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002072",
@@ -38073,13 +38077,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/InternalTriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/807",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6656",
-      "static_proof": null,
+      "static_proof": "Candidate static proof verifies no allocation at zero triangles and a two-byte-per-triangle allocation otherwise.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "InternalTriangleMesh allocation/lifecycle packet; candidate static proof is exercised by NxPhysicsInternalTests.",
+      "implementation": "Physics/src/InternalTriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002074",
@@ -38109,13 +38114,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/InternalTriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/808",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6658",
-      "static_proof": null,
+      "static_proof": "Candidate static proof verifies no allocation at zero triangles and a four-byte-per-triangle allocation otherwise.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "InternalTriangleMesh allocation/lifecycle packet; candidate static proof is exercised by NxPhysicsInternalTests.",
+      "implementation": "Physics/src/InternalTriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002076",
@@ -38181,13 +38187,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/842",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6674",
-      "static_proof": null,
+      "static_proof": "NxPhysicsInternalTests::testInternalTriangleMeshRows checks the 16-byte-per-triangle allocation and plane records for both windings; the recovered call to phys_fn_005155 reuses IceMaths::Plane::Set.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000555b0"
+      "notes": "Build data row, 002079.",
+      "implementation": "Physics/src/InternalTriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002080",
@@ -38254,13 +38261,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/InternalTriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/811",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6679",
-      "static_proof": null,
+      "static_proof": "NxPhysicsInternalTests::testInternalTriangleMeshModel exercises MeshInterface setup, host-allocator Model construction, the single-triangle OPC_SINGLE_NODE Build path, and teardown.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "mKeepOriginal comes from phys_data_003482 (RVA 0x00123b3c), zero in the pinned oracle image; no write references are recorded. Runtime parameter mutations still need differential coverage.",
+      "implementation": "Physics/src/InternalTriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002084",

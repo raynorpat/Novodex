@@ -36,6 +36,9 @@
 #include "NxSphereShapeDesc.h"
 #include "NxCapsuleShapeDesc.h"
 #include "NxPlaneShapeDesc.h"
+#include "NxTriangleMeshShapeDesc.h"
+#include "ObjectModel.h"
+#include "TriangleMesh.h"
 #include "NxActor.h"
 #include "NpActor.h"
 #include "NpActorDynamicMath.h"
@@ -561,7 +564,7 @@ void nxSceneReportErrorA(const char* message);
 // and 1 on success, matching the oracle's return contract.
 int nxActorLoadFromDescInternal(void* actor, const unsigned* descWords);
 // phys_fn_000013 (0x00001450), the actor constructor.
-void* nxActorConstruct(void* memory, void* scene);
+void* nxSceneCreateActorBody(void* memory, void* scene);
 
 NxActor* nxSceneActorConstruct(void* memory, void* scene);
 // phys_fn_00002010 (0x00002010, phase 2): applies the descriptor to the actor and
@@ -1355,7 +1358,7 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 	}
 
 // phys_fn_000013 (0x00001450) is the actor constructor.
-void* nxActorConstruct(void* memory, void* scene)
+void* nxSceneCreateActorBody(void* memory, void* scene)
 	{
 	unsigned* a = static_cast<unsigned*>(memory);
 	unsigned* s = static_cast<unsigned*>(scene);
@@ -1433,7 +1436,7 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 	// The earlier 0x50-byte actor assumption was wrong: the guarded oracle probe
 	// measured 0x18 for this wrapper and 0x50 for its outer body.
 	static_cast<NpActorObject*>(actorMemory)->installVtable();
-	NxActor* actor = static_cast<NxActor*>(nxActorConstruct(actorMemory, this));
+	NxActor* actor = static_cast<NxActor*>(nxSceneCreateActorBody(actorMemory, this));
 	if(!actor)
 		{
 		nxGetSdkAllocator()->free(actorMemory);
@@ -2082,7 +2085,7 @@ void NxSceneInternal::scalarDeletingDestructor(int flags)
 
 NxActor* nxSceneActorConstruct(void* memory, void* scene)
 	{
-	return reinterpret_cast<NxActor*>(nxActorConstruct(memory, scene));
+	return reinterpret_cast<NxActor*>(nxSceneCreateActorBody(memory, scene));
 	}
 
 void* nxSceneActorInitialise(NxActor* actor, const void* desc)
@@ -2730,6 +2733,40 @@ static unsigned char* nxActorShapeFactory(const NxShapeDesc* descriptor, unsigne
 				unsigned char* npScene = scene->at<unsigned char*>(0x6cc);
 				*reinterpret_cast<unsigned*>(handle + 0x10) = *reinterpret_cast<unsigned*>(npScene + 0xc);
 				*reinterpret_cast<unsigned*>(handle + 0x14) = *reinterpret_cast<unsigned*>(npScene + 0x10);
+				}
+			}
+		}
+	else if(type == NX_SHAPE_MESH)
+		{
+		void* memory = nxFoundationSDKAllocator->malloc(sizeof(MeshShape), NX_MEMORY_PERSISTENT);
+		if(memory)
+			{
+			shape = nxRuntimeShapeConstruct(memory, sizeof(MeshShape), type, body, id);
+			MeshShape* meshShape = reinterpret_cast<MeshShape*>(shape);
+			void* handle = *reinterpret_cast<void**>(shape + 0x9c);
+			if(handle)
+				{
+				// Runtime shapes are built from the verified raw-allocation path above.
+				// Construct the embedded hook member so the recovered deleting dtor can
+				// tear it down, then install the public family table and back-pointers.
+				new(handle) CollisionObject(shape);
+				*reinterpret_cast<void**>(handle) = nxShapePublicVtable(type);
+				*reinterpret_cast<void**>(static_cast<unsigned char*>(handle) + 8) = shape;
+				*reinterpret_cast<void**>(static_cast<unsigned char*>(handle) + 0x18) = shape;
+				}
+			const bool loaded = handle && meshShape->nxMeshLoadFromDesc(descriptor);
+			if(!loaded)
+				{
+				meshShape->nxMeshScalarDeletingDtor(0);
+				nxFoundationSDKAllocator->free(meshShape);
+				shape = 0;
+				}
+			else
+				{
+				unsigned char* npScene = scene->at<unsigned char*>(0x6cc);
+				unsigned char* handleBytes = static_cast<unsigned char*>(handle);
+				*reinterpret_cast<unsigned*>(handleBytes + 0x10) = *reinterpret_cast<unsigned*>(npScene + 0xc);
+				*reinterpret_cast<unsigned*>(handleBytes + 0x14) = *reinterpret_cast<unsigned*>(npScene + 0x10);
 				}
 			}
 		}
@@ -4193,6 +4230,24 @@ void NxSceneInternal::simulateFrame()
 						reinterpret_cast<Row000724Fixture*>(islandBody)->row000724(otherBody, node);
 					}
 				}
+			}
+
+		// phys_fn_000608's post-broadphase auxiliary-pair walk calls 000724 for
+		// each live pair with contacts. Rebuild those per-body links after 000764
+		// clears them and before active roots are collected for 000611.
+		NxPairList* contactPairs = reinterpret_cast<NxPairList*>(mBytes + 0x674);
+		for(NxPairNode* node = contactPairs->head; node;
+			node = node->at<NxPairNode*>(8))
+			{
+			NxActorPair* pair = node->pair();
+			if(!pair->at<NxU32>(0x10))
+				continue;
+			void* body0 = pair->at<void*>(8);
+			void* body1 = pair->at<void*>(0xc);
+			if(body0)
+				reinterpret_cast<Row000724Fixture*>(body0)->row000724(body1, node);
+			else if(body1)
+				reinterpret_cast<Row000724Fixture*>(body1)->row000724(0, node);
 			}
 
 		// phys_fn_000608's post-broadphase auxiliary-pair walk calls 000724 for

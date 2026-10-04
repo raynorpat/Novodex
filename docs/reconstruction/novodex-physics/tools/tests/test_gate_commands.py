@@ -3,7 +3,7 @@
 Six plan files independently reach for `run_differential.ps1 -Phase N`. Each is
 executed here to prove the parameter binds and the phase resolves to its
 registered targets. Whether the differential then passes is not the point --
-Some phases legitimately fail today, and Phase 4 has nothing registered -- the
+Some phases legitimately fail today, and Phase 1 has nothing registered -- the
 point is that no plan carries a command PowerShell cannot bind.
 
 The command lines are parsed out of the plan files rather than copied here, so a
@@ -31,7 +31,7 @@ COMMAND_PATTERN = re.compile(
 PHASE_TARGETS = {
     "2": "NxPhysicsExportTests,NxPhysicsSDKTests,NxPhysicsCoreClusterTests",
     "3": "NxPhysicsGeometryTests,NxPhysicsKernelFuzzTests",
-    "4": "",
+    "4": "NxPhysicsConvexMeshTests",
     "5": "NxPhysicsActorLifecycleTests,NxPhysicsDynamicFirstTests,NxPhysicsEmptySceneTests,NxPhysicsActorNameTests,NxPhysicsActorMetadataTests,NxPhysicsActorBodyFlagTests,NxPhysicsActorDynamicsTests,NxPhysicsActorDynamicSetterTests,NxPhysicsActorMomentumTests,NxPhysicsActorForceTests,NxPhysicsActorCMassTests,NxPhysicsActorShapeMutationTests,NxPhysicsBodyCreationTests",
     # Phase 6 has a registered STAGED-PAIR target: a closure is a mutation to a row's
     # implementation, and only a staged-pair target loads the rebuilt module, so the
@@ -44,7 +44,7 @@ PHASE_TARGETS = {
 }
 # Phases 6 and 7 moved out of this set when NxPhysicsJointStagedPairTests was
 # registered on them.
-UNREGISTERED_PHASES = ("4",)
+UNREGISTERED_PHASES = ("1",)
 SKIPPED_EXIT = 3
 
 BINDING_FAILURES = (
