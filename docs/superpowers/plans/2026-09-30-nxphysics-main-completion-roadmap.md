@@ -25,7 +25,7 @@ The assessment used the current source and inventory on main, not the older `cod
 | Executable code census | 2,787 code rows / 938,498 bytes: 749 discovered, 1,887 reconstructed, 145 dynamically gated, 6 statically reviewed | Separate missing implementation from verification debt |
 | Discovered code | 218,282 bytes across 749 unique IDs | This is an audit queue, not a claim that every byte is unwritten |
 | Data | All 5,138 records are classified | Prove candidate ownership and relocation for required tables/globals; classification alone is insufficient |
-| Work-unit map | Committed map has 143 records, 31 duplicate names and 2,023 multiply assigned IDs; regeneration in `build/main-planning-work-units.json` produces 109 units, 60 named and 49 gaps | Repair generated scheduling data before assigning work |
+| Work-unit map | Current `work_units.json` has 109 units (60 named, 49 gaps). The generator reproduces the same row ownership, and the committed-map test verifies unique names plus exactly one owner for each of 2,787 executable rows. The map's state/byte rollups lag the current inventory and are being refreshed. | Use the verified ownership map for scheduling; keep its generated rollups synchronized as inventory states change |
 | Scene simulation API | `getGravity`/`setGravity`, `getTiming`/`setTiming`, and the write-lock `isWritable` probe match oracle outputs; `startRun`/`finishRun`/`runFor` follow the oracle's deprecated-warning and call sequences. `simulate`, `checkResults`, `fetchResults`, and fence APIs remain open. | The worker/event lifecycle and real stepper are the immediate blockers to useful physics simulation tests |
 | Final gate | Phase 8 has no registered test targets and coverage floor zero | A separate whole-DLL acceptance gate must be built |
 
@@ -148,7 +148,7 @@ Use the existing translation-unit contracts and listing bundles. Ghidra or IDA r
 
 Deliverables: corrected work-unit map, a current-main baseline report, and one dependency backlog keyed by unique stable IDs.
 
-- Regenerate the map with the existing tool; verify every executable row has exactly one owner and repair duplicate-output detection in the normal validator/test workflow.
+- Regenerate the map with the existing tool; current ownership already covers every executable row exactly once, and the committed-map test rejects duplicate names or row assignments. Keep the rollup data synchronized with inventory state changes.
 - Classify all 749 discovered rows into missing, partial, implemented-but-unverified, proven vendor correspondence, or oracle-native unsupported/no-op. Locate existing candidate implementations and their callers before assigning new code.
 - For reconstructed rows, record missing dispatch, unresolved callees, current-source proof, or known differential divergence separately. Avoid equating a reconstructed count with production readiness.
 - Trace the public scene stepping entries into scheduling, broadphase, pair generation, contacts, islands, solver, integration, sleeping, and report delivery. Resolve indirect targets or explicitly list them as blockers. Numeric phase labels and adjacent source addresses are insufficient dependency evidence.
