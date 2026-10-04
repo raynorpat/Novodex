@@ -667,7 +667,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# nxSetSdkAllocatorBridge -- but the definition has to be in place before the link comes out, or the
 	# tree stops building. Round 75 measured why it matters: linking the Foundation makes the loader
 	# resolve it as an import before any harness code runs, so the PAIR's copy is never the one loaded.
-	target_link_libraries(NxPhysicsAssetTests NxQhull NxOpcode bcrypt)
+	target_link_libraries(NxPhysicsAssetTests NxFoundation NxQhull NxOpcode bcrypt)
 	# A linker map, so the vendored-correspondence execution trace can resolve the vendored
 	# functions linked into this exe by name (evidence/vendored-trace-*.txt). /MAP writes a
 	# file beside the exe and changes nothing in it.
@@ -759,6 +759,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsInternalTests tests/PhysicsInternalTests.cpp
 		tests/PhysicsInternalGroupPairStubs.cpp
 		tests/PhysicsInternalSceneStubs.cpp
+		tests/PhysicsInternalMeshContactStubs.cpp
+		tests/PhysicsInternalTriangleMeshStubs.cpp
 		Physics/src/PhysicsInternal.cpp
 		Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
