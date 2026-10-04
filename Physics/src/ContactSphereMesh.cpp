@@ -137,6 +137,8 @@ void __cdecl NxContactSphereMesh(const NxCollisionShape* sphere,
 	const NxReal radius = sphere->geometry[0];
 	const NxReal radiusSquared = radius * radius;
 	const bool isHeightfield = mesh->mHeightFieldVerticalAxis != 0xff;
+	const bool smoothSphereCollisions =
+		(*reinterpret_cast<const NxU32*>(&meshShape->geometry[1]) & 1u) != 0;
 	NxVec3 centerLocal;
 	nxSphereMeshToLocal(meshShape,
 		NxVec3(sphere->translation[0], sphere->translation[1], sphere->translation[2]), centerLocal);
@@ -225,13 +227,75 @@ void __cdecl NxContactSphereMesh(const NxCollisionShape* sphere,
 		NxVec3 contactDelta(centerLocal.x - closestLocal.x,
 			centerLocal.y - closestLocal.y, centerLocal.z - closestLocal.z);
 		NxVec3 normalLocal;
-		if(isHeightfield)
+		if(smoothSphereCollisions)
+			{
+			if(!mesh->mInternal.mVertexNormals)
+				{
+				InternalTriangleMesh* const internal =
+					const_cast<InternalTriangleMesh*>(&mesh->mInternal);
+				__asm
+					{
+					mov ecx, internal
+					call nxMeshComputeVertexNormals
+					}
+				}
+			const NxReal* const vertexNormals =
+				static_cast<const NxReal*>(mesh->mInternal.mVertexNormals);
+			const NxReal* const n0 = vertexNormals + tri[0] * 3;
+			const NxReal* const n1 = vertexNormals + tri[1] * 3;
+			const NxReal* const n2 = vertexNormals + tri[2] * 3;
+			// 001927's point/triangle helper writes its output parameters in the
+			// opposite edge order. Preserve that order and the listing's x87 sums.
+			normalLocal.x = (t * n2[0] + s * n1[0]) + ((1.0f - s) - t) * n0[0];
+			normalLocal.y = (s * n1[1] + t * n2[1]) + ((1.0f - s) - t) * n0[1];
+			normalLocal.z = (t * n2[2] + s * n1[2]) + ((1.0f - s) - t) * n0[2];
+			}
+		else if(isHeightfield)
 			normalLocal = faceNormal;
 		else
 		nxSphereMeshNormalizeDelta(contactDelta, distanceSquared, normalLocal);
 		NxVec3 normalWorld;
 		nxSphereMeshToWorldVector(meshShape, normalLocal, normalWorld);
-		if(isHeightfield)
+		if(smoothSphereCollisions)
+			{
+			NxReal normalizedX = normalWorld.x;
+			NxReal normalizedY = normalWorld.y;
+			NxReal normalizedZ = normalWorld.z;
+			if(normalWorld.x != 0.0f || normalWorld.y != 0.0f || normalWorld.z != 0.0f)
+				{
+				__asm
+					{
+					// 001927 keeps the length and reciprocal on the x87 stack,
+					// narrowing only each final normalized component.
+					fld normalWorld.y
+					fmul st(0), st(0)
+					fld normalWorld.z
+					fmul st(0), st(0)
+					faddp st(1), st(0)
+					fld normalWorld.x
+					fmul st(0), st(0)
+					faddp st(1), st(0)
+					fsqrt
+					fld1
+					fdiv st(0), st(1)
+					fld normalWorld.x
+					fmul st(0), st(1)
+					fstp normalizedX
+					fld normalWorld.y
+					fmul st(0), st(1)
+					fstp normalizedY
+					fld normalWorld.z
+					fmul st(0), st(1)
+					fstp normalizedZ
+				fstp st(0)
+				fstp st(0)
+				}
+			}
+			normalWorld.x = normalizedX;
+			normalWorld.y = normalizedY;
+			normalWorld.z = normalizedZ;
+			}
+		else if(isHeightfield)
 			{
 			NxReal normalLengthSquared = normalWorld.x * normalWorld.x
 				+ normalWorld.y * normalWorld.y;
@@ -247,7 +311,13 @@ void __cdecl NxContactSphereMesh(const NxCollisionShape* sphere,
 			}
 
 		NxVec3 point;
-		if(isHeightfield)
+		if(smoothSphereCollisions)
+			{
+			point.x = sphere->translation[0] - radius * normalWorld.x;
+			point.y = sphere->translation[1] - radius * normalWorld.y;
+			point.z = sphere->translation[2] - radius * normalWorld.z;
+			}
+		else if(isHeightfield)
 			{
 			point.x = sphere->translation[0];
 			point.y = sphere->translation[1];
@@ -260,24 +330,39 @@ void __cdecl NxContactSphereMesh(const NxCollisionShape* sphere,
 			point.y += meshShape->translation[1];
 			point.z += meshShape->translation[2];
 			}
-		NxReal contactDistanceSquared;
 		NxReal separation;
-		__asm
+		if(smoothSphereCollisions)
 			{
-			// 001927 stores the squared local delta before taking sqrt and subtracting r.
-			fld contactDelta.x
-			fmul contactDelta.x
-			fld contactDelta.y
-			fmul contactDelta.y
-			faddp st(1), st(0)
-			fld contactDelta.z
-			fmul contactDelta.z
-			faddp st(1), st(0)
-			fstp contactDistanceSquared
-			fld contactDistanceSquared
-			fsqrt
-			fsub radius
-			fstp separation
+			// 001672 leaves the squared distance in extended precision for
+			// 001927's sqrt/subtract sequence; do not narrow it through a float.
+			__asm
+				{
+				fld distanceSquared
+				fsqrt
+				fsub radius
+				fstp separation
+				}
+			}
+		else
+			{
+			NxReal contactDistanceSquared;
+			__asm
+				{
+				// 001927 stores the squared local delta before taking sqrt and subtracting r.
+				fld contactDelta.x
+				fmul contactDelta.x
+				fld contactDelta.y
+				fmul contactDelta.y
+				faddp st(1), st(0)
+				fld contactDelta.z
+				fmul contactDelta.z
+				faddp st(1), st(0)
+				fstp contactDistanceSquared
+				fld contactDistanceSquared
+				fsqrt
+				fsub radius
+				fstp separation
+				}
 			}
 		const NxU32 material = mesh->mInternal.mMaterialIndices
 			? mesh->mInternal.mMaterialIndices[face] : 0xffff;

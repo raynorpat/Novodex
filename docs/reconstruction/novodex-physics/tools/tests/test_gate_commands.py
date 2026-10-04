@@ -39,8 +39,8 @@ PHASE_TARGETS = {
     # NxFoundationTangentTests joined it when NxNormalToTangents, which
     # NxJointDesc::setGlobalAxis calls, was brought to the oracle's words.
     "6": "NxPhysicsJointStagedPairTests,NxFoundationTangentTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests",
-    # Phase 7 also runs scene simulation and trigger targets end to end.
-    "7": "NxPhysicsJointStagedPairTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsSceneRaycastTests,NxPhysicsSceneVisualizeTests,NxPhysicsSimulationTests,NxPhysicsTriggerSimulationTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests",
+    # Phase 7 also runs scene simulation, mesh, and trigger targets end to end.
+    "7": "NxPhysicsJointStagedPairTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsSceneRaycastTests,NxPhysicsSceneVisualizeTests,NxPhysicsSimulationTests,NxPhysicsMeshSimulationTests,NxPhysicsTriggerSimulationTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests",
 }
 # Phases 6 and 7 moved out of this set when NxPhysicsJointStagedPairTests was
 # registered on them.

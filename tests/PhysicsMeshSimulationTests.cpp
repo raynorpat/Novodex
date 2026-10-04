@@ -399,9 +399,85 @@ int wmain(int argc, wchar_t** argv)
 		heightfieldReport.firstPoint[0], heightfieldReport.firstPoint[1], heightfieldReport.firstPoint[2],
 		heightfieldReport.firstNormal[0], heightfieldReport.firstNormal[1], heightfieldReport.firstNormal[2],
 		heightfieldReport.firstSeparation, nxFloatBits(position.y), nxFloatBits(velocity.y));
+
+	// A non-coplanar heightfield makes the smooth-sphere flag observable: the
+	// normal at the shared edge blends the two face normals instead of selecting
+	// only the contacted face normal.
+	const NxPoint smoothVertices[] = {
+		NxPoint(-2.0f, 0.0f, -2.0f), NxPoint(2.0f, 0.0f, -2.0f),
+		NxPoint(-2.0f, 0.0f, 2.0f), NxPoint(2.0f, 2.0f, 2.0f)
+		};
+	const NxU32 smoothTriangles[] = { 0, 2, 1, 1, 2, 3 };
+	NxTriangleMeshDesc smoothHeightfieldDesc;
+	smoothHeightfieldDesc.numVertices = sizeof(smoothVertices) / sizeof(smoothVertices[0]);
+	smoothHeightfieldDesc.numTriangles = 2;
+	smoothHeightfieldDesc.pointStrideBytes = sizeof(NxPoint);
+	smoothHeightfieldDesc.triangleStrideBytes = 3 * sizeof(NxU32);
+	smoothHeightfieldDesc.points = smoothVertices;
+	smoothHeightfieldDesc.triangles = smoothTriangles;
+	smoothHeightfieldDesc.heightFieldVerticalAxis = NX_Y;
+	smoothHeightfieldDesc.heightFieldVerticalExtent = -100.0f;
+	NxTriangleMesh* const smoothHeightfieldMesh = sdk->createTriangleMesh(smoothHeightfieldDesc);
+	if(!smoothHeightfieldMesh)
+		return nxFail("smooth heightfield mesh creation failed");
+	NxTriangleMeshShapeDesc smoothHeightfieldShape;
+	smoothHeightfieldShape.meshData = smoothHeightfieldMesh;
+	smoothHeightfieldShape.meshFlags = NX_MESH_SMOOTH_SPHERE_COLLISIONS;
+	NxActorDesc smoothHeightfieldActorDesc;
+	smoothHeightfieldActorDesc.shapes.pushBack(&smoothHeightfieldShape);
+	NxActor* const smoothHeightfieldActor = scene->createActor(smoothHeightfieldActorDesc);
+	if(!smoothHeightfieldActor)
+		return nxFail("smooth heightfield actor creation failed");
+	smoothHeightfieldActor->setGroup(7);
+	NxMeshContactReport smoothHeightfieldReport(sphere, smoothHeightfieldActor);
+	scene->setUserContactReport(&smoothHeightfieldReport);
+	sphere->setGlobalPosition(NxVec3(0.5f, 0.7f, 0.5f));
+	sphere->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
+	scene->simulate(1.0f / 60.0f);
+	if(!scene->checkResults(NX_RIGID_BODY_FINISHED, true)
+		|| !scene->fetchResults(NX_RIGID_BODY_FINISHED, true))
+		return nxFail("smooth heightfield mesh-contact simulation results failed");
+	printf("simulation mesh-heightfield-smooth calls=%u unexpected=%u events=%08x patches=%u points=%u point=%08x.%08x.%08x normal=%08x.%08x.%08x separation=%08x\n",
+		smoothHeightfieldReport.calls, smoothHeightfieldReport.unexpectedCalls,
+		smoothHeightfieldReport.events, smoothHeightfieldReport.patchCount,
+		smoothHeightfieldReport.pointCount, smoothHeightfieldReport.firstPoint[0],
+		smoothHeightfieldReport.firstPoint[1], smoothHeightfieldReport.firstPoint[2],
+		smoothHeightfieldReport.firstNormal[0], smoothHeightfieldReport.firstNormal[1],
+		smoothHeightfieldReport.firstNormal[2], smoothHeightfieldReport.firstSeparation);
+
+	// Move the same smooth heightfield through an exact quarter-turn and
+	// translation to exercise local-to-world normal and contact-point handling.
+	NxMat34 smoothPose;
+	smoothPose.id();
+	smoothPose.M.setRow(0, NxVec3(0.0f, -1.0f, 0.0f));
+	smoothPose.M.setRow(1, NxVec3(1.0f, 0.0f, 0.0f));
+	smoothPose.M.setRow(2, NxVec3(0.0f, 0.0f, 1.0f));
+	smoothPose.t = NxVec3(2.0f, 1.0f, -1.0f);
+	smoothHeightfieldActor->setGlobalPose(smoothPose);
+	sphere->setGlobalPosition(NxVec3(1.3f, 1.5f, -0.5f));
+	sphere->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
+	smoothHeightfieldReport.calls = 0;
+	smoothHeightfieldReport.unexpectedCalls = 0;
+	smoothHeightfieldReport.events = 0;
+	smoothHeightfieldReport.patchCount = 0;
+	smoothHeightfieldReport.firstPatchPoints = 0;
+	smoothHeightfieldReport.pointCount = 0;
+	scene->simulate(1.0f / 60.0f);
+	if(!scene->checkResults(NX_RIGID_BODY_FINISHED, true)
+		|| !scene->fetchResults(NX_RIGID_BODY_FINISHED, true))
+		return nxFail("transformed smooth heightfield simulation results failed");
+	printf("simulation mesh-heightfield-smooth-transformed calls=%u unexpected=%u events=%08x patches=%u points=%u point=%08x.%08x.%08x normal=%08x.%08x.%08x separation=%08x\n",
+		smoothHeightfieldReport.calls, smoothHeightfieldReport.unexpectedCalls,
+		smoothHeightfieldReport.events, smoothHeightfieldReport.patchCount,
+		smoothHeightfieldReport.pointCount, smoothHeightfieldReport.firstPoint[0],
+		smoothHeightfieldReport.firstPoint[1], smoothHeightfieldReport.firstPoint[2],
+		smoothHeightfieldReport.firstNormal[0], smoothHeightfieldReport.firstNormal[1],
+		smoothHeightfieldReport.firstNormal[2], smoothHeightfieldReport.firstSeparation);
 	fflush(stdout);
 
 	sdk->setActorGroupPairFlags(7, 3, 0);
+	scene->releaseActor(*smoothHeightfieldActor);
+	sdk->releaseTriangleMesh(*smoothHeightfieldMesh);
 	scene->releaseActor(*heightfieldActor);
 	sdk->releaseTriangleMesh(*heightfieldMesh);
 	scene->releaseActor(*missSphereActor);

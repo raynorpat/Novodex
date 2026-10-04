@@ -3152,6 +3152,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation mesh-trigger calls=1 event=1 unexpected=0'
         # The Y-axis heightfield's negative extent permits a contact below the surface.
         'simulation mesh-heightfield calls=1 unexpected=0 events=0000000a patches=1 points=1 point=00000000.be800000.00000000 normal=00000000.3f800000.80000000 separation=be800000 y=bdb851ee vy=36000000'
+        # Smooth sphere collisions blend per-vertex normals on a sloped heightfield.
+        'simulation mesh-heightfield-smooth calls=1 unexpected=0 events=0000000a patches=1 points=1 point=3f23efc2.3e76e320.3f23efc2 normal=be8fbf08.3f6af4d6.be8fbf08 separation=beac63f3'
+        # The same contact survives a quarter-turn and translation of the heightfield.
+        'simulation mesh-heightfield-smooth-transformed calls=1 unexpected=0 events=00000008 patches=1 points=1 point=3fe1239b.3fd1f7e1.beb8207c normal=bf6af4d6.be8fbf08.be8fbf08 separation=beac63eb'
     )
     'NxPhysicsTriggerSimulationTests' = @(
         # A dynamic sphere crosses a public static trigger box under real motion.
@@ -5350,7 +5354,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1306  # previous 1,305 plus the sphere/mesh corner-contact fixture
+    '7' = 1309  # previous 1,308 plus transformed smooth sphere/heightfield coverage
     '8' = 0
 }
 
