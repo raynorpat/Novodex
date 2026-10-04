@@ -1,0 +1,185 @@
+Actor mass from shapes: cdb breakpoint trace of NxPhysicsActorMassTests (actor-mass Task 1)
+==========================================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/effector-and-coredump-trace-effector.txt.
+ModLoad lines, banners, register dumps and the echoed breakpoint commands are removed; the HIT
+lines are kept in order and unedited, with the program's own "created" line of each case left in
+place so every run of hits can be attributed to its case. It is the evidence behind the
+dynamic_proof this task records in inventory.json (see evidence/actor-mass.md).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\NxPhysicsActorMassTests.exe <worktree>\build\pairs\candidate
+           (the script breaks on the NxPhysics load with `sxe ld:NxPhysics`, sets the
+           breakpoints below, then runs to exit)
+Recorded:  2026-09-28, on the actor-mass working tree (parent commit d628181).
+Candidate: build\pairs\candidate\NxPhysics.dll
+           sha256=65aeb67c29025a01febac1e9269e227c6e0c044c09bd1d9d43634f1d1c5bb9af
+           (identical to build\Release\NxPhysics.dll at the time of the trace; the staged pair
+           of the NxPhysicsActorMassTests differential, stdout_delta=0).
+Raw log:   7452 bytes, sha256=26dc158840549bd20f65867cde0a0276318a09f509b016892042c3c5f9344892
+           (not committed; the program's transcript in it matches the differential's).
+Offsets:   module-relative, from build\Release\NxPhysics.map of that build. 000008, 000841,
+           001024, 000829 and 000845 are noinline so each has its own entry; 000843, 000837,
+           000839, 000851 and 000853 are inlined into their callers and were not broken on.
+
+  row                 breakpoint                                      offset   total
+  000008              Row000008Fixture::row000008                     0x2f410     13
+  000841              Row000841Fixture::row000841                     0x2f580     11
+  001024              CompoundShapeMass::row001024                    0x2f5c0      4
+  000833              MassFrame::nxMassFrameTranslate                 0x1eae0     27
+  000829              MassFrame::nxMassFrameBuildBox                  0x1e080      6
+  000845              MassFrame::nxMassFrameBuildCapsule              0x1e1a0      5
+  000831              MassFrame::nxMassFrameFoldPayload               0x1e3b0     16
+  000847              MassFrame::nxMassFrameConditionalZero           0x1e340     13
+  000947              BoxShape::nxBoxAccumulateMass                   0x1ab90      6
+  000849              BoxShape::nxBoxComputeMassFrame                 0x1af80      0 (inlined into 000947)
+  001371              SphereShape::nxSphereAccumulateMass             0x22240      6
+  001008              CapsuleShape::nxCapsuleAccumulateMass           0x1bb30      5
+  (000026's model)    nxActorComputeMass                              0x2a9a0     13
+
+000008 runs once per createActor that reaches the body creation: every case but the density with
+an explicit mass, which createActor refuses before allocating. The two trigger-only cases reach
+000008 and return 2 before 000841, which is why 000841 has 11 hits to 000008's 13. A box, sphere
+or capsule always passes its pose pointer, so 000831 and 000833 run for centred shapes too
+(000833 returns at once on a zero translation).
+
+Trace (in order):
+HIT nxActorComputeMass
+HIT 000008
+HIT 000847
+HIT 001371
+HIT 000831
+HIT 000833
+HIT 000841
+HIT 000833
+mass sphere created=1
+HIT nxActorComputeMass
+HIT 000008
+HIT 000847
+HIT 000947
+HIT 000829
+HIT 000831
+HIT 000833
+HIT 000841
+HIT 000833
+mass box created=1
+HIT nxActorComputeMass
+HIT 000008
+HIT 000847
+HIT 000947
+HIT 000829
+HIT 000831
+HIT 000833
+HIT 000841
+HIT 000833
+mass cube created=1
+HIT nxActorComputeMass
+HIT 000008
+HIT 000847
+HIT 001008
+HIT 000845
+HIT 000831
+HIT 000833
+HIT 000841
+HIT 000833
+mass capsule created=1
+HIT nxActorComputeMass
+HIT 000008
+HIT 000847
+HIT 001371
+HIT 000831
+HIT 000833
+HIT 000841
+HIT 000833
+mass sphere_pose created=1
+HIT nxActorComputeMass
+HIT 000008
+HIT 000847
+HIT 000947
+HIT 000829
+HIT 000831
+HIT 000833
+HIT 000841
+HIT 000833
+mass box_pose created=1
+HIT nxActorComputeMass
+HIT 000008
+HIT 000847
+HIT 001008
+HIT 000845
+HIT 000831
+HIT 000833
+HIT 000841
+HIT 000833
+mass capsule_pose created=1
+HIT nxActorComputeMass
+HIT 000008
+HIT 000847
+HIT 001024
+HIT 000947
+HIT 000829
+HIT 000831
+HIT 000833
+HIT 001371
+HIT 000831
+HIT 000833
+HIT 001008
+HIT 000845
+HIT 000831
+HIT 000833
+HIT 000841
+HIT 000833
+mass compound created=1
+HIT nxActorComputeMass
+HIT 000008
+HIT 000847
+HIT 001024
+HIT 000947
+HIT 000829
+HIT 000831
+HIT 000833
+HIT 001371
+HIT 000831
+HIT 000833
+HIT 001008
+HIT 000845
+HIT 000831
+HIT 000833
+HIT 000841
+HIT 000833
+mass compound_trigger created=1
+mass compound_mass_density created=0
+HIT nxActorComputeMass
+HIT 000008
+HIT 000847
+HIT 001024
+HIT 000947
+HIT 000829
+HIT 000831
+HIT 000833
+HIT 001371
+HIT 000831
+HIT 000833
+HIT 000841
+HIT 000833
+mass compound_mass_only created=1
+HIT nxActorComputeMass
+HIT 000008
+HIT 000847
+HIT 001008
+HIT 000845
+HIT 000831
+HIT 000833
+HIT 000841
+HIT 000833
+mass capsule_mass_only created=1
+HIT nxActorComputeMass
+HIT 000008
+HIT 000847
+HIT 001371
+mass trigger_only created=0
+HIT nxActorComputeMass
+HIT 000008
+HIT 000847
+HIT 001024
+mass compound_trigger_only created=0

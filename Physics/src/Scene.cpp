@@ -63,9 +63,15 @@
 #include "core/FixedJoint.h"
 #include "core/D6Joint.h"
 #include "core/SpringAndDamperEffector.h"
+#include "core/ActorMass.h"
 #include "NxSpringAndDamperEffectorDesc.h"
 #include "Observable.h"
 #include "PhysicsSDK.h"
+
+// The oracle's __FILE__ strings for the reports this file makes on their
+// behalf (.rdata 0x10106420 and 0x10104278).
+#define NX_SCENE_CPP	"\\Epic\\Novodex\\SDKs\\Physics\\src\\Scene.cpp"
+#define NX_ACTOR_CPP	"\\Epic\\Novodex\\SDKs\\Physics\\src\\Actor.cpp"
 #include "NxMat33.h"
 #include "NxQuat.h"
 #include "FoundationSDK.h"
@@ -1412,11 +1418,24 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 	unsigned* p = reinterpret_cast<unsigned*>(mBytes);
 
 	// The oracle inlines isValid() here as a long chain of __fpclass tests over the
-	// twelve globalPose floats and the body's twelve, plus a shape validity loop.
-	// The public header's isValid() is the same predicate, so it is used directly.
-	if(!desc.isValid())
+	// twelve globalPose floats and the body's twelve, plus a shape validity loop,
+	// once per descriptor type ([desc+0x48]: 1 at 0x11e99, 2 at 0x11a2d, any
+	// other at 0x1175f). For the two shape-list types it is the whole of the
+	// pinned header's NxActorDesc::isValid(), isValidInternal included (0x11d23:
+	// exactly one of density, mass, or mass with tensor) -- NxActorDescBase::
+	// isValid() is not virtual, so calling it through the base reference, as
+	// this transcription did, skipped that half (actor-mass Task 1: a density
+	// with an explicit mass was accepted). The two list types share one layout,
+	// which Actor::loadFromDescInternal reads the same way for both. The
+	// report goes through FoundationSDK::error with Scene.cpp's __FILE__ and
+	// the arm's line: 0x203, 0x209, 0x21b.
+	const NxU32 descType = static_cast<NxU32>(desc.getType());
+	const bool shapeList = descType == NX_ADT_DEFAULT || descType == NX_ADT_ALLOCATOR;
+	if(shapeList ? !static_cast<const NxActorDesc&>(desc).isValid() : !desc.isValid())
 		{
-		nxSceneReportError("Supplied NxActorDesc is not valid. createActor returns NULL.");
+		NxFoundation::FoundationSDK::error(NXE_INVALID_PARAMETER, NX_SCENE_CPP,
+			descType == NX_ADT_DEFAULT ? 0x203 : descType == NX_ADT_ALLOCATOR ? 0x209 : 0x21b,
+			0, "Supplied NxActorDesc is not valid. createActor returns NULL.");
 		return 0;
 		}
 

@@ -180,6 +180,8 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # core/SceneDump.cpp (effector-and-coredump Task 3) is the core dump: its
 # float tokens compare and widen x87 values and round with fistp at the live
 # control word, and its asset writer converts poses to quaternions with fsqrt.
+# core/ActorMass.cpp (actor-mass Task 1) is the actor's mass from shapes,
+# phys_fn_000008: x87 compares, scaling and the NxDiagonalizeInertiaTensor call.
 if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set_source_files_properties(
 		Physics/src/ContactPairManager.cpp
@@ -227,6 +229,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Quantizer.cpp
 		Physics/src/core/SpringAndDamperEffector.cpp
 		Physics/src/core/SceneDump.cpp
+		Physics/src/core/ActorMass.cpp
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 	# opcode/IcePruner.cpp builds OPCODE's AABBTreeOfAABBsBuilder on the stack
 	# (the static pruner's tree build, 005216), so it emits COMDAT copies of

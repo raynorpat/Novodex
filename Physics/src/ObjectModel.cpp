@@ -2404,6 +2404,7 @@ void nxMutexWorkEx(void* self, unsigned lockOff, unsigned objOff,
 	}
 
 // phys_fn_001024 (0x229b0, ret 0xc): the guarded three-argument dispatch loop.
+// Product row: Physics/src/core/ActorMass.cpp.
 unsigned char nxArrayVtCall3Args1024(void* self, unsigned a1, unsigned a2,
 	unsigned a3)
 	{
@@ -5346,9 +5347,9 @@ __declspec(noinline) void MassFrame::nxMassFrameBuildBox(const float* he)
 	const NxF32 f = static_cast<NxF32>(
 		static_cast<double>(gMassKOneThird) * m);			// fld 1/3; fmul st(1); fstp m32
 
-	double xx = static_cast<double>(he[0]) * static_cast<double>(he[0]);
-	double yy = static_cast<double>(he[1]) * static_cast<double>(he[1]);
-	double zz = static_cast<double>(he[2]) * static_cast<double>(he[2]);
+	const double xx = static_cast<double>(he[0]) * static_cast<double>(he[0]);
+	const double yy = static_cast<double>(he[1]) * static_cast<double>(he[1]);
+	const double zz = static_cast<double>(he[2]) * static_cast<double>(he[2]);
 
 	mInertia[1] = mInertia[2] = mInertia[3] = 0.0f;			// integer zero stores
 	mInertia[5] = mInertia[6] = mInertia[7] = 0.0f;
@@ -5357,6 +5358,9 @@ __declspec(noinline) void MassFrame::nxMassFrameBuildBox(const float* he)
 	const NxF32 sYY = static_cast<NxF32>(zz + xx);			// fadd st(2); fstp [esp+4]
 	const NxF32 sZZ = static_cast<NxF32>(yy + xx);			// fadd st(1); fstp [esp+8]
 
+	const double iXX = static_cast<double>(sumX) * f;		// stays on the stack
+	mInertia[4] = static_cast<NxF32>(static_cast<double>(sumY) * f);	// via [esp+0x10]
+	mInertia[8] = static_cast<NxF32>(static_cast<double>(sumZ) * f);	// via [esp+0x14]
 	mMass = static_cast<NxF32>(m);							// fstp [ecx+0x30]
 	mInertia[0] = static_cast<NxF32>(static_cast<double>(sXX) * f);	// fstp [ecx]
 	mInertia[4] = static_cast<NxF32>(static_cast<double>(sYY) * f);	// via [esp+0x10]
@@ -5580,6 +5584,7 @@ namespace
 // (0x1001c8eb).
 __declspec(noinline) void MassFrame::nxMassFrameTranslate(const void* param)
 	{
+	static const NxF32 zero = 0.0f;						// [0x101041f0]
 	const float* d = static_cast<const float*>(param);
 	unsigned w0,w1,w2;
 	memcpy(&w0,d+0,4); memcpy(&w1,d+1,4); memcpy(&w2,d+2,4);

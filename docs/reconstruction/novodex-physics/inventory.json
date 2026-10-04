@@ -688,7 +688,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/96",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "Round 54: the reconstruction named here was nxSceneActorInitialise, a function declared and defined in Scene.cpp and called by nothing. The dynamic proof added in round 30 claimed the row executes on the staged-pair differential path; it does not, because no code invokes it. Both fields are cleared rather than corrected, because this session has not established where the row is actually reconstructed.",
+      "notes": "Round 54: the reconstruction named here was nxSceneActorInitialise, a function declared and defined in Scene.cpp and called by nothing. The dynamic proof added in round 30 claimed the row executes on the staged-pair differential path; it does not, because no code invokes it. Both fields are cleared rather than corrected, because this session has not established where the row is actually reconstructed. Actor-mass Task 1: the candidate model nxActorLoadFromDescInternal (Scene.cpp) now reports its two mass failures through FoundationSDK::error with Actor.cpp's __FILE__ and lines 0xe5/0xe6, as 0x21e3/0x2201 do.",
       "implementation": null
     },
     {
@@ -11543,7 +11543,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1589",
       "static_proof": null,
       "dynamic_proof": "Scene::createActor; executed for every actor, and its transform arm by the joint rows it drives. driven on BOTH pairs by NxPhysicsJointStagedPairTests, a registered Phase 6 staged-pair differential (tools/gate_targets.ps1, floor 11, four coverage assertions). The harness creates the SDK, a scene, two actors with bodies and four revolute joints, reads each joint's anchor, axis, actors and state back, and releases everything; the oracle and candidate transcripts are identical after the runner normalises the pair-identity lines, and the gate runs the differential as part of phase 6. This row executes on that path. Recorded in round 30, after 11s found that the work was done and the census still said `discovered`.",
-      "notes": "",
+      "notes": "Actor-mass Task 1: createActor now applies the whole NxActorDesc::isValid (isValidInternal included, 0x11d23) to the two shape-list descriptor types, and reports through FoundationSDK::error with Scene.cpp's __FILE__ and lines 0x203/0x209/0x21b/0x228; a failed load releases the shapes and name it built (the failed-creation half of 0x1c40).",
       "implementation": "Physics/src/Scene.cpp"
     },
     {
@@ -15335,7 +15335,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/341",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2544",
       "static_proof": "payload fold step over {Vec3 d; SymMat3 K} records (0x24-byte stride): nine faddp-chain intermediates each rounded to float32 by their fstp m32 stores, then all nine inertia words overwritten from d/K products of the old inertia, COM offset replaced by {o.d, o^T K col0, o^T K col1}; mass untouched; driven bitwise by the paxis family through two crafted frame/payload pairs",
-      "dynamic_proof": null,
+      "dynamic_proof": "cdb breakpoint trace of the candidate NxPhysicsActorMassTests (evidence/actor-mass-trace.txt, actor-mass Task 1): hit 16 times (every posed shape and every box and sphere, whose pose pointer is never null).",
       "notes": "",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
@@ -18609,7 +18609,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/492",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3066",
       "static_proof": "when [this+0xde]&7 is clear, computes the capsule mass frame with axisSelector 1, radius [this+0xe0], cylHalfHeight [this+0xe0]+[this+0xe4] and pose [this+0x6c] via the 000853 helper; always returns true",
-      "dynamic_proof": "confirmed via capmass2 differential (3z119): 8 flag-lows x 2 densities failures=0 (needed the capsule builder payload-path fix)",
+      "dynamic_proof": "confirmed via capmass2 differential (3z119): 8 flag-lows x 2 densities failures=0 (needed the capsule builder payload-path fix) cdb breakpoint trace of the candidate NxPhysicsActorMassTests (evidence/actor-mass-trace.txt, actor-mass Task 1): hit 5 times.",
       "notes": ""
     },
     {
@@ -18896,7 +18896,7 @@
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "guarded three-argument dispatch loop (0x229b0, ret 0xc)",
+      "source": "Physics/src/core/ActorMass.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/406",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3096",
       "static_proof": "static review of the recorded shape: guarded three-argument dispatch loop (0x229b0, ret 0xc); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257); npactor-completion Task 5: the model dispatches each element's slot 4 as a thiscall on the element (0x229d1-0x229ea), where it had called a stdcall with no this; it is the runtime group table's slot 4 (Scene.cpp)",
@@ -25194,7 +25194,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/673",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3530",
       "static_proof": "when [this+0xde]&7 is clear, computes the sphere mass frame into the destination from the facade radius [this+0xe0] and pose [this+0x6c] via the 000851 helper; always returns true",
-      "dynamic_proof": "confirmed via sphmass differential (3z118): 8 flag-lows x 2 densities failures=0 (needed the sphere builder payload-path fix)",
+      "dynamic_proof": "confirmed via sphmass differential (3z118): 8 flag-lows x 2 densities failures=0 (needed the sphere builder payload-path fix) cdb breakpoint trace of the candidate NxPhysicsActorMassTests (evidence/actor-mass-trace.txt, actor-mass Task 1): hit 6 times.",
       "notes": ""
     },
     {
