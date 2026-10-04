@@ -437,6 +437,8 @@ int wmain(int argc, wchar_t** argv)
 	if(!scene->checkResults(NX_RIGID_BODY_FINISHED, true)
 		|| !scene->fetchResults(NX_RIGID_BODY_FINISHED, true))
 		return nxFail("smooth heightfield mesh-contact simulation results failed");
+	sphere->getGlobalPosition(position);
+	sphere->getLinearVelocity(velocity);
 	printf("simulation mesh-heightfield-smooth calls=%u unexpected=%u events=%08x patches=%u points=%u point=%08x.%08x.%08x normal=%08x.%08x.%08x separation=%08x\n",
 		smoothHeightfieldReport.calls, smoothHeightfieldReport.unexpectedCalls,
 		smoothHeightfieldReport.events, smoothHeightfieldReport.patchCount,
@@ -444,6 +446,9 @@ int wmain(int argc, wchar_t** argv)
 		smoothHeightfieldReport.firstPoint[1], smoothHeightfieldReport.firstPoint[2],
 		smoothHeightfieldReport.firstNormal[0], smoothHeightfieldReport.firstNormal[1],
 		smoothHeightfieldReport.firstNormal[2], smoothHeightfieldReport.firstSeparation);
+	printf("simulation mesh-heightfield-smooth-state position=%08x.%08x.%08x velocity=%08x.%08x.%08x\n",
+		nxFloatBits(position.x), nxFloatBits(position.y), nxFloatBits(position.z),
+		nxFloatBits(velocity.x), nxFloatBits(velocity.y), nxFloatBits(velocity.z));
 
 	// Move the same smooth heightfield through an exact quarter-turn and
 	// translation to exercise local-to-world normal and contact-point handling.
@@ -466,6 +471,8 @@ int wmain(int argc, wchar_t** argv)
 	if(!scene->checkResults(NX_RIGID_BODY_FINISHED, true)
 		|| !scene->fetchResults(NX_RIGID_BODY_FINISHED, true))
 		return nxFail("transformed smooth heightfield simulation results failed");
+	sphere->getGlobalPosition(position);
+	sphere->getLinearVelocity(velocity);
 	printf("simulation mesh-heightfield-smooth-transformed calls=%u unexpected=%u events=%08x patches=%u points=%u point=%08x.%08x.%08x normal=%08x.%08x.%08x separation=%08x\n",
 		smoothHeightfieldReport.calls, smoothHeightfieldReport.unexpectedCalls,
 		smoothHeightfieldReport.events, smoothHeightfieldReport.patchCount,
@@ -473,6 +480,9 @@ int wmain(int argc, wchar_t** argv)
 		smoothHeightfieldReport.firstPoint[1], smoothHeightfieldReport.firstPoint[2],
 		smoothHeightfieldReport.firstNormal[0], smoothHeightfieldReport.firstNormal[1],
 		smoothHeightfieldReport.firstNormal[2], smoothHeightfieldReport.firstSeparation);
+	printf("simulation mesh-heightfield-smooth-transformed-state position=%08x.%08x.%08x velocity=%08x.%08x.%08x\n",
+		nxFloatBits(position.x), nxFloatBits(position.y), nxFloatBits(position.z),
+		nxFloatBits(velocity.x), nxFloatBits(velocity.y), nxFloatBits(velocity.z));
 	fflush(stdout);
 
 	sdk->setActorGroupPairFlags(7, 3, 0);

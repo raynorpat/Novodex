@@ -75,9 +75,21 @@ static NX_INLINE NxU32 supportBits(NxReal value)
 // accumulator used by 000879's friction rows.
 static void supportSolveNormal004403(NxReal step, NxU32 pass, JointSupportRecord* record)
 	{
-	const double relativeVelocity = record->row004389();
-	const double lambda = ((double)record->mUnknown038 - relativeVelocity)
-		* record->mUnknown03c;
+	// 004403 keeps the contact relative-velocity dot product on the x87 stack
+	// through the target subtraction and effective-mass multiply. Calling
+	// 004389 here materializes its NxF64 result as a 64-bit double first; that
+	// loses precision before the applied impulse is rounded to NxReal.
+	const JointSupportBody* const body0 = record->mBody[0];
+	const JointSupportBody* const body1 = record->mBody[1];
+	const double lambda = ((double)record->mUnknown038
+		- (body0 && !body1
+			? (((((double)body0->mUnknown010.z * record->mUnknown018.z
+				+ (double)body0->mUnknown010.y * record->mUnknown018.y)
+				+ (double)body0->mUnknown000.z * record->mUnknown000.z)
+				+ (double)body0->mUnknown000.y * record->mUnknown000.y)
+				+ (double)body0->mUnknown000.x * record->mUnknown000.x
+				+ (double)body0->mUnknown010.x * record->mUnknown018.x)
+			: record->row004389())) * record->mUnknown03c;
 	NxReal rawAccumulation = (NxReal)((double)supportFloat(record->mUnknown04c) + lambda);
 	record->mUnknown04c = supportBits(rawAccumulation);
 	const double bias = (double)record->mUnknown040 * record->mUnknown034;
@@ -97,8 +109,9 @@ static void supportSolveNormal004403(NxReal step, NxU32 pass, JointSupportRecord
 		if(!body)
 			return;
 		// The oracle's first-body X path scales before projection, while its
-		// second-body path projects before scaling. Both stay in x87 precision
-		// through the velocity add; preserve the distinct operation order.
+		// second-body path projects before scaling. Y and Z project and round
+		// to float before inverse-mass scaling on both paths. Preserve those
+		// distinct operation orders through the velocity add.
 		const NxReal signedApplied = sign < 0.0f ? -applied : applied;
 		const double scaledImpulse = (double)signedApplied * body->mUnknown00c;
 		double linearX;
@@ -110,8 +123,10 @@ static void supportSolveNormal004403(NxReal step, NxU32 pass, JointSupportRecord
 			}
 		else
 			linearX = scaledImpulse * record->mUnknown000.x;
-		const NxReal linearY = (NxReal)(scaledImpulse * record->mUnknown000.y);
-		const NxReal linearZ = (NxReal)(scaledImpulse * record->mUnknown000.z);
+		const NxReal projectedY = (NxReal)((double)signedApplied * record->mUnknown000.y);
+		const NxReal projectedZ = (NxReal)((double)signedApplied * record->mUnknown000.z);
+		const double linearY = (double)projectedY * body->mUnknown00c;
+		const double linearZ = (double)projectedZ * body->mUnknown00c;
 		body->mUnknown000.x = (NxReal)((double)body->mUnknown000.x
 			+ linearX);
 		body->mUnknown000.y = (NxReal)((double)body->mUnknown000.y + linearY);
