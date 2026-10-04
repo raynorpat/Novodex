@@ -4294,6 +4294,19 @@ NxU32 NxSceneInternal::getNbPairs() const
 // then translate each flagged hash entry into public shape or actor handles.
 bool NxSceneInternal::getPairFlagArray(NxPairFlag* userArray, NxU32 numPairs) const
 	{
+	const auto publicActorForBody = [this](const void* body) -> void*
+		{
+		if(!body)
+			return 0;
+		NxActor** actors = 0;
+		NxActor** actorsEnd = 0;
+		memcpy(&actors, bytes() + 0x55c, sizeof(actors));
+		memcpy(&actorsEnd, bytes() + 0x560, sizeof(actorsEnd));
+		for(NxActor** actor = actors; actor && actor != actorsEnd; ++actor)
+			if(*actor && *reinterpret_cast<void**>(reinterpret_cast<NxU8*>(*actor) + 0x14) == body)
+				return *actor;
+		return 0;
+		};
 	void** shapeById = static_cast<void**>(_alloca(0x4000c));
 	memset(shapeById, 0, 0x4000c);
 
@@ -4345,8 +4358,8 @@ bool NxSceneInternal::getPairFlagArray(NxPairFlag* userArray, NxU32 numPairs) co
 						}
 					else
 						{
-							pair.objects[0] = *reinterpret_cast<void**>(shape0 + 4);
-							pair.objects[1] = *reinterpret_cast<void**>(shape1 + 4);
+							pair.objects[0] = publicActorForBody(*reinterpret_cast<void**>(shape0 + 4));
+							pair.objects[1] = publicActorForBody(*reinterpret_cast<void**>(shape1 + 4));
 							pair.flags |= 0x80000000u;
 						}
 					keepWalking = --numPairs != 0;

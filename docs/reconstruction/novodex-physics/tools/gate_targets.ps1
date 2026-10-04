@@ -16,7 +16,7 @@ $NxPhaseTestTargets = [ordered] @{
     '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests')
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsBodyCreationTests')
     '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests')
-    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
+    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
     '8' = @()
 }
 
@@ -3150,6 +3150,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation compound-generated-contact step=15 calls=8 events=00000008'
         'simulation compound-generated-contact summary calls=8 events=00000008'
     )
+    'NxPhysicsPairFlagTests' = @(
+        'pairflag compound flags=00000001 count=1 array=1 actor_pair=1 objects=0.1 pair_flags=80000001'
+    )
     'NxPhysicsMeshSimulationTests' = @(
         # Full public path: construct a static triangle mesh, drop a sphere,
         # generate contact reports and settle through the real solver.
@@ -5365,7 +5368,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 1  # one public actor-group pair-flag hash round-trip and clear
     '3' = 359  # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 256  # 36 asset, 215 third-party and 5 convex-mesh actor/mass assertions
-    '5' = 2037  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
+    '5' = 2042  # registered coverage across the current actor, body, shape, and object-layout targets
                # + 175 from scene-raycast Task 4 (149 body-creation, 13 setters, 9 dynamic-setter
                # and 3 shape-vtable from its shape sub-area, 1 shape-vtable from its box hull)
                # + 991 from the NpActor.cpp completion (251 Task 2, 446 + 3 Task 3 and review,
@@ -5375,8 +5378,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1315  # previous 1,312 includes smooth-heightfield state; plus the shape-pair
-               # inline/record/clear round-trip and shape-classified pair-array entry
+    '7' = 1316  # previous 1,315 plus the compound actor public-handle pair-array route
     '8' = 0
 }
 
@@ -5423,6 +5425,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsSceneRaycastTests',
     'NxPhysicsSceneVisualizeTests',
     'NxPhysicsSimulationTests',
+    'NxPhysicsPairFlagTests',
     'NxPhysicsMeshSimulationTests',
     'NxPhysicsTriggerSimulationTests',
     'NxPhysicsSDKTests'
