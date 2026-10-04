@@ -13,7 +13,7 @@ $NxPhaseTestTargets = [ordered] @{
     '1' = @()
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
-    '4' = @('NxPhysicsConvexMeshTests')
+    '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests')
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsBodyCreationTests')
     '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests')
     '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
@@ -5411,6 +5411,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsEffectorTests',
     'NxPhysicsCoreDumpTests',
     'NxPhysicsConvexMeshTests',
+    'NxPhysicsTriangleMeshApiTests',
     'NxPhysicsCoreClusterTests',
     'NxFoundationTangentTests',
     'NxPhysicsExportTests',

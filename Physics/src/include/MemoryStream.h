@@ -115,6 +115,8 @@ class MemoryStream
 	// in the image.
 	NxU32				readBit();
 	NxU32				readBitsMsbFirst(NxU32 count);
+	void				storeBit(NxU32 bit);
+	void				storeBitsMsbFirst(NxU32 value, NxU32 count);
 
 	// phys_fn_004770 (0x000b3a60), 63 bytes.
 	void				storeByte(NxU8 value);

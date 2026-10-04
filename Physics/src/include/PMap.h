@@ -13,6 +13,11 @@
 class NxUserOutputStream;
 namespace IceCore { class Container; }
 
+struct PMapCellCursor
+	{
+	NxI32 x, y, z;
+	};
+
 /**
 The penetration map: a cubic occupancy grid a triangle mesh carries so that
 deep-penetration queries have somewhere to look. The file format and every
@@ -66,13 +71,9 @@ WHAT IS NOT RECONSTRUCTED, and must not be guessed:
     this row's 2,340 bytes. It needs a real InternalTriangleMesh, which is the
     mesh component's and not this task's.
   * The filename arm of the payload loader, 0x00050123-0x0005014f, and the arm
-    at 0x0005017b that builds its own stream when the caller passes none. Both
-    reach serialization rows this task does not cover.
-  * The 5-bit cell-walk codes in the cell-run decoder. The 32-way jump table at
-    0x0004dc75 moves three cursor globals and the encoding is unestablished; the
-    decoder below reproduces the code-width selection, the count read and the
-    zero-count exit, which is what the recorded fixtures drive, and refuses
-    rather than inventing the walk.
+    at 0x0005017b that builds its own stream when the caller passes none. The
+    bit-packed serializer called by the public size/data accessors is
+    reconstructed below, but these alternate load sources remain open.
   * NxCreatePMap (phys_fn_002049, 0x00050f70). Its whole body is the COMPUTE
     arm above.
 */
@@ -98,6 +99,8 @@ class PenetrationMap
 	NxU32				getResolution()	const	{ return mResolution;	}
 	NxU32				getCellCount()	const	{ return mCellCount;	}
 	const NxU32*		getGrid()		const	{ return mGrid;			}
+	// phys_fn_002017 (0x0004e1a0), the bit-packed PMap data writer.
+	bool				serialize(MemoryStream& stream) const;
 
 	private:
 	// phys_fn_001986 (0x0004cb20).
@@ -107,7 +110,13 @@ class PenetrationMap
 	// phys_fn_002035 (0x00050110), the arm that reads from a supplied stream.
 	bool				loadPayload(MemoryStream& stream);
 	// phys_fn_002008 (0x0004dba0). Returns the number of cell indices appended.
-	static NxU32		decodeCellRun(MemoryStream& stream, IceCore::Container& cells, NxU32 resolution);
+	static NxU32		decodeCellRun(MemoryStream& stream, IceCore::Container& cells, NxU32 resolution,
+							PMapCellCursor& cursor);
+	// phys_fn_001990 (0x0004cc60). Writes a cell list in Morton order as local
+	// 3D steps with absolute-coordinate escapes.
+	static bool			encodeCellRun(MemoryStream& stream, const NxU32* cells,
+							NxU32 count, NxU32 resolution, const NxU32* spread,
+							PMapCellCursor& cursor);
 	// phys_fn_002037/002039/002041/002043 (0x000502d0..0x000505e8).
 	bool				finish();
 

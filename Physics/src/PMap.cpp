@@ -8,6 +8,7 @@
 #include "PMap.h"
 
 #include "NxUserOutputStream.h"
+#include "TriangleMesh.h"
 
 // The pinned public NxPMap.h names both of these in NxCreatePMap's signature and
 // includes neither; NxPhysics.h is what supplies them in a consumer build.
@@ -15,6 +16,34 @@ class NxTriangleMesh;
 #include "NxPMap.h"
 
 #include "Opcode.h"
+
+static void nxPMapCollectFaceOrder(const Opcode::AABBQuantizedNoLeafNode* node,
+	NxU32* faces, NxU32& count)
+	{
+	const NxU32 children[2] = { node->mPosData, node->mNegData };
+	for(unsigned child = 0; child < 2; ++child)
+		{
+		if(children[child] & 1)
+			faces[count++] = children[child] >> 1;
+		else
+			nxPMapCollectFaceOrder(reinterpret_cast<const Opcode::AABBQuantizedNoLeafNode*>(
+				static_cast<size_t>(children[child])), faces, count);
+		}
+	}
+
+static void nxPMapCollectFaceOrder(const Opcode::AABBNoLeafNode* node,
+	NxU32* faces, NxU32& count)
+	{
+	const NxU32 children[2] = { node->mPosData, node->mNegData };
+	for(unsigned child = 0; child < 2; ++child)
+		{
+		if(children[child] & 1)
+			faces[count++] = children[child] >> 1;
+		else
+			nxPMapCollectFaceOrder(reinterpret_cast<const Opcode::AABBNoLeafNode*>(
+				static_cast<size_t>(children[child])), faces, count);
+		}
+	}
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -54,20 +83,481 @@ static const NxU32	kPMapEndOfValues		= 0xffffffffu;
 // at 0x00050466.
 static const NxU32	kPMapCellFilled			= 0x80000000u;
 static const NxU32	kPMapCellInterior		= 0x40000000u;
+static const NxU32	kPMapEmptyValue			= 0x3fffffffu;
+
+// phys_fn_002008's jump table gives the exact codebook for adjacent cells.
+// Coordinates are ordered x (the fastest-varying grid coordinate), y, z.
+struct PMapCellStep
+	{
+	NxI32 x, y, z;
+	};
+
+static const PMapCellStep kPMapCellSteps[26] =
+	{
+	{ -1,  0,  0 }, {  1,  0,  0 }, {  0, -1,  0 }, {  0,  1,  0 },
+	{  0,  0, -1 }, {  0,  0,  1 }, { -1, -1,  0 }, {  1,  1,  0 },
+	{ -1,  1,  0 }, {  1, -1,  0 }, {  0, -1, -1 }, {  0,  1,  1 },
+	{  0, -1,  1 }, {  0,  1, -1 }, { -1,  0, -1 }, {  1,  0,  1 },
+	{ -1,  0,  1 }, {  1,  0, -1 }, { -1, -1, -1 }, {  1,  1,  1 },
+	{ -1, -1,  1 }, {  1,  1, -1 }, {  1, -1, -1 }, { -1,  1,  1 },
+	{  1, -1,  1 }, { -1,  1, -1 }
+	};
+
+struct PMapMortonCell
+	{
+	NxU32 index;
+	NxU32 key;
+	};
+
+static int comparePMapMortonCell(const void* lhs, const void* rhs)
+	{
+	const PMapMortonCell* a = static_cast<const PMapMortonCell*>(lhs);
+	const PMapMortonCell* b = static_cast<const PMapMortonCell*>(rhs);
+	if(a->key < b->key) return -1;
+	if(a->key > b->key) return 1;
+	return a->index < b->index ? -1 : (a->index > b->index ? 1 : 0);
+	}
+
+struct PMapValueCell
+	{
+	NxU32 value;
+	NxU32 index;
+	};
+
+static int comparePMapValueCell(const void* lhs, const void* rhs)
+	{
+	const PMapValueCell* a = static_cast<const PMapValueCell*>(lhs);
+	const PMapValueCell* b = static_cast<const PMapValueCell*>(rhs);
+	if(a->value < b->value) return -1;
+	if(a->value > b->value) return 1;
+	return a->index < b->index ? -1 : (a->index > b->index ? 1 : 0);
+	}
 
 static_assert(sizeof(NxU32) == 4, "the grid is dwords");
 
-// The decoder's three coordinate cursors and per-command counters are process
-// globals in the image (0x101222e8..0x101222f0 and 0x101240a0). In particular,
-// they are not reset when a new map or cell run begins.
-static NxU32 gPMapCellX = 0;
-static NxU32 gPMapCellY = 0;
-static NxU32 gPMapCellZ = 0;
-static NxU32 gPMapCellCodeCounts[32] = { 0 };
-
-static NxU32 pmapReadCoordinate(MemoryStream& stream, NxU32 width)
+struct NxPMapPointTriangleTerms
 	{
-	return width ? stream.readBitsMsbFirst(width) : 0;
+	NxReal a00;
+	NxReal a01;
+	NxReal a11;
+	NxReal b0;
+	NxReal b1;
+	NxReal det;
+	NxReal s;
+	NxReal dx;
+	NxReal dy;
+	NxReal dz;
+	NxReal e1x;
+	NxReal e1y;
+	NxReal e1z;
+	};
+
+// The first edge's three products (0x000329eb..0x00032a9e): a00 = (x^2 + z^2)
+// + y^2, a01 = (e1.x x + e1.z z) + e1.y y and b0 = (d.x x + d.z z) + d.y y,
+// with the first edge on the FPU stack throughout. A function of its own, entered
+// only with stored floats: written inside the whole setup, MSVC held the edge in
+// three 8-byte slots (cutting it to 53 bits under 0x0f7f) and read a01 and b0
+// from those copies.
+static __declspec(noinline) void nxPMapPointTriangleFirstEdge(const NxReal* v0, const NxReal* v1,
+	NxPMapPointTriangleTerms* k)
+	{
+	const double e0x = (double) v1[0] - v0[0];
+	const double e0y = (double) v1[1] - v0[1];
+	const double e0z = (double) v1[2] - v0[2];
+	k->a00 = (NxReal) ((e0x * e0x + e0z * e0z) + e0y * e0y);
+	k->a01 = (NxReal) (((double) k->e1x * e0x + (double) k->e1z * e0z) + (double) k->e1y * e0y);
+	k->b0 = (NxReal) (((double) k->dx * e0x + (double) k->dz * e0z) + (double) k->dy * e0y);
+	}
+
+// 0x000329e0..0x00032b0c. The first edge is on the FPU stack; the second edge
+// and the offset are stored. a00 is (x^2 + z^2) + y^2 of the first edge.
+static __declspec(noinline) void nxPMapPointTriangleTerms(const NxReal* point, const NxReal* v0,
+	const NxReal* v1, const NxReal* v2, NxPMapPointTriangleTerms* k)
+	{
+	k->e1x = (NxReal) ((double) v2[0] - v0[0]);
+	k->e1y = (NxReal) ((double) v2[1] - v0[1]);
+	k->e1z = (NxReal) ((double) v2[2] - v0[2]);
+	k->dx = (NxReal) ((double) v0[0] - point[0]);
+	k->dy = (NxReal) ((double) v0[1] - point[1]);
+	k->dz = (NxReal) ((double) v0[2] - point[2]);
+	nxPMapPointTriangleFirstEdge(v0, v1, k);
+
+	const NxReal e1x = k->e1x;
+	const NxReal e1y = k->e1y;
+	const NxReal e1z = k->e1z;
+	k->a11 = (NxReal) (((double) e1z * e1z + (double) e1y * e1y) + (double) e1x * e1x);
+	k->b1 = (NxReal) (((double) k->dz * e1z + (double) k->dy * e1y) + (double) k->dx * e1x);
+	k->det = (NxReal) fabs((double) k->a11 * k->a00 - (double) k->a01 * k->a01);
+	k->s = (NxReal) ((double) k->b1 * k->a01 - (double) k->b0 * k->a11);
+	}
+
+// c, the squared offset (0x00032ac8..0x00032ae2): (z^2 + y^2) + x^2.
+static __forceinline double nxPMapPointTriangleC(const NxPMapPointTriangleTerms* k)
+	{
+	return ((double) k->dz * k->dz + (double) k->dy * k->dy) + (double) k->dx * k->dx;
+	}
+
+// t before any division (0x00032b10..0x00032b20): b0 a01 - b1 a00.
+static __forceinline double nxPMapPointTriangleT(const NxPMapPointTriangleTerms* k)
+	{
+	return (double) k->b0 * k->a01 - (double) k->b1 * k->a00;
+	}
+
+// The denominator of the three quotient leaves: (a00 - (a01 + a01)) + a11.
+static __forceinline double nxPMapPointTriangleDenominator(const NxPMapPointTriangleTerms* k)
+	{
+	return ((double) k->a00 - ((double) k->a01 + k->a01)) + k->a11;
+	}
+
+// 0x00032eec: the parameters, then |squared|.
+static __forceinline double nxPMapPointTriangleFinish(NxReal* sParam, NxReal* tParam,
+	NxReal s, NxReal t, double squared)
+	{
+	if(sParam)
+		*sParam = s;
+	if(tParam)
+		*tParam = t;
+	return fabs(squared);
+	}
+
+// Vertex 1 (0x00032cc9): s = 1, t = 0, ((b0 + b0) + c) + a00.
+static __declspec(noinline) double nxPMapPointTriangleVertex1(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	return nxPMapPointTriangleFinish(sParam, tParam, 1.0f, 0.0f,
+		(((double) k->b0 + k->b0) + nxPMapPointTriangleC(k)) + k->a00);
+	}
+
+// Vertex 2 (0x00032d0c, 0x00032d9e, 0x00032e5c): s = 0, t = 1,
+// ((b1 + b1) + c) + a11.
+static __declspec(noinline) double nxPMapPointTriangleVertex2(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	return nxPMapPointTriangleFinish(sParam, tParam, 0.0f, 1.0f,
+		(((double) k->b1 + k->b1) + nxPMapPointTriangleC(k)) + k->a11);
+	}
+
+// Vertex 0 (0x00032bb9, 0x00032c01 with 0x00032c1e, 0x00032d2d, 0x00032e1c):
+// both parameters 0 and the squared distance c.
+static __declspec(noinline) double nxPMapPointTriangleVertex0(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	return nxPMapPointTriangleFinish(sParam, tParam, 0.0f, 0.0f, nxPMapPointTriangleC(k));
+	}
+
+// Edge 0's quotient (0x00032e2d): s = -(b0 / a00), kept wide for s b0 + c.
+static __declspec(noinline) double nxPMapPointTriangleEdge0Quotient(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	const double s = -((double) k->b0 / k->a00);
+	return nxPMapPointTriangleFinish(sParam, tParam, (NxReal) s, 0.0f, s * k->b0 + nxPMapPointTriangleC(k));
+	}
+
+// Edge 1's quotient (0x00032d3a/0x00032d3e): t = -(b1 / a11), kept wide.
+static __declspec(noinline) double nxPMapPointTriangleEdge1Quotient(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	const double t = -((double) k->b1 / k->a11);
+	return nxPMapPointTriangleFinish(sParam, tParam, 0.0f, (NxReal) t, t * k->b1 + nxPMapPointTriangleC(k));
+	}
+
+// Edge 0, t = 0 (0x00032b72, from regions 4 and 5): past the far vertex when
+// -b0 >= a00.
+static __declspec(noinline) double nxPMapPointTriangleEdge0(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	if(-k->b0 >= k->a00)
+		return nxPMapPointTriangleVertex1(k, sParam, tParam);
+	return nxPMapPointTriangleEdge0Quotient(k, sParam, tParam);
+	}
+
+// Edge 1, s = 0 (0x00032ba0, regions 3 and 4).
+static __declspec(noinline) double nxPMapPointTriangleEdge1(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	if(k->b1 >= 0.0f)
+		return nxPMapPointTriangleVertex0(k, sParam, tParam);
+	if(-k->b1 >= k->a11)
+		return nxPMapPointTriangleVertex2(k, sParam, tParam);
+	return nxPMapPointTriangleEdge1Quotient(k, sParam, tParam);
+	}
+
+// The interior sum (0x00032eb1): the first t is `first`, every later read of
+// t and s is the narrowed copy; ((X + Y) + c) with
+// X = t ((first a11 + s a01) + (b1 + b1)) and Y = s ((t a01 + s a00) + (b0 + b0)).
+static __forceinline double nxPMapPointTriangleInterior(const NxPMapPointTriangleTerms* k,
+	NxReal s, NxReal t, double first)
+	{
+	return ((first * k->a11 + (double) s * k->a01) + ((double) k->b1 + k->b1)) * t
+		+ (((double) t * k->a01 + (double) s * k->a00) + ((double) k->b0 + k->b0)) * s
+		+ nxPMapPointTriangleC(k);
+	}
+
+// The interior entered from a quotient s (0x00032e9b..0x00032ead): t = 1 - s
+// stored with `fst` and its wide value used first.
+static __declspec(noinline) double nxPMapPointTriangleInteriorFromS(const NxPMapPointTriangleTerms* k,
+	NxReal s, NxReal* sParam, NxReal* tParam)
+	{
+	const double first = 1.0f - (double) s;
+	const NxReal t = (NxReal) first;
+	return nxPMapPointTriangleFinish(sParam, tParam, s, t, nxPMapPointTriangleInterior(k, s, t, first));
+	}
+
+// The interior entered with t reloaded (0x00032c79, 0x00032dd8).
+static __declspec(noinline) double nxPMapPointTriangleInteriorNarrow(const NxPMapPointTriangleTerms* k,
+	NxReal s, NxReal t, NxReal* sParam, NxReal* tParam)
+	{
+	return nxPMapPointTriangleFinish(sParam, tParam, s, t, nxPMapPointTriangleInterior(k, s, t, t));
+	}
+
+// Region 0 (0x00032c2b): the determinant-zero interior returns FLT_MAX
+// (0x10106858) with both parameters 0; otherwise s and t are scaled by the
+// wide reciprocal and narrowed.
+static __declspec(noinline) double nxPMapPointTriangleRegion0(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	if(k->det == 0.0f)
+		return nxPMapPointTriangleFinish(sParam, tParam, 0.0f, 0.0f, 3.402823466e+38f);
+	const double inverse = 1.0f / (double) k->det;
+	const NxReal s = (NxReal) ((double) k->s * inverse);
+	const NxReal t = (NxReal) (inverse * nxPMapPointTriangleT(k));
+	return nxPMapPointTriangleInteriorNarrow(k, s, t, sParam, tParam);
+	}
+
+// Region 2's quotient (0x00032cab..0x00032cc5): numer = (b1 + a11) - tmp0.
+static __declspec(noinline) double nxPMapPointTriangleRegion2Quotient(const NxPMapPointTriangleTerms* k,
+	NxReal tmp0, NxReal* sParam, NxReal* tParam)
+	{
+	const double numer = ((double) k->b1 + k->a11) - tmp0;
+	const double denom = nxPMapPointTriangleDenominator(k);
+	if(numer >= denom)
+		return nxPMapPointTriangleVertex1(k, sParam, tParam);
+	return nxPMapPointTriangleInteriorFromS(k, (NxReal) (numer / denom), sParam, tParam);
+	}
+
+// Region 2 (0x00032c8b): tmp0 = b0 + a01 narrowed into the t slot, tmp1 =
+// b1 + a11 wide.
+static __declspec(noinline) double nxPMapPointTriangleRegion2(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	const NxReal tmp0 = (NxReal) ((double) k->b0 + k->a01);
+	const double tmp1 = (double) k->b1 + k->a11;
+	if(tmp1 > tmp0)
+		return nxPMapPointTriangleRegion2Quotient(k, tmp0, sParam, tParam);
+	if(tmp1 <= 0.0)
+		return nxPMapPointTriangleVertex2(k, sParam, tParam);
+	if(k->b1 >= 0.0f)
+		return nxPMapPointTriangleVertex0(k, sParam, tParam);
+	return nxPMapPointTriangleEdge1Quotient(k, sParam, tParam);
+	}
+
+// Region 6's quotient (0x00032d80..0x00032dd8): t = numer / denom narrowed,
+// s = 1 - t narrowed, and the interior entered with t reloaded.
+static __declspec(noinline) double nxPMapPointTriangleRegion6Quotient(const NxPMapPointTriangleTerms* k,
+	NxReal tmp0, NxReal* sParam, NxReal* tParam)
+	{
+	const double numer = ((double) k->b0 + k->a00) - tmp0;
+	const double denom = nxPMapPointTriangleDenominator(k);
+	if(numer >= denom)
+		return nxPMapPointTriangleVertex2(k, sParam, tParam);
+	const NxReal t = (NxReal) (numer / denom);
+	const NxReal s = (NxReal) (1.0f - (double) t);
+	return nxPMapPointTriangleInteriorNarrow(k, s, t, sParam, tParam);
+	}
+
+// Region 6 (0x00032d65): tmp0 = b1 + a01 narrowed, tmp1 = b0 + a00 wide.
+static __declspec(noinline) double nxPMapPointTriangleRegion6(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	const NxReal tmp0 = (NxReal) ((double) k->b1 + k->a01);
+	const double tmp1 = (double) k->b0 + k->a00;
+	if(tmp1 > tmp0)
+		return nxPMapPointTriangleRegion6Quotient(k, tmp0, sParam, tParam);
+	if(tmp1 <= 0.0)
+		return nxPMapPointTriangleVertex1(k, sParam, tParam);
+	if(k->b0 >= 0.0f)
+		return nxPMapPointTriangleVertex0(k, sParam, tParam);
+	return nxPMapPointTriangleEdge0Quotient(k, sParam, tParam);
+	}
+
+// Region 1 (0x00032e40): numer = ((b1 + a11) - a01) - b0, stored narrowed
+// into the t slot and tested wide against 0; the division reads the narrowed
+// copy.
+static __declspec(noinline) double nxPMapPointTriangleRegion1(const NxPMapPointTriangleTerms* k,
+	NxReal* sParam, NxReal* tParam)
+	{
+	const double numerWide = (((double) k->b1 + k->a11) - k->a01) - k->b0;
+	const NxReal numer = (NxReal) numerWide;
+	if(numerWide <= 0.0)
+		return nxPMapPointTriangleVertex2(k, sParam, tParam);
+	const double denom = nxPMapPointTriangleDenominator(k);
+	if(numer >= denom)
+		return nxPMapPointTriangleVertex1(k, sParam, tParam);
+	return nxPMapPointTriangleInteriorFromS(k, (NxReal) (numer / denom), sParam, tParam);
+	}
+
+// The region decision (0x00032b10..0x00032b68, 0x00032bf2, 0x00032c82,
+// 0x00032d50): s + t against the determinant, then the signs of s, t and b0.
+// Returns Eberly's region number.
+static __declspec(noinline) int nxPMapPointTriangleRegion(const NxPMapPointTriangleTerms* k)
+	{
+	const double t = nxPMapPointTriangleT(k);
+	if((double) k->s + t <= k->det)
+		{
+		if(k->s < 0.0f)
+			return (t < 0.0 && k->b0 < 0.0f) ? 4 : 3;
+		return t < 0.0 ? 5 : 0;
+		}
+	if(k->s < 0.0f)
+		return 2;
+	return t < 0.0 ? 6 : 1;
+	}
+
+// phys_fn_001672 (0x000329e0, 1326 B)
+// Point to triangle (origin v0, edges v1 - v0 and v2 - v0), with the two edge
+// parameters written through optional pointers. The first edge stays on the
+// FPU stack (0x000329eb..0x000329fc) and is squared and dotted from there; the
+// second edge and the offset v0 - p are stored. a00, a01, a11, b0, b1, the
+// determinant and s are narrowed -- b0, the determinant and s into the
+// caller's first three argument slots, b1 into the fourth -- while c (the
+// squared offset, 0x00032ac8..0x00032ae2) and t stay in registers; c is added
+// last in every leaf. The quotient leaves keep the parameter they just divided
+// in st(0) (`fst` at 0x00032d43, 0x00032e33, 0x00032ead) and use it wide; the
+// interior leaf (0x00032eb1) reads its first t either wide or reloaded, by
+// entry. The determinant-zero interior returns FLT_MAX (0x10106858) with both
+// parameters 0. Every comparison keeps the listing's NaN side: a NaN takes the
+// branch the `test ah` pattern gives it (for example b1 NaN at 0x00032bb7 is
+// "b1 < 0", the quotient). Regions 3 and 4 share the edge-1 leaf and regions 4
+// and 5 the edge-0 leaf, as the listing's jumps do.
+__declspec(noinline) double __cdecl nxPMapPointTriangleSquareDistance(const NxReal* point,
+	const NxReal* v0, const NxReal* v1, const NxReal* v2, NxReal* sParam, NxReal* tParam)
+	{
+	NxPMapPointTriangleTerms k;
+	nxPMapPointTriangleTerms(point, v0, v1, v2, &k);
+	switch(nxPMapPointTriangleRegion(&k))
+		{
+		case 0:
+			return nxPMapPointTriangleRegion0(&k, sParam, tParam);
+		case 1:
+			return nxPMapPointTriangleRegion1(&k, sParam, tParam);
+		case 2:
+			return nxPMapPointTriangleRegion2(&k, sParam, tParam);
+		case 3:
+			return nxPMapPointTriangleEdge1(&k, sParam, tParam);
+		case 4:
+			return nxPMapPointTriangleEdge0(&k, sParam, tParam);
+		case 5:
+			if(k.b0 >= 0.0f)
+				return nxPMapPointTriangleVertex0(&k, sParam, tParam);
+			return nxPMapPointTriangleEdge0(&k, sParam, tParam);
+		default:
+			return nxPMapPointTriangleRegion6(&k, sParam, tParam);
+		}
+	}
+
+
+static double nxPMapTriangleDistance(const InternalTriangleMesh& mesh,
+	const NxF32 point[3], NxU32 face)
+	{
+	const NxVec3* vertices = static_cast<const NxVec3*>(mesh.mVertices);
+	const NxU32* triangles = static_cast<const NxU32*>(mesh.mTriangles);
+	const NxVec3& a = vertices[triangles[face * 3 + 0]];
+	const NxVec3& b = vertices[triangles[face * 3 + 1]];
+	const NxVec3& c = vertices[triangles[face * 3 + 2]];
+	const IceMaths::Point query(point[0], point[1], point[2]);
+	const IceMaths::Point p0(a.x, a.y, a.z);
+	const IceMaths::Point p1(b.x, b.y, b.z);
+	const IceMaths::Point p2(c.x, c.y, c.z);
+	const NxF32 queryValues[3] = { query.x, query.y, query.z };
+	const NxF32 p0Values[3] = { p0.x, p0.y, p0.z };
+	const NxF32 p1Values[3] = { p1.x, p1.y, p1.z };
+	const NxF32 p2Values[3] = { p2.x, p2.y, p2.z };
+	return nxPMapPointTriangleSquareDistance(queryValues, p0Values, p1Values, p2Values, 0, 0);
+	}
+
+static double nxPMapPointAABBDistanceSquared(const IceMaths::Point& point,
+	const Opcode::CollisionAABB& bounds)
+	{
+	const IceMaths::Point delta = point - bounds.mCenter;
+	const IceMaths::Point& extents = bounds.mExtents;
+	double dx = 0.0;
+	double dy = 0.0;
+	double dz = 0.0;
+	if(delta.x < -extents.x) dx = static_cast<double>(delta.x) + extents.x;
+	else if(delta.x > extents.x) dx = static_cast<double>(delta.x) - extents.x;
+	if(delta.y < -extents.y) dy = static_cast<double>(delta.y) + extents.y;
+	else if(delta.y > extents.y) dy = static_cast<double>(delta.y) - extents.y;
+	if(delta.z < -extents.z) dz = static_cast<double>(delta.z) + extents.z;
+	else if(delta.z > extents.z) dz = static_cast<double>(delta.z) - extents.z;
+	return (dx * dx + dy * dy) + dz * dz;
+	}
+
+static void nxPMapNearestNoLeafNode(const InternalTriangleMesh& mesh,
+	const IceMaths::Point& point, const Opcode::AABBNoLeafNode* node,
+	double& bestDistanceSquared, NxU32& faceOut)
+	{
+	if(!node || nxPMapPointAABBDistanceSquared(point, node->mAABB) > bestDistanceSquared)
+		return;
+	const NxU32 children[2] = { node->mPosData, node->mNegData };
+	for(unsigned child = 0; child < 2; ++child)
+		{
+		if(children[child] & 1)
+			{
+			const NxU32 face = children[child] >> 1;
+			const NxF32 pointValues[3] = { point.x, point.y, point.z };
+			const double distanceSquared = nxPMapTriangleDistance(mesh, pointValues, face);
+			if(distanceSquared < bestDistanceSquared)
+				{
+				bestDistanceSquared = static_cast<NxF32>(distanceSquared);
+				faceOut = face;
+				}
+			}
+		else
+			nxPMapNearestNoLeafNode(mesh, point,
+				reinterpret_cast<const Opcode::AABBNoLeafNode*>(static_cast<size_t>(children[child])),
+				bestDistanceSquared, faceOut);
+		}
+	}
+
+// Match the oracle's point-distance collider: test each no-leaf node's AABB,
+// visit its positive child before its negative child, and prune against the
+// best squared distance. A flat face scan changes which equal-distance face
+// wins because it ignores the tree's data-dependent traversal order.
+static void nxPMapNearestFace(const InternalTriangleMesh& mesh, const NxF32 point[3],
+	const Opcode::Model& model, const NxU32* faceOrder, NxU32& faceOut,
+	NxF32& distanceSquaredOut)
+	{
+	double bestDistanceSquared = 3.402823466e+38F;
+	faceOut = 0;
+	if(!model.HasLeafNodes() && !model.IsQuantized() && !model.HasSingleNode())
+		{
+		const Opcode::AABBNoLeafTree* tree =
+			static_cast<const Opcode::AABBNoLeafTree*>(model.GetTree());
+		if(tree && tree->GetNodes())
+			nxPMapNearestNoLeafNode(mesh, IceMaths::Point(point[0], point[1], point[2]),
+				tree->GetNodes(), bestDistanceSquared, faceOut);
+		}
+	else
+		for(NxU32 order = 0; order < mesh.mTriangleCount; ++order)
+			{
+			const NxU32 face = faceOrder[order];
+			const double distanceSquared = nxPMapTriangleDistance(mesh, point, face);
+			if(distanceSquared < bestDistanceSquared)
+				{
+				bestDistanceSquared = static_cast<NxF32>(distanceSquared);
+				faceOut = face;
+				}
+			}
+	distanceSquaredOut = static_cast<NxF32>(bestDistanceSquared);
+	}
+
+// The oracle keeps the multiply, subtract, and add in the x87 register stack,
+// then rounds the final coordinate when it stores the point. Volatile float
+// temporaries round too early and shift surface-adjacent ray origins.
+static __declspec(noinline) NxF32 nxPMapCellCoordinate(NxU32 index, NxF32 unitsPerCell,
+	NxF32 halfExtent, NxF32 centre)
+	{
+	return (static_cast<NxF32>(index) * unitsPerCell - halfExtent) + centre;
 	}
 
 // ---------------------------------------------------------------------------
@@ -162,7 +652,11 @@ bool PenetrationMap::setup(NxU32 resolution, const NxF32* bounds)
 	for(int axis = 0; axis < 3; ++axis)
 		{
 		mCellsPerUnit[axis] = mLastIndex / mExtents[axis];
-		mUnitsPerCell[axis] = mInvLastIndex * mExtents[axis];
+		// The oracle recomputes 1/lastIndex for this product; it does not reuse
+		// the float-rounded mInvLastIndex stored at +0x68. Keeping the reciprocal
+		// in the x87 register through the multiply avoids a one-ULP grid-scale
+		// difference on resolutions such as 64.
+		mUnitsPerCell[axis] = (1.0f / mLastIndex) * mExtents[axis];
 		}
 
 	// `imul edi,ecx` at 0x000500b6 makes the third power out of the square, and
@@ -193,72 +687,216 @@ bool PenetrationMap::setup(NxU32 resolution, const NxF32* bounds)
 // any resolution at all.
 //
 // Then a 32-bit element count MSB first, then the container is emptied
-// (`[eax+4] = 0` at 0x0004dc13), and a zero count returns 0 without entering the
-// walk (0x0004dc1c to 0x0004e109).
-//
-// Each element is a 5-bit command. 0..25 move one or more coordinates by one;
-// 26..31 replace one or more coordinates with absolute values encoded at the
-// resolution's coordinate width. The flattened cell index is appended to the
-// caller's Ice container. The cursors and command counters are image globals.
-NxU32 PenetrationMap::decodeCellRun(MemoryStream& stream, IceCore::Container& cells, NxU32 resolution)
+// (`[eax+4] = 0` at 0x0004dc13). Each element is a 5-bit code dispatched
+// through the 32-way jump table at 0x0004dc75. Codes 0..25 move one step to a
+// neighboring cell; codes 26..31 replace selected coordinates with absolute
+// values using the resolution-dependent width above.
+NxU32 PenetrationMap::decodeCellRun(MemoryStream& stream, IceCore::Container& cells,
+	NxU32 resolution, PMapCellCursor& cursor)
 	{
 	NxU32 codeWidth = 0;
 	if(resolution == 0x20)		codeWidth = 5;
 	else if(resolution == 0x40)	codeWidth = 6;
 	else if(resolution == 0x50)	codeWidth = 7;
+
 	NxU32 count = stream.readBitsMsbFirst(32);
 	cells.Reset();
 	if(count == 0)
 		return 0;
 
-	static const NxI32 delta[26][3] = {
-		{ -1,  0,  0 }, {  1,  0,  0 }, {  0, -1,  0 }, {  0,  1,  0 },
-		{  0,  0, -1 }, {  0,  0,  1 }, { -1, -1,  0 }, {  1,  1,  0 },
-		{ -1,  1,  0 }, {  1, -1,  0 }, {  0, -1, -1 }, {  0,  1,  1 },
-		{  0, -1,  1 }, {  0,  1, -1 }, { -1,  0, -1 }, {  1,  0,  1 },
-		{ -1,  0,  1 }, {  1,  0, -1 }, { -1, -1, -1 }, {  1,  1,  1 },
-		{ -1, -1,  1 }, {  1,  1, -1 }, {  1, -1, -1 }, { -1,  1,  1 },
-		{  1, -1,  1 }, { -1,  1, -1 }
-		};
-
-	for(NxU32 i = 0; i < count; ++i)
+	// phys_fn_001988 initializes all three cursors to -1 before each value group.
+	// Codes 0..25 are the 26 possible non-zero one-cell moves. Codes 26..31
+	// replace one or more coordinates with an absolute value of codeWidth bits.
+	for(NxU32 entry = 0; entry < count; ++entry)
 		{
-		NxU32 code = stream.readBitsMsbFirst(5);
-		++gPMapCellCodeCounts[code];
-
+		const NxU32 code = stream.readBitsMsbFirst(5);
 		if(code < 26)
 			{
-			gPMapCellX += static_cast<NxU32>(delta[code][0]);
-			gPMapCellY += static_cast<NxU32>(delta[code][1]);
-			gPMapCellZ += static_cast<NxU32>(delta[code][2]);
+			cursor.x += kPMapCellSteps[code].x;
+			cursor.y += kPMapCellSteps[code].y;
+			cursor.z += kPMapCellSteps[code].z;
 			}
 		else
 			{
-			switch(code)
-				{
-				case 26: gPMapCellX = pmapReadCoordinate(stream, codeWidth); break;
-				case 27: gPMapCellY = pmapReadCoordinate(stream, codeWidth); break;
-				case 28: gPMapCellZ = pmapReadCoordinate(stream, codeWidth); break;
-				case 29:
-					gPMapCellX = pmapReadCoordinate(stream, codeWidth);
-					gPMapCellY = pmapReadCoordinate(stream, codeWidth);
-					break;
-				case 30:
-					gPMapCellX = pmapReadCoordinate(stream, codeWidth);
-					gPMapCellZ = pmapReadCoordinate(stream, codeWidth);
-					break;
-				case 31:
-					gPMapCellX = pmapReadCoordinate(stream, codeWidth);
-					gPMapCellY = pmapReadCoordinate(stream, codeWidth);
-					gPMapCellZ = pmapReadCoordinate(stream, codeWidth);
-					break;
-				}
+			if(code == 26 || code == 29 || code == 30 || code == 31)
+				cursor.x = static_cast<NxI32>(stream.readBitsMsbFirst(codeWidth));
+			if(code == 27 || code == 29 || code == 31)
+				cursor.y = static_cast<NxI32>(stream.readBitsMsbFirst(codeWidth));
+			if(code == 28 || code == 30 || code == 31)
+				cursor.z = static_cast<NxI32>(stream.readBitsMsbFirst(codeWidth));
 			}
 
-		NxU32 index = (gPMapCellZ * resolution + gPMapCellY) * resolution + gPMapCellX;
+		const NxU32 index = (static_cast<NxU32>(cursor.z) * resolution +
+			static_cast<NxU32>(cursor.y)) * resolution + static_cast<NxU32>(cursor.x);
 		cells.Add(index);
 		}
 	return count;
+	}
+
+// phys_fn_001990 at 0x0004cc60. Each value group's cells are sorted by their
+// Morton key, split into x/y/z, and represented as 5-bit neighbor codes. An
+// escape carries only the coordinates that are not adjacent to the prior cell.
+
+bool PenetrationMap::encodeCellRun(MemoryStream& stream, const NxU32* cells,
+	NxU32 count, NxU32 resolution, const NxU32* spread, PMapCellCursor& cursor)
+	{
+	PMapMortonCell* ordered = count ? static_cast<PMapMortonCell*>(
+		malloc(static_cast<size_t>(count) * sizeof(PMapMortonCell))) : 0;
+	if(count && !ordered)
+		return false;
+	const NxU32 resolutionSquared = resolution * resolution;
+	for(NxU32 i = 0; i < count; ++i)
+		{
+		const NxU32 index = cells[i];
+		const NxU32 x = index % resolution;
+		const NxU32 y = (index / resolution) % resolution;
+		const NxU32 z = index / resolutionSquared;
+		ordered[i].index = index;
+		// phys_fn_001990 spreads z into the low three-bit lanes, y into the
+		// middle lanes, and x into the high lanes (its bit loop shifts x by
+		// bit*3+2 and z by bit*3).
+		ordered[i].key = spread[z] + 2 * spread[y] + 4 * spread[x];
+		}
+	if(count > 1)
+		qsort(ordered, count, sizeof(PMapMortonCell), comparePMapMortonCell);
+
+	stream.storeBitsMsbFirst(count, 32);
+	NxU32 codeWidth = 0;
+	if(resolution == 0x20) codeWidth = 5;
+	else if(resolution == 0x40) codeWidth = 6;
+	else if(resolution == 0x50) codeWidth = 7;
+	for(NxU32 i = 0; i < count; ++i)
+		{
+		const NxU32 index = ordered[i].index;
+		const NxI32 x = static_cast<NxI32>(index % resolution);
+		const NxI32 y = static_cast<NxI32>((index / resolution) % resolution);
+		const NxI32 z = static_cast<NxI32>(index / resolutionSquared);
+		const NxI32 dx = x - cursor.x;
+		const NxI32 dy = y - cursor.y;
+		const NxI32 dz = z - cursor.z;
+		NxU32 code = 0xffffffffu;
+		if(dx >= -1 && dx <= 1 && dy >= -1 && dy <= 1 && dz >= -1 && dz <= 1)
+			for(NxU32 candidate = 0; candidate < 26; ++candidate)
+				if(kPMapCellSteps[candidate].x == dx && kPMapCellSteps[candidate].y == dy &&
+					kPMapCellSteps[candidate].z == dz)
+					{
+					code = candidate;
+					break;
+					}
+		if(code == 0xffffffffu)
+			{
+			const bool changeX = dx != 0;
+			const bool changeY = dy != 0;
+			const bool changeZ = dz != 0;
+			if(changeX && !changeY && !changeZ) code = 26;
+			else if(!changeX && changeY && !changeZ) code = 27;
+			else if(!changeX && !changeY && changeZ) code = 28;
+			else if(changeX && changeY && !changeZ) code = 29;
+			else if(changeX && !changeY && changeZ) code = 30;
+			else code = 31; // Includes y/z-only escapes; there is no narrower code.
+			}
+		stream.storeBitsMsbFirst(code, 5);
+		if(code == 26 || code == 29 || code == 30 || code == 31)
+			stream.storeBitsMsbFirst(static_cast<NxU32>(x), codeWidth);
+		if(code == 27 || code == 29 || code == 31)
+			stream.storeBitsMsbFirst(static_cast<NxU32>(y), codeWidth);
+		if(code == 28 || code == 30 || code == 31)
+			stream.storeBitsMsbFirst(static_cast<NxU32>(z), codeWidth);
+		cursor.x = x; cursor.y = y; cursor.z = z;
+		}
+	free(ordered);
+	return true;
+	}
+
+// phys_fn_002017 at 0x0004e1a0. The non-empty cell ids are radix-sorted into
+// equal-value groups; value ids use a repeat/delta bit followed by an absolute
+// 32-bit value when the id is not consecutive. Each group's cell indices are
+// then passed to phys_fn_001990, followed by the terminator and sign plane.
+bool PenetrationMap::serialize(MemoryStream& stream) const
+	{
+	PMapValueCell* ordered = mCellCount ? static_cast<PMapValueCell*>(
+		malloc(static_cast<size_t>(mCellCount) * sizeof(PMapValueCell))) : 0;
+	NxU32* group = mCellCount ? static_cast<NxU32*>(
+		malloc(static_cast<size_t>(mCellCount) * sizeof(NxU32))) : 0;
+	if(mCellCount && (!ordered || !group))
+		{
+		free(ordered);
+		free(group);
+		return false;
+		}
+	for(NxU32 i = 0; i < mCellCount; ++i)
+		{
+		ordered[i].value = mGrid[i] & 0x3fffffffu;
+		ordered[i].index = i;
+		}
+	if(mCellCount > 1)
+		qsort(ordered, mCellCount, sizeof(PMapValueCell), comparePMapValueCell);
+
+	stream.storeByte(kPMapTag[0]);
+	stream.storeByte(kPMapTag[1]);
+	stream.storeByte(kPMapTag[2]);
+	stream.storeByte(kPMapTag[3]);
+	stream.storeDword(kPMapVersion);
+	stream.storeDword(mResolution);
+
+	NxU32 previousValue = kPMapEmptyValue;
+	NxU32 nextValue = 0;
+	NxU32 groupCount = 0;
+	PMapCellCursor cursor = { -1, -1, -1 };
+	for(NxU32 i = 0; i < mCellCount; ++i)
+		{
+		const PMapValueCell& item = ordered[i];
+		if(item.value == kPMapEmptyValue)
+			continue;
+		if(item.value != previousValue)
+			{
+			if(previousValue != kPMapEmptyValue)
+				{
+				if(previousValue == nextValue)
+					stream.storeBit(1);
+				else
+					{
+					stream.storeBit(0);
+					stream.storeBitsMsbFirst(previousValue, 32);
+					}
+				if(!encodeCellRun(stream, groupCount ? group : 0,
+					groupCount, mResolution, mSpread, cursor))
+					{
+					free(ordered);
+					free(group);
+					return false;
+					}
+				groupCount = 0;
+				nextValue = previousValue + 1;
+				}
+			previousValue = item.value;
+			}
+		group[groupCount++] = item.index;
+		}
+
+	if(previousValue == nextValue)
+		stream.storeBit(1);
+	else
+		{
+		stream.storeBit(0);
+		stream.storeBitsMsbFirst(previousValue, 32);
+		}
+	if(!encodeCellRun(stream, groupCount ? group : 0, groupCount, mResolution, mSpread, cursor))
+		{
+		free(ordered);
+		free(group);
+		return false;
+		}
+
+	// The end marker is the non-consecutive value 0xffffffff, then the one-bit
+	// value prefix and its 32-bit payload, exactly as the decoder consumes it.
+	stream.storeBit(0);
+	stream.storeBitsMsbFirst(kPMapEndOfValues, 32);
+	for(NxU32 i = 0; i < mCellCount; ++i)
+		stream.storeBit((mGrid[i] & kPMapCellFilled) == 0 ? 1u : 0u);
+	free(ordered);
+	free(group);
+	return true;
 	}
 
 // ---------------------------------------------------------------------------
@@ -289,6 +927,7 @@ bool PenetrationMap::loadPayload(MemoryStream& stream)
 	// and never reset, so a set flag bit means "the value before this one, plus
 	// one" and the first record's implicit predecessor is -1.
 	NxU32 next = 0;
+	PMapCellCursor cursor = { -1, -1, -1 };
 	for(;;)
 		{
 		NxU32 value;
@@ -302,7 +941,7 @@ bool PenetrationMap::loadPayload(MemoryStream& stream)
 			break;
 
 		IceCore::Container cells;
-		NxU32 count = decodeCellRun(stream, cells, mResolution);
+		NxU32 count = decodeCellRun(stream, cells, mResolution, cursor);
 		const udword* entries = cells.GetEntries();
 		for(NxU32 i = 0; i < count; ++i)
 			mGrid[entries[i]] = value;
@@ -446,15 +1085,276 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 	if(load && loadPayload(*stream))
 		return finish();
 
-	// 0x00050768. The COMPUTE arm, reached both when the caller asked for one
-	// and when a load failed. NOT RECONSTRUCTED -- see PMap.h. Refusing is not
-	// what the oracle does here and this return is a hole, not a behaviour.
-	NX_ASSERT(!"PenetrationMap compute path is not reconstructed");
-	return false;
+	// 0x00050768. The routine's mesh argument is the concrete TriangleMesh
+	// object: setup reads its bounds at +0x44, and the Opcode interface is built
+	// from the counts and arrays at +0x08..+0x1c. The arrays also back the
+	// per-voxel nearest-face query below.
+	const TriangleMesh* sourceMesh = static_cast<const TriangleMesh*>(mesh);
+	const InternalTriangleMesh* source = &sourceMesh->mInternal;
+	if(!source->mVertices || !source->mTriangles || !source->mTriangleCount || !source->mModel ||
+		!mGrid || !stream)
+		return false;
+
+	const NxVec3* vertices = static_cast<const NxVec3*>(source->mVertices);
+	const NxU32* triangles = static_cast<const NxU32*>(source->mTriangles);
+	NxU8* classified = static_cast<NxU8*>(malloc(mCellCount));
+	if(!classified)
+		return false;
+	memset(classified, 0, mCellCount);
+
+	// The oracle builds a short-lived Opcode model directly over the source
+	// arrays for this compute operation; it does not reuse the mesh's cached
+	// model. Keep the interface alive until the local model is destroyed.
+	Opcode::MeshInterface pmapInterface;
+	pmapInterface.SetNbTriangles(source->mTriangleCount);
+	pmapInterface.SetNbVertices(source->mVertexCount);
+	if(!pmapInterface.SetPointers(static_cast<const IndexedTriangle*>(source->mTriangles),
+		static_cast<const Point*>(source->mVertices)))
+		{
+		free(classified);
+		return false;
+		}
+	Opcode::OPCODECREATE modelCreate;
+	modelCreate.mIMesh = &pmapInterface;
+	modelCreate.mNoLeaf = true;
+	modelCreate.mQuantized = false;
+	Opcode::Model pmapModel;
+	if(!pmapModel.Build(modelCreate))
+		{
+		free(classified);
+		return false;
+		}
+	NxU32* faceOrder = static_cast<NxU32*>(malloc(
+		static_cast<size_t>(source->mTriangleCount) * sizeof(NxU32)));
+	if(!faceOrder)
+		{
+		free(classified);
+		return false;
+		}
+	NxU32 faceOrderCount = 0;
+	if(pmapModel.HasSingleNode())
+		faceOrder[faceOrderCount++] = 0;
+	else if(!pmapModel.HasLeafNodes() && pmapModel.IsQuantized())
+		{
+		const Opcode::AABBQuantizedNoLeafTree* tree =
+			static_cast<const Opcode::AABBQuantizedNoLeafTree*>(pmapModel.GetTree());
+		if(tree && tree->GetNodes())
+			nxPMapCollectFaceOrder(tree->GetNodes(), faceOrder, faceOrderCount);
+		}
+	else if(!pmapModel.HasLeafNodes())
+		{
+		const Opcode::AABBNoLeafTree* tree =
+			static_cast<const Opcode::AABBNoLeafTree*>(pmapModel.GetTree());
+		if(tree && tree->GetNodes())
+			nxPMapCollectFaceOrder(tree->GetNodes(), faceOrder, faceOrderCount);
+		}
+	else
+		for(NxU32 face = 0; face < source->mTriangleCount; ++face)
+			faceOrder[faceOrderCount++] = face;
+	if(faceOrderCount != source->mTriangleCount)
+		{
+		free(faceOrder);
+		free(classified);
+		return false;
+		}
+	Opcode::RayCollider rayCollider;
+	rayCollider.SetFirstContact(false);
+	rayCollider.SetTemporalCoherence(false);
+	rayCollider.SetCulling(false);
+	const Opcode::Model& model = pmapModel;
+	// The oracle's random-ray helper reads TriangleMesh+0x28, the cached mesh
+	// model. Its nearest-distance query uses the temporary model above, but the
+	// classifier does not.
+	const Opcode::Model& rayModel = *static_cast<const Opcode::Model*>(source->mModel);
+
+	for(NxU32 z = 0; z < mResolution; ++z)
+		for(NxU32 y = 0; y < mResolution; ++y)
+			for(NxU32 x = 0; x < mResolution; ++x)
+				{
+				const NxU32 index = z * mResolutionSquared + y * mResolution + x;
+				NxF32 point[3] = {
+					nxPMapCellCoordinate(x, mUnitsPerCell[0], mHalfExtents[0], mCentre[0]),
+					nxPMapCellCoordinate(y, mUnitsPerCell[1], mHalfExtents[1], mCentre[1]),
+					nxPMapCellCoordinate(z, mUnitsPerCell[2], mHalfExtents[2], mCentre[2])
+					};
+				NxF32 bestDistanceSquared = 3.402823466e+38F;
+				double bestDistance = 3.402823466e+38F;
+				NxU32 nearestFace = 0;
+				nxPMapNearestFace(*source, point, pmapModel, faceOrder,
+					nearestFace, bestDistanceSquared);
+				bestDistance = bestDistanceSquared;
+				NxF32 distance = static_cast<NxF32>(sqrt(static_cast<double>(bestDistanceSquared)));
+				bool inside;
+				if(classified[index])
+					inside = classified[index] != 1;
+				else
+					{
+					unsigned insideVotes = 0;
+					// FUN_1004e5d0 is entered with EAX=3 by the oracle's PMap
+					// loop. That mode casts one random ray and uses its parity.
+					for(unsigned sample = 0; sample < 1; ++sample)
+						{
+						NxF32 direction[3];
+						for(unsigned axis = 0; axis < 3; ++axis)
+							{
+							volatile NxF32 scaledRandom =
+								static_cast<NxF32>(rand()) * 3.051851e-05f;
+							direction[axis] = scaledRandom - 0.5f;
+							}
+						if(direction[0] != 0.0f || direction[1] != 0.0f || direction[2] != 0.0f)
+							{
+							const NxF32 one = 1.0f;
+							// FUN_1004e5d0 sums z², y², then x² in extended x87
+							// precision, and keeps 1/sqrt(sum) extended while storing
+							// each normalized component back to its float slot.
+							__asm
+								{
+								fld dword ptr [direction + 8]
+								fmul st(0), st(0)
+								fld dword ptr [direction + 4]
+								fmul st(0), st(0)
+								faddp st(1), st
+								fld dword ptr [direction]
+								fmul st(0), st(0)
+								faddp st(1), st
+								fsqrt
+								fdivr dword ptr [one]
+								fld dword ptr [direction]
+								fmul st(0), st(1)
+								fstp dword ptr [direction]
+								fld dword ptr [direction + 4]
+								fmul st(0), st(1)
+								fstp dword ptr [direction + 4]
+								fld dword ptr [direction + 8]
+								fmul st(0), st(1)
+								fstp dword ptr [direction + 8]
+								fstp st(0)
+								}
+							}
+						const Ray ray(Point(point[0], point[1], point[2]),
+							Point(direction[0], direction[1], direction[2]));
+						if(rayCollider.Collide(ray, rayModel) && (rayCollider.GetNbIntersections() & 1))
+							++insideVotes;
+						}
+					inside = insideVotes != 0;
+					}
+				classified[index] = static_cast<NxU8>(inside ? 2 : 1);
+				if(inside)
+					mGrid[index] = nearestFace;
+
+				const NxI32 radius[3] = {
+					static_cast<NxI32>(nearbyint(distance * mCellsPerUnit[0])),
+					static_cast<NxI32>(nearbyint(distance * mCellsPerUnit[1])),
+					static_cast<NxI32>(nearbyint(distance * mCellsPerUnit[2]))
+					};
+				const NxI32 low[3] = {
+					static_cast<NxI32>(x) - radius[0], static_cast<NxI32>(y) - radius[1],
+					static_cast<NxI32>(z) - radius[2]
+					};
+				const NxI32 high[3] = {
+					static_cast<NxI32>(x) + radius[0], static_cast<NxI32>(y) + radius[1],
+					static_cast<NxI32>(z) + radius[2]
+					};
+				for(NxI32 nz = low[2] < 0 ? 0 : low[2]; nz <= high[2] && nz < static_cast<NxI32>(mResolution); ++nz)
+					for(NxI32 ny = low[1] < 0 ? 0 : low[1]; ny <= high[1] && ny < static_cast<NxI32>(mResolution); ++ny)
+						for(NxI32 nx = low[0] < 0 ? 0 : low[0]; nx <= high[0] && nx < static_cast<NxI32>(mResolution); ++nx)
+							{
+							const NxU32 neighbor = static_cast<NxU32>(nz) * mResolutionSquared +
+								static_cast<NxU32>(ny) * mResolution + static_cast<NxU32>(nx);
+							if(classified[neighbor]) continue;
+							volatile NxF32 dx = nxPMapCellCoordinate(static_cast<NxU32>(nx),
+								mUnitsPerCell[0], mHalfExtents[0], mCentre[0]) - point[0];
+							volatile NxF32 dy = nxPMapCellCoordinate(static_cast<NxU32>(ny),
+								mUnitsPerCell[1], mHalfExtents[1], mCentre[1]) - point[1];
+							volatile NxF32 dz = nxPMapCellCoordinate(static_cast<NxU32>(nz),
+								mUnitsPerCell[2], mHalfExtents[2], mCentre[2]) - point[2];
+							// FUN_10050640 tests z, then y, then x; reversing the sum can
+							// change a propagated classification at the surface threshold.
+							if((dz * dz + dy * dy) + dx * dx < distance * distance)
+								classified[neighbor] = static_cast<NxU8>(inside ? 2 : 1);
+							}
+				}
+
+	free(classified);
+
+	// phys_fn_002025 marks the eight corners of any cell touching a surface
+	// seed. A grid word whose filled bit is already set is either untouched
+	// empty (0xffffffff) or was handled on an earlier cell.
+	for(NxU32 z = 0; z < mResolution; ++z)
+		for(NxU32 y = 0; y < mResolution; ++y)
+			for(NxU32 x = 0; x < mResolution; ++x)
+				{
+				const NxU32 base = z * mResolutionSquared + y * mResolution + x;
+				NxI32 corners[8] = {
+					static_cast<NxI32>(base), static_cast<NxI32>(base + 1),
+					static_cast<NxI32>(base + mResolution),
+					static_cast<NxI32>(base + mResolution + 1),
+					static_cast<NxI32>(base + mResolutionSquared),
+					static_cast<NxI32>(base + mResolutionSquared + 1),
+					static_cast<NxI32>(base + mResolutionSquared + mResolution),
+					static_cast<NxI32>(base + mResolutionSquared + mResolution + 1)
+					};
+				if(x == mResolution - 1)
+					corners[1] = corners[3] = corners[5] = corners[7] = -1;
+				if(y == mResolution - 1)
+					corners[2] = corners[3] = corners[6] = corners[7] = -1;
+				if(z == mResolution - 1)
+					corners[4] = corners[5] = corners[6] = corners[7] = -1;
+				bool touchesSurface = false;
+				for(unsigned c = 0; c < 8; ++c)
+					if(corners[c] != -1 && !(mGrid[corners[c]] & kPMapCellFilled))
+						touchesSurface = true;
+				if(!touchesSurface) continue;
+				for(unsigned c = 0; c < 8; ++c)
+					{
+					if(corners[c] == -1 || !(mGrid[corners[c]] & kPMapCellFilled)) continue;
+					const NxU32 corner = static_cast<NxU32>(corners[c]);
+					const NxU32 cx = corner % mResolution;
+					const NxU32 cy = (corner / mResolution) % mResolution;
+					const NxU32 cz = corner / mResolutionSquared;
+					const NxF32 point[3] = {
+						(static_cast<NxF32>(cx) * mUnitsPerCell[0] - mHalfExtents[0]) + mCentre[0],
+						(static_cast<NxF32>(cy) * mUnitsPerCell[1] - mHalfExtents[1]) + mCentre[1],
+						(static_cast<NxF32>(cz) * mUnitsPerCell[2] - mHalfExtents[2]) + mCentre[2]
+						};
+					NxU32 face;
+					NxF32 distanceSquared;
+						nxPMapNearestFace(*source, point, pmapModel, faceOrder, face, distanceSquared);
+					mGrid[corner] = face | kPMapCellFilled;
+					}
+				}
+	free(faceOrder);
+	const bool serialized = serialize(*stream);
+	const bool finished = finish();
+	return serialized && finished;
 	}
 
 // ---------------------------------------------------------------------------
 // The exports.
+
+// phys_fn_002049 at 0x00050f70. The public handle's first data word points to
+// TriangleMesh; its InternalTriangleMesh begins at +0x08, matching the oracle's
+// `mesh[1].__vftable` load followed by the member's +0x44 bounds access.
+NX_C_EXPORT NXP_DLL_EXPORT bool NX_CALL_CONV NxCreatePMap(NxPMap& pmap,
+	const NxTriangleMesh& mesh, NxU32 density, NxUserOutputStream* outputStream)
+	{
+	const NxU8* publicObject = reinterpret_cast<const NxU8*>(&mesh);
+	const TriangleMesh* concrete = *reinterpret_cast<TriangleMesh* const*>(publicObject + 4);
+	if(!concrete)
+		return false;
+	MemoryStream stream(0x1000, 0);
+	PenetrationMap penetrationMap;
+	if(!penetrationMap.create(concrete, density, 0, &stream, false, outputStream))
+		return false;
+	const NxU32 size = stream.getLength();
+	void* data = malloc(size);
+	if(!data)
+		return false;
+	stream.collapse(data);
+	pmap.dataSize = size;
+	pmap.data = data;
+	return true;
+	}
 
 // phys_fn_002051 at 0x00051040, 32 bytes, every one of them driven.
 //
