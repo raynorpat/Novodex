@@ -81541,8 +81541,8 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2129",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15103",
       "static_proof": null,
-      "dynamic_proof": "The ordered support-normal implementation in Physics/src/core/JointSupport.cpp (supportSolveNormal004403) matches the smooth and transformed smooth-heightfield post-solver state lines in the registered Phase 6 and Phase 7 NxPhysicsMeshSimulationTests differential. In a throwaway git archive, changing the body-zero Y/Z path to scale before projection was caught with stdout_delta=4 and stderr_exact=True; restoring the source returned stdout_delta=0. An X-only reorder was not distinguished by the current fixture, so that operation order remains a known coverage limit.",
-      "notes": "Phase 6 mutation closure covers the body-zero Y/Z impulse projection order. An X-only order mutation was not detected by the registered fixture.",
+      "dynamic_proof": "The ordered support-normal implementation in Physics/src/core/JointSupport.cpp (supportSolveNormal004403) matches the smooth and transformed smooth-heightfield post-solver state lines in the registered Phase 6 and Phase 7 NxPhysicsMeshSimulationTests differential. Throwaway archive mutations of body-zero Y/Z projection-before-scaling and the X float-rounding order are both caught with stdout_delta=4 and stderr_exact=True; restoring the source returned stdout_delta=0. The X-order mutation uses the inward normal-velocity fixture and changes both ordinary and transformed post-solver state lines.",
+      "notes": "Phase 6 mutation closure covers body-zero X and Y/Z impulse projection order, with the X boundary driven by the inward normal-velocity smooth-heightfield fixture.",
       "implementation": "Physics/src/core/JointSupport.cpp",
       "implementation_symbol": "supportSolveNormal004403"
     },
