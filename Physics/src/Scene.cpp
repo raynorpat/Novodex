@@ -1958,7 +1958,34 @@ static void nxSceneStaticPrunerRegister(NxSceneInternal* scene, unsigned char* s
 		}
 	unsigned short& count = *reinterpret_cast<unsigned short*>(manager + 0x10);
 	unsigned short& capacity = *reinterpret_cast<unsigned short*>(manager + 0x12);
-	if(count >= capacity) return;
+	if(count >= capacity)
+		{
+		const unsigned short next = capacity ? static_cast<unsigned short>(capacity * 2u) : 4u;
+		unsigned char* grownEntries = static_cast<unsigned char*>(
+			nxGetSdkAllocator()->malloc(next * 0x18u, NX_MEMORY_PERSISTENT));
+		void** grownReferences = static_cast<void**>(
+			nxGetSdkAllocator()->malloc(next * sizeof(void*), NX_MEMORY_PERSISTENT));
+		if(!grownEntries || !grownReferences)
+			{
+			if(grownEntries) nxGetSdkAllocator()->free(grownEntries);
+			if(grownReferences) nxGetSdkAllocator()->free(grownReferences);
+			return;
+			}
+		memset(grownEntries, 0, next * 0x18u);
+		memset(grownReferences, 0, next * sizeof(void*));
+		unsigned char* oldEntries = *reinterpret_cast<unsigned char**>(manager + 0x14);
+		void** oldReferences = *reinterpret_cast<void***>(manager + 0x18);
+		if(count)
+			{
+			memcpy(grownEntries, oldEntries, count * 0x18u);
+			memcpy(grownReferences, oldReferences, count * sizeof(void*));
+			}
+		if(oldEntries) nxGetSdkAllocator()->free(oldEntries);
+		if(oldReferences) nxGetSdkAllocator()->free(oldReferences);
+		*reinterpret_cast<unsigned char**>(manager + 0x14) = grownEntries;
+		*reinterpret_cast<void***>(manager + 0x18) = grownReferences;
+		capacity = next;
+		}
 	unsigned char* entries = *reinterpret_cast<unsigned char**>(manager + 0x14);
 	void** references = *reinterpret_cast<void***>(manager + 0x18);
 	memset(entries + count * 0x18, 0, 0x18);
@@ -2178,6 +2205,8 @@ void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsi
 		unsigned char* child = static_cast<unsigned char*>(nxShapeFactory(
 			reinterpret_cast<void*>(shapeDescriptions[i]), actor));
 		if(!child) break;
+		if(body && !*reinterpret_cast<void**>(body + 8))
+			nxSceneStaticPrunerRegister(scene, child);
 		if(i == 0)
 			{
 			shapes = static_cast<void**>(nxGetSdkAllocator()->malloc(
@@ -2233,6 +2262,55 @@ void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsi
 // actor's public createShape slot: child, public handle, group, then arrays.
 // The factory temporarily links the new child as the body's root; promotion
 // replaces that link with the group while retaining the original child.
+static bool nxShapeGroupAppend(void* groupPointer, void* childPointer)
+	{
+	if(!groupPointer || !childPointer) return false;
+	unsigned char* group = static_cast<unsigned char*>(groupPointer);
+	unsigned char* child = static_cast<unsigned char*>(childPointer);
+	void** shapeFirst = *reinterpret_cast<void***>(group + 0xe0);
+	void** shapeEnd = *reinterpret_cast<void***>(group + 0xe4);
+	void** shapeCapacity = *reinterpret_cast<void***>(group + 0xe8);
+	void** helperFirst = *reinterpret_cast<void***>(group + 0xf0);
+	void** helperEnd = *reinterpret_cast<void***>(group + 0xf4);
+	void** helperCapacity = *reinterpret_cast<void***>(group + 0xf8);
+	if(!shapeFirst || !shapeEnd || !shapeCapacity || !helperFirst || !helperEnd || !helperCapacity)
+		return false;
+	if(shapeEnd == shapeCapacity || helperEnd == helperCapacity)
+		{
+		const unsigned shapeCount = static_cast<unsigned>(shapeEnd - shapeFirst);
+		const unsigned helperCount = static_cast<unsigned>(helperEnd - helperFirst);
+		if(shapeCount != helperCount) return false;
+		const unsigned next = shapeCount * 2u + 2u;
+		void** grownShapes = static_cast<void**>(
+			nxGetSdkAllocator()->malloc(next * sizeof(void*), NX_MEMORY_PERSISTENT));
+		void** grownHelpers = static_cast<void**>(
+			nxGetSdkAllocator()->malloc(next * sizeof(void*), NX_MEMORY_PERSISTENT));
+		if(!grownShapes || !grownHelpers)
+			{
+			if(grownShapes) nxGetSdkAllocator()->free(grownShapes);
+			if(grownHelpers) nxGetSdkAllocator()->free(grownHelpers);
+			return false;
+			}
+		memcpy(grownShapes, shapeFirst, shapeCount * sizeof(void*));
+		memcpy(grownHelpers, helperFirst, helperCount * sizeof(void*));
+		nxGetSdkAllocator()->free(shapeFirst);
+		nxGetSdkAllocator()->free(helperFirst);
+		*reinterpret_cast<void***>(group + 0xe0) = grownShapes;
+		*reinterpret_cast<void***>(group + 0xe4) = grownShapes + shapeCount;
+		*reinterpret_cast<void***>(group + 0xe8) = grownShapes + next;
+		*reinterpret_cast<void***>(group + 0xf0) = grownHelpers;
+		*reinterpret_cast<void***>(group + 0xf4) = grownHelpers + helperCount;
+		*reinterpret_cast<void***>(group + 0xf8) = grownHelpers + next;
+		shapeEnd = grownShapes + shapeCount;
+		helperEnd = grownHelpers + helperCount;
+		}
+	*shapeEnd++ = child;
+	*helperEnd++ = *reinterpret_cast<void**>(child + 0x9c);
+	*reinterpret_cast<void***>(group + 0xe4) = shapeEnd;
+	*reinterpret_cast<void***>(group + 0xf4) = helperEnd;
+	return true;
+	}
+
 void* nxActorAppendShape(void* actor, const NxShapeDesc* descriptor)
 	{
 	if(!actor || !descriptor || !descriptor->isValid()) return 0;
@@ -2240,12 +2318,31 @@ void* nxActorAppendShape(void* actor, const NxShapeDesc* descriptor)
 		static_cast<unsigned char*>(actor) + 0x14);
 	if(!body) return 0;
 	unsigned char* original = *reinterpret_cast<unsigned char**>(body + 0x10);
-	if(!original || *reinterpret_cast<unsigned*>(original + 0xd0) == 5u)
-		return 0;
+	if(!original) return 0;
+	const bool wasGroup = *reinterpret_cast<unsigned*>(original + 0xd0) == 5u;
 	unsigned char* child = static_cast<unsigned char*>(nxShapeFactory(
 		const_cast<NxShapeDesc*>(descriptor), actor));
 	if(!child) return 0;
 	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(body + 4);
+	if(wasGroup)
+		{
+		*reinterpret_cast<void**>(body + 0x10) = original;
+		if(!nxShapeGroupAppend(original, child))
+			{
+			nxSceneAuxUnregisterShape(scene, child);
+			nxSceneRecycleShapeId(scene, *reinterpret_cast<unsigned*>(child + 0xd4));
+			nxGetSdkAllocator()->free(*reinterpret_cast<void**>(child + 0x9c));
+			nxShapeSetName(child, 0);
+			nxGetSdkAllocator()->free(child);
+			return 0;
+			}
+		if(!*reinterpret_cast<void**>(body + 8))
+			nxSceneStaticPrunerRegister(scene, child);
+		nxSceneMarkShapeDirty(original, 0x100u);
+		return *reinterpret_cast<NxShape**>(child + 0x9c);
+		}
+	if(!*reinterpret_cast<void**>(body + 8))
+		nxSceneStaticPrunerRegister(scene, child);
 	unsigned char* group = static_cast<unsigned char*>(
 		nxGetSdkAllocator()->malloc(0x110, NX_MEMORY_PERSISTENT));
 	void** shapes = group ? static_cast<void**>(
