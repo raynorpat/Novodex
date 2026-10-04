@@ -170,6 +170,10 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # QhullHost.cpp is NovodeX's hull library around qhull (qhull-gap Task 4): x87 in the oracle
 # (the box fallback, the OBJ writers' widening, the rescale) and run under the caller's word.
 # Quantizer.cpp is the same library's band B (Wu's quantizer and reduceVertices, piece 4d), x87 too.
+# PMap.cpp's point-to-triangle query is the x87 OPCODE row 005324 (0x000e7c50):
+# the oracle compares its extended result against a float best distance. SSE2
+# rounded the near-tied face distances before that comparison, changing 61 face
+# labels in the exact-byte PMap fixture.
 # core/SpringAndDamperEffector.cpp (effector-and-coredump Task 2) does x87
 # work in 003962/003964/003970/003972 and its solver slot 003979 runs inside
 # the step; core/NpSpringAndDamperEffector.cpp does none and stays default.
@@ -186,11 +190,13 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/NarrowPhase.cpp
 		Physics/src/ContactGeneration.cpp
 		Physics/src/Distance.cpp
+		Physics/src/PMap.cpp
 		Physics/src/ContactBoxMeshICE.cpp
 		Physics/src/ContactCapsuleMesh.cpp
 		Physics/src/ContactSphereMesh.cpp
 		Physics/src/ContactMeshHeightfield.cpp
 		Physics/src/ContactMeshMesh.cpp
+		Physics/src/ContactPlaneMesh.cpp
 		Physics/src/EdgeList.cpp
 		Physics/src/InternalTriangleMesh.cpp
 		Physics/src/IceMeshTools.cpp
@@ -447,6 +453,13 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsActorShapeMutationTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsActorShapeMutationTests bcrypt)
+	# Public convex-mesh cooking regression. This is the front door for the
+	# TriangleMesh reconstruction packet and must pass before the Unreal KActor
+	# convex-element smoke can pass.
+	add_executable(NxPhysicsTriangleMeshApiTests tests/PhysicsTriangleMeshApiTests.cpp)
+	target_include_directories(NxPhysicsTriangleMeshApiTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsTriangleMeshApiTests bcrypt)
 	add_executable(NxPhysicsActorMomentumTests tests/PhysicsActorMomentumTests.cpp)
 	target_include_directories(NxPhysicsActorMomentumTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
@@ -660,7 +673,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# and leaves NXF import, which is what PhysicsInternal.cpp needs to reach
 	# nxFoundationSDKAllocator in NxFoundation.dll. NX_PHYSICS_STATICLIB would
 	# clear both and break that import.
-	target_compile_definitions(NxPhysicsAssetTests PRIVATE NX_PHYSICS_DLL=1)
+	target_compile_definitions(NxPhysicsAssetTests PRIVATE NX_PHYSICS_DLL=1 NX_TEST_REAL_TRIANGLE_MESH=1 NX_TEST_STUB_TRIANGLE_MESH_POLYGON_TABLE=1)
 	# NxFoundation stays linked FOR NOW. Removing it was tried in round 76 and fails at link time on one
 	# imported variable, `nxFoundationSDKAllocator`, reached through the local nxGetSdkAllocator helper
 	# by MemoryStream.cpp, ThirdPartyHost.cpp and PhysicsInternal.cpp. The dependency is one symbol and
@@ -698,7 +711,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# and otherwise to the stand-in every qhull family was measured against
 	# (qhull-gap Task 4a). TriangleMesh.cpp (and MemoryStream.cpp, which its
 	# writer uses) is linked for phys_fn_002233/002235/002237, which the
-	# convex-cooking differentials drive (qhull-gap Task 4e).
+	# convex-cooking differentials drive (qhull-gap Task 4e). PMap.cpp is also
+	# needed for TriangleMesh's public PMap attachment and load path.
 	add_executable(NxPhysicsThirdPartyTests tests/PhysicsThirdPartyTests.cpp
 		tests/PhysicsThirdPartyQhull.c
 		tests/PhysicsThirdPartyHost.cpp Physics/src/Quantizer.cpp Physics/src/PhysicsInternal.cpp
@@ -720,6 +734,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# NxPhysicsCollisionTests does for the whole target); here only the file gets
 	# it, so the harness's own translation units keep theirs.
 	set_source_files_properties(Physics/src/SmoothNormals.cpp PROPERTIES COMPILE_DEFINITIONS NX_PHYSICS_DLL=1)
+	set_source_files_properties(Physics/src/PMap.cpp PROPERTIES COMPILE_DEFINITIONS NX_PHYSICS_DLL=1)
 	# The hull family's C half reads qhull's own structs, so it and only it sees the
 	# merged tree's headers (their fprintf redirection stays out of the C++ harness).
 	set_source_files_properties(tests/PhysicsThirdPartyQhull.c PROPERTIES
@@ -727,6 +742,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsThirdPartyTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
 		Physics/src/opcode)
+	target_compile_definitions(NxPhysicsThirdPartyTests PRIVATE NX_TEST_REAL_TRIANGLE_MESH=1)
 	target_link_libraries(NxPhysicsThirdPartyTests NxFoundation NxQhull NxOpcode bcrypt)
 	# The harness itself compares x87 results the vendored libraries produce, so
 	# it follows the same architecture rule they do. A target option rather than
@@ -879,17 +895,20 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp
 		Physics/src/Distance.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp
-		Physics/src/ContactBoxMeshICE.cpp Physics/src/ContactCapsuleMesh.cpp Physics/src/ContactMeshHeightfield.cpp Physics/src/ContactMeshMesh.cpp
+		Physics/src/ContactBoxMeshICE.cpp Physics/src/ContactCapsuleMesh.cpp Physics/src/ContactMeshHeightfield.cpp Physics/src/ContactMeshMesh.cpp Physics/src/ContactPlaneMesh.cpp
 		Physics/src/ContactConvexConvex.cpp Physics/src/TriangleMeshPolygons.cpp
-		Physics/src/ContactConvexHeightfield.cpp Physics/src/TriangleMeshTopology.cpp
+		Physics/src/ContactConvexHeightfield.cpp Physics/src/TriangleMeshTopology.cpp Physics/src/TriangleMesh.cpp
+		Physics/src/QhullHost.cpp Physics/src/Quantizer.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/PhysicsInternal.cpp
 		Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
 		Physics/src/SceneRaycast.cpp Physics/src/BodyCreation.cpp Physics/src/SceneVisualize.cpp
-		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
+		Physics/src/ObjectModel.cpp Physics/src/BodyStep.cpp Physics/src/Island.cpp
+		Physics/src/ContactPairManager.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
+		Physics/src/opcode/NovodexBoxPruning.cpp
 		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp
 		${PHYSICS_CORE_SOURCES})
 	target_include_directories(NxPhysicsCollisionTests PRIVATE
@@ -898,7 +917,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# Geometry.cpp defines exports, so it has to be compiled with the same
 	# linkage here as in the DLL or every one of them warns.
 	target_compile_definitions(NxPhysicsCollisionTests PRIVATE NX_PHYSICS_DLL=1)
-	target_link_libraries(NxPhysicsCollisionTests NxFoundation NxOpcode bcrypt)
+	target_link_libraries(NxPhysicsCollisionTests NxFoundation NxOpcode NxQhull bcrypt)
 	# A linker map supports scene-raycast and convex-mesh-gap candidate traces;
 	# it changes nothing in the executable.
 	if(MSVC)

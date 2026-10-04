@@ -91,6 +91,21 @@ namespace
 
 // The definition the Foundation would otherwise provide.
 NxUserAllocator* nxFoundationSDKAllocator = &gAssetAllocator;
+// TriangleMesh.cpp imports the allocator pointer from the loaded Foundation DLL.
+// Seed that DLL-owned export as well as the local definition above before its
+// constructor allocates the public wrapper.
+static bool nxInstallAssetAllocatorInFoundation()
+	{
+	HMODULE foundation = GetModuleHandleW(L"NxFoundation.dll");
+	if(!foundation)
+		return false;
+	NxUserAllocator** slot = reinterpret_cast<NxUserAllocator**>(
+		GetProcAddress(foundation, "?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A"));
+	if(!slot)
+		return false;
+	*slot = &gAssetAllocator;
+	return true;
+	}
 
 // ---------------------------------------------------------------------------
 // The recovered addresses. Every one is an inventory row this phase owns; the
@@ -1143,8 +1158,9 @@ static bool nxCandidateMeshWriter(const NxWriterFixture* fixture, NxWriteLog* lo
 
 	NxCandidateFakeModel model;
 
+	if(!nxInstallAssetAllocatorInFoundation())
+		return false;
 	TriangleMesh mesh;
-	memset(&mesh, 0, sizeof(mesh));
 	mesh.mInternal.mVertexCount = fixture->vertexCount;
 	mesh.mInternal.mTriangleCount = fixture->triangleCount;
 	mesh.mInternal.mVertices = buffers.vertices;
@@ -1167,6 +1183,14 @@ static bool nxCandidateMeshWriter(const NxWriterFixture* fixture, NxWriteLog* lo
 
 	bool ok = mesh.save(stream);
 	*accepted = ok ? 1u : 0u;
+	// The fixture arrays and model are stack-owned; keep the constructor-owned
+	// wrapper intact for the destructor, but detach every borrowed resource.
+	mesh.mInternal.mVertices = 0;
+	mesh.mInternal.mTriangles = 0;
+	mesh.mInternal.mMaterialIndices = 0;
+	mesh.mInternal.mFaceRemap = 0;
+	mesh.mInternal.mVertexNormals = 0;
+	mesh.mInternal.mModel = 0;
 	return true;
 	}
 

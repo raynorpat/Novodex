@@ -16,6 +16,7 @@
 #include "Scene.h"
 #include "NpSceneGuard.h"
 #include "FoundationSDK.h"
+#include "TriangleMesh.h"
 
 // 0x0000ea05 allocates 0xc bytes for this object, phys_fn_000226 stores the SDK
 // pointer at +4 and constructs the lock at +8.

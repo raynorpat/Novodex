@@ -11331,8 +11331,10 @@ static void nxHullCreateRun(const NxOracleRows& o, const NxHullRun& run, unsigne
 	// The +4 path installs the interface's twelve indices and leaves the
 	// result's index count (+0x14) as it was.
 	const bool replaced = (run.flags & QF_POLYGONIZER) && (run.polygonizer == 1);
-	for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
+	for(int side = 0; side < 2; ++side)
 		{
+		if(selfOnly && side != 0)
+			break;
 		NxTape& tape = gHullTape[side];
 		polygonizer.tape = &tape;
 		tape.push(0x4e110000u | (unsigned) index);
@@ -11406,8 +11408,10 @@ static void nxHullComputeRun(const NxOracleRows& o, int set, unsigned meshFlags,
 	memcpy(&desc[12], &threshold, 4);	// convexEdgeThreshold
 
 	NxUserAllocator** oracleFoundation = *(NxUserAllocator***) (o.base + kIatFoundationAllocator);
-	for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
+	for(int side = 0; side < 2; ++side)
 		{
+		if(selfOnly && side != 0)
+			break;
 		NxTape& tape = gHullTape[side];
 		tape.push(0x4e120000u | (unsigned) index);
 		gHullProbeRun = 0x4e120000u | (unsigned) index | (side << 12);

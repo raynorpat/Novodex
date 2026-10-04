@@ -16,6 +16,7 @@ class NpPhysicsSDK;
 class NxSceneInternal;
 class Scene;
 class NxSceneDesc;
+class NxTriangleMeshDesc;
 class NxDebugRenderable;
 class NxUserDebugRenderer;
 class TriangleMesh;

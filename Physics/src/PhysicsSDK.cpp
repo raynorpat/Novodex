@@ -230,6 +230,35 @@ PhysicsSDK::~PhysicsSDK()
 	nxOpcodeReleasePool();
 	}
 
+TriangleMesh* PhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc& desc)
+	{
+	if(!nxFoundationSDKAllocator || !desc.isValid()) return 0;
+	void* memory = nxFoundationSDKAllocator->malloc(sizeof(TriangleMesh), NX_MEMORY_PERSISTENT);
+	if(!memory) return 0;
+	TriangleMesh* mesh = new(memory) TriangleMesh();
+	if(!mesh->publicHandle() || !mesh->loadFromDesc(desc))
+		{
+		mesh->~TriangleMesh();
+		nxFoundationSDKAllocator->free(memory);
+		return 0;
+		}
+	mTriangleMeshes.pushBack(mesh);
+	return mesh;
+	}
+
+void PhysicsSDK::releaseTriangleMesh(TriangleMesh* mesh)
+	{
+	if(!mesh) return;
+	for(NxU32 i = 0; i < mTriangleMeshes.size(); ++i)
+		if(mTriangleMeshes[i] == mesh)
+			{
+			mTriangleMeshes.erase(mTriangleMeshes.begin() + i, mTriangleMeshes.begin() + i + 1);
+			mesh->~TriangleMesh();
+			nxFoundationSDKAllocator->free(mesh);
+			return;
+			}
+	}
+
 void PhysicsSDK::release()
 	{
 	NX_DELETE_SINGLE(instance);

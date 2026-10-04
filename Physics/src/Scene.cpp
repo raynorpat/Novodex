@@ -35,6 +35,7 @@
 #include "NxBoxShapeDesc.h"
 #include "NxSphereShapeDesc.h"
 #include "NxCapsuleShapeDesc.h"
+#include "NxTriangleMeshShapeDesc.h"
 #include "NxPlaneShapeDesc.h"
 #include "NxTriangleMeshShapeDesc.h"
 #include "ObjectModel.h"
@@ -2628,6 +2629,19 @@ static bool nxRuntimeShapeLoad(unsigned char* shape, const NxShapeDesc* descript
 		{
 		const NxPlaneShapeDesc* plane = static_cast<const NxPlaneShapeDesc*>(descriptor);
 		nxShapeFactoryInitializePlane(shape, &plane->normal.x, plane->d);
+		}
+	else if(descriptor->getType() == NX_SHAPE_MESH)
+		{
+		const NxTriangleMeshShapeDesc* meshDesc =
+			static_cast<const NxTriangleMeshShapeDesc*>(descriptor);
+		if(!meshDesc->meshData) return false;
+		void* wrapper = meshDesc->meshData;
+		void* internalMesh = *reinterpret_cast<void**>(
+			static_cast<unsigned char*>(wrapper) + 4);
+		if(!internalMesh) return false;
+		*reinterpret_cast<void**>(shape + 0xe0) = internalMesh;
+		*reinterpret_cast<unsigned*>(shape + 0xe4) = meshDesc->meshFlags;
+		++*reinterpret_cast<unsigned*>(static_cast<unsigned char*>(internalMesh) + 0x74);
 		}
 	memcpy(shape + 0x6c, &descriptor->localPose, 0x30);
 	if(descriptor->name)

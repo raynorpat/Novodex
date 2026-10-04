@@ -111,6 +111,8 @@ void* NxGetCollisionDispatchMatrix();
 bool __cdecl NxOverlapPlaneSphere(const NxCollisionShape* plane, const NxCollisionShape* sphere);
 bool __cdecl NxOverlapPlaneBox(const NxCollisionShape* plane, const NxCollisionShape* box);
 bool __cdecl NxOverlapPlaneCapsule(const NxCollisionShape* plane, const NxCollisionShape* capsule);
+bool __cdecl NxOverlapPlaneMesh(const NxCollisionShape* plane, const NxCollisionShape* mesh,
+	void* context);
 bool __cdecl NxOverlapSphereSphere(const NxCollisionShape* sphere0, const NxCollisionShape* sphere1);
 bool __cdecl NxOverlapSphereBox(const NxCollisionShape* sphere, const NxCollisionShape* box);
 bool __cdecl NxOverlapSphereCapsule(const NxCollisionShape* sphere, const NxCollisionShape* capsule);
