@@ -76,6 +76,15 @@ course of reconstructing what NovodeX did.
                  reference binary.  File: novodex/geom.c.  See
                  MODIFICATIONS.md.
 
+6.  Modified by: the NovodeX Physics reconstruction project.
+    Date:        2026-10-03.
+    Reason:      not a NovodeX change: qh_gram_schmidt normalizes each row
+                 element by multiplying by one reciprocal where the modern
+                 compiler otherwise divides each element. The reference DLL's
+                 QRn rotation path uses the reciprocal at 0x0005f3d2; without
+                 this source form its rotation and merge decisions diverge.
+                 File: novodex/geom2.c. See MODIFICATIONS.md.
+
     (Append one entry per further change.  Clause 3 requires a name, a date and
     a reason for every modification, so this file grows rather than being
     rewritten.)

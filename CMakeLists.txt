@@ -704,11 +704,12 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Containers.cpp tests/PhysicsInternalContactStubs.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/IcePruner.cpp
 		Physics/src/opcode/NovodexBoxPruning.cpp
-		Physics/src/TriangleMesh.cpp Physics/src/MemoryStream.cpp
+		Physics/src/PMap.cpp Physics/src/TriangleMesh.cpp Physics/src/MemoryStream.cpp
 		Physics/src/EdgeList.cpp Physics/src/IceAdjacencies.cpp Physics/src/IceMeshTools.cpp
 		Physics/src/IceMeshBuilder2.cpp Physics/src/ConvexHull.cpp Physics/src/TriangleMeshTopology.cpp
 		Physics/src/IceSupportMaps.cpp Physics/src/SmoothNormals.cpp
 		Physics/src/TriangleMeshPolygons.cpp)
+	target_compile_definitions(NxPhysicsThirdPartyTests PRIVATE NX_PHYSICS_DLL=1)
 	# TriangleMeshPolygons.cpp since convex-mesh gap Task 2g: the polygon_interface
 	# family drives the TriangleMesh polygon interface (P-Mesh) over hull images.
 	# SmoothNormals.cpp comes with IceMeshTools.cpp since convex-mesh gap Task 2e:
