@@ -5094,9 +5094,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # (Task 4): the summation-order and register-lifetime work unit (the
         # three-product sums among them are in sum_grouping.csv) for *_x87,
         # ice_plane_triangle, ice_matrix4x4 and ice_obb; inputs placed exactly on a boundary, where that same last bit
-        # decides a hit, for *_boundary; qhull's own random rotation ("QR1"),
-        # which rounds differently and so changes the merges after it, for
-        # qhull_hull_rotated. `layout_checks=` in the second coverage line is the
+        # decides a hit, for *_boundary; qhull's own random rotation ("QR1") now
+        # matches after the Gram-Schmidt reciprocal fix. `layout_checks=` in the
+        # second coverage line is the
         # same 47: the new families add no layout assertion.
         'thirdparty name=opcode_model_build rva=0x000e9100 owner=phys_fn_005368 source=OPC_Model.cpp,OPC_BaseModel.cpp,OPC_AABBTree.cpp,OPC_OptimizedTree.cpp,OPC_TreeBuilders.cpp words=22607 oracle=737affc0 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=opcode_model_build_x87 rva=0x000f09b0 owner=phys_fn_005513 source=OPC_AABBTree.cpp,OPC_TreeBuilders.cpp,OPC_OptimizedTree.cpp words=19406 oracle=902f1257',
@@ -5124,7 +5124,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=ice_obb rva=0x000e4580 owner=phys_fn_005199 source=Ice/IceOBB.cpp words=10800 oracle=4f2c5548',
         'thirdparty name=qhull_hull rva=0x0007d180 owner=phys_fn_003234 source=qhull.c,poly.c,poly2.c,merge.c,geom.c,geom2.c,qset.c,mem.c,global.c words=58488 oracle=c824ff7f mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=qhull_hull_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=32036 oracle=20ffcbef',
-        'thirdparty name=qhull_hull_rotated rva=0x0005ff40 owner=phys_fn_002520 source=geom2.c,qhull.c,poly.c,poly2.c,merge.c words=9431 oracle=0a2f0b05',
+        'thirdparty name=qhull_hull_rotated rva=0x0005ff40 owner=phys_fn_002520 source=geom2.c,qhull.c,poly.c,poly2.c,merge.c words=9431 oracle=0a2f0b05 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage driven=44 divergent=9 words=464286 layout_checks=47',
         'thirdparty oracle digest=c16f0c0c',
 
@@ -5147,12 +5147,10 @@ $NxRequiredCoverageLines = [ordered] @{
         # the NovodeX driver sequence with qhull's printing captured on both sides
         # (the host object's slots, and each side's own CRT through files its own
         # fopen opened; evidence/qhull-gap.md). Each family is a discrete tape and a
-        # float tape. The discrete families that compare exactly, and both tapes of
-        # qhull_exact_output/qhull_exact_other, are registered whole; the other float
-        # families, qhull_paths, qhull_paths_t4 and qhull_rotation are DIVERGENT, registered up to
-        # the oracle digest, and held by kDivergentCeilings. The
-        # pairs above keep printing where Tasks 4 and 5a put them; the pair below
-        # carries the totals.
+        # float tape. The discrete families that compare exactly are registered whole;
+        # qhull_rotation and the trace-level-4 path now compare exactly. The remaining
+        # float families and qhull_paths are DIVERGENT, registered to their oracle digest.
+        # The pairs above keep printing where Tasks 4 and 5a put them.
         'thirdparty name=qhull_output rva=0x0006d800 owner=phys_fn_002866 source=io.c,geom2.c,poly2.c,stat.c words=113021 oracle=6f5465b7 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=qhull_output_x87 rva=0x0006d800 owner=phys_fn_002866 source=io.c,geom.c,geom2.c words=54558 oracle=9dc801f7',
         'thirdparty name=qhull_output_dims rva=0x0006d200 owner=phys_fn_002862 source=io.c,geom2.c,poly2.c,stat.c words=59282 oracle=cfd26e23 mismatches=0 worst_ulp=0 verdict=exact',
@@ -5177,13 +5175,13 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=qhull_exact_output_x87 rva=0x0006d800 owner=phys_fn_002866 source=io.c,geom.c,geom2.c words=24566 oracle=3ae85f24 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=qhull_exact_other rva=0x0007d180 owner=phys_fn_003234 source=qhull.c,poly.c,poly2.c,merge.c,global.c,io.c,qset.c words=37571 oracle=cb2d8512 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=qhull_exact_other_x87 rva=0x0007d180 owner=phys_fn_003234 source=geom.c,geom2.c,merge.c,io.c words=18072 oracle=22bf6dbb mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty name=qhull_paths rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,qhull.c,poly2.c,merge.c,io.c words=9518 oracle=96cb5a62',
+        'thirdparty name=qhull_paths rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,qhull.c,poly2.c,merge.c,io.c words=9518 oracle=96cb5a62 mismatches=4 discrete=4 float_ulp=0 double_ulp=0 beyond=0 inf_words=0 degenerate=0 finite_ulp=0 beyond_abs=0 first_diff=37 length_delta=0 ceiling=4/4 verdict=divergent',
         'thirdparty name=qhull_paths_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=15524 oracle=216821ea',
-        'thirdparty name=qhull_paths_t4 rva=0x0005dfb0 owner=phys_fn_002454 source=geom.c,qhull.c,poly2.c,merge.c,io.c words=17889 oracle=5bc3fc9a mismatches=3202 discrete=3194 float_ulp=0 double_ulp=0 beyond=0 inf_words=0 degenerate=0 finite_ulp=0 beyond_abs=0 first_diff=14578 length_delta=9 ceiling=3202/3194 verdict=divergent',
-        'thirdparty name=qhull_paths_t4_x87 rva=0x0005dfb0 owner=phys_fn_002454 source=geom.c,geom2.c,merge.c words=2723 oracle=248026db mismatches=458 discrete=1 float_ulp=0 double_ulp=inf beyond=334 inf_words=85 degenerate=0 finite_ulp=4616189618054758400 beyond_abs=inf first_diff=68 length_delta=2 ceiling=458/1 verdict=divergent',
-        'thirdparty name=qhull_rotation rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,global.c,qhull.c,merge.c words=9980 oracle=e80e1851',
-        'thirdparty name=qhull_rotation_x87 rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,geom.c words=8724 oracle=07282fca',
-        'thirdparty coverage driven=77 divergent=27 words=1636017 layout_checks=47',
+        'thirdparty name=qhull_paths_t4 rva=0x0005dfb0 owner=phys_fn_002454 source=geom.c,qhull.c,poly2.c,merge.c,io.c words=17889 oracle=5bc3fc9a mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=qhull_paths_t4_x87 rva=0x0005dfb0 owner=phys_fn_002454 source=geom.c,geom2.c,merge.c words=2723 oracle=248026db mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=qhull_rotation rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,global.c,qhull.c,merge.c words=9980 oracle=e80e1851 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=qhull_rotation_x87 rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,geom.c words=8724 oracle=07282fca mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage driven=77 divergent=21 words=1636017 layout_checks=47',
         'thirdparty oracle digest=52015450',
         # qhull-gap Task 4e: convex cooking. HullLibrary::CreateConvexHull/ReleaseResult
         # (0x0007ea10/0x0007e300) and phys_fn_002233 (0x00054920) called directly on both

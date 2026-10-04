@@ -69,7 +69,9 @@ void qh_distplane (pointT *point, facetT *facet, realT *dist) {
     *dist= facet->offset + point[0] * normal[0] + point[1] * normal[1];
     break;
   case 3:
-    *dist= facet->offset + point[0] * normal[0] + point[1] * normal[1] + point[2] * normal[2];
+    /* Preserve the NovodeX x87 accumulation order: z, then y, then x, and
+       finally the offset. Near-coplanar distances feed topology decisions. */
+    *dist= point[2] * normal[2] + point[1] * normal[1] + point[0] * normal[0] + facet->offset;
     break;
   case 4:
     *dist= facet->offset+point[0]*normal[0]+point[1]*normal[1]+point[2]*normal[2]+point[3]*normal[3];
@@ -845,7 +847,7 @@ void qh_normalize2 (coordT *normal, int dim, boolT toporient,
   if (dim == 2)
     norm= sqrt((*normal)*(*normal) + (*norm1)*(*norm1));
   else if (dim == 3)
-    norm= sqrt((*normal)*(*normal) + (*norm1)*(*norm1) + (*norm2)*(*norm2));
+    norm= sqrt((*normal)*(*normal) + ((*norm1)*(*norm1) + (*norm2)*(*norm2)));
   else if (dim == 4) {
     norm= sqrt((*normal)*(*normal) + (*norm1)*(*norm1) + (*norm2)*(*norm2) 
                + (*norm3)*(*norm3));
@@ -963,6 +965,7 @@ void qh_setfacetplane(facetT *facet) {
   vertexT *vertex, **vertexp;
   int k,i, normsize= qh normal_size, oldtrace= 0;
   realT dist;
+  volatile realT rounded_dist;
   void **freelistp; /* used !qh_NOmem */
   coordT *coord, *gmcoord;
   pointT *point0= SETfirstt_(facet->vertices, vertexT)->point;
@@ -1054,21 +1057,25 @@ void qh_setfacetplane(facetT *facet) {
 	boolT istrace= False;
 	zinc_(Zdiststat);
         qh_distplane(vertex->point, facet, &dist);
-        dist= fabs_(dist);
+        /* The shipped x86 build rounded |dist| to a realT before using it
+           for statistics.  Keep that binary64 rounding point explicit:
+           otherwise MSVC can retain the x87 extended value across the
+           following comparisons and accumulator update. */
+        rounded_dist= fabs_(dist);
         zinc_(Znewvertex);
-        wadd_(Wnewvertex, dist);
-        if (dist > wwval_(Wnewvertexmax)) {
-          wwval_(Wnewvertexmax)= dist;
-	  if (dist > qh max_outside) {
-	    qh max_outside= dist;  /* used by qh_maxouter() */
-	    if (dist > qh TRACEdist) 
+        wadd_(Wnewvertex, rounded_dist);
+        if (rounded_dist > wwval_(Wnewvertexmax)) {
+          wwval_(Wnewvertexmax)= rounded_dist;
+          if (rounded_dist > qh max_outside) {
+            qh max_outside= rounded_dist;  /* used by qh_maxouter() */
+            if (rounded_dist > qh TRACEdist)
 	      istrace= True;
 	  }
-	}else if (-dist > qh TRACEdist)
+        }else if (-rounded_dist > qh TRACEdist)
 	  istrace= True;
 	if (istrace) {
 	  fprintf (qh ferr, "qh_setfacetplane: ====== vertex p%d (v%d) increases max_outside to %2.2g for new facet f%d last p%d\n",
-	        qh_pointid(vertex->point), vertex->id, dist, facet->id, qh furthest_id);
+                qh_pointid(vertex->point), vertex->id, rounded_dist, facet->id, qh furthest_id);
 	  qh_errprint ("DISTANT", facet, NULL, NULL, NULL);
 	}
       }
@@ -1142,7 +1149,7 @@ void qh_sethyperplane_det (int dim, coordT **rows, coordT *point0,
     normal[0]= dY(1,0);
     normal[1]= dX(0,1);
     qh_normalize2 (normal, dim, toporient, NULL, NULL);
-    *offset= -(point0[0]*normal[0]+point0[1]*normal[1]);
+    *offset= -(point0[1]*normal[1]+point0[0]*normal[0]);
     *nearzero= False;  /* since nearzero norm => incident points */
   }else if (dim == 3) {
     normal[0]= det2_(dY(2,0), dZ(2,0),
@@ -1152,14 +1159,14 @@ void qh_sethyperplane_det (int dim, coordT **rows, coordT *point0,
     normal[2]= det2_(dX(2,0), dY(2,0),
 		     dX(1,0), dY(1,0));
     qh_normalize2 (normal, dim, toporient, NULL, NULL);
-    *offset= -(point0[0]*normal[0] + point0[1]*normal[1]
-	       + point0[2]*normal[2]);
+    *offset= -(point0[1]*normal[1] + point0[2]*normal[2]
+	       + point0[0]*normal[0]);
     maxround= qh DISTround;
     for (i=dim; i--; ) {
       point= rows[i];
       if (point != point0) {
-        dist= *offset + (point[0]*normal[0] + point[1]*normal[1]
-	       + point[2]*normal[2]);
+        dist= point[1]*normal[1] + point[2]*normal[2]
+	       + point[0]*normal[0] + *offset;
         if (dist > maxround || dist < -maxround) {
   	  *nearzero= True;
 	  break;
