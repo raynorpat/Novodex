@@ -86,9 +86,9 @@ checks the actor's final height while the viewer renders each frame. Run it with
 ctest --test-dir build -C Release -R '^ViewerPhysicsStep$' --output-on-failure
 ```
 
-`ViewerPhysicsContact` runs the same viewer loop with a static box under the
-falling box. It checks that contact resolution keeps the actor near the expected
-rest height after 60 fixed steps:
+`ViewerPhysicsContact` runs a sphere through the same viewer loop over the
+scene's built-in ground plane. It checks that contact resolution keeps the actor
+near the expected rest height after 60 fixed steps:
 
 ```powershell
 ctest --test-dir build -C Release -R '^ViewerPhysicsContact$' --output-on-failure
