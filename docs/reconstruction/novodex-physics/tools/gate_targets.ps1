@@ -1959,7 +1959,15 @@ $NxRequiredCoverageLines = [ordered] @{
         'actor scene_teardown_frees=45',
         'actor scene_teardown_sizes=14.18.20.4.20.4.28.18.260.1c.10.228.50.18.8.260.1c.228.50.400.400.400.400.400.400.400.400.400.400.400.400.a8.18.18.18.10.60.10.90.c0.20.3c.18.18.710',
         'actor sdk_teardown_frees=14',
-        'actor sdk_teardown_sizes=20.c.30.10.38.124.4.4.4.8.1c.90.8.38'
+        'actor sdk_teardown_sizes=20.c.30.10.38.124.4.4.4.8.1c.90.8.38',
+        # Group-shape append and removal coverage brought over from the
+        # completion branch. Main's newer Scene implementation already matches
+        # the oracle; the branch's older Scene.cpp implementation is obsolete.
+        'shape_mutation group_before_append=2.2.2.2.4.4',
+        'shape_mutation group_added=1.3.5.1.1.1',
+        'shape_mutation group_after_append=3.6.3.6.5.8',
+        'shape_mutation group_removed=2.5.1.1',
+        'shape_mutation group_after_remove=2.6.2.6.5.8'
     )
     # The body record's constructor and destructor rows (scene-raycast block
     # Task 4, body-creation: 000797, 000801, 000793/000795, 000722, 000748,
