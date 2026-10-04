@@ -5358,9 +5358,6 @@ __declspec(noinline) void MassFrame::nxMassFrameBuildBox(const float* he)
 	const NxF32 sYY = static_cast<NxF32>(zz + xx);			// fadd st(2); fstp [esp+4]
 	const NxF32 sZZ = static_cast<NxF32>(yy + xx);			// fadd st(1); fstp [esp+8]
 
-	const double iXX = static_cast<double>(sumX) * f;		// stays on the stack
-	mInertia[4] = static_cast<NxF32>(static_cast<double>(sumY) * f);	// via [esp+0x10]
-	mInertia[8] = static_cast<NxF32>(static_cast<double>(sumZ) * f);	// via [esp+0x14]
 	mMass = static_cast<NxF32>(m);							// fstp [ecx+0x30]
 	mInertia[0] = static_cast<NxF32>(static_cast<double>(sXX) * f);	// fstp [ecx]
 	mInertia[4] = static_cast<NxF32>(static_cast<double>(sYY) * f);	// via [esp+0x10]

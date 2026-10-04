@@ -603,10 +603,6 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsConvexMeshTests tests/PhysicsConvexMeshApiTests.cpp)
 	target_include_directories(NxPhysicsConvexMeshTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsConvexMeshTests bcrypt)
-	add_executable(NxPhysicsTriangleMeshApiTests tests/PhysicsTriangleMeshApiTests.cpp)
-	target_include_directories(NxPhysicsTriangleMeshApiTests PRIVATE
-		Foundation/include Foundation/src/include Physics/include)
-	target_link_libraries(NxPhysicsTriangleMeshApiTests bcrypt)
 	add_executable(NxPhysicsTriggerSimulationTests tests/PhysicsTriggerSimulationTests.cpp)
 	target_include_directories(NxPhysicsTriggerSimulationTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsTriggerSimulationTests bcrypt)
@@ -796,7 +792,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/InternalTriangleMesh.cpp
-		Physics/src/TriangleMesh.cpp Physics/src/TriangleMeshLifecycle.cpp
+		Physics/src/TriangleMesh.cpp
 		Physics/src/TriangleMeshPolygons.cpp Physics/src/PMap.cpp
 		Physics/src/QhullHost.cpp Physics/src/Quantizer.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp

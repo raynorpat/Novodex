@@ -673,13 +673,6 @@ static bool __fastcall nxMeshHandleSaveToDesc(void* self, void*,
 	return shape->nxMeshSaveState(&descriptor);
 	}
 
-static NxTriangleMesh& __fastcall nxMeshHandleGetTriangleMesh(void* self, void*)
-	{
-	MeshShape* shape = reinterpret_cast<MeshShape*>(nxBoxHandleInternal(self));
-	TriangleMesh* mesh = reinterpret_cast<TriangleMesh*>(shape->mWordE0);
-	return *mesh->publicMesh();
-	}
-
 void* nxBoxShapePublicVtable()
 	{
 	struct Table

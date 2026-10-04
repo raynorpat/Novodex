@@ -346,36 +346,6 @@ NxSceneInternal* PhysicsSDK::createScene(const NxSceneDesc& desc)
 	return scene;
 	}
 
-TriangleMesh* PhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc& desc)
-	{
-	if(!nxFoundationSDKAllocator || !desc.isValid()) return 0;
-	void* memory = nxFoundationSDKAllocator->malloc(sizeof(TriangleMesh), NX_MEMORY_PERSISTENT);
-	if(!memory) return 0;
-	TriangleMesh* mesh = new(memory) TriangleMesh();
-	if(!mesh->publicHandle() || !mesh->loadFromDesc(desc))
-		{
-		mesh->~TriangleMesh();
-		nxFoundationSDKAllocator->free(memory);
-		return 0;
-		}
-	mTriangleMeshes.pushBack(mesh);
-	return mesh;
-	}
-
-void PhysicsSDK::releaseTriangleMesh(TriangleMesh* mesh)
-	{
-	for(NxU32 i = 0; i < mTriangleMeshes.size(); ++i)
-		if(mTriangleMeshes[i] == mesh)
-			{
-			mTriangleMeshes.replaceWithLast(i);
-			mesh->~TriangleMesh();
-			nxFoundationSDKAllocator->free(mesh);
-			return;
-			}
-	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION, NX_PHYSICS_SDK_CPP, 569,
-		0, "PhysicsSDK::releaseTriangleMesh: double deletion detected!");
-	}
-
 // phys_fn_000468: remove the internal Scene from the SDK's unsorted array,
 // then invoke its scalar deleting destructor.
 void PhysicsSDK::releaseScene(NxSceneInternal* scene)

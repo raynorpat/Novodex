@@ -4296,24 +4296,6 @@ void NxSceneInternal::simulateFrame()
 				reinterpret_cast<Row000724Fixture*>(body1)->row000724(0, node);
 			}
 
-		// phys_fn_000608's post-broadphase auxiliary-pair walk calls 000724 for
-		// each live pair with contacts. Rebuild those per-body links after 000764
-		// clears them and before active roots are collected for 000611.
-		NxPairList* contactPairs = reinterpret_cast<NxPairList*>(mBytes + 0x674);
-		for(NxPairNode* node = contactPairs->head; node;
-			node = node->at<NxPairNode*>(8))
-			{
-			NxActorPair* pair = node->pair();
-			if(!pair->at<NxU32>(0x10))
-				continue;
-			void* body0 = pair->at<void*>(8);
-			void* body1 = pair->at<void*>(0xc);
-			if(body0)
-				reinterpret_cast<Row000724Fixture*>(body0)->row000724(body1, node);
-			else if(body1)
-				reinterpret_cast<Row000724Fixture*>(body1)->row000724(0, node);
-			}
-
 		// 000655's active-island collection follows 000608. Keep only the
 		// self-parented, awake sleep-group roots in Scene+0x57c..+0x580.
 		void**& rootFirst = at<void**>(0x57c);

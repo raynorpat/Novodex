@@ -42,6 +42,7 @@
 #include "Scene.h"
 #include "X87Sqrt.h"
 #include "core/JointSupport.h"
+#include "opcode/IcePruner.h"
 
 #include <float.h>
 #include <math.h>
@@ -887,6 +888,32 @@ static __declspec(noinline) CpmPairHashEntry* cpmOpen004155(CpmPairHash* hash, N
 	buckets[bucket] = static_cast<NxI32>(index);
 	++hash->count;
 	return entry;
+	}
+
+// .data 0x10123c28: process-wide actor-group pair flags. The SDK's lookup and
+// insertion rows use the same sparse hash layout as scene shape-pair records.
+static CpmPairHash gCpmActorGroupPairFlags = {};
+static CpmPairHash* const kCpmActorGroupPairFlags = &gCpmActorGroupPairFlags;
+
+void cpmSetActorGroupPairFlags(NxU16 group0, NxU16 group1, NxU32 flags)
+	{
+	cpmOpen004155(kCpmActorGroupPairFlags, group0, group1,
+		reinterpret_cast<void*>(static_cast<size_t>(flags)));
+	}
+
+NxU32 cpmGetActorGroupPairFlags(NxU16 group0, NxU16 group1)
+	{
+	const CpmPairHashEntry* entry = cpmOpen004153(kCpmActorGroupPairFlags, group0, group1);
+	return entry ? entry->value : 0;
+	}
+
+void cpmResetActorGroupPairFlags()
+	{
+	NxU32* words = reinterpret_cast<NxU32*>(kCpmActorGroupPairFlags);
+	if(words[2]) nxFoundationSDKAllocator->free(reinterpret_cast<void*>(words[2]));
+	if(words[3]) nxFoundationSDKAllocator->free(reinterpret_cast<void*>(words[3]));
+	if(words[5]) nxFoundationSDKAllocator->free(reinterpret_cast<void*>(words[5]));
+	memset(kCpmActorGroupPairFlags, 0, sizeof(*kCpmActorGroupPairFlags));
 	}
 
 // Row 004157 (0x0009a920, 476 B): erase (key0, key1). thiscall on the

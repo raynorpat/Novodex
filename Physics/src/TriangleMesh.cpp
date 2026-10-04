@@ -27,13 +27,6 @@ static const NxI32 kTriangleMeshPMapCreateFailedLine = 0x318;
 static const char* const kTriangleMeshInvalidPMapMessage = "TriangleMesh::loadPMap: invalid pmap data!";
 static const char* const kTriangleMeshPMapCreateFailedMessage = "TriangleMesh::loadPMap: pmap creation failed!";
 
-#define NX_TRIANGLE_MESH_CPP "\\Epic\\Novodex\\SDKs\\Physics\\src\\TriangleMesh.cpp"
-
-static const NxI32 kTriangleMeshInvalidPMapLine = 0x30b;
-static const NxI32 kTriangleMeshPMapCreateFailedLine = 0x318;
-static const char* const kTriangleMeshInvalidPMapMessage = "TriangleMesh::loadPMap: invalid pmap data!";
-static const char* const kTriangleMeshPMapCreateFailedMessage = "TriangleMesh::loadPMap: pmap creation failed!";
-
 // The two tags are read and written as DWORDS, so on the little-endian target
 // the bytes on disc are 54 53 58 4e and 48 53 45 4d. Written most significant
 // byte first the two constants spell NXST and MESH; in file order they spell

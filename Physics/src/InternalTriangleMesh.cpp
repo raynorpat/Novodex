@@ -295,7 +295,7 @@ bool nxInternalMeshBuildModel(InternalTriangleMesh* mesh, NxU32 extendAxis,
 		mesh->mModel = 0;
 		}
 
-	Opcode::MeshInterface* interface = reinterpret_cast<Opcode::MeshInterface*>(mesh->mInterfaceRegion);
+	Opcode::MeshInterface* interface = &mesh->mMeshInterface;
 	interface->SetNbVertices(mesh->mVertexCount);
 	interface->SetNbTriangles(mesh->mTriangleCount);
 	interface->SetPointers(
