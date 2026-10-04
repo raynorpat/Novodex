@@ -35,6 +35,10 @@
 #include "NxUserContactReport.h"
 #include "NxUtilities.h"
 #include "ObjectModel.h"
+#include "NarrowPhase.h"
+#include "ContactGeneration.h"
+#include "IcePruner.h"
+#include "Opcode.h"
 #include "PhysicsSDK.h"
 #include "Scene.h"
 #include "X87Sqrt.h"
@@ -256,16 +260,18 @@ static NX_INLINE JointSupportRecord* cpmTakeRecord(NxSceneInternal* scene)
 
 // Row 002356 (0x0005b680, 22 B): constructs the stream sub-object at pair
 // +0x10 (its SdkContainer at +0x28 through 004836, then 002354). thiscall.
+static __declspec(noinline) void cpmOpen002354(void* streamObject);
 static __declspec(noinline) void cpmOpen002356(void* streamObject)
 	{
-	(void)streamObject;
+	new (static_cast<NxU8*>(streamObject) + 0x28) SdkContainer;
+	cpmOpen002354(streamObject);
 	}
 
 // Row 002354 (0x0005b620, 86 B): resets the stream sub-object (zeroes
 // +0x00..+0x33, reserves the pair-count word). thiscall.
 static __declspec(noinline) void cpmOpen002354(void* streamObject)
 	{
-	(void)streamObject;
+	NxContactSinkResetState(reinterpret_cast<NxU32*>(streamObject));
 	}
 
 // Row 002348 (0x0005ab80, 719 B): the narrow-phase pair dispatcher,
@@ -273,37 +279,231 @@ static __declspec(noinline) void cpmOpen002354(void* streamObject)
 // (PhysicsSDK.cpp gShapePairFunctionTable), (shape0, shape1, pair, scene).
 static __declspec(noinline) void cpmOpen002348(NxU8* shape0, NxU8* shape1, NxActorPair* pair, NxSceneInternal* scene)
 	{
-	(void)shape0; (void)shape1; (void)pair; (void)scene;
+	NxDispatchShapePair(nxPhysicsSDKShapePairTable(),
+		reinterpret_cast<const NxCollisionShape*>(shape0),
+		reinterpret_cast<const NxCollisionShape*>(shape1), pair, scene);
 	}
 
 // Row 004153 (0x0009a570, 156 B): find (key0, key1). thiscall on the
 // hash; returns the entry or null.
 static __declspec(noinline) CpmPairHashEntry* cpmOpen004153(CpmPairHash* hash, NxU32 key0, NxU32 key1)
 	{
-	(void)hash; (void)key0; (void)key1;
-	return 0;
+	NxU32* words = reinterpret_cast<NxU32*>(hash);
+	if(!words[0] && !words[1] && !words[2] && !words[3]
+		&& !words[4] && !words[5] && !words[6])
+		words[6] = 0xffffffffu;
+	return static_cast<CpmPairHashEntry*>(NxFindCollisionPairRecord(hash,
+		static_cast<NxU16>(key0), static_cast<NxU16>(key1)));
 	}
 
-// Row 004155 (0x0009a610, 772 B): insert (key0, key1) -> value; returns
+// phys_fn_004155 / Row 004155 (0x0009a610, 772 B): insert (key0, key1) -> value; returns
 // the entry. thiscall on the hash.
 static __declspec(noinline) CpmPairHashEntry* cpmOpen004155(CpmPairHash* hash, NxU32 key0, NxU32 key1, void* value)
 	{
-	(void)hash; (void)key0; (void)key1; (void)value;
-	return 0;
+	NxU16 a = static_cast<NxU16>(key0);
+	NxU16 b = static_cast<NxU16>(key1);
+	if(b < a)
+		{ const NxU16 swap = a; a = b; b = swap; }
+	CpmPairHashEntry* found = cpmOpen004153(hash, a, b);
+	if(found)
+		{ found->value = static_cast<NxU32>(reinterpret_cast<size_t>(value)); return found; }
+
+	NxU32* words = reinterpret_cast<NxU32*>(hash);
+	// The hash's empty value is a free-list sentinel. Scene construction leaves
+	// the storage zeroed, so initialise the sentinel on first insertion.
+	if(words[6] == 0 && words[0] == 0 && words[1] == 0 && words[2] == 0
+		&& words[3] == 0 && words[4] == 0 && words[5] == 0)
+		words[6] = 0xffffffffu;
+	NxU32& capacityPlusOne = words[0];
+	NxU32& mask = words[1];
+	NxI32*& buckets = *reinterpret_cast<NxI32**>(words + 2);
+	NxI32*& links = *reinterpret_cast<NxI32**>(words + 3);
+	NxU32& count = words[4];
+	CpmPairHashEntry*& entries = *reinterpret_cast<CpmPairHashEntry**>(words + 5);
+	NxU32& freeHead = words[6];
+
+	if(freeHead == 0xffffffffu)
+		{
+		if(capacityPlusOne <= count)
+			{
+			NxU32 bit = count + 1;
+			bit |= bit >> 1; bit |= bit >> 2; bit |= bit >> 4; bit |= bit >> 8; bit |= bit >> 16;
+			mask = bit;
+			capacityPlusOne = bit + 1;
+			NxI32* newBuckets = static_cast<NxI32*>(nxFoundationSDKAllocator->malloc(capacityPlusOne * 4, NX_MEMORY_PERSISTENT));
+			CpmPairHashEntry* newEntries = static_cast<CpmPairHashEntry*>(nxFoundationSDKAllocator->malloc(capacityPlusOne * 8, NX_MEMORY_PERSISTENT));
+			NxI32* newLinks = static_cast<NxI32*>(nxFoundationSDKAllocator->malloc(capacityPlusOne * 4, NX_MEMORY_PERSISTENT));
+			if(!newBuckets || !newEntries || !newLinks)
+				{
+				if(newBuckets) nxFoundationSDKAllocator->free(newBuckets);
+				if(newEntries) nxFoundationSDKAllocator->free(newEntries);
+				if(newLinks) nxFoundationSDKAllocator->free(newLinks);
+				return 0;
+				}
+			for(NxU32 i = 0; i < capacityPlusOne; ++i) newBuckets[i] = -1;
+			for(NxU32 i = 0; i < count; ++i)
+				{
+				newEntries[i] = entries[i];
+				NxU32 h = ((NxU32)newEntries[i].key1 << 16) | newEntries[i].key0;
+				 h += ~(h << 15); h = ((NxI32)h >> 10 ^ h) * 9; h ^= (NxI32)h >> 6; h += ~(h << 11);
+				const NxU32 bucket = ((NxI32)h >> 16 ^ h) & mask;
+				newLinks[i] = newBuckets[bucket]; newBuckets[bucket] = static_cast<NxI32>(i);
+				}
+			if(buckets) nxFoundationSDKAllocator->free(buckets);
+			if(entries) nxFoundationSDKAllocator->free(entries);
+			if(links) nxFoundationSDKAllocator->free(links);
+			buckets = newBuckets; entries = newEntries; links = newLinks;
+			freeHead = 0xffffffffu;
+			}
+		NxU32 h = ((NxU32)b << 16) | a;
+		h += ~(h << 15); h = ((NxI32)h >> 10 ^ h) * 9; h ^= (NxI32)h >> 6; h += ~(h << 11);
+		const NxU32 bucket = ((NxI32)h >> 16 ^ h) & mask;
+		CpmPairHashEntry* slot = entries + count;
+		slot->key0 = a; slot->key1 = b; slot->value = static_cast<NxU32>(reinterpret_cast<size_t>(value));
+		links[count] = buckets[bucket]; buckets[bucket] = static_cast<NxI32>(count++);
+		return slot;
+		}
+
+	const NxU32 index = freeHead;
+	CpmPairHashEntry* slot = entries + index;
+	const NxU32 next = slot->value;
+	slot->key0 = a; slot->key1 = b; slot->value = static_cast<NxU32>(reinterpret_cast<size_t>(value));
+	NxU32 h = ((NxU32)b << 16) | a;
+	h += ~(h << 15); h = ((NxI32)h >> 10 ^ h) * 9; h ^= (NxI32)h >> 6; h += ~(h << 11);
+	const NxU32 bucket = ((NxI32)h >> 16 ^ h) & mask;
+	links[index] = buckets[bucket]; buckets[bucket] = static_cast<NxI32>(index);
+	freeHead = next;
+	if(index >= count) count = index + 1;
+	return slot;
+	}
+
+// .data 0x10123c28: process-wide actor-group pair flags. The SDK's lookup and
+// insertion rows use the same sparse hash layout as scene shape-pair records.
+static CpmPairHash gCpmActorGroupPairFlags = {};
+static CpmPairHash* const kCpmActorGroupPairFlags = &gCpmActorGroupPairFlags;
+
+void cpmSetActorGroupPairFlags(NxU16 group0, NxU16 group1, NxU32 flags)
+	{
+	cpmOpen004155(kCpmActorGroupPairFlags, group0, group1,
+		reinterpret_cast<void*>(static_cast<size_t>(flags)));
+	}
+
+NxU32 cpmGetActorGroupPairFlags(NxU16 group0, NxU16 group1)
+	{
+	const CpmPairHashEntry* entry = cpmOpen004153(kCpmActorGroupPairFlags, group0, group1);
+	return entry ? entry->value : 0;
+	}
+
+void cpmResetActorGroupPairFlags()
+	{
+	NxU32* words = reinterpret_cast<NxU32*>(kCpmActorGroupPairFlags);
+	if(words[2]) nxFoundationSDKAllocator->free(reinterpret_cast<void*>(words[2]));
+	if(words[3]) nxFoundationSDKAllocator->free(reinterpret_cast<void*>(words[3]));
+	if(words[5]) nxFoundationSDKAllocator->free(reinterpret_cast<void*>(words[5]));
+	memset(kCpmActorGroupPairFlags, 0, sizeof(*kCpmActorGroupPairFlags));
 	}
 
 // Row 004157 (0x0009a920, 476 B): erase (key0, key1). thiscall on the
 // hash.
 static __declspec(noinline) void cpmOpen004157(CpmPairHash* hash, NxU32 key0, NxU32 key1)
 	{
-	(void)hash; (void)key0; (void)key1;
+	NxRemoveCollisionPairRecord(hash, static_cast<NxU16>(key0), static_cast<NxU16>(key1));
 	}
 
-// .data 0x10123c28: the SDK's actor-group pair-flags hash (NpPhysicsSDK.cpp's
-// setActorGroupPairFlags is blocked on the same object). The oracle passes its
-// address to 004153 (`mov ecx,0x10123c28`, 0x1001ffa4 and 0x10020156); the
-// candidate has no such object.
-static CpmPairHash* const kCpmActorGroupPairFlags = 0;
+static bool cpmActorFirstShapeIds(const void* actor, NxU32& shapeId)
+	{
+	if(!actor) return false;
+	const NxU8* const body = *reinterpret_cast<NxU8* const*>(
+		static_cast<const NxU8*>(actor) + 0x14);
+	const NxU8* const shape = body ? *reinterpret_cast<NxU8* const*>(body + 0x10) : 0;
+	if(!shape) return false;
+	shapeId = cpmAt<NxU32>(shape, 0xd4);
+	return true;
+	}
+
+static void cpmClearActorPairFlags(NxSceneInternal* scene, NxU32 shape0, NxU32 shape1)
+	{
+	CpmPairHash* const hash = reinterpret_cast<CpmPairHash*>(scene->bytes() + 0x2c);
+	CpmPairHashEntry* const entry = cpmOpen004153(hash, shape0, shape1);
+	if(!entry) return;
+	if(!(entry->value & 1) && entry->value)
+		nxFoundationSDKAllocator->free(cpmPointer(entry->value));
+	cpmOpen004157(hash, shape0, shape1);
+	}
+
+void cpmSetActorPairFlags(NxSceneInternal* scene, void* actor0, void* actor1, NxU32 flags)
+	{
+	NxU32 shape0 = 0, shape1 = 0;
+	if(!scene || !cpmActorFirstShapeIds(actor0, shape0) ||
+		!cpmActorFirstShapeIds(actor1, shape1))
+		return;
+	CpmPairHash* const hash = reinterpret_cast<CpmPairHash*>(scene->bytes() + 0x2c);
+	cpmClearActorPairFlags(scene, shape0, shape1);
+	if(!flags) return;
+	const NxU32 storedFlags = (flags & 0x1fffffffu) | 0x20000000u;
+	void* value = reinterpret_cast<void*>(static_cast<size_t>(storedFlags));
+	if(!(flags & 1))
+		{
+		NxU32* record = static_cast<NxU32*>(nxFoundationSDKAllocator->malloc(0x14, NX_MEMORY_PERSISTENT));
+		if(!record) return;
+		record[0] = storedFlags;
+		record[1] = scene->at<NxU32>(0x540);
+		record[2] = record[3] = record[4] = 0;
+		value = record;
+		}
+	if(!cpmOpen004155(hash, shape0, shape1, value) && !(flags & 1))
+		nxFoundationSDKAllocator->free(value);
+	}
+
+NxU32 cpmGetActorPairFlags(const NxSceneInternal* scene, const void* actor0, const void* actor1)
+	{
+	NxU32 shape0 = 0, shape1 = 0;
+	if(!scene || !cpmActorFirstShapeIds(actor0, shape0) ||
+		!cpmActorFirstShapeIds(actor1, shape1))
+		return 0;
+	CpmPairHash* const hash = reinterpret_cast<CpmPairHash*>(
+		const_cast<NxU8*>(scene->bytes()) + 0x2c);
+	CpmPairHashEntry* const entry = cpmOpen004153(hash, shape0, shape1);
+	if(!entry) return 0;
+	if(entry->value & 1) return entry->value & 0x1fffffffu;
+	return *static_cast<NxU32*>(cpmPointer(entry->value)) & 0x1fffffffu;
+	}
+
+void cpmSetShapePairFlags(NxSceneInternal* scene, void* shape0, void* shape1, NxU32 flags)
+	{
+	if(!scene || !shape0 || !shape1) return;
+	const NxU32 shapeId0 = cpmAt<NxU32>(shape0, 0xd4);
+	const NxU32 shapeId1 = cpmAt<NxU32>(shape1, 0xd4);
+	CpmPairHash* const hash = reinterpret_cast<CpmPairHash*>(scene->bytes() + 0x2c);
+	cpmClearActorPairFlags(scene, shapeId0, shapeId1);
+	if(!flags) return;
+	const NxU32 storedFlags = (flags & 0x1fffffffu) | 0x20000000u;
+	void* value = reinterpret_cast<void*>(static_cast<size_t>(storedFlags));
+	if(!(flags & 1))
+		{
+		NxU32* record = static_cast<NxU32*>(nxFoundationSDKAllocator->malloc(0x14, NX_MEMORY_PERSISTENT));
+		if(!record) return;
+		record[0] = storedFlags;
+		record[1] = scene->at<NxU32>(0x540);
+		record[2] = record[3] = record[4] = 0;
+		value = record;
+		}
+	if(!cpmOpen004155(hash, shapeId0, shapeId1, value) && !(flags & 1))
+		nxFoundationSDKAllocator->free(value);
+	}
+
+NxU32 cpmGetShapePairFlags(const NxSceneInternal* scene, const void* shape0, const void* shape1)
+	{
+	if(!scene || !shape0 || !shape1) return 0;
+	const NxU32 shapeId0 = cpmAt<NxU32>(shape0, 0xd4);
+	const NxU32 shapeId1 = cpmAt<NxU32>(shape1, 0xd4);
+	CpmPairHash* const hash = reinterpret_cast<CpmPairHash*>(
+		const_cast<NxU8*>(scene->bytes()) + 0x2c);
+	CpmPairHashEntry* const entry = cpmOpen004153(hash, shapeId0, shapeId1);
+	if(!entry) return 0;
+	if(entry->value & 1) return entry->value & 0x1fffffffu;
+	return *static_cast<NxU32*>(cpmPointer(entry->value)) & 0x1fffffffu;
+	}
 
 // ---------------------------------------------------------------------------
 // The rows
@@ -833,7 +1033,6 @@ __declspec(noinline) void NxActorPair::row000879(NxSceneInternal* scene, NxReal 
 						}
 					const NxReal f1 = (NxReal)(((ex * t1.x + ez * t1.z) + ey * t1.y) * errorScale);
 					const NxReal f2 = (NxReal)(((ex * t2.x + ez * t2.z) + ey * t2.y) * errorScale);
-
 					for(NxU32 k = 0; k < 2; k++)
 						{
 						const NxVec3& t = k == 0 ? t1 : t2;
@@ -1635,8 +1834,8 @@ __declspec(noinline) void __fastcall cpmPairNodeUnlink0903(NxPairNode* node)
 // the Scene hash (+0x2c, 004153 on the two shape ids +0xd4) holds a flag
 // entry (bit 0). With reports on (Scene+0x6b4) the pair's report record gets
 // the frame (a new 0x14-byte record inserted through 004155 when there is
-// none). When either side's `+0x10->+0x08` changed: 000863 and 002348 (the
-// narrow-phase re-registration), and the node's cache refreshed. Last, the
+	// none). When either live body record changes: 000863 and 002348 (the
+	// narrow-phase re-registration), and the node's cache is refreshed. Last, the
 // record's bit 31 = (the pair's contact count != 0) and its node/objects.
 __declspec(noinline) void NxPairNode::row000905(NxSceneInternal* scene)
 	{
@@ -1682,13 +1881,13 @@ __declspec(noinline) void NxPairNode::row000905(NxSceneInternal* scene)
 			}
 		}
 
-	if(cpmAt<void*>(cpmAt<NxU8*>(at<NxU8*>(0x14), 0x10), 8) != at<void*>(0)
-		|| cpmAt<void*>(cpmAt<NxU8*>(at<NxU8*>(0x18), 0x10), 8) != at<void*>(4))
+	if(cpmAt<void*>(shape0, 8) != at<void*>(0)
+		|| cpmAt<void*>(shape1, 8) != at<void*>(4))
 		{
 		cpmActorPairResetStream0863(pair());
 		cpmOpen002348(cpmAt<NxU8*>(at<NxU8*>(0x14), 0x10), cpmAt<NxU8*>(at<NxU8*>(0x18), 0x10), pair(), scene);
-		at<void*>(0) = cpmAt<void*>(cpmAt<NxU8*>(at<NxU8*>(0x14), 0x10), 8);
-		at<void*>(4) = cpmAt<void*>(cpmAt<NxU8*>(at<NxU8*>(0x18), 0x10), 8);
+		at<void*>(0) = cpmAt<void*>(shape0, 8);
+		at<void*>(4) = cpmAt<void*>(shape1, 8);
 		}
 
 	if(reporting && recordEntry)
@@ -1747,6 +1946,192 @@ __declspec(noinline) NxPairNode* NxPairList::row000911(NxU8* element0, NxU8* ele
 	return static_cast<NxPairNode*>(block)->row000901(first, second, this);
 	}
 
+// phys_fn_001976 (0x0004c290): enumerate the selected pruner pools, keep one
+// persistent node per ordered shape-id pair, stamp live nodes, then retire
+// entries not seen this frame. Modes 1-3 only admit pairs whose current world
+// AABBs intersect. Mode 2 uses the oracle's full sweep-and-prune passes: a
+// bipartite static/dynamic pass and a complete dynamic/dynamic pass.
+static void cpmRefreshPairCandidate(NxU32 frame, Prunable*** objects,
+	unsigned poolI, NxU32 indexI, unsigned poolJ, NxU32 indexJ,
+	CpmPairHash* hash, NxPairList* list)
+	{
+	NxU8* shapeOwnerI = static_cast<NxU8*>(objects[poolI][indexI]->mOwner);
+	NxU8* actorI = shapeOwnerI ? cpmAt<NxU8*>(shapeOwnerI, 4) : 0;
+	if(!actorI) return;
+	NxU8* shapeI = cpmAt<NxU8*>(actorI, 0x10);
+	if(!shapeI) return;
+	NxU8* shapeOwnerJ = static_cast<NxU8*>(objects[poolJ][indexJ]->mOwner);
+	NxU8* actorJ = shapeOwnerJ ? cpmAt<NxU8*>(shapeOwnerJ, 4) : 0;
+	if(!actorJ || actorJ == actorI) return;
+	NxU8* shapeJ = cpmAt<NxU8*>(actorJ, 0x10);
+	if(!shapeJ) return;
+	CpmPairHashEntry* entry = cpmOpen004153(hash,
+		cpmAt<NxU32>(shapeI, 0xd4), cpmAt<NxU32>(shapeJ, 0xd4));
+	NxPairNode* node = entry ? static_cast<NxPairNode*>(cpmPointer(entry->value)) : 0;
+	if(!node)
+		{
+		node = list->row000911(actorI, actorJ);
+		if(!node) return;
+		entry = cpmOpen004155(hash,
+			cpmAt<NxU32>(shapeI, 0xd4), cpmAt<NxU32>(shapeJ, 0xd4), node);
+		if(!entry)
+			{
+			cpmPairNodeUnlink0903(node);
+			nxFoundationSDKAllocator->free(node);
+			return;
+		}
+		}
+	node->at<NxU32>(0x104) = frame;
+	}
+
+void nxSceneRefreshPairs(NxSceneInternal* scene)
+	{
+	NxU8* engine = scene->bytes() + 0x624;
+	const NxU32 engineMode = cpmAt<NxU32>(engine, 0x30);
+	Pruner* pools[2];
+	pools[0] = cpmAt<Pruner*>(engine, 0x1c);
+	const NxU32 selector = cpmAt<NxU32>(engine, 0x70);
+	pools[1] = cpmAt<Pruner*>(engine, 0x1c + selector * 4);
+	NxU32 counts[2] = { 0, 0 };
+	Prunable** objects[2] = { 0, 0 };
+	for(unsigned p = 0; p != 2; ++p)
+		if(pools[p])
+			{
+				counts[p] = pools[p]->mPool.mNbObjects[0] + pools[p]->mPool.mNbObjects[1];
+				objects[p] = pools[p]->mPool.mObjects;
+			}
+	const NxU32 total = counts[0] + counts[1];
+	CpmPairHash* hash = reinterpret_cast<CpmPairHash*>(engine + 0x34);
+	NxPairList* list = reinterpret_cast<NxPairList*>(engine + 0x50);
+	const NxU32 frame = scene->at<NxU32>(0x540);
+	if(engineMode == 2)
+		{
+		const AABB** boxes[2] = { 0, 0 };
+		NxU32* poolIndices[2] = { 0, 0 };
+		NxU32 validCounts[2] = { 0, 0 };
+		for(unsigned p = 0; p != 2; ++p)
+			if(counts[p])
+				{
+				boxes[p] = new const AABB*[counts[p]];
+				poolIndices[p] = new NxU32[counts[p]];
+				for(NxU32 i = 0; i < counts[p]; ++i)
+					{
+					const AABB* bounds = objects[p][i]->GetUpdatedWorldAABB();
+					if(!bounds) continue;
+					boxes[p][validCounts[p]] = bounds;
+					poolIndices[p][validCounts[p]++] = i;
+					}
+				}
+		Pairs crossPairs;
+		Pairs dynamicPairs;
+		const Axes axes(AXES_XZY);
+		if(validCounts[0] && validCounts[1])
+			Opcode::BipartiteBoxPruning(validCounts[0], boxes[0], validCounts[1], boxes[1], crossPairs, axes);
+		if(validCounts[1])
+			Opcode::CompleteBoxPruning(validCounts[1], boxes[1], dynamicPairs, axes);
+		const Pair* pairs = crossPairs.GetPairs();
+		for(NxU32 i = 0; i < crossPairs.GetNbPairs(); ++i)
+			cpmRefreshPairCandidate(frame, objects, 0, poolIndices[0][pairs[i].id0],
+				1, poolIndices[1][pairs[i].id1], hash, list);
+		pairs = dynamicPairs.GetPairs();
+		for(NxU32 i = 0; i < dynamicPairs.GetNbPairs(); ++i)
+			cpmRefreshPairCandidate(frame, objects, 1, poolIndices[1][pairs[i].id0],
+				1, poolIndices[1][pairs[i].id1], hash, list);
+		delete[] poolIndices[1];
+		delete[] poolIndices[0];
+		delete[] boxes[1];
+		delete[] boxes[0];
+		}
+	else if(engineMode == 3)
+		{
+		const NxU32 maximum = counts[0] + counts[1];
+		const AABB** boxes = maximum ? new const AABB*[maximum] : 0;
+		NxU32* poolIndices = maximum ? new NxU32[maximum] : 0;
+		unsigned char* poolKinds = maximum ? new unsigned char[maximum] : 0;
+		bool* dynamicFlags = maximum ? new bool[maximum] : 0;
+		NxU32 validCount = 0;
+		for(unsigned p = 0; p != 2; ++p)
+			for(NxU32 i = 0; i < counts[p]; ++i)
+				{
+				const AABB* bounds = objects[p][i]->GetUpdatedWorldAABB();
+				if(!bounds) continue;
+				boxes[validCount] = bounds;
+				poolIndices[validCount] = i;
+				poolKinds[validCount] = (unsigned char)p;
+				dynamicFlags[validCount] = (p != 0);
+				++validCount;
+				}
+		Opcode::SweepAndPrune*& coherent =
+			*reinterpret_cast<Opcode::SweepAndPrune**>(engine + 0x2c);
+		if(!coherent && validCount)
+			{
+			void* memory = nxGetSdkAllocator()->malloc(sizeof(Opcode::SweepAndPrune),
+				NX_MEMORY_PERSISTENT);
+			if(memory)
+				{
+				coherent = new(memory) Opcode::SweepAndPrune;
+				if(!coherent->Init(validCount, boxes, dynamicFlags))
+					nxSceneEngineReleaseCoherent(engine);
+				}
+			}
+		else if(coherent)
+			for(NxU32 i = 0; i < validCount; ++i)
+				coherent->UpdateObject(i, *boxes[i]);
+		if(coherent)
+			{
+			Pairs coherentPairs;
+			coherent->GetPairs(coherentPairs);
+			const Pair* pairs = coherentPairs.GetPairs();
+			for(NxU32 i = 0; i < coherentPairs.GetNbPairs(); ++i)
+				cpmRefreshPairCandidate(frame, objects,
+					poolKinds[pairs[i].id0], poolIndices[pairs[i].id0],
+					poolKinds[pairs[i].id1], poolIndices[pairs[i].id1], hash, list);
+			}
+		delete[] dynamicFlags;
+		delete[] poolKinds;
+		delete[] poolIndices;
+		delete[] boxes;
+		}
+	else
+		for(NxU32 i = 0; i < total; ++i)
+			{
+			const unsigned poolI = i < counts[0] ? 0 : 1;
+			const NxU32 indexI = poolI == 0 ? i : i - counts[0];
+			for(NxU32 j = i + 1; j < total; ++j)
+				{
+				const unsigned poolJ = j < counts[0] ? 0 : 1;
+				const NxU32 indexJ = poolJ == 0 ? j : j - counts[0];
+				if(engineMode != 0)
+					{
+					// The configured modes omit static/static pairs and retain
+					// intersecting static/dynamic or dynamic/dynamic pairs.
+					if(poolI == 0 && poolJ == 0) continue;
+					const AABB* boundsI = objects[poolI][indexI]->GetUpdatedWorldAABB();
+					const AABB* boundsJ = objects[poolJ][indexJ]->GetUpdatedWorldAABB();
+					if(!boundsI || !boundsJ || !boundsI->Intersect(*boundsJ)) continue;
+					}
+				cpmRefreshPairCandidate(frame, objects, poolI, indexI, poolJ, indexJ, hash, list);
+				}
+			}
+	// 0004bd80 releases nodes whose pair key was not stamped this frame. Erase
+	// compacts the hash, so retain the index after a removal.
+	NxU32 index = 0;
+	while(index < hash->count)
+		{
+			CpmPairHashEntry* entry = hash->entries + index;
+			NxPairNode* node = static_cast<NxPairNode*>(cpmPointer(entry->value));
+			if(node && node->at<NxU32>(0x104) == frame)
+				{ ++index; continue; }
+			if(node)
+				{
+					cpmPairNodeUnlink0903(node);
+					nxFoundationSDKAllocator->free(node);
+				}
+			cpmOpen004157(hash, entry->key0, entry->key1);
+		}
+	list->row000909(scene);
+	}
+
 // The event logic 000913 and 000917 share (0x1001fed0..0x1001ffb9 and
 // 0x10020080..0x1002016b): a stale record (frame != Scene+0x540) loses its
 // node and bit 31, and is released when its bit 29 is clear; otherwise
@@ -1786,7 +2171,7 @@ static NX_INLINE NxU32 cpmReportEvents(NxSceneInternal* scene, NxU32* record, Nx
 			}
 		else
 			lookup = false;
-		if(lookup)
+		if(lookup && kCpmActorGroupPairFlags)
 			{
 			const CpmPairHashEntry* flags = cpmOpen004153(kCpmActorGroupPairFlags,
 				cpmAt<NxU16>(cpmPointer(record[3]), 0x1c),

@@ -1015,7 +1015,7 @@ Decompile (capstone disassembly):
 0x0000bf16  ret
 ```
 
-## phys_fn_000267 (0x0000bf20, 221 B, discovered)
+## phys_fn_000267 (0x0000bf20, 221 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/NpPhysicsSDK.cpp
@@ -1087,7 +1087,7 @@ uint __thiscall FUN_1000bf20(void *this,undefined4 param_1,char param_2,int para
 
 ```
 
-## phys_fn_000269 (0x0000c000, 217 B, discovered)
+## phys_fn_000269 (0x0000c000, 217 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/NpPhysicsSDK.cpp
@@ -1156,11 +1156,11 @@ void __thiscall FUN_1000c000(void *this,ushort param_1,ushort param_2,undefined4
 
 ```
 
-## phys_fn_000271 (0x0000c0e0, 140 B, discovered)
+## phys_fn_000271 (0x0000c0e0, 140 B, reconstructed)
 
 - ambiguous: no
 - source: None
-- implementation: None
+- implementation: Physics/src/NpPhysicsSDK.cpp
 - prototype: undefined4 __thiscall FUN_1000c0e0(ushort param_1, ushort param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_000224 (0x0000b5b0)

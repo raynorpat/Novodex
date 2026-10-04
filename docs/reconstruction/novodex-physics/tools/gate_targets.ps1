@@ -15,8 +15,8 @@ $NxPhaseTestTargets = [ordered] @{
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @()
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsBodyCreationTests')
-    '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
-    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
+    '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests')
+    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
     '8' = @()
 }
 
@@ -87,6 +87,10 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from 89978 to 3521 and leaves stdout_delta at 0, and this is what turns that
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
+    'NxPhysicsSDKTests' = @(
+        # Public SDK-side sparse actor-group flag hash, queried in both key orders and cleared.
+        'step=actor_group_pair_flags initial=0 forward=10 reverse=10 cleared=0'
+    )
     'NxPhysicsActorShapeMutationTests' = @(
         # NpActor.cpp completion Task 4: createShape (000070 -> Actor.cpp 000036)
         # and releaseShape (000072 -> 000024) on a static and a dynamic actor, every
@@ -2955,6 +2959,223 @@ $NxRequiredCoverageLines = [ordered] @{
         'visualize moved stage=all renderables=1'
         'visualize scene_released renderables=0'
     )
+    # M1 public-path baseline: one dynamic sphere under gravity, 1,000
+    # blocking simulate/check/fetch cycles. These outputs were captured from
+    # the pinned oracle before the candidate step path was implemented.
+    'NxPhysicsSimulationTests' = @(
+        # Public NxTriangleMesh factory and wrapper round-trip the pinned
+        # ordinary 32-bit indexed descriptor through SDK ownership.
+        'simulation triangle-mesh create=1'
+        'simulation triangle-mesh data submeshes=2 vertices=4 triangles=2 vertex_format=1 vertex_stride=12 index_format=4 index_stride=12 first_index=0 last_index=2 first_vertex=c0000000.00000000.c0000000 save=1 saved_counts=4.2 saved_strides=12.12'
+        'simulation triangle-mesh16 create=1 vertices=4 triangles=2 index_format=4 index_stride=12 first_index=0 last_index=2'
+        'simulation triangle-mesh scene_owner create=1'
+        'simulation triangle-mesh actor=1 shapes=1'
+        'simulation triangle-mesh handle type=4 mesh_same=1'
+        'simulation triangle-mesh locked_create=0'
+        # Scene descriptor selectors 0/1/2 map to pruning-engine modes 1/2/3
+        # (phys_fn_000544 -> phys_fn_001973). These observations guard that
+        # the public broadPhase choice reaches the internal engine state.
+        'simulation broadphase selector=0 mode=1'
+        'simulation broadphase selector=1 mode=2'
+        'simulation broadphase selector=2 mode=3'
+        'simulation broadphase plane selector=1 pairs=1'
+        'simulation broadphase separated selector=0 pairs=0'
+        'simulation broadphase separated selector=1 pairs=0'
+        'simulation broadphase separated selector=2 pairs=0'
+        'simulation broadphase static-static selector=0 pairs=0'
+        'simulation broadphase static-static selector=1 pairs=0'
+        'simulation broadphase static-static selector=2 pairs=0'
+        'simulation broadphase overlapping selector=0 pairs=2'
+        'simulation broadphase overlapping selector=1 pairs=2'
+        'simulation broadphase overlapping selector=2 pairs=2'
+        'simulation stage=broadphase0-chain0 position=40c00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase0-chain1 position=40d80000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase0-chain2 position=40f00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation broadphase order selector=0 pairs=0-1,1-2'
+        'simulation stage=broadphase1-chain0 position=40c00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase1-chain1 position=40d80000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase1-chain2 position=40f00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation broadphase order selector=1 pairs=0-1,1-2'
+        'simulation stage=broadphase2-chain0 position=40c00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase2-chain1 position=40d80000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=broadphase2-chain2 position=40f00000.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation broadphase order selector=2 pairs=0-1,1-2'
+        'simulation broadphase dense selector=0 pairs=6'
+        'simulation broadphase order selector=0 pairs=0-1,0-2,0-3,1-2,1-3,2-3'
+        'simulation broadphase dense selector=1 pairs=6'
+        'simulation broadphase order selector=1 pairs=0-1,0-2,0-3,1-2,1-3,2-3'
+        'simulation broadphase dense selector=2 pairs=6'
+        'simulation broadphase order selector=2 pairs=0-1,0-2,0-3,1-2,1-3,2-3'
+        'simulation broadphase bounded selector=0 pairs=2'
+        'simulation broadphase bounded selector=1 pairs=2'
+        'simulation broadphase bounded selector=2 pairs=2'
+        'simulation broadphase moved-apart selector=2 pairs=1'
+        'simulation body-state=broadphase2-separated1 velocity=b5e06397.00000000.00000000'
+        'simulation body-state=broadphase2-separated2 velocity=35da9eba.00000000.00000000'
+        'simulation body-state=broadphase2-rejoin1 velocity=c07f0007.00000000.00000000'
+        'simulation body-state=broadphase2-rejoin2 velocity=40ff000a.00000000.00000000'
+        'simulation broadphase moved-together selector=2 pairs=2'
+        'simulation gravity=initial 00000000.c11cf5c3.00000000'
+        'simulation gravity=changed 00000000.c1a00000.00000000'
+        'simulation timing=initial 3c888889.8.0'
+        'simulation timing=changed 3e000000.4.1'
+        'simulation writable=initial 1'
+        'simulation nonblocking=idle ready=0 fetched=0'
+        'simulation fence=idle ready=0'
+        'simulation empty-step ready=1 fetched=1'
+        'simulation fence=submitted ready=1'
+        'simulation nonblocking=finished ready=1 fetched=1'
+        'simulation stage=force1 position=3d747645.00000000.00000000 velocity=3ef47645.00000000.00000000'
+        'simulation stage=kinematic1 position=3f800000.00000000.3f000000 velocity=00000000.00000000.00000000'
+        'simulation kinematic flag=1'
+        'simulation sleep=automatic sleeping=1'
+        'simulation sleep=woken sleeping=0'
+        'simulation ground=created'
+        'simulation stage=initial position=00000000.41200000.00000000 velocity=00000000.00000000.00000000'
+        'simulation step=0 ready=1 fetched=1'
+        'simulation stage=step0 position=00000000.41200000.00000000 velocity=00000000.00000000.00000000'
+        'simulation step=1 ready=1 fetched=1'
+        'simulation stage=step1 position=00000000.411ec776.00000000 velocity=00000000.bf927efa.00000000'
+        'simulation step=2 ready=1 fetched=1'
+        'simulation stage=step2 position=00000000.411ac494.00000000 velocity=00000000.c01cf5c0.00000000'
+        'simulation step=3 ready=1 fetched=1'
+        'simulation stage=step3 position=00000000.4114f813.00000000 velocity=00000000.c0663538.00000000'
+        'simulation step=4 ready=1 fetched=1'
+        'simulation stage=step4 position=00000000.410bb9cd.00000000 velocity=00000000.c09cf5bc.00000000'
+        'simulation step=5 ready=1 fetched=1'
+        'simulation stage=step5 position=00000000.41015954.00000000 velocity=00000000.c0c19578.00000000'
+        'simulation step=6 ready=1 fetched=1'
+        'simulation stage=step6 position=00000000.40e5bf58.00000000 velocity=00000000.c0eb7098.00000000'
+        'simulation step=7 ready=1 fetched=1'
+        'simulation stage=step7 position=00000000.40c7d67b.00000000 velocity=00000000.c108082a.00000000'
+        'simulation stage=distance0 position=40800000.40000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=distance1 position=40800000.3fff7f6b.00000000 velocity=00000000.be48e8a7.00000000'
+        'simulation stage=distance2 position=40800000.3fffd96c.00000000 velocity=00000000.33000000.00000000'
+        'simulation stage=distance3 position=40800000.3ffff46d.00000000 velocity=00000000.32000000.00000000'
+        'simulation stage=distance4 position=40800000.3ffffc87.00000000 velocity=00000000.31000000.00000000'
+        'simulation stage=distance5 position=40800000.3ffffef5.00000000 velocity=00000000.30400000.00000000'
+        'simulation stage=distance6 position=40800000.3fffffaf.00000000 velocity=00000000.2f800000.00000000'
+        'simulation stage=distance7 position=40800000.3fffffe7.00000000 velocity=00000000.2e800000.00000000'
+        'simulation stage=distance8 position=40800000.3ffffff8.00000000 velocity=00000000.2dc00000.00000000'
+        'simulation stage=distance9 position=40800000.3ffffffd.00000000 velocity=00000000.2d000000.00000000'
+        'simulation stage=distance10 position=40800000.3fffffff.00000000 velocity=00000000.2c400000.00000000'
+        'simulation stage=distance11 position=40800000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
+        'simulation distance-joint steps=12 ready=1 fetched=1'
+        # Exercise the kind-2 D6 swing row with every projection field
+        # explicitly initialized; setToDefault leaves those fields untouched.
+        'simulation d6-swing-limit final orientation=00000000.3effffff.00000000.3f5db3d7 angular=00000000.00000000.00000000'
+        # A fixed joint with a deliberately tiny maxForce queues a break event;
+        # fetchResults must dispatch it, detach the joint, and leave the actor
+        # in the same free-fall trajectory as the oracle on later steps.
+        'simulation stage=break0 position=40c00000.40000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation break-state step=0 state=0'
+        'simulation stage=break1 position=40c00000.3fff80ab.00000000 velocity=3041c5ce.be46f3fc.00000000'
+        'simulation break-state step=1 state=2'
+        'simulation stage=break2 position=40c00000.3ffe80c1.00000000 velocity=3041c5ce.bec7ee51.00000000'
+        'simulation break-state step=2 state=2'
+        'simulation stage=break3 position=40c00000.3ffd0042.00000000 velocity=3041c5ce.bf163152.00000000'
+        'simulation break-state step=3 state=2'
+        'simulation break-joint steps=4 ready=1 fetched=1'
+        'simulation soak steps=1000 ready=1 fetched=1'
+        'simulation stage=soak1000 position=00000000.3ee66666.00000000 velocity=00000000.00000000.00000000'
+        'simulation lifecycle state sdk=0 scene=0 p=00000000.3f79f904.00000000 v=00000000.bf16ae7d.00000000'
+        'simulation lifecycle scene_released sdk=0 scene=0'
+        'simulation lifecycle state sdk=0 scene=1 p=3f800000.3f79f904.00000000 v=00000000.bf16ae7d.00000000'
+        'simulation lifecycle scene_released sdk=0 scene=1'
+        'simulation lifecycle sdk_released cycle=0'
+        'simulation lifecycle state sdk=1 scene=0 p=40800000.3f79f904.00000000 v=00000000.bf16ae7d.00000000'
+        'simulation lifecycle scene_released sdk=1 scene=0'
+        'simulation lifecycle state sdk=1 scene=1 p=40a00000.3f79f904.00000000 v=00000000.bf16ae7d.00000000'
+        'simulation lifecycle scene_released sdk=1 scene=1'
+        'simulation lifecycle sdk_released cycle=1'
+        'simulation pair=created'
+        'simulation stage=pair11 p0=bf587c8e.00000000.3ea0bde5 v0=4013df79.00000000.3fc213dd p1=3d3afc59.00000000.bc6489c3 v1=3fd84107.00000000.bf0427bd'
+        'simulation pair steps=40 ready=1 fetched=1'
+        'simulation fetch-trigger trigger=1 other=1 status=1'
+        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=3f800000.40000000.40400000'
+        'simulation fetch-callback summary ready=1 fetched=1 trigger_get=1 trigger_calls=1 contact_get=1 contact_calls=1'
+        'simulation fetch-contact actor0=1 actor1=1 events=0000000a force=80000000.80000000.80000000'
+        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.80000000.80000000'
+        'simulation generated-contact summary flags=00000000 calls=6 events=00000008 ready=1 fetched=1'
+        'simulation configured-shape-pair-flags flags=00000001 count=1 array=1 pair0_actor=0_flags=00000001'
+        'simulation record-shape-pair-flags flags=00000008'
+        'simulation cleared-shape-pair-flags flags=00000000'
+        'simulation compound-root-pose actor=00000000.3f333333.00000000 root=00000000.3f333333.00000000'
+        'simulation compound-state step=0 position=00000000.3f333333.00000000 velocity=00000000.00000000.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ee.3f7746ea'
+        'simulation compound-generated-contact step=0 calls=0 events=00000000'
+        'simulation compound-state step=1 position=00000000.3f32809d.00000000 velocity=00000000.be276c8c.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ed.3f7746ea'
+        'simulation compound-generated-contact step=1 calls=0 events=00000000'
+        'simulation compound-state step=2 position=00000000.3f311b71.00000000 velocity=00000000.bea76c8c.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ed.3f7746ea'
+        'simulation compound-generated-contact step=2 calls=0 events=00000000'
+        'simulation compound-state step=3 position=00000000.3f2f03af.00000000 velocity=00000000.befb22d2.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ed.3f7746ea'
+        'simulation compound-generated-contact step=3 calls=0 events=00000000'
+        'simulation compound-state step=4 position=00000000.3f2c3957.00000000 velocity=00000000.bf276c8c.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ed.3f7746ea'
+        'simulation compound-generated-contact step=4 calls=0 events=00000000'
+        'simulation compound-state step=5 position=00000000.3f28bc69.00000000 velocity=00000000.bf5147af.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ed.3f7746ea'
+        'simulation compound-generated-contact step=5 calls=0 events=00000000'
+        'simulation compound-state step=6 position=00000000.3f248ce5.00000000 velocity=00000000.bf7b22d2.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ed.3f7746ea'
+        'simulation compound-generated-contact step=6 calls=0 events=00000000'
+        'simulation compound-state step=7 position=00000000.3f1faacb.00000000 velocity=00000000.bf927efa.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ed.3f7746ea'
+        'simulation compound-generated-contact step=7 calls=0 events=00000000'
+        'simulation compound-state step=8 position=00000000.3f1a161b.00000000 velocity=00000000.bfa76c8b.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ed.3f7746ea'
+        'simulation compound-generated-contact step=8 calls=1 events=0000000a'
+        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.c10caf41.80000000'
+        'simulation compound-state step=9 position=00000000.3f1467b0.00000000 velocity=00000000.bfaa707f.00000000 angular=00000000.00000000.be3eecea orientation=00000000.00000000.3e83bf2b.3f776131'
+        'simulation compound-generated-contact step=9 calls=2 events=00000008'
+        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.c2692e10.80000000'
+        'simulation compound-state step=10 position=00000000.3f11fc15.00000000 velocity=00000000.bf11383d.00000000 angular=00000000.00000000.bfb65aea orientation=00000000.00000000.3e7bba43.3f7824ee'
+        'simulation compound-generated-contact step=10 calls=3 events=00000008'
+        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.c18d45c6.80000000'
+        'simulation compound-state step=11 position=00000000.3f1010e0.00000000 velocity=00000000.bee64095.00000000 angular=00000000.00000000.bfe6dc13 orientation=00000000.00000000.3e6cc807.3f790fe3'
+        'simulation compound-generated-contact step=11 calls=4 events=00000008'
+        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.c118120a.80000000'
+        'simulation compound-state step=12 position=00000000.3f0e184f.00000000 velocity=00000000.beec83ee.00000000 angular=00000000.00000000.c000a289 orientation=00000000.00000000.3e5c0ffb.3f7a04c0'
+        'simulation compound-generated-contact step=12 calls=5 events=00000008'
+        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.c0faa408.80000000'
+        'simulation compound-state step=13 position=00000000.3f0bf551.00000000 velocity=00000000.bf003379.00000000 angular=00000000.00000000.c00bab01 orientation=00000000.00000000.3e49d6f9.3f7afa48'
+        'simulation compound-generated-contact step=13 calls=6 events=00000008'
+        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.c0ee1669.80000000'
+        'simulation compound-state step=14 position=00000000.3f09a114.00000000 velocity=00000000.bf0bbe27.00000000 angular=00000000.00000000.c0164e0e orientation=00000000.00000000.3e3627a4.3f7beac6'
+        'simulation compound-generated-contact step=14 calls=7 events=00000008'
+        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.c0e9d488.80000000'
+        'simulation compound-state step=15 position=00000000.3f071948.00000000 velocity=00000000.bf17d39a.00000000 angular=00000000.00000000.c020e7e0 orientation=00000000.00000000.3e210125.3f7cd0da'
+        'simulation compound-generated-contact step=15 calls=8 events=00000008'
+        'simulation compound-generated-contact summary calls=8 events=00000008'
+    )
+    'NxPhysicsMeshSimulationTests' = @(
+        # Full public path: construct a static triangle mesh, drop a sphere,
+        # generate contact reports and settle through the real solver.
+        'simulation mesh-contact calls=2 events=0000000a patches=2 firstPatchPoints=2 points=4 normal=80000000.bf7fffff.80000000 secondNormal=80000000.bf7fffff.80000000 separation=bcf62d26 y=3ee6cefd vy=be441bbb'
+        # The same upward-facing mesh must not generate contacts from below.
+        'simulation mesh-backface calls=0 events=00000000 y=bfc2311b vy=c09cf5bc'
+        # A sphere outside the footprint reports the oracle's closest edge point.
+        'simulation mesh-edge steps=29 calls=1 events=0000000a points=1 point=40000000.00000000.00000000 normal=bf093e3c.bf581a42.80000000 separation=bd09ee01 y=3eb84654 vy=c0018d73'
+        # A sphere beyond the footprint vertex drives the corner-distance branch.
+        'simulation mesh-vertex steps=30 calls=1 events=0000000a patches=1 points=1 point=40000000.00000000.40000000 normal=bf073a69.bf2a2f2b.bf073a69 separation=bcdaf02f y=3e836450 vy=c05eb7dc'
+        # Contact-point coordinates are transformed into world space.
+        'simulation mesh-transformed calls=1 events=00000008 points=2 point=c1200000.40a00000.00000000'
+        # Matrix-B sphere/mesh overlap drives the public trigger enter callback.
+        'simulation mesh-trigger calls=1 event=1 unexpected=0'
+        # The Y-axis heightfield's negative extent permits a contact below the surface.
+        'simulation mesh-heightfield calls=1 unexpected=0 events=0000000a patches=1 points=1 point=00000000.be800000.00000000 normal=00000000.3f800000.80000000 separation=be800000 y=bdb851ee vy=36000000'
+        # Smooth sphere collisions blend per-vertex normals on a sloped heightfield.
+        'simulation mesh-heightfield-smooth calls=1 unexpected=0 events=0000000a patches=1 points=1 point=3f23efc2.3e76e320.3f23efc2 normal=be8fbf08.3f6af4d6.be8fbf08 separation=beac63f3'
+        'simulation mesh-heightfield-smooth-state position=3edf07a3.3f6916e5.3edf07a4 velocity=b87e8b63.b8180000.b87f0000'
+        # The same contact survives a quarter-turn and translation of the heightfield.
+        'simulation mesh-heightfield-smooth-transformed calls=1 unexpected=0 events=00000008 patches=1 points=1 point=3fe1239b.3fd1f7e1.beb8207c normal=bf6af4d6.be8fbf08.be8fbf08 separation=beac63eb'
+        'simulation mesh-heightfield-smooth-transformed-state position=3f8b7488.3fb7c1f1.bf107c1c velocity=b43b45b4.b5400000.b5400000'
+    )
+    'NxPhysicsTriggerSimulationTests' = @(
+        # A dynamic sphere crosses a public static trigger box under real motion.
+        # Pin enter, per-substep stay, and leave callbacks plus end-of-frame poses.
+        'trigger callback trigger=1 other=1 event=1'
+        'trigger callback trigger=1 other=1 event=4'
+        'trigger callback trigger=1 other=1 event=2'
+        'trigger step=0 pos=bfdddddc calls=0 last=0 ready=1 fetched=1'
+        'trigger step=2 pos=bf6eeee1 calls=2 last=4 ready=1 fetched=1'
+        'trigger step=7 pos=3f888891 calls=17 last=4 ready=1 fetched=1'
+        'trigger step=8 pos=3fbbbbc4 calls=20 last=2 ready=1 fetched=1'
+    )
     # Effector-and-coredump Task 2: the spring-and-damper effector differential.
     # NxScene's effector API and every NxSpringAndDamperEffector method over two
     # dynamic actors; the internal effector's slots 2 and 3 by index (each root's
@@ -4450,10 +4671,10 @@ $NxRequiredCoverageLines = [ordered] @{
     # in output. Registering both is what would catch a reconstruction that made
     # them differ.
     'NxPhysicsAssetTests' = @(
-        'asset fixtures pmap=14 mesh=6 writer=9 release=1',
+        'asset fixtures pmap=16 mesh=6 writer=9 release=1',
         'asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051',
-        'asset coverage driven=30 accepted=13 rejected=16 errors=10',
-        'asset oracle digest=eaefc573',
+        'asset coverage driven=32 accepted=15 rejected=16 errors=10',
+        'asset oracle digest=1daa095e',
 
         'pmap case=pmap.minimal_valid dimension=minimal_valid bytes=17 accepted=1 errors=0 line=0x000 resolution=1 cells=1 grid=e3160fb1',
         'pmap case=pmap.multi_value dimension=multi_element bytes=30 accepted=1 errors=0 line=0x000 resolution=2 cells=8 grid=5b517625',
@@ -4469,6 +4690,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'pmap case=pmap.bad_version_ffffffff dimension=malformed bytes=17 accepted=0 errors=1 line=0x3da resolution=0 cells=0 grid=00000000',
         'pmap case=pmap.truncated_after_magic dimension=truncated bytes=84 accepted=0 errors=1 line=0x3da resolution=0 cells=0 grid=00000000',
         'pmap case=pmap.truncated_mid_tag dimension=truncated bytes=83 accepted=0 errors=1 line=0x3d3 resolution=0 cells=0 grid=00000000',
+        'pmap case=pmap.nonempty_absolute dimension=nonempty_cell_run bytes=4123 accepted=1 errors=0 line=0x000 resolution=32 cells=32768 grid=118f67a9',
+        'pmap case=pmap.command_matrix dimension=command_matrix bytes=4149 accepted=1 errors=0 line=0x000 resolution=32 cells=32768 grid=cdce6b95',
 
         # dwords_read is the measurement that says WHERE the reader stopped, not
         # only that it refused. A reader that validated both tags before
@@ -4936,8 +5159,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=qhull_exact_other_x87 rva=0x0007d180 owner=phys_fn_003234 source=geom.c,geom2.c,merge.c,io.c words=18072 oracle=22bf6dbb mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=qhull_paths rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,qhull.c,poly2.c,merge.c,io.c words=9518 oracle=96cb5a62',
         'thirdparty name=qhull_paths_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=15524 oracle=216821ea',
-        'thirdparty name=qhull_paths_t4 rva=0x0005dfb0 owner=phys_fn_002454 source=geom.c,qhull.c,poly2.c,merge.c,io.c words=17889 oracle=5bc3fc9a',
-        'thirdparty name=qhull_paths_t4_x87 rva=0x0005dfb0 owner=phys_fn_002454 source=geom.c,geom2.c,merge.c words=2723 oracle=248026db',
+        'thirdparty name=qhull_paths_t4 rva=0x0005dfb0 owner=phys_fn_002454 source=geom.c,qhull.c,poly2.c,merge.c,io.c words=17889 oracle=5bc3fc9a mismatches=3202 discrete=3194 float_ulp=0 double_ulp=0 beyond=0 inf_words=0 degenerate=0 finite_ulp=0 beyond_abs=0 first_diff=14578 length_delta=9 ceiling=3202/3194 verdict=divergent',
+        'thirdparty name=qhull_paths_t4_x87 rva=0x0005dfb0 owner=phys_fn_002454 source=geom.c,geom2.c,merge.c words=2723 oracle=248026db mismatches=458 discrete=1 float_ulp=0 double_ulp=inf beyond=334 inf_words=85 degenerate=0 finite_ulp=4616189618054758400 beyond_abs=inf first_diff=68 length_delta=2 ceiling=458/1 verdict=divergent',
         'thirdparty name=qhull_rotation rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,global.c,qhull.c,merge.c words=9980 oracle=e80e1851',
         'thirdparty name=qhull_rotation_x87 rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,geom.c words=8724 oracle=07282fca',
         'thirdparty coverage driven=77 divergent=27 words=1636017 layout_checks=47',
@@ -4947,14 +5170,12 @@ $NxRequiredCoverageLines = [ordered] @{
         # sides, under 0x027f and 0x0f7f, with a zeroing recording allocator, each side's
         # QHULL_*.obj files in a directory of its own (units/convex-cooking-contract.md,
         # differentials A and B), and the host's size slot 003265 called directly. The exact
-        # families are registered whole. hull_create_qhull
-        # and hull_compute_qhull (two inputs that differ under 0x027f -- box: vendored qhull
-        # (reproduced by hull_qhull_direct); clusters: not reproduced by qhull alone, open
-        # (qhull-gap Task 5; candidates: allocation pattern, qh_gethash address hashing))
-        # and the four _obj families (the OBJ text as tokens; the 2003 CRT prints -0.0
-        # without its sign) are DIVERGENT, registered up to the oracle digest, and held by
-        # kDivergentCeilings/kLengthCeilings. The pairs above keep printing where they were;
-        # the pair below carries the totals.
+        # families are registered whole. hull_create_qhull and hull_compute_qhull (two inputs
+        # that differ under 0x027f -- box: vendored qhull (reproduced by hull_qhull_direct);
+        # clusters: not reproduced by qhull alone, open (qhull-gap Task 5; candidates:
+        # allocation pattern, qh_gethash address hashing)) are DIVERGENT under 0x027f and held by measured ceilings;
+        # the OBJ token families compare exact after canonicalising signed-zero spellings.
+        # The pairs above keep printing where they were; the pair below carries the totals.
         'thirdparty name=hull_host_size rva=0x0007e520 owner=phys_fn_003265 source=QhullHost.cpp words=15 oracle=c9faaedb mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_create rva=0x0007ea10 owner=phys_fn_003279 source=QhullHost.cpp,Quantizer.cpp words=23542 oracle=1cf4b7ed mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_create_qhull rva=0x0007ea10 owner=phys_fn_003279 source=QhullHost.cpp,Quantizer.cpp words=442 oracle=980dbb03',
@@ -4966,13 +5187,13 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=hull_compute_obj rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=122 oracle=bc33134f',
         'thirdparty name=hull_compute_pc64 rva=0x00054920 owner=phys_fn_002233 source=TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp words=12633 oracle=f5a778d6 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_compute_pc64_obj rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=122 oracle=4ebf7157',
-        'thirdparty coverage driven=88 divergent=33 words=1719545 layout_checks=47',
-        'thirdparty oracle digest=87804f45',
+        'thirdparty coverage driven=108 divergent=34 words=2613605 layout_checks=47',
+        'thirdparty oracle digest=536f8add',
         # qhull-gap Task 5 (the Task 4e review): the byte digest of every QHULL_*.obj of
         # the Task 4e families after dropping the sign of a printed -0.000 (the two CRTs'
         # one known difference), exact and registered whole; and hull_qhull_direct(_x87),
         # the two inputs of hull_create_qhull run through qhull alone (nxQhullRun, "o"),
-        # DIVERGENT, registered up to the oracle digest and held by kDivergentCeilings. The
+        # DIVERGENT with measured ceilings, registered up to the oracle digest. The
         # pairs above keep printing where they were; the pair below carries the totals.
         'thirdparty name=hull_create_objbytes rva=0x0007dea0 owner=phys_fn_003247 source=QhullHost.cpp words=18 oracle=ef34c50f mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_create_pc64_objbytes rva=0x0007dea0 owner=phys_fn_003247 source=QhullHost.cpp words=18 oracle=99ca1d01 mismatches=0 worst_ulp=0 verdict=exact',
@@ -4980,10 +5201,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=hull_compute_pc64_objbytes rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=2 oracle=16381ab0 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_qhull_direct rva=0x0007d180 owner=phys_fn_003234 source=qhull.c,poly.c,poly2.c,merge.c,geom.c,geom2.c,qset.c,mem.c,global.c words=812 oracle=12922cc6',
         'thirdparty name=hull_qhull_direct_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=410 oracle=27d5b5e1',
-        'thirdparty coverage driven=94 divergent=35 words=1720807 layout_checks=47',
-        'thirdparty oracle digest=5d3c9ff1'
-        'thirdparty coverage driven=71 divergent=25 words=1500640 layout_checks=47',
-        'thirdparty oracle digest=a6ae0830',
+        'thirdparty coverage driven=114 divergent=36 words=2614867 layout_checks=47',
+        'thirdparty oracle digest=82161649'
         # convex-mesh gap Task 2c: the ICE-shaped rows with no vendored source,
         # reconstructed in Physics/src (EdgeList.cpp, IceAdjacencies.cpp, IceMeshTools.cpp)
         # and linked into the harness. Each family drives the oracle's entry row at its
@@ -5011,8 +5230,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty input name=ice_valencies words=10533 input=0863cbf9',
         'thirdparty name=ice_valencies rva=0x00032610 owner=phys_fn_001667 source=IceMeshTools.cpp,EdgeList.cpp words=32709 oracle=2cbd6dee mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=ice_valencies meshes=65 runs=261 succeeded=260 failed=1 adjacent=12020 reports=1 line72=1',
-        'thirdparty coverage driven=76 divergent=27 words=1755447 layout_checks=47',
-        'thirdparty oracle digest=4a282660',
+        'thirdparty coverage driven=82 divergent=29 words=1890824 layout_checks=47',
+        'thirdparty oracle digest=7e074cc0',
         # convex-mesh gap Task 2d: MeshBuilder2 (IceMeshBuilder2.cpp, 001591..001637) and the
         # vertex reduction (IceMeshTools.cpp, 001645/001647/001659), linked into the harness.
         # ice_meshbuilder2 drives the oracle's 001593 / 001623 / 001597 / 001633 / 001629 at
@@ -5031,8 +5250,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty input name=vertex_reduction words=13893 input=db8a41b6',
         'thirdparty name=vertex_reduction rva=0x000316a0 owner=phys_fn_001647 source=IceMeshTools.cpp words=24313 oracle=9d4e0115 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=vertex_reduction meshes=65 runs=178 verts=5457 reduced=4331 reports=0',
-        'thirdparty coverage driven=78 divergent=27 words=1957901 layout_checks=47',
-        'thirdparty oracle digest=c2e747eb',
+        'thirdparty coverage driven=84 divergent=29 words=2093278 layout_checks=47',
+        'thirdparty oracle digest=08fe06cb',
         # convex-mesh gap Task 2e: the rest of sub-unit D (IceMeshTools.cpp: 001639, 001641/001643,
         # 001649, 001651, 001653, 001661) and P-Small (002144 in SmoothNormals.cpp, 001461 in
         # ConvexHull.cpp, 002186 / 002188 in TriangleMeshTopology.cpp), linked into the harness.
@@ -5067,8 +5286,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=adjacency_owner rva=0x000543d0 owner=phys_fn_002186 source=TriangleMeshTopology.cpp,IceAdjacencies.cpp,EdgeList.cpp words=28728 oracle=b9df247a mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=adjacency_owner.plane_divergent rva=0x000543d0 owner=phys_fn_002186 source=TriangleMeshTopology.cpp,IceAdjacencies.cpp,EdgeList.cpp words=6300 oracle=50e4dd46',
         'thirdparty coverage name=adjacency_owner meshes=65 adjacencies=66 adjacencies_built=36 edge_lists=66 edge_lists_built=65 frozen_split_runs=13 reports=30 line72=1 line321=29',
-        'thirdparty coverage driven=85 divergent=29 words=2225551 layout_checks=47',
-        'thirdparty oracle digest=a1b4f9a6',
+        'thirdparty coverage driven=91 divergent=31 words=2360928 layout_checks=47',
+        'thirdparty oracle digest=474f4186',
         # convex-mesh gap Task 2f: P-Hull (ConvexHull.cpp: 001441, 001445, 001449, 001459, 001463, 001465,
         # 001472, 001496, 001502, and the helpers 000001, 000925, 001391, 001439; 001657 in
         # IceMeshTools.cpp) and the support maps (IceSupportMaps.cpp: 001550..001589), linked into the
@@ -5095,8 +5314,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty input name=support_maps words=26184 input=caa5f9eb',
         'thirdparty name=support_maps rva=0x0002e2f0 owner=phys_fn_001558 source=IceSupportMaps.cpp,ConvexHull.cpp words=26162 oracle=79d50caf mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=support_maps faces=2400 lookups=2400 maps=138 init_true=135 init_false=3 samples=11844 map_lookups=1620 freed=66 input_snan=625 reports=4',
-        'thirdparty coverage driven=89 divergent=30 words=2363327 layout_checks=47',
-        'thirdparty oracle digest=781af325',
+        'thirdparty coverage driven=95 divergent=32 words=2498704 layout_checks=47',
+        'thirdparty oracle digest=5a08e945',
         # convex-mesh gap Task 2g: polygon_interface drives the TriangleMesh polygon interface
         # (TriangleMeshPolygons.cpp: the twelve slots of 0x101085d4 and 000505) through each
         # side's own table over hull images of convex_hull's exact meshes, and with it 001514
@@ -5106,8 +5325,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty input name=polygon_interface words=20733 input=4df6a369',
         'thirdparty name=polygon_interface rva=0x000552c0 owner=phys_fn_002249 source=TriangleMeshPolygons.cpp,ConvexHull.cpp,IceSupportMaps.cpp words=31253 oracle=28edec7b mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=polygon_interface hulls=34 built=25 polygons=234 edges=604 axes=333 axes_rebuilt=18 support=400 support_posed=200 faces=400 faces_edge=33 face_kind_null=50 projects=544 projects_map=272 projects_graph=272 climbs_failed=48 stamp_wraps=65 input_snan=823 reports=10',
-        'thirdparty coverage driven=90 divergent=30 words=2394580 layout_checks=47',
-        'thirdparty oracle digest=8f91122f'
+        'thirdparty coverage driven=96 divergent=32 words=2529957 layout_checks=47',
+        'thirdparty oracle digest=cec7ff4f'
     )
 }
 
@@ -5128,20 +5347,21 @@ $NxRequiredCoverageLines = [ordered] @{
 # independently, so the two edits have to appear together in a diff.
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
-    '2' = 0
+    '2' = 1  # one public actor-group pair-flag hash round-trip and clear
     '3' = 359  # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 251  # 34 asset and 217 third-party assertions, including qhull and convex-mesh gap
+    '4' = 251  # 36 asset and 215 third-party assertions, including Qhull exact-output coverage
     '5' = 2037  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # + 175 from scene-raycast Task 4 (149 body-creation, 13 setters, 9 dynamic-setter
                # and 3 shape-vtable from its shape sub-area, 1 shape-vtable from its box hull)
                # + 991 from the NpActor.cpp completion (251 Task 2, 446 + 3 Task 3 and review,
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
-               # second merge of main into the scene-raycast block (RED on purpose: vtables
-               # family open)
-    '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
+               # second merge of main into the scene-raycast block. Phase 5 now passes its
+               # current 2,037 recorded assertions; the broader full-DLL vtable audit remains
+               # tracked in the completion roadmap.
+    '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1129  # the 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize
-               # + 79 effector + 374 core-dump; the oracle-differential assertions
+    '7' = 1315  # previous 1,312 includes smooth-heightfield state; plus the shape-pair
+               # inline/record/clear round-trip and shape-classified pair-array entry
     '8' = 0
 }
 
@@ -5185,6 +5405,9 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsKernelFuzzTests',
     'NxPhysicsSceneRaycastTests',
     'NxPhysicsSceneVisualizeTests',
+    'NxPhysicsSimulationTests',
+    'NxPhysicsMeshSimulationTests',
+    'NxPhysicsTriggerSimulationTests',
     'NxPhysicsSDKTests'
 )
 $NxRegisteredStaticProofTargets = @(

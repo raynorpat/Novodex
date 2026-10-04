@@ -71,6 +71,8 @@
   "excluded_from_comparison": [
     "pair_directory=",
     "loaded module=",
+    "oracle module path=",
+    "oracle base=",
     "modules ",
     "imports "
   ],

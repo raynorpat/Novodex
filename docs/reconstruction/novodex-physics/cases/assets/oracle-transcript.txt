@@ -1,7 +1,7 @@
 oracle module path=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
 oracle base=10000000 mode=self
 oracle pin=matched
-asset fixtures pmap=14 mesh=6 writer=9 release=1
+asset fixtures pmap=16 mesh=6 writer=9 release=1
 asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051
 pmap case=pmap.minimal_valid dimension=minimal_valid bytes=17 accepted=1 errors=0 line=0x000 resolution=1 cells=1 grid=e3160fb1
 pmap case=pmap.multi_value dimension=multi_element bytes=30 accepted=1 errors=0 line=0x000 resolution=2 cells=8 grid=5b517625
@@ -17,6 +17,8 @@ pmap case=pmap.bad_version_00000005 dimension=malformed bytes=17 accepted=0 erro
 pmap case=pmap.bad_version_ffffffff dimension=malformed bytes=17 accepted=0 errors=1 line=0x3da resolution=0 cells=0 grid=00000000
 pmap case=pmap.truncated_after_magic dimension=truncated bytes=84 accepted=0 errors=1 line=0x3da resolution=0 cells=0 grid=00000000
 pmap case=pmap.truncated_mid_tag dimension=truncated bytes=83 accepted=0 errors=1 line=0x3d3 resolution=0 cells=0 grid=00000000
+pmap case=pmap.nonempty_absolute dimension=nonempty_cell_run bytes=4123 accepted=1 errors=0 line=0x000 resolution=32 cells=32768 grid=118f67a9
+pmap case=pmap.command_matrix dimension=command_matrix bytes=4149 accepted=1 errors=0 line=0x000 resolution=32 cells=32768 grid=cdce6b95
 mesh case=mesh.bad_tag0 dimension=malformed accepted=0 dwords_read=1
 mesh case=mesh.bad_tag0_zero dimension=malformed accepted=0 dwords_read=1
 mesh case=mesh.bad_tag0_byteswapped dimension=malformed accepted=0 dwords_read=1
@@ -33,7 +35,7 @@ writer case=writer.array_b_only dimension=single_flag accepted=1 events=16 bytes
 writer case=writer.hull_present dimension=hull accepted=1 events=15 bytes=148 digest=e80ef3eb
 writer case=writer.hull_mode_bit dimension=hull accepted=1 events=15 bytes=148 digest=68416241
 release case=null_data returned=1 data_size=5a5a5a5a data=00000000
-asset coverage driven=30 accepted=13 rejected=16 errors=10
-asset oracle digest=eaefc573 expect_mismatches=0
+asset coverage driven=32 accepted=15 rejected=16 errors=10
+asset oracle digest=1daa095e expect_mismatches=0
 asset candidate mismatches=0 mode=self
 asset result=pass

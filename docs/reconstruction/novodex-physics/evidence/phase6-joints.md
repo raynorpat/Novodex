@@ -9235,3 +9235,43 @@ in the table above are kept as history.
 
     phys_fn_004115  NxJointDesc_SetGlobalAnchor       stdout_delta=320
     phys_fn_004117  NxJointDesc_SetGlobalAxis         stdout_delta=3655
+
+### `phys_fn_004403` support-normal mutation check (2026-10-04)
+
+The smooth-heightfield solver response is now observed in the Phase 6 staged-pair
+registry as well as Phase 7. The registered `NxPhysicsMeshSimulationTests`
+target pins the ordinary and transformed smooth-heightfield post-solver vectors.
+
+In a throwaway `git archive` of HEAD `ceed0031`
+(`D:/FlamingEnt__/novodex-analysis/mutation-004403-ceed0031`), the body-zero Y/Z
+application in `supportSolveNormal004403` was changed from projecting and
+rounding the signed impulse before inverse-mass scaling to scaling the impulse
+before projection. The archive rebuilt `NxPhysics` and
+`NxPhysicsMeshSimulationTests`, then ran the registered target through
+`run_differential.ps1 -Targets NxPhysicsMeshSimulationTests`. CAUGHT:
+`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=4`, `stderr_exact=True`.
+The four changed words are the Y/Z velocity components in the smooth and
+transformed smooth-heightfield state lines. After restoring the source byte for
+byte from the worktree and rebuilding, the same differential returned
+`stdout_delta=0`, `stderr_exact=True`.
+
+The original zero-velocity input did not distinguish the X order. The fixture
+now starts the sphere with inward normal velocity `(0.014, -0.046, 0.014)`;
+the oracle-pinned ordinary smooth-heightfield state is
+`position=3edf07a3.3f6916e5.3edf07a4 velocity=b87e8b63.b8180000.b87f0000`.
+The transformed state remains pinned as before. This drives body zero's X
+impulse close to cancellation with the incoming X velocity.
+
+In a throwaway archive of HEAD `7b942a40` with the updated fixture and gate
+expectation overlaid (`D:/FlamingEnt__/novodex-analysis/mutation-004403-xorder-7b942a40-clean`),
+the X-only mutation changed body-zero `linearX` from the recovered double
+projection followed by inverse-mass scaling to a float-rounded projection
+before inverse-mass scaling. After rebuilding `NxPhysics` and
+`NxPhysicsMeshSimulationTests`, the registered target CAUGHT it:
+`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=4`, `stderr_exact=True`.
+Both ordinary and transformed post-solver state lines changed. Restoring the
+source from the worktree, rebuilding, and rerunning returned
+`stdout_delta=0`, `stderr_exact=True`. The unmutated Phase 6 and Phase 7 gates
+then passed at 867/867 and 1,312/1,312 respectively.
+
+    phys_fn_004403  supportSolveNormal004403  stdout_delta=4

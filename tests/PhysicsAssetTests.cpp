@@ -127,6 +127,8 @@ typedef void (__thiscall* NxPMapDtorFn)(void* self);
 typedef char (__thiscall* NxPMapCreateFn)(void* self, const void* mesh, unsigned resolution,
 	const char* filename, void* stream, int load, void* outputStream);
 typedef void* (__thiscall* NxStreamCtorFn)(void* self, unsigned size, const void* buffer);
+typedef void* (__thiscall* NxCandidateStreamCtorFn)(void* self, unsigned size,
+	const void* buffer, unsigned fill, unsigned initialOffset);
 typedef void* (__thiscall* NxStreamSeekFn)(void* self, unsigned offset);
 typedef void (__thiscall* NxStreamDtorFn)(void* self);
 typedef char (__thiscall* NxMeshHeaderFn)(void* self, void* stream);
@@ -189,10 +191,102 @@ static const NxPMapFixture nxPMapFixtures[] =
 	{ "pmap.truncated_mid_tag",       "truncated", 0,
 	  "504d0000000000000000000000000000000000000000000000000000000000000000000000000000"
 	  "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-	                                                                              0, 1, 0x3d3, 0, 0 }
+	                                                                              0, 1, 0x3d3, 0, 0 },
+	{ "pmap.nonempty_absolute",       "nonempty_cell_run", 32,
+	  0,                                                                       1, 0, 0, 32768, 0x118f67a9 },
+	{ "pmap.command_matrix",          "command_matrix", 32,
+	  0,                                                                       1, 0, 0, 32768, 0xcdce6b95 }
 	};
 
 static const unsigned kPMapFixtureCount = sizeof(nxPMapFixtures) / sizeof(nxPMapFixtures[0]);
+
+static unsigned nxBuildPMapAbsoluteCellRun(unsigned char* storage, unsigned capacity)
+	{
+	static const unsigned char header[12] = {
+		'P', 'M', 'A', 'P', 4, 0, 0, 0, 32, 0, 0, 0
+		};
+	const unsigned cellCount = 32u * 32u * 32u;
+	const unsigned bitCapacity = capacity * 8;
+	unsigned bitPosition = sizeof(header) * 8;
+	if(capacity < sizeof(header))
+		return 0;
+	memcpy(storage, header, sizeof(header));
+	memset(storage + sizeof(header), 0, capacity - sizeof(header));
+	auto writeBits = [&](unsigned value, unsigned count)
+		{
+		for(unsigned bit = count; bit != 0; --bit)
+			{
+			if(bitPosition >= bitCapacity)
+				return false;
+			if((value >> (bit - 1)) & 1u)
+				storage[bitPosition >> 3] |= (unsigned char)(0x80u >> (bitPosition & 7));
+			++bitPosition;
+			}
+		return true;
+		};
+	if(!writeBits(0, 1) || !writeBits(0, 32) || !writeBits(1, 32)
+		|| !writeBits(0x1f, 5) || !writeBits(1, 5) || !writeBits(2, 5) || !writeBits(3, 5)
+		|| !writeBits(0, 1) || !writeBits(0xffffffffu, 32))
+		return 0;
+	for(unsigned bit = 0; bit < cellCount; ++bit)
+		if(!writeBits(1, 1))
+			return 0;
+	return (bitPosition + 7) >> 3;
+	}
+
+static unsigned nxBuildPMapCommandMatrix(unsigned char* storage, unsigned capacity)
+	{
+	static const unsigned char header[12] = {
+		'P', 'M', 'A', 'P', 4, 0, 0, 0, 32, 0, 0, 0
+		};
+	const unsigned cellCount = 32u * 32u * 32u;
+	const unsigned bitCapacity = capacity * 8;
+	unsigned bitPosition = sizeof(header) * 8;
+	if(capacity < sizeof(header))
+		return 0;
+	memcpy(storage, header, sizeof(header));
+	memset(storage + sizeof(header), 0, capacity - sizeof(header));
+	auto writeBits = [&](unsigned value, unsigned count)
+		{
+		for(unsigned bit = count; bit != 0; --bit)
+			{
+			if(bitPosition >= bitCapacity)
+				return false;
+			if((value >> (bit - 1)) & 1u)
+				storage[bitPosition >> 3] |= (unsigned char)(0x80u >> (bitPosition & 7));
+			++bitPosition;
+			}
+		return true;
+		};
+	if(!writeBits(0, 1) || !writeBits(0, 32) || !writeBits(33, 32))
+		return 0;
+	auto writeCommand = [&](unsigned code, unsigned x, unsigned y, unsigned z, unsigned axes)
+		{
+		if(!writeBits(code, 5))
+			return false;
+		if(axes & 1u) if(!writeBits(x, 5)) return false;
+		if(axes & 2u) if(!writeBits(y, 5)) return false;
+		if(axes & 4u) if(!writeBits(z, 5)) return false;
+		return true;
+		};
+	if(!writeCommand(31, 16, 16, 16, 7))
+		return 0;
+	for(unsigned code = 0; code < 26; ++code)
+		if(!writeCommand(code, 0, 0, 0, 0))
+			return 0;
+	if(!writeCommand(26, 5, 0, 0, 1)
+		|| !writeCommand(27, 0, 6, 0, 2)
+		|| !writeCommand(28, 0, 0, 7, 4)
+		|| !writeCommand(29, 8, 9, 0, 3)
+		|| !writeCommand(30, 10, 0, 11, 5)
+		|| !writeCommand(31, 12, 13, 14, 7)
+		|| !writeBits(0, 1) || !writeBits(0xffffffffu, 32))
+		return 0;
+	for(unsigned bit = 0; bit < cellCount; ++bit)
+		if(!writeBits(1, 1))
+			return 0;
+	return (bitPosition + 7) >> 3;
+	}
 
 struct NxMeshFixture
 	{
@@ -608,7 +702,10 @@ static void nxRunPMapOracle(const NxOracle* oracle, const unsigned char* storage
 	memset(stream, 0, sizeof(stream));
 	unsigned char streamCanary[16];
 	memset(streamCanary, 0x5A, sizeof(streamCanary));
-	oracle->streamCtor(stream, length, storage);
+	if(reinterpret_cast<unsigned>(oracle->base) == kNxRvaPreferredImageBase)
+		oracle->streamCtor(stream, length, storage);
+	else
+		((NxCandidateStreamCtorFn) oracle->streamCtor)(stream, length, storage, 0, length);
 	printf("  step streamCtor done\n"); fflush(stdout);
 	{
 	unsigned gb = 0, ga = 0;
@@ -667,8 +764,8 @@ static void nxRunPMapOracle(const NxOracle* oracle, const unsigned char* storage
 	// What the CANDIDATE left in the object, printed before the digest loop reads it. The loop folds
 	// `result->cells` entries of `grid`, so a count larger than the allocation reads past it -- and
 	// these four values are what distinguishes that from a bad free in the destructors below.
-	printf("  object accepted=%d resolution=%u cells=%u grid=%p\n",
-		(int) accepted, result->resolution, result->cells, (void*) grid);
+	printf("  object accepted=%d resolution=%u cells=%u grid=%s\n",
+		(int) accepted, result->resolution, result->cells, grid ? "present" : "null");
 	fflush(stdout);
 	if(accepted && grid)
 		{
@@ -1329,9 +1426,15 @@ int wmain(int argc, wchar_t** argv)
 	for(unsigned i = 0; i < kPMapFixtureCount; ++i)
 		{
 		const NxPMapFixture* fixture = &nxPMapFixtures[i];
-		unsigned char storage[256];
+		unsigned char storage[8192];
 		memset(storage, 0, sizeof(storage));
-		unsigned length = nxDecodeHex(fixture->bytes, storage, sizeof(storage));
+		unsigned length = fixture->bytes
+			? nxDecodeHex(fixture->bytes, storage, sizeof(storage))
+			: (strcmp(fixture->dimension, "command_matrix") == 0
+				? nxBuildPMapCommandMatrix(storage, sizeof(storage))
+				: nxBuildPMapAbsoluteCellRun(storage, sizeof(storage)));
+		if(length == 0)
+			return nxFail("penetration-map fixture construction failed");
 
 		// Named and appended, so the last line identifies the case that got furthest -- the instrument
 		// that CREATE_ALWAYS destroyed, corrected.
@@ -1367,7 +1470,7 @@ int wmain(int argc, wchar_t** argv)
 		// fine and the printf still faults, the fault is in the CRT's formatting rather than in the data.
 		{
 		char values[256];
-		unsigned bytes = (unsigned) strlen(fixture->bytes);
+		unsigned bytes = length;
 		_snprintf_s(values, sizeof(values), _TRUNCATE,
 			"values case=%s dim=%s bytes=%u accepted=%u errors=%u line=0x%03x res=%u cells=%u grid=%08x\n",
 			fixture->name, fixture->dimension, bytes,
@@ -1380,7 +1483,7 @@ int wmain(int argc, wchar_t** argv)
 		// does not print its cases is not a differential, so the region is narrowed another way.
 		printf("pmap case=%s dimension=%s bytes=%u accepted=%u errors=%u line=0x%03x "
 			"resolution=%u cells=%u grid=%08x\n",
-			fixture->name, fixture->dimension, (unsigned) (strlen(fixture->bytes) / 2),
+			fixture->name, fixture->dimension, length,
 			actual.accepted, actual.errors, actual.errorLine,
 			actual.resolution, actual.cells, actual.grid);
 		printf("  case-line printed\n"); fflush(stdout);

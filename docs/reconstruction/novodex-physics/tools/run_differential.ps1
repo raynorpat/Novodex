@@ -11,7 +11,7 @@ param(
     [Parameter(Mandatory = $true, ParameterSetName = 'Targets')]
     [string[]] $Targets,
 
-    [string] $RepoRoot = 'D:\github\Novodex',
+    [string] $RepoRoot,
     [string] $BuildRoot,
     [string] $OracleRoot = 'D:\FlamingEnt__\Unreal_3',
     [string] $PairsRoot = 'D:\FlamingEnt__\novodex-analysis\pairs'
@@ -26,6 +26,9 @@ $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 
 $toolsRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+if (-not $RepoRoot) {
+    $RepoRoot = (Resolve-Path -LiteralPath (Join-Path $toolsRoot '..\..\..\..')).Path
+}
 $evidenceRoot = Split-Path -Parent $toolsRoot
 $programPath = Join-Path $evidenceRoot 'program.json'
 $ue3Root = $OracleRoot
@@ -36,7 +39,16 @@ $releaseRoot = Join-Path $BuildRoot 'Release'
 $pairsRoot = $PairsRoot
 
 function Get-FileSha256([string] $Path) {
-    return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+    $sha256 = [System.Security.Cryptography.SHA256]::Create()
+    $stream = [System.IO.File]::OpenRead($Path)
+    try {
+        $digest = $sha256.ComputeHash($stream)
+        return [System.BitConverter]::ToString($digest).Replace('-', '').ToLowerInvariant()
+    }
+    finally {
+        $stream.Dispose()
+        $sha256.Dispose()
+    }
 }
 
 function Assert-True([bool] $Condition, [string] $Requirement) {
@@ -127,7 +139,9 @@ function Invoke-Child([string] $Target, $Pair) {
     #                                    child outright, and both its exit code
     #                                    and its stderr are compared.
     # Everything else must match exactly.
-    $normalized = @($lines | Where-Object { $_ -notmatch '^(pair_directory=|loaded module=|modules |imports )' })
+    $normalized = @($lines | Where-Object {
+        $_ -notmatch '^(pair_directory=|loaded module=|oracle module path=|oracle base=|modules |imports )'
+    })
     return [pscustomobject]@{
         ExitCode = $process.ExitCode
         Stdout = $stdout
@@ -152,7 +166,9 @@ else {
 
 Assert-True ($Targets.Count -gt 0) 'at least one test target was requested'
 foreach ($target in $Targets) {
-    Assert-True ($target -cin $NxRegisteredTestTargets) "test target is registered in gate_targets.ps1: $target"
+    $registered = ($target -cin $NxRegisteredTestTargets) -or
+        ($target -cin $NxRegisteredOracleDifferentialTargets)
+    Assert-True $registered "test target is registered in gate_targets.ps1: $target"
 }
 
 Assert-True (Test-Path -LiteralPath $programPath -PathType Leaf) "program pin file exists: $programPath"

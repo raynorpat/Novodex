@@ -114,6 +114,7 @@ bool __cdecl NxOverlapPlaneCapsule(const NxCollisionShape* plane, const NxCollis
 bool __cdecl NxOverlapSphereSphere(const NxCollisionShape* sphere0, const NxCollisionShape* sphere1);
 bool __cdecl NxOverlapSphereBox(const NxCollisionShape* sphere, const NxCollisionShape* box);
 bool __cdecl NxOverlapSphereCapsule(const NxCollisionShape* sphere, const NxCollisionShape* capsule);
+bool __cdecl NxOverlapSphereMesh(const NxCollisionShape* sphere, const NxCollisionShape* mesh, void* context);
 bool __cdecl NxOverlapBoxBox(const NxCollisionShape* box0, const NxCollisionShape* box1);
 
 // convex-mesh gap Task 2a (units/convex-mesh-gap-contract.md, sub-units G, J

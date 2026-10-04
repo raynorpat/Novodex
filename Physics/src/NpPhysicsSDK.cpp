@@ -8,6 +8,7 @@
 #include "NpPhysicsSDK.h"
 #include "PhysicsSDK.h"
 #include "NpScene.h"
+#include "TriangleMesh.h"
 
 #include <stddef.h>
 #include <stdio.h>
@@ -27,16 +28,14 @@ static_assert(offsetof(NpPhysicsSDK, mLock) == 8, "the lock follows the SDK poin
 // the build tree the DLL was compiled from, so __LINE__ cannot produce them.
 static const int gSetFluidGroupPairFlagsWarningLine = 257;
 static const int gGetFluidGroupPairFlagsWarningLine = 265;
+static const int gActorGroupPairFlagsWriteLockErrorLine = 236;
+static const int gCreateTriangleMeshWriteLockErrorLine = 111;
+static const int gReleaseTriangleMeshWriteLockErrorLine = 127;
+static void* nxSdkSceneWriteLink(PhysicsSDK* sdk, NxU32 index);
 
-// Around every forwarded call the oracle walks mSdk's scenes and takes each
-// scene's writer lock (or, for the const queries, its reader lock), unwinding
-// and reporting NXE_INVALID_OPERATION with
-//   "PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a
-//    deadlock!"
-// if one cannot be taken. Reaching those locks means going through NpScene,
-// which Phase 3 owns, so the loops are not reconstructed here. They run zero
-// iterations for every state this component can reach, because the only entry
-// point that adds a scene is createScene.
+// SDK-wide mutators take every live scene's write lock in scene-array order,
+// unwind acquired locks in reverse on contention, and release them in forward
+// order after dispatch. Triangle-mesh creation and release use this same guard.
 
 NpPhysicsSDK::NpPhysicsSDK(PhysicsSDK* sdk)
 	{
@@ -108,15 +107,46 @@ NxScene* NpPhysicsSDK::getScene(NxU32)
 	return 0;
 	}
 
-NxTriangleMesh* NpPhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc&)
+
+// phys_fn_000242 (0x0000b7e0): lock every scene before creating the internal
+// mesh, then return its public wrapper at TriangleMesh+0xe4.
+NxTriangleMesh* NpPhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc& desc)
 	{
-	// phys_fn_000242 -> phys_fn_000478; needs TriangleMesh, Phase 4.
-	return 0;
+	NxU32 locked = 0;
+	for(; locked < mSdk->getNbScenes(); ++locked)
+		if(!nxNpSceneGuardWriteTry(nxSdkSceneWriteLink(mSdk, locked)))
+			{
+			while(locked)
+				nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, --locked));
+			NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+				NX_NP_PHYSICS_SDK_CPP, gCreateTriangleMeshWriteLockErrorLine, 0,
+				"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+			return 0;
+			}
+	NxTriangleMesh* mesh = mSdk->createTriangleMesh(desc);
+	for(NxU32 index = 0; index < locked; ++index)
+		nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, index));
+	return mesh;
 	}
 
-void NpPhysicsSDK::releaseTriangleMesh(NxTriangleMesh&)
+// phys_fn_000244 (0x0000b8c0): same lock/unwind protocol around release.
+void NpPhysicsSDK::releaseTriangleMesh(NxTriangleMesh& mesh)
 	{
-	// phys_fn_000244 -> phys_fn_000470; needs TriangleMesh, Phase 4.
+	NxU32 locked = 0;
+	for(; locked < mSdk->getNbScenes(); ++locked)
+		if(!nxNpSceneGuardWriteTry(nxSdkSceneWriteLink(mSdk, locked)))
+			{
+			while(locked)
+				nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, --locked));
+			NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+				NX_NP_PHYSICS_SDK_CPP, gReleaseTriangleMeshWriteLockErrorLine, 0,
+				"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+			return;
+			}
+	NxTriangleMeshAdapter& adapter = static_cast<NxTriangleMeshAdapter&>(mesh);
+	mSdk->releaseTriangleMesh(adapter.mMesh);
+	for(NxU32 index = 0; index < locked; ++index)
+		nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, index));
 	}
 
 // phys_fn_000248 and phys_fn_000250. The mutating slot walks the scenes taking
@@ -135,17 +165,58 @@ bool NpPhysicsSDK::getGroupCollisionFlag(NxCollisionGroup group1, NxCollisionGro
 	return mSdk->getGroupCollisionFlag(group1, group2);
 	}
 
-void NpPhysicsSDK::setActorGroupPairFlags(NxActorGroup, NxActorGroup, NxU32)
+// phys_fn_000269: lock scenes and dispatch actor-group pair-flag updates.
+void NpPhysicsSDK::setActorGroupPairFlags(NxActorGroup group1, NxActorGroup group2, NxU32 flags)
 	{
-	// phys_fn_000269 -> phys_fn_000433 -> phys_fn_004155, which the census
-	// places in Phase 6. Blocked on the pair-keyed hash at .data 0x00123c28.
+	NxU32 locked = 0;
+	for(; locked < mSdk->getNbScenes(); ++locked)
+		{
+		NxSceneInternal* scene = reinterpret_cast<NxSceneInternal*>(mSdk->getScene(locked));
+		NpScene* wrapper = static_cast<NpScene*>(scene->publicScene());
+		if(!nxNpSceneGuardWriteTry(wrapper->writeLink()))
+			{
+			while(locked)
+				{
+				--locked;
+				NxSceneInternal* previous = reinterpret_cast<NxSceneInternal*>(mSdk->getScene(locked));
+				NpScene* previousWrapper = static_cast<NpScene*>(previous->publicScene());
+				nxNpSceneGuardLeave(previousWrapper->writeLink());
+				}
+			NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+				NX_NP_PHYSICS_SDK_CPP, gActorGroupPairFlagsWriteLockErrorLine, 0,
+				"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+			return;
+			}
+		}
+	mSdk->setActorGroupPairFlags(group1, group2, flags);
+	for(NxU32 index = 0; index < locked; ++index)
+		{
+		NxSceneInternal* scene = reinterpret_cast<NxSceneInternal*>(mSdk->getScene(index));
+		NpScene* wrapper = static_cast<NpScene*>(scene->publicScene());
+		nxNpSceneGuardLeave(wrapper->writeLink());
+		}
 	}
 
-NxU32 NpPhysicsSDK::getActorGroupPairFlags(NxActorGroup, NxActorGroup) const
+// phys_fn_000271: lock scenes and dispatch actor-group pair-flag queries.
+NxU32 NpPhysicsSDK::getActorGroupPairFlags(NxActorGroup group1, NxActorGroup group2) const
 	{
-	// phys_fn_000271 -> phys_fn_000435 -> phys_fn_004153, Phase 6. Blocked on
-	// the same hash.
-	return 0;
+	NxU32 locked = 0;
+	for(; locked < mSdk->getNbScenes(); ++locked)
+		{
+		NxSceneInternal* scene = reinterpret_cast<NxSceneInternal*>(mSdk->getScene(locked));
+		unsigned char* wrapper = reinterpret_cast<unsigned char*>(scene->publicScene());
+		void* readLink = *reinterpret_cast<void**>(wrapper + 0x10);
+		nxNpSceneGuardEnter(readLink);
+		}
+	const NxU32 flags = mSdk->getActorGroupPairFlags(group1, group2);
+	for(NxU32 index = 0; index < locked; ++index)
+		{
+		NxSceneInternal* scene = reinterpret_cast<NxSceneInternal*>(mSdk->getScene(index));
+		unsigned char* wrapper = reinterpret_cast<unsigned char*>(scene->publicScene());
+		void* readLink = *reinterpret_cast<void**>(wrapper + 0x10);
+		nxNpSceneGuardLeave(readLink);
+		}
+	return flags;
 	}
 
 #if NX_USE_FLUID_API

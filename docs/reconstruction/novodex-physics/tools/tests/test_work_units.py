@@ -1,4 +1,6 @@
 import sys
+import json
+from collections import Counter
 import unittest
 from pathlib import Path
 
@@ -99,6 +101,25 @@ class SourceSeedTest(unittest.TestCase):
         }
         seeds = work_units.source_seeds(ghidra, [row(7, 0x45f70)])
         self.assertEqual(seeds, {0x45f70: "ContactMeshHeightfield.cpp"})
+
+
+class CommittedWorkUnitMapTest(unittest.TestCase):
+    def test_map_assigns_each_executable_row_to_one_unique_unit(self):
+        root = TOOLS_DIR.parent
+        inventory = json.loads((root / "inventory.json").read_text(encoding="utf-8"))
+        mapping = json.loads((root / "work_units.json").read_text(encoding="utf-8"))
+
+        names = [unit["unit"] for unit in mapping["units"]]
+        assigned = [row_id for unit in mapping["units"]
+                    for row_id in unit["inferred_extent"] + unit["ambiguous_rows"]]
+        executable = {row["id"] for row in inventory["functions"]
+                      if row["kind"] == "code"}
+        counts = Counter(assigned)
+
+        self.assertEqual(len(names), len(set(names)), "work-unit names must be unique")
+        self.assertEqual(set(assigned), executable, "map must cover all executable rows")
+        self.assertTrue(all(counts[row_id] == 1 for row_id in executable),
+                        "every executable row must have exactly one owner")
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ param(
     [ValidateSet('1', '2', '3', '4', '5', '6', '7', '8', 'completed')]
     [string] $Phase,
 
-    [string] $RepoRoot = 'D:\github\Novodex',
+    [string] $RepoRoot,
     [string] $BuildRoot,
     [string] $OracleRoot = 'D:\FlamingEnt__\Unreal_3',
     [string] $PairsRoot
@@ -19,6 +19,9 @@ $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 
 $toolsRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+if (-not $RepoRoot) {
+    $RepoRoot = (Resolve-Path -LiteralPath (Join-Path $toolsRoot '..\..\..\..')).Path
+}
 $evidenceRoot = Split-Path -Parent $toolsRoot
 $programPath = Join-Path $evidenceRoot 'program.json'
 $inventoryPath = Join-Path $evidenceRoot 'inventory.json'

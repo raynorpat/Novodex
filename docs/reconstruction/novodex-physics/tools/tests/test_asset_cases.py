@@ -23,7 +23,7 @@ EVIDENCE_ROOT = Path(__file__).resolve().parents[2]
 CASES_PATH = EVIDENCE_ROOT / 'cases' / 'assets' / 'formats.json'
 TRANSCRIPT_PATH = EVIDENCE_ROOT / 'cases' / 'assets' / 'oracle-transcript.txt'
 INVENTORY_PATH = EVIDENCE_ROOT / 'inventory.json'
-HARNESS_PATH = Path('D:/github/Novodex/tests/PhysicsAssetTests.cpp')
+HARNESS_PATH = Path(__file__).resolve().parents[5] / 'tests' / 'PhysicsAssetTests.cpp'
 
 PMAP_RE = re.compile(r'^pmap case=(?P<id>\S+) dimension=(?P<dimension>\S+) bytes=(?P<bytes>\d+) '
                      r'accepted=(?P<accepted>\d+) errors=(?P<errors>\d+) line=(?P<line>0x[0-9a-f]{3}) '
@@ -36,7 +36,8 @@ HEX_RE = re.compile(r'^(?:[0-9a-f]{2})+$')
 
 # Every dimension the plan asks the fixtures to cover. A tag outside this set is
 # a typo; a dimension with no case is a hole.
-DIMENSIONS = {'minimal_valid', 'multi_element', 'malformed', 'truncated', 'boundary', 'ownership'}
+DIMENSIONS = {'minimal_valid', 'multi_element', 'malformed', 'truncated', 'boundary',
+              'ownership', 'nonempty_cell_run', 'command_matrix'}
 
 # The three the reconstruction replaces in Task 2.
 CANDIDATE_FUNCTIONS = ('nxCandidatePMapLoad', 'nxCandidateMeshHeader', 'nxCandidateReleasePMap')
@@ -78,7 +79,16 @@ class AssetCases(unittest.TestCase):
                 line = self.pmap[case['id']]
                 self.assertEqual(case['dimension'], line['dimension'])
                 self.assertEqual(case['byte_count'], int(line['bytes']))
-                self.assertEqual(case['byte_count'] * 2, len(case['bytes']))
+                if case['bytes'] is not None:
+                    self.assertEqual(case['byte_count'] * 2, len(case['bytes']))
+                elif case['encoding']['kind'] == 'absolute_cell_run':
+                    self.assertEqual(case['encoding']['command'], 31)
+                    self.assertEqual(case['encoding']['coordinates'], [1, 2, 3])
+                    self.assertEqual(case['encoding']['filled_sign_bits'], 32 ** 3)
+                else:
+                    self.assertEqual(case['encoding']['kind'], 'absolute_delta_command_matrix')
+                    self.assertEqual(case['encoding']['commands'], [31] + list(range(26)) + list(range(26, 32)))
+                    self.assertEqual(case['encoding']['filled_sign_bits'], 32 ** 3)
                 self.assertEqual(case['oracle']['accepted'], int(line['accepted']))
                 self.assertEqual(case['oracle']['errors'], int(line['errors']))
                 self.assertEqual(case['oracle']['error_line'], line['line'])
@@ -109,7 +119,10 @@ class AssetCases(unittest.TestCase):
         # being written as a literal hex byte string that another process reads.
         for case in self.document['pmap_cases'] + self.document['mesh_cases']:
             with self.subTest(case=case['id']):
-                self.assertRegex(case['bytes'], HEX_RE)
+                if case['bytes'] is not None:
+                    self.assertRegex(case['bytes'], HEX_RE)
+                else:
+                    self.assertIsInstance(case['encoding'], dict)
 
     def test_every_dimension_the_plan_names_has_a_case(self):
         seen = {c['dimension'] for c in
@@ -141,7 +154,16 @@ class AssetCases(unittest.TestCase):
         for case in self.document['pmap_cases'] + self.document['mesh_cases']:
             with self.subTest(case=case['id']):
                 self.assertIn('"%s"' % case['id'], self.harness)
-                self.assertIn(case['bytes'][:32], self.harness)
+                if case['bytes'] is not None:
+                    self.assertIn(case['bytes'][:32], self.harness)
+                else:
+                    if case['encoding']['kind'] == 'absolute_cell_run':
+                        self.assertIn('nxBuildPMapAbsoluteCellRun', self.harness)
+                        self.assertIn('writeBits(0x1f, 5)', self.harness)
+                    else:
+                        self.assertIn('nxBuildPMapCommandMatrix', self.harness)
+                        self.assertIn('writeBits(33, 32)', self.harness)
+                        self.assertIn('for(unsigned code = 0; code < 26; ++code)', self.harness)
 
     def test_the_harness_takes_its_fixture_bytes_only_from_hex(self):
         # nxDecodeHex is the one door fixture bytes come through. If a second

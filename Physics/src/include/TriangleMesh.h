@@ -19,6 +19,7 @@
 #include "QhullHost.h"
 #include "NxSimpleTriangleMesh.h"
 #include "NxTriangleMeshDesc.h"
+#include "NxTriangleMesh.h"
 
 class NxStream;
 class Adjacencies;
@@ -82,15 +83,14 @@ reads them at TriangleMesh+0x08/+0x0c/+0x10/+0x14/+0x18/+0x1c because the
 internal mesh is embedded at TriangleMesh+0x08 (`lea ebp,[edi+8]` at
 0x00055d18).
 
-The region from +0x24 onward belongs to the MeshInterface and whatever follows
-it; nothing the writer or the reconstructed reader touches reaches past
-internal+0x20, so it is carried as opaque bytes here and named rather than
-invented.
+The +0x24 region is the OPCODE MeshInterface: phys_fn_002083 copies the
+triangle and vertex counts there and calls SetPointers on its two array fields.
+The final four bytes at +0x34..+0x37 remain opaque.
 */
 struct InternalTriangleMesh
 	{
-	NxU32					mVertexCount;		//!< +0x00
-	NxU32					mTriangleCount;		//!< +0x04
+	NxU32					mVertexCount;		//!< +0x00 (TriangleMesh stream reader/writer)
+	NxU32					mTriangleCount;		//!< +0x04 (TriangleMesh stream reader/writer)
 	void*					mVertices;			//!< +0x08, 12 bytes each
 	void*					mTriangles;			//!< +0x0c, 12 bytes each, 32-bit indices
 	NxU16*					mMaterialIndices;	//!< +0x10, 2 bytes each, optional
@@ -98,7 +98,8 @@ struct InternalTriangleMesh
 	void*					mVertexNormals;		//!< +0x18, 12 bytes each
 	NxU32					mWord1C;			//!< +0x1c, unestablished; the allocation-site table jumps from +0x18 to +0x20
 	Opcode::BaseModel*		mModel;				//!< +0x20
-	NxU8					mInterfaceRegion[0x14];	//!< +0x24, the MeshInterface region, unestablished
+	Opcode::MeshInterface	mMeshInterface;		//!< +0x24, mesh pointers and counts for the OPCODE model
+	NxU8					mInterfaceTail[4];		//!< +0x34..+0x37, unestablished
 	};
 
 /**
@@ -128,9 +129,14 @@ established it.
 	+0xa0 the convex mesh     phys_fn_002164 releases slot 0 at 0x00053b84 and
 	                          installs at 0x00053bc6; writer test 0x00053a22
 */
-class TriangleMesh
+class NxTriangleMeshAdapter;
+
+class TriangleMesh : public NxAllocateable
 	{
 	public:
+	TriangleMesh();
+	bool					loadFromDesc(const NxTriangleMeshDesc& desc);
+	void					release();
 	//! phys_fn_002162 (0x000539d0), the whole of the writer. Returns the
 	//! literal 1; there is no error path in it (mov al,1 at 0x00053b64).
 	bool					save(NxStream& stream) const;
@@ -153,8 +159,12 @@ class TriangleMesh
 	InternalTriangleMesh	mInternal;
 	//! +0x40, the hull-construction flags. Only bit 0 is established.
 	NxU32					mHullFlags;
-	//! +0x44..+0x68, unestablished.
-	NxU8					mGap44[0x28];
+	//! +0x44..+0x58, local bounds: min xyz then max xyz. The constructor
+	//! initializes the minima to FLT_MAX and maxima to -FLT_MAX at 0x000554d4
+	//! onward; MeshShape::nxMeshWorldAABBNoTree reads these six floats directly.
+	float					mBounds[6];
+	//! +0x5c..+0x68, still unestablished.
+	NxU8					mGap5C[0x10];
 	//! +0x6c, NxTriangleMeshDesc::convexEdgeThreshold's image value.
 	float					mConvexEdgeThreshold;
 	//! +0x70..+0x78, unestablished.
@@ -189,6 +199,9 @@ class TriangleMesh
 	//! +0xa8 (the kind C support map slot 11 takes; 001820 at 0x000411f1 /
 	//! 0x000411f7), are outside this class's measured size.
 	void*					mConvexMesh;
+	//! The public NxTriangleMesh is a separate 8-byte wrapper in this image.
+	NxU8					mGapA4[0x40];
+	NxTriangleMeshAdapter*	mPublicMesh;
 	};
 
 // The measured offsets, pinned so a field added in the wrong place fails here
@@ -204,7 +217,10 @@ static_assert(offsetof(TriangleMesh, mInternal.mMaterialIndices) == 0x18, "mater
 static_assert(offsetof(TriangleMesh, mInternal.mFaceRemap) == 0x1c, "face remap is internal+0x14");
 static_assert(offsetof(TriangleMesh, mInternal.mVertexNormals) == 0x20, "vertex normals are internal+0x18");
 static_assert(offsetof(TriangleMesh, mInternal.mModel) == 0x28, "the model is internal+0x20 / TriangleMesh+0x28");
+static_assert(offsetof(TriangleMesh, mInternal.mMeshInterface) == 0x2c, "the OPCODE mesh interface is at +0x2c");
+static_assert(sizeof(Opcode::MeshInterface) == 0x10, "the OPCODE mesh interface has four pointer/count words");
 static_assert(offsetof(TriangleMesh, mHullFlags) == 0x40, "the hull flags are at +0x40");
+static_assert(offsetof(TriangleMesh, mBounds) == 0x44, "local mesh bounds start at +0x44");
 static_assert(offsetof(TriangleMesh, mConvexEdgeThreshold) == 0x6c, "the threshold is at +0x6c");
 static_assert(offsetof(TriangleMesh, mHeightFieldVerticalAxis) == 0x7c, "the height-field axis is at +0x7c");
 static_assert(offsetof(TriangleMesh, mHeightFieldVerticalExtent) == 0x80, "the height-field extent is at +0x80");
@@ -215,6 +231,28 @@ static_assert(offsetof(TriangleMesh, mPresenceFlagB) == 0x90, "presence flag B i
 static_assert(offsetof(TriangleMesh, mArrayA) == 0x94, "array A is at +0x94");
 static_assert(offsetof(TriangleMesh, mArrayB) == 0x98, "array B is at +0x98");
 static_assert(offsetof(TriangleMesh, mConvexMesh) == 0xa0, "the convex mesh is at +0xa0");
+static_assert(offsetof(TriangleMesh, mPublicMesh) == 0xe4, "public mesh wrapper stored at +0xe4");
+static_assert(sizeof(TriangleMesh) == 0xe8, "TriangleMesh allocation is 0xe8 bytes");
+
+//! Public ABI object allocated separately from TriangleMesh (phys_fn_002251).
+class NxTriangleMeshAdapter : public NxTriangleMesh, public NxAllocateable
+	{
+	public:
+	explicit NxTriangleMeshAdapter(TriangleMesh* mesh) : mMesh(mesh) {}
+	bool loadFromDesc(const NxTriangleMeshDesc& desc);
+	bool saveToDesc(NxTriangleMeshDesc& desc) const;
+	NxU32 getSubmeshCount() const;
+	NxU32 getCount(NxSubmeshIndex submesh, NxInternalArray array) const;
+	NxInternalFormat getFormat(NxSubmeshIndex submesh, NxInternalArray array) const;
+	const void* getBase(NxSubmeshIndex submesh, NxInternalArray array) const;
+	NxU32 getStride(NxSubmeshIndex submesh, NxInternalArray array) const;
+	bool loadPMap(const NxPMap& pmap);
+	bool hasPMap() const;
+	NxU32 getPMapSize() const;
+	bool getPMapData(NxPMap& pmap) const;
+	NxU32 getPMapDensity() const;
+	TriangleMesh* mMesh;
+	};
 
 /**
 TriangleMesh's first two virtuals, slots 0 and 1 of .rdata:0x00108608, are an

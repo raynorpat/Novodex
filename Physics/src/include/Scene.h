@@ -94,6 +94,11 @@ class NxSceneInternal
 	void growJointRecords();
 	// phys_fn_000571 (0x000108e0). Links a break event into the list at +0x620.
 	void addJointBreakEvent(JointBreakEvent* event);
+	// phys_fn_000577 (0x000109c0). Dispatches and frees queued break events.
+	void processJointBreakEvents();
+	// phys_fn_000640 (0x00012a90). Flushes trigger callbacks, break events,
+	// then buffered contact callbacks in oracle order.
+	void processSimulationCallbacks();
 	// phys_fn_000559 (0x00010860), phys_fn_000563 (0x00010880) and
 	// phys_fn_000567 (0x000108a0).
 	NxU32 getNbJoints() const;
@@ -144,6 +149,16 @@ class NxSceneInternal
 	// Task 3b).
 	// phys_fn_000509 (0x00010200). The gravity at +0x520..+0x528.
 	void getGravity(NxVec3& gravity) const;
+	// phys_fn_000507 (0x000101d0), the internal gravity setter.
+	void setGravity(const NxVec3& gravity);
+	// phys_fn_000538/000539 (0x000106f0/0x00010720), timing accessors.
+	void setTiming(NxReal maxTimestep, NxU32 maxIter, NxU32 method);
+	void getTiming(NxReal& maxTimestep, NxU32& maxIter, NxU32& method) const;
+	// phys_fn_000659's fixed/variable timestep scheduler. Called by NpScene's
+	// worker after simulate() stores the elapsed time at +0x544.
+	void simulateFrame();
+	// phys_fn_000619: fetch-side body gravity refresh and pose snapshot.
+	void finishSimulation();
 	// phys_fn_000523 (0x00010400). The pair-flag count at +0x3c.
 	NxU32 getNbPairs() const;
 	// phys_fn_000525 (0x00010410), with its continuation phys_fn_000527. The

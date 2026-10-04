@@ -51,6 +51,10 @@ struct CpmPairHash
 	CpmPairHashEntry*	entries;	//!< +0x14
 	};
 
+void cpmSetActorGroupPairFlags(NxU16 group0, NxU16 group1, NxU32 flags);
+NxU32 cpmGetActorGroupPairFlags(NxU16 group0, NxU16 group1);
+void cpmResetActorGroupPairFlags();
+
 // The per-actor-pair report record (0x14 bytes, allocated by 000905 through
 // nxFoundationSDKAllocator and freed by 000913/000917): +0x00 state (bit 31
 // touching this step, bit 30 touching last report, bit 29 kept while stale,
@@ -227,6 +231,11 @@ struct NxPairList
 	NxPairNode* row000911(NxU8* element0, NxU8* element1);
 	};
 
+// phys_fn_001976's default all-pairs scene path, backed by the current static
+// and dynamic pruning pools. Refreshes this Scene's persistent pair map/list
+// and generates narrow-phase contacts for live pairs.
+void nxSceneRefreshPairs(NxSceneInternal* scene);
+
 // The body the joint-list test runs on (`this` = a body record, +0x1d8 its
 // joint list).
 struct CpmJointedBody
@@ -260,5 +269,9 @@ void __cdecl cpmFireContactReports0913(NxSceneInternal* scene, NxUserContactRepo
 void __stdcall cpmDeletePairNode0915(NxPairNode* node);
 // Rows 000917 + 000919 + 000921. cdecl.
 void __cdecl cpmBufferContactReports0917(NxSceneInternal* scene, CpmPairHash* hash);
+void cpmSetActorPairFlags(NxSceneInternal* scene, void* actor0, void* actor1, NxU32 flags);
+NxU32 cpmGetActorPairFlags(const NxSceneInternal* scene, const void* actor0, const void* actor1);
+void cpmSetShapePairFlags(NxSceneInternal* scene, void* shape0, void* shape1, NxU32 flags);
+NxU32 cpmGetShapePairFlags(const NxSceneInternal* scene, const void* shape0, const void* shape1);
 
 #endif

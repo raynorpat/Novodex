@@ -387,3 +387,22 @@ With this helper present, `/WHOLEARCHIVE` linkage of both `NxOpcode` and
 `Segment::SquareDistance`, `qh_pointdist`, and `SweepAndPrune` symbols. This
 proves archive membership, while object lifecycle and public routing remain
 work for the full reconstruction.
+
+---
+
+## 12. 2026-10-04 follow-up: PMap cell-run command matrix
+
+`phys_fn_002008` (`PenetrationMap::decodeCellRun`, `0x0004dba0`, 909 bytes) now has
+both a nonempty absolute-coordinate fixture and a generated command-matrix fixture. The matrix
+visits all 32 five-bit commands in one resolution-32 run and matches the pinned oracle grid
+`cdce6b95`; the absolute fixture matches `118f67a9`. The 32-probe asset target reports oracle digest
+`1daa095e`, zero candidate mismatches, identical staged-pair transcripts, and exit 0.
+
+Mutation AA changed command 11's X delta from 0 to +1, rebuilt both `NxPhysicsAssetTests` and
+`NxPhysics`, and reran `run_differential.ps1 -Targets NxPhysicsAssetTests` against the staged pinned
+and candidate pairs. The pinned control remained at digest `1daa095e`. The mutated candidate
+reported a `pmap.command_matrix` oracle mismatch, `expect_mismatches=1`, digest `a15c726d`, and the
+staged gate exited 1. Restoring the command and rebuilding returned the staged differential to pass.
+For `phys_fn_002008`, the recorded falsification spends `mismatches=1`; resolution-64 and
+resolution-80 command widths remain uncovered, and public-DLL routing remains a separate
+reconstruction milestone.

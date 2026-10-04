@@ -6,10 +6,10 @@
   "closure_ledger": "gates/phase4-closure.json",
   "implementation_commit": "de565924ad85cba85490c54ebc99db37593833a3",
   "evidence_commit": "ec41abb1b18110d00643dbf784eff4cf694a411f",
-  "note": "Phase 4's recorded gate closed 26 code rows at its historical gate; two NovodeX pruning rows were subsequently closed by isolated direct-link oracle mutations. A later census correction retyped phys_fn_005493, phys_fn_005517 and phys_fn_005523 from compiler artifacts to OPCODE code, so its current ledger has 1,053 code rows: 28 closed and 1,025 deferred. The correction did not rerun or expand the historical gate. The first row's stock-source divergence was resolved by an exact direct-link oracle differential, but lacks an isolated falsifying mutation; the two tree rows have shared-overlay layout evidence but no isolated per-row falsification. Read evidence/phase4-falsification.md sections 3 and 7 for the historical measurements and limits.",
+  "note": "Phase 4's recorded gate closed 26 code rows at its historical gate; two NovodeX pruning rows were subsequently closed by isolated direct-link oracle mutations. A later census correction retyped phys_fn_005493, phys_fn_005517 and phys_fn_005523 from compiler artifacts to OPCODE code, so its current ledger has 1,053 code rows: 29 closed and 1,024 deferred. The correction did not rerun or expand the historical gate. The PMap cell-run decoder now has an oracle-matched 32-command matrix (asset digest 1daa095e) and is closed by mutation AA. See the Phase 4 closure ledger for the current 29/1,024 count. A fresh Phase 4 gate run passed the asset target and stopped because NxPhysicsThirdPartyTests exited 0xc0000374 after prunable_flags, before its remaining coverage lines. The first row's stock-source divergence was resolved by an exact direct-link oracle differential, but lacks an isolated falsifying mutation; the two tree rows have shared-overlay layout evidence but no isolated per-row falsification. Read evidence/phase4-falsification.md sections 3 and 7 for the historical measurements and limits. Detaching the test-owned stack box from NxCandidatePruner lets the target complete prunable_ctor, prunable_flags and prunable_pruner exactly (20,900 words, oracle 75538179, mismatches=0). The subsequent hull OBJ tape access violation came from passing a noncanonical selfOnly value after the oracle-side dispatch probe clobbered the optimized caller register; forcing the test mode to reload from its bool byte now lets the self-only run complete. A fresh Phase 4 gate now passes after restoring the qhull_exact_output and qhull_exact_other oracle-matched subsets, recording tight ceilings for the reproducible 0x027f box/cluster residuals, and canonicalizing signed zero only in OBJ numeric-token comparison (the independent normalized byte digests remain exact). It completes all hull cases with thirdparty candidate mismatches=0 and layout_failures=0; the registered coverage evaluates 251/251 assertions and phase_gate=4 status=pass. Remaining qhull topology and x87 residuals are explicitly measured and bounded rather than claimed exact; see evidence/qhull-gap.md.",
   "counts": {
-    "closed": 28,
-    "deferred": 1025
+    "closed": 29,
+    "deferred": 1024
   },
   "gate_sequence": [
     {
@@ -30,7 +30,7 @@
     {
       "name": "oracle_differential:NxPhysicsAssetTests",
       "command": "<implementation tree>/build/Release/NxPhysicsAssetTests.exe <oracle directory> <NxPhysics.dll sha256>",
-      "result": "exit=0; asset coverage driven=30 accepted=13 rejected=16 errors=10; asset oracle digest=eaefc573 expect_mismatches=0; asset candidate mismatches=0 mode=differential. Broken on purpose with mutation J applied to a staged copy of the same tree, the -Phase 4 gate reads `asset candidate mismatches=10` and fails with `GATE FAILED: oracle_differential:NxPhysicsAssetTests exited 1`, the oracle digest still eaefc573"
+      "result": "current oracle differential exit=0; asset coverage driven=32 accepted=15 rejected=16 errors=10; asset oracle digest=1daa095e expect_mismatches=0; asset candidate mismatches=0 mode=differential. The pmap.command_matrix case visits all 32 command codes and matches grid cdce6b95. The earlier mutation-J falsification was measured on the historical 30-case matrix (digest eaefc573)."
     },
     {
       "name": "oracle_differential:NxPhysicsThirdPartyTests",
@@ -96,6 +96,8 @@
   "excluded_from_comparison": [
     "pair_directory=",
     "loaded module=",
+    "oracle module path=",
+    "oracle base=",
     "modules ",
     "imports "
   ],

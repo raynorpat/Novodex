@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 4,
   "evidence_file": "evidence/phase4-falsification.md",
-  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 28 closed and 1,025 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 351 vendored rows (qhull 202, OPCODE 149) from discovered to reconstructed; they defer reconstructed_not_falsified, and 257 vendored rows stayed vendored_not_falsified (evidence/vendored-correspondence.md, Results). qhull-gap Task 2 promoted 167 more qhull rows (61,010 bytes) the same way, including 69 rows under the DIFF-equivalent arm; 90 vendored rows (71 qhull, 19 OPCODE) stay vendored_not_falsified (evidence/qhull-gap.md, Task 2). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. phys_fn_005493 has exact direct-link Segment behavior but no isolated mutation, while phys_fn_005517 and phys_fn_005523 have shared-overlay layout evidence but no isolated per-row falsification. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10 and 11.",
+  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 29 closed and 1,024 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 351 vendored rows (qhull 202, OPCODE 149) from discovered to reconstructed; they defer reconstructed_not_falsified, and 257 vendored rows stayed vendored_not_falsified (evidence/vendored-correspondence.md, Results). qhull-gap Task 2 promoted 167 more qhull rows (61,010 bytes) the same way, including 69 rows under the DIFF-equivalent arm; 90 vendored rows (71 qhull, 19 OPCODE) stay vendored_not_falsified (evidence/qhull-gap.md, Task 2). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. The 32-command PMap cell-run matrix adds one closure through mutation AA and a pinned oracle differential (asset digest 1daa095e). phys_fn_005493 has exact direct-link Segment behavior but no isolated mutation, while phys_fn_005517 and phys_fn_005523 have shared-overlay layout evidence but no isolated per-row falsification. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10 and 11.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row's reconstruction in a throwaway `git archive` copy, rebuilt and run through a staged-pair differential. Phase 4 registers no staged-pair target -- `run_differential.ps1 -Phase 4` resolves none and exits the skip code -- so it closes no row this way",
     "static_proof_falsified": "a mutation aimed at this row and caught by a static check rather than a differential. Phase 4 registers no static-proof target and closes no row this way",
@@ -53,12 +53,23 @@
     "control_words": "every block in both targets runs under the CRT default 0x027f and nothing in Phase 4 runs under 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. All 26 closed rows execute under 0x027f in the measurement. Escalated in gates/phase4.json qhull-gap addendum (2026-09-28, appended; the text before it is as measured then): NxPhysicsThirdPartyTests now sets 0x0f7f itself for the convex-cooking families hull_create_pc64, hull_compute_pc64 and their _obj/_objbytes twins (qhull-gap Tasks 4e and 5), so the 40 hull-library rows (phys_fn_002233-002237, 003236-003371) and the vendored qhull they call run under 0x0f7f in that target, compared exact against the oracle under the same word; every other Phase 4 block still runs under 0x027f."
   },
   "counts": {
-    "oracle_differential_falsified": 28,
-    "deferred_reconstructed_not_falsified": 752,
+    "oracle_differential_falsified": 29,
+    "deferred_reconstructed_not_falsified": 751,
     "deferred_not_reconstructed_in_phase": 183,
     "deferred_vendored_not_falsified": 90
   },
   "closed": [
+    {
+      "id": "phys_fn_002008",
+      "rva": "0x0004dba0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsAssetTests",
+      "falsification": {
+        "mutation": "mutation AA: command 11 X delta changed from 0 to +1 in a temporary source edit; the staged-pair run mismatches pmap.command_matrix against recorded grid cdce6b95, reports expect_mismatches=1, and exits 1. Aggregate asset digest moves from control 1daa095e to a15c726d. Restoring the source returns the staged differential to pass. The fixture visits all 32 commands in one valid resolution-32 run.",
+        "detected": "mismatches=1"
+      },
+      "note": "resolution-64 and resolution-80 coordinate widths are statically recovered but not covered by the current command matrix"
+    },
     {
       "id": "phys_fn_002033",
       "rva": "0x0004ff80",
@@ -941,15 +952,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "callers",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_002008",
-      "rva": "0x0004dba0",
-      "size": 909,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "the cell-run decoder, as far as the recorded fixtures establish it. Mutation V stops reading the 32-bit count off the stream. At bcf544f it was red only by ACCESS VIOLATION, and Task 3 did not claim the row on it; re-measured on this branch it is GREEN -- exit 0, `asset candidate mismatches=0` -- so there is no count either way. Every recorded fixture declares a cell-run count of zero, and the 5-bit walk behind the 32-way jump table at 0x0004dc75 is still unestablished. evidence/phase4-pmap-reconstruction.md section 5"
     },
     {
       "id": "phys_fn_002010",

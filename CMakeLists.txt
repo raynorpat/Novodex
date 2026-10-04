@@ -162,6 +162,11 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # rows (the x87 row sums of 000150/000152, the setters and getters) are x87 in
 # the oracle, and its `double` register lifetimes must compile to x87 at the
 # process's _PC_53 rather than to SSE2 (NpActor.cpp completion Task 2).
+# ObjectModel.cpp is reached from the simulation step too: body pose row
+# 000022 dispatches slot 6 on the owned shape after updating the body record.
+# 001315 composes compound child poses in the step's x87 precision-64,
+# round-toward-zero window; SSE2 double arithmetic leaves the cached poses
+# one or more ulps away from the oracle.
 # QhullHost.cpp is NovodeX's hull library around qhull (qhull-gap Task 4): x87 in the oracle
 # (the box fallback, the OBJ writers' widening, the rescale) and run under the caller's word.
 # Quantizer.cpp is the same library's band B (Wu's quantizer and reduceVertices, piece 4d), x87 too.
@@ -183,6 +188,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Distance.cpp
 		Physics/src/ContactBoxMeshICE.cpp
 		Physics/src/ContactCapsuleMesh.cpp
+		Physics/src/ContactSphereMesh.cpp
 		Physics/src/ContactMeshHeightfield.cpp
 		Physics/src/ContactMeshMesh.cpp
 		Physics/src/EdgeList.cpp
@@ -195,6 +201,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/ContactConvexHeightfield.cpp
 		Physics/src/ShapeRaycast.cpp
 		Physics/src/NpActor.cpp
+		Physics/src/ObjectModel.cpp
 		Physics/src/core/Joint.cpp
 		Physics/src/core/RevoluteJoint.cpp
 		Physics/src/core/PrismaticJoint.cpp
@@ -560,6 +567,15 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxSceneStepProbe tests/NxSceneStepProbe.cpp)
 	target_include_directories(NxSceneStepProbe PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxSceneStepProbe bcrypt)
+	add_executable(NxPhysicsSimulationTests tests/PhysicsSimulationTests.cpp)
+	target_include_directories(NxPhysicsSimulationTests PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsSimulationTests bcrypt)
+	add_executable(NxPhysicsMeshSimulationTests tests/PhysicsMeshSimulationTests.cpp)
+	target_include_directories(NxPhysicsMeshSimulationTests PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsMeshSimulationTests bcrypt)
+	add_executable(NxPhysicsTriggerSimulationTests tests/PhysicsTriggerSimulationTests.cpp)
+	target_include_directories(NxPhysicsTriggerSimulationTests PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsTriggerSimulationTests bcrypt)
 	# A measurement probe, not a gate: it prints what the pinned
 	# NxNormalToTangents returns so a joint row's localNormal can be attributed
 	# to a specific output rather than guessed at.
@@ -614,8 +630,11 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# seam is opcNovodeXAlloc/opcNovodeXFree and that reaches nxGetSdkAllocator.
 	# TriangleMesh.cpp holds phys_fn_002233, the hull computation, which calls the hull
 	# library (qhull-gap Task 4e), so QhullHost.cpp, Quantizer.cpp and NxQhull come with it.
-	add_executable(NxPhysicsAssetTests tests/PhysicsAssetTests.cpp
+	add_executable(NxPhysicsAssetTests tests/PhysicsAssetTests.cpp tests/PhysicsAssetTestSupport.cpp
 		Physics/src/PMap.cpp Physics/src/MemoryStream.cpp Physics/src/TriangleMesh.cpp
+		Physics/src/EdgeList.cpp Physics/src/IceAdjacencies.cpp Physics/src/IceMeshTools.cpp
+		Physics/src/IceMeshBuilder2.cpp Physics/src/ConvexHull.cpp Physics/src/TriangleMeshTopology.cpp
+		Physics/src/IceSupportMaps.cpp Physics/src/SmoothNormals.cpp Physics/src/TriangleMeshPolygons.cpp
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
 		Physics/src/QhullHost.cpp Physics/src/Quantizer.cpp
 		tests/PhysicsInternalContactStubs.cpp)
@@ -727,6 +746,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# units directly because the rows it covers cannot be reached through the
 	# public API. Same shape as NxFoundationCustomArrayTests above.
 	add_executable(NxPhysicsInternalTests tests/PhysicsInternalTests.cpp
+		tests/PhysicsInternalGroupPairStubs.cpp
+		tests/PhysicsInternalSceneStubs.cpp
 		Physics/src/PhysicsInternal.cpp
 		Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
@@ -737,6 +758,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp Physics/src/Distance.cpp
+		Physics/src/opcode/NovodexBoxPruning.cpp
 		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp
 		${PHYSICS_CORE_SOURCES})
 	target_include_directories(NxPhysicsInternalTests PRIVATE

@@ -34,6 +34,8 @@
 #include <string.h>
 
 #include "Scene.h"
+#include "PhysicsSDK.h"
+#include "NpPhysicsSDK.h"
 #include "NxActor.h"
 #include "NxActorDesc.h"
 #include "NxJointDesc.h"
@@ -42,6 +44,7 @@
 #include "core/Joint.h"
 #include "core/SpringAndDamperEffector.h"
 #include "core/NpSpringAndDamperEffector.h"
+#include "ContactPairManager.h"
 
 // ---------------------------------------------------------------------------
 // Lock helpers and the remaining condition-object reproduction hole.
@@ -50,8 +53,16 @@ static void* nxLockConstruct(void* memory);
 static bool nxLockTryLock(void* lock);
 static bool nxLockUnlock(void* lock);
 static void* nxConditionConstruct(void* memory, void* a, void* b, void* c);
+static bool nxConditionStart(void* condition);
+static void nxConditionStop(void* condition);
 // The deadlock report, defined in Scene.cpp.
 void nxSceneDeadlockReport();
+
+// The oracle emits each compatibility warning once per module lifetime.
+static bool gStartRunWarningEmitted = false;
+static bool gFinishRunWarningEmitted = false;
+static bool gRunForWarningEmitted = false;
+static bool gWaitWarningEmitted = false;
 
 NpScene::NpScene(NxSceneInternal* scene)
 	{
@@ -86,19 +97,33 @@ NpScene::NpScene(NxSceneInternal* scene)
 		*static_cast<void**>(mReadLock) = block ? nxLockConstruct(block) : 0;
 		}
 
+	mLockA[0] = mLockA[1] = mLockA[2] = mLockA[3] = 0;
+	mLockB[0] = mLockB[1] = mLockB[2] = mLockB[3] = 0;
+	*reinterpret_cast<HANDLE*>(mLockA) = ::CreateEventA(0, TRUE, FALSE, 0);
+	*reinterpret_cast<HANDLE*>(mLockB) = ::CreateEventA(0, TRUE, FALSE, 0);
+
 	mCondition = nxGetSdkAllocator()->malloc(0x18, NX_MEMORY_PERSISTENT);
 	if(mCondition)
-		mCondition = nxConditionConstruct(mCondition, mLockB, mLockA, 0);
+		{
+		mCondition = nxConditionConstruct(mCondition, mLockB, mLockA, mScene);
+		if(mCondition)
+			nxConditionStart(mCondition);
+		}
 	}
 
 NpScene::~NpScene()
 	{
 	if(mCondition)
 		{
+		nxConditionStop(mCondition);
 		nxGetSdkAllocator()->free(*reinterpret_cast<void**>(
 			static_cast<unsigned char*>(mCondition) + 4));
 		nxGetSdkAllocator()->free(mCondition);
 		}
+	if(*reinterpret_cast<HANDLE*>(mLockA))
+		::CloseHandle(*reinterpret_cast<HANDLE*>(mLockA));
+	if(*reinterpret_cast<HANDLE*>(mLockB))
+		::CloseHandle(*reinterpret_cast<HANDLE*>(mLockB));
 	if(mReadLock)
 		{
 		if(*static_cast<void**>(mReadLock))
@@ -181,12 +206,94 @@ static bool nxLockUnlock(void* lock)
 
 static void* nxConditionConstruct(void* memory, void* a, void* b, void* c)
 	{
-	(void)a; (void)b; (void)c;
+	// The condition object is 0x18 bytes: vptr, allocated worker state, work
+	// event, completion event, scene pointer, and SDK lock pointer.
 	memset(memory, 0, 0x18);
 	void* state = nxGetSdkAllocator()->malloc(0x14, NX_MEMORY_PERSISTENT);
 	if(state) memset(state, 0, 0x14);
-	*reinterpret_cast<void**>(static_cast<unsigned char*>(memory) + 4) = state;
+	unsigned char* bytes = static_cast<unsigned char*>(memory);
+	*reinterpret_cast<void**>(bytes + 4) = state;
+	*reinterpret_cast<HANDLE*>(bytes + 8) = *reinterpret_cast<HANDLE*>(a);
+	*reinterpret_cast<HANDLE*>(bytes + 12) = *reinterpret_cast<HANDLE*>(b);
+	*reinterpret_cast<NxSceneInternal**>(bytes + 16) = static_cast<NxSceneInternal*>(c);
+	ReadWriteLock* sdkLock = 0;
+	if(PhysicsSDK::instance && PhysicsSDK::instance->getNp())
+		sdkLock = &PhysicsSDK::instance->getNp()->mLock;
+	*reinterpret_cast<ReadWriteLock**>(bytes + 20) = sdkLock;
 	return memory;
+	}
+
+// Worker state is laid out at condition+4: thread handle, state (0 stopped,
+// 1 running, 2 exited), and exit flag. The remaining bytes are reserved by the
+// original 0x14-byte allocation.
+static DWORD WINAPI nxSceneWorker(void* parameter)
+	{
+	unsigned char* condition = static_cast<unsigned char*>(parameter);
+	HANDLE work = *reinterpret_cast<HANDLE*>(condition + 8);
+	HANDLE done = *reinterpret_cast<HANDLE*>(condition + 12);
+	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(condition + 16);
+	ReadWriteLock* sdkLock = *reinterpret_cast<ReadWriteLock**>(condition + 20);
+	unsigned char* state = *reinterpret_cast<unsigned char**>(condition + 4);
+
+	for(;;)
+		{
+		if(::WaitForSingleObject(work, INFINITE) != WAIT_OBJECT_0)
+			return 0;
+		::ResetEvent(work);
+		if(*reinterpret_cast<volatile LONG*>(state + 8))
+			{
+			*reinterpret_cast<LONG*>(state + 4) = 2;
+			return 0;
+			}
+
+		if(sdkLock)
+			sdkLock->lock();
+		NpScene* wrapper = scene
+			? reinterpret_cast<NpScene*>(scene->at<void*>(0x6cc)) : 0;
+		const bool sceneLocked = wrapper && wrapper->writeLink()
+			&& nxNpSceneGuardWriteTry(wrapper->writeLink());
+
+		if(sceneLocked && scene)
+			scene->simulateFrame();
+
+		if(sceneLocked)
+			nxNpSceneGuardLeave(wrapper->writeLink());
+		if(sdkLock)
+			sdkLock->unlock();
+		::SetEvent(done);
+		}
+	}
+
+static bool nxConditionStart(void* condition)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(condition);
+	unsigned char* state = *reinterpret_cast<unsigned char**>(bytes + 4);
+	if(!state || *reinterpret_cast<LONG*>(state + 4) != 0)
+		return false;
+	*reinterpret_cast<volatile LONG*>(state + 8) = 0;
+	HANDLE thread = ::CreateThread(0, 0, nxSceneWorker, condition, 0, 0);
+	if(!thread)
+		return false;
+	*reinterpret_cast<HANDLE*>(state) = thread;
+	*reinterpret_cast<LONG*>(state + 4) = 1;
+	return true;
+	}
+
+static void nxConditionStop(void* condition)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(condition);
+	unsigned char* state = *reinterpret_cast<unsigned char**>(bytes + 4);
+	if(!state || *reinterpret_cast<LONG*>(state + 4) != 1)
+		return;
+	*reinterpret_cast<volatile LONG*>(state + 8) = 1;
+	::SetEvent(*reinterpret_cast<HANDLE*>(bytes + 8));
+	HANDLE thread = *reinterpret_cast<HANDLE*>(state);
+	if(thread)
+		{
+		::WaitForSingleObject(thread, INFINITE);
+		::CloseHandle(thread);
+		}
+	*reinterpret_cast<LONG*>(state + 4) = 2;
 	}
 
 // ---------------------------------------------------------------------------
@@ -198,10 +305,14 @@ static void* nxConditionConstruct(void* memory, void* a, void* b, void* c)
 // reconstructed and none is gated.
 // ---------------------------------------------------------------------------
 
-// (unimplemented) getGravity
-void NpScene::getGravity(NxVec3&)
+
+// phys_fn_000291 (0x0000c460, 39 B): read-lock the Scene gravity copy.
+void NpScene::getGravity(NxVec3& gravity)
 	{
-	
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	mScene->getGravity(gravity);
+	nxNpSceneGuardLeave(link);
 	}
 
 // phys_fn_000299 (0x0000c5d0, 87 B, phase 7): NxScene::releaseJoint. The
@@ -293,40 +404,57 @@ void NpScene::releaseController(NxController&)
 	
 	}
 
-// (unimplemented) setActorPairFlags
-void NpScene::setActorPairFlags(NxActor&, NxActor&, NxU32 nxContactPairFlag)
+// Store contact-report flags for the two actors' current root shapes.
+void NpScene::setActorPairFlags(NxActor& actor0, NxActor& actor1, NxU32 nxContactPairFlag)
 	{
-	
+	if(mScene)
+		cpmSetActorPairFlags(mScene, &actor0, &actor1, nxContactPairFlag);
 	}
 
-// (unimplemented) getActorPairFlags
-NxU32 NpScene::getActorPairFlags(NxActor&, NxActor&) const
+// Return the flags stored by setActorPairFlags.
+NxU32 NpScene::getActorPairFlags(NxActor& actor0, NxActor& actor1) const
 	{
-	return 0;
+	return mScene ? cpmGetActorPairFlags(mScene, &actor0, &actor1) : 0;
 	}
 
-// (unimplemented) setShapePairFlags
-void NpScene::setShapePairFlags(NxShape&, NxShape&, NxU32 nxContactPairFlag)
+// Store contact-report flags for the pair's exact shapes.
+void NpScene::setShapePairFlags(NxShape& shape0, NxShape& shape1, NxU32 nxContactPairFlag)
 	{
-	
+	if(mScene)
+		{
+		NxU8* const internalShape0 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&shape0) + 8);
+		NxU8* const internalShape1 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&shape1) + 8);
+		cpmSetShapePairFlags(mScene, internalShape0, internalShape1, nxContactPairFlag);
+		}
 	}
 
-// (unimplemented) getShapePairFlags
-NxU32 NpScene::getShapePairFlags(NxShape&, NxShape&) const
+// Return the flags stored by setShapePairFlags.
+NxU32 NpScene::getShapePairFlags(NxShape& shape0, NxShape& shape1) const
 	{
-	return 0;
+	if(!mScene) return 0;
+	const NxU8* const internalShape0 = *reinterpret_cast<NxU8* const*>(reinterpret_cast<const NxU8*>(&shape0) + 8);
+	const NxU8* const internalShape1 = *reinterpret_cast<NxU8* const*>(reinterpret_cast<const NxU8*>(&shape1) + 8);
+	return cpmGetShapePairFlags(mScene, internalShape0, internalShape1);
 	}
 
-// (unimplemented) getNbPairs
+// Read-lock while forwarding the active contact-pair count from Scene.
 NxU32 NpScene::getNbPairs() const
 	{
-	return 0;
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	const NxU32 count = mScene->getNbPairs();
+	nxNpSceneGuardLeave(link);
+	return count;
 	}
 
-// (unimplemented) getPairFlagArray
+// Read-lock while forwarding the active pair flags from Scene.
 bool NpScene::getPairFlagArray(NxPairFlag* userArray, NxU32 numPairs) const
 	{
-	return 0;
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	const bool result = mScene->getPairFlagArray(userArray, numPairs);
+	nxNpSceneGuardLeave(link);
+	return result;
 	}
 
 // The Scene actor array begins at internal +0x55c. The wrapper forwards the
@@ -422,34 +550,73 @@ void NpScene::flushStream()
 	
 	}
 
-// (unimplemented) startRun
+// phys_fn_000335 (0x0000ca40): warn once, then use the public simulate slot.
 void NpScene::startRun(NxReal elapsedTime)
 	{
-	
+	if(!gStartRunWarningEmitted)
+		{
+		gStartRunWarningEmitted = true;
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_PRINT,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x114, 0,
+			"Warning: deprecated method: \nScene::startRun(). Use the new  simulate() instead!\n\n");
+		}
+	simulate(elapsedTime);
 	}
 
-// (unimplemented) finishRun
+// phys_fn_000336 (0x0000ca90): warn once, then fetch the finished rigid-body run.
 void NpScene::finishRun()
 	{
-	
+	if(!gFinishRunWarningEmitted)
+		{
+		gFinishRunWarningEmitted = true;
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_PRINT,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x11a, 0,
+			"Warning: deprecated method: \nScene::finishRun(). Use the new  fetchResults() instead!\n\n");
+		}
+	fetchResults(NX_RIGID_BODY_FINISHED, true);
 	}
 
-// (unimplemented) setTiming
+// phys_fn_000338 (0x0000cae0): write-lock, then forward the timing triplet.
 void NpScene::setTiming(NxReal maxTimestep, NxU32 maxIter, NxTimeStepMethod method)
 	{
-	
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x120, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	void* link = mWriteLock;
+	mScene->setTiming(maxTimestep, maxIter, static_cast<NxU32>(method));
+	nxNpSceneGuardLeave(link);
 	}
 
-// (unimplemented) getTiming
+// phys_fn_000340 (0x0000cb50): read-lock, then copy the timing triplet out.
 void NpScene::getTiming(NxReal & maxTimestep, NxU32 & maxIter, NxTimeStepMethod & method) const
 	{
-	
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	NxU32 methodValue;
+	mScene->getTiming(maxTimestep, maxIter, methodValue);
+	method = static_cast<NxTimeStepMethod>(methodValue);
+	nxNpSceneGuardLeave(link);
 	}
 
-// (unimplemented) runFor
+// phys_fn_000342 (0x0000cb90): the legacy sequence is setTiming, simulate,
+// flushStream, and blocking fetchResults, with its deprecation warning once.
 void NpScene::runFor(NxReal elapsedTime, NxReal maxTimestep, NxU32 maxIter, NxTimeStepMethod method)
 	{
-	
+	if(!gRunForWarningEmitted)
+		{
+		gRunForWarningEmitted = true;
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_PRINT,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x12e, 0,
+			"Warning: deprecated method: \nScene::runFor. Use the new setTiming(), simulate(), flushStream(), fetchResults() sequence instead!\n\n");
+		}
+	setTiming(maxTimestep, maxIter, method);
+	simulate(elapsedTime);
+	flushStream();
+	fetchResults(NX_RIGID_BODY_FINISHED, true);
 	}
 
 // phys_fn_000344 (0x0000cc10, 77 B)
@@ -484,40 +651,43 @@ void NpScene::getLimits(NxSceneLimits& limits) const
 	
 	}
 
-// (unimplemented) setUserNotify
+// phys_fn_000350: store the callback consumed by joint-break events.
 void NpScene::setUserNotify(NxUserNotify* callback)
 	{
-	
+	if(mScene)
+		mScene->at<NxUserNotify*>(0x6ac) = callback;
 	}
 
-// (unimplemented) getUserNotify
+// phys_fn_000352: read the callback stored at Scene+0x6ac.
 NxUserNotify* NpScene::getUserNotify() const
 	{
-	return 0;
+	return mScene ? mScene->at<NxUserNotify*>(0x6ac) : 0;
 	}
 
-// (unimplemented) setUserTriggerReport
+// phys_fn_000354: store the trigger callback consumed by phys_fn_000640.
 void NpScene::setUserTriggerReport(NxUserTriggerReport* callback)
 	{
-	
+	if(mScene)
+		mScene->at<NxUserTriggerReport*>(0x6b0) = callback;
 	}
 
-// (unimplemented) getUserTriggerReport
+// phys_fn_000356: read the callback stored at Scene+0x6b0.
 NxUserTriggerReport* NpScene::getUserTriggerReport() const
 	{
-	return 0;
+	return mScene ? mScene->at<NxUserTriggerReport*>(0x6b0) : 0;
 	}
 
-// (unimplemented) setUserContactReport
+// phys_fn_000358: store the actor-contact callback consumed by phys_fn_000640.
 void NpScene::setUserContactReport(NxUserContactReport* callback)
 	{
-	
+	if(mScene)
+		mScene->at<NxUserContactReport*>(0x6b4) = callback;
 	}
 
-// (unimplemented) getUserContactReport
+// phys_fn_000360: read the callback stored at Scene+0x6b4.
 NxUserContactReport* NpScene::getUserContactReport() const
 	{
-	return 0;
+	return mScene ? mScene->at<NxUserContactReport*>(0x6b4) : 0;
 	}
 
 // (unimplemented) setUserFluidContactReport
@@ -767,40 +937,98 @@ NxImplicitMesh** NpScene::getImplicitMeshes()
 	return 0;
 	}
 
-// (unimplemented) wait
+// phys_fn_000390 (0x0000d600): warn once, then forward the run-finished fence
+// to the same checkResults virtual slot used by the public replacement API.
 bool NpScene::wait(NxStandardFences, bool block)
 	{
-	return 0;
+	if(!gWaitWarningEmitted)
+		{
+		gWaitWarningEmitted = true;
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_PRINT,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x204, 0,
+			"Warning: deprecated method: \nScene::wait(). Use the new  checkResults() instead!\n\n");
+		}
+	return checkResults(NX_RIGID_BODY_FINISHED, block);
 	}
 
-// (unimplemented) isWritable
+// phys_fn_000392 (0x0000d660): a successful write-lock probe is immediately
+// released; failure reports the scene as non-writable.
 bool NpScene::isWritable()
 	{
-	return 0;
+	void* link = mWriteLock;
+	if(!nxNpSceneGuardWriteTry(link))
+		return false;
+	nxNpSceneGuardLeave(link);
+	return true;
 	}
 
 // (unimplemented) simulate
 void NpScene::simulate(NxReal elapsedTime)
 	{
-	
+	if(elapsedTime <= 0.0f || mFlag || !mScene || !mCondition)
+		return;
+	void* readLink = mReadLock;
+	nxNpSceneGuardEnter(readLink);
+	if(mFlag)
+		{
+		nxNpSceneGuardLeave(readLink);
+		return;
+		}
+	mScene->at<NxReal>(0x544) = elapsedTime;
+	mFlag = 1;
+	::SetEvent(*reinterpret_cast<HANDLE*>(
+		static_cast<unsigned char*>(mCondition) + 8));
+	nxNpSceneGuardLeave(readLink);
 	}
 
 // (unimplemented) checkResults
-bool NpScene::checkResults(NxSimulationStatus, bool block )
+bool NpScene::checkResults(NxSimulationStatus status, bool block )
 	{
-	return 0;
+	if(!(static_cast<NxU32>(status) & 1))
+		return true;
+	if(!mCondition)
+		return false;
+	HANDLE done = *reinterpret_cast<HANDLE*>(
+		static_cast<unsigned char*>(mCondition) + 12);
+	return ::WaitForSingleObject(done, block ? INFINITE : 0) == WAIT_OBJECT_0;
 	}
 
-// (unimplemented) fetchResults
-bool NpScene::fetchResults(NxSimulationStatus, bool block )
+// phys_fn_000398 fetch-side path: wait for the worker, dispatch queued trigger/break/contact reports, refresh body gravity/snapshots, then clear the completion event.
+bool NpScene::fetchResults(NxSimulationStatus status, bool block )
 	{
-	return 0;
+	if(!checkResults(status, block))
+		return false;
+	if(mScene)
+		{
+		nxNpSceneGuardEnter(mReadLock);
+		mScene->processSimulationCallbacks();
+		mScene->finishSimulation();
+		nxNpSceneGuardLeave(mReadLock);
+		}
+	if(mFlag)
+		{
+		mFlag = 0;
+		::ResetEvent(*reinterpret_cast<HANDLE*>(
+			static_cast<unsigned char*>(mCondition) + 12));
+		}
+	return true;
 	}
 
-// (unimplemented) setGravity
-void NpScene::setGravity(const NxVec3&)
+
+// phys_fn_000289 (0x0000c400, 84 B): try the write lock, forward the three
+// gravity words to Scene+0x520, then release the same lock link.
+void NpScene::setGravity(const NxVec3& gravity)
 	{
-	
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x5b, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	void* link = mWriteLock;
+	mScene->setGravity(gravity);
+	nxNpSceneGuardLeave(link);
 	}
 
 // phys_fn_000295's shape: the write lock, the forward, the release.
