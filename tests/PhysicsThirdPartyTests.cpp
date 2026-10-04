@@ -377,7 +377,6 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "ice_matrix4x4", 1815, 0, 106, 0, 109, 0, 19, 106ull, 0.00128173828125 },	// 17 singular inputs are `degenerate`
 	{ "ice_obb", 1204, 0, 512, 0, 72, 0, 0, 512ull, 2.384185791015625e-07 },
 	{ "qhull_hull_x87", 1284, 0, 0, 3421917482582016ull, 7, 0, 0, 3421917482582016ull, 2.9558577807620168e-12 },	// doubles only; the combinatorial hull is exact
-	{ "qhull_hull_rotated", 1201, 582, 0, kInf64, 146, 31, 0, 4611686018427387904ull, 2.0 },	// "QR1": the merges differ
 	{ "opcode_candidate_trees_ray", 18, 1, 14, 0, 2, 0, 0, 14ull, 8.3446502685546875e-07 },	// the collider's floats, and one grazing ray's BV test count
 	{ "opcode_candidate_trees_x87", 2489, 2436, 37445356, 0, 9, 0, 0, 37445356ull, 2.435370922088623 },	// candidate-built quantized and tied trees: test counts, hits, floats
 	{ "qhull_output_x87", 2225, 0, 0, 3377699720527872ull, 43, 0, 0, 3377699720527872ull, 1.6653345369377348e-16 },	// qhull-gap: printed and hull doubles, the qhull_hull_x87 class
@@ -392,8 +391,6 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "qhull_merge2_x87", 1700, 0, 0, 2814749767106560ull, 103, 0, 0, 2814749767106560ull, 5.5511151231257827e-15 },	// qhull-gap: the Qn switches, larger thresholds, Qf, Delaunay Qt
 	{ "qhull_paths", 3212, 3204, 0, 0ull, 0, 0, 0, 0ull, 0.0 },	// qhull-gap: distance-test counts and a trace-4 search path; the T4 run is 9 words longer
 	{ "qhull_paths_x87", 644, 1, 0, kInf64, 348, 85, 0, 4616189618054758400ull, HUGE_VAL },	// qhull-gap: the same runs; misaligned after the T4 run's extra lines
-	{ "qhull_rotation", 268, 268, 0, 0ull, 0, 0, 0, 0ull, 0.0 },	// qhull-gap: "QRn": the merges differ, as qhull_hull_rotated
-	{ "qhull_rotation_x87", 2001, 0, 0, kInf64, 547, 20, 0, 4611686018427387904ull, 2.0 },	// qhull-gap: "QRn"
 	{ "edge_list.plane_divergent", 465, 465, 0, 0, 0, 0, 0, 0ull, 0.0 },	// convex-mesh gap Task 2c: active-edge bits that follow the vendored Plane::Set / Triangle::Normal (005155, 005181); 0 with the oracle's bound in
 	{ "ice_adjacencies.plane_divergent", 124, 124, 0, 0, 0, 0, 0, 0ull, 0.0 },	// the same, through 001546's EdgeList
 	{ "pose_pair.inverse_divergent", 944, 0, 0xffffffffu, 0, 944, 944, 0, 0ull, HUGE_VAL },	// convex-mesh gap Task 2e: 001653 over the inverse of a raw pose; every word a NaN: 276 are a signalling NaN the oracle's 005191 copies as integers and the vendored InvertPRMatrix quiets by copying through the FPU, and 668 are quiet NaNs on both sides that differ only in sign (252), payload (140) or both (276), where that quieted inverse meets other NaNs downstream in 001653's products; 0 with the oracle's 005191 bound in
@@ -4317,11 +4314,9 @@ static void nxDriveQhullHull(const NxOracleRows& o, bool selfOnly)
 	// reach vendored rows that option does not -- triangulated output, facet
 	// areas, the merge options, input scaling, the exhaustive initial simplex,
 	// output verification -- over the five sets that merge. The last, "o QR1",
-	// rotates the input by qhull's own random matrix first; the rotation's
-	// sums (qh_randommatrix, qh_gram_schmidt, qh_rotatepoints) round
-	// differently, the lattice and the slab stop being exactly coplanar in
-	// different places, and the merges that follow differ: that option goes to
-	// qhull_hull_rotated, DIVERGENT, as a whole.
+	// rotates the input by qhull's own random matrix first; qh_gram_schmidt uses
+	// the reference reciprocal sequence, so the rotation, coplanar sets, and
+	// resulting merge decisions match the oracle.
 	static const char* const kOptions[] = { "o", "o Qt", "o FA", "o C-0", "o Qx", "o Qbb", "o QbB", "o Qs", "o Tv", "o QR1" };
 	static const int kMergingSets[] = { 2, 3, 5, 6, 7 };
 	static float points[3 * 256];
@@ -4375,7 +4370,7 @@ static void nxDriveQhullHull(const NxOracleRows& o, bool selfOnly)
 		}
 	*hostSlot = shippedHost;
 	nxReportTapes(gOracleTapeB, gCandidateTapeB, "qhull_hull_rotated", "0x0005ff40", "phys_fn_002520",
-		"geom2.c,qhull.c,poly.c,poly2.c,merge.c", selfOnly, kDivergent);
+		"geom2.c,qhull.c,poly.c,poly2.c,merge.c", selfOnly, 0);
 	}
 
 // The Task 4 families, in the order they depend on each other: the models
@@ -6080,17 +6075,17 @@ static void nxDriveQhullGap(const NxOracleRows& o, bool selfOnly)
 	nxQhGapFamily(o, "qhull_paths", "qhull_paths_x87", "0x0005c5c0", "phys_fn_002425", "geom.c,qhull.c,poly2.c,merge.c,io.c",
 		"0x0005c5c0", "phys_fn_002425", "geom.c,geom2.c,merge.c", kPaths, sizeof(kPaths) / sizeof(kPaths[0]),
 		selfOnly, kDivergent, kDivergent);
-
-	// DIVERGENT, as qhull_hull_rotated: "QRn" rotates the input by qhull's own
-	// random matrix, whose Gram-Schmidt the oracle evaluates with a reciprocal
-	// (0x0005f3d2) where the candidate divides.
+	// Exact regression for "QRn": the oracle's Gram-Schmidt evaluates each
+	// normalized row element with one reciprocal and a multiply (0x0005f3d2).
+	// Keep the QRn discrete tape and x87 values exact; a mismatch here means the
+	// candidate's rotation matrix still differs before qhull's merge decisions.
 	static const NxQhGapRun kRotation[] =
 		{
 		{ 2, "QR2", 0 }, { 3, "QR3", 0 }, { 17, "QR1", 0 }, { 19, "QR1", 0 }, { 7, "QR1 C-0", 0 }, { 22, "d QR1", 1 },
 		};
 	nxQhGapFamily(o, "qhull_rotation", "qhull_rotation_x87", "0x0005fec0", "phys_fn_002518", "geom2.c,global.c,qhull.c,merge.c",
 		"0x0005fec0", "phys_fn_002518", "geom2.c,geom.c", kRotation, sizeof(kRotation) / sizeof(kRotation[0]),
-		selfOnly, kDivergent, kDivergent);
+		selfOnly, 0, 0);
 	}
 
 //////////////////////////////////////////////////////////////////////////////

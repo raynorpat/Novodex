@@ -20,3 +20,9 @@ This is the first clean staged consumer run for the current CMake candidate. The
 Both logs report `Unreal engine initialized`, `Browse: PhysTest`, `LoadMap: PhysTest`, `Game engine initialized`, `Initializing Engine Completed`, `Object subsystem successfully closed`, and `Exiting.` Neither reports the earlier candidate-only body/actor initialization failures or `Scene.cpp:552` failure. Both report the same four `Actor::setCMassOffsetLocalPosition: Actor must be (non-kinematic) dynamic!` diagnostics while bringing the level up, so these are present in the pinned baseline and are not evidence of a candidate-only divergence.
 
 The complete logs and pair staging are retained under the ignored worktree build directory `build\unreal-consumer-smoke\{oracle,candidate}`. This validates one two-second DemoGame map load/simulation/unload smoke and confirms module provenance; it does not close the broader M5 map/transition/interactions matrix or the full-DLL acceptance criteria.
+
+## Candidate rerun after QRn reconstruction
+
+After rebuilding the CMake candidate with the `qh_gram_schmidt` reciprocal fix, the candidate-only smoke was repeated from its isolated staged root. The newly staged Physics DLL SHA-256 is `d4bc7fd9ce0aec1d9f72c54eb8b55a1fa0b225810e9835edd2c230920d2cb2922`.
+
+The process exited 0 in 3.4 seconds. A live module snapshot recorded both `NxPhysics.dll` and `NxFoundation.dll` from `build\unreal-consumer-smoke\candidate\Binaries`. `candidate\DemoGame\Logs\Launch.log` again reached `LoadMap: PhysTest`, `Game engine initialized`, `Initializing Engine Completed`, `Object subsystem successfully closed`, and `Exiting.` It emitted the same four non-kinematic center-of-mass diagnostics and no body-init or `Scene.cpp:552` failures. The pinned oracle run from the first section remains the baseline; the installed engine pair was not changed.
