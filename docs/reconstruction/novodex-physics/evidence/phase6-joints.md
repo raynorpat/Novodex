@@ -9255,9 +9255,23 @@ transformed smooth-heightfield state lines. After restoring the source byte for
 byte from the worktree and rebuilding, the same differential returned
 `stdout_delta=0`, `stderr_exact=True`.
 
-An X-only order mutation in the same row was not caught (`stdout_delta=0`), so
-the recorded closure rests on the observable Y/Z order boundary; the X order is
-still supported by the Capstone listing and live x87 trace, but this fixture
-does not distinguish its alternative.
+The original zero-velocity input did not distinguish the X order. The fixture
+now starts the sphere with inward normal velocity `(0.014, -0.046, 0.014)`;
+the oracle-pinned ordinary smooth-heightfield state is
+`position=3edf07a3.3f6916e5.3edf07a4 velocity=b87e8b63.b8180000.b87f0000`.
+The transformed state remains pinned as before. This drives body zero's X
+impulse close to cancellation with the incoming X velocity.
+
+In a throwaway archive of HEAD `7b942a40` with the updated fixture and gate
+expectation overlaid (`D:/FlamingEnt__/novodex-analysis/mutation-004403-xorder-7b942a40-clean`),
+the X-only mutation changed body-zero `linearX` from the recovered double
+projection followed by inverse-mass scaling to a float-rounded projection
+before inverse-mass scaling. After rebuilding `NxPhysics` and
+`NxPhysicsMeshSimulationTests`, the registered target CAUGHT it:
+`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=4`, `stderr_exact=True`.
+Both ordinary and transformed post-solver state lines changed. Restoring the
+source from the worktree, rebuilding, and rerunning returned
+`stdout_delta=0`, `stderr_exact=True`. The unmutated Phase 6 and Phase 7 gates
+then passed at 867/867 and 1,312/1,312 respectively.
 
     phys_fn_004403  supportSolveNormal004403  stdout_delta=4

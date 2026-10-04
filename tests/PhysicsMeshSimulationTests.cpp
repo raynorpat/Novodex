@@ -432,7 +432,10 @@ int wmain(int argc, wchar_t** argv)
 	NxMeshContactReport smoothHeightfieldReport(sphere, smoothHeightfieldActor);
 	scene->setUserContactReport(&smoothHeightfieldReport);
 	sphere->setGlobalPosition(NxVec3(0.5f, 0.7f, 0.5f));
-	sphere->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
+	// Give the solver a small normal-direction X component so the body-zero
+	// projected impulse nearly cancels the incoming X velocity. This makes the
+	// X projection/inverse-mass rounding boundary observable in the final state.
+	sphere->setLinearVelocity(NxVec3(0.014f, -0.046f, 0.014f));
 	scene->simulate(1.0f / 60.0f);
 	if(!scene->checkResults(NX_RIGID_BODY_FINISHED, true)
 		|| !scene->fetchResults(NX_RIGID_BODY_FINISHED, true))
