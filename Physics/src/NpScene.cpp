@@ -424,7 +424,7 @@ void NpScene::setShapePairFlags(NxShape& shape0, NxShape& shape1, NxU32 nxContac
 		{
 		NxU8* const internalShape0 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&shape0) + 8);
 		NxU8* const internalShape1 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&shape1) + 8);
-		cpmSetShapePairFlags(mScene, internalShape0, internalShape1, nxContactPairFlag);
+		mScene->setShapePairFlags(internalShape0, internalShape1, nxContactPairFlag);
 		}
 	}
 

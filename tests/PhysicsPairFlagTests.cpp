@@ -10,9 +10,11 @@
 #include "NxActor.h"
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
+#include "NxShape.h"
 #include "NxSphereShapeDesc.h"
 #include "NxPlaneShapeDesc.h"
 #include "NxUserContactReport.h"
+#include "PhysicsActorErrorStream.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -34,7 +36,8 @@ int wmain(int argc, wchar_t** argv)
 		GetProcAddress(physics, "NxCreatePhysicsSDK"));
 	if(!createSDK)
 		return nxFail("NxCreatePhysicsSDK missing");
-	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, 0, 0);
+	NxActorErrorStream errorStream("pairflag");
+	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, 0, &errorStream);
 	if(!sdk)
 		return nxFail("SDK creation failed");
 	NxSceneDesc sceneDesc;
@@ -79,6 +82,24 @@ int wmain(int argc, wchar_t** argv)
 	const NxU32 pairBits = array && count ? pairs[0].flags : 0;
 	printf("pairflag compound flags=%08x count=%u array=%u actor_pair=%u objects=%u.%u pair_flags=%08x\n",
 		flags, count, array ? 1u : 0u, actorPair, first, second, pairBits);
+
+	NxShape** compoundShapes = compound->getShapes();
+	if(!compoundShapes || !compoundShapes[0])
+		return nxFail("compound shape handle unavailable");
+	errorStream.enabled = true;
+	scene->setShapePairFlags(*compoundShapes[0], *compoundShapes[0], NX_IGNORE_PAIR);
+	errorStream.enabled = false;
+	const NxU32 sameShapeFlags = scene->getShapePairFlags(*compoundShapes[0], *compoundShapes[0]);
+	const NxU32 sameShapeCount = scene->getNbPairs();
+	NxPairFlag sameShapePairs[16] = {};
+	const bool sameShapeArray = scene->getPairFlagArray(sameShapePairs, sameShapeCount);
+	unsigned sameShapeEntries = 0;
+	for(NxU32 i = 0; sameShapeArray && i < sameShapeCount && i < 16; ++i)
+		if(sameShapePairs[i].objects[0] == compoundShapes[0] &&
+			sameShapePairs[i].objects[1] == compoundShapes[0] && !sameShapePairs[i].isActorPair())
+			++sameShapeEntries;
+	printf("pairflag same_shape flags=%08x count=%u array=%u self_entries=%u errors=%u\n",
+		sameShapeFlags, sameShapeCount, sameShapeArray ? 1u : 0u, sameShapeEntries, errorStream.reports);
 
 	sdk->releaseScene(*scene);
 	sdk->release();

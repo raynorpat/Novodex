@@ -3152,6 +3152,8 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsPairFlagTests' = @(
         'pairflag compound flags=00000001 count=1 array=1 actor_pair=1 objects=0.1 pair_flags=80000001'
+        'pairflag report=1.388.\Epic\Novodex\SDKs\Physics\src\Scene.cpp.Scene::setShapePairFlags: The two shape references must not reference the same shape.'
+        'pairflag same_shape flags=00000000 count=1 array=1 self_entries=0 errors=1'
     )
     'NxPhysicsMeshSimulationTests' = @(
         # Full public path: construct a static triangle mesh, drop a sphere,
@@ -5378,7 +5380,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1316  # previous 1,315 plus the compound actor public-handle pair-array route
+    '7' = 1318  # previous 1,315 plus compound-pair expansion and same-shape rejection
     '8' = 0
 }
 

@@ -32,5 +32,27 @@ The candidate and oracle both exited 0. The CMake Release build of `NxPhysics`
 and `NxPhysicsSimulationTests` succeeded. The three oracle outputs are
 registered in Phase 7, whose coverage floor is now 1,315.
 
-Not covered here: same-shape error reporting, actor-level multi-shape expansion,
-actor-group pair flags, and the broader contact-report state machine.
+The follow-up `NxPhysicsPairFlagTests` covers a two-child actor pair and the
+same-shape rejection path. For a flagged pair containing a compound actor, the
+oracle returns the public actor handles in order (`objects=0.1`), marks the
+entry as an actor pair, and preserves `NX_IGNORE_PAIR`. The candidate initially
+returned internal body pointers; `NxSceneInternal::getPairFlagArray()` now maps
+each internal body back to its public actor by scanning the scene actor range.
+
+The same target passes one public shape reference twice to
+`setShapePairFlags()`. The oracle reports `NXE_INVALID_PARAMETER` at
+`Scene.cpp:0x388` with the exact message, then leaves the flag value at zero,
+keeps the original pair count at one, and emits no self-pair entry. The first
+candidate run crashed because the pair-hash helper received duplicate shape
+IDs. Oracle listing `phys_fn_000590` shows the missing guard: identical shape
+references must be rejected before the hash call. `NxSceneInternal::setShapePairFlags()`
+now performs that check and reports the same error.
+
+The focused pair-flag differential passes with `oracle_exit=0`,
+`candidate_exit=0`, `stdout_delta=0`, and exact stderr. The Phase 7 registry
+requires both the error line and the unchanged-state result; the current Phase 7
+coverage floor is 1,318. The fresh Phase 5 gate also passes after its coverage
+floor was corrected to match the 2,042 currently registered lines.
+
+Not covered here: actor-group pair flags and the broader contact-report state
+machine. The complete Phase 7 gate was not rerun as part of this follow-up.

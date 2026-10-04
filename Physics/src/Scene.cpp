@@ -3412,6 +3412,20 @@ void nxActorReleaseShape(unsigned char* body, unsigned char* shape)
 
 #define NX_SCENE_CPP	"\\Epic\\Novodex\\SDKs\\Physics\\src\\Scene.cpp"
 
+// phys_fn_000590 (0x00010dc0) validates the shape references before entering
+// the pair hash. The hash path does not support a key whose two shape IDs are
+// equal; the oracle reports the invalid parameter and leaves the table intact.
+void NxSceneInternal::setShapePairFlags(void* shape0, void* shape1, NxU32 flags)
+	{
+	if(shape0 == shape1)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER, NX_SCENE_CPP, 0x388, 0,
+			"Scene::setShapePairFlags: The two shape references must not reference the same shape.");
+		return;
+		}
+	cpmSetShapePairFlags(this, shape0, shape1, flags);
+	}
+
 // phys_fn_000661 (0x00013e00, 290 B, phase 7) is Scene::addJoint.
 // A joint whose flag bit 0 is already set is reported (the Foundation
 // instance test with int3, code 2, line 0x752) and left alone. Otherwise:
