@@ -1209,6 +1209,29 @@ int wmain(int argc, wchar_t** argv)
 		printf(" pair%u_actor=%u_flags=%08x", pairIndex,
 			recordPairs[pairIndex].isActorPair(), recordPairs[pairIndex].flags);
 	printf("\n");
+	NxShape** const reportGroundShapes = reportGround->getShapes();
+	NxShape** const reportDynamicShapes = reportDynamic->getShapes();
+	if(!reportGroundShapes || !reportDynamicShapes || !reportGroundShapes[0] || !reportDynamicShapes[0])
+		return nxFail("contact-report shapes unavailable for shape-pair flags");
+	NxShape& reportGroundShape = *reportGroundShapes[0];
+	NxShape& reportDynamicShape = *reportDynamicShapes[0];
+	reportScene->setShapePairFlags(reportGroundShape, reportDynamicShape, NX_IGNORE_PAIR);
+	const NxU32 configuredShapePairFlags = reportScene->getShapePairFlags(reportGroundShape, reportDynamicShape);
+	const NxU32 configuredShapePairCount = reportScene->getNbPairs();
+	NxPairFlag configuredShapePairs[64];
+	const bool configuredShapePairArray = reportScene->getPairFlagArray(configuredShapePairs, configuredShapePairCount);
+	printf("simulation configured-shape-pair-flags flags=%08x count=%u array=%u",
+		configuredShapePairFlags, configuredShapePairCount, configuredShapePairArray);
+	for(NxU32 pairIndex = 0; configuredShapePairArray && pairIndex < configuredShapePairCount && pairIndex < 64; ++pairIndex)
+		printf(" pair%u_actor=%u_flags=%08x", pairIndex,
+			configuredShapePairs[pairIndex].isActorPair(), configuredShapePairs[pairIndex].flags);
+	printf("\n");
+	reportScene->setShapePairFlags(reportGroundShape, reportDynamicShape, NX_NOTIFY_ON_TOUCH);
+	const NxU32 recordShapePairFlags = reportScene->getShapePairFlags(reportGroundShape, reportDynamicShape);
+	printf("simulation record-shape-pair-flags flags=%08x\n", recordShapePairFlags);
+	reportScene->setShapePairFlags(reportGroundShape, reportDynamicShape, 0);
+	printf("simulation cleared-shape-pair-flags flags=%08x\n",
+		reportScene->getShapePairFlags(reportGroundShape, reportDynamicShape));
 	sdk->setActorGroupPairFlags(7, 3, 0);
 	sdk->releaseScene(*reportScene);
 

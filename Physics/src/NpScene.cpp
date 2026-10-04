@@ -417,16 +417,24 @@ NxU32 NpScene::getActorPairFlags(NxActor& actor0, NxActor& actor1) const
 	return mScene ? cpmGetActorPairFlags(mScene, &actor0, &actor1) : 0;
 	}
 
-// (unimplemented) setShapePairFlags
-void NpScene::setShapePairFlags(NxShape&, NxShape&, NxU32 nxContactPairFlag)
+// Store contact-report flags for the pair's exact shapes.
+void NpScene::setShapePairFlags(NxShape& shape0, NxShape& shape1, NxU32 nxContactPairFlag)
 	{
-	
+	if(mScene)
+		{
+		NxU8* const internalShape0 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&shape0) + 8);
+		NxU8* const internalShape1 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&shape1) + 8);
+		cpmSetShapePairFlags(mScene, internalShape0, internalShape1, nxContactPairFlag);
+		}
 	}
 
-// (unimplemented) getShapePairFlags
-NxU32 NpScene::getShapePairFlags(NxShape&, NxShape&) const
+// Return the flags stored by setShapePairFlags.
+NxU32 NpScene::getShapePairFlags(NxShape& shape0, NxShape& shape1) const
 	{
-	return 0;
+	if(!mScene) return 0;
+	const NxU8* const internalShape0 = *reinterpret_cast<NxU8* const*>(reinterpret_cast<const NxU8*>(&shape0) + 8);
+	const NxU8* const internalShape1 = *reinterpret_cast<NxU8* const*>(reinterpret_cast<const NxU8*>(&shape1) + 8);
+	return cpmGetShapePairFlags(mScene, internalShape0, internalShape1);
 	}
 
 // Read-lock while forwarding the active contact-pair count from Scene.

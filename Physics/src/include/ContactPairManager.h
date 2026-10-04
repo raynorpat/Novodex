@@ -271,5 +271,7 @@ void __stdcall cpmDeletePairNode0915(NxPairNode* node);
 void __cdecl cpmBufferContactReports0917(NxSceneInternal* scene, CpmPairHash* hash);
 void cpmSetActorPairFlags(NxSceneInternal* scene, void* actor0, void* actor1, NxU32 flags);
 NxU32 cpmGetActorPairFlags(const NxSceneInternal* scene, const void* actor0, const void* actor1);
+void cpmSetShapePairFlags(NxSceneInternal* scene, void* shape0, void* shape1, NxU32 flags);
+NxU32 cpmGetShapePairFlags(const NxSceneInternal* scene, const void* shape0, const void* shape1);
 
 #endif

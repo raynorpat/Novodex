@@ -3097,6 +3097,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation fetch-contact actor0=1 actor1=1 events=0000000a force=80000000.80000000.80000000'
         'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.80000000.80000000'
         'simulation generated-contact summary flags=00000000 calls=6 events=00000008 ready=1 fetched=1'
+        'simulation configured-shape-pair-flags flags=00000001 count=1 array=1 pair0_actor=0_flags=00000001'
+        'simulation record-shape-pair-flags flags=00000008'
+        'simulation cleared-shape-pair-flags flags=00000000'
         'simulation compound-root-pose actor=00000000.3f333333.00000000 root=00000000.3f333333.00000000'
         'simulation compound-state step=0 position=00000000.3f333333.00000000 velocity=00000000.00000000.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ee.3f7746ea'
         'simulation compound-generated-contact step=0 calls=0 events=00000000'
@@ -5357,7 +5360,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1312  # previous 1,310 plus smooth-heightfield post-solver state vectors
+    '7' = 1315  # previous 1,312 includes smooth-heightfield state; plus the shape-pair
+               # inline/record/clear round-trip and shape-classified pair-array entry
     '8' = 0
 }
 

@@ -469,6 +469,42 @@ NxU32 cpmGetActorPairFlags(const NxSceneInternal* scene, const void* actor0, con
 	return *static_cast<NxU32*>(cpmPointer(entry->value)) & 0x1fffffffu;
 	}
 
+void cpmSetShapePairFlags(NxSceneInternal* scene, void* shape0, void* shape1, NxU32 flags)
+	{
+	if(!scene || !shape0 || !shape1) return;
+	const NxU32 shapeId0 = cpmAt<NxU32>(shape0, 0xd4);
+	const NxU32 shapeId1 = cpmAt<NxU32>(shape1, 0xd4);
+	CpmPairHash* const hash = reinterpret_cast<CpmPairHash*>(scene->bytes() + 0x2c);
+	cpmClearActorPairFlags(scene, shapeId0, shapeId1);
+	if(!flags) return;
+	const NxU32 storedFlags = (flags & 0x1fffffffu) | 0x20000000u;
+	void* value = reinterpret_cast<void*>(static_cast<size_t>(storedFlags));
+	if(!(flags & 1))
+		{
+		NxU32* record = static_cast<NxU32*>(nxFoundationSDKAllocator->malloc(0x14, NX_MEMORY_PERSISTENT));
+		if(!record) return;
+		record[0] = storedFlags;
+		record[1] = scene->at<NxU32>(0x540);
+		record[2] = record[3] = record[4] = 0;
+		value = record;
+		}
+	if(!cpmOpen004155(hash, shapeId0, shapeId1, value) && !(flags & 1))
+		nxFoundationSDKAllocator->free(value);
+	}
+
+NxU32 cpmGetShapePairFlags(const NxSceneInternal* scene, const void* shape0, const void* shape1)
+	{
+	if(!scene || !shape0 || !shape1) return 0;
+	const NxU32 shapeId0 = cpmAt<NxU32>(shape0, 0xd4);
+	const NxU32 shapeId1 = cpmAt<NxU32>(shape1, 0xd4);
+	CpmPairHash* const hash = reinterpret_cast<CpmPairHash*>(
+		const_cast<NxU8*>(scene->bytes()) + 0x2c);
+	CpmPairHashEntry* const entry = cpmOpen004153(hash, shapeId0, shapeId1);
+	if(!entry) return 0;
+	if(entry->value & 1) return entry->value & 0x1fffffffu;
+	return *static_cast<NxU32*>(cpmPointer(entry->value)) & 0x1fffffffu;
+	}
+
 // ---------------------------------------------------------------------------
 // The rows
 // ---------------------------------------------------------------------------
