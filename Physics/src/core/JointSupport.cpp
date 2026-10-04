@@ -108,10 +108,8 @@ static void supportSolveNormal004403(NxReal step, NxU32 pass, JointSupportRecord
 		{
 		if(!body)
 			return;
-		// The oracle's first-body X path scales before projection, while its
-		// second-body path projects before scaling. Y and Z project and round
-		// to float before inverse-mass scaling on both paths. Preserve those
-		// distinct operation orders through the velocity add.
+		// Keep each body's x87 operation order from 004403: body zero projects
+		// before inverse-mass scaling; body one rounds its X projection first.
 		const NxReal signedApplied = sign < 0.0f ? -applied : applied;
 		const double scaledImpulse = (double)signedApplied * body->mUnknown00c;
 		double linearX;
@@ -122,11 +120,24 @@ static void supportSolveNormal004403(NxReal step, NxU32 pass, JointSupportRecord
 			linearX = (double)projectedX * body->mUnknown00c;
 			}
 		else
-			linearX = scaledImpulse * record->mUnknown000.x;
-		const NxReal projectedY = (NxReal)((double)signedApplied * record->mUnknown000.y);
-		const NxReal projectedZ = (NxReal)((double)signedApplied * record->mUnknown000.z);
-		const double linearY = (double)projectedY * body->mUnknown00c;
-		const double linearZ = (double)projectedZ * body->mUnknown00c;
+			linearX = ((double)signedApplied * record->mUnknown000.x)
+				* body->mUnknown00c;
+		NxReal linearY;
+		NxReal linearZ;
+		if(sign < 0.0f)
+			{
+			linearY = (NxReal)(scaledImpulse * record->mUnknown000.y);
+			linearZ = (NxReal)(scaledImpulse * record->mUnknown000.z);
+			}
+		else
+			{
+			const NxReal projectedY = (NxReal)((double)signedApplied
+				* record->mUnknown000.y);
+			const NxReal projectedZ = (NxReal)((double)signedApplied
+				* record->mUnknown000.z);
+			linearY = (NxReal)((double)projectedY * body->mUnknown00c);
+			linearZ = (NxReal)((double)projectedZ * body->mUnknown00c);
+			}
 		body->mUnknown000.x = (NxReal)((double)body->mUnknown000.x
 			+ linearX);
 		body->mUnknown000.y = (NxReal)((double)body->mUnknown000.y + linearY);

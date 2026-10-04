@@ -81536,13 +81536,15 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2129",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15103",
-      "static_proof": null,
+      "static_proof": "phys_fn_004403: preserves the ordered body-relative-velocity dot products on the x87 stack through target subtraction and effective-mass scaling; accumulates and clamps the normal impulse before applying the delta; body-zero linear impulses project before inverse-mass scaling, while body-one follows its separate sign/order path; both bodies then accumulate the three inertia-row products before the angular-velocity add. Reconstructed in Physics/src/core/JointSupport.cpp as supportSolveNormal004403 and reviewed against the Capstone instruction listing.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Phase 7 staged-pair and simulation differentials exercise the reconstructed solver; smooth and transformed smooth-heightfield post-solver states match the pinned oracle. A row-specific mutation gate remains open.",
+      "implementation": "Physics/src/core/JointSupport.cpp",
+      "implementation_symbol": "supportSolveNormal004403"
     },
     {
       "id": "phys_fn_004404",
