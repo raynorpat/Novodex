@@ -394,6 +394,10 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "qhull_paths_x87", 644, 1, 0, kInf64, 348, 85, 0, 4616189618054758400ull, HUGE_VAL },	// qhull-gap: the same runs; misaligned after the T4 run's extra lines
 	{ "qhull_rotation", 268, 268, 0, 0ull, 0, 0, 0, 0ull, 0.0 },	// qhull-gap: "QRn": the merges differ, as qhull_hull_rotated
 	{ "qhull_rotation_x87", 2001, 0, 0, kInf64, 547, 20, 0, 4611686018427387904ull, 2.0 },	// qhull-gap: "QRn"
+	{ "hull_create_qhull", 242, 179, 0xffffffffu, 0, 16, 12, 0, 18874368ull, 14.0 },	// 0x027f box facet topology and short-quantization doubles; inputs and per-set effects are measured by hull_qhull_direct
+	{ "hull_compute_qhull", 248, 185, 0xffffffffu, 0, 16, 12, 0, 18874368ull, 14.0 },	// the same two cooking inputs, including the TriangleMesh wrapper words
+	{ "hull_qhull_direct", 105, 105, 0, 0, 0, 0, 0, 0, 0.0 },	// 8-point box's discrete facet topology, identical input, independently reproduced by vendored qhull
+	{ "hull_qhull_direct_x87", 61, 0, 0, kInf64, 37, 12, 0, 4607182418800017408ull, 2.0000000596046448 },	// x87 geometry residues on the two inputs; cluster hull topology is exact
 	{ "edge_list.plane_divergent", 465, 465, 0, 0, 0, 0, 0, 0ull, 0.0 },	// convex-mesh gap Task 2c: active-edge bits that follow the vendored Plane::Set / Triangle::Normal (005155, 005181); 0 with the oracle's bound in
 	{ "ice_adjacencies.plane_divergent", 124, 124, 0, 0, 0, 0, 0, 0ull, 0.0 },	// the same, through 001546's EdgeList
 	{ "pose_pair.inverse_divergent", 944, 0, 0xffffffffu, 0, 944, 944, 0, 0ull, HUGE_VAL },	// convex-mesh gap Task 2e: 001653 over the inverse of a raw pose; every word a NaN: 276 are a signalling NaN the oracle's 005191 copies as integers and the vendored InvertPRMatrix quiets by copying through the FPU, and 668 are quiet NaNs on both sides that differ only in sign (252), payload (140) or both (276), where that quieted inverse meets other NaNs downstream in 001653's products; 0 with the oracle's 005191 bound in
@@ -5133,7 +5137,8 @@ static unsigned nxHashBytes(const char* s, size_t n)
 	return h;
 	}
 
-static void nxQhTapeText(const char* text, size_t n, NxTape& tape, NxTape& floats);
+static void nxQhTapeText(const char* text, size_t n, NxTape& tape, NxTape& floats,
+	bool ignoreSignedZero = false);
 
 static void nxQhCapOff(int dim, int numpoints, int numfacets, int numridges)
 	{
@@ -5361,7 +5366,7 @@ static void* gQhHostCapObject[4] = { gQhHostCapVtable, 0, 0, 0 };
 // A CRT-written file as tokens (see OUTPUT CAPTURE above).
 static bool nxQhIsDigit(char c) { return c >= '0' && c <= '9'; }
 
-static void nxQhTapeText(const char* text, size_t n, NxTape& tape, NxTape& floats)
+static void nxQhTapeText(const char* text, size_t n, NxTape& tape, NxTape& floats, bool ignoreSignedZero)
 	{
 	size_t i = 0;
 	bool afterAt = false;		// the previous token was "At" (a time of day follows)
@@ -5444,7 +5449,10 @@ static void nxQhTapeText(const char* text, size_t n, NxTape& tape, NxTape& float
 				const bool id = !isReal && j > i && ((text[j - 1] >= 'a' && text[j - 1] <= 'z')
 					|| (text[j - 1] >= 'A' && text[j - 1] <= 'Z') || text[j - 1] == '#');
 				if(!id && !(maskToken && !isReal))
-					floats.pushDouble(maskToken ? 0.0 : strtod(number, 0));
+					{
+					const double value = maskToken ? 0.0 : strtod(number, 0);
+					floats.pushDouble(ignoreSignedZero && value == 0.0 ? 0.0 : value);
+					}
 				else if(maskToken)
 					tape.push(kQhMask);
 				else if(m - j <= 9)
@@ -5464,6 +5472,19 @@ static void nxQhTapeText(const char* text, size_t n, NxTape& tape, NxTape& float
 			}
 		i = end;
 		}
+	}
+
+static bool nxHullObjSignedZeroProbe()
+	{
+	static const char kPositive[] = "0.000000000\n";
+	static const char kNegative[] = "-0.000000000\n";
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	nxQhTapeText(kPositive, sizeof(kPositive) - 1, gOracleTape, gOracleTape, true);
+	nxQhTapeText(kNegative, sizeof(kNegative) - 1, gCandidateTape, gCandidateTape, true);
+	return gOracleTape.count == gCandidateTape.count && gOracleTape.overflow == gCandidateTape.overflow
+		&& !memcmp(gOracleTape.words, gCandidateTape.words, gOracleTape.count * sizeof(gOracleTape.words[0]))
+		&& !memcmp(gOracleTape.kinds, gCandidateTape.kinds, gOracleTape.count * sizeof(gOracleTape.kinds[0]));
 	}
 
 static char gQhFileNames[4][MAX_PATH];
@@ -10993,7 +11014,7 @@ static void nxHullTapeObjFiles(NxTape& tape, NxTape& text, int side)
 			size = fread(bytes, 1, sizeof(bytes), f);
 			fclose(f);
 			}
-		nxQhTapeText(bytes, size, text, text);
+		nxQhTapeText(bytes, size, text, text, true);
 		text.push(0x0e0f0000u);
 		if(gHullBytesCur[side])
 			nxHullTapeObjBytes(*gHullBytesCur[side], bytes, size);
@@ -11480,7 +11501,7 @@ static void nxDriveConvexCooking(const NxOracleRows& o, bool selfOnly)
 				"QhullHost.cpp,Quantizer.cpp", selfOnly, kDivergent);
 			}
 		nxReportTapes(gHullText[0], gHullText[1], kCreateTextNames[w], "0x0007dea0", "phys_fn_003247",
-			"QhullHost.cpp", selfOnly, kDivergent);
+			"QhullHost.cpp", selfOnly, 0);
 		}
 
 	// B. Every set but the empty one as an NxTriangleMeshDesc with
@@ -11524,7 +11545,7 @@ static void nxDriveConvexCooking(const NxOracleRows& o, bool selfOnly)
 				"TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp", selfOnly, kDivergent);
 			}
 		nxReportTapes(gHullText[0], gHullText[1], kComputeTextNames[w], "0x0007e050", "phys_fn_003251",
-			"QhullHost.cpp", selfOnly, kDivergent);
+			"QhullHost.cpp", selfOnly, 0);
 		}
 
 	*hostSlot = shippedHost;
@@ -11737,6 +11758,8 @@ int wmain(int argc, wchar_t** argv)
 
 	printf("thirdparty libraries qhull=2003.1 opcode=1.3-standalone\n");
 	printf("thirdparty generator=xorshift32 mode=%s\n", selfOnly ? "self" : "differential");
+	if(!nxHullObjSignedZeroProbe())
+		return nxFail("OBJ text normalization did not ignore the CRT's signed-zero spelling");
 
 	nxCheckLayouts();
 
