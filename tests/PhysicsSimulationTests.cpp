@@ -1191,6 +1191,15 @@ int wmain(int argc, wchar_t** argv)
 		printf(" pair%u_actor=%u_flags=%08x", pairIndex,
 			generatedPairs[pairIndex].isActorPair(), generatedPairs[pairIndex].flags);
 	printf("\n");
+	reportScene->setActorPairFlags(*reportGround, *reportDynamic, NX_IGNORE_PAIR);
+	const NxU32 configuredPairCount = reportScene->getNbPairs();
+	NxPairFlag configuredPairs[64];
+	const bool configuredPairArray = reportScene->getPairFlagArray(configuredPairs, configuredPairCount);
+	printf("simulation configured-pair-flags count=%u array=%u", configuredPairCount, configuredPairArray);
+	for(NxU32 pairIndex = 0; configuredPairArray && pairIndex < configuredPairCount && pairIndex < 64; ++pairIndex)
+		printf(" pair%u_actor=%u_flags=%08x", pairIndex,
+			configuredPairs[pairIndex].isActorPair(), configuredPairs[pairIndex].flags);
+	printf("\n");
 	sdk->setActorGroupPairFlags(7, 3, 0);
 	sdk->releaseScene(*reportScene);
 
