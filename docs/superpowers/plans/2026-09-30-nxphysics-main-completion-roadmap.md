@@ -90,16 +90,23 @@ The original current-main artifacts are `build/main-phase5.log` and `build/main-
 - The older temporary D6 swing probe recorded six tiny angular-velocity word differences, but did not preserve its descriptor setup. The old residual is not reproduced by this fully initialized fixture; leave it inconclusive and retain it as a separate follow-up rather than attributing a solver bug without a valid reproducer. This case adds one registered Phase 7 assertion; focused coverage-floor tests pass and the fresh Phase 7 gate passes at 1,310/1,310 (`build/phase7-d6-swing-registered.log`).
 - This covers one kind-2 swing-limit route only. Other kind-2 axis/limit interactions, the broader joint solver matrix, and repeated lifecycle interactions remain open. Full M1 and full-DLL completion remain active. Public Physics headers were not changed.
 
+### Execution checkpoint — 2026-10-04, smooth-heightfield support response
+
+- Added oracle-pinned post-solver position and velocity vectors for both the sloped smooth-heightfield case and its transformed counterpart. The contact stream had already matched, but these state vectors exposed residual normal-impulse ordering differences.
+- Oracle disassembly and a live x87 trace identified the first-body projection/inverse-mass order in `phys_fn_004403`. `supportSolveNormal004403` now preserves that path while keeping the separate second-body sign/order branch. The ordinary mesh and below-surface cases remain bit-identical; both smooth-heightfield states now match exactly.
+- The focused mesh differential and all ten Phase 7 targets pass at 1,312/1,312; the full Phase 5 runner passes its 13 staged-pair targets and both oracle-side layout/vtable differentials at 2,037/2,037. The CMake Release build, 80-file public-header check, focused coverage-floor tests, and inventory validation pass. Commit `d7b45a51` records the solver reconstruction and inventory proof.
+- Phase 5's runner is green, while its closure ledger still defers all 205 owned functions and 122 data objects because row-level mutation evidence is outstanding. The support solver has fixture evidence but no row-specific mutation gate. Heightfield edge/corner and multi-face cases, the remaining M1 solver matrix, object-family audits, and full-DLL closure remain open. Public Physics headers were not changed.
+
 Current unique code-row states by owning phase:
 
 | Phase | Discovered | Reconstructed | Dynamically gated / statically reviewed |
 |---|---:|---:|---:|
-| 2: SDK | 21 | 66 | 50 / 6 |
+| 2: SDK | 15 | 72 | 50 / 6 |
 | 3: collision | 144 | 187 | 61 / 0 |
 | 4: meshes/spatial/vendor | 273 | 752 | 28 / 0 |
 | 5: objects | 8 | 197 | 0 / 0 |
-| 6: joints/effectors | 27 | 404 | 2 / 0 |
-| 7: scenes/simulation | 276 | 281 | 4 / 0 |
+| 6: joints/effectors | 22 | 409 | 2 / 0 |
+| 7: scenes/simulation | 268 | 289 | 4 / 0 |
 
 The eight discovered Phase 5 IDs are `000002`, `000030`, `000032`, `000034`, `002318`, `002324`, `002330`, and `002421`. Some already have candidate bodies, including `000030` and `000032`; audit their full paths and evidence before rewriting them. Phase 5 closure also requires verification of its reconstructed rows and concrete dispatch, not merely promoting these eight.
 
