@@ -11655,7 +11655,10 @@ int wmain(int argc, wchar_t** argv)
 	// have printed how far it got.
 	setvbuf(stdout, 0, _IONBF, 0);
 
-	bool selfOnly = false;
+	// Keep the mode byte in memory: the oracle-side dispatch probe clobbers the
+	// nonvolatile register MSVC otherwise keeps this value in across the driver
+	// calls, which can pass a noncanonical byte to the hull side-count logic.
+	volatile bool selfOnly = false;
 	if(argc == 4 && wcscmp(argv[3], L"--self") == 0)
 		selfOnly = true;
 	else if(argc != 3)
