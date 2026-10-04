@@ -3606,6 +3606,21 @@ $NxRequiredCoverageLines = [ordered] @{
         'dump no_scene lines=67 normalised_bytes=1799',
         'allocator after_release outstanding=14'
     )
+    # The staged-pair mesh simulation records contact, back-face, edge, vertex,
+    # transformed-mesh, trigger, heightfield and solver-state results.
+    'NxPhysicsMeshSimulationTests' = @(
+        'simulation mesh-contact calls=',
+        'simulation mesh-backface calls=',
+        'simulation mesh-edge steps=',
+        'simulation mesh-vertex steps=',
+        'simulation mesh-transformed calls=',
+        'simulation mesh-trigger calls=',
+        'simulation mesh-heightfield calls=',
+        'simulation mesh-heightfield-smooth calls=',
+        'simulation mesh-heightfield-smooth-state position=',
+        'simulation mesh-heightfield-smooth-transformed calls=',
+        'simulation mesh-heightfield-smooth-transformed-state position='
+    )
     'NxFoundationTangentTests' = @(
         'tangent sweep unit=120000 threshold=60000 scaled=60000 digest=5db0093f',
         'tangent coverage arm_z=93923 arm_xy=146112',
@@ -4664,14 +4679,6 @@ $NxRequiredCoverageLines = [ordered] @{
 
         'release case=null_data returned=1 data_size=5a5a5a5a data=00000000'
     )
-    'NxPhysicsConvexMeshTests' = @(
-        'mesh-case name=precomputed_tetra_first repeat=0 flags=00000004 created=1 submeshes=4',
-        'mesh-case name=computed_tetra repeat=0 flags=0000000c created=1 submeshes=4',
-        'mesh-actor name=static_tetra mesh=1 scene=1 actor=1 shapes=1 type=4',
-        'mesh-actor name=dynamic_tetra mesh=1 scene=1 actor=1 shapes=1 type=4 dynamic=1',
-        'mesh-actor-mass mass=3e2aaaab center=3e800000:3e800000:3e800000 inertia=3c2aaaac:3c888889:3c2aaaac'
-    )
-
     # The Phase 5 object-layout gate exercises the implemented object/layout rows.
     # Concrete candidate shape dispatch is checked by NxPhysicsShapeVtableTests,
     # while actor behavior and ownership are covered by the staged-pair targets.
@@ -5295,7 +5302,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 1  # one public actor-group pair-flag hash round-trip and clear
     '3' = 359  # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 256  # 36 asset, 215 third-party and 5 convex-mesh actor/mass assertions
+    '4' = 259  # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
     '5' = 2042  # registered coverage across the current actor, body, shape, and object-layout targets
                # + 175 from scene-raycast Task 4 (149 body-creation, 13 setters, 9 dynamic-setter
                # and 3 shape-vtable from its shape sub-area, 1 shape-vtable from its box hull)
@@ -5306,8 +5313,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1172  # 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize + 2 simulation soak assertions + 8 box-contact + 8 sphere-pair assertions
-               # + 23 M1 simulation + 79 effector + 374 core-dump; the oracle-differential assertions
+    '7' = 1263  # current registered assertions across joint, scene, simulation, mesh, trigger,
+               # effector and core-dump targets; kept equal to the registry count below
     '8' = 0
 }
 
