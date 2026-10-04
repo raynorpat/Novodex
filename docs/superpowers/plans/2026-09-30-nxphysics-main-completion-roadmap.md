@@ -122,6 +122,12 @@ The eight discovered Phase 5 IDs are `000002`, `000030`, `000032`, `000034`, `00
 - Fresh Phase 5 and Phase 6 gates passed immediately before this edit at 2,037/2,037 and 867/867. Fresh Phase 7 after the edit passes all ten targets at 1,312/1,312; each target has zero stdout delta, exact stderr, and successful oracle/candidate exits. Logs are under `D:\FlamingEnt__\novodex-analysis\pairs\codex-main-reconstruction-1636-*`.
 - The internal pair-array reader (`phys_fn_000525/000527`) and public `NpScene::getPairFlagArray()` still need an oracle-driven fixture that actually emits pair entries. Object-family/vtable closure, discovered code/data ownership, Unreal integration, and M6 full-DLL acceptance remain open. No public Physics headers changed.
 
+### Execution checkpoint — 2026-10-04, scene pair-flag array
+
+- Added an oracle-driven simulation case that sets `NX_IGNORE_PAIR` on a real actor pair. The oracle returns one actor pair with flags `00000001`; the reconstruction initially returned no pair array. `NxSceneInternal::getPairFlagArray()` now indexes scene shapes from the static and selected dynamic pruner pools, resolves shape IDs from the pair hash, and emits public shape or actor handles with the actor-pair bit. `NpScene::getPairFlagArray()` forwards under the scene read lock.
+- Contact-report records share the scene pair hash with explicit flag records. The candidate's allocator can place contact-record pointers in the oracle's `0x20000000` marker range, so the implementation also validates the stored record's flag marker; the contact-only case stays absent while an explicit actor-flag pair is returned.
+- The focused `NxPhysicsSimulationTests` differential passes with `stdout_delta=0` and exact stderr for the contact-only record, inline `NX_IGNORE_PAIR`, and record-backed `NX_NOTIFY_ON_TOUCH` cases. The fresh Phase 7 gate passes all ten targets with zero stdout deltas and exact stderr (`D:\FlamingEnt__\novodex-analysis\pairs\pair-array-phase7-final2.log`). Public Physics headers were not changed. Full Phase 5/6 closure, object-family and inventory audits, Unreal integration, and M6 full-DLL acceptance remain open.
+
 ## 2. Approach selection
 
 1. **Recommended: dependency-driven parallel reconstruction with continuous integration.** Trace the public simulation entries to their real internal callees, partition those dependencies into owned work units, and bring up an end-to-end simulation slice while independent full-DLL work proceeds. This minimizes time to useful testing and exposes integration defects early.

@@ -439,10 +439,14 @@ NxU32 NpScene::getNbPairs() const
 	return count;
 	}
 
-// (unimplemented) getPairFlagArray
+// Read-lock while forwarding the active pair flags from Scene.
 bool NpScene::getPairFlagArray(NxPairFlag* userArray, NxU32 numPairs) const
 	{
-	return 0;
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	const bool result = mScene->getPairFlagArray(userArray, numPairs);
+	nxNpSceneGuardLeave(link);
+	return result;
 	}
 
 // The Scene actor array begins at internal +0x55c. The wrapper forwards the

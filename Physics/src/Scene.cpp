@@ -68,6 +68,8 @@
 #include "NxUtilities.h"
 #include "SceneVisualize.h"
 #include "ContactPairManager.h"
+#include "NxScene.h"
+#include "opcode/IcePruner.h"
 #include "NxDebugRenderable.h"
 #include "NarrowPhase.h"
 #include "ContactGeneration.h"
@@ -4286,16 +4288,73 @@ NxU32 NxSceneInternal::getNbPairs() const
 	return at<NxU32>(0x3c);
 	}
 
-// phys_fn_000525 (0x00010410, 61 B, phase 7), deferred with its continuation
-// phys_fn_000527 (0x00010450, 284 B): the pairs are walked out of the hash at
-// +0x624 through phys_fn_001957 into a 0x4000c-byte frame, which the
-// candidate's pair-flag hash does not reproduce. Its one caller is the core
-// dump, behind getNbPairs() != 0, which the candidate never has.
+// phys_fn_000525 (0x00010410) and its continuation phys_fn_000527 (0x00010450).
+// Index the static roots and the selected dynamic roots by their shape IDs,
+// then translate each flagged hash entry into public shape or actor handles.
 bool NxSceneInternal::getPairFlagArray(NxPairFlag* userArray, NxU32 numPairs) const
 	{
-	(void)userArray; (void)numPairs;
-	NX_ASSERT(0);
-	return false;
+	void** shapeById = static_cast<void**>(_alloca(0x4000c));
+	memset(shapeById, 0, 0x4000c);
+
+	const unsigned char* const engine = bytes() + 0x624;
+	const unsigned char selectedType = at<unsigned char>(0x624 + 0x70);
+	const unsigned prunerOffsets[] = { 0x1cu, 0x1cu + static_cast<unsigned>(selectedType) * 4u };
+	for(unsigned pass = 0; pass < 2; ++pass)
+		{
+			const Pruner* const pruner = *reinterpret_cast<Pruner* const*>(engine + prunerOffsets[pass]);
+			if(!pruner)
+				continue;
+			const PruningPool& pool = pruner->mPool;
+			const unsigned count = pool.mNbObjects[1] + pool.mNbObjects[2];
+			for(unsigned index = 0; index < count; ++index)
+				{
+					Prunable* const prunable = pool.mObjects[pool.mNbObjects[0] + index];
+					unsigned char* const shape = *reinterpret_cast<unsigned char**>(
+						reinterpret_cast<unsigned char*>(prunable) + 4);
+					shapeById[*reinterpret_cast<unsigned*>(shape + 0xd4)] = shape;
+				}
+		}
+
+	const CpmPairHashEntry* entry = at<CpmPairHashEntry*>(0x40);
+	NxU32 remainingHashEntries = at<NxU32>(0x3c);
+	bool keepWalking = true;
+	bool everyEntryHasPairFlags = true;
+	while(remainingHashEntries && keepWalking)
+		{
+			--remainingHashEntries;
+			const NxU32 value = entry->value;
+			NxU32 storedFlags = 0;
+			// The entry value is a tagged immediate for flags containing bit 0,
+			// otherwise it points at a 0x14-byte record. Confirm the record's
+			// marker too: contact-report records share this hash, and a relocated
+			// 32-bit heap pointer can itself occupy the marker's address range.
+			if(value & 0x20000000u)
+				storedFlags = (value & 1u) ? value : *reinterpret_cast<const NxU32*>(value);
+			if(storedFlags & 0x20000000u)
+				{
+					NxPairFlag& pair = *userArray++;
+					pair.flags = (value & 1u) ? 1u : (storedFlags & 0x1fffffffu);
+					unsigned char* const shape0 = static_cast<unsigned char*>(shapeById[entry->key0]);
+					unsigned char* const shape1 = static_cast<unsigned char*>(shapeById[entry->key1]);
+					if(*reinterpret_cast<NxU32*>(shape0 + 0xd0) != 5u &&
+						*reinterpret_cast<NxU32*>(shape1 + 0xd0) != 5u)
+						{
+							pair.objects[0] = *reinterpret_cast<void**>(shape0 + 0x9c);
+							pair.objects[1] = *reinterpret_cast<void**>(shape1 + 0x9c);
+						}
+					else
+						{
+							pair.objects[0] = *reinterpret_cast<void**>(shape0 + 4);
+							pair.objects[1] = *reinterpret_cast<void**>(shape1 + 4);
+							pair.flags |= 0x80000000u;
+						}
+					keepWalking = --numPairs != 0;
+				}
+			else
+				everyEntryHasPairFlags = false;
+			++entry;
+		}
+	return everyEntryHasPairFlags && remainingHashEntries == 0 && numPairs == 0;
 	}
 
 // phys_fn_000561 (0x00010870, 7 B, phase 7): the effector count at +0x6c4.

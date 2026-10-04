@@ -1200,6 +1200,15 @@ int wmain(int argc, wchar_t** argv)
 		printf(" pair%u_actor=%u_flags=%08x", pairIndex,
 			configuredPairs[pairIndex].isActorPair(), configuredPairs[pairIndex].flags);
 	printf("\n");
+	reportScene->setActorPairFlags(*reportGround, *reportDynamic, NX_NOTIFY_ON_TOUCH);
+	const NxU32 recordPairCount = reportScene->getNbPairs();
+	NxPairFlag recordPairs[64];
+	const bool recordPairArray = reportScene->getPairFlagArray(recordPairs, recordPairCount);
+	printf("simulation record-pair-flags count=%u array=%u", recordPairCount, recordPairArray);
+	for(NxU32 pairIndex = 0; recordPairArray && pairIndex < recordPairCount && pairIndex < 64; ++pairIndex)
+		printf(" pair%u_actor=%u_flags=%08x", pairIndex,
+			recordPairs[pairIndex].isActorPair(), recordPairs[pairIndex].flags);
+	printf("\n");
 	sdk->setActorGroupPairFlags(7, 3, 0);
 	sdk->releaseScene(*reportScene);
 
