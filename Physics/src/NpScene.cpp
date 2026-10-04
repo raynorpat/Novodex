@@ -85,17 +85,17 @@ NpScene::NpScene(NxSceneInternal* scene)
 	// allocation size wrong.
 	static const NxU32 kNpSceneLockBlock = 0x20;
 
-	mWriteLock = nxGetSdkAllocator()->malloc(4, NX_MEMORY_PERSISTENT);
+	mWriteLock = nxFoundationSDKAllocator->malloc(4, NX_MEMORY_PERSISTENT);
 	if(mWriteLock)
 		{
-		void* block = nxGetSdkAllocator()->malloc(kNpSceneLockBlock, NX_MEMORY_PERSISTENT);
+		void* block = nxFoundationSDKAllocator->malloc(kNpSceneLockBlock, NX_MEMORY_PERSISTENT);
 		*static_cast<void**>(mWriteLock) = block ? nxLockConstruct(block) : 0;
 		}
 
-	mReadLock = nxGetSdkAllocator()->malloc(4, NX_MEMORY_PERSISTENT);
+	mReadLock = nxFoundationSDKAllocator->malloc(4, NX_MEMORY_PERSISTENT);
 	if(mReadLock)
 		{
-		void* block = nxGetSdkAllocator()->malloc(kNpSceneLockBlock, NX_MEMORY_PERSISTENT);
+		void* block = nxFoundationSDKAllocator->malloc(kNpSceneLockBlock, NX_MEMORY_PERSISTENT);
 		*static_cast<void**>(mReadLock) = block ? nxLockConstruct(block) : 0;
 		}
 
@@ -120,7 +120,7 @@ NpScene::~NpScene()
 		nxConditionStop(mCondition);
 		nxGetSdkAllocator()->free(*reinterpret_cast<void**>(
 			static_cast<unsigned char*>(mCondition) + 4));
-		nxGetSdkAllocator()->free(mCondition);
+		nxFoundationSDKAllocator->free(mCondition);
 		}
 	if(*reinterpret_cast<HANDLE*>(mLockA))
 		::CloseHandle(*reinterpret_cast<HANDLE*>(mLockA));
@@ -131,16 +131,16 @@ NpScene::~NpScene()
 		if(*static_cast<void**>(mReadLock))
 			::DeleteCriticalSection(static_cast<CRITICAL_SECTION*>(
 				*static_cast<void**>(mReadLock)));
-		nxGetSdkAllocator()->free(*static_cast<void**>(mReadLock));
-		nxGetSdkAllocator()->free(mReadLock);
+		nxFoundationSDKAllocator->free(*static_cast<void**>(mReadLock));
+		nxFoundationSDKAllocator->free(mReadLock);
 		}
 	if(mWriteLock)
 		{
 		if(*static_cast<void**>(mWriteLock))
 			::DeleteCriticalSection(static_cast<CRITICAL_SECTION*>(
 				*static_cast<void**>(mWriteLock)));
-		nxGetSdkAllocator()->free(*static_cast<void**>(mWriteLock));
-		nxGetSdkAllocator()->free(mWriteLock);
+		nxFoundationSDKAllocator->free(*static_cast<void**>(mWriteLock));
+		nxFoundationSDKAllocator->free(mWriteLock);
 		}
 	}
 
@@ -211,7 +211,7 @@ static void* nxConditionConstruct(void* memory, void* a, void* b, void* c)
 	// The condition object is 0x18 bytes: vptr, allocated worker state, work
 	// event, completion event, scene pointer, and SDK lock pointer.
 	memset(memory, 0, 0x18);
-	void* state = nxGetSdkAllocator()->malloc(0x14, NX_MEMORY_PERSISTENT);
+	void* state = nxFoundationSDKAllocator->malloc(0x14, NX_MEMORY_PERSISTENT);
 	if(state) memset(state, 0, 0x14);
 	unsigned char* bytes = static_cast<unsigned char*>(memory);
 	*reinterpret_cast<void**>(bytes + 4) = state;

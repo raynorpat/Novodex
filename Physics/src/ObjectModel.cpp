@@ -981,7 +981,7 @@ void nxSceneRemovePairs(void* container, void* shape)
 
 // phys_fn_000028 (0x1b90): dword-vector push_back over the VC9 layout
 // {_Myproxy@+0x00 untouched by this row, _Myfirst@+0x04, _Mylast@+0x08,
-// _Myend@+0x0c}. The growth arm allocates 2*size + 2 dwords through the SDK
+// _Myend@+0x0c}. The growth arm allocates 2*size + 2 dwords through the Foundation
 // allocator (adapter vtable slot +8 with flag word 0), copies the live
 // elements dword-wise, releases the old block (slot +0x14) and repoints all
 // three cursors; the compiler's own escape (`jae` over the arm when the old
@@ -1006,13 +1006,13 @@ void nxU32VectorPushBack(void* vecHeader, NxU32 value)
 		(reinterpret_cast<unsigned>(capEnd) - reinterpret_cast<unsigned>(begin)) >> 2);
 	if(oldCapDwords < newCapDwords)
 		{
-		void* fresh = nxGetSdkAllocator()->malloc(
+		void* fresh = nxFoundationSDKAllocator->malloc(
 			newCapDwords * sizeof(unsigned), NX_MEMORY_PERSISTENT);
 		unsigned* run = static_cast<unsigned*>(fresh);
 		for(unsigned i = 0; i < size; ++i)	// copy before release
 			run[i] = begin[i];
 		if(begin != 0)
-			nxGetSdkAllocator()->free(begin);
+			nxFoundationSDKAllocator->free(begin);
 		*reinterpret_cast<unsigned**>(f + 0x04) = run;
 		*reinterpret_cast<unsigned**>(f + 0x0c) = run + newCapDwords;
 		end = run + size;
@@ -1272,7 +1272,7 @@ void nxActorDeletingDtor(void* self, unsigned flags)
 	*reinterpret_cast<unsigned**>(a) =
 		reinterpret_cast<unsigned*>(0x101043d0u);
 	if(flags & 1)
-		nxGetSdkAllocator()->free(self);
+		nxFoundationSDKAllocator->free(self);
 	}
 
 // phys_fn_000116 (slot 87, 0x3640): the member table's this-adjustor
@@ -3954,7 +3954,7 @@ void nxChainedDeletingDtor(void* self, unsigned flags)
 	*reinterpret_cast<unsigned**>(a) =
 		reinterpret_cast<unsigned*>(0x1010878cu);
 	if(flags & 1)
-		nxGetSdkAllocator()->free(self);
+		nxFoundationSDKAllocator->free(self);
 	}
 
 // phys_fn_002322 (0x5a230): member-table adjustor thunk -- `sub ecx,8` onto
@@ -4086,7 +4086,7 @@ void nxBoundDeletingDtor798(void* self, unsigned flags)
 	*reinterpret_cast<unsigned**>(self) =
 		reinterpret_cast<unsigned*>(0x10108798u);
 	if(flags & 1)
-		nxGetSdkAllocator()->free(self);
+		nxFoundationSDKAllocator->free(self);
 	}
 
 // phys_fn_002340 (0x5aa60): same shape for the second pool class, vptr
@@ -4096,7 +4096,7 @@ void nxBoundDeletingDtor84c(void* self, unsigned flags)
 	*reinterpret_cast<unsigned**>(self) =
 		reinterpret_cast<unsigned*>(0x1010884cu);
 	if(flags & 1)
-		nxGetSdkAllocator()->free(self);
+		nxFoundationSDKAllocator->free(self);
 	}
 
 // ---------------------------------------------------------------------------
@@ -5026,7 +5026,7 @@ void nxShapeFactoryInitializePlane(void* shape, const float* normal,
 // Shape-to-name registry. See evidence section 3o for the full decode.
 
 // The global list head at .data 0x10123c0c. Each entry is {shape*, name*}
-// (8-byte stride). The list grows via the SDK allocator when capacity is
+// (8-byte stride). The list grows via the Foundation allocator when capacity is
 // exhausted.
 static void* gShapeNameList = nullptr;
 
@@ -5134,7 +5134,7 @@ void PlaneShape::nxPlaneScalarDeletingDtor(unsigned flags)
 	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
 	if(flags & 1u)
-		nxGetSdkAllocator()->free(this);
+		nxFoundationSDKAllocator->free(this);
 	}
 
 // phys_fn_001375 (0x00027c30), SPHERE-table slot 0.
@@ -5148,7 +5148,7 @@ void SphereShape::nxSphereScalarDeletingDtor(unsigned flags)
 	mBase.nxBaseDtorOwnerArms();			// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
 	if(flags & 1u)
-		nxGetSdkAllocator()->free(this);
+		nxFoundationSDKAllocator->free(this);
 	}
 
 // phys_fn_001353 (0x00027850), SPHERE-table slot 12.
@@ -6030,7 +6030,7 @@ void CapsuleShape::nxCapsuleScalarDeletingDtor(unsigned flags)
 	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
 	if(flags & 1u)
-		nxGetSdkAllocator()->free(this);
+		nxFoundationSDKAllocator->free(this);
 	}
 
 // phys_fn_001004 (0x00021c80), CAPSULE-table slot 8.
@@ -6463,7 +6463,7 @@ void MeshShape::nxMeshScalarDeletingDtor(unsigned flags)
 	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
 	if(flags & 1u)
-		nxGetSdkAllocator()->free(this);
+		nxFoundationSDKAllocator->free(this);
 	}
 
 // ---------------------------------------------------------------------------

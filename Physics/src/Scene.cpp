@@ -784,13 +784,13 @@ void nxSceneArrayReserve(void* arrayHeader, unsigned needed)
 	// not do here -- it grows by the formula alone.
 	const unsigned capacity = count * 2 + 2;
 	unsigned* grown = static_cast<unsigned*>(
-		nxGetSdkAllocator()->malloc(capacity * sizeof(unsigned), NX_MEMORY_PERSISTENT));
+		nxFoundationSDKAllocator->malloc(capacity * sizeof(unsigned), NX_MEMORY_PERSISTENT));
 	if(!grown)
 		return;
 	for(unsigned i = 0; i < count; ++i)
 		grown[i] = first[i];
 	if(first)
-		nxGetSdkAllocator()->free(first);
+		nxFoundationSDKAllocator->free(first);
 	a[0] = reinterpret_cast<unsigned>(grown);
 	a[1] = reinterpret_cast<unsigned>(grown + count);
 	a[2] = reinterpret_cast<unsigned>(grown + capacity);
@@ -846,19 +846,19 @@ static bool nxSceneAuxPrepareStagedArray(unsigned char* aux, unsigned offset,
 	unsigned fill, unsigned firstValue)
 	{
 	unsigned* staging = static_cast<unsigned*>(
-		nxGetSdkAllocator()->malloc(0x800, NX_MEMORY_PERSISTENT));
+		nxFoundationSDKAllocator->malloc(0x800, NX_MEMORY_PERSISTENT));
 	if(!staging) return false;
 	for(unsigned i = 0; i < 512; ++i) staging[i] = fill;
 	staging[0] = firstValue;
 	unsigned* retained = static_cast<unsigned*>(
-		nxGetSdkAllocator()->malloc(0x400, NX_MEMORY_PERSISTENT));
+		nxFoundationSDKAllocator->malloc(0x400, NX_MEMORY_PERSISTENT));
 	if(!retained)
 		{
-		nxGetSdkAllocator()->free(staging);
+		nxFoundationSDKAllocator->free(staging);
 		return false;
 		}
 	memcpy(retained, staging, 0x400);
-	nxGetSdkAllocator()->free(staging);
+	nxFoundationSDKAllocator->free(staging);
 	*reinterpret_cast<unsigned**>(aux + offset) = retained;
 	*reinterpret_cast<unsigned**>(aux + offset + 4) = retained + 256;
 	*reinterpret_cast<unsigned**>(aux + offset + 8) = retained + 256;
@@ -877,14 +877,14 @@ void nxSceneAuxRegisterRecord(void* auxPointer, void* recordPointer)
 		if(!nxSceneAuxPrepareStagedArray(aux, 0x40, 0, 0xffffffffu)) return;
 		if(!nxSceneAuxPrepareStagedArray(aux, 0x60, 0xd00beed0u, 0)) return;
 		unsigned* active = static_cast<unsigned*>(
-			nxGetSdkAllocator()->malloc(0x400, NX_MEMORY_PERSISTENT));
+			nxFoundationSDKAllocator->malloc(0x400, NX_MEMORY_PERSISTENT));
 		if(!active) return;
 		memset(active, 0, 0x400);
 		*reinterpret_cast<unsigned**>(aux + 0x50) = active;
 		*reinterpret_cast<unsigned**>(aux + 0x54) = active + 1;
 		*reinterpret_cast<unsigned**>(aux + 0x58) = active + 256;
 		unsigned* vacant = static_cast<unsigned*>(
-			nxGetSdkAllocator()->malloc(0x400, NX_MEMORY_PERSISTENT));
+			nxFoundationSDKAllocator->malloc(0x400, NX_MEMORY_PERSISTENT));
 		if(!vacant) return;
 		memset(vacant, 0, 0x400);
 		*reinterpret_cast<unsigned**>(aux + 0x70) = vacant;
@@ -922,14 +922,14 @@ static void nxSceneAuxRegisterShape(NxSceneInternal* scene, void* shapePointer)
 		if(!nxSceneAuxPrepareStagedArray(aux, 0, 0, 0xffffffffu)) return;
 		if(!nxSceneAuxPrepareStagedArray(aux, 0x20, 0xd00beed0u, 0)) return;
 		unsigned* active = static_cast<unsigned*>(
-			nxGetSdkAllocator()->malloc(0x400, NX_MEMORY_PERSISTENT));
+			nxFoundationSDKAllocator->malloc(0x400, NX_MEMORY_PERSISTENT));
 		if(!active) return;
 		memset(active, 0, 0x400);
 		*reinterpret_cast<unsigned**>(aux + 0x10) = active;
 		*reinterpret_cast<unsigned**>(aux + 0x14) = active + 1;
 		*reinterpret_cast<unsigned**>(aux + 0x18) = active + 256;
 		unsigned* vacant = static_cast<unsigned*>(
-			nxGetSdkAllocator()->malloc(0x400, NX_MEMORY_PERSISTENT));
+			nxFoundationSDKAllocator->malloc(0x400, NX_MEMORY_PERSISTENT));
 		if(!vacant) return;
 		memset(vacant, 0, 0x400);
 		*reinterpret_cast<unsigned**>(aux + 0x30) = vacant;
@@ -1007,11 +1007,11 @@ void nxSceneMarkShapeDirty(void* shapePointer, unsigned flag)
 			{
 			const unsigned count = static_cast<unsigned>(end - active);
 			const unsigned next = count * 2 + 2;
-			unsigned* grown = static_cast<unsigned*>(nxGetSdkAllocator()->malloc(
+			unsigned* grown = static_cast<unsigned*>(nxFoundationSDKAllocator->malloc(
 				next * sizeof(unsigned), NX_MEMORY_PERSISTENT));
 			if(!grown) return;
 			memcpy(grown, active, count * sizeof(unsigned));
-			nxGetSdkAllocator()->free(active);
+			nxFoundationSDKAllocator->free(active);
 			active = grown;
 			end = grown + count;
 			*reinterpret_cast<unsigned**>(aux + 0x10) = active;
@@ -1055,7 +1055,9 @@ void nxSceneAuxUnregisterRecord(void* auxPointer, void* recordPointer)
 	}
 
 // OPCODE's pool is initialized by the first pruning object, whether static or
-// dynamic. Its process-wide header owns four initial buffers.
+// dynamic. Its process-wide header owns four initial buffers. Unlike the Scene
+// rows, the pool (0x000b4cc0) and its buffers (0x000ef270) allocate through
+// phys_fn_004803, so this helper keeps nxGetSdkAllocator.
 static unsigned char* gNxOpcodePool = 0;
 
 bool nxOpcodeEnsurePool()
@@ -1096,6 +1098,10 @@ void nxOpcodeReleasePool()
 	gNxOpcodePool = 0;
 	}
 
+// The pending-shape array at Scene+0x69c..0x6a4 is +0x624's +0x78 header, which
+// 0x0004bb9c grows through phys_fn_004840 -- a phys_fn_004803 container -- so it
+// stays on nxGetSdkAllocator, as do the 0x3c/0x90 pruners built by 0x000b5090 and
+// their 0x60/0x10 entry buffers from 0x000effc0.
 // The oracle's dynamic broadphase table is a 0x3c-byte object stored at
 // Scene+0x648. Its subcontainer begins at +4: count and capacity are the
 // 16-bit words at +0x10/+0x12, followed by parallel 0x18-byte-entry and
@@ -1441,13 +1447,13 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 
 	// The oracle allocates the 0x50-byte body before the public 0x18-byte
 	// actor wrapper. Keep that order; the guarded allocator records it.
-	void* outerMemory = nxGetSdkAllocator()->malloc(0x50, NX_MEMORY_PERSISTENT);
+	void* outerMemory = nxFoundationSDKAllocator->malloc(0x50, NX_MEMORY_PERSISTENT);
 	if(!outerMemory)
 		return 0;
-	void* actorMemory = nxGetSdkAllocator()->malloc(0x18, NX_MEMORY_PERSISTENT);
+	void* actorMemory = nxFoundationSDKAllocator->malloc(0x18, NX_MEMORY_PERSISTENT);
 	if(!actorMemory)
 		{
-		nxGetSdkAllocator()->free(outerMemory);
+		nxFoundationSDKAllocator->free(outerMemory);
 		return 0;
 		}
 
@@ -1459,8 +1465,8 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 	NxActor* actor = static_cast<NxActor*>(nxSceneCreateActorBody(actorMemory, this));
 	if(!actor)
 		{
-		nxGetSdkAllocator()->free(actorMemory);
-		nxGetSdkAllocator()->free(outerMemory);
+		nxFoundationSDKAllocator->free(actorMemory);
+		nxFoundationSDKAllocator->free(outerMemory);
 		return 0;
 		}
 	*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(actor) + 0x14) = outerMemory;
@@ -2045,7 +2051,7 @@ static void nxSceneDelete(void* self, int flags)
 			static_cast<unsigned char*>(self) + offset);
 		if(entries)
 			{
-			nxGetSdkAllocator()->free(entries);
+			nxFoundationSDKAllocator->free(entries);
 			entries = 0;
 			}
 		}
@@ -2057,12 +2063,16 @@ static void nxSceneDelete(void* self, int flags)
 			void*& entries = *reinterpret_cast<void**>(aux + offset);
 			if(entries)
 				{
-				nxGetSdkAllocator()->free(entries);
+				nxFoundationSDKAllocator->free(entries);
 				entries = 0;
 				}
 			}
-		nxGetSdkAllocator()->free(aux);
+		nxFoundationSDKAllocator->free(aux);
 		}
+	// The three ID arrays grow through the Foundation allocator; the pending
+	// shape array at +0x6a4 (+0x624's +0x78) grows through phys_fn_004840,
+	// which uses phys_fn_004803. Each block goes back to the allocator it
+	// came from.
 	const unsigned arrayOffsets[] = {0x6fc, 0x6e8, 0x6d4, 0x6a4};
 	for(unsigned offset : arrayOffsets)
 		{
@@ -2070,7 +2080,10 @@ static void nxSceneDelete(void* self, int flags)
 			static_cast<unsigned char*>(self) + offset);
 		if(entries)
 			{
-			nxGetSdkAllocator()->free(entries);
+			if(offset == 0x6a4)
+				nxGetSdkAllocator()->free(entries);
+			else
+				nxFoundationSDKAllocator->free(entries);
 			entries = 0;
 			}
 		}
@@ -2084,12 +2097,12 @@ static void nxSceneDelete(void* self, int flags)
 			static_cast<unsigned char*>(self) + offset);
 		if(entries)
 			{
-			nxGetSdkAllocator()->free(entries);
+			nxFoundationSDKAllocator->free(entries);
 			entries = 0;
 			}
 		}
 	if(flags & 1)
-		nxGetSdkAllocator()->free(self);
+		nxFoundationSDKAllocator->free(self);
 	}
 
 void NxSceneInternal::scalarDeletingDestructor(int flags)

@@ -14,7 +14,7 @@
 // the two rows that build the object:
 //
 //   phys_fn_000476 (0x0000ea80, PhysicsSDK::createScene)
-//       allocates 0x710 bytes through the SDK allocator, then constructs and
+//       allocates 0x710 bytes through nxFoundationSDKAllocator, then constructs and
 //       initialises it; that 0x710 is where the size comes from.
 //   phys_fn_000647 (0x00012c10)  the constructor -- a straight-line initialiser
 //       that writes every field in increasing offset order.

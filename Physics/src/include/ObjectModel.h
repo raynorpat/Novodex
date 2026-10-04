@@ -62,7 +62,7 @@ class CollisionObject
 	explicit			CollisionObject(void* argument);
 	//! phys_fn_001079 (0x000235d0), the box-family slot-0 deleting row;
 	//! the generic collision object at 0x24810 has the same teardown:
-	//! destroys the embedded hook, then frees this through the SDK allocator
+	//! destroys the embedded hook, then frees this through the Foundation allocator
 	//! when flags&1. The member's final vptr is an intermediate destructor
 	//! detail; callers observe the allocator operation.
 	void				nxScalarDeletingDtor(unsigned flags);
@@ -389,7 +389,7 @@ pushes, pushed first, then arg2) and then:
 	                        0x000218a1..ee); the float data stays whatever the
 	                        memory held, so a fresh object's records carry
 	                        poison until the face builder runs
-	+0x09c	collision object	a fresh 0x1c-byte block through the SDK allocator
+	+0x09c	collision object	a fresh 0x1c-byte block through the Foundation allocator
 	                        ([0x101041bc] malloc slot, size 0x1c, flag 0 --
 	                        0x000218f1..fe), constructed by phys_fn_001075
 	                        (0x00023580: same body as phys_fn_001193 with the
@@ -545,7 +545,7 @@ class BoxShape
 	//! vtable with flag 1 UNCONDITIONALLY (the colobj's own deleting row is
 	/// separate and not yet transcribed), runs the base-dtor chain -- owner
 	//! arms, +0xa0 arms, Prunable destruction -- and frees this through the
-	//! SDK allocator slot +0x14 only when flags&1.
+	//! Foundation allocator slot +0x14 only when flags&1.
 	void				nxBoxScalarDeletingDtor(unsigned flags);
 
 	//! +0x00..+0xdf, the base shape subobject.
@@ -569,7 +569,7 @@ ShapeBase::ShapeBase (0x000277bb..cf) and then:
 	                        radius. Construction leaves it 0; the descriptor
 	                        path writes the real value here (0x00027850 reads
 	                        the descriptor's word +0x4c straight into it).
-	+0x09c	collision object	a fresh 0x1c-byte block through the SDK allocator
+	+0x09c	collision object	a fresh 0x1c-byte block through the Foundation allocator
 	                        (malloc(0x1c,0), 0x00027de4..f2) built by
 	                        phys_fn_001193 ITSELF -- the generic collision-object
 	                        constructor, not a per-type variant -- and stored at
@@ -783,7 +783,7 @@ void					nxSceneRemovePairs(void* container, void* shape);
 //! phys_fn_000028 (0x1b90): dword-vector push_back over the VC9 layout
 //! {_Myproxy@+0x00 untouched by this row, _Myfirst@+0x04, _Mylast@+0x08,
 //! _Myend@+0x0c}. Full fidelity including the growth arm -- new capacity
-//! 2*size + 2 dwords allocated through nxGetSdkAllocator, elements copied,
+//! 2*size + 2 dwords allocated through nxFoundationSDKAllocator, elements copied,
 //! old block released -- so the differential can drive both sides into
 //! realloc and fold the allocation stream.
 void					nxU32VectorPushBack(void* vecHeader, NxU32 value);
@@ -1929,7 +1929,7 @@ __thiscall, `ret 8`), which forwards BOTH arguments unchanged to
 ShapeBase::ShapeBase (0x00021a67..6f) and then:
 
 	+0x000	vptr			final CAPSULE table .rdata 0x10106b20, store 0x00021a74
-	+0x09c	collision object	a fresh 0x1c-byte block through the SDK allocator
+	+0x09c	collision object	a fresh 0x1c-byte block through the Foundation allocator
 	                        (malloc(0x1c,0), 0x00021a8e..9c) built by
 	                        phys_fn_001123 (0x00023cb0, the capsule-family variant
 	                        of the shared collision-object constructor) and stored
@@ -2045,7 +2045,7 @@ __thiscall, `ret 8`), which forwards BOTH arguments unchanged to
 ShapeBase::ShapeBase (0x00024edb..df) and then:
 
 	+0x000	vptr			final PLANE table .rdata 0x10107430, store 0x00024ee4
-	+0x09c	collision object	a fresh 0x1c-byte block through the SDK allocator
+	+0x09c	collision object	a fresh 0x1c-byte block through the Foundation allocator
 	                        (malloc(0x1c,0), 0x00024eea..f8) built by
 	                        phys_fn_001159 (0x00024250, the plane-family variant
 	                        of the shared collision-object constructor) and
@@ -2143,7 +2143,7 @@ __thiscall, `ret 8`), which forwards BOTH arguments unchanged to
 ShapeBase::ShapeBase (0x00027dbb..bf) and then:
 
 	+0x000	vptr			final MESH table .rdata 0x10107630, store 0x00027dc4
-	+0x09c	collision object	a fresh 0x1c-byte block through the SDK allocator
+	+0x09c	collision object	a fresh 0x1c-byte block through the Foundation allocator
 	                        (malloc(0x1c,0), 0x00027dde..ec) built by
 	                        phys_fn_001241 (0x00024e40, the mesh-family variant
 	                        of the shared collision-object constructor) and
