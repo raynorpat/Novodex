@@ -19,3 +19,5 @@ void nxSceneRefreshPairs(NxSceneInternal*) {}
 void __cdecl cpmBufferContactReports0917(NxSceneInternal*, CpmPairHash*) {}
 void cpmSetActorPairFlags(NxSceneInternal*, void*, void*, NxU32) {}
 NxU32 cpmGetActorPairFlags(const NxSceneInternal*, const void*, const void*) { return 0; }
+void cpmSetShapePairFlags(NxSceneInternal*, void*, void*, NxU32) {}
+NxU32 cpmGetShapePairFlags(const NxSceneInternal*, const void*, const void*) { return 0; }
