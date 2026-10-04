@@ -48,12 +48,12 @@
       "implementation_commit": "ac739543956cc4ea22bff832f17c66d07666b9da",
       "evidence_commit": "dcaa8391de0ae5ef45a00d5007d55aa4a19aef1c",
       "gate_artifact": "gates/phase2.json",
-      "owned_functions": 143,
-      "owned_data_objects": 1051,
+      "owned_functions": 139,
+      "owned_data_objects": 1055,
       "closed_functions": 56,
       "closed_data_objects": 0,
-      "remaining_functions": 87,
-      "remaining_data_objects": 1051
+      "remaining_functions": 83,
+      "remaining_data_objects": 1055
     },
     {
       "phase": 3,
@@ -64,12 +64,12 @@
       "implementation_commit": "7da93f7246e7003ceb15dfebb9d48353547d7c02",
       "evidence_commit": "5f7628e44d2e153bb2b3d92c16ba8a7b14f1578f",
       "gate_artifact": "gates/phase3.json",
-      "owned_functions": 392,
-      "owned_data_objects": 102,
+      "owned_functions": 376,
+      "owned_data_objects": 114,
       "closed_functions": 61,
       "closed_data_objects": 0,
-      "remaining_functions": 331,
-      "remaining_data_objects": 102
+      "remaining_functions": 315,
+      "remaining_data_objects": 114
     },
     {
       "phase": 4,
@@ -80,11 +80,11 @@
       "implementation_commit": "de565924ad85cba85490c54ebc99db37593833a3",
       "evidence_commit": "ec41abb1b18110d00643dbf784eff4cf694a411f",
       "gate_artifact": "gates/phase4.json",
-      "owned_functions": 1137,
+      "owned_functions": 1138,
       "owned_data_objects": 2813,
       "closed_functions": 29,
       "closed_data_objects": 0,
-      "remaining_functions": 1108,
+      "remaining_functions": 1112,
       "remaining_data_objects": 2813
     },
     {
@@ -96,12 +96,12 @@
       "implementation_commit": null,
       "evidence_commit": null,
       "gate_artifact": null,
-      "owned_functions": 205,
-      "owned_data_objects": 122,
+      "owned_functions": 219,
+      "owned_data_objects": 106,
       "closed_functions": 0,
       "closed_data_objects": 0,
-      "remaining_functions": 205,
-      "remaining_data_objects": 122
+      "remaining_functions": 219,
+      "remaining_data_objects": 106
     },
     {
       "phase": 6,
@@ -128,11 +128,11 @@
       "implementation_commit": null,
       "evidence_commit": null,
       "gate_artifact": null,
-      "owned_functions": 561,
+      "owned_functions": 566,
       "owned_data_objects": 502,
       "closed_functions": 4,
       "closed_data_objects": 0,
-      "remaining_functions": 557,
+      "remaining_functions": 562,
       "remaining_data_objects": 502
     },
     {

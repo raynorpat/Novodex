@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "phase": 2,
-  "note": "Phase 2 closes what it can prove and defers the rest explicitly. Every Phase 2 function row in inventory.json appears exactly once below, and validate_inventory.py enforces that, recomputes the counts, checks every gate against the real target registry, and rejects a closure that claims a falsification it does not carry. There is one proof kind per gate and both require a mutation: the proof kinds that rested on a free-text observation were deleted, because a run can name a real step and still never enter the row, and every error review found was one of those rows. The 48 rows they carried were re-measured by a mutation probe; 5 of them could not produce a detection and were demoted here rather than kept. Where the guarantee ends: recomputed counts and a required non-zero mutation delta make the strongest claim the costly one, but they do not make a false one impossible. The probe transcripts are not committed artifacts, so a fabricated mutation string with a plausible delta beside it would pass this validator. What is checked is that a claim of the shape exists and is internally consistent; what is not checked is that the run behind it happened. Two further limits are in the numbers themselves. Most of these deltas come from an entry probe -- a print at the top of the row -- so what they establish is that the gate enters the row, which is what the deleted kind asserted without checking; they do not establish that the gate would notice the row computing the wrong answer. And a static_proof_falsified row has no oracle side at all: it is checked against expectations read out of the disassembly, so it is only as good as that reading. One row is closed by a later phase: phys_fn_001690 was deferred homeless_shared_code with driving_phases [3, 4] because no Phase 2 entry point reaches it, and Phase 3's capsule/capsule entries are the reachability it lacked. It stays a Phase 2 row -- ownership is a census fact and the stray rule keeps one row owned by exactly one phase -- and what moved is the proof, so it is recorded here with discharged_by_phase rather than on Phase 3's ledger. Three more rows were closed that way by the canonical line -- phys_fn_002410, phys_fn_002404 and phys_fn_002406, discharged_by_phase 5 on Phase 5's NxPhysicsObjectLayoutTests -- and all three were RE-DEFERRED at the port of the Phase 4 close: a discharge counts only once the discharging phase has passed, Phase 5 has not, and so no passing gate runs their proofs. They are blocked_on_later_phase with their mutations, counts, source commits and dirty-control readings in their notes, for a Phase 5 close to discharge. phys_fn_001690, discharged by Phase 3, which has passed, is the only row a later phase has closed here. P4 Task 1c removed 19 rows from this ledger because the census no longer gives them to Phase 2: 14 qhull rows, phys_fn_004886 of IcePrunable.cpp, and phys_fn_004836/004840/004846/004847, which the source correspondence map identifies as OPCODE Ice/IceContainer.cpp members. The last four were closed here on static proofs; those proofs measured real behaviour and are reproduced in gates/phase2.json as the third_party_container_rows_moved escalation, but the ledger entry that authorised their inventory state left with the row, so the four are back at 'reconstructed' and Phase 4 has to close them again. Every remaining number here is recomputed from the entries below.",
+  "note": "Phase 2 closes what it can prove and defers the rest explicitly. Every Phase 2 function row in inventory.json appears exactly once below, and validate_inventory.py enforces that, recomputes the counts, checks every gate against the real target registry, and rejects a closure that claims a falsification it does not carry. There is one proof kind per gate and both require a mutation: the proof kinds that rested on a free-text observation were deleted, because a run can name a real step and still never enter the row, and every error review found was one of those rows. The 48 rows they carried were re-measured by a mutation probe; 5 of them could not produce a detection and were demoted here rather than kept. Where the guarantee ends: recomputed counts and a required non-zero mutation delta make the strongest claim the costly one, but they do not make a false one impossible. The probe transcripts are not committed artifacts, so a fabricated mutation string with a plausible delta beside it would pass this validator. What is checked is that a claim of the shape exists and is internally consistent; what is not checked is that the run behind it happened. Two further limits are in the numbers themselves. Most of these deltas come from an entry probe -- a print at the top of the row -- so what they establish is that the gate enters the row, which is what the deleted kind asserted without checking; they do not establish that the gate would notice the row computing the wrong answer. And a static_proof_falsified row has no oracle side at all: it is checked against expectations read out of the disassembly, so it is only as good as that reading. One row is closed by a later phase: phys_fn_001690 was deferred homeless_shared_code with driving_phases [3, 4] because no Phase 2 entry point reaches it, and Phase 3's capsule/capsule entries are the reachability it lacked. It stays a Phase 2 row -- ownership is a census fact and the stray rule keeps one row owned by exactly one phase -- and what moved is the proof, so it is recorded here with discharged_by_phase rather than on Phase 3's ledger. Three more rows were closed that way by the canonical line -- phys_fn_002410, phys_fn_002404 and phys_fn_002406, discharged_by_phase 5 on Phase 5's NxPhysicsObjectLayoutTests -- and all three were RE-DEFERRED at the port of the Phase 4 close: a discharge counts only once the discharging phase has passed, Phase 5 has not, and so no passing gate runs their proofs. phys_fn_002404 and phys_fn_002406 are blocked_on_later_phase with their mutations, counts, source commits and dirty-control readings in their notes, for a Phase 5 close to discharge; phys_fn_002410 was too, until the shape slot ruling below made it a Phase 5 row. phys_fn_001690, discharged by Phase 3, which has passed, is the only row a later phase has closed here. P4 Task 1c removed 19 rows from this ledger because the census no longer gives them to Phase 2: 14 qhull rows, phys_fn_004886 of IcePrunable.cpp, and phys_fn_004836/004840/004846/004847, which the source correspondence map identifies as OPCODE Ice/IceContainer.cpp members. The last four were closed here on static proofs; those proofs measured real behaviour and are reproduced in gates/phase2.json as the third_party_container_rows_moved escalation, but the ledger entry that authorised their inventory state left with the row, so the four are back at 'reconstructed' and Phase 4 has to close them again. Every remaining number here is recomputed from the entries below. Amendment, shape slot ruling (shape_slot_ruling.json, the shape-class vtable ruling validate_inventory.py recomputes: a slot the collision pipeline dispatches through is Phase 3's and every other slot of the shape classes is Phase 5's): eight function rows leave this ledger and five arrive. phys_fn_000837 and phys_fn_000839 are helpers only the ruled slot-4 mass rows call, so the ruling places them in Phase 5; phys_fn_000833, phys_fn_002410 and phys_fn_002417 with its continuation phys_fn_002419 follow callers that now agree on Phase 5, which takes phys_fn_002410 and its carried measurement out of this ledger -- it is a Phase 5 row its own phase can close; phys_fn_001730 and its continuation follow callers that now agree on Phase 3. phys_fn_001391 and phys_fn_004812, the two folded stubs the shape tables share with Phase 6 tables, arrive as shared runtime, and phys_fn_001945, 001947 and 001955 arrive because the ruling puts their two callers on different phases. No closed row moves. Amendment, review of the shape slot ruling: phys_fn_002354, the contact sink's reset, leaves this ledger for Phase 7. The generator run over the ruled census places it there by its callers, which are all Phase 7 rows once phys_fn_000887 follows phys_fn_000915 to Phase 7; the committed census had kept its pre-ruling phase, and the regeneration check now compares the two. It was deferred homeless_shared_code and never closed, so no closure moves, and the ledger defers 83 function rows.",
   "proof_kinds": {
     "differential_falsified": "a mutation was aimed at this row's reconstruction in a throwaway tree, rebuilt, and run through every Phase 2 differential target; the recorded stdout_delta is the largest one produced and the gate is the target that produced it",
     "static_proof_falsified": "a mutation was aimed at this row and the static-proof gate failed the named check; there is no oracle side, so this is weaker than any differential",
     "oracle_differential_falsified": "a mutation was aimed at this row's reconstruction in a throwaway tree, rebuilt, and run through an oracle differential -- a target that loads the pinned DLL in its own process, checks its hash, and calls the recorded internal address directly; the recorded mismatches count is what that target reported against the shipped bytes. Phase 2 has no such target of its own, so every closure of this kind carries discharged_by_phase naming the later phase whose gate produced it, and that phase must be one the original deferral listed in driving_phases and must stand at `pass` in program.json: a discharge counts only once the discharging phase has passed"
   },
   "deferred_reasons": {
-    "blocked_on_later_phase": "the row or the implementation it forwards to belongs to a phase after 2. Three of these rows -- phys_fn_002410, phys_fn_002404 and phys_fn_002406 -- were closed on Phase 5's NxPhysicsObjectLayoutTests with discharged_by_phase 5 and were re-deferred at the port of the Phase 4 close, because Phase 5 has not passed; each carries its measurement in its note",
+    "blocked_on_later_phase": "the row or the implementation it forwards to belongs to a phase after 2. Two of these rows -- phys_fn_002404 and phys_fn_002406 -- were closed on Phase 5's NxPhysicsObjectLayoutTests with discharged_by_phase 5 and were re-deferred at the port of the Phase 4 close, because Phase 5 has not passed; each carries its measurement in its note. A third, phys_fn_002410, was re-deferred here the same way and has since left for Phase 5 under the shape slot ruling",
     "unreachable_in_phase_2": "reconstructed, but no input sequence through the Phase 2 public API enters it; for the rows demoted here that is a measurement, not a judgement -- a mutation was applied and every target read a delta of zero in the same run that a positive control read non-zero",
     "not_independently_falsifiable": "the row has no counterpart in the candidate that can be mutated on its own: it is emitted by the compiler from a construct belonging to another row, or its distinctive behaviour has no consequence any gate can observe",
     "homeless_shared_code": "shared_by_callers with no translation unit span; not drivable from any Phase 2 entry point, and not linkable for a static proof either",
@@ -61,9 +61,8 @@
     "differential_falsified": 49,
     "static_proof_falsified": 6,
     "oracle_differential_falsified": 1,
-    "deferred_homeless_shared_code": 24,
-    "deferred_reconstructed_not_falsified": 39,
-    "deferred_blocked_on_later_phase": 17,
+    "deferred_homeless_shared_code": 55,
+    "deferred_blocked_on_later_phase": 21,
     "deferred_unreachable_in_phase_2": 6,
     "deferred_not_independently_falsifiable": 1
   },
@@ -1318,48 +1317,6 @@
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_000833",
-      "rva": "0x0001c040",
-      "size": 1371,
-      "reason": "homeless_shared_code",
-      "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap SceneRaycast.cpp .. CapsuleShape.cpp",
-      "reachability": "reachable_via_other_phase",
-      "driving_phases": [
-        3,
-        5
-      ],
-      "callers": 5
-    },
-    {
-      "id": "phys_fn_000837",
-      "rva": "0x0001c5c0",
-      "size": 101,
-      "reason": "homeless_shared_code",
-      "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap SceneRaycast.cpp .. CapsuleShape.cpp",
-      "reachability": "unreachable_from_phase_2",
-      "driving_phases": [
-        3,
-        5
-      ],
-      "callers": 3
-    },
-    {
-      "id": "phys_fn_000839",
-      "rva": "0x0001c630",
-      "size": 231,
-      "reason": "homeless_shared_code",
-      "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap SceneRaycast.cpp .. CapsuleShape.cpp",
-      "reachability": "unreachable_from_phase_2",
-      "driving_phases": [
-        3,
-        5
-      ],
-      "callers": 4
-    },
-    {
       "id": "phys_fn_000915",
       "rva": "0x00020020",
       "size": 33,
@@ -1407,7 +1364,7 @@
       "rva": "0x000213e0",
       "size": 3,
       "reason": "homeless_shared_code",
-      "phase_provenance": "shared_by_callers",
+      "phase_provenance": "slot_ruling",
       "translation_unit_zone": "gap SceneRaycast.cpp .. CapsuleShape.cpp",
       "reachability": "unreachable_from_phase_2",
       "driving_phases": [
@@ -1429,6 +1386,19 @@
       ],
       "callers": 2,
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001391",
+      "rva": "0x00027f00",
+      "size": 3,
+      "reason": "homeless_shared_code",
+      "phase_provenance": "slot_ruling",
+      "driving_phases": [
+        5,
+        6,
+        7
+      ],
+      "note": "Moved from Phase 5 to Phase 2 by the shape slot ruling: the target of BOX slot 14 (object model), BOX slot 15 (object model), BOX slot 16 (object model), CAPSULE slot 16 (object model), CAPSULE slot 17 (object model), CAPSULE slot 18 (object model), COMPOUND slot 12 (object model), COMPOUND slot 13 (object model), COMPOUND slot 14 (object model), PLANE slot 14 (object model), PLANE slot 15 (object model), PLANE slot 16 (object model), SPHERE slot 16 (object model), SPHERE slot 17 (object model), SPHERE slot 18 (object model), MESH slot 14 (collision), MESH slot 15 (object model), MESH slot 16 (object model), named in shape_slot_ruling.json as a shared exception: the folded mov eax,ecx; ret body is also a slot of ten Phase 6 dispatch tables and an immediate at 42 code sites across five phases, so no one phase owns it. It arrives after Phase 2 passed, so no Phase 2 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_001472",
@@ -1705,31 +1675,40 @@
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_001730",
-      "rva": "0x00038050",
-      "size": 61,
-      "reason": "reconstructed_not_falsified",
+      "id": "phys_fn_001945",
+      "rva": "0x0004bbd0",
+      "size": 74,
+      "reason": "homeless_shared_code",
       "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap IceAdjacencies.cpp .. ContactConvexHeightfield.cpp",
-      "reachability": "unreachable_from_phase_2",
       "driving_phases": [
         3,
         5
       ],
-      "callers": 3,
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Moved from Phase 3 to Phase 2 by the shape slot ruling: not a shape-block row, but its callers are phys_fn_001279 on Phase 3 and ShapeBase's destructor phys_fn_001323, which the ruling places in Phase 5, so they no longer agree and the generator calls it shared runtime. It arrives after Phase 2 passed, so no Phase 2 gate ever aimed a mutation at it. Deferred on the Phase 3 ledger as not_reconstructed_in_phase."
     },
     {
-      "id": "phys_fn_001732",
-      "rva": "0x00038090",
-      "size": 296,
-      "reason": "reconstructed_not_falsified",
+      "id": "phys_fn_001947",
+      "rva": "0x0004bc20",
+      "size": 89,
+      "reason": "homeless_shared_code",
       "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap IceAdjacencies.cpp .. ContactConvexHeightfield.cpp",
-      "reachability": "unreachable_from_phase_2",
-      "driving_phases": [],
-      "callers": 1,
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "driving_phases": [
+        3,
+        5
+      ],
+      "note": "Moved from Phase 3 to Phase 2 by the shape slot ruling: a continuation of phys_fn_001945, which moves with it. It arrives after Phase 2 passed, so no Phase 2 gate ever aimed a mutation at it. Deferred on the Phase 3 ledger as not_reconstructed_in_phase."
+    },
+    {
+      "id": "phys_fn_001955",
+      "rva": "0x0004bde0",
+      "size": 153,
+      "reason": "homeless_shared_code",
+      "phase_provenance": "shared_by_callers",
+      "driving_phases": [
+        3,
+        5
+      ],
+      "note": "Moved from Phase 3 to Phase 2 by the shape slot ruling: not a shape-block row, but its callers are phys_fn_001279 on Phase 3 and ShapeBase's destructor phys_fn_001323, which the ruling places in Phase 5, so they no longer agree and the generator calls it shared runtime. It arrives after Phase 2 passed, so no Phase 2 gate ever aimed a mutation at it. Deferred on the Phase 3 ledger as not_reconstructed_in_phase."
     },
     {
       "id": "phys_fn_001957",
@@ -1774,20 +1753,6 @@
       "callers": 5
     },
     {
-      "id": "phys_fn_002354",
-      "rva": "0x0005b620",
-      "size": 86,
-      "reason": "homeless_shared_code",
-      "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap Controller.cpp .. fluids/Fluid.cpp",
-      "reachability": "reachable_via_other_phase",
-      "driving_phases": [
-        3,
-        7
-      ],
-      "callers": 3
-    },
-    {
       "id": "phys_fn_002404",
       "rva": "0x0005ba70",
       "size": 17,
@@ -1824,46 +1789,6 @@
       "note": "RE-DEFERRED at the port of the Phase 4 close (branch p4-close-port), for the reason phys_fn_002344 was re-deferred on the Phase 3 ledger: a closure counts only once the phase whose gate it rests on has passed. Canonical commit e7094e9 closed this row on Phase 5's NxPhysicsObjectLayoutTests with `discharged_by_phase: 5` and `driving_phases: [3, 5, 6, 7]`. NxPhysicsObjectLayoutTests is registered to phase 5 only and Phase 5 is `pending` in program.json, so it runs neither when Phase 2 is gated nor under `-Phase completed`, and the validator now rejects a discharge by a phase that has not passed. No passing gate executes this row's proof. The deferral the closure came from was homeless_shared_code with driving_phases [3, 5, 6, 7]; that list is kept, and Phase 3 passed without discharging the row. It is blocked on the Actor: it is the destructor of the actor's +0x08 member subobject, and the only fixture that drives it is Phase 5's actorctor, through phys_fn_000118, the actor's scalar-deleting destructor, which calls it at 0x00003662. MUTATION, from e7094e9: the member destructor restores a null instead of the third-table vptr 0x101088b8. Detected on actorctor through BOTH post-free reads -- the deleting dtor's own block and the +8 adjustor thunk's. Control mismatches=1, this run mismatches=2. DETECTED, from e7094e9: mismatches=2. RE-MEASURED at this re-deferral in a `git archive` copy of d9a459b, control / mutant / control: `layout candidate mismatches=1`, then `2`, then `1`, with `layout oracle digest=16dceb3c` in all three; the mutant moves actorctor alone, `ok=1 ... dd=1/1/1 adj=1/1/1 ... digest=19f4915a` to `ok=0 ... dd=1/0/1 adj=1/0/1 ... digest=1bcf86aa`. THE CONTROL IS NOT CLEAN: its one mismatch is `candidate CANDIDATE-MISSING family=vtables`, the target's designed RED, so a target-level count is a count over a baseline of 1 and the part of it this row owns is the family reading. A Phase 5 discharge must re-establish a control in which the count it spends starts at zero, or spend the family-level reading, rather than inherit a target-level baseline that was already off"
     },
     {
-      "id": "phys_fn_002410",
-      "rva": "0x0005bac0",
-      "size": 240,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "shared_by_callers",
-      "driving_phases": [
-        3,
-        5
-      ],
-      "blocked_on": [
-        "phys_fn_002411"
-      ],
-      "note": "RE-DEFERRED at the port of the Phase 4 close (branch p4-close-port), for the reason phys_fn_002344 was re-deferred on the Phase 3 ledger: a closure counts only once the phase whose gate it rests on has passed. Canonical commit c962ffa closed this row on Phase 5's NxPhysicsObjectLayoutTests with `discharged_by_phase: 5` and `driving_phases: [3, 5]`. NxPhysicsObjectLayoutTests is registered to phase 5 only and Phase 5 is `pending` in program.json, so it runs neither when Phase 2 is gated nor under `-Phase completed`, and the validator now rejects a discharge by a phase that has not passed. No passing gate executes this row's proof. The deferral the closure came from was homeless_shared_code with driving_phases [3, 5]; that list is kept, and Phase 3 passed without discharging the row. It is blocked on phys_fn_002411, the Phase 5 shapes-clear entry that calls it at 0x0005bbc2 and whose fixture, with relgrow's, is the only one that supplies the pool-header contract the release arm reads. MUTATION, from c962ffa: the release arm's unlink stores the mirror partner's index where the image writes the 0xD00BEED0 poison (mir[idx] = u instead of the sentinel constant). Detected on relgrow, whose poison predicate reads false; the same transcription sits inside nxBaseDtorOwnerArms, so owndtor's chain drive moves with it. Control run of the unmutated tree reads mismatches=1, this run mismatches=3. DETECTED, from c962ffa: mismatches=3. RE-MEASURED at this re-deferral in a `git archive` copy of d9a459b, control / mutant / control: `layout candidate mismatches=1`, then `4`, then `1`, with `layout oracle digest=16dceb3c` in all three. The mutant moves THREE families where c962ffa saw two: relgrow (`ok=0 ... poison=0 ... digest=f4af64bb` against the control's `ok=1 ... poison=1 ... digest=dc548b5a`), owndtor (`ok=0 digest=67692e45` against `ok=1 digest=6d133744`), and miscsm2 -- phys_fn_002411's shapes-clear drive, written in rounds 3z12 and 3z13 of evidence/phase5-object-model.md after c962ffa's round 3z3 measured this, which reaches the release arm through the image's own call -- so the branch reads 4 where c962ffa recorded 3. THE CONTROL IS NOT CLEAN: its one mismatch is `candidate CANDIDATE-MISSING family=vtables`, the target's designed RED, so a target-level count is a count over a baseline of 1 and the part of it this row owns is the family reading. A Phase 5 discharge must re-establish a control in which the count it spends starts at zero, or spend the family-level reading, rather than inherit a target-level baseline that was already off"
-    },
-    {
-      "id": "phys_fn_002417",
-      "rva": "0x0005bc90",
-      "size": 1133,
-      "reason": "homeless_shared_code",
-      "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap Controller.cpp .. fluids/Fluid.cpp",
-      "reachability": "reachable_via_other_phase",
-      "driving_phases": [
-        3,
-        5
-      ],
-      "callers": 2
-    },
-    {
-      "id": "phys_fn_002419",
-      "rva": "0x0005c100",
-      "size": 89,
-      "reason": "homeless_shared_code",
-      "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap Controller.cpp .. fluids/Fluid.cpp",
-      "reachability": "reachable_via_other_phase",
-      "driving_phases": [],
-      "callers": 1
-    },
-    {
       "id": "phys_fn_004766",
       "rva": "0x000b39b0",
       "size": 123,
@@ -1890,6 +1815,18 @@
         6
       ],
       "callers": 5
+    },
+    {
+      "id": "phys_fn_004812",
+      "rva": "0x000b4070",
+      "size": 5,
+      "reason": "homeless_shared_code",
+      "phase_provenance": "slot_ruling",
+      "driving_phases": [
+        5,
+        6
+      ],
+      "note": "Moved from Phase 5 to Phase 2 by the shape slot ruling: the target of BASE slot 5 (collision), named in shape_slot_ruling.json as a shared exception: xor eax,eax; ret 0x14 is also slot 1 of the dispatch table at 0x0011b580, whose other slots are not shape rows, so the body is folded and shared outside the shape classes. It arrives after Phase 2 passed, so no Phase 2 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_004857",
