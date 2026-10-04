@@ -15,8 +15,19 @@
 #include "NxSphereShapeDesc.h"
 #include "NxBoxShapeDesc.h"
 #include "NxPlaneShapeDesc.h"
+#include "NxFixedJointDesc.h"
+#include "NxSpringDesc.h"
+#include "NxDistanceJointDesc.h"
+#include "NxRevoluteJointDesc.h"
+#include "NxD6JointDesc.h"
+#include "NxJoint.h"
 #include "NxMaterial.h"
+#include "NxSimpleTriangleMesh.h"
+#include "NxTriangleMeshDesc.h"
+#include "NxTriangleMeshShapeDesc.h"
+#include "NxBounds3.h"
 #include "NxUserContactReport.h"
+#include "../Physics/src/include/NpSceneGuard.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 typedef void (NX_CALL_CONV *JointDescSetGlobalAnchorFn)(NxJointDesc&, const NxVec3&);
@@ -95,6 +106,76 @@ static void nxPrintActorState(const char* stage, NxActor& actor)
 		nxFloatBits(v.x), nxFloatBits(v.y), nxFloatBits(v.z));
 	}
 
+static void nxPrintActorBodyVelocity(const char* stage, NxActor& actor)
+	{
+	unsigned char* const wrapper = reinterpret_cast<unsigned char*>(&actor);
+	unsigned char* const body = *reinterpret_cast<unsigned char**>(wrapper + 0x14);
+	unsigned char* const record = *reinterpret_cast<unsigned char**>(body + 8);
+	const NxReal* const velocity = reinterpret_cast<const NxReal*>(record + 0x34);
+	printf("simulation body-state=%s velocity=%08x.%08x.%08x\n", stage,
+		nxFloatBits(velocity[0]), nxFloatBits(velocity[1]), nxFloatBits(velocity[2]));
+	}
+
+// NpScene::mScene is at wrapper+0x24; the mode and pair-list offsets are
+// pinned by the oracle's 000544 -> 001973 initialization path.
+static unsigned nxReadSceneBroadPhaseMode(NxScene* scene)
+	{
+	unsigned char* const wrapper = reinterpret_cast<unsigned char*>(scene);
+	unsigned char* const internal = *reinterpret_cast<unsigned char**>(wrapper + 0x24);
+	return *reinterpret_cast<unsigned*>(internal + 0x654);
+	}
+
+static unsigned nxReadSceneBroadPhasePairCount(NxScene* scene)
+	{
+	unsigned char* const wrapper = reinterpret_cast<unsigned char*>(scene);
+	unsigned char* const internal = *reinterpret_cast<unsigned char**>(wrapper + 0x24);
+	unsigned char* node = *reinterpret_cast<unsigned char**>(internal + 0x674);
+	unsigned count = 0;
+	while(node)
+		{
+		++count;
+		node = *reinterpret_cast<unsigned char**>(node + 8);
+		}
+	return count;
+	}
+
+static void nxPrintBroadPhasePairOrder(NxScene* scene, unsigned selector,
+	NxActor** actors, unsigned actorCount)
+	{
+	unsigned char* const wrapper = reinterpret_cast<unsigned char*>(scene);
+	unsigned char* const internal = *reinterpret_cast<unsigned char**>(wrapper + 0x24);
+	unsigned char* node = *reinterpret_cast<unsigned char**>(internal + 0x674);
+	printf("simulation broadphase order selector=%u pairs=", selector);
+	bool first = true;
+	while(node)
+		{
+		unsigned char* const pair = node + 0x14;
+		unsigned char* owner[2] = {
+			*reinterpret_cast<unsigned char**>(pair),
+			*reinterpret_cast<unsigned char**>(pair + 4) };
+		unsigned char* body[2] = {
+			owner[0] ? *reinterpret_cast<unsigned char**>(owner[0] + 8) : 0,
+			owner[1] ? *reinterpret_cast<unsigned char**>(owner[1] + 8) : 0 };
+		if(body[0] && body[1])
+			{
+			const NxReal x0 = *reinterpret_cast<NxReal*>(body[0] + 0x158);
+			const NxReal x1 = *reinterpret_cast<NxReal*>(body[1] + 0x158);
+			unsigned a = actorCount;
+			unsigned b = actorCount;
+			for(unsigned actorIndex = 0; actorIndex != actorCount; ++actorIndex)
+				{
+				const NxReal actorX = actors[actorIndex]->getGlobalPosition().x;
+				if(actorX == x0) a = actorIndex;
+				if(actorX == x1) b = actorIndex;
+				}
+			printf("%s%u-%u", first ? "" : ",", a, b);
+			first = false;
+			}
+		node = *reinterpret_cast<unsigned char**>(node + 8);
+		}
+	printf("\n");
+	}
+
 static void nxPrintBoxActorState(const char* stage, NxActor& actor)
 	{
 	nxPrintActorState(stage, actor);
@@ -132,7 +213,7 @@ static void nxPrintActorMotionState(const char* stage, NxActor& actor)
 		nxFloatBits(w.x), nxFloatBits(w.y), nxFloatBits(w.z));
 	}
 
-struct NxSimulationContactReport : NxUserContactReport
+struct NxSimulationContactStreamReport : NxUserContactReport
 	{
 	unsigned calls;
 	unsigned events;
@@ -146,7 +227,7 @@ struct NxSimulationContactReport : NxUserContactReport
 	unsigned callbackPointCount[8];
 	unsigned callbackPoint[8][8][4];
 
-	NxSimulationContactReport()
+	NxSimulationContactStreamReport()
 		: calls(0), events(0), pairs(0), patches(0), points(0), separation(0),
 			capturedCallbacks(0)
 		{
@@ -1416,10 +1497,11 @@ int wmain(int argc, wchar_t** argv)
 
 	sdk->releaseScene(*scene);
 
+	{
 	// Exercise contact generation, reporting and response through the same
 	// public scene step/result path. Keep this in its own scene so the 1,000-step
 	// gravity soak above cannot affect the collision fixture.
-	NxSimulationContactReport contactReport;
+	NxSimulationContactStreamReport contactReport;
 	NxSceneDesc contactSceneDesc;
 	contactSceneDesc.setToDefault();
 	contactSceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
@@ -1484,7 +1566,7 @@ int wmain(int argc, wchar_t** argv)
 	// The box-plane path exercises a distinct narrow-phase emitter and the
 	// angular contact response. Keep every step in the differential transcript
 	// so the first divergence identifies the responsible solver stage.
-	NxSimulationContactReport boxContactReport;
+	NxSimulationContactStreamReport boxContactReport;
 	NxSceneDesc boxContactSceneDesc;
 	boxContactSceneDesc.setToDefault();
 	boxContactSceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
@@ -1553,7 +1635,7 @@ int wmain(int argc, wchar_t** argv)
 
 	// A two-dynamic-body impact exercises pair ownership and impulse sharing;
 	// the plane fixtures above only cover one movable body against static geometry.
-	NxSimulationContactReport spherePairReport;
+	NxSimulationContactStreamReport spherePairReport;
 	NxSceneDesc spherePairSceneDesc;
 	spherePairSceneDesc.setToDefault();
 	spherePairSceneDesc.gravity = NxVec3(0.0f, 0.0f, 0.0f);
@@ -1633,7 +1715,7 @@ int wmain(int argc, wchar_t** argv)
 	frictionMaterial.staticFriction = 0.8f;
 	frictionMaterial.dynamicFriction = 0.6f;
 	const NxMaterialIndex frictionIndex = sdk->addMaterial(frictionMaterial);
-	NxSimulationContactReport frictionReport;
+	NxSimulationContactStreamReport frictionReport;
 	NxSceneDesc frictionSceneDesc;
 	frictionSceneDesc.setToDefault();
 	frictionSceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
@@ -1699,6 +1781,7 @@ int wmain(int argc, wchar_t** argv)
 		nxFloatBits(frictionMaterial.staticFriction), nxFloatBits(frictionMaterial.dynamicFriction));
 	nxPrintActorMotionState("friction60", *slidingActor);
 	sdk->releaseScene(*frictionScene);
+	}
 
 	sdk->release();
 	for(unsigned sdkCycle = 0; sdkCycle != 2; ++sdkCycle)

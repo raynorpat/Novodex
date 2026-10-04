@@ -1,6 +1,7 @@
-// The internal static-proof target links the real primitive contact table,
-// but not the sphere/triangle-mesh implementations. Its layout checks never
-// execute this pair; public/product targets link ContactSphereMesh.cpp.
+// The internal static-proof, asset, object-layout, and shape-vtable harnesses
+// link the real primitive contact table but do not exercise sphere/mesh pairs.
+// Keep these dispatch-only targets independent of the full contact unit;
+// product and collision-differential targets link ContactSphereMesh.cpp.
 #include "ContactGeneration.h"
 #include "NarrowPhase.h"
 

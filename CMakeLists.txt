@@ -679,7 +679,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/IceSupportMaps.cpp Physics/src/SmoothNormals.cpp Physics/src/TriangleMeshPolygons.cpp
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
 		Physics/src/QhullHost.cpp Physics/src/Quantizer.cpp
-		tests/PhysicsInternalContactStubs.cpp)
+		tests/PhysicsInternalContactStubs.cpp tests/PhysicsInternalMeshContactStubs.cpp)
 	target_include_directories(NxPhysicsAssetTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
 		# The generated oracle-RVA to candidate-address table. It is built from the census and the
@@ -735,6 +735,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		tests/PhysicsThirdPartyQhull.c
 		tests/PhysicsThirdPartyHost.cpp Physics/src/Quantizer.cpp Physics/src/PhysicsInternal.cpp
 		Physics/src/Containers.cpp tests/PhysicsInternalContactStubs.cpp
+		tests/PhysicsInternalMeshContactStubs.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/IcePruner.cpp
 		Physics/src/opcode/NovodexBoxPruning.cpp
 		Physics/src/PMap.cpp Physics/src/TriangleMesh.cpp Physics/src/MemoryStream.cpp
@@ -792,10 +793,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# units directly because the rows it covers cannot be reached through the
 	# public API. Same shape as NxFoundationCustomArrayTests above.
 	add_executable(NxPhysicsInternalTests tests/PhysicsInternalTests.cpp
-		tests/PhysicsInternalGroupPairStubs.cpp
-		tests/PhysicsInternalSceneStubs.cpp
 		tests/PhysicsInternalMeshContactStubs.cpp
-		tests/PhysicsInternalTriangleMeshStubs.cpp
 		Physics/src/PhysicsInternal.cpp
 		Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
@@ -841,7 +839,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
-		tests/PhysicsInternalContactStubs.cpp
+		tests/PhysicsInternalContactStubs.cpp tests/PhysicsInternalMeshContactStubs.cpp
 		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp)
 	target_include_directories(NxPhysicsObjectLayoutTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
@@ -878,7 +876,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
-		tests/PhysicsInternalContactStubs.cpp
+		tests/PhysicsInternalContactStubs.cpp tests/PhysicsInternalMeshContactStubs.cpp
 		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp)
 	target_include_directories(NxPhysicsShapeVtableTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
@@ -915,7 +913,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp
 		Physics/src/ContactBoxMeshICE.cpp Physics/src/ContactCapsuleMesh.cpp Physics/src/ContactMeshHeightfield.cpp Physics/src/ContactMeshMesh.cpp Physics/src/ContactPlaneMesh.cpp
 		Physics/src/ContactConvexConvex.cpp Physics/src/TriangleMeshPolygons.cpp
-		Physics/src/ContactConvexHeightfield.cpp Physics/src/TriangleMeshTopology.cpp Physics/src/TriangleMesh.cpp
+		Physics/src/ContactConvexHeightfield.cpp Physics/src/ContactSphereMesh.cpp
+		Physics/src/TriangleMeshTopology.cpp Physics/src/TriangleMesh.cpp Physics/src/PMap.cpp
 		Physics/src/QhullHost.cpp Physics/src/Quantizer.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/PhysicsInternal.cpp

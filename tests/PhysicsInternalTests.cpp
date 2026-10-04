@@ -23,6 +23,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <new>
 
 #include "PhysicsInternal.h"
 #include "Containers.h"
@@ -434,10 +435,13 @@ static int testInternalTriangleMeshRows()
 		{
 		NxU32 words[0x38 / sizeof(NxU32)];
 		InternalTriangleMesh mesh;
+		AlignedMeshStorage() {}
+		~AlignedMeshStorage() {}
 		} storage;
-	memset(&storage, 0xa5, sizeof(storage));
-	nxInternalMeshInit(&storage.mesh);
-	const NxU8* raw = reinterpret_cast<const NxU8*>(&storage.mesh);
+	InternalTriangleMesh* mesh = ::new (&storage.mesh) InternalTriangleMesh;
+	memset(mesh, 0xa5, sizeof(*mesh));
+	nxInternalMeshInit(mesh);
+	const NxU8* raw = reinterpret_cast<const NxU8*>(mesh);
 	for(unsigned offset = 0; offset <= 0x20; offset += 4)
 		if(!check(*reinterpret_cast<const NxU32*>(raw + offset) == 0,
 			"002065 clears the nine measured leading words"))
@@ -450,19 +454,19 @@ static int testInternalTriangleMeshRows()
 		"002065 leaves the unmeasured final interface word untouched"))
 		return fail("internal mesh interface boundary");
 
-	nxInternalMeshAllocateMaterials(&storage.mesh);
-	nxInternalMeshAllocateFaceRemap(&storage.mesh);
-	if(!check(storage.mesh.mMaterialIndices == 0 && storage.mesh.mFaceRemap == 0,
+	nxInternalMeshAllocateMaterials(mesh);
+	nxInternalMeshAllocateFaceRemap(mesh);
+	if(!check(mesh->mMaterialIndices == 0 && mesh->mFaceRemap == 0,
 		"002073 and 002075 do not allocate for zero triangles"))
 		return fail("internal mesh zero-count allocation");
 
-	nxInternalMeshAllocateVertices(&storage.mesh, 3);
-	if(!check(storage.mesh.mVertexCount == 3 && storage.mesh.mVertices != 0 &&
+	nxInternalMeshAllocateVertices(mesh, 3);
+	if(!check(mesh->mVertexCount == 3 && mesh->mVertices != 0 &&
 		gFoundationCounter.lastSize == 36,
 		"002069 stores count and allocates twelve bytes per vertex"))
 		return fail("internal mesh vertex allocation");
-	nxInternalMeshAllocateTriangles(&storage.mesh, 2);
-	if(!check(storage.mesh.mTriangleCount == 2 && storage.mesh.mTriangles != 0 &&
+	nxInternalMeshAllocateTriangles(mesh, 2);
+	if(!check(mesh->mTriangleCount == 2 && mesh->mTriangles != 0 &&
 		gFoundationCounter.lastSize == 24,
 		"002071 stores count and allocates twelve bytes per triangle"))
 		return fail("internal mesh triangle allocation");
@@ -470,13 +474,13 @@ static int testInternalTriangleMeshRows()
 		NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f), NxVec3(0.0f, 1.0f, 0.0f)
 		};
 	const NxU32 triangles[6] = { 0, 1, 2, 0, 2, 1 };
-	memcpy(storage.mesh.mVertices, vertices, sizeof(vertices));
-	memcpy(storage.mesh.mTriangles, triangles, sizeof(triangles));
-	nxInternalMeshBuildTriangleData(&storage.mesh);
-	if(!check(storage.mesh.mTriangleData != 0 && gFoundationCounter.lastSize == 32,
+	memcpy(mesh->mVertices, vertices, sizeof(vertices));
+	memcpy(mesh->mTriangles, triangles, sizeof(triangles));
+	nxInternalMeshBuildTriangleData(mesh);
+	if(!check(mesh->mTriangleData != 0 && gFoundationCounter.lastSize == 32,
 		"002079 allocates sixteen bytes per triangle"))
 		return fail("internal mesh triangle-data allocation");
-	const NxReal* planes = static_cast<const NxReal*>(storage.mesh.mTriangleData);
+	const NxReal* planes = static_cast<const NxReal*>(mesh->mTriangleData);
 	if(!check(planes[0] == 0.0f && planes[1] == 0.0f && planes[2] == 1.0f && planes[3] == 0.0f &&
 		planes[4] == 0.0f && planes[5] == 0.0f && planes[6] == -1.0f && planes[7] == 0.0f,
 		"002079 writes normalized oriented planes in triangle order"))
@@ -489,25 +493,26 @@ static int testInternalTriangleMeshRows()
 	if(!check(storage.mesh.mFaceRemap != 0 && gFoundationCounter.lastSize == 8,
 		"002075 allocates four bytes per triangle"))
 		return fail("internal mesh face-remap allocation");
-	storage.mesh.mVertexNormals = gFoundationCounter.malloc(36, NX_MEMORY_PERSISTENT);
-	if(!check(storage.mesh.mVertexNormals != 0,
+	mesh->mVertexNormals = gFoundationCounter.malloc(36, NX_MEMORY_PERSISTENT);
+	if(!check(mesh->mVertexNormals != 0,
 		"test installs the measured optional vertex-normal array"))
 		return fail("internal mesh optional array allocation");
 
 	const unsigned freesBefore = gFoundationCounter.frees;
-	nxInternalMeshRelease(&storage.mesh);
+	nxInternalMeshRelease(mesh);
 	if(!check(gFoundationCounter.frees == freesBefore + 6,
 		"002067 releases all six Foundation-owned arrays in its empty-model case"))
 		return fail("internal mesh release count");
-	if(!check(storage.mesh.mVertices == 0 && storage.mesh.mTriangles == 0 &&
-		storage.mesh.mMaterialIndices == 0 && storage.mesh.mFaceRemap == 0 &&
-		storage.mesh.mVertexNormals == 0 && storage.mesh.mTriangleData == 0 &&
-		storage.mesh.mModel == 0,
+	if(!check(mesh->mVertices == 0 && mesh->mTriangles == 0 &&
+		mesh->mMaterialIndices == 0 && mesh->mFaceRemap == 0 &&
+		mesh->mVertexNormals == 0 && mesh->mTriangleData == 0 &&
+		mesh->mModel == 0,
 		"002067 clears each released pointer"))
 		return fail("internal mesh release pointers");
-	if(!check(storage.mesh.mVertexCount == 3 && storage.mesh.mTriangleCount == 2,
+	if(!check(mesh->mVertexCount == 3 && mesh->mTriangleCount == 2,
 		"002067 leaves the measured counts unchanged"))
 		return fail("internal mesh release counts");
+	mesh->~InternalTriangleMesh();
 	return 0;
 	}
 
