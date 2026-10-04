@@ -181,8 +181,17 @@ heading said twenty and four until the Task 4 review recounted it.
 cases move with `mesh.bad_tag1`; `phys_fn_002262` closes on N there. **V reads green**, exit 0,
 where it was red by access violation here. `evidence/phase4-falsification.md` §5 has both.
 
-Sixteen rows' worth of behaviour is falsified by a mutation inside the row's own censused extent
-with a measured non-zero delta. **Eight rows close on that basis:**
+The current harness adds nonempty cell runs and a 33-command sequence that visits every 5-bit code.
+The pinned oracle and rebuilt DLL agree on both cases; the command-matrix grid digest is
+`cdce6b95`, and the current asset digest is `1daa095e` over 32 probes. Mutation AA changed command
+11's X delta from 0 to +1. The staged-pair run rejected the command-matrix grid, reported one
+expected-value mismatch, and changed the aggregate digest to `a15c726d`; restoring the delta returned
+the staged differential to pass. This closes `phys_fn_002008` as an intermediate Phase 4 row.
+Resolution-64 and resolution-80 coordinate widths remain statically recovered but not dynamically
+covered.
+
+Seventeen rows' worth of behaviour is falsified by a mutation inside the row's own censused extent
+with a measured non-zero delta. **Nine rows close on that basis:**
 
 | row | rva | bytes | mutations |
 | --- | --- | ---: | --- |
@@ -194,8 +203,9 @@ with a measured non-zero delta. **Eight rows close on that basis:**
 | `phys_fn_002262` `TriangleMesh::load` | `0x00055cb0` | 511 | N, O |
 | `phys_fn_004772` `MemoryStream::readByte` | `0x000b3aa0` | 23 | P |
 | `phys_fn_004774` `MemoryStream::readDword` | `0x000b3ac0` | 24 | Q |
+| `phys_fn_002008` `PenetrationMap::decodeCellRun` | `0x0004dba0` | 909 | AA |
 
-**3,836 bytes of 60,146 — 3.5% of the rows and 6.4% of the bytes of this task's population.**
+**4,745 bytes of 60,146 — 3.9% of the rows and 7.9% of the bytes of this task's population.**
 
 ### And the registration, broken on purpose
 
@@ -220,7 +230,7 @@ load-bearing.
 | **`phys_fn_002037`/`002039`/`002041`/`002043`** `0x000502d0`-`0x000505e8`, 777 bytes (mutations R and U) | the corner pass ORs `0x40000000` into cells already `0xffffffff`, and the reorder permutes an array of identical words. Both are the identity on every recorded fixture |
 | **the sign block inside `phys_fn_002035`** (mutation T) | same: it ORs `0x80000000` into cells already `0xffffffff`. `phys_fn_002035` closes on H and I; **this arm of it does not** |
 | **`phys_fn_002033`'s `rep stosd 0xffffffff`** at `0x000500ea` (mutation G) | `phys_fn_002035` refills the whole grid with the same word at `0x00050160` before reading a bit, so setup's fill is dead on the load path. What H proves is that *the loader's* fill is `0xffffffff`; what G shows is that *setup's* is unobservable through the load path. The row closes on F |
-| **`phys_fn_002008`** `0x0004dba0`, 909 bytes (mutation V) | the row's outputs — the count it returns and the cell indices it appends — are never compared, because every recorded fixture declares a count of zero. All the differential can see is the row's effect on the stream position. Here, at `bcf544f`, removing the 32-bit count read desynchronised the bit stream so far that the reader walked off the fixture buffer and the process faulted -- a red by access violation, which is not a measured delta. Re-measured on branch `p4-close-port` it is **green**, exit 0, as §4's re-measurement paragraph says: it neither faults nor moves anything the differential compares. Either way this row is **not** claimed |
+| **`phys_fn_002008`** `0x0004dba0`, 909 bytes (mutation V; now closed by AA) | V remains a historical green/crash-only mutation. AA changes command 11's X delta; the staged-pair command matrix fails with one expected-value mismatch and aggregate digest `a15c726d` instead of `1daa095e`. The row is closed on AA; resolution 64/80 are still untested |
 | **the bit-mask reset in `phys_fn_004772`/`phys_fn_004774`** (`mov byte ptr [ecx+0x18],0`) | it is the second instruction of each row and it is what stops a bit stream and a byte stream interleaving. No recorded fixture interleaves them: the header is read before the first bit and no raw read follows. Reproduced, unfalsified |
 | **`phys_fn_001984`** `0x0004cae0`, the destructor | it frees the grid and the spread table. Nothing in the harness observes a free |
 | **the two `__LINE__` values 979 and 986** | the image pushes `0x3d3` and `0x3da`, which are `__LINE__` in NovodeX's own `PenetrationMap.cpp`. `Physics/src/PMap.cpp` is not that file. They are named constants there, recorded rather than manufactured by padding the file to 986 lines. Mutation C falsifies *which branch reports which*, which is the part that is a fact about the oracle |
@@ -238,8 +248,10 @@ load-bearing.
   one.
 - **The filename arm of `phys_fn_002035` (`0x00050123`-`0x0005014f`) and the build-your-own-stream
   arm at `0x0005017b`**, both of which reach serialization rows this task does not cover.
-- **The 5-bit cell walk in `phys_fn_002008`** — the 32-way jump table at `0x0004dc75` moving three
-  cursor globals. Recorded unestablished by Task 1 and still unestablished.
+- **The 5-bit cell walk in `phys_fn_002008`** is now reconstructed from the 32-way jump table at
+  `0x0004dc75`, including three persistent cursor globals, delta commands 0-25 and absolute
+  coordinate commands 26-31. A resolution-32 command-matrix fixture drives every command and
+  matches the pinned grid. Resolution-64 and resolution-80 absolute widths still need dynamic cases.
 - **Fields 3 to 19 of the mesh stream header.** The accept arm allocates through the Foundation SDK
   allocator at `0x101041bc`, null until an `NxPhysicsSDK` exists. `nxTriangleMeshReadHeader` returns
   a third value for "the tags passed and the rest is not reconstructed", and the harness reports

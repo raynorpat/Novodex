@@ -57,6 +57,19 @@ static const NxU32	kPMapCellInterior		= 0x40000000u;
 
 static_assert(sizeof(NxU32) == 4, "the grid is dwords");
 
+// The decoder's three coordinate cursors and per-command counters are process
+// globals in the image (0x101222e8..0x101222f0 and 0x101240a0). In particular,
+// they are not reset when a new map or cell run begins.
+static NxU32 gPMapCellX = 0;
+static NxU32 gPMapCellY = 0;
+static NxU32 gPMapCellZ = 0;
+static NxU32 gPMapCellCodeCounts[32] = { 0 };
+
+static NxU32 pmapReadCoordinate(MemoryStream& stream, NxU32 width)
+	{
+	return width ? stream.readBitsMsbFirst(width) : 0;
+	}
+
 // ---------------------------------------------------------------------------
 
 // phys_fn_002045 at 0x000505f0. The AABB is seeded with FLT_MAX/-FLT_MAX and
@@ -170,7 +183,7 @@ bool PenetrationMap::setup(NxU32 resolution, const NxF32* bounds)
 
 // ---------------------------------------------------------------------------
 
-// phys_fn_002008 at 0x0004dba0, as far as the recorded fixtures establish it.
+// phys_fn_002008 at 0x0004dba0.
 //
 // The first three instructions are the ONE place in this format where the
 // resolution is interpreted: `cmp eax,0x20` -> 5, `cmp eax,0x40` -> 6,
@@ -183,28 +196,69 @@ bool PenetrationMap::setup(NxU32 resolution, const NxF32* bounds)
 // (`[eax+4] = 0` at 0x0004dc13), and a zero count returns 0 without entering the
 // walk (0x0004dc1c to 0x0004e109).
 //
-// THE WALK ITSELF IS NOT RECONSTRUCTED. Each element is a 5-bit code dispatched
-// through the 32-way jump table at 0x0004dc75 which moves three cursor globals,
-// and the meaning of the codes is unestablished. The count read and the
-// code-width selection above are reproduced because they are measurable; the
-// walk refuses.
+// Each element is a 5-bit command. 0..25 move one or more coordinates by one;
+// 26..31 replace one or more coordinates with absolute values encoded at the
+// resolution's coordinate width. The flattened cell index is appended to the
+// caller's Ice container. The cursors and command counters are image globals.
 NxU32 PenetrationMap::decodeCellRun(MemoryStream& stream, IceCore::Container& cells, NxU32 resolution)
 	{
 	NxU32 codeWidth = 0;
 	if(resolution == 0x20)		codeWidth = 5;
 	else if(resolution == 0x40)	codeWidth = 6;
 	else if(resolution == 0x50)	codeWidth = 7;
-	(void) codeWidth;
-
 	NxU32 count = stream.readBitsMsbFirst(32);
 	cells.Reset();
 	if(count == 0)
 		return 0;
 
-	// NOT RECONSTRUCTED -- see above. Reaching here means a fixture drove a
-	// non-empty cell run, which nothing recorded does.
-	NX_ASSERT(!"PenetrationMap cell-run walk is not reconstructed");
-	return 0;
+	static const NxI32 delta[26][3] = {
+		{ -1,  0,  0 }, {  1,  0,  0 }, {  0, -1,  0 }, {  0,  1,  0 },
+		{  0,  0, -1 }, {  0,  0,  1 }, { -1, -1,  0 }, {  1,  1,  0 },
+		{ -1,  1,  0 }, {  1, -1,  0 }, {  0, -1, -1 }, {  0,  1,  1 },
+		{  0, -1,  1 }, {  0,  1, -1 }, { -1,  0, -1 }, {  1,  0,  1 },
+		{ -1,  0,  1 }, {  1,  0, -1 }, { -1, -1, -1 }, {  1,  1,  1 },
+		{ -1, -1,  1 }, {  1,  1, -1 }, {  1, -1, -1 }, { -1,  1,  1 },
+		{  1, -1,  1 }, { -1,  1, -1 }
+		};
+
+	for(NxU32 i = 0; i < count; ++i)
+		{
+		NxU32 code = stream.readBitsMsbFirst(5);
+		++gPMapCellCodeCounts[code];
+
+		if(code < 26)
+			{
+			gPMapCellX += static_cast<NxU32>(delta[code][0]);
+			gPMapCellY += static_cast<NxU32>(delta[code][1]);
+			gPMapCellZ += static_cast<NxU32>(delta[code][2]);
+			}
+		else
+			{
+			switch(code)
+				{
+				case 26: gPMapCellX = pmapReadCoordinate(stream, codeWidth); break;
+				case 27: gPMapCellY = pmapReadCoordinate(stream, codeWidth); break;
+				case 28: gPMapCellZ = pmapReadCoordinate(stream, codeWidth); break;
+				case 29:
+					gPMapCellX = pmapReadCoordinate(stream, codeWidth);
+					gPMapCellY = pmapReadCoordinate(stream, codeWidth);
+					break;
+				case 30:
+					gPMapCellX = pmapReadCoordinate(stream, codeWidth);
+					gPMapCellZ = pmapReadCoordinate(stream, codeWidth);
+					break;
+				case 31:
+					gPMapCellX = pmapReadCoordinate(stream, codeWidth);
+					gPMapCellY = pmapReadCoordinate(stream, codeWidth);
+					gPMapCellZ = pmapReadCoordinate(stream, codeWidth);
+					break;
+				}
+			}
+
+		NxU32 index = (gPMapCellZ * resolution + gPMapCellY) * resolution + gPMapCellX;
+		cells.Add(index);
+		}
+	return count;
 	}
 
 // ---------------------------------------------------------------------------

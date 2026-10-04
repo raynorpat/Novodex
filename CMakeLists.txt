@@ -630,8 +630,11 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# seam is opcNovodeXAlloc/opcNovodeXFree and that reaches nxGetSdkAllocator.
 	# TriangleMesh.cpp holds phys_fn_002233, the hull computation, which calls the hull
 	# library (qhull-gap Task 4e), so QhullHost.cpp, Quantizer.cpp and NxQhull come with it.
-	add_executable(NxPhysicsAssetTests tests/PhysicsAssetTests.cpp
+	add_executable(NxPhysicsAssetTests tests/PhysicsAssetTests.cpp tests/PhysicsAssetTestSupport.cpp
 		Physics/src/PMap.cpp Physics/src/MemoryStream.cpp Physics/src/TriangleMesh.cpp
+		Physics/src/EdgeList.cpp Physics/src/IceAdjacencies.cpp Physics/src/IceMeshTools.cpp
+		Physics/src/IceMeshBuilder2.cpp Physics/src/ConvexHull.cpp Physics/src/TriangleMeshTopology.cpp
+		Physics/src/IceSupportMaps.cpp Physics/src/SmoothNormals.cpp Physics/src/TriangleMeshPolygons.cpp
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
 		Physics/src/QhullHost.cpp Physics/src/Quantizer.cpp
 		tests/PhysicsInternalContactStubs.cpp)

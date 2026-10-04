@@ -3,14 +3,14 @@
  "phase": 4,
  "note": "The Phase 4 asset byte-format fixtures.  Each case carries the exact bytes tests/PhysicsAssetTests.cpp feeds the shipped oracle and the answer the oracle gave for them.  The oracle values are a record of a run, not a claim about a format: what each field of each format IS, and the address that establishes it, is in evidence/phase4-formats.md.  No fixture contains a pointer, so every one of them means the same thing in any process.  tools/tests/test_asset_cases.py holds this file to the committed transcript and to the harness so the three cannot drift.",
  "transcript": "cases/assets/oracle-transcript.txt",
- "harness": "D:/github/Novodex/tests/PhysicsAssetTests.cpp",
+ "harness": "tests/PhysicsAssetTests.cpp",
  "probes": [
   {
    "name": "pmap",
    "rva": "0x00050640",
    "owner": "phys_fn_002047",
    "entry": "PenetrationMap::Create, driven on the load path with a mesh stand-in, because that path reads only the six floats at mesh+0x44",
-   "cases": 14
+   "cases": 16
   },
   {
    "name": "mesh",
@@ -236,6 +236,55 @@
     "resolution": 0,
     "cells": 0,
     "grid": "00000000"
+   }
+  },
+  {
+   "id": "pmap.nonempty_absolute",
+   "dimension": "nonempty_cell_run",
+   "bytes": null,
+   "byte_count": 4123,
+   "encoding": {
+    "kind": "absolute_cell_run",
+    "header": "504d41500400000020000000",
+    "value": 0,
+    "command": 31,
+    "coordinates": [1, 2, 3],
+    "terminator": 4294967295,
+    "filled_sign_bits": 32768
+   },
+   "note": "resolution 32; one 0x1f absolute XYZ command writes flattened cell 3137, followed by all-one sign bits",
+   "oracle": {
+    "accepted": 1,
+    "errors": 0,
+    "error_line": "0x000",
+    "resolution": 32,
+    "cells": 32768,
+    "grid": "118f67a9"
+   }
+  },
+  {
+   "id": "pmap.command_matrix",
+   "dimension": "command_matrix",
+   "bytes": null,
+   "byte_count": 4149,
+   "encoding": {
+    "kind": "absolute_delta_command_matrix",
+    "header": "504d41500400000020000000",
+    "value": 0,
+    "commands": [31, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
+    "starting_coordinates": [16, 16, 16],
+    "absolute_coordinates": [[5], [6], [7], [8, 9], [10, 11], [12, 13, 14]],
+    "terminator": 4294967295,
+    "filled_sign_bits": 32768
+   },
+   "note": "resolution 32; visits all 32 command codes, anchoring with absolute XYZ before applying all 26 delta commands",
+   "oracle": {
+    "accepted": 1,
+    "errors": 0,
+    "error_line": "0x000",
+    "resolution": 32,
+    "cells": 32768,
+    "grid": "cdce6b95"
    }
   }
  ],

@@ -1990,7 +1990,7 @@ class DifferentialExclusionTests(unittest.TestCase):
 
     def test_reads_the_live_exclusion_list(self):
         self.assertEqual(validate_inventory.read_differential_exclusions(self.RUNNER),
-                         ["pair_directory=", "loaded module=", "modules ", "imports "])
+                         ["pair_directory=", "loaded module=", "oracle module path=", "oracle base=", "modules ", "imports "])
 
     def test_reports_nothing_when_the_runner_stops_naming_one_list(self):
         # Two lists or none means the record has nothing to be checked against,

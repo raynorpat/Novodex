@@ -139,7 +139,9 @@ function Invoke-Child([string] $Target, $Pair) {
     #                                    child outright, and both its exit code
     #                                    and its stderr are compared.
     # Everything else must match exactly.
-    $normalized = @($lines | Where-Object { $_ -notmatch '^(pair_directory=|loaded module=|modules |imports )' })
+    $normalized = @($lines | Where-Object {
+        $_ -notmatch '^(pair_directory=|loaded module=|oracle module path=|oracle base=|modules |imports )'
+    })
     return [pscustomobject]@{
         ExitCode = $process.ExitCode
         Stdout = $stdout
@@ -164,7 +166,9 @@ else {
 
 Assert-True ($Targets.Count -gt 0) 'at least one test target was requested'
 foreach ($target in $Targets) {
-    Assert-True ($target -cin $NxRegisteredTestTargets) "test target is registered in gate_targets.ps1: $target"
+    $registered = ($target -cin $NxRegisteredTestTargets) -or
+        ($target -cin $NxRegisteredOracleDifferentialTargets)
+    Assert-True $registered "test target is registered in gate_targets.ps1: $target"
 }
 
 Assert-True (Test-Path -LiteralPath $programPath -PathType Leaf) "program pin file exists: $programPath"

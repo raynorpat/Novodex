@@ -4668,10 +4668,10 @@ $NxRequiredCoverageLines = [ordered] @{
     # in output. Registering both is what would catch a reconstruction that made
     # them differ.
     'NxPhysicsAssetTests' = @(
-        'asset fixtures pmap=14 mesh=6 writer=9 release=1',
+        'asset fixtures pmap=16 mesh=6 writer=9 release=1',
         'asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051',
-        'asset coverage driven=30 accepted=13 rejected=16 errors=10',
-        'asset oracle digest=eaefc573',
+        'asset coverage driven=32 accepted=15 rejected=16 errors=10',
+        'asset oracle digest=1daa095e',
 
         'pmap case=pmap.minimal_valid dimension=minimal_valid bytes=17 accepted=1 errors=0 line=0x000 resolution=1 cells=1 grid=e3160fb1',
         'pmap case=pmap.multi_value dimension=multi_element bytes=30 accepted=1 errors=0 line=0x000 resolution=2 cells=8 grid=5b517625',
@@ -4687,6 +4687,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'pmap case=pmap.bad_version_ffffffff dimension=malformed bytes=17 accepted=0 errors=1 line=0x3da resolution=0 cells=0 grid=00000000',
         'pmap case=pmap.truncated_after_magic dimension=truncated bytes=84 accepted=0 errors=1 line=0x3da resolution=0 cells=0 grid=00000000',
         'pmap case=pmap.truncated_mid_tag dimension=truncated bytes=83 accepted=0 errors=1 line=0x3d3 resolution=0 cells=0 grid=00000000',
+        'pmap case=pmap.nonempty_absolute dimension=nonempty_cell_run bytes=4123 accepted=1 errors=0 line=0x000 resolution=32 cells=32768 grid=118f67a9',
+        'pmap case=pmap.command_matrix dimension=command_matrix bytes=4149 accepted=1 errors=0 line=0x000 resolution=32 cells=32768 grid=cdce6b95',
 
         # dwords_read is the measurement that says WHERE the reader stopped, not
         # only that it refused. A reader that validated both tags before
@@ -5348,7 +5350,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 1  # one public actor-group pair-flag hash round-trip and clear
     '3' = 359  # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 251  # 34 asset and 217 third-party assertions, including qhull and convex-mesh gap
+    '4' = 253  # 36 asset and 217 third-party assertions, including cell-run dispatch
     '5' = 2037  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # + 175 from scene-raycast Task 4 (149 body-creation, 13 setters, 9 dynamic-setter
                # and 3 shape-vtable from its shape sub-area, 1 shape-vtable from its box hull)
