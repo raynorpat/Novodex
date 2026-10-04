@@ -18,6 +18,7 @@ class Scene;
 class NxSceneDesc;
 class NxDebugRenderable;
 class NxUserDebugRenderer;
+class TriangleMesh;
 
 const NxU32* nxPhysicsSDKGroupCollisionMasks();
 void* nxPhysicsSDKShapePairTable();
@@ -49,7 +50,7 @@ class PhysicsSDK : public NxAllocateable
 	// mScenes; returns the Scene, which NpPhysicsSDK wraps.
 	NxSceneInternal* createScene(const NxSceneDesc& desc);
 	void releaseScene(NxSceneInternal* scene);
-	class NxTriangleMesh* createTriangleMesh(const NxTriangleMeshDesc& desc);
+	TriangleMesh* createTriangleMesh(const NxTriangleMeshDesc& desc);
 	void releaseTriangleMesh(TriangleMesh* mesh);
 	// phys_fn_000448 (0x0000def0)
 	NxU32 getNbScenes() const;

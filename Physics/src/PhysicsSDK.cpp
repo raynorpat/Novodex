@@ -199,6 +199,15 @@ void nxReleaseSdkPointerBindings();
 PhysicsSDK::~PhysicsSDK()
 	{
 	NX_DELETE_SINGLE(mNp);
+	for(NxU32 i = 0; i < mTriangleMeshes.size(); ++i)
+		{
+		TriangleMesh* mesh = mTriangleMeshes[i];
+		if(mesh)
+			{
+			mesh->~TriangleMesh();
+			nxFoundationSDKAllocator->free(mesh);
+			}
+		}
 	nxReleaseSdkPointerBindings();
 	cpmResetActorGroupPairFlags();
 
@@ -305,24 +314,20 @@ NxSceneInternal* PhysicsSDK::createScene(const NxSceneDesc& desc)
 	return scene;
 	}
 
-NxTriangleMesh* PhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc& desc)
+TriangleMesh* PhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc& desc)
 	{
-	if(!desc.isValid())
-		return 0;
-	TriangleMesh* mesh = NX_NEW(TriangleMesh)();
-	if(!mesh || !mesh->mPublicMesh)
+	if(!nxFoundationSDKAllocator || !desc.isValid()) return 0;
+	void* memory = nxFoundationSDKAllocator->malloc(sizeof(TriangleMesh), NX_MEMORY_PERSISTENT);
+	if(!memory) return 0;
+	TriangleMesh* mesh = new(memory) TriangleMesh();
+	if(!mesh->publicHandle() || !mesh->loadFromDesc(desc))
 		{
-		if(mesh) { mesh->release(); NX_DELETE_SINGLE(mesh); }
-		return 0;
-		}
-	if(!mesh->loadFromDesc(desc))
-		{
-		mesh->release();
-		NX_DELETE_SINGLE(mesh);
+		mesh->~TriangleMesh();
+		nxFoundationSDKAllocator->free(memory);
 		return 0;
 		}
 	mTriangleMeshes.pushBack(mesh);
-	return mesh->mPublicMesh;
+	return mesh;
 	}
 
 void PhysicsSDK::releaseTriangleMesh(TriangleMesh* mesh)
@@ -331,8 +336,8 @@ void PhysicsSDK::releaseTriangleMesh(TriangleMesh* mesh)
 		if(mTriangleMeshes[i] == mesh)
 			{
 			mTriangleMeshes.replaceWithLast(i);
-			mesh->release();
-			NX_DELETE_SINGLE(mesh);
+			mesh->~TriangleMesh();
+			nxFoundationSDKAllocator->free(mesh);
 			return;
 			}
 	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION, NX_PHYSICS_SDK_CPP, 569,

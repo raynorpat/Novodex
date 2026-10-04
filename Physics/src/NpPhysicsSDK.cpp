@@ -123,10 +123,10 @@ NxTriangleMesh* NpPhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc& desc)
 				"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 			return 0;
 			}
-	NxTriangleMesh* mesh = mSdk->createTriangleMesh(desc);
+	TriangleMesh* mesh = mSdk->createTriangleMesh(desc);
 	for(NxU32 index = 0; index < locked; ++index)
 		nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, index));
-	return mesh;
+	return mesh ? mesh->publicHandle() : 0;
 	}
 
 // phys_fn_000244 (0x0000b8c0): same lock/unwind protocol around release.
@@ -143,8 +143,14 @@ void NpPhysicsSDK::releaseTriangleMesh(NxTriangleMesh& mesh)
 				"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 			return;
 			}
-	NxTriangleMeshAdapter& adapter = static_cast<NxTriangleMeshAdapter&>(mesh);
-	mSdk->releaseTriangleMesh(adapter.mMesh);
+	TriangleMesh* internal = 0;
+	for(NxU32 i = 0; i < mSdk->mTriangleMeshes.size(); ++i)
+		if(mSdk->mTriangleMeshes[i]->publicHandle() == &mesh)
+			{
+			internal = mSdk->mTriangleMeshes[i];
+			break;
+			}
+	mSdk->releaseTriangleMesh(internal);
 	for(NxU32 index = 0; index < locked; ++index)
 		nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, index));
 	}
