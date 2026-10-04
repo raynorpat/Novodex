@@ -29,6 +29,7 @@ class NxMeshContactReport : public NxUserContactReport
 	NxActor* expectedGround;
 	NxActor* expectedSphere;
 	unsigned calls;
+	unsigned unexpectedCalls;
 	unsigned events;
 	unsigned patchCount;
 	unsigned firstPatchPoints;
@@ -38,13 +39,16 @@ class NxMeshContactReport : public NxUserContactReport
 	unsigned secondNormal[3];
 	unsigned firstSeparation;
 	NxMeshContactReport(NxActor* ground, NxActor* sphere)
-		: expectedGround(ground), expectedSphere(sphere), calls(0), events(0), patchCount(0),
+		: expectedGround(ground), expectedSphere(sphere), calls(0), unexpectedCalls(0), events(0), patchCount(0),
 			firstPatchPoints(0), pointCount(0),
 			firstPoint(), firstNormal(), secondNormal(), firstSeparation(0) {}
 	virtual void onContactNotify(NxContactPair& pair, NxU32 eventFlags)
 		{
 		if(pair.actors[0] != expectedGround || pair.actors[1] != expectedSphere)
+			{
+			++unexpectedCalls;
 			return;
+			}
 		++calls;
 		events |= eventFlags;
 		NxContactStreamIterator iterator(pair.stream);
@@ -361,7 +365,45 @@ int wmain(int argc, wchar_t** argv)
 	printf("simulation mesh-trigger calls=%u event=%u unexpected=%u\n",
 		triggerReport.calls, triggerReport.lastEvent, triggerReport.unexpectedCalls);
 
+	// Heightfields extend collision below their surface by the configured
+	// vertical extent. This distinguishes the heightfield branch from the
+	// ordinary-mesh front-face rejection above.
+	NxTriangleMeshDesc heightfieldDesc = meshDesc;
+	heightfieldDesc.heightFieldVerticalAxis = NX_Y;
+	heightfieldDesc.heightFieldVerticalExtent = -100.0f;
+	NxTriangleMesh* const heightfieldMesh = sdk->createTriangleMesh(heightfieldDesc);
+	if(!heightfieldMesh)
+		return nxFail("heightfield mesh creation failed");
+	NxTriangleMeshShapeDesc heightfieldShape;
+	heightfieldShape.meshData = heightfieldMesh;
+	NxActorDesc heightfieldActorDesc;
+	heightfieldActorDesc.shapes.pushBack(&heightfieldShape);
+	NxActor* const heightfieldActor = scene->createActor(heightfieldActorDesc);
+	if(!heightfieldActor)
+		return nxFail("heightfield actor creation failed");
+	heightfieldActor->setGroup(7);
+	NxMeshContactReport heightfieldReport(sphere, heightfieldActor);
+	scene->setUserContactReport(&heightfieldReport);
+	scene->setGravity(NxVec3(0.0f, 0.0f, 0.0f));
+	sphere->setGlobalPosition(NxVec3(0.0f, -0.25f, 0.0f));
+	sphere->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
+	scene->simulate(1.0f / 60.0f);
+	if(!scene->checkResults(NX_RIGID_BODY_FINISHED, true)
+		|| !scene->fetchResults(NX_RIGID_BODY_FINISHED, true))
+		return nxFail("heightfield mesh-contact simulation results failed");
+	sphere->getGlobalPosition(position);
+	sphere->getLinearVelocity(velocity);
+	printf("simulation mesh-heightfield calls=%u unexpected=%u events=%08x patches=%u points=%u point=%08x.%08x.%08x normal=%08x.%08x.%08x separation=%08x y=%08x vy=%08x\n",
+		heightfieldReport.calls, heightfieldReport.unexpectedCalls, heightfieldReport.events,
+		heightfieldReport.patchCount, heightfieldReport.pointCount,
+		heightfieldReport.firstPoint[0], heightfieldReport.firstPoint[1], heightfieldReport.firstPoint[2],
+		heightfieldReport.firstNormal[0], heightfieldReport.firstNormal[1], heightfieldReport.firstNormal[2],
+		heightfieldReport.firstSeparation, nxFloatBits(position.y), nxFloatBits(velocity.y));
+	fflush(stdout);
+
 	sdk->setActorGroupPairFlags(7, 3, 0);
+	scene->releaseActor(*heightfieldActor);
+	sdk->releaseTriangleMesh(*heightfieldMesh);
 	scene->releaseActor(*missSphereActor);
 	scene->releaseActor(*missTriggerActor);
 	sdk->releaseTriangleMesh(*missMesh);

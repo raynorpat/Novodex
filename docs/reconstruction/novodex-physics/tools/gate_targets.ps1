@@ -3150,6 +3150,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation mesh-transformed calls=1 events=00000008 points=2 point=c1200000.40a00000.00000000'
         # Matrix-B sphere/mesh overlap drives the public trigger enter callback.
         'simulation mesh-trigger calls=1 event=1 unexpected=0'
+        # The Y-axis heightfield's negative extent permits a contact below the surface.
+        'simulation mesh-heightfield calls=1 unexpected=0 events=0000000a patches=1 points=1 point=00000000.be800000.00000000 normal=00000000.3f800000.80000000 separation=be800000 y=bdb851ee vy=36000000'
     )
     'NxPhysicsTriggerSimulationTests' = @(
         # A dynamic sphere crosses a public static trigger box under real motion.

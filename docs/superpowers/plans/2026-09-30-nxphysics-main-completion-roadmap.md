@@ -72,6 +72,12 @@ The original current-main artifacts are `build/main-phase5.log` and `build/main-
 - The focused mesh differential passes with `stdout_delta=0`, exact stderr. Fresh Phase 7 passes at 1,306/1,306 (`build/phase7-mesh-vertex.log`).
 - Remaining mesh work includes the other edge/corner branches, heightfield-specific normals, broader transformed/multi-face and mutation cases, and semantic closure of `001927`/`001929`. Full M1 and full-DLL completion remain active.
 
+### Execution checkpoint — 2026-10-03, sphere/heightfield below-surface contact
+
+- Added public-path simulation coverage for an upward-facing Y-axis heightfield with a `-100` vertical extent and a sphere initially below its surface. The ordinary mesh remains backface-rejecting; the heightfield emits the expected one-point contact. The default heightfield fixture matches the shipped DLL exactly, including contact point, signed-zero normal component, separation, post-step position, and velocity (`stdout_delta=0`, exact stderr; `build/heightfield-default-pass.log`).
+- The candidate now selects one projected heightfield triangle when the sphere center projects inside the candidate set, permits the configured below-surface contact, uses the face normal for this default heightfield case, and preserves identity-transform normal bits.
+- Smooth-sphere heightfield contacts are not covered by this checkpoint: the oracle and candidate's generated flat-mesh vertex normals differ by one ULP. Other vertical axes, sloped heightfield normals, heightfield edges/corners and extent boundaries, broader transformed/multi-face cases, and full semantic closure of `001927`/`001929` remain open. Full M1 and full-DLL completion remain active.
+
 Current unique code-row states by owning phase:
 
 | Phase | Discovered | Reconstructed | Dynamically gated / statically reviewed |

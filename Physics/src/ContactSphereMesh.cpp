@@ -81,12 +81,40 @@ static void nxSphereMeshToWorldVector(const NxCollisionShape* meshShape,
 	const NxVec3& local, NxVec3& world)
 	{
 	const NxReal* const r = meshShape->rotation;
+	if(nxSphereMeshBits(r[0]) == 0x3f800000 && nxSphereMeshBits(r[1]) == 0
+		&& nxSphereMeshBits(r[2]) == 0 && nxSphereMeshBits(r[3]) == 0
+		&& nxSphereMeshBits(r[4]) == 0x3f800000 && nxSphereMeshBits(r[5]) == 0
+		&& nxSphereMeshBits(r[6]) == 0 && nxSphereMeshBits(r[7]) == 0
+		&& nxSphereMeshBits(r[8]) == 0x3f800000)
+		{
+		world = local;
+		return;
+		}
 	world.x = (NxReal) (((double) r[0] * local.x + (double) r[1] * local.y)
 		+ (double) r[2] * local.z);
 	world.y = (NxReal) (((double) r[3] * local.x + (double) r[4] * local.y)
 		+ (double) r[5] * local.z);
 	world.z = (NxReal) (((double) r[6] * local.x + (double) r[7] * local.y)
 		+ (double) r[8] * local.z);
+	}
+
+static bool nxSphereMeshProjectionInside(const NxReal* a, const NxReal* b,
+	const NxReal* c, const NxVec3& point, NxU32 verticalAxis)
+	{
+	const NxU32 u = verticalAxis == 0 ? 1 : 0;
+	const NxU32 v = verticalAxis == 2 ? 1 : 2;
+	const double abU = (double) b[u] - a[u];
+	const double abV = (double) b[v] - a[v];
+	const double acU = (double) c[u] - a[u];
+	const double acV = (double) c[v] - a[v];
+	const double apU = (double) point[u] - a[u];
+	const double apV = (double) point[v] - a[v];
+	const double denominator = abU * acV - acU * abV;
+	if(denominator == 0.0)
+		return false;
+	const double s = (apU * acV - acU * apV) / denominator;
+	const double t = (abU * apV - apU * abV) / denominator;
+	return s >= 0.0 && t >= 0.0 && s + t <= 1.0;
 	}
 
 void __cdecl NxContactSphereMesh(const NxCollisionShape* sphere,
@@ -108,6 +136,7 @@ void __cdecl NxContactSphereMesh(const NxCollisionShape* sphere,
 
 	const NxReal radius = sphere->geometry[0];
 	const NxReal radiusSquared = radius * radius;
+	const bool isHeightfield = mesh->mHeightFieldVerticalAxis != 0xff;
 	NxVec3 centerLocal;
 	nxSphereMeshToLocal(meshShape,
 		NxVec3(sphere->translation[0], sphere->translation[1], sphere->translation[2]), centerLocal);
@@ -127,9 +156,26 @@ void __cdecl NxContactSphereMesh(const NxCollisionShape* sphere,
 
 	const NxU32 candidateCount = candidates.GetNbEntries();
 	const NxU32* const candidateFaces = candidates.GetEntries();
+	NxU32 heightfieldFace = 0xffffffff;
+	if(isHeightfield)
+		for(NxU32 candidate = 0; candidate < candidateCount; ++candidate)
+			{
+			const NxU32* const tri = triangles + candidateFaces[candidate] * 3;
+			const NxReal* const v0 = vertices + tri[0] * 3;
+			const NxReal* const v1 = vertices + tri[1] * 3;
+			const NxReal* const v2 = vertices + tri[2] * 3;
+			if(nxSphereMeshProjectionInside(v0, v1, v2, centerLocal,
+				mesh->mHeightFieldVerticalAxis))
+				{
+				heightfieldFace = candidateFaces[candidate];
+				break;
+				}
+			}
 	for(NxU32 candidate = 0; candidate < candidateCount; ++candidate)
 		{
 		const NxU32 face = candidateFaces[candidate];
+		if(heightfieldFace != 0xffffffff && face != heightfieldFace)
+			continue;
 		const NxU32* const tri = triangles + face * 3;
 		const NxReal* const v0 = vertices + tri[0] * 3;
 		const NxReal* const v1 = vertices + tri[1] * 3;
@@ -155,7 +201,7 @@ void __cdecl NxContactSphereMesh(const NxCollisionShape* sphere,
 			(centerLocal.x - v0[0]) * faceNormal.x
 			+ (centerLocal.y - v0[1]) * faceNormal.y
 			+ (centerLocal.z - v0[2]) * faceNormal.z;
-		if(signedFaceDistance < 0.0f || signedFaceDistance > radius)
+		if((!isHeightfield && signedFaceDistance < 0.0f) || signedFaceDistance > radius)
 			continue;
 
 		NxReal s = 0.0f;
@@ -179,15 +225,41 @@ void __cdecl NxContactSphereMesh(const NxCollisionShape* sphere,
 		NxVec3 contactDelta(centerLocal.x - closestLocal.x,
 			centerLocal.y - closestLocal.y, centerLocal.z - closestLocal.z);
 		NxVec3 normalLocal;
+		if(isHeightfield)
+			normalLocal = faceNormal;
+		else
 		nxSphereMeshNormalizeDelta(contactDelta, distanceSquared, normalLocal);
 		NxVec3 normalWorld;
 		nxSphereMeshToWorldVector(meshShape, normalLocal, normalWorld);
+		if(isHeightfield)
+			{
+			NxReal normalLengthSquared = normalWorld.x * normalWorld.x
+				+ normalWorld.y * normalWorld.y;
+			normalLengthSquared += normalWorld.z * normalWorld.z;
+			const NxReal normalLength = nxSphereMeshSqrt(normalLengthSquared);
+			if(normalLength != 0.0f)
+				{
+				const NxReal inverseNormalLength = 1.0f / normalLength;
+				normalWorld.x *= inverseNormalLength;
+				normalWorld.y *= inverseNormalLength;
+				normalWorld.z *= inverseNormalLength;
+				}
+			}
 
 		NxVec3 point;
-		nxSphereMeshToWorldVector(meshShape, closestLocal, point);
-		point.x += meshShape->translation[0];
-		point.y += meshShape->translation[1];
-		point.z += meshShape->translation[2];
+		if(isHeightfield)
+			{
+			point.x = sphere->translation[0];
+			point.y = sphere->translation[1];
+			point.z = sphere->translation[2];
+			}
+		else
+			{
+			nxSphereMeshToWorldVector(meshShape, closestLocal, point);
+			point.x += meshShape->translation[0];
+			point.y += meshShape->translation[1];
+			point.z += meshShape->translation[2];
+			}
 		NxReal contactDistanceSquared;
 		NxReal separation;
 		__asm
