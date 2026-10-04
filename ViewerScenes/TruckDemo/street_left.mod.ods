@@ -1,0 +1,9 @@
+# street_left
+Model3
+{
+	Mesh	{ "street_left.obj"; }
+	Groups
+	{
+		Material_39 { "Material #999.mat.ods"; }
+	}
+}

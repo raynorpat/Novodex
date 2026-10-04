@@ -1,0 +1,8 @@
+Material3
+{
+	Smooth	{ 1; }
+	Color	{ 1.0; 1.0; 1.0; 1.0; }
+	Specular	{ 0.000000; 0.000000; 0.000000; 1.000000; }
+	SpecExp	{ 0.000000; }
+	Tex1 {"wood_tex.jpg"; }
+}

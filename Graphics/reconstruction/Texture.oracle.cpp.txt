@@ -1,0 +1,167 @@
+// 0x4 ??0Texture@SceneGraph@@QAE@XZ
+SceneGraph::Texture *__thiscall SceneGraph::Texture::Texture(SceneGraph::Texture *this)
+{
+  *(_BYTE *)this = HIBYTE(this);
+  *((_DWORD *)this + 1) = 0;
+  *((_DWORD *)this + 2) = 0;
+  *((_DWORD *)this + 3) = 0;
+  *((_DWORD *)this + 4) = -1;
+  *((_DWORD *)this + 5) = 0;
+  *((_DWORD *)this + 6) = 0;
+  *((_DWORD *)this + 7) = 1065353216;
+  return this;
+}
+
+// 0x34 ?load@Texture@SceneGraph@@QAEXPBD_N@Z
+void __thiscall SceneGraph::Texture::load(SceneGraph::Texture *this, const char *a2, bool a3)
+{
+  unsigned int v4; // kr04_4
+  unsigned int v5; // ebx
+  int v6; // ecx
+  char v7; // al
+  unsigned int v8; // eax
+  int v9; // ecx
+
+  if ( a2 == nullptr )
+    goto LABEL_16;
+  v4 = strlen(a2) + 1;
+  v5 = v4 - 1;
+  if ( v4 - 1 > 0xFFFFFFFD )
+    std::_Xlen();
+  v6 = *((_DWORD *)this + 1);
+  if ( v6 != 0 && (v7 = *(_BYTE *)(v6 - 1)) != 0 && v7 != -1 )
+  {
+    if ( v4 == 1 )
+    {
+      *(_BYTE *)(v6 - 1) = v7 - 1;
+      *((_DWORD *)this + 1) = 0;
+      *((_DWORD *)this + 2) = 0;
+      *((_DWORD *)this + 3) = 0;
+      SceneGraph::Texture::create(this, a2: a3);
+      return;
+    }
+  }
+  else
+  {
+    if ( v4 == 1 )
+    {
+      std::string::_Tidy(a1: 1);
+      SceneGraph::Texture::create(this, a2: a3);
+      return;
+    }
+    v8 = *((_DWORD *)this + 3);
+    if ( v8 <= 0x1F && v8 >= v5 )
+      goto LABEL_15;
+    std::string::_Tidy(a1: 1);
+  }
+  std::string::_Copy(a1: v5);
+LABEL_15:
+  qmemcpy(*((void **)this + 1), a2, v5);
+  v9 = *((_DWORD *)this + 1);
+  *((_DWORD *)this + 2) = v5;
+  *(_BYTE *)(v9 + v5) = 0;
+LABEL_16:
+  SceneGraph::Texture::create(this, a2: a3);
+}
+
+// 0x114 ??1Texture@SceneGraph@@QAE@XZ
+void __thiscall SceneGraph::Texture::~Texture(SceneGraph::Texture *this)
+{
+  int v2; // eax
+  _BYTE *v3; // ecx
+  char v4; // al
+  unsigned int v5; // ecx
+  _DWORD v6[3]; // [esp+4h] [ebp-Ch] BYREF
+
+  v6[1] = &_L26666;
+  v6[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v6);
+  v6[2] = 0;
+  SceneGraph::Texture::destroy(this);
+  v2 = *((_DWORD *)this + 1);
+  if ( v2 != 0 )
+  {
+    v3 = (_BYTE *)(v2 - 1);
+    v4 = *(_BYTE *)(v2 - 1);
+    if ( v4 == 0 || v4 == -1 )
+      operator delete(a1: v3);
+    else
+      *v3 = v4 - 1;
+  }
+  v5 = v6[0];
+  *((_DWORD *)this + 1) = 0;
+  *((_DWORD *)this + 2) = 0;
+  *((_DWORD *)this + 3) = 0;
+  __writefsdword((unsigned int)&_except_list, v5);
+}
+
+// 0x1c0 ?activate@Texture@SceneGraph@@QAEXXZ
+void __thiscall SceneGraph::Texture::activate(SceneGraph::Texture *this)
+{
+  glEnable(cap: 0xDE1u);
+  glBindTexture(target: 0xDE1u, texture: *((_DWORD *)this + 4));
+}
+
+// 0x1e0 ?create@Texture@SceneGraph@@QAEX_N@Z
+void __thiscall SceneGraph::Texture::create(GLuint *this, bool a2)
+{
+  GLuint *v3; // esi
+  const char *v4; // eax
+  struct GLTXimage *BMP; // eax
+  void (__stdcall *v6)(); // ebp
+  struct GLTXimage *v7; // esi
+  void (__stdcall *v8)(GLenum, GLenum, GLint); // esi
+
+  v3 = this + 4;
+  glGenTextures(n: 1, textures: this + 4);
+  glBindTexture(target: 0xDE1u, texture: *v3);
+  v4 = (const char *)*(this + 1);
+  if ( v4 == nullptr )
+    v4 = (const char *)&`std::string::_Nullstr'::`2'::_C;
+  BMP = gltxReadBMP(a1: v4);
+  v6 = (void (__stdcall *)())glGetError;
+  v7 = BMP;
+  glGetError();
+  v6();
+  if ( v7 != nullptr )
+  {
+    gluBuild2DMipmaps(
+      target: 0xDE1u,
+      components: *((_DWORD *)v7 + 4),
+      width: *(_DWORD *)v7,
+      height: *((_DWORD *)v7 + 1),
+      format: *((_DWORD *)v7 + 5),
+      type: 0x1401u,
+      data: *((const void **)v7 + 6));
+    *(this + 5) = *(_DWORD *)v7;
+    *(this + 6) = *((_DWORD *)v7 + 1);
+    *((float *)this + 7) = (double)*((unsigned int *)v7 + 3) / (double)*((int *)v7 + 2);
+    gltxDelete(a1: v7);
+  }
+  glTexEnvf(target: 0x2300u, pname: 0x2200u, param: 8448.0);
+  v8 = glTexParameteri;
+  if ( a2 )
+  {
+    glTexParameteri(target: 0xDE1u, pname: 0x2800u, param: 9729);
+    v8(target: 0xDE1u, pname: 0x2801u, param: 9987);
+  }
+  else
+  {
+    glTexParameteri(target: 0xDE1u, pname: 0x2800u, param: 9728);
+    v8(target: 0xDE1u, pname: 0x2801u, param: 9728);
+  }
+  v6();
+}
+
+// 0x304 ?destroy@Texture@SceneGraph@@QAEXXZ
+void __thiscall SceneGraph::Texture::destroy(const GLuint *this)
+{
+  _DWORD *v1; // esi
+
+  v1 = this + 4;
+  if ( *(this + 4) != -1 )
+  {
+    glDeleteTextures(n: 1, textures: this + 4);
+    *v1 = -1;
+  }
+}

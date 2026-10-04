@@ -1,0 +1,113 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 1000; }
+	DragForce	{ 100; }
+	gravity	{ 0.000000; -9.810000; 0.000000; }
+	gridRes	{ 0; }
+	simStepSize { 0.02; }
+
+	Parameters
+		{
+		RigidBodySDK
+			{
+			MIN_SEPARATION_FOR_PENALTY { -0.01; }
+			}
+		}
+	Text
+		{
+		T {"Deep penetrations are no big deal..."; Y{-0.7;} D{5;} S{16;}}
+		}
+
+	Bodies
+	{
+		stand
+		{
+			# Joint name
+			name	{ standJoint; }
+			# PRS
+			orientation	{ -0.500000; 0.500000; 0.500000; -0.500000; }
+			#position	{ 0.241310; 0.202339; -0.196850; }
+			position	{ 0.441310; 0.202339; -0.196850; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 0.000000; }
+		}
+		brick1
+		{
+			# Joint name
+			name	{ brick1Joint; }
+			# PRS
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			#position	{ 0.367165; 0.624774; -0.193637; }
+			position	{ 0.367165; 0.324774; -0.193637; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 1; }
+			wake { 10000; }
+		}
+		brick1
+		{
+			# Joint name
+			name	{ brick2Joint; }
+			# PRS
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			#position	{ 0.367165; 0.973218; -0.193637; }
+			position	{ 0.367165; 5.673218; -0.193637; }
+			scale	{ 1.50000; }
+			# Physical properties
+			mass	{ 10.000000; }
+		}
+		/*
+		brick1
+		{
+			# Joint name
+			name	{ brick3Joint; }
+			# PRS
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			#position	{ 0.367165; 1.122481; -0.193637; }
+			position	{ 0.367165; 0.8122481; -0.193637; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 1.000000; }
+		}
+		*/
+		/*
+		bar
+		{
+			# Joint name
+			name	{ barJoint; }
+			# PRS
+			orientation	{ -0.500000; 0.500000; 0.500000; -0.500000; }
+			#position	{ 0.068188; 0.448433; -0.197095; }
+			position	{ 0.068188; 0.348433; -0.197095; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 1.000000; }
+		}
+
+		faller
+		{
+			# Joint name
+			name	{ fallerJoint; }
+			# PRS
+			orientation	{ -0.500000; 0.500000; 0.500000; -0.500000; }
+			position	{ -0.294151; 1.389605; -0.197677; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 4.000000; }
+		}
+		*/
+	}
+	Joints
+	{
+	}
+	Lights
+	{
+	}
+	Camera
+	{
+	position {0.597671;1.466659;-2.974918;}
+	angles {0.000000;-192.000000;-14.000000;}
+	}
+}

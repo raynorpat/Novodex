@@ -1,0 +1,97 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 1000; }
+	DragForce	{ 100; }
+	gravity	{ 0.000000; -9.810000; 0.000000; }
+	gridRes	{ 0; }
+
+	Parameters	{
+	RigidBodySDK
+	{
+	MIN_SEPARATION_FOR_PENALTY { -0.02; }
+	}
+	}
+
+	Bodies
+	{
+		LargeBox
+		{
+			name	{ LargeBox; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 0.527339; 1.064062; 0.861479; }
+			scale	{ 1.000000; }
+		}
+		Teapot01
+		{
+			name	{ Teapot01; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -1.140604; 1.299129; -1.882316; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		Pyramid01
+		{
+			name	{ Pyramid01; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -1.666789; 0.597249; 1.916183; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		Tube01
+		{
+			name	{ Tube01; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 0.524437; 0.675505; 1.361729; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		LargeBox
+		{
+			name	{ LargeBox01; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -1.137251; 1.233634; -3.582785; }
+			scale	{ 1.000000; }
+		}
+		LargeBox
+		{
+			name	{ LargeBox02; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -1.140814; 1.692971; -0.347104; }
+			scale	{ 1.000000; }
+		}
+		LargeBox
+		{
+			name	{ LargeBox03; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -1.739491; 2.236359; -1.697350; }
+			scale	{ 1.000000; }
+		}
+		Box01
+		{
+			name	{ Box01; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 1.324400; 0.547245; -1.025043; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		LargeBox
+		{
+			name	{ LargeBox04; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 1.771352; 1.362623; -1.173299; }
+			scale	{ 1.000000; }
+		}
+	}
+	Joints
+	{
+	}
+	Lights
+	{
+	}
+	Camera
+	{
+		position {5.349436;5.527092;-5.040734;}
+		angles {0.000000;124.000000;-32.000000;}
+	}
+}

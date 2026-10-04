@@ -1,0 +1,9 @@
+# Terrain
+Model3
+{
+	Mesh	{ "Terrain.obj"; }
+	Groups
+	{
+		Material_0 { "TerrainMaterial.mat.ods"; }
+	}
+}

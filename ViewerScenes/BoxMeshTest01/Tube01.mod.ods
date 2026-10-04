@@ -1,0 +1,9 @@
+# Tube01
+Model3
+{
+	Mesh	{ "Tube01.obj"; }
+	Groups
+	{
+		Material_1 { "Terrain.mat.ods"; }
+	}
+}

@@ -1,0 +1,57 @@
+PDS
+{
+	Acts
+	{
+		"PMapTest8.psc.ods";
+	}
+	Models
+	{
+		Torus01	{ "Torus01.mod.ods"; }
+		Torus_Knot01	{ "Torus_Knot01.mod.ods"; }
+	}
+	Actors
+	{
+		Torus01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Torus01";
+					}
+				}
+			}
+			Collision
+			{
+					TriangleMesh
+					{
+						pmapDensity { 64; }
+						pmapFile { torus64.bin; }
+					}
+			}
+		}
+		Torus_Knot01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Torus_Knot01";
+					}
+				}
+			}
+			Collision
+			{
+					TriangleMesh
+					{
+						pmapDensity { 64; }
+						pmapFile { knot64.bin; }
+					}
+			}
+		}
+	}
+}

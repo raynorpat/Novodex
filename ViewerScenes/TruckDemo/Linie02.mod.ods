@@ -1,0 +1,9 @@
+# Linie02
+Model3
+{
+	Mesh	{ "Linie02.obj"; }
+	Groups
+	{
+		Material_42 { "Material #939.mat.ods"; }
+	}
+}

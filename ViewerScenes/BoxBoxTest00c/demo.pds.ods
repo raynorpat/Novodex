@@ -1,0 +1,58 @@
+PDS
+{
+	Acts
+	{
+		"BoxBoxTest00c.psc.ods";
+	}
+	Models
+	{
+		Box10	{ "Box10.mod.ods"; }
+		Sphere01	{ "Sphere01.mod.ods"; }
+	}
+	Actors
+	{
+		Box10
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box10";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.750000; 0.750000; 0.750000; }
+#					dimensions	{ 0.80000; 0.80000; 0.80000; }
+				}
+			}
+		}
+		Sphere01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Sphere01";
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+#					radius	{ 1.466613; }
+					radius	{ 1.5; }
+				}
+			}
+		}
+	}
+}

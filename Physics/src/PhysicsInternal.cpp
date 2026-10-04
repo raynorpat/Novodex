@@ -7,6 +7,7 @@
 \*----------------------------------------------------------------------------*/
 #include "PhysicsInternal.h"
 #include "ContactGeneration.h"
+#include "NarrowPhase.h"
 #include "NxArray.h"
 
 #define WIN32_LEAN_AND_MEAN
@@ -99,8 +100,7 @@ static_assert(offsetof(ShapePairFunctionTable, mFunction) == 4, "the table follo
 ShapePairFunctionTable::ShapePairFunctionTable()
 	{
 	// phys_fn_002338 clears both 36 word blocks and then writes the entries
-	// that have a handler. Every handler it writes is Phase 3 collision code,
-	// so this component leaves the table cleared.
+	// that have a handler.
 	for(unsigned block = 0; block < 2; block++)
 		for(unsigned i = 0; i < 6; i++)
 			for(unsigned j = 0; j < 6; j++)
@@ -118,9 +118,13 @@ ShapePairFunctionTable::ShapePairFunctionTable()
 	mFunction[0][1][1] = (void*) NxContactSphereSphere;
 	mFunction[0][1][2] = (void*) NxContactSphereBox;
 	mFunction[0][1][3] = (void*) NxContactSphereCapsule;
+	mFunction[0][1][4] = (void*) NxContactSphereMesh;
 	mFunction[0][2][2] = (void*) NxContactBoxBox;
 	mFunction[0][2][3] = (void*) NxContactBoxCapsule;
 	mFunction[0][3][3] = (void*) NxContactCapsuleCapsule;
+	// Trigger interactions use the second matrix. The sphere/mesh overlap row
+	// discovers mesh trigger pairs during simulation.
+	mFunction[1][1][4] = (void*) NxOverlapSphereMesh;
 	}
 
 ShapePairFunctionTable::~ShapePairFunctionTable()

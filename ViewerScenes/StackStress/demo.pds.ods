@@ -1,0 +1,58 @@
+PDS
+{
+	Acts
+	{
+		"StackStress.psc.ods";
+	}
+	Models
+	{
+		Box05	{ "Box05.mod.ods"; }
+		GeoSphere01	{ "GeoSphere01.mod.ods"; }
+	}
+	Actors
+	{
+		Box05
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box05";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+#					dimensions	{ 0.800000; 0.800000; 0.800000; }
+					dimensions	{ 0.8550000; 0.8550000; 0.8550000; }
+#					dimensions	{ 0.860000; 0.860000; 0.860000; }
+				}
+			}
+		}
+		GeoSphere01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"GeoSphere01";
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+					radius	{ 2.577232; }
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,57 @@
+PDS
+{
+	Acts
+	{
+		"tops.psc.ods";
+	}
+	Models
+	{
+		Box01	{ "Box01.mod.ods"; }
+		Box02	{ "Box02.mod.ods"; }
+	}
+	Actors
+	{
+		Box01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box01";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					dimensions	{ 1.750000; 1.750000; 1.750000; }
+				}
+			}
+		}
+		Box02
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box02";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; -0.000001; 0.000000; }
+					dimensions	{ 10.334795; 17.327631; 2.724117; }
+				}
+			}
+		}
+	}
+}

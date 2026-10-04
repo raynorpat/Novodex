@@ -1,0 +1,9 @@
+# Capsule_trigger
+Model3
+{
+	Mesh	{ "Capsule_trigger.obj"; }
+	Groups
+	{
+		Material_0 { "Objects.mat.ods"; }
+	}
+}

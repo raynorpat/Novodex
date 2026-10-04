@@ -119,6 +119,16 @@ static int nxTestPMapComputeFirst(HMODULE physics, NxPhysicsSDK* sdk, NxU32 dens
 	srand(1);
 	NxPMap pmap = { 0, 0 };
 	const bool computed = createPMap(pmap, *mesh, density, 0);
+	const char* dumpPath = getenv("NX_PMAP_DUMP_FILE");
+	if(computed && pmap.data && dumpPath && dumpPath[0])
+		{
+		FILE* dump = fopen(dumpPath, "wb");
+		if(dump)
+			{
+			fwrite(pmap.data, 1, pmap.dataSize, dump);
+			fclose(dump);
+			}
+		}
 	const unsigned long long hash = computed ? nxPMapByteHash(
 		static_cast<const unsigned char*>(pmap.data), pmap.dataSize) : 0ull;
 	printf("pmap_compute density=%u created=%u size=%u hash=%016llx\n",

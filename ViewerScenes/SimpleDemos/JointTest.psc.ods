@@ -1,0 +1,139 @@
+# joint test script
+# a sphere-joint loop -- a cyclic configuration!
+Scene
+	{
+	Text
+		{
+		T {"joint test";						X{-0.9;} Y{ 0.7;} N{0.7;} S{16;}}
+		}
+
+
+
+	PhysStart {1;}
+	PhysDuration   {200;}
+	DragForce { 40; }
+	gravity { 0; -9; 0; }		#no gravity yet to avoid contacts
+	collDet { 0; }				#collision detection off.
+
+	Bodies
+		{
+		1_Rubik
+			{
+			name { head; }
+			mass	{1;}				
+			position {0;25;0; }
+			scale {0.04;}
+			}
+
+		2_Rubik
+			{
+			name { tail0; }
+			mass	{1;}				
+			position {2; 23; 0;}
+			scale {0.03;}
+			}
+
+		3_Rubik
+			{
+			name { tail1; }
+			mass	{1;}				
+			position {-2; 23; 0;}
+			scale {0.03;}
+			}
+		3_Rubik
+			{
+			name { tail2; }
+			mass	{1;}				
+			position {2; 21; 0;}
+			scale {0.03;}
+			}
+		3_Rubik
+			{
+			name { tail3; }
+			mass	{1;}				
+			position {-2; 21; 0;}
+			scale {0.03;}
+			}
+		3_Rubik
+			{
+			name { tail4; }
+			mass	{1;}				
+			position {0; 19; 0;}
+			scale {0.04;}
+			}
+
+
+		}
+
+	Joints
+		{
+		Spherical
+			{
+			anchor { 0; 25.5; 0; }
+			bodies { WORLD; head; }
+			}
+
+
+		Spherical
+			{
+			anchor { 1; 24; 0; }
+			bodies { head; tail0; }
+			}
+		Spherical
+			{
+			anchor { -1; 24; 0; }
+			bodies { head; tail1; }
+			}
+
+		Spherical
+			{
+			anchor { 2; 22; 0; }
+			bodies { tail0; tail2; }
+			}
+		Spherical
+			{
+			anchor { -2; 22; 0; }
+			bodies { tail1; tail3; }
+			}
+
+		Spherical
+			{
+			anchor { 1; 20; 0; }
+			bodies { tail2; tail4; }
+			}
+		Spherical
+			{
+			anchor { -1; 20; 0; }
+			bodies { tail3; tail4; }
+			}
+
+		}
+
+
+	Obstacles
+		{
+
+		1 
+			{
+			position {  0; 26.2; 0; }
+			dimensions {2; 0.2; 2;}
+			}
+		}
+
+
+	Lights
+		{
+		1 {5; 5; 7;}
+		2 {-5; 25; 10;}
+		}
+
+	Camera
+		{
+		position {-1.243964;21.937880;19.389345;}
+		angles {0.000000;-2.000000;6.000000;}
+		}
+
+
+#use default gravity of 9.8
+
+	}

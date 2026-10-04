@@ -1,0 +1,9 @@
+# PtOnLineBody
+Model3
+{
+	Mesh	{ "PtOnLineBody.obj"; }
+	Groups
+	{
+		Material_1 { "Stones_Balmoral.mat.ods"; }
+	}
+}

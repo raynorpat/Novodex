@@ -1,0 +1,93 @@
+Scene
+{
+	PhysStart { 1; }
+	PhysDuration { 10000; }
+	gravity { 0.000000; -9.81000; 0.000000; }
+	collDet { 1; }
+	gridRes { 0; }
+	#recorder { 1; }	# 1 - REC 2 - PLAY
+
+	Bodies
+	{
+
+		Cylinder
+		{
+			name { Cylinder; }
+			position { 1; 4; 0; }
+			angles { 0; 0; 90; }
+			scale { 1; }
+		}
+		
+		Cube
+		{
+			name { Cube; }
+			position { 1; 3; 0; }
+			scale { 1; }
+		}
+
+		Pencil
+		{
+			name { Pencil; }
+			position { 1; 2; 0; }
+			mass { 0; }
+			scale { 1; }
+		}
+
+		Pot
+		{
+			name { Pot; }
+			position { 3; 3; 0; }
+			scale { 1; }
+		}
+
+		Quad
+		{
+			name { Quad; }
+			position { 3; 2; 0; }
+			mass {0; }
+			scale { 1; }
+		}
+/*pierre's tree doesn't work for one triangle meshes
+		Triangle
+		{
+			name { Triangle; }
+			position { 5; 5; 0; }
+			scale { 1; }
+		}
+*/
+		Wheel
+		{
+			name { Wheel; }
+			position { 6; 5; 0; }
+			angles { 0; 0; 90; }
+			scale { 1; }
+		}
+
+
+/*
+		Sphere01
+		{
+			name { Sphere01; }
+			position { 0; 10; 0; }
+			dimension { 1.468750; 1.468750; 1.468750; }
+			mass { 10; }
+			scale { 1; }
+			restitution { 0.7; }
+			friction { 0; }
+		}
+*/
+	}
+
+
+	Lights
+	{
+		 1 { 30.539808; 64.812670; 63.445845; }
+		 2 { -30.539808; 64.812670; -63.445845; }
+	}
+
+	Camera
+s	{
+	position {1.320453;4.621090;11.433870;}
+	angles {0.000000;-6.000000;1.000000;}
+	}
+}

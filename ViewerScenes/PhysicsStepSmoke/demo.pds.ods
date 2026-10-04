@@ -1,0 +1,28 @@
+PDS
+{
+	Acts
+	{
+		"PhysicsStepSmoke.psc.ods";
+	}
+	Models
+	{
+		TestBox	{ "TestBox.mod.ods"; }
+	}
+	Actors
+	{
+		TestBox
+		{
+			Graphics
+			{
+				Node
+				{
+					Model { "TestBox"; }
+				}
+			}
+			Collision
+			{
+				Box { dimensions { 0.5; 0.5; 0.5; } }
+			}
+		}
+	}
+}

@@ -1,0 +1,9 @@
+# je_tire_lowpoly06
+Model3
+{
+	Mesh	{ "je_tire_lowpoly06.obj"; }
+	Groups
+	{
+		Material_44 { "Material #938.mat.ods"; }
+	}
+}

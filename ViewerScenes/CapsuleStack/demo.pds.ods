@@ -1,0 +1,58 @@
+PDS
+{
+	Acts
+	{
+		"Physics_CapsuleStack.psc.ods";
+	}
+	Models
+	{
+		Room	{ "Room.mod.ods"; }
+		Capsule01	{ "Capsule01.mod.ods"; }
+	}
+	Actors
+	{
+		Room
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Room";
+					}
+				}
+			}
+			Collision
+			{
+					TriangleMesh;
+			}
+		}
+		Capsule01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Capsule01";
+					}
+				}
+			}
+			Collision
+			{
+				Capsule
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+#					radius	{ 0.384660; }
+#					radius	{ 0.41; }
+					radius	{ 0.416; }
+#					radius	{ 0.42; }
+					height	{ 3.362857; }
+				}
+			}
+		}
+	}
+}

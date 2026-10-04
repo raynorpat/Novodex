@@ -1,0 +1,9 @@
+# Quader31
+Model3
+{
+	Mesh	{ "Quader31.obj"; }
+	Groups
+	{
+		Material_0 { "Stones_Balmoral.mat.ods"; }
+	}
+}

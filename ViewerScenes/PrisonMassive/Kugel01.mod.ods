@@ -1,0 +1,9 @@
+# Kugel01
+Model3
+{
+	Mesh	{ "Kugel01.obj"; }
+	Groups
+	{
+		Material_0 { "Stones_Balmoral.mat.ods"; }
+	}
+}

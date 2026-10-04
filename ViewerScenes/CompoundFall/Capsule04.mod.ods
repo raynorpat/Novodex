@@ -1,0 +1,9 @@
+# Capsule04
+Model3
+{
+	Mesh	{ "Capsule04.obj"; }
+	Groups
+	{
+		Material_0 { "2_-_Default.mat.ods"; }
+	}
+}

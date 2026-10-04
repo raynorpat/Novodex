@@ -1,0 +1,9 @@
+# Moving_box
+Model3
+{
+	Mesh	{ "Moving_box.obj"; }
+	Groups
+	{
+		Material_1 { "03_-_Standard.mat.ods"; }
+	}
+}

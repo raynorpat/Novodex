@@ -1,0 +1,41 @@
+void __cdecl initGLState()
+{
+  void (__stdcall *v0)(GLenum); // esi
+  void (__stdcall *v1)(GLenum, GLenum, const GLfloat *); // edi
+  GLfloat params[4]; // [esp+8h] [ebp-40h] BYREF
+  GLfloat v3[4]; // [esp+18h] [ebp-30h] BYREF
+  GLfloat v4[4]; // [esp+28h] [ebp-20h] BYREF
+  GLfloat v5[4]; // [esp+38h] [ebp-10h] BYREF
+
+  glClearColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0);
+  glClear(mask: 0x4100u);
+  glutSwapBuffers();
+  glClearDepth(depth: 1.0);
+  v0 = glEnable;
+  glEnable(cap: 0xB71u);
+  glDepthFunc(func: 0x203u);
+  memset(v5, 0, 12);
+  v5[3] = 1.0;
+  params[0] = 0.2;
+  params[1] = 0.2;
+  params[2] = 0.2;
+  params[3] = 1.0;
+  v3[0] = 0.5;
+  v3[1] = 0.5;
+  v3[2] = 0.5;
+  v3[3] = 1.0;
+  v4[0] = 0.40000001;
+  v4[1] = 0.40000001;
+  v4[2] = 0.40000001;
+  v4[3] = 1.0;
+  glLightModelfv(pname: 0xB53u, params);
+  v1 = glLightfv;
+  glLightfv(light: 0x4000u, pname: 0x1201u, params: v3);
+  v1(light: 0x4000u, pname: 0x1202u, params: v4);
+  v1(light: 0x4000u, pname: 0x1200u, params: v5);
+  v0(cap: 0x4000u);
+  v0(cap: 0xB50u);
+  glBlendFunc(sfactor: 0, dfactor: 0x300u);
+  v0(cap: 0xBA1u);
+  glShadeModel(mode: 0x1D00u);
+}

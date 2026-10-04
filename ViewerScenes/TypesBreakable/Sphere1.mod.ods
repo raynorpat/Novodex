@@ -1,0 +1,9 @@
+# Sphere1
+Model3
+{
+	Mesh	{ "Sphere1.obj"; }
+	Groups
+	{
+		Material_1 { "Stones_Balmoral.mat.ods"; }
+	}
+}

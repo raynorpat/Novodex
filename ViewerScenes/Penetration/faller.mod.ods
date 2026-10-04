@@ -1,0 +1,9 @@
+# faller
+Model3
+{
+	Mesh	{ "faller.obj"; }
+	Groups
+	{
+		DefaultMaterial { "Default.mat.ods"; }
+	}
+}

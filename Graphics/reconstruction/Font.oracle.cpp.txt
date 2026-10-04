@@ -1,0 +1,159 @@
+// 0xf4 ?createFont@clText@@SAXHHW4FontStyle@1@@Z
+BOOL __cdecl clText::createFont(int a1, int a2, char a3)
+{
+  HFONT (__stdcall *v3)(const LOGFONTA *); // ebx
+  HFONT v4; // esi
+  struct font *v5; // ebx
+  HDC CurrentDC; // edi
+  struct _GLYPHMETRICSFLOAT *v7; // eax
+  LOGFONTA lf; // [esp+10h] [ebp-3Ch] BYREF
+
+  memset(&lf, 0, sizeof(lf));
+  lf.lfCharSet = 0;
+  lf.lfHeight = -a2;
+  lf.lfOutPrecision = 7;
+  if ( (a3 & 1) != 0 )
+    lf.lfWeight = 700;
+  if ( (a3 & 2) != 0 )
+    lf.lfItalic = 1;
+  if ( (a3 & 4) != 0 )
+    lf.lfUnderline = 1;
+  v3 = CreateFontIndirectA;
+  strcpy(lf.lfFaceName, (&off_14)[3 * a1]);
+  v4 = v3(lplf: &lf);
+  if ( v4 == nullptr )
+  {
+    lf.lfHeight = 0;
+    lf.lfWeight = 0;
+    lf.lfItalic = 0;
+    lf.lfUnderline = 0;
+    lf.lfStrikeOut = 0;
+    lf.lfFaceName[0] = 0;
+    v4 = v3(lplf: &lf);
+    if ( v4 == nullptr )
+      Fatal(a1: `string');
+  }
+  v5 = (struct font *)glGenLists(range: 128);
+  if ( v5 != nullptr )
+  {
+    CurrentDC = wglGetCurrentDC();
+    SelectObject(hdc: CurrentDC, h: v4);
+    v7 = (struct _GLYPHMETRICSFLOAT *)operator new(a1: 0xC00u);
+    dword_10[3 * a1] = (int)v7;
+    if ( !wglUseFontOutlinesA(a1: CurrentDC, a2: 0, a3: 0x7Fu, a4: (DWORD)v5, a5: 0.0, a6: 0.0, a7: 1, a8: v7) )
+      Fatal(a1: `string');
+  }
+  else
+  {
+    Fatal(a1: `string');
+  }
+  *(&fontMap + 3 * a1) = v5;
+  return DeleteObject(ho: v4);
+}
+
+// 0x27c ?draw@clText@@SAXIMMMPADPAMW4FontStyle@1@@Z
+void __cdecl clText::draw(int a1, float a2, float x, float y, const char *a5, GLfloat *v, char a7)
+{
+  unsigned int v8; // kr04_4
+  double v9; // st7
+  unsigned int v10; // esi
+  int v11; // edx
+  unsigned int v12; // eax
+  int v13; // ecx
+  float v14; // [esp+20h] [ebp+14h]
+
+  v8 = strlen(a5) + 1;
+  v9 = 0.0;
+  v10 = v8 - 1;
+  if ( *(&fontMap + 3 * a1) == nullptr )
+  {
+    clText::createFont(a1, a2: 12, a3: a7);
+    v9 = (float)0.0;
+  }
+  v11 = dword_10[3 * a1];
+  v14 = 1.0 / (a2 * *(float *)(v11 + 1564));
+  if ( x == 1.0 )
+  {
+    v12 = 0;
+    if ( v8 != 1 )
+    {
+      do
+      {
+        v13 = a5[v12++];
+        v9 = v9 + *(float *)(v11 + 24 * v13 + 16);
+      }
+      while ( v12 < v10 );
+    }
+    x = v14 * v9 * -0.5;
+  }
+  if ( y == 1.0 )
+    y = -(*(float *)(v11 + 1564) / (a2 + a2));
+  if ( v != nullptr )
+    glColor3fv(v);
+  else
+    glColor3f(red: 0.69999999, green: 0.69999999, blue: 0.69999999);
+  glListBase(base: (GLuint)*(&fontMap + 3 * a1));
+  glMatrixMode(mode: 0x1700u);
+  glPushMatrix();
+  glLoadIdentity();
+  glTranslatef(x, y, z: 0.0);
+  glScalef(x: v14, y: v14, z: 1.0);
+  glCallLists(n: v10, type: 0x1401u, lists: a5);
+  glPopMatrix();
+}
+
+// 0x3d8 ?start@clText@@SAXXZ
+static void __cdecl clText::start()
+{
+  void (__stdcall *v0)(GLenum); // esi
+
+  v0 = glDisable;
+  glDisable(cap: 0xB50u);
+  v0(cap: 0xB71u);
+  glMatrixMode(mode: 0x1701u);
+  glPushMatrix();
+  glLoadIdentity();
+  gluOrtho2D(left: -1.0, right: 1.0, bottom: -1.0, top: 1.0);
+  glCullFace(mode: 0x405u);
+  glEnable(cap: 0xB44u);
+}
+
+// 0x448 ?end@clText@@SAXXZ
+static void __cdecl clText::end()
+{
+  void (__stdcall *v0)(GLenum); // esi
+  void (__stdcall *v1)(GLenum); // esi
+
+  v0 = glMatrixMode;
+  glMatrixMode(mode: 0x1701u);
+  glPopMatrix();
+  v0(mode: 0x1700u);
+  v1 = glEnable;
+  glEnable(cap: 0xB50u);
+  v1(cap: 0xB71u);
+}
+
+// 0x488 ?shutDown@clText@@SAXXZ
+static void __cdecl clText::shutDown()
+{
+  void (__stdcall *v0)(GLuint, GLsizei); // edi
+  struct font **v1; // esi
+  struct font *v2; // edx
+
+  if ( *off_14 != 0 )
+  {
+    v0 = glDeleteLists;
+    v1 = &fontMap;
+    do
+    {
+      if ( *v1 != nullptr )
+      {
+        v0(list: (GLuint)*v1, range: 128);
+        operator delete(a1: v1[1]);
+      }
+      v2 = v1[5];
+      v1 += 3;
+    }
+    while ( *(_BYTE *)v2 != 0 );
+  }
+}

@@ -1,0 +1,9 @@
+# Box15
+Model3
+{
+	Mesh	{ "Box15.obj"; }
+	Groups
+	{
+		DefaultMaterial { "Default.mat.ods"; }
+	}
+}

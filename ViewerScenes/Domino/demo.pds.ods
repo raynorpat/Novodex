@@ -1,0 +1,83 @@
+PDS
+{
+	Acts
+	{
+		"Physics_Domino.psc.ods";
+	}
+	Models
+	{
+		Box29	{ "Box29.mod.ods"; }
+		Room	{ "Room.mod.ods"; }
+	}
+	Actors
+	{
+		Box29
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box29";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; -0.000000; 0.000000; }
+#					dimensions	{ 0.600000; 1.500000; 0.300000; }
+					dimensions	{ 0.650000; 1.550000; 0.350000; }
+				}
+			}
+		}
+		Room
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Room";
+					}
+				}
+			}
+			Collision
+			{
+				Plane
+				{
+				normal	{ -1.000000; 0.000000; 0.000000; }
+				d	{ -3.785854; }
+				}
+				Plane
+				{
+				normal	{ 1.000000; 0.000000; 0.000000; }
+				d	{ -8.003515; }
+				}
+				Plane
+				{
+				normal	{ 0.000000; -1.000000; 0.000000; }
+				d	{ -11.348882; }
+				}
+				Plane
+				{
+				normal	{ 0.000000; 1.000000; 0.000000; }
+				d	{ 0.000000; }
+				}
+				Plane
+				{
+				normal	{ 0.000000; 0.000000; -1.000000; }
+				d	{ -8.110381; }
+				}
+				Plane
+				{
+				normal	{ 0.000000; 0.000000; 1.000000; }
+				d	{ -7.219302; }
+				}
+			}
+		}
+	}
+}

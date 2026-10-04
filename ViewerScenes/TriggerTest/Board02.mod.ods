@@ -1,0 +1,9 @@
+# Board02
+Model3
+{
+	Mesh	{ "Board02.obj"; }
+	Groups
+	{
+		Material_0 { "Objects.mat.ods"; }
+	}
+}

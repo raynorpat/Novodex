@@ -1,0 +1,130 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 1000; }
+	DragForce	{ 100; }
+	gravity	{ 0.000000; -9.810000; 0.000000; }
+	gridRes	{ 0; }
+	simStepSize	{ 0.004000; }
+
+	Parameters	{
+	RigidBodySDK
+	{
+	MIN_SEPARATION_FOR_PENALTY { 0; }
+	}
+	}
+
+	Bodies
+	{
+		default
+		{
+			name	{ default; }
+			orientation	{ -0.981233; -0.192827; 0.000000; 0.000000; }
+			position	{ 6.000134; 12.509133; -1.295924; }
+			scale	{ 1.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus01; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 5.358223; 12.529984; -0.595442; }
+			scale	{ 1.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus02; }
+			orientation	{ 0.707107; 0.707107; 0.000000; 0.000000; }
+			position	{ 4.838792; 12.529984; -0.604421; }
+			scale	{ 1.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus03; }
+			orientation	{ 0.707107; 0.707107; 0.000000; 0.000000; }
+			position	{ 3.806971; 12.529984; -0.604421; }
+			scale	{ 1.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus04; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 4.326402; 12.529984; -0.595442; }
+			scale	{ 1.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus05; }
+			orientation	{ 0.707107; 0.707107; 0.000000; 0.000000; }
+			position	{ 5.885173; 12.529984; -0.604421; }
+			scale	{ 1.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus09; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 0.184179; 12.529984; -0.595442; }
+			scale	{ 1.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus10; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 2.262382; 12.529984; -0.595442; }
+			scale	{ 1.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus11; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 1.216001; 12.529984; -0.595442; }
+			scale	{ 1.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus12; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 3.294204; 12.529984; -0.595442; }
+			scale	{ 1.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus13; }
+			orientation	{ 0.707107; 0.707107; 0.000000; 0.000000; }
+			position	{ 1.742951; 12.529984; -0.604421; }
+			scale	{ 1.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus14; }
+			orientation	{ 0.707107; 0.707107; 0.000000; 0.000000; }
+			position	{ 2.774772; 12.529984; -0.604421; }
+			scale	{ 1.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus15; }
+			orientation	{ 0.707107; 0.707107; 0.000000; 0.000000; }
+			position	{ -0.335252; 12.529984; -0.604422; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus16; }
+			orientation	{ 0.707107; 0.707107; 0.000000; 0.000000; }
+			position	{ 0.696569; 12.529984; -0.604422; }
+			scale	{ 1.000000; }
+		}
+	}
+	Joints
+	{
+	}
+	Lights
+	{
+	}
+	Camera
+	{
+		position {1.819115;9.906069;13.363310;}
+		angles {0.000000;8.000000;-8.000000;}
+	}
+}

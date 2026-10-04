@@ -1,0 +1,9 @@
+# LargeBox
+Model3
+{
+	Mesh	{ "LargeBox.obj"; }
+	Groups
+	{
+		Material_0 { "Objects.mat.ods"; }
+	}
+}

@@ -1,0 +1,9 @@
+# Pyramid01
+Model3
+{
+	Mesh	{ "Pyramid01.obj"; }
+	Groups
+	{
+		Material_1 { "07_-_Standard.mat.ods"; }
+	}
+}

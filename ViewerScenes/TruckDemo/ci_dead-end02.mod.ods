@@ -1,0 +1,9 @@
+# ci_dead-end02
+Model3
+{
+	Mesh	{ "ci_dead-end02.obj"; }
+	Groups
+	{
+		Material_9 { "Material #977.mat.ods"; }
+	}
+}

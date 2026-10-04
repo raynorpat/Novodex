@@ -1,0 +1,203 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 1000; }
+	DragForce	{ 100; }
+	gravity	{ 0; -9.810000; 0; }
+
+	simStepSize { 0.01; } #simStepSize { 0.0166; }
+
+	Parameters
+		{
+		RigidBodySDK
+			{
+			MIN_SEPARATION_FOR_PENALTY { -0.008; }
+			}
+		}
+	Text
+		{
+		T {"Various friction coefficients"; Y{-0.7;} D{5;} S{16;}}
+		}
+
+	Bodies
+	{
+		ramp20
+		{
+			# Joint name
+			name	{ ramp20Joint; }
+			# PRS
+			orientation	{ -0.984808; 0; -0; 0.173648; }
+			position	{ -1.184609; 1.156318; 0; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 0; }
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		ramp20
+		{
+			# Joint name
+			name	{ ramp45Joint; }
+			# PRS
+			orientation	{ 0.923880; -0; 0; -0.382683; }
+			position	{ -4.542679; 3.428153; 0; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 0; }
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		ramp20
+		{
+			# Joint name
+			name	{ ramp30Joint; }
+			# PRS
+			orientation	{ 0.965926; -0; 0; -0.258819; }
+			position	{ -2.997636; 2.081358; 0; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 0; }
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		ramp20
+		{
+			# Joint name
+			name	{ ramp10Joint; }
+			# PRS
+			orientation	{ 0.996195; -0; 0; -0.087156; }
+			position	{ 0.771492; 0.531905; -0; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 0; }
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		ramp20
+		{
+			# Joint name
+			name	{ ramp0Joint; }
+			# PRS
+			orientation	{ 1.000000; 0; 0; 0; }
+			position	{ 2.797359; 0.296706; -0; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 0; }
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		ramp20
+		{
+			# Joint name
+			name	{ ramp60Joint; }
+			# PRS
+			orientation	{ 0.866025; -0; 0; -0.500000; }
+			position	{ -5.741310; 5.078747; 0; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 0; }
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		
+		Quader07
+		{
+			# Joint name
+			name	{ Quader07Joint; }
+			# PRS
+			orientation	{ -0.866025; 0; -0; 0.500000; }
+			position	{ -5.565095; 5.551404; -4.112922; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }			#no friction
+			staticFriction { 0; }
+
+		}
+		Quader07
+		{
+			# Joint name
+			name	{ Quader08Joint; }
+			# PRS
+			orientation	{ 0.866025; -0; 0; -0.500000; }
+			position	{ -5.565095; 5.551404; -2.811252; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0.1; }
+			staticFriction { 0.1; }		#only static
+		}
+		Quader07
+		{
+			# Joint name
+			name	{ Quader10Joint; }
+			# PRS
+			orientation	{ 0.866025; -0; 0; -0.500000; }
+			position	{ -5.565095; 5.551404; -1.439518; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0.4; }			#both low
+			staticFriction { 0.4; }
+		}
+		Quader07
+		{
+			# Joint name
+			name	{ Quader11Joint; }
+			# PRS
+			orientation	{ 0.866025; -0; 0; -0.500000; }
+			position	{ -5.565095; 5.551404; -0.073851; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0.7; }			#both, medium low
+			staticFriction { 0.7; }
+
+		}
+		Quader07
+		{
+			# Joint name
+			name	{ Quader12Joint; }
+			# PRS
+			orientation	{ 0.866025; -0; 0; -0.500000; }
+			position	{ -5.565095; 5.551404; 1.185679; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0.8; }			#both, medium
+			staticFriction { 1; }
+
+
+		}
+		Quader07
+		{
+			# Joint name
+			name	{ Quader13Joint; }
+			# PRS
+			orientation	{ 0.866025; -0; 0; -0.500000; }
+			position	{ -5.565095; 5.551404; 2.549107; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 1; }		#both, strong
+			staticFriction { 2; }
+
+		}
+		Quader07
+		{
+			# Joint name
+			name	{ Quader14Joint; }
+			# PRS
+			orientation	{ 0.866025; -0; 0; -0.500000; }
+			position	{ -5.565095; 5.551404; 3.979659; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 1.0; }				#both, max
+			staticFriction { 20; }		#max friction
+		}
+		
+	}
+	Joints
+	{
+	}
+	Lights
+	{
+	}
+	Camera
+	{
+	}
+}

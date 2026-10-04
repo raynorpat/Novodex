@@ -1,0 +1,103 @@
+PDS
+{
+	Acts
+	{
+		"prisonMassive.psc.ods";
+	}
+	Models
+	{
+		default	{ "default.mod.ods"; }
+		Quader01	{ "Quader01.mod.ods"; }
+		Kugel01	{ "Kugel01.mod.ods"; }
+
+		ArkaneBox	{ "ArkaneBox.mod.ods"; }
+
+	}
+	Actors
+	{
+
+		ArkaneBox
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"ArkaneBox";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					dimensions	{ 0.787401; 0.787401; 0.787401; }
+				}
+			}
+		}
+
+		default
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"default";
+					}
+				}
+			}
+			Collision
+			{
+					TriangleMesh
+						{
+						smoothSphereCollisions { 0; }
+						}
+			}
+		}
+		Quader01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Quader01";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.787401; 0.787401; 0.787401; }
+				}
+			}
+		}
+		Kugel01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Kugel01";
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+					radius	{ 0.590551; }
+				}
+			}
+		}
+	}
+}

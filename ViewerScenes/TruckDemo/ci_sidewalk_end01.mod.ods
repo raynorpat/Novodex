@@ -1,0 +1,9 @@
+# ci_sidewalk_end01
+Model3
+{
+	Mesh	{ "ci_sidewalk_end01.obj"; }
+	Groups
+	{
+		Material_5 { "Material #964.mat.ods"; }
+	}
+}

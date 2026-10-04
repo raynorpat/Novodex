@@ -1,0 +1,9 @@
+# Box08
+Model3
+{
+	Mesh	{ "Box08.obj"; }
+	Groups
+	{
+		DefaultMaterial { "Default.mat.ods"; }
+	}
+}

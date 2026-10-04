@@ -1,0 +1,9 @@
+# Netz03
+Model3
+{
+	Mesh	{ "Netz03.obj"; }
+	Groups
+	{
+		Material_6 { "Material #974.mat.ods"; }
+	}
+}

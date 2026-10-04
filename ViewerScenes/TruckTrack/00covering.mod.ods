@@ -1,0 +1,12 @@
+# 00covering
+Model3
+{
+	Mesh	{ "00covering.obj"; }
+	Groups
+	{
+		Material_3 { "03bahnauusen.mat.ods"; }
+		Material_6 { "bahn.mat.ods"; }
+		Material_7 { "bridge03.mat.ods"; }
+		Material_8 { "bridge02.mat.ods"; }
+	}
+}

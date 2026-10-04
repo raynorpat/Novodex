@@ -1,0 +1,103 @@
+# intro scene script for demo
+
+
+Scene
+	{
+
+	PhysStart {1;}
+	PhysDuration   {120;}
+	DragForce { 50; }
+	gravity { 0; -9; 0; }	#-9
+
+	Parameters
+		{
+		RigidBodySDK
+			{
+	#		MIN_SEPARATION_FOR_PENALTY { -0.008; }
+			SLEEP_LIN_VEL_SQUARED { 0.1; }
+			SLEEP_ANG_VEL_SQUARED { 0.1; }
+
+			}
+		}
+
+
+	Bodies
+		{
+		Eraser
+			{
+			mass	{30;}				
+			#angles {0; 0; 90;}
+			position {4; 0.5;4; }
+			friction {0.5;}
+			scale {0.035;}
+			#restitution { 1; }
+			}
+		Eraser
+			{
+			mass	{30;}				
+			#angles {0; 0; 90;}
+			position {4; 1;4; }
+			friction {0.5;}
+			scale {0.035;}
+			#restitution { 0; }
+			}
+
+		Eraser
+			{
+			mass	{30;}				
+			#angles {0; 0; 90;}
+			position {4; 1.5;4; }
+			friction {0.5;}
+			scale {0.035;}
+			#restitution { 0; }
+			}
+
+		Eraser
+			{
+			mass	{30;}				
+			#angles {0; 0; 90;}
+			position {4; 2;4; }
+			friction {0.5;}
+			scale {0.035;}
+			#restitution { 0; }
+			}
+
+		Eraser
+			{
+			mass	{30;}				
+			#angles {0; 0; 90;}
+			position {4; 2.5;4; }
+			friction {0.5;}
+			scale {0.035;}
+			#restitution { 0; }
+			}
+		Eraser
+			{
+			mass	{30;}				
+			#angles {0; 0; 90;}
+			position {4; 3;4; }
+			friction {0.5;}
+			scale {0.035;}
+			#restitution { 0; }
+			}
+		}
+
+
+
+	Lights
+		{
+		1 {5; 25; -17;}
+		2 {-5; 20; 10;}
+		}
+
+	Camera
+		{
+		position {1.525725;5.224339;13.817733;}
+		angles {0.000000;5.000000;-14.000000;}
+		scale {1.000000;}
+		}
+
+
+#use default gravity of 9.8
+
+	}

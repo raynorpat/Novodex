@@ -1,0 +1,9 @@
+# Hedra01
+Model3
+{
+	Mesh	{ "Hedra01.obj"; }
+	Groups
+	{
+		Material_3 { "04_-_Standard.mat.ods"; }
+	}
+}

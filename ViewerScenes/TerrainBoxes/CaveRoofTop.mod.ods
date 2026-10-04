@@ -1,0 +1,9 @@
+# CaveRoofTop
+Model3
+{
+	Mesh	{ "CaveRoofTop.obj"; }
+	Groups
+	{
+		Material_1 { "Terrain.mat.ods"; }
+	}
+}

@@ -1,0 +1,311 @@
+// 0x0 ?GLDL_glmxNumTexUnits@@YAIXZ
+GLint __thiscall GLDL_glmxNumTexUnits(void *this)
+{
+  char Extension; // al
+  GLint params; // [esp+0h] [ebp-4h] BYREF
+
+  params = (GLint)this;
+  if ( gleExtensionState == (enum gle3State *)((char *)&loc_1 + 1) )
+    Extension = gleLoadExtension(a1: 0);
+  else
+    Extension = gleExtensionState == (enum gle3State *)&loc_1;
+  if ( Extension == 0 )
+    return 1;
+  glGetIntegerv(pname: 0x84E2u, &params);
+  return params;
+}
+
+// 0x50 ?GLDL_glmxActivateTexUnit@@YAXI@Z
+void __cdecl GLDL_glmxActivateTexUnit(unsigned int a1)
+{
+  char Extension; // al
+
+  if ( gleExtensionState == (enum gle3State *)((char *)&loc_1 + 1) )
+    Extension = gleLoadExtension(a1: 0);
+  else
+    Extension = gleExtensionState == (enum gle3State *)&loc_1;
+  if ( Extension != 0 )
+  {
+    glActiveTextureARB(a1: a1 + 33984);
+    glClientActiveTextureARB(a1: a1 + 33984);
+  }
+}
+
+// 0xa0 ?GLDL_glmList@@YAIPAUGLMmodel@@IPAUGLMgroup@@@Z
+GLuint __cdecl GLDL_glmList(struct GLMmodel *a1, unsigned int a2, struct GLMgroup *a3)
+{
+  GLuint v3; // esi
+
+  v3 = glGenLists(range: 1);
+  glNewList(list: v3, mode: 0x1300u);
+  _GL_glmDraw(a1, a2, a3);
+  glEndList();
+  return v3;
+}
+
+// 0xe0 ?GLDL_glmDrawList@@YAXPAUGLMmodel@@IIPAUGLMgroup@@@Z
+void __cdecl GLDL_glmDrawList(struct GLMmodel *a1, GLuint list)
+{
+  glCallList(list);
+}
+
+// 0xf0 ?_GL_glmDraw@@YAXPAUGLMmodel@@IPAUGLMgroup@@@Z
+void __cdecl _GL_glmDraw(struct GLMmodel *a1, char a2, struct GLMgroup *a3)
+{
+  char v3; // bl
+  void (__stdcall *v4)(GLenum); // ebp
+  void (__stdcall *v5)(GLenum, GLenum, GLint); // edi
+  int v6; // ebp
+  struct GLMgroup *v7; // edi
+  void (__stdcall *v8)(GLenum, GLenum, const GLfloat *); // ebp
+  unsigned int v9; // ebp
+  int v10; // eax
+  int v11; // ebx
+  unsigned int v12; // eax
+  unsigned int v13; // eax
+  unsigned int v14; // eax
+  void (__stdcall *v15)(GLenum); // esi
+  int v16; // [esp+10h] [ebp-Ch]
+  int v17; // [esp+14h] [ebp-8h]
+  int i; // [esp+18h] [ebp-4h]
+
+  v3 = a2;
+  if ( (a2 & 1) != 0 && *((_DWORD *)a1 + 9) == 0 )
+  {
+    printf(Format: "glmDraw() warning: flat render mode requested with no facet normals defined.\n");
+    v3 = a2 & 0xFE;
+    a2 &= ~1u;
+  }
+  if ( (v3 & 2) != 0 && *((_DWORD *)a1 + 5) == 0 )
+  {
+    printf(Format: "glmDraw() warning: smooth render mode requested with no normals defined.\n");
+    v3 &= ~2u;
+    a2 = v3;
+  }
+  v4 = glEnable;
+  if ( (v3 & 4) != 0 && *((_DWORD *)a1 + 7) == 0 )
+  {
+    v5 = glTexGeni;
+    glTexGeni(coord: 0x2000u, pname: 0x2500u, param: 9217);
+    v5(coord: 0x2001u, pname: 0x2500u, param: 9217);
+    v4(cap: 0xC60u);
+    v4(cap: 0xC61u);
+    v3 &= ~4u;
+    a2 = v3;
+  }
+  if ( (v3 & 1) != 0 && (v3 & 2) != 0 )
+  {
+    printf(Format: "glmDraw() warning: flat render mode requested and smooth render mode requested (using smooth).\n");
+    v3 &= ~1u;
+    a2 = v3;
+  }
+  if ( (v3 & 8) != 0 && *((_DWORD *)a1 + 13) == 0 )
+  {
+    printf(Format: "glmDraw() warning: color render mode requested with no materials defined.\n");
+    v3 &= ~8u;
+    a2 = v3;
+  }
+  if ( (v3 & 0x10) != 0 && *((_DWORD *)a1 + 13) == 0 )
+  {
+    printf(Format: "glmDraw() warning: material render mode requested with no materials defined.\n");
+    v3 &= ~0x10u;
+    a2 = v3;
+  }
+  if ( (v3 & 8) != 0 && (v3 & 0x10) != 0 )
+  {
+    printf(Format: "glmDraw() warning: color and material render mode requested using only material mode\n");
+    v3 &= ~8u;
+    a2 = v3;
+  }
+  v17 = v3 & 8;
+  if ( (v3 & 8) != 0 )
+    v4(cap: 0xB57u);
+  v6 = v3 & 0x10;
+  v16 = v6;
+  if ( (v3 & 0x10) != 0 )
+    glDisable(cap: 0xB57u);
+  glPushMatrix();
+  glTranslatef(x: *((GLfloat *)a1 + 16), y: *((GLfloat *)a1 + 17), z: *((GLfloat *)a1 + 18));
+  v7 = a3;
+  if ( a3 != nullptr || (v7 = *((struct GLMgroup **)a1 + 15)) != nullptr )
+  {
+    while ( 1 )
+    {
+      if ( *((_DWORD *)v7 + 5) != -1 )
+        glBindTexture(target: 0xDE1u, texture: *((_DWORD *)v7 + 5));
+      glBegin(mode: 4u);
+      if ( v6 != 0 )
+      {
+        v8 = glMaterialfv;
+        glMaterialfv(
+          face: 0x408u,
+          pname: 0x1200u,
+          params: (const GLfloat *)(*((_DWORD *)a1 + 13) + 72 * *((_DWORD *)v7 + 3) + 20));
+        v8(face: 0x408u, pname: 0x1201u, params: (const GLfloat *)(*((_DWORD *)a1 + 13) + 72 * *((_DWORD *)v7 + 3) + 4));
+        v8(
+          face: 0x408u,
+          pname: 0x1202u,
+          params: (const GLfloat *)(*((_DWORD *)a1 + 13) + 72 * *((_DWORD *)v7 + 3) + 36));
+        glMaterialf(
+          face: 0x408u,
+          pname: 0x1601u,
+          param: *(GLfloat *)(*((_DWORD *)a1 + 13) + 72 * *((_DWORD *)v7 + 3) + 68));
+      }
+      if ( v17 != 0 )
+        glColor3fv(v: (const GLfloat *)(*((_DWORD *)a1 + 13) + 72 * *((_DWORD *)v7 + 3) + 4));
+      v9 = 0;
+      if ( *((_DWORD *)v7 + 1) != 0 )
+      {
+        v10 = v3 & 1;
+        v11 = v3 & 2;
+        for ( i = v10; ; v10 = i )
+        {
+          if ( v10 != 0 )
+            glNormal3fv(v: (const GLfloat *)(*((_DWORD *)a1 + 9)
+                                           + 12
+                                           * *(_DWORD *)(*((_DWORD *)a1 + 11)
+                                                       + 40 * *(_DWORD *)(*((_DWORD *)v7 + 2) + 4 * v9)
+                                                       + 36)));
+          if ( v11 != 0 )
+          {
+            v12 = *(_DWORD *)(*((_DWORD *)a1 + 11) + 40 * *(_DWORD *)(*((_DWORD *)v7 + 2) + 4 * v9) + 12);
+            if ( v12 <= *((_DWORD *)a1 + 4) )
+              glNormal3fv(v: (const GLfloat *)(*((_DWORD *)a1 + 5) + 12 * v12));
+          }
+          if ( (a2 & 4) != 0 )
+            glTexCoord2fv(v: (const GLfloat *)(*((_DWORD *)a1 + 7)
+                                             + 8
+                                             * *(_DWORD *)(*((_DWORD *)a1 + 11)
+                                                         + 40 * *(_DWORD *)(*((_DWORD *)v7 + 2) + 4 * v9)
+                                                         + 24)));
+          glVertex3fv(v: (const GLfloat *)(*((_DWORD *)a1 + 3)
+                                         + 12
+                                         * *(_DWORD *)(*((_DWORD *)a1 + 11)
+                                                     + 40 * *(_DWORD *)(*((_DWORD *)v7 + 2) + 4 * v9))));
+          if ( v11 != 0 )
+          {
+            v13 = *(_DWORD *)(*((_DWORD *)a1 + 11) + 40 * *(_DWORD *)(*((_DWORD *)v7 + 2) + 4 * v9) + 16);
+            if ( v13 <= *((_DWORD *)a1 + 4) )
+              glNormal3fv(v: (const GLfloat *)(*((_DWORD *)a1 + 5) + 12 * v13));
+          }
+          if ( (a2 & 4) != 0 )
+            glTexCoord2fv(v: (const GLfloat *)(*((_DWORD *)a1 + 7)
+                                             + 8
+                                             * *(_DWORD *)(*((_DWORD *)a1 + 11)
+                                                         + 40 * *(_DWORD *)(*((_DWORD *)v7 + 2) + 4 * v9)
+                                                         + 28)));
+          glVertex3fv(v: (const GLfloat *)(*((_DWORD *)a1 + 3)
+                                         + 12
+                                         * *(_DWORD *)(*((_DWORD *)a1 + 11)
+                                                     + 40 * *(_DWORD *)(*((_DWORD *)v7 + 2) + 4 * v9)
+                                                     + 4)));
+          if ( v11 != 0 )
+          {
+            v14 = *(_DWORD *)(*((_DWORD *)a1 + 11) + 40 * *(_DWORD *)(*((_DWORD *)v7 + 2) + 4 * v9) + 20);
+            if ( v14 <= *((_DWORD *)a1 + 4) )
+              glNormal3fv(v: (const GLfloat *)(*((_DWORD *)a1 + 5) + 12 * v14));
+          }
+          if ( (a2 & 4) != 0 )
+            glTexCoord2fv(v: (const GLfloat *)(*((_DWORD *)a1 + 7)
+                                             + 8
+                                             * *(_DWORD *)(*((_DWORD *)a1 + 11)
+                                                         + 40 * *(_DWORD *)(*((_DWORD *)v7 + 2) + 4 * v9)
+                                                         + 32)));
+          glVertex3fv(v: (const GLfloat *)(*((_DWORD *)a1 + 3)
+                                         + 12
+                                         * *(_DWORD *)(*((_DWORD *)a1 + 11)
+                                                     + 40 * *(_DWORD *)(*((_DWORD *)v7 + 2) + 4 * v9++)
+                                                     + 8)));
+          if ( v9 >= *((_DWORD *)v7 + 1) )
+            break;
+        }
+        v3 = a2;
+      }
+      glEnd();
+      if ( glGetError() != 0 )
+        printf(Format: "GL error after glEnd!\n");
+      if ( a3 != nullptr )
+        break;
+      v7 = *((struct GLMgroup **)v7 + 4);
+      if ( v7 == nullptr )
+        break;
+      v6 = v16;
+    }
+  }
+  if ( *((_DWORD *)a1 + 7) == 0 )
+  {
+    v15 = glDisable;
+    glDisable(cap: 0xC60u);
+    v15(cap: 0xC61u);
+  }
+  glPopMatrix();
+}
+
+// 0x730 __imp__glGetIntegerv@8
+extrn __imp__glGetIntegerv@8:near
+
+// 0x734 ?gleLoadExtension@@YA_NW4gleExt@@@Z
+extrn ?gleLoadExtension@@YA_NW4gleExt@@@Z:near
+
+// 0x744 __imp__glEndList@0
+extrn __imp__glEndList@0:near
+
+// 0x748 __imp__glNewList@8
+extrn __imp__glNewList@8:near
+
+// 0x74c __imp__glGenLists@4
+extrn __imp__glGenLists@4:near
+
+// 0x750 __imp__glCallList@4
+extrn __imp__glCallList@4:near
+
+// 0x754 __imp__glPopMatrix@0
+extrn __imp__glPopMatrix@0:near
+
+// 0x758 __imp__glGetError@0
+extrn __imp__glGetError@0:near
+
+// 0x75c __imp__glEnd@0
+extrn __imp__glEnd@0:near
+
+// 0x760 __imp__glVertex3fv@4
+extrn __imp__glVertex3fv@4:near
+
+// 0x764 __imp__glTexCoord2fv@4
+extrn __imp__glTexCoord2fv@4:near
+
+// 0x768 __imp__glNormal3fv@4
+extrn __imp__glNormal3fv@4:near
+
+// 0x76c __imp__glColor3fv@4
+extrn __imp__glColor3fv@4:near
+
+// 0x770 __imp__glMaterialf@12
+extrn __imp__glMaterialf@12:near
+
+// 0x774 __imp__glMaterialfv@12
+extrn __imp__glMaterialfv@12:near
+
+// 0x778 __imp__glBegin@4
+extrn __imp__glBegin@4:near
+
+// 0x77c __imp__glBindTexture@8
+extrn __imp__glBindTexture@8:near
+
+// 0x780 __imp__glTranslatef@12
+extrn __imp__glTranslatef@12:near
+
+// 0x784 __imp__glPushMatrix@0
+extrn __imp__glPushMatrix@0:near
+
+// 0x788 __imp__glDisable@4
+extrn __imp__glDisable@4:near
+
+// 0x78c __imp__glTexGeni@12
+extrn __imp__glTexGeni@12:near
+
+// 0x790 __imp__glEnable@4
+extrn __imp__glEnable@4:near
+
+// 0x794 _printf
+extrn _printf:near

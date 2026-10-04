@@ -1,0 +1,1024 @@
+// 0x14 ?getInstance@Scene@SceneGraph@@SAAAV12@XZ
+static struct SceneGraph::Scene *__cdecl SceneGraph::Scene::getInstance()
+{
+  struct SceneGraph::Scene *result; // eax
+  SceneGraph::Scene *v1; // eax
+  unsigned int v2[2]; // [esp+4h] [ebp-Ch] BYREF
+  int v3; // [esp+Ch] [ebp-4h]
+
+  v3 = -1;
+  v2[1] = (unsigned int)&_L31780;
+  v2[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v2);
+  result = SceneGraph::Scene::scene;
+  if ( SceneGraph::Scene::scene == nullptr )
+  {
+    v1 = (SceneGraph::Scene *)operator new(a1: 0x84u);
+    v3 = 0;
+    if ( v1 != nullptr )
+    {
+      result = SceneGraph::Scene::Scene(this: v1);
+      SceneGraph::Scene::scene = result;
+      __writefsdword((unsigned int)&_except_list, v2[0]);
+      return result;
+    }
+    result = nullptr;
+    SceneGraph::Scene::scene = nullptr;
+  }
+  __writefsdword((unsigned int)&_except_list, v2[0]);
+  return result;
+}
+
+// 0xc4 ?shutDown@Scene@SceneGraph@@SAXXZ
+static void __cdecl SceneGraph::Scene::shutDown()
+{
+  SceneGraph::Scene *v0; // esi
+
+  v0 = SceneGraph::Scene::scene;
+  if ( SceneGraph::Scene::scene != nullptr )
+  {
+    SceneGraph::Scene::~Scene(this: SceneGraph::Scene::scene);
+    operator delete(a1: v0);
+    SceneGraph::Scene::scene = nullptr;
+  }
+}
+
+// 0xf4 ??0Scene@SceneGraph@@QAE@XZ
+SceneGraph *__thiscall SceneGraph::Scene::Scene(SceneGraph::Scene *this)
+{
+  *(_BYTE *)this = HIBYTE(this);
+  *((_DWORD *)this + 1) = 0;
+  *((_DWORD *)this + 2) = 0;
+  *((_DWORD *)this + 3) = 0;
+  *((_BYTE *)this + 16) = HIBYTE(this);
+  *((_DWORD *)this + 5) = 0;
+  *((_DWORD *)this + 6) = 0;
+  *((_DWORD *)this + 7) = 0;
+  *((_BYTE *)this + 32) = HIBYTE(this);
+  *((_DWORD *)this + 9) = 0;
+  *((_DWORD *)this + 10) = 0;
+  *((_DWORD *)this + 11) = 0;
+  *((_BYTE *)this + 48) = HIBYTE(this);
+  *((_DWORD *)this + 13) = 0;
+  *((_DWORD *)this + 14) = 0;
+  *((_DWORD *)this + 15) = 0;
+  *((_BYTE *)this + 64) = HIBYTE(this);
+  *((_DWORD *)this + 17) = 0;
+  *((_DWORD *)this + 18) = 0;
+  *((_DWORD *)this + 19) = 0;
+  *((_DWORD *)this + 20) = 0;
+  memset((char *)this + 84, 0, 0x20u);
+  return this;
+}
+
+// 0x164 ??1Scene@SceneGraph@@QAE@XZ
+void __thiscall SceneGraph::Scene::~Scene(void **this)
+{
+  unsigned int v2; // ecx
+  _DWORD v3[3]; // [esp+4h] [ebp-Ch] BYREF
+
+  v3[1] = &_L32042;
+  v3[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v3);
+  v3[2] = 4;
+  SceneGraph::Scene::purge((SceneGraph::Scene *)this);
+  operator delete(a1: *(this + 17));
+  *(this + 17) = nullptr;
+  *(this + 18) = nullptr;
+  *(this + 19) = nullptr;
+  operator delete(a1: *(this + 13));
+  *(this + 13) = nullptr;
+  *(this + 14) = nullptr;
+  *(this + 15) = nullptr;
+  operator delete(a1: *(this + 9));
+  *(this + 9) = nullptr;
+  *(this + 10) = nullptr;
+  *(this + 11) = nullptr;
+  operator delete(a1: *(this + 5));
+  *(this + 5) = nullptr;
+  *(this + 6) = nullptr;
+  *(this + 7) = nullptr;
+  operator delete(a1: *(this + 1));
+  v2 = v3[0];
+  *(this + 1) = nullptr;
+  *(this + 2) = nullptr;
+  *(this + 3) = nullptr;
+  __writefsdword((unsigned int)&_except_list, v2);
+}
+
+// 0x29c ?addObject@Scene@SceneGraph@@QAEXAAVObject@2@@Z
+void __thiscall SceneGraph::Scene::addObject(SceneGraph::Scene *this, struct SceneGraph::Object *a2)
+{
+  struct SceneGraph::Object **v3; // eax
+  struct SceneGraph::Object **v4; // edi
+  int v5; // edx
+  int v6; // ecx
+  int v7; // eax
+  int v8; // eax
+  struct SceneGraph::Object **v9; // eax
+  struct SceneGraph::Object *const *v10; // ebp
+  struct SceneGraph::Object **i; // ebx
+  int v12; // eax
+  int v13; // ecx
+  struct SceneGraph::Object **v14; // eax
+  struct SceneGraph::Object **v15; // [esp+8h] [ebp-8h]
+  int v16; // [esp+Ch] [ebp-4h]
+
+  v3 = *((struct SceneGraph::Object ***)this + 2);
+  v4 = v3;
+  if ( (*((_DWORD *)this + 3) - (int)v3) >> 2 != 0 )
+  {
+    std::vector<SceneGraph::Object *>::_Ucopy(a1: v3, a2: v3, a3: v3 + 1);
+    std::vector<SceneGraph::Object *>::_Ufill(
+      a1: *((_DWORD *)this + 2),
+      a2: 1 - ((*((_DWORD *)this + 2) - (int)v4) >> 2),
+      a3: &a2);
+    v14 = *((struct SceneGraph::Object ***)this + 2);
+    if ( v4 == v14 )
+    {
+      *((_DWORD *)this + 2) += 4;
+    }
+    else
+    {
+      do
+        *v4++ = a2;
+      while ( v4 != v14 );
+      *((_DWORD *)this + 2) += 4;
+    }
+  }
+  else
+  {
+    v5 = *((_DWORD *)this + 1);
+    if ( v5 == 0 || (unsigned int)(v6 = ((int)v3 - v5) >> 2) <= 1 )
+      v6 = 1;
+    if ( v5 != 0 )
+      v7 = ((int)v3 - v5) >> 2;
+    else
+      v7 = 0;
+    v8 = v6 + v7;
+    v16 = v8;
+    if ( v8 < 0 )
+      v8 = 0;
+    v9 = (struct SceneGraph::Object **)operator new(a1: 4 * v8);
+    v10 = *((struct SceneGraph::Object *const **)this + 1);
+    v15 = v9;
+    for ( i = v9; v10 != v4; ++i )
+      std::_Construct(a1: i, a2: v10++);
+    std::vector<SceneGraph::Object *>::_Ufill(a1: i, a2: 1, a3: &a2);
+    std::vector<SceneGraph::Object *>::_Ucopy(a1: v4, a2: *((_DWORD *)this + 2), a3: i + 1);
+    std::vector<SceneGraph::Object *>::_Destroy(a1: *((_DWORD *)this + 1), a2: *((_DWORD *)this + 2));
+    operator delete(a1: *((void **)this + 1));
+    v12 = *((_DWORD *)this + 1);
+    *((_DWORD *)this + 3) = &v15[v16];
+    if ( v12 != 0 )
+    {
+      v13 = *((_DWORD *)this + 2);
+      *((_DWORD *)this + 1) = v15;
+      *((_DWORD *)this + 2) = &v15[((v13 - v12) >> 2) + 1];
+    }
+    else
+    {
+      *((_DWORD *)this + 1) = v15;
+      *((_DWORD *)this + 2) = v15 + 1;
+    }
+  }
+}
+
+// 0x45c ?addModel@Scene@SceneGraph@@QAEXAAVModel@2@@Z
+void __thiscall SceneGraph::Scene::addModel(SceneGraph::Scene *this, struct SceneGraph::Model *a2)
+{
+  char *v2; // esi
+  struct SceneGraph::Model **v3; // eax
+  struct SceneGraph::Model **v4; // edi
+  int v5; // edx
+  int v6; // ecx
+  int v7; // eax
+  int v8; // eax
+  struct SceneGraph::Model **v9; // eax
+  struct SceneGraph::Model *const *v10; // ebp
+  struct SceneGraph::Model **i; // ebx
+  int v12; // eax
+  int v13; // ecx
+  struct SceneGraph::Model **v14; // eax
+  struct SceneGraph::Model **v15; // [esp+8h] [ebp-8h]
+  int v16; // [esp+Ch] [ebp-4h]
+
+  v2 = (char *)this + 16;
+  v3 = *((struct SceneGraph::Model ***)this + 6);
+  v4 = v3;
+  if ( (*((_DWORD *)this + 7) - (int)v3) >> 2 != 0 )
+  {
+    std::vector<SceneGraph::Model *>::_Ucopy(a1: v3, a2: v3, a3: v3 + 1);
+    std::vector<SceneGraph::Model *>::_Ufill(
+      a1: *((_DWORD *)v2 + 2),
+      a2: 1 - ((*((_DWORD *)v2 + 2) - (int)v4) >> 2),
+      a3: &a2);
+    v14 = *((struct SceneGraph::Model ***)v2 + 2);
+    if ( v4 == v14 )
+    {
+      *((_DWORD *)v2 + 2) += 4;
+    }
+    else
+    {
+      do
+        *v4++ = a2;
+      while ( v4 != v14 );
+      *((_DWORD *)v2 + 2) += 4;
+    }
+  }
+  else
+  {
+    v5 = *((_DWORD *)this + 5);
+    if ( v5 == 0 || (unsigned int)(v6 = ((int)v3 - v5) >> 2) <= 1 )
+      v6 = 1;
+    if ( v5 != 0 )
+      v7 = ((int)v3 - v5) >> 2;
+    else
+      v7 = 0;
+    v8 = v6 + v7;
+    v16 = v8;
+    if ( v8 < 0 )
+      v8 = 0;
+    v9 = (struct SceneGraph::Model **)operator new(a1: 4 * v8);
+    v10 = *((struct SceneGraph::Model *const **)v2 + 1);
+    v15 = v9;
+    for ( i = v9; v10 != v4; ++i )
+      std::_Construct(a1: i, a2: v10++);
+    std::vector<SceneGraph::Model *>::_Ufill(a1: i, a2: 1, a3: &a2);
+    std::vector<SceneGraph::Model *>::_Ucopy(a1: v4, a2: *((_DWORD *)v2 + 2), a3: i + 1);
+    std::vector<SceneGraph::Model *>::_Destroy(a1: *((_DWORD *)v2 + 1), a2: *((_DWORD *)v2 + 2));
+    operator delete(a1: *((void **)v2 + 1));
+    v12 = *((_DWORD *)v2 + 1);
+    *((_DWORD *)v2 + 3) = &v15[v16];
+    if ( v12 != 0 )
+    {
+      v13 = *((_DWORD *)v2 + 2);
+      *((_DWORD *)v2 + 1) = v15;
+      *((_DWORD *)v2 + 2) = &v15[((v13 - v12) >> 2) + 1];
+    }
+    else
+    {
+      *((_DWORD *)v2 + 1) = v15;
+      *((_DWORD *)v2 + 2) = v15 + 1;
+    }
+  }
+}
+
+// 0x61c ?addMesh@Scene@SceneGraph@@QAEXAAVMesh@2@@Z
+void __thiscall SceneGraph::Scene::addMesh(SceneGraph::Scene *this, struct SceneGraph::Mesh *a2)
+{
+  char *v2; // esi
+  struct SceneGraph::Mesh **v3; // eax
+  struct SceneGraph::Mesh **v4; // edi
+  int v5; // edx
+  int v6; // ecx
+  int v7; // eax
+  int v8; // eax
+  struct SceneGraph::Mesh **v9; // eax
+  struct SceneGraph::Mesh *const *v10; // ebp
+  struct SceneGraph::Mesh **i; // ebx
+  int v12; // eax
+  int v13; // ecx
+  struct SceneGraph::Mesh **v14; // eax
+  struct SceneGraph::Mesh **v15; // [esp+8h] [ebp-8h]
+  int v16; // [esp+Ch] [ebp-4h]
+
+  v2 = (char *)this + 32;
+  v3 = *((struct SceneGraph::Mesh ***)this + 10);
+  v4 = v3;
+  if ( (*((_DWORD *)this + 11) - (int)v3) >> 2 != 0 )
+  {
+    std::vector<SceneGraph::Mesh *>::_Ucopy(a1: v3, a2: v3, a3: v3 + 1);
+    std::vector<SceneGraph::Mesh *>::_Ufill(
+      a1: *((_DWORD *)v2 + 2),
+      a2: 1 - ((*((_DWORD *)v2 + 2) - (int)v4) >> 2),
+      a3: &a2);
+    v14 = *((struct SceneGraph::Mesh ***)v2 + 2);
+    if ( v4 == v14 )
+    {
+      *((_DWORD *)v2 + 2) += 4;
+    }
+    else
+    {
+      do
+        *v4++ = a2;
+      while ( v4 != v14 );
+      *((_DWORD *)v2 + 2) += 4;
+    }
+  }
+  else
+  {
+    v5 = *((_DWORD *)this + 9);
+    if ( v5 == 0 || (unsigned int)(v6 = ((int)v3 - v5) >> 2) <= 1 )
+      v6 = 1;
+    if ( v5 != 0 )
+      v7 = ((int)v3 - v5) >> 2;
+    else
+      v7 = 0;
+    v8 = v6 + v7;
+    v16 = v8;
+    if ( v8 < 0 )
+      v8 = 0;
+    v9 = (struct SceneGraph::Mesh **)operator new(a1: 4 * v8);
+    v10 = *((struct SceneGraph::Mesh *const **)v2 + 1);
+    v15 = v9;
+    for ( i = v9; v10 != v4; ++i )
+      std::_Construct(a1: i, a2: v10++);
+    std::vector<SceneGraph::Mesh *>::_Ufill(a1: i, a2: 1, a3: &a2);
+    std::vector<SceneGraph::Mesh *>::_Ucopy(a1: v4, a2: *((_DWORD *)v2 + 2), a3: i + 1);
+    std::vector<SceneGraph::Mesh *>::_Destroy(a1: *((_DWORD *)v2 + 1), a2: *((_DWORD *)v2 + 2));
+    operator delete(a1: *((void **)v2 + 1));
+    v12 = *((_DWORD *)v2 + 1);
+    *((_DWORD *)v2 + 3) = &v15[v16];
+    if ( v12 != 0 )
+    {
+      v13 = *((_DWORD *)v2 + 2);
+      *((_DWORD *)v2 + 1) = v15;
+      *((_DWORD *)v2 + 2) = &v15[((v13 - v12) >> 2) + 1];
+    }
+    else
+    {
+      *((_DWORD *)v2 + 1) = v15;
+      *((_DWORD *)v2 + 2) = v15 + 1;
+    }
+  }
+}
+
+// 0x7dc ?addMaterial@Scene@SceneGraph@@QAEXAAVMaterial@2@@Z
+void __thiscall SceneGraph::Scene::addMaterial(SceneGraph::Scene *this, struct SceneGraph::Material *a2)
+{
+  char *v2; // esi
+  struct SceneGraph::Material **v3; // eax
+  struct SceneGraph::Material **v4; // edi
+  int v5; // edx
+  int v6; // ecx
+  int v7; // eax
+  int v8; // eax
+  struct SceneGraph::Material **v9; // eax
+  struct SceneGraph::Material *const *v10; // ebp
+  struct SceneGraph::Material **i; // ebx
+  int v12; // eax
+  int v13; // ecx
+  struct SceneGraph::Material **v14; // eax
+  struct SceneGraph::Material **v15; // [esp+8h] [ebp-8h]
+  int v16; // [esp+Ch] [ebp-4h]
+
+  v2 = (char *)this + 48;
+  v3 = *((struct SceneGraph::Material ***)this + 14);
+  v4 = v3;
+  if ( (*((_DWORD *)this + 15) - (int)v3) >> 2 != 0 )
+  {
+    std::vector<SceneGraph::Material *>::_Ucopy(a1: v3, a2: v3, a3: v3 + 1);
+    std::vector<SceneGraph::Material *>::_Ufill(
+      a1: *((_DWORD *)v2 + 2),
+      a2: 1 - ((*((_DWORD *)v2 + 2) - (int)v4) >> 2),
+      a3: &a2);
+    v14 = *((struct SceneGraph::Material ***)v2 + 2);
+    if ( v4 == v14 )
+    {
+      *((_DWORD *)v2 + 2) += 4;
+    }
+    else
+    {
+      do
+        *v4++ = a2;
+      while ( v4 != v14 );
+      *((_DWORD *)v2 + 2) += 4;
+    }
+  }
+  else
+  {
+    v5 = *((_DWORD *)this + 13);
+    if ( v5 == 0 || (unsigned int)(v6 = ((int)v3 - v5) >> 2) <= 1 )
+      v6 = 1;
+    if ( v5 != 0 )
+      v7 = ((int)v3 - v5) >> 2;
+    else
+      v7 = 0;
+    v8 = v6 + v7;
+    v16 = v8;
+    if ( v8 < 0 )
+      v8 = 0;
+    v9 = (struct SceneGraph::Material **)operator new(a1: 4 * v8);
+    v10 = *((struct SceneGraph::Material *const **)v2 + 1);
+    v15 = v9;
+    for ( i = v9; v10 != v4; ++i )
+      std::_Construct(a1: i, a2: v10++);
+    std::vector<SceneGraph::Material *>::_Ufill(a1: i, a2: 1, a3: &a2);
+    std::vector<SceneGraph::Material *>::_Ucopy(a1: v4, a2: *((_DWORD *)v2 + 2), a3: i + 1);
+    std::vector<SceneGraph::Material *>::_Destroy(a1: *((_DWORD *)v2 + 1), a2: *((_DWORD *)v2 + 2));
+    operator delete(a1: *((void **)v2 + 1));
+    v12 = *((_DWORD *)v2 + 1);
+    *((_DWORD *)v2 + 3) = &v15[v16];
+    if ( v12 != 0 )
+    {
+      v13 = *((_DWORD *)v2 + 2);
+      *((_DWORD *)v2 + 1) = v15;
+      *((_DWORD *)v2 + 2) = &v15[((v13 - v12) >> 2) + 1];
+    }
+    else
+    {
+      *((_DWORD *)v2 + 1) = v15;
+      *((_DWORD *)v2 + 2) = v15 + 1;
+    }
+  }
+}
+
+// 0x99c ?addTexture@Scene@SceneGraph@@QAEXAAVTexture@2@@Z
+void __thiscall SceneGraph::Scene::addTexture(SceneGraph::Scene *this, struct SceneGraph::Texture *a2)
+{
+  char *v2; // esi
+  struct SceneGraph::Texture **v3; // eax
+  struct SceneGraph::Texture **v4; // edi
+  int v5; // edx
+  int v6; // ecx
+  int v7; // eax
+  int v8; // eax
+  struct SceneGraph::Texture **v9; // eax
+  struct SceneGraph::Texture *const *v10; // ebp
+  struct SceneGraph::Texture **i; // ebx
+  int v12; // eax
+  int v13; // ecx
+  struct SceneGraph::Texture **v14; // eax
+  struct SceneGraph::Texture **v15; // [esp+8h] [ebp-8h]
+  int v16; // [esp+Ch] [ebp-4h]
+
+  v2 = (char *)this + 64;
+  v3 = *((struct SceneGraph::Texture ***)this + 18);
+  v4 = v3;
+  if ( (*((_DWORD *)this + 19) - (int)v3) >> 2 != 0 )
+  {
+    std::vector<SceneGraph::Texture *>::_Ucopy(a1: v3, a2: v3, a3: v3 + 1);
+    std::vector<SceneGraph::Texture *>::_Ufill(
+      a1: *((_DWORD *)v2 + 2),
+      a2: 1 - ((*((_DWORD *)v2 + 2) - (int)v4) >> 2),
+      a3: &a2);
+    v14 = *((struct SceneGraph::Texture ***)v2 + 2);
+    if ( v4 == v14 )
+    {
+      *((_DWORD *)v2 + 2) += 4;
+    }
+    else
+    {
+      do
+        *v4++ = a2;
+      while ( v4 != v14 );
+      *((_DWORD *)v2 + 2) += 4;
+    }
+  }
+  else
+  {
+    v5 = *((_DWORD *)this + 17);
+    if ( v5 == 0 || (unsigned int)(v6 = ((int)v3 - v5) >> 2) <= 1 )
+      v6 = 1;
+    if ( v5 != 0 )
+      v7 = ((int)v3 - v5) >> 2;
+    else
+      v7 = 0;
+    v8 = v6 + v7;
+    v16 = v8;
+    if ( v8 < 0 )
+      v8 = 0;
+    v9 = (struct SceneGraph::Texture **)operator new(a1: 4 * v8);
+    v10 = *((struct SceneGraph::Texture *const **)v2 + 1);
+    v15 = v9;
+    for ( i = v9; v10 != v4; ++i )
+      std::_Construct(a1: i, a2: v10++);
+    std::vector<SceneGraph::Texture *>::_Ufill(a1: i, a2: 1, a3: &a2);
+    std::vector<SceneGraph::Texture *>::_Ucopy(a1: v4, a2: *((_DWORD *)v2 + 2), a3: i + 1);
+    std::vector<SceneGraph::Texture *>::_Destroy(a1: *((_DWORD *)v2 + 1), a2: *((_DWORD *)v2 + 2));
+    operator delete(a1: *((void **)v2 + 1));
+    v12 = *((_DWORD *)v2 + 1);
+    *((_DWORD *)v2 + 3) = &v15[v16];
+    if ( v12 != 0 )
+    {
+      v13 = *((_DWORD *)v2 + 2);
+      *((_DWORD *)v2 + 1) = v15;
+      *((_DWORD *)v2 + 2) = &v15[((v13 - v12) >> 2) + 1];
+    }
+    else
+    {
+      *((_DWORD *)v2 + 1) = v15;
+      *((_DWORD *)v2 + 2) = v15 + 1;
+    }
+  }
+}
+
+// 0xb5c ?deletedObject@Scene@SceneGraph@@QAEXAAVObject@2@@Z
+void __thiscall SceneGraph::Scene::deletedObject(SceneGraph::Scene *this, struct SceneGraph::Object *a2)
+{
+  struct SceneGraph::Object **v2; // eax
+  int i; // ecx
+
+  if ( *((struct SceneGraph::Object **)this + 20) == a2 )
+    *((_DWORD *)this + 20) = 0;
+  v2 = (struct SceneGraph::Object **)((char *)this + 84);
+  for ( i = 8; i != 0; --i )
+  {
+    if ( *v2 == a2 )
+      *v2 = nullptr;
+    ++v2;
+  }
+}
+
+// 0xb8c ?removeObject@Scene@SceneGraph@@QAEXAAVObject@2@@Z
+void __thiscall SceneGraph::Scene::removeObject(SceneGraph::Scene *this, struct SceneGraph::Object *a2)
+{
+  struct SceneGraph::Object **v2; // eax
+  unsigned int v3; // esi
+  struct SceneGraph::Object **v4; // edx
+
+  v2 = *((struct SceneGraph::Object ***)this + 1);
+  v3 = 0;
+  v4 = v2;
+  while ( v2 != nullptr && v3 < (*((_DWORD *)this + 2) - (int)v2) >> 2 )
+  {
+    if ( *v4 == a2 )
+    {
+      v2[v3] = v2[((*((_DWORD *)this + 2) - (int)v2) >> 2) - 1];
+      *((_DWORD *)this + 2) -= 4;
+      return;
+    }
+    ++v3;
+    ++v4;
+  }
+}
+
+// 0xbfc ?removeModel@Scene@SceneGraph@@QAEXAAVModel@2@@Z
+void __thiscall SceneGraph::Scene::removeModel(SceneGraph::Scene *this, struct SceneGraph::Model *a2)
+{
+  int v2; // eax
+  unsigned int i; // esi
+  int v4; // eax
+  int v5; // edx
+
+  v2 = *((_DWORD *)this + 5);
+  for ( i = 0; v2 != 0 && i < (*((_DWORD *)this + 6) - v2) >> 2; ++i )
+  {
+    if ( *(struct SceneGraph::Model **)(*((_DWORD *)this + 5) + 4 * i) == a2 )
+    {
+      v4 = *((_DWORD *)this + 5);
+      if ( v4 != 0 )
+        v5 = (*((_DWORD *)this + 6) - v4) >> 2;
+      else
+        v5 = 0;
+      *(_DWORD *)(*((_DWORD *)this + 5) + 4 * i) = *(_DWORD *)(*((_DWORD *)this + 5) + 4 * v5 - 4);
+      *((_DWORD *)this + 6) -= 4;
+      return;
+    }
+  }
+}
+
+// 0xc6c ?removeMesh@Scene@SceneGraph@@QAEXAAVMesh@2@@Z
+void __thiscall SceneGraph::Scene::removeMesh(SceneGraph::Scene *this, struct SceneGraph::Mesh *a2)
+{
+  int v2; // eax
+  unsigned int i; // esi
+  int v4; // eax
+  int v5; // edx
+
+  v2 = *((_DWORD *)this + 9);
+  for ( i = 0; v2 != 0 && i < (*((_DWORD *)this + 10) - v2) >> 2; ++i )
+  {
+    if ( *(struct SceneGraph::Mesh **)(*((_DWORD *)this + 9) + 4 * i) == a2 )
+    {
+      v4 = *((_DWORD *)this + 9);
+      if ( v4 != 0 )
+        v5 = (*((_DWORD *)this + 10) - v4) >> 2;
+      else
+        v5 = 0;
+      *(_DWORD *)(*((_DWORD *)this + 9) + 4 * i) = *(_DWORD *)(*((_DWORD *)this + 9) + 4 * v5 - 4);
+      *((_DWORD *)this + 10) -= 4;
+      return;
+    }
+  }
+}
+
+// 0xcdc ?removeMaterial@Scene@SceneGraph@@QAEXAAVMaterial@2@@Z
+void __thiscall SceneGraph::Scene::removeMaterial(SceneGraph::Scene *this, struct SceneGraph::Material *a2)
+{
+  int v2; // eax
+  unsigned int i; // esi
+  int v4; // eax
+  int v5; // edx
+
+  v2 = *((_DWORD *)this + 13);
+  for ( i = 0; v2 != 0 && i < (*((_DWORD *)this + 14) - v2) >> 2; ++i )
+  {
+    if ( *(struct SceneGraph::Material **)(*((_DWORD *)this + 13) + 4 * i) == a2 )
+    {
+      v4 = *((_DWORD *)this + 13);
+      if ( v4 != 0 )
+        v5 = (*((_DWORD *)this + 14) - v4) >> 2;
+      else
+        v5 = 0;
+      *(_DWORD *)(*((_DWORD *)this + 13) + 4 * i) = *(_DWORD *)(*((_DWORD *)this + 13) + 4 * v5 - 4);
+      *((_DWORD *)this + 14) -= 4;
+      return;
+    }
+  }
+}
+
+// 0xd4c ?removeTexture@Scene@SceneGraph@@QAEXAAVTexture@2@@Z
+void __thiscall SceneGraph::Scene::removeTexture(SceneGraph::Scene *this, struct SceneGraph::Texture *a2)
+{
+  int v2; // eax
+  unsigned int i; // esi
+  int v4; // eax
+  int v5; // edx
+
+  v2 = *((_DWORD *)this + 17);
+  for ( i = 0; v2 != 0 && i < (*((_DWORD *)this + 18) - v2) >> 2; ++i )
+  {
+    if ( *(struct SceneGraph::Texture **)(*((_DWORD *)this + 17) + 4 * i) == a2 )
+    {
+      v4 = *((_DWORD *)this + 17);
+      if ( v4 != 0 )
+        v5 = (*((_DWORD *)this + 18) - v4) >> 2;
+      else
+        v5 = 0;
+      *(_DWORD *)(*((_DWORD *)this + 17) + 4 * i) = *(_DWORD *)(*((_DWORD *)this + 17) + 4 * v5 - 4);
+      *((_DWORD *)this + 18) -= 4;
+      return;
+    }
+  }
+}
+
+// 0xdbc ?getModel@Scene@SceneGraph@@QAEPAVModel@2@PBD@Z
+struct SceneGraph::Model *__thiscall SceneGraph::Scene::getModel(SceneGraph::Scene *this, const char *a2)
+{
+  unsigned int v2; // eax
+  int v4; // ecx
+  int v5; // edx
+  unsigned int v6; // kr04_4
+  unsigned int v7; // eax
+  unsigned int v8; // ebx
+  int v9; // ecx
+  int v10; // edx
+  int i; // [esp+10h] [ebp-4h]
+
+  v2 = 0;
+  for ( i = 0; ; ++i )
+  {
+    v4 = *((_DWORD *)this + 5);
+    if ( v4 == 0 || v2 >= (*((_DWORD *)this + 6) - v4) >> 2 )
+      break;
+    v5 = *(_DWORD *)(v4 + 4 * v2) + 20;
+    v6 = strlen(a2) + 1;
+    v7 = *(_DWORD *)(v5 + 8);
+    v8 = v6 - 1;
+    v9 = v7;
+    if ( v7 >= v6 - 1 )
+      v9 = v6 - 1;
+    v10 = memcmp(*(const char **)(v5 + 4), a2, v9);
+    if ( v10 == 0 && v7 >= v8 )
+    {
+      LOBYTE(v10) = v7 != v8;
+      if ( v10 == 0 )
+        return *(struct SceneGraph::Model **)(*((_DWORD *)this + 5) + 4 * i);
+    }
+    v2 = i + 1;
+  }
+  return nullptr;
+}
+
+// 0xe4c ?getMesh@Scene@SceneGraph@@QAEPAVMesh@2@PBD@Z
+struct SceneGraph::Mesh *__thiscall SceneGraph::Scene::getMesh(SceneGraph::Scene *this, const char *a2)
+{
+  unsigned int v2; // eax
+  int v4; // ecx
+  int v5; // edx
+  unsigned int v6; // kr04_4
+  unsigned int v7; // eax
+  unsigned int v8; // ebx
+  int v9; // ecx
+  int v10; // edx
+  int i; // [esp+10h] [ebp-4h]
+
+  v2 = 0;
+  for ( i = 0; ; ++i )
+  {
+    v4 = *((_DWORD *)this + 9);
+    if ( v4 == 0 || v2 >= (*((_DWORD *)this + 10) - v4) >> 2 )
+      break;
+    v5 = *(_DWORD *)(v4 + 4 * v2) + 20;
+    v6 = strlen(a2) + 1;
+    v7 = *(_DWORD *)(v5 + 8);
+    v8 = v6 - 1;
+    v9 = v7;
+    if ( v7 >= v6 - 1 )
+      v9 = v6 - 1;
+    v10 = memcmp(*(const char **)(v5 + 4), a2, v9);
+    if ( v10 == 0 && v7 >= v8 )
+    {
+      LOBYTE(v10) = v7 != v8;
+      if ( v10 == 0 )
+        return *(struct SceneGraph::Mesh **)(*((_DWORD *)this + 9) + 4 * i);
+    }
+    v2 = i + 1;
+  }
+  return nullptr;
+}
+
+// 0xedc ?getMaterial@Scene@SceneGraph@@QAEPAVMaterial@2@PBD@Z
+struct SceneGraph::Material *__thiscall SceneGraph::Scene::getMaterial(SceneGraph::Scene *this, const char *a2)
+{
+  unsigned int v2; // eax
+  int v4; // ecx
+  int v5; // edx
+  unsigned int v6; // kr04_4
+  unsigned int v7; // eax
+  unsigned int v8; // ebx
+  int v9; // ecx
+  int v10; // edx
+  int i; // [esp+10h] [ebp-4h]
+
+  v2 = 0;
+  for ( i = 0; ; ++i )
+  {
+    v4 = *((_DWORD *)this + 13);
+    if ( v4 == 0 || v2 >= (*((_DWORD *)this + 14) - v4) >> 2 )
+      break;
+    v5 = *(_DWORD *)(v4 + 4 * v2) + 60;
+    v6 = strlen(a2) + 1;
+    v7 = *(_DWORD *)(v5 + 8);
+    v8 = v6 - 1;
+    v9 = v7;
+    if ( v7 >= v6 - 1 )
+      v9 = v6 - 1;
+    v10 = memcmp(*(const char **)(v5 + 4), a2, v9);
+    if ( v10 == 0 && v7 >= v8 )
+    {
+      LOBYTE(v10) = v7 != v8;
+      if ( v10 == 0 )
+        return *(struct SceneGraph::Material **)(*((_DWORD *)this + 13) + 4 * i);
+    }
+    v2 = i + 1;
+  }
+  return nullptr;
+}
+
+// 0xf6c ?getTexture@Scene@SceneGraph@@QAEPAVTexture@2@PBD@Z
+struct SceneGraph::Texture *__thiscall SceneGraph::Scene::getTexture(SceneGraph::Scene *this, const char *a2)
+{
+  unsigned int v2; // eax
+  int v4; // ecx
+  int v5; // edx
+  unsigned int v6; // kr04_4
+  unsigned int v7; // eax
+  unsigned int v8; // ebx
+  int v9; // ecx
+  int v10; // edx
+  int i; // [esp+10h] [ebp-4h]
+
+  v2 = 0;
+  for ( i = 0; ; ++i )
+  {
+    v4 = *((_DWORD *)this + 17);
+    if ( v4 == 0 || v2 >= (*((_DWORD *)this + 18) - v4) >> 2 )
+      break;
+    v5 = *(_DWORD *)(v4 + 4 * v2);
+    v6 = strlen(a2) + 1;
+    v7 = *(_DWORD *)(v5 + 8);
+    v8 = v6 - 1;
+    v9 = v7;
+    if ( v7 >= v6 - 1 )
+      v9 = v6 - 1;
+    v10 = memcmp(*(const char **)(v5 + 4), a2, v9);
+    if ( v10 == 0 && v7 >= v8 )
+    {
+      LOBYTE(v10) = v7 != v8;
+      if ( v10 == 0 )
+        return *(struct SceneGraph::Texture **)(*((_DWORD *)this + 17) + 4 * i);
+    }
+    v2 = i + 1;
+  }
+  return nullptr;
+}
+
+// 0xffc ?purge@Scene@SceneGraph@@QAEXXZ
+void __thiscall SceneGraph::Scene::purge(SceneGraph::Scene *this)
+{
+  unsigned int v2; // ebx
+  int v3; // eax
+  void *v4; // edi
+  unsigned int v5; // ebx
+  int v6; // eax
+  int v7; // eax
+  void *v8; // edi
+  unsigned int v9; // ebp
+  struct SceneGraph::Mesh ***v10; // ebx
+  int v11; // eax
+  int v12; // edx
+  void *v13; // edi
+  unsigned int v14; // ecx
+  struct SceneGraph::Material ***v15; // edi
+  int v16; // eax
+  int v17; // eax
+  void *v18; // ebp
+  unsigned int v19; // edx
+  char *v20; // ebp
+  int v21; // eax
+  SceneGraph::Texture *v22; // ecx
+  char *v23; // esi
+  struct SceneGraph::Mesh **v24; // esi
+  struct SceneGraph::Material **v25; // esi
+  unsigned int i; // [esp+10h] [ebp-Ch]
+  unsigned int j; // [esp+10h] [ebp-Ch]
+  SceneGraph::Texture *v28; // [esp+14h] [ebp-8h]
+  struct SceneGraph::Object **v29; // [esp+14h] [ebp-8h]
+  struct SceneGraph::Model ***v30; // [esp+18h] [ebp-4h]
+  struct SceneGraph::Model **v31; // [esp+18h] [ebp-4h]
+
+  v2 = 0;
+  *((_DWORD *)this + 20) = 0;
+  memset((char *)this + 84, 0, 0x20u);
+  while ( 1 )
+  {
+    v3 = *((_DWORD *)this + 1);
+    if ( v3 == 0 || v2 >= (*((_DWORD *)this + 2) - v3) >> 2 )
+      break;
+    v4 = *(void **)(v3 + 4 * v2);
+    if ( v4 != nullptr )
+    {
+      SceneGraph::Object::~Object(this: *(SceneGraph::Object **)(v3 + 4 * v2));
+      operator delete(a1: v4);
+    }
+    ++v2;
+  }
+  v5 = 0;
+  v30 = (struct SceneGraph::Model ***)((char *)this + 16);
+  while ( 1 )
+  {
+    v6 = *((_DWORD *)this + 5);
+    if ( v6 == 0 || v5 >= (*((_DWORD *)this + 6) - v6) >> 2 )
+      break;
+    v7 = *((_DWORD *)this + 5);
+    v8 = *(void **)(v7 + 4 * v5);
+    if ( v8 != nullptr )
+    {
+      SceneGraph::Model::~Model(this: *(SceneGraph::Model **)(v7 + 4 * v5));
+      operator delete(a1: v8);
+    }
+    ++v5;
+  }
+  v9 = 0;
+  v10 = (struct SceneGraph::Mesh ***)((char *)this + 32);
+  while ( 1 )
+  {
+    v11 = *((_DWORD *)this + 9);
+    if ( v11 == 0 || v9 >= (*((_DWORD *)this + 10) - v11) >> 2 )
+      break;
+    v12 = *((_DWORD *)this + 9);
+    v13 = *(void **)(v12 + 4 * v9);
+    if ( v13 != nullptr )
+    {
+      SceneGraph::Mesh::~Mesh(this: *(SceneGraph::Mesh **)(v12 + 4 * v9));
+      operator delete(a1: v13);
+    }
+    ++v9;
+  }
+  v14 = 0;
+  v15 = (struct SceneGraph::Material ***)((char *)this + 48);
+  for ( i = 0; ; i = v14 )
+  {
+    v16 = *((_DWORD *)this + 13);
+    if ( v16 == 0 || v14 >= (*((_DWORD *)this + 14) - v16) >> 2 )
+      break;
+    v17 = *((_DWORD *)this + 13);
+    v18 = *(void **)(v17 + 4 * v14);
+    if ( v18 != nullptr )
+    {
+      SceneGraph::Material::~Material(this: *(SceneGraph::Material **)(v17 + 4 * v14));
+      operator delete(a1: v18);
+      v14 = i;
+    }
+    ++v14;
+  }
+  v19 = 0;
+  v20 = (char *)this + 64;
+  for ( j = 0; ; j = v19 )
+  {
+    v21 = *((_DWORD *)this + 17);
+    if ( v21 == 0 || v19 >= (*((_DWORD *)this + 18) - v21) >> 2 )
+      break;
+    v22 = *(SceneGraph::Texture **)(*((_DWORD *)this + 17) + 4 * v19);
+    v28 = v22;
+    if ( v22 != nullptr )
+    {
+      SceneGraph::Texture::~Texture(this: v22);
+      operator delete(a1: v28);
+      v19 = j;
+    }
+    ++v19;
+  }
+  v29 = std::copy(
+          a1: *((struct SceneGraph::Object ***)this + 2),
+          a2: *((struct SceneGraph::Object ***)this + 2),
+          a3: *((struct SceneGraph::Object ***)this + 1));
+  std::vector<SceneGraph::Object *>::_Destroy(a1: v29, a2: *((_DWORD *)this + 2));
+  *((_DWORD *)this + 2) = v29;
+  v23 = (char *)this + 16;
+  v31 = std::copy(a1: v30[2], a2: v30[2], a3: v30[1]);
+  std::vector<SceneGraph::Model *>::_Destroy(a1: v31, a2: *((_DWORD *)v23 + 2));
+  *((_DWORD *)v23 + 2) = v31;
+  v24 = std::copy(a1: v10[2], a2: v10[2], a3: v10[1]);
+  std::vector<SceneGraph::Mesh *>::_Destroy(a1: v24, a2: v10[2]);
+  v10[2] = v24;
+  v25 = std::copy(a1: v15[2], a2: v15[2], a3: v15[1]);
+  std::vector<SceneGraph::Material *>::_Destroy(a1: v25, a2: v15[2]);
+  v15[2] = v25;
+  std::vector<SceneGraph::Texture *>::erase(a1: *((_DWORD *)v20 + 1), a2: *((_DWORD *)v20 + 2));
+}
+
+// 0x11ec ?clear@Scene@SceneGraph@@QAEX_N0@Z
+void __thiscall SceneGraph::Scene::clear(SceneGraph::Scene *this, bool a2, bool a3)
+{
+  glClear(mask: (a3 ? 0x100 : 0) | (a2 ? 0x4000 : 0));
+}
+
+// 0x121c ?render@Scene@SceneGraph@@QAEXXZ
+void __thiscall SceneGraph::Scene::render(SceneGraph::Scene *this)
+{
+  SceneGraph::Object *v2; // ecx
+  unsigned int v3; // esi
+  SceneGraph::Object **v4; // edi
+  unsigned int i; // esi
+  int v6; // eax
+
+  glLoadIdentity();
+  v2 = *((SceneGraph::Object **)this + 20);
+  if ( v2 != nullptr )
+    SceneGraph::Object::renderAsCamera(this: v2);
+  v3 = 0;
+  v4 = (SceneGraph::Object **)((char *)this + 84);
+  do
+  {
+    if ( *v4 != nullptr )
+      SceneGraph::Object::renderAsLight(this: *v4, a2: v3);
+    ++v3;
+    ++v4;
+  }
+  while ( v3 < 8 );
+  for ( i = 0; ; ++i )
+  {
+    v6 = *((_DWORD *)this + 1);
+    if ( v6 == 0 || i >= (*((_DWORD *)this + 2) - v6) >> 2 )
+      break;
+    (***(void (__thiscall ****)(_DWORD))(v6 + 4 * i))(a1: *(_DWORD *)(v6 + 4 * i));
+  }
+}
+
+// 0x127c ?renderToTexture@Scene@SceneGraph@@QAEXMHHHAAVclTexture@@PAVObject@2@H1@Z
+void __thiscall SceneGraph::Scene::renderToTexture(
+        SceneGraph::Scene *this,
+        float a2,
+        int a3,
+        int a4,
+        int a5,
+        struct clTexture *a6,
+        struct SceneGraph::Object *a7,
+        int a8,
+        struct SceneGraph::Object *a9)
+{
+  ;
+}
+
+// 0x128c ?setCamera@Scene@SceneGraph@@QAEXPAVObject@2@@Z
+void __thiscall SceneGraph::Scene::setCamera(SceneGraph::Scene *this, struct SceneGraph::Object *a2)
+{
+  *((_DWORD *)this + 20) = a2;
+}
+
+// 0x129c ?setLight@Scene@SceneGraph@@QAEXHPAVObject@2@@Z
+void __thiscall SceneGraph::Scene::setLight(SceneGraph::Scene *this, int a2, struct SceneGraph::Object *a3)
+{
+  *((_DWORD *)this + a2 + 21) = a3;
+  if ( a3 == nullptr )
+    glDisable(cap: a2 + 0x4000);
+}
+
+// 0x12bc ?setProjection@Scene@SceneGraph@@QAEXMMMM@Z
+void __thiscall SceneGraph::Scene::setProjection(SceneGraph::Scene *this, float a2, float a3, float a4, float a5)
+{
+  void (__stdcall *v6)(GLenum); // edi
+  char v8; // c3
+
+  v6 = glMatrixMode;
+  *((float *)this + 29) = a2;
+  *((float *)this + 30) = a3;
+  *((float *)this + 31) = a4;
+  v6(mode: 0x1701u);
+  glLoadIdentity();
+  if ( v8 != 0 )
+    glOrtho(
+      left: -50.0,
+      right: 50.0,
+      bottom: -50.0,
+      top: 50.0,
+      zNear: *((float *)this + 29),
+      zFar: *((float *)this + 30));
+  else
+    gluPerspective(fovy: *((float *)this + 31), aspect: a5, zNear: *((float *)this + 29), zFar: *((float *)this + 30));
+  v6(mode: 0x1700u);
+}

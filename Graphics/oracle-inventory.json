@@ -1,0 +1,148 @@
+{
+  "archive": "lib/win32/Release/GraphicsLib.lib",
+  "sha256": "41f62c343a86f1e7d8bc41bed4b36b991038707179dd5078d3ca614934cdd7a3",
+  "architecture": "x86",
+  "object_count": 20,
+  "members": [
+    {
+      "object": ".\\Release\\TimeWin.obj",
+      "archive_offset": "0x123fe",
+      "bytes": 2252,
+      "sha256": "21991aa263f56ed4390d8bf6949e9eb52f7b55034b4aab9371d50fe8a776b629",
+      "source": "src/TimeWin.cpp"
+    },
+    {
+      "object": ".\\Release\\OGLExtensions.obj",
+      "archive_offset": "0x12d06",
+      "bytes": 22269,
+      "sha256": "2c5d7f64ba0d36d1b92cda0a285d369aae0950834196f5b815302587c634c36e",
+      "source": "src/OGLExtensions.cpp"
+    },
+    {
+      "object": ".\\Release\\ODBlock.obj",
+      "archive_offset": "0x18440",
+      "bytes": 42669,
+      "sha256": "e15da68b317e73cb190acc414c39eb5340a5db84ad5802a4cffabc998d18576d",
+      "source": "src/ODBlock.cpp"
+    },
+    {
+      "object": ".\\Release\\lmemorymanager.obj",
+      "archive_offset": "0x22b2a",
+      "bytes": 8537,
+      "sha256": "ce613ab8919703a0ea5288d258aa7fee3c6f80221c4f82d69314fcab74e3ceb7",
+      "source": "src/lmemorymanager.cpp"
+    },
+    {
+      "object": ".\\Release\\GLVertexArray.obj",
+      "archive_offset": "0x24cc0",
+      "bytes": 13864,
+      "sha256": "d8ccb7a26c5c793cf86a72ea663f4d84cc8ab200c093dea6b723f734a489613e",
+      "source": "src/GLVertexArray.cpp"
+    },
+    {
+      "object": ".\\Release\\glutApp.obj",
+      "archive_offset": "0x28324",
+      "bytes": 56509,
+      "sha256": "103b774476fdc14d51f3d338028d8b5fdaca41e65bc1f2931fc7fbb5d6538fdb",
+      "source": "src/glutApp.cpp"
+    },
+    {
+      "object": ".\\Release\\gltxDEVIL.obj",
+      "archive_offset": "0x3601e",
+      "bytes": 12087,
+      "sha256": "d685e55fc485b61596d003494b4f9f689eb57b32ef11dcca73217a5af0493a60",
+      "source": "src/gltxDEVIL.cpp"
+    },
+    {
+      "object": ".\\Release\\glmShaderGLVA.obj",
+      "archive_offset": "0x38f92",
+      "bytes": 6388,
+      "sha256": "a777fb4e5f76ef83e7c1e10623b961e7eabe6b5ce860501b81ac0aa0da47be76",
+      "source": "src/glmShaderGLVA.cpp"
+    },
+    {
+      "object": ".\\Release\\glmShaderGLDL.obj",
+      "archive_offset": "0x3a8c2",
+      "bytes": 5914,
+      "sha256": "6f33f778ba10af3885fdc23d8937f62e9633f80a365ec04d406e274ddeb5cccd",
+      "source": "src/glmShaderGLDL.cpp"
+    },
+    {
+      "object": ".\\Release\\glm.obj",
+      "archive_offset": "0x3c018",
+      "bytes": 44577,
+      "sha256": "13c4675d560e1766d0c77849a73c5f4d723d9177ba864dca05ea7e1c43edd750",
+      "source": "src/glm.cpp"
+    },
+    {
+      "object": ".\\Release\\Font.obj",
+      "archive_offset": "0x46e76",
+      "bytes": 9375,
+      "sha256": "90fc67e1f8d2ec086cb65606a6448d8d5bdb52c82d362655e90bee345cd82404",
+      "source": "src/Font.cpp"
+    },
+    {
+      "object": ".\\Release\\Bounds3d.obj",
+      "archive_offset": "0x49352",
+      "bytes": 4605,
+      "sha256": "d7129b890e15ff929421602b810d45191bb37cfa84b372e11d513f4ec88a0c47",
+      "source": "src/Bounds3d.cpp"
+    },
+    {
+      "object": ".\\Release\\Texture.obj",
+      "archive_offset": "0x4a58c",
+      "bytes": 6335,
+      "sha256": "043d28bc211d355d6560875e5ffe1801fb12bc664af1686609d109cd166b74bc",
+      "source": "src/Texture.cpp"
+    },
+    {
+      "object": ".\\Release\\Scene.obj",
+      "archive_offset": "0x4be88",
+      "bytes": 27302,
+      "sha256": "1bb84c0f5fd436f98a8475dd94e42645b9b0feb7dfab42acb0ec4514b3990668",
+      "source": "src/Scene.cpp"
+    },
+    {
+      "object": ".\\Release\\Primitive.obj",
+      "archive_offset": "0x5296a",
+      "bytes": 4351,
+      "sha256": "834b7509402e1d210d81b2ce123cc43a6a2c5c6b0a3cd7d8c106addafbb923c5",
+      "source": "src/Primitive.cpp"
+    },
+    {
+      "object": ".\\Release\\Object.obj",
+      "archive_offset": "0x53aa6",
+      "bytes": 16971,
+      "sha256": "add97adb63ff53e8323b1671ec3cdd6c9a51f21a80e80f7b2ea16d01746abd40",
+      "source": "src/Object.cpp"
+    },
+    {
+      "object": ".\\Release\\Model.obj",
+      "archive_offset": "0x57d2e",
+      "bytes": 13680,
+      "sha256": "e007e3ac26dd28a8b4f1d2ec14fa7651967ab1a78d18903aefeb929646b5ca51",
+      "source": "src/Model.cpp"
+    },
+    {
+      "object": ".\\Release\\Mesh.obj",
+      "archive_offset": "0x5b2da",
+      "bytes": 66391,
+      "sha256": "7603d8a3fa10341c24857881b3b4f98e865521098bd9522bf8ea3c18b6e94d0e",
+      "source": "src/Mesh.cpp"
+    },
+    {
+      "object": ".\\Release\\Material.obj",
+      "archive_offset": "0x6b66e",
+      "bytes": 52526,
+      "sha256": "48e0aae01dc2d7f7b12238e35974f06ce733cb394d574570f7450190e4e14604",
+      "source": "src/Material.cpp"
+    },
+    {
+      "object": ".\\Release\\Iterator.obj",
+      "archive_offset": "0x783d8",
+      "bytes": 13591,
+      "sha256": "79cc0af165f75512f057065738a648dcf7ced205ba6fe547c87d6bc05b5214a1",
+      "source": "src/Iterator.cpp"
+    }
+  ]
+}

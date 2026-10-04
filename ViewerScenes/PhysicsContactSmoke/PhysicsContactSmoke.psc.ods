@@ -1,0 +1,16 @@
+Scene
+{
+	PhysStart { 0; }
+	PhysDuration { 1000; }
+	gravity { 0; -9.81; 0; }
+	simStepSize { 0.01; }
+	Bodies
+	{
+		GeoSphere01
+		{
+			name { FallingSphere; }
+			position { 0; 0.7; 0; }
+			mass { 1; }
+		}
+	}
+}

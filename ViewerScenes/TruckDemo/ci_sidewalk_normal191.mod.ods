@@ -1,0 +1,9 @@
+# ci_sidewalk_normal191
+Model3
+{
+	Mesh	{ "ci_sidewalk_normal191.obj"; }
+	Groups
+	{
+		Material_1 { "Material #964.mat.ods"; }
+	}
+}

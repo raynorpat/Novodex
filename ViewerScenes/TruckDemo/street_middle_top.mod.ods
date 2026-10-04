@@ -1,0 +1,9 @@
+# street_middle_top
+Model3
+{
+	Mesh	{ "street_middle_top.obj"; }
+	Groups
+	{
+		Material_36 { "Material #1003.mat.ods"; }
+	}
+}

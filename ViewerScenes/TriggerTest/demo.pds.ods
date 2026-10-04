@@ -1,0 +1,187 @@
+PDS
+{
+	Acts
+	{
+		"Novodex_TriggerTest.psc.ods";
+	}
+	Models
+	{
+		Box_trigger_01	{ "Box_trigger_01.mod.ods"; }
+		Moving_box	{ "Moving_box.mod.ods"; }
+		Box_trigger_02	{ "Box_trigger_02.mod.ods"; }
+		Moving_sphere	{ "Moving_sphere.mod.ods"; }
+		Moving_capsule	{ "Moving_capsule.mod.ods"; }
+		Capsule_trigger	{ "Capsule_trigger.mod.ods"; }
+		Sphere_trigger	{ "Sphere_trigger.mod.ods"; }
+		MeshTrigger	{ "MeshTrigger.mod.ods"; }
+	}
+	Actors
+	{
+		Box_trigger_01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box_trigger_01";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					dimensions	{ 39.370079; 0.393701; 39.370079; }
+				}
+			}
+		}
+		Moving_box
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Moving_box";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					dimensions	{ 3.937008; 3.937008; 3.937008; }
+				}
+			}
+		}
+		Box_trigger_02
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box_trigger_02";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					dimensions	{ 39.370079; 0.393701; 39.370079; }
+				}
+			}
+		}
+		Moving_sphere
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Moving_sphere";
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+					radius	{ 3.100655; }
+				}
+			}
+		}
+		Moving_capsule
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Moving_capsule";
+					}
+				}
+			}
+			Collision
+			{
+				Capsule
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+					radius	{ 2.808408; }
+					height	{ 14.303909; }
+				}
+			}
+		}
+		Capsule_trigger
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Capsule_trigger";
+					}
+				}
+			}
+			Collision
+			{
+				Capsule
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+					radius	{ 6.990357; }
+					height	{ 28.790871; }
+				}
+			}
+		}
+		Sphere_trigger
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Sphere_trigger";
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+					radius	{ 21.146133; }
+				}
+			}
+		}
+		MeshTrigger
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"MeshTrigger";
+					}
+				}
+			}
+			Collision
+			{
+					TriangleMesh;
+			}
+		}
+	}
+}

@@ -1,0 +1,9 @@
+# Gengon01
+Model3
+{
+	Mesh	{ "Gengon01.obj"; }
+	Groups
+	{
+		Material_2 { "09_-_Standard.mat.ods"; }
+	}
+}

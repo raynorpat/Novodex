@@ -1,0 +1,100 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 1000; }
+	DragForce	{ 200; }
+	gravity	{ 0.000000; -40.000000; 0.000000; }
+	gridRes	{ 0; }
+	Bodies
+	{
+		Torus_Knot01
+		{
+			name	{ Torus_Knot01; }
+			orientation	{ 0.000000; 0.000000; 0.000000; -1.000000; }
+			position	{ -0.759716; 9.915449; -7.273869; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere01; }
+			orientation	{ 0.000000; 0.000000; 0.000000; -1.000000; }
+			position	{ -4.211659; 9.915450; -5.239767; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere02; }
+			orientation	{ -0.000000; 0.000000; 0.000000; 1.000000; }
+			position	{ -0.700699; 9.915450; -11.299042; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere03; }
+			orientation	{ -0.000000; 0.000000; 0.000000; 1.000000; }
+			position	{ 2.694983; 9.915450; -5.239767; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere04
+		{
+			name	{ GeoSphere04; }
+			orientation	{ 0.000000; 0.000000; 0.000000; -1.000000; }
+			position	{ -0.700699; 9.915450; -8.775341; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere05
+		{
+			name	{ GeoSphere05; }
+			orientation	{ 0.000000; 0.000000; 0.000000; -1.000000; }
+			position	{ 0.588200; 9.968921; -6.558657; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere06
+		{
+			name	{ GeoSphere06; }
+			orientation	{ 0.000000; 0.000000; 0.000000; -1.000000; }
+			position	{ 1.403653; 7.591335; -8.226099; }
+			scale	{ 1.000000; }
+		}
+		Capsule01
+		{
+			name	{ Capsule01; }
+			orientation	{ -0.707107; 0.000000; 0.000000; -0.707107; }
+			position	{ -0.516686; 9.983510; -10.048543; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		GeoSphere07
+		{
+			name	{ GeoSphere07; }
+			orientation	{ 0.000000; 0.000000; 0.000000; -1.000000; }
+			position	{ -1.902500; 8.213513; -10.729990; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere08
+		{
+			name	{ GeoSphere08; }
+			orientation	{ 0.000000; 0.000000; 0.000000; -1.000000; }
+			position	{ -1.902500; 10.273528; -6.334105; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere09
+		{
+			name	{ GeoSphere09; }
+			orientation	{ 0.000000; 0.000000; 0.000000; -1.000000; }
+			position	{ 0.981089; 12.127597; -4.487373; }
+			scale	{ 1.000000; }
+		}
+	}
+	Joints
+	{
+	}
+	Lights
+	{
+	}
+	Camera
+	{
+		position {-14.643539;10.082676;-6.460847;}
+		angles {0.000000;-71.000000;-13.000000;}
+	}
+}

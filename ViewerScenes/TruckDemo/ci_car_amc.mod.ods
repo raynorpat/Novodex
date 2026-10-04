@@ -1,0 +1,9 @@
+# ci_car_amc
+Model3
+{
+	Mesh	{ "ci_car_amc.obj"; }
+	Groups
+	{
+		Material_0 { "Material #29.mat.ods"; }
+	}
+}

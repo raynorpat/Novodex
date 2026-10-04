@@ -1,0 +1,108 @@
+# intro scene script for demo
+
+Scene
+	{
+	Text
+		{
+		T {"some more scenes...";						X{-0.9;} Y{ 0.7;} N{0.7;} S{16;}}
+		}
+
+
+
+	PhysStart {1;}
+	PhysDuration   {200;}
+	DragForce { 50; }
+	gravity { 0; -30; 0; }
+
+	Space
+		{
+		#noCollDet; 
+		worldBox { -4; 10; -1; 30; -5; 5; }
+		cellsize { 1; }
+		memory { 1021; }
+		}
+
+
+
+
+
+	Bodies
+		{
+		1_Rubik
+			{
+			mass	{3;}				
+			position {-4;25;0; }
+			linearVelocity {6.666;0;0;}
+			scale {0.04;}
+			}
+
+		1_Rubik
+			{
+			mass	{3;}				
+			position {4;25;0; }
+			linearVelocity {-6.666;0;0;}
+			scale {0.04;}
+			}
+
+			/*
+		1_Eraser
+			{
+			mass	{1;}				
+			angles {0; 0; 90;}
+			position {1;18.9;0; }
+			scale {0.1;}
+			}
+		2_Eraser
+			{
+			mass	{1;}				
+			angles {0; 0; 90;}
+			position {5;18.9;0; }
+			scale {0.1;}
+			}
+		3_Eraser
+			{
+			mass	{1;}				
+			angles {0; 0; 90;}
+			position {9;18.9;0; }
+			scale {0.1;}
+			}
+			*/
+
+		4_Eraser
+			{
+			mass	{1;}				
+			#angles {0; 0; 90;}
+			position {13;18.9;0; }
+			scale {0.1;}
+			}
+		Ez
+			{
+			mass	{0;}				
+			angles {90; 180; 0;}
+			position {  6; 12.5; 0; }
+			scale {0.2;}
+			}
+
+		}
+
+
+
+	Lights
+		{
+		1 {5; 5; 7;}
+		2 {-5; 25; 10;}
+		}
+
+	Camera
+		{
+		position {-31.203224;66.163841;68.898643;}
+		angles {0.000000;328.000000;-16.000000;}
+		#orientation {-0.974732;-0.124232;-0.173813;0.065209;}
+		#position {-3.599999;3.600003;0.000000;}
+		#scale {0.531441;}
+		}
+
+
+#use default gravity of 9.8
+
+	}

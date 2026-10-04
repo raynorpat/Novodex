@@ -1,0 +1,278 @@
+# intro scene script for demo
+
+Scene
+	{
+	Text
+		{
+		T {"Test setup"; Y{-0.6;} D{2;} S{17;} E{1;}}
+		}
+
+
+
+	PhysStart {1;}
+	PhysDuration   {30;}
+	DragForce { 50; }
+
+
+	Bodies
+		{
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;294;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;284;0; }
+			scale {0.12;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;274;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;264;0; }
+			scale {0.12;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;254;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;244;0; }
+			scale {0.12;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;234;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;224;0; }
+			scale {0.12;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;214;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;204;0; }
+			scale {0.12;}
+			restitution {0;} 
+			}
+
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;194;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;184;0; }
+			scale {0.12;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;174;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;164;0; }
+			scale {0.12;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;154;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;144;0; }
+			scale {0.12;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;134;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;124;0; }
+			scale {0.12;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;114;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;104;0; }
+			scale {0.12;}
+			restitution {0;} 
+			}
+
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;94;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;84;0; }
+			scale {0.12;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;74;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;64;0; }
+			scale {0.12;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;54;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;44;0; }
+			scale {0.12;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;34;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;24;0; }
+			scale {0.12;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;14;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;4;0; }
+			scale {0.12;}
+			restitution {0;} 
+			}
+
+
+		}
+
+	Lights
+		{
+		1 {5; 22; 7;}
+		2 {5; 2; 17;}
+		}
+
+	Camera
+		{
+		position {-67.638672;-93.853462;235.907394;}
+		angles {0.000000;-16.000000;43.000000;}
+		}
+
+	}

@@ -1,0 +1,105 @@
+# intro scene script for demo
+
+Scene
+	{
+	PhysStart {1.0;}
+	PhysDuration   {2000;}
+	DragForce { 5; }
+	gravity { 0; -9; 0; }
+	#collDet { 0; }				#collision detection off.
+	#simStepSize { 0.005; }
+
+
+	Bodies
+		{
+		Eraser
+			{
+			name	{ body; }
+			angles { 0; 90; 0; }
+			position	{0; 2; 0; } #{ -0.090812; 2.119964; -0.342994; }
+			scale	{ 0.08; }
+			mass { 1; }
+			}
+
+		Ball
+		{
+			name	{ wheelRFront; }
+			position { 1; 1; 1; }
+			mass { 1; }
+		}
+		Ball
+		{
+			name	{ wheelRBack; }
+			position { -1; 1; 1; }
+			mass { 1; }
+		}
+		Ball
+		{
+			name	{ wheelLFront; }
+			position { 1; 1; -1; }
+			mass { 1; }
+		}
+		Ball
+		{
+			name	{ wheelLBack; }
+			position { -1; 1; -1; }
+			mass { 1; }
+		}
+
+
+		}
+
+	Joints
+		{
+
+		Hinge
+			{
+			#anchor { 1.735394; 1.058559; 1.546264; }
+			anchor { 1; 1; 1; }
+			direction { 0; 0; 1; }
+			bodies { body; 	wheelRFront; }
+			#name { AxleFrontR; }
+			}
+
+		Hinge
+			{
+			#anchor { -1.707300; 1.058561; 1.546263; }
+			anchor { -1; 1; 1; }
+			direction { 0; 0; 1; }
+			bodies { body; 	wheelRBack; }
+			#name { AxleRearR; }
+			}
+
+		Hinge
+			{
+			#anchor { 1.735397; 1.058553; -2.230793; }	#origin of wheel
+			anchor { 1; 1; -1; }
+			direction { 0; 0; 1; }
+			bodies { body; 	wheelLFront; }
+			#name { AxleFrontL; }
+			}
+		Hinge
+			{
+			#anchor { -1.707297; 1.058553; -2.230793; }
+			anchor { -1; 1; -1; }
+			direction { 0; 0; 1; }
+			bodies { body; 	wheelLBack; }
+			#name { AxleRearL; }
+			}
+
+
+
+		}
+
+
+	Lights
+		{
+		1 {5; 28; 7;}
+		}
+
+	Camera
+		{
+		position {8.386342;4.151034;0.494792;}
+		angles {0.000000;438.000000;-16.000000;}
+		}
+	}

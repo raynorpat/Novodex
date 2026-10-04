@@ -1,0 +1,187 @@
+PDS
+{
+	Acts
+	{
+		"Bushiball.psc.ods";
+	}
+	Models
+	{
+		Sphere01	{ "Sphere01.mod.ods"; }
+		Sphere02	{ "Sphere02.mod.ods"; }
+		GeoSphere01	{ "GeoSphere01.mod.ods"; }
+		GeoSphere04	{ "GeoSphere04.mod.ods"; }
+		Cylinder01	{ "Cylinder01.mod.ods"; }
+		GeoSphere05	{ "GeoSphere05.mod.ods"; }
+		Tube01	{ "Tube01.mod.ods"; }
+	}
+	Actors
+	{
+		Group01
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ -0.004029; -0.265531; -0.245260; }
+						scale	{ 1.000000; }
+						Model
+						{
+			"Sphere01";
+						}
+					}
+					Node
+					{
+						orientation	{ 0.977360; -0.211585; 0.000000; 0.000000; }
+						position	{ -0.004029; -0.206213; 0.067914; }
+						scale	{ 1.000000; }
+						Model
+						{
+			"Sphere02";
+						}
+					}
+					Node
+					{
+						orientation	{ 0.965241; -0.261362; 0.000000; 0.000000; }
+						position	{ -0.004029; 0.232573; 1.163334; }
+						scale	{ 1.000000; }
+						Model
+						{
+			"GeoSphere01";
+						}
+					}
+					Node
+					{
+						orientation	{ 0.607009; -0.362684; 0.362684; 0.607009; }
+						position	{ -0.011151; -0.108367; 0.278591; }
+						scale	{ 1.000000; }
+						Model
+						{
+			"GeoSphere04";
+						}
+					}
+					Node
+					{
+						orientation	{ -0.500000; 0.500000; 0.500000; -0.500000; }
+						position	{ -0.932216; 0.786008; -0.228153; }
+						scale	{ 1.000000; }
+						Model
+						{
+			"Cylinder01";
+						}
+					}
+					Node
+					{
+						orientation	{ -0.500000; 0.500000; 0.500000; -0.500000; }
+						position	{ 0.932216; 0.786008; -0.228153; }
+						scale	{ 1.000000; }
+						Model
+						{
+			"Cylinder01";
+						}
+					}
+					Node
+					{
+						orientation	{ -0.170812; 0.686166; 0.170812; -0.686166; }
+						position	{ 0.323307; 0.371035; 0.474761; }
+						scale	{ 1.000000; }
+						Model
+						{
+			"GeoSphere05";
+						}
+					}
+					Node
+					{
+						orientation	{ -0.170812; 0.686166; 0.170812; -0.686166; }
+						position	{ -0.338304; 0.371035; 0.474761; }
+						scale	{ 1.000000; }
+						Model
+						{
+			"GeoSphere05";
+						}
+					}
+					Node
+					{
+						orientation	{ -0.307709; 0.636644; 0.307709; -0.636644; }
+						position	{ -0.350487; 0.656263; 0.268662; }
+						scale	{ 1.000000; }
+						Model
+						{
+			"Tube01";
+						}
+					}
+					Node
+					{
+						orientation	{ -0.307709; 0.636644; 0.307709; -0.636644; }
+						position	{ 0.354444; 0.656263; 0.268662; }
+						scale	{ 1.000000; }
+						Model
+						{
+			"Tube01";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+					position	{ -0.004029; -0.265531; -0.245260; }
+					radius	{ 1.082059; }
+				}
+/*				Box
+				{
+					position	{ -0.004029; -0.265531; 0.094860; }
+					dimensions	{ 2.054840; 1.085529; 2.344781; }
+					orientation	{ 0.977360; -0.211585; 0.000000; 0.000000; }
+				}*/
+				Sphere
+				{
+					position	{ -0.004029; 0.232573; 1.163334; }
+					radius	{ 0.442284; }
+				}
+				Sphere
+				{
+					position	{ -0.011151; -0.108367; 0.278591; }
+					radius	{ 0.423535; }
+				}
+				Box
+				{
+					position	{ -0.932216; 0.786008; -0.228153; }
+					dimensions	{ 1.123164; 0.493565; 1.140491; }
+					orientation	{ -0.500000; 0.500000; 0.500000; -0.500000; }
+				}
+				Box
+				{
+					position	{ 0.932217; 0.786008; -0.228153; }
+					dimensions	{ 1.123164; 0.493565; 1.140491; }
+					orientation	{ -0.500000; 0.500000; 0.500000; -0.500000; }
+				}
+				Sphere
+				{
+					position	{ 0.323307; 0.371035; 0.474761; }
+					radius	{ 0.372828; }
+				}
+				Sphere
+				{
+					position	{ -0.338304; 0.371035; 0.474761; }
+					radius	{ 0.372828; }
+				}
+/*				Box
+				{
+					position	{ -0.350487; 0.673979; 0.254616; }
+					dimensions	{ 0.344541; 0.191382; 0.689082; }
+					orientation	{ -0.307709; 0.636644; 0.307709; -0.636644; }
+				}
+				Box
+				{
+					position	{ 0.354444; 0.673979; 0.254616; }
+					dimensions	{ 0.344541; 0.191382; 0.689082; }
+					orientation	{ -0.307709; 0.636644; 0.307709; -0.636644; }
+				}*/
+			}
+		}
+	}
+}

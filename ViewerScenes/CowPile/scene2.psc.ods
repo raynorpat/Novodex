@@ -1,0 +1,89 @@
+Scene
+{
+	PhysStart { 1; }
+	PhysDuration { 10000; }
+	gravity { 0.000000; -9.81000; 0.000000; }
+	collDet { 1; }
+	gridRes { 0; }
+	#recorder { 1; }	# 1 - REC 2 - PLAY
+	#simStepSize { 0.001; }
+
+	Parameters
+		{
+		RigidBodySDK
+			{
+			MIN_SEPARATION_FOR_PENALTY { 0; }
+			}
+		}
+	Bodies
+	{
+
+		Cow
+		{
+			position { 2; 7; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+		
+		Cow
+		{
+			position { 2; 14; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+		Cow
+		{
+			position { 2; 21; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+		Cow
+		{
+			position { 2; 28; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+		Cow
+		{
+			position { 2; 35; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+		Cow
+		{
+			position { 2; 42; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+		Cow
+		{
+			position { 2; 49; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+		Cow
+		{
+			position { 2; 56; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+		Cow
+		{
+			position { 2; 63; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+	}
+
+
+	Lights
+	{
+		 1 { 30.539808; 64.812670; 63.445845; }
+	}
+
+	Camera
+	{
+	position {5.252406;1.851734;60.821320;}
+	angles {0.000000;4.000000;21.000000;}
+	}
+}

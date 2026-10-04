@@ -1,0 +1,9 @@
+# vase02
+Model3
+{
+	Mesh	{ "vase.obj"; }
+	Groups
+	{
+		DefaultMaterial { "Material #978.mat.ods"; }
+	}
+}

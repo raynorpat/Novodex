@@ -1,0 +1,9 @@
+# street_new
+Model3
+{
+	Mesh	{ "street_new.obj"; }
+	Groups
+	{
+		Material_33 { "street.mat.ods"; }
+	}
+}

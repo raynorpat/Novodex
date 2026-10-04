@@ -1,0 +1,9 @@
+# 00railsphysic
+Model3
+{
+	Mesh	{ "00railsphysic.obj"; }
+	Groups
+	{
+		Material_9 { "adcovering.mat.ods"; }
+	}
+}

@@ -1,0 +1,407 @@
+JTA
+	{
+#pendulum
+
+	simStepSize { 0.01; }	#this explodes on 50 fps with multibody
+
+	Construction
+		{
+		simulator { Multibody; }
+
+		Joint
+			{
+			type { Hinge; }	#or Prismatic or Floating
+			fatherPos {0;10;0;}
+			fatherAxis {0;0;1;}
+			fatherRefx {0;-1;0;}
+			sonPos {0;2;0;}
+			sonAxis {0;0;1;}
+			sonRefx {0;-1;0;}
+			jointParam { 40; }
+
+
+
+			Body
+				{
+				name { "link1"; }
+				dims {1;4;1;}
+				mass {1;}
+
+
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link2"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link3"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link4"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link5"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link6"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link7"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link8"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link9"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link10"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link11"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link12"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link13"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link14"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link15"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link16"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link17"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link18"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link19"; }
+						dims {1;4;1;}
+						mass {1;}
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link20"; }
+						dims {1;4;1;}
+						mass {1;}
+						}
+					}
+
+						}
+					}
+
+						}
+					}
+
+						}
+					}
+
+						}
+					}
+
+						}
+					}
+
+						}
+					}
+
+						}
+					}
+
+						}
+					}
+
+						}
+					}
+
+						}
+					}
+
+						}
+					}
+
+						}
+					}
+
+						}
+					}
+
+						}
+					}
+
+						}
+					}
+
+						}
+					}
+
+						}
+					}
+
+						}
+					}
+
+
+				}
+			}
+		}
+
+	Instances 
+		{
+		Multibody { }
+		}
+
+	Camera
+		{
+		#angles {0.000000;2.000000;18.000000;}
+		#position {-70.584541;93.003593;20.893381;}
+		}
+	}

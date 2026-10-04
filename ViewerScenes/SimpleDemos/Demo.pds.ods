@@ -1,0 +1,204 @@
+# physics demo script
+PDS
+	{
+	Acts
+		{
+		staticMotion.psc.ods;
+		aztek.psc.ods;
+		centrifuge.psc.ods;
+		HingeJointTest.psc.ods;
+		plate.psc.ods;
+		RonWallS.psc.ods;	
+		RonWallSS.psc.ods;	
+		restitution.psc.ods;
+		restitution2.psc.ods;
+
+/*
+		FricTest1.psc.ods;		#test for static and dynamic friction params
+
+		Hinge.psc.ods;
+		test2.psc.ods;
+		MegaWallS.psc.ods;
+		knockdown.psc.ods;		# swinging chain knocks over tower.
+
+		StackAttack.psc.ods;
+		JointTest.psc.ods;
+		SuperStack.psc.ods;
+		TallStack.psc.ods;
+		TallStack.psc.ods;
+		Domino.psc.ods;		offCenterMass.psc.ods;
+		intersectingThin.psc.ods;
+
+		bounce.psc.ods;
+		wall.psc.ods;
+		test3.psc.ods;
+		SuperStack.psc.ods;
+		fallingBall.psc.ods;
+
+		StaFricTest.psc.ods;
+
+		FricTest3.psc.ods;
+		fallingBody.psc.ods;		
+		StackAttack.psc.ods;
+
+		wall.psc.ods;
+		TallStack.psc.ods;
+		vice.psc.ods;
+
+
+		RonWallSS.psc.ods;	
+
+		MegaStackS.psc.ods;
+		Test.psc.ods;
+
+		Prismatic.psc.ods;
+		Car.psc.ods;
+		Hinge.psc.ods;
+		JointTest.psc.ods;
+		spring.psc.ods;
+
+		boxBox.psc.ods;
+
+
+		Slider.psc.ods;
+		RonWallS.psc.ods;
+		knockdown.psc.ods;		# swinging chain knocks over tower.
+		aztek.psc.ods;
+		JointTest2.psc.ods;		# sphere joint chains
+		RonWallSS.psc.ods;	
+		StackAttack.psc.ods;
+		SuperStack.psc.ods;
+		TallStack.psc.ods;
+		vice.psc.ods;
+		wall.psc.ods;
+		PointInPlane.psc.ods;
+		*/
+	
+		}
+
+	Models
+		{
+		Ball { Ball.mod.ods; }
+		Rubik { Rubik.mod.ods;}
+		Floppy { Floppy.mod.ods; }
+		Eraser 	{Eraser.mod.ods;}
+		Ez { Ez.mod.ods;}
+		Ruler { Ruler.mod.ods;}
+		}
+
+	Actors
+		{
+		EZCentrufuge
+			{
+			Graphics 
+				{ 
+				Node 
+					{
+					Node { 	position {0;-50;0; } angles { 90; 0; 0; } Model { Ez;}  }
+					Node { 	position {0; 50;0; } angles { 90; 0; 0; } Model { Ez;}  }
+					Node { 	position {0;0;-50; } Model { Ez;}  }
+					Node { 	position {0; 0;50; } Model { Ez;}  }
+					} 
+				}
+			Collision
+				{
+				Box	{ position {0;-50;0; } dimensions {120;22;120;} }
+				Box	{ position {0; 50;0; } dimensions {120;22;120;} }
+				Box	{ position {0;0;-50; } dimensions {120;120;22;} }
+				Box	{ position {0; 0;50; } dimensions {120;120;22;} }
+				} 
+			}
+		Ball  
+			{
+			Collision
+				{
+				Sphere
+					{
+					position { 0; 0; 0; }
+					radius { 0.5; }
+					}
+				} 
+			Dynamics
+				{
+				inertia { sphere; }
+
+				}
+			Graphics { Node { Model { Ball; } }	}
+			}
+
+		Rubik { Graphics { Node { Model { Rubik;} } } }
+		Floppy { Graphics { Node { Model { Floppy; } } } }
+		Eraser 	{ Graphics { Node { Model { Eraser;} } } }
+		Ez { Graphics { Node { Model { Ez;} } } }
+		Ruler { Graphics { Node { Model { Ruler;} } } }
+
+
+		Caps { Collision { Capsule { } } }
+
+
+		YPlane
+			{ 
+			Graphics 
+				{ 
+				Node 
+					{ 
+					Node 
+						{ 
+						position {0; -2; 0; } 
+						orientation {0.707107;0.707107;0;0;} 
+						Model { Floppy; } 
+						} 
+					} 
+				}
+
+			Collision 
+				{
+				Plane
+					{
+					normal { 0; 1; 0; }
+					#d { 0; }
+					d { 5; }
+					}
+				}
+			}
+
+		ZPlane
+			{ 
+			Graphics 
+				{ 
+				Node 
+					{ 
+					Node 
+						{ 
+						position {0; 0; -2; } 
+						Model { Floppy; } 
+						} 
+					} 
+				}
+
+			Collision 
+				{
+				Plane
+					{
+					normal { 0; 0; 1; }
+					d { 0; }
+					}
+				}
+			}
+
+		SkewPlane
+			{ 
+			Collision 
+				{
+				Plane
+					{
+					normal { 0; 0.707; 0.707; }
+					#d { -10; }
+					}
+				}
+			}
+
+
+		}
+	}
+

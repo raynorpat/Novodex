@@ -1,0 +1,9 @@
+# cone01
+Model3
+{
+	Mesh	{ "cone01.obj"; }
+	Groups
+	{
+		Material_1 { "CONO.mat.ods"; }
+	}
+}

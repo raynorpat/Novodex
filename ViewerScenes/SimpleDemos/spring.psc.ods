@@ -1,0 +1,91 @@
+# intro scene script for demo
+
+Scene
+	{
+	Text
+		{
+		T {"Test setup"; Y{-0.6;} D{2;} S{17;} E{1;}}
+		}
+
+
+
+	PhysStart {0.5;}
+	PhysDuration   {150;}
+	simStepSize { 0.02; }
+	DragForce { 50; }
+
+	Parameters
+		{
+		RigidBodySDK
+			{
+			PENALTY_FORCE	{0;}
+			}
+		}
+
+
+	Bodies
+		{
+		/*
+		Rubik
+			{
+			mass	{0;}				
+			position {0;3.5;0; }
+			#scale {1;}			#unit cube this way (0.501 radius!)
+			scale {0.0165;}
+			friction { 0;}		#had 0.8 to 0.05
+			staticFriction {0; }
+			restitution {0;} 
+			}
+		Rubik
+			{
+			mass	{0;}				
+			position {3;3.5;0; }
+			#scale {1;}			#unit cube this way (0.501 radius!)
+			scale {0.0165;}
+			friction { 0;}		#had 0.8 to 0.05
+			staticFriction {0; }
+			restitution {0;} 
+			}
+		*/
+
+		Rubik
+			{
+			name	{ bottom; }
+			position {0; 2; 0; }
+			#angles { 40; 0; 40; }
+			#scale {1;}			#unit cube this way (0.501 radius!)
+			scale {0.0165;}
+			friction { 0;}		#had 0.8 to 0.05
+			staticFriction {0; }
+			restitution {0;} 
+			angularVelocity { 1; 1; 1; }
+			}
+		}
+/*
+	Effectors
+		{
+		SpringAndDamper
+			{
+			bodies { WORLD; bottom; }
+			anchor1 { 0;3.5;0; }
+			anchor2 { 0;1.5;0; }
+
+			spring { 0.0; 1.0; 2.0; 10; 1000; }	
+			damper { -1000; 1000; 10000; 10000; }
+			}
+		}
+*/
+	Lights
+		{
+		1 {5; 22; 7;}
+		2 {5; 2; 17;}
+		}
+
+	Camera
+		{
+		position {-8.246276;9.278854;-1.761430;}
+		angles {0.000000;-115.000000;-40.000000;}
+		}
+
+
+	}

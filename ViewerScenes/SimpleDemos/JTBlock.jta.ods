@@ -1,0 +1,39 @@
+JTA
+	{
+	simStepSize { 0.01; }	#this explodes on 100 fps with multibody
+
+	Construction
+		{
+		simulator { Multibody; }
+
+		Joint
+			{
+			type { Floating; }	
+			fatherPos {0;0;0;}
+			fatherAxis {0;0;1;}
+			fatherRefx {0;-1;0;}
+			sonPos {0;0;0;}
+			sonAxis {0;0;1;}
+			sonRefx {0;-1;0;}
+			jointParam { 0; }
+
+			Body
+				{
+				name { "box"; }
+				dims {10;10;10;}
+				mass {1;}				
+				}
+			}
+		}
+
+	Instances 
+		{
+		Dynamechs { }
+		}
+
+	Camera
+		{
+		#angles {0.000000;2.000000;18.000000;}
+		#position {-70.584541;93.003593;20.893381;}
+		}
+	}

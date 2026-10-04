@@ -1,0 +1,9 @@
+# Bounds02
+Model3
+{
+	Mesh	{ "Bounds02.obj"; }
+	Groups
+	{
+		Material_5 { "BoundsMaterial.mat.ods"; }
+	}
+}

@@ -1,0 +1,2637 @@
+// 0x7c ?_glmWeldVectors@@YAPAMPAMPAIM@Z
+float *__cdecl _glmWeldVectors(float *a1, unsigned int *a2, float a3)
+{
+  unsigned int *v3; // ebp
+  float *v4; // edx
+  unsigned int v5; // ebx
+  float *v6; // edi
+  float *v7; // esi
+  char v8; // cl
+  unsigned int v9; // ebx
+  float *v10; // esi
+  float *v11; // eax
+  unsigned int v12; // edi
+  int v13; // ebp
+  float *v15; // [esp+10h] [ebp-10h]
+  unsigned int v16; // [esp+14h] [ebp-Ch]
+  float *v17; // [esp+24h] [ebp+4h]
+
+  v3 = a2;
+  v4 = (float *)malloc(Size: 12 * (*a2 + 1));
+  v15 = v4;
+  v5 = 12 * (*a2 + 1);
+  qmemcpy(v4, a1, 4 * (v5 >> 2));
+  v7 = &a1[v5 >> 2];
+  v6 = &v4[v5 >> 2];
+  v8 = v5;
+  v9 = 1;
+  v16 = 1;
+  qmemcpy(v6, v7, v8 & 3);
+  if ( *a2 != 0 )
+  {
+    v10 = a1 + 3;
+    v11 = v4 + 5;
+    v17 = v4 + 5;
+    do
+    {
+      v12 = 1;
+      if ( v9 != 0 )
+      {
+        v13 = (int)(v4 + 3);
+        while ( (unsigned __int8)_glmEqual(a1: (int)v10, a2: v13, a3) == 0 )
+        {
+          ++v12;
+          v13 += 12;
+          if ( v12 > v9 )
+          {
+            v3 = a2;
+            v4 = v15;
+            v11 = v17;
+            goto LABEL_8;
+          }
+        }
+        v3 = a2;
+        v4 = v15;
+        v11 = v17;
+      }
+      else
+      {
+LABEL_8:
+        v12 = v9;
+        *(v11 - 2) = *v10;
+        *(v11 - 1) = v10[1];
+        *v11 = v10[2];
+        ++v9;
+        v11 += 3;
+        v17 = v11;
+      }
+      v10 += 3;
+      ++v16;
+      *(v10 - 3) = (float)v12;
+    }
+    while ( v16 <= *v3 );
+  }
+  *v3 = v9 - 1;
+  return v4;
+}
+
+// 0x16c ?_glmEqual@@YA_NPAM0M@Z
+bool __cdecl _glmEqual(float *a1, float *a2, float a3)
+{
+  double v3; // st7
+  double v4; // st7
+  double v5; // st7
+  bool result; // al
+  float v7; // [esp+0h] [ebp-Ch]
+  float v8; // [esp+0h] [ebp-Ch]
+  float v9; // [esp+0h] [ebp-Ch]
+
+  v3 = *a1 - *a2;
+  v7 = v3;
+  _glmAbs(a1: v7);
+  result = false;
+  if ( v3 < a3 )
+  {
+    v4 = a1[1] - a2[1];
+    v8 = v4;
+    _glmAbs(a1: v8);
+    if ( v4 < a3 )
+    {
+      v5 = a1[2] - a2[2];
+      v9 = v5;
+      _glmAbs(a1: v9);
+      if ( v5 < a3 )
+        return true;
+    }
+  }
+  return result;
+}
+
+// 0x1dc ?_glmAbs@@YAMM@Z
+double __cdecl _glmAbs(float a1)
+{
+  if ( a1 >= 0.0 )
+    return a1;
+  else
+    return -a1;
+}
+
+// 0x200 ?glmFindGroup@@YAPAUGLMgroup@@PAUGLMmodel@@PBD@Z
+struct GLMgroup *__cdecl glmFindGroup(struct GLMmodel *a1, const char *a2)
+{
+  int i; // edi
+
+  for ( i = *((_DWORD *)a1 + 15); i != 0; i = *(_DWORD *)(i + 16) )
+  {
+    if ( strcmp(a2, *(const char **)i) == 0 )
+      break;
+  }
+  return (struct GLMgroup *)i;
+}
+
+// 0x260 ?glmAddGroup@@YAPAUGLMgroup@@PAUGLMmodel@@PBD@Z
+struct GLMgroup *__cdecl glmAddGroup(struct GLMmodel *a1, char *String)
+{
+  struct GLMgroup *result; // eax
+  _DWORD *v3; // esi
+  int v4; // eax
+
+  result = glmFindGroup(a1, a2: String);
+  if ( result == nullptr )
+  {
+    v3 = malloc(Size: 0x18u);
+    *v3 = strdup(String);
+    v3[3] = 0;
+    v3[1] = 0;
+    v3[2] = 0;
+    v4 = *((_DWORD *)a1 + 15);
+    v3[5] = -1;
+    v3[4] = v4;
+    ++*((_DWORD *)a1 + 14);
+    *((_DWORD *)a1 + 15) = v3;
+    return (struct GLMgroup *)v3;
+  }
+  return result;
+}
+
+// 0x2c0 ?_glmFindMaterial@@YAIPAUGLMmodel@@PBD@Z
+unsigned int __cdecl _glmFindMaterial(struct GLMmodel *a1, const char *a2)
+{
+  unsigned int v2; // ebp
+  unsigned int v3; // eax
+  const char **v4; // edi
+
+  v2 = 0;
+  v3 = *((_DWORD *)a1 + 12);
+  if ( v3 != 0 )
+  {
+    v4 = *((const char ***)a1 + 13);
+    while ( strcmp(*v4, a2) != 0 )
+    {
+      ++v2;
+      v4 += 18;
+      if ( v2 >= v3 )
+        goto LABEL_5;
+    }
+    return v2;
+  }
+  else
+  {
+LABEL_5:
+    printf(Format: "_glmFindMaterial():  can't find material \"%s\".\n", a2);
+    return 0;
+  }
+}
+
+// 0x360 ?glmGetRadius@@YAMPAUGLMmodel@@@Z
+long double __cdecl glmGetRadius(struct GLMmodel *a1)
+{
+  float *v2; // eax
+  float *v3; // ecx
+  int v4; // edx
+  double v5; // st7
+  double v6; // st7
+  double v7; // st7
+  float v9; // [esp+4h] [ebp-8h]
+  float v10; // [esp+8h] [ebp-4h]
+  float v11; // [esp+10h] [ebp+4h]
+
+  v2 = *((float **)a1 + 3);
+  v3 = v2 + 3;
+  v10 = v2[3];
+  v9 = v2[4];
+  v11 = v2[5];
+  if ( *((_DWORD *)a1 + 2) != 0 )
+  {
+    v4 = *((_DWORD *)a1 + 2);
+    do
+    {
+      v5 = *v3;
+      if ( v5 <= 0.0 )
+        v5 = -v5;
+      if ( v10 < v5 )
+        v10 = v5;
+      v6 = v3[1];
+      if ( v6 <= 0.0 )
+        v6 = -v6;
+      if ( v9 < v6 )
+        v9 = v6;
+      v7 = v3[2];
+      if ( v7 <= 0.0 )
+        v7 = -v7;
+      if ( v11 < v7 )
+        v11 = v7;
+      v3 += 3;
+      --v4;
+    }
+    while ( v4 != 0 );
+  }
+  return sqrt(v11 * v11 + v9 * v9 + v10 * v10);
+}
+
+// 0x430 ?glmUnitize@@YAMPAUGLMmodel@@@Z
+double __cdecl glmUnitize(struct GLMmodel *a1)
+{
+  float *v2; // eax
+  float *v3; // ecx
+  int v4; // edx
+  double v5; // st7
+  unsigned int v6; // edx
+  double result; // st7
+  int v8; // eax
+  int v9; // ecx
+  double v10; // st6
+  float *v11; // ecx
+  float v12; // [esp+0h] [ebp-2Ch]
+  float v13; // [esp+Ch] [ebp-20h]
+  float v14; // [esp+10h] [ebp-1Ch]
+  float v15; // [esp+14h] [ebp-18h]
+  float v16; // [esp+18h] [ebp-14h]
+  float v17; // [esp+18h] [ebp-14h]
+  float v18; // [esp+1Ch] [ebp-10h]
+  float v19; // [esp+1Ch] [ebp-10h]
+  float v20; // [esp+20h] [ebp-Ch]
+  float v21; // [esp+20h] [ebp-Ch]
+  float v22; // [esp+20h] [ebp-Ch]
+  float v23; // [esp+20h] [ebp-Ch]
+  float v24; // [esp+24h] [ebp-8h]
+  float v25; // [esp+28h] [ebp-4h]
+  float v26; // [esp+30h] [ebp+4h]
+  float v27; // [esp+30h] [ebp+4h]
+
+  v2 = *((float **)a1 + 3);
+  v3 = v2 + 3;
+  v26 = v2[3];
+  v15 = v26;
+  v13 = v2[4];
+  v16 = v13;
+  v14 = v2[5];
+  v18 = v14;
+  if ( *((_DWORD *)a1 + 2) != 0 )
+  {
+    v4 = *((_DWORD *)a1 + 2);
+    do
+    {
+      if ( v15 < (double)*v3 )
+        v15 = *v3;
+      if ( v26 > (double)*v3 )
+        v26 = *v3;
+      if ( v16 < (double)v3[1] )
+        v16 = v3[1];
+      if ( v13 > (double)v3[1] )
+        v13 = v3[1];
+      if ( v18 < (double)v3[2] )
+        v18 = v3[2];
+      if ( v14 > (double)v3[2] )
+        v14 = v3[2];
+      v3 += 3;
+      --v4;
+    }
+    while ( v4 != 0 );
+  }
+  v20 = _glmAbs(a1: v26);
+  v25 = _glmAbs(a1: v15) + v20;
+  v21 = _glmAbs(a1: v13);
+  v24 = _glmAbs(a1: v16) + v21;
+  v22 = _glmAbs(a1: v14);
+  v23 = _glmAbs(a1: v18) + v22;
+  v27 = (v26 + v15) * 0.5;
+  v17 = (v13 + v16) * 0.5;
+  v5 = (v14 + v18) * 0.5;
+  v19 = v5;
+  _glmMax(a1: v25, a2: v24);
+  v12 = v5;
+  _glmMax(a1: v12, a2: v23);
+  v6 = 1;
+  result = 2.0 / v5;
+  if ( *((_DWORD *)a1 + 2) != 0 )
+  {
+    v8 = 12;
+    do
+    {
+      *(float *)(v8 + *((_DWORD *)a1 + 3)) = *(float *)(v8 + *((_DWORD *)a1 + 3)) - v27;
+      *(float *)(v8 + *((_DWORD *)a1 + 3) + 4) = *(float *)(v8 + *((_DWORD *)a1 + 3) + 4) - v17;
+      *(float *)(v8 + *((_DWORD *)a1 + 3) + 8) = *(float *)(v8 + *((_DWORD *)a1 + 3) + 8) - v19;
+      ++v6;
+      *(float *)(v8 + *((_DWORD *)a1 + 3)) = result * *(float *)(v8 + *((_DWORD *)a1 + 3));
+      *(float *)(v8 + *((_DWORD *)a1 + 3) + 4) = result * *(float *)(v8 + *((_DWORD *)a1 + 3) + 4);
+      v9 = *((_DWORD *)a1 + 3);
+      v10 = result * *(float *)(v8 + v9 + 8);
+      v11 = (float *)(v8 + v9 + 8);
+      v8 += 12;
+      *v11 = v10;
+    }
+    while ( v6 <= *((_DWORD *)a1 + 2) );
+  }
+  return result;
+}
+
+// 0x638 ?_glmMax@@YAMMM@Z
+double __cdecl _glmMax(float a1, float a2)
+{
+  if ( a1 <= (double)a2 )
+    return a2;
+  else
+    return a1;
+}
+
+// 0x658 ?glmDimensions@@YAXPAUGLMmodel@@PAM@Z
+void __cdecl glmDimensions(struct GLMmodel *a1, float *a2)
+{
+  float *v3; // eax
+  float *v4; // ecx
+  int v5; // edx
+  float v6; // [esp+4h] [ebp-14h]
+  float v7; // [esp+8h] [ebp-10h]
+  float v8; // [esp+Ch] [ebp-Ch]
+  float v9; // [esp+10h] [ebp-8h]
+  float v10; // [esp+14h] [ebp-4h]
+  float v11; // [esp+1Ch] [ebp+4h]
+  float v12; // [esp+1Ch] [ebp+4h]
+  float v13; // [esp+1Ch] [ebp+4h]
+  float v14; // [esp+1Ch] [ebp+4h]
+
+  v3 = *((float **)a1 + 3);
+  v4 = v3 + 3;
+  v11 = v3[3];
+  v8 = v11;
+  v7 = v3[5];
+  v10 = v7;
+  v6 = v3[4];
+  v9 = v6;
+  if ( *((_DWORD *)a1 + 2) != 0 )
+  {
+    v5 = *((_DWORD *)a1 + 2);
+    do
+    {
+      if ( v8 < (double)*v4 )
+        v8 = *v4;
+      if ( v11 > (double)*v4 )
+        v11 = *v4;
+      if ( v9 < (double)v4[1] )
+        v9 = v4[1];
+      if ( v6 > (double)v4[1] )
+        v6 = v4[1];
+      if ( v10 < (double)v4[2] )
+        v10 = v4[2];
+      if ( v7 > (double)v4[2] )
+        v7 = v4[2];
+      v4 += 3;
+      --v5;
+    }
+    while ( v5 != 0 );
+  }
+  v12 = _glmAbs(a1: v11);
+  *a2 = _glmAbs(a1: v8) + v12;
+  v13 = _glmAbs(a1: v6);
+  a2[1] = _glmAbs(a1: v9) + v13;
+  v14 = _glmAbs(a1: v7);
+  a2[2] = _glmAbs(a1: v10) + v14;
+}
+
+// 0x788 ?glmScale@@YAXPAUGLMmodel@@M@Z
+void __cdecl glmScale(struct GLMmodel *a1, float a2)
+{
+  unsigned int v2; // esi
+  int v3; // eax
+  int v4; // edx
+  double v5; // st7
+  float *v6; // edx
+
+  v2 = 1;
+  if ( *((_DWORD *)a1 + 2) != 0 )
+  {
+    v3 = 12;
+    do
+    {
+      ++v2;
+      *(float *)(v3 + *((_DWORD *)a1 + 3)) = a2 * *(float *)(*((_DWORD *)a1 + 3) + v3);
+      *(float *)(*((_DWORD *)a1 + 3) + v3 + 4) = a2 * *(float *)(*((_DWORD *)a1 + 3) + v3 + 4);
+      v4 = *((_DWORD *)a1 + 3);
+      v5 = a2 * *(float *)(v4 + v3 + 8);
+      v6 = (float *)(v4 + v3 + 8);
+      v3 += 12;
+      *v6 = v5;
+    }
+    while ( v2 <= *((_DWORD *)a1 + 2) );
+  }
+}
+
+// 0x7d8 ?glmReverseWinding@@YAXPAUGLMmodel@@@Z
+void __cdecl glmReverseWinding(struct GLMmodel *a1)
+{
+  unsigned int v1; // edi
+  int v2; // ecx
+  int *v3; // edx
+  int v4; // esi
+  int v5; // edx
+  int v6; // esi
+  int v7; // edx
+  int v8; // esi
+  unsigned int v9; // esi
+  int v10; // ecx
+  int v11; // edx
+  double v12; // st7
+  float *v13; // edx
+  unsigned int v14; // esi
+  int v15; // ecx
+  int v16; // edx
+  double v17; // st7
+  float *v18; // edx
+
+  v1 = 0;
+  if ( *((_DWORD *)a1 + 10) != 0 )
+  {
+    v2 = 0;
+    do
+    {
+      v3 = (int *)(v2 + *((_DWORD *)a1 + 11));
+      v4 = *v3;
+      *v3 = v3[2];
+      *(_DWORD *)(v2 + *((_DWORD *)a1 + 11) + 8) = v4;
+      if ( *((_DWORD *)a1 + 4) != 0 )
+      {
+        v5 = v2 + *((_DWORD *)a1 + 11);
+        v6 = *(_DWORD *)(v5 + 12);
+        *(_DWORD *)(v5 + 12) = *(_DWORD *)(v5 + 20);
+        *(_DWORD *)(v2 + *((_DWORD *)a1 + 11) + 20) = v6;
+      }
+      if ( *((_DWORD *)a1 + 6) != 0 )
+      {
+        v7 = v2 + *((_DWORD *)a1 + 11);
+        v8 = *(_DWORD *)(v7 + 24);
+        *(_DWORD *)(v7 + 24) = *(_DWORD *)(v7 + 32);
+        *(_DWORD *)(v2 + *((_DWORD *)a1 + 11) + 32) = v8;
+      }
+      ++v1;
+      v2 += 40;
+    }
+    while ( v1 < *((_DWORD *)a1 + 10) );
+  }
+  v9 = 1;
+  if ( *((_DWORD *)a1 + 8) != 0 )
+  {
+    v10 = 12;
+    do
+    {
+      ++v9;
+      *(float *)(v10 + *((_DWORD *)a1 + 9)) = -*(float *)(v10 + *((_DWORD *)a1 + 9));
+      *(float *)(v10 + *((_DWORD *)a1 + 9) + 4) = -*(float *)(v10 + *((_DWORD *)a1 + 9) + 4);
+      v11 = *((_DWORD *)a1 + 9);
+      v12 = *(float *)(v10 + v11 + 8);
+      v13 = (float *)(v10 + v11 + 8);
+      v10 += 12;
+      *v13 = -v12;
+    }
+    while ( v9 <= *((_DWORD *)a1 + 8) );
+  }
+  v14 = 1;
+  if ( *((_DWORD *)a1 + 4) != 0 )
+  {
+    v15 = 12;
+    do
+    {
+      ++v14;
+      *(float *)(v15 + *((_DWORD *)a1 + 5)) = -*(float *)(v15 + *((_DWORD *)a1 + 5));
+      *(float *)(v15 + *((_DWORD *)a1 + 5) + 4) = -*(float *)(v15 + *((_DWORD *)a1 + 5) + 4);
+      v16 = *((_DWORD *)a1 + 5);
+      v17 = *(float *)(v15 + v16 + 8);
+      v18 = (float *)(v15 + v16 + 8);
+      v15 += 12;
+      *v18 = -v17;
+    }
+    while ( v14 <= *((_DWORD *)a1 + 4) );
+  }
+}
+
+// 0x8d8 ?glmFacetNormals@@YAXPAUGLMmodel@@@Z
+void __cdecl glmFacetNormals(void **a1)
+{
+  void *v2; // eax
+  void *v3; // eax
+  void *v4; // ecx
+  struct GLMmodel *v5; // eax
+  int v6; // ebx
+  int v7; // edi
+  float *v8; // ecx
+  _DWORD *v9; // eax
+  char *v10; // [esp-10h] [ebp-2Ch]
+  float v11[3]; // [esp+4h] [ebp-18h] BYREF
+  float v12[3]; // [esp+10h] [ebp-Ch] BYREF
+  struct GLMmodel *v13; // [esp+20h] [ebp+4h]
+
+  if ( a1[9] != nullptr )
+    free(Block: a1[9]);
+  v2 = a1[10];
+  a1[8] = v2;
+  v3 = malloc(Size: 4 * (3 * (_DWORD)v2 + 3));
+  v4 = a1[10];
+  a1[9] = v3;
+  v5 = nullptr;
+  if ( v4 != nullptr )
+  {
+    v6 = 0;
+    v7 = 12;
+    do
+    {
+      v13 = (struct GLMmodel *)((char *)v5 + 1);
+      *(_DWORD *)((char *)a1[11] + v6 + 36) = (char *)v5 + 1;
+      v8 = (float *)a1[3];
+      v9 = (char *)a1[11] + v6;
+      v12[0] = v8[3 * v9[1]] - v8[3 * *v9];
+      v12[1] = v8[3 * v9[1] + 1] - v8[3 * *v9 + 1];
+      v12[2] = v8[3 * v9[1] + 2] - v8[3 * *v9 + 2];
+      v11[0] = v8[3 * v9[2]] - v8[3 * *v9];
+      v11[1] = v8[3 * v9[2] + 1] - v8[3 * *v9 + 1];
+      v10 = (char *)a1[9] + v7;
+      v11[2] = v8[3 * v9[2] + 2] - v8[3 * *v9 + 2];
+      _glmCross(a1: v12, a2: v11, a3: v10);
+      _glmNormalize(a1: (char *)a1[9] + v7);
+      v5 = v13;
+      v7 += 12;
+      v6 += 40;
+    }
+    while ( v13 < a1[10] );
+  }
+}
+
+// 0xa08 ?_glmCross@@YAXPAM00@Z
+float *__cdecl _glmCross(float *a1, float *a2, float *a3)
+{
+  *a3 = a2[2] * a1[1] - a1[2] * a2[1];
+  a3[1] = a1[2] * *a2 - *a1 * a2[2];
+  a3[2] = *a1 * a2[1] - *a2 * a1[1];
+  return a1;
+}
+
+// 0xa48 ?_glmNormalize@@YAXPAM@Z
+float *__cdecl _glmNormalize(float *a1)
+{
+  long double v2; // st7
+
+  v2 = sqrt(*a1 * *a1 + a1[1] * a1[1] + a1[2] * a1[2]);
+  *a1 = *a1 / v2;
+  a1[1] = a1[1] / v2;
+  a1[2] = a1[2] / v2;
+  return a1;
+}
+
+// 0xa88 ?glmVertexNormals@@YAXPAUGLMmodel@@M@Z
+void __cdecl glmVertexNormals(struct GLMmodel *a1, float a2)
+{
+  void *v3; // eax
+  int v4; // eax
+  void *v5; // eax
+  int v6; // ecx
+  _DWORD *v7; // ebx
+  unsigned int v8; // eax
+  _DWORD *v9; // ecx
+  unsigned int v10; // ebp
+  int v11; // edi
+  _DWORD *v12; // eax
+  _DWORD *v13; // eax
+  _DWORD *v14; // eax
+  int v15; // edx
+  unsigned int v16; // ebp
+  _DWORD *v17; // edi
+  int v18; // ebx
+  int v19; // edx
+  int v20; // eax
+  int v21; // ecx
+  int v22; // eax
+  int v23; // edx
+  _DWORD *v24; // eax
+  int v25; // edx
+  int v26; // edi
+  _DWORD *v27; // ecx
+  _DWORD *v28; // ecx
+  unsigned int v29; // ebp
+  _DWORD *v30; // edi
+  void *v31; // eax
+  char *v32; // edi
+  unsigned int v33; // edx
+  int v34; // eax
+  char *v35; // ecx
+  int v36; // ebp
+  int v37; // [esp+0h] [ebp-18h]
+  float v38; // [esp+4h] [ebp-14h]
+  _DWORD *v39; // [esp+8h] [ebp-10h]
+  float v40; // [esp+Ch] [ebp-Ch] BYREF
+  float v41; // [esp+10h] [ebp-8h]
+  float v42; // [esp+14h] [ebp-4h]
+  struct GLMmodel *v43; // [esp+1Ch] [ebp+4h]
+  int v44; // [esp+20h] [ebp+8h]
+  _DWORD *v45; // [esp+20h] [ebp+8h]
+
+  v3 = *((void **)a1 + 5);
+  v38 = cos(a2 * 0.0174532925);
+  if ( v3 != nullptr )
+    free(Block: v3);
+  v4 = 3 * *((_DWORD *)a1 + 10);
+  *((_DWORD *)a1 + 4) = v4;
+  v5 = malloc(Size: 4 * (3 * v4 + 3));
+  v6 = *((_DWORD *)a1 + 2);
+  *((_DWORD *)a1 + 5) = v5;
+  v7 = malloc(Size: 4 * v6 + 4);
+  v39 = v7;
+  v8 = 1;
+  if ( *((_DWORD *)a1 + 2) != 0 )
+  {
+    v9 = v7 + 1;
+    do
+    {
+      *v9 = 0;
+      ++v8;
+      ++v9;
+    }
+    while ( v8 <= *((_DWORD *)a1 + 2) );
+  }
+  v10 = 0;
+  if ( *((_DWORD *)a1 + 10) != 0 )
+  {
+    v11 = 0;
+    do
+    {
+      v12 = malloc(Size: 0xCu);
+      *v12 = v10;
+      v12[2] = v7[*(_DWORD *)(v11 + *((_DWORD *)a1 + 11))];
+      v7[*(_DWORD *)(v11 + *((_DWORD *)a1 + 11))] = v12;
+      v13 = malloc(Size: 0xCu);
+      *v13 = v10;
+      v13[2] = v7[*(_DWORD *)(v11 + *((_DWORD *)a1 + 11) + 4)];
+      v7[*(_DWORD *)(v11 + *((_DWORD *)a1 + 11) + 4)] = v13;
+      v14 = malloc(Size: 0xCu);
+      *v14 = v10++;
+      v15 = *(_DWORD *)(v11 + *((_DWORD *)a1 + 11) + 8);
+      v11 += 40;
+      v14[2] = v7[v15];
+      v7[*(_DWORD *)(v11 + *((_DWORD *)a1 + 11) - 32)] = v14;
+    }
+    while ( v10 < *((_DWORD *)a1 + 10) );
+  }
+  v44 = 1;
+  v16 = 1;
+  if ( *((_DWORD *)a1 + 2) != 0 )
+  {
+    v43 = (struct GLMmodel *)(v7 + 1);
+    do
+    {
+      v17 = *(_DWORD **)v43;
+      if ( *(_DWORD *)v43 == 0 )
+        fprintf(Stream: &_iob[2], Format: "glmVertexNormals(): vertex w/o a triangle\n");
+      v18 = 0;
+      v40 = 0.0;
+      v41 = 0.0;
+      v42 = 0.0;
+      v37 = 0;
+      if ( v17 == nullptr )
+        goto LABEL_20;
+      do
+      {
+        if ( _glmDot(
+               a1: *((_DWORD *)a1 + 9) + 12 * *(_DWORD *)(*((_DWORD *)a1 + 11) + 40 * *v17 + 36),
+               a2: *((_DWORD *)a1 + 9) + 12 * *(_DWORD *)(*((_DWORD *)a1 + 11) + 40 * **(_DWORD **)v43 + 36)) <= v38 )
+        {
+          *((_BYTE *)v17 + 4) = 0;
+        }
+        else
+        {
+          v19 = *v17;
+          *((_BYTE *)v17 + 4) = 1;
+          v20 = *((_DWORD *)a1 + 11);
+          v21 = *((_DWORD *)a1 + 9);
+          v18 = 1;
+          v40 = v40 + *(float *)(v21 + 12 * *(_DWORD *)(v20 + 40 * v19 + 36));
+          v41 = v41 + *(float *)(v21 + 12 * *(_DWORD *)(v20 + 40 * *v17 + 36) + 4);
+          v42 = v42 + *(float *)(v21 + 12 * *(_DWORD *)(v20 + 40 * *v17 + 36) + 8);
+        }
+        v17 = (_DWORD *)v17[2];
+      }
+      while ( v17 != nullptr );
+      v37 = v18;
+      if ( v18 != 0 )
+      {
+        _glmNormalize(a1: &v40);
+        v22 = 12 * v44;
+        v18 = v44;
+        v23 = v44 + 1;
+        *(float *)(v22 + *((_DWORD *)a1 + 5)) = v40;
+        v37 = v44++;
+        *(float *)(v22 + *((_DWORD *)a1 + 5) + 4) = v41;
+        *(float *)(v22 + *((_DWORD *)a1 + 5) + 8) = v42;
+      }
+      else
+      {
+LABEL_20:
+        v23 = v44;
+      }
+      v24 = *(_DWORD **)v43;
+      if ( *(_DWORD *)v43 != 0 )
+      {
+        v25 = 12 * v23;
+        do
+        {
+          v26 = *((_DWORD *)a1 + 11);
+          if ( *((_BYTE *)v24 + 4) != 0 )
+          {
+            v27 = (_DWORD *)(v26 + 40 * *v24);
+            if ( *v27 == v16 )
+            {
+              v27[3] = v18;
+            }
+            else if ( v27[1] == v16 )
+            {
+              v27[4] = v18;
+            }
+            else if ( v27[2] == v16 )
+            {
+              v27[5] = v18;
+            }
+          }
+          else
+          {
+            *(_DWORD *)(v25 + *((_DWORD *)a1 + 5)) = *(_DWORD *)(*((_DWORD *)a1 + 9)
+                                                               + 12 * *(_DWORD *)(v26 + 40 * *v24 + 36));
+            *(_DWORD *)(v25 + *((_DWORD *)a1 + 5) + 4) = *(_DWORD *)(*((_DWORD *)a1 + 9)
+                                                                   + 12
+                                                                   * *(_DWORD *)(*((_DWORD *)a1 + 11) + 40 * *v24 + 36)
+                                                                   + 4);
+            *(_DWORD *)(v25 + *((_DWORD *)a1 + 5) + 8) = *(_DWORD *)(*((_DWORD *)a1 + 9)
+                                                                   + 12
+                                                                   * *(_DWORD *)(*((_DWORD *)a1 + 11) + 40 * *v24 + 36)
+                                                                   + 8);
+            v28 = (_DWORD *)(*((_DWORD *)a1 + 11) + 40 * *v24);
+            if ( *v28 == v16 )
+            {
+              v28[3] = v44;
+            }
+            else if ( v28[1] == v16 )
+            {
+              v28[4] = v44;
+            }
+            else if ( v28[2] == v16 )
+            {
+              v28[5] = v44;
+            }
+            v18 = v37;
+            v25 += 12;
+            ++v44;
+          }
+          v24 = (_DWORD *)v24[2];
+        }
+        while ( v24 != nullptr );
+      }
+      ++v16;
+      v43 = (struct GLMmodel *)((char *)v43 + 4);
+    }
+    while ( v16 <= *((_DWORD *)a1 + 2) );
+    v7 = v39;
+  }
+  v29 = 1;
+  *((_DWORD *)a1 + 4) = v44 - 1;
+  if ( *((_DWORD *)a1 + 2) != 0 )
+  {
+    v45 = v7 + 1;
+    do
+    {
+      v30 = (_DWORD *)*v45;
+      while ( v30 != nullptr )
+      {
+        v31 = v30;
+        v30 = (_DWORD *)v30[2];
+        free(Block: v31);
+      }
+      ++v29;
+      ++v45;
+    }
+    while ( v29 <= *((_DWORD *)a1 + 2) );
+  }
+  free(Block: v7);
+  v32 = *((char **)a1 + 5);
+  *((_DWORD *)a1 + 5) = malloc(Size: 12 * (*((_DWORD *)a1 + 4) + 1));
+  v33 = 1;
+  if ( *((_DWORD *)a1 + 4) != 0 )
+  {
+    v34 = 12;
+    v35 = v32 + 20;
+    do
+    {
+      v36 = *((_DWORD *)v35 - 2);
+      ++v33;
+      v35 += 12;
+      *(_DWORD *)(v34 + *((_DWORD *)a1 + 5)) = v36;
+      *(_DWORD *)(v34 + *((_DWORD *)a1 + 5) + 4) = *((_DWORD *)v35 - 4);
+      *(_DWORD *)(v34 + *((_DWORD *)a1 + 5) + 8) = *((_DWORD *)v35 - 3);
+      v34 += 12;
+    }
+    while ( v33 <= *((_DWORD *)a1 + 4) );
+  }
+  free(Block: v32);
+  printf(Format: ".");
+}
+
+// 0xee0 ?_glmDot@@YAMPAM0@Z
+double __cdecl _glmDot(float *a1, float *a2)
+{
+  return a1[2] * a2[2] + a1[1] * a2[1] + *a1 * *a2;
+}
+
+// 0xf00 ?glmLinearTexture@@YAXPAUGLMmodel@@MMI@Z
+void __cdecl glmLinearTexture(void **a1, float a2, float a3, unsigned int a4)
+{
+  void *v5; // eax
+  unsigned int v6; // eax
+  unsigned int v7; // edi
+  unsigned int v8; // edx
+  char *v9; // ecx
+  double v10; // st7
+  _DWORD *i; // ecx
+  unsigned int j; // eax
+  int v13; // edx
+  int v14; // edx
+  int v15; // edx
+  float v16; // [esp+0h] [ebp-1Ch]
+  float v17; // [esp+4h] [ebp-18h]
+  float v18; // [esp+4h] [ebp-18h]
+  float v19[3]; // [esp+10h] [ebp-Ch] BYREF
+  float v20; // [esp+20h] [ebp+4h]
+
+  if ( a1[7] != nullptr )
+    free(Block: a1[7]);
+  v5 = a1[2];
+  a1[6] = v5;
+  a1[7] = malloc(Size: 8 * (_DWORD)v5 + 8);
+  glmDimensions((struct GLMmodel *)a1, a2: v19);
+  v17 = v19[2];
+  v16 = _glmMax(a1: v19[0], a2: v19[1]);
+  v18 = _glmMax(a1: v16, a2: v17);
+  v20 = 2.0 / _glmAbs(a1: v18);
+  v6 = 1;
+  if ( a1[2] != nullptr )
+  {
+    v7 = 4 * ((a4 + 2) % 3) + 12;
+    v8 = 4 * ((a4 + 1) % 3) + 12;
+    do
+    {
+      v9 = (char *)a1[3];
+      ++v6;
+      v10 = v20 * *(float *)&v9[v8];
+      v8 += 12;
+      v7 += 12;
+      *((float *)a1[7] + 2 * v6 - 2) = (v20 * *(float *)&v9[v7 - 12] * a2 + 1.0) * 0.5;
+      *((float *)a1[7] + 2 * v6 - 1) = (v10 * a3 + 1.0) * 0.5;
+    }
+    while ( v6 <= (unsigned int)a1[2] );
+  }
+  for ( i = a1[15]; i != nullptr; i = (_DWORD *)i[4] )
+  {
+    for ( j = 0; j < i[1]; *(_DWORD *)(v15 + 32) = *(_DWORD *)(v15 + 8) )
+    {
+      v13 = *(_DWORD *)(i[2] + 4 * j++);
+      *((_DWORD *)a1[11] + 10 * v13 + 6) = *((_DWORD *)a1[11] + 10 * v13);
+      v14 = (int)a1[11] + 40 * *(_DWORD *)(i[2] + 4 * j - 4);
+      *(_DWORD *)(v14 + 28) = *(_DWORD *)(v14 + 4);
+      v15 = (int)a1[11] + 40 * *(_DWORD *)(i[2] + 4 * j - 4);
+    }
+  }
+}
+
+// 0x1064 ?glmSpheremapTexture@@YAXPAUGLMmodel@@@Z
+void __cdecl glmSpheremapTexture(void **a1)
+{
+  void *v2; // eax
+  unsigned int v3; // edi
+  int v4; // ebx
+  float *v5; // eax
+  long double v6; // st7
+  _DWORD *i; // ecx
+  unsigned int j; // eax
+  int v9; // edx
+  int v10; // edx
+  int v11; // edx
+  float v12; // [esp+8h] [ebp-Ch]
+  float v13; // [esp+Ch] [ebp-8h]
+  float v14; // [esp+10h] [ebp-4h]
+  float v15; // [esp+18h] [ebp+4h]
+
+  if ( a1[7] != nullptr )
+    free(Block: a1[7]);
+  v2 = a1[4];
+  a1[6] = v2;
+  a1[7] = malloc(Size: 8 * (_DWORD)v2 + 8);
+  v3 = 1;
+  if ( a1[4] != nullptr )
+  {
+    v4 = 12;
+    do
+    {
+      v5 = (float *)((char *)a1[5] + v4);
+      v12 = v5[1];
+      v15 = *v5;
+      v13 = sqrt(v5[2] * v5[2] + v12 * v12);
+      if ( v13 == 0.0 )
+      {
+        v6 = 0.0;
+        v14 = 0.0;
+      }
+      else
+      {
+        if ( v15 == 0.0 )
+          v14 = 1.5707964;
+        else
+          v14 = acos(v15 / sqrt(v13 * v13 + v15 * v15));
+        if ( v12 == 0.0 )
+          v6 = 1.5707961;
+        else
+          v6 = asin(v12 / v13) + 1.5707964;
+      }
+      ++v3;
+      v4 += 12;
+      *((float *)a1[7] + 2 * v3 - 2) = v6 * 0.31830987;
+      *((float *)a1[7] + 2 * v3 - 1) = v14 * 0.31830987;
+    }
+    while ( v3 <= (unsigned int)a1[4] );
+  }
+  for ( i = a1[15]; i != nullptr; i = (_DWORD *)i[4] )
+  {
+    for ( j = 0; j < i[1]; *(_DWORD *)(v11 + 32) = *(_DWORD *)(v11 + 20) )
+    {
+      v9 = *(_DWORD *)(i[2] + 4 * j++);
+      *((_DWORD *)a1[11] + 10 * v9 + 6) = *((_DWORD *)a1[11] + 10 * v9 + 3);
+      v10 = (int)a1[11] + 40 * *(_DWORD *)(i[2] + 4 * j - 4);
+      *(_DWORD *)(v10 + 28) = *(_DWORD *)(v10 + 16);
+      v11 = (int)a1[11] + 40 * *(_DWORD *)(i[2] + 4 * j - 4);
+    }
+  }
+}
+
+// 0x1210 ?glmDelete@@YAXPAUGLMmodel@@@Z
+void __cdecl glmDelete(void **Block)
+{
+  unsigned int v1; // edi
+  int v2; // ebx
+  void *i; // edi
+
+  if ( *Block != nullptr )
+    free(Block: *Block);
+  if ( Block[1] != nullptr )
+    free(Block: Block[1]);
+  if ( Block[3] != nullptr )
+    free(Block: Block[3]);
+  if ( Block[5] != nullptr )
+    free(Block: Block[5]);
+  if ( Block[7] != nullptr )
+    free(Block: Block[7]);
+  if ( Block[9] != nullptr )
+    free(Block: Block[9]);
+  if ( Block[11] != nullptr )
+    free(Block: Block[11]);
+  if ( Block[13] != nullptr )
+  {
+    v1 = 0;
+    if ( Block[12] != nullptr )
+    {
+      v2 = 0;
+      do
+      {
+        free(Block: *(void **)((char *)Block[13] + v2));
+        ++v1;
+        v2 += 72;
+      }
+      while ( v1 < (unsigned int)Block[12] );
+    }
+  }
+  free(Block: Block[13]);
+  for ( i = Block[15]; i != nullptr; i = Block[15] )
+  {
+    Block[15] = *((void **)i + 4);
+    free(Block: *(void **)i);
+    free(Block: *((void **)i + 2));
+    free(Block: i);
+  }
+  free(Block);
+}
+
+// 0x1300 ?glmReadOBJ@@YAPAUGLMmodel@@PBD@Z
+struct GLMmodel *__cdecl glmReadOBJ(char *FileName)
+{
+  const char *v1; // ebp
+  FILE *v2; // ebx
+  struct GLMmodel *v3; // esi
+  int v4; // eax
+  int v5; // eax
+
+  v1 = FileName;
+  v2 = fopen(FileName, Mode: `string');
+  if ( v2 == nullptr )
+  {
+    fprintf(Stream: &_iob[2], Format: "glmReadOBJ() failed: can't open data file \"%s\".\n", v1);
+    FileName = (char *)operator new(a1: 4u);
+    _CxxThrowException(pExceptionObject: &FileName, pThrowInfo: (_ThrowInfo *)&_TI2PAH);
+  }
+  v3 = (struct GLMmodel *)malloc(Size: 0x4Cu);
+  *(_DWORD *)v3 = strdup(String: v1);
+  *((_DWORD *)v3 + 1) = 0;
+  *((_DWORD *)v3 + 2) = 0;
+  *((_DWORD *)v3 + 3) = 0;
+  *((_DWORD *)v3 + 4) = 0;
+  *((_DWORD *)v3 + 5) = 0;
+  *((_DWORD *)v3 + 6) = 0;
+  *((_DWORD *)v3 + 7) = 0;
+  *((_DWORD *)v3 + 8) = 0;
+  *((_DWORD *)v3 + 9) = 0;
+  *((_DWORD *)v3 + 10) = 0;
+  *((_DWORD *)v3 + 11) = 0;
+  *((_DWORD *)v3 + 12) = 0;
+  *((_DWORD *)v3 + 13) = 0;
+  *((_DWORD *)v3 + 14) = 0;
+  *((_DWORD *)v3 + 15) = 0;
+  *((_DWORD *)v3 + 16) = 0;
+  *((_DWORD *)v3 + 17) = 0;
+  *((_DWORD *)v3 + 18) = 0;
+  _glmFirstPass(a1: v3, Stream: v2);
+  *((_DWORD *)v3 + 3) = malloc(Size: 12 * (*((_DWORD *)v3 + 2) + 1));
+  *((_DWORD *)v3 + 11) = malloc(Size: 40 * *((_DWORD *)v3 + 10));
+  v4 = *((_DWORD *)v3 + 4);
+  if ( v4 != 0 )
+    *((_DWORD *)v3 + 5) = malloc(Size: 4 * (3 * v4 + 3));
+  v5 = *((_DWORD *)v3 + 6);
+  if ( v5 != 0 )
+    *((_DWORD *)v3 + 7) = malloc(Size: 8 * v5 + 8);
+  rewind(Stream: v2);
+  _glmSecondPass(a1: v3, Stream: v2);
+  fclose(Stream: v2);
+  return v3;
+}
+
+// 0x14cc ?_glmFirstPass@@YAXPAUGLMmodel@@PAU_iobuf@@@Z
+void *__cdecl _glmFirstPass(struct GLMmodel *a1, FILE *Stream)
+{
+  struct GLMgroup *v2; // edi
+  int v3; // ebp
+  _DWORD *v4; // esi
+  void *result; // eax
+  int v6; // ecx
+  int v7; // [esp+10h] [ebp-9Ch] BYREF
+  int v8; // [esp+14h] [ebp-98h] BYREF
+  int v9; // [esp+18h] [ebp-94h] BYREF
+  int v10; // [esp+1Ch] [ebp-90h]
+  int v11; // [esp+20h] [ebp-8Ch]
+  char *v12; // [esp+24h] [ebp-88h]
+  void *pExceptionObject; // [esp+28h] [ebp-84h] BYREF
+  char Buffer; // [esp+2Ch] [ebp-80h] BYREF
+  char v15; // [esp+2Dh] [ebp-7Fh]
+
+  v2 = glmAddGroup(a1, String: `string');
+  v3 = 0;
+  v11 = 0;
+  v12 = nullptr;
+  v10 = 0;
+  while ( fscanf(Stream, Format: "%s", &Buffer) != -1 )
+  {
+    switch ( Buffer )
+    {
+      case 'f':
+        v9 = 0;
+        v8 = 0;
+        v7 = 0;
+        fscanf(Stream, Format: "%s", &Buffer);
+        if ( strstr(Str: &Buffer, SubStr: `string') != nullptr )
+        {
+          sscanf(&Buffer, Format: "%d//%d", &v7, &v8);
+          fscanf(Stream, Format: "%d//%d", &v7, &v8);
+          fscanf(Stream, Format: "%d//%d", &v7, &v8);
+          ++v3;
+          ++*((_DWORD *)v2 + 1);
+          for ( ; fscanf(Stream, Format: "%d//%d", &v7, &v8) > 0; ++*((_DWORD *)v2 + 1) )
+            ++v3;
+        }
+        else if ( sscanf(&Buffer, Format: "%d/%d/%d", &v7, &v9, &v8) == 3 )
+        {
+          fscanf(Stream, Format: "%d/%d/%d", &v7, &v9, &v8);
+          fscanf(Stream, Format: "%d/%d/%d", &v7, &v9, &v8);
+          ++v3;
+          ++*((_DWORD *)v2 + 1);
+          for ( ; fscanf(Stream, Format: "%d/%d/%d", &v7, &v9, &v8) > 0; ++*((_DWORD *)v2 + 1) )
+            ++v3;
+        }
+        else if ( sscanf(&Buffer, Format: "%d/%d", &v7, &v9) == 2 )
+        {
+          fscanf(Stream, Format: "%d/%d", &v7, &v9);
+          fscanf(Stream, Format: "%d/%d", &v7, &v9);
+          ++v3;
+          ++*((_DWORD *)v2 + 1);
+          for ( ; fscanf(Stream, Format: "%d/%d", &v7, &v9) > 0; ++*((_DWORD *)v2 + 1) )
+            ++v3;
+        }
+        else
+        {
+          fscanf(Stream, Format: "%d", &v7);
+          fscanf(Stream, Format: "%d", &v7);
+          ++v3;
+          ++*((_DWORD *)v2 + 1);
+          for ( ; fscanf(Stream, Format: "%d", &v7) > 0; ++*((_DWORD *)v2 + 1) )
+            ++v3;
+        }
+        break;
+      case 'g':
+        fgets(&Buffer, MaxCount: 128, Stream);
+        sscanf(&Buffer, Format: "%s", &Buffer);
+        v2 = glmAddGroup(a1, String: &Buffer);
+        break;
+      case 'm':
+        fgets(&Buffer, MaxCount: 128, Stream);
+        sscanf(&Buffer, Format: "%s %s", &Buffer, &Buffer);
+        *((_DWORD *)a1 + 1) = strdup(String: &Buffer);
+        _glmReadMTL(a1, a2: &Buffer);
+        break;
+      case 'v':
+        if ( v15 != 0 )
+        {
+          if ( v15 == 110 )
+          {
+            fgets(&Buffer, MaxCount: 128, Stream);
+            ++v12;
+          }
+          else
+          {
+            if ( v15 != 116 )
+            {
+              printf(Format: "_glmFirstPass(): Unknown token \"%s\".\n", &Buffer);
+              pExceptionObject = operator new(a1: 4u);
+              _CxxThrowException(&pExceptionObject, pThrowInfo: (_ThrowInfo *)&_TI2PAH);
+            }
+            fgets(&Buffer, MaxCount: 128, Stream);
+            ++v11;
+          }
+        }
+        else
+        {
+          fgets(&Buffer, MaxCount: 128, Stream);
+          ++v10;
+        }
+        break;
+      default:
+        fgets(&Buffer, MaxCount: 128, Stream);
+        break;
+    }
+  }
+  v4 = *((_DWORD **)a1 + 15);
+  result = v12;
+  v6 = v11;
+  *((_DWORD *)a1 + 2) = v10;
+  *((_DWORD *)a1 + 4) = result;
+  *((_DWORD *)a1 + 6) = v6;
+  for ( *((_DWORD *)a1 + 10) = v3; v4 != nullptr; v4 = (_DWORD *)v4[4] )
+  {
+    result = malloc(Size: 4 * v4[1]);
+    v4[2] = result;
+    v4[1] = 0;
+  }
+  return result;
+}
+
+// 0x1a6c ?_glmReadMTL@@YAXPAUGLMmodel@@PBD@Z
+int __cdecl _glmReadMTL(int a1, const char *a2)
+{
+  char *v2; // ebp
+  FILE *v3; // esi
+  int v4; // ebp
+  int v5; // eax
+  int result; // eax
+  int v7; // edi
+  void *Block; // [esp+10h] [ebp-84h] BYREF
+  char Buffer; // [esp+14h] [ebp-80h] BYREF
+  char v10; // [esp+15h] [ebp-7Fh]
+
+  Block = (void *)_glmDirName(String: *(char **)a1);
+  v2 = (char *)malloc(Size: strlen((const char *)Block) + 1 + strlen(a2));
+  strcpy(v2, (const char *)Block);
+  strcat(v2, a2);
+  free(Block);
+  v3 = fopen(FileName: v2, Mode: `string');
+  if ( v3 == nullptr )
+  {
+    fprintf(Stream: &_iob[2], Format: "_glmReadMTL() failed: can't open material file \"%s\".\n", v2);
+    Block = operator new(a1: 4u);
+    _CxxThrowException(pExceptionObject: &Block, pThrowInfo: (_ThrowInfo *)&_TI2PAH);
+  }
+  free(Block: v2);
+  v4 = 1;
+  while ( fscanf(Stream: v3, Format: "%s", &Buffer) != -1 )
+  {
+    if ( Buffer == 110 )
+    {
+      fgets(&Buffer, MaxCount: 128, Stream: v3);
+      ++v4;
+      sscanf(&Buffer, Format: "%s %s", &Buffer, &Buffer);
+    }
+    else
+    {
+      fgets(&Buffer, MaxCount: 128, Stream: v3);
+    }
+  }
+  rewind(Stream: v3);
+  *(_DWORD *)(a1 + 52) = malloc(Size: 72 * v4);
+  *(_DWORD *)(a1 + 48) = v4;
+  if ( v4 != 0 )
+  {
+    Block = (void *)v4;
+    v5 = 0;
+    do
+    {
+      v5 += 72;
+      *(_DWORD *)(*(_DWORD *)(a1 + 52) + v5 - 72) = 0;
+      *(_DWORD *)(*(_DWORD *)(a1 + 52) + v5 - 4) = 0;
+      *(_DWORD *)(*(_DWORD *)(a1 + 52) + v5 - 68) = 1061997773;
+      *(_DWORD *)(*(_DWORD *)(a1 + 52) + v5 - 64) = 1061997773;
+      *(_DWORD *)(*(_DWORD *)(a1 + 52) + v5 - 60) = 1061997773;
+      *(_DWORD *)(*(_DWORD *)(a1 + 52) + v5 - 56) = 1065353216;
+      *(_DWORD *)(*(_DWORD *)(a1 + 52) + v5 - 52) = 1045220557;
+      *(_DWORD *)(*(_DWORD *)(a1 + 52) + v5 - 48) = 1045220557;
+      *(_DWORD *)(*(_DWORD *)(a1 + 52) + v5 - 44) = 1045220557;
+      *(_DWORD *)(*(_DWORD *)(a1 + 52) + v5 - 40) = 1065353216;
+      *(_DWORD *)(*(_DWORD *)(a1 + 52) + v5 - 36) = 0;
+      *(_DWORD *)(*(_DWORD *)(a1 + 52) + v5 - 32) = 0;
+      *(_DWORD *)(*(_DWORD *)(a1 + 52) + v5 - 28) = 0;
+      *(_DWORD *)(*(_DWORD *)(a1 + 52) + v5 - 24) = 1065353216;
+      Block = (char *)Block - 1;
+    }
+    while ( Block != nullptr );
+  }
+  **(_DWORD **)(a1 + 52) = strdup(String: `string');
+  result = fscanf(Stream: v3, Format: "%s", &Buffer);
+  if ( result != -1 )
+  {
+    v7 = 0;
+    do
+    {
+      switch ( Buffer )
+      {
+        case 'K':
+          switch ( v10 )
+          {
+            case 'a':
+              fscanf(
+                Stream: v3,
+                Format: "%f %f %f",
+                v7 + *(_DWORD *)(a1 + 52) + 20,
+                v7 + *(_DWORD *)(a1 + 52) + 24,
+                v7 + *(_DWORD *)(a1 + 52) + 28);
+              break;
+            case 'd':
+              fscanf(
+                Stream: v3,
+                Format: "%f %f %f",
+                v7 + *(_DWORD *)(a1 + 52) + 4,
+                v7 + *(_DWORD *)(a1 + 52) + 8,
+                v7 + *(_DWORD *)(a1 + 52) + 12);
+              break;
+            case 's':
+              fscanf(
+                Stream: v3,
+                Format: "%f %f %f",
+                *(_DWORD *)(a1 + 52) + v7 + 36,
+                *(_DWORD *)(a1 + 52) + v7 + 40,
+                *(_DWORD *)(a1 + 52) + v7 + 44);
+              break;
+            default:
+              goto $L1821;
+          }
+          break;
+        case 'N':
+          fscanf(Stream: v3, Format: "%f", *(_DWORD *)(a1 + 52) + v7 + 68);
+          *(float *)(*(_DWORD *)(a1 + 52) + v7 + 68) = *(float *)(*(_DWORD *)(a1 + 52) + v7 + 68) * 0.001;
+          *(float *)(*(_DWORD *)(a1 + 52) + v7 + 68) = *(float *)(*(_DWORD *)(a1 + 52) + v7 + 68) * 128.0;
+          break;
+        case 'n':
+          fgets(&Buffer, MaxCount: 128, Stream: v3);
+          sscanf(&Buffer, Format: "%s %s", &Buffer, &Buffer);
+          v7 += 72;
+          *(_DWORD *)(*(_DWORD *)(a1 + 52) + v7) = strdup(String: &Buffer);
+          break;
+        default:
+$L1821:
+          fgets(&Buffer, MaxCount: 128, Stream: v3);
+          break;
+      }
+      result = fscanf(Stream: v3, Format: "%s", &Buffer);
+    }
+    while ( result != -1 );
+  }
+  return result;
+}
+
+// 0x1efc ?_glmDirName@@YAPADPBD@Z
+char *__cdecl _glmDirName(char *String)
+{
+  char *v1; // esi
+  char *v2; // eax
+
+  v1 = strdup(String);
+  v2 = strrchr(Str: v1, Ch: 47);
+  if ( v2 != nullptr )
+    v2[1] = 0;
+  else
+    *v1 = 0;
+  return v1;
+}
+
+// 0x1f2c ?_glmSecondPass@@YAXPAUGLMmodel@@PAU_iobuf@@@Z
+int __cdecl _glmSecondPass(struct GLMmodel *a1, FILE *Stream)
+{
+  FILE *v2; // ebp
+  int v3; // ecx
+  int v4; // edx
+  struct GLMgroup *Group; // edi
+  int v6; // ebx
+  int result; // eax
+  int v8; // eax
+  int v9; // edx
+  int v10; // eax
+  int v11; // eax
+  int v12; // eax
+  int v13; // ebp
+  int v14; // edx
+  int v15; // ecx
+  int v16; // eax
+  int v17; // ecx
+  int v18; // eax
+  int v19; // eax
+  int v20; // eax
+  int v21; // ebp
+  int v22; // edx
+  int v23; // ecx
+  int v24; // eax
+  int v25; // edx
+  int v26; // eax
+  int v27; // eax
+  int v28; // eax
+  int v29; // ebp
+  int v30; // edx
+  int v31; // ecx
+  int v32; // eax
+  int v33; // ecx
+  int i; // eax
+  int v35; // ecx
+  int v36; // eax
+  int v37; // [esp+10h] [ebp-A0h] BYREF
+  int v38; // [esp+14h] [ebp-9Ch] BYREF
+  int v39; // [esp+18h] [ebp-98h] BYREF
+  int v40; // [esp+1Ch] [ebp-94h]
+  int v41; // [esp+20h] [ebp-90h]
+  int v42; // [esp+24h] [ebp-8Ch]
+  int v43; // [esp+28h] [ebp-88h]
+  unsigned int Material; // [esp+2Ch] [ebp-84h]
+  char Buffer; // [esp+30h] [ebp-80h] BYREF
+  char v46; // [esp+31h] [ebp-7Fh]
+
+  v2 = Stream;
+  v3 = *((_DWORD *)a1 + 5);
+  v4 = *((_DWORD *)a1 + 7);
+  Group = *((struct GLMgroup **)a1 + 15);
+  v42 = *((_DWORD *)a1 + 3);
+  v6 = 0;
+  v40 = v3;
+  v41 = v4;
+  Material = 0;
+  result = fscanf(Stream, Format: "%s", &Buffer);
+  if ( result != -1 )
+  {
+    v43 = v41 + 8;
+    v8 = v42 + 16;
+    v41 = v42 + 16;
+    v42 = v40 + 16;
+    while ( 1 )
+    {
+      switch ( Buffer )
+      {
+        case 'f':
+          v38 = 0;
+          v39 = 0;
+          v37 = 0;
+          fscanf(Stream: v2, Format: "%s", &Buffer);
+          if ( strstr(Str: &Buffer, SubStr: `string') != nullptr )
+          {
+            sscanf(&Buffer, Format: "%d//%d", &v37, &v39);
+            v9 = *((_DWORD *)a1 + 11);
+            v10 = 40 * v6;
+            v40 = v10;
+            *(_DWORD *)(v9 + v10) = v37;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v10 + 12) = v39;
+            fscanf(Stream: v2, Format: "%d//%d", &v37, &v39);
+            v11 = v40;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v40 + 4) = v37;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v11 + 16) = v39;
+            fscanf(Stream: v2, Format: "%d//%d", &v37, &v39);
+            v12 = v40;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v40 + 8) = v37;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v12 + 20) = v39;
+            *(_DWORD *)(*((_DWORD *)Group + 2) + 4 * (*((_DWORD *)Group + 1))++) = v6++;
+            if ( fscanf(Stream: v2, Format: "%d//%d", &v37, &v39) > 0 )
+            {
+              v13 = 40 * v6;
+              do
+              {
+                *(_DWORD *)(v13 + *((_DWORD *)a1 + 11)) = *(_DWORD *)(v13 + *((_DWORD *)a1 + 11) - 40);
+                *(_DWORD *)(*((_DWORD *)a1 + 11) + v13 + 12) = *(_DWORD *)(*((_DWORD *)a1 + 11) + v13 - 28);
+                *(_DWORD *)(*((_DWORD *)a1 + 11) + v13 + 4) = *(_DWORD *)(*((_DWORD *)a1 + 11) + v13 - 32);
+                v14 = *((_DWORD *)a1 + 11);
+                v15 = *(_DWORD *)(v14 + v13 - 20);
+                v16 = v14 + v13;
+                v13 += 40;
+                *(_DWORD *)(v16 + 16) = v15;
+                *(_DWORD *)(*((_DWORD *)a1 + 11) + v13 - 32) = v37;
+                *(_DWORD *)(*((_DWORD *)a1 + 11) + v13 - 20) = v39;
+                *(_DWORD *)(*((_DWORD *)Group + 2) + 4 * (*((_DWORD *)Group + 1))++) = v6++;
+              }
+              while ( fscanf(Stream, Format: "%d//%d", &v37, &v39) > 0 );
+              v2 = Stream;
+            }
+          }
+          else if ( sscanf(&Buffer, Format: "%d/%d/%d", &v37, &v38, &v39) == 3 )
+          {
+            v17 = *((_DWORD *)a1 + 11);
+            v18 = 40 * v6;
+            v40 = v18;
+            *(_DWORD *)(v17 + v18) = v37;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v18 + 24) = v38;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v18 + 12) = v39;
+            fscanf(Stream: v2, Format: "%d/%d/%d", &v37, &v38, &v39);
+            v19 = v40;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v40 + 4) = v37;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v19 + 28) = v38;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v19 + 16) = v39;
+            fscanf(Stream: v2, Format: "%d/%d/%d", &v37, &v38, &v39);
+            v20 = v40;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v40 + 8) = v37;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v20 + 32) = v38;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v20 + 20) = v39;
+            *(_DWORD *)(*((_DWORD *)Group + 2) + 4 * (*((_DWORD *)Group + 1))++) = v6++;
+            if ( fscanf(Stream: v2, Format: "%d/%d/%d", &v37, &v38, &v39) > 0 )
+            {
+              v21 = 40 * v6;
+              do
+              {
+                *(_DWORD *)(*((_DWORD *)a1 + 11) + v21) = *(_DWORD *)(*((_DWORD *)a1 + 11) + v21 - 40);
+                *(_DWORD *)(*((_DWORD *)a1 + 11) + v21 + 24) = *(_DWORD *)(*((_DWORD *)a1 + 11) + v21 - 16);
+                *(_DWORD *)(*((_DWORD *)a1 + 11) + v21 + 12) = *(_DWORD *)(*((_DWORD *)a1 + 11) + v21 - 28);
+                *(_DWORD *)(*((_DWORD *)a1 + 11) + v21 + 4) = *(_DWORD *)(*((_DWORD *)a1 + 11) + v21 - 32);
+                *(_DWORD *)(*((_DWORD *)a1 + 11) + v21 + 28) = *(_DWORD *)(*((_DWORD *)a1 + 11) + v21 - 8);
+                v22 = *((_DWORD *)a1 + 11);
+                v23 = *(_DWORD *)(v22 + v21 - 20);
+                v24 = v22 + v21;
+                v21 += 40;
+                *(_DWORD *)(v24 + 16) = v23;
+                *(_DWORD *)(*((_DWORD *)a1 + 11) + v21 - 32) = v37;
+                *(_DWORD *)(*((_DWORD *)a1 + 11) + v21 - 8) = v38;
+                *(_DWORD *)(*((_DWORD *)a1 + 11) + v21 - 20) = v39;
+                *(_DWORD *)(*((_DWORD *)Group + 2) + 4 * (*((_DWORD *)Group + 1))++) = v6++;
+              }
+              while ( fscanf(Stream, Format: "%d/%d/%d", &v37, &v38, &v39) > 0 );
+              v2 = Stream;
+            }
+          }
+          else if ( sscanf(&Buffer, Format: "%d/%d", &v37, &v38) == 2 )
+          {
+            v25 = *((_DWORD *)a1 + 11);
+            v26 = 40 * v6;
+            v40 = v26;
+            *(_DWORD *)(v25 + v26) = v37;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v26 + 24) = v38;
+            fscanf(Stream: v2, Format: "%d/%d", &v37, &v38);
+            v27 = v40;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v40 + 4) = v37;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v27 + 28) = v38;
+            fscanf(Stream: v2, Format: "%d/%d", &v37, &v38);
+            v28 = v40;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v40 + 8) = v37;
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v28 + 32) = v38;
+            *(_DWORD *)(*((_DWORD *)Group + 2) + 4 * (*((_DWORD *)Group + 1))++) = v6++;
+            if ( fscanf(Stream: v2, Format: "%d/%d", &v37, &v38) > 0 )
+            {
+              v29 = 40 * v6;
+              do
+              {
+                *(_DWORD *)(v29 + *((_DWORD *)a1 + 11)) = *(_DWORD *)(v29 + *((_DWORD *)a1 + 11) - 40);
+                *(_DWORD *)(*((_DWORD *)a1 + 11) + v29 + 24) = *(_DWORD *)(*((_DWORD *)a1 + 11) + v29 - 16);
+                *(_DWORD *)(*((_DWORD *)a1 + 11) + v29 + 4) = *(_DWORD *)(*((_DWORD *)a1 + 11) + v29 - 32);
+                v30 = *((_DWORD *)a1 + 11);
+                v31 = *(_DWORD *)(v30 + v29 - 8);
+                v32 = v30 + v29;
+                v29 += 40;
+                *(_DWORD *)(v32 + 28) = v31;
+                *(_DWORD *)(*((_DWORD *)a1 + 11) + v29 - 32) = v37;
+                *(_DWORD *)(*((_DWORD *)a1 + 11) + v29 - 8) = v38;
+                *(_DWORD *)(*((_DWORD *)Group + 2) + 4 * (*((_DWORD *)Group + 1))++) = v6++;
+              }
+              while ( fscanf(Stream, Format: "%d/%d", &v37, &v38) > 0 );
+              v2 = Stream;
+            }
+          }
+          else
+          {
+            sscanf(&Buffer, Format: "%d", &v37);
+            v33 = *((_DWORD *)a1 + 11);
+            v40 = 40 * v6;
+            *(_DWORD *)(v33 + v40) = v37;
+            fscanf(Stream: v2, Format: "%d", &v37);
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v40 + 4) = v37;
+            fscanf(Stream: v2, Format: "%d", &v37);
+            *(_DWORD *)(*((_DWORD *)a1 + 11) + v40 + 8) = v37;
+            *(_DWORD *)(*((_DWORD *)Group + 2) + 4 * (*((_DWORD *)Group + 1))++) = v6++;
+            if ( fscanf(Stream: v2, Format: "%d", &v37) > 0 )
+            {
+              for ( i = 40 * v6; ; i = v40 )
+              {
+                *(_DWORD *)(i + *((_DWORD *)a1 + 11)) = *(_DWORD *)(i + *((_DWORD *)a1 + 11) - 40);
+                v35 = i + *((_DWORD *)a1 + 11);
+                v36 = i + 40;
+                v40 = v36;
+                *(_DWORD *)(v35 + 4) = *(_DWORD *)(v35 - 32);
+                *(_DWORD *)(v36 + *((_DWORD *)a1 + 11) - 32) = v37;
+                *(_DWORD *)(*((_DWORD *)Group + 2) + 4 * (*((_DWORD *)Group + 1))++) = v6++;
+                if ( fscanf(Stream: v2, Format: "%d", &v37) <= 0 )
+                  break;
+              }
+            }
+          }
+          break;
+        case 'g':
+          fgets(&Buffer, MaxCount: 128, Stream: v2);
+          sscanf(&Buffer, Format: "%s", &Buffer);
+          Group = glmFindGroup(a1, a2: &Buffer);
+          *((_DWORD *)Group + 3) = Material;
+          break;
+        case 'u':
+          fgets(&Buffer, MaxCount: 128, Stream: v2);
+          sscanf(&Buffer, Format: "%s %s", &Buffer, &Buffer);
+          Material = _glmFindMaterial(a1, a2: &Buffer);
+          *((_DWORD *)Group + 3) = Material;
+          break;
+        case 'v':
+          if ( v46 != 0 )
+          {
+            if ( v46 == 110 )
+            {
+              fscanf(Stream: v2, Format: "%f %f %f", v42 - 4, v42, v42 + 4);
+              v42 += 12;
+            }
+            else if ( v46 == 116 )
+            {
+              fscanf(Stream: v2, Format: "%f %f", v43, v43 + 4);
+              v43 += 8;
+            }
+          }
+          else
+          {
+            fscanf(Stream: v2, Format: "%f %f %f", v8 - 4, v8, v8 + 4);
+            v41 += 12;
+          }
+          break;
+        default:
+          fgets(&Buffer, MaxCount: 128, Stream: v2);
+          break;
+      }
+      result = fscanf(Stream: v2, Format: "%s", &Buffer);
+      if ( result == -1 )
+        break;
+      v8 = v41;
+    }
+  }
+  return result;
+}
+
+// 0x2764 ?glmWriteOBJ@@YAXPAUGLMmodel@@PBDI@Z
+void __cdecl glmWriteOBJ(struct GLMmodel *a1, char *FileName, char a3)
+{
+  char v3; // bl
+  FILE *v4; // eax
+  FILE *v5; // esi
+  unsigned int v6; // ebx
+  unsigned int v7; // ebx
+  unsigned int v8; // ebx
+  unsigned int i; // ebx
+  int v10; // ebx
+  int v11; // eax
+  int v12; // edx
+  int v13; // eax
+  int v14; // ecx
+  _DWORD *v15; // eax
+  int v16; // edx
+  int v17; // eax
+  int v18; // edx
+  int v19; // eax
+  int v20; // edx
+  int v21; // eax
+  _DWORD *v22; // eax
+  int v23; // [esp+28h] [ebp-10h]
+  int v24; // [esp+28h] [ebp-10h]
+  int v25; // [esp+28h] [ebp-10h]
+  int v26; // [esp+28h] [ebp-10h]
+  void *pExceptionObject; // [esp+30h] [ebp-8h] BYREF
+  int v28; // [esp+34h] [ebp-4h]
+
+  v3 = a3;
+  if ( (a3 & 1) != 0 && *((_DWORD *)a1 + 9) == 0 )
+  {
+    printf(Format: "glmWriteOBJ() warning: flat normal output requested with no facet normals defined.\n");
+    v3 = a3 & 0xFE;
+    a3 &= ~1u;
+  }
+  if ( (v3 & 2) != 0 && *((_DWORD *)a1 + 5) == 0 )
+  {
+    printf(Format: "glmWriteOBJ() warning: smooth normal output requested with no normals defined.\n");
+    v3 &= ~2u;
+    a3 = v3;
+  }
+  if ( (v3 & 4) != 0 && *((_DWORD *)a1 + 7) == 0 )
+  {
+    printf(Format: "glmWriteOBJ() warning: texture coordinate output requested with no texture coordinates defined.\n");
+    v3 &= ~4u;
+    a3 = v3;
+  }
+  if ( (v3 & 1) != 0 && (v3 & 2) != 0 )
+  {
+    printf(Format: "glmWriteOBJ() warning: flat normal output requested and smooth normal output requested (using smooth).\n");
+    v3 &= ~1u;
+    a3 = v3;
+  }
+  v4 = fopen(FileName, Mode: `string');
+  v5 = v4;
+  if ( v4 == nullptr )
+  {
+    fprintf(Stream: &_iob[2], Format: "glmWriteOBJ() failed: can't open file \"%s\" to write.\n", FileName);
+    pExceptionObject = operator new(a1: 4u);
+    _CxxThrowException(&pExceptionObject, pThrowInfo: (_ThrowInfo *)&_TI2PAH);
+  }
+  fprintf(Stream: v4, Format: "#  \n");
+  fprintf(Stream: v5, Format: "#  Wavefront OBJ generated by GLM library\n");
+  fprintf(Stream: v5, Format: "#  \n");
+  fprintf(Stream: v5, Format: "#  GLM library copyright (C) 1997 by Nate Robins\n");
+  fprintf(Stream: v5, Format: "#  email: ndr@pobox.com\n");
+  fprintf(Stream: v5, Format: "#  www:   http://www.pobox.com/~ndr\n");
+  fprintf(Stream: v5, Format: "#  \n");
+  v28 = v3 & 0x10;
+  if ( (v3 & 0x10) != 0 && *((_DWORD *)a1 + 1) != 0 )
+  {
+    fprintf(Stream: v5, Format: "\nmtllib %s\n\n", *((const char **)a1 + 1));
+    _glmWriteMTL((int)a1, String: FileName, a3: *((_DWORD *)a1 + 1));
+  }
+  fprintf(Stream: v5, Format: "\n");
+  fprintf(Stream: v5, Format: "# %d vertices\n", *((_DWORD *)a1 + 2));
+  v6 = 1;
+  if ( *((_DWORD *)a1 + 2) != 0 )
+  {
+    v23 = 12;
+    do
+    {
+      fprintf(
+        Stream: v5,
+        Format: "v %f %f %f\n",
+        *(float *)(v23 + *((_DWORD *)a1 + 3)),
+        *(float *)(v23 + *((_DWORD *)a1 + 3) + 4),
+        *(float *)(v23 + *((_DWORD *)a1 + 3) + 8));
+      ++v6;
+      v23 += 12;
+    }
+    while ( v6 <= *((_DWORD *)a1 + 2) );
+  }
+  pExceptionObject = (void *)(a3 & 2);
+  if ( (a3 & 2) != 0 )
+  {
+    fprintf(Stream: v5, Format: "\n");
+    fprintf(Stream: v5, Format: "# %d normals\n", *((_DWORD *)a1 + 4));
+    v7 = 1;
+    if ( *((_DWORD *)a1 + 4) != 0 )
+    {
+      v24 = 12;
+      do
+      {
+        fprintf(
+          Stream: v5,
+          Format: "vn %f %f %f\n",
+          *(float *)(v24 + *((_DWORD *)a1 + 5)),
+          *(float *)(v24 + *((_DWORD *)a1 + 5) + 4),
+          *(float *)(v24 + *((_DWORD *)a1 + 5) + 8));
+        ++v7;
+        v24 += 12;
+      }
+      while ( v7 <= *((_DWORD *)a1 + 4) );
+    }
+  }
+  else if ( (a3 & 1) != 0 )
+  {
+    fprintf(Stream: v5, Format: "\n");
+    fprintf(Stream: v5, Format: "# %d normals\n", *((_DWORD *)a1 + 8));
+    v8 = 1;
+    if ( *((_DWORD *)a1 + 4) != 0 )
+    {
+      v25 = 12;
+      do
+      {
+        fprintf(
+          Stream: v5,
+          Format: "vn %f %f %f\n",
+          *(float *)(v25 + *((_DWORD *)a1 + 9)),
+          *(float *)(v25 + *((_DWORD *)a1 + 9) + 4),
+          *(float *)(v25 + *((_DWORD *)a1 + 9) + 8));
+        ++v8;
+        v25 += 12;
+      }
+      while ( v8 <= *((_DWORD *)a1 + 4) );
+    }
+  }
+  if ( (a3 & 4) != 0 )
+  {
+    fprintf(Stream: v5, Format: "\n");
+    fprintf(Stream: v5, Format: "# %d texcoords\n", *((_DWORD *)a1 + 6));
+    for ( i = 1; i <= *((_DWORD *)a1 + 6); ++i )
+      fprintf(
+        Stream: v5,
+        Format: "vt %f %f\n",
+        *(float *)(*((_DWORD *)a1 + 7) + 8 * i),
+        *(float *)(*((_DWORD *)a1 + 7) + 8 * i + 4));
+  }
+  fprintf(Stream: v5, Format: "\n");
+  fprintf(Stream: v5, Format: "# %d groups\n", *((_DWORD *)a1 + 14));
+  fprintf(Stream: v5, Format: "# %d faces (triangles)\n", *((_DWORD *)a1 + 10));
+  fprintf(Stream: v5, Format: "\n");
+  v10 = *((_DWORD *)a1 + 15);
+  if ( v10 != 0 )
+  {
+    while ( 1 )
+    {
+      fprintf(Stream: v5, Format: "g %s\n", *(const char **)v10);
+      if ( v28 != 0 )
+        fprintf(Stream: v5, Format: "usemtl %s\n", *(const char **)(*((_DWORD *)a1 + 13) + 72 * *(_DWORD *)(v10 + 12)));
+      v11 = 0;
+      v26 = 0;
+      if ( *(_DWORD *)(v10 + 4) != 0 )
+        break;
+LABEL_53:
+      fprintf(Stream: v5, Format: "\n");
+      v10 = *(_DWORD *)(v10 + 16);
+      if ( v10 == 0 )
+        goto LABEL_54;
+    }
+    while ( 1 )
+    {
+      if ( pExceptionObject != nullptr && (a3 & 4) != 0 )
+      {
+        v12 = 5 * *(_DWORD *)(*(_DWORD *)(v10 + 8) + 4 * v11);
+        v13 = *((_DWORD *)a1 + 11);
+        v14 = *(_DWORD *)(v13 + 8 * v12 + 32);
+        v15 = (_DWORD *)(v13 + 8 * v12);
+        fprintf(
+          Stream: v5,
+          Format: "f %d/%d/%d %d/%d/%d %d/%d/%d\n",
+          *v15,
+          v15[3],
+          v15[6],
+          v15[1],
+          v15[4],
+          v15[7],
+          v15[2],
+          v15[5],
+          v14);
+        goto LABEL_52;
+      }
+      if ( (a3 & 1) != 0 )
+      {
+        if ( (a3 & 4) != 0 )
+        {
+          v16 = 5 * *(_DWORD *)(*(_DWORD *)(v10 + 8) + 4 * v11);
+          v17 = *((_DWORD *)a1 + 11);
+          fprintf(
+            Stream: v5,
+            Format: "f %d/%d %d/%d %d/%d\n",
+            *(_DWORD *)(v17 + 8 * v16),
+            *(_DWORD *)(v17 + 8 * v16 + 36),
+            *(_DWORD *)(v17 + 8 * v16 + 4),
+            *(_DWORD *)(v17 + 8 * v16 + 36),
+            *(_DWORD *)(v17 + 8 * v16 + 8),
+            *(_DWORD *)(v17 + 8 * v16 + 36));
+          goto LABEL_52;
+        }
+      }
+      else if ( (a3 & 4) != 0 )
+      {
+        v18 = 5 * *(_DWORD *)(*(_DWORD *)(v10 + 8) + 4 * v11);
+        v19 = *((_DWORD *)a1 + 11);
+        fprintf(
+          Stream: v5,
+          Format: "f %d/%d %d/%d %d/%d\n",
+          *(_DWORD *)(v19 + 8 * v18),
+          *(_DWORD *)(v19 + 8 * v18 + 24),
+          *(_DWORD *)(v19 + 8 * v18 + 4),
+          *(_DWORD *)(v19 + 8 * v18 + 28),
+          *(_DWORD *)(v19 + 8 * v18 + 8),
+          *(_DWORD *)(v19 + 8 * v18 + 32));
+        goto LABEL_52;
+      }
+      if ( pExceptionObject != nullptr )
+      {
+        v20 = 5 * *(_DWORD *)(*(_DWORD *)(v10 + 8) + 4 * v11);
+        v21 = *((_DWORD *)a1 + 11);
+        fprintf(
+          Stream: v5,
+          Format: "f %d//%d %d//%d %d//%d\n",
+          *(_DWORD *)(v21 + 8 * v20),
+          *(_DWORD *)(v21 + 8 * v20 + 12),
+          *(_DWORD *)(v21 + 8 * v20 + 4),
+          *(_DWORD *)(v21 + 8 * v20 + 16),
+          *(_DWORD *)(v21 + 8 * v20 + 8),
+          *(_DWORD *)(v21 + 8 * v20 + 20));
+      }
+      else
+      {
+        v22 = (_DWORD *)(*((_DWORD *)a1 + 11) + 40 * *(_DWORD *)(*(_DWORD *)(v10 + 8) + 4 * v11));
+        if ( (a3 & 1) != 0 )
+          fprintf(Stream: v5, Format: "f %d//%d %d//%d %d//%d\n", *v22, v22[9], v22[1], v22[9], v22[2], v22[9]);
+        else
+          fprintf(Stream: v5, Format: "f %d %d %d\n", *v22, v22[1], v22[2]);
+      }
+LABEL_52:
+      if ( (unsigned int)++v26 >= *(_DWORD *)(v10 + 4) )
+        goto LABEL_53;
+      v11 = v26;
+    }
+  }
+LABEL_54:
+  fclose(Stream: v5);
+}
+
+// 0x3040 ?_glmWriteMTL@@YAXPAUGLMmodel@@PBDPAD@Z
+unsigned int __cdecl _glmWriteMTL(int a1, char *String, const char *a3)
+{
+  char *v3; // ebx
+  FILE *v4; // edi
+  unsigned int v5; // ebx
+  unsigned int result; // eax
+  float *v7; // esi
+  void *Block; // [esp+24h] [ebp-4h] BYREF
+
+  Block = _glmDirName(String);
+  v3 = (char *)malloc(Size: strlen(a3) + strlen((const char *)Block));
+  strcpy(v3, (const char *)Block);
+  strcat(v3, a3);
+  free(Block);
+  v4 = fopen(FileName: v3, Mode: `string');
+  if ( v4 == nullptr )
+  {
+    fprintf(Stream: &_iob[2], Format: "_glmWriteMTL() failed: can't open file \"%s\".\n", v3);
+    Block = operator new(a1: 4u);
+    _CxxThrowException(pExceptionObject: &Block, pThrowInfo: (_ThrowInfo *)&_TI2PAH);
+  }
+  free(Block: v3);
+  fprintf(Stream: v4, Format: "#  \n");
+  fprintf(Stream: v4, Format: "#  Wavefront MTL generated by GLM library\n");
+  fprintf(Stream: v4, Format: "#  \n");
+  fprintf(Stream: v4, Format: "#  GLM library copyright (C) 1997 by Nate Robins\n");
+  fprintf(Stream: v4, Format: "#  email: ndr@pobox.com\n");
+  fprintf(Stream: v4, Format: "#  www:   http://www.pobox.com/~ndr\n");
+  fprintf(Stream: v4, Format: "#  \n\n");
+  v5 = 0;
+  result = *(_DWORD *)(a1 + 48);
+  if ( result != 0 )
+  {
+    Block = nullptr;
+    do
+    {
+      v7 = (float *)((char *)Block + *(_DWORD *)(a1 + 52));
+      fprintf(Stream: v4, Format: "newmtl %s\n", *(const char **)v7);
+      fprintf(Stream: v4, Format: "Ka %f %f %f\n", v7[5], v7[6], v7[7]);
+      fprintf(Stream: v4, Format: "Kd %f %f %f\n", v7[1], v7[2], v7[3]);
+      fprintf(Stream: v4, Format: "Ks %f %f %f\n", v7[9], v7[10], v7[11]);
+      fprintf(Stream: v4, Format: "Ns %f\n", v7[17]);
+      fprintf(Stream: v4, Format: "\n");
+      ++v5;
+      result = *(_DWORD *)(a1 + 48);
+      Block = (char *)Block + 72;
+    }
+    while ( v5 < result );
+  }
+  return result;
+}
+
+// 0x3308 ?glmWeld@@YAXPAUGLMmodel@@M@Z
+void __cdecl glmWeld(struct GLMmodel *a1, float a2)
+{
+  struct GLMmodel *v2; // esi
+  float *v3; // ebx
+  float *v4; // edi
+  int v5; // eax
+  int v6; // edi
+  unsigned int v7; // ecx
+  struct GLMmodel *v8; // eax
+  unsigned int v9; // edx
+  int v10; // eax
+  float *v11; // ecx
+  int v12; // ebp
+  float *v13; // [esp+10h] [ebp-4h]
+
+  v2 = a1;
+  v3 = *((float **)a1 + 3);
+  a1 = *((struct GLMmodel **)a1 + 2);
+  v4 = _glmWeldVectors(a1: v3, a2: (unsigned int *)&a1, a3: a2);
+  v13 = v4;
+  printf(Format: "glmWeld(): %d redundant vertices.\n", *((_DWORD *)v2 + 2) - (_DWORD)a1 - 1);
+  v5 = *((_DWORD *)v2 + 10);
+  a2 = 0.0;
+  if ( v5 != 0 )
+  {
+    v6 = 0;
+    do
+    {
+      *(_DWORD *)(v6 + *((_DWORD *)v2 + 11)) = (__int64)v3[3 * *(_DWORD *)(v6 + *((_DWORD *)v2 + 11))];
+      *(_DWORD *)(v6 + *((_DWORD *)v2 + 11) + 4) = (__int64)v3[3 * *(_DWORD *)(v6 + *((_DWORD *)v2 + 11) + 4)];
+      *(_DWORD *)(v6 + *((_DWORD *)v2 + 11) + 8) = (__int64)v3[3 * *(_DWORD *)(v6 + *((_DWORD *)v2 + 11) + 8)];
+      v7 = *((_DWORD *)v2 + 10);
+      v6 += 40;
+      ++LODWORD(a2);
+    }
+    while ( LODWORD(a2) < v7 );
+    v4 = v13;
+  }
+  free(Block: v3);
+  v8 = a1;
+  *((_DWORD *)v2 + 2) = a1;
+  *((_DWORD *)v2 + 3) = malloc(Size: 4 * (3 * (_DWORD)v8 + 3));
+  v9 = 1;
+  if ( *((_DWORD *)v2 + 2) != 0 )
+  {
+    v10 = 12;
+    v11 = v4 + 5;
+    do
+    {
+      v12 = *((_DWORD *)v11 - 2);
+      ++v9;
+      v11 += 3;
+      *(_DWORD *)(*((_DWORD *)v2 + 3) + v10) = v12;
+      *(float *)(*((_DWORD *)v2 + 3) + v10 + 4) = *(v11 - 4);
+      *(float *)(*((_DWORD *)v2 + 3) + v10 + 8) = *(v11 - 3);
+      v10 += 12;
+    }
+    while ( v9 <= *((_DWORD *)v2 + 2) );
+  }
+  free(Block: v4);
+}
+
+// 0x345c ?glmWriteBinMesh@@YAXPAUGLMmodel@@PBDI@Z
+void __cdecl glmWriteBinMesh(struct GLMmodel *a1, char *FileName, int pExceptionObject)
+{
+  unsigned int v3; // eax
+  FILE *v5; // eax
+  FILE *v6; // esi
+  unsigned int v7; // ebp
+  unsigned int *v8; // edi
+  unsigned int v9; // edi
+  int v10; // ebp
+  unsigned int i; // edi
+  int j; // ebp
+  unsigned int k; // edi
+  int v14; // [esp+Ch] [ebp-1Ch] BYREF
+  int v15; // [esp+10h] [ebp-18h] BYREF
+  unsigned int v16; // [esp+14h] [ebp-14h] BYREF
+  int v17; // [esp+18h] [ebp-10h] BYREF
+  int v18; // [esp+1Ch] [ebp-Ch] BYREF
+  _DWORD Buffer[2]; // [esp+20h] [ebp-8h] BYREF
+  struct GLMmodel *v20; // [esp+2Ch] [ebp+4h]
+  struct GLMmodel *v21; // [esp+2Ch] [ebp+4h]
+  char *FileNamea; // [esp+30h] [ebp+8h]
+
+  LOBYTE(v3) = pExceptionObject;
+  if ( (pExceptionObject & 1) != 0 && *((_DWORD *)a1 + 9) == 0 )
+  {
+    printf(Format: "glmWriteOBJ() warning: flat normal output requested with no facet normals defined.\n");
+    LOBYTE(v3) = pExceptionObject & 0xFE;
+    pExceptionObject &= ~1u;
+  }
+  if ( (v3 & 2) != 0 && *((_DWORD *)a1 + 5) == 0 )
+  {
+    printf(Format: "glmWriteOBJ() warning: smooth normal output requested with no normals defined.\n");
+    v3 = pExceptionObject;
+    LOBYTE(v3) = pExceptionObject & 0xFD;
+    pExceptionObject = v3;
+  }
+  if ( (v3 & 4) != 0 && *((_DWORD *)a1 + 7) == 0 )
+  {
+    printf(Format: "glmWriteOBJ() warning: texture coordinate output requested with no texture coordinates defined.\n");
+    v3 = pExceptionObject;
+    LOBYTE(v3) = pExceptionObject & 0xFB;
+    pExceptionObject = v3;
+  }
+  if ( (v3 & 1) != 0 && (v3 & 2) != 0 )
+  {
+    printf(Format: "glmWriteOBJ() warning: flat normal output requested and smooth normal output requested (using smooth).\n");
+    pExceptionObject &= ~1u;
+  }
+  v5 = fopen(FileName, Mode: `string');
+  v6 = v5;
+  if ( v5 == nullptr )
+  {
+    fprintf(Stream: &_iob[2], Format: "glmWriteOBJ() failed: can't open file \"%s\" to write.\n", FileName);
+    pExceptionObject = (int)operator new(a1: 4u);
+    _CxxThrowException(&pExceptionObject, pThrowInfo: (_ThrowInfo *)&_TI2PAH);
+  }
+  v7 = 1;
+  v17 = 1;
+  v14 = 0;
+  v15 = 1;
+  v18 = 2;
+  strcpy((char *)Buffer, "MESH");
+  fwrite(Buffer, ElementSize: 1u, ElementCount: 4u, Stream: v5);
+  fwrite(Buffer: &v17, ElementSize: 4u, ElementCount: 1u, Stream: v6);
+  v8 = (unsigned int *)((char *)a1 + 8);
+  fwrite(Buffer: (char *)a1 + 8, ElementSize: 4u, ElementCount: 1u, Stream: v6);
+  if ( *((_DWORD *)a1 + 2) != 0 )
+  {
+    v20 = (struct GLMmodel *)&shaders;
+    do
+    {
+      fwrite(Buffer: (char *)v20 + *((_DWORD *)a1 + 3), ElementSize: 4u, ElementCount: 3u, Stream: v6);
+      ++v7;
+      v20 = (struct GLMmodel *)((char *)v20 + 12);
+    }
+    while ( v7 <= *v8 );
+  }
+  FileNamea = (char *)(pExceptionObject & 2);
+  if ( (pExceptionObject & 2) != 0 )
+  {
+    fwrite(Buffer: (char *)a1 + 16, ElementSize: 4u, ElementCount: 1u, Stream: v6);
+    v9 = 1;
+    if ( *((_DWORD *)a1 + 4) != 0 )
+    {
+      v10 = 12;
+      do
+      {
+        fwrite(Buffer: (const void *)(*((_DWORD *)a1 + 5) + v10), ElementSize: 4u, ElementCount: 3u, Stream: v6);
+        ++v9;
+        v10 += 12;
+      }
+      while ( v9 <= *((_DWORD *)a1 + 4) );
+    }
+  }
+  else
+  {
+    fwrite(Buffer: &v14, ElementSize: 4u, ElementCount: 1u, Stream: v6);
+  }
+  v21 = (struct GLMmodel *)(pExceptionObject & 4);
+  if ( (pExceptionObject & 4) != 0 )
+  {
+    fwrite(Buffer: &v15, ElementSize: 4u, ElementCount: 1u, Stream: v6);
+    fwrite(Buffer: (char *)a1 + 24, ElementSize: 4u, ElementCount: 1u, Stream: v6);
+    fwrite(Buffer: &v18, ElementSize: 4u, ElementCount: 1u, Stream: v6);
+    for ( i = 1; i <= *((_DWORD *)a1 + 6); ++i )
+      fwrite(Buffer: (const void *)(*((_DWORD *)a1 + 7) + 8 * i), ElementSize: 4u, ElementCount: 2u, Stream: v6);
+  }
+  else
+  {
+    fwrite(Buffer: &v14, ElementSize: 4u, ElementCount: 1u, Stream: v6);
+  }
+  fwrite(Buffer: (char *)a1 + 40, ElementSize: 4u, ElementCount: 1u, Stream: v6);
+  fwrite(Buffer: (char *)a1 + 56, ElementSize: 4u, ElementCount: 1u, Stream: v6);
+  for ( j = *((_DWORD *)a1 + 15); j != 0; j = *(_DWORD *)(j + 16) )
+  {
+    v16 = strlen(*(const char **)j);
+    fwrite(Buffer: &v16, ElementSize: 4u, ElementCount: 1u, Stream: v6);
+    fwrite(Buffer: *(const void **)j, ElementSize: 1u, ElementCount: v16 + 1, Stream: v6);
+    fwrite(Buffer: (const void *)(j + 4), ElementSize: 4u, ElementCount: 1u, Stream: v6);
+    if ( v21 != nullptr )
+      fwrite(Buffer: &v15, ElementSize: 4u, ElementCount: 1u, Stream: v6);
+    else
+      fwrite(Buffer: &v14, ElementSize: 4u, ElementCount: 1u, Stream: v6);
+    fwrite(Buffer: &v15, ElementSize: 4u, ElementCount: 1u, Stream: v6);
+    for ( k = 0; k < *(_DWORD *)(j + 4); ++k )
+    {
+      pExceptionObject = *(_DWORD *)(*((_DWORD *)a1 + 11) + 40 * *(_DWORD *)(*(_DWORD *)(j + 8) + 4 * k)) - 1;
+      fwrite(Buffer: &pExceptionObject, ElementSize: 3u, ElementCount: 1u, Stream: v6);
+      if ( FileNamea != nullptr )
+      {
+        pExceptionObject = *(_DWORD *)(*((_DWORD *)a1 + 11) + 40 * *(_DWORD *)(*(_DWORD *)(j + 8) + 4 * k) + 12) - 1;
+        fwrite(Buffer: &pExceptionObject, ElementSize: 3u, ElementCount: 1u, Stream: v6);
+      }
+      if ( v21 != nullptr )
+      {
+        pExceptionObject = *(_DWORD *)(*((_DWORD *)a1 + 11) + 40 * *(_DWORD *)(*(_DWORD *)(j + 8) + 4 * k) + 24) - 1;
+        fwrite(Buffer: &pExceptionObject, ElementSize: 3u, ElementCount: 1u, Stream: v6);
+      }
+      pExceptionObject = *(_DWORD *)(*((_DWORD *)a1 + 11) + 40 * *(_DWORD *)(*(_DWORD *)(j + 8) + 4 * k) + 4) - 1;
+      fwrite(Buffer: &pExceptionObject, ElementSize: 3u, ElementCount: 1u, Stream: v6);
+      if ( FileNamea != nullptr )
+      {
+        pExceptionObject = *(_DWORD *)(*((_DWORD *)a1 + 11) + 40 * *(_DWORD *)(*(_DWORD *)(j + 8) + 4 * k) + 16) - 1;
+        fwrite(Buffer: &pExceptionObject, ElementSize: 3u, ElementCount: 1u, Stream: v6);
+      }
+      if ( v21 != nullptr )
+      {
+        pExceptionObject = *(_DWORD *)(*((_DWORD *)a1 + 11) + 40 * *(_DWORD *)(*(_DWORD *)(j + 8) + 4 * k) + 28) - 1;
+        fwrite(Buffer: &pExceptionObject, ElementSize: 3u, ElementCount: 1u, Stream: v6);
+      }
+      pExceptionObject = *(_DWORD *)(*((_DWORD *)a1 + 11) + 40 * *(_DWORD *)(*(_DWORD *)(j + 8) + 4 * k) + 8) - 1;
+      fwrite(Buffer: &pExceptionObject, ElementSize: 3u, ElementCount: 1u, Stream: v6);
+      if ( FileNamea != nullptr )
+      {
+        pExceptionObject = *(_DWORD *)(*((_DWORD *)a1 + 11) + 40 * *(_DWORD *)(*(_DWORD *)(j + 8) + 4 * k) + 20) - 1;
+        fwrite(Buffer: &pExceptionObject, ElementSize: 3u, ElementCount: 1u, Stream: v6);
+      }
+      if ( v21 != nullptr )
+      {
+        pExceptionObject = *(_DWORD *)(*((_DWORD *)a1 + 11) + 40 * *(_DWORD *)(*(_DWORD *)(j + 8) + 4 * k) + 32) - 1;
+        fwrite(Buffer: &pExceptionObject, ElementSize: 3u, ElementCount: 1u, Stream: v6);
+      }
+    }
+  }
+  fclose(Stream: v6);
+}
+
+// 0x3918 ?glmReadBinMesh@@YAPAUGLMmodel@@PBD@Z
+struct GLMmodel *__cdecl glmReadBinMesh(char *FileName)
+{
+  FILE *v1; // ebp
+  _DWORD *v2; // esi
+  _DWORD *v3; // edi
+  unsigned int *v4; // ebx
+  bool v5; // cf
+  bool v6; // cc
+  unsigned int v7; // eax
+  int v8; // eax
+  unsigned int v9; // ecx
+  int v10; // eax
+  int v11; // edi
+  int v12; // eax
+  int v13; // eax
+  int v14; // ecx
+  unsigned int v15; // edx
+  int v16; // edi
+  int v17; // ecx
+  int v18; // ecx
+  int v19; // edi
+  int v20; // eax
+  int v21; // eax
+  int v22; // ecx
+  unsigned int v24; // [esp+10h] [ebp-E8h] BYREF
+  unsigned int v25; // [esp+14h] [ebp-E4h]
+  int v26; // [esp+18h] [ebp-E0h]
+  char *pExceptionObject; // [esp+1Ch] [ebp-DCh] BYREF
+  int v28; // [esp+20h] [ebp-D8h]
+  int v29; // [esp+24h] [ebp-D4h] BYREF
+  int v30; // [esp+28h] [ebp-D0h] BYREF
+  int v31; // [esp+2Ch] [ebp-CCh] BYREF
+  int v32; // [esp+30h] [ebp-C8h] BYREF
+  int v33; // [esp+34h] [ebp-C4h] BYREF
+  int v34; // [esp+38h] [ebp-C0h] BYREF
+  int v35; // [esp+3Ch] [ebp-BCh] BYREF
+  int v36; // [esp+40h] [ebp-B8h] BYREF
+  int v37; // [esp+44h] [ebp-B4h] BYREF
+  unsigned int v38; // [esp+48h] [ebp-B0h] BYREF
+  unsigned int v39; // [esp+4Ch] [ebp-ACh] BYREF
+  int v40; // [esp+50h] [ebp-A8h] BYREF
+  struct GLMgroup *v41; // [esp+54h] [ebp-A4h]
+  char *v42; // [esp+58h] [ebp-A0h] BYREF
+  unsigned int v43; // [esp+5Ch] [ebp-9Ch] BYREF
+  _DWORD Buffer[2]; // [esp+60h] [ebp-98h] BYREF
+  int v45; // [esp+68h] [ebp-90h] BYREF
+  int v46; // [esp+6Ch] [ebp-8Ch] BYREF
+  int v47; // [esp+70h] [ebp-88h] BYREF
+  unsigned int v48; // [esp+74h] [ebp-84h] BYREF
+  char String[128]; // [esp+78h] [ebp-80h] BYREF
+
+  strcpy((char *)Buffer, "1234");
+  v46 = 112;
+  v1 = fopen(FileName, Mode: `string');
+  fread(Buffer, ElementSize: 1u, ElementCount: 4u, Stream: v1);
+  fread(Buffer: &v46, ElementSize: 4u, ElementCount: 1u, Stream: v1);
+  if ( v1 == nullptr || strcmp((const char *)Buffer, (const char *)&`string') != 0 || v46 != 1 )
+  {
+    fprintf(Stream: &_iob[2], Format: "glmReadBinMesh() failed: can't open data file \"%s\".\n", FileName);
+    pExceptionObject = (char *)operator new(a1: 4u);
+    _CxxThrowException(&pExceptionObject, pThrowInfo: (_ThrowInfo *)&_TI2PAH);
+  }
+  v2 = malloc(Size: 0x4Cu);
+  *v2 = strdup(String: FileName);
+  v3 = v2 + 2;
+  v4 = v2 + 4;
+  v2[1] = 0;
+  v2[2] = 0;
+  v2[3] = 0;
+  v2[4] = 0;
+  v2[5] = 0;
+  v2[6] = 0;
+  v2[7] = 0;
+  v2[8] = 0;
+  v2[9] = 0;
+  v2[10] = 0;
+  v2[11] = 0;
+  v2[12] = 0;
+  v2[13] = 0;
+  v2[14] = 0;
+  v2[15] = 0;
+  v2[16] = 0;
+  v2[17] = 0;
+  v2[18] = 0;
+  fread(Buffer: v2 + 2, ElementSize: 4u, ElementCount: 1u, Stream: v1);
+  if ( v2[2] != 0 )
+  {
+    v2[3] = malloc(Size: 4 * (3 * v2[2] + 3));
+    v5 = *v3 == 0;
+    v26 = 1;
+    if ( !v5 )
+    {
+      v25 = 12;
+      do
+      {
+        fread(Buffer: (void *)(v2[3] + v25), ElementSize: 4u, ElementCount: 3u, Stream: v1);
+        v6 = (unsigned int)++v26 <= *v3;
+        v25 += 12;
+      }
+      while ( v6 );
+    }
+  }
+  fread(Buffer: v2 + 4, ElementSize: 4u, ElementCount: 1u, Stream: v1);
+  if ( *v4 != 0 )
+  {
+    v2[5] = malloc(Size: 4 * (3 * *v4 + 3));
+    v5 = *v4 == 0;
+    v26 = 1;
+    if ( !v5 )
+    {
+      v25 = 12;
+      do
+      {
+        fread(Buffer: (void *)(v2[5] + v25), ElementSize: 4u, ElementCount: 3u, Stream: v1);
+        v6 = ++v26 <= *v4;
+        v25 += 12;
+      }
+      while ( v6 );
+    }
+  }
+  v7 = HACK_maxVertexCount;
+  if ( HACK_maxVertexCount < *v3 )
+  {
+    *v3 = HACK_maxVertexCount;
+    v7 = HACK_maxVertexCount;
+  }
+  if ( v7 < *v4 )
+    *v4 = v7;
+  v48 = 255;
+  fread(Buffer: &v48, ElementSize: 4u, ElementCount: 1u, Stream: v1);
+  if ( v48 > 1 )
+  {
+    fprintf(Stream: &_iob[2], Format: "glmReadBinMesh() failed: multiple texcoord channels unsupported!\n");
+    pExceptionObject = (char *)operator new(a1: 4u);
+    _CxxThrowException(&pExceptionObject, pThrowInfo: (_ThrowInfo *)&_TI2PAH);
+  }
+  if ( v48 != 0 )
+  {
+    fread(Buffer: v2 + 6, ElementSize: 4u, ElementCount: 1u, Stream: v1);
+    fread(Buffer: &pExceptionObject, ElementSize: 4u, ElementCount: 1u, Stream: v1);
+    if ( pExceptionObject != &algn_1[1] )
+    {
+      fprintf(Stream: &_iob[2], Format: "glmReadBinMesh() failed: only exactly 2 tex components supported!\n");
+      v42 = (char *)operator new(a1: 4u);
+      _CxxThrowException(pExceptionObject: &v42, pThrowInfo: (_ThrowInfo *)&_TI2PAH);
+    }
+    v2[7] = malloc(Size: 8 * v2[6] + 8);
+    v8 = v2[6];
+    v25 = 1;
+    if ( v8 != 0 )
+    {
+      do
+      {
+        fread(Buffer: (void *)(v2[7] + 8 * v25), ElementSize: 4u, ElementCount: 2u, Stream: v1);
+        v9 = v2[6];
+        ++v25;
+      }
+      while ( v25 <= v9 );
+    }
+  }
+  v43 = 255;
+  v45 = 255;
+  v24 = 255;
+  v47 = 255;
+  fread(Buffer: v2 + 10, ElementSize: 4u, ElementCount: 1u, Stream: v1);
+  v10 = v2[10];
+  if ( v10 != 0 )
+    v2[11] = malloc(Size: 40 * v10);
+  fread(Buffer: &v43, ElementSize: 4u, ElementCount: 1u, Stream: v1);
+  v28 = 0;
+  pExceptionObject = nullptr;
+  if ( v43 == 0 )
+    goto LABEL_107;
+  while ( 1 )
+  {
+    fread(Buffer: &v45, ElementSize: 4u, ElementCount: 1u, Stream: v1);
+    fread(Buffer: String, ElementSize: 1u, ElementCount: v45 + 1, Stream: v1);
+    v41 = glmAddGroup(a1: (struct GLMmodel *)v2, String);
+    v25 = (unsigned int)v41 + 4;
+    fread(Buffer: (char *)v41 + 4, ElementSize: 4u, ElementCount: 1u, Stream: v1);
+    *((_DWORD *)v41 + 2) = malloc(Size: 4 * *(_DWORD *)v25);
+    fread(Buffer: &v24, ElementSize: 4u, ElementCount: 1u, Stream: v1);
+    if ( v24 > 1 )
+    {
+      fprintf(Stream: &_iob[2], Format: "glmReadBinMesh() failed: multiple texcoord references unsupported!\n");
+      pExceptionObject = (char *)operator new(a1: 4u);
+      _CxxThrowException(&pExceptionObject, pThrowInfo: (_ThrowInfo *)&_TI2PAH);
+    }
+    v37 = 0;
+    v38 = 0;
+    v39 = 0;
+    v40 = 0;
+    v29 = 0;
+    v30 = 0;
+    v31 = 0;
+    v32 = 0;
+    v33 = 0;
+    v34 = 0;
+    v35 = 0;
+    v36 = 0;
+    fread(Buffer: &v47, ElementSize: 4u, ElementCount: 1u, Stream: v1);
+    if ( v47 != 1 )
+    {
+      if ( v47 != 2 )
+      {
+        fprintf(Stream: &_iob[2], Format: "glmReadBinMesh() failed: anything but quads or trigs unsupported!\n");
+        pExceptionObject = (char *)operator new(a1: 4u);
+        _CxxThrowException(&pExceptionObject, pThrowInfo: (_ThrowInfo *)&_TI2PAH);
+      }
+      v42 = nullptr;
+      if ( (*(_DWORD *)v25 & 0xFFFFFFFE) != 0 )
+      {
+        v26 = 0;
+        v16 = 40 * v28;
+        do
+        {
+          fread(Buffer: &v37, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+          if ( *v4 != 0 )
+            fread(Buffer: &v29, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+          if ( v24 != 0 )
+            fread(Buffer: &v33, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+          fread(Buffer: &v38, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+          if ( *v4 != 0 )
+            fread(Buffer: &v30, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+          if ( v24 != 0 )
+            fread(Buffer: &v34, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+          fread(Buffer: &v39, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+          if ( *v4 != 0 )
+            fread(Buffer: &v31, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+          if ( v24 != 0 )
+            fread(Buffer: &v35, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+          fread(Buffer: &v40, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+          if ( *v4 != 0 )
+            fread(Buffer: &v32, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+          if ( v24 != 0 )
+            fread(Buffer: &v36, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+          ++v38;
+          ++v39;
+          ++v40;
+          ++v29;
+          ++v30;
+          ++v31;
+          ++v32;
+          ++v33;
+          ++v34;
+          ++v37;
+          ++v36;
+          v17 = v2[11];
+          ++v35;
+          *(_DWORD *)(v16 + v17) = v37;
+          if ( *v4 != 0 )
+            *(_DWORD *)(v16 + v2[11] + 12) = v29;
+          if ( v24 != 0 )
+            *(_DWORD *)(v16 + v2[11] + 24) = v33;
+          *(_DWORD *)(v16 + v2[11] + 4) = v38;
+          if ( *v4 != 0 )
+            *(_DWORD *)(v16 + v2[11] + 16) = v30;
+          if ( v24 != 0 )
+            *(_DWORD *)(v16 + v2[11] + 28) = v34;
+          *(_DWORD *)(v16 + v2[11] + 8) = v39;
+          if ( *v4 != 0 )
+            *(_DWORD *)(v16 + v2[11] + 20) = v31;
+          if ( v24 != 0 )
+            *(_DWORD *)(v16 + v2[11] + 32) = v35;
+          v18 = v28;
+          v19 = v16 + 40;
+          v20 = v26;
+          *(_DWORD *)(*((_DWORD *)v41 + 2) + v26) = v28;
+          v21 = v20 + 4;
+          v28 = v18 + 1;
+          *(_DWORD *)(v19 + v2[11]) = v37;
+          if ( *v4 != 0 )
+            *(_DWORD *)(v19 + v2[11] + 12) = v29;
+          if ( v24 != 0 )
+            *(_DWORD *)(v19 + v2[11] + 24) = v33;
+          *(_DWORD *)(v19 + v2[11] + 4) = v39;
+          if ( *v4 != 0 )
+            *(_DWORD *)(v19 + v2[11] + 16) = v31;
+          if ( v24 != 0 )
+            *(_DWORD *)(v19 + v2[11] + 32) = v35;
+          *(_DWORD *)(v19 + v2[11] + 8) = v40;
+          if ( *v4 != 0 )
+            *(_DWORD *)(v19 + v2[11] + 20) = v32;
+          if ( v24 != 0 )
+            *(_DWORD *)(v19 + v2[11] + 36) = v36;
+          v26 = v21 + 4;
+          v16 = v19 + 40;
+          v22 = v28;
+          *(_DWORD *)(*((_DWORD *)v41 + 2) + v26 - 4) = v28;
+          v28 = v22 + 1;
+          ++v42;
+        }
+        while ( (unsigned int)v42 < *((_DWORD *)v41 + 1) >> 1 );
+      }
+      goto LABEL_103;
+    }
+    v26 = 0;
+    if ( *(_DWORD *)v25 != 0 )
+      break;
+LABEL_103:
+    if ( (unsigned int)++pExceptionObject >= v43 )
+      goto LABEL_107;
+  }
+  v11 = 40 * v28;
+  while ( 1 )
+  {
+    fread(Buffer: &v37, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+    if ( *v4 != 0 )
+      fread(Buffer: &v29, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+    if ( v24 != 0 )
+      fread(Buffer: &v33, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+    fread(Buffer: &v38, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+    if ( *v4 != 0 )
+      fread(Buffer: &v30, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+    if ( v24 != 0 )
+      fread(Buffer: &v34, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+    fread(Buffer: &v39, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+    if ( *v4 != 0 )
+      fread(Buffer: &v31, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+    if ( v24 != 0 )
+      fread(Buffer: &v35, ElementSize: 3u, ElementCount: 1u, Stream: v1);
+    v12 = v37 + 1;
+    ++v38;
+    ++v39;
+    ++v29;
+    ++v30;
+    ++v31;
+    ++v33;
+    ++v35;
+    v6 = HACK_maxVertexCount <= ++v37;
+    ++v34;
+    if ( v6 || HACK_maxVertexCount <= v38 || HACK_maxVertexCount <= v39 )
+      break;
+    *(_DWORD *)(v11 + v2[11]) = v12;
+    if ( *v4 != 0 )
+      *(_DWORD *)(v11 + v2[11] + 12) = v29;
+    if ( v24 != 0 )
+      *(_DWORD *)(v11 + v2[11] + 24) = v33;
+    *(_DWORD *)(v11 + v2[11] + 4) = v38;
+    if ( *v4 != 0 )
+      *(_DWORD *)(v11 + v2[11] + 16) = v30;
+    if ( v24 != 0 )
+      *(_DWORD *)(v11 + v2[11] + 28) = v34;
+    *(_DWORD *)(v11 + v2[11] + 8) = v39;
+    if ( *v4 != 0 )
+      *(_DWORD *)(v11 + v2[11] + 20) = v31;
+    if ( v24 != 0 )
+      *(_DWORD *)(v11 + v2[11] + 32) = v35;
+    v13 = v26;
+    v11 += 40;
+    v14 = v28;
+    *(_DWORD *)(*((_DWORD *)v41 + 2) + 4 * v26) = v28;
+    v28 = v14 + 1;
+    v15 = *(_DWORD *)v25;
+    v26 = v13 + 1;
+    if ( v13 + 1 >= v15 )
+      goto LABEL_103;
+  }
+  *((_DWORD *)v41 + 1) = v26;
+LABEL_107:
+  fclose(Stream: v1);
+  return (struct GLMmodel *)v2;
+}
+
+// 0x448c ?getShaderID@@YAIPBD@Z
+int __cdecl getShaderID(const char *a1)
+{
+  int v1; // ebp
+  const char *v2; // ecx
+  struct Shader **v3; // edi
+  bool v4; // zf
+
+  v1 = 0;
+  if ( &shaders == nullptr )
+    return 0;
+  v2 = (const char *)&shaders;
+  v3 = &shaders;
+  while ( strcmp(v2, a1) != 0 )
+  {
+    ++v1;
+    v4 = v3 + 9 == nullptr;
+    v3 += 9;
+    v2 = (const char *)v3;
+    if ( v4 )
+      return 0;
+  }
+  return v1;
+}
+
+// 0x44ec ?glmSetShader@@YAXI@Z
+void __cdecl glmSetShader(unsigned int a1)
+{
+  currShader = (struct Shader *)(&shaders + 9 * a1);
+}
+
+// 0x450c ?glmGetShaderInfo@@YAXAA_N@Z
+void __cdecl glmGetShaderInfo(bool *a1)
+{
+  *a1 = *((_BYTE *)currShader + 16);
+}
+
+// 0x451c ?glmDrawList@@YAXPAUGLMmodel@@IIPAUGLMgroup@@@Z
+void __cdecl glmDrawList(struct GLMmodel *a1, unsigned int a2, unsigned int a3, struct GLMgroup *a4)
+{
+  (*((void (__cdecl **)(struct GLMmodel *, unsigned int, unsigned int, struct GLMgroup *))currShader + 8))(
+    a1,
+    a2,
+    a3,
+    a4);
+}
+
+// 0x454c ?glmList@@YAIPAUGLMmodel@@IPAUGLMgroup@@@Z
+unsigned int __cdecl glmList(struct GLMmodel *a1, unsigned int a2, struct GLMgroup *a3)
+{
+  return (*((unsigned int (__cdecl **)(struct GLMmodel *, unsigned int, struct GLMgroup *))currShader + 7))(a1, a2, a3);
+}
+
+// 0x456c ?glmxNumTexUnits@@YAIXZ
+unsigned int __cdecl glmxNumTexUnits()
+{
+  return (*((unsigned int (**)(void))currShader + 5))();
+}
+
+// 0x457c ?glmxActivateTexUnit@@YAXI@Z
+void __cdecl glmxActivateTexUnit(unsigned int a1)
+{
+  (*((void (__cdecl **)(unsigned int))currShader + 6))(a1);
+}
+
+// 0x45b0 _malloc
+extrn _malloc:near
+
+// 0x45b8 _strdup
+extrn _strdup:near
+
+// 0x45bc _printf
+extrn _printf:near
+
+// 0x45c0 _free
+extrn _free:near
+
+// 0x45c4 _fprintf
+extrn _fprintf:near
+
+// 0x45cc __CIasin
+extrn __CIasin:near
+
+// 0x45d0 __CIacos
+extrn __CIacos:near
+
+// 0x45d8 _fclose
+extrn _fclose:near
+
+// 0x45dc _rewind
+extrn _rewind:near
+
+// 0x45e0 ??2@YAPAXI@Z
+extrn ??2@YAPAXI@Z:near
+
+// 0x45e4 _fopen
+extrn _fopen:near
+
+// 0x45e8 __CxxThrowException@8
+extrn __CxxThrowException@8:near
+
+// 0x45ec _strstr
+extrn _strstr:near
+
+// 0x45f0 _sscanf
+extrn _sscanf:near
+
+// 0x45f4 _fgets
+extrn _fgets:near
+
+// 0x45f8 _fscanf
+extrn _fscanf:near
+
+// 0x45fc _strrchr
+extrn _strrchr:near
+
+// 0x4600 __ftol
+extrn __ftol:near
+
+// 0x4604 _fwrite
+extrn _fwrite:near
+
+// 0x4608 _fread
+extrn _fread:near

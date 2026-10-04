@@ -1,0 +1,65 @@
+# intro scene script for demo
+
+Scene
+	{
+	Text
+		{
+		T {"'f-prot' floppy disk"; Y{-0.7;} D{5;} S{16;}}
+		}
+
+
+
+	PhysStart {1;}
+	PhysDuration   {200;}
+	DragForce { 50; }
+	gravity { 0; 0; 0; }		#no gravity yet to avoid contacts
+	collDet { 0; }				#collision detection off.
+
+
+	Bodies
+		{
+		1_Floppy
+			{
+			name { floppy; }
+
+			mass	{3;}				
+#			orientation {0.984808; 0.000000; 0.000000; -0.173650;}
+#			orientation {0.873948;0.271205;0.403294;0.004101;}
+			position {0;20;0; }
+			scale {0.1;}
+			}
+
+		1_Rubik
+			{
+			name { cube; }
+			mass	{3;}				
+			position {0;10;0; }
+			scale {0.02;}
+			}
+		}
+
+	Joints
+		{
+		PointInPlane
+			{
+			anchor { 0; 10; 0; }
+			normal { 0; 0; 1; }
+			bodies { floppy; cube; }
+			}
+		}
+
+	Lights
+		{
+		1 {5; 28; 7;}
+		}
+
+	Camera
+		{
+		position {-0.284466;8.448671;26.908834;}
+		angles {0.000000;-1.000000;20.000000;}
+		}
+
+
+#use default gravity of 9.8
+
+	}

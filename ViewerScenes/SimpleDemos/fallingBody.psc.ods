@@ -1,0 +1,1473 @@
+# joint test script
+# a horizontal human body falls.
+
+Scene
+	{
+	PhysStart {1;}
+	PhysDuration   {4000;}
+	DragForce { 50; }
+	gravity { 0; -10; 0; }
+	simStepSize { 0.016; }
+
+
+	Bodies
+		{
+#guy No 1
+		Rubik
+			{
+			name { g1_head; }
+			mass	{10;}				
+			position {0.60; 1.1221; 0; }
+			scale {0.005;}
+			}
+
+		Eraser
+			{
+			name { g1_body; }
+			mass	{22;}				
+			position { 0; 1.1221; 0; }
+			scale {0.015;}
+			}
+
+		Eraser
+			{
+			name { g1_LUpperArm; }
+			mass	{3;}				
+			position { 0.35; 1.1221; -0.50; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g1_LLowerArm; }
+			mass	{3;}				
+			position { 0.35; 1.1221; -0.90; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g1_RUpperArm; }
+			mass	{3;}				
+			position { 0.35; 1.1221; 0.50; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g1_RLowerArm; }
+			mass	{3;}				
+			position { 0.35; 1.1221; 0.90; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g1_LUpperLeg; }
+			mass	{6;}				
+			position { -0.65; 1.1221; -0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g1_LLowerLeg; }
+			mass	{6;}				
+			position { -1.15; 1.1221; -0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g1_RUpperLeg; }
+			mass	{5;}				
+			position { -0.65; 1.1221; 0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g1_RLowerLeg; }
+			mass	{5;}				
+			position { -1.15; 1.1221; 0.20; }
+			scale {0.01;}
+			}
+
+#guy # 1.5
+		Rubik
+			{
+			name { g15_head; }
+			mass	{10;}				
+			position {0.60; 1.5221; 0; }
+			scale {0.005;}
+			}
+
+		Eraser
+			{
+			name { g15_body; }
+			mass	{22;}				
+			position { 0; 1.5221; 0; }
+			scale {0.015;}
+			}
+
+		Eraser
+			{
+			name { g15_LUpperArm; }
+			mass	{3;}				
+			position { 0.35; 1.5221; -0.50; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g15_LLowerArm; }
+			mass	{3;}				
+			position { 0.35; 1.5221; -0.90; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g15_RUpperArm; }
+			mass	{3;}				
+			position { 0.35; 1.5221; 0.50; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g15_RLowerArm; }
+			mass	{3;}				
+			position { 0.35; 1.5221; 0.90; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g15_LUpperLeg; }
+			mass	{6;}				
+			position { -0.65; 1.5221; -0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g15_LLowerLeg; }
+			mass	{6;}				
+			position { -1.15; 1.5221; -0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g15_RUpperLeg; }
+			mass	{5;}				
+			position { -0.65; 1.5221; 0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g15_RLowerLeg; }
+			mass	{5;}				
+			position { -1.15; 1.5221; 0.20; }
+			scale {0.01;}
+			}
+#guy No 2
+		Rubik
+			{
+			name { g2_head; }
+			mass	{10;}				
+			position {0.60; 2.1221; 0; }
+			scale {0.005;}
+			}
+
+		Eraser
+			{
+			name { g2_body; }
+			mass	{22;}				
+			position { 0; 2.1221; 0; }
+			scale {0.015;}
+			}
+
+		Eraser
+			{
+			name { g2_LUpperArm; }
+			mass	{3;}				
+			position { 0.35; 2.1221; -0.50; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g2_LLowerArm; }
+			mass	{3;}				
+			position { 0.35; 2.1221; -0.90; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g2_RUpperArm; }
+			mass	{3;}				
+			position { 0.35; 2.1221; 0.50; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g2_RLowerArm; }
+			mass	{3;}				
+			position { 0.35; 2.1221; 0.90; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g2_LUpperLeg; }
+			mass	{6;}				
+			position { -0.65; 2.1221; -0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g2_LLowerLeg; }
+			mass	{6;}				
+			position { -1.15; 2.1221; -0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g2_RUpperLeg; }
+			mass	{5;}				
+			position { -0.65; 2.1221; 0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g2_RLowerLeg; }
+			mass	{5;}				
+			position { -1.15; 2.1221; 0.20; }
+			scale {0.01;}
+			}
+#guy no 2.5
+		Rubik
+			{
+			name { g25_head; }
+			mass	{10;}				
+			position {0.60; 2.5221; 0; }
+			scale {0.005;}
+			}
+
+		Eraser
+			{
+			name { g25_body; }
+			mass	{22;}				
+			position { 0; 2.5221; 0; }
+			scale {0.015;}
+			}
+
+		Eraser
+			{
+			name { g25_LUpperArm; }
+			mass	{3;}				
+			position { 0.35; 2.5221; -0.50; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g25_LLowerArm; }
+			mass	{3;}				
+			position { 0.35; 2.5221; -0.90; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g25_RUpperArm; }
+			mass	{3;}				
+			position { 0.35; 2.5221; 0.50; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g25_RLowerArm; }
+			mass	{3;}				
+			position { 0.35; 2.5221; 0.90; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g25_LUpperLeg; }
+			mass	{6;}				
+			position { -0.65; 2.5221; -0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g25_LLowerLeg; }
+			mass	{6;}				
+			position { -1.15; 2.5221; -0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g25_RUpperLeg; }
+			mass	{5;}				
+			position { -0.65; 2.5221; 0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g25_RLowerLeg; }
+			mass	{5;}				
+			position { -1.15; 2.5221; 0.20; }
+			scale {0.01;}
+			}
+#guy No 3
+		Rubik
+			{
+			name { g3_head; }
+			mass	{10;}				
+			position {0.60; 3.1221; 0; }
+			scale {0.005;}
+			}
+
+		Eraser
+			{
+			name { g3_body; }
+			mass	{22;}				
+			position { 0; 3.1221; 0; }
+			scale {0.015;}
+			}
+
+		Eraser
+			{
+			name { g3_LUpperArm; }
+			mass	{3;}				
+			position { 0.35; 3.1221; -0.50; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g3_LLowerArm; }
+			mass	{3;}				
+			position { 0.35; 3.1221; -0.90; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g3_RUpperArm; }
+			mass	{3;}				
+			position { 0.35; 3.1221; 0.50; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g3_RLowerArm; }
+			mass	{3;}				
+			position { 0.35; 3.1221; 0.90; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g3_LUpperLeg; }
+			mass	{6;}				
+			position { -0.65; 3.1221; -0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g3_LLowerLeg; }
+			mass	{6;}				
+			position { -1.15; 3.1221; -0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g3_RUpperLeg; }
+			mass	{5;}				
+			position { -0.65; 3.1221; 0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g3_RLowerLeg; }
+			mass	{5;}				
+			position { -1.15; 3.1221; 0.20; }
+			scale {0.01;}
+			}
+#guy No 3.5
+		Rubik
+			{
+			name { g35_head; }
+			mass	{10;}				
+			position {0.60; 3.5221; 0; }
+			scale {0.005;}
+			}
+
+		Eraser
+			{
+			name { g35_body; }
+			mass	{22;}				
+			position { 0; 3.5221; 0; }
+			scale {0.015;}
+			}
+
+		Eraser
+			{
+			name { g35_LUpperArm; }
+			mass	{3;}				
+			position { 0.35; 3.5221; -0.50; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g35_LLowerArm; }
+			mass	{3;}				
+			position { 0.35; 3.5221; -0.90; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g35_RUpperArm; }
+			mass	{3;}				
+			position { 0.35; 3.5221; 0.50; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g35_RLowerArm; }
+			mass	{3;}				
+			position { 0.35; 3.5221; 0.90; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g35_LUpperLeg; }
+			mass	{6;}				
+			position { -0.65; 3.5221; -0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g35_LLowerLeg; }
+			mass	{6;}				
+			position { -1.15; 3.5221; -0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g35_RUpperLeg; }
+			mass	{5;}				
+			position { -0.65; 3.5221; 0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g35_RLowerLeg; }
+			mass	{5;}				
+			position { -1.15; 3.5221; 0.20; }
+			scale {0.01;}
+			}
+
+#guy No 4
+		Rubik
+			{
+			name { g4_head; }
+			mass	{10;}				
+			position {0.60; 4.1221; 0; }
+			scale {0.005;}
+			}
+
+		Eraser
+			{
+			name { g4_body; }
+			mass	{22;}				
+			position { 0; 4.1221; 0; }
+			scale {0.015;}
+			}
+
+		Eraser
+			{
+			name { g4_LUpperArm; }
+			mass	{3;}				
+			position { 0.35; 4.1221; -0.50; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g4_LLowerArm; }
+			mass	{3;}				
+			position { 0.35; 4.1221; -0.90; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g4_RUpperArm; }
+			mass	{3;}				
+			position { 0.35; 4.1221; 0.50; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g4_RLowerArm; }
+			mass	{3;}				
+			position { 0.35; 4.1221; 0.90; }
+			scale {0.009;}
+			angles {0; 90; 0;}
+			}
+		Eraser
+			{
+			name { g4_LUpperLeg; }
+			mass	{6;}				
+			position { -0.65; 4.1221; -0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g4_LLowerLeg; }
+			mass	{6;}				
+			position { -1.15; 4.1221; -0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g4_RUpperLeg; }
+			mass	{5;}				
+			position { -0.65; 4.1221; 0.20; }
+			scale {0.01;}
+			}
+		Eraser
+			{
+			name { g4_RLowerLeg; }
+			mass	{5;}				
+			position { -1.15; 4.1221; 0.20; }
+			scale {0.01;}
+			}
+		}
+
+	Joints
+		{
+#guy No 1
+		Spherical		#neck
+			{
+			anchor {0.40; 1.1221; 0; }
+			bodies { g1_body; g1_head; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {1; 0; 0; }
+					p {0.40; 1.1221; 0; }
+					}
+				}
+
+			}
+		Spherical		#LShoulder
+			{
+			anchor {0.35; 1.1221; -0.25; }
+			bodies { g1_body; g1_LUpperArm; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {0; 0; -1; }
+					p {0.35; 1.1221; -0.25; }
+					}
+				}
+			}
+		Spherical		#RShoulder
+			{
+			anchor {0.35; 1.1221; 0.25; }
+			bodies { g1_body; g1_RUpperArm; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {0; 0; 1; }
+					p {0.35; 1.1221; 0.25; }
+					}
+				}
+			}
+		Spherical		#LHip
+			{
+			anchor {-0.40; 1.1221; -0.20; }
+			bodies { g1_body; g1_LUpperLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-1; 0; 0; }
+					p {-0.40; 1.1221; -0.20; }
+					}
+				}
+			}
+		Spherical		#RHip
+			{
+			anchor {-0.40; 1.1221; 0.20; }
+			bodies { g1_body; g1_RUpperLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-1; 0; 0; }
+					p {-0.40; 1.1221; 0.20; }
+					}
+				}
+			}
+
+		Hinge		#LElbow
+			{
+			anchor {0.35; 1.1221; -0.70; }
+			direction { 1; 0; 0; }
+			bodies { g1_LUpperArm; g1_LLowerArm; }
+			limitPlanes
+				{
+				1 
+					{
+					n {0; -1; -0.1; }
+					p {0.35; 1.1221; -0.70; }
+					}
+				}
+			}
+		Hinge		#RElbow
+			{
+			anchor {0.35; 1.1221; 0.70; }
+			direction { 1; 0; 0; }
+			bodies { g1_RUpperArm; g1_RLowerArm; }
+			limitPlanes
+				{
+				1 
+					{
+					n {0; -1; 0.1; }
+					p {0.35; 1.1221; 0.70; }
+					}
+				}
+			}
+		Hinge		#LKnee
+			{
+			anchor {-0.90; 1.1221; -0.20; }
+			direction { 0; 0; 1; }
+			bodies { g1_LUpperLeg; g1_LLowerLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-0.1; 1; 0; }
+					p {-0.90; 1.1221; -0.20; }
+					}
+				}
+			}
+		Hinge		#RKnee
+			{
+			anchor {-0.90; 1.1221; 0.20; }
+			direction { 0; 0; 1; }
+			bodies { g1_RUpperLeg; g1_RLowerLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-0.1; 1; 0; }
+					p {-0.90; 1.1221; 0.20; }
+					}
+				}
+			}
+#guy 1.5
+		Spherical		#neck
+			{
+			anchor {0.40; 1.5221; 0; }
+			bodies { g15_body; g15_head; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {1; 0; 0; }
+					p {0.40; 1.5221; 0; }
+					}
+				}
+
+			}
+		Spherical		#LShoulder
+			{
+			anchor {0.35; 1.5221; -0.25; }
+			bodies { g15_body; g15_LUpperArm; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {0; 0; -1; }
+					p {0.35; 1.5221; -0.25; }
+					}
+				}
+			}
+		Spherical		#RShoulder
+			{
+			anchor {0.35; 1.5221; 0.25; }
+			bodies { g15_body; g15_RUpperArm; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {0; 0; 1; }
+					p {0.35; 1.5221; 0.25; }
+					}
+				}
+			}
+		Spherical		#LHip
+			{
+			anchor {-0.40; 1.5221; -0.20; }
+			bodies { g15_body; g15_LUpperLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-1; 0; 0; }
+					p {-0.40; 1.5221; -0.20; }
+					}
+				}
+			}
+		Spherical		#RHip
+			{
+			anchor {-0.40; 1.5221; 0.20; }
+			bodies { g15_body; g15_RUpperLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-1; 0; 0; }
+					p {-0.40; 1.5221; 0.20; }
+					}
+				}
+			}
+
+		Hinge		#LElbow
+			{
+			anchor {0.35; 1.5221; -0.70; }
+			direction { 1; 0; 0; }
+			bodies { g15_LUpperArm; g15_LLowerArm; }
+			limitPlanes
+				{
+				1 
+					{
+					n {0; -1; -0.1; }
+					p {0.35; 1.5221; -0.70; }
+					}
+				}
+			}
+		Hinge		#RElbow
+			{
+			anchor {0.35; 1.5221; 0.70; }
+			direction { 1; 0; 0; }
+			bodies { g15_RUpperArm; g15_RLowerArm; }
+			limitPlanes
+				{
+				1 
+					{
+					n {0; -1; 0.1; }
+					p {0.35; 1.5221; 0.70; }
+					}
+				}
+			}
+		Hinge		#LKnee
+			{
+			anchor {-0.90; 1.5221; -0.20; }
+			direction { 0; 0; 1; }
+			bodies { g15_LUpperLeg; g15_LLowerLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-0.1; 1; 0; }
+					p {-0.90; 1.5221; -0.20; }
+					}
+				}
+			}
+		Hinge		#RKnee
+			{
+			anchor {-0.90; 1.5221; 0.20; }
+			direction { 0; 0; 1; }
+			bodies { g15_RUpperLeg; g15_RLowerLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-0.1; 1; 0; }
+					p {-0.90; 1.5221; 0.20; }
+					}
+				}
+			}
+#guy No 2
+
+		Spherical		#neck
+			{
+			anchor {0.40; 2.1221; 0; }
+			bodies { g2_body; g2_head; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {1; 0; 0; }
+					p {0.40; 2.1221; 0; }
+					}
+				}
+
+			}
+		Spherical		#LShoulder
+			{
+			anchor {0.35; 2.1221; -0.25; }
+			bodies { g2_body; g2_LUpperArm; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {0; 0; -1; }
+					p {0.35; 2.1221; -0.25; }
+					}
+				}
+			}
+		Spherical		#RShoulder
+			{
+			anchor {0.35; 2.1221; 0.25; }
+			bodies { g2_body; g2_RUpperArm; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {0; 0; 1; }
+					p {0.35; 2.1221; 0.25; }
+					}
+				}
+			}
+		Spherical		#LHip
+			{
+			anchor {-0.40; 2.1221; -0.20; }
+			bodies { g2_body; g2_LUpperLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-1; 0; 0; }
+					p {-0.40; 2.1221; -0.20; }
+					}
+				}
+			}
+		Spherical		#RHip
+			{
+			anchor {-0.40; 2.1221; 0.20; }
+			bodies { g2_body; g2_RUpperLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-1; 0; 0; }
+					p {-0.40; 2.1221; 0.20; }
+					}
+				}
+			}
+
+		Hinge		#LElbow
+			{
+			anchor {0.35; 2.1221; -0.70; }
+			direction { 1; 0; 0; }
+			bodies { g2_LUpperArm; g2_LLowerArm; }
+			limitPlanes
+				{
+				1 
+					{
+					n {0; -1; -0.1; }
+					p {0.35; 2.1221; -0.70; }
+					}
+				}
+			}
+		Hinge		#RElbow
+			{
+			anchor {0.35; 2.1221; 0.70; }
+			direction { 1; 0; 0; }
+			bodies { g2_RUpperArm; g2_RLowerArm; }
+			limitPlanes
+				{
+				1 
+					{
+					n {0; -1; 0.1; }
+					p {0.35; 2.1221; 0.70; }
+					}
+				}
+			}
+		Hinge		#LKnee
+			{
+			anchor {-0.90; 2.1221; -0.20; }
+			direction { 0; 0; 1; }
+			bodies { g2_LUpperLeg; g2_LLowerLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-0.1; 1; 0; }
+					p {-0.90; 2.1221; -0.20; }
+					}
+				}
+			}
+		Hinge		#RKnee
+			{
+			anchor {-0.90; 2.1221; 0.20; }
+			direction { 0; 0; 1; }
+			bodies { g2_RUpperLeg; g2_RLowerLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-0.1; 1; 0; }
+					p {-0.90; 2.1221; 0.20; }
+					}
+				}
+			}
+#guy 2.5
+		Spherical		#neck
+			{
+			anchor {0.40; 2.5221; 0; }
+			bodies { g25_body; g25_head; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {1; 0; 0; }
+					p {0.40; 2.5221; 0; }
+					}
+				}
+
+			}
+		Spherical		#LShoulder
+			{
+			anchor {0.35; 2.5221; -0.25; }
+			bodies { g25_body; g25_LUpperArm; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {0; 0; -1; }
+					p {0.35; 2.5221; -0.25; }
+					}
+				}
+			}
+		Spherical		#RShoulder
+			{
+			anchor {0.35; 2.5221; 0.25; }
+			bodies { g25_body; g25_RUpperArm; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {0; 0; 1; }
+					p {0.35; 2.5221; 0.25; }
+					}
+				}
+			}
+		Spherical		#LHip
+			{
+			anchor {-0.40; 2.5221; -0.20; }
+			bodies { g25_body; g25_LUpperLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-1; 0; 0; }
+					p {-0.40; 2.5221; -0.20; }
+					}
+				}
+			}
+		Spherical		#RHip
+			{
+			anchor {-0.40; 2.5221; 0.20; }
+			bodies { g25_body; g25_RUpperLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-1; 0; 0; }
+					p {-0.40; 2.5221; 0.20; }
+					}
+				}
+			}
+
+		Hinge		#LElbow
+			{
+			anchor {0.35; 2.5221; -0.70; }
+			direction { 1; 0; 0; }
+			bodies { g25_LUpperArm; g25_LLowerArm; }
+			limitPlanes
+				{
+				1 
+					{
+					n {0; -1; -0.1; }
+					p {0.35; 2.5221; -0.70; }
+					}
+				}
+			}
+		Hinge		#RElbow
+			{
+			anchor {0.35; 2.5221; 0.70; }
+			direction { 1; 0; 0; }
+			bodies { g25_RUpperArm; g25_RLowerArm; }
+			limitPlanes
+				{
+				1 
+					{
+					n {0; -1; 0.1; }
+					p {0.35; 2.5221; 0.70; }
+					}
+				}
+			}
+		Hinge		#LKnee
+			{
+			anchor {-0.90; 2.5221; -0.20; }
+			direction { 0; 0; 1; }
+			bodies { g25_LUpperLeg; g25_LLowerLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-0.1; 1; 0; }
+					p {-0.90; 2.5221; -0.20; }
+					}
+				}
+			}
+		Hinge		#RKnee
+			{
+			anchor {-0.90; 2.5221; 0.20; }
+			direction { 0; 0; 1; }
+			bodies { g25_RUpperLeg; g25_RLowerLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-0.1; 1; 0; }
+					p {-0.90; 2.5221; 0.20; }
+					}
+				}
+			}
+#guy 3
+
+		Spherical		#neck
+			{
+			anchor {0.40; 3.1221; 0; }
+			bodies { g3_body; g3_head; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {1; 0; 0; }
+					p {0.40; 3.1221; 0; }
+					}
+				}
+
+			}
+		Spherical		#LShoulder
+			{
+			anchor {0.35; 3.1221; -0.25; }
+			bodies { g3_body; g3_LUpperArm; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {0; 0; -1; }
+					p {0.35; 3.1221; -0.25; }
+					}
+				}
+			}
+		Spherical		#RShoulder
+			{
+			anchor {0.35; 3.1221; 0.25; }
+			bodies { g3_body; g3_RUpperArm; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {0; 0; 1; }
+					p {0.35; 3.1221; 0.25; }
+					}
+				}
+			}
+		Spherical		#LHip
+			{
+			anchor {-0.40; 3.1221; -0.20; }
+			bodies { g3_body; g3_LUpperLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-1; 0; 0; }
+					p {-0.40; 3.1221; -0.20; }
+					}
+				}
+			}
+		Spherical		#RHip
+			{
+			anchor {-0.40; 3.1221; 0.20; }
+			bodies { g3_body; g3_RUpperLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-1; 0; 0; }
+					p {-0.40; 3.1221; 0.20; }
+					}
+				}
+			}
+
+		Hinge		#LElbow
+			{
+			anchor {0.35; 3.1221; -0.70; }
+			direction { 1; 0; 0; }
+			bodies { g3_LUpperArm; g3_LLowerArm; }
+			limitPlanes
+				{
+				1 
+					{
+					n {0; -1; -0.1; }
+					p {0.35; 3.1221; -0.70; }
+					}
+				}
+			}
+		Hinge		#RElbow
+			{
+			anchor {0.35; 3.1221; 0.70; }
+			direction { 1; 0; 0; }
+			bodies { g3_RUpperArm; g3_RLowerArm; }
+			limitPlanes
+				{
+				1 
+					{
+					n {0; -1; 0.1; }
+					p {0.35; 3.1221; 0.70; }
+					}
+				}
+			}
+		Hinge		#LKnee
+			{
+			anchor {-0.90; 3.1221; -0.20; }
+			direction { 0; 0; 1; }
+			bodies { g3_LUpperLeg; g3_LLowerLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-0.1; 1; 0; }
+					p {-0.90; 3.1221; -0.20; }
+					}
+				}
+			}
+		Hinge		#RKnee
+			{
+			anchor {-0.90; 3.1221; 0.20; }
+			direction { 0; 0; 1; }
+			bodies { g3_RUpperLeg; g3_RLowerLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-0.1; 1; 0; }
+					p {-0.90; 3.1221; 0.20; }
+					}
+				}
+			}
+#guy 3.5
+
+		Spherical		#neck
+			{
+			anchor {0.40; 3.5221; 0; }
+			bodies { g35_body; g35_head; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {1; 0; 0; }
+					p {0.40; 3.5221; 0; }
+					}
+				}
+
+			}
+		Spherical		#LShoulder
+			{
+			anchor {0.35; 3.5221; -0.25; }
+			bodies { g35_body; g35_LUpperArm; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {0; 0; -1; }
+					p {0.35; 3.5221; -0.25; }
+					}
+				}
+			}
+		Spherical		#RShoulder
+			{
+			anchor {0.35; 3.5221; 0.25; }
+			bodies { g35_body; g35_RUpperArm; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {0; 0; 1; }
+					p {0.35; 3.5221; 0.25; }
+					}
+				}
+			}
+		Spherical		#LHip
+			{
+			anchor {-0.40; 3.5221; -0.20; }
+			bodies { g35_body; g35_LUpperLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-1; 0; 0; }
+					p {-0.40; 3.5221; -0.20; }
+					}
+				}
+			}
+		Spherical		#RHip
+			{
+			anchor {-0.40; 3.5221; 0.20; }
+			bodies { g35_body; g35_RUpperLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-1; 0; 0; }
+					p {-0.40; 3.5221; 0.20; }
+					}
+				}
+			}
+
+		Hinge		#LElbow
+			{
+			anchor {0.35; 3.5221; -0.70; }
+			direction { 1; 0; 0; }
+			bodies { g35_LUpperArm; g35_LLowerArm; }
+			limitPlanes
+				{
+				1 
+					{
+					n {0; -1; -0.1; }
+					p {0.35; 3.5221; -0.70; }
+					}
+				}
+			}
+		Hinge		#RElbow
+			{
+			anchor {0.35; 3.5221; 0.70; }
+			direction { 1; 0; 0; }
+			bodies { g35_RUpperArm; g35_RLowerArm; }
+			limitPlanes
+				{
+				1 
+					{
+					n {0; -1; 0.1; }
+					p {0.35; 3.5221; 0.70; }
+					}
+				}
+			}
+		Hinge		#LKnee
+			{
+			anchor {-0.90; 3.5221; -0.20; }
+			direction { 0; 0; 1; }
+			bodies { g35_LUpperLeg; g35_LLowerLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-0.1; 1; 0; }
+					p {-0.90; 3.5221; -0.20; }
+					}
+				}
+			}
+		Hinge		#RKnee
+			{
+			anchor {-0.90; 3.5221; 0.20; }
+			direction { 0; 0; 1; }
+			bodies { g35_RUpperLeg; g35_RLowerLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-0.1; 1; 0; }
+					p {-0.90; 3.5221; 0.20; }
+					}
+				}
+			}
+#guy 4
+	Spherical		#neck
+			{
+			anchor {0.40; 4.1221; 0; }
+			bodies { g4_body; g4_head; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {1; 0; 0; }
+					p {0.40; 4.1221; 0; }
+					}
+				}
+
+			}
+		Spherical		#LShoulder
+			{
+			anchor {0.35; 4.1221; -0.25; }
+			bodies { g4_body; g4_LUpperArm; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {0; 0; -1; }
+					p {0.35; 4.1221; -0.25; }
+					}
+				}
+			}
+		Spherical		#RShoulder
+			{
+			anchor {0.35; 4.1221; 0.25; }
+			bodies { g4_body; g4_RUpperArm; }
+
+			limitPlanes
+				{
+				1 
+					{
+					n {0; 0; 1; }
+					p {0.35; 4.1221; 0.25; }
+					}
+				}
+			}
+		Spherical		#LHip
+			{
+			anchor {-0.40; 4.1221; -0.20; }
+			bodies { g4_body; g4_LUpperLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-1; 0; 0; }
+					p {-0.40; 4.1221; -0.20; }
+					}
+				}
+			}
+		Spherical		#RHip
+			{
+			anchor {-0.40; 4.1221; 0.20; }
+			bodies { g4_body; g4_RUpperLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-1; 0; 0; }
+					p {-0.40; 4.1221; 0.20; }
+					}
+				}
+			}
+
+		Hinge		#LElbow
+			{
+			anchor {0.35; 4.1221; -0.70; }
+			direction { 1; 0; 0; }
+			bodies { g4_LUpperArm; g4_LLowerArm; }
+			limitPlanes
+				{
+				1 
+					{
+					n {0; -1; -0.1; }
+					p {0.35; 4.1221; -0.70; }
+					}
+				}
+			}
+		Hinge		#RElbow
+			{
+			anchor {0.35; 4.1221; 0.70; }
+			direction { 1; 0; 0; }
+			bodies { g4_RUpperArm; g4_RLowerArm; }
+			limitPlanes
+				{
+				1 
+					{
+					n {0; -1; 0.1; }
+					p {0.35; 4.1221; 0.70; }
+					}
+				}
+			}
+		Hinge		#LKnee
+			{
+			anchor {-0.90; 4.1221; -0.20; }
+			direction { 0; 0; 1; }
+			bodies { g4_LUpperLeg; g4_LLowerLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-0.1; 1; 0; }
+					p {-0.90; 4.1221; -0.20; }
+					}
+				}
+			}
+		Hinge		#RKnee
+			{
+			anchor {-0.90; 4.1221; 0.20; }
+			direction { 0; 0; 1; }
+			bodies { g4_RUpperLeg; g4_RLowerLeg; }
+			limitPlanes
+				{
+				1 
+					{
+					n {-0.1; 1; 0; }
+					p {-0.90; 4.1221; 0.20; }
+					}
+				}
+			}
+		}
+
+	Obstacles
+		{
+		}
+
+
+	Lights
+		{
+		1 {5; 5; 7;}
+		2 {-5; 25; 10;}
+		}
+
+	Camera
+		{
+		position {1.294484;5.926343;4.536036;}
+		angles {0.000000;15.000000;-33.000000;}
+		}
+
+
+
+	}

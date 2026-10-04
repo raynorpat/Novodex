@@ -1,0 +1,64 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 1000; }
+	DragForce	{ 100; }
+	gravity	{ 0.000000; -9.810000; 0.000000; }
+	gridRes	{ 0; }
+
+
+	Parameters
+		{
+		RigidBodySDK
+			{
+			#MIN_SEPARATION_FOR_PENALTY { -0.015; }
+			MAX_ANGULAR_VELOCITY { 100000; }
+
+			}
+		}
+
+Text
+	{
+	T {"Spinning tops (high angular vels)!"; Y{-0.7;} D{5;} S{16;}}
+	}
+
+
+	Bodies
+	{
+
+		Box01
+		{
+			name	{ Box24; }
+			orientation	{ 0.755738; 0.376289; 0.524470; 0.110441; }
+			position	{ 2.875001; 2.771177; 1.862341; }
+			scale	{ 1.000000; }
+			angularVelocity { 0; 111; 0; }
+		}
+		Box01
+		{
+			name	{ Box25; }
+			orientation	{ 0.755738; 0.376289; 0.524470; 0.110441; }
+			position	{ 0.199303; 3.377045; 5.461364; }
+			scale	{ 1.000000; }
+			angularVelocity { 0; 111; 0; }
+			linearVelocity { 2; 0; 0; }
+		}
+		Box01
+		{
+			name	{ Box26; }
+			orientation	{ 0.755738; 0.376289; 0.524470; 0.110441; }
+			position	{ -2.818482; 1.957439; 5.109363; }
+			scale	{ 1.000000; }
+			angularVelocity { 0; 111; 0; }
+		}
+	}
+	Joints
+	{
+	}
+	Lights
+	{
+	}
+	Camera
+	{
+	}
+}

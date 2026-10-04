@@ -1,0 +1,11 @@
+Model3
+  {
+  Mesh { "sphere.obj"; }
+  Groups
+		{
+		default		#for sphere
+			{
+			Wood.mat.ods;
+			}
+		}
+  }

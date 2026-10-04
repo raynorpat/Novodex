@@ -1,0 +1,13 @@
+Model3
+  {
+  #Terrain { "Terrain.chu"; }
+  #Terrain { "Desert.chu"; }
+  Terrain { "city.chu"; }
+  Groups
+		{
+		default
+			{
+			Terrain.mat.ods;
+			}
+		}
+  }

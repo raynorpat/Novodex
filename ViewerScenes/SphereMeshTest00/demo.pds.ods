@@ -1,0 +1,141 @@
+PDS
+{
+	Acts
+	{
+		"SphereMeshTest00.psc.ods";
+	}
+	Models
+	{
+		Plane01	{ "Plane01.mod.ods"; }
+		GeoSphere01	{ "GeoSphere01.mod.ods"; }
+		Box01	{ "Box01.mod.ods"; }
+		Box02	{ "Box02.mod.ods"; }
+		Box03	{ "Box03.mod.ods"; }
+		Box04	{ "Box04.mod.ods"; }
+	}
+	Actors
+	{
+		Plane01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Plane01";
+					}
+				}
+			}
+			Collision
+			{
+					TriangleMesh;
+			}
+		}
+		GeoSphere01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"GeoSphere01";
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+#					radius	{ 0.279914; }
+					radius	{ 0.3; }
+				}
+			}
+		}
+		Box01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box01";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					dimensions	{ 21.937323; 10.000000; 1.994302; }
+				}
+			}
+		}
+		Box02
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box02";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					dimensions	{ 21.937323; 10.000000; 1.994302; }
+				}
+			}
+		}
+		Box03
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box03";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					dimensions	{ 21.937321; 10.000000; 1.994301; }
+				}
+			}
+		}
+		Box04
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box04";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					dimensions	{ 21.937321; 10.000000; 1.994301; }
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,65 @@
+PDS
+{
+	Acts
+	{
+		"nofriction.psc.ods";
+		"isotropicFriction.psc.ods";
+		"anisotropicFriction.psc.ods";
+
+	}
+	Models
+	{
+		Terrain	{ "Terrain.mod.ods"; }
+		Sled	{ "Sled.mod.ods"; }
+	}
+	Actors
+	{
+		Terrain
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Terrain";
+					}
+				}
+			}
+			Collision
+			{
+					TriangleMesh
+					{
+						heightFieldInfAxis { 1; }
+						heightFieldInfValue { -10000; }
+					}
+			}
+		}
+		Sled
+		{
+			Graphics
+			{
+				Node
+				{
+					Node 
+					{
+						position { 0; 0.01; 0; }
+						angles {0; 90; 0;}
+						Model
+						{
+						"Sled";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.6500000; 0.2200; 0.3000; }
+				}
+			}
+		}
+	}
+}

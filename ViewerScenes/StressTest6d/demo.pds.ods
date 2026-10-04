@@ -1,0 +1,57 @@
+PDS
+{
+	Acts
+	{
+		"Physics_StressTest06d.psc.ods";
+	}
+	Models
+	{
+		Box05	{ "Box05.mod.ods"; }
+		GeoSphere01	{ "GeoSphere01.mod.ods"; }
+	}
+	Actors
+	{
+		Box05
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box05";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+#					dimensions	{ 0.800000; 0.800000; 0.800000; }
+					dimensions	{ 0.850000; 0.850000; 0.850000; }
+				}
+			}
+		}
+		GeoSphere01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"GeoSphere01";
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+					radius	{ 1.920809; }
+				}
+			}
+		}
+	}
+}

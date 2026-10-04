@@ -1,0 +1,109 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 1000; }
+	DragForce	{ 100; }
+	gravity	{ 0.000000; -9.810000; 0.000000; }
+	gridRes	{ 0; }
+
+	Text
+		{
+		T {"One of the four axes is motorized."; Y{-0.7;} D{5;} S{16;}}
+		}
+	Bodies
+	{
+		Gear1
+		{
+			# Joint name
+			name	{ Gear1Joint; }
+			# PRS
+			orientation	{ -1.000000; 0.000000; 0.000000; -0.000000; }
+			position	{ -0; 0.329416; -0; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 1.000000; }
+		}
+		Gear02
+		{
+			# Joint name
+			name	{ Gear02Joint; }
+			# PRS
+			orientation	{ -0.992005; -0.000000; -0.126199; -0.000000; }
+			position	{ 2.17; 0.329416; -0; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 1.000000; }
+		}
+
+
+		Gear1
+		{
+			# Joint name
+			name	{ Gear3Joint; }
+			# PRS
+			orientation	{ -1.000000; 0.000000; 0.000000; -0.000000; }
+			position	{ -0; 0.329416; 3; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 1.000000; }
+		}
+		Gear02
+		{
+			# Joint name
+			name	{ Gear04Joint; }
+			# PRS
+			orientation	{ -0.992005; -0.000000; -0.126199; -0.000000; }
+			position	{ 2.17; 0.329416; 3; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 1.000000; }
+		}
+/*
+	Box
+		{
+		position { 0; 4; 5; }
+		mass { 1; }
+		scale { 3; }
+		}
+*/
+	}
+	Joints
+	{
+	Hinge
+		{
+		bodies { WORLD; Gear1Joint;  }
+		anchor { 0; 0; 0; }
+		direction { 0; 1; 0; }
+
+		motor { 5; 10; 0; }
+		}
+	Hinge
+		{
+		bodies { WORLD; Gear02Joint; }
+		anchor { 2.17; 0; 0; }
+		direction { 0; 1; 0; }
+		}
+
+	Hinge
+		{
+		bodies { WORLD; Gear3Joint;  }
+		anchor { 0; 0; 3; }
+		direction { 0; 1; 0; }
+		}
+	Hinge
+		{
+		bodies { WORLD; Gear04Joint; }
+		anchor { 2.17; 0; 3; }
+		direction { 0; 1; 0; }
+		}
+
+	}
+	Lights
+	{
+	}
+	Camera
+	{
+		position {2.236627;5.064829;3.420819;}
+		angles {0.000000;21.000000;-55.000000;}
+	}
+}

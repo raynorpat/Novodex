@@ -1,0 +1,9 @@
+# Barrel24
+Model3
+{
+	Mesh	{ "Barrel24.obj"; }
+	Groups
+	{
+		Material_31 { "Material #968.mat.ods"; }
+	}
+}

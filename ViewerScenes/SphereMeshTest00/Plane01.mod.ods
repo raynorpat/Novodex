@@ -1,0 +1,9 @@
+# Plane01
+Model3
+{
+	Mesh	{ "Plane01.obj"; }
+	Groups
+	{
+		Material_0 { "2_-_Default.mat.ods"; }
+	}
+}

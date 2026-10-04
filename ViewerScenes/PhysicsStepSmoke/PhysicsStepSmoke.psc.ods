@@ -1,0 +1,17 @@
+Scene
+{
+	PhysStart { 0; }
+	PhysDuration { 1000; }
+	noGroundPlane;
+	gravity { 0; -9.81; 0; }
+	simStepSize { 0.01; }
+	Bodies
+	{
+		TestBox
+		{
+			name { FallingBox; }
+			position { 0; 10; 0; }
+			mass { 1; }
+		}
+	}
+}

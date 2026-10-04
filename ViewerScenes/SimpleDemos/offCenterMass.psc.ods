@@ -1,0 +1,91 @@
+# joint test script
+# three sphere-joint chains are connected to the world with sphere, pointOnLine and pointInPlane constraints.
+
+Scene
+	{
+	Text
+		{
+		T {"off center mass -- only works well with pierre's bbcd";						X{-0.9;} Y{ 0.7;} N{0.7;} S{16;}}
+		}
+
+
+
+	PhysStart {3;}
+	PhysDuration   {20000;}
+	DragForce { 50; }
+	simStepSize { 0.01; }
+	gravity { 0; -9; 0; }
+	noGroundPlane;
+
+	Space
+		{
+		worldBox { -5; 5; 0; 12; -2; 2; }
+		cellsize { 1; }
+		memory { 1021; }
+		}
+
+
+
+	Bodies
+		{
+	
+		Floppy
+			{
+			name { weirdbounce; }
+			mass	{10;}				
+			position {-4;3;0; }
+			scale {0.015;}
+			angles { 90; 0; 0; }
+			friction {0.5;}
+			}
+
+	Floppy
+			{
+			name { center; }
+			mass	{10;}				
+			position {2.2;3;0; }
+			scale {0.015;}
+			angles { 90; 0; 0; }
+			friction {0.5;}
+			}
+
+	Floppy
+			{
+			name { offcenter; }
+			mass	{10;}				
+			position {2.2;3;3; }
+			scale {0.015;}
+			angles { 90; 0; 0; }
+			friction {0.5;}
+
+			centerOfMass { 1; } 
+			}
+
+
+		Floppy
+			{
+			mass	{0;}				
+			angles { 90; 0; 0;}
+			position {-11;0;0; }
+			friction {0.5;}
+			scale {0.3;}
+			}
+
+
+		}
+
+
+	Lights
+		{
+		1 {5; 5; 7;}
+		2 {-5; 25; 10;}
+		}
+
+	Camera
+		{
+	position {3.480864;14.080350;17.458128;}
+	angles {0.000000;367.000000;-41.000000;}
+		}
+
+
+	}

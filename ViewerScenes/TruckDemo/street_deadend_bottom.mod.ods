@@ -1,0 +1,9 @@
+# street_deadend_bottom
+Model3
+{
+	Mesh	{ "street_deadend_bottom.obj"; }
+	Groups
+	{
+		Material_47 { "Material #1010.mat.ods"; }
+	}
+}

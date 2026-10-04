@@ -1,0 +1,64 @@
+PDS
+{
+	Acts
+	{
+
+
+	#hinge joints
+
+	hingeChainUnlimited.psc.ods;
+	hingeUnlimited.psc.ods;
+
+	hingeLimited.psc.ods;
+	hingeLowLimited.psc.ods;
+	hingeHighLimited.psc.ods;
+
+	hingePoweredVrel.psc.ods;
+	hingePoweredForce.psc.ods;
+	hingePoweredForceLim.psc.ods;
+	hingePoweredMinvel.psc.ods;
+
+	hingeChain.psc.ods;
+
+	hingeDamp.psc.ods;
+	hingeSpringUndamp.psc.ods;
+	hingeSpringCritDamp.psc.ods;
+	hingeSpringChain.psc.ods;
+
+
+	#hingeProjected.psc.ods;
+
+	#sphere joints
+	sphereUnlimited.psc.ods;
+	#sphereEuler.psc.ods;
+	#sphereAnatomic.psc.ods;
+	}
+	Models
+	{
+	brick1	{ "brick1.mod.ods"; }
+	}
+	Actors
+	{
+		brick1
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+					"brick1";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					dimensions	{ 1; 0.5; 0.6; }
+				}
+			}
+		}
+	}
+}

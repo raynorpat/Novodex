@@ -1,0 +1,9 @@
+# brick1
+Model3
+{
+	Mesh	{ "brick1.obj"; }
+	Groups
+	{
+		DefaultMaterial { "Default.mat.ods"; }
+	}
+}

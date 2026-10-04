@@ -1,0 +1,9 @@
+# Quader22
+Model3
+{
+	Mesh	{ "Quader22.obj"; }
+	Groups
+	{
+		DefaultMaterial { "Default.mat.ods"; }
+	}
+}

@@ -1,0 +1,9 @@
+# top_poly_tex
+Model3
+{
+	Mesh	{ "top_poly_tex.obj"; }
+	Groups
+	{
+		Material_34 { "14 - Standard.mat.ods"; }
+	}
+}

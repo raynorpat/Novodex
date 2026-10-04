@@ -1,0 +1,72 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 1000; }
+	DragForce	{ 100; }
+	gravity	{ 0; -10; 0; }#-9.81 #-10
+	simStepSize { 0.02; }
+	noGroundPlane;
+
+	Text
+		{
+		T {"Hinge with low limit";						X{-0.9;} Y{ 0.7;} N{0.7;} S{16;}}
+		}
+
+
+	Parameters
+		{
+		RigidBodySDK
+			{
+			#MIN_SEPARATION_FOR_PENALTY { -0.01; }
+			BOUNCE_TRESHOLD { -0.2; }
+			SLEEP_ANG_VEL_SQUARED { 0; }
+			}
+		Viewer
+			{
+			#COLL_VETO_JOINTED { 0; }
+			}
+		}
+
+	Bodies
+	{
+
+		brick1
+		{
+			name	{ fixed; }
+			position	{ 0; 0; 0; }
+			mass { 0; }
+		}
+		brick1
+		{
+			name	{ moving; }
+			position	{ 12; 0; 0; }#was 1.5 - 14
+			maxAngVel { 10000; }
+			#mass { 100; }
+		}
+	}
+	Joints
+	{
+	Hinge
+		{
+		bodies { WORLD; moving;  }
+		anchor { 1; 0; 0; }
+		direction   { 0; 0; 1; }
+		#Lagrange;
+
+		#limits { -45; 666; }
+
+		lowLimit { -45; 0; 1; }
+
+
+
+		}
+	}
+	Lights
+	{
+	}
+	Camera
+	{
+	position {10.031887;6.793139;33.245270;}
+	angles {0.000000;15.000000;-8.000000;}
+	}
+}

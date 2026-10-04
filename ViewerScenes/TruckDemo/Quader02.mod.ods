@@ -1,0 +1,9 @@
+# Quader02
+Model3
+{
+	Mesh	{ "Quader02.obj"; }
+	Groups
+	{
+		Material_4 { "Material #978.mat.ods"; }
+	}
+}

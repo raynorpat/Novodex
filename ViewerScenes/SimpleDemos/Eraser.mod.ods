@@ -1,0 +1,36 @@
+#Eraser Model
+Model3
+  {
+ Mesh { "eraser.mesh"; }
+  Groups
+		{
+		Default		#corners
+			{
+			Eraser.mat.ods;
+			}
+		bottom
+			{
+			Eraser.mat.ods;
+			}
+		top
+			{
+			Eraser.mat.ods;
+			}
+		longside1
+			{
+			Eraser.mat.ods;
+			}
+		longside2
+			{
+			Eraser.mat.ods;
+			}
+		shortside1 
+			{
+			Eraser.mat.ods;
+			}
+		shortside2
+			{
+			Eraser.mat.ods;
+			}
+		}
+  }

@@ -1,0 +1,9 @@
+# Object01
+Model3
+{
+	Mesh	{ "Object01.obj"; }
+	Groups
+	{
+		Material_41 { "je_body.mat.ods"; }
+	}
+}

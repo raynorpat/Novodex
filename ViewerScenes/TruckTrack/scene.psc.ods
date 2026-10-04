@@ -1,0 +1,514 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 10000; }
+	DragForce	{ 50; }
+	#simStepSize { 0.02; }
+	simStepSize { 0.0166; }
+	gravity	{ 0.000000; -30; 0.000000; }#-10
+#	fieldOfView { 90; }
+	noGroundPlane;
+
+
+	Parameters
+		{
+		RigidBodySDK
+			{
+			MIN_SEPARATION_FOR_PENALTY { -0.02; }
+		#	SLEEP_LIN_VEL_SQUARED { 0; }
+	#		SLEEP_ANG_VEL_SQUARED { 0; }
+
+			}
+		}
+
+Bodies
+	{
+	GPlane
+		{
+		name	{ groundPlane; }
+		mass { 0; }
+		}
+
+#track
+
+	00rails
+		{
+			name	{ 00rails; }
+			orientation	{ -0.234257; 0.000000; -0.972175; 0.000000; }
+			position	{ 1339.031128; 42.251320; -261.152100; }
+			mass	{ 0.000000; }
+			suppressDefaultShape;
+		}
+
+		00covering
+		{
+			name	{ 00covering; }
+			orientation	{ -0.234257; 0.000000; -0.972175; 0.000000; }
+			position	{ 1230.863403; 48.992996; -269.724915; }
+			mass	{ 0.000000; }
+		}
+		00railsphysic
+		{
+			name	{ 00railsphysic; }
+			orientation	{ -0.234257; 0.000000; -0.972175; 0.000000; }
+			position	{ 1273.871826; 47.693161; -267.327728; }
+			mass	{ 0.000000; }
+			friction	{ 0.000000; }
+			staticFriction	{ 0.000000; }
+		}
+
+###start car
+		TruckBody
+		{
+			# Joint name
+			name	{ body; }
+			# PRS
+			orientation	{ -0.707107; 0.000000; -0.707107; 0.000000; }
+			#position	{ -0.090812; 2.119964; -0.342994; }
+			position	{ -0.090812; 0.119964; -0.342994; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass {220;}			
+			restitution	{ 0.000000; }
+			centerOfMass { 0; -0.5; 0; }  #dropped center of mass for increased fahrvergnuegen
+
+
+			Control
+				{
+				Type { CarController; }
+				#default { 1; }
+
+
+				driveWheelL { wheelLBack; }
+				driveWheelR { wheelRBack; }
+
+				driveWheelFL { wheelLFront; }
+				driveWheelFR { wheelRFront; }
+
+				frontSuspBarL  { frontSuspBarL; }
+				frontSuspBarR  { frontSuspBarR; }
+
+				rearSuspBarL  { rearSuspBarL; }
+				rearSuspBarR  { rearSuspBarR; }
+
+				steerBodyL  { steerSprocketL; }
+				steerBodyR  { steerSprocketR; }
+
+				hinge1 { axleFrontL;}
+				hinge2 { axleFrontR;}
+				hinge3 { axleRearL;}
+				hinge4 { axleRearR;}
+				hinge5 { steeringL;}
+				hinge6 { steeringR;}
+				prism1 { springFrontL;}
+				prism2 { springFrontR;}
+				prism3 { springRearL;}
+				prism4 { springRearR;}
+
+				carBody		{ body; }
+
+				
+				driveMaxAcc { 45;}#was 0.3  5 15
+				driveMaxAccTime {0.5;}#was 0.4 1
+				driveAccHoldTime {100;} #50
+				driveAccStopTime {500;}#100
+				driveDrag {40;} #was 0.3
+				}
+
+		}
+		fr
+		{
+			# Joint name
+			name	{ wheelRFront; }
+			# PRS
+			position	{ 1.735394; 1.058559; 1.546264; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{80;}#mass	{ 100.000000; }
+			restitution	{ 0.000000; }
+			maxAngVel { 1000; }
+			friction	{ 1; }
+			staticFriction { 1.5; } #1.5
+		}
+		br
+		{
+			# Joint name
+			name	{ wheelRBack; }
+			# PRS
+			position	{ -1.707300; 1.058561; 1.546263; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{80;}#mass	{ 100.000000; }
+			restitution	{ 0.000000; }
+			maxAngVel { 1000; }
+			friction	{ 1; }
+			staticFriction { 1.5; }
+		}
+		bl
+		{
+			# Joint name
+			name	{ wheelLBack; }
+			# PRS
+			position	{ -1.707297; 1.058553; -2.230793; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{80;}#mass	{ 100.000000; }
+			restitution	{ 0.000000; }
+			maxAngVel { 1000; }
+			friction	{ 1; }
+			staticFriction { 1.5; }
+
+		}
+		fl
+		{
+			# Joint name
+			name	{ wheelLFront; }
+			# PRS
+			position	{ 1.735397; 1.058553; -2.230793; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{80;}#mass	{ 100.000000; }
+			restitution	{ 0.000000; }
+			maxAngVel { 1000; }
+			friction	{ 1; }
+			staticFriction { 1.5; }#1.5
+		}
+
+		je_radnarbe_lowpoly06
+		{
+			# Joint name
+			name	{ frontSuspBarL; }
+			# PRS
+			orientation	{ 0.477713; -0.477712; 0.521333; -0.521338; }
+			position	{ 1.735397; 1.058553; -2.230793; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{10;}
+			restitution	{ 0.000000; }
+			#friction	{ 1.000000; }
+		}
+
+
+		je_radnarbe_lowpoly07
+		{
+			# Joint name
+			name	{ frontSuspBarR; }
+			# PRS
+			orientation	{ -0.521335; 0.521335; 0.477712; -0.477714; }
+			position	{ 1.735394; 1.058559; 1.546264; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{10;}
+			restitution	{ 0.000000; }
+			#friction	{ 1.000000; }
+		}
+
+		je_radnarbe_lowpoly05
+		{
+			# Joint name
+			name	{ rearSuspBarL; }
+			# PRS
+			orientation	{ 0.477713; -0.477712; 0.521333; -0.521338; }
+			position	{ -1.666163; 1.055847; -1.490285; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{10;}
+			restitution	{ 0.000000; }
+			#friction	{ 1.000000; }
+		}
+		je_radnarbe_lowpoly04
+		{
+			# Joint name
+			name	{ rearSuspBarR; }
+			# PRS
+			orientation	{ -0.521335; 0.521335; 0.477712; -0.477714; }
+			position	{ -1.666164; 1.055850; 0.805752; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{10;}
+			restitution	{ 0.000000; }
+			#friction	{ 1.000000; }
+		}
+
+	Sprocket
+		{
+		name { steerSprocketL; }
+		position	{ 1.735397; 1.058553; -2.230793; }
+		dimensions { 0.11; 0.11; 0.11; }
+		mass	{ 10.0; }
+		scale {0.5; }
+		}
+	Sprocket
+		{
+		name { steerSprocketR; }
+		position	{ 1.735394; 1.058559; 1.546264; }
+		dimensions { 0.11; 0.11; 0.11; }
+		mass	{ 10.0; }
+		scale {0.5; }
+		}
+
+	}
+	Joints
+	{
+
+		Hinge
+			{
+			anchor { 1.735397; 1.058553; -2.230793; }	#origin of wheel
+			direction { 0; 0; 1; }
+			bodies { steerSprocketL; 	wheelLFront; }
+			name { axleFrontL; }
+			}
+
+		Hinge
+			{
+			anchor { 1.735394; 1.058559; 1.546264; }	#origin of wheel
+			direction { 0; 0; 1; }
+			bodies { steerSprocketR; 	wheelRFront; }
+			name { axleFrontR; }
+			}
+
+		Hinge
+			{
+			anchor { 1.735397; 1.058553; -2.230793; }	#origin of wheel
+			direction { 0; 1; 0; }
+			bodies { frontSuspBarL; steerSprocketL; }
+			name { steeringL; }
+			#limits { -35; 35; }
+			lowLimit { -35; 0; 1; }
+			highLimit { 35; 0; 1; }
+			springDamper { 1000; 100; 0; }
+			}
+
+		Hinge
+			{
+			anchor { 1.735394; 1.058559; 1.546264; }	#origin of wheel
+			direction { 0; 1; 0; }
+			bodies { frontSuspBarR; steerSprocketR; }
+			name { steeringR; }
+			#limits { -35; 35; }
+			lowLimit { -35; 0; 1; }
+			highLimit { 35; 0; 1; }
+			springDamper { 1000; 100; 0; }
+			}
+
+
+
+		Hinge
+			{
+			anchor { -1.707297; 1.058553; -2.230793; }
+			direction { 0; 0; 1; }
+			bodies { #body; 
+			rearSuspBarL; 
+			wheelLBack; 
+			}
+			name { axleRearL; }
+			}
+
+
+		Hinge
+			{
+			anchor { -1.707300; 1.058561; 1.546263; }
+			direction { 0; 0; 1; }
+			bodies { #body; 
+			rearSuspBarR; 
+			wheelRBack; 
+			}
+			name { axleRearR; }
+			}
+
+		
+		Prismatic
+			{
+			name { springFrontL; }
+			bodies { body; frontSuspBarL; }
+			anchor { 1.735397; 1.058553; -2.230793; }	#pos of suspBar == wheel.
+			direction { 0; 1; 0; }
+
+			limitPlanes
+				{
+				# suspension limits
+				compr					# susp fully compressed - little beyond horiz. wishbone.
+					{
+					n { 0; -1; 0; }
+					p  { 1.735397; 1.4; -2.230793; }
+					}
+				exp						# susp fully stretched
+					{
+					n { 0;  1; 0; }
+					p  { 1.735397; 1.0; -2.230793; }
+					}
+				}
+
+			}
+
+		
+		Prismatic
+			{
+			name { springFrontR; }
+			bodies { body; frontSuspBarR; }
+			anchor { 1.735394; 1.058559; 1.546264; }	#pos of suspBar == wheel.
+			direction { 0; 1; 0; }
+
+			limitPlanes
+				{
+				# suspension
+				compr					# susp fully compressed - little beyond horiz. wishbone.
+					{
+					n { 0; -1; 0; }
+					p  { 1.735394; 1.4; 1.546264; }
+					}
+				exp						# susp fully stretched
+					{
+					n { 0;  1; 0; }
+					p  { 1.735394; 1.0; 1.546264; }
+					}
+				}
+
+			}
+
+		
+		Prismatic #Sliding  #
+			{
+			name { springRearL; }
+			bodies { body; rearSuspBarL; }
+			anchor { -1.707297; 1.058553; -2.230793; }	#pos of rearSuspBar.
+			direction { 0; 1; 0; }
+
+			limitPlanes
+				{
+				compr					# susp fully compressed - little beyond horiz. wishbone.
+					{
+					n { 0; -1; 0; }
+					p { -1.707297; 1.4; -2.230793; }
+					}
+				exp						# susp fully stretched
+					{
+					n { 0;  1; 0; }
+					p { -1.707297; 1.0; -2.230793; }
+					}
+				}
+
+			}
+
+		
+		Prismatic #Sliding  #
+			{
+			name { springRearR; }
+			bodies { body; rearSuspBarR; }
+			anchor { -1.707300; 1.058561; 0.5; }	#1.546263 pos of rearSuspBar.
+			direction { 0; 1; 0; }
+
+			limitPlanes
+				{
+				compr					# susp fully compressed - little beyond horiz. wishbone.
+					{
+					n { 0; -1; 0; }
+					p  { -1.707300; 1.4; 1.546263; }
+					}
+				exp						# susp fully stretched
+					{
+					n { 0;  1; 0; }
+					p  { -1.707300; 1.0; 1.546263; }
+					}
+				}
+
+			}
+
+		CollisionVetoJoint
+			{
+			bodies { body; wheelLBack; }
+			}
+		CollisionVetoJoint
+			{
+			bodies { body; wheelRBack; }
+			}
+		CollisionVetoJoint
+			{
+			bodies { body; wheelLFront; }
+			}
+		CollisionVetoJoint
+			{
+			bodies { body; wheelRFront; }
+			}
+		CollisionVetoJoint
+			{
+			bodies { frontSuspBarL; wheelLFront; }
+			}
+		CollisionVetoJoint
+			{
+			bodies { frontSuspBarR; wheelRFront; }
+			}
+		CollisionVetoJoint
+			{
+			bodies { steerSprocketL; body; }
+			}
+		CollisionVetoJoint
+			{
+			bodies { steerSprocketR; body; }
+			}
+
+
+
+	}
+
+	Effectors
+		{
+
+		SpringAndDamper
+			{
+			bodies { body; rearSuspBarL; }
+			anchor1 { -1.707297; 2.058553; -2.230793; }		#position right above wheel
+			anchor2 { -1.707297; 1.058553; -2.230793; }		#position of wheel
+
+			spring { 0.0; 1.0; 1.0; 6000; 0; }
+			damper { -1000; 1000; 120000; 120000; }			
+			}
+
+		SpringAndDamper
+			{
+			bodies { body; rearSuspBarR; }
+			anchor1 { -1.707300; 2.058561; 1.546263; }		#position right above wheel
+			anchor2 { -1.707300; 1.058561; 1.546263; }		#position of wheel
+
+			
+			spring { 0.0; 1.0; 1.0; 6000; 0; }			
+			damper { -1000; 1000; 120000; 120000; }			
+			}
+
+		SpringAndDamper
+			{
+			bodies { body; frontSuspBarL; }
+			anchor1 { 1.735397; 2.058553; -2.230793; }		#position right above wheel
+			anchor2 { 1.735397; 1.058553; -2.230793; }		#position of wheel
+
+			spring { 0.0; 1.0; 1.0; 6000; 0; }
+			damper { -1000; 1000; 120000; 120000; }
+			}
+
+		SpringAndDamper
+			{
+			bodies { body; frontSuspBarR; }
+			anchor1 { 1.735394; 2.058559; 1.546264; }		#position right above wheel
+			anchor2 { 1.735394; 1.058559; 1.546264; }		#position of wheel
+
+			spring { 0.0; 1.0; 1.0; 6000; 0; }
+			damper { -1000; 1000; 90000; 90000; }
+			}
+
+		}
+
+
+	Lights
+	{
+		1	{ -11.342012; 1082.388336; 0.018634; }
+		2	{ 440.087914; 0.763778;  660.866943; }
+		3	{ -490.849403; 0.685036; -690.280106; }
+	}
+	Camera
+	{
+
+	position {-25.889771;5.358827;-1.731497;}
+	angles {0.000000;-91.000000;-17.000000;}
+
+	}
+}

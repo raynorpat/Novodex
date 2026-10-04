@@ -1,0 +1,9 @@
+# ci_building_B_new
+Model3
+{
+	Mesh	{ "ci_building_B_new.obj"; }
+	Groups
+	{
+		Material_13 { "Material #959.mat.ods"; }
+	}
+}

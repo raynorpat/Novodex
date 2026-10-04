@@ -1,0 +1,9 @@
+# Object03
+Model3
+{
+	Mesh	{ "Object03.obj"; }
+	Groups
+	{
+		Material_38 { "Material #926.mat.ods"; }
+	}
+}

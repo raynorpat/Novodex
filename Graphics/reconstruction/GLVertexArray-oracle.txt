@@ -1,0 +1,685 @@
+// 0xbc _$E5
+int _E5()
+{
+  _E2();
+  return _E4();
+}
+
+// 0xcc _$E2
+loader *_E2()
+{
+  return loader::loader(this: (loader *)&l);
+}
+
+// 0xdc _$E4
+int _E4()
+{
+  return atexit(a1: _E3);
+}
+
+// 0xec _$E3
+void __cdecl _E3()
+{
+  loader::~loader(this: (loader *)&l);
+}
+
+// 0xfc ??0Vlist@@QAE@XZ
+Vlist *__thiscall Vlist::Vlist(Vlist *this)
+{
+  int v2; // eax
+  unsigned int v3; // ecx
+  char v5; // [esp+1h] [ebp-11h]
+  _DWORD v6[2]; // [esp+6h] [ebp-Ch] BYREF
+  int v7; // [esp+Eh] [ebp-4h]
+
+  v7 = -1;
+  v6[1] = &_L51123;
+  v6[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v6);
+  *((_BYTE *)this + 52) = v5;
+  *((_DWORD *)this + 14) = 0;
+  *((_DWORD *)this + 15) = 0;
+  *((_DWORD *)this + 16) = 0;
+  *((_DWORD *)this + 4) = 0;
+  *((_DWORD *)this + 8) = 0;
+  *((_DWORD *)this + 10) = 0;
+  *((_DWORD *)this + 11) = 0;
+  v2 = (int)*(&gleExtensionState + 7);
+  v7 = 0;
+  if ( v2 == 2 )
+    NV_avail = gleLoadExtension(a1: 7);
+  else
+    NV_avail = v2 == 1;
+  v3 = v6[0];
+  *((_DWORD *)this + 9) = 0;
+  __writefsdword((unsigned int)&_except_list, v3);
+  return this;
+}
+
+// 0x1bc ??1Vlist@@QAE@XZ
+void __thiscall Vlist::~Vlist(Vlist *this)
+{
+  LMemoryManager *v2; // eax
+  unsigned int v3; // ecx
+  void *v4; // [esp-8h] [ebp-1Ch]
+  _DWORD v5[2]; // [esp+8h] [ebp-Ch] BYREF
+  int v6; // [esp+10h] [ebp-4h]
+
+  v6 = -1;
+  v5[1] = &_L51176;
+  v5[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v5);
+  v4 = *((void **)this + 4);
+  v6 = 0;
+  v2 = MemoryManager();
+  LMemoryManager::FreeMemory(this: v2, a2: v4);
+  operator delete(a1: *((void **)this + 14));
+  v3 = v5[0];
+  *((_DWORD *)this + 14) = 0;
+  *((_DWORD *)this + 15) = 0;
+  *((_DWORD *)this + 16) = 0;
+  __writefsdword((unsigned int)&_except_list, v3);
+}
+
+// 0x25c ?beginBRDF@Vlist@@QAEXII@Z
+void __thiscall Vlist::beginBRDF(Vlist *this, unsigned int a2, void *pExceptionObject)
+{
+  unsigned int v3; // eax
+  int v5; // ecx
+  unsigned int v6; // eax
+  LMemoryManager *v7; // eax
+  LMemoryManager *v8; // eax
+  void *Memory; // eax
+  char Extension; // al
+  unsigned int v11; // [esp-4h] [ebp-8h]
+
+  v3 = (unsigned int)pExceptionObject;
+  *((_DWORD *)this + 7) = pExceptionObject;
+  v3 += 6;
+  *(_DWORD *)this = v3;
+  *((_DWORD *)this + 9) = 2;
+  v5 = 4 * v3;
+  v6 = a2 * v3;
+  *((_DWORD *)this + 1) = v5;
+  *((_DWORD *)this + 2) = v6;
+  *((_DWORD *)this + 3) = 4 * v6;
+  InitMemoryManager();
+  v7 = MemoryManager();
+  LMemoryManager::SetRequiredMemorySize(this: v7, a2: 0x895440u);
+  v11 = *((_DWORD *)this + 3);
+  v8 = MemoryManager();
+  Memory = LMemoryManager::AllocateMemory(this: v8, a2: v11);
+  *((_DWORD *)this + 4) = Memory;
+  *((_DWORD *)this + 5) = Memory;
+  if ( gleExtensionState == (enum gle3State *)((char *)&_S6 + 2) )
+    Extension = gleLoadExtension(a1: 0);
+  else
+    Extension = gleExtensionState == (enum gle3State *)((char *)&_S6 + 1);
+  multiTexLoaded = Extension;
+  if ( Extension == 0 )
+  {
+    printf(Format: "BRDF: Can't find multitex support!\n");
+    pExceptionObject = operator new(a1: 4u);
+    _CxxThrowException(&pExceptionObject, pThrowInfo: (_ThrowInfo *)&_TI2PAH);
+  }
+}
+
+// 0x3a4 ?beginBRDFS@Vlist@@QAEXII@Z
+void __thiscall Vlist::beginBRDFS(Vlist *this, unsigned int a2, unsigned int a3)
+{
+  unsigned int v4; // eax
+  LMemoryManager *v5; // eax
+  LMemoryManager *v6; // eax
+  void *Memory; // eax
+  unsigned int v8; // [esp-4h] [ebp-8h]
+
+  *((_DWORD *)this + 7) = a3;
+  *(_DWORD *)this = a3 + 3;
+  *((_DWORD *)this + 9) = 3;
+  v4 = a2 * (a3 + 3);
+  *((_DWORD *)this + 1) = 4 * (a3 + 3);
+  *((_DWORD *)this + 2) = v4;
+  *((_DWORD *)this + 3) = 4 * v4;
+  InitMemoryManager();
+  v5 = MemoryManager();
+  LMemoryManager::SetRequiredMemorySize(this: v5, a2: 0x895440u);
+  v8 = *((_DWORD *)this + 3);
+  v6 = MemoryManager();
+  Memory = LMemoryManager::AllocateMemory(this: v6, a2: v8);
+  *((_DWORD *)this + 4) = Memory;
+  *((_DWORD *)this + 5) = Memory;
+}
+
+// 0x414 ?beginBump@Vlist@@QAEXII@Z
+void __thiscall Vlist::beginBump(Vlist *this, unsigned int a2, unsigned int a3)
+{
+  unsigned int v4; // ecx
+  LMemoryManager *v5; // eax
+  LMemoryManager *v6; // eax
+  void *Memory; // eax
+  unsigned int v8; // [esp-4h] [ebp-8h]
+
+  *(_DWORD *)this = a3 + 8;
+  *((_DWORD *)this + 7) = a3;
+  v4 = a2 * (a3 + 8);
+  *((_DWORD *)this + 2) = v4;
+  *((_DWORD *)this + 9) = 1;
+  *((_DWORD *)this + 1) = 4 * (a3 + 8);
+  *((_DWORD *)this + 3) = 4 * v4;
+  *((_DWORD *)this + 12) = a3 != 2 ? 10 : 8;
+  InitMemoryManager();
+  v5 = MemoryManager();
+  LMemoryManager::SetRequiredMemorySize(this: v5, a2: 0x895440u);
+  v8 = *((_DWORD *)this + 3);
+  v6 = MemoryManager();
+  Memory = LMemoryManager::AllocateMemory(this: v6, a2: v8);
+  *((_DWORD *)this + 4) = Memory;
+  *((_DWORD *)this + 5) = Memory;
+}
+
+// 0x484 ?begin@Vlist@@QAEXII@Z
+void __thiscall Vlist::begin(Vlist *this, unsigned int a2, unsigned int a3)
+{
+  unsigned int v4; // eax
+  LMemoryManager *v5; // eax
+  LMemoryManager *v6; // eax
+  void *Memory; // eax
+  unsigned int v8; // [esp-4h] [ebp-8h]
+
+  *((_DWORD *)this + 7) = a3;
+  *(_DWORD *)this = a3 + 6;
+  v4 = a2 * (a3 + 6);
+  *((_DWORD *)this + 1) = 4 * (a3 + 6);
+  *((_DWORD *)this + 2) = v4;
+  *((_DWORD *)this + 3) = 4 * v4;
+  InitMemoryManager();
+  v5 = MemoryManager();
+  LMemoryManager::SetRequiredMemorySize(this: v5, a2: 0x895440u);
+  v8 = *((_DWORD *)this + 3);
+  v6 = MemoryManager();
+  Memory = LMemoryManager::AllocateMemory(this: v6, a2: v8);
+  *((_DWORD *)this + 4) = Memory;
+  *((_DWORD *)this + 5) = Memory;
+}
+
+// 0x4e4 ?end@Vlist@@QAEXXZ
+void __thiscall Vlist::end(Vlist *this)
+{
+  LMemoryManager *v2; // eax
+  unsigned int v3; // [esp-4h] [ebp-8h]
+
+  printf(
+    Format: "Created NV_vertex_array of %d bytes, %d allocated bytes returned to pool.\n",
+    *((_DWORD *)this + 3),
+    *((_DWORD *)this + 3) - ((*((_DWORD *)this + 5) - *((_DWORD *)this + 4)) >> 2));
+  v3 = (*((_DWORD *)this + 5) - *((_DWORD *)this + 4)) >> 2;
+  v2 = MemoryManager();
+  LMemoryManager::ShrinkLastAlloc(this: v2, a2: v3);
+}
+
+// 0x570 ??0MiniList@Dlist@@QAE@PAU1@PAI@Z
+Dlist::MiniList *__thiscall Dlist::MiniList::MiniList(Dlist::MiniList *this, struct Dlist *a2, unsigned int *a3)
+{
+  *((_DWORD *)this + 2) = a3;
+  *((_DWORD *)this + 3) = a3;
+  *((_DWORD *)this + 4) = 0xFFFFFFF;
+  *(_DWORD *)this = a2;
+  *((_DWORD *)this + 5) = 0;
+  *((_DWORD *)this + 6) = 0;
+  *((_DWORD *)this + 7) = 0;
+  *((_DWORD *)this + 1) = 0;
+  return this;
+}
+
+// 0x5a0 ?trig@MiniList@Dlist@@QAE_NPAI@Z
+char __thiscall Dlist::MiniList::trig(Dlist::MiniList *this, unsigned int *a2)
+{
+  unsigned int v2; // esi
+  unsigned int v3; // edx
+  unsigned int v4; // eax
+  unsigned int v5; // ebx
+  unsigned int v6; // eax
+  int v7; // eax
+  unsigned int v9; // edx
+  int v10; // eax
+
+  v2 = *a2;
+  v3 = a2[1];
+  v4 = *a2;
+  if ( *a2 >= v3 )
+    v4 = a2[1];
+  v5 = a2[2];
+  if ( v4 >= v5 )
+    v4 = a2[2];
+  if ( v2 <= v3 )
+    v2 = a2[1];
+  if ( v2 <= v5 )
+    v2 = a2[2];
+  if ( v4 + 65520 >= v2 )
+  {
+    if ( *((_DWORD *)this + 4) < v4 )
+      v4 = *((_DWORD *)this + 4);
+    v9 = *((_DWORD *)this + 5);
+    if ( v4 + 65520 < v9 )
+      goto LABEL_14;
+    if ( v9 <= v2 )
+      v9 = v2;
+    if ( v4 + 65520 < v9 )
+    {
+LABEL_14:
+      Dlist::MiniList::end(this);
+      return 1;
+    }
+    else
+    {
+      *((_DWORD *)this + 4) = v4;
+      v10 = *((_DWORD *)this + 6);
+      *((_DWORD *)this + 3) = a2;
+      *((_DWORD *)this + 6) = v10 + 1;
+      *((_DWORD *)this + 5) = v9;
+      return 0;
+    }
+  }
+  else
+  {
+    v6 = *((_DWORD *)this + 4);
+    a2[2] = v6;
+    a2[1] = v6;
+    *a2 = v6;
+    v7 = *((_DWORD *)this + 6);
+    *((_DWORD *)this + 3) = a2;
+    *((_DWORD *)this + 6) = v7 + 1;
+    return 0;
+  }
+}
+
+// 0x650 ?end@MiniList@Dlist@@QAEXXZ
+void __thiscall Dlist::MiniList::end(Dlist::MiniList *this)
+{
+  _DWORD *i; // eax
+  int v2; // esi
+
+  for ( i = *((_DWORD **)this + 2); (unsigned int)i <= *((_DWORD *)this + 3); *(i - 1) -= *((_DWORD *)this + 4) )
+  {
+    *i -= *((_DWORD *)this + 4);
+    v2 = i[1];
+    i += 3;
+    *(i - 2) = v2 - *((_DWORD *)this + 4);
+  }
+  *(_DWORD *)(**(_DWORD **)this + 16) += 4 * ***(_DWORD ***)this * *((_DWORD *)this + 4);
+  *((_DWORD *)this + 1) = *(_DWORD *)(**(_DWORD **)this + 16);
+  printf(Format: "Created glDrawElements() mini index list for %d trigs.\n", *((_DWORD *)this + 6));
+}
+
+// 0x6f8 ?draw@MiniList@Dlist@@QAEXXZ
+void __thiscall Dlist::MiniList::draw(const GLvoid **this)
+{
+  void (__stdcall *v1)(GLenum); // edi
+  char v3; // bl
+  int v4; // ecx
+  int v5; // eax
+  void (__stdcall *v6)(GLint, GLenum, GLsizei, const GLvoid *); // ebx
+  int v7; // eax
+  void (__stdcall *v8)(GLint, GLenum, GLsizei, const GLvoid *); // ebp
+  Dlist::MiniList *v9; // esi
+  void (__stdcall *v10)(GLenum); // esi
+  char v11; // [esp+21h] [ebp-3h]
+  char v12; // [esp+22h] [ebp-2h]
+  GLboolean params; // [esp+23h] [ebp-1h] BYREF
+
+  v1 = glEnableClientState;
+  glEnableClientState(array: 0x8074u);
+  glVertexPointer(size: 3, type: 0x1406u, stride: *(_DWORD *)(*(_DWORD *)*this + 4), pointer: *(this + 1));
+  v3 = 0;
+  v11 = 0;
+  v12 = 0;
+  v4 = *(_DWORD *)*this;
+  v5 = *(_DWORD *)(v4 + 36);
+  switch ( v5 )
+  {
+    case 1:
+      v1(array: 0x8075u);
+      glNormalPointer(type: 0x1406u, stride: *(_DWORD *)(*(_DWORD *)*this + 4), pointer: (char *)*(this + 1) + 12);
+      glActiveTextureARB(a1: 33985);
+      glClientActiveTextureARB(a1: 33985);
+      v1(array: 0x8078u);
+      v6 = glTexCoordPointer;
+      glTexCoordPointer(
+        size: 2,
+        type: 0x1406u,
+        stride: *(_DWORD *)(*(_DWORD *)*this + 4),
+        pointer: (char *)*(this + 1) + 24);
+      glActiveTextureARB(a1: 33984);
+      glClientActiveTextureARB(a1: 33984);
+      v1(array: 0x8078u);
+      v7 = *(_DWORD *)*this;
+      if ( *(_DWORD *)(v7 + 28) == 4 )
+        v6(size: 2, type: 0x1406u, stride: *(_DWORD *)(v7 + 4), pointer: (char *)*(this + 1) + 32);
+      else
+        v6(size: 2, type: 0x1406u, stride: *(_DWORD *)(v7 + 4), pointer: (char *)*(this + 1) + 24);
+      v1(array: 0x8076u);
+      glColorPointer(
+        size: 4,
+        type: 0x1401u,
+        stride: *(_DWORD *)(*(_DWORD *)*this + 4),
+        pointer: (char *)*(this + 1) + 4 * *(_DWORD *)(*(_DWORD *)*this + 48));
+      v1(array: 0x845Eu);
+      glSecondaryColorPointerEXT(
+        a1: 3,
+        a2: 5121,
+        a3: *(_DWORD *)(*(_DWORD *)*this + 4),
+        a4: (char *)*(this + 1) + 4 * *(_DWORD *)(*(_DWORD *)*this + 48) + 4);
+      v12 = 1;
+      v11 = 1;
+      v3 = 1;
+      break;
+    case 2:
+      v1(array: 0x8075u);
+      glNormalPointer(type: 0x1406u, stride: *(_DWORD *)(*(_DWORD *)*this + 4), pointer: (char *)*(this + 1) + 12);
+      if ( *(_DWORD *)(*(_DWORD *)*this + 28) != 0 )
+      {
+        v3 = 1;
+        glActiveTextureARB(a1: 33984);
+        glClientActiveTextureARB(a1: 33984);
+        v1(array: 0x8078u);
+        v8 = glTexCoordPointer;
+        glTexCoordPointer(
+          size: 2,
+          type: 0x1406u,
+          stride: *(_DWORD *)(*(_DWORD *)*this + 4),
+          pointer: (char *)*(this + 1) + 24);
+        if ( *(_DWORD *)(*(_DWORD *)*this + 28) == 4 )
+        {
+          glActiveTextureARB(a1: 33985);
+          glClientActiveTextureARB(a1: 33985);
+          v1(array: 0x8078u);
+          v8(size: 2, type: 0x1406u, stride: *(_DWORD *)(*(_DWORD *)*this + 4), pointer: (char *)*(this + 1) + 32);
+          v11 = 1;
+        }
+      }
+      break;
+    case 3:
+      if ( *(_DWORD *)(v4 + 28) != 0 )
+      {
+        v3 = 1;
+        if ( multiTexLoaded )
+        {
+          glActiveTextureARB(a1: 33984);
+          glClientActiveTextureARB(a1: 33984);
+        }
+        v1(array: 0x8078u);
+        glTexCoordPointer(
+          size: 2,
+          type: 0x1406u,
+          stride: *(_DWORD *)(*(_DWORD *)*this + 4),
+          pointer: (char *)*(this + 1) + 12);
+        if ( multiTexLoaded )
+        {
+LABEL_20:
+          glActiveTextureARB(a1: 33985);
+          glClientActiveTextureARB(a1: 33985);
+          glDisableClientState(array: 0x8078u);
+          glDisable(cap: 0xDE1u);
+        }
+      }
+      break;
+    default:
+      v1(array: 0x8075u);
+      glNormalPointer(type: 0x1406u, stride: *(_DWORD *)(*(_DWORD *)*this + 4), pointer: (char *)*(this + 1) + 12);
+      if ( *(_DWORD *)(*(_DWORD *)*this + 28) != 0 )
+      {
+        v3 = 1;
+        if ( multiTexLoaded )
+        {
+          glActiveTextureARB(a1: 33984);
+          glClientActiveTextureARB(a1: 33984);
+        }
+        v1(array: 0x8078u);
+        glTexCoordPointer(
+          size: *(_DWORD *)(*(_DWORD *)*this + 28),
+          type: 0x1406u,
+          stride: *(_DWORD *)(*(_DWORD *)*this + 4),
+          pointer: (char *)*(this + 1) + 24);
+        if ( multiTexLoaded )
+          goto LABEL_20;
+      }
+      break;
+  }
+  glGetBooleanv(pname: 0x851Fu, &params);
+  if ( params == 0 )
+    printf(Format: "Error: Invalid vertex array range or not using AGP/VRAM rendering!\n");
+  glDrawElements(mode: 4u, count: 3 * (_DWORD)*(this + 6), type: 0x1405u, indices: *(this + 2));
+  v9 = (Dlist::MiniList *)*(this + 7);
+  if ( v9 != nullptr )
+    Dlist::MiniList::draw(this: v9);
+  v10 = glDisableClientState;
+  glDisableClientState(array: 0x8074u);
+  v10(array: 0x8075u);
+  if ( v3 != 0 )
+  {
+    if ( multiTexLoaded )
+    {
+      glActiveTextureARB(a1: 33984);
+      glClientActiveTextureARB(a1: 33984);
+    }
+    v10(array: 0x8078u);
+  }
+  if ( v11 != 0 )
+  {
+    glActiveTextureARB(a1: 33985);
+    glClientActiveTextureARB(a1: 33985);
+    v10(array: 0x8078u);
+  }
+  if ( v12 != 0 )
+  {
+    v10(array: 0x8076u);
+    v10(array: 0x845Eu);
+  }
+}
+
+// 0xb1c ??0Dlist@@QAE@XZ
+Dlist *__thiscall Dlist::Dlist(Dlist *this)
+{
+  *((_DWORD *)this + 2) = 0;
+  return this;
+}
+
+// 0xb2c ?begin@Dlist@@QAEXII@Z
+void __thiscall Dlist::begin(Dlist *this, unsigned int a2, unsigned int a3)
+{
+  int v4; // ecx
+  int v5; // eax
+  Dlist::MiniList *v6; // eax
+  Dlist::MiniList *v7; // eax
+
+  *(_DWORD *)this = (&vListData)[a2];
+  *((_DWORD *)this + 1) = a3;
+  *((_DWORD *)this + 2) = operator new(a1: 12 * a3);
+  printf(Format: "Index array of %d indices in sysmem.\n", 3 * *((_DWORD *)this + 1));
+  v4 = *((_DWORD *)this + 1);
+  v5 = *((_DWORD *)this + 2);
+  *((_DWORD *)this + 3) = v5;
+  *((_DWORD *)this + 4) = v5 + 12 * v4;
+  v6 = (Dlist::MiniList *)operator new(a1: 0x20u);
+  if ( v6 != nullptr )
+  {
+    v7 = Dlist::MiniList::MiniList(this: v6, a2: this, a3: *((unsigned int **)this + 2));
+    *((_DWORD *)this + 5) = v7;
+    *((_DWORD *)this + 6) = v7;
+  }
+  else
+  {
+    *((_DWORD *)this + 5) = 0;
+    *((_DWORD *)this + 6) = 0;
+  }
+}
+
+// 0xbd4 ?trig@Dlist@@QAEXIII@Z
+void __thiscall Dlist::trig(Dlist *this, void *pExceptionObject, unsigned int a3, unsigned int a4)
+{
+  _DWORD *v5; // eax
+  Dlist::MiniList *v6; // eax
+  Dlist::MiniList *v7; // eax
+  Dlist::MiniList *v8; // ecx
+  unsigned int *v9; // [esp-4h] [ebp-8h]
+
+  v5 = *((_DWORD **)this + 3);
+  if ( (unsigned int)v5 >= *((_DWORD *)this + 4) )
+  {
+    pExceptionObject = operator new(a1: 4u);
+    _CxxThrowException(&pExceptionObject, pThrowInfo: (_ThrowInfo *)&_TI2PAH);
+  }
+  *v5 = pExceptionObject;
+  *(_DWORD *)(*((_DWORD *)this + 3) + 4) = a3;
+  *(_DWORD *)(*((_DWORD *)this + 3) + 8) = a4;
+  if ( Dlist::MiniList::trig(this: *((Dlist::MiniList **)this + 6), a2: *((unsigned int **)this + 3)) != 0 )
+  {
+    v6 = (Dlist::MiniList *)operator new(a1: 0x20u);
+    if ( v6 != nullptr )
+      v7 = Dlist::MiniList::MiniList(this: v6, a2: this, a3: *((unsigned int **)this + 3));
+    else
+      v7 = nullptr;
+    *(_DWORD *)(*((_DWORD *)this + 6) + 28) = v7;
+    v8 = *(Dlist::MiniList **)(*((_DWORD *)this + 6) + 28);
+    v9 = *((unsigned int **)this + 3);
+    *((_DWORD *)this + 6) = v8;
+    Dlist::MiniList::trig(this: v8, a2: v9);
+  }
+  *((_DWORD *)this + 3) += 12;
+}
+
+// 0xc74 ?end@Dlist@@QAEXXZ
+void __thiscall Dlist::end(Dlist::MiniList **this)
+{
+  Dlist::MiniList::end(this: *(this + 6));
+}
+
+// 0xc84 ?draw@Dlist@@QAEXXZ
+void __thiscall Dlist::draw(const GLvoid ***this)
+{
+  Dlist::MiniList::draw(this: *(this + 5));
+}
+
+// 0xc94 ??1Dlist@@QAE@XZ
+void __thiscall Dlist::~Dlist(void **this)
+{
+  operator delete(a1: *(this + 2));
+}
+
+// 0xca4 ??0loader@@QAE@XZ
+loader *__thiscall loader::loader(loader *this)
+{
+  memset(&vListData, 0, 0x28u);
+  memset(&displistData, 0, 0x78u);
+  return this;
+}
+
+// 0xcd4 ??1loader@@QAE@XZ
+void __thiscall loader::~loader(loader *this)
+{
+  Vlist **v1; // esi
+  Vlist *v2; // edi
+  void ***v3; // esi
+  void **v4; // edi
+
+  v1 = (Vlist **)&vListData;
+  do
+  {
+    v2 = *v1;
+    if ( *v1 != nullptr )
+    {
+      Vlist::~Vlist(this: *v1);
+      operator delete(a1: v2);
+    }
+    ++v1;
+  }
+  while ( v1 < (Vlist **)&displistData );
+  v3 = (void ***)&displistData;
+  do
+  {
+    v4 = *v3;
+    if ( *v3 != nullptr )
+    {
+      Dlist::~Dlist(this: *v3);
+      operator delete(a1: v4);
+    }
+    ++v3;
+  }
+  while ( v3 < &nextFreeList );
+}
+
+// 0xd34 ??1?$vector@IV?$allocator@I@std@@@std@@QAE@XZ
+int __thiscall std::vector<unsigned int>::~vector<unsigned int>(int this)
+{
+  operator delete(a1: *(void **)(this + 4));
+  *(_DWORD *)(this + 4) = 0;
+  *(_DWORD *)(this + 8) = 0;
+  *(_DWORD *)(this + 12) = 0;
+  return 0;
+}
+
+// 0xd70 _atexit
+extrn _atexit:near
+
+// 0xd74 ?gleLoadExtension@@YA_NW4gleExt@@@Z
+extrn ?gleLoadExtension@@YA_NW4gleExt@@@Z:near
+
+// 0xd7c ___CxxFrameHandler
+extrn ___CxxFrameHandler:near
+
+// 0xd84 ??3@YAXPAX@Z
+extrn ??3@YAXPAX@Z:near
+
+// 0xd88 ?FreeMemory@LMemoryManager@@QAEXPAX@Z
+extrn ?FreeMemory@LMemoryManager@@QAEXPAX@Z:near
+
+// 0xd8c ?MemoryManager@@YAPAVLMemoryManager@@XZ
+extrn ?MemoryManager@@YAPAVLMemoryManager@@XZ:near
+
+// 0xd94 ??2@YAPAXI@Z
+extrn ??2@YAPAXI@Z:near
+
+// 0xd98 _printf
+extrn _printf:near
+
+// 0xd9c ?AllocateMemory@LMemoryManager@@QAEPAXI@Z
+extrn ?AllocateMemory@LMemoryManager@@QAEPAXI@Z:near
+
+// 0xda0 ?SetRequiredMemorySize@LMemoryManager@@QAEXI@Z
+extrn ?SetRequiredMemorySize@LMemoryManager@@QAEXI@Z:near
+
+// 0xda4 ?InitMemoryManager@@YAXXZ
+extrn ?InitMemoryManager@@YAXXZ:near
+
+// 0xda8 __CxxThrowException@8
+extrn __CxxThrowException@8:near
+
+// 0xdac ?ShrinkLastAlloc@LMemoryManager@@QAEXI@Z
+extrn ?ShrinkLastAlloc@LMemoryManager@@QAEXI@Z:near
+
+// 0xdb0 __imp__glDrawElements@16
+extrn __imp__glDrawElements@16:near
+
+// 0xdb4 __imp__glGetBooleanv@8
+extrn __imp__glGetBooleanv@8:near
+
+// 0xdb8 __imp__glDisable@4
+extrn __imp__glDisable@4:near
+
+// 0xdbc __imp__glDisableClientState@4
+extrn __imp__glDisableClientState@4:near
+
+// 0xdc4 __imp__glColorPointer@16
+extrn __imp__glColorPointer@16:near
+
+// 0xdc8 __imp__glTexCoordPointer@16
+extrn __imp__glTexCoordPointer@16:near
+
+// 0xdd4 __imp__glNormalPointer@12
+extrn __imp__glNormalPointer@12:near
+
+// 0xdd8 __imp__glVertexPointer@16
+extrn __imp__glVertexPointer@16:near
+
+// 0xddc __imp__glEnableClientState@4
+extrn __imp__glEnableClientState@4:near

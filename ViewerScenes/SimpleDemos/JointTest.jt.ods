@@ -1,0 +1,19 @@
+# physics demo script
+JT
+	{
+	Acts
+		{
+		JTBlock.jta.ods;
+		JTFixedPerson.jta.ods;
+		JTFixedPersonMany.jta.ods;
+		JTPerson.jta.ods;
+		JTWeirdo.jta.ods;
+		JTWeirdoMany.jta.ods;
+		JT10Chain.jta.ods;
+		JT20Chain.jta.ods;
+		JT2Chain.jta.ods;
+		JTPendulum.jta.ods;
+		}
+
+	}
+

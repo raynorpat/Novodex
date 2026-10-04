@@ -1,0 +1,9 @@
+# ci_building_A_roof
+Model3
+{
+	Mesh	{ "ci_building_A_roof.obj"; }
+	Groups
+	{
+		Material_0 { "ci_building_B_roof.mat.ods"; }
+	}
+}

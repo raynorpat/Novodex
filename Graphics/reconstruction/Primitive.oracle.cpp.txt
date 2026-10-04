@@ -1,0 +1,110 @@
+// 0x4 ?render@Billboard@SceneGraph@@UAEXXZ
+void __thiscall SceneGraph::Billboard::render(SceneGraph::Billboard *this)
+{
+  void (__stdcall *v2)(); // edi
+  void (__stdcall *v3)(); // ebx
+  void (__stdcall *v4)(GLenum); // ebp
+  void (__stdcall *v5)(GLfloat, GLfloat); // edi
+  void (__stdcall *v6)(GLfloat, GLfloat, GLfloat); // ebx
+  void (__stdcall *v7)(); // esi
+
+  if ( *((_BYTE *)this + 24) == 0 )
+  {
+    SceneGraph::Texture::activate(this: *((SceneGraph::Texture **)this + 1));
+    v2 = glPushMatrix;
+    glPushMatrix();
+    v3 = glLoadIdentity;
+    glLoadIdentity();
+    v4 = glMatrixMode;
+    glMatrixMode(mode: 0x1701u);
+    v2();
+    v3();
+    glDisable(cap: 0xB50u);
+    glEnable(cap: 0xBE2u);
+    glBlendFunc(sfactor: 0x302u, dfactor: 0x303u);
+    glBegin(mode: 7u);
+    glColor4f(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0);
+    v5 = glTexCoord2f;
+    glTexCoord2f(s: 0.0, t: 1.0);
+    v6 = glVertex3f;
+    glVertex3f(x: *((GLfloat *)this + 2), y: *((GLfloat *)this + 4), z: -1.0);
+    v5(s: 1.0, t: 1.0);
+    v6(x: *((GLfloat *)this + 3), y: *((GLfloat *)this + 4), z: -1.0);
+    v5(s: 1.0, t: 0.0);
+    v6(x: *((GLfloat *)this + 3), y: *((GLfloat *)this + 5), z: -1.0);
+    v5(s: 0.0, t: 0.0);
+    v6(x: *((GLfloat *)this + 2), y: *((GLfloat *)this + 5), z: -1.0);
+    glEnd();
+    glDisable(cap: 0xBE2u);
+    glEnable(cap: 0xB50u);
+    v7 = glPopMatrix;
+    glPopMatrix();
+    v4(mode: 0x1700u);
+    v7();
+  }
+}
+
+// 0x124 ?render@DisplayList@SceneGraph@@UAEXXZ
+void __thiscall SceneGraph::DisplayList::render(SceneGraph::DisplayList *this)
+{
+  void (__stdcall *v1)(GLenum); // edi
+
+  v1 = glDisable;
+  glDisable(cap: 0xDE1u);
+  v1(cap: 0xB50u);
+  glCallList(list: *((_DWORD *)this + 1));
+  glEnable(cap: 0xB50u);
+}
+
+// 0x154 ??1DisplayList@SceneGraph@@QAE@XZ
+void __thiscall SceneGraph::DisplayList::~DisplayList(SceneGraph::DisplayList *this)
+{
+  GLuint v1; // [esp-8h] [ebp-8h]
+
+  v1 = *((_DWORD *)this + 1);
+  *(_DWORD *)this = &SceneGraph::DisplayList::`vftable';
+  glDeleteLists(list: v1, range: 1);
+}
+
+// 0x178 ?render@Line@SceneGraph@@UAEXXZ
+void __thiscall SceneGraph::Line::render(const GLfloat *this)
+{
+  void (__stdcall *v1)(GLenum); // edi
+  void (__stdcall *v3)(const GLfloat *); // edi
+
+  v1 = glDisable;
+  glDisable(cap: 0xDE1u);
+  v1(cap: 0xB50u);
+  glBegin(mode: 1u);
+  glColor3f(red: 0.0, green: 1.0, blue: 1.0);
+  v3 = glVertex3fv;
+  glVertex3fv(v: this + 1);
+  v3(v: this + 4);
+  glEnd();
+  glEnable(cap: 0xB50u);
+}
+
+// 0x1d8 ?render@Plane@SceneGraph@@UAEXXZ
+void __thiscall SceneGraph::Plane::render(const GLfloat *this)
+{
+  void (__stdcall *v1)(GLenum); // ebx
+  void (__stdcall *v3)(GLenum); // ebp
+  void (__stdcall *v4)(const GLfloat *); // edi
+
+  v1 = glDisable;
+  glDisable(cap: 0xDE1u);
+  v1(cap: 0xB50u);
+  v3 = glEnable;
+  glEnable(cap: 0xBE2u);
+  glBlendFunc(sfactor: 1u, dfactor: 0x301u);
+  glBegin(mode: 7u);
+  glColor4f(red: 0.0, green: 0.5, blue: 1.0, alpha: 0.5);
+  v4 = glVertex3fv;
+  glVertex3fv(v: this + 1);
+  v4(v: this + 4);
+  v4(v: this + 7);
+  v4(v: this + 10);
+  glEnd();
+  v1(cap: 0xBE2u);
+  v3(cap: 0xB50u);
+}

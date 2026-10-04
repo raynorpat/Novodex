@@ -1,0 +1,147 @@
+# intro scene script for demo
+
+Scene
+	{
+	Text
+		{
+		T {"Test setup"; Y{-0.6;} D{2;} S{17;} E{1;}}
+		}
+
+
+
+	PhysStart {1;}
+	PhysDuration   {200;}
+	DragForce { 40; }
+	gravity { 0; 0; 0; }		
+	collDet { 0; }
+
+
+	Bodies
+		{
+		Rubik
+			{
+			name	{ NW; }
+			mass	{1;}				
+			position {0;4;0; }
+			scale {0.0165;}			#unit cube this way (0.501 radius!)
+			friction { 0.9;}		#had 0.8 to 0.05
+			staticFriction {2.0; }
+			restitution {0;} 
+			}
+		Ball
+			{
+			name	{ wheel; }
+			position { 1; 1; 1; }
+			mass { 1; }
+			}
+
+
+		Rubik
+			{
+			name	{ fake; }
+			mass	{1;}				
+			position {0;3;0; }
+			scale {0.0165;}			#unit cube this way (0.501 radius!)
+			friction { 0.9;}		#had 0.8 to 0.05
+			staticFriction {2.0; }
+			restitution {0;} 
+			}
+		}
+
+	Joints
+		{
+		 Prismatic  #Sliding
+			{
+			bodies { WORLD; NW;  }
+			anchor { 0;4;0; }
+			direction { -1; 0; 0; }
+			}
+		Hinge
+			{
+			anchor { 1; 1; 1; }
+			direction { 0; 0; 1; }
+			bodies { NW; 	wheel; }
+			}
+
+
+/*
+		xxPointInPlane
+			{
+			bodies { NE; SE;  }
+			anchor { 0;3;0; }
+			#anchor { 0;1;0; }
+			normal { 0; 0; 1; }
+			#normal { 0; 1; 0; }
+			}
+		Prismatic #Sliding  #
+			{
+			bodies { NE; Z;  }
+			anchor { 0;4;0; }
+			direction { 1; 0; 0; }
+			}
+		 Prismatic  #Sliding
+			{
+			bodies { NE; SE;  }
+			anchor { 0;6;0; }
+			direction { 1; 0; 0; }
+			}
+		Prismatic
+			{
+			bodies { NW; SE;  }
+			anchor { 0;4;0; }
+			direction { 0; 1; 0; }
+			}
+		Prismatic
+			{
+			bodies {  SW; NW; }
+			anchor { 0;4;0; }
+			direction { 0; 1; 0; }
+			}
+		Prismatic
+			{
+			bodies { NE; SE; }
+			anchor { 2; 4;0; }
+			direction { 0; 1; 0; }
+			}
+		Prismatic
+			{
+			bodies {  NE; NW; }
+			anchor { 0;4;0; }
+			direction { 1; 0; 0; }
+			}
+		Prismatic
+			{
+			bodies { SW; SE; }
+			anchor { 6;2;0; }
+			direction { 1; 0; 0; }
+			}
+*/
+		}
+/*
+	Effectors
+		{
+		SpringAndDamper
+			{
+			bodies { top; bottom; }
+			anchor1 { 0;3.5;0; }
+			anchor2 { 0;1.5;0; }
+
+			spring { 0.0; 1.0; 2.0; 10; 1000; }	
+			damper { -1000; 1000; 10000; 10000; }
+			}
+		}
+*/
+	Lights
+		{
+		1 {5; 22; 7;}
+		2 {5; 2; 17;}
+		}
+
+	Camera
+		{
+		position {-8.246276;9.278854;-1.761430;}
+		angles {0.000000;-115.000000;-40.000000;}
+		}
+
+
+	}

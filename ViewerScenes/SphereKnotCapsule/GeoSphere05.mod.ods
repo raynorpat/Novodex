@@ -1,0 +1,9 @@
+# GeoSphere05
+Model3
+{
+	Mesh	{ "GeoSphere05.obj"; }
+	Groups
+	{
+		Material_2 { "3_-_Default.mat.ods"; }
+	}
+}

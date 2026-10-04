@@ -1,0 +1,200 @@
+# joint test script
+# three sphere-joint chains are connected to the world with sphere, pointOnLine and pointInPlane constraints.
+
+Scene
+	{
+	Text
+		{
+		T {"joint test";						X{-0.9;} Y{ 0.7;} N{0.7;} S{16;}}
+		}
+
+
+
+	PhysStart {1;}
+	PhysDuration   {20000;}
+	DragForce { 50; }
+	simStepSize { 0.01; }
+	gravity { 0; -9; 0; }
+
+	Space
+		{
+		worldBox { -5; 5; 0; 12; -2; 2; }
+		cellsize { 1; }
+		memory { 1021; }
+		}
+
+
+
+	Bodies
+		{
+
+
+		#tower
+
+		__Eraser
+			{
+			mass	{30;}				
+			position {-1;1;0; }
+			scale {0.035;}
+
+			#mass	{0;}		
+			#position {-1;2;0; }		
+			#scale {0.026;}
+
+			angles {0; 0; 90;}
+			friction {0.5;}
+			}
+
+		__Eraser
+			{
+			mass	{30;}				
+			angles {0; 0; 90;}
+			position {0;1;0; }
+			friction {0.5;}
+			scale {0.035;}
+			}
+
+		__Ruler
+			{
+			name { ruler; }
+			mass	{20;}				
+			angles {270; 180; 0;}
+			position {-0.5;2.1;0; }
+			friction {0.5;}
+			scale {0.035;}
+			}
+
+		__Rubik
+			{
+			mass	{10;}				
+			position {-0.5;2.65;0; }
+			scale {0.015;}
+			friction {0.5;}
+			}
+
+		__Floppy
+			{
+			mass	{10;}				
+			angles { 90; 0; 0;}
+			position {-0.5;3.2;0; }
+			friction {0.5;}
+			scale {0.02;}
+			}
+
+		__Rubik
+			{
+			mass	{10;}				
+			position {-0.5;3.75;0; }
+			scale {0.015;}
+			friction {0.5;}
+			}
+
+
+	#chain!
+		__Rubik
+			{
+			name { head; }
+			mass	{10;}				
+			position {0.5;11.5;0.5; }
+			scale {0.0110;}			#unit cube this way (0.501 radius!)
+			}
+
+		__Rubik
+			{
+			name { tail0; }
+			mass	{10;}				
+			position {1.5;10.5;1.5; }
+			scale {0.0110;}			# was 0.0180 for perfect sizing, but may get contacts that way.
+			}
+
+		__Rubik
+			{
+			name { tail1; }
+			mass	{10;}				
+			position {2.5;9.5;2.5; }
+			scale {0.0110;}
+			}
+		__Rubik
+			{
+			name { tail2; }
+			mass	{10;}				
+			position {3.5;8.5;3.5; }
+			scale {0.0110;}
+			}
+		__Rubik
+			{
+			name { tail3; }
+			mass	{10;}				
+			position {4.5;7.5;4.5; }
+			scale {0.0110;}
+			}
+		__Rubik
+			{
+			name { tail4; }
+			mass	{10;}				
+			position {5.5;6.5;5.5; }
+			scale {0.0110;}
+			}
+
+		}
+
+	Joints
+		{
+		Spherical
+			{
+			anchor { 0; 12; 0; }
+			bodies { WORLD; head; }
+			}
+		Spherical
+			{
+			anchor { 1; 11; 1; }
+			bodies { head; tail0; }
+			}
+		Spherical
+			{
+			anchor { 2; 10; 2; }
+			bodies { tail0; tail1; }
+			}
+		Spherical
+			{
+			anchor { 3; 9; 3; }
+			bodies { tail1; tail2; }
+			}
+		Spherical
+			{
+			anchor { 4; 8; 4; }
+			bodies { tail2; tail3; }
+			}
+		Spherical
+			{
+			anchor { 5; 7; 5; }
+			bodies { tail3; tail4; }
+			}
+		}
+
+	Obstacles
+		{
+		1 
+			{
+			position {  0; 12.5; 0; }
+			dimensions {0.3; 0.3; 0.3;}
+			}
+		}
+
+
+	Lights
+		{
+		1 {5; 5; 7;}
+		2 {-5; 25; 10;}
+		}
+
+	Camera
+		{
+		position {-3.404530;14.080350;15.353054;}
+		angles {0.000000;354.000000;-21.000000;}
+		}
+
+
+#use default gravity of 9.8
+
+	}

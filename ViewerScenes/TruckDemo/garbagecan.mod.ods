@@ -1,0 +1,9 @@
+# garbadge01
+Model3
+{
+	Mesh	{ "garbagecan.obj"; }
+	Groups
+	{
+		Material_6 { "garbage.mat.ods"; }
+	}
+}

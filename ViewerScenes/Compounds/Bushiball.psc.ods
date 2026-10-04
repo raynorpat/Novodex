@@ -1,0 +1,86 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 1000; }
+	DragForce	{ 100; }
+	gravity	{ 0.000000; -9.810000; 0.000000; }
+	gridRes	{ 0; }
+
+	Text
+		{
+		T {"Stand-up toys with low COM."; Y{-0.7;} D{5;} S{16;}}
+		}
+
+	Bodies
+	{
+		Group01
+		{
+			name	{ Group01; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 0.011151; 1.447511; 0.238137; }
+			scale	{ 1.000000; }
+			centerOfMass { 0.0; -1.2; 0.0;	}
+			mass	{ 20; }
+			inertia { 4;0;0;4;0;4;}
+		}
+
+		Group01
+		{
+			name	{ Group01; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 3.011151; 1.447511; 0.238137; }
+			scale	{ 1.000000; }
+			centerOfMass { 0.0; -1.2; 0.0;	}
+			mass	{ 20; }
+			inertia { 4;0;0;4;0;4;}
+		}
+
+		Group01
+		{
+			name	{ Group01; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -3.011151; 1.447511; 0.238137; }
+			scale	{ 1.000000; }
+			centerOfMass { 0.0; -1.2; 0.0;	}
+			mass	{ 20; }
+			inertia { 4;0;0;4;0;4;}
+		}
+
+		Group01
+		{
+			name	{ Group01; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -6.011151; 1.447511; 0.238137; }
+			scale	{ 1.000000; }
+			centerOfMass { 0.0; -1.2; 0.0;	}
+			mass	{ 20; }
+			inertia { 4;0;0;4;0;4;}
+		}
+
+		Group01
+		{
+			name	{ Group01; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 6.011151; 1.447511; 0.238137; }
+			scale	{ 1.000000; }
+			centerOfMass { 0.0; -1.2; 0.0;	}
+			mass	{ 20; }
+			inertia { 4;0;0;4;0;4;}
+		}
+
+	}
+	Joints
+	{
+	}
+	Lights
+	{
+		1	{ -1.927193; 12.344509; 6.629998; }
+#		2	{ -6.456213; 9.263137; 0.506836; }
+		2	{ -6.456213; 0.263137; 0.506836; }
+	}
+	Camera
+	{
+		position {-12.969350;5.722626;10.848623;}
+		angles {0.000000;-50.000000;-15.000000;}
+	}
+}

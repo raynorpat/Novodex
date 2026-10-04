@@ -1,0 +1,321 @@
+# intro scene script for demo
+
+Scene
+	{
+	Text
+		{
+		T {"Restitution Test"; Y{-0.6;} D{2;} S{17;} E{1;}}
+		}
+
+
+
+	PhysStart {1;}
+	PhysDuration   {200;}
+	DragForce { 30; }
+
+
+	Bodies
+		{
+		#high altitude boxes:
+		Rubik
+			{
+			position {0;10;0; }
+			scale {0.0165;}
+			restitution {0;} 
+			}
+		Rubik
+			{
+			position {1.5;10;0; }
+			scale {0.0165;}
+			restitution {0.1;}
+			}
+
+		Rubik
+			{
+			position {3;10;0; }
+			scale {0.0165;}
+			restitution {0.2;}
+			}
+
+		Rubik
+			{
+			position {4.5;10;0; }
+			scale {0.0165;}
+			restitution {0.3;}
+			}
+
+		Rubik
+			{
+			position {6;10;0; }
+			scale {0.0165;}
+			restitution {0.4;}
+			}
+
+		Rubik
+			{
+			position {7.5;10;0; }
+			scale {0.0165;}
+			restitution {0.5;}
+			}
+
+		Rubik
+			{
+			position {9;10;0; }
+			scale {0.0165;}
+			restitution {0.6;}
+			}
+
+		Rubik
+			{
+			position {10.5;10;0; }
+			scale {0.0165;}
+			restitution {0.7;}
+			}
+
+		Rubik
+			{
+			position {12;10;0; }
+			scale {0.0165;}
+			restitution {0.8;}
+			}
+
+		Rubik
+			{
+			position {13.5;10;0; }
+			scale {0.0165;}
+			restitution {0.9;}
+			}
+
+		Rubik
+			{
+			position {15;10;0; }
+			scale {0.0165;}
+			restitution {1.0;}
+			}
+
+
+
+		#low altitude boxes:
+		Rubik
+			{
+			position {0;1;2; }
+			scale {0.0165;}
+			restitution {0;} 
+			}
+
+		Rubik
+			{
+			position {1.5;1;2; }
+			scale {0.0165;}
+			restitution {0.1;}
+			}
+
+		Rubik
+			{
+			position {3;1;2; }
+			scale {0.0165;}
+			restitution {0.2;}
+			}
+
+		Rubik
+			{
+			position {4.5;1;2; }
+			scale {0.0165;}
+			restitution {0.3;}
+			}
+
+		Rubik
+			{
+			position {6;1;2; }
+			scale {0.0165;}
+			restitution {0.4;}
+			}
+
+		Rubik
+			{
+			position {7.5;1;2; }
+			scale {0.0165;}
+			restitution {0.5;}
+			}
+
+		Rubik
+			{
+			position {9;1;2; }
+			scale {0.0165;}
+			restitution {0.6;}
+			}
+
+		Rubik
+			{
+			position {10.5;1;2; }
+			scale {0.0165;}
+			restitution {0.7;}
+			}
+
+		Rubik
+			{
+			position {12;1;2; }
+			scale {0.0165;}
+			restitution {0.8;}
+			}
+
+		Rubik
+			{
+			position {13.5;1;2; }
+			scale {0.0165;}
+			restitution {0.9;}
+			}
+
+		Rubik
+			{
+			position {15;1;2; }
+			scale {0.0165;}
+			restitution {1.0;}
+			}
+
+
+		#high altitude spheres:
+		Ball
+			{
+			position {0;10;4; }
+			restitution {0;} 
+			}
+
+		Ball
+			{
+			position {1.5;10;4; }
+			restitution {0.1;}
+			}
+
+		Ball
+			{
+			position {3;10;4; }
+			restitution {0.2;}
+			}
+
+		Ball
+			{
+			position {4.5;10;4; }
+			restitution {0.3;}
+			}
+
+		Ball
+			{
+			position {6;10;4; }
+			restitution {0.4;}
+			}
+
+		Ball
+			{
+			position {7.5;10;4; }
+			restitution {0.5;}
+			}
+
+		Ball
+			{
+			position {9;10;4; }
+			restitution {0.6;}
+			}
+
+		Ball
+			{
+			position {10.5;10;4; }
+			restitution {0.7;}
+			}
+
+		Ball
+			{
+			position {12;10;4; }
+			restitution {0.8;}
+			}
+
+		Ball
+			{
+			position {13.5;10;4; }
+			restitution {0.9;}
+			}
+
+		Ball
+			{
+			position {15;10;4; }
+			restitution {1.0;}
+			}
+
+		#low altitude spheres:
+		Ball
+			{
+			position {0;1;6; }
+			restitution {0;} 
+			}
+		Ball
+			{
+			position {1.5;1;6; }
+			restitution {0.1;}
+			}
+
+		Ball
+			{
+			position {3;1;6; }
+			restitution {0.2;}
+			}
+
+		Ball
+			{
+			position {4.5;1;6; }
+			restitution {0.3;}
+			}
+
+		Ball
+			{
+			position {6;1;6; }
+			restitution {0.4;}
+			}
+
+		Ball
+			{
+			position {7.5;1;6; }
+			restitution {0.5;}
+			}
+
+		Ball
+			{
+			position {9;1;6; }
+			restitution {0.6;}
+			}
+
+		Ball
+			{
+			position {10.5;1;6; }
+			restitution {0.7;}
+			}
+
+		Ball
+			{
+			position {12;1;6; }
+			restitution {0.8;}
+			}
+		Ball
+			{
+			position {13.5;1;6; }
+			restitution {0.9;}
+			}
+		Ball
+			{
+			position {15;1;6; }
+			restitution {1.0;}
+			}
+		}
+
+	Lights
+		{
+		1 {5; 22; 7;}
+		2 {5; 2; 17;}
+		}
+
+	Camera
+		{
+		position {0.180690;11.937024;23.418652;}
+		angles {0.000000;-19.000000;-17.000000;}
+		}
+
+	}

@@ -1,0 +1,388 @@
+PDS
+{
+	Acts
+	{
+		"scene.psc.ods";
+	}
+	Models
+	{
+		Box01	{ "Box01.mod.ods"; }
+		Box02	{ "Box02.mod.ods"; }
+		Box03	{ "Box03.mod.ods"; }
+		Box04	{ "Box04.mod.ods"; }
+		Box05	{ "Box05.mod.ods"; }
+		Box06	{ "Box06.mod.ods"; }
+		Box07	{ "Box07.mod.ods"; }
+		Box08	{ "Box08.mod.ods"; }
+		Box09	{ "Box09.mod.ods"; }
+		Box10	{ "Box10.mod.ods"; }
+		Box11	{ "Box11.mod.ods"; }
+		Box12	{ "Box12.mod.ods"; }
+		Box13	{ "Box13.mod.ods"; }
+		Box14	{ "Box14.mod.ods"; }
+		Box15	{ "Box15.mod.ods"; }
+		Box16	{ "Box16.mod.ods"; }
+	}
+	Actors
+	{
+	YPlane
+	{
+	Collision { Plane { normal {0; 1; 0; } d {-10; }  } } 
+
+	}
+		# Mesh actors not in groups
+		Box01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box01";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.985755; 0.056980; 0.997151; }
+				}
+			}
+		}
+		Box02
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box02";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ 0.000000; -0.000000; -0.000000; }
+					dimensions	{ 0.985754; 0.056980; 0.997150; }
+				}
+			}
+		}
+		Box03
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box03";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.985754; 0.056980; 0.997150; }
+				}
+			}
+		}
+		Box04
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box04";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ 0.000000; -0.000000; 0.000000; }
+					dimensions	{ 0.985754; 0.056980; 0.997150; }
+				}
+			}
+		}
+		Box05
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box05";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.148148; 0.142450; 0.142450; }
+				}
+			}
+		}
+		Box06
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box06";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.125356; 0.062678; 0.102564; }
+				}
+			}
+		}
+		Box07
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box07";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.091168; 0.096866; 0.205128; }
+				}
+			}
+		}
+		Box08
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box08";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.142450; 0.182336; 0.074074; }
+				}
+			}
+		}
+		Box09
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box09";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.108262; 0.131054; 0.131054; }
+				}
+			}
+		}
+		Box10
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box10";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.216524; 0.119658; 0.085470; }
+				}
+			}
+		}
+		Box11
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box11";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.153846; 0.068376; 0.159544; }
+				}
+			}
+		}
+		Box12
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box12";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.153846; 0.136752; 0.222222; }
+				}
+			}
+		}
+		Box13
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box13";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.131054; 0.091168; 0.199430; }
+				}
+			}
+		}
+		Box14
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box14";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.074074; 0.102564; 0.159544; }
+				}
+			}
+		}
+		Box15
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box15";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.125356; 0.142450; 0.199430; }
+				}
+			}
+		}
+		Box16
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box16";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.153846; 0.193732; 0.136752; }
+				}
+			}
+		}
+		# Group actors
+	}
+}

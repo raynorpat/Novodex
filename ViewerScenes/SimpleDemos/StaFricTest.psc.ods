@@ -1,0 +1,114 @@
+# intro scene script for demo
+
+Scene
+	{
+	PhysStart {1.0;}
+	PhysDuration   {1500;}
+	DragForce { 10; }
+
+#falls at 60, y = 17.67
+#stable at 55
+	Bodies
+		{
+		#rolling cube
+		Ez
+			{
+			mass	{0;}				
+			angles {35 /*90 - angle */ ; 0; 0;}
+			position {  6; 12.5; 30; }
+			scale {0.2;}
+			restitution {0.0;}
+			friction { 0; }
+			staticFriction { 1000; }
+			}
+
+		Rubik
+			{
+			mass	{40;}
+			position {0;17.1;30; }
+			angles { -55 /* angle */; 0; 0; }
+			scale {0.0165;}
+			restitution {0.0;}
+			friction { 0; }
+			staticFriction { 1000; }
+			}
+		#stable cube
+		Ez
+			{
+			mass	{0;}				
+			angles {55; 0; 0;}
+			position {  6; 12.5; 60; }
+			scale {0.2;}
+			restitution {0.0;}
+			friction { 0; }
+			staticFriction { 1000; }
+			}
+
+		Rubik
+			{
+			mass	{40;}
+			position {0;16.2;60; }
+			angles { -40; 0; 0; }
+			scale {0.0165;}
+			restitution {0.0;}
+			friction { 0; }
+			staticFriction { 1000; }
+			}
+
+
+
+/*
+		Rubik
+			{
+			mass	{1;}
+			position {0;1.5;0; }
+			scale {0.016;}
+			restitution {0.8;}
+			}
+		Ball
+			{
+			mass	{1;}
+			position {0;3.5;0; }
+			restitution {0.8;}
+			}
+*/
+/*
+		Rubik
+			{
+			mass	{1;}
+			position {2;10.5;0; }
+			scale {0.0165;}
+			restitution {0.8;}
+			}
+		Ball
+			{
+			mass	{1;}
+			position {4;10.5;0; }
+			restitution {0.8;}
+			}
+*/
+		}
+
+
+	Lights
+		{
+		1 {5; 22; 7;}
+		2 {5; 2; 17;}
+		}
+
+	Camera
+		{
+#		position {2.810795;1.894544;4.539639;}
+#		angles {0.000000;-329.000000;-12.000000;}
+
+#position {-0.011176;15.143322;10.682883;}
+#angles {0.000000;-354.000000;-5.000000;}
+
+#position {23.748276;30.582615;19.089987;}
+#angles {0.000000;-225.000000;-26.000000;}
+
+position {3.626332;19.950136;28.930149;}
+angles {0.000000;109.000000;-39.000000;}
+		}
+	}
+

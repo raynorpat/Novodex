@@ -1,0 +1,187 @@
+PDS
+{
+Acts
+{
+"Bip01.psc.ods";
+}
+Models {}
+Actors
+{
+void {}
+"Bip01 Head"
+{
+Collision
+{
+#Part51
+Sphere
+{
+radius {0.6;}
+}
+}
+}
+"Bip01 L Calf"
+{
+Collision
+{
+#Bip01 L Calf
+Box
+{
+position {0.13;0;0;}
+dimensions {2.27;0.734363;0.925625;}
+}
+}
+}
+"Bip01 L Forearm"
+{
+Collision
+{
+#Bip01 L Forearm
+Box
+{
+position {0.28;0;0;}
+dimensions {1.88;0.43846;0.475076;}
+}
+}
+}
+"Bip01 L Thigh"
+{
+Collision
+{
+#Bip01 L Thigh
+Box
+{
+dimensions {1.79196;0.857996;0.923436;}
+}
+}
+}
+"Bip01 L UpperArm"
+{
+Collision
+{
+#Part70
+Sphere
+{
+radius {0.3;}
+}
+#Part71
+Sphere
+{
+radius {0.35;}
+position {-0.4;0;0;}
+}
+#Part72
+Sphere
+{
+radius {0.35;}
+position {0.4;0;0;}
+}
+}
+}
+"Bip01 Neck"
+{
+Collision
+{
+#Bip01 Neck
+Box
+{
+dimensions {0.174159;0.348621;0.105948;}
+}
+}
+}
+"Bip01 Pelvis"
+{
+Collision
+{
+#Part22
+Sphere
+{
+radius {0.75;}
+position {0.56;-0.26;0;}
+}
+}
+}
+"Bip01 R Calf"
+{
+Collision
+{
+#Bip01 R Calf
+Box
+{
+position {0.13;0;0;}
+dimensions {2.27;0.73124;0.92;}
+}
+}
+}
+"Bip01 R Forearm"
+{
+Collision
+{
+#Bip01 R Forearm
+Box
+{
+position {0.28;0;0;}
+dimensions {1.88;0.43846;0.46514;}
+}
+}
+}
+"Bip01 R Thigh"
+{
+Collision
+{
+#Bip01 R Thigh
+Box
+{
+position {-0.16;0;0;}
+dimensions {1.76;0.84;0.92;}
+}
+}
+}
+"Bip01 R UpperArm"
+{
+Collision
+{
+#Part63
+Sphere
+{
+radius {0.35;}
+position {-0.4;0;0;}
+}
+#Part64
+Sphere
+{
+radius {0.35;}
+position {0.4;0;0;}
+}
+#Part67
+Sphere
+{
+radius {0.3;}
+}
+}
+}
+"Bip01 Spine1"
+{
+Collision
+{
+#Part58
+Sphere
+{
+radius {0.75;}
+position {0.8;0.1;0;}
+}
+}
+}
+"Bip01 Spine3"
+{
+Collision
+{
+#Part37
+Sphere
+{
+radius {0.85;}
+position {-0.35;0;0;}
+}
+}
+}
+}
+}

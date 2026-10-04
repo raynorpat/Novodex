@@ -1,0 +1,341 @@
+// 0x180 ?gleLoadExtension@@YA_NW4gleExt@@@Z
+char __cdecl gleLoadExtension(int a1)
+{
+  const GLubyte *(__stdcall *v1)(GLenum); // esi
+  PROC (__stdcall *v2)(LPCSTR); // esi
+  char result; // al
+  PROC (__stdcall *v4)(LPCSTR); // esi
+  PROC (__stdcall *v5)(LPCSTR); // esi
+  PROC (__stdcall *v6)(LPCSTR); // esi
+  PROC (__stdcall *v7)(LPCSTR); // esi
+  PROC (__stdcall *v8)(LPCSTR); // esi
+  const GLubyte *v9; // eax
+  PROC (__stdcall *v10)(LPCSTR); // esi
+  const char *String; // eax
+  const char *v12; // [esp-4h] [ebp-Ch]
+
+  *(&gleExtensionState + a1) = nullptr;
+  v1 = glGetString;
+  switch ( a1 )
+  {
+    case 0:
+      v2 = wglGetProcAddress;
+      glMultiTexCoord1dARB = (int)wglGetProcAddress(a1: `string');
+      if ( glMultiTexCoord1dARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord1dvARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord1dvARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord1fARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord1fARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord1fvARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord1fvARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord1iARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord1iARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord1ivARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord1ivARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord1sARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord1sARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord1svARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord1svARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord2dARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord2dARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord2dvARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord2dvARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord2fARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord2fARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord2fvARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord2fvARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord2iARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord2iARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord2ivARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord2ivARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord2sARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord2sARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord2svARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord2svARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord3dARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord3dARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord3dvARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord3dvARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord3fARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord3fARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord3fvARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord3fvARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord3iARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord3iARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord3ivARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord3ivARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord3sARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord3sARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord3svARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord3svARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord4dARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord4dARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord4dvARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord4dvARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord4fARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord4fARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord4fvARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord4fvARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord4iARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord4iARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord4ivARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord4ivARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord4sARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord4sARB == 0 )
+        goto LABEL_100;
+      glMultiTexCoord4svARB = (int)v2(a1: `string');
+      if ( glMultiTexCoord4svARB == 0 )
+        goto LABEL_100;
+      glActiveTextureARB = (int)v2(a1: `string');
+      if ( glActiveTextureARB == 0 )
+        goto LABEL_100;
+      glClientActiveTextureARB = (int)v2(a1: `string');
+      if ( glClientActiveTextureARB == 0 )
+        goto LABEL_100;
+      *(&gleExtensionState + a1) = (enum gle3State *)(&gleExtensionState + 1);
+      return 1;
+    case 1:
+      glBlendColorEXT = (int)wglGetProcAddress(a1: `string');
+      if ( glBlendColorEXT == 0 )
+        goto LABEL_100;
+      *(&gleExtensionState + a1) = (enum gle3State *)(&gleExtensionState + 1);
+      return 1;
+    case 2:
+      glBlendEquationEXT = (int)wglGetProcAddress(a1: `string');
+      if ( glBlendEquationEXT == 0 )
+        goto LABEL_100;
+      *(&gleExtensionState + a1) = (enum gle3State *)(&gleExtensionState + 1);
+      return 1;
+    case 3:
+      v4 = wglGetProcAddress;
+      glFogCoorddEXT = (int)wglGetProcAddress(a1: `string');
+      if ( glFogCoorddEXT == 0 )
+        goto LABEL_100;
+      glFogCoorddvEXT = (int)v4(a1: `string');
+      if ( glFogCoorddvEXT == 0 )
+        goto LABEL_100;
+      glFogCoordfEXT = (int)v4(a1: `string');
+      if ( glFogCoordfEXT == 0 )
+        goto LABEL_100;
+      glFogCoordfvEXT = (int)v4(a1: `string');
+      if ( glFogCoordfvEXT == 0 )
+        goto LABEL_100;
+      glFogCoordPointerEXT = (int)v4(a1: `string');
+      if ( glFogCoordPointerEXT == 0 )
+        goto LABEL_100;
+      *(&gleExtensionState + a1) = (enum gle3State *)(&gleExtensionState + 1);
+      return 1;
+    case 4:
+      v5 = wglGetProcAddress;
+      glSecondaryColor3bEXT = (int)wglGetProcAddress(a1: `string');
+      if ( glSecondaryColor3bEXT == 0 )
+        goto LABEL_100;
+      glSecondaryColor3bvEXT = (int)v5(a1: `string');
+      if ( glSecondaryColor3bvEXT == 0 )
+        goto LABEL_100;
+      glSecondaryColor3dEXT = (int)v5(a1: `string');
+      if ( glSecondaryColor3dEXT == 0 )
+        goto LABEL_100;
+      glSecondaryColor3dvEXT = (int)v5(a1: `string');
+      if ( glSecondaryColor3dvEXT == 0 )
+        goto LABEL_100;
+      glSecondaryColor3fEXT = (int)v5(a1: `string');
+      if ( glSecondaryColor3fEXT == 0 )
+        goto LABEL_100;
+      glSecondaryColor3fvEXT = (int)v5(a1: `string');
+      if ( glSecondaryColor3fvEXT == 0 )
+        goto LABEL_100;
+      glSecondaryColor3iEXT = (int)v5(a1: `string');
+      if ( glSecondaryColor3iEXT == 0 )
+        goto LABEL_100;
+      glSecondaryColor3ivEXT = (int)v5(a1: `string');
+      if ( glSecondaryColor3ivEXT == 0 )
+        goto LABEL_100;
+      glSecondaryColor3sEXT = (int)v5(a1: `string');
+      if ( glSecondaryColor3sEXT == 0 )
+        goto LABEL_100;
+      glSecondaryColor3svEXT = (int)v5(a1: `string');
+      if ( glSecondaryColor3svEXT == 0 )
+        goto LABEL_100;
+      glSecondaryColor3ubEXT = (int)v5(a1: `string');
+      if ( glSecondaryColor3ubEXT == 0 )
+        goto LABEL_100;
+      glSecondaryColor3ubvEXT = (int)v5(a1: `string');
+      if ( glSecondaryColor3ubvEXT == 0 )
+        goto LABEL_100;
+      glSecondaryColor3uiEXT = (int)v5(a1: `string');
+      if ( glSecondaryColor3uiEXT == 0 )
+        goto LABEL_100;
+      glSecondaryColor3uivEXT = (int)v5(a1: `string');
+      if ( glSecondaryColor3uivEXT == 0 )
+        goto LABEL_100;
+      glSecondaryColor3usEXT = (int)v5(a1: `string');
+      if ( glSecondaryColor3usEXT == 0 )
+        goto LABEL_100;
+      glSecondaryColor3usvEXT = (int)v5(a1: `string');
+      if ( glSecondaryColor3usvEXT == 0 )
+        goto LABEL_100;
+      glSecondaryColorPointerEXT = (int)v5(a1: `string');
+      if ( glSecondaryColorPointerEXT == 0 )
+        goto LABEL_100;
+      *(&gleExtensionState + a1) = (enum gle3State *)(&gleExtensionState + 1);
+      return 1;
+    case 5:
+      v6 = wglGetProcAddress;
+      glGenFencesNV = (int)wglGetProcAddress(a1: `string');
+      if ( glGenFencesNV == 0 )
+        goto LABEL_100;
+      glDeleteFencesNV = (int)v6(a1: `string');
+      if ( glDeleteFencesNV == 0 )
+        goto LABEL_100;
+      glSetFenceNV = (int)v6(a1: `string');
+      if ( glSetFenceNV == 0 )
+        goto LABEL_100;
+      glTestFenceNV = (int)v6(a1: `string');
+      if ( glTestFenceNV == 0 )
+        goto LABEL_100;
+      glFinishFenceNV = (int)v6(a1: `string');
+      if ( glFinishFenceNV == 0 )
+        goto LABEL_100;
+      glIsFenceNV = (int)v6(a1: `string');
+      if ( glIsFenceNV == 0 )
+        goto LABEL_100;
+      glGetFenceivNV = (int)v6(a1: `string');
+      if ( glGetFenceivNV == 0 )
+        goto LABEL_100;
+      *(&gleExtensionState + a1) = (enum gle3State *)(&gleExtensionState + 1);
+      return 1;
+    case 6:
+      v7 = wglGetProcAddress;
+      glCombinerParameterfvNV = (int)wglGetProcAddress(a1: `string');
+      if ( glCombinerParameterfvNV == 0 )
+        goto LABEL_100;
+      glCombinerParameterfNV = (int)v7(a1: `string');
+      if ( glCombinerParameterfNV == 0 )
+        goto LABEL_100;
+      glCombinerParameterivNV = (int)v7(a1: `string');
+      if ( glCombinerParameterivNV == 0 )
+        goto LABEL_100;
+      glCombinerParameteriNV = (int)v7(a1: `string');
+      if ( glCombinerParameteriNV == 0 )
+        goto LABEL_100;
+      glCombinerInputNV = (int)v7(a1: `string');
+      if ( glCombinerInputNV == 0 )
+        goto LABEL_100;
+      glCombinerOutputNV = (int)v7(a1: `string');
+      if ( glCombinerOutputNV == 0 )
+        goto LABEL_100;
+      glFinalCombinerInputNV = (int)v7(a1: `string');
+      if ( glFinalCombinerInputNV == 0 )
+        goto LABEL_100;
+      glGetCombinerInputParameterfvNV = (int)v7(a1: `string');
+      if ( glGetCombinerInputParameterfvNV == 0 )
+        goto LABEL_100;
+      glGetCombinerInputParameterivNV = (int)v7(a1: `string');
+      if ( glGetCombinerInputParameterivNV == 0 )
+        goto LABEL_100;
+      glGetCombinerOutputParameterfvNV = (int)v7(a1: `string');
+      if ( glGetCombinerOutputParameterfvNV == 0 )
+        goto LABEL_100;
+      glGetCombinerOutputParameterivNV = (int)v7(a1: `string');
+      if ( glGetCombinerOutputParameterivNV == 0 )
+        goto LABEL_100;
+      glGetFinalCombinerInputParameterfvNV = (int)v7(a1: `string');
+      if ( glGetFinalCombinerInputParameterfvNV == 0 )
+        goto LABEL_100;
+      glGetFinalCombinerInputParameterivNV = (int)v7(a1: `string');
+      if ( glGetFinalCombinerInputParameterivNV == 0 )
+        goto LABEL_100;
+      *(&gleExtensionState + a1) = (enum gle3State *)(&gleExtensionState + 1);
+      return 1;
+    case 7:
+      v8 = wglGetProcAddress;
+      glFlushVertexArrayRangeNV = (int)wglGetProcAddress(a1: `string');
+      if ( glFlushVertexArrayRangeNV == 0 )
+        goto LABEL_100;
+      glVertexArrayRangeNV = (int)v8(a1: `string');
+      if ( glVertexArrayRangeNV == 0 )
+        goto LABEL_100;
+      wglAllocateMemoryNV = (int)v8(a1: `string');
+      if ( wglAllocateMemoryNV == 0 )
+        goto LABEL_100;
+      wglFreeMemoryNV = (int)v8(a1: `string');
+      if ( wglFreeMemoryNV == 0 )
+        goto LABEL_100;
+      *(&gleExtensionState + a1) = (enum gle3State *)(&gleExtensionState + 1);
+      return 1;
+    case 8:
+      v10 = wglGetProcAddress;
+      wglSwapIntervalEXT = (int)wglGetProcAddress(a1: `string');
+      if ( wglSwapIntervalEXT == 0 )
+        goto LABEL_100;
+      wglGetSwapIntervalEXT = (int)v10(a1: `string');
+      if ( wglGetSwapIntervalEXT == 0 )
+        goto LABEL_100;
+      *(&gleExtensionState + a1) = (enum gle3State *)(&gleExtensionState + 1);
+      return 1;
+    case 9:
+      String = (const char *)glGetString(name: 0x1F03u);
+      if ( strstr(Str: String, SubStr: `string') == nullptr )
+        goto LABEL_100;
+      goto $L20018;
+    case 10:
+$L20018:
+      v12 = `string';
+      v9 = v1(name: 0x1F03u);
+      goto LABEL_93;
+    case 11:
+      v12 = `string';
+      v9 = glGetString(name: 0x1F03u);
+LABEL_93:
+      if ( strstr(Str: (const char *)v9, SubStr: v12) == nullptr )
+        goto LABEL_100;
+      *(&gleExtensionState + a1) = (enum gle3State *)(&gleExtensionState + 1);
+      result = 1;
+      break;
+    default:
+LABEL_100:
+      result = 0;
+      break;
+  }
+  return result;
+}
+
+// 0x1170 _strstr
+extrn _strstr:near
+
+// 0x1174 __imp__wglGetProcAddress@4
+extrn __imp__wglGetProcAddress@4:near
+
+// 0x1178 __imp__glGetString@4
+extrn __imp__glGetString@4:near

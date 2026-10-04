@@ -1,0 +1,37 @@
+PDS
+{
+	Acts
+	{
+		"Physics_Stack00.psc.ods";
+	}
+	Models
+	{
+		Box01	{ "Box01.mod.ods"; }
+	}
+	Actors
+	{
+		# Mesh actors not in groups
+		Box01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box01";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					dimensions	{ 0.5; 0.5; 0.5; }
+				}
+			}
+		}
+		# Group actors
+	}
+}

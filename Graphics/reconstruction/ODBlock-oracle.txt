@@ -1,0 +1,2318 @@
+0x498 ?encrypt@ODBlock@@CADDAAI@Z
+static char __cdecl ODBlock::encrypt(char a1, unsigned int *a2)
+{
+  char result; // al
+  int v3; // edx
+  char v4; // cl
+
+  result = a1;
+  if ( a1 > 32 )
+  {
+    v3 = (char)(a1 - 33);
+    v4 = map[4 * v3 - 1 + v3 + *a2];
+    *a2 = (v3 + *a2 + v4) % 5 + 1;
+    return v4 + 33;
+  }
+  return result;
+}
+
+
+0x4d8 ?decrypt@ODBlock@@CADDAAI@Z
+static char __cdecl ODBlock::decrypt(char a1, unsigned int *a2)
+{
+  char result; // al
+  int v3; // edx
+  char v4; // cl
+
+  result = a1;
+  if ( a1 > 32 )
+  {
+    v3 = (char)(a1 - 33);
+    v4 = byte_1E7[4 * v3 + v3 + *a2];
+    *a2 = (v3 + *a2 + v4) % 5 + 1;
+    return v4 + 33;
+  }
+  return result;
+}
+
+
+0x518 ?encrypt@ODBlock@@CAXPADAAV?$basic_ostream@DU?$char_traits@D@std@@@std@@AAI@Z
+char __cdecl ODBlock::encrypt(char *a1, int a2, unsigned int *a3)
+{
+  char *v3; // esi
+  char result; // al
+  int v5; // eax
+
+  v3 = a1;
+  for ( result = *a1; result != 0; ++v3 )
+  {
+    LOBYTE(v5) = ODBlock::encrypt(result, a3);
+    std::operator<<(a2, v5);
+    result = v3[1];
+  }
+  return result;
+}
+
+
+0x558 ?asString@ODSyntaxError@ODBlock@@QAEPBDXZ
+const char *__thiscall ODBlock::ODSyntaxError::asString(ODBlock::ODSyntaxError *this)
+{
+  const char *result; // eax
+
+  switch ( *(_DWORD *)this )
+  {
+    case 0:
+      result = "Quote unexpected.";
+      break;
+    case 1:
+      result = "Opening brace unexpected.";
+      break;
+    case 2:
+      result = "Closing brace unexpected.";
+      break;
+    case 3:
+      result = "Literal or semicolon unexpected.";
+      break;
+    case 4:
+      result = "Unexpected end of file found.";
+      break;
+    case 5:
+      result = "Unknown encryption algo code.";
+      break;
+    default:
+      result = nullptr;
+      break;
+  }
+  return result;
+}
+
+
+0x5a8 ?loadScript@ODBlock@@SAPAV1@AAV?$basic_istream@DU?$char_traits@D@std@@@std@@@Z
+int __cdecl ODBlock::loadScript(char *a1)
+{
+  int v1; // eax
+  _DWORD *v2; // eax
+  ODBlock *v3; // ecx
+  int result; // eax
+  ODBlock *v5; // ecx
+  int v6; // [esp-Ch] [ebp-28h] BYREF
+  _DWORD *pExceptionObject; // [esp+4h] [ebp-18h] BYREF
+  int v8[2]; // [esp+8h] [ebp-14h] BYREF
+  unsigned int v9[2]; // [esp+10h] [ebp-Ch] BYREF
+  int v10; // [esp+18h] [ebp-4h]
+
+  v9[1] = (unsigned int)&_L11955;
+  v9[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v9);
+  v10 = 0;
+  v1 = *(_DWORD *)a1;
+  v8[1] = (int)&v6;
+  *(_DWORD *)&a1[*(_DWORD *)(v1 + 4) + 12] |= 1u;
+  std::operator>>(a1, v8);
+  if ( LOBYTE(v8[0]) == 33 )
+  {
+    std::operator>>(a1, v8);
+    if ( LOBYTE(v8[0]) != 49 )
+    {
+      v2 = operator new(4u);
+      if ( v2 != nullptr )
+        *v2 = 5;
+      else
+        v2 = nullptr;
+      pExceptionObject = v2;
+      _CxxThrowException(&pExceptionObject, (_ThrowInfo *)&_TI2PAVODSyntaxError_ODBlock__);
+    }
+    ODBlock::cryptState = 1;
+    v3 = (ODBlock *)operator new(0x20u);
+    LOBYTE(v10) = 1;
+    if ( v3 != nullptr )
+    {
+      result = ODBlock::ODBlock(v3, (int)a1, 1, 0);
+      __writefsdword((unsigned int)&_except_list, v9[0]);
+      return result;
+    }
+  }
+  else
+  {
+    v5 = (ODBlock *)operator new(0x20u);
+    LOBYTE(v10) = 2;
+    if ( v5 != nullptr )
+    {
+      result = ODBlock::ODBlock(v5, (int)a1, 0, v8[0]);
+      __writefsdword((unsigned int)&_except_list, v9[0]);
+      return result;
+    }
+  }
+  __writefsdword((unsigned int)&_except_list, v9[0]);
+  return 0;
+}
+
+
+0x7d8 ??0ODBlock@@QAE@AAV?$basic_istream@DU?$char_traits@D@std@@@std@@_ND@Z
+ODBlock *__thiscall ODBlock::ODBlock(ODBlock *this, int *a2, int a3, _DWORD *a4)
+{
+  unsigned int v5; // edi
+  int v6; // esi
+  int v7; // ecx
+  int v8; // edx
+  char v9; // al
+  int v10; // ebx
+  ODBlock *v11; // eax
+  struct ODBlock *v12; // eax
+  bool v13; // zf
+  int v14; // eax
+  int v15; // ecx
+  int v16; // ebx
+  char *v17; // eax
+  const char *v18; // edi
+  char *v19; // edx
+  std::locale *v20; // esi
+  unsigned int v21; // eax
+  int v22; // eax
+  struct std::locale::facet *v23; // eax
+  int v24; // ebx
+  unsigned int v25; // ecx
+  char *v26; // eax
+  const char *v27; // edi
+  char *v28; // edx
+  _DWORD *v29; // eax
+  _DWORD *v30; // eax
+  _DWORD *v31; // eax
+  _DWORD *v32; // eax
+  _DWORD *v33; // eax
+  char v35; // [esp+0h] [ebp-42h]
+  bool v36; // [esp+1h] [ebp-41h]
+  char v37[4]; // [esp+2h] [ebp-40h] BYREF
+  int v38; // [esp+6h] [ebp-3Ch]
+  char *v39; // [esp+Ah] [ebp-38h]
+  int v40; // [esp+Eh] [ebp-34h] BYREF
+  std::locale::facet *v41; // [esp+12h] [ebp-30h] BYREF
+  char *v42; // [esp+16h] [ebp-2Ch] BYREF
+  _DWORD *v43; // [esp+1Ah] [ebp-28h] BYREF
+  _DWORD *v44; // [esp+1Eh] [ebp-24h] BYREF
+  _DWORD v45[2]; // [esp+22h] [ebp-20h] BYREF
+  _DWORD v46[3]; // [esp+2Ah] [ebp-18h] BYREF
+  unsigned int v47[2]; // [esp+36h] [ebp-Ch] BYREF
+  int v48; // [esp+3Eh] [ebp-4h]
+
+  v48 = -1;
+  v47[1] = (unsigned int)&_L12150;
+  v47[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v47);
+  v5 = 0;
+  v45[1] = this;
+  *((_BYTE *)this + 12) = (_BYTE)a4;
+  *((_DWORD *)this + 4) = 0;
+  *((_DWORD *)this + 5) = 0;
+  *((_DWORD *)this + 6) = 0;
+  v6 = (int)a2;
+  *(_DWORD *)this = 0;
+  *((_DWORD *)this + 1) = 0;
+  *((_BYTE *)this + 8) = 1;
+  *((_DWORD *)this + 7) = 0;
+  v7 = *a2;
+  v48 = 0;
+  v35 = 0;
+  v8 = *(_DWORD *)(v7 + 4);
+  v36 = false;
+  v38 = 0;
+  if ( (*(int *)((char *)a2 + v8 + 4) & 6) != 0 )
+  {
+LABEL_56:
+    v29 = operator new(4u);
+    if ( v29 != nullptr )
+      *v29 = 4;
+    else
+      v29 = nullptr;
+    a4 = v29;
+    _CxxThrowException(&a4, (_ThrowInfo *)&_TI2PAVODSyntaxError_ODBlock__);
+  }
+  while ( 1 )
+  {
+    v9 = (char)a4;
+    if ( (_BYTE)a4 != 0 )
+    {
+      v10 = a3;
+      v37[0] = (char)a4;
+      LOBYTE(a4) = 0;
+    }
+    else
+    {
+      std::operator>>(v6, v37);
+      v10 = a3;
+      if ( (_BYTE)a3 != 0 )
+      {
+        v9 = ODBlock::decrypt(v37[0], &ODBlock::cryptState);
+        v37[0] = v9;
+      }
+      else
+      {
+        v9 = v37[0];
+      }
+    }
+    if ( v9 != 34 )
+      break;
+    if ( v5 != 3 )
+    {
+      if ( v5 > 1 )
+      {
+        v30 = operator new(4u);
+        if ( v30 != nullptr )
+          *v30 = 0;
+        else
+          v30 = nullptr;
+        a4 = v30;
+        _CxxThrowException(&a4, (_ThrowInfo *)&_TI2PAVODSyntaxError_ODBlock__);
+      }
+      v13 = v36;
+      v36 = !v36;
+      if ( v13 )
+      {
+        v15 = *(_DWORD *)v6;
+        v38 = 1;
+        *(_DWORD *)(v6 + *(_DWORD *)(v15 + 4) + 12) = *(_DWORD *)(*(_DWORD *)(v15 + 4) + v6 + 12) | 1;
+      }
+      else
+      {
+        v14 = *(_DWORD *)v6;
+        v38 = 1;
+        *(_DWORD *)(v6 + *(_DWORD *)(v14 + 4) + 12) &= ~1u;
+      }
+LABEL_54:
+      v5 = v38;
+      goto LABEL_55;
+    }
+    *((_BYTE *)this + 8) = 0;
+    v11 = (ODBlock *)operator new(0x20u);
+    v39 = (char *)v11;
+    LOBYTE(v48) = 1;
+    if ( v11 == nullptr )
+    {
+LABEL_11:
+      LOBYTE(v48) = 0;
+      ODBlock::addStatement(this, nullptr);
+      goto LABEL_55;
+    }
+LABEL_10:
+    v12 = (struct ODBlock *)ODBlock::ODBlock(v11, v6, v10, *(int *)v37);
+    LOBYTE(v48) = 0;
+    ODBlock::addStatement(this, v12);
+LABEL_55:
+    if ( (*(_BYTE *)(*(_DWORD *)(*(_DWORD *)v6 + 4) + v6 + 4) & 6) != 0 )
+      goto LABEL_56;
+  }
+  if ( v36 )
+  {
+    v16 = v35;
+    if ( (unsigned int)v35 >= *((_DWORD *)this + 1) )
+    {
+      *((_DWORD *)this + 1) = 2 * v35 + 4;
+      v17 = (char *)operator new(2 * v35 + 5);
+      v18 = *(const char **)this;
+      v19 = v17;
+      v13 = *(_DWORD *)this == 0;
+      v39 = v17;
+      if ( !v13 )
+      {
+        strcpy(v17, v18);
+        v6 = (int)a2;
+      }
+      if ( *(_DWORD *)this != 0 )
+      {
+        operator delete(*(void **)this);
+        v19 = v39;
+        *(_DWORD *)this = 0;
+      }
+      v9 = v37[0];
+      v5 = v38;
+      *(_DWORD *)this = v19;
+    }
+    *(_BYTE *)(v35++ + *(_DWORD *)this) = v9;
+    *(_BYTE *)(v16 + *(_DWORD *)this + 1) = 0;
+    goto LABEL_55;
+  }
+  switch ( v9 )
+  {
+    case '#':
+      v20 = (std::locale *)std::ios_base::getloc(v6 + *(_DWORD *)(*(_DWORD *)v6 + 4), &v41);
+      LOBYTE(v48) = 2;
+      std::_Lockit::_Lockit((std::_Lockit *)&v40);
+      LOBYTE(v48) = 3;
+      v21 = std::locale::id::operator unsigned int(&std::ctype<char>::id);
+      if ( std::locale::_Getfacet(v20, v21, true) == nullptr )
+      {
+        if ( !std::locale::_Iscloc(v20) )
+        {
+          v42 = `string';
+          exception::exception((exception *)v46, (const char *const *)&v42);
+          v46[0] = &std::bad_cast::`vftable';
+          _CxxThrowException(v46, (_ThrowInfo *)&_TI2_AVbad_cast_std__);
+        }
+        if ( `std::use_facet'::`2'::_Psave == 0 )
+        {
+          v39 = (char *)operator new(0x18u);
+          LOBYTE(v48) = 4;
+          if ( v39 != nullptr )
+            v22 = std::ctype<char>::ctype<char>(0, 0, 0);
+          else
+            v22 = 0;
+          LOBYTE(v48) = 3;
+          `std::use_facet'::`2'::_Psave = std::_Tidyfac<std::ctype<char>>::_Save(v22);
+        }
+      }
+      LOBYTE(v48) = 2;
+      std::_Lockit::~_Lockit((std::_Lockit *)&v40);
+      LOBYTE(v48) = 0;
+      if ( v41 != nullptr )
+      {
+        v23 = std::locale::facet::_Decref(v41);
+        if ( v23 != nullptr )
+          (**(void (__thiscall ***)(struct std::locale::facet *, int))v23)(v23, 1);
+      }
+      std::istream::ignore(0xFFFFFF, 10);
+      goto LABEL_53;
+    case '/':
+      std::istream::ignore(0xFFFFFF, 47);
+      goto LABEL_55;
+    case '{':
+      if ( v5 != 2 && v5 != 1 )
+      {
+        v31 = operator new(4u);
+        if ( v31 != nullptr )
+          *v31 = 1;
+        else
+          v31 = nullptr;
+        v43 = v31;
+        _CxxThrowException(&v43, (_ThrowInfo *)&_TI2PAVODSyntaxError_ODBlock__);
+      }
+      v38 = 3;
+      goto LABEL_54;
+    case '}':
+      if ( v5 != 3 )
+      {
+        v32 = operator new(4u);
+        if ( v32 != nullptr )
+          *v32 = 2;
+        else
+          v32 = nullptr;
+        v44 = v32;
+        _CxxThrowException(&v44, (_ThrowInfo *)&_TI2PAVODSyntaxError_ODBlock__);
+      }
+      goto LABEL_76;
+    default:
+      if ( v5 == 3 )
+      {
+        *((_BYTE *)this + 8) = 0;
+        v11 = (ODBlock *)operator new(0x20u);
+        v39 = (char *)v11;
+        LOBYTE(v48) = 5;
+        if ( v11 == nullptr )
+          goto LABEL_11;
+        goto LABEL_10;
+      }
+      if ( v5 != 0 )
+      {
+        if ( v5 != 1 )
+        {
+          v33 = operator new(4u);
+          if ( v33 != nullptr )
+            *v33 = 3;
+          else
+            v33 = nullptr;
+          v45[0] = v33;
+          _CxxThrowException(v45, (_ThrowInfo *)&_TI2PAVODSyntaxError_ODBlock__);
+        }
+        if ( v9 == 59 )
+        {
+LABEL_76:
+          __writefsdword((unsigned int)&_except_list, v47[0]);
+          return this;
+        }
+      }
+      v24 = v35;
+      v25 = *((_DWORD *)this + 1);
+      v38 = 1;
+      if ( v35 >= v25 )
+      {
+        *((_DWORD *)this + 1) = 2 * v35 + 4;
+        v26 = (char *)operator new(2 * v35 + 5);
+        v27 = *(const char **)this;
+        v28 = v26;
+        v13 = *(_DWORD *)this == 0;
+        v39 = v26;
+        if ( !v13 )
+          strcpy(v26, v27);
+        if ( *(_DWORD *)this != 0 )
+        {
+          operator delete(*(void **)this);
+          v28 = v39;
+          *(_DWORD *)this = 0;
+        }
+        v9 = v37[0];
+        *(_DWORD *)this = v28;
+      }
+      *(_BYTE *)(v35++ + *(_DWORD *)this) = v9;
+      *(_BYTE *)(v24 + *(_DWORD *)this + 1) = 0;
+LABEL_53:
+      v6 = (int)a2;
+      goto LABEL_54;
+  }
+}
+
+
+0xed0 ??0ODBlock@@QAE@XZ
+ODBlock *__thiscall ODBlock::ODBlock(ODBlock *this)
+{
+  *((_BYTE *)this + 12) = HIBYTE(this);
+  *((_DWORD *)this + 4) = 0;
+  *((_DWORD *)this + 5) = 0;
+  *((_DWORD *)this + 6) = 0;
+  *(_DWORD *)this = 0;
+  *((_DWORD *)this + 1) = 0;
+  *((_BYTE *)this + 8) = 1;
+  *((_DWORD *)this + 7) = 0;
+  return this;
+}
+
+
+0xf00 ??1ODBlock@@QAE@XZ
+void __thiscall ODBlock::~ODBlock(ODBlock *this)
+{
+  ODBlock **v2; // edi
+  ODBlock **v3; // eax
+  ODBlock *v4; // ebx
+  unsigned int v5; // ecx
+  _DWORD v6[2]; // [esp+4h] [ebp-Ch] BYREF
+  int v7; // [esp+Ch] [ebp-4h]
+
+  v7 = -1;
+  v6[1] = &_L12331;
+  v6[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v6);
+  v2 = *((ODBlock ***)this + 4);
+  v3 = *((ODBlock ***)this + 5);
+  v7 = 0;
+  if ( v2 != v3 )
+  {
+    do
+    {
+      v4 = *v2;
+      if ( *v2 != nullptr )
+      {
+        ODBlock::~ODBlock(*v2);
+        operator delete(v4);
+        *v2 = nullptr;
+      }
+      ++v2;
+    }
+    while ( v2 != *((ODBlock ***)this + 5) );
+  }
+  *((_DWORD *)this + 5) = *((_DWORD *)this + 4);
+  if ( *(_DWORD *)this != 0 )
+  {
+    operator delete(*(void **)this);
+    *(_DWORD *)this = 0;
+  }
+  *(_DWORD *)this = 0;
+  *((_DWORD *)this + 1) = 0;
+  operator delete(*((void **)this + 4));
+  v5 = v6[0];
+  *((_DWORD *)this + 4) = 0;
+  *((_DWORD *)this + 5) = 0;
+  *((_DWORD *)this + 6) = 0;
+  __writefsdword((unsigned int)&_except_list, v5);
+}
+
+
+0x1000 ?saveFile@ODBlock@@QAEXAAV?$basic_ostream@DU?$char_traits@D@std@@@std@@_N1@Z
+int __stdcall ODBlock::saveFile(int a1, int a2, char a3)
+{
+  if ( a3 == 0 )
+    return ODBlock::saveScript(a1, a2, 0);
+  std::operator<<(a1, &`string');
+  ODBlock::cryptState = 1;
+  return ODBlock::saveScript(a1, 1, 1);
+}
+
+
+0x1054 ?saveScript@ODBlock@@QAEXAAV?$basic_ostream@DU?$char_traits@D@std@@@std@@_N1@Z
+int __thiscall ODBlock::saveScript(_DWORD *this, int a2, int a3, int a4)
+{
+  int j; // esi
+  int k; // esi
+  int m; // esi
+  int v8; // esi
+  int v10; // eax
+  int v11; // eax
+  int v12; // eax
+  int i; // esi
+  int v14; // eax
+
+  if ( (_BYTE)a4 != 0 )
+  {
+    LOBYTE(v10) = ODBlock::encrypt(34, &ODBlock::cryptState);
+    std::operator<<(a2, v10);
+    if ( *this != 0 )
+      ODBlock::encrypt((char *)*this, a2, &ODBlock::cryptState);
+    else
+      ODBlock::encrypt(`string', a2, &ODBlock::cryptState);
+    LOBYTE(v11) = ODBlock::encrypt(34, &ODBlock::cryptState);
+    std::operator<<(a2, v11);
+    if ( *((_BYTE *)this + 8) != 0 )
+    {
+      LOBYTE(v14) = ODBlock::encrypt(59, &ODBlock::cryptState);
+    }
+    else
+    {
+      LOBYTE(v12) = ODBlock::encrypt(123, &ODBlock::cryptState);
+      std::operator<<(a2, v12);
+      for ( i = *(this + 4); i != *(this + 5); i += 4 )
+        ODBlock::saveScript(a2, a3, a4);
+      LOBYTE(v14) = ODBlock::encrypt(125, &ODBlock::cryptState);
+    }
+    return std::operator<<(a2, v14);
+  }
+  else
+  {
+    for ( j = 0;
+          j < _tablevel__1__saveScript_ODBlock__QAEXAAV__basic_ostream_DU__char_traits_D_std___std___N1_Z_4HA - 1;
+          ++j )
+    {
+      std::operator<<(a2, 9);
+    }
+    if ( (_BYTE)a3 != 0 )
+      std::operator<<(a2, 34);
+    if ( *this != 0 )
+      std::operator<<(a2, *this);
+    else
+      std::operator<<(a2, `string');
+    if ( (_BYTE)a3 != 0 )
+      std::operator<<(a2, 34);
+    if ( *((_BYTE *)this + 8) != 0 )
+    {
+      return std::operator<<(a2, `string');
+    }
+    else
+    {
+      std::operator<<(a2, `string');
+      for ( k = 0; k < _tablevel__1__saveScript_ODBlock__QAEXAAV__basic_ostream_DU__char_traits_D_std___std___N1_Z_4HA; ++k )
+        std::operator<<(a2, 9);
+      std::operator<<(a2, `string');
+      ++_tablevel__1__saveScript_ODBlock__QAEXAAV__basic_ostream_DU__char_traits_D_std___std___N1_Z_4HA;
+      for ( m = *(this + 4); m != *(this + 5); m += 4 )
+        ODBlock::saveScript(a2, a3, 0);
+      v8 = 0;
+      if ( --_tablevel__1__saveScript_ODBlock__QAEXAAV__basic_ostream_DU__char_traits_D_std___std___N1_Z_4HA > 0 )
+      {
+        do
+        {
+          std::operator<<(a2, 9);
+          ++v8;
+        }
+        while ( v8 < _tablevel__1__saveScript_ODBlock__QAEXAAV__basic_ostream_DU__char_traits_D_std___std___N1_Z_4HA );
+      }
+      return std::operator<<(a2, `string');
+    }
+  }
+}
+
+
+0x125c ?saveScript@ODBlock@@QAEXPAU_iobuf@@_N@Z
+void __thiscall ODBlock::saveScript(const char *const *this, FILE *Stream, bool a3)
+{
+  int i; // edi
+  int j; // edi
+  ODBlock **k; // edi
+  int v7; // edi
+
+  for ( i = 0; i < _tablevel__1__saveScript_ODBlock__QAEXPAU_iobuf___N_Z_4HA - 1; ++i )
+    fprintf(Stream, "\t");
+  if ( a3 )
+    fprintf(Stream, "\"");
+  if ( *this != nullptr )
+    fprintf(Stream, *this);
+  else
+    fprintf(Stream, "_noname");
+  if ( a3 )
+    fprintf(Stream, "\"");
+  if ( *((_BYTE *)this + 8) != 0 )
+  {
+    fprintf(Stream, ";\n");
+  }
+  else
+  {
+    fprintf(Stream, "\n");
+    for ( j = 0; j < _tablevel__1__saveScript_ODBlock__QAEXPAU_iobuf___N_Z_4HA; ++j )
+      fprintf(Stream, "\t");
+    fprintf(Stream, "{\n");
+    ++_tablevel__1__saveScript_ODBlock__QAEXPAU_iobuf___N_Z_4HA;
+    for ( k = *((ODBlock ***)this + 4); k != *((ODBlock ***)this + 5); ++k )
+      ODBlock::saveScript(*k, Stream, a3);
+    v7 = 0;
+    if ( --_tablevel__1__saveScript_ODBlock__QAEXPAU_iobuf___N_Z_4HA > 0 )
+    {
+      do
+      {
+        fprintf(Stream, "\t");
+        ++v7;
+      }
+      while ( v7 < _tablevel__1__saveScript_ODBlock__QAEXPAU_iobuf___N_Z_4HA );
+    }
+    fprintf(Stream, "}\n");
+  }
+}
+
+
+0x13a4 ?ident@ODBlock@@QAEPBDXZ
+char *__thiscall ODBlock::ident(const char **this)
+{
+  char *result; // eax
+
+  result = (char *)*this;
+  if ( *this == nullptr )
+    return _noname__1__ident_ODBlock__QAEPBDXZ_4PADA;
+  return result;
+}
+
+
+0x13b4 ?isTerminal@ODBlock@@QAE_NXZ
+bool __thiscall ODBlock::isTerminal(ODBlock *this)
+{
+  return *((_BYTE *)this + 8);
+}
+
+
+0x13c4 ?ident@ODBlock@@QAEXPBD@Z
+void __thiscall ODBlock::ident(void **this, const char *a2)
+{
+  unsigned int v3; // kr08_4
+
+  if ( a2 != nullptr )
+  {
+    v3 = strlen(a2) + 1;
+    if ( (unsigned int)*(this + 1) < v3 )
+    {
+      if ( *this != nullptr )
+      {
+        operator delete(*this);
+        *this = nullptr;
+      }
+      *this = operator new(v3 + 1);
+      *(this + 1) = (void *)v3;
+    }
+    strcpy((char *)*this, a2);
+  }
+}
+
+
+0x1434 ?addStatement@ODBlock@@QAEXAAV1@@Z
+void __thiscall ODBlock::addStatement(ODBlock *this, struct ODBlock *a2)
+{
+  struct ODBlock *v2; // eax
+  char *v3; // esi
+  struct ODBlock **v4; // eax
+  struct ODBlock **v5; // edi
+  int v6; // edx
+  int v7; // ecx
+  int v8; // eax
+  int v9; // eax
+  struct ODBlock **v10; // eax
+  struct ODBlock *const *v11; // ebp
+  struct ODBlock **i; // ebx
+  int v13; // eax
+  int v14; // ecx
+  struct ODBlock **v15; // eax
+  struct ODBlock **v16; // [esp+8h] [ebp-8h]
+  int v17; // [esp+Ch] [ebp-4h]
+
+  v2 = a2;
+  v3 = (char *)this + 12;
+  *((_BYTE *)this + 8) = 0;
+  a2 = v2;
+  v4 = *((struct ODBlock ***)this + 5);
+  v5 = v4;
+  if ( (*((_DWORD *)this + 6) - (int)v4) >> 2 != 0 )
+  {
+    std::vector<ODBlock *>::_Ucopy(v4, v4, v4 + 1);
+    std::vector<ODBlock *>::_Ufill(*((_DWORD *)v3 + 2), 1 - ((*((_DWORD *)v3 + 2) - (int)v5) >> 2), &a2);
+    v15 = *((struct ODBlock ***)v3 + 2);
+    if ( v5 == v15 )
+    {
+      *((_DWORD *)v3 + 2) += 4;
+    }
+    else
+    {
+      do
+        *v5++ = a2;
+      while ( v5 != v15 );
+      *((_DWORD *)v3 + 2) += 4;
+    }
+  }
+  else
+  {
+    v6 = *((_DWORD *)this + 4);
+    if ( v6 == 0 || (unsigned int)(v7 = ((int)v4 - v6) >> 2) <= 1 )
+      v7 = 1;
+    if ( v6 != 0 )
+      v8 = ((int)v4 - v6) >> 2;
+    else
+      v8 = 0;
+    v9 = v7 + v8;
+    v17 = v9;
+    if ( v9 < 0 )
+      v9 = 0;
+    v10 = (struct ODBlock **)operator new(4 * v9);
+    v11 = *((struct ODBlock *const **)v3 + 1);
+    v16 = v10;
+    for ( i = v10; v11 != v5; ++i )
+      std::_Construct(i, v11++);
+    std::vector<ODBlock *>::_Ufill(i, 1, &a2);
+    std::vector<ODBlock *>::_Ucopy(v5, *((_DWORD *)v3 + 2), i + 1);
+    std::vector<ODBlock *>::_Destroy(*((_DWORD *)v3 + 1), *((_DWORD *)v3 + 2));
+    operator delete(*((void **)v3 + 1));
+    v13 = *((_DWORD *)v3 + 1);
+    *((_DWORD *)v3 + 3) = &v16[v17];
+    if ( v13 != 0 )
+    {
+      v14 = *((_DWORD *)v3 + 2);
+      *((_DWORD *)v3 + 1) = v16;
+      *((_DWORD *)v3 + 2) = &v16[((v14 - v13) >> 2) + 1];
+    }
+    else
+    {
+      *((_DWORD *)v3 + 1) = v16;
+      *((_DWORD *)v3 + 2) = v16 + 1;
+    }
+  }
+}
+
+
+0x15f4 ?reset@ODBlock@@QAEXXZ
+void __thiscall ODBlock::reset(ODBlock *this)
+{
+  *((_DWORD *)this + 7) = *((_DWORD *)this + 4);
+}
+
+
+0x1604 ?moreTerminals@ODBlock@@QAE_NXZ
+bool __thiscall ODBlock::moreTerminals(ODBlock *this)
+{
+  int v1; // eax
+  int v2; // eax
+
+  if ( *((_DWORD *)this + 7) != *((_DWORD *)this + 5) )
+  {
+    do
+    {
+      v1 = *((_DWORD *)this + 7);
+      if ( *(_BYTE *)(*(_DWORD *)v1 + 8) != 0 )
+        break;
+      v2 = v1 + 4;
+      *((_DWORD *)this + 7) = v2;
+    }
+    while ( v2 != *((_DWORD *)this + 5) );
+  }
+  return *((_DWORD *)this + 7) != *((_DWORD *)this + 5);
+}
+
+
+0x1644 ?nextTerminal@ODBlock@@QAEPADXZ
+char *__thiscall ODBlock::nextTerminal(ODBlock *this)
+{
+  char ***v1; // edx
+  char *result; // eax
+
+  v1 = *((char ****)this + 7);
+  result = **v1;
+  *((_DWORD *)this + 7) = v1 + 1;
+  if ( result == nullptr )
+    return _noname__1__nextTerminal_ODBlock__QAEPADXZ_4PADA;
+  return result;
+}
+
+
+0x1664 ?moreSubBlocks@ODBlock@@QAE_NXZ
+bool __thiscall ODBlock::moreSubBlocks(ODBlock *this)
+{
+  return *((_DWORD *)this + 7) != *((_DWORD *)this + 5);
+}
+
+
+0x1684 ?nextSubBlock@ODBlock@@QAEPAV1@XZ
+struct ODBlock *__thiscall ODBlock::nextSubBlock(ODBlock *this)
+{
+  struct ODBlock **v1; // edx
+  struct ODBlock *result; // eax
+
+  v1 = *((struct ODBlock ***)this + 7);
+  result = *v1;
+  *((_DWORD *)this + 7) = v1 + 1;
+  return result;
+}
+
+
+0x1694 ?getBlock@ODBlock@@QAEPAV1@PBD_N@Z
+struct ODBlock *__thiscall ODBlock::getBlock(const char **this, char *Str2, bool a3)
+{
+  struct ODBlock *result; // eax
+  ODBlock **i; // esi
+  const char *v6; // eax
+
+  if ( *this != nullptr && strncmp(*this, Str2, 0x1Eu) == 0 )
+    return (struct ODBlock *)this;
+  if ( *((_BYTE *)this + 8) == 0 )
+  {
+    for ( i = (ODBlock **)*(this + 4); i != (ODBlock **)*(this + 5); ++i )
+    {
+      if ( a3 )
+      {
+        result = ODBlock::getBlock(*i, Str2, true);
+        if ( result != nullptr )
+          return result;
+      }
+      else
+      {
+        v6 = *(const char **)*i;
+        if ( v6 != nullptr && strncmp(v6, Str2, 0x1Eu) == 0 )
+          return *i;
+      }
+    }
+  }
+  return nullptr;
+}
+
+
+0x1724 ?getBlockInt@ODBlock@@QAE_NPBDPAH@Z
+char __thiscall ODBlock::getBlockInt(const char **this, char *Str2, int *a3)
+{
+  ODBlock *Block; // eax
+  ODBlock *v4; // esi
+  const char *Terminal; // eax
+
+  Block = ODBlock::getBlock(this, Str2, false);
+  v4 = Block;
+  if ( Block == nullptr )
+    return 0;
+  ODBlock::reset(Block);
+  if ( !ODBlock::moreTerminals(v4) )
+    return 0;
+  if ( a3 != nullptr )
+  {
+    Terminal = ODBlock::nextTerminal(v4);
+    sscanf(Terminal, "%d", a3);
+  }
+  return 1;
+}
+
+
+0x1778 ?getBlockString@ODBlock@@QAE_NPBDPAPBD@Z
+char __thiscall ODBlock::getBlockString(const char **this, char *Str2, const char **a3)
+{
+  ODBlock *Block; // eax
+  ODBlock *v4; // esi
+
+  Block = ODBlock::getBlock(this, Str2, false);
+  v4 = Block;
+  if ( Block == nullptr )
+    return 0;
+  ODBlock::reset(Block);
+  if ( !ODBlock::moreTerminals(v4) )
+    return 0;
+  *a3 = ODBlock::nextTerminal(v4);
+  return 1;
+}
+
+
+0x17b8 ?getBlockFloat@ODBlock@@QAE_NPBDPAM@Z
+char __thiscall ODBlock::getBlockFloat(const char **this, char *Str2, float *a3)
+{
+  ODBlock *Block; // eax
+  ODBlock *v4; // esi
+  const char *Terminal; // eax
+
+  Block = ODBlock::getBlock(this, Str2, false);
+  v4 = Block;
+  if ( Block == nullptr )
+    return 0;
+  ODBlock::reset(Block);
+  if ( !ODBlock::moreTerminals(v4) )
+    return 0;
+  if ( a3 != nullptr )
+  {
+    Terminal = ODBlock::nextTerminal(v4);
+    sscanf(Terminal, "%f", a3);
+  }
+  return 1;
+}
+
+
+0x180c ?getBlockFloats@ODBlock@@QAE_NPBDPAMI@Z
+char __thiscall ODBlock::getBlockFloats(const char **this, char *Str2, float *a3, unsigned int a4)
+{
+  ODBlock *Block; // eax
+  ODBlock *v5; // edi
+  unsigned int i; // ebx
+  const char *Terminal; // eax
+
+  Block = ODBlock::getBlock(this, Str2, false);
+  v5 = Block;
+  if ( Block == nullptr )
+    return 0;
+  ODBlock::reset(Block);
+  if ( a4 != 0 )
+  {
+    for ( i = a4; i != 0; --i )
+    {
+      if ( ODBlock::moreTerminals(v5) )
+      {
+        Terminal = ODBlock::nextTerminal(v5);
+        sscanf(Terminal, "%f", a3);
+      }
+      ++a3;
+    }
+  }
+  return 1;
+}
+
+
+0x186c ??1bad_cast@std@@UAE@XZ
+void __thiscall std::bad_cast::~bad_cast(std::bad_cast *this)
+{
+  *(_DWORD *)this = &std::bad_cast::`vftable';
+  exception::~exception(this);
+}
+
+
+0x187c ?_Doraise@bad_cast@std@@MBEXXZ
+void __thiscall __noreturn std::bad_cast::_Doraise(std::bad_cast *this)
+{
+  _BYTE pExceptionObject[12]; // [esp+0h] [ebp-Ch] BYREF
+
+  std::bad_cast::bad_cast((std::bad_cast *)pExceptionObject, this);
+  _CxxThrowException(pExceptionObject, (_ThrowInfo *)&_TI2_AVbad_cast_std__);
+}
+
+
+0x189c ??_Gbad_cast@std@@UAEPAXI@Z
+std::bad_cast *__thiscall std::bad_cast::`scalar deleting destructor'(std::bad_cast *this, char a2)
+{
+  std::bad_cast::~bad_cast(this);
+  if ( (a2 & 1) != 0 )
+    operator delete(this);
+  return this;
+}
+
+
+0x18bc ??0bad_cast@std@@QAE@ABV01@@Z
+std::bad_cast *__thiscall std::bad_cast::bad_cast(std::bad_cast *this, const struct std::bad_cast *a2)
+{
+  exception::exception(this, a2);
+  *(_DWORD *)this = &std::bad_cast::`vftable';
+  return this;
+}
+
+
+0x18dc ?ignore@?$basic_istream@DU?$char_traits@D@std@@@std@@QAEAAV12@HH@Z
+_DWORD *__thiscall std::istream::ignore(_DWORD *this, int a2, int a3)
+{
+  int v4; // esi
+  int v5; // ecx
+  unsigned int v6; // eax
+  _DWORD *v7; // edx
+  _DWORD *v8; // ecx
+  unsigned __int8 *v9; // eax
+  int v10; // eax
+  int v11; // eax
+  std::ios_base *v12; // ecx
+  int v13; // eax
+  _DWORD v15[4]; // [esp-Ch] [ebp-24h] BYREF
+  int v16; // [esp+4h] [ebp-14h]
+  _DWORD *v17; // [esp+8h] [ebp-10h]
+  unsigned int v18[2]; // [esp+Ch] [ebp-Ch] BYREF
+  int v19; // [esp+14h] [ebp-4h]
+
+  v19 = -1;
+  v18[1] = (unsigned int)_L12859;
+  v18[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v18);
+  v17 = v15;
+  v4 = 0;
+  v15[3] = this;
+  v16 = 0;
+  *(this + 1) = 0;
+  if ( (unsigned __int8)std::istream::ipfx((char *)_S18 + 1) != 0 && a2 > 0 )
+  {
+    v19 = 0;
+    do
+    {
+      if ( a2 != 0x7FFFFFFF && --a2 < 0 )
+        break;
+      v5 = *(_DWORD *)((char *)this + *(_DWORD *)(*this + 4) + 40);
+      v6 = **(_DWORD **)(v5 + 28);
+      if ( v6 != 0 && (v7 = *(_DWORD **)(v5 + 44), v6 < *v7 + v6) )
+      {
+        --*v7;
+        v8 = *(_DWORD **)(v5 + 28);
+        v9 = (unsigned __int8 *)(*v8)++;
+        v10 = *v9;
+      }
+      else
+      {
+        v10 = (*(int (__thiscall **)(int))(*(_DWORD *)v5 + 20))(v5);
+      }
+      if ( v10 == -1 )
+      {
+        v11 = v16;
+        LOBYTE(v11) = v16 | 1;
+        v16 = v11;
+        break;
+      }
+      ++*(this + 1);
+    }
+    while ( v10 != a3 );
+    v4 = v16;
+    v19 = -1;
+  }
+  v12 = (std::ios_base *)((char *)this + *(_DWORD *)(*this + 4));
+  if ( v4 != 0 )
+  {
+    v13 = v4 | *((_DWORD *)v12 + 1);
+    if ( *((_DWORD *)v12 + 10) == 0 )
+      LOBYTE(v13) = v13 | 4;
+    std::ios_base::clear(v12, v13, false);
+  }
+  __writefsdword((unsigned int)&_except_list, v18[0]);
+  return this;
+}
+
+
+0x19fc $L12859
+int _L12859()
+{
+  return __CxxFrameHandler();
+}
+
+
+0x1a60 ??Bid@locale@std@@QAEIXZ
+int __thiscall std::locale::id::operator unsigned int(int *this)
+{
+  int v2; // esi
+  _BYTE v4[4]; // [esp+4h] [ebp-4h] BYREF
+
+  std::_Lockit::_Lockit((std::_Lockit *)v4);
+  if ( *this == 0 )
+    *this = ++std::locale::id::_Id_cnt;
+  v2 = *this;
+  std::_Lockit::~_Lockit((std::_Lockit *)v4);
+  return v2;
+}
+
+
+0x1a90 ?_Decref@facet@locale@std@@QAEPAV123@XZ
+struct std::locale::facet *__thiscall std::locale::facet::_Decref(std::locale::facet *this)
+{
+  int v2; // eax
+  std::locale::facet *v3; // esi
+  _BYTE v5[4]; // [esp+8h] [ebp-4h] BYREF
+
+  std::_Lockit::_Lockit((std::_Lockit *)v5);
+  v2 = *((_DWORD *)this + 1);
+  if ( v2 != 0 && v2 != -1 )
+    *((_DWORD *)this + 1) = v2 - 1;
+  v3 = *((_DWORD *)this + 1) == 0 ? this : nullptr;
+  std::_Lockit::~_Lockit((std::_Lockit *)v5);
+  return v3;
+}
+
+
+0x1ad0 ??1locale@std@@QAE@XZ
+void __thiscall std::locale::~locale(std::locale::facet **this)
+{
+  std::locale::facet *v1; // ecx
+  struct std::locale::facet *v2; // eax
+
+  v1 = *this;
+  if ( v1 != nullptr )
+  {
+    v2 = std::locale::facet::_Decref(v1);
+    if ( v2 != nullptr )
+      (**(void (__thiscall ***)(struct std::locale::facet *, int))v2)(v2, 1);
+  }
+}
+
+
+0x1af0 ??0?$ctype@D@std@@QAE@PBF_NI@Z
+char *__thiscall std::ctype<char>::ctype<char>(char *this, int a2, unsigned __int8 a3, int a4)
+{
+  _BYTE v6[4]; // [esp+4h] [ebp-64h] BYREF
+  char *v7; // [esp+8h] [ebp-60h]
+  _Ctypevec v8; // [esp+Ch] [ebp-5Ch] BYREF
+  _BYTE v9[64]; // [esp+1Ch] [ebp-4Ch] BYREF
+  unsigned int v10[2]; // [esp+5Ch] [ebp-Ch] BYREF
+  int v11; // [esp+64h] [ebp-4h]
+
+  v10[1] = (unsigned int)&_L12914;
+  v10[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v10);
+  v7 = this;
+  *((_DWORD *)this + 1) = a4;
+  v11 = 0;
+  *(_DWORD *)this = &std::ctype<char>::`vftable';
+  std::_Lockit::_Lockit((std::_Lockit *)v6);
+  LOBYTE(v11) = 1;
+  std::_Locinfo::_Locinfo((std::_Locinfo *)v9, `string');
+  LOBYTE(v11) = 2;
+  std::_Lockit::_Lockit((std::_Lockit *)&a4);
+  *(_Ctypevec *)(this + 8) = *_Getctype(&v8);
+  if ( std::ctype<char>::_Cltab == nullptr )
+  {
+    std::ctype<char>::_Cltab = *((void **)this + 4);
+    atexit(std::ctype<char>::_Term);
+    *((_DWORD *)this + 5) = 0;
+  }
+  std::_Lockit::~_Lockit((std::_Lockit *)&a4);
+  LOBYTE(v11) = 1;
+  std::_Locinfo::~_Locinfo((std::_Locinfo *)v9);
+  if ( *((_DWORD *)this + 5) != 0 )
+  {
+    free(*((void **)this + 4));
+    *((_DWORD *)this + 5) = 0;
+  }
+  if ( a2 != 0 )
+  {
+    *((_DWORD *)this + 4) = a2;
+    *((_DWORD *)this + 5) = a3;
+  }
+  else
+  {
+    *((_DWORD *)this + 4) = std::ctype<char>::_Cltab;
+  }
+  LOBYTE(v11) = 0;
+  std::_Lockit::~_Lockit((std::_Lockit *)v6);
+  __writefsdword((unsigned int)&_except_list, v10[0]);
+  return this;
+}
+
+
+0x1c84 ??1ctype_base@std@@UAE@XZ
+void __thiscall std::ctype_base::~ctype_base(std::ctype_base *this)
+{
+  *(_DWORD *)this = &std::locale::facet::`vftable';
+}
+
+
+0x1c98 ??_Gfacet@locale@std@@UAEPAXI@Z
+std::locale::facet *__thiscall std::locale::facet::`scalar deleting destructor'(std::locale::facet *this, char a2)
+{
+  *(_DWORD *)this = &std::locale::facet::`vftable';
+  if ( (a2 & 1) != 0 )
+    operator delete(this);
+  return this;
+}
+
+
+0x1cb8 ?_Term@?$ctype@D@std@@KAXXZ
+void __cdecl std::ctype<char>::_Term()
+{
+  free(std::ctype<char>::_Cltab);
+}
+
+
+0x1cc8 ?do_tolower@?$ctype@D@std@@MBEDD@Z
+int __thiscall std::ctype<char>::do_tolower(int this, unsigned __int8 a2)
+{
+  return _Tolower(a2, (const _Ctypevec *)(this + 8));
+}
+
+
+0x1ce8 ?do_tolower@?$ctype@D@std@@MBEPBDPADPBD@Z
+_BYTE *__thiscall std::ctype<char>::do_tolower(char *this, _BYTE *a2, _BYTE *a3)
+{
+  _BYTE *v3; // esi
+  const _Ctypevec *v4; // edi
+
+  v3 = a2;
+  if ( a2 == a3 )
+    return a2;
+  v4 = (const _Ctypevec *)(this + 8);
+  do
+  {
+    *v3 = _Tolower((char)*v3, v4);
+    ++v3;
+  }
+  while ( v3 != a3 );
+  return v3;
+}
+
+
+0x1d28 ?do_toupper@?$ctype@D@std@@MBEDD@Z
+int __thiscall std::ctype<char>::do_toupper(int this, unsigned __int8 a2)
+{
+  return _Toupper(a2, (const _Ctypevec *)(this + 8));
+}
+
+
+0x1d48 ?do_toupper@?$ctype@D@std@@MBEPBDPADPBD@Z
+_BYTE *__thiscall std::ctype<char>::do_toupper(char *this, _BYTE *a2, _BYTE *a3)
+{
+  _BYTE *v3; // esi
+  const _Ctypevec *v4; // edi
+
+  v3 = a2;
+  if ( a2 == a3 )
+    return a2;
+  v4 = (const _Ctypevec *)(this + 8);
+  do
+  {
+    *v3 = _Toupper((char)*v3, v4);
+    ++v3;
+  }
+  while ( v3 != a3 );
+  return v3;
+}
+
+
+0x1d88 ??1?$vector@PAVODBlock@@V?$allocator@PAVODBlock@@@std@@@std@@QAE@XZ
+int __thiscall std::vector<ODBlock *>::~vector<ODBlock *>(int this)
+{
+  operator delete(*(void **)(this + 4));
+  *(_DWORD *)(this + 4) = 0;
+  *(_DWORD *)(this + 8) = 0;
+  *(_DWORD *)(this + 12) = 0;
+  return 0;
+}
+
+
+0x1db8 ??_G?$ctype@D@std@@UAEPAXI@Z
+void *__thiscall std::ctype<char>::`scalar deleting destructor'(void *this, char a2)
+{
+  std::ctype<char>::~ctype<char>();
+  if ( (a2 & 1) != 0 )
+    operator delete(this);
+  return this;
+}
+
+
+0x1dd8 ??1?$ctype@D@std@@UAE@XZ
+void __thiscall std::ctype<char>::~ctype<char>(void *this)
+{
+  int v2; // eax
+
+  v2 = *((_DWORD *)this + 5);
+  *(_DWORD *)this = &std::ctype<char>::`vftable';
+  if ( v2 != 0 )
+    free(*((void **)this + 4));
+  *(_DWORD *)this = &std::locale::facet::`vftable';
+}
+
+
+0x1e08 ?getloc@ios_base@std@@QBE?AVlocale@2@XZ
+_DWORD *__thiscall std::ios_base::getloc(_DWORD *this, _DWORD *a2)
+{
+  int v2; // esi
+  _DWORD *v3; // edi
+  int v4; // eax
+
+  v2 = *(this + 8);
+  v3 = a2;
+  *a2 = v2;
+  std::_Lockit::_Lockit((std::_Lockit *)&a2);
+  v4 = *(_DWORD *)(v2 + 4);
+  if ( v4 != -1 )
+    *(_DWORD *)(v2 + 4) = v4 + 1;
+  std::_Lockit::~_Lockit((std::_Lockit *)&a2);
+  return v3;
+}
+
+
+0x1e48 ?ipfx@?$basic_istream@DU?$char_traits@D@std@@@std@@QAE_N_N@Z
+char __thiscall std::istream::ipfx(char *this, void *a2)
+{
+  int v3; // eax
+  int v4; // ecx
+  int v5; // eax
+  std::ios_base *v6; // ecx
+  int v7; // esi
+  int v8; // edi
+  int v9; // eax
+  std::locale *v10; // esi
+  unsigned int v11; // eax
+  int v12; // eax
+  char *v13; // eax
+  char *v14; // eax
+  struct std::locale::facet *v15; // eax
+  int v16; // eax
+  _DWORD **v17; // ecx
+  unsigned __int8 *v18; // eax
+  int v19; // eax
+  int v20; // esi
+  unsigned int v21; // eax
+  _DWORD *v22; // ecx
+  _DWORD *v23; // eax
+  unsigned __int8 *v24; // ecx
+  int v25; // ecx
+  int v26; // eax
+  int v28; // eax
+  int v29; // [esp-Ch] [ebp-34h] BYREF
+  _BYTE pExceptionObject[12]; // [esp+0h] [ebp-28h] BYREF
+  std::locale::facet *v31; // [esp+Ch] [ebp-1Ch] BYREF
+  _BYTE v32[4]; // [esp+10h] [ebp-18h] BYREF
+  char *v33; // [esp+14h] [ebp-14h]
+  int *v34; // [esp+18h] [ebp-10h]
+  unsigned int v35[2]; // [esp+1Ch] [ebp-Ch] BYREF
+  int v36; // [esp+24h] [ebp-4h]
+  const struct std::locale::facet *v37; // [esp+30h] [ebp+8h]
+
+  v36 = -1;
+  v35[1] = (unsigned int)&_L13306;
+  v35[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v35);
+  v3 = *(_DWORD *)this;
+  v34 = &v29;
+  v33 = this;
+  v4 = *(_DWORD *)(v3 + 4);
+  v5 = *(_DWORD *)&v33[v4 + 4];
+  v6 = (std::ios_base *)&v33[v4];
+  if ( v5 != 0 )
+    goto LABEL_36;
+  v7 = *((_DWORD *)v6 + 11);
+  if ( v7 != 0 )
+  {
+    v8 = 0;
+    v9 = v7 + *(_DWORD *)(*(_DWORD *)v7 + 4);
+    if ( (*(_BYTE *)(v9 + 4) & 6) == 0
+      && (*(int (__thiscall **)(_DWORD))(**(_DWORD **)(v9 + 40) + 44))(*(_DWORD *)(v9 + 40)) == -1 )
+    {
+      v8 = 4;
+    }
+    std::ios::setstate(v8, false);
+  }
+  if ( (_BYTE)a2 == 0 && (*(_DWORD *)(this + *(_DWORD *)(*(_DWORD *)this + 4) + 12) & 1) != 0 )
+  {
+    v10 = (std::locale *)std::ios_base::getloc(this + *(_DWORD *)(*(_DWORD *)this + 4), &v31);
+    v36 = 0;
+    std::_Lockit::_Lockit((std::_Lockit *)v32);
+    LOBYTE(v36) = 1;
+    v11 = std::locale::id::operator unsigned int(&std::ctype<char>::id);
+    v37 = std::locale::_Getfacet(v10, v11, true);
+    if ( v37 == nullptr )
+    {
+      if ( !std::locale::_Iscloc(v10) )
+      {
+        std::bad_cast::bad_cast((std::bad_cast *)pExceptionObject, `string');
+        _CxxThrowException(pExceptionObject, (_ThrowInfo *)&_TI2_AVbad_cast_std__);
+      }
+      v12 = `std::use_facet'::`2'::_Psave;
+      if ( `std::use_facet'::`2'::_Psave == 0 )
+      {
+        v13 = (char *)operator new(0x18u);
+        LOBYTE(v36) = 2;
+        if ( v13 != nullptr )
+          v14 = std::ctype<char>::ctype<char>(v13, 0, 0, 0);
+        else
+          v14 = nullptr;
+        LOBYTE(v36) = 1;
+        v12 = std::_Tidyfac<std::ctype<char>>::_Save(v14);
+        `std::use_facet'::`2'::_Psave = v12;
+      }
+      v37 = (const struct std::locale::facet *)v12;
+    }
+    LOBYTE(v36) = 0;
+    std::_Lockit::~_Lockit((std::_Lockit *)v32);
+    v36 = -1;
+    if ( v31 != nullptr )
+    {
+      v15 = std::locale::facet::_Decref(v31);
+      if ( v15 != nullptr )
+        (**(void (__thiscall ***)(struct std::locale::facet *, int))v15)(v15, 1);
+    }
+    v16 = *(_DWORD *)this;
+    v36 = 3;
+    v17 = *(_DWORD ***)(this + *(_DWORD *)(v16 + 4) + 40);
+    v18 = (unsigned __int8 *)*v17[7];
+    if ( v18 != nullptr && v18 < &v18[*v17[11]] )
+      v19 = *v18;
+    else
+      v19 = ((int (__thiscall *)(_DWORD **))(*v17)[4])(v17);
+    while ( v19 != -1 && (*(_BYTE *)(*((_DWORD *)v37 + 4) + 2 * (unsigned __int8)v19) & 0x48) != 0 )
+    {
+      v20 = *(_DWORD *)(this + *(_DWORD *)(*(_DWORD *)this + 4) + 40);
+      v21 = **(_DWORD **)(v20 + 28);
+      if ( v21 != 0 && (v22 = *(_DWORD **)(v20 + 44), v21 < *v22 + v21) )
+      {
+        --*v22;
+        v23 = *(_DWORD **)(v20 + 28);
+        v24 = (unsigned __int8 *)(*v23)++;
+        v19 = *v24;
+      }
+      else
+      {
+        v19 = (*(int (__thiscall **)(int))(*(_DWORD *)v20 + 20))(v20);
+      }
+      if ( v19 != -1 )
+        v19 = std::streambuf::sgetc(v20);
+    }
+    v36 = -1;
+  }
+  v25 = *(_DWORD *)(*(_DWORD *)this + 4);
+  v26 = *(_DWORD *)(this + v25 + 4);
+  v6 = (std::ios_base *)(this + v25);
+  if ( v26 != 0 )
+  {
+LABEL_36:
+    v28 = *((_DWORD *)v6 + 1);
+    LOBYTE(v28) = v28 | 2;
+    if ( *((_DWORD *)v6 + 10) == 0 )
+      LOBYTE(v28) = v28 | 4;
+    std::ios_base::clear(v6, v28, false);
+    __writefsdword((unsigned int)&_except_list, v35[0]);
+    return 0;
+  }
+  else
+  {
+    __writefsdword((unsigned int)&_except_list, v35[0]);
+    return 1;
+  }
+}
+
+
+0x2160 ??0bad_cast@std@@QAE@PBD@Z
+std::bad_cast *__thiscall std::bad_cast::bad_cast(std::bad_cast *this, char *a2)
+{
+  exception::exception(this, (const char *const *)&a2);
+  *(_DWORD *)this = &std::bad_cast::`vftable';
+  return this;
+}
+
+
+0x2180 ?setstate@?$basic_ios@DU?$char_traits@D@std@@@std@@QAEXH_N@Z
+void __thiscall std::ios::setstate(std::ios_base *this, int a2, bool a3)
+{
+  int v3; // eax
+
+  if ( a2 != 0 )
+  {
+    v3 = a2 | *((_DWORD *)this + 1);
+    if ( *((_DWORD *)this + 10) == 0 )
+      LOBYTE(v3) = v3 | 4;
+    std::ios_base::clear(this, v3, a3);
+  }
+}
+
+
+0x21b0 ?sgetc@?$basic_streambuf@DU?$char_traits@D@std@@@std@@QAEHXZ
+int __thiscall std::streambuf::sgetc(unsigned __int8 ***this)
+{
+  unsigned __int8 *v1; // eax
+
+  v1 = **(this + 7);
+  if ( v1 != nullptr && v1 < &(**(this + 11))[(int)v1] )
+    return *v1;
+  else
+    return ((int (__thiscall *)(unsigned __int8 ***))(*this)[4])(this);
+}
+
+
+0x21d0 _$E17
+int _E17()
+{
+  _E14();
+  return _E16();
+}
+
+
+0x21e0 _$E14
+int _E14()
+{
+  return std::ios_base::Init::Init((std::ios_base::Init *)&_Ios_init);
+}
+
+
+0x21f0 _$E16
+int _E16()
+{
+  return atexit(_E15);
+}
+
+
+0x2200 _$E15
+void __cdecl _E15()
+{
+  std::ios_base::Init::~Init((std::ios_base::Init *)&_Ios_init);
+}
+
+
+0x2210 _$E23
+int _E23()
+{
+  _E20();
+  return _E22();
+}
+
+
+0x2220 _$E20
+int _E20()
+{
+  return std::_Winit::_Winit((std::_Winit *)&_Wios_init);
+}
+
+
+0x2230 _$E22
+int _E22()
+{
+  return atexit(_E21);
+}
+
+
+0x2240 _$E21
+void __cdecl _E21()
+{
+  std::_Winit::~_Winit((std::_Winit *)&_Wios_init);
+}
+
+
+0x2250 ?_Destroy@?$vector@PAVODBlock@@V?$allocator@PAVODBlock@@@std@@@std@@IAEXPAPAVODBlock@@0@Z
+void __stdcall std::vector<ODBlock *>::_Destroy(int a1, int a2)
+{
+  ;
+}
+
+
+0x2260 ?_Ucopy@?$vector@PAVODBlock@@V?$allocator@PAVODBlock@@@std@@@std@@IAEPAPAVODBlock@@PBQAV3@0PAPAV3@@Z
+_DWORD *__stdcall std::vector<ODBlock *>::_Ucopy(_DWORD *a1, _DWORD *a2, _DWORD *a3)
+{
+  _DWORD *v3; // ecx
+  _DWORD *result; // eax
+
+  v3 = a1;
+  if ( a1 == a2 )
+    return a3;
+  result = a3;
+  do
+  {
+    if ( result != nullptr )
+      *result = *v3;
+    ++v3;
+    ++result;
+  }
+  while ( v3 != a2 );
+  return result;
+}
+
+
+0x2290 ?_Ufill@?$vector@PAVODBlock@@V?$allocator@PAVODBlock@@@std@@@std@@IAEXPAPAVODBlock@@IABQAV3@@Z
+_DWORD *__stdcall std::vector<ODBlock *>::_Ufill(_DWORD *a1, _DWORD *a2, _DWORD *a3)
+{
+  _DWORD *result; // eax
+  _DWORD *v4; // ecx
+
+  result = a2;
+  if ( a2 != nullptr )
+  {
+    v4 = a2;
+    result = a1;
+    do
+    {
+      if ( result != nullptr )
+        *result = *a3;
+      ++result;
+      v4 = (_DWORD *)((char *)v4 - 1);
+    }
+    while ( v4 != nullptr );
+  }
+  return result;
+}
+
+
+0x22c0 ??6std@@YAAAV?$basic_ostream@DU?$char_traits@D@std@@@0@AAV10@D@Z
+int __cdecl std::operator<<(int a1, unsigned __int8 a2)
+{
+  int v2; // esi
+  int v3; // edi
+  int v4; // ebx
+  int v5; // ecx
+  int v6; // eax
+  int v7; // ecx
+  int v8; // eax
+  int v9; // eax
+  int v10; // ecx
+  char v11; // bl
+  unsigned int v12; // eax
+  _DWORD *v13; // edx
+  _DWORD *v14; // ecx
+  _BYTE *v15; // eax
+  int v16; // eax
+  int v17; // ecx
+  unsigned int v18; // edi
+  _DWORD *v19; // eax
+  _DWORD *v20; // ecx
+  unsigned __int8 *v21; // edx
+  int v22; // eax
+  int v23; // edx
+  int v24; // ecx
+  unsigned __int8 v25; // bl
+  unsigned int v26; // eax
+  _DWORD *v27; // edx
+  _DWORD *v28; // ecx
+  unsigned __int8 *v29; // eax
+  int v30; // eax
+  std::ios_base *v31; // ecx
+  int v32; // eax
+  int v33; // eax
+  int v34; // edi
+  std::ios_base *v35; // ecx
+  int v36; // eax
+  int v38; // [esp-Ch] [ebp-30h] BYREF
+  char v39; // [esp+0h] [ebp-24h]
+  int v40; // [esp+4h] [ebp-20h]
+  int v41; // [esp+8h] [ebp-1Ch]
+  int v42; // [esp+Ch] [ebp-18h]
+  int v43; // [esp+10h] [ebp-14h]
+  int *v44; // [esp+14h] [ebp-10h]
+  unsigned int v45[2]; // [esp+18h] [ebp-Ch] BYREF
+  int v46; // [esp+20h] [ebp-4h]
+
+  v46 = -1;
+  v45[1] = (unsigned int)&_L13828;
+  v45[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v45);
+  v2 = a1;
+  v3 = 0;
+  v44 = &v38;
+  v42 = 0;
+  v4 = a1;
+  v39 = std::ostream::opfx(a1);
+  v40 = a1;
+  v46 = 0;
+  if ( v39 != 0 )
+  {
+    v5 = *(_DWORD *)(*(_DWORD *)a1 + 4);
+    v6 = *(_DWORD *)(v5 + a1 + 20);
+    v7 = a1 + v5;
+    if ( v6 > 1 )
+      v43 = v6 - 1;
+    else
+      v43 = 0;
+    v8 = *(_DWORD *)(v7 + 12);
+    LOBYTE(v46) = 1;
+    if ( (v8 & 0x1C0) != 0x40 )
+    {
+      while ( 1 )
+      {
+        if ( v42 != 0 )
+        {
+LABEL_32:
+          v4 = v40;
+          v3 = v42;
+          v46 = 0;
+          goto LABEL_33;
+        }
+        if ( v43 == 0 )
+          break;
+        v9 = v2 + *(_DWORD *)(*(_DWORD *)v2 + 4);
+        v10 = *(_DWORD *)(v9 + 40);
+        v11 = *(_BYTE *)(v9 + 48);
+        LOBYTE(v41) = v11;
+        v12 = **(_DWORD **)(v10 + 32);
+        if ( v12 != 0 )
+        {
+          v13 = *(_DWORD **)(v10 + 48);
+          if ( v12 < *v13 + v12 )
+          {
+            --*v13;
+            v14 = *(_DWORD **)(v10 + 32);
+            v2 = a1;
+            v15 = (_BYTE *)(*v14)++;
+            *v15 = v11;
+            v16 = (unsigned __int8)v41;
+            goto LABEL_13;
+          }
+          v2 = a1;
+        }
+        v16 = (*(int (__thiscall **)(int, _DWORD))(*(_DWORD *)v10 + 4))(v10, (unsigned __int8)v41);
+LABEL_13:
+        if ( v16 == -1 )
+          v42 = 4;
+        --v43;
+      }
+    }
+    v17 = *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v2 + 4) + v2 + 40);
+    v18 = **(_DWORD **)(v17 + 32);
+    if ( v18 != 0 && (v19 = *(_DWORD **)(v17 + 48), v18 < *v19 + v18) )
+    {
+      --*v19;
+      v20 = *(_DWORD **)(v17 + 32);
+      v21 = (unsigned __int8 *)(*v20)++;
+      *v21 = a2;
+      v22 = a2;
+    }
+    else
+    {
+      v22 = (*(int (__thiscall **)(int, _DWORD))(*(_DWORD *)v17 + 4))(v17, a2);
+    }
+    if ( v22 == -1 )
+      v42 = 4;
+    while ( 1 )
+    {
+      if ( v42 != 0 || v43 == 0 )
+        goto LABEL_32;
+      v23 = *(_DWORD *)(*(_DWORD *)v2 + 4);
+      v24 = *(_DWORD *)(v23 + v2 + 40);
+      v25 = *(_BYTE *)(v23 + v2 + 48);
+      v26 = **(_DWORD **)(v24 + 32);
+      if ( v26 != 0 )
+      {
+        v27 = *(_DWORD **)(v24 + 48);
+        if ( v26 < *v27 + v26 )
+        {
+          --*v27;
+          v28 = *(_DWORD **)(v24 + 32);
+          v2 = a1;
+          v29 = (unsigned __int8 *)(*v28)++;
+          *v29 = v25;
+          v30 = v25;
+          goto LABEL_29;
+        }
+        v2 = a1;
+      }
+      v30 = (*(int (__thiscall **)(int, _DWORD))(*(_DWORD *)v24 + 4))(v24, v25);
+LABEL_29:
+      if ( v30 == -1 )
+        v42 = 4;
+      --v43;
+    }
+  }
+LABEL_33:
+  *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v2 + 4) + v2 + 20) = 0;
+  v31 = (std::ios_base *)(v2 + *(_DWORD *)(*(_DWORD *)v2 + 4));
+  if ( v3 != 0 )
+  {
+    v32 = v3 | *((_DWORD *)v31 + 1);
+    if ( *((_DWORD *)v31 + 10) == 0 )
+      LOBYTE(v32) = v32 | 4;
+    std::ios_base::clear(v31, v32, false);
+  }
+  v46 = -1;
+  if ( !std::uncaught_exception() )
+  {
+    v33 = *(_DWORD *)(*(_DWORD *)v4 + 4) + v4;
+    if ( (*(_BYTE *)(v33 + 12) & 2) != 0 )
+    {
+      v34 = 0;
+      if ( (*(_BYTE *)(v33 + 4) & 6) == 0
+        && (*(int (__thiscall **)(_DWORD))(**(_DWORD **)(v33 + 40) + 44))(*(_DWORD *)(v33 + 40)) == -1 )
+      {
+        v34 = 4;
+      }
+      v35 = (std::ios_base *)(v4 + *(_DWORD *)(*(_DWORD *)v4 + 4));
+      if ( v34 != 0 )
+      {
+        v36 = v34 | *((_DWORD *)v35 + 1);
+        if ( *((_DWORD *)v35 + 10) == 0 )
+          LOBYTE(v36) = v36 | 4;
+        std::ios_base::clear(v35, v36, false);
+      }
+    }
+  }
+  __writefsdword((unsigned int)&_except_list, v45[0]);
+  return v2;
+}
+
+
+0x25c4 ??1sentry@?$basic_ostream@DU?$char_traits@D@std@@@std@@QAE@XZ
+void __thiscall std::ostream::sentry::~sentry(_DWORD *this)
+{
+  int v2; // edi
+  int v3; // eax
+  int v4; // esi
+  std::ios_base *v5; // ecx
+  int v6; // eax
+
+  if ( !std::uncaught_exception() )
+  {
+    v2 = *(this + 1);
+    v3 = *(_DWORD *)(*(_DWORD *)v2 + 4) + v2;
+    if ( (*(_BYTE *)(v3 + 12) & 2) != 0 )
+    {
+      v4 = 0;
+      if ( (*(_BYTE *)(v3 + 4) & 6) == 0
+        && (*(int (__thiscall **)(_DWORD))(**(_DWORD **)(v3 + 40) + 44))(*(_DWORD *)(v3 + 40)) == -1 )
+      {
+        v4 = 4;
+      }
+      v5 = (std::ios_base *)(v2 + *(_DWORD *)(*(_DWORD *)v2 + 4));
+      if ( v4 != 0 )
+      {
+        v6 = v4 | *((_DWORD *)v5 + 1);
+        if ( *((_DWORD *)v5 + 10) == 0 )
+          LOBYTE(v6) = v6 | 4;
+        std::ios_base::clear(v5, v6, false);
+      }
+    }
+  }
+}
+
+
+0x2634 ?opfx@?$basic_ostream@DU?$char_traits@D@std@@@std@@QAE_NXZ
+BOOL __thiscall std::ostream::opfx(char *this)
+{
+  char *v2; // eax
+  int v3; // esi
+  int v4; // edi
+  int v5; // eax
+  std::ios_base *v6; // ecx
+  int v7; // eax
+
+  v2 = this + *(_DWORD *)(*(_DWORD *)this + 4);
+  if ( *((_DWORD *)v2 + 1) == 0 )
+  {
+    v3 = *((_DWORD *)v2 + 11);
+    if ( v3 != 0 )
+    {
+      v4 = 0;
+      v5 = v3 + *(_DWORD *)(*(_DWORD *)v3 + 4);
+      if ( (*(_BYTE *)(v5 + 4) & 6) == 0
+        && (*(int (__thiscall **)(_DWORD))(**(_DWORD **)(v5 + 40) + 44))(*(_DWORD *)(v5 + 40)) == -1 )
+      {
+        v4 = 4;
+      }
+      v6 = (std::ios_base *)(v3 + *(_DWORD *)(*(_DWORD *)v3 + 4));
+      if ( v4 != 0 )
+      {
+        v7 = v4 | *((_DWORD *)v6 + 1);
+        if ( *((_DWORD *)v6 + 10) == 0 )
+          LOBYTE(v7) = v7 | 4;
+        std::ios_base::clear(v6, v7, false);
+      }
+    }
+  }
+  return *(_DWORD *)(this + *(_DWORD *)(*(_DWORD *)this + 4) + 4) == 0;
+}
+
+
+0x26b4 ??5std@@YAAAV?$basic_istream@DU?$char_traits@D@std@@@0@AAV10@AAD@Z
+char *__cdecl std::operator>>(char *a1, _BYTE *a2)
+{
+  int v2; // esi
+  int v3; // eax
+  int v4; // ecx
+  unsigned int v5; // eax
+  _DWORD *v6; // edx
+  _DWORD *v7; // ecx
+  unsigned __int8 *v8; // edx
+  int v9; // eax
+  std::ios_base *v10; // ecx
+  int v11; // eax
+  int v13; // [esp-Ch] [ebp-20h] BYREF
+  int v14; // [esp+0h] [ebp-14h]
+  int *v15; // [esp+4h] [ebp-10h]
+  unsigned int v16[2]; // [esp+8h] [ebp-Ch] BYREF
+  int v17; // [esp+10h] [ebp-4h]
+
+  v17 = -1;
+  v16[1] = (unsigned int)_L14129;
+  v16[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v16);
+  v2 = 0;
+  v15 = &v13;
+  v14 = 0;
+  if ( std::istream::ipfx(a1, nullptr) != 0 )
+  {
+    v3 = *(_DWORD *)a1;
+    v17 = 0;
+    v4 = *(_DWORD *)&a1[*(_DWORD *)(v3 + 4) + 40];
+    v5 = **(_DWORD **)(v4 + 28);
+    if ( v5 != 0 && (v6 = *(_DWORD **)(v4 + 44), v5 < *v6 + v5) )
+    {
+      --*v6;
+      v7 = *(_DWORD **)(v4 + 28);
+      v8 = (unsigned __int8 *)(*v7)++;
+      v9 = *v8;
+    }
+    else
+    {
+      v9 = (*(int (__thiscall **)(int))(*(_DWORD *)v4 + 20))(v4);
+    }
+    if ( v9 == -1 )
+      v14 = 3;
+    else
+      *a2 = v9;
+    v2 = v14;
+    v17 = -1;
+  }
+  v10 = (std::ios_base *)&a1[*(_DWORD *)(*(_DWORD *)a1 + 4)];
+  if ( v2 != 0 )
+  {
+    v11 = v2 | *((_DWORD *)v10 + 1);
+    if ( *((_DWORD *)v10 + 10) == 0 )
+      LOBYTE(v11) = v11 | 4;
+    std::ios_base::clear(v10, v11, false);
+  }
+  __writefsdword((unsigned int)&_except_list, v16[0]);
+  return a1;
+}
+
+
+0x27a4 $L14129
+int _L14129()
+{
+  return __CxxFrameHandler();
+}
+
+
+0x2808 ??6std@@YAAAV?$basic_ostream@DU?$char_traits@D@std@@@0@AAV10@PBD@Z
+char *__cdecl std::operator<<(char *a1, const char *a2)
+{
+  unsigned int v2; // esi
+  int v3; // ecx
+  int v4; // eax
+  char *v5; // ebx
+  int v6; // edx
+  int v7; // edx
+  int v8; // edx
+  int v9; // ecx
+  unsigned int v10; // eax
+  _DWORD *v11; // edx
+  _DWORD *v12; // ecx
+  _BYTE *v13; // eax
+  int v14; // eax
+  int v15; // eax
+  int v16; // ecx
+  int v17; // edx
+  int v18; // ecx
+  int v19; // ecx
+  unsigned int v20; // eax
+  _DWORD *v21; // edx
+  _DWORD *v22; // ecx
+  unsigned __int8 *v23; // eax
+  int v24; // eax
+  int v25; // eax
+  std::ios_base *v26; // ecx
+  int v27; // eax
+  char *v28; // eax
+  int v29; // esi
+  std::ios_base *v30; // ecx
+  int v31; // eax
+  int v33; // [esp-Ch] [ebp-34h] BYREF
+  bool v34; // [esp+0h] [ebp-28h]
+  char *v35; // [esp+4h] [ebp-24h]
+  unsigned int v36; // [esp+8h] [ebp-20h]
+  int v37; // [esp+Ch] [ebp-1Ch]
+  int v38; // [esp+10h] [ebp-18h]
+  unsigned int v39; // [esp+14h] [ebp-14h]
+  int *v40; // [esp+18h] [ebp-10h]
+  unsigned int v41[2]; // [esp+1Ch] [ebp-Ch] BYREF
+  int v42; // [esp+24h] [ebp-4h]
+  unsigned __int8 v43; // [esp+34h] [ebp+Ch]
+
+  v42 = -1;
+  v41[1] = (unsigned int)&_L14484;
+  v41[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v41);
+  v40 = &v33;
+  v38 = 0;
+  v2 = strlen(a2);
+  v3 = *(_DWORD *)(*(_DWORD *)a1 + 4);
+  v36 = v2;
+  v4 = *(_DWORD *)&a1[v3 + 20];
+  if ( v4 <= 0 || v4 <= v2 )
+    v39 = 0;
+  else
+    v39 = v4 - v2;
+  v5 = a1;
+  v34 = std::ostream::opfx(a1);
+  v35 = a1;
+  v42 = 0;
+  if ( !v34 )
+  {
+    v6 = 4;
+    goto LABEL_30;
+  }
+  v7 = *(_DWORD *)a1;
+  LOBYTE(v42) = 1;
+  if ( (*(_DWORD *)&a1[*(_DWORD *)(v7 + 4) + 12] & 0x1C0) != 0x40 )
+  {
+    while ( v39 != 0 )
+    {
+      v8 = *(_DWORD *)(*(_DWORD *)a1 + 4);
+      LOBYTE(v37) = a1[v8 + 48];
+      v9 = *(_DWORD *)&a1[v8 + 40];
+      v10 = **(_DWORD **)(v9 + 32);
+      if ( v10 != 0 && (v11 = *(_DWORD **)(v9 + 48), v10 < *v11 + v10) )
+      {
+        --*v11;
+        v12 = *(_DWORD **)(v9 + 32);
+        v13 = (_BYTE *)(*v12)++;
+        *v13 = v37;
+        v14 = (unsigned __int8)v37;
+      }
+      else
+      {
+        v14 = (*(int (__thiscall **)(int, _DWORD))(*(_DWORD *)v9 + 4))(v9, (unsigned __int8)v37);
+      }
+      if ( v14 == -1 )
+      {
+        v15 = v38;
+        LOBYTE(v15) = v38 | 4;
+        v38 = v15;
+        break;
+      }
+      --v39;
+    }
+    if ( v38 != 0 )
+      goto LABEL_27;
+    v2 = v36;
+  }
+  v16 = *(_DWORD *)&a1[*(_DWORD *)(*(_DWORD *)a1 + 4) + 40];
+  if ( (*(int (__thiscall **)(int, const char *, unsigned int))(*(_DWORD *)v16 + 28))(v16, a2, v2) == v2 )
+  {
+    while ( v39 != 0 )
+    {
+      v18 = *(_DWORD *)(*(_DWORD *)a1 + 4);
+      v43 = a1[v18 + 48];
+      v19 = *(_DWORD *)&a1[v18 + 40];
+      v20 = **(_DWORD **)(v19 + 32);
+      if ( v20 != 0 && (v21 = *(_DWORD **)(v19 + 48), v20 < *v21 + v20) )
+      {
+        --*v21;
+        v22 = *(_DWORD **)(v19 + 32);
+        v23 = (unsigned __int8 *)(*v22)++;
+        *v23 = v43;
+        v24 = v43;
+      }
+      else
+      {
+        v24 = (*(int (__thiscall **)(int, _DWORD))(*(_DWORD *)v19 + 4))(v19, v43);
+      }
+      if ( v24 == -1 )
+      {
+        v25 = v38;
+        LOBYTE(v25) = v38 | 4;
+        v38 = v25;
+        break;
+      }
+      --v39;
+    }
+LABEL_27:
+    *(_DWORD *)&a1[*(_DWORD *)(*(_DWORD *)a1 + 4) + 20] = 0;
+    goto LABEL_29;
+  }
+  v17 = *(_DWORD *)a1;
+  v38 = 4;
+  *(_DWORD *)&a1[*(_DWORD *)(v17 + 4) + 20] = 0;
+LABEL_29:
+  v5 = v35;
+  v6 = v38;
+  v42 = 0;
+LABEL_30:
+  v26 = (std::ios_base *)&a1[*(_DWORD *)(*(_DWORD *)a1 + 4)];
+  if ( v6 != 0 )
+  {
+    v27 = v6 | *((_DWORD *)v26 + 1);
+    if ( *((_DWORD *)v26 + 10) == 0 )
+      LOBYTE(v27) = v27 | 4;
+    std::ios_base::clear(v26, v27, false);
+  }
+  v42 = -1;
+  if ( !std::uncaught_exception() )
+  {
+    v28 = &v5[*(_DWORD *)(*(_DWORD *)v5 + 4)];
+    if ( (v28[12] & 2) != 0 )
+    {
+      v29 = 0;
+      if ( (v28[4] & 6) == 0
+        && (*(int (__thiscall **)(_DWORD))(**((_DWORD **)v28 + 10) + 44))(*((_DWORD *)v28 + 10)) == -1 )
+      {
+        v29 = 4;
+      }
+      v30 = (std::ios_base *)&v5[*(_DWORD *)(*(_DWORD *)v5 + 4)];
+      if ( v29 != 0 )
+      {
+        v31 = v29 | *((_DWORD *)v30 + 1);
+        if ( *((_DWORD *)v30 + 10) == 0 )
+          LOBYTE(v31) = v31 | 4;
+        std::ios_base::clear(v30, v31, false);
+      }
+    }
+  }
+  __writefsdword((unsigned int)&_except_list, v41[0]);
+  return a1;
+}
+
+
+0x2b0c ?_Construct@std@@YAXPAPAVODBlock@@ABQAV2@@Z
+void __cdecl std::_Construct(struct ODBlock **a1, struct ODBlock *const *a2)
+{
+  if ( a1 != nullptr )
+    *a1 = *a2;
+}
+
+
+0x2b2c ?_Save@?$_Tidyfac@V?$ctype@D@std@@@std@@SAPAV?$ctype@D@2@PAV32@@Z
+int __cdecl std::_Tidyfac<std::ctype<char>>::_Save(int a1)
+{
+  int v1; // ecx
+  int v2; // esi
+  int v3; // eax
+  int v5; // [esp+0h] [ebp-10h] BYREF
+  unsigned int v6[2]; // [esp+4h] [ebp-Ch] BYREF
+  int v7; // [esp+Ch] [ebp-4h]
+
+  v7 = -1;
+  v6[1] = (unsigned int)&_L14510;
+  v6[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v6);
+  v5 = v1;
+  std::_Lockit::_Lockit((std::_Lockit *)&v5);
+  v2 = a1;
+  v7 = 0;
+  std::_Tidyfac<std::ctype<char>>::_Facsav = a1;
+  std::_Lockit::_Lockit((std::_Lockit *)&a1);
+  v3 = *(_DWORD *)(v2 + 4);
+  if ( v3 != -1 )
+    *(_DWORD *)(v2 + 4) = v3 + 1;
+  std::_Lockit::~_Lockit((std::_Lockit *)&a1);
+  atexit(std::_Tidyfac<std::ctype<char>>::_Tidy);
+  v7 = -1;
+  std::_Lockit::~_Lockit((std::_Lockit *)&v5);
+  __writefsdword((unsigned int)&_except_list, v6[0]);
+  return v2;
+}
+
+
+0x2bec ?_Tidy@?$_Tidyfac@V?$ctype@D@std@@@std@@SAXXZ
+void __cdecl std::_Tidyfac<std::ctype<char>>::_Tidy()
+{
+  int v0; // edi
+  int v1; // eax
+  void (__thiscall ***v2)(_DWORD, int); // esi
+  _BYTE v3[4]; // [esp+0h] [ebp-14h] BYREF
+  int v4; // [esp+4h] [ebp-10h] BYREF
+  unsigned int v5[2]; // [esp+8h] [ebp-Ch] BYREF
+  int v6; // [esp+10h] [ebp-4h]
+
+  v6 = -1;
+  v5[1] = (unsigned int)&_L14533;
+  v5[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v5);
+  std::_Lockit::_Lockit((std::_Lockit *)&v4);
+  v0 = std::_Tidyfac<std::ctype<char>>::_Facsav;
+  v6 = 0;
+  std::_Lockit::_Lockit((std::_Lockit *)v3);
+  v1 = *(_DWORD *)(v0 + 4);
+  if ( v1 != 0 && v1 != -1 )
+    *(_DWORD *)(v0 + 4) = v1 - 1;
+  v2 = *(_DWORD *)(v0 + 4) == 0 ? (void (__thiscall ***)(_DWORD, int))v0 : nullptr;
+  std::_Lockit::~_Lockit((std::_Lockit *)v3);
+  if ( v2 != nullptr )
+    (**v2)(v2, 1);
+  std::_Tidyfac<std::ctype<char>>::_Facsav = 0;
+  v6 = -1;
+  std::_Lockit::~_Lockit((std::_Lockit *)&v4);
+  __writefsdword((unsigned int)&_except_list, v5[0]);
+}
+
+
+0x2cc8 _$E32
+int _E32()
+{
+  if ( (___B_1___id___ctype_G_std___D__9_51 & 1) == 0 )
+    ___B_1___id___ctype_G_std___D__9_51 |= 1u;
+  return _E31();
+}
+
+
+0x2ce8 _$E31
+int _E31()
+{
+  return atexit(std::ctype<unsigned short>::id`template static data member destructor helper');
+}
+
+
+0x2cf8 ?id@?$ctype@G@std@@$E
+void __cdecl std::ctype<unsigned short>::id`template static data member destructor helper'()
+{
+  ;
+}
+
+
+0x2d14 ??3@YAXPAX@Z
+None
+
+0x2d18 ??2@YAPAXI@Z
+None
+
+0x2d1c ___CxxFrameHandler
+None
+
+0x2d24 __CxxThrowException@8
+None
+
+0x2d34 ??0exception@@QAE@ABV0@@Z
+None
+
+0x2d38 ??0exception@@QAE@ABQBD@Z
+None
+
+0x2d3c ??1_Lockit@std@@QAE@XZ
+None
+
+0x2d40 ?_Iscloc@locale@std@@QBE_NXZ
+None
+
+0x2d44 ?_Getfacet@locale@std@@QBEPBVfacet@12@I_N@Z
+None
+
+0x2d4c ??0_Lockit@std@@QAE@XZ
+None
+
+0x2d50 _fprintf
+None
+
+0x2d54 _strncmp
+None
+
+0x2d58 _sscanf
+None
+
+0x2d5c ??1exception@@UAE@XZ
+None
+
+0x2d60 ?clear@ios_base@std@@QAEXH_N@Z
+None
+
+0x2d70 _free
+None
+
+0x2d74 ??1_Locinfo@std@@QAE@XZ
+None
+
+0x2d78 _atexit
+None
+
+0x2d80 __Getctype
+None
+
+0x2d84 ??0_Locinfo@std@@QAE@PBD@Z
+None
+
+0x2d90 __Tolower
+None
+
+0x2d94 __Toupper
+None
+
+0x2d98 ??0Init@ios_base@std@@QAE@XZ
+None
+
+0x2d9c ??1Init@ios_base@std@@QAE@XZ
+None
+
+0x2da0 ??0_Winit@std@@QAE@XZ
+None
+
+0x2da4 ??1_Winit@std@@QAE@XZ
+None
+
+0x2da8 ?uncaught_exception@std@@YA_NXZ
+None

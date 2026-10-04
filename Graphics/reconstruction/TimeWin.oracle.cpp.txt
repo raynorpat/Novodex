@@ -1,0 +1,57 @@
+// 0x10 ??0clWinTime@@QAE@XZ
+clWinTime *__thiscall clWinTime::clWinTime(clWinTime *this)
+{
+  clWinTime::GetElapsedSeconds(this);
+  return this;
+}
+
+// 0x20 ??1clWinTime@@QAE@XZ
+void __thiscall clWinTime::~clWinTime(clWinTime *this)
+{
+  ;
+}
+
+// 0x30 ?GetElapsedSeconds@clWinTime@@QAENXZ
+double __thiscall clWinTime::GetElapsedSeconds(clWinTime *this)
+{
+  double TimeTicks; // st7
+  double v4; // [esp+4h] [ebp-8h]
+
+  TimeTicks = clWinTime::GetTimeTicks();
+  v4 = TimeTicks - *(double *)this;
+  *(double *)this = TimeTicks;
+  return v4 / clWinTime::GetClockFrequency();
+}
+
+// 0x60 ?PeekElapsedSeconds@clWinTime@@QAENXZ
+double __thiscall clWinTime::PeekElapsedSeconds(clWinTime *this)
+{
+  double v2; // [esp+4h] [ebp-8h]
+
+  v2 = clWinTime::GetTimeTicks() - *(double *)this;
+  return v2 / clWinTime::GetClockFrequency();
+}
+
+// 0x80 ?GetTimeTicks@clWinTime@@SANXZ
+static double __cdecl clWinTime::GetTimeTicks()
+{
+  LARGE_INTEGER PerformanceCount; // [esp+0h] [ebp-8h] BYREF
+
+  QueryPerformanceCounter(lpPerformanceCount: &PerformanceCount);
+  return (double)PerformanceCount.QuadPart;
+}
+
+// 0xa0 ?GetClockFrequency@clWinTime@@SANXZ
+static double __cdecl clWinTime::GetClockFrequency()
+{
+  double result; // st7
+  LARGE_INTEGER Frequency; // [esp+0h] [ebp-8h] BYREF
+
+  if ( _haveIt__1__GetClockFrequency_clWinTime__SANXZ_4HA != 0 )
+    return _hz__1__GetClockFrequency_clWinTime__SANXZ_4NA;
+  QueryPerformanceFrequency(lpFrequency: &Frequency);
+  result = (double)Frequency.QuadPart;
+  _haveIt__1__GetClockFrequency_clWinTime__SANXZ_4HA = 1;
+  _hz__1__GetClockFrequency_clWinTime__SANXZ_4NA = result;
+  return result;
+}

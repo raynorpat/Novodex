@@ -1,0 +1,107 @@
+PDS
+{
+	Acts
+	{
+		"scene.psc.ods";
+	}
+	Models
+	{
+		stand	{ "stand.mod.ods"; }
+		bar	{ "bar.mod.ods"; }
+		brick1	{ "brick1.mod.ods"; }
+		faller	{ "faller.mod.ods"; }
+	}
+	Actors
+	{
+		# Mesh actors not in groups
+		stand
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"stand";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.393700; 0.393701; 0.393700; }
+				}
+			}
+		}
+		bar
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"bar";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.095307; 0.245598; 1.000721; }
+				}
+			}
+		}
+		brick1
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"brick1";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.195712; 0.249701; 0.148471; }
+				}
+			}
+		}
+		faller
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"faller";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.359233; 0.260261; 0.256595; }
+				}
+			}
+		}
+		# Group actors
+	}
+}

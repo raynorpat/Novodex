@@ -1,0 +1,284 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 1000; }
+	DragForce	{ 100; }
+	gravity	{ 0.000000; -9.810000; 0.000000; }
+	gridRes	{ 0; }
+	frequency	{ 100; }
+
+	Text
+	{
+		T {"Isotropic friction! press n for next scene"; Y{-0.6;} D{2;} S{17;} E{1;} R{0.0;} G{0.0;} B{0.3;}}
+	}
+		
+	Parameters
+	{
+		RigidBodySDK
+		{
+			MIN_SEPARATION_FOR_PENALTY { -0.01; }
+		}
+	}
+
+	Bodies
+	{
+		Terrain
+		{
+			name	{ Terrain; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 0.000000; 2.137957; 0.000000; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }friction {0.0;} staticFriction{0.0;}
+		}
+		Sled
+		{
+			name	{ Sled; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -8.042866; 5.229192; 7.751227; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box02; }
+			orientation	{ 0.976296; 0.000000; 0.216440; 0.000000; }
+			position	{ -8.042866; 5.229192; 7.001227; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box03; }
+			orientation	{ 0.906308; 0.000000; 0.422618; 0.000000; }
+			position	{ -8.042866; 5.229192; 6.251227; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box04; }
+			orientation	{ 0.793353; 0.000000; 0.608761; 0.000000; }
+			position	{ -8.042866; 5.229192; 5.501227; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box05; }
+			orientation	{ 0.642788; 0.000000; 0.766044; 0.000000; }
+			position	{ -8.042866; 5.229192; 4.751227; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box06; }
+			orientation	{ 0.461749; 0.000000; 0.887011; 0.000000; }
+			position	{ -8.042866; 5.229192; 4.001227; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box07; }
+			orientation	{ 0.258819; 0.000000; 0.965926; 0.000000; }
+			position	{ -8.042866; 5.229192; 3.251227; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box08; }
+			orientation	{ 0.043620; 0.000000; 0.999048; 0.000000; }
+			position	{ -8.042866; 5.229192; 2.501227; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box09; }
+			orientation	{ -0.173648; 0.000000; 0.984808; 0.000000; }
+			position	{ -4.261281; 7.559375; -5.564887; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box10; }
+			orientation	{ -0.382683; 0.000000; 0.923880; 0.000000; }
+			position	{ -4.261281; 7.559375; -6.314887; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box11; }
+			orientation	{ 0.573576; 0.000000; -0.819152; 0.000000; }
+			position	{ -4.261281; 7.559375; -7.064887; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box12; }
+			orientation	{ 0.737277; 0.000000; -0.675590; 0.000000; }
+			position	{ -4.261281; 7.559375; -7.814887; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box13; }
+			orientation	{ 0.866025; 0.000000; -0.500000; 0.000000; }
+			position	{ -4.261281; 7.559375; -8.564887; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box14; }
+			orientation	{ 0.953717; 0.000000; -0.300706; 0.000000; }
+			position	{ -4.261281; 7.559375; -9.314887; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box15; }
+			orientation	{ 0.996195; 0.000000; -0.087156; 0.000000; }
+			position	{ -4.261281; 7.559375; -10.064887; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box16; }
+			orientation	{ 0.991445; 0.000000; 0.130526; 0.000000; }
+			position	{ 5.597525; 3.994903; 7.144376; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box17; }
+			orientation	{ 0.939693; 0.000000; 0.342020; 0.000000; }
+			position	{ 5.597525; 3.994903; 6.394376; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box18; }
+			orientation	{ 0.843392; 0.000000; 0.537299; 0.000000; }
+			position	{ 5.597525; 3.994903; 5.644376; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box19; }
+			orientation	{ 0.707107; 0.000000; 0.707106; 0.000000; }
+			position	{ 5.597525; 3.994903; 4.894376; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box20; }
+			orientation	{ 0.537300; 0.000000; 0.843391; 0.000000; }
+			position	{ 5.597525; 3.994903; 4.144376; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box21; }
+			orientation	{ 0.342020; 0.000000; 0.939692; 0.000000; }
+			position	{ 5.597525; 3.994903; 3.394376; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box22; }
+			orientation	{ 0.130526; 0.000000; 0.991445; 0.000000; }
+			position	{ 5.597525; 3.994903; 2.644376; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box23; }
+			orientation	{ -0.087156; 0.000000; 0.996195; 0.000000; }
+			position	{ 7.619634; 3.124214; -4.165226; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box24; }
+			orientation	{ -0.300706; 0.000000; 0.953717; 0.000000; }
+			position	{ 7.619634; 3.124214; -4.915226; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box25; }
+			orientation	{ 0.500000; 0.000000; -0.866025; 0.000000; }
+			position	{ 7.619634; 3.124214; -5.665226; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box26; }
+			orientation	{ 0.675591; 0.000000; -0.737277; 0.000000; }
+			position	{ 7.619634; 3.124214; -6.415226; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box27; }
+			orientation	{ 0.819152; 0.000000; -0.573576; 0.000000; }
+			position	{ 7.619634; 3.124214; -7.165226; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box28; }
+			orientation	{ 0.923880; 0.000000; -0.382683; 0.000000; }
+			position	{ 7.619634; 3.124214; -7.915226; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box29; }
+			orientation	{ 0.984808; 0.000000; -0.173647; 0.000000; }
+			position	{ 7.619634; 3.124214; -8.665226; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+		Sled
+		{
+			name	{ Box30; }
+			orientation	{ 0.999048; 0.000000; 0.043621; 0.000000; }
+			position	{ 7.619634; 3.124214; -9.415226; }
+			scale	{ 1.000000; }
+			mass{3;} centerOfMass { 0.0; -0.075; 0.0;} friction {0.4;} staticFriction{0.5;}
+		}
+	}
+	Joints
+	{
+	}
+	Lights
+	{
+		1	{ -5.927193; 20.0; 6.629998; }
+	}
+	Camera
+	{
+	}
+}

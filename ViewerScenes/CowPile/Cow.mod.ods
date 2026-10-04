@@ -1,0 +1,12 @@
+# Cyl02
+Model3
+{
+	Mesh { "Cow.obj"; }  #
+	#Mesh { "Cyl02.obj"; }
+
+	ForceTexCoords { 2; }
+	Groups
+	{
+		Cyl02 { "Material03.mat.ods"; }
+	}
+}

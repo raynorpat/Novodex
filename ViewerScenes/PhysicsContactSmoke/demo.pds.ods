@@ -1,0 +1,28 @@
+PDS
+{
+	Acts
+	{
+		"PhysicsContactSmoke.psc.ods";
+	}
+	Models
+	{
+		GeoSphere01 { "GeoSphere01.mod.ods"; }
+	}
+	Actors
+	{
+		GeoSphere01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model { "GeoSphere01"; }
+				}
+			}
+			Collision
+			{
+				Sphere { radius { 0.3; } }
+			}
+		}
+	}
+}

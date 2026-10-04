@@ -1,0 +1,699 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 10000; }
+	DragForce	{ 50; }
+	#simStepSize { 0.02; }
+	simStepSize { 0.0166; }
+	gravity	{ 0.000000; -20; 0.000000; }#-10
+	noGroundPlane;
+	fieldOfView { 90; }
+
+	Parameters
+		{
+		RigidBodySDK
+			{
+			MIN_SEPARATION_FOR_PENALTY { -0.02; }
+			}
+		}
+
+	Bodies
+	{
+		Terrain
+		{
+			name	{ Terrain; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.855482; 0.139751; -0.637681; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		Ramp
+		{
+			name	{ Ramp; }
+			orientation	{ -0.830928; 0.000000; 0.000000; -0.556380; }
+			position	{ -12.108080; -5.126657; 6.252740; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		Capsule01
+		{
+			name	{ Capsule01; }
+			orientation	{ -0.707107; 0.000000; 0.000000; -0.707107; }
+			position	{ 56.427814; 7.958345; 8.848809; }
+			scale	{ 1.000000; }
+		}
+		Capsule01
+		{
+			name	{ Capsule02; }
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ -58.610142; 6.135029; -4.620733; }
+			scale	{ 1.000000; }
+		}
+		Capsule01
+		{
+			name	{ Capsule03; }
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ 40.126892; 8.380256; -36.842873; }
+			scale	{ 1.000000; }
+		}
+		Capsule01
+		{
+			name	{ Capsule04; }
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ 6.564198; 6.310846; 57.942600; }
+			scale	{ 1.000000; }
+		}
+		Cube01
+		{
+			name	{ Cube01; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 18.812248; 8.221493; -62.524143; }
+			scale	{ 1.000000; }
+		}
+		Cube02
+		{
+			name	{ Cube02; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -46.391449; 6.239383; -66.574043; }
+			scale	{ 1.000000; }
+		}
+		Cube03
+		{
+			name	{ Cube03; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 80.755768; 4.940326; -75.747078; }
+			scale	{ 1.000000; }
+		}
+		Cube04
+		{
+			name	{ Cube04; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -49.651630; 5.488469; 60.487148; }
+			scale	{ 1.000000; }
+		}
+		Cube05
+		{
+			name	{ Cube05; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -23.570152; 7.166134; 68.558014; }
+			scale	{ 1.000000; }
+		}
+		Cube02
+		{
+			name	{ Cube06; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -18.912746; 10.581928; -29.679182; }
+			scale	{ 1.000000; }
+		}
+		Cube03
+		{
+			name	{ Cube07; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 59.797436; 10.581928; 14.410206; }
+			scale	{ 1.000000; }
+		}
+		Cube04
+		{
+			name	{ Cube08; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -63.315647; 10.581928; 64.319878; }
+			scale	{ 1.000000; }
+		}
+		Cube01
+		{
+			name	{ Cube09; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -63.315647; 10.581928; 40.107281; }
+			scale	{ 1.000000; }
+		}
+		Cube02
+		{
+			name	{ Cube10; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 46.756691; 26.443518; -26.955606; }
+			scale	{ 1.000000; }
+		}
+		Cube03
+		{
+			name	{ Cube11; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -37.542377; 26.443518; 56.644444; }
+			scale	{ 1.000000; }
+		}
+		Cube02
+		{
+			name	{ Cube12; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 32.784473; 18.516457; 44.345417; }
+			scale	{ 1.000000; }
+		}
+		Cube04
+		{
+			name	{ Cube14; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -34.282188; 18.516457; -35.551609; }
+			scale	{ 1.000000; }
+		}
+		Cube03
+		{
+			name	{ Cube13; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 11.360401; 18.516457; -26.252750; }
+			scale	{ 1.000000; }
+		}
+		Sphere01
+		{
+			name	{ Sphere01; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 74.095779; 6.380516; -44.845242; }
+			scale	{ 1.000000; }
+		}
+		Sphere01
+		{
+			name	{ Sphere02; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -22.312550; 6.380516; 42.940891; }
+			scale	{ 1.000000; }
+		}
+		Sphere01
+		{
+			name	{ Sphere03; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 61.149456; 6.380516; 35.846874; }
+			scale	{ 1.000000; }
+		}
+		Sphere01
+		{
+			name	{ Sphere04; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -57.708843; 6.380516; -58.513149; }
+			scale	{ 1.000000; }
+		}
+		Ramp
+		{
+			name	{ Ramp01; }
+			orientation	{ 0.715699; 0.282671; 0.422156; 0.479224; }
+			position	{ -5.857429; -5.126657; -50.381828; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		Ramp
+		{
+			name	{ Ramp02; }
+			orientation	{ 0.768798; 0.032839; 0.555760; 0.314646; }
+			position	{ 63.567299; 0.359640; 59.377068; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		Bounds02
+		{
+			name	{ Bounds02; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 100.586494; -1.467036; 0.412521; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		Bounds02
+		{
+			name	{ Bounds00; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -100.965302; -1.467036; 0.412521; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		Bounds02
+		{
+			name	{ Bounds03; }
+			orientation	{ 0.707211; 0.000000; -0.707002; 0.000000; }
+			position	{ -0.877322; -1.467036; -100.363365; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		Bounds02
+		{
+			name	{ Bounds01; }
+			orientation	{ 0.707211; 0.000000; -0.707002; 0.000000; }
+			position	{ -0.812543; -1.467036; 100.188408; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		TruckBody
+		{
+			# Joint name
+			name	{ body; }
+			# PRS
+			orientation	{ -0.707107; 0.000000; -0.707107; 0.000000; }
+			position	{ -0.090812; 0.119964; -0.342994; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass {220;}			
+			restitution	{ 0; }
+			centerOfMass { 0; -0.5; 0; }  #dropped center of mass for increased fahrvergnuegen
+
+
+			Control
+				{
+				Type { CarController; }
+				#default { 1; }
+
+
+				driveWheelL { wheelLBack; }
+				driveWheelR { wheelRBack; }
+
+				driveWheelFL { wheelLFront; }
+				driveWheelFR { wheelRFront; }
+
+				frontSuspBarL  { frontSuspBarL; }
+				frontSuspBarR  { frontSuspBarR; }
+
+				rearSuspBarL  { rearSuspBarL; }
+				rearSuspBarR  { rearSuspBarR; }
+
+				steerBodyL  { steerSprocketL; }
+				steerBodyR  { steerSprocketR; }
+
+				hinge1 { axleFrontL;}
+				hinge2 { axleFrontR;}
+				hinge3 { axleRearL;}
+				hinge4 { axleRearR;}
+				hinge5 { steeringL;}
+				hinge6 { steeringR;}
+				prism1 { sprintFrontL;}
+				prism2 { sprintFrontR;}
+				prism3 { springRearL;}
+				prism4 { springRearR;}
+
+				carBody		{ body; }
+
+				
+				driveMaxAcc {45;}#was 0.3
+				driveMaxAccTime {1.0;}#was 0.4
+				driveAccHoldTime {50;}
+				driveAccStopTime {100;}
+				driveDrag {40;} #was 0.3
+
+				}
+
+		}
+		fr
+		{
+			# Joint name
+			name	{ wheelRFront; }
+			# PRS
+			position	{ 1.735394; 1.058559; 1.546264; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{80;}#mass	{ 100.000000; }
+			restitution	{ 0.000000; }
+			maxAngVel { 1000; }
+			friction	{ 1; }
+			staticFriction { 1.5; }
+		}
+		br
+		{
+			# Joint name
+			name	{ wheelRBack; }
+			# PRS
+			position	{ -1.707300; 1.058561; 1.546263; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{80;}#mass	{ 100.000000; }
+			restitution	{ 0.000000; }
+			maxAngVel { 1000; }
+			friction	{ 1; }
+			staticFriction { 1.5; }
+		}
+		bl
+		{
+			# Joint name
+			name	{ wheelLBack; }
+			# PRS
+			position	{ -1.707297; 1.058553; -2.230793; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{80;}#mass	{ 100.000000; }
+			restitution	{ 0.000000; }
+			maxAngVel { 1000; }
+			friction	{ 1; }
+			staticFriction { 1.5; }
+
+		}
+		fl
+		{
+			# Joint name
+			name	{ wheelLFront; }
+			# PRS
+			position	{ 1.735397; 1.058553; -2.230793; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{80;}#mass	{ 100.000000; }
+			restitution	{ 0.000000; }
+			maxAngVel { 1000; }
+			friction	{ 1; }
+			staticFriction { 1.5; }
+		}
+
+		je_radnarbe_lowpoly06
+		{
+			# Joint name
+			name	{ frontSuspBarL; }
+			# PRS
+			orientation	{ 0.477713; -0.477712; 0.521333; -0.521338; }
+			position	{ 1.735397; 1.058553; -2.230793; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{10;}
+			restitution	{ 0.000000; }
+			#friction	{ 1.000000; }
+		}
+
+
+		je_radnarbe_lowpoly07
+		{
+			# Joint name
+			name	{ frontSuspBarR; }
+			# PRS
+			orientation	{ -0.521335; 0.521335; 0.477712; -0.477714; }
+			position	{ 1.735394; 1.058559; 1.546264; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{10;}
+			restitution	{ 0.000000; }
+			#friction	{ 1.000000; }
+		}
+
+		je_radnarbe_lowpoly05
+		{
+			# Joint name
+			name	{ rearSuspBarL; }
+			# PRS
+			orientation	{ 0.477713; -0.477712; 0.521333; -0.521338; }
+			position	{ -1.666163; 1.055847; -1.490285; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{10;}
+			restitution	{ 0.000000; }
+			#friction	{ 1.000000; }
+		}
+		je_radnarbe_lowpoly04
+		{
+			# Joint name
+			name	{ rearSuspBarR; }
+			# PRS
+			orientation	{ -0.521335; 0.521335; 0.477712; -0.477714; }
+			position	{ -1.666164; 1.055850; 0.805752; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{10;}
+			restitution	{ 0.000000; }
+			#friction	{ 1.000000; }
+		}
+
+	Ball
+		{
+		name { steerSprocketL; }
+		position	{ 1.735397; 1.058553; -2.230793; }
+		dimensions { 0.11; 0.11; 0.11; }
+		mass	{ 10.0; }
+		scale {0.5; }
+		}
+	Ball
+		{
+		name { steerSprocketR; }
+		position	{ 1.735394; 1.058559; 1.546264; }
+		dimensions { 0.11; 0.11; 0.11; }
+		mass	{ 10.0; }
+		scale {0.5; }
+		}
+
+	}
+	Joints
+	{
+
+		Hinge
+			{
+			anchor { 1.735397; 1.058553; -2.230793; }	#origin of wheel
+			direction { 0; 0; 1; }
+			bodies { steerSprocketL; 	wheelLFront; }
+			name { axleFrontL; }
+			#motorVFS { 100; 5; 0; }
+			}
+
+		Hinge
+			{
+			anchor { 1.735394; 1.058559; 1.546264; }	#origin of wheel
+			direction { 0; 0; 1; }
+			bodies { steerSprocketR; 	wheelRFront; }
+			name { axleFrontR; }
+			#motorVFS { 100; 5; 0; }
+			}
+
+		Hinge
+			{
+			anchor { 1.735397; 1.058553; -2.230793; }	#origin of wheel
+			direction { 0; 1; 0; }
+			bodies { frontSuspBarL; steerSprocketL; }
+			name { steeringL; }
+			#limits { -35; 35; }
+			lowLimit { -35; 0; 1; }
+			highLimit { 35; 0; 1; }
+			springDamper { 1000; 100; 0; }
+			}
+
+		Hinge
+			{
+			anchor { 1.735394; 1.058559; 1.546264; }	#origin of wheel
+			direction { 0; 1; 0; }
+			bodies { frontSuspBarR; steerSprocketR; }
+			name { steeringR; }
+			#limits { -35; 35; }
+			lowLimit { -35; 0; 1; }
+			highLimit { 35; 0; 1; }
+			springDamper { 1000; 100; 0; }
+			}
+
+
+
+		Hinge
+			{
+			anchor { -1.707297; 1.058553; -2.230793; }
+			direction { 0; 0; 1; }
+			bodies { #body; 
+			rearSuspBarL; 
+			wheelLBack; 
+			}
+			name { axleRearL; }
+			#motorVFS { 2; 10000; 0; }
+			#motorVFS { -100; 5; 0; }
+			}
+
+
+		Hinge
+			{
+			anchor { -1.707300; 1.058561; 1.546263; }
+			direction { 0; 0; 1; }
+			bodies { #body; 
+			rearSuspBarR; 
+			wheelRBack; 
+			}
+			name { axleRearR; }
+			#motorVFS { 2; 10000; 0; }
+			#motorVFS { -100; 5; 0; }
+			}
+
+		Prismatic
+			{
+			name { sprintFrontL; }
+			bodies { body; frontSuspBarL; }
+			anchor { 1.735397; 1.058553; -2.230793; }	#pos of suspBar == wheel.
+			direction { 0; 1; 0; }
+
+			limitPlanes
+				{
+				# suspension limits
+				compr					# susp fully compressed - little beyond horiz. wishbone.
+					{
+					n { 0; -1; 0; }
+					p  { 1.735397; 1.4; -2.230793; }
+					}
+				exp						# susp fully stretched
+					{
+					n { 0;  1; 0; }
+					p  { 1.735397; 1.0; -2.230793; }
+					}
+				}
+
+			}
+
+		
+		Prismatic
+			{
+			name { sprintFrontR; }
+			bodies { body; frontSuspBarR; }
+			anchor { 1.735394; 1.058559; 1.546264; }	#pos of suspBar == wheel.
+			direction { 0; 1; 0; }
+
+			limitPlanes
+				{
+				# suspension
+				compr					# susp fully compressed - little beyond horiz. wishbone.
+					{
+					n { 0; -1; 0; }
+					p  { 1.735394; 1.4; 1.546264; }
+					}
+				exp						# susp fully stretched
+					{
+					n { 0;  1; 0; }
+					p  { 1.735394; 1.0; 1.546264; }
+					}
+				}
+
+			}
+
+		
+		Prismatic #Sliding  #
+			{
+			name { springRearL; }
+			bodies { body; rearSuspBarL; }
+			anchor { -1.707297; 1.058553; -2.230793; }	#pos of rearSuspBar.
+			direction { 0; 1; 0; }
+
+			limitPlanes
+				{
+				compr					# susp fully compressed - little beyond horiz. wishbone.
+					{
+					n { 0; -1; 0; }
+					p { -1.707297; 1.4; -2.230793; }
+					}
+				exp						# susp fully stretched
+					{
+					n { 0;  1; 0; }
+					p { -1.707297; 1.0; -2.230793; }
+					}
+				}
+
+			}
+
+		
+		Prismatic #Sliding  #
+			{
+			name { springRearR; }
+			bodies { body; rearSuspBarR; }
+			anchor { -1.707300; 1.058561; 0.5; }	#1.546263 pos of rearSuspBar.
+			direction { 0; 1; 0; }
+
+			limitPlanes
+				{
+				compr					# susp fully compressed - little beyond horiz. wishbone.
+					{
+					n { 0; -1; 0; }
+					p  { -1.707300; 1.4; 1.546263; }
+					}
+				exp						# susp fully stretched
+					{
+					n { 0;  1; 0; }
+					p  { -1.707300; 1.0; 1.546263; }
+					}
+				}
+
+			}
+
+		CollisionVetoJoint
+			{
+			bodies { body; wheelLBack; }
+			}
+		CollisionVetoJoint
+			{
+			bodies { body; wheelRBack; }
+			}
+		CollisionVetoJoint
+			{
+			bodies { body; wheelLFront; }
+			}
+		CollisionVetoJoint
+			{
+			bodies { body; wheelRFront; }
+			}
+		CollisionVetoJoint
+			{
+			bodies { frontSuspBarL; wheelLFront; }
+			}
+		CollisionVetoJoint
+			{
+			bodies { frontSuspBarR; wheelRFront; }
+			}
+		CollisionVetoJoint
+			{
+			bodies { steerSprocketL; body; }
+			}
+		CollisionVetoJoint
+			{
+			bodies { steerSprocketR; body; }
+			}
+
+
+
+	}
+
+	Effectors
+		{
+
+		SpringAndDamper
+			{
+			bodies { body; rearSuspBarL; }
+			anchor1 { -1.707297; 2.058553; -2.230793; }		#position right above wheel
+			anchor2 { -1.707297; 1.058553; -2.230793; }		#position of wheel
+
+			spring { 0.0; 1.0; 1.0; 6000; 0; }
+			damper { -1000; 1000; 120000; 120000; }			
+			}
+
+		SpringAndDamper
+			{
+			bodies { body; rearSuspBarR; }
+			anchor1 { -1.707300; 2.058561; 1.546263; }		#position right above wheel
+			anchor2 { -1.707300; 1.058561; 1.546263; }		#position of wheel
+
+			
+			spring { 0.0; 1.0; 1.0; 6000; 0; }			
+			damper { -1000; 1000; 120000; 120000; }			
+			}
+
+		SpringAndDamper
+			{
+			bodies { body; frontSuspBarL; }
+			anchor1 { 1.735397; 2.058553; -2.230793; }		#position right above wheel
+			anchor2 { 1.735397; 1.058553; -2.230793; }		#position of wheel
+
+			spring { 0.0; 1.0; 1.0; 6000; 0; }
+			damper { -1000; 1000; 120000; 120000; }
+			}
+
+		SpringAndDamper
+			{
+			bodies { body; frontSuspBarR; }
+			anchor1 { 1.735394; 2.058559; 1.546264; }		#position right above wheel
+			anchor2 { 1.735394; 1.058559; 1.546264; }		#position of wheel
+
+			spring { 0.0; 1.0; 1.0; 6000; 0; }
+			damper { -1000; 1000; 90000; 90000; }
+			}
+
+		}
+
+
+	Lights
+	{
+		#1	{ -11.342012; 1082.388336; 0.018634; }
+		2	{ 440.087914; 0.763778;  660.866943; }
+		3	{ -490.849403; 0.685036; -690.280106; }
+	}
+	Camera
+	{
+
+	position {24.977768;24.282831;5.700097;}
+	angles {0.000000;70.000000;-40.000000;}
+
+
+	}
+}

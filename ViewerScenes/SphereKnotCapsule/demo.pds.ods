@@ -1,0 +1,202 @@
+PDS
+{
+	Acts
+	{
+		"SphereKnotCapsule.psc.ods";
+	}
+	Models
+	{
+		Torus_Knot01	{ "Torus_Knot01.mod.ods"; }
+		GeoSphere01	{ "GeoSphere01.mod.ods"; }
+		GeoSphere04	{ "GeoSphere04.mod.ods"; }
+		GeoSphere05	{ "GeoSphere05.mod.ods"; }
+		GeoSphere06	{ "GeoSphere06.mod.ods"; }
+		Capsule01	{ "Capsule01.mod.ods"; }
+		GeoSphere07	{ "GeoSphere07.mod.ods"; }
+		GeoSphere08	{ "GeoSphere08.mod.ods"; }
+		GeoSphere09	{ "GeoSphere09.mod.ods"; }
+	}
+	Actors
+	{
+		Torus_Knot01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Torus_Knot01";
+					}
+				}
+			}
+			Collision
+			{
+					TriangleMesh;
+			}
+		}
+		GeoSphere01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"GeoSphere01";
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+					radius	{ 0.491814; }
+				}
+			}
+		}
+		GeoSphere04
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"GeoSphere04";
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+					radius	{ 0.491814; }
+				}
+			}
+		}
+		GeoSphere05
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"GeoSphere05";
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+					radius	{ 0.491814; }
+				}
+			}
+		}
+		GeoSphere06
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"GeoSphere06";
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+					radius	{ 0.491814; }
+				}
+			}
+		}
+		Capsule01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Capsule01";
+					}
+				}
+			}
+			Collision
+			{
+				Capsule
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+					radius	{ 0.553177; }
+					height	{ 8.034186; }
+				}
+			}
+		}
+		GeoSphere07
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"GeoSphere07";
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+					radius	{ 0.491814; }
+				}
+			}
+		}
+		GeoSphere08
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"GeoSphere08";
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+					radius	{ 0.491814; }
+				}
+			}
+		}
+		GeoSphere09
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"GeoSphere09";
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+					radius	{ 0.491814; }
+				}
+			}
+		}
+	}
+}

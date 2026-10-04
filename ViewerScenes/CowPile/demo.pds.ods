@@ -1,0 +1,61 @@
+PDS
+{
+	Acts
+	{
+		scene2.psc.ods;
+		scene.psc.ods;
+		withSpheres.psc.ods;
+		withBoxes.psc.ods;
+	}
+	Models
+	{
+		Cow { "Cow.mod.ods"; }
+		Sphere01 { "Sphere01.mod.ods"; }
+
+		#new stuff
+		Cylinder { "Cylinder.mod.ods"; }
+		Cube { "Cube.mod.ods"; }
+		Pencil { "Pencil.mod.ods"; }
+		Pot { "Pot.mod.ods"; }
+		Quad { "Quad.mod.ods"; }
+		Triangle { "Triangle.mod.ods"; }
+		Wheel { "Wheel.mod.ods"; }
+
+	}
+	Actors
+	{
+
+		Cow
+		{
+			Graphics { Node { Model { Cow; } } }
+			Collision
+			{
+			TriangleMesh
+				{
+				pmapDensity { 64; }
+				pmapFile { cow64.bin; }
+				}
+			}
+		}	
+		Sphere
+		{
+			Dynamics
+			{
+				inertia { sphere; }
+			}
+			Graphics { Node { Model { Sphere01; } } }
+			Collision
+			{
+				Sphere	{	radius { 0.734375; } }
+				#TriangleMesh;
+			}
+		}
+
+
+
+		Box
+		{
+			Graphics { Node { Model { Cube; } } }
+		}	
+	}
+}

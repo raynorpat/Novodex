@@ -1,0 +1,3677 @@
+// 0x4 ??0Mesh@SceneGraph@@QAE@XZ
+SceneGraph::Mesh *__thiscall SceneGraph::Mesh::Mesh(SceneGraph::Mesh *this)
+{
+  *((_BYTE *)this + 4) = HIBYTE(this);
+  *((_DWORD *)this + 2) = 0;
+  *((_DWORD *)this + 3) = 0;
+  *((_DWORD *)this + 4) = 0;
+  *((_BYTE *)this + 20) = HIBYTE(this);
+  *((_DWORD *)this + 6) = 0;
+  *((_DWORD *)this + 7) = 0;
+  *((_DWORD *)this + 8) = 0;
+  *(_DWORD *)this = &SceneGraph::Mesh::`vftable';
+  return this;
+}
+
+// 0x3c ?load@Mesh@SceneGraph@@QAEXPBD_NM1I@Z
+void __thiscall SceneGraph::Mesh::load(SceneGraph::Mesh *this, char *a2, bool a3, float a4, bool a5, unsigned int a6)
+{
+  char *v6; // esi
+  void **v7; // ebp
+  unsigned int v8; // ebx
+  struct GLMmodel *BinMesh; // esi
+  struct GLMgroup *v10; // edi
+  _BYTE *v11; // eax
+  _BYTE *v12; // esi
+  const char *v13; // esi
+  float **v14; // ebp
+  unsigned int v15; // ebx
+  char v16; // [esp+1h] [ebp-B1h] BYREF
+  float **v17; // [esp+2h] [ebp-B0h] BYREF
+  struct GLMgroup *v18; // [esp+6h] [ebp-ACh]
+  struct GLMmodel *OBJ; // [esp+Ah] [ebp-A8h]
+  SceneGraph::Mesh *v20; // [esp+Eh] [ebp-A4h]
+  _BYTE *v21; // [esp+12h] [ebp-A0h]
+  _DWORD v22[2]; // [esp+16h] [ebp-9Ch] BYREF
+  _BYTE v23[80]; // [esp+1Eh] [ebp-94h] BYREF
+  FILE *Stream; // [esp+6Eh] [ebp-44h]
+  _DWORD v25[13]; // [esp+72h] [ebp-40h] BYREF
+  unsigned int v26[2]; // [esp+A6h] [ebp-Ch] BYREF
+  int v27; // [esp+AEh] [ebp-4h]
+
+  v27 = -1;
+  v26[1] = (unsigned int)&_L30962;
+  v26[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v26);
+  v6 = a2;
+  v20 = this;
+  v17 = nullptr;
+  if ( a2 != nullptr )
+  {
+    v7 = (void **)((char *)this + 20);
+    v8 = strlen(a2);
+    if ( (unsigned __int8)std::string::_Grow(a1: v8, a2: 1) != 0 )
+    {
+      qmemcpy(v7[1], a2, v8);
+      std::string::_Eos(a1: v8);
+      v6 = a2;
+    }
+    v22[0] = &std::ifstream::`vbtable';
+    std::ios_base::ios_base(this: (std::ios_base *)v25);
+    v25[0] = &std::ios::`vftable';
+    v17 = (float **)(&_S25 + 1);
+    v27 = 0;
+    std::istream::istream(a1: v23, a2: 0, a3: 0);
+    v27 = 1;
+    std::filebuf::filebuf(a1: 0);
+    LOBYTE(v27) = 2;
+    v25[0] = &std::ifstream::`vftable';
+    if ( std::filebuf::open(a1: v6, a2: 1) == 0 )
+      std::ios::setstate(a1: 2, a2: false);
+    v27 = 3;
+    if ( Stream != nullptr )
+    {
+      std::operator>>(a1: v22, a2: &v16);
+      if ( Stream == nullptr || fclose(Stream) != 0 || (std::filebuf::_Init(a1: 0, a2: 2), v23 == nullptr) )
+        std::ios::setstate(a1: 2, a2: false);
+      if ( v16 == 77 )
+      {
+        BinMesh = glmReadBinMesh(a1: v6);
+        OBJ = BinMesh;
+      }
+      else
+      {
+        OBJ = glmReadOBJ(a1: v6);
+        BinMesh = OBJ;
+      }
+      v18 = (struct GLMgroup *)v25;
+      *(_DWORD *)((char *)v22 + *(_DWORD *)(v22[0] + 4)) = &std::ifstream::`vftable';
+      v27 = 5;
+      std::filebuf::~filebuf<char,std::char_traits<char>>(a1: v23);
+      v27 = -1;
+      *(_DWORD *)((char *)v22 + *(_DWORD *)(v22[0] + 4)) = &std::istream::`vftable';
+      std::ios::~ios<char,std::char_traits<char>>(a1: v25);
+      if ( a4 != 0.0 )
+      {
+        glmUnitize(a1: BinMesh);
+        if ( a4 != 1.0 )
+          glmScale(a1: BinMesh, a2: a4);
+      }
+      glmDimensions(a1: BinMesh, a2: (float *)v20 + 9);
+      if ( a5 )
+      {
+        if ( *((_DWORD *)BinMesh + 8) == 0 )
+          glmFacetNormals(a1: BinMesh);
+        if ( *((_DWORD *)BinMesh + 4) == 0 )
+          glmVertexNormals(a1: BinMesh, a2: 90.0);
+      }
+      if ( a6 != 0 )
+      {
+        if ( *((_DWORD *)BinMesh + 4) == 0 )
+          glmVertexNormals(a1: BinMesh, a2: 90.0);
+        if ( a6 == 1 )
+          glmSpheremapTexture(a1: BinMesh);
+        else
+          glmLinearTexture(a1: BinMesh, a2: 5.0, a3: 5.0, a4: 2u);
+      }
+      v18 = *((struct GLMgroup **)BinMesh + 15);
+      v10 = v18;
+      if ( v18 != nullptr )
+      {
+        while ( 1 )
+        {
+          if ( *((_DWORD *)v10 + 1) != 0 )
+          {
+            v11 = operator new(a1: 0x28u);
+            v12 = v11;
+            v21 = v11;
+            v27 = 6;
+            if ( v11 != nullptr )
+            {
+              v11[16] = v16;
+              std::string::_Tidy(a1: 0);
+              *(_DWORD *)v12 = 0;
+              *((_DWORD *)v12 + 1) = 0;
+              *((_DWORD *)v12 + 2) = 0;
+              *((_DWORD *)v12 + 3) = 0;
+              *((_DWORD *)v12 + 8) = 0;
+              *((_DWORD *)v12 + 9) = 0;
+            }
+            else
+            {
+              v12 = nullptr;
+            }
+            v17 = (float **)v12;
+            *((_DWORD *)v12 + 8) = -1;
+            v13 = *(const char **)v10;
+            v27 = -1;
+            v14 = v17 + 4;
+            v15 = strlen(v13);
+            if ( (unsigned __int8)std::string::_Grow(a1: v15, a2: 1) != 0 )
+            {
+              qmemcpy(v14[1], v13, v15);
+              std::string::_Eos(a1: v15);
+            }
+            std::vector<SceneGraph::SubMesh *>::insert(a1: *((_DWORD *)v20 + 3), a2: 1, a3: &v17);
+            SceneGraph::Mesh::glmGroupToIndexedList(
+              a1: OBJ,
+              a2: v18,
+              a3: (unsigned int *)v17 + 2,
+              a4: (unsigned int *)v17 + 3,
+              a5: v17,
+              a6: (unsigned int **)v17 + 1);
+            BinMesh = OBJ;
+            v10 = v18;
+          }
+          v18 = *((struct GLMgroup **)v10 + 4);
+          if ( v18 == nullptr )
+            break;
+          v10 = v18;
+        }
+      }
+      if ( BinMesh != nullptr )
+        glmDelete(a1: BinMesh);
+    }
+    else
+    {
+      printf(Format: "Error: File not found: %s\n", v6);
+      v20 = (SceneGraph::Mesh *)v25;
+      *(_DWORD *)((char *)v22 + *(_DWORD *)(v22[0] + 4)) = &std::ifstream::`vftable';
+      v27 = 4;
+      std::filebuf::~filebuf<char,std::char_traits<char>>(a1: v23);
+      v27 = -1;
+      *(_DWORD *)((char *)v22 + *(_DWORD *)(v22[0] + 4)) = &std::istream::`vftable';
+      std::ios::~ios<char,std::char_traits<char>>(a1: v25);
+    }
+  }
+  __writefsdword((unsigned int)&_except_list, v26[0]);
+}
+
+// 0x58c ??_D?$basic_ifstream@DU?$char_traits@D@std@@@std@@QAEXXZ
+int __thiscall std::ifstream::`vbase destructor'(char *this)
+{
+  char *v1; // esi
+
+  v1 = this + 92;
+  std::ifstream::~ifstream<char,std::char_traits<char>>(a1: this + 92);
+  return std::ios::~ios<char,std::char_traits<char>>(a1: v1);
+}
+
+// 0x5ac ??1Mesh@SceneGraph@@QAE@XZ
+void __thiscall SceneGraph::Mesh::~Mesh(SceneGraph::Mesh *this)
+{
+  SceneGraph::SubMesh **v2; // edi
+  SceneGraph::SubMesh **v3; // eax
+  void (__stdcall *v4)(GLuint, GLsizei); // ebx
+  GLuint v5; // eax
+  SceneGraph::SubMesh *v6; // ebp
+  int v7; // eax
+  _BYTE *v8; // ecx
+  char v9; // al
+  unsigned int v10; // ecx
+  _DWORD v11[2]; // [esp+4h] [ebp-Ch] BYREF
+  int v12; // [esp+Ch] [ebp-4h]
+
+  v12 = -1;
+  v11[1] = &_L31087;
+  v11[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v11);
+  *(_DWORD *)this = &SceneGraph::Mesh::`vftable';
+  v2 = *((SceneGraph::SubMesh ***)this + 2);
+  v3 = *((SceneGraph::SubMesh ***)this + 3);
+  v12 = 1;
+  if ( v2 != v3 )
+  {
+    v4 = glDeleteLists;
+    do
+    {
+      v5 = *((_DWORD *)*v2 + 8);
+      if ( v5 != -1 )
+        v4(list: v5, range: 1);
+      v6 = *v2;
+      if ( *v2 != nullptr )
+      {
+        SceneGraph::SubMesh::~SubMesh(this: *v2);
+        operator delete(a1: v6);
+      }
+      ++v2;
+    }
+    while ( v2 != *((SceneGraph::SubMesh ***)this + 3) );
+  }
+  v7 = *((_DWORD *)this + 6);
+  if ( v7 != 0 )
+  {
+    v8 = (_BYTE *)(v7 - 1);
+    v9 = *(_BYTE *)(v7 - 1);
+    if ( v9 == 0 || v9 == -1 )
+      operator delete(a1: v8);
+    else
+      *v8 = v9 - 1;
+  }
+  *((_DWORD *)this + 6) = 0;
+  *((_DWORD *)this + 7) = 0;
+  *((_DWORD *)this + 8) = 0;
+  operator delete(a1: *((void **)this + 2));
+  v10 = v11[0];
+  *((_DWORD *)this + 2) = 0;
+  *((_DWORD *)this + 3) = 0;
+  *((_DWORD *)this + 4) = 0;
+  __writefsdword((unsigned int)&_except_list, v10);
+}
+
+// 0x6cc ??1SubMesh@SceneGraph@@QAE@XZ
+void __thiscall SceneGraph::SubMesh::~SubMesh(void **this)
+{
+  int v2; // eax
+  _BYTE *v3; // ecx
+  char v4; // al
+
+  operator delete(a1: *this);
+  operator delete(a1: *(this + 1));
+  *(this + 2) = nullptr;
+  *(this + 3) = nullptr;
+  v2 = (int)*(this + 5);
+  if ( v2 != 0 )
+  {
+    v3 = (_BYTE *)(v2 - 1);
+    v4 = *(_BYTE *)(v2 - 1);
+    if ( v4 != 0 && v4 != -1 )
+    {
+      *v3 = v4 - 1;
+      *(this + 5) = nullptr;
+      *(this + 6) = nullptr;
+      *(this + 7) = nullptr;
+      return;
+    }
+    operator delete(a1: v3);
+  }
+  *(this + 5) = nullptr;
+  *(this + 6) = nullptr;
+  *(this + 7) = nullptr;
+}
+
+// 0x72c ?changed@SubMesh@SceneGraph@@QAEXXZ
+void __thiscall SceneGraph::SubMesh::changed(SceneGraph::SubMesh *this)
+{
+  GLuint v2; // eax
+
+  v2 = *((_DWORD *)this + 8);
+  if ( v2 != -1 )
+  {
+    glDeleteLists(list: v2, range: 1);
+    *((_DWORD *)this + 8) = -1;
+  }
+}
+
+// 0x74c ?renderAsPoints@SubMesh@SceneGraph@@QAEXM@Z
+void __thiscall SceneGraph::SubMesh::renderAsPoints(SceneGraph::SubMesh *this, GLfloat size)
+{
+  if ( size != 0.0 )
+    glPointSize(size);
+  glDisable(cap: 0xB50u);
+  glEnableClientState(array: 0x8074u);
+  glVertexPointer(size: 3, type: 0x1406u, stride: 32, pointer: *(const GLvoid **)this);
+  glDrawArrays(mode: 0, first: 0, count: *((_DWORD *)this + 2));
+  glDisableClientState(array: 0x8074u);
+  glEnable(cap: 0xB50u);
+}
+
+// 0x7bc ?DEBUGassertIntegrity@SubMesh@SceneGraph@@QAEXXZ
+void __thiscall SceneGraph::SubMesh::DEBUGassertIntegrity(SceneGraph::SubMesh *this)
+{
+  ;
+}
+
+// 0x7cc ?render@SubMesh@SceneGraph@@QAEXXZ
+void __thiscall SceneGraph::SubMesh::render(SceneGraph::SubMesh *this)
+{
+  GLuint v2; // eax
+  void (__stdcall *v3)(GLenum); // edi
+  void (__stdcall *v4)(GLenum); // edi
+
+  if ( *((_DWORD *)this + 8) == -1 )
+  {
+    v2 = glGenLists(range: 1);
+    *((_DWORD *)this + 8) = v2;
+    glNewList(list: v2, mode: 0x1300u);
+    v3 = glEnableClientState;
+    glEnableClientState(array: 0x8074u);
+    glVertexPointer(size: 3, type: 0x1406u, stride: 32, pointer: *(const GLvoid **)this);
+    v3(array: 0x8075u);
+    glNormalPointer(type: 0x1406u, stride: 32, pointer: (const GLvoid *)(*(_DWORD *)this + 12));
+    v3(array: 0x8078u);
+    glTexCoordPointer(size: 2, type: 0x1406u, stride: 32, pointer: (const GLvoid *)(*(_DWORD *)this + 24));
+    glDrawElements(mode: 4u, count: 3 * *((_DWORD *)this + 3), type: 0x1405u, indices: *((const GLvoid **)this + 1));
+    v4 = glDisableClientState;
+    glDisableClientState(array: 0x8074u);
+    v4(array: 0x8075u);
+    v4(array: 0x8078u);
+    glEndList();
+  }
+  glCallList(list: *((_DWORD *)this + 8));
+}
+
+// 0x88c ?changed@Mesh@SceneGraph@@QAEXH@Z
+void __thiscall SceneGraph::Mesh::changed(SceneGraph::Mesh *this, int a2)
+{
+  SceneGraph::SubMesh **i; // esi
+
+  if ( a2 == -1 )
+  {
+    for ( i = *((SceneGraph::SubMesh ***)this + 2); i != *((SceneGraph::SubMesh ***)this + 3); ++i )
+      SceneGraph::SubMesh::changed(this: *i);
+  }
+  else
+  {
+    SceneGraph::SubMesh::changed(this: *(SceneGraph::SubMesh **)(*((_DWORD *)this + 2) + 4 * a2));
+  }
+}
+
+// 0x8cc ?render@Mesh@SceneGraph@@UAEXH@Z
+void __thiscall SceneGraph::Mesh::render(SceneGraph::Mesh *this, int a2)
+{
+  int v3; // ebx
+  SceneGraph::SubMesh **i; // esi
+
+  v3 = 0;
+  for ( i = *((SceneGraph::SubMesh ***)this + 2); i != *((SceneGraph::SubMesh ***)this + 3); ++v3 )
+  {
+    if ( a2 == -1 || a2 == v3 )
+    {
+      SceneGraph::SubMesh::render(this: *i);
+      if ( a2 != -1 )
+        break;
+    }
+    ++i;
+  }
+}
+
+// 0x90c ?findGroup@Mesh@SceneGraph@@UAEHPBD@Z
+int __thiscall SceneGraph::Mesh::findGroup(SceneGraph::Mesh *this, const char *a2)
+{
+  int v2; // ebp
+  unsigned int v3; // kr04_4
+  unsigned int v4; // eax
+  unsigned int v5; // ebx
+  int v6; // ecx
+  int v7; // edx
+  int v9; // [esp+10h] [ebp-8h]
+  int v10; // [esp+14h] [ebp-4h]
+
+  v2 = *((_DWORD *)this + 2);
+  v9 = 0;
+  v10 = *((_DWORD *)this + 3);
+  if ( v2 == v10 )
+    return -1;
+  while ( 1 )
+  {
+    v3 = strlen(a2) + 1;
+    v4 = *(_DWORD *)(*(_DWORD *)v2 + 24);
+    v5 = v3 - 1;
+    v6 = v4;
+    if ( v4 >= v3 - 1 )
+      v6 = v3 - 1;
+    v7 = memcmp(*(const char **)(*(_DWORD *)v2 + 20), a2, v6);
+    if ( v7 == 0 && v4 >= v5 )
+    {
+      LOBYTE(v7) = v4 != v5;
+      if ( v7 == 0 )
+        break;
+    }
+    v2 += 4;
+    ++v9;
+    if ( v2 == v10 )
+      return -1;
+  }
+  return v9;
+}
+
+// 0x9ac ?getBoundingBox@Mesh@SceneGraph@@QAEXAAVclVector3D@@@Z
+void __thiscall SceneGraph::Mesh::getBoundingBox(SceneGraph::Mesh *this, struct clVector3D *a2)
+{
+  *(_DWORD *)a2 = *((_DWORD *)this + 9);
+  *((_DWORD *)a2 + 1) = *((_DWORD *)this + 10);
+  *((_DWORD *)a2 + 2) = *((_DWORD *)this + 11);
+}
+
+// 0x9cc ?glmGroupToIndexedList@Mesh@SceneGraph@@KAXPAUGLMmodel@@PAUGLMgroup@@AAI2AAPAMAAPAI@Z
+static void __cdecl SceneGraph::Mesh::glmGroupToIndexedList(
+        struct GLMmodel *a1,
+        struct GLMgroup *a2,
+        unsigned int *a3,
+        unsigned int *a4,
+        float **a5,
+        unsigned int **a6)
+{
+  struct GLMgroup *v6; // edi
+  int v7; // ebx
+  unsigned int v8; // eax
+  int v9; // ebp
+  int *v10; // edi
+  int v11; // edx
+  int v12; // ecx
+  int v13; // eax
+  unsigned int NumVertices; // eax
+  unsigned int v15; // ebx
+  _DWORD *i; // ecx
+  float *v17; // eax
+  int v18; // edx
+  int v19; // edx
+  int v20; // edx
+  _DWORD v21[2]; // [esp+0h] [ebp-14h] BYREF
+  unsigned int v22[2]; // [esp+8h] [ebp-Ch] BYREF
+  int v23; // [esp+10h] [ebp-4h]
+  unsigned int *v24; // [esp+24h] [ebp+10h]
+
+  v23 = -1;
+  v22[1] = (unsigned int)&_L31320;
+  v22[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v22);
+  `SceneGraph::Mesh::glmGroupToIndexedList'::`2'::Hash::Hash(a1: v21);
+  v6 = a2;
+  v7 = 0;
+  v8 = *((_DWORD *)a2 + 1);
+  v23 = 0;
+  *a4 = v8;
+  v24 = nullptr;
+  *a6 = (unsigned int *)operator new(a1: 12 * v8);
+  if ( *((_DWORD *)a2 + 1) != 0 )
+  {
+    while ( 1 )
+    {
+      v9 = 3;
+      v10 = (int *)(*((_DWORD *)a1 + 11) + 40 * *(_DWORD *)(*((_DWORD *)v6 + 2) + 4 * (_DWORD)v24) + 24);
+      do
+      {
+        v11 = *(v10 - 6);
+        if ( *((_DWORD *)a1 + 4) != 0 )
+          v12 = *(v10 - 3);
+        else
+          v12 = 0;
+        if ( *((_DWORD *)a1 + 6) != 0 )
+          v13 = *v10;
+        else
+          v13 = 0;
+        ++v10;
+        ++v7;
+        --v9;
+        (*a6)[v7 - 1] = `SceneGraph::Mesh::glmGroupToIndexedList'::`2'::Hash::haveVertex(a1: v11, a2: v12, a3: v13);
+      }
+      while ( v9 != 0 );
+      v24 = (unsigned int *)((char *)v24 + 1);
+      if ( (unsigned int)v24 >= *((_DWORD *)a2 + 1) )
+        break;
+      v6 = a2;
+    }
+  }
+  NumVertices = `SceneGraph::Mesh::glmGroupToIndexedList'::`2'::Hash::getNumVertices(a1: v21);
+  *a3 = NumVertices;
+  v15 = 0;
+  *a5 = (float *)operator new(a1: 32 * NumVertices);
+  do
+  {
+    for ( i = *(_DWORD **)(v15 + v21[0]); i != nullptr; i = (_DWORD *)i[4] )
+    {
+      v17 = &(*a5)[8 * i[3]];
+      v18 = 3 * *i;
+      *v17 = *(float *)(*((_DWORD *)a1 + 3) + 12 * *i);
+      v17[1] = *(float *)(*((_DWORD *)a1 + 3) + 4 * v18 + 4);
+      v17[2] = *(float *)(*((_DWORD *)a1 + 3) + 4 * v18 + 8);
+      if ( *((_DWORD *)a1 + 4) != 0 )
+      {
+        v19 = 3 * i[1];
+        v17[3] = *(float *)(*((_DWORD *)a1 + 5) + 12 * i[1]);
+        v17[4] = *(float *)(*((_DWORD *)a1 + 5) + 4 * v19 + 4);
+        v17[5] = *(float *)(*((_DWORD *)a1 + 5) + 4 * v19 + 8);
+      }
+      if ( *((_DWORD *)a1 + 6) != 0 )
+      {
+        v20 = 2 * i[2];
+        v17[6] = *(float *)(*((_DWORD *)a1 + 7) + 8 * i[2]);
+        v17[7] = *(float *)(*((_DWORD *)a1 + 7) + 4 * v20 + 4);
+      }
+    }
+    v15 += 4;
+  }
+  while ( v15 < 0x2000 );
+  v23 = -1;
+  `SceneGraph::Mesh::glmGroupToIndexedList'::`2'::Hash::~Hash(a1: v21);
+  __writefsdword((unsigned int)&_except_list, v22[0]);
+}
+
+// 0xbb8 ??0Data@Hash@?1??glmGroupToIndexedList@Mesh@SceneGraph@@KAXPAUGLMmodel@@PAUGLMgroup@@AAI2AAPAMAAPAI@Z@QAE@IIII@Z
+_DWORD *__thiscall `SceneGraph::Mesh::glmGroupToIndexedList'::`2'::Hash::Data::Data(
+        _DWORD *this,
+        int a2,
+        int a3,
+        int a4,
+        int a5)
+{
+  *this = a2;
+  *(this + 1) = a3;
+  *(this + 2) = a4;
+  *(this + 3) = a5;
+  *(this + 4) = 0;
+  return this;
+}
+
+// 0xbe8 ??0Hash@?1??glmGroupToIndexedList@Mesh@SceneGraph@@KAXPAUGLMmodel@@PAUGLMgroup@@AAI2AAPAMAAPAI@Z@QAE@XZ
+_DWORD *__thiscall `SceneGraph::Mesh::glmGroupToIndexedList'::`2'::Hash::Hash(_DWORD *this)
+{
+  void *v2; // edi
+
+  *(this + 1) = 0;
+  v2 = operator new(a1: 0x2000u);
+  *this = v2;
+  memset(v2, 0, 0x2000u);
+  return this;
+}
+
+// 0xc18 ??1Hash@?1??glmGroupToIndexedList@Mesh@SceneGraph@@KAXPAUGLMmodel@@PAUGLMgroup@@AAI2AAPAMAAPAI@Z@QAE@XZ
+void __thiscall `SceneGraph::Mesh::glmGroupToIndexedList'::`2'::Hash::~Hash(void **this)
+{
+  unsigned int i; // esi
+  _DWORD **v3; // ecx
+  _DWORD *j; // eax
+
+  for ( i = 0; i < 0x2000; i += 4 )
+  {
+    v3 = (_DWORD **)((char *)*this + i);
+    for ( j = *v3; *v3 != nullptr; j = *v3 )
+    {
+      *v3 = (_DWORD *)j[4];
+      operator delete(a1: j);
+      v3 = (_DWORD **)((char *)*this + i);
+    }
+  }
+  operator delete(a1: *this);
+}
+
+// 0xc68 ?find@Hash@?1??glmGroupToIndexedList@Mesh@SceneGraph@@KAXPAUGLMmodel@@PAUGLMgroup@@AAI2AAPAMAAPAI@Z@SAPAUData@1?1??234@KAX012234@Z@PAU71?1??234@KAX012234@Z@III@Z
+_DWORD *__cdecl `SceneGraph::Mesh::glmGroupToIndexedList'::`2'::Hash::find(_DWORD *a1, int a2, int a3, int a4)
+{
+  _DWORD *result; // eax
+
+  result = a1;
+  if ( a1 == nullptr )
+    return nullptr;
+  while ( *result != a2 || result[1] != a3 || result[2] != a4 )
+  {
+    result = (_DWORD *)result[4];
+    if ( result == nullptr )
+      return nullptr;
+  }
+  return result;
+}
+
+// 0xc98 ?hash@Hash@?1??glmGroupToIndexedList@Mesh@SceneGraph@@KAXPAUGLMmodel@@PAUGLMgroup@@AAI2AAPAMAAPAI@Z@SAIIII@Z
+unsigned int __cdecl `SceneGraph::Mesh::glmGroupToIndexedList'::`2'::Hash::hash(int a1, int a2, unsigned int a3)
+{
+  int v3; // eax
+  unsigned int v4; // ecx
+  unsigned int v5; // edx
+  int v6; // eax
+  unsigned int v7; // ecx
+  unsigned int v8; // edx
+  int v9; // esi
+
+  v3 = (a3 >> 13) ^ (a1 - a2 - a3);
+  v4 = (v3 << 8) ^ (a2 - v3 - a3);
+  v5 = (v4 >> 13) ^ (a3 - v3 - v4);
+  v6 = (v5 >> 12) ^ (v3 - v4 - v5);
+  v7 = (v6 << 16) ^ (v4 - v6 - v5);
+  v8 = (v7 >> 5) ^ (v5 - v6 - v7);
+  v9 = (v8 >> 3) ^ (v6 - v7 - v8);
+  return (((v9 << 10) ^ (v7 - v9 - v8)) >> 15)
+       & 0x7FF
+       ^ ((_WORD)v8 - (_WORD)v9 - ((unsigned __int16)((_WORD)v9 << 10) ^ (unsigned __int16)(v7 - v9 - v8)))
+       & 0x7FF;
+}
+
+// 0xd18 ?haveVertex@Hash@?1??glmGroupToIndexedList@Mesh@SceneGraph@@KAXPAUGLMmodel@@PAUGLMgroup@@AAI2AAPAMAAPAI@Z@QAEIIII@Z
+int __thiscall `SceneGraph::Mesh::glmGroupToIndexedList'::`2'::Hash::haveVertex(
+        int *this,
+        int a2,
+        int a3,
+        unsigned int a4)
+{
+  _DWORD *v6; // eax
+  _DWORD *v7; // eax
+  unsigned int v9; // [esp+1Ch] [ebp+Ch]
+
+  v9 = `SceneGraph::Mesh::glmGroupToIndexedList'::`2'::Hash::hash(a1: a2, a2: a3, a3: a4);
+  v6 = `SceneGraph::Mesh::glmGroupToIndexedList'::`2'::Hash::find(a1: *(_DWORD **)(*this + 4 * v9), a2, a3, a4);
+  if ( v6 == nullptr )
+  {
+    v7 = operator new(a1: 0x14u);
+    if ( v7 != nullptr )
+      v6 = `SceneGraph::Mesh::glmGroupToIndexedList'::`2'::Hash::Data::Data(this: v7, a2, a3, a4, a5: *(this + 1));
+    else
+      v6 = nullptr;
+    v6[4] = *(_DWORD *)(*this + 4 * v9);
+    *(_DWORD *)(*this + 4 * v9) = v6;
+    ++*(this + 1);
+  }
+  return v6[3];
+}
+
+// 0xd98 ?getNumVertices@Hash@?1??glmGroupToIndexedList@Mesh@SceneGraph@@KAXPAUGLMmodel@@PAUGLMgroup@@AAI2AAPAMAAPAI@Z@QAEIXZ
+int __thiscall `SceneGraph::Mesh::glmGroupToIndexedList'::`2'::Hash::getNumVertices(_DWORD *this)
+{
+  return *(this + 1);
+}
+
+// 0xda8 ??1?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@XZ
+void __thiscall std::string::~string(_DWORD *this)
+{
+  int v2; // eax
+  _BYTE *v3; // ecx
+  char v4; // al
+
+  v2 = *(this + 1);
+  if ( v2 != 0 )
+  {
+    v3 = (_BYTE *)(v2 - 1);
+    v4 = *(_BYTE *)(v2 - 1);
+    if ( v4 == 0 || v4 == -1 )
+      operator delete(a1: v3);
+    else
+      *v3 = v4 - 1;
+  }
+  *(this + 1) = 0;
+  *(this + 2) = 0;
+  *(this + 3) = 0;
+}
+
+// 0xde8 ??1?$basic_ios@DU?$char_traits@D@std@@@std@@UAE@XZ
+void __thiscall std::ios::~ios<char,std::char_traits<char>>(std::ios_base *this)
+{
+  *(_DWORD *)this = &std::ios::`vftable';
+  std::ios_base::~ios_base(this);
+}
+
+// 0xdf8 ?setstate@?$basic_ios@DU?$char_traits@D@std@@@std@@QAEXH_N@Z
+void __thiscall std::ios::setstate(std::ios_base *this, int a2, bool a3)
+{
+  int v3; // eax
+
+  if ( a2 != 0 )
+  {
+    v3 = a2 | *((_DWORD *)this + 1);
+    if ( *((_DWORD *)this + 10) == 0 )
+      LOBYTE(v3) = v3 | 4;
+    std::ios_base::clear(this, a2: v3, a3);
+  }
+}
+
+// 0xe28 ??1?$basic_istream@DU?$char_traits@D@std@@@std@@UAE@XZ
+int __thiscall std::istream::~istream<char,std::char_traits<char>>(_DWORD *this)
+{
+  int result; // eax
+
+  result = *(this - 2);
+  *(_DWORD *)((char *)this + *(_DWORD *)(result + 4) - 8) = &std::istream::`vftable';
+  return result;
+}
+
+// 0xe38 ??1?$vector@PAVSubMesh@SceneGraph@@V?$allocator@PAVSubMesh@SceneGraph@@@std@@@std@@QAE@XZ
+int __thiscall std::vector<SceneGraph::SubMesh *>::~vector<SceneGraph::SubMesh *>(int this)
+{
+  operator delete(a1: *(void **)(this + 4));
+  *(_DWORD *)(this + 4) = 0;
+  *(_DWORD *)(this + 8) = 0;
+  *(_DWORD *)(this + 12) = 0;
+  return 0;
+}
+
+// 0xe68 ??1?$basic_ifstream@DU?$char_traits@D@std@@@std@@UAE@XZ
+int __thiscall std::ifstream::~ifstream<char,std::char_traits<char>>(_DWORD *this)
+{
+  int v1; // eax
+  char *v2; // edi
+  void *v3; // esi
+  int v4; // ebp
+  int v5; // eax
+  void (__thiscall ***v6)(_DWORD, int); // esi
+  std::locale::facet *v7; // ecx
+  struct std::locale::facet *v8; // eax
+  int result; // eax
+  char v10[4]; // [esp+0h] [ebp-18h] BYREF
+  _DWORD *v11; // [esp+4h] [ebp-14h]
+  char *v12; // [esp+8h] [ebp-10h]
+  unsigned int v13[2]; // [esp+Ch] [ebp-Ch] BYREF
+  int v14; // [esp+14h] [ebp-4h]
+
+  v14 = -1;
+  v13[1] = (unsigned int)&_L31554;
+  v13[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v13);
+  v1 = *(this - 23);
+  v11 = this;
+  *(_DWORD *)((char *)this + *(_DWORD *)(v1 + 4) - 92) = &std::ifstream::`vftable';
+  v2 = (char *)(this - 21);
+  v14 = 0;
+  v12 = v2;
+  *(_DWORD *)v2 = &std::filebuf::`vftable';
+  LOBYTE(v1) = *((_BYTE *)this - 12);
+  LOBYTE(v14) = 2;
+  if ( (_BYTE)v1 != 0 && *((_DWORD *)v2 + 20) != 0 && fclose(Stream: *((FILE **)v2 + 20)) == 0 )
+    std::filebuf::_Init(a1: 0, a2: 2);
+  v3 = *((void **)v2 + 17);
+  if ( v3 != nullptr )
+  {
+    std::string::_Tidy(a1: 1);
+    operator delete(a1: v3);
+  }
+  v4 = *((_DWORD *)v2 + 19);
+  LOBYTE(v14) = 1;
+  if ( v4 != 0 )
+  {
+    std::_Lockit::_Lockit(this: (std::_Lockit *)v10);
+    v5 = *(_DWORD *)(v4 + 4);
+    if ( v5 != 0 && v5 != -1 )
+      *(_DWORD *)(v4 + 4) = v5 - 1;
+    v6 = *(_DWORD *)(v4 + 4) == 0 ? (void (__thiscall ***)(_DWORD, int))v4 : nullptr;
+    std::_Lockit::~_Lockit(this: (std::_Lockit *)v10);
+    if ( v6 != nullptr )
+      (**v6)(a1: v6, a2: 1);
+  }
+  *(_DWORD *)v2 = &std::streambuf::`vftable';
+  v7 = *((std::locale::facet **)v2 + 13);
+  LOBYTE(v14) = 0;
+  if ( v7 != nullptr )
+  {
+    v8 = std::locale::facet::_Decref(this: v7);
+    if ( v8 != nullptr )
+      (**(void (__thiscall ***)(struct std::locale::facet *, int))v8)(a1: v8, a2: 1);
+  }
+  result = *((_DWORD *)v2 - 2);
+  *(_DWORD *)&v2[*(_DWORD *)(result + 4) - 8] = &std::istream::`vftable';
+  __writefsdword((unsigned int)&_except_list, v13[0]);
+  return result;
+}
+
+// 0x1040 ??1?$basic_streambuf@DU?$char_traits@D@std@@@std@@UAE@XZ
+void __thiscall std::streambuf::~streambuf<char,std::char_traits<char>>(_DWORD *this)
+{
+  int v1; // edi
+  int v2; // eax
+  void (__thiscall ***v3)(_DWORD, int); // esi
+  _BYTE v4[4]; // [esp+8h] [ebp-4h] BYREF
+
+  *this = &std::streambuf::`vftable';
+  v1 = *(this + 13);
+  if ( v1 != 0 )
+  {
+    std::_Lockit::_Lockit(this: (std::_Lockit *)v4);
+    v2 = *(_DWORD *)(v1 + 4);
+    if ( v2 != 0 && v2 != -1 )
+      *(_DWORD *)(v1 + 4) = v2 - 1;
+    v3 = *(_DWORD *)(v1 + 4) == 0 ? (void (__thiscall ***)(_DWORD, int))v1 : nullptr;
+    std::_Lockit::~_Lockit(this: (std::_Lockit *)v4);
+    if ( v3 != nullptr )
+      (**v3)(a1: v3, a2: 1);
+  }
+}
+
+// 0x1090 ?overflow@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MAEHH@Z
+int __stdcall std::streambuf::overflow(int a1)
+{
+  return -1;
+}
+
+// 0x10a0 ?pbackfail@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MAEHH@Z
+int __stdcall std::streambuf::pbackfail(int a1)
+{
+  return -1;
+}
+
+// 0x10b0 ?showmanyc@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MAEHXZ
+int std::streambuf::showmanyc()
+{
+  return 0;
+}
+
+// 0x10c0 ?underflow@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MAEHXZ
+int std::streambuf::underflow()
+{
+  return -1;
+}
+
+// 0x10d0 ?uflow@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MAEHXZ
+int __thiscall std::streambuf::uflow(_DWORD **this)
+{
+  int result; // eax
+  _DWORD *v3; // esi
+  unsigned __int8 *v4; // eax
+
+  result = ((int (__thiscall *)(_DWORD **))(*this)[4])(a1: this);
+  if ( result != -1 )
+  {
+    --**(this + 11);
+    v3 = *(this + 7);
+    v4 = (unsigned __int8 *)(*v3)++;
+    return *v4;
+  }
+  return result;
+}
+
+// 0x1100 ?xsgetn@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MAEHPADH@Z
+int __thiscall std::streambuf::xsgetn(signed int **this, _BYTE *a2, int a3)
+{
+  int v3; // edi
+  int result; // eax
+  const void *v7; // esi
+  signed int v8; // eax
+  void *v9; // edi
+  int v10; // eax
+  int v11; // [esp+10h] [ebp-4h]
+
+  v3 = a3;
+  result = 0;
+  v11 = 0;
+  if ( a3 > 0 )
+  {
+    do
+    {
+      v7 = (const void *)**(this + 7);
+      if ( v7 != nullptr && (v8 = **(this + 11)) > 0 )
+      {
+        if ( v3 < v8 )
+          v8 = v3;
+        v9 = a2;
+        a2 += v8;
+        qmemcpy(v9, v7, v8);
+        v3 = a3 - v8;
+        v11 += v8;
+        a3 -= v8;
+        **(this + 11) -= v8;
+        **(this + 7) += v8;
+      }
+      else
+      {
+        v10 = ((int (__thiscall *)(signed int **))(*this)[5])(a1: this);
+        if ( v10 == -1 )
+          return v11;
+        *a2++ = v10;
+        --v3;
+        ++v11;
+        a3 = v3;
+      }
+    }
+    while ( v3 > 0 );
+    return v11;
+  }
+  return result;
+}
+
+// 0x11a0 ?xsputn@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MAEHPBDH@Z
+int __thiscall std::streambuf::xsputn(signed int **this, unsigned __int8 *a2, int a3)
+{
+  int v3; // esi
+  int result; // eax
+  void *v7; // edi
+  signed int v8; // eax
+  const void *v9; // esi
+  int v10; // [esp+10h] [ebp-4h]
+
+  v3 = a3;
+  result = 0;
+  v10 = 0;
+  if ( a3 > 0 )
+  {
+    do
+    {
+      v7 = (void *)**(this + 8);
+      if ( v7 != nullptr && (v8 = **(this + 12)) > 0 )
+      {
+        if ( v3 < v8 )
+          v8 = v3;
+        v9 = a2;
+        a2 += v8;
+        qmemcpy(v7, v9, v8);
+        v10 += v8;
+        a3 -= v8;
+        **(this + 12) -= v8;
+        v3 = a3;
+        **(this + 8) += v8;
+      }
+      else
+      {
+        if ( ((int (__thiscall *)(signed int **, _DWORD))(*this)[1])(a1: this, a2: *a2) == -1 )
+          return v10;
+        ++a2;
+        --v3;
+        ++v10;
+        a3 = v3;
+      }
+    }
+    while ( v3 > 0 );
+    return v10;
+  }
+  return result;
+}
+
+// 0x1240 ?seekoff@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MAE?AV?$fpos@H@2@JW4seekdir@ios_base@2@H@Z
+int __stdcall std::streambuf::seekoff(int a1, int a2, int a3, int a4)
+{
+  std::fpos<int>::fpos<int>(a1: -1);
+  return a1;
+}
+
+// 0x1260 ?seekpos@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MAE?AV?$fpos@H@2@V32@H@Z
+int __stdcall std::streambuf::seekpos(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8)
+{
+  std::fpos<int>::fpos<int>(a1: -1);
+  return a1;
+}
+
+// 0x1280 ?setbuf@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MAEPAV12@PADH@Z
+void *__thiscall std::streambuf::setbuf(void *this, int a2, int a3)
+{
+  return this;
+}
+
+// 0x1290 ?sync@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MAEHXZ
+int std::streambuf::sync()
+{
+  return 0;
+}
+
+// 0x12a0 ?imbue@?$basic_streambuf@DU?$char_traits@D@std@@@std@@MAEXABVlocale@2@@Z
+void __stdcall std::streambuf::imbue(int a1)
+{
+  ;
+}
+
+// 0x12b0 ?_Decref@facet@locale@std@@QAEPAV123@XZ
+struct std::locale::facet *__thiscall std::locale::facet::_Decref(std::locale::facet *this)
+{
+  int v2; // eax
+  std::locale::facet *v3; // esi
+  _BYTE v5[4]; // [esp+8h] [ebp-4h] BYREF
+
+  std::_Lockit::_Lockit(this: (std::_Lockit *)v5);
+  v2 = *((_DWORD *)this + 1);
+  if ( v2 != 0 && v2 != -1 )
+    *((_DWORD *)this + 1) = v2 - 1;
+  v3 = *((_DWORD *)this + 1) == 0 ? this : nullptr;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)v5);
+  return v3;
+}
+
+// 0x12f0 ??1locale@std@@QAE@XZ
+void __thiscall std::locale::~locale(std::locale::facet **this)
+{
+  std::locale::facet *v1; // ecx
+  struct std::locale::facet *v2; // eax
+
+  v1 = *this;
+  if ( v1 != nullptr )
+  {
+    v2 = std::locale::facet::_Decref(this: v1);
+    if ( v2 != nullptr )
+      (**(void (__thiscall ***)(struct std::locale::facet *, int))v2)(a1: v2, a2: 1);
+  }
+}
+
+// 0x1310 ??1?$basic_filebuf@DU?$char_traits@D@std@@@std@@UAE@XZ
+void __thiscall std::filebuf::~filebuf<char,std::char_traits<char>>(void *this)
+{
+  char v2; // al
+  _DWORD *v3; // esi
+  int v4; // eax
+  _BYTE *v5; // ecx
+  char v6; // al
+  int v7; // ebp
+  int v8; // eax
+  void (__thiscall ***v9)(_DWORD, int); // esi
+  int v10; // edi
+  int v11; // eax
+  void (__thiscall ***v12)(_DWORD, int); // esi
+  _DWORD v13[2]; // [esp+4h] [ebp-14h] BYREF
+  unsigned int v14[2]; // [esp+Ch] [ebp-Ch] BYREF
+  int v15; // [esp+14h] [ebp-4h]
+
+  v15 = -1;
+  v14[1] = (unsigned int)&_L31907;
+  v14[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v14);
+  v13[1] = this;
+  *(_DWORD *)this = &std::filebuf::`vftable';
+  v2 = *((_BYTE *)this + 72);
+  v15 = 1;
+  if ( v2 != 0 && *((_DWORD *)this + 20) != 0 && fclose(Stream: *((FILE **)this + 20)) == 0 )
+  {
+    *((_BYTE *)this + 72) = 0;
+    std::streambuf::_Init(a1: this);
+    *((_DWORD *)this + 20) = 0;
+    *((_DWORD *)this + 16) = `std::filebuf::_Init'::`2'::_Stinit;
+    *((_DWORD *)this + 15) = `std::filebuf::_Init'::`2'::_Stinit;
+    *((_DWORD *)this + 14) = 0;
+  }
+  v3 = *((_DWORD **)this + 17);
+  if ( v3 != nullptr )
+  {
+    v4 = v3[1];
+    if ( v4 != 0 )
+    {
+      v5 = (_BYTE *)(v4 - 1);
+      v6 = *(_BYTE *)(v4 - 1);
+      if ( v6 == 0 || v6 == -1 )
+        operator delete(a1: v5);
+      else
+        *v5 = v6 - 1;
+    }
+    v3[1] = 0;
+    v3[2] = 0;
+    v3[3] = 0;
+    operator delete(a1: v3);
+  }
+  v7 = *((_DWORD *)this + 19);
+  LOBYTE(v15) = 0;
+  if ( v7 != 0 )
+  {
+    std::_Lockit::_Lockit(this: (std::_Lockit *)v13);
+    v8 = *(_DWORD *)(v7 + 4);
+    if ( v8 != 0 && v8 != -1 )
+      *(_DWORD *)(v7 + 4) = v8 - 1;
+    v9 = *(_DWORD *)(v7 + 4) == 0 ? (void (__thiscall ***)(_DWORD, int))v7 : nullptr;
+    std::_Lockit::~_Lockit(this: (std::_Lockit *)v13);
+    if ( v9 != nullptr )
+      (**v9)(a1: v9, a2: 1);
+  }
+  *(_DWORD *)this = &std::streambuf::`vftable';
+  v10 = *((_DWORD *)this + 13);
+  v15 = -1;
+  if ( v10 != 0 )
+  {
+    std::_Lockit::_Lockit(this: (std::_Lockit *)v13);
+    v11 = *(_DWORD *)(v10 + 4);
+    if ( v11 != 0 && v11 != -1 )
+      *(_DWORD *)(v10 + 4) = v11 - 1;
+    v12 = *(_DWORD *)(v10 + 4) == 0 ? (void (__thiscall ***)(_DWORD, int))v10 : nullptr;
+    std::_Lockit::~_Lockit(this: (std::_Lockit *)v13);
+    if ( v12 != nullptr )
+      (**v12)(a1: v12, a2: 1);
+  }
+  __writefsdword((unsigned int)&_except_list, v14[0]);
+}
+
+// 0x14b0 ?overflow@?$basic_filebuf@DU?$char_traits@D@std@@@std@@MAEHH@Z
+int __thiscall std::filebuf::overflow(int this, int a2)
+{
+  int v2; // ebx
+  unsigned int v5; // edx
+  _DWORD *v6; // eax
+  _DWORD *v7; // esi
+  _BYTE *v8; // eax
+  int v9; // eax
+  int v10; // edi
+  int v11; // ebp
+  int v12; // eax
+  int v13; // ebx
+  int v14; // ecx
+  int v15; // edi
+  int v16; // ebp
+  _DWORD *v17; // ecx
+  int v18; // edx
+  int v19; // edi
+  int v20; // eax
+  int v21; // ebp
+  int v22; // edi
+  int v23; // eax
+  int v24; // eax
+  int v25; // ebp
+  int v26; // eax
+  int v27; // ebp
+  size_t v28; // edi
+  char v29; // [esp+1Dh] [ebp-9h] BYREF
+  char *v30; // [esp+1Eh] [ebp-8h] BYREF
+  int v31; // [esp+22h] [ebp-4h] BYREF
+
+  v2 = a2;
+  if ( a2 == -1 )
+    return 0;
+  v5 = **(_DWORD **)(this + 32);
+  if ( v5 != 0 )
+  {
+    v6 = *(_DWORD **)(this + 48);
+    if ( v5 < *v6 + v5 )
+    {
+      --*v6;
+      v7 = *(_DWORD **)(this + 32);
+      v8 = (_BYTE *)(*v7)++;
+      *v8 = a2;
+      return a2;
+    }
+  }
+  if ( *(_DWORD *)(this + 80) == 0 )
+    return -1;
+  if ( *(_DWORD *)(this + 56) == 0 )
+  {
+    v9 = fputc(Character: (char)a2, Stream: *(FILE **)(this + 80));
+    goto LABEL_26;
+  }
+  v11 = -1;
+  v10 = *(_DWORD *)(this + 68);
+  v29 = a2;
+  std::string::_Split(a1: v10);
+  v12 = *(_DWORD *)(v10 + 8);
+  if ( v12 != -1 )
+    v11 = *(_DWORD *)(v10 + 8);
+  if ( v11 != 0 )
+  {
+    memmove(a1: *(void **)(v10 + 4), Src: (const void *)(*(_DWORD *)(v10 + 4) + v11), Size: v12 - v11);
+    v13 = *(_DWORD *)(v10 + 8) - v11;
+    if ( (unsigned __int8)std::string::_Grow(a1: v13, a2: 0) != 0 )
+    {
+      v14 = *(_DWORD *)(v10 + 4);
+      *(_DWORD *)(v10 + 8) = v13;
+      *(_BYTE *)(v13 + v14) = 0;
+    }
+    v2 = a2;
+  }
+  v15 = *(_DWORD *)(this + 68);
+  if ( (unsigned int)(-1 - *(_DWORD *)(v15 + 8)) <= 8 )
+    std::_Xlen();
+  v16 = *(_DWORD *)(v15 + 8) + 8;
+  if ( (unsigned __int8)std::string::_Grow(a1: v16, a2: 0) != 0 )
+  {
+    v17 = (_DWORD *)(*(_DWORD *)(v15 + 8) + *(_DWORD *)(v15 + 4));
+    *v17 = 0;
+    v17[1] = 0;
+    v18 = *(_DWORD *)(v15 + 4);
+    *(_DWORD *)(v15 + 8) = v16;
+    *(_BYTE *)(v18 + v16) = 0;
+  }
+  v19 = *(_DWORD *)(this + 68);
+  std::string::_Freeze(a1: v19);
+  v20 = *(_DWORD *)(v19 + 4);
+  if ( v20 != 0 )
+    v21 = v20 + *(_DWORD *)(v19 + 8);
+  else
+    v21 = 0;
+  v22 = *(_DWORD *)(this + 68);
+  std::string::_Freeze(a1: v22);
+  v23 = (*(int (__thiscall **)(_DWORD, int, char *, char **, char **, _DWORD, int, int *))(**(_DWORD **)(this + 56) + 20))(
+          a1: *(_DWORD *)(this + 56),
+          a2: this + 64,
+          a3: &v29,
+          a4: &v30,
+          a5: &v30,
+          a6: *(_DWORD *)(v22 + 4),
+          a7: v21,
+          a8: &v31);
+  if ( v23 == 0 )
+  {
+LABEL_29:
+    v25 = *(_DWORD *)(this + 68);
+    std::string::_Freeze(a1: v25);
+    v26 = *(_DWORD *)(v25 + 4);
+    v27 = *(_DWORD *)(this + 68);
+    v28 = v31 - v26;
+    std::string::_Freeze(a1: v27);
+    if ( fwrite(Buffer: *(const void **)(v27 + 4), ElementSize: 1u, ElementCount: v28, Stream: *(FILE **)(this + 80)) == v28 )
+      return v2;
+    return -1;
+  }
+  v24 = v23 - 1;
+  if ( v24 == 0 )
+  {
+    if ( v30 == &v29 )
+      return -1;
+    goto LABEL_29;
+  }
+  if ( v24 == 2 )
+  {
+    v9 = fputc(Character: v29, Stream: *(FILE **)(this + 80));
+LABEL_26:
+    if ( v9 != -1 )
+      return v2;
+  }
+  return -1;
+}
+
+// 0x1694 ?pbackfail@?$basic_filebuf@DU?$char_traits@D@std@@@std@@MAEHH@Z
+int __thiscall std::filebuf::pbackfail(int this, int a2)
+{
+  unsigned int v3; // eax
+  int v4; // esi
+  int v6; // esi
+  int v7; // edi
+  int v8; // eax
+  char v9; // al
+  int v10; // eax
+  FILE *v11; // ebx
+  int v12; // esi
+  int v13; // esi
+  int v14; // ebx
+  const char *v15; // edi
+  char v16; // al
+  int v17; // eax
+  int v18; // edi
+  int v19; // eax
+
+  v3 = **(_DWORD **)(this + 28);
+  if ( v3 != 0 && **(_DWORD **)(this + 12) < v3 )
+  {
+    v4 = a2;
+    if ( a2 == -1 || *(unsigned __int8 *)(v3 - 1) == a2 )
+    {
+      ++**(_DWORD **)(this + 44);
+      --**(_DWORD **)(this + 28);
+      return a2 != -1 ? a2 : 0;
+    }
+  }
+  else
+  {
+    v4 = a2;
+  }
+  if ( *(_DWORD *)(this + 80) == 0 || v4 == -1 )
+    return -1;
+  if ( *(_DWORD *)(this + 56) == 0 )
+  {
+    if ( ungetc(Character: (unsigned __int8)v4, Stream: *(FILE **)(this + 80)) != -1 )
+      return v4;
+    return -1;
+  }
+  v6 = *(_DWORD *)(this + 68);
+  v7 = *(_DWORD *)(v6 + 8);
+  if ( v7 == 0 )
+    return -1;
+  v8 = *(_DWORD *)(v6 + 4);
+  if ( v8 != 0 )
+  {
+    v9 = *(_BYTE *)(v8 - 1);
+    if ( v9 != 0 && v9 != -1 )
+      std::string::_Grow(a1: v7, a2: 0);
+  }
+  v10 = *(_DWORD *)(v6 + 4);
+  if ( v10 != 0 )
+    *(_BYTE *)(v10 - 1) = -1;
+  v11 = *(FILE **)(this + 80);
+  v12 = v7 + *(_DWORD *)(v6 + 4);
+  do
+  {
+    if ( ungetc(Character: *(unsigned __int8 *)--v12, Stream: v11) == -1 )
+      break;
+    --v7;
+  }
+  while ( v7 != 0 );
+  if ( v7 != 0 )
+    return -1;
+  v13 = *(_DWORD *)(this + 68);
+  v14 = -1;
+  v15 = *(const char **)(v13 + 4);
+  if ( v15 != nullptr )
+  {
+    v16 = *(v15 - 1);
+    if ( v16 != 0 && v16 != -1 )
+    {
+      std::string::_Tidy(a1: 1);
+      std::string::assign(a1: v15, a2: strlen(v15));
+    }
+  }
+  v17 = *(_DWORD *)(v13 + 8);
+  if ( v17 != -1 )
+    v14 = *(_DWORD *)(v13 + 8);
+  if ( v14 != 0 )
+  {
+    memmove(a1: *(void **)(v13 + 4), Src: (const void *)(*(_DWORD *)(v13 + 4) + v14), Size: v17 - v14);
+    v18 = *(_DWORD *)(v13 + 8) - v14;
+    if ( (unsigned __int8)std::string::_Grow(a1: v18, a2: 0) != 0 )
+    {
+      v19 = *(_DWORD *)(v13 + 4);
+      *(_DWORD *)(v13 + 8) = v18;
+      *(_BYTE *)(v18 + v19) = 0;
+    }
+  }
+  *(_DWORD *)(this + 64) = *(_DWORD *)(this + 60);
+  return a2;
+}
+
+// 0x1834 ?underflow@?$basic_filebuf@DU?$char_traits@D@std@@@std@@MAEHXZ
+int __thiscall std::filebuf::underflow(unsigned __int8 ***this)
+{
+  unsigned __int8 *v2; // eax
+  unsigned __int8 **v4; // edi
+  int v5; // eax
+
+  v2 = **(this + 7);
+  if ( v2 != nullptr && v2 < &(**(this + 11))[(int)v2] )
+    return *v2;
+  v4 = *this;
+  v5 = ((int (__thiscall *)(unsigned __int8 ***))(*this)[5])(a1: this);
+  return ((int (__thiscall *)(unsigned __int8 ***, int))v4[2])(a1: this, a2: v5);
+}
+
+// 0x1864 ?uflow@?$basic_filebuf@DU?$char_traits@D@std@@@std@@MAEHXZ
+int __thiscall std::filebuf::uflow(int this)
+{
+  unsigned int v2; // eax
+  _DWORD *v3; // ecx
+  _DWORD *v4; // esi
+  unsigned __int8 *v5; // eax
+  int result; // eax
+  int v7; // edi
+  int v8; // ebx
+  int v9; // eax
+  int v10; // ebp
+  int v11; // eax
+  int v12; // eax
+  char v13; // bl
+  int v14; // edi
+  int v15; // ebp
+  int v16; // eax
+  int v17; // edi
+  int v18; // eax
+  int v19; // ebx
+  int v20; // edi
+  int v21; // eax
+  int v22; // eax
+  int v23; // eax
+  int v24; // esi
+  int v25; // eax
+  char v26; // al
+  int v27; // eax
+  unsigned __int8 v28; // [esp+1Ch] [ebp-Ch] BYREF
+  _BYTE v29[3]; // [esp+1Dh] [ebp-Bh] BYREF
+  _BYTE v30[4]; // [esp+20h] [ebp-8h] BYREF
+  _BYTE v31[4]; // [esp+24h] [ebp-4h] BYREF
+
+  v2 = **(_DWORD **)(this + 28);
+  if ( v2 != 0 )
+  {
+    v3 = *(_DWORD **)(this + 44);
+    if ( v2 < *v3 + v2 )
+    {
+      --*v3;
+      v4 = *(_DWORD **)(this + 28);
+      v5 = (unsigned __int8 *)(*v4)++;
+      return *v5;
+    }
+  }
+  if ( *(_DWORD *)(this + 80) == 0 )
+    return -1;
+  if ( *(_DWORD *)(this + 56) != 0 )
+  {
+    v7 = *(_DWORD *)(this + 68);
+    *(_DWORD *)(this + 60) = *(_DWORD *)(this + 64);
+    v8 = -1;
+    std::string::_Split(a1: v7);
+    v9 = *(_DWORD *)(v7 + 8);
+    if ( v9 != -1 )
+      v8 = *(_DWORD *)(v7 + 8);
+    if ( v8 != 0 )
+    {
+      memmove(a1: *(void **)(v7 + 4), Src: (const void *)(*(_DWORD *)(v7 + 4) + v8), Size: v9 - v8);
+      v10 = *(_DWORD *)(v7 + 8) - v8;
+      if ( (unsigned __int8)std::string::_Grow(a1: v10, a2: 0) != 0 )
+      {
+        v11 = *(_DWORD *)(v7 + 4);
+        *(_DWORD *)(v7 + 8) = v10;
+        *(_BYTE *)(v11 + v10) = 0;
+      }
+    }
+    v12 = fgetc(Stream: *(FILE **)(this + 80));
+    v13 = v12;
+    if ( v12 == -1 )
+    {
+      return -1;
+    }
+    else
+    {
+      while ( 1 )
+      {
+        v14 = *(_DWORD *)(this + 68);
+        if ( *(_DWORD *)(v14 + 8) == -1 || *(_DWORD *)(v14 + 8) == -2 )
+          std::_Xlen();
+        v15 = *(_DWORD *)(v14 + 8) + 1;
+        if ( (unsigned __int8)std::string::_Grow(a1: v15, a2: 0) != 0 )
+        {
+          *(_BYTE *)(*(_DWORD *)(v14 + 4) + *(_DWORD *)(v14 + 8)) = v13;
+          v16 = *(_DWORD *)(v14 + 4);
+          *(_DWORD *)(v14 + 8) = v15;
+          *(_BYTE *)(v16 + v15) = 0;
+        }
+        v17 = *(_DWORD *)(this + 68);
+        *(_DWORD *)(this + 64) = *(_DWORD *)(this + 60);
+        std::string::_Freeze(a1: v17);
+        v18 = *(_DWORD *)(v17 + 4);
+        v19 = v18 != 0 ? v18 + *(_DWORD *)(v17 + 8) : 0;
+        v20 = *(_DWORD *)(this + 68);
+        std::string::_Freeze(a1: v20);
+        v21 = (*(int (__thiscall **)(_DWORD, int, _DWORD, int, _BYTE *, unsigned __int8 *, _BYTE *, _BYTE *))(**(_DWORD **)(this + 56) + 16))(
+                a1: *(_DWORD *)(this + 56),
+                a2: this + 64,
+                a3: *(_DWORD *)(v20 + 4),
+                a4: v19,
+                a5: v31,
+                a6: &v28,
+                a7: v29,
+                a8: v30);
+        if ( v21 == 0 )
+          break;
+        v22 = v21 - 1;
+        if ( v22 != 0 )
+        {
+          if ( v22 != 2 )
+            return -1;
+          if ( *(_DWORD *)(*(_DWORD *)(this + 68) + 8) != 0 )
+          {
+            v24 = *(_DWORD *)(this + 68);
+            v25 = *(_DWORD *)(v24 + 4);
+            if ( v25 != 0 )
+            {
+              v26 = *(_BYTE *)(v25 - 1);
+              if ( v26 != 0 && v26 != -1 )
+                std::string::_Grow(a1: *(_DWORD *)(v24 + 8), a2: 0);
+            }
+            v27 = *(_DWORD *)(v24 + 4);
+            if ( v27 != 0 )
+              *(_BYTE *)(v27 - 1) = -1;
+            return **(unsigned __int8 **)(v24 + 4);
+          }
+        }
+        v23 = fgetc(Stream: *(FILE **)(this + 80));
+        v13 = v23;
+        if ( v23 == -1 )
+          return -1;
+      }
+      return v28;
+    }
+  }
+  else
+  {
+    result = fgetc(Stream: *(FILE **)(this + 80));
+    if ( result == -1 )
+      return -1;
+    return (unsigned __int8)result;
+  }
+}
+
+// 0x1a54 ?seekoff@?$basic_filebuf@DU?$char_traits@D@std@@@std@@MAE?AV?$fpos@H@2@JW4seekdir@ios_base@2@H@Z
+_DWORD *__thiscall std::filebuf::seekoff(int this, _DWORD *a2, int Offset, int Origin, int a5)
+{
+  FILE *v6; // eax
+  int v8; // esi
+  int v9; // ecx
+  fpos_t Position; // [esp+4h] [ebp-8h] BYREF
+
+  v6 = *(FILE **)(this + 80);
+  if ( v6 == nullptr || fseek(Stream: v6, Offset, Origin) != 0 || fgetpos(Stream: *(FILE **)(this + 80), &Position) != 0 )
+  {
+    std::fpos<int>::fpos<int>(a1: -1);
+    return a2;
+  }
+  else
+  {
+    v8 = *(_DWORD *)(this + 64);
+    v9 = HIDWORD(Position);
+    a2[2] = Position;
+    a2[4] = v8;
+    *a2 = 0;
+    a2[3] = v9;
+    return a2;
+  }
+}
+
+// 0x1ad4 ?seekpos@?$basic_filebuf@DU?$char_traits@D@std@@@std@@MAE?AV?$fpos@H@2@V32@H@Z
+_DWORD *__thiscall std::filebuf::seekpos(FILE **this, _DWORD *a2, int a3, int a4, fpos_t a5, FILE *a6, int a7, int a8)
+{
+  FILE **v8; // edi
+  FILE *v9; // eax
+  FILE *v10; // ebx
+  const char *cnt; // esi
+  int v12; // ebp
+  char v13; // al
+  unsigned int v14; // edi
+  char *base; // eax
+  int v16; // esi
+  int v17; // eax
+  fpos_t v19; // kr08_8
+  fpos_t Position; // [esp+Ch] [ebp-8h] BYREF
+
+  Position = a5;
+  v8 = this;
+  v9 = *(this + 20);
+  if ( v9 == nullptr
+    || fsetpos(Stream: v9, &Position) != 0
+    || a3 != 0 && fseek(Stream: v8[20], Offset: a3, Origin: 1) != 0
+    || fgetpos(Stream: v8[20], &Position) != 0 )
+  {
+    std::fpos<int>::fpos<int>(a1: -1);
+    return a2;
+  }
+  else
+  {
+    v10 = v8[17];
+    if ( v10 != nullptr )
+    {
+      v8[16] = a6;
+      cnt = (const char *)v10->_cnt;
+      v12 = -1;
+      if ( cnt != nullptr )
+      {
+        v13 = *(cnt - 1);
+        if ( v13 != 0 && v13 != -1 )
+        {
+          std::string::_Tidy(a1: 1);
+          v14 = strlen(cnt);
+          if ( (unsigned __int8)std::string::_Grow(a1: v14, a2: 1) != 0 )
+          {
+            qmemcpy((void *)v10->_cnt, cnt, v14);
+            std::string::_Eos(a1: v14);
+          }
+          v8 = this;
+        }
+      }
+      base = v10->_base;
+      if ( base != (char *)-1 )
+        v12 = (int)v10->_base;
+      if ( v12 != 0 )
+      {
+        memmove(a1: (void *)v10->_cnt, Src: (const void *)(v10->_cnt + v12), Size: (size_t)&base[-v12]);
+        v16 = (int)&v10->_base[-v12];
+        if ( (unsigned __int8)std::string::_Grow(a1: v16, a2: 0) != 0 )
+        {
+          v17 = v10->_cnt;
+          v10->_base = (char *)v16;
+          *(_BYTE *)(v17 + v16) = 0;
+        }
+        v8 = this;
+      }
+    }
+    v19 = Position;
+    a2[4] = v8[16];
+    a2[2] = v19;
+    *a2 = 0;
+    a2[3] = HIDWORD(v19);
+    return a2;
+  }
+}
+
+// 0x1c44 ?setbuf@?$basic_filebuf@DU?$char_traits@D@std@@@std@@MAEPAV?$basic_streambuf@DU?$char_traits@D@std@@@2@PADH@Z
+FILE **__thiscall std::filebuf::setbuf(FILE **this, char *Buffer, size_t Size)
+{
+  FILE *v4; // eax
+
+  v4 = *(this + 20);
+  if ( v4 == nullptr || setvbuf(Stream: v4, Buffer, Mode: 0, Size) != 0 )
+    return nullptr;
+  else
+    return this;
+}
+
+// 0x1c74 ?sync@?$basic_filebuf@DU?$char_traits@D@std@@@std@@MAEHXZ
+int __thiscall std::filebuf::sync(FILE **this)
+{
+  if ( *(this + 20) != nullptr && fflush(Stream: *(this + 20)) < 0 )
+    return -1;
+  else
+    return 0;
+}
+
+// 0x1c94 ??_G?$basic_ios@DU?$char_traits@D@std@@@std@@UAEPAXI@Z
+std::ios_base *__thiscall std::ios::`scalar deleting destructor'(std::ios_base *this, char a2)
+{
+  std::ios::~ios<char,std::char_traits<char>>(this);
+  if ( (a2 & 1) != 0 )
+    operator delete(a1: this);
+  return this;
+}
+
+// 0x1cb4 ??_G?$basic_istream@DU?$char_traits@D@std@@@std@@UAEPAXI@Z
+char *__thiscall std::istream::`scalar deleting destructor'(std::ios_base *this, char a2)
+{
+  char *v2; // esi
+
+  v2 = (char *)this - 8;
+  *(_DWORD *)((char *)this + *(_DWORD *)(*((_DWORD *)this - 2) + 4) - 8) = &std::istream::`vftable';
+  std::ios::~ios<char,std::char_traits<char>>(this);
+  if ( (a2 & 1) != 0 )
+    operator delete(a1: v2);
+  return v2;
+}
+
+// 0x1ce4 ??_G?$basic_streambuf@DU?$char_traits@D@std@@@std@@UAEPAXI@Z
+_DWORD *__thiscall std::streambuf::`scalar deleting destructor'(_DWORD *this, char a2)
+{
+  std::streambuf::~streambuf<char,std::char_traits<char>>(this);
+  if ( (a2 & 1) != 0 )
+    operator delete(a1: this);
+  return this;
+}
+
+// 0x1d04 ??_G?$basic_ifstream@DU?$char_traits@D@std@@@std@@UAEPAXI@Z
+_DWORD *__thiscall std::ifstream::`scalar deleting destructor'(std::ios_base *this, char a2)
+{
+  _DWORD *v2; // esi
+
+  v2 = (_DWORD *)((char *)this - 92);
+  std::ifstream::~ifstream<char,std::char_traits<char>>(this);
+  std::ios::~ios<char,std::char_traits<char>>(this);
+  if ( (a2 & 1) != 0 )
+    operator delete(a1: v2);
+  return v2;
+}
+
+// 0x1d34 ??_G?$basic_filebuf@DU?$char_traits@D@std@@@std@@UAEPAXI@Z
+void *__thiscall std::filebuf::`scalar deleting destructor'(void *this, char a2)
+{
+  std::filebuf::~filebuf<char,std::char_traits<char>>(this);
+  if ( (a2 & 1) != 0 )
+    operator delete(a1: this);
+  return this;
+}
+
+// 0x1d54 ??0ios_base@std@@IAE@XZ
+std::ios_base *__thiscall std::ios_base::ios_base(std::ios_base *this)
+{
+  *((_DWORD *)this + 9) = 0;
+  *(_DWORD *)this = &std::ios_base::`vftable';
+  return this;
+}
+
+// 0x1d68 ??_Gios_base@std@@UAEPAXI@Z
+std::ios_base *__thiscall std::ios_base::`scalar deleting destructor'(std::ios_base *this, char a2)
+{
+  std::ios_base::~ios_base(this);
+  if ( (a2 & 1) != 0 )
+    operator delete(a1: this);
+  return this;
+}
+
+// 0x1d88 ?_Tidy@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AAEX_N@Z
+void __thiscall std::string::_Tidy(_DWORD *this, char a2)
+{
+  int v3; // eax
+  _BYTE *v4; // ecx
+  char v5; // al
+
+  if ( a2 != 0 )
+  {
+    v3 = *(this + 1);
+    if ( v3 != 0 )
+    {
+      v4 = (_BYTE *)(v3 - 1);
+      v5 = *(_BYTE *)(v3 - 1);
+      if ( v5 == 0 || v5 == -1 )
+        operator delete(a1: v4);
+      else
+        *v4 = v5 - 1;
+    }
+  }
+  *(this + 1) = 0;
+  *(this + 2) = 0;
+  *(this + 3) = 0;
+}
+
+// 0x1dd8 ??0?$fpos@H@std@@QAE@J@Z
+_DWORD *__thiscall std::fpos<int>::fpos<int>(_DWORD *this, int a2)
+{
+  *this = a2;
+  *(this + 2) = std::_Fpz;
+  *(this + 3) = HIDWORD(std::_Fpz);
+  std::_Lockit::_Lockit(this: (std::_Lockit *)&a2);
+  *(this + 4) = std::fpos<int>::_Stz;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)&a2);
+  return this;
+}
+
+// 0x1e18 ??0?$basic_istream@DU?$char_traits@D@std@@@std@@QAE@PAV?$basic_streambuf@DU?$char_traits@D@std@@@1@_N@Z
+_DWORD *__thiscall std::istream::istream(_DWORD *this, int a2, char a3, int a4)
+{
+  int v5; // eax
+  int v6; // esi
+  char *v7; // esi
+  int v8; // eax
+  unsigned int v10[2]; // [esp+8h] [ebp-Ch] BYREF
+  int v11; // [esp+10h] [ebp-4h]
+
+  v11 = -1;
+  v10[1] = (unsigned int)&_L32791;
+  v10[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v10);
+  if ( a4 != 0 )
+  {
+    *this = &std::istream::`vbtable';
+    *(this + 11) = 0;
+    *(this + 2) = &std::ios::`vftable';
+    v11 = 0;
+  }
+  v5 = *this;
+  *(this + 1) = 0;
+  *(_DWORD *)((char *)this + *(_DWORD *)(v5 + 4)) = &std::istream::`vftable';
+  v6 = *(_DWORD *)(*this + 4);
+  *(_DWORD *)((char *)this + v6 + 40) = a2;
+  v7 = (char *)this + v6;
+  *((_DWORD *)v7 + 11) = 0;
+  v7[48] = 32;
+  std::ios_base::_Init(this: (std::ios_base *)v7);
+  if ( *((_DWORD *)v7 + 10) == 0 )
+  {
+    v8 = *((_DWORD *)v7 + 1);
+    LOBYTE(v8) = v8 | 4;
+    std::ios_base::clear(this: (std::ios_base *)v7, a2: v8, a3: false);
+  }
+  if ( a3 != 0 )
+    std::ios_base::_Addstd(this: (std::ios_base *)v7);
+  __writefsdword((unsigned int)&_except_list, v10[0]);
+  return this;
+}
+
+// 0x1f1c ??0?$basic_filebuf@DU?$char_traits@D@std@@@std@@QAE@PAU_iobuf@@@Z
+char *__thiscall std::filebuf::filebuf(char *this, int a2)
+{
+  struct std::locale::_Locimp *v3; // edi
+  int v4; // eax
+  _DWORD *v5; // ecx
+  std::locale::facet **v6; // ebp
+  struct std::locale::_Locimp *v7; // ebx
+  int v8; // eax
+  std::locale::facet *v9; // ecx
+  bool v10; // zf
+  struct std::locale::facet *v11; // eax
+  struct std::locale::_Locimp *v12; // ebp
+  int v13; // eax
+  unsigned int v14; // ecx
+  char v16[4]; // [esp+0h] [ebp-28h] BYREF
+  char v17[4]; // [esp+4h] [ebp-24h] BYREF
+  char v18[4]; // [esp+8h] [ebp-20h] BYREF
+  char v19[4]; // [esp+Ch] [ebp-1Ch] BYREF
+  char v20[4]; // [esp+10h] [ebp-18h] BYREF
+  char v21[4]; // [esp+14h] [ebp-14h] BYREF
+  char *v22; // [esp+18h] [ebp-10h]
+  _DWORD v23[2]; // [esp+1Ch] [ebp-Ch] BYREF
+  int v24; // [esp+24h] [ebp-4h]
+
+  v24 = -1;
+  v23[1] = &_L32919;
+  v23[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v23);
+  v22 = this;
+  *((_DWORD *)this + 13) = std::locale::_Init();
+  std::_Lockit::_Lockit(this: (std::_Lockit *)v17);
+  v3 = std::locale::_Locimp::_Global;
+  std::_Lockit::_Lockit(this: (std::_Lockit *)v16);
+  v4 = *((_DWORD *)v3 + 1);
+  if ( v4 != -1 )
+    *((_DWORD *)v3 + 1) = v4 + 1;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)v16);
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)v17);
+  *((_DWORD *)this + 3) = this + 4;
+  *((_DWORD *)this + 7) = this + 20;
+  *((_DWORD *)this + 8) = this + 24;
+  *((_DWORD *)this + 11) = this + 36;
+  *(_DWORD *)this = &std::streambuf::`vftable';
+  *((_DWORD *)this + 4) = this + 8;
+  *((_DWORD *)this + 12) = this + 40;
+  *((_DWORD *)this + 2) = 0;
+  **((_DWORD **)this + 8) = 0;
+  v5 = *((_DWORD **)this + 12);
+  v24 = 0;
+  *v5 = 0;
+  std::streambuf::setg(a1: 0, a2: 0, a3: 0);
+  v24 = 1;
+  v6 = (std::locale::facet **)(this + 76);
+  *((_DWORD *)this + 19) = std::locale::_Init();
+  std::_Lockit::_Lockit(this: (std::_Lockit *)v19);
+  v7 = std::locale::_Locimp::_Global;
+  std::_Lockit::_Lockit(this: (std::_Lockit *)v18);
+  v8 = *((_DWORD *)v7 + 1);
+  if ( v8 != -1 )
+    *((_DWORD *)v7 + 1) = v8 + 1;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)v18);
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)v19);
+  *(_DWORD *)this = &std::filebuf::`vftable';
+  *(this + 72) = 0;
+  v9 = *v6;
+  v10 = *v6 == nullptr;
+  LOBYTE(v24) = 2;
+  if ( !v10 )
+  {
+    v11 = std::locale::facet::_Decref(this: v9);
+    if ( v11 != nullptr )
+      (**(void (__thiscall ***)(struct std::locale::facet *, int))v11)(a1: v11, a2: 1);
+  }
+  if ( this != (char *)-76 )
+  {
+    *v6 = std::locale::_Init();
+    std::_Lockit::_Lockit(this: (std::_Lockit *)v21);
+    v12 = std::locale::_Locimp::_Global;
+    std::_Lockit::_Lockit(this: (std::_Lockit *)v20);
+    v13 = *((_DWORD *)v12 + 1);
+    if ( v13 != -1 )
+      *((_DWORD *)v12 + 1) = v13 + 1;
+    std::_Lockit::~_Lockit(this: (std::_Lockit *)v20);
+    std::_Lockit::~_Lockit(this: (std::_Lockit *)v21);
+  }
+  *((_DWORD *)this + 3) = this + 4;
+  *((_DWORD *)this + 7) = this + 20;
+  *((_DWORD *)this + 8) = this + 24;
+  *((_DWORD *)this + 11) = this + 36;
+  *((_DWORD *)this + 17) = 0;
+  *((_DWORD *)this + 4) = this + 8;
+  *((_DWORD *)this + 12) = this + 40;
+  std::streambuf::setp(a1: 0, a2: 0);
+  std::streambuf::setg(a1: 0, a2: 0, a3: 0);
+  if ( a2 != 0 && *(this + 72) == 0 )
+    std::streambuf::_Init(a1: a2 + 8, a2, a3: a2 + 4, a4: a2 + 8, a5: a2, a6: a2 + 4);
+  *((_DWORD *)this + 20) = a2;
+  *((_DWORD *)this + 16) = `std::filebuf::_Init'::`2'::_Stinit;
+  *((_DWORD *)this + 15) = `std::filebuf::_Init'::`2'::_Stinit;
+  v14 = v23[0];
+  *((_DWORD *)this + 14) = 0;
+  __writefsdword((unsigned int)&_except_list, v14);
+  return this;
+}
+
+// 0x217c ?open@?$basic_filebuf@DU?$char_traits@D@std@@@std@@QAEPAV12@PBDH@Z
+int __thiscall std::filebuf::open(int this, char *a2, int a3)
+{
+  struct _iobuf *v4; // eax
+
+  if ( *(_DWORD *)(this + 80) != 0 )
+    return 0;
+  v4 = std::__Fiopen(a1: a2, a2: a3);
+  if ( v4 == nullptr )
+    return 0;
+  *(_DWORD *)(this + 12) = this + 4;
+  *(_DWORD *)(this + 28) = this + 20;
+  *(_DWORD *)(this + 32) = this + 24;
+  *(_DWORD *)(this + 44) = this + 36;
+  *(_BYTE *)(this + 72) = 1;
+  *(_DWORD *)(this + 16) = this + 8;
+  *(_DWORD *)(this + 48) = this + 40;
+  *(_DWORD *)(this + 8) = 0;
+  **(_DWORD **)(this + 32) = 0;
+  **(_DWORD **)(this + 48) = 0;
+  **(_DWORD **)(this + 12) = 0;
+  **(_DWORD **)(this + 28) = 0;
+  **(_DWORD **)(this + 44) = 0;
+  if ( *(_BYTE *)(this + 72) == 0 )
+  {
+    *(_DWORD *)(this + 28) = v4;
+    *(_DWORD *)(this + 12) = &v4->_base;
+    *(_DWORD *)(this + 16) = &v4->_base;
+    *(_DWORD *)(this + 32) = v4;
+    *(_DWORD *)(this + 44) = &v4->_cnt;
+    *(_DWORD *)(this + 48) = &v4->_cnt;
+  }
+  *(_DWORD *)(this + 80) = v4;
+  *(_DWORD *)(this + 64) = `std::filebuf::_Init'::`2'::_Stinit;
+  *(_DWORD *)(this + 60) = `std::filebuf::_Init'::`2'::_Stinit;
+  *(_DWORD *)(this + 56) = 0;
+  std::filebuf::_Initcvt(a1: this);
+  return this;
+}
+
+// 0x224c ?assign@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@PBDI@Z
+int __thiscall std::string::assign(int this, const void *a2, unsigned int a3)
+{
+  int v4; // ecx
+  char v5; // al
+  unsigned int v7; // eax
+  int v8; // ecx
+
+  if ( a3 > 0xFFFFFFFD )
+    std::_Xlen();
+  v4 = *(_DWORD *)(this + 4);
+  if ( v4 != 0 )
+  {
+    v5 = *(_BYTE *)(v4 - 1);
+    if ( v5 != 0 && v5 != -1 )
+    {
+      if ( a3 == 0 )
+      {
+        *(_BYTE *)(v4 - 1) = v5 - 1;
+        *(_DWORD *)(this + 4) = 0;
+        *(_DWORD *)(this + 8) = 0;
+        *(_DWORD *)(this + 12) = 0;
+        return this;
+      }
+      goto LABEL_13;
+    }
+  }
+  if ( a3 == 0 )
+  {
+    std::string::_Tidy((_DWORD *)this, a2: 1);
+    return this;
+  }
+  v7 = *(_DWORD *)(this + 12);
+  if ( v7 > 0x1F || v7 < a3 )
+  {
+    std::string::_Tidy((_DWORD *)this, a2: 1);
+LABEL_13:
+    std::string::_Copy(a1: a3);
+  }
+  qmemcpy(*(void **)(this + 4), a2, a3);
+  v8 = *(_DWORD *)(this + 4);
+  *(_DWORD *)(this + 8) = a3;
+  *(_BYTE *)(a3 + v8) = 0;
+  return this;
+}
+
+// 0x22ec ?_Eos@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AAEXI@Z
+int __thiscall std::string::_Eos(_DWORD *this, int a2)
+{
+  *(this + 2) = a2;
+  *(_BYTE *)(*(this + 1) + a2) = 0;
+  return a2;
+}
+
+// 0x230c ?_Freeze@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AAEXXZ
+void __thiscall std::string::_Freeze(unsigned int *this)
+{
+  int v2; // eax
+  char v3; // al
+  unsigned int v4; // edi
+  int v5; // ecx
+  char v6; // al
+  int v7; // esi
+
+  v2 = *(this + 1);
+  if ( v2 == 0 )
+    goto LABEL_16;
+  v3 = *(_BYTE *)(v2 - 1);
+  if ( v3 == 0 || v3 == -1 )
+    goto LABEL_16;
+  v4 = *(this + 2);
+  if ( v4 > 0xFFFFFFFD )
+    std::_Xlen();
+  v5 = *(this + 1);
+  if ( v5 != 0 )
+  {
+    v6 = *(_BYTE *)(v5 - 1);
+    if ( v6 != 0 && v6 != -1 )
+    {
+      if ( v4 == 0 )
+      {
+        *(_BYTE *)(v5 - 1) = v6 - 1;
+        *(this + 1) = 0;
+        *(this + 2) = 0;
+        *(this + 3) = 0;
+        goto LABEL_16;
+      }
+LABEL_15:
+      std::string::_Copy(a1: v4);
+      goto LABEL_16;
+    }
+  }
+  if ( v4 != 0 )
+  {
+    if ( *(this + 3) >= v4 )
+      goto LABEL_16;
+    goto LABEL_15;
+  }
+  if ( v5 != 0 )
+    std::string::_Eos(this, a2: 0);
+LABEL_16:
+  v7 = *(this + 1);
+  if ( v7 != 0 )
+    *(_BYTE *)(v7 - 1) = -1;
+}
+
+// 0x238c ?_Grow@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AAE_NI_N@Z
+char __thiscall std::string::_Grow(unsigned int *this, unsigned int a2, char a3)
+{
+  _BYTE *v4; // eax
+  char v5; // cl
+  _BYTE *v7; // ecx
+  char v8; // al
+  unsigned int v9; // ecx
+  _BYTE *v10; // ecx
+  char v11; // al
+
+  if ( a2 > 0xFFFFFFFD )
+    std::_Xlen();
+  v4 = (_BYTE *)*(this + 1);
+  if ( v4 != nullptr )
+  {
+    v5 = *(v4 - 1);
+    if ( v5 != 0 && v5 != -1 )
+    {
+      if ( a2 == 0 )
+      {
+        *(v4 - 1) = v5 - 1;
+        *(this + 1) = 0;
+        *(this + 2) = 0;
+        *(this + 3) = 0;
+        return 0;
+      }
+      goto LABEL_29;
+    }
+  }
+  if ( a2 != 0 )
+  {
+    if ( a3 == 0 )
+    {
+      if ( *(this + 3) >= a2 )
+        return 1;
+LABEL_29:
+      std::string::_Copy(a1: a2);
+      return 1;
+    }
+    v9 = *(this + 3);
+    if ( v9 <= 0x1F && v9 >= a2 )
+      return 1;
+    if ( v4 != nullptr )
+    {
+      v10 = v4 - 1;
+      v11 = *(v4 - 1);
+      if ( v11 != 0 && v11 != -1 )
+      {
+        *v10 = v11 - 1;
+        *(this + 1) = 0;
+        *(this + 2) = 0;
+        *(this + 3) = 0;
+        std::string::_Copy(a1: a2);
+        return 1;
+      }
+      operator delete(a1: v10);
+    }
+    *(this + 1) = 0;
+    *(this + 2) = 0;
+    *(this + 3) = 0;
+    std::string::_Copy(a1: a2);
+    return 1;
+  }
+  else if ( a3 != 0 )
+  {
+    if ( v4 != nullptr )
+    {
+      v7 = v4 - 1;
+      v8 = *(v4 - 1);
+      if ( v8 != 0 && v8 != -1 )
+      {
+        *v7 = v8 - 1;
+        *(this + 1) = 0;
+        *(this + 2) = 0;
+        *(this + 3) = 0;
+        return 0;
+      }
+      operator delete(a1: v7);
+    }
+    *(this + 1) = 0;
+    *(this + 2) = 0;
+    *(this + 3) = 0;
+    return 0;
+  }
+  else
+  {
+    if ( v4 != nullptr )
+    {
+      *(this + 2) = 0;
+      *v4 = 0;
+    }
+    return 0;
+  }
+}
+
+// 0x24ac ?_Split@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AAEXXZ
+void __thiscall std::string::_Split(int this)
+{
+  const char *v2; // ecx
+  char v3; // al
+  const char *v4; // esi
+  unsigned int v5; // kr04_4
+  unsigned int v6; // ebx
+  int v7; // ecx
+  char v8; // al
+  unsigned int v9; // eax
+  int v10; // ecx
+
+  v2 = *(const char **)(this + 4);
+  if ( v2 != nullptr )
+  {
+    v3 = *(v2 - 1);
+    if ( v3 != 0 && v3 != -1 )
+    {
+      v4 = v2;
+      *((_BYTE *)v2 - 1) = v3 - 1;
+      *(_DWORD *)(this + 4) = 0;
+      *(_DWORD *)(this + 8) = 0;
+      *(_DWORD *)(this + 12) = 0;
+      v5 = strlen(v2) + 1;
+      v6 = v5 - 1;
+      if ( v5 - 1 > 0xFFFFFFFD )
+        std::_Xlen();
+      v7 = *(_DWORD *)(this + 4);
+      if ( v7 != 0 && (v8 = *(_BYTE *)(v7 - 1)) != 0 && v8 != -1 )
+      {
+        if ( v5 == 1 )
+        {
+          *(_BYTE *)(v7 - 1) = v8 - 1;
+          std::string::_Tidy((_DWORD *)this, a2: 0);
+          return;
+        }
+      }
+      else
+      {
+        if ( v5 == 1 )
+        {
+          std::string::_Tidy((_DWORD *)this, a2: 1);
+          return;
+        }
+        v9 = *(_DWORD *)(this + 12);
+        if ( v9 <= 0x1F && v9 >= v6 )
+          goto LABEL_17;
+        std::string::_Tidy((_DWORD *)this, a2: 1);
+      }
+      std::string::_Copy(a1: v6);
+LABEL_17:
+      qmemcpy(*(void **)(this + 4), v4, v6);
+      v10 = *(_DWORD *)(this + 4);
+      *(_DWORD *)(this + 8) = v6;
+      *(_BYTE *)(v6 + v10) = 0;
+    }
+  }
+}
+
+// 0x257c ?insert@?$vector@PAVSubMesh@SceneGraph@@V?$allocator@PAVSubMesh@SceneGraph@@@std@@@std@@QAEXPAPAVSubMesh@SceneGraph@@IABQAV34@@Z
+_DWORD *__thiscall std::vector<SceneGraph::SubMesh *>::insert(int this, _DWORD *a2, unsigned int a3, _DWORD *a4)
+{
+  int v5; // edi
+  _DWORD *result; // eax
+  int v7; // edx
+  unsigned int v8; // ecx
+  int v9; // eax
+  int v10; // eax
+  _DWORD *v11; // ecx
+  _DWORD *n; // eax
+  _DWORD *v13; // eax
+  unsigned int ii; // edx
+  _DWORD *v15; // edi
+  _DWORD *v16; // edx
+  _DWORD *v17; // eax
+  int v18; // ecx
+  int v19; // eax
+  int v20; // ebx
+  _DWORD *v21; // esi
+  _DWORD *v22; // ecx
+  _DWORD *v23; // eax
+  unsigned int k; // ebp
+  _DWORD *v25; // ecx
+  _DWORD *m; // eax
+  int v27; // ebp
+  _DWORD *v28; // esi
+  _DWORD *i; // ecx
+  _DWORD *v30; // ecx
+  _DWORD *j; // eax
+  int v32; // esi
+  int v34; // [esp+14h] [ebp-4h]
+  _DWORD *v35; // [esp+20h] [ebp+8h]
+
+  v5 = this;
+  result = *(_DWORD **)(this + 8);
+  if ( (*(_DWORD *)(this + 12) - (int)result) >> 2 >= a3 )
+  {
+    if ( result - a2 >= a3 )
+    {
+      if ( a3 != 0 )
+      {
+        v27 = 4 * a3;
+        v28 = *(_DWORD **)(this + 8);
+        for ( i = &result[-a3]; i != result; ++v28 )
+        {
+          if ( v28 != nullptr )
+            *v28 = *i;
+          ++i;
+        }
+        v30 = *(_DWORD **)(v5 + 8);
+        for ( j = &v30[v27 / 0xFFFFFFFC]; j != a2; *v30 = v32 )
+        {
+          v32 = *--j;
+          --v30;
+        }
+        for ( result = a2; result != &a2[v27 / 4u]; ++result )
+          *result = *a4;
+        *(_DWORD *)(v5 + 8) += v27;
+      }
+    }
+    else
+    {
+      v20 = 4 * a3;
+      v21 = &a2[a3];
+      if ( a2 != result )
+      {
+        v22 = &v21[v20 / 0xFFFFFFFC];
+        do
+        {
+          if ( v21 != nullptr )
+          {
+            *v21 = *v22;
+            v5 = this;
+          }
+          ++v22;
+          ++v21;
+        }
+        while ( v22 != result );
+      }
+      v23 = *(_DWORD **)(v5 + 8);
+      for ( k = a3 - (v23 - a2); k != 0; --k )
+      {
+        if ( v23 != nullptr )
+          *v23 = *a4;
+        ++v23;
+      }
+      v25 = *(_DWORD **)(v5 + 8);
+      for ( m = a2; m != v25; ++m )
+        *m = *a4;
+      result = (_DWORD *)(v20 + *(_DWORD *)(v5 + 8));
+      *(_DWORD *)(v5 + 8) = result;
+    }
+  }
+  else
+  {
+    v7 = *(_DWORD *)(this + 4);
+    if ( v7 == 0 || (v8 = ((int)result - v7) >> 2, a3 >= v8) )
+      v8 = a3;
+    if ( v7 != 0 )
+      v9 = ((int)result - v7) >> 2;
+    else
+      v9 = 0;
+    v10 = v8 + v9;
+    v34 = v10;
+    if ( v10 < 0 )
+      v10 = 0;
+    v35 = operator new(a1: 4 * v10);
+    v11 = v35;
+    for ( n = *(_DWORD **)(v5 + 4); n != a2; ++v11 )
+    {
+      if ( v11 != nullptr )
+        *v11 = *n;
+      ++n;
+    }
+    v13 = v11;
+    if ( a3 != 0 )
+    {
+      for ( ii = a3; ii != 0; --ii )
+      {
+        if ( v13 != nullptr )
+        {
+          *v13 = *a4;
+          v5 = this;
+        }
+        ++v13;
+      }
+    }
+    v15 = *(_DWORD **)(v5 + 8);
+    v16 = &v11[a3];
+    if ( a2 != v15 )
+    {
+      v17 = a2;
+      do
+      {
+        if ( v16 != nullptr )
+          *v16 = *v17;
+        ++v17;
+        ++v16;
+      }
+      while ( v17 != v15 );
+    }
+    operator delete(a1: *(void **)(this + 4));
+    *(_DWORD *)(this + 12) = &v35[v34];
+    v18 = *(_DWORD *)(this + 4);
+    if ( v18 != 0 )
+    {
+      v19 = *(_DWORD *)(this + 8);
+      *(_DWORD *)(this + 4) = v35;
+      result = &v35[a3 + ((v19 - v18) >> 2)];
+    }
+    else
+    {
+      *(_DWORD *)(this + 4) = v35;
+      result = &v35[a3];
+    }
+    *(_DWORD *)(this + 8) = result;
+  }
+  return result;
+}
+
+// 0x278c ?_Init@?$basic_filebuf@DU?$char_traits@D@std@@@std@@IAEXPAU_iobuf@@W4_Initfl@12@@Z
+int __thiscall std::filebuf::_Init(int this, int a2, int a3)
+{
+  std::locale::facet *v4; // ecx
+  struct std::locale::facet *v5; // eax
+  int result; // eax
+
+  *(_BYTE *)(this + 72) = a3 == 1;
+  if ( a3 == 0 )
+  {
+    v4 = *(std::locale::facet **)(this + 76);
+    if ( v4 != nullptr )
+    {
+      v5 = std::locale::facet::_Decref(this: v4);
+      if ( v5 != nullptr )
+        (**(void (__thiscall ***)(struct std::locale::facet *, int))v5)(a1: v5, a2: 1);
+    }
+    if ( this != -76 )
+      std::locale::locale(this: (std::locale *)(this + 76));
+    *(_DWORD *)(this + 68) = 0;
+  }
+  *(_DWORD *)(this + 12) = this + 4;
+  *(_DWORD *)(this + 28) = this + 20;
+  *(_DWORD *)(this + 32) = this + 24;
+  *(_DWORD *)(this + 16) = this + 8;
+  *(_DWORD *)(this + 44) = this + 36;
+  *(_DWORD *)(this + 48) = this + 40;
+  *(_DWORD *)(this + 8) = 0;
+  **(_DWORD **)(this + 32) = 0;
+  **(_DWORD **)(this + 48) = 0;
+  **(_DWORD **)(this + 12) = 0;
+  **(_DWORD **)(this + 28) = 0;
+  **(_DWORD **)(this + 44) = 0;
+  if ( a2 != 0 && *(_BYTE *)(this + 72) == 0 )
+  {
+    *(_DWORD *)(this + 28) = a2;
+    *(_DWORD *)(this + 12) = a2 + 8;
+    *(_DWORD *)(this + 16) = a2 + 8;
+    *(_DWORD *)(this + 32) = a2;
+    *(_DWORD *)(this + 44) = a2 + 4;
+    *(_DWORD *)(this + 48) = a2 + 4;
+  }
+  *(_DWORD *)(this + 80) = a2;
+  *(_DWORD *)(this + 64) = `std::filebuf::_Init'::`2'::_Stinit;
+  result = `std::filebuf::_Init'::`2'::_Stinit;
+  *(_DWORD *)(this + 60) = `std::filebuf::_Init'::`2'::_Stinit;
+  *(_DWORD *)(this + 56) = 0;
+  return result;
+}
+
+// 0x286c ??0locale@std@@QAE@XZ
+std::locale *__thiscall std::locale::locale(std::locale *this)
+{
+  struct std::locale::_Locimp *v2; // esi
+  int v3; // eax
+  _BYTE v5[4]; // [esp+8h] [ebp-8h] BYREF
+  _BYTE v6[4]; // [esp+Ch] [ebp-4h] BYREF
+
+  *(_DWORD *)this = std::locale::_Init();
+  std::_Lockit::_Lockit(this: (std::_Lockit *)v6);
+  v2 = std::locale::_Locimp::_Global;
+  std::_Lockit::_Lockit(this: (std::_Lockit *)v5);
+  v3 = *((_DWORD *)v2 + 1);
+  if ( v3 != -1 )
+    *((_DWORD *)v2 + 1) = v3 + 1;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)v5);
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)v6);
+  return this;
+}
+
+// 0x28bc ?_Initcvt@?$basic_filebuf@DU?$char_traits@D@std@@@std@@IAEXXZ
+_DWORD *__thiscall std::filebuf::_Initcvt(int *this)
+{
+  std::locale *v2; // edi
+  unsigned int v3; // esi
+  const struct std::locale::facet *v4; // esi
+  std::locale::facet *v5; // eax
+  int v6; // eax
+  int v7; // ecx
+  int v8; // edi
+  int v9; // eax
+  void (__thiscall ***v10)(_DWORD, int); // esi
+  int v11; // eax
+  const struct std::locale *v12; // ebp
+  std::locale::facet **v13; // ebx
+  int v14; // edi
+  bool v15; // zf
+  int v16; // eax
+  void (__thiscall ***v17)(_DWORD, int); // esi
+  std::locale::facet *v18; // ecx
+  struct std::locale::facet *v19; // eax
+  int *v20; // esi
+  _DWORD *result; // eax
+  char v22; // cl
+  int v23; // [esp-Ah] [ebp-48h] BYREF
+  int v24; // [esp-6h] [ebp-44h]
+  int v25; // [esp-2h] [ebp-40h]
+  char v26; // [esp+2h] [ebp-3Ch]
+  struct std::locale::facet *v27; // [esp+6h] [ebp-38h]
+  char v28; // [esp+11h] [ebp-2Dh]
+  int v29; // [esp+12h] [ebp-2Ch] BYREF
+  int v30; // [esp+16h] [ebp-28h] BYREF
+  int v31; // [esp+1Ah] [ebp-24h] BYREF
+  std::locale::facet *v32; // [esp+1Eh] [ebp-20h] BYREF
+  int *v33; // [esp+22h] [ebp-1Ch]
+  _BYTE pExceptionObject[12]; // [esp+26h] [ebp-18h] BYREF
+  unsigned int v35[2]; // [esp+32h] [ebp-Ch] BYREF
+  int v36; // [esp+3Ah] [ebp-4h]
+
+  v36 = -1;
+  v35[1] = (unsigned int)&_L34254;
+  v35[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v35);
+  v33 = this;
+  v2 = (std::locale *)std::streambuf::getloc(a1: &v31);
+  v36 = 0;
+  std::_Lockit::_Lockit(this: (std::_Lockit *)&v30);
+  LOBYTE(v36) = 1;
+  std::_Lockit::_Lockit(this: (std::_Lockit *)&v29);
+  v3 = std::codecvt<char,char,int>::id;
+  if ( std::codecvt<char,char,int>::id == 0 )
+  {
+    v3 = std::locale::id::_Id_cnt + 1;
+    std::locale::id::_Id_cnt = v3;
+    std::codecvt<char,char,int>::id = v3;
+  }
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)&v29);
+  v4 = std::locale::_Getfacet(this: v2, a2: v3, a3: true);
+  if ( v4 == nullptr )
+  {
+    if ( !std::locale::_Iscloc(this: v2) )
+    {
+      std::bad_cast::bad_cast(this: (std::bad_cast *)pExceptionObject, a2: `string');
+      _CxxThrowException(pExceptionObject, pThrowInfo: (_ThrowInfo *)&_TI2_AVbad_cast_std__);
+    }
+    v4 = (const struct std::locale::facet *)`std::use_facet'::`2'::_Psave;
+    if ( `std::use_facet'::`2'::_Psave == 0 )
+    {
+      v5 = (std::locale::facet *)operator new(a1: 0x10u);
+      v32 = v5;
+      LOBYTE(v36) = 2;
+      if ( v5 != nullptr )
+        v6 = std::codecvt<char,char,int>::codecvt<char,char,int>(a1: v5, a2: 0);
+      else
+        v6 = 0;
+      LOBYTE(v36) = 1;
+      `std::use_facet'::`2'::_Psave = std::_Tidyfac<std::codecvt<char,char,int>>::_Save(a1: v6);
+      v4 = (const struct std::locale::facet *)`std::use_facet'::`2'::_Psave;
+    }
+  }
+  LOBYTE(v36) = 0;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)&v30);
+  v8 = v31;
+  *(this + 14) = (int)v4;
+  v36 = -1;
+  if ( v8 != 0 )
+  {
+    std::_Lockit::_Lockit(this: (std::_Lockit *)&v30);
+    v9 = *(_DWORD *)(v8 + 4);
+    if ( v9 != 0 && v9 != -1 )
+      *(_DWORD *)(v8 + 4) = v9 - 1;
+    v10 = *(_DWORD *)(v8 + 4) == 0 ? (void (__thiscall ***)(_DWORD, int))v8 : nullptr;
+    std::_Lockit::~_Lockit(this: (std::_Lockit *)&v30);
+    if ( v10 != nullptr )
+      (**v10)(a1: v10, a2: 1);
+  }
+  v11 = *(this + 14);
+  v12 = (const struct std::locale *)(this + 19);
+  v24 = v11;
+  v23 = v7;
+  v32 = (std::locale::facet *)&v23;
+  std::locale::locale(this: (std::locale *)&v23, a2: v12);
+  v13 = (std::locale::facet **)std::_Addfac(a1: (int)&v32, a2: v23, a3: v24, a4: v25, a5: v26, a6: v27);
+  v14 = *(_DWORD *)v12;
+  v15 = *(_DWORD *)v12 == (_DWORD)*v13;
+  v36 = 3;
+  if ( !v15 )
+  {
+    std::_Lockit::_Lockit(this: (std::_Lockit *)&v29);
+    v16 = *(_DWORD *)(v14 + 4);
+    if ( v16 != 0 && v16 != -1 )
+      *(_DWORD *)(v14 + 4) = v16 - 1;
+    v17 = *(_DWORD *)(v14 + 4) == 0 ? (void (__thiscall ***)(_DWORD, int))v14 : nullptr;
+    std::_Lockit::~_Lockit(this: (std::_Lockit *)&v29);
+    if ( v17 != nullptr )
+      (**v17)(a1: v17, a2: 1);
+    v18 = *v13;
+    *(_DWORD *)v12 = *v13;
+    std::locale::facet::_Incref(this: v18);
+  }
+  v36 = -1;
+  if ( v32 != nullptr )
+  {
+    v19 = std::locale::facet::_Decref(this: v32);
+    if ( v19 != nullptr )
+      (**(void (__thiscall ***)(struct std::locale::facet *, int))v19)(a1: v19, a2: 1);
+  }
+  v20 = v33;
+  result = (_DWORD *)(*(int (__thiscall **)(int))(*(_DWORD *)v33[14] + 4))(a1: v33[14]);
+  if ( (_BYTE)result != 0 )
+    v20[14] = 0;
+  if ( v20[17] == 0 )
+  {
+    result = operator new(a1: 0x10u);
+    if ( result != nullptr )
+    {
+      v22 = v28;
+      result[1] = 0;
+      *(_BYTE *)result = v22;
+      result[2] = 0;
+      result[3] = 0;
+    }
+    else
+    {
+      result = nullptr;
+    }
+    v20[17] = (int)result;
+  }
+  __writefsdword((unsigned int)&_except_list, v35[0]);
+  return result;
+}
+
+// 0x2c10 ??0bad_cast@std@@QAE@PBD@Z
+std::bad_cast *__thiscall std::bad_cast::bad_cast(std::bad_cast *this, char *a2)
+{
+  exception::exception(this, (const char *const *)&a2);
+  *(_DWORD *)this = &std::bad_cast::`vftable';
+  return this;
+}
+
+// 0x2c3c ??1bad_cast@std@@UAE@XZ
+void __thiscall std::bad_cast::~bad_cast(std::bad_cast *this)
+{
+  *(_DWORD *)this = &std::bad_cast::`vftable';
+  exception::~exception(this);
+}
+
+// 0x2c4c ?_Doraise@bad_cast@std@@MBEXXZ
+void __thiscall __noreturn std::bad_cast::_Doraise(std::bad_cast *this)
+{
+  _BYTE pExceptionObject[12]; // [esp+0h] [ebp-Ch] BYREF
+
+  std::bad_cast::bad_cast(this: (std::bad_cast *)pExceptionObject, a2: this);
+  _CxxThrowException(pExceptionObject, pThrowInfo: (_ThrowInfo *)&_TI2_AVbad_cast_std__);
+}
+
+// 0x2c6c ??_Gbad_cast@std@@UAEPAXI@Z
+std::bad_cast *__thiscall std::bad_cast::`scalar deleting destructor'(std::bad_cast *this, char a2)
+{
+  std::bad_cast::~bad_cast(this);
+  if ( (a2 & 1) != 0 )
+    operator delete(a1: this);
+  return this;
+}
+
+// 0x2c8c ??0bad_cast@std@@QAE@ABV01@@Z
+std::bad_cast *__thiscall std::bad_cast::bad_cast(std::bad_cast *this, const struct std::bad_cast *a2)
+{
+  exception::exception(this, a2);
+  *(_DWORD *)this = &std::bad_cast::`vftable';
+  return this;
+}
+
+// 0x2cac ?_Incref@facet@locale@std@@QAEXXZ
+void __thiscall std::locale::facet::_Incref(std::locale::facet *this)
+{
+  int v2; // eax
+  _BYTE v3[4]; // [esp+4h] [ebp-4h] BYREF
+
+  std::_Lockit::_Lockit(this: (std::_Lockit *)v3);
+  v2 = *((_DWORD *)this + 1);
+  if ( v2 != -1 )
+    *((_DWORD *)this + 1) = v2 + 1;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)v3);
+}
+
+// 0x2cdc ??0locale@std@@QAE@ABV01@@Z
+std::locale *__thiscall std::locale::locale(std::locale *this, std::locale::facet **a2)
+{
+  std::locale::facet *v3; // ecx
+
+  v3 = *a2;
+  *(_DWORD *)this = *a2;
+  std::locale::facet::_Incref(this: v3);
+  return this;
+}
+
+// 0x2cfc ?_Copy@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AAEXI@Z
+_BYTE *__thiscall std::string::_Copy(int this, unsigned int a2)
+{
+  unsigned int v2; // esi
+  unsigned int v4; // eax
+  unsigned int v5; // eax
+  int v6; // eax
+  unsigned int v7; // edi
+  _BYTE *v8; // ecx
+  char v9; // al
+  _BYTE *result; // eax
+  int v11; // ecx
+  _DWORD v12[4]; // [esp-Ch] [ebp-24h] BYREF
+  int v13; // [esp+4h] [ebp-14h]
+  _DWORD *v14; // [esp+8h] [ebp-10h]
+  unsigned int v15[2]; // [esp+Ch] [ebp-Ch] BYREF
+  int v16; // [esp+14h] [ebp-4h]
+  _BYTE *v17; // [esp+20h] [ebp+8h]
+
+  v16 = -1;
+  v15[1] = (unsigned int)_L34384;
+  v15[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v15);
+  v2 = a2 | 0x1F;
+  v14 = v12;
+  v12[3] = this;
+  v13 = a2 | 0x1F;
+  if ( (a2 | 0x1F) > 0xFFFFFFFD )
+  {
+    v13 = a2;
+    v2 = a2;
+  }
+  v4 = v2 + 2;
+  v16 = 0;
+  if ( (int)(v2 + 2) < 0 )
+    v4 = 0;
+  v17 = operator new(a1: v4);
+  v5 = *(_DWORD *)(this + 8);
+  if ( v5 != 0 )
+  {
+    if ( v5 > v2 )
+      v5 = v2;
+    qmemcpy(v17 + 1, *(const void **)(this + 4), v5);
+    v2 = v13;
+  }
+  v6 = *(_DWORD *)(this + 4);
+  v7 = *(_DWORD *)(this + 8);
+  if ( v6 != 0 )
+  {
+    v8 = (_BYTE *)(v6 - 1);
+    v9 = *(_BYTE *)(v6 - 1);
+    if ( v9 == 0 || v9 == -1 )
+      operator delete(a1: v8);
+    else
+      *v8 = v9 - 1;
+  }
+  *(_DWORD *)(this + 8) = 0;
+  result = v17 + 1;
+  *(_DWORD *)(this + 4) = v17 + 1;
+  *v17 = 0;
+  *(_DWORD *)(this + 12) = v2;
+  if ( v7 <= v2 )
+    v2 = v7;
+  v11 = *(_DWORD *)(this + 4);
+  *(_DWORD *)(this + 8) = v2;
+  *(_BYTE *)(v11 + v2) = 0;
+  __writefsdword((unsigned int)&_except_list, v15[0]);
+  return result;
+}
+
+// 0x2e0c $L34384
+int _L34384()
+{
+  return __CxxFrameHandler();
+}
+
+// 0x2e70 ?getloc@?$basic_streambuf@DU?$char_traits@D@std@@@std@@QAE?AVlocale@2@XZ
+_DWORD *__thiscall std::streambuf::getloc(_DWORD *this, _DWORD *a2)
+{
+  int v2; // esi
+  _DWORD *v3; // edi
+  int v4; // eax
+
+  v2 = *(this + 13);
+  v3 = a2;
+  *a2 = v2;
+  std::_Lockit::_Lockit(this: (std::_Lockit *)&a2);
+  v4 = *(_DWORD *)(v2 + 4);
+  if ( v4 != -1 )
+    *(_DWORD *)(v2 + 4) = v4 + 1;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)&a2);
+  return v3;
+}
+
+// 0x2eb0 ?_Init@?$basic_streambuf@DU?$char_traits@D@std@@@std@@IAEXXZ
+_DWORD *__thiscall std::streambuf::_Init(_DWORD *this)
+{
+  _DWORD *result; // eax
+
+  *(this + 7) = this + 5;
+  *(this + 8) = this + 6;
+  *(this + 3) = this + 1;
+  *(this + 11) = this + 9;
+  *(this + 4) = this + 2;
+  *(this + 12) = this + 10;
+  *(this + 2) = 0;
+  *(_DWORD *)*(this + 8) = 0;
+  *(_DWORD *)*(this + 12) = 0;
+  *(_DWORD *)*(this + 3) = 0;
+  *(_DWORD *)*(this + 7) = 0;
+  result = (_DWORD *)*(this + 11);
+  *result = 0;
+  return result;
+}
+
+// 0x2f10 ?_Init@?$basic_streambuf@DU?$char_traits@D@std@@@std@@IAEXPAPAD0PAH001@Z
+int __thiscall std::streambuf::_Init(_DWORD *this, int a2, int a3, int a4, int a5, int a6, int a7)
+{
+  *(this + 3) = a2;
+  *(this + 4) = a5;
+  *(this + 7) = a3;
+  *(this + 8) = a6;
+  *(this + 11) = a4;
+  *(this + 12) = a7;
+  return a4;
+}
+
+// 0x2f40 ?setg@?$basic_streambuf@DU?$char_traits@D@std@@@std@@IAEXPAD00@Z
+_DWORD *__thiscall std::streambuf::setg(int this, int a2, int a3, int a4)
+{
+  _DWORD *result; // eax
+
+  **(_DWORD **)(this + 12) = a2;
+  **(_DWORD **)(this + 28) = a3;
+  result = *(_DWORD **)(this + 44);
+  *result = a4 - a3;
+  return result;
+}
+
+// 0x2f60 ?setp@?$basic_streambuf@DU?$char_traits@D@std@@@std@@IAEXPAD0@Z
+_DWORD *__thiscall std::streambuf::setp(int this, int a2, int a3)
+{
+  _DWORD *result; // eax
+
+  **(_DWORD **)(this + 16) = a2;
+  **(_DWORD **)(this + 32) = a2;
+  result = *(_DWORD **)(this + 48);
+  *result = a3 - a2;
+  return result;
+}
+
+// 0x2f80 ?_Addfac@std@@YA?AVlocale@1@V21@PAV?$codecvt@DDH@1@@Z
+_DWORD *__cdecl std::_Addfac(_DWORD *a1, int a2, struct std::locale::facet *a3)
+{
+  unsigned int v3; // esi
+  int v4; // esi
+  int v5; // eax
+  int v6; // edi
+  int v7; // eax
+  void (__thiscall ***v8)(_DWORD, int); // esi
+  _BYTE v10[4]; // [esp+8h] [ebp-18h] BYREF
+  int v11; // [esp+Ch] [ebp-14h]
+  _BYTE v12[4]; // [esp+10h] [ebp-10h] BYREF
+  unsigned int v13[2]; // [esp+14h] [ebp-Ch] BYREF
+  int v14; // [esp+1Ch] [ebp-4h]
+
+  v13[1] = (unsigned int)&_L34485;
+  v13[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v13);
+  v11 = 0;
+  v14 = 1;
+  std::_Lockit::_Lockit(this: (std::_Lockit *)v12);
+  LOBYTE(v14) = 2;
+  std::_Lockit::_Lockit(this: (std::_Lockit *)v10);
+  v3 = std::codecvt<char,char,int>::id;
+  if ( std::codecvt<char,char,int>::id == 0 )
+  {
+    v3 = std::locale::id::_Id_cnt + 1;
+    std::locale::id::_Id_cnt = v3;
+    std::codecvt<char,char,int>::id = v3;
+  }
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)v10);
+  v4 = *(_DWORD *)std::locale::_Addfac(this: (std::locale *)&a2, a2: a3, a3: v3, a4: 2u);
+  *a1 = v4;
+  std::_Lockit::_Lockit(this: (std::_Lockit *)&a3);
+  v5 = *(_DWORD *)(v4 + 4);
+  if ( v5 != -1 )
+    *(_DWORD *)(v4 + 4) = v5 + 1;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)&a3);
+  v11 = 1;
+  LOBYTE(v14) = 1;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)v12);
+  v6 = a2;
+  LOBYTE(v14) = 0;
+  if ( a2 != 0 )
+  {
+    std::_Lockit::_Lockit(this: (std::_Lockit *)&a3);
+    v7 = *(_DWORD *)(v6 + 4);
+    if ( v7 != 0 && v7 != -1 )
+      *(_DWORD *)(v6 + 4) = v7 - 1;
+    v8 = *(_DWORD *)(v6 + 4) == 0 ? (void (__thiscall ***)(_DWORD, int))v6 : nullptr;
+    std::_Lockit::~_Lockit(this: (std::_Lockit *)&a3);
+    if ( v8 != nullptr )
+      (**v8)(a1: v8, a2: 1);
+  }
+  __writefsdword((unsigned int)&_except_list, v13[0]);
+  return a1;
+}
+
+// 0x30fc ??0?$codecvt@DDH@std@@QAE@I@Z
+_DWORD *__userpurge std::codecvt<char,char,int>::codecvt<char,char,int>@<eax>(
+        _DWORD *a1@<ecx>,
+        _Cvtvec *a2@<esi>,
+        int a3)
+{
+  int v4; // edx
+  _BYTE v7[64]; // [esp+4h] [ebp-4Ch] BYREF
+  unsigned int v8[3]; // [esp+44h] [ebp-Ch] BYREF
+
+  v8[1] = (unsigned int)&_L34518;
+  v8[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v8);
+  a1[1] = a3;
+  v8[2] = 0;
+  *a1 = &std::codecvt<char,char,int>::`vftable';
+  std::_Locinfo::_Locinfo(this: (std::_Locinfo *)v7, a2: `string');
+  a1[2] = _Getcvt(retstr: a2);
+  a1[3] = v4;
+  std::_Locinfo::~_Locinfo(this: (std::_Locinfo *)v7);
+  __writefsdword((unsigned int)&_except_list, v8[0]);
+  return a1;
+}
+
+// 0x31c8 ?do_always_noconv@codecvt_base@std@@MBE_NXZ
+char __thiscall std::codecvt_base::do_always_noconv(std::codecvt_base *this)
+{
+  return 1;
+}
+
+// 0x31d8 ?do_max_length@codecvt_base@std@@MBEHXZ
+int __thiscall std::codecvt_base::do_max_length(std::codecvt_base *this)
+{
+  return 1;
+}
+
+// 0x31e8 ?do_encoding@codecvt_base@std@@MBEHXZ
+int __thiscall std::codecvt_base::do_encoding(std::codecvt_base *this)
+{
+  return 1;
+}
+
+// 0x31f8 ??1codecvt_base@std@@UAE@XZ
+void __thiscall std::codecvt_base::~codecvt_base(std::codecvt_base *this)
+{
+  *(_DWORD *)this = &std::locale::facet::`vftable';
+}
+
+// 0x320c ??_Gfacet@locale@std@@UAEPAXI@Z
+std::locale::facet *__thiscall std::locale::facet::`scalar deleting destructor'(std::locale::facet *this, char a2)
+{
+  *(_DWORD *)this = &std::locale::facet::`vftable';
+  if ( (a2 & 1) != 0 )
+    operator delete(a1: this);
+  return this;
+}
+
+// 0x322c ?do_in@?$codecvt@DDH@std@@MBEHAAHPBD1AAPBDPAD3AAPAD@Z
+int __stdcall std::codecvt<char,char,int>::do_in(int a1, int a2, int a3, _DWORD *a4, int a5, int a6, _DWORD *a7)
+{
+  *a4 = a2;
+  *a7 = a5;
+  return 3;
+}
+
+// 0x324c ?do_out@?$codecvt@DDH@std@@MBEHAAHPBD1AAPBDPAD3AAPAD@Z
+int __stdcall std::codecvt<char,char,int>::do_out(int a1, int a2, int a3, _DWORD *a4, int a5, int a6, _DWORD *a7)
+{
+  *a4 = a2;
+  *a7 = a5;
+  return 3;
+}
+
+// 0x326c ?do_length@?$codecvt@DDH@std@@MBEHAAHPBD1I@Z
+unsigned int __stdcall std::codecvt<char,char,int>::do_length(int a1, int a2, int a3, unsigned int a4)
+{
+  unsigned int result; // eax
+
+  result = a3 - a2;
+  if ( a4 < a3 - a2 )
+    return a4;
+  return result;
+}
+
+// 0x328c ??_G?$codecvt@DDH@std@@UAEPAXI@Z
+void *__thiscall std::codecvt<char,char,int>::`scalar deleting destructor'(void *this, char a2)
+{
+  std::codecvt<char,char,int>::~codecvt<char,char,int>();
+  if ( (a2 & 1) != 0 )
+    operator delete(a1: this);
+  return this;
+}
+
+// 0x32ac ??1?$codecvt@DDH@std@@UAE@XZ
+void __thiscall std::codecvt<char,char,int>::~codecvt<char,char,int>(_DWORD *this)
+{
+  *this = &std::locale::facet::`vftable';
+}
+
+// 0x32bc ?_Save@?$_Tidyfac@V?$codecvt@DDH@std@@@std@@SAPAV?$codecvt@DDH@2@PAV32@@Z
+int __cdecl std::_Tidyfac<std::codecvt<char,char,int>>::_Save(int a1)
+{
+  int v1; // ecx
+  int v2; // esi
+  int v3; // eax
+  int v5; // [esp+0h] [ebp-10h] BYREF
+  unsigned int v6[2]; // [esp+4h] [ebp-Ch] BYREF
+  int v7; // [esp+Ch] [ebp-4h]
+
+  v7 = -1;
+  v6[1] = (unsigned int)&_L34575;
+  v6[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v6);
+  v5 = v1;
+  std::_Lockit::_Lockit(this: (std::_Lockit *)&v5);
+  v2 = a1;
+  v7 = 0;
+  std::_Tidyfac<std::codecvt<char,char,int>>::_Facsav = a1;
+  std::_Lockit::_Lockit(this: (std::_Lockit *)&a1);
+  v3 = *(_DWORD *)(v2 + 4);
+  if ( v3 != -1 )
+    *(_DWORD *)(v2 + 4) = v3 + 1;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)&a1);
+  atexit(a1: std::_Tidyfac<std::codecvt<char,char,int>>::_Tidy);
+  v7 = -1;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)&v5);
+  __writefsdword((unsigned int)&_except_list, v6[0]);
+  return v2;
+}
+
+// 0x337c ?_Tidy@?$_Tidyfac@V?$codecvt@DDH@std@@@std@@SAXXZ
+void __cdecl std::_Tidyfac<std::codecvt<char,char,int>>::_Tidy()
+{
+  int v0; // edi
+  int v1; // eax
+  void (__thiscall ***v2)(_DWORD, int); // esi
+  _BYTE v3[4]; // [esp+0h] [ebp-14h] BYREF
+  int v4; // [esp+4h] [ebp-10h] BYREF
+  unsigned int v5[2]; // [esp+8h] [ebp-Ch] BYREF
+  int v6; // [esp+10h] [ebp-4h]
+
+  v6 = -1;
+  v5[1] = (unsigned int)&_L34598;
+  v5[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v5);
+  std::_Lockit::_Lockit(this: (std::_Lockit *)&v4);
+  v0 = std::_Tidyfac<std::codecvt<char,char,int>>::_Facsav;
+  v6 = 0;
+  std::_Lockit::_Lockit(this: (std::_Lockit *)v3);
+  v1 = *(_DWORD *)(v0 + 4);
+  if ( v1 != 0 && v1 != -1 )
+    *(_DWORD *)(v0 + 4) = v1 - 1;
+  v2 = *(_DWORD *)(v0 + 4) == 0 ? (void (__thiscall ***)(_DWORD, int))v0 : nullptr;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)v3);
+  if ( v2 != nullptr )
+    (**v2)(a1: v2, a2: 1);
+  std::_Tidyfac<std::codecvt<char,char,int>>::_Facsav = 0;
+  v6 = -1;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)&v4);
+  __writefsdword((unsigned int)&_except_list, v5[0]);
+}
+
+// 0x3458 ??5std@@YAAAV?$basic_istream@DU?$char_traits@D@std@@@0@AAV10@AAD@Z
+int *__cdecl std::operator>>(int *a1, _BYTE *a2)
+{
+  int v2; // esi
+  int v3; // eax
+  int v4; // ecx
+  unsigned int v5; // eax
+  _DWORD *v6; // edx
+  _DWORD *v7; // ecx
+  unsigned __int8 *v8; // edx
+  int v9; // eax
+  std::ios_base *v10; // ecx
+  int v11; // eax
+  int v13; // [esp-Ch] [ebp-20h] BYREF
+  int v14; // [esp+0h] [ebp-14h]
+  int *v15; // [esp+4h] [ebp-10h]
+  unsigned int v16[2]; // [esp+8h] [ebp-Ch] BYREF
+  int v17; // [esp+10h] [ebp-4h]
+
+  v17 = -1;
+  v16[1] = (unsigned int)_L34712;
+  v16[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v16);
+  v2 = 0;
+  v15 = &v13;
+  v14 = 0;
+  if ( (unsigned __int8)std::istream::ipfx(a1: nullptr) != 0 )
+  {
+    v3 = *a1;
+    v17 = 0;
+    v4 = *(int *)((char *)a1 + *(_DWORD *)(v3 + 4) + 40);
+    v5 = **(_DWORD **)(v4 + 28);
+    if ( v5 != 0 && (v6 = *(_DWORD **)(v4 + 44), v5 < *v6 + v5) )
+    {
+      --*v6;
+      v7 = *(_DWORD **)(v4 + 28);
+      v8 = (unsigned __int8 *)(*v7)++;
+      v9 = *v8;
+    }
+    else
+    {
+      v9 = (*(int (__thiscall **)(int))(*(_DWORD *)v4 + 20))(a1: v4);
+    }
+    if ( v9 == -1 )
+      v14 = 3;
+    else
+      *a2 = v9;
+    v2 = v14;
+    v17 = -1;
+  }
+  v10 = (std::ios_base *)((char *)a1 + *(_DWORD *)(*a1 + 4));
+  if ( v2 != 0 )
+  {
+    v11 = v2 | *((_DWORD *)v10 + 1);
+    if ( *((_DWORD *)v10 + 10) == 0 )
+      LOBYTE(v11) = v11 | 4;
+    std::ios_base::clear(this: v10, a2: v11, a3: false);
+  }
+  __writefsdword((unsigned int)&_except_list, v16[0]);
+  return a1;
+}
+
+// 0x3548 $L34712
+int _L34712()
+{
+  return __CxxFrameHandler();
+}
+
+// 0x35ac ?ipfx@?$basic_istream@DU?$char_traits@D@std@@@std@@QAE_N_N@Z
+char __thiscall std::istream::ipfx(char *this, void *a2)
+{
+  int v3; // eax
+  int v4; // ecx
+  int v5; // eax
+  std::ios_base *v6; // ecx
+  int v7; // esi
+  int v8; // edi
+  int v9; // eax
+  std::locale *v10; // esi
+  unsigned int v11; // eax
+  int v12; // eax
+  int v13; // eax
+  struct std::locale::facet *v14; // eax
+  int v15; // eax
+  _DWORD **v16; // ecx
+  unsigned __int8 *v17; // eax
+  int v18; // eax
+  int v19; // esi
+  unsigned int v20; // eax
+  _DWORD *v21; // ecx
+  _DWORD *v22; // eax
+  unsigned __int8 *v23; // ecx
+  int v24; // ecx
+  int v25; // eax
+  int v27; // eax
+  int v28; // [esp-Ch] [ebp-34h] BYREF
+  _BYTE pExceptionObject[12]; // [esp+0h] [ebp-28h] BYREF
+  std::locale::facet *v30; // [esp+Ch] [ebp-1Ch] BYREF
+  _BYTE v31[4]; // [esp+10h] [ebp-18h] BYREF
+  char *v32; // [esp+14h] [ebp-14h]
+  int *v33; // [esp+18h] [ebp-10h]
+  unsigned int v34[2]; // [esp+1Ch] [ebp-Ch] BYREF
+  int v35; // [esp+24h] [ebp-4h]
+  const struct std::locale::facet *v36; // [esp+30h] [ebp+8h]
+  void *v37; // [esp+30h] [ebp+8h]
+
+  v35 = -1;
+  v34[1] = (unsigned int)&_L35015;
+  v34[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v34);
+  v3 = *(_DWORD *)this;
+  v33 = &v28;
+  v32 = this;
+  v4 = *(_DWORD *)(v3 + 4);
+  v5 = *(_DWORD *)&v32[v4 + 4];
+  v6 = (std::ios_base *)&v32[v4];
+  if ( v5 != 0 )
+    goto LABEL_36;
+  v7 = *((_DWORD *)v6 + 11);
+  if ( v7 != 0 )
+  {
+    v8 = 0;
+    v9 = v7 + *(_DWORD *)(*(_DWORD *)v7 + 4);
+    if ( (*(_BYTE *)(v9 + 4) & 6) == 0
+      && (*(int (__thiscall **)(_DWORD))(**(_DWORD **)(v9 + 40) + 44))(a1: *(_DWORD *)(v9 + 40)) == -1 )
+    {
+      v8 = 4;
+    }
+    std::ios::setstate(this: (std::ios_base *)(v7 + *(_DWORD *)(*(_DWORD *)v7 + 4)), a2: v8, a3: false);
+  }
+  if ( (_BYTE)a2 == 0 && (*(_DWORD *)(this + *(_DWORD *)(*(_DWORD *)this + 4) + 12) & 1) != 0 )
+  {
+    v10 = (std::locale *)std::ios_base::getloc(a1: this + *(_DWORD *)(*(_DWORD *)this + 4), a2: &v30);
+    v35 = 0;
+    std::_Lockit::_Lockit(this: (std::_Lockit *)v31);
+    LOBYTE(v35) = 1;
+    v11 = std::locale::id::operator unsigned int(a1: &std::ctype<char>::id);
+    v36 = std::locale::_Getfacet(this: v10, a2: v11, a3: true);
+    if ( v36 == nullptr )
+    {
+      if ( !std::locale::_Iscloc(this: v10) )
+      {
+        std::bad_cast::bad_cast(this: (std::bad_cast *)pExceptionObject, a2: `string');
+        _CxxThrowException(pExceptionObject, pThrowInfo: (_ThrowInfo *)&_TI2_AVbad_cast_std__);
+      }
+      v12 = `std::use_facet'::`2'::_Psave;
+      if ( `std::use_facet'::`2'::_Psave == 0 )
+      {
+        v37 = operator new(a1: 0x18u);
+        LOBYTE(v35) = 2;
+        if ( v37 != nullptr )
+          v13 = std::ctype<char>::ctype<char>(a1: 0, a2: 0, a3: 0);
+        else
+          v13 = 0;
+        LOBYTE(v35) = 1;
+        v12 = std::_Tidyfac<std::ctype<char>>::_Save(a1: v13);
+        `std::use_facet'::`2'::_Psave = v12;
+      }
+      v36 = (const struct std::locale::facet *)v12;
+    }
+    LOBYTE(v35) = 0;
+    std::_Lockit::~_Lockit(this: (std::_Lockit *)v31);
+    v35 = -1;
+    if ( v30 != nullptr )
+    {
+      v14 = std::locale::facet::_Decref(this: v30);
+      if ( v14 != nullptr )
+        (**(void (__thiscall ***)(struct std::locale::facet *, int))v14)(a1: v14, a2: 1);
+    }
+    v15 = *(_DWORD *)this;
+    v35 = 3;
+    v16 = *(_DWORD ***)(this + *(_DWORD *)(v15 + 4) + 40);
+    v17 = (unsigned __int8 *)*v16[7];
+    if ( v17 != nullptr && v17 < &v17[*v16[11]] )
+      v18 = *v17;
+    else
+      v18 = ((int (__thiscall *)(_DWORD **))(*v16)[4])(a1: v16);
+    while ( v18 != -1 && (*(_BYTE *)(*((_DWORD *)v36 + 4) + 2 * (unsigned __int8)v18) & 0x48) != 0 )
+    {
+      v19 = *(_DWORD *)(this + *(_DWORD *)(*(_DWORD *)this + 4) + 40);
+      v20 = **(_DWORD **)(v19 + 28);
+      if ( v20 != 0 && (v21 = *(_DWORD **)(v19 + 44), v20 < *v21 + v20) )
+      {
+        --*v21;
+        v22 = *(_DWORD **)(v19 + 28);
+        v23 = (unsigned __int8 *)(*v22)++;
+        v18 = *v23;
+      }
+      else
+      {
+        v18 = (*(int (__thiscall **)(int))(*(_DWORD *)v19 + 20))(a1: v19);
+      }
+      if ( v18 != -1 )
+        v18 = std::streambuf::sgetc(a1: v19);
+    }
+    v35 = -1;
+  }
+  v24 = *(_DWORD *)(*(_DWORD *)this + 4);
+  v25 = *(_DWORD *)(this + v24 + 4);
+  v6 = (std::ios_base *)(this + v24);
+  if ( v25 != 0 )
+  {
+LABEL_36:
+    v27 = *((_DWORD *)v6 + 1);
+    LOBYTE(v27) = v27 | 2;
+    if ( *((_DWORD *)v6 + 10) == 0 )
+      LOBYTE(v27) = v27 | 4;
+    std::ios_base::clear(this: v6, a2: v27, a3: false);
+    __writefsdword((unsigned int)&_except_list, v34[0]);
+    return 0;
+  }
+  else
+  {
+    __writefsdword((unsigned int)&_except_list, v34[0]);
+    return 1;
+  }
+}
+
+// 0x38c8 ?sgetc@?$basic_streambuf@DU?$char_traits@D@std@@@std@@QAEHXZ
+int __thiscall std::streambuf::sgetc(unsigned __int8 ***this)
+{
+  unsigned __int8 *v1; // eax
+
+  v1 = **(this + 7);
+  if ( v1 != nullptr && v1 < &(**(this + 11))[(int)v1] )
+    return *v1;
+  else
+    return ((int (__thiscall *)(unsigned __int8 ***))(*this)[4])(a1: this);
+}
+
+// 0x38e8 ??Bid@locale@std@@QAEIXZ
+int __thiscall std::locale::id::operator unsigned int(int *this)
+{
+  int v2; // esi
+  _BYTE v4[4]; // [esp+4h] [ebp-4h] BYREF
+
+  std::_Lockit::_Lockit(this: (std::_Lockit *)v4);
+  if ( *this == 0 )
+    *this = ++std::locale::id::_Id_cnt;
+  v2 = *this;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)v4);
+  return v2;
+}
+
+// 0x3918 ??0?$ctype@D@std@@QAE@PBF_NI@Z
+char *__thiscall std::ctype<char>::ctype<char>(char *this, int a2, unsigned __int8 a3, int a4)
+{
+  _BYTE v6[4]; // [esp+4h] [ebp-64h] BYREF
+  char *v7; // [esp+8h] [ebp-60h]
+  _Ctypevec v8; // [esp+Ch] [ebp-5Ch] BYREF
+  _BYTE v9[64]; // [esp+1Ch] [ebp-4Ch] BYREF
+  unsigned int v10[2]; // [esp+5Ch] [ebp-Ch] BYREF
+  int v11; // [esp+64h] [ebp-4h]
+
+  v10[1] = (unsigned int)&_L35084;
+  v10[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v10);
+  v7 = this;
+  *((_DWORD *)this + 1) = a4;
+  v11 = 0;
+  *(_DWORD *)this = &std::ctype<char>::`vftable';
+  std::_Lockit::_Lockit(this: (std::_Lockit *)v6);
+  LOBYTE(v11) = 1;
+  std::_Locinfo::_Locinfo(this: (std::_Locinfo *)v9, a2: `string');
+  LOBYTE(v11) = 2;
+  std::_Lockit::_Lockit(this: (std::_Lockit *)&a4);
+  *(_Ctypevec *)(this + 8) = *_Getctype(retstr: &v8);
+  if ( std::ctype<char>::_Cltab == nullptr )
+  {
+    std::ctype<char>::_Cltab = *((void **)this + 4);
+    atexit(a1: std::ctype<char>::_Term);
+    *((_DWORD *)this + 5) = 0;
+  }
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)&a4);
+  LOBYTE(v11) = 1;
+  std::_Locinfo::~_Locinfo(this: (std::_Locinfo *)v9);
+  if ( *((_DWORD *)this + 5) != 0 )
+  {
+    free(Block: *((void **)this + 4));
+    *((_DWORD *)this + 5) = 0;
+  }
+  if ( a2 != 0 )
+  {
+    *((_DWORD *)this + 4) = a2;
+    *((_DWORD *)this + 5) = a3;
+  }
+  else
+  {
+    *((_DWORD *)this + 4) = std::ctype<char>::_Cltab;
+  }
+  LOBYTE(v11) = 0;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)v6);
+  __writefsdword((unsigned int)&_except_list, v10[0]);
+  return this;
+}
+
+// 0x3aa8 ??1ctype_base@std@@UAE@XZ
+void __thiscall std::ctype_base::~ctype_base(std::ctype_base *this)
+{
+  *(_DWORD *)this = &std::locale::facet::`vftable';
+}
+
+// 0x3ab8 ?_Term@?$ctype@D@std@@KAXXZ
+void __cdecl std::ctype<char>::_Term()
+{
+  free(Block: std::ctype<char>::_Cltab);
+}
+
+// 0x3ac8 ?do_tolower@?$ctype@D@std@@MBEDD@Z
+int __thiscall std::ctype<char>::do_tolower(int this, unsigned __int8 a2)
+{
+  return _Tolower(a1: a2, a2: (const _Ctypevec *)(this + 8));
+}
+
+// 0x3ae8 ?do_tolower@?$ctype@D@std@@MBEPBDPADPBD@Z
+_BYTE *__thiscall std::ctype<char>::do_tolower(char *this, _BYTE *a2, _BYTE *a3)
+{
+  _BYTE *v3; // esi
+  const _Ctypevec *v4; // edi
+
+  v3 = a2;
+  if ( a2 == a3 )
+    return a2;
+  v4 = (const _Ctypevec *)(this + 8);
+  do
+  {
+    *v3 = _Tolower(a1: (char)*v3, a2: v4);
+    ++v3;
+  }
+  while ( v3 != a3 );
+  return v3;
+}
+
+// 0x3b28 ?do_toupper@?$ctype@D@std@@MBEDD@Z
+int __thiscall std::ctype<char>::do_toupper(int this, unsigned __int8 a2)
+{
+  return _Toupper(a1: a2, a2: (const _Ctypevec *)(this + 8));
+}
+
+// 0x3b48 ?do_toupper@?$ctype@D@std@@MBEPBDPADPBD@Z
+_BYTE *__thiscall std::ctype<char>::do_toupper(char *this, _BYTE *a2, _BYTE *a3)
+{
+  _BYTE *v3; // esi
+  const _Ctypevec *v4; // edi
+
+  v3 = a2;
+  if ( a2 == a3 )
+    return a2;
+  v4 = (const _Ctypevec *)(this + 8);
+  do
+  {
+    *v3 = _Toupper(a1: (char)*v3, a2: v4);
+    ++v3;
+  }
+  while ( v3 != a3 );
+  return v3;
+}
+
+// 0x3b88 ??_G?$ctype@D@std@@UAEPAXI@Z
+void *__thiscall std::ctype<char>::`scalar deleting destructor'(void *this, char a2)
+{
+  std::ctype<char>::~ctype<char>();
+  if ( (a2 & 1) != 0 )
+    operator delete(a1: this);
+  return this;
+}
+
+// 0x3ba8 ??1?$ctype@D@std@@UAE@XZ
+void __thiscall std::ctype<char>::~ctype<char>(void *this)
+{
+  int v2; // eax
+
+  v2 = *((_DWORD *)this + 5);
+  *(_DWORD *)this = &std::ctype<char>::`vftable';
+  if ( v2 != 0 )
+    free(Block: *((void **)this + 4));
+  *(_DWORD *)this = &std::locale::facet::`vftable';
+}
+
+// 0x3bd8 ?getloc@ios_base@std@@QBE?AVlocale@2@XZ
+_DWORD *__thiscall std::ios_base::getloc(_DWORD *this, _DWORD *a2)
+{
+  int v2; // esi
+  _DWORD *v3; // edi
+  int v4; // eax
+
+  v2 = *(this + 8);
+  v3 = a2;
+  *a2 = v2;
+  std::_Lockit::_Lockit(this: (std::_Lockit *)&a2);
+  v4 = *(_DWORD *)(v2 + 4);
+  if ( v4 != -1 )
+    *(_DWORD *)(v2 + 4) = v4 + 1;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)&a2);
+  return v3;
+}
+
+// 0x3c18 ?_Save@?$_Tidyfac@V?$ctype@D@std@@@std@@SAPAV?$ctype@D@2@PAV32@@Z
+int __cdecl std::_Tidyfac<std::ctype<char>>::_Save(int a1)
+{
+  int v1; // ecx
+  int v2; // esi
+  int v3; // eax
+  int v5; // [esp+0h] [ebp-10h] BYREF
+  unsigned int v6[2]; // [esp+4h] [ebp-Ch] BYREF
+  int v7; // [esp+Ch] [ebp-4h]
+
+  v7 = -1;
+  v6[1] = (unsigned int)&_L35157;
+  v6[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v6);
+  v5 = v1;
+  std::_Lockit::_Lockit(this: (std::_Lockit *)&v5);
+  v2 = a1;
+  v7 = 0;
+  std::_Tidyfac<std::ctype<char>>::_Facsav = a1;
+  std::_Lockit::_Lockit(this: (std::_Lockit *)&a1);
+  v3 = *(_DWORD *)(v2 + 4);
+  if ( v3 != -1 )
+    *(_DWORD *)(v2 + 4) = v3 + 1;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)&a1);
+  atexit(a1: std::_Tidyfac<std::ctype<char>>::_Tidy);
+  v7 = -1;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)&v5);
+  __writefsdword((unsigned int)&_except_list, v6[0]);
+  return v2;
+}
+
+// 0x3cd8 ?_Tidy@?$_Tidyfac@V?$ctype@D@std@@@std@@SAXXZ
+void __cdecl std::_Tidyfac<std::ctype<char>>::_Tidy()
+{
+  int v0; // edi
+  int v1; // eax
+  void (__thiscall ***v2)(_DWORD, int); // esi
+  _BYTE v3[4]; // [esp+0h] [ebp-14h] BYREF
+  int v4; // [esp+4h] [ebp-10h] BYREF
+  unsigned int v5[2]; // [esp+8h] [ebp-Ch] BYREF
+  int v6; // [esp+10h] [ebp-4h]
+
+  v6 = -1;
+  v5[1] = (unsigned int)&_L35180;
+  v5[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v5);
+  std::_Lockit::_Lockit(this: (std::_Lockit *)&v4);
+  v0 = std::_Tidyfac<std::ctype<char>>::_Facsav;
+  v6 = 0;
+  std::_Lockit::_Lockit(this: (std::_Lockit *)v3);
+  v1 = *(_DWORD *)(v0 + 4);
+  if ( v1 != 0 && v1 != -1 )
+    *(_DWORD *)(v0 + 4) = v1 - 1;
+  v2 = *(_DWORD *)(v0 + 4) == 0 ? (void (__thiscall ***)(_DWORD, int))v0 : nullptr;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)v3);
+  if ( v2 != nullptr )
+    (**v2)(a1: v2, a2: 1);
+  std::_Tidyfac<std::ctype<char>>::_Facsav = 0;
+  v6 = -1;
+  std::_Lockit::~_Lockit(this: (std::_Lockit *)&v4);
+  __writefsdword((unsigned int)&_except_list, v5[0]);
+}
+
+// 0x3db4 _$E24
+int _E24()
+{
+  if ( (___B_1___id___ctype_G_std___D__9_51 & 1) == 0 )
+    ___B_1___id___ctype_G_std___D__9_51 |= 1u;
+  _E20();
+  if ( (___B_1___id___codecvt_DDH_std___D__9_51 & 1) == 0 )
+    ___B_1___id___codecvt_DDH_std___D__9_51 |= 1u;
+  return _E23();
+}
+
+// 0x3de4 _$E20
+int _E20()
+{
+  return atexit(a1: std::ctype<unsigned short>::id`template static data member destructor helper');
+}
+
+// 0x3df4 _$E23
+int _E23()
+{
+  return atexit(a1: std::codecvt<char,char,int>::id`template static data member destructor helper');
+}
+
+// 0x3e04 ?id@?$codecvt@DDH@std@@$E
+void __cdecl std::codecvt<char,char,int>::id`template static data member destructor helper'()
+{
+  ;
+}
+
+// 0x3e14 ?id@?$ctype@G@std@@$E
+void __cdecl std::ctype<unsigned short>::id`template static data member destructor helper'()
+{
+  ;
+}
+
+// 0x3e48 ??3@YAXPAX@Z
+extrn ??3@YAXPAX@Z:near
+
+// 0x3e4c ?glmDelete@@YAXPAUGLMmodel@@@Z
+extrn ?glmDelete@@YAXPAUGLMmodel@@@Z:near
+
+// 0x3e50 ??2@YAPAXI@Z
+extrn ??2@YAPAXI@Z:near
+
+// 0x3e54 ?glmLinearTexture@@YAXPAUGLMmodel@@MMI@Z
+extrn ?glmLinearTexture@@YAXPAUGLMmodel@@MMI@Z:near
+
+// 0x3e58 ?glmSpheremapTexture@@YAXPAUGLMmodel@@@Z
+extrn ?glmSpheremapTexture@@YAXPAUGLMmodel@@@Z:near
+
+// 0x3e5c ?glmVertexNormals@@YAXPAUGLMmodel@@M@Z
+extrn ?glmVertexNormals@@YAXPAUGLMmodel@@M@Z:near
+
+// 0x3e60 ?glmFacetNormals@@YAXPAUGLMmodel@@@Z
+extrn ?glmFacetNormals@@YAXPAUGLMmodel@@@Z:near
+
+// 0x3e64 ?glmDimensions@@YAXPAUGLMmodel@@PAM@Z
+extrn ?glmDimensions@@YAXPAUGLMmodel@@PAM@Z:near
+
+// 0x3e68 ?glmScale@@YAXPAUGLMmodel@@M@Z
+extrn ?glmScale@@YAXPAUGLMmodel@@M@Z:near
+
+// 0x3e6c ?glmUnitize@@YAMPAUGLMmodel@@@Z
+extrn ?glmUnitize@@YAMPAUGLMmodel@@@Z:near
+
+// 0x3e70 ?glmReadOBJ@@YAPAUGLMmodel@@PBD@Z
+extrn ?glmReadOBJ@@YAPAUGLMmodel@@PBD@Z:near
+
+// 0x3e74 ?glmReadBinMesh@@YAPAUGLMmodel@@PBD@Z
+extrn ?glmReadBinMesh@@YAPAUGLMmodel@@PBD@Z:near
+
+// 0x3e78 _fclose
+extrn _fclose:near
+
+// 0x3e7c _printf
+extrn _printf:near
+
+// 0x3e80 ___CxxFrameHandler
+extrn ___CxxFrameHandler:near
+
+// 0x3e8c __imp__glDeleteLists@8
+extrn __imp__glDeleteLists@8:near
+
+// 0x3e90 __imp__glEnable@4
+extrn __imp__glEnable@4:near
+
+// 0x3e94 __imp__glDisableClientState@4
+extrn __imp__glDisableClientState@4:near
+
+// 0x3e98 __imp__glDrawArrays@12
+extrn __imp__glDrawArrays@12:near
+
+// 0x3e9c __imp__glVertexPointer@16
+extrn __imp__glVertexPointer@16:near
+
+// 0x3ea0 __imp__glEnableClientState@4
+extrn __imp__glEnableClientState@4:near
+
+// 0x3ea4 __imp__glDisable@4
+extrn __imp__glDisable@4:near
+
+// 0x3ea8 __imp__glPointSize@4
+extrn __imp__glPointSize@4:near
+
+// 0x3eac __imp__glCallList@4
+extrn __imp__glCallList@4:near
+
+// 0x3eb0 __imp__glEndList@0
+extrn __imp__glEndList@0:near
+
+// 0x3eb4 __imp__glDrawElements@16
+extrn __imp__glDrawElements@16:near
+
+// 0x3eb8 __imp__glTexCoordPointer@16
+extrn __imp__glTexCoordPointer@16:near
+
+// 0x3ebc __imp__glNormalPointer@12
+extrn __imp__glNormalPointer@12:near
+
+// 0x3ec0 __imp__glNewList@8
+extrn __imp__glNewList@8:near
+
+// 0x3ec4 __imp__glGenLists@4
+extrn __imp__glGenLists@4:near
+
+// 0x3ec8 ??1ios_base@std@@UAE@XZ
+extrn ??1ios_base@std@@UAE@XZ:near
+
+// 0x3ecc ?clear@ios_base@std@@QAEXH_N@Z
+extrn ?clear@ios_base@std@@QAEXH_N@Z:near
+
+// 0x3ee0 ??1_Lockit@std@@QAE@XZ
+extrn ??1_Lockit@std@@QAE@XZ:near
+
+// 0x3ee4 ??0_Lockit@std@@QAE@XZ
+extrn ??0_Lockit@std@@QAE@XZ:near
+
+// 0x3eec _fwrite
+extrn _fwrite:near
+
+// 0x3ef0 _fputc
+extrn _fputc:near
+
+// 0x3ef4 ?_Xlen@std@@YAXXZ
+extrn ?_Xlen@std@@YAXXZ:near
+
+// 0x3ef8 _memmove
+extrn _memmove:near
+
+// 0x3efc _fgetc
+extrn _fgetc:near
+
+// 0x3f00 _ungetc
+extrn _ungetc:near
+
+// 0x3f04 _fgetpos
+extrn _fgetpos:near
+
+// 0x3f08 _fseek
+extrn _fseek:near
+
+// 0x3f0c _fsetpos
+extrn _fsetpos:near
+
+// 0x3f10 _setvbuf
+extrn _setvbuf:near
+
+// 0x3f14 _fflush
+extrn _fflush:near
+
+// 0x3f28 ?_Addstd@ios_base@std@@IAEXXZ
+extrn ?_Addstd@ios_base@std@@IAEXXZ:near
+
+// 0x3f2c ?_Init@ios_base@std@@IAEXXZ
+extrn ?_Init@ios_base@std@@IAEXXZ:near
+
+// 0x3f34 ?_Init@locale@std@@CAPAV_Locimp@12@XZ
+extrn ?_Init@locale@std@@CAPAV_Locimp@12@XZ:near
+
+// 0x3f38 ?__Fiopen@std@@YAPAU_iobuf@@PBDH@Z
+extrn ?__Fiopen@std@@YAPAU_iobuf@@PBDH@Z:near
+
+// 0x3f3c ??0exception@@QAE@ABV0@@Z
+extrn ??0exception@@QAE@ABV0@@Z:near
+
+// 0x3f44 ?_Iscloc@locale@std@@QBE_NXZ
+extrn ?_Iscloc@locale@std@@QBE_NXZ:near
+
+// 0x3f48 ?_Getfacet@locale@std@@QBEPBVfacet@12@I_N@Z
+extrn ?_Getfacet@locale@std@@QBEPBVfacet@12@I_N@Z:near
+
+// 0x3f54 __CxxThrowException@8
+extrn __CxxThrowException@8:near
+
+// 0x3f64 ??0exception@@QAE@ABQBD@Z
+extrn ??0exception@@QAE@ABQBD@Z:near
+
+// 0x3f68 ??1exception@@UAE@XZ
+extrn ??1exception@@UAE@XZ:near
+
+// 0x3f6c ?_Addfac@locale@std@@QAEAAV12@PAVfacet@12@II@Z
+extrn ?_Addfac@locale@std@@QAEAAV12@PAVfacet@12@II@Z:near
+
+// 0x3f78 ??1_Locinfo@std@@QAE@XZ
+extrn ??1_Locinfo@std@@QAE@XZ:near
+
+// 0x3f7c __Getcvt
+extrn __Getcvt:near
+
+// 0x3f80 ??0_Locinfo@std@@QAE@PBD@Z
+extrn ??0_Locinfo@std@@QAE@PBD@Z:near
+
+// 0x3f8c _atexit
+extrn _atexit:near
+
+// 0x3f9c _free
+extrn _free:near
+
+// 0x3fa4 __Getctype
+extrn __Getctype:near
+
+// 0x3fa8 __Tolower
+extrn __Tolower:near
+
+// 0x3fac __Toupper
+extrn __Toupper:near

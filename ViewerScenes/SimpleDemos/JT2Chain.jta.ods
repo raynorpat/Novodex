@@ -1,0 +1,63 @@
+JTA
+	{
+#pendulum
+
+	Construction
+		{
+		simulator { Multibody; }
+
+		Joint
+			{
+			type { Hinge; }	#or Prismatic or Floating
+			fatherPos {0;10;0;}
+			fatherAxis {0;0;1;}
+			fatherRefx {0;-1;0;}
+			sonPos {0;2;0;}
+			sonAxis {0;0;1;}
+			sonRefx {0;-1;0;}
+			jointParam { 40; }
+
+
+
+			Body
+				{
+				name { "link1"; }
+				dims {1;4;1;}
+				mass {1;}
+
+
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;2;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 40; }
+
+					Body
+						{
+						name { "link2"; }
+						dims {1;4;1;}
+						mass {1;}
+						}
+					}
+
+
+				}
+			}
+		}
+
+	Instances 
+		{
+		Multibody { }
+		}
+
+	Camera
+		{
+		#angles {0.000000;2.000000;18.000000;}
+		#position {-70.584541;93.003593;20.893381;}
+		}
+	}

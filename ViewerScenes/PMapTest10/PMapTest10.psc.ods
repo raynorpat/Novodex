@@ -1,0 +1,44 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 1000; }
+	DragForce	{ 100; }
+	gravity	{ 0.000000; -9.810000; 0.000000; }
+	gridRes	{ 0; }
+
+	Parameters	{
+	RigidBodySDK
+	{
+	MIN_SEPARATION_FOR_PENALTY { -0.005; }
+	}
+	}
+
+	Bodies
+	{
+		GD-Bunny
+		{
+			name	{ GD-Bunny; }
+			orientation	{ -0.707107; -0.000000; 0.000000; -0.707107; }
+			position	{ 2.980983; 1.230877; 4.382951; }
+			scale	{ 1.000000; }
+		}
+		default
+		{
+			name	{ default; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.125475; 3.792981; 1.429935; }
+			scale	{ 1.000000; }
+		}
+	}
+	Joints
+	{
+	}
+	Lights
+	{
+	}
+	Camera
+	{
+		position {-6.729145;7.860949;10.230246;}
+		angles {0.000000;-45.000000;-26.000000;}
+	}
+}

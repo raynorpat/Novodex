@@ -1,0 +1,9 @@
+# Sphere01
+Model3
+{
+	Mesh	{ "Sphere01.obj"; }
+	Groups
+	{
+		Material_0 { "1_-_Default.mat.ods"; }
+	}
+}

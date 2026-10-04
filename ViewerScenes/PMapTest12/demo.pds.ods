@@ -1,0 +1,57 @@
+PDS
+{
+	Acts
+	{
+		"PMapTest12.psc.ods";
+	}
+	Models
+	{
+		default	{ "default.mod.ods"; }
+		Torus01	{ "Torus01.mod.ods"; }
+	}
+	Actors
+	{
+		default
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"default";
+					}
+				}
+			}
+			Collision
+			{
+					TriangleMesh
+					{
+						pmapDensity { 64; }
+						pmapFile { cow64.bin; }
+					}
+			}
+		}
+		Torus01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Torus01";
+					}
+				}
+			}
+			Collision
+			{
+					TriangleMesh
+					{
+						pmapDensity { 64; }
+						pmapFile { pm_torus01_64_v4.bin; }
+					}
+			}
+		}
+	}
+}

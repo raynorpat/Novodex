@@ -1,0 +1,9 @@
+# Sphere01
+Model3
+{
+	Mesh { "Quad.obj"; }
+	Groups
+	{
+		DefaultMaterial { "Material03.mat.ods"; }
+	}
+}

@@ -1,0 +1,7058 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 1000; }
+	DragForce	{ 100; }
+	gravity	{ 0.000000; -9.810000; 0.000000; }
+	gridRes	{ 0; }
+
+	Text
+		{
+		T {"Stress test with 1000 Spheres."; Y{-0.7;} D{5;} S{16;}}
+		}
+
+	Bodies
+	{
+		Wall
+		{
+			name	{ Wall; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 2.000000; 1.250000; 0.000000; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		Wall
+		{
+			name	{ Wall; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -2.000000; 1.250000; 0.000000; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		Wall
+		{
+			name	{ Wall; }
+			orientation	{ 0.707107; 0.000000; 0.707107; 0.000000; }
+			position	{ 0.000000; 1.250000; 2.000000; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		Wall
+		{
+			name	{ Wall; }
+			orientation	{ 0.707107; 0.000000; 0.707107; 0.000000; }
+			position	{ 0.000000; 1.250000; -2.000000; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere01; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.070616; 3.321262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere02; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 3.621262; 0.090658; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere03; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 3.921262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere04; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 4.221262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere05; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 4.521262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere06; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 4.821262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere07; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 5.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere08; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 5.421262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere09; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 5.721262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere10; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 6.021262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere11; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 6.321262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere12; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 6.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere13; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 6.921262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere14; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 7.221262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere15; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 7.521262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere16; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 7.821262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere17; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 8.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere18; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 8.421262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere19; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 8.721262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere20; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 9.021262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere21; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 9.321261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere22; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 9.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere23; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 9.921262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere24; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 10.221262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere25; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 10.521262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere26; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 10.821261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere27; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 11.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere28; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000125; 11.421262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere29; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 11.721262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere30; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 12.021262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere31; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 12.321261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere32; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 12.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere33; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 12.921262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere34; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 13.221262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere35; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 13.521262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere36; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 13.821261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere37; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 14.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere38; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 14.421262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere39; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 14.721262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere40; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 15.021262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere41; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 15.321261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere42; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 15.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere43; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 15.921262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere44; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 16.221262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere45; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 16.521261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere46; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 16.821262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere47; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 17.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere48; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 17.421263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere49; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 17.721262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere50; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 18.021261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere51; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 18.321262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere52; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 18.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere53; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 18.921263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere54; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 19.221262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere55; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 19.521261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere56; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 19.821262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere57; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 20.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere58; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 20.421263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere59; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 20.721262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere60; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 21.021261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere61; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 21.321262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere62; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 21.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere63; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 21.921263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere64; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 22.221262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere65; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 22.521261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere66; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 22.821262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere67; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 23.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere68; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 23.421263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere69; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 23.721262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere70; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 24.021261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere71; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 24.321262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere72; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 24.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere73; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 24.921263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere74; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 25.221262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere75; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 25.521261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere76; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 25.821262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere77; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 26.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere78; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 26.421263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere79; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 26.721262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere80; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 27.021261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere81; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 27.321262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere82; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 27.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere83; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 27.921263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere84; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 28.221262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere85; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 28.521261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere86; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 28.821262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere87; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 29.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere88; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 29.421263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere89; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 29.721262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere90; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 30.021261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere91; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 30.321262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere92; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 30.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere93; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 30.921263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere94; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 31.221262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere95; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 31.521261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere96; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 31.821262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere97; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 32.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere98; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 32.421261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere99; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 32.721264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere100; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 33.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere101; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 33.321262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere102; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 33.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere103; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 33.921261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere104; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000126; 34.221264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere105; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 34.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere106; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 34.821262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere107; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 35.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere108; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 35.421261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere109; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 35.721264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere110; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 36.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere111; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 36.321262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere112; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 36.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere113; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 36.921261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere114; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 37.221264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere115; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 37.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere116; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 37.821262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere117; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 38.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere118; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 38.421261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere119; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 38.721264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere120; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 39.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere121; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 39.321262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere122; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 39.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere123; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 39.921261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere124; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 40.221264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere125; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 40.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere126; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 40.821262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere127; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 41.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere128; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 41.421261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere129; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 41.721264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere130; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 42.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere131; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 42.321262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere132; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 42.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere133; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 42.921261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere134; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 43.221264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere135; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 43.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere136; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 43.821262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere137; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 44.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere138; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 44.421261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere139; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 44.721264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere140; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 45.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere141; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 45.321262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere142; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 45.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere143; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 45.921261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere144; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 46.221264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere145; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 46.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere146; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 46.821262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere147; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 47.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere148; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 47.421261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere149; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 47.721264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere150; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 48.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere151; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 48.321262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere152; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 48.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere153; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 48.921261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere154; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 49.221264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere155; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 49.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere156; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 49.821262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere157; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 50.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere158; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 50.421261; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere159; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 50.721264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere160; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 51.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere161; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 51.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere162; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 51.621265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere163; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 51.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere164; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 52.221264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere165; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 52.521267; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere166; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 52.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere167; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 53.121265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere168; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 53.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere169; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 53.721264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere170; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 54.021267; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere171; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 54.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere172; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 54.621265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere173; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 54.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere174; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 55.221264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere175; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 55.521267; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere176; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 55.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere177; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 56.121265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere178; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 56.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere179; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 56.721264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere180; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000127; 57.021267; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere181; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 57.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere182; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 57.621265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere183; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 57.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere184; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 58.221264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere185; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 58.521267; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere186; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 58.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere187; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 59.121265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere188; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 59.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere189; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 59.721264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere190; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 60.021267; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere191; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 60.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere192; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 60.621265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere193; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 60.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere194; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 61.221264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere195; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 61.521267; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere196; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 61.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere197; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 62.121265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere198; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 62.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere199; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 62.721264; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere200; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 63.021267; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere201; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 63.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere202; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 63.621265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere203; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 63.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere204; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 64.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere205; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 64.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere206; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 64.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere207; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 65.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere208; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 65.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere209; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 65.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere210; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 66.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere211; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 66.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere212; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 66.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere213; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 66.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere214; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 67.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere215; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 67.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere216; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 67.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere217; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 68.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere218; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 68.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere219; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 68.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere220; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 69.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere221; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 69.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere222; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 69.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere223; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 69.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere224; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 70.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere225; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 70.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere226; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 70.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere227; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 71.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere228; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 71.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere229; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 71.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere230; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 72.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere231; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 72.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere232; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 72.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere233; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 72.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere234; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 73.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere235; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 73.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere236; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 73.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere237; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 74.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere238; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 74.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere239; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 74.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere240; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 75.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere241; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 75.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere242; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 75.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere243; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 75.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere244; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 76.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere245; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 76.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere246; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 76.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere247; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 77.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere248; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 77.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere249; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 77.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere250; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 78.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere251; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 78.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere252; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 78.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere253; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 78.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere254; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 79.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere255; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 79.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere256; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000128; 79.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere257; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 80.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere258; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 80.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere259; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 80.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere260; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 81.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere261; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 81.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere262; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 81.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere263; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 81.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere264; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 82.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere265; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 82.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere266; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 82.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere267; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 83.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere268; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 83.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere269; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 83.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere270; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 84.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere271; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 84.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere272; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 84.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere273; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 84.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere274; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 85.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere275; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 85.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere276; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 85.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere277; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 86.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere278; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 86.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere279; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 86.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere280; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 87.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere281; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 87.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere282; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 87.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere283; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 87.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere284; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 88.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere285; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 88.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere286; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 88.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere287; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 89.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere288; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 89.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere289; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 89.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere290; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 90.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere291; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 90.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere292; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 90.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere293; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 90.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere294; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 91.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere295; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 91.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere296; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 91.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere297; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 92.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere298; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 92.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere299; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 92.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere300; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 93.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere301; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 93.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere302; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 93.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere303; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 93.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere304; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 94.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere305; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 94.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere306; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 94.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere307; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 95.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere308; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 95.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere309; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 95.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere310; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 96.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere311; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 96.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere312; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 96.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere313; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 96.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere314; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 97.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere315; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 97.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere316; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 97.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere317; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 98.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere318; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 98.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere319; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 98.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere320; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 99.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere321; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 99.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere322; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 99.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere323; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 99.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere324; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 100.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere325; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 100.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere326; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 100.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere327; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 101.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere328; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 101.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere329; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 101.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere330; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 102.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere331; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 102.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere332; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 102.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere333; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000129; 102.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere334; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 103.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere335; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 103.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere336; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 103.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere337; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 104.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere338; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 104.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere339; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 104.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere340; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 105.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere341; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 105.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere342; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 105.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere343; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 105.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere344; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 106.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere345; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 106.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere346; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 106.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere347; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 107.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere348; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 107.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere349; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 107.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere350; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 108.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere351; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 108.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere352; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 108.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere353; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 108.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere354; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 109.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere355; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 109.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere356; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 109.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere357; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 110.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere358; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 110.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere359; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 110.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere360; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 111.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere361; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 111.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere362; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 111.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere363; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 111.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere364; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 112.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere365; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 112.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere366; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 112.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere367; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 113.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere368; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 113.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere369; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 113.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere370; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 114.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere371; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 114.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere372; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 114.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere373; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 114.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere374; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 115.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere375; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 115.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere376; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 115.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere377; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 116.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere378; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 116.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere379; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 116.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere380; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 117.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere381; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 117.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere382; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 117.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere383; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 117.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere384; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 118.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere385; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 118.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere386; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 118.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere387; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 119.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere388; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 119.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere389; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 119.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere390; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 120.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere391; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 120.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere392; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 120.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere393; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 120.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere394; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 121.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere395; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 121.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere396; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 121.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere397; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 122.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere398; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 122.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere399; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 122.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere400; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 123.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere401; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 123.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere402; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 123.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere403; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 123.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere404; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 124.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere405; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 124.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere406; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 124.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere407; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 125.121269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere408; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 125.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere409; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000130; 125.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere410; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 126.021263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere411; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 126.321266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere412; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 126.621269; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere413; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 126.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere414; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 127.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere415; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 127.521263; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere416; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 127.821266; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere417; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 128.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere418; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 128.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere419; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 128.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere420; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 129.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere421; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 129.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere422; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 129.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere423; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 129.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere424; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 130.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere425; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 130.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere426; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 130.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere427; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 131.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere428; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 131.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere429; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 131.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere430; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 132.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere431; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 132.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere432; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 132.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere433; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 132.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere434; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 133.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere435; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 133.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere436; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 133.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere437; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 134.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere438; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 134.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere439; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 134.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere440; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 135.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere441; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 135.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere442; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 135.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere443; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 135.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere444; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 136.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere445; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 136.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere446; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 136.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere447; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 137.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere448; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 137.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere449; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 137.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere450; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 138.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere451; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 138.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere452; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 138.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere453; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 138.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere454; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 139.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere455; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 139.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere456; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 139.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere457; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 140.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere458; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 140.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere459; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 140.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere460; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 141.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere461; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 141.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere462; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 141.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere463; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 141.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere464; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 142.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere465; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 142.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere466; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 142.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere467; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 143.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere468; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 143.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere469; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 143.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere470; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 144.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere471; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 144.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere472; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 144.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere473; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 144.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere474; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 145.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere475; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 145.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere476; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 145.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere477; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 146.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere478; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 146.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere479; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 146.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere480; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 147.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere481; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 147.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere482; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 147.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere483; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 147.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere484; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 148.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere485; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000131; 148.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere486; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 148.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere487; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 149.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere488; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 149.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere489; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 149.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere490; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 150.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere491; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 150.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere492; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 150.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere493; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 150.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere494; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 151.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere495; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 151.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere496; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 151.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere497; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 152.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere498; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 152.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere499; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 152.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere500; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 153.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere501; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 153.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere502; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 153.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere503; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 153.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere504; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 154.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere505; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 154.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere506; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 154.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere507; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 155.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere508; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 155.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere509; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 155.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere510; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 156.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere511; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 156.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere512; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 156.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere513; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 156.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere514; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 157.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere515; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 157.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere516; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 157.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere517; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 158.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere518; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 158.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere519; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 158.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere520; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 159.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere521; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 159.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere522; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 159.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere523; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 159.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere524; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 160.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere525; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 160.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere526; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 160.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere527; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 161.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere528; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 161.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere529; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 161.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere530; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 162.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere531; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 162.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere532; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 162.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere533; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 162.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere534; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 163.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere535; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 163.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere536; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 163.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere537; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 164.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere538; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 164.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere539; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 164.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere540; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 165.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere541; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 165.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere542; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 165.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere543; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 165.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere544; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 166.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere545; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 166.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere546; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 166.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere547; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 167.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere548; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 167.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere549; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 167.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere550; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 168.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere551; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 168.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere552; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 168.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere553; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 168.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere554; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 169.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere555; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 169.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere556; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 169.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere557; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 170.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere558; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 170.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere559; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 170.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere560; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 171.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere561; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 171.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere562; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000132; 171.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere563; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 171.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere564; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 172.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere565; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 172.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere566; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 172.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere567; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 173.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere568; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 173.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere569; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 173.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere570; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 174.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere571; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 174.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere572; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 174.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere573; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 174.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere574; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 175.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere575; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 175.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere576; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 175.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere577; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 176.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere578; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 176.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere579; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 176.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere580; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 177.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere581; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 177.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere582; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 177.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere583; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 177.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere584; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 178.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere585; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 178.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere586; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 178.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere587; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 179.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere588; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 179.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere589; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 179.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere590; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 180.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere591; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 180.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere592; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 180.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere593; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 180.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere594; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 181.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere595; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 181.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere596; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 181.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere597; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 182.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere598; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 182.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere599; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 182.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere600; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 183.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere601; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 183.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere602; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 183.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere603; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 183.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere604; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 184.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere605; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 184.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere606; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 184.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere607; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 185.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere608; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 185.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere609; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 185.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere610; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 186.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere611; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 186.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere612; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 186.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere613; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 186.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere614; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 187.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere615; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 187.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere616; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 187.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere617; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 188.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere618; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 188.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere619; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 188.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere620; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 189.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere621; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 189.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere622; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 189.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere623; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 189.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere624; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 190.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere625; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 190.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere626; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 190.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere627; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 191.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere628; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 191.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere629; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 191.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere630; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 192.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere631; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 192.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere632; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 192.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere633; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 192.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere634; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 193.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere635; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 193.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere636; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 193.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere637; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 194.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere638; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000133; 194.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere639; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 194.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere640; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 195.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere641; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 195.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere642; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 195.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere643; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 195.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere644; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 196.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere645; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 196.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere646; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 196.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere647; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 197.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere648; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 197.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere649; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 197.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere650; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 198.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere651; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 198.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere652; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 198.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere653; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 198.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere654; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 199.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere655; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 199.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere656; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 199.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere657; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 200.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere658; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 200.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere659; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 200.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere660; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 201.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere661; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 201.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere662; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 201.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere663; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 201.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere664; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 202.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere665; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 202.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere666; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 202.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere667; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 203.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere668; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 203.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere669; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 203.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere670; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 204.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere671; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 204.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere672; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 204.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere673; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 204.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere674; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 205.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere675; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 205.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere676; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 205.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere677; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 206.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere678; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 206.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere679; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 206.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere680; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 207.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere681; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 207.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere682; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 207.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere683; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 207.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere684; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 208.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere685; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 208.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere686; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 208.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere687; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 209.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere688; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 209.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere689; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 209.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere690; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 210.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere691; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 210.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere692; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 210.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere693; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 210.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere694; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 211.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere695; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 211.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere696; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 211.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere697; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 212.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere698; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 212.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere699; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 212.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere700; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 213.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere701; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 213.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere702; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 213.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere703; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 213.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere704; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 214.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere705; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 214.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere706; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 214.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere707; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 215.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere708; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 215.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere709; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 215.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere710; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 216.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere711; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 216.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere712; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 216.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere713; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 216.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere714; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000134; 217.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere715; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 217.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere716; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 217.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere717; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 218.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere718; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 218.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere719; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 218.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere720; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 219.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere721; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 219.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere722; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 219.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere723; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 219.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere724; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 220.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere725; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 220.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere726; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 220.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere727; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 221.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere728; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 221.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere729; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 221.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere730; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 222.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere731; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 222.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere732; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 222.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere733; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 222.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere734; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 223.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere735; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 223.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere736; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 223.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere737; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 224.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere738; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 224.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere739; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 224.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere740; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 225.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere741; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 225.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere742; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 225.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere743; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 225.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere744; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 226.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere745; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 226.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere746; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 226.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere747; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 227.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere748; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 227.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere749; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 227.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere750; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 228.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere751; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 228.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere752; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 228.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere753; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 228.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere754; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 229.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere755; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 229.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere756; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 229.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere757; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 230.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere758; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 230.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere759; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 230.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere760; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 231.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere761; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 231.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere762; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 231.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere763; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 231.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere764; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 232.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere765; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 232.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere766; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 232.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere767; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 233.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere768; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 233.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere769; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 233.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere770; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 234.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere771; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 234.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere772; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 234.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere773; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 234.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere774; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 235.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere775; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 235.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere776; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 235.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere777; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 236.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere778; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 236.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere779; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 236.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere780; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 237.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere781; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 237.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere782; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 237.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere783; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 237.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere784; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 238.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere785; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 238.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere786; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 238.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere787; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 239.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere788; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 239.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere789; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 239.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere790; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 240.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere791; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000135; 240.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere792; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 240.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere793; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 240.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere794; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 241.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere795; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 241.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere796; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 241.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere797; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 242.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere798; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 242.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere799; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 242.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere800; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 243.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere801; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 243.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere802; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 243.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere803; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 243.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere804; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 244.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere805; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 244.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere806; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 244.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere807; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 245.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere808; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 245.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere809; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 245.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere810; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 246.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere811; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 246.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere812; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 246.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere813; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 246.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere814; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 247.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere815; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 247.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere816; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 247.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere817; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 248.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere818; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 248.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere819; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 248.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere820; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 249.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere821; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 249.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere822; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 249.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere823; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 249.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere824; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 250.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere825; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 250.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere826; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 250.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere827; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 251.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere828; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 251.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere829; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 251.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere830; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 252.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere831; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 252.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere832; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 252.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere833; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 252.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere834; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 253.221268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere835; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 253.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere836; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 253.821274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere837; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 254.121262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere838; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 254.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere839; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 254.721268; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere840; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 255.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere841; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 255.321274; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere842; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 255.621262; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere843; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 255.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere844; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 256.221283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere845; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 256.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere846; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 256.821259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere847; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 257.121277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere848; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 257.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere849; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 257.721283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere850; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 258.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere851; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 258.321259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere852; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 258.621277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere853; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 258.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere854; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 259.221283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere855; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 259.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere856; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 259.821259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere857; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 260.121277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere858; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 260.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere859; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 260.721283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere860; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 261.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere861; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 261.321259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere862; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 261.621277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere863; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 261.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere864; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 262.221283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere865; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 262.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere866; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 262.821259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere867; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000136; 263.121277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere868; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 263.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere869; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 263.721283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere870; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 264.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere871; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 264.321259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere872; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 264.621277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere873; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 264.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere874; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 265.221283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere875; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 265.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere876; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 265.821259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere877; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 266.121277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere878; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 266.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere879; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 266.721283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere880; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 267.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere881; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 267.321259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere882; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 267.621277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere883; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 267.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere884; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 268.221283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere885; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 268.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere886; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 268.821259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere887; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 269.121277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere888; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 269.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere889; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 269.721283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere890; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 270.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere891; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 270.321259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere892; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 270.621277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere893; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 270.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere894; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 271.221283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere895; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 271.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere896; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 271.821259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere897; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 272.121277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere898; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 272.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere899; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 272.721283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere900; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 273.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere901; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 273.321259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere902; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 273.621277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere903; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 273.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere904; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 274.221283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere905; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 274.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere906; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 274.821259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere907; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 275.121277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere908; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 275.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere909; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 275.721283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere910; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 276.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere911; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 276.321259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere912; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 276.621277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere913; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 276.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere914; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 277.221283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere915; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 277.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere916; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 277.821259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere917; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 278.121277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere918; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 278.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere919; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 278.721283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere920; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 279.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere921; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 279.321259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere922; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 279.621277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere923; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 279.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere924; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 280.221283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere925; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 280.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere926; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 280.821259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere927; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 281.121277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere928; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 281.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere929; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 281.721283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere930; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 282.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere931; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 282.321259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere932; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 282.621277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere933; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 282.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere934; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 283.221283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere935; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 283.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere936; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 283.821259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere937; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 284.121277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere938; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 284.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere939; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 284.721283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere940; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 285.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere941; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 285.321259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere942; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 285.621277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere943; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000137; 285.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere944; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 286.221283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere945; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 286.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere946; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 286.821259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere947; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 287.121277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere948; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 287.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere949; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 287.721283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere950; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 288.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere951; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 288.321259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere952; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 288.621277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere953; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 288.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere954; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 289.221283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere955; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 289.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere956; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 289.821259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere957; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 290.121277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere958; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 290.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere959; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 290.721283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere960; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 291.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere961; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 291.321259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere962; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 291.621277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere963; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 291.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere964; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 292.221283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere965; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 292.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere966; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 292.821259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere967; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 293.121277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere968; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 293.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere969; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 293.721283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere970; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 294.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere971; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 294.321259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere972; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 294.621277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere973; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 294.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere974; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 295.221283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere975; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 295.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere976; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 295.821259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere977; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 296.121277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere978; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 296.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere979; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 296.721283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere980; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 297.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere981; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 297.321259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere982; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 297.621277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere983; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 297.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere984; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 298.221283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere985; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 298.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere986; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 298.821259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere987; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 299.121277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere988; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 299.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere989; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 299.721283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere990; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 300.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere991; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 300.321259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere992; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 300.621277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere993; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 300.921265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere994; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 301.221283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere995; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 301.521271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere996; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 301.821259; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere997; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 302.121277; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere998; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 302.421265; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere999; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 302.721283; 0.011577; }
+			scale	{ 1.000000; }
+		}
+		GeoSphere01
+		{
+			name	{ GeoSphere1000; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.000138; 303.021271; 0.011577; }
+			scale	{ 1.000000; }
+		}
+	}
+	Joints
+	{
+	}
+	Lights
+	{
+	}
+	Camera
+	{
+	}
+}

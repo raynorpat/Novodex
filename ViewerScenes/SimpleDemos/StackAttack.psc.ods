@@ -1,0 +1,136 @@
+# intro scene script for demo
+
+Scene
+	{
+	Text
+		{
+		T {"Test setup"; Y{-0.6;} D{2;} S{17;} E{1;}}
+		}
+
+
+
+	PhysStart {1;}
+	PhysDuration   {5000;}
+	DragForce { 50; }
+
+	Bodies
+		{
+		1_Rubik
+			{
+			mass	{40;}				
+			position {40;4;0; }
+			angularVelocity {0; -37.5; 0; }
+			scale {0.04;}
+			#friction { 0.05; }
+			friction { 0.0; }
+			staticFriction { 0.0; }
+			restitution {0.000;} 
+			}
+		# the tower:
+
+		1_Rubik
+			{
+			mass	{40;}				
+			position {0;36;0; }
+			scale {0.05;}
+			friction { 0.5; }
+			restitution {0.000;} 
+			}
+
+		1_Rubik
+			{
+			mass	{40;}				
+			position {0;32;0; }
+			scale {0.05;}
+			friction { 0.5; }
+			restitution {0.000;} 
+			}
+
+		1_Rubik
+			{
+			mass	{40;}				
+			position {0;28;0; }
+			scale {0.05;}
+			friction { 0.5; }
+			restitution {0.000;} 
+			}
+
+		1_Rubik
+			{
+			mass	{40;}				
+			position {0;24;0; }
+			scale {0.05;}
+			friction { 0.5; }
+			restitution {0.000;} 
+			}
+
+		1_Rubik
+			{
+			mass	{40;}				
+			position {0;20;0; }
+			scale {0.05;}
+			friction { 0.5; }
+			restitution {0.000;} 
+			}
+
+		1_Rubik
+			{
+			mass	{40;}				
+			position {0;16;0; }
+			scale {0.05;}
+			friction { 0.5; }
+			restitution {0.000;} 
+			}
+
+		1_Rubik
+			{
+			mass	{40;}				
+			position {0;12;0; }
+			scale {0.05;}
+			friction { 0.5; }
+			restitution {0.000;} 
+			}
+
+		1_Rubik
+			{
+			mass	{40;}				
+			position {0;8;0; }
+			scale {0.05;}
+			friction { 0.5; }
+			restitution {0.000;} 
+			}
+
+
+		1_Rubik
+			{
+			mass	{40;}				
+			position {0;4;0; }
+			scale {0.05;}
+			restitution {0.000;} 
+			}
+
+		}
+
+	Obstacles
+		{
+		1				#unit cube for sense of scale
+			{
+			position { -5; 5; 5; }
+			dimensions {1; 1; 1;}
+			}
+		}
+
+	Lights
+		{
+		1 {5; 22; 7;}
+		2 {5; 2; 17;}
+		}
+
+	Camera
+		{
+		position {-8.703096;4.823647;52.421921;}
+		angles {0.000000;-25.000000;18.000000;}
+		}
+
+
+	}

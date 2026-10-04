@@ -1,0 +1,9 @@
+# ci_houses
+Model3
+{
+	Mesh	{ "ci_houses.obj"; }
+	Groups
+	{
+		Material_6 { "Material #974.mat.ods"; }
+	}
+}

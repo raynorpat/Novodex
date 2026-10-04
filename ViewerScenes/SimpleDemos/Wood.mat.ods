@@ -1,0 +1,10 @@
+#Eraser Material
+Material3
+	{
+#	Shader { vertexArray; }
+	Smooth {1;}
+	Color	 {1; 1; 1; 1; }
+	Specular {1; 1; 1; 1; }
+	SpecExp { 1; }
+	Tex1 {Wood.BMP; }
+	}

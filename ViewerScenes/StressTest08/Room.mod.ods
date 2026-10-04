@@ -1,0 +1,9 @@
+# Room
+Model3
+{
+	Mesh	{ "Room.obj"; }
+	Groups
+	{
+		Material_1 { "3_-_Default.mat.ods"; }
+	}
+}

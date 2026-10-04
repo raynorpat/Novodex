@@ -1,0 +1,261 @@
+# intro scene script for demo
+
+
+Scene
+	{
+
+	PhysStart {1;}
+	PhysDuration   {120;}
+	DragForce { 50; }
+	gravity { 0; -9; 0; }
+	#gravity { 0; 0; 0; }
+	collDet { 1; }
+	gridRes { 5; }
+
+	Text
+		{
+		T {"kinematically controlled ez disks,"; Y{-0.7;} D{5;} S{16;} N{0.1;} }
+		T {"and a ruler with animated center of mass"; Y{-0.8;} D{5;} S{16;} }
+		}
+
+	Parameters
+		{
+		RigidBodySDK
+			{
+			PENALTY_FORCE { 0.6; }
+			}
+		}
+	
+
+
+	Bodies
+		{
+
+# table 1
+		Rubik
+			{
+			mass	{10;}				
+			position {-5;1.8;1; }
+			scale {0.015;}
+			friction {0.5;}
+			}
+
+		Rubik
+			{
+			mass	{10;}				
+			position {-5;2.7;1; }
+			scale {0.015;}
+			friction {0.5;}
+			}
+		Ez
+			{
+			name { vertPlate; }
+
+			#mass	{0;}
+			#mass	{1000;}
+
+			mass	{1;}
+
+			angles {90; 180; 0;}
+			#position {-5; 1.2; 0.75; }
+			position {-5; 0.2; 0.75; }
+			friction {0.2;}
+			scale {0.02;}
+
+			Behaviors
+				{
+				translation { destination {-5; 5; 0.75; } speed { 0.7; }  }
+				}
+			}
+
+# table 2
+		Rubik
+			{
+			mass	{10;}				
+			position {0;1.8;1; }
+			scale {0.015;}
+			friction {0.5;}
+			}
+
+		Rubik
+			{
+			mass	{10;}				
+			position {0;2.7;1; }
+			scale {0.015;}
+			friction {0.5;}
+			}
+		Ez
+			{
+			name { horizPlate; }
+			#mass	{0;}				
+			mass	{1;}
+
+			angles {90; 180; 0;}
+			position {0; 1.2; 0.75; }
+			friction {0.2;}
+			scale {0.02;}
+
+			Behaviors
+				{
+				translation { destination {5; 1.2; 0.75; } speed { 0.25; }  }
+				}
+
+			}
+
+
+		Ez
+			{
+			mass	{0;}				
+			angles { 0; 90; 0; }
+
+			position {5; 1.2; 0.75; }
+			scale {0.02;}
+			}
+
+
+
+# table 3
+		Rubik
+			{
+			mass	{10;}				
+			position {-5;1.8;-5; }
+			scale {0.015;}
+			friction {0.5;}
+			}
+
+		Rubik
+			{
+			mass	{10;}				
+			position {-5;2.7;-5; }
+			scale {0.015;}
+			friction {0.5;}
+			}
+		Ez
+			{
+			name { rotPlate; }
+			#mass	{0;}				
+			mass	{1;}
+			angles {90; 180; 0;}
+			position {-5; 1.2; -4; }
+			friction {0.2;}
+			scale {0.02;}
+
+		Behaviors
+				{
+				rotation { destinationAngles {90; 0; 0; } speed { 0.3; }  }
+				}
+			}
+# table 4
+		Rubik
+			{
+			mass	{10;}				
+			position {0;1.8;-5; }
+			scale {0.015;}
+			friction {0.5;}
+			}
+
+		Rubik
+			{
+			mass	{10;}				
+			position {0;2.7;-5; }
+			scale {0.015;}
+			friction {0.5;}
+			}
+
+		Rubik
+			{
+			name { smallBox1; }
+			mass	{10;}				
+			position {-1.7;0.9; -5.7; }
+			scale {0.01;}
+			friction {0.5;}
+			}
+		Rubik
+			{
+			name { smallBox2; }
+			mass	{5;}				
+			position {-1.7;0.3; -5.7; }
+			scale {0.006;}
+			friction {0.0;}
+			}
+
+		Ez
+			{
+			name { comboPlate; }
+			#mass	{0;}				
+			mass	{1;}
+			angles {90; 180; 0;}
+			position {0; 1.2; -4; }
+			friction {0.2;}
+			scale {0.02;}
+
+		Behaviors
+				{
+				translation { destination {5; 5; -4; } speed { 0.5; }  }
+				rotation { destinationAngles {90; 0; 0; } speed { 0.3; }  }
+				}
+
+			}
+
+
+
+#balance
+
+		Ruler
+			{
+			name { balance; }
+			mass	{20;}				
+			angles {270; 180; 0;}
+			position {0;1;3; }
+			friction {0.5;}
+			scale {0.035;}
+			centerOfMass { -3; 0; 0; }
+
+			Behaviors
+				{
+				translation { destination { 3; 0; 0; } speed { 0.1; } COM; }
+				}
+
+
+			}
+
+
+		}
+
+	Joints
+		{
+		Hinge
+			{
+			anchor  {0;1;3; }
+			direction { 0; 0; 1; }
+			bodies { WORLD; balance; }
+			Lagrange;
+			}
+
+		Spherical 
+			{
+			bodies { comboPlate; smallBox1; }
+			anchor {-1.5;1.1; -5.5; }
+
+			}
+		Spherical 
+			{
+			bodies { smallBox1; smallBox2; }
+			anchor {-1.5;0.4; -5.5; }
+
+			}
+
+		}
+
+	Lights
+		{
+		1 {5; 25; -17;}
+		2 {-5; 20; 10;}
+		}
+
+	Camera
+		{
+		position {-11.917711;10.367029;7.070704;}
+		angles {0.000000;-53.000000;-35.000000;}
+		}
+	}

@@ -1,0 +1,9 @@
+# garbadgecanwheels
+Model3
+{
+	Mesh	{ "garbagecanwheels.obj"; }
+	Groups
+	{
+		Material_5 { "CUBOGORU.mat.ods"; }
+	}
+}

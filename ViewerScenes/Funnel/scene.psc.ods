@@ -1,0 +1,521 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 1000; }
+	DragForce	{ 40; }
+	gravity	{ 0.000000; -9.810000; 0.000000; }
+	collDet	{ 1; }
+	noGroundPlane;
+	gridRes	{ 0; }
+	simStepSize	{ 0.010000; }
+
+
+	Parameters
+		{
+		RigidBodySDK
+			{
+			MIN_SEPARATION_FOR_PENALTY { -0.001; }
+			}
+		}
+	Bodies
+	{
+	YPlane
+	{
+	mass { 0; }
+	position { 0; 0; 0; }
+	orientation {1; 0; 0; 0; }
+	}
+		Box01
+		{
+			# Joint name
+			name	{ Box01Joint; }
+			# PRS
+			orientation	{ -0.955302; 0.139127; 0.068283; -0.251753; }
+			position	{ 0.465311; -0.255332; 0.481476; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 0.000000; }
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box02
+		{
+			# Joint name
+			name	{ Box02Joint; }
+			# PRS
+			orientation	{ -0.139127; -0.955302; 0.251753; 0.068283; }
+			position	{ -0.487844; -0.255332; 0.481476; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 0.000000; }
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box03
+		{
+			# Joint name
+			name	{ Box03Joint; }
+			# PRS
+			orientation	{ -0.068283; -0.251753; -0.955302; -0.139127; }
+			position	{ -0.487844; -0.255332; -0.498524; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 0.000000; }
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box04
+		{
+			# Joint name
+			name	{ Box04Joint; }
+			# PRS
+			orientation	{ 0.251753; -0.068283; 0.139127; -0.955302; }
+			position	{ 0.465311; -0.255332; -0.498524; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 0.000000; }
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box05
+		{
+			# Joint name
+			name	{ Box05Joint; }
+			# PRS
+			orientation	{ -0.707107; 0.000000; 0.000000; -0.707107; }
+			position	{ -0.059884; 0.902435; -0.444444; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box06
+		{
+			# Joint name
+			name	{ Box06Joint; }
+			# PRS
+			orientation	{ -0.707107; 0.000000; 0.000000; -0.707107; }
+			position	{ -0.019998; 0.856851; -0.116809; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box07
+		{
+			# Joint name
+			name	{ Box07Joint; }
+			# PRS
+			orientation	{ -0.707107; 0.000000; 0.000000; -0.707107; }
+			position	{ -0.037092; 0.851153; 0.139601; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box08
+		{
+			# Joint name
+			name	{ Box08Joint; }
+			# PRS
+			orientation	{ -0.707107; 0.000000; 0.000000; -0.707107; }
+			position	{ -0.079827; 0.643176; 0.660968; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box09
+		{
+			# Joint name
+			name	{ Box09Joint; }
+			# PRS
+			orientation	{ -0.707107; 0.000000; 0.000000; -0.707107; }
+			position	{ -0.054186; 0.472236; 0.307692; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box10
+		{
+			# Joint name
+			name	{ Box10Joint; }
+			# PRS
+			orientation	{ -0.707107; 0.000000; 0.000000; -0.707107; }
+			position	{ -0.048488; 0.463689; -0.495726; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box11
+		{
+			# Joint name
+			name	{ Box11Joint; }
+			# PRS
+			orientation	{ -0.707107; 0.000000; 0.000000; -0.707107; }
+			position	{ -0.022847; 0.472236; -0.139601; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box12
+		{
+			# Joint name
+			name	{ Box12Joint; }
+			# PRS
+			orientation	{ -0.707107; 0.000000; 0.000000; -0.707107; }
+			position	{ -0.057035; 0.523518; -0.837607; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box13
+		{
+			# Joint name
+			name	{ Box13Joint; }
+			# PRS
+			orientation	{ -0.707107; 0.000000; 0.000000; -0.707107; }
+			position	{ -0.034243; 0.734344; -0.649573; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box14
+		{
+			# Joint name
+			name	{ Box14Joint; }
+			# PRS
+			orientation	{ -0.707107; 0.000000; 0.000000; -0.707107; }
+			position	{ -0.039941; 0.318390; -0.259259; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box15
+		{
+			# Joint name
+			name	{ Box15Joint; }
+			# PRS
+			orientation	{ -0.707107; 0.000000; 0.000000; -0.707107; }
+			position	{ -0.059884; 0.212977; 0.113960; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box16
+		{
+			# Joint name
+			name	{ Box16Joint; }
+			# PRS
+			orientation	{ -0.707107; 0.000000; 0.000000; -0.707107; }
+			position	{ -0.085525; 0.369672; 0.589743; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box10
+		{
+			# Joint name
+			name	{ Box17Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ -0.401835; 0.462681; -0.495726; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box11
+		{
+			# Joint name
+			name	{ Box18Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ -0.376194; 0.471228; -0.139601; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box07
+		{
+			# Joint name
+			name	{ Box19Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ -0.390439; 0.850145; 0.139601; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box12
+		{
+			# Joint name
+			name	{ Box20Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ -0.410382; 0.522510; -0.837607; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box09
+		{
+			# Joint name
+			name	{ Box21Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ -0.407533; 0.471228; 0.307692; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box13
+		{
+			# Joint name
+			name	{ Box22Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ -0.387590; 0.733336; -0.649572; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box06
+		{
+			# Joint name
+			name	{ Box23Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ -0.373345; 0.855843; -0.116809; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box08
+		{
+			# Joint name
+			name	{ Box24Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ -0.433174; 0.642168; 0.660968; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box05
+		{
+			# Joint name
+			name	{ Box25Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ -0.413231; 0.901427; -0.444444; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box14
+		{
+			# Joint name
+			name	{ Box26Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ -0.393288; 0.317382; -0.259259; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box15
+		{
+			# Joint name
+			name	{ Box27Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ -0.413231; 0.211969; 0.113960; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box16
+		{
+			# Joint name
+			name	{ Box28Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ -0.438872; 0.368664; 0.589743; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box10
+		{
+			# Joint name
+			name	{ Box29Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ 0.345035; 0.455977; -0.495726; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box11
+		{
+			# Joint name
+			name	{ Box30Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ 0.370676; 0.464524; -0.139601; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box07
+		{
+			# Joint name
+			name	{ Box31Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ 0.356432; 0.843441; 0.139601; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box12
+		{
+			# Joint name
+			name	{ Box32Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ 0.336488; 0.515806; -0.837607; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box09
+		{
+			# Joint name
+			name	{ Box33Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ 0.339337; 0.464524; 0.307692; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box13
+		{
+			# Joint name
+			name	{ Box34Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ 0.359280; 0.726632; -0.649572; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box06
+		{
+			# Joint name
+			name	{ Box35Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ 0.373526; 0.849139; -0.116809; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box08
+		{
+			# Joint name
+			name	{ Box36Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ 0.313696; 0.635464; 0.660968; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box05
+		{
+			# Joint name
+			name	{ Box37Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ 0.333640; 0.894723; -0.444444; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box14
+		{
+			# Joint name
+			name	{ Box38Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ 0.353582; 0.310678; -0.259259; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box15
+		{
+			# Joint name
+			name	{ Box39Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ 0.333639; 0.205265; 0.113960; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+		Box16
+		{
+			# Joint name
+			name	{ Box40Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ 0.307998; 0.361960; 0.589743; }
+			scale	{ 1.000000; }
+			# Physical properties
+			friction { 0; }
+			staticFriction { 0; }
+		}
+	}
+	Lights
+	{
+	}
+	Camera
+	{
+	position {-0.757983;1.243582;1.999039;}
+	angles {0.000000;-20.000000;-33.000000;}
+	}
+}

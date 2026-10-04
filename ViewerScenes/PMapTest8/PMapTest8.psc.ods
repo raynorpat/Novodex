@@ -1,0 +1,113 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 1000; }
+	DragForce	{ 100; }
+	gravity	{ 0.000000; -9.810000; 0.000000; }
+	gridRes	{ 0; }
+	simStepSize	{ 0.010000; }
+
+	Parameters	{
+	RigidBodySDK
+	{
+	MIN_SEPARATION_FOR_PENALTY { -0.02; }
+	}
+	}
+
+	Bodies
+	{
+		Torus01
+		{
+			name	{ Torus01; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.313558; 2.012137; 0.439244; }
+			scale	{ 1.000000; }
+			friction	{ 0.000000; }
+			staticFriction	{ 0.000000; }
+		}
+		Torus_Knot01
+		{
+			name	{ Torus_Knot01; }
+			orientation	{ -0.929308; -0.089107; -0.089107; -0.347140; }
+			position	{ -0.000000; 2.714695; 1.871410; }
+			scale	{ 1.000000; }
+			mass	{ 0.000000; }
+			friction	{ 0.000000; }
+			staticFriction	{ 0.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus02; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.313558; 2.247266; 0.403631; }
+			scale	{ 1.000000; }
+			friction	{ 0.000000; }
+			staticFriction	{ 0.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus03; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.313558; 2.473565; 0.360896; }
+			scale	{ 1.000000; }
+			friction	{ 0.000000; }
+			staticFriction	{ 0.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus04; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.313558; 2.707953; 0.353774; }
+			scale	{ 1.000000; }
+			friction	{ 0.000000; }
+			staticFriction	{ 0.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus05; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.313558; 3.626606; 0.618269; }
+			scale	{ 1.000000; }
+			friction	{ 0.000000; }
+			staticFriction	{ 0.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus06; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.313558; 3.392218; 0.467734; }
+			scale	{ 1.000000; }
+			friction	{ 0.000000; }
+			staticFriction	{ 0.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus07; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.313558; 3.165919; 0.397471; }
+			scale	{ 1.000000; }
+			friction	{ 0.000000; }
+			staticFriction	{ 0.000000; }
+		}
+		Torus01
+		{
+			name	{ Torus08; }
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.313558; 2.930791; 0.347614; }
+			scale	{ 1.000000; }
+			friction	{ 0.000000; }
+			staticFriction	{ 0.000000; }
+		}
+	}
+	Joints
+	{
+	}
+	Lights
+	{
+	}
+	Camera
+	{
+		position {-5.597733;2.430040;2.132483;}
+		angles {0.000000;-84.000000;0.000000;}
+	}
+}

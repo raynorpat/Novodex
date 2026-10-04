@@ -768,11 +768,10 @@ static __declspec(noinline) void cpmOpen002354(void* streamObject)
 // (PhysicsSDK.cpp gShapePairFunctionTable), (shape0, shape1, pair, scene).
 static __declspec(noinline) void cpmOpen002348(NxU8* shape0, NxU8* shape1, NxActorPair* pair, NxSceneInternal* scene)
 	{
-	(void)scene;
 	NxDispatchShapePair(NxGetCollisionDispatchMatrix(),
 		reinterpret_cast<const NxCollisionShape*>(shape0),
 		reinterpret_cast<const NxCollisionShape*>(shape1),
-		pair, 0);
+		pair, scene);
 	}
 
 static NxU32 cpmPairHash(const CpmPairHash* hash, NxU32 key0, NxU32 key1)

@@ -1,8 +1,20 @@
-cmake_minimum_required(VERSION 3.2...3.16)
+cmake_minimum_required(VERSION 3.16...3.31)
 
 project(Novodex VERSION 2.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 11)
+enable_testing()
+
+# Graphics is reconstructed separately from the shipped VC6 archive.
+if(WIN32)
+	add_subdirectory(Graphics)
+endif()
+
+set(NOVODEX_VIEWER_DEFAULT OFF)
+if(WIN32 AND MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+	set(NOVODEX_VIEWER_DEFAULT ON)
+endif()
+option(NOVODEX_BUILD_VIEWER "Build the legacy Windows viewer" ${NOVODEX_VIEWER_DEFAULT})
 
 #### FOUNDATION ####
 
@@ -935,3 +947,18 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# override the first, which would leave the first untestable -- the mutation
 	# that removes NarrowPhase.cpp from it moved nothing until this was deleted.
 endif()
+
+#### VIEWER ####
+set(NOVODEX_INSTALL_TARGETS NxFoundation NxPhysics)
+if(NOVODEX_BUILD_VIEWER)
+    add_subdirectory(Viewer)
+    list(APPEND NOVODEX_INSTALL_TARGETS Viewer)
+endif()
+
+# Keep installed SDK libraries and the viewer together in the project root,
+# including when an existing build cache has another install prefix.
+install(TARGETS ${NOVODEX_INSTALL_TARGETS}
+    RUNTIME DESTINATION "${PROJECT_SOURCE_DIR}/Bin"
+    LIBRARY DESTINATION "${PROJECT_SOURCE_DIR}/Bin"
+    ARCHIVE DESTINATION "${PROJECT_SOURCE_DIR}/Bin"
+)

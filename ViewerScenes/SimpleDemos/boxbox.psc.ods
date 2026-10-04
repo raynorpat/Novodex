@@ -1,0 +1,127 @@
+# intro scene script for demo
+
+Scene
+	{
+	Text
+		{
+		T {"Test setup"; Y{-0.6;} D{2;} S{17;} E{1;}}
+		}
+ 
+
+
+	PhysStart {0.5;}
+	PhysDuration   {150;}
+	simStepSize { 0.02; }
+	DragForce { 50; }
+
+	#gravity { 0; 0; 0; }
+
+	Space
+		{
+		#noCollDet; 
+		worldBox { 0; 10; 0; 0; -2; 2; }
+		cellsize { 1; }
+		memory { 1021; }
+		}
+
+
+	Bodies
+		{
+		1_Rubik
+			{
+			name { top; }
+			mass	{10;}				
+
+			position {0.6;4;0; }			
+			angles {45; 0; -15; }
+
+			#position {0.1;4;0.1; }#2.918
+			scale {0.0165;}			#unit cube this way (0.501 radius!)
+			restitution {0;} 
+			}
+		1_Rubik
+			{
+			mass	{10;}				
+			position {2;4;0.1; }#2.918
+			scale {0.0165;}			#unit cube this way (0.501 radius!)
+			restitution {0;} 
+			}
+
+
+		1_Rubik
+			{
+			mass	{10;}				
+			position {4;4;0.1; }#2.918
+			scale {0.0165;}			#unit cube this way (0.501 radius!)
+			restitution {0;} 
+			}
+		1_Rubik
+			{
+			mass	{10;}				
+			position {6;4;0.1; }#2.918
+			scale {0.0165;}			#unit cube this way (0.501 radius!)
+			restitution {0;} 
+			}
+
+
+
+
+
+
+		1_Rubik
+			{
+			name	{ bottom; }
+			mass	{0;}				
+			position {0;2;0; }
+			scale {0.0165;}			#unit cube this way (0.501 radius!)
+			restitution {0;} 
+			}
+		1_Rubik
+			{
+			mass	{0;}				
+			position {2;2;0; }
+			scale {0.02;}	
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{0;}	
+			position {4;2;0; }
+			scale {0.04;}	
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{0;}	
+			position {6;2;0; }
+			scale {0.001;}	
+			restitution {0;} 
+			}
+
+		Ruler
+			{
+			mass	{0;}	
+			position {3;4;0; }
+			scale {0.01;}	
+			restitution {0;} 
+			}
+
+		}
+
+
+	Lights
+		{
+		1 {5; 22; 7;}
+		2 {5; 2; 17;}
+		}
+
+	Camera
+		{
+		position {4.070147;3.874515;4.938862;}
+		angles {0.000000;41.000000;-12.000000;}
+		}
+
+
+	}

@@ -1,0 +1,9 @@
+# Zylinder01
+Model3
+{
+	Mesh	{ "Zylinder01.obj"; }
+	Groups
+	{
+		Material_3 { "Wood.mat.ods"; }
+	}
+}

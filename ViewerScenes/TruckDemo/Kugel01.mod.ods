@@ -1,0 +1,8 @@
+# Kugel01
+Model3
+{
+	Mesh	{ "Kugel01.obj"; }
+	Groups
+	{
+	}
+}

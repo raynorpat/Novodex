@@ -1,0 +1,9 @@
+# Rohr02
+Model3
+{
+	Mesh	{ "Rohr02.obj"; }
+	Groups
+	{
+		DefaultMaterial { "Default.mat.ods"; }
+	}
+}

@@ -1,0 +1,9 @@
+# Teapot01
+Model3
+{
+	Mesh	{ "Teapot01.obj"; }
+	Groups
+	{
+		DefaultMaterial { "Default.mat.ods"; }
+	}
+}

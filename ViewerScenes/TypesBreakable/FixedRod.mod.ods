@@ -1,0 +1,9 @@
+# FixedRod
+Model3
+{
+	Mesh	{ "FixedRod.obj"; }
+	Groups
+	{
+		Material_0 { "08_-_Standard.mat.ods"; }
+	}
+}

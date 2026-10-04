@@ -1,0 +1,38 @@
+# intro scene script for demo
+
+Scene
+	{
+	Text
+		{
+		T {"Restitution Test"; Y{-0.6;} D{2;} S{17;} E{1;}}
+		}
+
+
+
+	PhysStart {1;}
+	PhysDuration   {200;}
+	DragForce { 30; }
+
+
+	Bodies
+		{
+		Ball
+			{
+			position {15;1;6; }
+			angularVelocity { 2; 0; 0; }
+			}
+		}
+
+	Lights
+		{
+		1 {5; 22; 7;}
+		2 {5; 2; 17;}
+		}
+
+	Camera
+		{
+		position {0.180690;11.937024;23.418652;}
+		angles {0.000000;-19.000000;-17.000000;}
+		}
+
+	}

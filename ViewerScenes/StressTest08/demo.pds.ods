@@ -1,0 +1,105 @@
+PDS
+{
+	Acts
+	{
+		"Physics_StressTest08.psc.ods";
+	}
+	Models
+	{
+		GeoSphere01	{ "GeoSphere01.mod.ods"; }
+		Room	{ "Room.mod.ods"; }
+		Box01	{ "Box01.mod.ods"; }
+	}
+	Actors
+	{
+		GeoSphere01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"GeoSphere01";
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+#					radius	{ 0.400000; }
+					radius	{ 0.420000; }
+				}
+			}
+		}
+		Room
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Room";
+					}
+				}
+			}
+			Collision
+			{
+				Plane
+				{
+				normal	{ -1.000000; 0.000000; 0.000000; }
+				d	{ -2.977807; }
+				}
+				Plane
+				{
+				normal	{ 1.000000; 0.000000; 0.000000; }
+				d	{ -7.643246; }
+				}
+				Plane
+				{
+				normal	{ 0.000000; -1.000000; 0.000000; }
+				d	{ -2.256404; }
+				}
+				Plane
+				{
+				normal	{ 0.000000; 1.000000; 0.000000; }
+				d	{ 0.000000; }
+				}
+				Plane
+				{
+				normal	{ 0.000000; 0.000000; -1.000000; }
+				d	{ -3.936514; }
+				}
+				Plane
+				{
+				normal	{ 0.000000; 0.000000; 1.000000; }
+				d	{ -5.020727; }
+				}
+			}
+		}
+		Box01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box01";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; -0.000000; 0.000000; }
+#					dimensions	{ 0.400000; 0.400000; 0.400000; }
+					dimensions	{ 0.450000; 0.450000; 0.450000; }
+				}
+			}
+		}
+	}
+}

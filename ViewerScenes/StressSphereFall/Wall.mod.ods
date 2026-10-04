@@ -1,0 +1,9 @@
+# Wall
+Model3
+{
+	Mesh	{ "Wall.obj"; }
+	Groups
+	{
+		Material_0 { "1_-_Default.mat.ods"; }
+	}
+}

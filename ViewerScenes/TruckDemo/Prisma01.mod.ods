@@ -1,0 +1,9 @@
+# Prisma01
+Model3
+{
+	Mesh	{ "Prisma01.obj"; }
+	Groups
+	{
+		Material_4 { "Material #978.mat.ods"; }
+	}
+}

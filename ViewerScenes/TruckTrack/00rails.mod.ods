@@ -1,0 +1,12 @@
+# 00rails
+Model3
+{
+	Mesh	{ "00rails.obj"; }
+	Groups
+	{
+		Material_2 { "bridge01.mat.ods"; }
+		Material_3 { "03bahnauusen.mat.ods"; }
+		Material_4 { "Rail01.mat.ods"; }
+		Material_5 { "Rail02.mat.ods"; }
+	}
+}

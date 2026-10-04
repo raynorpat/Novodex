@@ -1,0 +1,89 @@
+# intro scene script for demo
+
+
+Scene
+	{
+
+	PhysStart {1;}
+	PhysDuration   {120;}
+	DragForce { 50; }
+	gravity { 0; -9; 0; }	#-9
+	collDet { 1; }
+	gridRes { 5; }
+	#simStepSize { 0.0166; }
+	#simStepSize { 0.001; }
+	#simStepSize { 0.2; }
+
+	
+	Parameters
+		{
+		RigidBodySDK
+			{
+#			MIN_SEPARATION_FOR_PENALTY { -0.01; }
+#			MIN_SEPARATION_FOR_PENALTY { -1; }
+			PENALTY_FORCE { 0.9; }
+			}
+		}
+	
+
+	Bodies
+		{
+/*
+		Floppy
+			{
+			mass	{0;}				
+			angles {-90; 0; 0;}
+			position {0;1;0; }
+			scale {0.25;}
+
+			restitution { 0; }
+			friction {0;}
+			staticFriction {0;}
+			}
+*/
+		Eraser
+			{
+			mass	{30;}				
+			#position {3; 3.2;0; }
+			position {3; -1;0; }
+			scale {0.035;}
+			#wake { 10000; }
+			    
+			restitution { 0; }
+			friction {0;}
+			staticFriction {0;}
+			wake { 100000; }
+			}
+/*
+		Ball
+			{
+			mass	{30;}				
+			position {0; 1.5;0; }
+			    
+			restitution { 0; }
+			friction {0;}
+			staticFriction {0;}
+			}
+*/	
+	
+	
+
+		}
+
+
+
+	Lights
+		{
+		1 {5; 25; -17;}
+		2 {-5; 20; 10;}
+		}
+
+	Camera
+		{
+		position {5.438192;1.733910;3.437454;}
+		angles {0.000000;58.000000;3.000000;}
+		}
+
+
+
+	}

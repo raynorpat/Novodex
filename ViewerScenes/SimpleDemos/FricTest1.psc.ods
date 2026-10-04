@@ -1,0 +1,100 @@
+# tests friction and arbitrary planes (second plane is invisible, a slope to the right)
+
+Scene
+	{
+	Text
+		{
+		T {"Test setup"; Y{-0.6;} D{2;} S{17;} E{1;}}
+		}
+
+
+
+	PhysStart {0.5;}
+	PhysDuration   {150;}
+	simStepSize { 0.02; }
+	DragForce { 50; }
+	noGroundPlane;
+
+
+	Bodies
+		{
+
+
+		1_Rubik
+			{
+			mass	{40;}				
+			position {0;2.5;2; }
+			linearVelocity {3.5;0;0;}
+			scale {0.0165;}			#unit cube this way (0.501 radius!)
+			friction { 0.5;}		#had 0.8 to 0.05
+			staticFriction {0.5; }
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{40;}				
+			position {0;2.5;4; }
+			linearVelocity {3.5;0;0;}
+			scale {0.0165;}			#unit cube this way (0.501 radius!)
+			friction { 0.5;}		#had 0.8 to 0.05
+			staticFriction {0.25; }
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{40;}				
+			position {0;2.5;6; }
+			linearVelocity {3.5;0;0;}
+			scale {0.0165;}			#unit cube this way (0.501 radius!)
+			friction { 0.05;}		#had 0.8 to 0.05
+			staticFriction {0.05; }
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{40;}				
+			position {0;2.5;8; }
+			linearVelocity {3.5;0;0;}
+			scale {0.0165;}			#unit cube this way (0.501 radius!)
+			friction { 0.005;}		#had 0.8 to 0.05
+			staticFriction {0.005; }
+			restitution {0;} 
+			}
+
+		__YPlane
+			{
+			mass	{0;}
+			}
+
+		ZPlane
+			{
+			mass	{0;}
+			}
+
+		Ball 
+		{
+		position { 3; 0; 0; }
+		}
+		Caps 
+		{
+
+		}
+		}
+
+	Lights
+		{
+		1 {5; 22; 7;}
+		2 {5; 2; 17;}
+		}
+
+	Camera
+		{
+		position {-8.246276;9.278854;-1.761430;}
+		angles {0.000000;-115.000000;-40.000000;}
+		}
+
+
+	}

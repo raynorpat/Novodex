@@ -1,0 +1,9 @@
+# ci_sidewalk_incorner03
+Model3
+{
+	Mesh	{ "ci_sidewalk_incorner03.obj"; }
+	Groups
+	{
+		Material_25 { "street incorner.mat.ods"; }
+	}
+}

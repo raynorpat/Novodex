@@ -1,0 +1,377 @@
+// 0x1c ??0Material@SceneGraph@@QAE@XZ
+SceneGraph::Material *__thiscall SceneGraph::Material::Material(SceneGraph::Material *this)
+{
+  *((_BYTE *)this + 60) = HIBYTE(this);
+  *((_DWORD *)this + 16) = 0;
+  *((_DWORD *)this + 17) = 0;
+  *((_DWORD *)this + 18) = 0;
+  *((_DWORD *)this + 11) = 0;
+  *((_DWORD *)this + 10) = 0;
+  *((_DWORD *)this + 9) = 0;
+  *(_DWORD *)this = 1065353216;
+  *((_DWORD *)this + 1) = 1065353216;
+  *((_DWORD *)this + 2) = 1065353216;
+  *((_DWORD *)this + 3) = 1065353216;
+  *((_DWORD *)this + 4) = 1065353216;
+  *((_DWORD *)this + 5) = 1065353216;
+  *((_DWORD *)this + 6) = 1065353216;
+  *((_DWORD *)this + 7) = 1065353216;
+  *((_DWORD *)this + 12) = 0;
+  *((_DWORD *)this + 8) = 1065353216;
+  *((_DWORD *)this + 13) = 1;
+  *((_BYTE *)this + 56) = 0;
+  return this;
+}
+
+// 0x6c ??1Material@SceneGraph@@QAE@XZ
+void __thiscall SceneGraph::Material::~Material(SceneGraph::Material *this)
+{
+  int v2; // eax
+  _BYTE *v3; // ecx
+  char v4; // al
+
+  v2 = *((_DWORD *)this + 16);
+  if ( v2 != 0 )
+  {
+    v3 = (_BYTE *)(v2 - 1);
+    v4 = *(_BYTE *)(v2 - 1);
+    if ( v4 == 0 || v4 == -1 )
+      operator delete(a1: v3);
+    else
+      *v3 = v4 - 1;
+  }
+  *((_DWORD *)this + 16) = 0;
+  *((_DWORD *)this + 17) = 0;
+  *((_DWORD *)this + 18) = 0;
+}
+
+// 0xac ?load@Material@SceneGraph@@QAEXPBD@Z
+void __thiscall SceneGraph::Material::load(SceneGraph::Material *this, char *a2)
+{
+  const char *v2; // esi
+  char *v4; // edi
+  struct _iobuf *v5; // eax
+  int v6; // eax
+  ODBlock *Script; // eax
+  ODBlock *v8; // ebx
+  SceneGraph::Scene *Instance; // esi
+  struct SceneGraph::Texture *Texture; // eax
+  SceneGraph::Texture *v11; // eax
+  SceneGraph::Texture *v12; // eax
+  struct SceneGraph::Texture *v13; // eax
+  SceneGraph::Texture *v14; // eax
+  SceneGraph::Texture *v15; // eax
+  struct SceneGraph::Texture *v16; // eax
+  SceneGraph::Texture *v17; // eax
+  SceneGraph::Texture *v18; // eax
+  int v19; // edx
+  int v20; // eax
+  char *v21; // [esp+64h] [ebp-C4h]
+  char *v22; // [esp+64h] [ebp-C4h]
+  char *v23; // [esp+64h] [ebp-C4h]
+  char *v24; // [esp+7Ch] [ebp-ACh] BYREF
+  SceneGraph::Texture *v25; // [esp+80h] [ebp-A8h]
+  char *v26; // [esp+84h] [ebp-A4h]
+  char *v27; // [esp+88h] [ebp-A0h] BYREF
+  char *v28[2]; // [esp+8Ch] [ebp-9Ch] BYREF
+  _DWORD v29[9]; // [esp+94h] [ebp-94h] BYREF
+  void *v30; // [esp+D8h] [ebp-50h]
+  char v31; // [esp+DCh] [ebp-4Ch]
+  _BYTE v32[4]; // [esp+E0h] [ebp-48h] BYREF
+  FILE *Stream; // [esp+E4h] [ebp-44h]
+  _DWORD v34[13]; // [esp+E8h] [ebp-40h] BYREF
+  unsigned int v35[2]; // [esp+11Ch] [ebp-Ch] BYREF
+  int v36; // [esp+124h] [ebp-4h]
+
+  v36 = -1;
+  v35[1] = (unsigned int)&_L32043;
+  v35[0] = __readfsdword((unsigned int)&_except_list);
+  __writefsdword((unsigned int)&_except_list, (unsigned int)v35);
+  v2 = a2;
+  v4 = (char *)strlen(a2);
+  v26 = v4;
+  if ( (unsigned __int8)std::string::_Grow(a1: v4, a2: 1) != 0 )
+  {
+    qmemcpy(*((void **)this + 16), a2, (unsigned int)v4);
+    v2 = a2;
+    *((_DWORD *)this + 17) = v4;
+    v4[*((_DWORD *)this + 16)] = 0;
+  }
+  v28[0] = (char *)&std::ifstream::`vbtable';
+  std::ios_base::ios_base(this: (std::ios_base *)v34);
+  v34[0] = &std::ios::`vftable';
+  v26 = (_BYTE *)(_S18 + 1);
+  v36 = 0;
+  std::istream::istream(a1: v29, a2: 0, a3: 0);
+  v36 = 1;
+  v25 = (SceneGraph::Texture *)v29;
+  std::streambuf::streambuf(a1: v29);
+  std::locale::locale(this: (std::locale *)v32);
+  LOBYTE(v36) = 3;
+  v29[0] = &std::filebuf::`vftable';
+  std::filebuf::_Init(a1: 0, a2: 0);
+  v34[0] = &std::ifstream::`vftable';
+  v36 = 4;
+  if ( Stream != nullptr
+    || (v5 = std::__Fiopen(a1: v2, a2: 1)) == nullptr
+    || (std::filebuf::_Init(a1: v5, a2: 1), std::filebuf::_Initcvt(a1: v29), v29 == nullptr) )
+  {
+    v6 = *(int *)((char *)&v28[1] + *((_DWORD *)v28[0] + 1));
+    LOBYTE(v6) = v6 | 2;
+    std::ios::clear(a1: v6, a2: false);
+  }
+  if ( Stream != nullptr )
+  {
+    Script = (ODBlock *)ODBlock::loadScript(a1: v28);
+    v8 = Script;
+    if ( Script != nullptr )
+    {
+      ODBlock::getBlockInt(this: Script, a2: `string', a3: (int *)this + 13);
+      if ( ODBlock::getBlockString(this: v8, a2: `string', a3: (const char **)&v27) )
+        *((_DWORD *)this + 12) = getShaderID(a1: v27);
+      else
+        *((_DWORD *)this + 12) = 0;
+      glmSetShader(a1: *((_DWORD *)this + 12));
+      if ( !ODBlock::getBlockFloats(this: v8, a2: `string', a3: (float *)this, a4: 4u) )
+      {
+        *((_DWORD *)this + 3) = 1050253722;
+        *((_DWORD *)this + 2) = 1050253722;
+        *((_DWORD *)this + 1) = 1050253722;
+        *(_DWORD *)this = 1050253722;
+      }
+      if ( !ODBlock::getBlockFloats(this: v8, a2: `string', a3: (float *)this + 4, a4: 4u) )
+      {
+        *((_DWORD *)this + 7) = 1050253722;
+        *((_DWORD *)this + 6) = 1050253722;
+        *((_DWORD *)this + 5) = 1050253722;
+        *((_DWORD *)this + 4) = 1050253722;
+      }
+      if ( !ODBlock::getBlockFloat(this: v8, a2: `string', a3: (float *)this + 8) )
+        *((_DWORD *)this + 8) = 1065353216;
+      Instance = SceneGraph::Scene::getInstance();
+      if ( ODBlock::getBlockString(this: v8, a2: `string', a3: (const char **)&v24) )
+      {
+        Texture = SceneGraph::Scene::getTexture(this: Instance, a2: v24);
+        *((_DWORD *)this + 9) = Texture;
+        if ( Texture == nullptr )
+        {
+          v11 = (SceneGraph::Texture *)operator new(a1: 0x20u);
+          v25 = v11;
+          LOBYTE(v36) = 7;
+          if ( v11 != nullptr )
+            v12 = (SceneGraph::Texture *)SceneGraph::Texture::Texture(this: v11);
+          else
+            v12 = nullptr;
+          v21 = v24;
+          LOBYTE(v36) = 4;
+          *((_DWORD *)this + 9) = v12;
+          SceneGraph::Texture::load(this: v12, a2: v21, a3: true);
+          SceneGraph::Scene::addTexture(this: Instance, a2: *((struct SceneGraph::Texture **)this + 9));
+        }
+      }
+      if ( ODBlock::getBlockString(this: v8, a2: `string', a3: (const char **)&v24) )
+      {
+        v13 = SceneGraph::Scene::getTexture(this: Instance, a2: v24);
+        *((_DWORD *)this + 10) = v13;
+        if ( v13 == nullptr )
+        {
+          v14 = (SceneGraph::Texture *)operator new(a1: 0x20u);
+          v25 = v14;
+          LOBYTE(v36) = 8;
+          if ( v14 != nullptr )
+            v15 = (SceneGraph::Texture *)SceneGraph::Texture::Texture(this: v14);
+          else
+            v15 = nullptr;
+          v22 = v24;
+          LOBYTE(v36) = 4;
+          *((_DWORD *)this + 10) = v15;
+          SceneGraph::Texture::load(this: v15, a2: v22, a3: true);
+          SceneGraph::Scene::addTexture(this: Instance, a2: *((struct SceneGraph::Texture **)this + 10));
+        }
+        *((_BYTE *)this + 56) = glmxNumTexUnits() < 2;
+      }
+      if ( *((_DWORD *)this + 10) != 0
+        && glmxNumTexUnits() >= 3
+        && ODBlock::getBlockString(this: v8, a2: `string', a3: (const char **)&v24) )
+      {
+        v16 = SceneGraph::Scene::getTexture(this: Instance, a2: v24);
+        *((_DWORD *)this + 11) = v16;
+        if ( v16 == nullptr )
+        {
+          v17 = (SceneGraph::Texture *)operator new(a1: 0x20u);
+          v25 = v17;
+          LOBYTE(v36) = 9;
+          if ( v17 != nullptr )
+            v18 = (SceneGraph::Texture *)SceneGraph::Texture::Texture(this: v17);
+          else
+            v18 = nullptr;
+          v23 = v24;
+          LOBYTE(v36) = 4;
+          *((_DWORD *)this + 11) = v18;
+          SceneGraph::Texture::load(this: v18, a2: v23, a3: true);
+          SceneGraph::Scene::addTexture(this: Instance, a2: *((struct SceneGraph::Texture **)this + 11));
+        }
+      }
+      ODBlock::~ODBlock(this: v8);
+      operator delete(a1: v8);
+      if ( Stream == nullptr || fclose(Stream) != 0 || (std::filebuf::_Init(a1: 0, a2: 2), v29 == nullptr) )
+      {
+        v19 = *((_DWORD *)v28[0] + 1);
+        v20 = *(int *)((char *)&v28[1] + v19);
+        LOBYTE(v20) = v20 | 2;
+        if ( *(_DWORD *)((char *)&v29[8] + v19) == 0 )
+          LOBYTE(v20) = v20 | 4;
+        std::ios_base::clear(this: (std::ios_base *)((char *)v28 + v19), a2: v20, a3: false);
+      }
+      v25 = (SceneGraph::Texture *)v34;
+      *(char **)((char *)v28 + *((_DWORD *)v28[0] + 1)) = (char *)&std::ifstream::`vftable';
+      v36 = 12;
+      v26 = (char *)v29;
+      v29[0] = &std::filebuf::`vftable';
+      if ( v31 != 0 )
+        std::filebuf::close(a1: v29);
+      if ( v30 != nullptr )
+        std::string::`scalar deleting destructor'(a1: v30, a2: 1);
+      std::locale::~locale(this: (std::locale *)v32);
+      LOBYTE(v36) = 10;
+      std::streambuf::~streambuf<char,std::char_traits<char>>(a1: v29);
+      v36 = -1;
+      *(char **)((char *)v28 + *((_DWORD *)v28[0] + 1)) = (char *)&std::istream::`vftable';
+    }
+    else
+    {
+      v25 = (SceneGraph::Texture *)v34;
+      *(char **)((char *)v28 + *((_DWORD *)v28[0] + 1)) = (char *)&std::ifstream::`vftable';
+      v36 = 6;
+      std::filebuf::~filebuf<char,std::char_traits<char>>(a1: v29);
+      v36 = -1;
+      *(char **)((char *)v28 + *((_DWORD *)v28[0] + 1)) = (char *)&std::istream::`vftable';
+    }
+  }
+  else
+  {
+    printf(Format: "Error: File not found: %s\n", v2);
+    v25 = (SceneGraph::Texture *)v34;
+    *(char **)((char *)v28 + *((_DWORD *)v28[0] + 1)) = (char *)&std::ifstream::`vftable';
+    v36 = 5;
+    std::filebuf::~filebuf<char,std::char_traits<char>>(a1: v29);
+    v36 = -1;
+    *(char **)((char *)v28 + *((_DWORD *)v28[0] + 1)) = (char *)&std::istream::`vftable';
+  }
+  v34[0] = &std::ios::`vftable';
+  std::ios_base::~ios_base(this: (std::ios_base *)v34);
+  __writefsdword((unsigned int)&_except_list, v35[0]);
+}
+
+// 0x80c ?activate@Material@SceneGraph@@QAEXPAVTexture@2@@Z
+void __thiscall SceneGraph::Material::activate(GLfloat *params, struct SceneGraph::Texture *a2)
+{
+  int v3; // edi
+
+  v3 = 0;
+  glmSetShader(a1: *((_DWORD *)params + 12));
+  if ( a2 != nullptr )
+  {
+    v3 = *((_DWORD *)params + 9);
+    *((_DWORD *)params + 9) = a2;
+  }
+  if ( *((_DWORD *)params + 11) != 0 )
+  {
+    glmxActivateTexUnit(a1: 0);
+    SceneGraph::Material::activatePass0(params);
+    glmxActivateTexUnit(a1: 1u);
+    SceneGraph::Texture::activate(this: *((SceneGraph::Texture **)params + 10));
+    glmxActivateTexUnit(a1: 2u);
+    SceneGraph::Texture::activate(this: *((SceneGraph::Texture **)params + 11));
+  }
+  else if ( *((_DWORD *)params + 10) == 0 || *((_BYTE *)params + 56) != 0 )
+  {
+    glmxActivateTexUnit(a1: 0);
+    SceneGraph::Material::activatePass0(params);
+  }
+  else
+  {
+    glmxActivateTexUnit(a1: 0);
+    SceneGraph::Material::activatePass0(params);
+    glmxActivateTexUnit(a1: 1u);
+    SceneGraph::Texture::activate(this: *((SceneGraph::Texture **)params + 10));
+  }
+  if ( v3 != 0 )
+    *((_DWORD *)params + 9) = v3;
+  if ( *((_DWORD *)params + 13) != 0 )
+    glShadeModel(mode: 0x1D01u);
+  else
+    glShadeModel(mode: 0x1D00u);
+}
+
+// 0x8dc ?deactivate@Material@SceneGraph@@QAEXXZ
+void __thiscall SceneGraph::Material::deactivate(SceneGraph::Material *this)
+{
+  void (__stdcall *v1)(GLenum); // esi
+
+  if ( *((_DWORD *)this + 10) != 0 && *((_BYTE *)this + 56) == 0 )
+  {
+    v1 = glDisable;
+    if ( *((_DWORD *)this + 11) != 0 )
+    {
+      glmxActivateTexUnit(a1: 2u);
+      v1(cap: 0xDE1u);
+    }
+    glmxActivateTexUnit(a1: 1u);
+    v1(cap: 0xDE1u);
+    glmxActivateTexUnit(a1: 0);
+    v1(cap: 0xDE1u);
+  }
+}
+
+// 0x93c ?renderAsLight@Material@SceneGraph@@QAEXH@Z
+void __thiscall SceneGraph::Material::renderAsLight(GLfloat *params, int a2)
+{
+  void (__stdcall *v2)(GLenum, GLenum, const GLfloat *); // ebx
+
+  v2 = glLightfv;
+  glLightfv(light: a2 + 0x4000, pname: 0x1201u, params);
+  v2(light: a2 + 0x4000, pname: 0x1202u, params: params + 4);
+  glLightf(light: a2 + 0x4000, pname: 0x1205u, param: *(params + 8));
+}
+
+// 0x97c ?activatePass0@Material@SceneGraph@@IAEXXZ
+void __thiscall SceneGraph::Material::activatePass0(GLfloat *params)
+{
+  void (__stdcall *v2)(GLenum, GLenum, const GLfloat *); // edi
+  SceneGraph::Texture *v3; // ecx
+
+  v2 = glMaterialfv;
+  glMaterialfv(face: 0x404u, pname: 0x1201u, params);
+  v2(face: 0x404u, pname: 0x1200u, params);
+  glColor3fv(v: params);
+  glMaterialf(face: 0x404u, pname: 0x1601u, param: *(params + 8));
+  if ( *(params + 8) == 0.0 )
+    v2(face: 0x404u, pname: 0x1202u, params: _black__4__activatePass0_Material_SceneGraph__IAEXXZ_4PAMA);
+  else
+    v2(face: 0x404u, pname: 0x1202u, params: params + 4);
+  v3 = *((SceneGraph::Texture **)params + 9);
+  if ( v3 != nullptr )
+    SceneGraph::Texture::activate(this: v3);
+  else
+    glDisable(cap: 0xDE1u);
+}
+
+// 0xa00 ?activatePass1@Material@SceneGraph@@IAEXXZ
+void __thiscall SceneGraph::Material::activatePass1(SceneGraph::Texture **this)
+{
+  void (__stdcall *v2)(GLenum); // esi
+  void (__stdcall *v3)(GLenum, GLenum, GLint); // ebx
+
+  glDisable(cap: 0xB50u);
+  v2 = glEnable;
+  glEnable(cap: 0xBE2u);
+  glBlendFunc(sfactor: 1u, dfactor: 0x301u);
+  v3 = glTexGeni;
+  glTexGeni(coord: 0x2000u, pname: 0x2500u, param: 9218);
+  v3(coord: 0x2001u, pname: 0x2500u, param: 9218);
+  v2(cap: 0xC60u);
+  v2(cap: 0xC61u);
+  glDepthMask(flag: 0);
+  SceneGraph::Texture::activate(this: *(this + 10));
+}

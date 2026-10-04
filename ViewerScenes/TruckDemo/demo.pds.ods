@@ -1,0 +1,3053 @@
+PDS
+{
+	Acts
+	{
+	scene.psc.ods;
+	}
+	Models
+	{
+		ci_pole_tex	{ "ci_pole_tex.mod.ods"; }
+		cone01	{ "cone01.mod.ods"; }
+		vase	{ "vase.mod.ods"; }
+		ci_stopsign	{ "ci_stopsign02.mod.ods"; }
+		ci_sidewalk_corner03	{ "ci_sidewalk_corner03.mod.ods"; }
+		ci_sidewalk_normal197	{ "ci_sidewalk_normal197.mod.ods"; }
+		ci_sidewalk_corner02	{ "ci_sidewalk_corner02.mod.ods"; }
+		ci_sidewalk_normal196	{ "ci_sidewalk_normal196.mod.ods"; }
+		ci_sidewalk_corner01	{ "ci_sidewalk_corner01.mod.ods"; }
+		ci_sidewalk_normal198	{ "ci_sidewalk_normal198.mod.ods"; }
+		ci_sidewalk_corner04	{ "ci_sidewalk_corner04.mod.ods"; }
+		ci_sidewalk_normal195	{ "ci_sidewalk_normal195.mod.ods"; }
+		ci_sidewalk_corner06	{ "ci_sidewalk_corner06.mod.ods"; }
+		ci_sidewalk_normal200	{ "ci_sidewalk_normal200.mod.ods"; }
+		ci_sidewalk_corner05	{ "ci_sidewalk_corner05.mod.ods"; }
+		ci_sidewalk_normal201	{ "ci_sidewalk_normal201.mod.ods"; }
+		ci_sidewalk_corner08	{ "ci_sidewalk_corner08.mod.ods"; }
+		ci_sidewalk_normal202	{ "ci_sidewalk_normal202.mod.ods"; }
+		ci_sidewalk_corner07	{ "ci_sidewalk_corner07.mod.ods"; }
+		ci_sidewalk_normal199	{ "ci_sidewalk_normal199.mod.ods"; }
+		Netz01	{ "Netz01.mod.ods"; }
+		Netz02	{ "Netz02.mod.ods"; }
+		Netz03	{ "Netz03.mod.ods"; }
+		Netz04	{ "Netz04.mod.ods"; }
+		Netz05	{ "Netz05.mod.ods"; }
+		Netz06	{ "Netz06.mod.ods"; }
+		Netz07	{ "Netz07.mod.ods"; }
+		ci_houses	{ "ci_houses.mod.ods"; }
+		ci_dead-end02	{ "ci_dead-end02.mod.ods"; }
+		ci_dead-end01	{ "ci_dead-end01.mod.ods"; }
+		Objekt01	{ "Objekt01.mod.ods"; }
+		Objekt02	{ "Objekt02.mod.ods"; }
+		Objekt03	{ "Objekt03.mod.ods"; }
+		ci_building_B_new	{ "ci_building_B_new.mod.ods"; }
+		ci_building_A_roof	{ "ci_building_A_roof.mod.ods"; }
+		ci_building_A	{ "ci_building_A.mod.ods"; }
+		ci_sidewalk_end01	{ "ci_sidewalk_end01.mod.ods"; }
+		ci_sidewalk_end02	{ "ci_sidewalk_end02.mod.ods"; }
+		ci_sidewalk_end03	{ "ci_sidewalk_end03.mod.ods"; }
+		ci_sidewalk_end04	{ "ci_sidewalk_end04.mod.ods"; }
+		ci_sidewalk_incorner01	{ "ci_sidewalk_incorner01.mod.ods"; }
+		ci_sidewalk_incorner02	{ "ci_sidewalk_incorner02.mod.ods"; }
+		ci_sidewalk_incorner03	{ "ci_sidewalk_incorner03.mod.ods"; }
+		ci_sidewalk_incorner04	{ "ci_sidewalk_incorner04.mod.ods"; }
+		ci_sidewalk_normal76	{ "ci_sidewalk_normal76.mod.ods"; }
+		ci_sidewalk_normal90	{ "ci_sidewalk_normal90.mod.ods"; }
+		ci_sidewalk_normal190	{ "ci_sidewalk_normal190.mod.ods"; }
+		ci_sidewalk_normal192	{ "ci_sidewalk_normal192.mod.ods"; }
+		ci_sidewalk_normal193	{ "ci_sidewalk_normal193.mod.ods"; }
+		ci_sidewalk_normal194	{ "ci_sidewalk_normal194.mod.ods"; }
+		Quader10	{ "Quader10.mod.ods"; }
+		Quader11	{ "Quader11.mod.ods"; }
+		Quader12	{ "Quader12.mod.ods"; }
+		Quader16	{ "Quader16.mod.ods"; }
+		Quader17	{ "Quader17.mod.ods"; }
+		Quader18	{ "Quader18.mod.ods"; }
+		Quader19	{ "Quader19.mod.ods"; }
+		Quader20	{ "Quader20.mod.ods"; }
+		Quader21	{ "Quader21.mod.ods"; }
+		Quader22	{ "Quader22.mod.ods"; }
+		Quader23	{ "Quader23.mod.ods"; }
+		Quader24	{ "Quader24.mod.ods"; }
+		ci_car_amc04	{ "ci_car_amc.mod.ods"; }
+
+		garbagecanwheels { "garbagecanwheels.mod.ods"; }
+		garbagecan	{ "garbagecan.mod.ods"; }
+
+		Barrel24	{ "Barrel24.mod.ods"; }
+		box14	{ "box14.mod.ods"; }
+		street_left_top	{ "street_left_top.mod.ods"; }
+		street_left_corner_bottom	{ "street_left_corner_bottom.mod.ods"; }
+		street_middle_bottom	{ "street_middle_bottom.mod.ods"; }
+		street_middle_top	{ "street_middle_top.mod.ods"; }
+		street_right_corner_top	{ "street_right_corner_top.mod.ods"; }
+		street_right_corner_bottom	{ "street_right_corner_bottom.mod.ods"; }
+		street_left	{ "street_left.mod.ods"; }
+		street_left_corner_top	{ "street_left_corner_top.mod.ods"; }
+		street_right_top	{ "street_right_top.mod.ods"; }
+		street_right	{ "street_right.mod.ods"; }
+		street_right_bottom	{ "street_right_bottom.mod.ods"; }
+		street_left_bottom	{ "street_left_bottom.mod.ods"; }
+		street_middle	{ "street_middle.mod.ods"; }
+		street_deadend_top	{ "street_deadend_top.mod.ods"; }
+		street_deadend_bottom	{ "street_deadend_bottom.mod.ods"; }
+		Zylinder01	{ "Zylinder01.mod.ods"; }
+		Quader01	{ "Quader01.mod.ods"; }
+		Prisma01	{ "Prisma01.mod.ods"; }
+		Quader02	{ "Quader02.mod.ods"; }
+		Ball { Ball.mod.ods; }
+
+
+
+#truck
+
+		top_poly_tex	{ "top_poly_tex.mod.ods"; }
+		haube	{ "haube.mod.ods"; }
+		je_5wheel	{ "je_5wheel.mod.ods"; }
+		Object02	{ "Object02.mod.ods"; }
+		Object03	{ "Object03.mod.ods"; }
+		Object04	{ "Object04.mod.ods"; }
+		Object05	{ "Object05.mod.ods"; }
+		Object06	{ "Object06.mod.ods"; }
+		Object07	{ "Object07.mod.ods"; }
+		Object08	{ "Object08.mod.ods"; }
+		Object01	{ "Object01.mod.ods"; }
+		Linie02	{ "Linie02.mod.ods"; }
+		Linie03	{ "Linie03.mod.ods"; }
+		Linie01	{ "Linie01.mod.ods"; }
+		Linie04	{ "Linie04.mod.ods"; }
+		Linie05	{ "Linie05.mod.ods"; }
+		je_radnarbe_lowpoly07	{ "je_radnarbe_lowpoly07.mod.ods"; }
+		je_tire_lowpoly08	{ "je_tire_lowpoly08.mod.ods"; }
+		je_radnarbe_lowpoly04	{ "je_radnarbe_lowpoly04.mod.ods"; }
+		je_radnarbe_lowpoly05	{ "je_radnarbe_lowpoly05.mod.ods"; }
+		je_tire_lowpoly06	{ "je_tire_lowpoly06.mod.ods"; }
+		je_radnarbe_lowpoly06	{ "je_radnarbe_lowpoly06.mod.ods"; }
+
+	}
+	Actors
+	{
+
+		YPlane
+			{ 
+			Collision 
+				{
+				Plane
+					{
+					normal { 0; 1; 0; }
+					d { 0; }
+					}
+				}
+			}
+		Ball
+			{
+			Dynamics
+				{
+				inertia { sphere; }
+				}
+
+			Graphics { Node { Model { Ball; } } }
+			Collision 
+				{
+				Sphere 
+					{
+					radius	{ 0.5; }
+					} 
+				}
+			}
+
+		Sprocket
+			{
+			Dynamics
+				{
+				inertia { sphere; }
+				}
+
+			Graphics { Node { Model { Ball; } } }
+			}
+		# Mesh actors not in groups
+		Pole
+		{
+			Graphics
+			{
+				Node
+				{
+				Node
+				{
+				position	{ 0; 0.391086; 0; }
+
+					Model
+					{
+			"ci_pole_tex";
+					}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					#position	{ -0.000320; -0.391086; -0.000515; }
+					dimensions	{ 0.25; 1.017647; 0.25; }
+					#orientation	{ 1.000000; 0.000000; 0.000819; -0.000000; }
+				}
+			}
+		}
+
+		Cone
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"cone01";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					#position	{ 0.165651; 0.000022; -0.000412; }
+					dimensions	{ 0.496615; 0.209556; 0.212619; }
+					#orientation	{ 0.999860; -0.016634; 0.000486; -0.001737; }
+				}
+			}
+		}
+
+		# Group actors
+		vase
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+						position	{ 0.001777; 0.199473; 0.016516; }
+			scale	{ 1.000000; }
+						Model
+						{
+						"vase";	
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000000; -0.381142; -0.000002; }
+				radius	{ 0.407420; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000001; 0.261996; -0.000002; }
+				radius	{ 0.529392; }
+				}
+			}
+		}
+
+		stop_bbox
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 0.140494; 0.693009; 0.693009; -0.140494; }
+						position	{ 0.008438; 0.475490; -0.002676; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_stopsign";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ 0.000000; 0.249867; 0.000000; }
+				dimensions	{ 0.290181; 2.529921; 0.568272; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+			}
+		}
+		sidewalk_building_A
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ -0.000000; 0.000000; 1.000000; 0.000000; }
+						position	{ 13.779533; 0.000007; -13.779539; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_corner03";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ -0.000000; -0.000000; 0.000001; 1.000000; }
+						position	{ 14.517715; 0.036906; 0.000011; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_normal197";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; 0.707107; 0.000000; }
+						position	{ 13.779533; 0.000007; 13.779519; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_corner02";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ -0.000000; 0.707107; -0.000001; -0.707106; }
+						position	{ -0.000003; 0.036909; 14.517735; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_normal196";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ -13.779524; 0.000007; 13.779521; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_corner01";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ -0.000000; -0.000000; 1.000000; -0.000000; }
+						position	{ -14.517721; 0.036917; 0.000000; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_normal198";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+						position	{ -13.779524; 0.000007; -13.779535; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_corner04";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; 0.707107; -0.000000; }
+						position	{ 0.000008; 0.036917; -14.517717; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_normal195";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ 0.000004; -0.5; -0.000010; }
+				dimensions	{ 30.511814; 1.147652; 30.511820; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+			}
+		}
+		sidewalk_building_B
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ -0.000000; 0.000000; 1.000000; 0.000000; }
+						position	{ 13.779533; 0.000007; -13.779534; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_corner06";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ -0.000000; -0.000000; 0.000001; 1.000000; }
+						position	{ 14.517715; 0.036906; 0.000006; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_normal200";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; 0.707107; 0.000000; }
+						position	{ 13.779533; 0.000007; 13.779526; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_corner05";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ -0.000000; 0.707107; -0.000001; -0.707106; }
+						position	{ -0.000003; 0.036909; 14.517731; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_normal201";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ -13.779524; 0.000007; 13.779526; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_corner08";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ -0.000000; -0.000000; 1.000000; -0.000000; }
+						position	{ -14.517721; 0.036917; -0.000002; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_normal202";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+						position	{ -13.779524; 0.000007; -13.779528; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_corner07";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; 0.707107; -0.000000; }
+						position	{ 0.000008; 0.036917; -14.517717; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_normal199";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ 0.000004; -0.5; 0.000013; }
+				dimensions	{ 30.511814; 1.147652; 30.511820; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+			}
+		}
+		house right bottom
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 1.476383; 0.000000; -0.041018; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Netz01";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000002; 0.000000; 0.041010; }
+				dimensions	{ 45.275585; 19.685036; 2.952755; }
+				orientation	{ 0.707107; 0.000000; 0.707107; 0.000000; }
+				}
+			}
+		}
+		house left bottom
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 1.476383; 0.000000; -0.000006; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Netz02";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000002; 0.000000; -0.000010; }
+				dimensions	{ 45.275585; 19.685036; 2.952755; }
+				orientation	{ 0.707107; 0.000000; 0.707107; 0.000000; }
+				}
+			}
+		}
+		house left top
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ -1.476374; 0.000000; -0.000006; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Netz05";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ 0.000004; 0.000000; -0.000010; }
+				dimensions	{ 45.275585; 19.685036; 2.952755; }
+				orientation	{ 0.707107; 0.000000; 0.707107; 0.000000; }
+				}
+			}
+		}
+		house right top
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ -1.476374; 0.000000; -0.000006; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_houses";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ 0.000004; 0.000000; -0.000002; }
+				dimensions	{ 45.275585; 19.685036; 2.952755; }
+				orientation	{ 0.707107; 0.000000; 0.707107; 0.000000; }
+				}
+			}
+		}
+		house dead top
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ -0.000000; 1.000000; 0.000000; 0.000000; }
+						position	{ -1.476372; 0.000000; 0.000000; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_dead-end02";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ 0.000004; 0.000000; 0.000000; }
+				dimensions	{ 11.811022; 19.685036; 2.952755; }
+				orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+				}
+			}
+		}
+		house dead bottom
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 1.476372; 0.000000; 0.000000; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_dead-end01";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000004; 0.000000; 0.000000; }
+				dimensions	{ 11.811022; 19.685036; 2.952755; }
+				orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+				}
+			}
+		}
+		house right
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 0.000000; 0.000000; 0.000000; 1.000000; }
+						position	{ 15.881637; 0.000001; -1.476372; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Netz07";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.000000; 0.000000; 0.000000; 1.000000; }
+						position	{ -12.169555; 0.000001; -1.476387; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Netz04";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ 0.000017; -0.000007; 0.000027; }
+				dimensions	{ 56.102352; 19.685036; 2.952755; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+			}
+		}
+		house left
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 0.000006; 0.000000; 1.476376; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Netz03";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000002; 0.000000; -0.000004; }
+				dimensions	{ 56.102352; 19.685036; 2.952755; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+			}
+		}
+		house dead left bottom
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 0.063976; 0.000000; 1.476387; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Objekt03";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ -0.063972; 0.000000; -0.000001; }
+				dimensions	{ 14.763778; 19.685036; 2.952755; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+			}
+		}
+		house dead left top
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 0.000004; 0.000000; 1.476387; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Objekt01";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ 0.000000; 0.000000; -0.000001; }
+				dimensions	{ 12.795274; 19.685036; 2.952755; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+			}
+		}
+		house dead right top
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 0.000004; -0.000001; -1.476377; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Netz06";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ 0.000000; 0.000000; 0.000000; }
+				dimensions	{ 12.795274; 19.685036; 2.952755; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+			}
+		}
+		house dead right bottom
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 0.063961; 0.000000; -1.476377; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Objekt02";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ -0.063972; 0.000000; 0.000000; }
+				dimensions	{ 14.763778; 19.685036; 2.952755; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+			}
+		}
+		ci_building_b
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 0.144389; 6.609035; -4.636121; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_building_B_new";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ 0.000000; 0.000000; 0.000000; }
+				dimensions	{ 24.606297; 19.685036; 24.606297; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+			}
+		}
+		ci_building_A
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 0.000002; 5.888885; 0.000000; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_building_A_roof";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 0.000001; -1.718028; 0.000000; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_building_A";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000000; -0.596253; 0.000000; }
+				dimensions	{ 24.606297; 14.763778; 24.606297; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+			}
+		}
+		
+		OutsideSidewalkGroup
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ -30.055019; 0.000006; -3.245384; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_end01";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.000000; 1.000000; 0.000000; 0.000000; }
+						position	{ 22.110331; 0.000006; -3.245383; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_end02";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ -0.000000; -0.000000; 1.000000; 0.000000; }
+						position	{ 22.110331; 0.000005; 3.316305; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_end03";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.000000; 0.000000; 0.000000; 1.000000; }
+						position	{ -30.055019; 0.000006; 3.316278; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_end04";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+						position	{ 22.602451; -0.024600; -46.716496; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_incorner01";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.000000; 0.707107; 0.000000; 0.707107; }
+						position	{ 22.602451; -0.024600; 46.787422; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_incorner02";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ -30.547142; -0.024600; -46.716492; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_incorner03";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.000000; 0.000000; 0.000000; 1.000000; }
+						position	{ -30.547140; -0.024600; 46.787388; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_incorner04";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.000000; 1.000000; 0.000000; 0.000000; }
+						position	{ 21.864258; 0.012309; -24.570900; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_normal76";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.000000; -0.707107; -0.000000; 0.707107; }
+						position	{ -3.972301; 0.012307; -45.978298; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_normal90";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; 0.707107; -0.000000; }
+						position	{ -3.972330; 0.012310; 46.049255; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_normal190";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; 0.000000; -0.000000; }
+						position	{ -29.808943; 0.012311; -24.570913; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_normal192";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; 0.000000; -0.000000; }
+						position	{ -29.808943; 0.012311; 24.641712; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_normal193";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.000000; 1.000000; 0.000000; 0.000000; }
+						position	{ 21.864258; 0.012309; 24.641756; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_sidewalk_normal194";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ -30.550798; -0.5; 24.081186; }
+				dimensions	{ 3.250000; 1.196850; 42.249996; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ 22.698229; -0.5; 24.081186; }
+				dimensions	{ 3.250000; 1.196850; 42.249996; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ 22.767908; -0.5; -24.026606; }
+				dimensions	{ 3.250000; 1.196850; 42.249996; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -30.599169; -0.5; -24.010164; }
+				dimensions	{ 3.250000; 1.196850; 42.249996; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -3.897746; -0.5; -46.947617; }
+				dimensions	{ 3.282499; 1.196850; 59.912178; }
+				orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -3.897746; -0.5; 46.947617; }
+				dimensions	{ 3.282499; 1.196850; 59.912178; }
+				orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+				}
+			}
+		}
+		Gruppieren01
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+						position	{ -0.006828; 0.328681; 0.011505; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Quader10";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+						position	{ 1.583726; -0.297888; 0.011505; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Quader11";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+						position	{ -1.591957; -0.297888; 0.011505; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Quader12";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ 1.588864; -0.449155; 0.000000; }
+				dimensions	{ 0.111385; 0.604350; 0.599284; }
+				orientation	{ 0.644713; -0.290422; -0.290422; 0.644713; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ 1.589717; 0.005839; 0.026333; }
+				dimensions	{ 0.282267; 0.998017; 0.292346; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -1.588408; 0.005839; 0.026333; }
+				dimensions	{ 0.282267; 0.998017; 0.292346; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -1.588864; -0.449155; 0.000000; }
+				dimensions	{ 0.111385; 0.604350; 0.599284; }
+				orientation	{ 0.644713; -0.290422; -0.290422; 0.644713; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -0.013053; 0.320184; 0.020893; }
+				dimensions	{ 3.369599; 0.340000; 0.219300; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+			}
+		}
+		Gruppieren02
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+						position	{ -0.006827; 0.328681; 0.011505; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Quader16";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+						position	{ 1.583727; -0.297888; 0.011503; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Quader17";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+						position	{ -1.591956; -0.297888; 0.011504; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Quader18";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ -0.013053; 0.320184; 0.020890; }
+				dimensions	{ 3.369599; 0.340000; 0.219300; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ 1.588864; -0.449155; -0.000002; }
+				dimensions	{ 0.111385; 0.604350; 0.599284; }
+				orientation	{ 0.644713; -0.290422; -0.290422; 0.644713; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ 1.589716; 0.005839; 0.026333; }
+				dimensions	{ 0.282267; 0.998017; 0.292346; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -1.588408; 0.005839; 0.026331; }
+				dimensions	{ 0.282267; 0.998017; 0.292346; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -1.588864; -0.449155; -0.000002; }
+				dimensions	{ 0.111385; 0.604350; 0.599284; }
+				orientation	{ 0.644713; -0.290422; -0.290422; 0.644713; }
+				}
+			}
+		}
+		Gruppieren03
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+						position	{ -0.006824; 0.328681; 0.011503; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Quader19";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+						position	{ 1.583734; -0.297888; 0.011503; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Quader20";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+						position	{ -1.591950; -0.297888; 0.011503; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Quader21";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ -0.013054; 0.320184; 0.020892; }
+				dimensions	{ 3.369599; 0.340000; 0.219300; }
+				orientation	{ 1.000000; 0.000000; -0.000000; 0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ 1.588871; -0.449155; -0.000001; }
+				dimensions	{ 0.111385; 0.604350; 0.599284; }
+				orientation	{ 0.644713; -0.290422; -0.290422; 0.644713; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ 1.589716; 0.005839; 0.026334; }
+				dimensions	{ 0.282267; 0.998017; 0.292346; }
+				orientation	{ 1.000000; 0.000000; -0.000000; 0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -1.588407; 0.005839; 0.026334; }
+				dimensions	{ 0.282267; 0.998017; 0.292346; }
+				orientation	{ 1.000000; 0.000000; -0.000000; 0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -1.588858; -0.449155; -0.000002; }
+				dimensions	{ 0.111385; 0.604350; 0.599284; }
+				orientation	{ 0.644713; -0.290422; -0.290422; 0.644713; }
+				}
+			}
+		}
+		Gruppieren04
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+						position	{ -0.006824; 0.328681; 0.011502; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Quader22";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+						position	{ 1.583733; -0.297888; 0.011502; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Quader23";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.707107; 0.000000; }
+						position	{ -1.591954; -0.297888; 0.011501; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Quader24";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ -0.013054; 0.320184; 0.020892; }
+				dimensions	{ 3.369599; 0.340000; 0.219300; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ 1.588869; -0.449155; -0.000003; }
+				dimensions	{ 0.111385; 0.604350; 0.599284; }
+				orientation	{ 0.644713; -0.290422; -0.290422; 0.644713; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ 1.589715; 0.005839; 0.026334; }
+				dimensions	{ 0.282267; 0.998017; 0.292346; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -1.588406; 0.005839; 0.026333; }
+				dimensions	{ 0.282267; 0.998017; 0.292346; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -1.588859; -0.449155; -0.000003; }
+				dimensions	{ 0.111385; 0.604350; 0.599284; }
+				orientation	{ 0.644713; -0.290422; -0.290422; 0.644713; }
+				}
+			}
+		}
+		CarGroup
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 0.866024; -0.000000; -0.500002; 0.000000; }
+						position	{ -0.038229; -0.358887; 0.021093; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"ci_car_amc04";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ -0.030162; -0.026496; 0.005339; }
+				dimensions	{ 2.054040; 0.650013; 4.927099; }
+				orientation	{ 1.000000; 0.000000; 0.000000; -0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -0.034918; 0.538338; -0.492514; }
+				dimensions	{ 1.248659; 0.442529; 1.911038; }
+				orientation	{ 1.000000; 0.000000; 0.000000; -0.000000; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.813112; -0.392646; 1.431015; }
+				radius	{ 0.382348; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.813112; -0.392646; -1.404934; }
+				radius	{ 0.382348; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.813115; -0.392646; -1.404934; }
+				radius	{ 0.382348; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.813115; -0.392646; 1.431015; }
+				radius	{ 0.382348; }
+				}
+			}
+		}
+
+		TrashBin
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; 0.707106; -0.000000; }
+						position	{ 0.000603; 0.431047; -0.080749; }
+			scale	{ 1.000000; }
+						Model
+						{
+						"garbagecan";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; 0.707106; -0.000000; }
+						position	{ -0.001898; -0.536674; -0.168106; }
+			scale	{ 1.000000; }
+						Model
+						{
+						"garbagecanwheels";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ 0.000067; -0.050775; 0.072204; }
+				dimensions	{ 0.685490; 1.228836; 0.717801; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -0.002321; 0.572744; -0.000000; }
+				dimensions	{ 0.684455; 0.184898; 0.939136; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+			}
+		}
+
+		Barrel23
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; -0.000000; -0.000000; }
+						position	{ -0.004856; 0.415424; -0.001514; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Barrel24";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000275; 0.203607; -0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000278; -0.210846; 0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000938; 0.002057; 0.003602; }
+				dimensions	{ 1.473039; 0.671289; 0.673162; }
+				orientation	{ 0.707107; 0.000000; 0.000000; 0.707106; }
+				}
+			}
+		}
+		Barrel26
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; -0.000000; -0.000000; }
+						position	{ -0.004856; 0.415424; -0.001509; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Barrel24";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000275; 0.203607; -0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000278; -0.210846; 0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000938; 0.002057; 0.003602; }
+				dimensions	{ 1.473039; 0.671289; 0.673162; }
+				orientation	{ 0.707107; 0.000000; 0.000000; 0.707106; }
+				}
+			}
+		}
+		Barrel28
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; -0.000000; -0.000000; }
+						position	{ -0.004856; 0.415424; -0.001504; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Barrel24";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000275; 0.203607; -0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000278; -0.210846; 0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000938; 0.002057; 0.003602; }
+				dimensions	{ 1.473039; 0.671289; 0.673162; }
+				orientation	{ 0.707107; 0.000000; 0.000000; 0.707106; }
+				}
+			}
+		}
+		Barrel30
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; -0.000000; -0.000000; }
+						position	{ -0.004856; 0.415424; -0.001507; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Barrel24";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000275; 0.203607; -0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000278; -0.210846; 0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000938; 0.002057; 0.003602; }
+				dimensions	{ 1.473039; 0.671289; 0.673162; }
+				orientation	{ 0.707107; 0.000000; 0.000000; 0.707106; }
+				}
+			}
+		}
+		Barrel32
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; -0.000000; -0.000000; }
+						position	{ -0.004856; 0.415424; -0.001514; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Barrel24";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000275; 0.203607; -0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000278; -0.210846; 0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000938; 0.002057; 0.003601; }
+				dimensions	{ 1.473039; 0.671289; 0.673162; }
+				orientation	{ 0.707107; 0.000000; 0.000000; 0.707106; }
+				}
+			}
+		}
+		Barrel38
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; -0.000000; -0.000000; }
+						position	{ -0.004856; 0.415424; -0.001504; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Barrel24";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000278; -0.210846; 0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000275; 0.203607; -0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000938; 0.002057; 0.003602; }
+				dimensions	{ 1.473039; 0.671289; 0.673162; }
+				orientation	{ 0.707107; 0.000000; 0.000000; 0.707106; }
+				}
+			}
+		}
+		Barrel39
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; -0.000000; -0.000000; }
+						position	{ -0.004856; 0.415424; -0.001514; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Barrel24";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000275; 0.203607; -0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000278; -0.210846; 0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000938; 0.002057; 0.003602; }
+				dimensions	{ 1.473039; 0.671289; 0.673162; }
+				orientation	{ 0.707107; 0.000000; 0.000000; 0.707106; }
+				}
+			}
+		}
+		Barrel40
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; -0.000000; -0.000000; }
+						position	{ -0.004856; 0.415424; -0.001509; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Barrel24";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000275; 0.203607; -0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000278; -0.210846; 0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000938; 0.002057; 0.003602; }
+				dimensions	{ 1.473039; 0.671289; 0.673162; }
+				orientation	{ 0.707107; 0.000000; 0.000000; 0.707106; }
+				}
+			}
+		}
+		Barrel41
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; -0.000000; -0.000000; }
+						position	{ -0.004856; 0.415424; -0.001507; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Barrel24";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000275; 0.203607; -0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000278; -0.210846; 0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000938; 0.002057; 0.003602; }
+				dimensions	{ 1.473039; 0.671289; 0.673162; }
+				orientation	{ 0.707107; 0.000000; 0.000000; 0.707106; }
+				}
+			}
+		}
+		Barrel42
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; -0.000000; -0.000000; }
+						position	{ -0.004856; 0.415424; -0.001514; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Barrel24";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000275; 0.203607; -0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000278; -0.210846; 0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000938; 0.002057; 0.003601; }
+				dimensions	{ 1.473039; 0.671289; 0.673162; }
+				orientation	{ 0.707107; 0.000000; 0.000000; 0.707106; }
+				}
+			}
+		}
+		Barrel46
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; -0.000000; -0.000000; }
+						position	{ -0.004856; 0.415423; -0.001509; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Barrel24";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000278; -0.210846; 0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000275; 0.203606; -0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000938; 0.002057; 0.003602; }
+				dimensions	{ 1.473039; 0.671289; 0.673162; }
+				orientation	{ 0.707107; 0.000000; 0.000000; 0.707106; }
+				}
+			}
+		}
+		Barrel47
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; -0.000000; -0.000000; }
+						position	{ -0.004856; 0.415423; -0.001504; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Barrel24";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000275; 0.203606; -0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000938; 0.002057; 0.003602; }
+				dimensions	{ 1.473039; 0.671289; 0.673162; }
+				orientation	{ 0.707107; 0.000000; 0.000000; 0.707106; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000278; -0.210846; 0.004827; }
+				radius	{ 0.497364; }
+				}
+			}
+		}
+		Barrel48
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; -0.000000; -0.000000; }
+						position	{ -0.004856; 0.415423; -0.001507; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Barrel24";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000275; 0.203606; -0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000278; -0.210846; 0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000938; 0.002057; 0.003602; }
+				dimensions	{ 1.473039; 0.671289; 0.673162; }
+				orientation	{ 0.707107; 0.000000; 0.000000; 0.707106; }
+				}
+			}
+		}
+		Barrel49
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; -0.000000; -0.000000; }
+						position	{ -0.004856; 0.415423; -0.001504; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Barrel24";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000275; 0.203606; -0.004827; }
+				radius	{ 0.497364; }
+				}
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000938; 0.002057; 0.003602; }
+				dimensions	{ 1.473039; 0.671289; 0.673162; }
+				orientation	{ 0.707107; 0.000000; 0.000000; 0.707106; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000278; -0.210846; 0.004827; }
+				radius	{ 0.497364; }
+				}
+			}
+		}
+		BoxGroup
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 0.016039; 0.020116; 0.002588; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"box14";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ 0.000000; 0; 0.000000; }	#-0.271648
+				dimensions	{ 2; 2; 2; } #{ 1.552275; 1.552275; 1.604018; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+			}
+		}
+
+		StreetGroup
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 21.225391; -4.731429; -20.177145; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"street_left_top";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ -19.128935; -4.731429; -40.354301; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"street_left_corner_bottom";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ -19.128929; -4.731429; 0.000014; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"street_middle_bottom";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 21.225393; -4.731429; 0.000014; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"street_middle_top";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 21.225393; -4.731429; 40.354324; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"street_right_corner_top";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ -19.128929; -4.731429; 40.354324; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"street_right_corner_bottom";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 1.048228; -4.731429; -40.354301; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"street_left";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 21.225388; -4.731429; -40.354309; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"street_left_corner_top";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 21.225391; -4.731429; 20.177168; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"street_right_top";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 1.048232; -4.731429; 40.354324; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"street_right";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ -19.128929; -4.731429; 20.177168; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"street_right_bottom";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ -19.128929; -4.731429; -20.177139; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"street_left_bottom";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 1.048231; -4.731429; 0.000014; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"street_middle";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 34.020660; -4.731429; 0.000015; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"street_deadend_top";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ -32.972435; -4.731429; 0.000001; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"street_deadend_bottom";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 3.238112; 2.155005; -21.968313; }
+				radius	{ 2.576425; }
+				}
+			}
+		}
+		RampGroup
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 0.002874; 0.651266; -0.013395; }
+						scale	{ 1.000000; }
+						Model
+						{
+						"Quader01";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ -0.000002; 0.651317; 0.006518; }
+				dimensions	{ 7.135340; 0.25; 9.263424; }
+				orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+				}
+			}
+		}
+		JumpSprocket
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.000000; 0.707106; }
+						position	{ -0.032803; 0.127026; -0.003085; }
+						scale	{ 1.000000; }
+						Model
+						{
+						"Zylinder01";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ 0.034143; -0.263676; 0.023006; }
+				dimensions	{ 7.096684; 0.873438; 1.201522; }
+				orientation	{ 1.000000; -0.000000; 0.000000; 0.000000; }
+				}
+			}
+		}
+
+		flagGroup
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; -0.000000; 0.000000; -0.707106; }
+						position	{ -0.022945; 0.238171; 0.009261; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Prisma01";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ 0.006080; 0; -0.009259; }	#0.553981
+				dimensions	{ 0.213800; 1.5; 1.5; }#{ 0.513800; 2.553504; 2.952755; }
+				orientation	{ 1.000000; 0.000000; 0.000000; -0.000000; }
+				}
+			}
+		}
+
+		HangFlagGroup
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+						position	{ 0.000000; 0.000619; 0.000801; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Quader02";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ 0.000386; -0.001801; -0.001064; }
+				dimensions	{ 1.936750; 0.352136; 2.007178; }
+				orientation	{ 0.707107; 0.000000; 0.000000; 0.707106; }
+				}
+			}
+		}
+
+
+
+	TruckBody
+		{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 0.999848; 0.017452; -0.000000; -0.000000; }
+						position	{ 0.000802; 2.990571; -1.582967; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"top_poly_tex";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.999848; 0.017452; -0.000000; -0.000000; }
+						position	{ -0.053795; 2.227915; 1.655976; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"haube";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.999848; 0.017452; -0.000000; -0.000000; }
+						position	{ -0.047219; 2.437532; -2.722458; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"je_5wheel";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.999848; 0.017452; -0.000000; -0.000000; }
+						position	{ -0.895609; 2.551139; -0.298304; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Object02";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.746331; 0.013027; 0.665346; 0.011613; }
+						position	{ -0.854889; 2.963924; -0.315893; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Object03";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.984013; 0.017176; -0.177241; -0.003094; }
+						position	{ 0.000063; 2.959114; 0.254775; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Object04";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.999848; 0.017452; -0.000000; -0.000000; }
+						position	{ -1.050122; 2.680219; 0.194944; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Object05";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ -0.017452; 0.999848; 0.000001; 0.000001; }
+						position	{ 1.050244; 2.680219; 0.194945; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Object06";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ -0.017452; 0.999848; 0.000001; 0.000001; }
+						position	{ 0.895732; 2.551140; -0.298303; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Object07";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ -0.013028; 0.746331; -0.011614; 0.665346; }
+						position	{ 0.847898; 2.963923; -0.315891; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Object08";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.999848; 0.017452; -0.000000; -0.000000; }
+						position	{ 0.012350; 2.049433; 0.029769; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Object01";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; 0.000000; -0.000000; }
+						position	{ -0.000443; 1.981279; 2.728338; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Linie02";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; 0.000000; -0.000000; }
+						position	{ -0.000443; 1.680782; 2.728338; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Linie03";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.000000; 0.707106; }
+						position	{ -0.465630; 1.627563; 2.307565; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Linie01";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.000000; 0.707106; }
+						position	{ 0.471251; 1.627562; 2.307565; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Linie04";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.000000; 0.707106; }
+						position	{ -0.012077; 1.3144; 0.276549; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Linie05";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+				position	{ 0; 2.062866; -1.022920; }				dimensions	{ 1.937473; 1.179460; 3.026148; }
+				orientation	{ 0.999848; 0.017452; -0.000000; -0.000000; }
+				}
+
+				
+				Box
+				{
+				position	{ 0; 3.012937; -0.981686; }				dimensions	{ 1.937473; 0.731265; 2.630328; }
+				orientation	{ 0.999848; 0.017452; -0.000000; -0.000000; }
+				}
+				Box
+				{
+				position	{ 0; 1.815699; 1.504705; }				dimensions	{ 1.955925; 1.126509; 2.232707; }
+				orientation	{ -0.078459; 0.996917; -0.000000; -0.000000; }
+				}
+				Box
+				{
+				position	{ 0; 1.060163; -1.588153; }				dimensions	{ 1.734500; 0.950284; 1.070223; }
+				orientation	{ -0.008726; 0.999962; -0.000000; -0.000000; }
+				}
+				Box
+				{
+				position	{ 0; 1.200033; 2.121858; }				dimensions	{ 1.734500; 0.893267; 1.129026; }
+				orientation	{ -0.147809; 0.989016; -0.000000; -0.000000; }
+				}
+				Box
+				{
+				position	{ 0; 1.515144; -2.144400; }				dimensions	{ 1.734500; 0.838151; 0.417815; }
+				orientation	{ 0.267238; 0.963630; -0.000000; -0.000000; }
+				}
+			}
+		}
+		
+		je_radnarbe_lowpoly07
+		{
+			Graphics
+			{
+				Node
+				{
+
+				Node
+					{
+					position {  0;0.74;0; }
+
+						Model
+						{
+				"je_radnarbe_lowpoly07";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.013670; -0.096094; 0.022031; }
+					dimensions	{ 0.690373; 1.171184; 0.785836; }
+					orientation	{ 0.998906; -0.033457; 0.029197; 0.014654; }
+				}
+			}
+		}
+		je_radnarbe_lowpoly04
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"je_radnarbe_lowpoly04";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.013670; -0.096094; 0.022031; }
+					dimensions	{ 0.690373; 1.171185; 0.785836; }
+					orientation	{ 0.998906; -0.033457; 0.029197; 0.014654; }
+				}
+			}
+		}
+		je_radnarbe_lowpoly05
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"je_radnarbe_lowpoly05";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ 0.013670; 0.096094; -0.022031; }
+					dimensions	{ 0.690372; 1.171183; 0.785834; }
+					orientation	{ 0.998906; -0.033457; 0.029197; 0.014654; }
+				}
+			}
+		}
+		je_radnarbe_lowpoly06
+		{
+			Graphics
+			{
+				Node
+				{
+				Node
+					{
+					position { 0;-0.74; 0; }
+					Model
+					{
+			"je_radnarbe_lowpoly06";
+					}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ 0.013670; 0.096094; -0.022031; }
+					dimensions	{ 0.690372; 1.171183; 0.785834; }
+					orientation	{ 0.998906; -0.033457; 0.029197; 0.014654; }
+				}
+			}
+		}
+		fr
+		{
+		Dynamics
+			{
+			inertia { sphere; }
+			}
+
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						#orientation	{ 0.000001; -0.000001; 1.000000; 0.000004; }
+						orientation	{ -0.707107; 0.000001; -0.707106; 0.000002; }
+#						position	{ -0.126152; -0.006761; 0.002075; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"je_tire_lowpoly08";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000000; 0.000000; 0.000000; }
+				radius	{ 0.944882; }
+				}
+			}
+		}
+		br
+		{
+		Dynamics
+			{
+			inertia { sphere; }
+			}
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						#orientation	{ 0.000001; -0.000001; 1.000000; 0.000004; }
+						orientation	{ -0.707107; 0.000001; -0.707106; 0.000002; }
+#						position	{ -0.126153; -0.006762; 0.002076; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"je_tire_lowpoly08";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000000; 0.000000; -0.000000; }
+				radius	{ 0.944882; }
+				}
+			}
+		}
+		bl
+		{
+		Dynamics
+			{
+			inertia { sphere; }
+			}
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						#orientation	{ 0.000003; 0.000000; -0.000005; 1.000000; }
+						orientation	{ -0.707107; 0.000001; -0.707106; 0.000002; }
+#						position	{ 0.126154; -0.006762; 0.002072; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"je_tire_lowpoly06";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000000; 0.000000; -0.000000; }
+				radius	{ 0.944882; }
+				}
+			}
+		}
+		fl
+		{
+		Dynamics
+			{
+			inertia { sphere; }
+			}
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						#orientation	{ 0.000003; 0.000000; -0.000005; 1.000000; }
+						orientation	{ -0.707107; 0.000001; -0.707106; 0.000002; }
+#position	{ 0.126154; -0.006762; 0.002073; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"je_tire_lowpoly06";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000000; 0.000000; 0.000000; }
+				radius	{ 0.944882; }
+				}
+			}
+		}
+
+
+	##substance SDK stuff
+	Vase
+		{
+		#no graphics or shape: a pure substance
+		
+		Substance
+			{
+			tetFile 
+				{
+				fileName { "smallVase.tet"; }
+				#flipXY;
+				texGen{ 1; }
+				}
+
+			material 
+				{
+				youngMod	{50000; }
+				fractureFact{1; }
+				deformRadius{1; }
+				fractRadius {3; }
+				density		{100; }
+				poissonRatio {0.33; }
+				
+				minDeformImp {1500; }
+				impMultiply  {0.02; }
+				maxFractures {4; }
+				gcIterations {20; }
+				}
+
+
+			texture { "ci_vase.bmp"; }
+
+			anchors
+				{
+				yMin { 0.1; }
+				}
+			}
+		}
+	Wall
+		{
+		#no graphics or shape: a pure substance
+		
+		Substance
+			{
+			tetFile 
+				{
+				fileName { "wall.tet"; }
+				#flipXY;
+				texGen{ 1; }
+				}
+
+			material 
+				{
+				youngMod	{50000; }
+				fractureFact{1; }
+				deformRadius{1; }
+				fractRadius {3; }
+				density		{100; }
+				poissonRatio {0.33; }
+				
+				minDeformImp {1500; }
+				impMultiply  {0.02; }
+				maxFractures {4; }
+				gcIterations {20; }
+				}
+
+
+			texture { "ci_WarningBars.bmp"; }
+
+#			anchors
+#				{
+#				yMin { 0.1; }
+#				}
+			}
+		}
+
+
+
+
+	}
+}

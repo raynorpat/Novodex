@@ -1,0 +1,95 @@
+# intro scene script for demo
+
+Scene
+	{
+	Text
+		{
+		T {"Test setup"; Y{-0.6;} D{2;} S{17;} E{1;}}
+		}
+
+
+
+	PhysStart {1;}
+	PhysDuration   {60;}
+	DragForce { 50; }
+
+	Parameters
+		{
+		RigidBodySDK
+			{
+			MIN_SEPARATION_FOR_PENALTY { -1; }
+			}
+		}
+
+
+	Bodies
+		{
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;54;0; }
+			scale {0.15;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;44;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;34;0; }
+			scale {0.15;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;24;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4;}				
+			position {0;14;0; }
+			scale {0.15;}
+			restitution {0;} 
+			}
+
+
+		1_Rubik
+			{
+			mass	{0;}				
+			position {0;4;0; }
+			scale {0.1;}
+			restitution {0;} 
+			}
+
+
+		}
+
+	Lights
+		{
+		1 {5; 22; 7;}
+		2 {5; 2; 17;}
+		}
+
+	Camera
+		{
+		position {-25.983063;10.972888;76.735077;}
+		angles {0.000000;-22.000000;14.000000;}
+		}
+
+	}
+
+
+

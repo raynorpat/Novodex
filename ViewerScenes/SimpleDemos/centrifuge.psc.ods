@@ -1,0 +1,387 @@
+# intro scene script for demo
+# mega wall with unit meter cubes and earth gravity.
+Scene
+	{
+
+
+
+	PhysStart {1;}
+	PhysDuration   {1060;}
+	DragForce { 50; }
+	gravity { 0; 0; 0; }		#we're in space
+	noGroundPlane;
+
+	Parameters
+		{
+		RigidBodySDK
+			{
+			MIN_SEPARATION_FOR_PENALTY { -0.1; }
+			}
+		}
+Text
+	{
+	T {"A rotating space station! Drag the cubes!"; Y{-0.7;} D{5;} S{16;}}
+	}
+
+	Bodies
+		{
+	#drum
+		EZCentrufuge 
+			{
+			mass	{1000;}				
+			position {0; 0; 0; }
+			friction {0.2;}
+			scale {0.2;}
+			angularVelocity { 10; 0; 0; }
+			}
+
+
+
+
+
+#		1st row (10)
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {1.1;0.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {2.2;0.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {3.3;0.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {4.4;0.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {5.5;0.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {6.6;0.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+
+#		2nd row (9)
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {1.6;1.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {2.7;1.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {3.8;1.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {4.9;1.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {6.0;1.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+
+#		3rd row (8)
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {1.1;2.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {2.2;2.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {3.3;2.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {4.4;2.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {5.5;2.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {6.6;2.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+
+#		4th row (7)
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {1.6;3.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {2.7;3.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {3.8;3.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {4.9;3.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {6.0;3.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+
+
+#		5th row (6)
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {1.1;4.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {2.2;4.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {3.3;4.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {4.4;4.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {5.5;4.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {6.6;4.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+#		6th row (5)
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {1.6;5.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {2.7;5.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {3.8;5.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {4.9;5.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {6.0;5.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+
+#		7th row (4)
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {1.1;6.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {2.2;6.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {3.3;6.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {4.4;6.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {5.5;6.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {6.6;6.5;0; }
+			scale {0.0165;}
+			friction {0.85;} 
+			}
+
+		}
+
+
+	Lights
+		{
+		1 {5; 22; 7;}
+		2 {5; 2; 17;}
+		}
+
+	Camera
+		{
+		position {51.739594;9.011091;11.420526;}
+		angles {0.000000;75.000000;-10.000000;}
+		}
+
+	}

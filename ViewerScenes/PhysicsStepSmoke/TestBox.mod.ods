@@ -1,0 +1,4 @@
+Model3
+{
+	Mesh { "TestBox.obj"; }
+}

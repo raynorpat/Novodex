@@ -1,0 +1,9 @@
+# Ramp
+Model3
+{
+	Mesh	{ "Ramp.obj"; }
+	Groups
+	{
+		Material_1 { "RampMaterial.mat.ods"; }
+	}
+}

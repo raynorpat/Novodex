@@ -1,0 +1,9 @@
+# je_5wheel
+Model3
+{
+	Mesh	{ "je_5wheel.obj"; }
+	Groups
+	{
+		Material_36 { "16 - Standard.mat.ods"; }
+	}
+}

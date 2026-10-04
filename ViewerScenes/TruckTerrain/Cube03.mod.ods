@@ -1,0 +1,9 @@
+# Cube03
+Model3
+{
+	Mesh	{ "Cube03.obj"; }
+	Groups
+	{
+		Material_3 { "CubeMaterial.mat.ods"; }
+	}
+}

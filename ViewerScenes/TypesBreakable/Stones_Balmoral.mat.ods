@@ -1,0 +1,9 @@
+# Stones_Balmoral
+Material3
+{
+	Smooth	{ 1; }
+	Color	{ 1;1;1; 1.000000; }
+	Specular	{ 0.900000; 0; 0; 1.000000; }
+	SpecExp	{ 16; }
+	Tex1	{ "Balmoral.jpg"; }
+}

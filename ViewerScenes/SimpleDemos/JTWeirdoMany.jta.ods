@@ -1,0 +1,224 @@
+JTA
+	{
+#pendulum
+
+	Construction
+		{
+		simulator { Multibody; }
+
+		Joint
+			{
+			type { Hinge; }	#or Prismatic or Floating
+			fatherPos {0;10;0;}
+			fatherAxis {0;0;1;}
+			fatherRefx {0;-1;0;}
+			sonPos {0;0.5;0;}
+			sonAxis {0;0;1;}
+			sonRefx {0;-1;0;}
+			jointParam { 10; }
+
+			Body
+				{
+				name { "neck"; }
+				dims {0.2;1;0.2;}
+				mass {1;}
+
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;-0.5;0;}
+					fatherAxis {1;0;0;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;0;0;}
+					sonAxis {1;0;0;}
+					sonRefx {0;-1;0;}
+					jointParam { 10; }
+
+					Body
+						{
+						name { "shoulder"; }
+						dims {0.2;0.2; 2;}
+						mass {1;}
+
+						Joint
+							{
+							type { Hinge; }	
+							fatherPos {0;0;-1;}
+							fatherAxis {1;0;0;}
+							fatherRefx {0;-1;0;}
+							sonPos {0;0.5;0;}
+							sonAxis {1;0;0;}
+							sonRefx {0;-1;0;}
+							jointParam { 10; }
+
+							Body
+								{
+								name { "LeftArm"; }
+								dims {0.2;1;0.2;}
+								mass {1;}
+
+
+								Joint
+									{
+									type { Hinge; }	
+									fatherPos {0;-0.5;0;}
+									fatherAxis {0;1;0;}
+									fatherRefx {1;0;0;}
+									sonPos {0;0;0;}
+									sonAxis {0;1;0;}
+									sonRefx {1;0;0;}
+									jointParam { 10; }
+
+									Body
+										{
+										name { "LeftHand"; }
+										dims {1;0.2;0.2;}
+										mass {1;}
+
+										Joint
+											{
+											type { Hinge; }	
+											fatherPos {-0.5;0;0;}
+											fatherAxis {0;0;1;}
+											fatherRefx {0;-1;0;}
+											sonPos {0;0.25;0;}
+											sonAxis {0;0;1;}
+											sonRefx {0;-1;0;}
+											jointParam { 10; }
+
+											Body
+												{
+												name { "LeftFirstFinger"; }
+												dims {0.2;0.5;0.2;}
+												mass {1;}
+												}
+											}
+										Joint
+											{
+											type { Hinge; }	
+											fatherPos {0.5;0;0;}
+											fatherAxis {0;0;1;}
+											fatherRefx {0;-1;0;}
+											sonPos {0;0.25;0;}
+											sonAxis {0;0;1;}
+											sonRefx {0;-1;0;}
+											jointParam { 0; }
+
+											Body
+												{
+												name { "LeftSecondFinger"; }
+												dims {0.2;0.5;0.2;}
+												mass {1;}
+												}
+											}
+										}
+									}
+									
+								}
+							}
+
+####### arm2
+						Joint
+							{
+							type { Hinge; }	
+							fatherPos {0;0;1;}
+							fatherAxis {1;0;0;}
+							fatherRefx {0;-1;0;}
+							sonPos {0;0.5;0;}
+							sonAxis {1;0;0;}
+							sonRefx {0;-1;0;}
+							jointParam { 0; }
+
+							Body
+								{
+								name { "RightArm"; }
+								dims {0.2;1;0.2;}
+								mass {1;}
+
+								Joint
+									{
+									type { Hinge; }	
+									fatherPos {0;-0.5;0;}
+									fatherAxis {0;1;0;}
+									fatherRefx {1;0;0;}
+									sonPos {0;0;0;}
+									sonAxis {0;1;0;}
+									sonRefx {1;0;0;}
+									jointParam { 0; }
+
+									Body
+										{
+										name { "RightHand"; }
+										dims {1;0.2;0.2;}
+										mass {1;}
+
+										Joint
+											{
+											type { Hinge; }	
+											fatherPos {-0.5;0;0;}
+											fatherAxis {0;0;1;}
+											fatherRefx {0;-1;0;}
+											sonPos {0;0.25;0;}
+											sonAxis {0;0;1;}
+											sonRefx {0;-1;0;}
+											jointParam { 0; }
+
+											Body
+												{
+												name { "LeftFirstFinger"; }
+												dims {0.2;0.5;0.2;}
+												mass {1;}
+												}
+											}
+										Joint
+											{
+											type { Hinge; }	
+											fatherPos {0.5;0;0;}
+											fatherAxis {0;0;1;}
+											fatherRefx {0;-1;0;}
+											sonPos {0;0.25;0;}
+											sonAxis {0;0;1;}
+											sonRefx {0;-1;0;}
+											jointParam { 0; }
+
+											Body
+												{
+												name { "LeftSecondFinger"; }
+												dims {0.2;0.5;0.2;}
+												mass {1;}
+												}
+											}
+
+											
+										}
+									}									
+								}
+							}							
+						} #shoulder
+					} #j2
+				} #neck
+			}	#j1
+		}	#cons
+
+	Instances 
+		{
+		Multibody { position { 0; 0; 0; }  random { 0; }}
+		Multibody { position { 2; 0; 0; }  random { 5; }}
+		Multibody { position { 4; 0; 0; }  random { 5; }}
+		Multibody { position { 6; 0; 0; }  random { 5; }}
+		Multibody { position { 0; 0; 4; }  random { 5; }}
+		Multibody { position { 2; 0; 4; }  random { 5; }}
+		Multibody { position { 4; 0; 4; }  random { 5; }}
+		Multibody { position { 6; 0; 4; }  random { 5; }}
+		Multibody { position { 0; 0; 8; }  random { 5; }}
+		Multibody { position { 2; 0; 8; }  random { 5; }}
+		Multibody { position { 4; 0; 8; }  random { 5; }}
+		Multibody { position { 6; 0; 8; }  random { 5; }}
+		}
+
+	Camera
+		{
+		position {16.113892;14.542390;13.554640;}
+		angles {0.000000;54.000000;-24.000000;}
+		}
+	}

@@ -1,0 +1,94 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 1000; }
+	DragForce	{ 100; }
+	gravity	{ 0.000000; -20; 0.000000; }
+	gridRes	{ 0; }
+
+Text
+	{
+	T {"See the console for trigger events!"; Y{-0.7;} D{5;} S{16;}}
+	}
+
+	Bodies
+	{
+		Box_trigger_01
+		{
+			name	{ Box_trigger_01; }
+			orientation	{ -0.707107; -0.707107; 0.000000; -0.000000; }
+			position	{ -1.958628; 19.713070; 20.293701; }
+			scale	{ 1.000000; }
+			trigger	{ 1; }
+			mass	{ 0.000000; }
+		}
+		Moving_box
+		{
+			name	{ Moving_box; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -1.958628; 15.469643; 8.522198; }
+			scale	{ 1.000000; }
+		}
+		Box_trigger_02
+		{
+			name	{ Box_trigger_02; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -1.958627; 9.746661; 1.947069; }
+			scale	{ 1.000000; }
+			trigger	{ 1; }
+			mass	{ 0.000000; }
+		}
+		Moving_sphere
+		{
+			name	{ Moving_sphere; }
+			orientation	{ -0.707107; 0.000000; 0.000000; -0.707107; }
+			position	{ -0.000000; 4.637012; -2.343806; }
+			scale	{ 1.000000; }
+		}
+		Moving_capsule
+		{
+			name	{ Moving_capsule; }
+			orientation	{ -0.707107; 0.000000; 0.000000; -0.707107; }
+			position	{ -9.960350; 5.206960; -14.150208; }
+			scale	{ 1.000000; }
+		}
+		Capsule_trigger
+		{
+			name	{ Capsule_trigger; }
+			orientation	{ 0.500000; -0.500000; -0.500000; 0.500000; }
+			position	{ -46.775478; 7.224595; -21.385809; }
+			scale	{ 1.000000; }
+			trigger	{ 1; }
+			mass	{ 0.000000; }
+		}
+		Sphere_trigger
+		{
+			name	{ Sphere_trigger; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 16.510817; -0.000000; -65.299950; }
+			scale	{ 1.000000; }
+			trigger	{ 1; }
+			mass	{ 0.000000; }
+		}
+		MeshTrigger
+		{
+			name	{ MeshTrigger; }
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 68.848717; 23.949144; -23.865923; }
+			scale	{ 1.000000; }
+			trigger	{ 1; }
+			mass	{ 0.000000; }
+		}
+	}
+	Joints
+	{
+	}
+	Lights
+	{
+	}
+	Camera
+	{
+		position {-77.500618;31.036192;-123.091957;}
+		angles {0.000000;218.000000;-9.000000;}
+	}
+}

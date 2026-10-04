@@ -1,0 +1,742 @@
+PDS
+{
+	Acts
+	{
+		"Playground.psc.ods";
+	}
+	Models
+	{
+		Terrain	{ "Terrain.mod.ods"; }
+		Ramp	{ "Ramp.mod.ods"; }
+		Capsule01	{ "Capsule01.mod.ods"; }
+		Cube01	{ "Cube01.mod.ods"; }
+		Cube02	{ "Cube02.mod.ods"; }
+		Cube03	{ "Cube03.mod.ods"; }
+		Cube04	{ "Cube04.mod.ods"; }
+		Cube05	{ "Cube05.mod.ods"; }
+		Sphere01	{ "Sphere01.mod.ods"; }
+		Bounds02	{ "Bounds02.mod.ods"; }
+
+#truck
+		Ball { Ball.mod.ods; }
+		top_poly_tex	{ "top_poly_tex.mod.ods"; }
+		haube	{ "haube.mod.ods"; }
+		je_5wheel	{ "je_5wheel.mod.ods"; }
+		Object02	{ "Object02.mod.ods"; }
+		Object03	{ "Object03.mod.ods"; }
+		Object04	{ "Object04.mod.ods"; }
+		Object05	{ "Object05.mod.ods"; }
+		Object06	{ "Object06.mod.ods"; }
+		Object07	{ "Object07.mod.ods"; }
+		Object08	{ "Object08.mod.ods"; }
+		Object01	{ "Object01.mod.ods"; }
+		Linie02	{ "Linie02.mod.ods"; }
+		Linie03	{ "Linie03.mod.ods"; }
+		Linie01	{ "Linie01.mod.ods"; }
+		Linie04	{ "Linie04.mod.ods"; }
+		Linie05	{ "Linie05.mod.ods"; }
+		je_radnarbe_lowpoly07	{ "je_radnarbe_lowpoly07.mod.ods"; }
+		je_tire_lowpoly08	{ "je_tire_lowpoly08.mod.ods"; }
+		je_radnarbe_lowpoly04	{ "je_radnarbe_lowpoly04.mod.ods"; }
+		je_radnarbe_lowpoly05	{ "je_radnarbe_lowpoly05.mod.ods"; }
+		je_tire_lowpoly06	{ "je_tire_lowpoly06.mod.ods"; }
+		je_radnarbe_lowpoly06	{ "je_radnarbe_lowpoly06.mod.ods"; }
+
+	}
+	Actors
+	{
+		Terrain
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Terrain";
+					}
+				}
+			}
+			Collision
+			{
+					TriangleMesh
+					{
+						heightFieldInfAxis { 1; }
+						heightFieldInfValue { -10000.000000; }
+					}
+			}
+		}
+		Ramp
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Ramp";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; 0.000001; 0.000000; }
+					dimensions	{ 11.836892; 26.190290; 32.900970; }
+				}
+			}
+		}
+		Capsule01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Capsule01";
+					}
+				}
+			}
+			Collision
+			{
+				Capsule
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+					radius	{ 1.298180; }
+					height	{ 10.532038; }
+				}
+			}
+		}
+		Cube01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Cube01";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; -0.000000; 0.000000; }
+					dimensions	{ 3.937008; 3.937008; 3.937008; }
+				}
+			}
+		}
+		Cube02
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Cube02";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; -0.000000; 0.000000; }
+					dimensions	{ 3.937008; 3.937008; 3.937008; }
+				}
+			}
+		}
+		Cube03
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Cube03";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; -0.000000; 0.000000; }
+					dimensions	{ 3.937008; 3.937008; 3.937008; }
+				}
+			}
+		}
+		Cube04
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Cube04";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; -0.000000; 0.000000; }
+					dimensions	{ 3.937008; 3.937008; 3.937008; }
+				}
+			}
+		}
+		Cube05
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Cube05";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; -0.000000; 0.000000; }
+					dimensions	{ 3.937008; 3.937008; 3.937008; }
+				}
+			}
+		}
+		Sphere01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Sphere01";
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+					radius	{ 2.982195; }
+				}
+			}
+		}
+		Bounds02
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Bounds02";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; -0.000001; 0.000000; }
+					dimensions	{ 21.424065; 18.536482; 240.322205; }
+				}
+			}
+		}
+
+#truck
+
+	TruckBody
+{
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						orientation	{ 0.999848; 0.017452; -0.000000; -0.000000; }
+						position	{ 0.000802; 2.990571; -1.582967; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"top_poly_tex";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.999848; 0.017452; -0.000000; -0.000000; }
+						position	{ -0.053795; 2.227915; 1.655976; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"haube";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.999848; 0.017452; -0.000000; -0.000000; }
+						position	{ -0.047219; 2.437532; -2.722458; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"je_5wheel";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.999848; 0.017452; -0.000000; -0.000000; }
+						position	{ -0.895609; 2.551139; -0.298304; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Object02";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.746331; 0.013027; 0.665346; 0.011613; }
+						position	{ -0.854889; 2.963924; -0.315893; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Object03";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.984013; 0.017176; -0.177241; -0.003094; }
+						position	{ 0.000063; 2.959114; 0.254775; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Object04";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.999848; 0.017452; -0.000000; -0.000000; }
+						position	{ -1.050122; 2.680219; 0.194944; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Object05";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ -0.017452; 0.999848; 0.000001; 0.000001; }
+						position	{ 1.050244; 2.680219; 0.194945; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Object06";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ -0.017452; 0.999848; 0.000001; 0.000001; }
+						position	{ 0.895732; 2.551140; -0.298303; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Object07";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ -0.013028; 0.746331; -0.011614; 0.665346; }
+						position	{ 0.847898; 2.963923; -0.315891; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Object08";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.999848; 0.017452; -0.000000; -0.000000; }
+						position	{ 0.012350; 2.049433; 0.029769; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Object01";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; 0.000000; -0.000000; }
+						position	{ -0.000443; 1.981279; 2.728338; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Linie02";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 1.000000; -0.000000; 0.000000; -0.000000; }
+						position	{ -0.000443; 1.680782; 2.728338; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Linie03";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.000000; 0.707106; }
+						position	{ -0.465630; 1.627563; 2.307565; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Linie01";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.000000; 0.707106; }
+						position	{ 0.471251; 1.627562; 2.307565; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Linie04";
+						}
+					}
+					Node
+					{
+						# PRS
+						orientation	{ 0.707107; 0.000000; -0.000000; 0.707106; }
+						position	{ -0.012077; 1.3144; 0.276549; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"Linie05";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+				position	{ 0; 2.062866; -1.022920; }				dimensions	{ 1.937473; 1.179460; 3.026148; }
+				orientation	{ 0.999848; 0.017452; -0.000000; -0.000000; }
+				}
+
+				
+				Box
+				{
+				position	{ 0; 3.012937; -0.981686; }				dimensions	{ 1.937473; 0.731265; 2.630328; }
+				orientation	{ 0.999848; 0.017452; -0.000000; -0.000000; }
+				}
+				Box
+				{
+				position	{ 0; 1.815699; 1.504705; }				dimensions	{ 1.955925; 1.126509; 2.232707; }
+				orientation	{ -0.078459; 0.996917; -0.000000; -0.000000; }
+				}
+				Box
+				{
+				position	{ 0; 1.060163; -1.588153; }				dimensions	{ 1.734500; 0.950284; 1.070223; }
+				orientation	{ -0.008726; 0.999962; -0.000000; -0.000000; }
+				}
+				Box
+				{
+				position	{ 0; 1.200033; 2.121858; }				dimensions	{ 1.734500; 0.893267; 1.129026; }
+				orientation	{ -0.147809; 0.989016; -0.000000; -0.000000; }
+				}
+				Box
+				{
+				position	{ 0; 1.515144; -2.144400; }				dimensions	{ 1.734500; 0.838151; 0.417815; }
+				orientation	{ 0.267238; 0.963630; -0.000000; -0.000000; }
+				}
+			}
+		}		
+		
+		je_radnarbe_lowpoly07
+		{
+			Graphics
+			{
+				Node
+				{
+
+				Node
+					{
+					position {  0;0.74;0; }
+
+						Model
+						{
+				"je_radnarbe_lowpoly07";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.013670; -0.096094; 0.022031; }
+					dimensions	{ 0.690373; 1.171184; 0.785836; }
+					orientation	{ 0.998906; -0.033457; 0.029197; 0.014654; }
+				}
+			}
+		}
+		je_radnarbe_lowpoly04
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"je_radnarbe_lowpoly04";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.013670; -0.096094; 0.022031; }
+					dimensions	{ 0.690373; 1.171185; 0.785836; }
+					orientation	{ 0.998906; -0.033457; 0.029197; 0.014654; }
+				}
+			}
+		}
+		je_radnarbe_lowpoly05
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"je_radnarbe_lowpoly05";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ 0.013670; 0.096094; -0.022031; }
+					dimensions	{ 0.690372; 1.171183; 0.785834; }
+					orientation	{ 0.998906; -0.033457; 0.029197; 0.014654; }
+				}
+			}
+		}
+		je_radnarbe_lowpoly06
+		{
+			Graphics
+			{
+				Node
+				{
+				Node
+					{
+					position { 0;-0.74; 0; }
+					Model
+					{
+			"je_radnarbe_lowpoly06";
+					}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ 0.013670; 0.096094; -0.022031; }
+					dimensions	{ 0.690372; 1.171183; 0.785834; }
+					orientation	{ 0.998906; -0.033457; 0.029197; 0.014654; }
+				}
+			}
+		}
+		fr
+		{
+		Dynamics
+			{
+			inertia { sphere; }
+			}
+
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						#orientation	{ 0.000001; -0.000001; 1.000000; 0.000004; }
+						orientation	{ -0.707107; 0.000001; -0.707106; 0.000002; }
+#						position	{ -0.126152; -0.006761; 0.002075; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"je_tire_lowpoly08";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000000; 0.000000; 0.000000; }
+				radius	{ 0.944882; }
+				}
+			}
+		}
+		br
+		{
+		Dynamics
+			{
+			inertia { sphere; }
+			}
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						#orientation	{ 0.000001; -0.000001; 1.000000; 0.000004; }
+						orientation	{ -0.707107; 0.000001; -0.707106; 0.000002; }
+#						position	{ -0.126153; -0.006762; 0.002076; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"je_tire_lowpoly08";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000000; 0.000000; -0.000000; }
+				radius	{ 0.944882; }
+				}
+			}
+		}
+		bl
+		{
+		Dynamics
+			{
+			inertia { sphere; }
+			}
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						#orientation	{ 0.000003; 0.000000; -0.000005; 1.000000; }
+						orientation	{ -0.707107; 0.000001; -0.707106; 0.000002; }
+#						position	{ 0.126154; -0.006762; 0.002072; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"je_tire_lowpoly06";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000000; 0.000000; -0.000000; }
+				radius	{ 0.944882; }
+				}
+			}
+		}
+		fl
+		{
+		Dynamics
+			{
+			inertia { sphere; }
+			}
+			Graphics
+			{
+				Node
+				{
+					Node
+					{
+						# PRS
+						#orientation	{ 0.000003; 0.000000; -0.000005; 1.000000; }
+						orientation	{ -0.707107; 0.000001; -0.707106; 0.000002; }
+#position	{ 0.126154; -0.006762; 0.002073; }
+			scale	{ 1.000000; }
+						Model
+						{
+			"je_tire_lowpoly06";
+						}
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.000000; 0.000000; 0.000000; }
+				radius	{ 0.944882; }
+				}
+			}
+		}
+
+		Ball
+			{
+			Dynamics
+				{
+				inertia { sphere; }
+				}
+
+			Graphics { Node { Model { Ball; } } }
+			Collision 
+				{
+				Sphere 
+					{
+					radius	{ 0.5; }
+					} 
+				}
+			}
+
+
+	}
+}

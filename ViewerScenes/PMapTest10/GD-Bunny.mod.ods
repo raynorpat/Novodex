@@ -1,0 +1,9 @@
+# GD-Bunny
+Model3
+{
+	Mesh	{ "GD-Bunny.obj"; }
+	Groups
+	{
+		Material_0 { "1_-_Default.mat.ods"; }
+	}
+}

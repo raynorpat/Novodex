@@ -1,0 +1,61 @@
+PDS
+{
+	Acts
+	{
+		"scene.psc.ods";
+	}
+	Models
+	{
+		ramp20	{ "ramp20.mod.ods"; }
+		Quader07	{ "Quader07.mod.ods"; }
+	}
+	Actors
+	{
+		# Mesh actors not in groups
+		ramp20
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"ramp20";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 1.968503; 0.393701; 9.842514; }
+				}
+			}
+		}
+		Quader07
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Quader07";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 1.030268; 0.309080; 0.798458; }
+				}
+			}
+		}
+		# Group actors
+	}
+}

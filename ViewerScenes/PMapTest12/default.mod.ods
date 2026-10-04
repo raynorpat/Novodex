@@ -1,0 +1,9 @@
+# default
+Model3
+{
+	Mesh	{ "default.obj"; }
+	Groups
+	{
+		Material_0 { "7_-_Default.mat.ods"; }
+	}
+}

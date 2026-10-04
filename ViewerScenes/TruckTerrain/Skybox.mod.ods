@@ -1,0 +1,14 @@
+# Skybox
+Model3
+{
+	Mesh	{ "Skybox.obj"; }
+	Groups
+	{
+		Material_6 { "Skybox_Down.mat.ods"; }
+		Material_7 { "Skybox_Back.mat.ods"; }
+		Material_8 { "Skybox_Right.mat.ods"; }
+		Material_9 { "Skybox_Left.mat.ods"; }
+		Material_10 { "Skybox_Up.mat.ods"; }
+		Material_11 { "Skybox_Front.mat.ods"; }
+	}
+}

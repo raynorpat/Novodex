@@ -1,0 +1,9 @@
+# ci_pole_tex
+Model3
+{
+	Mesh	{ "ci_pole_tex.obj"; }
+	Groups
+	{
+		Material_2 { "Material #966.mat.ods"; }
+	}
+}

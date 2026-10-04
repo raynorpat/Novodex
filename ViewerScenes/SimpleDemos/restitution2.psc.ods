@@ -1,0 +1,376 @@
+# intro scene script for demo
+
+Scene
+	{
+	Text
+		{
+		T {"Restitution Test"; Y{-0.6;} D{2;} S{17;} E{1;}}
+		}
+
+
+
+	PhysStart {1;}
+	PhysDuration   {20;}
+	DragForce { 30; }
+	gravity { 0; 0; 0; }
+
+
+	Bodies
+		{
+
+
+		#high altitude boxes:
+		Rubik
+			{
+			position {0;10;0; }
+			scale {0.0165;}
+			restitution {0;} 
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Rubik
+			{
+			position {1.5;10;0; }
+			scale {0.0165;}
+			restitution {0.1;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Rubik
+			{
+			position {3;10;0; }
+			scale {0.0165;}
+			restitution {0.2;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Rubik
+			{
+			position {4.5;10;0; }
+			scale {0.0165;}
+			restitution {0.3;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Rubik
+			{
+			position {6;10;0; }
+			scale {0.0165;}
+			restitution {0.4;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Rubik
+			{
+			position {7.5;10;0; }
+			scale {0.0165;}
+			restitution {0.5;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Rubik
+			{
+			position {9;10;0; }
+			scale {0.0165;}
+			restitution {0.6;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Rubik
+			{
+			position {10.5;10;0; }
+			scale {0.0165;}
+			restitution {0.7;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Rubik
+			{
+			position {12;10;0; }
+			scale {0.0165;}
+			restitution {0.8;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Rubik
+			{
+			position {13.5;10;0; }
+			scale {0.0165;}
+			restitution {0.9;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Rubik
+			{
+			position {15;10;0; }
+			scale {0.0165;}
+			restitution {1.0;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		#second row:
+
+	Rubik
+			{
+			position {0;10;10; }
+			scale {0.0165;}
+			restitution {0;} 
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Rubik
+			{
+			position {1.5;10;10; }
+			scale {0.0165;}
+			restitution {0.1;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Rubik
+			{
+			position {3;10;10; }
+			scale {0.0165;}
+			restitution {0.2;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Rubik
+			{
+			position {4.5;10;10; }
+			scale {0.0165;}
+			restitution {0.3;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Rubik
+			{
+			position {6;10;10; }
+			scale {0.0165;}
+			restitution {0.4;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Rubik
+			{
+			position {7.5;10;10; }
+			scale {0.0165;}
+			restitution {0.5;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Rubik
+			{
+			position {9;10;10; }
+			scale {0.0165;}
+			restitution {0.6;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Rubik
+			{
+			position {10.5;10;10; }
+			scale {0.0165;}
+			restitution {0.7;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Rubik
+			{
+			position {12;10;10; }
+			scale {0.0165;}
+			restitution {0.8;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Rubik
+			{
+			position {13.5;10;10; }
+			scale {0.0165;}
+			restitution {0.9;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Rubik
+			{
+			position {15;10;10; }
+			scale {0.0165;}
+			restitution {1.0;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+
+
+
+
+		#high altitude spheres:
+		Ball
+			{
+			position {0;5;0; }
+			restitution {0;} 
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Ball
+			{
+			position {1.5;5;0; }
+			restitution {0.1;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Ball
+			{
+			position {3;5;0; }
+			restitution {0.2;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Ball
+			{
+			position {4.5;5;0; }
+			restitution {0.3;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Ball
+			{
+			position {6;5;0; }
+			restitution {0.4;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Ball
+			{
+			position {7.5;5;0; }
+			restitution {0.5;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Ball
+			{
+			position {9;5;0; }
+			restitution {0.6;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Ball
+			{
+			position {10.5;5;0; }
+			restitution {0.7;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Ball
+			{
+			position {12;5;0; }
+			restitution {0.8;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Ball
+			{
+			position {13.5;5;0; }
+			restitution {0.9;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		Ball
+			{
+			position {15;5;0; }
+			restitution {1.0;}
+			linearVelocity { 0; 0; 5; }
+			}
+
+		#second row:
+		Ball
+			{
+			position {0;5;10; }
+			restitution {0;} 
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Ball
+			{
+			position {1.5;5;10; }
+			restitution {0.1;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Ball
+			{
+			position {3;5;10; }
+			restitution {0.2;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Ball
+			{
+			position {4.5;5;10; }
+			restitution {0.3;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Ball
+			{
+			position {6;5;10; }
+			restitution {0.4;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Ball
+			{
+			position {7.5;5;10; }
+			restitution {0.5;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Ball
+			{
+			position {9;5;10; }
+			restitution {0.6;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Ball
+			{
+			position {10.5;5;10; }
+			restitution {0.7;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Ball
+			{
+			position {12;5;10; }
+			restitution {0.8;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Ball
+			{
+			position {13.5;5;10; }
+			restitution {0.9;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+		Ball
+			{
+			position {15;5;10; }
+			restitution {1.0;}
+			linearVelocity { 0; 0; -5; }
+			}
+
+
+		}
+
+	Lights
+		{
+		1 {5; 22; 7;}
+		2 {5; 2; 17;}
+		}
+
+	Camera
+		{
+		position {-14.244033;23.949579;20.074306;}
+		angles {0.000000;-60.000000;-33.000000;}
+		}
+
+	}

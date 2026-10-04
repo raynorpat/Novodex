@@ -1,0 +1,186 @@
+# intro scene script for demo
+
+Scene
+	{
+	Text
+		{
+		T {"'f-prot' floppy disks"; Y{-0.7;} D{5;} S{16;}}
+		}
+
+
+
+	PhysStart {1;}
+	PhysDuration   {2000;}
+	DragForce { 5; }
+	gravity { 0; -9; 0; }
+	#gravity { 0; 0; 0; }
+	#collDet { 0; }				#collision detection off.
+	#simStepSize { 0.005; }
+
+
+	Bodies
+		{
+		Floppy
+			{
+			name { f1; }
+			mass	{1;}
+			position {0;70;0; }
+			scale {0.04;}
+			}
+
+		Floppy
+			{
+			name { f2; }
+			mass	{1;}
+			position {0;66;0; }
+			#position {0;7;0; } #11
+			scale {0.04;}
+			}
+		
+		Floppy
+			{
+			name { f3; }
+			mass	{1;}
+			position {0;62;0; }
+			scale {0.04;}
+			}
+		Floppy
+			{
+			name { f4; }
+			mass	{1;}
+			position {0;58;0; }
+			scale {0.04;}
+			}
+		Floppy
+			{
+			name { f5; }
+			mass	{1;}
+			position {0;54;0; }
+			scale {0.04;}
+			}
+	
+		/*
+		Floppy
+			{
+			name { f6; }
+			mass	{1;}
+			position {0;50;0; }
+			scale {0.04;}
+			}
+		Floppy
+			{
+			name { f7; }
+			mass	{1;}
+			position {0;46;0; }
+			scale {0.04;}
+			}
+		Floppy
+			{
+			name { f8; }
+			mass	{1;}
+			position {0;42;0; }
+			scale {0.04;}
+			}
+		Floppy
+			{
+			name { f9; }
+			mass	{1;}
+			position {0;38;0; }
+			scale {0.04;}
+			}
+		Floppy
+			{
+			name { f10; }
+			mass	{1;}
+			position {0;34;0; }
+			scale {0.04;}
+			}
+			*/
+		}
+
+	Joints
+		{
+/*		
+		Hinge
+			{
+			anchor {0;72;0; }
+			#anchor {0;1;0; } #5
+			direction { 1; 0; 0; }
+			#direction { 0; 1; 0; }
+			bodies { WORLD; f1; }
+			}
+*/		
+
+		Hinge
+			{
+			anchor { 0;68;0; }
+			#anchor { 0;5;0; }#9
+			direction { 1; 0; 0; }
+			bodies { f1; f2; }
+			}
+		
+		Hinge
+			{
+			anchor { 0;64;0; }
+			direction { 1; 0; 0; }
+			bodies { f2; f3; }
+			}
+		Hinge
+			{
+			anchor { 0;60;0; }
+			direction { 1; 0; 0; }
+			bodies { f3; f4; }
+			}
+		Hinge
+			{
+			anchor { 0;56;0; }
+			direction { 1; 0; 0; }
+			bodies { f4; f5; }
+			}
+
+		/*
+		Hinge
+			{
+			anchor { 0;52;0; }
+			direction { 1; 0; 0; }
+			bodies { f5; f6; }
+			}
+		Hinge
+			{
+			anchor { 0;48;0; }
+			direction { 1; 0; 0; }
+			bodies { f6; f7; }
+			}
+		Hinge
+			{
+			anchor { 0;44;0; }
+			direction { 1; 0; 0; }
+			bodies { f7; f8; }
+			}
+		Hinge
+			{
+			anchor { 0;40;0; }
+			direction { 1; 0; 0; }
+			bodies { f8; f9; }
+			}
+		Hinge
+			{
+			anchor { 0;36;0; }
+			direction { 1; 0; 0; }
+			bodies { f9; f10; }
+			}
+		*/
+		}
+
+
+	Lights
+		{
+		1 {5; 28; 7;}
+		}
+
+	Camera
+		{
+		position {14.068132;72.209419;19.407461;}
+		angles {0.000000;391.000000;-13.000000;}
+		}
+	}

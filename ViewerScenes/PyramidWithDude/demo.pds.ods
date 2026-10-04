@@ -1,0 +1,139 @@
+PDS
+{
+	Acts
+	{
+		"Physics_Stack00.psc.ods";
+	}
+	Models
+	{
+		Box01	{ "Box01.mod.ods"; }
+	}
+	Actors
+	{
+		# Mesh actors not in groups
+		Box01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box01";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					dimensions	{ 0.5; 0.5; 0.5; }
+				}
+			}
+		}
+		# Group actors
+
+
+
+void {}
+"bip01 l calf"
+{
+Collision
+{
+#bip01 l calf_1
+Capsule
+{
+orientation {0.707101;-0.00279176;-0.00279179;-0.707101;}
+position {0.219242;5.30276e-009;2.251e-009;}
+radius {0.106162;}
+height {0.438484;}
+}
+}
+}
+"bip01 l forearm"
+{
+Collision
+{
+#bip01 l forearm_1
+Capsule
+{
+orientation {0.482154;0.517231;0.517231;-0.482154;}
+position {0.142714;1.37641e-008;-1.90088e-008;}
+radius {0.0977569;}
+height {0.285428;}
+}
+}
+}
+"bip01 l thigh"
+{
+Collision
+{
+#bip01 l thigh_1
+Capsule
+{
+orientation {0.50144;-0.498556;-0.498556;-0.50144;}
+position {0.259692;-5.80562e-010;1.8475e-008;}
+radius {0.1;}
+height {0.519384;}
+}
+}
+}
+"bip01 l upperarm"
+{
+Collision
+{
+#bip01 l upperarm_1
+Capsule
+{
+orientation {0.482054;0.517324;0.517324;-0.482054;}
+position {0.16467;9.33598e-009;-1.7876e-008;}
+radius {0.102622;}
+height {0.32934;}
+}
+}
+}
+"bip01 neck"
+{
+Collision
+{
+#bip01 neck_1
+Sphere
+{
+radius {0.1;}
+position {0.186448;-0.0403108;0.000444256;}
+}
+}
+}
+"bip01 pelvis"
+{
+Collision
+{
+#Part1
+Capsule
+{
+orientation {-0.5;-0.5;0.5;-0.5;}
+position {0.0865471;0.0179372;1.49012e-008;}
+radius {0.18;}
+height {0.18;}
+}
+}
+}
+"bip01 spine2"
+{
+Collision
+{
+#bip01 spine2_1
+Capsule
+{
+orientation {4.93392e-007;0.706995;0.707218;-4.8109e-007;}
+position {0.0478124;2.77546e-005;1.50885e-009;}
+radius {0.18;}
+height {0.11;}
+}
+}
+}
+
+
+	}
+}

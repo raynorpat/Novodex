@@ -1,0 +1,57 @@
+PDS
+{
+	Acts
+	{
+		"SphereFall.psc.ods";
+	}
+	Models
+	{
+		Wall	{ "Wall.mod.ods"; }
+		GeoSphere01	{ "GeoSphere01.mod.ods"; }
+	}
+	Actors
+	{
+		Wall
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Wall";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					dimensions	{ 1.000000; 2.500000; 5.000000; }
+				}
+			}
+		}
+		GeoSphere01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"GeoSphere01";
+					}
+				}
+			}
+			Collision
+			{
+				Sphere
+				{
+#					radius	{ 0.125000; }
+					radius	{ 0.15000; }
+				}
+			}
+		}
+	}
+}

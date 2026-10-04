@@ -1,0 +1,9 @@
+# ci_stopsign02
+Model3
+{
+	Mesh	{ "ci_stopsign02.obj"; }
+	Groups
+	{
+		Material_3 { "Material #960.mat.ods"; }
+	}
+}

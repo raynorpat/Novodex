@@ -1,0 +1,108 @@
+PDS
+{
+	Acts
+	{
+		"BoxMeshTest01.psc.ods";
+	}
+	Models
+	{
+		LargeBox	{ "LargeBox.mod.ods"; }
+		Teapot01	{ "Teapot01.mod.ods"; }
+		Pyramid01	{ "Pyramid01.mod.ods"; }
+		Tube01	{ "Tube01.mod.ods"; }
+		Box01	{ "Box01.mod.ods"; }
+	}
+	Actors
+	{
+		LargeBox
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"LargeBox";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+#					dimensions	{ 0.431701; 0.431701; 0.431701; }
+					dimensions	{ 0.47; 0.47; 0.47; }
+				}
+			}
+		}
+		Teapot01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Teapot01";
+					}
+				}
+			}
+			Collision
+			{
+					TriangleMesh;
+			}
+		}
+		Pyramid01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Pyramid01";
+					}
+				}
+			}
+			Collision
+			{
+					TriangleMesh;
+			}
+		}
+		Tube01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Tube01";
+					}
+				}
+			}
+			Collision
+			{
+					TriangleMesh;
+			}
+		}
+		Box01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Box01";
+					}
+				}
+			}
+			Collision
+			{
+					TriangleMesh;
+			}
+		}
+	}
+}

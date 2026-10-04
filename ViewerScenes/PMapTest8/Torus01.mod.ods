@@ -1,0 +1,9 @@
+# Torus01
+Model3
+{
+	Mesh	{ "Torus01.obj"; }
+	Groups
+	{
+		Material_0 { "2_-_Default.mat.ods"; }
+	}
+}

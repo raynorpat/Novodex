@@ -1,0 +1,9 @@
+# Hinged1
+Model3
+{
+	Mesh	{ "Hinged1.obj"; }
+	Groups
+	{
+		Material_1 { "Stones_Balmoral.mat.ods"; }
+	}
+}

@@ -1,0 +1,9 @@
+# Quader16
+Model3
+{
+	Mesh	{ "Quader16.obj"; }
+	Groups
+	{
+		DefaultMaterial { "Default.mat.ods"; }
+	}
+}

@@ -1,0 +1,420 @@
+Scene
+{
+	PhysStart	{ 1; }
+	PhysDuration	{ 1000; }
+	DragForce	{ 100; }
+	gravity	{ 0.000000; -9.81; 0.000000; }
+	#collDet { 0; } 
+
+	Text
+		{
+		T {"Next scene ('n') has breakables!"; Y{-0.6;} D{2;} S{17;} E{1;}}
+		}
+
+
+	Bodies
+	{
+		FixedRod
+		{
+			# Joint name
+			name	{ FixedRodJoint; }
+			# PRS
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ -0.369542; 2.953203; 0.026408; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 0.000000; }
+		}
+		PtOnLineBody
+		{
+			# Joint name
+			name	{ PtOnLineBodyJoint; }
+			# PRS
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			#position	{ -0.980734; 2.285797; -2.134397; } #traditional pos
+
+			position	{ -1.4; 1.5; -2.5; }		#with this pos we have to simult solve, otherwise there is drift like crazy
+
+			scale	{ 1.000000; }
+			# Physical properties
+		}
+		Hinged1
+		{
+			# Joint name
+			name	{ Hinged1Joint; }
+			# PRS
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 0.149648; 2.201564; -1.857394; }
+			scale	{ 1.000000; }
+			# Physical properties
+			#mass	{ 5.000000; }
+		}
+		Hinged1
+		{
+			# Joint name
+			name	{ Hinged2Joint; }
+			# PRS
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 0.149648; 1.458559; -1.857394; }
+			scale	{ 1.000000; }
+			# Physical properties
+			#mass	{ 5.000000; }
+		}
+		Hinged1
+		{
+			# Joint name
+			name	{ Hinged3Joint; }
+			# PRS
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 0.149648; 0.724190; -1.857394; }
+			scale	{ 1.000000; }
+			# Physical properties
+			#mass	{ 5.000000; }
+		}
+
+
+
+		Hinged1
+		{
+			# Joint name
+			name	{ Hinged1Joint2; }
+			# PRS
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 0.149648; 2.201564; -2.523; }
+			scale	{ 1.000000; }
+			# Physical properties
+			#mass	{ 5.000000; }
+		}
+		Hinged1
+		{
+			# Joint name
+			name	{ Hinged2Joint2; }
+			# PRS
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 0.149648; 1.458559; -2.523; }
+			scale	{ 1.000000; }
+			# Physical properties
+			#mass	{ 5.000000; }
+		}
+		Hinged1
+		{
+			# Joint name
+			name	{ Hinged3Joint2; }
+			# PRS
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 0.149648; 0.724190; -2.523; }
+			scale	{ 1.000000; }
+			# Physical properties
+			#mass	{ 5.000000; }
+		}
+		Sphere1
+		{
+			# Joint name
+			name	{ Sphere1Joint; }
+			# PRS
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 0.024085; 2.373561; 0.008803; }
+			scale	{ 1.000000; }
+			# Physical properties
+			#angDamping { 0.832; }
+		}
+		Sphere1
+		{
+			# Joint name
+			name	{ Sphere2Joint; }
+			# PRS
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 0.024085; 1.528589; 0.008803; }
+			scale	{ 1.000000; }
+			# Physical properties
+			#mass { 80; }	#example for sim screwup
+			#angDamping { 0.832; }
+		}
+		Sphere1
+		{
+			# Joint name
+			name	{ Sphere3Joint; }
+			# PRS
+			orientation	{ 1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 0.024085; 0.686487; 0.008803; }
+			scale	{ 1.000000; }
+			# Physical properties
+			#angDamping { 0.832; }
+		}
+		SlidingBody
+		{
+			# Joint name
+			name	{ SlidingBodyJoint; }
+			# PRS
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 0.184859; 1.499923; 1.508768; }
+			scale	{ 1.000000; }
+			# Physical properties
+		}
+		PrismBody
+		{
+			# Joint name
+			name	{ PrismBodyJoint; }
+			# PRS
+			orientation	{ -1.000000; 0.000000; 0.000000; 0.000000; }
+			position	{ 0.142759; 1.455881; 2.269978; }
+			scale	{ 1.000000; }
+			# Physical properties
+		}
+		Quader01
+		{
+			# Joint name
+			name	{ Quader01Joint; }
+			# PRS
+			orientation	{ -0.707107; 0.000000; 0.000000; -0.707107; }
+			position	{ 0.123959; 1.379613; 1.124780; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 0.000000; }
+		}
+		Quader01
+		{
+			# Joint name
+			name	{ Quader02Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ 0.123959; 1.379613; 1.897887; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 0.000000; }
+		}
+		Quader01
+		{
+			# Joint name
+			name	{ Quader03Joint; }
+			# PRS
+			orientation	{ 0.707107; 0.000000; 0.000000; 0.707107; }
+			position	{ 0.123959; 1.379613; 2.633127; }
+			scale	{ 1.000000; }
+			# Physical properties
+			mass	{ 0.000000; }
+		}
+	}
+	Joints
+	{
+		PointOnLine
+		{
+			bodies	{ FixedRodJoint; PtOnLineBodyJoint; }
+			anchor	{ -0.994718; 2.747206; -2.136095; }
+			direction	{ 0.000000; 0.000000; 1.000000; }
+
+			#Lagrange;
+
+
+			limitPoint_2	{ -0.994718; 2.747206; -2.136095; }
+			limitPlanes
+			{
+				-
+				{
+					n	{ 0.000000; 0.000000; 1.000000; }
+					p	{ -0.994718; 2.747205; -3.383589; }
+				}
+				-
+				{
+					n	{ 0.000000; 0.000000; -1.000000; }
+					p	{ -0.994718; 2.747205; 3.357657; }
+				}
+			}
+		}
+		Hinge
+		{
+			bodies	{ Hinged1Joint; FixedRodJoint; }
+			anchor	{ 0.149648; 2.655618; -1.857394; }
+			direction	{ 1.000000; 0.000000; 0.000000; }
+
+			#Lagrange;
+
+
+			limitPoint_2	{ 0.149648; 2.655618; -1.757394; }
+			limitPlanes
+			{
+				-
+				{
+					n	{ 0.000000; 0.436802; 0.899558; }
+					p	{ 0.149648; 2.655618; -1.857394; }
+				}
+				-
+				{
+					n	{ 0.000000; -0.424199; 0.905569; }
+					p	{ 0.149648; 2.655618; -1.857394; }
+				}
+			}
+		}
+		Hinge
+		{
+			bodies	{ Hinged2Joint; Hinged1Joint; }
+			anchor	{ 0.149648; 1.829161; -1.857394; }
+			direction	{ 1.000000; 0.000000; 0.000000; }
+
+			#Lagrange;
+
+
+			limitPoint_2	{ 0.149648; 1.829161; -1.757394; }
+			limitPlanes
+			{
+				-
+				{
+					n	{ 0.000000; 0.421036; 0.907044; }
+					p	{ 0.149648; 1.829161; -1.857394; }
+				}
+				-
+				{
+					n	{ 0.000000; -0.447759; 0.894154; }
+					p	{ 0.149648; 1.829161; -1.857394; }
+				}
+			}
+		}
+		Hinge
+		{
+			bodies	{ Hinged3Joint; Hinged2Joint; }
+			anchor	{ 0.149648; 1.089827; -1.857394; }
+			direction	{ 1.000000; 0.000000; 0.000000; }
+
+			#Lagrange;
+
+			limitPoint_2	{ 0.149648; 1.089827; -1.757394; }
+			limitPlanes
+			{
+				-
+				{
+					n	{ 0.000000; 0.424199; 0.905569; }
+					p	{ 0.149648; 1.089827; -1.857394; }
+				}
+				-
+				{
+					n	{ 0.000000; -0.443071; 0.896486; }
+					p	{ 0.149648; 1.089827; -1.857394; }
+				}
+			}
+		}
+
+
+		Hinge
+		{
+			bodies	{ Hinged1Joint2; FixedRodJoint; }
+			anchor	{ 0.149648; 2.655618; -2.523; }
+			direction	{ 1.000000; 0.000000; 0.000000; }
+			#Lagrange;
+		}
+		Hinge
+		{
+			bodies	{ Hinged2Joint2; Hinged1Joint2; }
+			anchor	{ 0.149648; 1.829161; -2.523; }
+			direction	{ 1.000000; 0.000000; 0.000000; }
+			#limitPoint_2	{ 0.149648; 1.829161; -1.757394; }
+			#Lagrange;
+		}
+		Hinge
+		{
+			bodies	{ Hinged3Joint2; Hinged2Joint2; }
+			anchor	{ 0.149648; 1.089827; -2.523; }
+			direction	{ 1.000000; 0.000000; 0.000000; }
+			#limitPoint_2	{ 0.149648; 1.089827; -1.757394; }
+			#Lagrange;
+		}
+		Spherical
+		{
+			bodies	{ FixedRodJoint; Sphere1Joint; }
+			anchor	{ 0.008803; 2.773239; 0.008803; }
+
+
+		direction	{ 0; 1; 0; }
+
+		twistLowLimit { -45; 0.3; 1; }
+		twistHighLimit { 45; 0.3; 1; }
+
+		swingLimit { 45; 0.3; 1; }
+		swingAxis { 0; 0; 1; }
+		swingSpring { 0; 1; 0; }
+
+
+		}
+		Spherical
+		{
+			bodies	{ Sphere2Joint; Sphere1Joint; }
+			anchor	{ 0.008803; 1.920310; 0.008803; }
+
+		direction	{ 0; 1; 0; }
+
+		twistLowLimit { -45; 0.3; 1; }
+		twistHighLimit { 45; 0.3; 1; }
+
+		swingLimit { 45; 0.3; 1; }
+		swingAxis { 0; 0; 1; }
+		swingSpring { 0; 1; 0; }
+
+
+		}
+		Spherical
+		{
+			bodies	{ Sphere3Joint; Sphere2Joint; }
+			anchor	{ 0.008803; 1.066931; 0.008803; }
+
+		direction	{ 0; 1; 0; }
+
+		twistLowLimit { -45; 0.3; 1; }
+		twistHighLimit { 45; 0.3; 1; }
+
+		swingLimit { 45; 0.3; 1; }
+		swingAxis { 0; 0; 1; }
+		swingSpring { 0; 1; 0; }
+
+		}
+		Sliding
+		{
+			#bodies	{ SlidingBodyJoint; FixedRodJoint; }
+			bodies	{ FixedRodJoint; SlidingBodyJoint; }
+			anchor	{ 0.184859; 1.509242; 1.505281; }
+			direction	{ 0.000000; 1.000000; 0.000000; }
+			limitPoint_1	{ 0.184859; 1.509242; 1.505281; }
+			limitPlanes
+			{
+				-
+				{
+					n	{ 0.000000; 1.000000; 0.000000; }
+					p	{ 0.184859; 0.822949; 1.505281; }
+				}
+				-
+				{
+					n	{ 0.000000; -1.000000; 0.000000; }
+					p	{ 0.184859; 1.877572; 1.505281; }
+				}
+			}
+		}
+		Prismatic # Fixed #
+		{
+			#bodies	{ PrismBodyJoint; FixedRodJoint; } #bad
+			bodies	{ FixedRodJoint; PrismBodyJoint; } #good
+			anchor	{ 0.140845; 1.454936; 2.271126; }
+			direction	{ 0.000000; 1.000000; 0.000000; }
+			#Lagrange;
+			limitPoint_1	{ 0.140845; 1.454936; 2.271126; }
+			limitPlanes
+			{
+				-
+				{
+					n	{ 0.000000; 1.000000; 0.000000; }
+					p	{ 0.140845; 0.529437; 2.271126; }
+				}
+				-
+				{
+					n	{ 0.000000; -1.000000; 0.000000; }
+					p	{ 0.140845; 2.307492; 2.271126; }
+				}
+			}
+		}
+	}
+	Lights
+	{
+	}
+	Camera
+	{
+position {-7.151421;2.092601;-0.848667;}
+angles {0.000000;-96.000000;-1.000000;}	
+	}
+}

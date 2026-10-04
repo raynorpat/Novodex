@@ -1,0 +1,10 @@
+# sled
+Model3
+{
+	Mesh	{ "sled.obj"; }
+	Scale { 0.32; }
+	Groups
+	{
+		Material_0 { "Wood.mat.ods"; }
+	}
+}

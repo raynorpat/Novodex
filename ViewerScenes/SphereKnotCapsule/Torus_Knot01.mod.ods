@@ -1,0 +1,9 @@
+# Torus_Knot01
+Model3
+{
+	Mesh	{ "Torus_Knot01.obj"; }
+	Groups
+	{
+		Material_0 { "1_-_Default.mat.ods"; }
+	}
+}

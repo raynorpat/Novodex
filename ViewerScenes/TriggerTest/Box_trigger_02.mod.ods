@@ -1,0 +1,9 @@
+# Box_trigger_02
+Model3
+{
+	Mesh	{ "Box_trigger_02.obj"; }
+	Groups
+	{
+		Material_0 { "Objects.mat.ods"; }
+	}
+}

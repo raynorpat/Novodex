@@ -1,0 +1,592 @@
+JTA
+	{
+	simStepSize { 0.01; }	#this explodes on 1/50 with multibody
+
+	Construction
+		{
+
+		Joint
+			{
+			type {Hinge; } #{ Floating; }	
+			fatherPos {0;0;0;}
+			fatherAxis {0;0;1;}
+			fatherRefx {0;-1;0;}
+			sonPos {0;0;0;}
+			sonAxis {0;0;1;}
+			sonRefx {0;-1;0;}
+			jointParam { 0; }
+
+			Body
+				{
+				name { "hip"; }
+				dims {0.6;0.4;0.3;}
+				mass {1;}
+				
+
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0;0.2;0;}
+					fatherAxis {1;0;0;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;-0.1;0;}
+					sonAxis {1;0;0;}
+					sonRefx {0;-1;0;}
+					jointParam { 0; }
+					damping { 1; }
+
+
+					Body
+						{
+						name { "abdomen"; }
+						dims {0.3;0.6;0.2;}
+						mass {1;}
+						
+						Joint
+							{
+							type { Hinge; }	
+							fatherPos {0;0.1;0;}
+							fatherAxis {1;0;0;}
+							fatherRefx {0;-1;0;}
+							sonPos {0;-0.4;0;}
+							sonAxis {1;0;0;}
+							sonRefx {0;-1;0;}
+							jointParam { 0; }	damping { 1; }
+
+
+							Body
+								{
+								name { "torso"; }
+								dims {0.6;0.8;0.4;}
+								mass {1;}
+
+
+								Joint
+									{
+									type { Hinge; }	
+									fatherPos {0;0.4;0;}
+									fatherAxis {1;0;0;}
+									fatherRefx {0;-1;0;}
+									sonPos {0;0;0;}
+									sonAxis {1;0;0;}
+									sonRefx {0;-1;0;}
+									jointParam { 0; }	damping { 1; }
+
+									Body
+										{
+										name { "neck"; }
+										dims {0.1;0.1;0.1;}
+										mass {0.2;}
+
+										Joint
+											{
+											type { Hinge; }	#or Prismatic or Floating
+											fatherPos {0;0.2;0;}
+											fatherAxis {0;1;0;}
+											fatherRefx {1;0;0;}
+											sonPos {0;0;0;}
+											sonAxis {0;1;0;}
+											sonRefx {1;0;0;}
+											jointParam { 0; }	damping { 1; }
+
+											Body
+												{
+												name { "head"; }
+												dims {0.25;0.3;0.25;}
+												mass {0.5;}
+												}
+											}
+
+										}
+									}
+								
+								Joint
+									{
+									type { Hinge; }	
+									fatherPos {0.3;0.2;0;}
+									fatherAxis {0;0;1;}
+									fatherRefx {0;-1;0;}
+									sonPos {0;0;0;}
+									sonAxis {0;0;1;}
+									sonRefx {0;-1;0;}
+									jointParam { 10; }	damping { 1; }
+
+									Body
+										{
+										name { "leftArmPre1"; }
+										dims {0.1;0.1;0.1;}
+										mass {0.1;}
+
+										Joint
+											{
+											type { Hinge; }	
+											fatherPos {0;0;0;}
+											fatherAxis {0;1;0;}
+											fatherRefx {1;0;0;}
+											sonPos {0;0;0;}
+											sonAxis {0;1;0;}
+											sonRefx {1;0;0;}
+											jointParam { 10; }	damping { 1; }
+
+											Body
+												{
+												name { "leftArmPre2"; }
+												dims {0.1;0.1;0.1;}
+												mass {0.1;}
+
+												Joint
+													{
+													type { Hinge; }	
+													fatherPos {0;0;0;}
+													fatherAxis {1;0;0;}
+													fatherRefx {0;-1;0;}
+													sonPos {-0.3;0;0;}
+													sonAxis {1;0;0;}
+													sonRefx {0;-1;0;}
+													jointParam { 10; }	damping { 1; }
+
+													Body
+														{
+														name { "leftArm"; }
+														dims {0.6;0.2;0.15;}
+														mass {1;}
+
+														Joint
+															{
+															type { Hinge; }	
+															fatherPos {0.3;0;0;}
+															fatherAxis {0;1;0;}
+															fatherRefx {1;0;0;}
+															sonPos {-0.3;0;0;}
+															sonAxis {0;1;0;}
+															sonRefx {1;0;0;}
+															jointParam { 0; }	damping { 1; }
+
+															Body
+																{
+																name { "leftLowerArm"; }
+																dims {0.5;0.2;0.1;}
+																mass {1;}
+
+																Joint
+																	{
+																	type { Hinge; }	
+																	fatherPos {0.3;0;0;}
+																	fatherAxis {0;1;0;}
+																	fatherRefx {1;0;0;}
+																	sonPos {0;0;0;}
+																	sonAxis {0;1;0;}
+																	sonRefx {1;0;0;}
+																	jointParam { 0; }	damping { 1; }
+
+																	Body
+																		{
+																		name { "leftWrist"; }
+																		dims {0.1;0.1;0.1;}
+																		mass {0.1;}
+
+																		Joint
+																			{
+																			type { Hinge; }	
+																			fatherPos {0;0;0;}
+																			fatherAxis {1;0;0;}
+																			fatherRefx {0;-1;0;}
+																			sonPos {-0.1;0;0;}
+																			sonAxis {1;0;0;}
+																			sonRefx {0;-1;0;}
+																			jointParam { 0; }	damping { 1; }
+
+																			Body
+																				{
+																				name { "leftHand"; }
+																				dims {0.15;0.15;0.1;}
+																				mass {0.5;}
+																				}
+																			}
+																		}
+																	}
+																}
+															}															
+														}
+													}
+												}
+											}
+										}
+									}
+								Joint
+									{
+									type { Hinge; }	
+									fatherPos {-0.3;0.2;0;}
+									fatherAxis {0;0;1;}
+									fatherRefx {0;-1;0;}
+									sonPos {0;0;0;}
+									sonAxis {0;0;1;}
+									sonRefx {0;-1;0;}
+									jointParam { 10; }	damping { 1; }
+
+									Body
+										{
+										name { "rightArmPre1"; }
+										dims {0.1;0.1;0.1;}
+										mass {0.1;}
+
+										Joint
+											{
+											type { Hinge; }	
+											fatherPos {0;0;0;}
+											fatherAxis {0;1;0;}
+											fatherRefx {1;0;0;}
+											sonPos {0;0;0;}
+											sonAxis {0;1;0;}
+											sonRefx {1;0;0;}
+											jointParam { 10; }	damping { 1; }
+
+											Body
+												{
+												name { "rightArmPre2"; }
+												dims {0.1;0.1;0.1;}
+												mass {0.1;}
+
+												Joint
+													{
+													type { Hinge; }	
+													fatherPos {0;0;0;}
+													fatherAxis {1;0;0;}
+													fatherRefx {0;-1;0;}
+													sonPos {0.3;0;0;}
+													sonAxis {1;0;0;}
+													sonRefx {0;-1;0;}
+													jointParam { 10; }	damping { 1; }
+
+													Body
+														{
+														name { "rightArm"; }
+														dims {0.6;0.2;0.15;}
+														mass {1;}
+
+														Joint
+															{
+															type { Hinge; }	
+															fatherPos {-0.3;0;0;}
+															fatherAxis {0;1;0;}
+															fatherRefx {1;0;0;}
+															sonPos {0.3;0;0;}
+															sonAxis {0;1;0;}
+															sonRefx {1;0;0;}
+															jointParam { 0; }	damping { 1; }
+
+															Body
+																{
+																name { "rightLowerArm"; }
+																dims {0.5;0.2;0.1;}
+																mass {1;}
+
+																Joint
+																	{
+																	type { Hinge; }	
+																	fatherPos {-0.3;0;0;}
+																	fatherAxis {0;1;0;}
+																	fatherRefx {1;0;0;}
+																	sonPos {0;0;0;}
+																	sonAxis {0;1;0;}
+																	sonRefx {1;0;0;}
+																	jointParam { 0; }	damping { 1; }
+
+																	Body
+																		{
+																		name { "rightWrist"; }
+																		dims {0.1;0.1;0.1;}
+																		mass {0.1;}
+
+																		Joint
+																			{
+																			type { Hinge; }	
+																			fatherPos {0;0;0;}
+																			fatherAxis {1;0;0;}
+																			fatherRefx {0;-1;0;}
+																			sonPos {0.1;0;0;}
+																			sonAxis {1;0;0;}
+																			sonRefx {0;-1;0;}
+																			jointParam { 0; }	damping { 1; }
+
+																			Body
+																				{
+																				name { "rightHand"; }
+																				dims {0.15;0.15;0.1;}
+																				mass {0.5;}
+																				}
+																			}
+																		}
+																	}
+																}
+															}															
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+
+					}
+
+
+### legs
+
+								
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {0.2;-0.2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;0;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 10; }	damping { 1; }
+
+					Body
+						{
+						name { "leftLegPre1"; }
+						dims {0.1;0.1;0.1;}
+						mass {0.1;}
+
+						Joint
+							{
+							type { Hinge; }	
+							fatherPos {0;0;0;}
+							fatherAxis {0;1;0;}
+							fatherRefx {1;0;0;}
+							sonPos {0;0;0;}
+							sonAxis {0;1;0;}
+							sonRefx {1;0;0;}
+							jointParam { 10; }	damping { 1; }
+
+							Body
+								{
+								name { "leftLegPre2"; }
+								dims {0.1;0.1;0.1;}
+								mass {0.1;}
+
+								Joint
+									{
+									type { Hinge; }	
+									fatherPos {0;0;0;}
+									fatherAxis {1;0;0;}
+									fatherRefx {0;-1;0;}
+									sonPos {0;0.3;0;}
+									sonAxis {1;0;0;}
+									sonRefx {0;-1;0;}
+									jointParam { 10; }	damping { 1; }
+
+									Body
+										{
+										name { "leftLeg"; }
+										dims {0.3;0.6;0.3;}
+										mass {1;}
+
+										Joint
+											{
+											type { Hinge; }	
+											fatherPos {0;-0.3;0;}
+											fatherAxis {1;0;0;}
+											fatherRefx {0;1;0;}
+											sonPos {0;0.3;0;}
+											sonAxis {1;0;0;}
+											sonRefx {0;1;0;}
+											jointParam { 0; }	damping { 1; }
+
+											Body
+												{
+												name { "leftLowerLeg"; }
+												dims {0.25;0.6;0.25;}
+												mass {1;}
+
+												Joint
+													{
+													type { Hinge; }	
+													fatherPos {0;-0.3;0;}
+													fatherAxis {1;0;0;}
+													fatherRefx {0;1;0;}
+													sonPos {0;0;0;}
+													sonAxis {1;0;0;}
+													sonRefx {0;1;0;}
+													jointParam { 0; }	damping { 1; }
+
+													Body
+														{
+														name { "leftAnkle"; }
+														dims {0.1;0.1;0.1;}
+														mass {0.1;}
+
+														Joint
+															{
+															type { Hinge; }	
+															fatherPos {0;0;0;}
+															fatherAxis {0;1;0;}
+															fatherRefx {1;0;0;}
+															sonPos {0;0.1;-0.1;}
+															sonAxis {0;1;0;}
+															sonRefx {1;0;0;}
+															jointParam { 0; }	damping { 1; }
+
+															Body
+																{
+																name { "leftFoot"; }
+																dims {0.15;0.15;0.4;}
+																mass {0.5;}
+																}
+															}
+														}
+													}
+												}
+											}															
+										}
+									}
+								}
+							}
+						}
+					}
+
+								
+				Joint
+					{
+					type { Hinge; }	
+					fatherPos {-0.2;-0.2;0;}
+					fatherAxis {0;0;1;}
+					fatherRefx {0;-1;0;}
+					sonPos {0;0;0;}
+					sonAxis {0;0;1;}
+					sonRefx {0;-1;0;}
+					jointParam { 10; }	damping { 1; }
+
+					Body
+						{
+						name { "rightLegPre1"; }
+						dims {0.1;0.1;0.1;}
+						mass {0.1;}
+
+						Joint
+							{
+							type { Hinge; }	
+							fatherPos {0;0;0;}
+							fatherAxis {0;1;0;}
+							fatherRefx {1;0;0;}
+							sonPos {0;0;0;}
+							sonAxis {0;1;0;}
+							sonRefx {1;0;0;}
+							jointParam { 10; }	damping { 1; }
+
+							Body
+								{
+								name { "rightLegPre2"; }
+								dims {0.1;0.1;0.1;}
+								mass {0.1;}
+
+								Joint
+									{
+									type { Hinge; }	
+									fatherPos {0;0;0;}
+									fatherAxis {1;0;0;}
+									fatherRefx {0;-1;0;}
+									sonPos {0;0.3;0;}
+									sonAxis {1;0;0;}
+									sonRefx {0;-1;0;}
+									jointParam { 10; }	damping { 1; }
+
+									Body
+										{
+										name { "rightLeg"; }
+										dims {0.3;0.6;0.3;}
+										mass {1;}
+
+										Joint
+											{
+											type { Hinge; }	
+											fatherPos {0;-0.3;0;}
+											fatherAxis {1;0;0;}
+											fatherRefx {0;1;0;}
+											sonPos {0;0.3;0;}
+											sonAxis {1;0;0;}
+											sonRefx {0;1;0;}
+											jointParam { 0; }	damping { 1; }
+
+											Body
+												{
+												name { "rightLowerLeg"; }
+												dims {0.25;0.6;0.25;}
+												mass {1;}
+
+												Joint
+													{
+													type { Hinge; }	
+													fatherPos {0;-0.3;0;}
+													fatherAxis {1;0;0;}
+													fatherRefx {0;1;0;}
+													sonPos {0;0;0;}
+													sonAxis {1;0;0;}
+													sonRefx {0;1;0;}
+													jointParam { 0; }	damping { 1; }
+
+													Body
+														{
+														name { "rightAnkle"; }
+														dims {0.1;0.1;0.1;}
+														mass {0.1;}
+
+														Joint
+															{
+															type { Hinge; }	
+															fatherPos {0;0;0;}
+															fatherAxis {0;1;0;}
+															fatherRefx {1;0;0;}
+															sonPos {0;0.1;-0.1;}
+															sonAxis {0;1;0;}
+															sonRefx {1;0;0;}
+															jointParam { 0; }	damping { 1; }
+
+															Body
+																{
+																name { "rightFoot"; }
+																dims {0.15;0.15;0.4;}
+																mass {0.5;}
+																}
+															}
+														}
+													}
+												}
+											}															
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+	Instances 
+		{
+		Multibody { position { 0; 0; 0; }  random { 0; }}
+		Multibody { position { 2; 0; 0; }  random { 5; }}
+		Multibody { position { 4; 0; 0; }  random { 5; }}
+		Multibody { position { 6; 0; 0; }  random { 5; }}
+		Multibody { position { 0; 0; 2; }  random { 5; }}
+		Multibody { position { 2; 0; 2; }  random { 5; }}
+		Multibody { position { 4; 0; 2; }  random { 5; }}
+		Multibody { position { 6; 0; 2; }  random { 5; }}
+		Multibody { position { 0; 0; 4; }  random { 5; }}
+		Multibody { position { 2; 0; 4; }  random { 5; }}
+		Multibody { position { 4; 0; 4; }  random { 5; }}
+		Multibody { position { 6; 0; 4; }  random { 5; }}
+		}
+
+	Camera
+		{
+		position {0.982614;7.016707;13.647415;}
+		angles {0.000000;-10.000000;-29.000000;}
+		}
+	}

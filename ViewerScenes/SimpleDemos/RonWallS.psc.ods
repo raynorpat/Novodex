@@ -1,0 +1,426 @@
+# intro scene script for demo
+# mega wall with unit meter cubes and earth gravity.
+Scene
+	{
+
+
+
+	PhysStart {1;}
+	PhysDuration   {10060;}
+	DragForce { 50; }
+
+	Parameters
+		{
+		RigidBodySDK
+			{
+			#MIN_SEPARATION_FOR_PENALTY { -0.1; }
+			#PENALTY_FORCE { 1; }
+			}
+		}
+
+	Bodies
+		{
+
+
+#		1st row (10)
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {1.1;0.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {2.2;0.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {3.3;0.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {4.4;0.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {5.5;0.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {6.6;0.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+
+#		2nd row (9)
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {1.6;1.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {2.7;1.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {3.8;1.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {4.9;1.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {6.0;1.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+#		3rd row (8)
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {1.1;2.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {2.2;2.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {3.3;2.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {4.4;2.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {5.5;2.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {6.6;2.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+
+#		4th row (7)
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {1.6;3.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {2.7;3.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {3.8;3.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {4.9;3.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {6.0;3.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+
+
+#		5th row (6)
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {1.1;4.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {2.2;4.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {3.3;4.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {4.4;4.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {5.5;4.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {6.6;4.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+#		6th row (5)
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {1.6;5.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {2.7;5.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {3.8;5.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {4.9;5.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {6.0;5.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+
+#		7th row (4)
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {1.1;6.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {2.2;6.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			#name { heavy; } 
+			#mass	{160.0;}
+			mass	{4.0;}
+			position {3.3;6.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {4.4;6.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {5.5;6.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+
+		1_Rubik
+			{
+			mass	{4.0;}
+			position {6.6;6.5;0; }
+			scale {0.0165;}
+			friction {0.85;} rest {0;}
+			}
+#attacker
+
+		x_Rubik
+			{
+			mass	{100;}
+			position {3.5;5;10; }#position {3.5;3.5;10; }
+			scale {0.03;}
+			friction {0.85;} rest {0;}
+			linearVelocity {0; 0; -30;}
+			}
+
+
+
+		}
+
+	Obstacles
+		{
+		1				#man for sense of scale. Head.
+			{
+			position { 3; 1.7; 2; }
+			angles {0; -30; 0;}
+			dimensions {0.1; 0.2; 0.15;}
+			}
+		2				#body
+			{
+			position { 3; 1.2; 2; }
+			dimensions {0.2; 0.4; 0.1;}
+			}
+		3				#leg1
+			{
+			position { 2.75; 0.5; 2; }
+			angles {0; 0; -12;}
+			dimensions {0.08; 0.5; 0.08;}
+			}
+		4				#leg2
+			{
+			position { 3.25; 0.5; 2; }
+			angles {0; 0; 12;}
+			dimensions {0.08; 0.5; 0.08;}
+			}
+		5				#arm1
+			{
+			position { 2.7; 1.5; 2; }
+			angles {0; 0; -90;}
+			dimensions {0.08; 0.5; 0.08;}
+			}
+		6				#arm2
+			{
+			position { 3.4; 1.2; 2; }
+			angles {0; 0; 30;}
+			dimensions {0.08; 0.5; 0.08;}
+			}
+
+
+		}
+
+	Lights
+		{
+		1 {5; 22; 7;}
+		2 {5; 2; 17;}
+		}
+
+	Camera
+		{
+		position {20.226032;11.824879;28.956474;}
+		angles {0.000000;22.000000;-4.000000;}
+		#orientation {0.987825;-0.117102;-0.094230;0.040093;}
+		#position {-9.550007;-0.300000;0.000000;}
+		#scale {2.057620;}
+		}
+
+	}

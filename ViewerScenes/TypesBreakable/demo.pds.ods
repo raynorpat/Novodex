@@ -1,0 +1,190 @@
+PDS
+{
+	Acts
+	{
+		"demo.psc.ods";
+		"breakable.psc.ods";
+	}
+	Models
+	{
+		FixedRod	{ "FixedRod.mod.ods"; }
+		PtOnLineBody	{ "PtOnLineBody.mod.ods"; }
+		Hinged1	{ "Hinged1.mod.ods"; }
+		Sphere1	{ "Sphere1.mod.ods"; }
+		SlidingBody	{ "SlidingBody.mod.ods"; }
+		PrismBody	{ "PrismBody.mod.ods"; }
+		Quader01	{ "Quader01.mod.ods"; }
+	}
+	Actors
+	{
+		# Mesh actors not in groups
+		FixedRod
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"FixedRod";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+					dimensions	{ 1.275528; 0.246479; 6.795773; }
+				}
+			}
+		}
+		PtOnLineBody
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"PtOnLineBody";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.013984; 0.000001; 0.001219; }
+					dimensions	{ 0.398543; 0.739437; 0.395637; }
+				}
+			}
+		}
+		Hinged1
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Hinged1";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 0.984252; 0.688976; 0.246063; }
+				}
+			}
+		}
+		Sphere1
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Sphere1";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding sphere
+				Sphere
+				{
+					#position	{ -0.015282; -0.025699; -0.000000; }
+					radius	{ 0.423268; }
+				}
+			}
+		}
+		SlidingBody
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"SlidingBody";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+				position	{ -0.005034; 0.010234; -0.002352; }
+				dimensions	{ 0.504240; 0.295276; 0.295276; }
+				orientation	{ 0.707107; 0.000000; 0.000000; 0.707106; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ -0.002293; -0.268694; -0.014919; }
+				radius	{ 0.196850; }
+				}
+				# Local bounding sphere
+				Sphere
+				{
+				position	{ 0.000861; 0.275560; -0.010879; }
+				radius	{ 0.196850; }
+				}
+			}
+		}
+		PrismBody
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"PrismBody";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.001914; 0.000001; 0.001148; }
+					dimensions	{ 0.264084; 0.714084; 0.334507; }
+				}
+			}
+		}
+		Quader01
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Quader01";
+					}
+				}
+			}
+			Collision
+			{
+				# Local bounding box
+				Box
+				{
+					position	{ -0.000000; 0.000000; 0.000000; }
+					dimensions	{ 2.910316; 0.316344; 0.246046; }
+				}
+			}
+		}
+		# Group actors
+	}
+}

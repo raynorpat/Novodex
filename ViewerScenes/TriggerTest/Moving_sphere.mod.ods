@@ -1,0 +1,9 @@
+# Moving_sphere
+Model3
+{
+	Mesh	{ "Moving_sphere.obj"; }
+	Groups
+	{
+		Material_1 { "03_-_Standard.mat.ods"; }
+	}
+}

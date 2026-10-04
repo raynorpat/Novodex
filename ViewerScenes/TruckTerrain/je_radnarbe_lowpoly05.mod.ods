@@ -1,0 +1,9 @@
+# je_radnarbe_lowpoly05
+Model3
+{
+	Mesh	{ "je_radnarbe_lowpoly05.obj"; }
+	Groups
+	{
+		Material_43 { "Material #939.mat.ods"; }
+	}
+}

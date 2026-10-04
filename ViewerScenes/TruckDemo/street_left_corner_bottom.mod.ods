@@ -1,0 +1,9 @@
+# street_left_corner_bottom
+Model3
+{
+	Mesh	{ "street_left_corner_bottom.obj"; }
+	Groups
+	{
+		Material_34 { "Material #997.mat.ods"; }
+	}
+}

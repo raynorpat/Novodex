@@ -1,0 +1,9 @@
+# Sphere_trigger
+Model3
+{
+	Mesh	{ "Sphere_trigger.obj"; }
+	Groups
+	{
+		Material_0 { "Objects.mat.ods"; }
+	}
+}

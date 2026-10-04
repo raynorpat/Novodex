@@ -1,0 +1,58 @@
+PDS
+{
+	Acts
+	{
+		"terrain3.psc.ods";
+	}
+	Models
+	{
+		Board	{ "Board.mod.ods"; }
+		CaveRoofTop	{ "CaveRoofTop.mod.ods"; }
+	}
+	Actors
+	{
+		Board
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"Board";
+					}
+				}
+			}
+			Collision
+			{
+				Box
+				{
+					position	{ 0.000000; 0.000000; 0.000000; }
+#					dimensions	{ 0.787402; 0.787402; 0.787402; }
+					dimensions	{ 0.84; 0.84; 0.84; }
+				}
+			}
+		}
+		CaveRoofTop
+		{
+			Graphics
+			{
+				Node
+				{
+					Model
+					{
+			"CaveRoofTop";
+					}
+				}
+			}
+			Collision
+			{
+					TriangleMesh
+					{
+						heightFieldInfAxis { 1; }
+						heightFieldInfValue { -10000.000000; }
+					}
+			}
+		}
+	}
+}

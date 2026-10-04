@@ -1,0 +1,9 @@
+# haube
+Model3
+{
+	Mesh	{ "haube.obj"; }
+	Groups
+	{
+		Material_35 { "je_haube.mat.ods"; }
+	}
+}

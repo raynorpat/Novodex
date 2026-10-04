@@ -1,0 +1,12 @@
+Material3
+	{
+	Smooth {1;}
+	Color	 {1; 1; 1; 1; }
+	Specular {1; 1; 1; 1; }
+	SpecExp { 1; }
+	#Tex1 {Terrain.BMP; }
+	#Tex1 {deserttex.bmp; }
+	Tex1 {cityTex.bmp; }
+	#Tex2 {noise.BMP; }
+	Tex2 {desertsand.BMP; }
+	}

@@ -1,0 +1,9 @@
+# PrismBody
+Model3
+{
+	Mesh	{ "PrismBody.obj"; }
+	Groups
+	{
+		Material_1 { "Stones_Balmoral.mat.ods"; }
+	}
+}

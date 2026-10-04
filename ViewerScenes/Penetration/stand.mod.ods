@@ -1,0 +1,9 @@
+# stand
+Model3
+{
+	Mesh	{ "stand.obj"; }
+	Groups
+	{
+		DefaultMaterial { "Default.mat.ods"; }
+	}
+}

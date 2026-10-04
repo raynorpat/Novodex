@@ -1,0 +1,107 @@
+Scene
+{
+	PhysStart { 1; }
+	PhysDuration { 10000; }
+	gravity { 0.000000; -9.81000; 0.000000; }
+	collDet { 1; }
+	gridRes { 0; }
+	#recorder { 1; }	# 1 - REC 2 - PLAY
+
+	Parameters
+		{
+		RigidBodySDK
+			{
+			MIN_SEPARATION_FOR_PENALTY { 0; }
+			}
+		}
+	Bodies
+	{
+
+		Cow
+		{
+			position { 0; 5; 0; }
+			angles {  0; 90; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+		
+		Cow
+		{
+			position { 0.9; 10; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+		Cow
+		{
+			position { 2.1; 15; 0; }
+			angles {  0;90; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+		Sphere
+		{
+			position { 2; 20; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+		Sphere
+		{
+			position { 2; 25; 0; }
+			angles {  0;90; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+		Sphere
+		{
+			position { 2; 30; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+		Sphere
+		{
+			position { 2; 35; 0; }
+			angles {  0;90; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+		Sphere
+		{
+			position { 2; 40; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+		Sphere
+		{
+			position { 2; 45; 0; }
+			angles {  0;90; 0; }
+			mass { 10; }
+			scale { 1; }
+		}
+
+
+/*
+		Sphere01
+		{
+			name { Sphere01; }
+			position { 0; 10; 0; }
+			dimension { 1.468750; 1.468750; 1.468750; }
+			mass { 10; }
+			scale { 1; }
+			restitution { 0.7; }
+			friction { 0; }
+		}
+*/
+	}
+
+
+	Lights
+	{
+		 1 { 30.539808; 64.812670; 63.445845; }
+	}
+
+	Camera
+	{
+	position {5.252406;1.851734;60.821320;}
+	angles {0.000000;4.000000;21.000000;}
+	}
+}

@@ -1,0 +1,59 @@
+# intro scene script for demo
+
+Scene
+	{
+
+	PhysStart {1;}
+	PhysDuration   {12;}
+	DragForce { 50; }
+
+	#simStepSize { 0.004f; } #pierre: 0.004
+
+	Bodies
+		{
+		1_Eraser
+			{
+			mass	{1;}				
+			angles {0; 90; 0;}
+			position {0;0.064;0; }
+			scale {0.01;}
+			}
+		2_Ruler
+			{
+			mass	{1;}				
+			angles {270; 180; 0;}
+			position {0;0.16;0; }
+			friction {0.2;}
+			scale {0.01;}
+			}
+		3_Ez
+			{
+			mass	{1;}				
+			angles {90; 180; 0;}
+			position {-0.9;0.3;0; }
+			friction {0.2;}
+			scale {0.01;}
+			}
+		4_Rubik
+			{
+			mass	{3;}				
+			position {2;0.4;0; }
+			linearVelocity {-0.83;7.33;0;}
+			scale {0.01;}
+			}
+
+		}
+
+	Lights
+		{
+		1 {5; 25; -17;}
+		2 {-5; 20; 10;}
+		}
+
+	Camera
+		{
+		position {-0.725812;2.031387;4.884758;}
+		angles {0.000000;-11.000000;-16.000000;}
+		}
+
+	}

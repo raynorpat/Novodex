@@ -1,0 +1,9 @@
+# Moving_capsule
+Model3
+{
+	Mesh	{ "Moving_capsule.obj"; }
+	Groups
+	{
+		Material_1 { "03_-_Standard.mat.ods"; }
+	}
+}
