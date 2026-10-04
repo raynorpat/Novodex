@@ -2,14 +2,14 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closes 2 of its 433 function rows and none of its 531 data objects. The closed rows are the two exported joint-descriptor rows, and each is closed by the one thing the schema accepts: a mutation aimed at it that a registered gate caught. The target that catches them is NxPhysicsJointTests as a STAGED-PAIR differential -- not an oracle differential, because an oracle differential runs only against the pinned DLL and so can never catch a mutation to the candidate (recorded in evidence 11l). The deferred rows are the ones Phase 6 has not reconstructed, which is a debt rather than an obstruction.",
+  "note": "Phase 6 closes 3 of its 433 function rows and none of its 531 data objects. The closed rows include the two exported joint-descriptor rows and phys_fn_004403, each closed by a mutation aimed at the row that a registered staged-pair gate caught. The two descriptor mutations are caught by NxPhysicsJointStagedPairTests; the support normal solver mutation is caught by NxPhysicsMeshSimulationTests. The deferred rows remain debt rather than an obstruction.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "Phase 6 did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction.",
-    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work Phase 6 has left: 402 rows, each needing one mutation and one measured detection.",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work Phase 6 has left: 403 rows, each needing one mutation and one measured detection.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -19,13 +19,14 @@
     ],
     "differentials": [
       "NxPhysicsJointTests, registered as a Phase 6 STAGED-PAIR differential: four revolute cases, each building the descriptor, creating the joint, reading the anchor, the axis, the actors and the state back, and releasing. The oracle and candidate transcripts are identical after the runner normalises the pair-identity lines, and four coverage assertions are registered against them, so a mutation that moves any of those lines fails the gate.",
-      "NxPhysicsJointDescTests, registered as a Phase 6 ORACLE differential: the two exported descriptor rows over four cases."
+      "NxPhysicsJointDescTests, registered as a Phase 6 ORACLE differential: the two exported descriptor rows over four cases.",
+      "NxPhysicsMeshSimulationTests, registered as a Phase 6 STAGED-PAIR differential with 11 coverage assertions. It captures smooth and transformed smooth-heightfield contact and post-solver state; the body-zero Y/Z operation-order mutation changes four velocity words while the restored implementation matches the pinned oracle exactly."
     ]
   },
   "counts": {
-    "differential_falsified": 2,
+    "differential_falsified": 3,
     "deferred_reconstructed_not_falsified": 403,
-    "deferred_not_reconstructed_in_phase": 28
+    "deferred_not_reconstructed_in_phase": 27
   },
   "closed": [
     {
@@ -46,6 +47,16 @@
       "falsification": {
         "mutation": "Re-measured by joint-open-items Task 4 after Task 4 rewrote this row's body from the listing (the earlier mutation, `axis.x * inv * 1.5`, was measured on the float-length transcription; the earlier claim that the two rows are independently falsifiable predates the shared nxJointWorldMatrix/nxJointTransposeMultiply helpers, so it is re-established here with a mutation in code only this row has, its normalisation). In the same throwaway copy, `if(length != 0.0)` in NxJointDesc_SetGlobalAxis became `if(length > 1.0)`, so no axis shorter than 1 is normalised. Rebuilt and run through run_phase_gate.ps1 -Phase 7 as above. CAUGHT: `stdout_delta=3655` (non-unit axes now fail desc.isValid(), so createJoint returns null and the transcript loses lines), and the registered assertion `case=revolute index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0` failed. Restored and re-run: stdout_delta=0, phase_gate=7 status=pass. Also measured and NOT caught: rounding the length to float (`static_cast<float>(sqrt(...))`, what the pre-Task-4 transcription did) left stdout_delta=0; the register-precision length is reproduced from the listing (0x982f9-0x98326) but no registered input separates it. With the anchor mutation above, each row is caught by a mutation in its own code and neither mutation touches the shared helpers.",
         "detected": "stdout_delta=3655"
+      }
+    },
+    {
+      "id": "phys_fn_004403",
+      "rva": "0x000affe0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsMeshSimulationTests",
+      "falsification": {
+        "mutation": "In a throwaway git archive of HEAD ceed0031 (D:/FlamingEnt__/novodex-analysis/mutation-004403-ceed0031), supportSolveNormal004403's body-zero Y/Z path was changed from projecting and rounding signedApplied before inverse-mass scaling to projecting after scaledImpulse. The archive rebuilt NxPhysics and NxPhysicsMeshSimulationTests and ran run_differential.ps1 -Targets NxPhysicsMeshSimulationTests through the registered Phase 6 staged-pair target. CAUGHT: oracle_exit=0, candidate_exit=0, stdout_delta=4, stderr_exact=True. The changed words were the Y/Z components in the smooth and transformed smooth-heightfield post-solver vectors. Restoring the source from the committed worktree, rebuilding, and rerunning returned stdout_delta=0 and stderr_exact=True. An X-only operation-order mutation in the same row was not caught (stdout_delta=0), so the fixture establishes the Y/Z boundary and leaves X-order observability as follow-up.",
+        "detected": "stdout_delta=4"
       }
     }
   ],
@@ -1747,14 +1758,6 @@
       "id": "phys_fn_004401",
       "rva": "0x000afcc0",
       "size": 794,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_004403",
-      "rva": "0x000affe0",
-      "size": 763,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []

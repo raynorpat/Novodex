@@ -9235,3 +9235,29 @@ in the table above are kept as history.
 
     phys_fn_004115  NxJointDesc_SetGlobalAnchor       stdout_delta=320
     phys_fn_004117  NxJointDesc_SetGlobalAxis         stdout_delta=3655
+
+### `phys_fn_004403` support-normal mutation check (2026-10-04)
+
+The smooth-heightfield solver response is now observed in the Phase 6 staged-pair
+registry as well as Phase 7. The registered `NxPhysicsMeshSimulationTests`
+target pins the ordinary and transformed smooth-heightfield post-solver vectors.
+
+In a throwaway `git archive` of HEAD `ceed0031`
+(`D:/FlamingEnt__/novodex-analysis/mutation-004403-ceed0031`), the body-zero Y/Z
+application in `supportSolveNormal004403` was changed from projecting and
+rounding the signed impulse before inverse-mass scaling to scaling the impulse
+before projection. The archive rebuilt `NxPhysics` and
+`NxPhysicsMeshSimulationTests`, then ran the registered target through
+`run_differential.ps1 -Targets NxPhysicsMeshSimulationTests`. CAUGHT:
+`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=4`, `stderr_exact=True`.
+The four changed words are the Y/Z velocity components in the smooth and
+transformed smooth-heightfield state lines. After restoring the source byte for
+byte from the worktree and rebuilding, the same differential returned
+`stdout_delta=0`, `stderr_exact=True`.
+
+An X-only order mutation in the same row was not caught (`stdout_delta=0`), so
+the recorded closure rests on the observable Y/Z order boundary; the X order is
+still supported by the Capstone listing and live x87 trace, but this fixture
+does not distinguish its alternative.
+
+    phys_fn_004403  supportSolveNormal004403  stdout_delta=4
