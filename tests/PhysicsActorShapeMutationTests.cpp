@@ -37,6 +37,33 @@ static const unsigned char* shapeRoot(const NxActor* actor)
 	return *reinterpret_cast<unsigned char* const*>(body + 0x10);
 	}
 
+static const unsigned char* staticPruner(const NxActor* actor)
+	{
+	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(
+		reinterpret_cast<const unsigned char*>(actor) + 0x14);
+	const unsigned char* scene = *reinterpret_cast<unsigned char* const*>(body + 4);
+	return *reinterpret_cast<unsigned char* const*>(scene + 0x640);
+	}
+
+static void printGroupState(const char* label, const NxActor* actor)
+	{
+	const unsigned char* group = shapeRoot(actor);
+	void* const* childFirst = *reinterpret_cast<void* const* const*>(group + 0xe0);
+	void* const* childEnd = *reinterpret_cast<void* const* const*>(group + 0xe4);
+	void* const* childCap = *reinterpret_cast<void* const* const*>(group + 0xe8);
+	void* const* publicFirst = *reinterpret_cast<void* const* const*>(group + 0xf0);
+	void* const* publicEnd = *reinterpret_cast<void* const* const*>(group + 0xf4);
+	void* const* publicCap = *reinterpret_cast<void* const* const*>(group + 0xf8);
+	const unsigned char* pruner = staticPruner(actor);
+	printf("shape_mutation %s=%u.%u.%u.%u.%u.%u\n", label,
+		static_cast<unsigned>(childEnd - childFirst),
+		static_cast<unsigned>(childCap - childFirst),
+		static_cast<unsigned>(publicEnd - publicFirst),
+		static_cast<unsigned>(publicCap - publicFirst),
+		pruner ? *reinterpret_cast<const unsigned short*>(pruner + 0x10) : 0,
+		pruner ? *reinterpret_cast<const unsigned short*>(pruner + 0x12) : 0);
+	}
+
 static void printAllocations(const char* label, const NxPageGuardedAllocator& allocator,
 	unsigned beforeAlloc, unsigned beforeFree)
 	{
@@ -979,6 +1006,48 @@ int wmain(int argc, wchar_t** argv)
 	scene->releaseActor(*actor);
 	printAllocations("actor_release_memory", allocator,
 		beforeActorReleaseAlloc, beforeActorReleaseFree);
+	NxBoxShapeDesc groupFirst;
+	NxBoxShapeDesc groupSecond;
+	NxBoxShapeDesc groupThird;
+	groupFirst.dimensions = NxVec3(1.0f, 1.0f, 1.0f);
+	groupSecond.dimensions = NxVec3(2.0f, 2.0f, 2.0f);
+	groupThird.dimensions = NxVec3(3.0f, 3.0f, 3.0f);
+	NxActorDesc groupDesc;
+	groupDesc.shapes.pushBack(&groupFirst);
+	groupDesc.shapes.pushBack(&groupSecond);
+	NxActor* groupActor = scene->createActor(groupDesc);
+	if(!groupActor) return nxFail("group actor creation failed");
+	NxShape* firstHandle = groupActor->getShapes()[0];
+	NxShape* secondHandle = groupActor->getShapes()[1];
+	printGroupState("group_before_append", groupActor);
+	const unsigned beforeGroupAddAlloc = allocator.allocations();
+	const unsigned beforeGroupAddFree = allocator.frees();
+	NxShape* thirdHandle = groupActor->createShape(groupThird);
+	printAllocations("group_add_memory", allocator,
+		beforeGroupAddAlloc, beforeGroupAddFree);
+	NxShape** groupHandles = groupActor->getShapes();
+	printf("shape_mutation group_added=%u.%u.%u.%u.%u.%u\n",
+		thirdHandle ? 1u : 0u, groupActor->getNbShapes(),
+		shapeRootType(groupActor),
+		groupHandles[0] == firstHandle ? 1u : 0u,
+		groupHandles[1] == secondHandle ? 1u : 0u,
+		thirdHandle && groupHandles[2] == thirdHandle ? 1u : 0u);
+	printGroupState("group_after_append", groupActor);
+	if(thirdHandle)
+		{
+		const unsigned beforeGroupRemoveAlloc = allocator.allocations();
+		const unsigned beforeGroupRemoveFree = allocator.frees();
+		groupActor->releaseShape(*secondHandle);
+		printAllocations("group_remove_memory", allocator,
+			beforeGroupRemoveAlloc, beforeGroupRemoveFree);
+		groupHandles = groupActor->getShapes();
+		printf("shape_mutation group_removed=%u.%u.%u.%u\n",
+			groupActor->getNbShapes(), shapeRootType(groupActor),
+			groupHandles[0] == firstHandle ? 1u : 0u,
+			groupHandles[1] == thirdHandle ? 1u : 0u);
+		printGroupState("group_after_remove", groupActor);
+		}
+	scene->releaseActor(*groupActor);
 	sdk->releaseScene(*scene);
 	runTask4Cases(sdk, allocator, errors);
 	runTask5Cases(sdk, allocator, errors);
