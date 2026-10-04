@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <string.h>
 
+#include "NxBitField.h"
 #include "NxPhysicsSDK.h"
 #include "NxScene.h"
 #include "NxSceneDesc.h"
@@ -17,6 +18,7 @@
 #include "NxSpringDesc.h"
 #include "NxDistanceJointDesc.h"
 #include "NxRevoluteJointDesc.h"
+#include "NxD6JointDesc.h"
 #include "NxJoint.h"
 #include "NxMaterial.h"
 #include "NxSimpleTriangleMesh.h"
@@ -929,6 +931,57 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("simulation distance-joint steps=12 ready=1 fetched=1\n");
 	sdk->releaseScene(*distanceScene);
+
+	// Reproduce the D6 swing-limit angular-impulse cancellation case. The
+	// actor begins 60 degrees off the world frame; one limited swing axis
+	// drives a kind-2 row over four fixed solver steps.
+	NxSceneDesc d6SwingSceneDesc;
+	d6SwingSceneDesc.setToDefault();
+	d6SwingSceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
+	NxScene* d6SwingScene = sdk->createScene(d6SwingSceneDesc);
+	if(!d6SwingScene) return nxFail("D6 swing-limit scene creation failed");
+	d6SwingScene->setTiming(0.02f, 1, NX_TIMESTEP_FIXED);
+	NxBodyDesc d6SwingBody;
+	NxActorDesc d6SwingActorDesc;
+	d6SwingActorDesc.body = &d6SwingBody;
+	d6SwingActorDesc.density = 1.0f;
+	d6SwingActorDesc.globalPose.t = NxVec3(8.0f, 2.0f, 0.0f);
+	const NxReal d6SwingStartRotation[9] = {
+		0.5f, 0.0f, 0.8660254f,
+		0.0f, 1.0f, 0.0f,
+		-0.8660254f, 0.0f, 0.5f };
+	d6SwingActorDesc.globalPose.M.setRowMajor(d6SwingStartRotation);
+	d6SwingActorDesc.shapes.pushBack(&forceSphere);
+	NxActor* d6SwingActor = d6SwingScene->createActor(d6SwingActorDesc);
+	if(!d6SwingActor) return nxFail("D6 swing-limit actor creation failed");
+	NxD6JointDesc d6SwingDesc;
+	d6SwingDesc.setToDefault();
+	d6SwingDesc.actor[0] = d6SwingActor;
+	d6SwingDesc.actor[1] = 0;
+	d6SwingDesc.swing1Motion = NX_D6JOINT_MOTION_LIMITED;
+	d6SwingDesc.swing1Limit.value = 0.2f;
+	d6SwingDesc.projectionDistance = 0.0f;
+	d6SwingDesc.projectionAngle = 0.0f;
+	d6SwingDesc.projectionMode = NX_JPM_NONE;
+	setGlobalAnchor(d6SwingDesc, NxVec3(8.0f, 2.0f, 0.0f));
+	if(!d6SwingScene->createJoint(d6SwingDesc))
+		return nxFail("D6 swing-limit joint creation failed");
+	for(unsigned step = 0; step != 4; ++step)
+		{
+		d6SwingScene->simulate(0.02f);
+		const bool ready = d6SwingScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+		const bool fetched = d6SwingScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		if(!ready || !fetched)
+			return nxFail("D6 swing-limit simulation result was not ready and fetched");
+		}
+	const NxQuat d6SwingOrientation = d6SwingActor->getGlobalOrientationQuatVal();
+	const NxVec3 d6SwingAngularVelocity = d6SwingActor->getAngularVelocityVal();
+	printf("simulation d6-swing-limit final orientation=%08x.%08x.%08x.%08x angular=%08x.%08x.%08x\n",
+		nxFloatBits(d6SwingOrientation.x), nxFloatBits(d6SwingOrientation.y),
+		nxFloatBits(d6SwingOrientation.z), nxFloatBits(d6SwingOrientation.w),
+		nxFloatBits(d6SwingAngularVelocity.x), nxFloatBits(d6SwingAngularVelocity.y),
+		nxFloatBits(d6SwingAngularVelocity.z));
+	sdk->releaseScene(*d6SwingScene);
 
 	NxPlaneShapeDesc groundPlane;
 	groundPlane.normal = NxVec3(0.0f, 1.0f, 0.0f);

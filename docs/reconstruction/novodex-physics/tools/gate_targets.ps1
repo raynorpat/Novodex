@@ -3061,6 +3061,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation stage=distance10 position=40800000.3fffffff.00000000 velocity=00000000.2c400000.00000000'
         'simulation stage=distance11 position=40800000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
         'simulation distance-joint steps=12 ready=1 fetched=1'
+        # Exercise the kind-2 D6 swing row with every projection field
+        # explicitly initialized; setToDefault leaves those fields untouched.
+        'simulation d6-swing-limit final orientation=00000000.3effffff.00000000.3f5db3d7 angular=00000000.00000000.00000000'
         # A fixed joint with a deliberately tiny maxForce queues a break event;
         # fetchResults must dispatch it, detach the joint, and leave the actor
         # in the same free-fall trajectory as the oracle on later steps.
@@ -5354,7 +5357,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1309  # previous 1,308 plus transformed smooth sphere/heightfield coverage
+    '7' = 1310  # previous 1,309 plus initialized D6 kind-2 swing solver coverage
     '8' = 0
 }
 
