@@ -229,6 +229,36 @@ int wmain(int argc, wchar_t** argv)
 		report.firstPoint[0], report.firstPoint[1], report.firstPoint[2],
 		report.firstNormal[0], report.firstNormal[1], report.firstNormal[2],
 		report.firstSeparation, nxFloatBits(position.y), nxFloatBits(velocity.y));
+
+	// The sphere center lies beyond the mesh corner, so the nearest feature is
+	// the single shared vertex rather than an interior face or long edge.
+	sphere->setGlobalPosition(NxVec3(2.25f, 1.5f, 2.25f));
+	sphere->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
+	report.calls = 0;
+	report.events = 0;
+	report.patchCount = 0;
+	report.firstPatchPoints = 0;
+	report.pointCount = 0;
+	unsigned vertexSteps = 0;
+	for(; vertexSteps < 60; ++vertexSteps)
+		{
+		scene->simulate(1.0f / 60.0f);
+		if(!scene->checkResults(NX_RIGID_BODY_FINISHED, true)
+			|| !scene->fetchResults(NX_RIGID_BODY_FINISHED, true))
+			return nxFail("vertex mesh-contact simulation results failed");
+		if(report.calls != 0)
+			{
+			++vertexSteps;
+			break;
+			}
+		}
+	sphere->getGlobalPosition(position);
+	sphere->getLinearVelocity(velocity);
+	printf("simulation mesh-vertex steps=%u calls=%u events=%08x patches=%u points=%u point=%08x.%08x.%08x normal=%08x.%08x.%08x separation=%08x y=%08x vy=%08x\n",
+		vertexSteps, report.calls, report.events, report.patchCount, report.pointCount,
+		report.firstPoint[0], report.firstPoint[1], report.firstPoint[2],
+		report.firstNormal[0], report.firstNormal[1], report.firstNormal[2],
+		report.firstSeparation, nxFloatBits(position.y), nxFloatBits(velocity.y));
 	sphere->setGlobalPosition(NxVec3(-30.0f, 20.0f, 20.0f));
 	sphere->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
 

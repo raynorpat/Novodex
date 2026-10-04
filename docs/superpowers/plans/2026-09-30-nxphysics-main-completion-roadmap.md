@@ -66,6 +66,12 @@ The original current-main artifacts are `build/main-phase5.log` and `build/main-
 - Phase 5's fresh build exposed missing `NxContactSphereMesh` and `NxOverlapSphereMesh` symbols in the static object-layout/vtable harness. Added link-only definitions to `tests/PhysicsInternalContactStubs.cpp`; production and simulation targets continue linking the real sphere/mesh implementations. Phase 5 now passes all 13 targets at 2,037/2,037 (`build/phase5-mesh-normal-final.log`). The focused gate-registry test suite passes all 37 tests.
 - This closes only the exercised ordinary-mesh face and one boundary-edge normal/response route. Heightfield normals, other edge/corner branches, broader transformed/multi-face and mutation coverage, and full `001927`/`001929` reconstruction remain open. Public Physics headers were not changed.
 
+### Execution checkpoint — 2026-10-03, sphere-mesh vertex branch
+
+- Added a public sphere/mesh corner fixture with the sphere centered beyond the `(2,0,2)` mesh vertex. Oracle and candidate both report one callback and one patch at step 30, contact point `(2,0,2)`, normal words `bf073a69.bf2a2f2b.bf073a69`, separation `bcdaf02f`, and matching post-step Y position/velocity. This exercises a vertex-distance branch in addition to the previously pinned face and edge routes.
+- The focused mesh differential passes with `stdout_delta=0`, exact stderr. Fresh Phase 7 passes at 1,306/1,306 (`build/phase7-mesh-vertex.log`).
+- Remaining mesh work includes the other edge/corner branches, heightfield-specific normals, broader transformed/multi-face and mutation cases, and semantic closure of `001927`/`001929`. Full M1 and full-DLL completion remain active.
+
 Current unique code-row states by owning phase:
 
 | Phase | Discovered | Reconstructed | Dynamically gated / statically reviewed |
