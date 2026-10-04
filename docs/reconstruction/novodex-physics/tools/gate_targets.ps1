@@ -13,7 +13,7 @@ $NxPhaseTestTargets = [ordered] @{
     '1' = @()
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
-    '4' = @()
+    '4' = @('NxPhysicsConvexMeshTests')
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsBodyCreationTests')
     '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests')
     '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
@@ -4731,6 +4731,11 @@ $NxRequiredCoverageLines = [ordered] @{
 
         'release case=null_data returned=1 data_size=5a5a5a5a data=00000000'
     )
+    'NxPhysicsConvexMeshTests' = @(
+        'mesh-case name=precomputed_tetra_first repeat=0 flags=00000004 created=1 submeshes=4',
+        'mesh-case name=computed_tetra repeat=0 flags=0000000c created=1 submeshes=4',
+        'mesh-actor name=static_tetra mesh=1 scene=1 actor=1 shapes=1 type=4'
+    )
 
     # The Phase 5 object-layout gate. RED on purpose until Tasks 2 and 3
     # transcribe the object-model classes; its own exit code fails the phase
@@ -5357,7 +5362,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 1  # one public actor-group pair-flag hash round-trip and clear
     '3' = 359  # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 251  # 36 asset and 215 third-party assertions, including Qhull exact-output coverage
+    '4' = 254  # 36 asset, 215 third-party and 3 convex-mesh actor assertions
     '5' = 2037  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # + 175 from scene-raycast Task 4 (149 body-creation, 13 setters, 9 dynamic-setter
                # and 3 shape-vtable from its shape sub-area, 1 shape-vtable from its box hull)
@@ -5403,6 +5408,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsEmptySceneTests',
     'NxPhysicsEffectorTests',
     'NxPhysicsCoreDumpTests',
+    'NxPhysicsConvexMeshTests',
     'NxPhysicsCoreClusterTests',
     'NxFoundationTangentTests',
     'NxPhysicsExportTests',
