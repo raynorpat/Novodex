@@ -1829,6 +1829,10 @@ static void nxDrivePrunablePruner(const NxOracleRows& o, bool selfOnly)
 						for(int b = 0; b < 8 * 6; ++b)
 							gCandidateTape.pushFloat(((float*) candidateBoxes)[b]);
 						}
+		// The pool points at this fixture's stack-owned box array. Pruner's base
+		// destructor treats mWorldBoxes as owned and frees it, so detach the
+		// borrowed test buffer before destroying the fake pruner.
+		candidatePruner->mPool.mWorldBoxes = 0;
 		candidatePruner->~NxCandidatePruner();
 		gPrunableOwnerWorldAABB = 0;
 		}
