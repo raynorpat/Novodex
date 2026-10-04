@@ -1181,9 +1181,16 @@ int wmain(int argc, wchar_t** argv)
 	const bool reportFetched = reportScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
 	if(!reportReady || !reportFetched)
 		return nxFail("contact-report simulation result was not ready and fetched");
-	printf("simulation generated-contact summary flags=%08x calls=%u events=%08x ready=%u fetched=%u\n",
+	const NxU32 generatedPairCount = reportScene->getNbPairs();
+	NxPairFlag generatedPairs[64];
+	const bool generatedPairArray = reportScene->getPairFlagArray(generatedPairs, generatedPairCount);
+	printf("simulation generated-contact summary flags=%08x calls=%u events=%08x ready=%u fetched=%u pairs=%u pair_array=%u",
 		reportFlags, generatedContactReport.calls, generatedContactReport.events,
-		reportReady, reportFetched);
+		reportReady, reportFetched, generatedPairCount, generatedPairArray);
+	for(NxU32 pairIndex = 0; generatedPairArray && pairIndex < generatedPairCount && pairIndex < 64; ++pairIndex)
+		printf(" pair%u_actor=%u_flags=%08x", pairIndex,
+			generatedPairs[pairIndex].isActorPair(), generatedPairs[pairIndex].flags);
+	printf("\n");
 	sdk->setActorGroupPairFlags(7, 3, 0);
 	sdk->releaseScene(*reportScene);
 

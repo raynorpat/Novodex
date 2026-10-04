@@ -429,10 +429,14 @@ NxU32 NpScene::getShapePairFlags(NxShape&, NxShape&) const
 	return 0;
 	}
 
-// (unimplemented) getNbPairs
+// Read-lock while forwarding the active contact-pair count from Scene.
 NxU32 NpScene::getNbPairs() const
 	{
-	return 0;
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	const NxU32 count = mScene->getNbPairs();
+	nxNpSceneGuardLeave(link);
+	return count;
 	}
 
 // (unimplemented) getPairFlagArray

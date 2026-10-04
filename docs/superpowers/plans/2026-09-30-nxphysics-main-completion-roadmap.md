@@ -116,6 +116,12 @@ Current unique code-row states by owning phase:
 
 The eight discovered Phase 5 IDs are `000002`, `000030`, `000032`, `000034`, `002318`, `002324`, `002330`, and `002421`. Some already have candidate bodies, including `000030` and `000032`; audit their full paths and evidence before rewriting them. Phase 5 closure also requires verification of its reconstructed rows and concrete dispatch, not merely promoting these eight.
 
+### Execution checkpoint — 2026-10-04, scene pair-count forwarding
+
+- Routed `NpScene::getNbPairs()` through the read lock to `NxSceneInternal::getNbPairs()`. The new public simulation assertion first failed with oracle `pairs=1` and candidate `pairs=0`; after rebuilding both the DLL and test executable, the focused differential matches exactly (`stdout_delta=0`, `stderr_exact=True`). The fixture also observes `getPairFlagArray()` returning false on both sides for its contact-report record, so it does not establish pair-array behavior.
+- Fresh Phase 5 and Phase 6 gates passed immediately before this edit at 2,037/2,037 and 867/867. Fresh Phase 7 after the edit passes all ten targets at 1,312/1,312; each target has zero stdout delta, exact stderr, and successful oracle/candidate exits. Logs are under `D:\FlamingEnt__\novodex-analysis\pairs\codex-main-reconstruction-1636-*`.
+- The internal pair-array reader (`phys_fn_000525/000527`) and public `NpScene::getPairFlagArray()` still need an oracle-driven fixture that actually emits pair entries. Object-family/vtable closure, discovered code/data ownership, Unreal integration, and M6 full-DLL acceptance remain open. No public Physics headers changed.
+
 ## 2. Approach selection
 
 1. **Recommended: dependency-driven parallel reconstruction with continuous integration.** Trace the public simulation entries to their real internal callees, partition those dependencies into owned work units, and bring up an end-to-end simulation slice while independent full-DLL work proceeds. This minimizes time to useful testing and exposes integration defects early.
