@@ -177,6 +177,7 @@ Primary code: `Physics/src/NpScene.cpp`, `Physics/src/Scene.cpp`, their private 
 - Start with an empty scene and one body under gravity/force, then static contact, two-body collision, kinematic interaction, sleep/wake, a small stack, and a jointed pair. Include variable step sizes and the oracle's FP control-word transitions.
 - Cover each `NxSceneDesc::broadPhase` selector with bounded and unbounded scene descriptors, then prove the selected traversal emits the oracle's candidate pairs and contact outcomes.
 - Exercise at least 1,000 steps for basic stable fixtures, repeated scene/SDK lifecycle, and both blocking and nonblocking result calls. Expand cases to reach every new branch before claiming its closure.
+- After the standalone simulation slice passes, run the CMake Viewer as an additional consumer before Unreal integration: build `Viewer` and run `ctest --test-dir build -C Release -R '^ViewerPhysics(Step|Contact)$' --output-on-failure`. These checks advance a falling box and a contacting sphere through the viewer loop against the built SDK DLLs; record their result separately from the oracle differential gates.
 
 Exit / **T1: standalone testing begins**: the candidate runs the genuine public step/result path through collision and solver code; the above fixtures execute without stubs, crashes, hangs, or unexplained mismatches. Any longer numerical divergence has a measured first divergent step and remains an open defect. This is not whole-DLL completion.
 
