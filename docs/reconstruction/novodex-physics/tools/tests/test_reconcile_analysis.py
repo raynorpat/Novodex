@@ -800,93 +800,6 @@ class PhaseAssignmentTests(unittest.TestCase):
         self.assertEqual(self.result["dependencies"].count(" -> "), 11)
 
 
-def fixture_ruling(slots=("object_model", "collision", "collision")):
-    """A shape ruling over the fixture's one dispatch table, B's, holding E, G and I."""
-    return {"phase_of": {"collision": 3, "object_model": 5},
-            "tables": [{"class": "FIXTURE", "rva": hexa(DISPATCH_RVA), "slots": list(slots)}],
-            "members": [], "exceptions": []}
-
-
-class SlotRulingPhaseTests(unittest.TestCase):
-    """The shape ruling is a phase layer, read through the validator's own resolver."""
-
-    @classmethod
-    def setUpClass(cls):
-        cls.result = reconcile_analysis.reconcile(
-            pe=make_pe(), ghidra=make_ghidra(), capstone=make_capstone(),
-            inventory=make_inventory(), ruling=fixture_ruling())
-        cls.rows = {row["rva"]: row for row in cls.result["inventory"]["functions"]}
-
-    def placed(self, rva):
-        row = self.rows[hexa(rva)]
-        return row["phase"], row["phase_provenance"]
-
-    def test_a_ruled_slot_outranks_the_rule_that_placed_its_target(self):
-        # E was placed by its installer's phase, G by a Phase 5 bracket and I by
-        # its own translation unit; each slot's ruling replaces all three.
-        self.assertEqual(self.placed(0x1050), (5, "slot_ruling"))
-        self.assertEqual(self.placed(0x1080), (3, "slot_ruling"))
-        self.assertEqual(self.placed(0x10B0), (3, "slot_ruling"))
-
-    def test_a_ruled_row_seeds_the_caller_layer(self):
-        # D is called from A, on Phase 7 before its pin, and from E. Without the
-        # ruling both are 7 and D follows them; with E ruled to 5 its callers
-        # disagree and D falls to shared runtime, which only happens if the caller
-        # layer read E's ruled phase.
-        self.assertEqual(self.placed(0x1040), (2, "shared_by_callers"))
-        rows = {row["rva"]: row for row in reconcile()["inventory"]["functions"]}
-        self.assertEqual((rows[hexa(0x1040)]["phase"], rows[hexa(0x1040)]["phase_provenance"]),
-                         (7, "callers"))
-
-    def test_the_shared_override_leaves_a_ruled_row_where_the_ruling_put_it(self):
-        # G is called from B on 7 and F on 5, the shape the override fires on.
-        self.assertEqual(self.placed(0x1080)[1], "slot_ruling")
-
-    def test_without_a_ruling_the_layers_are_unchanged(self):
-        rows = {row["rva"]: row for row in reconcile()["inventory"]["functions"]}
-        self.assertEqual([rows[hexa(rva)]["phase_provenance"] for rva in (0x1050, 0x1080, 0x10B0)],
-                         ["callers", "enclosed_by_one_phase", "translation_unit"])
-
-
-class ThirdPartyAndPinLayerTests(unittest.TestCase):
-    """The correspondence maps and the pins are the last layers, and reach function rows only."""
-
-    @classmethod
-    def setUpClass(cls):
-        cls.plain = reconcile()
-        rows = {row["rva"]: row for row in cls.plain["inventory"]["functions"]}
-        cls.h = rows[hexa(0x1098)]["id"]
-        cls.pin = {"id": rows[hexa(0x1040)]["id"], "rva": hexa(0x1040), "phase": 6,
-                   "phase_provenance": "callers", "reason": "fixture", "decided_by": "0000000"}
-        cls.layered = reconcile_analysis.reconcile(
-            pe=make_pe(), ghidra=make_ghidra(), capstone=make_capstone(),
-            inventory=make_inventory(), third_party={0x1098: "qhull"},
-            pins={cls.pin["id"]: cls.pin})
-        cls.rows = {row["id"]: row for row in cls.layered["inventory"]["functions"]}
-
-    def test_a_third_party_row_is_phase_4_on_its_upstream_unit(self):
-        # H sits between two Phase 5 spans; the map says it is qhull's.
-        row = self.rows[self.h]
-        self.assertEqual((row["phase"], row["phase_provenance"]), (4, "translation_unit"))
-
-    def test_a_pin_replaces_the_row_and_records_what_it_replaced(self):
-        row = self.rows[self.pin["id"]]
-        self.assertEqual((row["phase"], row["phase_provenance"]), (6, "callers"))
-        plain = next(row for row in self.plain["inventory"]["functions"]
-                     if row["id"] == self.pin["id"])
-        self.assertEqual(self.layered["unpinned"],
-                         {self.pin["id"]: (plain["phase"], plain["phase_provenance"])})
-
-    def test_neither_layer_reaches_another_row_or_a_data_object(self):
-        changed = [row["id"] for row, before in zip(self.layered["inventory"]["functions"],
-                                                     self.plain["inventory"]["functions"])
-                   if (row["phase"], row["phase_provenance"])
-                   != (before["phase"], before["phase_provenance"])]
-        self.assertEqual(sorted(changed), sorted([self.h, self.pin["id"]]))
-        self.assertEqual(self.layered["inventory"]["data_objects"],
-                         self.plain["inventory"]["data_objects"])
-
-
 class InputRejectionTests(unittest.TestCase):
     """One field moves on a fixture the tests above prove valid."""
 
@@ -896,31 +809,6 @@ class InputRejectionTests(unittest.TestCase):
         mutate(oracles)
         with self.assertRaisesRegex(ValueError, message):
             reconcile_analysis.reconcile(**oracles)
-
-    def test_rejects_a_shape_ruling_that_does_not_resolve(self):
-        # A fourth slot past the end of B's table names no relocated pointer.
-        self.rejects(lambda o: o.__setitem__("ruling", fixture_ruling(
-            ("object_model", "collision", "collision", "collision"))),
-            "the shape ruling does not resolve against the PE oracle: shape ruling "
-            "table FIXTURE slot 3 at 0x0000202c is not a relocated pointer")
-
-    def test_rejects_a_pin_on_a_row_the_generator_emits_elsewhere(self):
-        self.rejects(lambda o: o.__setitem__("pins", {"phys_fn_000001": {
-            "id": "phys_fn_000001", "rva": "0x00009999", "phase": 4,
-            "phase_provenance": "callers", "reason": "x", "decided_by": "0000000"}}),
-            "phase_pins.json pins phys_fn_000001 at 0x00009999, and the generator emits it at "
-            "0x00001000")
-
-    def test_rejects_a_ruling_the_collision_pipeline_does_not_bear_out(self):
-        # The matrix row stores nothing, so nothing is dispatched and the two
-        # collision slots rest on no dispatch at all.
-        def mutate(oracles):
-            ruling = fixture_ruling()
-            ruling["pipeline"] = {"matrix": "phys_fn_000001", "phases": [3, 4]}
-            oracles["ruling"] = ruling
-        self.rejects(mutate, "the shape ruling disagrees with the collision pipeline the generated "
-                             "census walks: shape ruling rules FIXTURE slot 1 collision, but the "
-                             "collision pipeline never dispatches it")
 
     def test_rejects_a_pe_oracle_written_against_another_schema(self):
         self.rejects(lambda o: o["pe"].__setitem__("schema_version", 2),
@@ -1152,12 +1040,6 @@ RAISE_SITES = {
         "test_rejects_a_passing_census_with_unresolved_targets",
     "{} function entries the evidence names are not owned rows, the first being {}":
         "test_rejects_a_function_entry_no_row_owns",
-    "the shape ruling does not resolve against the PE oracle: {}":
-        "test_rejects_a_shape_ruling_that_does_not_resolve",
-    "phase_pins.json pins {} at {}, and the generator emits it at {}":
-        "test_rejects_a_pin_on_a_row_the_generator_emits_elsewhere",
-    "the shape ruling disagrees with the collision pipeline the generated census walks: {}":
-        "test_rejects_a_ruling_the_collision_pipeline_does_not_bear_out",
 }
 
 

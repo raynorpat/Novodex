@@ -3732,9 +3732,8 @@ constructors, one per shape family, byte-identical in shape:
 
 **`0x0005b620` *is* this object's reset.** `phys_fn_002356` at `0x0005b680`
 (Phase 7) is the constructor: it builds the stream sub-object at `+0x28` through
-`0x000b4d70` and then calls `phys_fn_002354` at `0x0005b620` (Phase 7, like the
-sink it resets; it was Phase 2 shared runtime when this section was written, and
-the census regeneration check moved it) at `0x0005b68d` to reset it. `0x0005b620` operates on `sink + 0x10`, so every
+`0x000b4d70` and then calls `phys_fn_002354` at `0x0005b620` (Phase 2) at
+`0x0005b68d` to reset it. `0x0005b620` operates on `sink + 0x10`, so every
 offset inside those two functions is `0x10` lower than the ones in the table
 above — their `+0x28` array is this table's `+0x38` stream.
 

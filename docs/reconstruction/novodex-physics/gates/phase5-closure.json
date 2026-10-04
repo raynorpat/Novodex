@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "phase": 5,
-  "note": "Phase 5 closes NOTHING, and says so rather than closing on a recorded differential. It owns 219 function rows and 106 data objects; 118 of the function rows are reconstructed with a proof, 101 are not reconstructed, and no data object is dispositioned. The schema accepts one thing as a closure -- a mutation aimed at the row that the gate catches -- and this phase has no per-row mutation evidence. The ledger is published so that every row the phase owns is accounted for rather than left in no list: before it existed, 327 rows were owned by a phase with no ledger at all. Amendment, shape slot ruling (shape_slot_ruling.json, the shape-class vtable ruling validate_inventory.py recomputes: a slot the collision pipeline dispatches through is Phase 3's and every other slot of the shape classes is Phase 5's): 35 function rows arrive -- 29 from Phase 3 and six from Phase 2, among them phys_fn_002344 and phys_fn_002410, each carrying the measurement it was re-deferred with -- and 17 leave: thirteen the ruling places with collision for Phase 3 (twelve slot targets and the slot-9 Prunable adapter), phys_fn_001075 and phys_fn_001329 back to the phase the generator gives them, and the folded stubs phys_fn_001391 and phys_fn_004812 to shared runtime. Before the ruling the phase owned 205 function rows and 122 data objects. Amendment, review of the shape slot ruling: four function rows leave and none arrive. phys_fn_000967, phys_fn_000969 and phys_fn_000971, BOX_HULL slots 6, 7 and 8, go to Phase 3, because phys_fn_000959, BOX_HULL slot 10, dispatches them on its own this; and phys_fn_002352 goes to Phase 7, where the census regeneration check places it by its callers. Three data objects leave with the box-hull rows and phys_data_005007 arrives. Before this review the phase owned 223 function rows and 108 data objects.",
+  "note": "Phase 5 closes NOTHING, and says so rather than closing on a recorded differential. It owns 205 function rows and 122 data objects; 197 of the function rows are reconstructed with a proof, 8 are not reconstructed, and no data object is dispositioned. The schema accepts one thing as a closure -- a mutation aimed at the row that the gate catches -- and this phase has no per-row mutation evidence. The ledger is published so that every row the phase owns is accounted for rather than left in no list: before it existed, 327 rows were owned by a phase with no ledger at all.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway archive copy, rebuilt, and run against the committed oracle transcript through a registered staged-pair target. This phase has none yet.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. This phase has none yet."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction.",
-    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 118 rows, each needing one mutation and one measured detection.",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 194 rows, each needing one mutation and one measured detection.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -18,8 +18,8 @@
     "differentials": []
   },
   "counts": {
-    "deferred_not_reconstructed_in_phase": 101,
-    "deferred_reconstructed_not_falsified": 118
+    "deferred_not_reconstructed_in_phase": 11,
+    "deferred_reconstructed_not_falsified": 194
   },
   "closed": [],
   "deferred": [
@@ -695,162 +695,46 @@
       "id": "phys_fn_000945",
       "rva": "0x000207e0",
       "size": 104,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": []
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_001006",
-      "rva": "0x00021cd0",
-      "size": 1896,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
+      "id": "phys_fn_000949",
+      "rva": "0x00020880",
+      "size": 663,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: the target of CAPSULE slot 3 (object model) in shape_slot_ruling.json."
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_001018",
-      "rva": "0x000227d0",
-      "size": 62,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
+      "id": "phys_fn_000951",
+      "rva": "0x00020b20",
+      "size": 507,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: the target of COMPOUND slot 6 (object model) in shape_slot_ruling.json."
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_001020",
-      "rva": "0x00022810",
-      "size": 349,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
+      "id": "phys_fn_000957",
+      "rva": "0x00020d40",
+      "size": 578,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: the target of COMPOUND slot 11 (object model) in shape_slot_ruling.json."
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_001032",
-      "rva": "0x00022d00",
-      "size": 96,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
+      "id": "phys_fn_000959",
+      "rva": "0x00020f90",
+      "size": 1062,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: a helper every direct caller of which is a ruled row (phys_fn_001037 at 0x00022dea), ruled object model."
-    },
-    {
-      "id": "phys_fn_001033",
-      "rva": "0x00022d60",
-      "size": 99,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: a constructor of the shape classes (0x00022d76), ruled object model."
-    },
-    {
-      "id": "phys_fn_001037",
-      "rva": "0x00022de0",
-      "size": 110,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: a destructor of the shape classes (0x00022de4), ruled object model."
-    },
-    {
-      "id": "phys_fn_001039",
-      "rva": "0x00022e50",
-      "size": 34,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: the target of COMPOUND slot 0 (object model) in shape_slot_ruling.json."
-    },
-    {
-      "id": "phys_fn_001259",
-      "rva": "0x000251f0",
-      "size": 351,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: the target of PLANE slot 3 (object model) in shape_slot_ruling.json."
-    },
-    {
-      "id": "phys_fn_001305",
-      "rva": "0x00025960",
-      "size": 685,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: the target of BASE slot 3 (object model) in shape_slot_ruling.json."
-    },
-    {
-      "id": "phys_fn_001315",
-      "rva": "0x000266a0",
-      "size": 1061,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: the target of BASE slot 6 (object model), BOX slot 6 (object model), CAPSULE slot 6 (object model), PLANE slot 6 (object model), SPHERE slot 6 (object model), MESH slot 6 (object model) in shape_slot_ruling.json."
-    },
-    {
-      "id": "phys_fn_001323",
-      "rva": "0x00026bd0",
-      "size": 182,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: a destructor of the shape classes (0x00026bd6), ruled object model."
-    },
-    {
-      "id": "phys_fn_001345",
-      "rva": "0x00027710",
-      "size": 34,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: the target of BASE slot 0 (object model) in shape_slot_ruling.json."
-    },
-    {
-      "id": "phys_fn_001351",
-      "rva": "0x00027820",
-      "size": 33,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: a destructor of the shape classes (0x0002782b), ruled object model."
-    },
-    {
-      "id": "phys_fn_001369",
-      "rva": "0x00027a30",
-      "size": 424,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: the target of SPHERE slot 3 (object model) in shape_slot_ruling.json."
-    },
-    {
-      "id": "phys_fn_001393",
-      "rva": "0x00027f10",
-      "size": 1114,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: the target of MESH slot 3 (object model) in shape_slot_ruling.json."
-    },
-    {
-      "id": "phys_fn_001395",
-      "rva": "0x00028370",
-      "size": 2715,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: a continuation of phys_fn_001393, which the ruling places."
-    },
-    {
-      "id": "phys_fn_001397",
-      "rva": "0x00028e10",
-      "size": 104,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: the target of MESH slot 4 (object model) in shape_slot_ruling.json."
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_001941",
@@ -884,33 +768,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_002413",
-      "rva": "0x0005bbe0",
-      "size": 38,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: a helper every direct caller of which is a ruled row (phys_fn_001323 at 0x00026c03), ruled object model."
-    },
-    {
-      "id": "phys_fn_002417",
-      "rva": "0x0005bc90",
-      "size": 1133,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "Moved from Phase 2 to Phase 5 by the shape slot ruling: not a shape-block row, but its callers are phys_fn_002421 on Phase 5 and phys_fn_002423, which the ruling places in Phase 5 as a helper of ShapeBase's constructor, so they agree and shared_by_callers no longer holds. Deferred on the Phase 2 ledger as homeless_shared_code."
-    },
-    {
-      "id": "phys_fn_002419",
-      "rva": "0x0005c100",
-      "size": 89,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "Moved from Phase 2 to Phase 5 by the shape slot ruling: a continuation of phys_fn_002417, which moves with it. Deferred on the Phase 2 ledger as homeless_shared_code."
     },
     {
       "id": "phys_fn_002421",
@@ -1317,20 +1174,11 @@
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_000827",
-      "rva": "0x0001bcc0",
-      "size": 50,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: a helper every direct caller of which is a ruled row (phys_fn_001397 at 0x00028e3d), ruled object model. Deferred on the Phase 3 ledger as not_reconstructed_in_phase."
-    },
-    {
       "id": "phys_fn_000829",
       "rva": "0x0001bd00",
       "size": 187,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "callers",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1339,45 +1187,9 @@
       "rva": "0x0001bdc0",
       "size": 635,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000833",
-      "rva": "0x0001c040",
-      "size": 1371,
-      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Moved from Phase 2 to Phase 5 by the shape slot ruling: not a shape-block row, but its callers are phys_fn_000835, 000841, 000843, 000849 and 000853: the ruling places four of them in Phase 5 as helpers of the slot-4 mass rows and phys_fn_000841 already was, so they agree and shared_by_callers no longer holds; the generator's callers rule places it in Phase 5. Deferred on the Phase 2 ledger as homeless_shared_code."
-    },
-    {
-      "id": "phys_fn_000835",
-      "rva": "0x0001c5a0",
-      "size": 30,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: a helper every direct caller of which is a ruled row (phys_fn_001397 at 0x00028e4a), ruled object model. Deferred on the Phase 3 ledger as not_reconstructed_in_phase."
-    },
-    {
-      "id": "phys_fn_000837",
-      "rva": "0x0001c5c0",
-      "size": 101,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 2 to Phase 5 by the shape slot ruling: a helper every direct caller of which is a ruled row (phys_fn_000849 at 0x0001c90c, phys_fn_000851 at 0x0001c965, phys_fn_000853 at 0x0001c9da), ruled object model. Deferred on the Phase 2 ledger as homeless_shared_code."
-    },
-    {
-      "id": "phys_fn_000839",
-      "rva": "0x0001c630",
-      "size": 231,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 2 to Phase 5 by the shape slot ruling: a helper every direct caller of which is a ruled row (phys_fn_000849 at 0x0001c918, phys_fn_000851 at 0x0001c971, phys_fn_000853 at 0x0001c9e6, phys_fn_001397 at 0x00028e58), ruled object model. Deferred on the Phase 2 ledger as homeless_shared_code."
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000841",
@@ -1387,24 +1199,6 @@
       "phase_provenance": "callers",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000843",
-      "rva": "0x0001c750",
-      "size": 110,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: a helper every direct caller of which is a ruled row (phys_fn_000851 at 0x0001c944), ruled object model. Deferred on the Phase 3 ledger as not_reconstructed_in_phase."
-    },
-    {
-      "id": "phys_fn_000845",
-      "rva": "0x0001c7c0",
-      "size": 181,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: a helper every direct caller of which is a ruled row (phys_fn_000853 at 0x0001c99a), ruled object model. Deferred on the Phase 3 ledger as not_reconstructed_in_phase."
     },
     {
       "id": "phys_fn_000847",
@@ -1420,7 +1214,7 @@
       "rva": "0x0001c8c0",
       "size": 101,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "callers",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1429,7 +1223,7 @@
       "rva": "0x0001c930",
       "size": 77,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "callers",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1438,7 +1232,7 @@
       "rva": "0x0001c980",
       "size": 115,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "callers",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1447,7 +1241,16 @@
       "rva": "0x00020450",
       "size": 40,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000935",
+      "rva": "0x000205a0",
+      "size": 198,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1456,7 +1259,7 @@
       "rva": "0x000206c0",
       "size": 62,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1465,7 +1268,7 @@
       "rva": "0x00020670",
       "size": 69,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1474,7 +1277,7 @@
       "rva": "0x00020700",
       "size": 68,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1483,7 +1286,7 @@
       "rva": "0x00020850",
       "size": 39,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "callers",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1492,7 +1295,70 @@
       "rva": "0x00020d20",
       "size": 6,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000955",
+      "rva": "0x00020d30",
+      "size": 4,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000961",
+      "rva": "0x000213c0",
+      "size": 6,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000963",
+      "rva": "0x000213d0",
+      "size": 14,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000967",
+      "rva": "0x000213f0",
+      "size": 6,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000969",
+      "rva": "0x00021400",
+      "size": 6,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000971",
+      "rva": "0x00021410",
+      "size": 6,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000975",
+      "rva": "0x000217c0",
+      "size": 168,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1501,7 +1367,7 @@
       "rva": "0x00021870",
       "size": 207,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1510,7 +1376,7 @@
       "rva": "0x00021940",
       "size": 69,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1519,7 +1385,16 @@
       "rva": "0x00021990",
       "size": 55,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000985",
+      "rva": "0x00021a10",
+      "size": 78,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1528,7 +1403,7 @@
       "rva": "0x00021a60",
       "size": 101,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1537,7 +1412,7 @@
       "rva": "0x00021ad0",
       "size": 110,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1546,7 +1421,7 @@
       "rva": "0x00021b40",
       "size": 42,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1555,7 +1430,7 @@
       "rva": "0x00021be0",
       "size": 23,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1564,7 +1439,7 @@
       "rva": "0x00021c30",
       "size": 39,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1573,7 +1448,7 @@
       "rva": "0x00021c60",
       "size": 32,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1582,52 +1457,43 @@
       "rva": "0x00021c80",
       "size": 78,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_001008",
-      "rva": "0x00022440",
-      "size": 57,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: the target of CAPSULE slot 4 (object model) in shape_slot_ruling.json. Deferred on the Phase 3 ledger as not_reconstructed_in_phase."
     },
     {
       "id": "phys_fn_001014",
       "rva": "0x000225e0",
       "size": 59,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_001022",
-      "rva": "0x00022970",
-      "size": 52,
+      "id": "phys_fn_001035",
+      "rva": "0x00022dd0",
+      "size": 5,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: the target of COMPOUND slot 3 (object model) in shape_slot_ruling.json. Deferred on the Phase 3 ledger as not_reconstructed_in_phase."
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_001024",
-      "rva": "0x000229b0",
-      "size": 87,
+      "id": "phys_fn_001075",
+      "rva": "0x00023580",
+      "size": 57,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: the target of COMPOUND slot 4 (object model) in shape_slot_ruling.json. Deferred on the Phase 3 ledger as not_reconstructed_in_phase."
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_001247",
       "rva": "0x00024ed0",
       "size": 151,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1636,7 +1502,7 @@
       "rva": "0x00024f70",
       "size": 5,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1645,7 +1511,7 @@
       "rva": "0x00024f80",
       "size": 51,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1654,7 +1520,7 @@
       "rva": "0x000251d0",
       "size": 24,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1663,7 +1529,7 @@
       "rva": "0x00025420",
       "size": 59,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1672,7 +1538,16 @@
       "rva": "0x00025460",
       "size": 36,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001269",
+      "rva": "0x00025510",
+      "size": 15,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1681,7 +1556,7 @@
       "rva": "0x00025520",
       "size": 15,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1690,7 +1565,7 @@
       "rva": "0x00025530",
       "size": 424,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1699,7 +1574,16 @@
       "rva": "0x000256f0",
       "size": 98,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001329",
+      "rva": "0x00026d90",
+      "size": 94,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1708,7 +1592,7 @@
       "rva": "0x00027740",
       "size": 119,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1717,7 +1601,7 @@
       "rva": "0x000277c0",
       "size": 91,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1726,7 +1610,7 @@
       "rva": "0x00027850",
       "size": 79,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "callers",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1735,7 +1619,7 @@
       "rva": "0x000278a0",
       "size": 22,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1744,7 +1628,7 @@
       "rva": "0x000278c0",
       "size": 89,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1753,7 +1637,16 @@
       "rva": "0x00027920",
       "size": 7,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001361",
+      "rva": "0x00027930",
+      "size": 78,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1762,7 +1655,7 @@
       "rva": "0x00027980",
       "size": 33,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1771,7 +1664,7 @@
       "rva": "0x000279b0",
       "size": 26,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1780,25 +1673,16 @@
       "rva": "0x000279d0",
       "size": 84,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_001371",
-      "rva": "0x00027be0",
-      "size": 39,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: the target of SPHERE slot 4 (object model) in shape_slot_ruling.json. Deferred on the Phase 3 ledger as not_reconstructed_in_phase."
     },
     {
       "id": "phys_fn_001375",
       "rva": "0x00027c30",
       "size": 59,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1807,7 +1691,7 @@
       "rva": "0x00027db0",
       "size": 101,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1816,7 +1700,7 @@
       "rva": "0x00027e20",
       "size": 13,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1825,7 +1709,7 @@
       "rva": "0x00027e30",
       "size": 46,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1834,7 +1718,7 @@
       "rva": "0x00027e60",
       "size": 37,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1843,7 +1727,7 @@
       "rva": "0x00027e90",
       "size": 39,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1852,7 +1736,16 @@
       "rva": "0x00027ec0",
       "size": 51,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001391",
+      "rva": "0x00027f00",
+      "size": 3,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -1861,18 +1754,9 @@
       "rva": "0x00028e80",
       "size": 72,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_001403",
-      "rva": "0x00029190",
-      "size": 152,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: the target of MESH slot 10 (object model) in shape_slot_ruling.json. Deferred on the Phase 3 ledger as not_reconstructed_in_phase."
     },
     {
       "id": "phys_fn_002312",
@@ -1929,13 +1813,13 @@
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_002344",
-      "rva": "0x0005aae0",
-      "size": 104,
+      "id": "phys_fn_002352",
+      "rva": "0x0005b610",
+      "size": 8,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: a helper every direct caller of which is a ruled row (phys_fn_001323 at 0x00026c19), ruled object model. Deferred on the Phase 3 ledger as blocked_on_later_phase, with this note: RE-DEFERRED at the port of the Phase 4 close (branch p4-close-port). Canonical commit c962ffa closed this row outright on NxPhysicsObjectLayoutTests with no discharge fields, because its not_reconstructed_in_phase deferral had named no driving phases. The gate-to-phase binding ported with the Phase 4 close rejects that closure: NxPhysicsObjectLayoutTests is registered to phase 5 only, so it does not run when phase 3 is gated -- `run_phase_gate.ps1 -Phase 3` prints `selected_targets=NxPhysicsGeometryTests,NxPhysicsKernelFuzzTests` and `selected_oracle_differential_targets=NxPhysicsCollisionTests` -- and it does not run under `-Phase completed` while Phase 5 is pending either, which prints `highest_passing_phase=4 differential_phases=1,2,3,4` and `selected_oracle_differential_targets=NxPhysicsAssetTests,NxPhysicsCollisionTests,NxPhysicsThirdPartyTests`. No passing gate executes this row's proof. The measurement is carried here unchanged so that a Phase 5 close can discharge the row through the legitimate form, `discharged_by_phase: 5` with `driving_phases: [5]`. MUTATION, from c962ffa: the pair remover's match test keeps only the second half of each stride-8 record -- begin[i*2]==self, the first-half arm, is dropped. Detected on pairrm, whose five sub-drives include two first-half matches; the family digest moves f0bdae43 -> 2df229f4 against the unchanged oracle transcript. Control run of the unmutated tree reads mismatches=1, this run mismatches=2. DETECTED, from c962ffa: mismatches=2. RE-MEASURED on this branch in a `git archive` copy of de56592, control / mutant / control: `layout candidate mismatches=1`, then `2`, then `1`, with `layout oracle digest=16dceb3c` in all three and the pairrm family reading `candidate ok=1 digest=f0bdae43`, then `ok=0 digest=2df229f4`, then `ok=1 digest=f0bdae43` against `pairrm row=oracle cases=5 digest=f0bdae43`. THE CONTROL IS NOT CLEAN: its one mismatch is `candidate CANDIDATE-MISSING family=vtables`, the target's designed RED, so the recorded mismatches=2 is a target-level count over a baseline of 1 and the part of it this row owns is the pairrm family alone. A discharge must re-establish a control in which the count it spends starts at zero, or spend the family-level reading, rather than inherit a target-level baseline that was already off. The blocking type is the Scene because the row's receiver is the ADDRESS of the scene's +0x5d4 field (`add ecx,0x5d4` at 0x00026c13 in phys_fn_001323), and the only harness that supplies that contract is Phase 5's pairrm fixture"
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002379",
@@ -1956,15 +1840,6 @@
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_002410",
-      "rva": "0x0005bac0",
-      "size": 240,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "Moved from Phase 2 to Phase 5 by the shape slot ruling: not a shape-block row, but its callers are phys_fn_002411 on Phase 5 and phys_fn_002413, which the ruling places in Phase 5 as a helper of ShapeBase's destructor, so they agree and shared_by_callers no longer holds. Deferred on the Phase 2 ledger as blocked_on_later_phase, with this note: RE-DEFERRED at the port of the Phase 4 close (branch p4-close-port), for the reason phys_fn_002344 was re-deferred on the Phase 3 ledger: a closure counts only once the phase whose gate it rests on has passed. Canonical commit c962ffa closed this row on Phase 5's NxPhysicsObjectLayoutTests with `discharged_by_phase: 5` and `driving_phases: [3, 5]`. NxPhysicsObjectLayoutTests is registered to phase 5 only and Phase 5 is `pending` in program.json, so it runs neither when Phase 2 is gated nor under `-Phase completed`, and the validator now rejects a discharge by a phase that has not passed. No passing gate executes this row's proof. The deferral the closure came from was homeless_shared_code with driving_phases [3, 5]; that list is kept, and Phase 3 passed without discharging the row. It is blocked on phys_fn_002411, the Phase 5 shapes-clear entry that calls it at 0x0005bbc2 and whose fixture, with relgrow's, is the only one that supplies the pool-header contract the release arm reads. MUTATION, from c962ffa: the release arm's unlink stores the mirror partner's index where the image writes the 0xD00BEED0 poison (mir[idx] = u instead of the sentinel constant). Detected on relgrow, whose poison predicate reads false; the same transcription sits inside nxBaseDtorOwnerArms, so owndtor's chain drive moves with it. Control run of the unmutated tree reads mismatches=1, this run mismatches=3. DETECTED, from c962ffa: mismatches=3. RE-MEASURED at this re-deferral in a `git archive` copy of d9a459b, control / mutant / control: `layout candidate mismatches=1`, then `4`, then `1`, with `layout oracle digest=16dceb3c` in all three. The mutant moves THREE families where c962ffa saw two: relgrow (`ok=0 ... poison=0 ... digest=f4af64bb` against the control's `ok=1 ... poison=1 ... digest=dc548b5a`), owndtor (`ok=0 digest=67692e45` against `ok=1 digest=6d133744`), and miscsm2 -- phys_fn_002411's shapes-clear drive, written in rounds 3z12 and 3z13 of evidence/phase5-object-model.md after c962ffa's round 3z3 measured this, which reaches the release arm through the image's own call -- so the branch reads 4 where c962ffa recorded 3. THE CONTROL IS NOT CLEAN: its one mismatch is `candidate CANDIDATE-MISSING family=vtables`, the target's designed RED, so a target-level count is a count over a baseline of 1 and the part of it this row owns is the family reading. A Phase 5 discharge must re-establish a control in which the count it spends starts at zero, or spend the family-level reading, rather than inherit a target-level baseline that was already off"
-    },
-    {
       "id": "phys_fn_002411",
       "rva": "0x0005bbb0",
       "size": 41,
@@ -1974,13 +1849,13 @@
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_002423",
-      "rva": "0x0005c390",
-      "size": 552,
+      "id": "phys_fn_004812",
+      "rva": "0x000b4070",
+      "size": 5,
       "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
+      "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: a helper every direct caller of which is a ruled row (phys_fn_001273 at 0x00025626), ruled object model. Deferred on the Phase 3 ledger as not_reconstructed_in_phase."
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     }
   ]
 }

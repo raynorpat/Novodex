@@ -93,7 +93,7 @@
         "desc_mixin_vptr_at_plus_e0": "A=0x10106a58 then B=0x10106a88 (12-slot tables each), stores at 0x00021885/0x00021895",
         "zeroed_trio": "+0x150..+0x158"
       },
-      "slot_5_raycast": "phys_fn_000949 (Phase 3: slot 5 is a collision slot under shape_slot_ruling.json)",
+      "slot_5_raycast": "phys_fn_000949 (phase 3 recorded)",
       "slot_7_sweep_dispatch": "phys_fn_000951"
     },
     "sphere_shape": {
@@ -195,7 +195,7 @@
         "established_by": "stores 0x0002560b/0x00025614"
       },
       "owner_registration": {
-        "meaning": "when owner is non-null, the ctor calls owner->[vtbl+0x48](shape) = phys_fn_002423 (552 bytes; Phase 5 under shape_slot_ruling.json, a helper only this constructor calls)",
+        "meaning": "when owner is non-null, the ctor calls owner->[vtbl+0x48](shape) = phys_fn_002423 (552 bytes, phase 3, discovered)",
         "established_by": "call 0x0005c390 at 0x00025626; row identified in inventory"
       },
       "global_hook_install": {
@@ -517,31 +517,35 @@
       "slot6 owner-update/001315"
     ],
     "BOX": [
-      "slot3 debug-draw/000945",
-      "slot4 mass/000947",
+      "slot1 apply-desc",
+      "slot3 debug-draw/001003",
+      "slot4 cached-bounds/000941",
+      "slot5 raycast/000949",
+      "slot7 sweep/000951",
       "slot12 loadFromDesc/000981"
     ],
     "SPHERE": [
       "slot3 debug-draw/001369",
-      "slot4 mass/001371",
+      "slot4 cached-bounds/001371",
+      "slot5 raycast/001377",
+      "slot7 sweep/001373",
       "slot12 loadFromDesc/001353"
     ],
     "CAPSULE": [
       "slot3 debug-draw/001006",
-      "slot4 mass/001008",
+      "slot4 cached-bounds/001008",
+      "slot5 raycast/001010",
+      "slot7 sweep/001012",
       "slot12 loadFromDesc/000989"
     ],
     "PLANE": [
+      "slot5 raycast/001261",
+      "slot8 prunable-query/001267",
       "slot12 loadFromDesc/001265"
     ],
     "MESH": [
-      "slot3 debug-draw/001393",
-      "slot4 mass/001397",
-      "slot8/001389",
-      "slot10/001403",
-      "slot12 loadFromDesc/001383"
-    ],
-    "note": "Reconciled with shape_slot_ruling.json: only object-model slots are listed. The raycast (slot 5), sweep (slot 7) and world-AABB (slot 9) rows this list used to carry are collision slots and Phase 3's -- phys_fn_001377, phys_fn_001010 and phys_fn_001261 are closed there -- and PLANE slot 8, phys_fn_001267, goes with them as a named exception: no virtual call dispatches PLANE slot 8, and its only direct caller is COMPOUND slot 9 (phys_fn_001030) at 0x00022c6a. BOX slot 3 was listed as phys_fn_001003 and slot 4 as phys_fn_000941; the pointers at 0x10106ac4 and 0x10106ac8 name phys_fn_000945 and phys_fn_000947. Slot 4 is the mass row, not a cached-bounds update (evidence/phase5-object-model.md 3p/3q)."
+      "slots3/4/5/7/8/9/10/12 various mesh-pipeline rows"
+    ]
   },
   "blocked_on": {
     "registry_fixture": "phys_fn_000480 decode complete; needs transcription + drive",
@@ -582,36 +586,5 @@
       "status": "not started",
       "prerequisite": "scene infrastructure (dirty-flag accumulator table, actor body links)"
     }
-  },
-  "shape_slot_ruling": {
-    "file": "shape_slot_ruling.json",
-    "rule": "A slot the collision pipeline dispatches through is Phase 3's; every other slot of the shape classes is Phase 5's. Collision slots: 5 (raycast), 7 (sweep) and 9 (world AABB) in every final, MESH slot 14, and BOX_HULL slots 0, 2, 3, 4, 9, 10 and 11; everything else is object model.",
-    "rows_this_file_names_that_the_ruling_places_outside_phase_5": {
-      "000949": 3,
-      "000951": 3,
-      "000955": 3,
-      "000957": 3,
-      "000959": 3,
-      "000961": 3,
-      "000963": 3,
-      "000965": 2,
-      "000975": 3,
-      "000985": 3,
-      "001010": 3,
-      "001012": 3,
-      "001016": 3,
-      "001035": 3,
-      "001261": 3,
-      "001267": 3,
-      "001361": 3,
-      "001373": 3,
-      "001377": 3,
-      "001391": 2,
-      "001401": 3,
-      "001405": 3,
-      "001407": 3,
-      "004812": 2
-    },
-    "note": "The slot maps and progress lists above record the Phase 5 line's work and are kept as written; where they name one of these rows, the phase is the one given here, and validate_inventory.py recomputes it."
   }
 }
