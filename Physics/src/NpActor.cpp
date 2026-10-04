@@ -39,7 +39,6 @@
 #include <math.h>
 #include <float.h>
 
-
 static unsigned char* nxNpActorBody(void* actor)
 	{
 	return *reinterpret_cast<unsigned char**>(
@@ -361,7 +360,8 @@ static void __fastcall nxShapeHandleSetGlobalPose(void* self, void*,
 static void __fastcall nxShapeHandleGetGlobalPose(void* self, void*,
 	NxMat34& pose)
 	{
-	memcpy(&pose, nxBoxHandleInternal(self) + 0x0c, sizeof(pose));
+	static_cast<ShapeBase*>(static_cast<void*>(nxBoxHandleInternal(self)))->nxShapeGlobalPose(
+		reinterpret_cast<float*>(&pose));
 	}
 
 static void __fastcall nxShapeHandleGetGlobalPosition(void* self, void*,

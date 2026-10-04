@@ -33,12 +33,11 @@
 #include "Containers.h"
 #include "NxMaterial.h"
 #include "NxUserContactReport.h"
+#include "NxActor.h"
 #include "NxUtilities.h"
 #include "ObjectModel.h"
-#include "NarrowPhase.h"
 #include "ContactGeneration.h"
-#include "IcePruner.h"
-#include "Opcode.h"
+#include "NarrowPhase.h"
 #include "PhysicsSDK.h"
 #include "Scene.h"
 #include "X87Sqrt.h"
@@ -187,15 +186,51 @@ static NX_INLINE void cpmToBodyLocal0891(const NxU8* body, const NxReal* p, NxRe
 	{
 	const NxReal* m = cpmBodyRotation(body);
 	const NxReal* t = cpmBodyPosition(body);
-	const double dx = (double)p[0] - t[0];
-	const NxReal dy = (NxReal)((double)p[1] - t[1]);
-	const NxReal dz = (NxReal)((double)p[2] - t[2]);
-	const double y = (dx * m[1] + (double)dz * m[7]) + (double)dy * m[4];
-	const double z = (dx * m[2] + (double)dz * m[8]) + (double)dy * m[5];
-	const double x = ((double)dz * m[6] + (double)dy * m[3]) + dx * m[0];
-	out[0] = (NxReal)x;
-	out[1] = (NxReal)y;
-	out[2] = (NxReal)z;
+	NxReal* destination = out;
+	NxReal dy, dz;
+	__asm
+		{
+		mov eax, p
+		mov ecx, t
+		mov edx, m
+		mov ebx, destination
+		fld dword ptr [eax]
+		fsub dword ptr [ecx]
+		fld dword ptr [eax + 4]
+		fsub dword ptr [ecx + 4]
+		fstp dword ptr [dy]
+		fld dword ptr [eax + 8]
+		fsub dword ptr [ecx + 8]
+		fstp dword ptr [dz]
+		fld st(0)
+		fmul dword ptr [edx + 4]
+		fld dword ptr [dz]
+		fmul dword ptr [edx + 28]
+		faddp st(1), st(0)
+		fld dword ptr [dy]
+		fmul dword ptr [edx + 16]
+		faddp st(1), st(0)
+		fld st(1)
+		fmul dword ptr [edx + 8]
+		fld dword ptr [dz]
+		fmul dword ptr [edx + 32]
+		faddp st(1), st(0)
+		fld dword ptr [dy]
+		fmul dword ptr [edx + 20]
+		faddp st(1), st(0)
+		fld dword ptr [dz]
+		fmul dword ptr [edx + 24]
+		fld dword ptr [dy]
+		fmul dword ptr [edx + 12]
+		faddp st(1), st(0)
+		fxch st(3)
+		fmul dword ptr [edx]
+		faddp st(3), st(0)
+		fxch st(2)
+		fstp dword ptr [ebx]
+		fstp dword ptr [ebx + 4]
+		fstp dword ptr [ebx + 8]
+		}
 	}
 
 // A world direction into a body's frame, 000895's form (0x1001f026..0x1001f08b).
@@ -241,6 +276,459 @@ static NX_INLINE void cpmSolveRecord(JointSupportRecord* record, const NxReal* p
 		record->mUnknown040 = (NxReal)((double)record->mUnknown040 * 0.7f);
 	}
 
+static NX_INLINE NxReal cpmRecordAccumulatedImpulse(const JointSupportRecord* record)
+	{
+	NxReal value;
+	memcpy(&value, &record->mUnknown044, sizeof(value));
+	return value;
+	}
+
+static NX_INLINE void cpmSetRecordAccumulatedImpulse(JointSupportRecord* record, NxReal value)
+	{
+	memcpy(&record->mUnknown044, &value, sizeof(value));
+	}
+
+// Semantic model of phys_fn_004403. The velocity error accumulates separately
+// in +0x4c. Its body impulse is reduced by the scaled penetration bias before
+// being accumulated in +0x44; the listing stores that change as a float and
+// clamps the accumulated impulse at zero.
+static void cpmSolveContactRecord0403(NxReal dt, NxI32 pass, JointSupportRecord* record)
+	{
+	NxReal applied;
+	static const NxReal zero = 0.0f;
+	__asm
+		{
+		mov edx, record
+		mov ecx, dword ptr [edx + 10h]
+		test ecx, ecx
+		jz cpm_solve_no_body0
+		fld dword ptr [ecx + 18h]
+		fmul dword ptr [edx + 20h]
+		fld dword ptr [ecx + 14h]
+		fmul dword ptr [edx + 1ch]
+		faddp st(1), st(0)
+		fld dword ptr [ecx + 8]
+		fmul dword ptr [edx + 8]
+		faddp st(1), st(0)
+		fld dword ptr [ecx + 4]
+		fmul dword ptr [edx + 4]
+		faddp st(1), st(0)
+		fld dword ptr [ecx]
+		fmul dword ptr [edx]
+		faddp st(1), st(0)
+		fld dword ptr [ecx + 10h]
+		fmul dword ptr [edx + 18h]
+		faddp st(1), st(0)
+		jmp cpm_solve_body1
+	cpm_solve_no_body0:
+		fldz
+	cpm_solve_body1:
+		mov eax, dword ptr [edx + 14h]
+		test eax, eax
+		jz cpm_solve_relative_ready
+		fld dword ptr [eax + 18h]
+		fmul dword ptr [edx + 2ch]
+		fld dword ptr [eax + 14h]
+		fmul dword ptr [edx + 28h]
+		faddp st(1), st(0)
+		fld dword ptr [eax + 8]
+		fmul dword ptr [edx + 8]
+		faddp st(1), st(0)
+		fld dword ptr [eax + 4]
+		fmul dword ptr [edx + 4]
+		faddp st(1), st(0)
+		fld dword ptr [eax + 10h]
+		fmul dword ptr [edx + 24h]
+		faddp st(1), st(0)
+		fld dword ptr [eax]
+		fmul dword ptr [edx]
+		faddp st(1), st(0)
+		fsubp st(1), st(0)
+	cpm_solve_relative_ready:
+		fsubr dword ptr [edx + 38h]
+		fmul dword ptr [edx + 3ch]
+		fld st(0)
+		fadd dword ptr [edx + 4ch]
+		fstp dword ptr [edx + 4ch]
+		fld dword ptr [edx + 40h]
+		fmul dword ptr [edx + 34h]
+		fsubr st(0), st(1)
+		fstp dword ptr [applied]
+		fstp st(0)
+		fld dword ptr [applied]
+		fadd dword ptr [edx + 44h]
+		fcom dword ptr [zero]
+		fnstsw ax
+		test ah, 5
+		jp cpm_solve_store_impulse
+		fstp st(0)
+		fld dword ptr [edx + 44h]
+		mov dword ptr [edx + 44h], 0
+		fchs
+		fstp dword ptr [applied]
+		jmp cpm_solve_impulse_ready
+	cpm_solve_store_impulse:
+		fstp dword ptr [edx + 44h]
+	cpm_solve_impulse_ready:
+		fldz
+		fld dword ptr [applied]
+		fucompp
+		fnstsw ax
+		test ah, 44h
+		jnp cpm_solve_no_apply
+	cpm_solve_no_apply:
+		}
+	if(applied == 0.0f)
+		{
+		if(pass == 1 && record->mUnknown030)
+			reinterpret_cast<NxFrictionPatch*>(record->mUnknown030)->accumulate(
+				cpmRecordAccumulatedImpulse(record), record, dt);
+		return;
+		}
+
+	const NxVec3& n = record->mUnknown000;
+	for(unsigned side = 0; side < 2; ++side)
+		{
+		JointSupportBody* body = record->mBody[side];
+		if(!body || body->mUnknown00c <= 0.0f)
+			continue;
+		const NxReal sign = side == 0 ? applied : -applied;
+		NxReal scaledImpulseY, scaledImpulseZ;
+		__asm
+			{
+			mov edx, record
+			mov ecx, body
+			fld sign
+			fmul dword ptr [edx + 4]
+			fstp dword ptr [scaledImpulseY]
+			fld sign
+			fmul dword ptr [edx + 8]
+			fstp dword ptr [scaledImpulseZ]
+			fld sign
+			fmul dword ptr [edx]
+			fld dword ptr [ecx + 0ch]
+			fld st(0)
+			fmul st(0), st(2)
+			fld dword ptr [scaledImpulseY]
+			fmul st(0), st(2)
+			fstp dword ptr [scaledImpulseY]
+			fld dword ptr [scaledImpulseZ]
+			fmul st(0), st(2)
+			fstp dword ptr [scaledImpulseZ]
+			fadd dword ptr [ecx]
+			fstp dword ptr [ecx]
+			fld dword ptr [scaledImpulseY]
+			fadd dword ptr [ecx + 4]
+			fstp dword ptr [ecx + 4]
+			fld dword ptr [scaledImpulseZ]
+			fadd dword ptr [ecx + 8]
+			fstp dword ptr [ecx + 8]
+			fstp st(0)
+			fstp st(0)
+			}
+		const NxVec3& arm = side == 0 ? record->mUnknown018 : record->mUnknown024;
+		const NxReal angularInput[3] = {
+			(NxReal)((double)arm.x * sign),
+			(NxReal)((double)arm.y * sign),
+			(NxReal)((double)arm.z * sign) };
+		for(unsigned row = 0; row < 3; ++row)
+			{
+			const NxReal* matrixRow = body->mUnknown020 + row * 3;
+			NxReal* angularComponent = (&body->mUnknown010.x) + row;
+			if(row == 2)
+				{
+				NxReal angularDelta;
+				__asm
+					{
+					lea eax, angularInput
+					mov edx, matrixRow
+					fld dword ptr [eax + 8]
+					fmul dword ptr [edx + 8]
+					fld dword ptr [eax + 4]
+					fmul dword ptr [edx + 4]
+					faddp st(1), st(0)
+					fld dword ptr [eax]
+					fmul dword ptr [edx]
+					faddp st(1), st(0)
+					fstp angularDelta
+					}
+				*angularComponent = (NxReal)((double)*angularComponent + angularDelta);
+				}
+			else
+				{
+				__asm
+					{
+					lea eax, angularInput
+					mov edx, matrixRow
+					mov ecx, angularComponent
+					push eax
+					push edx
+					push ecx
+					fld dword ptr [eax + 8]
+					fmul dword ptr [edx + 8]
+					fld dword ptr [eax + 4]
+					fmul dword ptr [edx + 4]
+					faddp st(1), st(0)
+					fld dword ptr [eax]
+					fmul dword ptr [edx]
+					faddp st(1), st(0)
+					fadd dword ptr [ecx]
+					fstp dword ptr [ecx]
+					pop ecx
+					pop edx
+					pop eax
+					}
+				}
+			}
+		}
+	if(pass == 1 && record->mUnknown030)
+		{
+		NxFrictionPatch* patch = reinterpret_cast<NxFrictionPatch*>(record->mUnknown030);
+		patch->accumulate(cpmRecordAccumulatedImpulse(record), record, dt);
+		}
+	}
+
+// Apply a solved record impulse using the scene island's live body view.
+static void cpmApplyContactImpulse(JointSupportRecord* record, NxReal applied)
+	{
+	if(applied == 0.0f)
+		return;
+
+	const NxVec3& n = record->mUnknown000;
+	for(unsigned side = 0; side < 2; ++side)
+		{
+		JointSupportBody* body = record->mBody[side];
+		if(!body || body->mUnknown00c <= 0.0f)
+			continue;
+		const NxReal sign = side == 0 ? applied : -applied;
+		NxReal scaledImpulseY, scaledImpulseZ;
+		__asm
+			{
+			mov edx, record
+			mov ecx, body
+			fld sign
+			fmul dword ptr [edx + 4]
+			fstp dword ptr [scaledImpulseY]
+			fld sign
+			fmul dword ptr [edx + 8]
+			fstp dword ptr [scaledImpulseZ]
+			fld sign
+			fmul dword ptr [edx]
+			fld dword ptr [ecx + 0ch]
+			fld st(0)
+			fmul st(0), st(2)
+			fld dword ptr [scaledImpulseY]
+			fmul st(0), st(2)
+			fstp dword ptr [scaledImpulseY]
+			fld dword ptr [scaledImpulseZ]
+			fmul st(0), st(2)
+			fstp dword ptr [scaledImpulseZ]
+			fadd dword ptr [ecx]
+			fstp dword ptr [ecx]
+			fld dword ptr [scaledImpulseY]
+			fadd dword ptr [ecx + 4]
+			fstp dword ptr [ecx + 4]
+			fld dword ptr [scaledImpulseZ]
+			fadd dword ptr [ecx + 8]
+			fstp dword ptr [ecx + 8]
+			fstp st(0)
+			fstp st(0)
+			}
+		const NxVec3& arm = side == 0 ? record->mUnknown018 : record->mUnknown024;
+		const NxReal angularInput[3] = {
+			(NxReal)((double)arm.x * sign),
+			(NxReal)((double)arm.y * sign),
+			(NxReal)((double)arm.z * sign) };
+		for(unsigned row = 0; row < 3; ++row)
+			{
+			const NxReal* matrixRow = body->mUnknown020 + row * 3;
+			NxReal* angularComponent = (&body->mUnknown010.x) + row;
+			if(row == 2)
+				{
+				NxReal angularDelta;
+				__asm
+					{
+					lea eax, angularInput
+					mov edx, matrixRow
+					fld dword ptr [eax + 8]
+					fmul dword ptr [edx + 8]
+					fld dword ptr [eax + 4]
+					fmul dword ptr [edx + 4]
+					faddp st(1), st(0)
+					fld dword ptr [eax]
+					fmul dword ptr [edx]
+					faddp st(1), st(0)
+					fstp angularDelta
+					}
+				*angularComponent = (NxReal)((double)*angularComponent + angularDelta);
+				}
+			else
+				{
+				__asm
+					{
+					lea eax, angularInput
+					mov edx, matrixRow
+					mov ecx, angularComponent
+					push eax
+					push edx
+					push ecx
+					fld dword ptr [eax + 8]
+					fmul dword ptr [edx + 8]
+					fld dword ptr [eax + 4]
+					fmul dword ptr [edx + 4]
+					faddp st(1), st(0)
+					fld dword ptr [eax]
+					fmul dword ptr [edx]
+					faddp st(1), st(0)
+					fadd dword ptr [ecx]
+					fstp dword ptr [ecx]
+					pop ecx
+					pop edx
+					pop eax
+					}
+				}
+			}
+		}
+	}
+
+// phys_fn_004176 dispatches kind 4 to the tangential-friction row. The
+// accumulated impulse is symmetric about zero; once it exceeds the static
+// bound, it is clamped to the dynamic-friction bound.
+static void cpmSolveFrictionRecord0401(NxReal dt, NxI32 pass, JointSupportRecord* record)
+	{
+	if(record->mFlags & 0x20)
+		return;
+	NxReal applied;
+	__asm
+		{
+		mov edx, record
+		mov ecx, dword ptr [edx + 10h]
+		test ecx, ecx
+		jz cpm_friction_no_body0
+		fld dword ptr [ecx + 18h]
+		fmul dword ptr [edx + 20h]
+		fld dword ptr [ecx + 14h]
+		fmul dword ptr [edx + 1ch]
+		faddp st(1), st(0)
+		fld dword ptr [ecx + 8]
+		fmul dword ptr [edx + 8]
+		faddp st(1), st(0)
+		fld dword ptr [ecx + 4]
+		fmul dword ptr [edx + 4]
+		faddp st(1), st(0)
+		fld dword ptr [ecx]
+		fmul dword ptr [edx]
+		faddp st(1), st(0)
+		fld dword ptr [ecx + 10h]
+		fmul dword ptr [edx + 18h]
+		faddp st(1), st(0)
+		jmp cpm_friction_body1
+	cpm_friction_no_body0:
+		fldz
+	cpm_friction_body1:
+		mov eax, dword ptr [edx + 14h]
+		test eax, eax
+		jz cpm_friction_relative_ready
+		fld dword ptr [eax + 18h]
+		fmul dword ptr [edx + 2ch]
+		fld dword ptr [eax + 14h]
+		fmul dword ptr [edx + 28h]
+		faddp st(1), st(0)
+		fld dword ptr [eax + 8]
+		fmul dword ptr [edx + 8]
+		faddp st(1), st(0)
+		fld dword ptr [eax + 4]
+		fmul dword ptr [edx + 4]
+		faddp st(1), st(0)
+		fld dword ptr [edx + 24h]
+		fmul dword ptr [eax + 10h]
+		faddp st(1), st(0)
+		fld dword ptr [eax]
+		fmul dword ptr [edx]
+		faddp st(1), st(0)
+		fsubp st(1), st(0)
+	cpm_friction_relative_ready:
+		fadd dword ptr [edx + 34h]
+		fmul dword ptr [edx + 3ch]
+		fchs
+		fst dword ptr [applied]
+		fadd dword ptr [edx + 44h]
+		fld st(0)
+		fabs
+		fcom dword ptr [edx + 48h]
+		fnstsw ax
+		test ah, 41h
+		jnz cpm_friction_no_clamp
+		mov ebx, dword ptr [edx + 0ch]
+		fld dword ptr [edx + 4ch]
+		fdiv st(0), st(1)
+		or ebx, 40h
+		mov dword ptr [edx + 0ch], ebx
+		fmul dword ptr [edx + 48h]
+		fmulp st(2), st(0)
+		fstp st(0)
+		fld st(0)
+		fsub dword ptr [edx + 44h]
+		fstp dword ptr [applied]
+		jmp cpm_friction_impulse_ready
+	cpm_friction_no_clamp:
+		fstp st(0)
+	cpm_friction_impulse_ready:
+		fstp dword ptr [edx + 44h]
+		fstp st(0)
+		}
+	cpmApplyContactImpulse(record, applied);
+	if(pass == 1 && record->mUnknown030)
+		reinterpret_cast<NxFrictionPatch*>(record->mUnknown030)->accumulate(
+			cpmRecordAccumulatedImpulse(record), record, dt);
+	}
+
+// phys_fn_004176's record pass for normal and friction contacts. The schedule
+// and body-view writeback remain at the exact 000611 island boundary.
+void __cdecl cpmSolveSceneContactRecords(NxSceneInternal* scene, NxU32 maxIterations)
+	{
+	const NxReal dt = scene->at<NxReal>(0x548);
+	const NxU32 count = scene->at<NxU32>(0x5bc);
+	JointSupportRecord* records = scene->at<JointSupportRecord*>(0x5b8);
+	for(NxI32 pass = (NxI32)maxIterations; pass > 0; --pass)
+		for(NxU32 i = 0; i < count; ++i)
+			{
+			JointSupportRecord* record = records + i;
+			const NxU32 kind = record->mFlags & 0x1f;
+			if(kind != 0 && kind != 4)
+				continue;
+			const JointSupportBody* a = record->mBody[0];
+			const JointSupportBody* b = record->mBody[1];
+			if((a && a->mUnknown05c >= (NxU32)pass)
+				|| (b && b->mUnknown05c >= (NxU32)pass))
+				{
+				if(kind == 0)
+					cpmSolveContactRecord0403(dt, pass, record);
+				else
+					cpmSolveFrictionRecord0401(dt, pass, record);
+				}
+			}
+	for(NxU32 i = 0; i < scene->at<NxU32>(0x5b0); ++i)
+		{
+		JointSupportBody* body = scene->at<JointSupportBody*>(0x5ac) + i;
+		body->mUnknown044 = body->mUnknown000;
+		body->mUnknown050 = body->mUnknown010;
+		}
+	for(NxU32 i = 0; i < count; ++i)
+		{
+		JointSupportRecord* record = records + i;
+		const NxU32 kind = record->mFlags & 0x1f;
+		if(kind != 0 && kind != 4)
+			continue;
+		if(kind != 0 || record->mUnknown034 <= 0.0f)
+			record->mUnknown034 = 0.0f;
+		if(kind == 0)
+			cpmSolveContactRecord0403(dt, -1, record);
+		else
+			cpmSolveFrictionRecord0401(dt, -1, record);
+		}
+	}
+
 // The Scene's 0x50-byte record array (+0x5b8 records, +0x5bc count, +0x5c0
 // capacity), grown by 000598 when full: the inline sequence at 0x1001e175,
 // 0x1001e314, 0x1001e735 and 0x1001f76d.
@@ -263,8 +751,8 @@ static NX_INLINE JointSupportRecord* cpmTakeRecord(NxSceneInternal* scene)
 static __declspec(noinline) void cpmOpen002354(void* streamObject);
 static __declspec(noinline) void cpmOpen002356(void* streamObject)
 	{
-	new (static_cast<NxU8*>(streamObject) + 0x28) SdkContainer;
-	cpmOpen002354(streamObject);
+	new (static_cast<NxU8*>(streamObject) + 0x28) SdkContainer();
+	NxContactSinkResetState(reinterpret_cast<NxU32*>(streamObject));
 	}
 
 // Row 002354 (0x0005b620, 86 B): resets the stream sub-object (zeroes
@@ -279,19 +767,88 @@ static __declspec(noinline) void cpmOpen002354(void* streamObject)
 // (PhysicsSDK.cpp gShapePairFunctionTable), (shape0, shape1, pair, scene).
 static __declspec(noinline) void cpmOpen002348(NxU8* shape0, NxU8* shape1, NxActorPair* pair, NxSceneInternal* scene)
 	{
-	NxDispatchShapePair(nxPhysicsSDKShapePairTable(),
+	(void)scene;
+	NxDispatchShapePair(NxGetCollisionDispatchMatrix(),
 		reinterpret_cast<const NxCollisionShape*>(shape0),
-		reinterpret_cast<const NxCollisionShape*>(shape1), pair, scene);
+		reinterpret_cast<const NxCollisionShape*>(shape1),
+		pair, 0);
+	}
+
+static NxU32 cpmPairHash(const CpmPairHash* hash, NxU32 key0, NxU32 key1)
+	{
+	if(key1 < key0)
+		{
+		const NxU32 swap = key0;
+		key0 = key1;
+		key1 = swap;
+		}
+	NxU32 value = ((key1 & 0xffffu) << 16) | (key0 & 0xffffu);
+	value += ~(value << 15);
+	value = (static_cast<NxU32>(static_cast<NxI32>(value) >> 10) ^ value) * 9;
+	value ^= static_cast<NxU32>(static_cast<NxI32>(value) >> 6);
+	value += ~(value << 11);
+	return (static_cast<NxU32>(static_cast<NxI32>(value) >> 16) ^ value)
+		& *reinterpret_cast<const NxU32*>(reinterpret_cast<const NxU8*>(hash) + 4);
+	}
+
+static void cpmPairHashEnsure(CpmPairHash* hash)
+	{
+	if(hash->entries || hash->count)
+		return;
+	*reinterpret_cast<NxU32*>(reinterpret_cast<NxU8*>(hash) + 0x18) = 0xffffffffu;
+	}
+
+static void cpmPairHashGrow(CpmPairHash* hash)
+	{
+	NxU8* bytes = reinterpret_cast<NxU8*>(hash);
+	const NxU32 oldCapacity = *reinterpret_cast<NxU32*>(bytes + 4) + 1;
+	const NxU32 newCapacity = oldCapacity > 1 ? oldCapacity * 2 : 8;
+	NxI32* buckets = static_cast<NxI32*>(nxFoundationSDKAllocator->malloc(
+		newCapacity * sizeof(NxI32), NX_MEMORY_PERSISTENT));
+	NxI32* links = static_cast<NxI32*>(nxFoundationSDKAllocator->malloc(
+		newCapacity * sizeof(NxI32), NX_MEMORY_PERSISTENT));
+	CpmPairHashEntry* entries = static_cast<CpmPairHashEntry*>(nxFoundationSDKAllocator->malloc(
+		newCapacity * sizeof(CpmPairHashEntry), NX_MEMORY_PERSISTENT));
+	if(!buckets || !links || !entries)
+		{
+		if(buckets) nxFoundationSDKAllocator->free(buckets);
+		if(links) nxFoundationSDKAllocator->free(links);
+		if(entries) nxFoundationSDKAllocator->free(entries);
+		return;
+		}
+	for(NxU32 i = 0; i < newCapacity; ++i)
+		buckets[i] = links[i] = -1;
+	const NxU32 count = hash->count;
+	*reinterpret_cast<NxU32*>(bytes + 4) = newCapacity - 1;
+	for(NxU32 i = 0; i < count; ++i)
+		{
+		entries[i] = hash->entries[i];
+		const NxU32 bucket = cpmPairHash(hash, entries[i].key0, entries[i].key1)
+			& (newCapacity - 1);
+		links[i] = buckets[bucket];
+		buckets[bucket] = static_cast<NxI32>(i);
+		}
+	NxI32* oldBuckets = *reinterpret_cast<NxI32**>(bytes + 8);
+	NxI32* oldLinks = *reinterpret_cast<NxI32**>(bytes + 0x0c);
+	CpmPairHashEntry* oldEntries = hash->entries;
+	*reinterpret_cast<NxI32**>(bytes + 8) = buckets;
+	*reinterpret_cast<NxI32**>(bytes + 0x0c) = links;
+	hash->entries = entries;
+	if(oldBuckets) nxFoundationSDKAllocator->free(oldBuckets);
+	if(oldLinks) nxFoundationSDKAllocator->free(oldLinks);
+	if(oldEntries) nxFoundationSDKAllocator->free(oldEntries);
 	}
 
 // Row 004153 (0x0009a570, 156 B): find (key0, key1). thiscall on the
 // hash; returns the entry or null.
 static __declspec(noinline) CpmPairHashEntry* cpmOpen004153(CpmPairHash* hash, NxU32 key0, NxU32 key1)
 	{
-	NxU32* words = reinterpret_cast<NxU32*>(hash);
-	if(!words[0] && !words[1] && !words[2] && !words[3]
-		&& !words[4] && !words[5] && !words[6])
-		words[6] = 0xffffffffu;
+	if(key1 < key0)
+		{
+		const NxU32 swap = key0;
+		key0 = key1;
+		key1 = swap;
+		}
 	return static_cast<CpmPairHashEntry*>(NxFindCollisionPairRecord(hash,
 		static_cast<NxU16>(key0), static_cast<NxU16>(key1)));
 	}
@@ -300,107 +857,36 @@ static __declspec(noinline) CpmPairHashEntry* cpmOpen004153(CpmPairHash* hash, N
 // the entry. thiscall on the hash.
 static __declspec(noinline) CpmPairHashEntry* cpmOpen004155(CpmPairHash* hash, NxU32 key0, NxU32 key1, void* value)
 	{
-	NxU16 a = static_cast<NxU16>(key0);
-	NxU16 b = static_cast<NxU16>(key1);
-	if(b < a)
-		{ const NxU16 swap = a; a = b; b = swap; }
-	CpmPairHashEntry* found = cpmOpen004153(hash, a, b);
-	if(found)
-		{ found->value = static_cast<NxU32>(reinterpret_cast<size_t>(value)); return found; }
-
-	NxU32* words = reinterpret_cast<NxU32*>(hash);
-	// The hash's empty value is a free-list sentinel. Scene construction leaves
-	// the storage zeroed, so initialise the sentinel on first insertion.
-	if(words[6] == 0 && words[0] == 0 && words[1] == 0 && words[2] == 0
-		&& words[3] == 0 && words[4] == 0 && words[5] == 0)
-		words[6] = 0xffffffffu;
-	NxU32& capacityPlusOne = words[0];
-	NxU32& mask = words[1];
-	NxI32*& buckets = *reinterpret_cast<NxI32**>(words + 2);
-	NxI32*& links = *reinterpret_cast<NxI32**>(words + 3);
-	NxU32& count = words[4];
-	CpmPairHashEntry*& entries = *reinterpret_cast<CpmPairHashEntry**>(words + 5);
-	NxU32& freeHead = words[6];
-
-	if(freeHead == 0xffffffffu)
+	if(key1 < key0)
 		{
-		if(capacityPlusOne <= count)
-			{
-			NxU32 bit = count + 1;
-			bit |= bit >> 1; bit |= bit >> 2; bit |= bit >> 4; bit |= bit >> 8; bit |= bit >> 16;
-			mask = bit;
-			capacityPlusOne = bit + 1;
-			NxI32* newBuckets = static_cast<NxI32*>(nxFoundationSDKAllocator->malloc(capacityPlusOne * 4, NX_MEMORY_PERSISTENT));
-			CpmPairHashEntry* newEntries = static_cast<CpmPairHashEntry*>(nxFoundationSDKAllocator->malloc(capacityPlusOne * 8, NX_MEMORY_PERSISTENT));
-			NxI32* newLinks = static_cast<NxI32*>(nxFoundationSDKAllocator->malloc(capacityPlusOne * 4, NX_MEMORY_PERSISTENT));
-			if(!newBuckets || !newEntries || !newLinks)
-				{
-				if(newBuckets) nxFoundationSDKAllocator->free(newBuckets);
-				if(newEntries) nxFoundationSDKAllocator->free(newEntries);
-				if(newLinks) nxFoundationSDKAllocator->free(newLinks);
-				return 0;
-				}
-			for(NxU32 i = 0; i < capacityPlusOne; ++i) newBuckets[i] = -1;
-			for(NxU32 i = 0; i < count; ++i)
-				{
-				newEntries[i] = entries[i];
-				NxU32 h = ((NxU32)newEntries[i].key1 << 16) | newEntries[i].key0;
-				 h += ~(h << 15); h = ((NxI32)h >> 10 ^ h) * 9; h ^= (NxI32)h >> 6; h += ~(h << 11);
-				const NxU32 bucket = ((NxI32)h >> 16 ^ h) & mask;
-				newLinks[i] = newBuckets[bucket]; newBuckets[bucket] = static_cast<NxI32>(i);
-				}
-			if(buckets) nxFoundationSDKAllocator->free(buckets);
-			if(entries) nxFoundationSDKAllocator->free(entries);
-			if(links) nxFoundationSDKAllocator->free(links);
-			buckets = newBuckets; entries = newEntries; links = newLinks;
-			freeHead = 0xffffffffu;
-			}
-		NxU32 h = ((NxU32)b << 16) | a;
-		h += ~(h << 15); h = ((NxI32)h >> 10 ^ h) * 9; h ^= (NxI32)h >> 6; h += ~(h << 11);
-		const NxU32 bucket = ((NxI32)h >> 16 ^ h) & mask;
-		CpmPairHashEntry* slot = entries + count;
-		slot->key0 = a; slot->key1 = b; slot->value = static_cast<NxU32>(reinterpret_cast<size_t>(value));
-		links[count] = buckets[bucket]; buckets[bucket] = static_cast<NxI32>(count++);
-		return slot;
+		const NxU32 swap = key0;
+		key0 = key1;
+		key1 = swap;
 		}
-
-	const NxU32 index = freeHead;
-	CpmPairHashEntry* slot = entries + index;
-	const NxU32 next = slot->value;
-	slot->key0 = a; slot->key1 = b; slot->value = static_cast<NxU32>(reinterpret_cast<size_t>(value));
-	NxU32 h = ((NxU32)b << 16) | a;
-	h += ~(h << 15); h = ((NxI32)h >> 10 ^ h) * 9; h ^= (NxI32)h >> 6; h += ~(h << 11);
-	const NxU32 bucket = ((NxI32)h >> 16 ^ h) & mask;
-	links[index] = buckets[bucket]; buckets[bucket] = static_cast<NxI32>(index);
-	freeHead = next;
-	if(index >= count) count = index + 1;
-	return slot;
-	}
-
-// .data 0x10123c28: process-wide actor-group pair flags. The SDK's lookup and
-// insertion rows use the same sparse hash layout as scene shape-pair records.
-static CpmPairHash gCpmActorGroupPairFlags = {};
-static CpmPairHash* const kCpmActorGroupPairFlags = &gCpmActorGroupPairFlags;
-
-void cpmSetActorGroupPairFlags(NxU16 group0, NxU16 group1, NxU32 flags)
-	{
-	cpmOpen004155(kCpmActorGroupPairFlags, group0, group1,
-		reinterpret_cast<void*>(static_cast<size_t>(flags)));
-	}
-
-NxU32 cpmGetActorGroupPairFlags(NxU16 group0, NxU16 group1)
-	{
-	const CpmPairHashEntry* entry = cpmOpen004153(kCpmActorGroupPairFlags, group0, group1);
-	return entry ? entry->value : 0;
-	}
-
-void cpmResetActorGroupPairFlags()
-	{
-	NxU32* words = reinterpret_cast<NxU32*>(kCpmActorGroupPairFlags);
-	if(words[2]) nxFoundationSDKAllocator->free(reinterpret_cast<void*>(words[2]));
-	if(words[3]) nxFoundationSDKAllocator->free(reinterpret_cast<void*>(words[3]));
-	if(words[5]) nxFoundationSDKAllocator->free(reinterpret_cast<void*>(words[5]));
-	memset(kCpmActorGroupPairFlags, 0, sizeof(*kCpmActorGroupPairFlags));
+	cpmPairHashEnsure(hash);
+	if(CpmPairHashEntry* found = cpmOpen004153(hash, key0, key1))
+		{
+		found->value = reinterpret_cast<NxU32>(value);
+		return found;
+		}
+	if(!*reinterpret_cast<NxU32*>(reinterpret_cast<NxU8*>(hash) + 8)
+		|| hash->count >= *reinterpret_cast<NxU32*>(reinterpret_cast<NxU8*>(hash) + 4) + 1)
+		cpmPairHashGrow(hash);
+	NxU8* bytes = reinterpret_cast<NxU8*>(hash);
+	NxI32* buckets = *reinterpret_cast<NxI32**>(bytes + 8);
+	NxI32* links = *reinterpret_cast<NxI32**>(bytes + 0x0c);
+	if(!buckets || !links || !hash->entries)
+		return 0;
+	const NxU32 index = hash->count;
+	CpmPairHashEntry* entry = hash->entries + index;
+	entry->key0 = static_cast<NxU16>(key0);
+	entry->key1 = static_cast<NxU16>(key1);
+	entry->value = reinterpret_cast<NxU32>(value);
+	const NxU32 bucket = cpmPairHash(hash, key0, key1);
+	links[index] = buckets[bucket];
+	buckets[bucket] = static_cast<NxI32>(index);
+	++hash->count;
+	return entry;
 	}
 
 // Row 004157 (0x0009a920, 476 B): erase (key0, key1). thiscall on the
@@ -2173,11 +2659,14 @@ static NX_INLINE NxU32 cpmReportEvents(NxSceneInternal* scene, NxU32* record, Nx
 			lookup = false;
 		if(lookup && kCpmActorGroupPairFlags)
 			{
-			const CpmPairHashEntry* flags = cpmOpen004153(kCpmActorGroupPairFlags,
-				cpmAt<NxU16>(cpmPointer(record[3]), 0x1c),
-				cpmAt<NxU16>(cpmPointer(record[4]), 0x1c));
-			if(flags)
-				return (record[0] | flags->value) & events;
+			if(kCpmActorGroupPairFlags)
+				{
+				const CpmPairHashEntry* flags = cpmOpen004153(kCpmActorGroupPairFlags,
+					cpmAt<NxU16>(cpmPointer(record[3]), 0x1c),
+					cpmAt<NxU16>(cpmPointer(record[4]), 0x1c));
+				if(flags)
+					return (record[0] | flags->value) & events;
+				}
 			}
 		}
 	return record[0] & events;
@@ -2317,4 +2806,59 @@ __declspec(noinline) void __cdecl cpmBufferContactReports0917(NxSceneInternal* s
 		entry++;
 		}
 	while(--count);
+	}
+
+// phys_fn_000589 (0x00010d50): replace a shape-pair flag record in the Scene
+// hash. Ignore-pair is stored as the tagged flag word itself; report flags use
+// a 0x14-byte state record so 000905/000917 can track contact transitions.
+void cpmSetShapePairFlags(NxSceneInternal* scene, const NxU8* shape0,
+	const NxU8* shape1, NxU32 flags)
+	{
+	CpmPairHash* hash = reinterpret_cast<CpmPairHash*>(scene->bytes() + 0x2c);
+	const NxU32 id0 = cpmAt<NxU32>(shape0, 0xd4);
+	const NxU32 id1 = cpmAt<NxU32>(shape1, 0xd4);
+	CpmPairHashEntry* old = cpmOpen004153(hash, id0, id1);
+	if(old)
+		{
+		if(!(old->value & 1) && old->value)
+			nxFoundationSDKAllocator->free(cpmPointer(old->value));
+		cpmOpen004157(hash, id0, id1);
+		}
+	if(!flags)
+		return;
+
+	NxU32 value = (flags & 0x1fffffffu) | 0x20000000u;
+	if(!(flags & 1))
+		{
+		NxU32* record = static_cast<NxU32*>(
+			nxFoundationSDKAllocator->malloc(0x14, NX_MEMORY_PERSISTENT));
+		if(!record)
+			return;
+		record[0] = value;
+		record[1] = scene->at<NxU32>(0x540);
+		record[2] = record[3] = record[4] = 0;
+		value = reinterpret_cast<NxU32>(record);
+		}
+	cpmOpen004155(hash, id0, id1, reinterpret_cast<void*>(value));
+	}
+
+// The fetch-results path delivers 000917's per-step buffer. Keep the event and
+// stream values exactly as captured by the simulation worker and reset the
+// vector only after the callbacks have returned.
+void cpmDeliverBufferedContactReports(NxSceneInternal* scene, NxUserContactReport* report)
+	{
+	CpmBufferedContact* begin = scene->at<CpmBufferedContact*>(0x60c);
+	CpmBufferedContact* end = scene->at<CpmBufferedContact*>(0x610);
+	if(report && begin)
+		for(CpmBufferedContact* item = begin; item && item != end; ++item)
+			{
+			NxContactPair pair;
+			pair.actors[0] = static_cast<NxActor*>(item->actors[0]);
+			pair.actors[1] = static_cast<NxActor*>(item->actors[1]);
+			pair.stream = static_cast<NxConstContactStream>(item->stream);
+			memcpy(&pair.sumNormalForce, item->sumNormalForce, sizeof(pair.sumNormalForce));
+			memcpy(&pair.sumFrictionForce, item->sumFrictionForce, sizeof(pair.sumFrictionForce));
+			report->onContactNotify(pair, item->events);
+			}
+	scene->at<CpmBufferedContact*>(0x610) = begin;
 	}

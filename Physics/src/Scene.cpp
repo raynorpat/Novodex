@@ -24,6 +24,7 @@
 //     not model.
 
 #include "Scene.h"
+#include "ContactPairManager.h"
 
 #include "Containers.h"
 #include "NxSceneDesc.h"
@@ -4134,6 +4135,65 @@ void NxSceneInternal::simulateFrame()
 		void** bodiesEnd = at<void**>(0x570);
 		for(void** item = bodies; item && item != bodiesEnd; ++item)
 			reinterpret_cast<Row000764Fixture*>(*item)->row000764();
+		// 001976's dirty-prunable prepass reaches 001949/001303 before the
+		// pair-list refresh. The public shape slot 6 refreshes its world pose and
+		// advances ShapeBase+0x08 to this Scene frame; 000905 uses that stamp to
+		// detect the changed pair geometry and dispatch narrow phase.
+		void** trackedShapes = at<void**>(0x6a4);
+		const NxU32 trackedShapeCount = at<NxU32>(0x6a0);
+		for(NxU32 i = 0; trackedShapes && i < trackedShapeCount; ++i)
+			nxRuntimeShapeSlot6(static_cast<unsigned char*>(trackedShapes[i]), 1);
+
+		// The current Scene+0x624 pruning engine carries mode 0. For single-root
+		// shapes, refresh the same all-pairs contact nodes that mode 0 feeds into
+		// 000608; compound expansion and the other broadphase modes remain open.
+		NxPairList* pairList = reinterpret_cast<NxPairList*>(mBytes + 0x674);
+		NxActor** actors = at<NxActor**>(0x55c);
+		NxActor** actorsEnd = at<NxActor**>(0x560);
+		for(NxActor** first = actors; first && first != actorsEnd; ++first)
+			{
+			NxU8* actor0 = reinterpret_cast<NxU8*>(*first);
+			NxU8* body0 = *reinterpret_cast<NxU8**>(actor0 + 0x14);
+			NxU8* shape0 = body0 ? *reinterpret_cast<NxU8**>(body0 + 0x10) : 0;
+			if(!shape0) continue;
+			NxU8* owner0 = *reinterpret_cast<NxU8**>(shape0 + 4);
+			if(!owner0) continue;
+			for(NxActor** second = first + 1; second && second != actorsEnd; ++second)
+				{
+				NxU8* actor1 = reinterpret_cast<NxU8*>(*second);
+				NxU8* body1 = *reinterpret_cast<NxU8**>(actor1 + 0x14);
+				NxU8* shape1 = body1 ? *reinterpret_cast<NxU8**>(body1 + 0x10) : 0;
+				if(!shape1 || shape0 == shape1) continue;
+				NxU8* owner1 = *reinterpret_cast<NxU8**>(shape1 + 4);
+				if(!owner1) continue;
+
+				NxPairNode* node = pairList->head;
+				for(; node; node = node->at<NxPairNode*>(8))
+					{
+					NxActorPair* existing = node->pair();
+					if((existing->at<NxU8*>(0) == owner0 && existing->at<NxU8*>(4) == owner1)
+						|| (existing->at<NxU8*>(0) == owner1 && existing->at<NxU8*>(4) == owner0))
+						break;
+					}
+				if(!node)
+					node = pairList->row000911(owner0, owner1);
+				if(!node) continue;
+				node->at<NxU32>(0x104) = at<NxU32>(0x2a0);
+				NxU8* pairBody0 = *reinterpret_cast<NxU8**>(owner0 + 8);
+				NxU8* pairBody1 = *reinterpret_cast<NxU8**>(owner1 + 8);
+				if((pairBody0 && *reinterpret_cast<NxU32*>(pairBody0 + 0x4c) != 0)
+					|| (pairBody1 && *reinterpret_cast<NxU32*>(pairBody1 + 0x4c) != 0))
+					node->row000905(this);
+				if(node->at<NxU32>(0x104) == at<NxU32>(0x2a0)
+					&& node->pair()->at<NxU32>(0x24) != 0)
+					{
+					NxU8* islandBody = pairBody0 ? pairBody0 : pairBody1;
+					NxU8* otherBody = pairBody0 ? pairBody1 : 0;
+					if(islandBody)
+						reinterpret_cast<Row000724Fixture*>(islandBody)->row000724(otherBody, node);
+					}
+				}
+			}
 
 		// phys_fn_000608's post-broadphase auxiliary-pair walk calls 000724 for
 		// each live pair with contacts. Rebuild those per-body links after 000764
@@ -4223,25 +4283,14 @@ void NxSceneInternal::simulateFrame()
 					nxSceneMaximumStepBodies = record->mUnknown05c;
 				}
 			reinterpret_cast<Row000730Fixture*>(island)->row000730(timestep, inverseTimestep);
-			if(at<NxU32>(0x5bc) != 0)
-				nxSolveJointSupportRecords(this, at<NxReal>(0x548), nxSceneMaximumStepBodies);
-			nxSceneMaximumStepBodies = 0;
-
-			// phys_fn_000613 copies the solved per-island support velocities back
-			// to each body record and marks the solver result dirty before the next
-			// island reuses the Scene's step-body array.
+			if(at<NxU32>(0x5bc))
+				{
+				cpmSolveSceneContactRecords(this, nxSceneMaximumStepBodies);
+				nxSceneMaximumStepBodies = 0;
+				}
 			for(unsigned char* body = island; body;
 				body = *reinterpret_cast<unsigned char**>(body + 0x1fc))
-				{
-			JointSupportBody* const support = *reinterpret_cast<JointSupportBody**>(body + 0x204);
-				if(!support)
-					continue;
-				memcpy(body + 0x34, &support->mUnknown000, sizeof(NxVec3));
-				memcpy(body + 0x40, &support->mUnknown010, sizeof(NxVec3));
-				memcpy(body + 0x1a0, &support->mUnknown044, sizeof(NxVec3));
-				memcpy(body + 0x1ac, &support->mUnknown050, sizeof(NxVec3));
-				*reinterpret_cast<NxU32*>(body + 0x1e4) |= 0x20;
-				}
+				reinterpret_cast<Row000708Fixture*>(body)->row000708();
 			at<NxU32>(0x5bc) = 0;
 			}
 		at<NxU32>(0x70c) &= ~4u;
@@ -4269,6 +4318,9 @@ void NxSceneInternal::simulateFrame()
 			CpmPairHash* const reportHash = reinterpret_cast<CpmPairHash*>(mBytes + 0x2c);
 			cpmBufferContactReports0917(this, reportHash);
 			}
+		if(at<void*>(0x6b4))
+			cpmBufferContactReports0917(this,
+				reinterpret_cast<CpmPairHash*>(mBytes + 0x2c));
 		++at<NxU32>(0x558);
 		at<NxReal>(0x538) -= timestep;
 		}

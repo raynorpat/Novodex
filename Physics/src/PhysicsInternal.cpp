@@ -110,33 +110,17 @@ ShapePairFunctionTable::ShapePairFunctionTable()
 	for(unsigned type = 0; type < 5; ++type)
 		mFunction[0][type][5] = (void*) NxContactCompoundShape;
 	mFunction[0][5][5] = (void*) NxContactCompoundCompound;
-
-	// phys_fn_002338's primitive contact entries, transcribed from its stores.
-	// The type order is Plane, Sphere, Box, Capsule, Mesh, Compound; the table
-	// uses only the upper triangle.
+	// phys_fn_002338's primitive contact slots are the kernels reconstructed in
+	// ContactGeneration.cpp. Keep the upper-triangle indexing used by 002348.
 	mFunction[0][0][1] = (void*) NxContactPlaneSphere;
 	mFunction[0][0][2] = (void*) NxContactPlaneBox;
 	mFunction[0][0][3] = (void*) NxContactPlaneCapsule;
 	mFunction[0][1][1] = (void*) NxContactSphereSphere;
 	mFunction[0][1][2] = (void*) NxContactSphereBox;
 	mFunction[0][1][3] = (void*) NxContactSphereCapsule;
-	mFunction[0][1][4] = (void*) NxContactSphereMesh;
 	mFunction[0][2][2] = (void*) NxContactBoxBox;
 	mFunction[0][2][3] = (void*) NxContactBoxCapsule;
 	mFunction[0][3][3] = (void*) NxContactCapsuleCapsule;
-
-	// The +0x94 overlap entries are read by trigger dispatch and by compound
-	// expansion. These are the primitive entries stored by phys_fn_002338.
-	mFunction[1][0][1] = (void*) NxOverlapPlaneSphere;
-	mFunction[1][0][2] = (void*) NxOverlapPlaneBox;
-	mFunction[1][0][3] = (void*) NxOverlapPlaneCapsule;
-	mFunction[1][1][1] = (void*) NxOverlapSphereSphere;
-	mFunction[1][1][2] = (void*) NxOverlapSphereBox;
-	mFunction[1][1][3] = (void*) NxOverlapSphereCapsule;
-	mFunction[1][1][4] = (void*) NxOverlapSphereMesh;
-	mFunction[1][2][2] = (void*) NxOverlapBoxBox;
-	mFunction[1][2][3] = (void*) NxOverlapBoxCapsule;
-	mFunction[1][3][3] = (void*) NxOverlapCapsuleCapsule;
 	}
 
 ShapePairFunctionTable::~ShapePairFunctionTable()

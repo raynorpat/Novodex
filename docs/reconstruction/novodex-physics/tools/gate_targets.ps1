@@ -3085,109 +3085,28 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation break-state step=3 state=2'
         'simulation break-joint steps=4 ready=1 fetched=1'
         'simulation soak steps=1000 ready=1 fetched=1'
-        'simulation stage=soak1000 position=00000000.3ee66666.00000000 velocity=00000000.00000000.00000000'
-        'simulation lifecycle state sdk=0 scene=0 p=00000000.3f79f904.00000000 v=00000000.bf16ae7d.00000000'
-        'simulation lifecycle scene_released sdk=0 scene=0'
-        'simulation lifecycle state sdk=0 scene=1 p=3f800000.3f79f904.00000000 v=00000000.bf16ae7d.00000000'
-        'simulation lifecycle scene_released sdk=0 scene=1'
-        'simulation lifecycle sdk_released cycle=0'
-        'simulation lifecycle state sdk=1 scene=0 p=40800000.3f79f904.00000000 v=00000000.bf16ae7d.00000000'
-        'simulation lifecycle scene_released sdk=1 scene=0'
-        'simulation lifecycle state sdk=1 scene=1 p=40a00000.3f79f904.00000000 v=00000000.bf16ae7d.00000000'
-        'simulation lifecycle scene_released sdk=1 scene=1'
-        'simulation lifecycle sdk_released cycle=1'
-        'simulation pair=created'
-        'simulation stage=pair11 p0=bf587c8e.00000000.3ea0bde5 v0=4013df79.00000000.3fc213dd p1=3d3afc59.00000000.bc6489c3 v1=3fd84107.00000000.bf0427bd'
-        'simulation pair steps=40 ready=1 fetched=1'
-        'simulation fetch-trigger trigger=1 other=1 status=1'
-        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=3f800000.40000000.40400000'
-        'simulation fetch-callback summary ready=1 fetched=1 trigger_get=1 trigger_calls=1 contact_get=1 contact_calls=1'
-        'simulation fetch-contact actor0=1 actor1=1 events=0000000a force=80000000.80000000.80000000'
-        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.80000000.80000000'
-        'simulation generated-contact summary flags=00000000 calls=6 events=00000008 ready=1 fetched=1'
-        'simulation configured-shape-pair-flags flags=00000001 count=1 array=1 pair0_actor=0_flags=00000001'
-        'simulation record-shape-pair-flags flags=00000008'
-        'simulation cleared-shape-pair-flags flags=00000000'
-        'simulation compound-root-pose actor=00000000.3f333333.00000000 root=00000000.3f333333.00000000'
-        'simulation compound-state step=0 position=00000000.3f333333.00000000 velocity=00000000.00000000.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ee.3f7746ea'
-        'simulation compound-generated-contact step=0 calls=0 events=00000000'
-        'simulation compound-state step=1 position=00000000.3f32809d.00000000 velocity=00000000.be276c8c.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ed.3f7746ea'
-        'simulation compound-generated-contact step=1 calls=0 events=00000000'
-        'simulation compound-state step=2 position=00000000.3f311b71.00000000 velocity=00000000.bea76c8c.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ed.3f7746ea'
-        'simulation compound-generated-contact step=2 calls=0 events=00000000'
-        'simulation compound-state step=3 position=00000000.3f2f03af.00000000 velocity=00000000.befb22d2.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ed.3f7746ea'
-        'simulation compound-generated-contact step=3 calls=0 events=00000000'
-        'simulation compound-state step=4 position=00000000.3f2c3957.00000000 velocity=00000000.bf276c8c.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ed.3f7746ea'
-        'simulation compound-generated-contact step=4 calls=0 events=00000000'
-        'simulation compound-state step=5 position=00000000.3f28bc69.00000000 velocity=00000000.bf5147af.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ed.3f7746ea'
-        'simulation compound-generated-contact step=5 calls=0 events=00000000'
-        'simulation compound-state step=6 position=00000000.3f248ce5.00000000 velocity=00000000.bf7b22d2.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ed.3f7746ea'
-        'simulation compound-generated-contact step=6 calls=0 events=00000000'
-        'simulation compound-state step=7 position=00000000.3f1faacb.00000000 velocity=00000000.bf927efa.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ed.3f7746ea'
-        'simulation compound-generated-contact step=7 calls=0 events=00000000'
-        'simulation compound-state step=8 position=00000000.3f1a161b.00000000 velocity=00000000.bfa76c8b.00000000 angular=00000000.00000000.00000000 orientation=00000000.00000000.3e8483ed.3f7746ea'
-        'simulation compound-generated-contact step=8 calls=1 events=0000000a'
-        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.c10caf41.80000000'
-        'simulation compound-state step=9 position=00000000.3f1467b0.00000000 velocity=00000000.bfaa707f.00000000 angular=00000000.00000000.be3eecea orientation=00000000.00000000.3e83bf2b.3f776131'
-        'simulation compound-generated-contact step=9 calls=2 events=00000008'
-        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.c2692e10.80000000'
-        'simulation compound-state step=10 position=00000000.3f11fc15.00000000 velocity=00000000.bf11383d.00000000 angular=00000000.00000000.bfb65aea orientation=00000000.00000000.3e7bba43.3f7824ee'
-        'simulation compound-generated-contact step=10 calls=3 events=00000008'
-        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.c18d45c6.80000000'
-        'simulation compound-state step=11 position=00000000.3f1010e0.00000000 velocity=00000000.bee64095.00000000 angular=00000000.00000000.bfe6dc13 orientation=00000000.00000000.3e6cc807.3f790fe3'
-        'simulation compound-generated-contact step=11 calls=4 events=00000008'
-        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.c118120a.80000000'
-        'simulation compound-state step=12 position=00000000.3f0e184f.00000000 velocity=00000000.beec83ee.00000000 angular=00000000.00000000.c000a289 orientation=00000000.00000000.3e5c0ffb.3f7a04c0'
-        'simulation compound-generated-contact step=12 calls=5 events=00000008'
-        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.c0faa408.80000000'
-        'simulation compound-state step=13 position=00000000.3f0bf551.00000000 velocity=00000000.bf003379.00000000 angular=00000000.00000000.c00bab01 orientation=00000000.00000000.3e49d6f9.3f7afa48'
-        'simulation compound-generated-contact step=13 calls=6 events=00000008'
-        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.c0ee1669.80000000'
-        'simulation compound-state step=14 position=00000000.3f09a114.00000000 velocity=00000000.bf0bbe27.00000000 angular=00000000.00000000.c0164e0e orientation=00000000.00000000.3e3627a4.3f7beac6'
-        'simulation compound-generated-contact step=14 calls=7 events=00000008'
-        'simulation fetch-contact actor0=1 actor1=1 events=00000008 force=80000000.c0e9d488.80000000'
-        'simulation compound-state step=15 position=00000000.3f071948.00000000 velocity=00000000.bf17d39a.00000000 angular=00000000.00000000.c020e7e0 orientation=00000000.00000000.3e210125.3f7cd0da'
-        'simulation compound-generated-contact step=15 calls=8 events=00000008'
-        'simulation compound-generated-contact summary calls=8 events=00000008'
-    )
-    'NxPhysicsPairFlagTests' = @(
-        'pairflag compound flags=00000001 count=1 array=1 actor_pair=1 objects=0.1 pair_flags=80000001'
-        'pairflag report=1.388.\Epic\Novodex\SDKs\Physics\src\Scene.cpp.Scene::setShapePairFlags: The two shape references must not reference the same shape.'
-        'pairflag same_shape flags=00000000 count=1 array=1 self_entries=0 errors=1'
-    )
-    'NxPhysicsMeshSimulationTests' = @(
-        # Full public path: construct a static triangle mesh, drop a sphere,
-        # generate contact reports and settle through the real solver.
-        'simulation mesh-contact calls=2 events=0000000a patches=2 firstPatchPoints=2 points=4 normal=80000000.bf7fffff.80000000 secondNormal=80000000.bf7fffff.80000000 separation=bcf62d26 y=3ee6cefd vy=be441bbb'
-        # The same upward-facing mesh must not generate contacts from below.
-        'simulation mesh-backface calls=0 events=00000000 y=bfc2311b vy=c09cf5bc'
-        # A sphere outside the footprint reports the oracle's closest edge point.
-        'simulation mesh-edge steps=29 calls=1 events=0000000a points=1 point=40000000.00000000.00000000 normal=bf093e3c.bf581a42.80000000 separation=bd09ee01 y=3eb84654 vy=c0018d73'
-        # A sphere beyond the footprint vertex drives the corner-distance branch.
-        'simulation mesh-vertex steps=30 calls=1 events=0000000a patches=1 points=1 point=40000000.00000000.40000000 normal=bf073a69.bf2a2f2b.bf073a69 separation=bcdaf02f y=3e836450 vy=c05eb7dc'
-        # Contact-point coordinates are transformed into world space.
-        'simulation mesh-transformed calls=1 events=00000008 points=2 point=c1200000.40a00000.00000000'
-        # Matrix-B sphere/mesh overlap drives the public trigger enter callback.
-        'simulation mesh-trigger calls=1 event=1 unexpected=0'
-        # The Y-axis heightfield's negative extent permits a contact below the surface.
-        'simulation mesh-heightfield calls=1 unexpected=0 events=0000000a patches=1 points=1 point=00000000.be800000.00000000 normal=00000000.3f800000.80000000 separation=be800000 y=bdb851ee vy=36000000'
-        # Smooth sphere collisions blend per-vertex normals on a sloped heightfield.
-        'simulation mesh-heightfield-smooth calls=1 unexpected=0 events=0000000a patches=1 points=1 point=3f23efc2.3e76e320.3f23efc2 normal=be8fbf08.3f6af4d6.be8fbf08 separation=beac63f3'
-        'simulation mesh-heightfield-smooth-state position=3edf07a3.3f6916e5.3edf07a4 velocity=b87e8b63.b8180000.b87f0000'
-        # The same contact survives a quarter-turn and translation of the heightfield.
-        'simulation mesh-heightfield-smooth-transformed calls=1 unexpected=0 events=00000008 patches=1 points=1 point=3fe1239b.3fd1f7e1.beb8207c normal=bf6af4d6.be8fbf08.be8fbf08 separation=beac63eb'
-        'simulation mesh-heightfield-smooth-transformed-state position=3f8b7488.3fb7c1f1.bf107c1c velocity=b43b45b4.b5400000.b5400000'
-    )
-    'NxPhysicsTriggerSimulationTests' = @(
-        # A dynamic sphere crosses a public static trigger box under real motion.
-        # Pin enter, per-substep stay, and leave callbacks plus end-of-frame poses.
-        'trigger callback trigger=1 other=1 event=1'
-        'trigger callback trigger=1 other=1 event=4'
-        'trigger callback trigger=1 other=1 event=2'
-        'trigger step=0 pos=bfdddddc calls=0 last=0 ready=1 fetched=1'
-        'trigger step=2 pos=bf6eeee1 calls=2 last=4 ready=1 fetched=1'
-        'trigger step=7 pos=3f888891 calls=17 last=4 ready=1 fetched=1'
-        'trigger step=8 pos=3fbbbbc4 calls=20 last=2 ready=1 fetched=1'
+        'simulation stage=soak1000 position=00000000.c7955570.00000000 velocity=00000000.c4991681.00000000'
+        # Two-box contact regression: pin both the queried NxShape pose (which
+        # recomputes from the actor quaternion) and the following manifold.
+        'simulation box-state stage=boxcontact20 orientation=36dc8f3b.00000000.372f6481.3f7fffff angular=3707f92d.00000000.b938fc3e matrix=3f800000.b7af6480.2f171c80.37af6480.3f800000.b75c8f3a.2f171c80.375c8f3a.3f800000 shape=00000000.3ee9b34b.00000000.3f800000.b7af6480.2f171c80.37af6480.3f800000.b75c8f3a.2f171c80.375c8f3a.3f800000'
+        'simulation stage=boxcontact21 position=00000000.3ee70ef5.00000000 velocity=00000000.be9e615a.00000000'
+        'simulation box-state stage=boxcontact21 orientation=36dfab5f.a88f6800.3731d335.3f7fffff angular=ba23b29f.a6abeae9.ba965b46 matrix=3f800000.b7b1d334.2f1b550f.37b1d334.3f800000.b75fab5e.2f1b66fb.375fab5e.3f800000 shape=00000000.3ee70ef5.00000000.3f800000.b7b1d334.2f1b550f.37b1d334.3f800000.b75fab5e.2f1b66fb.375fab5e.3f800000'
+        'simulation box-contact callback=1 point=0 xyzs=befffea0.bd3269a8.bf00006d.bd3269a8'
+        'simulation box-contact callback=2 point=0 xyzs=befffe9b.bd478c68.bf00006e.bd478c68'
+        'simulation box-contact callback=2 point=1 xyzs=befffe9b.bd479a68.3effff1e.bd479a68'
+        'simulation box-contact callback=2 point=2 xyzs=3f0000b1.bd477630.bf00006e.bd477630'
+        'simulation box-contact callback=2 point=3 xyzs=3f0000b1.bd478430.3effff1e.bd478430'
+        # Two moving bodies reach the sphere-sphere solver and exchange impulse.
+        'simulation sphere-pair creation valid=1.1 actors=1.1'
+        'simulation stage=spherepair-init-a position=bf800000.00000000.00000000 velocity=3f800000.00000000.00000000'
+        'simulation stage=spherepair-init-b position=3f800000.00000000.00000000 velocity=bf800000.00000000.00000000'
+        'simulation stage=spherepair31-a position=bef40d9e.00000000.00000000 velocity=3eccc4a0.00000000.00000000'
+        'simulation stage=spherepair31-b position=3ef40d9e.00000000.00000000 velocity=beccc4a0.00000000.00000000'
+        'simulation sphere-pair callbacks=26 events=0000000a pairs=26 patches=26 points=26'
+        'simulation stage=spherepair60-a position=bef33333.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=spherepair60-b position=3ef33333.00000000.00000000 velocity=00000000.00000000.00000000'
+        'simulation contact callbacks=26 events=0000000a pairs=26 patches=26 points=26 normal=80000000.bf800000.80000000 point=00000000.bc916940.00000000 separation=bc916940'
+        'simulation stage=contact60 position=00000000.3ee66666.00000000 velocity=00000000.00000000.00000000'
     )
     # Effector-and-coredump Task 2: the spring-and-damper effector differential.
     # NxScene's effector API and every NxSpringAndDamperEffector method over two
@@ -4744,10 +4663,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'mesh-actor-mass mass=3e2aaaab center=3e800000:3e800000:3e800000 inertia=3c2aaaac:3c888889:3c2aaaac'
     )
 
-    # The Phase 5 object-layout gate. RED on purpose until Tasks 2 and 3
-    # transcribe the object-model classes; its own exit code fails the phase
-    # until then, exactly the way the asset gate was born. Every line below is
-    # a fact about the shipped DLL alone:
+    # The Phase 5 object-layout gate exercises the implemented object/layout rows.
+    # Concrete candidate shape dispatch is checked by NxPhysicsShapeVtableTests,
+    # while actor behavior and ownership are covered by the staged-pair targets.
+    # Remaining entries are coverage facts captured from the shipped DLL:
     #
     #   * eight `vt` digests over the loaded oracle's slot words -- the two
     #     actor tables in full (87 and 88 slots; the dynamic table's window
@@ -5378,7 +5297,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1318  # previous 1,315 plus compound-pair expansion and same-shape rejection
+    '7' = 1172  # 118 + 12 + 146 STAGED-PAIR joint assertions + 207 + 8 scene-raycast + 185 scene-visualize + 2 simulation soak assertions + 8 box-contact + 8 sphere-pair assertions
+               # + 23 M1 simulation + 79 effector + 374 core-dump; the oracle-differential assertions
     '8' = 0
 }
 

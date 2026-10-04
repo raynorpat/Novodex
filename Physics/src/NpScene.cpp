@@ -40,6 +40,8 @@
 #include "NxActorDesc.h"
 #include "NxJointDesc.h"
 #include "NxJoint.h"
+#include "NxUserContactReport.h"
+#include "ContactPairManager.h"
 #include "FoundationSDK.h"
 #include "core/Joint.h"
 #include "core/SpringAndDamperEffector.h"
@@ -404,11 +406,22 @@ void NpScene::releaseController(NxController&)
 	
 	}
 
-// Store contact-report flags for the two actors' current root shapes.
+// phys_fn_000309 (0x0000c740): guarded forward to Scene::setActorPairFlags.
 void NpScene::setActorPairFlags(NxActor& actor0, NxActor& actor1, NxU32 nxContactPairFlag)
 	{
-	if(mScene)
-		cpmSetActorPairFlags(mScene, &actor0, &actor1, nxContactPairFlag);
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		nxSceneDeadlockReport();
+		return;
+		}
+	void* link = mWriteLock;
+	NxU8* body0 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&actor0) + 0x14);
+	NxU8* body1 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&actor1) + 0x14);
+	NxU8* shape0 = body0 ? *reinterpret_cast<NxU8**>(body0 + 0x10) : 0;
+	NxU8* shape1 = body1 ? *reinterpret_cast<NxU8**>(body1 + 0x10) : 0;
+	if(mScene && shape0 && shape1 && shape0 != shape1)
+		cpmSetShapePairFlags(mScene, shape0, shape1, nxContactPairFlag);
+	nxNpSceneGuardLeave(link);
 	}
 
 // Return the flags stored by setActorPairFlags.
@@ -677,17 +690,27 @@ NxUserTriggerReport* NpScene::getUserTriggerReport() const
 	return mScene ? mScene->at<NxUserTriggerReport*>(0x6b0) : 0;
 	}
 
-// phys_fn_000358: store the actor-contact callback consumed by phys_fn_000640.
+// phys_fn_000358 (0x0000cde0): Scene+0x6b4 stores the callback pointer.
 void NpScene::setUserContactReport(NxUserContactReport* callback)
 	{
-	if(mScene)
-		mScene->at<NxUserContactReport*>(0x6b4) = callback;
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		nxSceneDeadlockReport();
+		return;
+		}
+	void* link = mWriteLock;
+	if(mScene) mScene->at<void*>(0x6b4) = callback;
+	nxNpSceneGuardLeave(link);
 	}
 
-// phys_fn_000360: read the callback stored at Scene+0x6b4.
+// phys_fn_000360 (0x0000ce40): Scene+0x6b4 getter.
 NxUserContactReport* NpScene::getUserContactReport() const
 	{
-	return mScene ? mScene->at<NxUserContactReport*>(0x6b4) : 0;
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	NxUserContactReport* report = mScene ? mScene->at<NxUserContactReport*>(0x6b4) : 0;
+	nxNpSceneGuardLeave(link);
+	return report;
 	}
 
 // (unimplemented) setUserFluidContactReport
@@ -1003,6 +1026,8 @@ bool NpScene::fetchResults(NxSimulationStatus status, bool block )
 		nxNpSceneGuardEnter(mReadLock);
 		mScene->processSimulationCallbacks();
 		mScene->finishSimulation();
+		cpmDeliverBufferedContactReports(mScene,
+			mScene->at<NxUserContactReport*>(0x6b4));
 		nxNpSceneGuardLeave(mReadLock);
 		}
 	if(mFlag)
