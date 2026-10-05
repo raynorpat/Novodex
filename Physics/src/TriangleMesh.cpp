@@ -191,7 +191,7 @@ namespace
 		NxU32 getSubmeshCount() const override
 			{
 			const NxU32 hullPolygons = mMesh->getCount(NX_ARRAY_HULL_POLYGONS);
-			return hullPolygons ? hullPolygons : 1;
+			return hullPolygons ? hullPolygons : mMesh->getCount(NX_ARRAY_TRIANGLES);
 			}
 		NxU32 getCount(NxSubmeshIndex submesh, NxInternalArray array) const override
 			{ return submesh == 0 ? mMesh->getCount(array) : 0; }
