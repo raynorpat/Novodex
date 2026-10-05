@@ -301,10 +301,20 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& source)
 			if(indices16)
 				{
 				const NxU16* in = reinterpret_cast<const NxU16*>(src + i * triangleStride);
-				outTriangle.v[0] = in[0]; outTriangle.v[1] = in[1]; outTriangle.v[2] = in[2];
+				outTriangle.v[0] = in[0];
+				outTriangle.v[1] = in[(cooked.flags & NX_MF_FLIPNORMALS) ? 2 : 1];
+				outTriangle.v[2] = in[(cooked.flags & NX_MF_FLIPNORMALS) ? 1 : 2];
 				}
 			else
+				{
 				memcpy(outTriangle.v, src + i * triangleStride, sizeof(outTriangle.v));
+				if(cooked.flags & NX_MF_FLIPNORMALS)
+					{
+					const NxU32 second = outTriangle.v[1];
+					outTriangle.v[1] = outTriangle.v[2];
+					outTriangle.v[2] = second;
+					}
+				}
 			}
 		}
 	else if(triangles)
@@ -361,7 +371,11 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& source)
 			source.numTriangles, source.materialIndexStride, sizeof(NxU16)));
 	nxTriangleMeshFree(cookedPoints);
 	nxTriangleMeshFree(cookedTriangles);
-	if(!buildModel())
+	// phys_fn_002260 routes the converted descriptor through 002256 before
+	// building the OPCODE model. 002256 runs 002087 (MeshBuilder2 topology),
+	// which canonicalizes face order, removes zero-area faces, welds indexed
+	// geometry and produces the source-face remap used for material indices.
+	if(!nxInternalMeshBuildTopology(&mInternal) || !buildModel())
 		return false;
 	if(source.pmap && !loadPMap(*source.pmap))
 		return false;
@@ -393,6 +407,7 @@ NxU32 TriangleMesh::getCount(NxInternalArray array) const
 		{
 		case NX_ARRAY_VERTICES: return mInternal.mVertexCount;
 		case NX_ARRAY_TRIANGLES: return mInternal.mTriangleCount;
+		case NX_ARRAY_NORMALS: return mInternal.mVertexCount;
 		default: return 0;
 		}
 	}
@@ -401,6 +416,7 @@ NxInternalFormat TriangleMesh::getFormat(NxInternalArray array) const
 	{
 	if(array == NX_ARRAY_VERTICES) return NX_FORMAT_FLOAT;
 	if(array == NX_ARRAY_TRIANGLES) return NX_FORMAT_INT;
+	if(array == NX_ARRAY_NORMALS) return NX_FORMAT_FLOAT;
 	return NX_FORMAT_NODATA;
 	}
 
@@ -408,12 +424,25 @@ const void* TriangleMesh::getBase(NxInternalArray array) const
 	{
 	if(array == NX_ARRAY_VERTICES) return mInternal.mVertices;
 	if(array == NX_ARRAY_TRIANGLES) return mInternal.mTriangles;
+	if(array == NX_ARRAY_NORMALS)
+		{
+		if(!mInternal.mVertexNormals)
+			{
+			InternalTriangleMesh* internal = const_cast<InternalTriangleMesh*>(&mInternal);
+			__asm
+				{
+				mov ecx, internal
+				call nxMeshComputeVertexNormals
+				}
+			}
+		return mInternal.mVertexNormals;
+		}
 	return 0;
 	}
 
 NxU32 TriangleMesh::getStride(NxInternalArray array) const
 	{
-	if(array == NX_ARRAY_VERTICES) return sizeof(NxVec3);
+	if(array == NX_ARRAY_VERTICES || array == NX_ARRAY_NORMALS) return sizeof(NxVec3);
 	if(array == NX_ARRAY_TRIANGLES) return sizeof(NxTriangle32);
 	return 0;
 	}

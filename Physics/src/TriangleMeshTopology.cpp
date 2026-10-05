@@ -116,6 +116,7 @@ extern "C" void* nxTriangleMeshFoundationAllocatorSlot;	// the import slot 0x101
 #pragma comment(linker, "/alternatename:_nxTriangleMeshFoundationAllocatorSlot=__imp_?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A")
 extern "C" void nxTriangleMeshCallBuildSmoothNormals();		// 002146, NxBuildSmoothNormals
 #pragma comment(linker, "/alternatename:_nxTriangleMeshCallBuildSmoothNormals=_NxBuildSmoothNormals")
+
 __declspec(naked) void nxMeshComputeVertexNormals()
 	{
 	__asm
