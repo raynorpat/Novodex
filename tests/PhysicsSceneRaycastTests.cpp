@@ -986,7 +986,7 @@ static void nxBoundedPrunerQueryChecks(NxPhysicsSDK* sdk)
 		};
 	NxBounds3 queryBounds;
 	queryBounds.set(NxVec3(-12.0f, -12.0f, -12.0f), NxVec3(12.0f, 12.0f, 12.0f));
-	printQuery("all", queryBounds, false);
+	printQuery("all", queryBounds, true);
 	queryBounds.set(NxVec3(-12.0f, -12.0f, -12.0f), NxVec3(0.0f, 0.0f, 0.0f));
 	printQuery("negative_octant", queryBounds, true);
 	actors[1]->setGlobalPosition(NxVec3(9.0f, 9.0f, 9.0f));

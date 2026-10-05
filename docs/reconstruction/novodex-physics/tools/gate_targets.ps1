@@ -2589,6 +2589,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'scene_overlap sphere_mesh rotated_bounds_only result=1',
         'scene_overlap sphere_mesh rotated_tangent result=1',
         'scene_overlap sphere_mesh rotated_outside result=0',
+        # Strict ordered bounded-dynamic query output pins the boundary-cell
+        # stream before the fully-contained subtree stream.
+        'scene_overlap bounded_tree all count=12 order=bounded_05.bounded_10.bounded_00.bounded_02.bounded_04.bounded_03.bounded_01.bounded_09.bounded_08.bounded_06.bounded_07.bounded_11',
         'scene_overlap sphere=10 type=2 result=1',
         'scene_overlap sphere=11 type=2 result=0',
         'scene_overlap aabb=0 type=3 result=1',
@@ -2789,13 +2792,13 @@ $NxRequiredCoverageLines = [ordered] @{
         'raycast after_release ray=compound_across type=3 groups=ffffffff max=7f7fffff hint=ffffffff all_shapes result=0 calls=0',
         'raycast late ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff any_bounds result=1',
         'raycast late ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff any_shape result=1',
-        'raycast late ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff closest_bounds result=s_late flags=00000013 shape=s_late impact=40000000.00000000.00000000 distance=40e00000',
-        'raycast late ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff closest_shape result=s_late flags=00000017 shape=s_late impact=40000000.00000000.00000000 normal=bf800000.00000000.00000000 distance=40e00000',
+        'raycast late ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff closest_bounds result=d_box flags=00000013 shape=d_box impact=40000000.00000000.00000000 distance=40e00000',
+        'raycast late ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff closest_shape result=d_box flags=00000017 shape=d_box impact=40000000.00000000.00000000 normal=bf800000.00000000.00000000 distance=40e00000',
         'raycast late ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff all_bounds on_hit=1 flags=00000013 shape=s_rotated impact=4190cccd.00000000.00000000 distance=41b8cccd return=1',
         'raycast late ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff all_bounds on_hit=2 flags=00000013 shape=s_capsule impact=41180000.00000000.00000000 distance=41680000 return=1',
         'raycast late ray=x_statics type=1 groups=ffffffff max=7f7fffff hint=ffffffff all_bounds on_hit=1 flags=00000013 shape=s_rotated impact=4190cccd.00000000.00000000 distance=41b8cccd return=1',
         'raycast late ray=x_statics type=1 groups=ffffffff max=7f7fffff hint=ffffffff all_bounds on_hit=2 flags=00000013 shape=s_capsule impact=41180000.00000000.00000000 distance=41680000 return=1',
-        'raycast late ray=x_statics type=1 groups=ffffffff max=7f7fffff hint=ffffffff all_bounds on_hit=3 flags=00000013 shape=s_late impact=40000000.00000000.00000000 distance=40e00000 return=1'
+        'raycast late ray=x_statics type=1 groups=ffffffff max=7f7fffff hint=ffffffff all_bounds on_hit=3 flags=00000013 shape=d_box impact=40000000.00000000.00000000 distance=40e00000 return=1'
         # Scene-raycast Task 4, box hull: boxes created through the image's path
         # (000981 -> 000973) and resized through setDimensions (000983), their
         # dims, world bounds, hull words, facade slots 9/10 and raycasts. The
@@ -5358,7 +5361,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1297  # current registered assertions across joint, scene, simulation, mesh, trigger,
+    '7' = 1298  # current registered assertions across joint, scene, simulation, mesh, trigger,
                # effector and core-dump targets; kept equal to the registry count below
     '8' = 0
 }

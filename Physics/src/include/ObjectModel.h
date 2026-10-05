@@ -1468,6 +1468,10 @@ unsigned char			nxMaskedFourSlotLoop4866(void* self, unsigned a1,
 							unsigned a2, unsigned a3, unsigned a4, unsigned a5,
 							NxSlotMfp4 slot);
 
+unsigned char			nxMaskedFourSlotLoop4865(void* self, unsigned a1,
+							unsigned a2, unsigned a3, unsigned a4, unsigned a5,
+							NxSlotMfp4 slot);
+
 void					nxByteGuardedRelease5159(void* self, void* singleton,
 							const unsigned* offsets, unsigned count, NxSlotMfp1 slot);
 

@@ -46,8 +46,9 @@ NOT RECONSTRUCTED.
     which reproduces its allocations) and the handle is left 0. So 0x000f1550
     is not claimed, and neither are the destructors, whose base (0x000f15a0)
     undoes that registration (0x000b4d20).
-  * Slots 5, 7 and 8 of both families (sweeps and overlaps). Nothing in this
-    reconstruction calls them; the base's `false` stands in.
+  * Slot 5 across the pruner families, plus overlap slots 7/8 on the unbounded
+    dynamic pruner. The base defaults remain false. Static and bounded-dynamic
+    overlap slots 7/8 are reconstructed below.
 
 PRECISION. Every row here runs at API time under the control word 0x027f
 (53-bit precision, round to nearest): the raycasts, and the registration from
@@ -483,6 +484,13 @@ bool StaticPruner::NovodeXPrunerSlot8(udword result, udword queryBounds,
 	return true;
 }
 
+// Bounded-shape AABB collection is slot 7 in the pruning-engine loop.
+bool StaticPruner::NovodeXPrunerSlot7(udword result, udword queryBounds,
+	udword first_contact, udword mask)
+{
+	return StaticPruner::NovodeXPrunerSlot8(result, queryBounds, first_contact, mask);
+}
+
 // phys_fn_005227 (0x000e5440, 184 B)
 // The tree is built on the first query after any change. A RayCollider on the
 // stack stabs it, first-contact as asked, temporal coherence off, the maximum
@@ -526,10 +534,141 @@ BoundedDynamicPruner::~BoundedDynamicPruner()
 {
 }
 
-// phys_fn_005258/005260 (0x000e6060/0x000e6130). Approximate the bounded
-// pruner's octree traversal with Morton cell ordering. The multi-axis oracle
-// order is not yet exact; one-axis traversal, filtering, movement updates and
-// slot dispatch are covered by the staged-pair tests.
+struct BoundedTreeQuery
+{
+	BoundedDynamicPruner* pruner;
+	Container* objects;
+	const Point* queryMin;
+	const Point* queryMax;
+	udword mask;
+	Container* partialObjects;
+	Container* containedObjects;
+	udword* nodeHeads;
+	udword* objectNext;
+	udword* subtreeCounts;
+	udword nodeCount;
+};
+
+static bool nxAABBOverlaps(const Point& min0, const Point& max0,
+	const Point& min1, const Point& max1)
+{
+	return min0.x <= max1.x && max0.x >= min1.x
+		&& min0.y <= max1.y && max0.y >= min1.y
+		&& min0.z <= max1.z && max0.z >= min1.z;
+}
+
+static bool nxAABBContains(const Point& outerMin, const Point& outerMax,
+	const Point& innerMin, const Point& innerMax)
+{
+	return outerMin.x <= innerMin.x && outerMax.x >= innerMax.x
+		&& outerMin.y <= innerMin.y && outerMax.y >= innerMax.y
+		&& outerMin.z <= innerMin.z && outerMax.z >= innerMax.z;
+}
+
+static void nxBoundedTreeNodeBounds(udword node, const Point& rootMin,
+	const Point& rootMax, Point& nodeMin, Point& nodeMax)
+{
+	udword depth = 0;
+	udword firstAtDepth = 0;
+	udword levelCount = 1;
+	while(depth < 5 && node >= firstAtDepth + levelCount)
+		{
+		firstAtDepth += levelCount;
+		levelCount *= 8;
+		++depth;
+		}
+	const udword path = node - firstAtDepth;
+	Point center((rootMin.x + rootMax.x) * 0.5f,
+		(rootMin.y + rootMax.y) * 0.5f, (rootMin.z + rootMax.z) * 0.5f);
+	float side = rootMax.x - rootMin.x;
+	for(udword level = 0; level < depth; ++level)
+		{
+		const udword shift = 3 * (depth - level - 1);
+		const udword child = ((path >> shift) & 7u) + 1u;
+		const udword octant = child - 1u;
+		const float offset = side * 0.125f;
+		center.x += (octant & 4u) ? offset : -offset;
+		center.y += (octant & 2u) ? offset : -offset;
+		center.z += (octant & 1u) ? offset : -offset;
+		side *= 0.5f;
+		}
+	const float half = side * 0.5f;
+	nodeMin = Point(center.x - half, center.y - half, center.z - half);
+	nodeMax = Point(center.x + half, center.y + half, center.z + half);
+}
+
+static void nxBoundedTreeChildBounds(const Point& nodeMin, const Point& nodeMax,
+	udword child, Point& childMin, Point& childMax)
+{
+	const Point center((nodeMin.x + nodeMax.x) * 0.5f,
+		(nodeMin.y + nodeMax.y) * 0.5f, (nodeMin.z + nodeMax.z) * 0.5f);
+	const float side = nodeMax.x - nodeMin.x;
+	const float offset = side * 0.125f;
+	const float half = side * 0.25f;
+	const udword octant = child - 1u;
+	const float childCenterX = center.x + ((octant & 4u) ? offset : -offset);
+	const float childCenterY = center.y + ((octant & 2u) ? offset : -offset);
+	const float childCenterZ = center.z + ((octant & 1u) ? offset : -offset);
+	childMin = Point(childCenterX - half, childCenterY - half, childCenterZ - half);
+	childMax = Point(childCenterX + half, childCenterY + half, childCenterZ + half);
+}
+
+static void nxBoundedTreeQueryNode(BoundedTreeQuery& query, udword node,
+	const Point& nodeMin, const Point& nodeMax)
+{
+	if(!query.subtreeCounts[node]
+		|| !nxAABBOverlaps(nodeMin, nodeMax, *query.queryMin, *query.queryMax))
+		return;
+	if(nxAABBContains(*query.queryMin, *query.queryMax, nodeMin, nodeMax))
+		{
+		// The oracle switches to a subtree collection path once a node is fully
+		// inside the query. That stream is emitted after all partially crossed
+		// nodes, so keep it separate from the boundary-cell results.
+		for(udword i = query.nodeHeads[node]; i != 0xffffffffu; i = query.objectNext[i])
+			{
+			Prunable* const object = query.pruner->mPool.mObjects[i];
+			if((query.mask & object->mPrunable24) && object->mHandle != PRUNABLE_INVALID_HANDLE)
+				query.containedObjects->Add(udword(object));
+			}
+		for(udword child = 1; child <= 8; ++child)
+			{
+			const udword childNode = node * 8 + child;
+			if(childNode >= query.nodeCount || !query.subtreeCounts[childNode])
+				continue;
+			Point childMin, childMax;
+			nxBoundedTreeChildBounds(nodeMin, nodeMax, child, childMin, childMax);
+			nxBoundedTreeQueryNode(query, childNode, childMin, childMax);
+			}
+		return;
+		}
+	for(udword i = query.nodeHeads[node]; i != 0xffffffffu; i = query.objectNext[i])
+		{
+		Prunable* const object = query.pruner->mPool.mObjects[i];
+		if(!(query.mask & object->mPrunable24) || object->mHandle == PRUNABLE_INVALID_HANDLE)
+			continue;
+		if(!(object->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
+			object->UpdateWorldAABB(&query.pruner->mPool.mWorldBoxes[object->mHandle]);
+		Point objectMin, objectMax;
+		query.pruner->mPool.mWorldBoxes[object->mHandle].GetMin(objectMin);
+		query.pruner->mPool.mWorldBoxes[object->mHandle].GetMax(objectMax);
+		if(nxAABBOverlaps(objectMin, objectMax, *query.queryMin, *query.queryMax))
+			query.partialObjects->Add(udword(object));
+		}
+	for(udword child = 1; child <= 8; ++child)
+		{
+		const udword childNode = node * 8 + child;
+		if(childNode >= query.nodeCount || !query.subtreeCounts[childNode])
+			continue;
+		Point childMin, childMax;
+		nxBoundedTreeChildBounds(nodeMin, nodeMax, child, childMin, childMax);
+		nxBoundedTreeQueryNode(query, childNode, childMin, childMax);
+		}
+}
+
+// phys_fn_005258/005260 (0x000e6060/0x000e6130), the bounded-pruner AABB
+// collector. Rebuild the fixed-depth tree from the current pool, assigning
+// each object to its recovered center/radius cell, then follow the oracle's
+// node-first, child-slots-1-through-8 traversal.
 bool BoundedDynamicPruner::OverlapAABB(Container& objects, const Point& min, const Point& max,
 	udword mask)
 {
@@ -540,27 +679,83 @@ bool BoundedDynamicPruner::OverlapAABB(Container& objects, const Point& min, con
 	Point rootMin, rootMax;
 	mBounds.GetMin(rootMin);
 	mBounds.GetMax(rootMax);
-	const float rootWidth = rootMax.x - rootMin.x;
-	const float rootHeight = rootMax.y - rootMin.y;
-	const float rootDepth = rootMax.z - rootMin.z;
-	float rootSize = rootWidth;
-	if(rootHeight > rootSize) rootSize = rootHeight;
-	if(rootDepth > rootSize) rootSize = rootDepth;
-	struct Entry
-	{
-		Prunable* object;
-		udword treeKey;
-		udword depth;
-		udword poolIndex;
-	};
-	Entry* const entries = static_cast<Entry*>(malloc(sizeof(Entry) * nb));
-	if(!entries)
+	if(rootMin.x > rootMax.x || rootMin.y > rootMax.y || rootMin.z > rootMax.z)
+		{
+		bool haveBounds = false;
+		for(udword i = 0; i < nb; ++i)
+			{
+			Prunable* const object = mPool.mObjects[i];
+			if(object->mHandle == PRUNABLE_INVALID_HANDLE)
+				continue;
+			if(!(object->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
+				object->UpdateWorldAABB(&mPool.mWorldBoxes[object->mHandle]);
+			Point objectMin, objectMax;
+			mPool.mWorldBoxes[object->mHandle].GetMin(objectMin);
+			mPool.mWorldBoxes[object->mHandle].GetMax(objectMax);
+			if(!haveBounds)
+				{
+				rootMin = objectMin;
+				rootMax = objectMax;
+				haveBounds = true;
+				}
+			else
+				{
+				if(objectMin.x < rootMin.x) rootMin.x = objectMin.x;
+				if(objectMin.y < rootMin.y) rootMin.y = objectMin.y;
+				if(objectMin.z < rootMin.z) rootMin.z = objectMin.z;
+				if(objectMax.x > rootMax.x) rootMax.x = objectMax.x;
+				if(objectMax.y > rootMax.y) rootMax.y = objectMax.y;
+				if(objectMax.z > rootMax.z) rootMax.z = objectMax.z;
+				}
+			}
+		if(rootMin.x > rootMax.x || rootMin.y > rootMax.y || rootMin.z > rootMax.z)
+			return true;
+		}
+	float rootSize = rootMax.x - rootMin.x;
+	if(rootMax.y - rootMin.y > rootSize) rootSize = rootMax.y - rootMin.y;
+	if(rootMax.z - rootMin.z > rootSize) rootSize = rootMax.z - rootMin.z;
+	if(!(rootSize > 0.0f))
+		return true;
+	const Point rootCenter((rootMin.x + rootMax.x) * 0.5f,
+		(rootMin.y + rootMax.y) * 0.5f, (rootMin.z + rootMax.z) * 0.5f);
+	const float treeScale = rootSize;
+	// BoundedTree's stored mBounds are the inner simulation bounds. The
+	// oracle builds its octree root at twice that side length (tree scale is
+	// the stored half-extent), so its nodes can extend one half-extent beyond
+	// the simulation bounds.
+	rootSize *= 2.0f;
+	const float rootRadius = rootSize * 0.5f;
+	rootMin = Point(rootCenter.x - rootRadius, rootCenter.y - rootRadius,
+		rootCenter.z - rootRadius);
+	rootMax = Point(rootCenter.x + rootRadius, rootCenter.y + rootRadius,
+		rootCenter.z + rootRadius);
+	const udword nodeCount = 37449u;
+	BoundedTreeQuery query;
+	query.pruner = this;
+	query.objects = &objects;
+	query.queryMin = &min;
+	query.queryMax = &max;
+	query.mask = mask;
+	Container partialObjects;
+	Container containedObjects;
+	query.partialObjects = &partialObjects;
+	query.containedObjects = &containedObjects;
+	query.nodeCount = nodeCount;
+	query.nodeHeads = static_cast<udword*>(malloc(sizeof(udword) * nodeCount));
+	query.objectNext = static_cast<udword*>(malloc(sizeof(udword) * nb));
+	query.subtreeCounts = static_cast<udword*>(calloc(nodeCount, sizeof(udword)));
+	if(!query.nodeHeads || !query.objectNext || !query.subtreeCounts)
+		{
+		if(query.nodeHeads) free(query.nodeHeads);
+		if(query.objectNext) free(query.objectNext);
+		if(query.subtreeCounts) free(query.subtreeCounts);
 		return false;
-	udword entryCount = 0;
+		}
+	memset(query.nodeHeads, 0xff, sizeof(udword) * nodeCount);
 	for(udword i = 0; i < nb; ++i)
 	{
 		Prunable* const object = mPool.mObjects[i];
-		if(!(mask & object->mPrunable24) || object->mHandle == PRUNABLE_INVALID_HANDLE)
+		if(object->mHandle == PRUNABLE_INVALID_HANDLE)
 			continue;
 		if(!(object->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
 			object->UpdateWorldAABB(&mPool.mWorldBoxes[object->mHandle]);
@@ -568,71 +763,59 @@ bool BoundedDynamicPruner::OverlapAABB(Container& objects, const Point& min, con
 		Point objectMin, objectMax;
 		bounds.GetMin(objectMin);
 		bounds.GetMax(objectMax);
-		if(objectMin.x > max.x || objectMax.x < min.x
-			|| objectMin.y > max.y || objectMax.y < min.y
-			|| objectMin.z > max.z || objectMax.z < min.z)
+		// subE7850 inserts by the owner's center/radius callback (vtable slot
+		// +0x28), not by Prunable's cached world AABB. Convert that sphere to
+		// the same enclosing cube the oracle uses before choosing its tree node.
+		float centerRadius[4];
+		void* const owner = object->mOwner;
+		void** const ownerVtable = *reinterpret_cast<void***>(owner);
+		typedef void (__thiscall* CenterRadiusFn)(void*, float*);
+		reinterpret_cast<CenterRadiusFn>(ownerVtable[10])(owner, centerRadius);
+		const float radius = centerRadius[3];
+		const Point treeMin(centerRadius[0] - radius, centerRadius[1] - radius,
+			centerRadius[2] - radius);
+		const Point treeMax(centerRadius[0] + radius, centerRadius[1] + radius,
+			centerRadius[2] + radius);
+		if(!nxAABBOverlaps(treeMin, treeMax, rootMin, rootMax))
 			continue;
-
-		float objectSize = objectMax.x - objectMin.x;
-		if(objectMax.y - objectMin.y > objectSize)
-			objectSize = objectMax.y - objectMin.y;
-		if(objectMax.z - objectMin.z > objectSize)
-			objectSize = objectMax.z - objectMin.z;
+		const float objectSize = radius + radius;
 		udword depth = 0;
-		while(depth < 5 && rootSize / float(1u << (depth + 1)) >= objectSize)
+		while(depth < 5 && treeScale / float(1u << (depth + 1)) >= objectSize)
 			++depth;
-		const float cellWidth = rootSize / float(1u << depth);
-		const float rootCenterX = (rootMin.x + rootMax.x) * 0.5f;
-		const float rootCenterY = (rootMin.y + rootMax.y) * 0.5f;
-		const float rootCenterZ = (rootMin.z + rootMax.z) * 0.5f;
-		udword cell[3];
 		const float centers[3] = {
-			(objectMin.x + objectMax.x) * 0.5f,
-			(objectMin.y + objectMax.y) * 0.5f,
-			(objectMin.z + objectMax.z) * 0.5f };
-		const float cubeMins[3] = { rootCenterX - rootSize * 0.5f,
-			rootCenterY - rootSize * 0.5f, rootCenterZ - rootSize * 0.5f };
-		for(udword axis = 0; axis < 3; ++axis)
-		{
-			int coordinate = int(floor((centers[axis] - cubeMins[axis]) / cellWidth));
-			const int count = 1 << depth;
-			if(coordinate < 0) coordinate = 0;
-			if(coordinate >= count) coordinate = count - 1;
-			cell[axis] = udword(coordinate);
-		}
-		udword treeKey = 0;
-		for(int bit = int(depth) - 1; bit >= 0; --bit)
-			treeKey = (treeKey << 3) | (((cell[0] >> bit) & 1u) << 2)
-				| (((cell[1] >> bit) & 1u) << 1) | ((cell[2] >> bit) & 1u);
-		entries[entryCount].object = object;
-		entries[entryCount].treeKey = treeKey;
-		entries[entryCount].depth = depth;
-		entries[entryCount].poolIndex = i;
-		++entryCount;
-	}
-	auto entryLess = [](const Entry& a, const Entry& b)
-	{
-		if(a.treeKey != b.treeKey)
-			return a.treeKey < b.treeKey;
-		if(a.depth != b.depth)
-			return a.depth < b.depth;
-		return a.poolIndex > b.poolIndex;
-	};
-	for(udword gap = entryCount / 2; gap; gap /= 2)
-		for(udword i = gap; i < entryCount; ++i)
-		{
-			const Entry value = entries[i];
-			udword position = i;
-			while(position >= gap && entryLess(value, entries[position - gap]))
+			centerRadius[0], centerRadius[1], centerRadius[2] };
+		Point nodeCenter = rootCenter;
+		float nodeSide = rootSize;
+		udword node = 0;
+		for(udword level = 0; level < depth; ++level)
 			{
-				entries[position] = entries[position - gap];
-				position -= gap;
+			const udword octant = (centers[0] >= nodeCenter.x ? 4u : 0u)
+				| (centers[1] >= nodeCenter.y ? 2u : 0u)
+				| (centers[2] >= nodeCenter.z ? 1u : 0u);
+			node = node * 8u + octant + 1u;
+			const float offset = nodeSide * 0.125f;
+			nodeCenter.x += (octant & 4u) ? offset : -offset;
+			nodeCenter.y += (octant & 2u) ? offset : -offset;
+			nodeCenter.z += (octant & 1u) ? offset : -offset;
+			nodeSide *= 0.5f;
 			}
-			entries[position] = value;
-		}
-	for(udword i = 0; i < entryCount; ++i)
-		objects.Add(udword(entries[i].object));
-	free(entries);
+		query.objectNext[i] = query.nodeHeads[node];
+		query.nodeHeads[node] = i;
+		for(udword ancestor = node;; ancestor = (ancestor - 1u) / 8u)
+			{
+			++query.subtreeCounts[ancestor];
+			if(ancestor == 0)
+				break;
+			}
+	}
+	nxBoundedTreeQueryNode(query, 0u, rootMin, rootMax);
+	if(partialObjects.GetNbEntries())
+		objects.Add(partialObjects.GetEntries(), partialObjects.GetNbEntries());
+	if(containedObjects.GetNbEntries())
+		objects.Add(containedObjects.GetEntries(), containedObjects.GetNbEntries());
+	free(query.nodeHeads);
+	free(query.objectNext);
+	free(query.subtreeCounts);
 	return true;
 }
 
@@ -650,6 +833,12 @@ bool BoundedDynamicPruner::NovodeXPrunerSlot8(udword result, udword queryBounds,
 	for(udword i = 0; i < touched.GetNbEntries(); ++i)
 		nxSdkContainerAppend(reinterpret_cast<void*>(result), entries[i]);
 	return true;
+}
+
+bool BoundedDynamicPruner::NovodeXPrunerSlot7(udword result, udword queryBounds,
+	udword first_contact, udword mask)
+{
+	return BoundedDynamicPruner::NovodeXPrunerSlot8(result, queryBounds, first_contact, mask);
 }
 
 // 0x000efe80 (not claimed): the base only.
@@ -685,6 +874,12 @@ bool DynamicPruner::NovodeXPrunerSlot8(udword result, udword queryBounds,
 		found = true;
 	}
 	return found;
+}
+
+bool DynamicPruner::NovodeXPrunerSlot7(udword result, udword queryBounds,
+	udword first_contact, udword mask)
+{
+	return DynamicPruner::NovodeXPrunerSlot8(result, queryBounds, first_contact, mask);
 }
 
 // phys_fn_005468 (0x000efa90, 503 B)

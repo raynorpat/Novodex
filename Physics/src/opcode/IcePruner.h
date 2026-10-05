@@ -43,6 +43,8 @@ class StaticPruner : public Pruner
 	virtual	void				SetExternalBuffer(udword max_nb, udword* entries);
 	virtual	bool				Raycast(Container& objects, const Ray& world_ray, float max_dist,
 									bool first_contact, udword mask);
+	virtual	bool				NovodeXPrunerSlot7(udword result, udword bounds,
+								udword first_contact, udword mask);
 	virtual	bool				NovodeXPrunerSlot8(udword result, udword bounds,
 								udword first_contact, udword mask);
 
@@ -67,6 +69,8 @@ class DynamicPruner : public Pruner
 	virtual						~DynamicPruner();
 	virtual	bool				Raycast(Container& objects, const Ray& world_ray, float max_dist,
 									bool first_contact, udword mask);
+	virtual	bool				NovodeXPrunerSlot7(udword result, udword bounds,
+								udword first_contact, udword mask);
 	virtual	bool				NovodeXPrunerSlot8(udword result, udword bounds,
 								udword first_contact, udword mask);
 };
@@ -80,6 +84,8 @@ class BoundedDynamicPruner : public DynamicPruner
 								BoundedDynamicPruner();
 								~BoundedDynamicPruner();
 	virtual	bool				NovodeXPrunerSlot8(udword result, udword bounds,
+								udword first_contact, udword mask);
+	virtual	bool				NovodeXPrunerSlot7(udword result, udword bounds,
 								udword first_contact, udword mask);
 			bool				OverlapAABB(Container& objects, const Point& min, const Point& max,
 								udword mask);

@@ -50,10 +50,24 @@ add_custom_command(TARGET ViewerSceneTests POST_BUILD
         "$<TARGET_FILE_DIR:ViewerSceneTests>"
     VERBATIM
 )
+# Keep every Viewer run on a disposable copy: the loader can write diagnostic
+# dumps next to the scene script while it starts up.
+file(GLOB_RECURSE VIEWER_SCENE_DEMOS CONFIGURE_DEPENDS
+    "${PROJECT_SOURCE_DIR}/ViewerScenes/*.pds.ods")
+list(SORT VIEWER_SCENE_DEMOS)
+set(VIEWER_SCENE_SMOKE_ROOT "${CMAKE_CURRENT_BINARY_DIR}/scene-smoke/assets")
+add_test(NAME ViewerSceneSmokePrepareAssets
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PROJECT_SOURCE_DIR}/ViewerScenes" "${VIEWER_SCENE_SMOKE_ROOT}")
+set_tests_properties(ViewerSceneSmokePrepareAssets PROPERTIES
+    FIXTURES_SETUP ViewerSceneAssets)
 add_test(NAME ViewerSceneTests COMMAND ViewerSceneTests
-    "${PROJECT_SOURCE_DIR}/ViewerScenes/PhysicsStepSmoke/demo.pds.ods"
-    "${PROJECT_SOURCE_DIR}/ViewerScenes/BoxBoxTest00c/demo.pds.ods")
-set_tests_properties(ViewerSceneTests PROPERTIES TIMEOUT 60)
+    "${VIEWER_SCENE_SMOKE_ROOT}/PhysicsStepSmoke/demo.pds.ods"
+    "${VIEWER_SCENE_SMOKE_ROOT}/BoxBoxTest00c/demo.pds.ods")
+set_tests_properties(ViewerSceneTests PROPERTIES
+    FIXTURES_REQUIRED ViewerSceneAssets
+    RESOURCE_LOCK ViewerSceneSmokeAssets
+    TIMEOUT 60)
 target_include_directories(Viewer PRIVATE
     src compiler/vc6 ../Foundation/include ../Physics/include
 )
@@ -76,15 +90,6 @@ add_custom_command(TARGET Viewer POST_BUILD
 # Run every checked-in demo through the viewer in an isolated copy. Scene
 # startup can emit diagnostic dumps, so smoke runs must not write into the
 # source asset tree.
-file(GLOB_RECURSE VIEWER_SCENE_DEMOS CONFIGURE_DEPENDS
-    "${PROJECT_SOURCE_DIR}/ViewerScenes/*.pds.ods")
-list(SORT VIEWER_SCENE_DEMOS)
-set(VIEWER_SCENE_SMOKE_ROOT "${CMAKE_CURRENT_BINARY_DIR}/scene-smoke/assets")
-add_test(NAME ViewerSceneSmokePrepareAssets
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${PROJECT_SOURCE_DIR}/ViewerScenes" "${VIEWER_SCENE_SMOKE_ROOT}")
-set_tests_properties(ViewerSceneSmokePrepareAssets PROPERTIES
-    FIXTURES_SETUP ViewerSceneAssets)
 foreach(sceneFile IN LISTS VIEWER_SCENE_DEMOS)
     file(RELATIVE_PATH sceneRelative "${PROJECT_SOURCE_DIR}/ViewerScenes" "${sceneFile}")
     string(REGEX REPLACE "\\.pds\\.ods$" "" sceneTestName "${sceneRelative}")
@@ -112,11 +117,17 @@ add_test(NAME ViewerSmokeSound COMMAND Viewer --smoke-test "${CMAKE_CURRENT_BINA
 set_tests_properties(ViewerSmokeSound PROPERTIES FIXTURES_REQUIRED SoundScene TIMEOUT 60)
 add_test(NAME ViewerPhysicsStep
     COMMAND Viewer --physics-test
-        "${PROJECT_SOURCE_DIR}/ViewerScenes/PhysicsStepSmoke/demo.pds.ods"
+        "${VIEWER_SCENE_SMOKE_ROOT}/PhysicsStepSmoke/demo.pds.ods"
         FallingBox 8.0 8.5 60)
-set_tests_properties(ViewerPhysicsStep PROPERTIES TIMEOUT 60)
+set_tests_properties(ViewerPhysicsStep PROPERTIES
+    FIXTURES_REQUIRED ViewerSceneAssets
+    RESOURCE_LOCK ViewerSceneSmokeAssets
+    TIMEOUT 60)
 add_test(NAME ViewerPhysicsContact
     COMMAND Viewer --physics-test
-        "${PROJECT_SOURCE_DIR}/ViewerScenes/PhysicsContactSmoke/demo.pds.ods"
+        "${VIEWER_SCENE_SMOKE_ROOT}/PhysicsContactSmoke/demo.pds.ods"
         FallingSphere 0.25 0.35 60)
-set_tests_properties(ViewerPhysicsContact PROPERTIES TIMEOUT 60)
+set_tests_properties(ViewerPhysicsContact PROPERTIES
+    FIXTURES_REQUIRED ViewerSceneAssets
+    RESOURCE_LOCK ViewerSceneSmokeAssets
+    TIMEOUT 60)
