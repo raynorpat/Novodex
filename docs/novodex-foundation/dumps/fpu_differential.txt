@@ -1,0 +1,32 @@
+Provenance
+oracle: D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+oracle SHA-256: 7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+rebuilt: D:/github/Novodex/build/Release/NxFoundation.dll
+harness: D:/github/Novodex/build/Release/NxFoundationClusterTests.exe
+Capstone: 5.0.6 x86-32; pefile: 2024.8.26
+
+Command (each DLL loaded in its own process)
+NxFoundationClusterTests.exe fpu <absolute-dll-path>
+
+RED before production patch
+oracle exit 0:
+fpu exports=11 ints=7_vectors precision=x87_24,53,64 rounding=x87_chop,up,down,near exceptions=x87_true_masked,false_unmasked mxcsr=unchanged restoration=exact
+rebuilt exit 1:
+FAIL FPU rounding chop x87=0f7f mxcsr=00007f80
+
+Root cause
+Oracle setter RVAs 0x000040d0..0x00004180 call the legacy CRT control helper with precision masks 0x30000, rounding mask 0x300, and exception mask 0x8001f. Runtime state shows that helper mutates only x87: all setters leave MXCSR byte-for-byte unchanged. The modern rebuilt CRT _controlfp mutates MXCSR rounding/masks too. Oracle false exception state retains only x87 denormal masked (CW & 0x3f == 0x02).
+
+Minimal patch
+The Win32 wrappers now perform masked fnstcw/fldcw updates directly: precision CW mask 0x0300; rounding CW mask 0x0c00; exception CW mask 0x003f with values true=0x003f and false=0x0002. The conversion algorithms are unchanged.
+
+GREEN after production patch
+oracle exit 0:
+fpu exports=11 ints=7_vectors precision=x87_24,53,64 rounding=x87_chop,up,down,near exceptions=x87_true_masked,false_unmasked mxcsr=unchanged restoration=exact
+rebuilt exit 0:
+fpu exports=11 ints=7_vectors precision=x87_24,53,64 rounding=x87_chop,up,down,near exceptions=x87_true_masked,false_unmasked mxcsr=unchanged restoration=exact
+
+The harness saves and restores the incoming x87 abstract control bits and exact MXCSR before return. Seven finite conversion vectors cover negative/positive fractional, integral, sub-unit, and zero values for NxIntChop/Floor/Ceil.
+
+Post-cluster export gate
+oracle=134 rebuilt=140 missing=0 extra=6 recorder_exports=0 saved_equals_live=True

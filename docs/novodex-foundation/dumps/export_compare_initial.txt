@@ -1,0 +1,23 @@
+evidence_kind: reconstructed regression RED against pre-fix parent
+source_commit: 979ee1bbd5feeb14f8f5568fbf620c4320d8d8cc
+generator: Visual Studio 18 2026
+platform: Win32
+configuration: Release
+dll_sha256: 58b45affb8d871f6e3dbb4b5d651192dea42863b2e6cd02c2da474922032b356
+dump_command: python D:/FlamingEnt__/Unreal_3/.worktrees/novodex-foundation-dropin/docs/reconstruction/novodex-foundation/tools/pe_exports.py D:/FlamingEnt__/task6-red-979ee1b/build/Release/NxFoundation.dll | Set-Content -Encoding utf8 D:/FlamingEnt__/Unreal_3/.worktrees/novodex-foundation-dropin/docs/reconstruction/novodex-foundation/dumps/exports_rebuilt_initial.txt
+compare_command: python D:/FlamingEnt__/Unreal_3/.worktrees/novodex-foundation-dropin/docs/reconstruction/novodex-foundation/tools/compare_exports.py --oracle D:/FlamingEnt__/Unreal_3/.worktrees/novodex-foundation-dropin/docs/reconstruction/novodex-foundation/dumps/exports_oracle.txt --rebuilt D:/FlamingEnt__/Unreal_3/.worktrees/novodex-foundation-dropin/docs/reconstruction/novodex-foundation/dumps/exports_rebuilt_initial.txt
+oracle: 134
+rebuilt: 140
+missing: 2
+extra: 8
+MISSING NxCrc32
+MISSING NxMergeSpheres
+EXTRA ??0Exception@NxFoundation@@QAE@$$QAV01@@Z
+EXTRA ??0Observable@NxFoundation@@QAE@$$QAV01@@Z
+EXTRA ??4Exception@NxFoundation@@QAEAAV01@$$QAV01@@Z
+EXTRA ??4NxProfiler@@QAEAAV0@$$QAV0@@Z
+EXTRA ??4Observable@NxFoundation@@QAEAAV01@$$QAV01@@Z
+EXTRA ??4Time@NxFoundation@@QAEAAV01@$$QAV01@@Z
+EXTRA ?freeID@FoundationSDK@NxFoundation@@QAEXI@Z
+EXTRA ?getNewID@FoundationSDK@NxFoundation@@QAEIXZ
+compare_exit: 1

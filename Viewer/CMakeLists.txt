@@ -73,10 +73,40 @@ add_custom_command(TARGET Viewer POST_BUILD
     VERBATIM
 )
 
-foreach(scene BoxBoxTest00c Pyramid TruckTerrain TypesBreakable)
-    add_test(NAME ViewerSmoke${scene}
-        COMMAND Viewer --smoke-test "${PROJECT_SOURCE_DIR}/ViewerScenes/${scene}/demo.pds.ods")
-    set_tests_properties(ViewerSmoke${scene} PROPERTIES TIMEOUT 60)
+# Run every checked-in demo through the viewer in an isolated copy. Scene
+# startup can emit diagnostic dumps, so smoke runs must not write into the
+# source asset tree.
+file(GLOB_RECURSE VIEWER_SCENE_DEMOS CONFIGURE_DEPENDS
+    "${PROJECT_SOURCE_DIR}/ViewerScenes/*.pds.ods")
+list(SORT VIEWER_SCENE_DEMOS)
+set(VIEWER_SCENE_SMOKE_ROOT "${CMAKE_CURRENT_BINARY_DIR}/scene-smoke/assets")
+add_test(NAME ViewerSceneSmokePrepareAssets
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PROJECT_SOURCE_DIR}/ViewerScenes" "${VIEWER_SCENE_SMOKE_ROOT}")
+set_tests_properties(ViewerSceneSmokePrepareAssets PROPERTIES
+    FIXTURES_SETUP ViewerSceneAssets)
+foreach(sceneFile IN LISTS VIEWER_SCENE_DEMOS)
+    file(RELATIVE_PATH sceneRelative "${PROJECT_SOURCE_DIR}/ViewerScenes" "${sceneFile}")
+    string(REGEX REPLACE "\\.pds\\.ods$" "" sceneTestName "${sceneRelative}")
+    string(REGEX REPLACE "[^A-Za-z0-9_]" "_" sceneTestName "${sceneTestName}")
+    add_test(NAME ViewerSmokeScene_${sceneTestName}
+        COMMAND Viewer --smoke-test "${VIEWER_SCENE_SMOKE_ROOT}/${sceneRelative}")
+    set_tests_properties(ViewerSmokeScene_${sceneTestName} PROPERTIES
+        FIXTURES_REQUIRED ViewerSceneAssets
+        RESOURCE_LOCK ViewerSceneSmokeAssets
+        TIMEOUT 60)
+    # These checked-in scenes already fail with the pinned original DLL: four
+    # need a PMap creation path the viewer cannot supply, and TruckDemo has a
+    # missing material asset. Keep them in the all-scene inventory and mark
+    # only those specific baseline diagnostics as skipped. Any other failure
+    # (including a candidate-only crash) remains a failing test.
+    if(sceneTestName MATCHES "^(CowPile_demo|PMapTest(8|10|12)_demo)$")
+        set_tests_properties(ViewerSmokeScene_${sceneTestName} PROPERTIES
+            SKIP_REGULAR_EXPRESSION "TriangleMesh::loadPMap: pmap creation failed!")
+    elseif(sceneTestName STREQUAL "TruckDemo_demo")
+        set_tests_properties(ViewerSmokeScene_${sceneTestName} PROPERTIES
+            SKIP_REGULAR_EXPRESSION "Material #960.mat.ods")
+    endif()
 endforeach()
 add_test(NAME ViewerSmokeSound COMMAND Viewer --smoke-test "${CMAKE_CURRENT_BINARY_DIR}/sound-smoke/demo.pds.ods")
 set_tests_properties(ViewerSmokeSound PROPERTIES FIXTURES_REQUIRED SoundScene TIMEOUT 60)

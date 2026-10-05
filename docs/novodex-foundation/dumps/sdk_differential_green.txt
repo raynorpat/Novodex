@@ -1,0 +1,32 @@
+Task 7 c_sdk differential GREEN after source commit b94320b
+
+Clean-first build commands:
+  cmake --build build --config Release --target clean
+  cmake --build build --config Release --target NxFoundation
+  cmake --build build --config Release --target NxFoundationExportTests
+  cmake --build build --config Release --target NxFoundationSDKTests
+
+Separate process commands:
+  build/Release/NxFoundationSDKTests.exe D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+  build/Release/NxFoundationSDKTests.exe build/Release/NxFoundation.dll
+
+Oracle output / exit 0:
+wrong_version=null global=null
+create=nonnull alloc_calls=1 typed_calls=1 first_size=56 bindings=allocator,global,stream
+initial_errors=0,0
+error=return_false callback=206,gate_message,sdk_gate.cpp,77 codes=206,206,0,0
+second_create=same allocator=sticky stream=updated second_allocator_calls=0
+release=free_calls_1 global=sticky
+recreate=nonnull alloc_calls=1 typed_calls=1 free_calls=1
+
+Rebuild output / exit 0:
+wrong_version=null global=null
+create=nonnull alloc_calls=1 typed_calls=1 first_size=56 bindings=allocator,global,stream
+initial_errors=0,0
+error=return_false callback=206,gate_message,sdk_gate.cpp,77 codes=206,206,0,0
+second_create=same allocator=sticky stream=updated second_allocator_calls=0
+release=free_calls_1 global=sticky
+recreate=nonnull alloc_calls=1 typed_calls=1 free_calls=1
+
+Compare-Object result: output_diff_count=0
+NxFoundationExportTests: oracle exit 0; rebuild exit 0

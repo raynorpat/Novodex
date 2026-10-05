@@ -1,0 +1,30 @@
+Provenance
+oracle: D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+oracle SHA-256: 7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+rebuilt: D:/github/Novodex/build/Release/NxFoundation.dll
+harness: D:/github/Novodex/build/Release/NxFoundationClusterTests.exe
+Capstone: 5.0.6 x86-32; pefile: 2024.8.26
+
+Commands (separate process invocations)
+NxFoundationClusterTests.exe time D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+NxFoundationClusterTests.exe time D:/github/Novodex/build/Release/NxFoundation.dll
+
+Oracle output (exit 0)
+time size=8 frequency=positive_stable ticks=positive_monotonic peek=nonreset_monotonic elapsed=resets assignment=epoch_exact windows=bounded
+
+Rebuilt output (exit 0)
+time size=8 frequency=positive_stable ticks=positive_monotonic peek=nonreset_monotonic elapsed=resets assignment=epoch_exact windows=bounded
+
+Structural Capstone facts
+RVA 0x00004670: assignment copies the two dwords of the 8-byte tick epoch and returns this.
+RVA 0x00005190: GetTimeTicks calls QueryPerformanceCounter and converts the 64-bit integer to double.
+RVA 0x000051b0: GetClockFrequency caches QueryPerformanceFrequency and returns the cached double.
+RVA 0x000051f0: GetElapsedSeconds obtains a counter, subtracts/replaces the 8-byte epoch, and divides by frequency.
+RVA 0x00005250: PeekElapsedSeconds obtains a counter and divides its delta without replacing the epoch.
+RVA 0x000052a0: constructor calls GetElapsedSeconds to seed the epoch.
+
+Tolerance policy
+The gate does not compare wall-clock magnitudes across processes. It requires stable positive frequency, positive monotonic ticks, 15 ms sleeps producing values in [0.005, 1.0] seconds, monotonic non-resetting peeks, elapsed reset behavior, and assigned epochs remaining within 50 ms when sampled sequentially. These broad bounds absorb scheduler delay while still distinguishing unit/conversion/reset errors.
+
+Post-cluster export gate
+oracle=134 rebuilt=140 missing=0 extra=6 recorder_exports=0 saved_equals_live=True

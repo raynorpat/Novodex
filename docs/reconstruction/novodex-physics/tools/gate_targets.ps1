@@ -2549,6 +2549,13 @@ $NxRequiredCoverageLines = [ordered] @{
     # overflowed against the plane's box), and a moved static shape was missed
     # at its new place (the static pruner's tree was never dropped).
     'NxPhysicsSceneRaycastTests' = @(
+        # AABB triangle query: appends intersecting world-space mesh triangles,
+        # returns no elements for a miss, and applies a translated actor pose.
+        'scene_overlap triangles hit_count=3 array_count=3',
+        'scene_overlap triangles miss_count=0 array_count=0',
+        'scene_overlap triangles corner_miss_count=0 array_count=0',
+        'scene_overlap triangles all_count=5 array_count=5',
+        'scene_overlap triangles translated_count=2 array_count=2',
         'raycast create s_box created=1 shapes=1',
         'raycast create s_sphere created=1 shapes=1',
         'raycast create s_capsule created=1 shapes=1',
@@ -2562,6 +2569,39 @@ $NxRequiredCoverageLines = [ordered] @{
         'raycast create s_compound created=1 shapes=2',
         'raycast create d_compound created=1 shapes=2',
         'raycast create s_late created=1',
+        # Scene spatial query recovery: exact primitive sphere tests include a
+        # broadphase-corner rejection; AABB queries retain unbounded-plane
+        # candidates and select dynamic pruner pools independently.
+        'scene_overlap sphere=0 type=1 result=1',
+        'scene_overlap sphere=0 type=2 result=0',
+        'scene_overlap sphere=1 type=2 result=1',
+        'scene_overlap sphere=3 type=2 result=0',
+        'scene_overlap sphere=4 type=2 result=1',
+        'scene_overlap sphere=7 type=2 result=1',
+        'scene_overlap sphere=8 type=2 result=1',
+        'scene_overlap sphere=9 type=2 result=0',
+        # Triangle-mesh spheres use the shape's transformed world bounds, while
+        # the static/dynamic selector still excludes static mesh shapes.
+        'scene_overlap sphere_mesh bounds_only type=1 result=1',
+        'scene_overlap sphere_mesh bounds_only type=2 result=0',
+        'scene_overlap sphere_mesh bounds_only type=3 result=1',
+        'scene_overlap sphere_mesh outside result=0',
+        'scene_overlap sphere_mesh rotated_bounds_only result=1',
+        'scene_overlap sphere_mesh rotated_tangent result=1',
+        'scene_overlap sphere_mesh rotated_outside result=0',
+        'scene_overlap sphere=10 type=2 result=1',
+        'scene_overlap sphere=11 type=2 result=0',
+        'scene_overlap aabb=0 type=3 result=1',
+        'scene_overlap aabb=2 type=2 result=0',
+        'scene_overlap aabb_shapes count=2 shapes=s_box.s_plane',
+        'scene_overlap aabb_shapes limited_count=1 shape=s_box',
+        'scene_overlap report call=1 count=2 shapes=s_box.s_plane return=1',
+        'scene_overlap aabb_shapes callback_count=2 calls=1 entities=2',
+        'scene_overlap sphere_shapes count=2 shapes=s_box.s_plane',
+        'scene_overlap sphere_shapes callback_count=2 calls=1 entities=2',
+        'scene_cull outside count=2 shapes=s_box.s_plane',
+        'scene_cull opposite count=1 shapes=s_plane',
+        'scene_cull callback_count=2 calls=1 entities=2',
         'raycast ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff any_bounds result=1',
         'raycast ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff any_shape result=1',
         'raycast ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff closest_bounds result=s_box flags=00000013 shape=s_box impact=bf800000.00000000.00000000 distance=40800000',
@@ -3084,7 +3124,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation break-state step=3 state=2'
         'simulation break-joint steps=4 ready=1 fetched=1'
         'simulation soak steps=1000 ready=1 fetched=1'
-        'simulation stage=soak1000 position=00000000.c7955570.00000000 velocity=00000000.c4991681.00000000'
+        'simulation stage=soak1000 position=00000000.3ee66666.00000000 velocity=00000000.00000000.00000000'
         # Two-box contact regression: pin both the queried NxShape pose (which
         # recomputes from the actor quaternion) and the following manifold.
         'simulation box-state stage=boxcontact20 orientation=36dc8f3b.00000000.372f6481.3f7fffff angular=3707f92d.00000000.b938fc3e matrix=3f800000.b7af6480.2f171c80.37af6480.3f800000.b75c8f3a.2f171c80.375c8f3a.3f800000 shape=00000000.3ee9b34b.00000000.3f800000.b7af6480.2f171c80.37af6480.3f800000.b75c8f3a.2f171c80.375c8f3a.3f800000'
@@ -3106,6 +3146,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation stage=spherepair60-b position=3ef33333.00000000.00000000 velocity=00000000.00000000.00000000'
         'simulation contact callbacks=26 events=0000000a pairs=26 patches=26 points=26 normal=80000000.bf800000.80000000 point=00000000.bc916940.00000000 separation=bc916940'
         'simulation stage=contact60 position=00000000.3ee66666.00000000 velocity=00000000.00000000.00000000'
+    )
+    # Releasing a compound actor must erase its actor-pair hash entry before
+    # getPairFlagArray resolves the now-freed group shape ID.
+    'NxPhysicsPairFlagTests' = @(
+        'pairflag compound_released count=0 array=0'
     )
     # Effector-and-coredump Task 2: the spring-and-damper effector differential.
     # NxScene's effector API and every NxSpringAndDamperEffector method over two
@@ -3203,13 +3248,13 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsConvexMeshTests' = @(
         'mesh-case name=precomputed_tetra_first repeat=0 flags=00000004 created=1 submeshes=4',
+        'mesh-case name=precomputed_tetra_flip_normals repeat=0 flags=00000005 created=1 submeshes=4',
         'mesh-case name=computed_tetra repeat=0 flags=0000000c created=1 submeshes=4',
+        'mesh-case name=computed_tetra_padded_points repeat=0 flags=0000000c created=1 submeshes=4',
         'mesh-actor name=static_tetra mesh=1 scene=1 actor=1 shapes=1 type=4',
-        'mesh-graph-tetra=valid/4/12/d76d4b25/de3b8609/d32294c5',
         'mesh-actor name=dynamic_tetra mesh=1 scene=1 actor=1 shapes=1 type=4 dynamic=1',
-        'mesh-actor-bounds=00000000:00000000:00000000:3f800000:3f800000:3f800000',
         'mesh-actor-mass mass=3e2aaaab center=3e800000:3e800000:3e800000 inertia=3c2aaaac:3c888889:3c2aaaac',
-        'mesh-graph-octa=valid/6/24/40d43be5/0656b781/d4d21aa5'
+        'mesh-case name=precomputed_tetra_padded16_materials repeat=0 flags=00000006 created=1 submeshes=4'
     )
     # Effector-and-coredump Task 4: the scene core-dump differential. Two populated
     # scenes dumped through NxPhysicsSDK::coreDump (000267 -> 004062) in text and
@@ -5060,7 +5105,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=qhull_hull rva=0x0007d180 owner=phys_fn_003234 source=qhull.c,poly.c,poly2.c,merge.c,geom.c,geom2.c,qset.c,mem.c,global.c words=58488 oracle=c824ff7f mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=qhull_hull_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=32036 oracle=20ffcbef',
         'thirdparty name=qhull_hull_rotated rva=0x0005ff40 owner=phys_fn_002520 source=geom2.c,qhull.c,poly.c,poly2.c,merge.c words=9431 oracle=0a2f0b05 mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty coverage driven=44 divergent=9 words=464286 layout_checks=47',
+        'thirdparty coverage driven=44 divergent=8 words=464286 layout_checks=47',
         'thirdparty oracle digest=c16f0c0c',
 
         # Vendored correspondence, Task 5a: candidate-built trees queried by the
@@ -5140,7 +5185,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=hull_compute_obj rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=122 oracle=bc33134f',
         'thirdparty name=hull_compute_pc64 rva=0x00054920 owner=phys_fn_002233 source=TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp words=12633 oracle=f5a778d6 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_compute_pc64_obj rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=122 oracle=4ebf7157',
-        'thirdparty coverage driven=108 divergent=34 words=2613605 layout_checks=47',
+        'thirdparty coverage driven=108 divergent=26 words=2613605 layout_checks=47',
         'thirdparty oracle digest=536f8add',
         # qhull-gap Task 5 (the Task 4e review): the byte digest of every QHULL_*.obj of
         # the Task 4e families after dropping the sign of a printed -0.000 (the two CRTs'
@@ -5154,7 +5199,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=hull_compute_pc64_objbytes rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=2 oracle=16381ab0 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_qhull_direct rva=0x0007d180 owner=phys_fn_003234 source=qhull.c,poly.c,poly2.c,merge.c,geom.c,geom2.c,qset.c,mem.c,global.c words=812 oracle=12922cc6',
         'thirdparty name=hull_qhull_direct_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=410 oracle=27d5b5e1',
-        'thirdparty coverage driven=114 divergent=36 words=2614867 layout_checks=47',
+        'thirdparty coverage driven=114 divergent=26 words=2614867 layout_checks=47',
         'thirdparty oracle digest=82161649'
         # convex-mesh gap Task 2c: the ICE-shaped rows with no vendored source,
         # reconstructed in Physics/src (EdgeList.cpp, IceAdjacencies.cpp, IceMeshTools.cpp)
@@ -5183,7 +5228,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty input name=ice_valencies words=10533 input=0863cbf9',
         'thirdparty name=ice_valencies rva=0x00032610 owner=phys_fn_001667 source=IceMeshTools.cpp,EdgeList.cpp words=32709 oracle=2cbd6dee mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=ice_valencies meshes=65 runs=261 succeeded=260 failed=1 adjacent=12020 reports=1 line72=1',
-        'thirdparty coverage driven=82 divergent=29 words=1890824 layout_checks=47',
+        'thirdparty coverage driven=82 divergent=23 words=1890824 layout_checks=47',
         'thirdparty oracle digest=7e074cc0',
         # convex-mesh gap Task 2d: MeshBuilder2 (IceMeshBuilder2.cpp, 001591..001637) and the
         # vertex reduction (IceMeshTools.cpp, 001645/001647/001659), linked into the harness.
@@ -5203,7 +5248,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty input name=vertex_reduction words=13893 input=db8a41b6',
         'thirdparty name=vertex_reduction rva=0x000316a0 owner=phys_fn_001647 source=IceMeshTools.cpp words=24313 oracle=9d4e0115 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=vertex_reduction meshes=65 runs=178 verts=5457 reduced=4331 reports=0',
-        'thirdparty coverage driven=84 divergent=29 words=2093278 layout_checks=47',
+        'thirdparty coverage driven=84 divergent=23 words=2093278 layout_checks=47',
         'thirdparty oracle digest=08fe06cb',
         # convex-mesh gap Task 2e: the rest of sub-unit D (IceMeshTools.cpp: 001639, 001641/001643,
         # 001649, 001651, 001653, 001661) and P-Small (002144 in SmoothNormals.cpp, 001461 in
@@ -5239,7 +5284,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=adjacency_owner rva=0x000543d0 owner=phys_fn_002186 source=TriangleMeshTopology.cpp,IceAdjacencies.cpp,EdgeList.cpp words=28728 oracle=b9df247a mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=adjacency_owner.plane_divergent rva=0x000543d0 owner=phys_fn_002186 source=TriangleMeshTopology.cpp,IceAdjacencies.cpp,EdgeList.cpp words=6300 oracle=50e4dd46',
         'thirdparty coverage name=adjacency_owner meshes=65 adjacencies=66 adjacencies_built=36 edge_lists=66 edge_lists_built=65 frozen_split_runs=13 reports=30 line72=1 line321=29',
-        'thirdparty coverage driven=91 divergent=31 words=2360928 layout_checks=47',
+        'thirdparty coverage driven=91 divergent=25 words=2360928 layout_checks=47',
         'thirdparty oracle digest=474f4186',
         # convex-mesh gap Task 2f: P-Hull (ConvexHull.cpp: 001441, 001445, 001449, 001459, 001463, 001465,
         # 001472, 001496, 001502, and the helpers 000001, 000925, 001391, 001439; 001657 in
@@ -5267,7 +5312,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty input name=support_maps words=26184 input=caa5f9eb',
         'thirdparty name=support_maps rva=0x0002e2f0 owner=phys_fn_001558 source=IceSupportMaps.cpp,ConvexHull.cpp words=26162 oracle=79d50caf mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=support_maps faces=2400 lookups=2400 maps=138 init_true=135 init_false=3 samples=11844 map_lookups=1620 freed=66 input_snan=625 reports=4',
-        'thirdparty coverage driven=95 divergent=32 words=2498704 layout_checks=47',
+        'thirdparty coverage driven=95 divergent=26 words=2498704 layout_checks=47',
         'thirdparty oracle digest=5a08e945',
         # convex-mesh gap Task 2g: polygon_interface drives the TriangleMesh polygon interface
         # (TriangleMeshPolygons.cpp: the twelve slots of 0x101085d4 and 000505) through each
@@ -5278,7 +5323,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty input name=polygon_interface words=20733 input=4df6a369',
         'thirdparty name=polygon_interface rva=0x000552c0 owner=phys_fn_002249 source=TriangleMeshPolygons.cpp,ConvexHull.cpp,IceSupportMaps.cpp words=31253 oracle=28edec7b mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=polygon_interface hulls=34 built=25 polygons=234 edges=604 axes=333 axes_rebuilt=18 support=400 support_posed=200 faces=400 faces_edge=33 face_kind_null=50 projects=544 projects_map=272 projects_graph=272 climbs_failed=48 stamp_wraps=65 input_snan=823 reports=10',
-        'thirdparty coverage driven=96 divergent=32 words=2529957 layout_checks=47',
+        'thirdparty coverage driven=96 divergent=26 words=2529957 layout_checks=47',
         'thirdparty oracle digest=cec7ff4f'
     )
 }
@@ -5313,7 +5358,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1263  # current registered assertions across joint, scene, simulation, mesh, trigger,
+    '7' = 1297  # current registered assertions across joint, scene, simulation, mesh, trigger,
                # effector and core-dump targets; kept equal to the registry count below
     '8' = 0
 }

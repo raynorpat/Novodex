@@ -1,0 +1,29 @@
+run=NxFoundationExportTests oracle
+command=& "D:\github\Novodex\build\Release\NxFoundationExportTests.exe" "D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll"
+exit_code=0
+
+run=NxFoundationExportTests candidate
+command=& "D:\github\Novodex\build\Release\NxFoundationExportTests.exe" "D:\github\Novodex\build\Release\NxFoundation.dll"
+exit_code=0
+
+run=NxFoundationSDKTests oracle
+command=& "D:\github\Novodex\build\Release\NxFoundationSDKTests.exe" "D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll"
+wrong_version=null global=null
+create=nonnull alloc_calls=1 typed_calls=1 first_size=56 bindings=allocator,global,stream
+initial_errors=0,0
+error=return_false callback=206,gate_message,sdk_gate.cpp,77 codes=206,206,0,0
+second_create=same allocator=sticky stream=updated second_allocator_calls=0
+release=free_calls_1 global=sticky
+recreate=nonnull alloc_calls=1 typed_calls=1 free_calls=1
+exit_code=0
+
+run=NxFoundationSDKTests candidate
+command=& "D:\github\Novodex\build\Release\NxFoundationSDKTests.exe" "D:\github\Novodex\build\Release\NxFoundation.dll"
+wrong_version=null global=null
+create=nonnull alloc_calls=1 typed_calls=1 first_size=56 bindings=allocator,global,stream
+initial_errors=0,0
+error=return_false callback=206,gate_message,sdk_gate.cpp,77 codes=206,206,0,0
+second_create=same allocator=sticky stream=updated second_allocator_calls=0
+release=free_calls_1 global=sticky
+recreate=nonnull alloc_calls=1 typed_calls=1 free_calls=1
+exit_code=0

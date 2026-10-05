@@ -1,0 +1,349 @@
+{
+    "schema_version":  2,
+    "algorithm":  "SHA-256",
+    "raw_file_hashing":  "raw_worktree_sha256 and raw_oracle_sha256 hash file bytes exactly as stored on disk, without normalization or transformation.",
+    "git_blob_hashing":  "transplant_blob_sha256 and current_blob_sha256 hash raw Git blob bytes returned by git cat-file blob for the named commits. They are not checkout file-byte hashes; Git stores the text with canonical LF line endings.",
+    "ue3_source_oracle_root":  "D:/FlamingEnt__/Unreal_3/Development/External/Novodex",
+    "novodex_worktree_root":  "D:/github/Novodex",
+    "novodex_transplant_baseline_commit":  "ac804727f9565f4266aab3b794834ab5551d127f",
+    "novodex_current_implementation_commit":  "979ee1bbd5feeb14f8f5568fbf620c4320d8d8cc",
+    "proof_statement":  "For every path, equal raw worktree/oracle hashes prove the current checked-out bytes match the UE3 source oracle; equal transplant/current blob hashes separately prove neither implementation commit modified the immutable committed content.",
+    "files":  [
+                  {
+                      "path":  "BuildNumber.h",
+                      "raw_worktree_sha256":  "d873aa4e7026ead951d32b4aad92e276b1a1b98f2aae832fd97577c50f2a2a60",
+                      "raw_oracle_sha256":  "d873aa4e7026ead951d32b4aad92e276b1a1b98f2aae832fd97577c50f2a2a60",
+                      "transplant_blob_sha256":  "79c8cfede7fed80e2495fbb18a4eb26952fa7f3198295d66518cc4f53224b95f",
+                      "current_blob_sha256":  "79c8cfede7fed80e2495fbb18a4eb26952fa7f3198295d66518cc4f53224b95f"
+                  },
+                  {
+                      "path":  "changes.txt",
+                      "raw_worktree_sha256":  "0a33f4787a523438688e94d72f5da963fc47626cefaf6c919257da9fc9d1e939",
+                      "raw_oracle_sha256":  "0a33f4787a523438688e94d72f5da963fc47626cefaf6c919257da9fc9d1e939",
+                      "transplant_blob_sha256":  "d6231fdf2a7ec3f97a56e7d05284f5dc221444b7d203b14213b1d26a0dbaa128",
+                      "current_blob_sha256":  "d6231fdf2a7ec3f97a56e7d05284f5dc221444b7d203b14213b1d26a0dbaa128"
+                  },
+                  {
+                      "path":  "Foundation/include/Nx.h",
+                      "raw_worktree_sha256":  "0f1411124c2b704e5bfb72ca476297840692f1c6c4df47daf1185530070464e4",
+                      "raw_oracle_sha256":  "0f1411124c2b704e5bfb72ca476297840692f1c6c4df47daf1185530070464e4",
+                      "transplant_blob_sha256":  "55e7f9e10d0d9c1a76e77bb27a73a57ef01a957a36cf6d2716e3fa6ea1f64b49",
+                      "current_blob_sha256":  "55e7f9e10d0d9c1a76e77bb27a73a57ef01a957a36cf6d2716e3fa6ea1f64b49"
+                  },
+                  {
+                      "path":  "Foundation/include/Nx12F32.h",
+                      "raw_worktree_sha256":  "ba4bbbf13aad6e32a7a9f82306d8a96b8c78311c8f5769c29d37ca5e93a38b96",
+                      "raw_oracle_sha256":  "ba4bbbf13aad6e32a7a9f82306d8a96b8c78311c8f5769c29d37ca5e93a38b96",
+                      "transplant_blob_sha256":  "fd392003f1c3a184d63389d4ddf60ee798a746bd7d810b9ef5e688e2485e656f",
+                      "current_blob_sha256":  "fd392003f1c3a184d63389d4ddf60ee798a746bd7d810b9ef5e688e2485e656f"
+                  },
+                  {
+                      "path":  "Foundation/include/Nx16F32.h",
+                      "raw_worktree_sha256":  "bb786b47861edeec6917b6fc7aaff97c93bae473fe9d9c92184298b2a75d4cd5",
+                      "raw_oracle_sha256":  "bb786b47861edeec6917b6fc7aaff97c93bae473fe9d9c92184298b2a75d4cd5",
+                      "transplant_blob_sha256":  "48bdb8bffc3e224c24bbdda885f4e7870aab955fc047a6623383a40f45064ca6",
+                      "current_blob_sha256":  "48bdb8bffc3e224c24bbdda885f4e7870aab955fc047a6623383a40f45064ca6"
+                  },
+                  {
+                      "path":  "Foundation/include/Nx9F32.h",
+                      "raw_worktree_sha256":  "7e5bf33f115fbb2e4203c11cd3b9f26bd4ab4d2732e8ae724436da298eed64c6",
+                      "raw_oracle_sha256":  "7e5bf33f115fbb2e4203c11cd3b9f26bd4ab4d2732e8ae724436da298eed64c6",
+                      "transplant_blob_sha256":  "16b4ee5e4da467e45833016630cd6746eccdc3f7dba0937207b19f844bc78df1",
+                      "current_blob_sha256":  "16b4ee5e4da467e45833016630cd6746eccdc3f7dba0937207b19f844bc78df1"
+                  },
+                  {
+                      "path":  "Foundation/include/NxAllocateable.h",
+                      "raw_worktree_sha256":  "b86d9bd9b50bcf630cd7f33702c7f057892770b35f2a64c13dbe02499fee3686",
+                      "raw_oracle_sha256":  "b86d9bd9b50bcf630cd7f33702c7f057892770b35f2a64c13dbe02499fee3686",
+                      "transplant_blob_sha256":  "edcdb30a677bc1ae3821532148144abc47d175627b899520d5094dfcec5ef2e4",
+                      "current_blob_sha256":  "edcdb30a677bc1ae3821532148144abc47d175627b899520d5094dfcec5ef2e4"
+                  },
+                  {
+                      "path":  "Foundation/include/NxAllocatorDefault.h",
+                      "raw_worktree_sha256":  "f7af0e4db1d123ecdae6d412105d8666d939391da74216433b6d965c069509af",
+                      "raw_oracle_sha256":  "f7af0e4db1d123ecdae6d412105d8666d939391da74216433b6d965c069509af",
+                      "transplant_blob_sha256":  "a8ef9587f488908a93b006d173172d87e1b765224245c50201542765a3f2a8ac",
+                      "current_blob_sha256":  "a8ef9587f488908a93b006d173172d87e1b765224245c50201542765a3f2a8ac"
+                  },
+                  {
+                      "path":  "Foundation/include/NxArray.h",
+                      "raw_worktree_sha256":  "8a64f16ae54412c7087c35d4de0a161c4485e7bbc9a0c51ca947a3f2058b45f6",
+                      "raw_oracle_sha256":  "8a64f16ae54412c7087c35d4de0a161c4485e7bbc9a0c51ca947a3f2058b45f6",
+                      "transplant_blob_sha256":  "be0ded046f689054334b4aaed07a443d239d50de1c0140dc7e2faa1934a199d8",
+                      "current_blob_sha256":  "be0ded046f689054334b4aaed07a443d239d50de1c0140dc7e2faa1934a199d8"
+                  },
+                  {
+                      "path":  "Foundation/include/NxAssert.h",
+                      "raw_worktree_sha256":  "8a144be9690039a11e9879d9a6c4151e33c326ffdce2598aa7f54c2536b1a825",
+                      "raw_oracle_sha256":  "8a144be9690039a11e9879d9a6c4151e33c326ffdce2598aa7f54c2536b1a825",
+                      "transplant_blob_sha256":  "3ff24b80f7d83d0ea4dd7486461a41dd6b83b107b480858f440ed76d906525d8",
+                      "current_blob_sha256":  "3ff24b80f7d83d0ea4dd7486461a41dd6b83b107b480858f440ed76d906525d8"
+                  },
+                  {
+                      "path":  "Foundation/include/NxBitField.h",
+                      "raw_worktree_sha256":  "457f929e339ac136150af13c6a392ff5c077ac650c651c18962113455be835d1",
+                      "raw_oracle_sha256":  "457f929e339ac136150af13c6a392ff5c077ac650c651c18962113455be835d1",
+                      "transplant_blob_sha256":  "e99e8f7e493038861d1624cc94487866eda09a1cd01e0dba4b8ca4f5c4fb303d",
+                      "current_blob_sha256":  "e99e8f7e493038861d1624cc94487866eda09a1cd01e0dba4b8ca4f5c4fb303d"
+                  },
+                  {
+                      "path":  "Foundation/include/NxBlank.h",
+                      "raw_worktree_sha256":  "b2d6b42fad0dc95c525e0c4ff9ec53adf34f14b0a2a5ea9939f4a7bf424058d6",
+                      "raw_oracle_sha256":  "b2d6b42fad0dc95c525e0c4ff9ec53adf34f14b0a2a5ea9939f4a7bf424058d6",
+                      "transplant_blob_sha256":  "e617d3cbb421a5015e743f777ee3feb7abe868f69ca2883436bb4bd6a3498136",
+                      "current_blob_sha256":  "e617d3cbb421a5015e743f777ee3feb7abe868f69ca2883436bb4bd6a3498136"
+                  },
+                  {
+                      "path":  "Foundation/include/NxBounds3.h",
+                      "raw_worktree_sha256":  "c7763076cb80b44863fa2faf71d1710548e2b96323b6ebe6dc557b56efd86c42",
+                      "raw_oracle_sha256":  "c7763076cb80b44863fa2faf71d1710548e2b96323b6ebe6dc557b56efd86c42",
+                      "transplant_blob_sha256":  "244f4072e3b8660088fc83180d045c2cab261051ea7391b14c7a4367216dea52",
+                      "current_blob_sha256":  "244f4072e3b8660088fc83180d045c2cab261051ea7391b14c7a4367216dea52"
+                  },
+                  {
+                      "path":  "Foundation/include/NxBox.h",
+                      "raw_worktree_sha256":  "453505eea6459281937094b4e5e4b7782bec48e817d19d2e586a7c7c2dbda4bf",
+                      "raw_oracle_sha256":  "453505eea6459281937094b4e5e4b7782bec48e817d19d2e586a7c7c2dbda4bf",
+                      "transplant_blob_sha256":  "69630c307b47716127d00bf9a22dfe310d0550448f4bc7c47c2c0005fb9f4f37",
+                      "current_blob_sha256":  "69630c307b47716127d00bf9a22dfe310d0550448f4bc7c47c2c0005fb9f4f37"
+                  },
+                  {
+                      "path":  "Foundation/include/NxCapsule.h",
+                      "raw_worktree_sha256":  "b019a841676991483cd8cd306af298a07d09b07aac1014651e028157ce87cd90",
+                      "raw_oracle_sha256":  "b019a841676991483cd8cd306af298a07d09b07aac1014651e028157ce87cd90",
+                      "transplant_blob_sha256":  "8d180e793633372e8b377cd977562003c6bf12b6a085b3af5a25da60b1e5eb54",
+                      "current_blob_sha256":  "8d180e793633372e8b377cd977562003c6bf12b6a085b3af5a25da60b1e5eb54"
+                  },
+                  {
+                      "path":  "Foundation/include/NxDebugRenderable.h",
+                      "raw_worktree_sha256":  "bd05064e4c2363d39c137b2630dc23e62eaca09bfd62d88f056a69013fc2b2af",
+                      "raw_oracle_sha256":  "bd05064e4c2363d39c137b2630dc23e62eaca09bfd62d88f056a69013fc2b2af",
+                      "transplant_blob_sha256":  "be11bec0ebd6365e1fb9d378bb75d3a9921d35cf81f3a18d2d54d1fee9173e9b",
+                      "current_blob_sha256":  "be11bec0ebd6365e1fb9d378bb75d3a9921d35cf81f3a18d2d54d1fee9173e9b"
+                  },
+                  {
+                      "path":  "Foundation/include/NxException.h",
+                      "raw_worktree_sha256":  "999cc86008a233615c16f6e772cf37c44e1e71dd1dc496ac8e2b36def4874f76",
+                      "raw_oracle_sha256":  "999cc86008a233615c16f6e772cf37c44e1e71dd1dc496ac8e2b36def4874f76",
+                      "transplant_blob_sha256":  "69fc5be85f1797d5718060c4ea90f5f958432f94d0f5997df015be11b51d91db",
+                      "current_blob_sha256":  "69fc5be85f1797d5718060c4ea90f5f958432f94d0f5997df015be11b51d91db"
+                  },
+                  {
+                      "path":  "Foundation/include/Nxf.h",
+                      "raw_worktree_sha256":  "9303dc95fd07426f00bd803e7f024b2dc690da302b2487161624a893ffadbf38",
+                      "raw_oracle_sha256":  "9303dc95fd07426f00bd803e7f024b2dc690da302b2487161624a893ffadbf38",
+                      "transplant_blob_sha256":  "52be9abd124ec43762d3bf4c4b705fcd35b496cf8e22c756fc5e202aef198d9f",
+                      "current_blob_sha256":  "52be9abd124ec43762d3bf4c4b705fcd35b496cf8e22c756fc5e202aef198d9f"
+                  },
+                  {
+                      "path":  "Foundation/include/NxFoundation.h",
+                      "raw_worktree_sha256":  "bca036d356a428cc1d85620d0846ed672632d47963877f9e5f163551d8207cf5",
+                      "raw_oracle_sha256":  "bca036d356a428cc1d85620d0846ed672632d47963877f9e5f163551d8207cf5",
+                      "transplant_blob_sha256":  "a5ae464da93da07678fdcc995e0704effcd807efffa050dfa4cf1f9c89dce41a",
+                      "current_blob_sha256":  "a5ae464da93da07678fdcc995e0704effcd807efffa050dfa4cf1f9c89dce41a"
+                  },
+                  {
+                      "path":  "Foundation/include/NxFoundationSDK.h",
+                      "raw_worktree_sha256":  "6a9171538c4e0a0924f9a294b1575a53e60f806625e3f33ca8725c531802d172",
+                      "raw_oracle_sha256":  "6a9171538c4e0a0924f9a294b1575a53e60f806625e3f33ca8725c531802d172",
+                      "transplant_blob_sha256":  "29015afe22c60e6e12683f2a63f5f8e9cea7a38b3f47bc6f874c770b315275b1",
+                      "current_blob_sha256":  "29015afe22c60e6e12683f2a63f5f8e9cea7a38b3f47bc6f874c770b315275b1"
+                  },
+                  {
+                      "path":  "Foundation/include/NxFPU.h",
+                      "raw_worktree_sha256":  "437e2a2fd24336e7a1bc93af292593992a2b0b80bf045629c414475b91090db9",
+                      "raw_oracle_sha256":  "437e2a2fd24336e7a1bc93af292593992a2b0b80bf045629c414475b91090db9",
+                      "transplant_blob_sha256":  "b9ecad9d35cca6e055e3060790fa9d529ee7a64d39f6e84c328e2f1b53a202ec",
+                      "current_blob_sha256":  "b9ecad9d35cca6e055e3060790fa9d529ee7a64d39f6e84c328e2f1b53a202ec"
+                  },
+                  {
+                      "path":  "Foundation/include/NxList.h",
+                      "raw_worktree_sha256":  "c59f413d86d739af0408899233d41f53180da34e7804acc47df41a0f0c405ca8",
+                      "raw_oracle_sha256":  "c59f413d86d739af0408899233d41f53180da34e7804acc47df41a0f0c405ca8",
+                      "transplant_blob_sha256":  "84b69bf00a014db443d0eb5f42d4991f73ce987c1d9b97da952c72edc28db4fb",
+                      "current_blob_sha256":  "84b69bf00a014db443d0eb5f42d4991f73ce987c1d9b97da952c72edc28db4fb"
+                  },
+                  {
+                      "path":  "Foundation/include/NxMat33.h",
+                      "raw_worktree_sha256":  "20d47881227a4ac033a4a2c618d6fc3cb1bafd9b086d7b12e56c683b7bf08ea5",
+                      "raw_oracle_sha256":  "20d47881227a4ac033a4a2c618d6fc3cb1bafd9b086d7b12e56c683b7bf08ea5",
+                      "transplant_blob_sha256":  "a631626257d4ce949ef5586cb745917cc68e23aa0d5d00f5b1108e588637d007",
+                      "current_blob_sha256":  "a631626257d4ce949ef5586cb745917cc68e23aa0d5d00f5b1108e588637d007"
+                  },
+                  {
+                      "path":  "Foundation/include/NxMat34.h",
+                      "raw_worktree_sha256":  "26fb30b99d68209cb3fc45f91d18bb26503119263a04576997e39a079cb7faed",
+                      "raw_oracle_sha256":  "26fb30b99d68209cb3fc45f91d18bb26503119263a04576997e39a079cb7faed",
+                      "transplant_blob_sha256":  "6c8ec03f58ef719c5248f9132b81f21a236b091e6bc186805b9b726d4029a6d6",
+                      "current_blob_sha256":  "6c8ec03f58ef719c5248f9132b81f21a236b091e6bc186805b9b726d4029a6d6"
+                  },
+                  {
+                      "path":  "Foundation/include/NxMath.h",
+                      "raw_worktree_sha256":  "2ed0e0a0a3ea62201bd406173e5f3e918e43990be28c43bdeb305af9037a0822",
+                      "raw_oracle_sha256":  "2ed0e0a0a3ea62201bd406173e5f3e918e43990be28c43bdeb305af9037a0822",
+                      "transplant_blob_sha256":  "148cddcbb40c1865857cb61fe9627e087031d314ca8529c01bc3d6db0939f4e1",
+                      "current_blob_sha256":  "148cddcbb40c1865857cb61fe9627e087031d314ca8529c01bc3d6db0939f4e1"
+                  },
+                  {
+                      "path":  "Foundation/include/NxPlane.h",
+                      "raw_worktree_sha256":  "9ee607a71ab37b82c641cff4d1c026f2a24aa51c7ef33c1dc6acc5874a22f552",
+                      "raw_oracle_sha256":  "9ee607a71ab37b82c641cff4d1c026f2a24aa51c7ef33c1dc6acc5874a22f552",
+                      "transplant_blob_sha256":  "6f73a80d75c9462fa2e076cca585b2dbeba9e15424f329ddabfc15a6ab70666d",
+                      "current_blob_sha256":  "6f73a80d75c9462fa2e076cca585b2dbeba9e15424f329ddabfc15a6ab70666d"
+                  },
+                  {
+                      "path":  "Foundation/include/NxPool.h",
+                      "raw_worktree_sha256":  "94688d29641eaad9a16170e3470991c23266190c84732f8513bee8cbc1d3c251",
+                      "raw_oracle_sha256":  "94688d29641eaad9a16170e3470991c23266190c84732f8513bee8cbc1d3c251",
+                      "transplant_blob_sha256":  "470c8ccbea7514071417703550aeccadda99adafe28eb98f78d873574f070aa8",
+                      "current_blob_sha256":  "470c8ccbea7514071417703550aeccadda99adafe28eb98f78d873574f070aa8"
+                  },
+                  {
+                      "path":  "Foundation/include/NxProfiler.h",
+                      "raw_worktree_sha256":  "203efe91b8a04e1459aab30545d4b424b6a7832e27d738e4ef88f238e9d7699d",
+                      "raw_oracle_sha256":  "203efe91b8a04e1459aab30545d4b424b6a7832e27d738e4ef88f238e9d7699d",
+                      "transplant_blob_sha256":  "01a85c9f12dda84f1924a52566f616a30c14d968e0e561b72a585f5da12a8c25",
+                      "current_blob_sha256":  "01a85c9f12dda84f1924a52566f616a30c14d968e0e561b72a585f5da12a8c25"
+                  },
+                  {
+                      "path":  "Foundation/include/NxQuat.h",
+                      "raw_worktree_sha256":  "58fd4d399650ba087a5441315d4faeed0250be1d8a348c23006a450fd53bc18e",
+                      "raw_oracle_sha256":  "58fd4d399650ba087a5441315d4faeed0250be1d8a348c23006a450fd53bc18e",
+                      "transplant_blob_sha256":  "7ea7ee3c6d42e262438d7979d90d11ac14d899fe22aba2cbfe280f6cc4c27030",
+                      "current_blob_sha256":  "7ea7ee3c6d42e262438d7979d90d11ac14d899fe22aba2cbfe280f6cc4c27030"
+                  },
+                  {
+                      "path":  "Foundation/include/NxQuickSort.h",
+                      "raw_worktree_sha256":  "f582c562f1812ec9c63ea8553af258f54cca199b3e6b05993fbc417378133067",
+                      "raw_oracle_sha256":  "f582c562f1812ec9c63ea8553af258f54cca199b3e6b05993fbc417378133067",
+                      "transplant_blob_sha256":  "6f39777e2e46d112dbe3de98de5c5e941186cc8d98303b960fa36f2d5963c608",
+                      "current_blob_sha256":  "6f39777e2e46d112dbe3de98de5c5e941186cc8d98303b960fa36f2d5963c608"
+                  },
+                  {
+                      "path":  "Foundation/include/NxRay.h",
+                      "raw_worktree_sha256":  "e05ad1eca258d12ed08fedc8b03dbb88cd6bf1e1d7a35f10486f54c664cbab7e",
+                      "raw_oracle_sha256":  "e05ad1eca258d12ed08fedc8b03dbb88cd6bf1e1d7a35f10486f54c664cbab7e",
+                      "transplant_blob_sha256":  "3d5ca08293515c78a1fc7109e6df83b7873fb27caccb25f7597a81eeedd08e1f",
+                      "current_blob_sha256":  "3d5ca08293515c78a1fc7109e6df83b7873fb27caccb25f7597a81eeedd08e1f"
+                  },
+                  {
+                      "path":  "Foundation/include/NxSegment.h",
+                      "raw_worktree_sha256":  "268cb4d45d49a0f3d2eb4f692d43d97aa21d24db761014d242495e6e54a4008f",
+                      "raw_oracle_sha256":  "268cb4d45d49a0f3d2eb4f692d43d97aa21d24db761014d242495e6e54a4008f",
+                      "transplant_blob_sha256":  "2e2ae14d06b2ee952e87c6a8a97e800c3e530d8c46ca1adb574431054285743e",
+                      "current_blob_sha256":  "2e2ae14d06b2ee952e87c6a8a97e800c3e530d8c46ca1adb574431054285743e"
+                  },
+                  {
+                      "path":  "Foundation/include/NxSimpleTriangleMesh.h",
+                      "raw_worktree_sha256":  "c8b4dd640bbe297b29dab1a3521da3cf6444edd384f06f35f6a63ff58f667995",
+                      "raw_oracle_sha256":  "c8b4dd640bbe297b29dab1a3521da3cf6444edd384f06f35f6a63ff58f667995",
+                      "transplant_blob_sha256":  "f3b16becab102454bc35c6d16a70d06f4e9050094ca887bd9f80db4fdf19c1d3",
+                      "current_blob_sha256":  "f3b16becab102454bc35c6d16a70d06f4e9050094ca887bd9f80db4fdf19c1d3"
+                  },
+                  {
+                      "path":  "Foundation/include/NxSimpleTypes.h",
+                      "raw_worktree_sha256":  "74f162f50a02d66d62144261c0044945ded354bb67efba21562ee9362c3ab203",
+                      "raw_oracle_sha256":  "74f162f50a02d66d62144261c0044945ded354bb67efba21562ee9362c3ab203",
+                      "transplant_blob_sha256":  "cbb65e4524af38ddb79584ecf0d6ca2133e508a4f7522ab4881f283f61a34505",
+                      "current_blob_sha256":  "cbb65e4524af38ddb79584ecf0d6ca2133e508a4f7522ab4881f283f61a34505"
+                  },
+                  {
+                      "path":  "Foundation/include/NxSphere.h",
+                      "raw_worktree_sha256":  "9d205a2d69fbfed1e27cf69bd7054cbbda07516d7e68fc54c33ffac899609970",
+                      "raw_oracle_sha256":  "9d205a2d69fbfed1e27cf69bd7054cbbda07516d7e68fc54c33ffac899609970",
+                      "transplant_blob_sha256":  "02232ffb0677c29793578c2665d04b291be2817222d2dc3abb1002003bdc7f35",
+                      "current_blob_sha256":  "02232ffb0677c29793578c2665d04b291be2817222d2dc3abb1002003bdc7f35"
+                  },
+                  {
+                      "path":  "Foundation/include/NxStream.h",
+                      "raw_worktree_sha256":  "406f5261e4dcec6a87c3a654e1c16bb05f23f362df45627193efaa159bdd6a12",
+                      "raw_oracle_sha256":  "406f5261e4dcec6a87c3a654e1c16bb05f23f362df45627193efaa159bdd6a12",
+                      "transplant_blob_sha256":  "c8c203ff61f243dd22d976724929ca3a5f4431e3888cbc3de268e0e46f56e463",
+                      "current_blob_sha256":  "c8c203ff61f243dd22d976724929ca3a5f4431e3888cbc3de268e0e46f56e463"
+                  },
+                  {
+                      "path":  "Foundation/include/NxUserAllocator.h",
+                      "raw_worktree_sha256":  "d9a9099d220e18c854f4e1d856d4b4f3809951ba78ec85d1953cc610b5b8e039",
+                      "raw_oracle_sha256":  "d9a9099d220e18c854f4e1d856d4b4f3809951ba78ec85d1953cc610b5b8e039",
+                      "transplant_blob_sha256":  "4d9c1aeaa7fda1a01030a2ee8faec08899bba5a59539e2020ece90209e51cf0e",
+                      "current_blob_sha256":  "4d9c1aeaa7fda1a01030a2ee8faec08899bba5a59539e2020ece90209e51cf0e"
+                  },
+                  {
+                      "path":  "Foundation/include/NxUserAllocatorAccess.h",
+                      "raw_worktree_sha256":  "0cb14602986db655d7f7507de33033bf29601abb620ba0491dcdd1609ff86cbf",
+                      "raw_oracle_sha256":  "0cb14602986db655d7f7507de33033bf29601abb620ba0491dcdd1609ff86cbf",
+                      "transplant_blob_sha256":  "268c56b76c1d59ec90a8f4ff3add3fb5547657cde5aa0ed2077e5e8177084402",
+                      "current_blob_sha256":  "268c56b76c1d59ec90a8f4ff3add3fb5547657cde5aa0ed2077e5e8177084402"
+                  },
+                  {
+                      "path":  "Foundation/include/NxUserAllocatorDefault.h",
+                      "raw_worktree_sha256":  "afe8cc95c7ad796e09f97b46e0ebe9a62d8c06afe25d422629dd842bf207fb53",
+                      "raw_oracle_sha256":  "afe8cc95c7ad796e09f97b46e0ebe9a62d8c06afe25d422629dd842bf207fb53",
+                      "transplant_blob_sha256":  "4d2bd97852454667d5505e5eb5482de5cefd7f9e2de68f98066e948fec8bbb5e",
+                      "current_blob_sha256":  "4d2bd97852454667d5505e5eb5482de5cefd7f9e2de68f98066e948fec8bbb5e"
+                  },
+                  {
+                      "path":  "Foundation/include/NxUserDebugRenderer.h",
+                      "raw_worktree_sha256":  "1f1dd04c5be2abd80479aa755f53f028978869539e370000682289f10263baee",
+                      "raw_oracle_sha256":  "1f1dd04c5be2abd80479aa755f53f028978869539e370000682289f10263baee",
+                      "transplant_blob_sha256":  "3e9b48a3106506cc61827f346dd7945efda7dc51cdd9fba79d816c8be79db447",
+                      "current_blob_sha256":  "3e9b48a3106506cc61827f346dd7945efda7dc51cdd9fba79d816c8be79db447"
+                  },
+                  {
+                      "path":  "Foundation/include/NxUserOutputStream.h",
+                      "raw_worktree_sha256":  "7f9f3b9b92a36c84acf166b5c2fd84db70733899caa1569e0784de4bfbb33965",
+                      "raw_oracle_sha256":  "7f9f3b9b92a36c84acf166b5c2fd84db70733899caa1569e0784de4bfbb33965",
+                      "transplant_blob_sha256":  "a8be20b7a8c7cffe544375bc573853eb85ada6706e00c889a4cf84e56cf3fe50",
+                      "current_blob_sha256":  "a8be20b7a8c7cffe544375bc573853eb85ada6706e00c889a4cf84e56cf3fe50"
+                  },
+                  {
+                      "path":  "Foundation/include/NxUtilities.h",
+                      "raw_worktree_sha256":  "ee639cb8ceb5edd2d770775232dfd1628eccdc3b7631689c6f082437e31910ee",
+                      "raw_oracle_sha256":  "ee639cb8ceb5edd2d770775232dfd1628eccdc3b7631689c6f082437e31910ee",
+                      "transplant_blob_sha256":  "50bce8a755da7f0f0274abc229996984aeaafeb6759fb3280632712d93837023",
+                      "current_blob_sha256":  "50bce8a755da7f0f0274abc229996984aeaafeb6759fb3280632712d93837023"
+                  },
+                  {
+                      "path":  "Foundation/include/NxVec3.h",
+                      "raw_worktree_sha256":  "de0752264f51d064c233be6de418b2aea25e1a74a4a80c7dd68b762bc0492cd8",
+                      "raw_oracle_sha256":  "de0752264f51d064c233be6de418b2aea25e1a74a4a80c7dd68b762bc0492cd8",
+                      "transplant_blob_sha256":  "e2d8990b25cfe1a03027bc5939d2b817b98be0d168bee2baeec1877d48fa7630",
+                      "current_blob_sha256":  "e2d8990b25cfe1a03027bc5939d2b817b98be0d168bee2baeec1877d48fa7630"
+                  },
+                  {
+                      "path":  "Foundation/include/NxVolumeIntegration.h",
+                      "raw_worktree_sha256":  "e748af935cd1d56999e65449fc95dc7230108f3bd5e51a4052926a287dd2cc72",
+                      "raw_oracle_sha256":  "e748af935cd1d56999e65449fc95dc7230108f3bd5e51a4052926a287dd2cc72",
+                      "transplant_blob_sha256":  "cc8bb4553c066cbced4a1b295bf823fe8fe03022cba0334db596d58d811f5a45",
+                      "current_blob_sha256":  "cc8bb4553c066cbced4a1b295bf823fe8fe03022cba0334db596d58d811f5a45"
+                  },
+                  {
+                      "path":  "Foundation/include/NxXBOX.h",
+                      "raw_worktree_sha256":  "964f1207a89b6563700eaee9d44fb4b03e9bac59f933f494f1a8e4339532f665",
+                      "raw_oracle_sha256":  "964f1207a89b6563700eaee9d44fb4b03e9bac59f933f494f1a8e4339532f665",
+                      "transplant_blob_sha256":  "d92afbf5a45f20e04180b9b8a6444e298d520840d62cfb018854060ad46c4b7e",
+                      "current_blob_sha256":  "d92afbf5a45f20e04180b9b8a6444e298d520840d62cfb018854060ad46c4b7e"
+                  },
+                  {
+                      "path":  "NxBuildNumber.h",
+                      "raw_worktree_sha256":  "8bc6af66adb5adb9bfa8e402ee2bb4be23fc089b4c2835d174f41300aa0a028d",
+                      "raw_oracle_sha256":  "8bc6af66adb5adb9bfa8e402ee2bb4be23fc089b4c2835d174f41300aa0a028d",
+                      "transplant_blob_sha256":  "84d431ffaae60fc692e1c22343f9ff91b23c6a39da89433a06558ea9c4789511",
+                      "current_blob_sha256":  "84d431ffaae60fc692e1c22343f9ff91b23c6a39da89433a06558ea9c4789511"
+                  },
+                  {
+                      "path":  "NxVersionNumber.h",
+                      "raw_worktree_sha256":  "0b0ee61a53b886437e2a0ef7f5d9b123d4d8ccd178ebd6057eeddc3e552e3df1",
+                      "raw_oracle_sha256":  "0b0ee61a53b886437e2a0ef7f5d9b123d4d8ccd178ebd6057eeddc3e552e3df1",
+                      "transplant_blob_sha256":  "4b1112c5660a0d9cc5fe82386fb644bc3c1c93210dd4cb3d2a7c61eaf52a6313",
+                      "current_blob_sha256":  "4b1112c5660a0d9cc5fe82386fb644bc3c1c93210dd4cb3d2a7c61eaf52a6313"
+                  },
+                  {
+                      "path":  "VersionNumber.h",
+                      "raw_worktree_sha256":  "e1dea1959436ff74616345b4a645176dbeaf94672dd15da9eabbfd018f347f6d",
+                      "raw_oracle_sha256":  "e1dea1959436ff74616345b4a645176dbeaf94672dd15da9eabbfd018f347f6d",
+                      "transplant_blob_sha256":  "5170932bbb7cf51568be9481ddb89a32c8b0536148e2bb77f66f367b97d28219",
+                      "current_blob_sha256":  "5170932bbb7cf51568be9481ddb89a32c8b0536148e2bb77f66f367b97d28219"
+                  }
+              ]
+}

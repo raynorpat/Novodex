@@ -547,6 +547,11 @@ int wmain(int argc, wchar_t** argv)
 		if(!chainScene->checkResults(NX_RIGID_BODY_FINISHED, true)
 			|| !chainScene->fetchResults(NX_RIGID_BODY_FINISHED, true))
 			return nxFail("overlapping broadphase chain step failed");
+		if(selector == NX_BROADPHASE_COHERENT)
+			{
+			nxPrintActorBodyVelocity("broadphase2-contact1", *chainActors[1]);
+			nxPrintActorBodyVelocity("broadphase2-contact2", *chainActors[2]);
+			}
 		for(unsigned chainIndex = 0; chainIndex != 3; ++chainIndex)
 			{
 			char stage[32];

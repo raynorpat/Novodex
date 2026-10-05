@@ -1,0 +1,1913 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260809132707
+Configuration Name: 
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\tools\run_final_verification.ps1
+PSVersion: 5.1.26100.8875
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.8875
+BuildVersion: 10.0.26100.8875
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+SCRIPT_INVOCATION: & C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\tools\run_final_verification.ps1
+STARTUP_OUTPUT_INVALIDATION: path=D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_final_verification.raw.txt existed=True removed=True
+STARTUP_OUTPUT_INVALIDATION: path=D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_final_verification.result.txt existed=True removed=True
+STARTUP_OUTPUT_INVALIDATION: path=D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_live_exports.txt existed=True removed=True
+
+==============================================================================
+Resolved paths and immutable inputs
+==============================================================================
+SCRIPT_PATH: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\tools\run_final_verification.ps1
+EVIDENCE_REPO: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin
+NOVODEX_REPO: D:\github\Novodex
+ORACLE_PATH: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+CANDIDATE_PATH: D:\github\Novodex\build\Release\NxFoundation.dll
+LIVE_EXPORTS_PATH: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_live_exports.txt
+RAW_TRANSCRIPT_PATH: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_final_verification.raw.txt
+RESULT_PATH: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_final_verification.result.txt
+CONSUMER_ACTION_POLICY: consumer-read-only; Novodex build outputs and the three exact Task 10 evidence outputs may be overwritten, but consumer binaries are never deployed, removed, or launched.
+ASSERTION PASS: required path exists: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin
+ASSERTION PASS: required path exists: D:\github\Novodex
+ASSERTION PASS: required path exists: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+ASSERTION PASS: required path exists: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\inventory.json
+ASSERTION PASS: required path exists: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\oracle_pe_capstone.json
+ASSERTION PASS: required path exists: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\immutable_public_hashes.json
+ASSERTION PASS: required path exists: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\exports_oracle.txt
+ASSERTION PASS: required path exists: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\exports_rebuilt.txt
+ASSERTION PASS: required path exists: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\tools\pe_exports.py
+ASSERTION PASS: required path exists: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\tools\compare_exports.py
+ASSERTION PASS: required path exists: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\tools\tests\test_export_tools.py
+PLATFORM: Microsoft Windows NT 10.0.26100.0
+WORKING_DIRECTORY: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin
+COMMAND: & cmake.exe --version
+STDOUT_BEGIN
+cmake version 4.4.2
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin
+COMMAND: & python.exe --version
+STDOUT_BEGIN
+Python 3.13.9
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin
+COMMAND: & git.exe --version
+STDOUT_BEGIN
+git version 2.54.0.windows.1
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe rev-parse HEAD
+STDOUT_BEGIN
+62b26f4f672ea70b73742302db52c67e338565e3
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+ASSERTION PASS: implementation HEAD is 62b26f4f672ea70b73742302db52c67e338565e3
+WORKING_DIRECTORY: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin
+COMMAND: & git.exe rev-parse HEAD
+STDOUT_BEGIN
+391a1cf176f3c0a0e409c9737f3c1b5fc6d05a6f
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+EVIDENCE_HEAD_AT_AUDIT: 391a1cf176f3c0a0e409c9737f3c1b5fc6d05a6f
+
+==============================================================================
+Fresh Win32 configure, explicit clean, and Release build
+==============================================================================
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & cmake.exe -S . -B build --fresh -G "Visual Studio 18 2026" -A Win32
+STDOUT_BEGIN
+-- The C compiler identification is MSVC 19.51.36252.0
+-- The CXX compiler identification is MSVC 19.51.36252.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/Program Files/Microsoft Visual Studio/18/Professional/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x86/cl.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/18/Professional/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x86/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (5.3s)
+-- Generating done (0.2s)
+-- Build files have been written to: D:/github/Novodex/build
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & cmake.exe --build build --config Release --target clean
+STDOUT_BEGIN
+MSBuild version 18.8.2+ce25c0108 for .NET Framework
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & cmake.exe --build build --config Release --target NxFoundation NxFoundationExportTests NxFoundationSDKTests NxFoundationClusterTests NxFoundationCustomArrayTests
+STDOUT_BEGIN
+MSBuild version 18.8.2+ce25c0108 for .NET Framework
+
+  1>Checking Build System
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  Box.cpp
+  Capsule.cpp
+  CustomArray.cpp
+  DebugRenderable.cpp
+  DefaultAllocator.cpp
+  Exception.cpp
+  FPU.cpp
+  FoundationSDK.cpp
+  Observable.cpp
+D:\github\Novodex\Foundation\src\FoundationSDK.cpp(73,39): warning C4291: 'void *NxAllocateable::operator new(size_t,NxMemoryType)': no matching operator delete found; memory will not be freed if initialization throws an exception [D:\github\Novodex\build\NxFoundation.vcxproj]
+      D:\github\Novodex\Foundation\include\NxAllocateable.h(31,33):
+      see declaration of 'NxAllocateable::operator new'
+  
+D:\github\Novodex\Foundation\src\FoundationSDK.cpp(83,51): warning C4291: 'void *NxAllocateable::operator new(size_t,NxMemoryType)': no matching operator delete found; memory will not be freed if initialization throws an exception [D:\github\Novodex\build\NxFoundation.vcxproj]
+      D:\github\Novodex\Foundation\include\NxAllocateable.h(31,33):
+      see declaration of 'NxAllocateable::operator new'
+  
+D:\github\Novodex\Foundation\src\FoundationSDK.cpp(244,78): warning C4291: 'void *NxAllocateable::operator new(size_t,NxMemoryType)': no matching operator delete found; memory will not be freed if initialization throws an exception [D:\github\Novodex\build\NxFoundation.vcxproj]
+      D:\github\Novodex\Foundation\include\NxAllocateable.h(31,33):
+      see declaration of 'NxAllocateable::operator new'
+  
+  Profiler.cpp
+  Ray.cpp
+  Segment.cpp
+  Sphere.cpp
+  Time.cpp
+  Utilities.cpp
+  VolumeIntegration.cpp
+  Generating Code...
+     Creating library D:/github/Novodex/build/Release/NxFoundation.lib and object D:/github/Novodex/build/Release/NxFoundation.exp
+  NxFoundation.vcxproj -> D:\github\Novodex\build\Release\NxFoundation.dll
+MSBuild version 18.8.2+ce25c0108 for .NET Framework
+
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  FoundationExportTests.cpp
+  NxFoundationExportTests.vcxproj -> D:\github\Novodex\build\Release\NxFoundationExportTests.exe
+MSBuild version 18.8.2+ce25c0108 for .NET Framework
+
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  FoundationSDKTests.cpp
+  NxFoundationSDKTests.vcxproj -> D:\github\Novodex\build\Release\NxFoundationSDKTests.exe
+MSBuild version 18.8.2+ce25c0108 for .NET Framework
+
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  FoundationClusterTests.cpp
+  NxFoundationClusterTests.vcxproj -> D:\github\Novodex\build\Release\NxFoundationClusterTests.exe
+MSBuild version 18.8.2+ce25c0108 for .NET Framework
+
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  FoundationCustomArrayTests.cpp
+  CustomArray.cpp
+  Generating Code...
+  NxFoundationCustomArrayTests.vcxproj -> D:\github\Novodex\build\Release\NxFoundationCustomArrayTests.exe
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+ASSERTION PASS: fresh build output exists: D:\github\Novodex\build\Release\NxFoundation.dll
+ASSERTION PASS: fresh build output exists: D:\github\Novodex\build\Release\NxFoundationExportTests.exe
+ASSERTION PASS: fresh build output exists: D:\github\Novodex\build\Release\NxFoundationSDKTests.exe
+ASSERTION PASS: fresh build output exists: D:\github\Novodex\build\Release\NxFoundationClusterTests.exe
+ASSERTION PASS: fresh build output exists: D:\github\Novodex\build\Release\NxFoundationCustomArrayTests.exe
+
+==============================================================================
+Export and SDK oracle/rebuilt processes
+==============================================================================
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationExportTests.exe D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+STDOUT_BEGIN
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationExportTests.exe D:\github\Novodex\build\Release\NxFoundation.dll
+STDOUT_BEGIN
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+PROCESS_COMPARISON: test=NxFoundationExportTests.exe stdout_exact=True stderr_exact=True oracle_exit=0 rebuilt_exit=0
+ASSERTION PASS: NxFoundationExportTests.exe oracle/rebuilt output is exact
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationSDKTests.exe D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+STDOUT_BEGIN
+wrong_version=null global=null
+create=nonnull alloc_calls=1 typed_calls=1 first_size=56 bindings=allocator,global,stream
+initial_errors=0,0
+error=return_false callback=206,gate_message,sdk_gate.cpp,77 codes=206,206,0,0
+second_create=same allocator=sticky stream=updated second_allocator_calls=0
+release=free_calls_1 global=sticky
+recreate=nonnull alloc_calls=1 typed_calls=1 free_calls=1
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationSDKTests.exe D:\github\Novodex\build\Release\NxFoundation.dll
+STDOUT_BEGIN
+wrong_version=null global=null
+create=nonnull alloc_calls=1 typed_calls=1 first_size=56 bindings=allocator,global,stream
+initial_errors=0,0
+error=return_false callback=206,gate_message,sdk_gate.cpp,77 codes=206,206,0,0
+second_create=same allocator=sticky stream=updated second_allocator_calls=0
+release=free_calls_1 global=sticky
+recreate=nonnull alloc_calls=1 typed_calls=1 free_calls=1
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+PROCESS_COMPARISON: test=NxFoundationSDKTests.exe stdout_exact=True stderr_exact=True oracle_exit=0 rebuilt_exit=0
+ASSERTION PASS: NxFoundationSDKTests.exe oracle/rebuilt output is exact
+
+==============================================================================
+Twelve cluster modes, twenty-four explicit processes
+==============================================================================
+CLUSTER_MODE_BEGIN: exception
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe exception D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+STDOUT_BEGIN
+exception size=16 fields=4,8,12 getters=1,exception_gate.cpp,321 copy=exact assign=exact vftable=3_ordered
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe exception D:\github\Novodex\build\Release\NxFoundation.dll
+STDOUT_BEGIN
+exception size=16 fields=4,8,12 getters=1,exception_gate.cpp,321 copy=exact assign=exact vftable=3_ordered
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+PROCESS_COMPARISON: mode=exception stdout_exact=True stderr_exact=True oracle_exit=0 rebuilt_exit=0
+ASSERTION PASS: exception oracle/rebuilt output is exact
+CLUSTER_MODE_END: exception
+CLUSTER_MODE_BEGIN: observable
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe observable D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+STDOUT_BEGIN
+observable size=16 fields=4,8,12 vftable=1 count=0,2,1,0 callbacks=1,2 copy=deep assign=deep last_remove=empty
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe observable D:\github\Novodex\build\Release\NxFoundation.dll
+STDOUT_BEGIN
+observable size=16 fields=4,8,12 vftable=1 count=0,2,1,0 callbacks=1,2 copy=deep assign=deep last_remove=empty
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+PROCESS_COMPARISON: mode=observable stdout_exact=True stderr_exact=True oracle_exit=0 rebuilt_exit=0
+ASSERTION PASS: observable oracle/rebuilt output is exact
+CLUSTER_MODE_END: observable
+CLUSTER_MODE_BEGIN: profiler
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe profiler D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+STDOUT_BEGIN
+profiler exports=49 define_zone_size=56 vftable=3_ordered globals=initialized,0,0,0,256,64 zone=define,enter,leave,scope,release copy=fields_exact assign=fields_exact stdev=3 sort=1,-1,0 update=0_to_1 active=positive
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe profiler D:\github\Novodex\build\Release\NxFoundation.dll
+STDOUT_BEGIN
+profiler exports=49 define_zone_size=56 vftable=3_ordered globals=initialized,0,0,0,256,64 zone=define,enter,leave,scope,release copy=fields_exact assign=fields_exact stdev=3 sort=1,-1,0 update=0_to_1 active=positive
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+PROCESS_COMPARISON: mode=profiler stdout_exact=True stderr_exact=True oracle_exit=0 rebuilt_exit=0
+ASSERTION PASS: profiler oracle/rebuilt output is exact
+CLUSTER_MODE_END: profiler
+CLUSTER_MODE_BEGIN: time
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe time D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+STDOUT_BEGIN
+time size=8 frequency=positive_stable ticks=positive_monotonic peek=nonreset_monotonic elapsed=resets assignment=epoch_exact windows=bounded
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe time D:\github\Novodex\build\Release\NxFoundation.dll
+STDOUT_BEGIN
+time size=8 frequency=positive_stable ticks=positive_monotonic peek=nonreset_monotonic elapsed=resets assignment=epoch_exact windows=bounded
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+PROCESS_COMPARISON: mode=time stdout_exact=True stderr_exact=True oracle_exit=0 rebuilt_exit=0
+ASSERTION PASS: time oracle/rebuilt output is exact
+CLUSTER_MODE_END: time
+CLUSTER_MODE_BEGIN: fpu
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe fpu D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+STDOUT_BEGIN
+fpu exports=11 ints=7_vectors precision=x87_24,53,64 rounding=x87_chop,up,down,near exceptions=x87_true_masked,false_unmasked mxcsr=unchanged restoration=exact
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe fpu D:\github\Novodex\build\Release\NxFoundation.dll
+STDOUT_BEGIN
+fpu exports=11 ints=7_vectors precision=x87_24,53,64 rounding=x87_chop,up,down,near exceptions=x87_true_masked,false_unmasked mxcsr=unchanged restoration=exact
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+PROCESS_COMPARISON: mode=fpu stdout_exact=True stderr_exact=True oracle_exit=0 rebuilt_exit=0
+ASSERTION PASS: fpu oracle/rebuilt output is exact
+CLUSTER_MODE_END: fpu
+CLUSTER_MODE_BEGIN: util
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe util D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+STDOUT_BEGIN
+util exports=5 crc=empty,canonical,byte_domain,ff,embedded_nul,4096 bounds=empty_unchanged,extrema tangents=both_branches_orthonormal rotation=general,parallel,antiparallel inertia=diagonal,symmetric_positive_trace
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe util D:\github\Novodex\build\Release\NxFoundation.dll
+STDOUT_BEGIN
+util exports=5 crc=empty,canonical,byte_domain,ff,embedded_nul,4096 bounds=empty_unchanged,extrema tangents=both_branches_orthonormal rotation=general,parallel,antiparallel inertia=diagonal,symmetric_positive_trace
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+PROCESS_COMPARISON: mode=util stdout_exact=True stderr_exact=True oracle_exit=0 rebuilt_exit=0
+ASSERTION PASS: util oracle/rebuilt output is exact
+CLUSTER_MODE_END: util
+CLUSTER_MODE_BEGIN: box
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe box D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+STDOUT_BEGIN
+box_geometry planes=3f800000,00000000,00000000,c0400000/bf800000,80000000,80000000,bf800000/00000000,3f800000,00000000,c0a00000/80000000,bf800000,80000000,bf800000/00000000,00000000,3f800000,c0e00000/80000000,80000000,bf800000,bf800000 points=bf800000,bf800000,bf800000/40400000,bf800000,bf800000/40400000,40a00000,bf800000/bf800000,40a00000,bf800000/bf800000,bf800000,40e00000/40400000,bf800000,40e00000/40400000,40a00000,40e00000/bf800000,40a00000,40e00000 normals=bf13cd3a,bf13cd3a,bf13cd3a/3f13cd3a,bf13cd3a,bf13cd3a/3f13cd3a,3f13cd3a,bf13cd3a/bf13cd3a,3f13cd3a,bf13cd3a/bf13cd3a,bf13cd3a,3f13cd3a/3f13cd3a,bf13cd3a,3f13cd3a/3f13cd3a,3f13cd3a,3f13cd3a/bf13cd3a,3f13cd3a,3f13cd3a
+box exports=13 contains=interior,boundary_excluded,exterior,degenerate create=translated_aabb outputs=null_rejected,planes,points,vertex_normals tables=edges,axes,quads,triangles vertex_to_quad=345/045/015/135/234/024/012/123 world_normal=identity containment=inside,touching,outside,reverse
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe box D:\github\Novodex\build\Release\NxFoundation.dll
+STDOUT_BEGIN
+box_geometry planes=3f800000,00000000,00000000,c0400000/bf800000,80000000,80000000,bf800000/00000000,3f800000,00000000,c0a00000/80000000,bf800000,80000000,bf800000/00000000,00000000,3f800000,c0e00000/80000000,80000000,bf800000,bf800000 points=bf800000,bf800000,bf800000/40400000,bf800000,bf800000/40400000,40a00000,bf800000/bf800000,40a00000,bf800000/bf800000,bf800000,40e00000/40400000,bf800000,40e00000/40400000,40a00000,40e00000/bf800000,40a00000,40e00000 normals=bf13cd3a,bf13cd3a,bf13cd3a/3f13cd3a,bf13cd3a,bf13cd3a/3f13cd3a,3f13cd3a,bf13cd3a/bf13cd3a,3f13cd3a,bf13cd3a/bf13cd3a,bf13cd3a,3f13cd3a/3f13cd3a,bf13cd3a,3f13cd3a/3f13cd3a,3f13cd3a,3f13cd3a/bf13cd3a,3f13cd3a,3f13cd3a
+box exports=13 contains=interior,boundary_excluded,exterior,degenerate create=translated_aabb outputs=null_rejected,planes,points,vertex_normals tables=edges,axes,quads,triangles vertex_to_quad=345/045/015/135/234/024/012/123 world_normal=identity containment=inside,touching,outside,reverse
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+PROCESS_COMPARISON: mode=box stdout_exact=True stderr_exact=True oracle_exit=0 rebuilt_exit=0
+ASSERTION PASS: box oracle/rebuilt output is exact
+CLUSTER_MODE_END: box
+CLUSTER_MODE_BEGIN: capsule
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe capsule D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+STDOUT_BEGIN
+capsule_box0 center=3f800000,40000000,40400000 extents=40600000,3fc00000,3fc00000 rotation=3f800000,00000000,00000000/80000000,3f800000,00000000/80000000,80000000,3f800000
+capsule_box1 center=3f800000,40000000,40400000 extents=40900000,3fc00000,3fc00000 rotation=00000000,3f800000,00000000/00000000,80000000,3f800000/3f800000,80000000,80000000
+capsule_box2 center=3f800000,40000000,40400000 extents=40b00000,3fc00000,3fc00000 rotation=00000000,00000000,3f800000/3f800000,00000000,80000000/80000000,3f800000,80000000
+capsule exports=2 capsule_to_box=axis_x,y,z_center_extents_orthonormal box_to_capsule=largest_x,y,z,tie_x,zero_center_radius
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe capsule D:\github\Novodex\build\Release\NxFoundation.dll
+STDOUT_BEGIN
+capsule_box0 center=3f800000,40000000,40400000 extents=40600000,3fc00000,3fc00000 rotation=3f800000,00000000,00000000/80000000,3f800000,00000000/80000000,80000000,3f800000
+capsule_box1 center=3f800000,40000000,40400000 extents=40900000,3fc00000,3fc00000 rotation=00000000,3f800000,00000000/00000000,80000000,3f800000/3f800000,80000000,80000000
+capsule_box2 center=3f800000,40000000,40400000 extents=40b00000,3fc00000,3fc00000 rotation=00000000,00000000,3f800000/3f800000,00000000,80000000/80000000,3f800000,80000000
+capsule exports=2 capsule_to_box=axis_x,y,z_center_extents_orthonormal box_to_capsule=largest_x,y,z,tie_x,zero_center_radius
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+PROCESS_COMPARISON: mode=capsule stdout_exact=True stderr_exact=True oracle_exit=0 rebuilt_exit=0
+ASSERTION PASS: capsule oracle/rebuilt output is exact
+CLUSTER_MODE_END: capsule
+CLUSTER_MODE_BEGIN: sphere
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe sphere D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+STDOUT_BEGIN
+sphere exports=3 fast=null,single,pair,multi_contains compute=empty_none,multi_gems merge=disjoint,containment,both_orders,coincident,touching,alias_first
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe sphere D:\github\Novodex\build\Release\NxFoundation.dll
+STDOUT_BEGIN
+sphere exports=3 fast=null,single,pair,multi_contains compute=empty_none,multi_gems merge=disjoint,containment,both_orders,coincident,touching,alias_first
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+PROCESS_COMPARISON: mode=sphere stdout_exact=True stderr_exact=True oracle_exit=0 rebuilt_exit=0
+ASSERTION PASS: sphere oracle/rebuilt output is exact
+CLUSTER_MODE_END: sphere
+CLUSTER_MODE_BEGIN: ray_seg
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe ray_seg D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+STDOUT_BEGIN
+ray_seg exports=2 ray=unit_interior,behind,on,null_t,output_alias segment=interior,start,end,zero_length,output_alias
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe ray_seg D:\github\Novodex\build\Release\NxFoundation.dll
+STDOUT_BEGIN
+ray_seg exports=2 ray=unit_interior,behind,on,null_t,output_alias segment=interior,start,end,zero_length,output_alias
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+PROCESS_COMPARISON: mode=ray_seg stdout_exact=True stderr_exact=True oracle_exit=0 rebuilt_exit=0
+ASSERTION PASS: ray_seg oracle/rebuilt output is exact
+CLUSTER_MODE_END: ray_seg
+CLUSTER_MODE_BEGIN: volume
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe volume D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+STDOUT_BEGIN
+volume exports=1 allocator_guard=unchanged tetra32=analytic translated=density12 tetra16_flip=analytic
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe volume D:\github\Novodex\build\Release\NxFoundation.dll
+STDOUT_BEGIN
+volume exports=1 allocator_guard=unchanged tetra32=analytic translated=density12 tetra16_flip=analytic
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+PROCESS_COMPARISON: mode=volume stdout_exact=True stderr_exact=True oracle_exit=0 rebuilt_exit=0
+ASSERTION PASS: volume oracle/rebuilt output is exact
+CLUSTER_MODE_END: volume
+CLUSTER_MODE_BEGIN: debug
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe debug D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+STDOUT_BEGIN
+debug_records low_point=3f800000,40000000,40400000,11223344 low_line=00000000,00000000,00000000,3f800000,40000000,40400000,55667788 low_triangle=00000000,00000000,00000000,3f800000,00000000,00000000,00000000,3f800000,00000000,99aabbcc retained_points=40800000,40a00000,40c00000,00000007 generated_lines=bf800000,c0000000,c0400000,3f800000,c0000000,c0400000,01020304/3f800000,c0000000,c0400000,3f800000,40000000,c0400000,01020304/3f800000,40000000,c0400000,bf800000,40000000,c0400000,01020304/bf800000,40000000,c0400000,bf800000,c0000000,c0400000,01020304/bf800000,40000000,40400000,3f800000,40000000,40400000,01020304/3f800000,40000000,40400000,3f800000,c0000000,40400000,01020304/3f800000,c0000000,40400000,bf800000,c0000000,40400000,01020304/bf800000,c0000000,40400000,bf800000,40000000,40400000,01020304/3f800000,c0000000,c0400000,3f800000,c0000000,40400000,01020304/3f800000,40000000,40400000,3f800000,40000000,c0400000,01020304/bf800000,40000000,c0400000,bf800000,40000000,40400000,01020304/bf800000,c0000000,40400000,bf800000,c0000000,c0400000,01020304/00000000,00000000,00000000,3f800000,00000000,00000000,00ff0000/00000000,00000000,00000000,00000000,3f800000,00000000,0000ff00/00000000,00000000,00000000,00000000,00000000,3f800000,000000ff/bf800000,bf800000,bf800000,3f800000,bf800000,bf800000,00000009/3f800000,bf800000,bf800000,3f800000,3f800000,bf800000,00000009/3f800000,3f800000,bf800000,bf800000,3f800000,bf800000,00000009/bf800000,3f800000,bf800000,bf800000,bf800000,bf800000,00000009/bf800000,3f800000,3f800000,3f800000,3f800000,3f800000,00000009/3f800000,3f800000,3f800000,3f800000,bf800000,3f800000,00000009/3f800000,bf800000,3f800000,bf800000,bf800000,3f800000,00000009/bf800000,bf800000,3f800000,bf800000,3f800000,3f800000,00000009/3f800000,bf800000,bf800000,3f800000,bf800000,3f800000,00000009/3f800000,3f800000,3f800000,3f800000,3f800000,bf800000,00000009/bf800000,3f800000,bf800000,bf800000,3f800000,3f800000,00000009/bf800000,bf800000,3f800000,bf800000,bf800000,bf800000,00000009/00000000,00000000,00000000,40000000,00000000,00000000,0000000a/40000000,00000000,00000000,3fd9999a,3e99999a,00000000,0000000a/40000000,00000000,00000000,3fd9999a,be99999a,00000000,0000000a/40000000,00000000,00000000,3fd9999a,00000000,3e99999a,0000000a/40000000,00000000,00000000,3fd9999a,00000000,be99999a,0000000a/00000000,00000000,00000000,3f800000,00000000,00000000,0000000b/3f800000,00000000,00000000,3f59999a,3e19999a,00000000,0000000b/3f800000,00000000,00000000,3f59999a,be19999a,00000000,0000000b/3f800000,00000000,00000000,3f59999a,00000000,3e19999a,0000000b/3f800000,00000000,00000000,3f59999a,00000000,be19999a,0000000b/00000000,00000000,00000000,00000000,3f800000,00000000,0000000c/00000000,3f800000,00000000,be19999a,3f59999a,00000000,0000000c/00000000,3f800000,00000000,3e19999a,3f59999a,00000000,0000000c/00000000,3f800000,00000000,00000000,3f59999a,3e19999a,0000000c/00000000,3f800000,00000000,00000000,3f59999a,be19999a,0000000c/00000000,00000000,00000000,00000000,00000000,3f800000,0000000d/00000000,00000000,3f800000,00000000,be19999a,3f59999a,0000000d/00000000,00000000,3f800000,00000000,3e19999a,3f59999a,0000000d/00000000,00000000,3f800000,3e19999a,00000000,3f59999a,0000000d/00000000,00000000,3f800000,be19999a,00000000,3f59999a,0000000d/00000000,40000000,00000000,3fb504f3,3fb504f3,00000000,0000000e/3fb504f3,3fb504f3,00000000,40000000,b3bbbd2e,00000000,0000000e/40000000,b3bbbd2e,00000000,3fb504f3,bfb504f3,00000000,0000000e/3fb504f2,bfb504f4,00000000,b43bbd2e,c0000000,00000000,0000000e/b43bbd2e,c0000000,00000000,bfb504f5,bfb504f1,00000000,0000000e/bfb504f4,bfb504f2,00000000,c0000000,32ccde2e,00000000,0000000e/c0000000,348ccde3,00000000,bfb504ef,3fb504f7,00000000,0000000e/bfb504f1,3fb504f5,00000000,00000000,40000000,00000000,0000000e/00000000,40000000,00000000,3fb504f3,3fb504f3,00000000,0000000f/3fb504f3,3fb504f3,00000000,40000000,b3bbbd2e,00000000,0000000f/40000000,b3bbbd2e,00000000,3fb504f3,bfb504f3,00000000,0000000f/3fb504f2,bfb504f4,00000000,b43bbd2e,c0000000,00000000,0000000f generated_triangles= second_points=41100000,41000000,40e00000,00000006
+debug exports=3 object_size=52 vftable=15 primitives=point,line,triangle clear=retains_buffer aabb=12+frame3 high_level=59 append=2,1 release=nulls
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationClusterTests.exe debug D:\github\Novodex\build\Release\NxFoundation.dll
+STDOUT_BEGIN
+debug_records low_point=3f800000,40000000,40400000,11223344 low_line=00000000,00000000,00000000,3f800000,40000000,40400000,55667788 low_triangle=00000000,00000000,00000000,3f800000,00000000,00000000,00000000,3f800000,00000000,99aabbcc retained_points=40800000,40a00000,40c00000,00000007 generated_lines=bf800000,c0000000,c0400000,3f800000,c0000000,c0400000,01020304/3f800000,c0000000,c0400000,3f800000,40000000,c0400000,01020304/3f800000,40000000,c0400000,bf800000,40000000,c0400000,01020304/bf800000,40000000,c0400000,bf800000,c0000000,c0400000,01020304/bf800000,40000000,40400000,3f800000,40000000,40400000,01020304/3f800000,40000000,40400000,3f800000,c0000000,40400000,01020304/3f800000,c0000000,40400000,bf800000,c0000000,40400000,01020304/bf800000,c0000000,40400000,bf800000,40000000,40400000,01020304/3f800000,c0000000,c0400000,3f800000,c0000000,40400000,01020304/3f800000,40000000,40400000,3f800000,40000000,c0400000,01020304/bf800000,40000000,c0400000,bf800000,40000000,40400000,01020304/bf800000,c0000000,40400000,bf800000,c0000000,c0400000,01020304/00000000,00000000,00000000,3f800000,00000000,00000000,00ff0000/00000000,00000000,00000000,00000000,3f800000,00000000,0000ff00/00000000,00000000,00000000,00000000,00000000,3f800000,000000ff/bf800000,bf800000,bf800000,3f800000,bf800000,bf800000,00000009/3f800000,bf800000,bf800000,3f800000,3f800000,bf800000,00000009/3f800000,3f800000,bf800000,bf800000,3f800000,bf800000,00000009/bf800000,3f800000,bf800000,bf800000,bf800000,bf800000,00000009/bf800000,3f800000,3f800000,3f800000,3f800000,3f800000,00000009/3f800000,3f800000,3f800000,3f800000,bf800000,3f800000,00000009/3f800000,bf800000,3f800000,bf800000,bf800000,3f800000,00000009/bf800000,bf800000,3f800000,bf800000,3f800000,3f800000,00000009/3f800000,bf800000,bf800000,3f800000,bf800000,3f800000,00000009/3f800000,3f800000,3f800000,3f800000,3f800000,bf800000,00000009/bf800000,3f800000,bf800000,bf800000,3f800000,3f800000,00000009/bf800000,bf800000,3f800000,bf800000,bf800000,bf800000,00000009/00000000,00000000,00000000,40000000,00000000,00000000,0000000a/40000000,00000000,00000000,3fd9999a,3e99999a,00000000,0000000a/40000000,00000000,00000000,3fd9999a,be99999a,00000000,0000000a/40000000,00000000,00000000,3fd9999a,00000000,3e99999a,0000000a/40000000,00000000,00000000,3fd9999a,00000000,be99999a,0000000a/00000000,00000000,00000000,3f800000,00000000,00000000,0000000b/3f800000,00000000,00000000,3f59999a,3e19999a,00000000,0000000b/3f800000,00000000,00000000,3f59999a,be19999a,00000000,0000000b/3f800000,00000000,00000000,3f59999a,00000000,3e19999a,0000000b/3f800000,00000000,00000000,3f59999a,00000000,be19999a,0000000b/00000000,00000000,00000000,00000000,3f800000,00000000,0000000c/00000000,3f800000,00000000,be19999a,3f59999a,00000000,0000000c/00000000,3f800000,00000000,3e19999a,3f59999a,00000000,0000000c/00000000,3f800000,00000000,00000000,3f59999a,3e19999a,0000000c/00000000,3f800000,00000000,00000000,3f59999a,be19999a,0000000c/00000000,00000000,00000000,00000000,00000000,3f800000,0000000d/00000000,00000000,3f800000,00000000,be19999a,3f59999a,0000000d/00000000,00000000,3f800000,00000000,3e19999a,3f59999a,0000000d/00000000,00000000,3f800000,3e19999a,00000000,3f59999a,0000000d/00000000,00000000,3f800000,be19999a,00000000,3f59999a,0000000d/00000000,40000000,00000000,3fb504f3,3fb504f3,00000000,0000000e/3fb504f3,3fb504f3,00000000,40000000,b3bbbd2e,00000000,0000000e/40000000,b3bbbd2e,00000000,3fb504f3,bfb504f3,00000000,0000000e/3fb504f2,bfb504f4,00000000,b43bbd2e,c0000000,00000000,0000000e/b43bbd2e,c0000000,00000000,bfb504f5,bfb504f1,00000000,0000000e/bfb504f4,bfb504f2,00000000,c0000000,32ccde2e,00000000,0000000e/c0000000,348ccde3,00000000,bfb504ef,3fb504f7,00000000,0000000e/bfb504f1,3fb504f5,00000000,00000000,40000000,00000000,0000000e/00000000,40000000,00000000,3fb504f3,3fb504f3,00000000,0000000f/3fb504f3,3fb504f3,00000000,40000000,b3bbbd2e,00000000,0000000f/40000000,b3bbbd2e,00000000,3fb504f3,bfb504f3,00000000,0000000f/3fb504f2,bfb504f4,00000000,b43bbd2e,c0000000,00000000,0000000f generated_triangles= second_points=41100000,41000000,40e00000,00000006
+debug exports=3 object_size=52 vftable=15 primitives=point,line,triangle clear=retains_buffer aabb=12+frame3 high_level=59 append=2,1 release=nulls
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+PROCESS_COMPARISON: mode=debug stdout_exact=True stderr_exact=True oracle_exit=0 rebuilt_exit=0
+ASSERTION PASS: debug oracle/rebuilt output is exact
+CLUSTER_MODE_END: debug
+ASSERTION PASS: all 12 cluster mode pairs match exactly
+
+==============================================================================
+Private CustomArray process
+==============================================================================
+WORKING_DIRECTORY: D:\github\Novodex\build\Release
+COMMAND: & D:\github\Novodex\build\Release\NxFoundationCustomArrayTests.exe
+STDOUT_BEGIN
+misc exports=0 custom_array block=4,8 offset=11 typed=roundtrip bits=b0 ascii=ab42 stream=exact copy=deep assignment=deep
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+
+==============================================================================
+Live exports, committed equivalence, and recorder exclusion
+==============================================================================
+WORKING_DIRECTORY: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin
+ENVIRONMENT: PYTHONDONTWRITEBYTECODE=1
+COMMAND: & python.exe -B D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\tools\pe_exports.py D:\github\Novodex\build\Release\NxFoundation.dll
+STDOUT_BEGIN
+1 ??0DefineZone@NxProfiler@@QAE@ABV01@@Z
+2 ??0DefineZone@NxProfiler@@QAE@PBD@Z
+3 ??0DefineZone@NxProfiler@@QAE@XZ
+4 ??0Exception@NxFoundation@@QAE@$$QAV01@@Z
+5 ??0Exception@NxFoundation@@QAE@ABV01@@Z
+6 ??0Exception@NxFoundation@@QAE@W4NxErrorCode@@PBDH@Z
+7 ??0FoundationSDK@NxFoundation@@AAE@XZ
+8 ??0FoundationSDK@NxFoundation@@QAE@ABV01@@Z
+9 ??0Observable@NxFoundation@@QAE@$$QAV01@@Z
+10 ??0Observable@NxFoundation@@QAE@ABV01@@Z
+11 ??0Observable@NxFoundation@@QAE@XZ
+12 ??0SetCurrentZone@NxProfiler@@QAE@AAVDefineZone@1@@Z
+13 ??0Time@NxFoundation@@QAE@XZ
+14 ??1DefineZone@NxProfiler@@QAE@XZ
+15 ??1FoundationSDK@NxFoundation@@AAE@XZ
+16 ??1Observable@NxFoundation@@QAE@XZ
+17 ??1SetCurrentZone@NxProfiler@@QAE@XZ
+18 ??4DefineZone@NxProfiler@@QAEAAV01@ABV01@@Z
+19 ??4Exception@NxFoundation@@QAEAAV01@$$QAV01@@Z
+20 ??4Exception@NxFoundation@@QAEAAV01@ABV01@@Z
+21 ??4FoundationSDK@NxFoundation@@QAEAAV01@ABV01@@Z
+22 ??4NxProfiler@@QAEAAV0@$$QAV0@@Z
+23 ??4NxProfiler@@QAEAAV0@ABV0@@Z
+24 ??4Observable@NxFoundation@@QAEAAV01@$$QAV01@@Z
+25 ??4Observable@NxFoundation@@QAEAAV01@ABV01@@Z
+26 ??4SetCurrentZone@NxProfiler@@QAEAAV01@ABV01@@Z
+27 ??4Time@NxFoundation@@QAEAAV01@$$QAV01@@Z
+28 ??4Time@NxFoundation@@QAEAAV01@ABV01@@Z
+29 ??_7DefineZone@NxProfiler@@6B@
+30 ??_7Exception@NxFoundation@@6B@
+31 ??_7FoundationSDK@NxFoundation@@6BNxFoundationSDK@@@
+32 ??_7FoundationSDK@NxFoundation@@6BObservable@1@@
+33 ??_7Observable@NxFoundation@@6B@
+34 ?Enter_Zone@NxProfiler@@CAXAAVDefineZone@1@@Z
+35 ?Exit_Zone@NxProfiler@@CAXXZ
+36 ?GetClockFrequency@Time@NxFoundation@@CANXZ
+37 ?GetElapsedSeconds@Time@NxFoundation@@QAENXZ
+38 ?GetTimeTicks@Time@NxFoundation@@CANXZ
+39 ?PeekElapsedSeconds@Time@NxFoundation@@QAENXZ
+40 ?addObserver@Observable@NxFoundation@@QAEXAAV12@@Z
+41 ?createDebugRenderable@FoundationSDK@NxFoundation@@UAEPAVNxDebugRenderable@@XZ
+42 ?createProfilingZone@FoundationSDK@NxFoundation@@UAEPAVNxProfilingZone@@PBD@Z
+43 ?current_integer_timestamp@NxProfiler@@0_JA
+44 ?current_zone@NxProfiler@@0HA
+45 ?data_records@NxProfiler@@0PAUProfile_Tracker_Data_Record@1@A
+46 ?dbAssert@FoundationSDK@NxFoundation@@SA_NW4NxErrorCode@@PBDHPA_N1@Z
+47 ?dbMessage@FoundationSDK@NxFoundation@@SAXW4NxErrorCode@@PBDH1ZZ
+48 ?defaultSDKAllocator@FoundationSDK@NxFoundation@@2VNxUserAllocatorDefault@@A
+49 ?defaultZone@NxProfiler@@0VDefineZone@1@A
+50 ?displayed_quantity@NxProfiler@@2W4NxDisplayMode@@A
+51 ?dt@NxProfiler@@0NA
+52 ?dt_per_integer_timestamp@NxProfiler@@0NA
+53 ?enter@DefineZone@NxProfiler@@UAEXXZ
+54 ?error@FoundationSDK@NxFoundation@@SA_NW4NxErrorCode@@PBDHPA_N1ZZ
+55 ?errorImpl@FoundationSDK@NxFoundation@@AAE_NW4NxErrorCode@@PBDHPA_N1PAD@Z
+56 ?event@FoundationSDK@NxFoundation@@UAEXIAAVObservable@2@@Z
+57 ?event@Observable@NxFoundation@@UAEXIAAV12@@Z
+58 ?frame_time@NxProfiler@@2UHistory_Scalar@1@A
+59 ?getAllocator@FoundationSDK@NxFoundation@@UAEAAVNxUserAllocator@@XZ
+60 ?getErrorCode@Exception@NxFoundation@@UAE?AW4NxErrorCode@@XZ
+61 ?getErrorStream@FoundationSDK@NxFoundation@@UAEPAVNxUserOutputStream@@XZ
+62 ?getFile@Exception@NxFoundation@@UAEPBDXZ
+63 ?getFirstError@FoundationSDK@NxFoundation@@UAE?AW4NxErrorCode@@XZ
+64 ?getInstance@FoundationSDK@NxFoundation@@SAAAV12@XZ
+65 ?getLastError@FoundationSDK@NxFoundation@@UAE?AW4NxErrorCode@@XZ
+66 ?getLine@Exception@NxFoundation@@UAEHXZ
+67 ?getName@DefineZone@NxProfiler@@QAEPBDXZ
+68 ?getNumObservers@Observable@NxFoundation@@QAEIXZ
+69 ?getTime@NxProfiler@@CAXPA_J@Z
+70 ?get_stdev@NxProfiler@@CANPAUHistory_Scalar@1@H@Z
+71 ?initialize@NxProfiler@@SAXXZ
+72 ?initializeHighLevel@NxProfiler@@CAXXZ
+73 ?initialized@NxProfiler@@0_NA
+74 ?instance@FoundationSDK@NxFoundation@@0PAV12@A
+75 ?integer_timestamps_per_second@NxProfiler@@2UHistory_Scalar@1@A
+76 ?last_integer_timestamp@NxProfiler@@0_JA
+77 ?last_update_time@NxProfiler@@0NA
+78 ?leave@DefineZone@NxProfiler@@UAEXXZ
+79 ?maxZones@NxProfiler@@2HA
+80 ?notifyObservers@Observable@NxFoundation@@QAEXI@Z
+81 ?num_active_zones@NxProfiler@@2HA
+82 ?num_zones@NxProfiler@@0HA
+83 ?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A
+84 ?pointersData@NxProfiler@@0PAPAVDefineZone@1@A
+85 ?precomputed_factors@NxProfiler@@0PANA
+86 ?release@DefineZone@NxProfiler@@UAEXXZ
+87 ?release@FoundationSDK@NxFoundation@@UAEXXZ
+88 ?releaseDebugRenderable@FoundationSDK@NxFoundation@@UAEXAAPAVNxDebugRenderable@@@Z
+89 ?removeObserver@Observable@NxFoundation@@QAEXAAV12@@Z
+90 ?renderDebugData@FoundationSDK@NxFoundation@@UBEXABVNxUserDebugRenderer@@@Z
+91 ?setErrorStream@FoundationSDK@NxFoundation@@UAEXPAVNxUserOutputStream@@@Z
+92 ?setMode@NxProfiler@@SAXW4NxDisplayMode@@@Z
+93 ?sort_records@NxProfiler@@CAHPBX0@Z
+94 ?sorted_pointers@NxProfiler@@2PAPAUProfile_Tracker_Data_Record@1@A
+95 ?stackData@NxProfiler@@0PAHA
+96 ?stackSize@NxProfiler@@0HA
+97 ?stack_pos@NxProfiler@@0HA
+98 ?times_to_reach_90_percent@NxProfiler@@0PANA
+99 ?update@NxProfiler@@SAXXZ
+100 ?update_index@NxProfiler@@0HA
+101 ?zone_pointers_by_index@NxProfiler@@2PAPAVDefineZone@1@A
+102 ?zone_stack@NxProfiler@@0PAHA
+103 NxBoxContainsPoint
+104 NxBoxVertexToQuad
+105 NxComputeBounds
+106 NxComputeBoxAroundCapsule
+107 NxComputeBoxPlanes
+108 NxComputeBoxPoints
+109 NxComputeBoxVertexNormals
+110 NxComputeBoxWorldEdgeNormal
+111 NxComputeCapsuleAroundBox
+112 NxComputeDistanceSquared
+113 NxComputeSphere
+114 NxComputeSquareDistance
+115 NxComputeVolumeIntegrals
+116 NxCrc32
+117 NxCreateBox
+118 NxCreateFoundationSDK
+119 NxDiagonalizeInertiaTensor
+120 NxFastComputeSphere
+121 NxFindRotationMatrix
+122 NxGetBoxEdges
+123 NxGetBoxEdgesAxes
+124 NxGetBoxLocalEdgeNormals
+125 NxGetBoxQuads
+126 NxGetBoxTriangles
+127 NxIntCeil
+128 NxIntChop
+129 NxIntFloor
+130 NxIsBoxAInsideBoxB
+131 NxMergeSpheres
+132 NxNormalToTangents
+133 NxSetFPUExceptions
+134 NxSetFPUPrecision24
+135 NxSetFPUPrecision53
+136 NxSetFPUPrecision64
+137 NxSetFPURoundingChop
+138 NxSetFPURoundingDown
+139 NxSetFPURoundingNear
+140 NxSetFPURoundingUp
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+ARTIFACT_WRITE: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_live_exports.txt bytes=5974
+WORKING_DIRECTORY: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin
+ENVIRONMENT: PYTHONDONTWRITEBYTECODE=1
+COMMAND: & python.exe -B D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\tools\compare_exports.py --oracle D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\exports_oracle.txt --rebuilt D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_live_exports.txt
+STDOUT_BEGIN
+oracle: 134
+rebuilt: 140
+missing: 0
+extra: 6
+EXTRA ??0Exception@NxFoundation@@QAE@$$QAV01@@Z
+EXTRA ??0Observable@NxFoundation@@QAE@$$QAV01@@Z
+EXTRA ??4Exception@NxFoundation@@QAEAAV01@$$QAV01@@Z
+EXTRA ??4NxProfiler@@QAEAAV0@$$QAV0@@Z
+EXTRA ??4Observable@NxFoundation@@QAEAAV01@$$QAV01@@Z
+EXTRA ??4Time@NxFoundation@@QAEAAV01@$$QAV01@@Z
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+EXPORT_EQUIVALENCE: generated_count=140 live_count=140 generation_delta=0 committed_count=140 committed_delta=0
+ASSERTION PASS: task10_live_exports.txt equals the just-generated live export rows
+ASSERTION PASS: live export names equal committed exports_rebuilt.txt
+RECORDER_EXPORTS: count=0 names=
+ASSERTION PASS: recorder export count is zero
+
+==============================================================================
+Inventory code validation
+==============================================================================
+INVENTORY_GATES: count=4 export_abi=pass,structural=pass,selected_behavior=pass,consumer_smoke=pass
+ASSERTION PASS: inventory has exactly four gates
+ASSERTION PASS: all inventory gates are exactly pass
+ASSERTION PASS: inventory has exactly 14 clusters
+INVENTORY_DECISIONS: clusters=14 pending=0
+ASSERTION PASS: no cluster decision remains pending
+INVENTORY_PARTITION: assigned=134 unique=134 oracle=134 delta=0
+ASSERTION PASS: cluster export partition is the exact unique 134-name oracle set
+ASSERTION PASS: raw attachment key is unique: ??0DefineZone@NxProfiler@@QAE@ABV01@@Z|0x00003390|code|.text
+ASSERTION PASS: raw attachment key is unique: ??0DefineZone@NxProfiler@@QAE@PBD@Z|0x00004a60|code|.text
+ASSERTION PASS: raw attachment key is unique: ??0DefineZone@NxProfiler@@QAE@XZ|0x00005170|code|.text
+ASSERTION PASS: raw attachment key is unique: ??0Exception@NxFoundation@@QAE@ABV01@@Z|0x00002db0|code|.text
+ASSERTION PASS: raw attachment key is unique: ??0Exception@NxFoundation@@QAE@W4NxErrorCode@@PBDH@Z|0x00002e00|code|.text
+ASSERTION PASS: raw attachment key is unique: ??0FoundationSDK@NxFoundation@@AAE@XZ|0x00003e20|code|.text
+ASSERTION PASS: raw attachment key is unique: ??0FoundationSDK@NxFoundation@@QAE@ABV01@@Z|0x00003d80|code|.text
+ASSERTION PASS: raw attachment key is unique: ??0Observable@NxFoundation@@QAE@ABV01@@Z|0x00003d40|code|.text
+ASSERTION PASS: raw attachment key is unique: ??0Observable@NxFoundation@@QAE@XZ|0x00003cf0|code|.text
+ASSERTION PASS: raw attachment key is unique: ??0SetCurrentZone@NxProfiler@@QAE@AAVDefineZone@1@@Z|0x00004a20|code|.text
+ASSERTION PASS: raw attachment key is unique: ??0Time@NxFoundation@@QAE@XZ|0x000052a0|code|.text
+ASSERTION PASS: raw attachment key is unique: ??1DefineZone@NxProfiler@@QAE@XZ|0x000046a0|code|.text
+ASSERTION PASS: raw attachment key is unique: ??1FoundationSDK@NxFoundation@@AAE@XZ|0x00003e60|code|.text
+ASSERTION PASS: raw attachment key is unique: ??1Observable@NxFoundation@@QAE@XZ|0x00003d10|code|.text
+ASSERTION PASS: raw attachment key is unique: ??1SetCurrentZone@NxProfiler@@QAE@XZ|0x00004a40|code|.text
+ASSERTION PASS: raw attachment key is unique: ??4DefineZone@NxProfiler@@QAEAAV01@ABV01@@Z|0x000033f0|code|.text
+ASSERTION PASS: raw attachment key is unique: ??4Exception@NxFoundation@@QAEAAV01@ABV01@@Z|0x00002de0|code|.text
+ASSERTION PASS: raw attachment key is unique: ??4FoundationSDK@NxFoundation@@QAEAAV01@ABV01@@Z|0x00003de0|code|.text
+ASSERTION PASS: raw attachment key is unique: ??4NxProfiler@@QAEAAV0@ABV0@@Z|0x00002eb0|code|.text
+ASSERTION PASS: raw attachment key is unique: ??4Observable@NxFoundation@@QAEAAV01@ABV01@@Z|0x00003d60|code|.text
+ASSERTION PASS: raw attachment key is unique: ??4SetCurrentZone@NxProfiler@@QAEAAV01@ABV01@@Z|0x00002ea0|code|.text
+ASSERTION PASS: raw attachment key is unique: ??4Time@NxFoundation@@QAEAAV01@ABV01@@Z|0x00004670|code|.text
+ASSERTION PASS: raw attachment key is unique: ??_7DefineZone@NxProfiler@@6B@|0x0001c288|data|.rdata
+ASSERTION PASS: raw attachment key is unique: ??_7Exception@NxFoundation@@6B@|0x0001c210|data|.rdata
+ASSERTION PASS: raw attachment key is unique: ??_7FoundationSDK@NxFoundation@@6BNxFoundationSDK@@@|0x0001c2b4|data|.rdata
+ASSERTION PASS: raw attachment key is unique: ??_7FoundationSDK@NxFoundation@@6BObservable@1@@|0x0001c2dc|data|.rdata
+ASSERTION PASS: raw attachment key is unique: ??_7Observable@NxFoundation@@6B@|0x0001c2b0|data|.rdata
+ASSERTION PASS: raw attachment key is unique: ?Enter_Zone@NxProfiler@@CAXAAVDefineZone@1@@Z|0x000048f0|code|.text
+ASSERTION PASS: raw attachment key is unique: ?Exit_Zone@NxProfiler@@CAXXZ|0x00004970|code|.text
+ASSERTION PASS: raw attachment key is unique: ?GetClockFrequency@Time@NxFoundation@@CANXZ|0x000051b0|code|.text
+ASSERTION PASS: raw attachment key is unique: ?GetElapsedSeconds@Time@NxFoundation@@QAENXZ|0x000051f0|code|.text
+ASSERTION PASS: raw attachment key is unique: ?GetTimeTicks@Time@NxFoundation@@CANXZ|0x00005190|code|.text
+ASSERTION PASS: raw attachment key is unique: ?PeekElapsedSeconds@Time@NxFoundation@@QAENXZ|0x00005250|code|.text
+ASSERTION PASS: raw attachment key is unique: ?addObserver@Observable@NxFoundation@@QAEXAAV12@@Z|0x000045a0|code|.text
+ASSERTION PASS: raw attachment key is unique: ?createDebugRenderable@FoundationSDK@NxFoundation@@UAEPAVNxDebugRenderable@@XZ|0x00003f10|code|.text
+ASSERTION PASS: raw attachment key is unique: ?createProfilingZone@FoundationSDK@NxFoundation@@UAEPAVNxProfilingZone@@PBD@Z|0x00002f70|code|.text
+ASSERTION PASS: raw attachment key is unique: ?current_integer_timestamp@NxProfiler@@0_JA|0x000296b0|data|.data
+ASSERTION PASS: raw attachment key is unique: ?current_zone@NxProfiler@@0HA|0x0002985c|data|.data
+ASSERTION PASS: raw attachment key is unique: ?data_records@NxProfiler@@0PAUProfile_Tracker_Data_Record@1@A|0x00026988|data|.data
+ASSERTION PASS: raw attachment key is unique: ?dbAssert@FoundationSDK@NxFoundation@@SA_NW4NxErrorCode@@PBDHPA_N1@Z|0x00003360|code|.text
+ASSERTION PASS: raw attachment key is unique: ?dbMessage@FoundationSDK@NxFoundation@@SAXW4NxErrorCode@@PBDH1ZZ|0x00002e90|code|.text
+ASSERTION PASS: raw attachment key is unique: ?defaultSDKAllocator@FoundationSDK@NxFoundation@@2VNxUserAllocatorDefault@@A|0x00025040|data|.data
+ASSERTION PASS: raw attachment key is unique: ?defaultZone@NxProfiler@@0VDefineZone@1@A|0x00025058|data|.data
+ASSERTION PASS: raw attachment key is unique: ?displayed_quantity@NxProfiler@@2W4NxDisplayMode@@A|0x00029190|data|.data
+ASSERTION PASS: raw attachment key is unique: ?dt@NxProfiler@@0NA|0x00029188|data|.data
+ASSERTION PASS: raw attachment key is unique: ?dt_per_integer_timestamp@NxProfiler@@0NA|0x000295a0|data|.data
+ASSERTION PASS: raw attachment key is unique: ?enter@DefineZone@NxProfiler@@UAEXXZ|0x00004b00|code|.text
+ASSERTION PASS: raw attachment key is unique: ?error@FoundationSDK@NxFoundation@@SA_NW4NxErrorCode@@PBDHPA_N1ZZ|0x00003320|code|.text
+ASSERTION PASS: raw attachment key is unique: ?errorImpl@FoundationSDK@NxFoundation@@AAE_NW4NxErrorCode@@PBDHPA_N1PAD@Z|0x00002fe0|code|.text
+ASSERTION PASS: raw attachment key is unique: ?event@FoundationSDK@NxFoundation@@UAEXIAAVObservable@2@@Z|0x00003fe0|code|.text
+ASSERTION PASS: raw attachment key is unique: ?event@Observable@NxFoundation@@UAEXIAAV12@@Z|0x000042e0|code|.text
+ASSERTION PASS: raw attachment key is unique: ?frame_time@NxProfiler@@2UHistory_Scalar@1@A|0x00029828|data|.data
+ASSERTION PASS: raw attachment key is unique: ?getAllocator@FoundationSDK@NxFoundation@@UAEAAVNxUserAllocator@@XZ|0x00002f60|code|.text
+ASSERTION PASS: raw attachment key is unique: ?getErrorCode@Exception@NxFoundation@@UAE?AW4NxErrorCode@@XZ|0x00002d80|code|.text
+ASSERTION PASS: raw attachment key is unique: ?getErrorStream@FoundationSDK@NxFoundation@@UAEPAVNxUserOutputStream@@XZ|0x00002f50|code|.text
+ASSERTION PASS: raw attachment key is unique: ?getFile@Exception@NxFoundation@@UAEPBDXZ|0x00002d90|code|.text
+ASSERTION PASS: raw attachment key is unique: ?getFirstError@FoundationSDK@NxFoundation@@UAE?AW4NxErrorCode@@XZ|0x00002fd0|code|.text
+ASSERTION PASS: raw attachment key is unique: ?getInstance@FoundationSDK@NxFoundation@@SAAAV12@XZ|0x00002e80|code|.text
+ASSERTION PASS: raw attachment key is unique: ?getLastError@FoundationSDK@NxFoundation@@UAE?AW4NxErrorCode@@XZ|0x00002fc0|code|.text
+ASSERTION PASS: raw attachment key is unique: ?getLine@Exception@NxFoundation@@UAEHXZ|0x00002da0|code|.text
+ASSERTION PASS: raw attachment key is unique: ?getName@DefineZone@NxProfiler@@QAEPBDXZ|0x00004a50|code|.text
+ASSERTION PASS: raw attachment key is unique: ?getNumObservers@Observable@NxFoundation@@QAEIXZ|0x000043d0|code|.text
+ASSERTION PASS: raw attachment key is unique: ?getTime@NxProfiler@@CAXPA_J@Z|0x000048d0|code|.text
+ASSERTION PASS: raw attachment key is unique: ?get_stdev@NxProfiler@@CANPAUHistory_Scalar@1@H@Z|0x000047a0|code|.text
+ASSERTION PASS: raw attachment key is unique: ?initialize@NxProfiler@@SAXXZ|0x000050d0|code|.text
+ASSERTION PASS: raw attachment key is unique: ?initializeHighLevel@NxProfiler@@CAXXZ|0x00004b20|code|.text
+ASSERTION PASS: raw attachment key is unique: ?initialized@NxProfiler@@0_NA|0x00029858|data|.data
+ASSERTION PASS: raw attachment key is unique: ?instance@FoundationSDK@NxFoundation@@0PAV12@A|0x00026984|data|.data
+ASSERTION PASS: raw attachment key is unique: ?integer_timestamps_per_second@NxProfiler@@2UHistory_Scalar@1@A|0x000297f8|data|.data
+ASSERTION PASS: raw attachment key is unique: ?last_integer_timestamp@NxProfiler@@0_JA|0x000295a8|data|.data
+ASSERTION PASS: raw attachment key is unique: ?last_update_time@NxProfiler@@0NA|0x000297d0|data|.data
+ASSERTION PASS: raw attachment key is unique: ?leave@DefineZone@NxProfiler@@UAEXXZ|0x00004b10|code|.text
+ASSERTION PASS: raw attachment key is unique: ?maxZones@NxProfiler@@2HA|0x0002504c|data|.data
+ASSERTION PASS: raw attachment key is unique: ?notifyObservers@Observable@NxFoundation@@QAEXI@Z|0x00004390|code|.text
+ASSERTION PASS: raw attachment key is unique: ?num_active_zones@NxProfiler@@2HA|0x00029194|data|.data
+ASSERTION PASS: raw attachment key is unique: ?num_zones@NxProfiler@@0HA|0x00029864|data|.data
+ASSERTION PASS: raw attachment key is unique: ?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A|0x00026980|data|.data
+ASSERTION PASS: raw attachment key is unique: ?pointersData@NxProfiler@@0PAPAVDefineZone@1@A|0x000295b0|data|.data
+ASSERTION PASS: raw attachment key is unique: ?precomputed_factors@NxProfiler@@0PANA|0x000297d8|data|.data
+ASSERTION PASS: raw attachment key is unique: ?release@DefineZone@NxProfiler@@UAEXXZ|0x00004ab0|code|.text
+ASSERTION PASS: raw attachment key is unique: ?release@FoundationSDK@NxFoundation@@UAEXXZ|0x00004090|code|.text
+ASSERTION PASS: raw attachment key is unique: ?releaseDebugRenderable@FoundationSDK@NxFoundation@@UAEXAAPAVNxDebugRenderable@@@Z|0x00003bd0|code|.text
+ASSERTION PASS: raw attachment key is unique: ?removeObserver@Observable@NxFoundation@@QAEXAAV12@@Z|0x00004490|code|.text
+ASSERTION PASS: raw attachment key is unique: ?renderDebugData@FoundationSDK@NxFoundation@@UBEXABVNxUserDebugRenderer@@@Z|0x000034c0|code|.text
+ASSERTION PASS: raw attachment key is unique: ?setErrorStream@FoundationSDK@NxFoundation@@UAEXPAVNxUserOutputStream@@@Z|0x00002f40|code|.text
+ASSERTION PASS: raw attachment key is unique: ?setMode@NxProfiler@@SAXW4NxDisplayMode@@@Z|0x00004790|code|.text
+ASSERTION PASS: raw attachment key is unique: ?sort_records@NxProfiler@@CAHPBX0@Z|0x00004740|code|.text
+ASSERTION PASS: raw attachment key is unique: ?sorted_pointers@NxProfiler@@2PAPAUProfile_Tracker_Data_Record@1@A|0x000296b8|data|.data
+ASSERTION PASS: raw attachment key is unique: ?stackData@NxProfiler@@0PAHA|0x00029198|data|.data
+ASSERTION PASS: raw attachment key is unique: ?stackSize@NxProfiler@@0HA|0x00025048|data|.data
+ASSERTION PASS: raw attachment key is unique: ?stack_pos@NxProfiler@@0HA|0x00029860|data|.data
+ASSERTION PASS: raw attachment key is unique: ?times_to_reach_90_percent@NxProfiler@@0PANA|0x000297b8|data|.data
+ASSERTION PASS: raw attachment key is unique: ?update@NxProfiler@@SAXXZ|0x00004c30|code|.text
+ASSERTION PASS: raw attachment key is unique: ?update_index@NxProfiler@@0HA|0x000297f0|data|.data
+ASSERTION PASS: raw attachment key is unique: ?zone_pointers_by_index@NxProfiler@@2PAPAVDefineZone@1@A|0x00025054|data|.data
+ASSERTION PASS: raw attachment key is unique: ?zone_stack@NxProfiler@@0PAHA|0x00025050|data|.data
+ASSERTION PASS: raw attachment key is unique: NxBoxContainsPoint|0x00007860|code|.text
+ASSERTION PASS: raw attachment key is unique: NxBoxVertexToQuad|0x00008950|code|.text
+ASSERTION PASS: raw attachment key is unique: NxComputeBounds|0x000053f0|code|.text
+ASSERTION PASS: raw attachment key is unique: NxComputeBoxAroundCapsule|0x00008c10|code|.text
+ASSERTION PASS: raw attachment key is unique: NxComputeBoxPlanes|0x00007a40|code|.text
+ASSERTION PASS: raw attachment key is unique: NxComputeBoxPoints|0x00007cf0|code|.text
+ASSERTION PASS: raw attachment key is unique: NxComputeBoxVertexNormals|0x00007f40|code|.text
+ASSERTION PASS: raw attachment key is unique: NxComputeBoxWorldEdgeNormal|0x000082e0|code|.text
+ASSERTION PASS: raw attachment key is unique: NxComputeCapsuleAroundBox|0x00008380|code|.text
+ASSERTION PASS: raw attachment key is unique: NxComputeDistanceSquared|0x00008d50|code|.text
+ASSERTION PASS: raw attachment key is unique: NxComputeSphere|0x0000a420|code|.text
+ASSERTION PASS: raw attachment key is unique: NxComputeSquareDistance|0x00008df0|code|.text
+ASSERTION PASS: raw attachment key is unique: NxComputeVolumeIntegrals|0x00007220|code|.text
+ASSERTION PASS: raw attachment key is unique: NxCrc32|0x00006230|code|.text
+ASSERTION PASS: raw attachment key is unique: NxCreateBox|0x00007930|code|.text
+ASSERTION PASS: raw attachment key is unique: NxCreateFoundationSDK|0x00004020|code|.text
+ASSERTION PASS: raw attachment key is unique: NxDiagonalizeInertiaTensor|0x00005e40|code|.text
+ASSERTION PASS: raw attachment key is unique: NxFastComputeSphere|0x00009020|code|.text
+ASSERTION PASS: raw attachment key is unique: NxFindRotationMatrix|0x00005f20|code|.text
+ASSERTION PASS: raw attachment key is unique: NxGetBoxEdges|0x000082a0|code|.text
+ASSERTION PASS: raw attachment key is unique: NxGetBoxEdgesAxes|0x000082b0|code|.text
+ASSERTION PASS: raw attachment key is unique: NxGetBoxLocalEdgeNormals|0x000082d0|code|.text
+ASSERTION PASS: raw attachment key is unique: NxGetBoxQuads|0x00008940|code|.text
+ASSERTION PASS: raw attachment key is unique: NxGetBoxTriangles|0x000082c0|code|.text
+ASSERTION PASS: raw attachment key is unique: NxIntCeil|0x00004270|code|.text
+ASSERTION PASS: raw attachment key is unique: NxIntChop|0x000041c0|code|.text
+ASSERTION PASS: raw attachment key is unique: NxIntFloor|0x00004200|code|.text
+ASSERTION PASS: raw attachment key is unique: NxIsBoxAInsideBoxB|0x00008640|code|.text
+ASSERTION PASS: raw attachment key is unique: NxMergeSpheres|0x0000a540|code|.text
+ASSERTION PASS: raw attachment key is unique: NxNormalToTangents|0x000062b0|code|.text
+ASSERTION PASS: raw attachment key is unique: NxSetFPUExceptions|0x00004190|code|.text
+ASSERTION PASS: raw attachment key is unique: NxSetFPUPrecision24|0x000040d0|code|.text
+ASSERTION PASS: raw attachment key is unique: NxSetFPUPrecision53|0x000040f0|code|.text
+ASSERTION PASS: raw attachment key is unique: NxSetFPUPrecision64|0x00004110|code|.text
+ASSERTION PASS: raw attachment key is unique: NxSetFPURoundingChop|0x00004120|code|.text
+ASSERTION PASS: raw attachment key is unique: NxSetFPURoundingDown|0x00004160|code|.text
+ASSERTION PASS: raw attachment key is unique: NxSetFPURoundingNear|0x00004180|code|.text
+ASSERTION PASS: raw attachment key is unique: NxSetFPURoundingUp|0x00004140|code|.text
+INVENTORY_REF_JOIN: refs=134 raw_rows=134 unjoined=0
+ASSERTION PASS: all 134 oracle refs join to raw attachment rows
+
+==============================================================================
+Immutable public manifest: 48 files and 192 live validations
+==============================================================================
+ASSERTION PASS: immutable manifest has exactly 48 files
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:BuildNumber.h
+STDOUT_BINARY: bytes=320 sha256=79c8cfede7fed80e2495fbb18a4eb26952fa7f3198295d66518cc4f53224b95f content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:BuildNumber.h
+STDOUT_BINARY: bytes=320 sha256=79c8cfede7fed80e2495fbb18a4eb26952fa7f3198295d66518cc4f53224b95f content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=BuildNumber.h raw_worktree=d873aa4e7026ead951d32b4aad92e276b1a1b98f2aae832fd97577c50f2a2a60 raw_oracle=d873aa4e7026ead951d32b4aad92e276b1a1b98f2aae832fd97577c50f2a2a60 transplant_blob=79c8cfede7fed80e2495fbb18a4eb26952fa7f3198295d66518cc4f53224b95f current_blob=79c8cfede7fed80e2495fbb18a4eb26952fa7f3198295d66518cc4f53224b95f checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:changes.txt
+STDOUT_BINARY: bytes=17822 sha256=d6231fdf2a7ec3f97a56e7d05284f5dc221444b7d203b14213b1d26a0dbaa128 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:changes.txt
+STDOUT_BINARY: bytes=17822 sha256=d6231fdf2a7ec3f97a56e7d05284f5dc221444b7d203b14213b1d26a0dbaa128 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=changes.txt raw_worktree=0a33f4787a523438688e94d72f5da963fc47626cefaf6c919257da9fc9d1e939 raw_oracle=0a33f4787a523438688e94d72f5da963fc47626cefaf6c919257da9fc9d1e939 transplant_blob=d6231fdf2a7ec3f97a56e7d05284f5dc221444b7d203b14213b1d26a0dbaa128 current_blob=d6231fdf2a7ec3f97a56e7d05284f5dc221444b7d203b14213b1d26a0dbaa128 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/Nx.h
+STDOUT_BINARY: bytes=5062 sha256=55e7f9e10d0d9c1a76e77bb27a73a57ef01a957a36cf6d2716e3fa6ea1f64b49 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/Nx.h
+STDOUT_BINARY: bytes=5062 sha256=55e7f9e10d0d9c1a76e77bb27a73a57ef01a957a36cf6d2716e3fa6ea1f64b49 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/Nx.h raw_worktree=0f1411124c2b704e5bfb72ca476297840692f1c6c4df47daf1185530070464e4 raw_oracle=0f1411124c2b704e5bfb72ca476297840692f1c6c4df47daf1185530070464e4 transplant_blob=55e7f9e10d0d9c1a76e77bb27a73a57ef01a957a36cf6d2716e3fa6ea1f64b49 current_blob=55e7f9e10d0d9c1a76e77bb27a73a57ef01a957a36cf6d2716e3fa6ea1f64b49 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/Nx12F32.h
+STDOUT_BINARY: bytes=653 sha256=fd392003f1c3a184d63389d4ddf60ee798a746bd7d810b9ef5e688e2485e656f content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/Nx12F32.h
+STDOUT_BINARY: bytes=653 sha256=fd392003f1c3a184d63389d4ddf60ee798a746bd7d810b9ef5e688e2485e656f content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/Nx12F32.h raw_worktree=ba4bbbf13aad6e32a7a9f82306d8a96b8c78311c8f5769c29d37ca5e93a38b96 raw_oracle=ba4bbbf13aad6e32a7a9f82306d8a96b8c78311c8f5769c29d37ca5e93a38b96 transplant_blob=fd392003f1c3a184d63389d4ddf60ee798a746bd7d810b9ef5e688e2485e656f current_blob=fd392003f1c3a184d63389d4ddf60ee798a746bd7d810b9ef5e688e2485e656f checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/Nx16F32.h
+STDOUT_BINARY: bytes=698 sha256=48bdb8bffc3e224c24bbdda885f4e7870aab955fc047a6623383a40f45064ca6 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/Nx16F32.h
+STDOUT_BINARY: bytes=698 sha256=48bdb8bffc3e224c24bbdda885f4e7870aab955fc047a6623383a40f45064ca6 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/Nx16F32.h raw_worktree=bb786b47861edeec6917b6fc7aaff97c93bae473fe9d9c92184298b2a75d4cd5 raw_oracle=bb786b47861edeec6917b6fc7aaff97c93bae473fe9d9c92184298b2a75d4cd5 transplant_blob=48bdb8bffc3e224c24bbdda885f4e7870aab955fc047a6623383a40f45064ca6 current_blob=48bdb8bffc3e224c24bbdda885f4e7870aab955fc047a6623383a40f45064ca6 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/Nx9F32.h
+STDOUT_BINARY: bytes=752 sha256=16b4ee5e4da467e45833016630cd6746eccdc3f7dba0937207b19f844bc78df1 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/Nx9F32.h
+STDOUT_BINARY: bytes=752 sha256=16b4ee5e4da467e45833016630cd6746eccdc3f7dba0937207b19f844bc78df1 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/Nx9F32.h raw_worktree=7e5bf33f115fbb2e4203c11cd3b9f26bd4ab4d2732e8ae724436da298eed64c6 raw_oracle=7e5bf33f115fbb2e4203c11cd3b9f26bd4ab4d2732e8ae724436da298eed64c6 transplant_blob=16b4ee5e4da467e45833016630cd6746eccdc3f7dba0937207b19f844bc78df1 current_blob=16b4ee5e4da467e45833016630cd6746eccdc3f7dba0937207b19f844bc78df1 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxAllocateable.h
+STDOUT_BINARY: bytes=2333 sha256=edcdb30a677bc1ae3821532148144abc47d175627b899520d5094dfcec5ef2e4 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxAllocateable.h
+STDOUT_BINARY: bytes=2333 sha256=edcdb30a677bc1ae3821532148144abc47d175627b899520d5094dfcec5ef2e4 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxAllocateable.h raw_worktree=b86d9bd9b50bcf630cd7f33702c7f057892770b35f2a64c13dbe02499fee3686 raw_oracle=b86d9bd9b50bcf630cd7f33702c7f057892770b35f2a64c13dbe02499fee3686 transplant_blob=edcdb30a677bc1ae3821532148144abc47d175627b899520d5094dfcec5ef2e4 current_blob=edcdb30a677bc1ae3821532148144abc47d175627b899520d5094dfcec5ef2e4 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxAllocatorDefault.h
+STDOUT_BINARY: bytes=1847 sha256=a8ef9587f488908a93b006d173172d87e1b765224245c50201542765a3f2a8ac content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxAllocatorDefault.h
+STDOUT_BINARY: bytes=1847 sha256=a8ef9587f488908a93b006d173172d87e1b765224245c50201542765a3f2a8ac content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxAllocatorDefault.h raw_worktree=f7af0e4db1d123ecdae6d412105d8666d939391da74216433b6d965c069509af raw_oracle=f7af0e4db1d123ecdae6d412105d8666d939391da74216433b6d965c069509af transplant_blob=a8ef9587f488908a93b006d173172d87e1b765224245c50201542765a3f2a8ac current_blob=a8ef9587f488908a93b006d173172d87e1b765224245c50201542765a3f2a8ac checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxArray.h
+STDOUT_BINARY: bytes=12315 sha256=be0ded046f689054334b4aaed07a443d239d50de1c0140dc7e2faa1934a199d8 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxArray.h
+STDOUT_BINARY: bytes=12315 sha256=be0ded046f689054334b4aaed07a443d239d50de1c0140dc7e2faa1934a199d8 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxArray.h raw_worktree=8a64f16ae54412c7087c35d4de0a161c4485e7bbc9a0c51ca947a3f2058b45f6 raw_oracle=8a64f16ae54412c7087c35d4de0a161c4485e7bbc9a0c51ca947a3f2058b45f6 transplant_blob=be0ded046f689054334b4aaed07a443d239d50de1c0140dc7e2faa1934a199d8 current_blob=be0ded046f689054334b4aaed07a443d239d50de1c0140dc7e2faa1934a199d8 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxAssert.h
+STDOUT_BINARY: bytes=540 sha256=3ff24b80f7d83d0ea4dd7486461a41dd6b83b107b480858f440ed76d906525d8 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxAssert.h
+STDOUT_BINARY: bytes=540 sha256=3ff24b80f7d83d0ea4dd7486461a41dd6b83b107b480858f440ed76d906525d8 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxAssert.h raw_worktree=8a144be9690039a11e9879d9a6c4151e33c326ffdce2598aa7f54c2536b1a825 raw_oracle=8a144be9690039a11e9879d9a6c4151e33c326ffdce2598aa7f54c2536b1a825 transplant_blob=3ff24b80f7d83d0ea4dd7486461a41dd6b83b107b480858f440ed76d906525d8 current_blob=3ff24b80f7d83d0ea4dd7486461a41dd6b83b107b480858f440ed76d906525d8 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxBitField.h
+STDOUT_BINARY: bytes=4658 sha256=e99e8f7e493038861d1624cc94487866eda09a1cd01e0dba4b8ca4f5c4fb303d content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxBitField.h
+STDOUT_BINARY: bytes=4658 sha256=e99e8f7e493038861d1624cc94487866eda09a1cd01e0dba4b8ca4f5c4fb303d content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxBitField.h raw_worktree=457f929e339ac136150af13c6a392ff5c077ac650c651c18962113455be835d1 raw_oracle=457f929e339ac136150af13c6a392ff5c077ac650c651c18962113455be835d1 transplant_blob=e99e8f7e493038861d1624cc94487866eda09a1cd01e0dba4b8ca4f5c4fb303d current_blob=e99e8f7e493038861d1624cc94487866eda09a1cd01e0dba4b8ca4f5c4fb303d checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxBlank.h
+STDOUT_BINARY: bytes=344 sha256=e617d3cbb421a5015e743f777ee3feb7abe868f69ca2883436bb4bd6a3498136 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxBlank.h
+STDOUT_BINARY: bytes=344 sha256=e617d3cbb421a5015e743f777ee3feb7abe868f69ca2883436bb4bd6a3498136 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxBlank.h raw_worktree=b2d6b42fad0dc95c525e0c4ff9ec53adf34f14b0a2a5ea9939f4a7bf424058d6 raw_oracle=b2d6b42fad0dc95c525e0c4ff9ec53adf34f14b0a2a5ea9939f4a7bf424058d6 transplant_blob=e617d3cbb421a5015e743f777ee3feb7abe868f69ca2883436bb4bd6a3498136 current_blob=e617d3cbb421a5015e743f777ee3feb7abe868f69ca2883436bb4bd6a3498136 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxBounds3.h
+STDOUT_BINARY: bytes=7174 sha256=244f4072e3b8660088fc83180d045c2cab261051ea7391b14c7a4367216dea52 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxBounds3.h
+STDOUT_BINARY: bytes=7174 sha256=244f4072e3b8660088fc83180d045c2cab261051ea7391b14c7a4367216dea52 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxBounds3.h raw_worktree=c7763076cb80b44863fa2faf71d1710548e2b96323b6ebe6dc557b56efd86c42 raw_oracle=c7763076cb80b44863fa2faf71d1710548e2b96323b6ebe6dc557b56efd86c42 transplant_blob=244f4072e3b8660088fc83180d045c2cab261051ea7391b14c7a4367216dea52 current_blob=244f4072e3b8660088fc83180d045c2cab261051ea7391b14c7a4367216dea52 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxBox.h
+STDOUT_BINARY: bytes=5977 sha256=69630c307b47716127d00bf9a22dfe310d0550448f4bc7c47c2c0005fb9f4f37 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxBox.h
+STDOUT_BINARY: bytes=5977 sha256=69630c307b47716127d00bf9a22dfe310d0550448f4bc7c47c2c0005fb9f4f37 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxBox.h raw_worktree=453505eea6459281937094b4e5e4b7782bec48e817d19d2e586a7c7c2dbda4bf raw_oracle=453505eea6459281937094b4e5e4b7782bec48e817d19d2e586a7c7c2dbda4bf transplant_blob=69630c307b47716127d00bf9a22dfe310d0550448f4bc7c47c2c0005fb9f4f37 current_blob=69630c307b47716127d00bf9a22dfe310d0550448f4bc7c47c2c0005fb9f4f37 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxCapsule.h
+STDOUT_BINARY: bytes=2105 sha256=8d180e793633372e8b377cd977562003c6bf12b6a085b3af5a25da60b1e5eb54 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxCapsule.h
+STDOUT_BINARY: bytes=2105 sha256=8d180e793633372e8b377cd977562003c6bf12b6a085b3af5a25da60b1e5eb54 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxCapsule.h raw_worktree=b019a841676991483cd8cd306af298a07d09b07aac1014651e028157ce87cd90 raw_oracle=b019a841676991483cd8cd306af298a07d09b07aac1014651e028157ce87cd90 transplant_blob=8d180e793633372e8b377cd977562003c6bf12b6a085b3af5a25da60b1e5eb54 current_blob=8d180e793633372e8b377cd977562003c6bf12b6a085b3af5a25da60b1e5eb54 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxDebugRenderable.h
+STDOUT_BINARY: bytes=2421 sha256=be11bec0ebd6365e1fb9d378bb75d3a9921d35cf81f3a18d2d54d1fee9173e9b content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxDebugRenderable.h
+STDOUT_BINARY: bytes=2421 sha256=be11bec0ebd6365e1fb9d378bb75d3a9921d35cf81f3a18d2d54d1fee9173e9b content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxDebugRenderable.h raw_worktree=bd05064e4c2363d39c137b2630dc23e62eaca09bfd62d88f056a69013fc2b2af raw_oracle=bd05064e4c2363d39c137b2630dc23e62eaca09bfd62d88f056a69013fc2b2af transplant_blob=be11bec0ebd6365e1fb9d378bb75d3a9921d35cf81f3a18d2d54d1fee9173e9b current_blob=be11bec0ebd6365e1fb9d378bb75d3a9921d35cf81f3a18d2d54d1fee9173e9b checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxException.h
+STDOUT_BINARY: bytes=585 sha256=69fc5be85f1797d5718060c4ea90f5f958432f94d0f5997df015be11b51d91db content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxException.h
+STDOUT_BINARY: bytes=585 sha256=69fc5be85f1797d5718060c4ea90f5f958432f94d0f5997df015be11b51d91db content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxException.h raw_worktree=999cc86008a233615c16f6e772cf37c44e1e71dd1dc496ac8e2b36def4874f76 raw_oracle=999cc86008a233615c16f6e772cf37c44e1e71dd1dc496ac8e2b36def4874f76 transplant_blob=69fc5be85f1797d5718060c4ea90f5f958432f94d0f5997df015be11b51d91db current_blob=69fc5be85f1797d5718060c4ea90f5f958432f94d0f5997df015be11b51d91db checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/Nxf.h
+STDOUT_BINARY: bytes=1827 sha256=52be9abd124ec43762d3bf4c4b705fcd35b496cf8e22c756fc5e202aef198d9f content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/Nxf.h
+STDOUT_BINARY: bytes=1827 sha256=52be9abd124ec43762d3bf4c4b705fcd35b496cf8e22c756fc5e202aef198d9f content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/Nxf.h raw_worktree=9303dc95fd07426f00bd803e7f024b2dc690da302b2487161624a893ffadbf38 raw_oracle=9303dc95fd07426f00bd803e7f024b2dc690da302b2487161624a893ffadbf38 transplant_blob=52be9abd124ec43762d3bf4c4b705fcd35b496cf8e22c756fc5e202aef198d9f current_blob=52be9abd124ec43762d3bf4c4b705fcd35b496cf8e22c756fc5e202aef198d9f checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxFoundation.h
+STDOUT_BINARY: bytes=929 sha256=a5ae464da93da07678fdcc995e0704effcd807efffa050dfa4cf1f9c89dce41a content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxFoundation.h
+STDOUT_BINARY: bytes=929 sha256=a5ae464da93da07678fdcc995e0704effcd807efffa050dfa4cf1f9c89dce41a content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxFoundation.h raw_worktree=bca036d356a428cc1d85620d0846ed672632d47963877f9e5f163551d8207cf5 raw_oracle=bca036d356a428cc1d85620d0846ed672632d47963877f9e5f163551d8207cf5 transplant_blob=a5ae464da93da07678fdcc995e0704effcd807efffa050dfa4cf1f9c89dce41a current_blob=a5ae464da93da07678fdcc995e0704effcd807efffa050dfa4cf1f9c89dce41a checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxFoundationSDK.h
+STDOUT_BINARY: bytes=4194 sha256=29015afe22c60e6e12683f2a63f5f8e9cea7a38b3f47bc6f874c770b315275b1 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxFoundationSDK.h
+STDOUT_BINARY: bytes=4194 sha256=29015afe22c60e6e12683f2a63f5f8e9cea7a38b3f47bc6f874c770b315275b1 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxFoundationSDK.h raw_worktree=6a9171538c4e0a0924f9a294b1575a53e60f806625e3f33ca8725c531802d172 raw_oracle=6a9171538c4e0a0924f9a294b1575a53e60f806625e3f33ca8725c531802d172 transplant_blob=29015afe22c60e6e12683f2a63f5f8e9cea7a38b3f47bc6f874c770b315275b1 current_blob=29015afe22c60e6e12683f2a63f5f8e9cea7a38b3f47bc6f874c770b315275b1 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxFPU.h
+STDOUT_BINARY: bytes=1773 sha256=b9ecad9d35cca6e055e3060790fa9d529ee7a64d39f6e84c328e2f1b53a202ec content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxFPU.h
+STDOUT_BINARY: bytes=1773 sha256=b9ecad9d35cca6e055e3060790fa9d529ee7a64d39f6e84c328e2f1b53a202ec content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxFPU.h raw_worktree=437e2a2fd24336e7a1bc93af292593992a2b0b80bf045629c414475b91090db9 raw_oracle=437e2a2fd24336e7a1bc93af292593992a2b0b80bf045629c414475b91090db9 transplant_blob=b9ecad9d35cca6e055e3060790fa9d529ee7a64d39f6e84c328e2f1b53a202ec current_blob=b9ecad9d35cca6e055e3060790fa9d529ee7a64d39f6e84c328e2f1b53a202ec checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxList.h
+STDOUT_BINARY: bytes=353 sha256=84b69bf00a014db443d0eb5f42d4991f73ce987c1d9b97da952c72edc28db4fb content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxList.h
+STDOUT_BINARY: bytes=353 sha256=84b69bf00a014db443d0eb5f42d4991f73ce987c1d9b97da952c72edc28db4fb content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxList.h raw_worktree=c59f413d86d739af0408899233d41f53180da34e7804acc47df41a0f0c405ca8 raw_oracle=c59f413d86d739af0408899233d41f53180da34e7804acc47df41a0f0c405ca8 transplant_blob=84b69bf00a014db443d0eb5f42d4991f73ce987c1d9b97da952c72edc28db4fb current_blob=84b69bf00a014db443d0eb5f42d4991f73ce987c1d9b97da952c72edc28db4fb checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxMat33.h
+STDOUT_BINARY: bytes=34211 sha256=a631626257d4ce949ef5586cb745917cc68e23aa0d5d00f5b1108e588637d007 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxMat33.h
+STDOUT_BINARY: bytes=34211 sha256=a631626257d4ce949ef5586cb745917cc68e23aa0d5d00f5b1108e588637d007 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxMat33.h raw_worktree=20d47881227a4ac033a4a2c618d6fc3cb1bafd9b086d7b12e56c683b7bf08ea5 raw_oracle=20d47881227a4ac033a4a2c618d6fc3cb1bafd9b086d7b12e56c683b7bf08ea5 transplant_blob=a631626257d4ce949ef5586cb745917cc68e23aa0d5d00f5b1108e588637d007 current_blob=a631626257d4ce949ef5586cb745917cc68e23aa0d5d00f5b1108e588637d007 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxMat34.h
+STDOUT_BINARY: bytes=5425 sha256=6c8ec03f58ef719c5248f9132b81f21a236b091e6bc186805b9b726d4029a6d6 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxMat34.h
+STDOUT_BINARY: bytes=5425 sha256=6c8ec03f58ef719c5248f9132b81f21a236b091e6bc186805b9b726d4029a6d6 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxMat34.h raw_worktree=26fb30b99d68209cb3fc45f91d18bb26503119263a04576997e39a079cb7faed raw_oracle=26fb30b99d68209cb3fc45f91d18bb26503119263a04576997e39a079cb7faed transplant_blob=6c8ec03f58ef719c5248f9132b81f21a236b091e6bc186805b9b726d4029a6d6 current_blob=6c8ec03f58ef719c5248f9132b81f21a236b091e6bc186805b9b726d4029a6d6 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxMath.h
+STDOUT_BINARY: bytes=16086 sha256=148cddcbb40c1865857cb61fe9627e087031d314ca8529c01bc3d6db0939f4e1 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxMath.h
+STDOUT_BINARY: bytes=16086 sha256=148cddcbb40c1865857cb61fe9627e087031d314ca8529c01bc3d6db0939f4e1 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxMath.h raw_worktree=2ed0e0a0a3ea62201bd406173e5f3e918e43990be28c43bdeb305af9037a0822 raw_oracle=2ed0e0a0a3ea62201bd406173e5f3e918e43990be28c43bdeb305af9037a0822 transplant_blob=148cddcbb40c1865857cb61fe9627e087031d314ca8529c01bc3d6db0939f4e1 current_blob=148cddcbb40c1865857cb61fe9627e087031d314ca8529c01bc3d6db0939f4e1 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxPlane.h
+STDOUT_BINARY: bytes=3803 sha256=6f73a80d75c9462fa2e076cca585b2dbeba9e15424f329ddabfc15a6ab70666d content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxPlane.h
+STDOUT_BINARY: bytes=3803 sha256=6f73a80d75c9462fa2e076cca585b2dbeba9e15424f329ddabfc15a6ab70666d content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxPlane.h raw_worktree=9ee607a71ab37b82c641cff4d1c026f2a24aa51c7ef33c1dc6acc5874a22f552 raw_oracle=9ee607a71ab37b82c641cff4d1c026f2a24aa51c7ef33c1dc6acc5874a22f552 transplant_blob=6f73a80d75c9462fa2e076cca585b2dbeba9e15424f329ddabfc15a6ab70666d current_blob=6f73a80d75c9462fa2e076cca585b2dbeba9e15424f329ddabfc15a6ab70666d checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxPool.h
+STDOUT_BINARY: bytes=3125 sha256=470c8ccbea7514071417703550aeccadda99adafe28eb98f78d873574f070aa8 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxPool.h
+STDOUT_BINARY: bytes=3125 sha256=470c8ccbea7514071417703550aeccadda99adafe28eb98f78d873574f070aa8 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxPool.h raw_worktree=94688d29641eaad9a16170e3470991c23266190c84732f8513bee8cbc1d3c251 raw_oracle=94688d29641eaad9a16170e3470991c23266190c84732f8513bee8cbc1d3c251 transplant_blob=470c8ccbea7514071417703550aeccadda99adafe28eb98f78d873574f070aa8 current_blob=470c8ccbea7514071417703550aeccadda99adafe28eb98f78d873574f070aa8 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxProfiler.h
+STDOUT_BINARY: bytes=5283 sha256=01a85c9f12dda84f1924a52566f616a30c14d968e0e561b72a585f5da12a8c25 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxProfiler.h
+STDOUT_BINARY: bytes=5283 sha256=01a85c9f12dda84f1924a52566f616a30c14d968e0e561b72a585f5da12a8c25 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxProfiler.h raw_worktree=203efe91b8a04e1459aab30545d4b424b6a7832e27d738e4ef88f238e9d7699d raw_oracle=203efe91b8a04e1459aab30545d4b424b6a7832e27d738e4ef88f238e9d7699d transplant_blob=01a85c9f12dda84f1924a52566f616a30c14d968e0e561b72a585f5da12a8c25 current_blob=01a85c9f12dda84f1924a52566f616a30c14d968e0e561b72a585f5da12a8c25 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxQuat.h
+STDOUT_BINARY: bytes=16270 sha256=7ea7ee3c6d42e262438d7979d90d11ac14d899fe22aba2cbfe280f6cc4c27030 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxQuat.h
+STDOUT_BINARY: bytes=16270 sha256=7ea7ee3c6d42e262438d7979d90d11ac14d899fe22aba2cbfe280f6cc4c27030 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxQuat.h raw_worktree=58fd4d399650ba087a5441315d4faeed0250be1d8a348c23006a450fd53bc18e raw_oracle=58fd4d399650ba087a5441315d4faeed0250be1d8a348c23006a450fd53bc18e transplant_blob=7ea7ee3c6d42e262438d7979d90d11ac14d899fe22aba2cbfe280f6cc4c27030 current_blob=7ea7ee3c6d42e262438d7979d90d11ac14d899fe22aba2cbfe280f6cc4c27030 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxQuickSort.h
+STDOUT_BINARY: bytes=2116 sha256=6f39777e2e46d112dbe3de98de5c5e941186cc8d98303b960fa36f2d5963c608 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxQuickSort.h
+STDOUT_BINARY: bytes=2116 sha256=6f39777e2e46d112dbe3de98de5c5e941186cc8d98303b960fa36f2d5963c608 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxQuickSort.h raw_worktree=f582c562f1812ec9c63ea8553af258f54cca199b3e6b05993fbc417378133067 raw_oracle=f582c562f1812ec9c63ea8553af258f54cca199b3e6b05993fbc417378133067 transplant_blob=6f39777e2e46d112dbe3de98de5c5e941186cc8d98303b960fa36f2d5963c608 current_blob=6f39777e2e46d112dbe3de98de5c5e941186cc8d98303b960fa36f2d5963c608 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxRay.h
+STDOUT_BINARY: bytes=2070 sha256=3d5ca08293515c78a1fc7109e6df83b7873fb27caccb25f7597a81eeedd08e1f content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxRay.h
+STDOUT_BINARY: bytes=2070 sha256=3d5ca08293515c78a1fc7109e6df83b7873fb27caccb25f7597a81eeedd08e1f content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxRay.h raw_worktree=e05ad1eca258d12ed08fedc8b03dbb88cd6bf1e1d7a35f10486f54c664cbab7e raw_oracle=e05ad1eca258d12ed08fedc8b03dbb88cd6bf1e1d7a35f10486f54c664cbab7e transplant_blob=3d5ca08293515c78a1fc7109e6df83b7873fb27caccb25f7597a81eeedd08e1f current_blob=3d5ca08293515c78a1fc7109e6df83b7873fb27caccb25f7597a81eeedd08e1f checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxSegment.h
+STDOUT_BINARY: bytes=1914 sha256=2e2ae14d06b2ee952e87c6a8a97e800c3e530d8c46ca1adb574431054285743e content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxSegment.h
+STDOUT_BINARY: bytes=1914 sha256=2e2ae14d06b2ee952e87c6a8a97e800c3e530d8c46ca1adb574431054285743e content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxSegment.h raw_worktree=268cb4d45d49a0f3d2eb4f692d43d97aa21d24db761014d242495e6e54a4008f raw_oracle=268cb4d45d49a0f3d2eb4f692d43d97aa21d24db761014d242495e6e54a4008f transplant_blob=2e2ae14d06b2ee952e87c6a8a97e800c3e530d8c46ca1adb574431054285743e current_blob=2e2ae14d06b2ee952e87c6a8a97e800c3e530d8c46ca1adb574431054285743e checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxSimpleTriangleMesh.h
+STDOUT_BINARY: bytes=4128 sha256=f3b16becab102454bc35c6d16a70d06f4e9050094ca887bd9f80db4fdf19c1d3 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxSimpleTriangleMesh.h
+STDOUT_BINARY: bytes=4128 sha256=f3b16becab102454bc35c6d16a70d06f4e9050094ca887bd9f80db4fdf19c1d3 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxSimpleTriangleMesh.h raw_worktree=c8b4dd640bbe297b29dab1a3521da3cf6444edd384f06f35f6a63ff58f667995 raw_oracle=c8b4dd640bbe297b29dab1a3521da3cf6444edd384f06f35f6a63ff58f667995 transplant_blob=f3b16becab102454bc35c6d16a70d06f4e9050094ca887bd9f80db4fdf19c1d3 current_blob=f3b16becab102454bc35c6d16a70d06f4e9050094ca887bd9f80db4fdf19c1d3 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxSimpleTypes.h
+STDOUT_BINARY: bytes=3959 sha256=cbb65e4524af38ddb79584ecf0d6ca2133e508a4f7522ab4881f283f61a34505 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxSimpleTypes.h
+STDOUT_BINARY: bytes=3959 sha256=cbb65e4524af38ddb79584ecf0d6ca2133e508a4f7522ab4881f283f61a34505 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxSimpleTypes.h raw_worktree=74f162f50a02d66d62144261c0044945ded354bb67efba21562ee9362c3ab203 raw_oracle=74f162f50a02d66d62144261c0044945ded354bb67efba21562ee9362c3ab203 transplant_blob=cbb65e4524af38ddb79584ecf0d6ca2133e508a4f7522ab4881f283f61a34505 current_blob=cbb65e4524af38ddb79584ecf0d6ca2133e508a4f7522ab4881f283f61a34505 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxSphere.h
+STDOUT_BINARY: bytes=4065 sha256=02232ffb0677c29793578c2665d04b291be2817222d2dc3abb1002003bdc7f35 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxSphere.h
+STDOUT_BINARY: bytes=4065 sha256=02232ffb0677c29793578c2665d04b291be2817222d2dc3abb1002003bdc7f35 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxSphere.h raw_worktree=9d205a2d69fbfed1e27cf69bd7054cbbda07516d7e68fc54c33ffac899609970 raw_oracle=9d205a2d69fbfed1e27cf69bd7054cbbda07516d7e68fc54c33ffac899609970 transplant_blob=02232ffb0677c29793578c2665d04b291be2817222d2dc3abb1002003bdc7f35 current_blob=02232ffb0677c29793578c2665d04b291be2817222d2dc3abb1002003bdc7f35 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxStream.h
+STDOUT_BINARY: bytes=1273 sha256=c8c203ff61f243dd22d976724929ca3a5f4431e3888cbc3de268e0e46f56e463 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxStream.h
+STDOUT_BINARY: bytes=1273 sha256=c8c203ff61f243dd22d976724929ca3a5f4431e3888cbc3de268e0e46f56e463 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxStream.h raw_worktree=406f5261e4dcec6a87c3a654e1c16bb05f23f362df45627193efaa159bdd6a12 raw_oracle=406f5261e4dcec6a87c3a654e1c16bb05f23f362df45627193efaa159bdd6a12 transplant_blob=c8c203ff61f243dd22d976724929ca3a5f4431e3888cbc3de268e0e46f56e463 current_blob=c8c203ff61f243dd22d976724929ca3a5f4431e3888cbc3de268e0e46f56e463 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxUserAllocator.h
+STDOUT_BINARY: bytes=2821 sha256=4d9c1aeaa7fda1a01030a2ee8faec08899bba5a59539e2020ece90209e51cf0e content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxUserAllocator.h
+STDOUT_BINARY: bytes=2821 sha256=4d9c1aeaa7fda1a01030a2ee8faec08899bba5a59539e2020ece90209e51cf0e content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxUserAllocator.h raw_worktree=d9a9099d220e18c854f4e1d856d4b4f3809951ba78ec85d1953cc610b5b8e039 raw_oracle=d9a9099d220e18c854f4e1d856d4b4f3809951ba78ec85d1953cc610b5b8e039 transplant_blob=4d9c1aeaa7fda1a01030a2ee8faec08899bba5a59539e2020ece90209e51cf0e current_blob=4d9c1aeaa7fda1a01030a2ee8faec08899bba5a59539e2020ece90209e51cf0e checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxUserAllocatorAccess.h
+STDOUT_BINARY: bytes=1618 sha256=268c56b76c1d59ec90a8f4ff3add3fb5547657cde5aa0ed2077e5e8177084402 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxUserAllocatorAccess.h
+STDOUT_BINARY: bytes=1618 sha256=268c56b76c1d59ec90a8f4ff3add3fb5547657cde5aa0ed2077e5e8177084402 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxUserAllocatorAccess.h raw_worktree=0cb14602986db655d7f7507de33033bf29601abb620ba0491dcdd1609ff86cbf raw_oracle=0cb14602986db655d7f7507de33033bf29601abb620ba0491dcdd1609ff86cbf transplant_blob=268c56b76c1d59ec90a8f4ff3add3fb5547657cde5aa0ed2077e5e8177084402 current_blob=268c56b76c1d59ec90a8f4ff3add3fb5547657cde5aa0ed2077e5e8177084402 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxUserAllocatorDefault.h
+STDOUT_BINARY: bytes=2188 sha256=4d2bd97852454667d5505e5eb5482de5cefd7f9e2de68f98066e948fec8bbb5e content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxUserAllocatorDefault.h
+STDOUT_BINARY: bytes=2188 sha256=4d2bd97852454667d5505e5eb5482de5cefd7f9e2de68f98066e948fec8bbb5e content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxUserAllocatorDefault.h raw_worktree=afe8cc95c7ad796e09f97b46e0ebe9a62d8c06afe25d422629dd842bf207fb53 raw_oracle=afe8cc95c7ad796e09f97b46e0ebe9a62d8c06afe25d422629dd842bf207fb53 transplant_blob=4d2bd97852454667d5505e5eb5482de5cefd7f9e2de68f98066e948fec8bbb5e current_blob=4d2bd97852454667d5505e5eb5482de5cefd7f9e2de68f98066e948fec8bbb5e checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxUserDebugRenderer.h
+STDOUT_BINARY: bytes=574 sha256=3e9b48a3106506cc61827f346dd7945efda7dc51cdd9fba79d816c8be79db447 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxUserDebugRenderer.h
+STDOUT_BINARY: bytes=574 sha256=3e9b48a3106506cc61827f346dd7945efda7dc51cdd9fba79d816c8be79db447 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxUserDebugRenderer.h raw_worktree=1f1dd04c5be2abd80479aa755f53f028978869539e370000682289f10263baee raw_oracle=1f1dd04c5be2abd80479aa755f53f028978869539e370000682289f10263baee transplant_blob=3e9b48a3106506cc61827f346dd7945efda7dc51cdd9fba79d816c8be79db447 current_blob=3e9b48a3106506cc61827f346dd7945efda7dc51cdd9fba79d816c8be79db447 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxUserOutputStream.h
+STDOUT_BINARY: bytes=1046 sha256=a8be20b7a8c7cffe544375bc573853eb85ada6706e00c889a4cf84e56cf3fe50 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxUserOutputStream.h
+STDOUT_BINARY: bytes=1046 sha256=a8be20b7a8c7cffe544375bc573853eb85ada6706e00c889a4cf84e56cf3fe50 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxUserOutputStream.h raw_worktree=7f9f3b9b92a36c84acf166b5c2fd84db70733899caa1569e0784de4bfbb33965 raw_oracle=7f9f3b9b92a36c84acf166b5c2fd84db70733899caa1569e0784de4bfbb33965 transplant_blob=a8be20b7a8c7cffe544375bc573853eb85ada6706e00c889a4cf84e56cf3fe50 current_blob=a8be20b7a8c7cffe544375bc573853eb85ada6706e00c889a4cf84e56cf3fe50 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxUtilities.h
+STDOUT_BINARY: bytes=3608 sha256=50bce8a755da7f0f0274abc229996984aeaafeb6759fb3280632712d93837023 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxUtilities.h
+STDOUT_BINARY: bytes=3608 sha256=50bce8a755da7f0f0274abc229996984aeaafeb6759fb3280632712d93837023 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxUtilities.h raw_worktree=ee639cb8ceb5edd2d770775232dfd1628eccdc3b7631689c6f082437e31910ee raw_oracle=ee639cb8ceb5edd2d770775232dfd1628eccdc3b7631689c6f082437e31910ee transplant_blob=50bce8a755da7f0f0274abc229996984aeaafeb6759fb3280632712d93837023 current_blob=50bce8a755da7f0f0274abc229996984aeaafeb6759fb3280632712d93837023 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxVec3.h
+STDOUT_BINARY: bytes=14159 sha256=e2d8990b25cfe1a03027bc5939d2b817b98be0d168bee2baeec1877d48fa7630 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxVec3.h
+STDOUT_BINARY: bytes=14159 sha256=e2d8990b25cfe1a03027bc5939d2b817b98be0d168bee2baeec1877d48fa7630 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxVec3.h raw_worktree=de0752264f51d064c233be6de418b2aea25e1a74a4a80c7dd68b762bc0492cd8 raw_oracle=de0752264f51d064c233be6de418b2aea25e1a74a4a80c7dd68b762bc0492cd8 transplant_blob=e2d8990b25cfe1a03027bc5939d2b817b98be0d168bee2baeec1877d48fa7630 current_blob=e2d8990b25cfe1a03027bc5939d2b817b98be0d168bee2baeec1877d48fa7630 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxVolumeIntegration.h
+STDOUT_BINARY: bytes=1282 sha256=cc8bb4553c066cbced4a1b295bf823fe8fe03022cba0334db596d58d811f5a45 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxVolumeIntegration.h
+STDOUT_BINARY: bytes=1282 sha256=cc8bb4553c066cbced4a1b295bf823fe8fe03022cba0334db596d58d811f5a45 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxVolumeIntegration.h raw_worktree=e748af935cd1d56999e65449fc95dc7230108f3bd5e51a4052926a287dd2cc72 raw_oracle=e748af935cd1d56999e65449fc95dc7230108f3bd5e51a4052926a287dd2cc72 transplant_blob=cc8bb4553c066cbced4a1b295bf823fe8fe03022cba0334db596d58d811f5a45 current_blob=cc8bb4553c066cbced4a1b295bf823fe8fe03022cba0334db596d58d811f5a45 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:Foundation/include/NxXBOX.h
+STDOUT_BINARY: bytes=358 sha256=d92afbf5a45f20e04180b9b8a6444e298d520840d62cfb018854060ad46c4b7e content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:Foundation/include/NxXBOX.h
+STDOUT_BINARY: bytes=358 sha256=d92afbf5a45f20e04180b9b8a6444e298d520840d62cfb018854060ad46c4b7e content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=Foundation/include/NxXBOX.h raw_worktree=964f1207a89b6563700eaee9d44fb4b03e9bac59f933f494f1a8e4339532f665 raw_oracle=964f1207a89b6563700eaee9d44fb4b03e9bac59f933f494f1a8e4339532f665 transplant_blob=d92afbf5a45f20e04180b9b8a6444e298d520840d62cfb018854060ad46c4b7e current_blob=d92afbf5a45f20e04180b9b8a6444e298d520840d62cfb018854060ad46c4b7e checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:NxBuildNumber.h
+STDOUT_BINARY: bytes=322 sha256=84d431ffaae60fc692e1c22343f9ff91b23c6a39da89433a06558ea9c4789511 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:NxBuildNumber.h
+STDOUT_BINARY: bytes=322 sha256=84d431ffaae60fc692e1c22343f9ff91b23c6a39da89433a06558ea9c4789511 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=NxBuildNumber.h raw_worktree=8bc6af66adb5adb9bfa8e402ee2bb4be23fc089b4c2835d174f41300aa0a028d raw_oracle=8bc6af66adb5adb9bfa8e402ee2bb4be23fc089b4c2835d174f41300aa0a028d transplant_blob=84d431ffaae60fc692e1c22343f9ff91b23c6a39da89433a06558ea9c4789511 current_blob=84d431ffaae60fc692e1c22343f9ff91b23c6a39da89433a06558ea9c4789511 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:NxVersionNumber.h
+STDOUT_BINARY: bytes=629 sha256=4b1112c5660a0d9cc5fe82386fb644bc3c1c93210dd4cb3d2a7c61eaf52a6313 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:NxVersionNumber.h
+STDOUT_BINARY: bytes=629 sha256=4b1112c5660a0d9cc5fe82386fb644bc3c1c93210dd4cb3d2a7c61eaf52a6313 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=NxVersionNumber.h raw_worktree=0b0ee61a53b886437e2a0ef7f5d9b123d4d8ccd178ebd6057eeddc3e552e3df1 raw_oracle=0b0ee61a53b886437e2a0ef7f5d9b123d4d8ccd178ebd6057eeddc3e552e3df1 transplant_blob=4b1112c5660a0d9cc5fe82386fb644bc3c1c93210dd4cb3d2a7c61eaf52a6313 current_blob=4b1112c5660a0d9cc5fe82386fb644bc3c1c93210dd4cb3d2a7c61eaf52a6313 checks=True,True,True,True
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob ac804727f9565f4266aab3b794834ab5551d127f:VersionNumber.h
+STDOUT_BINARY: bytes=629 sha256=5170932bbb7cf51568be9481ddb89a32c8b0536148e2bb77f66f367b97d28219 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe cat-file blob 62b26f4f672ea70b73742302db52c67e338565e3:VersionNumber.h
+STDOUT_BINARY: bytes=629 sha256=5170932bbb7cf51568be9481ddb89a32c8b0536148e2bb77f66f367b97d28219 content_not_repeated=immutable_public_blob
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+MANIFEST_ROW: path=VersionNumber.h raw_worktree=e1dea1959436ff74616345b4a645176dbeaf94672dd15da9eabbfd018f347f6d raw_oracle=e1dea1959436ff74616345b4a645176dbeaf94672dd15da9eabbfd018f347f6d transplant_blob=5170932bbb7cf51568be9481ddb89a32c8b0536148e2bb77f66f367b97d28219 current_blob=5170932bbb7cf51568be9481ddb89a32c8b0536148e2bb77f66f367b97d28219 checks=True,True,True,True
+MANIFEST_SUMMARY: files=48 checks=192 failures=0
+ASSERTION PASS: all 48 files and 192 manifest hashes validate live
+
+==============================================================================
+Six Python export-tool tests and bytecode exclusion
+==============================================================================
+WORKING_DIRECTORY: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin
+ENVIRONMENT: PYTHONDONTWRITEBYTECODE=1
+COMMAND: & python.exe -B -m pytest -p no:cacheprovider D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\tools\tests\test_export_tools.py -q
+STDOUT_BEGIN
+......                                                                   [100%]
+6 passed in 0.29s
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+PYCACHE_CHECK: count=0 paths=
+ASSERTION PASS: no Python bytecode cache exists under tools
+
+==============================================================================
+Candidate PE/version/hash and installed-oracle restoration
+==============================================================================
+CANDIDATE_IDENTITY: path=D:\github\Novodex\build\Release\NxFoundation.dll sha256=161438b06797246c39c9febe1dc5aba2702a36504bd5e91069ff512018ece332 size=57344 machine=0x014c magic=0x010b file_version=2.1.2.6000 product_version=2.1.2.6000
+ASSERTION PASS: candidate is PE32 x86
+ASSERTION PASS: candidate file/product version is 2.1.2.6000
+ORACLE_IDENTITY: path=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 size=172032
+ASSERTION PASS: installed NxFoundation.dll is the exact pinned oracle
+RESTORATION_STATE: backup_count=0 consumer_process_count=0
+ASSERTION PASS: no oracle backup or consumer process remains
+
+==============================================================================
+Exact git scope, diff, and status checks
+==============================================================================
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe rev-parse pre-ue3-headers^{}
+STDOUT_BEGIN
+528a7bfef8d3816c36135ff3768b5b0c2ed68641
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+BASELINE_TAG_RESOLVED: 528a7bfef8d3816c36135ff3768b5b0c2ed68641
+ASSERTION PASS: baseline tag resolves to expected commit
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe diff --name-only ac804727f9565f4266aab3b794834ab5551d127f..62b26f4f672ea70b73742302db52c67e338565e3 -- Foundation/include BuildNumber.h changes.txt NxBuildNumber.h NxVersionNumber.h VersionNumber.h
+STDOUT_BEGIN
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+ASSERTION PASS: no public/version header changed after transplant
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe diff --name-only ac804727f9565f4266aab3b794834ab5551d127f..62b26f4f672ea70b73742302db52c67e338565e3 -- Physics
+STDOUT_BEGIN
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+ASSERTION PASS: no Physics path changed after transplant
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe diff --name-only ac804727f9565f4266aab3b794834ab5551d127f..62b26f4f672ea70b73742302db52c67e338565e3
+STDOUT_BEGIN
+CMakeLists.txt
+Foundation/src/DebugRenderable.cpp
+Foundation/src/FPU.cpp
+Foundation/src/FoundationSDK.cpp
+Foundation/src/Sphere.cpp
+Foundation/src/Utilities.cpp
+Foundation/src/include/DebugRenderable.h
+Foundation/src/include/FoundationSDK.h
+Foundation/src/win32/resource.rc
+tests/FoundationClusterTests.cpp
+tests/FoundationCustomArrayTests.cpp
+tests/FoundationExportTests.cpp
+tests/FoundationSDKTests.cpp
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+ENGINE_GLUE_SCOPE: count=0 paths=
+ASSERTION PASS: no Engine/Unreal glue changed after transplant
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe log --format= --name-only ac804727f9565f4266aab3b794834ab5551d127f..62b26f4f672ea70b73742302db52c67e338565e3
+STDOUT_BEGIN
+Foundation/src/DebugRenderable.cpp
+tests/FoundationClusterTests.cpp
+tests/FoundationClusterTests.cpp
+CMakeLists.txt
+tests/FoundationCustomArrayTests.cpp
+tests/FoundationClusterTests.cpp
+tests/FoundationClusterTests.cpp
+tests/FoundationClusterTests.cpp
+tests/FoundationClusterTests.cpp
+tests/FoundationClusterTests.cpp
+tests/FoundationClusterTests.cpp
+Foundation/src/Utilities.cpp
+tests/FoundationClusterTests.cpp
+Foundation/src/FPU.cpp
+tests/FoundationClusterTests.cpp
+tests/FoundationClusterTests.cpp
+tests/FoundationClusterTests.cpp
+tests/FoundationClusterTests.cpp
+CMakeLists.txt
+tests/FoundationClusterTests.cpp
+CMakeLists.txt
+CMakeLists.txt
+Foundation/src/FoundationSDK.cpp
+Foundation/src/include/FoundationSDK.h
+tests/FoundationSDKTests.cpp
+Foundation/src/Utilities.cpp
+CMakeLists.txt
+Foundation/src/Sphere.cpp
+Foundation/src/Utilities.cpp
+tests/FoundationExportTests.cpp
+Foundation/src/DebugRenderable.cpp
+Foundation/src/FoundationSDK.cpp
+Foundation/src/Utilities.cpp
+Foundation/src/include/DebugRenderable.h
+Foundation/src/win32/resource.rc
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+IMPLEMENTATION_DLL_COMMITS: count=0 paths=
+ASSERTION PASS: no DLL is committed in implementation range
+WORKING_DIRECTORY: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin
+COMMAND: & git.exe diff --name-only 737b273367061e61a46d53f1c5fd3828c327f124..391a1cf176f3c0a0e409c9737f3c1b5fc6d05a6f
+STDOUT_BEGIN
+docs/reconstruction/novodex-foundation/dumps/.gitattributes
+docs/reconstruction/novodex-foundation/dumps/README.md
+docs/reconstruction/novodex-foundation/dumps/box_differential.txt
+docs/reconstruction/novodex-foundation/dumps/capsule_differential.txt
+docs/reconstruction/novodex-foundation/dumps/consumer_smoke_differential.txt
+docs/reconstruction/novodex-foundation/dumps/consumer_smoke_launch.log
+docs/reconstruction/novodex-foundation/dumps/consumer_smoke_modules.txt
+docs/reconstruction/novodex-foundation/dumps/consumer_smoke_oracle_launch.log
+docs/reconstruction/novodex-foundation/dumps/consumer_smoke_result.txt
+docs/reconstruction/novodex-foundation/dumps/debug_circle_capstone.txt
+docs/reconstruction/novodex-foundation/dumps/debug_differential.txt
+docs/reconstruction/novodex-foundation/dumps/exception_differential.txt
+docs/reconstruction/novodex-foundation/dumps/export_compare_initial.txt
+docs/reconstruction/novodex-foundation/dumps/exports_oracle.txt
+docs/reconstruction/novodex-foundation/dumps/exports_rebuilt.txt
+docs/reconstruction/novodex-foundation/dumps/exports_rebuilt_initial.txt
+docs/reconstruction/novodex-foundation/dumps/fpu_differential.txt
+docs/reconstruction/novodex-foundation/dumps/immutable_public_hashes.json
+docs/reconstruction/novodex-foundation/dumps/link_oracle_import_names.txt
+docs/reconstruction/novodex-foundation/dumps/misc_custom_array.txt
+docs/reconstruction/novodex-foundation/dumps/observable_differential.txt
+docs/reconstruction/novodex-foundation/dumps/oracle_pe_capstone.json
+docs/reconstruction/novodex-foundation/dumps/oracle_sdk_capstone.txt
+docs/reconstruction/novodex-foundation/dumps/profiler_differential.txt
+docs/reconstruction/novodex-foundation/dumps/ray_seg_differential.txt
+docs/reconstruction/novodex-foundation/dumps/sdk_differential_green.txt
+docs/reconstruction/novodex-foundation/dumps/sdk_differential_red.txt
+docs/reconstruction/novodex-foundation/dumps/sdk_vtable_compare.txt
+docs/reconstruction/novodex-foundation/dumps/sphere_differential.txt
+docs/reconstruction/novodex-foundation/dumps/task10_final_verification.raw.txt
+docs/reconstruction/novodex-foundation/dumps/task10_final_verification.result.txt
+docs/reconstruction/novodex-foundation/dumps/task10_final_verification.txt
+docs/reconstruction/novodex-foundation/dumps/task10_live_exports.txt
+docs/reconstruction/novodex-foundation/dumps/task8_final_verification.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_candidate.launch.log
+docs/reconstruction/novodex-foundation/dumps/task9_audit_candidate.modules.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_candidate.stderr.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_candidate.stdout.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_candidate.transcript.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_candidate.wer.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_oracle.launch.log
+docs/reconstruction/novodex-foundation/dumps/task9_audit_oracle.modules.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_oracle.stderr.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_oracle.stdout.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_oracle.transcript.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_oracle.wer.txt
+docs/reconstruction/novodex-foundation/dumps/task9_candidate_full_gates.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_build.result.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_build.stderr.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_build.stdout.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_candidate_identity.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_clean.stderr.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_clean.stdout.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_configure.result.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_configure.stderr.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_configure.stdout.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_export_compare.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_export_sdk_tests.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_exports_rebuilt.stderr.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_exports_rebuilt.txt
+docs/reconstruction/novodex-foundation/dumps/test_initial_red.txt
+docs/reconstruction/novodex-foundation/dumps/test_oracle_green.txt
+docs/reconstruction/novodex-foundation/dumps/time_differential.txt
+docs/reconstruction/novodex-foundation/dumps/util_differential.txt
+docs/reconstruction/novodex-foundation/dumps/volume_differential.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/tools/compare_exports.py
+docs/reconstruction/novodex-foundation/tools/pe_exports.py
+docs/reconstruction/novodex-foundation/tools/run_consumer_smoke.ps1
+docs/reconstruction/novodex-foundation/tools/run_final_verification.ps1
+docs/reconstruction/novodex-foundation/tools/tests/test_export_tools.py
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+EVIDENCE_COMMITTED_SCOPE: paths=73 outside=0
+ASSERTION PASS: committed evidence range changes only reconstruction subtree
+WORKING_DIRECTORY: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin
+COMMAND: & git.exe log --format= --name-only 737b273367061e61a46d53f1c5fd3828c327f124..391a1cf176f3c0a0e409c9737f3c1b5fc6d05a6f
+STDOUT_BEGIN
+docs/reconstruction/novodex-foundation/tools/run_final_verification.ps1
+docs/reconstruction/novodex-foundation/tools/run_final_verification.ps1
+docs/reconstruction/novodex-foundation/tools/run_final_verification.ps1
+docs/reconstruction/novodex-foundation/tools/run_final_verification.ps1
+docs/reconstruction/novodex-foundation/dumps/README.md
+docs/reconstruction/novodex-foundation/dumps/task10_final_verification.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/tools/run_final_verification.ps1
+docs/reconstruction/novodex-foundation/dumps/.gitattributes
+docs/reconstruction/novodex-foundation/dumps/README.md
+docs/reconstruction/novodex-foundation/dumps/task10_final_verification.raw.txt
+docs/reconstruction/novodex-foundation/dumps/task10_final_verification.result.txt
+docs/reconstruction/novodex-foundation/dumps/task10_final_verification.txt
+docs/reconstruction/novodex-foundation/dumps/task10_live_exports.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/tools/run_final_verification.ps1
+docs/reconstruction/novodex-foundation/dumps/README.md
+docs/reconstruction/novodex-foundation/dumps/task10_final_verification.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/dumps/README.md
+docs/reconstruction/novodex-foundation/dumps/consumer_smoke_result.txt
+docs/reconstruction/novodex-foundation/dumps/task9_candidate_full_gates.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/dumps/README.md
+docs/reconstruction/novodex-foundation/dumps/consumer_smoke_differential.txt
+docs/reconstruction/novodex-foundation/dumps/consumer_smoke_modules.txt
+docs/reconstruction/novodex-foundation/dumps/consumer_smoke_result.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_candidate.launch.log
+docs/reconstruction/novodex-foundation/dumps/task9_audit_candidate.modules.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_candidate.stderr.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_candidate.stdout.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_candidate.transcript.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_candidate.wer.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_oracle.launch.log
+docs/reconstruction/novodex-foundation/dumps/task9_audit_oracle.modules.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_oracle.stderr.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_oracle.stdout.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_oracle.transcript.txt
+docs/reconstruction/novodex-foundation/dumps/task9_audit_oracle.wer.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_build.result.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_build.stderr.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_build.stdout.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_candidate_identity.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_clean.stderr.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_clean.stdout.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_configure.result.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_configure.stderr.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_configure.stdout.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_export_compare.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_export_sdk_tests.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_exports_rebuilt.stderr.txt
+docs/reconstruction/novodex-foundation/dumps/task9_rerun_exports_rebuilt.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/tools/run_consumer_smoke.ps1
+docs/reconstruction/novodex-foundation/dumps/README.md
+docs/reconstruction/novodex-foundation/dumps/consumer_smoke_differential.txt
+docs/reconstruction/novodex-foundation/dumps/consumer_smoke_launch.log
+docs/reconstruction/novodex-foundation/dumps/consumer_smoke_modules.txt
+docs/reconstruction/novodex-foundation/dumps/consumer_smoke_oracle_launch.log
+docs/reconstruction/novodex-foundation/dumps/consumer_smoke_result.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/dumps/box_differential.txt
+docs/reconstruction/novodex-foundation/dumps/capsule_differential.txt
+docs/reconstruction/novodex-foundation/dumps/debug_circle_capstone.txt
+docs/reconstruction/novodex-foundation/dumps/debug_differential.txt
+docs/reconstruction/novodex-foundation/dumps/task8_final_verification.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/dumps/box_differential.txt
+docs/reconstruction/novodex-foundation/dumps/ray_seg_differential.txt
+docs/reconstruction/novodex-foundation/dumps/task8_final_verification.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/dumps/task8_final_verification.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/dumps/misc_custom_array.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/dumps/debug_differential.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/dumps/volume_differential.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/dumps/ray_seg_differential.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/dumps/sphere_differential.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/dumps/capsule_differential.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/dumps/box_differential.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/dumps/util_differential.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/dumps/fpu_differential.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/dumps/time_differential.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/dumps/profiler_differential.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/dumps/observable_differential.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/dumps/exception_differential.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/dumps/README.md
+docs/reconstruction/novodex-foundation/dumps/exports_rebuilt.txt
+docs/reconstruction/novodex-foundation/dumps/oracle_sdk_capstone.txt
+docs/reconstruction/novodex-foundation/dumps/sdk_differential_green.txt
+docs/reconstruction/novodex-foundation/dumps/sdk_differential_red.txt
+docs/reconstruction/novodex-foundation/dumps/sdk_vtable_compare.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/dumps/link_oracle_import_names.txt
+docs/reconstruction/novodex-foundation/dumps/test_oracle_green.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/dumps/export_compare_initial.txt
+docs/reconstruction/novodex-foundation/dumps/exports_rebuilt_initial.txt
+docs/reconstruction/novodex-foundation/dumps/test_initial_red.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/dumps/exports_rebuilt.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/dumps/immutable_public_hashes.json
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/dumps/immutable_public_hashes.json
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/dumps/oracle_pe_capstone.json
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/tools/compare_exports.py
+docs/reconstruction/novodex-foundation/tools/tests/test_export_tools.py
+docs/reconstruction/novodex-foundation/dumps/exports_oracle.txt
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/tools/compare_exports.py
+docs/reconstruction/novodex-foundation/tools/pe_exports.py
+docs/reconstruction/novodex-foundation/tools/tests/test_export_tools.py
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/dumps/README.md
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/inventory.json
+docs/reconstruction/novodex-foundation/spike.md
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+EVIDENCE_DLL_COMMITS: count=0 paths=
+ASSERTION PASS: no DLL is committed in evidence range
+WORKING_DIRECTORY: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin
+COMMAND: & git.exe diff --check
+STDOUT_BEGIN
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+WORKING_DIRECTORY: D:\github\Novodex
+COMMAND: & git.exe status --porcelain
+STDOUT_BEGIN
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+ASSERTION PASS: Novodex implementation repository is clean
+WORKING_DIRECTORY: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin
+COMMAND: & git.exe status --porcelain
+STDOUT_BEGIN
+ M docs/reconstruction/novodex-foundation/dumps/task10_final_verification.raw.txt
+ M docs/reconstruction/novodex-foundation/dumps/task10_final_verification.result.txt
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE: 0
+ALLOWED_DIRTY_EVIDENCE_PATHS_BEGIN
+docs/reconstruction/novodex-foundation/dumps/README.md
+docs/reconstruction/novodex-foundation/dumps/task10_final_verification.raw.txt
+docs/reconstruction/novodex-foundation/dumps/task10_final_verification.result.txt
+docs/reconstruction/novodex-foundation/dumps/task10_final_verification.txt
+docs/reconstruction/novodex-foundation/dumps/task10_live_exports.txt
+docs/reconstruction/novodex-foundation/evidence.md
+docs/reconstruction/novodex-foundation/spike.md
+docs/reconstruction/novodex-foundation/tools/run_final_verification.ps1
+ALLOWED_DIRTY_EVIDENCE_PATHS_END
+EVIDENCE_STATUS_CLASSIFICATION: observed=2 unexpected=0
+ASSERTION PASS: evidence worktree has no unexpected dirty paths
+ASSERTION PASS: generated artifact exists: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_final_verification.raw.txt
+ASSERTION PASS: generated artifact is nonempty: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_final_verification.raw.txt
+GENERATED_ARTIFACT_VALIDATION: path=D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_final_verification.raw.txt bytes=133816 sha256=deferred_until_transcript_close git_dirty=True
+ASSERTION PASS: generated artifact exists: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_final_verification.result.txt
+ASSERTION PASS: generated artifact is nonempty: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_final_verification.result.txt
+GENERATED_ARTIFACT_VALIDATION: path=D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_final_verification.result.txt bytes=38 sha256=db71773619dfe4b356f36fc93a99cbc6b0ca6dba796162aa267c4c6a39b41dde git_dirty=True
+ASSERTION PASS: generated artifact exists: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_live_exports.txt
+ASSERTION PASS: generated artifact is nonempty: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_live_exports.txt
+GENERATED_ARTIFACT_VALIDATION: path=D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_live_exports.txt bytes=5974 sha256=3584f8a2d4f0d698c0361561aeef9f161e864bd7e32edf3f1aff775016efc929 git_dirty=False
+ASSERTION PASS: in-progress result artifact was freshly invalidated and regenerated
+
+==============================================================================
+Final result
+==============================================================================
+CONSUMER_ACTIONS: deployment=0 launch=0
+FINAL_COUNTS: export_sdk_processes=4 cluster_processes=24 cluster_modes=12 cluster_matches=12 custom_array_processes=1 manifest_files=48 manifest_checks=192 python_tests=6
+FINAL_CANDIDATE_SHA256: 161438b06797246c39c9febe1dc5aba2702a36504bd5e91069ff512018ece332
+FINAL_ORACLE_SHA256: 7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+FINAL_STATUS: PASS
+RESULT_ARTIFACT_WRITE: D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task10_final_verification.result.txt
+**********************
+Windows PowerShell transcript end
+End time: 20260809132733
+**********************
+IDENTITY_HEADER_SANITIZATION: removed=4 fields=username,run_as,machine,process_id
+POST_RUN_GENERATED_VALIDATION: count=3 errors=0
+POST_RUN_RESULT_SHA256: 8adf10d7657364c504ae119edd7ece3e97933c19de1b41746e08818de000cdc7
+POST_RUN_LIVE_EXPORTS_SHA256: 3584f8a2d4f0d698c0361561aeef9f161e864bd7e32edf3f1aff775016efc929
+SCRIPT_EXIT_CODE: 0

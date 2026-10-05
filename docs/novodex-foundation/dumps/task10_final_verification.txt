@@ -1,0 +1,119 @@
+Novodex Foundation Task 10 final verification
+Date: 2026-08-09 America/New_York
+
+This file is the concise summary, not the raw proof. The reproducible
+consumer-read-only runner is
+`../tools/run_final_verification.ps1`; its complete executed transcript is
+`task10_final_verification.raw.txt`, exit/result is
+`task10_final_verification.result.txt`, and live export output is
+`task10_live_exports.txt`. The executed transcript contains every fully resolved
+command, stdout, stderr, exit code, and comparison without unresolved
+placeholders.
+
+Heads and pins
+- implementation HEAD: 62b26f4f672ea70b73742302db52c67e338565e3
+- verification input evidence HEAD: 391a1cf176f3c0a0e409c9737f3c1b5fc6d05a6f (both repositories clean at start)
+- baseline tag: pre-ue3-headers -> 528a7bfef8d3816c36135ff3768b5b0c2ed68641
+- transplant: ac804727f9565f4266aab3b794834ab5551d127f
+- pinned oracle: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+  sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 size=172032
+- fresh retained candidate: D:\github\Novodex\build\Release\NxFoundation.dll
+  sha256=161438b06797246c39c9febe1dc5aba2702a36504bd5e91069ff512018ece332 size=57344
+
+Fresh configure, clean, and Release build (cwd D:\github\Novodex)
+> cmake -S . -B build --fresh -G "Visual Studio 18 2026" -A Win32
+> cmake --build build --config Release --target clean
+> cmake --build build --config Release --target NxFoundation NxFoundationExportTests NxFoundationSDKTests NxFoundationClusterTests NxFoundationCustomArrayTests
+result: exit 0; CMake selected MSVC 19.51.36252.0 Hostx64/x86; all five targets built.
+warnings: C4291 at FoundationSDK.cpp:73, :83, and :244; no build error.
+
+Exact loader process commands (each command below was a distinct process)
+> build\Release\NxFoundationExportTests.exe D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+> build\Release\NxFoundationExportTests.exe D:\github\Novodex\build\Release\NxFoundation.dll
+> build\Release\NxFoundationSDKTests.exe D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+> build\Release\NxFoundationSDKTests.exe D:\github\Novodex\build\Release\NxFoundation.dll
+result: four exits 0; SDK normalized stdout exact; stderr exact and empty.
+
+For each mode in exception, observable, profiler, time, fpu, util, box, capsule,
+sphere, ray_seg, volume, and debug, the raw transcript records two separately
+resolved commands: one against the pinned oracle and one against the rebuilt DLL.
+results by mode (oracle_exit/rebuilt_exit/stdout_exact/stderr_exact):
+exception 0/0/True/True
+observable 0/0/True/True
+profiler 0/0/True/True
+time 0/0/True/True
+fpu 0/0/True/True
+util 0/0/True/True
+box 0/0/True/True
+capsule 0/0/True/True
+sphere 0/0/True/True
+ray_seg 0/0/True/True
+volume 0/0/True/True
+debug 0/0/True/True
+summary: 24 exits 0; normalized stdout exact 12/12; stderr exact 12/12.
+> build\Release\NxFoundationCustomArrayTests.exe
+result: exit 0; misc exports=0 custom_array block=4,8 offset=11 typed=roundtrip bits=b0 ascii=ab42 stream=exact copy=deep assignment=deep
+
+Fresh export generation (cwd evidence worktree)
+> python -B docs\reconstruction\novodex-foundation\tools\pe_exports.py D:\github\Novodex\build\Release\NxFoundation.dll
+> python -B docs\reconstruction\novodex-foundation\tools\compare_exports.py --oracle docs\reconstruction\novodex-foundation\dumps\exports_oracle.txt --rebuilt docs\reconstruction\novodex-foundation\dumps\task10_live_exports.txt
+result: oracle=134 rebuilt=140 missing=0 extra=6; exit 0.
+extras:
+- ??0Exception@NxFoundation@@QAE@$$QAV01@@Z
+- ??0Observable@NxFoundation@@QAE@$$QAV01@@Z
+- ??4Exception@NxFoundation@@QAEAAV01@$$QAV01@@Z
+- ??4NxProfiler@@QAEAAV0@$$QAV0@@Z
+- ??4Observable@NxFoundation@@QAEAAV01@$$QAV01@@Z
+- ??4Time@NxFoundation@@QAEAAV01@$$QAV01@@Z
+result: regenerated count=140; names differ from exports_rebuilt.txt=False; recorder exports=0.
+
+Inventory exactness (PowerShell ConvertFrom-Json plus exact set/join checks)
+> verify four gate properties all equal literal pass; flatten cluster exports and
+  compare unique set to exports_oracle; join every oracle_refs row to
+  oracle_pe_capstone.json by export/rva/kind/section.
+result: gates=4 exactly_pass=True
+  export_abi=pass structural=pass selected_behavior=pass consumer_smoke=pass;
+clusters=14 pending_decisions=0;
+assigned=134 unique=134 oracle=134 duplicates=0 missing=0 extra=0;
+oracle_refs=134 raw_rows=134 unjoined=0.
+
+PE, version, public manifest, and Python tool tests
+> inspect PE header with System.BitConverter and version with System.Diagnostics.FileVersionInfo
+result: machine=0x014c magic=0x010b file_version=2.1.2.6000 product_version=2.1.2.6000.
+> compare all four hash fields in dumps\immutable_public_hashes.json
+result: files=48 hash_cells=192 raw_mismatches=0 blob_mismatches=0.
+> $env:PYTHONDONTWRITEBYTECODE='1'; python -B -m pytest -p no:cacheprovider docs\reconstruction\novodex-foundation\tools\tests\test_export_tools.py -q
+result: 6 passed in 0.29s; __pycache__ count=0.
+
+Scope audit
+> git diff --name-only ac804727f9565f4266aab3b794834ab5551d127f..62b26f4f672ea70b73742302db52c67e338565e3 -- Foundation/include BuildNumber.h changes.txt NxBuildNumber.h NxVersionNumber.h VersionNumber.h
+result: 0 paths.
+> git diff/log the same range for Physics, Engine/Unreal glue, and *.dll paths
+result: Physics=0; Engine glue=0; committed DLL paths=0.
+implementation range paths: CMakeLists.txt; eight private Foundation source/header/resource paths; four tests paths.
+> git diff/log 737b273367061e61a46d53f1c5fd3828c327f124..391a1cf176f3c0a0e409c9737f3c1b5fc6d05a6f
+result: 41 evidence commits; 73 changed paths, all under docs/reconstruction/novodex-foundation; committed DLL paths=0.
+
+Consumer/oracle restoration (no deployment or launch in Task 10)
+> Get-FileHash D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll -Algorithm SHA256
+result: 7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 (exact pinned oracle).
+> enumerate NxFoundation.dll.oracle.bak* and consumer processes
+result: backup_count=0 consumer_process_count=0.
+Task 9 criterion remains import load plus source-backed Foundation/Novodex SDK bind through Initializing Engine Completed. The identical oracle control reproduces the later 0x80000003 KERNELBASE.dll breakpoint; no clean exit or gameplay soak is claimed.
+
+Close-out limitations and deferral
+- Three C4291 legacy allocation exception-cleanup warnings remain non-blocking.
+- Six accounted modern-MSVC move-member exports remain beyond the 134 required names.
+- Selected-behavior coverage is strong but deliberately not exhaustive.
+- Kawaiidra export enumeration remained unavailable; the approved PE/Capstone fallback is the mapping/characterization authority.
+- Clean modern-MSVC builds are byte/hash nondeterministic; export names and verified behavior remained unchanged.
+- Physics reconstruction is explicitly deferred to a separate follow-on design; this Foundation close-out does not cover NxPhysics.dll, cooking, scenes/actors, or Engine glue.
+
+Raw-proof audit: 136982 bytes / 1913 lines / SHA-256 641066f7a1a3950c8977aa4f2e9a19d0c937a6eee4e12a2bc3f34efb36ff5e47 / exact runner invocation and exit / 146 exact command and exit records; 24
+cluster commands (12 oracle, 12 rebuilt, every mode exactly twice); 96 binary
+Git-blob commands; 48 manifest rows / 192 live checks; placeholders 0; failing exits/assertions 0;
+personal-identity/header matches 0; credential-pattern matches 0. Clean-start status
+was zero changes in both repositories. After execution, raw/result were dirty and
+the deterministic live-export artifact was clean; all three exact generated paths
+passed direct existence, nonempty, content, count, and hash/semantic checks. The
+result artifact records exit_code=0, consumer_deployments=0, and consumer_launches=0.

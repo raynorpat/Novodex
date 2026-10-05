@@ -673,7 +673,9 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# TriangleMesh.cpp holds phys_fn_002233, the hull computation, which calls the hull
 	# library (qhull-gap Task 4e), so QhullHost.cpp, Quantizer.cpp and NxQhull come with it.
 	add_executable(NxPhysicsAssetTests tests/PhysicsAssetTests.cpp tests/PhysicsAssetTestSupport.cpp
+		tests/PhysicsNoSdkStubs.cpp
 		Physics/src/PMap.cpp Physics/src/MemoryStream.cpp Physics/src/TriangleMesh.cpp
+		Physics/src/InternalTriangleMesh.cpp
 		Physics/src/EdgeList.cpp Physics/src/IceAdjacencies.cpp Physics/src/IceMeshTools.cpp
 		Physics/src/IceMeshBuilder2.cpp Physics/src/ConvexHull.cpp Physics/src/TriangleMeshTopology.cpp
 		Physics/src/IceSupportMaps.cpp Physics/src/SmoothNormals.cpp Physics/src/TriangleMeshPolygons.cpp
@@ -734,11 +736,13 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsThirdPartyTests tests/PhysicsThirdPartyTests.cpp
 		tests/PhysicsThirdPartyQhull.c
 		tests/PhysicsThirdPartyHost.cpp Physics/src/Quantizer.cpp Physics/src/PhysicsInternal.cpp
+		tests/PhysicsNoSdkStubs.cpp
 		Physics/src/Containers.cpp tests/PhysicsInternalContactStubs.cpp
 		tests/PhysicsInternalMeshContactStubs.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/IcePruner.cpp
 		Physics/src/opcode/NovodexBoxPruning.cpp
-		Physics/src/PMap.cpp Physics/src/TriangleMesh.cpp Physics/src/MemoryStream.cpp
+		Physics/src/PMap.cpp Physics/src/TriangleMesh.cpp Physics/src/InternalTriangleMesh.cpp
+		Physics/src/MemoryStream.cpp
 		Physics/src/EdgeList.cpp Physics/src/IceAdjacencies.cpp Physics/src/IceMeshTools.cpp
 		Physics/src/IceMeshBuilder2.cpp Physics/src/ConvexHull.cpp Physics/src/TriangleMeshTopology.cpp
 		Physics/src/IceSupportMaps.cpp Physics/src/SmoothNormals.cpp

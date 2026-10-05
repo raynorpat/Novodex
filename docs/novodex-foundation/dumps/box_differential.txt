@@ -1,0 +1,15 @@
+Provenance: pinned oracle SHA-256 7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990; rebuilt D:/github/Novodex/build/Release/NxFoundation.dll; Capstone 5.0.6 x86-32; pefile 2024.8.26.
+Command: NxFoundationClusterTests.exe box <absolute-dll-path>, separate oracle/rebuild processes.
+Oracle exit 0 and rebuilt exit 0:
+box_geometry planes=all 6 normal.xyz+d bit rows; points=all 8 xyz bit rows; normals=all 8 xyz bit rows
+box exports=13 contains=interior,boundary_excluded,exterior,degenerate create=translated_aabb outputs=null_rejected,planes,points,vertex_normals tables=edges,axes,quads,triangles vertex_to_quad=345/045/015/135/234/024/012/123 world_normal=identity containment=inside,touching,outside,reverse
+Captured two-line output text SHA-256 (PowerShell UTF-16LE capture) is 0C49B09FEA8AA4559E05BF52CDAFEA7E68209261A913D2DD5262878736112060 for each process. The first line contains every component as eight lowercase hex digits in row/insertion order; no float is omitted.
+
+Review-hardening RED: the former gate checked only that each NxBoxVertexToQuad value was <=5 and emitted only a constant token. An intentionally wrong 24-zero expected table demonstrates that the old predicate accepts every value while the strengthened exact comparison rejects it. The strengthened oracle invocation exited 1 with:
+  FAIL box vertex-to-quad rows=345/045/015/135/234/024/012/123
+Those eight oracle-derived rows became the canonical 24-value hard assertion. Subsequent separate oracle/rebuild processes both exited 0 and emitted the exact rows above; any in-range permutation or substitution now fails either the hard assertion or normalized output comparison.
+
+Complete-geometry RED: the former predicate sampled only points[0], points[6], plane[0], and normal[0] magnitude. Setting the new expected point[1].x to 99 therefore leaves every former assertion unchanged, but the strengthened oracle invocation exits 1 with `FAIL box complete point/normal row=1` and emits actual point bits `40400000,bf800000,bf800000`. Correcting the canonical row makes all six planes, eight points, and eight normals GREEN and exact across processes. Plane/point expected geometry is hard-coded; vertex normals are hard-checked against all signed 1/sqrt(3) components and bit-serialized.
+
+All assigned RVAs and instruction attachments are recorded in oracle_pe_capstone.json. Edges, axes, quads, triangles, and all 24 vertex-to-quad values are compared exactly; float/vector facts use 1e-4 tolerance, matching the operations' float precision.
+Post-cluster export gate: oracle=134 rebuilt=140 missing=0 extra=6 recorder_exports=0 saved_equals_live=True.

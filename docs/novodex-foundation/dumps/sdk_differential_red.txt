@@ -1,0 +1,26 @@
+Task 7 c_sdk differential RED
+
+Build-of-record version: NX_FOUNDATION_SDK_VERSION = 0x02010200
+Oracle: D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+Rebuild: D:/github/Novodex/build/Release/NxFoundation.dll
+
+Commands (separate process invocations):
+  D:/github/Novodex/build/Release/NxFoundationSDKTests.exe D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+  D:/github/Novodex/build/Release/NxFoundationSDKTests.exe D:/github/Novodex/build/Release/NxFoundation.dll
+
+Oracle output / exit 0:
+wrong_version=null global=null
+create=nonnull alloc_calls=1 typed_calls=1 first_size=56 bindings=allocator,global,stream
+initial_errors=0,0
+error=return_false callback=206,gate_message,sdk_gate.cpp,77 codes=206,206,0,0
+second_create=same allocator=sticky stream=updated second_allocator_calls=0
+release=free_calls_1 global=sticky
+recreate=nonnull alloc_calls=1 typed_calls=1 free_calls=1
+
+Pre-patch rebuild output / exit 1:
+wrong_version=null global=null
+FAIL FoundationSDK allocation size differs
+
+Before the 56-byte oracle expectation became an assertion, the same pre-patch
+rebuild printed first_size=76. This is runtime allocation-size evidence, not a
+decompiler-derived sizeof claim.

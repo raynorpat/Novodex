@@ -1,0 +1,6 @@
+Provenance: pinned oracle SHA-256 7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990; rebuilt D:/github/Novodex/build/Release/NxFoundation.dll; Capstone 5.0.6 x86-32; pefile 2024.8.26.
+Command: NxFoundationClusterTests.exe sphere <absolute-dll-path>, separate processes.
+Oracle exit 0 and rebuilt exit 0:
+sphere exports=3 fast=null,single,pair,multi_contains compute=empty_none,multi_gems merge=disjoint,containment,both_orders,coincident,touching,alias_first
+Capstone attachments: NxComputeSphere 0x0000a420; NxFastComputeSphere 0x00009020; NxMergeSpheres 0x0000a540. Float/vector tolerance 1e-4.
+Post-cluster export gate: oracle=134 rebuilt=140 missing=0 extra=6 recorder_exports=0 saved_equals_live=True.

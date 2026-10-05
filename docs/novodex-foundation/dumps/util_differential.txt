@@ -1,0 +1,44 @@
+Provenance
+oracle: D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+oracle SHA-256: 7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+rebuilt: D:/github/Novodex/build/Release/NxFoundation.dll
+harness: D:/github/Novodex/build/Release/NxFoundationClusterTests.exe
+Capstone: 5.0.6 x86-32; pefile: 2024.8.26
+
+Command (separate process invocations)
+NxFoundationClusterTests.exe util <absolute-dll-path>
+
+RED before production patch
+oracle exit 0:
+util exports=5 crc=empty,canonical,byte_domain,ff,embedded_nul,4096 bounds=empty_unchanged,extrema tangents=both_branches_orthonormal rotation=general,parallel,antiparallel inertia=diagonal,symmetric_positive_trace
+rebuilt exit 1:
+FAIL utility rotation branch 0 matrix=0,-1,0;1,0,0;0,0,1 product=0,-1,0
+
+Root cause and minimal patch
+The immutable public NxMat33::operator* confirms the oracle maps unit X to unit Y while the rebuild maps it to negative Y. Utilities.cpp used v.cross(from, to); the oracle matrix sign corresponds to v.cross(to, from);. Only that argument order changed.
+
+Authorized non-UTF8 byte gate
+apply_patch could not read Utilities.cpp because it contains a legacy 0xF6. The user explicitly authorized git apply for this one edit only. The patch was applied through git apply, with a binary git-apply recovery after a first text attempt normalized line endings and failed the byte gate. No normalized attempt was built or committed.
+before length: 7651
+after length: 7651
+before SHA-256: c057f744ab44bd028fa2a0e74f734be01789f3c1927fbc15d40cb41a7aee84f5
+after SHA-256: 1ac9cb0e0c4511c968f964e0d19aad238a39d273b1b3cd50dc5c624d3e6d0706
+changed byte offsets: exactly 5248..5255
+before bytes at 5240..5257: v.cross(from, to);
+after bytes at 5240..5257: v.cross(to, from);
+legacy 0xF6 before: offset 4956
+legacy 0xF6 after: offset 4956
+No length, encoding, line-ending, or unrelated byte change remains.
+
+GREEN after production patch
+oracle exit 0 and rebuilt exit 0, with identical util summary shown above.
+
+Coverage
+NxCrc32: empty, 123456789, complete 0..255 byte domain, 0xff, embedded NUL, and 4096 repeated bytes.
+NxComputeBounds: zero/null leaves sentinels unchanged; four-point extrema with duplicates.
+NxNormalToTangents: both |z| branches; unit and mutual/normal orthogonality invariants.
+NxFindRotationMatrix: general, parallel, and antiparallel unit-vector paths through public matrix multiplication.
+NxDiagonalizeInertiaTensor: diagonal exact eigenvalues and symmetric positive trace/eigenvalue invariants.
+
+Post-cluster export gate
+oracle=134 rebuilt=140 missing=0 extra=6 recorder_exports=0 saved_equals_live=True

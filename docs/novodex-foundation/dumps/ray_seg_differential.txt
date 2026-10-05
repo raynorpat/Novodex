@@ -1,0 +1,15 @@
+Provenance: pinned oracle D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll SHA-256 7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990; rebuilt D:/github/Novodex/build/Release/NxFoundation.dll; Capstone 5.0.6 x86-32; pefile 2024.8.26.
+Commands (separate process invocations):
+  D:/github/Novodex/build/Release/NxFoundationClusterTests.exe ray_seg D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+  D:/github/Novodex/build/Release/NxFoundationClusterTests.exe ray_seg D:/github/Novodex/build/Release/NxFoundation.dll
+Oracle exit 0 and rebuilt exit 0, identical output:
+  ray_seg exports=2 ray=unit_interior,behind,on,null_t,output_alias segment=interior,start,end,zero_length,output_alias
+Capstone attachments:
+  NxComputeDistanceSquared RVA 0x00008d50
+  NxComputeSquareDistance RVA 0x00008df0
+Float/output tolerance: absolute 1e-4 for the deterministic integer-valued vectors and parameters.
+
+TDD characterization: an initial probe supplied ray direction (2,0,0). Oracle and rebuild differed, but immutable Foundation/include/NxRay.h documents that direction must be normalized. The probe violated the public precondition and was removed from the acceptance gate; neither result is treated as required behavior. Review then removed the zero-direction probe for the same reason, making the boundary consistent. The valid normalized-direction gate was GREEN in both processes without a production change. Non-unit and zero directions, NaN/infinity, invalid pointers, and additional overlapping output pointers are excluded.
+
+Post-cluster clean-first build: exit 0, with only the three previously documented C4291 warnings.
+Post-cluster export gate: oracle=134 rebuilt=140 missing=0 extra=6 recorder_exports=0 saved_equals_live=True.

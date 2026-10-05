@@ -38,6 +38,7 @@
 #include "NpPhysicsSDK.h"
 #include "NxActor.h"
 #include "NxActorDesc.h"
+#include "NxTriangle.h"
 #include "NxJointDesc.h"
 #include "NxJoint.h"
 #include "NxUserContactReport.h"
@@ -876,40 +877,66 @@ NxShape* NpScene::raycastClosestShape(const NxRay& worldRay, NxShapesType shapeT
 	return result;
 	}
 
-// (unimplemented) overlapSphereShapes
+// phys_fn_000378 (0x0000d390): read-lock around the Scene's sphere overlap collection.
 NxU32 NpScene::overlapSphereShapes(const NxSphere& worldSphere, NxShapesType shapeType, NxU32 nbShapes, NxShape** shapes, NxUserEntityReport<NxShape*>* callback)
 	{
-	return 0;
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	const NxU32 result = mScene->overlapSphereShapes(worldSphere, shapeType, nbShapes, shapes, callback);
+	nxNpSceneGuardLeave(link);
+	return result;
 	}
 
-// (unimplemented) overlapAABBShapes
+// phys_fn_000380 (0x0000d400): read-lock around the Scene's AABB overlap collection.
 NxU32 NpScene::overlapAABBShapes(const NxBounds3& worldBounds, NxShapesType shapeType, NxU32 nbShapes, NxShape** shapes, NxUserEntityReport<NxShape*>* callback)
 	{
-	return 0;
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	const NxU32 result = mScene->overlapAABBShapes(worldBounds, shapeType, nbShapes, shapes, callback);
+	nxNpSceneGuardLeave(link);
+	return result;
 	}
 
-// (unimplemented) cullShapes
+// phys_fn_000382 (0x0000d480): read-lock around the Scene's plane culling query.
 NxU32 NpScene::cullShapes(NxU32 nbPlanes, const NxPlane* worldPlanes, NxShapesType shapeType, NxU32 nbShapes, NxShape** shapes, NxUserEntityReport<NxShape*>* callback)
 	{
-	return 0;
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	const NxU32 result = mScene->cullShapes(nbPlanes, worldPlanes, shapeType, nbShapes, shapes, callback);
+	nxNpSceneGuardLeave(link);
+	return result;
 	}
 
-// (unimplemented) checkOverlapSphere
+// phys_fn_000384 (0x0000d500): read-lock, run the sphere overlap query, and
+// release the lock.
 bool NpScene::checkOverlapSphere(const NxSphere& worldSphere, NxShapesType shapeType)
 	{
-	return 0;
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	const bool result = mScene->checkOverlapSphere(worldSphere, shapeType);
+	nxNpSceneGuardLeave(link);
+	return result;
 	}
 
-// (unimplemented) checkOverlapAABB
+// phys_fn_000386 (0x0000d580): read-lock, run the pruner-backed AABB query,
+// and release the same read lock on the way out.
 bool NpScene::checkOverlapAABB(const NxBounds3& worldBounds, NxShapesType shapeType)
 	{
-	return 0;
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	const bool result = mScene->checkOverlapAABB(worldBounds, shapeType);
+	nxNpSceneGuardLeave(link);
+	return result;
 	}
 
-// (unimplemented) overlapAABBTriangles
+// phys_fn_000388 (0x0000d5c0): read-lock around the Scene-side AABB triangle query.
 NxU32 NpScene::overlapAABBTriangles(const NxBounds3& worldBounds, NxArraySDK<NxTriangle>& worldTriangles)
 	{
-	return 0;
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	const NxU32 result = mScene->overlapAABBTriangles(worldBounds, worldTriangles);
+	nxNpSceneGuardLeave(link);
+	return result;
 	}
 
 // (unimplemented) createFluid

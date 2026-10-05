@@ -1,0 +1,8 @@
+﻿path=D:\github\Novodex\build\Release\NxFoundation.dll
+sha256=80913618B823789F016081260FCDC1902E7F8EAC9A1FA6003C16357D3DD72704
+size=57344
+last_write_utc=2026-08-09T16:02:52.4402469Z
+file_version=2.1.2.6000
+product_version=2.1.2.6000
+machine=0x014c
+optional_header_magic=0x10b

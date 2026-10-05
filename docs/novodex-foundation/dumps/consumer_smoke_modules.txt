@@ -1,0 +1,35 @@
+Task 9 audited module evidence
+
+Live condition-based polling (raw rows in task9_audit_*.modules.txt):
+  candidate PID 2596: polls=21, observations=0, errors=0
+  oracle PID 31172: polls=20, observations=0, errors=0
+  Poll interval=100ms. This limitation is not represented as live path evidence.
+
+Candidate exact-PID WER (raw query/result in task9_audit_candidate.wer.txt):
+  Report Id=a9111ed2-4256-4826-a0ef-62cc1f3bfd88
+  exception=0x80000003
+  module=KERNELBASE.dll
+  offset=0x001fa5e2
+  bucket=88a4a13ea901cd3c6ae88e1119e106a6
+  LoadedModule[6]=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+  LoadedModule[31]=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+
+Oracle exact-PID WER (raw query/result in task9_audit_oracle.wer.txt):
+  Report Id=849717fd-3667-4d02-9293-876536b8e38e
+  exception=0x80000003
+  module=KERNELBASE.dll
+  offset=0x001fa5e2
+  bucket=88a4a13ea901cd3c6ae88e1119e106a6
+  LoadedModule[6]=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+  LoadedModule[42]=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+
+Byte/path binding:
+  Candidate transcript hashes installed NxFoundation.dll immediately pre-start and
+  again after WER capture as 80913618...72704 / 57344. The same transcript hashes
+  NxPhysics.dll as 4b7db3e...602c / 1253376. Thus WER's paths are directly tied to
+  deployment-time and post-process disk identities before restoration.
+
+Interpretation:
+  WER is postmortem path evidence, not a live-poll sample. Source/log ordering proves
+  NxCreatePhysicsSDK returned non-null and SDK initialization progressed. The oracle
+  reproduces the same paths, bind milestones, and later baseline breakpoint.

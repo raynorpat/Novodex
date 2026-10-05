@@ -37,6 +37,44 @@ extern "C" void __fastcall NxScenePrunerOwnerDestroy(void* manager, void* owner)
 #define NOMINMAX
 #include <windows.h>
 
+// The original grows the scene's three per-slot dword vectors in 256-entry
+// blocks. Keep this helper in ObjectModel.cpp because the object-layout gate
+// links this translation unit without Scene.cpp.
+static bool nxSceneGrowShapeSlotVector(unsigned char* container, unsigned offset,
+	unsigned slot, unsigned fill)
+	{
+	unsigned* begin = *reinterpret_cast<unsigned**>(container + offset);
+	unsigned* end = *reinterpret_cast<unsigned**>(container + offset + 4);
+	unsigned* capacity = *reinterpret_cast<unsigned**>(container + offset + 8);
+	if(!begin || !end || !capacity) return false;
+	const unsigned count = static_cast<unsigned>(end - begin);
+	const unsigned held = static_cast<unsigned>(capacity - begin);
+	if(slot < count) return true;
+	const unsigned required = (slot + 0x100u) & ~0xffu;
+	if(required < slot) return false;
+	if(required <= held) return true;
+	unsigned* grown = static_cast<unsigned*>(nxFoundationSDKAllocator->malloc(
+		required * sizeof(unsigned), NX_MEMORY_PERSISTENT));
+	if(!grown) return false;
+	if(count) memcpy(grown, begin, count * sizeof(unsigned));
+	for(unsigned i = count; i < required; ++i) grown[i] = fill;
+	nxFoundationSDKAllocator->free(begin);
+	*reinterpret_cast<unsigned**>(container + offset) = grown;
+	*reinterpret_cast<unsigned**>(container + offset + 4) = grown + required;
+	*reinterpret_cast<unsigned**>(container + offset + 8) = grown + required;
+	return true;
+	}
+
+bool nxSceneAuxEnsureShapeSlot(void* container, NxU32 slot)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(container);
+	if(!bytes) return false;
+	if(slot < 256) return true;
+	return nxSceneGrowShapeSlotVector(bytes, 0, slot, 0)
+		&& nxSceneGrowShapeSlotVector(bytes, 0x20, slot, 0xd00beed0u)
+		&& nxSceneGrowShapeSlotVector(bytes, 0x90, slot, 0);
+	}
+
 
 // phys_fn_002404 (0x0005ba70) is the shared member constructor; the oracle's
 // collision-object ctor calls it at 0x000247d7 and then overwrites the vptr
@@ -838,12 +876,13 @@ void BoxShape::nxDebugRenderDispatch(const void* renderer) const
 	static_cast<NxDebugRenderable*>(const_cast<void*>(renderer))->addOBB(box, color, false);
 	}
 
-// Task 4 scaffolding: the scene shape-array insert. Write order follows the
-// image -- registrar's shape store first (0x5c5a4), then the notify helper's
-// free-list sentinel (0x5c093) and count mirror (0x5c0a8). Slot must be
-// within every pre-sized vector's count: growth is not modelled.
+// Scene shape-array insert. Write order follows the image -- registrar's
+// shape store first (0x5c5a4), then the notify helper's free-list sentinel
+// (0x5c093) and count mirror (0x5c0a8). Its per-slot vectors grow in 256-slot
+// blocks when a newly allocated shape ID reaches their end.
 void nxSceneInsertShape(void* container, void* shape, NxU32 slot)
 	{
+	if(!nxSceneAuxEnsureShapeSlot(container, slot)) return;
 	unsigned self = reinterpret_cast<unsigned>(shape);
 	unsigned c = reinterpret_cast<unsigned>(container);
 

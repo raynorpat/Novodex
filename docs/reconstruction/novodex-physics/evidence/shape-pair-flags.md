@@ -48,11 +48,26 @@ IDs. Oracle listing `phys_fn_000590` shows the missing guard: identical shape
 references must be rejected before the hash call. `NxSceneInternal::setShapePairFlags()`
 now performs that check and reports the same error.
 
+The actor-release follow-up uncovered another teardown omission. Runtime shapes
+are deleted through `nxRuntimeShapeBaseDestroy`, which did not run the owner
+pair-map cleanup performed by `ShapeBase::nxBaseDtorOwnerArms`. Releasing a
+compound actor therefore left its actor-pair entry keyed by the freed group
+shape ID; `getPairFlagArray()` then dereferenced the missing shape. The runtime
+teardown now removes owner pair records before recycling the shape ID, and the
+internal pair-array method returns false for a zero-pair request, matching the
+oracle. The test pins `pairflag compound_released count=0 array=0` so this path
+cannot disappear from the symmetric differential unnoticed.
+
 The focused pair-flag differential passes with `oracle_exit=0`,
-`candidate_exit=0`, `stdout_delta=0`, and exact stderr. The Phase 7 registry
-requires both the error line and the unchanged-state result; the current Phase 7
-coverage floor is 1,318. The fresh Phase 5 gate also passes after its coverage
-floor was corrected to match the 2,042 currently registered lines.
+`candidate_exit=0`, `stdout_delta=0`, and exact stderr
+(`build/pairflag-owner-cleanup-final.log`). The Phase 7 gate passes at
+1,264/1,264 (`build/phase7-owner-cleanup-final.log`) and Phase 5 passes at
+2,042/2,042 (`build/phase5-owner-cleanup-final.log`). The Release Viewer CTest
+selection also passes all 48 entries, exercising all 39 scenes and the
+focused Viewer physics checks; the five pre-identified pinned-oracle failure
+scenes remain skipped by their verified patterns
+(`build/viewer-scenes-owner-pair-cleanup.log`). Public Physics headers remain
+unchanged.
 
 Not covered here: actor-group pair flags and the broader contact-report state
 machine. The complete Phase 7 gate was not rerun as part of this follow-up.

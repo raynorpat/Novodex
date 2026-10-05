@@ -1,0 +1,16 @@
+evidence_kind: shipped NxFoundation import-library name-resolution inspection
+library_path: D:/FlamingEnt__/Unreal_3/Development/External/Novodex/Foundation/lib/win32/Release/NxFoundation.lib
+library_sha256: 4d86d8371c80192b8766f9b0e7f43cf349ba03d00d3577203cf3b03d29d5a161
+library_size: 41322
+tool_path: C:/Program Files/Microsoft Visual Studio/18/Professional/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x86/dumpbin.exe
+tool_version: Microsoft (R) COFF/PE Dumper Version 14.51.36252.0
+command: "C:/Program Files/Microsoft Visual Studio/18/Professional/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x86/dumpbin.exe" /HEADERS D:/FlamingEnt__/Unreal_3/Development/External/Novodex/Foundation/lib/win32/Release/NxFoundation.lib
+parser: split dumpbin output at each Version: 0 short-import header; select records with DLL name and Name type; count DLL name and Name type; count exact Name type ordinal; select representative Name fields
+import_header_count: 134
+dll_name_count: NxFoundation.dll=134
+name_type_count: name=96; no prefix=38; ordinal=0
+result: all 134 short-import records resolve through an encoded export name; none has Name type ordinal
+representative: Name=NxCrc32; Name type=no prefix; Hint=109; DLL name=NxFoundation.dll
+representative: Name=NxMergeSpheres; Name type=no prefix; Hint=124; DLL name=NxFoundation.dll
+representative: Name=NxCreateFoundationSDK; Name type=no prefix; Hint=111; DLL name=NxFoundation.dll
+scope: Hint values are recorded as emitted by dumpbin and are not asserted to be runtime import ordinals

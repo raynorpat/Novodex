@@ -60,6 +60,7 @@ AABBTreeBuilder::GetSplittingValue, 002150, rounded its result to float).
 */
 
 #include "IcePruner.h"
+#include "OPC_AABBCollider.h"
 
 #include <string.h>
 #include <new>
@@ -438,6 +439,30 @@ __declspec(noinline) void StaticPruner::ReportTouched(Container& objects, udword
 			objects.Add(udword(current));
 	}
 	while(--nb);
+}
+
+// phys_fn_005229 (0x000e5500, 133 B). The static AABB query uses the
+// pruner's AABBCache at +0x6c and reports the AABB-tree traversal order.
+bool StaticPruner::OverlapAABB(Container& objects, const Point& min, const Point& max,
+	udword mask)
+{
+	if(!mTree)
+	{
+		BuildTree();
+		if(!mTree)
+			return false;
+	}
+
+	mTouched.Reset();
+	CollisionAABB query;
+	query.SetMinMax(min, max);
+	AABBCollider collider;
+	AABBCache& cache = *reinterpret_cast<AABBCache*>(mCache6C);
+	if(!collider.Collide(cache, query, mTree))
+		return false;
+
+	ReportTouched(objects, mask);
+	return true;
 }
 
 // phys_fn_005227 (0x000e5440, 184 B)

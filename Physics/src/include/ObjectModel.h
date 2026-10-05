@@ -755,9 +755,10 @@ void					nxBindDebugRenderGuardC(float* guardC);
 //! arm performs. Reproduces the three observable writes -- shape pointer
 //! into the +0x90 vector, free-list sentinel -1 into the +0x00 vector, and
 //! the +0x10/14 vector's count into the +0x20 vector -- all indexed by the
-//! shape's scene slot. Pre-sized containers only: growth is not modelled.
+//! shape's scene slot. The scene's per-slot vectors grow in 256-entry blocks.
 void					nxSceneInsertShape(void* container, void* shape,
 							NxU32 slot);
+bool					nxSceneAuxEnsureShapeSlot(void* container, NxU32 slot);
 
 //! Task 4 scaffolding: remover #1 (phys_fn_002410's release arm + the
 //! 0x5bbe0 clear). Freelist push of the scene slot when not already freed,

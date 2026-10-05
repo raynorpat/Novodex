@@ -1,0 +1,136 @@
+Task 7 expanded oracle Capstone evidence
+Oracle image base: 0x10000000; mode: x86-32.
+Addresses are RVAs. These are instruction slices from PE-export RVAs, not
+claimed decompiler output or complete function-boundary recovery.
+
+NxCreateFoundationSDK export RVA 0x00004020
+  00004020 817c240400020102 cmp dword ptr [esp + 4], 0x2010200
+  00004028 7403             je 0x1000402d
+  0000402a 33c0             xor eax, eax
+  0000402c c3               ret
+  0000402d a184690210       mov eax, dword ptr [0x10026984]
+  00004032 85c0             test eax, eax
+  00004034 7530             jne 0x10004066
+  00004036 8b4c240c         mov ecx, dword ptr [esp + 0xc]
+  0000403a 85c9             test ecx, ecx
+  0000403c 7505             jne 0x10004043
+  0000403e b940500210       mov ecx, 0x10025040
+  00004043 6a00             push 0
+  00004045 890d80690210     mov dword ptr [0x10026980], ecx
+  0000404b 8b01             mov eax, dword ptr [ecx]
+  0000404d 6a38             push 0x38
+  0000404f ff5008           call dword ptr [eax + 8]
+  00004052 85c0             test eax, eax
+  00004054 7409             je 0x1000405f
+  00004056 8bc8             mov ecx, eax
+  00004058 e8c3fdffff       call 0x10003e20
+  00004061 a384690210       mov dword ptr [0x10026984], eax
+  00004066 8b5014           mov edx, dword ptr [eax + 0x14]
+  00004069 8d4814           lea ecx, [eax + 0x14]
+  0000406c 8b442408         mov eax, dword ptr [esp + 8]
+  00004070 50               push eax
+  00004071 ff5204           call dword ptr [edx + 4]
+  00004074 8b0d84690210     mov ecx, dword ptr [0x10026984]
+  0000407a c6413401         mov byte ptr [ecx + 0x34], 1
+  0000407e a184690210       mov eax, dword ptr [0x10026984]
+  00004083 83c014           add eax, 0x14
+  00004086 c3               ret
+
+FoundationSDK constructor export RVA 0x00003e20
+  00003e20 8bc1             mov eax, ecx
+  00003e24 894804           mov dword ptr [eax + 4], ecx
+  00003e27 894808           mov dword ptr [eax + 8], ecx
+  00003e2a 89480c           mov dword ptr [eax + 0xc], ecx
+  00003e2d c7401438c20110   mov dword ptr [eax + 0x14], 0x1001c238
+  00003e34 c700dcc20110     mov dword ptr [eax], 0x1001c2dc
+  00003e3a c74014b4c20110   mov dword ptr [eax + 0x14], 0x1001c2b4
+  00003e41 89481c           mov dword ptr [eax + 0x1c], ecx
+  00003e44 894820           mov dword ptr [eax + 0x20], ecx
+  00003e47 894824           mov dword ptr [eax + 0x24], ecx
+  00003e4a 894818           mov dword ptr [eax + 0x18], ecx
+  00003e4d c6403401         mov byte ptr [eax + 0x34], 1
+  00003e51 894830           mov dword ptr [eax + 0x30], ecx
+  00003e54 89482c           mov dword ptr [eax + 0x2c], ecx
+  00003e57 c3               ret
+
+FoundationSDK release export RVA 0x00004090
+  00004090 c6412000         mov byte ptr [ecx + 0x20], 0
+  00004094 83c1ec           add ecx, -0x14
+  00004097 e834030000       call 0x100043d0
+  0000409c 85c0             test eax, eax
+  0000409e 7529             jne 0x100040c9
+  000040a0 8b0d84690210     mov ecx, dword ptr [0x10026984]
+  000040a9 8bf1             mov esi, ecx
+  000040ab 7411             je 0x100040be
+  000040ad e8aefdffff       call 0x10003e60
+  000040b2 8b0d80690210     mov ecx, dword ptr [0x10026980]
+  000040ba 56               push esi
+  000040bb ff5014           call dword ptr [eax + 0x14]
+  000040be c7058469021000000000 mov dword ptr [0x10026984], 0
+  000040c9 c3               ret
+
+FoundationSDK destructor export RVA 0x00003e60 (selected full-object offsets)
+  00003e66 c706dcc20110     mov dword ptr [esi], 0x1001c2dc
+  00003e6c c74614b4c20110   mov dword ptr [esi + 0x14], 0x1001c2b4
+  00003e73 8b7e20           mov edi, dword ptr [esi + 0x20]
+  00003e76 2b7e1c           sub edi, dword ptr [esi + 0x1c]
+  00003e84 8b461c           mov eax, dword ptr [esi + 0x1c]
+  00003ea8 ff5214           call dword ptr [edx + 0x14]
+  00003eab 896e1c           mov dword ptr [esi + 0x1c], ebp
+  00003eae 896e20           mov dword ptr [esi + 0x20], ebp
+  00003eb1 896e24           mov dword ptr [esi + 0x24], ebp
+  00003eb4 8b4604           mov eax, dword ptr [esi + 4]
+  00003ec4 ff5214           call dword ptr [edx + 0x14]
+  00003ec8 896e04           mov dword ptr [esi + 4], ebp
+  00003ecb 896e08           mov dword ptr [esi + 8], ebp
+  00003ece 896e0c           mov dword ptr [esi + 0xc], ebp
+  00003ed4 c3               ret
+
+Accessors (ecx is the NxFoundationSDK subobject returned at full object +0x14)
+  getErrorStream RVA 0x00002f50: mov eax, [ecx + 4]; ret
+  getAllocator   RVA 0x00002f60: mov eax, [0x10026980]; ret
+  getLastError   RVA 0x00002fc0: mov eax, [ecx + 0x1c]; mov [ecx + 0x1c], 0; ret
+  getFirstError  RVA 0x00002fd0: mov eax, [ecx + 0x18]; mov [ecx + 0x18], 0; ret
+
+errorImpl export RVA 0x00002fe0 (selected non-assert reporting control flow)
+  00002feb 8b512c           mov edx, dword ptr [ecx + 0x2c]
+  00003001 894130           mov dword ptr [ecx + 0x30], eax
+  00003004 7503             jne 0x10003009
+  00003006 89412c           mov dword ptr [ecx + 0x2c], eax
+  00003009 8b4918           mov ecx, dword ptr [ecx + 0x18]
+  0000300e 0f84f4000000     je 0x10003108
+  00003014 83f86b           cmp eax, 0x6b
+  00003017 755f             jne 0x10003078
+  0000308c 8d7c241c         lea edi, [esp + 0x1c]
+  00003090 bea0000000       mov esi, 0xa0
+  00003099 e816790000       call 0x1000a9b4
+  000030a1 83f8ff           cmp eax, -1
+  000030a6 81fe40420f00     cmp esi, 0xf4240
+  000030ae 8b0d80690210     mov ecx, dword ptr [0x10026980]
+  000030bd ff5210           call dword ptr [edx + 0x10]
+  000030de 3dd0000000       cmp eax, 0xd0
+  000030e3 8b4918           mov ecx, dword ptr [ecx + 0x18]
+  000030ea 57               push edi
+  000030eb ff5208           call dword ptr [edx + 8]
+  000030f0 8bb424c8000000   mov esi, dword ptr [esp + 0xc8]
+  000030f7 56               push esi
+  000030f8 8bb424c8000000   mov esi, dword ptr [esp + 0xc8]
+  000030ff 56               push esi
+  00003100 57               push edi
+  00003101 50               push eax
+  00003102 ff12             call dword ptr [edx]
+  0000310f 32c0             xor al, al
+  0000311c c21800           ret 0x18
+
+FoundationSDK event export RVA 0x00003fe0
+  00003fe0 837c240402       cmp dword ptr [esp + 4], 2
+  00003fe5 7530             jne 0x10004017
+  00003fe7 8a4134           mov al, byte ptr [ecx + 0x34]
+  00003fea 84c0             test al, al
+  00003fec 7529             jne 0x10004017
+  00003fee 8b0d84690210     mov ecx, dword ptr [0x10026984]
+  00003ffb e860feffff       call 0x10003e60
+  00004000 8b0d80690210     mov ecx, dword ptr [0x10026980]
+  00004009 ff5014           call dword ptr [eax + 0x14]
+  0000400c c7058469021000000000 mov dword ptr [0x10026984], 0
+  00004017 c20800           ret 8

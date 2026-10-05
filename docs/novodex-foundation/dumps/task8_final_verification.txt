@@ -1,0 +1,64 @@
+Task 8 final verification
+
+Post-review hardening:
+  production test commit 517729f foundation: harden box and ray gates
+  c_box RED with deliberately wrong all-zero expected table: oracle exit 1, FAIL box vertex-to-quad rows=345/045/015/135/234/024/012/123
+  The old range-only predicate accepts the all-zero table; the strengthened gate hard-asserts and emits all 24 oracle-derived values.
+  c_box GREEN oracle/rebuild: vertex_to_quad=345/045/015/135/234/024/012/123, both exit 0, output equal.
+  c_ray_seg removes zero direction from execution/claims; valid ray cases are unit_interior, behind/origin clamp, on-ray, null_t, and output_alias.
+  Non-unit and zero ray directions are both outside the immutable NxRay normalized-direction precondition.
+
+Geometry quality hardening:
+  production commit 62b26f4 foundation: match and gate complete geometry
+  c_box deliberate RED: expected formerly unchecked point[1].x=99; old sampled predicate is unchanged, strengthened oracle exits 1 at row 1. GREEN serializes all 6 planes, 8 points, and 8 normals; oracle/rebuild output SHA-256 0C49B09FEA8AA4559E05BF52CDAFEA7E68209261A913D2DD5262878736112060.
+  c_capsule deliberate RED: sign-flip both secondary rows, preserving old row0+det=+1 predicate; strengthened exact oracle matrix check exits 1. GREEN emits all center/extents/3x3 bits for X/Y/Z axes and checks every row/column norm/dot; output SHA-256 246404B439A1EC874E0946CF8C45EA8D301F4BF3090FC1A59330437B33C3DF0E.
+  c_debug deliberate RED: expected unchecked line endpoint (1,2,99); old color predicate passes it, strengthened oracle exits 1.
+  Complete debug serialization then found a real RED in five addCircle lines. Oracle slot 14 RVA 0x00001930 uses x87 trig with distinct first/second angle lifetimes. Minimal private Win32 x87 PATCH makes all selected records exact; oracle/rebuild output SHA-256 FA003E5A47C3CE945D9FA1DEA770137F15C63B6BE4860123E36C16C15E928B3F.
+
+Configure/build (D:/github/Novodex):
+  cmake -S . -B build --fresh -G "Visual Studio 18 2026" -A Win32
+  cmake --build build --config Release --target clean
+  cmake --build build --config Release --target NxFoundation NxFoundationExportTests NxFoundationSDKTests NxFoundationClusterTests NxFoundationCustomArrayTests
+Result: exit 0. Only the three previously documented FoundationSDK.cpp C4291 warnings remain.
+
+Separate-process behavior:
+  NxFoundationExportTests.exe <oracle|rebuilt>                         both exit 0
+  NxFoundationSDKTests.exe <oracle|rebuilt>                            both exit 0
+  NxFoundationClusterTests.exe <mode> <oracle|rebuilt>                 all exit 0; exact normalized output equal for every mode
+Modes: exception observable profiler time fpu util box capsule sphere ray_seg volume debug
+  NxFoundationCustomArrayTests.exe                                     exit 0
+CustomArray output:
+  misc exports=0 custom_array block=4,8 offset=11 typed=roundtrip bits=b0 ascii=ab42 stream=exact copy=deep assignment=deep
+
+Verification-time binary artifact (not a timeless/reproducible-build identity):
+  path D:/github/Novodex/build/Release/NxFoundation.dll
+  SHA-256 135763400e9581d54065638bf37e9d0cc14d1575a189bfcb3bbeb770a34dc9c7
+  size 57344
+  COFF machine 0x014c (x86)
+  optional-header magic 0x10b (PE32)
+  file version 2.1.2.6000
+  product version 2.1.2.6000
+  Fresh clean PE builds have produced differing DLL hashes while retaining identical export/behavior/version facts; build nondeterminism is observed. Task 9 must record the exact newly built and deployed candidate hash.
+
+Exports:
+  python tools/pe_exports.py <rebuilt> > <temporary live dump>
+  python tools/compare_exports.py --oracle dumps/exports_oracle.txt --rebuilt <temporary live dump>
+  exit 0; oracle=134 rebuilt=140 missing=0 extra=6
+  extras: six documented modern-MSVC move construction/assignment members
+  committed dumps/exports_rebuilt.txt equals the live parser output
+  recorder exports=0
+
+Immutable public/root inputs:
+  manifest entries=48
+  raw_worktree fields validated=48; raw_oracle=48; transplant_blob=48; current HEAD blob=48; mismatches=0
+
+Tool tests:
+  PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s docs/reconstruction/novodex-foundation/tools/tests -v
+  6 tests passed; __pycache__ directories=0
+
+Inventory:
+  clusters=14; assigned=134; unique=134; oracle=134; duplicate groups=0; missing=0; extra=0; pending decisions=0
+  decisions: c_sdk=PATCH; c_exception=KEEP; c_observable=KEEP; c_profiler=KEEP; c_time=KEEP; c_fpu=PATCH; c_box=KEEP; c_capsule=KEEP; c_sphere=KEEP; c_ray_seg=KEEP; c_volume=KEEP; c_util=PATCH; c_debug=PATCH; c_misc=KEEP
+  gates: export_abi=pass; structural=pass; selected_behavior=pass; consumer_smoke=pending
+
+Proof boundary: selected_behavior is a focused set of deterministic public-ABI paths and documented tolerances/invariants, not exhaustive behavioral equivalence. c_misc has no oracle export and therefore only private-source unit evidence plus exact export-partition/absence proof. Task 9 owns consumer smoke.

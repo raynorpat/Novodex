@@ -34,6 +34,10 @@
 #include "PhysicsInternal.h"
 #include "NxUserRaycastReport.h"
 
+template<class T> class NxUserEntityReport;
+class NxShape;
+class NxPlane;
+
 class Scene;
 class NxSceneDesc;
 class NxActor;
@@ -43,6 +47,10 @@ class NxJoint;
 class Joint;
 class JointBreakEvent;
 class NxRay;
+class NxBounds3;
+class NxTriangle;
+template<class T> class NxArraySDK;
+class NxSphere;
 class NxDebugRenderable;
 class Effector;
 class SpringAndDamperEffector;
@@ -119,6 +127,21 @@ class NxSceneInternal
 	bool raycastAnyShape(const NxRay& worldRay, NxShapesType shapesType, NxU32 groups, NxReal maxDist);
 	void* raycastClosestShape(const NxRay& worldRay, NxShapesType shapeType, NxRaycastHit& hit,
 		NxU32 groups, NxReal maxDist, NxU32 hintFlags);
+	// Broadphase AABB query used by NxScene::checkOverlapAABB.
+	bool checkOverlapAABB(const NxBounds3& worldBounds, NxShapesType shapeType);
+	// Sphere query used by NxScene::checkOverlapSphere.
+	bool checkOverlapSphere(const NxSphere& worldSphere, NxShapesType shapeType);
+	// phys_fn_000676 (0x00014930), the Scene-side AABB triangle collection.
+	NxU32 overlapAABBTriangles(const NxBounds3& worldBounds, NxArraySDK<NxTriangle>& worldTriangles);
+	// phys_fn_000670 (0x000145f0). AABB overlap collection for public NxScene.
+	NxU32 overlapAABBShapes(const NxBounds3& worldBounds, NxShapesType shapeType,
+		NxU32 maxShapes, NxShape** shapes, NxUserEntityReport<NxShape*>* callback);
+	// phys_fn_000678 (0x00014990). Sphere overlap collection for public NxScene.
+	NxU32 overlapSphereShapes(const NxSphere& worldSphere, NxShapesType shapeType,
+		NxU32 maxShapes, NxShape** shapes, NxUserEntityReport<NxShape*>* callback);
+	// phys_fn_000671 (0x000146e0). Plane-volume culling for public NxScene.
+	NxU32 cullShapes(NxU32 nbPlanes, const NxPlane* worldPlanes, NxShapesType shapeType,
+		NxU32 maxShapes, NxShape** shapes, NxUserEntityReport<NxShape*>* callback);
 
 	// Debug visualisation (scene-raycast block Task 4; SceneVisualize.h has
 	// the chain). phys_fn_000657 (0x000139c0) fills the renderable at +0x6b8,

@@ -1,0 +1,16 @@
+Provenance: Foundation/src/CustomArray.cpp and CustomArray.h at Novodex commit 7125cab; both production files are unchanged since imported commit 1a4bed4. Test compiler MSVC 19.51.36252.0, Win32 Release. Pinned oracle SHA-256 7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 is used for the accompanying export partition, but has no c_misc export to invoke.
+Fresh configure/build commands:
+  cmake -S . -B build --fresh -G "Visual Studio 18 2026" -A Win32
+  cmake --build build --config Release --target clean
+  cmake --build build --config Release --target NxFoundation NxFoundationClusterTests NxFoundationCustomArrayTests
+Unit command/result, exit 0:
+  D:/github/Novodex/build/Release/NxFoundationCustomArrayTests.exe
+  misc exports=0 custom_array block=4,8 offset=11 typed=roundtrip bits=b0 ascii=ab42 stream=exact copy=deep assignment=deep
+
+Structural/data facts: CustomBlock stores data pointer, used size, and maximum size. Starting at maximum 4, a dword fills the first block and the next byte creates a linked block of maximum 8; total heterogeneous payload is 11 bytes. Collapse and FILE export both equal bytes 44 33 22 11 41 33 22 00 00 c0 3f. Four bits 1011 are padded to byte b0. Copy construction and assignment remain correct after the caller-owned collapse destination is overwritten.
+
+Oracle boundary: inventory c_misc exports=[] and oracle_refs=[]. The exact 134-name oracle partition assigns every name uniquely to the other 13 clusters. Live rebuilt export parsing reports 140 names, missing 0, the same six documented move-member extras, and zero names matching Recorder/recordString/recordFloat/recordDword/recordPos/recordQuat/recordMatrix/initRecorder/closeRecorder. There is no legitimate public-ABI route to execute private CustomArray code inside the oracle, so no behavioral-equivalence claim is made for it.
+
+Excluded: disk filename constructor, failed allocation/I/O, zero-sized construction, Padd/GetChunk, malformed reads, oversized single stores, and concurrency.
+Post-cluster clean-first build: exit 0, with only the three previously documented C4291 warnings.
+Post-cluster export gate: oracle=134 rebuilt=140 missing=0 extra=6 recorder_exports=0 saved_equals_live=True.

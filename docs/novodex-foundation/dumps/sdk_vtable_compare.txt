@@ -1,0 +1,54 @@
+Task 7 FoundationSDK / Observable vftable comparison
+Pointer size: 4 bytes; both images are PE32 x86.
+Bounds stop before an adjacent exported vftable or at the first non-executable dword.
+
+ORACLE D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+
+??_7Observable@NxFoundation@@6B@ RVA 0x0001c2b0
+  [0] 0x000042e0 ?event@Observable@NxFoundation@@UAEXIAAV12@@Z
+  bound: adjacent exported vftable at RVA 0x0001c2b4
+
+??_7FoundationSDK@NxFoundation@@6BNxFoundationSDK@@@ RVA 0x0001c2b4
+  [0] 0x00004090 ?release@FoundationSDK@NxFoundation@@UAEXXZ
+  [1] 0x00002f40 ?setErrorStream@FoundationSDK@NxFoundation@@UAEXPAVNxUserOutputStream@@@Z
+  [2] 0x00002f50 ?getErrorStream@FoundationSDK@NxFoundation@@UAEPAVNxUserOutputStream@@XZ
+  [3] 0x00002fc0 ?getLastError@FoundationSDK@NxFoundation@@UAE?AW4NxErrorCode@@XZ
+  [4] 0x00002fd0 ?getFirstError@FoundationSDK@NxFoundation@@UAE?AW4NxErrorCode@@XZ
+  [5] 0x00002f60 ?getAllocator@FoundationSDK@NxFoundation@@UAEAAVNxUserAllocator@@XZ
+  [6] 0x00002f70 ?createProfilingZone@FoundationSDK@NxFoundation@@UAEPAVNxProfilingZone@@PBD@Z
+  [7] 0x00003f10 ?createDebugRenderable@FoundationSDK@NxFoundation@@UAEPAVNxDebugRenderable@@XZ
+  [8] 0x00003bd0 ?releaseDebugRenderable@FoundationSDK@NxFoundation@@UAEXAAPAVNxDebugRenderable@@@Z
+  [9] 0x000034c0 ?renderDebugData@FoundationSDK@NxFoundation@@UBEXABVNxUserDebugRenderer@@@Z
+  bound: adjacent exported vftable at RVA 0x0001c2dc
+
+??_7FoundationSDK@NxFoundation@@6BObservable@1@@ RVA 0x0001c2dc
+  [0] 0x00003fe0 ?event@FoundationSDK@NxFoundation@@UAEXIAAVObservable@2@@Z
+  bound: next dword 0x54442d18 is non-executable/non-image
+
+REBUILD D:/github/Novodex/build/Release/NxFoundation.dll
+
+??_7Observable@NxFoundation@@6B@ RVA 0x0000b1f4
+  [0] 0x00004460 ?event@Observable@NxFoundation@@UAEXIAAV12@@Z
+  bound: next dword is non-executable
+
+??_7FoundationSDK@NxFoundation@@6BObservable@1@@ RVA 0x0000b1fc
+  [0] 0x00004080 ?event@FoundationSDK@NxFoundation@@UAEXIAAVObservable@2@@Z
+  bound: next dword is non-executable; primary table begins at RVA 0x0000b204
+
+??_7FoundationSDK@NxFoundation@@6BNxFoundationSDK@@@ RVA 0x0000b204
+  [0] 0x00004140 ?release@FoundationSDK@NxFoundation@@UAEXXZ
+  [1] 0x000042b0 ?setErrorStream@FoundationSDK@NxFoundation@@UAEXPAVNxUserOutputStream@@@Z
+  [2] 0x00003480 ?getErrorStream@FoundationSDK@NxFoundation@@UAEPAVNxUserOutputStream@@XZ
+  [3] 0x00004130 ?getLastError@FoundationSDK@NxFoundation@@UAE?AW4NxErrorCode@@XZ
+  [4] 0x00004110 ?getFirstError@FoundationSDK@NxFoundation@@UAE?AW4NxErrorCode@@XZ
+  [5] 0x00004100 ?getAllocator@FoundationSDK@NxFoundation@@UAEAAVNxUserAllocator@@XZ
+  [6] 0x00003e50 ?createProfilingZone@FoundationSDK@NxFoundation@@UAEPAVNxProfilingZone@@PBD@Z
+  [7] 0x00003d70 ?createDebugRenderable@FoundationSDK@NxFoundation@@UAEPAVNxDebugRenderable@@XZ
+  [8] 0x000041c0 ?releaseDebugRenderable@FoundationSDK@NxFoundation@@UAEXAAPAVNxDebugRenderable@@@Z
+  [9] 0x00004270 ?renderDebugData@FoundationSDK@NxFoundation@@UBEXABVNxUserDebugRenderer@@@Z
+  bound: next dword is non-executable
+
+Result: both binaries have the one-slot Observable table, one-slot FoundationSDK
+Observable-base table, and ten-slot NxFoundationSDK-interface table. The primary
+slot order and decorated roles match. Absolute RVAs and table placement are not
+required to match.

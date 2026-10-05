@@ -101,6 +101,15 @@ int wmain(int argc, wchar_t** argv)
 	printf("pairflag same_shape flags=%08x count=%u array=%u self_entries=%u errors=%u\n",
 		sameShapeFlags, sameShapeCount, sameShapeArray ? 1u : 0u, sameShapeEntries, errorStream.reports);
 
+	// Releasing one side must remove its per-shape records from the scene hash,
+	// including both child-shape keys of this compound actor.
+	scene->releaseActor(*compound);
+	const NxU32 releasedPairCount = scene->getNbPairs();
+	NxPairFlag releasedPairs[16] = {};
+	const bool releasedPairArray = scene->getPairFlagArray(releasedPairs, releasedPairCount);
+	printf("pairflag compound_released count=%u array=%u\n",
+		releasedPairCount, releasedPairArray ? 1u : 0u);
+
 	sdk->releaseScene(*scene);
 	sdk->release();
 	status = nxReportPairIdentity(pairDirectory);

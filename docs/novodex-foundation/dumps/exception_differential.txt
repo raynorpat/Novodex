@@ -1,0 +1,27 @@
+Provenance
+oracle: D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+oracle SHA-256: 7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+rebuilt: D:/github/Novodex/build/Release/NxFoundation.dll
+harness: D:/github/Novodex/build/Release/NxFoundationClusterTests.exe
+
+Commands (separate process invocations)
+NxFoundationClusterTests.exe exception D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+NxFoundationClusterTests.exe exception D:/github/Novodex/build/Release/NxFoundation.dll
+
+Oracle output (exit 0)
+exception size=16 fields=4,8,12 getters=1,exception_gate.cpp,321 copy=exact assign=exact vftable=3_ordered
+
+Rebuilt output (exit 0)
+exception size=16 fields=4,8,12 getters=1,exception_gate.cpp,321 copy=exact assign=exact vftable=3_ordered
+
+Structural Capstone facts (Capstone 5.0.6, x86-32)
+RVA 0x00002d80: mov eax, dword ptr [ecx + 4]; ret
+RVA 0x00002d90: mov eax, dword ptr [ecx + 8]; ret
+RVA 0x00002da0: mov eax, dword ptr [ecx + 0xc]; ret
+RVA 0x00002db0: copy constructor writes vftable 0x1001c210 and copies +4/+8/+0xc
+RVA 0x00002de0: assignment copies +4/+8/+0xc and returns this
+RVA 0x00002e00: value constructor writes vftable 0x1001c210 and arguments at +4/+8/+0xc
+RVA 0x0001c210: three executable pointers in getter order, followed by zero
+
+Post-cluster export gate
+oracle=134 rebuilt=140 missing=0 extra=6 recorder_exports=0 saved_equals_live=True

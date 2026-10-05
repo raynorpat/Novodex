@@ -394,7 +394,19 @@ static void cpmSolveContactRecord0403(NxReal dt, NxI32 pass, JointSupportRecord*
 		if(!body || body->mUnknown00c <= 0.0f)
 			continue;
 		const NxReal sign = side == 0 ? applied : -applied;
-		NxReal scaledImpulseY, scaledImpulseZ;
+		NxReal scaledImpulseX, scaledImpulseY, scaledImpulseZ;
+		if(side == 1)
+			{
+			// The oracle rounds body one's projected X impulse to float before
+			// inverse-mass scaling. Body zero keeps the projected value in x87.
+			__asm
+				{
+				mov edx, record
+				fld sign
+				fmul dword ptr [edx]
+				fstp dword ptr [scaledImpulseX]
+				}
+			}
 		__asm
 			{
 			mov edx, record
@@ -405,27 +417,63 @@ static void cpmSolveContactRecord0403(NxReal dt, NxI32 pass, JointSupportRecord*
 			fld sign
 			fmul dword ptr [edx + 8]
 			fstp dword ptr [scaledImpulseZ]
-			fld sign
-			fmul dword ptr [edx]
-			fld dword ptr [ecx + 0ch]
-			fld st(0)
-			fmul st(0), st(2)
-			fld dword ptr [scaledImpulseY]
-			fmul st(0), st(2)
-			fstp dword ptr [scaledImpulseY]
-			fld dword ptr [scaledImpulseZ]
-			fmul st(0), st(2)
-			fstp dword ptr [scaledImpulseZ]
-			fadd dword ptr [ecx]
-			fstp dword ptr [ecx]
-			fld dword ptr [scaledImpulseY]
-			fadd dword ptr [ecx + 4]
-			fstp dword ptr [ecx + 4]
-			fld dword ptr [scaledImpulseZ]
-			fadd dword ptr [ecx + 8]
-			fstp dword ptr [ecx + 8]
-			fstp st(0)
-			fstp st(0)
+			}
+		if(side == 0)
+			{
+			__asm
+				{
+				mov ecx, body
+				mov edx, record
+				fld sign
+				fmul dword ptr [edx]
+				fld dword ptr [ecx + 0ch]
+				fld st(0)
+				fmul st(0), st(2)
+				fld dword ptr [scaledImpulseY]
+				fmul st(0), st(2)
+				fstp dword ptr [scaledImpulseY]
+				fld dword ptr [scaledImpulseZ]
+				fmul st(0), st(2)
+				fstp dword ptr [scaledImpulseZ]
+				fadd dword ptr [ecx]
+				fstp dword ptr [ecx]
+				fld dword ptr [scaledImpulseY]
+				fadd dword ptr [ecx + 4]
+				fstp dword ptr [ecx + 4]
+				fld dword ptr [scaledImpulseZ]
+				fadd dword ptr [ecx + 8]
+				fstp dword ptr [ecx + 8]
+				fstp st(0)
+				fstp st(0)
+				}
+			}
+		else
+			{
+			__asm
+				{
+				mov ecx, body
+				fld dword ptr [scaledImpulseX]
+				fmul dword ptr [ecx + 0ch]
+				fld dword ptr [ecx + 0ch]
+				fld st(0)
+				fld dword ptr [scaledImpulseY]
+				fmul st(0), st(2)
+				fstp dword ptr [scaledImpulseY]
+				fld dword ptr [scaledImpulseZ]
+				fmul st(0), st(2)
+				fstp dword ptr [scaledImpulseZ]
+				fxch st(2)
+				fadd dword ptr [ecx]
+				fstp dword ptr [ecx]
+				fld dword ptr [scaledImpulseY]
+				fadd dword ptr [ecx + 4]
+				fstp dword ptr [ecx + 4]
+				fld dword ptr [scaledImpulseZ]
+				fadd dword ptr [ecx + 8]
+				fstp dword ptr [ecx + 8]
+				fstp st(0)
+				fstp st(0)
+				}
 			}
 		const NxVec3& arm = side == 0 ? record->mUnknown018 : record->mUnknown024;
 		const NxReal angularInput[3] = {

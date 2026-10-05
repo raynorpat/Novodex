@@ -2,14 +2,14 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 4 functions are closed, 284 reconstructed functions remain unfalsified, 273 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 4 functions are closed, 296 reconstructed functions remain unfalsified, 261 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through NxPhysicsJointStagedPairTests, a REGISTERED Phase 7 STAGED-PAIR target. The mutation is to the row's CONTROL FLOW, because the harness drives identity poses and identity quaternions -- arithmetic mutations cancel on those inputs (evidence 12d) -- while a mutation that breaks a construction moves the `created=yes` line the harness prints (12h).",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction.",
-    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 196 rows (phys_fn_001639, the function-static identity pair, reconstructed by convex-mesh gap Task 2e), each needing one mutation and one measured detection.",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left; each row needs one mutation and one measured detection.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -20,8 +20,8 @@
   },
   "counts": {
     "differential_falsified": 4,
-    "deferred_reconstructed_not_falsified": 284,
-    "deferred_not_reconstructed_in_phase": 273
+    "deferred_reconstructed_not_falsified": 296,
+    "deferred_not_reconstructed_in_phase": 261
   },
   "closed": [
     {
@@ -289,49 +289,55 @@
       "id": "phys_fn_000378",
       "rva": "0x0000d390",
       "size": 98,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed and dynamically compared on recorded inputs, but no mutation has yet been aimed at this row"
     },
     {
       "id": "phys_fn_000380",
       "rva": "0x0000d400",
       "size": 113,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed and dynamically compared on recorded inputs, but no mutation has yet been aimed at this row"
     },
     {
       "id": "phys_fn_000382",
       "rva": "0x0000d480",
       "size": 113,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed and dynamically compared on recorded inputs, but no mutation has yet been aimed at this row"
     },
     {
       "id": "phys_fn_000384",
       "rva": "0x0000d500",
       "size": 118,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed and dynamically compared on recorded inputs, but no mutation has yet been aimed at this row"
     },
     {
       "id": "phys_fn_000386",
       "rva": "0x0000d580",
       "size": 50,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed and dynamically compared on recorded inputs, but no mutation has yet been aimed at this row"
     },
     {
       "id": "phys_fn_000388",
       "rva": "0x0000d5c0",
       "size": 50,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed and dynamically compared for hits, misses, full output order across two meshes, prefilled output, and translated mesh; no mutation has yet been aimed at this wrapper"
     },
     {
       "id": "phys_fn_000394",
@@ -935,49 +941,55 @@
       "id": "phys_fn_000670",
       "rva": "0x000145f0",
       "size": 240,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed and dynamically compared on recorded inputs, but no mutation has yet been aimed at this row"
     },
     {
       "id": "phys_fn_000671",
       "rva": "0x000146e0",
       "size": 240,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed and dynamically compared on recorded inputs, but no mutation has yet been aimed at this row"
     },
     {
       "id": "phys_fn_000672",
       "rva": "0x000147d0",
       "size": 253,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "primitive and mesh-bounds sphere overlap are dynamically compared; rotated mesh-bound and near-boundary cases and row-specific falsification remain open"
     },
     {
       "id": "phys_fn_000674",
       "rva": "0x000148d0",
       "size": 89,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed and dynamically compared on recorded inputs, but no mutation has yet been aimed at this row"
     },
     {
       "id": "phys_fn_000676",
       "rva": "0x00014930",
       "size": 89,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "public cases are dynamically compared; selected-pruner internals, broader ordering and edge behavior, and row-specific falsification remain open"
     },
     {
       "id": "phys_fn_000678",
       "rva": "0x00014990",
       "size": 1738,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed and dynamically compared on recorded inputs, but no mutation has yet been aimed at this row"
     },
     {
       "id": "phys_fn_000680",

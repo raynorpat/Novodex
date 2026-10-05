@@ -1,0 +1,21 @@
+evidence_kind: reconstructed regression RED against pre-fix parent
+source_commit: 979ee1bbd5feeb14f8f5568fbf620c4320d8d8cc
+harness_source_commit: 8b452123e373ce571796979b0c5f603680ed64f2
+harness_only_paths: CMakeLists.txt; tests/FoundationExportTests.cpp
+implementation_paths_changed: none
+generator: Visual Studio 18 2026
+platform: Win32
+configuration: Release
+compiler: MSVC 19.51.36252.0 Hostx64/x86
+dll_capture_path: D:/FlamingEnt__/task6-red-979ee1b/build/Release/NxFoundation.dll (temporary detached worktree; removed after capture)
+dll_sha256: 58b45affb8d871f6e3dbb4b5d651192dea42863b2e6cd02c2da474922032b356
+dll_size: 57344
+configure_command: cmake -S . -B build --fresh -G "Visual Studio 18 2026" -A Win32
+configure_exit: 0
+dll_build_command: cmake --build build --config Release --target NxFoundation
+dll_build_exit: 0
+test_build_command: cmake --build build --config Release --target NxFoundationExportTests
+test_build_exit: 0
+test_command: build/Release/NxFoundationExportTests.exe build/Release/NxFoundation.dll
+test_output: missing exports: NxCrc32=00000000 NxMergeSpheres=00000000
+test_exit: 1

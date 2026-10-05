@@ -1,0 +1,68 @@
+Task 9 audited consumer smoke: PASS on load + Foundation/Novodex SDK bind
+
+Procedure:
+  tools/run_consumer_smoke.ps1
+  It resolves paths, rejects collisions/existing backup, verifies every DLL identity,
+  launches hidden with a 90-second condition-based bound, polls modules, captures
+  exact-PID WER, and restores/removes the verified backup in finally.
+
+Exact candidate invocation (working directory D:\FlamingEnt__\Unreal_3\Binaries):
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File "D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\tools\run_consumer_smoke.ps1" -Mode Candidate -CandidatePath "D:\github\Novodex\build\Release\NxFoundation.dll" -OutputPrefix "D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task9_audit_candidate"
+
+Exact oracle invocation (same working directory):
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File "D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\tools\run_consumer_smoke.ps1" -Mode Oracle -CandidatePath "D:\github\Novodex\build\Release\NxFoundation.dll" -OutputPrefix "D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task9_audit_oracle"
+
+Fresh build of record:
+  configure exit=0: cmake -S . -B build --fresh -G "Visual Studio 18 2026" -A Win32
+  clean exit=0: cmake --build build --config Release --target clean
+  build exit=0: cmake --build build --config Release --target NxFoundation NxFoundationExportTests NxFoundationSDKTests NxFoundationClusterTests NxFoundationCustomArrayTests
+  candidate=D:\github\Novodex\build\Release\NxFoundation.dll
+  sha256=80913618b823789f016081260fcdc1902e7f8eac9a1fa6003c16357d3dd72704
+  size=57344
+  machine=0x014c x86; optional-header magic=0x10b PE32
+  file/product version=2.1.2.6000
+  exports: oracle=134 rebuilt=140 missing=0 extra=6
+  Export/SDK loaders: oracle=0 candidate=0 for both programs
+  Full cluster/custom gates tied to this exact candidate:
+    12 modes, 24 separate oracle/candidate invocations, all exit 0
+    12/12 normalized stdout/stderr pairs case-sensitively exact
+    NxFoundationCustomArrayTests exit 0 with expected summary
+    candidate/oracle hashes unchanged after tests
+    raw artifact=task9_candidate_full_gates.txt
+
+Candidate PID window and byte binding:
+  PID=2596
+  start=2026-08-09T16:05:27.3278514Z
+  end=2026-08-09T16:05:30.0490178Z
+  duration=2.721s; timed_out=False; exit_code=<null>
+  source candidate=80913618...72704 / 57344
+  installed candidate pre-start=80913618...72704 / 57344
+  installed candidate after WER capture, before restore=80913618...72704 / 57344
+  launch markers: Browse: Entry.war; Game engine initialized; Initializing Engine Completed
+  WER: 0x80000003, KERNELBASE.dll+0x001fa5e2
+  WER bucket=88a4a13ea901cd3c6ae88e1119e106a6
+  WER paths=Binaries\NxPhysics.dll and Binaries\NxFoundation.dll
+
+Oracle control:
+  PID=31172
+  start=2026-08-09T16:05:39.1000664Z
+  end=2026-08-09T16:05:41.7407226Z
+  duration=2.641s; timed_out=False; exit_code=<null>
+  oracle pre-start/at-WER/final=7e0596e4...0990 / 172032
+  normalized milestones=12/12 exactly equal to candidate
+  WER exception/module/offset/bucket/loaded paths exactly equivalent
+
+Recovery:
+  installed oracle before backup=7e0596e4...0990 / 172032
+  backup=7e0596e4...0990 / 172032
+  backup before restore=7e0596e4...0990 / 172032
+  restored/final oracle=7e0596e4...0990 / 172032
+  exact .oracle.bak removed only after restored identity proven=True
+
+Proof boundary:
+  UGameEngine::Init calls InitGameRBPhys before Entry loading.
+  InitGameRBPhys calls NxCreatePhysicsSDK, checks non-null, and applies parameters.
+  FEngineLoop logs Initializing Engine Completed only after GEngine->Init returns.
+  The candidate therefore passes import load + SDK bind equivalently to the oracle.
+  Not claimed: clean/zero exit, benchmark completion, live module observation,
+  gameplay stability, or full gameplay soak.

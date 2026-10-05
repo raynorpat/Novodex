@@ -1,0 +1,12 @@
+﻿command=python D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\tools\compare_exports.py --oracle D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\exports_oracle.txt --rebuilt D:\FlamingEnt__\Unreal_3\.worktrees\novodex-foundation-dropin\docs\reconstruction\novodex-foundation\dumps\task9_rerun_exports_rebuilt.txt
+oracle: 134
+rebuilt: 140
+missing: 0
+extra: 6
+EXTRA ??0Exception@NxFoundation@@QAE@$$QAV01@@Z
+EXTRA ??0Observable@NxFoundation@@QAE@$$QAV01@@Z
+EXTRA ??4Exception@NxFoundation@@QAEAAV01@$$QAV01@@Z
+EXTRA ??4NxProfiler@@QAEAAV0@$$QAV0@@Z
+EXTRA ??4Observable@NxFoundation@@QAEAAV01@$$QAV01@@Z
+EXTRA ??4Time@NxFoundation@@QAEAAV01@$$QAV01@@Z
+exit_code=0

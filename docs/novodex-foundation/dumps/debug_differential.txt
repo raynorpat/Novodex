@@ -1,0 +1,22 @@
+Provenance: pinned oracle D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll SHA-256 7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990; rebuilt D:/github/Novodex/build/Release/NxFoundation.dll; Capstone 5.0.6 x86-32; pefile 2024.8.26.
+Commands (separate process invocations):
+  D:/github/Novodex/build/Release/NxFoundationClusterTests.exe debug D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+  D:/github/Novodex/build/Release/NxFoundationClusterTests.exe debug D:/github/Novodex/build/Release/NxFoundation.dll
+Oracle exit 0 and rebuilt exit 0, identical output:
+  debug_records low_point=<xyz,color> low_line=<p0,p1,color> low_triangle=<p0,p1,p2,color> retained_points=<records> generated_lines=<59 records> generated_triangles=<0 records> second_points=<record>
+  debug exports=3 object_size=52 vftable=15 primitives=point,line,triangle clear=retains_buffer aabb=12+frame3 high_level=59 append=2,1 release=nulls
+Every float field is printed as its exact eight-digit hexadecimal bit pattern, followed by eight-digit color, in insertion order. Captured two-line output text SHA-256 (PowerShell UTF-16LE capture) is FA003E5A47C3CE945D9FA1DEA770137F15C63B6BE4860123E36C16C15E928B3F for each process. Thus all low-level records, retained/second points, and 59 selected generated lines are included; generated triangle count is zero after the tested clear.
+Capstone attachments:
+  ?createDebugRenderable@FoundationSDK@NxFoundation@@UAEPAVNxDebugRenderable@@XZ RVA 0x00003f10
+  ?releaseDebugRenderable@FoundationSDK@NxFoundation@@UAEXAAPAVNxDebugRenderable@@@Z RVA 0x00003bd0
+  ?renderDebugData@FoundationSDK@NxFoundation@@UBEXABVNxUserDebugRenderer@@@Z RVA 0x000034c0
+
+Structural gate: a custom public NxUserAllocator records 56 bytes for FoundationSDK followed by 52 bytes for DebugRenderable in each binary. On PE32, immutable NxArray.h defines each NxArraySDK as three four-byte pointers plus its four-byte NxUserAllocatorAccess, accounting for vptr 4 + 3*16 = 52. The runtime pointer walk validates 15 consecutive executable entries, and calls the immutable interface's exact semantic order: six getters, clear, three low-level writers, and five high-level writers. This is stronger than an unlabelled raw pointer walk but does not recover private RTTI metadata.
+
+TDD characterization: the first test expected 40 bytes by overlooking each NxArraySDK allocator member; both binaries reported 52. Geometry hardening deliberately expected low-level line endpoint (1,2,99), a coordinate the old color-only predicate ignored; strengthened oracle exits 1 with `FAIL debug primitive buffers`. Complete low-level and AABB/frame assertions then pass.
+
+The complete serialization exposed a real RED: oracle/rebuild exited 0 but their output differed in five circle lines (indices 50, 52, 53, 54, and 58), by 1-2 ULP or signed near-zero bits. Other 54 generated lines were exact. Runtime vtable slot 14 located oracle addCircle RVA 0x00001930. Capstone in debug_circle_capstone.txt shows x87 angle/trig order absent from the modern build. The private Win32 patch reproduces the extended first angle and float-rounded second angle; GREEN yields exact output hashes above. Task 5 addAABB reconciliation remains validated by all 15 exact AABB/frame records.
+
+Excluded: allocation failure, huge growth/reallocation failure, zero-segment circles, non-normalized arrows, NaN/infinity, renderer exceptions, foreign/stale release pointers, concurrent mutation, and direct destruction outside SDK ownership.
+Post-cluster clean-first build: exit 0, with only the three previously documented C4291 warnings.
+Post-cluster export gate: oracle=134 rebuilt=140 missing=0 extra=6 recorder_exports=0 saved_equals_live=True.

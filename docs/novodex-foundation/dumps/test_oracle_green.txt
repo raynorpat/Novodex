@@ -1,0 +1,14 @@
+evidence_kind: oracle control for the same dynamic loader harness used by reconstructed RED
+capture_provenance: captured after RED worktree removal using the current Win32 Release test executable; the harness dynamically loads only the DLL path supplied on argv[1] and does not link NxFoundation
+novodex_commit: f6d8db26908b319588508e76697f7abbb7cc247b
+harness_source_commit: 8b452123e373ce571796979b0c5f603680ed64f2
+harness_source_git_blob: cfd50b8040754630cec3c353069f97f5fe0db268
+test_executable_path: D:/github/Novodex/build/Release/NxFoundationExportTests.exe
+test_executable_sha256: 9248117355af8df972ebf2f1db649b4ef877b64d6c59bb0b308ea75aa62ef135
+test_executable_size: 10240
+oracle_path: D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+oracle_sha256: 7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+command: D:/github/Novodex/build/Release/NxFoundationExportTests.exe D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+test_output: <none>
+test_exit: 0
+paired_parent_failure: dumps/test_initial_red.txt

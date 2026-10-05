@@ -1,0 +1,14 @@
+Provenance: pinned oracle D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll SHA-256 7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990; rebuilt D:/github/Novodex/build/Release/NxFoundation.dll; Capstone 5.0.6 x86-32; pefile 2024.8.26.
+Commands (separate process invocations):
+  D:/github/Novodex/build/Release/NxFoundationClusterTests.exe volume D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+  D:/github/Novodex/build/Release/NxFoundationClusterTests.exe volume D:/github/Novodex/build/Release/NxFoundation.dll
+Oracle exit 0 and rebuilt exit 0, identical normalized output:
+  volume exports=1 allocator_guard=unchanged tetra32=analytic translated=density12 tetra16_flip=analytic
+Capstone attachment: NxComputeVolumeIntegrals RVA 0x00007220.
+Public structures: PE32 NxSimpleTriangleMesh has four NxU32 fields, two four-byte pointers, and flags; NxIntegrals holds NxVec3 COM, NxF64 mass, and two 3x3 NxF64 tensors. The test consumes these through immutable public headers.
+
+TDD/debugging record: the first allocator-guard assertion failed in both binaries because a C++ memberwise copy did not preserve NxIntegrals padding; replacing it with byte-exact memcpy corrected the test. With an unjustified 1e-8 tensor threshold, oracle passed and rebuild failed only on the translated mesh. Rebuilt COM z was 4.24999475 versus analytic 4.25 and the largest tensor error was about 4.2e-5, consistent with float normal normalization followed by translated-coordinate cancellation. The final tolerance is absolute 1e-4 for COM/tensor values, while mass remains 1e-9; all analytic invariants and both index formats pass. This numerical characterization did not justify a production patch.
+
+Excluded: degenerate, open, non-manifold, self-intersecting meshes; invalid indexes/strides/pointers; NaN/infinity; zero/negative density; and huge coordinates.
+Post-cluster clean-first build: exit 0, with only the three previously documented C4291 warnings.
+Post-cluster export gate: oracle=134 rebuilt=140 missing=0 extra=6 recorder_exports=0 saved_equals_live=True.

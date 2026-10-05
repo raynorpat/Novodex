@@ -1,0 +1,9 @@
+﻿clean_command=cmake --build build --config Release --target clean
+clean_start_utc=2026-08-09T16:02:46.1118090Z
+clean_end_utc=2026-08-09T16:02:47.6523997Z
+clean_exit_code=0
+build_command=cmake --build build --config Release --target NxFoundation NxFoundationExportTests NxFoundationSDKTests NxFoundationClusterTests NxFoundationCustomArrayTests
+working_directory=D:\github\Novodex
+build_start_utc=2026-08-09T16:02:47.6545038Z
+build_end_utc=2026-08-09T16:03:06.3532254Z
+build_exit_code=0

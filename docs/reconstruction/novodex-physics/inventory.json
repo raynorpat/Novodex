@@ -6997,13 +6997,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/136",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1120",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Capstone source mapping and call sequence verified against oracle row phys_fn_000378; read-lock and argument forwarding for the public sphere collection API.",
+      "dynamic_proof": "NxPhysicsSceneRaycastTests Phase 7 staged-pair differential; read-lock and argument forwarding for the public sphere collection API; exact oracle/candidate output in build/cull-callback.log and registered Phase 7 gate.",
+      "notes": "",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::overlapSphereShapes"
     },
     {
       "id": "phys_fn_000379",
@@ -7033,13 +7035,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/137",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1123",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Capstone source mapping and call sequence verified against oracle row phys_fn_000380; read-lock and argument forwarding for the public AABB collection API.",
+      "dynamic_proof": "NxPhysicsSceneRaycastTests Phase 7 staged-pair differential; read-lock and argument forwarding for the public AABB collection API; exact oracle/candidate output in build/cull-callback.log and registered Phase 7 gate.",
+      "notes": "",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::overlapAABBShapes"
     },
     {
       "id": "phys_fn_000381",
@@ -7069,13 +7073,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/138",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1126",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Capstone source mapping and call sequence verified against oracle row phys_fn_000382; read-lock and argument forwarding for public plane culling.",
+      "dynamic_proof": "NxPhysicsSceneRaycastTests Phase 7 staged-pair differential; read-lock and argument forwarding for public plane culling; exact oracle/candidate output in build/cull-callback.log and registered Phase 7 gate.",
+      "notes": "",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::cullShapes"
     },
     {
       "id": "phys_fn_000383",
@@ -7105,13 +7111,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/139",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1129",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Capstone source mapping and call sequence verified against oracle row phys_fn_000384; read-lock and argument forwarding for the public sphere Boolean query.",
+      "dynamic_proof": "NxPhysicsSceneRaycastTests Phase 7 staged-pair differential; read-lock and argument forwarding for the public sphere Boolean query; exact oracle/candidate output in build/cull-callback.log and registered Phase 7 gate.",
+      "notes": "",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::checkOverlapSphere"
     },
     {
       "id": "phys_fn_000385",
@@ -7141,13 +7149,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/140",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1132",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Capstone source mapping and call sequence verified against oracle row phys_fn_000386; read-lock and argument forwarding for the public AABB Boolean query.",
+      "dynamic_proof": "NxPhysicsSceneRaycastTests Phase 7 staged-pair differential; read-lock and argument forwarding for the public AABB Boolean query; exact oracle/candidate output in build/cull-callback.log and registered Phase 7 gate.",
+      "notes": "",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::checkOverlapAABB"
     },
     {
       "id": "phys_fn_000387",
@@ -7177,12 +7187,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/141",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1133",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "Capstone wrapper mapping verified against oracle phys_fn_000388; read-lock and argument forwarding around the AABB triangle query.",
+      "dynamic_proof": "NxPhysicsSceneRaycastTests staged-pair differential for hit, misses, full output order across two meshes, prefilled output, and translated mesh; exact oracle/candidate output in build/overlap-tri-diff.log and registered Phase 7 coverage.",
       "notes": ""
     },
     {
@@ -12307,13 +12317,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/IcePruner.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/263",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1853",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSceneRaycastTests: 12-object static AABB-tree traversal and plane order, exact pinned-oracle differential (build/bounded-query-differential.log)",
+      "notes": "StaticPruner slot 8 uses OPCODE AABBCollider over the cached AABBTree and reports touched objects in tree traversal order."
     },
     {
       "id": "phys_fn_000669",
@@ -12343,13 +12353,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/SceneRaycast.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/264",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1855",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Capstone source mapping and call sequence verified against oracle row phys_fn_000670; selected-pruner AABB candidate collection, stale-bound refresh, and buffer/callback reporting.",
+      "dynamic_proof": "NxPhysicsSceneRaycastTests Phase 7 staged-pair differential; selected-pruner AABB candidate collection, stale-bound refresh, and buffer/callback reporting; exact oracle/candidate output in build/cull-callback.log and registered Phase 7 gate.",
+      "notes": "",
+      "implementation": "Physics/src/SceneRaycast.cpp",
+      "implementation_symbol": "NxSceneInternal::overlapAABBShapes"
     },
     {
       "id": "phys_fn_000671",
@@ -12361,13 +12373,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/SceneRaycast.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/265",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1869",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Capstone source mapping and call sequence verified against oracle row phys_fn_000671; selected-pruner collection against plane half-spaces with unbounded planes preserved.",
+      "dynamic_proof": "NxPhysicsSceneRaycastTests Phase 7 staged-pair differential; selected-pruner collection against plane half-spaces with unbounded planes preserved; exact oracle/candidate output in build/cull-callback.log and registered Phase 7 gate.",
+      "notes": "Current differential covers a single plane on each half-space and callback output; multi-plane frusta and capacity truncation remain open.",
+      "implementation": "Physics/src/SceneRaycast.cpp",
+      "implementation_symbol": "NxSceneInternal::cullShapes"
     },
     {
       "id": "phys_fn_000672",
@@ -12379,13 +12393,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/SceneRaycast.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/266",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1883",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Capstone source mapping and call sequence verified against oracle row phys_fn_000672; sphere/AABB candidate traversal with primitive sphere, box, capsule, plane, and mesh-bounds tests.",
+      "dynamic_proof": "NxPhysicsSceneRaycastTests Phase 7 staged-pair differential; primitive and triangle-mesh sphere overlap, including static/dynamic selection, a 90-degree rotated mesh bounds-only hit, transformed-bound tangency, and a near-boundary miss; exact oracle/candidate output in build/rotated-mesh-query-differential.log and registered Phase 7 gate.",
+      "notes": "Mesh sphere overlap uses transformed world bounds as observed by the corner case. Row-specific mutation falsification and broader pruning behavior remain open.",
+      "implementation": "Physics/src/SceneRaycast.cpp",
+      "implementation_symbol": "NxSceneInternal::checkOverlapSphere"
     },
     {
       "id": "phys_fn_000673",
@@ -12415,13 +12431,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/SceneRaycast.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/267",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1898",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Capstone source mapping and call sequence verified against oracle row phys_fn_000674; selected-pruner AABB Boolean query and stale-bound refresh.",
+      "dynamic_proof": "NxPhysicsSceneRaycastTests Phase 7 staged-pair differential; selected-pruner AABB Boolean query and stale-bound refresh; exact oracle/candidate output in build/cull-callback.log and registered Phase 7 gate.",
+      "notes": "",
+      "implementation": "Physics/src/SceneRaycast.cpp",
+      "implementation_symbol": "NxSceneInternal::checkOverlapAABB"
     },
     {
       "id": "phys_fn_000675",
@@ -12451,13 +12469,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/SceneRaycast.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/268",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1902",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSceneRaycastTests staged-pair differential for hit, misses, full output order across two meshes, prefilled output, and translated mesh; exact oracle/candidate output in build/overlap-tri-diff.log and registered Phase 7 coverage.",
+      "notes": "The public cases are covered; direct actor/mesh traversal approximates the oracle's selected-pruner query and remains subject to broader ordering and narrow-phase falsification.",
+      "implementation": "Physics/src/SceneRaycast.cpp",
+      "implementation_symbol": "NxSceneInternal::overlapAABBTriangles"
     },
     {
       "id": "phys_fn_000677",
@@ -12487,13 +12507,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/SceneRaycast.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/269",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1906",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Capstone source mapping and call sequence verified against oracle row phys_fn_000678; sphere candidate traversal and primitive narrow tests with buffer/callback reporting.",
+      "dynamic_proof": "NxPhysicsSceneRaycastTests Phase 7 staged-pair differential; sphere candidate traversal and primitive narrow tests with buffer/callback reporting; exact oracle/candidate output in build/cull-callback.log and registered Phase 7 gate.",
+      "notes": "Partial shape-family coverage: triangle-mesh overlap remains open.",
+      "implementation": "Physics/src/SceneRaycast.cpp",
+      "implementation_symbol": "NxSceneInternal::overlapSphereShapes"
     },
     {
       "id": "phys_fn_000679",
@@ -17629,7 +17651,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/466",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2982",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` \u00e2\u20ac\u201d the vertex array |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` â€” the vertex array |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17777,7 +17799,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/470",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3019",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 4 | `phys_fn_000963` | `index*36 + this+0x70` \u00e2\u20ac\u201d face-record[k] |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 4 | `phys_fn_000963` | `index*36 + this+0x70` â€” face-record[k] |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -65103,13 +65125,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/SceneRaycast.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1307",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12348",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSceneRaycastTests staged-pair differential for hit, miss, prefilled output, and translated mesh; exact oracle/candidate output in build/overlap-tri-diff.log and registered Phase 7 coverage.",
+      "notes": "The public cases are covered; direct actor/mesh traversal is an approximation of the oracle's selected-pruner query and remains subject to broader ordering and narrow-phase falsification."
     },
     {
       "id": "phys_fn_003504",
@@ -97083,13 +97105,13 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/IcePruner.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1995",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18102",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSceneRaycastTests: 12-object static AABB-tree traversal and plane order, exact pinned-oracle differential (build/bounded-query-differential.log)",
+      "notes": "StaticPruner slot 8 uses OPCODE AABBCollider over the cached AABBTree and reports touched objects in tree traversal order."
     },
     {
       "id": "phys_fn_005230",

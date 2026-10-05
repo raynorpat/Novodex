@@ -14,9 +14,6 @@
 // them and the static pruner rebuilds its tree), and a static actor created
 // after the tree was built is queried.
 //
-// No triangle mesh: the candidate's NxPhysicsSDK::createTriangleMesh
-// (000242 -> 000478) still returns 0, so a mesh cannot be built on both sides.
-//
 // Every NxUserRaycastReport::onHit call is printed as the NxRaycastHit's words
 // the hit's flags declare valid (shape, impact, normal, face, distance, u/v),
 // plus the flags word itself. Words the flags do not declare are not printed:
@@ -40,6 +37,7 @@
 #include <string.h>
 
 #include "NxPhysicsSDK.h"
+#include "NxArray.h"
 #include "NxScene.h"
 #include "NxSceneDesc.h"
 #include "NxActor.h"
@@ -51,10 +49,19 @@
 #include "NxCapsuleShapeDesc.h"
 #include "NxPlaneShapeDesc.h"
 #include "NxUserRaycastReport.h"
+#include "NxUserEntityReport.h"
 #include "NxUserOutputStream.h"
 #include "NxRay.h"
 #include "NxBoxShape.h"
 #include "NxBounds3.h"
+#include "NxSphere.h"
+#include "NxPlane.h"
+#include "NxQuat.h"
+#include "NxTriangle.h"
+#include "NxSimpleTriangleMesh.h"
+#include "NxTriangleMesh.h"
+#include "NxTriangleMeshDesc.h"
+#include "NxTriangleMeshShapeDesc.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -100,6 +107,32 @@ static void nxSymbolSet(const void* pointer, const char* name)
 			}
 	nxSymbolAdd(pointer, name);
 	}
+
+static const char* nxShapeName(const NxShape* shape)
+	{
+	for(unsigned i = 0; i < nxSymbolCount; i++)
+		if(nxSymbols[i].pointer == shape)
+			return nxSymbols[i].name;
+	return "unknown";
+	}
+
+class NxRecordingEntityReport : public NxUserEntityReport<NxShape*>
+	{
+	public:
+	NxRecordingEntityReport() : mCalls(0), mEntities(0) {}
+	virtual bool onEvent(NxU32 nbEntities, NxShape** entities)
+		{
+		mCalls++;
+		mEntities += nbEntities;
+		printf("scene_overlap report call=%u count=%u shapes=", mCalls, static_cast<unsigned>(nbEntities));
+		for(NxU32 i = 0; i < nbEntities; i++)
+			printf("%s%s", i ? "." : "", nxShapeName(entities[i]));
+		printf(" return=1\n");
+		return true;
+		}
+	unsigned mCalls;
+	unsigned mEntities;
+	};
 
 static void nxPrintWord(NxU32 word, bool first)
 	{
@@ -221,6 +254,7 @@ static const NxShapeCase nxShapeCases[] =
 static const unsigned kShapeCaseCount = sizeof(nxShapeCases) / sizeof(nxShapeCases[0]);
 
 static NxActor* nxActors[kShapeCaseCount];
+static NxTriangleMesh* nxSphereQueryMesh = 0;
 
 static NxActor* nxCreateCase(NxScene* scene, unsigned index)
 	{
@@ -605,6 +639,296 @@ static void nxResizeCases(NxScene* scene)
 			scene->releaseActor(*actors[i]);
 	}
 
+static void nxSpatialOverlapChecks(NxPhysicsSDK* sdk, NxScene* scene)
+	{
+	// The two triangles form a square at y=0. Query a box over one half, then
+	// an empty region, so the result checks both triangle extraction and the
+	// miss path while the returned geometry remains easy to compare.
+	const NxPoint meshVertices[] = {
+		NxPoint(-2.0f, 0.0f, -2.0f), NxPoint(2.0f, 0.0f, -2.0f), NxPoint(-2.0f, 0.0f, 2.0f),
+		NxPoint(2.0f, 0.0f, -2.0f), NxPoint(2.0f, 0.0f, 2.0f), NxPoint(-2.0f, 0.0f, 2.0f),
+		NxPoint(38.0f, 0.0f, -2.0f), NxPoint(42.0f, 0.0f, -2.0f), NxPoint(38.0f, 0.0f, 2.0f)
+		};
+	const NxU32 meshIndices[] = { 0, 2, 1, 3, 5, 4, 6, 8, 7 };
+	NxTriangleMeshDesc meshDesc;
+	meshDesc.numVertices = sizeof(meshVertices) / sizeof(meshVertices[0]);
+	meshDesc.numTriangles = 3;
+	meshDesc.pointStrideBytes = sizeof(NxPoint);
+	meshDesc.triangleStrideBytes = 3 * sizeof(NxU32);
+	meshDesc.points = meshVertices;
+	meshDesc.triangles = meshIndices;
+	NxTriangleMesh* const queryMesh = sdk->createTriangleMesh(meshDesc);
+	if(!queryMesh)
+		{
+		printf("scene_overlap triangles mesh_create=failed\n");
+		return;
+		}
+	NxTriangleMeshShapeDesc meshShape;
+	meshShape.meshData = queryMesh;
+	NxActorDesc meshActorDesc;
+	meshActorDesc.shapes.pushBack(&meshShape);
+	NxActor* const meshActor = scene->createActor(meshActorDesc);
+	if(!meshActor)
+		{
+		printf("scene_overlap triangles actor_create=failed\n");
+		sdk->releaseTriangleMesh(*queryMesh);
+		return;
+		}
+	NxActorDesc translatedMeshDesc;
+	translatedMeshDesc.shapes.pushBack(&meshShape);
+	translatedMeshDesc.globalPose.t = NxVec3(20.0f, 0.0f, 0.0f);
+	NxActor* const translatedMeshActor = scene->createActor(translatedMeshDesc);
+	if(!translatedMeshActor)
+		{
+		printf("scene_overlap triangles translated_actor_create=failed\n");
+		scene->releaseActor(*meshActor);
+		sdk->releaseTriangleMesh(*queryMesh);
+		return;
+		}
+	NxBounds3 triangleBounds;
+	triangleBounds.set(NxVec3(-2.1f, -0.1f, -2.1f), NxVec3(0.0f, 0.1f, 2.1f));
+	// The SDK array owns its storage through an allocator global in the loaded
+	// Foundation DLL. Give it caller-owned capacity here so the differential
+	// harness stays isolated to the selected Physics/Foundation pair and never
+	// needs to link a third Foundation module into the process.
+	NxTriangle triangleStorage[16];
+	alignas(NxArraySDK<NxTriangle>) unsigned char triangleArrayMemory[sizeof(NxArraySDK<NxTriangle>)];
+	triangleStorage[0] = NxTriangle(NxVec3(99.0f, 99.0f, 99.0f), NxVec3(99.0f, 99.0f, 99.0f),
+		NxVec3(99.0f, 99.0f, 99.0f));
+	void* triangleArrayWords[3] = { triangleStorage, triangleStorage + 1, triangleStorage + 16 };
+	memcpy(triangleArrayMemory, triangleArrayWords, sizeof(triangleArrayWords));
+	NxArraySDK<NxTriangle>* const triangles = reinterpret_cast<NxArraySDK<NxTriangle>*>(triangleArrayMemory);
+	const NxU32 triangleCount = scene->overlapAABBTriangles(triangleBounds, *triangles);
+	printf("scene_overlap triangles hit_count=%u array_count=%u", static_cast<unsigned>(triangleCount), triangles->size());
+	for(unsigned i = 0; i < triangles->size(); i++)
+		for(unsigned vertex = 0; vertex < 3; vertex++)
+			printf(" %08x.%08x.%08x", nxU((*triangles)[i].verts[vertex].x), nxU((*triangles)[i].verts[vertex].y),
+				nxU((*triangles)[i].verts[vertex].z));
+	printf("\n");
+	triangleBounds.set(NxVec3(100.0f, 100.0f, 100.0f), NxVec3(101.0f, 101.0f, 101.0f));
+	triangleArrayWords[0] = triangleStorage;
+	triangleArrayWords[1] = triangleStorage;
+	triangleArrayWords[2] = triangleStorage + 16;
+	memcpy(triangleArrayMemory, triangleArrayWords, sizeof(triangleArrayWords));
+	const NxU32 emptyTriangleCount = scene->overlapAABBTriangles(triangleBounds, *triangles);
+	printf("scene_overlap triangles miss_count=%u array_count=%u\n", static_cast<unsigned>(emptyTriangleCount), triangles->size());
+	triangleArrayWords[0] = triangleStorage;
+	triangleArrayWords[1] = triangleStorage;
+	triangleArrayWords[2] = triangleStorage + 16;
+	memcpy(triangleArrayMemory, triangleArrayWords, sizeof(triangleArrayWords));
+	triangleBounds.set(NxVec3(41.4f, -0.1f, 1.4f), NxVec3(41.6f, 0.1f, 1.6f));
+	const NxU32 triangleCornerCount = scene->overlapAABBTriangles(triangleBounds, *triangles);
+	printf("scene_overlap triangles corner_miss_count=%u array_count=%u\n",
+		static_cast<unsigned>(triangleCornerCount), triangles->size());
+	triangleArrayWords[0] = triangleStorage;
+	triangleArrayWords[1] = triangleStorage;
+	triangleArrayWords[2] = triangleStorage + 16;
+	memcpy(triangleArrayMemory, triangleArrayWords, sizeof(triangleArrayWords));
+	triangleBounds.set(NxVec3(-3.0f, -0.1f, -3.0f), NxVec3(43.0f, 0.1f, 3.0f));
+	const NxU32 allTriangleCount = scene->overlapAABBTriangles(triangleBounds, *triangles);
+	printf("scene_overlap triangles all_count=%u array_count=%u order=", static_cast<unsigned>(allTriangleCount), triangles->size());
+	for(unsigned i = 0; i < triangles->size(); ++i)
+		printf("%s%08x.%08x", i ? "." : "", nxU((*triangles)[i].verts[0].x), nxU((*triangles)[i].verts[0].z));
+	printf("\n");
+	const NxShapesType types[] = { NX_STATIC_SHAPES, NX_DYNAMIC_SHAPES, NX_ALL_SHAPES };
+	triangleArrayWords[0] = triangleStorage;
+	triangleArrayWords[1] = triangleStorage;
+	triangleArrayWords[2] = triangleStorage + 16;
+	memcpy(triangleArrayMemory, triangleArrayWords, sizeof(triangleArrayWords));
+	triangleBounds.set(NxVec3(17.9f, -0.1f, -2.1f), NxVec3(20.1f, 0.1f, 2.1f));
+	const NxU32 translatedCount = scene->overlapAABBTriangles(triangleBounds, *triangles);
+	printf("scene_overlap triangles translated_count=%u array_count=%u", static_cast<unsigned>(translatedCount), triangles->size());
+	for(unsigned i = 0; i < triangles->size(); i++)
+		for(unsigned vertex = 0; vertex < 3; vertex++)
+			printf(" %08x.%08x.%08x", nxU((*triangles)[i].verts[vertex].x), nxU((*triangles)[i].verts[vertex].y),
+				nxU((*triangles)[i].verts[vertex].z));
+	printf("\n");
+	scene->releaseActor(*translatedMeshActor);
+	scene->releaseActor(*meshActor);
+	nxSphereQueryMesh = queryMesh;
+
+	const NxSphere spheres[] =
+		{
+		NxSphere(NxVec3(0.0f, 0.0f, 0.0f), 0.25f),
+		NxSphere(NxVec3(0.0f, 0.0f, 5.0f), 0.25f),
+		NxSphere(NxVec3(100.0f, 100.0f, 100.0f), 0.25f),
+		// This overlaps the dynamic box's broadphase AABB at a corner, but not
+		// the oriented box itself.
+		NxSphere(NxVec3(0.7f, 0.7f, 5.0f), 0.25f),
+		NxSphere(NxVec3(5.0f, 0.0f, 5.0f), 0.1f),
+		NxSphere(NxVec3(10.0f, 1.7f, 5.0f), 0.3f),
+		NxSphere(NxVec3(11.7f, 0.0f, 5.0f), 0.3f),
+		NxSphere(NxVec3(10.0f, 0.0f, 5.0f), 0.1f),
+		NxSphere(NxVec3(0.75f, 0.0f, 5.0f), 0.25f),
+		NxSphere(NxVec3(0.7501f, 0.0f, 5.0f), 0.25f),
+		NxSphere(NxVec3(5.875f, 0.0f, 5.0f), 0.125f),
+		NxSphere(NxVec3(5.876f, 0.0f, 5.0f), 0.125f),
+		};
+	for(unsigned i = 0; i < sizeof(spheres) / sizeof(spheres[0]); i++)
+		for(unsigned t = 0; t < sizeof(types) / sizeof(types[0]); t++)
+			printf("scene_overlap sphere=%u type=%u result=%u\n", i, static_cast<unsigned>(types[t]),
+				scene->checkOverlapSphere(spheres[i], types[t]) ? 1u : 0u);
+
+	const NxVec3 mins[] =
+		{
+		NxVec3(-0.25f, -0.25f, -0.25f),
+		NxVec3(-0.25f, -0.25f, 4.75f),
+		NxVec3(100.0f, 100.0f, 100.0f),
+		};
+	const NxVec3 maxs[] =
+		{
+		NxVec3(0.25f, 0.25f, 0.25f),
+		NxVec3(0.25f, 0.25f, 5.25f),
+		NxVec3(101.0f, 101.0f, 101.0f),
+		};
+	for(unsigned i = 0; i < sizeof(mins) / sizeof(mins[0]); i++)
+		{
+		NxBounds3 bounds;
+		bounds.set(mins[i], maxs[i]);
+		for(unsigned t = 0; t < sizeof(types) / sizeof(types[0]); t++)
+			printf("scene_overlap aabb=%u type=%u result=%u\n", i, static_cast<unsigned>(types[t]),
+				scene->checkOverlapAABB(bounds, types[t]) ? 1u : 0u);
+		}
+	NxBounds3 collectionBounds;
+	collectionBounds.set(NxVec3(-2.0f, -2.0f, -2.0f), NxVec3(2.0f, 2.0f, 2.0f));
+	NxShape* collected[8] = { 0 };
+	const NxU32 collectedCount = scene->overlapAABBShapes(collectionBounds, NX_STATIC_SHAPES,
+		8, collected, 0);
+	printf("scene_overlap aabb_shapes count=%u shapes=", static_cast<unsigned>(collectedCount));
+	for(NxU32 i = 0; i < collectedCount && i < 8; i++)
+		{
+		if(i) printf(".");
+		for(unsigned symbol = 0; symbol < nxSymbolCount; symbol++)
+			if(nxSymbols[symbol].pointer == collected[i])
+				{
+				printf("%s", nxSymbols[symbol].name);
+				break;
+				}
+		}
+	printf("\n");
+	NxShape* limited[1] = { 0 };
+	const NxU32 limitedCount = scene->overlapAABBShapes(collectionBounds, NX_STATIC_SHAPES, 1, limited, 0);
+	printf("scene_overlap aabb_shapes limited_count=%u shape=%s\n", static_cast<unsigned>(limitedCount),
+		limitedCount ? nxShapeName(limited[0]) : "none");
+	NxRecordingEntityReport report;
+	const NxU32 reportedCount = scene->overlapAABBShapes(collectionBounds, NX_STATIC_SHAPES, 0, 0, &report);
+	printf("scene_overlap aabb_shapes callback_count=%u calls=%u entities=%u\n", static_cast<unsigned>(reportedCount),
+		report.mCalls, report.mEntities);
+	NxShape* sphereCollected[8] = { 0 };
+	const NxSphere collectionSphere(NxVec3(0.0f, 0.0f, 0.0f), 0.5f);
+	const NxU32 sphereCollectedCount = scene->overlapSphereShapes(collectionSphere, NX_STATIC_SHAPES,
+		8, sphereCollected, 0);
+	printf("scene_overlap sphere_shapes count=%u shapes=", static_cast<unsigned>(sphereCollectedCount));
+	for(NxU32 i = 0; i < sphereCollectedCount && i < 8; i++)
+		printf("%s%s", i ? "." : "", nxShapeName(sphereCollected[i]));
+	printf("\n");
+	NxRecordingEntityReport sphereReport;
+	const NxU32 sphereReportedCount = scene->overlapSphereShapes(collectionSphere, NX_STATIC_SHAPES, 0, 0,
+		&sphereReport);
+	printf("scene_overlap sphere_shapes callback_count=%u calls=%u entities=%u\n",
+		static_cast<unsigned>(sphereReportedCount), sphereReport.mCalls, sphereReport.mEntities);
+	const NxPlane cullPlane(1.0f, 0.0f, 0.0f, -2.0f);
+	NxShape* culled[8] = { 0 };
+	const NxU32 culledCount = scene->cullShapes(1, &cullPlane, NX_STATIC_SHAPES, 8, culled, 0);
+	printf("scene_cull outside count=%u shapes=", static_cast<unsigned>(culledCount));
+	for(NxU32 i = 0; i < culledCount && i < 8; i++)
+		printf("%s%s", i ? "." : "", nxShapeName(culled[i]));
+	printf("\n");
+	const NxPlane oppositeCullPlane(1.0f, 0.0f, 0.0f, 2.0f);
+	const NxU32 oppositeCulledCount = scene->cullShapes(1, &oppositeCullPlane, NX_STATIC_SHAPES,
+		8, culled, 0);
+	printf("scene_cull opposite count=%u shapes=", static_cast<unsigned>(oppositeCulledCount));
+	for(NxU32 i = 0; i < oppositeCulledCount && i < 8; i++)
+		printf("%s%s", i ? "." : "", nxShapeName(culled[i]));
+	printf("\n");
+	NxRecordingEntityReport cullReport;
+	const NxU32 reportedCullCount = scene->cullShapes(1, &cullPlane, NX_STATIC_SHAPES, 0, 0,
+		&cullReport);
+	printf("scene_cull callback_count=%u calls=%u entities=%u\n", static_cast<unsigned>(reportedCullCount),
+		cullReport.mCalls, cullReport.mEntities);
+	const char* const queryTreeNames[] =
+		{ "tree_11", "tree_00", "tree_08", "tree_03", "tree_09", "tree_01",
+		  "tree_07", "tree_04", "tree_10", "tree_02", "tree_06", "tree_05" };
+	const NxReal queryTreePositions[] = { 11.0f, 0.0f, 8.0f, 3.0f, 9.0f, 1.0f,
+		7.0f, 4.0f, 10.0f, 2.0f, 6.0f, 5.0f };
+	NxActor* queryTreeActors[sizeof(queryTreePositions) / sizeof(queryTreePositions[0])] = { 0 };
+	for(unsigned i = 0; i < sizeof(queryTreePositions) / sizeof(queryTreePositions[0]); ++i)
+		{
+		NxBoxShapeDesc treeBox;
+		treeBox.dimensions = NxVec3(0.25f, 0.25f, 0.25f);
+		NxActorDesc treeActorDesc;
+		treeActorDesc.shapes.pushBack(&treeBox);
+		treeActorDesc.globalPose.t = NxVec3(500.0f + queryTreePositions[i], 0.0f, 0.0f);
+		queryTreeActors[i] = scene->createActor(treeActorDesc);
+		if(queryTreeActors[i])
+			nxSymbolAdd(queryTreeActors[i]->getShapes()[0], queryTreeNames[i]);
+		}
+	NxBounds3 queryTreeBounds;
+	queryTreeBounds.set(NxVec3(499.0f, -1.0f, -1.0f), NxVec3(512.0f, 1.0f, 1.0f));
+	NxShape* queryTreeHits[16] = { 0 };
+	const NxU32 queryTreeHitCount = scene->overlapAABBShapes(queryTreeBounds, NX_STATIC_SHAPES,
+		16, queryTreeHits, 0);
+	printf("scene_overlap tree_aabb count=%u order=", static_cast<unsigned>(queryTreeHitCount));
+	for(NxU32 i = 0; i < queryTreeHitCount && i < 16; ++i)
+		printf("%s%s", i ? "." : "", nxShapeName(queryTreeHits[i]));
+	printf("\n");
+	for(unsigned i = 0; i < sizeof(queryTreeActors) / sizeof(queryTreeActors[0]); ++i)
+		if(queryTreeActors[i])
+			scene->releaseActor(*queryTreeActors[i]);
+	}
+
+static void nxSphereMeshOverlapChecks(NxPhysicsSDK* sdk, NxScene* scene)
+	{
+	if(!nxSphereQueryMesh)
+		{
+		printf("scene_overlap sphere_mesh mesh_unavailable=1\n");
+		return;
+		}
+	NxTriangleMeshShapeDesc meshShape;
+	meshShape.meshData = nxSphereQueryMesh;
+	NxActorDesc actorDesc;
+	actorDesc.shapes.pushBack(&meshShape);
+	NxActor* const actor = scene->createActor(actorDesc);
+	if(!actor)
+		{
+		printf("scene_overlap sphere_mesh actor_create=failed\n");
+		sdk->releaseTriangleMesh(*nxSphereQueryMesh);
+		nxSphereQueryMesh = 0;
+		return;
+		}
+	const NxShapesType types[] = { NX_STATIC_SHAPES, NX_DYNAMIC_SHAPES, NX_ALL_SHAPES };
+	const NxSphere boundsOnly(NxVec3(41.5f, 0.0f, 1.5f), 0.1f);
+	const NxSphere outside(NxVec3(50.0f, 0.0f, 10.0f), 0.1f);
+	for(unsigned i = 0; i < sizeof(types) / sizeof(types[0]); ++i)
+		printf("scene_overlap sphere_mesh bounds_only type=%u result=%u\n",
+			static_cast<unsigned>(types[i]), scene->checkOverlapSphere(boundsOnly, types[i]) ? 1u : 0u);
+	printf("scene_overlap sphere_mesh outside result=%u\n",
+		scene->checkOverlapSphere(outside, NX_ALL_SHAPES) ? 1u : 0u);
+	scene->releaseActor(*actor);
+	NxActorDesc rotatedDesc;
+	rotatedDesc.shapes.pushBack(&meshShape);
+	rotatedDesc.globalPose.M = NxMat33(NxQuat(90.0f, NxVec3(0.0f, 1.0f, 0.0f)));
+	rotatedDesc.globalPose.t = NxVec3(100.0f, 0.0f, 0.0f);
+	NxActor* const rotatedActor = scene->createActor(rotatedDesc);
+	if(rotatedActor)
+		{
+		const NxSphere rotatedBoundsOnly(NxVec3(100.0f, 0.0f, -20.0f), 0.1f);
+		const NxSphere rotatedTangent(NxVec3(100.0f, 0.0f, 2.0f), 0.0f);
+		const NxSphere rotatedOutside(NxVec3(100.0f, 0.0f, 2.01f), 0.005f);
+		printf("scene_overlap sphere_mesh rotated_bounds_only result=%u\n",
+			scene->checkOverlapSphere(rotatedBoundsOnly, NX_ALL_SHAPES) ? 1u : 0u);
+		printf("scene_overlap sphere_mesh rotated_tangent result=%u\n",
+			scene->checkOverlapSphere(rotatedTangent, NX_ALL_SHAPES) ? 1u : 0u);
+		printf("scene_overlap sphere_mesh rotated_outside result=%u\n",
+			scene->checkOverlapSphere(rotatedOutside, NX_ALL_SHAPES) ? 1u : 0u);
+		scene->releaseActor(*rotatedActor);
+		}
+	else
+		printf("scene_overlap sphere_mesh rotated_actor_create=failed\n");
+	sdk->releaseTriangleMesh(*nxSphereQueryMesh);
+	nxSphereQueryMesh = 0;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -630,6 +954,8 @@ int wmain(int argc, wchar_t** argv)
 
 	for(unsigned i = 0; i < kShapeCaseCount; i++)
 		nxActors[i] = nxCreateCase(scene, i);
+
+	nxSpatialOverlapChecks(sdk, scene);
 
 	// Two compound actors, one static and one dynamic: a box and a sphere each.
 	// The pool keeps a compound's shapes in section 0 and its group shape in
@@ -828,6 +1154,7 @@ int wmain(int argc, wchar_t** argv)
 			scene->releaseActor(*nxActors[i]);
 	if(compounds[1])
 		scene->releaseActor(*compounds[1]);
+	nxSphereMeshOverlapChecks(sdk, scene);
 	sdk->releaseScene(*scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);

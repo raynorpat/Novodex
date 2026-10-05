@@ -1,0 +1,22 @@
+Oracle: D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+SHA-256: 7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+Runtime provenance: NxDebugRenderable vtable slot 14 minus loaded module base = RVA 0x00001930.
+Decoder: Capstone 5.0.6, x86-32. These are selected instructions, not invented function boundaries.
+
+0x00001934 fild dword ptr [esp + 4]       ; segment count
+0x00001949 fdivr dword ptr [0x1001c178]   ; float step
+0x00001986 fild dword ptr [esp + 0x78]    ; first endpoint index
+0x00001994 fmul dword ptr [esp + 0x10]    ; index * step remains extended
+0x000019b2 fsin
+0x000019b4 fmul dword ptr [esp + 0x74]    ; radius
+0x000019ba fcos
+0x000019bc fmul dword ptr [esp + 0x74]
+0x000019ac fstp dword ptr [esp + 0x78]    ; second endpoint angle rounds to float
+0x00001a43 fld dword ptr [esp + 0x78]
+0x00001a47 fsin
+0x00001a49 fmul dword ptr [esp + 0x74]
+0x00001a4d fld dword ptr [esp + 0x78]
+0x00001a51 fcos
+0x00001a53 fmul dword ptr [esp + 0x74]
+
+The pre-patch rebuilt slot called modern precise sin/cos helpers after float angle multiplication. Complete record output showed five selected circle-line mismatches. Production commit 62b26f4 adds a private MSVC x86 path reproducing the two oracle angle lifetimes and x87 fsin/fcos ordering; non-x86 fallback remains the prior sinf/cosf behavior.

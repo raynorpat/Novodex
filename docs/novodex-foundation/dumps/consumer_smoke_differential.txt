@@ -1,0 +1,51 @@
+Task 9 audited candidate/oracle differential
+
+Constant inputs:
+  checked-in procedure=tools/run_consumer_smoke.ps1
+  executable=D:\FlamingEnt__\Unreal_3\Binaries\DemoGame.exe
+  working_directory=D:\FlamingEnt__\Unreal_3\Binaries
+  flags=-benchmark -seconds=10 -noini -abslog=<absolute prefix log>
+  launch=Start-Process -WindowStyle Hidden with absolute stdout/stderr
+  timeout=90 seconds, condition-based wait, exact-PID termination on timeout
+  NxPhysics sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+
+Foundation inputs:
+  candidate=80913618b823789f016081260fcdc1902e7f8eac9a1fa6003c16357d3dd72704 / 57344 / PE32 x86 / 2.1.2.6000
+  oracle=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 / 172032 / PE32 x86 / 2.1.2.6000
+
+Normalized milestones (12/12 exact and in order):
+  Command line: -benchmark -seconds=10 -noini -abslog=<PATH>
+  missing intUAudioComponentexecSetFloatParameter warning
+  Initializing Engine...
+  Unreal engine initialized
+  missing DefOpenAL32.dll warning
+  Client initialized
+  LoadMap: Entry
+  Game class is GameInfo
+  Browse: Entry.war
+  LoadMap: Entry.war
+  Game engine initialized
+  Initializing Engine Completed
+
+Candidate:
+  PID=2596; start=2026-08-09T16:05:27.3278514Z; end=2026-08-09T16:05:30.0490178Z; duration=2.721s
+  bytes pre-start and after WER=80913618...72704 / 57344
+  polls=21; live observations=0; poll errors=0
+  exit=<null>; fault=0x80000003 KERNELBASE.dll+0x001fa5e2
+  bucket=88a4a13ea901cd3c6ae88e1119e106a6; legacy bucket=1938955843682764454
+  WER paths=Binaries\NxPhysics.dll and Binaries\NxFoundation.dll
+
+Oracle:
+  PID=31172; start=2026-08-09T16:05:39.1000664Z; end=2026-08-09T16:05:41.7407226Z; duration=2.641s
+  bytes pre-start/at-WER/final=7e0596e4...0990 / 172032
+  polls=20; live observations=0; poll errors=0
+  exit=<null>; fault=0x80000003 KERNELBASE.dll+0x001fa5e2
+  bucket=88a4a13ea901cd3c6ae88e1119e106a6; legacy bucket=1938955843682764454
+  WER paths=Binaries\NxPhysics.dll and Binaries\NxFoundation.dll
+
+Decision:
+  No candidate-only divergence exists before the source-backed SDK-bind boundary.
+  The same post-bind breakpoint/bucket and unavailable numeric exit reproduce with
+  the pinned oracle. consumer_smoke=pass only for import load + SDK bind.
+  Clean exit, benchmark completion, live module observation, gameplay stability,
+  and a full gameplay soak are not claimed.

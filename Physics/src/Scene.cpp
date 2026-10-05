@@ -939,11 +939,30 @@ static void nxSceneAuxRegisterShape(NxSceneInternal* scene, void* shapePointer)
 		}
 	unsigned* active = *reinterpret_cast<unsigned**>(aux + 0x10);
 	unsigned* activeEnd = *reinterpret_cast<unsigned**>(aux + 0x14);
-	if(!active || !activeEnd || activeEnd - active >= 256) return;
-	unsigned* flags = *reinterpret_cast<unsigned**>(aux);
+	if(!active || !activeEnd || !nxSceneAuxEnsureShapeSlot(aux,
+		*reinterpret_cast<unsigned*>(static_cast<unsigned char*>(shapePointer) + 0xd4))) return;
 	const unsigned slot = *reinterpret_cast<unsigned*>(
 		static_cast<unsigned char*>(shapePointer) + 0xd4);
-	if(slot >= 256 || flags[slot]) return;
+	unsigned* activeCapacity = *reinterpret_cast<unsigned**>(aux + 0x18);
+	if(!activeCapacity) return;
+	if(activeEnd == activeCapacity)
+		{
+		const unsigned count = static_cast<unsigned>(activeEnd - active);
+		const unsigned next = count * 2 + 2;
+		unsigned* grown = static_cast<unsigned*>(nxFoundationSDKAllocator->malloc(
+			next * sizeof(unsigned), NX_MEMORY_PERSISTENT));
+		if(!grown) return;
+		if(count) memcpy(grown, active, count * sizeof(unsigned));
+		nxFoundationSDKAllocator->free(active);
+		active = grown;
+		activeEnd = grown + count;
+		activeCapacity = grown + next;
+		*reinterpret_cast<unsigned**>(aux + 0x10) = active;
+		*reinterpret_cast<unsigned**>(aux + 0x14) = activeEnd;
+		*reinterpret_cast<unsigned**>(aux + 0x18) = activeCapacity;
+		}
+	unsigned* flags = *reinterpret_cast<unsigned**>(aux);
+	if(flags[slot]) return;
 	const unsigned activeIndex = static_cast<unsigned>(activeEnd - active);
 	flags[slot] = 0xffffffffu;
 	active[activeIndex] = slot;
@@ -996,7 +1015,8 @@ void nxSceneMarkShapeDirty(void* shapePointer, unsigned flag)
 	if(!aux) return;
 	unsigned* flags = *reinterpret_cast<unsigned**>(aux);
 	const unsigned id = *reinterpret_cast<unsigned*>(shape + 0xd4);
-	if(!flags || id >= 256) return;
+	if(!flags || id >= static_cast<unsigned>(
+		*reinterpret_cast<unsigned**>(aux + 8) - flags)) return;
 	if(!flags[id])
 		{
 		unsigned* active = *reinterpret_cast<unsigned**>(aux + 0x10);
@@ -2705,6 +2725,8 @@ static void nxRuntimeShapeBaseDestroy(unsigned char* shape)
 	if(body)
 		nxSceneRemovePairs(scene->bytes() + 0x5d4, shape);
 	if(body)
+		NxSceneRemoveOwnerPairRecords(scene, shape);
+	if(body)
 		nxU32VectorPushBack(scene->bytes() + 0x6e4, *reinterpret_cast<unsigned*>(shape + 0xd4));
 	if(*reinterpret_cast<unsigned char**>(shape + 0xa0))
 		nxPruningRemoveRootPairs(*reinterpret_cast<unsigned char**>(shape + 0xa0), body);
@@ -4317,7 +4339,10 @@ void NxSceneInternal::simulateFrame()
 			reinterpret_cast<Row000730Fixture*>(island)->row000730(timestep, inverseTimestep);
 			if(at<NxU32>(0x5bc))
 				{
+				// Keep contact rows on their oracle-matched path, then solve the
+				// joint rows 000728 appended to this same island record array.
 				cpmSolveSceneContactRecords(this, nxSceneMaximumStepBodies);
+				nxSolveJointSupportRecords(this, timestep, nxSceneMaximumStepBodies, false);
 				nxSceneMaximumStepBodies = 0;
 				}
 			for(unsigned char* body = island; body;
@@ -4389,6 +4414,8 @@ NxU32 NxSceneInternal::getNbPairs() const
 // then translate each flagged hash entry into public shape or actor handles.
 bool NxSceneInternal::getPairFlagArray(NxPairFlag* userArray, NxU32 numPairs) const
 	{
+	if(numPairs == 0)
+		return false;
 	const auto publicActorForBody = [this](const void* body) -> void*
 		{
 		if(!body)

@@ -1,0 +1,12 @@
+Provenance: pinned oracle SHA-256 7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990; rebuilt D:/github/Novodex/build/Release/NxFoundation.dll; Capstone 5.0.6 x86-32; pefile 2024.8.26.
+Command: NxFoundationClusterTests.exe capsule <absolute-dll-path>, separate processes.
+Oracle exit 0 and rebuilt exit 0:
+capsule_box0 center=3f800000,40000000,40400000 extents=40600000,3fc00000,3fc00000 rotation=3f800000,00000000,00000000/80000000,3f800000,00000000/80000000,80000000,3f800000
+capsule_box1 center=3f800000,40000000,40400000 extents=40900000,3fc00000,3fc00000 rotation=00000000,3f800000,00000000/00000000,80000000,3f800000/3f800000,80000000,80000000
+capsule_box2 center=3f800000,40000000,40400000 extents=40b00000,3fc00000,3fc00000 rotation=00000000,00000000,3f800000/3f800000,00000000,80000000/80000000,3f800000,80000000
+capsule exports=2 capsule_to_box=axis_x,y,z_center_extents_orthonormal box_to_capsule=largest_x,y,z,tie_x,zero_center_radius
+Captured four-line output text SHA-256 (PowerShell UTF-16LE capture) is 246404B439A1EC874E0946CF8C45EA8D301F4BF3090FC1A59330437B33C3DF0E for each process. The matrices above contain all nine float bits in row order. Hard checks cover exact matrices; all row/column norms, all pairwise row/column dot products, and determinant=+1 use 2e-4.
+
+Hardening RED: an expected X-axis matrix with both secondary rows sign-flipped preserves the old checked row0 and determinant +1, so the former predicate accepts it. The strengthened oracle gate exits 1 with `FAIL capsule-to-box exact rotation 0` and reports canonical `3f800000,00000000,00000000/80000000,3f800000,00000000/80000000,80000000,3f800000`. Restoring that matrix makes all three axes exact GREEN.
+RVA 0x00008c10 NxComputeBoxAroundCapsule and RVA 0x00008380 NxComputeCapsuleAroundBox have full attachments in oracle_pe_capstone.json.
+Post-cluster export gate: oracle=134 rebuilt=140 missing=0 extra=6 recorder_exports=0 saved_equals_live=True.

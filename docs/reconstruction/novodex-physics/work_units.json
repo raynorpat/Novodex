@@ -357,12 +357,12 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 23,
-    "reconstructed": 39
+    "discovered": 18,
+    "reconstructed": 44
    },
    "bytes": {
-    "discovered": 1780,
-    "reconstructed": 3187
+    "discovered": 1288,
+    "reconstructed": 3679
    },
    "phases": {
     "7": 62
@@ -609,12 +609,12 @@
     "phys_fn_000686"
    ],
    "rows": {
-    "discovered": 6,
-    "reconstructed": 4
+    "discovered": 1,
+    "reconstructed": 9
    },
    "bytes": {
-    "discovered": 2649,
-    "reconstructed": 854
+    "discovered": 89,
+    "reconstructed": 3414
    },
    "phases": {
     "7": 10

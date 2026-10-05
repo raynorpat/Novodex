@@ -20,42 +20,42 @@ static const unsigned kNxRvaPreferredImageBase = 0x10000000u;
 
 static const NxRvaTranslation kNxRvaTranslations[] = {
 	{ 0x0000b5d0, 0x1000c5f0u },  // phys_fn_000226  NpPhysicsSDK::NpPhysicsSDK
-	{ 0x0000b5f0, 0x1000c910u },  // phys_fn_000228  NpPhysicsSDK::release
-	{ 0x0000b600, 0x1000c9a0u },  // phys_fn_000230  NpPhysicsSDK::setParameter
-	{ 0x0000b6e0, 0x1000c8e0u },  // phys_fn_000232  NpPhysicsSDK::getParameter
-	{ 0x0000b7b0, 0x1000c8d0u },  // phys_fn_000238  NpPhysicsSDK::getNbScenes
-	{ 0x0000b9a0, 0x1000c980u },  // phys_fn_000248  NpPhysicsSDK::setGroupCollisionFlag
-	{ 0x0000bb10, 0x1000c9e0u },  // phys_fn_000252  NpPhysicsSDK::visualize
-	{ 0x0000bc70, 0x1000c990u },  // phys_fn_000258  NpPhysicsSDK::setMaterialAtIndex
-	{ 0x0000bd50, 0x1000c8b0u },  // phys_fn_000260  NpPhysicsSDK::getMaterial
-	{ 0x0000bdd0, 0x1000c8c0u },  // phys_fn_000261  NpPhysicsSDK::getNbMaterials
-	{ 0x0000be50, 0x1000c900u },  // phys_fn_000263  NpPhysicsSDK::purgeMaterials
-	{ 0x0000c170, 0x1000c950u },  // phys_fn_000273  NpPhysicsSDK::setFluidGroupPairFlags
-	{ 0x0000c1a0, 0x1000c870u },  // phys_fn_000275  NpPhysicsSDK::getFluidGroupPairFlags
-	{ 0x0000c1d0, 0x1000c9c0u },  // phys_fn_000277  NpPhysicsSDK::setPerformanceInspector
-	{ 0x0000db30, 0x10019650u },  // phys_fn_000425  PhysicsSDK::release
-	{ 0x0000db50, 0x1001a240u },  // phys_fn_000427  PhysicsSDK::setParameter
-	{ 0x0000dc00, 0x10018ca0u },  // phys_fn_000429  PhysicsSDK::getParameter
-	{ 0x0000de10, 0x1001a3a0u },  // phys_fn_000439  PhysicsSDK::visualize
-	{ 0x0000deb0, 0x10018b90u },  // phys_fn_000443  PhysicsSDK::getDebugRenderable
-	{ 0x0000def0, 0x10018c80u },  // phys_fn_000448  PhysicsSDK::getNbScenes
-	{ 0x0000df30, 0x10019bb0u },  // phys_fn_000452  PhysicsSDK::setGroupCollisionFlag
-	{ 0x0000e030, 0x10018c60u },  // phys_fn_000458  PhysicsSDK::getNbMaterials
+	{ 0x0000b5f0, 0x10036a90u },  // phys_fn_000228  NpPhysicsSDK::release
+	{ 0x0000b600, 0x10036de0u },  // phys_fn_000230  NpPhysicsSDK::setParameter
+	{ 0x0000b6e0, 0x10036a30u },  // phys_fn_000232  NpPhysicsSDK::getParameter
+	{ 0x0000b7b0, 0x10036a20u },  // phys_fn_000238  NpPhysicsSDK::getNbScenes
+	{ 0x0000b9a0, 0x10036dc0u },  // phys_fn_000248  NpPhysicsSDK::setGroupCollisionFlag
+	{ 0x0000bb10, 0x10036e20u },  // phys_fn_000252  NpPhysicsSDK::visualize
+	{ 0x0000bc70, 0x10036dd0u },  // phys_fn_000258  NpPhysicsSDK::setMaterialAtIndex
+	{ 0x0000bd50, 0x10036a00u },  // phys_fn_000260  NpPhysicsSDK::getMaterial
+	{ 0x0000bdd0, 0x10036a10u },  // phys_fn_000261  NpPhysicsSDK::getNbMaterials
+	{ 0x0000be50, 0x10036a80u },  // phys_fn_000263  NpPhysicsSDK::purgeMaterials
+	{ 0x0000c170, 0x10036d90u },  // phys_fn_000273  NpPhysicsSDK::setFluidGroupPairFlags
+	{ 0x0000c1a0, 0x100369c0u },  // phys_fn_000275  NpPhysicsSDK::getFluidGroupPairFlags
+	{ 0x0000c1d0, 0x10036e00u },  // phys_fn_000277  NpPhysicsSDK::setPerformanceInspector
+	{ 0x0000db30, 0x10049300u },  // phys_fn_000425  PhysicsSDK::release
+	{ 0x0000db50, 0x1004a100u },  // phys_fn_000427  PhysicsSDK::setParameter
+	{ 0x0000dc00, 0x10048780u },  // phys_fn_000429  PhysicsSDK::getParameter
+	{ 0x0000de10, 0x1004a260u },  // phys_fn_000439  PhysicsSDK::visualize
+	{ 0x0000deb0, 0x10048680u },  // phys_fn_000443  PhysicsSDK::getDebugRenderable
+	{ 0x0000def0, 0x10048770u },  // phys_fn_000448  PhysicsSDK::getNbScenes
+	{ 0x0000df30, 0x10049a70u },  // phys_fn_000452  PhysicsSDK::setGroupCollisionFlag
+	{ 0x0000e030, 0x10048750u },  // phys_fn_000458  PhysicsSDK::getNbMaterials
 	{ 0x0000e1b0, 0x10017a50u },  // phys_fn_000472  PhysicsSDK::PhysicsSDK
-	{ 0x00013070, 0x1001b060u },  // phys_fn_000651  NxSceneInternal::initialise
-	{ 0x0004cae0, 0x10041320u },  // phys_fn_001984  PenetrationMap::~PenetrationMap
-	{ 0x000505f0, 0x10041240u },  // phys_fn_002045  PenetrationMap::PenetrationMap
-	{ 0x00050640, 0x10041440u },  // phys_fn_002047  PenetrationMap::create
-	{ 0x00051040, 0x10041f00u },  // phys_fn_002051  NxReleasePMap
-	{ 0x000539d0, 0x100542f0u },  // phys_fn_002162  TriangleMesh::save
-	{ 0x00055cb0, 0x100541e0u },  // phys_fn_002262  nxTriangleMeshReadHeader
+	{ 0x00013070, 0x1004f650u },  // phys_fn_000651  NxSceneInternal::initialise
+	{ 0x0004cae0, 0x10043ad0u },  // phys_fn_001984  PenetrationMap::~PenetrationMap
+	{ 0x000505f0, 0x100439d0u },  // phys_fn_002045  PenetrationMap::PenetrationMap
+	{ 0x00050640, 0x10043d10u },  // phys_fn_002047  PenetrationMap::create
+	{ 0x00051040, 0x10046510u },  // phys_fn_002051  NxReleasePMap
+	{ 0x000539d0, 0x1005a8b0u },  // phys_fn_002162  TriangleMesh::save
+	{ 0x00055cb0, 0x1005a870u },  // phys_fn_002262  nxTriangleMeshReadHeader
 	{ 0x0005a8e0, 0x10016f40u },  // phys_fn_002338  ShapePairFunctionTable::ShapePairFunctionTable
 	{ 0x0005b6a0, 0x10016f10u },  // phys_fn_002358  ReadWriteLock::ReadWriteLock
-	{ 0x00095cc0, 0x1000d8a0u },  // phys_fn_004087  nxAccumulateByKind0867
-	{ 0x000b3b30, 0x10029a50u },  // phys_fn_004780  MemoryStream::seek
-	{ 0x000b3ce0, 0x10029580u },  // phys_fn_004788  MemoryStream::MemoryStream
-	{ 0x000b3db0, 0x10029630u },  // phys_fn_004791  MemoryStream::~MemoryStream
-	{ 0x000b3f00, 0x10029b00u },  // phys_fn_004797  MemoryStream::storeDword
+	{ 0x00095cc0, 0x10058320u },  // phys_fn_004087  nxAccumulateByKind0867
+	{ 0x000b3b30, 0x1002b6e0u },  // phys_fn_004780  MemoryStream::seek
+	{ 0x000b3ce0, 0x1002b210u },  // phys_fn_004788  MemoryStream::MemoryStream
+	{ 0x000b3db0, 0x1002b2c0u },  // phys_fn_004791  MemoryStream::~MemoryStream
+	{ 0x000b3f00, 0x1002b920u },  // phys_fn_004797  MemoryStream::storeDword
 };
 
 static const unsigned kNxRvaTranslationCount =

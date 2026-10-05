@@ -1,0 +1,27 @@
+Provenance
+oracle: D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+oracle SHA-256: 7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+rebuilt: D:/github/Novodex/build/Release/NxFoundation.dll
+harness: D:/github/Novodex/build/Release/NxFoundationClusterTests.exe
+
+Commands (separate process invocations)
+NxFoundationClusterTests.exe observable D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+NxFoundationClusterTests.exe observable D:/github/Novodex/build/Release/NxFoundation.dll
+
+Oracle output (exit 0)
+observable size=16 fields=4,8,12 vftable=1 count=0,2,1,0 callbacks=1,2 copy=deep assign=deep last_remove=empty
+
+Rebuilt output (exit 0)
+observable size=16 fields=4,8,12 vftable=1 count=0,2,1,0 callbacks=1,2 copy=deep assign=deep last_remove=empty
+
+Structural Capstone facts (Capstone 5.0.6, x86-32)
+RVA 0x00003cf0: constructor writes vftable 0x1001c2b0 and zeroes +4/+8/+0xc
+RVA 0x00003d10: destructor frees the +4 allocation through the Foundation allocator when non-null
+RVA 0x00003d40: copy constructor installs vftable and calls array copy for source/destination +4
+RVA 0x00003d60: assignment calls array assignment for source/destination +4 and returns this
+RVA 0x000042e0: default event is ret 8
+RVA 0x000043d0: count is (+8 - +4) / 4
+RVA 0x0001c2b0: one executable pointer to event RVA 0x000042e0, bounded by next exported vftable
+
+Post-cluster export gate
+oracle=134 rebuilt=140 missing=0 extra=6 recorder_exports=0 saved_equals_live=True

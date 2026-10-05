@@ -1,0 +1,35 @@
+Provenance
+oracle: D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+oracle SHA-256: 7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+rebuilt: D:/github/Novodex/build/Release/NxFoundation.dll
+harness: D:/github/Novodex/build/Release/NxFoundationClusterTests.exe
+Capstone: 5.0.6 x86-32; pefile: 2024.8.26
+
+Commands (separate process invocations)
+NxFoundationClusterTests.exe profiler D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll
+NxFoundationClusterTests.exe profiler D:/github/Novodex/build/Release/NxFoundation.dll
+
+Initial test defect (both exit 1)
+FAIL DefineZone copy/assignment
+Root cause: the test compared all 56 allocation bytes, but oracle copy/assignment do not copy padding at +0xc or tail padding after +0x30.
+
+Oracle output after field-span correction (exit 0)
+profiler exports=49 define_zone_size=56 vftable=3_ordered globals=initialized,0,0,0,256,64 zone=define,enter,leave,scope,release copy=fields_exact assign=fields_exact stdev=3 sort=1,-1,0 update=0_to_1 active=positive
+
+Rebuilt output after field-span correction (exit 0)
+profiler exports=49 define_zone_size=56 vftable=3_ordered globals=initialized,0,0,0,256,64 zone=define,enter,leave,scope,release copy=fields_exact assign=fields_exact stdev=3 sort=1,-1,0 update=0_to_1 active=positive
+
+Structural Capstone facts
+RVA 0x00002f70: FoundationSDK profiling-zone creation requests 0x38 (56) bytes.
+RVA 0x00003390: DefineZone copy constructor writes vftable 0x1001c288 and copies +4/+8 and +0x10..+0x30.
+RVA 0x000033f0: DefineZone assignment copies +4/+8 and +0x10..+0x30 and returns this.
+RVA 0x000046a0: destructor removes/reindexes the zone-list entry.
+RVA 0x000048f0 / 0x00004970: Enter_Zone / Exit_Zone update current-zone and stack state around timestamp accounting.
+RVA 0x00004a50: getName returns +4.
+RVA 0x00004a60: named constructor installs vftable, increments num_zones, stores name/index, and zeroes +0x10..+0x30.
+RVA 0x00005170: default constructor installs vftable and calls initialize.
+RVA 0x0001c288: public NxProfilingZone establishes exactly three semantic slots: release, enter, leave. Additional executable pointers before the next exported table are adjacent data and are not claimed as slots.
+All 49 assigned exports have individual code/data attachments in oracle_pe_capstone.json and were resolved by the runtime gate.
+
+Post-cluster export gate
+oracle=134 rebuilt=140 missing=0 extra=6 recorder_exports=0 saved_equals_live=True

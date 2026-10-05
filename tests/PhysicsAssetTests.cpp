@@ -1191,6 +1191,10 @@ static bool nxCandidateMeshWriter(const NxWriterFixture* fixture, NxWriteLog* lo
 	mesh.mInternal.mFaceRemap = 0;
 	mesh.mInternal.mVertexNormals = 0;
 	mesh.mInternal.mModel = 0;
+	// hasHull supplies a borrowed non-null sentinel so save() emits the hull
+	// block. TriangleMesh owns mConvexMesh in normal construction, so detach
+	// that sentinel before the wrapper's destructor treats it as convex data.
+	mesh.mConvexMesh = 0;
 	return true;
 	}
 

@@ -103,7 +103,6 @@ static void supportSolveNormal004403(NxReal step, NxU32 pass, JointSupportRecord
 		}
 	else
 		record->mUnknown044 = supportBits(accumulated);
-
 	auto apply = [&](JointSupportBody* body, const NxVec3& angularJacobian, NxReal sign)
 		{
 		if(!body)
@@ -449,19 +448,34 @@ static void supportSolveJoint004397(NxReal step, NxU32 pass, JointSupportRecord*
 // phys_fn_004174/004176 (0x0009b120/0x0009b240), the per-island solver
 // wrapper. Dispatch table kinds 1/2/3/6 share 004397, kind 4 is 004401,
 // kind 5 is 004399, and kind 0 is 004403.
-void nxSolveJointSupportRecords(NxSceneInternal* scene, NxReal step, NxU32 iterations)
+void nxSolveJointSupportRecords(NxSceneInternal* scene, NxReal step, NxU32 iterations,
+	bool includeContactRows)
 	{
 	JointSupportRecord* const first = scene->at<JointSupportRecord*>(0x5b8);
 	const NxU32 count = scene->at<NxU32>(0x5bc);
+	if(!includeContactRows)
+		{
+		NxU32 jointRows = 0;
+		for(; jointRows != count; ++jointRows)
+			{
+			const NxU32 kind = first[jointRows].mFlags & 0x1f;
+			if(kind != 0 && kind != 4)
+				break;
+			}
+		if(jointRows == count)
+			return;
+		}
 	for(NxU32 pass = iterations; pass != 0; --pass)
 		for(NxU32 i = 0; i != count; ++i)
 			{
 			JointSupportRecord* record = first + i;
+			const NxU32 kind = record->mFlags & 0x1f;
+			if(!includeContactRows && (kind == 0 || kind == 4))
+				continue;
 			const bool body0 = record->mBody[0] && pass <= record->mBody[0]->mUnknown05c;
 			const bool body1 = record->mBody[1] && pass <= record->mBody[1]->mUnknown05c;
 			if(!body0 && !body1)
 				continue;
-			const NxU32 kind = record->mFlags & 0x1f;
 			if(kind == 0)
 				supportSolveNormal004403(step, pass, record);
 			else if(kind == 1 || kind == 2 || kind == 3 || kind == 6)
@@ -484,6 +498,8 @@ void nxSolveJointSupportRecords(NxSceneInternal* scene, NxReal step, NxU32 itera
 		{
 		JointSupportRecord* record = first + i;
 		const NxU32 kind = record->mFlags & 0x1f;
+		if(!includeContactRows && (kind == 0 || kind == 4))
+			continue;
 		if(kind != 0 || record->mUnknown034 <= 0.0f)
 			record->mUnknown034 = 0.0f;
 		if(kind == 6)

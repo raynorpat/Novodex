@@ -1,0 +1,5 @@
+﻿command=cmake -S . -B build --fresh -G "Visual Studio 18 2026" -A Win32
+working_directory=D:\github\Novodex
+start_utc=2026-08-09T16:02:23.6307224Z
+end_utc=2026-08-09T16:02:30.0608784Z
+exit_code=0

@@ -1,0 +1,39 @@
+﻿query=Get-WinEvent Application StartTime=2026-08-09T12:05:39.1000664-04:00 exact_pid=31172 pid_hex=0x79C4
+event_count=1
+event_begin provider=Application Error id=1000 record_id=420656 utc=2026-08-09T16:05:39.9001183Z
+Faulting application name: DemoGame.exe, version: 0.0.0.0, time stamp: 0x6a789603
+Faulting module name: KERNELBASE.dll, version: 10.0.26100.8875, time stamp: 0xc97469ea
+Exception code: 0x80000003
+Fault offset: 0x001fa5e2
+Faulting process id: 0x79C4
+Faulting application start time: 0x1DD2818EBCADA24
+Faulting application path: D:\FlamingEnt__\Unreal_3\Binaries\DemoGame.exe
+Faulting module path: C:\Windows\System32\KERNELBASE.dll
+Report Id: 849717fd-3667-4d02-9293-876536b8e38e
+Faulting package full name:
+Faulting package-relative application ID:
+event_end
+report_path=C:\ProgramData\Microsoft\Windows\WER\ReportArchive\AppCrash_DemoGame.exe_dfb756d97535391f138f66d13c7e4ecc6e991a_2d259bab_de19b640-0f37-4614-8083-4ea6e0a48fec\Report.wer
+ReportIdentifier=de19b640-0f37-4614-8083-4ea6e0a48fec
+IntegratorReportIdentifier=849717fd-3667-4d02-9293-876536b8e38e
+Response.BucketId=88a4a13ea901cd3c6ae88e1119e106a6
+Response.LegacyBucketId=1938955843682764454
+Response.type=4
+Sig[0].Name=Application Name
+Sig[0].Value=DemoGame.exe
+Sig[1].Name=Application Version
+Sig[1].Value=0.0.0.0
+Sig[2].Name=Application Timestamp
+Sig[2].Value=6a789603
+Sig[3].Name=Fault Module Name
+Sig[3].Value=KERNELBASE.dll
+Sig[4].Name=Fault Module Version
+Sig[4].Value=10.0.26100.8875
+Sig[5].Name=Fault Module Timestamp
+Sig[5].Value=c97469ea
+Sig[6].Name=Exception Code
+Sig[6].Value=80000003
+Sig[7].Name=Exception Offset
+Sig[7].Value=001fa5e2
+LoadedModule[6]=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+LoadedModule[42]=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll

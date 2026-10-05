@@ -1,0 +1,1296 @@
+{
+  "binary_pins": {
+    "NxFoundation.dll": {
+      "path": "D:/FlamingEnt__/Unreal_3/Binaries/NxFoundation.dll",
+      "sha256": "7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990",
+      "size": 172032,
+      "image_base": "0x10000000",
+      "export_count": 134
+    }
+  },
+  "header_pin": {
+    "source": "D:/FlamingEnt__/Unreal_3/Development/External/Novodex",
+    "sdk_full_version": "2.1.2.6000"
+  },
+  "exports_oracle": [
+    "??0DefineZone@NxProfiler@@QAE@ABV01@@Z",
+    "??0DefineZone@NxProfiler@@QAE@PBD@Z",
+    "??0DefineZone@NxProfiler@@QAE@XZ",
+    "??0Exception@NxFoundation@@QAE@ABV01@@Z",
+    "??0Exception@NxFoundation@@QAE@W4NxErrorCode@@PBDH@Z",
+    "??0FoundationSDK@NxFoundation@@AAE@XZ",
+    "??0FoundationSDK@NxFoundation@@QAE@ABV01@@Z",
+    "??0Observable@NxFoundation@@QAE@ABV01@@Z",
+    "??0Observable@NxFoundation@@QAE@XZ",
+    "??0SetCurrentZone@NxProfiler@@QAE@AAVDefineZone@1@@Z",
+    "??0Time@NxFoundation@@QAE@XZ",
+    "??1DefineZone@NxProfiler@@QAE@XZ",
+    "??1FoundationSDK@NxFoundation@@AAE@XZ",
+    "??1Observable@NxFoundation@@QAE@XZ",
+    "??1SetCurrentZone@NxProfiler@@QAE@XZ",
+    "??4DefineZone@NxProfiler@@QAEAAV01@ABV01@@Z",
+    "??4Exception@NxFoundation@@QAEAAV01@ABV01@@Z",
+    "??4FoundationSDK@NxFoundation@@QAEAAV01@ABV01@@Z",
+    "??4NxProfiler@@QAEAAV0@ABV0@@Z",
+    "??4Observable@NxFoundation@@QAEAAV01@ABV01@@Z",
+    "??4SetCurrentZone@NxProfiler@@QAEAAV01@ABV01@@Z",
+    "??4Time@NxFoundation@@QAEAAV01@ABV01@@Z",
+    "??_7DefineZone@NxProfiler@@6B@",
+    "??_7Exception@NxFoundation@@6B@",
+    "??_7FoundationSDK@NxFoundation@@6BNxFoundationSDK@@@",
+    "??_7FoundationSDK@NxFoundation@@6BObservable@1@@",
+    "??_7Observable@NxFoundation@@6B@",
+    "?Enter_Zone@NxProfiler@@CAXAAVDefineZone@1@@Z",
+    "?Exit_Zone@NxProfiler@@CAXXZ",
+    "?GetClockFrequency@Time@NxFoundation@@CANXZ",
+    "?GetElapsedSeconds@Time@NxFoundation@@QAENXZ",
+    "?GetTimeTicks@Time@NxFoundation@@CANXZ",
+    "?PeekElapsedSeconds@Time@NxFoundation@@QAENXZ",
+    "?addObserver@Observable@NxFoundation@@QAEXAAV12@@Z",
+    "?createDebugRenderable@FoundationSDK@NxFoundation@@UAEPAVNxDebugRenderable@@XZ",
+    "?createProfilingZone@FoundationSDK@NxFoundation@@UAEPAVNxProfilingZone@@PBD@Z",
+    "?current_integer_timestamp@NxProfiler@@0_JA",
+    "?current_zone@NxProfiler@@0HA",
+    "?data_records@NxProfiler@@0PAUProfile_Tracker_Data_Record@1@A",
+    "?dbAssert@FoundationSDK@NxFoundation@@SA_NW4NxErrorCode@@PBDHPA_N1@Z",
+    "?dbMessage@FoundationSDK@NxFoundation@@SAXW4NxErrorCode@@PBDH1ZZ",
+    "?defaultSDKAllocator@FoundationSDK@NxFoundation@@2VNxUserAllocatorDefault@@A",
+    "?defaultZone@NxProfiler@@0VDefineZone@1@A",
+    "?displayed_quantity@NxProfiler@@2W4NxDisplayMode@@A",
+    "?dt@NxProfiler@@0NA",
+    "?dt_per_integer_timestamp@NxProfiler@@0NA",
+    "?enter@DefineZone@NxProfiler@@UAEXXZ",
+    "?error@FoundationSDK@NxFoundation@@SA_NW4NxErrorCode@@PBDHPA_N1ZZ",
+    "?errorImpl@FoundationSDK@NxFoundation@@AAE_NW4NxErrorCode@@PBDHPA_N1PAD@Z",
+    "?event@FoundationSDK@NxFoundation@@UAEXIAAVObservable@2@@Z",
+    "?event@Observable@NxFoundation@@UAEXIAAV12@@Z",
+    "?frame_time@NxProfiler@@2UHistory_Scalar@1@A",
+    "?getAllocator@FoundationSDK@NxFoundation@@UAEAAVNxUserAllocator@@XZ",
+    "?getErrorCode@Exception@NxFoundation@@UAE?AW4NxErrorCode@@XZ",
+    "?getErrorStream@FoundationSDK@NxFoundation@@UAEPAVNxUserOutputStream@@XZ",
+    "?getFile@Exception@NxFoundation@@UAEPBDXZ",
+    "?getFirstError@FoundationSDK@NxFoundation@@UAE?AW4NxErrorCode@@XZ",
+    "?getInstance@FoundationSDK@NxFoundation@@SAAAV12@XZ",
+    "?getLastError@FoundationSDK@NxFoundation@@UAE?AW4NxErrorCode@@XZ",
+    "?getLine@Exception@NxFoundation@@UAEHXZ",
+    "?getName@DefineZone@NxProfiler@@QAEPBDXZ",
+    "?getNumObservers@Observable@NxFoundation@@QAEIXZ",
+    "?getTime@NxProfiler@@CAXPA_J@Z",
+    "?get_stdev@NxProfiler@@CANPAUHistory_Scalar@1@H@Z",
+    "?initialize@NxProfiler@@SAXXZ",
+    "?initializeHighLevel@NxProfiler@@CAXXZ",
+    "?initialized@NxProfiler@@0_NA",
+    "?instance@FoundationSDK@NxFoundation@@0PAV12@A",
+    "?integer_timestamps_per_second@NxProfiler@@2UHistory_Scalar@1@A",
+    "?last_integer_timestamp@NxProfiler@@0_JA",
+    "?last_update_time@NxProfiler@@0NA",
+    "?leave@DefineZone@NxProfiler@@UAEXXZ",
+    "?maxZones@NxProfiler@@2HA",
+    "?notifyObservers@Observable@NxFoundation@@QAEXI@Z",
+    "?num_active_zones@NxProfiler@@2HA",
+    "?num_zones@NxProfiler@@0HA",
+    "?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A",
+    "?pointersData@NxProfiler@@0PAPAVDefineZone@1@A",
+    "?precomputed_factors@NxProfiler@@0PANA",
+    "?release@DefineZone@NxProfiler@@UAEXXZ",
+    "?release@FoundationSDK@NxFoundation@@UAEXXZ",
+    "?releaseDebugRenderable@FoundationSDK@NxFoundation@@UAEXAAPAVNxDebugRenderable@@@Z",
+    "?removeObserver@Observable@NxFoundation@@QAEXAAV12@@Z",
+    "?renderDebugData@FoundationSDK@NxFoundation@@UBEXABVNxUserDebugRenderer@@@Z",
+    "?setErrorStream@FoundationSDK@NxFoundation@@UAEXPAVNxUserOutputStream@@@Z",
+    "?setMode@NxProfiler@@SAXW4NxDisplayMode@@@Z",
+    "?sort_records@NxProfiler@@CAHPBX0@Z",
+    "?sorted_pointers@NxProfiler@@2PAPAUProfile_Tracker_Data_Record@1@A",
+    "?stackData@NxProfiler@@0PAHA",
+    "?stackSize@NxProfiler@@0HA",
+    "?stack_pos@NxProfiler@@0HA",
+    "?times_to_reach_90_percent@NxProfiler@@0PANA",
+    "?update@NxProfiler@@SAXXZ",
+    "?update_index@NxProfiler@@0HA",
+    "?zone_pointers_by_index@NxProfiler@@2PAPAVDefineZone@1@A",
+    "?zone_stack@NxProfiler@@0PAHA",
+    "NxBoxContainsPoint",
+    "NxBoxVertexToQuad",
+    "NxComputeBounds",
+    "NxComputeBoxAroundCapsule",
+    "NxComputeBoxPlanes",
+    "NxComputeBoxPoints",
+    "NxComputeBoxVertexNormals",
+    "NxComputeBoxWorldEdgeNormal",
+    "NxComputeCapsuleAroundBox",
+    "NxComputeDistanceSquared",
+    "NxComputeSphere",
+    "NxComputeSquareDistance",
+    "NxComputeVolumeIntegrals",
+    "NxCrc32",
+    "NxCreateBox",
+    "NxCreateFoundationSDK",
+    "NxDiagonalizeInertiaTensor",
+    "NxFastComputeSphere",
+    "NxFindRotationMatrix",
+    "NxGetBoxEdges",
+    "NxGetBoxEdgesAxes",
+    "NxGetBoxLocalEdgeNormals",
+    "NxGetBoxQuads",
+    "NxGetBoxTriangles",
+    "NxIntCeil",
+    "NxIntChop",
+    "NxIntFloor",
+    "NxIsBoxAInsideBoxB",
+    "NxMergeSpheres",
+    "NxNormalToTangents",
+    "NxSetFPUExceptions",
+    "NxSetFPUPrecision24",
+    "NxSetFPUPrecision53",
+    "NxSetFPUPrecision64",
+    "NxSetFPURoundingChop",
+    "NxSetFPURoundingDown",
+    "NxSetFPURoundingNear",
+    "NxSetFPURoundingUp"
+  ],
+  "clusters": [
+    {
+      "id": "c_sdk",
+      "name": "FoundationSDK create/release/allocator/errors",
+      "src_candidates": [
+        "FoundationSDK.cpp",
+        "include/FoundationSDK.h",
+        "DefaultAllocator.*"
+      ],
+      "exports": [
+        "??0FoundationSDK@NxFoundation@@AAE@XZ",
+        "??0FoundationSDK@NxFoundation@@QAE@ABV01@@Z",
+        "??1FoundationSDK@NxFoundation@@AAE@XZ",
+        "??4FoundationSDK@NxFoundation@@QAEAAV01@ABV01@@Z",
+        "??_7FoundationSDK@NxFoundation@@6BNxFoundationSDK@@@",
+        "??_7FoundationSDK@NxFoundation@@6BObservable@1@@",
+        "?dbAssert@FoundationSDK@NxFoundation@@SA_NW4NxErrorCode@@PBDHPA_N1@Z",
+        "?dbMessage@FoundationSDK@NxFoundation@@SAXW4NxErrorCode@@PBDH1ZZ",
+        "?defaultSDKAllocator@FoundationSDK@NxFoundation@@2VNxUserAllocatorDefault@@A",
+        "?error@FoundationSDK@NxFoundation@@SA_NW4NxErrorCode@@PBDHPA_N1ZZ",
+        "?errorImpl@FoundationSDK@NxFoundation@@AAE_NW4NxErrorCode@@PBDHPA_N1PAD@Z",
+        "?event@FoundationSDK@NxFoundation@@UAEXIAAVObservable@2@@Z",
+        "?getAllocator@FoundationSDK@NxFoundation@@UAEAAVNxUserAllocator@@XZ",
+        "?getErrorStream@FoundationSDK@NxFoundation@@UAEPAVNxUserOutputStream@@XZ",
+        "?getFirstError@FoundationSDK@NxFoundation@@UAE?AW4NxErrorCode@@XZ",
+        "?getInstance@FoundationSDK@NxFoundation@@SAAAV12@XZ",
+        "?getLastError@FoundationSDK@NxFoundation@@UAE?AW4NxErrorCode@@XZ",
+        "?instance@FoundationSDK@NxFoundation@@0PAV12@A",
+        "?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A",
+        "?release@FoundationSDK@NxFoundation@@UAEXXZ",
+        "?setErrorStream@FoundationSDK@NxFoundation@@UAEXPAVNxUserOutputStream@@@Z",
+        "NxCreateFoundationSDK"
+      ],
+      "decision": "PATCH",
+      "oracle_refs": [
+        {
+          "export": "??0FoundationSDK@NxFoundation@@AAE@XZ",
+          "rva": "0x00003e20",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??0FoundationSDK@NxFoundation@@QAE@ABV01@@Z",
+          "rva": "0x00003d80",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??1FoundationSDK@NxFoundation@@AAE@XZ",
+          "rva": "0x00003e60",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??4FoundationSDK@NxFoundation@@QAEAAV01@ABV01@@Z",
+          "rva": "0x00003de0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??_7FoundationSDK@NxFoundation@@6BNxFoundationSDK@@@",
+          "rva": "0x0001c2b4",
+          "kind": "data",
+          "section": ".rdata"
+        },
+        {
+          "export": "??_7FoundationSDK@NxFoundation@@6BObservable@1@@",
+          "rva": "0x0001c2dc",
+          "kind": "data",
+          "section": ".rdata"
+        },
+        {
+          "export": "?dbAssert@FoundationSDK@NxFoundation@@SA_NW4NxErrorCode@@PBDHPA_N1@Z",
+          "rva": "0x00003360",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?dbMessage@FoundationSDK@NxFoundation@@SAXW4NxErrorCode@@PBDH1ZZ",
+          "rva": "0x00002e90",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?defaultSDKAllocator@FoundationSDK@NxFoundation@@2VNxUserAllocatorDefault@@A",
+          "rva": "0x00025040",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?error@FoundationSDK@NxFoundation@@SA_NW4NxErrorCode@@PBDHPA_N1ZZ",
+          "rva": "0x00003320",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?errorImpl@FoundationSDK@NxFoundation@@AAE_NW4NxErrorCode@@PBDHPA_N1PAD@Z",
+          "rva": "0x00002fe0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?event@FoundationSDK@NxFoundation@@UAEXIAAVObservable@2@@Z",
+          "rva": "0x00003fe0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?getAllocator@FoundationSDK@NxFoundation@@UAEAAVNxUserAllocator@@XZ",
+          "rva": "0x00002f60",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?getErrorStream@FoundationSDK@NxFoundation@@UAEPAVNxUserOutputStream@@XZ",
+          "rva": "0x00002f50",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?getFirstError@FoundationSDK@NxFoundation@@UAE?AW4NxErrorCode@@XZ",
+          "rva": "0x00002fd0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?getInstance@FoundationSDK@NxFoundation@@SAAAV12@XZ",
+          "rva": "0x00002e80",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?getLastError@FoundationSDK@NxFoundation@@UAE?AW4NxErrorCode@@XZ",
+          "rva": "0x00002fc0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?instance@FoundationSDK@NxFoundation@@0PAV12@A",
+          "rva": "0x00026984",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A",
+          "rva": "0x00026980",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?release@FoundationSDK@NxFoundation@@UAEXXZ",
+          "rva": "0x00004090",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?setErrorStream@FoundationSDK@NxFoundation@@UAEXPAVNxUserOutputStream@@@Z",
+          "rva": "0x00002f40",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxCreateFoundationSDK",
+          "rva": "0x00004020",
+          "kind": "code",
+          "section": ".text"
+        }
+      ],
+      "notes": "PATCH: Task 5 adapted the three c_sdk-owned allocations to the immutable 2.1.2 function-like NX_NEW(type) macro. Task 7 differential RED found oracle/rebuild FoundationSDK allocation sizes 56/76 bytes. Oracle NxCreateFoundationSDK RVA 0x00004020 pushes 0x38; constructor/destructor/error/event slices in dumps/oracle_sdk_capstone.txt recover interface offset +0x14, debug-array storage +0x1c..+0x24, first/last errors +0x2c/+0x30, and lifecycle byte +0x34. The private currentID/freeIDs storage and getNewID/freeID methods had no call sites and no oracle exports; removing them and reordering remaining private fields restores 56 bytes. dumps/sdk_vtable_compare.txt proves matching one-entry Observable, one-entry FoundationSDK Observable-base, and ordered ten-entry NxFoundationSDK-interface tables. Separate-process oracle/rebuild runtime output is identical for exact/wrong version, create/release/recreate, allocator/global binding, stream replacement, short warning callback, and error clearing (dumps/sdk_differential_red.txt and sdk_differential_green.txt). DefaultAllocator.* required no Task 7 change. Scope excludes assertions, long-message realloc, allocator failure, live-observer deferral, copying, concurrency, profiler/debug behavior, and exhaustive errors; global structural/selected_behavior gates remain pending for Task 8."
+    },
+    {
+      "id": "c_exception",
+      "name": "Exception",
+      "src_candidates": [
+        "Exception.cpp",
+        "include/Exception.h"
+      ],
+      "exports": [
+        "??0Exception@NxFoundation@@QAE@ABV01@@Z",
+        "??0Exception@NxFoundation@@QAE@W4NxErrorCode@@PBDH@Z",
+        "??4Exception@NxFoundation@@QAEAAV01@ABV01@@Z",
+        "??_7Exception@NxFoundation@@6B@",
+        "?getErrorCode@Exception@NxFoundation@@UAE?AW4NxErrorCode@@XZ",
+        "?getFile@Exception@NxFoundation@@UAEPBDXZ",
+        "?getLine@Exception@NxFoundation@@UAEHXZ"
+      ],
+      "decision": "KEEP",
+      "oracle_refs": [
+        {
+          "export": "??0Exception@NxFoundation@@QAE@ABV01@@Z",
+          "rva": "0x00002db0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??0Exception@NxFoundation@@QAE@W4NxErrorCode@@PBDH@Z",
+          "rva": "0x00002e00",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??4Exception@NxFoundation@@QAEAAV01@ABV01@@Z",
+          "rva": "0x00002de0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??_7Exception@NxFoundation@@6B@",
+          "rva": "0x0001c210",
+          "kind": "data",
+          "section": ".rdata"
+        },
+        {
+          "export": "?getErrorCode@Exception@NxFoundation@@UAE?AW4NxErrorCode@@XZ",
+          "rva": "0x00002d80",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?getFile@Exception@NxFoundation@@UAEPBDXZ",
+          "rva": "0x00002d90",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?getLine@Exception@NxFoundation@@UAEHXZ",
+          "rva": "0x00002da0",
+          "kind": "code",
+          "section": ".text"
+        }
+      ],
+      "notes": "KEEP: Capstone x86-32 shows a 16-byte object with vftable at +0 and error/file/line at +4/+8/+0xc. Exported vftable RVA 0x0001c210 contains the three getter RVAs 0x00002d80/0x00002d90/0x00002da0 in that order followed by zero. Constructor RVA 0x00002e00, copy constructor RVA 0x00002db0, and assignment RVA 0x00002de0 write/copy exactly those fields. The public-ABI loader resolves every assigned export and obtains identical oracle/rebuild results for construction, all getters, copy, assignment, return-this semantics, 16-byte bytes, and vtable identity/order (dumps/exception_differential.txt). No production change was needed. Proof excludes invalid object pointers and lifetime of caller-owned file strings."
+    },
+    {
+      "id": "c_observable",
+      "name": "Observable",
+      "src_candidates": [
+        "Observable.cpp",
+        "include/Observable.h"
+      ],
+      "exports": [
+        "??0Observable@NxFoundation@@QAE@ABV01@@Z",
+        "??0Observable@NxFoundation@@QAE@XZ",
+        "??1Observable@NxFoundation@@QAE@XZ",
+        "??4Observable@NxFoundation@@QAEAAV01@ABV01@@Z",
+        "??_7Observable@NxFoundation@@6B@",
+        "?addObserver@Observable@NxFoundation@@QAEXAAV12@@Z",
+        "?event@Observable@NxFoundation@@UAEXIAAV12@@Z",
+        "?getNumObservers@Observable@NxFoundation@@QAEIXZ",
+        "?notifyObservers@Observable@NxFoundation@@QAEXI@Z",
+        "?removeObserver@Observable@NxFoundation@@QAEXAAV12@@Z"
+      ],
+      "decision": "KEEP",
+      "oracle_refs": [
+        {
+          "export": "??0Observable@NxFoundation@@QAE@ABV01@@Z",
+          "rva": "0x00003d40",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??0Observable@NxFoundation@@QAE@XZ",
+          "rva": "0x00003cf0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??1Observable@NxFoundation@@QAE@XZ",
+          "rva": "0x00003d10",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??4Observable@NxFoundation@@QAEAAV01@ABV01@@Z",
+          "rva": "0x00003d60",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??_7Observable@NxFoundation@@6B@",
+          "rva": "0x0001c2b0",
+          "kind": "data",
+          "section": ".rdata"
+        },
+        {
+          "export": "?addObserver@Observable@NxFoundation@@QAEXAAV12@@Z",
+          "rva": "0x000045a0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?event@Observable@NxFoundation@@UAEXIAAV12@@Z",
+          "rva": "0x000042e0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?getNumObservers@Observable@NxFoundation@@QAEIXZ",
+          "rva": "0x000043d0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?notifyObservers@Observable@NxFoundation@@QAEXI@Z",
+          "rva": "0x00004390",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?removeObserver@Observable@NxFoundation@@QAEXAAV12@@Z",
+          "rva": "0x00004490",
+          "kind": "code",
+          "section": ".text"
+        }
+      ],
+      "notes": "KEEP: Capstone x86-32 identifies a 16-byte Observable with one-slot event vftable at +0 and the observer pointer array begin/end/capacity at +4/+8/+0xc. Constructor RVA 0x00003cf0 zeroes those fields; destructor RVA 0x00003d10 frees owned storage; copy/assignment RVAs 0x00003d40/0x00003d60 call deep array operations. Event RVA 0x000042e0 is a no-op ret 8 and count RVA 0x000043d0 computes (+8 - +4)/4. The public-ABI loader resolves all ten assigned exports and produces identical oracle/rebuild results for add/remove/count, ordered notify callbacks, removed-observer suppression, last-observer event 2, deep copy/assignment ownership, destruction, and the exported one-slot vtable (dumps/observable_differential.txt). No production change was needed. Unsupported cases include duplicate observers, missing-observer assertion policy, mutation during notification, self-deletion, allocation failure, and concurrency."
+    },
+    {
+      "id": "c_profiler",
+      "name": "NxProfiler / DefineZone",
+      "src_candidates": [
+        "Profiler.cpp",
+        "include/Profiler.h"
+      ],
+      "exports": [
+        "??0DefineZone@NxProfiler@@QAE@ABV01@@Z",
+        "??0DefineZone@NxProfiler@@QAE@PBD@Z",
+        "??0DefineZone@NxProfiler@@QAE@XZ",
+        "??0SetCurrentZone@NxProfiler@@QAE@AAVDefineZone@1@@Z",
+        "??1DefineZone@NxProfiler@@QAE@XZ",
+        "??1SetCurrentZone@NxProfiler@@QAE@XZ",
+        "??4DefineZone@NxProfiler@@QAEAAV01@ABV01@@Z",
+        "??4NxProfiler@@QAEAAV0@ABV0@@Z",
+        "??4SetCurrentZone@NxProfiler@@QAEAAV01@ABV01@@Z",
+        "??_7DefineZone@NxProfiler@@6B@",
+        "?Enter_Zone@NxProfiler@@CAXAAVDefineZone@1@@Z",
+        "?Exit_Zone@NxProfiler@@CAXXZ",
+        "?createProfilingZone@FoundationSDK@NxFoundation@@UAEPAVNxProfilingZone@@PBD@Z",
+        "?current_integer_timestamp@NxProfiler@@0_JA",
+        "?current_zone@NxProfiler@@0HA",
+        "?data_records@NxProfiler@@0PAUProfile_Tracker_Data_Record@1@A",
+        "?defaultZone@NxProfiler@@0VDefineZone@1@A",
+        "?displayed_quantity@NxProfiler@@2W4NxDisplayMode@@A",
+        "?dt@NxProfiler@@0NA",
+        "?dt_per_integer_timestamp@NxProfiler@@0NA",
+        "?enter@DefineZone@NxProfiler@@UAEXXZ",
+        "?frame_time@NxProfiler@@2UHistory_Scalar@1@A",
+        "?getName@DefineZone@NxProfiler@@QAEPBDXZ",
+        "?getTime@NxProfiler@@CAXPA_J@Z",
+        "?get_stdev@NxProfiler@@CANPAUHistory_Scalar@1@H@Z",
+        "?initialize@NxProfiler@@SAXXZ",
+        "?initializeHighLevel@NxProfiler@@CAXXZ",
+        "?initialized@NxProfiler@@0_NA",
+        "?integer_timestamps_per_second@NxProfiler@@2UHistory_Scalar@1@A",
+        "?last_integer_timestamp@NxProfiler@@0_JA",
+        "?last_update_time@NxProfiler@@0NA",
+        "?leave@DefineZone@NxProfiler@@UAEXXZ",
+        "?maxZones@NxProfiler@@2HA",
+        "?num_active_zones@NxProfiler@@2HA",
+        "?num_zones@NxProfiler@@0HA",
+        "?pointersData@NxProfiler@@0PAPAVDefineZone@1@A",
+        "?precomputed_factors@NxProfiler@@0PANA",
+        "?release@DefineZone@NxProfiler@@UAEXXZ",
+        "?setMode@NxProfiler@@SAXW4NxDisplayMode@@@Z",
+        "?sort_records@NxProfiler@@CAHPBX0@Z",
+        "?sorted_pointers@NxProfiler@@2PAPAUProfile_Tracker_Data_Record@1@A",
+        "?stackData@NxProfiler@@0PAHA",
+        "?stackSize@NxProfiler@@0HA",
+        "?stack_pos@NxProfiler@@0HA",
+        "?times_to_reach_90_percent@NxProfiler@@0PANA",
+        "?update@NxProfiler@@SAXXZ",
+        "?update_index@NxProfiler@@0HA",
+        "?zone_pointers_by_index@NxProfiler@@2PAPAVDefineZone@1@A",
+        "?zone_stack@NxProfiler@@0PAHA"
+      ],
+      "decision": "KEEP",
+      "oracle_refs": [
+        {
+          "export": "??0DefineZone@NxProfiler@@QAE@ABV01@@Z",
+          "rva": "0x00003390",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??0DefineZone@NxProfiler@@QAE@PBD@Z",
+          "rva": "0x00004a60",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??0DefineZone@NxProfiler@@QAE@XZ",
+          "rva": "0x00005170",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??0SetCurrentZone@NxProfiler@@QAE@AAVDefineZone@1@@Z",
+          "rva": "0x00004a20",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??1DefineZone@NxProfiler@@QAE@XZ",
+          "rva": "0x000046a0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??1SetCurrentZone@NxProfiler@@QAE@XZ",
+          "rva": "0x00004a40",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??4DefineZone@NxProfiler@@QAEAAV01@ABV01@@Z",
+          "rva": "0x000033f0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??4NxProfiler@@QAEAAV0@ABV0@@Z",
+          "rva": "0x00002eb0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??4SetCurrentZone@NxProfiler@@QAEAAV01@ABV01@@Z",
+          "rva": "0x00002ea0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??_7DefineZone@NxProfiler@@6B@",
+          "rva": "0x0001c288",
+          "kind": "data",
+          "section": ".rdata"
+        },
+        {
+          "export": "?Enter_Zone@NxProfiler@@CAXAAVDefineZone@1@@Z",
+          "rva": "0x000048f0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?Exit_Zone@NxProfiler@@CAXXZ",
+          "rva": "0x00004970",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?createProfilingZone@FoundationSDK@NxFoundation@@UAEPAVNxProfilingZone@@PBD@Z",
+          "rva": "0x00002f70",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?current_integer_timestamp@NxProfiler@@0_JA",
+          "rva": "0x000296b0",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?current_zone@NxProfiler@@0HA",
+          "rva": "0x0002985c",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?data_records@NxProfiler@@0PAUProfile_Tracker_Data_Record@1@A",
+          "rva": "0x00026988",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?defaultZone@NxProfiler@@0VDefineZone@1@A",
+          "rva": "0x00025058",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?displayed_quantity@NxProfiler@@2W4NxDisplayMode@@A",
+          "rva": "0x00029190",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?dt@NxProfiler@@0NA",
+          "rva": "0x00029188",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?dt_per_integer_timestamp@NxProfiler@@0NA",
+          "rva": "0x000295a0",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?enter@DefineZone@NxProfiler@@UAEXXZ",
+          "rva": "0x00004b00",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?frame_time@NxProfiler@@2UHistory_Scalar@1@A",
+          "rva": "0x00029828",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?getName@DefineZone@NxProfiler@@QAEPBDXZ",
+          "rva": "0x00004a50",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?getTime@NxProfiler@@CAXPA_J@Z",
+          "rva": "0x000048d0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?get_stdev@NxProfiler@@CANPAUHistory_Scalar@1@H@Z",
+          "rva": "0x000047a0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?initialize@NxProfiler@@SAXXZ",
+          "rva": "0x000050d0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?initializeHighLevel@NxProfiler@@CAXXZ",
+          "rva": "0x00004b20",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?initialized@NxProfiler@@0_NA",
+          "rva": "0x00029858",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?integer_timestamps_per_second@NxProfiler@@2UHistory_Scalar@1@A",
+          "rva": "0x000297f8",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?last_integer_timestamp@NxProfiler@@0_JA",
+          "rva": "0x000295a8",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?last_update_time@NxProfiler@@0NA",
+          "rva": "0x000297d0",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?leave@DefineZone@NxProfiler@@UAEXXZ",
+          "rva": "0x00004b10",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?maxZones@NxProfiler@@2HA",
+          "rva": "0x0002504c",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?num_active_zones@NxProfiler@@2HA",
+          "rva": "0x00029194",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?num_zones@NxProfiler@@0HA",
+          "rva": "0x00029864",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?pointersData@NxProfiler@@0PAPAVDefineZone@1@A",
+          "rva": "0x000295b0",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?precomputed_factors@NxProfiler@@0PANA",
+          "rva": "0x000297d8",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?release@DefineZone@NxProfiler@@UAEXXZ",
+          "rva": "0x00004ab0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?setMode@NxProfiler@@SAXW4NxDisplayMode@@@Z",
+          "rva": "0x00004790",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?sort_records@NxProfiler@@CAHPBX0@Z",
+          "rva": "0x00004740",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?sorted_pointers@NxProfiler@@2PAPAUProfile_Tracker_Data_Record@1@A",
+          "rva": "0x000296b8",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?stackData@NxProfiler@@0PAHA",
+          "rva": "0x00029198",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?stackSize@NxProfiler@@0HA",
+          "rva": "0x00025048",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?stack_pos@NxProfiler@@0HA",
+          "rva": "0x00029860",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?times_to_reach_90_percent@NxProfiler@@0PANA",
+          "rva": "0x000297b8",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?update@NxProfiler@@SAXXZ",
+          "rva": "0x00004c30",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?update_index@NxProfiler@@0HA",
+          "rva": "0x000297f0",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?zone_pointers_by_index@NxProfiler@@2PAPAVDefineZone@1@A",
+          "rva": "0x00025054",
+          "kind": "data",
+          "section": ".data"
+        },
+        {
+          "export": "?zone_stack@NxProfiler@@0PAHA",
+          "rva": "0x00025050",
+          "kind": "data",
+          "section": ".data"
+        }
+      ],
+      "notes": "KEEP: every one of the 49 assigned code/data exports has a PE+Capstone attachment in dumps/oracle_pe_capstone.json and is required by the loader gate. createProfilingZone RVA 0x00002f70 requests 0x38 bytes. Named/default constructors are at 0x00004a60/0x00005170; copy/assignment at 0x00003390/0x000033f0 copy semantic fields +4/+8 and +0x10..+0x30 while leaving padding; destructor 0x000046a0 removes/reindexes the zone. Public NxProfilingZone defines the three semantic vftable slots release/enter/leave at RVA 0x0001c288; later executable pointers before the next export are adjacent data, not claimed slots. Separate-process oracle/rebuild output matches for initialization/global dimensions, named/default/copy/assignment, zone list/index/name, direct and scoped enter/leave, release, ticks, stdev, sort, mode, and normalized update invariants (dumps/profiler_differential.txt). No production change. Timing magnitudes, long-run smoothing/statistical accuracy, recursion/overflow, concurrent zones, allocation failure, and abnormal scope exit are outside this selected gate."
+    },
+    {
+      "id": "c_time",
+      "name": "Time",
+      "src_candidates": [
+        "Time.cpp",
+        "include/NxTime.h"
+      ],
+      "exports": [
+        "??0Time@NxFoundation@@QAE@XZ",
+        "??4Time@NxFoundation@@QAEAAV01@ABV01@@Z",
+        "?GetClockFrequency@Time@NxFoundation@@CANXZ",
+        "?GetElapsedSeconds@Time@NxFoundation@@QAENXZ",
+        "?GetTimeTicks@Time@NxFoundation@@CANXZ",
+        "?PeekElapsedSeconds@Time@NxFoundation@@QAENXZ"
+      ],
+      "decision": "KEEP",
+      "oracle_refs": [
+        {
+          "export": "??0Time@NxFoundation@@QAE@XZ",
+          "rva": "0x000052a0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "??4Time@NxFoundation@@QAEAAV01@ABV01@@Z",
+          "rva": "0x00004670",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?GetClockFrequency@Time@NxFoundation@@CANXZ",
+          "rva": "0x000051b0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?GetElapsedSeconds@Time@NxFoundation@@QAENXZ",
+          "rva": "0x000051f0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?GetTimeTicks@Time@NxFoundation@@CANXZ",
+          "rva": "0x00005190",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?PeekElapsedSeconds@Time@NxFoundation@@QAENXZ",
+          "rva": "0x00005250",
+          "kind": "code",
+          "section": ".text"
+        }
+      ],
+      "notes": "KEEP: all six exports are resolved and exercised. Capstone RVAs 0x00005190/0x000051b0 call and convert QueryPerformanceCounter/Frequency; 0x000051f0 subtracts and replaces the 8-byte epoch before division; 0x00005250 computes without replacing; constructor 0x000052a0 seeds via GetElapsedSeconds; assignment 0x00004670 copies exactly 8 bytes. Separate-process oracle/rebuild output matches for positive stable frequency, monotonic ticks, non-resetting peek, elapsed reset, exact epoch assignment, and documented scheduler-tolerant bounds (dumps/time_differential.txt). No production change. Exact tick/frequency values and cross-process elapsed magnitudes are nondeterministic and deliberately not compared; suspend/resume, counter failure, clock migration, and long-duration precision are outside this gate."
+    },
+    {
+      "id": "c_fpu",
+      "name": "FPU control exports",
+      "src_candidates": [
+        "FPU.cpp"
+      ],
+      "exports": [
+        "NxIntCeil",
+        "NxIntChop",
+        "NxIntFloor",
+        "NxSetFPUExceptions",
+        "NxSetFPUPrecision24",
+        "NxSetFPUPrecision53",
+        "NxSetFPUPrecision64",
+        "NxSetFPURoundingChop",
+        "NxSetFPURoundingDown",
+        "NxSetFPURoundingNear",
+        "NxSetFPURoundingUp"
+      ],
+      "decision": "PATCH",
+      "oracle_refs": [
+        {
+          "export": "NxIntCeil",
+          "rva": "0x00004270",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxIntChop",
+          "rva": "0x000041c0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxIntFloor",
+          "rva": "0x00004200",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxSetFPUExceptions",
+          "rva": "0x00004190",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxSetFPUPrecision24",
+          "rva": "0x000040d0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxSetFPUPrecision53",
+          "rva": "0x000040f0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxSetFPUPrecision64",
+          "rva": "0x00004110",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxSetFPURoundingChop",
+          "rva": "0x00004120",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxSetFPURoundingDown",
+          "rva": "0x00004160",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxSetFPURoundingNear",
+          "rva": "0x00004180",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxSetFPURoundingUp",
+          "rva": "0x00004140",
+          "kind": "code",
+          "section": ".text"
+        }
+      ],
+      "notes": "PATCH: all eleven exports are resolved. Capstone RVAs 0x000040d0..0x00004180 show the legacy CRT control-helper calls/masks; conversion bodies begin at 0x000041c0/0x00004200/0x00004270. Separate-process state measurement found the oracle changes only x87 and leaves MXCSR byte-exact unchanged, while the rebuilt modern _controlfp also changed SSE rounding/masks. RED: oracle exit 0, rebuild exit 1 at rounding-chop MXCSR. The minimal Win32 patch uses fnstcw/fldcw masked updates for precision (0x0300), rounding (0x0c00), and exceptions (0x003f; true=0x003f, false=0x0002 denormal-only masked). GREEN matches oracle for every setter, exact restoration, and seven finite NxInt conversion vectors (dumps/fpu_differential.txt). NaN/infinity, out-of-range conversion shifts, pending x87 exception delivery, and multithreaded FPU-state interactions are outside this gate."
+    },
+    {
+      "id": "c_box",
+      "name": "Box helpers",
+      "src_candidates": [
+        "Box.cpp"
+      ],
+      "exports": [
+        "NxBoxContainsPoint",
+        "NxBoxVertexToQuad",
+        "NxComputeBoxPlanes",
+        "NxComputeBoxPoints",
+        "NxComputeBoxVertexNormals",
+        "NxComputeBoxWorldEdgeNormal",
+        "NxCreateBox",
+        "NxGetBoxEdges",
+        "NxGetBoxEdgesAxes",
+        "NxGetBoxLocalEdgeNormals",
+        "NxGetBoxQuads",
+        "NxGetBoxTriangles",
+        "NxIsBoxAInsideBoxB"
+      ],
+      "decision": "KEEP",
+      "oracle_refs": [
+        {
+          "export": "NxBoxContainsPoint",
+          "rva": "0x00007860",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxBoxVertexToQuad",
+          "rva": "0x00008950",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxComputeBoxPlanes",
+          "rva": "0x00007a40",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxComputeBoxPoints",
+          "rva": "0x00007cf0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxComputeBoxVertexNormals",
+          "rva": "0x00007f40",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxComputeBoxWorldEdgeNormal",
+          "rva": "0x000082e0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxCreateBox",
+          "rva": "0x00007930",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxGetBoxEdges",
+          "rva": "0x000082a0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxGetBoxEdgesAxes",
+          "rva": "0x000082b0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxGetBoxLocalEdgeNormals",
+          "rva": "0x000082d0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxGetBoxQuads",
+          "rva": "0x00008940",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxGetBoxTriangles",
+          "rva": "0x000082c0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxIsBoxAInsideBoxB",
+          "rva": "0x00008640",
+          "kind": "code",
+          "section": ".text"
+        }
+      ],
+      "notes": "KEEP: all 13 exports have PE+Capstone attachments. All six plane normal/d rows, eight point rows, and eight vertex-normal rows are hard-checked and bit-serialized in order; oracle/rebuild output is exact. The old sampled predicate false-passes a deliberately wrong formerly unchecked point[1], while the strengthened oracle gate rejects it. Edges/axes/quads/triangles and all eight NxBoxVertexToQuad rows 345/045/015/135/234/024/012/123 are exact. Identity world/local edge normal and inside/touching/outside/reverse containment also match (dumps/box_differential.txt). Float/vector hard assertions use 1e-4 while serialized differential values are exact. No production change. Invalid indexes, NaN/infinity, negative extents, and non-orthonormal rotations are excluded."
+    },
+    {
+      "id": "c_capsule",
+      "name": "Capsule helpers",
+      "src_candidates": [
+        "Capsule.cpp"
+      ],
+      "exports": [
+        "NxComputeBoxAroundCapsule",
+        "NxComputeCapsuleAroundBox"
+      ],
+      "decision": "KEEP",
+      "oracle_refs": [
+        {
+          "export": "NxComputeBoxAroundCapsule",
+          "rva": "0x00008c10",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxComputeCapsuleAroundBox",
+          "rva": "0x00008380",
+          "kind": "code",
+          "section": ".text"
+        }
+      ],
+      "notes": "KEEP: Capstone attachments cover NxComputeBoxAroundCapsule RVA 0x00008c10 and NxComputeCapsuleAroundBox RVA 0x00008380. For X/Y/Z capsule axes, center/extents and every bit of all three 3x3 orientation rows are emitted and compared exactly; all row/column norms and pairwise dots plus determinant handedness are hard-checked. Flipping both formerly unchecked secondary rows preserves the old row0+det predicate but is rejected by the strengthened exact gate. Box-to-capsule largest X/Y/Z, equal-axis tie, translated center, and zero extents/radius remain checked (dumps/capsule_differential.txt). No production change. Zero-length input capsules, negative radius/extents, non-orthonormal box rotations, NaN/infinity, and aliasing are excluded."
+    },
+    {
+      "id": "c_sphere",
+      "name": "Sphere helpers",
+      "src_candidates": [
+        "Sphere.cpp"
+      ],
+      "exports": [
+        "NxComputeSphere",
+        "NxFastComputeSphere",
+        "NxMergeSpheres"
+      ],
+      "decision": "KEEP",
+      "oracle_refs": [
+        {
+          "export": "NxComputeSphere",
+          "rva": "0x0000a420",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxFastComputeSphere",
+          "rva": "0x00009020",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxMergeSpheres",
+          "rva": "0x0000a540",
+          "kind": "code",
+          "section": ".text"
+        }
+      ],
+      "notes": "KEEP: Capstone covers NxComputeSphere RVA 0x0000a420, NxFastComputeSphere RVA 0x00009020, and NxMergeSpheres RVA 0x0000a540. Separate-process oracle/rebuild output matches for null/empty, single, pair, and multi-point enclosing behavior; the robust method's measured GEMS selection; and disjoint, containment both orders, coincident, touching, and first-output-alias merges (dumps/sphere_differential.txt). No production change. NxComputeSphere's observed GEMS selection is recorded without claiming the unreachable/buggy miniball branch; four-point miniball assertion paths, aliasing the second merge input, negative radii, NaN/infinity, and very large coordinates are excluded."
+    },
+    {
+      "id": "c_ray_seg",
+      "name": "Ray/Segment distance",
+      "src_candidates": [
+        "Ray.cpp",
+        "Segment.cpp"
+      ],
+      "exports": [
+        "NxComputeDistanceSquared",
+        "NxComputeSquareDistance"
+      ],
+      "decision": "KEEP",
+      "oracle_refs": [
+        {
+          "export": "NxComputeDistanceSquared",
+          "rva": "0x00008d50",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxComputeSquareDistance",
+          "rva": "0x00008df0",
+          "kind": "code",
+          "section": ".text"
+        }
+      ],
+      "notes": "KEEP: Capstone covers NxComputeDistanceSquared RVA 0x00008d50 and NxComputeSquareDistance RVA 0x00008df0. Separate-process oracle/rebuild output matches valid normalized-ray interior projection, origin clamping, an on-ray point, null output, and output aliasing; and segment interior, both endpoint clamps, zero length, and output aliasing (dumps/ray_seg_differential.txt). No production change. Non-unit and zero directions are both excluded consistently because immutable NxRay.h explicitly requires a normalized direction; the preliminary differing non-unit characterization is non-authoritative and neither invalid case is claimed as parity coverage."
+    },
+    {
+      "id": "c_volume",
+      "name": "Volume integrals",
+      "src_candidates": [
+        "VolumeIntegration.cpp"
+      ],
+      "exports": [
+        "NxComputeVolumeIntegrals"
+      ],
+      "decision": "KEEP",
+      "oracle_refs": [
+        {
+          "export": "NxComputeVolumeIntegrals",
+          "rva": "0x00007220",
+          "kind": "code",
+          "section": ".text"
+        }
+      ],
+      "notes": "KEEP: Capstone covers NxComputeVolumeIntegrals RVA 0x00007220; VolumeIntegration.cpp is unchanged since the imported source baseline. Separate-process oracle/rebuild gates match analytic tetrahedron mass, COM, origin inertia, and COM inertia for 32-bit indices, translation/density scaling, 16-bit indices plus flipped normals, and the null-allocator false/unchanged-output guard (dumps/volume_differential.txt). A 1e-4 absolute tensor tolerance is required for modern-compiler normalization/cancellation drift on the translated mesh; the largest observed rebuilt analytic error was about 4.2e-5. Degenerate/open/self-intersecting meshes and invalid indexes are excluded."
+    },
+    {
+      "id": "c_util",
+      "name": "Bounds/CRC/tangents/inertia helpers",
+      "src_candidates": [
+        "Utilities.cpp"
+      ],
+      "exports": [
+        "NxComputeBounds",
+        "NxCrc32",
+        "NxDiagonalizeInertiaTensor",
+        "NxFindRotationMatrix",
+        "NxNormalToTangents"
+      ],
+      "decision": "PATCH",
+      "oracle_refs": [
+        {
+          "export": "NxComputeBounds",
+          "rva": "0x000053f0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxCrc32",
+          "rva": "0x00006230",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxDiagonalizeInertiaTensor",
+          "rva": "0x00005e40",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxFindRotationMatrix",
+          "rva": "0x00005f20",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "NxNormalToTangents",
+          "rva": "0x000062b0",
+          "kind": "code",
+          "section": ".text"
+        }
+      ],
+      "notes": "PATCH: all five exports have Capstone attachments at RVAs 0x000053f0, 0x00006230, 0x00005e40, 0x00005f20, and 0x000062b0 and are resolved/exercised. RED: oracle mapped unit X to unit Y while rebuild NxFindRotationMatrix mapped it to negative Y. Public NxMat33 multiplication and matrix dumps traced this to reversed cross orientation; the minimal patch changes v.cross(from,to) to v.cross(to,from). GREEN matches across general/parallel/antiparallel rotation, deep CRC vectors, empty/extrema bounds, both tangent branches, and diagonal/symmetric inertia invariants (dumps/util_differential.txt). User-authorized git apply preserved the 7651-byte non-UTF8 file: only offsets 5248..5255 changed and legacy 0xF6 stayed at 4956. Degenerate non-unit rotation inputs, zero normal tangents, NaN/infinity, Jacobi nonconvergence, and aliasing beyond documented output/input separation are not claimed."
+    },
+    {
+      "id": "c_debug",
+      "name": "DebugRenderable",
+      "src_candidates": [
+        "DebugRenderable.cpp",
+        "include/DebugRenderable.h"
+      ],
+      "exports": [
+        "?createDebugRenderable@FoundationSDK@NxFoundation@@UAEPAVNxDebugRenderable@@XZ",
+        "?releaseDebugRenderable@FoundationSDK@NxFoundation@@UAEXAAPAVNxDebugRenderable@@@Z",
+        "?renderDebugData@FoundationSDK@NxFoundation@@UBEXABVNxUserDebugRenderer@@@Z"
+      ],
+      "decision": "PATCH",
+      "oracle_refs": [
+        {
+          "export": "?createDebugRenderable@FoundationSDK@NxFoundation@@UAEPAVNxDebugRenderable@@XZ",
+          "rva": "0x00003f10",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?releaseDebugRenderable@FoundationSDK@NxFoundation@@UAEXAAPAVNxDebugRenderable@@@Z",
+          "rva": "0x00003bd0",
+          "kind": "code",
+          "section": ".text"
+        },
+        {
+          "export": "?renderDebugData@FoundationSDK@NxFoundation@@UBEXABVNxUserDebugRenderer@@@Z",
+          "rva": "0x000034c0",
+          "kind": "code",
+          "section": ".text"
+        }
+      ],
+      "notes": "PATCH: SDK create/release/render exports remain attached at RVAs 0x00003f10, 0x00003bd0, and 0x000034c0. The 52-byte object, 15 executable interface slots, allocator/buffer retention, SDK append/render/release ownership, and null release are measured. Every point/line/triangle record from low-level primitives and selected AABB/frame, OBB, arrow, basis, full-circle, and semicircle calls is bit-serialized with color in insertion order; stable low-level and all 15 AABB/frame records are hard-checked. A deliberately wrong line endpoint proves the former color-only predicate false-passed. The strengthened differential found five circle records differing by 1-2 ULP/near-zero bits. Runtime vtable slot 14 localized oracle addCircle at RVA 0x00001930; Capstone shows extended x87 fild/fmul/fsin/fcos with a float-rounded second angle. The minimal private Win32 x87 patch reproduces that order and makes all 59 generated lines exact (dumps/debug_differential.txt and debug_circle_capstone.txt)."
+    },
+    {
+      "id": "c_misc",
+      "name": "Remaining (CustomArray, etc.)",
+      "src_candidates": [
+        "CustomArray.*",
+        "leftovers"
+      ],
+      "exports": [],
+      "decision": "KEEP",
+      "oracle_refs": [],
+      "notes": "KEEP (measured private/trivial): the exact oracle partition leaves zero exports in this cluster, so there is no callable oracle body or data target to label or differentially invoke. CustomArray.cpp is private and unchanged since the imported baseline; DEBUG_DETERMINISM is disabled and its recorder helpers are neither compiled nor exported. A focused rebuilt-source unit gate covers 4-to-8-byte block growth, typed binary roundtrip, address backpatching, bit packing, ASCII storage, exact FILE stream export, collapse, and deep copy/assignment (dumps/misc_custom_array.txt). The live PE export parser confirms recorder exports 0 and all 134 oracle names remain uniquely assigned elsewhere."
+    }
+  ],
+  "gates": {
+    "export_abi": "pass",
+    "structural": "pass",
+    "selected_behavior": "pass",
+    "consumer_smoke": "pass"
+  },
+  "oracle_analysis": {
+    "kawaiidra_import": "project novodex_foundation_dropin, binary NxFoundation.dll: import success and analysis complete",
+    "kawaiidra_enumeration": "unavailable: list_exports, read-only export scripts, and narrower list_labels queries reproducibly hung",
+    "mapping_authority": "PE export directory parsed from the pinned oracle",
+    "code_characterization": "Capstone 5.0.6 x86 32-bit approved fallback",
+    "data_characterization": "PE sections, raw dwords, and bounded executable-pointer walks",
+    "raw_attachment": "dumps/oracle_pe_capstone.json",
+    "oracle_ref_join": "join every cluster oracle_refs row to raw_attachment by exact export/name and RVA",
+    "address_basis": "preferred RVA; VA = 0x10000000 + RVA"
+  }
+}

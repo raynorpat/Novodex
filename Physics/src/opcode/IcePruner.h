@@ -46,6 +46,8 @@ class StaticPruner : public Pruner
 
 			bool				BuildTree();
 			void				ReportTouched(Container& objects, udword mask);
+			bool				OverlapAABB(Container& objects, const Point& min, const Point& max,
+								udword mask);
 
 			AABBTree*			mTree;				//!< +0x3c
 			Container			mTouched;			//!< +0x40

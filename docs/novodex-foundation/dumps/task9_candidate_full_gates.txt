@@ -1,0 +1,271 @@
+Task 9 exact deployed-candidate full gates
+candidate.path=D:\github\Novodex\build\Release\NxFoundation.dll
+candidate.sha256.pre=80913618B823789F016081260FCDC1902E7F8EAC9A1FA6003C16357D3DD72704
+candidate.size.pre=57344
+oracle.path=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+oracle.sha256.pre=7E0596E45AF2F1AB937A948100528E51C80DFD02B295BA678898081883AE0990
+oracle.size.pre=172032
+cluster_exe=D:\github\Novodex\build\Release\NxFoundationClusterTests.exe
+custom_exe=D:\github\Novodex\build\Release\NxFoundationCustomArrayTests.exe
+working_directory=D:\github\Novodex
+comparison=case-sensitive exact stdout and stderr equality; test output is already Task-8 normalized
+
+pair.mode=exception
+oracle.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "exception" "D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll"
+oracle.start_utc=2026-08-09T16:17:20.8740050Z
+oracle.stdout.begin
+exception size=16 fields=4,8,12 getters=1,exception_gate.cpp,321 copy=exact assign=exact vftable=3_ordered
+oracle.stdout.end
+oracle.stderr.begin
+oracle.stderr.end
+oracle.exit_code=0
+candidate.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "exception" "D:\github\Novodex\build\Release\NxFoundation.dll"
+candidate.start_utc=2026-08-09T16:17:20.9190060Z
+candidate.stdout.begin
+exception size=16 fields=4,8,12 getters=1,exception_gate.cpp,321 copy=exact assign=exact vftable=3_ordered
+candidate.stdout.end
+candidate.stderr.begin
+candidate.stderr.end
+candidate.exit_code=0
+normalized_output_exact_equal=True
+
+pair.mode=observable
+oracle.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "observable" "D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll"
+oracle.start_utc=2026-08-09T16:17:20.9560031Z
+oracle.stdout.begin
+observable size=16 fields=4,8,12 vftable=1 count=0,2,1,0 callbacks=1,2 copy=deep assign=deep last_remove=empty
+oracle.stdout.end
+oracle.stderr.begin
+oracle.stderr.end
+oracle.exit_code=0
+candidate.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "observable" "D:\github\Novodex\build\Release\NxFoundation.dll"
+candidate.start_utc=2026-08-09T16:17:21.0360064Z
+candidate.stdout.begin
+observable size=16 fields=4,8,12 vftable=1 count=0,2,1,0 callbacks=1,2 copy=deep assign=deep last_remove=empty
+candidate.stdout.end
+candidate.stderr.begin
+candidate.stderr.end
+candidate.exit_code=0
+normalized_output_exact_equal=True
+
+pair.mode=profiler
+oracle.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "profiler" "D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll"
+oracle.start_utc=2026-08-09T16:17:21.0660145Z
+oracle.stdout.begin
+profiler exports=49 define_zone_size=56 vftable=3_ordered globals=initialized,0,0,0,256,64 zone=define,enter,leave,scope,release copy=fields_exact assign=fields_exact stdev=3 sort=1,-1,0 update=0_to_1 active=positive
+oracle.stdout.end
+oracle.stderr.begin
+oracle.stderr.end
+oracle.exit_code=0
+candidate.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "profiler" "D:\github\Novodex\build\Release\NxFoundation.dll"
+candidate.start_utc=2026-08-09T16:17:21.1445301Z
+candidate.stdout.begin
+profiler exports=49 define_zone_size=56 vftable=3_ordered globals=initialized,0,0,0,256,64 zone=define,enter,leave,scope,release copy=fields_exact assign=fields_exact stdev=3 sort=1,-1,0 update=0_to_1 active=positive
+candidate.stdout.end
+candidate.stderr.begin
+candidate.stderr.end
+candidate.exit_code=0
+normalized_output_exact_equal=True
+
+pair.mode=time
+oracle.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "time" "D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll"
+oracle.start_utc=2026-08-09T16:17:21.2250058Z
+oracle.stdout.begin
+time size=8 frequency=positive_stable ticks=positive_monotonic peek=nonreset_monotonic elapsed=resets assignment=epoch_exact windows=bounded
+oracle.stdout.end
+oracle.stderr.begin
+oracle.stderr.end
+oracle.exit_code=0
+candidate.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "time" "D:\github\Novodex\build\Release\NxFoundation.dll"
+candidate.start_utc=2026-08-09T16:17:21.4052758Z
+candidate.stdout.begin
+time size=8 frequency=positive_stable ticks=positive_monotonic peek=nonreset_monotonic elapsed=resets assignment=epoch_exact windows=bounded
+candidate.stdout.end
+candidate.stderr.begin
+candidate.stderr.end
+candidate.exit_code=0
+normalized_output_exact_equal=True
+
+pair.mode=fpu
+oracle.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "fpu" "D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll"
+oracle.start_utc=2026-08-09T16:17:21.4824339Z
+oracle.stdout.begin
+fpu exports=11 ints=7_vectors precision=x87_24,53,64 rounding=x87_chop,up,down,near exceptions=x87_true_masked,false_unmasked mxcsr=unchanged restoration=exact
+oracle.stdout.end
+oracle.stderr.begin
+oracle.stderr.end
+oracle.exit_code=0
+candidate.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "fpu" "D:\github\Novodex\build\Release\NxFoundation.dll"
+candidate.start_utc=2026-08-09T16:17:21.5110341Z
+candidate.stdout.begin
+fpu exports=11 ints=7_vectors precision=x87_24,53,64 rounding=x87_chop,up,down,near exceptions=x87_true_masked,false_unmasked mxcsr=unchanged restoration=exact
+candidate.stdout.end
+candidate.stderr.begin
+candidate.stderr.end
+candidate.exit_code=0
+normalized_output_exact_equal=True
+
+pair.mode=util
+oracle.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "util" "D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll"
+oracle.start_utc=2026-08-09T16:17:21.5390366Z
+oracle.stdout.begin
+util exports=5 crc=empty,canonical,byte_domain,ff,embedded_nul,4096 bounds=empty_unchanged,extrema tangents=both_branches_orthonormal rotation=general,parallel,antiparallel inertia=diagonal,symmetric_positive_trace
+oracle.stdout.end
+oracle.stderr.begin
+oracle.stderr.end
+oracle.exit_code=0
+candidate.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "util" "D:\github\Novodex\build\Release\NxFoundation.dll"
+candidate.start_utc=2026-08-09T16:17:21.5670347Z
+candidate.stdout.begin
+util exports=5 crc=empty,canonical,byte_domain,ff,embedded_nul,4096 bounds=empty_unchanged,extrema tangents=both_branches_orthonormal rotation=general,parallel,antiparallel inertia=diagonal,symmetric_positive_trace
+candidate.stdout.end
+candidate.stderr.begin
+candidate.stderr.end
+candidate.exit_code=0
+normalized_output_exact_equal=True
+
+pair.mode=box
+oracle.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "box" "D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll"
+oracle.start_utc=2026-08-09T16:17:21.5950351Z
+oracle.stdout.begin
+box_geometry planes=3f800000,00000000,00000000,c0400000/bf800000,80000000,80000000,bf800000/00000000,3f800000,00000000,c0a00000/80000000,bf800000,80000000,bf800000/00000000,00000000,3f800000,c0e00000/80000000,80000000,bf800000,bf800000 points=bf800000,bf800000,bf800000/40400000,bf800000,bf800000/40400000,40a00000,bf800000/bf800000,40a00000,bf800000/bf800000,bf800000,40e00000/40400000,bf800000,40e00000/40400000,40a00000,40e00000/bf800000,40a00000,40e00000 normals=bf13cd3a,bf13cd3a,bf13cd3a/3f13cd3a,bf13cd3a,bf13cd3a/3f13cd3a,3f13cd3a,bf13cd3a/bf13cd3a,3f13cd3a,bf13cd3a/bf13cd3a,bf13cd3a,3f13cd3a/3f13cd3a,bf13cd3a,3f13cd3a/3f13cd3a,3f13cd3a,3f13cd3a/bf13cd3a,3f13cd3a,3f13cd3a
+box exports=13 contains=interior,boundary_excluded,exterior,degenerate create=translated_aabb outputs=null_rejected,planes,points,vertex_normals tables=edges,axes,quads,triangles vertex_to_quad=345/045/015/135/234/024/012/123 world_normal=identity containment=inside,touching,outside,reverse
+oracle.stdout.end
+oracle.stderr.begin
+oracle.stderr.end
+oracle.exit_code=0
+candidate.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "box" "D:\github\Novodex\build\Release\NxFoundation.dll"
+candidate.start_utc=2026-08-09T16:17:21.6240345Z
+candidate.stdout.begin
+box_geometry planes=3f800000,00000000,00000000,c0400000/bf800000,80000000,80000000,bf800000/00000000,3f800000,00000000,c0a00000/80000000,bf800000,80000000,bf800000/00000000,00000000,3f800000,c0e00000/80000000,80000000,bf800000,bf800000 points=bf800000,bf800000,bf800000/40400000,bf800000,bf800000/40400000,40a00000,bf800000/bf800000,40a00000,bf800000/bf800000,bf800000,40e00000/40400000,bf800000,40e00000/40400000,40a00000,40e00000/bf800000,40a00000,40e00000 normals=bf13cd3a,bf13cd3a,bf13cd3a/3f13cd3a,bf13cd3a,bf13cd3a/3f13cd3a,3f13cd3a,bf13cd3a/bf13cd3a,3f13cd3a,bf13cd3a/bf13cd3a,bf13cd3a,3f13cd3a/3f13cd3a,bf13cd3a,3f13cd3a/3f13cd3a,3f13cd3a,3f13cd3a/bf13cd3a,3f13cd3a,3f13cd3a
+box exports=13 contains=interior,boundary_excluded,exterior,degenerate create=translated_aabb outputs=null_rejected,planes,points,vertex_normals tables=edges,axes,quads,triangles vertex_to_quad=345/045/015/135/234/024/012/123 world_normal=identity containment=inside,touching,outside,reverse
+candidate.stdout.end
+candidate.stderr.begin
+candidate.stderr.end
+candidate.exit_code=0
+normalized_output_exact_equal=True
+
+pair.mode=capsule
+oracle.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "capsule" "D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll"
+oracle.start_utc=2026-08-09T16:17:21.6538132Z
+oracle.stdout.begin
+capsule_box0 center=3f800000,40000000,40400000 extents=40600000,3fc00000,3fc00000 rotation=3f800000,00000000,00000000/80000000,3f800000,00000000/80000000,80000000,3f800000
+capsule_box1 center=3f800000,40000000,40400000 extents=40900000,3fc00000,3fc00000 rotation=00000000,3f800000,00000000/00000000,80000000,3f800000/3f800000,80000000,80000000
+capsule_box2 center=3f800000,40000000,40400000 extents=40b00000,3fc00000,3fc00000 rotation=00000000,00000000,3f800000/3f800000,00000000,80000000/80000000,3f800000,80000000
+capsule exports=2 capsule_to_box=axis_x,y,z_center_extents_orthonormal box_to_capsule=largest_x,y,z,tie_x,zero_center_radius
+oracle.stdout.end
+oracle.stderr.begin
+oracle.stderr.end
+oracle.exit_code=0
+candidate.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "capsule" "D:\github\Novodex\build\Release\NxFoundation.dll"
+candidate.start_utc=2026-08-09T16:17:21.6818109Z
+candidate.stdout.begin
+capsule_box0 center=3f800000,40000000,40400000 extents=40600000,3fc00000,3fc00000 rotation=3f800000,00000000,00000000/80000000,3f800000,00000000/80000000,80000000,3f800000
+capsule_box1 center=3f800000,40000000,40400000 extents=40900000,3fc00000,3fc00000 rotation=00000000,3f800000,00000000/00000000,80000000,3f800000/3f800000,80000000,80000000
+capsule_box2 center=3f800000,40000000,40400000 extents=40b00000,3fc00000,3fc00000 rotation=00000000,00000000,3f800000/3f800000,00000000,80000000/80000000,3f800000,80000000
+capsule exports=2 capsule_to_box=axis_x,y,z_center_extents_orthonormal box_to_capsule=largest_x,y,z,tie_x,zero_center_radius
+candidate.stdout.end
+candidate.stderr.begin
+candidate.stderr.end
+candidate.exit_code=0
+normalized_output_exact_equal=True
+
+pair.mode=sphere
+oracle.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "sphere" "D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll"
+oracle.start_utc=2026-08-09T16:17:21.7092158Z
+oracle.stdout.begin
+sphere exports=3 fast=null,single,pair,multi_contains compute=empty_none,multi_gems merge=disjoint,containment,both_orders,coincident,touching,alias_first
+oracle.stdout.end
+oracle.stderr.begin
+oracle.stderr.end
+oracle.exit_code=0
+candidate.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "sphere" "D:\github\Novodex\build\Release\NxFoundation.dll"
+candidate.start_utc=2026-08-09T16:17:21.7372146Z
+candidate.stdout.begin
+sphere exports=3 fast=null,single,pair,multi_contains compute=empty_none,multi_gems merge=disjoint,containment,both_orders,coincident,touching,alias_first
+candidate.stdout.end
+candidate.stderr.begin
+candidate.stderr.end
+candidate.exit_code=0
+normalized_output_exact_equal=True
+
+pair.mode=ray_seg
+oracle.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "ray_seg" "D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll"
+oracle.start_utc=2026-08-09T16:17:21.7642223Z
+oracle.stdout.begin
+ray_seg exports=2 ray=unit_interior,behind,on,null_t,output_alias segment=interior,start,end,zero_length,output_alias
+oracle.stdout.end
+oracle.stderr.begin
+oracle.stderr.end
+oracle.exit_code=0
+candidate.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "ray_seg" "D:\github\Novodex\build\Release\NxFoundation.dll"
+candidate.start_utc=2026-08-09T16:17:21.7914790Z
+candidate.stdout.begin
+ray_seg exports=2 ray=unit_interior,behind,on,null_t,output_alias segment=interior,start,end,zero_length,output_alias
+candidate.stdout.end
+candidate.stderr.begin
+candidate.stderr.end
+candidate.exit_code=0
+normalized_output_exact_equal=True
+
+pair.mode=volume
+oracle.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "volume" "D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll"
+oracle.start_utc=2026-08-09T16:17:21.8183644Z
+oracle.stdout.begin
+volume exports=1 allocator_guard=unchanged tetra32=analytic translated=density12 tetra16_flip=analytic
+oracle.stdout.end
+oracle.stderr.begin
+oracle.stderr.end
+oracle.exit_code=0
+candidate.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "volume" "D:\github\Novodex\build\Release\NxFoundation.dll"
+candidate.start_utc=2026-08-09T16:17:21.8451541Z
+candidate.stdout.begin
+volume exports=1 allocator_guard=unchanged tetra32=analytic translated=density12 tetra16_flip=analytic
+candidate.stdout.end
+candidate.stderr.begin
+candidate.stderr.end
+candidate.exit_code=0
+normalized_output_exact_equal=True
+
+pair.mode=debug
+oracle.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "debug" "D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll"
+oracle.start_utc=2026-08-09T16:17:21.8749646Z
+oracle.stdout.begin
+debug_records low_point=3f800000,40000000,40400000,11223344 low_line=00000000,00000000,00000000,3f800000,40000000,40400000,55667788 low_triangle=00000000,00000000,00000000,3f800000,00000000,00000000,00000000,3f800000,00000000,99aabbcc retained_points=40800000,40a00000,40c00000,00000007 generated_lines=bf800000,c0000000,c0400000,3f800000,c0000000,c0400000,01020304/3f800000,c0000000,c0400000,3f800000,40000000,c0400000,01020304/3f800000,40000000,c0400000,bf800000,40000000,c0400000,01020304/bf800000,40000000,c0400000,bf800000,c0000000,c0400000,01020304/bf800000,40000000,40400000,3f800000,40000000,40400000,01020304/3f800000,40000000,40400000,3f800000,c0000000,40400000,01020304/3f800000,c0000000,40400000,bf800000,c0000000,40400000,01020304/bf800000,c0000000,40400000,bf800000,40000000,40400000,01020304/3f800000,c0000000,c0400000,3f800000,c0000000,40400000,01020304/3f800000,40000000,40400000,3f800000,40000000,c0400000,01020304/bf800000,40000000,c0400000,bf800000,40000000,40400000,01020304/bf800000,c0000000,40400000,bf800000,c0000000,c0400000,01020304/00000000,00000000,00000000,3f800000,00000000,00000000,00ff0000/00000000,00000000,00000000,00000000,3f800000,00000000,0000ff00/00000000,00000000,00000000,00000000,00000000,3f800000,000000ff/bf800000,bf800000,bf800000,3f800000,bf800000,bf800000,00000009/3f800000,bf800000,bf800000,3f800000,3f800000,bf800000,00000009/3f800000,3f800000,bf800000,bf800000,3f800000,bf800000,00000009/bf800000,3f800000,bf800000,bf800000,bf800000,bf800000,00000009/bf800000,3f800000,3f800000,3f800000,3f800000,3f800000,00000009/3f800000,3f800000,3f800000,3f800000,bf800000,3f800000,00000009/3f800000,bf800000,3f800000,bf800000,bf800000,3f800000,00000009/bf800000,bf800000,3f800000,bf800000,3f800000,3f800000,00000009/3f800000,bf800000,bf800000,3f800000,bf800000,3f800000,00000009/3f800000,3f800000,3f800000,3f800000,3f800000,bf800000,00000009/bf800000,3f800000,bf800000,bf800000,3f800000,3f800000,00000009/bf800000,bf800000,3f800000,bf800000,bf800000,bf800000,00000009/00000000,00000000,00000000,40000000,00000000,00000000,0000000a/40000000,00000000,00000000,3fd9999a,3e99999a,00000000,0000000a/40000000,00000000,00000000,3fd9999a,be99999a,00000000,0000000a/40000000,00000000,00000000,3fd9999a,00000000,3e99999a,0000000a/40000000,00000000,00000000,3fd9999a,00000000,be99999a,0000000a/00000000,00000000,00000000,3f800000,00000000,00000000,0000000b/3f800000,00000000,00000000,3f59999a,3e19999a,00000000,0000000b/3f800000,00000000,00000000,3f59999a,be19999a,00000000,0000000b/3f800000,00000000,00000000,3f59999a,00000000,3e19999a,0000000b/3f800000,00000000,00000000,3f59999a,00000000,be19999a,0000000b/00000000,00000000,00000000,00000000,3f800000,00000000,0000000c/00000000,3f800000,00000000,be19999a,3f59999a,00000000,0000000c/00000000,3f800000,00000000,3e19999a,3f59999a,00000000,0000000c/00000000,3f800000,00000000,00000000,3f59999a,3e19999a,0000000c/00000000,3f800000,00000000,00000000,3f59999a,be19999a,0000000c/00000000,00000000,00000000,00000000,00000000,3f800000,0000000d/00000000,00000000,3f800000,00000000,be19999a,3f59999a,0000000d/00000000,00000000,3f800000,00000000,3e19999a,3f59999a,0000000d/00000000,00000000,3f800000,3e19999a,00000000,3f59999a,0000000d/00000000,00000000,3f800000,be19999a,00000000,3f59999a,0000000d/00000000,40000000,00000000,3fb504f3,3fb504f3,00000000,0000000e/3fb504f3,3fb504f3,00000000,40000000,b3bbbd2e,00000000,0000000e/40000000,b3bbbd2e,00000000,3fb504f3,bfb504f3,00000000,0000000e/3fb504f2,bfb504f4,00000000,b43bbd2e,c0000000,00000000,0000000e/b43bbd2e,c0000000,00000000,bfb504f5,bfb504f1,00000000,0000000e/bfb504f4,bfb504f2,00000000,c0000000,32ccde2e,00000000,0000000e/c0000000,348ccde3,00000000,bfb504ef,3fb504f7,00000000,0000000e/bfb504f1,3fb504f5,00000000,00000000,40000000,00000000,0000000e/00000000,40000000,00000000,3fb504f3,3fb504f3,00000000,0000000f/3fb504f3,3fb504f3,00000000,40000000,b3bbbd2e,00000000,0000000f/40000000,b3bbbd2e,00000000,3fb504f3,bfb504f3,00000000,0000000f/3fb504f2,bfb504f4,00000000,b43bbd2e,c0000000,00000000,0000000f generated_triangles= second_points=41100000,41000000,40e00000,00000006
+debug exports=3 object_size=52 vftable=15 primitives=point,line,triangle clear=retains_buffer aabb=12+frame3 high_level=59 append=2,1 release=nulls
+oracle.stdout.end
+oracle.stderr.begin
+oracle.stderr.end
+oracle.exit_code=0
+candidate.command=& "D:\github\Novodex\build\Release\NxFoundationClusterTests.exe" "debug" "D:\github\Novodex\build\Release\NxFoundation.dll"
+candidate.start_utc=2026-08-09T16:17:21.9017874Z
+candidate.stdout.begin
+debug_records low_point=3f800000,40000000,40400000,11223344 low_line=00000000,00000000,00000000,3f800000,40000000,40400000,55667788 low_triangle=00000000,00000000,00000000,3f800000,00000000,00000000,00000000,3f800000,00000000,99aabbcc retained_points=40800000,40a00000,40c00000,00000007 generated_lines=bf800000,c0000000,c0400000,3f800000,c0000000,c0400000,01020304/3f800000,c0000000,c0400000,3f800000,40000000,c0400000,01020304/3f800000,40000000,c0400000,bf800000,40000000,c0400000,01020304/bf800000,40000000,c0400000,bf800000,c0000000,c0400000,01020304/bf800000,40000000,40400000,3f800000,40000000,40400000,01020304/3f800000,40000000,40400000,3f800000,c0000000,40400000,01020304/3f800000,c0000000,40400000,bf800000,c0000000,40400000,01020304/bf800000,c0000000,40400000,bf800000,40000000,40400000,01020304/3f800000,c0000000,c0400000,3f800000,c0000000,40400000,01020304/3f800000,40000000,40400000,3f800000,40000000,c0400000,01020304/bf800000,40000000,c0400000,bf800000,40000000,40400000,01020304/bf800000,c0000000,40400000,bf800000,c0000000,c0400000,01020304/00000000,00000000,00000000,3f800000,00000000,00000000,00ff0000/00000000,00000000,00000000,00000000,3f800000,00000000,0000ff00/00000000,00000000,00000000,00000000,00000000,3f800000,000000ff/bf800000,bf800000,bf800000,3f800000,bf800000,bf800000,00000009/3f800000,bf800000,bf800000,3f800000,3f800000,bf800000,00000009/3f800000,3f800000,bf800000,bf800000,3f800000,bf800000,00000009/bf800000,3f800000,bf800000,bf800000,bf800000,bf800000,00000009/bf800000,3f800000,3f800000,3f800000,3f800000,3f800000,00000009/3f800000,3f800000,3f800000,3f800000,bf800000,3f800000,00000009/3f800000,bf800000,3f800000,bf800000,bf800000,3f800000,00000009/bf800000,bf800000,3f800000,bf800000,3f800000,3f800000,00000009/3f800000,bf800000,bf800000,3f800000,bf800000,3f800000,00000009/3f800000,3f800000,3f800000,3f800000,3f800000,bf800000,00000009/bf800000,3f800000,bf800000,bf800000,3f800000,3f800000,00000009/bf800000,bf800000,3f800000,bf800000,bf800000,bf800000,00000009/00000000,00000000,00000000,40000000,00000000,00000000,0000000a/40000000,00000000,00000000,3fd9999a,3e99999a,00000000,0000000a/40000000,00000000,00000000,3fd9999a,be99999a,00000000,0000000a/40000000,00000000,00000000,3fd9999a,00000000,3e99999a,0000000a/40000000,00000000,00000000,3fd9999a,00000000,be99999a,0000000a/00000000,00000000,00000000,3f800000,00000000,00000000,0000000b/3f800000,00000000,00000000,3f59999a,3e19999a,00000000,0000000b/3f800000,00000000,00000000,3f59999a,be19999a,00000000,0000000b/3f800000,00000000,00000000,3f59999a,00000000,3e19999a,0000000b/3f800000,00000000,00000000,3f59999a,00000000,be19999a,0000000b/00000000,00000000,00000000,00000000,3f800000,00000000,0000000c/00000000,3f800000,00000000,be19999a,3f59999a,00000000,0000000c/00000000,3f800000,00000000,3e19999a,3f59999a,00000000,0000000c/00000000,3f800000,00000000,00000000,3f59999a,3e19999a,0000000c/00000000,3f800000,00000000,00000000,3f59999a,be19999a,0000000c/00000000,00000000,00000000,00000000,00000000,3f800000,0000000d/00000000,00000000,3f800000,00000000,be19999a,3f59999a,0000000d/00000000,00000000,3f800000,00000000,3e19999a,3f59999a,0000000d/00000000,00000000,3f800000,3e19999a,00000000,3f59999a,0000000d/00000000,00000000,3f800000,be19999a,00000000,3f59999a,0000000d/00000000,40000000,00000000,3fb504f3,3fb504f3,00000000,0000000e/3fb504f3,3fb504f3,00000000,40000000,b3bbbd2e,00000000,0000000e/40000000,b3bbbd2e,00000000,3fb504f3,bfb504f3,00000000,0000000e/3fb504f2,bfb504f4,00000000,b43bbd2e,c0000000,00000000,0000000e/b43bbd2e,c0000000,00000000,bfb504f5,bfb504f1,00000000,0000000e/bfb504f4,bfb504f2,00000000,c0000000,32ccde2e,00000000,0000000e/c0000000,348ccde3,00000000,bfb504ef,3fb504f7,00000000,0000000e/bfb504f1,3fb504f5,00000000,00000000,40000000,00000000,0000000e/00000000,40000000,00000000,3fb504f3,3fb504f3,00000000,0000000f/3fb504f3,3fb504f3,00000000,40000000,b3bbbd2e,00000000,0000000f/40000000,b3bbbd2e,00000000,3fb504f3,bfb504f3,00000000,0000000f/3fb504f2,bfb504f4,00000000,b43bbd2e,c0000000,00000000,0000000f generated_triangles= second_points=41100000,41000000,40e00000,00000006
+debug exports=3 object_size=52 vftable=15 primitives=point,line,triangle clear=retains_buffer aabb=12+frame3 high_level=59 append=2,1 release=nulls
+candidate.stdout.end
+candidate.stderr.begin
+candidate.stderr.end
+candidate.exit_code=0
+normalized_output_exact_equal=True
+
+custom.command=& "D:\github\Novodex\build\Release\NxFoundationCustomArrayTests.exe"
+custom.start_utc=2026-08-09T16:17:21.9297882Z
+custom.stdout.begin
+misc exports=0 custom_array block=4,8 offset=11 typed=roundtrip bits=b0 ascii=ab42 stream=exact copy=deep assignment=deep
+custom.stdout.end
+custom.stderr.begin
+custom.stderr.end
+custom.exit_code=0
+
+summary.modes=12
+summary.separate_cluster_invocations=24
+summary.pairs=12
+summary.exit_failures=0
+summary.output_mismatches=0
+summary.custom_exit_code=0
+candidate.sha256.post=80913618B823789F016081260FCDC1902E7F8EAC9A1FA6003C16357D3DD72704
+candidate.size.post=57344
+oracle.sha256.post=7E0596E45AF2F1AB937A948100528E51C80DFD02B295BA678898081883AE0990
+oracle.size.post=172032
+candidate.identity_unchanged=True
+oracle.identity_unchanged=True
