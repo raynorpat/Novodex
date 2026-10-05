@@ -14,6 +14,8 @@
 #include "TriangleMeshPolygons.h"
 #include "OPC_Model.h"
 #include "NxVolumeIntegration.h"
+#include "ConvexHull.h"
+#include "IceMeshTools.h"
 
 #include <new>
 #include <float.h>
@@ -39,6 +41,144 @@ static const NxU32 kTriangleMeshTag1 = 0x4d455348;	// cmp at 0x00055cd0, push at
 
 namespace
 	{
+	struct TriangleMeshConvexData : ConvexHull
+		{
+	float			mBounds[6];		// +0x4c, min xyz then max xyz (001411)
+	Valencies*		mVertexGraph;		// +0x64 (001411, 002249)
+	NxU32			mObjectWords[12];	// +0x68..+0x97 (001524)
+		};
+
+	static_assert(sizeof(ConvexHull) == 0x4c, "the convex hull base has the measured 0x4c layout");
+	static_assert(offsetof(TriangleMeshConvexData, mVertexGraph) == 0x64,
+		"the convex vertex graph is at +0x64");
+	static_assert(sizeof(TriangleMeshConvexData) == 0x98, "the convex mesh allocation is 0x98 bytes");
+
+	static void nxTriangleMeshDestroyConvexData(TriangleMeshConvexData* hull)
+		{
+	if(!hull)
+		return;
+	if(hull->mVertexGraph)
+		{
+		hull->mVertexGraph->~Valencies();
+		nxFoundationSDKAllocator->free(hull->mVertexGraph);
+		hull->mVertexGraph = 0;
+		}
+	if(hull->mVertexNormals)
+		nxFoundationSDKAllocator->free(hull->mVertexNormals);
+	if(hull->mPolygonVRefs)
+		nxFoundationSDKAllocator->free(hull->mPolygonVRefs);
+	if(hull->mPolygons)
+		nxFoundationSDKAllocator->free(reinterpret_cast<NxU32*>(hull->mPolygons) - 1);
+	if(hull->mFaces)
+		nxFoundationSDKAllocator->free(reinterpret_cast<NxU8*>(const_cast<NxU16*>(hull->mFaces)) - sizeof(NxU32));
+	if(hull->mVerts)
+		nxFoundationSDKAllocator->free(const_cast<IceMaths::Point*>(hull->mVerts));
+		nxFoundationSDKAllocator->free(hull);
+		}
+
+	static bool nxTriangleMeshBuildConvexData(TriangleMeshConvexData** result,
+		const InternalTriangleMesh& mesh)
+		{
+	*result = 0;
+	if(!mesh.mVertexCount || !mesh.mTriangleCount || !mesh.mVertices || !mesh.mTriangles)
+		return false;
+	TriangleMeshConvexData* hull = static_cast<TriangleMeshConvexData*>(
+		nxFoundationSDKAllocator->malloc(sizeof(TriangleMeshConvexData), NX_MEMORY_PERSISTENT));
+	if(!hull)
+		return false;
+	memset(hull, 0, sizeof(*hull));
+	hull->mNbFaces = mesh.mTriangleCount;
+	hull->mNbVerts = mesh.mVertexCount;
+
+	IceMaths::Point* vertices = static_cast<IceMaths::Point*>(
+		nxFoundationSDKAllocator->malloc(mesh.mVertexCount * sizeof(IceMaths::Point), NX_MEMORY_PERSISTENT));
+	if(!vertices)
+		{
+		nxTriangleMeshDestroyConvexData(hull);
+		return false;
+		}
+	memcpy(vertices, mesh.mVertices, mesh.mVertexCount * sizeof(IceMaths::Point));
+	hull->mVerts = vertices;
+
+	NxU32* faceAllocation = static_cast<NxU32*>(nxFoundationSDKAllocator->malloc(
+		mesh.mTriangleCount * sizeof(NxU16) * 3 + sizeof(NxU32), NX_MEMORY_PERSISTENT));
+	if(!faceAllocation)
+		{
+		nxTriangleMeshDestroyConvexData(hull);
+		return false;
+		}
+	faceAllocation[0] = mesh.mTriangleCount;
+	NxU16* faces = reinterpret_cast<NxU16*>(faceAllocation + 1);
+	const NxU32* triangles = static_cast<const NxU32*>(mesh.mTriangles);
+	for(NxU32 i = 0; i < mesh.mTriangleCount * 3; ++i)
+		faces[i] = static_cast<NxU16>(triangles[i]);
+	hull->mFaces = faces;
+
+	// 001494 makes the closed hull consistently outward before 001472 groups
+	// coplanar triangles. 001467 compares each triangle plane with the vertex
+	// cloud's centre and reverses inward faces.
+	IceMaths::Point center(0.0f, 0.0f, 0.0f);
+	for(NxU32 i = 0; i < hull->mNbVerts; ++i)
+		center += hull->mVerts[i];
+	center *= 1.0f / hull->mNbVerts;
+	for(NxU32 i = 0; i < hull->mNbFaces; ++i)
+		{
+		NxU16* face = faces + i * 3;
+		const IceMaths::Point& v0 = hull->mVerts[face[0]];
+		const IceMaths::Point& v1 = hull->mVerts[face[1]];
+		const IceMaths::Point& v2 = hull->mVerts[face[2]];
+		const IceMaths::Point edge0 = v1 - v0;
+		const IceMaths::Point edge1 = v2 - v0;
+		const IceMaths::Point normal = edge0 ^ edge1;
+		if((normal | (center - v0)) > 0.0f)
+			{
+			const NxU16 swap = face[1];
+			face[1] = face[2];
+			face[2] = swap;
+			}
+		}
+
+	if(!nxHullComputePolygons(hull) || !hull->ComputeVertexNormals())
+		{
+		nxTriangleMeshDestroyConvexData(hull);
+		return false;
+		}
+
+	void* graphMemory = nxFoundationSDKAllocator->malloc(sizeof(Valencies), NX_MEMORY_PERSISTENT);
+	if(!graphMemory)
+		{
+		nxTriangleMeshDestroyConvexData(hull);
+		return false;
+		}
+	hull->mVertexGraph = new(graphMemory) Valencies;
+	VALENCESCREATE graphDesc;
+	graphDesc.NbVerts = hull->mNbVerts;
+	graphDesc.NbFaces = hull->mNbFaces;
+	graphDesc.DFaces = 0;
+	graphDesc.WFaces = hull->mFaces;
+	graphDesc.AdjacentList = true;
+	if(!hull->mVertexGraph->Compute(graphDesc))
+		{
+		nxTriangleMeshDestroyConvexData(hull);
+		return false;
+		}
+
+	for(unsigned axis = 0; axis < 3; ++axis)
+		{
+		hull->mBounds[axis] = FLT_MAX;
+		hull->mBounds[axis + 3] = -FLT_MAX;
+		}
+	for(NxU32 i = 0; i < hull->mNbVerts; ++i)
+		for(unsigned axis = 0; axis < 3; ++axis)
+			{
+			const float value = hull->mVerts[i][axis];
+			if(value < hull->mBounds[axis]) hull->mBounds[axis] = value;
+			if(value > hull->mBounds[axis + 3]) hull->mBounds[axis + 3] = value;
+			}
+	*result = hull;
+	return true;
+		}
+
 	class NxTriangleMeshWrapper : public NxTriangleMesh
 		{
 		public:
@@ -48,7 +188,11 @@ namespace
 			{ return mMesh->loadFromDesc(desc); }
 		bool saveToDesc(NxTriangleMeshDesc& desc) const override
 			{ return mMesh->saveToDesc(desc); }
-		NxU32 getSubmeshCount() const override { return 1; }
+		NxU32 getSubmeshCount() const override
+			{
+			const NxU32 hullPolygons = mMesh->getCount(NX_ARRAY_HULL_POLYGONS);
+			return hullPolygons ? hullPolygons : 1;
+			}
 		NxU32 getCount(NxSubmeshIndex submesh, NxInternalArray array) const override
 			{ return submesh == 0 ? mMesh->getCount(array) : 0; }
 		NxInternalFormat getFormat(NxSubmeshIndex submesh, NxInternalArray array) const override
@@ -121,6 +265,8 @@ TriangleMesh::TriangleMesh()
 
 TriangleMesh::~TriangleMesh()
 	{
+	nxTriangleMeshDestroyConvexData(static_cast<TriangleMeshConvexData*>(mConvexMesh));
+	mConvexMesh = 0;
 	if(mPMap)
 		{
 		mPMap->~PenetrationMap();
@@ -379,6 +525,12 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& source)
 		return false;
 	if(source.pmap && !loadPMap(*source.pmap))
 		return false;
+	nxTriangleMeshDestroyConvexData(static_cast<TriangleMeshConvexData*>(mConvexMesh));
+	mConvexMesh = 0;
+	TriangleMeshConvexData* convexData = 0;
+	if((mHullFlags & NX_MF_CONVEX) && !nxTriangleMeshBuildConvexData(&convexData, mInternal))
+		return false;
+	mConvexMesh = convexData;
 	return true;
 	}
 
@@ -408,6 +560,10 @@ NxU32 TriangleMesh::getCount(NxInternalArray array) const
 		case NX_ARRAY_VERTICES: return mInternal.mVertexCount;
 		case NX_ARRAY_TRIANGLES: return mInternal.mTriangleCount;
 		case NX_ARRAY_NORMALS: return mInternal.mVertexCount;
+		case NX_ARRAY_HULL_VERTICES:
+			return mConvexMesh ? static_cast<const TriangleMeshConvexData*>(mConvexMesh)->mNbVerts : 0;
+		case NX_ARRAY_HULL_POLYGONS:
+			return mConvexMesh ? static_cast<const TriangleMeshConvexData*>(mConvexMesh)->mNbPolygons : 0;
 		default: return 0;
 		}
 	}
@@ -417,6 +573,8 @@ NxInternalFormat TriangleMesh::getFormat(NxInternalArray array) const
 	if(array == NX_ARRAY_VERTICES) return NX_FORMAT_FLOAT;
 	if(array == NX_ARRAY_TRIANGLES) return NX_FORMAT_INT;
 	if(array == NX_ARRAY_NORMALS) return NX_FORMAT_FLOAT;
+	if(array == NX_ARRAY_HULL_VERTICES) return NX_FORMAT_FLOAT;
+	if(array == NX_ARRAY_HULL_POLYGONS) return NX_FORMAT_INT;
 	return NX_FORMAT_NODATA;
 	}
 
@@ -424,6 +582,8 @@ const void* TriangleMesh::getBase(NxInternalArray array) const
 	{
 	if(array == NX_ARRAY_VERTICES) return mInternal.mVertices;
 	if(array == NX_ARRAY_TRIANGLES) return mInternal.mTriangles;
+	if(array == NX_ARRAY_HULL_VERTICES && mConvexMesh)
+		return static_cast<const TriangleMeshConvexData*>(mConvexMesh)->mVerts;
 	if(array == NX_ARRAY_NORMALS)
 		{
 		if(!mInternal.mVertexNormals)
@@ -443,6 +603,7 @@ const void* TriangleMesh::getBase(NxInternalArray array) const
 NxU32 TriangleMesh::getStride(NxInternalArray array) const
 	{
 	if(array == NX_ARRAY_VERTICES || array == NX_ARRAY_NORMALS) return sizeof(NxVec3);
+	if(array == NX_ARRAY_HULL_VERTICES) return sizeof(NxVec3);
 	if(array == NX_ARRAY_TRIANGLES) return sizeof(NxTriangle32);
 	return 0;
 	}
