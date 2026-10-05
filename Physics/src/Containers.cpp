@@ -102,3 +102,11 @@ void nxSdkContainerSetExternalBuffer(void* container, NxU32 capacity, NxU32* ent
 	{
 	static_cast<SdkContainer*>(container)->setExternalBuffer(capacity, entries);
 	}
+
+void nxSdkContainerAppend(void* container, NxU32 entry)
+	{
+	SdkContainer* const array = static_cast<SdkContainer*>(container);
+	if(array->mCount == array->mCapacity && !array->resize(1))
+		return;
+	array->mEntries[array->mCount++] = entry;
+	}

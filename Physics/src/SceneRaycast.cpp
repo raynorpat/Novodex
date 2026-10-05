@@ -61,6 +61,16 @@
 // The pruner table slot the engine loop dispatches through (opcode/IcePruner.cpp).
 NxSlotMfp5 nxPrunerRaycastSlot();
 
+// Slot 8 is the four-argument AABB query used by phys_fn_004866. The source
+// signature is expressed through the common slot receiver because the helper
+// dispatches an encoded member-function pointer onto each Pruner instance.
+static NxSlotMfp4 nxPrunerAABBQuerySlot()
+	{
+	typedef bool (Pruner::*Slot)(udword, udword, udword, udword);
+	Slot slot = &Pruner::NovodeXPrunerSlot8;
+	return reinterpret_cast<NxSlotMfp4&>(slot);
+	}
+
 static const char* const kSceneRaycastFile = "\\Epic\\Novodex\\SDKs\\Physics\\src\\SceneRaycast.cpp";
 static const char* const kSceneRaycastBadRay = "NxRay direction not valid: must be unit vector.";
 
@@ -129,6 +139,19 @@ static inline SdkContainer& nxRaycastCollect(NxSceneInternal* scene, const NxRay
 	memcpy(&maxDistBits, &maxDist, 4);
 	nxMaskedFourSlotLoop4864(&scene->at<unsigned char>(0x624), reinterpret_cast<unsigned>(&collector),
 		reinterpret_cast<unsigned>(&ray), mask, maxDistBits, 0, 0xffffffff, nxPrunerRaycastSlot());
+	return collector;
+	}
+
+static inline SdkContainer& nxAABBCollect(NxSceneInternal* scene, const NxBounds3& worldBounds,
+	NxShapesType shapesType)
+	{
+	SdkContainer& collector = scene->at<SdkContainer>(0x500);
+	collector.mCount = 0;
+	const NxU32 mask = ((shapesType & NX_STATIC_SHAPES) ? 1u : 0u) |
+		((shapesType & NX_DYNAMIC_SHAPES) ? 0xeu : 0u);
+	nxMaskedFourSlotLoop4866(&scene->at<unsigned char>(0x624), reinterpret_cast<unsigned>(&collector),
+		reinterpret_cast<unsigned>(const_cast<NxBounds3*>(&worldBounds)), mask, 0, 0xffffffffu,
+		nxPrunerAABBQuerySlot());
 	return collector;
 	}
 
@@ -475,39 +498,11 @@ void* NxSceneInternal::raycastClosestShape(const NxRay& worldRay, NxShapesType s
 	return *reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(hit.shape) + 8);
 	}
 
-// phys_fn_000674 (0x000148d0). The image sends an AABB query through pruning
-// engine slot 8 and returns whether its shared collector is nonempty. The
-// reconstructed pruner table does not yet implement that query slot, so walk
-// the same selected pruner pools and apply the stored world-AABB overlap test.
-// This keeps the public result on the scene's registered prunables and updates
-// stale bounds through the prunable's recovered update path.
+// phys_fn_000674 (0x000148d0). Send the AABB through pruning-engine slot 8 and
+// return whether its shared collector is nonempty.
 bool NxSceneInternal::checkOverlapAABB(const NxBounds3& worldBounds, NxShapesType shapesType)
 	{
-	const NxU32 mask = ((shapesType & NX_STATIC_SHAPES) ? 1u : 0u) |
-		((shapesType & NX_DYNAMIC_SHAPES) ? 0xeu : 0u);
-	Pruner** const pruners = reinterpret_cast<Pruner**>(bytes() + 0x624 + 0x1c);
-	for(NxU32 type = 0; type < 4; type++)
-		{
-		if(!(mask & (1u << type)) || !pruners[type])
-			continue;
-		PruningPool& pool = pruners[type]->mPool;
-		for(NxU32 i = 0; i < pool.mNbTotal; i++)
-			{
-			Prunable* const prunable = pool.mObjects[i];
-			// Plane prunables use an unbounded world box in the oracle query path.
-			// Their cached pool box is not the query representation, so any AABB
-			// query that selects the owning pruner reports a possible overlap.
-			const unsigned char* const shape = static_cast<const unsigned char*>(prunable->mOwner);
-			if(shape && *reinterpret_cast<const NxU32*>(shape + 0xd0) == NX_SHAPE_PLANE)
-				return true;
-			if(!(prunable->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
-				prunable->UpdateWorldAABB(&pool.mWorldBoxes[i]);
-			const NxBounds3& shapeBounds = *reinterpret_cast<const NxBounds3*>(&pool.mWorldBoxes[i]);
-			if(worldBounds.intersects(shapeBounds))
-				return true;
-			}
-		}
-	return false;
+	return nxAABBCollect(this, worldBounds, shapesType).mCount != 0;
 	}
 
 static bool nxTriangleSeparatesAABB(const NxVec3& axis, const NxVec3& v0,
@@ -631,78 +626,28 @@ NxU32 NxSceneInternal::overlapAABBShapes(const NxBounds3& worldBounds, NxShapesT
 	const NxU32 capacity = shapes ? maxShapes : (callback ? 64u : 0u);
 	if(!capacity)
 		return 0;
-	const NxU32 mask = ((shapesType & NX_STATIC_SHAPES) ? 1u : 0u) |
-		((shapesType & NX_DYNAMIC_SHAPES) ? 0xeu : 0u);
-	Pruner** const pruners = reinterpret_cast<Pruner**>(bytes() + 0x624 + 0x1c);
+	const SdkContainer& collector = nxAABBCollect(this, worldBounds, shapesType);
 	NxU32 count = 0;
 	NxU32 buffered = 0;
-	for(NxU32 type = 0; type < 4; type++)
+	const NxU32* const entries = collector.mEntries;
+	for(NxU32 i = 0; i < collector.mCount; ++i)
 		{
-		if(!(mask & (1u << type)) || !pruners[type])
+		Prunable* const prunable = reinterpret_cast<Prunable*>(entries[i]);
+		unsigned char* const shapeBase = static_cast<unsigned char*>(prunable->mOwner);
+		if(!shapeBase)
 			continue;
-		if(type == 0)
-			{
-			// The static pruner's slot 8 traverses its AABB tree and reports
-			// the touched shapes in tree order (phys_fn_005229).
-			IceCore::Container treeObjects;
-			const NxVec3& nxMin = worldBounds.getMin();
-			const NxVec3& nxMax = worldBounds.getMax();
-			const Point min(nxMin.x, nxMin.y, nxMin.z);
-			const Point max(nxMax.x, nxMax.y, nxMax.z);
-			static_cast<StaticPruner*>(pruners[type])->OverlapAABB(treeObjects, min, max, 0xffffffffu);
-			const NxU32* const entries = treeObjects.GetEntries();
-			for(NxU32 i = 0; i < treeObjects.GetNbEntries(); i++)
-				{
-				Prunable* const prunable = reinterpret_cast<Prunable*>(entries[i]);
-				unsigned char* const shapeBase = static_cast<unsigned char*>(prunable->mOwner);
-				if(!shapeBase)
-					continue;
-				NxShape* const publicShape = *reinterpret_cast<NxShape**>(shapeBase + 0x9c);
-				if(!publicShape)
-					continue;
-				buffer[buffered++] = publicShape;
-				count++;
-				if(buffered == capacity)
-					{
-					if(callback && !callback->onEvent(buffered, buffer))
-						return count;
-					buffered = 0;
-					if(!callback)
-						return count;
-					}
-				}
+		NxShape* const publicShape = *reinterpret_cast<NxShape**>(shapeBase + 0x9c);
+		if(!publicShape)
 			continue;
-			}
-		PruningPool& pool = pruners[type]->mPool;
-		for(NxU32 i = 0; i < pool.mNbTotal; i++)
+		buffer[buffered++] = publicShape;
+		count++;
+		if(buffered == capacity)
 			{
-			Prunable* const prunable = pool.mObjects[i];
-			if(!prunable || prunable->mHandle == PRUNABLE_INVALID_HANDLE)
-				continue;
-			unsigned char* const shapeBase = static_cast<unsigned char*>(prunable->mOwner);
-			if(!shapeBase)
-				continue;
-			if(*reinterpret_cast<NxU32*>(shapeBase + 0xd0) != NX_SHAPE_PLANE)
-				{
-				if(!(prunable->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
-					prunable->UpdateWorldAABB(&pool.mWorldBoxes[i]);
-				const NxBounds3& shapeBounds = *reinterpret_cast<NxBounds3*>(&pool.mWorldBoxes[i]);
-				if(!worldBounds.intersects(shapeBounds))
-					continue;
-				}
-			NxShape* const publicShape = *reinterpret_cast<NxShape**>(shapeBase + 0x9c);
-			if(!publicShape)
-				continue;
-			buffer[buffered++] = publicShape;
-			count++;
-			if(buffered == capacity)
-				{
-				if(callback && !callback->onEvent(buffered, buffer))
-					return count;
-				buffered = 0;
-				if(!callback)
-					return count;
-				}
+			if(callback && !callback->onEvent(buffered, buffer))
+				return count;
+			buffered = 0;
+			if(!callback)
+				return count;
 			}
 		}
 	if(callback && buffered && !callback->onEvent(buffered, buffer))

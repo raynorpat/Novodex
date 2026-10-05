@@ -929,6 +929,77 @@ static void nxSphereMeshOverlapChecks(NxPhysicsSDK* sdk, NxScene* scene)
 	nxSphereQueryMesh = 0;
 	}
 
+static void nxBoundedPrunerQueryChecks(NxPhysicsSDK* sdk)
+	{
+	NxBounds3 sceneBounds;
+	sceneBounds.set(NxVec3(-12.0f, -12.0f, -12.0f), NxVec3(12.0f, 12.0f, 12.0f));
+	NxSceneDesc sceneDesc;
+	sceneDesc.setToDefault();
+	sceneDesc.maxBounds = &sceneBounds;
+	NxScene* const scene = sdk->createScene(sceneDesc);
+	if(!scene)
+		{
+		printf("scene_overlap bounded_tree scene_create=failed\n");
+		return;
+		}
+	const char* const names[] =
+		{ "bounded_11", "bounded_00", "bounded_08", "bounded_03", "bounded_09", "bounded_01",
+		  "bounded_07", "bounded_04", "bounded_10", "bounded_02", "bounded_06", "bounded_05" };
+	const NxVec3 positions[] = {
+		NxVec3(9.0f, 9.0f, 9.0f), NxVec3(-9.0f, -9.0f, -9.0f),
+		NxVec3(5.0f, -5.0f, 9.0f), NxVec3(-3.0f, 9.0f, -5.0f),
+		NxVec3(7.0f, -9.0f, -7.0f), NxVec3(-7.0f, 5.0f, 3.0f),
+		NxVec3(3.0f, 7.0f, -9.0f), NxVec3(-1.0f, -3.0f, 5.0f),
+		NxVec3(11.0f, 1.0f, -1.0f), NxVec3(-5.0f, -7.0f, 7.0f),
+		NxVec3(1.0f, 3.0f, -3.0f), NxVec3(-11.0f, -1.0f, 1.0f) };
+	NxActor* actors[sizeof(positions) / sizeof(positions[0])] = { 0 };
+	for(unsigned i = 0; i < sizeof(positions) / sizeof(positions[0]); ++i)
+		{
+		NxBoxShapeDesc box;
+		box.dimensions = NxVec3(0.4f, 0.4f, 0.4f);
+		NxBodyDesc body;
+		NxActorDesc actorDesc;
+		actorDesc.body = &body;
+		actorDesc.density = 1.0f;
+		actorDesc.shapes.pushBack(&box);
+		actorDesc.globalPose.t = positions[i];
+		actors[i] = scene->createActor(actorDesc);
+		}
+	auto printQuery = [&](const char* label, const NxBounds3& queryBounds, bool printOrder)
+		{
+		NxShape* hits[16] = { 0 };
+		const NxU32 count = scene->overlapAABBShapes(queryBounds, NX_DYNAMIC_SHAPES, 16, hits, 0);
+		printf("scene_overlap bounded_tree %s count=%u", label, static_cast<unsigned>(count));
+		if(printOrder)
+			{
+			printf(" order=");
+			for(NxU32 i = 0; i < count && i < 16; ++i)
+				{
+				const char* name = "unknown";
+				for(unsigned j = 0; j < sizeof(actors) / sizeof(actors[0]); ++j)
+					if(actors[j] && actors[j]->getShapes()[0] == hits[i])
+						name = names[j];
+				printf("%s%s", i ? "." : "", name);
+				}
+			}
+		printf("\n");
+		};
+	NxBounds3 queryBounds;
+	queryBounds.set(NxVec3(-12.0f, -12.0f, -12.0f), NxVec3(12.0f, 12.0f, 12.0f));
+	printQuery("all", queryBounds, false);
+	queryBounds.set(NxVec3(-12.0f, -12.0f, -12.0f), NxVec3(0.0f, 0.0f, 0.0f));
+	printQuery("negative_octant", queryBounds, true);
+	actors[1]->setGlobalPosition(NxVec3(9.0f, 9.0f, 9.0f));
+	queryBounds.set(NxVec3(-12.0f, -12.0f, -12.0f), NxVec3(-8.0f, -8.0f, -8.0f));
+	printQuery("old_after_move", queryBounds, true);
+	queryBounds.set(NxVec3(8.0f, 8.0f, 8.0f), NxVec3(10.0f, 10.0f, 10.0f));
+	printQuery("new_after_move", queryBounds, true);
+	for(unsigned i = 0; i < sizeof(actors) / sizeof(actors[0]); ++i)
+		if(actors[i])
+			scene->releaseActor(*actors[i]);
+	sdk->releaseScene(*scene);
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -1155,6 +1226,7 @@ int wmain(int argc, wchar_t** argv)
 	if(compounds[1])
 		scene->releaseActor(*compounds[1]);
 	nxSphereMeshOverlapChecks(sdk, scene);
+	nxBoundedPrunerQueryChecks(sdk);
 	sdk->releaseScene(*scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);

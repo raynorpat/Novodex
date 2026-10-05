@@ -64,10 +64,12 @@ AABBTreeBuilder::GetSplittingValue, 002150, rounded its result to float).
 
 #include <string.h>
 #include <new>
+#include <stdlib.h>
 
 // SdkContainer::setExternalBuffer (phys_fn_004847) on a container of this
 // layout, through Containers.cpp (Containers.h and OPCODE's headers do not mix).
 void nxSdkContainerSetExternalBuffer(void* container, udword capacity, udword* entries);
+void nxSdkContainerAppend(void* container, udword entry);
 
 // The layouts the listing addresses (IcePruner.h, IcePrunable.h).
 static_assert(sizeof(PruningPool) == 0x18, "PruningPool is 0x18 bytes");
@@ -465,6 +467,22 @@ bool StaticPruner::OverlapAABB(Container& objects, const Point& min, const Point
 	return true;
 }
 
+// phys_fn_005229 (0x000e5500), the static-pruner slot 8 ABI adapter.
+bool StaticPruner::NovodeXPrunerSlot8(udword result, udword queryBounds,
+	udword /*first_contact*/, udword mask)
+{
+	const float* const values = reinterpret_cast<const float*>(queryBounds);
+	const Point min(values[0], values[1], values[2]);
+	const Point max(values[3], values[4], values[5]);
+	Container touched;
+	if(!OverlapAABB(touched, min, max, mask))
+		return false;
+	const udword* entries = touched.GetEntries();
+	for(udword i = 0; i < touched.GetNbEntries(); ++i)
+		nxSdkContainerAppend(reinterpret_cast<void*>(result), entries[i]);
+	return true;
+}
+
 // phys_fn_005227 (0x000e5440, 184 B)
 // The tree is built on the first query after any change. A RayCollider on the
 // stack stabs it, first-contact as asked, temporal coherence off, the maximum
@@ -508,9 +526,165 @@ BoundedDynamicPruner::~BoundedDynamicPruner()
 {
 }
 
+// phys_fn_005258/005260 (0x000e6060/0x000e6130). Approximate the bounded
+// pruner's octree traversal with Morton cell ordering. The multi-axis oracle
+// order is not yet exact; one-axis traversal, filtering, movement updates and
+// slot dispatch are covered by the staged-pair tests.
+bool BoundedDynamicPruner::OverlapAABB(Container& objects, const Point& min, const Point& max,
+	udword mask)
+{
+	const udword nb = mPool.mNbObjects[0] + mPool.mNbObjects[1];
+	if(!nb)
+		return true;
+
+	Point rootMin, rootMax;
+	mBounds.GetMin(rootMin);
+	mBounds.GetMax(rootMax);
+	const float rootWidth = rootMax.x - rootMin.x;
+	const float rootHeight = rootMax.y - rootMin.y;
+	const float rootDepth = rootMax.z - rootMin.z;
+	float rootSize = rootWidth;
+	if(rootHeight > rootSize) rootSize = rootHeight;
+	if(rootDepth > rootSize) rootSize = rootDepth;
+	struct Entry
+	{
+		Prunable* object;
+		udword treeKey;
+		udword depth;
+		udword poolIndex;
+	};
+	Entry* const entries = static_cast<Entry*>(malloc(sizeof(Entry) * nb));
+	if(!entries)
+		return false;
+	udword entryCount = 0;
+	for(udword i = 0; i < nb; ++i)
+	{
+		Prunable* const object = mPool.mObjects[i];
+		if(!(mask & object->mPrunable24) || object->mHandle == PRUNABLE_INVALID_HANDLE)
+			continue;
+		if(!(object->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
+			object->UpdateWorldAABB(&mPool.mWorldBoxes[object->mHandle]);
+		const AABB& bounds = mPool.mWorldBoxes[object->mHandle];
+		Point objectMin, objectMax;
+		bounds.GetMin(objectMin);
+		bounds.GetMax(objectMax);
+		if(objectMin.x > max.x || objectMax.x < min.x
+			|| objectMin.y > max.y || objectMax.y < min.y
+			|| objectMin.z > max.z || objectMax.z < min.z)
+			continue;
+
+		float objectSize = objectMax.x - objectMin.x;
+		if(objectMax.y - objectMin.y > objectSize)
+			objectSize = objectMax.y - objectMin.y;
+		if(objectMax.z - objectMin.z > objectSize)
+			objectSize = objectMax.z - objectMin.z;
+		udword depth = 0;
+		while(depth < 5 && rootSize / float(1u << (depth + 1)) >= objectSize)
+			++depth;
+		const float cellWidth = rootSize / float(1u << depth);
+		const float rootCenterX = (rootMin.x + rootMax.x) * 0.5f;
+		const float rootCenterY = (rootMin.y + rootMax.y) * 0.5f;
+		const float rootCenterZ = (rootMin.z + rootMax.z) * 0.5f;
+		udword cell[3];
+		const float centers[3] = {
+			(objectMin.x + objectMax.x) * 0.5f,
+			(objectMin.y + objectMax.y) * 0.5f,
+			(objectMin.z + objectMax.z) * 0.5f };
+		const float cubeMins[3] = { rootCenterX - rootSize * 0.5f,
+			rootCenterY - rootSize * 0.5f, rootCenterZ - rootSize * 0.5f };
+		for(udword axis = 0; axis < 3; ++axis)
+		{
+			int coordinate = int(floor((centers[axis] - cubeMins[axis]) / cellWidth));
+			const int count = 1 << depth;
+			if(coordinate < 0) coordinate = 0;
+			if(coordinate >= count) coordinate = count - 1;
+			cell[axis] = udword(coordinate);
+		}
+		udword treeKey = 0;
+		for(int bit = int(depth) - 1; bit >= 0; --bit)
+			treeKey = (treeKey << 3) | (((cell[0] >> bit) & 1u) << 2)
+				| (((cell[1] >> bit) & 1u) << 1) | ((cell[2] >> bit) & 1u);
+		entries[entryCount].object = object;
+		entries[entryCount].treeKey = treeKey;
+		entries[entryCount].depth = depth;
+		entries[entryCount].poolIndex = i;
+		++entryCount;
+	}
+	auto entryLess = [](const Entry& a, const Entry& b)
+	{
+		if(a.treeKey != b.treeKey)
+			return a.treeKey < b.treeKey;
+		if(a.depth != b.depth)
+			return a.depth < b.depth;
+		return a.poolIndex > b.poolIndex;
+	};
+	for(udword gap = entryCount / 2; gap; gap /= 2)
+		for(udword i = gap; i < entryCount; ++i)
+		{
+			const Entry value = entries[i];
+			udword position = i;
+			while(position >= gap && entryLess(value, entries[position - gap]))
+			{
+				entries[position] = entries[position - gap];
+				position -= gap;
+			}
+			entries[position] = value;
+		}
+	for(udword i = 0; i < entryCount; ++i)
+		objects.Add(udword(entries[i].object));
+	free(entries);
+	return true;
+}
+
+// phys_fn_005258/005260 (0x000e6060/0x000e6130), bounded-pruner slot 8 ABI.
+bool BoundedDynamicPruner::NovodeXPrunerSlot8(udword result, udword queryBounds,
+	udword /*first_contact*/, udword mask)
+{
+	const float* const values = reinterpret_cast<const float*>(queryBounds);
+	const Point min(values[0], values[1], values[2]);
+	const Point max(values[3], values[4], values[5]);
+	Container touched;
+	if(!OverlapAABB(touched, min, max, mask))
+		return false;
+	const udword* entries = touched.GetEntries();
+	for(udword i = 0; i < touched.GetNbEntries(); ++i)
+		nxSdkContainerAppend(reinterpret_cast<void*>(result), entries[i]);
+	return true;
+}
+
 // 0x000efe80 (not claimed): the base only.
 DynamicPruner::~DynamicPruner()
 {
+}
+
+// phys_fn_005468's pool walk adapted to the four-argument AABB query slot.
+bool DynamicPruner::NovodeXPrunerSlot8(udword result, udword queryBounds,
+	udword /*first_contact*/, udword mask)
+{
+	const float* const values = reinterpret_cast<const float*>(queryBounds);
+	const Point min(values[0], values[1], values[2]);
+	const Point max(values[3], values[4], values[5]);
+	bool found = false;
+	const udword objectCount = mPool.mNbTotal;
+	for(udword i = 0; i < objectCount; ++i)
+	{
+		Prunable* const object = mPool.mObjects[i];
+		if(!(mask & object->mPrunable24) || object->mHandle == PRUNABLE_INVALID_HANDLE)
+			continue;
+		if(!(object->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
+			object->UpdateWorldAABB(&mPool.mWorldBoxes[object->mHandle]);
+		const AABB& box = mPool.mWorldBoxes[object->mHandle];
+		Point objectMin, objectMax;
+		box.GetMin(objectMin);
+		box.GetMax(objectMax);
+		if(objectMin.x > max.x || objectMax.x < min.x
+			|| objectMin.y > max.y || objectMax.y < min.y
+			|| objectMin.z > max.z || objectMax.z < min.z)
+			continue;
+		nxSdkContainerAppend(reinterpret_cast<void*>(result), udword(object));
+		found = true;
+	}
+	return found;
 }
 
 // phys_fn_005468 (0x000efa90, 503 B)
