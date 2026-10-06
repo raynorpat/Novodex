@@ -20,6 +20,9 @@ destructor; after reconstruction, candidate and oracle both exit 0 and their
 (`build/FluidGate/fluid-vtable-candidate-green.log`,
 `build/FluidGate/fluid-vtable-oracle-green.log`; pair identity/footer lines
 excluded because they necessarily contain different paths and hashes).
+The isolated full Phase 7 gate then passed all 11 targets with zero
+differential deltas and evaluated the updated floor exactly at 1,320/1,320
+(`build/FluidGate/phase7-fluid-manager-vtable-gate.log`).
 
 The regression first calls `createFluid` to allocate the manager, then passes a
 pointer-shaped local marker as a non-member fluid. Since the oracle manager's

@@ -5390,7 +5390,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1318  # current registered assertions across joint, scene, simulation, mesh, trigger,
+    '7' = 1320  # previous 1,318 plus two disabled FluidManager constructor/vtable assertions
+               # across joint, scene, simulation, mesh, trigger,
                # effector and core-dump targets; kept equal to the registry count below
     '8' = 0
 }
