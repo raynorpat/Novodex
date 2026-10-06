@@ -989,27 +989,44 @@ NxFluid** NpScene::getFluids()
 	return 0;
 	}
 
-// (unimplemented) createImplicitMesh
-NxImplicitMesh* NpScene::createImplicitMesh(const NxImplicitMeshDesc&)
+// phys_fn_000404 (0x0000d8a0). Implicit meshes are unavailable in the pinned
+// build; preserve the exported warning and null return.
+NxImplicitMesh* NpScene::createImplicitMesh(const NxImplicitMeshDesc& desc)
 	{
+	(void)desc;
+	NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+		"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x281, 0,
+		"NxScene::createImplicitMesh(): Feature not available!");
 	return 0;
 	}
 
-// (unimplemented) releaseImplicitMesh
-void NpScene::releaseImplicitMesh(NxImplicitMesh&)
+// phys_fn_000406 (0x0000d8d0). The unavailable release operation warns and
+// does not inspect or retain the supplied object.
+void NpScene::releaseImplicitMesh(NxImplicitMesh& mesh)
 	{
-	
+	(void)mesh;
+	NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+		"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x287, 0,
+		"NxScene::releaseImplicitMesh(): Feature not available!");
 	}
 
-// (unimplemented) getNbImplicitMeshes
+// phys_fn_000408 (0x0000d900). The unavailable count operation warns and
+// returns zero.
 NxU32 NpScene::getNbImplicitMeshes() const
 	{
+	NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+		"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x28d, 0,
+		"NxScene::getNbImplicitMeshes(): Feature not available!");
 	return 0;
 	}
 
-// (unimplemented) getImplicitMeshes
+// phys_fn_000410 (0x0000d930). The unavailable enumeration warns and returns
+// a null array.
 NxImplicitMesh** NpScene::getImplicitMeshes()
 	{
+	NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+		"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x293, 0,
+		"NxScene::getImplicitMeshes(): Feature not available!");
 	return 0;
 	}
 

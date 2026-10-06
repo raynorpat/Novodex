@@ -7484,9 +7484,9 @@
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/199",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1156",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via assertrows differential (3z156): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
-      "notes": ""
+      "static_proof": "phys_fn_000404 (0x0000d8a0) reports NXE_DB_WARNING from NpScene.cpp line 0x281 with the unavailable-feature message, then returns null.",
+      "dynamic_proof": "NxPhysicsSimulationTests: oracle and candidate both return null and report code 206, line 641, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxScene::createImplicitMesh(): Feature not available!; stdout_delta=0 and stderr_exact=True (evidence/implicit-mesh-disabled.md). Prior low-level assertrows differential (3z156) also matched the captured report tuple.",
+      "notes": "Implicit-mesh creation is unavailable in the pinned release."
     },
     {
       "id": "phys_fn_000405",
@@ -7520,9 +7520,9 @@
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/200",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1158",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via assertrows differential (3z156): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
-      "notes": ""
+      "static_proof": "phys_fn_000406 (0x0000d8d0) reports NXE_DB_WARNING from NpScene.cpp line 0x287 with the unavailable-feature message; it does not consume the mesh reference.",
+      "dynamic_proof": "NxPhysicsSimulationTests: oracle and candidate report code 206, line 647, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxScene::releaseImplicitMesh(): Feature not available! (evidence/implicit-mesh-disabled.md). Prior low-level assertrows differential (3z156) also matched the captured report tuple.",
+      "notes": "Implicit-mesh release is unavailable in the pinned release."
     },
     {
       "id": "phys_fn_000407",
@@ -7556,9 +7556,9 @@
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/201",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1160",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via assertrows differential (3z155): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
-      "notes": ""
+      "static_proof": "phys_fn_000408 (0x0000d900) reports NXE_DB_WARNING from NpScene.cpp line 0x28d with the unavailable-feature message, then returns zero.",
+      "dynamic_proof": "NxPhysicsSimulationTests: oracle and candidate both return zero and report code 206, line 653, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxScene::getNbImplicitMeshes(): Feature not available! (evidence/implicit-mesh-disabled.md). Prior low-level assertrows differential (3z155) also matched the captured report tuple.",
+      "notes": "Implicit-mesh enumeration is unavailable in the pinned release."
     },
     {
       "id": "phys_fn_000409",
@@ -7592,9 +7592,9 @@
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/202",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1162",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via assertrows differential (3z155): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
-      "notes": ""
+      "static_proof": "phys_fn_000410 (0x0000d930) reports NXE_DB_WARNING from NpScene.cpp line 0x293 with the unavailable-feature message, then returns null.",
+      "dynamic_proof": "NxPhysicsSimulationTests: oracle and candidate both return null and report code 206, line 659, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxScene::getImplicitMeshes(): Feature not available! (evidence/implicit-mesh-disabled.md). Prior low-level assertrows differential (3z155) also matched the captured report tuple.",
+      "notes": "Implicit-mesh enumeration is unavailable in the pinned release."
     },
     {
       "id": "phys_fn_000411",

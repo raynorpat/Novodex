@@ -11,6 +11,7 @@
 #include "NxSceneDesc.h"
 #include "NxUserOutputStream.h"
 #include "fluids/NxFluidDesc.h"
+#include "fluids/NxImplicitMeshDesc.h"
 #include "NxActor.h"
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
@@ -1895,6 +1896,40 @@ int wmain(int argc, wchar_t** argv)
 	printf("simulation fluid contact-report-get stored=%u errors=%u code=%u line=%d file=%s message=%s\n",
 		returnedFluidCallback == fluidCallback ? 1u : 0u,
 		simulationOutput.errors - fluidCallbackGetErrorsBefore,
+		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
+		simulationOutput.file, simulationOutput.message);
+	NxImplicitMeshDesc implicitMeshDesc;
+	implicitMeshDesc.setToDefault();
+	const unsigned implicitCreateErrorsBefore = simulationOutput.errors;
+	simulationOutput.resetLast();
+	NxImplicitMesh* const createdImplicitMesh = fluidScene->createImplicitMesh(implicitMeshDesc);
+	printf("simulation implicit-mesh-create created=%u errors=%u code=%u line=%d file=%s message=%s\n",
+		createdImplicitMesh != 0 ? 1u : 0u,
+		simulationOutput.errors - implicitCreateErrorsBefore,
+		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
+		simulationOutput.file, simulationOutput.message);
+	unsigned char implicitMeshMarker = 0;
+	const unsigned implicitReleaseErrorsBefore = simulationOutput.errors;
+	simulationOutput.resetLast();
+	fluidScene->releaseImplicitMesh(*reinterpret_cast<NxImplicitMesh*>(&implicitMeshMarker));
+	printf("simulation implicit-mesh-release errors=%u code=%u line=%d file=%s message=%s\n",
+		simulationOutput.errors - implicitReleaseErrorsBefore,
+		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
+		simulationOutput.file, simulationOutput.message);
+	const unsigned implicitCountErrorsBefore = simulationOutput.errors;
+	simulationOutput.resetLast();
+	const NxU32 implicitMeshCount = fluidScene->getNbImplicitMeshes();
+	printf("simulation implicit-mesh-count count=%u errors=%u code=%u line=%d file=%s message=%s\n",
+		implicitMeshCount,
+		simulationOutput.errors - implicitCountErrorsBefore,
+		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
+		simulationOutput.file, simulationOutput.message);
+	const unsigned implicitListErrorsBefore = simulationOutput.errors;
+	simulationOutput.resetLast();
+	NxImplicitMesh** const implicitMeshes = fluidScene->getImplicitMeshes();
+	printf("simulation implicit-mesh-list present=%u errors=%u code=%u line=%d file=%s message=%s\n",
+		implicitMeshes != 0 ? 1u : 0u,
+		simulationOutput.errors - implicitListErrorsBefore,
 		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
 		simulationOutput.file, simulationOutput.message);
 	sdk->releaseScene(*fluidScene);
