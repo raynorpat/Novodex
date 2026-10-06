@@ -3206,6 +3206,8 @@ $NxRequiredCoverageLines = [ordered] @{
         # rejects an AABB-only corner and reports contact on the actual face.
         'simulation controller-obstacle mesh-corner position=40000000.3f8ccccd.3f8ccccd flags=00000000'
         'simulation controller-obstacle mesh-hit position=3f800000.3e4ccccd.3e4ccccd flags=00000004'
+        'simulation controller-obstacle mesh-overlap-out position=3f800000.3e4ccccd.3e4ccccd flags=00000000'
+        'simulation controller-obstacle mesh-overlap-in position=40000000.3e4ccccd.3e4ccccd flags=00000000'
         'simulation controller-initial-overlap escape position=3e800000.00000000.00000000 flags=00000000'
         'simulation controller-initial-overlap inward position=3f400000.00000000.00000000 flags=00000004'
         'simulation effector-step setup count=1 awake=1 pos=00000000 spring=3f000000.3f800000.40800000.42c80000.42c80000'
@@ -5429,7 +5431,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1351  # previous 1,349 plus triangle-mesh corner and face-hit assertions
+    '7' = 1353  # previous 1,351 plus triangle-mesh initial-overlap assertions
                # (free-space, actor pose, obstacle/group filter, vertical, trigger, overlap)
     '8' = 0
 }

@@ -136,3 +136,26 @@ including all 39 available scene demos: 34 pass and the same five
 signature-verified baseline skips remain. Viewer sound, physics step, and
 physics contact checks pass. Inventory validation reports 6,338 functions,
 5,138 data objects, and zero unexplained entries.
+
+## Triangle-mesh initial-overlap follow-up
+
+Two isolated paired scenes start the controller box centered on the mesh plane
+at `(1.5, 0.2, 0.2)`. The first fixture moves `-0.5` X and the second moves
+`+0.5` X. The oracle completes both moves without collision flags, ending at
+X=1.0 and X=2.0 respectively. Before the fix, the candidate remained at
+X=1.5 with side flag 4 for both moves (`stdout_delta=4`). Continuous SAT now
+detects a starting AABB/triangle overlap and ignores that triangle for the
+current sweep; the isolated scenes avoid introducing a second controller
+actor as an obstacle. The paired simulation differential is exact
+(`stdout_delta=0`, `stderr_exact=True`;
+`build/controller-mesh-overlap-isolated-diff.log`). Phase 7 registers both
+outcomes. This pins initial overlap for the tested mesh plane, not general
+penetration recovery across arbitrary mesh shapes or multiple contacts.
+
+The follow-up passes Phase 5 at 2,042/2,042 and Phase 7 at 1,353/1,353
+(`build/controller-mesh-overlap-phase5.log`,
+`build/controller-mesh-overlap-phase7.log`). The rebuilt Viewer passes all
+44 selected tests, including the full 39-scene selection and sound, step, and
+contact checks (`build/controller-mesh-overlap-viewer-ctest.log`). Inventory
+validation remains clean at 6,338 functions, 5,138 data objects, and zero
+unexplained records.

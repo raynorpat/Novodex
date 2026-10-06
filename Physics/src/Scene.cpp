@@ -1840,6 +1840,7 @@ namespace
 		NxReal enter = 0.0f;
 		NxReal leave = 1.0f;
 		NxU32 entryAxis = 0;
+		bool startsOverlapped = true;
 		for(NxU32 i = 0; i != axisCount; ++i)
 			{
 			const NxVec3& axis = axes[i];
@@ -1857,6 +1858,9 @@ namespace
 			const NxReal deltaProjection = displacement.dot(axis);
 			const NxReal radius = NxMath::abs(axis.x) * extents.x +
 				NxMath::abs(axis.y) * extents.y + NxMath::abs(axis.z) * extents.z;
+			if(centerProjection + radius < triangleMin ||
+				centerProjection - radius > triangleMax)
+				startsOverlapped = false;
 			if(deltaProjection == 0.0f)
 				{
 				if(centerProjection + radius < triangleMin ||
@@ -1882,6 +1886,11 @@ namespace
 			if(enter > leave)
 				return false;
 			}
+		// The pinned controller resolver ignores an obstacle triangle that
+		// already intersects the controller at the start of this sweep. Its
+		// movement therefore escapes the initial mesh overlap in either direction.
+		if(startsOverlapped)
+			return false;
 		if(leave < 0.0f || enter < 0.0f || enter > 1.0f)
 			return false;
 		hitFraction = enter;
@@ -1901,7 +1910,7 @@ namespace
 			NxReal minDistance, NxU32& collisionFlags)
 			{
 			// Reconstruct the axis-aligned box sweep used by the recovered
-			// controller resolver. General convex/mesh sweeps and slide/step
+	// controller resolver. General transformed/convex sweeps and slide/step
 			// response remain separate open paths.
 			unsigned char* bytes = reinterpret_cast<unsigned char*>(this);
 			NxVec3& position = *reinterpret_cast<NxVec3*>(bytes + 0x28);

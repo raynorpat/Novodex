@@ -2777,6 +2777,67 @@ int wmain(int argc, wchar_t** argv)
 		nxFloatBits(meshHitControllerPosition.y) != 0x3e4ccccd ||
 		nxFloatBits(meshHitControllerPosition.z) != 0x3e4ccccd || obstacleCollisionFlags != 4;
 	meshHitScene->releaseController(*meshHitController);
+	alignas(4) unsigned char meshOverlapOutDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(meshOverlapOutDescStorage + 0x0c) = nxFloatBits(1.5f);
+	*reinterpret_cast<NxU32*>(meshOverlapOutDescStorage + 0x10) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(meshOverlapOutDescStorage + 0x14) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(meshOverlapOutDescStorage + 0x30) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(meshOverlapOutDescStorage + 0x34) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(meshOverlapOutDescStorage + 0x38) = nxFloatBits(0.5f);
+	NxController* const meshOverlapOutController = meshHitScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(meshOverlapOutDescStorage));
+	if(!meshOverlapOutController)
+		return nxFail("mesh-overlap-out controller fixture setup failed");
+	NxSceneDesc meshOverlapInSceneDesc;
+	meshOverlapInSceneDesc.setToDefault();
+	NxScene* const meshOverlapInScene = sdk->createScene(meshOverlapInSceneDesc);
+	if(!meshOverlapInScene)
+		return nxFail("mesh-overlap-in scene creation failed");
+	NxActorDesc meshOverlapInObstacleActorDesc;
+	meshOverlapInObstacleActorDesc.globalPose.t = NxVec3(1.5f, 0.0f, 0.0f);
+	meshOverlapInObstacleActorDesc.shapes.pushBack(&meshControllerObstacleShape);
+	NxActor* const meshOverlapInObstacle = meshOverlapInScene->createActor(
+		meshOverlapInObstacleActorDesc);
+	alignas(4) unsigned char meshOverlapInDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(meshOverlapInDescStorage + 0x0c) = nxFloatBits(1.5f);
+	*reinterpret_cast<NxU32*>(meshOverlapInDescStorage + 0x10) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(meshOverlapInDescStorage + 0x14) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(meshOverlapInDescStorage + 0x30) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(meshOverlapInDescStorage + 0x34) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(meshOverlapInDescStorage + 0x38) = nxFloatBits(0.5f);
+	NxController* const meshOverlapInController = meshOverlapInScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(meshOverlapInDescStorage));
+	if(!meshOverlapInObstacle || !meshOverlapInController)
+		return nxFail("mesh-overlap controller fixture setup failed");
+	const NxVec3 meshOverlapOutDisplacement(-0.5f, 0.0f, 0.0f);
+	obstacleCollisionFlags = 0xdeadbeef;
+	reinterpret_cast<NxControllerProbe*>(meshOverlapOutController)->move(
+		meshOverlapOutDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& meshOverlapOutPosition =
+		reinterpret_cast<NxControllerProbe*>(meshOverlapOutController)->getPosition();
+	printf("simulation controller-obstacle mesh-overlap-out position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(meshOverlapOutPosition.x), nxFloatBits(meshOverlapOutPosition.y),
+		nxFloatBits(meshOverlapOutPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(meshOverlapOutPosition.x) != 0x3f800000 ||
+		nxFloatBits(meshOverlapOutPosition.y) != 0x3e4ccccd ||
+		nxFloatBits(meshOverlapOutPosition.z) != 0x3e4ccccd || obstacleCollisionFlags != 0;
+	const NxVec3 meshOverlapInDisplacement(0.5f, 0.0f, 0.0f);
+	obstacleCollisionFlags = 0xdeadbeef;
+	reinterpret_cast<NxControllerProbe*>(meshOverlapInController)->move(
+		meshOverlapInDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& meshOverlapInPosition =
+		reinterpret_cast<NxControllerProbe*>(meshOverlapInController)->getPosition();
+	printf("simulation controller-obstacle mesh-overlap-in position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(meshOverlapInPosition.x), nxFloatBits(meshOverlapInPosition.y),
+		nxFloatBits(meshOverlapInPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(meshOverlapInPosition.x) != 0x40000000 ||
+		nxFloatBits(meshOverlapInPosition.y) != 0x3e4ccccd ||
+		nxFloatBits(meshOverlapInPosition.z) != 0x3e4ccccd || obstacleCollisionFlags != 0;
+	meshOverlapInScene->releaseController(*meshOverlapInController);
+	sdk->releaseScene(*meshOverlapInScene);
+	meshHitScene->releaseController(*meshOverlapOutController);
 	sdk->releaseScene(*meshHitScene);
 	sdk->releaseTriangleMesh(*controllerMesh);
 
