@@ -24,10 +24,11 @@ bool __cdecl NxOverlapPlaneMesh(const NxCollisionShape*, const NxCollisionShape*
 	return false;
 	}
 
-// PhysicsInternal.cpp keeps the complete trigger-overlap dispatch table even
-// in dispatch-only harnesses, which intentionally do not compile NarrowPhase.cpp.
-// Those harnesses only construct the table; real simulation targets link the
-// recovered overlap kernels from NarrowPhase.cpp.
+// PhysicsInternal.cpp keeps the complete trigger-overlap dispatch table in
+// dispatch-only harnesses, which intentionally do not compile NarrowPhase.cpp.
+// NxPhysicsInternalTests does compile that production unit, so leave its real
+// overlap kernels in place there.
+#ifndef NX_TEST_REAL_NARROW_PHASE
 bool __cdecl NxOverlapSphereSphere(const NxCollisionShape*, const NxCollisionShape*)
 	{
 	return false;
@@ -57,3 +58,4 @@ bool __cdecl NxOverlapCapsuleCapsule(const NxCollisionShape*, const NxCollisionS
 	{
 	return false;
 	}
+#endif

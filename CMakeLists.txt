@@ -807,7 +807,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/InternalTriangleMesh.cpp
 		Physics/src/TriangleMesh.cpp
-		Physics/src/TriangleMeshPolygons.cpp Physics/src/PMap.cpp
+		Physics/src/TriangleMeshPolygons.cpp Physics/src/TriangleMeshTopology.cpp Physics/src/PMap.cpp
 		Physics/src/QhullHost.cpp Physics/src/Quantizer.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
@@ -828,7 +828,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# and type through phys_fn_001281/001283 in ContactGeneration.cpp, which
 	# needs NarrowPhase.cpp. The /arch:IA32 rule above is per directory, so it
 	# gives the internal joint files NoExtensions here too.
-	target_compile_definitions(NxPhysicsInternalTests PRIVATE NX_PHYSICS_DLL=1)
+	target_compile_definitions(NxPhysicsInternalTests PRIVATE NX_PHYSICS_DLL=1 NX_TEST_REAL_NARROW_PHASE=1)
 	target_link_libraries(NxPhysicsInternalTests NxFoundation NxOpcode NxQhull)
 
 	# The Phase 5 object-layout gate. RED on purpose until Tasks 2 and 3

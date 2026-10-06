@@ -4,6 +4,21 @@ Date: 2026-09-30
 Baseline: `main` at `b942f01` (Merge convex-mesh gap reconstruction into main)
 Status: Active execution. The user selected full-DLL reconstruction and standalone simulation tests before Unreal integration.
 
+### Continuation — SDK indexed scene lookup (2026-10-06)
+
+Completed the previously blocked `NxPhysicsSDK::getScene` wrapper slot using
+the existing measured `Scene+0x6cc` wrapper field. The paired SDK test creates
+two scenes, verifies both indexed wrappers, releases the first and verifies
+the survivor moved to index 0, then releases the survivor. Returning null was
+RED (`stdout_delta=4`); the reconstructed wrapper lookup is GREEN. See
+`docs/reconstruction/novodex-physics/evidence/sdk-get-scene.md`. This closes
+valid-index lookup only; the oracle's out-of-range fault is recorded from
+disassembly and is not exercised in-process. Full-DLL reconstruction remains
+open. The fresh Phase 2 gate passes (including `NxPhysicsInternalTests`), and
+the all-scene Viewer selection passes 48/48 registered cases: all 39 available
+scenes are represented, with 43 passes and five existing signature-verified
+asset skips. Public Physics headers remain unchanged.
+
 ### Continuation — controller mesh back-face sweep (2026-10-06)
 
 Added an isolated scene using the same triangle geometry with reversed winding.

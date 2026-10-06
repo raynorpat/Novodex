@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "NxPhysicsSDK.h"
+#include "NxSceneDesc.h"
 #include "NxUserAllocator.h"
 #include "NxUserOutputStream.h"
 
@@ -239,6 +240,25 @@ int wmain(int argc, wchar_t** argv)
 	const NxU32 clearedPairFlags = first->getActorGroupPairFlags(groupA, groupB);
 	printf("step=actor_group_pair_flags initial=%u forward=%u reverse=%u cleared=%u\n",
 		initialPairFlags, forwardPairFlags, reversePairFlags, clearedPairFlags);
+
+	NxSceneDesc sceneDesc;
+	NxScene* sceneA = first->createScene(sceneDesc);
+	NxScene* sceneB = first->createScene(sceneDesc);
+	int sceneLookupFailed = !sceneA || !sceneB || first->getScene(0) != sceneA ||
+		first->getScene(1) != sceneB;
+	printf("step=scenes_created count=%u both=%d first_lookup=%d second_lookup=%d\n",
+		first->getNbScenes(), sceneA && sceneB ? 1 : 0,
+		first->getScene(0) == sceneA ? 1 : 0,
+		first->getScene(1) == sceneB ? 1 : 0);
+	if(sceneA)
+		first->releaseScene(*sceneA);
+	const int survivorLookup = first->getScene(0) == sceneB ? 1 : 0;
+	printf("step=scene_released count=%u survivor_lookup=%d\n", first->getNbScenes(), survivorLookup);
+	if(first->getNbScenes() != 1 || !survivorLookup)
+		sceneLookupFailed = 1;
+	if(sceneB)
+		first->releaseScene(*sceneB);
+	printf("step=scenes_empty count=%u\n", first->getNbScenes());
 	reportStream("step=parameters.stream", streamFirst);
 
 	first->release();
@@ -268,5 +288,7 @@ int wmain(int argc, wchar_t** argv)
 
 	status = nxReportPairIdentity(pairDirectory);
 	FreeLibrary(physics);
+	if(!status && sceneLookupFailed)
+		return nxFail("scene lookup did not track the created and surviving public scenes");
 	return status;
 	}

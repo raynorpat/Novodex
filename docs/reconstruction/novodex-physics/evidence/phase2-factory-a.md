@@ -174,12 +174,13 @@ The mutating wrappers reference
 `PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!`
 and report it with error code 2, `NXE_INVALID_OPERATION`; the const wrappers
 reference no string. Both walks reach the lock through `Scene` at `+0x6cc`, which
-Phase 3 owns, and run zero iterations for every state this component can reach,
-because `createScene` is the only entry point that adds a scene.
+Phase 3 owns. The original Phase 2 fixture did not create scenes, so those
+walks ran zero iterations there. Scene creation is now implemented; lock
+behavior with live scenes remains a separate differential concern.
 
 ---
 
-## 6. Slot 7 is blocked, not open — a correction
+## 6. Slot 7: blocked at the original Phase 2 close, implemented after Scene layout recovery
 
 Stage 2 listed `getScene` as closing inside Phase 2. It does not. `phys_fn_000240`
 is 22 bytes with no lock walk:
@@ -192,10 +193,15 @@ is 22 bytes with no lock walk:
 ```
 
 `PhysicsSDK::getScene` returns null for an out-of-range index, and `0x0000b7cd`
-dereferences it without a check, so `NpPhysicsSDK::getScene` **faults** on a bad
-index. Reproducing that needs `Scene`'s layout, which Phase 3 owns. The slot is
-blocked on Phase 3, and it is left a documented placeholder rather than written
-with a magic offset.
+dereferences it without a check, so `NpPhysicsSDK::getScene` faults on a bad
+index. At the original Phase 2 close, the internal `Scene` layout had not yet
+been recovered and the wrapper remained a placeholder. The later Scene layout
+work established the `+0x6cc` public-wrapper field; the slot now forwards the
+index and returns that wrapper in `Physics/src/NpPhysicsSDK.cpp`. The paired
+`NxPhysicsSDKTests` probe verifies two valid indices and the survivor after
+release, with exact oracle output. Its evidence is in
+`evidence/sdk-get-scene.md`. Out-of-range behavior remains intentionally
+untested because the oracle faults.
 
 ---
 

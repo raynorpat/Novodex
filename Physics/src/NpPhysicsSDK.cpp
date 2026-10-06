@@ -99,14 +99,13 @@ void NpPhysicsSDK::releaseScene(NxScene& scene)
 	mSdk->releaseScene(static_cast<NpScene&>(scene).scene());
 	}
 
-NxScene* NpPhysicsSDK::getScene(NxU32)
+NxScene* NpPhysicsSDK::getScene(NxU32 index)
 	{
-	// phys_fn_000240 -> phys_fn_000450. Twenty-two bytes with no lock walk: it
-	// forwards, then reads the NxScene wrapper out of Scene at +0x6cc and
-	// returns it, unguarded -- 0x0000b7cd dereferences whatever getScene handed
-	// back, so an out of range index faults. Reconstructing that needs the Scene
-	// layout, which Phase 3 owns, so this slot is blocked, not open.
-	return 0;
+	// phys_fn_000240 -> phys_fn_000450. The wrapper forwards the index, then
+	// returns Scene's public wrapper at +0x6cc without checking for a null
+	// internal scene. As in the oracle, an out-of-range index faults here.
+	NxSceneInternal* scene = reinterpret_cast<NxSceneInternal*>(mSdk->getScene(index));
+	return static_cast<NxScene*>(scene->publicScene());
 	}
 
 

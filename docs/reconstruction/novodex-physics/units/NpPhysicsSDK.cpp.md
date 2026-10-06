@@ -214,7 +214,7 @@ Decompile (capstone disassembly):
 
 - ambiguous: no
 - source: container-index wrapper (0xb7c0, ret 4)
-- implementation: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/NpPhysicsSDK.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_000224 (0x0000b5b0)

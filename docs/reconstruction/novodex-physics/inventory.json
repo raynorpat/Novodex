@@ -4458,14 +4458,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "container-index wrapper (0xb7c0, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/118",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/882",
       "static_proof": "slot = the index into the container at [this+4] (000450 bounds-commit: slot = *[*ctr+8 + idx*4] if idx < ([ctr+0xc]-[ctr+8])>>2 else 0); return [slot + 0x6cc]",
-      "dynamic_proof": "confirmed via wrap240 differential (3z101): failures=0",
+      "dynamic_proof": "NxPhysicsSDKTests pairs indexed public-scene lookup across two scene creations and survivor lookup after release; mutation returning null is detected (stdout_delta=4)",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000241",
