@@ -9,6 +9,8 @@
 #include "NxPhysicsSDK.h"
 #include "NxScene.h"
 #include "NxSceneDesc.h"
+#include "NxUserOutputStream.h"
+#include "fluids/NxFluidDesc.h"
 #include "NxActor.h"
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
@@ -33,6 +35,48 @@ typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*
 typedef void (NX_CALL_CONV *JointDescSetGlobalAnchorFn)(NxJointDesc&, const NxVec3&);
 typedef void (NX_CALL_CONV *JointDescSetGlobalAxisFn)(NxJointDesc&, const NxVec3&);
 static unsigned nxFloatBits(NxReal value);
+
+class NxSimulationOutputStream : public NxUserOutputStream
+	{
+	public:
+	NxSimulationOutputStream(): errors(0), code(NXE_NO_ERROR), line(0)
+		{
+		message[0] = 0;
+		file[0] = 0;
+		}
+	void reportError(NxErrorCode errorCode, const char* errorMessage, const char* errorFile, int errorLine)
+		{
+		++errors;
+		code = errorCode;
+		line = errorLine;
+		copy(message, sizeof(message), errorMessage);
+		copy(file, sizeof(file), errorFile);
+		}
+	NxAssertResponse reportAssertViolation(const char*, const char*, int)	{ return NX_AR_CONTINUE; }
+	void print(const char*) {}
+	void resetLast()
+		{
+		code = NXE_NO_ERROR;
+		line = 0;
+		message[0] = 0;
+		file[0] = 0;
+		}
+	unsigned errors;
+	NxErrorCode code;
+	int line;
+	char message[128];
+	char file[96];
+	private:
+	static void copy(char* destination, size_t capacity, const char* source)
+		{
+		if(!source)
+			{
+			destination[0] = 0;
+			return;
+			}
+		strncpy_s(destination, capacity, source, _TRUNCATE);
+		}
+	};
 
 static void nxPrintSimulationSceneState(NxScene* scene, unsigned selector, const char* phase)
 	{
@@ -313,7 +357,8 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("NxCreatePhysicsSDK missing");
 		}
 
-	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, 0, 0);
+	NxSimulationOutputStream simulationOutput;
+	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, 0, &simulationOutput);
 	if(!sdk)
 		{
 		FreeLibrary(physics);
@@ -1805,6 +1850,36 @@ int wmain(int argc, wchar_t** argv)
 	nxPrintActorMotionState("friction60", *slidingActor);
 	sdk->releaseScene(*frictionScene);
 	}
+
+	// The shipped SDK exports the fluid API while this build disables its
+	// implementation. Keep the deterministic unsupported contract covered and
+	// release this scene without simulating it: the pinned manager's disabled
+	// path leaves fields uninitialised that its later step path reads.
+	NxSceneDesc fluidSceneDesc;
+	fluidSceneDesc.setToDefault();
+	NxScene* const fluidScene = sdk->createScene(fluidSceneDesc);
+	if(!fluidScene)
+		return nxFail("fluid unsupported scene creation failed");
+	const unsigned fluidErrorsBefore = simulationOutput.errors;
+	simulationOutput.resetLast();
+	const NxU32 emptyFluidCount = fluidScene->getNbFluids();
+	const bool emptyFluidList = fluidScene->getFluids() != 0;
+	NxFluidDesc fluidDesc;
+	fluidDesc.setToDefault();
+	NxFluid* const createdFluid = fluidScene->createFluid(fluidDesc);
+	const NxU32 createdFluidCount = fluidScene->getNbFluids();
+	const bool createdFluidList = fluidScene->getFluids() != 0;
+	unsigned char* const fluidSceneInternal = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(fluidScene) + 0x24);
+	const bool fluidManagerCreated = *reinterpret_cast<void**>(fluidSceneInternal + 0x61c) != 0;
+	printf("simulation fluid unsupported create=%u manager=%u empty=%u.%u created=%u.%u errors=%u code=%u line=%d file=%s message=%s\n",
+		createdFluid != 0, fluidManagerCreated ? 1u : 0u,
+		emptyFluidCount, emptyFluidList ? 1u : 0u,
+		createdFluidCount, createdFluidList ? 1u : 0u,
+		simulationOutput.errors - fluidErrorsBefore,
+		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
+		simulationOutput.file, simulationOutput.message);
+	sdk->releaseScene(*fluidScene);
 
 	sdk->release();
 	for(unsigned sdkCycle = 0; sdkCycle != 2; ++sdkCycle)

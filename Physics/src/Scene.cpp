@@ -736,6 +736,49 @@ NxSceneInternal::NxSceneInternal()
 	nxDword(p, 0x048) = aux ? reinterpret_cast<unsigned>(nxSceneAuxConstruct(aux, p)) : 0;
 	}
 
+// phys_fn_003629 (0x00089f50) lays out FluidManager's empty arrays and records
+// the owning Scene. In this build the fluid implementation flag is false; we
+// initialise the otherwise-unused dirty flag and backend pointer as zero so a
+// disabled manager has deterministic, safe state if the scene is stepped.
+static void* nxSceneCreateDisabledFluidManager(NxSceneInternal* scene)
+	{
+	void* memory = nxFoundationSDKAllocator->malloc(0x34, NX_MEMORY_PERSISTENT);
+	if(!memory)
+		return 0;
+	memset(memory, 0, 0x34);
+	static const unsigned char disabledFluidManagerVtable = 0;
+	*reinterpret_cast<unsigned*>(memory) = reinterpret_cast<unsigned>(&disabledFluidManagerVtable);
+	*reinterpret_cast<void**>(static_cast<unsigned char*>(memory) + 0x24) = scene;
+	static_cast<unsigned char*>(memory)[0x29] = 1;
+	return memory;
+	}
+
+// The FluidManager destructor (slot 0) releases its two empty arrays and the
+// 0x34-byte manager through the Foundation allocator. No fluid or emitter can
+// be created in this build, so those arrays remain null.
+static void nxSceneReleaseDisabledFluidManager(void* manager)
+	{
+	if(manager)
+		nxFoundationSDKAllocator->free(manager);
+	}
+
+// phys_fn_000645 (0x00012b80): create the manager lazily, then forward the
+// descriptor. FluidManager's constructor records +0x2b=0 when the backend is
+// unavailable; createFluid reports the shipped warning and returns null.
+NxFluid* NxSceneInternal::createFluid(const NxFluidDesc& desc)
+	{
+	(void)desc;
+	void*& manager = at<void*>(0x61c);
+	if(!manager)
+		manager = nxSceneCreateDisabledFluidManager(this);
+	if(!manager)
+		return 0;
+	NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+		"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\FluidManager.cpp",
+		0x8a, 0, "NxScene::createFluid(): Feature not available!");
+	return 0;
+	}
+
 
 
 // Reserves an embedded NxArraySDK<T> to `needed` entries through
@@ -2065,6 +2108,11 @@ static void nxSceneDelete(void* self, int flags)
 		static_cast<NxFoundationSDK&>(NxFoundation::FoundationSDK::getInstance())
 			.releaseDebugRenderable(scene->at<NxDebugRenderable*>(0x6b8));
 		scene->at<NxDebugRenderable*>(0x6b8) = 0;
+		}
+	if(void* fluids = scene->at<void*>(0x61c))
+		{
+		nxSceneReleaseDisabledFluidManager(fluids);
+		scene->at<void*>(0x61c) = 0;
 		}
 	for(unsigned offset = 8; offset <= 0xc; offset += 4)
 		{

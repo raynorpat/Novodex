@@ -946,10 +946,22 @@ NxU32 NpScene::overlapAABBTriangles(const NxBounds3& worldBounds, NxArraySDK<NxT
 	return result;
 	}
 
-// (unimplemented) createFluid
-NxFluid* NpScene::createFluid(const NxFluidDesc&)
+// phys_fn_000400 (0x0000d7c0): take the write lock, lazily create the internal
+// fluid manager through Scene, then return the public fluid object (null while
+// the shipped build's fluid backend is disabled).
+NxFluid* NpScene::createFluid(const NxFluidDesc& desc)
 	{
-	return 0;
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x266, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return 0;
+		}
+	void* link = mWriteLock;
+	NxFluid* fluid = mScene->createFluid(desc);
+	nxNpSceneGuardLeave(link);
+	return fluid;
 	}
 
 // (unimplemented) releaseFluid

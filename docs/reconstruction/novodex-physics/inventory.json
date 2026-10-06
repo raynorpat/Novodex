@@ -7412,9 +7412,9 @@
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/143",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1148",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "phys_fn_000400 (0x0000d7c0): NpScene::createFluid takes the scene write lock, delegates to Scene::createFluid, releases the lock, and returns its result; the lock-failure branch reports the NpScene.cpp warning.",
+      "dynamic_proof": "NxPhysicsSimulationTests on oracle and candidate: default createFluid returns null with identical empty-list state and one matching warning; transcript stdout_delta=0 and stderr_exact=True (evidence/fluid-disabled-create.md).",
+      "notes": "Only the disabled backend's unsupported create path is reconstructed; other fluid API behavior remains open."
     },
     {
       "id": "phys_fn_000401",
@@ -11907,9 +11907,9 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/252",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1710",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "phys_fn_000645 (0x00012b80): lazily installs the manager, obtains the descriptor's internal data, and calls the manager's create operation; in the pinned build the operation reports the unavailable-fluid warning and returns null.",
+      "dynamic_proof": "NxPhysicsSimulationTests confirms a manager appears at Scene +0x61c, fluid enumeration remains empty, and the unsupported-create warning matches the oracle; transcript stdout_delta=0 and stderr_exact=True (evidence/fluid-disabled-create.md).",
+      "notes": "The disabled manager allocation and unsupported create branch are covered. The full function and manager step/release callbacks remain open."
     },
     {
       "id": "phys_fn_000646",

@@ -3163,6 +3163,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation stage=spherepair60-b position=3ef33333.00000000.00000000 velocity=00000000.00000000.00000000'
         'simulation contact callbacks=26 events=0000000a pairs=26 patches=26 points=26 normal=80000000.bf800000.80000000 point=00000000.bc916940.00000000 separation=bc916940'
         'simulation stage=contact60 position=00000000.3ee66666.00000000 velocity=00000000.00000000.00000000'
+        # Fluid is exported but disabled in this build. The public call lazily
+        # creates its manager, reports NXE_DB_WARNING from FluidManager.cpp,
+        # and returns null; the scene is released without stepping that manager.
+        'simulation fluid unsupported create=0 manager=1 empty=0.0 created=0.0 errors=1 code=206 line=138 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=NxScene::createFluid(): Feature not available!'
     )
     # Releasing a compound actor must erase its actor-pair hash entry before
     # getPairFlagArray resolves the now-freed group shape ID.
@@ -5375,7 +5379,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1310  # current registered assertions across joint, scene, simulation, mesh, trigger,
+    '7' = 1311  # current registered assertions across joint, scene, simulation, mesh, trigger,
                # effector and core-dump targets; kept equal to the registry count below
     '8' = 0
 }

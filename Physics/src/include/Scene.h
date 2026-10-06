@@ -54,6 +54,8 @@ class NxTriangle;
 template<class T> class NxArraySDK;
 class NxSphere;
 class NxDebugRenderable;
+class NxFluid;
+class NxFluidDesc;
 class Effector;
 class SpringAndDamperEffector;
 class NxSpringAndDamperEffectorDesc;
@@ -85,6 +87,9 @@ class NxSceneInternal
 	// phys_fn_000665 (0x000142c0). The joint factory. Needs at least one of the
 	// two actors dynamic, read through each actor's +0x14 body.
 	NxJoint* createJoint(const NxJointDesc& desc);
+	// phys_fn_000645 (0x00012b80). Lazily creates the disabled-fluid manager,
+	// then asks it to create the requested fluid (which reports unavailable).
+	NxFluid* createFluid(const NxFluidDesc& desc);
 
 	// The joint rows (units/joint-open-items-contract.md "## Scene joint rows").
 	// The Scene keeps its joints three ways: a list through Joint +0x10 headed
