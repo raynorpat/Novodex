@@ -4,6 +4,19 @@ Date: 2026-09-30
 Baseline: `main` at `b942f01` (Merge convex-mesh gap reconstruction into main)
 Status: Active execution. The user selected full-DLL reconstruction and standalone simulation tests before Unreal integration.
 
+### Continuation — grounded controller sweep at floor contact (2026-10-06)
+
+Added a fresh-scene differential where the controller begins exactly at floor
+contact, moves down slightly while sweeping toward a low wall, and must classify
+the time-zero floor contact on the vertical axis. The oracle advances to
+`(0.5, 0.5, 0)` with flags `0x5`; candidate previously remained at the start
+with flags `0x4`. Preserving the inward zero-time boundary axis makes the
+simulation transcript exact. Phase 5 passes 2,042/2,042; Phase 7 passes
+1,358/1,358. Successful step-over and general penetration recovery remain
+open. The full Release Viewer selection passes 48/48, with all 39 scenes
+represented, 43 passes, and five signature-verified oracle asset skips. See
+`docs/reconstruction/novodex-physics/evidence/controller-grounded-sweep.md`.
+
 ### Continuation — isolated grounded controller step response (2026-10-06)
 
 Added the approved fresh-scene controller fixture to isolate the grounded

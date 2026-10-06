@@ -2549,6 +2549,50 @@ int wmain(int argc, wchar_t** argv)
 		nxFloatBits(stepUpPosition.z), obstacleCollisionFlags);
 	stepUpScene->releaseController(*stepUpController);
 	sdk->releaseScene(*stepUpScene);
+	// A controller touching the floor while sweeping into a low wall must
+	// classify the zero-time vertical floor contact, not a side hit.
+	NxSceneDesc groundedSweepSceneDesc;
+	groundedSweepSceneDesc.setToDefault();
+	NxScene* const groundedSweepScene = sdk->createScene(groundedSweepSceneDesc);
+	if(!groundedSweepScene)
+		return nxFail("grounded-sweep controller scene creation failed");
+	NxBoxShapeDesc groundedSweepFloorShape;
+	groundedSweepFloorShape.dimensions = NxVec3(10.0f, 0.5f, 10.0f);
+	NxActorDesc groundedSweepFloorActorDesc;
+	groundedSweepFloorActorDesc.globalPose.t = NxVec3(0.0f, -0.5f, 0.0f);
+	groundedSweepFloorActorDesc.shapes.pushBack(&groundedSweepFloorShape);
+	NxActor* const groundedSweepFloorActor = groundedSweepScene->createActor(groundedSweepFloorActorDesc);
+	NxBoxShapeDesc groundedSweepObstacleShape;
+	groundedSweepObstacleShape.dimensions = NxVec3(0.5f, 0.1f, 1.0f);
+	NxActorDesc groundedSweepObstacleActorDesc;
+	groundedSweepObstacleActorDesc.globalPose.t = NxVec3(1.5f, 0.1f, 0.0f);
+	groundedSweepObstacleActorDesc.shapes.pushBack(&groundedSweepObstacleShape);
+	NxActor* const groundedSweepObstacleActor = groundedSweepScene->createActor(groundedSweepObstacleActorDesc);
+	alignas(4) unsigned char groundedSweepControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(groundedSweepControllerDescStorage + 0x0c) = nxFloatBits(0.0f);
+	*reinterpret_cast<NxU32*>(groundedSweepControllerDescStorage + 0x10) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(groundedSweepControllerDescStorage + 0x14) = nxFloatBits(0.0f);
+	*reinterpret_cast<NxU32*>(groundedSweepControllerDescStorage + 0x1c) = nxFloatBits(1.0f);
+	*reinterpret_cast<NxU32*>(groundedSweepControllerDescStorage + 0x20) = 0;
+	*reinterpret_cast<NxU32*>(groundedSweepControllerDescStorage + 0x24) = nxFloatBits(0.7f);
+	*reinterpret_cast<NxU32*>(groundedSweepControllerDescStorage + 0x2c) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(groundedSweepControllerDescStorage + 0x30) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(groundedSweepControllerDescStorage + 0x34) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(groundedSweepControllerDescStorage + 0x38) = nxFloatBits(0.5f);
+	NxController* const groundedSweepController = groundedSweepScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(groundedSweepControllerDescStorage));
+	if(!groundedSweepFloorActor || !groundedSweepObstacleActor || !groundedSweepController)
+		return nxFail("grounded-sweep controller fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	const NxVec3 groundedSweepDisplacement(2.0f, -0.1f, 0.0f);
+	reinterpret_cast<NxControllerProbe*>(groundedSweepController)->move(
+		groundedSweepDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& groundedSweepPosition = reinterpret_cast<NxControllerProbe*>(groundedSweepController)->getPosition();
+	printf("simulation controller-obstacle grounded-sweep position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(groundedSweepPosition.x), nxFloatBits(groundedSweepPosition.y),
+		nxFloatBits(groundedSweepPosition.z), obstacleCollisionFlags);
+	groundedSweepScene->releaseController(*groundedSweepController);
+	sdk->releaseScene(*groundedSweepScene);
 	NxSceneDesc slideSceneDesc;
 	slideSceneDesc.setToDefault();
 	NxScene* const slideScene = sdk->createScene(slideSceneDesc);

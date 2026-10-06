@@ -3199,6 +3199,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation controller-obstacle vertical position=40800000.3f000000.00000000 flags=00000001'
         'simulation controller-obstacle step position=3f000000.3f000000.00000000 flags=00000005'
         'simulation controller-obstacle step-response-isolated position=3f000000.3f000000.00000000 flags=00000005'
+        'simulation controller-obstacle grounded-sweep position=3f000000.3f000000.00000000 flags=00000005'
         'simulation controller-obstacle trigger position=40f00000.00000000.00000000 flags=00000004'
         'simulation controller-obstacle rotated-corner position=bf50704e.00000000.3f4ccccd flags=00000004'
         # IDA's controller shape dispatch accepts box and triangle mesh types;
@@ -5439,7 +5440,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1357  # previous 1,356 plus the isolated grounded step-response scene
+    '7' = 1358  # previous 1,357 plus the grounded sweep's floor-contact classification
                # (free-space, actor pose, obstacle/group filter, vertical, grounded step, trigger, overlap)
     '8' = 0
 }

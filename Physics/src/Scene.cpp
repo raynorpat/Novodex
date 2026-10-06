@@ -2129,6 +2129,7 @@ namespace
 							hi.x + extents.x, hi.y + extents.y, hi.z + extents.z};
 						const NxReal start[3] = {position.x, position.y, position.z};
 						const NxReal delta[3] = {remaining.x, remaining.y, remaining.z};
+						NxU32 entryAxis = 0;
 						bool startsInside = true;
 						for(NxU32 axis = 0; axis != 3; ++axis)
 							if(start[axis] <= expandedMin[axis] || start[axis] >= expandedMax[axis])
@@ -2161,7 +2162,6 @@ namespace
 						NxReal enter = 0.0f;
 						NxReal leave = 1.0f;
 						NxU32 axis = 0;
-						NxU32 entryAxis = 0;
 						bool intersects = true;
 						for(; axis != 3; ++axis)
 							{
@@ -2179,7 +2179,13 @@ namespace
 								first = last;
 								last = swap;
 								}
-							if(first > enter)
+							// A contact exactly at the start of the sweep is still
+							// entering when motion points into that face. Preserve its
+							// axis instead of leaving the default X hit normal.
+							const bool inwardBoundaryContact = first == 0.0f &&
+								((start[axis] == expandedMin[axis] && delta[axis] > 0.0f) ||
+								 (start[axis] == expandedMax[axis] && delta[axis] < 0.0f));
+							if(!startsInside && (first > enter || inwardBoundaryContact))
 								{
 								enter = first;
 								entryAxis = axis;
