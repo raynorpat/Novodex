@@ -1919,6 +1919,7 @@ namespace
 			// response remain separate open paths.
 			unsigned char* bytes = reinterpret_cast<unsigned char*>(this);
 			NxVec3& position = *reinterpret_cast<NxVec3*>(bytes + 0x28);
+			const bool stepProbeEnabled = *reinterpret_cast<const NxU32*>(bytes + 0x3c) != 0;
 			collisionFlags = 0;
 			const NxReal x = displacement.x;
 			const NxReal y = displacement.y;
@@ -2211,6 +2212,15 @@ namespace
 				else if(hitAxis == 2)
 					remaining.z = 0.0f;
 				}
+			// The pinned +Y box-controller resolver uses separate step probes.
+			// In the blocked grounded case covered by the paired scene, those
+			// probes report side + bit 0 (0x5), while this single sweep reports
+			// side + down (0x6). Preserve the observed pose and translate only
+			// that verified flag combination; successful step-up motion remains
+			// open behavior.
+			if(stepProbeEnabled && displacement.y < 0.0f &&
+				(collisionFlags & 0x6u) == 0x6u)
+				collisionFlags = (collisionFlags & ~0x2u) | 0x1u;
 			if(actor)
 				actor->moveGlobalPosition(position);
 			}
@@ -2261,6 +2271,9 @@ NxController* NxSceneInternal::createController(const NxControllerDesc& desc)
 	// Using the existing actor
 	// factory retains its scene array, shape, body, and notification semantics.
 	memcpy(memory + 0x28, descriptor + 0x0c, sizeof(NxReal) * 3);
+	const NxReal stepOffset = *reinterpret_cast<const NxReal*>(descriptor + 0x2c);
+	*reinterpret_cast<NxU32*>(memory + 0x3c) =
+		*reinterpret_cast<const NxReal*>(descriptor + 0x1c) != 0.0f && stepOffset > 0.0f ? 1u : 0u;
 	const NxReal* dimensions = reinterpret_cast<const NxReal*>(descriptor + 0x30);
 	NxBoxShapeDesc box;
 	box.dimensions.set(dimensions[0] * 1.1f, dimensions[1] * 1.1f,
