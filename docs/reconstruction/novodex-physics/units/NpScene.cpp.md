@@ -2182,13 +2182,13 @@ undefined4 __fastcall FUN_1000d660(int param_1)
 
 ```
 
-## phys_fn_000394 (0x0000d680, 137 B, discovered)
+## phys_fn_000394 (0x0000d680, 137 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/NpScene.cpp
-- implementation: None
-- prototype: None
-- calling convention: None, stack purge: None
+- implementation: Physics/src/NpScene.cpp
+- prototype: void __thiscall NpScene::simulate(NxReal elapsedTime)
+- calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000285 (0x0000c310)
 - callees: phys_fn_000538 (0x000106e0), phys_fn_002362 (0x0005b700), phys_fn_002366 (0x0005b790), phys_fn_002373 (0x0005b7f0)
 - indirect calls: 0x0000d6b2  call dword ptr [0x101041b4]

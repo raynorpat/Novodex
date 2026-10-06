@@ -9275,3 +9275,5 @@ source from the worktree, rebuilding, and rerunning returned
 then passed at 867/867 and 1,312/1,312 respectively.
 
     phys_fn_004403  supportSolveNormal004403  stdout_delta=4
+
+Phase 7 closure addition (`phys_fn_000394`, `NpScene::simulate`): the public negative/zero elapsed-time and pending-run fixture is documented in `evidence/scene-simulate-dt.md`. A throwaway-archive mutation to the `Scene+0x544` timestep store changed the registered `simulation submit state` record and was caught by `NxPhysicsSimulationTests` (`stdout_delta=1064`).

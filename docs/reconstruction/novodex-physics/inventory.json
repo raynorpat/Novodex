@@ -7300,13 +7300,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/194",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1139",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "Partial NpScene::simulate wrapper coverage: the public regression records NXE_INVALID_PARAMETER at source line 0x21c for negative elapsed time and verifies that zero elapsed time is accepted and fetched (evidence/scene-simulate-dt.md; tests/PhysicsSimulationTests.cpp). Keep discovered: the complete lock/reentry, internal Scene call, condition signaling, and worker-state protocol for this 137-byte row still needs static and mutation-falsification work."
+      "static_proof": "Transcribed the full oracle instruction range 0xd680-0xd706: FCOMP against +0.0 and C0 error branch to NXE_INVALID_PARAMETER at NpScene.cpp:0x21c; otherwise lock at NpScene+0x10, read +0x20 and unlock; return if pending; call phys_fn_000538 to store elapsed time at Scene+0x544; reacquire +0x10, set NpScene+0x20, call phys_fn_002373 with NpScene+0x18 to SetEvent on the stored work handle, then unlock. Candidate: NpScene::simulate in Physics/src/NpScene.cpp.",
+      "dynamic_proof": "Paired public NxPhysicsSimulationTests verifies the negative-time diagnostic tuple, successful zero-time completion, first-submit-wins timestep (0.125 despite a second 0.25 submission), pending byte set before completion and cleared by fetch. Exact differential, stdout_delta=0 and stderr_exact=True (evidence/scene-simulate-dt.md; build/FluidGate/np-scene-protocol-differential.log). A throwaway git-archive timestep mutation was caught by the registered Phase 7 target with stdout_delta=1064 (build/mutation-npscene-simulate-28a6e1b8/mutant-diff.log).",
+      "notes": "Full wrapper source reconstructed and row-specific mutation caught; Phase 7 closure ledger records the throwaway-archive proof."
     },
     {
       "id": "phys_fn_000395",

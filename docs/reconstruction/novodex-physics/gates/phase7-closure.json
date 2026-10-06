@@ -2,9 +2,9 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 4 functions are closed, 298 reconstructed functions remain unfalsified, 259 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 5 functions are closed, 298 reconstructed functions remain unfalsified, 258 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
   "proof_kinds": {
-    "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through NxPhysicsJointStagedPairTests, a REGISTERED Phase 7 STAGED-PAIR target. The mutation is to the row's CONTROL FLOW, because the harness drives identity poses and identity quaternions -- arithmetic mutations cancel on those inputs (evidence 12d) -- while a mutation that breaks a construction moves the `created=yes` line the harness prints (12h).",
+    "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
   },
   "deferred_reasons": {
@@ -19,9 +19,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 4,
+    "differential_falsified": 5,
     "deferred_reconstructed_not_falsified": 298,
-    "deferred_not_reconstructed_in_phase": 259
+    "deferred_not_reconstructed_in_phase": 258
   },
   "closed": [
     {
@@ -62,6 +62,16 @@
       "falsification": {
         "mutation": "the body link was short-circuited in a throwaway `git archive` copy of HEAD: `nxActorBuildBody` returns before linking the body at actor+0x14, so every actor the harness builds is static. `Scene::createJoint` then refuses the pair -- \"at least one of the two actors must be dynamic\" -- and every case fails to create its joint. The copy was rebuilt with NxFoundation, NxPhysics and NxPhysicsJointTests, and the harness was run against the rebuilt pair with the pinned oracle transcript as the baseline. CAUGHT, measured as stdout_delta=30: the mutant exit=0 with a 21-line transcript against the oracle's 29, losing every case's `created=yes`, `out_anchor`, `actors` and `released` lines.",
         "detected": "stdout_delta=30"
+      }
+    },
+    {
+      "id": "phys_fn_000394",
+      "rva": "0x0000d680",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a throwaway git-archive copy of committed HEAD, changed the row's Scene+0x544 store from `elapsedTime` to `elapsedTime + 0.125f`, rebuilt NxPhysics and NxPhysicsSimulationTests, and ran the registered Phase 7 differential against the pinned oracle. The fixture's expected submitted dt `3e000000` became `3e800000`; the mutated candidate still exited 0 but diverged across the simulation transcript.",
+        "detected": "stdout_delta=1064"
       }
     }
   ],
@@ -338,14 +348,6 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed and dynamically compared for hits, misses, full output order across two meshes, prefilled output, and translated mesh; no mutation has yet been aimed at this wrapper"
-    },
-    {
-      "id": "phys_fn_000394",
-      "rva": "0x0000d680",
-      "size": 137,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_000398",
