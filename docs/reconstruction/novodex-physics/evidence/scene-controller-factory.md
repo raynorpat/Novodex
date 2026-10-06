@@ -29,8 +29,18 @@ and exact stderr. Phase 5 passes 2,042/2,042 assertions; Phase 7 passes
 1,338/1,338 assertions. The all-scene Viewer selection passes 48/48 selected
 cases, including 43 passes and five existing signature-verified skips.
 
-The returned object's primary vtable is a lifecycle shell with only destructor
-slots. The test deliberately does not call controller methods. The rest of the
-controller virtual interface and complete public-object vtable remain open, so
-this is not yet usable controller support or a complete reconstruction of the
-factory callees.
+IDA confirms the primary vtable at `0x10108824` has three entries: deleting
+destructor (`0x1005a470`), `move` (`0x10059710`), and `getPosition`
+(`0x1005a870`). The getter returns `this + 0x28`; the constructor initializes
+that vector from descriptor `+0x0c`. A private test-only ABI mirror now calls
+the getter on two controllers and checks both bit-exact positions. Before the
+implementation change the oracle returned the descriptor values while the
+candidate's old destructor-only vtable returned invalid values; after the
+change the simulation differential passes with `stdout_delta=0` and exact
+stderr.
+
+The vtable layout and getter are reconstructed. The `move` slot is present to
+preserve dispatch layout but its collision-aware algorithm is not implemented
+yet. The rest of the constructor/destructor callees and complete controller
+interface remain open; this is still partial controller support, not a claim
+that controller behavior is complete.

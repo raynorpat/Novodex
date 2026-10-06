@@ -1813,12 +1813,20 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 // actor, so that actor deliberately remains registered in the Scene.
 namespace
 	{
-	// Lifecycle shell only: this local primary vtable has no NxController API
-	// slots. Do not treat the returned object as method-call capable; Controller's
-	// public virtual interface still needs its own recovered vtable and methods.
+	// The pinned three-slot primary vtable is scalar-deleting destructor,
+	// move(NxVec3, activeGroups, minDistance, collisionFlags), and getPosition.
+	// The getter is reconstructed below. The collision-aware move algorithm is
+	// still open; keep the slot present so callers dispatch through the recovered
+	// ABI while that behavior is completed.
 	struct NxControllerCore
 		{
 		virtual ~NxControllerCore() {}
+		virtual void move(const NxVec3&, NxU32, NxReal, NxU32&) {}
+		virtual const NxVec3& getPosition() const
+			{
+			return *reinterpret_cast<const NxVec3*>(
+				reinterpret_cast<const unsigned char*>(this) + 0x28);
+			}
 		static void operator delete(void* memory)
 			{
 			if(memory && nxFoundationSDKAllocator)
@@ -1855,9 +1863,11 @@ NxController* NxSceneInternal::createController(const NxControllerDesc& desc)
 	*reinterpret_cast<void**>(memory + 4) = proxy;
 
 	// Controller::Controller copies its position components from descriptor
-	// +0x0c..+0x14 and the dimensions from +0x30. It creates a kinematic box actor with a
-	// 10-unit density and 1.1x controller extents. Using the existing actor
+	// +0x0c..+0x14 to object +0x28 and the dimensions from +0x30. It creates a
+	// kinematic box actor with a 10-unit density and 1.1x controller extents.
+	// Using the existing actor
 	// factory retains its scene array, shape, body, and notification semantics.
+	memcpy(memory + 0x28, descriptor + 0x0c, sizeof(NxReal) * 3);
 	const NxReal* dimensions = reinterpret_cast<const NxReal*>(descriptor + 0x30);
 	NxBoxShapeDesc box;
 	box.dimensions.set(dimensions[0] * 1.1f, dimensions[1] * 1.1f,

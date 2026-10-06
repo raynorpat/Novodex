@@ -40,6 +40,18 @@ typedef void (NX_CALL_CONV *JointDescSetGlobalAnchorFn)(NxJointDesc&, const NxVe
 typedef void (NX_CALL_CONV *JointDescSetGlobalAxisFn)(NxJointDesc&, const NxVec3&);
 static unsigned nxFloatBits(NxReal value);
 
+// Private ABI probe for the three-entry controller vtable recovered from the
+// pinned DLL. Keep this test-only: the public NxController declaration remains
+// intentionally incomplete and unchanged.
+class NxControllerProbe
+	{
+	public:
+	virtual ~NxControllerProbe() {}
+	virtual void move(const NxVec3&, NxU32 activeGroups, NxReal minDistance,
+		NxU32& collisionFlags) = 0;
+	virtual const NxVec3& getPosition() const = 0;
+	};
+
 static unsigned gNxSimulationFluidDestructorCalls = 0;
 static unsigned gNxSimulationFluidDestructorFlags = 0;
 static void* gNxSimulationFluidDestructorObject = 0;
@@ -2317,6 +2329,19 @@ int wmain(int argc, wchar_t** argv)
 		controllerSceneActorCountCreated);
 	controllerCreateFailed = controllerCreateFailed || controller == 0 || secondController == 0 ||
 		controllerSceneActorCountCreated != controllerSceneActorCountBefore + 2;
+	if(controller && secondController)
+		{
+		const NxVec3& firstPosition =
+			reinterpret_cast<NxControllerProbe*>(controller)->getPosition();
+		const NxVec3& secondPosition =
+			reinterpret_cast<NxControllerProbe*>(secondController)->getPosition();
+		printf("simulation controller-position first=%08x.%08x.%08x second=%08x.%08x.%08x\n",
+			nxFloatBits(firstPosition.x), nxFloatBits(firstPosition.y), nxFloatBits(firstPosition.z),
+			nxFloatBits(secondPosition.x), nxFloatBits(secondPosition.y), nxFloatBits(secondPosition.z));
+		controllerCreateFailed = controllerCreateFailed ||
+			firstPosition.x != 0.0f || firstPosition.y != 0.0f || firstPosition.z != 0.0f ||
+			secondPosition.x != 2.0f || secondPosition.y != 0.0f || secondPosition.z != 0.0f;
+		}
 	NxActor** const controllerActors = controllerScene->getActors();
 	for(NxU32 index = 0; index != 2 && index < controllerSceneActorCountCreated; ++index)
 		{

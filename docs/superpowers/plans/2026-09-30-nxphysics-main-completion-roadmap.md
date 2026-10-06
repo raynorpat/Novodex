@@ -4,6 +4,23 @@ Date: 2026-09-30
 Baseline: `main` at `b942f01` (Merge convex-mesh gap reconstruction into main)
 Status: Active execution. The user selected full-DLL reconstruction and standalone simulation tests before Unreal integration.
 
+### Continuation — controller position ABI (2026-10-06)
+
+The approved all-scenes Viewer selection remains part of verification. A new
+test-only private ABI probe calls the recovered controller position getter.
+The first differential was RED: the oracle returned the two descriptor
+positions, while the candidate's destructor-only vtable produced invalid
+values. IDA shows the three-slot primary vtable (deleting destructor, move,
+getPosition), with getPosition returning `this + 0x28`. The candidate now
+installs those slots, initializes object position from descriptor `+0x0c`, and
+returns that state through getPosition. `NxPhysicsSimulationTests` is exact
+after the fix. Fresh Phase 5 and Phase 7 gates pass at 2,042/2,042 and
+1,338/1,338 assertions. The approved Viewer selection passes all 48 tests:
+43 pass, including the runnable scenes and both focused Viewer physics cases;
+five pinned-oracle asset failures retain their signature-checked skip status.
+The collision-aware move algorithm remains open; this is still partial
+controller support. No public Physics header changed.
+
 ### Continuation — scene controller factory (2026-10-06)
 
 Recovered the `NpScene` forwarding entries and implemented a tested slice of
@@ -17,10 +34,10 @@ Viewer selection passes 48 selected cases (43 passed, five existing
 signature-verified skips). See
 `docs/reconstruction/novodex-physics/evidence/scene-controller-factory.md`.
 
-This remains an explicitly partial slice: the returned object's primary vtable
-has only lifecycle destructor slots, and the controller virtual methods are not
-usable yet. The rest of the constructor/destructor callees, controller
-interface, full-DLL completion and Unreal integration remain open.
+This remains an explicitly partial slice: the primary vtable layout and
+position getter are recovered, while collision-aware movement and the rest of
+the constructor/destructor callees remain open. Full-DLL completion and Unreal
+integration remain open.
 
 ### Continuation — spring/damper scene-step integration (2026-10-06)
 
