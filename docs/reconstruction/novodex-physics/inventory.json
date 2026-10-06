@@ -42373,7 +42373,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7219",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "The full collision resolver is not implemented: the row performs three controller sweep queries and optional step-up logic through phys_fn_002304. The candidate currently implements an axis-aligned swept-AABB box subset with active-group filtering, tangential projection, and limited directional handling for initial overlap in the phys_fn_002308 vtable slot; oriented/convex/mesh sweeps, generalized multi-contact sliding, and step-up remain open."
+      "notes": "The full collision resolver is not implemented: the row performs three controller sweep queries and optional step-up logic through phys_fn_002304. The candidate implements axis-aligned sweeps plus a tested 45-degree OBB/AABB sweep case, active-group filtering, tangential projection, and limited directional handling for initial overlap in the phys_fn_002308 vtable slot; the broader transformed/convex/mesh sweeps, generalized multi-contact sliding, and step-up remain open."
     },
     {
       "id": "phys_fn_002307",
@@ -42408,8 +42408,8 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/860",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7230",
       "static_proof": null,
-      "dynamic_proof": "NxPhysicsSimulationTests paired differential drives the three-slot controller vtable: free-space translation (0.25,0,0) preserves the generated actor's pre-step pose; an X sweep toward a static box stops at x=0.5 with flags=4; activeGroups=0 passes through to x=2.5 with flags=0; a diagonal move slides along the X wall to (0.5,0,1) with flags=4; a controller initially at x=0.75 inside the expanded box can escape to x=0.25 with flags=0, while moving inward remains at x=0.75 with flags=4; a +Y sweep toward an overhead box stops at y=0.5 with flags=1; an enabled trigger box stops the controller at x=7.5 with flags=4. Oracle and candidate transcripts match exactly. This covers a bounded axis-aligned box subset only.",
-      "notes": "Candidate implements axis-aligned swept-AABB filtering, a bounded tangential projection loop, and limited directional handling when initially overlapping a box. Keep state discovered until oriented box/convex/mesh sweeps, full penetration recovery, full step-up/slide behavior, callback paths, and broader controller lifecycle behavior are reconstructed and falsified."
+      "dynamic_proof": "NxPhysicsSimulationTests paired differential drives the three-slot controller vtable: free-space translation (0.25,0,0) preserves the generated actor's pre-step pose; an X sweep toward a static box stops at x=0.5 with flags=4; activeGroups=0 passes through to x=2.5 with flags=0; a diagonal move slides along the X wall to (0.5,0,1) with flags=4; a controller initially at x=0.75 inside the expanded box can escape to x=0.25 with flags=0, while moving inward remains at x=0.75 with flags=4; a +Y sweep toward an overhead box stops at y=0.5 with flags=1; an enabled trigger box stops the controller at x=7.5 with flags=4; a 45-degree thin OBB sweep at an offset through its empty world-AABB corner stops at x bits bf50704e with flags=4. Oracle and candidate transcripts match exactly. This is still a bounded box subset.",
+      "notes": "Candidate implements axis-aligned swept-AABB filtering, a 15-axis swept OBB/AABB box path, a bounded tangential projection loop, and limited directional handling when initially overlapping a box. Keep state discovered until the broader transformed/convex/mesh sweep matrix, full penetration recovery, full step-up/slide behavior, callback paths, and broader controller lifecycle behavior are reconstructed and falsified."
     },
     {
       "id": "phys_fn_002309",

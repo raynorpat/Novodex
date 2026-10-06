@@ -70,6 +70,22 @@ general depenetration or alternate contact manifolds. Phase 5 passes
 2,042/2,042, Phase 7 passes 1,347/1,347, and the complete Viewer selection
 passes 48/48 with five existing signature-verified oracle skips.
 
+### Continuation — rotated controller box sweep case (2026-10-06)
+
+Added an oracle fixture that sweeps past the empty corner of a 45-degree thin
+box. It first exposed a two-ULP contact-position difference between the
+axis-aligned candidate bound and the oracle. The controller now performs a
+15-axis swept AABB/OBB interval test for rotated box obstacles, with outward
+rounding on the support radius; the full `NxPhysicsSimulationTests` differential
+passes exactly (`stdout_delta=0`, `stderr_exact=True`). The result is pinned in
+Phase 7, whose fresh final-source gate passes 1,348/1,348 assertions; Phase 5
+also passes 2,042/2,042. The rebuilt Viewer passes all 48 selected cases: 43
+pass and five verified oracle-asset cases skip by signature, including all 39
+available scenes and both focused Viewer physics checks. The broader
+transformed shape matrix, convex/mesh sweeps, penetration recovery, full
+slide/step handling, and hit callbacks remain open. No public Physics headers
+changed.
+
 ### Continuation — controller position ABI (2026-10-06)
 
 The approved all-scenes Viewer selection remains part of verification. A new

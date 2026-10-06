@@ -2607,6 +2607,48 @@ int wmain(int argc, wchar_t** argv)
 	controllerObstacleScene->releaseController(*obstacleController);
 	sdk->releaseScene(*controllerObstacleScene);
 
+	// A rotated thin box has an axis-aligned world bound that contains a large
+	// empty corner. Moving along X at an offset through that corner distinguishes
+	// a true controller sweep from treating every obstacle as its world AABB.
+	NxSceneDesc rotatedControllerSceneDesc;
+	rotatedControllerSceneDesc.setToDefault();
+	NxScene* const rotatedControllerScene = sdk->createScene(rotatedControllerSceneDesc);
+	if(!rotatedControllerScene)
+		return nxFail("rotated controller scene creation failed");
+	NxBoxShapeDesc rotatedControllerObstacleShape;
+	rotatedControllerObstacleShape.dimensions = NxVec3(1.0f, 0.5f, 0.1f);
+	NxActorDesc rotatedControllerObstacleActorDesc;
+	rotatedControllerObstacleActorDesc.globalPose.M =
+		NxMat33(NxQuat(45.0f, NxVec3(0.0f, 1.0f, 0.0f)));
+	rotatedControllerObstacleActorDesc.shapes.pushBack(&rotatedControllerObstacleShape);
+	NxActor* const rotatedControllerObstacle = rotatedControllerScene->createActor(
+		rotatedControllerObstacleActorDesc);
+	alignas(4) unsigned char rotatedControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(rotatedControllerDescStorage + 0x0c) = nxFloatBits(-2.0f);
+	*reinterpret_cast<NxU32*>(rotatedControllerDescStorage + 0x14) = nxFloatBits(0.8f);
+	*reinterpret_cast<NxU32*>(rotatedControllerDescStorage + 0x30) = nxFloatBits(0.1f);
+	*reinterpret_cast<NxU32*>(rotatedControllerDescStorage + 0x34) = nxFloatBits(0.25f);
+	*reinterpret_cast<NxU32*>(rotatedControllerDescStorage + 0x38) = nxFloatBits(0.1f);
+	NxController* const rotatedController = rotatedControllerScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(rotatedControllerDescStorage));
+	if(!rotatedControllerObstacle || !rotatedController)
+		return nxFail("rotated controller fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	const NxVec3 rotatedObstacleDisplacement(4.0f, 0.0f, 0.0f);
+	reinterpret_cast<NxControllerProbe*>(rotatedController)->move(
+		rotatedObstacleDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& rotatedControllerPosition =
+		reinterpret_cast<NxControllerProbe*>(rotatedController)->getPosition();
+	printf("simulation controller-obstacle rotated-corner position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(rotatedControllerPosition.x), nxFloatBits(rotatedControllerPosition.y),
+		nxFloatBits(rotatedControllerPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(rotatedControllerPosition.x) != 0xbf50704e ||
+		nxFloatBits(rotatedControllerPosition.y) != 0 ||
+		nxFloatBits(rotatedControllerPosition.z) != 0x3f4ccccd || obstacleCollisionFlags != 4;
+	rotatedControllerScene->releaseController(*rotatedController);
+	sdk->releaseScene(*rotatedControllerScene);
+
 	sdk->release();
 	for(unsigned sdkCycle = 0; sdkCycle != 2; ++sdkCycle)
 		{

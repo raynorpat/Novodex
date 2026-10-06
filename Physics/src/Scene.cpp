@@ -30,9 +30,11 @@
 #include "NxSceneDesc.h"
 #include "NxSceneStats.h"
 #include "NxBounds3.h"
+#include "NxBox.h"
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
 #include "NxShapeDesc.h"
+#include "NxBoxShape.h"
 #include "NxBoxShapeDesc.h"
 #include "NxSphereShapeDesc.h"
 #include "NxCapsuleShapeDesc.h"
@@ -1873,6 +1875,97 @@ namespace
 						const NxU32 group = shape->getGroup();
 						if(group >= 32 || !(activeGroups & (1u << group)))
 							continue;
+						if(shape->getType() == NX_SHAPE_BOX)
+							{
+							NxBoxShape* box = shape->isBox();
+							NxBox worldBox;
+							box->getWorldOBB(worldBox);
+							const NxMat33& orientation = worldBox.GetRot();
+							const NxVec3 boxAxis[3] = {
+								orientation.getColumn(0), orientation.getColumn(1),
+								orientation.getColumn(2)};
+							const bool oriented =
+								NxMath::abs(boxAxis[0].y) > 0.0001f ||
+								NxMath::abs(boxAxis[0].z) > 0.0001f ||
+								NxMath::abs(boxAxis[1].x) > 0.0001f ||
+								NxMath::abs(boxAxis[1].z) > 0.0001f ||
+								NxMath::abs(boxAxis[2].x) > 0.0001f ||
+								NxMath::abs(boxAxis[2].y) > 0.0001f;
+							if(oriented)
+								{
+								const NxVec3& boxPosition = worldBox.GetCenter();
+								const NxVec3& boxExtents = worldBox.GetExtents();
+								const NxVec3 relativeStart = position - boxPosition;
+								const NxVec3 worldAxis[3] = {
+									NxVec3(1.0f, 0.0f, 0.0f), NxVec3(0.0f, 1.0f, 0.0f),
+									NxVec3(0.0f, 0.0f, 1.0f)};
+								NxVec3 sweepAxis[15];
+								NxU32 sweepAxisCount = 0;
+								for(NxU32 i = 0; i != 3; ++i)
+									sweepAxis[sweepAxisCount++] = worldAxis[i];
+								for(NxU32 i = 0; i != 3; ++i)
+									sweepAxis[sweepAxisCount++] = boxAxis[i];
+								for(NxU32 i = 0; i != 3; ++i)
+									for(NxU32 j = 0; j != 3; ++j)
+										sweepAxis[sweepAxisCount++] = worldAxis[i] ^ boxAxis[j];
+								NxReal enter = 0.0f;
+								NxReal leave = 1.0f;
+								NxU32 entryAxis = 0;
+								bool intersects = true;
+								for(NxU32 axisIndex = 0; axisIndex != sweepAxisCount; ++axisIndex)
+									{
+									const NxVec3& axis = sweepAxis[axisIndex];
+									if(axis.magnitudeSquared() < 1.0e-12f)
+										continue;
+									const NxReal startProjection = relativeStart.dot(axis);
+									const NxReal deltaProjection = remaining.dot(axis);
+									const NxReal controllerRadius =
+										NxMath::abs(axis.x) * extents.x +
+										NxMath::abs(axis.y) * extents.y +
+										NxMath::abs(axis.z) * extents.z;
+									const NxReal boxRadius = axisIndex >= 3 && axisIndex < 6 ?
+										boxExtents[axisIndex - 3] :
+										NxMath::abs(boxAxis[0].dot(axis)) * boxExtents.x +
+										NxMath::abs(boxAxis[1].dot(axis)) * boxExtents.y +
+										NxMath::abs(boxAxis[2].dot(axis)) * boxExtents.z;
+									NxReal radius = controllerRadius + boxRadius;
+									// Round the projected contact interval outward so a boundary
+									// hit is not lost to the final float addition.
+									radius += radius * 1.1920928955078125e-7f;
+									if(deltaProjection == 0.0f)
+										{
+										if(startProjection < -radius || startProjection > radius)
+											intersects = false;
+										continue;
+										}
+									NxReal first = (-radius - startProjection) / deltaProjection;
+									NxReal last = (radius - startProjection) / deltaProjection;
+									if(first > last)
+										{
+										const NxReal swap = first;
+										first = last;
+										last = swap;
+										}
+									if(first > enter)
+										{
+										enter = first;
+										entryAxis = axisIndex;
+										}
+									if(last < leave)
+										leave = last;
+									if(enter > leave)
+										intersects = false;
+									}
+								if(intersects && leave >= 0.0f && enter >= 0.0f && enter < fraction)
+									{
+									fraction = enter;
+									const NxVec3& hitNormal = sweepAxis[entryAxis];
+									hitAxis = hitNormal.y * hitNormal.y >
+										0.5f * hitNormal.magnitudeSquared() ? 1u : 0u;
+									}
+								continue;
+								}
+							}
 						NxBounds3 shapeBounds;
 						shape->getWorldBounds(shapeBounds);
 						const NxVec3& lo = shapeBounds.getMin();

@@ -65,9 +65,22 @@ behavior is also partially pinned: from X=0.75 inside the wall's expanded
 bounds, moving outward by -0.5 escapes to X=0.25 with no flags; moving inward
 by +0.5 stays at X=0.75 with flag 4. The candidate's first version blocked
 both directions, and the escape differential was red before adding nearest
-face-directed escape handling. Rotated shapes, convex/mesh query faces,
-general penetration recovery, multiple-face sliding, step-up, and callbacks
-remain open. The rest of the
+face-directed escape handling. Convex/mesh query faces, general penetration
+recovery, multiple-face sliding, step-up, callbacks, and the broader
+transformed-shape matrix remain open. A 45-degree thin-box fixture moves at an
+offset through the rotated box's empty world-AABB corner. The initial
+candidate stopped two float ULPs early; the axis-projection sweep with
+outward-rounded support intervals now matches the oracle bit-for-bit
+(`bf50704e`, flag 4; Phase 7 coverage). This exercises a rotated-box sweep
+case, not the complete transformed-shape matrix. The rest of the
 constructor/destructor callees and complete controller interface remain open;
 this is still partial controller support, not a claim that controller
 behavior is complete.
+
+The final-source focused paired differential is exact (`stdout_delta=0`,
+`stderr_exact=True`; `build/controller-rotated-fullsat-diff.log`). Fresh Phase 5
+passes 2,042/2,042 (`build/controller-rotated-box-phase5.log`), and Phase 7
+passes 1,348/1,348 (`build/controller-rotated-box-phase7-final.log`). The
+all-scenes Viewer gate passes all 48 selections on the rebuilt final DLL:
+43 pass and the same five pinned-oracle asset failures skip by signature
+(`build/controller-rotated-box-viewer-ctest.log`).
