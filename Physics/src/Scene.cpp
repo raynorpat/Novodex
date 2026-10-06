@@ -1891,6 +1891,11 @@ namespace
 		// movement therefore escapes the initial mesh overlap in either direction.
 		if(startsOverlapped)
 			return false;
+		// The controller's mesh query is one-sided: a reversed-winding copy of
+		// the same face is ignored when motion approaches from its back side.
+		const NxVec3 triangleNormal = edge[0] ^ edge[1];
+		if(triangleNormal.dot(displacement) >= 0.0f)
+			return false;
 		if(leave < 0.0f || enter < 0.0f || enter > 1.0f)
 			return false;
 		hitFraction = enter;

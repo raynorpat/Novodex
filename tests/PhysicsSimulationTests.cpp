@@ -2841,6 +2841,59 @@ int wmain(int argc, wchar_t** argv)
 	sdk->releaseScene(*meshHitScene);
 	sdk->releaseTriangleMesh(*controllerMesh);
 
+	// Reverse the established controller mesh winding so the moving controller
+	// approaches the back side of the same triangular face.
+	const NxU32 backfaceMeshIndices[] = {0, 3, 1, 0, 2, 3};
+	NxTriangleMeshDesc backfaceMeshDesc;
+	backfaceMeshDesc.numVertices = 4;
+	backfaceMeshDesc.numTriangles = 2;
+	backfaceMeshDesc.pointStrideBytes = sizeof(NxPoint);
+	backfaceMeshDesc.triangleStrideBytes = 3 * sizeof(NxU32);
+	backfaceMeshDesc.points = controllerMeshPoints;
+	backfaceMeshDesc.triangles = backfaceMeshIndices;
+	NxTriangleMesh* const backfaceMesh = sdk->createTriangleMesh(backfaceMeshDesc);
+	if(!backfaceMesh)
+		return nxFail("controller back-face mesh cooking failed");
+	NxSceneDesc backfaceControllerSceneDesc;
+	backfaceControllerSceneDesc.setToDefault();
+	NxScene* const backfaceControllerScene = sdk->createScene(backfaceControllerSceneDesc);
+	if(!backfaceControllerScene)
+		return nxFail("controller back-face scene creation failed");
+	NxTriangleMeshShapeDesc backfaceObstacleShape;
+	backfaceObstacleShape.meshData = backfaceMesh;
+	NxActorDesc backfaceObstacleActorDesc;
+	backfaceObstacleActorDesc.globalPose.t = NxVec3(1.5f, 0.0f, 0.0f);
+	backfaceObstacleActorDesc.shapes.pushBack(&backfaceObstacleShape);
+	NxActor* const backfaceObstacle = backfaceControllerScene->createActor(
+		backfaceObstacleActorDesc);
+	alignas(4) unsigned char backfaceControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(backfaceControllerDescStorage + 0x0c) = nxFloatBits(-2.0f);
+	*reinterpret_cast<NxU32*>(backfaceControllerDescStorage + 0x10) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(backfaceControllerDescStorage + 0x14) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(backfaceControllerDescStorage + 0x30) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(backfaceControllerDescStorage + 0x34) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(backfaceControllerDescStorage + 0x38) = nxFloatBits(0.2f);
+	NxController* const backfaceController = backfaceControllerScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(backfaceControllerDescStorage));
+	if(!backfaceObstacle || !backfaceController)
+		return nxFail("controller back-face fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	const NxVec3 backfaceDisplacement(4.0f, 0.0f, 0.0f);
+	reinterpret_cast<NxControllerProbe*>(backfaceController)->move(
+		backfaceDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& backfaceControllerPosition =
+		reinterpret_cast<NxControllerProbe*>(backfaceController)->getPosition();
+	printf("simulation controller-obstacle mesh-backface position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(backfaceControllerPosition.x), nxFloatBits(backfaceControllerPosition.y),
+		nxFloatBits(backfaceControllerPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(backfaceControllerPosition.x) != 0x40000000 ||
+		nxFloatBits(backfaceControllerPosition.y) != 0x3e4ccccd ||
+		nxFloatBits(backfaceControllerPosition.z) != 0x3e4ccccd || obstacleCollisionFlags != 0;
+	backfaceControllerScene->releaseController(*backfaceController);
+	sdk->releaseScene(*backfaceControllerScene);
+	sdk->releaseTriangleMesh(*backfaceMesh);
+
 	sdk->release();
 	for(unsigned sdkCycle = 0; sdkCycle != 2; ++sdkCycle)
 		{

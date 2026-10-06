@@ -159,3 +159,24 @@ The follow-up passes Phase 5 at 2,042/2,042 and Phase 7 at 1,353/1,353
 contact checks (`build/controller-mesh-overlap-viewer-ctest.log`). Inventory
 validation remains clean at 6,338 functions, 5,138 data objects, and zero
 unexplained records.
+
+## Triangle-mesh back-face sweep follow-up
+
+A separate scene cooks a reversed-winding copy of the tested mesh and moves the
+controller toward the back of its vertical face. The oracle passes through to
+`x=2.0` with no collision flags; before the change, the candidate treated the
+triangle as two-sided and stopped at `x=1.3` with side flag 4. The sweep now
+rejects a triangle when displacement points along its winding normal, after
+preserving the existing initial-overlap escape behavior. The test asserts the
+oracle endpoint, is registered in Phase 7, and the paired simulation transcript
+is exact (`build/controller-backface-oracle-green.log`,
+`build/controller-backface-candidate-green.log`).
+
+Phase 5 passes 2,042/2,042 assertions. Phase 7 passes with 1,354 observed
+assertions and a registered floor of 1,354. The Viewer selection passes 48/48
+registered cases: 43 pass and the five existing signature-verified scene
+skips remain; all 39 available scene demos and the sound, physics-step, and
+contact checks are included. This establishes winding sidedness only for the
+tested controller mesh sweep. Step response, callbacks, transformed mesh and
+controller cases, and broader controller semantics remain open. Public
+Physics headers were not changed.

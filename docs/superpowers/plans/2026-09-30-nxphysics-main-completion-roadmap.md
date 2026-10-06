@@ -4,6 +4,20 @@ Date: 2026-09-30
 Baseline: `main` at `b942f01` (Merge convex-mesh gap reconstruction into main)
 Status: Active execution. The user selected full-DLL reconstruction and standalone simulation tests before Unreal integration.
 
+### Continuation — controller mesh back-face sweep (2026-10-06)
+
+Added an isolated scene using the same triangle geometry with reversed winding.
+The oracle ignores motion into the triangle's back face and reaches `x=2.0`
+with no collision flags; the candidate initially stopped at `x=1.3` with flag
+4. The controller mesh sweep now rejects back-face motion after checking the
+initial-overlap case, and the paired transcript matches exactly. Phase 5 passes
+2,042/2,042 assertions; Phase 7 passes at 1,354/1,354; the all-scene Viewer
+selection passes 48/48, covering all 39 demos with the same five
+signature-verified skips. This closes the tested mesh-sidedness case only;
+step-up and the broader controller behavior remain open. Public Physics
+headers remain unchanged. See
+`docs/reconstruction/novodex-physics/evidence/scene-controller-factory.md`.
+
 ### Continuation — all-scene Viewer startup and gate (2026-10-06)
 
 The first serial Viewer sweep showed every scene launch spending 79–98 seconds
