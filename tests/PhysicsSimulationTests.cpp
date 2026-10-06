@@ -2825,6 +2825,62 @@ int wmain(int argc, wchar_t** argv)
 		nxFloatBits(meshHitControllerPosition.y) != 0x3e4ccccd ||
 		nxFloatBits(meshHitControllerPosition.z) != 0x3e4ccccd || obstacleCollisionFlags != 4;
 	meshHitScene->releaseController(*meshHitController);
+
+	// Exercise the complete public path from 16-bit descriptor indices through
+	// mesh cooking to the controller's triangle sweep.
+	const NxU16 controllerMeshIndices16[] = {0, 1, 3, 0, 3, 2};
+	NxTriangleMeshDesc controllerMesh16Desc;
+	controllerMesh16Desc.numVertices = 4;
+	controllerMesh16Desc.numTriangles = 2;
+	controllerMesh16Desc.pointStrideBytes = sizeof(NxPoint);
+	controllerMesh16Desc.triangleStrideBytes = 3 * sizeof(NxU16);
+	controllerMesh16Desc.points = controllerMeshPoints;
+	controllerMesh16Desc.triangles = controllerMeshIndices16;
+	controllerMesh16Desc.flags = NX_MF_16_BIT_INDICES;
+	NxTriangleMesh* const controllerMesh16 = sdk->createTriangleMesh(controllerMesh16Desc);
+	if(!controllerMesh16)
+		return nxFail("16-bit controller mesh cooking failed");
+	NxSceneDesc mesh16HitSceneDesc;
+	mesh16HitSceneDesc.setToDefault();
+	NxScene* const mesh16HitScene = sdk->createScene(mesh16HitSceneDesc);
+	if(!mesh16HitScene)
+		return nxFail("16-bit mesh-hit scene creation failed");
+	NxTriangleMeshShapeDesc mesh16ObstacleShape;
+	mesh16ObstacleShape.meshData = controllerMesh16;
+	NxActorDesc mesh16ObstacleActorDesc;
+	mesh16ObstacleActorDesc.globalPose.t = NxVec3(1.5f, 0.0f, 0.0f);
+	mesh16ObstacleActorDesc.shapes.pushBack(&mesh16ObstacleShape);
+	NxActor* const mesh16Obstacle = mesh16HitScene->createActor(mesh16ObstacleActorDesc);
+	alignas(4) unsigned char mesh16ControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(mesh16ControllerDescStorage + 0x0c) = nxFloatBits(-2.0f);
+	*reinterpret_cast<NxU32*>(mesh16ControllerDescStorage + 0x10) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(mesh16ControllerDescStorage + 0x14) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(mesh16ControllerDescStorage + 0x30) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(mesh16ControllerDescStorage + 0x34) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(mesh16ControllerDescStorage + 0x38) = nxFloatBits(0.5f);
+	NxController* const mesh16Controller = mesh16HitScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(mesh16ControllerDescStorage));
+	if(!mesh16Obstacle || !mesh16Controller)
+		return nxFail("16-bit mesh-hit fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	reinterpret_cast<NxControllerProbe*>(mesh16Controller)->move(
+		meshObstacleDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& mesh16ControllerPosition =
+		reinterpret_cast<NxControllerProbe*>(mesh16Controller)->getPosition();
+	const NxU32 mesh16ControllerIndexFormat = controllerMesh16->getFormat(0, NX_ARRAY_TRIANGLES);
+	const NxU32 mesh16ControllerIndexStride = controllerMesh16->getStride(0, NX_ARRAY_TRIANGLES);
+	printf("simulation controller-obstacle mesh16-hit source_index_bits=16 index_format=%u index_stride=%u position=%08x.%08x.%08x flags=%08x\n",
+		mesh16ControllerIndexFormat, mesh16ControllerIndexStride,
+		nxFloatBits(mesh16ControllerPosition.x), nxFloatBits(mesh16ControllerPosition.y),
+		nxFloatBits(mesh16ControllerPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed || mesh16ControllerIndexFormat != 4 ||
+		mesh16ControllerIndexStride != 3 * sizeof(NxU32) ||
+		nxFloatBits(mesh16ControllerPosition.x) != 0x3f800000 ||
+		nxFloatBits(mesh16ControllerPosition.y) != 0x3e4ccccd ||
+		nxFloatBits(mesh16ControllerPosition.z) != 0x3e4ccccd || obstacleCollisionFlags != 4;
+	mesh16HitScene->releaseController(*mesh16Controller);
+	sdk->releaseScene(*mesh16HitScene);
+	sdk->releaseTriangleMesh(*controllerMesh16);
 	alignas(4) unsigned char meshOverlapOutDescStorage[0x80] = {};
 	*reinterpret_cast<NxU32*>(meshOverlapOutDescStorage + 0x0c) = nxFloatBits(1.5f);
 	*reinterpret_cast<NxU32*>(meshOverlapOutDescStorage + 0x10) = nxFloatBits(0.2f);

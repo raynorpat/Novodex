@@ -119,13 +119,18 @@ stop at `x=1`, retaining `y=z=0.2` and collision flag 4. The combined
 `NxPhysicsSimulationTests` transcript is exact (`stdout_delta=0`,
 `stderr_exact=True`; `build/controller-mesh-final-diff.log`).
 
-Both mesh outcomes are asserted in the test and registered in Phase 7. The
-verified sweep uses float vertices, 32-bit triangle indices, and an
-axis-aligned controller box. The implementation also decodes 16-bit triangle
-indices, but that encoding does not yet have a paired fixture. Other
-vertex/index encodings, mesh/controller rotation, initial mesh penetration,
-mesh sliding/step response, callbacks, and complete controller semantics are
-still open. This is a tested mesh-sweep subset, not complete controller
+Both mesh outcomes are asserted in the test and registered in Phase 7. A
+follow-up public fixture cooks the same obstacle from 16-bit descriptor
+indices, then sweeps into its face. Oracle and candidate both stop at
+`x=1, y=z=0.2` with flag 4; the normalized public mesh reports the oracle's
+32-bit triangle format and 12-byte stride. The `NX_FORMAT_SHORT` decoder in
+the controller loop is not reached through this public `TriangleMesh`, whose
+triangle arrays are exposed as `NX_FORMAT_INT`; the paired test establishes
+the 16-bit input-to-cooked-mesh path instead of claiming that internal branch
+was exercised. Phase 7 registers the new exact output. Other vertex/index
+encodings, mesh/controller rotation, initial mesh penetration, mesh
+sliding/step response, callbacks, and complete controller semantics remain
+open. This is a tested mesh-sweep subset, not complete controller
 reconstruction. Public Physics headers remain unchanged.
 
 Final validation for this slice: Phase 5 passes 2,042/2,042 assertions
@@ -180,3 +185,19 @@ contact checks are included. This establishes winding sidedness only for the
 tested controller mesh sweep. Step response, callbacks, transformed mesh and
 controller cases, and broader controller semantics remain open. Public
 Physics headers were not changed.
+
+## Public 16-bit mesh input through controller sweep
+
+The controller mesh face-hit fixture now also runs with a public mesh cooked
+from `NX_MF_16_BIT_INDICES`. Both DLLs report `index_format=4` and
+`index_stride=12` for the cooked triangle array, then stop at
+`(x=1, y=z=0.2)` with side flag 4. The paired `NxPhysicsSimulationTests`
+transcript matches exactly (`stdout_delta=0`, `stderr_exact=True`). This proves
+the public 16-bit descriptor input path and its controller interaction after
+mesh normalization. It does not exercise `NX_FORMAT_SHORT` in the controller
+sweep: `TriangleMesh::getFormat` exposes the cooked triangle arrays as
+`NX_FORMAT_INT`. Phase 7 now registers 1,356 assertions, one more than before.
+The transformed mesh/controller, extra vertex formats, step response,
+callbacks, and complete controller semantics remain open.
+The fresh Phase 7 gate passes all 11 registered differentials with 1,356/1,356
+coverage assertions, including this paired line.

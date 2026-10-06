@@ -3205,8 +3205,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation controller-obstacle sphere-corner position=40000000.3f4ccccd.3f4ccccd flags=00000000'
         # Continuous SAT for the supported triangle-mesh controller path both
         # rejects an AABB-only corner and reports contact on the actual face.
+        # The last case starts with a public 16-bit-index descriptor that the
+        # mesh cooker normalizes to the internal 32-bit triangle format.
         'simulation controller-obstacle mesh-corner position=40000000.3f8ccccd.3f8ccccd flags=00000000'
         'simulation controller-obstacle mesh-hit position=3f800000.3e4ccccd.3e4ccccd flags=00000004'
+        'simulation controller-obstacle mesh16-hit source_index_bits=16 index_format=4 index_stride=12 position=3f800000.3e4ccccd.3e4ccccd flags=00000004'
         'simulation controller-obstacle mesh-overlap-out position=3f800000.3e4ccccd.3e4ccccd flags=00000000'
         'simulation controller-obstacle mesh-overlap-in position=40000000.3e4ccccd.3e4ccccd flags=00000000'
         # A reversed-winding copy of the controller mesh is approached from
@@ -5435,7 +5438,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1355  # previous 1,354 plus grounded controller step-probe assertion
+    '7' = 1356  # previous 1,355 plus controller sweep over a mesh cooked from 16-bit indices
                # (free-space, actor pose, obstacle/group filter, vertical, trigger, overlap)
     '8' = 0
 }

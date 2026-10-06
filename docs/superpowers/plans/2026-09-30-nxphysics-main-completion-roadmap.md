@@ -4,6 +4,20 @@ Date: 2026-09-30
 Baseline: `main` at `b942f01` (Merge convex-mesh gap reconstruction into main)
 Status: Active execution. The user selected full-DLL reconstruction and standalone simulation tests before Unreal integration.
 
+### Continuation — public 16-bit mesh input in controller sweep (2026-10-06)
+
+Added a paired controller face-hit fixture using a triangle mesh cooked from
+`NX_MF_16_BIT_INDICES`. Both DLLs stop at `x=1, y=z=0.2` with collision flag
+4, and expose the cooked indices as `NX_FORMAT_INT` with a 12-byte stride.
+This covers the public descriptor-to-controller path; the private
+`NX_FORMAT_SHORT` decode branch remains unreachable through the current
+`TriangleMesh` format. The focused differential is exact (`stdout_delta=0`,
+`stderr_exact=True`), and Phase 7 registers the new output at a 1,356 assertion
+floor. The fresh Phase 7 gate passes all 11 registered differentials with
+1,356/1,356 assertions. Other mesh formats, transformed controllers, step response, callbacks,
+and complete controller semantics remain open. See
+`docs/reconstruction/novodex-physics/evidence/scene-controller-factory.md`.
+
 ### Continuation — SDK indexed scene lookup (2026-10-06)
 
 Completed the previously blocked `NxPhysicsSDK::getScene` wrapper slot using
