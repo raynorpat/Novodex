@@ -17,6 +17,6 @@ mutant as expected:
 `build/scene-contact-callback-branch-archive-mutation.log`.
 
 This closes the actor-contact dispatch branch for this row. Trigger queue
-generation remains separate coverage. It does not close `NpScene::fetchResults`
-(`phys_fn_000398`): that row still has a second contact-delivery helper whose
-mutation has not been observed independently.
+generation remains separate coverage. The fetch-result wait/dispatch row
+(`phys_fn_000398`) is covered by the deferred-report regression and its own
+mutation in `evidence/fetch-results-mutation.md`.
