@@ -3166,6 +3166,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation stage=spherepair60-b position=3ef33333.00000000.00000000 velocity=00000000.00000000.00000000'
         'simulation contact callbacks=26 events=0000000a pairs=26 patches=26 points=26 normal=80000000.bf800000.80000000 point=00000000.bc916940.00000000 separation=bc916940'
         'simulation fetch-callback summary ready=1 fetched=1 trigger_get=1 trigger_calls=1 contact_get=1 contact_calls=1'
+        'simulation deferred-contact-report first=1 pending=1 second=1 calls=1 events=00000008'
         'simulation stage=contact60 position=00000000.3ee66666.00000000 velocity=00000000.00000000.00000000'
         # Fluid is exported but disabled in this build. The public call lazily
         # creates its manager, reports NXE_DB_WARNING from FluidManager.cpp,
@@ -5409,7 +5410,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1337  # previous 1,336 plus the fetched trigger/contact callback summary
+    '7' = 1338  # previous 1,337 plus deferred buffered-contact retention and delivery
                # across joint, scene, simulation, mesh, trigger, effector and core-dump targets;
                # kept equal to the registry count below
     '8' = 0

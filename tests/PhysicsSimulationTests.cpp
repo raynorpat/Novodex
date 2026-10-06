@@ -374,6 +374,7 @@ int wmain(int argc, wchar_t** argv)
 		}
 
 	NxSimulationOutputStream simulationOutput;
+	bool deferredContactFailed = false;
 	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, 0, &simulationOutput);
 	if(!sdk)
 		{
@@ -1685,6 +1686,64 @@ int wmain(int argc, wchar_t** argv)
 		contactGetter, contactReport.calls);
 	sdk->releaseScene(*callbackScene);
 
+	// fetchResults must retain buffered contact reports while no user callback
+	// is installed. Installing the listener before the next fetch must deliver
+	// the pending record exactly once. The oracle's callback dispatcher only
+	// resets the queue when it has a listener; a second unconditional drain would
+	// silently discard this record.
+	NxSceneDesc deferredContactSceneDesc;
+	deferredContactSceneDesc.setToDefault();
+	NxScene* deferredContactScene = sdk->createScene(deferredContactSceneDesc);
+	if(!deferredContactScene)
+		return nxFail("deferred contact-report scene creation failed");
+	unsigned char deferredContactWrapper[0x28];
+	memcpy(deferredContactWrapper, deferredContactScene, sizeof(deferredContactWrapper));
+	unsigned char* const deferredContactInternal = *reinterpret_cast<unsigned char**>(
+		deferredContactWrapper + 0x24);
+	unsigned char deferredContactQueue[0x2c];
+	memset(deferredContactQueue, 0, sizeof(deferredContactQueue));
+	NxActor* const deferredExpectedActor0 = reinterpret_cast<NxActor*>(&publicShapeTokens[0]);
+	NxActor* const deferredExpectedActor1 = reinterpret_cast<NxActor*>(&publicShapeTokens[1]);
+	*reinterpret_cast<NxActor**>(deferredContactQueue + 0x00) = deferredExpectedActor0;
+	*reinterpret_cast<NxActor**>(deferredContactQueue + 0x04) = deferredExpectedActor1;
+	*reinterpret_cast<NxU32*>(deferredContactQueue + 0x0c) = nxFloatBits(1.0f);
+	*reinterpret_cast<NxU32*>(deferredContactQueue + 0x10) = nxFloatBits(2.0f);
+	*reinterpret_cast<NxU32*>(deferredContactQueue + 0x14) = nxFloatBits(3.0f);
+	*reinterpret_cast<NxU32*>(deferredContactQueue + 0x28) = NX_NOTIFY_ON_TOUCH;
+	void** const deferredContactBeginField = reinterpret_cast<void**>(
+		deferredContactInternal + 0x60c);
+	void** const deferredContactEndField = reinterpret_cast<void**>(
+		deferredContactInternal + 0x610);
+	void** const deferredContactCapacityField = reinterpret_cast<void**>(
+		deferredContactInternal + 0x614);
+	void* const deferredSavedBegin = *deferredContactBeginField;
+	void* const deferredSavedEnd = *deferredContactEndField;
+	void* const deferredSavedCapacity = *deferredContactCapacityField;
+	*deferredContactBeginField = deferredContactQueue;
+	*deferredContactEndField = deferredContactQueue + sizeof(deferredContactQueue);
+	*deferredContactCapacityField = deferredContactQueue + sizeof(deferredContactQueue);
+	const bool deferredFirstFetch = deferredContactScene->fetchResults(
+		static_cast<NxSimulationStatus>(0), false);
+	const bool deferredPendingAfterFirstFetch =
+		*deferredContactEndField == deferredContactQueue + sizeof(deferredContactQueue);
+	NxSimulationContactReport deferredContactReport(
+		deferredExpectedActor0, deferredExpectedActor1);
+	deferredContactScene->setUserContactReport(&deferredContactReport);
+	const bool deferredSecondFetch = deferredContactScene->fetchResults(
+		static_cast<NxSimulationStatus>(0), false);
+	printf("simulation deferred-contact-report first=%u pending=%u second=%u calls=%u events=%08x\n",
+		deferredFirstFetch, deferredPendingAfterFirstFetch, deferredSecondFetch,
+		deferredContactReport.calls, deferredContactReport.events);
+	*deferredContactBeginField = deferredSavedBegin;
+	*deferredContactEndField = deferredSavedEnd;
+	*deferredContactCapacityField = deferredSavedCapacity;
+	deferredContactFailed = !deferredFirstFetch || !deferredPendingAfterFirstFetch || !deferredSecondFetch
+		|| deferredContactReport.calls != 1
+		|| deferredContactReport.events != NX_NOTIFY_ON_TOUCH;
+	if(deferredContactFailed)
+		printf("FAIL deferred contact report was not retained and delivered exactly once\n");
+	sdk->releaseScene(*deferredContactScene);
+
 	sdk->releaseScene(*scene);
 
 	{
@@ -2267,6 +2326,8 @@ int wmain(int argc, wchar_t** argv)
 		printf("simulation lifecycle sdk_released cycle=%u\n", sdkCycle);
 		}
 	status = nxReportPairIdentity(pairDirectory);
+	if(deferredContactFailed)
+		status = 1;
 	FreeLibrary(physics);
 	return status;
 	}

@@ -1126,8 +1126,6 @@ bool NpScene::fetchResults(NxSimulationStatus status, bool block )
 		nxNpSceneGuardEnter(mReadLock);
 		mScene->processSimulationCallbacks();
 		mScene->finishSimulation();
-		cpmDeliverBufferedContactReports(mScene,
-			mScene->at<NxUserContactReport*>(0x6b4));
 		nxNpSceneGuardLeave(mReadLock);
 		}
 	if(mFlag)
