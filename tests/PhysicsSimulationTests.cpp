@@ -2457,6 +2457,40 @@ int wmain(int argc, wchar_t** argv)
 		nxFloatBits(filteredControllerPosition.x) != 0x40200000 ||
 		nxFloatBits(filteredControllerPosition.y) != 0 ||
 		nxFloatBits(filteredControllerPosition.z) != 0 || obstacleCollisionFlags != 0;
+	NxSceneDesc slideSceneDesc;
+	slideSceneDesc.setToDefault();
+	NxScene* const slideScene = sdk->createScene(slideSceneDesc);
+	if(!slideScene)
+		return nxFail("sliding controller scene creation failed");
+	NxBoxShapeDesc slideObstacleShape;
+	slideObstacleShape.dimensions = NxVec3(0.5f, 1.0f, 1.0f);
+	NxActorDesc slideObstacleActorDesc;
+	slideObstacleActorDesc.globalPose.t = NxVec3(1.5f, 0.0f, 0.0f);
+	slideObstacleActorDesc.shapes.pushBack(&slideObstacleShape);
+	NxActor* const slideObstacleActor = slideScene->createActor(slideObstacleActorDesc);
+	alignas(4) unsigned char slideControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(slideControllerDescStorage + 0x30) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(slideControllerDescStorage + 0x34) = nxFloatBits(1.0f);
+	*reinterpret_cast<NxU32*>(slideControllerDescStorage + 0x38) = nxFloatBits(0.5f);
+	NxController* const slideController = slideScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(slideControllerDescStorage));
+	if(!slideObstacleActor || !slideController)
+		return nxFail("sliding controller fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	const NxVec3 diagonalDisplacement(2.0f, 0.0f, 1.0f);
+	reinterpret_cast<NxControllerProbe*>(slideController)->move(
+		diagonalDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& slideControllerPosition =
+		reinterpret_cast<NxControllerProbe*>(slideController)->getPosition();
+	printf("simulation controller-obstacle slide position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(slideControllerPosition.x), nxFloatBits(slideControllerPosition.y),
+		nxFloatBits(slideControllerPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(slideControllerPosition.x) != 0x3f000000 ||
+		nxFloatBits(slideControllerPosition.y) != 0 ||
+		nxFloatBits(slideControllerPosition.z) != 0x3f800000 || obstacleCollisionFlags != 4;
+	slideScene->releaseController(*slideController);
+	sdk->releaseScene(*slideScene);
 	NxBoxShapeDesc verticalObstacleShape;
 	verticalObstacleShape.dimensions = NxVec3(1.0f, 0.5f, 1.0f);
 	NxActorDesc verticalObstacleActorDesc;

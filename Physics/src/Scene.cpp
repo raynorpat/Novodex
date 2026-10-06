@@ -1837,87 +1837,106 @@ namespace
 			if(distanceSquared < minDistance * minDistance)
 				return;
 
-			NxReal fraction = 1.0f;
-			NxU32 hitAxis = 3;
 			NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(bytes + 0x34);
 			NxActor* actor = *reinterpret_cast<NxActor**>(bytes + 0x24);
 			const NxVec3& extents = *reinterpret_cast<const NxVec3*>(bytes + 0x40);
-			if(scene)
+			NxVec3 remaining = displacement;
+			for(NxU32 iteration = 0; iteration != 4; ++iteration)
 				{
-				const NxReal endX = position.x + x;
-				const NxReal endY = position.y + y;
-				const NxReal endZ = position.z + z;
-				NxBounds3 sweptBounds;
-				sweptBounds.set(
-					(position.x < endX ? position.x : endX) - extents.x,
-					(position.y < endY ? position.y : endY) - extents.y,
-					(position.z < endZ ? position.z : endZ) - extents.z,
-					(position.x > endX ? position.x : endX) + extents.x,
-					(position.y > endY ? position.y : endY) + extents.y,
-					(position.z > endZ ? position.z : endZ) + extents.z);
-				NxShape* candidates[128];
-				const NxU32 candidateCount = scene->overlapAABBShapes(
-					sweptBounds, NX_ALL_SHAPES, 128, candidates, 0);
-				for(NxU32 i = 0; i < candidateCount; ++i)
+				const NxReal stepDistanceSquared = remaining.x * remaining.x +
+					remaining.y * remaining.y + remaining.z * remaining.z;
+				if(stepDistanceSquared < minDistance * minDistance)
+					break;
+				NxReal fraction = 1.0f;
+				NxU32 hitAxis = 3;
+				if(scene)
 					{
-					NxShape* shape = candidates[i];
-					if(!shape || (actor && &shape->getActor() == actor))
-						continue;
-					const NxU32 group = shape->getGroup();
-					if(group >= 32 || !(activeGroups & (1u << group)))
-						continue;
-					NxBounds3 shapeBounds;
-					shape->getWorldBounds(shapeBounds);
-					const NxVec3& lo = shapeBounds.getMin();
-					const NxVec3& hi = shapeBounds.getMax();
-					const NxReal expandedMin[3] = {
-						lo.x - extents.x, lo.y - extents.y, lo.z - extents.z};
-					const NxReal expandedMax[3] = {
-						hi.x + extents.x, hi.y + extents.y, hi.z + extents.z};
-					const NxReal start[3] = {position.x, position.y, position.z};
-					const NxReal delta[3] = {x, y, z};
-					NxReal enter = 0.0f;
-					NxReal leave = 1.0f;
-					NxU32 axis = 0;
-					NxU32 entryAxis = 0;
-					bool intersects = true;
-					for(; axis != 3; ++axis)
+					const NxReal endX = position.x + remaining.x;
+					const NxReal endY = position.y + remaining.y;
+					const NxReal endZ = position.z + remaining.z;
+					NxBounds3 sweptBounds;
+					sweptBounds.set(
+						(position.x < endX ? position.x : endX) - extents.x,
+						(position.y < endY ? position.y : endY) - extents.y,
+						(position.z < endZ ? position.z : endZ) - extents.z,
+						(position.x > endX ? position.x : endX) + extents.x,
+						(position.y > endY ? position.y : endY) + extents.y,
+						(position.z > endZ ? position.z : endZ) + extents.z);
+					NxShape* candidates[128];
+					const NxU32 candidateCount = scene->overlapAABBShapes(
+						sweptBounds, NX_ALL_SHAPES, 128, candidates, 0);
+					for(NxU32 i = 0; i < candidateCount; ++i)
 						{
-						if(delta[axis] == 0.0f)
-							{
-							if(start[axis] < expandedMin[axis] || start[axis] > expandedMax[axis])
-								intersects = false;
+						NxShape* shape = candidates[i];
+						if(!shape || (actor && &shape->getActor() == actor))
 							continue;
-							}
-						NxReal first = (expandedMin[axis] - start[axis]) / delta[axis];
-						NxReal last = (expandedMax[axis] - start[axis]) / delta[axis];
-						if(first > last)
+						const NxU32 group = shape->getGroup();
+						if(group >= 32 || !(activeGroups & (1u << group)))
+							continue;
+						NxBounds3 shapeBounds;
+						shape->getWorldBounds(shapeBounds);
+						const NxVec3& lo = shapeBounds.getMin();
+						const NxVec3& hi = shapeBounds.getMax();
+						const NxReal expandedMin[3] = {
+							lo.x - extents.x, lo.y - extents.y, lo.z - extents.z};
+						const NxReal expandedMax[3] = {
+							hi.x + extents.x, hi.y + extents.y, hi.z + extents.z};
+						const NxReal start[3] = {position.x, position.y, position.z};
+						const NxReal delta[3] = {remaining.x, remaining.y, remaining.z};
+						NxReal enter = 0.0f;
+						NxReal leave = 1.0f;
+						NxU32 axis = 0;
+						NxU32 entryAxis = 0;
+						bool intersects = true;
+						for(; axis != 3; ++axis)
 							{
-							const NxReal swap = first;
-							first = last;
-							last = swap;
+							if(delta[axis] == 0.0f)
+								{
+								if(start[axis] <= expandedMin[axis] || start[axis] >= expandedMax[axis])
+									intersects = false;
+								continue;
+								}
+							NxReal first = (expandedMin[axis] - start[axis]) / delta[axis];
+							NxReal last = (expandedMax[axis] - start[axis]) / delta[axis];
+							if(first > last)
+								{
+								const NxReal swap = first;
+								first = last;
+								last = swap;
+								}
+							if(first > enter)
+								{
+								enter = first;
+								entryAxis = axis;
+								}
+							if(last < leave)
+								leave = last;
+							if(enter > leave)
+								intersects = false;
 							}
-						if(first > enter)
+						if(intersects && leave >= 0.0f && enter >= 0.0f && enter < fraction)
 							{
-							enter = first;
-							entryAxis = axis;
+							fraction = enter;
+							hitAxis = entryAxis;
 							}
-						if(last < leave)
-							leave = last;
-						if(enter > leave)
-							intersects = false;
 						}
-					if(intersects && leave >= 0.0f && enter >= 0.0f && enter < fraction)
-						{
-						fraction = enter;
-						hitAxis = entryAxis;
-						}
-					}
 				}
-			position.set(position.x + x * fraction,
-				position.y + y * fraction, position.z + z * fraction);
-			if(fraction < 1.0f)
-				collisionFlags = hitAxis == 1 ? (y > 0.0f ? 1u : 2u) : 4u;
+				position.set(position.x + remaining.x * fraction,
+					position.y + remaining.y * fraction,
+					position.z + remaining.z * fraction);
+				if(fraction >= 1.0f)
+					break;
+				collisionFlags |= hitAxis == 1 ? (remaining.y > 0.0f ? 1u : 2u) : 4u;
+				remaining.set(remaining.x * (1.0f - fraction),
+					remaining.y * (1.0f - fraction),
+					remaining.z * (1.0f - fraction));
+				if(hitAxis == 0)
+					remaining.x = 0.0f;
+				else if(hitAxis == 1)
+					remaining.y = 0.0f;
+				else if(hitAxis == 2)
+					remaining.z = 0.0f;
+				}
 			if(actor)
 				actor->moveGlobalPosition(position);
 			}

@@ -43,6 +43,20 @@ active-group exclusion, and this trigger case. Final relevant checks: Phase 5
 existing signature-verified scene skips. These checks cover smoke loading and
 the registered physics probes; they do not close the full-DLL goal.
 
+### Continuation — controller tangential wall slide (2026-10-06)
+
+A clean-scene diagonal fixture makes the unresolved slide behavior observable:
+the oracle moves `(2,0,1)` into an X wall, stops at X=0.5, continues along the
+wall to Z=1, and reports flag 4. The previous candidate stopped the tangential
+component at Z=0.25 (`stdout_delta=2`); the candidate now projects the remaining
+motion off the contacted axis and continues up to four axis-aligned contacts.
+The focused oracle differential is exact (`stdout_delta=0`, exact stderr).
+Phase 5 passes 2,042/2,042, Phase 7 passes 1,345/1,345, and the full Viewer
+selection passes 48/48 with five existing signature-verified scene skips.
+The Phase 7 target and coverage floor have been extended by one. This remains
+a bounded AABB implementation: arbitrary convex/mesh sweeps, initial
+penetration, full step behavior, and callback semantics remain open.
+
 ### Continuation — controller position ABI (2026-10-06)
 
 The approved all-scenes Viewer selection remains part of verification. A new
