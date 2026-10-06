@@ -15,6 +15,7 @@
 #include "NxPlaneShapeDesc.h"
 #include "NxUserContactReport.h"
 #include "PhysicsActorErrorStream.h"
+#include "../Physics/src/include/NpSceneGuard.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -23,6 +24,24 @@ static unsigned nxPairObjectLabel(const void* object, const NxActor* actor0, con
 	if(object == actor0) return 0;
 	if(object == actor1) return 1;
 	return 255;
+	}
+
+struct NxPairFlagHeldSceneWriteLock
+	{
+	void* link;
+	HANDLE ready;
+	HANDLE release;
+	};
+
+static DWORD WINAPI nxPairFlagHoldSceneWriteLock(void* context)
+	{
+	NxPairFlagHeldSceneWriteLock* const held =
+		static_cast<NxPairFlagHeldSceneWriteLock*>(context);
+	nxNpSceneGuardEnter(held->link);
+	SetEvent(held->ready);
+	WaitForSingleObject(held->release, INFINITE);
+	nxNpSceneGuardLeave(held->link);
+	return 0;
 	}
 
 int wmain(int argc, wchar_t** argv)
@@ -100,6 +119,34 @@ int wmain(int argc, wchar_t** argv)
 			++sameShapeEntries;
 	printf("pairflag same_shape flags=%08x count=%u array=%u self_entries=%u errors=%u\n",
 		sameShapeFlags, sameShapeCount, sameShapeArray ? 1u : 0u, sameShapeEntries, errorStream.reports);
+
+	NxPairFlagHeldSceneWriteLock held = {
+		*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(scene) + 0x0c),
+		CreateEventA(0, TRUE, FALSE, 0), CreateEventA(0, TRUE, FALSE, 0) };
+	if(!held.link || !held.ready || !held.release)
+		return nxFail("scene write-lock fixture setup failed");
+	HANDLE lockThread = CreateThread(0, 0, nxPairFlagHoldSceneWriteLock, &held, 0, 0);
+	if(!lockThread || WaitForSingleObject(held.ready, 5000) != WAIT_OBJECT_0)
+		return nxFail("scene write-lock fixture did not acquire the lock");
+	const unsigned actorReportsBeforeContention = errorStream.reports;
+	errorStream.enabled = true;
+	scene->setActorPairFlags(*ground, *compound, NX_NOTIFY_ON_TOUCH);
+	errorStream.enabled = false;
+	printf("pairflag actor_contended reports=%u flags=%08x\n",
+		errorStream.reports - actorReportsBeforeContention,
+		scene->getActorPairFlags(*ground, *compound));
+	const unsigned reportsBeforeContention = errorStream.reports;
+	errorStream.enabled = true;
+	scene->setShapePairFlags(*compoundShapes[0], *compoundShapes[1], NX_NOTIFY_ON_TOUCH);
+	errorStream.enabled = false;
+	SetEvent(held.release);
+	WaitForSingleObject(lockThread, INFINITE);
+	CloseHandle(lockThread);
+	CloseHandle(held.ready);
+	CloseHandle(held.release);
+	printf("pairflag contended reports=%u flags=%08x\n",
+		errorStream.reports - reportsBeforeContention,
+		scene->getShapePairFlags(*compoundShapes[0], *compoundShapes[1]));
 
 	// Releasing one side must remove its per-shape records from the scene hash,
 	// including both child-shape keys of this compound actor.

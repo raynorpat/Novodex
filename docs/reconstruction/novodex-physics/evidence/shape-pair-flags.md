@@ -70,4 +70,25 @@ scenes remain skipped by their verified patterns
 unchanged.
 
 Not covered here: actor-group pair flags and the broader contact-report state
-machine. The complete Phase 7 gate was not rerun as part of this follow-up.
+machine. At the time of the owner-pair cleanup check, the complete Phase 7
+gate was not rerun; the separate lock-contention follow-up below has since
+rerun it.
+
+## Contended NpScene write-lock path
+
+`NxPhysicsPairFlagTests` now attempts both `setActorPairFlags()` and
+`setShapePairFlags()` while a second thread holds the Scene write lock. Before
+the diagnostic repairs, the candidate printed generic `NxPhysics:` lines and
+emitted no `NxUserOutputStream` reports; the focused differentials were RED
+(`stdout_delta=4` for each wrapper). The actor setter now reports
+`NXE_INVALID_OPERATION` at the oracle's `NpScene.cpp:0xab` location and keeps
+the prior actor flags (`00000001`); the shape setter reports at `NpScene.cpp:0xb8`
+and leaves the new pair absent (`flags=00000000`). Changing either source line
+by one is caught by the registered Phase 7 target (`stdout_delta=2` each;
+`build/actor-pair-lock-mutation.log` and
+`build/scene-shape-pair-lock-mutation.log`). The focused differential is exact
+(`stdout_delta=0`, `stderr_exact=True`; `build/actor-shape-pair-lock-green.log`).
+Phase 7 passes at 1,332/1,332 coverage assertions
+(`build/scene-pair-lock-final-phase7.log`). This closes these wrappers' normal
+and contended write-lock paths; the rest of Phase 7 and the full DLL remain
+open.

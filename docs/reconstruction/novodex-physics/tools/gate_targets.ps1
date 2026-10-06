@@ -3195,6 +3195,8 @@ $NxRequiredCoverageLines = [ordered] @{
     # getPairFlagArray resolves the now-freed group shape ID.
     'NxPhysicsPairFlagTests' = @(
         'pairflag compound_released count=0 array=0'
+        'pairflag actor_contended reports=1 flags=00000001'
+        'pairflag contended reports=1 flags=00000000'
     )
     # Effector-and-coredump Task 2: the spring-and-damper effector differential.
     # NxScene's effector API and every NxSpringAndDamperEffector method over two
@@ -5402,9 +5404,9 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1330  # previous 1,327 plus negative/zero-dt and pending-run state checks
-               # across joint, scene, simulation, mesh, trigger,
-               # effector and core-dump targets; kept equal to the registry count below
+    '7' = 1332  # previous 1,330 plus contended actor- and shape-pair write-lock reports
+               # across joint, scene, simulation, mesh, trigger, effector and core-dump targets;
+               # kept equal to the registry count below
     '8' = 0
 }
 

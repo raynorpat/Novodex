@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 5 functions are closed, 298 reconstructed functions remain unfalsified, 258 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 7 functions are closed, 298 reconstructed functions remain unfalsified, 256 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
@@ -19,9 +19,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 5,
+    "differential_falsified": 7,
     "deferred_reconstructed_not_falsified": 298,
-    "deferred_not_reconstructed_in_phase": 258
+    "deferred_not_reconstructed_in_phase": 256
   },
   "closed": [
     {
@@ -72,6 +72,26 @@
       "falsification": {
         "mutation": "In a throwaway git-archive copy of committed HEAD, changed the row's Scene+0x544 store from `elapsedTime` to `elapsedTime + 0.125f`, rebuilt NxPhysics and NxPhysicsSimulationTests, and ran the registered Phase 7 differential against the pinned oracle. The fixture's expected submitted dt `3e000000` became `3e800000`; the mutated candidate still exited 0 but diverged across the simulation transcript.",
         "detected": "stdout_delta=1064"
+      }
+    },
+    {
+      "id": "phys_fn_000313",
+      "rva": "0x0000c7f0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsPairFlagTests",
+      "falsification": {
+        "mutation": "In a throwaway source mutation, changed the reconstructed contended-write diagnostic source line in NpScene::setShapePairFlags from 0xb8 to 0xb9, rebuilt NxPhysics and NxPhysicsPairFlagTests, and reran the registered Phase 7 staged-pair differential. The focused test observes the error line and the unchanged pair-table result.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_000309",
+      "rva": "0x0000c740",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsPairFlagTests",
+      "falsification": {
+        "mutation": "In a throwaway source mutation, changed the reconstructed contended-write diagnostic source line in NpScene::setActorPairFlags from 0xab to 0xac, rebuilt NxPhysics and NxPhysicsPairFlagTests, and reran the registered Phase 7 staged-pair differential. The fixture observes the diagnostic while verifying the pre-existing actor-pair flags remain unchanged.",
+        "detected": "stdout_delta=2"
       }
     }
   ],
@@ -169,25 +189,9 @@
       "driving_phases": []
     },
     {
-      "id": "phys_fn_000309",
-      "rva": "0x0000c740",
-      "size": 103,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
       "id": "phys_fn_000311",
       "rva": "0x0000c7b0",
       "size": 54,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000313",
-      "rva": "0x0000c7f0",
-      "size": 103,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []

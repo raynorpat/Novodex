@@ -5736,13 +5736,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/107",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1035",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "The registered NxPhysicsPairFlagTests Phase 7 differential drives setActorPairFlags while a second thread holds the scene write lock. The wrapper reports NXE_INVALID_OPERATION at NpScene.cpp:0xab and preserves the existing actor-pair flags; oracle/candidate output is exact. A deliberate 0xab -> 0xac source-line mutation is caught by the same gate (stdout_delta=2); the generic diagnostic first produced a focused RED (stdout_delta=4).",
+      "notes": "",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::setActorPairFlags"
     },
     {
       "id": "phys_fn_000310",
@@ -5808,13 +5810,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/109",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1039",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "The registered NxPhysicsPairFlagTests Phase 7 differential drives both the successful shape-pair path (same-shape rejection leaves the pair table intact) and the contended write-lock path (a second thread holds the scene write lock; setShapePairFlags reports NXE_INVALID_OPERATION at NpScene.cpp:0xb8 and leaves the flags zero). Oracle/candidate output is exact. A deliberate 0xb8 -> 0xb9 source-line mutation is caught by the same gate (stdout_delta=2); the earlier generic printf diagnostic also produced a focused RED (stdout_delta=4).",
+      "notes": "",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::setShapePairFlags"
     },
     {
       "id": "phys_fn_000314",

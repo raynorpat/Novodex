@@ -9277,3 +9277,9 @@ then passed at 867/867 and 1,312/1,312 respectively.
     phys_fn_004403  supportSolveNormal004403  stdout_delta=4
 
 Phase 7 closure addition (`phys_fn_000394`, `NpScene::simulate`): the public negative/zero elapsed-time and pending-run fixture is documented in `evidence/scene-simulate-dt.md`. A throwaway-archive mutation to the `Scene+0x544` timestep store changed the registered `simulation submit state` record and was caught by `NxPhysicsSimulationTests` (`stdout_delta=1064`).
+
+
+Phase 7 closure addition (`phys_fn_000313`, `NpScene::setShapePairFlags`): the public pair-flag target now drives the normal and contended write-lock paths. The contended call reports NXE_INVALID_OPERATION at NpScene.cpp:0xb8 and leaves the pair flags clear. Changing the reported source line to 0xb9 is caught by the registered Phase 7 differential (`stdout_delta=2`; `evidence/shape-pair-flags.md`, `build/scene-shape-pair-lock-mutation.log`).
+
+
+Phase 7 closure addition (`phys_fn_000309`, `NpScene::setActorPairFlags`): the pair-flag target now holds the scene write lock from another thread and calls the public setter. It verifies the `NXE_INVALID_OPERATION` diagnostic at NpScene.cpp:0xab and that the prior actor-pair flags are unchanged. Changing the reported source line to 0xac is caught by the registered Phase 7 differential (`stdout_delta=2`; `evidence/shape-pair-flags.md`, `build/actor-pair-lock-mutation.log`).

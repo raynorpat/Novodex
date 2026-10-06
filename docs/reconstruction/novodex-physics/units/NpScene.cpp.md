@@ -430,11 +430,11 @@ Decompile (capstone disassembly):
 0x0000c733  jmp 0x1005a4b0
 ```
 
-## phys_fn_000309 (0x0000c740, 103 B, discovered)
+## phys_fn_000309 (0x0000c740, 103 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/NpScene.cpp
-- implementation: None
+- implementation: Physics/src/NpScene.cpp (`NpScene::setActorPairFlags`)
 - prototype: undefined __thiscall FUN_1000c740(int param_1, int param_2, uint param_3)
 - calling convention: __thiscall, stack purge: 12
 - callers: phys_fn_000285 (0x0000c310)
@@ -475,6 +475,12 @@ void __thiscall FUN_1000c740(void *this,int param_1,int param_2,uint param_3)
 
 ```
 
+The wrapper is reconstructed with its write-lock try, actor-body extraction,
+Scene pair-flag forward, and unlock. On contention it reports the recovered
+`NXE_INVALID_OPERATION` at line `0xab`; the registered Phase 7 fixture verifies
+that report and preserves the existing pair flags while another thread holds
+the scene lock.
+
 ## phys_fn_000311 (0x0000c7b0, 54 B, discovered)
 
 - ambiguous: no
@@ -508,11 +514,11 @@ uint __thiscall FUN_1000c7b0(void *this,int param_1,int param_2)
 
 ```
 
-## phys_fn_000313 (0x0000c7f0, 103 B, discovered)
+## phys_fn_000313 (0x0000c7f0, 103 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/NpScene.cpp
-- implementation: None
+- implementation: Physics/src/NpScene.cpp (`NpScene::setShapePairFlags`)
 - prototype: undefined __thiscall FUN_1000c7f0(int param_1, int param_2, uint param_3)
 - calling convention: __thiscall, stack purge: 12
 - callers: phys_fn_000285 (0x0000c310)
@@ -551,6 +557,13 @@ void __thiscall FUN_1000c7f0(void *this,int param_1,int param_2,uint param_3)
 
 
 ```
+
+The wrapper is reconstructed with the write-lock try, handle unwrapping at
+`NxShape + 8`, call to the internal shape-pair setter, and matching unlock.
+The lock-failure branch reports the recovered `NXE_INVALID_OPERATION` at line
+`0xb8`; a registered Phase 7 fixture holds the same write lock on another
+thread, verifies the report and unchanged flags, and catches a one-line source
+location mutation.
 
 ## phys_fn_000315 (0x0000c860, 54 B, discovered)
 

@@ -408,7 +408,9 @@ void NpScene::setActorPairFlags(NxActor& actor0, NxActor& actor1, NxU32 nxContac
 	{
 	if(!nxNpSceneGuardWriteTry(mWriteLock))
 		{
-		nxSceneDeadlockReport();
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0xab, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 		return;
 		}
 	void* link = mWriteLock;
@@ -432,7 +434,9 @@ void NpScene::setShapePairFlags(NxShape& shape0, NxShape& shape1, NxU32 nxContac
 	{
 	if(!nxNpSceneGuardWriteTry(mWriteLock))
 		{
-		nxSceneDeadlockReport();
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0xb8, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 		return;
 		}
 	void* link = mWriteLock;
