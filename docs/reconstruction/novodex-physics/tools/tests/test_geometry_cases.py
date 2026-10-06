@@ -123,7 +123,7 @@ class GeometryCases(unittest.TestCase):
                 at += field['words']
 
     def test_every_phase_three_export_is_covered(self):
-        inventory = json.loads(INVENTORY_PATH.read_text())
+        inventory = json.loads(INVENTORY_PATH.read_text(encoding='utf-8'))
         functions = {f['id']: f for f in inventory['functions']}
         expected = sorted(e['name'] for e in inventory['exports']
                           if functions[e['function_id']]['phase'] == 3)

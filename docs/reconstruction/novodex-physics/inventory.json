@@ -12087,13 +12087,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/257",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1753",
-      "static_proof": "Partial: RVA 0x000138e0 iterates the scene effector list at +0x5a4 and dispatches vtable slot 2 after island contact solving; candidate now calls Effector::tick() at the corresponding substep edge. The rest of the 475-byte function and its remaining indirect calls/branches are open.",
-      "dynamic_proof": "Partial: the public spring/damper scene-step fixture matches oracle and candidate exactly over two fixed substeps; second-step x velocity is 0x3e8e38e3 (evidence/effector-step-integration.md; build/FluidGate/effector-tick-green.log).",
-      "notes": "Only the effector-list dispatch edge is covered; complete function reconstruction and whole-row mutation closure remain open."
+      "static_proof": "phys_fn_000655 (0x000137e0): the active-step body translates the nonzero-timestep guard, frame counter and wrap, 000635/000608 prepass, awake self-root collection and allocator growth, effector list at Scene+0x5a4 with vtable slot 2, then the 000610/000611/000636/000615/002350/000917 sequence. The 475-byte row is implemented in NxSceneInternal::simulateFrame; Ghidra control-flow and indirect-call targets were checked against the source.",
+      "dynamic_proof": "The public spring/damper fixture reaches the effector dispatch and matches both fixed substeps exactly; second-step x velocity is 0x3e8e38e3 (evidence/effector-step-integration.md; build/FluidGate/effector-tick-green.log). The current full NxPhysicsSimulationTests paired differential also passes in Phase 7 (build/FluidGate/phase7-fluid-step.log).",
+      "notes": "Whole-row mutation falsification remains open; branch coverage is limited to the recorded simulation corpus."
     },
     {
       "id": "phys_fn_000656",
@@ -12160,13 +12160,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/259",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1782",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "phys_fn_000659 (0x00013c40): saves the FP control state, selects variable or fixed timestep scheduling, computes and caps fixed-step iteration count, initializes scheduler fields, calls 000655 for each substep, calls 003630 after each substep when Scene+0x61c has a manager, clamps residual time, calls 003632 once after the frame, then restores FP control state. Implemented by NxSceneInternal::simulateFrame; the Ghidra branches, field offsets, and direct-call order are reflected in source.",
+      "dynamic_proof": "The public simulation corpus matches oracle and candidate in the full Phase 7 differential. A disabled-manager fixture executes two fixed frames and verifies three warnings (one step warning per frame and one surface-mesh warning after stepping), with exact text/output and successful check/fetch (build/FluidGate/fluid-step-green.log).",
+      "notes": "Whole-row mutation falsification remains open. The called 003630/003632 extension-backed and nonempty-fluid branches are separately tracked as partial."
     },
     {
       "id": "phys_fn_000660",
@@ -67422,12 +67422,12 @@
       "phase": 7,
       "phase_provenance": "translation_unit",
       "state": "discovered",
-      "source": "Physics/src/fluids/FluidManager.cpp",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1369",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12581",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Partial: the disabled-backend branch at +0x2b == 0 emits the stepFluids warning (line 0xcf). The remaining dirty-static-collision branch dispatches extension functions, then iterates live fluids through phys_fn_003495; these branches are not implemented.",
+      "dynamic_proof": "NxPhysicsSimulationTests pins the extension-dirty byte to zero, steps a disabled empty manager over two fixed frames, and observes two exact stepFluids warnings as part of the oracle-matching three-warning transcript (build/FluidGate/fluid-step-green.log; Phase 7 1,327/1,327).",
+      "notes": "Only the disabled empty-array warning path is reconstructed. Static-collision refresh and enabled/live-fluid dispatch remain open."
     },
     {
       "id": "phys_fn_003631",
@@ -67458,12 +67458,12 @@
       "phase": 7,
       "phase_provenance": "translation_unit",
       "state": "discovered",
-      "source": "Physics/src/fluids/FluidManager.cpp",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1370",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12587",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Partial: the disabled-backend branch at +0x2b == 0 emits the generateSurfaceMeshes warning (line 0xea), then iterates the primary fluid array and calls phys_fn_003419 for each live fluid; candidate currently implements only the warning branch.",
+      "dynamic_proof": "NxPhysicsSimulationTests pins a disabled manager with empty arrays, steps two frames, and observes one exact generateSurfaceMeshes warning after stepping as part of the oracle-matching three-warning transcript (build/FluidGate/fluid-step-green.log; Phase 7 1,327/1,327).",
+      "notes": "Only the disabled empty-array warning path is reconstructed. Extension-backed/nonempty-array iteration and fluid callbacks remain open."
     },
     {
       "id": "phys_fn_003633",

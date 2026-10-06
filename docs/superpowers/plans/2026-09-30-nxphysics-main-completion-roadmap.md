@@ -16,11 +16,26 @@ approved all-scene Viewer selection passes all 48 selected cases, including 34
 scene runs and five existing signature-verified oracle skips. See
 `docs/reconstruction/novodex-physics/evidence/effector-step-integration.md`.
 
-This is partial evidence for `phys_fn_000655`, not whole-function closure; its
-inventory state remains discovered. Next continue tracing and reconstructing
-the remaining simulation-step rows and branch/callee coverage, then resume the
-standalone simulation suite before Unreal testing. Public Physics headers remain
+This fixture is partial dynamic evidence for `phys_fn_000655`; the source now
+translates the full recovered row, so the inventory marks it reconstructed.
+Whole-row mutation falsification remains open. Public Physics headers remain
 unchanged.
+
+### Continuation — disabled FluidManager scene-step calls (2026-10-06)
+
+Oracle `phys_fn_000659` calls the disabled FluidManager step hook after every
+substep and surface-mesh generation once after the substep loop. The scheduler
+had omitted both calls. A public scene fixture with the manager's conditional
+extension-dirty byte pinned to zero was RED (three oracle warnings, zero
+candidate warnings) and is now an exact differential. Phase 5 passes
+2,042/2,042, Phase 7 passes 1,327/1,327, and the approved all-scenes Viewer
+selection passes 48/48, with five existing signature-verified skips. See
+`docs/reconstruction/novodex-physics/evidence/fluid-manager-scene-step.md`.
+
+Inventory rows 000655 and 000659 now record their reconstructed scheduler/step
+control flow; mutation falsification remains open. Rows 003630 and 003632 only
+have partial disabled-empty-manager behavior. Extension-backed static
+collision, live-fluid updates, and surface generation remain open full-DLL work.
 
 ## Outcome and constraints
 

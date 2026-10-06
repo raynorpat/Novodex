@@ -130,7 +130,7 @@ class AssetCases(unittest.TestCase):
         self.assertEqual(seen, DIMENSIONS)
 
     def test_every_probe_names_an_owned_phase_4_row_at_the_recorded_rva(self):
-        inventory = json.loads(INVENTORY_PATH.read_text())
+        inventory = json.loads(INVENTORY_PATH.read_text(encoding='utf-8'))
         rows = {row['id']: row for row in inventory['functions']}
         for probe in self.document['probes']:
             with self.subTest(probe=probe['name']):

@@ -3183,6 +3183,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation fluid array-release remaining=1 secondary=1 swapped=1.1 destructor=1 flags=1 target=1'
         'simulation fluid manager actor-created present=1 errors=1 code=206 line=263 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=NxScene::fluidsNotifyCreateActor(): Feature not available!'
         'simulation fluid manager actor-released errors=1 code=206 line=250 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=NxScene::fluidsNotifyReleaseActor(): Feature not available!'
+        'simulation fluid manager-step ready=1 fetched=1 frames=2 errors=3 code=206 line=234 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=NxScene::generateSurfaceMeshes(): Feature not available!'
         'simulation effector-step setup count=1 awake=1 pos=00000000 spring=3f000000.3f800000.40800000.42c80000.42c80000'
         'simulation effector-step ready=1 fetched=1 vx=00000000'
         'simulation effector-step second ready=1 fetched=1 vx=3e8e38e3'
@@ -5398,7 +5399,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1326  # previous 1,323 plus the spring/damper effector step assertions
+    '7' = 1327  # previous 1,326 plus disabled fluid-manager step/surface assertions
                # across joint, scene, simulation, mesh, trigger,
                # effector and core-dump targets; kept equal to the registry count below
     '8' = 0

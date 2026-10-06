@@ -868,6 +868,31 @@ static void nxFluidManagerNotifyActorReleasedDisabled(void* manager, void* body)
 			0xfa, 0, "NxScene::fluidsNotifyReleaseActor(): Feature not available!");
 	}
 
+// phys_fn_003630 (0x00089bd0) is called once after each completed scene
+// substep. The available=false branch reports the pinned backend warning;
+// extension-backed collision updates and live-fluid iteration remain open.
+static void nxFluidManagerStepDisabled(void* manager, NxReal timestep)
+	{
+	(void)timestep;
+	unsigned char* bytes = static_cast<unsigned char*>(manager);
+	if(bytes[0x2b] == 0)
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\FluidManager.cpp",
+			0xcf, 0, "NxScene::stepFluids(): Feature not available!");
+	}
+
+// phys_fn_003632 (0x00089c80) runs once after the scene's substep loop.
+// Its available=false warning is independent of whether the fluid array is
+// empty; enabled extension dispatch is still not reconstructed here.
+static void nxFluidManagerGenerateSurfaceMeshesDisabled(void* manager)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(manager);
+	if(bytes[0x2b] == 0)
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\FluidManager.cpp",
+			0xea, 0, "NxScene::generateSurfaceMeshes(): Feature not available!");
+	}
+
 // phys_fn_000622 (0x00011620): guard reentry, release the requested fluid,
 // then destroy and clear an empty manager.
 void NxSceneInternal::releaseFluid(void* fluidInternal)
@@ -4599,11 +4624,15 @@ void NxSceneInternal::simulateFrame()
 			CpmPairHash* const reportHash = reinterpret_cast<CpmPairHash*>(mBytes + 0x2c);
 			cpmBufferContactReports0917(this, reportHash);
 			}
+		if(void* fluidManager = at<void*>(0x61c))
+			nxFluidManagerStepDisabled(fluidManager, timestep);
 		++at<NxU32>(0x558);
 		at<NxReal>(0x538) -= timestep;
 		}
 	if(at<NxU32>(0x534) != 1 && timestep < at<NxReal>(0x538))
 		at<NxReal>(0x538) = timestep;
+	if(void* fluidManager = at<void*>(0x61c))
+		nxFluidManagerGenerateSurfaceMeshesDisabled(fluidManager);
 	__asm fldcw savedControlWord
 	}
 

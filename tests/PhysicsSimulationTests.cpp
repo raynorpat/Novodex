@@ -2028,6 +2028,41 @@ int wmain(int argc, wchar_t** argv)
 		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
 		simulationOutput.file, simulationOutput.message);
 	sdk->releaseScene(*fluidScene);
+	// The disabled FluidManager is still stepped by the scene scheduler. Pin
+	// its uninitialised extension dirty flag to the false branch on both paired
+	// processes so this fixture measures the manager warnings without invoking
+	// extension callbacks that the shipped installation does not provide.
+	NxScene* const fluidStepScene = sdk->createScene(fluidSceneDesc);
+	if(!fluidStepScene)
+		return nxFail("fluid manager step scene creation failed");
+	fluidStepScene->setTiming(1.0f / 60.0f, 4, NX_TIMESTEP_FIXED);
+	if(fluidStepScene->createFluid(fluidDesc) != 0)
+		return nxFail("disabled fluid manager unexpectedly created a fluid");
+	unsigned char* const fluidStepSceneInternal = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(fluidStepScene) + 0x24);
+	unsigned char* const fluidStepManager = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(fluidStepSceneInternal + 0x61c));
+	if(!fluidStepManager)
+		return nxFail("fluid manager step fixture has no manager");
+	fluidStepManager[0x28] = 0;
+	simulationOutput.resetLast();
+	const unsigned fluidStepErrorsBefore = simulationOutput.errors;
+	bool fluidStepReady = true;
+	bool fluidStepFetched = true;
+	for(unsigned step = 0; step < 2; ++step)
+		{
+		fluidStepScene->simulate(1.0f / 60.0f);
+		fluidStepReady = fluidStepReady &&
+			fluidStepScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+		fluidStepFetched = fluidStepFetched &&
+			fluidStepScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		}
+	printf("simulation fluid manager-step ready=%u fetched=%u frames=2 errors=%u code=%u line=%d file=%s message=%s\n",
+		fluidStepReady ? 1u : 0u, fluidStepFetched ? 1u : 0u,
+		simulationOutput.errors - fluidStepErrorsBefore,
+		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
+		simulationOutput.file, simulationOutput.message);
+	sdk->releaseScene(*fluidStepScene);
 	// Seed the manager's two parallel fluid arrays with a concrete fake fluid
 	// so release exercises its swap-removal and scalar-deleting dispatch, even
 	// though the shipped build cannot create a backend fluid itself.

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 4 functions are closed, 296 reconstructed functions remain unfalsified, 261 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 4 functions are closed, 298 reconstructed functions remain unfalsified, 259 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through NxPhysicsJointStagedPairTests, a REGISTERED Phase 7 STAGED-PAIR target. The mutation is to the row's CONTROL FLOW, because the harness drives identity poses and identity quaternions -- arithmetic mutations cancel on those inputs (evidence 12d) -- while a mutation that breaks a construction moves the `created=yes` line the harness prints (12h).",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
@@ -20,8 +20,8 @@
   },
   "counts": {
     "differential_falsified": 4,
-    "deferred_reconstructed_not_falsified": 296,
-    "deferred_not_reconstructed_in_phase": 261
+    "deferred_reconstructed_not_falsified": 298,
+    "deferred_not_reconstructed_in_phase": 259
   },
   "closed": [
     {
@@ -891,9 +891,10 @@
       "id": "phys_fn_000655",
       "rva": "0x000137e0",
       "size": 475,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Full row translation now recorded in inventory; whole-row mutation falsification remains open."
     },
     {
       "id": "phys_fn_000657",
@@ -908,9 +909,10 @@
       "id": "phys_fn_000659",
       "rva": "0x00013c40",
       "size": 447,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Scheduler plus disabled-fluid manager calls are now implemented and staged; whole-row mutation falsification remains open."
     },
     {
       "id": "phys_fn_000661",
