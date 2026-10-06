@@ -4,6 +4,17 @@ Date: 2026-09-30
 Baseline: `main` at `b942f01` (Merge convex-mesh gap reconstruction into main)
 Status: Active execution. The user selected full-DLL reconstruction and standalone simulation tests before Unreal integration.
 
+### Continuation — isolated grounded controller step response (2026-10-06)
+
+Added the approved fresh-scene controller fixture to isolate the grounded
+low-obstacle step response from the preceding controller actor. Oracle and
+candidate both finish at `(0.5, 0.5, 0)` with flags `0x5`; the Phase 7 gate now
+pins that paired output at a 1,357 assertion floor. This confirms the blocked
+step-probe behavior in isolation, not a successful step-over: the controller
+still stops at the obstacle's near face. Successful step-over motion remains
+open. Phase 7 passes 1,357/1,357 assertions. See
+`docs/reconstruction/novodex-physics/evidence/controller-grounded-step-response.md`.
+
 ### Continuation — public 16-bit mesh input in controller sweep (2026-10-06)
 
 Added a paired controller face-hit fixture using a triangle mesh cooked from
@@ -14,7 +25,8 @@ This covers the public descriptor-to-controller path; the private
 `TriangleMesh` format. The focused differential is exact (`stdout_delta=0`,
 `stderr_exact=True`), and Phase 7 registers the new output at a 1,356 assertion
 floor. The fresh Phase 7 gate passes all 11 registered differentials with
-1,356/1,356 assertions. Other mesh formats, transformed controllers, step response, callbacks,
+1,356/1,356 assertions. Other mesh formats, transformed controllers, successful
+step-over behavior, callbacks,
 and complete controller semantics remain open. See
 `docs/reconstruction/novodex-physics/evidence/scene-controller-factory.md`.
 
