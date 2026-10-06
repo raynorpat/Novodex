@@ -1966,6 +1966,12 @@ namespace
 								continue;
 								}
 							}
+						// The pinned Controller resolver (0x00058ea0) only builds
+						// sweep candidates for boxes (type 2) and triangle meshes
+						// (type 4). Other shape bounds are not controller blockers.
+						const NxShapeType obstacleType = shape->getType();
+						if(obstacleType != NX_SHAPE_BOX && obstacleType != NX_SHAPE_MESH)
+							continue;
 						NxBounds3 shapeBounds;
 						shape->getWorldBounds(shapeBounds);
 						const NxVec3& lo = shapeBounds.getMin();

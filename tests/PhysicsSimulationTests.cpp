@@ -2649,6 +2649,47 @@ int wmain(int argc, wchar_t** argv)
 	rotatedControllerScene->releaseController(*rotatedController);
 	sdk->releaseScene(*rotatedControllerScene);
 
+	// A sphere's expanded world AABB has square corners. This diagonal path
+	// clips that empty corner for a box controller and a spherical obstacle.
+	NxSceneDesc sphereControllerSceneDesc;
+	sphereControllerSceneDesc.setToDefault();
+	NxScene* const sphereControllerScene = sdk->createScene(sphereControllerSceneDesc);
+	if(!sphereControllerScene)
+		return nxFail("sphere controller scene creation failed");
+	NxSphereShapeDesc sphereControllerObstacleShape;
+	sphereControllerObstacleShape.radius = 0.5f;
+	NxActorDesc sphereControllerObstacleActorDesc;
+	sphereControllerObstacleActorDesc.globalPose.t = NxVec3(1.5f, 0.0f, 0.0f);
+	sphereControllerObstacleActorDesc.shapes.pushBack(&sphereControllerObstacleShape);
+	NxActor* const sphereControllerObstacle = sphereControllerScene->createActor(
+		sphereControllerObstacleActorDesc);
+	alignas(4) unsigned char sphereControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(sphereControllerDescStorage + 0x0c) = nxFloatBits(-2.0f);
+	*reinterpret_cast<NxU32*>(sphereControllerDescStorage + 0x10) = nxFloatBits(0.8f);
+	*reinterpret_cast<NxU32*>(sphereControllerDescStorage + 0x14) = nxFloatBits(0.8f);
+	*reinterpret_cast<NxU32*>(sphereControllerDescStorage + 0x30) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(sphereControllerDescStorage + 0x34) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(sphereControllerDescStorage + 0x38) = nxFloatBits(0.5f);
+	NxController* const sphereController = sphereControllerScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(sphereControllerDescStorage));
+	if(!sphereControllerObstacle || !sphereController)
+		return nxFail("sphere controller fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	const NxVec3 sphereObstacleDisplacement(4.0f, 0.0f, 0.0f);
+	reinterpret_cast<NxControllerProbe*>(sphereController)->move(
+		sphereObstacleDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& sphereControllerPosition =
+		reinterpret_cast<NxControllerProbe*>(sphereController)->getPosition();
+	printf("simulation controller-obstacle sphere-corner position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(sphereControllerPosition.x), nxFloatBits(sphereControllerPosition.y),
+		nxFloatBits(sphereControllerPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(sphereControllerPosition.x) != 0x40000000 ||
+		nxFloatBits(sphereControllerPosition.y) != 0x3f4ccccd ||
+		nxFloatBits(sphereControllerPosition.z) != 0x3f4ccccd || obstacleCollisionFlags != 0;
+	sphereControllerScene->releaseController(*sphereController);
+	sdk->releaseScene(*sphereControllerScene);
+
 	sdk->release();
 	for(unsigned sdkCycle = 0; sdkCycle != 2; ++sdkCycle)
 		{

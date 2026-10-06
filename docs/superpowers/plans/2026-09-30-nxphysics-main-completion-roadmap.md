@@ -4,6 +4,23 @@ Date: 2026-09-30
 Baseline: `main` at `b942f01` (Merge convex-mesh gap reconstruction into main)
 Status: Active execution. The user selected full-DLL reconstruction and standalone simulation tests before Unreal integration.
 
+### Continuation — controller sphere obstacle dispatch (2026-10-06)
+
+Added a paired controller move through the expanded AABB corner of a sphere.
+It first went RED: the oracle passes through to `x=2` with no flags, while the
+candidate's generic shape-bounds fallback stopped at `x=0.5` with flag 4. IDA's
+resolver at RVA `0x00058ea0` dispatches candidate geometry only for internal
+shape types 2 (box) and 4 (triangle mesh); the candidate now applies that type
+filter. The differential is exact (`stdout_delta=0`, `stderr_exact=True`;
+`build/controller-sphere-corner-green.log`). Fresh Phase 5 passes 2,042/2,042,
+Phase 7 passes 1,349/1,349, inventory validation reports 6,338 functions /
+5,138 data objects / zero unexplained rows, and the full Viewer selection passes
+all 44 selected cases across all 39 demos (34 scene passes and five existing
+signature-verified skips). This is partial controller geometry only;
+triangle-mesh narrow-phase, general penetration recovery, complete slide/step
+response, callbacks, and the rest of the controller matrix remain open. See
+`docs/reconstruction/novodex-physics/evidence/scene-controller-factory.md`.
+
 ### Continuation — controller free-space move slice (2026-10-06)
 
 Added a paired call through the recovered second controller vtable slot. The

@@ -84,3 +84,23 @@ passes 1,348/1,348 (`build/controller-rotated-box-phase7-final.log`). The
 all-scenes Viewer gate passes all 48 selections on the rebuilt final DLL:
 43 pass and the same five pinned-oracle asset failures skip by signature
 (`build/controller-rotated-box-viewer-ctest.log`).
+
+## Sphere obstacle dispatch follow-up
+
+A diagonal controller path through the expanded corner of a sphere was added
+as a paired simulation regression. The first run was RED: the pinned controller
+passed through to `x=2` (`0x40000000`) with flags zero, while the candidate's
+sphere world-AABB fallback stopped at `x=0.5` with flag 4. IDA's controller
+query helper at RVA `0x00058ea0` dispatches collision geometry only for
+internal shape types 2 (box) and 4 (triangle mesh). The candidate now applies
+that type filter before the generic bounds fallback; the oracle/candidate
+transcript matches exactly (`stdout_delta=0`, `stderr_exact=True`;
+`build/controller-sphere-corner-green.log`).
+
+Fresh Phase 5 passes 2,042/2,042 and Phase 7 passes 1,349/1,349. The rebuilt
+Viewer selection passes all 44 selected CTest cases, covering all 39 demos;
+34 scene runs pass and the five existing signature-verified oracle failures
+skip (`build/controller-sphere-corner-viewer-ctest.log`). This closes only the
+shape-type filter shown by the oracle. Triangle-mesh narrow-phase, generalized
+overlap recovery, complete slide/step handling, callbacks, and the wider
+controller lifecycle remain open. Public Physics headers were not changed.

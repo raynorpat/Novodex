@@ -3199,6 +3199,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation controller-obstacle vertical position=40800000.3f000000.00000000 flags=00000001'
         'simulation controller-obstacle trigger position=40f00000.00000000.00000000 flags=00000004'
         'simulation controller-obstacle rotated-corner position=bf50704e.00000000.3f4ccccd flags=00000004'
+        # IDA's controller shape dispatch accepts box and triangle mesh types;
+        # a sphere in the expanded box corner must not become a false blocker.
+        'simulation controller-obstacle sphere-corner position=40000000.3f4ccccd.3f4ccccd flags=00000000'
         'simulation controller-initial-overlap escape position=3e800000.00000000.00000000 flags=00000000'
         'simulation controller-initial-overlap inward position=3f400000.00000000.00000000 flags=00000004'
         'simulation effector-step setup count=1 awake=1 pos=00000000 spring=3f000000.3f800000.40800000.42c80000.42c80000'
@@ -5422,7 +5425,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1348  # previous 1,347 plus the rotated-box controller sweep assertion
+    '7' = 1349  # previous 1,348 plus the controller sphere-corner type-filter assertion
                # (free-space, actor pose, obstacle/group filter, vertical, trigger, overlap)
     '8' = 0
 }
