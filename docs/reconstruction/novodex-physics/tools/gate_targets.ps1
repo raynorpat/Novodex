@@ -3174,6 +3174,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation implicit-mesh-release errors=1 code=206 line=647 file=\Epic\Novodex\SDKs\Physics\src\NpScene.cpp message=NxScene::releaseImplicitMesh(): Feature not available!'
         'simulation implicit-mesh-count count=0 errors=1 code=206 line=653 file=\Epic\Novodex\SDKs\Physics\src\NpScene.cpp message=NxScene::getNbImplicitMeshes(): Feature not available!'
         'simulation implicit-mesh-list present=0 errors=1 code=206 line=659 file=\Epic\Novodex\SDKs\Physics\src\NpScene.cpp message=NxScene::getImplicitMeshes(): Feature not available!'
+        # The pinned build cannot create a live fluid, so exercise the manager
+        # constructor state and scalar-deleting vtable slot directly.
+        'simulation fluid manager-constructor owner=1 arrays-empty=1 initialized=1 extension=0 available=0'
+        'simulation fluid manager-vtable deleting-destructor=1'
     )
     # Releasing a compound actor must erase its actor-pair hash entry before
     # getPairFlagArray resolves the now-freed group shape ID.

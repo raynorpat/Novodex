@@ -736,27 +736,39 @@ NxSceneInternal::NxSceneInternal()
 	nxDword(p, 0x048) = aux ? reinterpret_cast<unsigned>(nxSceneAuxConstruct(aux, p)) : 0;
 	}
 
-// phys_fn_003629 (0x00089f50) lays out FluidManager's empty arrays and records
-// the owning Scene. In this build the fluid implementation flag is false; we
-// initialise the otherwise-unused dirty flag and backend pointer as zero so a
-// disabled manager has deterministic, safe state if the scene is stepped.
+static void* __fastcall nxFluidManagerDeletingDestructor(void* manager, void*, unsigned char deleteObject);
+
+static void* gNxFluidManagerVtable[] = {
+	reinterpret_cast<void*>(nxFluidManagerDeletingDestructor)
+	};
+
+// phys_fn_003645 (0x00089f50) lays out FluidManager's arrays, backend flags,
+// Scene link, and virtual dispatch pointer. The pinned build has no fluid
+// extension, so its extension flags are zero; the constructor leaves the
+// conditional backend storage untouched while that feature is unavailable.
 static void* nxSceneCreateDisabledFluidManager(NxSceneInternal* scene)
 	{
 	void* memory = nxFoundationSDKAllocator->malloc(0x34, NX_MEMORY_PERSISTENT);
 	if(!memory)
 		return 0;
-	memset(memory, 0, 0x34);
-	static const unsigned char disabledFluidManagerVtable = 0;
-	*reinterpret_cast<unsigned*>(memory) = reinterpret_cast<unsigned>(&disabledFluidManagerVtable);
-	*reinterpret_cast<void**>(static_cast<unsigned char*>(memory) + 0x24) = scene;
-	static_cast<unsigned char*>(memory)[0x29] = 1;
+	*reinterpret_cast<void***>(memory) = gNxFluidManagerVtable;
+	unsigned char* bytes = static_cast<unsigned char*>(memory);
+	*reinterpret_cast<unsigned*>(bytes + 4) = 0;
+	*reinterpret_cast<unsigned*>(bytes + 8) = 0;
+	*reinterpret_cast<unsigned*>(bytes + 0xc) = 0;
+	*reinterpret_cast<unsigned*>(bytes + 0x14) = 0;
+	*reinterpret_cast<unsigned*>(bytes + 0x18) = 0;
+	*reinterpret_cast<unsigned*>(bytes + 0x1c) = 0;
+	*reinterpret_cast<void**>(bytes + 0x24) = scene;
+	bytes[0x2a] = 0;
+	bytes[0x2b] = 0;
+	bytes[0x29] = 1;
 	return memory;
 	}
 
-// The FluidManager destructor (slot 0) releases its two empty arrays and the
-// 0x34-byte manager through the Foundation allocator. No fluid or emitter can
-// be created in this build, so those arrays remain null.
-static void nxSceneReleaseDisabledFluidManager(void* manager)
+// phys_fn_003630 (0x00089e00) destroys the two SDK arrays. They remain empty
+// while the pinned fluid backend is unavailable.
+static void nxFluidManagerDestroyArrays(void* manager)
 	{
 	if(manager)
 		{
@@ -769,7 +781,26 @@ static void nxSceneReleaseDisabledFluidManager(void* manager)
 			if(offset == 4)
 				break;
 			}
+		}
+	}
+
+// phys_fn_003647 (0x00089fd0): scalar deleting destructor, vtable slot 0.
+static void* __fastcall nxFluidManagerDeletingDestructor(void* manager, void*, unsigned char deleteObject)
+	{
+	nxFluidManagerDestroyArrays(manager);
+	if((deleteObject & 1) != 0)
 		nxFoundationSDKAllocator->free(manager);
+	return manager;
+	}
+
+static void nxSceneReleaseDisabledFluidManager(void* manager)
+	{
+	if(manager)
+		{
+		void** vtable = *reinterpret_cast<void***>(manager);
+		typedef void* (__thiscall *DeletingDestructor)(void*, unsigned char);
+		DeletingDestructor destroy = reinterpret_cast<DeletingDestructor>(vtable[0]);
+		destroy(manager, 1);
 		}
 	}
 

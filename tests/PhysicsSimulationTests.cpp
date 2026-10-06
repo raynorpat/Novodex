@@ -1945,6 +1945,41 @@ int wmain(int argc, wchar_t** argv)
 		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
 		simulationOutput.file, simulationOutput.message);
 	sdk->releaseScene(*fluidScene);
+	// The manager is an internal C++ object. Exercise its first vtable slot
+	// through the pinned scalar-deleting destructor instead of treating the
+	// manager as a byte buffer only.
+	NxScene* const fluidVtableScene = sdk->createScene(fluidSceneDesc);
+	if(!fluidVtableScene)
+		return nxFail("fluid vtable scene creation failed");
+	fluidVtableScene->createFluid(fluidDesc);
+	unsigned char* const fluidVtableSceneInternal = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(fluidVtableScene) + 0x24);
+	void* const fluidManager = *reinterpret_cast<void**>(fluidVtableSceneInternal + 0x61c);
+	if(!fluidManager)
+		return nxFail("fluid manager was not installed by createFluid");
+	unsigned char* const fluidManagerBytes = static_cast<unsigned char*>(fluidManager);
+	const bool fluidManagerOwnerMatches =
+		*reinterpret_cast<void**>(fluidManagerBytes + 0x24) == fluidVtableSceneInternal;
+	const bool fluidManagerArraysEmpty =
+		*reinterpret_cast<unsigned*>(fluidManagerBytes + 4) == 0 &&
+		*reinterpret_cast<unsigned*>(fluidManagerBytes + 8) == 0 &&
+		*reinterpret_cast<unsigned*>(fluidManagerBytes + 0xc) == 0 &&
+		*reinterpret_cast<unsigned*>(fluidManagerBytes + 0x14) == 0 &&
+		*reinterpret_cast<unsigned*>(fluidManagerBytes + 0x18) == 0 &&
+		*reinterpret_cast<unsigned*>(fluidManagerBytes + 0x1c) == 0;
+	printf("simulation fluid manager-constructor owner=%u arrays-empty=%u initialized=%u extension=%u available=%u\n",
+		fluidManagerOwnerMatches ? 1u : 0u, fluidManagerArraysEmpty ? 1u : 0u,
+		fluidManagerBytes[0x29], fluidManagerBytes[0x2a], fluidManagerBytes[0x2b]);
+	void** const fluidManagerVtable = fluidManager ? *reinterpret_cast<void***>(fluidManager) : 0;
+	if(!fluidManagerVtable || !fluidManagerVtable[0])
+		return nxFail("fluid manager vtable destructor missing");
+	typedef void* (__thiscall *FluidManagerDeletingDestructorFn)(void*, unsigned char);
+	FluidManagerDeletingDestructorFn fluidManagerDeletingDestructor =
+		reinterpret_cast<FluidManagerDeletingDestructorFn>(fluidManagerVtable[0]);
+	fluidManagerDeletingDestructor(fluidManager, 1);
+	*reinterpret_cast<void**>(fluidVtableSceneInternal + 0x61c) = 0;
+	printf("simulation fluid manager-vtable deleting-destructor=1\n");
+	sdk->releaseScene(*fluidVtableScene);
 
 	sdk->release();
 	for(unsigned sdkCycle = 0; sdkCycle != 2; ++sdkCycle)
