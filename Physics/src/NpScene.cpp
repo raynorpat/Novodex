@@ -427,15 +427,20 @@ NxU32 NpScene::getActorPairFlags(NxActor& actor0, NxActor& actor1) const
 	return mScene ? cpmGetActorPairFlags(mScene, &actor0, &actor1) : 0;
 	}
 
-// Store contact-report flags for the pair's exact shapes.
+// phys_fn_000313 (0x0000c7f0): write-locked forward to Scene::setShapePairFlags.
 void NpScene::setShapePairFlags(NxShape& shape0, NxShape& shape1, NxU32 nxContactPairFlag)
 	{
-	if(mScene)
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
 		{
-		NxU8* const internalShape0 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&shape0) + 8);
-		NxU8* const internalShape1 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&shape1) + 8);
-		mScene->setShapePairFlags(internalShape0, internalShape1, nxContactPairFlag);
+		nxSceneDeadlockReport();
+		return;
 		}
+	void* link = mWriteLock;
+	NxU8* const internalShape0 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&shape0) + 8);
+	NxU8* const internalShape1 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&shape1) + 8);
+	if(mScene)
+		mScene->setShapePairFlags(internalShape0, internalShape1, nxContactPairFlag);
+	nxNpSceneGuardLeave(link);
 	}
 
 // Return the flags stored by setShapePairFlags.
