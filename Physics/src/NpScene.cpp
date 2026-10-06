@@ -8,9 +8,9 @@
 // The NxScene wrapper. Its layout is measured from phys_fn_000285 (0x0000c310);
 // see NpScene.h for the offsets.
 //
-// The Scene lock links follow the oracle's two-allocation shape. The
-// CRITICAL_SECTION lifecycle and guard protocol are connected to the actor
-// virtuals; the condition-object behavior remains a reproduction hole.
+// The Scene lock links and condition object follow the oracle's measured
+// layouts. Public wrapper methods recover those protocols individually; the
+// worker condition is reconstructed in the helpers below.
 //
 // The forwarding slots are the point of this class. phys_fn_000293 (0x0000c490)
 // is the shape of all of them, and it is transcribed:
@@ -50,7 +50,7 @@
 #include "ContactPairManager.h"
 
 // ---------------------------------------------------------------------------
-// Lock helpers and the remaining condition-object reproduction hole.
+// Lock and condition-object helpers.
 // ---------------------------------------------------------------------------
 static void* nxLockConstruct(void* memory);
 static bool nxLockTryLock(void* lock);
@@ -184,7 +184,7 @@ void NpScene::release()
 	}
 
 // ---------------------------------------------------------------------------
-// Reproduction holes.
+// Lock and condition implementations.
 // ---------------------------------------------------------------------------
 
 static void* nxLockConstruct(void* memory)
@@ -300,12 +300,8 @@ static void nxConditionStop(void* condition)
 	}
 
 // ---------------------------------------------------------------------------
-// The remaining NxScene virtuals, UNIMPLEMENTED.
-//
-// NpScene must be concrete to be instantiated, and NxScene declares 65 pure
-// virtuals. Only createActor and releaseActor above are reconstructed; every
-// definition below is an empty body returning a default. None is claimed as
-// reconstructed and none is gated.
+// The remaining NxScene virtuals. Unimplemented methods are explicit stubs;
+// reconstructed methods are annotated at their definitions below.
 // ---------------------------------------------------------------------------
 
 
@@ -1076,19 +1072,22 @@ void NpScene::simulate(NxReal elapsedTime)
 			"Scene::simulate: The elapsed time must be nonnegative!");
 		return;
 		}
-	if(mFlag || !mScene || !mCondition)
-		return;
+
+	// phys_fn_000394 probes +0x10 under the scene lock, releases it before
+	// writing Scene+0x544 through phys_fn_000538, then reacquires it to mark the
+	// run pending and signal the work event through phys_fn_002373.
 	void* readLink = mReadLock;
 	nxNpSceneGuardEnter(readLink);
-	if(mFlag)
-		{
-		nxNpSceneGuardLeave(readLink);
+	const bool alreadyRunning = mFlag != 0;
+	nxNpSceneGuardLeave(readLink);
+	if(alreadyRunning)
 		return;
-		}
+
 	mScene->at<NxReal>(0x544) = elapsedTime;
+
+	nxNpSceneGuardEnter(readLink);
 	mFlag = 1;
-	::SetEvent(*reinterpret_cast<HANDLE*>(
-		static_cast<unsigned char*>(mCondition) + 8));
+	::SetEvent(*reinterpret_cast<HANDLE*>(mLockB));
 	nxNpSceneGuardLeave(readLink);
 	}
 

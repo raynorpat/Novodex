@@ -59,14 +59,13 @@ class NpScene : public NxScene, public NxAllocateable
 	virtual NxJoint* createJoint(const NxJointDesc& desc);
 	virtual void setGravity(const NxVec3&);
 
-	// The remaining virtuals are not reached by a reconstructed path and are
-	// declared only so the vtable keeps the oracle's slot order.
+	// Keep the complete oracle vtable order. Definitions range from reconstructed
+	// forwards to explicit stubs; see NpScene.cpp for each method's status.
 	void release();
 
-	// The remaining NxScene virtuals, UNIMPLEMENTED. NpScene must be concrete to
-	// be instantiated and NxScene declares 65 pure virtuals; actor creation,
-	// release, count, and list are reconstructed. Other bodies return defaults.
-	// None is claimed as reconstructed and none is gated.
+	// NpScene must be concrete to preserve the oracle's 65-slot NxScene vtable.
+	// Some declarations below still have stub bodies; reconstructed paths are
+	// documented beside their definitions in NpScene.cpp.
 	virtual void getGravity(NxVec3&);
 	virtual void releaseJoint(NxJoint &);
 	virtual NxSpringAndDamperEffector* createSpringAndDamperEffector(const NxSpringAndDamperEffectorDesc&);

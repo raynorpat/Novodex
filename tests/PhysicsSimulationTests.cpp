@@ -820,6 +820,25 @@ int wmain(int argc, wchar_t** argv)
 		? emptyScene->fetchResults(NX_RIGID_BODY_FINISHED, false) : false;
 	printf("simulation zero-dt ready=%u fetched=%u\n",
 		zeroDtReady ? 1u : 0u, zeroDtFetched ? 1u : 0u);
+	unsigned char* emptyWrapper = reinterpret_cast<unsigned char*>(emptyScene);
+	unsigned char* emptyInternal = *reinterpret_cast<unsigned char**>(emptyWrapper + 0x24);
+	emptyScene->simulate(0.125f);
+	emptyScene->simulate(0.25f);
+	const unsigned queuedDtBits = nxFloatBits(
+		*reinterpret_cast<NxReal*>(emptyInternal + 0x544));
+	const unsigned char pendingFlag = emptyWrapper[0x20];
+	bool submittedReady = false;
+	for(unsigned wait = 0; wait != 1000 && !submittedReady; ++wait)
+		{
+		submittedReady = emptyScene->checkResults(NX_RIGID_BODY_FINISHED, false);
+		if(!submittedReady)
+			::Sleep(1);
+		}
+	const bool submittedFetched = submittedReady
+		? emptyScene->fetchResults(NX_RIGID_BODY_FINISHED, false) : false;
+	printf("simulation submit state dt=%08x pending=%u ready=%u fetched=%u finished=%u\n",
+		queuedDtBits, static_cast<unsigned>(pendingFlag), submittedReady ? 1u : 0u,
+		submittedFetched ? 1u : 0u, static_cast<unsigned>(emptyWrapper[0x20]));
 	const bool idleReady = emptyScene->checkResults(NX_RIGID_BODY_FINISHED, false);
 	const bool idleFetched = emptyScene->fetchResults(NX_RIGID_BODY_FINISHED, false);
 	const bool idleFence = emptyScene->wait(NX_FENCE_RUN_FINISHED, false);

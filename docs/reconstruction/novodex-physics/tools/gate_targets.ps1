@@ -3086,6 +3086,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation writable=initial 1'
         'simulation negative-dt error=1 code=1 line=540 file=\Epic\Novodex\SDKs\Physics\src\NpScene.cpp message=Scene::simulate: The elapsed time must be nonnegative!'
         'simulation zero-dt ready=1 fetched=1'
+        'simulation submit state dt=3e000000 pending=1 ready=1 fetched=1 finished=0'
         'simulation nonblocking=idle ready=0 fetched=0'
         'simulation fence=idle ready=0'
         'simulation empty-step ready=1 fetched=1'
@@ -5401,7 +5402,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1329  # previous 1,327 plus negative-dt reporting and zero-dt submission
+    '7' = 1330  # previous 1,327 plus negative/zero-dt and pending-run state checks
                # across joint, scene, simulation, mesh, trigger,
                # effector and core-dump targets; kept equal to the registry count below
     '8' = 0
