@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 12 functions are closed, 297 reconstructed functions remain unfalsified, 252 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 12 functions are closed, 299 reconstructed functions remain unfalsified, 250 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
@@ -20,8 +20,8 @@
   },
   "counts": {
     "differential_falsified": 12,
-    "deferred_reconstructed_not_falsified": 297,
-    "deferred_not_reconstructed_in_phase": 252
+    "deferred_reconstructed_not_falsified": 299,
+    "deferred_not_reconstructed_in_phase": 250
   },
   "closed": [
     {
@@ -202,17 +202,19 @@
       "id": "phys_fn_000305",
       "rva": "0x0000c720",
       "size": 8,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "The NpScene forwarding entry is reconstructed and has a registered differential proof, but no mutation has been aimed at this row; the controller constructor/destructor callees and full method interface remain open work."
     },
     {
       "id": "phys_fn_000307",
       "rva": "0x0000c730",
       "size": 8,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "The NpScene forwarding entry is reconstructed and has a registered differential proof, but no mutation has been aimed at this row; the controller constructor/destructor callees and full method interface remain open work."
     },
     {
       "id": "phys_fn_000311",

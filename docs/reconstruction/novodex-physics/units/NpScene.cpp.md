@@ -410,17 +410,18 @@ void __thiscall FUN_1000c6c0(void *this,int param_1)
 
 ```
 
-## phys_fn_000305 (0x0000c720, 8 B, discovered)
+## phys_fn_000305 (0x0000c720, 8 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
-- prototype: None
-- calling convention: None, stack purge: None
+- source: Physics/src/NpScene.cpp
+- implementation: Physics/src/NpScene.cpp (`NpScene::createController`)
+- prototype: `NxController* __thiscall NpScene::createController(const NxControllerDesc&)`
+- calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000285 (0x0000c310)
 - callees: phys_fn_002336 (0x0005a880)
 - indirect calls: none
 - strings: none
+- dynamic proof: registered Phase 7 controller fixture checks descriptor rejection, factory side effects, generated actor state, and controller list teardown.
 
 Decompile (capstone disassembly):
 
@@ -429,17 +430,18 @@ Decompile (capstone disassembly):
 0x0000c723  jmp 0x1005a880
 ```
 
-## phys_fn_000307 (0x0000c730, 8 B, discovered)
+## phys_fn_000307 (0x0000c730, 8 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
-- prototype: None
-- calling convention: None, stack purge: None
+- source: Physics/src/NpScene.cpp
+- implementation: Physics/src/NpScene.cpp (`NpScene::releaseController`)
+- prototype: `void __thiscall NpScene::releaseController(NxController&)`
+- calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000285 (0x0000c310)
 - callees: phys_fn_002330 (0x0005a4b0)
 - indirect calls: none
 - strings: none
+- dynamic proof: registered Phase 7 controller fixture removes two controllers, first from the non-head list position and then from the head.
 
 Decompile (capstone disassembly):
 

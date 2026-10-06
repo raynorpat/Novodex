@@ -44,6 +44,8 @@ class NxSceneStats;
 class NxSceneLimits;
 class NxActor;
 class NxActorDescBase;
+class NxController;
+class NxControllerDesc;
 class NxJointDesc;
 class NxJoint;
 class Joint;
@@ -83,6 +85,11 @@ class NxSceneInternal
 	// because the ground plane is made by calling this.
 	NxActor* createActor(const NxActorDescBase& desc);
 	void releaseActor(void* body);
+	// phys_fn_000305/000307 (0x0000c720/0x0000c730): controller factory and
+	// release forwarded by NpScene. Controller storage remains private because
+	// the public SDK exposes only an incomplete NxController declaration.
+	NxController* createController(const NxControllerDesc& desc);
+	void releaseController(NxController& controller);
 
 	// phys_fn_000665 (0x000142c0). The joint factory. Needs at least one of the
 	// two actors dynamic, read through each actor's +0x14 body.

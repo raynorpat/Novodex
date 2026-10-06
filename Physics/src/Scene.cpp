@@ -1804,6 +1804,121 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 	gNxApiReentry = false;
 	}
 
+// phys_fn_000305/000307 (Controller.cpp, public NxScene slots 18/19) expose a
+// controller object whose public primary base starts at allocation+0 and whose
+// controller-list node starts at allocation+8. The controller API header is not
+// part of this SDK tree, so preserve that ABI privately rather than inventing a
+// public declaration. The embedded proxy's scalar deleting destructor owns the
+// 0x4c allocation; the oracle's release path does not release its generated
+// actor, so that actor deliberately remains registered in the Scene.
+namespace
+	{
+	// Lifecycle shell only: this local primary vtable has no NxController API
+	// slots. Do not treat the returned object as method-call capable; Controller's
+	// public virtual interface still needs its own recovered vtable and methods.
+	struct NxControllerCore
+		{
+		virtual ~NxControllerCore() {}
+		static void operator delete(void* memory)
+			{
+			if(memory && nxFoundationSDKAllocator)
+				nxFoundationSDKAllocator->free(memory);
+			}
+		};
+
+	struct NxControllerProxy
+		{
+		virtual ~NxControllerProxy() {}
+		static void operator delete(void* memory)
+			{
+			if(memory && nxFoundationSDKAllocator)
+				nxFoundationSDKAllocator->free(static_cast<unsigned char*>(memory) - 8);
+			}
+		};
+	}
+
+NxController* NxSceneInternal::createController(const NxControllerDesc& desc)
+	{
+	const unsigned char* descriptor = reinterpret_cast<const unsigned char*>(&desc);
+	// The pinned Controller.cpp accepts the descriptor only when its type word
+	// at +8 is zero. Other descriptor kinds return null without allocating.
+	if(*reinterpret_cast<const NxU32*>(descriptor + 8) != 0)
+		return 0;
+
+	unsigned char* memory = static_cast<unsigned char*>(
+		nxFoundationSDKAllocator->malloc(0x4c, NX_MEMORY_PERSISTENT));
+	if(!memory)
+		return 0;
+	memset(memory, 0, 0x4c);
+	NxControllerCore* core = new (memory) NxControllerCore();
+	NxControllerProxy* proxy = new (memory + 8) NxControllerProxy();
+	*reinterpret_cast<void**>(memory + 4) = proxy;
+
+	// Controller::Controller copies its position components from descriptor
+	// +0x0c..+0x14 and the dimensions from +0x30. It creates a kinematic box actor with a
+	// 10-unit density and 1.1x controller extents. Using the existing actor
+	// factory retains its scene array, shape, body, and notification semantics.
+	const NxReal* dimensions = reinterpret_cast<const NxReal*>(descriptor + 0x30);
+	NxBoxShapeDesc box;
+	box.dimensions.set(dimensions[0] * 1.1f, dimensions[1] * 1.1f,
+		dimensions[2] * 1.1f);
+	NxBodyDesc body;
+	body.flags = NX_BF_KINEMATIC;
+	NxActorDesc actorDesc;
+	actorDesc.globalPose.t.set(
+		*reinterpret_cast<const NxReal*>(descriptor + 0x0c),
+		*reinterpret_cast<const NxReal*>(descriptor + 0x10),
+		*reinterpret_cast<const NxReal*>(descriptor + 0x14));
+	actorDesc.body = &body;
+	actorDesc.density = 10.0f;
+	actorDesc.shapes.pushBack(&box);
+	NxActor* actor = createActor(actorDesc);
+	*reinterpret_cast<NxActor**>(memory + 0x24) = actor;
+	memcpy(memory + 0x40, dimensions, sizeof(NxReal) * 3);
+
+	// Scene::createController links the embedded object (allocation+8), with its
+	// next pointer at node+0x30, to Scene+0x5a8.
+	*reinterpret_cast<void**>(memory + 0x38) = at<void*>(0x5a8);
+	at<void*>(0x5a8) = memory + 8;
+	(void)core;
+	return reinterpret_cast<NxController*>(memory);
+	}
+
+void NxSceneInternal::releaseController(NxController& controller)
+	{
+	if(gNxApiReentry)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\Controller.cpp", 97, 0,
+			"Reentry check: You may not call this API method from a callback!");
+		return;
+		}
+	gNxApiReentry = true;
+	unsigned char* memory = reinterpret_cast<unsigned char*>(&controller);
+	unsigned char* node = *reinterpret_cast<unsigned char**>(memory + 4);
+	void* head = at<void*>(0x5a8);
+	if(head == node)
+		at<void*>(0x5a8) = *reinterpret_cast<void**>(node + 0x30);
+	else
+		{
+		unsigned char* previous = static_cast<unsigned char*>(head);
+		while(previous && *reinterpret_cast<void**>(previous + 0x30) != node)
+			previous = *reinterpret_cast<unsigned char**>(previous + 0x30);
+		if(previous)
+			*reinterpret_cast<void**>(previous + 0x30) =
+				*reinterpret_cast<void**>(node + 0x30);
+		else
+			NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+				"\\Epic\\Novodex\\SDKs\\Physics\\src\\Controller.cpp", 124, 0,
+				"Scene::removeController: controller is not in the scene.");
+		}
+	*reinterpret_cast<void**>(node + 0x30) = 0;
+	// Calling delete through the embedded proxy reproduces Controller.cpp's
+	// scalar deleting-destructor dispatch and frees allocation+0 as the oracle.
+	delete reinterpret_cast<NxControllerProxy*>(node);
+	gNxApiReentry = false;
+	}
+
 // ---------------------------------------------------------------------------
 // phys_fn_000665 (0x000142c0, 718 B, phase 7) is Scene::createJoint.
 //

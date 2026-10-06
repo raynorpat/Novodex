@@ -5670,13 +5670,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/150",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1033",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "The registered Phase 7 NxPhysicsSimulationTests differential exercises the NxScene create/releaseController entrypoints. It checks unsupported-type rejection, creates two controllers, compares their generated actor counts, positions and box dimensions, then releases a non-head and the remaining head. Oracle and candidate exit 0 with stdout_delta=0 and exact stderr; the Phase 7 gate records all 1,338 assertions. This proves only the tested entrypoint and lifecycle slice; the constructor/destructor callees and remaining NxController virtual methods are not fully reconstructed.",
+      "notes": "The direct NpScene forward is reconstructed; the complete NxController method vtable remains open.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::createController"
     },
     {
       "id": "phys_fn_000306",
@@ -5706,13 +5708,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/151",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1034",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "The registered Phase 7 NxPhysicsSimulationTests differential exercises the NxScene create/releaseController entrypoints. It checks unsupported-type rejection, creates two controllers, compares their generated actor counts, positions and box dimensions, then releases a non-head and the remaining head. Oracle and candidate exit 0 with stdout_delta=0 and exact stderr; the Phase 7 gate records all 1,338 assertions. This proves only the tested entrypoint and lifecycle slice; the constructor/destructor callees and remaining NxController virtual methods are not fully reconstructed.",
+      "notes": "The direct NpScene forward is reconstructed; the complete NxController method vtable remains open.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::releaseController"
     },
     {
       "id": "phys_fn_000308",

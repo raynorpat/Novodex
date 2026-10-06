@@ -395,16 +395,18 @@ void NpScene::releaseEffector(NxEffector& effector)
 	nxNpSceneGuardLeave(link);
 	}
 
-// (unimplemented) createController
-NxController* NpScene::createController(const NxControllerDesc&)
+// phys_fn_000305 (0x0000c720): direct Scene::createController forward. This
+// slot is intentionally not write-locked in the pinned NpScene implementation.
+NxController* NpScene::createController(const NxControllerDesc& desc)
 	{
-	return 0;
+	return mScene ? mScene->createController(desc) : 0;
 	}
 
-// (unimplemented) releaseController
-void NpScene::releaseController(NxController&)
+// phys_fn_000307 (0x0000c730): direct Scene::releaseController forward.
+void NpScene::releaseController(NxController& controller)
 	{
-	
+	if(mScene)
+		mScene->releaseController(controller);
 	}
 
 // phys_fn_000309 (0x0000c740): guarded forward to Scene::setActorPairFlags.

@@ -4,6 +4,24 @@ Date: 2026-09-30
 Baseline: `main` at `b942f01` (Merge convex-mesh gap reconstruction into main)
 Status: Active execution. The user selected full-DLL reconstruction and standalone simulation tests before Unreal integration.
 
+### Continuation — scene controller factory (2026-10-06)
+
+Recovered the `NpScene` forwarding entries and implemented a tested slice of
+the Scene-owned controller allocation/list lifecycle. The first paired regression exposed the
+factory's generated kinematic box actor; the strengthened case now verifies its
+descriptor-derived position and dimensions, rejects an unsupported descriptor,
+and removes two controllers from the middle/head of the Scene list. The
+standalone simulation differential is exact. Current Phase 5 passes
+2,042/2,042 assertions; Phase 7 passes 1,338/1,338 assertions. The all-scene
+Viewer selection passes 48 selected cases (43 passed, five existing
+signature-verified skips). See
+`docs/reconstruction/novodex-physics/evidence/scene-controller-factory.md`.
+
+This remains an explicitly partial slice: the returned object's primary vtable
+has only lifecycle destructor slots, and the controller virtual methods are not
+usable yet. The rest of the constructor/destructor callees, controller
+interface, full-DLL completion and Unreal integration remain open.
+
 ### Continuation — spring/damper scene-step integration (2026-10-06)
 
 Closed a missing scene-step dispatch edge: `NxSceneInternal::simulateFrame`

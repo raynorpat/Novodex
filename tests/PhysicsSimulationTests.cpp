@@ -17,6 +17,7 @@
 #include "NxBodyDesc.h"
 #include "NxSphereShapeDesc.h"
 #include "NxBoxShapeDesc.h"
+#include "NxBoxShape.h"
 #include "NxPlaneShapeDesc.h"
 #include "NxFixedJointDesc.h"
 #include "NxSpringDesc.h"
@@ -375,6 +376,7 @@ int wmain(int argc, wchar_t** argv)
 
 	NxSimulationOutputStream simulationOutput;
 	bool deferredContactFailed = false;
+	bool controllerCreateFailed = false;
 	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, 0, &simulationOutput);
 	if(!sdk)
 		{
@@ -2277,6 +2279,87 @@ int wmain(int argc, wchar_t** argv)
 	*reinterpret_cast<void**>(fluidVtableSceneInternal + 0x61c) = 0;
 	printf("simulation fluid manager-vtable deleting-destructor=1\n");
 	sdk->releaseScene(*fluidVtableScene);
+	// NxScene::createController forwards to the Scene-owned controller list in
+	// the pinned DLL. NxControllerDesc is intentionally incomplete in this SDK
+	// header set, so supply its recovered byte layout without changing public
+	// headers. A zero type word selects the descriptor path accepted by the
+	// oracle; the three dimensions at +0x30 are a half-meter box controller.
+	NxSceneDesc controllerSceneDesc;
+	controllerSceneDesc.setToDefault();
+	NxScene* const controllerScene = sdk->createScene(controllerSceneDesc);
+	if(!controllerScene)
+		return nxFail("controller scene creation failed");
+	const NxU32 controllerSceneActorCountBefore = controllerScene->getNbActors();
+	alignas(4) unsigned char controllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(controllerDescStorage + 0x30) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(controllerDescStorage + 0x34) = nxFloatBits(1.0f);
+	*reinterpret_cast<NxU32*>(controllerDescStorage + 0x38) = nxFloatBits(0.5f);
+	alignas(4) unsigned char rejectedControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(rejectedControllerDescStorage + 8) = 1;
+	NxController* const rejectedController = controllerScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(rejectedControllerDescStorage));
+	printf("simulation controller-create rejected=%u actors=%u\n",
+		rejectedController == 0, controllerScene->getNbActors());
+	controllerCreateFailed = rejectedController != 0 ||
+		controllerScene->getNbActors() != controllerSceneActorCountBefore;
+	NxController* const controller = controllerScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(controllerDescStorage));
+	alignas(4) unsigned char secondControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(secondControllerDescStorage + 0x0c) = nxFloatBits(2.0f);
+	*reinterpret_cast<NxU32*>(secondControllerDescStorage + 0x30) = nxFloatBits(0.25f);
+	*reinterpret_cast<NxU32*>(secondControllerDescStorage + 0x34) = nxFloatBits(0.75f);
+	*reinterpret_cast<NxU32*>(secondControllerDescStorage + 0x38) = nxFloatBits(0.25f);
+	NxController* const secondController = controllerScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(secondControllerDescStorage));
+	const NxU32 controllerSceneActorCountCreated = controllerScene->getNbActors();
+	printf("simulation controller-create first=%u second=%u actors-before=%u actors-created=%u\n",
+		controller != 0, secondController != 0, controllerSceneActorCountBefore,
+		controllerSceneActorCountCreated);
+	controllerCreateFailed = controllerCreateFailed || controller == 0 || secondController == 0 ||
+		controllerSceneActorCountCreated != controllerSceneActorCountBefore + 2;
+	NxActor** const controllerActors = controllerScene->getActors();
+	for(NxU32 index = 0; index != 2 && index < controllerSceneActorCountCreated; ++index)
+		{
+		NxVec3 actorPosition;
+		controllerActors[controllerSceneActorCountBefore + index]->getGlobalPosition(actorPosition);
+		NxShape** const actorShapes = controllerActors[controllerSceneActorCountBefore + index]->getShapes();
+		if(!actorShapes || controllerActors[controllerSceneActorCountBefore + index]->getNbShapes() != 1)
+			{
+			controllerCreateFailed = true;
+			printf("simulation controller-actor index=%u shape-layout-invalid\n", index);
+			continue;
+			}
+		const NxVec3& actorDimensions = static_cast<NxBoxShape*>(actorShapes[0])->getDimensions();
+		printf("simulation controller-actor index=%u position=%08x.%08x.%08x dimensions=%08x.%08x.%08x\n",
+			index, nxFloatBits(actorPosition.x), nxFloatBits(actorPosition.y),
+			nxFloatBits(actorPosition.z), nxFloatBits(actorDimensions.x),
+			nxFloatBits(actorDimensions.y), nxFloatBits(actorDimensions.z));
+		const NxReal expectedX = index == 0 ? 0.0f : 2.0f;
+		const NxU32 expectedHalfExtent = index == 0 ? 0x3f0ccccd : 0x3e8ccccd;
+		const NxU32 expectedHeight = index == 0 ? 0x3f8ccccd : 0x3f533334;
+		controllerCreateFailed = controllerCreateFailed ||
+			actorPosition.x != expectedX || actorPosition.y != 0.0f || actorPosition.z != 0.0f ||
+			nxFloatBits(actorDimensions.x) != expectedHalfExtent ||
+			nxFloatBits(actorDimensions.y) != expectedHeight ||
+			nxFloatBits(actorDimensions.z) != expectedHalfExtent;
+		}
+	// Releasing the first item exercises Scene::removeController's non-head walk;
+	// releasing the second then checks removal of the remaining head.
+	if(controller)
+		controllerScene->releaseController(*controller);
+	const NxU32 controllerSceneActorCountAfterFirstRelease = controllerScene->getNbActors();
+	if(secondController)
+		controllerScene->releaseController(*secondController);
+	const NxU32 controllerSceneActorCountReleased = controllerScene->getNbActors();
+	printf("simulation controller-release actors-after-first=%u actors-after=%u\n",
+		controllerSceneActorCountAfterFirstRelease, controllerSceneActorCountReleased);
+	// The pinned DLL leaves the generated actor registered when its controller
+	// is released. Preserve and compare that observed behavior rather than
+	// imposing a stronger cleanup contract than the oracle has.
+	controllerCreateFailed = controllerCreateFailed ||
+		controllerSceneActorCountAfterFirstRelease != controllerSceneActorCountCreated ||
+		controllerSceneActorCountReleased != controllerSceneActorCountCreated;
+	sdk->releaseScene(*controllerScene);
 
 	sdk->release();
 	for(unsigned sdkCycle = 0; sdkCycle != 2; ++sdkCycle)
@@ -2327,6 +2410,8 @@ int wmain(int argc, wchar_t** argv)
 		}
 	status = nxReportPairIdentity(pairDirectory);
 	if(deferredContactFailed)
+		status = 1;
+	if(controllerCreateFailed)
 		status = 1;
 	FreeLibrary(physics);
 	return status;
