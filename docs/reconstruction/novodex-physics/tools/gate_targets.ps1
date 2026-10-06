@@ -3178,6 +3178,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # constructor state and scalar-deleting vtable slot directly.
         'simulation fluid manager-constructor owner=1 arrays-empty=1 initialized=1 extension=0 available=0'
         'simulation fluid manager-vtable deleting-destructor=1'
+        # Seeded internal array state verifies swap-removal from both arrays
+        # and the fluid's scalar-deleting vtable dispatch.
+        'simulation fluid array-release remaining=1 secondary=1 swapped=1.1 destructor=1 flags=1 target=1'
     )
     # Releasing a compound actor must erase its actor-pair hash entry before
     # getPairFlagArray resolves the now-freed group shape ID.
@@ -5390,7 +5393,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1320  # previous 1,318 plus two disabled FluidManager constructor/vtable assertions
+    '7' = 1321  # previous 1,320 plus the FluidManager array-removal/destructor dispatch assertion
                # across joint, scene, simulation, mesh, trigger,
                # effector and core-dump targets; kept equal to the registry count below
     '8' = 0

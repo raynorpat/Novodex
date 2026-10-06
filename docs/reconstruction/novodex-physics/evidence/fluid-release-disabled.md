@@ -33,9 +33,22 @@ left the manager installed. After reconstruction, oracle and candidate both
 exit 0 with identical output (`stdout_delta=0`, `stderr_exact=True`) in
 `build/FluidGate/fluid-release-green.log` (2026-10-05).
 
+A second focused fixture seeds both manager arrays with two internal fluid
+pointers, then releases the first
+through `NxScene::releaseFluid`. The oracle swap-removes the target from both
+arrays and calls that object's vtable slot 0 with scalar deleting flag 1. The
+new candidate fixture first went RED with matching array contents but no
+destructor call (`calls=0`, `flags=0`); `nxFluidManagerReleaseDisabledFluid`
+now dispatches that slot after the removals. The exact differential is green
+(`stdout_delta=0`, `stderr_exact=True`; `build/FluidGate/fluid-array-target-final-differential.log`),
+including a check that the dispatched object is the one removed from the arrays.
+The full Phase 7 gate passes all 11 targets at 1,321/1,321 assertions
+(`build/FluidGate/phase7-fluid-array-target-final.log`).
+
 This evidence covers disabled manager state, its first virtual deleting
-destructor on empty arrays, the wrapper warning, and empty manager cleanup.
-Removing a live fluid, nonempty parallel arrays, extension-backed manager
-initialization/destruction, registry-controlled fluid flags, and callback
-reentry remain open because the pinned release cannot create a valid fluid
-through its public API.
+destructor on empty arrays, the wrapper warning, empty manager cleanup, and
+swap-removal/destructor dispatch with test-seeded array state. It does not
+exercise a real `NpFluid` object or its destructor body. Extension-backed
+manager initialization/destruction, registry-controlled fluid flags, live
+emitter ownership, and callback reentry remain open because the pinned release
+cannot create a valid fluid through its public API.

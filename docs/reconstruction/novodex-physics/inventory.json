@@ -67655,13 +67655,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/FluidManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1375",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12613",
       "static_proof": "phys_fn_003643 (0x00089e90) warns when manager +0x2b is zero, searches the primary pointer array, removes a matching entry by swapping the last element, and adjusts the parallel array before dispatching the removed fluid destructor.",
-      "dynamic_proof": "The empty-list release path reaches this function and matches the oracle's unsupported-fluid warning; the current fixture does not exercise a matching entry or the fluid destructor dispatch (evidence/fluid-release-disabled.md).",
-      "notes": "The disabled backend never populates these arrays, so live-fluid entry removal and virtual destruction are still unverified and intentionally remain discovered."
+      "dynamic_proof": "NxPhysicsSimulationTests first verifies the empty-list unsupported warning, then seeds two manager arrays with two fake fluid objects and releases the first through NxScene::releaseFluid. Oracle and candidate both swap-remove the same object from both arrays and call its first vtable slot with scalar-delete flag 1 (simulation fluid array-release ... target=1; stdout_delta=0, stderr_exact=True; build/FluidGate/fluid-array-target-final-differential.log; evidence/fluid-release-disabled.md).",
+      "notes": "The manager warning, matching-entry removal, parallel-array swap, and deleting-dispatch behavior are covered with a test-seeded fake object. This does not execute a real NpFluid destructor body or extension-backed fluid lifecycle."
     },
     {
       "id": "phys_fn_003644",

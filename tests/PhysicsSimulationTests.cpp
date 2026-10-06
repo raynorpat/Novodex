@@ -37,6 +37,19 @@ typedef void (NX_CALL_CONV *JointDescSetGlobalAnchorFn)(NxJointDesc&, const NxVe
 typedef void (NX_CALL_CONV *JointDescSetGlobalAxisFn)(NxJointDesc&, const NxVec3&);
 static unsigned nxFloatBits(NxReal value);
 
+static unsigned gNxSimulationFluidDestructorCalls = 0;
+static unsigned gNxSimulationFluidDestructorFlags = 0;
+static void* gNxSimulationFluidDestructorObject = 0;
+
+static void* __fastcall nxSimulationFluidDeletingDestructor(
+	void* fluid, void*, unsigned char deleteObject)
+	{
+	++gNxSimulationFluidDestructorCalls;
+	gNxSimulationFluidDestructorFlags = deleteObject;
+	gNxSimulationFluidDestructorObject = fluid;
+	return fluid;
+	}
+
 class NxSimulationOutputStream : public NxUserOutputStream
 	{
 	public:
@@ -1945,6 +1958,65 @@ int wmain(int argc, wchar_t** argv)
 		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
 		simulationOutput.file, simulationOutput.message);
 	sdk->releaseScene(*fluidScene);
+	// Seed the manager's two parallel fluid arrays with a concrete fake fluid
+	// so release exercises its swap-removal and scalar-deleting dispatch, even
+	// though the shipped build cannot create a backend fluid itself.
+	NxScene* const fluidArrayScene = sdk->createScene(fluidSceneDesc);
+	if(!fluidArrayScene)
+		return nxFail("fluid array scene creation failed");
+	fluidArrayScene->createFluid(fluidDesc);
+	unsigned char* const fluidArraySceneInternal = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(fluidArrayScene) + 0x24);
+	unsigned char* const fluidArrayManager = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(fluidArraySceneInternal + 0x61c));
+	if(!fluidArrayManager)
+		return nxFail("fluid array manager was not installed");
+	void* fluidDeletingVtable[] = {
+		reinterpret_cast<void*>(nxSimulationFluidDeletingDestructor)
+		};
+	unsigned char fluidInternalA[0x20] = {};
+	unsigned char fluidInternalB[0x20] = {};
+	*reinterpret_cast<void***>(fluidInternalA) = fluidDeletingVtable;
+	*reinterpret_cast<void***>(fluidInternalB) = fluidDeletingVtable;
+	unsigned fluidPointers[] = {
+		reinterpret_cast<unsigned>(fluidInternalA),
+		reinterpret_cast<unsigned>(fluidInternalB)
+		};
+	unsigned secondaryPointers[] = { 0x11111111u, 0x22222222u };
+	*reinterpret_cast<unsigned*>(fluidArrayManager + 4) = reinterpret_cast<unsigned>(fluidPointers);
+	*reinterpret_cast<unsigned*>(fluidArrayManager + 8) = reinterpret_cast<unsigned>(fluidPointers + 2);
+	*reinterpret_cast<unsigned*>(fluidArrayManager + 0xc) = reinterpret_cast<unsigned>(fluidPointers + 2);
+	*reinterpret_cast<unsigned*>(fluidArrayManager + 0x14) = reinterpret_cast<unsigned>(secondaryPointers);
+	*reinterpret_cast<unsigned*>(fluidArrayManager + 0x18) = reinterpret_cast<unsigned>(secondaryPointers + 2);
+	*reinterpret_cast<unsigned*>(fluidArrayManager + 0x1c) = reinterpret_cast<unsigned>(secondaryPointers + 2);
+	unsigned char publicFluidStorage[0x40] = {};
+	*reinterpret_cast<void**>(publicFluidStorage + 0x14) = fluidInternalA;
+	gNxSimulationFluidDestructorCalls = 0;
+	gNxSimulationFluidDestructorFlags = 0;
+	gNxSimulationFluidDestructorObject = 0;
+	fluidArrayScene->releaseFluid(*reinterpret_cast<NxFluid*>(publicFluidStorage));
+	const unsigned fluidArrayRemaining =
+		(*reinterpret_cast<unsigned*>(fluidArrayManager + 8) -
+		 *reinterpret_cast<unsigned*>(fluidArrayManager + 4)) >> 2;
+	const unsigned secondaryArrayRemaining =
+		(*reinterpret_cast<unsigned*>(fluidArrayManager + 0x18) -
+		 *reinterpret_cast<unsigned*>(fluidArrayManager + 0x14)) >> 2;
+	printf("simulation fluid array-release remaining=%u secondary=%u swapped=%u.%u destructor=%u flags=%u target=%u\n",
+		fluidArrayRemaining, secondaryArrayRemaining,
+		fluidPointers[0] == reinterpret_cast<unsigned>(fluidInternalB) ? 1u : 0u,
+		secondaryPointers[0] == 0x22222222u ? 1u : 0u,
+		gNxSimulationFluidDestructorCalls, gNxSimulationFluidDestructorFlags,
+		gNxSimulationFluidDestructorObject == fluidInternalA ? 1u : 0u);
+	// The two arrays above are stack fixtures rather than allocator-owned SDK
+	// storage. Empty their headers before releasing the scene so the manager
+	// destructor does not try to free those test buffers.
+	*reinterpret_cast<unsigned*>(fluidArrayManager + 4) = 0;
+	*reinterpret_cast<unsigned*>(fluidArrayManager + 8) = 0;
+	*reinterpret_cast<unsigned*>(fluidArrayManager + 0xc) = 0;
+	*reinterpret_cast<unsigned*>(fluidArrayManager + 0x14) = 0;
+	*reinterpret_cast<unsigned*>(fluidArrayManager + 0x18) = 0;
+	*reinterpret_cast<unsigned*>(fluidArrayManager + 0x1c) = 0;
+	sdk->releaseScene(*fluidArrayScene);
 	// The manager is an internal C++ object. Exercise its first vtable slot
 	// through the pinned scalar-deleting destructor instead of treating the
 	// manager as a byte buffer only.

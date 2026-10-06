@@ -836,6 +836,13 @@ static void nxFluidManagerReleaseDisabledFluid(void* manager, void* fluidInterna
 			secondary[i] = secondary[secondaryCount - 1];
 			*reinterpret_cast<unsigned*>(bytes + 0x18) = secondaryLast - 4;
 			}
+		if(fluidInternal)
+			{
+			void** fluidVtable = *reinterpret_cast<void***>(fluidInternal);
+			typedef void* (__thiscall *DeletingDestructor)(void*, unsigned char);
+			DeletingDestructor destroy = reinterpret_cast<DeletingDestructor>(fluidVtable[0]);
+			destroy(fluidInternal, 1);
+			}
 		break;
 		}
 	}
