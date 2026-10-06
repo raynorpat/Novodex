@@ -1067,10 +1067,16 @@ bool NpScene::isWritable()
 	return true;
 	}
 
-// (unimplemented) simulate
 void NpScene::simulate(NxReal elapsedTime)
 	{
-	if(elapsedTime <= 0.0f || mFlag || !mScene || !mCondition)
+	if(!(elapsedTime >= 0.0f))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x21c, 0,
+			"Scene::simulate: The elapsed time must be nonnegative!");
+		return;
+		}
+	if(mFlag || !mScene || !mCondition)
 		return;
 	void* readLink = mReadLock;
 	nxNpSceneGuardEnter(readLink);

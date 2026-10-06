@@ -801,6 +801,25 @@ int wmain(int argc, wchar_t** argv)
 		FreeLibrary(physics);
 		return nxFail("empty worker scene creation failed");
 		}
+	const unsigned simulateErrorsBefore = simulationOutput.errors;
+	simulationOutput.resetLast();
+	emptyScene->simulate(-0.125f);
+	printf("simulation negative-dt error=%u code=%u line=%d file=%s message=%s\n",
+		simulationOutput.errors - simulateErrorsBefore,
+		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
+		simulationOutput.file, simulationOutput.message);
+	emptyScene->simulate(0.0f);
+	bool zeroDtReady = false;
+	for(unsigned wait = 0; wait != 1000 && !zeroDtReady; ++wait)
+		{
+		zeroDtReady = emptyScene->checkResults(NX_RIGID_BODY_FINISHED, false);
+		if(!zeroDtReady)
+			::Sleep(1);
+		}
+	const bool zeroDtFetched = zeroDtReady
+		? emptyScene->fetchResults(NX_RIGID_BODY_FINISHED, false) : false;
+	printf("simulation zero-dt ready=%u fetched=%u\n",
+		zeroDtReady ? 1u : 0u, zeroDtFetched ? 1u : 0u);
 	const bool idleReady = emptyScene->checkResults(NX_RIGID_BODY_FINISHED, false);
 	const bool idleFetched = emptyScene->fetchResults(NX_RIGID_BODY_FINISHED, false);
 	const bool idleFence = emptyScene->wait(NX_FENCE_RUN_FINISHED, false);

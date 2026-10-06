@@ -7306,7 +7306,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1139",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Partial NpScene::simulate wrapper coverage: the public regression records NXE_INVALID_PARAMETER at source line 0x21c for negative elapsed time and verifies that zero elapsed time is accepted and fetched (evidence/scene-simulate-dt.md; tests/PhysicsSimulationTests.cpp). Keep discovered: the complete lock/reentry, internal Scene call, condition signaling, and worker-state protocol for this 137-byte row still needs static and mutation-falsification work."
     },
     {
       "id": "phys_fn_000395",
