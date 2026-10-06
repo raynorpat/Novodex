@@ -583,7 +583,7 @@ void nxActorDestroy(unsigned char* body);
 // phys_fn_000100a0 (0x000100a0, phase 7): refreshes a cached count from an array.
 void nxSceneUpdateActorCount(void* scene, unsigned count);
 // phys_fn_00089d50 (0x00089d50, phase 6): the scene's notification hook.
-void nxSceneNotifyActorCreated(void* hook);
+void nxSceneNotifyActorCreated(void* hook, NxActor* actor);
 // The scene's error reporter.
 void nxSceneReportError(const char* message);
 
@@ -807,8 +807,9 @@ static void nxSceneReleaseDisabledFluidManager(void* manager)
 static bool gNxSceneFluidReleaseInProgress = false;
 
 // phys_fn_003643 (0x00089e90): the disabled manager warns, then searches its
-// fluid pointer array. The backend cannot create a fluid in this build, so the
-// two arrays remain empty on supported product paths.
+// fluid pointer array. When the pinned backend is disabled, this array is
+// empty; the matching-entry and deleting-dispatch path is also exercised with
+// a test-seeded fake object.
 static void nxFluidManagerReleaseDisabledFluid(void* manager, void* fluidInternal)
 	{
 	unsigned char* bytes = static_cast<unsigned char*>(manager);
@@ -845,6 +846,26 @@ static void nxFluidManagerReleaseDisabledFluid(void* manager, void* fluidInterna
 			}
 		break;
 		}
+	}
+
+static void nxFluidManagerNotifyActorCreatedDisabled(void* manager, NxActor* actor)
+	{
+	(void)actor;
+	unsigned char* bytes = static_cast<unsigned char*>(manager);
+	if(bytes[0x2b] == 0)
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\FluidManager.cpp",
+			0x107, 0, "NxScene::fluidsNotifyCreateActor(): Feature not available!");
+	}
+
+static void nxFluidManagerNotifyActorReleasedDisabled(void* manager, void* body)
+	{
+	(void)body;
+	unsigned char* bytes = static_cast<unsigned char*>(manager);
+	if(bytes[0x2b] == 0)
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\FluidManager.cpp",
+			0xfa, 0, "NxScene::fluidsNotifyReleaseActor(): Feature not available!");
 	}
 
 // phys_fn_000622 (0x00011620): guard reentry, release the requested fluid,
@@ -1698,7 +1719,7 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 
 	// The notification hook, when the Scene has one at +0x61c.
 	if(p[0x61c / 4])
-		nxSceneNotifyActorCreated(reinterpret_cast<void*>(p[0x61c / 4]));
+		nxSceneNotifyActorCreated(reinterpret_cast<void*>(p[0x61c / 4]), actor);
 
 	return actor;
 	}
@@ -1710,11 +1731,11 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 // 0x4ae, "Scene::releaseActor: double deletion detected!". Found: the last
 // entry takes its place and the array shrinks; a fluid manager at +0x61c
 // takes 003635 (0x1248c-0x12497), which is NOT written: 003635 walks the
-// manager's fluids through 003485 into the emitter rows 003593/003622, none
-// of them written, and +0x61c is only set by createFluid (000645/000400),
-// which the candidate stubs. The row stays `discovered` until that chain is
-// (NpActor completion final review I2). Actor.cpp's 000030 destroys the
-// actor and the body is freed through [0x101041bc]; the flag is cleared.
+// manager's fluids through 003485 into the emitter rows 003593/003622. The
+// disabled-manager warning path is reconstructed and dynamically checked;
+// notifications for live fluids still depend on the open 003485/003593/003622
+// chain. Actor.cpp's 000030 destroys the actor and the body is freed through
+// [0x101041bc]; the flag is cleared.
 void nxActorDestroy(unsigned char* body);
 
 // .data 0x10123c10: the one API reentry flag. Scene::createJoint and
@@ -1751,6 +1772,8 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 	if(index != count - 1)
 		first[index] = at<NxActor**>(0x560)[-1];
 	--at<NxActor**>(0x560);
+	if(void* fluidManager = at<void*>(0x61c))
+		nxFluidManagerNotifyActorReleasedDisabled(fluidManager, body);
 	nxActorDestroy(body);
 	nxFoundationSDKAllocator->free(body);
 	gNxApiReentry = false;
@@ -2292,9 +2315,9 @@ void NxSceneInternal::scalarDeletingDestructor(int flags)
 	}
 
 // ---------------------------------------------------------------------------
-// Reproduction holes for Scene::createActor's callees. Each reproduces the call
-// shape and the state the Scene reads back, and nothing else. Every one is
-// recorded in the evidence with what it does not model.
+// Supporting routines for Scene::createActor. Actor initialization and other
+// listed callees remain partial; the notification helper below reproduces the
+// unavailable FluidManager contract when its backend is disabled.
 // ---------------------------------------------------------------------------
 
 NxActor* nxSceneActorConstruct(void* memory, void* scene)
@@ -2353,9 +2376,9 @@ void nxSceneUpdateActorCount(void* scene, unsigned count)
 	nxSceneEngineSetExternalBuffer(bytes + 0x624, capacity, buffer);
 	}
 
-void nxSceneNotifyActorCreated(void* hook)
+void nxSceneNotifyActorCreated(void* hook, NxActor* actor)
 	{
-	(void)hook;
+	nxFluidManagerNotifyActorCreatedDisabled(hook, actor);
 	}
 
 void nxSceneReportError(const char* message)

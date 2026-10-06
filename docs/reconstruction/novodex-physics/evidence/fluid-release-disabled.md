@@ -45,6 +45,15 @@ including a check that the dispatched object is the one removed from the arrays.
 The full Phase 7 gate passes all 11 targets at 1,321/1,321 assertions
 (`build/FluidGate/phase7-fluid-array-target-final.log`).
 
+The same disabled manager remains attached while the fixture creates and then
+releases a public sphere actor. The oracle calls `phys_fn_003637` and
+`phys_fn_003635`, reporting `NXE_DB_WARNING` at FluidManager.cpp lines 263 and
+250; before the change both candidate calls were silent. The candidate now
+matches both tuples and the complete simulation transcript exactly
+(`stdout_delta=0`, `stderr_exact=True`; `build/FluidGate/fluid-actor-notify-green.log`).
+The manager arrays are empty in this pinned backend, so iteration into live
+`NpFluid` notifications remains open.
+
 This evidence covers disabled manager state, its first virtual deleting
 destructor on empty arrays, the wrapper warning, empty manager cleanup, and
 swap-removal/destructor dispatch with test-seeded array state. It does not

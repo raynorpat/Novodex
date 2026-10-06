@@ -67515,9 +67515,9 @@
       "source": "Physics/src/fluids/FluidManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1371",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12592",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "phys_fn_003635 (0x00089ce0) reports NXE_DB_WARNING when manager +0x2b is zero, then walks the primary fluid array and forwards the released actor body to each fluid's notify-release entry (phys_fn_003485).",
+      "dynamic_proof": "NxPhysicsSimulationTests creates and releases a public sphere actor after creating the disabled FluidManager. Oracle and candidate report the exact disabled create/release notification tuples at lines 263 and 250 respectively (simulation fluid manager actor-created/actor-released; stdout_delta=0, stderr_exact=True; build/FluidGate/fluid-actor-notify-green.log). The manager arrays are empty in this pinned backend.",
+      "notes": "The disabled-manager, empty-array contract is gated. Iteration into live NpFluid notifications through phys_fn_003485 remains open for extension-backed fluid state."
     },
     {
       "id": "phys_fn_003636",
@@ -67551,9 +67551,9 @@
       "source": "Physics/src/fluids/FluidManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1372",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12597",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "phys_fn_003637 (0x00089d50) reports NXE_DB_WARNING when manager +0x2b is zero, then walks the primary fluid array and calls nullsub_12 with the created actor wrapper.",
+      "dynamic_proof": "NxPhysicsSimulationTests creates a public sphere actor after creating the disabled FluidManager. Oracle and candidate report the exact NXE_DB_WARNING tuple at FluidManager.cpp line 263 (simulation fluid manager actor-created; stdout_delta=0, stderr_exact=True; build/FluidGate/fluid-actor-notify-green.log). The manager array is empty in this pinned backend.",
+      "notes": "The disabled-manager, empty-array contract is gated. Extension-backed fluid notification state is outside this tested path."
     },
     {
       "id": "phys_fn_003638",

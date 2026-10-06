@@ -1971,6 +1971,29 @@ int wmain(int argc, wchar_t** argv)
 		*reinterpret_cast<void**>(fluidArraySceneInternal + 0x61c));
 	if(!fluidArrayManager)
 		return nxFail("fluid array manager was not installed");
+	NxSphereShapeDesc fluidNotifyShape;
+	fluidNotifyShape.setToDefault();
+	fluidNotifyShape.radius = 0.5f;
+	NxActorDesc fluidNotifyActorDesc;
+	fluidNotifyActorDesc.setToDefault();
+	fluidNotifyActorDesc.shapes.pushBack(&fluidNotifyShape);
+	simulationOutput.resetLast();
+	const unsigned fluidNotifyCreateErrorsBefore = simulationOutput.errors;
+	NxActor* const fluidNotifyActor = fluidArrayScene->createActor(fluidNotifyActorDesc);
+	printf("simulation fluid manager actor-created present=%u errors=%u code=%u line=%d file=%s message=%s\n",
+		fluidNotifyActor ? 1u : 0u,
+		simulationOutput.errors - fluidNotifyCreateErrorsBefore,
+		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
+		simulationOutput.file, simulationOutput.message);
+	if(!fluidNotifyActor)
+		return nxFail("fluid manager actor-create notification fixture failed");
+	simulationOutput.resetLast();
+	const unsigned fluidNotifyReleaseErrorsBefore = simulationOutput.errors;
+	fluidArrayScene->releaseActor(*fluidNotifyActor);
+	printf("simulation fluid manager actor-released errors=%u code=%u line=%d file=%s message=%s\n",
+		simulationOutput.errors - fluidNotifyReleaseErrorsBefore,
+		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
+		simulationOutput.file, simulationOutput.message);
 	void* fluidDeletingVtable[] = {
 		reinterpret_cast<void*>(nxSimulationFluidDeletingDestructor)
 		};
