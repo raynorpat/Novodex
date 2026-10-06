@@ -9,6 +9,7 @@
 #include "NxSceneDesc.h"
 #include "NxActor.h"
 #include "NxActorDesc.h"
+#include "NxFixedJointDesc.h"
 #include "NxBodyDesc.h"
 #include "NxShape.h"
 #include "NxSphereShapeDesc.h"
@@ -138,6 +139,12 @@ int wmain(int argc, wchar_t** argv)
 	const unsigned reportsBeforeContention = errorStream.reports;
 	errorStream.enabled = true;
 	scene->setShapePairFlags(*compoundShapes[0], *compoundShapes[1], NX_NOTIFY_ON_TOUCH);
+	const unsigned mutationReportsBeforeContention = errorStream.reports;
+	NxActor* const contendedActor = scene->createActor(groundDesc);
+	scene->releaseActor(*compound);
+	NxFixedJointDesc fixedJointDesc;
+	fixedJointDesc.actor[0] = compound;
+	NxJoint* const contendedJoint = scene->createJoint(fixedJointDesc);
 	errorStream.enabled = false;
 	SetEvent(held.release);
 	WaitForSingleObject(lockThread, INFINITE);
@@ -147,6 +154,11 @@ int wmain(int argc, wchar_t** argv)
 	printf("pairflag contended reports=%u flags=%08x\n",
 		errorStream.reports - reportsBeforeContention,
 		scene->getShapePairFlags(*compoundShapes[0], *compoundShapes[1]));
+	printf("pairflag mutations_contended reports=%u create_actor=%u actors=%u release_actor=%u joints=%u create_joint=%u\n",
+		errorStream.reports - mutationReportsBeforeContention,
+		contendedActor ? 1u : 0u, scene->getNbActors(),
+		compound->getNbShapes() == 2 ? 0u : 1u, scene->getNbJoints(),
+		contendedJoint ? 1u : 0u);
 
 	// Releasing one side must remove its per-shape records from the scene hash,
 	// including both child-shape keys of this compound actor.
