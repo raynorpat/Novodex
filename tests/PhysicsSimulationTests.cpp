@@ -1880,6 +1880,18 @@ int wmain(int argc, wchar_t** argv)
 		simulationOutput.errors - fluidErrorsBefore,
 		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
 		simulationOutput.file, simulationOutput.message);
+	unsigned char fluidStorage[0x40] = {};
+	unsigned char fluidIdentity = 0;
+	*reinterpret_cast<void**>(fluidStorage + 0x14) = &fluidIdentity;
+	const unsigned fluidReleaseErrorsBefore = simulationOutput.errors;
+	simulationOutput.resetLast();
+	fluidScene->releaseFluid(*reinterpret_cast<NxFluid*>(fluidStorage));
+	const bool fluidManagerReleased = *reinterpret_cast<void**>(fluidSceneInternal + 0x61c) == 0;
+	printf("simulation fluid unsupported release manager-cleared=%u errors=%u code=%u line=%d file=%s message=%s\n",
+		fluidManagerReleased ? 1u : 0u,
+		simulationOutput.errors - fluidReleaseErrorsBefore,
+		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
+		simulationOutput.file, simulationOutput.message);
 	unsigned char fluidCallbackMarker = 0;
 	NxUserFluidContactReport* const fluidCallback =
 		reinterpret_cast<NxUserFluidContactReport*>(&fluidCallbackMarker);

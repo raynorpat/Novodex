@@ -7448,9 +7448,9 @@
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/144",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1152",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "phys_fn_000402 (0x0000d840) takes the write lock, passes the NxFluid internal pointer at +0x14 to Scene::releaseFluid, then unlocks; lock failure reports NpScene.cpp line 0x26d.",
+      "dynamic_proof": "NxPhysicsSimulationTests exercises the wrapper after unsupported creation using a non-member marker with a pointer-shaped +0x14 field; oracle and candidate emit code 206, line 183, the FluidManager.cpp release warning, and clear the empty manager. Transcript stdout_delta=0 and stderr_exact=True (evidence/fluid-release-disabled.md).",
+      "notes": "The wrapper and disabled empty-manager path are covered; no valid fluid object can be created by this pinned build, so live-fluid removal remains open."
     },
     {
       "id": "phys_fn_000403",
@@ -11487,9 +11487,9 @@
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/241",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1580",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "phys_fn_000622 (0x00011620) prevents callback reentry, calls FluidManager::releaseFluid when Scene +0x61c is set, and invokes manager slot 0 plus clears +0x61c when its fluid array becomes empty.",
+      "dynamic_proof": "The staged release probe creates the disabled manager, invokes releaseFluid, observes the oracle warning, then confirms the candidate clears Scene +0x61c exactly as the oracle does (evidence/fluid-release-disabled.md).",
+      "notes": "Current implementation and differential cover the pinned disabled manager's empty-list release path; nonempty list and callback reentry remain open."
     },
     {
       "id": "phys_fn_000623",
@@ -67659,9 +67659,9 @@
       "source": "Physics/src/fluids/FluidManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1375",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12613",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "phys_fn_003643 (0x00089e90) warns when manager +0x2b is zero, searches the primary pointer array, removes a matching entry by swapping the last element, and adjusts the parallel array before dispatching the removed fluid destructor.",
+      "dynamic_proof": "The empty-list release path reaches this function and matches the oracle's unsupported-fluid warning; the current fixture does not exercise a matching entry or the fluid destructor dispatch (evidence/fluid-release-disabled.md).",
+      "notes": "The disabled backend never populates these arrays, so live-fluid entry removal and virtual destruction are still unverified and intentionally remain discovered."
     },
     {
       "id": "phys_fn_003644",

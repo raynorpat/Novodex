@@ -759,7 +759,81 @@ static void* nxSceneCreateDisabledFluidManager(NxSceneInternal* scene)
 static void nxSceneReleaseDisabledFluidManager(void* manager)
 	{
 	if(manager)
+		{
+		unsigned char* bytes = static_cast<unsigned char*>(manager);
+		for(unsigned offset = 0x14; ; offset = 4)
+			{
+			void* entries = *reinterpret_cast<void**>(bytes + offset);
+			if(entries)
+				nxFoundationSDKAllocator->free(entries);
+			if(offset == 4)
+				break;
+			}
 		nxFoundationSDKAllocator->free(manager);
+		}
+	}
+
+static bool gNxSceneFluidReleaseInProgress = false;
+
+// phys_fn_003643 (0x00089e90): the disabled manager warns, then searches its
+// fluid pointer array. The backend cannot create a fluid in this build, so the
+// two arrays remain empty on supported product paths.
+static void nxFluidManagerReleaseDisabledFluid(void* manager, void* fluidInternal)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(manager);
+	if(bytes[0x2b] == 0)
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\FluidManager.cpp",
+			0xb7, 0, "NxScene::releaseFluid(): Feature not available!");
+	unsigned first = *reinterpret_cast<unsigned*>(bytes + 4);
+	unsigned last = *reinterpret_cast<unsigned*>(bytes + 8);
+	unsigned count = last >= first ? (last - first) >> 2 : 0;
+	for(unsigned i = 0; i != count; ++i)
+		{
+		unsigned* fluids = reinterpret_cast<unsigned*>(first);
+		if(reinterpret_cast<void*>(fluids[i]) != fluidInternal)
+			continue;
+		fluids[i] = fluids[count - 1];
+		*reinterpret_cast<unsigned*>(bytes + 8) = last - 4;
+		unsigned secondaryFirst = *reinterpret_cast<unsigned*>(bytes + 0x14);
+		unsigned secondaryLast = *reinterpret_cast<unsigned*>(bytes + 0x18);
+		unsigned secondaryCount = secondaryLast >= secondaryFirst ?
+			(secondaryLast - secondaryFirst) >> 2 : 0;
+		if(i < secondaryCount)
+			{
+			unsigned* secondary = reinterpret_cast<unsigned*>(secondaryFirst);
+			secondary[i] = secondary[secondaryCount - 1];
+			*reinterpret_cast<unsigned*>(bytes + 0x18) = secondaryLast - 4;
+			}
+		break;
+		}
+	}
+
+// phys_fn_000622 (0x00011620): guard reentry, release the requested fluid,
+// then destroy and clear an empty manager.
+void NxSceneInternal::releaseFluid(void* fluidInternal)
+	{
+	if(gNxSceneFluidReleaseInProgress)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\Scene.cpp", 0xc52, 0,
+			"Reentry check: You may not call this API method from a callback!");
+		return;
+		}
+	gNxSceneFluidReleaseInProgress = true;
+	void*& manager = at<void*>(0x61c);
+	if(manager)
+		{
+		nxFluidManagerReleaseDisabledFluid(manager, fluidInternal);
+		unsigned first = *reinterpret_cast<unsigned*>(static_cast<unsigned char*>(manager) + 4);
+		unsigned last = *reinterpret_cast<unsigned*>(static_cast<unsigned char*>(manager) + 8);
+		if(first == last)
+			{
+			nxSceneReleaseDisabledFluidManager(manager);
+			manager = 0;
+			}
+		}
+	gNxSceneFluidReleaseInProgress = false;
 	}
 
 // phys_fn_000645 (0x00012b80): create the manager lazily, then forward the

@@ -90,6 +90,9 @@ class NxSceneInternal
 	// phys_fn_000645 (0x00012b80). Lazily creates the disabled-fluid manager,
 	// then asks it to create the requested fluid (which reports unavailable).
 	NxFluid* createFluid(const NxFluidDesc& desc);
+	// phys_fn_000622 (0x00011620). Remove a fluid from the manager and destroy
+	// the now-empty disabled manager; the argument is the NpFluid internal ptr.
+	void releaseFluid(void* fluidInternal);
 
 	// The joint rows (units/joint-open-items-contract.md "## Scene joint rows").
 	// The Scene keeps its joints three ways: a list through Joint +0x10 headed

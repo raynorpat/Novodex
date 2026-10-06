@@ -971,10 +971,22 @@ NxFluid* NpScene::createFluid(const NxFluidDesc& desc)
 	return fluid;
 	}
 
-// (unimplemented) releaseFluid
-void NpScene::releaseFluid(NxFluid&)
+// phys_fn_000402 (0x0000d840): release through Scene using the NpFluid
+// internal pointer at +0x14, under the scene write lock.
+void NpScene::releaseFluid(NxFluid& fluid)
 	{
-	
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x26d, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	void* link = mWriteLock;
+	void* fluidInternal = *reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(&fluid) + 0x14);
+	if(mScene)
+		mScene->releaseFluid(fluidInternal);
+	nxNpSceneGuardLeave(link);
 	}
 
 // (unimplemented) getNbFluids

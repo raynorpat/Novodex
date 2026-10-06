@@ -3167,6 +3167,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # creates its manager, reports NXE_DB_WARNING from FluidManager.cpp,
         # and returns null; the scene is released without stepping that manager.
         'simulation fluid unsupported create=0 manager=1 empty=0.0 created=0.0 errors=1 code=206 line=138 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=NxScene::createFluid(): Feature not available!'
+        'simulation fluid unsupported release manager-cleared=1 errors=1 code=206 line=183 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=NxScene::releaseFluid(): Feature not available!'
         'simulation fluid contact-report-set errors=1 code=206 line=377 file=\Epic\Novodex\SDKs\Physics\src\NpScene.cpp message=NxFluid::setUserFluidContactReport(): Feature not available!'
         'simulation fluid contact-report-get stored=0 errors=1 code=206 line=383 file=\Epic\Novodex\SDKs\Physics\src\NpScene.cpp message=NxFluid::getUserFluidContactReport(): Feature not available!'
         'simulation implicit-mesh-create created=0 errors=1 code=206 line=641 file=\Epic\Novodex\SDKs\Physics\src\NpScene.cpp message=NxScene::createImplicitMesh(): Feature not available!'
@@ -5385,7 +5386,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1317  # current registered assertions across joint, scene, simulation, mesh, trigger,
+    '7' = 1318  # current registered assertions across joint, scene, simulation, mesh, trigger,
                # effector and core-dump targets; kept equal to the registry count below
     '8' = 0
 }
