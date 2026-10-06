@@ -1821,7 +1821,28 @@ namespace
 	struct NxControllerCore
 		{
 		virtual ~NxControllerCore() {}
-		virtual void move(const NxVec3&, NxU32, NxReal, NxU32&) {}
+		virtual void move(const NxVec3& displacement, NxU32 activeGroups,
+			NxReal minDistance, NxU32& collisionFlags)
+			{
+			// This is only the verified collision-free translation subset. The
+			// oracle's broadphase sweep, slide/step response, and active-group
+			// filtering are still open; callers must not treat this as full CCT
+			// movement support.
+			(void)activeGroups;
+			unsigned char* bytes = reinterpret_cast<unsigned char*>(this);
+			NxVec3& position = *reinterpret_cast<NxVec3*>(bytes + 0x28);
+			collisionFlags = 0;
+			const NxReal x = displacement.x;
+			const NxReal y = displacement.y;
+			const NxReal z = displacement.z;
+			const NxReal distanceSquared = x * x + y * y + z * z;
+			if(distanceSquared < minDistance * minDistance)
+				return;
+			position.set(position.x + x, position.y + y, position.z + z);
+			NxActor* actor = *reinterpret_cast<NxActor**>(bytes + 0x24);
+			if(actor)
+				actor->moveGlobalPosition(position);
+			}
 		virtual const NxVec3& getPosition() const
 			{
 			return *reinterpret_cast<const NxVec3*>(
@@ -1861,6 +1882,7 @@ NxController* NxSceneInternal::createController(const NxControllerDesc& desc)
 	NxControllerCore* core = new (memory) NxControllerCore();
 	NxControllerProxy* proxy = new (memory + 8) NxControllerProxy();
 	*reinterpret_cast<void**>(memory + 4) = proxy;
+	*reinterpret_cast<NxSceneInternal**>(memory + 0x34) = this;
 
 	// Controller::Controller copies its position components from descriptor
 	// +0x0c..+0x14 to object +0x28 and the dimensions from +0x30. It creates a

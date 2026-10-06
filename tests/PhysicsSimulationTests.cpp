@@ -2341,6 +2341,26 @@ int wmain(int argc, wchar_t** argv)
 		controllerCreateFailed = controllerCreateFailed ||
 			firstPosition.x != 0.0f || firstPosition.y != 0.0f || firstPosition.z != 0.0f ||
 			secondPosition.x != 2.0f || secondPosition.y != 0.0f || secondPosition.z != 0.0f;
+		NxU32 collisionFlags = 0xdeadbeef;
+		const NxVec3 displacement(0.25f, 0.0f, 0.0f);
+		reinterpret_cast<NxControllerProbe*>(controller)->move(
+			displacement, 0xffffffff, 0.001f, collisionFlags);
+		const NxVec3& movedPosition =
+			reinterpret_cast<NxControllerProbe*>(controller)->getPosition();
+		printf("simulation controller-move position=%08x.%08x.%08x flags=%08x\n",
+			nxFloatBits(movedPosition.x), nxFloatBits(movedPosition.y),
+			nxFloatBits(movedPosition.z), collisionFlags);
+		controllerCreateFailed = controllerCreateFailed ||
+			movedPosition.x != 0.25f || movedPosition.y != 0.0f ||
+			movedPosition.z != 0.0f || collisionFlags != 0;
+		NxVec3 actorPositionBeforeStep;
+		NxActor** const controllerActorsBeforeStep = controllerScene->getActors();
+		controllerActorsBeforeStep[controllerSceneActorCountBefore]->getGlobalPosition(actorPositionBeforeStep);
+		printf("simulation controller-move actor-before-step=%08x.%08x.%08x\n",
+			nxFloatBits(actorPositionBeforeStep.x), nxFloatBits(actorPositionBeforeStep.y),
+			nxFloatBits(actorPositionBeforeStep.z));
+		controllerCreateFailed = controllerCreateFailed || actorPositionBeforeStep.x != 0.0f ||
+			actorPositionBeforeStep.y != 0.0f || actorPositionBeforeStep.z != 0.0f;
 		}
 	NxActor** const controllerActors = controllerScene->getActors();
 	for(NxU32 index = 0; index != 2 && index < controllerSceneActorCountCreated; ++index)
@@ -2359,6 +2379,8 @@ int wmain(int argc, wchar_t** argv)
 			index, nxFloatBits(actorPosition.x), nxFloatBits(actorPosition.y),
 			nxFloatBits(actorPosition.z), nxFloatBits(actorDimensions.x),
 			nxFloatBits(actorDimensions.y), nxFloatBits(actorDimensions.z));
+		// The controller advances its exposed position immediately, while the
+		// generated kinematic actor still exposes its pre-step global pose.
 		const NxReal expectedX = index == 0 ? 0.0f : 2.0f;
 		const NxU32 expectedHalfExtent = index == 0 ? 0x3f0ccccd : 0x3e8ccccd;
 		const NxU32 expectedHeight = index == 0 ? 0x3f8ccccd : 0x3f533334;

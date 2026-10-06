@@ -40,7 +40,14 @@ change the simulation differential passes with `stdout_delta=0` and exact
 stderr.
 
 The vtable layout and getter are reconstructed. The `move` slot is present to
-preserve dispatch layout but its collision-aware algorithm is not implemented
-yet. The rest of the constructor/destructor callees and complete controller
-interface remain open; this is still partial controller support, not a claim
-that controller behavior is complete.
+preserve dispatch layout. A new paired probe exercises collision-free motion in
+an unobstructed path: a `+0.25` X displacement with `minDistance=0.001` updates the
+controller getter to `0.25` and clears collision flags, while the generated
+kinematic actor still reports its pre-step pose. The candidate's translation
+subset matches those oracle observations exactly (`stdout_delta=0`, exact
+stderr); the test output is registered in Phase 7.
+
+The collision-aware sweep, active-group filtering, slide/step response, and
+hit callbacks are not implemented. The rest of the constructor/destructor
+callees and complete controller interface remain open; this is still partial
+controller support, not a claim that controller behavior is complete.

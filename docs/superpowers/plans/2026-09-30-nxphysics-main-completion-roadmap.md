@@ -4,6 +4,19 @@ Date: 2026-09-30
 Baseline: `main` at `b942f01` (Merge convex-mesh gap reconstruction into main)
 Status: Active execution. The user selected full-DLL reconstruction and standalone simulation tests before Unreal integration.
 
+### Continuation — controller free-space move slice (2026-10-06)
+
+Added a paired call through the recovered second controller vtable slot. The
+oracle advances the controller's exposed position by a clear-path `+0.25` X
+displacement and clears the collision flags; the generated actor still reports
+its pre-step pose. The candidate's collision-free translation subset matches
+exactly, and the two oracle outputs are now pinned in Phase 7. Phase 5 passes
+2,042/2,042; Phase 7 passes 1,340/1,340; the rebuilt Viewer selection passes
+48/48, with five existing signature-verified scene skips. Collision sweeps,
+active-group filtering, slide/step response, and hit callbacks remain open, so
+this is partial controller movement only. See
+`docs/reconstruction/novodex-physics/evidence/scene-controller-factory.md`.
+
 ### Continuation — controller position ABI (2026-10-06)
 
 The approved all-scenes Viewer selection remains part of verification. A new

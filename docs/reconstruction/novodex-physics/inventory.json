@@ -42373,7 +42373,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7219",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "The full collision resolver is not implemented: the row performs three controller sweep queries and optional step-up logic through phys_fn_002304. The candidate currently implements only a collision-free translation subset in the phys_fn_002308 vtable slot."
     },
     {
       "id": "phys_fn_002307",
@@ -42408,8 +42408,8 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/860",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7230",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSimulationTests paired differential drives the three-slot controller vtable in a free-space scene: displacement (0.25,0,0), minDistance 0.001, all active groups; getter reports x=0.25 and collisionFlags=0, while the generated actor reports its prior pose. Oracle and candidate transcripts match exactly. This does not cover collision queries or response.",
+      "notes": "Only the collision-free translation subset is implemented in the candidate. Keep state discovered until the sweep/slide/step algorithm, active-group filtering, and callback paths are reconstructed and falsified."
     },
     {
       "id": "phys_fn_002309",
