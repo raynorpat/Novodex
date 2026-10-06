@@ -39,6 +39,18 @@ collision, live-fluid updates, and surface generation remain open full-DLL work.
 
 ## Outcome and constraints
 
+### Continuation — current-build DemoGame smoke (2026-10-06)
+
+Reran `DemoGame.exe PhysTest` against isolated oracle and candidate pairs after
+the scheduler change. Both processes exit 0, load `PhysTest`, initialize and
+shut down cleanly. Module polling confirms each process loaded Physics and
+Foundation from its own staged `Binaries`; the same four `NpActor.cpp:916`
+center-of-mass diagnostics appear on both sides. Logs and binary hashes are
+recorded in
+`docs/reconstruction/novodex-physics/evidence/demogame-phystest-smoke-2026-10-06.md`.
+This revalidates the one-map T2 smoke against the current DLL; the broader
+Unreal interaction matrix and full reconstruction remain open.
+
 Finish reconstructing the complete pinned Win32 NxPhysics.dll, including functionality Unreal rarely uses. Build it and NxFoundation.dll through the existing CMake project. Preserve all public Physics headers and the Foundation ABI. Product code must be independent of the original DLL; the original is an oracle for analysis and separate-process tests only.
 
 The user selected **standalone simulation tests first, then Unreal**. Begin useful testing as soon as the real simulation path works. Early testing is an intermediate milestone; it does not reduce the full-DLL scope or authorize declaring unfinished subsystems complete.
