@@ -99,7 +99,8 @@ foreach(sceneFile IN LISTS VIEWER_SCENE_DEMOS)
     set_tests_properties(ViewerSmokeScene_${sceneTestName} PROPERTIES
         FIXTURES_REQUIRED ViewerSceneAssets
         RESOURCE_LOCK ViewerSceneSmokeAssets
-        TIMEOUT 60)
+        TIMEOUT 30
+        ENVIRONMENT "NOVODEX_DISABLE_GLFW_KEY_NAME_SCAN=1")
     # These checked-in scenes already fail with the pinned original DLL: four
     # need a PMap creation path the viewer cannot supply, and TruckDemo has a
     # missing material asset. Keep them in the all-scene inventory and mark
@@ -114,7 +115,10 @@ foreach(sceneFile IN LISTS VIEWER_SCENE_DEMOS)
     endif()
 endforeach()
 add_test(NAME ViewerSmokeSound COMMAND Viewer --smoke-test "${CMAKE_CURRENT_BINARY_DIR}/sound-smoke/demo.pds.ods")
-set_tests_properties(ViewerSmokeSound PROPERTIES FIXTURES_REQUIRED SoundScene TIMEOUT 60)
+set_tests_properties(ViewerSmokeSound PROPERTIES
+    FIXTURES_REQUIRED SoundScene
+    TIMEOUT 30
+    ENVIRONMENT "NOVODEX_DISABLE_GLFW_KEY_NAME_SCAN=1")
 add_test(NAME ViewerPhysicsStep
     COMMAND Viewer --physics-test
         "${VIEWER_SCENE_SMOKE_ROOT}/PhysicsStepSmoke/demo.pds.ods"
@@ -122,7 +126,8 @@ add_test(NAME ViewerPhysicsStep
 set_tests_properties(ViewerPhysicsStep PROPERTIES
     FIXTURES_REQUIRED ViewerSceneAssets
     RESOURCE_LOCK ViewerSceneSmokeAssets
-    TIMEOUT 60)
+    TIMEOUT 30
+    ENVIRONMENT "NOVODEX_DISABLE_GLFW_KEY_NAME_SCAN=1")
 add_test(NAME ViewerPhysicsContact
     COMMAND Viewer --physics-test
         "${VIEWER_SCENE_SMOKE_ROOT}/PhysicsContactSmoke/demo.pds.ods"
@@ -130,4 +135,5 @@ add_test(NAME ViewerPhysicsContact
 set_tests_properties(ViewerPhysicsContact PROPERTIES
     FIXTURES_REQUIRED ViewerSceneAssets
     RESOURCE_LOCK ViewerSceneSmokeAssets
-    TIMEOUT 60)
+    TIMEOUT 30
+    ENVIRONMENT "NOVODEX_DISABLE_GLFW_KEY_NAME_SCAN=1")

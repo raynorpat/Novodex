@@ -4,6 +4,20 @@ Date: 2026-09-30
 Baseline: `main` at `b942f01` (Merge convex-mesh gap reconstruction into main)
 Status: Active execution. The user selected full-DLL reconstruction and standalone simulation tests before Unreal integration.
 
+### Continuation — all-scene Viewer startup and gate (2026-10-06)
+
+The first serial Viewer sweep showed every scene launch spending 79–98 seconds
+in GLFW's Win32 keyboard-layout scan, before Viewer used any input. The live
+stack was in `ToUnicode` under `_glfwUpdateKeyNamesWin32`. Hidden Viewer tests
+now opt out of that unused key-name table scan through a test-only environment
+variable; interactive Viewer startup retains the normal path. The complete
+Viewer selection passes 48/48 registered cases (43 passed, five existing
+signature-verified oracle-asset skips), including all 39 available scene demos
+and both focused physics checks (`ctest --test-dir build -C Debug -R '^Viewer'
+--output-on-failure`, 55.21 sec). This closes the current Viewer gate only;
+M1 and full-DLL reconstruction remain active. Public Physics headers are
+unchanged.
+
 ### Continuation — controller sphere obstacle dispatch (2026-10-06)
 
 Added a paired controller move through the expanded AABB corner of a sphere.
