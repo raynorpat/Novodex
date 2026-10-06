@@ -61,3 +61,12 @@ exercise a real `NpFluid` object or its destructor body. Extension-backed
 manager initialization/destruction, registry-controlled fluid flags, live
 emitter ownership, and callback reentry remain open because the pinned release
 cannot create a valid fluid through its public API.
+
+Mutation sensitivity was also probed against the registered Phase 7 simulation
+differential. Replacing the `Scene::releaseFluid` forwarding call in
+`NpScene::releaseFluid` with a no-op kept the candidate process alive but changed
+four normalized transcript lines; the runner reported `stdout_delta=4` and
+rejected the candidate (`build/scene-release-fluid-mutation.log`). This was a
+temporary mutation in the active checkout, restored and rebuilt immediately
+afterward. It is supplemental evidence only and is not used to close the Phase 7
+row, whose full live-fluid behavior remains unavailable in the pinned SDK.

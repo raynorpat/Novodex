@@ -7461,8 +7461,8 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/144",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1152",
       "static_proof": "phys_fn_000402 (0x0000d840) takes the write lock, passes the NxFluid internal pointer at +0x14 to Scene::releaseFluid, then unlocks; lock failure reports NpScene.cpp line 0x26d.",
-      "dynamic_proof": "NxPhysicsSimulationTests exercises the wrapper after unsupported creation using a non-member marker with a pointer-shaped +0x14 field; oracle and candidate emit code 206, line 183, the FluidManager.cpp release warning, and clear the empty manager. Transcript stdout_delta=0 and stderr_exact=True (evidence/fluid-release-disabled.md).",
-      "notes": "The wrapper and disabled empty-manager path are covered; no valid fluid object can be created by this pinned build, so live-fluid removal remains open."
+      "dynamic_proof": "NxPhysicsSimulationTests exercises the wrapper after unsupported creation using a non-member marker with a pointer-shaped +0x14 field; oracle and candidate emit code 206, line 183, the FluidManager.cpp release warning, and clear the empty manager. Transcript stdout_delta=0 and stderr_exact=True (evidence/fluid-release-disabled.md). A local mutation sensitivity probe that skipped the Scene::releaseFluid forwarding call was caught by the registered differential with stdout_delta=4 (build/scene-release-fluid-mutation.log); this working-tree probe is supplemental evidence, not a Phase 7 closure artifact.",
+      "notes": "The wrapper, disabled empty-manager path, and test-seeded array-removal path are covered; no valid fluid object can be created by this pinned build, so real-fluid ownership and extension-backed removal remain open."
     },
     {
       "id": "phys_fn_000403",
