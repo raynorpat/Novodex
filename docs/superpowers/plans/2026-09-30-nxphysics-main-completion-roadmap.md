@@ -17,6 +17,32 @@ active-group filtering, slide/step response, and hit callbacks remain open, so
 this is partial controller movement only. See
 `docs/reconstruction/novodex-physics/evidence/scene-controller-factory.md`.
 
+### Continuation — controller axis-aligned obstacle sweep (2026-10-06)
+
+Added a public-scene obstacle differential around the private controller ABI.
+The pinned DLL stops at X=0.5 and reports collision flag 4 when a half-meter
+controller moves +2 toward a static box at X=1.5. With active group mask zero,
+the same controller passes through to X=2.5 with no flags. The candidate now
+queries the scene's selected pruner over the swept controller AABB, filters
+candidate groups and the controller's own actor, and clips the translation at
+the earliest box-AABB intersection. The initial test was red (`stdout_delta=2`,
+candidate X=2/flags=0); after implementation the standalone differential is
+exact (`stdout_delta=0`, `stderr_exact=True`). A mutation removing group-mask
+filtering is caught. Phase 7 coverage now pins both new outputs. This does not
+reconstruct oriented/mesh sweeps, initial overlap, slide/step response, hit
+callbacks, or the remaining controller interface.
+
+Follow-up vertical and trigger fixtures were then added. The oracle clips a
+controller moving +Y toward an overhead static box at Y=0.5 and reports flag 1;
+the initial candidate had the right position but the wrong axis flag, and the
+test caught the bug. The fix retains the entering slab axis. The oracle also
+blocks on the tested trigger shape at X=7.5 with flag 4. The simulation
+differential is exact for free movement, horizontal and vertical obstacles,
+active-group exclusion, and this trigger case. Final relevant checks: Phase 5
+2,042/2,042; Phase 7 1,344/1,344; all 48 Viewer selections pass, with five
+existing signature-verified scene skips. These checks cover smoke loading and
+the registered physics probes; they do not close the full-DLL goal.
+
 ### Continuation — controller position ABI (2026-10-06)
 
 The approved all-scenes Viewer selection remains part of verification. A new

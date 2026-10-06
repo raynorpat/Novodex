@@ -2408,6 +2408,118 @@ int wmain(int argc, wchar_t** argv)
 		controllerSceneActorCountReleased != controllerSceneActorCountCreated;
 	sdk->releaseScene(*controllerScene);
 
+	// Exercise the collision-aware controller sweep with one static obstacle.
+	// The implementation change this test should catch is continuing through a
+	// solid wall (or reporting no side collision) when the controller requests a
+	// displacement longer than the available clear path.
+	NxSceneDesc controllerObstacleSceneDesc;
+	controllerObstacleSceneDesc.setToDefault();
+	NxScene* const controllerObstacleScene = sdk->createScene(controllerObstacleSceneDesc);
+	if(!controllerObstacleScene)
+		return nxFail("controller obstacle scene creation failed");
+	NxBoxShapeDesc controllerObstacleShape;
+	controllerObstacleShape.dimensions = NxVec3(0.5f, 1.0f, 1.0f);
+	NxActorDesc controllerObstacleActorDesc;
+	controllerObstacleActorDesc.globalPose.t = NxVec3(1.5f, 0.0f, 0.0f);
+	controllerObstacleActorDesc.shapes.pushBack(&controllerObstacleShape);
+	NxActor* const controllerObstacleActor =
+		controllerObstacleScene->createActor(controllerObstacleActorDesc);
+	alignas(4) unsigned char obstacleControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(obstacleControllerDescStorage + 0x30) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(obstacleControllerDescStorage + 0x34) = nxFloatBits(1.0f);
+	*reinterpret_cast<NxU32*>(obstacleControllerDescStorage + 0x38) = nxFloatBits(0.5f);
+	NxController* const obstacleController = controllerObstacleScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(obstacleControllerDescStorage));
+	if(!controllerObstacleActor || !obstacleController)
+		return nxFail("controller obstacle fixture setup failed");
+	NxU32 obstacleCollisionFlags = 0xdeadbeef;
+	const NxVec3 obstacleDisplacement(2.0f, 0.0f, 0.0f);
+	reinterpret_cast<NxControllerProbe*>(obstacleController)->move(
+		obstacleDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& obstacleControllerPosition =
+		reinterpret_cast<NxControllerProbe*>(obstacleController)->getPosition();
+	printf("simulation controller-obstacle position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(obstacleControllerPosition.x), nxFloatBits(obstacleControllerPosition.y),
+		nxFloatBits(obstacleControllerPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(obstacleControllerPosition.x) != 0x3f000000 ||
+		nxFloatBits(obstacleControllerPosition.y) != 0 ||
+		nxFloatBits(obstacleControllerPosition.z) != 0 || obstacleCollisionFlags != 4;
+	obstacleCollisionFlags = 0xdeadbeef;
+	reinterpret_cast<NxControllerProbe*>(obstacleController)->move(
+		obstacleDisplacement, 0, 0.001f, obstacleCollisionFlags);
+	const NxVec3& filteredControllerPosition =
+		reinterpret_cast<NxControllerProbe*>(obstacleController)->getPosition();
+	printf("simulation controller-obstacle filtered position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(filteredControllerPosition.x), nxFloatBits(filteredControllerPosition.y),
+		nxFloatBits(filteredControllerPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(filteredControllerPosition.x) != 0x40200000 ||
+		nxFloatBits(filteredControllerPosition.y) != 0 ||
+		nxFloatBits(filteredControllerPosition.z) != 0 || obstacleCollisionFlags != 0;
+	NxBoxShapeDesc verticalObstacleShape;
+	verticalObstacleShape.dimensions = NxVec3(1.0f, 0.5f, 1.0f);
+	NxActorDesc verticalObstacleActorDesc;
+	verticalObstacleActorDesc.globalPose.t = NxVec3(4.0f, 2.0f, 0.0f);
+	verticalObstacleActorDesc.shapes.pushBack(&verticalObstacleShape);
+	NxActor* const verticalObstacleActor =
+		controllerObstacleScene->createActor(verticalObstacleActorDesc);
+	alignas(4) unsigned char verticalControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(verticalControllerDescStorage + 0x0c) = nxFloatBits(4.0f);
+	*reinterpret_cast<NxU32*>(verticalControllerDescStorage + 0x30) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(verticalControllerDescStorage + 0x34) = nxFloatBits(1.0f);
+	*reinterpret_cast<NxU32*>(verticalControllerDescStorage + 0x38) = nxFloatBits(0.5f);
+	NxController* const verticalController = controllerObstacleScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(verticalControllerDescStorage));
+	if(!verticalObstacleActor || !verticalController)
+		return nxFail("vertical controller obstacle fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	const NxVec3 upwardDisplacement(0.0f, 2.0f, 0.0f);
+	reinterpret_cast<NxControllerProbe*>(verticalController)->move(
+		upwardDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& verticalControllerPosition =
+		reinterpret_cast<NxControllerProbe*>(verticalController)->getPosition();
+	printf("simulation controller-obstacle vertical position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(verticalControllerPosition.x), nxFloatBits(verticalControllerPosition.y),
+		nxFloatBits(verticalControllerPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(verticalControllerPosition.x) != 0x40800000 ||
+		nxFloatBits(verticalControllerPosition.y) != 0x3f000000 ||
+		nxFloatBits(verticalControllerPosition.z) != 0 || obstacleCollisionFlags != 1;
+	controllerObstacleScene->releaseController(*verticalController);
+	NxBoxShapeDesc triggerObstacleShape;
+	triggerObstacleShape.dimensions = NxVec3(0.5f, 1.0f, 1.0f);
+	triggerObstacleShape.shapeFlags |= NX_TRIGGER_ENABLE;
+	NxActorDesc triggerObstacleActorDesc;
+	triggerObstacleActorDesc.globalPose.t = NxVec3(8.5f, 0.0f, 0.0f);
+	triggerObstacleActorDesc.shapes.pushBack(&triggerObstacleShape);
+	NxActor* const triggerObstacleActor =
+		controllerObstacleScene->createActor(triggerObstacleActorDesc);
+	alignas(4) unsigned char triggerControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(triggerControllerDescStorage + 0x0c) = nxFloatBits(7.0f);
+	*reinterpret_cast<NxU32*>(triggerControllerDescStorage + 0x30) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(triggerControllerDescStorage + 0x34) = nxFloatBits(1.0f);
+	*reinterpret_cast<NxU32*>(triggerControllerDescStorage + 0x38) = nxFloatBits(0.5f);
+	NxController* const triggerController = controllerObstacleScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(triggerControllerDescStorage));
+	if(!triggerObstacleActor || !triggerController)
+		return nxFail("trigger controller obstacle fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	reinterpret_cast<NxControllerProbe*>(triggerController)->move(
+		obstacleDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& triggerControllerPosition =
+		reinterpret_cast<NxControllerProbe*>(triggerController)->getPosition();
+	printf("simulation controller-obstacle trigger position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(triggerControllerPosition.x), nxFloatBits(triggerControllerPosition.y),
+		nxFloatBits(triggerControllerPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(triggerControllerPosition.x) != 0x40f00000 ||
+		nxFloatBits(triggerControllerPosition.y) != 0 ||
+		nxFloatBits(triggerControllerPosition.z) != 0 || obstacleCollisionFlags != 4;
+	controllerObstacleScene->releaseController(*triggerController);
+	controllerObstacleScene->releaseController(*obstacleController);
+	sdk->releaseScene(*controllerObstacleScene);
+
 	sdk->release();
 	for(unsigned sdkCycle = 0; sdkCycle != 2; ++sdkCycle)
 		{

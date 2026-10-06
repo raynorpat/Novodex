@@ -3189,10 +3189,14 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation fluid manager actor-created present=1 errors=1 code=206 line=263 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=NxScene::fluidsNotifyCreateActor(): Feature not available!'
         'simulation fluid manager actor-released errors=1 code=206 line=250 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=NxScene::fluidsNotifyReleaseActor(): Feature not available!'
         'simulation fluid manager-step ready=1 fetched=1 frames=2 errors=3 code=206 line=234 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=NxScene::generateSurfaceMeshes(): Feature not available!'
-        # The recovered controller vtable supports this verified collision-free
-        # translation path; collision sweep/slide/step behavior remains open.
+        # The recovered controller move slot now has paired free-space and
+        # axis-aligned swept-box evidence; general sweeps and response remain open.
         'simulation controller-move position=3e800000.00000000.00000000 flags=00000000'
         'simulation controller-move actor-before-step=00000000.00000000.00000000'
+        'simulation controller-obstacle position=3f000000.00000000.00000000 flags=00000004'
+        'simulation controller-obstacle filtered position=40200000.00000000.00000000 flags=00000000'
+        'simulation controller-obstacle vertical position=40800000.3f000000.00000000 flags=00000001'
+        'simulation controller-obstacle trigger position=40f00000.00000000.00000000 flags=00000004'
         'simulation effector-step setup count=1 awake=1 pos=00000000 spring=3f000000.3f800000.40800000.42c80000.42c80000'
         'simulation effector-step ready=1 fetched=1 vx=00000000'
         'simulation effector-step second ready=1 fetched=1 vx=3e8e38e3'
@@ -5414,9 +5418,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1340  # previous 1,338 plus the controller free-space move and deferred
-               # contact assertions across joint, scene, simulation, mesh, trigger,
-               # effector and core-dump targets; equal to the registry count below
+    '7' = 1344  # previous 1,340 plus four controller move assertions
+               # (free-space, actor pose, obstacle/group filter, vertical, trigger)
     '8' = 0
 }
 

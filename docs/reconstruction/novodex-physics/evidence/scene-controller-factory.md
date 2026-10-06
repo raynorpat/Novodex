@@ -48,6 +48,18 @@ subset matches those oracle observations exactly (`stdout_delta=0`, exact
 stderr); the test output is registered in Phase 7.
 
 The collision-aware sweep, active-group filtering, slide/step response, and
-hit callbacks are not implemented. The rest of the constructor/destructor
-callees and complete controller interface remain open; this is still partial
-controller support, not a claim that controller behavior is complete.
+hit callbacks remain incomplete. A second paired fixture places an
+axis-aligned static box at X=1.5: moving the controller from X=0 by +2 stops at
+X=0.5 with collision flag 4. Repeating that move with active group mask zero
+passes through to X=2.5 with no collision flags. A temporary mutation that
+ignored the group mask failed the test (`candidate_exit=1`, `stdout_delta=2`);
+the restored implementation matches the oracle exactly. This is a swept-AABB
+box subset. A vertical fixture moving +Y toward an overhead box stops at Y=0.5
+with collision flag 1, and catches a candidate that reports the horizontal
+side flag for every axis. An enabled trigger shape remains a blocking sweep
+candidate in this oracle build; moving toward it stops at X=7.5 with flag 4.
+Rotated shapes, convex/mesh query faces,
+initial-overlap, sliding, step-up, and callbacks remain open. The rest of the
+constructor/destructor callees and complete controller interface remain open;
+this is still partial controller support, not a claim that controller
+behavior is complete.
