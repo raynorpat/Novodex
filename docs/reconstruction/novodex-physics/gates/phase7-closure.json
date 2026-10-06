@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 7 functions are closed, 298 reconstructed functions remain unfalsified, 256 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 11 functions are closed, 298 reconstructed functions remain unfalsified, 252 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
@@ -19,8 +19,8 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 10,
-    "deferred_reconstructed_not_falsified": 299,
+    "differential_falsified": 11,
+    "deferred_reconstructed_not_falsified": 298,
     "deferred_not_reconstructed_in_phase": 252
   },
   "closed": [
@@ -122,6 +122,16 @@
       "falsification": {
         "mutation": "Changed the NpScene::createJoint contention diagnostic line from 0x78 to 0x79 in a source mutation, rebuilt NxPhysics and NxPhysicsPairFlagTests, then ran the registered Phase 7 staged-pair differential. The candidate emitted line 0x79 where the oracle emitted 0x78; the focused lock fixture still observed a null joint and unchanged joint count.",
         "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_000640",
+      "rva": "0x00012a90",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a throwaway git-archive copy of HEAD 0ac9f256, replaced NxSceneInternal::processSimulationCallbacks' `contactReport->onContactNotify(pair, events)` call with a no-op, rebuilt NxPhysics and NxPhysicsSimulationTests, and ran the registered Phase 7 staged-pair differential. Both processes exited 0 and stderr matched exactly; the candidate omitted the buffered actor-contact notifications exercised by the real contact simulation and the paired fetch callback fixture.",
+        "detected": "stdout_delta=937"
       }
     }
   ],
@@ -841,15 +851,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000640",
-      "rva": "0x00012a90",
-      "size": 58,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed and reached by the Phase 7 public-pair fetch-callback differential; only oracle-shaped preloaded trigger/contact queues are driven, and no mutation has yet been shown to fail the gate."
     },
     {
       "id": "phys_fn_000642",
