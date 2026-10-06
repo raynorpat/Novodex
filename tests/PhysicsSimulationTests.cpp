@@ -2690,6 +2690,96 @@ int wmain(int argc, wchar_t** argv)
 	sphereControllerScene->releaseController(*sphereController);
 	sdk->releaseScene(*sphereControllerScene);
 
+	// The mesh bounds cover this controller path, but its triangular surface lies
+	// beyond the moving box's rounded-free corner in the YZ plane.
+	const NxPoint controllerMeshPoints[] = {
+		NxPoint(0.0f, 0.0f, 0.0f), NxPoint(0.0f, 0.0f, 1.0f),
+		NxPoint(0.0f, 1.0f, 0.0f), NxPoint(0.0f, 0.5f, 0.5f)};
+	const NxU32 controllerMeshIndices[] = {0, 1, 3, 0, 3, 2};
+	NxTriangleMeshDesc controllerMeshDesc;
+	controllerMeshDesc.numVertices = 4;
+	controllerMeshDesc.numTriangles = 2;
+	controllerMeshDesc.pointStrideBytes = sizeof(NxPoint);
+	controllerMeshDesc.triangleStrideBytes = 3 * sizeof(NxU32);
+	controllerMeshDesc.points = controllerMeshPoints;
+	controllerMeshDesc.triangles = controllerMeshIndices;
+	NxTriangleMesh* const controllerMesh = sdk->createTriangleMesh(controllerMeshDesc);
+	if(!controllerMesh)
+		return nxFail("controller mesh fixture cooking failed");
+	NxSceneDesc meshControllerSceneDesc;
+	meshControllerSceneDesc.setToDefault();
+	NxScene* const meshControllerScene = sdk->createScene(meshControllerSceneDesc);
+	if(!meshControllerScene)
+		return nxFail("mesh controller scene creation failed");
+	NxTriangleMeshShapeDesc meshControllerObstacleShape;
+	meshControllerObstacleShape.meshData = controllerMesh;
+	NxActorDesc meshControllerObstacleActorDesc;
+	meshControllerObstacleActorDesc.globalPose.t = NxVec3(1.5f, 0.0f, 0.0f);
+	meshControllerObstacleActorDesc.shapes.pushBack(&meshControllerObstacleShape);
+	NxActor* const meshControllerObstacle = meshControllerScene->createActor(
+		meshControllerObstacleActorDesc);
+	alignas(4) unsigned char meshControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(meshControllerDescStorage + 0x0c) = nxFloatBits(-2.0f);
+	*reinterpret_cast<NxU32*>(meshControllerDescStorage + 0x10) = nxFloatBits(1.1f);
+	*reinterpret_cast<NxU32*>(meshControllerDescStorage + 0x14) = nxFloatBits(1.1f);
+	*reinterpret_cast<NxU32*>(meshControllerDescStorage + 0x30) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(meshControllerDescStorage + 0x34) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(meshControllerDescStorage + 0x38) = nxFloatBits(0.5f);
+	NxController* const meshController = meshControllerScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(meshControllerDescStorage));
+	if(!meshControllerObstacle || !meshController)
+		return nxFail("mesh controller fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	const NxVec3 meshObstacleDisplacement(4.0f, 0.0f, 0.0f);
+	reinterpret_cast<NxControllerProbe*>(meshController)->move(
+		meshObstacleDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& meshControllerPosition =
+		reinterpret_cast<NxControllerProbe*>(meshController)->getPosition();
+	printf("simulation controller-obstacle mesh-corner position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(meshControllerPosition.x), nxFloatBits(meshControllerPosition.y),
+		nxFloatBits(meshControllerPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(meshControllerPosition.x) != 0x40000000 ||
+		nxFloatBits(meshControllerPosition.y) != 0x3f8ccccd ||
+		nxFloatBits(meshControllerPosition.z) != 0x3f8ccccd || obstacleCollisionFlags != 0;
+	meshControllerScene->releaseController(*meshController);
+	sdk->releaseScene(*meshControllerScene);
+	NxSceneDesc meshHitSceneDesc;
+	meshHitSceneDesc.setToDefault();
+	NxScene* const meshHitScene = sdk->createScene(meshHitSceneDesc);
+	if(!meshHitScene)
+		return nxFail("mesh-hit controller scene creation failed");
+	NxActorDesc meshHitObstacleActorDesc;
+	meshHitObstacleActorDesc.globalPose.t = NxVec3(1.5f, 0.0f, 0.0f);
+	meshHitObstacleActorDesc.shapes.pushBack(&meshControllerObstacleShape);
+	NxActor* const meshHitObstacle = meshHitScene->createActor(meshHitObstacleActorDesc);
+	alignas(4) unsigned char meshHitControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(meshHitControllerDescStorage + 0x0c) = nxFloatBits(-2.0f);
+	*reinterpret_cast<NxU32*>(meshHitControllerDescStorage + 0x10) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(meshHitControllerDescStorage + 0x14) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(meshHitControllerDescStorage + 0x30) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(meshHitControllerDescStorage + 0x34) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(meshHitControllerDescStorage + 0x38) = nxFloatBits(0.5f);
+	NxController* const meshHitController = meshHitScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(meshHitControllerDescStorage));
+	if(!meshHitObstacle || !meshHitController)
+		return nxFail("mesh-hit controller fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	reinterpret_cast<NxControllerProbe*>(meshHitController)->move(
+		meshObstacleDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& meshHitControllerPosition =
+		reinterpret_cast<NxControllerProbe*>(meshHitController)->getPosition();
+	printf("simulation controller-obstacle mesh-hit position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(meshHitControllerPosition.x), nxFloatBits(meshHitControllerPosition.y),
+		nxFloatBits(meshHitControllerPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(meshHitControllerPosition.x) != 0x3f800000 ||
+		nxFloatBits(meshHitControllerPosition.y) != 0x3e4ccccd ||
+		nxFloatBits(meshHitControllerPosition.z) != 0x3e4ccccd || obstacleCollisionFlags != 4;
+	meshHitScene->releaseController(*meshHitController);
+	sdk->releaseScene(*meshHitScene);
+	sdk->releaseTriangleMesh(*controllerMesh);
+
 	sdk->release();
 	for(unsigned sdkCycle = 0; sdkCycle != 2; ++sdkCycle)
 		{

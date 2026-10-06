@@ -41,6 +41,8 @@
 #include "NxTriangleMeshShapeDesc.h"
 #include "NxPlaneShapeDesc.h"
 #include "NxTriangleMeshShapeDesc.h"
+#include "NxTriangleMesh.h"
+#include "NxTriangleMeshShape.h"
 #include "ObjectModel.h"
 #include "TriangleMesh.h"
 #include "NxActor.h"
@@ -1815,6 +1817,78 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 // actor, so that actor deliberately remains registered in the Scene.
 namespace
 	{
+	// Continuous SAT for an axis-aligned controller box translated past one
+	// static triangle. The candidate path uses the same 13 separating axes as a
+	// static AABB/triangle test, but clips the overlap interval along displacement.
+	static bool nxControllerSweepAABBTriangle(const NxVec3& start, const NxVec3& displacement,
+		const NxVec3& extents, const NxVec3 triangle[3], NxReal& hitFraction,
+		NxVec3& hitNormal)
+		{
+		const NxVec3 worldAxis[3] = {
+			NxVec3(1.0f, 0.0f, 0.0f), NxVec3(0.0f, 1.0f, 0.0f), NxVec3(0.0f, 0.0f, 1.0f)};
+		const NxVec3 edge[3] = {
+			triangle[1] - triangle[0], triangle[2] - triangle[1], triangle[0] - triangle[2]};
+		NxVec3 axes[13];
+		NxU32 axisCount = 0;
+		for(NxU32 i = 0; i != 3; ++i)
+			axes[axisCount++] = worldAxis[i];
+		axes[axisCount++] = edge[0] ^ edge[1];
+		for(NxU32 i = 0; i != 3; ++i)
+			for(NxU32 j = 0; j != 3; ++j)
+				axes[axisCount++] = edge[i] ^ worldAxis[j];
+
+		NxReal enter = 0.0f;
+		NxReal leave = 1.0f;
+		NxU32 entryAxis = 0;
+		for(NxU32 i = 0; i != axisCount; ++i)
+			{
+			const NxVec3& axis = axes[i];
+			if(axis.magnitudeSquared() < 1.0e-12f)
+				continue;
+			NxReal triangleMin = triangle[0].dot(axis);
+			NxReal triangleMax = triangleMin;
+			for(NxU32 vertex = 1; vertex != 3; ++vertex)
+				{
+				const NxReal projection = triangle[vertex].dot(axis);
+				if(projection < triangleMin) triangleMin = projection;
+				if(projection > triangleMax) triangleMax = projection;
+				}
+			const NxReal centerProjection = start.dot(axis);
+			const NxReal deltaProjection = displacement.dot(axis);
+			const NxReal radius = NxMath::abs(axis.x) * extents.x +
+				NxMath::abs(axis.y) * extents.y + NxMath::abs(axis.z) * extents.z;
+			if(deltaProjection == 0.0f)
+				{
+				if(centerProjection + radius < triangleMin ||
+					centerProjection - radius > triangleMax)
+					return false;
+				continue;
+				}
+			NxReal first = (triangleMin - radius - centerProjection) / deltaProjection;
+			NxReal last = (triangleMax + radius - centerProjection) / deltaProjection;
+			if(first > last)
+				{
+				const NxReal swap = first;
+				first = last;
+				last = swap;
+				}
+			if(first > enter)
+				{
+				enter = first;
+				entryAxis = i;
+				}
+			if(last < leave)
+				leave = last;
+			if(enter > leave)
+				return false;
+			}
+		if(leave < 0.0f || enter < 0.0f || enter > 1.0f)
+			return false;
+		hitFraction = enter;
+		hitNormal = axes[entryAxis];
+		return true;
+		}
+
 	// The pinned three-slot primary vtable is scalar-deleting destructor,
 	// move(NxVec3, activeGroups, minDistance, collisionFlags), and getPosition.
 	// The getter is reconstructed below. The collision-aware move algorithm is
@@ -1972,6 +2046,64 @@ namespace
 						const NxShapeType obstacleType = shape->getType();
 						if(obstacleType != NX_SHAPE_BOX && obstacleType != NX_SHAPE_MESH)
 							continue;
+						if(obstacleType == NX_SHAPE_MESH)
+							{
+							NxTriangleMesh& mesh = shape->isTriangleMesh()->getTriangleMesh();
+							const NxMat34 pose = shape->getGlobalPose();
+							for(NxU32 submesh = 0; submesh < mesh.getSubmeshCount(); ++submesh)
+								{
+								const NxU32 vertexCount = mesh.getCount(submesh, NX_ARRAY_VERTICES);
+								const NxU32 triangleCount = mesh.getCount(submesh, NX_ARRAY_TRIANGLES);
+								const NxU32 vertexStride = mesh.getStride(submesh, NX_ARRAY_VERTICES);
+								const NxU32 triangleStride = mesh.getStride(submesh, NX_ARRAY_TRIANGLES);
+								const NxU8* const vertexData = static_cast<const NxU8*>(
+									mesh.getBase(submesh, NX_ARRAY_VERTICES));
+								const NxU8* const triangleData = static_cast<const NxU8*>(
+									mesh.getBase(submesh, NX_ARRAY_TRIANGLES));
+								const NxInternalFormat indexFormat = mesh.getFormat(submesh, NX_ARRAY_TRIANGLES);
+								if(mesh.getFormat(submesh, NX_ARRAY_VERTICES) != NX_FORMAT_FLOAT ||
+									!vertexData || !triangleData || vertexStride < sizeof(NxVec3))
+									continue;
+								for(NxU32 triangleIndex = 0; triangleIndex < triangleCount; ++triangleIndex)
+									{
+									const NxU8* const indices = triangleData + triangleIndex * triangleStride;
+									NxU32 vertexIndices[3];
+									if(indexFormat == NX_FORMAT_INT && triangleStride >= 3 * sizeof(NxU32))
+										memcpy(vertexIndices, indices, sizeof(vertexIndices));
+									else if(indexFormat == NX_FORMAT_SHORT && triangleStride >= 3 * sizeof(NxU16))
+										{
+										NxU16 shortIndices[3];
+										memcpy(shortIndices, indices, sizeof(shortIndices));
+										vertexIndices[0] = shortIndices[0];
+										vertexIndices[1] = shortIndices[1];
+										vertexIndices[2] = shortIndices[2];
+										}
+									else
+										continue;
+									if(vertexIndices[0] >= vertexCount || vertexIndices[1] >= vertexCount ||
+										vertexIndices[2] >= vertexCount)
+										continue;
+									NxVec3 triangle[3];
+									for(NxU32 vertex = 0; vertex != 3; ++vertex)
+										{
+										NxVec3 localVertex;
+										memcpy(&localVertex, vertexData + vertexIndices[vertex] * vertexStride,
+											sizeof(localVertex));
+										triangle[vertex] = pose * localVertex;
+										}
+									NxReal meshFraction;
+									NxVec3 meshNormal;
+									if(nxControllerSweepAABBTriangle(position, remaining, extents,
+										triangle, meshFraction, meshNormal) && meshFraction < fraction)
+										{
+										fraction = meshFraction;
+										hitAxis = meshNormal.y * meshNormal.y >
+											0.5f * meshNormal.magnitudeSquared() ? 1u : 0u;
+										}
+									}
+								}
+							continue;
+							}
 						NxBounds3 shapeBounds;
 						shape->getWorldBounds(shapeBounds);
 						const NxVec3& lo = shapeBounds.getMin();

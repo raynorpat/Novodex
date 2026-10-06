@@ -104,3 +104,35 @@ skip (`build/controller-sphere-corner-viewer-ctest.log`). This closes only the
 shape-type filter shown by the oracle. Triangle-mesh narrow-phase, generalized
 overlap recovery, complete slide/step handling, callbacks, and the wider
 controller lifecycle remain open. Public Physics headers were not changed.
+
+## Triangle-mesh controller sweep follow-up
+
+The shape-type filter exposed a bounds-only false positive for triangle meshes,
+so the controller's supported triangle-mesh path now tests a translating
+axis-aligned controller box against each mesh triangle with continuous SAT.
+The tested mesh uses float vertices and 32-bit indices; transformed mesh
+vertices are evaluated in world space. The first corner fixture went RED: the
+oracle passed through an expanded world-AABB corner to `x=2`, while the
+candidate stopped at `x=1`. After the triangle sweep, both DLLs pass through
+with flags zero. A complementary fixture crosses the actual triangle and both
+stop at `x=1`, retaining `y=z=0.2` and collision flag 4. The combined
+`NxPhysicsSimulationTests` transcript is exact (`stdout_delta=0`,
+`stderr_exact=True`; `build/controller-mesh-final-diff.log`).
+
+Both mesh outcomes are asserted in the test and registered in Phase 7. The
+verified sweep uses float vertices, 32-bit triangle indices, and an
+axis-aligned controller box. The implementation also decodes 16-bit triangle
+indices, but that encoding does not yet have a paired fixture. Other
+vertex/index encodings, mesh/controller rotation, initial mesh penetration,
+mesh sliding/step response, callbacks, and complete controller semantics are
+still open. This is a tested mesh-sweep subset, not complete controller
+reconstruction. Public Physics headers remain unchanged.
+
+Final validation for this slice: Phase 5 passes 2,042/2,042 assertions
+(`build/controller-mesh-final-phase5.log`); Phase 7 passes all 1,351/1,351
+registered assertions (`build/controller-mesh-final-phase7.log`). The rebuilt
+Viewer passes all 44 selected CTest cases (`build/controller-mesh-viewer-ctest.log`),
+including all 39 available scene demos: 34 pass and the same five
+signature-verified baseline skips remain. Viewer sound, physics step, and
+physics contact checks pass. Inventory validation reports 6,338 functions,
+5,138 data objects, and zero unexplained entries.
