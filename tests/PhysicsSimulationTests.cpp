@@ -2491,6 +2491,59 @@ int wmain(int argc, wchar_t** argv)
 		nxFloatBits(slideControllerPosition.z) != 0x3f800000 || obstacleCollisionFlags != 4;
 	slideScene->releaseController(*slideController);
 	sdk->releaseScene(*slideScene);
+	NxSceneDesc overlapSceneDesc;
+	overlapSceneDesc.setToDefault();
+	NxScene* const overlapScene = sdk->createScene(overlapSceneDesc);
+	if(!overlapScene)
+		return nxFail("controller initial-overlap scene creation failed");
+	NxBoxShapeDesc overlapObstacleShape;
+	overlapObstacleShape.dimensions = NxVec3(0.5f, 1.0f, 1.0f);
+	NxActorDesc overlapObstacleActorDesc;
+	overlapObstacleActorDesc.globalPose.t = NxVec3(1.5f, 0.0f, 0.0f);
+	overlapObstacleActorDesc.shapes.pushBack(&overlapObstacleShape);
+	NxActor* const overlapObstacleActor = overlapScene->createActor(overlapObstacleActorDesc);
+	alignas(4) unsigned char overlapControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(overlapControllerDescStorage + 0x0c) = nxFloatBits(0.75f);
+	*reinterpret_cast<NxU32*>(overlapControllerDescStorage + 0x30) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(overlapControllerDescStorage + 0x34) = nxFloatBits(1.0f);
+	*reinterpret_cast<NxU32*>(overlapControllerDescStorage + 0x38) = nxFloatBits(0.5f);
+	NxController* const overlapController = overlapScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(overlapControllerDescStorage));
+	if(!overlapObstacleActor || !overlapController)
+		return nxFail("controller initial-overlap fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	const NxVec3 escapeDisplacement(-0.5f, 0.0f, 0.0f);
+	reinterpret_cast<NxControllerProbe*>(overlapController)->move(
+		escapeDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& escapedControllerPosition =
+		reinterpret_cast<NxControllerProbe*>(overlapController)->getPosition();
+	printf("simulation controller-initial-overlap escape position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(escapedControllerPosition.x), nxFloatBits(escapedControllerPosition.y),
+		nxFloatBits(escapedControllerPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(escapedControllerPosition.x) != 0x3e800000 ||
+		nxFloatBits(escapedControllerPosition.y) != 0 ||
+		nxFloatBits(escapedControllerPosition.z) != 0 || obstacleCollisionFlags != 0;
+	overlapScene->releaseController(*overlapController);
+	NxController* const overlapControllerInward = overlapScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(overlapControllerDescStorage));
+	if(!overlapControllerInward)
+		return nxFail("controller inward-overlap fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	const NxVec3 inwardDisplacement(0.5f, 0.0f, 0.0f);
+	reinterpret_cast<NxControllerProbe*>(overlapControllerInward)->move(
+		inwardDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& inwardControllerPosition =
+		reinterpret_cast<NxControllerProbe*>(overlapControllerInward)->getPosition();
+	printf("simulation controller-initial-overlap inward position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(inwardControllerPosition.x), nxFloatBits(inwardControllerPosition.y),
+		nxFloatBits(inwardControllerPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(inwardControllerPosition.x) != 0x3f400000 ||
+		nxFloatBits(inwardControllerPosition.y) != 0 ||
+		nxFloatBits(inwardControllerPosition.z) != 0 || obstacleCollisionFlags != 4;
+	overlapScene->releaseController(*overlapControllerInward);
+	sdk->releaseScene(*overlapScene);
 	NxBoxShapeDesc verticalObstacleShape;
 	verticalObstacleShape.dimensions = NxVec3(1.0f, 0.5f, 1.0f);
 	NxActorDesc verticalObstacleActorDesc;

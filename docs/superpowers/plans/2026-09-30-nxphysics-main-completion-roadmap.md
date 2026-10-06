@@ -57,6 +57,19 @@ The Phase 7 target and coverage floor have been extended by one. This remains
 a bounded AABB implementation: arbitrary convex/mesh sweeps, initial
 penetration, full step behavior, and callback semantics remain open.
 
+### Continuation — initial-overlap escape direction (2026-10-06)
+
+Added a clean-scene pair with the controller at X=0.75 inside the expanded
+static-box bounds. The oracle allows motion outward by -0.5 to X=0.25 with no
+collision flag, but blocks motion inward by +0.5 at X=0.75 with flag 4. The
+first candidate stopped both directions (`stdout_delta=2`); it now identifies
+the nearest expanded-box face and permits motion directed toward that exit.
+The paired simulation differential matches exactly for both directions. This
+is bounded directional recovery for axis-aligned boxes and does not reconstruct
+general depenetration or alternate contact manifolds. Phase 5 passes
+2,042/2,042, Phase 7 passes 1,347/1,347, and the complete Viewer selection
+passes 48/48 with five existing signature-verified oracle skips.
+
 ### Continuation — controller position ABI (2026-10-06)
 
 The approved all-scenes Viewer selection remains part of verification. A new

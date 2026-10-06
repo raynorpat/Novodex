@@ -1883,6 +1883,35 @@ namespace
 							hi.x + extents.x, hi.y + extents.y, hi.z + extents.z};
 						const NxReal start[3] = {position.x, position.y, position.z};
 						const NxReal delta[3] = {remaining.x, remaining.y, remaining.z};
+						bool startsInside = true;
+						for(NxU32 axis = 0; axis != 3; ++axis)
+							if(start[axis] <= expandedMin[axis] || start[axis] >= expandedMax[axis])
+								startsInside = false;
+						if(startsInside)
+							{
+							NxU32 escapeAxis = 0;
+							NxReal escapeDirection = -1.0f;
+							NxReal escapeDistance = start[0] - expandedMin[0];
+							for(NxU32 axis = 0; axis != 3; ++axis)
+								{
+								const NxReal towardMax = expandedMax[axis] - start[axis];
+								if(towardMax < escapeDistance)
+									{
+									escapeAxis = axis;
+									escapeDirection = 1.0f;
+									escapeDistance = towardMax;
+									}
+								const NxReal towardMin = start[axis] - expandedMin[axis];
+								if(towardMin < escapeDistance)
+									{
+									escapeAxis = axis;
+									escapeDirection = -1.0f;
+									escapeDistance = towardMin;
+									}
+								}
+							if(delta[escapeAxis] * escapeDirection > 0.0f)
+								continue;
+							}
 						NxReal enter = 0.0f;
 						NxReal leave = 1.0f;
 						NxU32 axis = 0;

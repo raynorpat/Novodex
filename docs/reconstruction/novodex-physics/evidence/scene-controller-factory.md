@@ -60,9 +60,14 @@ side flag for every axis. An enabled trigger shape remains a blocking sweep
 candidate in this oracle build; moving toward it stops at X=7.5 with flag 4.
 A clean-scene diagonal fixture also verifies tangential projection along the
 X wall: displacement `(2,0,1)` ends at `(0.5,0,1)` with flag 4, while the
-candidate before slide handling stopped at `(0.5,0,0.25)`. Rotated shapes,
-convex/mesh query faces, initial-overlap, multiple-face sliding, step-up, and
-callbacks remain open. The rest of the
+candidate before slide handling stopped at `(0.5,0,0.25)`. Initial-overlap
+behavior is also partially pinned: from X=0.75 inside the wall's expanded
+bounds, moving outward by -0.5 escapes to X=0.25 with no flags; moving inward
+by +0.5 stays at X=0.75 with flag 4. The candidate's first version blocked
+both directions, and the escape differential was red before adding nearest
+face-directed escape handling. Rotated shapes, convex/mesh query faces,
+general penetration recovery, multiple-face sliding, step-up, and callbacks
+remain open. The rest of the
 constructor/destructor callees and complete controller interface remain open;
 this is still partial controller support, not a claim that controller
 behavior is complete.
