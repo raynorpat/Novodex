@@ -7382,13 +7382,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/196",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1146",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "The registered NxPhysicsSimulationTests Phase 7 differential drives the fetch callback path after a completed step; trigger and contact getter/callback counts match the oracle. Suppressing NpScene::fetchResults' Scene::processSimulationCallbacks call in a source mutation changes the transcript (stdout_delta=877). Suppressing cpmDeliverBufferedContactReports alone currently produces stdout_delta=0, so the buffered-contact-report arm remains unverified and this row stays deferred.",
+      "notes": "Partial dynamic coverage; buffered contact-report delivery has not been observed by the current simulation fixture.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::fetchResults"
     },
     {
       "id": "phys_fn_000399",

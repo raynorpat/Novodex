@@ -20,8 +20,8 @@
   },
   "counts": {
     "differential_falsified": 10,
-    "deferred_reconstructed_not_falsified": 298,
-    "deferred_not_reconstructed_in_phase": 253
+    "deferred_reconstructed_not_falsified": 299,
+    "deferred_not_reconstructed_in_phase": 252
   },
   "closed": [
     {
@@ -363,9 +363,10 @@
       "id": "phys_fn_000398",
       "rva": "0x0000d740",
       "size": 118,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "The fetchResults callback-dispatch arm is reconstructed and its mutation changes the Phase 7 simulation transcript, but suppressing buffered contact-report delivery alone leaves the transcript unchanged (stdout_delta=0). Keep the row deferred until a fixture observes and falsifies that arm."
     },
     {
       "id": "phys_fn_000400",

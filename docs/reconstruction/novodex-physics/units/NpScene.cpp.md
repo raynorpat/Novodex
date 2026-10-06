@@ -2309,11 +2309,11 @@ Decompile (capstone disassembly):
 0x0000d73a  ret 8
 ```
 
-## phys_fn_000398 (0x0000d740, 118 B, discovered)
+## phys_fn_000398 (0x0000d740, 118 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/NpScene.cpp
+- implementation: Physics/src/NpScene.cpp (`NpScene::fetchResults`)
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_000285 (0x0000c310)
@@ -2361,6 +2361,14 @@ Decompile (capstone disassembly):
 0x0000d7b2  pop esi
 0x0000d7b3  ret 8
 ```
+
+The fetched path waits through `checkResults`, processes queued scene callbacks,
+finishes simulation bookkeeping, delivers buffered contact reports, clears the
+pending flag/event, and returns true. The Phase 7 simulation differential
+registers the trigger/contact callback summary; suppressing callback dispatch
+is caught (`stdout_delta=877`). Buffered contact-report delivery is not yet
+observed by that fixture: suppressing only that call leaves the transcript
+unchanged, so the row remains deferred pending a discriminating fixture.
 
 ## phys_fn_000400 (0x0000d7c0, 114 B, discovered)
 
