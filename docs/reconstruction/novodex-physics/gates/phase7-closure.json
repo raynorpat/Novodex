@@ -19,9 +19,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 7,
+    "differential_falsified": 10,
     "deferred_reconstructed_not_falsified": 298,
-    "deferred_not_reconstructed_in_phase": 256
+    "deferred_not_reconstructed_in_phase": 253
   },
   "closed": [
     {
@@ -93,6 +93,36 @@
         "mutation": "In a throwaway source mutation, changed the reconstructed contended-write diagnostic source line in NpScene::setActorPairFlags from 0xab to 0xac, rebuilt NxPhysics and NxPhysicsPairFlagTests, and reran the registered Phase 7 staged-pair differential. The fixture observes the diagnostic while verifying the pre-existing actor-pair flags remain unchanged.",
         "detected": "stdout_delta=2"
       }
+    },
+    {
+      "id": "phys_fn_000293",
+      "rva": "0x0000c490",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsPairFlagTests",
+      "falsification": {
+        "mutation": "Changed the NpScene::createActor contention diagnostic line from 0x69 to 0x6a in a source mutation, rebuilt NxPhysics and NxPhysicsPairFlagTests, then ran the registered Phase 7 staged-pair differential. The candidate emitted line 0x6a where the oracle emitted 0x69; the focused lock fixture still observed a null actor and an unchanged two-actor scene.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_000295",
+      "rva": "0x0000c500",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsPairFlagTests",
+      "falsification": {
+        "mutation": "Changed the NpScene::releaseActor contention diagnostic line from 0x70 to 0x71 in a source mutation, rebuilt NxPhysics and NxPhysicsPairFlagTests, then ran the registered Phase 7 staged-pair differential. The candidate emitted line 0x71 where the oracle emitted 0x70; the focused lock fixture still observed the actor present.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_000297",
+      "rva": "0x0000c560",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsPairFlagTests",
+      "falsification": {
+        "mutation": "Changed the NpScene::createJoint contention diagnostic line from 0x78 to 0x79 in a source mutation, rebuilt NxPhysics and NxPhysicsPairFlagTests, then ran the registered Phase 7 staged-pair differential. The candidate emitted line 0x79 where the oracle emitted 0x78; the focused lock fixture still observed a null joint and unchanged joint count.",
+        "detected": "stdout_delta=2"
+      }
     }
   ],
   "deferred": [
@@ -119,30 +149,6 @@
       "size": 216,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "callers",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000293",
-      "rva": "0x0000c490",
-      "size": 110,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000295",
-      "rva": "0x0000c500",
-      "size": 91,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000297",
-      "rva": "0x0000c560",
-      "size": 111,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
       "driving_phases": []
     },
     {

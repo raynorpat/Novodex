@@ -3196,7 +3196,11 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsPairFlagTests' = @(
         'pairflag compound_released count=0 array=0'
         'pairflag actor_contended reports=1 flags=00000001'
-        'pairflag contended reports=1 flags=00000000'
+        'pairflag contended reports=4 flags=00000000'
+        'pairflag report=2.69.\Epic\Novodex\SDKs\Physics\src\NpScene.cpp.PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!'
+        'pairflag report=2.70.\Epic\Novodex\SDKs\Physics\src\NpScene.cpp.PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!'
+        'pairflag report=2.78.\Epic\Novodex\SDKs\Physics\src\NpScene.cpp.PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!'
+        'pairflag mutations_contended reports=3 create_actor=0 actors=2 release_actor=0 joints=0 create_joint=0'
     )
     # Effector-and-coredump Task 2: the spring-and-damper effector differential.
     # NxScene's effector API and every NxSpringAndDamperEffector method over two
@@ -5404,7 +5408,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1332  # previous 1,330 plus contended actor- and shape-pair write-lock reports
+    '7' = 1336  # previous 1,332 plus create/release actor and create joint lock diagnostics/outcomes
                # across joint, scene, simulation, mesh, trigger, effector and core-dump targets;
                # kept equal to the registry count below
     '8' = 0

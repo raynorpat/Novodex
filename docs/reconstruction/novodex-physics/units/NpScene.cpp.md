@@ -98,11 +98,11 @@ void __thiscall FUN_1000c460(void *this,undefined4 *param_1)
 
 ```
 
-## phys_fn_000293 (0x0000c490, 110 B, discovered)
+## phys_fn_000293 (0x0000c490, 110 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/NpScene.cpp
-- implementation: None
+- implementation: Physics/src/NpScene.cpp (`NpScene::createActor`)
 - prototype: int __thiscall FUN_1000c490(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000285 (0x0000c310)
@@ -149,11 +149,17 @@ int __thiscall FUN_1000c490(void *this,float *param_1)
 
 ```
 
-## phys_fn_000295 (0x0000c500, 91 B, discovered)
+The wrapper is reconstructed with the scene write-lock try, Scene actor-create
+forward, and unlock. Its contention branch reports `NXE_INVALID_OPERATION` at
+line `0x69`; the Phase 7 fixture verifies the null result and unchanged actor
+count while a second thread holds the lock. A one-line source-location mutation
+is caught by the staged-pair differential.
+
+## phys_fn_000295 (0x0000c500, 91 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/NpScene.cpp
-- implementation: None
+- implementation: Physics/src/NpScene.cpp (`NpScene::releaseActor`)
 - prototype: undefined __thiscall FUN_1000c500(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000285 (0x0000c310)
@@ -195,11 +201,17 @@ void __thiscall FUN_1000c500(void *this,int param_1)
 
 ```
 
-## phys_fn_000297 (0x0000c560, 111 B, discovered)
+The wrapper is reconstructed with the scene write-lock try, actor-body
+extraction, Scene release, and unlock. Its contention branch reports
+`NXE_INVALID_OPERATION` at line `0x70`; the Phase 7 fixture verifies the actor
+remains present while a second thread holds the lock. A one-line source-location
+mutation is caught by the staged-pair differential.
+
+## phys_fn_000297 (0x0000c560, 111 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/NpScene.cpp
-- implementation: None
+- implementation: Physics/src/NpScene.cpp (`NpScene::createJoint`)
 - prototype: int __thiscall FUN_1000c560(int * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000285 (0x0000c310)
@@ -245,6 +257,12 @@ int __thiscall FUN_1000c560(void *this,int *param_1)
 
 
 ```
+
+The wrapper is reconstructed with the scene write-lock try, Scene joint-create
+forward, and unlock. Its contention branch reports `NXE_INVALID_OPERATION` at
+line `0x78`; the Phase 7 fixture verifies the null result and unchanged joint
+count while a second thread holds the lock. A one-line source-location mutation
+is caught by the staged-pair differential.
 
 ## phys_fn_000299 (0x0000c5d0, 87 B, reconstructed)
 

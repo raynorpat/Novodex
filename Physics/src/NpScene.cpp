@@ -151,7 +151,9 @@ NxActor* NpScene::createActor(const NxActorDescBase& desc)
 	{
 	if(!mWriteLock || !nxLockTryLock(mWriteLock))
 		{
-		nxSceneDeadlockReport();
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x69, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 		return 0;
 		}
 
@@ -166,7 +168,9 @@ void NpScene::releaseActor(NxActor& actor)
 	{
 	if(!mWriteLock || !nxLockTryLock(mWriteLock))
 		{
-		nxSceneDeadlockReport();
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x70, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 		return;
 		}
 
@@ -1152,12 +1156,14 @@ void NpScene::setGravity(const NxVec3& gravity)
 	nxNpSceneGuardLeave(link);
 	}
 
-// phys_fn_000295's shape: the write lock, the forward, the release.
+// phys_fn_000297's shape: the write lock, the forward, the release.
 NxJoint* NpScene::createJoint(const NxJointDesc& desc)
 	{
 	if(!mWriteLock || !nxLockTryLock(mWriteLock))
 		{
-		nxSceneDeadlockReport();
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x78, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 		return 0;
 		}
 

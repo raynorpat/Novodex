@@ -5445,13 +5445,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/101",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1010",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "The registered NxPhysicsPairFlagTests Phase 7 differential contends the scene write lock while createActor is called. It reports NXE_INVALID_OPERATION at NpScene.cpp:0x69, returns null and preserves the two-actor scene. Oracle/candidate output is exact. A deliberate 0x69 -> 0x6a source-line mutation is caught by the same differential (stdout_delta=2).",
+      "notes": "",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::createActor"
     },
     {
       "id": "phys_fn_000294",
@@ -5481,13 +5483,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/102",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1014",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "The registered NxPhysicsPairFlagTests Phase 7 differential contends the scene write lock while releaseActor is called. It reports NXE_INVALID_OPERATION at NpScene.cpp:0x70 and leaves the actor present. Oracle/candidate output is exact. A deliberate 0x70 -> 0x71 source-line mutation is caught by the same differential (stdout_delta=2).",
+      "notes": "",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::releaseActor"
     },
     {
       "id": "phys_fn_000296",
@@ -5517,13 +5521,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/103",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1018",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "The registered NxPhysicsPairFlagTests Phase 7 differential contends the scene write lock while createJoint is called. It reports NXE_INVALID_OPERATION at NpScene.cpp:0x78, returns null and leaves the joint count unchanged. Oracle/candidate output is exact. A deliberate 0x78 -> 0x79 source-line mutation is caught by the same differential (stdout_delta=2).",
+      "notes": "",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::createJoint"
     },
     {
       "id": "phys_fn_000298",
