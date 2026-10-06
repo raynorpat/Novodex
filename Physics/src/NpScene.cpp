@@ -721,15 +721,22 @@ NxUserContactReport* NpScene::getUserContactReport() const
 	return report;
 	}
 
-// (unimplemented) setUserFluidContactReport
+// phys_fn_000362 (0x0000ce70). The pinned SDK exports this entry but fluid
+// contact reporting is disabled; retain the callback-independent warning.
 void NpScene::setUserFluidContactReport(NxUserFluidContactReport* callback)
 	{
-	
+	(void)callback;
+	NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+		"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x179, 0,
+		"NxFluid::setUserFluidContactReport(): Feature not available!");
 	}
 
-// (unimplemented) getUserFluidContactReport
+// phys_fn_000364 (0x0000cea0). The unavailable getter warns and returns null.
 NxUserFluidContactReport* NpScene::getUserFluidContactReport() const
 	{
+	NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+		"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x17f, 0,
+		"NxFluid::getUserFluidContactReport(): Feature not available!");
 	return 0;
 	}
 

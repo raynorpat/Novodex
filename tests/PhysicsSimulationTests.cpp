@@ -1879,6 +1879,24 @@ int wmain(int argc, wchar_t** argv)
 		simulationOutput.errors - fluidErrorsBefore,
 		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
 		simulationOutput.file, simulationOutput.message);
+	unsigned char fluidCallbackMarker = 0;
+	NxUserFluidContactReport* const fluidCallback =
+		reinterpret_cast<NxUserFluidContactReport*>(&fluidCallbackMarker);
+	const unsigned fluidCallbackErrorsBefore = simulationOutput.errors;
+	simulationOutput.resetLast();
+	fluidScene->setUserFluidContactReport(fluidCallback);
+	printf("simulation fluid contact-report-set errors=%u code=%u line=%d file=%s message=%s\n",
+		simulationOutput.errors - fluidCallbackErrorsBefore,
+		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
+		simulationOutput.file, simulationOutput.message);
+	const unsigned fluidCallbackGetErrorsBefore = simulationOutput.errors;
+	simulationOutput.resetLast();
+	NxUserFluidContactReport* const returnedFluidCallback = fluidScene->getUserFluidContactReport();
+	printf("simulation fluid contact-report-get stored=%u errors=%u code=%u line=%d file=%s message=%s\n",
+		returnedFluidCallback == fluidCallback ? 1u : 0u,
+		simulationOutput.errors - fluidCallbackGetErrorsBefore,
+		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
+		simulationOutput.file, simulationOutput.message);
 	sdk->releaseScene(*fluidScene);
 
 	sdk->release();
