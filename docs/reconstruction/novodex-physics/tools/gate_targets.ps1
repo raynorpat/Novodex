@@ -3028,6 +3028,20 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation broadphase selector=0 mode=1'
         'simulation broadphase selector=1 mode=2'
         'simulation broadphase selector=2 mode=3'
+        # Scene stats and limits must expose empty-scene and populated-scene
+        # counters consistently across every broadphase implementation.
+        'simulation scene-stats phase=created selector=0 present=1 contacts=0 max_contacts=0 actors=0 joints=0 awake=0 asleep=0 static_shapes=0'
+        'simulation scene-limits phase=created selector=0 actors=0 bodies=0 static_shapes=0 dynamic_shapes=0 joints=0'
+        'simulation scene-stats phase=active selector=0 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3'
+        'simulation scene-limits phase=active selector=0 actors=8 bodies=5 static_shapes=3 dynamic_shapes=5 joints=0'
+        'simulation scene-stats phase=created selector=1 present=1 contacts=0 max_contacts=0 actors=0 joints=0 awake=0 asleep=0 static_shapes=0'
+        'simulation scene-limits phase=created selector=1 actors=0 bodies=0 static_shapes=0 dynamic_shapes=0 joints=0'
+        'simulation scene-stats phase=active selector=1 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3'
+        'simulation scene-limits phase=active selector=1 actors=8 bodies=5 static_shapes=3 dynamic_shapes=5 joints=0'
+        'simulation scene-stats phase=created selector=2 present=1 contacts=0 max_contacts=0 actors=0 joints=0 awake=0 asleep=0 static_shapes=0'
+        'simulation scene-limits phase=created selector=2 actors=0 bodies=0 static_shapes=0 dynamic_shapes=0 joints=0'
+        'simulation scene-stats phase=active selector=2 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3'
+        'simulation scene-limits phase=active selector=2 actors=8 bodies=5 static_shapes=3 dynamic_shapes=5 joints=0'
         'simulation broadphase plane selector=1 pairs=1'
         'simulation broadphase separated selector=0 pairs=0'
         'simulation broadphase separated selector=1 pairs=0'
@@ -5361,7 +5375,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1298  # current registered assertions across joint, scene, simulation, mesh, trigger,
+    '7' = 1310  # current registered assertions across joint, scene, simulation, mesh, trigger,
                # effector and core-dump targets; kept equal to the registry count below
     '8' = 0
 }

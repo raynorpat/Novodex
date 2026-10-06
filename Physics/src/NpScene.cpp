@@ -653,16 +653,23 @@ void NpScene::visualize()
 	nxNpSceneGuardLeave(link);
 	}
 
-// (unimplemented) getSceneStats
+// phys_fn_000346 (0x0000cc60): read-lock around Scene::getSceneStats.
 NxSceneStats* NpScene::getSceneStats()
 	{
-	return 0;
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	NxSceneStats* const stats = mScene->getSceneStats();
+	nxNpSceneGuardLeave(link);
+	return stats;
 	}
 
-// (unimplemented) getLimits
+// phys_fn_000348 (0x0000cc90): read-lock around Scene::getLimits.
 void NpScene::getLimits(NxSceneLimits& limits) const
 	{
-	
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	mScene->getLimits(limits);
+	nxNpSceneGuardLeave(link);
 	}
 
 // phys_fn_000350: store the callback consumed by joint-break events.

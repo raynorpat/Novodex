@@ -28,6 +28,7 @@
 
 #include "Containers.h"
 #include "NxSceneDesc.h"
+#include "NxSceneStats.h"
 #include "NxBounds3.h"
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
@@ -3786,6 +3787,38 @@ void JointBreakEvent::row004113()
 NxU32 NxSceneInternal::getNbJoints() const
 	{
 	return at<NxU32>(0x6c8);
+	}
+
+// phys_fn_000617 (0x00011440). The image reuses one process-wide stats object,
+// clearing it on every call and reporting only actor and static-shape counts.
+NxSceneStats* NxSceneInternal::getSceneStats()
+	{
+	static NxSceneStats stats;
+	stats.reset();
+	const NxActor* const* actorBegin = at<NxActor**>(0x55c);
+	const NxActor* const* actorEnd = at<NxActor**>(0x560);
+	stats.numActors = actorBegin
+		? static_cast<NxI32>(actorEnd - actorBegin)
+		: 0;
+	stats.numStaticShapes = static_cast<NxI32>(nxPruningCountFirst(bytes() + 0x624));
+	return &stats;
+	}
+
+// phys_fn_000621 (0x000115b0). These fields are backing-array counts read by
+// the oracle, including the pruner counts and the primary joint list.
+void NxSceneInternal::getLimits(NxSceneLimits& limits) const
+	{
+	const void* const* actorBegin = at<void**>(0x55c);
+	const void* const* actorEnd = at<void**>(0x560);
+	const void* const* bodyBegin = at<void**>(0x56c);
+	const void* const* bodyEnd = at<void**>(0x570);
+	limits.maxNbActors = actorBegin ? static_cast<NxU32>(actorEnd - actorBegin) : 0;
+	limits.maxNbBodies = bodyBegin ? static_cast<NxU32>(bodyEnd - bodyBegin) : 0;
+	limits.maxNbStaticShapes = nxPruningCountFirst(bytes() + 0x624);
+	limits.maxNbDynamicShapes = nxPruningCountIndexed(bytes() + 0x624);
+	limits.maxNbJoints = 0;
+	for(Joint* joint = at<Joint*>(0x59c); joint; joint = static_cast<Joint*>(joint->mNextJoint))
+		++limits.maxNbJoints;
 	}
 
 // phys_fn_000563 (0x00010880, 13 B, phase 7): the cursor at +0x6bc = the list

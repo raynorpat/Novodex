@@ -34,6 +34,22 @@ typedef void (NX_CALL_CONV *JointDescSetGlobalAnchorFn)(NxJointDesc&, const NxVe
 typedef void (NX_CALL_CONV *JointDescSetGlobalAxisFn)(NxJointDesc&, const NxVec3&);
 static unsigned nxFloatBits(NxReal value);
 
+static void nxPrintSimulationSceneState(NxScene* scene, unsigned selector, const char* phase)
+	{
+	NxSceneStats* const sceneStats = scene->getSceneStats();
+	NxSceneLimits sceneLimits;
+	scene->getLimits(sceneLimits);
+	printf("simulation scene-stats phase=%s selector=%u present=%u contacts=%d max_contacts=%d actors=%d joints=%d awake=%d asleep=%d static_shapes=%d\n",
+		phase, selector, sceneStats != 0, sceneStats ? sceneStats->numContacts : -1,
+		sceneStats ? sceneStats->maxContacts : -1, sceneStats ? sceneStats->numActors : -1,
+		sceneStats ? sceneStats->numJoints : -1, sceneStats ? sceneStats->numAwake : -1,
+		sceneStats ? sceneStats->numAsleep : -1, sceneStats ? sceneStats->numStaticShapes : -1);
+	printf("simulation scene-limits phase=%s selector=%u actors=%u bodies=%u static_shapes=%u dynamic_shapes=%u joints=%u\n",
+		phase, selector, sceneLimits.maxNbActors, sceneLimits.maxNbBodies,
+		sceneLimits.maxNbStaticShapes, sceneLimits.maxNbDynamicShapes,
+		sceneLimits.maxNbJoints);
+	}
+
 struct NxSimulationHeldSceneWriteLock
 	{
 	void* link;
@@ -433,6 +449,7 @@ int wmain(int argc, wchar_t** argv)
 			}
 		printf("simulation broadphase selector=%u mode=%u\n",
 			selector, nxReadSceneBroadPhaseMode(broadPhaseScene));
+		nxPrintSimulationSceneState(broadPhaseScene, selector, "created");
 		broadPhaseScene->setTiming(0.01f, 1, NX_TIMESTEP_VARIABLE);
 		NxSphereShapeDesc separatedSphere;
 		separatedSphere.radius = 0.5f;
@@ -508,6 +525,7 @@ int wmain(int argc, wchar_t** argv)
 			return nxFail("overlapping broadphase step failed");
 		printf("simulation broadphase overlapping selector=%u pairs=%u\n",
 			selector, nxReadSceneBroadPhasePairCount(broadPhaseScene));
+		nxPrintSimulationSceneState(broadPhaseScene, selector, "active");
 		sdk->releaseScene(*broadPhaseScene);
 		NxSceneDesc chainDesc;
 		chainDesc.setToDefault();

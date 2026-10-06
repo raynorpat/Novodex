@@ -6409,13 +6409,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/122",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1070",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSimulationTests Phase 7 staged-pair differential against the pinned oracle: empty and populated scene snapshots for broadphase selectors 0, 1, and 2 are byte-identical (stdout_delta=0, stderr_exact=True); the active case reports stats actors=8/static_shapes=3 and limits actors=8/bodies=5/static_shapes=3/dynamic_shapes=5/joints=0. All 11 Phase 7 targets pass with stdout_delta=0. See evidence/scene-stats-limits.md and build/SceneGate-diff.log. Row-specific mutation falsification remains open.",
+      "notes": "",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::getSceneStats"
     },
     {
       "id": "phys_fn_000347",
@@ -6445,13 +6447,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/123",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1071",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSimulationTests Phase 7 staged-pair differential against the pinned oracle: empty and populated scene snapshots for broadphase selectors 0, 1, and 2 are byte-identical (stdout_delta=0, stderr_exact=True); the active case reports stats actors=8/static_shapes=3 and limits actors=8/bodies=5/static_shapes=3/dynamic_shapes=5/joints=0. All 11 Phase 7 targets pass with stdout_delta=0. See evidence/scene-stats-limits.md and build/SceneGate-diff.log. Row-specific mutation falsification remains open.",
+      "notes": "",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::getLimits"
     },
     {
       "id": "phys_fn_000349",
@@ -11385,13 +11389,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/238",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1565",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSimulationTests Phase 7 staged-pair differential against the pinned oracle: empty and populated scene snapshots for broadphase selectors 0, 1, and 2 are byte-identical (stdout_delta=0, stderr_exact=True); the active case reports stats actors=8/static_shapes=3 and limits actors=8/bodies=5/static_shapes=3/dynamic_shapes=5/joints=0. All 11 Phase 7 targets pass with stdout_delta=0. See evidence/scene-stats-limits.md and build/SceneGate-diff.log. Row-specific mutation falsification remains open.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "NxSceneInternal::getSceneStats"
     },
     {
       "id": "phys_fn_000618",
@@ -11457,13 +11463,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/240",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1577",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSimulationTests Phase 7 staged-pair differential against the pinned oracle: empty and populated scene snapshots for broadphase selectors 0, 1, and 2 are byte-identical (stdout_delta=0, stderr_exact=True); the active case reports stats actors=8/static_shapes=3 and limits actors=8/bodies=5/static_shapes=3/dynamic_shapes=5/joints=0. All 11 Phase 7 targets pass with stdout_delta=0. See evidence/scene-stats-limits.md and build/SceneGate-diff.log. Row-specific mutation falsification remains open.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "NxSceneInternal::getLimits"
     },
     {
       "id": "phys_fn_000622",

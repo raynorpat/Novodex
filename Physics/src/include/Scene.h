@@ -40,6 +40,8 @@ class NxPlane;
 
 class Scene;
 class NxSceneDesc;
+class NxSceneStats;
+class NxSceneLimits;
 class NxActor;
 class NxActorDescBase;
 class NxJointDesc;
@@ -110,6 +112,9 @@ class NxSceneInternal
 	// phys_fn_000559 (0x00010860), phys_fn_000563 (0x00010880) and
 	// phys_fn_000567 (0x000108a0).
 	NxU32 getNbJoints() const;
+	// phys_fn_000617 (0x00011440) and phys_fn_000621 (0x000115b0).
+	NxSceneStats* getSceneStats();
+	void getLimits(NxSceneLimits& limits) const;
 	void resetJointIterator();
 	Joint* getNextJoint();
 

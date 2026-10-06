@@ -39,11 +39,11 @@ Evidenced span: ['0x000102a0', '0x000142c0']. Rows: 83 (0 ambiguous). Generated 
 - gap:opcode\IcePrunable.cpp..opcode\OPC_MeshInterface.cpp: phys_fn_004899, phys_fn_004901, phys_fn_004938, phys_fn_004940, phys_fn_004996, phys_fn_004998, phys_fn_005029, phys_fn_005031, phys_fn_005071, phys_fn_005072, phys_fn_005109, phys_fn_005136
 - unassigned: phys_fn_005666, phys_fn_005691, phys_fn_005692, phys_fn_005695
 
-## phys_fn_000511 (0x00010230, 97 B, discovered)
+## phys_fn_000511 (0x00010230, 97 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/ContactPairManager.cpp
+- implementation: Physics/src/ContactPairManager.cpp
 - prototype: undefined __thiscall FUN_10010230(int param_1, int param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_000589 (0x00010d50), phys_fn_000590 (0x00010dc0)
@@ -77,11 +77,11 @@ void __thiscall FUN_10010230(void *this,int param_1,int param_2)
 
 ```
 
-## phys_fn_000513 (0x000102a0, 107 B, discovered)
+## phys_fn_000513 (0x000102a0, 107 B, reconstructed)
 
 - ambiguous: no
-- source: Physics/src/Scene.cpp
-- implementation: None
+- source: Physics/src/ContactPairManager.cpp
+- implementation: Physics/src/ContactPairManager.cpp
 - prototype: uint __thiscall FUN_100102a0(int param_1, int param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_000315 (0x0000c860), phys_fn_000515 (0x00010310)
@@ -127,11 +127,11 @@ uint __thiscall FUN_100102a0(void *this,int param_1,int param_2)
 
 ```
 
-## phys_fn_000515 (0x00010310, 83 B, discovered)
+## phys_fn_000515 (0x00010310, 83 B, reconstructed)
 
 - ambiguous: no
-- source: Physics/src/Scene.cpp
-- implementation: None
+- source: Physics/src/ContactPairManager.cpp
+- implementation: Physics/src/ContactPairManager.cpp
 - prototype: uint __thiscall FUN_10010310(int param_1, int param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_000311 (0x0000c7b0)
@@ -1589,11 +1589,11 @@ void * __fastcall FUN_10010c90(int param_1)
 
 ```
 
-## phys_fn_000589 (0x00010d50, 112 B, discovered)
+## phys_fn_000589 (0x00010d50, 112 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/ContactPairManager.cpp
+- implementation: Physics/src/ContactPairManager.cpp
 - prototype: undefined __thiscall FUN_10010d50(int param_1, int param_2, uint param_3)
 - calling convention: __thiscall, stack purge: 12
 - callers: phys_fn_000590 (0x00010dc0)
@@ -1630,11 +1630,11 @@ void __thiscall FUN_10010d50(void *this,int param_1,int param_2,uint param_3)
 
 ```
 
-## phys_fn_000590 (0x00010dc0, 86 B, discovered)
+## phys_fn_000590 (0x00010dc0, 86 B, reconstructed)
 
 - ambiguous: no
-- source: Physics/src/Scene.cpp
-- implementation: None
+- source: Physics/src/ContactPairManager.cpp
+- implementation: Physics/src/ContactPairManager.cpp
 - prototype: undefined __thiscall FUN_10010dc0(int param_1, int param_2, uint param_3)
 - calling convention: __thiscall, stack purge: 12
 - callers: phys_fn_000313 (0x0000c7f0), phys_fn_000592 (0x00010e20)
@@ -1674,11 +1674,11 @@ void __thiscall FUN_10010dc0(void *this,int param_1,int param_2,uint param_3)
 
 ```
 
-## phys_fn_000592 (0x00010e20, 85 B, discovered)
+## phys_fn_000592 (0x00010e20, 85 B, reconstructed)
 
 - ambiguous: no
-- source: Physics/src/Scene.cpp
-- implementation: None
+- source: Physics/src/ContactPairManager.cpp
+- implementation: Physics/src/ContactPairManager.cpp
 - prototype: undefined __thiscall FUN_10010e20(int param_1, int param_2, uint param_3)
 - calling convention: __thiscall, stack purge: 12
 - callers: phys_fn_000309 (0x0000c740)
@@ -2342,11 +2342,11 @@ void __fastcall FUN_100113c0(int param_1)
 
 ```
 
-## phys_fn_000617 (0x00011440, 100 B, discovered)
+## phys_fn_000617 (0x00011440, 100 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/Scene.cpp
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined * __fastcall FUN_10011440(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000346 (0x0000cc60)
@@ -2452,11 +2452,11 @@ void __fastcall FUN_100114b0(int param_1)
 
 ```
 
-## phys_fn_000621 (0x000115b0, 112 B, discovered)
+## phys_fn_000621 (0x000115b0, 112 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/Scene.cpp
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined __thiscall FUN_100115b0(int * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000348 (0x0000cc90)
@@ -3377,11 +3377,11 @@ void __cdecl FUN_100128e0(void *param_1,int *param_2,undefined4 param_3,char par
 
 ```
 
-## phys_fn_000640 (0x00012a90, 58 B, discovered)
+## phys_fn_000640 (0x00012a90, 58 B, reconstructed)
 
 - ambiguous: no
 - source: None
-- implementation: None
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined __fastcall FUN_10012a90(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000398 (0x0000d740)
@@ -4851,10 +4851,10 @@ switchD_10014393_default:
 
 ```
 
-## phys_fn_000668 (0x000145c0, 34 B, discovered)
+## phys_fn_000668 (0x000145c0, 34 B, reconstructed)
 
 - ambiguous: no
-- source: None
+- source: Physics/src/opcode/IcePruner.cpp
 - implementation: None
 - prototype: void * __thiscall FUN_100145c0(byte param_1)
 - calling convention: __thiscall, stack purge: 4
