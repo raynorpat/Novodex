@@ -12088,12 +12088,12 @@
       "phase": 7,
       "phase_provenance": "translation_unit",
       "state": "discovered",
-      "source": null,
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/257",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1753",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Partial: RVA 0x000138e0 iterates the scene effector list at +0x5a4 and dispatches vtable slot 2 after island contact solving; candidate now calls Effector::tick() at the corresponding substep edge. The rest of the 475-byte function and its remaining indirect calls/branches are open.",
+      "dynamic_proof": "Partial: the public spring/damper scene-step fixture matches oracle and candidate exactly over two fixed substeps; second-step x velocity is 0x3e8e38e3 (evidence/effector-step-integration.md; build/FluidGate/effector-tick-green.log).",
+      "notes": "Only the effector-list dispatch edge is covered; complete function reconstruction and whole-row mutation closure remain open."
     },
     {
       "id": "phys_fn_000656",

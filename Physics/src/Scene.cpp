@@ -4568,6 +4568,14 @@ void NxSceneInternal::simulateFrame()
 			}
 		at<NxU32>(0x70c) &= ~4u;
 
+		// phys_fn_000655 walks the scene's effector list after island contact
+		// solving and before 00012890 performs post-step body velocity updates.
+		// Slot 2 is ActorPairEffector::tick, which applies the spring/damper
+		// force for this substep.
+		for(Effector* effector = at<Effector*>(0x5a4); effector;
+			effector = effector->mNext)
+			effector->tick();
+
 		// 000636 performs post-step velocity bookkeeping and clears the active
 		// root range before 000615 advances each body's COM/quaternion.
 		for(void** item = bodies; item && item != bodiesEnd; ++item)

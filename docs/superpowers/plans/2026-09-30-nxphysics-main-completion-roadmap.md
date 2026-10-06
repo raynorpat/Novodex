@@ -4,6 +4,24 @@ Date: 2026-09-30
 Baseline: `main` at `b942f01` (Merge convex-mesh gap reconstruction into main)
 Status: Active execution. The user selected full-DLL reconstruction and standalone simulation tests before Unreal integration.
 
+### Continuation — spring/damper scene-step integration (2026-10-06)
+
+Closed a missing scene-step dispatch edge: `NxSceneInternal::simulateFrame`
+walks effectors after island contact solving and calls slot 2 (`Effector::tick`)
+before post-step velocity bookkeeping. A one-dynamic-body/world-anchor fixture
+was RED before the change (the second-step oracle x velocity was `0x3e8e38e3`,
+while candidate stayed zero) and is now an exact paired differential.
+Verification: Phase 5 passes 2,042/2,042; Phase 7 passes 1,326/1,326; the
+approved all-scene Viewer selection passes all 48 selected cases, including 34
+scene runs and five existing signature-verified oracle skips. See
+`docs/reconstruction/novodex-physics/evidence/effector-step-integration.md`.
+
+This is partial evidence for `phys_fn_000655`, not whole-function closure; its
+inventory state remains discovered. Next continue tracing and reconstructing
+the remaining simulation-step rows and branch/callee coverage, then resume the
+standalone simulation suite before Unreal testing. Public Physics headers remain
+unchanged.
+
 ## Outcome and constraints
 
 Finish reconstructing the complete pinned Win32 NxPhysics.dll, including functionality Unreal rarely uses. Build it and NxFoundation.dll through the existing CMake project. Preserve all public Physics headers and the Foundation ABI. Product code must be independent of the original DLL; the original is an oracle for analysis and separate-process tests only.

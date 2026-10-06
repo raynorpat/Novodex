@@ -23,6 +23,8 @@
 #include "NxDistanceJointDesc.h"
 #include "NxRevoluteJointDesc.h"
 #include "NxD6JointDesc.h"
+#include "NxSpringAndDamperEffector.h"
+#include "NxSpringAndDamperEffectorDesc.h"
 #include "NxJoint.h"
 #include "NxMaterial.h"
 #include "NxSimpleTriangleMesh.h"
@@ -903,6 +905,74 @@ int wmain(int argc, wchar_t** argv)
 	sleepActor->wakeUp(0.5f);
 	printf("simulation sleep=woken sleeping=%u\n", sleepActor->isSleeping() ? 1u : 0u);
 	sdk->releaseScene(*sleepScene);
+
+	// Reach the reconstructed spring/damper effector through the real scene
+	// step. The dynamic body starts beyond the relaxed length from the world
+	// anchor; the oracle's pre-solver effector tick must pull it toward the anchor.
+	NxSceneDesc effectorStepSceneDesc;
+	effectorStepSceneDesc.setToDefault();
+	effectorStepSceneDesc.gravity = NxVec3(0.0f, 0.0f, 0.0f);
+	NxScene* const effectorStepScene = sdk->createScene(effectorStepSceneDesc);
+	if(!effectorStepScene)
+		return nxFail("effector-step scene creation failed");
+	effectorStepScene->setTiming(1.0f / 60.0f, 1, NX_TIMESTEP_FIXED);
+	NxBoxShapeDesc effectorStepShape;
+	effectorStepShape.setToDefault();
+	effectorStepShape.dimensions = NxVec3(0.5f, 0.5f, 0.5f);
+	NxBodyDesc effectorStepBody1;
+	effectorStepBody1.setToDefault();
+	NxActorDesc effectorStepActorDesc1;
+	effectorStepActorDesc1.setToDefault();
+	effectorStepActorDesc1.body = &effectorStepBody1;
+	effectorStepActorDesc1.density = 2.0f;
+	effectorStepActorDesc1.shapes.pushBack(&effectorStepShape);
+	NxActor* const effectorStepActor1 = effectorStepScene->createActor(effectorStepActorDesc1);
+	if(!effectorStepActor1)
+		return nxFail("effector-step actor creation failed");
+	NxSpringAndDamperEffectorDesc effectorStepDesc;
+	effectorStepDesc.setToDefault();
+	effectorStepDesc.body1 = effectorStepActor1;
+	effectorStepDesc.pos2 = NxVec3(2.0f, 0.0f, 0.0f);
+	effectorStepDesc.springDistCompressSaturate = 0.5f;
+	effectorStepDesc.springDistRelaxed = 1.0f;
+	effectorStepDesc.springDistStretchSaturate = 4.0f;
+	effectorStepDesc.springMaxCompressForce = 100.0f;
+	effectorStepDesc.springMaxStretchForce = 100.0f;
+	NxSpringAndDamperEffector* const stepEffector =
+		effectorStepScene->createSpringAndDamperEffector(effectorStepDesc);
+	if(!stepEffector)
+		return nxFail("effector-step creation failed");
+	NxReal effectorCompress, effectorRelaxed, effectorStretch, effectorMaxCompress, effectorMaxStretch;
+	stepEffector->getLinearSpring(effectorCompress, effectorRelaxed, effectorStretch,
+		effectorMaxCompress, effectorMaxStretch);
+	const NxVec3 effectorInitialPosition1 = effectorStepActor1->getGlobalPosition();
+	printf("simulation effector-step setup count=%u awake=%u pos=%08x spring=%08x.%08x.%08x.%08x.%08x\n",
+		effectorStepScene->getNbEffectors(), effectorStepActor1->isSleeping() ? 0u : 1u,
+		nxFloatBits(effectorStepActor1->getGlobalPosition().x), nxFloatBits(effectorCompress),
+		nxFloatBits(effectorRelaxed), nxFloatBits(effectorStretch),
+		nxFloatBits(effectorMaxCompress), nxFloatBits(effectorMaxStretch));
+	effectorStepActor1->wakeUp(1.0f);
+	effectorStepScene->simulate(1.0f / 60.0f);
+	const bool effectorStepReady = effectorStepScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+	const bool effectorStepFetched = effectorStepScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+	if(!effectorStepReady || !effectorStepFetched)
+		return nxFail("effector-step results were not ready and fetched");
+	NxVec3 effectorStepVelocity1;
+	effectorStepActor1->getLinearVelocity(effectorStepVelocity1);
+	printf("simulation effector-step ready=%u fetched=%u vx=%08x\n",
+		effectorStepReady ? 1u : 0u, effectorStepFetched ? 1u : 0u,
+		nxFloatBits(effectorStepVelocity1.x));
+	effectorStepScene->simulate(1.0f / 60.0f);
+	const bool effectorStepReady2 = effectorStepScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+	const bool effectorStepFetched2 = effectorStepScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+	if(!effectorStepReady2 || !effectorStepFetched2)
+		return nxFail("second effector-step results were not ready and fetched");
+	effectorStepActor1->getLinearVelocity(effectorStepVelocity1);
+	printf("simulation effector-step second ready=%u fetched=%u vx=%08x\n",
+		effectorStepReady2 ? 1u : 0u, effectorStepFetched2 ? 1u : 0u,
+		nxFloatBits(effectorStepVelocity1.x));
+	effectorStepScene->releaseEffector(*stepEffector);
+	sdk->releaseScene(*effectorStepScene);
 
 	// Exercise a three-body contact island settling through the public solver
 	// path, beyond the single impact pair.
