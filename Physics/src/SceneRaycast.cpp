@@ -71,6 +71,13 @@ static NxSlotMfp4 nxPrunerAABBQuerySlot()
 	return reinterpret_cast<NxSlotMfp4&>(slot);
 	}
 
+static NxSlotMfp4 nxPrunerSphereQuerySlot()
+	{
+	typedef bool (Pruner::*Slot)(udword, udword, udword, udword);
+	Slot slot = &Pruner::NovodeXPrunerSlot8;
+	return reinterpret_cast<NxSlotMfp4&>(slot);
+	}
+
 static const char* const kSceneRaycastFile = "\\Epic\\Novodex\\SDKs\\Physics\\src\\SceneRaycast.cpp";
 static const char* const kSceneRaycastBadRay = "NxRay direction not valid: must be unit vector.";
 
@@ -152,6 +159,19 @@ static inline SdkContainer& nxAABBCollect(NxSceneInternal* scene, const NxBounds
 	nxMaskedFourSlotLoop4865(&scene->at<unsigned char>(0x624), reinterpret_cast<unsigned>(&collector),
 		reinterpret_cast<unsigned>(const_cast<NxBounds3*>(&worldBounds)), mask, 0, 0xffffffffu,
 		nxPrunerAABBQuerySlot());
+	return collector;
+	}
+
+static inline SdkContainer& nxSphereCollect(NxSceneInternal* scene, const NxSphere& worldSphere,
+	NxShapesType shapesType)
+	{
+	SdkContainer& collector = scene->at<SdkContainer>(0x500);
+	collector.mCount = 0;
+	const NxU32 mask = ((shapesType & NX_STATIC_SHAPES) ? 1u : 0u) |
+		((shapesType & NX_DYNAMIC_SHAPES) ? 0xeu : 0u);
+	nxMaskedFourSlotLoop4866(&scene->at<unsigned char>(0x624), reinterpret_cast<unsigned>(&collector),
+		reinterpret_cast<unsigned>(const_cast<NxSphere*>(&worldSphere)), mask, 0, 0xffffffffu,
+		nxPrunerSphereQuerySlot());
 	return collector;
 	}
 
@@ -807,50 +827,27 @@ NxU32 NxSceneInternal::overlapSphereShapes(const NxSphere& worldSphere, NxShapes
 	const NxU32 capacity = shapes ? maxShapes : (callback ? 64u : 0u);
 	if(!capacity)
 		return 0;
-	NxBounds3 queryBounds;
-	queryBounds.set(worldSphere.center.x - worldSphere.radius, worldSphere.center.y - worldSphere.radius,
-		worldSphere.center.z - worldSphere.radius, worldSphere.center.x + worldSphere.radius,
-		worldSphere.center.y + worldSphere.radius, worldSphere.center.z + worldSphere.radius);
-	const NxU32 mask = ((shapesType & NX_STATIC_SHAPES) ? 1u : 0u) |
-		((shapesType & NX_DYNAMIC_SHAPES) ? 0xeu : 0u);
-	Pruner** const pruners = reinterpret_cast<Pruner**>(bytes() + 0x624 + 0x1c);
 	NxU32 count = 0;
 	NxU32 buffered = 0;
-	for(NxU32 type = 0; type < 4; type++)
+	const SdkContainer& collector = nxSphereCollect(this, worldSphere, shapesType);
+	const NxU32* entry = collector.mEntries;
+	for(NxU32 i = 0; i < collector.mCount; ++i, ++entry)
 		{
-		if(!(mask & (1u << type)) || !pruners[type])
+		Prunable* const prunable = reinterpret_cast<Prunable*>(*entry);
+		unsigned char* const shapeBase = static_cast<unsigned char*>(prunable->mOwner);
+		NxShape* const publicShape = shapeBase
+			? *reinterpret_cast<NxShape**>(shapeBase + 0x9c) : 0;
+		if(!publicShape)
 			continue;
-		PruningPool& pool = pruners[type]->mPool;
-		for(NxU32 i = 0; i < pool.mNbTotal; i++)
+		buffer[buffered++] = publicShape;
+		count++;
+		if(buffered == capacity)
 			{
-			Prunable* const prunable = pool.mObjects[i];
-			if(!prunable || prunable->mHandle == PRUNABLE_INVALID_HANDLE)
-				continue;
-			unsigned char* const shapeBase = static_cast<unsigned char*>(prunable->mOwner);
-			if(!shapeBase)
-				continue;
-			const bool isPlane = *reinterpret_cast<NxU32*>(shapeBase + 0xd0) == NX_SHAPE_PLANE;
-			if(!isPlane)
-				{
-				if(!(prunable->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
-					prunable->UpdateWorldAABB(&pool.mWorldBoxes[i]);
-				const NxBounds3& shapeBounds = *reinterpret_cast<NxBounds3*>(&pool.mWorldBoxes[i]);
-				if(!queryBounds.intersects(shapeBounds))
-					continue;
-				}
-			NxShape* const publicShape = *reinterpret_cast<NxShape**>(shapeBase + 0x9c);
-			if(!publicShape || !nxSceneSphereOverlapsShape(worldSphere, publicShape))
-				continue;
-			buffer[buffered++] = publicShape;
-			count++;
-			if(buffered == capacity)
-				{
-				if(callback && !callback->onEvent(buffered, buffer))
-					return count;
-				buffered = 0;
-				if(!callback)
-					return count;
-				}
+			if(callback && !callback->onEvent(buffered, buffer))
+				return count;
+			buffered = 0;
+			if(!callback)
+				return count;
 			}
 		}
 	if(callback && buffered && !callback->onEvent(buffered, buffer))
@@ -868,27 +865,13 @@ bool NxSceneInternal::checkOverlapSphere(const NxSphere& worldSphere, NxShapesTy
 	queryBounds.set(worldSphere.center.x - worldSphere.radius, worldSphere.center.y - worldSphere.radius,
 		worldSphere.center.z - worldSphere.radius, worldSphere.center.x + worldSphere.radius,
 		worldSphere.center.y + worldSphere.radius, worldSphere.center.z + worldSphere.radius);
-	const NxU32 mask = ((shapesType & NX_STATIC_SHAPES) ? 1u : 0u) |
-		((shapesType & NX_DYNAMIC_SHAPES) ? 0xeu : 0u);
-	Pruner** const pruners = reinterpret_cast<Pruner**>(bytes() + 0x624 + 0x1c);
-	for(NxU32 type = 0; type < 4; type++)
+	const SdkContainer& collector = nxAABBCollect(this, queryBounds, shapesType);
+	for(NxU32 i = 0; i < collector.mCount; ++i)
 		{
-		if(!(mask & (1u << type)) || !pruners[type])
-			continue;
-		PruningPool& pool = pruners[type]->mPool;
-		for(NxU32 i = 0; i < pool.mNbTotal; i++)
-			{
-			Prunable* const prunable = pool.mObjects[i];
-			const unsigned char* const shapeBase = static_cast<const unsigned char*>(prunable->mOwner);
-			NxShape* const shape = shapeBase ? *reinterpret_cast<NxShape* const*>(shapeBase + 0x9c) : 0;
-			if(shape && shape->getType() == NX_SHAPE_PLANE)
-				return true;
-			if(!(prunable->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
-				prunable->UpdateWorldAABB(&pool.mWorldBoxes[i]);
-			const NxBounds3& shapeBounds = *reinterpret_cast<const NxBounds3*>(&pool.mWorldBoxes[i]);
-			if(queryBounds.intersects(shapeBounds) && nxSceneSphereOverlapsShape(worldSphere, shape))
-				return true;
-			}
+		unsigned char* const shapeBase = nxCollectedShape(&collector.mEntries[i]);
+		NxShape* const shape = *reinterpret_cast<NxShape**>(shapeBase + 0x9c);
+		if(shape && nxSceneSphereOverlapsShape(worldSphere, shape))
+			return true;
 		}
 	return false;
 	}

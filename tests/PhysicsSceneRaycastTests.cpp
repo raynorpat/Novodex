@@ -990,10 +990,30 @@ static void nxBoundedPrunerQueryChecks(NxPhysicsSDK* sdk)
 	queryBounds.set(NxVec3(-12.0f, -12.0f, -12.0f), NxVec3(0.0f, 0.0f, 0.0f));
 	printQuery("negative_octant", queryBounds, true);
 	actors[1]->setGlobalPosition(NxVec3(9.0f, 9.0f, 9.0f));
+	queryBounds.set(NxVec3(-12.0f, -12.0f, -12.0f), NxVec3(12.0f, 12.0f, 12.0f));
+	printQuery("all_after_move", queryBounds, true);
+	queryBounds.set(NxVec3(0.0f, 0.0f, 0.0f), NxVec3(12.0f, 12.0f, 12.0f));
+	printQuery("positive_octant_after_move", queryBounds, true);
 	queryBounds.set(NxVec3(-12.0f, -12.0f, -12.0f), NxVec3(-8.0f, -8.0f, -8.0f));
 	printQuery("old_after_move", queryBounds, true);
 	queryBounds.set(NxVec3(8.0f, 8.0f, 8.0f), NxVec3(10.0f, 10.0f, 10.0f));
 	printQuery("new_after_move", queryBounds, true);
+	queryBounds.set(NxVec3(-16.0f, -16.0f, -16.0f), NxVec3(16.0f, 16.0f, 16.0f));
+	printQuery("expanded_after_move", queryBounds, true);
+	NxShape* sphereHits[16] = { 0 };
+	const NxSphere broadSphere(NxVec3(0.0f, 0.0f, 0.0f), 16.0f);
+	const NxU32 sphereHitCount = scene->overlapSphereShapes(broadSphere, NX_DYNAMIC_SHAPES,
+		16, sphereHits, 0);
+	printf("scene_overlap bounded_tree sphere count=%u order=", static_cast<unsigned>(sphereHitCount));
+	for(NxU32 i = 0; i < sphereHitCount && i < 16; ++i)
+		{
+		const char* name = "unknown";
+		for(unsigned j = 0; j < sizeof(actors) / sizeof(actors[0]); ++j)
+			if(actors[j] && actors[j]->getShapes()[0] == sphereHits[i])
+				name = names[j];
+		printf("%s%s", i ? "." : "", name);
+		}
+	printf("\n");
 	for(unsigned i = 0; i < sizeof(actors) / sizeof(actors[0]); ++i)
 		if(actors[i])
 			scene->releaseActor(*actors[i]);

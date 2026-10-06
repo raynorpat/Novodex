@@ -46,9 +46,9 @@ NOT RECONSTRUCTED.
     which reproduces its allocations) and the handle is left 0. So 0x000f1550
     is not claimed, and neither are the destructors, whose base (0x000f15a0)
     undoes that registration (0x000b4d20).
-  * Slot 5 across the pruner families, plus overlap slots 7/8 on the unbounded
-    dynamic pruner. The base defaults remain false. Static and bounded-dynamic
-    overlap slots 7/8 are reconstructed below.
+  * Slot 5 across the pruner families. The base defaults remain false. The
+    static, bounded-dynamic, and unbounded-dynamic query slots 7/8 are
+    reconstructed below.
 
 PRECISION. Every row here runs at API time under the control word 0x027f
 (53-bit precision, round to nearest): the raycasts, and the registration from
@@ -62,6 +62,7 @@ AABBTreeBuilder::GetSplittingValue, 002150, rounded its result to float).
 
 #include "IcePruner.h"
 #include "OPC_AABBCollider.h"
+#include "OPC_SphereCollider.h"
 
 #include <string.h>
 #include <new>
@@ -444,8 +445,7 @@ __declspec(noinline) void StaticPruner::ReportTouched(Container& objects, udword
 	while(--nb);
 }
 
-// phys_fn_005229 (0x000e5500, 133 B). The static AABB query uses the
-// pruner's AABBCache at +0x6c and reports the AABB-tree traversal order.
+// Static AABB query: use the pruner's AABBCache at +0x6c and report tree order.
 bool StaticPruner::OverlapAABB(Container& objects, const Point& min, const Point& max,
 	udword mask)
 {
@@ -468,9 +468,23 @@ bool StaticPruner::OverlapAABB(Container& objects, const Point& min, const Point
 	return true;
 }
 
-// phys_fn_005229 (0x000e5500), the static-pruner slot 8 ABI adapter.
+// Static-pruner slot 8 sphere ABI adapter.
 bool StaticPruner::NovodeXPrunerSlot8(udword result, udword queryBounds,
 	udword /*first_contact*/, udword mask)
+{
+	const float* const values = reinterpret_cast<const float*>(queryBounds);
+	Container touched;
+	if(!OverlapSphere(touched, Point(values[0], values[1], values[2]), values[3], mask))
+		return false;
+	const udword* entries = touched.GetEntries();
+	for(udword i = 0; i < touched.GetNbEntries(); ++i)
+		nxSdkContainerAppend(reinterpret_cast<void*>(result), entries[i]);
+	return true;
+}
+
+// Bounded-shape AABB collection is slot 7 in the pruning-engine loop.
+bool StaticPruner::NovodeXPrunerSlot7(udword result, udword queryBounds,
+	udword first_contact, udword mask)
 {
 	const float* const values = reinterpret_cast<const float*>(queryBounds);
 	const Point min(values[0], values[1], values[2]);
@@ -484,11 +498,29 @@ bool StaticPruner::NovodeXPrunerSlot8(udword result, udword queryBounds,
 	return true;
 }
 
-// Bounded-shape AABB collection is slot 7 in the pruning-engine loop.
-bool StaticPruner::NovodeXPrunerSlot7(udword result, udword queryBounds,
-	udword first_contact, udword mask)
+bool StaticPruner::OverlapSphere(Container& objects, const Point& center, float radius,
+	udword mask)
 {
-	return StaticPruner::NovodeXPrunerSlot8(result, queryBounds, first_contact, mask);
+	if(!mTree)
+		{
+		BuildTree();
+		if(!mTree)
+			return false;
+		}
+	Sphere sphere(center, radius);
+	SphereCollider collider;
+	SphereCache& cache = *reinterpret_cast<SphereCache*>(mCache50);
+	if(!collider.Collide(cache, sphere, mTree))
+		return false;
+	const udword* touched = collider.GetTouchedPrimitives();
+	const udword count = collider.GetNbTouchedPrimitives();
+	for(udword i = 0; i < count; ++i)
+		{
+		Prunable* const object = mPool.mObjects[touched[i]];
+		if(mask & object->mPrunable24)
+			objects.Add(udword(object));
+		}
+	return true;
 }
 
 // phys_fn_005227 (0x000e5440, 184 B)
@@ -540,6 +572,9 @@ struct BoundedTreeQuery
 	Container* objects;
 	const Point* queryMin;
 	const Point* queryMax;
+	bool sphereQuery;
+	const Point* sphereCenter;
+	float sphereRadius2;
 	udword mask;
 	Container* partialObjects;
 	Container* containedObjects;
@@ -563,6 +598,32 @@ static bool nxAABBContains(const Point& outerMin, const Point& outerMax,
 	return outerMin.x <= innerMin.x && outerMax.x >= innerMax.x
 		&& outerMin.y <= innerMin.y && outerMax.y >= innerMax.y
 		&& outerMin.z <= innerMin.z && outerMax.z >= innerMax.z;
+}
+
+static bool nxSphereAABBOverlaps(const Point& center, float radius2,
+	const Point& min, const Point& max)
+{
+	float distance2 = 0.0f;
+	for(udword axis = 0; axis < 3; ++axis)
+		{
+		const float delta = center[axis] < min[axis] ? min[axis] - center[axis]
+			: (center[axis] > max[axis] ? center[axis] - max[axis] : 0.0f);
+		distance2 += delta * delta;
+		}
+	return distance2 < radius2;
+}
+
+static bool nxSphereContainsAABB(const Point& center, float radius2,
+	const Point& min, const Point& max)
+{
+	for(udword corner = 0; corner < 8; ++corner)
+		{
+		const Point vertex((corner & 4u) ? max.x : min.x,
+			(corner & 2u) ? max.y : min.y, (corner & 1u) ? max.z : min.z);
+		if(center.SquareDistance(vertex) >= radius2)
+			return false;
+		}
+	return true;
 }
 
 static void nxBoundedTreeNodeBounds(udword node, const Point& rootMin,
@@ -616,10 +677,15 @@ static void nxBoundedTreeChildBounds(const Point& nodeMin, const Point& nodeMax,
 static void nxBoundedTreeQueryNode(BoundedTreeQuery& query, udword node,
 	const Point& nodeMin, const Point& nodeMax)
 {
-	if(!query.subtreeCounts[node]
-		|| !nxAABBOverlaps(nodeMin, nodeMax, *query.queryMin, *query.queryMax))
+	const bool overlapsNode = query.sphereQuery
+		? nxSphereAABBOverlaps(*query.sphereCenter, query.sphereRadius2, nodeMin, nodeMax)
+		: nxAABBOverlaps(nodeMin, nodeMax, *query.queryMin, *query.queryMax);
+	if(!query.subtreeCounts[node] || !overlapsNode)
 		return;
-	if(nxAABBContains(*query.queryMin, *query.queryMax, nodeMin, nodeMax))
+	const bool containsNode = query.sphereQuery
+		? nxSphereContainsAABB(*query.sphereCenter, query.sphereRadius2, nodeMin, nodeMax)
+		: nxAABBContains(*query.queryMin, *query.queryMax, nodeMin, nodeMax);
+	if(containsNode)
 		{
 		// The oracle switches to a subtree collection path once a node is fully
 		// inside the query. That stream is emitted after all partially crossed
@@ -651,7 +717,10 @@ static void nxBoundedTreeQueryNode(BoundedTreeQuery& query, udword node,
 		Point objectMin, objectMax;
 		query.pruner->mPool.mWorldBoxes[object->mHandle].GetMin(objectMin);
 		query.pruner->mPool.mWorldBoxes[object->mHandle].GetMax(objectMax);
-		if(nxAABBOverlaps(objectMin, objectMax, *query.queryMin, *query.queryMax))
+		const bool overlapsObject = query.sphereQuery
+			? nxSphereAABBOverlaps(*query.sphereCenter, query.sphereRadius2, objectMin, objectMax)
+			: nxAABBOverlaps(objectMin, objectMax, *query.queryMin, *query.queryMax);
+		if(overlapsObject)
 			query.partialObjects->Add(udword(object));
 		}
 	for(udword child = 1; child <= 8; ++child)
@@ -665,12 +734,12 @@ static void nxBoundedTreeQueryNode(BoundedTreeQuery& query, udword node,
 		}
 }
 
-// phys_fn_005258/005260 (0x000e6060/0x000e6130), the bounded-pruner AABB
+// phys_fn_005258/005260 (0x000e6060/0x000e6130), the bounded-pruner query
 // collector. Rebuild the fixed-depth tree from the current pool, assigning
 // each object to its recovered center/radius cell, then follow the oracle's
 // node-first, child-slots-1-through-8 traversal.
-bool BoundedDynamicPruner::OverlapAABB(Container& objects, const Point& min, const Point& max,
-	udword mask)
+bool BoundedDynamicPruner::OverlapQuery(Container& objects, const Point& min, const Point& max,
+	udword mask, bool sphereQuery, const Point& sphereCenter, float sphereRadius)
 {
 	const udword nb = mPool.mNbObjects[0] + mPool.mNbObjects[1];
 	if(!nb)
@@ -735,6 +804,9 @@ bool BoundedDynamicPruner::OverlapAABB(Container& objects, const Point& min, con
 	query.objects = &objects;
 	query.queryMin = &min;
 	query.queryMax = &max;
+	query.sphereQuery = sphereQuery;
+	query.sphereCenter = &sphereCenter;
+	query.sphereRadius2 = sphereRadius * sphereRadius;
 	query.mask = mask;
 	Container partialObjects;
 	Container containedObjects;
@@ -819,15 +891,19 @@ bool BoundedDynamicPruner::OverlapAABB(Container& objects, const Point& min, con
 	return true;
 }
 
-// phys_fn_005258/005260 (0x000e6060/0x000e6130), bounded-pruner slot 8 ABI.
+bool BoundedDynamicPruner::OverlapAABB(Container& objects, const Point& min,
+	const Point& max, udword mask)
+{
+	return OverlapQuery(objects, min, max, mask, false, Point(0.0f, 0.0f, 0.0f), 0.0f);
+}
+
+// Bounded-pruner slot 8 sphere ABI.
 bool BoundedDynamicPruner::NovodeXPrunerSlot8(udword result, udword queryBounds,
 	udword /*first_contact*/, udword mask)
 {
 	const float* const values = reinterpret_cast<const float*>(queryBounds);
-	const Point min(values[0], values[1], values[2]);
-	const Point max(values[3], values[4], values[5]);
 	Container touched;
-	if(!OverlapAABB(touched, min, max, mask))
+	if(!OverlapSphere(touched, Point(values[0], values[1], values[2]), values[3], mask))
 		return false;
 	const udword* entries = touched.GetEntries();
 	for(udword i = 0; i < touched.GetNbEntries(); ++i)
@@ -835,10 +911,26 @@ bool BoundedDynamicPruner::NovodeXPrunerSlot8(udword result, udword queryBounds,
 	return true;
 }
 
+bool BoundedDynamicPruner::OverlapSphere(Container& objects, const Point& center,
+	float radius, udword mask)
+{
+	return OverlapQuery(objects, Point(center.x - radius, center.y - radius,
+		center.z - radius), Point(center.x + radius, center.y + radius,
+		center.z + radius), mask, true, center, radius);
+}
+
 bool BoundedDynamicPruner::NovodeXPrunerSlot7(udword result, udword queryBounds,
 	udword first_contact, udword mask)
 {
-	return BoundedDynamicPruner::NovodeXPrunerSlot8(result, queryBounds, first_contact, mask);
+	const float* const values = reinterpret_cast<const float*>(queryBounds);
+	Container touched;
+	if(!OverlapAABB(touched, Point(values[0], values[1], values[2]),
+		Point(values[3], values[4], values[5]), mask))
+		return false;
+	const udword* entries = touched.GetEntries();
+	for(udword i = 0; i < touched.GetNbEntries(); ++i)
+		nxSdkContainerAppend(reinterpret_cast<void*>(result), entries[i]);
+	return true;
 }
 
 // 0x000efe80 (not claimed): the base only.
@@ -846,29 +938,39 @@ DynamicPruner::~DynamicPruner()
 {
 }
 
-// phys_fn_005468's pool walk adapted to the four-argument AABB query slot.
+// Unbounded-pruner slot 8 sphere pool walk.
 bool DynamicPruner::NovodeXPrunerSlot8(udword result, udword queryBounds,
 	udword /*first_contact*/, udword mask)
 {
 	const float* const values = reinterpret_cast<const float*>(queryBounds);
-	const Point min(values[0], values[1], values[2]);
-	const Point max(values[3], values[4], values[5]);
+	const Point center(values[0], values[1], values[2]);
+	const float radius2 = values[3] * values[3];
 	bool found = false;
 	const udword objectCount = mPool.mNbTotal;
 	for(udword i = 0; i < objectCount; ++i)
 	{
 		Prunable* const object = mPool.mObjects[i];
-		if(!(mask & object->mPrunable24) || object->mHandle == PRUNABLE_INVALID_HANDLE)
+		if(!(mask & object->mPrunable24))
 			continue;
+		if(object->mHandle == PRUNABLE_INVALID_HANDLE)
+			{
+				nxSdkContainerAppend(reinterpret_cast<void*>(result), udword(object));
+				found = true;
+				continue;
+			}
 		if(!(object->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
 			object->UpdateWorldAABB(&mPool.mWorldBoxes[object->mHandle]);
-		const AABB& box = mPool.mWorldBoxes[object->mHandle];
 		Point objectMin, objectMax;
-		box.GetMin(objectMin);
-		box.GetMax(objectMax);
-		if(objectMin.x > max.x || objectMax.x < min.x
-			|| objectMin.y > max.y || objectMax.y < min.y
-			|| objectMin.z > max.z || objectMax.z < min.z)
+		mPool.mWorldBoxes[object->mHandle].GetMin(objectMin);
+		mPool.mWorldBoxes[object->mHandle].GetMax(objectMax);
+		float distance2 = 0.0f;
+		for(udword axis = 0; axis < 3; ++axis)
+			{
+			const float delta = center[axis] < objectMin[axis] ? objectMin[axis] - center[axis]
+				: (center[axis] > objectMax[axis] ? center[axis] - objectMax[axis] : 0.0f);
+			distance2 += delta * delta;
+			}
+		if(distance2 >= radius2)
 			continue;
 		nxSdkContainerAppend(reinterpret_cast<void*>(result), udword(object));
 		found = true;
@@ -879,7 +981,26 @@ bool DynamicPruner::NovodeXPrunerSlot8(udword result, udword queryBounds,
 bool DynamicPruner::NovodeXPrunerSlot7(udword result, udword queryBounds,
 	udword first_contact, udword mask)
 {
-	return DynamicPruner::NovodeXPrunerSlot8(result, queryBounds, first_contact, mask);
+	const float* const values = reinterpret_cast<const float*>(queryBounds);
+	const Point min(values[0], values[1], values[2]);
+	const Point max(values[3], values[4], values[5]);
+	bool found = false;
+	for(udword i = 0; i < mPool.mNbTotal; ++i)
+		{
+		Prunable* const object = mPool.mObjects[i];
+		if(!(mask & object->mPrunable24) || object->mHandle == PRUNABLE_INVALID_HANDLE)
+			continue;
+		if(!(object->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
+			object->UpdateWorldAABB(&mPool.mWorldBoxes[object->mHandle]);
+		Point objectMin, objectMax;
+		mPool.mWorldBoxes[object->mHandle].GetMin(objectMin);
+		mPool.mWorldBoxes[object->mHandle].GetMax(objectMax);
+		if(!nxAABBOverlaps(objectMin, objectMax, min, max))
+			continue;
+		nxSdkContainerAppend(reinterpret_cast<void*>(result), udword(object));
+		found = true;
+		}
+	return found;
 }
 
 // phys_fn_005468 (0x000efa90, 503 B)

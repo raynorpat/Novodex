@@ -14,11 +14,12 @@ NovodeX's scene-query pruners: the static pruner (type 0, 0x90 bytes, table
 type (the object at Scene+0x624; the pruners are its words +0x1c..+0x28).
 
 Like IcePrunable.h this is NovodeX's own code, not OPCODE: neither pinned
-OPCODE 1.3 tree has a pruner. It uses OPCODE (the static pruner builds an
-AABBTree over its world boxes and stabs it with a RayCollider).
+OPCODE 1.3 tree has a pruner. It uses OPCODE for its static world-box tree,
+which the ray, AABB, and sphere colliders query.
 
-Written by the scene-raycast block, Task 3, for the scene raycasts: the
-queries walk the engine's pruners through slot 6 (phys_fn_004864), and the
+Written by the scene-raycast block, Task 3, for the scene queries: raycasts
+walk the engine's pruners through slot 6 (phys_fn_004864), AABB queries use
+slot 7, and sphere queries use slot 8. The
 pool the pruners keep is what the Scene's shape registration fills. Only the
 rows the raycasts and the registration reach are here; see IcePruner.cpp (the
 pool and the pruners) and IcePruningEngine.cpp (the engine) for the row map and
@@ -50,7 +51,10 @@ class StaticPruner : public Pruner
 
 			bool				BuildTree();
 			void				ReportTouched(Container& objects, udword mask);
+			// Slot 7 receives NxBounds3; slot 8 receives NxSphere.
 			bool				OverlapAABB(Container& objects, const Point& min, const Point& max,
+								udword mask);
+			bool				OverlapSphere(Container& objects, const Point& center, float radius,
 								udword mask);
 
 			AABBTree*			mTree;				//!< +0x3c
@@ -76,8 +80,8 @@ class DynamicPruner : public Pruner
 };
 
 // phys_fn_004852 creates the bounded dynamic pruner for type 1 (0x40 bytes).
-// Its tree-backed query overrides are still reconstructed separately; scene
-// registration uses the inherited pool operations while this tree is empty.
+// Its AABB and sphere query overrides reproduce the fixed-depth tree walk;
+// scene registration uses the inherited pool operations.
 class BoundedDynamicPruner : public DynamicPruner
 {
 	public:
@@ -89,6 +93,11 @@ class BoundedDynamicPruner : public DynamicPruner
 								udword first_contact, udword mask);
 			bool				OverlapAABB(Container& objects, const Point& min, const Point& max,
 								udword mask);
+			bool				OverlapSphere(Container& objects, const Point& center, float radius,
+								udword mask);
+			bool				OverlapQuery(Container& objects, const Point& min, const Point& max,
+								udword mask, bool sphereQuery, const Point& sphereCenter,
+								float sphereRadius);
 
 		void*					mTree;				//!< +0x3c
 };
