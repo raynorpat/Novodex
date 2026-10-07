@@ -28,6 +28,15 @@ Phase 5 now has eight mutation-closed function rows and 197 reconstructed rows
 awaiting falsification. Evidence and clean/mutated output are recorded in
 `docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md`.
 
+### Continuation — Box hull face-record getter (2026-10-07)
+
+Closed Phase 5 row `phys_fn_000963`, the facade slot returning a face record by
+index. Added six direct oracle/candidate pointer assertions because existing
+hull support and rebuild checks bypassed this getter. The clean test passes
+320/320 hull cases; a cyclic-index mutation fails all six new checks. Phase 5
+now has nine mutation-closed function rows and 196 reconstructed rows awaiting
+falsification. The Phase 5 oracle gate expects the expanded case count.
+
 ### Continuation — scene shape registration and standalone test sweep (2026-10-07)
 
 Closed Phase 3 row `phys_fn_002423`: the body-creation differential checks the

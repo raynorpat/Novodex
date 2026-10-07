@@ -60,3 +60,9 @@ The unmodified candidate matches the pinned DLL: `box hull oracle_digest=e047722
 IDA identifies RVA `0x000213c0` as `mov eax,6; ret`: facade slot 3 reports the six faces used by box hull rebuild and support queries. The clean `NxPhysicsShapeVtableTests` run matches the pinned oracle at `box hull oracle_digest=e0477220 cases=314 failures=0` (`build/phase5-facecount-clean.log`). A temporary mutation changed the return value from six to five; the same target exited 1 with `box hull oracle_digest=e0477220 cases=314 failures=44` (`build/phase5-facecount-mutation.log`). After restoring the six-face return, the target again passed with zero failures. No public Physics header changed.
 
 `phys_fn_000961` mutation detection: `mismatches=44`.
+
+## Box hull facade face record: `phys_fn_000963`
+
+The face-record getter at RVA `0x000213d0` returns `&mFaces[index]` (`this + 0x70 + index * 36`). The original hull differential did not call facade slot 4 directly, so the support and rebuild tests could not falsify a broken getter. `NxPhysicsShapeVtableTests` now asks both vtables for each of the six records and checks the returned pointer against the expected in-object record address. The clean run passes all six new assertions and reports `box hull oracle_digest=e0477220 cases=320 failures=0` (`build/phase5-facegetter-clean.log`). A temporary cyclic-index mutation fails all six direct assertions and exits 1 (`build/phase5-facegetter-mutation.log`). No public Physics header changed.
+
+`phys_fn_000963` mutation detection: `mismatches=6`.

@@ -190,6 +190,32 @@ static BoxHullResult runBoxHullCases(const unsigned char* base) {
         }
         ++result.cases;
     };
+
+    // BOX hull facade slot 4 (phys_fn_000963) returns the requested face record.
+    // Check every index directly: the support/rebuild cases below read mFaces
+    // internally and would not detect a bad implementation of this getter.
+    {
+        typedef const BoxFaceRecord* (__thiscall* FaceRecordSlot)(void*, unsigned);
+        build();
+        FaceRecordSlot oracleFace = reinterpret_cast<FaceRecordSlot>(
+            (*reinterpret_cast<void***>(o + 0xe0))[4]);
+        FaceRecordSlot candidateFace = reinterpret_cast<FaceRecordSlot>(
+            (*reinterpret_cast<void***>(c + 0xe0))[4]);
+        for(unsigned index = 0; index < 6; ++index) {
+            const BoxFaceRecord* expectedOracle = reinterpret_cast<const BoxFaceRecord*>(
+                o + 0x150 + index * 0x24);
+            const BoxFaceRecord* expectedCandidate = reinterpret_cast<const BoxFaceRecord*>(
+                c + 0x150 + index * 0x24);
+            if(oracleFace(o + 0xe0, index) != expectedOracle ||
+               candidateFace(c + 0xe0, index) != expectedCandidate) {
+                fprintf(stderr, "box hull facade_face case=%u differs\n", index);
+                ++result.failures;
+            }
+            ++result.cases;
+        }
+        destroy();
+    }
+
     const unsigned dimensionBits[][3] = {
         {0x3f800000u, 0x3f800000u, 0x3f800000u},    // 1, 1, 1
         {0x40200000u, 0x40500000u, 0x40980000u},    // 2.5, 3.25, 4.75

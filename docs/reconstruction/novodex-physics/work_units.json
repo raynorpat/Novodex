@@ -798,13 +798,13 @@
    ],
    "rows": {
     "discovered": 1,
-    "dynamically_gated": 16,
-    "reconstructed": 124
+    "dynamically_gated": 17,
+    "reconstructed": 123
    },
    "bytes": {
     "discovered": 120,
-    "dynamically_gated": 1326,
-    "reconstructed": 46148
+    "dynamically_gated": 1340,
+    "reconstructed": 46134
    },
    "phases": {
     "2": 20,
