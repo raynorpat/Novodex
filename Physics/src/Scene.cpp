@@ -1073,13 +1073,69 @@ static bool nxSceneAuxPrepareStagedArray(unsigned char* aux, unsigned offset,
 	return true;
 	}
 
+static bool nxSceneAuxEnsureIndexedArray(unsigned char* aux, unsigned offset,
+	unsigned slot, unsigned fill)
+	{
+	unsigned*& first = *reinterpret_cast<unsigned**>(aux + offset);
+	unsigned*& last = *reinterpret_cast<unsigned**>(aux + offset + 4);
+	unsigned*& capacity = *reinterpret_cast<unsigned**>(aux + offset + 8);
+	const unsigned size = first ? static_cast<unsigned>(last - first) : 0;
+	if(slot < size) return true;
+	const unsigned target = (slot + 256u) & ~255u;
+	if(target == 0) return false;
+	if(first && capacity && static_cast<unsigned>(capacity - first) >= target)
+		{
+		for(unsigned i = size; i < target; ++i) first[i] = fill;
+		last = first + target;
+		return true;
+		}
+	unsigned* grown = static_cast<unsigned*>(nxFoundationSDKAllocator->malloc(
+		target * sizeof(unsigned), NX_MEMORY_PERSISTENT));
+	if(!grown) return false;
+	if(size) memcpy(grown, first, size * sizeof(unsigned));
+	for(unsigned i = size; i < target; ++i) grown[i] = fill;
+	if(first) nxFoundationSDKAllocator->free(first);
+	first = grown;
+	last = grown + target;
+	capacity = grown + target;
+	return true;
+	}
+
+static bool nxSceneAuxEnsureRecordIndex(unsigned char* aux, unsigned offset,
+	unsigned slot)
+	{
+	unsigned* first = *reinterpret_cast<unsigned**>(aux + offset);
+	unsigned* capacity = *reinterpret_cast<unsigned**>(aux + offset + 8);
+	const unsigned target = (slot + 256u) & ~255u;
+	if(target == 0) return false;
+	if(first && capacity && static_cast<unsigned>(capacity - first) >= target)
+		return true;
+	unsigned* grown = static_cast<unsigned*>(nxFoundationSDKAllocator->malloc(
+		target * sizeof(unsigned), NX_MEMORY_PERSISTENT));
+	if(!grown) return false;
+	unsigned* last = *reinterpret_cast<unsigned**>(aux + offset + 4);
+	const unsigned size = first ? static_cast<unsigned>(last - first) : 0;
+	if(size) memcpy(grown, first, size * sizeof(unsigned));
+	if(first) nxFoundationSDKAllocator->free(first);
+	*reinterpret_cast<unsigned**>(aux + offset) = grown;
+	*reinterpret_cast<unsigned**>(aux + offset + 4) = grown + size;
+	*reinterpret_cast<unsigned**>(aux + offset + 8) = grown + target;
+	return true;
+	}
+
+// phys_fn_002421 (0x0005c160): DynamicBodyBase::construct inserts the record
+// by its +0x104 ID into the Scene auxiliary manager and grows its sparse slot.
 void nxSceneAuxRegisterRecord(void* auxPointer, void* recordPointer)
 	{
 	unsigned char* aux = static_cast<unsigned char*>(auxPointer);
 	unsigned char* record = static_cast<unsigned char*>(recordPointer);
 	if(!aux || !record) return;
+	const unsigned slot = *reinterpret_cast<unsigned*>(record + 0x11c);
 	if(!*reinterpret_cast<void**>(aux + 0x80))
 		{
+		// IDs start at zero in a new Scene. The first record establishes the
+		// five parallel arrays and active-list entry in one allocation sequence.
+		if(slot != 0) return;
 		if(!nxSceneAuxPrepareStagedArray(aux, 0x80, 0,
 			reinterpret_cast<unsigned>(record + 0x18))) return;
 		if(!nxSceneAuxPrepareStagedArray(aux, 0x40, 0, 0xffffffffu)) return;
@@ -1100,15 +1156,34 @@ void nxSceneAuxRegisterRecord(void* auxPointer, void* recordPointer)
 		*reinterpret_cast<unsigned**>(aux + 0x78) = vacant + 256;
 		return;
 		}
+	if(!nxSceneAuxEnsureIndexedArray(aux, 0x80, slot, 0) ||
+		!nxSceneAuxEnsureIndexedArray(aux, 0x40, slot, 0) ||
+		!nxSceneAuxEnsureIndexedArray(aux, 0x60, slot, 0xd00beed0u) ||
+		!nxSceneAuxEnsureRecordIndex(aux, 0x70, slot)) return;
 	unsigned* active = *reinterpret_cast<unsigned**>(aux + 0x50);
 	unsigned* activeEnd = *reinterpret_cast<unsigned**>(aux + 0x54);
-	if(!active || !activeEnd || activeEnd - active >= 256) return;
+	unsigned* activeCapacity = *reinterpret_cast<unsigned**>(aux + 0x58);
+	if(!active || !activeEnd || !activeCapacity) return;
+	if(activeEnd == activeCapacity)
+		{
+		const unsigned count = static_cast<unsigned>(activeEnd - active);
+		const unsigned next = count * 2 + 2;
+		unsigned* grown = static_cast<unsigned*>(nxFoundationSDKAllocator->malloc(
+			next * sizeof(unsigned), NX_MEMORY_PERSISTENT));
+		if(!grown) return;
+		if(count) memcpy(grown, active, count * sizeof(unsigned));
+		nxFoundationSDKAllocator->free(active);
+		active = grown;
+		activeEnd = grown + count;
+		activeCapacity = grown + next;
+		*reinterpret_cast<unsigned**>(aux + 0x50) = active;
+		*reinterpret_cast<unsigned**>(aux + 0x54) = activeEnd;
+		*reinterpret_cast<unsigned**>(aux + 0x58) = activeCapacity;
+		}
 	unsigned* occupied = *reinterpret_cast<unsigned**>(aux + 0x40);
-	unsigned slot = 0;
-	while(slot < 256 && occupied[slot]) ++slot;
-	if(slot == 256) return;
+	if(occupied[slot]) return;
 	const unsigned activeIndex = static_cast<unsigned>(activeEnd - active);
-	(*reinterpret_cast<unsigned**>(aux + 0x40))[slot] = 0xffffffffu;
+	occupied[slot] = 0xffffffffu;
 	active[activeIndex] = slot;
 	(*reinterpret_cast<unsigned**>(aux + 0x60))[slot] = activeIndex;
 	(*reinterpret_cast<unsigned**>(aux + 0x80))[slot] =

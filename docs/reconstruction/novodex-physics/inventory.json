@@ -44445,13 +44445,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/909",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7512",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at 0x1005c160 (RVA 0x5c160, 553 bytes) identifies the auxiliary-manager record registration called by DynamicBodyBase::construct at 0x1001ba79. It reads DynamicBodyBase::id at record+0x104, grows the manager record pointer table at aux+0x80 in 256-slot chunks, stores record+0x18 at that exact ID, then calls phys_fn_002417 on aux+0x40 to set the occupancy sentinel, reverse index, and active ID list. The Scene.cpp implementation now preserves ID-keyed registration across recycled IDs and the 256-slot boundary.",
+      "dynamic_proof": "NxPhysicsBodyCreationTests staged-pair differential inspects the auxiliary manager through each dynamic body record. Out-of-order release of IDs 0 and 5 followed by the LIFO reuse reports aux_reused_lifo=5.1.1.1.1.6 and aux_reused_hole=0.1.1.1.1.6; 257 simultaneous records cross to ID 0x100 and report aux_chunk_256=100.1.1.1.1.257. Oracle and candidate match exactly (stdout_delta=0, exact stderr; build/phase5-next/body-creation-aux-registration-green.log). A mutation clearing the indexed record pointer is caught by the same gate (stdout_delta=6; build/phase5-next/aux-registration-mutation.txt).",
+      "notes": "The first record initializes the 256-slot arrays; later registrations use DynamicBodyBase::id as the sparse key. The active list grows beyond 256 entries. No public Physics header changed.",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_002422",

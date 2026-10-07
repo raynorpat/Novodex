@@ -32,4 +32,12 @@ IDA identifies `phys_fn_000034` at `0x10002010` as `Actor::loadFromDescInternal`
 
 `phys_fn_000034` mutation detection: `stdout_delta=2`.
 
+## Dynamic body auxiliary registration: `phys_fn_002421`
+
+IDA decompilation identifies `phys_fn_002421` at `0x1005c160` as the auxiliary-manager record insertion called by `DynamicBodyBase::construct` at `0x1001ba79`. It reads the body ID from record `+0x104`, ensures the manager's sparse record table at `aux+0x80` covers that ID, stores the record at exactly that slot, and calls `phys_fn_002417` to add the ID to the manager's indexed and active arrays. `nxSceneAuxRegisterRecord` now grows these indexed arrays in 256-slot chunks and grows the active list when it fills.
+
+The registered `NxPhysicsBodyCreationTests` target releases IDs 0 and 5 out of order, then checks the LIFO-reused ID 5 and ID 0 map to their own record slots. It also registers 257 concurrent bodies to cross the first chunk boundary and checks ID `0x100`. Oracle and candidate report the same manager state (`stdout_delta=0`, exact stderr; `build/phase5-next/body-creation-aux-registration-green.log`). A mutation that clears the indexed record-pointer write is rejected with `stdout_delta=6` (`build/phase5-next/aux-registration-mutation.txt`). The test exits after identity reporting for the high-water stress case because the shipped DLL's separate high-ID release path remains under study.
+
+`phys_fn_002421` mutation detection: `stdout_delta=6`.
+
 The Phase 7 `NxPhysicsPairFlagTests` regression isolates the root-ID recycle case: set actor-pair flags, release the actor, create a replacement, and verify the recycled root ID is `1 -> 1` while the old flags are cleared. Oracle and candidate both report `flags=00000000` with `stdout_delta=0` and exact stderr (`build/phase5-pair-cleanup-final-diff.log`). The final Phase 5 gate also passes (`build/phase5-pair-cleanup-final.log`). These checks cover actor destruction and pair-record cleanup; they do not close any other Phase 5 rows.

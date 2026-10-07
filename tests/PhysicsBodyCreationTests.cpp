@@ -54,6 +54,26 @@ static const unsigned char* bodyOf(NxActor* actor)
 		reinterpret_cast<const unsigned char*>(actor) + 0x14);
 }
 
+static void printAuxRegistration(const char* label, NxActor* actor)
+{
+	const unsigned char* record = recordOf(actor);
+	const unsigned id = word(record, 0x11c);
+	const unsigned char* aux = reinterpret_cast<const unsigned char*>(
+		word(record, 0x120));
+	const unsigned* records = *reinterpret_cast<unsigned* const*>(aux + 0x80);
+	const unsigned* occupied = *reinterpret_cast<unsigned* const*>(aux + 0x40);
+	const unsigned* active = *reinterpret_cast<unsigned* const*>(aux + 0x50);
+	const unsigned* activeEnd = *reinterpret_cast<unsigned* const*>(aux + 0x54);
+	const unsigned* indices = *reinterpret_cast<unsigned* const*>(aux + 0x60);
+	const unsigned index = indices[id];
+	printf("bodycreate aux_%s=%x.%u.%u.%u.%u.%u\n", label, id,
+		records[id] == reinterpret_cast<unsigned>(record + 0x18) ? 1u : 0u,
+		occupied[id] == 0xffffffffu ? 1u : 0u,
+		index < static_cast<unsigned>(activeEnd - active) ? 1u : 0u,
+		index < static_cast<unsigned>(activeEnd - active) && active[index] == id ? 1u : 0u,
+		static_cast<unsigned>(activeEnd - active));
+}
+
 // `count` consecutive words from `first`, dot-separated.
 static void printRange(const char* label, const unsigned char* record,
 	unsigned first, unsigned count)
@@ -353,7 +373,36 @@ int wmain(int argc, wchar_t** argv)
 	scene->releaseActor(*d);
 	scene->releaseActor(*b);
 	scene->releaseActor(*a);
-	sdk->releaseScene(*scene);
-	sdk->release();
+
+	// Release low IDs out of order so the next LIFO-reused ID is not the first
+	// vacant table entry. Registration must use the body ID for all three maps.
+	NxActor* reuseStress[6] = {};
+	NxBodyDesc registrationBody;
+	for(unsigned i = 0; i < 6; ++i)
+		{
+		reuseStress[i] = createBox(scene, registrationBody, 1.0f, identity);
+		if(!reuseStress[i]) return nxFail("aux registration reuse actor creation failed");
+		}
+	scene->releaseActor(*reuseStress[0]);
+	scene->releaseActor(*reuseStress[5]);
+	NxActor* reusedRegistrationA = createBox(scene, registrationBody, 1.0f, identity);
+	NxActor* reusedRegistrationB = createBox(scene, registrationBody, 1.0f, identity);
+	if(!reusedRegistrationA || !reusedRegistrationB)
+		return nxFail("aux registration recycled actor creation failed");
+	printAuxRegistration("reused_lifo", reusedRegistrationA);
+	printAuxRegistration("reused_hole", reusedRegistrationB);
+	for(unsigned i = 1; i < 5; ++i) scene->releaseActor(*reuseStress[i]);
+	scene->releaseActor(*reusedRegistrationA);
+	scene->releaseActor(*reusedRegistrationB);
+
+	// Cross the first 256-ID chunk. Keep these stress actors until process exit:
+	// the shipped DLL's release path has a separate 256+ row still under study.
+	NxActor* registrationStress[257] = {};
+	for(unsigned i = 0; i < 257; ++i)
+		{
+		registrationStress[i] = createBox(scene, registrationBody, 1.0f, identity);
+		if(!registrationStress[i]) return nxFail("aux registration stress actor creation failed");
+		}
+	printAuxRegistration("chunk_256", registrationStress[256]);
 	return nxReportPairIdentity(pairDirectory);
 }

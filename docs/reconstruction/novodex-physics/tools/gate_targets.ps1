@@ -2142,7 +2142,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'bodycreate setters_drowsy_wake=3e000000.3e000000',
         'bodycreate setters_mode5_wake=3ecccccc.3ecccccc',
         'bodycreate setters_mode5_accumulators=0.0.0.0.0.0.0.0.0.0.0.0',
-        'bodycreate setters_mode5_velocity=0.0.0.0.0.0'
+        'bodycreate setters_mode5_velocity=0.0.0.0.0.0',
+        'bodycreate aux_reused_lifo=5.1.1.1.1.6',
+        'bodycreate aux_reused_hole=0.1.1.1.1.6',
+        'bodycreate aux_chunk_256=100.1.1.1.1.257'
     )
     # The Phase 6 joint-descriptor differential. Two cases over the two exported
     # rows, printing the whole descriptor surface before and after each call. The
@@ -5445,7 +5448,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '3' = 359  # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 260  # previous 259 plus the isolated density-80 PMap compute result
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2238  # previous 2,237 plus actor descriptor userData initialization
+    '5' = 2241  # previous 2,238 plus three auxiliary record registration checks
+               # previous 2,237 plus actor descriptor userData initialization
                # previous 2,226 plus the mesh factory's 11 registered diagnostics
                # previous 2,225 plus the 1,000-step multi-body stack soak
                # + 175 from scene-raycast Task 4 (149 body-creation, 13 setters, 9 dynamic-setter

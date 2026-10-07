@@ -1,5 +1,15 @@
 # NxPhysics completion project plan from main
 
+### Continuation — dynamic body auxiliary registration (2026-10-07)
+
+Closed `phys_fn_002421`: the Scene auxiliary manager now registers each dynamic
+body by its assigned ID, grows its sparse tables beyond 256 IDs, and expands the
+active list when full. A staged-pair probe verifies out-of-order ID reuse and
+registration through ID `0x100`; the omitted-record-pointer mutation is detected
+with `stdout_delta=6`. Phase 5 now has five differential-closed rows, 200 rows
+reconstructed but awaiting mutation, and no unreconstructed function rows.
+Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md`.
+
 ### Continuation — actor descriptor userData and Phase 5 gate (2026-10-07)
 
 IDA confirms the call from `Scene::createActor` to `phys_fn_000034` at `0x10011dac`.
