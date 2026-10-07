@@ -544,7 +544,7 @@ bool TriangleMesh::saveToDesc(NxTriangleMeshDesc& desc) const
 	desc.triangleStrideBytes = sizeof(NxTriangle32);
 	desc.points = mInternal.mVertices;
 	desc.triangles = mInternal.mTriangles;
-	desc.flags = mHullFlags;
+	desc.flags = mConvexMesh ? NX_MF_CONVEX : 0;			// 002166 writes only the computed-convex bit.
 	desc.materialIndexStride = mInternal.mMaterialIndices ? sizeof(NxU16) : 0;
 	desc.materialIndices = mInternal.mMaterialIndices;
 	desc.heightFieldVerticalAxis = static_cast<NxHeightFieldAxis>(mHeightFieldVerticalAxis);
