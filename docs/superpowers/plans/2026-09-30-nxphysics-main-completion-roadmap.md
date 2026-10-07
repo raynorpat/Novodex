@@ -1,5 +1,14 @@
 # NxPhysics completion project plan from main
 
+### Continuation — Box identity vtable slot (2026-10-07)
+
+Closed Phase 5 row `phys_fn_001391`, the Box identity method shared by vtable
+slots 14–16. The shape-vtable oracle/candidate test checks that slot 14 returns
+the constructed object address. A throwaway private-header mutation returning
+null was caught (`failures=1`); the clean target returns zero failures. Phase 5
+now has six mutation-closed function rows and 199 reconstructed rows awaiting
+falsification. Evidence: `docs/reconstruction/novodex-physics/evidence/shape-self-001391.md`.
+
 ### Continuation — scene shape registration and standalone test sweep (2026-10-07)
 
 Closed Phase 3 row `phys_fn_002423`: the body-creation differential checks the

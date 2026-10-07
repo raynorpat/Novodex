@@ -1,14 +1,15 @@
 {
   "schema_version": 1,
   "phase": 5,
-  "note": "Phase 5 owns 205 function rows and 122 data objects. Five function rows, phys_fn_002318, phys_fn_000030, phys_fn_000032, phys_fn_000034, and phys_fn_002421, are closed by registered differential mutations; 200 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records.",
+  "note": "Phase 5 owns 205 function rows and 122 data objects. Five function rows are closed by registered staged-pair mutations: phys_fn_002318, phys_fn_000030, phys_fn_000032, phys_fn_000034, and phys_fn_002421. One row, phys_fn_001391, is closed by the NxPhysicsShapeVtableTests oracle/candidate check. 199 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records. See evidence/shape-self-001391.md.",
   "proof_kinds": {
-    "differential_falsified": "mutations aimed at phys_fn_002318, phys_fn_000030, phys_fn_000032, phys_fn_000034, and phys_fn_002421 were caught by registered staged-pair differentials; 200 reconstructed function rows still need a mutation and measured detection.",
-    "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. This phase has none yet."
+    "differential_falsified": "mutations aimed at the five staged-pair rows were caught by their registered differentials; 199 reconstructed function rows still need a mutation and measured detection.",
+    "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. This phase has none yet.",
+    "oracle_differential_falsified": "the mutation to phys_fn_001391 was caught by NxPhysicsShapeVtableTests, which compares the candidate Box vtable identity call with the pinned oracle; the non-zero mismatch count records the failed identity case."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction; no function rows remain here.",
-    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 200 rows, each needing one mutation and one measured detection.",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 199 rows, each needing one mutation and one measured detection.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -19,7 +20,8 @@
   },
   "counts": {
     "differential_falsified": 5,
-    "deferred_reconstructed_not_falsified": 200
+    "oracle_differential_falsified": 1,
+    "deferred_reconstructed_not_falsified": 199
   },
   "closed": [
     {
@@ -70,6 +72,16 @@
       "falsification": {
         "mutation": "Omitted the indexed record-pointer write in nxSceneAuxRegisterRecord while preserving ID allocation and active-list bookkeeping.",
         "detected": "stdout_delta=6"
+      }
+    },
+    {
+      "id": "phys_fn_001391",
+      "rva": "0x00027f00",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "In a throwaway git archive copy, changed BoxShape::nxBoxSelf from returning this to returning null; the Box slot-14 oracle/candidate identity check was the single failing case.",
+        "detected": "mismatches=1"
       }
     }
   ],
@@ -1758,15 +1770,6 @@
       "size": 51,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_001391",
-      "rva": "0x00027f00",
-      "size": 3,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },

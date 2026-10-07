@@ -1,5 +1,11 @@
 # Phase 5 controller-list removal falsification
 
+## Box identity vtable row: `phys_fn_001391`
+
+The Box vtable shares the three-byte self-return method at RVA `0x00027f00` across slots 14–16. `NxPhysicsShapeVtableTests` calls slot 14 on the pinned oracle and candidate and checks that each returns its own object address. The clean target reports `shape vtable oracle_digest=ed1294b6 cases=626 failures=0` (`build/shape-self-001391-green.log`).
+
+A throwaway `git archive` copy changed the private `BoxShape::nxBoxSelf` implementation to return null. Its oracle/candidate check reported `shape vtable oracle_digest=ed1294b6 cases=626 failures=1` and exited 1 (`build/shape-self-001391-mutation.log`). The single failed identity comparison for `phys_fn_001391` is recorded as `mismatches=1`. The generated project was restored and the target was clean-built with the original private header; the baseline again reported zero failures. This closes only the shared identity method, not the remaining Box vtable slots. Details: `evidence/shape-self-001391.md`.
+
 `phys_fn_002318` at `0x0005a170` (106 bytes) records a differential falsification with `stdout_delta=2` for controller linked-list removal implemented by `NxSceneInternal::releaseController` in `Physics/src/Scene.cpp`.
 
 The pinned function removes a middle node by walking from the scene head and replacing the predecessor's `+0x30` link with the released node's next link. It reports an invalid-operation error only when the node is absent. This note records the middle-node and head-removal slice; it does not claim the rest of controller behavior is complete.

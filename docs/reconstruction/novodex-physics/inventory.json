@@ -25604,13 +25604,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/683",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3550",
       "static_proof": "mov eax,ecx; ret -- returns this, ignores every argument; fills BOX vtable .rdata 0x10106ab8 slots 14, 15 AND 16",
-      "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests boxrow family: all three slots return the constructed object address on both sides (pointer equality; never folded)",
-      "notes": "P5 Task 3: one row serving three slots.; convex-mesh gap Task 2f: the product form is nxIceIdentityConstruct in Physics/src/ConvexHull.cpp (naked, listing-exact; the constructor 001502's edge `new[]` runs) (stable-ID line), hit in evidence/convex-mesh-gap-trace-2f.txt; the hull_leaf family compares its effects with the oracle's. The existing model and its proof stand; state unchanged",
+      "dynamic_proof": "NxPhysicsShapeVtableTests directly calls Box vtable slot 14 on oracle and candidate objects and checks the returned self pointer; the row also fills slots 15 and 16. The baseline reports `shape vtable oracle_digest=ed1294b6 cases=626 failures=0` (build/shape-self-001391-green.log). A throwaway git archive mutation changing nxBoxSelf to return null produces `cases=626 failures=1` and process exit 1 (build/shape-self-001391-mutation.log).",
+      "notes": "P5 Task 3: one identity row serves Box slots 14, 15, and 16. No public Physics header changed.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
