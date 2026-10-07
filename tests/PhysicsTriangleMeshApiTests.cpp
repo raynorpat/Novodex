@@ -5,6 +5,7 @@
 
 #include "PhysicsPairLoader.h"
 #include "NxUserAllocator.h"
+#include "NxUserOutputStream.h"
 #include "NxPhysicsSDK.h"
 #include "NxScene.h"
 #include "NxSceneDesc.h"
