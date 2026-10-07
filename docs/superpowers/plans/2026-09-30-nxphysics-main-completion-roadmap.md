@@ -1,5 +1,19 @@
 # NxPhysics completion project plan from main
 
+### Continuation — controller move ABI and approved Viewer scene gate (2026-10-06)
+
+The controller test probe and reconstructed move slot now match the installed
+NxCharacter six-argument `NxController::move` ABI. The default-argument
+simulation differential remains exact. Direct Phase 5 and Phase 7 differentials
+pass all 14 and 11 registered targets; all 48 Viewer selections pass, covering
+all 39 scenes with five existing signature-verified oracle-asset skips. The
+aggregate phase wrapper remains blocked at inventory preflight because this
+worktree lacks the pinned upstream source trees under
+`.analysis/novodex-physics/thirdparty`. This closes the call ABI only;
+successful step-over, non-default sharpness, groups-mask filtering, and full
+controller behavior remain open. See
+`docs/reconstruction/novodex-physics/evidence/controller-move-public-abi.md`.
+
 ### Continuation — authored tetrahedron PMap density 80 (2026-10-06)
 
 Added an isolated density-80 compute executable and Phase 4 coverage registration.

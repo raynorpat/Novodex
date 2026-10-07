@@ -44,12 +44,14 @@ static unsigned nxFloatBits(NxReal value);
 // Private ABI probe for the three-entry controller vtable recovered from the
 // pinned DLL. Keep this test-only: the public NxController declaration remains
 // intentionally incomplete and unchanged.
+class NxGroupsMask;
 class NxControllerProbe
 	{
 	public:
 	virtual ~NxControllerProbe() {}
 	virtual void move(const NxVec3&, NxU32 activeGroups, NxReal minDistance,
-		NxU32& collisionFlags) = 0;
+		NxU32& collisionFlags, NxReal sharpness = 1.0f,
+		const NxGroupsMask* groupsMask = 0) = 0;
 	virtual const NxVec3& getPosition() const = 0;
 	};
 

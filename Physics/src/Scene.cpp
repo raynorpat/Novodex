@@ -94,6 +94,8 @@ void nxContainerAddThunk(void* innerThis);
 #include <string.h>
 #include <new>
 
+class NxGroupsMask;
+
 void nxAggregateAABB1030(void* self, float* out);
 
 // phys_data_000980 (0x1012718c): the largest 000611 island-body count seen by
@@ -1912,8 +1914,11 @@ namespace
 		{
 		virtual ~NxControllerCore() {}
 		virtual void move(const NxVec3& displacement, NxU32 activeGroups,
-			NxReal minDistance, NxU32& collisionFlags)
+			NxReal minDistance, NxU32& collisionFlags, NxReal sharpness,
+			const NxGroupsMask* groupsMask)
 			{
+			(void)sharpness;
+			(void)groupsMask;
 			// Reconstruct the axis-aligned box sweep used by the recovered
 	// controller resolver. General transformed/convex sweeps and slide/step
 			// response remain separate open paths.
