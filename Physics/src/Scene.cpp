@@ -2336,6 +2336,10 @@ namespace
 			if(stepProbeEnabled && displacement.y < 0.0f &&
 				(collisionFlags & 0x6u) == 0x6u)
 				collisionFlags = (collisionFlags & ~0x2u) | 0x1u;
+			// The oracle's final up-axis probe reports this downward-only contact
+			// as 0x4; the local sweep accumulator records the same hit as 0x2.
+			else if(stepProbeEnabled && displacement.y < 0.0f && collisionFlags == 0x2u)
+				collisionFlags = 0x4u;
 			if(actor)
 				actor->moveGlobalPosition(position);
 			}

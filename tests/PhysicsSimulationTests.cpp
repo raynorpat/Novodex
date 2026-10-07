@@ -3323,6 +3323,45 @@ int wmain(int argc, wchar_t** argv)
 		nxFloatBits(slopeControllerPosition.z) != 0x3f000000 || obstacleCollisionFlags != 4;
 	slopeControllerScene->releaseController(*slopeController);
 	sdk->releaseScene(*slopeControllerScene);
+	// Drive a high-threshold, step-enabled controller downward onto a sloped
+	// triangle face. This gives the resolver a non-axis-aligned contact normal
+	// for its conditional correction query.
+	NxSceneDesc slopeCorrectionSceneDesc;
+	slopeCorrectionSceneDesc.setToDefault();
+	NxScene* const slopeCorrectionScene = sdk->createScene(slopeCorrectionSceneDesc);
+	if(!slopeCorrectionScene)
+		return nxFail("slope-correction controller scene creation failed");
+	NxActorDesc slopeCorrectionObstacleDesc;
+	slopeCorrectionObstacleDesc.shapes.pushBack(&slopeObstacleShape);
+	NxActor* const slopeCorrectionObstacle = slopeCorrectionScene->createActor(
+		slopeCorrectionObstacleDesc);
+	alignas(4) unsigned char slopeCorrectionControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x0c) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x10) = nxFloatBits(2.0f);
+	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x14) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x1c) = 1;
+	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x18) = 1;
+	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x20) = 1;
+	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x24) = nxFloatBits(0.7f);
+	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x2c) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x30) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x34) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x38) = nxFloatBits(0.2f);
+	NxController* const slopeCorrectionController = slopeCorrectionScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(slopeCorrectionControllerDescStorage));
+	if(!slopeCorrectionObstacle || !slopeCorrectionController)
+		return nxFail("slope-correction controller fixture setup failed");
+	const NxVec3 slopeCorrectionDisplacement(0.0f, -3.0f, 0.0f);
+	obstacleCollisionFlags = 0xdeadbeef;
+	reinterpret_cast<NxControllerProbe*>(slopeCorrectionController)->move(
+		slopeCorrectionDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& slopeCorrectionPosition = reinterpret_cast<NxControllerProbe*>(
+		slopeCorrectionController)->getPosition();
+	printf("simulation controller-mesh-slope-correction position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(slopeCorrectionPosition.x), nxFloatBits(slopeCorrectionPosition.y),
+		nxFloatBits(slopeCorrectionPosition.z), obstacleCollisionFlags);
+	slopeCorrectionScene->releaseController(*slopeCorrectionController);
+	sdk->releaseScene(*slopeCorrectionScene);
 	sdk->releaseTriangleMesh(*controllerSlopeMesh);
 
 	// Exercise the complete public path from 16-bit descriptor indices through

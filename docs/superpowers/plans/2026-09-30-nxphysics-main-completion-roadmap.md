@@ -1,3 +1,16 @@
+### Continuation — sloped controller downward-contact flag (2026-10-07)
+
+Added a sloped-triangle controller differential that was red only on the
+downward-contact flag: oracle `0x4`, candidate `0x2`, with identical stopped
+position. The resolver trace confirms the native final up-axis probe contributes
+`0x4`; the local sweep uses `0x2` for the same downward-only hit. The narrow
+step-enabled negative-Y flag remap makes the focused simulation exact. Phase
+5/6/7 gates pass, including 2,261/2,261, 1,059/1,059, and 1,375/1,375 recorded
+coverage assertions. This closes the observed fixture mismatch only; the
+conditional correction probe and full controller resolver remain open. Public
+Physics headers are unchanged. Evidence:
+`docs/reconstruction/novodex-physics/evidence/controller-slope-correction-flag-remap-2026-10-07.md`.
+
 ### Continuation — controller resolver oracle mapping (2026-10-07)
 
 IDA review of `phys_fn_002306` (`NxPhysics.dll+0x59320`) shows a three-query
