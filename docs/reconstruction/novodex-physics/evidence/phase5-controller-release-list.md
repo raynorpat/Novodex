@@ -148,3 +148,16 @@ The required `NxPhysicsActorDynamicSetterTests` output pins the raw squared thre
 `phys_fn_000184` mutation detection: wrong setter offset `+0xd4` caught with `stdout_delta=4`.
 
 `phys_fn_000186` mutation detection: wrong setter offset `+0xd0` caught with `stdout_delta=2`.
+
+
+## Sleep and wake transitions: `phys_fn_000062`, `phys_fn_000064`, `phys_fn_000192`, and `phys_fn_000194`
+
+The registered `NxPhysicsActorDynamicSetterTests` output pins group sleeping, individual sleeping, wake counters, put-to-sleep flags, and the wake-state transitions. Four independent source mutations were each caught: changing the group scan from `> 0.0f` to `>= 0.0f` made a fully asleep group report awake (`stdout_delta=4`); reversing the individual asleep comparison inverted its awake/asleep/rewake results (`stdout_delta=8`); redirecting `wakeUp` counter storage from record `+0x84` to `+0x80` changed the wake and negative-wake states (`stdout_delta=10`); and redirecting `putToSleep` from `+0x84` to `+0x80` left the actor and group awake (`stdout_delta=6`). Both processes exited zero and stderr was exact for each mutation. The restored clean differential matches the oracle with `stdout_delta=0`.
+
+`phys_fn_000062` mutation detection: registered sleep/wake observation caught the mutation with `stdout_delta=4`.
+
+`phys_fn_000064` mutation detection: registered sleep/wake observation caught the mutation with `stdout_delta=8`.
+
+`phys_fn_000192` mutation detection: registered sleep/wake observation caught the mutation with `stdout_delta=10`.
+
+`phys_fn_000194` mutation detection: registered sleep/wake observation caught the mutation with `stdout_delta=6`.

@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "phase": 5,
-  "note": "Phase 5 owns 205 function rows and 122 data objects. Eleven function rows are closed by registered staged-pair mutations: phys_fn_002318, phys_fn_000030, phys_fn_000032, phys_fn_000034, phys_fn_002421, phys_fn_000050, phys_fn_000052, phys_fn_000066, phys_fn_000068, phys_fn_000184, and phys_fn_000186. One row, phys_fn_000002, is closed by the NxPhysicsRangeIterationTests static proof. Eight rows, phys_fn_001391, phys_fn_000955, phys_fn_000961, phys_fn_000963, phys_fn_000953, phys_fn_000967, phys_fn_000969, and phys_fn_000971, are closed by NxPhysicsShapeVtableTests oracle/candidate checks. The two rows phys_fn_000004 and phys_fn_000012 are closed by the NxPhysicsObjectLayoutTests oracle differential. 183 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records. See evidence/shape-self-001391.md and evidence/phase5-controller-release-list.md.",
+  "note": "Phase 5 owns 205 function rows and 122 data objects. Fifteen function rows are closed by registered staged-pair mutations: phys_fn_002318, phys_fn_000030, phys_fn_000032, phys_fn_000034, phys_fn_002421, phys_fn_000050, phys_fn_000052, phys_fn_000066, phys_fn_000068, phys_fn_000184, phys_fn_000186, phys_fn_000062, phys_fn_000064, phys_fn_000192, and phys_fn_000194. One row, phys_fn_000002, is closed by the NxPhysicsRangeIterationTests static proof. Eight rows, phys_fn_001391, phys_fn_000955, phys_fn_000961, phys_fn_000963, phys_fn_000953, phys_fn_000967, phys_fn_000969, and phys_fn_000971, are closed by NxPhysicsShapeVtableTests oracle/candidate checks. The two rows phys_fn_000004 and phys_fn_000012 are closed by the NxPhysicsObjectLayoutTests oracle differential. 179 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records. See evidence/shape-self-001391.md and evidence/phase5-controller-release-list.md.",
   "proof_kinds": {
-    "differential_falsified": "Mutations aimed at the eleven staged-pair rows were caught by their registered differentials; all eleven rows are closed.",
+    "differential_falsified": "Mutations aimed at the fifteen staged-pair rows were caught by their registered differentials; all fifteen rows are closed.",
     "static_proof_falsified": "The NxPhysicsRangeIterationTests mutation changed reverse stepping to forward stepping; its named checks caught the broken visitation order, callback result, and negative-stride behavior for phys_fn_000002.",
     "oracle_differential_falsified": "Mutations to phys_fn_001391, phys_fn_000955, phys_fn_000961, phys_fn_000963, phys_fn_000953, phys_fn_000967, phys_fn_000969, and phys_fn_000971 were caught by NxPhysicsShapeVtableTests; mutations to phys_fn_000004 and phys_fn_000012 were caught by NxPhysicsObjectLayoutTests. Each non-zero mismatch count records the failed case."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction; no function rows remain here.",
-    "reconstructed_not_falsified": "The row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 187 rows, each needing one mutation and one measured detection.",
+    "reconstructed_not_falsified": "The row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 179 rows, each needing one mutation and one measured detection.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -19,9 +19,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 11,
+    "differential_falsified": 15,
     "oracle_differential_falsified": 10,
-    "deferred_reconstructed_not_falsified": 183,
+    "deferred_reconstructed_not_falsified": 179,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -250,6 +250,50 @@
         "detected": "stdout_delta=2"
       },
       "note": "the raw angular threshold and both getters changed after the write landed in the linear slot"
+    },
+    {
+      "id": "phys_fn_000062",
+      "rva": "0x00002950",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed the actor sleep/wake implementation so > 0.0f replaced the oracle behavior at +0.0f in an isolated mutation build.",
+        "detected": "stdout_delta=4"
+      },
+      "note": "The pinned fully asleep group changed from sleeping to awake under the non-strict predicate."
+    },
+    {
+      "id": "phys_fn_000064",
+      "rva": "0x00002990",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed the actor sleep/wake implementation so != 0 replaced the oracle behavior at == 0 in an isolated mutation build.",
+        "detected": "stdout_delta=8"
+      },
+      "note": "The individual sleeping results inverted for awake, asleep, and rewoken states."
+    },
+    {
+      "id": "phys_fn_000192",
+      "rva": "0x00008810",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed the actor sleep/wake implementation so record + 0x80 replaced the oracle behavior at record + 0x84 in an isolated mutation build.",
+        "detected": "stdout_delta=10"
+      },
+      "note": "Wake counters and the negative wake counter were written to the adjacent velocity word."
+    },
+    {
+      "id": "phys_fn_000194",
+      "rva": "0x00008990",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed the actor sleep/wake implementation so record + 0x80 replaced the oracle behavior at record + 0x84 in an isolated mutation build.",
+        "detected": "stdout_delta=6"
+      },
+      "note": "Put-to-sleep left the wake counter nonzero and the actor/group awake."
     }
   ],
   "deferred": [
@@ -641,24 +685,6 @@
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_000192",
-      "rva": "0x00008810",
-      "size": 371,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000194",
-      "rva": "0x00008990",
-      "size": 354,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
       "id": "phys_fn_000196",
       "rva": "0x00008b00",
       "size": 1114,
@@ -1035,24 +1061,6 @@
       "id": "phys_fn_000060",
       "rva": "0x00002900",
       "size": 72,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000062",
-      "rva": "0x00002950",
-      "size": 60,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000064",
-      "rva": "0x00002990",
-      "size": 73,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],

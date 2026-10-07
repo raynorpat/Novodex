@@ -48,6 +48,10 @@ full DLL reconstruction remains active. Public Physics headers are unchanged.
 
 # NxPhysics completion project plan from main
 
+### Continuation � actor sleep/wake mutation closures (2026-10-07)
+
+The existing dynamic-setter oracle target now falsifies four additional Phase 5 rows: group sleep (`phys_fn_000062`), individual sleep (`phys_fn_000064`), `wakeUp` (`phys_fn_000192`), and `putToSleep` (`phys_fn_000194`). Each independent mutation was caught by the registered state output (`stdout_delta=4`, `8`, `10`, and `6` respectively); the restored differential matches exactly. Phase 5 now records 26 closed rows and 179 reconstructed rows awaiting falsification. The previously approved all-scene Viewer sweep remains part of the plan.
+
 ### Continuation — reverse strided range helper falsification (2026-10-07)
 
 Closed Phase 5 row `phys_fn_000002` with the existing disassembly-based static

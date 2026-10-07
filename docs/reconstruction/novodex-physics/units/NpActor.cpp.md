@@ -355,10 +355,10 @@ Decompile (capstone disassembly):
 0x00002947  ret
 ```
 
-## phys_fn_000062 (0x00002950, 60 B, reconstructed)
+## phys_fn_000062 (0x00002950, 60 B, dynamically_gated)
 
 - ambiguous: no
-- source: None
+- source: Physics/src/NpActor.cpp
 - implementation: None
 - prototype: undefined1 __fastcall FUN_10002950(int param_1)
 - calling convention: __fastcall, stack purge: 0
@@ -393,10 +393,10 @@ undefined1 __fastcall FUN_10002950(int param_1)
 
 ```
 
-## phys_fn_000064 (0x00002990, 73 B, reconstructed)
+## phys_fn_000064 (0x00002990, 73 B, dynamically_gated)
 
 - ambiguous: no
-- source: None
+- source: Physics/src/NpActor.cpp
 - implementation: None
 - prototype: None
 - calling convention: None, stack purge: None
@@ -7591,7 +7591,7 @@ Decompile (capstone disassembly):
 0x0000880c  ret 4
 ```
 
-## phys_fn_000192 (0x00008810, 371 B, reconstructed)
+## phys_fn_000192 (0x00008810, 371 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/NpActor.cpp
@@ -7731,7 +7731,7 @@ Decompile (capstone disassembly):
 0x00008980  ret 4
 ```
 
-## phys_fn_000194 (0x00008990, 354 B, reconstructed)
+## phys_fn_000194 (0x00008990, 354 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/NpActor.cpp
