@@ -377,8 +377,9 @@ static int nxTestInvalidDescriptor(NxPhysicsSDK* sdk)
 		mesh ? 0u : 1u, gOutputStream.errors, static_cast<unsigned>(gOutputStream.lastCode),
 		gOutputStream.lastLine, gOutputStream.file, gOutputStream.message);
 	return !mesh && gOutputStream.errors == 1 &&
-		gOutputStream.lastCode == NXE_INVALID_PARAMETER && gOutputStream.lastLine == 186 &&
-		strcmp(gOutputStream.message, "TriangleMesh::loadFromDesc: desc.isValid() failed!") == 0 ?
+		gOutputStream.lastCode == NXE_INVALID_PARAMETER && gOutputStream.lastLine == 498 &&
+		strcmp(gOutputStream.file, "\\Epic\\Novodex\\SDKs\\Physics\\src\\PhysicsSDK.cpp") == 0 &&
+		strcmp(gOutputStream.message, "PhysicsSDK::createTriangleMesh: desc.isValid() is false!") == 0 ?
 		0 : nxFail("invalid triangle-mesh descriptor did not report the oracle error");
 	}
 
