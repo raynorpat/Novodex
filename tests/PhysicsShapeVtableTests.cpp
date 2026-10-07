@@ -216,6 +216,40 @@ static BoxHullResult runBoxHullCases(const unsigned char* base) {
         destroy();
     }
 
+    // The remaining fixed BoxHullFacade accessors are cheap public-to-the-
+    // object vtable contracts. Rebuild consumes these slots indirectly, so
+    // call each one directly to make a bad count or table selection visible.
+    {
+        typedef unsigned (__thiscall* CountSlot)(void*);
+        typedef const NxU32* (__thiscall* TableSlot)(void*);
+        build();
+        void** oracleTable = *reinterpret_cast<void***>(o + 0xe0);
+        void** candidateTable = *reinterpret_cast<void***>(c + 0xe0);
+        CountSlot oracleCount = reinterpret_cast<CountSlot>(oracleTable[1]);
+        CountSlot candidateCount = reinterpret_cast<CountSlot>(candidateTable[1]);
+        if(oracleCount(o + 0xe0) != 8 || candidateCount(c + 0xe0) != 8) {
+            fprintf(stderr, "box hull facade_vertex_count differs\n");
+            ++result.failures;
+        }
+        ++result.cases;
+
+        const unsigned slots[3] = {6, 7, 8};
+        const char* names[3] = {"edge_table", "face_corner_table", "adjacency_table"};
+        for(unsigned i = 0; i < 3; ++i) {
+            TableSlot oracleGetter = reinterpret_cast<TableSlot>(oracleTable[slots[i]]);
+            TableSlot candidateGetter = reinterpret_cast<TableSlot>(candidateTable[slots[i]]);
+            const NxU32* oracleWords = oracleGetter(o + 0xe0);
+            const NxU32* candidateWords = candidateGetter(c + 0xe0);
+            if(!oracleWords || !candidateWords ||
+               memcmp(oracleWords, candidateWords, 24 * sizeof(NxU32)) != 0) {
+                fprintf(stderr, "box hull facade_%s differs\n", names[i]);
+                ++result.failures;
+            }
+            ++result.cases;
+        }
+        destroy();
+    }
+
     const unsigned dimensionBits[][3] = {
         {0x3f800000u, 0x3f800000u, 0x3f800000u},    // 1, 1, 1
         {0x40200000u, 0x40500000u, 0x40980000u},    // 2.5, 3.25, 4.75

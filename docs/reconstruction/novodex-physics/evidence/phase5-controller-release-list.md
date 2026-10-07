@@ -66,3 +66,24 @@ IDA identifies RVA `0x000213c0` as `mov eax,6; ret`: facade slot 3 reports the s
 The face-record getter at RVA `0x000213d0` returns `&mFaces[index]` (`this + 0x70 + index * 36`). The original hull differential did not call facade slot 4 directly, so the support and rebuild tests could not falsify a broken getter. `NxPhysicsShapeVtableTests` now asks both vtables for each of the six records and checks the returned pointer against the expected in-object record address. The clean run passes all six new assertions and reports `box hull oracle_digest=e0477220 cases=320 failures=0` (`build/phase5-facegetter-clean.log`). A temporary cyclic-index mutation fails all six direct assertions and exits 1 (`build/phase5-facegetter-mutation.log`). No public Physics header changed.
 
 `phys_fn_000963` mutation detection: `mismatches=6`.
+
+## Remaining Box hull facade accessors
+
+`NxPhysicsShapeVtableTests` now invokes facade slot 1 directly and checks its
+vertex count is eight. It also calls slots 6, 7, and 8 and compares all 24
+words of each edge, face-corner, and adjacency table between the pinned oracle
+and candidate. The clean differential reports `box hull oracle_digest=e0477220
+cases=324 failures=0` (`build/shape-vtable-accessor-clean-build.log`).
+
+Each row was falsified independently: `vertexCount()` returning one fewer than
+`kVertexCount` failed the direct count assertion; `edgeTable()` returning the
+face-corner table failed the direct word comparison; `faceCornerTable()`
+returning the edge table failed its direct comparison; and `adjacencyTable()`
+returning the edge table failed its direct comparison. Every mutated target
+exited 1. The mutations were restored before the clean run. Public headers are
+unchanged.
+
+- `phys_fn_000953`: count mutation caught, `mismatches=1`.
+- `phys_fn_000967`: edge-table mutation caught, `mismatches=1`.
+- `phys_fn_000969`: face-corner table mutation caught, `mismatches=83`.
+- `phys_fn_000971`: adjacency-table mutation caught, `mismatches=83`.

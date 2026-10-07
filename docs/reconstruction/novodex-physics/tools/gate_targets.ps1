@@ -413,9 +413,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'shape vtable massframe oracle_digest=7c450cef cases=201 failures=0',
         'shape vtable boxsweep oracle_digest=2c5d5c09 cases=84 failures=0'
         # Scene-raycast Task 4, box hull: 000973 and BOX slot 12 (000981), facade
-        # slots 4, 9 and 10 (000963, 000957, 000959) against the oracle rows. The
+        # slots 1, 4, 6-10 (000953, 000963, 000967/969/971, 000957, 000959)
+        # against the oracle rows. The
         # oracle side's line, appended as its own statement.
-        'box hull oracle_digest=e0477220 cases=320 failures=0'
+        'box hull oracle_digest=e0477220 cases=324 failures=0'
     )
     # Joint-open-items Task 4 review: seven rotated bodies (a general rotation,
     # 180 degrees about x, y and z, and three general rotations whose largest

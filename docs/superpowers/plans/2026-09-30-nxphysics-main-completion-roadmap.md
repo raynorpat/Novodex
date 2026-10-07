@@ -1,5 +1,16 @@
 # NxPhysics completion project plan from main
 
+### Continuation — Box hull facade accessor falsification (2026-10-07)
+
+The approved Viewer scene sweep is already part of CTest and passed all 48
+currently registered Viewer selections, covering all 39 scenes (43 passed;
+five pinned-oracle asset cases skipped under their existing signatures). The
+Phase 5 closure sweep then added direct oracle/candidate checks for the Box
+hull vertex-count and three table getter slots. Four independent mutations
+were each rejected; the clean hull differential passes 324/324 cases. Phase 5
+now records 13 closed and 192 reconstructed rows still awaiting falsification.
+Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md`.
+
 ### Continuation — Box identity vtable slot (2026-10-07)
 
 Closed Phase 5 row `phys_fn_001391`, the Box identity method shared by vtable
