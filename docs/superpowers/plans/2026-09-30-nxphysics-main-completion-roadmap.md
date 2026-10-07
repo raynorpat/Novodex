@@ -6,7 +6,7 @@ static-actor error arm. An isolated mutation from body-record offset `+0xb8`
 to `+0xb4` changed the result and was caught with `stdout_delta=2`; the clean
 paired target matches. Phase 5 coverage floor rises to 2,250, and the closure
 ledger now has 17 closed function rows with 188 reconstructed rows awaiting
-falsification. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-get-linear-damping.md`.
+falsification. The full Phase 5 gate passes at merged commit `559b865c` with 2,250/2,250 coverage assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-get-linear-damping.md`.
 
 ### Continuation — mixed joint solver interaction and Phase 6 row closure (2026-10-07)
 
