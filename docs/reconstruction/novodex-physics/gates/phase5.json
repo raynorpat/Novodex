@@ -6,7 +6,7 @@
   "closure_ledger": "gates/phase5-closure.json",
   "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
   "evidence_commit": "ab5fccf5",
-  "note": "The Phase 5 gate passed on the current mainline implementation. It verifies immutable public headers, inventory accounting, clean Win32 Release builds, all registered actor/body/shape differential and oracle targets, and 2,244/2,244 coverage assertions. The closure ledger now records 16 mutation-falsified rows and 189 reconstructed rows still awaiting falsification; this green gate does not claim the remaining rows are complete. The post-merge Viewer selection exercised all 39 registered scenes: 43 of 48 tests passed, and five pinned-oracle asset cases skipped under their established signatures. The phase remains pending because its reconstruction closure is not complete.",
+  "note": "The Phase 5 gate passed on merged local main at 403b57d5. It verifies immutable public headers, inventory accounting, clean Win32 Release builds, all registered actor/body/shape differential and oracle targets, and 2,244/2,244 coverage assertions. The closure ledger records 16 falsified rows and 189 reconstructed rows still awaiting falsification; this green gate does not claim the remaining rows are complete. The merged Viewer selection exercised all 39 registered scenes: 43 of 48 tests passed, and five pinned-oracle asset cases skipped under their established signatures. The phase remains pending because its reconstruction closure is not complete.",
   "counts": {
     "closed": 16,
     "deferred": 189
@@ -25,12 +25,12 @@
     {
       "name": "build_and_phase_gate",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 5",
-      "result": "Win32 Release gate passed on local main at 9fadd84e; all selected Phase 5 targets passed, including NxPhysicsShapeVtableTests (626 cases, failures=0; box hull 324 cases, failures=0; face-count mutation mismatches=44; face-getter mutation mismatches=6); coverage_assertions_evaluated=2244 floor=2244; phase_gate=5 status=pass; four Box hull accessor mutations and the reverse-step range-helper mutation were rejected by their direct/static checks"
+      "result": "Win32 Release gate passed on merged local main at 403b57d5; all selected Phase 5 targets passed, including NxPhysicsObjectLayoutTests (miscsm baseline digest 9460eb64; each of two registered mutations produced mismatches=1), NxPhysicsShapeVtableTests (626 cases, failures=0; box hull 324 cases, failures=0; face-count mutation mismatches=44; face-getter mutation mismatches=6); coverage_assertions_evaluated=2244 floor=2244; phase_gate=5 status=pass"
     },
     {
       "name": "viewer_all_scenes",
       "command": "ctest --test-dir build -C Release -R '^Viewer' --output-on-failure",
-      "result": "On merged mainline commit 9fadd84e, all 48 registered Viewer CTest entries completed: 43 passed and five signature-verified pinned-oracle asset cases were skipped. All 39 registered ViewerSmokeScene_* scenes were included (34 passed, five skipped), along with Viewer platform/sound checks and focused physics step/contact tests. Transcript: build/mainline-viewer-scenes-after-range-row.log."
+      "result": "On merged local main at 403b57d5, all 48 registered Viewer CTest entries passed: 43 passed and five signature-verified pinned-oracle asset cases were skipped. All 39 registered ViewerSmokeScene_* scenes were included (34 passed, five skipped), along with Viewer platform/sound checks and focused physics step/contact tests. Total time: 67.35 seconds."
     }
   ],
   "excluded_from_comparison": [

@@ -1,3 +1,18 @@
+### Continuation — object-layout falsification and approved all-scene Viewer gate (2026-10-07)
+
+Closed Phase 5 rows `phys_fn_000004` and `phys_fn_000012` with independent
+mutations caught by `NxPhysicsObjectLayoutTests`: the forwarded-argument
+mutation and freelist-cursor mutation each produced `mismatches=1` against the
+pinned `miscsm` fixture. Their evidence and the regenerated closure/work-unit
+rollups are committed at `403b57d5`; inventory validation reports 6,338
+functions, 5,138 data objects, and zero unexplained rows. On merged local main,
+the Win32 Release Phase 5 gate passes at 2,244/2,244 assertions. The approved
+Viewer design covers all 39 registered scenes; the full 48-entry CTest
+selection passes (43 passed, five established signature-verified asset skips)
+in 67.35 seconds, including Viewer platform/sound and focused physics checks.
+Phase 5 remains pending with 189 function rows awaiting falsification, and the
+full DLL reconstruction remains active. Public Physics headers are unchanged.
+
 # NxPhysics completion project plan from main
 
 ### Continuation — reverse strided range helper falsification (2026-10-07)
