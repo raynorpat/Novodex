@@ -33,6 +33,13 @@
       "result": "56/56 CTest entries completed; 51 passed and five signature-verified pinned-oracle asset cases were skipped because their assets were unavailable. All 39 registered ViewerSmokeScene_* scenes were included."
     }
   ],
-  "excluded_from_comparison": [],
+  "excluded_from_comparison": [
+    "pair_directory=",
+    "loaded module=",
+    "oracle module path=",
+    "oracle base=",
+    "modules ",
+    "imports "
+  ],
   "escalations": []
 }
