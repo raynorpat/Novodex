@@ -81493,13 +81493,15 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2126",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15074",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "The Phase 6 registered NxPhysicsSimulationTests differential exercises kind-3 fixed and kind-1 distance rows together in one connected island for 12 fixed steps. The oracle and candidate match all recorded trajectory points and the completion marker (stdout_delta=0, stderr_exact=True). In a throwaway archive of commit a519d8b4, mutating supportJointForceSum004397 to add relativeVelocity instead of subtracting it was caught by the same Phase 6 gate: both processes exited 0, stdout_delta=6, stderr_exact=True.",
+      "notes": "Whole-row mutation falsification recorded in the Phase 6 closure ledger.",
+      "implementation": "Physics/src/core/JointSupport.cpp",
+      "implementation_symbol": "supportSolveJoint004397"
     },
     {
       "id": "phys_fn_004398",

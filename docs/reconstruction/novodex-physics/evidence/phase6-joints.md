@@ -9289,3 +9289,21 @@ Phase 7 closure additions (`phys_fn_000293`, `NpScene::createActor`; `phys_fn_00
 Phase 7 closure addition (`phys_fn_000398`, `NpScene::fetchResults`): a two-fetch fixture queues a report with no listener, verifies that the first fetch retains it, installs a listener, and verifies that the second fetch delivers it once. This first went RED against the candidate (`pending=0`, `calls=0`; `stdout_delta=4`). Removing the extra `cpmDeliverBufferedContactReports` call matches the oracle (`stdout_delta=0`). In a throwaway archive of HEAD `1bb2955d`, suppressing the row's `processSimulationCallbacks` dispatch is caught by the registered simulation staged-pair differential (`candidate_exit=1`, `oracle_exit=0`, `stdout_delta=944`, `stderr_exact=True`; `build/scene-fetch-results-callback-archive-mutation.log`).
 
 Phase 7 closure addition (`phys_fn_000640`, `NxSceneInternal::processSimulationCallbacks`): in a throwaway archive of HEAD `0ac9f256`, replacing the buffered actor-contact `contactReport->onContactNotify` call with a no-op and rebuilding the DLL and simulation target is caught by the registered staged-pair differential (`stdout_delta=937`, `stderr_exact=True`; `build/scene-contact-callback-branch-archive-mutation.log`). The row now closes on that measured branch; trigger queue generation remains outside this row's coverage. The separate `NpScene::fetchResults` mutation remains open.
+
+
+## Bounded joint support row 004397 — mixed solver-kind island
+
+The registered Phase 6 `NxPhysicsSimulationTests` differential now exercises a
+kind-3 fixed constraint and a kind-1 distance constraint in the same connected
+island for 12 fixed steps. The pinned oracle and candidate match the selected
+early and final body states and the completion marker; the full target reports
+`stdout_delta=0` and exact stderr. The five observations are also required
+coverage lines in Phases 5, 6, and 7.
+
+For whole-row falsification, a throwaway archive of commit `a519d8b4` changed
+`supportJointForceSum004397` from subtracting the measured relative velocity
+to adding it. The registered Phase 6 gate caught the mutation in
+`NxPhysicsSimulationTests`: both processes exited 0, `stdout_delta=6`, and
+stderr matched exactly. The restored source remains unchanged. This closes
+`phys_fn_004397` at RVA `0x000afae0`; the other solver-kind families and Phase 6
+rows remain open.

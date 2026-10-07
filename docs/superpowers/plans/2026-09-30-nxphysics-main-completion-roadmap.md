@@ -1,3 +1,16 @@
+### Continuation — mixed joint solver interaction and Phase 6 row closure (2026-10-07)
+
+Added a 12-step public simulation fixture with a kind-3 fixed constraint and a
+kind-1 distance constraint sharing one connected island. Oracle and candidate
+trajectories match exactly. The fixture is pinned by five required Phase 5/6/7
+coverage observations. A throwaway archive mutation that changed
+`supportJointForceSum004397` from subtracting relative velocity to adding it was
+caught by the registered Phase 6 `NxPhysicsSimulationTests` differential
+(`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=6`, exact stderr).
+`phys_fn_004397` is now closed; Phase 6 records four closed, 403 reconstructed
+rows awaiting falsification, and 26 rows not yet reconstructed in that phase.
+The merged baseline Phase 6 gate passes at 1,056/1,056 assertions.
+
 ### Continuation — object-layout falsification and approved all-scene Viewer gate (2026-10-07)
 
 Closed Phase 5 rows `phys_fn_000004` and `phys_fn_000012` with independent
