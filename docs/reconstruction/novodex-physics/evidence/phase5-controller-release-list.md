@@ -305,3 +305,17 @@ stub and rebuilding returned the target to `failures=0`; the box sweep and hull
 checks also remained green. Full evidence: `evidence/phase5-shape-base-sweep-mutation.md`.
 
 - `phys_fn_001035` mutation detection: changing the base sweep return is caught with `mismatches=3` (the target prints `failures=3`).
+
+## `NpActorVtable::saveToDesc`: `phys_fn_000120`
+
+The registered `NxPhysicsActorLifecycleTests` differential now assigns distinct
+actor groups to the static and dynamic fixtures (3 and 7). The clean target
+matches exactly and reports those saved groups along with pose, density, flags,
+user data, and preserved descriptor fields. Changing the saved group read from
+body+0x1c to body+0x18 is caught with `stdout_delta=8`; changing saved density
+from body+0x18 to body+0x14 is caught with `stdout_delta=6`. Both mutated pairs
+exit zero with exact stderr. After each mutation, the source bytes are restored,
+the DLL/test target rebuilt, and the clean differential returns to
+`stdout_delta=0`, `stderr_exact=True`.
+
+- `phys_fn_000120` mutation detection: wrong group source caught with `stdout_delta=8`; wrong density source caught with `stdout_delta=6`.

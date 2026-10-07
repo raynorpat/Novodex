@@ -2239,12 +2239,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "actor_dynamic vtable slot 82 saveToDesc (Physics/src/NpActor.cpp)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/46",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/238",
       "static_proof": "RVA 0x3690 copies the cached static pose or converts record+0x5c quaternion and copies record+0x50 translation; writes body+0x18 density, +0x14 flags, +0x1c group and actor+4 userData to the descriptor, preserving body/name/type",
-      "dynamic_proof": "NxPhysicsActorLifecycleTests compares descriptor pose and metadata on both DLL pairs for static, dynamic, rotated and quarter-turn actors; all eight gate targets matched",
+      "dynamic_proof": "NxPhysicsActorLifecycleTests matches the pinned oracle for static, dynamic, rotated, and quarter-turn actors with distinct static/dynamic groups 3/7. Changing saveToDesc group source body+0x1c to +0x18 is caught with stdout_delta=8; changing density source body+0x18 to +0x14 is caught with stdout_delta=6. Both processes exit 0 with exact stderr. After byte-exact source restoration and rebuild, the clean differential is stdout_delta=0 and stderr_exact=True.",
       "notes": ""
     },
     {

@@ -617,6 +617,7 @@ int wmain(int argc, wchar_t** argv)
 	NxBoxShapeDesc box;
 	box.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
 	NxActorDesc staticDesc;
+	staticDesc.group = 3;
 	staticDesc.shapes.pushBack(&box);
 	staticDesc.globalPose.t = NxVec3(2.0f, -1.0f, 4.0f);
 	const unsigned beforeStaticAllocations = allocator.allocations();
@@ -690,6 +691,7 @@ int wmain(int argc, wchar_t** argv)
 	NxActorDesc dynamicDesc;
 	dynamicDesc.body = &body;
 	dynamicDesc.density = 1.0f;
+	dynamicDesc.group = 7;
 	dynamicDesc.shapes.pushBack(&box);
 	dynamicDesc.globalPose.t = NxVec3(-3.0f, 2.0f, 1.0f);
 	const unsigned beforeDynamicAllocations = allocator.allocations();

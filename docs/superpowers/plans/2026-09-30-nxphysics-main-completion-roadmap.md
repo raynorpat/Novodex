@@ -183,6 +183,18 @@ full DLL reconstruction remains active. Public Physics headers are unchanged.
 
 # NxPhysics completion project plan from main
 
+### Continuation — actor `saveToDesc` field-source falsification (2026-10-07)
+
+The registered lifecycle fixture now uses distinct static/dynamic actor groups
+(3 and 7), and the clean oracle/candidate differential remains exact. For
+`phys_fn_000120` (`NpActorVtable::saveToDesc`), reading group from density's
+body+0x18 instead of body+0x1c is caught with `stdout_delta=8`; reading density
+from flags at body+0x14 instead of body+0x18 is caught with
+`stdout_delta=6`. Both mutant processes exit zero with exact stderr. Restoring
+the source byte-for-byte and rebuilding returns the differential to exact.
+Phase 5 now records 41 closed / 164 deferred rows; the phase remains pending.
+Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-save-to-desc-mutation.md`.
+
 ### Continuation � actor-flag mutation closures (2026-10-07)
 
 `NxPhysicsActorMetadataTests` now independently falsifies Phase 5 rows `phys_fn_000074` (`raiseActorFlag`), `phys_fn_000076` (`clearActorFlag`), and `phys_fn_000078` (`readActorFlag`). The mutations were caught with `stdout_delta=4`, `2`, and `8`; the restored differential matches exactly. Phase 5 now records 32 closed rows and 173 reconstructed rows awaiting falsification.
