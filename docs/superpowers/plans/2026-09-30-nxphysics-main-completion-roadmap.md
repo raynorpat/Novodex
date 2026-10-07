@@ -183,6 +183,17 @@ full DLL reconstruction remains active. Public Physics headers are unchanged.
 
 # NxPhysics completion project plan from main
 
+### Continuation — `saveBodyToDesc` result falsification (2026-10-07)
+
+For `phys_fn_000046`, forcing `NpActorVtable::saveBodyToDesc` to return false
+after the descriptor gather is caught by the registered lifecycle differential
+with `stdout_delta=6`; both processes exit zero and stderr is exact. The
+mutation leaves descriptor bytes unchanged but flips the dynamic actors'
+public success result. Restoring the source byte-for-byte and rebuilding
+returns the clean differential to exact. Phase 5 now records 44 closed / 161
+deferred rows; the phase remains pending. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase5-save-body-desc-mutation.md`.
+
 ### Continuation — local-point velocity row falsification (2026-10-07)
 
 For `phys_fn_000148` (`NpActorVtable::getLocalPointVelocityVal`), changing the

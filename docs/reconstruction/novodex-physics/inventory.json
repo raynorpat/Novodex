@@ -900,12 +900,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "actor_dynamic vtable slot: descriptor gather (0x24c0, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/21",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/132",
       "static_proof": "gathers the descriptor record at [[self+0x14]+8] into out: nine dwords from record+0xdc, three from record+0x100, then the tail fields, with square roots of the floats at +0xd8/+0xd0/+0xd4; returns false and writes nothing when the record pointer is null; ret 4",
-      "dynamic_proof": "confirmed via gather0046 differential (3z134): null arm + present arm failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
+      "dynamic_proof": "NxPhysicsActorLifecycleTests matches the pinned oracle for a static no-record actor and dynamic, rotated, and quarter-turn actors. Forcing saveBodyToDesc to return false after descriptor gather is caught with stdout_delta=6; both processes exit 0 and stderr is exact. After byte-exact source restoration and rebuild, the clean differential is stdout_delta=0 and stderr_exact=True.",
       "notes": ""
     },
     {

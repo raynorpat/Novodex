@@ -344,3 +344,16 @@ returns the differential to `stdout_delta=0`, `stderr_exact=True`. Full
 evidence: `evidence/phase5-local-point-velocity-mutation.md`.
 
 - `phys_fn_000148` mutation detection: changed the final local-Z accumulation from addition to subtraction; caught with `stdout_delta=38`.
+
+## `NpActorVtable::saveBodyToDesc`: `phys_fn_000046`
+
+The registered lifecycle differential checks the null-record static actor and
+dynamic, rotated, and quarter-turn body descriptors. Replacing the gathered
+result with `false` leaves the output bytes unchanged but changes the public
+success result for the three dynamic actors; the paired transcript catches it
+with `stdout_delta=6`. Both processes exit zero with exact stderr. Restoring
+the source byte-for-byte, rebuilding, and rerunning returns to
+`stdout_delta=0`, `stderr_exact=True`. Full evidence:
+`evidence/phase5-save-body-desc-mutation.md`.
+
+- `phys_fn_000046` mutation detection: forced the successful descriptor-gather return to false; caught with `stdout_delta=6`.
