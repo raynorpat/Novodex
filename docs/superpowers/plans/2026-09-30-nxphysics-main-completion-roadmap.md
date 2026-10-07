@@ -1,3 +1,15 @@
+### Continuation — kind-5 joint solver differential (2026-10-07)
+
+Added a direct oracle/candidate internal Scene fixture for `phys_fn_004399`
+(`NxPhysics.dll+0x000afc10`), registered in Phase 7. The unconstrained and
+force-clamped kind-5 rows match through one solver pass and the final-record
+pass, including body updates, accumulated impulse, flags, and the slot-3
+callback. The pinned oracle and candidate digests match exactly; disabling the
+kind-5 route is caught with 11 mismatches. Phase 7 passes at 1,372/1,372
+coverage assertions. This verifies the solver row directly; the public joint
+record producer for kind 5 remains unlocated. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase7-kind5-support.md`.
+
 ### Continuation — actor dynamic-state vtable mutation closure (2026-10-07)
 
 Closed Phase 5 row `phys_fn_000110` (`NxActor::isDynamic`) using the registered

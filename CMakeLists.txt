@@ -946,6 +946,17 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# linkage here as in the DLL or every one of them warns.
 	target_compile_definitions(NxPhysicsCollisionTests PRIVATE NX_PHYSICS_DLL=1)
 	target_link_libraries(NxPhysicsCollisionTests NxFoundation NxOpcode NxQhull bcrypt)
+	# The joint-support solver-row differential follows the same in-process oracle
+	# pattern as the narrow-phase harness: it calls the pinned internal wrapper by
+	# RVA and compares its record/body/callback effects with JointSupport.cpp linked
+	# into the test. Kind 5 has no public joint-record producer in the current
+	# reconstruction, so the fixture builds the measured Scene support arrays.
+	add_executable(NxPhysicsJointSupportTests tests/PhysicsJointSupportTests.cpp
+		Physics/src/core/JointSupport.cpp)
+	target_include_directories(NxPhysicsJointSupportTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include Physics/src/include)
+	target_compile_definitions(NxPhysicsJointSupportTests PRIVATE NX_PHYSICS_STATICLIB=1)
+	target_link_libraries(NxPhysicsJointSupportTests bcrypt)
 	# A linker map supports scene-raycast and convex-mesh-gap candidate traces;
 	# it changes nothing in the executable.
 	if(MSVC)

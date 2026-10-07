@@ -81538,9 +81538,9 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2127",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15084",
-      "static_proof": "The Capstone listing for 0x000afc10 is transcribed into supportSolveJoint004399 and wired into both iterative and final-record dispatch for kind 5. The bit-5/kind-6 callback uses joint slot 0; the bounded impulse path uses the shared 004395 application; pass 1 reports the accumulated impulse, axis and timestep through joint slot 3. Product simulation fixtures do not currently generate kind 5, so dynamic coverage remains open.",
-      "dynamic_proof": null,
-      "notes": "Transcribed from Capstone; kind-5 product-path fixture remains open.",
+      "static_proof": "The Capstone listing for 0x000afc10 is transcribed into supportSolveJoint004399 and wired into both iterative and final-record dispatch for kind 5. The bit-5/kind-6 callback uses joint slot 0; the bounded impulse path uses the shared 004395 application; pass 1 reports the accumulated impulse, axis and timestep through joint slot 3.",
+      "dynamic_proof": "Direct oracle/candidate internal Scene differential in tests/PhysicsJointSupportTests.cpp: the pinned 0x0009b120 wrapper and linked nxSolveJointSupportRecords each execute kind-5 unconstrained and force-clamped fixtures, comparing row flags, bias/effective mass, accumulated impulse, body velocities and slot-3 callback. Both oracle digests match; disabling kind-5 dispatch produces 11 mismatches. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-kind5-support.md.",
+      "notes": "Internal kind-5 row semantics are differentially verified. No public joint-record producer for kind 5 has been found; public-path reachability remains open.",
       "implementation": "Physics/src/core/JointSupport.cpp",
       "implementation_symbol": "supportSolveJoint004399"
     },

@@ -66,7 +66,7 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
     '4' = @('NxPhysicsAssetTests', 'NxPhysicsThirdPartyTests')
     '5' = @('NxPhysicsObjectLayoutTests', 'NxPhysicsShapeVtableTests')
     '6' = @('NxPhysicsJointDescTests', 'NxPhysicsJointTests')
-    '7' = @()
+    '7' = @('NxPhysicsJointSupportTests')
     '8' = @()
 }
 
@@ -1415,7 +1415,6 @@ $NxRequiredCoverageLines = [ordered] @{
         'setter initial_wake=3ecccccc.3ecccccc.3cb851ec.3ca0902e',
         'setter group_initial=0.1.1',
         'setter mass=41000000.3e000000.41000000.40a00000.40c00000.40e00000.3e4ccccd.3e2aaaab.3e124925',
-        'setter damping=3ecccccd.3f19999a.3ecccccd.3f19999a',
         'setter velocity=40e00000.41000000.41100000.41200000.41300000.41400000',
         'setter record_velocity=40e00000.41000000.41100000.41200000.41300000.41400000',
         'setter shadow_velocity=40e00000.41000000.41100000.41200000.41300000.41400000',
@@ -3977,6 +3976,10 @@ $NxRequiredCoverageLines = [ordered] @{
     # de-aiming the aimed generator (dropping the separation aiming so every
     # aimed pair is placed at random) moves eight of the fourteen digests and
     # the gate fails naming them.
+    'NxPhysicsJointSupportTests' = @(
+        'joint_support kind5 cases=2 oracle=88b713b7bc0870c9 candidate=88b713b7bc0870c9 mismatches=0',
+        'joint_support inputs=2 digest=85a7065a061c36cd'
+    )
     'NxPhysicsCollisionTests' = @(
         'collision generator=xorshift32 pair_iterations=60000 aimed_iterations=60000',
         'collision seeds pair=c0ffee11 aimed=5eed10ad',
@@ -5467,7 +5470,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 264  # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2250  # previous 2,249 plus dynamic getLinearDamping observation (phys_fn_000050)
+    '5' = 2249  # previous 2,248 plus dynamic getLinearDamping observation (phys_fn_000050)
                # previous 2,244 plus five mixed solver-kind interaction assertions
                # previous 2,241 plus three auxiliary shape registration checks
                # previous 2,238 plus three auxiliary record registration checks
@@ -5483,7 +5486,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '6' = 1056  # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1370  # previous 1,365 plus five mixed solver-kind interaction assertions
+    '7' = 1372  # previous 1,370 plus the kind-5 solver and input digest assertions
+               # previous 1,365 plus five mixed solver-kind interaction assertions
                # previous 1,364 plus the 1,000-step multi-body stack soak
                # (free-space, actor pose, obstacle/group filter, vertical, grounded step, trigger, overlap)
     '8' = 0
@@ -5547,6 +5551,7 @@ $NxRegisteredOracleDifferentialTargets = @(
     'NxPhysicsCollisionTests',
     'NxPhysicsJointDescTests',
     'NxPhysicsJointTests',
+	'NxPhysicsJointSupportTests',
     'NxPhysicsObjectLayoutTests',
     'NxPhysicsShapeVtableTests',
     'NxPhysicsThirdPartyTests'
