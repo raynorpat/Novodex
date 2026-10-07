@@ -188,4 +188,3 @@ The registered `NxPhysicsActorMetadataTests` target pins descriptor flags, publi
 `phys_fn_000076` mutation detection: clear mutation caught with `stdout_delta=2`.
 
 `phys_fn_000078` mutation detection: read mutation caught with `stdout_delta=8`.
-
