@@ -103,7 +103,7 @@ struct InternalTriangleMesh
 	void*					mTriangleData;		//!< +0x1c, 16 bytes per triangle, allocated by 002079 and released by 002067
 	Opcode::BaseModel*		mModel;				//!< +0x20
 	Opcode::MeshInterface	mMeshInterface;	//!< +0x24, OPCODE's four-word mesh interface
-	NxU32					mInterfaceWord34;	//!< +0x34, not read by the recovered build path
+	void*					mInterfaceAllocation;	//!< +0x34; the TriangleMesh destructor frees it through the Foundation allocator
 	};
 
 // InternalTriangleMesh rows recovered from the allocation/teardown paths in
@@ -187,7 +187,7 @@ class TriangleMesh
 	//! destructor again at 0x00055581). Its twelve slots take the mesh plus
 	//! four as `this` and read the convex mesh at +0xa0; the candidate's slots
 	//! are gTriangleMeshPolygonTable (TriangleMeshPolygons.cpp, convex-mesh gap
-	//! Task 2g). No candidate constructor exists yet to store it.
+	//! Task 2g). The candidate constructor installs the table.
 	const void* const*		mPolygonTable;
 	//! +0x08, the embedded internal mesh -- which reaches exactly to +0x40.
 	InternalTriangleMesh	mInternal;
@@ -226,15 +226,15 @@ class TriangleMesh
 	NxU32*					mArrayB;
 	//! +0x9c, PenetrationMap, released by the TriangleMesh destructor.
 	PenetrationMap*			mPMap;
-	//! +0xa0, the convex mesh. Released through its slot 0 by
-	//! phys_fn_002164. The polygon interface reads it as the hull of
-	//! ConvexHull.h (+0x0c..+0x48) with a vertex graph at +0x64 (002249).
-	//! The words after it, +0xa4 (passed to 001818, which never reads it) and
-	//! +0xa8 (the kind C support map slot 11 takes; 001820 at 0x000411f1 /
-	//! 0x000411f7), are outside this class's measured size.
+	//! +0xa0, the convex mesh. Released by the mesh cleanup helper. The polygon
+	//! interface reads it as the hull of ConvexHull.h (+0x0c..+0x48) with a
+	//! vertex graph at +0x64 (002249).
 	void*					mConvexMesh;
-	//! +0xa4..+0xaf, reserved.
-	NxU8					mGapA4[0x0c];
+	//! +0xa4, +0xa8, and +0xac are opaque objects released through their
+	//! virtual deleting-destructor slots by phys_fn_002253's cleanup helper.
+	void*					mOwnedSlotA4;
+	void*					mOwnedSlotA8;
+	void*					mOwnedSlotAC;
 	//! +0xb0, lazy mass/inertia cache consumed by MeshShape's mass path.
 	float					mCachedMass;
 	float					mCachedInertia[9];
@@ -257,6 +257,7 @@ static_assert(offsetof(TriangleMesh, mInternal.mFaceRemap) == 0x1c, "face remap 
 static_assert(offsetof(TriangleMesh, mInternal.mVertexNormals) == 0x20, "vertex normals are internal+0x18");
 static_assert(offsetof(TriangleMesh, mInternal.mTriangleData) == 0x24, "per-triangle data pointer is internal+0x1c / TriangleMesh+0x24");
 static_assert(offsetof(TriangleMesh, mInternal.mModel) == 0x28, "the model is internal+0x20 / TriangleMesh+0x28");
+static_assert(offsetof(TriangleMesh, mInternal.mInterfaceAllocation) == 0x3c, "the destructor-owned interface allocation is at +0x3c");
 static_assert(offsetof(TriangleMesh, mHullFlags) == 0x40, "the hull flags are at +0x40");
 static_assert(offsetof(TriangleMesh, mConvexEdgeThreshold) == 0x6c, "the threshold is at +0x6c");
 static_assert(offsetof(TriangleMesh, mHeightFieldVerticalAxis) == 0x7c, "the height-field axis is at +0x7c");
@@ -269,6 +270,9 @@ static_assert(offsetof(TriangleMesh, mArrayA) == 0x94, "array A is at +0x94");
 static_assert(offsetof(TriangleMesh, mArrayB) == 0x98, "array B is at +0x98");
 static_assert(offsetof(TriangleMesh, mPMap) == 0x9c, "the penetration map is at +0x9c");
 static_assert(offsetof(TriangleMesh, mConvexMesh) == 0xa0, "the convex mesh is at +0xa0");
+static_assert(offsetof(TriangleMesh, mOwnedSlotA4) == 0xa4, "opaque deleting slot A is at +0xa4");
+static_assert(offsetof(TriangleMesh, mOwnedSlotA8) == 0xa8, "opaque deleting slot B is at +0xa8");
+static_assert(offsetof(TriangleMesh, mOwnedSlotAC) == 0xac, "opaque deleting slot C is at +0xac");
 static_assert(offsetof(TriangleMesh, mPublicObject) == 0xe4, "the public wrapper is at +0xe4");
 static_assert(sizeof(TriangleMesh) == 0xe8, "the SDK allocates a 0xe8-byte triangle mesh");
 

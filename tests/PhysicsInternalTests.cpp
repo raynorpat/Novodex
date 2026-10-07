@@ -56,6 +56,16 @@ class FoundationCounter : public NxUserAllocator
 
 static FoundationCounter gFoundationCounter;
 
+static unsigned gTriangleMeshDeletingObjectDestructions = 0;
+
+class TriangleMeshDeletingTestObject
+	{
+	public:
+	virtual ~TriangleMeshDeletingTestObject() { ++gTriangleMeshDeletingObjectDestructions; }
+	static void operator delete(void* memory)
+		{ nxGetSdkAllocator()->free(memory); }
+	};
+
 static int fail(const char* message)
 	{
 	fprintf(stderr, "FAIL %s\n", message);
@@ -540,6 +550,78 @@ static int testInternalTriangleMeshModel()
 	return 0;
 	}
 
+// The TriangleMesh destructor's cleanup helper at 0x00054a80 owns more than
+// the embedded mesh arrays: two Foundation arrays, three polymorphic deleting
+// slots, the EdgeList and Adjacencies caches, and the allocation at +0x3c.
+// Build every one through the same allocators the oracle uses, then verify the
+// destructor releases the full ownership set.
+static int testTriangleMeshDestructorOwnership()
+	{
+	CountingAllocator sdkAllocator;
+	nxSetSdkAllocatorBridge(&sdkAllocator);
+	const unsigned foundationMallocsBefore = gFoundationCounter.mallocs;
+	const unsigned foundationFreesBefore = gFoundationCounter.frees;
+	const unsigned sdkMallocsBefore = sdkAllocator.mallocs;
+	const unsigned sdkFreesBefore = sdkAllocator.frees;
+	const unsigned deletingDestructionsBefore = gTriangleMeshDeletingObjectDestructions;
+
+	void* meshMemory = gFoundationCounter.malloc(sizeof(TriangleMesh), NX_MEMORY_PERSISTENT);
+	TriangleMesh* mesh = meshMemory ? new(meshMemory) TriangleMesh : 0;
+	if(!check(mesh != 0, "destructor fixture allocates a TriangleMesh"))
+		return fail("TriangleMesh destructor fixture allocation");
+
+	nxInternalMeshAllocateVertices(&mesh->mInternal, 4);
+	nxInternalMeshAllocateTriangles(&mesh->mInternal, 4);
+	const NxVec3 vertices[4] = {
+		NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f),
+		NxVec3(0.0f, 1.0f, 0.0f), NxVec3(0.0f, 0.0f, 1.0f)
+		};
+	const NxU32 triangles[12] = { 0, 2, 1, 0, 1, 3, 0, 3, 2, 1, 2, 3 };
+	memcpy(mesh->mInternal.mVertices, vertices, sizeof(vertices));
+	memcpy(mesh->mInternal.mTriangles, triangles, sizeof(triangles));
+	nxInternalMeshBuildTriangleData(&mesh->mInternal);
+	mesh->createAdjacencies();
+	mesh->createEdgeList();
+	if(!check(mesh->mInternal.mTriangleData && mesh->mAdjacencies && mesh->mEdgeList,
+		"destructor fixture builds triangle data and both topology caches"))
+		return fail("TriangleMesh destructor fixture topology construction");
+
+	mesh->mArrayA = static_cast<NxU32*>(gFoundationCounter.malloc(4 * sizeof(NxU32), NX_MEMORY_PERSISTENT));
+	mesh->mArrayB = static_cast<NxU32*>(gFoundationCounter.malloc(4 * sizeof(NxU32), NX_MEMORY_PERSISTENT));
+	mesh->mInternal.mInterfaceAllocation =
+		gFoundationCounter.malloc(16, NX_MEMORY_PERSISTENT);
+	for(unsigned offset = 0xa4; offset <= 0xac; offset += 4)
+		{
+		void* memory = sdkAllocator.malloc(sizeof(TriangleMeshDeletingTestObject), NX_MEMORY_PERSISTENT);
+		if(!check(memory != 0, "destructor fixture allocates a deleting-slot object"))
+			return fail("TriangleMesh destructor deleting-slot allocation");
+		new(memory) TriangleMeshDeletingTestObject;
+		*reinterpret_cast<void**>(reinterpret_cast<NxU8*>(mesh) + offset) = memory;
+		}
+	if(!check(mesh->mArrayA && mesh->mArrayB && mesh->mInternal.mInterfaceAllocation,
+		"destructor fixture installs both optional arrays and the +0x3c allocation"))
+		return fail("TriangleMesh destructor fixture auxiliary storage");
+
+	mesh->~TriangleMesh();
+	gFoundationCounter.free(meshMemory);
+	nxSetSdkAllocatorBridge(0);
+
+	const unsigned foundationMallocs = gFoundationCounter.mallocs - foundationMallocsBefore;
+	const unsigned foundationFrees = gFoundationCounter.frees - foundationFreesBefore;
+	const unsigned sdkMallocs = sdkAllocator.mallocs - sdkMallocsBefore;
+	const unsigned sdkFrees = sdkAllocator.frees - sdkFreesBefore;
+	const unsigned deletingDestructions = gTriangleMeshDeletingObjectDestructions - deletingDestructionsBefore;
+	printf("triangle_mesh destructor foundation=%u.%u sdk=%u.%u deleting=%u\n",
+		foundationMallocs, foundationFrees, sdkMallocs, sdkFrees, deletingDestructions);
+	if(!check(foundationFrees == foundationMallocs,
+		"TriangleMesh destructor releases every Foundation-owned allocation"))
+		return fail("TriangleMesh destructor leaked Foundation-owned storage");
+	if(!check(sdkFrees == sdkMallocs && deletingDestructions == 3,
+		"TriangleMesh destructor releases both caches and all deleting slots"))
+		return fail("TriangleMesh destructor leaked SDK-owned storage");
+	return 0;
+	}
+
 int main()
 	{
 	// ReadWriteLock allocates its block through nxFoundationSDKAllocator, which
@@ -559,6 +641,8 @@ int main()
 		status = testInternalTriangleMeshRows();
 	if(!status)
 		status = testInternalTriangleMeshModel();
+	if(!status)
+		status = testTriangleMeshDestructorOwnership();
 
 	printf("static_proof checks=%d status=%s\n", gChecks, status ? "fail" : "pass");
 	foundation->release();

@@ -12,6 +12,8 @@
 #include "NxPMap.h"
 #include "NxTriangleMesh.h"
 #include "TriangleMeshPolygons.h"
+#include "EdgeList.h"
+#include "IceAdjacencies.h"
 #include "OPC_Model.h"
 #include "NxVolumeIntegration.h"
 #include "ConvexHull.h"
@@ -32,6 +34,19 @@ static const char* const kTriangleMeshPMapCreateFailedMessage = "TriangleMesh::l
 static const char* const kTriangleMeshReleaseInUseMessage =
 	"TriangleMesh::release: instances of this mesh still exist!";
 
+// The cleanup helper at 0x00054a80 invokes slot 0 with deleting flag 1 for
+// three opaque TriangleMesh-owned objects (+0xa4, +0xa8 and +0xac). Preserve
+// that ABI operation until their concrete types are recovered.
+static void nxTriangleMeshDeleteOpaqueSlot(void*& object)
+	{
+	if(!object)
+		return;
+	typedef void (__thiscall *DeletingDestructor)(void*, NxU32);
+	void** vtable = *reinterpret_cast<void***>(object);
+	reinterpret_cast<DeletingDestructor>(vtable[0])(object, 1);
+	object = 0;
+	}
+
 // The two tags are read and written as DWORDS, so on the little-endian target
 // the bytes on disc are 54 53 58 4e and 48 53 45 4d. Written most significant
 // byte first the two constants spell NXST and MESH; in file order they spell
@@ -44,6 +59,12 @@ static const NxU32 kTriangleMeshTag1 = 0x4d455348;	// cmp at 0x00055cd0, push at
 
 namespace
 	{
+	static NxU32* nxTriangleMeshVtableToken()
+		{
+		static const NxU32 token = 0x00108608;
+		return const_cast<NxU32*>(&token);
+		}
+
 	struct TriangleMeshConvexData : ConvexHull
 		{
 	float			mBounds[6];		// +0x4c, min xyz then max xyz (001411)
@@ -256,8 +277,7 @@ namespace
 TriangleMesh::TriangleMesh()
 	{
 	memset(this, 0, sizeof(*this));
-	static const NxU32 vtableToken = 0x00108608;
-	mVtableSlot = const_cast<NxU32*>(&vtableToken);
+	mVtableSlot = nxTriangleMeshVtableToken();
 	mPolygonTable = gTriangleMeshPolygonTable;
 	mConvexEdgeThreshold = 0.001f;
 	mHeightFieldVerticalAxis = NX_NOT_HEIGHTFIELD;
@@ -274,6 +294,33 @@ TriangleMesh::TriangleMesh()
 // TriangleMesh-owned PMap, convex, model, and array storage.
 TriangleMesh::~TriangleMesh()
 	{
+	mVtableSlot = nxTriangleMeshVtableToken();
+	mPolygonTable = gTriangleMeshPolygonTable;
+	if(mPublicObject)
+		{
+		NxTriangleMeshWrapper* wrapper = static_cast<NxTriangleMeshWrapper*>(mPublicObject);
+		wrapper->~NxTriangleMeshWrapper();
+		nxFoundationSDKAllocator->free(wrapper);
+		mPublicObject = 0;
+		}
+
+	// phys_fn_002253 calls 002067 through the cleanup helper before releasing
+	// its adjacent TriangleMesh-owned arrays and cache objects.
+	nxInternalMeshRelease(&mInternal);
+	if(mArrayB)
+		{
+		nxFoundationSDKAllocator->free(mArrayB);
+		mArrayB = 0;
+		}
+	if(mArrayA)
+		{
+		nxFoundationSDKAllocator->free(mArrayA);
+		mArrayA = 0;
+		}
+
+	nxTriangleMeshDeleteOpaqueSlot(mOwnedSlotAC);
+	nxTriangleMeshDeleteOpaqueSlot(mOwnedSlotA8);
+	nxTriangleMeshDeleteOpaqueSlot(mOwnedSlotA4);
 	nxTriangleMeshDestroyConvexData(static_cast<TriangleMeshConvexData*>(mConvexMesh));
 	mConvexMesh = 0;
 	if(mPMap)
@@ -282,22 +329,24 @@ TriangleMesh::~TriangleMesh()
 		nxFoundationSDKAllocator->free(mPMap);
 		mPMap = 0;
 		}
-	nxTriangleMeshFree(mInternal.mVertices);
-	nxTriangleMeshFree(mInternal.mTriangles);
-	nxTriangleMeshFreeTyped(mInternal.mMaterialIndices);
-	nxTriangleMeshFreeTyped(mInternal.mFaceRemap);
-	nxTriangleMeshFree(mInternal.mVertexNormals);
-	if(mInternal.mModel)
+	if(mEdgeList)
 		{
-		delete mInternal.mModel;
-		mInternal.mModel = 0;
+		mEdgeList->~EdgeList();
+		nxIceFree(mEdgeList);
+		mEdgeList = 0;
 		}
-	if(mPublicObject)
+	if(mInternal.mInterfaceAllocation)
 		{
-		NxTriangleMeshWrapper* wrapper = static_cast<NxTriangleMeshWrapper*>(mPublicObject);
-		wrapper->~NxTriangleMeshWrapper();
-		nxFoundationSDKAllocator->free(wrapper);
-		mPublicObject = 0;
+		nxFoundationSDKAllocator->free(mInternal.mInterfaceAllocation);
+		mInternal.mInterfaceAllocation = 0;
+		}
+	// The image uses an integer >= 2 check because 1 records a failed adjacency
+	// allocation; only an installed object is destroyed and returned to the pool.
+	if(reinterpret_cast<NxU32>(mAdjacencies) >= 2)
+		{
+		mAdjacencies->~Adjacencies();
+		nxIceFree(mAdjacencies);
+		mAdjacencies = 0;
 		}
 	}
 

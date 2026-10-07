@@ -3,23 +3,33 @@
 Date: 2026-10-07
 Oracle: pinned `D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll`
 Oracle SHA-256: `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`
-Candidate: `build-mut/Release/NxPhysics.dll`
-Candidate SHA-256: `aac7df85d5125d511f4aa6929291d6c087c61082ca323a9b751a8cf154175a8a`
+Candidate: `build/Release/NxPhysics.dll`
+Candidate SHA-256: `043a028a913f77da20d97c3a8790e9fb42e74a8d18c28ae7abbb8e597c7ae2ac`
 
-IDA decompiled RVA `0x00055570` (preferred VA `0x10055570`) as the TriangleMesh
-destructor. It releases and clears the public wrapper, calls the convex-data/PMap cleanup
-helper, then destroys the internal mesh arrays. The candidate implementation is
-`TriangleMesh::~TriangleMesh` in `Physics/src/TriangleMesh.cpp`, with the stable row comment
-at the destructor.
+IDA decompiled RVA `0x00055570` (`0x10055570`) as the TriangleMesh destructor.
+It restores the two interface words, deletes the public wrapper, and calls
+`0x00054a80`. That helper releases the embedded model and arrays, the optional
+arrays at `+0x94/+0x98`, the deleting-destructor objects at `+0xac/+0xa8/+0xa4`,
+the convex mesh and PMap, the edge list at `+0x88`, the Foundation allocation
+at `+0x3c`, and (when its value is at least 2) the adjacency cache at `+0x84`.
+The final helper calls the internal cleanup again and calls `NxFluidAssert`, a
+no-op in the pinned image.
 
-`NxPhysicsTriangleMeshApiTests` now tracks outstanding SDK-allocator blocks around one
-triangle-mesh create/release pair and asserts that release returns to the starting level.
-The staged-pair differential passed that target and `NxPhysicsConvexMeshTests` with both
-processes exiting zero, `stdout_delta=0`, and exact stderr. The API tests also release
-computed convex meshes and meshes carrying loaded PMaps.
+`NxPhysicsInternalTests` now constructs a TriangleMesh with the per-triangle
+data, both topology caches, both optional arrays, the `+0x3c` allocation, and
+three valid polymorphic deleting-slot objects. Before the destructor fix, this
+fixture reported `foundation=8.4 sdk=20.10 deleting=0` and failed. After the
+fix it reports `foundation=8.8 sdk=20.20 deleting=3` and passes, proving every
+fixture allocation is released and each opaque object's deleting destructor is
+dispatched. The internal field layout and public header hash gate also pass.
 
-Mutation check: temporarily omitted the vertex-array free in the candidate destructor. The
-new fixture changed `returned_to_baseline` from 1 to 0 and failed while the oracle passed.
-Restoring the free returned both targets to exact output. Temporary allocation totals during
-cooking differ between the binaries, so the fixture checks only outstanding ownership after
-release. Individual allocation-failure branches remain open.
+The staged oracle/candidate differential passed `NxPhysicsTriangleMeshApiTests`
+with both processes exiting zero, `stdout_delta=0`, and exact stderr. This
+retains the public lifecycle coverage for release refusal while an actor owns a
+mesh, successful release after actor teardown, computed convex meshes, and
+loaded PMaps. Build command: `cmake --build build --config Release --target
+NxPhysics NxPhysicsTriangleMeshApiTests NxPhysicsInternalTests`.
+
+The internal fixture directly verifies the cleanup branches that the public
+path does not currently populate; the public differential verifies observable
+API behavior. Individual allocation-failure branches remain open.

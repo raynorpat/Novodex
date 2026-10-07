@@ -2820,13 +2820,13 @@ undefined4 * __fastcall FUN_10055490(undefined4 *param_1)
 
 ```
 
-## phys_fn_002253 (0x00055570, 59 B, discovered)
+## phys_fn_002253 (0x00055570, 59 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
-- prototype: undefined __fastcall FUN_10055570(undefined4 * param_1)
-- calling convention: __fastcall, stack purge: 0
+- source: Physics/src/TriangleMesh.cpp
+- implementation: Physics/src/TriangleMesh.cpp
+- prototype: TriangleMesh::~TriangleMesh()
+- calling convention: thiscall
 - callers: phys_fn_000478 (0x0000ebe0), phys_fn_000492 (0x0000fb70)
 - callees: phys_fn_002085 (0x000523a0), phys_fn_002239 (0x00054a80)
 - indirect calls: 0x0005558e  call dword ptr [eax + 0x30]
@@ -2852,6 +2852,14 @@ void __fastcall FUN_10055570(undefined4 *param_1)
 
 
 ```
+
+IDA confirms that the called cleanup helper at `0x00054a80` releases the
+embedded mesh resources, optional arrays at `+0x94/+0x98`, deleting-destructor
+objects at `+0xac/+0xa8/+0xa4`, convex data, PMap, edge list, the Foundation
+allocation at `+0x3c`, and the adjacency cache. `NxPhysicsInternalTests` builds
+all these ownership forms in one fixture and verifies both allocator balances
+and the three deleting-destructor calls; see
+[`evidence/triangle-mesh-destructor.md`](../evidence/triangle-mesh-destructor.md).
 
 ## phys_fn_002255 (0x000555b0, 272 B, discovered)
 
