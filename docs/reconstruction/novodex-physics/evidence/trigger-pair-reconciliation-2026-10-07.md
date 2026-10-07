@@ -24,10 +24,21 @@ so the candidate now mirrors the observed rule that any enabled trigger event
 bit admits all transitions. Both focused differentials are exact; the expanded
 batch transcript is recorded in
 `build/trigger-pair-eight-mask-restored.log` (`oracle_exit=0`,
-`candidate_exit=0`, `stdout_delta=0`, `stderr_exact=True`). A same-checkout
-mutation that made the pair lookup always miss is caught by the trigger
-lifecycle fixture (`build/trigger-pair-hash-mutation.log`). This mutation was
-not run from a throwaway archive and is not formal closure evidence.
+`candidate_exit=0`, `stdout_delta=0`, `stderr_exact=True`). The clean candidate
+also passed the registered simulation differential from a throwaway archive
+of `1e23e707` (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`,
+`stderr_exact=True`). A second build from that archive changed the matching
+branch in `nxSceneFindTriggerPair` to return `-1`. The pinned control still
+passed; the mutant emitted a second enter and duplicate leave, reported
+`trigger-lifecycle summary ... exact=0`, and exited 1. The archive runner's
+identity check stops before it prints a whole-target delta for failing
+children, so the focused mismatch is recorded directly rather than claiming a
+`stdout_delta` from that runner. The staged oracle and mutant Physics hashes
+were `4b7db3e1...79602c` and `d846ee82...68fe86` respectively. This formal
+falsification covers lookup matching in the lifecycle fixture; duplicate
+identical pairs, compound expansion, unsupported overlap slots, and broader
+allocation/list edge cases remain open, so the inventory row stays
+`discovered`.
 
 The current staged gates pass: Phase 5 at 2,263/2,263 assertions, Phase 6 at
 1,061/1,061, and Phase 7 at 1,377/1,377. These results establish the tested
