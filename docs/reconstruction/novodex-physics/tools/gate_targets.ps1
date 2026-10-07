@@ -1167,6 +1167,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'setter static_quat_3=3f741dfd.3e4d9285.3dcd9285.3e4d9285',
         'setter static_quat_4=3e1ac3df.3f6825d0.be9ac3df.3e80f88f',
         'setter static_quat_5=be4c8b64.3e7fae3d.3f661ccf.3e99688b',
+        # phys_fn_000050: the public dynamic-actor getter must read record +0xb8.
+        'setter damping=3ecccccd.3f19999a.3ecccccd.3f19999a',
         # NpActor.cpp completion Task 2 (contract G1/E1): the Foundation error stream the
         # target now passes, enabled only for these cases, prints every report the pair
         # delivers. Static, kinematic and invalid-argument calls report E1 with the row's
@@ -5465,7 +5467,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 264  # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2249  # previous 2,244 plus five mixed solver-kind interaction assertions
+    '5' = 2250  # previous 2,249 plus dynamic getLinearDamping observation (phys_fn_000050)
+               # previous 2,244 plus five mixed solver-kind interaction assertions
                # previous 2,241 plus three auxiliary shape registration checks
                # previous 2,238 plus three auxiliary record registration checks
                # previous 2,237 plus actor descriptor userData initialization
