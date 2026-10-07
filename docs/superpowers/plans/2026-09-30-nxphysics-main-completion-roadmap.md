@@ -5,11 +5,14 @@ controller move path and a conditional fourth correction probe. The fourth
 probe is gated by step-probe state, a hit on the up-axis movement query, and
 negative requested motion along that axis; it tests the transformed contact
 normal against the stored threshold and can clear the down-collision bit. The
-listing does not establish an upward retry in this entry. Before implementing
-the remaining path, add a paired fixture that records the oracle's exact
-correction behavior and maps the descriptor/object offsets and sweep helper's
-outputs. This avoids turning the current plan's shorthand “successful step-up”
-into invented behavior. Static trace: `docs/reconstruction/novodex-physics/evidence/controller-resolver-static-trace-2026-10-07.md`.
+listing does not establish an upward retry in this entry. A separate grounded
+low-obstacle fixture with a `2.0` threshold now matches the oracle exactly at
+`(0.5, 0.5, 0)` with flags `0x5`; it pins the high-threshold input but does not
+show that the conditional correction changes the output. Phase 5/6/7 staged
+pair gates pass with this case. Next, make the correction observable by
+mapping the sweep helper's hit output and varying the contact normal. Do not
+turn the shorthand “successful step-up” into invented behavior. Static trace:
+`docs/reconstruction/novodex-physics/evidence/controller-resolver-static-trace-2026-10-07.md`.
 
 ### Continuation — current-main standalone, Viewer, and DemoGame smoke (2026-10-07)
 

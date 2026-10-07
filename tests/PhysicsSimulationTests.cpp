@@ -2799,6 +2799,51 @@ int wmain(int argc, wchar_t** argv)
 		nxFloatBits(stepOverPosition.x), nxFloatBits(stepOverPosition.y),
 		nxFloatBits(stepOverPosition.z), obstacleCollisionFlags);
 	stepOverScene->releaseController(*stepOverController);
+	// Raise the stored threshold above a unit contact-normal component to pin
+	// the high-threshold response after a downward sweep with step probing on.
+	// Keep this controller in its own scene so generated controller bodies do
+	// not become obstacles for one another in the candidate's broadphase path.
+	alignas(4) unsigned char highThresholdControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(highThresholdControllerDescStorage + 0x10) = nxFloatBits(0.8f);
+	*reinterpret_cast<NxU32*>(highThresholdControllerDescStorage + 0x1c) = nxFloatBits(1.0f);
+	*reinterpret_cast<NxU32*>(highThresholdControllerDescStorage + 0x20) = 1;
+	*reinterpret_cast<NxU32*>(highThresholdControllerDescStorage + 0x24) = nxFloatBits(0.7f);
+	*reinterpret_cast<NxU32*>(highThresholdControllerDescStorage + 0x2c) = nxFloatBits(2.0f);
+	*reinterpret_cast<NxU32*>(highThresholdControllerDescStorage + 0x30) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(highThresholdControllerDescStorage + 0x34) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(highThresholdControllerDescStorage + 0x38) = nxFloatBits(0.5f);
+	NxSceneDesc highThresholdSceneDesc;
+	highThresholdSceneDesc.setToDefault();
+	NxScene* const highThresholdScene = sdk->createScene(highThresholdSceneDesc);
+	if(!highThresholdScene)
+		return nxFail("high-threshold controller scene creation failed");
+	NxBoxShapeDesc highThresholdFloorShape;
+	highThresholdFloorShape.dimensions = NxVec3(10.0f, 0.5f, 10.0f);
+	NxActorDesc highThresholdFloorActorDesc;
+	highThresholdFloorActorDesc.globalPose.t = NxVec3(0.0f, -0.5f, 0.0f);
+	highThresholdFloorActorDesc.shapes.pushBack(&highThresholdFloorShape);
+	NxActor* const highThresholdFloor = highThresholdScene->createActor(highThresholdFloorActorDesc);
+	NxBoxShapeDesc highThresholdObstacleShape;
+	highThresholdObstacleShape.dimensions = NxVec3(0.5f, 0.1f, 1.0f);
+	NxActorDesc highThresholdObstacleActorDesc;
+	highThresholdObstacleActorDesc.globalPose.t = NxVec3(1.5f, 0.1f, 0.0f);
+	highThresholdObstacleActorDesc.shapes.pushBack(&highThresholdObstacleShape);
+	NxActor* const highThresholdObstacle = highThresholdScene->createActor(
+		highThresholdObstacleActorDesc);
+	NxController* const highThresholdController = highThresholdScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(highThresholdControllerDescStorage));
+	if(!highThresholdFloor || !highThresholdObstacle || !highThresholdController)
+		return nxFail("high-threshold controller fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	reinterpret_cast<NxControllerProbe*>(highThresholdController)->move(
+		stepOverDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& highThresholdPosition =
+		reinterpret_cast<NxControllerProbe*>(highThresholdController)->getPosition();
+	printf("simulation controller-grounded-high-threshold position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(highThresholdPosition.x), nxFloatBits(highThresholdPosition.y),
+		nxFloatBits(highThresholdPosition.z), obstacleCollisionFlags);
+	highThresholdScene->releaseController(*highThresholdController);
+	sdk->releaseScene(*highThresholdScene);
 	sdk->releaseScene(*stepOverScene);
 	{
 	// A controller already resting at floor height receives a tiny downward

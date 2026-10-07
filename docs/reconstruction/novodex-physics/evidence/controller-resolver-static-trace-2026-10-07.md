@@ -20,11 +20,21 @@ common description “successful step-up” is not yet evidence-backed for this
 call path; establish it with a fixture against the pinned binary before
 changing the candidate to synthesize such motion.
 
-This trace narrows the next controller task: map the descriptor/object offsets
-and helper output contract into an oracle fixture, then implement and falsify
-the exact conditional correction behavior. The current candidate still uses
+The registered simulation differential now includes a separate grounded
+low-obstacle case with the step threshold set to `2.0`. Oracle and candidate
+both stop at `(0.5, 0.5, 0)` with flags `0x5`. The first attempt reused a scene
+with another controller; that made the candidate collide with the first
+controller's generated actor and produced a false mismatch. Moving the fixture
+to its own scene removed that interference. The exact high-threshold output
+pins this input but does not demonstrate that the conditional correction
+changes an observable result.
+
+The next controller task is to map the helper output contract into an oracle
+fixture that makes the correction observable, then implement and falsify that
+behavior. The current candidate still uses
 its own swept-bounds loop and has only case-specific evidence for box and mesh
 contacts, overlap direction, wall slide, slope classification, and the grounded
 +Y probe. `phys_fn_002306` remains partial; this static trace does not close its
-behavior or the surrounding controller cluster. Public Physics headers were
-not changed.
+behavior or the surrounding controller cluster. Fresh Phase 5, Phase 6, and
+Phase 7 staged-pair gates pass with the new case; Phase 7 covers the simulation
+transcript exactly. Public Physics headers were not changed.
