@@ -1,3 +1,20 @@
+### Continuation — current-main standalone, Viewer, and DemoGame smoke (2026-10-07)
+
+On current local main commit `0fbbdb81`, a fresh Win32 Release configure and
+build of `NxPhysics`, `NxPhysicsSimulationTests`, and the Viewer succeeds. The
+standalone simulation pair is exact (`oracle_exit=0`, `candidate_exit=0`,
+`stdout_delta=0`, `stderr_exact=True`; `build/simulation-mainline-final.log`).
+The full `^Viewer` CTest selection passes 48/48 entries in 305.90 seconds,
+covering all 39 registered scenes: 43 pass and five pinned-oracle asset cases
+skip under their established signatures. A staged `DemoGame.exe PhysTest`
+oracle/candidate smoke also exits 0 on both sides; each loads NxPhysics and
+NxFoundation from its own staged `Binaries` directory and reaches clean map
+unload and process exit. No installed engine DLL was replaced. Evidence and
+hashes: `docs/reconstruction/novodex-physics/evidence/demogame-phystest-smoke-2026-10-07.md`.
+This reaches the standalone and initial Unreal-smoke checkpoints on this
+source revision; the wider Unreal matrix and full-DLL acceptance remain open.
+Public Physics headers are unchanged.
+
 ### Continuation — base-shape sweep stub falsification (2026-10-07)
 
 Closed Phase 5 row `phys_fn_001035`, the base `NxShape` slot-7 sweep stub. The
