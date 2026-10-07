@@ -1,3 +1,15 @@
+### Continuation — bounded `releaseShape` mutation closure (2026-10-07)
+
+Added `NxPhysicsActorReleaseShapeProbeTests` for a two-shape static actor. The
+fixture releases one shape, checks the remaining handle, then tears the actor
+down without the release-count loop that made a broad no-op mutation hang.
+Replacing `NpActorVtable::releaseShape`'s `nxActorReleaseShape` dispatch with a
+no-op is caught with `stdout_delta=2`; the restored target is exact. Phase 5
+now passes all 16 staged targets and 2,252/2,252 coverage assertions. Its
+closure ledger advances to 37 closed / 168 reconstructed rows awaiting
+falsification; full Phase 5 and full-DLL reconstruction remain open. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase5-release-shape-probe.md`.
+
 ### Continuation — `NpActorVtable::createShape` invalid return falsification (2026-10-07)
 
 Closed Phase 5 row `phys_fn_000070` with the registered

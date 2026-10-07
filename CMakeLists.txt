@@ -475,6 +475,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsActorShapeMutationTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsActorShapeMutationTests bcrypt)
+	add_executable(NxPhysicsActorReleaseShapeProbeTests tests/PhysicsActorReleaseShapeProbeTests.cpp)
+	target_include_directories(NxPhysicsActorReleaseShapeProbeTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsActorReleaseShapeProbeTests bcrypt)
 	# Public convex-mesh cooking regression. This is the front door for the
 	# TriangleMesh reconstruction packet and must pass before the Unreal KActor
 	# convex-element smoke can pass.

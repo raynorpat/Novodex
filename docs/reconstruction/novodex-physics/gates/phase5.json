@@ -6,10 +6,10 @@
   "closure_ledger": "gates/phase5-closure.json",
   "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
   "evidence_commit": "6965e505f86ac15d1c35d2cd471f6544e42fb71d",
-  "note": "The full Phase 5 regression gate passes all 15 staged targets, static/oracle proofs, and 2,251/2,251 coverage assertions on the current continuation build. Twenty actor damping, sleep, wake, body-flag, group-accessor, dynamic-state, and createShape rows are independently mutation-falsified on target lines driven by registered tests; the current closure ledger is 36 closed / 169 deferred. The phase remains pending until all owned rows are closed.",
+  "note": "The full Phase 5 regression gate passes all 16 staged targets, static/oracle proofs, and 2,252/2,252 coverage assertions on the current continuation build. Twenty-one actor damping, sleep, wake, body-flag, group-accessor, dynamic-state, createShape, and releaseShape rows are independently mutation-falsified on target lines driven by registered tests; the current closure ledger is 37 closed / 168 deferred. The phase remains pending until all owned rows are closed.",
   "counts": {
-    "closed": 36,
-    "deferred": 169
+    "closed": 37,
+    "deferred": 168
   },
   "gate_sequence": [
     {
@@ -25,7 +25,7 @@
     {
       "name": "build_and_phase_gate",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 5",
-      "result": "Win32 Release Phase 5 gate passed on the current reconstruction worktree; all 15 staged-pair targets, NxPhysicsRangeIterationTests static proof, and both oracle-differential targets passed; coverage_assertions_evaluated=2251 floor=2251; phase_gate=5 status=pass (build/phase5-create-shape-final.log)."
+      "result": "Win32 Release Phase 5 gate passed on the current worktree; all 16 staged-pair targets, NxPhysicsRangeIterationTests static proof, and both oracle-differential targets passed; coverage_assertions_evaluated=2252 floor=2252; phase_gate=5 status=pass."
     },
     {
       "name": "viewer_all_scenes",

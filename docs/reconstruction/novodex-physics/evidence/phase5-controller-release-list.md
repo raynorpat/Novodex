@@ -243,6 +243,24 @@ invalid-descriptor contract. No public Physics headers changed.
 - `phys_fn_000070` mutation detection: non-null invalid-descriptor return caught with `stdout_delta=4`.
 
 After restoration, the staged `NxPhysicsActorDynamicSetterTests` differential
-matches exactly (`stdout_delta=0`, `stderr_exact=True`). The complete Phase 5
-gate passes all 15 staged targets, static/oracle proofs, and 2,251/2,251
-coverage assertions (`build/phase5-create-shape-final.log`).
+matches exactly (`stdout_delta=0`, `stderr_exact=True`). At that checkpoint,
+the complete Phase 5 gate passed all 15 staged targets, static/oracle proofs,
+and 2,251/2,251 coverage assertions (`build/phase5-create-shape-final.log`).
+
+## `NpActorVtable::releaseShape` bounded release: `phys_fn_000072`
+
+The new `NxPhysicsActorReleaseShapeProbeTests` target creates a static actor
+with two box shapes, releases one handle, and verifies the surviving handle and
+count before normal teardown. Its clean staged-pair differential matches
+exactly. Replacing the `nxActorReleaseShape` dispatch with `(void)shape` in a
+temporary candidate build leaves the second shape registered and changes two
+transcript lines (`stdout_delta=2`); both processes exit zero and stderr stays
+exact. The source was restored and rebuilt, and the clean target again matches
+exactly. This bounded fixture catches the row without entering the exhaustive
+target's release-count loops. Full mutation details are in
+`evidence/phase5-release-shape-probe.md`.
+
+- `phys_fn_000072` mutation detection: omitted inner release dispatch caught with `stdout_delta=2`.
+
+After this closure, Phase 5 passes all 16 staged targets, static/oracle proofs,
+and 2,252/2,252 coverage assertions.
