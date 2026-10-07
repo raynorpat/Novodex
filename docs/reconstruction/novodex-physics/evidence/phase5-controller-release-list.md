@@ -54,3 +54,9 @@ IDA identifies RVA `0x00020d30` as `lea eax,[ecx+0x10]`: the `BoxHullFacade::ver
 The unmodified candidate matches the pinned DLL: `box hull oracle_digest=e0477220 cases=314 failures=0`. A temporary mutation changed `BoxHullFacade::vertices()` to return `mVertices + 1`; the same test rejected it with `box hull oracle_digest=e0477220 cases=314 failures=30` (all 30 mismatches were rebuild/load cases). The mutation was reverted, and the restored target returned to 314/314 with zero failures. No public Physics header changed.
 
 `phys_fn_000955` mutation detection: `mismatches=30`.
+
+## Box hull facade face count: `phys_fn_000961`
+
+IDA identifies RVA `0x000213c0` as `mov eax,6; ret`: facade slot 3 reports the six faces used by box hull rebuild and support queries. The clean `NxPhysicsShapeVtableTests` run matches the pinned oracle at `box hull oracle_digest=e0477220 cases=314 failures=0` (`build/phase5-facecount-clean.log`). A temporary mutation changed the return value from six to five; the same target exited 1 with `box hull oracle_digest=e0477220 cases=314 failures=44` (`build/phase5-facecount-mutation.log`). After restoring the six-face return, the target again passed with zero failures. No public Physics header changed.
+
+`phys_fn_000961` mutation detection: `mismatches=44`.

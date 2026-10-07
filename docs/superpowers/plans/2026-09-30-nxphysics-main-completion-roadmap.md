@@ -19,6 +19,15 @@ Phase 5 now has seven mutation-closed function rows and 198 reconstructed rows
 awaiting falsification. The full Phase 5 gate passed at 2,244/2,244 after the
 restored build. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md`.
 
+### Continuation — Box hull face count (2026-10-07)
+
+Closed Phase 5 row `phys_fn_000961`, the box hull facade's face-count slot.
+Changing the returned face count from six to five was caught by 44 cases in
+`NxPhysicsShapeVtableTests`; the restored target passes all 314 hull cases.
+Phase 5 now has eight mutation-closed function rows and 197 reconstructed rows
+awaiting falsification. Evidence and clean/mutated output are recorded in
+`docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md`.
+
 ### Continuation — scene shape registration and standalone test sweep (2026-10-07)
 
 Closed Phase 3 row `phys_fn_002423`: the body-creation differential checks the
