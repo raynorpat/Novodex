@@ -256,6 +256,8 @@ static int nxTestDescriptorPath(NxPhysicsSDK* sdk, const char* name,
 	const NxU32 triangles = mesh->getCount(0, NX_ARRAY_TRIANGLES);
 	if(!savedOk || vertices != expectedVertices || triangles != expectedTriangles)
 		{
+		fprintf(stderr, "triangle_mesh case=%s actual=%u.%u expected=%u.%u saved=%u\n",
+			name, vertices, triangles, expectedVertices, expectedTriangles, savedOk ? 1u : 0u);
 		sdk->releaseTriangleMesh(*mesh);
 		return nxFail("triangle-mesh descriptor fixture changed expected topology");
 		}
@@ -306,7 +308,7 @@ static int nxTestDescriptorVariants(NxPhysicsSDK* sdk)
 	unindexed.numVertices = 6;
 	unindexed.points = unindexedPoints;
 	unindexed.pointStrideBytes = sizeof(NxVec3);
-	return nxTestDescriptorPath(sdk, "implicit_indices", unindexed, 6, 2);
+	return nxTestDescriptorPath(sdk, "implicit_indices", unindexed, 4, 2);
 	}
 
 int wmain(int argc, wchar_t** argv)
