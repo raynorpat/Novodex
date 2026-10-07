@@ -1409,12 +1409,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/26",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/176",
       "static_proof": "flag RAISE under the write guard: 0x5b730 upgrade on the member field at +0xc; on a failed upgrade reports kind 2 from NpActor.cpp line 0x1bb ('WriteLock is still aquired...') and skips; else body+0x14 |= mask and leaves",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsActorMetadataTests pins actor descriptor flags and public flag reads after raise/clear transitions. An isolated mutation replacing body + 0x14 |= flag with body + 0x14 &= ~flag was caught with stdout_delta=4; both processes exited 0 and stderr was exact. The restored staged-pair differential is exact. See evidence/phase5-controller-release-list.md.",
       "notes": ""
     },
     {
@@ -1445,12 +1445,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/27",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/179",
       "static_proof": "flag CLEAR: same guard-and-report shape at line 0x1c1 with body+0x14 &= ~mask",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsActorMetadataTests pins actor descriptor flags and public flag reads after raise/clear transitions. An isolated mutation replacing body + 0x14 &= ~flag with body + 0x14 |= flag was caught with stdout_delta=2; both processes exited 0 and stderr was exact. The restored staged-pair differential is exact. See evidence/phase5-controller-release-list.md.",
       "notes": ""
     },
     {
@@ -1481,12 +1481,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/28",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/182",
       "static_proof": "guarded flag test: ([body+0x14] & mask) != 0, mask on the stack",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsActorMetadataTests pins actor descriptor flags and public flag reads after raise/clear transitions. An isolated mutation replacing masked-bit predicate != 0 with masked-bit predicate == 0 was caught with stdout_delta=8; both processes exited 0 and stderr was exact. The restored staged-pair differential is exact. See evidence/phase5-controller-release-list.md.",
       "notes": ""
     },
     {

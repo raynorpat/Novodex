@@ -665,7 +665,7 @@ void __thiscall FUN_10002b40(void *this,int param_1)
 
 ```
 
-## phys_fn_000074 (0x00002ba0, 85 B, reconstructed)
+## phys_fn_000074 (0x00002ba0, 85 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/NpActor.cpp
@@ -710,7 +710,7 @@ void __thiscall FUN_10002ba0(void *this,uint param_1)
 
 ```
 
-## phys_fn_000076 (0x00002c00, 87 B, reconstructed)
+## phys_fn_000076 (0x00002c00, 87 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/NpActor.cpp
@@ -755,10 +755,10 @@ void __thiscall FUN_10002c00(void *this,uint param_1)
 
 ```
 
-## phys_fn_000078 (0x00002c60, 39 B, reconstructed)
+## phys_fn_000078 (0x00002c60, 39 B, dynamically_gated)
 
 - ambiguous: no
-- source: None
+- source: Physics/src/NpActor.cpp
 - implementation: None
 - prototype: bool __thiscall FUN_10002c60(uint param_1)
 - calling convention: __thiscall, stack purge: 4

@@ -177,3 +177,15 @@ The registered `NxPhysicsActorBodyFlagTests` differential pins the actor body-fl
 The `NxPhysicsActorBodyFlagTests` differential checks `readBodyFlag` after descriptor initialization, after raising the disable-gravity flag, and after clearing visualization. Inverting the method's masked-bit predicate changed `bodyflag_descriptor`, `bodyflag_raised`, and `bodyflag_cleared`; the mutation was caught with `stdout_delta=6` (both processes exited zero, stderr exact). The restored target matches with `stdout_delta=0`.
 
 `phys_fn_000080` mutation detection: inverted masked-bit predicate caught with `stdout_delta=6`.
+
+
+## Actor-flag methods: `phys_fn_000074`, `phys_fn_000076`, and `phys_fn_000078`
+
+The registered `NxPhysicsActorMetadataTests` target pins descriptor flags, public reads, and body storage before and after raising/clearing flags. Three isolated mutations were caught: replacing `raiseActorFlag`'s OR with a clear changed the raised line and produced `stdout_delta=4`; replacing `clearActorFlag`'s clear with OR changed the cleared line and produced `stdout_delta=2`; inverting `readActorFlag`'s masked-bit test changed descriptor/default/raised/cleared reads and produced `stdout_delta=8`. Both processes exited zero and stderr was exact for each mutation. The restored clean differential matches the oracle with `stdout_delta=0`.
+
+`phys_fn_000074` mutation detection: raise mutation caught with `stdout_delta=4`.
+
+`phys_fn_000076` mutation detection: clear mutation caught with `stdout_delta=2`.
+
+`phys_fn_000078` mutation detection: read mutation caught with `stdout_delta=8`.
+
