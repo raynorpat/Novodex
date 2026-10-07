@@ -455,3 +455,11 @@ The registered `NxPhysicsObjectLayoutTests` compares all thirteen frame words fo
 Restored `NxPhysicsActorMassTests` to CMake and the Phase 5 target registry. The oracle-backed target covers primitive, posed and compound shapes, explicit-mass behavior, and trigger-only refusals; baseline is exact (`stdout_delta=0`, `stderr_exact=True`; `build/actor-mass-current-main-differential.log`). A one-component density-inertia mutation in `nxActorComputeMassFromShapes` is caught with `stdout_delta=36`, successful exits on both sides, and exact stderr (`build/actor-mass-000008-mutation.log`).
 
 `phys_fn_000008` mutation detection: `stdout_delta=36`. Full details: `evidence/phase5-actor-mass-000008.md`.
+
+
+## Kinematic transition — `phys_fn_000785` and `phys_fn_000787`
+
+The registered `NxPhysicsActorBodyFlagTests` baseline matches exactly. Changing the enable arm's first inverse-mass write from `0.0f` to `0.5f` is caught with `stdout_delta=2`; changing the disable arm's inverse-mass reconstruction to `0.5f` is independently caught with `stdout_delta=2`. Both oracle and mutant processes exit zero with exact stderr. The byte-restored control is exact (`build/kinematic-transition-restored-differential.log`; mutation runs: `build/kinematic-enable-mutation-full.log` and `build/kinematic-disable-mutation-full.log`).
+
+`phys_fn_000785` mutation detection: `stdout_delta=2`.
+`phys_fn_000787` mutation detection: `stdout_delta=2`. Full details: `evidence/phase5-kinematic-transition-000785-000787.md`.

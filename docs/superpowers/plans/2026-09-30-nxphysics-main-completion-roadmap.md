@@ -1201,3 +1201,9 @@ Continuation 2026-10-06: compared the controller constructor's descriptor copies
 
 - Reconnected the existing `PhysicsActorMassTests.cpp` fixture to CMake and the Phase 5 registry after finding that main no longer built or ran it. The staged oracle differential is exact across primitive, posed, compound, explicit-mass, and trigger-refusal paths.
 - A throwaway archive mutation adding 1.0 to the first density-scaled inertia component in `phys_fn_000008` is caught with `stdout_delta=36` (both processes exit 0; stderr exact). The full Phase 5 gate passes 18 targets at 2,302/2,302. Closure advances from 60 closed / 145 deferred to 61 closed / 144 deferred. Public Physics headers remain unchanged; full-DLL reconstruction remains active. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-actor-mass-000008.md`.
+
+
+### Continuation — kinematic body-flag transition falsification (2026-10-07)
+
+- The registered `NxPhysicsActorBodyFlagTests` baseline is exact. Independent temporary mutations of `phys_fn_000785`'s enable inverse-mass write and `phys_fn_000787`'s disable inverse-mass reconstruction are each caught with `stdout_delta=2` (both processes exit zero; stderr exact). The restored source rebuild returns to `stdout_delta=0`.
+- Phase 5 closure advances from 61 closed / 144 deferred to 63 closed / 142 deferred. Public Physics headers remain unchanged; the full DLL reconstruction remains active. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-kinematic-transition-000785-000787.md`.
