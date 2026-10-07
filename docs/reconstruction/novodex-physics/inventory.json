@@ -19144,13 +19144,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/505",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3125",
       "static_proof": "xor al,al; ret 8 -- two stack dwords (output and sweep record), always false; BASE vtable .rdata 0x10107494 and PLANE final table slot 7",
-      "dynamic_proof": "NxPhysicsObjectLayoutTests basevt family and three NxPhysicsShapeVtableTests plane slot-7 table-dispatch cases preserve the output word",
-      "notes": "P5 Task 3: the sweep itself remains the owning phase's row; this closes only the base-shape stub.",
+      "dynamic_proof": "NxPhysicsShapeVtableTests calls the plane final-vtable slot 7 for three seeds and verifies false plus an unchanged output word. Changing ShapeBase::nxBaseSlot7 to true is caught with failures=3 (mismatches=3); the restored 626-case target passes.",
+      "notes": "P5 Task 3: the sweep itself remains the owning phase's row; mutation-falsified base-shape stub.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {

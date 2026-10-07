@@ -1,3 +1,13 @@
+### Continuation — base-shape sweep stub falsification (2026-10-07)
+
+Closed Phase 5 row `phys_fn_001035`, the base `NxShape` slot-7 sweep stub. The
+existing `NxPhysicsShapeVtableTests` plane final-vtable cases compare its false
+return and preserved output word against the pinned oracle. Changing the
+candidate return to true produced three failures; restoring it yielded the
+exact 626-case shape-vtable pass. Phase 5 now records 40 closed / 165 deferred
+rows. Public headers are unchanged, and full DLL reconstruction remains open.
+Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-shape-base-sweep-mutation.md`.
+
 ### Continuation — `setDynamic` static-to-dynamic registration closure (2026-10-07)
 
 Closed Phase 5 row `phys_fn_000122` with the existing actor shape-mutation

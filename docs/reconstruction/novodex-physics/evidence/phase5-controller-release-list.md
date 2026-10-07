@@ -294,3 +294,14 @@ Restoring the call returned the differential to `stdout_delta=0` and exact
 stderr. Full mutation details: `evidence/phase5-set-dynamic-mutation.md`.
 
 - `phys_fn_000122` mutation detection: skipped dynamic pruner registration caught with `stdout_delta=36`.
+
+## `ShapeBase::nxBaseSlot7`: `phys_fn_001035`
+
+The three plane final-vtable slot-7 cases in `NxPhysicsShapeVtableTests` compare
+the return value and untouched output word against the pinned DLL. Changing
+the candidate stub from `false` to `true` produced three failures in the
+626-case target (`mismatches=3`; the target prints `failures=3`). Restoring the
+stub and rebuilding returned the target to `failures=0`; the box sweep and hull
+checks also remained green. Full evidence: `evidence/phase5-shape-base-sweep-mutation.md`.
+
+- `phys_fn_001035` mutation detection: changing the base sweep return is caught with `mismatches=3` (the target prints `failures=3`).

@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "phase": 5,
-  "note": "Phase 5 owns 205 function rows and 122 data objects. Twenty-eight function rows are closed by registered staged-pair mutations, including actor group accessors, isDynamic, createShape, and releaseShape behavior. One row, phys_fn_000002, is closed by the NxPhysicsRangeIterationTests static proof. Ten rows are closed by oracle differentials: eight Box shape-vtable rows plus phys_fn_000004 and phys_fn_000012. 166 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records. See evidence/shape-self-001391.md and evidence/phase5-controller-release-list.md.",
+  "note": "Phase 5 owns 205 function rows and 122 data objects. Twenty-eight function rows are closed by registered staged-pair mutations, including actor group accessors, isDynamic, createShape, and releaseShape behavior. One row, phys_fn_000002, is closed by the NxPhysicsRangeIterationTests static proof. Eleven rows are closed by oracle differentials: eight Box shape-vtable rows, phys_fn_001035, phys_fn_000004, and phys_fn_000012. 165 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records. See evidence/shape-self-001391.md and evidence/phase5-controller-release-list.md.",
   "proof_kinds": {
     "differential_falsified": "Mutations aimed at the twenty-eight staged-pair rows were caught by their registered differentials; all twenty-eight rows are closed.",
     "static_proof_falsified": "The NxPhysicsRangeIterationTests mutation changed reverse stepping to forward stepping; its named checks caught the broken visitation order, callback result, and negative-stride behavior for phys_fn_000002.",
-    "oracle_differential_falsified": "Mutations to phys_fn_001391, phys_fn_000955, phys_fn_000961, phys_fn_000963, phys_fn_000953, phys_fn_000967, phys_fn_000969, and phys_fn_000971 were caught by NxPhysicsShapeVtableTests; mutations to phys_fn_000004 and phys_fn_000012 were caught by NxPhysicsObjectLayoutTests. Each non-zero mismatch count records the failed case."
+    "oracle_differential_falsified": "Mutations to phys_fn_001391, phys_fn_000955, phys_fn_000961, phys_fn_000963, phys_fn_000953, phys_fn_000967, phys_fn_000969, phys_fn_000971, and phys_fn_001035 were caught by NxPhysicsShapeVtableTests; mutations to phys_fn_000004 and phys_fn_000012 were caught by NxPhysicsObjectLayoutTests. Each non-zero mismatch count records the failed case."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction; no function rows remain here.",
-    "reconstructed_not_falsified": "The row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 166 rows, each needing one mutation and one measured detection.",
+    "reconstructed_not_falsified": "The row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 165 rows, each needing one mutation and one measured detection.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -20,8 +20,8 @@
   },
   "counts": {
     "differential_falsified": 28,
-    "oracle_differential_falsified": 10,
-    "deferred_reconstructed_not_falsified": 166,
+    "oracle_differential_falsified": 11,
+    "deferred_reconstructed_not_falsified": 165,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -429,6 +429,16 @@
       "falsification": {
         "mutation": "Disabled the final nxSceneAddShape(scene, shape, true) call after NpActorVtable::setDynamic converts a static actor with a shape into a dynamic body.",
         "detected": "stdout_delta=36"
+      }
+    },
+    {
+      "id": "phys_fn_001035",
+      "rva": "0x00022dd0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Changed ShapeBase::nxBaseSlot7 from false to true; the three plane final-vtable slot-7 cases compare the return value and preserved output word against the pinned oracle.",
+        "detected": "mismatches=3"
       }
     }
   ],
@@ -1548,15 +1558,6 @@
       "id": "phys_fn_001014",
       "rva": "0x000225e0",
       "size": 59,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_001035",
-      "rva": "0x00022dd0",
-      "size": 5,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
