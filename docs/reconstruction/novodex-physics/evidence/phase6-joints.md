@@ -9307,3 +9307,11 @@ to adding it. The registered Phase 6 gate caught the mutation in
 stderr matched exactly. The restored source remains unchanged. This closes
 `phys_fn_004397` at RVA `0x000afae0`; the other solver-kind families and Phase 6
 rows remain open.
+## Phase 7 closure — broad-phase selector mapping (`phys_fn_000544`)
+
+The clean registered `NxPhysicsSimulationTests` pair reports selector/mode
+values 0/1, 1/2, and 2/3 with `stdout_delta=0` and exact stderr. In a throwaway
+git-archive copy of HEAD `34ecced5`, changing the coherent selector mapping
+from engine mode 3 to 2 is caught by the same staged-pair differential:
+`phys_fn_000544 stdout_delta=2`. The focused evidence is in
+`evidence/phase7-broadphase-selector-000544.md`.

@@ -10072,13 +10072,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/203",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1447",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x00010750 shows public broadPhase values 0, 1, and 2 selecting pruning-engine modes 1, 2, and 3; other values report code 1 at Scene.cpp line 0x63e. The candidate implements this mapping and optional-bounds initialization in nxSceneApplyDescriptorFlags, called by NxSceneInternal::initialise.",
+      "dynamic_proof": "The registered Phase 7 NxPhysicsSimulationTests staged-pair differential checks all three selector-to-mode values and bounded/unbounded scene behavior. In a throwaway git-archive copy, changing the coherent selector's mode from 3 to 2 is caught by the same differential (oracle_exit=0, candidate_exit=0, stdout_delta=2, stderr_exact=True). Evidence: docs/reconstruction/novodex-physics/evidence/phase7-broadphase-selector-000544.md.",
+      "notes": "The invalid-enum diagnostic branch is not exercised by the current public selector matrix; ground-plane construction is a separate unresolved row."
     },
     {
       "id": "phys_fn_000545",

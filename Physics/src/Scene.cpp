@@ -2735,8 +2735,8 @@ bool NxSceneInternal::initialise(const NxSceneDesc& desc)
 	nxDword(p, 0x530) = d[8];				// maxIter
 	nxDword(p, 0x534) = d[9];				// solverType
 
-	// phys_fn_000544 (0x00010750, phase 7) applies the flags and the debug word.
-	// It is a reproduction hole.
+	// phys_fn_000544 (0x00010750, phase 7) maps the public broad-phase selector
+	// and forwards the optional bounds to the pruning engine.
 	nxSceneApplyDescriptorFlags(this, d[0], reinterpret_cast<const NxBounds3*>(d[0x0a]));
 
 	// The ground-plane expansion. REPRODUCTION HOLE: the oracle builds a default
@@ -2771,9 +2771,6 @@ bool NxSceneInternal::initialise(const NxSceneDesc& desc)
 	}
 
 
-// phys_fn_000544 (0x00010750, phase 7). REPRODUCTION HOLE. The oracle's body
-// applies the descriptor's flag words and its debug value; it is 144 bytes and is
-// not reconstructed. This reproduces the call and nothing else.
 // phys_fn_000544 (0x00010750) and phys_fn_001973 (0x0004c1b0): map the public
 // broad-phase enum to the pruning-engine selector and copy an optional scene
 // bounds box into both engine bounds records. The engine selector uses 1 for

@@ -1,3 +1,14 @@
+### Continuation — broad-phase selector mapping falsification (2026-10-07)
+
+Closed Phase 7 row `phys_fn_000544` with a mutation to the coherent selector's
+engine-mode mapping. The registered `NxPhysicsSimulationTests` differential
+caught the mutant with `stdout_delta=2`; the restored candidate matches all
+three selector-to-mode results and bounded/unbounded scene cases exactly.
+Phase 7 now records 13 closed rows, 299 reconstructed rows awaiting
+falsification, and 249 rows not reconstructed in that phase. The invalid-enum
+diagnostic remains outside the public selector matrix. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase7-broadphase-selector-000544.md`.
+
 ### Continuation — kind-5 joint solver differential (2026-10-07)
 
 Added a direct oracle/candidate internal Scene fixture for `phys_fn_004399`

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 12 functions are closed, 299 reconstructed functions remain unfalsified, 250 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 13 functions are closed, 299 reconstructed functions remain unfalsified, 249 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
@@ -19,9 +19,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 12,
+    "differential_falsified": 13,
     "deferred_reconstructed_not_falsified": 299,
-    "deferred_not_reconstructed_in_phase": 250
+    "deferred_not_reconstructed_in_phase": 249
   },
   "closed": [
     {
@@ -142,6 +142,16 @@
       "falsification": {
         "mutation": "In a throwaway git-archive copy of HEAD 1bb2955d, replaced NpScene::fetchResults' `mScene->processSimulationCallbacks()` call with a no-op, rebuilt NxPhysics and NxPhysicsSimulationTests, and ran the registered Phase 7 staged-pair differential. The deferred-contact fixture reported the queued record retained but never delivered; its assertion set candidate_exit=1 while oracle_exit=0. The candidate still emitted its staged module identities and stderr matched exactly.",
         "detected": "stdout_delta=944"
+      }
+    },
+    {
+      "id": "phys_fn_000544",
+      "rva": "0x00010750",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a throwaway git-archive copy of committed HEAD 34ecced5, changed the coherent public broad-phase selector mapping in nxSceneApplyDescriptorFlags from engine mode 3 to 2, rebuilt NxPhysics and NxPhysicsSimulationTests, then ran the registered Phase 7 staged-pair differential against the pinned oracle. The oracle reported selector=2 mode=3 while the mutant reported mode=2; both exited 0 and stderr matched exactly.",
+        "detected": "stdout_delta=2"
       }
     }
   ],
@@ -554,14 +564,6 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000544",
-      "rva": "0x00010750",
-      "size": 144,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_000573",
