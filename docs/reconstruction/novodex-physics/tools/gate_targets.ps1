@@ -3031,6 +3031,12 @@ $NxRequiredCoverageLines = [ordered] @{
     # blocking simulate/check/fetch cycles. These outputs were captured from
     # the pinned oracle before the candidate step path was implemented.
     'NxPhysicsSimulationTests' = @(
+        # Pair reconciliation produces one enter, one stay and one leave event
+        # with the corresponding public shape handles across fetched steps.
+        'simulation trigger-lifecycle summary fetched=1 calls=3 bad_shapes=0 exact=1'
+        # Eight concurrent pairs exercise hash-chain matching, overlap
+        # retention and queue growth; any enabled trigger bit admits all events.
+        'simulation trigger-batch summary fetched=1 calls=24 bad_shapes=0 exact=1'
         # Public NxTriangleMesh factory and wrapper round-trip the pinned
         # ordinary 32-bit indexed descriptor through SDK ownership.
         'simulation triangle-mesh create=1'
@@ -5476,7 +5482,9 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 264  # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2261  # plus the grounded controller's short-probe simulation assertion
+    '5' = 2263  # plus three-pair trigger reconciliation and queue growth
+               # plus public trigger enter/stay/leave lifecycle
+               # plus the grounded controller's short-probe simulation assertion
                # previous 2,248 plus dynamic getLinearDamping observation (phys_fn_000050)
                # previous 2,244 plus five mixed solver-kind interaction assertions
                # previous 2,241 plus three auxiliary shape registration checks
@@ -5490,11 +5498,15 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1059  # plus the grounded controller's short-probe simulation assertion
+    '6' = 1061  # plus three-pair trigger reconciliation and queue growth
+               # plus public trigger enter/stay/leave lifecycle
+               # plus the grounded controller's short-probe simulation assertion
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1375  # previous 1,374 plus the already-grounded short downward controller probe
+    '7' = 1377  # plus three-pair trigger reconciliation and queue growth
+               # plus public trigger enter/stay/leave lifecycle
+               # previous 1,374 plus the already-grounded short downward controller probe
                # previous 1,365 plus five mixed solver-kind interaction assertions
                # previous 1,364 plus the 1,000-step multi-body stack soak
                # (free-space, actor pose, obstacle/group filter, vertical, grounded step, trigger, overlap)

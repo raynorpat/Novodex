@@ -30,6 +30,7 @@
 #include "NxSceneDesc.h"
 #include "NxSceneStats.h"
 #include "NxBounds3.h"
+#include "NxIntersectionRayTriangle.h"
 #include "NxBox.h"
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
@@ -1987,6 +1988,127 @@ namespace
 		return true;
 		}
 
+	// The native mesh callback first sweeps the controller's eight vertices
+	// against each triangle before checking face and edge crossings. Keep this
+	// vertex path separate from the SAT fallback so correction probes can use
+	// the callback's vertex-hit point and face normal.
+	static bool nxControllerSweepBoxVerticesTriangle(const NxVec3& start,
+		const NxVec3& displacement, const NxVec3& extents, const NxVec3 triangle[3],
+		NxReal& hitDistance, NxVec3& hitNormal)
+		{
+		const NxReal travelDistance = NxMath::sqrt(displacement.magnitudeSquared());
+		if(travelDistance == 0.0f)
+			return false;
+		const NxVec3 rayDirection = displacement * (1.0f / travelDistance);
+		NxReal closest = hitDistance < travelDistance ? hitDistance : travelDistance;
+		NxVec3 normal = (triangle[1] - triangle[0]) ^ (triangle[2] - triangle[0]);
+		const NxReal normalLengthSquared = normal.magnitudeSquared();
+		if(normalLengthSquared == 0.0f)
+			return false;
+		normal *= 1.0f / NxMath::sqrt(normalLengthSquared);
+		const NxVec3 triangleCenter(
+			((triangle[0].x + triangle[1].x) + triangle[2].x) * 0.33333334f,
+			((triangle[0].y + triangle[1].y) + triangle[2].y) * 0.33333334f,
+			((triangle[0].z + triangle[1].z) + triangle[2].z) * 0.33333334f);
+		NxVec3 expandedTriangle[3];
+		for(NxU32 vertex = 0; vertex != 3; ++vertex)
+			{
+			const NxVec3 offset = triangle[vertex] - triangleCenter;
+			const NxReal offsetX = offset.x * 0.02f;
+			const NxReal offsetY = offset.y * 0.02f;
+			const NxReal offsetZ = offset.z * 0.02f;
+			expandedTriangle[vertex].set(triangle[vertex].x + offsetX,
+				triangle[vertex].y + offsetY, triangle[vertex].z + offsetZ);
+			}
+		bool found = false;
+		for(NxU32 corner = 0; corner != 8; ++corner)
+			{
+			const NxVec3 vertexStart(
+				start.x + ((corner & 1u) ? extents.x : -extents.x),
+				start.y + ((corner & 2u) ? extents.y : -extents.y),
+				start.z + ((corner & 4u) ? extents.z : -extents.z));
+			NxReal distance = closest;
+			NxReal barycentricU = 0.0f;
+			NxReal barycentricV = 0.0f;
+			if(NxRayTriIntersect(vertexStart, rayDirection, expandedTriangle[0],
+				expandedTriangle[1], expandedTriangle[2], distance, barycentricU,
+				barycentricV, true) &&
+				distance >= 0.0f && distance < closest)
+				{
+				closest = distance;
+				found = true;
+				}
+			}
+		if(!found)
+			return false;
+		if(normal.dot(displacement) > 0.0f)
+			normal *= -1.0f;
+		hitDistance = closest;
+		hitNormal = normal;
+		return true;
+		}
+
+	// Match sub_10058870's x87/double normalization and float spill order without
+	// inline-assembly aggregate operands that MSVC miscompiles in this helper.
+	static void nxControllerResponseTangent(const NxVec3& direction,
+		const NxVec3& normal, NxVec3& tangent, NxVec3& normalPart)
+		{
+		NxReal reflectedDot = normal.z * direction.z;
+		reflectedDot = reflectedDot + normal.y * direction.y;
+		reflectedDot = reflectedDot + normal.x * direction.x;
+		NxVec3 reflected(
+			direction.x - (normal.x + normal.x) * reflectedDot,
+			direction.y - (normal.y + normal.y) * reflectedDot,
+			direction.z - (normal.z + normal.z) * reflectedDot);
+	const double reflectedLengthSquared =
+		static_cast<double>(reflected.z) * reflected.z +
+		static_cast<double>(reflected.y) * reflected.y +
+		static_cast<double>(reflected.x) * reflected.x;
+	if(reflectedLengthSquared != 0.0)
+		{
+		const double reflectedInverseLength = 1.0 / sqrt(reflectedLengthSquared);
+		reflected.set(
+			static_cast<NxReal>(static_cast<double>(reflected.x) * reflectedInverseLength),
+			static_cast<NxReal>(static_cast<double>(reflected.y) * reflectedInverseLength),
+			static_cast<NxReal>(static_cast<double>(reflected.z) * reflectedInverseLength));
+		}
+	const double normalProjection =
+		static_cast<double>(normal.y) * reflected.y +
+		static_cast<double>(reflected.z) * normal.z +
+		static_cast<double>(normal.x) * reflected.x;
+	const NxReal normalPartX = static_cast<NxReal>(static_cast<double>(normal.x) * normalProjection);
+	const NxReal normalPartY = static_cast<NxReal>(static_cast<double>(normal.y) * normalProjection);
+	const NxReal normalPartZ = static_cast<NxReal>(static_cast<double>(normal.z) * normalProjection);
+	normalPart.set(normalPartX, normalPartY, normalPartZ);
+		tangent.set(reflected.x - normalPart.x,
+			reflected.y - normalPart.y, reflected.z - normalPart.z);
+	const double normalPartLengthSquared =
+		static_cast<double>(normalPart.z) * normalPart.z +
+		static_cast<double>(normalPart.y) * normalPart.y +
+		static_cast<double>(normalPart.x) * normalPart.x;
+	if(normalPartLengthSquared != 0.0)
+		{
+		const double inverseLength = 1.0 / sqrt(normalPartLengthSquared);
+		normalPart.set(
+			static_cast<NxReal>(static_cast<double>(normalPart.x) * inverseLength),
+			static_cast<NxReal>(static_cast<double>(normalPart.y) * inverseLength),
+			static_cast<NxReal>(static_cast<double>(normalPart.z) * inverseLength));
+		}
+	const double tangentLengthSquared =
+		static_cast<double>(tangent.z) * tangent.z +
+		static_cast<double>(tangent.y) * tangent.y +
+		static_cast<double>(tangent.x) * tangent.x;
+	if(tangentLengthSquared != 0.0)
+		{
+		const double inverseLength = 1.0 / sqrt(tangentLengthSquared);
+		tangent.set(
+			static_cast<NxReal>(static_cast<double>(tangent.x) * inverseLength),
+			static_cast<NxReal>(static_cast<double>(tangent.y) * inverseLength),
+			static_cast<NxReal>(static_cast<double>(tangent.z) * inverseLength));
+		}
+		}
+
+
 	// The pinned three-slot primary vtable is scalar-deleting destructor,
 	// move(NxVec3, activeGroups, minDistance, collisionFlags), and getPosition.
 	// The getter is reconstructed below. The collision-aware move algorithm is
@@ -2018,12 +2140,21 @@ namespace
 			NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(bytes + 0x34);
 			NxActor* actor = *reinterpret_cast<NxActor**>(bytes + 0x24);
 			const NxVec3& extents = *reinterpret_cast<const NxVec3*>(bytes + 0x40);
-			const NxU32 upAxis = *reinterpret_cast<const NxU32*>(bytes + 0x14);
-			const bool groundedProbe = stepProbeEnabled && upAxis == 1 && displacement.y < 0.0f;
-			const NxVec3 motionPhases[2] = {
-				groundedProbe ? NxVec3(0.0f, displacement.y, 0.0f) : displacement,
-				NxVec3(displacement.x, 0.0f, displacement.z)};
-			const NxU32 motionPhaseCount = groundedProbe ? 2u : 1u;
+			const NxU32 upAxis = *reinterpret_cast<const NxU32*>(bytes + 0x0c);
+			const NxReal stepOffset = *reinterpret_cast<const NxReal*>(bytes + 0x18);
+			const NxReal requestedUpMotion = displacement[upAxis];
+			const NxReal initialUpProbe = requestedUpMotion > 0.0f ? 0.0f : stepOffset;
+			NxVec3 finalProbeNormal(0.0f, 0.0f, 0.0f);
+			NxVec3 finalProbeTriangle[3];
+			bool finalProbeHitTriangle = false;
+			NxVec3 motionPhases[3] = {
+				NxVec3(0.0f, 0.0f, 0.0f), displacement,
+				NxVec3(0.0f, 0.0f, 0.0f)};
+			motionPhases[0][upAxis] = initialUpProbe;
+			motionPhases[1][upAxis] = 0.0f;
+			motionPhases[2][upAxis] = requestedUpMotion - initialUpProbe;
+			const NxU32 motionPhaseFlags[3] = {2u, 1u, 4u};
+			const NxU32 motionPhaseCount = 3;
 			for(NxU32 phase = 0; phase != motionPhaseCount; ++phase)
 				{
 				NxVec3 remaining = motionPhases[phase];
@@ -2041,6 +2172,9 @@ namespace
 						break;
 					NxReal fraction = 1.0f;
 					NxU32 hitAxis = 3;
+					bool hitTriangle = false;
+					NxVec3 triangleHitNormal(0.0f, 0.0f, 0.0f);
+					NxVec3 triangleHitVertices[3];
 					if(scene)
 						{
 					NxBounds3 sweptBounds;
@@ -2217,6 +2351,10 @@ namespace
 										triangle, meshFraction, meshNormal) && meshFraction < fraction)
 										{
 										fraction = meshFraction;
+										hitTriangle = true;
+										triangleHitNormal = meshNormal;
+						for(NxU32 vertex = 0; vertex != 3; ++vertex)
+							triangleHitVertices[vertex] = triangle[vertex];
 									const bool horizontalOnlyYUp = upAxis == 1 && remaining.y == 0.0f &&
 										(remaining.x != 0.0f || remaining.z != 0.0f);
 									if(horizontalOnlyYUp)
@@ -2317,11 +2455,20 @@ namespace
 						position.z + remaining.z * fraction);
 					if(fraction >= 1.0f)
 						break;
-					collisionFlags |= hitAxis == 1 ? (remaining.y > 0.0f ? 1u : 2u) : 4u;
+					if(phase == 2 && hitTriangle)
+						{
+						finalProbeHitTriangle = true;
+						finalProbeNormal = triangleHitNormal;
+						for(NxU32 vertex = 0; vertex != 3; ++vertex)
+							finalProbeTriangle[vertex] = triangleHitVertices[vertex];
+						}
+					collisionFlags |= motionPhaseFlags[phase];
 					remaining.set(remaining.x * (1.0f - fraction),
 						remaining.y * (1.0f - fraction),
 						remaining.z * (1.0f - fraction));
-					if(hitAxis == 0)
+					if(hitTriangle)
+						remaining.set(0.0f, 0.0f, 0.0f);
+					else if(hitAxis == 0)
 						remaining.x = 0.0f;
 					else if(hitAxis == 1)
 						remaining.y = 0.0f;
@@ -2329,17 +2476,68 @@ namespace
 						remaining.z = 0.0f;
 					}
 				}
-			// The pinned +Y box-controller resolver handles a grounded downward
-			// move as separate vertical and horizontal probes. Preserve the
-			// tested blocked response and its side + probe flags; broader step-up
-			// response remains open behavior.
-			if(stepProbeEnabled && displacement.y < 0.0f &&
-				(collisionFlags & 0x6u) == 0x6u)
-				collisionFlags = (collisionFlags & ~0x2u) | 0x1u;
-			// The oracle's final up-axis probe reports this downward-only contact
-			// as 0x4; the local sweep accumulator records the same hit as 0x2.
-			else if(stepProbeEnabled && displacement.y < 0.0f && collisionFlags == 0x2u)
-				collisionFlags = 0x4u;
+			// The resolver's fourth query is enabled only for a descending final
+			// probe on a surface below the stored slope threshold. It advances to
+			// the triangle hit, then projects the remaining distance onto the
+			// contact tangent while temporary correction mode is active.
+			const NxReal correctionSlopeThreshold =
+				*reinterpret_cast<const NxReal*>(bytes + 0x10);
+			if(stepProbeEnabled && finalProbeHitTriangle && requestedUpMotion < 0.0f)
+				{
+				const NxReal normalLengthSquared = finalProbeNormal.magnitudeSquared();
+				if(normalLengthSquared > 0.0f)
+					{
+					finalProbeNormal *= 1.0f / NxMath::sqrt(normalLengthSquared);
+					const NxReal normalUp = finalProbeNormal[upAxis];
+					if(normalUp >= 0.0f && normalUp < correctionSlopeThreshold)
+						{
+						NxVec3 correctionDirection(0.0f, 0.0f, 0.0f);
+						correctionDirection[upAxis] = -1.0f;
+						const NxReal heightTravel = stepOffset > initialUpProbe ?
+							stepOffset - initialUpProbe : 0.0f;
+						const NxReal correctionDistance = heightTravel +
+							NxMath::abs(requestedUpMotion);
+						if(correctionDistance >= minDistance)
+							{
+							const NxVec3 probeStart = position;
+							NxReal probeDistance = correctionDistance;
+							NxVec3 probeNormal(0.0f, 0.0f, 0.0f);
+							if(nxControllerSweepBoxVerticesTriangle(probeStart,
+								correctionDirection * correctionDistance, extents,
+								finalProbeTriangle, probeDistance, probeNormal))
+								{
+								const NxReal probeNormalLengthSquared =
+									probeNormal.magnitudeSquared();
+								if(probeNormalLengthSquared > 0.0f)
+									probeNormal *= 1.0f / NxMath::sqrt(probeNormalLengthSquared);
+								if(probeNormal.dot(correctionDirection) > 0.0f)
+									probeNormal *= -1.0f;
+								const NxVec3 correctionTarget = position +
+									correctionDirection * correctionDistance;
+								position += correctionDirection *
+									probeDistance;
+								NxVec3 tangent(0.0f, 0.0f, 0.0f);
+								NxVec3 normalPart(0.0f, 0.0f, 0.0f);
+								nxControllerResponseTangent(correctionDirection,
+									finalProbeNormal, tangent, normalPart);
+								const NxReal remainingX = correctionTarget.x - position.x;
+								const NxReal remainingY = correctionTarget.y - position.y;
+								const NxReal remainingZ = correctionTarget.z - position.z;
+								const NxReal remainingDistance = static_cast<NxReal>(sqrt(
+									static_cast<double>(remainingY) * remainingY +
+									static_cast<double>(remainingZ) * remainingZ +
+									static_cast<double>(remainingX) * remainingX));
+								if(remainingDistance >= minDistance)
+									position.set(
+										static_cast<NxReal>(static_cast<double>(tangent.x) * remainingDistance + position.x),
+										static_cast<NxReal>(static_cast<double>(tangent.y) * remainingDistance + position.y),
+										static_cast<NxReal>(static_cast<double>(tangent.z) * remainingDistance + position.z));
+								collisionFlags &= ~4u;
+								}
+							}
+						}
+					}
+				}
 			if(actor)
 				actor->moveGlobalPosition(position);
 			}
@@ -2394,10 +2592,16 @@ NxController* NxSceneInternal::createController(const NxControllerDesc& desc)
 	// that probe-enable byte is independent of the step-offset value at +0x2c.
 	*reinterpret_cast<NxU32*>(memory + 0x3c) =
 		*reinterpret_cast<const NxReal*>(descriptor + 0x1c) != 0.0f ? 1u : 0u;
-	// Controller::Controller retains the selected up axis and step offset in
-	// its private descriptor-derived state used by Controller::move.
+	// Controller::move selects its up axis from descriptor +0x18 (private +0x0c).
+	*reinterpret_cast<NxU32*>(memory + 0x0c) =
+		*reinterpret_cast<const NxU32*>(descriptor + 0x18);
+	*reinterpret_cast<NxReal*>(memory + 0x10) =
+		*reinterpret_cast<const NxReal*>(descriptor + 0x1c);
+	// Preserve the constructor's contiguous descriptor-derived controller state.
 	*reinterpret_cast<NxU32*>(memory + 0x14) =
 		*reinterpret_cast<const NxU32*>(descriptor + 0x20);
+	*reinterpret_cast<NxReal*>(memory + 0x18) =
+		*reinterpret_cast<const NxReal*>(descriptor + 0x24);
 	*reinterpret_cast<NxReal*>(memory + 0x20) =
 		*reinterpret_cast<const NxReal*>(descriptor + 0x2c);
 	const NxReal* dimensions = reinterpret_cast<const NxReal*>(descriptor + 0x30);
@@ -4983,13 +5187,114 @@ static void nxSceneAppendTriggerEvent(NxSceneInternal* scene, NxShape* trigger,
 	++end;
 	}
 
-static bool nxSceneTriggerPairContains(const NxSceneTriggerPairs* pairs,
+struct NxSceneTriggerPairIndex
+	{
+	NxSceneTriggerPairs* pairs;
+	NxI32* buckets;
+	NxI32* next;
+	NxU8* matched;
+	NxU32 bucketMask;
+	NxU32 count;
+	};
+
+static NxU32 nxSceneTriggerArithmeticShiftRight(NxU32 value, NxU32 shift)
+	{
+	return (value >> shift) |
+		((value & 0x80000000u) ? (~NxU32(0) << (32 - shift)) : 0);
+	}
+
+static NxU32 nxSceneTriggerPairHash(const NxCollisionShape* first,
+	const NxCollisionShape* second)
+	{
+	const NxU32 firstId = *reinterpret_cast<const NxU32*>(
+		reinterpret_cast<const NxU8*>(first) + 0xd4) & 0xffffu;
+	const NxU32 secondId = *reinterpret_cast<const NxU32*>(
+		reinterpret_cast<const NxU8*>(second) + 0xd4);
+	const NxU32 key = firstId | (secondId << 16);
+	const NxU32 firstMix = ~(key << 15) + key;
+	const NxU32 salted = 9u * (firstMix ^ nxSceneTriggerArithmeticShiftRight(firstMix, 10));
+	const NxU32 folded = nxSceneTriggerArithmeticShiftRight(salted, 6) ^ salted;
+	const NxU32 secondMix = ~(folded << 11) + folded;
+	return secondMix ^ nxSceneTriggerArithmeticShiftRight(secondMix, 16);
+	}
+
+static NxSceneTriggerPairIndex nxSceneBuildTriggerPairIndex(
+	NxSceneTriggerPairs* pairs, NxI32* buckets, NxI32* next, NxU8* matched,
+	NxU32 bucketCount)
+	{
+	NxSceneTriggerPairIndex index;
+	index.pairs = pairs;
+	index.count = pairs->begin
+		? static_cast<NxU32>((pairs->end - pairs->begin) / 2) : 0;
+	index.bucketMask = bucketCount - 1;
+	index.buckets = buckets;
+	index.next = next;
+	index.matched = matched;
+	memset(index.buckets, 0xff, bucketCount * sizeof(*index.buckets));
+	memset(index.matched, 0, index.count ? index.count : 1);
+	for(NxU32 pair = 0; pair < index.count; ++pair)
+		{
+		NxCollisionShape* first = pairs->begin[pair * 2];
+		NxCollisionShape* second = pairs->begin[pair * 2 + 1];
+		const NxU32 bucket = nxSceneTriggerPairHash(first, second) & index.bucketMask;
+		index.next[pair] = index.buckets[bucket];
+		index.buckets[bucket] = static_cast<NxI32>(pair);
+		}
+	return index;
+	}
+
+static NxI32 nxSceneFindTriggerPair(const NxSceneTriggerPairIndex& index,
 	const NxCollisionShape* first, const NxCollisionShape* second)
 	{
-	for(NxCollisionShape** item = pairs->begin; item && item != pairs->end; item += 2)
-		if(item[0] == first && item[1] == second)
-			return true;
-	return false;
+	const NxU32 bucket = nxSceneTriggerPairHash(first, second) & index.bucketMask;
+	for(NxI32 pair = index.buckets[bucket]; pair >= 0; pair = index.next[pair])
+		if(index.pairs->begin[pair * 2] == first &&
+			index.pairs->begin[pair * 2 + 1] == second)
+			return pair;
+	return -1;
+	}
+
+static bool nxSceneTriggerPairStillOverlaps(const NxCollisionShape* first,
+	const NxCollisionShape* second)
+	{
+	if(first->type > second->type)
+		{
+		const NxCollisionShape* swap = first;
+		first = second;
+		second = swap;
+		}
+	NxShapeOverlapFn* const overlaps = reinterpret_cast<NxShapeOverlapFn*>(
+		static_cast<NxU8*>(NxGetCollisionDispatchMatrix()) + 0x94);
+	NxShapeOverlapFn const overlap = overlaps[NxCollisionPairIndex(first->type, second->type)];
+	return overlap && overlap(first, second);
+	}
+
+static void nxSceneAppendTriggerPair(NxSceneTriggerPairs* pairs,
+	NxCollisionShape* first, NxCollisionShape* second)
+	{
+	if(pairs->capacity <= pairs->end)
+		{
+		const NxU32 count = pairs->begin
+			? static_cast<NxU32>((pairs->end - pairs->begin) / 2) : 0;
+		const NxU32 held = pairs->begin
+			? static_cast<NxU32>((pairs->capacity - pairs->begin) / 2) : 0;
+		const NxU32 wanted = count * 2 + 2;
+		if(held < wanted)
+			{
+		NxCollisionShape** grown = static_cast<NxCollisionShape**>(
+			nxFoundationSDKAllocator->malloc(wanted * 2 * sizeof(*grown),
+				NX_MEMORY_PERSISTENT));
+		for(NxU32 index = 0; index < count * 2; ++index)
+			grown[index] = pairs->begin[index];
+		if(pairs->begin)
+			nxFoundationSDKAllocator->free(pairs->begin);
+		pairs->begin = grown;
+		pairs->end = grown + count * 2;
+		pairs->capacity = grown + wanted * 2;
+		}
+		}
+	*pairs->end++ = first;
+	*pairs->end++ = second;
 	}
 
 static void nxSceneReportTriggerTransition(NxSceneInternal* scene,
@@ -4998,7 +5303,9 @@ static void nxSceneReportTriggerTransition(NxSceneInternal* scene,
 	NxCollisionShape* trigger = (*(reinterpret_cast<NxU8*>(first) + 0xde) & 7) ? first : second;
 	NxCollisionShape* other = trigger == first ? second : first;
 	const NxU8 flags = *(reinterpret_cast<NxU8*>(trigger) + 0xde);
-	if((flags & event) != 0)
+	// phys_fn_002350 and its callback drain only test that at least one
+	// trigger event bit is enabled; the pinned build reports every transition.
+	if((flags & 7u) != 0)
 		nxSceneAppendTriggerEvent(scene, reinterpret_cast<NxShape*>(trigger),
 			reinterpret_cast<NxShape*>(other), event);
 	}
@@ -5011,12 +5318,40 @@ void nxSceneProcessTriggerPairs(NxSceneInternal* scene)
 	NxSceneTriggerPairs* const current = *reinterpret_cast<NxSceneTriggerPairs**>(bytes + 0x5d8);
 	if(!previous || !current)
 		return;
+	const NxU32 previousCount = previous->begin
+		? static_cast<NxU32>((previous->end - previous->begin) / 2) : 0;
+	NxU32 bucketCount = 1;
+	while(bucketCount <= previousCount)
+		bucketCount <<= 1;
+	const NxU32 scratchCount = previousCount ? previousCount : 1;
+	NxI32* const buckets = static_cast<NxI32*>(
+		_alloca(bucketCount * sizeof(*buckets)));
+	NxI32* const next = static_cast<NxI32*>(
+		_alloca(scratchCount * sizeof(*next)));
+	NxU8* const matched = static_cast<NxU8*>(_alloca(scratchCount));
+	NxSceneTriggerPairIndex previousIndex = nxSceneBuildTriggerPairIndex(
+		previous, buckets, next, matched, bucketCount);
 	for(NxCollisionShape** item = current->begin; item && item != current->end; item += 2)
+		{
+		const NxI32 previousPair = nxSceneFindTriggerPair(previousIndex, item[0], item[1]);
+		if(previousPair >= 0)
+			previousIndex.matched[previousPair] = 1;
 		nxSceneReportTriggerTransition(scene, item[0], item[1],
-			nxSceneTriggerPairContains(previous, item[0], item[1]) ? 4u : 1u);
-	for(NxCollisionShape** item = previous->begin; item && item != previous->end; item += 2)
-		if(!nxSceneTriggerPairContains(current, item[0], item[1]))
-			nxSceneReportTriggerTransition(scene, item[0], item[1], 2u);
+			previousPair >= 0 ? 4u : 1u);
+		}
+	for(NxU32 pair = 0; pair < previousIndex.count; ++pair)
+		if(!previousIndex.matched[pair])
+			{
+			NxCollisionShape* const first = previous->begin[pair * 2];
+			NxCollisionShape* const second = previous->begin[pair * 2 + 1];
+			if(nxSceneTriggerPairStillOverlaps(first, second))
+				{
+				nxSceneAppendTriggerPair(current, first, second);
+				nxSceneReportTriggerTransition(scene, first, second, 4u);
+				}
+			else
+				nxSceneReportTriggerTransition(scene, first, second, 2u);
+			}
 
 	// phys_fn_002350 consumes the second pair list, then swaps the two embedded
 	// list headers and resets the new current list for the next substep.

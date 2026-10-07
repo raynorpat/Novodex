@@ -161,6 +161,64 @@ class NxSimulationTriggerReport : public NxUserTriggerReport
 		}
 	};
 
+class NxSimulationTriggerLifecycleReport : public NxUserTriggerReport
+	{
+	public:
+	NxShape* expectedTrigger;
+	NxShape* expectedOther;
+	NxTriggerFlag events[8];
+	unsigned calls;
+	unsigned badShapes;
+	NxSimulationTriggerLifecycleReport(NxShape* trigger, NxShape* other)
+		: expectedTrigger(trigger), expectedOther(other), calls(0), badShapes(0) {}
+	virtual void onTrigger(NxShape& trigger, NxShape& other, NxTriggerFlag event)
+		{
+		if(&trigger != expectedTrigger || &other != expectedOther)
+			++badShapes;
+		if(calls < sizeof(events) / sizeof(events[0]))
+			events[calls] = event;
+		++calls;
+		printf("simulation trigger-lifecycle event=%u trigger=%u other=%u\n",
+			static_cast<unsigned>(event), &trigger == expectedTrigger,
+			&other == expectedOther);
+		}
+	};
+
+class NxSimulationTriggerBatchReport : public NxUserTriggerReport
+	{
+	public:
+	enum { BatchCount = 8 };
+	NxShape* trigger;
+	NxShape* others[BatchCount];
+	unsigned eventCounts[BatchCount][3];
+	unsigned calls;
+	unsigned badShapes;
+	NxSimulationTriggerBatchReport(NxShape* triggerShape, NxShape** otherShapes)
+		: trigger(triggerShape), calls(0), badShapes(0)
+		{
+		memset(eventCounts, 0, sizeof(eventCounts));
+		for(unsigned index = 0; index != BatchCount; ++index)
+			others[index] = otherShapes[index];
+		}
+	virtual void onTrigger(NxShape& triggerShape, NxShape& otherShape, NxTriggerFlag event)
+		{
+		unsigned otherIndex = BatchCount;
+		for(unsigned index = 0; index != BatchCount; ++index)
+			if(&otherShape == others[index])
+				otherIndex = index;
+		unsigned eventIndex = event == NX_TRIGGER_ON_ENTER ? 0 :
+			event == NX_TRIGGER_ON_STAY ? 1 : event == NX_TRIGGER_ON_LEAVE ? 2 : 3;
+		if(&triggerShape != trigger || otherIndex == BatchCount || eventIndex == 3)
+			++badShapes;
+		else
+			++eventCounts[otherIndex][eventIndex];
+		++calls;
+		printf("simulation trigger-batch event=%u other=%u trigger_ok=%u\n",
+			static_cast<unsigned>(event), otherIndex,
+			&triggerShape == trigger);
+		}
+	};
+
 class NxSimulationContactReport : public NxUserContactReport
 	{
 	public:
@@ -399,6 +457,142 @@ int wmain(int argc, wchar_t** argv)
 		FreeLibrary(physics);
 		return nxFail("SDK creation failed");
 		}
+	// Exercise trigger-pair generation, enter/stay/leave reconciliation, and
+	// fetch-time callback delivery through the public scene API.
+	NxSceneDesc triggerLifecycleSceneDesc;
+	triggerLifecycleSceneDesc.setToDefault();
+	NxScene* const triggerLifecycleScene = sdk->createScene(triggerLifecycleSceneDesc);
+	if(!triggerLifecycleScene)
+		return nxFail("trigger lifecycle scene creation failed");
+	triggerLifecycleScene->setGravity(NxVec3(0.0f, 0.0f, 0.0f));
+	triggerLifecycleScene->setTiming(0.01f, 1, NX_TIMESTEP_VARIABLE);
+	NxBoxShapeDesc lifecycleTriggerShapeDesc;
+	lifecycleTriggerShapeDesc.dimensions = NxVec3(1.0f, 1.0f, 1.0f);
+	lifecycleTriggerShapeDesc.shapeFlags |= NX_TRIGGER_ENABLE;
+	NxActorDesc lifecycleTriggerActorDesc;
+	lifecycleTriggerActorDesc.shapes.pushBack(&lifecycleTriggerShapeDesc);
+	NxActor* const lifecycleTriggerActor =
+		triggerLifecycleScene->createActor(lifecycleTriggerActorDesc);
+	NxSphereShapeDesc lifecycleOtherShapeDesc;
+	lifecycleOtherShapeDesc.radius = 0.5f;
+	NxBodyDesc lifecycleOtherBodyDesc;
+	NxActorDesc lifecycleOtherActorDesc;
+	lifecycleOtherActorDesc.body = &lifecycleOtherBodyDesc;
+	lifecycleOtherActorDesc.density = 1.0f;
+	lifecycleOtherActorDesc.shapes.pushBack(&lifecycleOtherShapeDesc);
+	NxActor* const lifecycleOtherActor =
+		triggerLifecycleScene->createActor(lifecycleOtherActorDesc);
+	if(!lifecycleTriggerActor || !lifecycleOtherActor)
+		return nxFail("trigger lifecycle actors creation failed");
+	NxShape* const lifecycleTriggerShape = lifecycleTriggerActor->getShapes()[0];
+	NxShape* const lifecycleOtherShape = lifecycleOtherActor->getShapes()[0];
+	NxSimulationTriggerLifecycleReport lifecycleTriggerReport(
+		lifecycleTriggerShape, lifecycleOtherShape);
+	triggerLifecycleScene->setUserTriggerReport(&lifecycleTriggerReport);
+	bool lifecycleFetched = true;
+	for(unsigned step = 0; step != 3 && lifecycleFetched; ++step)
+		{
+		lifecycleOtherActor->setGlobalPosition(NxVec3(0.1f * step, 0.0f, 0.0f));
+		triggerLifecycleScene->simulate(0.01f);
+		lifecycleFetched = triggerLifecycleScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		printf("simulation trigger-lifecycle tick=%u calls=%u\n", step + 1,
+			lifecycleTriggerReport.calls);
+		}
+	lifecycleOtherActor->setGlobalPosition(NxVec3(4.0f, 0.0f, 0.0f));
+	if(lifecycleFetched)
+		{
+		triggerLifecycleScene->simulate(0.01f);
+		lifecycleFetched = triggerLifecycleScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		}
+	const bool triggerLifecycleExact = lifecycleFetched &&
+		lifecycleTriggerReport.calls == 3 && lifecycleTriggerReport.badShapes == 0 &&
+		lifecycleTriggerReport.events[0] == NX_TRIGGER_ON_ENTER &&
+		lifecycleTriggerReport.events[1] == NX_TRIGGER_ON_STAY &&
+		lifecycleTriggerReport.events[2] == NX_TRIGGER_ON_LEAVE;
+	printf("simulation trigger-lifecycle summary fetched=%u calls=%u bad_shapes=%u exact=%u\n",
+		lifecycleFetched, lifecycleTriggerReport.calls,
+		lifecycleTriggerReport.badShapes, triggerLifecycleExact);
+	triggerLifecycleScene->releaseActor(*lifecycleOtherActor);
+	triggerLifecycleScene->releaseActor(*lifecycleTriggerActor);
+	sdk->releaseScene(*triggerLifecycleScene);
+	if(!triggerLifecycleExact)
+		return nxFail("trigger enter/stay/leave lifecycle did not match the public contract");
+	// Several live pairs exercise hash collisions and event-buffer growth in one
+	// scene. Each body enters, remains for a fetched step, then leaves.
+	NxSceneDesc triggerBatchSceneDesc;
+	triggerBatchSceneDesc.setToDefault();
+	NxScene* const triggerBatchScene = sdk->createScene(triggerBatchSceneDesc);
+	if(!triggerBatchScene)
+		return nxFail("trigger batch scene creation failed");
+	triggerBatchScene->setGravity(NxVec3(0.0f, 0.0f, 0.0f));
+	triggerBatchScene->setTiming(0.01f, 1, NX_TIMESTEP_VARIABLE);
+	NxBoxShapeDesc batchTriggerShapeDesc;
+	batchTriggerShapeDesc.dimensions = NxVec3(2.0f, 2.0f, 2.0f);
+	batchTriggerShapeDesc.shapeFlags |= NX_TRIGGER_ENABLE;
+	batchTriggerShapeDesc.shapeFlags = (batchTriggerShapeDesc.shapeFlags & ~NX_TRIGGER_ENABLE) |
+		NX_TRIGGER_ON_STAY;
+	NxActorDesc batchTriggerActorDesc;
+	batchTriggerActorDesc.shapes.pushBack(&batchTriggerShapeDesc);
+	NxActor* const batchTriggerActor = triggerBatchScene->createActor(batchTriggerActorDesc);
+	NxActor* batchOtherActors[NxSimulationTriggerBatchReport::BatchCount] = {};
+	NxShape* batchOtherShapes[NxSimulationTriggerBatchReport::BatchCount] = {};
+	for(unsigned index = 0; index != NxSimulationTriggerBatchReport::BatchCount; ++index)
+		{
+		NxSphereShapeDesc batchOtherShapeDesc;
+		batchOtherShapeDesc.radius = 0.07f;
+		NxBodyDesc batchOtherBodyDesc;
+		NxActorDesc batchOtherActorDesc;
+		batchOtherActorDesc.body = &batchOtherBodyDesc;
+		batchOtherActorDesc.density = 1.0f;
+		batchOtherActorDesc.globalPose.t = NxVec3(-0.7f + 0.2f * index, 0.0f, 0.0f);
+		batchOtherActorDesc.shapes.pushBack(&batchOtherShapeDesc);
+		batchOtherActors[index] = triggerBatchScene->createActor(batchOtherActorDesc);
+		if(!batchOtherActors[index])
+			return nxFail("trigger batch dynamic actor creation failed");
+		batchOtherShapes[index] = batchOtherActors[index]->getShapes()[0];
+		}
+	if(!batchTriggerActor)
+		return nxFail("trigger batch trigger creation failed");
+	NxSimulationTriggerBatchReport triggerBatchReport(
+		batchTriggerActor->getShapes()[0], batchOtherShapes);
+	triggerBatchScene->setUserTriggerReport(&triggerBatchReport);
+	bool triggerBatchFetched = true;
+	for(unsigned step = 0; step != 3 && triggerBatchFetched; ++step)
+		{
+		if(step < 2)
+			for(unsigned index = 0; index != NxSimulationTriggerBatchReport::BatchCount; ++index)
+				batchOtherActors[index]->setGlobalPosition(
+					NxVec3(-0.7f + 0.2f * index + 0.05f * step, 0.0f, 0.0f));
+		triggerBatchScene->simulate(0.01f);
+		triggerBatchFetched = triggerBatchScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		printf("simulation trigger-batch tick=%u calls=%u\n", step + 1,
+			triggerBatchReport.calls);
+		if(step == 1)
+			for(unsigned index = 0; index != NxSimulationTriggerBatchReport::BatchCount; ++index)
+				batchOtherActors[index]->putToSleep();
+		}
+	for(unsigned index = 0; index != NxSimulationTriggerBatchReport::BatchCount; ++index)
+		batchOtherActors[index]->setGlobalPosition(NxVec3(4.0f + index, 0.0f, 0.0f));
+	if(triggerBatchFetched)
+		{
+		triggerBatchScene->simulate(0.01f);
+		triggerBatchFetched = triggerBatchScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		}
+	bool triggerBatchExact = triggerBatchFetched && triggerBatchReport.calls == 24 &&
+		triggerBatchReport.badShapes == 0;
+	for(unsigned index = 0; index != NxSimulationTriggerBatchReport::BatchCount; ++index)
+		for(unsigned event = 0; event != 3; ++event)
+			triggerBatchExact = triggerBatchExact &&
+				triggerBatchReport.eventCounts[index][event] == 1;
+	printf("simulation trigger-batch summary fetched=%u calls=%u bad_shapes=%u exact=%u\n",
+		triggerBatchFetched, triggerBatchReport.calls,
+		triggerBatchReport.badShapes, triggerBatchExact);
+	for(unsigned index = 0; index != NxSimulationTriggerBatchReport::BatchCount; ++index)
+		triggerBatchScene->releaseActor(*batchOtherActors[index]);
+	triggerBatchScene->releaseActor(*batchTriggerActor);
+	sdk->releaseScene(*triggerBatchScene);
+	if(!triggerBatchExact)
+		return nxFail("multi-pair trigger lifecycle did not match the public contract");
 	// A public mesh factory smoke case. The oracle accepts this valid two-face
 	// descriptor; keeping it in the simulation corpus ensures a rebuilt mesh can
 	// become the next real static-contact fixture rather than remaining an
@@ -3339,7 +3533,7 @@ int wmain(int argc, wchar_t** argv)
 	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x0c) = nxFloatBits(0.5f);
 	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x10) = nxFloatBits(2.0f);
 	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x14) = nxFloatBits(0.5f);
-	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x1c) = 1;
+	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x1c) = nxFloatBits(0.95f);
 	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x18) = 1;
 	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x20) = 1;
 	*reinterpret_cast<NxU32*>(slopeCorrectionControllerDescStorage + 0x24) = nxFloatBits(0.7f);
@@ -3361,7 +3555,83 @@ int wmain(int argc, wchar_t** argv)
 		nxFloatBits(slopeCorrectionPosition.x), nxFloatBits(slopeCorrectionPosition.y),
 		nxFloatBits(slopeCorrectionPosition.z), obstacleCollisionFlags);
 	slopeCorrectionScene->releaseController(*slopeCorrectionController);
+	// Use an isolated scene and disable only the slope correction threshold to
+	// capture the pose after the resolver's original three probes. Controller
+	// release retains its generated actor, so scene reuse would contaminate the
+	// next sweep with a second controller obstacle.
+	NxSceneDesc slopeBaselineSceneDesc;
+	slopeBaselineSceneDesc.setToDefault();
+	NxScene* const slopeBaselineScene = sdk->createScene(slopeBaselineSceneDesc);
+	if(!slopeBaselineScene)
+		return nxFail("slope-baseline controller scene creation failed");
+	NxActorDesc slopeBaselineObstacleDesc;
+	slopeBaselineObstacleDesc.shapes.pushBack(&slopeObstacleShape);
+	NxActor* const slopeBaselineObstacle = slopeBaselineScene->createActor(
+		slopeBaselineObstacleDesc);
+	alignas(4) unsigned char slopeBaselineControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(slopeBaselineControllerDescStorage + 0x0c) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(slopeBaselineControllerDescStorage + 0x10) = nxFloatBits(2.0f);
+	*reinterpret_cast<NxU32*>(slopeBaselineControllerDescStorage + 0x14) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(slopeBaselineControllerDescStorage + 0x1c) = 0;
+	*reinterpret_cast<NxU32*>(slopeBaselineControllerDescStorage + 0x18) = 1;
+	*reinterpret_cast<NxU32*>(slopeBaselineControllerDescStorage + 0x20) = 1;
+	*reinterpret_cast<NxU32*>(slopeBaselineControllerDescStorage + 0x24) = nxFloatBits(0.7f);
+	*reinterpret_cast<NxU32*>(slopeBaselineControllerDescStorage + 0x2c) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(slopeBaselineControllerDescStorage + 0x30) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(slopeBaselineControllerDescStorage + 0x34) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(slopeBaselineControllerDescStorage + 0x38) = nxFloatBits(0.2f);
+	NxController* const slopeBaselineController = slopeBaselineScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(slopeBaselineControllerDescStorage));
+	if(!slopeBaselineObstacle || !slopeBaselineController)
+		return nxFail("slope-baseline controller fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	reinterpret_cast<NxControllerProbe*>(slopeBaselineController)->move(
+		slopeCorrectionDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& slopeBaselinePosition = reinterpret_cast<NxControllerProbe*>(
+		slopeBaselineController)->getPosition();
+	printf("simulation controller-mesh-slope-baseline position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(slopeBaselinePosition.x), nxFloatBits(slopeBaselinePosition.y),
+		nxFloatBits(slopeBaselinePosition.z), obstacleCollisionFlags);
+	slopeBaselineScene->releaseController(*slopeBaselineController);
+	sdk->releaseScene(*slopeBaselineScene);
 	sdk->releaseScene(*slopeCorrectionScene);
+	// Keep the descriptor's other axis-like word different so this scene proves
+	// which field the resolver actually uses when it decomposes movement.
+	NxSceneDesc slopeAxisSceneDesc;
+	slopeAxisSceneDesc.setToDefault();
+	NxScene* const slopeAxisScene = sdk->createScene(slopeAxisSceneDesc);
+	if(!slopeAxisScene)
+		return nxFail("slope-axis controller scene creation failed");
+	NxActorDesc slopeAxisObstacleDesc;
+	slopeAxisObstacleDesc.shapes.pushBack(&slopeObstacleShape);
+	NxActor* const slopeAxisObstacle = slopeAxisScene->createActor(slopeAxisObstacleDesc);
+	alignas(4) unsigned char slopeAxisControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(slopeAxisControllerDescStorage + 0x0c) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(slopeAxisControllerDescStorage + 0x10) = nxFloatBits(2.0f);
+	*reinterpret_cast<NxU32*>(slopeAxisControllerDescStorage + 0x14) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(slopeAxisControllerDescStorage + 0x1c) = 1;
+	*reinterpret_cast<NxU32*>(slopeAxisControllerDescStorage + 0x18) = 0;
+	*reinterpret_cast<NxU32*>(slopeAxisControllerDescStorage + 0x20) = 1;
+	*reinterpret_cast<NxU32*>(slopeAxisControllerDescStorage + 0x24) = nxFloatBits(0.7f);
+	*reinterpret_cast<NxU32*>(slopeAxisControllerDescStorage + 0x2c) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(slopeAxisControllerDescStorage + 0x30) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(slopeAxisControllerDescStorage + 0x34) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(slopeAxisControllerDescStorage + 0x38) = nxFloatBits(0.2f);
+	NxController* const slopeAxisController = slopeAxisScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(slopeAxisControllerDescStorage));
+	if(!slopeAxisObstacle || !slopeAxisController)
+		return nxFail("slope-axis controller fixture setup failed");
+	const NxVec3 slopeAxisDisplacement(0.0f, -3.0f, 0.0f);
+	obstacleCollisionFlags = 0xdeadbeef;
+	reinterpret_cast<NxControllerProbe*>(slopeAxisController)->move(
+		slopeAxisDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& slopeAxisPosition = reinterpret_cast<NxControllerProbe*>(
+		slopeAxisController)->getPosition();
+	printf("simulation controller-mesh-slope-descriptor-axis position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(slopeAxisPosition.x), nxFloatBits(slopeAxisPosition.y),
+		nxFloatBits(slopeAxisPosition.z), obstacleCollisionFlags);
+	slopeAxisScene->releaseController(*slopeAxisController);
+	sdk->releaseScene(*slopeAxisScene);
 	sdk->releaseTriangleMesh(*controllerSlopeMesh);
 
 	// Exercise the complete public path from 16-bit descriptor indices through
