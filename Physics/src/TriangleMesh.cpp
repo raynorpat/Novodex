@@ -246,6 +246,8 @@ namespace
 		}
 	}
 
+// phys_fn_002251 (oracle RVA 0x00055490): initialize the TriangleMesh object
+// and create its public NxTriangleMesh wrapper.
 TriangleMesh::TriangleMesh()
 	{
 	memset(this, 0, sizeof(*this));

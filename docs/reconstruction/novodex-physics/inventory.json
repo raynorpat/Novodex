@@ -41376,13 +41376,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/840",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7023",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompile at RVA 0x00055490: installs the TriangleMesh vtable and base vtable, calls the internal mesh initializer at 0x00051ec0, sets the bounds sentinels and defaults including convexEdgeThreshold=0.001, initializes nullable owned pointers, allocates the 8-byte public wrapper through nxFoundationSDKAllocator, and stores its construction result. The candidate implementation is TriangleMesh::TriangleMesh in Physics/src/TriangleMesh.cpp.",
+      "dynamic_proof": "TriangleMesh constructor mutation audit (2026-10-07): staged x86 pair differential passed NxPhysicsTriangleMeshApiTests and NxPhysicsConvexMeshTests with oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=true. Temporarily clearing mPublicObject after wrapper construction caused the candidate's first authored mesh creation to fail while the oracle passed; restoring the assignment returned both targets to exact output. Evidence: evidence/triangle-mesh-constructor.md.",
+      "notes": "Construction and public-wrapper behavior are covered; destructor allocation-failure and every dependent mesh lifecycle row are tracked separately.",
+      "implementation": "Physics/src/TriangleMesh.cpp",
+      "implementation_symbol": "TriangleMesh::TriangleMesh"
     },
     {
       "id": "phys_fn_002252",
