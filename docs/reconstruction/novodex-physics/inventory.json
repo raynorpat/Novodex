@@ -44483,13 +44483,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/910",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7531",
-      "static_proof": "scene shape-array insert: keyed by the shape's scene slot (shape+0xd4), inserts the shape pointer into the growable vector at container+0x90/0x94/0x98 -- in-place store [begin+slot*4] when slot < count, otherwise chunk growth of (slot+0x100)&~0xff entries through the SDK allocator adapter; touches no other container fields",
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at 0x1005c390 (RVA 0x5c390, 552 bytes) identifies shape insertion by the scene slot at shape+0xd4. It writes the shape pointer into the growable per-slot vector at auxiliary-manager +0x90, growing the table in 256-slot chunks when needed. The Scene.cpp implementation models this alongside the active list, reverse index, and occupancy sentinel.",
+      "dynamic_proof": "NxPhysicsBodyCreationTests checks the registered shape pointer for IDs 5 and 0 after out-of-order reuse and ID 0x100 across the 256-slot boundary. Oracle and candidate match exactly (`stdout_delta=0`, exact stderr; build/shape-register-002423-green.log). Omitting the shape pointer slot store in a throwaway git archive copy changes all six manager transcript lines (`stdout_delta=6`, both processes exit 0; build/shape-register-002423-archive-mutation.log).",
+      "notes": "Closed through the Phase 3 staged-pair body-creation differential; no public Physics header changed.",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_002424",

@@ -1,5 +1,17 @@
 # NxPhysics completion project plan from main
 
+### Continuation — scene shape registration and standalone test sweep (2026-10-07)
+
+Closed Phase 3 row `phys_fn_002423`: the body-creation differential checks the
+scene's shape-pointer slot and 256-slot capacity growth after out-of-order
+reuse and at ID `0x100`. Omitting the pointer store in a throwaway archive copy
+was caught with `stdout_delta=6`; the clean mainline build returns an exact
+oracle match. Phase 3 now records 62 closed and 330 deferred rows, with
+527/527 gate assertions. The standalone Phase 5 and Phase 7 gates pass at
+2,244/2,244 and 1,365/1,365. The full Viewer CTest selection passes 56/56,
+covering all 39 available scenes; five known pinned-oracle asset cases skip on
+their established signatures. Evidence: `docs/reconstruction/novodex-physics/evidence/scene-registration-002423.md`.
+
 ### Continuation — shared indexed-manager insertion (2026-10-07)
 
 Discharged Phase 2 row `phys_fn_002417` through the passing Phase 3
