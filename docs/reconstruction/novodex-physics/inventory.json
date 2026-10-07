@@ -972,13 +972,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/23",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/136",
       "static_proof": "getLinearDamping under the read guard: float at record +0xb8; a null record reports kind 1 from NpActor.cpp line 0xd9 (setLinearDamping literal) and returns the zero constant at 0x101041f0",
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsActorDynamicSetterTests pins dynamic linear and angular damping storage/getter values; the focused differential is exact. An isolated +0xb4 getter-offset mutation was caught with stdout_delta=2, both processes exit 0 and stderr is exact. Phase 5 requires the getter output line at coverage floor 2250. See evidence/phase5-get-linear-damping.md.",
+      "notes": "The static-actor null-return/error arm is also observed in NxPhysicsActorDynamicSetterTests; the row mutation targets the dynamic +0xb8 load."
     },
     {
       "id": "phys_fn_000051",

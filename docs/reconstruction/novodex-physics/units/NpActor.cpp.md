@@ -23,7 +23,7 @@ Evidenced span: ['0x00002610', '0x0000b100']. Rows: 87 (0 ambiguous). Generated 
 - gap:SceneRaycast.cpp..CapsuleShape.cpp: phys_fn_000742, phys_fn_000744, phys_fn_000746, phys_fn_000756, phys_fn_000768, phys_fn_000776, phys_fn_000782, phys_fn_000784, phys_fn_000785, phys_fn_000789, phys_fn_000791
 - unassigned: phys_fn_005666
 
-## phys_fn_000050 (0x00002610, 107 B, reconstructed)
+## phys_fn_000050 (0x00002610, 107 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/NpActor.cpp

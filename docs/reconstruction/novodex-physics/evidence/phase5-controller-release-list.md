@@ -117,3 +117,9 @@ unchanged.
 
 - `phys_fn_000004`: forwarded-argument mutation caught, `mismatches=1`.
 - `phys_fn_000012`: freelist cursor mutation caught, `mismatches=1`.
+
+## Linear damping getter: `phys_fn_000050`
+
+The registered `NxPhysicsActorDynamicSetterTests` target pins `setter damping=3ecccccd.3f19999a.3ecccccd.3f19999a`, covering the dynamic body-record `+0xb8` load through the public getter. The same target checks the static actor's zero return and invalid-operation report. An isolated mutation changed the load to `+0xb4`; the candidate getter became zero and the pair differential caught it with `stdout_delta=2` (both processes exited zero, stderr exact). The clean staged-pair differential has `stdout_delta=0`.
+
+`phys_fn_000050` mutation detection: wrong getter offset `+0xb4` caught with `stdout_delta=2`.

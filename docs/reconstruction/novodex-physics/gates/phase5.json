@@ -5,11 +5,11 @@
   "status": "pending",
   "closure_ledger": "gates/phase5-closure.json",
   "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
-  "evidence_commit": "ab5fccf5",
-  "note": "The Phase 5 gate passed on merged local main at 403b57d5. It verifies immutable public headers, inventory accounting, clean Win32 Release builds, all registered actor/body/shape differential and oracle targets, and 2,244/2,244 coverage assertions. The closure ledger records 16 falsified rows and 189 reconstructed rows still awaiting falsification; this green gate does not claim the remaining rows are complete. The merged Viewer selection exercised all 39 registered scenes: 43 of 48 tests passed, and five pinned-oracle asset cases skipped under their established signatures. The phase remains pending because its reconstruction closure is not complete.",
+  "evidence_commit": "254804f4",
+  "note": "The closure ledger now records 17 falsified function rows and 188 reconstructed rows awaiting falsification. The next full Phase 5 gate run will refresh the gate transcript at coverage floor 2250; this record remains pending until then.",
   "counts": {
-    "closed": 16,
-    "deferred": 189
+    "closed": 17,
+    "deferred": 188
   },
   "gate_sequence": [
     {
@@ -20,12 +20,12 @@
     {
       "name": "validate_inventory",
       "command": "python -B docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json",
-      "result": "inventory=pass; Phase 5 closure 16 closed / 189 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0"
+      "result": "inventory=pass expected after commit; closure 17 closed / 188 deferred; 6,338 functions and 5,138 data objects; unexplained=0"
     },
     {
       "name": "build_and_phase_gate",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 5",
-      "result": "Win32 Release gate passed on merged local main at 403b57d5; all selected Phase 5 targets passed, including NxPhysicsObjectLayoutTests (miscsm baseline digest 9460eb64; each of two registered mutations produced mismatches=1), NxPhysicsShapeVtableTests (626 cases, failures=0; box hull 324 cases, failures=0; face-count mutation mismatches=44; face-getter mutation mismatches=6); coverage_assertions_evaluated=2244 floor=2244; phase_gate=5 status=pass"
+      "result": "pending rerun at coverage floor 2250"
     },
     {
       "name": "viewer_all_scenes",
@@ -41,5 +41,6 @@
     "modules ",
     "imports "
   ],
-  "escalations": []
+  "escalations": [],
+  "closed_functions": 17
 }

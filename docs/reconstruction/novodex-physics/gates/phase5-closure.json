@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "phase": 5,
-  "note": "Phase 5 owns 205 function rows and 122 data objects. Five function rows are closed by registered staged-pair mutations: phys_fn_002318, phys_fn_000030, phys_fn_000032, phys_fn_000034, and phys_fn_002421. One row, phys_fn_000002, is closed by the NxPhysicsRangeIterationTests static proof. Eight rows, phys_fn_001391, phys_fn_000955, phys_fn_000961, phys_fn_000963, phys_fn_000953, phys_fn_000967, phys_fn_000969, and phys_fn_000971, are closed by NxPhysicsShapeVtableTests oracle/candidate checks. The two rows phys_fn_000004 and phys_fn_000012 are closed by the NxPhysicsObjectLayoutTests oracle differential. 189 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records. See evidence/shape-self-001391.md and evidence/phase5-controller-release-list.md.",
+  "note": "Phase 5 owns 205 function rows and 122 data objects. Six function rows are closed by registered staged-pair mutations: phys_fn_002318, phys_fn_000030, phys_fn_000032, phys_fn_000034, phys_fn_002421, and phys_fn_000050. One row, phys_fn_000002, is closed by the NxPhysicsRangeIterationTests static proof. Eight rows, phys_fn_001391, phys_fn_000955, phys_fn_000961, phys_fn_000963, phys_fn_000953, phys_fn_000967, phys_fn_000969, and phys_fn_000971, are closed by NxPhysicsShapeVtableTests oracle/candidate checks. The two rows phys_fn_000004 and phys_fn_000012 are closed by the NxPhysicsObjectLayoutTests oracle differential. 188 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records. See evidence/shape-self-001391.md and evidence/phase5-controller-release-list.md.",
   "proof_kinds": {
-    "differential_falsified": "Mutations aimed at the five staged-pair rows were caught by their registered differentials; all five rows are closed.",
+    "differential_falsified": "Mutations aimed at the six staged-pair rows were caught by their registered differentials; all six rows are closed.",
     "static_proof_falsified": "The NxPhysicsRangeIterationTests mutation changed reverse stepping to forward stepping; its named checks caught the broken visitation order, callback result, and negative-stride behavior for phys_fn_000002.",
     "oracle_differential_falsified": "Mutations to phys_fn_001391, phys_fn_000955, phys_fn_000961, phys_fn_000963, phys_fn_000953, phys_fn_000967, phys_fn_000969, and phys_fn_000971 were caught by NxPhysicsShapeVtableTests; mutations to phys_fn_000004 and phys_fn_000012 were caught by NxPhysicsObjectLayoutTests. Each non-zero mismatch count records the failed case."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction; no function rows remain here.",
-    "reconstructed_not_falsified": "The row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 189 rows, each needing one mutation and one measured detection.",
+    "reconstructed_not_falsified": "The row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 188 rows, each needing one mutation and one measured detection.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -19,9 +19,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 5,
+    "differential_falsified": 6,
     "oracle_differential_falsified": 10,
-    "deferred_reconstructed_not_falsified": 189,
+    "deferred_reconstructed_not_falsified": 188,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -184,6 +184,17 @@
         "mutation": "Changed the freelist pop cursor update from cursor -= 4 to cursor += 4.",
         "detected": "mismatches=1"
       }
+    },
+    {
+      "id": "phys_fn_000050",
+      "rva": "0x00002610",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed NpActorVtable::getLinearDamping to read body-record offset +0xb4 instead of +0xb8 in an isolated mutation build.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The pinned getter observation changes from 3ecccccd to zero under the wrong offset."
     }
   ],
   "deferred": [
@@ -980,15 +991,6 @@
       "size": 73,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000050",
-      "rva": "0x00002610",
-      "size": 107,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
