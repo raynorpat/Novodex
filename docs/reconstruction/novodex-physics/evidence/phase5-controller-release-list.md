@@ -123,3 +123,10 @@ unchanged.
 The registered `NxPhysicsActorDynamicSetterTests` target pins `setter damping=3ecccccd.3f19999a.3ecccccd.3f19999a`, covering the dynamic body-record `+0xb8` load through the public getter. The same target checks the static actor's zero return and invalid-operation report. An isolated mutation changed the load to `+0xb4`; the candidate getter became zero and the pair differential caught it with `stdout_delta=2` (both processes exited zero, stderr exact). The clean staged-pair differential has `stdout_delta=0`.
 
 `phys_fn_000050` mutation detection: wrong getter offset `+0xb4` caught with `stdout_delta=2`.
+
+
+## Angular damping getter: `phys_fn_000052`
+
+`NxPhysicsActorDynamicSetterTests` already pins both damping getters in `setter damping=3ecccccd.3f19999a.3ecccccd.3f19999a`; the angular getter must read body record `+0xbc`. A separate mutation redirected it to `+0xb8`, returning the linear value `0.4` instead of angular `0.6`; the differential caught it with `stdout_delta=2` (both processes exited zero, stderr exact). The restored clean target passes with `stdout_delta=0`.
+
+`phys_fn_000052` mutation detection: wrong getter offset `+0xb8` caught with `stdout_delta=2`.
