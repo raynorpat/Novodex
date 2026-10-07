@@ -154,6 +154,9 @@ class TriangleMesh
 	public:
 	TriangleMesh();
 	~TriangleMesh();
+	//! phys_fn_002258 (oracle RVA 0x00055810): refuse to destroy a mesh with
+	//! live shape instances; otherwise run the destructor and free this object.
+	bool release();
 
 	bool loadFromDesc(const NxTriangleMeshDesc& desc);
 	bool buildModel();

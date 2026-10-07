@@ -41509,14 +41509,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/TriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/844",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7049",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "implementation": null
+      "static_proof": "IDA pseudocode at RVA 0x55810 checks the dword at this+0x74; nonzero reports NXE_INVALID_OPERATION with TriangleMesh.cpp:173 and returns false. Zero restores the two mesh interface tables, releases the optional convex object through slot 12, calls the existing mesh cleanup rows 002239 and 002085, then frees this through allocator slot 5 and returns true. Candidate implementation TriangleMesh::release follows the same guard and owned-resource cleanup; PhysicsSDK erases the registry entry only after release succeeds.",
+      "dynamic_proof": "evidence/triangle-mesh-release.md: staged oracle/candidate differential for NxPhysicsTriangleMeshApiTests matches the live-shape refusal result (errors=1, code=2, line=173), subsequent mesh-backed simulation, and normal release after the actor is removed; the focused target reports stdout_delta=0 and stderr_exact=True. Before the implementation, the new live-shape case reported refused=0/errors=0 and the candidate exited 1 while the oracle passed.",
+      "notes": "The row is reconstructed but remains deferred until an isolated throwaway-source mutation is measured under the Phase 4 closure protocol.",
+      "implementation": "Physics/src/TriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002259",

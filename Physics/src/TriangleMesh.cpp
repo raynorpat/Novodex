@@ -26,8 +26,11 @@
 
 static const NxI32 kTriangleMeshInvalidPMapLine = 0x30b;
 static const NxI32 kTriangleMeshPMapCreateFailedLine = 0x318;
+static const NxI32 kTriangleMeshReleaseInUseLine = 173;
 static const char* const kTriangleMeshInvalidPMapMessage = "TriangleMesh::loadPMap: invalid pmap data!";
 static const char* const kTriangleMeshPMapCreateFailedMessage = "TriangleMesh::loadPMap: pmap creation failed!";
+static const char* const kTriangleMeshReleaseInUseMessage =
+	"TriangleMesh::release: instances of this mesh still exist!";
 
 // The two tags are read and written as DWORDS, so on the little-endian target
 // the bytes on disc are 54 53 58 4e and 48 53 45 4d. Written most significant
@@ -296,6 +299,23 @@ TriangleMesh::~TriangleMesh()
 		nxFoundationSDKAllocator->free(wrapper);
 		mPublicObject = 0;
 		}
+	}
+
+// phys_fn_002258 (oracle RVA 0x00055810): a live MeshShape owns one reference
+// at +0x74. Keep the object and its public wrapper registered when that
+// reference is nonzero; otherwise destroy all owned data and free this block.
+bool TriangleMesh::release()
+	{
+	if(mReferenceCount)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			NX_TRIANGLE_MESH_CPP, kTriangleMeshReleaseInUseLine, 0,
+			"%s", kTriangleMeshReleaseInUseMessage);
+		return false;
+		}
+	this->~TriangleMesh();
+	nxFoundationSDKAllocator->free(this);
+	return true;
 	}
 
 // phys_fn_002168 (oracle RVA 0x00053cf0): replace a mesh's penetration map

@@ -260,9 +260,9 @@ void PhysicsSDK::releaseTriangleMesh(TriangleMesh* mesh)
 	for(NxU32 i = 0; i < mTriangleMeshes.size(); ++i)
 		if(mTriangleMeshes[i] == mesh)
 			{
+			if(!mesh->release())
+				return;
 			mTriangleMeshes.erase(mTriangleMeshes.begin() + i, mTriangleMeshes.begin() + i + 1);
-			mesh->~TriangleMesh();
-			nxFoundationSDKAllocator->free(mesh);
 			return;
 			}
 	}

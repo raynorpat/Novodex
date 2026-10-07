@@ -790,6 +790,23 @@ int wmain(int argc, wchar_t** argv)
 		sdk->release();
 		return nxFail("triangle-mesh actor creation failed");
 		}
+	// phys_fn_002258 refuses to release a mesh while any shape still owns it.
+	// Check before simulation so a broken implementation fails without using a
+	// dangling wrapper in subsequent actor work.
+	gOutputStream.reset();
+	sdk->releaseTriangleMesh(*mesh);
+	const bool releaseRefused = gOutputStream.errors == 1 &&
+		gOutputStream.lastCode == NXE_INVALID_OPERATION && gOutputStream.lastLine == 173 &&
+		strcmp(gOutputStream.file,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\TriangleMesh.cpp") == 0 &&
+		strcmp(gOutputStream.message,
+			"TriangleMesh::release: instances of this mesh still exist!") == 0;
+	printf("triangle_mesh release_in_use refused=%u errors=%u code=%u line=%d\n",
+		releaseRefused ? 1u : 0u, gOutputStream.errors,
+		static_cast<unsigned>(gOutputStream.lastCode), gOutputStream.lastLine);
+	if(!releaseRefused)
+		return nxFail("triangle-mesh release did not refuse a live shape reference");
+	gOutputStream.reset();
 	NxVec3 inertia = actor->getMassSpaceInertiaTensor();
 	printf("triangle_mesh mass=%08x inertia=%08x.%08x.%08x\n",
 		nxMeshFloatBits(actor->getMass()), nxMeshFloatBits(inertia.x),

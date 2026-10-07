@@ -54,8 +54,8 @@
   },
   "counts": {
     "oracle_differential_falsified": 29,
-    "deferred_reconstructed_not_falsified": 751,
-    "deferred_not_reconstructed_in_phase": 183,
+    "deferred_reconstructed_not_falsified": 752,
+    "deferred_not_reconstructed_in_phase": 182,
     "deferred_vendored_not_falsified": 90
   },
   "closed": [
@@ -1750,9 +1750,10 @@
       "id": "phys_fn_002258",
       "rva": "0x00055810",
       "size": 115,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Reconstructed in Physics/src/TriangleMesh.cpp and matched against the pinned oracle by NxPhysicsTriangleMeshApiTests; live shape release is refused with the exact code/line/message, and release succeeds after actor teardown. Still deferred: no isolated mutation has yet falsified this row under the Phase 4 closure protocol. See evidence/triangle-mesh-release.md."
     },
     {
       "id": "phys_fn_002260",

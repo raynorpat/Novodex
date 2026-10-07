@@ -3046,11 +3046,11 @@ void __thiscall FUN_100556c0(void *this,int *param_1)
 
 ```
 
-## phys_fn_002258 (0x00055810, 115 B, discovered)
+## phys_fn_002258 (0x00055810, 115 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/TriangleMesh.cpp
-- implementation: None
+- implementation: Physics/src/TriangleMesh.cpp
 - prototype: undefined4 __fastcall FUN_10055810(undefined4 * param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000470 (0x0000e130)
