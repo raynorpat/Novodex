@@ -132,12 +132,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6",
       "static_proof": "sub-object virtual forwarder: [this+0x10] names a sub-object whose vtable slot +0x18 receives the call with the original stack argument; a null sub-object returns without touching anything observable",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsObjectLayoutTests compares the `miscsm` object-layout fixture to the pinned oracle. The NxPhysicsObjectLayoutTests planted __thiscall sentinel reported its argument incorrectly: baseline `miscsm candidate ok=1 digest=9460eb64`, mutant `miscsm candidate ok=0 digest=bb22aa65`; the target exited 1 with one candidate mismatch.",
       "notes": ""
     },
     {
@@ -278,12 +278,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/6",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/19",
       "static_proof": "id-allocation primitive over {counter@0, freelist begin@4, cursor@8}: a non-empty list pops its last dword and shrinks the cursor; an exhausted list returns and increments the counter",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsObjectLayoutTests compares the `miscsm` object-layout fixture to the pinned oracle. The NxPhysicsObjectLayoutTests counter/freelist cases reported baseline `miscsm candidate ok=1 digest=9460eb64`, mutant `miscsm candidate ok=0 digest=85d7355f`; the target exited 1 with one candidate mismatch.",
       "notes": ""
     },
     {

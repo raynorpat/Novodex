@@ -98,3 +98,22 @@ in descending address order`. The restored implementation passes the focused
 Release test. The row is classified `statically_reviewed`, since this target
 compares against the recovered disassembly contract rather than a pinned-oracle
 transcript. No public header changed.
+
+## Object-layout helper rows: `phys_fn_000004` and `phys_fn_000012`
+
+`NxPhysicsObjectLayoutTests` compares the `miscsm` object-layout fixture
+against the pinned oracle. For `phys_fn_000004` at RVA `0x00001070`, changing
+the subobject forwarder to pass null instead of the caller's argument produced
+oracle digest `9460eb64` and candidate digest `bb22aa65`; the target exited 1
+with one candidate mismatch. The restored target reports `miscsm candidate
+ok=1 digest=9460eb64` and zero candidate mismatches.
+
+For `phys_fn_000012` at RVA `0x00001430`, changing the freelist pop cursor
+update from `cursor -= 4` to `cursor += 4` produced candidate digest
+`85d7355f` against oracle digest `9460eb64`; the target exited 1 with one
+candidate mismatch. The restored counter and freelist cases match the oracle.
+Both mutations were reverted before the clean target run. Public headers are
+unchanged.
+
+- `phys_fn_000004`: forwarded-argument mutation caught, `mismatches=1`.
+- `phys_fn_000012`: freelist cursor mutation caught, `mismatches=1`.

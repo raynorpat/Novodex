@@ -6,10 +6,10 @@
   "closure_ledger": "gates/phase5-closure.json",
   "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
   "evidence_commit": "ab5fccf5",
-  "note": "The Phase 5 gate passed on the current mainline implementation. It verifies immutable public headers, inventory accounting, clean Win32 Release builds, all registered actor/body/shape differential and oracle targets, and 2,244/2,244 coverage assertions. The closure ledger now records 14 mutation-falsified rows and 191 reconstructed rows still awaiting falsification; this green gate does not claim the remaining rows are complete. The post-merge Viewer selection exercised all 39 registered scenes: 43 of 48 tests passed, and five pinned-oracle asset cases skipped under their established signatures. The phase remains pending because its reconstruction closure is not complete.",
+  "note": "The Phase 5 gate passed on the current mainline implementation. It verifies immutable public headers, inventory accounting, clean Win32 Release builds, all registered actor/body/shape differential and oracle targets, and 2,244/2,244 coverage assertions. The closure ledger now records 16 mutation-falsified rows and 189 reconstructed rows still awaiting falsification; this green gate does not claim the remaining rows are complete. The post-merge Viewer selection exercised all 39 registered scenes: 43 of 48 tests passed, and five pinned-oracle asset cases skipped under their established signatures. The phase remains pending because its reconstruction closure is not complete.",
   "counts": {
-    "closed": 14,
-    "deferred": 191
+    "closed": 16,
+    "deferred": 189
   },
   "gate_sequence": [
     {
@@ -20,7 +20,7 @@
     {
       "name": "validate_inventory",
       "command": "python -B docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json",
-      "result": "inventory=pass; Phase 5 closure 14 closed / 191 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0"
+      "result": "inventory=pass; Phase 5 closure 16 closed / 189 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0"
     },
     {
       "name": "build_and_phase_gate",
