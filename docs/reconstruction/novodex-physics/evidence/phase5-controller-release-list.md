@@ -319,3 +319,16 @@ the DLL/test target rebuilt, and the clean differential returns to
 `stdout_delta=0`, `stderr_exact=True`.
 
 - `phys_fn_000120` mutation detection: wrong group source caught with `stdout_delta=8`; wrong density source caught with `stdout_delta=6`.
+
+## `NpActorVtable::getPointVelocityVal`: `phys_fn_000146`
+
+The registered lifecycle differential exercises static, dynamic, rotated, and
+quarter-turn actors plus its quaternion/mass-offset/point/velocity grid. The
+clean output is exact. Changing the final world-Z velocity accumulation in the
+Win32 x87 path from addition to subtraction changes the public point-velocity
+transcript (`stdout_delta=38`); both processes exit zero and stderr matches.
+Restoring the source byte-for-byte and rebuilding returns the differential to
+`stdout_delta=0`, `stderr_exact=True`. Full evidence:
+`evidence/phase5-world-point-velocity-mutation.md`.
+
+- `phys_fn_000146` mutation detection: changed the final Z accumulation from addition to subtraction; caught with `stdout_delta=38`.

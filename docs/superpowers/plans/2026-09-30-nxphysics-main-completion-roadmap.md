@@ -183,6 +183,17 @@ full DLL reconstruction remains active. Public Physics headers are unchanged.
 
 # NxPhysics completion project plan from main
 
+### Continuation — world-point velocity row falsification (2026-10-07)
+
+For `phys_fn_000146` (`NpActorVtable::getPointVelocityVal`), changing the
+candidate's final Win32 x87 world-Z velocity accumulation from addition to
+subtraction is caught by the registered lifecycle oracle differential with
+`stdout_delta=38`; both processes exit zero and stderr is exact. Restoring the
+source byte-for-byte and rebuilding returns the clean differential to an exact
+match. Phase 5 now records 42 closed / 163 deferred rows; the phase remains
+pending. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase5-world-point-velocity-mutation.md`.
+
 ### Continuation — actor `saveToDesc` field-source falsification (2026-10-07)
 
 The registered lifecycle fixture now uses distinct static/dynamic actor groups
