@@ -448,3 +448,10 @@ The registered `NxPhysicsShapeVtableTests` directly compares the oracle entry an
 The registered `NxPhysicsObjectLayoutTests` compares all thirteen frame words for flag=1 and flag=0. Baseline: `mzero row=phys_fn_000847 zA=00000000 zB=42424242 digest=23206019`; the candidate matches (`build/object-layout-000847-baseline.log`). Changing only the final mass clear to `1.0f` in an isolated archive yields a candidate mismatch and exit 1 (`build/object-layout-000847-mutation.log`).
 
 `phys_fn_000847` mutation detection: `mismatches=1`. Full details: `evidence/phase5-massframe-zero-000847.md`.
+
+
+## Actor mass from shapes — `phys_fn_000008`
+
+Restored `NxPhysicsActorMassTests` to CMake and the Phase 5 target registry. The oracle-backed target covers primitive, posed and compound shapes, explicit-mass behavior, and trigger-only refusals; baseline is exact (`stdout_delta=0`, `stderr_exact=True`; `build/actor-mass-current-main-differential.log`). A one-component density-inertia mutation in `nxActorComputeMassFromShapes` is caught with `stdout_delta=36`, successful exits on both sides, and exact stderr (`build/actor-mass-000008-mutation.log`).
+
+`phys_fn_000008` mutation detection: `stdout_delta=36`. Full details: `evidence/phase5-actor-mass-000008.md`.

@@ -1195,3 +1195,9 @@ Continuation 2026-10-06: compared the controller constructor's descriptor copies
 
 - The existing `NxPhysicsObjectLayoutTests` zeroizer differential covers both flag paths across all thirteen frame words. Baseline oracle/candidate digest is `23206019`; mutating the candidate's mass clear to `1.0f` produces one candidate mismatch and exit 1.
 - Phase 5 closure advances from 59 closed / 146 deferred to 60 closed / 145 deferred. Its fresh gate passes all 17 targets at 2,266/2,266 coverage assertions. Public Physics headers remain unchanged; full-DLL reconstruction remains active. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-massframe-zero-000847.md`.
+
+
+### Continuation — restore and falsify actor mass-from-shapes (2026-10-07)
+
+- Reconnected the existing `PhysicsActorMassTests.cpp` fixture to CMake and the Phase 5 registry after finding that main no longer built or ran it. The staged oracle differential is exact across primitive, posed, compound, explicit-mass, and trigger-refusal paths.
+- A throwaway archive mutation adding 1.0 to the first density-scaled inertia component in `phys_fn_000008` is caught with `stdout_delta=36` (both processes exit 0; stderr exact). The full Phase 5 gate passes 18 targets at 2,302/2,302. Closure advances from 60 closed / 145 deferred to 61 closed / 144 deferred. Public Physics headers remain unchanged; full-DLL reconstruction remains active. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-actor-mass-000008.md`.

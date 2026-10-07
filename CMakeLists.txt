@@ -503,6 +503,12 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsActorCMassTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsActorCMassTests bcrypt)
+	# Density-based actor creation exercises phys_fn_000008 across primitive,
+	# posed and compound shapes, including the trigger-only refusal.
+	add_executable(NxPhysicsActorMassTests tests/PhysicsActorMassTests.cpp)
+	target_include_directories(NxPhysicsActorMassTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsActorMassTests bcrypt)
 	# The dynamic body record's constructor and destructor rows (scene-raycast
 	# block Task 4, body-creation): the record words the constructor chain
 	# writes for default, live-SDK-parameter, explicit, zero-element-tensor and
@@ -580,7 +586,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 			NxPhysicsActorBodyFlagTests
 			NxPhysicsActorDynamicSetterTests NxPhysicsActorMomentumTests
 			NxPhysicsActorForceTests NxPhysicsActorCMassTests
-			NxPhysicsActorShapeMutationTests NxPhysicsJointStagedPairTests
+			NxPhysicsActorMassTests NxPhysicsActorShapeMutationTests NxPhysicsJointStagedPairTests
 			NxPhysicsJointSlotTests NxPhysicsSceneRaycastTests
 			NxPhysicsBodyCreationTests NxPhysicsSceneVisualizeTests
 			NxPhysicsEffectorTests NxPhysicsCoreDumpTests)

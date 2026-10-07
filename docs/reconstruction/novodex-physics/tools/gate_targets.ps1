@@ -13,7 +13,7 @@ $NxPhaseTestTargets = [ordered] @{
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
     '3' = @('NxPhysicsBodyCreationTests', 'NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests', 'NxPhysicsPMapResolution80Tests')
-    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsActorReleaseShapeProbeTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsSimulationTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsConvexMeshTests')
+    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsActorReleaseShapeProbeTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsSimulationTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsConvexMeshTests')
     '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsSimulationTests')
     '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
     '8' = @()
@@ -912,6 +912,48 @@ $NxRequiredCoverageLines = [ordered] @{
         'cmass snan_pose_val dynamic_t=ff800004.7f900005.40000000',
         'cmass snan_wake counter=7f900005.7f900005',
         'cmass static pose_reference=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0'
+    )
+    # Actor-mass Task 1: density-based dynamic actors, so that body creation
+    # computes mass, mass frame and inertia through 000008 and the shape slot-4
+    # rows. This target covers primitives, posed shapes, a compound, explicit
+    # mass scaling, and the trigger-only refusal.
+    'NxPhysicsActorMassTests' = @(
+        'mass sphere created=1',
+        'mass sphere mass=406231d6 inertia=3f4b9341.3f4b9341.3f4b9341',
+        'mass sphere cmass_local_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
+        'mass box created=1',
+        'mass box mass=41700000 inertia=41de8001.41aa0000.41110000',
+        'mass box cmass_local_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
+        'mass cube created=1',
+        'mass cube mass=3ec00000 inertia=3c800000.3c800000.3c800000',
+        'mass cube cmass_local_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
+        'mass capsule created=1',
+        'mass capsule mass=3f13fb49 inertia=3e8e4f18.3d3d6a9c.3e8e4f18',
+        'mass capsule cmass_local_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
+        'mass sphere_pose created=1',
+        'mass sphere_pose mass=3f860a92 inertia=3dd67750.3dd67750.3dd67750',
+        'mass sphere_pose cmass_local_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.3e800000.bf800000.3f000000',
+        'mass box_pose created=1',
+        'mass box_pose mass=41700000 inertia=41a9ffff.4110fffd.41de7ffe',
+        'mass box_pose cmass_local_pose=3f1b9b9c.3f2aaaaa.3edcdcdf.bf3ebebe.3f2aaaac.3ca0a06a.be8c8c91.beaaaaa9.3f66e6e7.bf400000.3f000000.3fa00000',
+        'mass capsule_pose created=1',
+        'mass capsule_pose mass=3ebc31a9 inertia=3c877fec.3e5c802b.3e5c8028',
+        'mass capsule_pose cmass_local_pose=3f7771da.3e3abb70.be38831d.be35a285.3f7bb1be.3d322f84.3e3d8839.bc254503.3f7b9040.3f800000.0.bf000000',
+        'mass compound created=1',
+        'mass compound mass=41612cb5 inertia=4150b30b.41a84610.41f5dadb',
+        'mass compound cmass_local_pose=3f49ba0e.bea22edb.3f07274d.3eceeba1.3f69bb7a.bd62f0bb.beedcf20.3e839884.3f58f3d1.bf16d7b0.3ecb9168.3f8ce8d3',
+        'mass compound_trigger created=1',
+        'mass compound_trigger mass=41612cb5 inertia=4150b30b.41a84610.41f5dadb',
+        'mass compound_trigger cmass_local_pose=3f49ba0e.bea22edb.3f07274d.3eceeba1.3f69bb7a.bd62f0bb.beedcf20.3e839884.3f58f3d1.bf16d7b0.3ecb9168.3f8ce8d3',
+        'mass compound_mass_density created=0',
+        'mass compound_mass_only created=1',
+        'mass compound_mass_only mass=40e00000 inertia=4117a82d.40a9febd.4159ccd3',
+        'mass compound_mass_only cmass_local_pose=3f18f5a8.3f28ca18.3ee9a97f.bf3c93b8.3f2d1a42.bc4c730b.bea235ea.bea84e0a.3f63c382.bf334346.3ed9c9d3.3f9b393b',
+        'mass capsule_mass_only created=1',
+        'mass capsule_mass_only mass=40400000 inertia=3e0a3d72.3fe0f5c5.3fe0f5c2',
+        'mass capsule_mass_only cmass_local_pose=3f7771da.3e3d04fd.be362b14.be35a286.3f7b892a.3d646930.3e3d8839.bcb70ded.3f7b82fd.3f800000.0.bf000000',
+        'mass trigger_only created=0',
+        'mass compound_trigger_only created=0'
     )
     'NxPhysicsActorForceTests' = @(
         # Task 3 review (000782 modes 0/1): inputs where adding the unrounded product and
@@ -5491,7 +5533,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 264  # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2266  # plus box slot-4 and mass-frame recentering coverage
+    '5' = 2302  # plus 36 actor mass-from-shapes oracle transcript lines
                # plus compound-trigger per-shape enter/stay/leave lifecycle
                # plus three-pair trigger reconciliation and queue growth
                # plus public trigger enter/stay/leave lifecycle
@@ -5552,6 +5594,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsActorMomentumTests',
     'NxPhysicsActorForceTests',
     'NxPhysicsActorCMassTests',
+    'NxPhysicsActorMassTests',
     'NxPhysicsBodyCreationTests',
     'NxPhysicsDynamicFirstTests',
     'NxPhysicsEmptySceneTests',
