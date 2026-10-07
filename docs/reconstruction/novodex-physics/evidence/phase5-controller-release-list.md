@@ -441,3 +441,10 @@ The registered `NxPhysicsShapeVtableTests` baseline passes all shape-vtable, box
 The registered `NxPhysicsShapeVtableTests` directly compares the oracle entry and candidate recentering method for four offset cases. Baseline: `shape vtable massframe centre oracle_digest=65953565 cases=4 failures=0` (`build/shape-vtable-000841-baseline.log`). An isolated archive mutation changed the x-offset negation to addition; three cases failed and all other sections stayed exact (`build/shape-vtable-000841-mutation.log`).
 
 `phys_fn_000841` mutation detection: `mismatches=3`. Full details: `evidence/phase5-massframe-centre-000841.md`.
+
+
+## Conditional mass-frame zeroing — `phys_fn_000847`
+
+The registered `NxPhysicsObjectLayoutTests` compares all thirteen frame words for flag=1 and flag=0. Baseline: `mzero row=phys_fn_000847 zA=00000000 zB=42424242 digest=23206019`; the candidate matches (`build/object-layout-000847-baseline.log`). Changing only the final mass clear to `1.0f` in an isolated archive yields a candidate mismatch and exit 1 (`build/object-layout-000847-mutation.log`).
+
+`phys_fn_000847` mutation detection: `mismatches=1`. Full details: `evidence/phase5-massframe-zero-000847.md`.

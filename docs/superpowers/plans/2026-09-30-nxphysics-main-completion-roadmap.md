@@ -1189,3 +1189,9 @@ Continuation 2026-10-06: compared the controller constructor's descriptor copies
 
 - Added four direct pinned-oracle comparisons for `phys_fn_000841` (`MassFrame::nxMassFrameTranslateToCentre`), including finite offsets, signed zero, and zero. Baseline matches exactly (digest `65953565`). In an isolated archive, changing the first offset negation to addition produces three mismatches while every other shape-vtable section remains exact.
 - The clean Phase 5 gate passes all 17 targets at 2,266/2,266 coverage assertions. Phase 5 closure advances from 58 closed / 147 deferred to 59 closed / 146 deferred. Public Physics headers remain unchanged; full-DLL reconstruction remains active. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-massframe-centre-000841.md`.
+
+
+### Continuation — conditional mass-frame zeroing row falsification (2026-10-07)
+
+- The existing `NxPhysicsObjectLayoutTests` zeroizer differential covers both flag paths across all thirteen frame words. Baseline oracle/candidate digest is `23206019`; mutating the candidate's mass clear to `1.0f` produces one candidate mismatch and exit 1.
+- Phase 5 closure advances from 59 closed / 146 deferred to 60 closed / 145 deferred. Its fresh gate passes all 17 targets at 2,266/2,266 coverage assertions. Public Physics headers remain unchanged; full-DLL reconstruction remains active. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-massframe-zero-000847.md`.

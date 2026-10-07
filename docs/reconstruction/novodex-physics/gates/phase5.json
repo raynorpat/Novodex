@@ -6,10 +6,10 @@
   "closure_ledger": "gates/phase5-closure.json",
   "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
   "evidence_commit": "6965e505f86ac15d1c35d2cd471f6544e42fb71d",
-  "note": "The full Phase 5 regression gate passes all 17 staged targets, static/oracle proofs, and 2,266/2,266 coverage assertions on the isolated clean verification build. Actor accessors, shape-vtable behavior, the box mass-frame builder, the box slot-4 density/local-pose wrapper, the mass-frame payload fold, and mass-frame recentering are independently mutation-falsified on registered tests; the current closure ledger is 59 closed / 146 deferred. The phase remains pending until all owned rows are closed.",
+  "note": "The full Phase 5 regression gate passes all 17 staged targets, static/oracle proofs, and 2,266/2,266 coverage assertions on the isolated clean verification build. Actor accessors, shape-vtable behavior, the box mass-frame builder, the box slot-4 density/local-pose wrapper, the mass-frame payload fold, mass-frame recentering, and conditional mass-frame zeroing are independently mutation-falsified on registered tests; the current closure ledger is 60 closed / 145 deferred. The phase remains pending until all owned rows are closed.",
   "counts": {
-    "closed": 59,
-    "deferred": 146
+    "closed": 60,
+    "deferred": 145
   },
   "gate_sequence": [
     {
@@ -20,7 +20,7 @@
     {
       "name": "validate_inventory",
       "command": "python -B docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json",
-      "result": "inventory=pass; Phase 5 closure 59 closed / 146 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0."
+      "result": "inventory=pass; Phase 5 closure 60 closed / 145 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0."
     },
     {
       "name": "build_and_phase_gate",
