@@ -264,3 +264,19 @@ target's release-count loops. Full mutation details are in
 
 After this closure, Phase 5 passes all 16 staged targets, static/oracle proofs,
 and 2,252/2,252 coverage assertions.
+
+## `NpActorVtable::updateMassFromShapes`: `phys_fn_000164`
+
+The existing `NxPhysicsActorShapeMutationTests` target exercises mass updates
+across primitive families, grouped shapes, planes, triggers, invalid inputs,
+and refreshed body records. Removing the row's first `+0x198` record-version
+increment changed 80 transcript lines (`stdout_delta=80`); both processes
+exited zero and stderr matched exactly. Restoring the increment returned the
+target to `stdout_delta=0` with exact stderr. Detailed evidence and log names:
+`evidence/phase5-update-mass-mutation.md`.
+
+- `phys_fn_000164` mutation detection: omitted mass-frame version increment caught with `stdout_delta=80`.
+
+The refreshed Phase 5 gate passes all 16 staged targets and 2,252/2,252
+coverage assertions after the `updateMassFromShapes` closure
+(`build/phase5-update-mass-final.log`).

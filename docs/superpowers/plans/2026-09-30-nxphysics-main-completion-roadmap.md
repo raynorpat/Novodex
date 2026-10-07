@@ -1,3 +1,16 @@
+### Continuation — `updateMassFromShapes` row mutation closure (2026-10-07)
+
+The existing shape-mutation differential covers mass recalculation across
+primitive shapes, grouped shapes, planes, triggers, invalid inputs, and
+refreshed dynamic-body records. Removing the row's first `+0x198` version
+increment changed 80 transcript lines with both processes exiting zero and
+exact stderr. Restoring the increment returns to an exact differential.
+`phys_fn_000164` is now closed; Phase 5 records 38 closed / 167 reconstructed
+rows awaiting falsification. The full Phase 5 gate passes all 16 staged
+targets and 2,252/2,252 assertions (`build/phase5-update-mass-final.log`);
+full DLL reconstruction remains open. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase5-update-mass-mutation.md`.
+
 ### Continuation — bounded `releaseShape` mutation closure (2026-10-07)
 
 Added `NxPhysicsActorReleaseShapeProbeTests` for a two-shape static actor. The
