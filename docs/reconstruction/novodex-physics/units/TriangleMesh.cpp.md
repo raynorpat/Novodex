@@ -411,10 +411,10 @@ LAB_10053c70:
 ## phys_fn_002166 (0x00053c80, 102 B, reconstructed)
 
 - ambiguous: no
-- source: builder/four-row (0x53c80, ret 4)
-- implementation: None
-- prototype: None
-- calling convention: None, stack purge: None
+- source: Physics/src/TriangleMesh.cpp
+- implementation: Physics/src/TriangleMesh.cpp :: TriangleMesh::saveToDesc
+- prototype: bool __thiscall TriangleMesh::saveToDesc(NxTriangleMeshDesc&), stack purge: 4
+- calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_002251 (0x00055490)
 - callees: none
 - indirect calls: none
