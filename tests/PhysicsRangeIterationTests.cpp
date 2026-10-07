@@ -17,7 +17,7 @@ static int nxCheck(const char* name, int condition)
 	{
 	if(!condition)
 		{
-		fprintf(stderr, "FAIL %s\n", name);
+		fprintf(stderr, "check_failed %s\n", name);
 		return 0;
 		}
 	return 1;

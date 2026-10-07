@@ -96,7 +96,7 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "layout_adjacency",
-      "state": "reconstructed",
+      "state": "statically_reviewed",
       "source": "Physics/src/RecoveredRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3",

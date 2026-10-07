@@ -1,5 +1,15 @@
 # NxPhysics completion project plan from main
 
+### Continuation — reverse strided range helper falsification (2026-10-07)
+
+Closed Phase 5 row `phys_fn_000002` with the existing disassembly-based static
+proof. Changing the candidate's reverse stride update into a forward step made
+the focused test fail its visitation, callback-result, and negative-stride
+checks; the restored Release target passes. Phase 5 now records 14 closed rows
+and 191 reconstructed rows awaiting falsification. Evidence:
+`docs/reconstruction/novodex-physics/evidence/range-iteration-000002.md` and
+`docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md`.
+
 ### Continuation — Box hull facade accessor falsification (2026-10-07)
 
 The approved Viewer scene sweep is already part of CTest and passed all 48

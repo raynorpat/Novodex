@@ -26,3 +26,12 @@ Verification:
 
 This closes only the helper's reconstructed row and tested argument cases; it
 does not change the full-DLL acceptance criteria.
+
+## Mutation follow-up (2026-10-07)
+
+The focused test was rerun after changing the loop update from `address -=
+stride` to `address += stride`. The mutant exited 1 and printed three failed
+checks: descending visitation, final callback result, and negative stride. The
+restored candidate passes `NxPhysicsRangeIterationTests`; this falsifies
+`phys_fn_000002` under the disassembly-based static proof and does not claim an
+oracle differential.

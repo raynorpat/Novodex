@@ -87,3 +87,14 @@ unchanged.
 - `phys_fn_000967`: edge-table mutation caught, `mismatches=1`.
 - `phys_fn_000969`: face-corner table mutation caught, `mismatches=83`.
 - `phys_fn_000971`: adjacency-table mutation caught, `mismatches=83`.
+
+## Reverse strided range helper: `phys_fn_000002`
+
+`NxPhysicsRangeIterationTests` already covers descending visitation, negative
+stride, the final callback result, and zero-count behavior. Mutating the loop
+update from `address -= stride` to `address += stride` made the target fail
+three named checks; the first reported `check_failed three values are visited
+in descending address order`. The restored implementation passes the focused
+Release test. The row is classified `statically_reviewed`, since this target
+compares against the recovered disassembly contract rather than a pinned-oracle
+transcript. No public header changed.
