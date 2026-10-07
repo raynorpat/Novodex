@@ -1,3 +1,16 @@
+### Continuation — controller resolver oracle mapping (2026-10-07)
+
+IDA review of `phys_fn_002306` (`NxPhysics.dll+0x59320`) shows a three-query
+controller move path and a conditional fourth correction probe. The fourth
+probe is gated by step-probe state, a hit on the up-axis movement query, and
+negative requested motion along that axis; it tests the transformed contact
+normal against the stored threshold and can clear the down-collision bit. The
+listing does not establish an upward retry in this entry. Before implementing
+the remaining path, add a paired fixture that records the oracle's exact
+correction behavior and maps the descriptor/object offsets and sweep helper's
+outputs. This avoids turning the current plan's shorthand “successful step-up”
+into invented behavior. Static trace: `docs/reconstruction/novodex-physics/evidence/controller-resolver-static-trace-2026-10-07.md`.
+
 ### Continuation — current-main standalone, Viewer, and DemoGame smoke (2026-10-07)
 
 On current local main commit `0fbbdb81`, a fresh Win32 Release configure and
