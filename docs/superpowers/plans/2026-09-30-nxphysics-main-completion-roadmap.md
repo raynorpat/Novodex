@@ -1177,3 +1177,9 @@ Continuation 2026-10-06: compared the controller constructor's descriptor copies
 
 - Extended `NxPhysicsShapeVtableTests` to drive Box slot 4 across descriptor dimensions, local pose, density, and its flag-gated path. Baseline: 24 cases / 0 failures. In an isolated archive, omitting density scaling in `phys_fn_000849` produced 12 mismatches and exit 1 while all other shape-vtable sections remained exact.
 - `phys_fn_000849` is now `dynamically_gated`; Phase 5 closure advances to 57 closed / 148 deferred. Public Physics headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-massframe-000849.md`.
+
+
+### Continuation — mass-frame payload-fold row falsification (2026-10-07)
+
+- The registered `NxPhysicsShapeVtableTests` baseline passes all 626 shape-vtable cases, 24 Box slot-4 cases, and 201 mass-frame cases. In the isolated archive, changing the first inertia result in `phys_fn_000831` (`MassFrame::nxMassFrameFoldPayload`) from `s` to `s + 1.0` produces 18 mismatches: two capsule slot-4 cases and sixteen cached-mesh slot-4 cases. Other sections remain exact.
+- The Phase 5 closure advances from 57 closed / 148 deferred to 58 closed / 147 deferred. Public Physics headers are unchanged; full-DLL reconstruction remains active. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-massframe-fold-000831.md`.

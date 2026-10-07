@@ -427,3 +427,10 @@ The registered `NxPhysicsShapeVtableTests` mass-frame differential covers nine b
 The registered `NxPhysicsShapeVtableTests` calls Box shape slot 4 across three dimensions, two local poses, two densities, and the clear/skip flag values. The baseline reports `cases=24 failures=0` (`build/shape-vtable-000849-baseline.log`). An isolated archive mutation omitted `local.nxMassFrameScale(density)` in `BoxShape::nxBoxComputeMassFrame`; all 12 density-two calls failed while the other shape-vtable sections remained exact (`build/shape-vtable-000849-mutation.log`).
 
 `phys_fn_000849` mutation detection: `mismatches=12`. Full details: `evidence/phase5-box-massframe-000849.md`.
+
+
+## Mass-frame payload fold — `phys_fn_000831`
+
+The registered `NxPhysicsShapeVtableTests` baseline passes all shape-vtable, boxmass, and massframe cases (`build/shape-vtable-000831-baseline.log`). An isolated archive mutation changed the first inertia result in `MassFrame::nxMassFrameFoldPayload`; two capsule and sixteen cached-mesh cases failed, while the Box slot-4, box-sweep, box-hull, and mass-frame-builder sections remained exact (`build/shape-vtable-000831-mutation.log`).
+
+`phys_fn_000831` mutation detection: `mismatches=18`. Full details: `evidence/phase5-massframe-fold-000831.md`.
