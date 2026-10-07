@@ -1806,12 +1806,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/46",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/208",
       "static_proof": "getCMassLocalPose under the read guard: twelve words into the out pointer -- nine rotation words from record+0xdc then translation from +0x100; a static actor (null record) reports kind 1 from NpActor.cpp line 0x2f2 and hands back identity plus zero translation Final review I1 (NpActor completion): the listing's integer word copies (rep movsd / mov) are now bit copies (memcpy) in the candidate; under /arch:IA32 they had been fld/fstp pairs that quiet a signalling NaN. The ActorCMass signalling-NaN cases (cmass snan_*) show the words match the oracle.",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsActorCMassTests catches row-targeted mutation: Shifted getCMassLocalPoseVal rotation source from record+0xdc to +0xe0. Detected with stdout_delta=56; both processes exit 0 and stderr is exact. Byte-restored differential: stdout_delta=0, stderr_exact=True.",
       "notes": ""
     },
     {
@@ -1842,12 +1842,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/37",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/211",
       "static_proof": "getCMassLocalPosition under the read guard: [+0x100/104/108]; static actors report kind 1 (line 0x2fa) and copy the zero triple at .data 0x10123c1c",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsActorCMassTests catches row-targeted mutation: Shifted getCMassLocalPositionVal source from +0x100 to +0x104. Detected with stdout_delta=56; both processes exit 0 and stderr is exact. Byte-restored differential: stdout_delta=0, stderr_exact=True.",
       "notes": ""
     },
     {
@@ -1878,12 +1878,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/38",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/214",
       "static_proof": "getCMassLocalOrientation: nine words from record+0xdc; static actors get the shipped identity table (.rdata 0x10122078) after the line-0x301 warning Final review I1 (NpActor completion): the listing's integer word copies (rep movsd / mov) are now bit copies (memcpy) in the candidate; under /arch:IA32 they had been fld/fstp pairs that quiet a signalling NaN. The ActorCMass signalling-NaN cases (cmass snan_*) show the words match the oracle.",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsActorCMassTests catches row-targeted mutation: Shifted getCMassLocalOrientationVal source from +0xdc to +0xe0. Detected with stdout_delta=58; both processes exit 0 and stderr is exact. Byte-restored differential: stdout_delta=0, stderr_exact=True.",
       "notes": ""
     },
     {
@@ -1914,12 +1914,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/39",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/218",
       "static_proof": "getMassSpaceInertiaTensorVal: the inertia diagonal [+0x18c/190/194] under the read guard; static arm reports line 0x328 with the same zero triple",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsConvexMeshTests catches row-targeted mutation: Shifted getMassSpaceInertiaTensorVal source from +0x18c to +0x190. Detected with stdout_delta=2; both processes exit 0 and stderr is exact. Byte-restored differential: stdout_delta=0, stderr_exact=True.",
       "notes": ""
     },
     {
@@ -1950,12 +1950,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/40",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/221",
       "static_proof": "getLinearVelocity under the read guard: [+0x6c/70/74] -- the same words the slate-2 energy term scales; static arm reports line 0x343 and writes inline zeros",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsActorDynamicsTests catches row-targeted mutation: Shifted getLinearVelocityVal source from +0x6c to +0x70. Detected with stdout_delta=2; both processes exit 0 and stderr is exact. Byte-restored differential: stdout_delta=0, stderr_exact=True.",
       "notes": ""
     },
     {
@@ -1986,12 +1986,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/41",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/224",
       "static_proof": "getAngularVelocity under the read guard: [+0x78/7c/80]; inline zeros on the static arm, line 0x34a",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsActorDynamicsTests catches row-targeted mutation: Shifted getAngularVelocityVal source from +0x78 to +0x7c. Detected with stdout_delta=2; both processes exit 0 and stderr is exact. Byte-restored differential: stdout_delta=0, stderr_exact=True.",
       "notes": ""
     },
     {
@@ -2022,12 +2022,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/52",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/227",
       "static_proof": "getLinearMomentumVal: mass [+0x188] times velocity [+0x6c/70/74] in natural component order, full-precision multiply, one rounding; .data zeros on the static arm, line 0x353",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsActorMomentumTests catches row-targeted mutation: Sourced getLinearMomentumVal mass from +0x18c instead of +0x188. Detected with stdout_delta=4; both processes exit 0 and stderr is exact. Byte-restored differential: stdout_delta=0, stderr_exact=True.",
       "notes": ""
     },
     {

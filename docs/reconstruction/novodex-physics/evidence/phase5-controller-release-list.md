@@ -385,3 +385,31 @@ to zero delta. Full evidence:
 `evidence/phase5-orientation-quat-mutation.md`.
 
 - `phys_fn_000094` mutation detection: shifted the dynamic quaternion source by four bytes; caught with `stdout_delta=4`.
+
+## Actor center-of-mass, velocity, inertia, and momentum getters
+
+Seven additional rows are independently falsified through registered public
+path differentials:
+
+- `phys_fn_000096` (`getCMassLocalPoseVal`): shifted the rotation source from
+  record+0xdc to +0xe0; `NxPhysicsActorCMassTests` caught it with
+  `stdout_delta=56`.
+- `phys_fn_000098` (`getCMassLocalPositionVal`): shifted the position source
+  from +0x100 to +0x104; the same target caught it with `stdout_delta=56`.
+- `phys_fn_000100` (`getCMassLocalOrientationVal`): shifted the matrix source
+  from +0xdc to +0xe0; the same target caught it with `stdout_delta=58`.
+- `phys_fn_000102` (`getMassSpaceInertiaTensorVal`): shifted the inertia read
+  from +0x18c to +0x190; `NxPhysicsConvexMeshTests` caught it with
+  `stdout_delta=2`.
+- `phys_fn_000104` (`getLinearVelocityVal`): shifted the velocity read from
+  +0x6c to +0x70; `NxPhysicsActorDynamicsTests` caught it with
+  `stdout_delta=2`.
+- `phys_fn_000106` (`getAngularVelocityVal`): shifted the velocity read from
+  +0x78 to +0x7c; the same target caught it with `stdout_delta=2`.
+- `phys_fn_000108` (`getLinearMomentumVal`): sourced mass from +0x18c instead
+  of +0x188; `NxPhysicsActorMomentumTests` caught it with `stdout_delta=4`.
+
+All mutant processes exited zero with exact stderr. Each source was restored
+byte-for-byte, rebuilt, and its clean target returned to `stdout_delta=0` with
+exact stderr. Full evidence: `evidence/phase5-actor-accessor-mutations.md`.
+- Mutation index: `phys_fn_000096` `stdout_delta=56`; `phys_fn_000098` `stdout_delta=56`; `phys_fn_000100` `stdout_delta=58`; `phys_fn_000102` `stdout_delta=2`; `phys_fn_000104` `stdout_delta=2`; `phys_fn_000106` `stdout_delta=2`; `phys_fn_000108` `stdout_delta=4`.

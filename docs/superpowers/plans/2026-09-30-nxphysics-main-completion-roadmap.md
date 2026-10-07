@@ -183,6 +183,17 @@ full DLL reconstruction remains active. Public Physics headers are unchanged.
 
 # NxPhysics completion project plan from main
 
+### Continuation — actor center-of-mass and motion getter falsification (2026-10-07)
+
+Seven Phase 5 accessors are now independently mutation-sensitive: local center
+of-mass pose, position, and orientation (`stdout_delta=56`, `56`, `58`);
+mass-space inertia (`2`); linear and angular velocity (`2` each); and linear
+momentum (`4`). Each registered oracle differential catches its targeted field
+offset mutation with both processes exiting zero and exact stderr. Every
+byte-restored control is exact. Phase 5 now records 55 closed / 150 deferred
+rows; the phase remains pending. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase5-actor-accessor-mutations.md`.
+
 ### Continuation — global orientation quaternion mutation closure (2026-10-07)
 
 For `phys_fn_000094`, shifting the dynamic quaternion copy from record+0x5c to

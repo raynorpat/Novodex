@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "phase": 5,
-  "note": "Phase 5 owns 205 function rows and 122 data objects. Thirty-six function rows are closed by registered staged-pair mutations, including actor group accessors, isDynamic, createShape, and releaseShape behavior. One row, phys_fn_000002, is closed by the NxPhysicsRangeIterationTests static proof. Eleven rows are closed by oracle differentials: eight Box shape-vtable rows, phys_fn_001035, phys_fn_000004, and phys_fn_000012. 157 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records. See evidence/shape-self-001391.md and evidence/phase5-controller-release-list.md.",
+  "note": "Phase 5 owns 205 function rows and 122 data objects. Forty-three function rows are closed by registered staged-pair mutations, including actor group accessors, isDynamic, createShape, and releaseShape behavior. One row, phys_fn_000002, is closed by the NxPhysicsRangeIterationTests static proof. Eleven rows are closed by oracle differentials: eight Box shape-vtable rows, phys_fn_001035, phys_fn_000004, and phys_fn_000012. 150 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records. See evidence/shape-self-001391.md and evidence/phase5-controller-release-list.md.",
   "proof_kinds": {
-    "differential_falsified": "Mutations aimed at the thirty-six staged-pair rows were caught by their registered differentials; all thirty-six rows are closed.",
+    "differential_falsified": "Mutations aimed at the thirty-nine staged-pair rows were caught by their registered differentials; all thirty-nine rows are closed.",
     "static_proof_falsified": "The NxPhysicsRangeIterationTests mutation changed reverse stepping to forward stepping; its named checks caught the broken visitation order, callback result, and negative-stride behavior for phys_fn_000002.",
     "oracle_differential_falsified": "Mutations to phys_fn_001391, phys_fn_000955, phys_fn_000961, phys_fn_000963, phys_fn_000953, phys_fn_000967, phys_fn_000969, phys_fn_000971, and phys_fn_001035 were caught by NxPhysicsShapeVtableTests; mutations to phys_fn_000004 and phys_fn_000012 were caught by NxPhysicsObjectLayoutTests. Each non-zero mismatch count records the failed case."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction; no function rows remain here.",
-    "reconstructed_not_falsified": "The row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 157 rows, each needing one mutation and one measured detection.",
+    "reconstructed_not_falsified": "The row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 150 rows, each needing one mutation and one measured detection.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -19,9 +19,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 36,
+    "differential_falsified": 43,
     "oracle_differential_falsified": 11,
-    "deferred_reconstructed_not_falsified": 157,
+    "deferred_reconstructed_not_falsified": 150,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -518,6 +518,76 @@
       "gate": "NxPhysicsActorLifecycleTests",
       "falsification": {
         "mutation": "Shifted the dynamic quaternion copy source from record+0x5c to record+0x60.",
+        "detected": "stdout_delta=4"
+      }
+    },
+    {
+      "id": "phys_fn_000096",
+      "rva": "0x00003140",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorCMassTests",
+      "falsification": {
+        "mutation": "Shifted getCMassLocalPoseVal rotation source from record+0xdc to +0xe0.",
+        "detected": "stdout_delta=56"
+      }
+    },
+    {
+      "id": "phys_fn_000098",
+      "rva": "0x00003200",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorCMassTests",
+      "falsification": {
+        "mutation": "Shifted getCMassLocalPositionVal source from +0x100 to +0x104.",
+        "detected": "stdout_delta=56"
+      }
+    },
+    {
+      "id": "phys_fn_000100",
+      "rva": "0x000032a0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorCMassTests",
+      "falsification": {
+        "mutation": "Shifted getCMassLocalOrientationVal source from +0xdc to +0xe0.",
+        "detected": "stdout_delta=58"
+      }
+    },
+    {
+      "id": "phys_fn_000102",
+      "rva": "0x00003310",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsConvexMeshTests",
+      "falsification": {
+        "mutation": "Shifted getMassSpaceInertiaTensorVal source from +0x18c to +0x190.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_000104",
+      "rva": "0x000033b0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicsTests",
+      "falsification": {
+        "mutation": "Shifted getLinearVelocityVal source from +0x6c to +0x70.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_000106",
+      "rva": "0x00003440",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicsTests",
+      "falsification": {
+        "mutation": "Shifted getAngularVelocityVal source from +0x78 to +0x7c.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_000108",
+      "rva": "0x000034d0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorMomentumTests",
+      "falsification": {
+        "mutation": "Sourced getLinearMomentumVal mass from +0x18c instead of +0x188.",
         "detected": "stdout_delta=4"
       }
     }
@@ -1215,69 +1285,6 @@
       "id": "phys_fn_000092",
       "rva": "0x00002ed0",
       "size": 90,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000096",
-      "rva": "0x00003140",
-      "size": 179,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000098",
-      "rva": "0x00003200",
-      "size": 151,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000100",
-      "rva": "0x000032a0",
-      "size": 108,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000102",
-      "rva": "0x00003310",
-      "size": 151,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000104",
-      "rva": "0x000033b0",
-      "size": 137,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000106",
-      "rva": "0x00003440",
-      "size": 140,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000108",
-      "rva": "0x000034d0",
-      "size": 173,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
