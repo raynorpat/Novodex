@@ -50,7 +50,7 @@ full DLL reconstruction remains active. Public Physics headers are unchanged.
 
 ### Continuation — actor body-flag mutation closures (2026-10-07)
 
-The dedicated `NxPhysicsActorBodyFlagTests` target now independently falsifies Phase 5 rows `phys_fn_000188` (`raiseBodyFlag`) and `phys_fn_000190` (`clearBodyFlag`). The wrong raise operation was caught with `stdout_delta=16`; the wrong clear operation was caught with `stdout_delta=12`; the restored differential is exact. Phase 5 now records 28 closed rows and 177 reconstructed rows awaiting falsification.
+The dedicated `NxPhysicsActorBodyFlagTests` target now independently falsifies Phase 5 rows `phys_fn_000188` (`raiseBodyFlag`), `phys_fn_000190` (`clearBodyFlag`), and `phys_fn_000080` (`readBodyFlag`). The wrong raise operation was caught with `stdout_delta=16`; the wrong clear operation was caught with `stdout_delta=12`; the restored differential is exact. Phase 5 now records 29 closed rows and 176 reconstructed rows awaiting falsification.
 
 ### Continuation ï¿½ actor sleep/wake mutation closures (2026-10-07)
 

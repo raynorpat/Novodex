@@ -1517,12 +1517,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/29",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/183",
       "static_proof": "readBodyFlag under the read guard: ([record+0x10c] byte AND mask) != 0; a static actor reports kind 1 (readBodyFlag: Actor must be dynamic!) and returns false",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsActorBodyFlagTests pins the public readBodyFlag result after descriptor initialization, raise, and clear transitions. An isolated mutation inverted the masked-bit predicate and was caught with stdout_delta=6; both processes exited 0 and stderr was exact. The restored staged-pair differential is exact. See evidence/phase5-controller-release-list.md.",
       "notes": ""
     },
     {

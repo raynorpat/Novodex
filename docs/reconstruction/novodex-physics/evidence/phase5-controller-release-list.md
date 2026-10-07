@@ -170,3 +170,10 @@ The registered `NxPhysicsActorBodyFlagTests` differential pins the actor body-fl
 `phys_fn_000188` mutation detection: body-flag raise mutation caught with `stdout_delta=16`.
 
 `phys_fn_000190` mutation detection: body-flag clear mutation caught with `stdout_delta=12`.
+
+
+## Body-flag read: `phys_fn_000080`
+
+The `NxPhysicsActorBodyFlagTests` differential checks `readBodyFlag` after descriptor initialization, after raising the disable-gravity flag, and after clearing visualization. Inverting the method's masked-bit predicate changed `bodyflag_descriptor`, `bodyflag_raised`, and `bodyflag_cleared`; the mutation was caught with `stdout_delta=6` (both processes exited zero, stderr exact). The restored target matches with `stdout_delta=0`.
+
+`phys_fn_000080` mutation detection: inverted masked-bit predicate caught with `stdout_delta=6`.

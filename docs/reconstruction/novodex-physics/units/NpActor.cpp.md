@@ -787,7 +787,7 @@ bool __thiscall FUN_10002c60(void *this,uint param_1)
 
 ```
 
-## phys_fn_000080 (0x00002c90, 103 B, reconstructed)
+## phys_fn_000080 (0x00002c90, 103 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/NpActor.cpp
