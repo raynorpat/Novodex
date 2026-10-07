@@ -41414,13 +41414,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/841",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7026",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompile at RVA 0x00055570: releases the optional wrapper held at TriangleMesh+0xe4 and clears the field, dispatches the convex-data/PMap cleanup helper at 0x00054a80, then destroys the internal mesh arrays via 0x000523a0. The candidate implementation is TriangleMesh::~TriangleMesh in Physics/src/TriangleMesh.cpp.",
+      "dynamic_proof": "TriangleMesh destructor lifecycle audit (2026-10-07): NxPhysicsTriangleMeshApiTests tracks live allocations through a create/release fixture and confirms release returns to the pre-create baseline. Staged x86 pair differentials passed NxPhysicsTriangleMeshApiTests and NxPhysicsConvexMeshTests with oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=true. A targeted mutant omitting the vertex-array free changed returned_to_baseline from 1 to 0 and failed the candidate fixture while the oracle passed; restoring the free returned both targets to exact output. Evidence: evidence/triangle-mesh-destructor.md.",
+      "notes": "The lifetime fixture asserts zero net live allocations for a simple mesh; optional PMap and computed-convex release paths are also driven by the two API suites, while individual allocation-failure branches remain open.",
+      "implementation": "Physics/src/TriangleMesh.cpp",
+      "implementation_symbol": "TriangleMesh::~TriangleMesh"
     },
     {
       "id": "phys_fn_002254",

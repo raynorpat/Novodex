@@ -76,10 +76,41 @@ static unsigned long long nxPMapByteHash(const unsigned char* bytes, NxU32 count
 class TriangleMeshApiAllocator : public NxUserAllocator
 	{
 	public:
-	void* mallocDEBUG(size_t size, const char*, int) override { return ::malloc(size); }
-	void* malloc(size_t size) override { return ::malloc(size); }
-	void* realloc(void* memory, size_t size) override { return ::realloc(memory, size); }
-	void free(void* memory) override { ::free(memory); }
+	TriangleMeshApiAllocator(): liveAllocations(0) {}
+	void* mallocDEBUG(size_t size, const char*, int) override { return allocate(size); }
+	void* malloc(size_t size) override { return allocate(size); }
+	void* realloc(void* memory, size_t size) override
+		{
+		void* result = ::realloc(memory, size);
+		if(!memory && result)
+			{
+			++liveAllocations;
+			}
+		else if(memory && !size && !result)
+			{
+			--liveAllocations;
+			}
+		return result;
+		}
+	void free(void* memory) override
+		{
+		if(memory)
+			{
+			--liveAllocations;
+			}
+		::free(memory);
+		}
+	long long liveAllocations;
+	private:
+	void* allocate(size_t size)
+		{
+		void* memory = ::malloc(size);
+		if(memory)
+			{
+			++liveAllocations;
+			}
+		return memory;
+		}
 	};
 
 static TriangleMeshApiAllocator gAllocator;
@@ -365,6 +396,33 @@ static int nxTestDescriptorVariants(NxPhysicsSDK* sdk)
 	return nxTestDescriptorPath(sdk, "precomputed_convex", precomputedConvex, 4, 4, NX_MF_CONVEX);
 	}
 
+static int nxTestTriangleMeshReleaseLifetime(NxPhysicsSDK* sdk)
+	{
+	const NxVec3 points[] = {
+		NxVec3(-1.0f, -1.0f, 0.0f), NxVec3(1.0f, -1.0f, 0.0f),
+		NxVec3(-1.0f, 1.0f, 0.0f), NxVec3(1.0f, 1.0f, 0.0f)
+		};
+	const NxU32 indices[] = { 0, 1, 2, 1, 3, 2 };
+	NxTriangleMeshDesc desc;
+	desc.setToDefault();
+	desc.numVertices = 4;
+	desc.points = points;
+	desc.pointStrideBytes = sizeof(NxVec3);
+	desc.numTriangles = 2;
+	desc.triangles = indices;
+	desc.triangleStrideBytes = 3 * sizeof(NxU32);
+	const long long liveBefore = gAllocator.liveAllocations;
+	NxTriangleMesh* mesh = sdk->createTriangleMesh(desc);
+	if(!mesh)
+		return nxFail("triangle-mesh destructor fixture creation failed");
+	sdk->releaseTriangleMesh(*mesh);
+	const long long liveAfterRelease = gAllocator.liveAllocations;
+	printf("triangle_mesh lifecycle returned_to_baseline=%u\n",
+		liveAfterRelease == liveBefore ? 1u : 0u);
+	return liveAfterRelease == liveBefore ? 0 :
+		nxFail("triangle-mesh release did not return allocator ownership to its starting level");
+	}
+
 static int nxTestInvalidDescriptor(NxPhysicsSDK* sdk)
 	{
 	NxTriangleMeshDesc invalid;
@@ -426,6 +484,12 @@ int wmain(int argc, wchar_t** argv)
 		}
 
 	status = nxTestDescriptorVariants(sdk);
+	if(status)
+		{
+		sdk->release();
+		return status;
+		}
+	status = nxTestTriangleMeshReleaseLifetime(sdk);
 	if(status)
 		{
 		sdk->release();

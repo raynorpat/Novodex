@@ -265,6 +265,8 @@ TriangleMesh::TriangleMesh()
 	mPublicObject = wrapper;
 	}
 
+// phys_fn_002253 (oracle RVA 0x00055570): release the public wrapper and all
+// TriangleMesh-owned PMap, convex, model, and array storage.
 TriangleMesh::~TriangleMesh()
 	{
 	nxTriangleMeshDestroyConvexData(static_cast<TriangleMeshConvexData*>(mConvexMesh));
