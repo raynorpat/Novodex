@@ -244,7 +244,7 @@ static unsigned long long nxMeshSavedMaterialsHash(const NxTriangleMeshDesc& des
 	}
 
 static int nxTestDescriptorPath(NxPhysicsSDK* sdk, const char* name,
-	const NxTriangleMeshDesc& input, NxU32 expectedVertices, NxU32 expectedTriangles)
+	const NxTriangleMeshDesc& input, NxU32 expectedVertices, NxU32 expectedTriangles, NxU32 expectedFlags)
 	{
 	NxTriangleMesh* mesh = sdk->createTriangleMesh(input);
 	if(!mesh)
@@ -254,10 +254,10 @@ static int nxTestDescriptorPath(NxPhysicsSDK* sdk, const char* name,
 	const bool savedOk = mesh->saveToDesc(saved);
 	const NxU32 vertices = mesh->getCount(0, NX_ARRAY_VERTICES);
 	const NxU32 triangles = mesh->getCount(0, NX_ARRAY_TRIANGLES);
-	if(!savedOk || vertices != expectedVertices || triangles != expectedTriangles)
+	if(!savedOk || vertices != expectedVertices || triangles != expectedTriangles || saved.flags != expectedFlags)
 		{
-		fprintf(stderr, "triangle_mesh case=%s actual=%u.%u expected=%u.%u saved=%u\n",
-			name, vertices, triangles, expectedVertices, expectedTriangles, savedOk ? 1u : 0u);
+		fprintf(stderr, "triangle_mesh case=%s actual=%u.%u.%08x expected=%u.%u.%08x saved=%u\n",
+			name, vertices, triangles, saved.flags, expectedVertices, expectedTriangles, expectedFlags, savedOk ? 1u : 0u);
 		sdk->releaseTriangleMesh(*mesh);
 		return nxFail("triangle-mesh descriptor fixture changed expected topology");
 		}
@@ -295,7 +295,7 @@ static int nxTestDescriptorVariants(NxPhysicsSDK* sdk)
 	indexed.flags = NX_MF_16_BIT_INDICES | NX_MF_FLIPNORMALS;
 	indexed.materialIndices = materials;
 	indexed.materialIndexStride = sizeof(MaterialWithPadding);
-	int status = nxTestDescriptorPath(sdk, "descriptor16", indexed, 4, 2);
+	int status = nxTestDescriptorPath(sdk, "descriptor16", indexed, 4, 2, 0);
 	if(status)
 		return status;
 
@@ -308,7 +308,25 @@ static int nxTestDescriptorVariants(NxPhysicsSDK* sdk)
 	unindexed.numVertices = 6;
 	unindexed.points = unindexedPoints;
 	unindexed.pointStrideBytes = sizeof(NxVec3);
-	return nxTestDescriptorPath(sdk, "implicit_indices", unindexed, 4, 2);
+	status = nxTestDescriptorPath(sdk, "implicit_indices", unindexed, 4, 2, 0);
+	if(status)
+		return status;
+
+	const NxVec3 tetraPoints[] = {
+		NxVec3(-1.0f, -1.0f, -1.0f), NxVec3(1.0f, -1.0f, -1.0f),
+		NxVec3(-1.0f, 1.0f, -1.0f), NxVec3(-1.0f, -1.0f, 1.0f)
+		};
+	const NxU32 tetraTriangles[] = { 0, 2, 1, 0, 1, 3, 0, 3, 2, 1, 2, 3 };
+	NxTriangleMeshDesc precomputedConvex;
+	precomputedConvex.setToDefault();
+	precomputedConvex.numVertices = 4;
+	precomputedConvex.points = tetraPoints;
+	precomputedConvex.pointStrideBytes = sizeof(NxVec3);
+	precomputedConvex.numTriangles = 4;
+	precomputedConvex.triangles = tetraTriangles;
+	precomputedConvex.triangleStrideBytes = 3 * sizeof(NxU32);
+	precomputedConvex.flags = NX_MF_CONVEX;
+	return nxTestDescriptorPath(sdk, "precomputed_convex", precomputedConvex, 4, 4, NX_MF_CONVEX);
 	}
 
 int wmain(int argc, wchar_t** argv)
