@@ -10,6 +10,8 @@ Task M2-vtable-000955: `BoxHullFacade::vertices()` at RVA `0x00020d30` is mutati
 
 Task M2-vtable-000961: `BoxHullFacade::faceCount()` at RVA `0x000213c0` is mutation-falsified by the same oracle-backed test. Returning five instead of six faces yields 44 mismatches; the restored target passes all 314 hull cases. Evidence: `build/phase5-facecount-mutation.log` and `build/phase5-facecount-clean.log`. Phase 5 accounting is now 8 closed / 197 deferred. Public headers unchanged.
 
+Viewer acceptance after merge: at mainline commit `4a0fd687`, the full CTest suite completed 56/56 entries: 51 passed and five signature-verified pinned-oracle asset cases skipped. Every one of the 39 `ViewerSmokeScene_*` entries ran (34 passed, five skipped). Transcript: `build/viewer-all-scenes-mainline.log`.
+
 Task 1: The 45-degree rotated D6 fixture is now exact. `D6JointPose::row004180` uses an x86/MSVC x87 sequence that keeps `ty` and `tz` intermediates in 80-bit memory temporaries, matching the oracle. The all-axis angular-lock fixture is also exact: `supportApplyAngularImpulse004395` preserves the oracle's x87 row-sum precision through angular-velocity addition. Both fixtures run 12 fixed steps and are registered in Phase 7; current floor is 1,291.
 
 Task 1: Added a populated-scene teardown differential. It creates two dynamic sphere actors, joins them with a live fixed joint, steps once, then releases the scene while all three objects remain attached. A second case creates two such populated scenes in one SDK, steps both, then releases in reverse order. Both oracle/candidate transcripts are exact; Phase 7 registers these observations and passes at floor 1,293. Populated teardown with controllers and allocation-failure rollback remain open.

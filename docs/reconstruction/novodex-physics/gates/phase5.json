@@ -30,7 +30,7 @@
     {
       "name": "viewer_all_scenes",
       "command": "ctest --test-dir build -C Release --output-on-failure",
-      "result": "56/56 CTest entries completed; 51 passed and five signature-verified pinned-oracle asset cases were skipped because their assets were unavailable. All 39 registered ViewerSmokeScene_* scenes were included."
+      "result": "On merged mainline commit 4a0fd687, all 56 CTest entries completed: 51 passed and five signature-verified pinned-oracle asset cases were skipped because their assets were unavailable. All 39 registered ViewerSmokeScene_* scenes were included (34 passed, five skipped). Transcript: build/viewer-all-scenes-mainline.log."
     }
   ],
   "excluded_from_comparison": [
