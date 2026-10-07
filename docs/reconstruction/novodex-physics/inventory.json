@@ -39782,14 +39782,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/TriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/824",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6847",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "implementation": null
+      "static_proof": "IDA decompile at RVA 0x00053b70: deletes/clears an existing convex object when this method is explicitly called, clears the convex-ready bit, then either builds a hull from the current mesh or allocates a 0x98-byte hull and initializes it from existing topology. Candidate loadFromDesc inlines the loader-side guard and initialization: oracle 002260 invokes this transition only when no convex object exists and the new descriptor requests convex data.",
+      "dynamic_proof": "TriangleMesh convex reload audit (2026-10-07): added a public NxTriangleMesh::loadFromDesc sequence that loads a computed convex tetrahedron, reloads a different precomputed tetrahedron, then reloads a plain mesh. Oracle retains the original hull object and reports convex flags/hull arrays throughout. The prior candidate cleared and rebuilt the hull, producing different hull hashes and then no hull for the plain descriptor (RED). The candidate now matches both stages exactly. Staged-pair NxPhysicsTriangleMeshApiTests and NxPhysicsConvexMeshTests pass with oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=true. Evidence: evidence/triangle-mesh-compute-convex.md.",
+      "notes": "The public reload path is now tested for computed/precomputed/plain replacement order; other explicit computeConvexHull callers and allocation-failure branches remain open.",
+      "implementation": "Physics/src/TriangleMesh.cpp",
+      "implementation_symbol": "TriangleMesh::loadFromDesc"
     },
     {
       "id": "phys_fn_002165",

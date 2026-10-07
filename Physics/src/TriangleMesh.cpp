@@ -533,12 +533,16 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& source)
 		return false;
 	if(source.pmap && !loadPMap(*source.pmap))
 		return false;
-	nxTriangleMeshDestroyConvexData(static_cast<TriangleMeshConvexData*>(mConvexMesh));
-	mConvexMesh = 0;
+	// phys_fn_002164 (oracle RVA 0x00053b70): loadFromDesc invokes the convex
+	// initializer only when the mesh has no convex object yet. Reloading another
+	// descriptor preserves the existing hull, even when the new descriptor is plain.
+	if(!mConvexMesh && (mHullFlags & NX_MF_CONVEX))
+		{
 	TriangleMeshConvexData* convexData = 0;
-	if((mHullFlags & NX_MF_CONVEX) && !nxTriangleMeshBuildConvexData(&convexData, mInternal))
+	if(!nxTriangleMeshBuildConvexData(&convexData, mInternal))
 		return false;
 	mConvexMesh = convexData;
+		}
 	return true;
 	}
 

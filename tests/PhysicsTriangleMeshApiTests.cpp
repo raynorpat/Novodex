@@ -396,6 +396,75 @@ static int nxTestDescriptorVariants(NxPhysicsSDK* sdk)
 	return nxTestDescriptorPath(sdk, "precomputed_convex", precomputedConvex, 4, 4, NX_MF_CONVEX);
 	}
 
+static int nxTestTriangleMeshReload(NxPhysicsSDK* sdk)
+	{
+	const NxVec3 plainPoints[] = {
+		NxVec3(-1.0f, -1.0f, 0.0f), NxVec3(1.0f, -1.0f, 0.0f),
+		NxVec3(-1.0f, 1.0f, 0.0f), NxVec3(1.0f, 1.0f, 0.0f)
+		};
+	const NxU32 plainIndices[] = { 0, 1, 2, 1, 3, 2 };
+	NxTriangleMeshDesc plain;
+	plain.setToDefault();
+	plain.numVertices = 4;
+	plain.points = plainPoints;
+	plain.pointStrideBytes = sizeof(NxVec3);
+	plain.numTriangles = 2;
+	plain.triangles = plainIndices;
+	plain.triangleStrideBytes = 3 * sizeof(NxU32);
+	NxTriangleMesh* mesh = sdk->createTriangleMesh(plain);
+	if(!mesh)
+		return nxFail("triangle-mesh reload fixture creation failed");
+
+	const NxVec3 tetraPoints[] = {
+		NxVec3(-1.0f, -1.0f, -1.0f), NxVec3(1.0f, -1.0f, -1.0f),
+		NxVec3(-1.0f, 1.0f, -1.0f), NxVec3(-1.0f, -1.0f, 1.0f)
+		};
+	const NxVec3 replacementPoints[] = {
+		NxVec3(8.0f, 8.0f, 8.0f), NxVec3(10.0f, 8.0f, 8.0f),
+		NxVec3(8.0f, 10.0f, 8.0f), NxVec3(8.0f, 8.0f, 10.0f)
+		};
+	const NxU32 tetraIndices[] = { 0, 2, 1, 0, 1, 3, 0, 3, 2, 1, 2, 3 };
+	NxTriangleMeshDesc computed;
+	computed.setToDefault();
+	computed.numVertices = 4;
+	computed.points = tetraPoints;
+	computed.pointStrideBytes = sizeof(NxVec3);
+	computed.flags = NX_MF_CONVEX | NX_MF_COMPUTE_CONVEX;
+	NxTriangleMeshDesc precomputed = computed;
+	precomputed.points = replacementPoints;
+	precomputed.numTriangles = 4;
+	precomputed.triangles = tetraIndices;
+	precomputed.triangleStrideBytes = 3 * sizeof(NxU32);
+	precomputed.flags = NX_MF_CONVEX;
+
+	bool ok = true;
+	const NxTriangleMeshDesc* inputs[] = { &computed, &precomputed, &plain };
+	const NxU32 expectedFlags[] = { NX_MF_CONVEX, NX_MF_CONVEX, NX_MF_CONVEX };
+	const char* names[] = { "computed_convex", "precomputed_convex", "plain" };
+	unsigned long long retainedHullHash = 0;
+	for(unsigned i = 0; i < 3; ++i)
+		{
+		const bool loaded = mesh->loadFromDesc(*inputs[i]);
+		NxTriangleMeshDesc saved;
+		saved.setToDefault();
+		const bool savedOk = mesh->saveToDesc(saved);
+		const NxU32 hullVertices = mesh->getCount(0, NX_ARRAY_HULL_VERTICES);
+		const NxU32 hullPolygons = mesh->getCount(0, NX_ARRAY_HULL_POLYGONS);
+		const unsigned long long hullHash = nxMeshArrayHash(*mesh, NX_ARRAY_HULL_VERTICES);
+		if(i == 0)
+			retainedHullHash = hullHash;
+		printf("triangle_mesh reload step=%s loaded=%u flags=%08x hull=%u.%u arrays=%016llx.%016llx hull_hash=%016llx\n",
+			names[i], loaded ? 1u : 0u, saved.flags, hullVertices, hullPolygons,
+			nxMeshArrayHash(*mesh, NX_ARRAY_VERTICES), nxMeshArrayHash(*mesh, NX_ARRAY_TRIANGLES), hullHash);
+		if(!loaded || !savedOk || saved.flags != expectedFlags[i] ||
+			hullVertices < 4 || hullPolygons < 4 ||
+			(i != 0 && hullHash != retainedHullHash))
+			ok = false;
+		}
+	sdk->releaseTriangleMesh(*mesh);
+	return ok ? 0 : nxFail("triangle-mesh loadFromDesc replacement lifecycle diverged");
+	}
+
 static int nxTestTriangleMeshReleaseLifetime(NxPhysicsSDK* sdk)
 	{
 	const NxVec3 points[] = {
@@ -484,6 +553,12 @@ int wmain(int argc, wchar_t** argv)
 		}
 
 	status = nxTestDescriptorVariants(sdk);
+	if(status)
+		{
+		sdk->release();
+		return status;
+		}
+	status = nxTestTriangleMeshReload(sdk);
 	if(status)
 		{
 		sdk->release();
