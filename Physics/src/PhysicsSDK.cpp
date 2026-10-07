@@ -27,6 +27,7 @@
 static const int gSetParameterEnumErrorLine = 263;
 static const int gSetParameterRangeErrorLine = 292;
 static const int gGetParameterEnumErrorLine = 306;
+static const int gCreateTriangleMeshDescriptorErrorLine = 498;
 // The two collision-group error sites, from the immediates pushed at 0x0000df71
 // and 0x0000dc9b. Both push an error code of 1, NXE_INVALID_PARAMETER.
 static const int gSetGroupCollisionFlagErrorLine = 576;
@@ -232,7 +233,14 @@ PhysicsSDK::~PhysicsSDK()
 
 TriangleMesh* PhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc& desc)
 	{
-	if(!nxFoundationSDKAllocator || !desc.isValid()) return 0;
+	if(!nxFoundationSDKAllocator) return 0;
+	if(!desc.isValid())
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,
+			NX_PHYSICS_SDK_CPP, gCreateTriangleMeshDescriptorErrorLine, 0,
+			"PhysicsSDK::createTriangleMesh: desc.isValid() is false!");
+		return 0;
+		}
 	void* memory = nxFoundationSDKAllocator->malloc(sizeof(TriangleMesh), NX_MEMORY_PERSISTENT);
 	if(!memory) return 0;
 	TriangleMesh* mesh = new(memory) TriangleMesh();
