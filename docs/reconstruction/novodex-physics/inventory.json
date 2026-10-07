@@ -41539,14 +41539,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/TriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1101",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7052",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "implementation": null
+      "dynamic_proof": "TriangleMesh loadFromDesc audit (2026-10-07): the pinned oracle row at RVA 0x55890 was decompiled in IDA; its descriptor validation, implicit-index path, 16/32-bit conversion, compute-convex dispatch, topology/model construction, PMap load, and convex-data construction correspond to TriangleMesh::loadFromDesc. Staged x86 pair differential passed NxPhysicsTriangleMeshApiTests and NxPhysicsConvexMeshTests with oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=true. Coverage includes padded 16-bit indices with flipped winding/materials, implicit indices, precomputed convex input, computed convex input with padded points, repeat creation, saveToDesc, PMap, and static/dynamic actor mass. A targeted mutant returning false for four-vertex input was caught by the authored PMap mesh-creation fixture (candidate exit=1; oracle exit=0); restored source returned to the exact differential. Evidence: evidence/triangle-mesh-load-from-desc.md.",
+      "notes": "The differential closes the exercised public construction paths; broader malformed/allocation-failure cases and TriangleMesh's dependent rows remain tracked separately.",
+      "implementation": "Physics/src/TriangleMesh.cpp",
+      "implementation_symbol": "TriangleMesh::loadFromDesc"
     },
     {
       "id": "phys_fn_002261",
