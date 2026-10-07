@@ -1191,6 +1191,11 @@ static bool nxCandidateMeshWriter(const NxWriterFixture* fixture, NxWriteLog* lo
 	mesh.mInternal.mFaceRemap = 0;
 	mesh.mInternal.mVertexNormals = 0;
 	mesh.mInternal.mModel = 0;
+	// mArrayA and mArrayB are borrowed stack buffers too. TriangleMesh's
+	// destructor releases them through the foundation allocator, so detach them
+	// before the local wrapper leaves scope.
+	mesh.mArrayA = 0;
+	mesh.mArrayB = 0;
 	// hasHull supplies a borrowed non-null sentinel so save() emits the hull
 	// block. TriangleMesh owns mConvexMesh in normal construction, so detach
 	// that sentinel before the wrapper's destructor treats it as convex data.
