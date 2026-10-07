@@ -65,13 +65,37 @@ static void printAuxRegistration(const char* label, NxActor* actor)
 	const unsigned* active = *reinterpret_cast<unsigned* const*>(aux + 0x50);
 	const unsigned* activeEnd = *reinterpret_cast<unsigned* const*>(aux + 0x54);
 	const unsigned* indices = *reinterpret_cast<unsigned* const*>(aux + 0x60);
+	const unsigned* secondary = *reinterpret_cast<unsigned* const*>(aux + 0x90);
+	const unsigned* secondaryCapacity = *reinterpret_cast<unsigned* const*>(aux + 0x98);
 	const unsigned index = indices[id];
-	printf("bodycreate aux_%s=%x.%u.%u.%u.%u.%u\n", label, id,
+	printf("bodycreate aux_%s=%x.%u.%u.%u.%u.%u.%u.%u\n", label, id,
 		records[id] == reinterpret_cast<unsigned>(record + 0x18) ? 1u : 0u,
 		occupied[id] == 0xffffffffu ? 1u : 0u,
 		index < static_cast<unsigned>(activeEnd - active) ? 1u : 0u,
 		index < static_cast<unsigned>(activeEnd - active) && active[index] == id ? 1u : 0u,
-		static_cast<unsigned>(activeEnd - active));
+		static_cast<unsigned>(activeEnd - active),
+		secondary ? 1u : 0u,
+		secondary ? static_cast<unsigned>(secondaryCapacity - secondary) : 0u);
+	const unsigned char* body = bodyOf(actor);
+	const unsigned char* scene = *reinterpret_cast<unsigned char* const*>(body + 4);
+	const unsigned char* shape = *reinterpret_cast<unsigned char* const*>(body + 0x10);
+	const unsigned shapeId = word(shape, 0xd4);
+	const unsigned char* shapeAux = *reinterpret_cast<unsigned char* const*>(scene + 0x48);
+	const unsigned* shapeFlags = *reinterpret_cast<unsigned* const*>(shapeAux);
+	const unsigned* shapeActive = *reinterpret_cast<unsigned* const*>(shapeAux + 0x10);
+	const unsigned* shapeActiveEnd = *reinterpret_cast<unsigned* const*>(shapeAux + 0x14);
+	const unsigned* shapeIndices = *reinterpret_cast<unsigned* const*>(shapeAux + 0x20);
+	const unsigned* shapes = *reinterpret_cast<unsigned* const*>(shapeAux + 0x90);
+	const unsigned* shapeCapacity = *reinterpret_cast<unsigned* const*>(shapeAux + 0x98);
+	const unsigned shapeIndex = shapeIndices[shapeId];
+	printf("bodycreate aux_shape_%s=%x.%u.%u.%u.%u.%u.%u\n", label, shapeId,
+		shapeFlags[shapeId] == 0xffffffffu ? 1u : 0u,
+		shapeIndex < static_cast<unsigned>(shapeActiveEnd - shapeActive) ? 1u : 0u,
+		shapeIndex < static_cast<unsigned>(shapeActiveEnd - shapeActive) &&
+			shapeActive[shapeIndex] == shapeId ? 1u : 0u,
+		shapes[shapeId] == reinterpret_cast<unsigned>(shape) ? 1u : 0u,
+		static_cast<unsigned>(shapeActiveEnd - shapeActive),
+		static_cast<unsigned>(shapeCapacity - shapes));
 }
 
 // `count` consecutive words from `first`, dot-separated.

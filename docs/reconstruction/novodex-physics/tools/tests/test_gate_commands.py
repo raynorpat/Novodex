@@ -30,7 +30,7 @@ COMMAND_PATTERN = re.compile(
 # with nothing registered resolves to the empty list and skips.
 PHASE_TARGETS = {
     "2": "NxPhysicsExportTests,NxPhysicsSDKTests,NxPhysicsCoreClusterTests",
-    "3": "NxPhysicsGeometryTests,NxPhysicsKernelFuzzTests",
+    "3": "NxPhysicsBodyCreationTests,NxPhysicsGeometryTests,NxPhysicsKernelFuzzTests",
     "4": "NxPhysicsConvexMeshTests,NxPhysicsTriangleMeshApiTests,NxPhysicsPMapResolution80Tests",
     "5": "NxPhysicsActorLifecycleTests,NxPhysicsDynamicFirstTests,NxPhysicsEmptySceneTests,NxPhysicsActorNameTests,NxPhysicsActorMetadataTests,NxPhysicsActorBodyFlagTests,NxPhysicsActorDynamicsTests,NxPhysicsActorDynamicSetterTests,NxPhysicsActorMomentumTests,NxPhysicsActorForceTests,NxPhysicsActorCMassTests,NxPhysicsActorShapeMutationTests,NxPhysicsBodyCreationTests,NxPhysicsSimulationTests,NxPhysicsMeshSimulationTests",
     # Phase 6 has a registered STAGED-PAIR target: a closure is a mutation to a row's

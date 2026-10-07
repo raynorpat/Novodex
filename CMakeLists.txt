@@ -925,7 +925,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/ContactBoxMeshICE.cpp Physics/src/ContactCapsuleMesh.cpp Physics/src/ContactMeshHeightfield.cpp Physics/src/ContactMeshMesh.cpp Physics/src/ContactPlaneMesh.cpp
 		Physics/src/ContactConvexConvex.cpp Physics/src/TriangleMeshPolygons.cpp
 		Physics/src/ContactConvexHeightfield.cpp Physics/src/ContactSphereMesh.cpp
-		Physics/src/TriangleMeshTopology.cpp Physics/src/TriangleMesh.cpp Physics/src/PMap.cpp
+		Physics/src/TriangleMeshTopology.cpp Physics/src/TriangleMesh.cpp Physics/src/InternalTriangleMesh.cpp Physics/src/PMap.cpp
 		Physics/src/QhullHost.cpp Physics/src/Quantizer.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/PhysicsInternal.cpp

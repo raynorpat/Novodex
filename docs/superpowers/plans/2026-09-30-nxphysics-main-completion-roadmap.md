@@ -1,5 +1,16 @@
 # NxPhysics completion project plan from main
 
+### Continuation — shared indexed-manager insertion (2026-10-07)
+
+Discharged Phase 2 row `phys_fn_002417` through the passing Phase 3
+`NxPhysicsBodyCreationTests` gate. The body-creation probe now checks both the
+dynamic-body and shape managers after out-of-order ID reuse and across the
+256-slot boundary. Oracle and candidate match exactly; independent body and
+shape occupancy mutations each produce `stdout_delta=6`. Phase 2 now has 58
+closed rows and 85 deferred rows. The Phase 3 coverage floor rises to 527 and
+the Phase 5 floor to 2,244.
+Evidence: `docs/reconstruction/novodex-physics/evidence/indexed-manager-002417.md`.
+
 ### Continuation — dynamic body auxiliary registration (2026-10-07)
 
 Closed `phys_fn_002421`: the Scene auxiliary manager now registers each dynamic

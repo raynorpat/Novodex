@@ -11,7 +11,7 @@
 $NxPhaseTestTargets = [ordered] @{
     '1' = @()
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
-    '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
+    '3' = @('NxPhysicsBodyCreationTests', 'NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests', 'NxPhysicsPMapResolution80Tests')
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsSimulationTests', 'NxPhysicsMeshSimulationTests')
     '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests')
@@ -2143,9 +2143,12 @@ $NxRequiredCoverageLines = [ordered] @{
         'bodycreate setters_mode5_wake=3ecccccc.3ecccccc',
         'bodycreate setters_mode5_accumulators=0.0.0.0.0.0.0.0.0.0.0.0',
         'bodycreate setters_mode5_velocity=0.0.0.0.0.0',
-        'bodycreate aux_reused_lifo=5.1.1.1.1.6',
-        'bodycreate aux_reused_hole=0.1.1.1.1.6',
-        'bodycreate aux_chunk_256=100.1.1.1.1.257'
+        'bodycreate aux_reused_lifo=5.1.1.1.1.6.1.256',
+        'bodycreate aux_reused_hole=0.1.1.1.1.6.1.256',
+        'bodycreate aux_chunk_256=100.1.1.1.1.257.1.512',
+        'bodycreate aux_shape_reused_lifo=5.1.1.1.1.6.256',
+        'bodycreate aux_shape_reused_hole=0.1.1.1.1.6.256',
+        'bodycreate aux_shape_chunk_256=100.1.1.1.1.257.512'
     )
     # The Phase 6 joint-descriptor differential. Two cases over the two exported
     # rows, printing the whole descriptor surface before and after each call. The
@@ -5445,10 +5448,12 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 1  # one public actor-group pair-flag hash round-trip and clear
-    '3' = 359  # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
+    '3' = 527  # previous 359 plus the 168 required body/shape manager assertions
+               # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 260  # previous 259 plus the isolated density-80 PMap compute result
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2241  # previous 2,238 plus three auxiliary record registration checks
+    '5' = 2244  # previous 2,241 plus three auxiliary shape registration checks
+               # previous 2,238 plus three auxiliary record registration checks
                # previous 2,237 plus actor descriptor userData initialization
                # previous 2,226 plus the mesh factory's 11 registered diagnostics
                # previous 2,225 plus the 1,000-step multi-body stack soak

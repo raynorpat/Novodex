@@ -44373,13 +44373,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/908",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7458",
-      "static_proof": "slot bookkeeping for the same scene arrays: writes a free-list sentinel -1 into array2[slot] and mirrors a count into a further vector at container+0x20; manages at least three parallel arrays (+0x00/04, +0x10/14, +0x20) with the same chunk-growth pattern; full body undecoded",
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at 0x1005bc90 identifies the shared indexed-manager insertion helper called by phys_fn_002421 and phys_fn_002423. It grows the occupancy, sentinel, reverse-index, active-ID, record-index, and auxiliary arrays in 256-slot chunks; writes the free-list sentinel, records the ID's active-list index, and appends the ID. The Scene.cpp body/shape registration paths implement these writes and capacity changes.",
+      "dynamic_proof": "NxPhysicsBodyCreationTests checks body and shape occupancy sentinels, reverse active indices, active ID lists, and auxiliary capacities on out-of-order ID reuse and through ID 0x100. Oracle and candidate match (`stdout_delta=0`, exact stderr; build/phase5-next/aux-manager-002417-green.log). Clearing the record-manager occupancy mark and the shape-manager occupancy mark each changes the differential (`stdout_delta=6`; build/phase5-next/aux-manager-002417-mutation.log and aux-manager-002417-shape-mutation.log).",
+      "notes": "Shared helper remains owned by Phase 2; its body and shape registration behavior is discharged through the passing Phase 3 body-creation gate. No public Physics header changed.",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_002418",

@@ -1123,6 +1123,8 @@ static bool nxSceneAuxEnsureRecordIndex(unsigned char* aux, unsigned offset,
 	return true;
 	}
 
+// phys_fn_002417 (0x0005bc90) is the shared indexed-manager insertion behavior
+// modeled by the body and shape registration paths in this file.
 // phys_fn_002421 (0x0005c160): DynamicBodyBase::construct inserts the record
 // by its +0x104 ID into the Scene auxiliary manager and grows its sparse slot.
 void nxSceneAuxRegisterRecord(void* auxPointer, void* recordPointer)
