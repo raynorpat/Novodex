@@ -30,6 +30,11 @@ mesh, successful release after actor teardown, computed convex meshes, and
 loaded PMaps. Build command: `cmake --build build --config Release --target
 NxPhysics NxPhysicsTriangleMeshApiTests NxPhysicsInternalTests`.
 
+After this commit reached `main`, the approved Viewer suite was rebuilt against
+the candidate DLL and run with `ctest --test-dir build -C Release -R "^Viewer"
+--output-on-failure`. All 48 registered tests passed across all 39 available
+scenes: 43 passed, and the five established oracle-asset cases were skipped.
+
 The internal fixture directly verifies the cleanup branches that the public
 path does not currently populate; the public differential verifies observable
 API behavior. Individual allocation-failure branches remain open.
