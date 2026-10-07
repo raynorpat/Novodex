@@ -1183,3 +1183,9 @@ Continuation 2026-10-06: compared the controller constructor's descriptor copies
 
 - The registered `NxPhysicsShapeVtableTests` baseline passes all 626 shape-vtable cases, 24 Box slot-4 cases, and 201 mass-frame cases. In the isolated archive, changing the first inertia result in `phys_fn_000831` (`MassFrame::nxMassFrameFoldPayload`) from `s` to `s + 1.0` produces 18 mismatches: two capsule slot-4 cases and sixteen cached-mesh slot-4 cases. Other sections remain exact.
 - The Phase 5 closure advances from 57 closed / 148 deferred to 58 closed / 147 deferred. Public Physics headers are unchanged; full-DLL reconstruction remains active. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-massframe-fold-000831.md`.
+
+
+### Continuation — mass-frame recentering row falsification (2026-10-07)
+
+- Added four direct pinned-oracle comparisons for `phys_fn_000841` (`MassFrame::nxMassFrameTranslateToCentre`), including finite offsets, signed zero, and zero. Baseline matches exactly (digest `65953565`). In an isolated archive, changing the first offset negation to addition produces three mismatches while every other shape-vtable section remains exact.
+- The clean Phase 5 gate passes all 17 targets at 2,266/2,266 coverage assertions. Phase 5 closure advances from 58 closed / 147 deferred to 59 closed / 146 deferred. Public Physics headers remain unchanged; full-DLL reconstruction remains active. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-massframe-centre-000841.md`.

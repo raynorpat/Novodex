@@ -434,3 +434,10 @@ The registered `NxPhysicsShapeVtableTests` calls Box shape slot 4 across three d
 The registered `NxPhysicsShapeVtableTests` baseline passes all shape-vtable, boxmass, and massframe cases (`build/shape-vtable-000831-baseline.log`). An isolated archive mutation changed the first inertia result in `MassFrame::nxMassFrameFoldPayload`; two capsule and sixteen cached-mesh cases failed, while the Box slot-4, box-sweep, box-hull, and mass-frame-builder sections remained exact (`build/shape-vtable-000831-mutation.log`).
 
 `phys_fn_000831` mutation detection: `mismatches=18`. Full details: `evidence/phase5-massframe-fold-000831.md`.
+
+
+## Mass-frame recentering — `phys_fn_000841`
+
+The registered `NxPhysicsShapeVtableTests` directly compares the oracle entry and candidate recentering method for four offset cases. Baseline: `shape vtable massframe centre oracle_digest=65953565 cases=4 failures=0` (`build/shape-vtable-000841-baseline.log`). An isolated archive mutation changed the x-offset negation to addition; three cases failed and all other sections stayed exact (`build/shape-vtable-000841-mutation.log`).
+
+`phys_fn_000841` mutation detection: `mismatches=3`. Full details: `evidence/phase5-massframe-centre-000841.md`.

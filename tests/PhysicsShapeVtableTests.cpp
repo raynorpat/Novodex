@@ -2247,6 +2247,40 @@ int wmain(int argc, wchar_t** argv)
         ++massCases;
     }
     }
+    // Mass-frame recentering row (000841): negate the old COM offset, then
+    // route through the exact translate row. Directly call the oracle entry
+    // because the only production caller (actor mass aggregation) is not yet
+    // reconstructed; keep the frame's inertia and mass words observable too.
+    unsigned centreCases = 0, centreFailures = 0, centreDigest = 2166136261u;
+    {
+    typedef void (__thiscall* TranslateCentreFn)(void*);
+    TranslateCentreFn oracleTranslateCentre = reinterpret_cast<TranslateCentreFn>(
+        const_cast<unsigned char*>(base) + 0x1c720);
+    const float offsets[][3] = {
+        {1.25f, -0.75f, 2.5f}, {-0.0f, 0.0f, -3.0f},
+        {-4.4f, 0.1f, -0.123f}, {0.0f, 0.0f, 0.0f} };
+    for(unsigned sample = 0; sample < sizeof(offsets) / sizeof(offsets[0]); ++sample) {
+        unsigned char oracleFrame[0x34], candidateFrame[0x34];
+        for(unsigned k = 0; k < 9; ++k) {
+            const float value = 0.31f + 0.27f * static_cast<float>(k + sample);
+            memcpy(oracleFrame + 4*k, &value, 4);
+            memcpy(candidateFrame + 4*k, &value, 4);
+        }
+        const float mass = 2.75f + static_cast<float>(sample);
+        memcpy(oracleFrame + 0x24, offsets[sample], 12);
+        memcpy(candidateFrame + 0x24, offsets[sample], 12);
+        memcpy(oracleFrame + 0x30, &mass, 4);
+        memcpy(candidateFrame + 0x30, &mass, 4);
+        oracleTranslateCentre(oracleFrame);
+        reinterpret_cast<MassFrame*>(candidateFrame)->nxMassFrameTranslateToCentre();
+        centreDigest = foldOracle(centreDigest, oracleFrame, sizeof(oracleFrame));
+        if(memcmp(oracleFrame, candidateFrame, sizeof(oracleFrame)) != 0) {
+            fprintf(stderr, "massframe centre sample=%u differs\n", sample);
+            ++centreFailures;
+        }
+        ++centreCases;
+    }
+    }
     // BOX slot 7 (000951) through its slab test (001730) on rotated,
     // translated boxes, with directions that lie inside the +-2^-23 parallel
     // band on some axes, exactly on it, negative, and non-finite.
@@ -2305,11 +2339,14 @@ int wmain(int argc, wchar_t** argv)
         capsuleLoadOracleReturn, capsuleLoadCandidateReturn);
     printf("shape vtable massframe oracle_digest=%08x cases=%u failures=%u\n",
         massDigest, massCases, massFailures);
+    printf("shape vtable massframe centre oracle_digest=%08x cases=%u failures=%u\n",
+        centreDigest, centreCases, centreFailures);
     printf("shape vtable boxsweep oracle_digest=%08x cases=%u failures=%u\n",
         sweepDigest, sweepCases, sweepFailures);
     printf("box hull oracle_digest=%08x cases=%u failures=%u\n",
         hull.digest, hull.cases, hull.failures);
     if(capsuleLoadOracleReturn != capsuleLoadCandidateReturn || massFailures ||
+       centreFailures ||
        boxMassFailures ||
        sweepFailures || hull.failures)
         return 1;

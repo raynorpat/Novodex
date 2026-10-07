@@ -423,6 +423,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # oracle side's lines, appended as their own statement.
         'shape vtable capsule_load_return oracle=1 candidate=1',
         'shape vtable massframe oracle_digest=7c450cef cases=201 failures=0',
+        # phys_fn_000841 (MassFrame::nxMassFrameTranslateToCentre), called
+        # directly against its pinned internal oracle entry.
+        'shape vtable massframe centre oracle_digest=65953565 cases=4 failures=0',
         'shape vtable boxsweep oracle_digest=2c5d5c09 cases=84 failures=0'
         # Scene-raycast Task 4, box hull: 000973 and BOX slot 12 (000981), facade
         # slots 1, 4, 6-10 (000953, 000963, 000967/969/971, 000957, 000959)
@@ -5488,7 +5491,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 264  # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2265  # plus box slot-4 mass-frame density and local-pose coverage
+    '5' = 2266  # plus box slot-4 and mass-frame recentering coverage
                # plus compound-trigger per-shape enter/stay/leave lifecycle
                # plus three-pair trigger reconciliation and queue growth
                # plus public trigger enter/stay/leave lifecycle
