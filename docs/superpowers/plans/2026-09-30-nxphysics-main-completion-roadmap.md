@@ -183,6 +183,16 @@ full DLL reconstruction remains active. Public Physics headers are unchanged.
 
 # NxPhysics completion project plan from main
 
+### Continuation — global orientation quaternion mutation closure (2026-10-07)
+
+For `phys_fn_000094`, shifting the dynamic quaternion copy from record+0x5c to
+record+0x60 is caught by the lifecycle oracle differential with
+`stdout_delta=4`; both processes exit zero and stderr is exact. The static
+matrix path remains unchanged. Restoring the source byte-for-byte and
+rebuilding returns the clean differential to exact. Phase 5 now records 48
+closed / 157 deferred rows and remains pending. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase5-orientation-quat-mutation.md`.
+
 ### Continuation — actor force and torque dispatch falsification (2026-10-07)
 
 Three Phase 5 rows now have independent mutation evidence from

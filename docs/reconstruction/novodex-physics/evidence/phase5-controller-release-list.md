@@ -373,3 +373,15 @@ Full evidence: `evidence/phase5-actor-force-dispatch-mutations.md`.
 - `phys_fn_000054` mutation detection: swapped force and position arguments; `stdout_delta=18`.
 - `phys_fn_000056` mutation detection: routed force into the torque accumulator; `stdout_delta=36`.
 - `phys_fn_000058` mutation detection: routed torque into the force accumulator; `stdout_delta=30`.
+
+## `NpActorVtable::getGlobalOrientationQuatVal`: `phys_fn_000094`
+
+The lifecycle differential covers the static matrix-conversion arm and dynamic
+identity, rotated, and quarter-turn quaternion reads. Changing the dynamic
+record source from record+0x5c to record+0x60 changes the rotated outputs and is
+caught with `stdout_delta=4`; both processes exit zero with exact stderr. The
+source is restored byte-for-byte, rebuilt, and the clean differential returns
+to zero delta. Full evidence:
+`evidence/phase5-orientation-quat-mutation.md`.
+
+- `phys_fn_000094` mutation detection: shifted the dynamic quaternion source by four bytes; caught with `stdout_delta=4`.
