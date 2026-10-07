@@ -279,4 +279,18 @@ target to `stdout_delta=0` with exact stderr. Detailed evidence and log names:
 
 The refreshed Phase 5 gate passes all 16 staged targets and 2,252/2,252
 coverage assertions after the `updateMassFromShapes` closure
-(`build/phase5-update-mass-final.log`).
+(`build/phase5-update-mass-final.log`). After the following `setDynamic` row
+closure, it passes again at the same floor (`build/phase5-set-dynamic-final.log`).
+
+## `NpActorVtable::setDynamic`: `phys_fn_000122`
+
+The existing `NxPhysicsActorShapeMutationTests` target exercises static-to-
+dynamic conversion for single and grouped shapes, body creation from density,
+replacing an existing dynamic body, and a shape-less body. Suppressing the
+static-pruner removal/re-add route's final `nxSceneAddShape` call left the
+converted shape out of the dynamic pruner and changed 36 transcript lines
+(`stdout_delta=36`); both processes exited zero and stderr matched exactly.
+Restoring the call returned the differential to `stdout_delta=0` and exact
+stderr. Full mutation details: `evidence/phase5-set-dynamic-mutation.md`.
+
+- `phys_fn_000122` mutation detection: skipped dynamic pruner registration caught with `stdout_delta=36`.

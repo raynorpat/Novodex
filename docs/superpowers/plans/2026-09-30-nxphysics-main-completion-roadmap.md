@@ -1,3 +1,15 @@
+### Continuation — `setDynamic` static-to-dynamic registration closure (2026-10-07)
+
+Closed Phase 5 row `phys_fn_000122` with the existing actor shape-mutation
+fixture. Disabling the final dynamic-pruner registration after converting a
+static actor changed 36 transcript lines; both processes exited successfully
+and stderr matched exactly. Restoring the call returned to an exact
+differential. The fixture also drives grouped conversion, density-derived
+mass, replacement of an existing dynamic record, and shape-less body setup.
+Phase 5 passes all 16 staged targets and 2,252/2,252 assertions, and now
+records 39 closed / 166 reconstructed rows awaiting falsification. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase5-set-dynamic-mutation.md`.
+
 ### Continuation — `updateMassFromShapes` row mutation closure (2026-10-07)
 
 The existing shape-mutation differential covers mass recalculation across
