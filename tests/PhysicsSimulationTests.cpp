@@ -1086,7 +1086,7 @@ int wmain(int argc, wchar_t** argv)
 		if(!stackActors[index])
 			return nxFail("stack sphere creation failed");
 		}
-	for(unsigned step = 0; step < 120; ++step)
+	for(unsigned step = 0; step < 1000; ++step)
 		{
 		stackScene->simulate(0.02f);
 		const bool ready = stackScene->checkResults(NX_RIGID_BODY_FINISHED, true);
@@ -1100,7 +1100,7 @@ int wmain(int argc, wchar_t** argv)
 			nxPrintActorState(stage, *stackActors[index]);
 			}
 		}
-	printf("simulation stack=settled steps=120 ready=1 fetched=1\n");
+	printf("simulation stack=settled steps=1000 ready=1 fetched=1\n");
 	for(unsigned index = 0; index < 3; ++index)
 		{
 		char stage[16];
