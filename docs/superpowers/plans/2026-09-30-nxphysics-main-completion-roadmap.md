@@ -9,7 +9,7 @@ caught by the registered Phase 6 `NxPhysicsSimulationTests` differential
 (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=6`, exact stderr).
 `phys_fn_004397` is now closed; Phase 6 records four closed, 403 reconstructed
 rows awaiting falsification, and 26 rows not yet reconstructed in that phase.
-The merged baseline Phase 6 gate passes at 1,056/1,056 assertions.
+After the closure records merged at `b40b984c`, a fresh Phase 6 gate passes at 1,056/1,056 assertions; `NxPhysicsSimulationTests` matches the oracle with `stdout_delta=0` and exact stderr.
 
 ### Continuation — object-layout falsification and approved all-scene Viewer gate (2026-10-07)
 
