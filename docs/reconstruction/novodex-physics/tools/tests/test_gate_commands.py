@@ -38,7 +38,7 @@ PHASE_TARGETS = {
     # closure schema needs one (evidence 11l).
     # NxFoundationTangentTests joined it when NxNormalToTangents, which
     # NxJointDesc::setGlobalAxis calls, was brought to the oracle's words.
-    "6": "NxPhysicsJointStagedPairTests,NxFoundationTangentTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests,NxPhysicsMeshSimulationTests",
+    "6": "NxPhysicsJointStagedPairTests,NxFoundationTangentTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests,NxPhysicsMeshSimulationTests,NxPhysicsSimulationTests",
     # Phase 7 also runs scene simulation, mesh, and trigger targets end to end.
     "7": "NxPhysicsJointStagedPairTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsSceneRaycastTests,NxPhysicsSceneVisualizeTests,NxPhysicsSimulationTests,NxPhysicsPairFlagTests,NxPhysicsMeshSimulationTests,NxPhysicsTriggerSimulationTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests",
 }

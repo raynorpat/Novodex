@@ -1,3 +1,17 @@
+### Continuation — grounded +Y controller step-probe order (2026-10-07)
+
+An isolated +Y controller fixture with a 0.5 step offset and a 0.2-high box
+first exposed a real oracle divergence: the oracle stops on the near face at
+`(0.5, 0.5, 0)` with flags `0x5`, while the candidate crossed the top and ended
+at `(3, 0.7, 0)` with flags `0x2`. The candidate now resolves downward grounding
+before its horizontal sweep for this enabled +Y probe, matching the oracle's
+blocked result exactly. This is not successful step-over evidence; the broader
+resolver, successful step-up, other up axes, transformed obstacles, and full
+slide/callback behavior remain open. Phase 7 passes 1,373/1,373, Phase 5 passes
+2,250/2,250, and the Viewer selection passes all 48 CTest entries across the
+39 available scenes (43 pass and five established pinned-oracle asset skips).
+Evidence: `docs/reconstruction/novodex-physics/evidence/controller-grounded-step-probe.md`.
+
 ### Continuation — broad-phase selector mapping falsification (2026-10-07)
 
 Closed Phase 7 row `phys_fn_000544` with a mutation to the coherent selector's

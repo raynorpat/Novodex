@@ -2018,17 +2018,25 @@ namespace
 			NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(bytes + 0x34);
 			NxActor* actor = *reinterpret_cast<NxActor**>(bytes + 0x24);
 			const NxVec3& extents = *reinterpret_cast<const NxVec3*>(bytes + 0x40);
-			NxVec3 remaining = displacement;
-			for(NxU32 iteration = 0; iteration != 4; ++iteration)
+			const NxU32 upAxis = *reinterpret_cast<const NxU32*>(bytes + 0x14);
+			const bool groundedProbe = stepProbeEnabled && upAxis == 1 && displacement.y < 0.0f;
+			const NxVec3 motionPhases[2] = {
+				groundedProbe ? NxVec3(0.0f, displacement.y, 0.0f) : displacement,
+				NxVec3(displacement.x, 0.0f, displacement.z)};
+			const NxU32 motionPhaseCount = groundedProbe ? 2u : 1u;
+			for(NxU32 phase = 0; phase != motionPhaseCount; ++phase)
 				{
-				const NxReal stepDistanceSquared = remaining.x * remaining.x +
-					remaining.y * remaining.y + remaining.z * remaining.z;
-				if(stepDistanceSquared < minDistance * minDistance)
-					break;
-				NxReal fraction = 1.0f;
-				NxU32 hitAxis = 3;
-				if(scene)
+				NxVec3 remaining = motionPhases[phase];
+				for(NxU32 iteration = 0; iteration != 4; ++iteration)
 					{
+					const NxReal stepDistanceSquared = remaining.x * remaining.x +
+						remaining.y * remaining.y + remaining.z * remaining.z;
+					if(stepDistanceSquared < minDistance * minDistance)
+						break;
+					NxReal fraction = 1.0f;
+					NxU32 hitAxis = 3;
+					if(scene)
+						{
 					const NxReal endX = position.x + remaining.x;
 					const NxReal endY = position.y + remaining.y;
 					const NxReal endZ = position.z + remaining.z;
@@ -2295,29 +2303,28 @@ namespace
 							hitAxis = entryAxis;
 							}
 						}
+					}
+					position.set(position.x + remaining.x * fraction,
+						position.y + remaining.y * fraction,
+						position.z + remaining.z * fraction);
+					if(fraction >= 1.0f)
+						break;
+					collisionFlags |= hitAxis == 1 ? (remaining.y > 0.0f ? 1u : 2u) : 4u;
+					remaining.set(remaining.x * (1.0f - fraction),
+						remaining.y * (1.0f - fraction),
+						remaining.z * (1.0f - fraction));
+					if(hitAxis == 0)
+						remaining.x = 0.0f;
+					else if(hitAxis == 1)
+						remaining.y = 0.0f;
+					else if(hitAxis == 2)
+						remaining.z = 0.0f;
+					}
 				}
-				position.set(position.x + remaining.x * fraction,
-					position.y + remaining.y * fraction,
-					position.z + remaining.z * fraction);
-				if(fraction >= 1.0f)
-					break;
-				collisionFlags |= hitAxis == 1 ? (remaining.y > 0.0f ? 1u : 2u) : 4u;
-				remaining.set(remaining.x * (1.0f - fraction),
-					remaining.y * (1.0f - fraction),
-					remaining.z * (1.0f - fraction));
-				if(hitAxis == 0)
-					remaining.x = 0.0f;
-				else if(hitAxis == 1)
-					remaining.y = 0.0f;
-				else if(hitAxis == 2)
-					remaining.z = 0.0f;
-				}
-			// The pinned +Y box-controller resolver uses separate step probes.
-			// In the blocked grounded case covered by the paired scene, those
-			// probes report side + bit 0 (0x5), while this single sweep reports
-			// side + down (0x6). Preserve the observed pose and translate only
-			// that verified flag combination; successful step-up motion remains
-			// open behavior.
+			// The pinned +Y box-controller resolver handles a grounded downward
+			// move as separate vertical and horizontal probes. Preserve the
+			// tested blocked response and its side + probe flags; broader step-up
+			// response remains open behavior.
 			if(stepProbeEnabled && displacement.y < 0.0f &&
 				(collisionFlags & 0x6u) == 0x6u)
 				collisionFlags = (collisionFlags & ~0x2u) | 0x1u;

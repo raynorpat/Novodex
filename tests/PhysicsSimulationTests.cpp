@@ -2755,6 +2755,51 @@ int wmain(int argc, wchar_t** argv)
 		nxFloatBits(successfulStepPosition.z) != 0 || obstacleCollisionFlags != 4;
 	successfulStepScene->releaseController(*successfulStepController);
 	sdk->releaseScene(*successfulStepScene);
+	// A grounded +Y box controller requests horizontal and downward motion
+	// toward a low box. The pinned oracle treats this as separate vertical and
+	// horizontal probes and blocks at the near side; successful step-up remains
+	// a separate, unverified path.
+	NxSceneDesc stepOverSceneDesc;
+	stepOverSceneDesc.setToDefault();
+	NxScene* const stepOverScene = sdk->createScene(stepOverSceneDesc);
+	if(!stepOverScene)
+		return nxFail("step-over controller scene creation failed");
+	NxBoxShapeDesc stepOverFloorShape;
+	stepOverFloorShape.dimensions = NxVec3(10.0f, 0.5f, 10.0f);
+	NxActorDesc stepOverFloorActorDesc;
+	stepOverFloorActorDesc.globalPose.t = NxVec3(0.0f, -0.5f, 0.0f);
+	stepOverFloorActorDesc.shapes.pushBack(&stepOverFloorShape);
+	NxActor* const stepOverFloorActor = stepOverScene->createActor(stepOverFloorActorDesc);
+	NxBoxShapeDesc stepOverObstacleShape;
+	stepOverObstacleShape.dimensions = NxVec3(0.5f, 0.1f, 1.0f);
+	NxActorDesc stepOverObstacleActorDesc;
+	stepOverObstacleActorDesc.globalPose.t = NxVec3(1.5f, 0.1f, 0.0f);
+	stepOverObstacleActorDesc.shapes.pushBack(&stepOverObstacleShape);
+	NxActor* const stepOverObstacleActor = stepOverScene->createActor(stepOverObstacleActorDesc);
+	alignas(4) unsigned char stepOverControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(stepOverControllerDescStorage + 0x10) = nxFloatBits(0.8f);
+	*reinterpret_cast<NxU32*>(stepOverControllerDescStorage + 0x1c) = nxFloatBits(1.0f);
+	*reinterpret_cast<NxU32*>(stepOverControllerDescStorage + 0x20) = 1;
+	*reinterpret_cast<NxU32*>(stepOverControllerDescStorage + 0x24) = nxFloatBits(0.7f);
+	*reinterpret_cast<NxU32*>(stepOverControllerDescStorage + 0x2c) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(stepOverControllerDescStorage + 0x30) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(stepOverControllerDescStorage + 0x34) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(stepOverControllerDescStorage + 0x38) = nxFloatBits(0.5f);
+	NxController* const stepOverController = stepOverScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(stepOverControllerDescStorage));
+	if(!stepOverFloorActor || !stepOverObstacleActor || !stepOverController)
+		return nxFail("step-over controller fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	const NxVec3 stepOverDisplacement(3.0f, -0.5f, 0.0f);
+	reinterpret_cast<NxControllerProbe*>(stepOverController)->move(
+		stepOverDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& stepOverPosition =
+		reinterpret_cast<NxControllerProbe*>(stepOverController)->getPosition();
+	printf("simulation controller-grounded-step-probe position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(stepOverPosition.x), nxFloatBits(stepOverPosition.y),
+		nxFloatBits(stepOverPosition.z), obstacleCollisionFlags);
+	stepOverScene->releaseController(*stepOverController);
+	sdk->releaseScene(*stepOverScene);
 	NxSceneDesc slideSceneDesc;
 	slideSceneDesc.setToDefault();
 	NxScene* const slideScene = sdk->createScene(slideSceneDesc);

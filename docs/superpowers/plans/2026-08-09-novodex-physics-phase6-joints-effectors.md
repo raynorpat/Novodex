@@ -73,7 +73,7 @@ Before family implementation, create an explicit disposition row for every publi
 ### Task 5: Close Phase 6
 
 ```powershell
-cmake --build D:\github\Novodex\build --config Release --target NxPhysics NxPhysicsJointTests --clean-first
+cmake --build D:\github\Novodex\build --config Release --target NxPhysics NxPhysicsJointStagedPairTests NxFoundationTangentTests NxPhysicsJointAllocatorTests NxPhysicsJointSlotTests NxPhysicsEffectorTests NxPhysicsCoreDumpTests NxPhysicsMeshSimulationTests NxPhysicsSimulationTests --clean-first
 powershell -NoProfile -File docs/reconstruction/novodex-physics/tools/run_differential.ps1 -Phase 6
 python docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json
 ```
