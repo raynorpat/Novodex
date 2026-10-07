@@ -12,7 +12,7 @@ $NxPhaseTestTargets = [ordered] @{
     '1' = @()
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
-    '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests')
+    '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests', 'NxPhysicsPMapResolution80Tests')
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsSimulationTests')
     '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests')
     '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
@@ -4759,6 +4759,12 @@ $NxRequiredCoverageLines = [ordered] @{
     # 0xffffffff, so the two fixtures differ in one bit of input and not at all
     # in output. Registering both is what would catch a reconstruction that made
     # them differ.
+    # The standalone density-80 compute fixture uses a separate executable so
+    # each pair starts with the same local rand() stream.
+    'NxPhysicsPMapResolution80Tests' = @(
+        'pmap_compute density=80 created=1 size=144272 hash=1c6814b928a39f10'
+    )
+
     'NxPhysicsAssetTests' = @(
         'asset fixtures pmap=16 mesh=6 writer=9 release=1',
         'asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051',
@@ -5435,7 +5441,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 1  # one public actor-group pair-flag hash round-trip and clear
     '3' = 359  # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 259  # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
+    '4' = 260  # previous 259 plus the isolated density-80 PMap compute result
+               # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
     '5' = 2225  # previous 2,042 plus 183 simulation assertions, including controller-list removal
                # + 175 from scene-raycast Task 4 (149 body-creation, 13 setters, 9 dynamic-setter
                # and 3 shape-vtable from its shape sub-area, 1 shape-vtable from its box hull)
@@ -5482,6 +5489,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsCoreDumpTests',
     'NxPhysicsConvexMeshTests',
     'NxPhysicsTriangleMeshApiTests',
+    'NxPhysicsPMapResolution80Tests',
     'NxPhysicsCoreClusterTests',
     'NxFoundationTangentTests',
     'NxPhysicsExportTests',

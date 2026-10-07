@@ -482,6 +482,11 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsTriangleMeshApiTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsTriangleMeshApiTests bcrypt)
+	add_executable(NxPhysicsPMapResolution80Tests tests/PhysicsTriangleMeshApiTests.cpp)
+	target_include_directories(NxPhysicsPMapResolution80Tests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_compile_definitions(NxPhysicsPMapResolution80Tests PRIVATE NX_PMAP_COMPUTE_DENSITY=80)
+	target_link_libraries(NxPhysicsPMapResolution80Tests bcrypt)
 	add_executable(NxPhysicsActorMomentumTests tests/PhysicsActorMomentumTests.cpp)
 	target_include_directories(NxPhysicsActorMomentumTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)

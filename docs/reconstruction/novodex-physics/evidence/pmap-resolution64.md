@@ -86,6 +86,16 @@ The candidate's cell state was zero before its direct ray test, confirming it wa
 
 Fresh Release verification after restoring the uninstrumented source on 2026-10-02: build `NxPhysics` and `NxPhysicsTriangleMeshApiTests` succeeded. The density-32 candidate probe passed (`10444 / 9a70de00aaf0edd4`). Density 64 remains red (`74562 / 25b0f27b921ae809`) against the oracle (`74563 / 2c38820e277e9465`). Candidate DLL SHA-256: `0c743099e81efecc3671947022334e196fcb7b0357d779ceca5d3316ebd7bbbc`. The Phase 5 gate passed earlier in this same turn's prior verified build with 2,037/2,037 assertions.
 
+## Current-main verification (2026-10-06)
+
+The historical red results above are superseded by the current Release candidate.
+Fresh isolated density-64 processes now pass on both pairs at 74,563 bytes and
+FNV-1a `2c38820e277e9465`. The current candidate Physics DLL is
+`fbb2ca03862a161c64296870e91185e53f5ed63174df9e43f83b935cafe5a100`; the
+pinned oracle remains `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`.
+Density 32 remains pinned at 10,444 / `9a70de00aaf0edd4`. Density 80 is recorded
+in the companion `pmap-resolution80.md` evidence.
+
 ## Ray arithmetic follow-up
 
 An instrumented candidate run exposed two arithmetic differences before the ray entered `RayCollider`: the sample coordinate and normalized direction. For the target cell `(36,26,5)`, the revised `nxPMapCellCoordinate` keeps multiply/subtract/add in the x87 register stack and rounds only when the caller stores the completed coordinate; the resulting point bits are `3ea0ea0c / bdbc8bc3 / bf4d34d3`, matching the oracle. The random-vector path now materializes each scaled RNG product as float before subtracting `0.5`, matching the oracle raw x component (`3ea19f44`), then reproduces its x87 `z² + y² + x²`, square-root, reciprocal, and component-multiply sequence. The normalized direction bits now match exactly at `3f2aee90 / bd318ce4 / 3f3e400f`.

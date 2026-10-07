@@ -24,6 +24,10 @@ typedef bool (NX_CALL_CONV *CreatePMapFn)(
 	NxPMap&, const NxTriangleMesh&, NxU32, NxUserOutputStream*);
 typedef bool (NX_CALL_CONV *ReleasePMapFn)(NxPMap&);
 
+#ifndef NX_PMAP_COMPUTE_DENSITY
+#define NX_PMAP_COMPUTE_DENSITY 32
+#endif
+
 static NxU32 nxMeshFloatBits(NxReal value)
 	{
 	union { NxReal real; NxU32 bits; } word = { value };
@@ -133,12 +137,13 @@ static int nxTestPMapComputeFirst(HMODULE physics, NxPhysicsSDK* sdk, NxU32 dens
 		static_cast<const unsigned char*>(pmap.data), pmap.dataSize) : 0ull;
 	printf("pmap_compute density=%u created=%u size=%u hash=%016llx\n",
 		density, computed ? 1u : 0u, pmap.dataSize, hash);
-	// Density 32 is the checked-in compute fixture. Density 64 is an isolated
-	// oracle probe exposed by the optional CLI argument so its rand stream starts
-	// in a fresh process; disconnected32 isolates a separate-components topology.
-	const NxU32 expectedSize = density == 32 ? 10444 : density == 64 ? 74563 : 0;
+	// Density 32 is the normal fixture; separate target builds pin 64 and 80
+	// without allowing earlier API calls to advance the DLL's rand() stream.
+	const NxU32 expectedSize = density == 32 ? 10444 :
+		density == 64 ? 74563 : density == 80 ? 144272 : 0;
 	const unsigned long long expectedHash = density == 32 ? 0x9a70de00aaf0edd4ull :
-		density == 64 ? 0x2c38820e277e9465ull : 0ull;
+		density == 64 ? 0x2c38820e277e9465ull :
+		density == 80 ? 0x1c6814b928a39f10ull : 0ull;
 	const bool expected = computed && pmap.data && pmap.dataSize == expectedSize &&
 		hash == expectedHash;
 	const bool valid = expected && density == 32 &&
@@ -226,17 +231,17 @@ static int nxTestDisconnectedPMap(HMODULE physics, NxPhysicsSDK* sdk)
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
-	NxU32 density = 32;
+	NxU32 density = NX_PMAP_COMPUTE_DENSITY;
 	const bool isolatedPMap = argc == 3;
 	if(argc != 2 && !isolatedPMap)
-		return nxFail("usage: NxPhysicsTriangleMeshApiTests <absolute pair directory> [64|disconnected32]");
+		return nxFail("usage: NxPhysicsTriangleMeshApiTests <absolute pair directory> [64|80|disconnected32]");
 	if(isolatedPMap)
 		{
 		if(wcscmp(argv[2], L"disconnected32") != 0)
 			{
 			const unsigned long parsedDensity = wcstoul(argv[2], 0, 10);
-			if(parsedDensity != 64)
-				return nxFail("isolated PMap mode accepts only density 64 or disconnected32");
+			if(parsedDensity != 64 && parsedDensity != 80)
+				return nxFail("isolated PMap mode accepts only density 64, density 80, or disconnected32");
 			density = static_cast<NxU32>(parsedDensity);
 			}
 		}

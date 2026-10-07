@@ -1,5 +1,18 @@
 # NxPhysics completion project plan from main
 
+### Continuation — authored tetrahedron PMap density 80 (2026-10-06)
+
+Added an isolated density-80 compute executable and Phase 4 coverage registration.
+The pinned oracle and rebuilt candidate both produce a 144,272-byte PMap with
+FNV-1a `1c6814b928a39f10`; the focused paired differential passes with identical
+stdout/stderr. The existing all-scene Viewer gate remains part of verification
+and continues to cover all 39 available demos. Fresh Release CTest passes all
+48 Viewer selections: 34 runnable scene demos and both focused Viewer physics
+checks pass, while five existing oracle-asset cases skip on their verified
+failure signatures. This closes only the authored tetrahedron at density 80;
+other PMap topologies/resolutions and the full-DLL audit remain open. See
+`docs/reconstruction/novodex-physics/evidence/pmap-resolution80.md`.
+
 Date: 2026-09-30
 Baseline: `main` at `b942f01` (Merge convex-mesh gap reconstruction into main)
 Status: Active execution. The user selected full-DLL reconstruction and standalone simulation tests before Unreal integration.
