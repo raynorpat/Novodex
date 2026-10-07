@@ -7007,7 +7007,7 @@ void __thiscall FUN_10007ec0(void *this,float *param_1)
 
 ```
 
-## phys_fn_000184 (0x00008230, 333 B, reconstructed)
+## phys_fn_000184 (0x00008230, 333 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/NpActor.cpp
@@ -7140,7 +7140,7 @@ Decompile (capstone disassembly):
 0x0000837a  ret 4
 ```
 
-## phys_fn_000186 (0x00008380, 333 B, reconstructed)
+## phys_fn_000186 (0x00008380, 333 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/NpActor.cpp

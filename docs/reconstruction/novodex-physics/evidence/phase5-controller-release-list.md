@@ -139,3 +139,12 @@ The required `NxPhysicsActorDynamicSetterTests` line `setter sleep_thresholds=3d
 `phys_fn_000066` mutation detection: wrong getter offset `+0xd4` caught with `stdout_delta=4`.
 
 `phys_fn_000068` mutation detection: wrong getter offset `+0xd0` caught with `stdout_delta=2`.
+
+
+## Sleep-threshold setters: `phys_fn_000184` and `phys_fn_000186`
+
+The required `NxPhysicsActorDynamicSetterTests` output pins the raw squared thresholds, both public getters, and the dirty-state bits. The linear setter writes `threshold * threshold` to body record `+0xd0`; the angular setter writes to `+0xd4`. An isolated linear-setter mutation redirected `+0xd0` to `+0xd4`, changing the candidate `setter sleep_thresholds` line to `3cb851ec.3e800000.3e19999a.3f000000`; the registered differential caught it with `stdout_delta=4` (both processes exited zero, stderr exact). A separate angular-setter mutation redirected `+0xd4` to `+0xd0`, changing the same line to `3e800000.3ca0902e.3f000000.3e0f5c29`; the differential caught it with `stdout_delta=2` (both processes exited zero, stderr exact). The restored clean build matches the oracle with `stdout_delta=0`.
+
+`phys_fn_000184` mutation detection: wrong setter offset `+0xd4` caught with `stdout_delta=4`.
+
+`phys_fn_000186` mutation detection: wrong setter offset `+0xd0` caught with `stdout_delta=2`.
