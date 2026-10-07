@@ -6,10 +6,10 @@
   "closure_ledger": "gates/phase5-closure.json",
   "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
   "evidence_commit": "6965e505f86ac15d1c35d2cd471f6544e42fb71d",
-  "note": "The full Phase 5 regression gate passed at merged commit 559b865c with 2,250/2,250 coverage assertions. Nineteen actor damping, sleep, wake, body-flag, group-accessor, and dynamic-state rows are independently mutation-falsified on target lines driven by registered tests; the current closure ledger is 35 closed / 170 deferred. The phase remains pending until all owned rows are closed.",
+  "note": "The full Phase 5 regression gate passes all 15 staged targets, static/oracle proofs, and 2,251/2,251 coverage assertions on the current continuation build. Twenty actor damping, sleep, wake, body-flag, group-accessor, dynamic-state, and createShape rows are independently mutation-falsified on target lines driven by registered tests; the current closure ledger is 36 closed / 169 deferred. The phase remains pending until all owned rows are closed.",
   "counts": {
-    "closed": 35,
-    "deferred": 170
+    "closed": 36,
+    "deferred": 169
   },
   "gate_sequence": [
     {
@@ -25,12 +25,12 @@
     {
       "name": "build_and_phase_gate",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 5",
-      "result": "Win32 Release Phase 5 gate passed on merged local main at 559b865c; all 15 staged-pair targets, the NxPhysicsRangeIterationTests static proof, and both oracle-differential targets passed; coverage_assertions_evaluated=2250 floor=2250; phase_gate=5 status=pass"
+      "result": "Win32 Release Phase 5 gate passed on the current reconstruction worktree; all 15 staged-pair targets, NxPhysicsRangeIterationTests static proof, and both oracle-differential targets passed; coverage_assertions_evaluated=2251 floor=2251; phase_gate=5 status=pass (build/phase5-create-shape-final.log)."
     },
     {
       "name": "viewer_all_scenes",
       "command": "ctest --test-dir build -C Release -R '^Viewer' --output-on-failure",
-      "result": "On merged local main at 403b57d5, all 48 registered Viewer CTest entries passed: 43 passed and five signature-verified pinned-oracle asset cases were skipped. All 39 registered ViewerSmokeScene_* scenes were included (34 passed, five skipped), along with Viewer platform/sound checks and focused physics step/contact tests. Total time: 67.35 seconds."
+      "result": "Fresh Release Viewer CTest sweep on 2026-10-07 passed all 48 registered entries across all 39 available scenes: 43 passed, five established signature-verified pinned-oracle asset cases skipped, including the focused physics checks (build/Testing/viewer-scenes-all-20261007.log)."
     }
   ],
   "excluded_from_comparison": [

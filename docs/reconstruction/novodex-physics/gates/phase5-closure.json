@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "phase": 5,
-  "note": "Phase 5 owns 205 function rows and 122 data objects. Twenty-four function rows are closed by registered staged-pair mutations, including actor group accessors and isDynamic. One row, phys_fn_000002, is closed by the NxPhysicsRangeIterationTests static proof. Ten rows are closed by oracle differentials: eight Box shape-vtable rows plus phys_fn_000004 and phys_fn_000012. 170 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records. See evidence/shape-self-001391.md and evidence/phase5-controller-release-list.md.",
+  "note": "Phase 5 owns 205 function rows and 122 data objects. Twenty-five function rows are closed by registered staged-pair mutations, including actor group accessors, isDynamic, and createShape invalid-descriptor behavior. One row, phys_fn_000002, is closed by the NxPhysicsRangeIterationTests static proof. Ten rows are closed by oracle differentials: eight Box shape-vtable rows plus phys_fn_000004 and phys_fn_000012. 169 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records. See evidence/shape-self-001391.md and evidence/phase5-controller-release-list.md.",
   "proof_kinds": {
     "differential_falsified": "Mutations aimed at the twenty-four staged-pair rows were caught by their registered differentials; all twenty-four rows are closed.",
     "static_proof_falsified": "The NxPhysicsRangeIterationTests mutation changed reverse stepping to forward stepping; its named checks caught the broken visitation order, callback result, and negative-stride behavior for phys_fn_000002.",
@@ -19,9 +19,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 24,
+    "differential_falsified": 25,
     "oracle_differential_falsified": 10,
-    "deferred_reconstructed_not_falsified": 170,
+    "deferred_reconstructed_not_falsified": 169,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -390,6 +390,16 @@
         "mutation": "Reversed NpActorVtable::isDynamic body-record predicate from != 0 to == 0 in a mutation build.",
         "detected": "stdout_delta=4"
       }
+    },
+    {
+      "id": "phys_fn_000070",
+      "rva": "0x00002a80",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed NpActorVtable::createShape invalid-descriptor branch to return the actor pointer cast as NxShape* after emitting the normal diagnostic and releasing the lock.",
+        "detected": "stdout_delta=4"
+      }
     }
   ],
   "deferred": [
@@ -460,15 +470,6 @@
       "id": "phys_fn_000058",
       "rva": "0x00002850",
       "size": 165,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000070",
-      "rva": "0x00002a80",
-      "size": 185,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],

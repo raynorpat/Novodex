@@ -226,3 +226,23 @@ This closes `phys_fn_000110` only for the exercised static/dynamic body-state
 query. Public Physics headers are unchanged.
 
 - `phys_fn_000110`: inverted isDynamic predicate caught with `stdout_delta=4`.
+
+## `NpActorVtable::createShape` invalid-descriptor return: `phys_fn_000070`
+
+The registered `NxPhysicsActorDynamicSetterTests` public-API differential calls
+`createShape` with an invalid descriptor on static and dynamic actors and pins
+the false result, validation diagnostic, and unchanged actor state. For
+falsification, the invalid-descriptor branch was changed to return the actor
+pointer cast as `NxShape*` after reporting the same diagnostic and releasing
+the lock. Both oracle and mutant exited zero, stderr matched exactly, and the
+paired transcript differed by four lines (`stdout_delta=4`). The mutation was
+restored; the clean staged-pair differential is exact (`stdout_delta=0`,
+`stderr_exact=True`). This closes `phys_fn_000070` for the exercised
+invalid-descriptor contract. No public Physics headers changed.
+
+- `phys_fn_000070` mutation detection: non-null invalid-descriptor return caught with `stdout_delta=4`.
+
+After restoration, the staged `NxPhysicsActorDynamicSetterTests` differential
+matches exactly (`stdout_delta=0`, `stderr_exact=True`). The complete Phase 5
+gate passes all 15 staged targets, static/oracle proofs, and 2,251/2,251
+coverage assertions (`build/phase5-create-shape-final.log`).

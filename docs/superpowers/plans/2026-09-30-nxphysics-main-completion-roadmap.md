@@ -1,3 +1,14 @@
+### Continuation — `NpActorVtable::createShape` invalid return falsification (2026-10-07)
+
+Closed Phase 5 row `phys_fn_000070` with the registered
+`NxPhysicsActorDynamicSetterTests` differential. Returning a non-null pointer
+from the invalid-descriptor branch changed four transcript lines while both
+processes exited successfully and stderr matched (`stdout_delta=4`); restoring
+the null return restores an exact staged-pair match. The full Phase 5 gate
+passes all 15 staged targets and 2,251/2,251 coverage assertions. Phase 5 now
+records 36 closed and 169 reconstructed rows awaiting falsification, so the
+phase remains pending. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md`.
+
 ### Continuation — horizontal controller hit on a shallow mesh slope (2026-10-07)
 
 A two-triangle ramp fixture first went RED: the oracle stops at X=0.4 with side
