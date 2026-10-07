@@ -332,3 +332,15 @@ Restoring the source byte-for-byte and rebuilding returns the differential to
 `evidence/phase5-world-point-velocity-mutation.md`.
 
 - `phys_fn_000146` mutation detection: changed the final Z accumulation from addition to subtraction; caught with `stdout_delta=38`.
+
+## `NpActorVtable::getLocalPointVelocityVal`: `phys_fn_000148`
+
+The same lifecycle fixture compares local-point velocity for static, dynamic,
+rotated, and quarter-turn actors plus its quaternion/frame/point/velocity grid.
+Changing the final local-Z accumulation in the Win32 x87 path from addition to
+subtraction changes the transcript (`stdout_delta=38`); both processes exit
+zero and stderr matches. Restoring the source byte-for-byte and rebuilding
+returns the differential to `stdout_delta=0`, `stderr_exact=True`. Full
+evidence: `evidence/phase5-local-point-velocity-mutation.md`.
+
+- `phys_fn_000148` mutation detection: changed the final local-Z accumulation from addition to subtraction; caught with `stdout_delta=38`.

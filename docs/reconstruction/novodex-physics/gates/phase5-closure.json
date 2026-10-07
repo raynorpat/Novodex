@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "phase": 5,
-  "note": "Phase 5 owns 205 function rows and 122 data objects. Thirty function rows are closed by registered staged-pair mutations, including actor group accessors, isDynamic, createShape, and releaseShape behavior. One row, phys_fn_000002, is closed by the NxPhysicsRangeIterationTests static proof. Eleven rows are closed by oracle differentials: eight Box shape-vtable rows, phys_fn_001035, phys_fn_000004, and phys_fn_000012. 163 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records. See evidence/shape-self-001391.md and evidence/phase5-controller-release-list.md.",
+  "note": "Phase 5 owns 205 function rows and 122 data objects. Thirty-one function rows are closed by registered staged-pair mutations, including actor group accessors, isDynamic, createShape, and releaseShape behavior. One row, phys_fn_000002, is closed by the NxPhysicsRangeIterationTests static proof. Eleven rows are closed by oracle differentials: eight Box shape-vtable rows, phys_fn_001035, phys_fn_000004, and phys_fn_000012. 162 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records. See evidence/shape-self-001391.md and evidence/phase5-controller-release-list.md.",
   "proof_kinds": {
-    "differential_falsified": "Mutations aimed at the thirty staged-pair rows were caught by their registered differentials; all thirty rows are closed.",
+    "differential_falsified": "Mutations aimed at the thirty-one staged-pair rows were caught by their registered differentials; all thirty-one rows are closed.",
     "static_proof_falsified": "The NxPhysicsRangeIterationTests mutation changed reverse stepping to forward stepping; its named checks caught the broken visitation order, callback result, and negative-stride behavior for phys_fn_000002.",
     "oracle_differential_falsified": "Mutations to phys_fn_001391, phys_fn_000955, phys_fn_000961, phys_fn_000963, phys_fn_000953, phys_fn_000967, phys_fn_000969, phys_fn_000971, and phys_fn_001035 were caught by NxPhysicsShapeVtableTests; mutations to phys_fn_000004 and phys_fn_000012 were caught by NxPhysicsObjectLayoutTests. Each non-zero mismatch count records the failed case."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction; no function rows remain here.",
-    "reconstructed_not_falsified": "The row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 163 rows, each needing one mutation and one measured detection.",
+    "reconstructed_not_falsified": "The row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 162 rows, each needing one mutation and one measured detection.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -19,9 +19,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 30,
+    "differential_falsified": 31,
     "oracle_differential_falsified": 11,
-    "deferred_reconstructed_not_falsified": 163,
+    "deferred_reconstructed_not_falsified": 162,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -460,6 +460,16 @@
         "mutation": "Changed the final world-Z accumulation in NpActorVtable::getPointVelocityVal from x87 fadd to fsub.",
         "detected": "stdout_delta=38"
       }
+    },
+    {
+      "id": "phys_fn_000148",
+      "rva": "0x00005b40",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorLifecycleTests",
+      "falsification": {
+        "mutation": "Changed the final local-Z accumulation in NpActorVtable::getLocalPointVelocityVal from x87 fadd to fsub.",
+        "detected": "stdout_delta=38"
+      }
     }
   ],
   "deferred": [
@@ -624,15 +634,6 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000148",
-      "rva": "0x00005b40",
-      "size": 811,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Dynamic actor local-point velocity is reconstructed with static proof and lifecycle differential coverage; no row-targeted mutation has been measured."
     },
     {
       "id": "phys_fn_000150",

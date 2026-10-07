@@ -2753,12 +2753,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "actor_dynamic vtable slot 66 getLocalPointVelocityVal (Physics/src/NpActor.cpp)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/53",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/318",
       "static_proof": "RVA 0x5b40 takes the actor record from body+8, multiplies the body quaternion rotation by the mass-frame matrix at record+0xdc, transforms the local point, then adds angular velocity cross the transformed radius to linear velocity; the no-record arm returns zero. Combined matrix cells spill to float, local point products stay on x87, and only X/Y cross terms spill before adding linear velocity.",
-      "dynamic_proof": "NxPhysicsActorLifecycleTests compares public dispatch for static, identity, half-turn and quarter-turn actors plus a 16-case quaternion/frame/point/velocity grid; all 20 output triples agree bit-for-bit with the oracle, including quarter-turn z=0x40cfffff.",
+      "dynamic_proof": "NxPhysicsActorLifecycleTests matches the pinned oracle for static, identity, half-turn, and quarter-turn actors plus the 16-case quaternion/frame/point/velocity grid. Changing the final Win32 x87 local-Z accumulation from fadd to fsub is caught with stdout_delta=38; both processes exit 0 and stderr is exact. After byte-exact source restoration and rebuild, the clean differential is stdout_delta=0 and stderr_exact=True.",
       "notes": ""
     },
     {

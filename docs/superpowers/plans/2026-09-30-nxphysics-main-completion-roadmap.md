@@ -183,6 +183,17 @@ full DLL reconstruction remains active. Public Physics headers are unchanged.
 
 # NxPhysics completion project plan from main
 
+### Continuation — local-point velocity row falsification (2026-10-07)
+
+For `phys_fn_000148` (`NpActorVtable::getLocalPointVelocityVal`), changing the
+candidate's final Win32 x87 local-Z velocity accumulation from addition to
+subtraction is caught by the registered lifecycle oracle differential with
+`stdout_delta=38`; both processes exit zero and stderr is exact. Restoring the
+source byte-for-byte and rebuilding returns the clean differential to an exact
+match. Phase 5 now records 43 closed / 162 deferred rows; the phase remains
+pending. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase5-local-point-velocity-mutation.md`.
+
 ### Continuation — world-point velocity row falsification (2026-10-07)
 
 For `phys_fn_000146` (`NpActorVtable::getPointVelocityVal`), changing the
