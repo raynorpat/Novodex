@@ -1,3 +1,13 @@
+### Continuation — actor dynamic-state vtable mutation closure (2026-10-07)
+
+Closed Phase 5 row `phys_fn_000110` (`NxActor::isDynamic`) using the registered
+actor-lifecycle target. Reversing its body-record predicate swapped the static
+and dynamic results and was caught with `stdout_delta=4`; the restored target
+matches exactly (`stdout_delta=0`, exact stderr). Phase 5 now records 35 closed
+rows and 170 reconstructed rows awaiting falsification. This advances the
+object vtable audit; the full simulation, all actor slots, and full-DLL audit
+remain open. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md`.
 ### Continuation — actor group accessor mutation closures (2026-10-07)
 
 Closed Phase 5 rows `phys_fn_000112` (`setGroup`) and `phys_fn_000114`

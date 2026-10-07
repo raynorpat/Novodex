@@ -214,3 +214,15 @@ PY
 - `phys_fn_000114`: wrong `getGroup` read offset caught with `stdout_delta=4`.
 - `phys_fn_000112`: wrong `setGroup` write offset caught with `stdout_delta=2`.
 - `phys_fn_000114`: wrong `getGroup` read offset caught with `stdout_delta=4`.
+## Dynamic-state virtual: `phys_fn_000110`
+
+The registered `NxPhysicsActorLifecycleTests` target calls `NxActor::isDynamic`
+for a static actor and a dynamic actor. The oracle reports `0` and `1`. An
+isolated mutation reversed the body-record predicate; the candidate reported
+`1` and `0`, which the paired differential caught with `stdout_delta=4` while
+both processes exited zero and stderr remained exact. After restoring the
+predicate, the clean differential reports `stdout_delta=0` and exact stderr.
+This closes `phys_fn_000110` only for the exercised static/dynamic body-state
+query. Public Physics headers are unchanged.
+
+- `phys_fn_000110`: inverted isDynamic predicate caught with `stdout_delta=4`.

@@ -1602,11 +1602,11 @@ Decompile (capstone disassembly):
 0x0000357a  ret 4
 ```
 
-## phys_fn_000110 (0x00003580, 35 B, reconstructed)
+## phys_fn_000110 (0x00003580, 35 B, dynamically_gated)
 
 - ambiguous: no
 - source: None
-- implementation: None
+- implementation: Physics/src/NpActor.cpp
 - prototype: bool __fastcall FUN_10003580(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000044 (0x00002480)
@@ -1681,8 +1681,8 @@ void __thiscall FUN_100035b0(void *this,undefined2 param_1)
 ## phys_fn_000114 (0x00003610, 34 B, dynamically_gated)
 
 - ambiguous: no
-- source: Physics/src/NpActor.cpp
-- implementation: None
+- source: None
+- implementation: Physics/src/NpActor.cpp
 - prototype: undefined2 __fastcall FUN_10003610(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000044 (0x00002480)

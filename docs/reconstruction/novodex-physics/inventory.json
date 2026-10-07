@@ -2058,13 +2058,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/42",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/230",
       "static_proof": "guarded bool of [body+8]",
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsActorLifecycleTests checks both actor kinds through the public NxActor::isDynamic call. Reversing the body-record predicate made the static and dynamic outputs 1 and 0 instead of 0 and 1; the registered differential caught it with stdout_delta=4. The restored clean differential has oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True.",
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp"
     },
     {
       "id": "phys_fn_000111",
@@ -2131,7 +2132,7 @@
       "phase": 5,
       "phase_provenance": "translation_unit",
       "state": "dynamically_gated",
-      "source": "Physics/src/NpActor.cpp",
+      "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/44",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/234",
       "static_proof": "guarded read of the group WORD at [body+0x1c]",
