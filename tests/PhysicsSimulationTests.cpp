@@ -2531,7 +2531,7 @@ int wmain(int argc, wchar_t** argv)
 	*reinterpret_cast<NxU32*>(stepUpControllerDescStorage + 0x1c) = nxFloatBits(1.0f);
 	*reinterpret_cast<NxU32*>(stepUpControllerDescStorage + 0x20) = 0;
 	*reinterpret_cast<NxU32*>(stepUpControllerDescStorage + 0x24) = nxFloatBits(0.7f);
-	*reinterpret_cast<NxU32*>(stepUpControllerDescStorage + 0x2c) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(stepUpControllerDescStorage + 0x2c) = 0;
 	*reinterpret_cast<NxU32*>(stepUpControllerDescStorage + 0x30) = nxFloatBits(0.5f);
 	*reinterpret_cast<NxU32*>(stepUpControllerDescStorage + 0x34) = nxFloatBits(0.5f);
 	*reinterpret_cast<NxU32*>(stepUpControllerDescStorage + 0x38) = nxFloatBits(0.5f);
@@ -2544,7 +2544,7 @@ int wmain(int argc, wchar_t** argv)
 	reinterpret_cast<NxControllerProbe*>(stepUpController)->move(
 		stepUpDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
 	const NxVec3& stepUpPosition = reinterpret_cast<NxControllerProbe*>(stepUpController)->getPosition();
-	printf("simulation controller-obstacle step-response-isolated position=%08x.%08x.%08x flags=%08x\n",
+	printf("simulation controller-obstacle step-offset-disabled position=%08x.%08x.%08x flags=%08x\n",
 		nxFloatBits(stepUpPosition.x), nxFloatBits(stepUpPosition.y),
 		nxFloatBits(stepUpPosition.z), obstacleCollisionFlags);
 	stepUpScene->releaseController(*stepUpController);

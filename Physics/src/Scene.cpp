@@ -2277,9 +2277,10 @@ NxController* NxSceneInternal::createController(const NxControllerDesc& desc)
 	// Using the existing actor
 	// factory retains its scene array, shape, body, and notification semantics.
 	memcpy(memory + 0x28, descriptor + 0x0c, sizeof(NxReal) * 3);
-	const NxReal stepOffset = *reinterpret_cast<const NxReal*>(descriptor + 0x2c);
+	// Controller::Controller copies descriptor +0x1c != 0 into object +0x34;
+	// that probe-enable byte is independent of the step-offset value at +0x2c.
 	*reinterpret_cast<NxU32*>(memory + 0x3c) =
-		*reinterpret_cast<const NxReal*>(descriptor + 0x1c) != 0.0f && stepOffset > 0.0f ? 1u : 0u;
+		*reinterpret_cast<const NxReal*>(descriptor + 0x1c) != 0.0f ? 1u : 0u;
 	const NxReal* dimensions = reinterpret_cast<const NxReal*>(descriptor + 0x30);
 	NxBoxShapeDesc box;
 	box.dimensions.set(dimensions[0] * 1.1f, dimensions[1] * 1.1f,

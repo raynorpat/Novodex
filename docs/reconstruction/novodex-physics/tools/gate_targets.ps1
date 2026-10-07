@@ -3198,7 +3198,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation controller-obstacle slide position=3f000000.00000000.3f800000 flags=00000004'
         'simulation controller-obstacle vertical position=40800000.3f000000.00000000 flags=00000001'
         'simulation controller-obstacle step position=3f000000.3f000000.00000000 flags=00000005'
-        'simulation controller-obstacle step-response-isolated position=3f000000.3f000000.00000000 flags=00000005'
+        'simulation controller-obstacle step-offset-disabled position=3f000000.3f000000.00000000 flags=00000005'
         'simulation controller-obstacle grounded-sweep position=3f000000.3f000000.00000000 flags=00000005'
         'simulation controller-obstacle trigger position=40f00000.00000000.00000000 flags=00000004'
         'simulation controller-obstacle rotated-corner position=bf50704e.00000000.3f4ccccd flags=00000004'

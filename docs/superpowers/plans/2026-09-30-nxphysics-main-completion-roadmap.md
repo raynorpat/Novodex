@@ -17,16 +17,21 @@ open. The full Release Viewer selection passes 48/48, with all 39 scenes
 represented, 43 passes, and five signature-verified oracle asset skips. See
 `docs/reconstruction/novodex-physics/evidence/controller-grounded-sweep.md`.
 
-### Continuation — isolated grounded controller step response (2026-10-06)
+### Continuation — controller step-offset enable-byte gating (2026-10-06)
 
-Added the approved fresh-scene controller fixture to isolate the grounded
-low-obstacle step response from the preceding controller actor. Oracle and
-candidate both finish at `(0.5, 0.5, 0)` with flags `0x5`; the Phase 7 gate now
-pins that paired output at a 1,357 assertion floor. This confirms the blocked
-step-probe behavior in isolation, not a successful step-over: the controller
-still stops at the obstacle's near face. Successful step-over motion remains
-open. Phase 7 passes 1,357/1,357 assertions. See
-`docs/reconstruction/novodex-physics/evidence/controller-grounded-step-response.md`.
+The approved isolated grounded low-obstacle fixture now sets `stepOffset` to
+zero while keeping descriptor `+0x1c` nonzero. The oracle still stops at
+`(0.5, 0.5, 0)` with flags `0x5`; the candidate was RED at flags `0x6` because
+its private probe-enable byte incorrectly also required a positive step offset.
+IDA shows the constructor copies only `descriptor[7] != 0` into object byte
+`+0x34`. The candidate now preserves that field independently of
+`descriptor+0x2c`, and the complete simulation differential is exact
+(`stdout_delta=0`, `stderr_exact=True`; `build/controller-step-offset-green.log`).
+Phase 7 passes 1,358/1,358 assertions; Phase 5 passes 2,042/2,042; the Viewer
+physics step/contact selection passes. The positive-step-offset fixture
+remains covered separately. Successful step-over motion and broader controller
+semantics remain open. See
+`docs/reconstruction/novodex-physics/evidence/controller-step-offset-gating.md`.
 
 ### Continuation — public 16-bit mesh input in controller sweep (2026-10-06)
 

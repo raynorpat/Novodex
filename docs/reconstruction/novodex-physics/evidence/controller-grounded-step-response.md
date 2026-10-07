@@ -1,5 +1,10 @@
 # Grounded controller step response
 
+Historical fixture: the isolated descriptor used a positive `stepOffset` at
+the time this evidence was recorded. The test now uses zero offset to pin the
+independent probe-enable byte; see
+`controller-step-offset-gating.md` for the current regression and result.
+
 An additional paired simulation fixture runs the low-obstacle grounded move in
 a fresh scene, without the earlier controller actor. The controller starts at
 `(0, 0.8, 0)`, has half-extents `(0.5, 0.5, 0.5)`, enables the `0.5` step
