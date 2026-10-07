@@ -2288,6 +2288,12 @@ NxController* NxSceneInternal::createController(const NxControllerDesc& desc)
 	// that probe-enable byte is independent of the step-offset value at +0x2c.
 	*reinterpret_cast<NxU32*>(memory + 0x3c) =
 		*reinterpret_cast<const NxReal*>(descriptor + 0x1c) != 0.0f ? 1u : 0u;
+	// Controller::Controller retains the selected up axis and step offset in
+	// its private descriptor-derived state used by Controller::move.
+	*reinterpret_cast<NxU32*>(memory + 0x14) =
+		*reinterpret_cast<const NxU32*>(descriptor + 0x20);
+	*reinterpret_cast<NxReal*>(memory + 0x20) =
+		*reinterpret_cast<const NxReal*>(descriptor + 0x2c);
 	const NxReal* dimensions = reinterpret_cast<const NxReal*>(descriptor + 0x30);
 	NxBoxShapeDesc box;
 	box.dimensions.set(dimensions[0] * 1.1f, dimensions[1] * 1.1f,

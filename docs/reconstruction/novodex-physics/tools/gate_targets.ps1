@@ -3199,6 +3199,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation controller-obstacle slide position=3f000000.00000000.3f800000 flags=00000004'
         'simulation controller-obstacle vertical position=40800000.3f000000.00000000 flags=00000001'
         'simulation controller-obstacle step position=3f000000.3f000000.00000000 flags=00000005'
+        'simulation controller-descriptor up-axis=00000001 step-offset=3f000000'
+        'simulation controller-obstacle step-offset move position=3fc00000.3f0ccccd.00000000 flags=00000004'
         'simulation controller-obstacle step-offset-disabled position=3f000000.3f000000.00000000 flags=00000005'
         'simulation controller-obstacle grounded-sweep position=3f000000.3f000000.00000000 flags=00000005'
         'simulation controller-obstacle trigger position=40f00000.00000000.00000000 flags=00000004'
@@ -5443,7 +5445,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1361  # previous 1,359 plus both rotated-box initial-overlap exits
+    '7' = 1363  # previous 1,361 plus controller descriptor state and its blocked step-offset move
                # (free-space, actor pose, obstacle/group filter, vertical, grounded step, trigger, overlap)
     '8' = 0
 }

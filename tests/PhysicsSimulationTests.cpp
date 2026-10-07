@@ -2623,6 +2623,63 @@ int wmain(int argc, wchar_t** argv)
 		nxFloatBits(groundedSweepPosition.z), obstacleCollisionFlags);
 	groundedSweepScene->releaseController(*groundedSweepController);
 	sdk->releaseScene(*groundedSweepScene);
+	// Pin the controller's private up-axis and step-offset state from the public
+	// descriptor, then retain a blocked obstacle move as the current behavior.
+	NxSceneDesc successfulStepSceneDesc;
+	successfulStepSceneDesc.setToDefault();
+	NxScene* const successfulStepScene = sdk->createScene(successfulStepSceneDesc);
+	if(!successfulStepScene)
+		return nxFail("successful-step controller scene creation failed");
+	NxBoxShapeDesc successfulStepFloorShape;
+	successfulStepFloorShape.dimensions = NxVec3(10.0f, 0.5f, 10.0f);
+	NxActorDesc successfulStepFloorActorDesc;
+	successfulStepFloorActorDesc.globalPose.t = NxVec3(0.0f, -10.5f, 0.0f);
+	successfulStepFloorActorDesc.shapes.pushBack(&successfulStepFloorShape);
+	NxActor* const successfulStepFloorActor = successfulStepScene->createActor(
+		successfulStepFloorActorDesc);
+	NxBoxShapeDesc successfulStepObstacleShape;
+	successfulStepObstacleShape.dimensions = NxVec3(0.5f, 0.1f, 1.0f);
+	NxActorDesc successfulStepObstacleActorDesc;
+	successfulStepObstacleActorDesc.globalPose.t = NxVec3(2.5f, 0.1f, 0.0f);
+	successfulStepObstacleActorDesc.shapes.pushBack(&successfulStepObstacleShape);
+	NxActor* const successfulStepObstacleActor = successfulStepScene->createActor(
+		successfulStepObstacleActorDesc);
+	alignas(4) unsigned char successfulStepControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(successfulStepControllerDescStorage + 0x10) = nxFloatBits(0.55f);
+	*reinterpret_cast<NxU32*>(successfulStepControllerDescStorage + 0x1c) = nxFloatBits(1.0f);
+	*reinterpret_cast<NxU32*>(successfulStepControllerDescStorage + 0x20) = 1;
+	*reinterpret_cast<NxU32*>(successfulStepControllerDescStorage + 0x24) = nxFloatBits(0.7f);
+	*reinterpret_cast<NxU32*>(successfulStepControllerDescStorage + 0x2c) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(successfulStepControllerDescStorage + 0x30) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(successfulStepControllerDescStorage + 0x34) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(successfulStepControllerDescStorage + 0x38) = nxFloatBits(0.5f);
+	NxController* const successfulStepController = successfulStepScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(successfulStepControllerDescStorage));
+	if(!successfulStepFloorActor || !successfulStepObstacleActor || !successfulStepController)
+		return nxFail("successful-step controller fixture setup failed");
+	const unsigned char* const successfulStepControllerBytes =
+		reinterpret_cast<const unsigned char*>(successfulStepController);
+	printf("simulation controller-descriptor up-axis=%08x step-offset=%08x\n",
+		*reinterpret_cast<const NxU32*>(successfulStepControllerBytes + 0x14),
+		*reinterpret_cast<const NxU32*>(successfulStepControllerBytes + 0x20));
+	controllerCreateFailed = controllerCreateFailed ||
+		*reinterpret_cast<const NxU32*>(successfulStepControllerBytes + 0x14) != 1 ||
+		*reinterpret_cast<const NxU32*>(successfulStepControllerBytes + 0x20) != nxFloatBits(0.5f);
+	obstacleCollisionFlags = 0xdeadbeef;
+	const NxVec3 successfulStepDisplacement(3.0f, 0.0f, 0.0f);
+	reinterpret_cast<NxControllerProbe*>(successfulStepController)->move(
+		successfulStepDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& successfulStepPosition =
+		reinterpret_cast<NxControllerProbe*>(successfulStepController)->getPosition();
+	printf("simulation controller-obstacle step-offset move position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(successfulStepPosition.x), nxFloatBits(successfulStepPosition.y),
+		nxFloatBits(successfulStepPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(successfulStepPosition.x) != 0x3fc00000 ||
+		nxFloatBits(successfulStepPosition.y) != 0x3f0ccccd ||
+		nxFloatBits(successfulStepPosition.z) != 0 || obstacleCollisionFlags != 4;
+	successfulStepScene->releaseController(*successfulStepController);
+	sdk->releaseScene(*successfulStepScene);
 	NxSceneDesc slideSceneDesc;
 	slideSceneDesc.setToDefault();
 	NxScene* const slideScene = sdk->createScene(slideSceneDesc);
