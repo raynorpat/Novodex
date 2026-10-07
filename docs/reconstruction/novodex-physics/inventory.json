@@ -39670,14 +39670,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/TriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/822",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6833",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "implementation": null
+      "static_proof": "IDA decompile at RVA 0x00053910: allocates and constructs a 0x98-byte ConvexHull object, fills a build descriptor from mesh vertex/face buffers and the tolerance, and calls its virtual build slot; on failure it reports convex hull computation failure and destroys the object. The candidate implementation is nxTriangleMeshBuildConvexData in Physics/src/TriangleMesh.cpp, which owns the measured hull layout and builds polygon data, normals, adjacency, and bounds.",
+      "dynamic_proof": "TriangleMesh convex-data audit (2026-10-07): staged x86 pair differentials passed NxPhysicsTriangleMeshApiTests and NxPhysicsConvexMeshTests with oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=true. Covered convex cube point-cloud construction plus computed/precomputed tetrahedra, padded input points, flipped winding, padded 16-bit indices/materials, hull arrays and polygons, and static/dynamic actor creation. A targeted mutant making nxTriangleMeshBuildConvexData reject every valid cooked mesh was caught by the candidate descriptor fixture while the oracle passed; restoring the implementation returned both targets to exact output. Evidence: evidence/triangle-mesh-convex-data.md.",
+      "notes": "These tests exercise common polygonal convex data; degeneracy and allocation-failure branches remain part of the open hull contract.",
+      "implementation": "Physics/src/TriangleMesh.cpp",
+      "implementation_symbol": "nxTriangleMeshBuildConvexData"
     },
     {
       "id": "phys_fn_002159",

@@ -76,6 +76,8 @@ namespace
 		nxFoundationSDKAllocator->free(hull);
 		}
 
+	// phys_fn_002158 (oracle RVA 0x00053910): construct the ConvexHull data
+	// used by a cooked TriangleMesh from its indexed vertices and faces.
 	static bool nxTriangleMeshBuildConvexData(TriangleMeshConvexData** result,
 		const InternalTriangleMesh& mesh)
 		{
