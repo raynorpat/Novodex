@@ -7273,7 +7273,7 @@ Decompile (capstone disassembly):
 0x000084ca  ret 4
 ```
 
-## phys_fn_000188 (0x000084d0, 407 B, reconstructed)
+## phys_fn_000188 (0x000084d0, 407 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/NpActor.cpp
@@ -7431,7 +7431,7 @@ Decompile (capstone disassembly):
 0x00008664  ret 4
 ```
 
-## phys_fn_000190 (0x00008670, 415 B, reconstructed)
+## phys_fn_000190 (0x00008670, 415 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/NpActor.cpp

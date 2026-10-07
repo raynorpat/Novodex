@@ -48,6 +48,10 @@ full DLL reconstruction remains active. Public Physics headers are unchanged.
 
 # NxPhysics completion project plan from main
 
+### Continuation — actor body-flag mutation closures (2026-10-07)
+
+The dedicated `NxPhysicsActorBodyFlagTests` target now independently falsifies Phase 5 rows `phys_fn_000188` (`raiseBodyFlag`) and `phys_fn_000190` (`clearBodyFlag`). The wrong raise operation was caught with `stdout_delta=16`; the wrong clear operation was caught with `stdout_delta=12`; the restored differential is exact. Phase 5 now records 28 closed rows and 177 reconstructed rows awaiting falsification.
+
 ### Continuation ï¿½ actor sleep/wake mutation closures (2026-10-07)
 
 The existing dynamic-setter oracle target now falsifies four additional Phase 5 rows: group sleep (`phys_fn_000062`), individual sleep (`phys_fn_000064`), `wakeUp` (`phys_fn_000192`), and `putToSleep` (`phys_fn_000194`). Each independent mutation was caught by the registered state output (`stdout_delta=4`, `8`, `10`, and `6` respectively); the restored differential matches exactly. Phase 5 now records 26 closed rows and 179 reconstructed rows awaiting falsification. The previously approved all-scene Viewer sweep remains part of the plan.

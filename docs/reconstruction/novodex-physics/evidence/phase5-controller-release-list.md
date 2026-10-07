@@ -161,3 +161,12 @@ The registered `NxPhysicsActorDynamicSetterTests` output pins group sleeping, in
 `phys_fn_000192` mutation detection: registered sleep/wake observation caught the mutation with `stdout_delta=10`.
 
 `phys_fn_000194` mutation detection: registered sleep/wake observation caught the mutation with `stdout_delta=6`.
+
+
+## Body-flag mutations: `phys_fn_000188` and `phys_fn_000190`
+
+The registered `NxPhysicsActorBodyFlagTests` differential pins the actor body-flag word, manager copy, dirty-queue state, allocation, and kinematic transition. Replacing `raiseBodyFlag`'s `record + 0x10c |= flag` with a clear operation changed `bodyflag_raised` from `1.1.101` to `0.0.0` and altered transition state; the differential caught it with `stdout_delta=16`. Replacing `clearBodyFlag`'s `record + 0x10c &= ~flag` with a set operation changed `bodyflag_cleared` from `1.0.1` to `1.1.101`; it was caught with `stdout_delta=12`. Both processes exited zero and stderr was exact. The restored clean target matches the oracle with `stdout_delta=0`.
+
+`phys_fn_000188` mutation detection: body-flag raise mutation caught with `stdout_delta=16`.
+
+`phys_fn_000190` mutation detection: body-flag clear mutation caught with `stdout_delta=12`.
