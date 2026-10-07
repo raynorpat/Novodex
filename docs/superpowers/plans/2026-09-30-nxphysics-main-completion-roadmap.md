@@ -183,6 +183,17 @@ full DLL reconstruction remains active. Public Physics headers are unchanged.
 
 # NxPhysics completion project plan from main
 
+### Continuation — actor force and torque dispatch falsification (2026-10-07)
+
+Three Phase 5 rows now have independent mutation evidence from
+`NxPhysicsActorForceTests`: swapping `addForceAtPos` arguments is caught with
+`stdout_delta=18`, routing `addForce` into the torque accumulator is caught
+with `stdout_delta=36`, and routing `addTorque` into the force accumulator is
+caught with `stdout_delta=30`. The oracle and mutant processes exit zero with
+exact stderr; all byte-restored controls are exact. Phase 5 now records 47
+closed / 158 deferred rows and remains pending. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase5-actor-force-dispatch-mutations.md`.
+
 ### Continuation — `saveBodyToDesc` result falsification (2026-10-07)
 
 For `phys_fn_000046`, forcing `NpActorVtable::saveBodyToDesc` to return false

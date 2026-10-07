@@ -357,3 +357,19 @@ the source byte-for-byte, rebuilding, and rerunning returns to
 `evidence/phase5-save-body-desc-mutation.md`.
 
 - `phys_fn_000046` mutation detection: forced the successful descriptor-gather return to false; caught with `stdout_delta=6`.
+
+## Actor force and torque dispatch rows
+
+The registered `NxPhysicsActorForceTests` target independently falsifies three
+public vtable rows. Swapping the force and position arguments in
+`addForceAtPos` (`phys_fn_000054`) is caught with `stdout_delta=18`; changing
+`addForce`'s force accumulator selector from `false` to `true`
+(`phys_fn_000056`) is caught with `stdout_delta=36`; changing `addTorque`'s
+selector from `true` to `false` (`phys_fn_000058`) is caught with
+`stdout_delta=30`. For all three, oracle and mutant exit zero and stderr is
+exact. Each byte-restored rebuild returns to `stdout_delta=0` with exact stderr.
+Full evidence: `evidence/phase5-actor-force-dispatch-mutations.md`.
+
+- `phys_fn_000054` mutation detection: swapped force and position arguments; `stdout_delta=18`.
+- `phys_fn_000056` mutation detection: routed force into the torque accumulator; `stdout_delta=36`.
+- `phys_fn_000058` mutation detection: routed torque into the force accumulator; `stdout_delta=30`.
