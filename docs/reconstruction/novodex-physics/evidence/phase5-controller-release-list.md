@@ -188,3 +188,29 @@ The registered `NxPhysicsActorMetadataTests` target pins descriptor flags, publi
 `phys_fn_000076` mutation detection: clear mutation caught with `stdout_delta=2`.
 
 `phys_fn_000078` mutation detection: read mutation caught with `stdout_delta=8`.
+## Actor group accessors: `phys_fn_000112` and `phys_fn_000114`
+
+The registered `NxPhysicsActorMetadataTests` target observes the actor group
+through descriptor initialization and after `setGroup`. In separate mutation
+builds, `setGroup` was redirected from actor-body offset `+0x1c` to `+0x18`,
+which changed `metadata_raised` and was caught with `stdout_delta=2`; `getGroup`
+was redirected from `+0x1c` to `+0x18`, changing `metadata_descriptor` and
+`metadata_raised`, and was caught with `stdout_delta=4`. Oracle and candidate
+processes exited zero and stderr matched in both mutation runs. After restoring
+the implementation, the clean differential matches exactly (`stdout_delta=0`,
+`stderr_exact=True`). These results close `phys_fn_000112` and
+`phys_fn_000114`. No public Physics headers changed.
+import json
+from pathlib import Path
+base=Path('docs/reconstruction/novodex-physics')
+p=base/'gates/phase5-closure.json'
+d=json.loads(p.read_text(encoding='utf-8'))
+d['deferred']=[r for r in d['deferred'] if r['id'] not in {'phys_fn_000112','phys_fn_000114'}]
+d['counts']['deferred_reconstructed_not_falsified']=len([r for r in d['deferred'] if r['reason']=='reconstructed_not_falsified'])
+p.write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n',encoding='utf-8',newline='\n')
+PY
+@'
+- `phys_fn_000112`: wrong `setGroup` write offset caught with `stdout_delta=2`.
+- `phys_fn_000114`: wrong `getGroup` read offset caught with `stdout_delta=4`.
+- `phys_fn_000112`: wrong `setGroup` write offset caught with `stdout_delta=2`.
+- `phys_fn_000114`: wrong `getGroup` read offset caught with `stdout_delta=4`.

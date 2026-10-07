@@ -2094,12 +2094,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/43",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/231",
       "static_proof": "setGroup under the write guard: word argument into body+0x1c (the same field slot 86 reads); line 0x3cd on a failed upgrade",
-      "dynamic_proof": null,
+      "dynamic_proof": "Changed NpActorVtable::setGroup to write actor-body offset +0x18 instead of +0x1c in a mutation build; NxPhysicsActorMetadataTests changed metadata_raised and caught it with stdout_delta=2. The restored clean differential has oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True.",
       "notes": ""
     },
     {
@@ -2130,12 +2130,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/44",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/234",
       "static_proof": "guarded read of the group WORD at [body+0x1c]",
-      "dynamic_proof": null,
+      "dynamic_proof": "Changed NpActorVtable::getGroup to read actor-body offset +0x18 instead of +0x1c in a mutation build; NxPhysicsActorMetadataTests changed metadata_descriptor and metadata_raised and caught it with stdout_delta=4. The restored clean differential has oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True.",
       "notes": ""
     },
     {

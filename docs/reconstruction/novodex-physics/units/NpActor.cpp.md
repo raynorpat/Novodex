@@ -1634,7 +1634,7 @@ bool __fastcall FUN_10003580(int param_1)
 
 ```
 
-## phys_fn_000112 (0x000035b0, 82 B, reconstructed)
+## phys_fn_000112 (0x000035b0, 82 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/NpActor.cpp
@@ -1678,10 +1678,10 @@ void __thiscall FUN_100035b0(void *this,undefined2 param_1)
 
 ```
 
-## phys_fn_000114 (0x00003610, 34 B, reconstructed)
+## phys_fn_000114 (0x00003610, 34 B, dynamically_gated)
 
 - ambiguous: no
-- source: None
+- source: Physics/src/NpActor.cpp
 - implementation: None
 - prototype: undefined2 __fastcall FUN_10003610(int param_1)
 - calling convention: __fastcall, stack purge: 0

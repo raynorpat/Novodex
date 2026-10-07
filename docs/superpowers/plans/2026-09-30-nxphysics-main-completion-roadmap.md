@@ -1,3 +1,13 @@
+### Continuation â€” actor group accessor mutation closures (2026-10-07)
+
+Closed Phase 5 rows `phys_fn_000112` (`setGroup`) and `phys_fn_000114`
+(`getGroup`) with separate wrong-offset mutations in `NpActor.cpp`. The
+registered `NxPhysicsActorMetadataTests` differential caught them with
+`stdout_delta=2` and `4`; after restoring the correct `+0x1c` actor-body field,
+the clean target matches exactly (`stdout_delta=0`, exact stderr). Phase 5 now
+records 34 closed rows and 171 reconstructed rows awaiting falsification. The
+approved Viewer gate remains scoped to all 39 available scenes. Public headers
+remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md`.
 ### Continuation â€” angular damping getter falsification (2026-10-07)
 
 Closed Phase 5 row `phys_fn_000052` (`NpActorVtable::getAngularDamping`) using
@@ -48,11 +58,11 @@ full DLL reconstruction remains active. Public Physics headers are unchanged.
 
 # NxPhysics completion project plan from main
 
-### Continuation — actor-flag mutation closures (2026-10-07)
+### Continuation ï¿½ actor-flag mutation closures (2026-10-07)
 
 `NxPhysicsActorMetadataTests` now independently falsifies Phase 5 rows `phys_fn_000074` (`raiseActorFlag`), `phys_fn_000076` (`clearActorFlag`), and `phys_fn_000078` (`readActorFlag`). The mutations were caught with `stdout_delta=4`, `2`, and `8`; the restored differential matches exactly. Phase 5 now records 32 closed rows and 173 reconstructed rows awaiting falsification.
 
-### Continuation — actor body-flag mutation closures (2026-10-07)
+### Continuation ï¿½ actor body-flag mutation closures (2026-10-07)
 
 The dedicated `NxPhysicsActorBodyFlagTests` target now independently falsifies Phase 5 rows `phys_fn_000188` (`raiseBodyFlag`), `phys_fn_000190` (`clearBodyFlag`), and `phys_fn_000080` (`readBodyFlag`). The wrong raise operation was caught with `stdout_delta=16`; the wrong clear operation was caught with `stdout_delta=12`; the restored differential is exact. Phase 5 now records 29 closed rows and 176 reconstructed rows awaiting falsification.
 
