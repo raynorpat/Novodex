@@ -32,7 +32,7 @@ PHASE_TARGETS = {
     "2": "NxPhysicsExportTests,NxPhysicsSDKTests,NxPhysicsCoreClusterTests",
     "3": "NxPhysicsBodyCreationTests,NxPhysicsGeometryTests,NxPhysicsKernelFuzzTests",
     "4": "NxPhysicsConvexMeshTests,NxPhysicsTriangleMeshApiTests,NxPhysicsPMapResolution80Tests",
-    "5": "NxPhysicsActorLifecycleTests,NxPhysicsDynamicFirstTests,NxPhysicsEmptySceneTests,NxPhysicsActorNameTests,NxPhysicsActorMetadataTests,NxPhysicsActorBodyFlagTests,NxPhysicsActorDynamicsTests,NxPhysicsActorDynamicSetterTests,NxPhysicsActorMomentumTests,NxPhysicsActorForceTests,NxPhysicsActorCMassTests,NxPhysicsActorShapeMutationTests,NxPhysicsBodyCreationTests,NxPhysicsSimulationTests,NxPhysicsMeshSimulationTests",
+    "5": "NxPhysicsActorLifecycleTests,NxPhysicsDynamicFirstTests,NxPhysicsEmptySceneTests,NxPhysicsActorNameTests,NxPhysicsActorMetadataTests,NxPhysicsActorBodyFlagTests,NxPhysicsActorDynamicsTests,NxPhysicsActorDynamicSetterTests,NxPhysicsActorMomentumTests,NxPhysicsActorForceTests,NxPhysicsActorCMassTests,NxPhysicsActorShapeMutationTests,NxPhysicsActorReleaseShapeProbeTests,NxPhysicsBodyCreationTests,NxPhysicsSimulationTests,NxPhysicsMeshSimulationTests,NxPhysicsConvexMeshTests",
     # Phase 6 has a registered STAGED-PAIR target: a closure is a mutation to a row's
     # implementation, and only a staged-pair target loads the rebuilt module, so the
     # closure schema needs one (evidence 11l).
@@ -88,8 +88,12 @@ class PlanCommandTests(unittest.TestCase):
     def test_every_command_binds_and_resolves_as_written(self):
         for plan, script, phase in plan_commands():
             with self.subTest(plan=plan, phase=phase):
-                result = run_powershell("-File", str(REPO_DIR / script), "-Phase", phase)
+                result = run_powershell(
+                    "-File", str(REPO_DIR / script), "-Phase", phase, "-ResolveOnly"
+                )
                 output = result.stdout + result.stderr
+                self.assertEqual(result.returncode, 0, f"{plan}: {output}")
+                self.assertNotIn("staged pair=", output, f"{plan}: resolution must not run gates")
                 for failure in BINDING_FAILURES:
                     self.assertNotIn(failure, output, f"{plan}: {output}")
                 # A prefix match would pass with a target appended, which is

@@ -11,6 +11,11 @@ param(
     [Parameter(Mandatory = $true, ParameterSetName = 'Targets')]
     [string[]] $Targets,
 
+    # Lets plan-validation tests check binding and registry resolution without
+    # staging DLLs or launching the full oracle/candidate suite.
+    [Parameter(ParameterSetName = 'Phase')]
+    [switch] $ResolveOnly,
+
     [string] $RepoRoot,
     [string] $BuildRoot,
     [string] $OracleRoot = 'D:\FlamingEnt__\Unreal_3',
@@ -169,6 +174,11 @@ foreach ($target in $Targets) {
     $registered = ($target -cin $NxRegisteredTestTargets) -or
         ($target -cin $NxRegisteredOracleDifferentialTargets)
     Assert-True $registered "test target is registered in gate_targets.ps1: $target"
+}
+
+if ($ResolveOnly) {
+    Write-Host "resolution=pass phase=$Phase targets=$($Targets -join ',')"
+    exit 0
 }
 
 Assert-True (Test-Path -LiteralPath $programPath -PathType Leaf) "program pin file exists: $programPath"
