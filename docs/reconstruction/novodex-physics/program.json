@@ -94,7 +94,7 @@
       "gate": "Actors, bodies, shapes, materials, descriptors, mass/inertia, and lifecycle close",
       "status": "pending",
       "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
-      "evidence_commit": "6540c586",
+      "evidence_commit": "ebcc3101",
       "gate_artifact": "gates/phase5.json",
       "owned_functions": 205,
       "owned_data_objects": 122,

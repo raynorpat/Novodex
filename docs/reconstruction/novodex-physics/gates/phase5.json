@@ -5,7 +5,7 @@
   "status": "pending",
   "closure_ledger": "gates/phase5-closure.json",
   "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
-  "evidence_commit": "6540c586",
+  "evidence_commit": "ebcc3101",
   "note": "The full Phase 5 regression gate passed at merged commit 559b865c with 2,250/2,250 coverage assertions. Four getter rows are now independently mutation-falsified on target lines already run by that gate, including the linear and angular sleep-velocity getters; the current closure ledger is 20 closed / 185 deferred. The phase remains pending until all owned rows are closed.",
   "counts": {
     "closed": 20,
