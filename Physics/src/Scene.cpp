@@ -2214,6 +2214,11 @@ namespace
 										triangle, meshFraction, meshNormal) && meshFraction < fraction)
 										{
 										fraction = meshFraction;
+									const bool horizontalOnlyYUp = upAxis == 1 && remaining.y == 0.0f &&
+										(remaining.x != 0.0f || remaining.z != 0.0f);
+									if(horizontalOnlyYUp)
+										hitAxis = NxMath::abs(remaining.x) >= NxMath::abs(remaining.z) ? 0u : 2u;
+									else
 										hitAxis = meshNormal.y * meshNormal.y >
 											0.5f * meshNormal.magnitudeSquared() ? 1u : 0u;
 										}

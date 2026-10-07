@@ -3237,6 +3237,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # mesh cooker normalizes to the internal 32-bit triangle format.
         'simulation controller-obstacle mesh-corner position=40000000.3f8ccccd.3f8ccccd flags=00000000'
         'simulation controller-obstacle mesh-hit position=3f800000.3e4ccccd.3e4ccccd flags=00000004'
+        'simulation controller-mesh-slope position=3eccccd0.3f000000.3f000000 flags=00000004'
         'simulation controller-obstacle mesh16-hit source_index_bits=16 index_format=4 index_stride=12 position=3f800000.3e4ccccd.3e4ccccd flags=00000004'
         'simulation controller-obstacle mesh-overlap-out position=3f800000.3e4ccccd.3e4ccccd flags=00000000'
         'simulation controller-obstacle mesh-overlap-in position=40000000.3e4ccccd.3e4ccccd flags=00000000'
@@ -5471,7 +5472,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 264  # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2250  # current required registrations include the 2,250 checks across all Phase 5 targets
+    '5' = 2251  # current required registrations include the 2,251 checks across all Phase 5 targets
                # previous 2,248 plus dynamic getLinearDamping observation (phys_fn_000050)
                # previous 2,244 plus five mixed solver-kind interaction assertions
                # previous 2,241 plus three auxiliary shape registration checks
@@ -5485,11 +5486,11 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1057  # current required registrations include 1,057 checks across all Phase 6 targets
+    '6' = 1058  # current required registrations include 1,058 checks across all Phase 6 targets
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1373  # previous 1,372 plus the grounded +Y controller probe assertion
+    '7' = 1374  # previous 1,373 plus the shallow controller-mesh slope assertion
                # previous 1,365 plus five mixed solver-kind interaction assertions
                # previous 1,364 plus the 1,000-step multi-body stack soak
                # (free-space, actor pose, obstacle/group filter, vertical, grounded step, trigger, overlap)

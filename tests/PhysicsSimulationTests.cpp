@@ -3176,6 +3176,60 @@ int wmain(int argc, wchar_t** argv)
 		nxFloatBits(meshHitControllerPosition.y) != 0x3e4ccccd ||
 		nxFloatBits(meshHitControllerPosition.z) != 0x3e4ccccd || obstacleCollisionFlags != 4;
 	meshHitScene->releaseController(*meshHitController);
+	// Sweep across a rising triangle mesh face to pin the controller's slope
+	// normal classification and stop pose.
+	const NxPoint controllerSlopePoints[] = {
+		NxPoint(0.0f, 0.0f, 0.0f), NxPoint(0.0f, 0.0f, 1.0f),
+		NxPoint(1.0f, 0.5f, 0.0f), NxPoint(1.0f, 0.5f, 1.0f)};
+	const NxU32 controllerSlopeIndices[] = {0, 1, 2, 1, 3, 2};
+	NxTriangleMeshDesc controllerSlopeMeshDesc;
+	controllerSlopeMeshDesc.numVertices = 4;
+	controllerSlopeMeshDesc.numTriangles = 2;
+	controllerSlopeMeshDesc.pointStrideBytes = sizeof(NxPoint);
+	controllerSlopeMeshDesc.triangleStrideBytes = 3 * sizeof(NxU32);
+	controllerSlopeMeshDesc.points = controllerSlopePoints;
+	controllerSlopeMeshDesc.triangles = controllerSlopeIndices;
+	NxTriangleMesh* const controllerSlopeMesh = sdk->createTriangleMesh(controllerSlopeMeshDesc);
+	if(!controllerSlopeMesh)
+		return nxFail("controller slope mesh cooking failed");
+	NxSceneDesc slopeControllerSceneDesc;
+	slopeControllerSceneDesc.setToDefault();
+	NxScene* const slopeControllerScene = sdk->createScene(slopeControllerSceneDesc);
+	if(!slopeControllerScene)
+		return nxFail("slope controller scene creation failed");
+	NxTriangleMeshShapeDesc slopeObstacleShape;
+	slopeObstacleShape.meshData = controllerSlopeMesh;
+	NxActorDesc slopeObstacleActorDesc;
+	slopeObstacleActorDesc.shapes.pushBack(&slopeObstacleShape);
+	NxActor* const slopeObstacle = slopeControllerScene->createActor(slopeObstacleActorDesc);
+	alignas(4) unsigned char slopeControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(slopeControllerDescStorage + 0x0c) = nxFloatBits(-2.0f);
+	*reinterpret_cast<NxU32*>(slopeControllerDescStorage + 0x10) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(slopeControllerDescStorage + 0x14) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(slopeControllerDescStorage + 0x20) = 1;
+	*reinterpret_cast<NxU32*>(slopeControllerDescStorage + 0x30) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(slopeControllerDescStorage + 0x34) = nxFloatBits(0.2f);
+	*reinterpret_cast<NxU32*>(slopeControllerDescStorage + 0x38) = nxFloatBits(0.2f);
+	NxController* const slopeController = slopeControllerScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(slopeControllerDescStorage));
+	if(!slopeObstacle || !slopeController)
+		return nxFail("slope controller fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	const NxVec3 slopeDisplacement(4.0f, 0.0f, 0.0f);
+	reinterpret_cast<NxControllerProbe*>(slopeController)->move(
+		slopeDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& slopeControllerPosition =
+		reinterpret_cast<NxControllerProbe*>(slopeController)->getPosition();
+	printf("simulation controller-mesh-slope position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(slopeControllerPosition.x), nxFloatBits(slopeControllerPosition.y),
+		nxFloatBits(slopeControllerPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(slopeControllerPosition.x) != 0x3eccccd0 ||
+		nxFloatBits(slopeControllerPosition.y) != 0x3f000000 ||
+		nxFloatBits(slopeControllerPosition.z) != 0x3f000000 || obstacleCollisionFlags != 4;
+	slopeControllerScene->releaseController(*slopeController);
+	sdk->releaseScene(*slopeControllerScene);
+	sdk->releaseTriangleMesh(*controllerSlopeMesh);
 
 	// Exercise the complete public path from 16-bit descriptor indices through
 	// mesh cooking to the controller's triangle sweep.

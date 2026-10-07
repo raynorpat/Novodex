@@ -1,3 +1,23 @@
+### Continuation — horizontal controller hit on a shallow mesh slope (2026-10-07)
+
+A two-triangle ramp fixture first went RED: the oracle stops at X=0.4 with side
+flag `0x4`, while candidate SAT finds the face at fraction 0.6 but labels it a
+vertical hit and slides through to X=2 with flag `0x2`. For horizontal-only
+Y-up mesh motion, the candidate now resolves the hit as a side collision and
+stops along the dominant horizontal axis. The paired simulation differential
+is exact. Phase 7 passes at 1,374/1,374 registered assertions; registry tests
+were updated to the actual shared-target totals (Phase 5 2,251; Phase 6 1,058;
+Phase 7 1,374). This remains one slope/axis case and does not close the full
+controller resolver or successful step-up path. Evidence:
+`docs/reconstruction/novodex-physics/evidence/controller-mesh-slope-normal.md`.
+
+The rebuilt Phase 5 and Phase 6 gates also pass at 2,251/2,251 and 1,058/1,058
+registered assertions. The full tooling suite passes all 770 tests, inventory
+validation passes with 6,338 functions / 5,138 data objects / zero unexplained,
+and the Release Viewer selection passes 48/48 across all 39 scenes (43 passed,
+five established signature-verified oracle asset skips). No public Physics
+header changed.
+
 ### Continuation — grounded +Y controller step-probe order (2026-10-07)
 
 An isolated +Y controller fixture with a 0.5 step offset and a 0.2-high box
