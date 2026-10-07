@@ -9,6 +9,9 @@ checks; the restored Release target passes. Phase 5 now records 14 closed rows
 and 191 reconstructed rows awaiting falsification. Evidence:
 `docs/reconstruction/novodex-physics/evidence/range-iteration-000002.md` and
 `docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md`.
+After merge to local `main` at `9fadd84e`, Phase 5 passes 2,244/2,244
+assertions, and the Viewer selection passes 48/48 with all 39 scenes included
+(43 passed, five existing pinned-oracle asset cases skipped).
 
 ### Continuation — Box hull facade accessor falsification (2026-10-07)
 
