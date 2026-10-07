@@ -1307,12 +1307,12 @@ undefined4 * __thiscall FUN_1000ea80(void *this,int *param_1)
 
 ```
 
-## phys_fn_000478 (0x0000ebe0, 470 B, discovered)
+## phys_fn_000478 (0x0000ebe0, 470 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/PhysicsSDK.cpp
-- implementation: None
-- prototype: int * __thiscall FUN_1000ebe0(uint * param_1)
+- implementation: Physics/src/PhysicsSDK.cpp :: PhysicsSDK::createTriangleMesh
+- prototype: TriangleMesh* __thiscall PhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc&)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000242 (0x0000b7e0)
 - callees: phys_fn_000470 (0x0000e130), phys_fn_002251 (0x00055490), phys_fn_002253 (0x00055570)

@@ -52,7 +52,7 @@ two OBJ file names and three OBJ format lines.
 | Row | RVA | Size | State | Phase | Unit (work_units.json) | What it is |
 |---|---|---:|---|---:|---|---|
 | `phys_fn_000242` | 0x0000b7e0 | 219 | discovered | 2 | NpPhysicsSDK.cpp | `NpPhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc&)`, slot 8 of the NpPhysicsSDK vtable |
-| `phys_fn_000478` | 0x0000ebe0 | 470 | discovered | 2 | PhysicsSDK.cpp | `PhysicsSDK::createTriangleMesh`: an inline `isValid`, `new TriangleMesh`, `loadFromDesc`, and the append to `mTriangleMeshes` |
+| `phys_fn_000478` | 0x0000ebe0 | 470 | reconstructed | 2 | PhysicsSDK.cpp | `PhysicsSDK::createTriangleMesh`: validation/error report, allocation, `loadFromDesc`, and append to `mTriangleMeshes` |
 | `phys_fn_002251` | 0x00055490 | 216 | discovered | 4 | TriangleMesh.cpp | the `TriangleMesh` constructor (0xe8 bytes) |
 | `phys_fn_002260` | 0x00055890 | 1,044 | discovered | 4 | TriangleMesh.cpp | `TriangleMesh::loadFromDesc`, slot 2 of the vtable at `.rdata:0x00108608` |
 | `phys_fn_002233` | 0x00054920 | 277 | discovered | 4 | TriangleMesh.cpp | the hull computation from `NX_MF_COMPUTE_CONVEX`: descriptor in, hull triangle descriptor out |
