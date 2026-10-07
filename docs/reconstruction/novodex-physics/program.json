@@ -21,7 +21,7 @@
     "foundation_manifest": "../novodex-foundation/dumps/immutable_public_hashes.json"
   },
   "foundation_commit": "62b26f4f672ea70b73742302db52c67e338565e3",
-  "evidence_commit": "bf340799fe1cb06271344857f33fc79751956e2e",
+  "evidence_commit": "9f8e67dfeb0e96c702b56616de4a92eac974a153",
   "phases": [
     {
       "phase": 1,
@@ -94,7 +94,7 @@
       "gate": "Actors, bodies, shapes, materials, descriptors, mass/inertia, and lifecycle close",
       "status": "pending",
       "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
-      "evidence_commit": "eb63af0e",
+      "evidence_commit": "9f8e67dfeb0e96c702b56616de4a92eac974a153",
       "gate_artifact": "gates/phase5.json",
       "owned_functions": 205,
       "owned_data_objects": 122,
