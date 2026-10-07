@@ -16,8 +16,13 @@ are allocated in the processing caller's stack frame so their lifetime covers
 all lookups. The overlap fallback retains sleeping bodies that are still
 inside a trigger even when the broadphase omits them.
 
-The public simulation corpus covers one pair through enter/stay/leave and eight
-simultaneous pairs through the same transitions. The batch actors sleep while
+The public simulation corpus covers one pair through enter/stay/leave, eight
+simultaneous pairs through the same transitions, and two trigger shapes on one
+actor overlapping the same dynamic sphere. The compound fixture verifies each
+shape receives exactly one enter, stay, and leave callback with its own shape
+handle; the pinned oracle and candidate transcripts match exactly
+(`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`, `stderr_exact=True`,
+`build/trigger-compound-differential.log`). The batch actors sleep while
 overlapping, then move outside. It also configures a trigger with only
 `NX_TRIGGER_ON_STAY`: the pinned oracle still reports enter, stay, and leave,
 so the candidate now mirrors the observed rule that any enabled trigger event
@@ -40,10 +45,12 @@ identical pairs, compound expansion, unsupported overlap slots, and broader
 allocation/list edge cases remain open, so the inventory row stays
 `discovered`.
 
-The current staged gates pass: Phase 5 at 2,263/2,263 assertions, Phase 6 at
-1,061/1,061, and Phase 7 at 1,377/1,377. These results establish the tested
-lifecycle, hash collisions exercised by the batch, sleeping-overlap retention,
-and observed event-mask behavior. The row remains discovered because duplicate
-identical pairs, compound expansion, unsupported overlap slots, and broader
-allocation/list edge cases still need oracle-backed fixtures and formal
-mutation falsification. Public Physics headers were not changed.
+The current staged gates pass: Phase 5 at 2,264/2,264 assertions, Phase 6 at
+1,062/1,062, and Phase 7 at 1,378/1,378 (`build/phase5-compound-trigger.log`,
+`build/phase6-compound-trigger.log`, and `build/phase7-compound-trigger.log`).
+These results establish the tested lifecycle, hash collisions exercised by the
+batch, per-shape compound lifecycle, sleeping-overlap retention, and observed
+event-mask behavior. The row remains discovered because duplicate identical
+pairs, unsupported overlap slots, and broader allocation/list edge cases still
+need oracle-backed fixtures and formal mutation falsification. Public Physics
+headers were not changed.

@@ -3037,6 +3037,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # Eight concurrent pairs exercise hash-chain matching, overlap
         # retention and queue growth; any enabled trigger bit admits all events.
         'simulation trigger-batch summary fetched=1 calls=24 bad_shapes=0 exact=1'
+        # Two trigger shapes on one actor remain distinct through overlap
+        # entry, stay and separation for their common dynamic partner.
+        'simulation trigger-compound summary fetched=1 calls=6 bad_shapes=0 exact=1'
         # Public NxTriangleMesh factory and wrapper round-trip the pinned
         # ordinary 32-bit indexed descriptor through SDK ownership.
         'simulation triangle-mesh create=1'
@@ -5482,7 +5485,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 264  # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2263  # plus three-pair trigger reconciliation and queue growth
+    '5' = 2264  # plus compound-trigger per-shape enter/stay/leave lifecycle
+               # plus three-pair trigger reconciliation and queue growth
                # plus public trigger enter/stay/leave lifecycle
                # plus the grounded controller's short-probe simulation assertion
                # previous 2,248 plus dynamic getLinearDamping observation (phys_fn_000050)
@@ -5498,13 +5502,15 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1061  # plus three-pair trigger reconciliation and queue growth
+    '6' = 1062  # plus compound-trigger per-shape enter/stay/leave lifecycle
+               # plus three-pair trigger reconciliation and queue growth
                # plus public trigger enter/stay/leave lifecycle
                # plus the grounded controller's short-probe simulation assertion
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1377  # plus three-pair trigger reconciliation and queue growth
+    '7' = 1378  # plus compound-trigger per-shape enter/stay/leave lifecycle
+               # plus three-pair trigger reconciliation and queue growth
                # plus public trigger enter/stay/leave lifecycle
                # previous 1,374 plus the already-grounded short downward controller probe
                # previous 1,365 plus five mixed solver-kind interaction assertions

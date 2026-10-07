@@ -219,6 +219,40 @@ class NxSimulationTriggerBatchReport : public NxUserTriggerReport
 		}
 	};
 
+class NxSimulationCompoundTriggerReport : public NxUserTriggerReport
+	{
+	public:
+	NxShape* triggers[2];
+	NxShape* other;
+	unsigned eventCounts[2][3];
+	unsigned calls;
+	unsigned badShapes;
+	NxSimulationCompoundTriggerReport(NxShape* const* triggerShapes, NxShape* otherShape)
+		: other(otherShape), calls(0), badShapes(0)
+		{
+		memset(eventCounts, 0, sizeof(eventCounts));
+		triggers[0] = triggerShapes[0];
+		triggers[1] = triggerShapes[1];
+		}
+	virtual void onTrigger(NxShape& trigger, NxShape& otherShape, NxTriggerFlag event)
+		{
+		unsigned triggerIndex = 2;
+		for(unsigned index = 0; index != 2; ++index)
+			if(&trigger == triggers[index])
+				triggerIndex = index;
+		const unsigned eventIndex = event == NX_TRIGGER_ON_ENTER ? 0 :
+			event == NX_TRIGGER_ON_STAY ? 1 : event == NX_TRIGGER_ON_LEAVE ? 2 : 3;
+		if(triggerIndex == 2 || &otherShape != other || eventIndex == 3)
+			++badShapes;
+		else
+			++eventCounts[triggerIndex][eventIndex];
+		++calls;
+		printf("simulation trigger-compound event=%u trigger=%u other=%u\n",
+			static_cast<unsigned>(event), triggerIndex,
+			&otherShape == other);
+		}
+	};
+
 class NxSimulationContactReport : public NxUserContactReport
 	{
 	public:
@@ -593,6 +627,70 @@ int wmain(int argc, wchar_t** argv)
 	sdk->releaseScene(*triggerBatchScene);
 	if(!triggerBatchExact)
 		return nxFail("multi-pair trigger lifecycle did not match the public contract");
+	// Two trigger shapes on one actor must retain separate overlap pairs even
+	// when both shapes overlap the same dynamic actor.
+	NxSceneDesc triggerCompoundSceneDesc;
+	triggerCompoundSceneDesc.setToDefault();
+	NxScene* const triggerCompoundScene = sdk->createScene(triggerCompoundSceneDesc);
+	if(!triggerCompoundScene)
+		return nxFail("compound trigger scene creation failed");
+	triggerCompoundScene->setGravity(NxVec3(0.0f, 0.0f, 0.0f));
+	triggerCompoundScene->setTiming(0.01f, 1, NX_TIMESTEP_VARIABLE);
+	NxBoxShapeDesc compoundTriggerShapeDescs[2];
+	for(unsigned index = 0; index != 2; ++index)
+		{
+		compoundTriggerShapeDescs[index].dimensions = NxVec3(1.0f, 1.0f, 1.0f);
+		compoundTriggerShapeDescs[index].shapeFlags |= NX_TRIGGER_ENABLE;
+		}
+	NxActorDesc compoundTriggerActorDesc;
+	compoundTriggerActorDesc.shapes.pushBack(&compoundTriggerShapeDescs[0]);
+	compoundTriggerActorDesc.shapes.pushBack(&compoundTriggerShapeDescs[1]);
+	NxActor* const compoundTriggerActor =
+		triggerCompoundScene->createActor(compoundTriggerActorDesc);
+	NxSphereShapeDesc compoundOtherShapeDesc;
+	compoundOtherShapeDesc.radius = 0.25f;
+	NxBodyDesc compoundOtherBodyDesc;
+	NxActorDesc compoundOtherActorDesc;
+	compoundOtherActorDesc.body = &compoundOtherBodyDesc;
+	compoundOtherActorDesc.density = 1.0f;
+	compoundOtherActorDesc.shapes.pushBack(&compoundOtherShapeDesc);
+	NxActor* const compoundOtherActor =
+		triggerCompoundScene->createActor(compoundOtherActorDesc);
+	if(!compoundTriggerActor || !compoundOtherActor)
+		return nxFail("compound trigger actor creation failed");
+	NxShape* const compoundTriggerShapes[] = {
+		compoundTriggerActor->getShapes()[0], compoundTriggerActor->getShapes()[1]
+		};
+	NxSimulationCompoundTriggerReport compoundTriggerReport(
+		compoundTriggerShapes, compoundOtherActor->getShapes()[0]);
+	triggerCompoundScene->setUserTriggerReport(&compoundTriggerReport);
+	bool triggerCompoundFetched = true;
+	for(unsigned step = 0; step != 3 && triggerCompoundFetched; ++step)
+		{
+		triggerCompoundScene->simulate(0.01f);
+		triggerCompoundFetched = triggerCompoundScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		}
+	compoundOtherActor->setGlobalPosition(NxVec3(4.0f, 0.0f, 0.0f));
+	if(triggerCompoundFetched)
+		{
+		triggerCompoundScene->simulate(0.01f);
+		triggerCompoundFetched =
+			triggerCompoundScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		}
+	bool triggerCompoundExact = triggerCompoundFetched &&
+		compoundTriggerReport.calls == 6 && compoundTriggerReport.badShapes == 0;
+	for(unsigned trigger = 0; trigger != 2; ++trigger)
+		for(unsigned event = 0; event != 3; ++event)
+			triggerCompoundExact = triggerCompoundExact &&
+				compoundTriggerReport.eventCounts[trigger][event] == 1;
+	printf("simulation trigger-compound summary fetched=%u calls=%u bad_shapes=%u exact=%u\n",
+		triggerCompoundFetched, compoundTriggerReport.calls,
+		compoundTriggerReport.badShapes, triggerCompoundExact);
+	triggerCompoundScene->releaseActor(*compoundOtherActor);
+	triggerCompoundScene->releaseActor(*compoundTriggerActor);
+	sdk->releaseScene(*triggerCompoundScene);
+	if(!triggerCompoundExact)
+		return nxFail("compound trigger lifecycle did not match the public contract");
 	// A public mesh factory smoke case. The oracle accepts this valid two-face
 	// descriptor; keeping it in the simulation corpus ensures a rebuilt mesh can
 	// become the next real static-contact fixture rather than remaining an
