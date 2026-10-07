@@ -5302,13 +5302,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": "Physics/src/Scene.cpp#nxSceneProcessTriggerPairs",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpScene.cpp#NpScene::NpScene",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/97",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/998",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSceneConstructorTests is registered in Phase 7 and checks the NpScene internal-scene back-link at wrapper +0x24 immediately after NxPhysicsSDK::createScene. The oracle and clean candidate both report internal_link=1 (stdout_delta=0, stderr_exact=True). In a throwaway source mutation replacing `mScene = scene` with `mScene = 0`, the candidate reports internal_link=0 and exits 1; the registered differential catches it with stdout_delta=2 while both DLL identities are reported. After byte-exact restoration and rebuild, the clean differential returns stdout_delta=0, stderr_exact=True. Evidence: evidence/phase6-joints.md, Phase 7 Scene constructor addendum.",
+      "notes": "Constructor mapping verified against the pinned image at RVA 0x0000c310 and candidate map; the source correspondence previously pointed to an unrelated trigger-pair function."
     },
     {
       "id": "phys_fn_000286",

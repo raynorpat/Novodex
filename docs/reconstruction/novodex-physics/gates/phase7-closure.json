@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 13 functions are closed, 299 reconstructed functions remain unfalsified, 249 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 14 functions are closed, 299 reconstructed functions remain unfalsified, 248 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
@@ -19,9 +19,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 13,
+    "differential_falsified": 14,
     "deferred_reconstructed_not_falsified": 299,
-    "deferred_not_reconstructed_in_phase": 249
+    "deferred_not_reconstructed_in_phase": 248
   },
   "closed": [
     {
@@ -153,6 +153,16 @@
         "mutation": "In a throwaway git-archive copy of committed HEAD 34ecced5, changed the coherent public broad-phase selector mapping in nxSceneApplyDescriptorFlags from engine mode 3 to 2, rebuilt NxPhysics and NxPhysicsSimulationTests, then ran the registered Phase 7 staged-pair differential against the pinned oracle. The oracle reported selector=2 mode=3 while the mutant reported mode=2; both exited 0 and stderr matched exactly.",
         "detected": "stdout_delta=2"
       }
+    },
+    {
+      "id": "phys_fn_000285",
+      "rva": "0x0000c310",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneConstructorTests",
+      "falsification": {
+        "mutation": "In a throwaway source mutation of NpScene::NpScene, replaced `mScene = scene` with `mScene = 0`, rebuilt NxPhysics, and ran the registered Phase 7 staged-pair differential against the pinned DLL. The oracle reported `scene constructor internal_link=1`; the mutant reported `internal_link=0`, exited 1, and emitted its staged module identities. After restoring the source byte for byte and rebuilding, oracle and candidate both reported `internal_link=1`, exited 0, and matched exactly.",
+        "detected": "stdout_delta=2"
+      }
     }
   ],
   "deferred": [
@@ -171,14 +181,6 @@
       "size": 31,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000285",
-      "rva": "0x0000c310",
-      "size": 216,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
       "driving_phases": []
     },
     {

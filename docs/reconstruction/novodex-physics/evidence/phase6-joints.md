@@ -9315,3 +9315,14 @@ git-archive copy of HEAD `34ecced5`, changing the coherent selector mapping
 from engine mode 3 to 2 is caught by the same staged-pair differential:
 `phys_fn_000544 stdout_delta=2`. The focused evidence is in
 `evidence/phase7-broadphase-selector-000544.md`.
+
+
+## Phase 7 Scene constructor addendum — `phys_fn_000285`
+
+The pinned image at RVA `0x0000c310` is `NpScene::NpScene(NxSceneInternal*)`; its constructor stores the argument at wrapper offset `+0x24`. The candidate map places the constructor in `Physics/src/NpScene.cpp`. The inventory had incorrectly named an unrelated trigger-pair function, so this row now points to the constructor implementation.
+
+`NxPhysicsSceneConstructorTests` creates one empty scene through the public SDK, reads the wrapper back-link at `+0x24`, and requires `scene constructor internal_link=1`. It uses the common isolated pair loader and reports both module identities. The pinned oracle and clean candidate both pass with `stdout_delta=0` and `stderr_exact=True` (`build/scene-285-clean-differential.log`).
+
+For falsification, replaced `mScene = scene` with `mScene = 0` in a temporary source mutation, rebuilt NxPhysics, and ran the registered staged-pair differential. The mutant reported `internal_link=0`, exited 1, and still reported both staged DLL identities; the oracle reported `internal_link=1`. The registered differential caught the mutation with `stdout_delta=2` (`build/scene-285-mutant-differential.log`). Restored `NpScene.cpp` byte for byte, rebuilt, and reran the clean differential successfully.
+
+Closure measurement: `phys_fn_000285` was caught by the constructor back-link mutation (`stdout_delta=2`); after restoration its registered clean differential passed (`stdout_delta=0`, `stderr_exact=True`).
