@@ -413,3 +413,10 @@ All mutant processes exited zero with exact stderr. Each source was restored
 byte-for-byte, rebuilt, and its clean target returned to `stdout_delta=0` with
 exact stderr. Full evidence: `evidence/phase5-actor-accessor-mutations.md`.
 - Mutation index: `phys_fn_000096` `stdout_delta=56`; `phys_fn_000098` `stdout_delta=56`; `phys_fn_000100` `stdout_delta=58`; `phys_fn_000102` `stdout_delta=2`; `phys_fn_000104` `stdout_delta=2`; `phys_fn_000106` `stdout_delta=2`; `phys_fn_000108` `stdout_delta=4`.
+
+
+## Box mass-frame builder — `phys_fn_000829`
+
+The registered `NxPhysicsShapeVtableTests` mass-frame differential covers nine box extent sets. The baseline reports `cases=201 failures=0` (`build/shape-vtable-000829-baseline.log`). A throwaway archive mutation changed the xx diagonal sum from `zz + yy` to `zz - yy`; the target reported eight mismatches, while box-sweep and box-hull sections remained exact (`build/shape-vtable-000829-mutation.log`).
+
+`phys_fn_000829` mutation detection: `mismatches=8`. Full details: `evidence/phase5-box-massframe-000829.md`.

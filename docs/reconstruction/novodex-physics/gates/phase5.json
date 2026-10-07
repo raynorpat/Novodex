@@ -6,10 +6,10 @@
   "closure_ledger": "gates/phase5-closure.json",
   "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
   "evidence_commit": "6965e505f86ac15d1c35d2cd471f6544e42fb71d",
-  "note": "The full Phase 5 regression gate passes all 17 staged targets, static/oracle proofs, and 2,260/2,260 coverage assertions on the current continuation build. Thirty-eight actor damping, sleep, wake, body-flag, group-accessor, dynamic-state, center-of-mass, inertia, velocity/momentum, orientation-quaternion, saveToDesc, saveBodyToDesc, point-velocity, force/torque, createShape, releaseShape, mass-update, and setDynamic rows plus the base-shape sweep stub are independently mutation-falsified on target lines driven by registered tests; the current closure ledger is 55 closed / 150 deferred. The phase remains pending until all owned rows are closed.",
+  "note": "The full Phase 5 regression gate passes all 17 staged targets, static/oracle proofs, and 2,264/2,264 coverage assertions on the isolated clean verification build. Actor accessors, shape-vtable behavior, and the box mass-frame builder are independently mutation-falsified on registered tests; the current closure ledger is 56 closed / 149 deferred. The phase remains pending until all owned rows are closed.",
   "counts": {
-    "closed": 55,
-    "deferred": 150
+    "closed": 56,
+    "deferred": 149
   },
   "gate_sequence": [
     {
@@ -20,12 +20,12 @@
     {
       "name": "validate_inventory",
       "command": "python -B docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json",
-      "result": "inventory=pass; Phase 5 closure 55 closed / 150 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0"
+      "result": "inventory=pass; Phase 5 closure 56 closed / 149 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0."
     },
     {
       "name": "build_and_phase_gate",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 5",
-      "result": "Fresh Win32 Release Phase 5 gate passed: all 17 staged-pair targets, static/oracle proofs, and 2,260/2,260 coverage assertions; phase_gate=5 status=pass (build/phase5-actor-accessors-final.log)."
+      "result": "Fresh isolated Win32 Release Phase 5 gate passed: all 17 staged-pair targets, static/oracle proofs, and 2,264/2,264 coverage assertions; phase_gate=5 status=pass (build/phase5-verify-000829.log)."
     },
     {
       "name": "viewer_all_scenes",
