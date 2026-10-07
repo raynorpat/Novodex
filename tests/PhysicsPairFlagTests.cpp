@@ -27,6 +27,15 @@ static unsigned nxPairObjectLabel(const void* object, const NxActor* actor0, con
 	return 255;
 	}
 
+static unsigned nxPairActorRootId(const NxActor* actor)
+	{
+	const unsigned char* const body = *reinterpret_cast<unsigned char* const*>(
+		reinterpret_cast<const unsigned char*>(actor) + 0x14);
+	const unsigned char* const root = body
+		? *reinterpret_cast<unsigned char* const*>(body + 0x10) : 0;
+	return root ? *reinterpret_cast<const unsigned*>(root + 0xd4) : 0xffffffffu;
+	}
+
 struct NxPairFlagHeldSceneWriteLock
 	{
 	void* link;
@@ -170,6 +179,35 @@ int wmain(int argc, wchar_t** argv)
 		releasedPairCount, releasedPairArray ? 1u : 0u);
 
 	sdk->releaseScene(*scene);
+
+	// Actor-pair flags are keyed by root shape IDs. Keep this reuse regression
+	// in its own scene so no earlier pair records can mask the release behavior.
+	NxScene* reuseScene = sdk->createScene(sceneDesc);
+	if(!reuseScene)
+		return nxFail("pair-flag ID-reuse scene creation failed");
+	NxActor* reuseGround = reuseScene->createActor(groundDesc);
+	NxSphereShapeDesc recycleSphere;
+	recycleSphere.radius = 0.25f;
+	NxActorDesc recycleDesc;
+	recycleDesc.body = &body;
+	recycleDesc.density = 1.0f;
+	recycleDesc.shapes.pushBack(&recycleSphere);
+	NxActor* recycled = reuseScene->createActor(recycleDesc);
+	if(!reuseGround || !recycled)
+		return nxFail("pair-flag recycle actor creation failed");
+	const unsigned recycledRootId = nxPairActorRootId(recycled);
+	reuseScene->setActorPairFlags(*reuseGround, *recycled, NX_IGNORE_PAIR);
+	reuseScene->releaseActor(*recycled);
+	NxActor* replacement = reuseScene->createActor(recycleDesc);
+	if(!replacement)
+		return nxFail("pair-flag replacement actor creation failed");
+	const NxU32 replacementFlags = reuseScene->getActorPairFlags(*reuseGround, *replacement);
+	printf("pairflag released_id_reused old_id=%u new_id=%u flags=%08x\n",
+		recycledRootId, nxPairActorRootId(replacement), replacementFlags);
+	if(replacementFlags != 0)
+		return nxFail("stale actor-pair flags survived root ID reuse");
+	reuseScene->releaseActor(*replacement);
+	sdk->releaseScene(*reuseScene);
 	sdk->release();
 	status = nxReportPairIdentity(pairDirectory);
 	FreeLibrary(physics);

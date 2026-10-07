@@ -3573,40 +3573,21 @@ static unsigned char* nxActorShapeFactory(const NxShapeDesc* descriptor, unsigne
 				unsigned char* npScene = scene->at<unsigned char*>(0x6cc);
 				*reinterpret_cast<unsigned*>(handle + 0x10) = *reinterpret_cast<unsigned*>(npScene + 0xc);
 				*reinterpret_cast<unsigned*>(handle + 0x14) = *reinterpret_cast<unsigned*>(npScene + 0x10);
-				}
-			}
-		}
-	else if(type == NX_SHAPE_MESH)
-		{
-		void* memory = nxFoundationSDKAllocator->malloc(sizeof(MeshShape), NX_MEMORY_PERSISTENT);
-		if(memory)
-			{
-			shape = nxRuntimeShapeConstruct(memory, sizeof(MeshShape), type, body, id);
-			MeshShape* meshShape = reinterpret_cast<MeshShape*>(shape);
-			void* handle = *reinterpret_cast<void**>(shape + 0x9c);
-			if(handle)
-				{
-				// Runtime shapes are built from the verified raw-allocation path above.
-				// Construct the embedded hook member so the recovered deleting dtor can
-				// tear it down, then install the public family table and back-pointers.
-				new(handle) CollisionObject(shape);
-				*reinterpret_cast<void**>(handle) = nxShapePublicVtable(type);
-				*reinterpret_cast<void**>(static_cast<unsigned char*>(handle) + 8) = shape;
-				*reinterpret_cast<void**>(static_cast<unsigned char*>(handle) + 0x18) = shape;
-				}
-			const bool loaded = handle && meshShape->nxMeshLoadFromDesc(descriptor);
-			if(!loaded)
-				{
-				meshShape->nxMeshScalarDeletingDtor(0);
-				nxFoundationSDKAllocator->free(meshShape);
-				shape = 0;
-				}
-			else
-				{
-				unsigned char* npScene = scene->at<unsigned char*>(0x6cc);
-				unsigned char* handleBytes = static_cast<unsigned char*>(handle);
-				*reinterpret_cast<unsigned*>(handleBytes + 0x10) = *reinterpret_cast<unsigned*>(npScene + 0xc);
-				*reinterpret_cast<unsigned*>(handleBytes + 0x14) = *reinterpret_cast<unsigned*>(npScene + 0x10);
+				if(type == NX_SHAPE_MESH)
+					{
+					// Row 000032's case 4 increments Scene+0x10 and reserves
+					// the scene's mesh-work buffers for the larger internal mesh count.
+					++scene->at<unsigned>(0x10);
+					const unsigned char* const mesh =
+						*reinterpret_cast<unsigned char**>(shape + 0xe0);
+					if(mesh)
+						{
+						const unsigned vertices = *reinterpret_cast<const unsigned*>(mesh + 8);
+						const unsigned triangles = *reinterpret_cast<const unsigned*>(mesh + 0x0c);
+						nxSceneUpdateActorCount(scene,
+							vertices > triangles ? vertices : triangles);
+						}
+					}
 				}
 			}
 		}

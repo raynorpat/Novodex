@@ -152,6 +152,66 @@ int wmain(int argc, wchar_t** argv)
 	NxActorDesc groundDesc;
 	groundDesc.shapes.pushBack(&meshShape);
 	NxActor* const ground = scene->createActor(groundDesc);
+	if(ground)
+		{
+		// phys_fn_000032's mesh arm increments Scene+0x10 and reserves its
+		// mesh-work buffers from the internal mesh's +8/+0c counts.
+		const unsigned char* const groundBytes =
+			reinterpret_cast<const unsigned char*>(ground);
+		const unsigned char* const groundBody =
+			*reinterpret_cast<unsigned char* const*>(groundBytes + 0x14);
+		const unsigned char* const sceneInternal =
+			*reinterpret_cast<unsigned char* const*>(groundBody + 4);
+		const unsigned char* const meshRoot =
+			*reinterpret_cast<unsigned char* const*>(groundBody + 0x10);
+		const unsigned char* const meshInternal =
+			*reinterpret_cast<unsigned char* const*>(meshRoot + 0xe0);
+		printf("simulation mesh-factory scene_meshes=%u buffer_capacity=%u mesh_counts=%u.%u\n",
+			*reinterpret_cast<const unsigned*>(sceneInternal + 0x10),
+			*reinterpret_cast<const unsigned*>(sceneInternal + 4),
+			*reinterpret_cast<const unsigned*>(meshInternal + 8),
+			*reinterpret_cast<const unsigned*>(meshInternal + 0x0c));
+		}
+	NxPoint largeMeshVertices[900];
+	NxU32 largeMeshTriangles[900];
+	for(NxU32 triangle = 0; triangle < 300; ++triangle)
+		{
+		const NxReal x = static_cast<NxReal>(triangle) * 3.0f;
+		largeMeshVertices[triangle * 3] = NxPoint(x, 0.0f, 0.0f);
+		largeMeshVertices[triangle * 3 + 1] = NxPoint(x + 1.0f, 0.0f, 0.0f);
+		largeMeshVertices[triangle * 3 + 2] = NxPoint(x, 0.0f, 1.0f);
+		largeMeshTriangles[triangle * 3] = triangle * 3;
+		largeMeshTriangles[triangle * 3 + 1] = triangle * 3 + 1;
+		largeMeshTriangles[triangle * 3 + 2] = triangle * 3 + 2;
+		}
+	NxTriangleMeshDesc largeMeshDesc;
+	largeMeshDesc.numVertices = 900;
+	largeMeshDesc.numTriangles = 300;
+	largeMeshDesc.pointStrideBytes = sizeof(NxPoint);
+	largeMeshDesc.triangleStrideBytes = 3 * sizeof(NxU32);
+	largeMeshDesc.points = largeMeshVertices;
+	largeMeshDesc.triangles = largeMeshTriangles;
+	NxTriangleMesh* const largeMesh = sdk->createTriangleMesh(largeMeshDesc);
+	if(!largeMesh)
+		return nxFail("large triangle-mesh creation failed");
+	NxTriangleMeshShapeDesc largeMeshShape;
+	largeMeshShape.meshData = largeMesh;
+	NxActorDesc largeGroundDesc;
+	largeGroundDesc.globalPose.t = NxVec3(10000.0f, 0.0f, 0.0f);
+	largeGroundDesc.shapes.pushBack(&largeMeshShape);
+	NxActor* const largeGround = scene->createActor(largeGroundDesc);
+	if(!largeGround)
+		return nxFail("large mesh actor creation failed");
+	const unsigned char* const largeBody = *reinterpret_cast<unsigned char* const*>(
+		reinterpret_cast<const unsigned char*>(largeGround) + 0x14);
+	const unsigned char* const largeScene = *reinterpret_cast<unsigned char* const*>(largeBody + 4);
+	const unsigned char* const largeRoot = *reinterpret_cast<unsigned char* const*>(largeBody + 0x10);
+	const unsigned char* const largeInternal = *reinterpret_cast<unsigned char* const*>(largeRoot + 0xe0);
+	printf("simulation mesh-factory-large scene_meshes=%u buffer_capacity=%u mesh_counts=%u.%u\n",
+		*reinterpret_cast<const unsigned*>(largeScene + 0x10),
+		*reinterpret_cast<const unsigned*>(largeScene + 4),
+		*reinterpret_cast<const unsigned*>(largeInternal + 8),
+		*reinterpret_cast<const unsigned*>(largeInternal + 0x0c));
 	NxSphereShapeDesc sphereShape;
 	sphereShape.radius = 0.5f;
 	NxBodyDesc bodyDesc;
@@ -489,6 +549,8 @@ int wmain(int argc, wchar_t** argv)
 	fflush(stdout);
 
 	sdk->setActorGroupPairFlags(7, 3, 0);
+	scene->releaseActor(*largeGround);
+	sdk->releaseTriangleMesh(*largeMesh);
 	scene->releaseActor(*smoothHeightfieldActor);
 	sdk->releaseTriangleMesh(*smoothHeightfieldMesh);
 	scene->releaseActor(*heightfieldActor);

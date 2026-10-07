@@ -1,5 +1,20 @@
 # NxPhysics completion project plan from main
 
+### Continuation — Phase 5 actor teardown and mesh shape factory (2026-10-07)
+
+Closed `phys_fn_000030` with the actor-root deletion mutation and `phys_fn_000032`
+with the mesh-factory bookkeeping mutation. The mesh arm now increments the
+scene mesh count and reserves mesh-work buffers from the internal vertex and
+triangle counts; its large-mesh differential verifies capacity growth from 256
+to 1,024. The Phase 5 registry includes `NxPhysicsMeshSimulationTests`; Phase 5
+passes all 15 targets, Phase 7 passes all 11, and all 56 Viewer CTest selections
+pass across all 39 scenes (51 pass; five pinned-oracle asset cases skip).
+Inventory validation reports 6,338 functions, 5,138 data objects, and zero
+unexplained; two Phase 5 rows remain unreconstructed. The full Release build's
+unrelated `NxPhysicsCollisionTests` target still fails to link
+`nxInternalMeshBuildTopology`, while the `NxPhysics` DLL and Viewer targets
+build. Public Physics headers remain unchanged.
+
 ### Continuation — reverse strided range helper (2026-10-06)
 
 Reconstructed the 49-byte `phys_fn_000002` (`0x1030`) in

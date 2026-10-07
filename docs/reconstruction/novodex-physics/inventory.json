@@ -610,13 +610,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp#nxActorDestroy",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/16",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/71",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at 0x10001c40 (RVA 0x1c40, 403 bytes): releases the public actor wrapper, unregisters the body name, removes the actor root from the scene, copies the dynamic body's pose back to the body, removes and notifies the body record, calls DynamicBody::destruct and frees the record, recycles the actor ID, clears root-keyed pair records, then deletes the root. Scene.cpp nxActorDestroy follows that order; root-pair cleanup is performed by the root's base-shape destructor through NxSceneRemoveOwnerPairRecords.",
+      "dynamic_proof": "NxPhysicsActorLifecycleTests, NxPhysicsActorShapeMutationTests, and NxPhysicsEffectorTests pass against the shipped pair; the root-delete mutation in nxActorDestroy was detected by NxPhysicsActorShapeMutationTests (stdout_delta=12, both processes exit 0, exact stderr; build/phase5-actor-destroy-root-mutation.log). NxPhysicsPairFlagTests additionally verifies actor-pair flags clear when a released actor's root ID is reused (old_id=1, new_id=1, flags=00000000; build/phase5-pair-cleanup-final-diff.log).",
+      "notes": "The existing helpers own the row's body-record, scene-registration, name, pair-hash and root-deletion suboperations; no public Physics header changed."
     },
     {
       "id": "phys_fn_000031",
@@ -646,13 +646,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp#nxActorShapeFactory",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/17",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/78",
-      "static_proof": "Partial: Ghidra shows the per-shape-type constructor, descriptor load and public handle allocation. The candidate's factory initializes local pose, composes owner world pose, refreshes it after dynamic record construction, installs reconstructed internal final tables for plane/sphere/box/capsule, and copies their basic descriptor fields. Full constructor and descriptor branches remain open.",
-      "dynamic_proof": "Public actor creation probes compare default and rotated shape poses, four internal final-table self-return and center/extent slots, common public shape-handle getters, sphere/capsule public geometry getters, and descriptor fields including the plane tangent basis on the pinned oracle and candidate.",
-      "notes": "The single-mesh actor arm now allocates the 0xe8 runtime shape, loads through MESH slot 12, exposes a type-4 public handle, and releases through MESH slot 0. Compound type 5 and other full shape-family branches remain open."
+      "static_proof": "IDA at RVA 0x1de0 has a five-case switch for shape types 0..4 with allocation sizes 0x10c, 0xe4, 0x228, 0xec and 0xe8; each family constructor installs its table and slot 12 loads the descriptor. Failed loads or missing public handles take slot 0 with delete flag 1 and recycle the allocated shape ID. Successful handles receive the NpScene lock links, shapes receive Scene+0x540-1, and the mesh arm increments Scene+0x10 and calls the Scene buffer reserve row for max(mesh+8, mesh+0xc). The candidate implements these arms through nxActorShapeFactory and nxRuntimeShapeLoad; type 5 and above follow the oracle default failure path.",
+      "dynamic_proof": "The registered NxPhysicsMeshSimulationTests staged-pair differential covers ordinary, trigger, transformed, and heightfield mesh actors plus the factory side effects. The small-mesh case reports scene_meshes=1 and capacity=256; a 900-vertex mesh reports scene_meshes=2 and capacity=1024. Oracle and candidate transcripts match exactly after the row fix.",
+      "notes": "Whole-row mutation falsification is recorded in the Phase 5 closure ledger."
     },
     {
       "id": "phys_fn_000033",
