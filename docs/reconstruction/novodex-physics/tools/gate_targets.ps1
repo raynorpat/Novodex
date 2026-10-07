@@ -14,7 +14,7 @@ $NxPhaseTestTargets = [ordered] @{
     '3' = @('NxPhysicsBodyCreationTests', 'NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests', 'NxPhysicsPMapResolution80Tests')
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsSimulationTests', 'NxPhysicsMeshSimulationTests')
-    '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests')
+    '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsSimulationTests')
     '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
     '8' = @()
 }
@@ -3137,6 +3137,12 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation stage=distance10 position=40800000.3fffffff.00000000 velocity=00000000.2c400000.00000000'
         'simulation stage=distance11 position=40800000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
         'simulation distance-joint steps=12 ready=1 fetched=1'
+        # Mixed fixed-kind-3 and distance-kind-1 rows share a public simulation island.
+        'simulation stage=jointmix1_0 position=41800000.40bfdfdb.00000000 velocity=2cda6348.be48e4a1.00000000'
+        'simulation stage=jointmix1_1 position=41900000.40bfdfda.00000000 velocity=00000000.be48e8a7.00000000'
+        'simulation stage=jointmix11_0 position=417fffbc.40b7c053.00000000 velocity=371c4e36.c009f0b5.00000000'
+        'simulation stage=jointmix11_1 position=4190001c.40b7ae1e.00000000 velocity=b53ed7ae.c00a1fd9.00000000'
+        'simulation solver-interaction fixed-distance steps=12 ready=1 fetched=1'
         # Exercise the kind-2 D6 swing row with every projection field
         # explicitly initialized; setToDefault leaves those fields untouched.
         'simulation d6-swing-limit final orientation=00000000.3effffff.00000000.3f5db3d7 angular=00000000.00000000.00000000'
@@ -5453,7 +5459,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 260  # previous 259 plus the isolated density-80 PMap compute result
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2244  # previous 2,241 plus three auxiliary shape registration checks
+    '5' = 2249  # previous 2,244 plus five mixed solver-kind interaction assertions
+               # previous 2,241 plus three auxiliary shape registration checks
                # previous 2,238 plus three auxiliary record registration checks
                # previous 2,237 plus actor descriptor userData initialization
                # previous 2,226 plus the mesh factory's 11 registered diagnostics
@@ -5464,9 +5471,11 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
+    '6' = 1056  # previous 867 plus the public joint/contact simulation corpus (189 assertions)
+               # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1365  # previous 1,364 plus the 1,000-step multi-body stack soak
+    '7' = 1370  # previous 1,365 plus five mixed solver-kind interaction assertions
+               # previous 1,364 plus the 1,000-step multi-body stack soak
                # (free-space, actor pose, obstacle/group filter, vertical, grounded step, trigger, overlap)
     '8' = 0
 }

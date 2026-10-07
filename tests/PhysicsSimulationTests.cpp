@@ -1324,6 +1324,67 @@ int wmain(int argc, wchar_t** argv)
 		nxFloatBits(d6SwingAngularVelocity.z));
 	sdk->releaseScene(*d6SwingScene);
 
+	// Exercise two different joint solver kinds in one connected island: a
+	// fixed anchor on the first body and a minimum-distance row to the second.
+	NxSceneDesc mixedJointSceneDesc;
+	mixedJointSceneDesc.setToDefault();
+	mixedJointSceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
+	NxScene* mixedJointScene = sdk->createScene(mixedJointSceneDesc);
+	if(!mixedJointScene) return nxFail("mixed-joint scene creation failed");
+	mixedJointScene->setTiming(0.02f, 1, NX_TIMESTEP_FIXED);
+	NxSphereShapeDesc mixedJointSphere;
+	mixedJointSphere.radius = 0.1f;
+	NxBodyDesc mixedJointBody0;
+	NxActorDesc mixedJointActorDesc0;
+	mixedJointActorDesc0.body = &mixedJointBody0;
+	mixedJointActorDesc0.density = 1.0f;
+	mixedJointActorDesc0.globalPose.t = NxVec3(16.0f, 6.0f, 0.0f);
+	mixedJointActorDesc0.shapes.pushBack(&mixedJointSphere);
+	NxActor* const mixedJointActor0 = mixedJointScene->createActor(mixedJointActorDesc0);
+	NxBodyDesc mixedJointBody1;
+	NxActorDesc mixedJointActorDesc1;
+	mixedJointActorDesc1.body = &mixedJointBody1;
+	mixedJointActorDesc1.density = 1.0f;
+	mixedJointActorDesc1.globalPose.t = NxVec3(18.0f, 6.0f, 0.0f);
+	mixedJointActorDesc1.shapes.pushBack(&mixedJointSphere);
+	NxActor* const mixedJointActor1 = mixedJointScene->createActor(mixedJointActorDesc1);
+	if(!mixedJointActor0 || !mixedJointActor1)
+		return nxFail("mixed-joint actor creation failed");
+	NxFixedJointDesc mixedFixedDesc;
+	mixedFixedDesc.setToDefault();
+	mixedFixedDesc.actor[0] = mixedJointActor0;
+	mixedFixedDesc.actor[1] = 0;
+	setGlobalAnchor(mixedFixedDesc, NxVec3(16.0f, 6.0f, 0.0f));
+	setGlobalAxis(mixedFixedDesc, NxVec3(0.0f, 0.0f, 1.0f));
+	if(!mixedJointScene->createJoint(mixedFixedDesc))
+		return nxFail("mixed-joint fixed constraint creation failed");
+	NxDistanceJointDesc mixedDistanceDesc;
+	mixedDistanceDesc.setToDefault(false);
+	mixedDistanceDesc.actor[0] = mixedJointActor1;
+	mixedDistanceDesc.actor[1] = mixedJointActor0;
+	setGlobalAnchor(mixedDistanceDesc, NxVec3(16.0f, 6.0f, 0.0f));
+	mixedDistanceDesc.minDistance = 1.0f;
+	mixedDistanceDesc.maxDistance = 1.0f;
+	mixedDistanceDesc.flags = NX_DJF_MIN_DISTANCE_ENABLED | NX_DJF_MAX_DISTANCE_ENABLED;
+	if(!mixedJointScene->createJoint(mixedDistanceDesc))
+		return nxFail("mixed-joint distance constraint creation failed");
+	for(unsigned step = 0; step != 12; ++step)
+		{
+		mixedJointScene->simulate(0.02f);
+		const bool ready = mixedJointScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+		const bool fetched = mixedJointScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		if(!ready || !fetched)
+			return nxFail("mixed-joint simulation result was not ready and fetched");
+		char stage0[24];
+		char stage1[24];
+		sprintf_s(stage0, "jointmix%u_0", step);
+		sprintf_s(stage1, "jointmix%u_1", step);
+		nxPrintActorState(stage0, *mixedJointActor0);
+		nxPrintActorState(stage1, *mixedJointActor1);
+		}
+	printf("simulation solver-interaction fixed-distance steps=12 ready=1 fetched=1\n");
+	sdk->releaseScene(*mixedJointScene);
+
 	NxPlaneShapeDesc groundPlane;
 	groundPlane.normal = NxVec3(0.0f, 1.0f, 0.0f);
 	groundPlane.d = 0.0f;
