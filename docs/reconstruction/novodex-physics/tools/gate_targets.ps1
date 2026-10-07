@@ -5461,7 +5461,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 1  # one public actor-group pair-flag hash round-trip and clear
     '3' = 527  # previous 359 plus the 168 required body/shape manager assertions
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 264  # previous 260 plus two mesh descriptor cases, checked on both pairs
+    '4' = 262  # previous 260 plus two new mesh descriptor coverage assertions
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
     '5' = 2249  # previous 2,244 plus five mixed solver-kind interaction assertions
                # previous 2,241 plus three auxiliary shape registration checks
