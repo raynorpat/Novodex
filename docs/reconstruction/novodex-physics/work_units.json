@@ -21,14 +21,14 @@
     "phys_fn_000022"
    ],
    "rows": {
-    "discovered": 2,
+    "discovered": 1,
     "dynamically_gated": 1,
-    "reconstructed": 10
+    "reconstructed": 11
    },
    "bytes": {
-    "discovered": 97,
+    "discovered": 48,
     "dynamically_gated": 157,
-    "reconstructed": 1837
+    "reconstructed": 1886
    },
    "phases": {
     "2": 4,

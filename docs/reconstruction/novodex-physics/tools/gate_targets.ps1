@@ -30,7 +30,7 @@ $NxPhaseStaticProofTargets = [ordered] @{
     '2' = @('NxPhysicsInternalTests')
     '3' = @()
     '4' = @()
-    '5' = @()
+    '5' = @('NxPhysicsRangeIterationTests')
     '6' = @()
     '7' = @()
     '8' = @()
@@ -5508,7 +5508,8 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsSDKTests'
 )
 $NxRegisteredStaticProofTargets = @(
-    'NxPhysicsInternalTests'
+    'NxPhysicsInternalTests',
+    'NxPhysicsRangeIterationTests'
 )
 $NxRegisteredOracleDifferentialTargets = @(
     'NxPhysicsAssetTests',

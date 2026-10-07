@@ -1,5 +1,17 @@
 # NxPhysics completion project plan from main
 
+### Continuation — reverse strided range helper (2026-10-06)
+
+Reconstructed the 49-byte `phys_fn_000002` (`0x1030`) in
+`Physics/src/RecoveredRows.cpp`. Its Phase 5 static proof checks reverse
+iteration order, negative stride, zero-count return, and the final callback
+result. The function is retained in the Release DLL map as
+`_phys_fn_000002@16`. Inventory and work-unit rollups now record the row as
+reconstructed. The fresh Phase 5 gate passes with 2,226/2,226 coverage
+assertions, and the inventory/work-unit tests pass. Public headers remain
+unchanged. See
+`docs/reconstruction/novodex-physics/evidence/range-iteration-000002.md`.
+
 ### Continuation — 1,000-step three-body stack soak (2026-10-06)
 
 Extended the public gravity/contact stack fixture from 120 to 1,000 blocking

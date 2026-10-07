@@ -96,13 +96,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/RecoveredRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3",
-      "static_proof": null,
+      "static_proof": "NxPhysicsRangeIterationTests checks reverse strided address order, negative stride, zero-count no-callback behavior, and the returned last callback result against the IDA body at RVA 0x1030.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "The helper computes first + count * stride, decrements by stride before each __thiscall callback, and returns the final callback result; count <= 0 returns count - 1 without invoking the callback."
     },
     {
       "id": "phys_fn_000003",
