@@ -83,6 +83,41 @@ class TriangleMeshApiAllocator : public NxUserAllocator
 
 static TriangleMeshApiAllocator gAllocator;
 
+class TriangleMeshApiOutputStream : public NxUserOutputStream
+	{
+	public:
+	TriangleMeshApiOutputStream(): errors(0), lastCode(NXE_NO_ERROR), lastLine(0)
+		{ message[0] = 0; file[0] = 0; }
+	void reportError(NxErrorCode code, const char* text, const char* source, int line) override
+		{
+		++errors;
+		lastCode = code;
+		lastLine = line;
+		copy(message, sizeof(message), text);
+		copy(file, sizeof(file), source);
+		}
+	NxAssertResponse reportAssertViolation(const char*, const char*, int) override
+		{ return NX_AR_CONTINUE; }
+	void print(const char*) override {}
+	void reset()
+		{ errors = 0; lastCode = NXE_NO_ERROR; lastLine = 0; message[0] = 0; file[0] = 0; }
+	unsigned errors;
+	NxErrorCode lastCode;
+	int lastLine;
+	char message[128];
+	char file[96];
+	private:
+	static void copy(char* destination, size_t capacity, const char* source)
+		{
+		if(!source) { destination[0] = 0; return; }
+		size_t i = 0;
+		for(; i + 1 < capacity && source[i]; ++i) destination[i] = source[i];
+		destination[i] = 0;
+		}
+	};
+
+static TriangleMeshApiOutputStream gOutputStream;
+
 static int nxTestPMapComputeFirst(HMODULE physics, NxPhysicsSDK* sdk, NxU32 density)
 	{
 	CreatePMapFn createPMap = reinterpret_cast<CreatePMapFn>(
@@ -329,6 +364,23 @@ static int nxTestDescriptorVariants(NxPhysicsSDK* sdk)
 	return nxTestDescriptorPath(sdk, "precomputed_convex", precomputedConvex, 4, 4, NX_MF_CONVEX);
 	}
 
+static int nxTestInvalidDescriptor(NxPhysicsSDK* sdk)
+	{
+	NxTriangleMeshDesc invalid;
+	invalid.setToDefault();
+	gOutputStream.reset();
+	NxTriangleMesh* mesh = sdk->createTriangleMesh(invalid);
+	if(mesh)
+		sdk->releaseTriangleMesh(*mesh);
+	printf("triangle_mesh invalid_desc rejected=%u errors=%u code=%u line=%d file=%s message=%s\n",
+		mesh ? 0u : 1u, gOutputStream.errors, static_cast<unsigned>(gOutputStream.lastCode),
+		gOutputStream.lastLine, gOutputStream.file, gOutputStream.message);
+	return !mesh && gOutputStream.errors == 1 &&
+		gOutputStream.lastCode == NXE_INVALID_PARAMETER && gOutputStream.lastLine == 186 &&
+		strcmp(gOutputStream.message, "TriangleMesh::loadFromDesc: desc.isValid() failed!") == 0 ?
+		0 : nxFail("invalid triangle-mesh descriptor did not report the oracle error");
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -355,7 +407,7 @@ int wmain(int argc, wchar_t** argv)
 	CreatePhysicsSDKFn createSDK = reinterpret_cast<CreatePhysicsSDKFn>(
 		GetProcAddress(physics, "NxCreatePhysicsSDK"));
 	if(!createSDK) return nxFail("NxCreatePhysicsSDK is missing");
-	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, &gAllocator, 0);
+	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, &gAllocator, &gOutputStream);
 	if(!sdk) return nxFail("SDK creation failed");
 	const bool disconnectedPMap = isolatedPMap && wcscmp(argv[2], L"disconnected32") == 0;
 	status = disconnectedPMap ? nxTestDisconnectedPMap(physics, sdk) :
@@ -372,6 +424,12 @@ int wmain(int argc, wchar_t** argv)
 		}
 
 	status = nxTestDescriptorVariants(sdk);
+	if(status)
+		{
+		sdk->release();
+		return status;
+		}
+	status = nxTestInvalidDescriptor(sdk);
 	if(status)
 		{
 		sdk->release();
