@@ -16,6 +16,7 @@
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
 #include "NxSphereShapeDesc.h"
+#include "NxCapsuleShapeDesc.h"
 #include "NxBoxShapeDesc.h"
 #include "NxBoxShape.h"
 #include "NxPlaneShapeDesc.h"
@@ -389,6 +390,7 @@ int wmain(int argc, wchar_t** argv)
 	NxSimulationOutputStream simulationOutput;
 	bool deferredContactFailed = false;
 	bool controllerCreateFailed = false;
+	bool shapeUserDataFailed = false;
 	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, 0, &simulationOutput);
 	if(!sdk)
 		{
@@ -457,6 +459,34 @@ int wmain(int argc, wchar_t** argv)
 		sdk->releaseTriangleMesh(*publicMesh16);
 		}
 	printf("\n");
+	// Vehicle wheels discover the created capsule shape through the descriptor's
+	// userData pointer, so this public-API case pins that descriptor-to-handle copy.
+	static unsigned char capsuleUserDataMarker;
+	NxSceneDesc capsuleUserDataSceneDesc;
+	capsuleUserDataSceneDesc.setToDefault();
+	NxScene* const capsuleUserDataScene = sdk->createScene(capsuleUserDataSceneDesc);
+	if(!capsuleUserDataScene)
+		return nxFail("capsule userData scene creation failed");
+	NxCapsuleShapeDesc capsuleUserDataShape;
+	capsuleUserDataShape.radius = 0.25f;
+	capsuleUserDataShape.height = 0.5f;
+	capsuleUserDataShape.userData = &capsuleUserDataMarker;
+	NxActorDesc capsuleUserDataActorDesc;
+	capsuleUserDataActorDesc.shapes.pushBack(&capsuleUserDataShape);
+	NxActor* const capsuleUserDataActor = capsuleUserDataScene->createActor(capsuleUserDataActorDesc);
+	NxShape** const capsuleUserDataShapes = capsuleUserDataActor
+		? capsuleUserDataActor->getShapes() : 0;
+	NxShape* const capsuleUserDataHandle = capsuleUserDataShapes ? capsuleUserDataShapes[0] : 0;
+	const bool capsuleUserDataMatches = capsuleUserDataHandle &&
+		capsuleUserDataHandle->userData == &capsuleUserDataMarker;
+	printf("simulation capsule-shape userdata actor=%u shapes=%u marker=%u\n",
+		capsuleUserDataActor != 0,
+		capsuleUserDataActor ? capsuleUserDataActor->getNbShapes() : 0,
+		capsuleUserDataMatches);
+	shapeUserDataFailed = !capsuleUserDataActor || !capsuleUserDataMatches;
+	if(capsuleUserDataActor)
+		capsuleUserDataScene->releaseActor(*capsuleUserDataActor);
+	sdk->releaseScene(*capsuleUserDataScene);
 	JointDescSetGlobalAnchorFn setGlobalAnchor = reinterpret_cast<JointDescSetGlobalAnchorFn>(
 		GetProcAddress(physics, "NxJointDesc_SetGlobalAnchor"));
 	JointDescSetGlobalAxisFn setGlobalAxis = reinterpret_cast<JointDescSetGlobalAxisFn>(
@@ -3137,6 +3167,8 @@ int wmain(int argc, wchar_t** argv)
 	if(deferredContactFailed)
 		status = 1;
 	if(controllerCreateFailed)
+		status = 1;
+	if(shapeUserDataFailed)
 		status = 1;
 	FreeLibrary(physics);
 	return status;

@@ -3396,6 +3396,13 @@ static unsigned char* nxRuntimeShapeConstruct(void* memory, unsigned size, unsig
 // SphereShape::nxSphereLoadFromDesc and its siblings are the listing models.
 static bool nxRuntimeShapeLoad(unsigned char* shape, const NxShapeDesc* descriptor)
 	{
+	// ShapeBase::nxApplyDescriptor (phys_fn_001347) copies descriptor+0x40
+	// into the public NxShape handle at +0x04. Keep this in the common load
+	// path so every concrete family, including mesh's slot-12 loader, retains
+	// the descriptor's userData.
+	unsigned char* publicShape = *reinterpret_cast<unsigned char**>(shape + 0x9c);
+	if(publicShape)
+		*reinterpret_cast<void**>(publicShape + 4) = descriptor->userData;
 	if(descriptor->getType() == NX_SHAPE_MESH)
 		{
 		void** table = *reinterpret_cast<void***>(shape);

@@ -3022,6 +3022,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation triangle-mesh actor=1 shapes=1'
         'simulation triangle-mesh handle type=4 mesh_same=1'
         'simulation triangle-mesh locked_create=0'
+        'simulation capsule-shape userdata actor=1 shapes=1 marker=1'
         # Scene descriptor selectors 0/1/2 map to pruning-engine modes 1/2/3
         # (phys_fn_000544 -> phys_fn_001973). These observations guard that
         # the public broadPhase choice reaches the internal engine state.
@@ -5440,7 +5441,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1358  # previous 1,357 plus the grounded sweep's floor-contact classification
+    '7' = 1359  # previous 1,358 plus the vehicle wheel-capsule userData copy
                # (free-space, actor pose, obstacle/group filter, vertical, grounded step, trigger, overlap)
     '8' = 0
 }
