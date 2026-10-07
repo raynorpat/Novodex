@@ -6,8 +6,18 @@ Closed Phase 5 row `phys_fn_001391`, the Box identity method shared by vtable
 slots 14–16. The shape-vtable oracle/candidate test checks that slot 14 returns
 the constructed object address. A throwaway private-header mutation returning
 null was caught (`failures=1`); the clean target returns zero failures. Phase 5
-now has six mutation-closed function rows and 199 reconstructed rows awaiting
+now had six mutation-closed function rows and 199 reconstructed rows awaiting
 falsification. Evidence: `docs/reconstruction/novodex-physics/evidence/shape-self-001391.md`.
+
+### Continuation — Box hull facade vertex pointer (2026-10-07)
+
+Closed Phase 5 row `phys_fn_000955`, the `BoxHullFacade::vertices()` slot at
+RVA `0x00020d30`. The shape-vtable differential compares 314 box-hull
+rebuild/load cases against the pinned oracle. A temporary `mVertices + 1`
+mutation produced 30 mismatches; the restored implementation returns zero.
+Phase 5 now has seven mutation-closed function rows and 198 reconstructed rows
+awaiting falsification. The full Phase 5 gate passed at 2,244/2,244 after the
+restored build. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md`.
 
 ### Continuation — scene shape registration and standalone test sweep (2026-10-07)
 

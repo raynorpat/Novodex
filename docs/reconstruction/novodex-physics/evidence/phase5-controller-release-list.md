@@ -46,4 +46,11 @@ The registered `NxPhysicsBodyCreationTests` target releases IDs 0 and 5 out of o
 
 `phys_fn_002421` mutation detection: `stdout_delta=6`.
 
-The Phase 7 `NxPhysicsPairFlagTests` regression isolates the root-ID recycle case: set actor-pair flags, release the actor, create a replacement, and verify the recycled root ID is `1 -> 1` while the old flags are cleared. Oracle and candidate both report `flags=00000000` with `stdout_delta=0` and exact stderr (`build/phase5-pair-cleanup-final-diff.log`). The final Phase 5 gate also passes (`build/phase5-pair-cleanup-final.log`). These checks cover actor destruction and pair-record cleanup; they do not close any other Phase 5 rows.
+
+## Box hull facade vertex pointer: `phys_fn_000955`
+
+IDA identifies RVA `0x00020d30` as `lea eax,[ecx+0x10]`: the `BoxHullFacade::vertices()` slot returns the facade's vertex array at `+0x10`. `NxPhysicsShapeVtableTests` reaches this slot through the box hull rebuild and load paths, then compares all 117 serialized hull words against the pinned oracle.
+
+The unmodified candidate matches the pinned DLL: `box hull oracle_digest=e0477220 cases=314 failures=0`. A temporary mutation changed `BoxHullFacade::vertices()` to return `mVertices + 1`; the same test rejected it with `box hull oracle_digest=e0477220 cases=314 failures=30` (all 30 mismatches were rebuild/load cases). The mutation was reverted, and the restored target returned to 314/314 with zero failures. No public Physics header changed.
+
+`phys_fn_000955` mutation detection: `mismatches=30`.
