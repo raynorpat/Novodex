@@ -2,11 +2,11 @@
   "schema_version": 1,
   "phase": 5,
   "name": "Objects",
-  "status": "pass",
+  "status": "pending",
   "closure_ledger": "gates/phase5-closure.json",
   "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
   "evidence_commit": "ab5fccf5",
-  "note": "The Phase 5 gate passed on the current mainline implementation. It verifies immutable public headers, inventory accounting, clean Win32 Release builds, all registered actor/body/shape differential and oracle targets, and 2,244/2,244 coverage assertions. The closure ledger records six mutation-falsified rows and 199 reconstructed rows still awaiting falsification; this green gate does not claim the remaining rows are complete. The viewer suite also exercised all 39 registered scenes: 51 tests passed and five pinned-oracle asset cases were skipped because their reference assets are unavailable.",
+  "note": "The Phase 5 gate passed on the current mainline implementation. It verifies immutable public headers, inventory accounting, clean Win32 Release builds, all registered actor/body/shape differential and oracle targets, and 2,244/2,244 coverage assertions. The closure ledger records six mutation-falsified rows and 199 reconstructed rows still awaiting falsification; this green gate does not claim the remaining rows are complete. The viewer suite also exercised all 39 registered scenes: 51 tests passed and five pinned-oracle asset cases were skipped because their reference assets are unavailable. The phase remains pending because its reconstruction closure is not complete.",
   "counts": {
     "closed": 6,
     "deferred": 199
