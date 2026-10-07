@@ -1171,3 +1171,9 @@ Continuation 2026-10-06: compared the controller constructor's descriptor copies
 
 - The registered `NxPhysicsShapeVtableTests` mass-frame differential now formally falsifies `phys_fn_000829` (`MassFrame::nxMassFrameBuildBox`). Baseline reports 201 cases / 0 failures. In a throwaway archive of `d2564d07`, changing the xx inertia sum from `zz + yy` to `zz - yy` produces eight failures and exit 1; all other shape-vtable, box-sweep, and box-hull sections remain exact.
 - The row is now `dynamically_gated`; Phase 5 closure advances from 55/150 to 56 closed / 149 deferred. The test is oracle-backed; no production code or public header changed. See `docs/reconstruction/novodex-physics/evidence/phase5-box-massframe-000829.md`.
+
+
+### Continuation — box mass accumulator row falsification (2026-10-07)
+
+- Extended `NxPhysicsShapeVtableTests` to drive Box slot 4 across descriptor dimensions, local pose, density, and its flag-gated path. Baseline: 24 cases / 0 failures. In an isolated archive, omitting density scaling in `phys_fn_000849` produced 12 mismatches and exit 1 while all other shape-vtable sections remained exact.
+- `phys_fn_000849` is now `dynamically_gated`; Phase 5 closure advances to 57 closed / 148 deferred. Public Physics headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-massframe-000849.md`.

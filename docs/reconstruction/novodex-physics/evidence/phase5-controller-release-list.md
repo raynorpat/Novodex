@@ -420,3 +420,10 @@ exact stderr. Full evidence: `evidence/phase5-actor-accessor-mutations.md`.
 The registered `NxPhysicsShapeVtableTests` mass-frame differential covers nine box extent sets. The baseline reports `cases=201 failures=0` (`build/shape-vtable-000829-baseline.log`). A throwaway archive mutation changed the xx diagonal sum from `zz + yy` to `zz - yy`; the target reported eight mismatches, while box-sweep and box-hull sections remained exact (`build/shape-vtable-000829-mutation.log`).
 
 `phys_fn_000829` mutation detection: `mismatches=8`. Full details: `evidence/phase5-box-massframe-000829.md`.
+
+
+## Box shape mass accumulator — `phys_fn_000849`
+
+The registered `NxPhysicsShapeVtableTests` calls Box shape slot 4 across three dimensions, two local poses, two densities, and the clear/skip flag values. The baseline reports `cases=24 failures=0` (`build/shape-vtable-000849-baseline.log`). An isolated archive mutation omitted `local.nxMassFrameScale(density)` in `BoxShape::nxBoxComputeMassFrame`; all 12 density-two calls failed while the other shape-vtable sections remained exact (`build/shape-vtable-000849-mutation.log`).
+
+`phys_fn_000849` mutation detection: `mismatches=12`. Full details: `evidence/phase5-box-massframe-000849.md`.

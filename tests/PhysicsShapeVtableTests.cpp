@@ -516,6 +516,8 @@ int wmain(int argc, wchar_t** argv)
     typedef void (__thiscall* BoundsSlot)(void*, float*);
     typedef void* (__thiscall* SelfSlot)(void*);
     unsigned failures = 0, cases = 0;
+    unsigned boxMassCases = 0, boxMassFailures = 0;
+    unsigned boxMassDigest = 2166136261u;
     unsigned char oracleBytes[0x228], candidateBytes[0x228];
     memset(oracleBytes, 0xcd, sizeof(oracleBytes));
     memset(candidateBytes, 0xcd, sizeof(candidateBytes));
@@ -552,6 +554,49 @@ int wmain(int argc, wchar_t** argv)
                 ++failures;
             }
             ++cases;
+        }
+    }
+    // BOX slot 4 (phys_fn_000849) through the public shape's mass accumulator:
+    // include its local-pose payload and both the unit-density and scaled paths.
+    typedef bool (__thiscall* BoxMassSlot)(void*, MassFrame*, float, unsigned);
+    const float boxMassDensities[] = {1.0f, 2.0f};
+    const float boxMassPoses[][12] = {
+        {1,0,0, 0,1,0, 0,0,1, 0,0,0},
+        {0,-1,0, 1,0,0, 0,0,1, 1.25f,-0.75f,2.5f}
+    };
+    const unsigned short boxMassFlags[] = {0, 1};
+    for(unsigned shape = 0; shape != 3; ++shape) {
+        memcpy(oracleBytes + 0xe4, dimensions[shape], 12);
+        memcpy(candidateBytes + 0xe4, dimensions[shape], 12);
+        for(unsigned pose = 0; pose != 2; ++pose) {
+            memcpy(oracleBytes + 0x6c, boxMassPoses[pose], 48);
+            memcpy(candidateBytes + 0x6c, boxMassPoses[pose], 48);
+            for(unsigned density = 0; density != 2; ++density)
+            for(unsigned flags = 0; flags != 2; ++flags) {
+                memcpy(oracleBytes + 0xde, &boxMassFlags[flags], 2);
+                memcpy(candidateBytes + 0xde, &boxMassFlags[flags], 2);
+                unsigned char oracleFrame[0x34], candidateFrame[0x34];
+                memset(oracleFrame, 0xcd, sizeof(oracleFrame));
+                memset(candidateFrame, 0xcd, sizeof(candidateFrame));
+                const bool oracleMass = reinterpret_cast<BoxMassSlot>(oracleTable[4])(
+                    oracleBytes, reinterpret_cast<MassFrame*>(oracleFrame),
+                    boxMassDensities[density], 0);
+                const bool candidateMass = reinterpret_cast<BoxMassSlot>(candidateTable[4])(
+                    candidateBytes, reinterpret_cast<MassFrame*>(candidateFrame),
+                    boxMassDensities[density], 0);
+                boxMassDigest = foldOracle(boxMassDigest, &oracleMass,
+                    sizeof(oracleMass));
+                boxMassDigest = foldOracle(boxMassDigest, oracleFrame,
+                    sizeof(oracleFrame));
+                if(oracleMass != candidateMass ||
+                   memcmp(oracleFrame, candidateFrame, sizeof(oracleFrame)) != 0) {
+                    fprintf(stderr,
+                        "box slot 4 shape=%u pose=%u density=%u flags=%u differs\n",
+                        shape, pose, density, flags);
+                    ++boxMassFailures;
+                }
+                ++boxMassCases;
+            }
         }
     }
     if(reinterpret_cast<SelfSlot>(oracleTable[14])(oracleBytes) != oracleBytes ||
@@ -2254,6 +2299,8 @@ int wmain(int argc, wchar_t** argv)
     nxSetSdkAllocatorBridge(0);
     printf("shape vtable oracle_digest=%08x cases=%u failures=%u\n",
         oracleDigest, cases, failures);
+    printf("shape vtable boxmass oracle_digest=%08x cases=%u failures=%u\n",
+        boxMassDigest, boxMassCases, boxMassFailures);
     printf("shape vtable capsule_load_return oracle=%u candidate=%u\n",
         capsuleLoadOracleReturn, capsuleLoadCandidateReturn);
     printf("shape vtable massframe oracle_digest=%08x cases=%u failures=%u\n",
@@ -2263,6 +2310,7 @@ int wmain(int argc, wchar_t** argv)
     printf("box hull oracle_digest=%08x cases=%u failures=%u\n",
         hull.digest, hull.cases, hull.failures);
     if(capsuleLoadOracleReturn != capsuleLoadCandidateReturn || massFailures ||
+       boxMassFailures ||
        sweepFailures || hull.failures)
         return 1;
     return failures ? 1 : 0;

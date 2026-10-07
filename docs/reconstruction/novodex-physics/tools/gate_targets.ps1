@@ -415,6 +415,9 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsShapeVtableTests' = @(
         'shape vtable oracle_digest=ed1294b6 cases=626 failures=0'
+        # BOX slot 4 (phys_fn_000849) reaches the mass-frame builder with
+        # descriptor dimensions, local pose, density scaling, and gated flags.
+        'shape vtable boxmass oracle_digest=82843962 cases=24 failures=0'
         # Scene-raycast Task 4, shape: 000989's return, the mass-frame rows
         # 000829/000833 and BOX slot 7 (000951) against the oracle rows. The
         # oracle side's lines, appended as their own statement.
@@ -5485,7 +5488,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 264  # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2264  # plus compound-trigger per-shape enter/stay/leave lifecycle
+    '5' = 2265  # plus box slot-4 mass-frame density and local-pose coverage
+               # plus compound-trigger per-shape enter/stay/leave lifecycle
                # plus three-pair trigger reconciliation and queue growth
                # plus public trigger enter/stay/leave lifecycle
                # plus the grounded controller's short-probe simulation assertion
