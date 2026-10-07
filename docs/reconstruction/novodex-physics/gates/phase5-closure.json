@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "phase": 5,
-  "note": "Phase 5 owns 205 function rows and 122 data objects. Seven function rows are closed by registered staged-pair mutations: phys_fn_002318, phys_fn_000030, phys_fn_000032, phys_fn_000034, phys_fn_002421, phys_fn_000050, and phys_fn_000052. One row, phys_fn_000002, is closed by the NxPhysicsRangeIterationTests static proof. Eight rows, phys_fn_001391, phys_fn_000955, phys_fn_000961, phys_fn_000963, phys_fn_000953, phys_fn_000967, phys_fn_000969, and phys_fn_000971, are closed by NxPhysicsShapeVtableTests oracle/candidate checks. The two rows phys_fn_000004 and phys_fn_000012 are closed by the NxPhysicsObjectLayoutTests oracle differential. 187 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records. See evidence/shape-self-001391.md and evidence/phase5-controller-release-list.md.",
+  "note": "Phase 5 owns 205 function rows and 122 data objects. Nine function rows are closed by registered staged-pair mutations: phys_fn_002318, phys_fn_000030, phys_fn_000032, phys_fn_000034, phys_fn_002421, phys_fn_000050, phys_fn_000052, phys_fn_000066, and phys_fn_000068. One row, phys_fn_000002, is closed by the NxPhysicsRangeIterationTests static proof. Eight rows, phys_fn_001391, phys_fn_000955, phys_fn_000961, phys_fn_000963, phys_fn_000953, phys_fn_000967, phys_fn_000969, and phys_fn_000971, are closed by NxPhysicsShapeVtableTests oracle/candidate checks. The two rows phys_fn_000004 and phys_fn_000012 are closed by the NxPhysicsObjectLayoutTests oracle differential. 185 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records. See evidence/shape-self-001391.md and evidence/phase5-controller-release-list.md.",
   "proof_kinds": {
-    "differential_falsified": "Mutations aimed at the seven staged-pair rows were caught by their registered differentials; all seven rows are closed.",
+    "differential_falsified": "Mutations aimed at the nine staged-pair rows were caught by their registered differentials; all nine rows are closed.",
     "static_proof_falsified": "The NxPhysicsRangeIterationTests mutation changed reverse stepping to forward stepping; its named checks caught the broken visitation order, callback result, and negative-stride behavior for phys_fn_000002.",
     "oracle_differential_falsified": "Mutations to phys_fn_001391, phys_fn_000955, phys_fn_000961, phys_fn_000963, phys_fn_000953, phys_fn_000967, phys_fn_000969, and phys_fn_000971 were caught by NxPhysicsShapeVtableTests; mutations to phys_fn_000004 and phys_fn_000012 were caught by NxPhysicsObjectLayoutTests. Each non-zero mismatch count records the failed case."
   },
@@ -19,9 +19,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 7,
+    "differential_falsified": 9,
     "oracle_differential_falsified": 10,
-    "deferred_reconstructed_not_falsified": 187,
+    "deferred_reconstructed_not_falsified": 185,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -206,6 +206,28 @@
         "detected": "stdout_delta=2"
       },
       "note": "The pinned angular getter observation changed from 3f19999a to the linear damping value 3ecccccd under the wrong offset."
+    },
+    {
+      "id": "phys_fn_000066",
+      "rva": "0x000029e0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed NpActorVtable getter to read +0xd4 instead of body-record offset +0xd0 in an isolated mutation build.",
+        "detected": "stdout_delta=4"
+      },
+      "note": "The pinned getter observation changed to 0.5 instead of 0.25 under the wrong offset."
+    },
+    {
+      "id": "phys_fn_000068",
+      "rva": "0x00002a30",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed NpActorVtable getter to read +0xd0 instead of body-record offset +0xd4 in an isolated mutation build.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The pinned getter observation changed to 0.25 instead of 0.5 under the wrong offset."
     }
   ],
   "deferred": [
@@ -1027,24 +1049,6 @@
       "id": "phys_fn_000064",
       "rva": "0x00002990",
       "size": 73,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000066",
-      "rva": "0x000029e0",
-      "size": 75,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000068",
-      "rva": "0x00002a30",
-      "size": 75,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],

@@ -1263,12 +1263,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/31",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/163",
       "static_proof": "guarded accessor: [this+0x14] names the body, [body+8] a nested record; fsqrt of the float at record+0xd0, exact float zero when that record is null (the only guard -- a null body would fault)",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsActorDynamicSetterTests pins the raw squared thresholds and both public getters in the required setter sleep_thresholds line; the restored staged-pair differential is exact. An isolated wrong-offset mutation (+0xd4 instead of +0xd0) was caught with stdout_delta=4, both processes exited 0, and stderr was exact. The line is required by the Phase 5 gate at coverage floor 2250. See evidence/phase5-controller-release-list.md.",
       "notes": ""
     },
     {
@@ -1299,12 +1299,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/32",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/165",
       "static_proof": "same shape as 000066 over record+0xd4",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsActorDynamicSetterTests pins the raw squared thresholds and both public getters in the required setter sleep_thresholds line; the restored staged-pair differential is exact. An isolated wrong-offset mutation (+0xd0 instead of +0xd4) was caught with stdout_delta=2, both processes exited 0, and stderr was exact. The line is required by the Phase 5 gate at coverage floor 2250. See evidence/phase5-controller-release-list.md.",
       "notes": ""
     },
     {

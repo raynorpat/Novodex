@@ -444,10 +444,10 @@ Decompile (capstone disassembly):
 0x000029d8  ret
 ```
 
-## phys_fn_000066 (0x000029e0, 75 B, reconstructed)
+## phys_fn_000066 (0x000029e0, 75 B, dynamically_gated)
 
 - ambiguous: no
-- source: None
+- source: Physics/src/NpActor.cpp
 - implementation: None
 - prototype: None
 - calling convention: None, stack purge: None
@@ -490,10 +490,10 @@ Decompile (capstone disassembly):
 0x00002a2a  ret
 ```
 
-## phys_fn_000068 (0x00002a30, 75 B, reconstructed)
+## phys_fn_000068 (0x00002a30, 75 B, dynamically_gated)
 
 - ambiguous: no
-- source: None
+- source: Physics/src/NpActor.cpp
 - implementation: None
 - prototype: None
 - calling convention: None, stack purge: None
