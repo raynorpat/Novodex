@@ -296,6 +296,8 @@ TriangleMesh::~TriangleMesh()
 		}
 	}
 
+// phys_fn_002168 (oracle RVA 0x00053cf0): replace a mesh's penetration map
+// from the supplied serialized PMap data.
 bool TriangleMesh::loadPMap(const NxPMap& pmap)
 	{
 	if(!pmap.data || !pmap.dataSize)

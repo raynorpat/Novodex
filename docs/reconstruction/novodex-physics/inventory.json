@@ -39856,14 +39856,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/TriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/825",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6856",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "implementation": null
+      "static_proof": "IDA decompile at RVA 0x00053cf0: rejects missing/empty input with the invalid-PMap error, destroys and clears the previous map, allocates/constructs PenetrationMap, reads the serialized buffer, and either installs the parsed map or destroys it and reports creation failure. The candidate implementation is TriangleMesh::loadPMap in Physics/src/TriangleMesh.cpp.",
+      "dynamic_proof": "TriangleMesh PMap lifecycle audit (2026-10-07): staged x86 pair differentials passed NxPhysicsTriangleMeshApiTests and NxPhysicsConvexMeshTests with oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=true. The API target exercises descriptor PMap load, valid reload/export, non-empty cell-run decoding/export, and invalid-magic reload that must drop the previous map. A targeted mutant skipping previous-map cleanup left hasPMap=1 after the invalid reload and failed the candidate fixture while the oracle passed; restored source returned to exact output. Evidence: evidence/triangle-mesh-load-pmap.md.",
+      "notes": "The fixtures cover valid serialization and invalid-magic replacement; allocation failure and every malformed encoding boundary remain open.",
+      "implementation": "Physics/src/TriangleMesh.cpp",
+      "implementation_symbol": "TriangleMesh::loadPMap"
     },
     {
       "id": "phys_fn_002169",
