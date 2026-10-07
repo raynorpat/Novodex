@@ -16,15 +16,16 @@ Verification on the rebuilt Release DLL:
 
 - `NxPhysicsSimulationTests`: oracle and candidate exit 0 with identical
   stdout and stderr.
-- Direct Phase 5 differential: all 14 registered targets match.
-- Direct Phase 7 differential: all 11 registered targets match.
+- Phase 5 gate on merged `main`: inventory and vendored-source preflights pass;
+  all 14 registered differentials match and 2,225/2,225 coverage assertions
+  run.
+- Phase 7 gate on merged `main`: all 11 registered differentials match and
+  1,364/1,364 coverage assertions run. An external `PairsRoot` is required in
+  this environment; placing the staged pair under `build\pairs` caused the
+  pinned oracle to fault during `NxPhysicsSceneRaycastTests`.
 - `ctest --test-dir build -C Release -R '^Viewer' --output-on-failure`: all
   48 selections pass, representing all 39 scenes; 43 pass and five existing
   pinned-oracle asset cases skip by signature.
-- The `run_phase_gate.ps1` wrapper stops during inventory preflight in this
-  worktree because the pinned upstream source trees are not staged under
-  `.analysis/novodex-physics/thirdparty`. The direct differential runs above
-  did execute successfully.
 
 Successful step-over, non-default sharpness, non-null groups masks, and the
 remaining controller semantics are still open.

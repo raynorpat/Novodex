@@ -7,11 +7,11 @@ NxCharacter six-argument `NxController::move` ABI. The default-argument
 simulation differential remains exact. Direct Phase 5 and Phase 7 differentials
 pass all 14 and 11 registered targets; all 48 Viewer selections pass, covering
 all 39 scenes with five existing signature-verified oracle-asset skips. The
-aggregate phase wrapper remains blocked at inventory preflight because this
-worktree lacks the pinned upstream source trees under
-`.analysis/novodex-physics/thirdparty`. This closes the call ABI only;
-successful step-over, non-default sharpness, groups-mask filtering, and full
-controller behavior remain open. See
+full Phase 5 gate passes at 2,225/2,225 coverage assertions. Phase 7 passes at
+1,364/1,364 with external pair staging; the default pair directory under
+`build` caused the pinned oracle to fault during its raycast differential.
+This closes the call ABI only; successful step-over, non-default sharpness,
+groups-mask filtering, and full controller behavior remain open. See
 `docs/reconstruction/novodex-physics/evidence/controller-move-public-abi.md`.
 
 ### Continuation — authored tetrahedron PMap density 80 (2026-10-06)
