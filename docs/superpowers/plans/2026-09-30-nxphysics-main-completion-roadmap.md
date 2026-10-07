@@ -1,5 +1,17 @@
 # NxPhysics completion project plan from main
 
+### Continuation — controller release wrapper classification (2026-10-06)
+
+Classified `phys_fn_002330` (`0x0005a4b0`) as reconstructed: the existing
+`NxSceneInternal::releaseController` path matches its reentry guard, embedded
+node unlink, deleting-destructor dispatch, and guard clear. The standalone
+simulation differential exercises non-head then head removal and checks list
+integrity/error counts. Phase 5 now has eight unreconstructed rows, 196
+reconstructed rows awaiting whole-row falsification, and one falsified row.
+The reentry and non-member error paths are backed by static evidence only; the
+controller subsystem remains partial. See
+`docs/reconstruction/novodex-physics/evidence/controller-release-wrapper.md`.
+
 ### Continuation — controller move ABI and approved Viewer scene gate (2026-10-06)
 
 The controller test probe and reconstructed move slot now match the installed

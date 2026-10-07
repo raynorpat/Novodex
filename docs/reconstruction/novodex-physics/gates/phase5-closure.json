@@ -19,8 +19,8 @@
   },
   "counts": {
     "differential_falsified": 1,
-    "deferred_not_reconstructed_in_phase": 9,
-    "deferred_reconstructed_not_falsified": 195
+    "deferred_not_reconstructed_in_phase": 8,
+    "deferred_reconstructed_not_falsified": 196
   },
   "closed": [
     {
@@ -772,9 +772,12 @@
       "id": "phys_fn_002330",
       "rva": "0x0005a4b0",
       "size": 100,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [
+        5
+      ],
+      "note": "The inlined NxSceneInternal::releaseController path reproduces the pinned wrapper sequence and has a valid-path simulation differential; no mutation has been aimed at phys_fn_002330 itself."
     },
     {
       "id": "phys_fn_002421",

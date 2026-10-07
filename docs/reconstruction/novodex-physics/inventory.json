@@ -42801,13 +42801,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/Controller.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp::NxSceneInternal::releaseController",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/867",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7299",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Ghidra RVA 0x0005a4b0 checks the Controller.cpp reentry guard, sets it, loads the embedded node from controller+4, calls phys_fn_002318 at 0x0005a170 to unlink the Scene list, dispatches the node deleting destructor when non-null, then clears the guard. NxSceneInternal::releaseController implements the same sequence; list unlink is inlined in the candidate method.",
+      "dynamic_proof": "NxPhysicsSimulationTests releases a non-head controller and then the remaining head, compares the oracle transcript, and checks the link is cleared with no error callbacks; stdout_delta=0 and stderr_exact=True.",
+      "notes": "The valid release path is dynamically exercised. Reentry and non-member error outcomes are supported by static evidence only; this row has not been independently falsified."
     },
     {
       "id": "phys_fn_002331",
