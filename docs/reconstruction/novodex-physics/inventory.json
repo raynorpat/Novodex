@@ -42583,13 +42583,15 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/Controller.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/863",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7281",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "evidence/phase5-controller-release-list.md",
+      "notes": "Differentially gated middle-node unlink and head removal; archived mutation omission is caught.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "NxSceneInternal::releaseController"
     },
     {
       "id": "phys_fn_002319",

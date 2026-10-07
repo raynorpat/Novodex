@@ -13,7 +13,7 @@ $NxPhaseTestTargets = [ordered] @{
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests')
-    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsBodyCreationTests')
+    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsSimulationTests')
     '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests')
     '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
     '8' = @()
@@ -3224,6 +3224,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation controller-initial-overlap inward position=3f400000.00000000.00000000 flags=00000004'
         'simulation controller-rotated-initial-overlap escape position=3f800000.00000000.00000000 flags=00000000'
         'simulation controller-rotated-initial-overlap reverse position=bf800000.00000000.00000000 flags=00000000'
+        'simulation controller-release actors-after-first=2 actors-after=2 stale-next-after-first=0 errors-after-first=0 errors-after-second=0'
         'simulation effector-step setup count=1 awake=1 pos=00000000 spring=3f000000.3f800000.40800000.42c80000.42c80000'
         'simulation effector-step ready=1 fetched=1 vx=00000000'
         'simulation effector-step second ready=1 fetched=1 vx=3e8e38e3'
@@ -5435,17 +5436,16 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 1  # one public actor-group pair-flag hash round-trip and clear
     '3' = 359  # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 259  # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2042  # registered coverage across the current actor, body, shape, and object-layout targets
+    '5' = 2225  # previous 2,042 plus 183 simulation assertions, including controller-list removal
                # + 175 from scene-raycast Task 4 (149 body-creation, 13 setters, 9 dynamic-setter
                # and 3 shape-vtable from its shape sub-area, 1 shape-vtable from its box hull)
                # + 991 from the NpActor.cpp completion (251 Task 2, 446 + 3 Task 3 and review,
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
-               # second merge of main into the scene-raycast block. Phase 5 now passes its
-               # current 2,037 recorded assertions; the broader full-DLL vtable audit remains
-               # tracked in the completion roadmap.
+               # second merge of main into the scene-raycast block. The broader full-DLL
+               # vtable audit remains tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1363  # previous 1,361 plus controller descriptor state and its blocked step-offset move
+    '7' = 1364  # previous 1,361 plus controller descriptor state, step-offset move and release diagnostics
                # (free-space, actor pose, obstacle/group filter, vertical, grounded step, trigger, overlap)
     '8' = 0
 }

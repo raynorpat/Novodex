@@ -2422,20 +2422,32 @@ int wmain(int argc, wchar_t** argv)
 		}
 	// Releasing the first item exercises Scene::removeController's non-head walk;
 	// releasing the second then checks removal of the remaining head.
+	const unsigned controllerReleaseErrorsBefore = simulationOutput.errors;
+	simulationOutput.resetLast();
 	if(controller)
 		controllerScene->releaseController(*controller);
 	const NxU32 controllerSceneActorCountAfterFirstRelease = controllerScene->getNbActors();
+	const bool controllerListHasStaleNext = secondController &&
+		*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(secondController) + 0x38) != 0;
+	const unsigned controllerReleaseErrorsAfterFirst =
+		simulationOutput.errors - controllerReleaseErrorsBefore;
 	if(secondController)
 		controllerScene->releaseController(*secondController);
 	const NxU32 controllerSceneActorCountReleased = controllerScene->getNbActors();
-	printf("simulation controller-release actors-after-first=%u actors-after=%u\n",
-		controllerSceneActorCountAfterFirstRelease, controllerSceneActorCountReleased);
+	const unsigned controllerReleaseErrorsAfterSecond =
+		simulationOutput.errors - controllerReleaseErrorsBefore;
+	printf("simulation controller-release actors-after-first=%u actors-after=%u stale-next-after-first=%u errors-after-first=%u errors-after-second=%u\n",
+		controllerSceneActorCountAfterFirstRelease, controllerSceneActorCountReleased,
+		controllerListHasStaleNext ? 1u : 0u,
+		controllerReleaseErrorsAfterFirst, controllerReleaseErrorsAfterSecond);
 	// The pinned DLL leaves the generated actor registered when its controller
 	// is released. Preserve and compare that observed behavior rather than
 	// imposing a stronger cleanup contract than the oracle has.
 	controllerCreateFailed = controllerCreateFailed ||
 		controllerSceneActorCountAfterFirstRelease != controllerSceneActorCountCreated ||
-		controllerSceneActorCountReleased != controllerSceneActorCountCreated;
+		controllerSceneActorCountReleased != controllerSceneActorCountCreated ||
+		controllerListHasStaleNext ||
+		controllerReleaseErrorsAfterFirst != 0 || controllerReleaseErrorsAfterSecond != 0;
 	sdk->releaseScene(*controllerScene);
 
 	// Exercise the collision-aware controller sweep with one static obstacle.

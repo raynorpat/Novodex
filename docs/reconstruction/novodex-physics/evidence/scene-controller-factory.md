@@ -23,11 +23,14 @@ IDA evidence for the pinned DLL:
 
 The paired simulation regression covers an unsupported descriptor, two
 controllers in one scene, actor count changes, generated actor position and box
-dimensions, middle-node removal, and final head removal. On the final build,
-`NxPhysicsSimulationTests` exits zero on both DLL pairs with `stdout_delta=0`
-and exact stderr. Phase 5 passes 2,042/2,042 assertions; Phase 7 passes
-1,338/1,338 assertions. The all-scene Viewer selection passes 48/48 selected
-cases, including 43 passes and five existing signature-verified skips.
+dimensions, middle-node removal, and final head removal. The latest staged-pair
+differential exits zero on both DLL pairs with `stdout_delta=0` and exact
+stderr. Phase 5 passes 2,225/2,225 registered assertions, including this
+simulation target; Phase 7 now registers 1,364 assertions. The all-scene Viewer
+selection includes all 39 scene scripts: 34 scene smoke tests pass and five
+known oracle-asset failures are skipped; the scene-replacement and both physics
+tests pass. See [phase5-controller-release-list.md](phase5-controller-release-list.md)
+for the isolated mutation that falsifies middle-node unlinking.
 
 IDA confirms the primary vtable at `0x10108824` has three entries: deleting
 destructor (`0x1005a470`), `move` (`0x10059710`), and `getPosition`

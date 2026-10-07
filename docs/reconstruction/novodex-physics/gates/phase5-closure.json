@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "phase": 5,
-  "note": "Phase 5 closes NOTHING, and says so rather than closing on a recorded differential. It owns 205 function rows and 122 data objects; 197 of the function rows are reconstructed with a proof, 8 are not reconstructed, and no data object is dispositioned. The schema accepts one thing as a closure -- a mutation aimed at the row that the gate catches -- and this phase has no per-row mutation evidence. The ledger is published so that every row the phase owns is accounted for rather than left in no list: before it existed, 327 rows were owned by a phase with no ledger at all.",
+  "note": "Phase 5 owns 205 function rows and 122 data objects. One function row, phys_fn_002318, is now closed by a registered differential mutation; 194 function rows remain reconstructed but not falsified, 10 remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records.",
   "proof_kinds": {
-    "differential_falsified": "a mutation aimed at this row in a throwaway archive copy, rebuilt, and run against the committed oracle transcript through a registered staged-pair target. This phase has none yet.",
+    "differential_falsified": "one mutation aimed at phys_fn_002318 in an isolated archive was caught by the registered NxPhysicsSimulationTests differential; 194 reconstructed function rows still need a mutation and measured detection.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. This phase has none yet."
   },
   "deferred_reasons": {
-    "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction.",
+    "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction; 10 function rows remain here.",
     "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 194 rows, each needing one mutation and one measured detection.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
@@ -18,10 +18,22 @@
     "differentials": []
   },
   "counts": {
-    "deferred_not_reconstructed_in_phase": 11,
+    "differential_falsified": 1,
+    "deferred_not_reconstructed_in_phase": 10,
     "deferred_reconstructed_not_falsified": 194
   },
-  "closed": [],
+  "closed": [
+    {
+      "id": "phys_fn_002318",
+      "rva": "0x0005a170",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In an isolated git-archive copy, removed the predecessor-link assignment in NxSceneInternal::releaseController, leaving the released middle controller linked from the surviving head.",
+        "detected": "stdout_delta=2"
+      }
+    }
+  ],
   "deferred": [
     {
       "id": "phys_fn_000002",
@@ -744,14 +756,6 @@
       "phase_provenance": "callers",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_002318",
-      "rva": "0x0005a170",
-      "size": 106,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_002324",
@@ -1857,5 +1861,6 @@
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     }
-  ]
+  ],
+  "evidence_file": "evidence/phase5-controller-release-list.md"
 }
