@@ -5,7 +5,7 @@
   "status": "pending",
   "closure_ledger": "gates/phase5-closure.json",
   "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
-  "evidence_commit": "76790dca",
+  "evidence_commit": "d1563966",
   "note": "The full Phase 5 regression gate passed at merged commit 559b865c with 2,250/2,250 coverage assertions. Ten actor damping, sleep, and wake rows are now independently mutation-falsified on target lines already run by that gate; the current closure ledger is 26 closed / 179 deferred. The phase remains pending until all owned rows are closed.",
   "counts": {
     "closed": 26,
