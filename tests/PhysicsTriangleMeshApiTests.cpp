@@ -228,6 +228,87 @@ static int nxTestDisconnectedPMap(HMODULE physics, NxPhysicsSDK* sdk)
 	return expected ? 0 : nxFail("disconnected-component PMap differs from the oracle");
 	}
 
+static unsigned long long nxMeshSavedMaterialsHash(const NxTriangleMeshDesc& desc)
+	{
+	if(!desc.materialIndices || !desc.materialIndexStride || !desc.numTriangles)
+		return 14695981039346656037ull;
+	unsigned long long hash = 14695981039346656037ull;
+	const NxU8* bytes = static_cast<const NxU8*>(desc.materialIndices);
+	for(NxU32 i = 0; i < desc.numTriangles; ++i)
+		for(unsigned byte = 0; byte < sizeof(NxU16); ++byte)
+			{
+			hash ^= bytes[i * desc.materialIndexStride + byte];
+			hash *= 1099511628211ull;
+			}
+	return hash;
+	}
+
+static int nxTestDescriptorPath(NxPhysicsSDK* sdk, const char* name,
+	const NxTriangleMeshDesc& input, NxU32 expectedVertices, NxU32 expectedTriangles)
+	{
+	NxTriangleMesh* mesh = sdk->createTriangleMesh(input);
+	if(!mesh)
+		return nxFail("triangle-mesh descriptor fixture creation failed");
+	NxTriangleMeshDesc saved;
+	saved.setToDefault();
+	const bool savedOk = mesh->saveToDesc(saved);
+	const NxU32 vertices = mesh->getCount(0, NX_ARRAY_VERTICES);
+	const NxU32 triangles = mesh->getCount(0, NX_ARRAY_TRIANGLES);
+	if(!savedOk || vertices != expectedVertices || triangles != expectedTriangles)
+		{
+		sdk->releaseTriangleMesh(*mesh);
+		return nxFail("triangle-mesh descriptor fixture changed expected topology");
+		}
+	printf("triangle_mesh case=%s created=1 vertices=%u triangles=%u vertex_hash=%016llx triangle_hash=%016llx flags=%08x material_hash=%016llx\n",
+		name, vertices, triangles, nxMeshArrayHash(*mesh, NX_ARRAY_VERTICES),
+		nxMeshArrayHash(*mesh, NX_ARRAY_TRIANGLES), saved.flags,
+		nxMeshSavedMaterialsHash(saved));
+	sdk->releaseTriangleMesh(*mesh);
+	return 0;
+	}
+
+static int nxTestDescriptorVariants(NxPhysicsSDK* sdk)
+	{
+	struct PointWithPadding { NxVec3 point; NxU32 padding; };
+	const PointWithPadding points16[] = {
+		{ NxVec3(0.0f, 0.0f, 0.0f), 0xaaaaaaaa },
+		{ NxVec3(2.0f, 0.0f, 0.0f), 0xbbbbbbbb },
+		{ NxVec3(0.0f, 2.0f, 0.0f), 0xcccccccc },
+		{ NxVec3(2.0f, 2.0f, 0.0f), 0xdddddddd }
+		};
+	struct Triangle16WithPadding { NxU16 indices[3]; NxU16 padding; };
+	const Triangle16WithPadding triangles16[] = {
+		{ { 0, 1, 2 }, 0xaaaa }, { { 2, 1, 3 }, 0xbbbb }
+		};
+	struct MaterialWithPadding { NxU16 index; NxU16 padding; };
+	const MaterialWithPadding materials[] = { { 3, 0xaaaa }, { 7, 0xbbbb } };
+	NxTriangleMeshDesc indexed;
+	indexed.setToDefault();
+	indexed.numVertices = 4;
+	indexed.points = points16;
+	indexed.pointStrideBytes = sizeof(PointWithPadding);
+	indexed.numTriangles = 2;
+	indexed.triangles = triangles16;
+	indexed.triangleStrideBytes = sizeof(Triangle16WithPadding);
+	indexed.flags = NX_MF_16_BIT_INDICES | NX_MF_FLIPNORMALS;
+	indexed.materialIndices = materials;
+	indexed.materialIndexStride = sizeof(MaterialWithPadding);
+	int status = nxTestDescriptorPath(sdk, "descriptor16", indexed, 4, 2);
+	if(status)
+		return status;
+
+	const NxVec3 unindexedPoints[] = {
+		NxVec3(-2.0f, -1.0f, 0.0f), NxVec3(0.0f, -1.0f, 0.0f), NxVec3(-2.0f, 1.0f, 0.0f),
+		NxVec3(0.0f, -1.0f, 0.0f), NxVec3(0.0f, 1.0f, 0.0f), NxVec3(-2.0f, 1.0f, 0.0f)
+		};
+	NxTriangleMeshDesc unindexed;
+	unindexed.setToDefault();
+	unindexed.numVertices = 6;
+	unindexed.points = unindexedPoints;
+	unindexed.pointStrideBytes = sizeof(NxVec3);
+	return nxTestDescriptorPath(sdk, "implicit_indices", unindexed, 6, 2);
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -268,6 +349,13 @@ int wmain(int argc, wchar_t** argv)
 		{
 		sdk->release();
 		return nxReportPairIdentity(pairDirectory);
+		}
+
+	status = nxTestDescriptorVariants(sdk);
+	if(status)
+		{
+		sdk->release();
+		return status;
 		}
 
 	const NxVec3 vertices[] = {

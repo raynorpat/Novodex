@@ -86,6 +86,10 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from 89978 to 3521 and leaves stdout_delta at 0, and this is what turns that
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
+    'NxPhysicsTriangleMeshApiTests' = @(
+        'triangle_mesh case=descriptor16 created=1',
+        'triangle_mesh case=implicit_indices created=1'
+    )
     'NxPhysicsSDKTests' = @(
         # Public SDK-side sparse actor-group flag hash, queried in both key orders and cleared.
         'step=actor_group_pair_flags initial=0 forward=10 reverse=10 cleared=0'
@@ -5457,7 +5461,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 1  # one public actor-group pair-flag hash round-trip and clear
     '3' = 527  # previous 359 plus the 168 required body/shape manager assertions
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 260  # previous 259 plus the isolated density-80 PMap compute result
+    '4' = 264  # previous 260 plus two mesh descriptor cases, checked on both pairs
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
     '5' = 2249  # previous 2,244 plus five mixed solver-kind interaction assertions
                # previous 2,241 plus three auxiliary shape registration checks
