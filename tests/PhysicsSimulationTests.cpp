@@ -2710,6 +2710,62 @@ int wmain(int argc, wchar_t** argv)
 		nxFloatBits(inwardControllerPosition.z) != 0 || obstacleCollisionFlags != 4;
 	overlapScene->releaseController(*overlapControllerInward);
 	sdk->releaseScene(*overlapScene);
+	// The rotated-box SAT path must handle a controller that starts inside the
+	// obstacle and moves out through its expanded bound.
+	NxSceneDesc rotatedOverlapSceneDesc;
+	rotatedOverlapSceneDesc.setToDefault();
+	NxScene* const rotatedOverlapScene = sdk->createScene(rotatedOverlapSceneDesc);
+	if(!rotatedOverlapScene)
+		return nxFail("rotated initial-overlap scene creation failed");
+	NxBoxShapeDesc rotatedOverlapObstacleShape;
+	rotatedOverlapObstacleShape.dimensions = NxVec3(1.0f, 0.5f, 0.1f);
+	NxActorDesc rotatedOverlapObstacleActorDesc;
+	rotatedOverlapObstacleActorDesc.globalPose.M =
+		NxMat33(NxQuat(45.0f, NxVec3(0.0f, 1.0f, 0.0f)));
+	rotatedOverlapObstacleActorDesc.shapes.pushBack(&rotatedOverlapObstacleShape);
+	NxActor* const rotatedOverlapObstacleActor = rotatedOverlapScene->createActor(
+		rotatedOverlapObstacleActorDesc);
+	alignas(4) unsigned char rotatedOverlapControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(rotatedOverlapControllerDescStorage + 0x30) = nxFloatBits(0.1f);
+	*reinterpret_cast<NxU32*>(rotatedOverlapControllerDescStorage + 0x34) = nxFloatBits(0.25f);
+	*reinterpret_cast<NxU32*>(rotatedOverlapControllerDescStorage + 0x38) = nxFloatBits(0.1f);
+	NxController* const rotatedOverlapController = rotatedOverlapScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(rotatedOverlapControllerDescStorage));
+	if(!rotatedOverlapObstacleActor || !rotatedOverlapController)
+		return nxFail("rotated initial-overlap controller fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	const NxVec3 rotatedEscapeDisplacement(1.0f, 0.0f, 0.0f);
+	reinterpret_cast<NxControllerProbe*>(rotatedOverlapController)->move(
+		rotatedEscapeDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& rotatedEscapedPosition =
+		reinterpret_cast<NxControllerProbe*>(rotatedOverlapController)->getPosition();
+	printf("simulation controller-rotated-initial-overlap escape position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(rotatedEscapedPosition.x), nxFloatBits(rotatedEscapedPosition.y),
+		nxFloatBits(rotatedEscapedPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(rotatedEscapedPosition.x) != 0x3f800000 ||
+		nxFloatBits(rotatedEscapedPosition.y) != 0 ||
+		nxFloatBits(rotatedEscapedPosition.z) != 0 || obstacleCollisionFlags != 0;
+	rotatedOverlapScene->releaseController(*rotatedOverlapController);
+	NxController* const rotatedOverlapControllerReverse = rotatedOverlapScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(rotatedOverlapControllerDescStorage));
+	if(!rotatedOverlapControllerReverse)
+		return nxFail("rotated reverse-overlap controller fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	const NxVec3 rotatedEscapeDisplacementReverse(-1.0f, 0.0f, 0.0f);
+	reinterpret_cast<NxControllerProbe*>(rotatedOverlapControllerReverse)->move(
+		rotatedEscapeDisplacementReverse, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& rotatedEscapedPositionReverse =
+		reinterpret_cast<NxControllerProbe*>(rotatedOverlapControllerReverse)->getPosition();
+	printf("simulation controller-rotated-initial-overlap reverse position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(rotatedEscapedPositionReverse.x), nxFloatBits(rotatedEscapedPositionReverse.y),
+		nxFloatBits(rotatedEscapedPositionReverse.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(rotatedEscapedPositionReverse.x) != 0xbf800000 ||
+		nxFloatBits(rotatedEscapedPositionReverse.y) != 0 ||
+		nxFloatBits(rotatedEscapedPositionReverse.z) != 0 || obstacleCollisionFlags != 0;
+	rotatedOverlapScene->releaseController(*rotatedOverlapControllerReverse);
+	sdk->releaseScene(*rotatedOverlapScene);
 	NxBoxShapeDesc verticalObstacleShape;
 	verticalObstacleShape.dimensions = NxVec3(1.0f, 0.5f, 1.0f);
 	NxActorDesc verticalObstacleActorDesc;

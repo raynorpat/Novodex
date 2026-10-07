@@ -3220,6 +3220,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation controller-obstacle mesh-backface position=40000000.3e4ccccd.3e4ccccd flags=00000000'
         'simulation controller-initial-overlap escape position=3e800000.00000000.00000000 flags=00000000'
         'simulation controller-initial-overlap inward position=3f400000.00000000.00000000 flags=00000004'
+        'simulation controller-rotated-initial-overlap escape position=3f800000.00000000.00000000 flags=00000000'
+        'simulation controller-rotated-initial-overlap reverse position=bf800000.00000000.00000000 flags=00000000'
         'simulation effector-step setup count=1 awake=1 pos=00000000 spring=3f000000.3f800000.40800000.42c80000.42c80000'
         'simulation effector-step ready=1 fetched=1 vx=00000000'
         'simulation effector-step second ready=1 fetched=1 vx=3e8e38e3'
@@ -5441,7 +5443,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # tracked in the completion roadmap.
     '6' = 867  # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1359  # previous 1,358 plus the vehicle wheel-capsule userData copy
+    '7' = 1361  # previous 1,359 plus both rotated-box initial-overlap exits
                # (free-space, actor pose, obstacle/group filter, vertical, grounded step, trigger, overlap)
     '8' = 0
 }

@@ -2001,6 +2001,7 @@ namespace
 								NxReal leave = 1.0f;
 								NxU32 entryAxis = 0;
 								bool intersects = true;
+								bool startsOverlapping = true;
 								for(NxU32 axisIndex = 0; axisIndex != sweepAxisCount; ++axisIndex)
 									{
 									const NxVec3& axis = sweepAxis[axisIndex];
@@ -2021,6 +2022,8 @@ namespace
 									// Round the projected contact interval outward so a boundary
 									// hit is not lost to the final float addition.
 									radius += radius * 1.1920928955078125e-7f;
+									if(startProjection < -radius || startProjection > radius)
+										startsOverlapping = false;
 									if(deltaProjection == 0.0f)
 										{
 										if(startProjection < -radius || startProjection > radius)
@@ -2045,6 +2048,10 @@ namespace
 									if(enter > leave)
 										intersects = false;
 									}
+								if(startsOverlapping)
+									// The pinned rotated-box resolver accepts either direction
+									// when a move begins inside the expanded OBB.
+									continue;
 								if(intersects && leave >= 0.0f && enter >= 0.0f && enter < fraction)
 									{
 									fraction = enter;
