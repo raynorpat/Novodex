@@ -41,6 +41,5 @@
     "modules ",
     "imports "
   ],
-  "escalations": [],
-  "closed_functions": 17
+  "escalations": []
 }
