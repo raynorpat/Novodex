@@ -42693,13 +42693,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/include/NxBoxShapeDesc.h",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/865",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7292",
-      "static_proof": null,
+      "static_proof": "IDA vtable at 0x10108818 places this function in NxBoxShapeDesc slot 2. Its checks over dimensions +0x4c/+0x50/+0x54 and the base NxShapeDesc fields match the inline implementation in Physics/include/NxBoxShapeDesc.h and NxShapeDesc.h field for field; zero dimensions are accepted, as in the oracle.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Inline NxBoxShapeDesc::isValid implementation matches the oracle vtable slot; see evidence/box-shape-desc-validation.md."
     },
     {
       "id": "phys_fn_002325",

@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "phase": 5,
-  "note": "Phase 5 owns 205 function rows and 122 data objects. One function row, phys_fn_002318, is now closed by a registered differential mutation; 194 function rows remain reconstructed but not falsified, 10 remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records.",
+  "note": "Phase 5 owns 205 function rows and 122 data objects. One function row, phys_fn_002318, is closed by a registered differential mutation; 195 function rows remain reconstructed but not falsified, 9 remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 function rows; the 122 data objects remain separately classified as described by their inventory records.",
   "proof_kinds": {
-    "differential_falsified": "one mutation aimed at phys_fn_002318 in an isolated archive was caught by the registered NxPhysicsSimulationTests differential; 194 reconstructed function rows still need a mutation and measured detection.",
+    "differential_falsified": "one mutation aimed at phys_fn_002318 in an isolated archive was caught by the registered NxPhysicsSimulationTests differential; 195 reconstructed function rows still need a mutation and measured detection.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. This phase has none yet."
   },
   "deferred_reasons": {
-    "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction; 10 function rows remain here.",
-    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 194 rows, each needing one mutation and one measured detection.",
+    "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction; 9 function rows remain here.",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 195 rows, each needing one mutation and one measured detection.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -19,8 +19,8 @@
   },
   "counts": {
     "differential_falsified": 1,
-    "deferred_not_reconstructed_in_phase": 10,
-    "deferred_reconstructed_not_falsified": 194
+    "deferred_not_reconstructed_in_phase": 9,
+    "deferred_reconstructed_not_falsified": 195
   },
   "closed": [
     {
@@ -761,9 +761,12 @@
       "id": "phys_fn_002324",
       "rva": "0x0005a240",
       "size": 500,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [
+        5
+      ],
+      "note": "The oracle vtable slot is NxBoxShapeDesc::isValid; its implementation is inline in Physics/include/NxBoxShapeDesc.h and is exercised through invalid-shape createShape cases. A row-targeted mutation has not yet been falsified."
     },
     {
       "id": "phys_fn_002330",
