@@ -2029,17 +2029,20 @@ namespace
 				NxVec3 remaining = motionPhases[phase];
 				for(NxU32 iteration = 0; iteration != 4; ++iteration)
 					{
-					const NxReal stepDistanceSquared = remaining.x * remaining.x +
-						remaining.y * remaining.y + remaining.z * remaining.z;
-					if(stepDistanceSquared < minDistance * minDistance)
+					const NxReal endX = position.x + remaining.x;
+					const NxReal endY = position.y + remaining.y;
+					const NxReal endZ = position.z + remaining.z;
+					const NxReal moveX = endX - position.x;
+					const NxReal moveY = endY - position.y;
+					const NxReal moveZ = endZ - position.z;
+					const NxReal stepDistance = NxMath::sqrt(
+						moveX * moveX + moveY * moveY + moveZ * moveZ);
+					if(stepDistance < minDistance)
 						break;
 					NxReal fraction = 1.0f;
 					NxU32 hitAxis = 3;
 					if(scene)
 						{
-					const NxReal endX = position.x + remaining.x;
-					const NxReal endY = position.y + remaining.y;
-					const NxReal endZ = position.z + remaining.z;
 					NxBounds3 sweptBounds;
 					sweptBounds.set(
 						(position.x < endX ? position.x : endX) - extents.x,
