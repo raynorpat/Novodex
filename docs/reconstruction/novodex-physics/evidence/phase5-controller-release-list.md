@@ -24,4 +24,12 @@ The `NxPhysicsMeshSimulationTests` probe reports the mesh-shape count and buffer
 
 `phys_fn_000032` mutation measurement: omitted the mesh Scene+0x10 increment and mesh-count-driven buffer reserve; caught by the registered `NxPhysicsMeshSimulationTests` differential with `stdout_delta=4` (`build/phase5-shapefactory-mesh-mutation.log`). The target is registered in Phase 5 as well as the existing mesh/contact gates. The clean Phase 5 run passes all 15 targets (`build/phase5-shapefactory-final.log`).
 
+## Actor descriptor userData: `phys_fn_000034`
+
+IDA identifies `phys_fn_000034` at `0x10002010` as `Actor::loadFromDescInternal`; the call at `0x10011dac` comes from `Scene::createActor` (`0x10011730`). The descriptor contract in `NxActorDescBase` says `userData` is copied to `NxActor::userData`. The candidate previously left the wrapper's `+4` field holding its temporary Scene link, even though the body had already copied that Scene link to `body+4`.
+
+`NxPhysicsActorMetadataTests` now creates an actor with sentinel descriptor userData and reports whether the returned actor preserves it. Before the fix, the shipped DLL reported `metadata_user_data=1` and the candidate `0` (`stdout_delta=2`, exact stderr). `nxActorLoadFromDescInternal` now copies the descriptor value into the wrapper after scene registration; both sides report `1` and the complete differential matches (`stdout_delta=0`, exact stderr; `build/phase5-next/actor-metadata-userdata-green.log`). The omitted-copy state is the row's mutation and is rejected by the registered Phase 5 test. Public Physics headers remain unchanged.
+
+`phys_fn_000034` mutation detection: `stdout_delta=2`.
+
 The Phase 7 `NxPhysicsPairFlagTests` regression isolates the root-ID recycle case: set actor-pair flags, release the actor, create a replacement, and verify the recycled root ID is `1 -> 1` while the old flags are cleared. Oracle and candidate both report `flags=00000000` with `stdout_delta=0` and exact stderr (`build/phase5-pair-cleanup-final-diff.log`). The final Phase 5 gate also passes (`build/phase5-pair-cleanup-final.log`). These checks cover actor destruction and pair-record cleanup; they do not close any other Phase 5 rows.

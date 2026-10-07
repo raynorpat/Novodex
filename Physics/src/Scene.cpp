@@ -1566,6 +1566,10 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 		// No body: register the actor with the scene and succeed.
 		nxSceneAddActorObject(reinterpret_cast<void*>(a[1]),
 			reinterpret_cast<void*>(a[0x10 / 4]), actor);
+		// The constructor uses +4 as its temporary Scene link. The body has
+		// already copied that link; this is NxActor::userData on the public
+		// wrapper, and the descriptor promises to initialise it.
+		a[1] = d[0x10];
 		return 1;
 		}
 
@@ -1589,6 +1593,7 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 		{
 		nxSceneAddActorObject(reinterpret_cast<void*>(a[1]),
 			reinterpret_cast<void*>(a[0x10 / 4]), actor);
+		a[1] = d[0x10];
 		return 1;
 		}
 	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,

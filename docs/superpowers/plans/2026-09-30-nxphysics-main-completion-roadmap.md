@@ -1,5 +1,17 @@
 # NxPhysics completion project plan from main
 
+### Continuation — actor descriptor userData and Phase 5 gate (2026-10-07)
+
+IDA confirms the call from `Scene::createActor` to `phys_fn_000034` at `0x10011dac`.
+The Phase 5 metadata differential exposed that the candidate dropped
+`NxActorDescBase::userData`: the oracle returned the sentinel on `NxActor`, the
+candidate returned false. The loader now copies it after scene registration,
+once the body has retained its Scene link. The targeted differential is exact;
+Phase 5 coverage rises to 2,238 assertions, and the closure ledger now records
+four falsified rows, 200 reconstructed rows awaiting mutation, and one truly
+unreconstructed row. The viewer sweep still covers all 39 available scenes.
+Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md`.
+
 ### Continuation — Phase 5 actor teardown and mesh shape factory (2026-10-07)
 
 Closed `phys_fn_000030` with the actor-root deletion mutation and `phys_fn_000032`
@@ -10,7 +22,7 @@ to 1,024. The Phase 5 registry includes `NxPhysicsMeshSimulationTests`; Phase 5
 passes all 15 targets, Phase 7 passes all 11, and all 56 Viewer CTest selections
 pass across all 39 scenes (51 pass; five pinned-oracle asset cases skip).
 Inventory validation reports 6,338 functions, 5,138 data objects, and zero
-unexplained; two Phase 5 rows remain unreconstructed. The full Release build's
+unexplained; one Phase 5 row remains unreconstructed. The full Release build's
 unrelated `NxPhysicsCollisionTests` target still fails to link
 `nxInternalMeshBuildTopology`, while the `NxPhysics` DLL and Viewer targets
 build. Public Physics headers remain unchanged.

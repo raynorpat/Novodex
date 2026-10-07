@@ -1629,6 +1629,7 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsActorMetadataTests' = @(
         'actor metadata_created=1',
+        'actor metadata_user_data=1',
         'actor metadata_descriptor=7.1.2.7',
         'actor metadata_collision_default=0',
         'actor metadata_raised=9.1.1.3',
@@ -5444,7 +5445,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '3' = 359  # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 260  # previous 259 plus the isolated density-80 PMap compute result
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2237  # previous 2,226 plus the mesh factory's 11 registered diagnostics
+    '5' = 2238  # previous 2,237 plus actor descriptor userData initialization
+               # previous 2,226 plus the mesh factory's 11 registered diagnostics
                # previous 2,225 plus the 1,000-step multi-body stack soak
                # + 175 from scene-raycast Task 4 (149 body-creation, 13 setters, 9 dynamic-setter
                # and 3 shape-vtable from its shape sub-area, 1 shape-vtable from its box hull)

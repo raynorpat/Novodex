@@ -682,14 +682,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/Actor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/18",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/96",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "Round 54: the reconstruction named here was nxSceneActorInitialise, a function declared and defined in Scene.cpp and called by nothing. The dynamic proof added in round 30 claimed the row executes on the staged-pair differential path; it does not, because no code invokes it. Both fields are cleared rather than corrected, because this session has not established where the row is actually reconstructed. Actor-mass Task 1: the candidate model nxActorLoadFromDescInternal (Scene.cpp) now reports its two mass failures through FoundationSDK::error with Actor.cpp's __FILE__ and lines 0xe5/0xe6, as 0x21e3/0x2201 do.",
-      "implementation": null
+      "static_proof": "IDA decompilation at 0x10002010 (RVA 0x2010, 565 bytes) identifies Actor::loadFromDescInternal. IDA xrefs show Scene::createActor at 0x10011730 calls it at 0x10011dac; the candidate models body creation, naming, shape selection, mass error arms, and successful scene registration. NxActorDescBase::userData is the public wrapper field at +4; the descriptor value is copied only after the body has taken ownership of the temporary Scene link.",
+      "dynamic_proof": "NxPhysicsActorMetadataTests staged-pair differential drives the real Scene::createActor -> phys_fn_000034 path. Before the fix, oracle reported metadata_user_data=1 while candidate reported 0 (stdout_delta=2, exact stderr). After copying descriptor userData to the public NxActor field after scene registration, both report 1 and the whole target matches exactly (stdout_delta=0, exact stderr). The missing-copy mutant is rejected by the registered Phase 5 gate.",
+      "notes": "Corrected the earlier stale discovered classification that referred to unused nxSceneActorInitialise: the binary xref and the staged-pair target establish the actual Actor::loadFromDescInternal path. Other descriptor/mass/shape/lifecycle behavior continues to be exercised by the Phase 5 actor targets.",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000035",

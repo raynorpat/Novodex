@@ -37,9 +37,11 @@ int wmain(int argc, wchar_t** argv)
 	actorDesc.shapes.pushBack(&box);
 	actorDesc.group = 7;
 	actorDesc.flags = NX_AF_DISABLE_RESPONSE;
+	actorDesc.userData = reinterpret_cast<void*>(0x12345678u);
 	NxActor* actor = scene->createActor(actorDesc);
 	printf("actor metadata_created=%u\n", actor ? 1u : 0u);
 	if(!actor) return nxFail("actor creation failed");
+	printf("actor metadata_user_data=%u\n", actor->userData == actorDesc.userData ? 1u : 0u);
 	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(
 		reinterpret_cast<const unsigned char*>(actor) + 0x14);
 	printf("actor metadata_descriptor=%u.%u.%x.%x\n",
