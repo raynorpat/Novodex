@@ -78,7 +78,7 @@ Decompile (capstone disassembly):
 0x0000267a  ret
 ```
 
-## phys_fn_000052 (0x00002680, 107 B, reconstructed)
+## phys_fn_000052 (0x00002680, 107 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/NpActor.cpp

@@ -5,11 +5,11 @@
   "status": "pending",
   "closure_ledger": "gates/phase5-closure.json",
   "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
-  "evidence_commit": "254804f4",
-  "note": "The Phase 5 regression gate passed on merged local main at 559b865c: 15 staged-pair targets, one static-proof target, two oracle-differential targets, and 2,250/2,250 coverage assertions. The closure ledger records 17 falsified rows and 188 reconstructed rows still awaiting falsification; the overall reconstruction phase remains pending. The prior Viewer sweep at 403b57d5 exercised all 39 registered scenes: 43 of 48 tests passed and five signature-verified pinned-oracle asset cases skipped.",
+  "evidence_commit": "639fcdee",
+  "note": "The full Phase 5 regression gate passed at merged commit 559b865c with 2,250/2,250 coverage assertions. Two damping getter rows are now independently mutation-falsified on the target line already run by that gate; the current closure ledger is 18 closed / 187 deferred. The phase remains pending until all owned rows are closed.",
   "counts": {
-    "closed": 17,
-    "deferred": 188
+    "closed": 18,
+    "deferred": 187
   },
   "gate_sequence": [
     {

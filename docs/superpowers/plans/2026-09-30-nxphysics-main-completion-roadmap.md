@@ -1,3 +1,13 @@
+### Continuation — angular damping getter falsification (2026-10-07)
+
+Closed Phase 5 row `phys_fn_000052` (`NpActorVtable::getAngularDamping`) using
+the same required output line as the linear getter. A wrong `+0xb8` read in
+place of `+0xbc` changed the public value from `0.6` to `0.4`;
+`NxPhysicsActorDynamicSetterTests` caught it with `stdout_delta=2`. The clean
+differential is exact. Phase 5 now records 18 closed rows and 187 reconstructed
+rows awaiting falsification; no coverage floor change was needed. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase5-get-linear-damping.md`.
+
 ### Continuation — linear damping getter falsification (2026-10-07)
 
 Closed Phase 5 row `phys_fn_000050` (`NpActorVtable::getLinearDamping`). The
