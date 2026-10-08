@@ -43233,12 +43233,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "layout_adjacency",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/876",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7402",
       "static_proof": "add ecx,0x28 then tail-jump to 0xb4f50 (SdkContainer::empty); multiple-inheritance offset adjustment thunk; the thunk's own return is empty()'s eax -- unpinned",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsObjectLayoutTests drives the +0x28 container adjustor over owned, external, and null-entry cases; removing its SdkContainer::empty call yields candidate failures=4 and mismatches=4; restored digest f9aac08b matches the oracle.",
       "notes": "first transcription hard-coded the oracle's absolute 0x100b4f50; the addthunk differential caught it as c0000005 at 0xb4f53 (candidate tail-calling oracle code with ecx invalid)"
     },
     {
