@@ -556,3 +556,20 @@ The CMass differential catches each pose setter mutation, and clean/restored out
 - `phys_fn_000200` mutation detection: `stdout_delta=56`. Full details: `evidence/phase5-global-pose-setters-000196-000198-000200-000202-000204.md`.
 - `phys_fn_000202` mutation detection: `stdout_delta=392`. Full details: `evidence/phase5-global-pose-setters-000196-000198-000200-000202-000204.md`.
 - `phys_fn_000204` mutation detection: `stdout_delta=218`. Full details: `evidence/phase5-global-pose-setters-000196-000198-000200-000202-000204.md`.
+
+### Center-of-mass setter mutations (2026-10-08)
+
+The registered `NxPhysicsActorCMassTests` differential independently caught
+each setter's wrong-store mutation with both processes exiting zero and exact
+stderr; restoring the source returned to an exact transcript:
+
+- `phys_fn_000206` mutation detection: `stdout_delta=148`.
+- `phys_fn_000208` mutation detection: `stdout_delta=150`.
+- `phys_fn_000210` mutation detection: `stdout_delta=28`.
+- `phys_fn_000212` mutation detection: `stdout_delta=52`.
+- `phys_fn_000214` mutation detection: `stdout_delta=56`.
+- `phys_fn_000218` mutation detection: `stdout_delta=120`.
+- `phys_fn_000220` mutation detection: `stdout_delta=58`.
+- `phys_fn_000222` mutation detection: `stdout_delta=60`.
+
+Full inputs, mutation descriptions, and restored logs: `evidence/phase5-cmass-setter-mutations-000206-000222.md`.
