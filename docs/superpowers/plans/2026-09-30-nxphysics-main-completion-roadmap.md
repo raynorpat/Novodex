@@ -1311,3 +1311,8 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 
 - `phys_fn_000975` now has an independent mutation proof: reversing the minimum comparison produces `mismatches=1`; restoring the comparison passes the registered oracle fixture.
 - Phase 5 stands at 123 closed / 82 deferred; the 2,309 coverage assertions remain required.
+
+### Continuation — BOX slot-3 visualization dispatcher closure (2026-10-08)
+
+- `phys_fn_000945` now has an independent mutation proof: reversing the live visualization parameter guard produces `mismatches=1`; the restored 64-case contract passes.
+- Phase 5 stands at 124 closed / 81 deferred; the 2,309 coverage assertions remain required.

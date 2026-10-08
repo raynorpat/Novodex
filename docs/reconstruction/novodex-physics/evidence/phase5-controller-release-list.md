@@ -634,3 +634,8 @@ The registered DynamicSetter differential catches a source-line mutation in the 
 
 - `phys_fn_000975` is caught by reversing the minimum comparison (`hull support candidate ok=0`; `mismatches=1`). Restoring the comparison yields exact oracle words and zero mismatches.
 - Phase 5 advances to 123 closed / 82 deferred functions. The 2,309 assertion floor is unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-hull-support-000975.md`.
+
+### Continuation — BOX slot-3 visualization dispatcher closure (2026-10-08)
+
+- `phys_fn_000945` is caught by reversing the live visualization guard (`slot3 mismatches=1`); restoring the guard passes the 64-case candidate contract and ordering check.
+- Phase 5 advances to 124 closed / 81 deferred functions. The 2,309 assertion floor is unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-debug-render-000945.md`.
