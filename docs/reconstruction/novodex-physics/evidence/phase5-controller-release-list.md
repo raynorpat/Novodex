@@ -835,3 +835,10 @@ The registered `NxPhysicsSimulationTests` staged-pair differential detects the
 mutation (`phys_fn_002330`, `candidate_exit=1`, `stdout_delta=2`, exact stderr). Restoring the
 guard reset returns to `oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`,
 and exact stderr (`build/phase5-002330-restored.log`).
+
+
+## Box hull support-face row: `phys_fn_000957`
+
+The registered `NxPhysicsShapeVtableTests` oracle differential directly invokes BoxHullFacade slots 9 and 10 on paired constructed box hulls. The baseline is `box hull oracle_digest=e0477220 cases=324 failures=0`. In a throwaway mutation, `BoxHullFacade::supportFace` was changed to return face 0 for every input; the same target reported `box hull oracle_digest=e0477220 cases=324 failures=150` and exited 1. Restoring `return bestFace` rebuilt cleanly and returned to 324 cases with zero failures (exit 0). The registered Phase 5 coverage line pins the clean digest and case count. Detailed record: `evidence/phase5-box-support-face-000957.md`.
+
+`phys_fn_000957` mutation detection: `mismatches=150`; restored output is exact (`mismatches=0`).

@@ -1340,3 +1340,9 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 ### Continuation — inert `flushStream` mutation closure (2026-10-08)
 
 - Closed Phase 7 row `phys_fn_000333` after IDA confirmed the oracle slot tail-jumps to a one-byte `retn` helper. The direct `NxPhysicsSimulationTests` fixture verifies a public call emits no error; an `NXE_DB_WARNING` mutation is caught (`candidate_exit=1`, `stdout_delta=554`), and the restored DLL matches the oracle exactly. Phase 7 advances to 23 closed / 538 remaining functions. Public headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-joints.md`.
+
+
+### Continuation — box hull support-face mutation closure (2026-10-08)
+
+- `phys_fn_000957` (`BoxHullFacade::supportFace`, BOX hull slot 9) is now mutation-falsified by the registered `NxPhysicsShapeVtableTests` oracle differential. The clean fixture compares 324 cases at digest `e0477220`; forcing face 0 produced 150 mismatches and exit 1; the restored build returned to zero mismatches. The existing required Phase 5 coverage line already pins the clean digest and case count.
+- The fresh current-main Phase 5 gate passes all 18 staged-pair targets, the range static proof, both oracle differentials, and 2,311/2,311 coverage assertions. Inventory and both 80-file public-header roots pass. Phase 5 advances to 159 closed / 46 reconstructed-but-unfalsified rows. No public headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-support-face-000957.md`.
