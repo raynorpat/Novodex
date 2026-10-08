@@ -802,13 +802,13 @@
    ],
    "rows": {
     "discovered": 1,
-    "dynamically_gated": 38,
-    "reconstructed": 102
+    "dynamically_gated": 39,
+    "reconstructed": 101
    },
    "bytes": {
     "discovered": 120,
-    "dynamically_gated": 5020,
-    "reconstructed": 42454
+    "dynamically_gated": 5088,
+    "reconstructed": 42386
    },
    "phases": {
     "2": 20,

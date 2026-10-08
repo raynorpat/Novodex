@@ -650,3 +650,9 @@ The registered DynamicSetter differential catches a source-line mutation in the 
 
 - `phys_fn_000742` mutation detection: `actorsm2 candidate ok=0`, energy `422b41c8` versus oracle `4240985d`, `mismatches=1`, target exit 1. The restored target reports `ok=1`, identical energy words, and zero layout mismatches.
 - Full details: `evidence/phase5-energy-x87-000742.md`.
+
+
+### Group-sleep chain helper (`phys_fn_000744`)
+
+- `phys_fn_000744` changing the group-sleep comparison from `> 0.0f` to `>= 0.0f` is caught by `NxPhysicsObjectLayoutTests`: `actorsm5 candidate ok=0`, `mismatches=1`. The restored candidate returns digest `75b57124` with zero mismatches.
+- Full details: `evidence/phase5-chain-settled-000744.md`.
