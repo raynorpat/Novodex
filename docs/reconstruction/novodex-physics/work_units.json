@@ -1364,13 +1364,13 @@
    ],
    "rows": {
     "discovered": 22,
-    "dynamically_gated": 5,
-    "reconstructed": 27
+    "dynamically_gated": 7,
+    "reconstructed": 25
    },
    "bytes": {
     "discovered": 10004,
-    "dynamically_gated": 383,
-    "reconstructed": 3362
+    "dynamically_gated": 545,
+    "reconstructed": 3200
    },
    "phases": {
     "3": 40,

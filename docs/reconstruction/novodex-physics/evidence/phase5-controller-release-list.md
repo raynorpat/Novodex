@@ -750,3 +750,15 @@ The baseline `NxPhysicsObjectLayoutTests` oracle differential reports sphere sav
 
 The baseline `NxPhysicsObjectLayoutTests` oracle differential reports sphere digest `f9280a78`, `sphererows candidate ok=1`, and zero layout mismatches (`build/phase5-001365-baseline.log`). Changing the first zero-center output to 1.0f is caught with `sphererows candidate ok=0` and `layout candidate mismatches=1`; the mutant exits 1 (`build/phase5-001365-mutant.log`). Restoring zero returns the baseline digest, zero mismatches, and differential-pass (`build/phase5-001365-restored.log`).
 `phys_fn_001365` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-sphere-zero-center-001365.md`.
+
+
+### Sphere world AABB (`phys_fn_001361`)
+
+The baseline `NxPhysicsObjectLayoutTests` oracle differential reports `aabbrows candidate ok=1`, digest `e2ba14a5`, and zero layout mismatches (`build/phase5-001361-001367-baseline.log`). Adding 1.0f to the first candidate world-AABB output changes the digest to `07257e18`, reports candidate ok=0 and `layout candidate mismatches=1`, and exits 1 (`build/phase5-001361-mutant.log`). Restoring the subtraction returns the baseline digest, zero mismatches, and differential-pass (`build/phase5-001361-restored.log`).
+`phys_fn_001361` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-sphere-aabbs-001361-001367.md`.
+
+
+### Sphere local AABB (`phys_fn_001367`)
+
+The baseline `NxPhysicsObjectLayoutTests` oracle differential reports `sphlocal candidate ok=1`, digest `33c61825`, and zero layout mismatches (`build/phase5-001361-001367-baseline.log`). Changing the first negative-radius store to positive radius changes the digest to `f40ecfa5`, reports candidate ok=0 and `layout candidate mismatches=1`, and exits 1 (`build/phase5-001367-mutant.log`). Restoring the negation returns the baseline digest, zero mismatches, and differential-pass (`build/phase5-001367-restored.log`).
+`phys_fn_001367` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-sphere-aabbs-001361-001367.md`.
