@@ -645,3 +645,8 @@ The registered DynamicSetter differential catches a source-line mutation in the 
 
 - `phys_fn_000748` mutation detection: `stdout_delta=172`; oracle reports `bodycreate mark_island_dirty=3.5`, candidate mutant reports `1.5` and exits 1. The restored candidate differential is exact.
 - Full details: `evidence/phase5-mark-island-dirty-000748.md`.
+
+### Body-record mass-energy helper (`phys_fn_000742`)
+
+- `phys_fn_000742` mutation detection: `actorsm2 candidate ok=0`, energy `422b41c8` versus oracle `4240985d`, `mismatches=1`, target exit 1. The restored target reports `ok=1`, identical energy words, and zero layout mismatches.
+- Full details: `evidence/phase5-energy-x87-000742.md`.

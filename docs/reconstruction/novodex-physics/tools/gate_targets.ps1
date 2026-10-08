@@ -5038,7 +5038,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # scale factors SQUARED, the defect the first transcription missed --
         # the +0x84 zero test, and the write-guard flag writers including
         # their kind-2 deadlock-report arms.
-        'actorsm2 row=oracle energy=42500000/42500000 digest=663451db',
+        'actorsm2 row=oracle energy=4240985d/4240985d digest=f3e3d65f',
         # Slate 3: the damping getters -- kind-1 warnings on a null record,
         # each folded immediately (a shared cap keeps only the last report).
         'actorsm3 row=oracle lin=3eb33333 ang=3e000000 digest=5bc8156a',
@@ -5090,7 +5090,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'capdtor row=phys_fn_001014 digest=7a376673',
         'capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
         'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1',
-        'layout oracle digest=48e9445b',
+        'layout oracle digest=5943e78a',
         'hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5',
         'hull sharedhook candidate ok=1 stable=1',
         'basesave candidate ok=1 digest=bc9dc964',
@@ -5127,7 +5127,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'pairrm candidate ok=1 digest=f0bdae43',
         'actorsm candidate ok=1 digest=1bdc2fa8',
         'actorctor candidate ok=1 ct=1/1/1/1/1 dd=1/1/1 adj=1/1/1 w=1/1/1 digest=19f4915a',
-        'actorsm2 candidate ok=1 energy=42500000/42500000 digest=663451db',
+        'actorsm2 candidate ok=1 energy=4240985d/4240985d digest=f3e3d65f',
         'actorsm3 candidate ok=1 lin=3eb33333 ang=3e000000 digest=5bc8156a'
         'actorsm4 candidate ok=1 digest=0ecc5ea9'
         'actorsm5 candidate ok=1 digest=75b57124'

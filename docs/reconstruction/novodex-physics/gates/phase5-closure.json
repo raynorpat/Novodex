@@ -22,8 +22,8 @@
   },
   "counts": {
     "differential_falsified": 96,
-    "oracle_differential_falsified": 28,
-    "deferred_reconstructed_not_falsified": 80,
+    "oracle_differential_falsified": 29,
+    "deferred_reconstructed_not_falsified": 79,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -1292,6 +1292,16 @@
         "mutation": "Changed DynamicBody::markIslandDirty +0x1e4 update from |= 2 to |= 0.",
         "detected": "stdout_delta=172"
       }
+    },
+    {
+      "id": "phys_fn_000742",
+      "rva": "0x00016dd0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Removed the [+0x194]*[+0x80]^2 contribution from nxBodyRecordEnergyWord.",
+        "detected": "mismatches=1"
+      }
     }
   ],
   "deferred": [
@@ -1575,15 +1585,6 @@
       "size": 259,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000742",
-      "rva": "0x00016dd0",
-      "size": 89,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
