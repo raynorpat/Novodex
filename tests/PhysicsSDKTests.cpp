@@ -259,6 +259,7 @@ int wmain(int argc, wchar_t** argv)
 	if(sceneB)
 		first->releaseScene(*sceneB);
 	printf("step=scenes_empty count=%u\n", first->getNbScenes());
+	reportAllocator("step=scenes_released.allocator", allocatorFirst);
 	reportStream("step=parameters.stream", streamFirst);
 
 	first->release();

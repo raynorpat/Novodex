@@ -1,3 +1,18 @@
+### Continuation — scene release deleting-destructor chain (2026-10-07)
+
+Added an allocator snapshot immediately after both public scene releases and
+required it in Phase 2 and Phase 3 coverage. The pinned oracle and restored
+candidate report 18 allocator frees at that checkpoint. A no-op mutation of
+`NxSceneInternal::scalarDeletingDestructor` was caught with `stdout_delta=4`
+(candidate free count 0); a no-op `PhysicsSDK::releaseScene` mutation was caught
+with `stdout_delta=8` and a failed survivor lookup. The SDK lifecycle target is
+now also registered to Phase 3. Fresh Phase 2 and Phase 3 gates pass with 4 and
+531 required assertions respectively. The ledgers now close Phase 2 rows
+`phys_fn_000236` and `phys_fn_000468` as discharged by Phase 3, and dynamically
+gate Phase 3 row `phys_fn_001275`. Scene creation's larger dependency tree
+remains open. Evidence:
+`docs/reconstruction/novodex-physics/evidence/scene-release-deleting-destructor-2026-10-07.md`.
+
 ### Continuation — SDK scene wrapper gate sensitivity (2026-10-07)
 
 Registered the existing two-scene create/index/release/survivor fixture as

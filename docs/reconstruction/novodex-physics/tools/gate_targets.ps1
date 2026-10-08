@@ -11,7 +11,7 @@
 $NxPhaseTestTargets = [ordered] @{
     '1' = @()
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
-    '3' = @('NxPhysicsBodyCreationTests', 'NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
+    '3' = @('NxPhysicsBodyCreationTests', 'NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests', 'NxPhysicsSDKTests')
     '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests', 'NxPhysicsPMapResolution80Tests')
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsActorReleaseShapeProbeTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsSimulationTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsConvexMeshTests')
     '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsSimulationTests')
@@ -100,6 +100,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # swap-removes it while preserving lookup of the surviving scene.
         'step=scenes_created count=2 both=1 first_lookup=1 second_lookup=1'
         'step=scene_released count=1 survivor_lookup=1'
+        # The second release runs NxSceneInternal's deleting destructor before
+        # SDK teardown, which must return the scene allocations to its allocator.
+        'step=scenes_released.allocator'
     )
     'NxPhysicsActorShapeMutationTests' = @(
         # NpActor.cpp completion Task 4: createShape (000070 -> Actor.cpp 000036)
@@ -5540,8 +5543,8 @@ $NxRequiredCoverageLines = [ordered] @{
 # independently, so the two edits have to appear together in a diff.
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
-    '2' = 3  # actor-group pair flags, scene-wrapper creation/indexing and release/survivor lookup
-    '3' = 527  # previous 359 plus the 168 required body/shape manager assertions
+    '2' = 4  # actor-group flags, scene creation/indexing, release/survivor lookup and destructor frees
+    '3' = 531  # previous 527 plus four SDK scene lifecycle/destructor assertions
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 264  # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
