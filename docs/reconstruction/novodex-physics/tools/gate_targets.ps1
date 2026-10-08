@@ -414,8 +414,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'release_shape count=1 remaining_first=1 remaining_released=0'
     )
     'NxPhysicsShapeVtableTests' = @(
-        'shape vtable oracle_digest=ed1294b6 cases=628 failures=0'
-        'shape vtable base_stubs oracle_digest=6282208d cases=2 mismatches=0'
+        'shape vtable oracle_digest=ed1294b6 cases=629 failures=0'
+        'shape vtable base_stub slot4 oracle_false=1 candidate_false=1 output_preserved=1'
+        'shape vtable base_stub slot5 oracle_null=1 candidate_null=1 esp_balanced=1'
+        'shape vtable base_stub slot7 oracle_false=1 candidate_false=1 output_preserved=1'
         # BOX slot 4 (phys_fn_000849) reaches the mass-frame builder with
         # descriptor dimensions, local pose, density scaling, and gated flags.
         'shape vtable boxmass oracle_digest=82843962 cases=24 failures=0'
@@ -4950,7 +4952,6 @@ $NxRequiredCoverageLines = [ordered] @{
         'capsule ctor=phys_fn_000987 size=236 digest=ba7317e3 sentinel_d0=3 arg_d4=5a5a5a5a float_e0=00000000 float_e4=00000000 colobj_ok=1',
         'plane ctor=phys_fn_001247 size=268 digest=abed37e0 sentinel_d0=0 arg_d4=5a5a5a5a normal=00000000.3f800000.00000000 dist_ec=00000000 word108=1 tangent_f0=bf800000.00000000.00000000 binormal_fc=80000000.80000000.3f800000 colobj_ok=1',
         'mesh ctor=phys_fn_001379 size=232 digest=422a1f78 sentinel_d0=4 arg_d4=5a5a5a5a word_e0=00000000 word_e4=00000000 colobj_ok=1',
-        'basevt slots=4:001249,5:004812,7:001035 ret4=0 ret5=00000000 ret7=0',
         'basesave row=phys_fn_001277 saved=1 digest=bc9dc964 pose_diag=3f800000 word38=00000008 word3c=00000000 word40=00000000 poison_head=cdcdcdcd',
         'boxrow slot10=phys_fn_000937 out=00000000.00000000.00000000.3fddb3d7',
         'boxrow2 slot11=phys_fn_000939 out=00000000.00000000.00000000.3fddb3d7 slot13=phys_fn_000927 saved=1 digest=853c971d dims_at_4c=3f800000',
@@ -5059,11 +5060,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'material row=template flags=00000000 digest=527814f5',
         'capdtor row=phys_fn_001014 digest=7a376673',
         'capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
-        'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1',
-        'layout oracle digest=16dceb3c',
+        'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1',
+        'layout oracle digest=73a1bc1c',
         'hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5',
         'hull sharedhook candidate ok=1 stable=1',
-        'basevt candidate ok=1 ret4=0 ret5=00000000 ret7=0',
         'basesave candidate ok=1 digest=bc9dc964',
         'boxrow candidate ok=1 digest=2f2dc4eb',
         'boxrow2 candidate ok=1 d11=2f2dc4eb d13=853c971d',

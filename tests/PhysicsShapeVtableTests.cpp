@@ -528,18 +528,18 @@ int wmain(int argc, wchar_t** argv)
     unsigned baseStubCases = 0, baseStubFailures = 0;
     unsigned baseStubDigest = 2166136261u;
     {
-        // Base-shape slots 4 and 5 are inherited stubs. Exercise their exact
+        // Base-shape slots 4, 5 and 7 are inherited stubs. Exercise their exact
         // entry points directly: final shape tables can replace these slots,
         // so derived-table calls do not prove the base implementations.
         typedef bool (__thiscall* BaseSlot4Fn)(void*, void*, float, unsigned);
-        typedef void* (__thiscall* BaseSlot5Fn)(void*, void*, void*, void*, void*);
+        typedef bool (__thiscall* BaseSlot7Fn)(void*, unsigned*, const void*);
+        typedef void* (__thiscall* BaseSlot5Fn)(void*, void*, float,
+            unsigned, unsigned, void*);
         unsigned outputSentinel = 0x6a5b4c3du;
         unsigned oracleOutput = outputSentinel;
         unsigned candidateOutput = outputSentinel;
-        void* const argument1 = &outputSentinel;
-        void* const argument2 = reinterpret_cast<void*>(0x12345678u);
-        void* const argument3 = reinterpret_cast<void*>(0x87654321u);
-        void* const argument4 = &baseStubCases;
+        void* const rayArgument = &outputSentinel;
+        void* const hitArgument = &oracleOutput;
         BaseSlot4Fn oracleSlot4 = reinterpret_cast<BaseSlot4Fn>(
             const_cast<unsigned char*>(base) + 0x24f70);
         const bool oracleSlot4Result = oracleSlot4(oracleBytes, &oracleOutput,
@@ -557,25 +557,75 @@ int wmain(int argc, wchar_t** argv)
             fprintf(stderr, "base shape slot 4 stub differs\n");
             ++baseStubFailures;
         }
+        printf("shape vtable base_stub slot4 oracle_false=%u candidate_false=%u "
+            "output_preserved=%u\n", !oracleSlot4Result,
+            !candidateSlot4Result, oracleOutput == outputSentinel &&
+            candidateOutput == oracleOutput);
         ++baseStubCases;
 
         BaseSlot5Fn oracleSlot5 = reinterpret_cast<BaseSlot5Fn>(
             const_cast<unsigned char*>(base) + 0xb4070);
-        void* const oracleSlot5Result = oracleSlot5(oracleBytes, argument1,
-            argument2, argument3, argument4);
+        unsigned stackBeforeSlot5 = 0, stackAfterOracleSlot5 = 0;
+        unsigned stackBeforeCandidateSlot5 = 0, stackAfterCandidateSlot5 = 0;
+        __asm mov stackBeforeSlot5, esp
+        void* const oracleSlot5Result = oracleSlot5(oracleBytes, rayArgument,
+            17.5f, 0x10203040u, 0x50607080u, hitArgument);
+        __asm mov stackAfterOracleSlot5, esp
+        __asm mov stackBeforeCandidateSlot5, esp
         void* const candidateSlot5Result =
             reinterpret_cast<ShapeBase*>(candidateBytes)->nxBaseSlot5(
-                argument1, argument2, argument3, argument4);
+                rayArgument, 17.5f, 0x10203040u, 0x50607080u, hitArgument);
+        __asm mov stackAfterCandidateSlot5, esp
         const unsigned slot5OracleWord = oracleSlot5Result ? 1u : 0u;
         baseStubDigest = foldOracle(baseStubDigest, &slot5OracleWord,
             sizeof(slot5OracleWord));
+        if(stackBeforeSlot5 != stackAfterOracleSlot5 ||
+           stackBeforeCandidateSlot5 != stackAfterCandidateSlot5) {
+            fprintf(stderr, "base shape slot 5 stack imbalance: oracle %u -> %u, "
+                "candidate %u -> %u\n", stackBeforeSlot5, stackAfterOracleSlot5,
+                stackBeforeCandidateSlot5, stackAfterCandidateSlot5);
+            ++baseStubFailures;
+        }
         if(oracleSlot5Result || oracleSlot5Result != candidateSlot5Result) {
             fprintf(stderr, "base shape slot 5 stub differs\n");
             ++baseStubFailures;
         }
+        printf("shape vtable base_stub slot5 oracle_null=%u candidate_null=%u "
+            "esp_balanced=%u\n", oracleSlot5Result == 0,
+            candidateSlot5Result == 0,
+            stackBeforeSlot5 == stackAfterOracleSlot5 &&
+            stackBeforeCandidateSlot5 == stackAfterCandidateSlot5);
+        ++baseStubCases;
+
+        unsigned oracleSweepOutput = 0xcafef00du;
+        unsigned candidateSweepOutput = oracleSweepOutput;
+        BaseSlot7Fn oracleSlot7 = reinterpret_cast<BaseSlot7Fn>(
+            const_cast<unsigned char*>(base) + 0x22dd0);
+        const bool oracleSlot7Result = oracleSlot7(oracleBytes,
+            &oracleSweepOutput, oracleBytes);
+        const bool candidateSlot7Result =
+            reinterpret_cast<ShapeBase*>(candidateBytes)->nxBaseSlot7(
+                &candidateSweepOutput, candidateBytes);
+        const unsigned slot7OracleWord = oracleSlot7Result ? 1u : 0u;
+        baseStubDigest = foldOracle(baseStubDigest, &slot7OracleWord,
+            sizeof(slot7OracleWord));
+        baseStubDigest = foldOracle(baseStubDigest, &oracleSweepOutput,
+            sizeof(oracleSweepOutput));
+        if(oracleSlot7Result || oracleSlot7Result != candidateSlot7Result ||
+           oracleSweepOutput != 0xcafef00du ||
+           candidateSweepOutput != oracleSweepOutput) {
+            fprintf(stderr, "base shape slot 7 stub differs\n");
+            ++baseStubFailures;
+        }
+        printf("shape vtable base_stub slot7 oracle_false=%u candidate_false=%u "
+            "output_preserved=%u\n", !oracleSlot7Result,
+            !candidateSlot7Result, oracleSweepOutput == 0xcafef00du &&
+            candidateSweepOutput == oracleSweepOutput);
         ++baseStubCases;
         cases += baseStubCases;
     }
+    printf("shape vtable base_stub_cases=%u mismatches=%u\n",
+        baseStubCases, baseStubFailures);
     for(unsigned slot = 0; slot < 17; ++slot) {
         HMODULE owner = 0;
         BOOL ok = GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |

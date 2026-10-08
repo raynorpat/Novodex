@@ -260,10 +260,10 @@ class ShapeBase
 	//! destination, density and reserved word, always false.
 	bool				nxBaseSlot4(void* destination, float density,
 							unsigned reserved);
-	//! Slot 5, phys_fn_004812 (0x000b4070): `xor eax,eax; ret 0x14` -- four
-	//! stack arguments, always null.
-	void*				nxBaseSlot5(void* argument1, void* argument2,
-							void* argument3, void* argument4);
+	//! Slot 5, phys_fn_004812 (0x000b4070): `xor eax,eax; ret 0x14` -- five
+	//! stack arguments (ray, max distance, groups, hints and hit), always null.
+	void*				nxBaseSlot5(void* ray, float maxDistance,
+							unsigned groups, unsigned hintFlags, void* hit);
 	//! Slot 7, phys_fn_001035 (0x00022dd0): `xor al,al; ret 8` -- output
 	//! and swept record arguments, always false. This is the continuous-collision sweep entry
 	//! Phase 3 left unresolved: the base shape cannot sweep. The plane final

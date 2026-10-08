@@ -1217,6 +1217,6 @@ Continuation 2026-10-06: compared the controller constructor's descriptor copies
 
 ### Continuation — base-shape stubs and exact gate coverage floors (2026-10-07)
 
-- Added direct oracle/candidate probes for base-shape slots 4 and 5 (`phys_fn_001249`, `phys_fn_004812`). Return and output-write mutants are each caught by `NxPhysicsShapeVtableTests`; the restored target reports `shape vtable base_stubs oracle_digest=6282208d cases=2 mismatches=0`. Phase 5 now records 65 closed / 140 deferred functions and passes 2,303/2,303 assertions.
+- Added direct oracle/candidate probes for base-shape slots 4, 5 and 7 (`phys_fn_001249`, `phys_fn_004812`, `phys_fn_001035`). The reviewer caught a slot-5 ABI mismatch in the original probe: `retn 0x14` removes five stack arguments, not four. The private `ShapeBase` signature and direct call now match `(ray, maxDistance, groups, hintFlags, hit)`, and the isolated probe verifies ESP balance for oracle and candidate; slot 4/7 checks moved out of the oversized ObjectLayout harness. Slot-4 return and output-write mutants plus a slot-5 non-null mutant are caught. Phase 5 passes exactly 2,303/2,303 assertions.
 - The registry consistency test exposed Phase 7's 1,378 floor below its 1,380 registered assertions. Raised the floor and its pinned unit-test minimum; Phase 7 passes all 13 staged-pair targets at 1,380/1,380. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-coverage-floor.md`.
 - Public Physics headers remain unchanged. The full DLL reconstruction remains active.

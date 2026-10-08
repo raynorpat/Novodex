@@ -274,17 +274,19 @@ records — slot → target):
 | 1 | 0x00027740 | descriptor-driven update: copies a pose into +0x6c, halfwords from the desc, colobj+4; calls 0xedc0/0x26d90 | discovered |
 | 2 | 0x000256f0 | **phys_fn_001277** (98 B): save-to-descriptor — pose3 + halfword trio + [colobj+4] into a record, returns true | **reconstructed** |
 | 3 | 0x00025960 | phys_fn_001305 (685 B): x87 world-bounds-class computation against globals 0x10123bc8/0x10123b4c | discovered |
-| 4 | 0x00024f70 | **phys_fn_001249**: `xor al,al; ret 0xc` — two args, false | **reconstructed** |
-| 5 | 0x000b4070 | **phys_fn_004812**: `xor eax,eax; ret 0x14` — four args, null | **reconstructed** |
+| 4 | 0x00024f70 | **phys_fn_001249**: `xor al,al; ret 0xc` — three stack args, false | **reconstructed** |
+| 5 | 0x000b4070 | **phys_fn_004812**: `xor eax,eax; ret 0x14` — five stack args (ray, max distance, groups, hints, hit), null | **reconstructed** |
 | 6 | 0x000266a0 | phys_fn_001315 (1061 B): owner/scene-touching update (reads [owner+4]+0x540) | discovered |
 | 7 | 0x00022dd0 | **phys_fn_001035**: `xor al,al; ret 8` — the sweep stub Phase 3 left unresolved | **reconstructed** |
 | 8–11 | 0x000f41dc ×4 | purecall filler | filler |
 
 The three stub rows are transcribed as `ShapeBase` members
-(`nxBaseSlot4/nxBaseSlot5/nxBaseSlot7`) and driven by a new `basevt`
-family: the oracle rows run on a dummy this with marked arguments, the
-candidate members answer through the reconstruction, both fold to the same
-transcript (`ret4=0 ret5=00000000 ret7=0`). Slot 7's closure is exact: it is
+(`nxBaseSlot4/nxBaseSlot5/nxBaseSlot7`) and exercised directly by
+`NxPhysicsShapeVtableTests`: the oracle rows run on a dummy this with marked
+arguments, the candidate members answer through the reconstruction, and the
+test separately reports each return value, slot 4/7 output preservation, and
+slot 5's balanced x86 stack. Slot 5 has five stack arguments (ray, max
+distance, groups, hints and hit), matching the oracle's `ret 0x14`. Slot 7's closure is exact: it is
 Phase 3's continuous-collision sweep entry, and what the base shape does
 with it is answer "no sweep" — the finals' overrides (box phys_fn_000951
 etc.) remain the sweep's owning rows. Slots 0–1 and 3/6 stay open until

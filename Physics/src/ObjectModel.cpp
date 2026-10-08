@@ -7009,8 +7009,8 @@ bool ShapeBase::nxBaseSlot4(void* /*destination*/, float /*density*/,
 	}
 
 // phys_fn_004812 (0x000b4070), base-table slot 5.
-void* ShapeBase::nxBaseSlot5(void* /*argument1*/, void* /*argument2*/,
-	void* /*argument3*/, void* /*argument4*/)
+void* ShapeBase::nxBaseSlot5(void* /*ray*/, float /*maxDistance*/,
+	unsigned /*groups*/, unsigned /*hintFlags*/, void* /*hit*/)
 	{
 	return 0;								// xor eax,eax; ret 0x14
 	}

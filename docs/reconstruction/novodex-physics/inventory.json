@@ -89191,7 +89191,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2332",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15619",
-      "static_proof": "xor eax,eax; ret 0x14 -- four stack arguments, always null; BASE vtable .rdata 0x10107494 slot 5 (pe.json pointer record)",
+      "static_proof": "xor eax,eax; ret 0x14 -- five stack arguments (ray, max distance, groups, hints, hit), always null; BASE vtable .rdata 0x10107494 slot 5 (pe.json pointer record)",
       "dynamic_proof": "Direct oracle/candidate comparison in NxPhysicsShapeVtableTests verifies null for slot 5. Independent non-null-return mutation is caught (mismatches=1).",
       "notes": "P5 Task 3: consumer unestablished.",
       "implementation": "Physics/src/ObjectModel.cpp"
