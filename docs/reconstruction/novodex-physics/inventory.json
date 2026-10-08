@@ -2208,12 +2208,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/45",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/236",
       "static_proof": "actor scalar-deleting destructor: final tables again, member reset to the third table, allocator release through adapter slot +0x14 when flags&1",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsObjectLayoutTests actorctor differential: changing the actor deleting destructor final wall-vtable store from 0x101043d0 to 0x101043d4 breaks both direct and +8-adjustor destructor observations and yields layout candidate mismatches=1; restoring the wall table returns digest 19f4915a and zero mismatches.",
       "notes": ""
     },
     {

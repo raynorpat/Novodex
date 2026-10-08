@@ -899,3 +899,5 @@ The `phys_fn_001379` constructor's `+0xe4` zero initialization changed to `0xdea
 Changing the `phys_fn_000042` interface-wall vtable store from `0x101043d0` to `0x101043d4` is detected by the actorctor case (`mismatches=1`); the restored function reports `wWall=1` and exact digest `19f4915a`. See `evidence/phase5-wall-dtor-000042.md`.
 
 The `phys_fn_000044` actor-construction tail final-vtable mutation produces `mismatches=1`; the restored constructor installs `0x10104530` and matches lifecycle digest `19f4915a`. See `evidence/phase5-actor-ctor-000044.md`.
+
+The `phys_fn_000118` actor deleting-destructor final wall-vtable mutation breaks both direct and +8-adjustor observations (`mismatches=1`); restoring `0x101043d0` returns lifecycle digest `19f4915a`. See `evidence/phase5-actor-dtor-000118.md`.
