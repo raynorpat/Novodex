@@ -19,18 +19,22 @@ normals and `d` values (`normal dot x = d`):
 
 `NxPhysicsSceneBoundsPlanesTests` uses asymmetric bounds, checks all six
 equations through the public actor and shape descriptors in oracle order, checks
-the default ground plane separately, and verifies that both flags together create seven
-actors in ground-then-bounds order. The first run against the candidate failed as
-expected with zero actors. After reconstruction, it passed against both the
-pinned DLL and candidate. The test is registered in the Phase 7 differential and
-contributes three coverage assertions. This is baseline differential coverage;
-the helper has not yet been mutation-falsified for Phase 7 closure.
+the default ground plane separately, and verifies that both flags together
+create seven actors in ground-then-bounds order. The first run against the
+candidate failed as expected with zero actors. After reconstruction, it passed
+against both the pinned DLL and candidate. The test is registered in the Phase
+7 differential and contributes three coverage assertions. This is baseline
+differential coverage; the helper has not yet been mutation-falsified for Phase
+7 closure.
 
 Verification: `run_phase_gate.ps1 -Phase 7` passes with 1,383/1,383 coverage
 assertions; the focused target reports `stdout_delta=0` and `stderr_exact=True`.
-The captured gate transcript is `build/scene-bounds-planes-phase7.log`. The
-gate's inventory validation passes, and the immutable-header checks pass for all
-80 public Physics headers in both trees.
+The merged mainline run is captured in
+`build/scene-bounds-planes-phase7-retry.log`. One earlier mainline run had a
+single oracle-side access-violation exit in `NxPhysicsSceneRaycastTests`; three
+direct reruns of that target and the full Phase 7 retry passed. The gate's
+inventory validation passes, and the immutable-header checks pass for all 80
+public Physics headers in both trees.
 
 The implementation is in `Physics/src/Scene.cpp`. No public Physics header was
 changed.
