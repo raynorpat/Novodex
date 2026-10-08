@@ -31,4 +31,4 @@ The full Phase 5 gate passed after adding the link-only harness definitions, inc
 
 ## Scope limits
 
-This proves public capsule/mesh contact dispatch, the candidate mesh plane records needed by that handler, and contact discovery after moving between separated patches. The trigger-overlap matrix entry was not driven by this case. This test also did not detect a mutation of `Segment::SquareDistance`; DLL-level routing for `phys_fn_005493` remains open and must not be claimed from this result.
+This proves public capsule/mesh contact dispatch, the candidate mesh plane records needed by that handler, and contact discovery after moving between separated patches. A separate capsule-trigger fixture emitted no enter callback in the pinned oracle, so it was discarded rather than counted; public trigger-overlap coverage remains open. This test also did not detect a mutation of `Segment::SquareDistance`; DLL-level routing for `phys_fn_005493` remains open and must not be claimed from this result.
