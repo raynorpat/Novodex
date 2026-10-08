@@ -340,6 +340,8 @@ int wmain(int argc, wchar_t** argv)
 	unsigned char* offsetRecord = *reinterpret_cast<unsigned char**>(offsetBody + 8);
 	printf("force offset_cmass=%x.%x.%x\n", word(offsetRecord, 0x158),
 		word(offsetRecord, 0x15c), word(offsetRecord, 0x160));
+	offset->addLocalForceAtPos(force, worldPoint, NX_SMOOTH_IMPULSE);
+	printAtPosState("offset_local_force", offsetRecord);
 	offset->addForceAtLocalPos(force, localPoint, NX_FORCE);
 	printAtPosState("offset_local_position", offsetRecord);
 	offset->addLocalForceAtLocalPos(force, NxVec3(2.0f, 3.0f, 4.0f), NX_IMPULSE);

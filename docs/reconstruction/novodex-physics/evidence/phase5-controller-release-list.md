@@ -512,3 +512,11 @@ The staged `NxPhysicsActorDynamicsTests` pair baseline and restored candidate ar
 - `phys_fn_000150` force-helper mutation detection: `stdout_delta=18`. Full details: `evidence/phase5-force-helpers-000150-000152.md`.
 
 - `phys_fn_000152` force-helper mutation detection: `stdout_delta=4`. Full details: `evidence/phase5-force-helpers-000150-000152.md`.
+
+### Local force-at-position wrappers (2026-10-08)
+
+The Force target now includes a rotated-actor, offset-mass-frame `addLocalForceAtPos` case. Clean/restored output is exact; each registered mutation is detected with equal zero exits and exact stderr.
+
+- `phys_fn_000154` mutation detection: `stdout_delta=10`. Full details: `evidence/phase5-force-wrappers-000154-000156-000158.md`.
+- `phys_fn_000156` mutation detection: `stdout_delta=6`. Full details: `evidence/phase5-force-wrappers-000154-000156-000158.md`.
+- `phys_fn_000158` mutation detection: `stdout_delta=4`. Full details: `evidence/phase5-force-wrappers-000154-000156-000158.md`.

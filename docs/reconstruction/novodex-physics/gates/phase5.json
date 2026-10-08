@@ -6,10 +6,10 @@
   "closure_ledger": "gates/phase5-closure.json",
   "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
   "evidence_commit": "6965e505f86ac15d1c35d2cd471f6544e42fb71d",
-  "note": "The full Phase 5 regression gate passes all 18 staged targets, static/oracle proofs, and 2,303/2,303 coverage assertions on the Win32 Release build. Actor accessors, mass-from-shapes, shape-vtable behavior, mass-frame behavior, kinematic flags, base-shape return stubs, and the phys_fn_000006 root null-guard and phys_fn_000028 vector growth and phys_fn_000024 no-root release report and phys_fn_000036 create-shape return and phys_fn_000026 zero-inertia mass build and phys_fn_000128 global-pose reference and phys_fn_000134 CMass global pose plus phys_fn_000136 position and phys_fn_000138 orientation plus phys_fn_000140 global inertia, phys_fn_000142 inverse inertia, and phys_fn_000144 angular momentum plus phys_fn_000150 local-force rotation and phys_fn_000152 local-position transform are independently mutation-falsified on registered tests; the current closure ledger is 82 closed / 123 deferred. The differential loader reports and flushes staged DLL identity before test code and retains its final lifecycle audit. The phase remains pending until all owned rows are closed.",
+  "note": "The full Phase 5 regression gate passes all 18 staged targets, static/oracle proofs, and 2,304/2,304 coverage assertions on the Win32 Release build. Actor accessors, mass-from-shapes, shape-vtable behavior, mass-frame behavior, kinematic flags, base-shape return stubs, and the phys_fn_000006 root null-guard and phys_fn_000028 vector growth and phys_fn_000024 no-root release report and phys_fn_000036 create-shape return and phys_fn_000026 zero-inertia mass build and phys_fn_000128 global-pose reference and phys_fn_000134 CMass global pose plus phys_fn_000136 position and phys_fn_000138 orientation plus phys_fn_000140 global inertia, phys_fn_000142 inverse inertia, and phys_fn_000144 angular momentum plus phys_fn_000150 local-force rotation and phys_fn_000152 local-position transform, and local force-at-position wrappers phys_fn_000154, phys_fn_000156, and phys_fn_000158 are independently mutation-falsified on registered tests; the current closure ledger is 85 closed / 120 deferred. The differential loader reports and flushes staged DLL identity before test code and retains its final lifecycle audit. The phase remains pending until all owned rows are closed.",
   "counts": {
-    "closed": 82,
-    "deferred": 123
+    "closed": 85,
+    "deferred": 120
   },
   "gate_sequence": [
     {
@@ -20,12 +20,12 @@
     {
       "name": "validate_inventory",
       "command": "python -B docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json",
-      "result": "inventory=pass; Phase 5 closure 82 closed / 123 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0."
+      "result": "inventory=pass; Phase 5 closure 85 closed / 120 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0."
     },
     {
       "name": "build_and_phase_gate",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 5",
-      "result": "Fresh Win32 Release Phase 5 gate passed all 18 staged-pair targets, the NxPhysicsRangeIterationTests static proof, the NxPhysicsObjectLayoutTests oracle differential, and 2,303/2,303 coverage assertions. Mutations for phys_fn_000028, phys_fn_000024, phys_fn_000036, phys_fn_000026, phys_fn_000128, phys_fn_000134, phys_fn_000136, phys_fn_000138, phys_fn_000140, phys_fn_000142, phys_fn_000144, phys_fn_000150, and phys_fn_000152 were each rejected by registered targets; restored sources pass. See build/phase5-force-helpers-000150-000152-gate.log. Public headers remain unchanged."
+      "result": "Fresh Win32 Release Phase 5 gate passed all 18 staged-pair targets, the NxPhysicsRangeIterationTests static proof, the NxPhysicsObjectLayoutTests oracle differential, and 2,304/2,304 coverage assertions. Mutations for phys_fn_000028, phys_fn_000024, phys_fn_000036, phys_fn_000026, phys_fn_000128, phys_fn_000134, phys_fn_000136, phys_fn_000138, phys_fn_000140, phys_fn_000142, phys_fn_000144, phys_fn_000150, phys_fn_000152, phys_fn_000154, phys_fn_000156, and phys_fn_000158 were rejected by registered targets; restored sources pass. See build/phase5-force-wrappers-000154-000156-000158-gate.log. Public headers remain unchanged."
     },
     {
       "name": "viewer_all_scenes",

@@ -1042,8 +1042,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'force atpos both_local linear=41400000.41accccd.42066666 angular=40400000.402aaaab.c0200000 force=40000000.40666667.40b33333 torque=3f800000.3f2aaaab.bf000000 smooth_force=40000000.40666667.40b33333 smooth_torque=3f800000.3f2aaaab.bf000000',
         'force offset_created=1',
         'force offset_cmass=40000001.40c00000.41100000',
-        'force atpos offset_local_position linear=0.0.0 angular=0.0.0 force=40000000.40666667.40b33333 torque=0.0.0 smooth_force=0.0.0 smooth_torque=0.0.0',
-        'force atpos offset_both_local linear=c0666665.40000000.40b33333 angular=40bffffe.40a00001.3ffffffc force=40000000.40666667.40b33333 torque=0.0.0 smooth_force=0.0.0 smooth_torque=0.0.0',
+        'force atpos offset_local_force linear=0.0.0 angular=0.0.0 force=0.0.0 torque=0.0.0 smooth_force=c0666665.40000000.40b33333 smooth_torque=41155553.c227fffe.413fffff',
+        'force atpos offset_local_position linear=0.0.0 angular=0.0.0 force=40000000.40666667.40b33333 torque=0.0.0 smooth_force=c0666665.40000000.40b33333 smooth_torque=41155553.c227fffe.413fffff',
+        'force atpos offset_both_local linear=c0666665.40000000.40b33333 angular=40bffffe.40a00001.3ffffffc force=40000000.40666667.40b33333 torque=0.0.0 smooth_force=c0666665.40000000.40b33333 smooth_torque=41155553.c227fffe.413fffff',
         'force kinematic_created=1',
         'force kinematic_unchanged=0.0.0.0.0.0.0.0'
     )
@@ -5557,7 +5558,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 264  # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2303  # plus 36 actor mass-from-shapes lines and the two base-shape stub checks
+    '5' = 2304  # plus 36 actor mass-from-shapes lines, the added local-force-at-position case, and the two base-shape stub checks
                # plus compound-trigger per-shape enter/stay/leave lifecycle
                # plus three-pair trigger reconciliation and queue growth
                # plus public trigger enter/stay/leave lifecycle
