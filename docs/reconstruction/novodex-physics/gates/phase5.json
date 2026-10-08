@@ -20,17 +20,17 @@
     {
       "name": "validate_inventory",
       "command": "python -B docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json",
-      "result": "inventory=pass; Phase 5 closure 194 closed / 11 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0."
+      "result": "inventory=pass; Phase 5 closure 195 closed / 10 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0."
     },
     {
       "name": "build_and_phase_gate",
-      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 5 -PairsRoot D:\\github\\Novodex\\build\\phase5-get-mass-main-pairs",
-      "result": "Committed main at 50d9104a passes all 19 staged Phase 5 targets, registered static/oracle proofs, and 2,567/2,567 coverage assertions. The actor mass getter mutation proof is recorded in the ledger; full output: build/phase5-get-mass-main.log. Current Phase 5 remains pending at 194 closed / 11 deferred."
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 5 -PairsRoot D:\\github\\Novodex\\build\\phase5-posecopy-committed-main-pairs",
+      "result": "Committed main at 0430e616 passes all 19 staged Phase 5 targets, registered static/oracle proofs, and 2,567/2,567 coverage assertions. Full output: build/phase5-posecopy-committed-main.log. Current Phase 5 remains pending at 195 closed / 10 deferred."
     },
     {
       "name": "viewer_all_scenes",
       "command": "ctest --test-dir build -C Release --output-on-failure -R '^Viewer'",
-      "result": "Committed main at 50d9104a passes the full 48-entry Viewer CTest selection, including every available scene (39 scene entrypoints) and focused Viewer checks: 43 passed, five known pinned-oracle asset cases skipped, zero failed. Full output: build/viewer-all-scenes-get-mass-main.log."
+      "result": "Committed main at 0430e616 passes the full 48-entry Viewer CTest selection, including all 39 available scene entrypoints and focused Viewer checks: 43 passed, five known pinned-oracle asset cases skipped, zero failed. Full output: build/viewer-all-scenes-posecopy-main.log."
     }
   ],
   "excluded_from_comparison": [
