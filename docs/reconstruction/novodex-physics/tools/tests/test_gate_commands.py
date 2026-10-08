@@ -32,7 +32,7 @@ PHASE_TARGETS = {
     "2": "NxPhysicsExportTests,NxPhysicsSDKTests,NxPhysicsCoreClusterTests",
     "3": "NxPhysicsBodyCreationTests,NxPhysicsGeometryTests,NxPhysicsKernelFuzzTests,NxPhysicsSDKTests,NxPhysicsPopulatedSceneTeardownTests",
     "4": "NxPhysicsConvexMeshTests,NxPhysicsTriangleMeshApiTests,NxPhysicsPMapResolution80Tests",
-    "5": "NxPhysicsActorLifecycleTests,NxPhysicsDynamicFirstTests,NxPhysicsEmptySceneTests,NxPhysicsActorNameTests,NxPhysicsActorMetadataTests,NxPhysicsActorBodyFlagTests,NxPhysicsActorDynamicsTests,NxPhysicsActorDynamicSetterTests,NxPhysicsActorMomentumTests,NxPhysicsActorForceTests,NxPhysicsActorCMassTests,NxPhysicsActorShapeMutationTests,NxPhysicsActorReleaseShapeProbeTests,NxPhysicsBodyCreationTests,NxPhysicsSimulationTests,NxPhysicsMeshSimulationTests,NxPhysicsConvexMeshTests",
+    "5": "NxPhysicsActorLifecycleTests,NxPhysicsDynamicFirstTests,NxPhysicsEmptySceneTests,NxPhysicsActorNameTests,NxPhysicsActorMetadataTests,NxPhysicsActorBodyFlagTests,NxPhysicsActorDynamicsTests,NxPhysicsActorDynamicSetterTests,NxPhysicsActorMomentumTests,NxPhysicsActorForceTests,NxPhysicsActorCMassTests,NxPhysicsActorMassTests,NxPhysicsActorShapeMutationTests,NxPhysicsActorReleaseShapeProbeTests,NxPhysicsBodyCreationTests,NxPhysicsSimulationTests,NxPhysicsMeshSimulationTests,NxPhysicsConvexMeshTests",
     # Phase 6 has a registered STAGED-PAIR target: a closure is a mutation to a row's
     # implementation, and only a staged-pair target loads the rebuilt module, so the
     # closure schema needs one (evidence 11l).
@@ -40,7 +40,7 @@ PHASE_TARGETS = {
     # NxJointDesc::setGlobalAxis calls, was brought to the oracle's words.
     "6": "NxPhysicsJointStagedPairTests,NxFoundationTangentTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests,NxPhysicsMeshSimulationTests,NxPhysicsSimulationTests",
     # Phase 7 also runs scene simulation, mesh, and trigger targets end to end.
-    "7": "NxPhysicsJointStagedPairTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsSceneRaycastTests,NxPhysicsSceneVisualizeTests,NxPhysicsSimulationTests,NxPhysicsPairFlagTests,NxPhysicsMeshSimulationTests,NxPhysicsTriggerSimulationTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests",
+    "7": "NxPhysicsJointStagedPairTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsSceneConstructorTests,NxPhysicsSceneBoundsPlanesTests,NxPhysicsControllerSweepFaceTests,NxPhysicsSceneRaycastTests,NxPhysicsSceneVisualizeTests,NxPhysicsSimulationTests,NxPhysicsPairFlagTests,NxPhysicsMeshSimulationTests,NxPhysicsTriggerSimulationTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests",
 }
 # Phases 6 and 7 moved out of this set when NxPhysicsJointStagedPairTests was
 # registered on them.

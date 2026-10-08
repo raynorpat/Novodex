@@ -5646,7 +5646,6 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsPairFlagTests',
     'NxPhysicsMeshSimulationTests',
     'NxPhysicsTriggerSimulationTests',
-    'NxPhysicsSceneAllocatorTests',
     'NxPhysicsPopulatedSceneTeardownTests',
     'NxPhysicsSDKTests'
 )

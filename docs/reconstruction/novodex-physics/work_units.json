@@ -480,14 +480,14 @@
     "phys_fn_000509"
    ],
    "rows": {
-    "discovered": 5,
+    "discovered": 4,
     "dynamically_gated": 2,
-    "reconstructed": 5
+    "reconstructed": 6
    },
    "bytes": {
-    "discovered": 1375,
+    "discovered": 982,
     "dynamically_gated": 443,
-    "reconstructed": 258
+    "reconstructed": 651
    },
    "phases": {
     "2": 5,

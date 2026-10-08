@@ -102005,7 +102005,9 @@
       "static_proof": "Oracle 0x000f0560-0x000f0659 x87 instruction sequence preserves the point delta at register precision, stores direction Z to float, and uses the stored Z for the squared length and correction products; implemented in the local IceSegment.cpp overlay.",
       "dynamic_proof": "NxPhysicsThirdPartyTests direct-linked grid 0/60000 and wide 0/40000 differing words, worst ULP 0 in both families; the measured symbol is retained in NxPhysics.map.",
       "notes": "OPCODE Ice/IceSegment.cpp:29 Segment::SquareDistance, reached from LSSCollider::InitQuery at 0x000d34c0. The stock-source divergence recorded in evidence/phase4-falsification.md section 7 is resolved by the local overlay; direct-linked candidate behavior is exact. Full closure still requires a falsifying mutation.",
-      "third_party": "opcode"
+      "third_party": "opcode",
+      "implementation": "External/opcode/novodex/Ice/IceSegment.cpp",
+      "implementation_symbol": "Segment::SquareDistance"
     },
     {
       "id": "phys_fn_005494",
@@ -102450,7 +102452,8 @@
       "dynamic_proof": "External/opcode/novodex/OPC_AABBTree.cpp overlay represents the oracle capture, extend and inflate block at 0x000f0ec0-0x000f1026; deleting the overlay in a forced rebuild fails five registered layout assertions, evidence/phase4-falsification.md section 3. This is shared-overlay evidence, not a per-row closure mutation.",
       "notes": "OPCODE AABBTreeNode::_BuildHierarchy, called by AABBTree::Build. Oracle 0x000f0ec0-0x000f1026 has the NovodeX capture, extend and inflate block represented in the local OPC_AABBTree.cpp overlay. Deleting that overlay fails five recorded layout assertions, but no per-row mutation closes this entry; evidence/phase4-falsification.md section 3.",
       "third_party": "opcode",
-      "implementation": "External/opcode/novodex/OPC_AABBTree.cpp"
+      "implementation": "External/opcode/novodex/OPC_AABBTree.cpp",
+      "implementation_symbol": "AABBTreeNode::_BuildHierarchy"
     },
     {
       "id": "phys_fn_005518",
@@ -102562,7 +102565,8 @@
       "dynamic_proof": "External/opcode/novodex/OPC_AABBTree.cpp overlay represents the oracle latch store at 0x000f1187; deleting the overlay in a forced rebuild fails five registered layout assertions, evidence/phase4-falsification.md section 3. This is shared-overlay evidence, not a per-row closure mutation.",
       "notes": "OPCODE AABBTree::Build, reached from Model::Build and calling AABBTreeNode::_BuildHierarchy. Oracle 0x000f1187 arms the capture latch represented in the local OPC_AABBTree.cpp overlay. Deleting that overlay fails five recorded layout assertions, but no per-row mutation closes this entry; evidence/phase4-falsification.md section 3.",
       "third_party": "opcode",
-      "implementation": "External/opcode/novodex/OPC_AABBTree.cpp"
+      "implementation": "External/opcode/novodex/OPC_AABBTree.cpp",
+      "implementation_symbol": "AABBTree::Build"
     },
     {
       "id": "phys_fn_005524",
