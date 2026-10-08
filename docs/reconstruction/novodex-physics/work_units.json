@@ -3037,12 +3037,12 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 9,
-    "reconstructed": 2
+    "discovered": 8,
+    "reconstructed": 3
    },
    "bytes": {
-    "discovered": 3150,
-    "reconstructed": 286
+    "discovered": 3007,
+    "reconstructed": 429
    },
    "phases": {
     "7": 11

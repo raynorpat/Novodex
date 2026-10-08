@@ -774,18 +774,41 @@ static void* nxSceneCreateDisabledFluidManager(NxSceneInternal* scene)
 	return memory;
 	}
 
-// phys_fn_003630 (0x00089e00) destroys the two SDK arrays. They remain empty
-// while the pinned fluid backend is unavailable.
+// phys_fn_003641 (0x00089e00) switches to the base FluidManager vtable, runs
+// each primary entry's scalar deleting destructor, then frees and clears both
+// SDK array headers. The pinned backend is unavailable, so its conditional
+// callback and extension-library cleanup have no live state to observe.
 static void nxFluidManagerDestroyArrays(void* manager)
 	{
 	if(manager)
 		{
 		unsigned char* bytes = static_cast<unsigned char*>(manager);
+		*reinterpret_cast<void***>(manager) = gNxFluidManagerVtable;
+		unsigned first = *reinterpret_cast<unsigned*>(bytes + 4);
+		unsigned last = *reinterpret_cast<unsigned*>(bytes + 8);
+		unsigned count = last >= first ? (last - first) >> 2 : 0;
+		void** fluids = reinterpret_cast<void**>(first);
+		for(unsigned i = 0; i != count; ++i)
+			{
+			void* fluid = fluids[i];
+			if(fluid)
+				{
+				void** vtable = *reinterpret_cast<void***>(fluid);
+				typedef void* (__thiscall *DeletingDestructor)(void*, unsigned char);
+				DeletingDestructor destroy = reinterpret_cast<DeletingDestructor>(vtable[0]);
+				destroy(fluid, 1);
+				}
+			}
+		// The enabled extension path calls a global function pointer with the
+		// value stored at +0x30; this disabled build never sets the flag at +0x2b.
 		for(unsigned offset = 0x14; ; offset = 4)
 			{
 			void* entries = *reinterpret_cast<void**>(bytes + offset);
 			if(entries)
 				nxFoundationSDKAllocator->free(entries);
+			*reinterpret_cast<unsigned*>(bytes + offset) = 0;
+			*reinterpret_cast<unsigned*>(bytes + offset + 4) = 0;
+			*reinterpret_cast<unsigned*>(bytes + offset + 8) = 0;
 			if(offset == 4)
 				break;
 			}

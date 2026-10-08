@@ -3291,6 +3291,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # constructor state and scalar-deleting vtable slot directly.
         'simulation fluid manager-constructor owner=1 arrays-empty=1 initialized=1 extension=0 available=0'
         'simulation fluid manager-vtable deleting-destructor=1'
+        # A populated internal fixture pins per-fluid deleting dispatch and
+        # both allocator-owned array headers being cleared by manager teardown.
+        'simulation fluid manager-populated-destructor calls=2 flags=1 target=1 arrays-cleared=1'
         # Seeded internal array state verifies swap-removal from both arrays
         # and the fluid's scalar-deleting vtable dispatch.
         'simulation fluid array-release remaining=1 secondary=1 swapped=1.1 destructor=1 flags=1 target=1'

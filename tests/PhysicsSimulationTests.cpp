@@ -35,9 +35,12 @@
 #include "NxTriangleMeshShapeDesc.h"
 #include "NxBounds3.h"
 #include "NxUserContactReport.h"
+#include "NxFoundationSDK.h"
+#include "NxUserAllocator.h"
 #include "../Physics/src/include/NpSceneGuard.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
+typedef NxFoundationSDK* (NX_CALL_CONV *CreateFoundationSDKFn)(NxU32, NxUserOutputStream*, NxUserAllocator*);
 typedef void (NX_CALL_CONV *JointDescSetGlobalAnchorFn)(NxJointDesc&, const NxVec3&);
 typedef void (NX_CALL_CONV *JointDescSetGlobalAxisFn)(NxJointDesc&, const NxVec3&);
 static unsigned nxFloatBits(NxReal value);
@@ -2761,6 +2764,53 @@ int wmain(int argc, wchar_t** argv)
 	typedef void* (__thiscall *FluidManagerDeletingDestructorFn)(void*, unsigned char);
 	FluidManagerDeletingDestructorFn fluidManagerDeletingDestructor =
 		reinterpret_cast<FluidManagerDeletingDestructorFn>(fluidManagerVtable[0]);
+	HMODULE foundation = GetModuleHandleW(L"NxFoundation.dll");
+	CreateFoundationSDKFn createFoundation = foundation ?
+		reinterpret_cast<CreateFoundationSDKFn>(GetProcAddress(foundation, "NxCreateFoundationSDK")) : 0;
+	NxFoundationSDK* foundationSDK = createFoundation ?
+		createFoundation(NX_FOUNDATION_SDK_VERSION, &simulationOutput, 0) : 0;
+	if(!foundationSDK)
+		return nxFail("Foundation allocator access failed for fluid manager teardown");
+	NxUserAllocator* foundationAllocator = &foundationSDK->getAllocator();
+	unsigned* managerFluids = static_cast<unsigned*>(
+		foundationAllocator->malloc(2 * sizeof(unsigned), NX_MEMORY_PERSISTENT));
+	unsigned* managerSecondary = static_cast<unsigned*>(
+		foundationAllocator->malloc(sizeof(unsigned), NX_MEMORY_PERSISTENT));
+	if(!managerFluids || !managerSecondary)
+		return nxFail("fluid manager teardown arrays allocation failed");
+	unsigned char managerFluidA[0x20] = {};
+	unsigned char managerFluidB[0x20] = {};
+	*reinterpret_cast<void***>(managerFluidA) = fluidDeletingVtable;
+	*reinterpret_cast<void***>(managerFluidB) = fluidDeletingVtable;
+	managerFluids[0] = reinterpret_cast<unsigned>(managerFluidA);
+	managerFluids[1] = reinterpret_cast<unsigned>(managerFluidB);
+	managerSecondary[0] = 0;
+	*reinterpret_cast<unsigned*>(fluidManagerBytes + 4) = reinterpret_cast<unsigned>(managerFluids);
+	*reinterpret_cast<unsigned*>(fluidManagerBytes + 8) = reinterpret_cast<unsigned>(managerFluids + 2);
+	*reinterpret_cast<unsigned*>(fluidManagerBytes + 0xc) = reinterpret_cast<unsigned>(managerFluids + 2);
+	*reinterpret_cast<unsigned*>(fluidManagerBytes + 0x14) = reinterpret_cast<unsigned>(managerSecondary);
+	*reinterpret_cast<unsigned*>(fluidManagerBytes + 0x18) = reinterpret_cast<unsigned>(managerSecondary + 1);
+	*reinterpret_cast<unsigned*>(fluidManagerBytes + 0x1c) = reinterpret_cast<unsigned>(managerSecondary + 1);
+	gNxSimulationFluidDestructorCalls = 0;
+	gNxSimulationFluidDestructorFlags = 0;
+	gNxSimulationFluidDestructorObject = 0;
+	fluidManagerDeletingDestructor(fluidManager, 0);
+	const bool managerArraysCleared =
+		*reinterpret_cast<unsigned*>(fluidManagerBytes + 4) == 0 &&
+		*reinterpret_cast<unsigned*>(fluidManagerBytes + 8) == 0 &&
+		*reinterpret_cast<unsigned*>(fluidManagerBytes + 0xc) == 0 &&
+		*reinterpret_cast<unsigned*>(fluidManagerBytes + 0x14) == 0 &&
+		*reinterpret_cast<unsigned*>(fluidManagerBytes + 0x18) == 0 &&
+		*reinterpret_cast<unsigned*>(fluidManagerBytes + 0x1c) == 0;
+	const bool populatedManagerDestroyed = gNxSimulationFluidDestructorCalls == 2 &&
+		gNxSimulationFluidDestructorFlags == 1 &&
+		gNxSimulationFluidDestructorObject == managerFluidB && managerArraysCleared;
+	printf("simulation fluid manager-populated-destructor calls=%u flags=%u target=%u arrays-cleared=%u\n",
+		gNxSimulationFluidDestructorCalls, gNxSimulationFluidDestructorFlags,
+		gNxSimulationFluidDestructorObject == managerFluidB ? 1u : 0u,
+		managerArraysCleared ? 1u : 0u);
+	if(!populatedManagerDestroyed)
+		return nxFail("fluid manager populated deleting destructor mismatch");
 	fluidManagerDeletingDestructor(fluidManager, 1);
 	*reinterpret_cast<void**>(fluidVtableSceneInternal + 0x61c) = 0;
 	printf("simulation fluid manager-vtable deleting-destructor=1\n");

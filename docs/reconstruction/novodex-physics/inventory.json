@@ -67667,13 +67667,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "implementation": "Physics/src/Scene.cpp",
+      "source": "Physics/src/fluids/FluidManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1374",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12606",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x89e00 shows the manager's vtable reset, iteration over the primary array with a null check and virtual slot-0 call using deleting flag 1, then frees and zeros the secondary and primary array headers. The backend callback is conditional on manager byte +0x2b, which is zero for the pinned disabled backend.",
+      "dynamic_proof": "NxPhysicsSimulationTests seeds two fake fluid objects and allocator-owned primary and secondary arrays, then invokes the manager destructor with deleteObject=0. Oracle and candidate both dispatch two scalar deleting destructors, clear all six array header words, exit 0, and match exactly (stdout_delta=0, stderr_exact=True; build/FluidGate/fluid-manager-populated-destructor-focused-repeat.log). The full Phase 7 gate passes with the new coverage line at 1,386 evaluated assertions (floor 1,385; build/FluidGate/fluid-manager-populated-destructor-phase7.log).",
+      "notes": "The pinned disabled-backend teardown is reconstructed. Extension callback dispatch, global extension table reset, and module unload state are not exercised by this build."
     },
     {
       "id": "phys_fn_003642",
