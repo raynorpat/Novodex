@@ -19883,13 +19883,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/431",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3184",
       "static_proof": "same body as phys_fn_001193: +4/+8 zeroed (0x2358b/8e), wall vptr 0x10106d08 (0x23591), member ctor phys_fn_002404 at +0xc (0x23597), argument stored at BOTH +8 and +0x18 (0x235a6/a9), member vptr 0x10106e54 (0x235a0), final vptr 0x10106dc8 (0x235ad)",
-      "dynamic_proof": "driven inside the NxPhysicsObjectLayoutTests boxshape family through phys_fn_000977; the constructed object's +8/+0x18 point back at the shape and its member slot is non-null on both sides",
-      "notes": "P5 Task 3: the box-family instance of the shared collision-object constructor family.",
+      "dynamic_proof": "driven inside the NxPhysicsObjectLayoutTests boxshape family through phys_fn_000977; the constructed object's +8/+0x18 point back at the shape and its member slot is non-null on both sides Mutation proof (2026-10-08): the registered Phase 5 NxPhysicsObjectLayoutTests pinned-oracle differential constructs a BoxShape and asserts the collision object's +0x08 and +0x18 owner back-pointers. Baseline: boxshape candidate ok=1, digest=ac5ed12f, mismatches=0. Replacing the +0x18 argument store with null produces boxshape candidate ok=0 and mismatches=6. Restoring the argument store returns to ok=1 and mismatches=0. Evidence: evidence/phase5-box-collision-object-ctor-001075.md. The generic entry phys_fn_001193 remains separately owned by Phase 3.",
+      "notes": "P5 Task 3: the box-family instance of the shared collision-object constructor family. The box-family back-pointer store is mutation-falsified through the constructed BoxShape; the generic phys_fn_001193 remains separately owned by Phase 3.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {

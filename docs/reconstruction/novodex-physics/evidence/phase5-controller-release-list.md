@@ -860,3 +860,7 @@ Reversing the BOX hit-normal hint branch in `BoxShape::nxBoxRaycast` is caught b
 ## Capsule save-to-state row: `phys_fn_000991`
 
 `phys_fn_000991` mutation detection: `mismatches=1`; restoring the base-save tail call returns the complete capsule record differential to exact (`mismatches=0`). See `evidence/phase5-capsule-save-000991.md`.
+
+## Box-family collision-object constructor: `phys_fn_001075`
+
+`phys_fn_001075` mutation detection: `mismatches=6`; the box-specific candidate assertion fails with the null back-pointer mutant and the restored oracle differential is exact (`mismatches=0`). See `evidence/phase5-box-collision-object-ctor-001075.md`.
