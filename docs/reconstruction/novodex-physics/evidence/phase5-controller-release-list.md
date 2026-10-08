@@ -708,3 +708,9 @@ Baseline and restored `NxPhysicsBodyCreationTests` staged-pair runs are exact (`
 
 Baseline and restored `NxPhysicsBodyCreationTests` staged-pair runs are exact (`stdout_delta=0`, `stderr_exact=True`; `build/phase5-000801-baseline.log`, `build/phase5-000801-restored.log`). Adding one word to the copied pose X at +0x38 in `DynamicBodyBase::construct` is caught with `stdout_delta=12`; both mutant processes exit 0 and stderr is exact (`build/phase5-000801-mutant.log`).
 `phys_fn_000801` mutation detection: `stdout_delta=12`; restored output is exact (`stdout_delta=0`, `stderr_exact=True`).
+
+
+### Pruning shape insertion (`phys_fn_001941`)
+
+The registered `NxPhysicsActorShapeMutationTests` staged-pair differential catches changing the kind byte written by `nxPruningAddShape` at `shape+0xcf` from 0 to 1 (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=58`, `stderr_exact=True`; `build/phase5-001941-mutant.log`). Restoring kind 0 returns an exact differential (`stdout_delta=0`, `stderr_exact=True`; `build/phase5-001941-restored.log`).
+`phys_fn_001941` mutation detection: `stdout_delta=58`; restored output is exact (`stdout_delta=0`, `stderr_exact=True`). See `evidence/phase5-pruning-add-shape-001941.md`.

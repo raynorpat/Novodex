@@ -21,9 +21,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 105,
+    "differential_falsified": 106,
     "oracle_differential_falsified": 32,
-    "deferred_reconstructed_not_falsified": 67,
+    "deferred_reconstructed_not_falsified": 66,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -1422,6 +1422,16 @@
         "mutation": "Added one word to the copied pose X at DynamicBodyBase+0x38 in DynamicBodyBase::construct.",
         "detected": "stdout_delta=12"
       }
+    },
+    {
+      "id": "phys_fn_001941",
+      "rva": "0x0004ba80",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "Changed the kind byte written by nxPruningAddShape from 0 to 1 at shape+0xcf.",
+        "detected": "stdout_delta=58"
+      }
     }
   ],
   "deferred": [
@@ -1456,15 +1466,6 @@
       "id": "phys_fn_000959",
       "rva": "0x00020f90",
       "size": 1062,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_001941",
-      "rva": "0x0004ba80",
-      "size": 59,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
