@@ -1384,3 +1384,13 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 ### Continuation — plane and sphere deleting destructor mutation closures (2026-10-08)
 
 - `phys_fn_001263` and `phys_fn_001375` are independently mutation-falsified by the registered `NxPhysicsShapeVtableTests` allocator-delta cases. Suppressing either flag-1 self-free produces one mismatch; restoring both returns the pinned 629-case digest with zero mismatches. Phase 5 advances to 175 closed / 30 reconstructed rows. The full Phase 5 gate passes all 19 targets at its 2,565 assertion floor (`build/phase5-shape-dtor-final.log`). No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-plane-sphere-dtors.md`.
+
+
+### Continuation — box deleting destructor mutation closure (2026-10-08)
+
+- `phys_fn_000979` is independently mutation-falsified by the registered `NxPhysicsShapeVtableTests` flag-0/flag-1 allocator-delta case. Suppressing the flag-1 self-free produces one mismatch; the restored destructor returns to the exact 629-case digest. Phase 5 advances to 176 closed / 29 reconstructed rows. The fresh full Phase 5 gate passes all 19 targets at 2,565/2,565 (`build/phase5-box-dtor-final.log`). No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-dtor-000979.md`.
+
+
+### Continuation — mesh deleting destructor mutation closure (2026-10-08)
+
+- `phys_fn_001399` is mutation-falsified by the registered `NxPhysicsShapeVtableTests` mesh slot-0 case. Suppressing the flag-1 self-free changes the measured allocator delta from two to one while preserving the expected mesh reference decrement, yielding one mismatch; the restored shape matches both. Phase 5 advances to 177 closed / 28 reconstructed rows. The fresh full gate passes all 19 targets and 2,565/2,565 assertions (`build/phase5-shape-dtor-final.log`). No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-mesh-dtors.md`.

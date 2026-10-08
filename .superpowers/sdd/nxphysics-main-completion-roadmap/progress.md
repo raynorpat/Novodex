@@ -67,3 +67,17 @@ oracle-backed allocator-delta cases. Both restored runs return the pinned
 shape-vtable digest with zero mismatches. Phase 5 advances to 175 closed / 30
 deferred; its fresh full gate passes at 2,565/2,565 assertions. Evidence:
 `docs/reconstruction/novodex-physics/evidence/phase5-plane-sphere-dtors.md`.
+
+Task M2-box-dtor-000979: suppressing the box shape's flag-1 self-free is
+detected by the existing oracle-backed shape-vtable allocator check
+(`mismatches=1`); the restored target returns to the pinned digest and zero
+mismatches. Phase 5 advances to 176 closed / 29 deferred; the fresh full gate
+passes at 2,565/2,565 assertions. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase5-box-dtor-000979.md`.
+
+Task M2-mesh-dtor-001399: suppressing the mesh shape's flag-1 self-free is
+detected (`frees=2/1; mismatches=1`); the refcount decrement 7 to 6 remains
+correct and the restored target matches exactly. Phase 5 advances to 177
+closed / 28 deferred; the fresh full gate passes at 2,565/2,565 assertions.
+Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase5-box-mesh-dtors.md`.
