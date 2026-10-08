@@ -24808,13 +24808,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/550",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3508",
       "static_proof": "__thiscall ret 4: copies descriptor pose3 (12 words from +0x08) to shape+0x6c, halfword +0x38 -> +0xde, halfword +0x3e -> +0xda, [desc+0x40] -> [colobj+4] when colobj non-null, calls registry phys_fn_000480(shape, name) and validated group-setter phys_fn_001329(group), returns al=1; BASE vtable .rdata 0x10107494 slot 1, inherited by ALL five finals",
-      "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests applydesc family on a real constructed sphere with a crafted NULL-name record: oracle digest bfd22e48 equals candidate bitwise over the shape tail",
-      "notes": "",
+      "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests applydesc family on a real constructed sphere with a crafted NULL-name record: oracle digest bfd22e48 equals candidate bitwise over the shape tail Row-targeted fixture and mutation proof (2026-10-08): the registered pinned-oracle NxPhysicsObjectLayoutTests fixture applies a descriptor with a non-default pose, flags=0x1234, group=5, material=0x5678, and null name to detached ShapeBase instances, then compares all non-pointer object words and return. Oracle/candidate fixture digest 11e5e856, result=true. Mutating the +0xde flag copy to zero changes candidate digest to b866a954 and yields mismatches=1; restoring the copy returns the exact digest and zero mismatches. Gate pins the oracle row and candidate line; coverage floor raised to 2561. Evidence: evidence/phase5-apply-descriptor-001347.md.",
+      "notes": " The base descriptor copy path is now directly covered with non-default values in a row-targeted oracle differential.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {

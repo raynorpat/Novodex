@@ -5089,8 +5089,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'material row=template flags=00000000 digest=527814f5',
         'capdtor row=phys_fn_001014 digest=7a376673',
         'capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
-        'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1',
-        'layout oracle digest=5943e78a',
+        'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 applydesc=1',
+        'applydesc row=phys_fn_001347 result=1 digest=11e5e856 flags=1234 group=5 material=5678',
+        'layout oracle digest=3e13e0a3',
         'hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5',
         'hull sharedhook candidate ok=1 stable=1',
         'basesave candidate ok=1 digest=bc9dc964',
@@ -5116,6 +5117,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'paxis candidate ok=1 digest=1d701701',
         'errstream candidate ok=1 digest=c2ab04f6',
         'grouperr candidate ok=1 digest=b6f879ec',
+        'applydesc candidate ok=1 result=1 digest=11e5e856 flags=1234 group=5 material=5678',
         'loaderr candidate ok=1 digest=8f125103',
         'material candidate ok=1 digest=527814f5',
         'ownctor candidate ok=1 digest=641beb67',
@@ -5572,7 +5574,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 266  # previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2560  # previous 2,311 plus all 249 recorded scene-raycast coverage lines
+    '5' = 2561  # previous 2,560 plus the row-targeted base descriptor-load fixture
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths

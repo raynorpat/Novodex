@@ -870,3 +870,5 @@ Reversing the BOX hit-normal hint branch in `BoxShape::nxBoxRaycast` is caught b
 `phys_fn_001273` mutation detection: `mismatches=15`; changing the +0xde constructor default from 8 to 9 changes the poisoned-object digest from `de5f5000` to `0461ca69`; the restored pinned-oracle differential returns to exact (`mismatches=0`). See `evidence/phase5-shapebase-ctor-001273.md`.
 
 `phys_fn_001329` mutation detection: `mismatches=1`; replacing the prunable group-mask assignment with zero changes the digest from `b6f879ec` to `b17097cc`; the restored pinned-oracle differential returns to exact (`mismatches=0`). See `evidence/phase5-apply-group-001329.md`.
+
+`phys_fn_001347` mutation detection: `mismatches=1`; changing the descriptor +0x38 flags copy into shape+0xde to zero changes the row digest from `11e5e856` to `b866a954`; the restored differential returns exact. The Phase 5 gate pins this row and candidate result and evaluates 2,562 assertions against the 2,561 floor. See `evidence/phase5-apply-descriptor-001347.md`.
