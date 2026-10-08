@@ -623,3 +623,9 @@ The registered DynamicSetter differential catches a source-line mutation in the 
 
 - `phys_fn_000937` matches the oracle with non-unit dimensions and a translated pose; omitting `dy*dy` is caught with `mismatches=1`, while the restored differential is exact.
 - IDA disassembly confirms `(dx*dx + dy*dy) + dz*dz` before `fsqrt`. Full details: `evidence/phase5-box-center-diagonal-000937.md`.
+
+
+### Continuation — BOX slot-4 return closure (2026-10-08)
+
+- `phys_fn_000947` is caught by a return-false mutation on the first of 64 cases (`returns=1/0`, with `mismatches=1`); the restored implementation passes all 64.
+- Phase 5 advances to 122 closed / 83 deferred functions; the coverage floor rises to 2,309. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-slot4-000947.md`.

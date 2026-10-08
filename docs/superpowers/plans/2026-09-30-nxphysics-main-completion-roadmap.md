@@ -1300,3 +1300,9 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 
 - IDA disassembly confirms `phys_fn_000937` computes `(dx*dx + dy*dy) + dz*dz` on x87 before `fsqrt`. The existing ObjectLayout fixture now uses dimensions 2.5, 3.75, 4.125 and translation (1.25,-2.5,0.75); candidate and oracle words match. Omitting `dy*dy` is detected with one mismatch and the restored run is exact.
 - Phase 5 advances to 121 closed / 84 deferred functions; the 2,308 assertion floor is unchanged. No public Physics headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-center-diagonal-000937.md`.
+
+
+### Continuation — BOX slot-4 return closure (2026-10-08)
+
+- `phys_fn_000947` now has an independent mutation proof: returning false fails at pose=0, low=0, density=0; restoring the true return passes all 64 existing boxslot4 cases. Its line is pinned in Phase 5 gate coverage.
+- Phase 5 stands at 122 closed / 83 deferred, with 2,309 required coverage assertions.

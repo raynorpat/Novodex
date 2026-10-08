@@ -17539,13 +17539,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/462",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2972",
       "static_proof": "if [this+0xde]&7 open, call the 000849 mass helper on the facade pose/dims (this+0x6c/+0xe4) into the destination MassFrame; always returns true",
-      "dynamic_proof": "confirmed via boxslot4 differential (3z102): cases=pose4 x low8 x density2 failures=0; candidate nxBoxAccumulateMass",
-      "notes": "previous source: BOX slot-4 mass wrapper (0x20850, ret 0xc) Second merge of main (482a621) into the scene-raycast block: identical code; this block's copy is kept, with the NpActor.cpp completion's comment.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests boxslot4 drives 64 combinations (4 third poses x 8 low flag masks x 2 densities); all 13 MassFrame words and the bool return match the oracle. Mutating BoxShape::nxBoxAccumulateMass to return false is caught on pose=0, low=0, density=0 (oracle/candidate returns 1/0); restored run passes all 64 cases.",
+      "notes": "P5 BOX slot 4. The 64-case oracle differential covers the wrapper return, low-bit suppression, density, pose translation/rotation, and full MassFrame merge.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {

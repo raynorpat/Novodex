@@ -4980,6 +4980,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'mesh ctor=phys_fn_001379 size=232 digest=422a1f78 sentinel_d0=4 arg_d4=5a5a5a5a word_e0=00000000 word_e4=00000000 colobj_ok=1',
         'basesave row=phys_fn_001277 saved=1 digest=bc9dc964 pose_diag=3f800000 word38=00000008 word3c=00000000 word40=00000000 poison_head=cdcdcdcd',
         'boxrow slot10=phys_fn_000937 out=3fa00000.c0200000.3f400000.40c38275',
+        'boxslot4 candidate cases=64 failures=0 provisional=1',
         'boxrow2 slot11=phys_fn_000939 out=00000000.00000000.00000000.3fddb3d7 slot13=phys_fn_000927 saved=1 digest=853c971d dims_at_4c=3f800000',
         'boxrow3 slot8=phys_fn_000941 minmax=bf800000.bf800000.bf800000.3f800000.3f800000.3f800000 slot9=phys_fn_000935 minmax=bf800000.bf800000.bf800000.3f800000.3f800000.3f800000',
         'boxrow4 slots14-16=phys_fn_001391 stable=1',
@@ -5566,7 +5567,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 264  # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2308  # plus the direct sphere slot-15 get-radius differential assertion
+    '5' = 2309  # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths
                # plus 36 actor mass-from-shapes lines, the added local-force-at-position case, and the two base-shape stub checks
