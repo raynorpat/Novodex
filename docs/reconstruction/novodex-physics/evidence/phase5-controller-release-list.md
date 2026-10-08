@@ -938,3 +938,8 @@ The public `NxPhysicsBodyCreationTests` route verifies the Scene auxiliary recor
 IDA confirms both rows use the SDK pointer-binding table keyed by `[actor+0x14]`: getter lookup at oracle RVA `0x0000df90`, setter binding at `0x0000edc0`. `NxPhysicsActorNameTests` caught an actor getter forced to return null and a setter changed to skip its binding write; each produced `stdout_delta=8` with equal zero exits and exact stderr. The restored candidate returned to `stdout_delta=0` with exact stderr. Details and DLL identity: `evidence/phase5-actor-name-000086-000088.md`.
 
 `phys_fn_000086` mutation detection: `stdout_delta=8`; restored differential is exact. `phys_fn_000088` mutation detection: `stdout_delta=8`; restored differential is exact.
+
+## Actor full-pose getter: `phys_fn_000130`
+
+`NxPhysicsActorLifecycleTests` exercises the public actor full-pose getter for static, dynamic, rotated, and quarter-turn actors. Adding `1.0f` to the returned pose's Z translation produces a staged differential `stdout_delta=8` with equal zero exits and exact stderr; the restored differential is exact. See `evidence/phase5-actor-get-global-pose-000130.md`.
+`phys_fn_000130` mutation detection: `stdout_delta=8`; restored public-DLL differential is exact (`stdout_delta=0`, exact stderr).

@@ -2437,12 +2437,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "actor_dynamic vtable slot: full pose from quaternion (0x4580, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/49",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/291",
       "static_proof": "writes the 0x30-byte pose to out: the quaternion matrix from record+0x5c (x,y,z,w) then the translation at record+0x50/0x54/0x58, or the cached pose at [self+0x14]+0x20 when the record pointer is null; returns out either way Final review I1 (NpActor completion): the listing's integer word copies (rep movsd / mov) are now bit copies (memcpy) in the candidate; under /arch:IA32 they had been fld/fstp pairs that quiet a signalling NaN. The ActorCMass signalling-NaN cases (cmass snan_*) show the words match the oracle.",
-      "dynamic_proof": "confirmed via poseq0130 differential (3z136): null cached-pose arm + quaternion arm failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
+      "dynamic_proof": "NxPhysicsActorLifecycleTests staged-pair differential: adding 1.0f to the returned pose Z translation is caught with stdout_delta=8; restored output is exact. See evidence/phase5-actor-get-global-pose-000130.md.",
       "notes": ""
     },
     {
