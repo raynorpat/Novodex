@@ -1270,3 +1270,9 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 
 - The existing DynamicSetter fixture exercises capsule vtable slot 14 through `setRadius(0.75f)` and observes resulting radius, dimensions, and AABB. Mutating the internal `+0xe0` store to `radius + 1.0f` produces `stdout_delta=4` with both processes exiting 0 and exact stderr; restoring returns the differential to exact.
 - Phase 5 closure advances to 112 closed / 93 deferred functions; its assertion floor remains 2,308 because this uses already-registered observations. No public Physics headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-capsule-set-radius-000995.md`.
+
+
+### Continuation — sphere and capsule geometry slot falsification (2026-10-08)
+
+- Closed four Phase 5 rows with existing fixtures. Sphere set-radius `phys_fn_001357` is caught by the ObjectLayout oracle differential (`mismatches=1`); sphere center-radius `phys_fn_001363`, capsule center-radius `phys_fn_001001`, and capsule local-AABB `phys_fn_001004` each fail their DynamicSetter differential with `stdout_delta=2`. Restored controls are exact.
+- Phase 5 advances to 116 closed / 89 deferred functions. The 2,308 assertion floor is unchanged. No public headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-shape-accessors-001001-001004-001357-001363.md`.

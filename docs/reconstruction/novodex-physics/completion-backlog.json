@@ -89,10 +89,10 @@
       },
       "5": {
         "phase": 5,
-        "closed_rows": 112,
-        "deferred_rows": 93,
+        "closed_rows": 116,
+        "deferred_rows": 89,
         "deferred_reasons": {
-          "reconstructed_not_falsified": 93
+          "reconstructed_not_falsified": 89
         }
       },
       "6": {
@@ -160,8 +160,8 @@
         "rows_without_implementation_mapping": 58,
         "rows_with_unresolved_indirect_calls": 112,
         "by_state": {
-          "dynamically_gated": 111,
-          "reconstructed": 93,
+          "dynamically_gated": 115,
+          "reconstructed": 89,
           "statically_reviewed": 1
         }
       },
@@ -42250,7 +42250,7 @@
       "size": 39,
       "phase": 5,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "NxCapsule center+radius row (slot 10)",
       "implementation": {
         "path": "Physics/src/ObjectModel.cpp",
@@ -42265,7 +42265,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorDynamicSetterTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -42288,22 +42288,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 5,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorDynamicSetterTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_001001",
         "rva": "0x00021c30",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -42378,7 +42378,7 @@
       "size": 78,
       "phase": 5,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "NxCapsule local-AABB row (slot 8)",
       "implementation": {
         "path": "Physics/src/ObjectModel.cpp",
@@ -42393,7 +42393,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorDynamicSetterTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -42416,22 +42416,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 5,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorDynamicSetterTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_001004",
         "rva": "0x00021c80",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -56783,7 +56783,7 @@
       "size": 89,
       "phase": 5,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "NxSphere set-radius (slot 14)",
       "implementation": {
         "path": "Physics/src/ObjectModel.cpp",
@@ -56798,7 +56798,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsObjectLayoutTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -56837,22 +56837,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 5,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsObjectLayoutTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_001357",
         "rva": "0x000278c0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -56991,7 +56991,7 @@
       "size": 33,
       "phase": 5,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "NxSphere center+radius row (slot 10)",
       "implementation": {
         "path": "Physics/src/ObjectModel.cpp",
@@ -57006,7 +57006,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorDynamicSetterTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -57029,22 +57029,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 5,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorDynamicSetterTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_001363",
         "rva": "0x00027980",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -78239,7 +78239,7 @@
           {
             "id": "phys_fn_001357",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_001872",
@@ -230742,7 +230742,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "63220487906d71bfbe67ff2702a18891274e28cebd5b2bec681e336287fb5877",
+    "inventory_sha256": "9814770de657b8d48589740383d4666a753fd4c01c55e619913550b378d0a53d",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "3695dd2e6b069def544c821b383613af92b49f565cb2603e57304436832ea622",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
@@ -230750,7 +230750,7 @@
       "docs/reconstruction/novodex-physics/gates/phase2-closure.json": "35d23d5095f7367fac9e0a2683b78a75708d3e9d3b4fa8821ea6a2f66721d4ad",
       "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "07216a93b627ff11ae142e2cdd6f82f7e2d77cc067b2c89e74d8393fcc388e3d",
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "da77e315cbe8ac0fb86f9954e65972d69e36769a907bb2abfa06af2fa3fb9775",
-      "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "0b6c0ae9a1fda56f13a6e6d3facaf94b2822a2a7a5aed084030b0f58abdb491e",
+      "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "1f60def7309201f57fc73dd90149ebbed0bd8d41c72768c2b880aff2d78dbb82",
       "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "8a7434ec2b092b85b9e8803935722832c9a2404f9f2437d671867625b0813e3c",
       "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "7faca2c0c86fba327359a55901cd202c2947dd8971de505199346520d2575264"
     }
