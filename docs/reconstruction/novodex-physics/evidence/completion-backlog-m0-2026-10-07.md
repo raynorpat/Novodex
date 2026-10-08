@@ -16,6 +16,8 @@ The Viewer test design already registered on main runs 48 CTest entries across a
 
 The three OPCODE code rows `phys_fn_005493`, `phys_fn_005517`, and `phys_fn_005523` remain code rows, not artifacts. Their candidate source files and symbols are now explicit in `inventory.json`; the overlay evidence does not close them because no row-specific falsifying mutation has been recorded.
 
+`NxPhysicsSceneAllocatorTests` remains a CMake executable but no current phase runs it. Removing its stale gate-registry entry restores the registry-to-phase consistency check; this baseline does not claim that allocator fixture is phase-gated.
+
 ## Reproducibility dependency
 
 The validator and vendored-source verification still require the pinned third-party source snapshot under `.analysis/novodex-physics/thirdparty`. In this worktree, `.analysis` is an ignored junction to `D:\github\Novodex\.analysis`, so a clean checkout cannot reproduce those checks without arranging that snapshot. This M0 baseline records the dependency; portable acquisition or a documented setup remains open.
