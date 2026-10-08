@@ -789,3 +789,9 @@ The baseline `NxPhysicsObjectLayoutTests` oracle differential reports sphere con
 Changing the first dimension read at +0x21998 from descriptor +0x4c to +0x50 produces `boxload candidate ok=0` and `layout candidate mismatches=1` (`build/phase5-000981-mutant.log`). Restoring +0x4c returns `boxload candidate ok=1`, zero mismatches, and differential-pass (`build/phase5-000981-restored.log`).
 
 `phys_fn_000981` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-box-load-000981.md`.
+
+
+### PlaneShape descriptor load (`phys_fn_001265`)
+
+Shifting the normal input from descriptor +0x4c to +0x50 produces `planeload candidate ok=0` and `layout candidate mismatches=1` (`build/phase5-001265-mutant.log`). Restoring +0x4c returns `planeload candidate ok=1`, Y normal bits `3f800000`, zero mismatches, and differential-pass (`build/phase5-001265-restored.log`).
+`phys_fn_001265` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-plane-load-001265.md`.

@@ -261,3 +261,9 @@ Task M2-000981: closed the BoxShape descriptor-load row with the registered NxPh
 
 
 Fresh Win32 Release Phase 5 gate after closing `phys_fn_000981` passed all 18 staged-pair targets, both oracle-differential targets, and 2,311/2,311 coverage assertions (`build/phase5-000981-full-gate.log`). Inventory and both 80-file public-header roots validate.
+
+
+Task M2-001265: closed the PlaneShape descriptor-load row with the registered NxPhysicsObjectLayoutTests oracle differential. Shifting the normal input from +0x4c to +0x50 is caught (`planeload candidate ok=0`; mismatches=1); restoring +0x4c returns zero mismatches and differential-pass. Phase 5 advances to 152 closed / 53 deferred. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-plane-load-001265.md`.
+
+
+Fresh Win32 Release Phase 5 gate after closing `phys_fn_001265` passed all 18 staged-pair targets, both oracle-differential targets, and 2,311/2,311 coverage assertions (`build/phase5-001265-full-gate.log`). Inventory and both 80-file public-header roots validate.
