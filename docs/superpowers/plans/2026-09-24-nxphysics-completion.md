@@ -315,3 +315,6 @@ The current runners hard-code the primary repository/build roots; M1 must parame
 - [ ] Reproducible proofs test behavior, real DLL integration, floating-point contexts, failures, and lifetime.
 - [ ] Multi-frame simulation and actual consumer physics verified on the exact retained pair.
 - [ ] Source revision, hashes, evidence, and build/test instructions sufficient to reproduce the result.
+
+
+**M2/M4 follow-up — BOX slot-5 raycast closure, 2026-10-08:** Closed `phys_fn_000949` (`BoxShape::nxBoxRaycast`) with the public-SDK `NxPhysicsSceneRaycastTests` differential. Reversing the hit-normal hint branch produced `stdout_delta=508` with equal zero exits and exact stderr; the restored run returned to `stdout_delta=0`. Phase 5 now requires the raycast test's full 249-line pinned coverage corpus. A fresh Win32 Release Phase 5 gate passes all 19 staged targets, its static/oracle checks, and 2,560/2,560 coverage assertions. Inventory is 6,338 functions / 5,138 data objects / zero unexplained; Phase 5 is 162 closed / 43 reconstructed-but-unfalsified with 122 data objects still undispositioned. Public Physics headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-raycast-000949.md`.
