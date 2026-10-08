@@ -813,3 +813,9 @@ Changing the source offset from mesh +0x5c to +0x60 yields `meshrows candidate o
 
 Changing the source offset from mesh +0x44 to +0x48 yields `meshwords44 candidate ok=0` and `layout candidate mismatches=1` (`build/phase5-001389-mutant.log`). Restoring +0x44 returns the expected digest and words, zero mismatches, and differential-pass (`build/phase5-001389-restored.log`).
 `phys_fn_001389` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-mesh-words44-001389.md`.
+
+
+### Mesh save-to-state (`phys_fn_001385`)
+
+Changing the mesh-word source read from +0xe4 to +0xe0 yields `meshrows candidate ok=0` and `layout candidate mismatches=1` (`build/phase5-001385-mutant.log`). Restoring +0xe4 returns the expected record digest and words, zero mismatches, and differential-pass (`build/phase5-001385-restored.log`).
+`phys_fn_001385` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-mesh-save-001385.md`.
