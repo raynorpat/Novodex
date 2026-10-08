@@ -493,3 +493,5 @@ The staged `NxPhysicsActorDynamicsTests` pair baseline and restored candidate ar
 - `phys_fn_000024` no-root release-report mutation detection: `stdout_delta=2`. Full details: `evidence/phase5-release-shape-000024.md`.
 
 - `phys_fn_000036` create-shape return mutation detection: `stdout_delta=359` (candidate access violation after the fixture observes null instead of the installed shape handle). Full details: `evidence/phase5-create-shape-000036.md`.
+
+- `phys_fn_000026` zero-inertia mass-build mutation detection: `stdout_delta=18`. Full details: `evidence/phase5-body-record-000026.md`.

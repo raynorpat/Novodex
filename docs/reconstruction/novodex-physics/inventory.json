@@ -538,14 +538,15 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/14",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/57",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit Actor.cpp): nxActorBuildRecord: 000008 when the tensor is zero bits (1 -> the caller's E1 0x7c, other nonzero 0x7d), the pose from an old record (ROT) or the body, the 0x260-byte record through [0x101041bc], 000797, 000630 (## Task 5). Staged-pair cases: the targets named in the dynamic proof.",
-      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxActorBuildRecord) in the candidate build (build/Release/NxPhysics.map) was hit 151 times (ActorLifecycle 6, DynamicFirst 1, ActorBodyFlag 9, ActorDynamics 5, ActorDynamicSetter 6, ActorMomentum 12, ActorForce 31, ActorCMass 25, ActorShapeMutation 56) against build/pairs/candidate (NxPhysics.dll sha256 2f9815a105ac1fe5754ce2d69d7d1b2030a336eb8327fadeeb0f5388481c3dee, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1862/1862); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6, re-recorded for its final-review fixes and re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?nxActorBuildRecord@@YAHPAEPBVNxBodyDesc@@@Z hit 228 times (Life 6, DynF 1, BFlag 9, Dyn 5, DSet 8, Mom 12, Force 31, CMass 25, SMut 56, BodyC 7, JSP 8, JAll 2, JSlot 27, SRay 7, SVis 5, Eff 4, Dump 15); equal to the oracle row's count on every target.",
+      "dynamic_proof": "NxPhysicsBodyCreationTests exercises nxActorBuildRecord through body creation with zero-bit inertia tensors, causing the record builder to call nxActorComputeMassFromShapes and store the computed mass frame. The clean and restored staged-pair outputs are exact (both exit 0, stdout_delta=0, stderr_exact=True). In an isolated candidate mutation, forced the all-zero tensor branch condition false. The oracle still computes the mass from shapes while the candidate skips that path; the registered target rejects it with oracle_exit=0, candidate_exit=0, stdout_delta=18, stderr_exact=True. Detailed runs: evidence/phase5-body-record-000026.md.",
       "notes": "owning unit Actor.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp; 000797, which it calls, stays discovered",
-      "implementation": "Physics/src/Scene.cpp"
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxActorBuildRecord"
     },
     {
       "id": "phys_fn_000027",
