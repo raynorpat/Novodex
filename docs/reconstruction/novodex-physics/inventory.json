@@ -42763,12 +42763,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1134",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7295",
       "static_proof": "bound-pool deleting destructor installing vptr 0x10108798 with adapter release through slot +0x14 when flagged",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsObjectLayoutTests compares this bound-pool deleting destructor against the pinned NxPhysics.dll; a wrong-vptr mutation produces miscsm2 candidate ok=0 and layout candidate mismatches=1; the restored differential returns digest c4bc7155. The existing static proof records the adapter release arm.",
       "notes": ""
     },
     {
@@ -43017,12 +43017,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "layout_adjacency",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1141",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7315",
       "static_proof": "second bound-pool deleting destructor, vptr 0x1010884c, same adapter-release shape",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsObjectLayoutTests compares this bound-pool deleting destructor against the pinned NxPhysics.dll; a wrong-vptr mutation produces miscsm2 candidate ok=0 and layout candidate mismatches=1; the restored differential returns digest c4bc7155. The existing static proof records the adapter release arm.",
       "notes": ""
     },
     {
