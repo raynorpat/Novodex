@@ -2391,14 +2391,15 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/48",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/287",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 9 getGlobalPoseReference; verdict faithful): all blocks incl. the one-shot 0xd0 warning (line 0x2c0) and the x87 quat-to-rows sequence; Task 2 made the report getInstance().error (the inline `cmp [instance],0; int3`); the Task 3 review moved position x/y through fld/fstp (SNaN quieted) and z as a dword, as 0x10004553-0x10004568. Staged-pair cases: NxPhysicsActorCMassTests.",
-      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable getGlobalPoseReference) in the candidate build (build/Release/NxPhysics.map) was hit 4 times (ActorCMass 4) against build/pairs/candidate (NxPhysics.dll sha256 2f9815a105ac1fe5754ce2d69d7d1b2030a336eb8327fadeeb0f5388481c3dee, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1862/1862); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6, re-recorded for its final-review fixes and re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?getGlobalPoseReference@NpActorVtable@@UBEABVNxMat34@@XZ hit 4 times (CMass 4); equal to the oracle row's count on every target.",
+      "dynamic_proof": "NxPhysicsActorCMassTests directly calls getGlobalPoseReference after installing signaling-NaN position bits in a dynamic body record. The oracle and restored candidate preserve x and y through x87 stores while copying z as an exact dword; clean and restored staged-pair output is exact (both exit 0, stdout_delta=0, stderr_exact=True). In an isolated source mutation, changed the z dword source from record+0x58 to record+0x54. The test observes oracle z=7fa00003 and candidate z=ff800002 and the registered differential rejects it with both processes exiting 0, stdout_delta=4, and exact stderr. Detailed runs: evidence/phase5-global-pose-reference-000128.md.",
       "notes": "",
-      "implementation": "Physics/src/NpActor.cpp"
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getGlobalPoseReference"
     },
     {
       "id": "phys_fn_000129",
