@@ -774,3 +774,9 @@ The baseline `NxPhysicsObjectLayoutTests` oracle differential reports capsule co
 
 The baseline `NxPhysicsObjectLayoutTests` oracle differential reports plane constructor digest `abed37e0`, zero distance, and zero layout mismatches (`build/phase5-000987-001247-baseline.log`). Changing the distance initializer at +0xec from 0.0f to 1.0f produces `layout candidate mismatches=3` and exits 1 (`build/phase5-001247-mutant.log`). Restoring zero returns the baseline digest, zero mismatches, and differential-pass (`build/phase5-001247-restored.log`).
 `phys_fn_001247` mutation detection: `mismatches=3`; restored output is exact (`mismatches=0`). See `evidence/phase5-shape-constructors-000987-001247.md`.
+
+
+### SphereShape constructor (`phys_fn_001349`)
+
+The baseline `NxPhysicsObjectLayoutTests` oracle differential reports sphere constructor digest `37ea7205`, radius zero, and zero layout mismatches (`build/phase5-001349-baseline.log`). Changing the radius initializer at +0xe0 from 0.0f to 1.0f produces `layout candidate mismatches=4` and exits 1 (`build/phase5-001349-mutant.log`). Restoring zero returns the baseline digest, zero mismatches, and differential-pass (`build/phase5-001349-restored.log`).
+`phys_fn_001349` mutation detection: `mismatches=4`; restored output is exact (`mismatches=0`). See `evidence/phase5-sphere-constructor-001349.md`.

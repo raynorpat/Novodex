@@ -249,3 +249,9 @@ Fresh Win32 Release Phase 5 gate after closing `phys_fn_001361` and `phys_fn_001
 Task M2-000987/001247: closed the CapsuleShape and PlaneShape constructors with the registered NxPhysicsObjectLayoutTests oracle differential. Changing capsule half-height from 0.0f to 1.0f yields `mismatches=5`; changing plane distance from 0.0f to 1.0f yields `mismatches=3`. Both restored runs return their pinned digests and zero mismatches. Phase 5 advances to 149 closed / 56 deferred. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-shape-constructors-000987-001247.md`.
 
 Fresh Win32 Release Phase 5 gate after closing `phys_fn_000987` and `phys_fn_001247` passed all 18 staged-pair targets, both oracle-differential targets, and 2,311/2,311 coverage assertions (`build/phase5-000987-001247-full-gate.log`). Inventory and both 80-file public-header roots validate.
+
+
+Task M2-001349: closed the SphereShape constructor with the registered NxPhysicsObjectLayoutTests oracle differential. Changing its default radius from 0.0f to 1.0f yields `mismatches=4`; restoring zero returns digest `37ea7205` and zero mismatches. Phase 5 advances to 150 closed / 55 deferred. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-sphere-constructor-001349.md`.
+
+
+Fresh Win32 Release Phase 5 gate after closing `phys_fn_001349` passed all 18 staged-pair targets, both oracle-differential targets, and 2,311/2,311 coverage assertions (`build/phase5-001349-full-gate.log`). Inventory and both 80-file public-header roots validate.

@@ -1270,10 +1270,12 @@
     "phys_fn_001351"
    ],
    "rows": {
-    "reconstructed": 3
+    "dynamically_gated": 1,
+    "reconstructed": 2
    },
    "bytes": {
-    "reconstructed": 243
+    "dynamically_gated": 91,
+    "reconstructed": 152
    },
    "phases": {
     "3": 1,
