@@ -483,3 +483,7 @@ runner compared captured output and exit status and rejected the mutant with
 The clean staged-pair baseline is exact (`stdout_delta=0`, exact stderr). Full
 method, hashes and harness details: `evidence/root-shape-cleanup-guard-2026-10-07.md`.
 - `phys_fn_000006` closes its null-root guard mutation with `stdout_delta=155`; the mutant candidate exited with an access violation while the pinned oracle exited zero. Full details: `evidence/root-shape-cleanup-guard-2026-10-07.md`.
+
+### Kinematic global-move rows (2026-10-07)
+
+The staged `NxPhysicsActorDynamicsTests` pair baseline and restored candidate are exact. Each rebuilt mutant was detected with both children exiting zero and exact stderr: `phys_fn_000090` `stdout_delta=16`, `phys_fn_000124` `stdout_delta=14`, and `phys_fn_000126` `stdout_delta=16`. Detailed inputs, mutation descriptions, and DLL hashes are in `evidence/phase5-kinematic-move-mutations.md`.

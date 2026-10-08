@@ -6,10 +6,10 @@
   "closure_ledger": "gates/phase5-closure.json",
   "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
   "evidence_commit": "6965e505f86ac15d1c35d2cd471f6544e42fb71d",
-  "note": "The full Phase 5 regression gate passes all 18 staged targets, static/oracle proofs, and 2,303/2,303 coverage assertions on the Win32 Release build. Actor accessors, mass-from-shapes, shape-vtable behavior, mass-frame behavior, kinematic flags, base-shape return stubs, and the phys_fn_000006 root null-guard are independently mutation-falsified on registered tests; the current closure ledger is 66 closed / 139 deferred. The differential loader reports and flushes staged DLL identity before test code and retains its final lifecycle audit. The phase remains pending until all owned rows are closed.",
+  "note": "The full Phase 5 regression gate passes all 18 staged targets, static/oracle proofs, and 2,303/2,303 coverage assertions on the Win32 Release build. Actor accessors, mass-from-shapes, shape-vtable behavior, mass-frame behavior, kinematic flags, base-shape return stubs, and the phys_fn_000006 root null-guard are independently mutation-falsified on registered tests; the current closure ledger is 69 closed / 136 deferred. The differential loader reports and flushes staged DLL identity before test code and retains its final lifecycle audit. The phase remains pending until all owned rows are closed.",
   "counts": {
-    "closed": 66,
-    "deferred": 139
+    "closed": 69,
+    "deferred": 136
   },
   "gate_sequence": [
     {
@@ -20,7 +20,7 @@
     {
       "name": "validate_inventory",
       "command": "python -B docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json",
-      "result": "inventory=pass; Phase 5 closure 66 closed / 139 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0."
+      "result": "inventory=pass; Phase 5 closure 69 closed / 136 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0."
     },
     {
       "name": "build_and_phase_gate",
