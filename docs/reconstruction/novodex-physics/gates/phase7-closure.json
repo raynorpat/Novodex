@@ -2,9 +2,9 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. The disabled FluidManager release path (phys_fn_003643) is now mutation-falsified through its seeded array-removal and deleting-dispatch fixture. It owns 561 function rows and 502 data objects: 22 functions are closed, 296 reconstructed functions remain unfalsified, 243 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are now independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. The disabled FluidManager release path (phys_fn_003643) is mutation-falsified through its seeded array-removal and deleting-dispatch fixture. The inert flushStream slot (phys_fn_000333) is mutation-falsified through a direct public-call fixture and an error-report mutation. Phase 7 owns 561 function rows and 502 data objects: 23 functions are closed, 296 reconstructed functions remain unfalsified, 242 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
   "proof_kinds": {
-    "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection.",
+    "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection. The direct flushStream mutation is tested by NxPhysicsSimulationTests and measured as stdout_delta=554 with candidate_exit=1.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
   },
   "deferred_reasons": {
@@ -19,9 +19,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 22,
+    "differential_falsified": 23,
     "deferred_reconstructed_not_falsified": 296,
-    "deferred_not_reconstructed_in_phase": 243
+    "deferred_not_reconstructed_in_phase": 242
   },
   "closed": [
     {
@@ -243,6 +243,16 @@
         "mutation": "In a freshly configured and built throwaway git archive of HEAD e6616f8b2c9cfa5f4d44f9e728d47a3d9378df79, changed only the scalar deleting flag for the removed fluid from 1 to 0 in the FluidManager release helper. The registered NxPhysicsSimulationTests staged-pair differential rejected the mutant: both processes exited 0, stderr matched exactly, and the seeded array-release line changed from flags=1 to flags=0. Restoring the exact Scene.cpp source and rebuilding returned to stdout_delta=0.",
         "detected": "stdout_delta=2"
       }
+    },
+    {
+      "id": "phys_fn_000333",
+      "rva": "0x0000ca30",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In NpScene::flushStream, add an NXE_DB_WARNING report; the direct public fixture must still observe zero errors.",
+        "detected": "stdout_delta=554"
+      }
     }
   ],
   "deferred": [
@@ -328,14 +338,6 @@
       "id": "phys_fn_000319",
       "rva": "0x0000c8d0",
       "size": 50,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000333",
-      "rva": "0x0000ca30",
-      "size": 8,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []

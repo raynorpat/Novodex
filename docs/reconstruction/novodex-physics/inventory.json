@@ -6203,13 +6203,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/164",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1053",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA: RVA 0x0000ca30 loads [this+0x24] and tail-jumps to NxFluidAssert; the pinned helper at VA 0x1002ea70 is a one-byte retn.",
+      "dynamic_proof": "Direct NxPhysicsSimulationTests call observes zero error callbacks; an NXE_DB_WARNING mutation fails the fixture (stdout_delta=554, candidate_exit=1), and restored candidate matches the oracle exactly (stdout_delta=0, stderr_exact=True).",
+      "notes": "Public slot is an oracle-native no-op; no public headers changed."
     },
     {
       "id": "phys_fn_000334",

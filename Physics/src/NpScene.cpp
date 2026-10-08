@@ -569,7 +569,9 @@ NxEffector * NpScene::getNextEffector()
 	return result;
 	}
 
-// (unimplemented) flushStream
+// phys_fn_000333 (oracle RVA 0x0000ca30): load the scene pointer at +0x24 and
+// tail-jump to NxFluidAssert. The pinned NxFluidAssert is a one-byte `retn`, so
+// this public slot has no observable work in the shipped binary.
 void NpScene::flushStream()
 	{
 	

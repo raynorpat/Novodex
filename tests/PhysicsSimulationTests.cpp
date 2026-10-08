@@ -1866,6 +1866,13 @@ int wmain(int argc, wchar_t** argv)
 		}
 	sdk->releaseScene(*frictionScene);
 
+	const unsigned flushStreamErrorsBefore = simulationOutput.errors;
+	scene->flushStream();
+	if(simulationOutput.errors != flushStreamErrorsBefore)
+		return nxFail("flushStream unexpectedly emitted an error");
+	printf("simulation flush-stream errors=%u\n",
+		simulationOutput.errors - flushStreamErrorsBefore);
+
 	scene->startRun(0.01f);
 	scene->finishRun();
 	printf("simulation legacy=start-finish returned\n");

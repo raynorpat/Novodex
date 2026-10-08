@@ -9376,3 +9376,15 @@ restoration and rebuild, the archive transcript is exact again. See
 ## Phase 7 closure measurement — FluidManager release
 
 `phys_fn_003643` mutation detection: changing the removed fluid's scalar deleting flag from 1 to 0 in an isolated archive was caught by the registered `NxPhysicsSimulationTests` differential (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=2`, `stderr_exact=True`). The restored archived source returned to an exact transcript. See `evidence/phase7-fluid-release-003643.md`.
+
+## Phase 7 closure measurement — inert `flushStream` (`phys_fn_000333`)
+
+IDA at oracle RVA `0x0000ca30` shows `NpScene::flushStream` loading the scene
+pointer from `this+0x24` and tail-jumping to `NxFluidAssert`; that helper is a
+one-byte `retn`. A direct public `flushStream()` call in
+`NxPhysicsSimulationTests` verifies no error callback and matches the oracle.
+Adding an `NXE_DB_WARNING` error call to the candidate was caught by the direct
+fixture: `phys_fn_000333` mutation detection was `stdout_delta=554`
+(`candidate_exit=1`); the restored target is exact
+(`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`, `stderr_exact=True`;
+`build/phase7-flushStream-restored.log`).

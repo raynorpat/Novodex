@@ -1336,3 +1336,7 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 ### Continuation — FluidManager release mutation closure (2026-10-08)
 
 - Closed Phase 7 row `phys_fn_003643` (`releaseFluid`) with a throwaway-archive mutation that changes the removed fluid's scalar deleting flag from 1 to 0. The registered simulation differential catches it with equal zero exits, exact stderr, and `stdout_delta=2`; restoring and rebuilding returns to `stdout_delta=0`. The full Phase 7 target selection passes all 14 staged-pair targets exactly. Phase 7 advances to 22 closed / 539 deferred; inventory validates at 6,338 functions / 5,138 data objects / zero unexplained. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-release-003643.md`. This covers the test-seeded manager removal and destructor dispatch; real `NpFluid` destruction and extension-backed lifecycle remain open. Public Physics headers are unchanged.
+
+### Continuation — inert `flushStream` mutation closure (2026-10-08)
+
+- Closed Phase 7 row `phys_fn_000333` after IDA confirmed the oracle slot tail-jumps to a one-byte `retn` helper. The direct `NxPhysicsSimulationTests` fixture verifies a public call emits no error; an `NXE_DB_WARNING` mutation is caught (`candidate_exit=1`, `stdout_delta=554`), and the restored DLL matches the oracle exactly. Phase 7 advances to 23 closed / 538 remaining functions. Public headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-joints.md`.
