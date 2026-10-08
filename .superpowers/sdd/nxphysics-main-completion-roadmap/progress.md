@@ -92,3 +92,5 @@ targeted mutations failed as expected, restored destructor checks passed, and
 Phase 5 passed 2,565/2,565).
 
 Task M2-mesh-ctor-001379: changing the `+0xe4` initialization to `0xdeadbeef` is detected by `NxPhysicsObjectLayoutTests` (`mesh candidate ok=0`, aggregate `mismatches=2`); restored output has zero mismatches and digest `422a1f78`. Phase 5 advances to 178 closed / 27 deferred; full gate passes at 2,565/2,565 assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-mesh-constructor-001379.md`.
+
+Task M2-wall-dtor-000042: changing the interface-wall vtable to `0x101043d4` is caught by the actorctor test (`mismatches=1`); the restored `0x101043d0` table matches digest `19f4915a` with zero mismatches. Phase 5 advances to 179 closed / 26 deferred; full gate passes at 2,565/2,565 assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-wall-dtor-000042.md`.

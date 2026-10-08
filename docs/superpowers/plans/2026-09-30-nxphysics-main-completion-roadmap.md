@@ -1399,3 +1399,8 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 
 - `phys_fn_001379` (`MeshShape::MeshShape`) is mutation-falsified by the registered `NxPhysicsObjectLayoutTests` poisoned-buffer differential. Changing the `+0xe4` initialization to `0xdeadbeef` yields `mesh candidate ok=0` and two mismatches; the restored constructor returns both mesh words to zero, preserves sentinel `4` and collision-object back-pointers, and matches digest `422a1f78` with zero mismatches.
 - Phase 5 advances to 178 closed / 27 reconstructed-but-unfalsified rows. The fresh full Phase 5 gate passes all 19 targets and 2,565/2,565 assertions (`build/phase5-mesh-ctor-final.log`). No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-mesh-constructor-001379.md`.
+
+### Continuation — interface-wall destructor mutation closure (2026-10-08)
+
+- `phys_fn_000042` is mutation-falsified by the registered `NxPhysicsObjectLayoutTests` actorctor lifecycle case. Changing the interface-wall vtable store to `0x101043d4` produces `mismatches=1`; restoring `0x101043d0` returns the lifecycle digest `19f4915a` with zero mismatches.
+- Phase 5 advances to 179 closed / 26 reconstructed-but-unfalsified rows. The fresh full Phase 5 gate passes all 19 targets and 2,565/2,565 assertions (`build/phase5-wall-dtor-final.log`). No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-wall-dtor-000042.md`.

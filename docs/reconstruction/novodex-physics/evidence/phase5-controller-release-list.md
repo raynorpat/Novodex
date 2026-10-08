@@ -893,3 +893,7 @@ Changing `shapeOwnerWorldAABB` to dispatch owner vtable slot 8 instead of slot 9
 ## MeshShape constructor: `phys_fn_001379`
 
 The `phys_fn_001379` constructor's `+0xe4` zero initialization changed to `0xdeadbeef` is detected by `NxPhysicsObjectLayoutTests` (`mismatches=2`; the mesh candidate row reports `ok=0`). The restored constructor matches the pinned zero words, sentinel, and collision-object back-pointer with digest `422a1f78` and zero differential mismatches. See `evidence/phase5-mesh-constructor-001379.md`.
+
+## Interface-wall deleting destructor: `phys_fn_000042`
+
+Changing the `phys_fn_000042` interface-wall vtable store from `0x101043d0` to `0x101043d4` is detected by the actorctor case (`mismatches=1`); the restored function reports `wWall=1` and exact digest `19f4915a`. See `evidence/phase5-wall-dtor-000042.md`.

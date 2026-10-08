@@ -833,12 +833,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/19",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/129",
       "static_proof": "interface-wall scalar-deleting destructor: installs the wall table and releases through the LINKED CRT (0x0002471 calls 0x100f41f0 directly), not through the SDK allocator adapter its slot-0 sibling uses",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsObjectLayoutTests actorctor differential: changing the wall vtable store from 0x101043d0 to 0x101043d4 produces actorctor candidate ok=0 (wWall=0) and layout candidate mismatches=1; restoring the wall table returns digest 19f4915a and zero layout mismatches.",
       "notes": ""
     },
     {
