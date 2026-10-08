@@ -499,3 +499,6 @@ The staged `NxPhysicsActorDynamicsTests` pair baseline and restored candidate ar
 - `phys_fn_000128` global-pose-reference z-word mutation detection: `stdout_delta=4`. Full details: `evidence/phase5-global-pose-reference-000128.md`.
 
 - `phys_fn_000134` CMass global-pose matrix-offset mutation detection: `stdout_delta=54`. Full details: `evidence/phase5-cmass-global-pose-000134.md`.
+
+- `phys_fn_000136` CMass global-position offset mutation detection: `stdout_delta=54`. Full details: `evidence/phase5-cmass-getters-000136-000138.md`.
+- `phys_fn_000138` CMass global-orientation offset mutation detection: `stdout_delta=54`. Full details: `evidence/phase5-cmass-getters-000136-000138.md`.

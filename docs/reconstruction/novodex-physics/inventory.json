@@ -2539,14 +2539,15 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/51",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/299",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 33 getCMassGlobalPositionVal; verdict faithful): E1 0x314 reproduced by Task 2; ROT and position arithmetic faithful. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorCMassTests, NxPhysicsActorShapeMutationTests. Final review I1 (NpActor completion): the x87 dot products (nxNpActorX87Dot3) take their operands by reference, so each fld / fmul reads the float in place as the listing does instead of a quieted by-value copy.",
-      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable getCMassGlobalPositionVal) in the candidate build (build/Release/NxPhysics.map) was hit 35 times (ActorDynamicSetter 1, ActorCMass 28, ActorShapeMutation 6) against build/pairs/candidate (NxPhysics.dll sha256 2f9815a105ac1fe5754ce2d69d7d1b2030a336eb8327fadeeb0f5388481c3dee, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1862/1862); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6, re-recorded for its final-review fixes and re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?getCMassGlobalPositionVal@NpActorVtable@@UBE?AVNxVec3@@XZ hit 35 times (DSet 1, CMass 28, SMut 6); equal to the oracle row's count on every target.",
+      "dynamic_proof": "NxPhysicsActorCMassTests directly records NpActorVtable::getCMassGlobalPositionVal values for rotated single and grouped actors. The clean and restored staged pairs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated candidate mutation Changed the CMass position field offset from 0x158 to 0x15c. The registered differential rejects it with both processes exiting 0, stdout_delta=54, and exact stderr; the CMass target observes the wrong global position. Detailed runs: evidence/phase5-cmass-getters-000136-000138.md.",
       "notes": "",
-      "implementation": "Physics/src/NpActor.cpp"
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getCMassGlobalPositionVal"
     },
     {
       "id": "phys_fn_000137",
@@ -2576,14 +2577,15 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/52",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/302",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 34 getCMassGlobalOrientationVal; verdict faithful): E1 0x31d reproduced by Task 2; ROT and RF faithful (nxNpActorDerivedMassFrame). Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorCMassTests. Final review I1 (NpActor completion): the listing's integer word copies (rep movsd / mov) are now bit copies (memcpy) in the candidate; under /arch:IA32 they had been fld/fstp pairs that quiet a signalling NaN; the x87 dot products (nxNpActorX87Dot3) take their operands by reference, so each fld / fmul reads the float in place as the listing does instead of a quieted by-value copy.",
-      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable getCMassGlobalOrientationVal) in the candidate build (build/Release/NxPhysics.map) was hit 37 times (ActorDynamicSetter 1, ActorMomentum 8, ActorCMass 28) against build/pairs/candidate (NxPhysics.dll sha256 2f9815a105ac1fe5754ce2d69d7d1b2030a336eb8327fadeeb0f5388481c3dee, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1862/1862); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6, re-recorded for its final-review fixes and re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?getCMassGlobalOrientationVal@NpActorVtable@@UBE?AVNxMat33@@XZ hit 37 times (DSet 1, Mom 8, CMass 28); equal to the oracle row's count on every target.",
+      "dynamic_proof": "NxPhysicsActorCMassTests directly records NpActorVtable::getCMassGlobalOrientationVal values for rotated single and grouped actors. The clean and restored staged pairs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated candidate mutation Changed the CMass orientation matrix field offset from 0x134 to 0x138. The registered differential rejects it with both processes exiting 0, stdout_delta=54, and exact stderr; the CMass target observes the wrong global orientation. Detailed runs: evidence/phase5-cmass-getters-000136-000138.md.",
       "notes": "",
-      "implementation": "Physics/src/NpActor.cpp"
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getCMassGlobalOrientationVal"
     },
     {
       "id": "phys_fn_000139",
