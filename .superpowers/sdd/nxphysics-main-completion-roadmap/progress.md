@@ -90,3 +90,5 @@ Phase 5 passed 2,565/2,565).
 Task M2-box-mesh-dtors-000979-001399: complete (commit `35ea4f56`; both
 targeted mutations failed as expected, restored destructor checks passed, and
 Phase 5 passed 2,565/2,565).
+
+Task M2-mesh-ctor-001379: changing the `+0xe4` initialization to `0xdeadbeef` is detected by `NxPhysicsObjectLayoutTests` (`mesh candidate ok=0`, aggregate `mismatches=2`); restored output has zero mismatches and digest `422a1f78`. Phase 5 advances to 178 closed / 27 deferred; full gate passes at 2,565/2,565 assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-mesh-constructor-001379.md`.

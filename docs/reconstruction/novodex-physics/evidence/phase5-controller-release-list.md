@@ -889,3 +889,7 @@ Changing `shapeOwnerWorldAABB` to dispatch owner vtable slot 8 instead of slot 9
 `phys_fn_001263` and `phys_fn_001375` mutation detection: suppressing the plane and sphere flag-1 self-free independently produces `mismatches=1`; restoring each returns to the exact aggregate shape-vtable result.
 `phys_fn_000979` mutation detection: suppressing the box flag-1 self-free produces `mismatches=1`; the restored box table returns the aggregate shape-vtable target to its pinned digest and zero mismatches.
 `phys_fn_001399` mutation detection: suppressing the mesh flag-1 self-free produces `frees=2/1; mismatches=1` while the mesh refcount still changes 7 to 6; the restored destructor matches both observations.
+
+## MeshShape constructor: `phys_fn_001379`
+
+The `phys_fn_001379` constructor's `+0xe4` zero initialization changed to `0xdeadbeef` is detected by `NxPhysicsObjectLayoutTests` (`mismatches=2`; the mesh candidate row reports `ok=0`). The restored constructor matches the pinned zero words, sentinel, and collision-object back-pointer with digest `422a1f78` and zero differential mismatches. See `evidence/phase5-mesh-constructor-001379.md`.

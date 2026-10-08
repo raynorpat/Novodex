@@ -1394,3 +1394,8 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 ### Continuation — mesh deleting destructor mutation closure (2026-10-08)
 
 - `phys_fn_001399` is mutation-falsified by the registered `NxPhysicsShapeVtableTests` mesh slot-0 case. Suppressing the flag-1 self-free changes the measured allocator delta from two to one while preserving the expected mesh reference decrement, yielding one mismatch; the restored shape matches both. Phase 5 advances to 177 closed / 28 reconstructed rows. The fresh full gate passes all 19 targets and 2,565/2,565 assertions (`build/phase5-shape-dtor-final.log`). No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-mesh-dtors.md`.
+
+### Continuation — mesh constructor mutation closure (2026-10-08)
+
+- `phys_fn_001379` (`MeshShape::MeshShape`) is mutation-falsified by the registered `NxPhysicsObjectLayoutTests` poisoned-buffer differential. Changing the `+0xe4` initialization to `0xdeadbeef` yields `mesh candidate ok=0` and two mismatches; the restored constructor returns both mesh words to zero, preserves sentinel `4` and collision-object back-pointers, and matches digest `422a1f78` with zero mismatches.
+- Phase 5 advances to 178 closed / 27 reconstructed-but-unfalsified rows. The fresh full Phase 5 gate passes all 19 targets and 2,565/2,565 assertions (`build/phase5-mesh-ctor-final.log`). No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-mesh-constructor-001379.md`.
