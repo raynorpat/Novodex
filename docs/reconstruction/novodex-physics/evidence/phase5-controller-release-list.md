@@ -573,3 +573,9 @@ stderr; restoring the source returned to an exact transcript:
 - `phys_fn_000222` mutation detection: `stdout_delta=60`.
 
 Full inputs, mutation descriptions, and restored logs: `evidence/phase5-cmass-setter-mutations-000206-000222.md`.
+
+### Center-of-mass orientation error tail (2026-10-08)
+
+The registered DynamicSetter differential catches a source-line mutation in the static/kinematic error report contained in the tail row `phys_fn_000216`; both processes exit zero and stderr is exact.
+
+- `phys_fn_000216` mutation detection: `stdout_delta=4`. Full details: `evidence/phase5-cmass-orientation-tail-000216.md`.
