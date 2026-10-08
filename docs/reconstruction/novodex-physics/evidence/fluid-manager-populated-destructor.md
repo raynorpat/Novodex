@@ -27,3 +27,9 @@ constructor leaves that backend unavailable, so its global callback table and
 module lifetime cannot be observed through this scene fixture.
 
 No public `Physics/include` header changed.
+
+After rebuilding the candidate, the approved Release Viewer selection also
+passed: all 48 CTest selections covered the 39 available scenes, with 43
+passing and the five established signature-verified pinned-oracle asset cases
+skipped. The Viewer physics-step and contact checks passed as well
+(`build/FluidGate/viewer-all-scenes-fluid-manager.log`).
