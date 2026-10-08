@@ -1364,3 +1364,8 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 
 - Added a grounded low-obstacle controller scene with `NX_Z` up and registered its exact output as required coverage. Oracle and candidate both end at `(3.0, 0.0, 0.5)` with collision flags `4`. A temporary forced-+Y resolver mutation is detected (candidate exit 1, 36-byte output delta); the restored build matches exactly.
 - Fresh Phases 4–6 passed. Phase 7 passed on retry with 1,389/1,389 coverage assertions; the first attempt's isolated oracle access violation did not reproduce in either the direct target rerun or full gate retry. Gate registry tests pass 37/37. This probe adds one focused Z-up case and does not close the resolver's remaining branches or the full DLL. No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/controller-zup-step-probe.md`.
+
+
+### Continuation — prunable owner world-AABB adapter mutation closure (2026-10-08)
+
+- `phys_fn_001269` is now mutation-falsified through the registered Phase 5 `NxPhysicsSceneRaycastTests` staged-pair target. Dispatching slot 8 instead of owner vtable slot 9 makes the candidate stack overflow (`oracle_exit=0`, candidate exit `-1073741571`, stdout delta 2,783); the restored and forcibly rebuilt candidate matches the oracle exactly. Phase 5 advances to 171 closed / 34 reconstructed rows without row-specific mutation proof. The adjacent notify adapter remains open. No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-owner-world-aabb-001269.md`.

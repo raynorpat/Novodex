@@ -878,3 +878,9 @@ Reversing the BOX hit-normal hint branch in `BoxShape::nxBoxRaycast` is caught b
 The pinned-oracle `NxPhysicsObjectLayoutTests` fixture covers the null-shape, ordinary-shape, and kind-5 mesh cases. Changing the mesh branch in `nxBodyCollisionObject` to return `shape+0x9c` instead of `*(shape+0xf0)` fails the actor shape assertion (`actorsm candidate ok=0 digest=81d5e7b9`) and produces `layout candidate mismatches=1`. Restoring the mesh collision-object pointer returns the digest to `1bdc2fa8` and the oracle comparison to zero mismatches. A separate null-arm mutant was also detected and restored. See `evidence/phase5-actor-collision-object-000019.md`.
 
 `phys_fn_000019` mutation detection: `mismatches=1`; the restored actor-shape digest and oracle differential are exact (`mismatches=0`).
+
+
+## Prunable owner world-AABB adapter: `phys_fn_001269`
+
+Changing `shapeOwnerWorldAABB` to dispatch owner vtable slot 8 instead of slot 9 is caught by the registered `NxPhysicsSceneRaycastTests` staged-pair differential (`stdout_delta=2783`; oracle exit 0, candidate STATUS_STACK_OVERFLOW, stderr exact). The restored forced rebuild returns to an exact staged-pair match. See `evidence/phase5-owner-world-aabb-001269.md`.
+`phys_fn_001269` mutation detection: `stdout_delta=2783`; the candidate stack overflowed under the slot-8 mutant, and the restored transcript is exact.
