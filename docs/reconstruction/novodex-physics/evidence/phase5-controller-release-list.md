@@ -546,3 +546,13 @@ Registered DynamicSetter and Momentum differentials reject each row-specific mut
 - `phys_fn_000178` mutation detection: `stdout_delta=2`. Full details: `evidence/phase5-velocity-momentum-wrappers-000174-000176-000178-000180-000182.md`.
 - `phys_fn_000180` mutation detection: `stdout_delta=40`. Full details: `evidence/phase5-velocity-momentum-wrappers-000174-000176-000178-000180-000182.md`.
 - `phys_fn_000182` mutation detection: `stdout_delta=18`. Full details: `evidence/phase5-velocity-momentum-wrappers-000174-000176-000178-000180-000182.md`.
+
+### Actor global pose setters (2026-10-08)
+
+The CMass differential catches each pose setter mutation, and clean/restored output is exact.
+
+- `phys_fn_000196` mutation detection: `stdout_delta=112`. Full details: `evidence/phase5-global-pose-setters-000196-000198-000200-000202-000204.md`.
+- `phys_fn_000198` mutation detection: `stdout_delta=196`. Full details: `evidence/phase5-global-pose-setters-000196-000198-000200-000202-000204.md`.
+- `phys_fn_000200` mutation detection: `stdout_delta=56`. Full details: `evidence/phase5-global-pose-setters-000196-000198-000200-000202-000204.md`.
+- `phys_fn_000202` mutation detection: `stdout_delta=392`. Full details: `evidence/phase5-global-pose-setters-000196-000198-000200-000202-000204.md`.
+- `phys_fn_000204` mutation detection: `stdout_delta=218`. Full details: `evidence/phase5-global-pose-setters-000196-000198-000200-000202-000204.md`.
