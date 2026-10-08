@@ -9,10 +9,19 @@ TOOLS_DIR = Path(__file__).resolve().parents[1]
 REPO_DIR = Path(__file__).resolve().parents[5]
 sys.path.insert(0, str(TOOLS_DIR))
 
-from report_completion import _sha256, build_report  # noqa: E402
+from report_completion import _sha256, build_report, write_report  # noqa: E402
 
 
 class CompletionReportTests(unittest.TestCase):
+    def test_generated_report_uses_lf_bytes_on_every_platform(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "report.json"
+            write_report(output, {"rows": ["first", "second"]})
+
+            self.assertEqual(
+                output.read_bytes(),
+                b'{\n  "rows": [\n    "first",\n    "second"\n  ]\n}\n')
+
     def test_sha256_normalizes_text_line_endings(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             lf_path = Path(temp_dir) / "lf.json"

@@ -377,6 +377,12 @@ def _sha256(path):
     return hashlib.sha256(contents).hexdigest()
 
 
+def write_report(path, report):
+    """Write stable UTF-8/LF JSON bytes regardless of the host platform."""
+    path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n",
+                    encoding="utf-8", newline="\n")
+
+
 def main(argv=None):
     script_root = Path(__file__).resolve().parents[4]
     parser = argparse.ArgumentParser(description=__doc__)
@@ -415,8 +421,7 @@ def main(argv=None):
         },
     }
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n",
-                           encoding="utf-8")
+    write_report(output_path, report)
     summary = report["summary"]
     print(
         "completion_backlog=pass "
