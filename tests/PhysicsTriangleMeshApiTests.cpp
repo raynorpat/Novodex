@@ -35,12 +35,6 @@ static NxU32 nxMeshFloatBits(NxReal value)
 	return word.bits;
 	}
 
-static bool nxMeshWithinOneUlp(NxReal value, NxU32 expectedBits)
-	{
-	const NxU32 bits = nxMeshFloatBits(value);
-	return bits >= expectedBits ? bits - expectedBits <= 1 : expectedBits - bits <= 1;
-	}
-
 static unsigned long long nxMeshArrayHash(const NxTriangleMesh& mesh, NxInternalArray array)
 	{
 	const NxU8* bytes = static_cast<const NxU8*>(mesh.getBase(0, array));
@@ -510,6 +504,182 @@ static int nxTestInvalidDescriptor(NxPhysicsSDK* sdk)
 		0 : nxFail("invalid triangle-mesh descriptor did not report the oracle error");
 	}
 
+static float nxApiRange(unsigned& state, float low, float high)
+	{
+	state ^= state << 13;
+	state ^= state >> 17;
+	state ^= state << 5;
+	const float unit = static_cast<float>(state >> 8) * (1.0f / 16777216.0f);
+	return low + (high - low) * unit;
+	}
+
+static unsigned long long nxPointCloudHash(const NxVec3* points, NxU32 count)
+	{
+	const NxU8* bytes = reinterpret_cast<const NxU8*>(points);
+	const size_t byteCount = static_cast<size_t>(count) * sizeof(*points);
+	unsigned long long hash = 14695981039346656037ull;
+	for(size_t i = 0; i < byteCount; ++i)
+		{
+		hash ^= bytes[i];
+		hash *= 1099511628211ull;
+		}
+	return hash;
+	}
+
+static bool nxConvexMeshHasUsableTopology(const NxTriangleMesh& mesh,
+	const NxVec3* points, NxU32 pointCount)
+	{
+	const NxU32 vertexCount = mesh.getCount(0, NX_ARRAY_VERTICES);
+	const NxU32 triangleCount = mesh.getCount(0, NX_ARRAY_TRIANGLES);
+	if(vertexCount < 4 || vertexCount > 256 || triangleCount < 4 ||
+		mesh.getFormat(0, NX_ARRAY_VERTICES) != NX_FORMAT_FLOAT ||
+		mesh.getFormat(0, NX_ARRAY_TRIANGLES) != NX_FORMAT_INT ||
+		mesh.getStride(0, NX_ARRAY_VERTICES) != sizeof(NxVec3) ||
+		mesh.getStride(0, NX_ARRAY_TRIANGLES) != 3 * sizeof(NxU32))
+		return false;
+
+	const NxVec3* vertices = static_cast<const NxVec3*>(mesh.getBase(0, NX_ARRAY_VERTICES));
+	const NxU32* indices = static_cast<const NxU32*>(mesh.getBase(0, NX_ARRAY_TRIANGLES));
+	if(!vertices || !indices)
+		return false;
+
+	double minimum[3] = { points[0].x, points[0].y, points[0].z };
+	double maximum[3] = { points[0].x, points[0].y, points[0].z };
+	for(NxU32 i = 1; i < pointCount; ++i)
+		{
+		const double value[3] = { points[i].x, points[i].y, points[i].z };
+		for(int axis = 0; axis < 3; ++axis)
+			{
+			if(value[axis] < minimum[axis]) minimum[axis] = value[axis];
+			if(value[axis] > maximum[axis]) maximum[axis] = value[axis];
+			}
+		}
+	const double extent = maximum[0] - minimum[0] > maximum[1] - minimum[1] ?
+		(maximum[0] - minimum[0] > maximum[2] - minimum[2] ? maximum[0] - minimum[0] : maximum[2] - minimum[2]) :
+		(maximum[1] - minimum[1] > maximum[2] - minimum[2] ? maximum[1] - minimum[1] : maximum[2] - minimum[2]);
+	const double tolerance = extent * 1.0e-5;
+	bool referenced[256] = {};
+	for(NxU32 triangle = 0; triangle < triangleCount; ++triangle)
+		{
+		const NxU32 ia = indices[triangle * 3 + 0];
+		const NxU32 ib = indices[triangle * 3 + 1];
+		const NxU32 ic = indices[triangle * 3 + 2];
+		if(ia >= vertexCount || ib >= vertexCount || ic >= vertexCount)
+			return false;
+		referenced[ia] = referenced[ib] = referenced[ic] = true;
+		const double abx = vertices[ib].x - vertices[ia].x;
+		const double aby = vertices[ib].y - vertices[ia].y;
+		const double abz = vertices[ib].z - vertices[ia].z;
+		const double acx = vertices[ic].x - vertices[ia].x;
+		const double acy = vertices[ic].y - vertices[ia].y;
+		const double acz = vertices[ic].z - vertices[ia].z;
+		const double nx = aby * acz - abz * acy;
+		const double ny = abz * acx - abx * acz;
+		const double nz = abx * acy - aby * acx;
+		if(nx * nx + ny * ny + nz * nz <= tolerance * tolerance * tolerance * tolerance)
+			return false;
+		}
+	for(NxU32 vertex = 0; vertex < vertexCount; ++vertex)
+		{
+		if(!referenced[vertex] || vertices[vertex].x < minimum[0] - tolerance ||
+			vertices[vertex].x > maximum[0] + tolerance ||
+			vertices[vertex].y < minimum[1] - tolerance ||
+			vertices[vertex].y > maximum[1] + tolerance ||
+			vertices[vertex].z < minimum[2] - tolerance ||
+			vertices[vertex].z > maximum[2] + tolerance)
+			return false;
+		}
+	return true;
+	}
+
+static int nxTestConvexCookingCloud(NxPhysicsSDK* sdk, const char* name,
+	const NxVec3* points, NxU32 count)
+	{
+	NxTriangleMeshDesc desc;
+	desc.setToDefault();
+	desc.numVertices = count;
+	desc.points = points;
+	desc.pointStrideBytes = sizeof(NxVec3);
+	desc.flags = NX_MF_CONVEX | NX_MF_COMPUTE_CONVEX;
+	if(!desc.isValid())
+		return nxFail("convex cooking point-cloud descriptor is invalid");
+
+	const long long allocationsBefore = gAllocator.liveAllocations;
+	gOutputStream.reset();
+	NxTriangleMesh* mesh = sdk->createTriangleMesh(desc);
+	if(!mesh)
+		{
+		printf("triangle_mesh convex_cook case=%s input=%016llx created=0 errors=%u code=%u line=%d\n",
+			name, nxPointCloudHash(points, count), gOutputStream.errors,
+			static_cast<unsigned>(gOutputStream.lastCode), gOutputStream.lastLine);
+		return nxFail("convex cooking input cloud could not be cooked");
+		}
+
+	const NxU32 vertices = mesh->getCount(0, NX_ARRAY_VERTICES);
+	const NxU32 triangles = mesh->getCount(0, NX_ARRAY_TRIANGLES);
+	if(strcmp(name, "five_clusters") == 0)
+		{
+	// This 400-point input enters the oracle's 256-point reducer. Repeated
+	// oracle processes return different reduced point selections and facet order
+	// because qhull's facet hash incorporates heap addresses. Separate recorded
+	// qhull sets and algorithm paths are covered by NxPhysicsThirdPartyTests; this
+	// public route pins successful mesh construction, bounded output geometry,
+	// usable triangle topology and release without treating allocator-dependent
+	// topology as a deterministic byte contract.
+	const bool validTopology = nxConvexMeshHasUsableTopology(*mesh, points, count);
+	printf("triangle_mesh convex_cook case=%s input=%016llx created=1 topology=%u\n",
+		name, nxPointCloudHash(points, count), validTopology ? 1u : 0u);
+	if(!validTopology)
+		{
+		sdk->releaseTriangleMesh(*mesh);
+		return nxFail("reduced convex cooking output has invalid geometry or triangle topology");
+		}
+		}
+	else
+		printf("triangle_mesh convex_cook case=%s input=%016llx created=1 vertices=%u triangles=%u arrays=%016llx.%016llx\n",
+			name, nxPointCloudHash(points, count), vertices, triangles,
+			nxMeshArrayHash(*mesh, NX_ARRAY_VERTICES), nxMeshArrayHash(*mesh, NX_ARRAY_TRIANGLES));
+	sdk->releaseTriangleMesh(*mesh);
+	if(gAllocator.liveAllocations != allocationsBefore)
+		{
+		printf("triangle_mesh convex_cook case=%s allocator_before=%lld after=%lld\n",
+			name, allocationsBefore, gAllocator.liveAllocations);
+		return nxFail("convex cooking point-cloud release leaked user allocations");
+		}
+	return 0;
+	}
+
+// Public-DLL coverage for duplicate welding and the reduced point-cloud path.
+static int nxTestConvexCookingPointClouds(NxPhysicsSDK* sdk)
+	{
+	NxVec3 weldedPair[10];
+	for(int i = 0; i < 10; ++i)
+		{
+		const float delta = (i / 2) * 1e-8f;
+		weldedPair[i].set((i & 1) ? 2.0f + delta : -1.0f + delta,
+			(i & 1) ? 1.0f - delta : 0.5f,
+			(i & 1) ? -3.0f : 4.0f + delta);
+		}
+	int status = nxTestConvexCookingCloud(sdk, "welded_pair", weldedPair, 10);
+	if(status) return status;
+
+	const NxVec3 centers[] = {
+		NxVec3(-4.0f, 0.0f, 1.0f), NxVec3(2.0f, -3.0f, 4.0f),
+		NxVec3(3.0f, 2.0f, -2.0f), NxVec3(-1.0f, 5.0f, -3.0f),
+		NxVec3(0.0f, -2.0f, -5.0f)
+		};
+	NxVec3 clusters[400];
+	unsigned state = 0x4e0c0df1u;
+	for(int i = 0; i < 400; ++i)
+		{
+		const int cluster = i % 5;
+		clusters[i].set(centers[cluster].x + nxApiRange(state, -0.01f, 0.01f),
+			centers[cluster].y + nxApiRange(state, -0.01f, 0.01f),
+			centers[cluster].z + nxApiRange(state, -0.01f, 0.01f));
+		}
+	return nxTestConvexCookingCloud(sdk, "five_clusters", clusters, 400);
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -571,6 +741,12 @@ int wmain(int argc, wchar_t** argv)
 		return status;
 		}
 	status = nxTestInvalidDescriptor(sdk);
+	if(status)
+		{
+		sdk->release();
+		return status;
+		}
+	status = nxTestConvexCookingPointClouds(sdk);
 	if(status)
 		{
 		sdk->release();
@@ -847,12 +1023,10 @@ int wmain(int argc, wchar_t** argv)
 	// the 2-unit cube rests at y=0x3f73332a with zero linear velocity.
 	// Checking the actual state makes this gate catch missing mesh-plane contact
 	// dispatch instead of treating any successful fetch as a passing simulation.
-	// The qhull path can remap the same cooked cube vertices differently under
-	// the oracle's default x87 word. This fixture preserves that measured single-
-	// ULP settle difference as a follow-up fidelity item while still requiring
-	// the candidate to resolve contact and stop falling.
+	// Current independently staged oracle and candidate runs match this state
+	// exactly, so keep the full float-bit result in the differential contract.
 	const bool settledOnPlane = nxMeshFloatBits(position.x) == 0 &&
-		nxMeshWithinOneUlp(position.y, 0x3f73332a) &&
+		nxMeshFloatBits(position.y) == 0x3f73332a &&
 		nxMeshFloatBits(position.z) == 0 && nxMeshFloatBits(velocity.x) == 0 &&
 		nxMeshFloatBits(velocity.y) == 0 && nxMeshFloatBits(velocity.z) == 0;
 	if(!settledOnPlane)

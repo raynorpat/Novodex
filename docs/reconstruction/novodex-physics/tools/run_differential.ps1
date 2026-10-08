@@ -205,8 +205,9 @@ foreach ($target in $Targets) {
     $delta = @(Compare-Object $oracleRun.Normalized $candidateRun.Normalized -CaseSensitive -SyncWindow 0)
     $stderrExact = $oracleRun.Stderr -ceq $candidateRun.Stderr
     $exitExact = $oracleRun.ExitCode -eq $candidateRun.ExitCode
-    Write-Host "differential target=$target oracle_exit=$($oracleRun.ExitCode) candidate_exit=$($candidateRun.ExitCode) stdout_delta=$($delta.Count) stderr_exact=$stderrExact"
-    if ($delta.Count -ne 0 -or -not $stderrExact -or -not $exitExact) {
+    $bothSucceeded = $oracleRun.ExitCode -eq 0 -and $candidateRun.ExitCode -eq 0
+    Write-Host "differential target=$target oracle_exit=$($oracleRun.ExitCode) candidate_exit=$($candidateRun.ExitCode) both_exit_zero=$bothSucceeded stdout_delta=$($delta.Count) stderr_exact=$stderrExact"
+    if ($delta.Count -ne 0 -or -not $stderrExact -or -not $exitExact -or -not $bothSucceeded) {
         $differences++
     }
 }

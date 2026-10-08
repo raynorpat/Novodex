@@ -90,6 +90,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'triangle_mesh case=descriptor16 created=1',
         'triangle_mesh case=implicit_indices created=1',
         'triangle_mesh case=precomputed_convex created=1',
+        'triangle_mesh convex_cook case=welded_pair',
+        'triangle_mesh convex_cook case=five_clusters',
         'triangle_mesh invalid_desc rejected=1'
     )
     'NxPhysicsSDKTests' = @(
