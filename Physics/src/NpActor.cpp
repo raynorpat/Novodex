@@ -3543,5 +3543,3 @@ NxActorGroup NpActorVtable::getGroup() const
 	nxNpSceneGuardLeave(ctx);
 	return out;
 	}
-
-\n
