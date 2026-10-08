@@ -1352,3 +1352,9 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 
 - `phys_fn_000959` (`BoxHullFacade::supportFeature`, BOX hull slot 10) is mutation-falsified by the registered `NxPhysicsShapeVtableTests` oracle differential. Changing the no-edge arm to report `edgeWon=1` produces 145 mismatches; the restored build returns to the exact 324-case digest `e0477220`.
 - Phase 5 advances to 160 closed / 45 reconstructed-but-unfalsified rows. No public headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-support-feature-000959.md`.
+
+
+### Continuation — box sweep mutation closure (2026-10-08)
+
+- `phys_fn_000951` (`BoxShape::nxBoxSweep`, BOX slot 7) is mutation-falsified by the registered `NxPhysicsShapeVtableTests` oracle differential. Returning false after a successful slab hit produces 60 mismatches across 84 cases; the restored build returns to the exact `2c5d5c09` digest with zero failures.
+- Phase 5 advances to 161 closed / 44 reconstructed-but-unfalsified rows. No public headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-sweep-000951.md`.

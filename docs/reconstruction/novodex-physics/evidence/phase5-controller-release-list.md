@@ -844,3 +844,5 @@ The registered `NxPhysicsShapeVtableTests` oracle differential directly invokes 
 `phys_fn_000957` mutation detection: `mismatches=150`; restored output is exact (`mismatches=0`).
 
 `phys_fn_000959` mutation detection: `mismatches=145`; restored output is exact (`mismatches=0`).
+
+`phys_fn_000951` mutation detection: `mismatches=60` across the 84-case box sweep fixture; restored output is exact (`mismatches=0`).
