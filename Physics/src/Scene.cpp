@@ -308,9 +308,10 @@ static inline unsigned char* nxAt(unsigned* p, unsigned byteOffset);
 void nxSceneApplyDescriptorFlags(NxSceneInternal* scene, NxU32 broadPhase,
 	const NxBounds3* bounds);
 void nxReport(int kind, const char* file, int line, int code, const char* message);
-// phys_fn_000626 (0x00011730, phase 7) with phys_fn_000501 (0x0000ff10, phase 7):
-// the ground-plane expansion.
+// phys_fn_000626 (0x00011730, phase 7) and phys_fn_000501 (0x0000ff10, phase 7):
+// the scene descriptor's ground and bounds-plane actor builders.
 void nxSceneBuildGroundPlane(void* scene);
+void nxSceneBuildBoundsPlanes(void* scene, const NxBounds3* bounds);
 // phys_fn_000651's array reserve, above.
 void nxSceneArrayReserve(void* arrayHeader, unsigned needed);
 void nxSceneRecycleActorId(NxSceneInternal* scene, unsigned id);
@@ -2930,14 +2931,14 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 //
 // The oracle reads the descriptor at these offsets, all of which are NxSceneDesc
 // fields rather than guesses:
-//   0x00 vtable   0x04 userData   0x08 gravity   0x14 userContactReport
-//   0x18 maxTimestep   0x1c maxIter   0x20 solverType   0x2c limits
-//   0x30 groundPlane   0x31 upAxis   0x34 flags
+//   0x00 broadPhase   0x04 gravity   0x10 userNotify   0x14 userTriggerReport
+//   0x18 userContactReport   0x1c maxTimestep   0x20 maxIter   0x24 timeStepMethod
+//   0x28 maxBounds   0x2c limits   0x30 groundPlane   0x31 boundsPlanes
+//   0x32 collisionDetection   0x34 userData
 //
-// One block is a REPRODUCTION HOLE and is named as such below: the ground-plane
-// expansion, which calls phys_fn_000626 (0x00011730, 3227 bytes) and
-// phys_fn_000501 (0x0000ff10, 393 bytes). Both belong to phase 7 and neither is
-// reconstructed. Everything outside that block is transcribed.
+// The descriptor-driven plane expansion calls phys_fn_000626
+// (0x00011730, 3227 bytes) to create plane actors and phys_fn_000501
+// (0x0000ff10, 393 bytes) to derive the six equations from maxBounds.
 // ---------------------------------------------------------------------------
 
 bool NxSceneInternal::initialise(const NxSceneDesc& desc)
@@ -2979,18 +2980,16 @@ bool NxSceneInternal::initialise(const NxSceneDesc& desc)
 	// and forwards the optional bounds to the pruning engine.
 	nxSceneApplyDescriptorFlags(this, d[0], reinterpret_cast<const NxBounds3*>(d[0x0a]));
 
-	// The ground-plane expansion. REPRODUCTION HOLE: the oracle builds a default
-	// ground-plane shape descriptor on the stack, feeds it to phys_fn_000626 and
-	// writes the resulting bounds back through phys_fn_000501. Neither row is
-	// reconstructed, so this block reproduces the call and the byte flag it is
-	// gated on, and nothing else. It is recorded in the evidence against this row.
+	// The default ground plane is a static actor containing one default plane
+	// shape. The bounds-plane path below creates its six actors separately.
 	if(reinterpret_cast<const unsigned char*>(&desc)[0x30] != 0)
 		nxSceneBuildGroundPlane(this);
 
-	// The second ground-plane path, gated on upAxis != 0 and a non-null pointer at
-	// descriptor word 0x0a. Same hole, six iterations in the oracle.
+	// phys_fn_000501 converts maxBounds into the six inward-facing AABB plane
+	// equations. The oracle's loop passes each equation to createActor.
 	if(reinterpret_cast<const unsigned char*>(&desc)[0x31] != 0 && d[0x0a] != 0)
-		nxSceneBuildGroundPlane(this);
+		nxSceneBuildBoundsPlanes(this,
+			reinterpret_cast<const NxBounds3*>(d[0x0a]));
 
 	nxDword(p, 0x520) = d[1];				// userData
 	nxDword(p, 0x524) = d[2];
@@ -3052,14 +3051,38 @@ void nxSceneApplyDescriptorFlags(NxSceneInternal* scene, NxU32 broadPhase,
 	*reinterpret_cast<NxU32*>(engine + 0x74) = 0;
 	}
 
-// phys_fn_000626 (0x00011730, phase 7) and phys_fn_000501 (0x0000ff10, phase 7).
-// REPRODUCTION HOLE. The oracle builds a default ground-plane shape descriptor on
-// the stack, calls 000626 with it, and feeds the result to 000501; 000626 is 3227
-// bytes. This reproduces the call and nothing else, so a scene built with
-// groundPlane set does NOT get a ground plane from this reconstruction.
+// phys_fn_000626 (0x00011730) and phys_fn_000501 (0x0000ff10).
+// Both descriptor-driven plane paths ultimately create static actors through
+// Scene::createActor. The six bounded planes are the AABB faces, in X-, X+,
+// Y-, Y+, Z-, Z+ order. NxPlaneShapeDesc uses n dot x = d.
 void nxSceneBuildGroundPlane(void* scene)
 	{
-	(void)scene;
+	NxPlaneShapeDesc plane;
+	NxActorDesc actor;
+	actor.shapes.pushBack(&plane);
+	static_cast<NxSceneInternal*>(scene)->createActor(actor);
+	}
+
+void nxSceneBuildBoundsPlanes(void* scene, const NxBounds3* bounds)
+	{
+	if(!scene || !bounds)
+		return;
+	const NxReal* const b = reinterpret_cast<const NxReal*>(bounds);
+	const NxVec3 normals[6] = {
+		NxVec3(-1.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f),
+		NxVec3(0.0f, -1.0f, 0.0f), NxVec3(0.0f, 1.0f, 0.0f),
+		NxVec3(0.0f, 0.0f, -1.0f), NxVec3(0.0f, 0.0f, 1.0f) };
+	const NxReal distances[6] = { -b[3], b[0], -b[4], b[1], -b[5], b[2] };
+	NxSceneInternal* const internalScene = static_cast<NxSceneInternal*>(scene);
+	for(unsigned i = 0; i != 6; ++i)
+		{
+		NxPlaneShapeDesc plane;
+		plane.normal = normals[i];
+		plane.d = distances[i];
+		NxActorDesc actor;
+		actor.shapes.pushBack(&plane);
+		internalScene->createActor(actor);
+		}
 	}
 
 // The scalar deleting destructor the vtable's slot 0 points at. Empty-scene

@@ -15,7 +15,7 @@ $NxPhaseTestTargets = [ordered] @{
     '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests', 'NxPhysicsPMapResolution80Tests')
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsActorReleaseShapeProbeTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsSimulationTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsConvexMeshTests')
     '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsSimulationTests')
-    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneConstructorTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
+    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneConstructorTests', 'NxPhysicsSceneBoundsPlanesTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
     '8' = @()
 }
 
@@ -3331,6 +3331,12 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation effector-step ready=1 fetched=1 vx=00000000'
         'simulation effector-step second ready=1 fetched=1 vx=3e8e38e3'
     )
+    'NxPhysicsSceneBoundsPlanesTests' = @(
+        # The descriptor creates six static AABB faces and the default ground plane.
+        'scene bounds_planes verified=6 faces=xmax,xmin,ymax,ymin,zmax,zmin'
+        'scene ground_plane verified=1 y=0'
+        'scene combined_planes verified=7 ground_then_bounds=1'
+    )
     # Releasing a compound actor must erase its actor-pair hash entry before
     # getPairFlagArray resolves the now-freed group shape ID.
     'NxPhysicsPairFlagTests' = @(
@@ -5573,7 +5579,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1380  # plus two controller correction transcript assertions
+    '7' = 1383  # plus the bounded, ground-only and combined plane descriptor checks
+               # plus two controller correction transcript assertions
                # plus compound-trigger per-shape enter/stay/leave lifecycle
                # plus three-pair trigger reconciliation and queue growth
                # plus public trigger enter/stay/leave lifecycle
@@ -5615,6 +5622,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsDynamicFirstTests',
     'NxPhysicsEmptySceneTests',
     'NxPhysicsSceneConstructorTests',
+    'NxPhysicsSceneBoundsPlanesTests',
     'NxPhysicsControllerSweepFaceTests',
     'NxPhysicsEffectorTests',
     'NxPhysicsCoreDumpTests',

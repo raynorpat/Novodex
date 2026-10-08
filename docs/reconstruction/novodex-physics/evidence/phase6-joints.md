@@ -9316,6 +9316,19 @@ from engine mode 3 to 2 is caught by the same staged-pair differential:
 `phys_fn_000544 stdout_delta=2`. The focused evidence is in
 `evidence/phase7-broadphase-selector-000544.md`.
 
+### Scene descriptor plane paths (2026-10-07)
+
+The earlier reconstruction hole in `NxSceneInternal::initialise` for plane
+creation is now implemented. `groundPlane` creates one default static plane
+actor; `boundsPlanes` calls the recovered AABB helper and creates six static
+actors in maximum/minimum boundary order for each axis.
+`NxPhysicsSceneBoundsPlanesTests` checks the six equations with asymmetric
+bounds and the default `y = 0` plane against both
+oracle and candidate, and verifies both flags together create seven actors in
+ground-then-bounds order. The target is in the Phase 7 registry, adding three
+registered coverage assertions. The helper remains reconstructed but
+not mutation-falsified. See `evidence/scene-bounds-planes.md`.
+
 
 ## Phase 7 Scene constructor addendum — `phys_fn_000285`
 

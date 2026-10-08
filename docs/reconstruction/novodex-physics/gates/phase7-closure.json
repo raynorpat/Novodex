@@ -20,8 +20,8 @@
   },
   "counts": {
     "differential_falsified": 14,
-    "deferred_reconstructed_not_falsified": 299,
-    "deferred_not_reconstructed_in_phase": 248
+    "deferred_reconstructed_not_falsified": 300,
+    "deferred_not_reconstructed_in_phase": 247
   },
   "closed": [
     {
@@ -461,9 +461,10 @@
       "id": "phys_fn_000501",
       "rva": "0x0000ff10",
       "size": 393,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "The AABB-to-six-plane equations and both scene descriptor paths are reconstructed in Physics/src/Scene.cpp and compared with the pinned DLL by NxPhysicsSceneBoundsPlanesTests; this baseline differential does not mutation-falsify the row."
     },
     {
       "id": "phys_fn_000511",

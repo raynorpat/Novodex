@@ -9286,13 +9286,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/183",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1389",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSceneBoundsPlanesTests exercises boundsPlanes with asymmetric bounds, checks all six actor planes in oracle order, separately verifies groundPlane's default y=0 actor, and checks that enabling both flags creates the default ground plane before the six bounds planes. The pinned DLL and candidate match; the registered Phase 7 differential includes this target. This is positive differential coverage, not mutation falsification. Evidence: evidence/scene-bounds-planes.md.",
+      "notes": "The helper writes the six plane equations used by the bounded-scene descriptor path.",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000502",
