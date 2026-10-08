@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 14 functions are closed, 299 reconstructed functions remain unfalsified, 248 functions are not reconstructed in this phase, and no data object is dispositioned. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 20 functions are closed, 296 reconstructed functions remain unfalsified, 245 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are now independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
@@ -19,9 +19,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 14,
-    "deferred_reconstructed_not_falsified": 300,
-    "deferred_not_reconstructed_in_phase": 247
+    "differential_falsified": 20,
+    "deferred_reconstructed_not_falsified": 296,
+    "deferred_not_reconstructed_in_phase": 245
   },
   "closed": [
     {
@@ -161,6 +161,66 @@
       "gate": "NxPhysicsSceneConstructorTests",
       "falsification": {
         "mutation": "In a throwaway source mutation of NpScene::NpScene, replaced `mScene = scene` with `mScene = 0`, rebuilt NxPhysics, and ran the registered Phase 7 staged-pair differential against the pinned DLL. The oracle reported `scene constructor internal_link=1`; the mutant reported `internal_link=0`, exited 1, and emitted its staged module identities. After restoring the source byte for byte and rebuilding, oracle and candidate both reported `internal_link=1`, exited 0, and matched exactly.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_000400",
+      "rva": "0x0000d7c0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Replaced the NpScene::createFluid Scene::createFluid forwarding call with a null result in a throwaway git archive of HEAD. NxPhysicsSimulationTests caught the missing lazy manager and unavailable-feature diagnostic; oracle_exit=0, candidate_exit=1, stdout_delta=59, stderr_exact=False.",
+        "detected": "stdout_delta=59"
+      }
+    },
+    {
+      "id": "phys_fn_000402",
+      "rva": "0x0000d840",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Omitted the NpScene::releaseFluid forwarding call in a throwaway git archive of HEAD. NxPhysicsSimulationTests caught the retained empty manager and missing release warning; both exits=0, stdout_delta=4, stderr_exact=True.",
+        "detected": "stdout_delta=4"
+      }
+    },
+    {
+      "id": "phys_fn_000404",
+      "rva": "0x0000d8a0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Omitted the unavailable-feature warning from NpScene::createImplicitMesh in a throwaway git archive of HEAD. NxPhysicsSimulationTests caught the missing diagnostic; both exits=0, stdout_delta=2, stderr_exact=True.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_000406",
+      "rva": "0x0000d8d0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Omitted the unavailable-feature warning from NpScene::releaseImplicitMesh in a throwaway git archive of HEAD. NxPhysicsSimulationTests caught the missing diagnostic; both exits=0, stdout_delta=2, stderr_exact=True.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_000408",
+      "rva": "0x0000d900",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Changed NpScene::getNbImplicitMeshes to return one instead of zero in a throwaway git archive of HEAD. NxPhysicsSimulationTests caught the wrong count; both exits=0, stdout_delta=2, stderr_exact=True.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_000410",
+      "rva": "0x0000d930",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Omitted the unavailable-feature warning from NpScene::getImplicitMeshes in a throwaway git archive of HEAD. NxPhysicsSimulationTests caught the missing diagnostic; both exits=0, stdout_delta=2, stderr_exact=True.",
         "detected": "stdout_delta=2"
       }
     }
@@ -392,22 +452,6 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed and dynamically compared for hits, misses, full output order across two meshes, prefilled output, and translated mesh; no mutation has yet been aimed at this wrapper"
-    },
-    {
-      "id": "phys_fn_000400",
-      "rva": "0x0000d7c0",
-      "size": 114,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000402",
-      "rva": "0x0000d840",
-      "size": 94,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_000412",
@@ -3378,42 +3422,6 @@
     {
       "id": "phys_fn_000396",
       "rva": "0x0000d710",
-      "size": 45,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000404",
-      "rva": "0x0000d8a0",
-      "size": 47,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000406",
-      "rva": "0x0000d8d0",
-      "size": 45,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000408",
-      "rva": "0x0000d900",
-      "size": 45,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000410",
-      "rva": "0x0000d930",
       "size": 45,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",

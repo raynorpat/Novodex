@@ -9339,3 +9339,14 @@ The pinned image at RVA `0x0000c310` is `NpScene::NpScene(NxSceneInternal*)`; it
 For falsification, replaced `mScene = scene` with `mScene = 0` in a temporary source mutation, rebuilt NxPhysics, and ran the registered staged-pair differential. The mutant reported `internal_link=0`, exited 1, and still reported both staged DLL identities; the oracle reported `internal_link=1`. The registered differential caught the mutation with `stdout_delta=2` (`build/scene-285-mutant-differential.log`). Restored `NpScene.cpp` byte for byte, rebuilt, and reran the clean differential successfully.
 
 Closure measurement: `phys_fn_000285` was caught by the constructor back-link mutation (`stdout_delta=2`); after restoration its registered clean differential passed (`stdout_delta=0`, `stderr_exact=True`).
+
+### Phase 7 disabled fluid and implicit-mesh wrappers (2026-10-08)
+
+Independent throwaway-archive mutations were caught by `NxPhysicsSimulationTests`; details: `phase7-disabled-fluid-implicit-mesh-wrappers-2026-10-08.md`.
+
+- `phys_fn_000400` mutation detection: `stdout_delta=59`.
+- `phys_fn_000402` mutation detection: `stdout_delta=4`.
+- `phys_fn_000404` mutation detection: `stdout_delta=2`.
+- `phys_fn_000406` mutation detection: `stdout_delta=2`.
+- `phys_fn_000408` mutation detection: `stdout_delta=2`.
+- `phys_fn_000410` mutation detection: `stdout_delta=2`.

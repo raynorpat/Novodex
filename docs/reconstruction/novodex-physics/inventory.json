@@ -7439,13 +7439,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/143",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1148",
       "static_proof": "phys_fn_000400 (0x0000d7c0): NpScene::createFluid takes the scene write lock, delegates to Scene::createFluid, releases the lock, and returns its result; the lock-failure branch reports the NpScene.cpp warning.",
-      "dynamic_proof": "NxPhysicsSimulationTests on oracle and candidate: default createFluid returns null with identical empty-list state and one matching warning; transcript stdout_delta=0 and stderr_exact=True (evidence/fluid-disabled-create.md).",
-      "notes": "Only the disabled backend's unsupported create path is reconstructed; other fluid API behavior remains open."
+      "dynamic_proof": "NxPhysicsSimulationTests on oracle and candidate: default createFluid returns null with identical empty-list state and one matching warning; transcript stdout_delta=0 and stderr_exact=True (evidence/fluid-disabled-create.md). Archived Phase 7 mutation audit: Replaced the NpScene::createFluid Scene::createFluid forwarding call with a null result in a throwaway git archive of HEAD. NxPhysicsSimulationTests caught the missing lazy manager and unavailable-feature diagnostic; oracle_exit=0, candidate_exit=1, stdout_delta=59, stderr_exact=False. Evidence: evidence/phase7-disabled-fluid-implicit-mesh-wrappers-2026-10-08.md.",
+      "notes": "The shipped backend is disabled; the wrapper’s null result, lazy manager creation, warning, and lock-protected dispatch are covered by the registered mutation audit. Real-fluid behavior remains outside this build and open."
     },
     {
       "id": "phys_fn_000401",
@@ -7475,13 +7475,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/144",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1152",
       "static_proof": "phys_fn_000402 (0x0000d840) takes the write lock, passes the NxFluid internal pointer at +0x14 to Scene::releaseFluid, then unlocks; lock failure reports NpScene.cpp line 0x26d.",
-      "dynamic_proof": "NxPhysicsSimulationTests exercises the wrapper after unsupported creation using a non-member marker with a pointer-shaped +0x14 field; oracle and candidate emit code 206, line 183, the FluidManager.cpp release warning, and clear the empty manager. Transcript stdout_delta=0 and stderr_exact=True (evidence/fluid-release-disabled.md). A local mutation sensitivity probe that skipped the Scene::releaseFluid forwarding call was caught by the registered differential with stdout_delta=4 (build/scene-release-fluid-mutation.log); this working-tree probe is supplemental evidence, not a Phase 7 closure artifact.",
-      "notes": "The wrapper, disabled empty-manager path, and test-seeded array-removal path are covered; no valid fluid object can be created by this pinned build, so real-fluid ownership and extension-backed removal remain open."
+      "dynamic_proof": "NxPhysicsSimulationTests exercises the wrapper after unsupported creation using a non-member marker with a pointer-shaped +0x14 field; oracle and candidate emit code 206, line 183, the FluidManager.cpp release warning, and clear the empty manager. Transcript stdout_delta=0 and stderr_exact=True (evidence/fluid-release-disabled.md). A local mutation sensitivity probe that skipped the Scene::releaseFluid forwarding call was caught by the registered differential with stdout_delta=4 (build/scene-release-fluid-mutation.log); this working-tree probe is supplemental evidence, not a Phase 7 closure artifact. Archived Phase 7 mutation audit: Omitted the NpScene::releaseFluid forwarding call in a throwaway git archive of HEAD. NxPhysicsSimulationTests caught the retained empty manager and missing release warning; both exits=0, stdout_delta=4, stderr_exact=True. Evidence: evidence/phase7-disabled-fluid-implicit-mesh-wrappers-2026-10-08.md.",
+      "notes": "The shipped backend is disabled; the empty-manager release, warning, and lock-protected dispatch are covered by the registered mutation audit. Real-fluid ownership and extension-backed removal remain open."
     },
     {
       "id": "phys_fn_000403",
@@ -7511,12 +7511,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/199",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1156",
       "static_proof": "phys_fn_000404 (0x0000d8a0) reports NXE_DB_WARNING from NpScene.cpp line 0x281 with the unavailable-feature message, then returns null.",
-      "dynamic_proof": "NxPhysicsSimulationTests: oracle and candidate both return null and report code 206, line 641, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxScene::createImplicitMesh(): Feature not available!; stdout_delta=0 and stderr_exact=True (evidence/implicit-mesh-disabled.md). Prior low-level assertrows differential (3z156) also matched the captured report tuple.",
+      "dynamic_proof": "NxPhysicsSimulationTests: oracle and candidate both return null and report code 206, line 641, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxScene::createImplicitMesh(): Feature not available!; stdout_delta=0 and stderr_exact=True (evidence/implicit-mesh-disabled.md). Prior low-level assertrows differential (3z156) also matched the captured report tuple. Archived Phase 7 mutation audit: Omitted the unavailable-feature warning from NpScene::createImplicitMesh in a throwaway git archive of HEAD. NxPhysicsSimulationTests caught the missing diagnostic; both exits=0, stdout_delta=2, stderr_exact=True. Evidence: evidence/phase7-disabled-fluid-implicit-mesh-wrappers-2026-10-08.md.",
       "notes": "Implicit-mesh creation is unavailable in the pinned release."
     },
     {
@@ -7547,12 +7547,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/200",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1158",
       "static_proof": "phys_fn_000406 (0x0000d8d0) reports NXE_DB_WARNING from NpScene.cpp line 0x287 with the unavailable-feature message; it does not consume the mesh reference.",
-      "dynamic_proof": "NxPhysicsSimulationTests: oracle and candidate report code 206, line 647, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxScene::releaseImplicitMesh(): Feature not available! (evidence/implicit-mesh-disabled.md). Prior low-level assertrows differential (3z156) also matched the captured report tuple.",
+      "dynamic_proof": "NxPhysicsSimulationTests: oracle and candidate report code 206, line 647, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxScene::releaseImplicitMesh(): Feature not available! (evidence/implicit-mesh-disabled.md). Prior low-level assertrows differential (3z156) also matched the captured report tuple. Archived Phase 7 mutation audit: Omitted the unavailable-feature warning from NpScene::releaseImplicitMesh in a throwaway git archive of HEAD. NxPhysicsSimulationTests caught the missing diagnostic; both exits=0, stdout_delta=2, stderr_exact=True. Evidence: evidence/phase7-disabled-fluid-implicit-mesh-wrappers-2026-10-08.md.",
       "notes": "Implicit-mesh release is unavailable in the pinned release."
     },
     {
@@ -7583,12 +7583,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/201",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1160",
       "static_proof": "phys_fn_000408 (0x0000d900) reports NXE_DB_WARNING from NpScene.cpp line 0x28d with the unavailable-feature message, then returns zero.",
-      "dynamic_proof": "NxPhysicsSimulationTests: oracle and candidate both return zero and report code 206, line 653, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxScene::getNbImplicitMeshes(): Feature not available! (evidence/implicit-mesh-disabled.md). Prior low-level assertrows differential (3z155) also matched the captured report tuple.",
+      "dynamic_proof": "NxPhysicsSimulationTests: oracle and candidate both return zero and report code 206, line 653, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxScene::getNbImplicitMeshes(): Feature not available! (evidence/implicit-mesh-disabled.md). Prior low-level assertrows differential (3z155) also matched the captured report tuple. Archived Phase 7 mutation audit: Changed NpScene::getNbImplicitMeshes to return one instead of zero in a throwaway git archive of HEAD. NxPhysicsSimulationTests caught the wrong count; both exits=0, stdout_delta=2, stderr_exact=True. Evidence: evidence/phase7-disabled-fluid-implicit-mesh-wrappers-2026-10-08.md.",
       "notes": "Implicit-mesh enumeration is unavailable in the pinned release."
     },
     {
@@ -7619,12 +7619,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/202",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1162",
       "static_proof": "phys_fn_000410 (0x0000d930) reports NXE_DB_WARNING from NpScene.cpp line 0x293 with the unavailable-feature message, then returns null.",
-      "dynamic_proof": "NxPhysicsSimulationTests: oracle and candidate both return null and report code 206, line 659, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxScene::getImplicitMeshes(): Feature not available! (evidence/implicit-mesh-disabled.md). Prior low-level assertrows differential (3z155) also matched the captured report tuple.",
+      "dynamic_proof": "NxPhysicsSimulationTests: oracle and candidate both return null and report code 206, line 659, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxScene::getImplicitMeshes(): Feature not available! (evidence/implicit-mesh-disabled.md). Prior low-level assertrows differential (3z155) also matched the captured report tuple. Archived Phase 7 mutation audit: Omitted the unavailable-feature warning from NpScene::getImplicitMeshes in a throwaway git archive of HEAD. NxPhysicsSimulationTests caught the missing diagnostic; both exits=0, stdout_delta=2, stderr_exact=True. Evidence: evidence/phase7-disabled-fluid-implicit-mesh-wrappers-2026-10-08.md.",
       "notes": "Implicit-mesh enumeration is unavailable in the pinned release."
     },
     {
