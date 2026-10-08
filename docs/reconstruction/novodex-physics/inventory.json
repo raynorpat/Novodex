@@ -18242,13 +18242,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/481",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3045",
       "static_proof": null,
-      "dynamic_proof": "driven and gated: the transcript line 'hull sharedhook row=phys_fn_000985 stable=1 words=00000000.00000000.00000000', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
-      "notes": "P5: transcribed. Once-guarded lazy init of a twelve-byte .data global at 0x10123c64; the initializer array at .rdata 0x10103010 is twelve bare ret stubs, so the global stays all-zero and the row returns its address. Ignores this. Driven by NxPhysicsObjectLayoutTests: two calls return one stable pointer with zero words.",
+      "dynamic_proof": "The pinned-oracle NxPhysicsObjectLayoutTests differential checks two calls on each side, stable pointer identity, and the three zero words. Baseline: candidate ok=1 stable=1, mismatches=0. Mutation: replacing `return shared` with `return nullptr` yields candidate ok=0 stable=0 and mismatches=1. Restored run: candidate ok=1 stable=1, mismatches=0, differential-pass. Evidence: evidence/phase5-box-sharedhook-000985.md.",
+      "notes": "P5: transcribed. Once-guarded lazy init of a twelve-byte .data global at 0x10123c64; the initializer array at .rdata 0x10103010 is twelve bare ret stubs, so the global stays all-zero and the row returns its address. Ignores this. Driven by NxPhysicsObjectLayoutTests: two calls return one stable pointer with zero words. Its null-return mutation is detected by the registered Phase 5 oracle differential.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {

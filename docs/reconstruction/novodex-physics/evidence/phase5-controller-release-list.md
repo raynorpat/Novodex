@@ -852,3 +852,7 @@ The registered `NxPhysicsShapeVtableTests` oracle differential directly invokes 
 Reversing the BOX hit-normal hint branch in `BoxShape::nxBoxRaycast` is caught by the registered `NxPhysicsSceneRaycastTests` public-SDK staged-pair differential with `stdout_delta=508`, both processes exiting 0, and exact stderr. Restoring the `flags & 4` condition returns to `stdout_delta=0`; see `evidence/phase5-box-raycast-000949.md`.
 
 `phys_fn_000949` mutation detection: `stdout_delta=508`; restored output is exact (`stdout_delta=0`).
+
+## Box hull shared-hook accessor: `phys_fn_000985`
+
+`phys_fn_000985` mutation detection: `mismatches=1`; restoring the stable shared-block return restores the exact oracle differential (`mismatches=0`). See `evidence/phase5-box-sharedhook-000985.md`.
