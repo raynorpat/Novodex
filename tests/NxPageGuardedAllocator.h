@@ -33,7 +33,8 @@ class NxPageGuardedAllocator : public NxUserAllocator
 	enum { HISTORY = 128 };
 	NxPageGuardedAllocator() : mAllocations(0), mFellBack(0), mFrees(0)
 		{ memset(mFreedSizes, 0, sizeof(mFreedSizes)); memset(mAllocSizes, 0, sizeof(mAllocSizes));
-		  memset(mAllocPtrs, 0, sizeof(mAllocPtrs)); memset(mFreedPtrs, 0, sizeof(mFreedPtrs)); }
+		  memset(mAllocPtrs, 0, sizeof(mAllocPtrs)); memset(mFreedPtrs, 0, sizeof(mFreedPtrs));
+		  memset(mFallbackPtrs, 0, sizeof(mFallbackPtrs)); memset(mFallbackSizes, 0, sizeof(mFallbackSizes)); }
 
 	virtual void* malloc(size_t size)
 		{
@@ -63,7 +64,9 @@ class NxPageGuardedAllocator : public NxUserAllocator
 		if(!memory)
 			return allocate(size, NX_MEMORY_PERSISTENT);
 		unsigned char* old = static_cast<unsigned char*>(memory);
-		const size_t oldSize = sizeOf(old);
+		size_t oldSize;
+		if(!fallbackSize(old, &oldSize))
+			oldSize = sizeOf(old);
 		void* fresh = allocate(size, NX_MEMORY_PERSISTENT);
 		if(fresh)
 			{
@@ -77,6 +80,18 @@ class NxPageGuardedAllocator : public NxUserAllocator
 		{
 		if(!memory)
 			return;
+		for(unsigned i = 0; i < HISTORY; ++i)
+			if(mFallbackPtrs[i] == memory)
+				{
+				const unsigned releasedSize = static_cast<unsigned>(mFallbackSizes[i]);
+				::free(memory);
+				mFallbackPtrs[i] = 0;
+				mFallbackSizes[i] = 0;
+				mFreedSizes[mFrees % HISTORY] = releasedSize;
+				mFreedPtrs[mFrees % HISTORY] = memory;
+				++mFrees;
+				return;
+			}
 		const unsigned releasedSize = static_cast<unsigned>(sizeOf(memory));
 		if(VirtualFree(baseOf(memory), 0, MEM_RELEASE))
 			{
@@ -112,6 +127,17 @@ class NxPageGuardedAllocator : public NxUserAllocator
 		return *reinterpret_cast<unsigned*>(baseOf(memory));
 		}
 
+	bool fallbackSize(void* memory, size_t* size) const
+		{
+		for(unsigned i = 0; i < HISTORY; ++i)
+			if(mFallbackPtrs[i] == memory)
+				{
+				*size = mFallbackSizes[i];
+				return true;
+				}
+		return false;
+		}
+
 	void* allocate(size_t size, NxMemoryType type)
 		{
 		(void)type;
@@ -141,12 +167,23 @@ class NxPageGuardedAllocator : public NxUserAllocator
 			// path allocates at most 0x710 bytes.
 #ifdef NX_PAGE_GUARDED_FILL
 			void* plain = ::malloc(size);
-			if(plain)
-				memset(plain, 0xcd, size);
-			return plain;
 #else
-			return ::malloc(size);
+			void* plain = ::malloc(size);
 #endif
+			if(!plain)
+				return 0;
+			for(unsigned i = 0; i < HISTORY; ++i)
+				if(!mFallbackPtrs[i])
+					{
+					mFallbackPtrs[i] = plain;
+					mFallbackSizes[i] = size;
+#ifdef NX_PAGE_GUARDED_FILL
+					memset(plain, 0xcd, size);
+#endif
+					return plain;
+					}
+			::free(plain);
+			return 0;
 			}
 
 		*reinterpret_cast<unsigned*>(base) = static_cast<unsigned>(size);
@@ -170,4 +207,8 @@ class NxPageGuardedAllocator : public NxUserAllocator
 	unsigned mAllocSizes[HISTORY];
 	void* mAllocPtrs[HISTORY];
 	void* mFreedPtrs[HISTORY];
+	// Oversized blocks use the CRT heap; keep their sizes so realloc/free never
+	// interpret those pointers as page-aligned VirtualAlloc blocks.
+	void* mFallbackPtrs[HISTORY];
+	size_t mFallbackSizes[HISTORY];
 	};

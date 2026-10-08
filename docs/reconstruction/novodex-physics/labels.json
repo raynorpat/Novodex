@@ -2996,6 +2996,13 @@
       "confidence": "semantic",
       "evidence": "oracle/ghidra/manifest.json#/functions/905",
       "reason": "the 0x5bbb0 oracle routine releases the body id from the auxiliary pool and clears the record-table slot; NxPhysicsBodyCreationTests observes that slot before and after public NxScene::releaseActor"
+    },
+    {
+      "id": "phys_fn_000092",
+      "label": "Actor global-position getter",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/35",
+      "reason": "the oracle actor vtable slot-6 method copies the nested record translation or the static body translation under the actor read lock; the public actor lifecycle differential observes both branches"
     }
   ]
 }
