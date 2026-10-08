@@ -21,9 +21,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 102,
+    "differential_falsified": 103,
     "oracle_differential_falsified": 32,
-    "deferred_reconstructed_not_falsified": 70,
+    "deferred_reconstructed_not_falsified": 69,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -1392,18 +1392,19 @@
         "mutation": "Changed the first copied linear-velocity word at DynamicBody+0x6c by XORing its descriptor bits with 1.",
         "detected": "stdout_delta=14"
       }
-    }
-  ],
-  "deferred": [
+    },
     {
       "id": "phys_fn_000768",
       "rva": "0x00017f10",
-      "size": 1164,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorCMassTests",
+      "falsification": {
+        "mutation": "Added 1.0f to centre[0] in nxNpActorUpdateMassFrame before storing the world mass center at DynamicBody+0x158.",
+        "detected": "stdout_delta=184"
+      }
+    }
+  ],
+  "deferred": [
     {
       "id": "phys_fn_000797",
       "rva": "0x0001b5c0",

@@ -690,3 +690,9 @@ Baseline and restored `NxPhysicsBodyCreationTests` staged-pair runs are exact (`
 - `phys_fn_000793`: adding 1.0f to the stored mass at +0x188 is caught with `stdout_delta=26`; both mutant processes exit 0 and stderr is exact (`build/phase5-000793-mutant.log`).
 - `phys_fn_000795`: flipping bit 0 of the first copied linear-velocity word at +0x6c is caught with `stdout_delta=14`; both mutant processes exit 0 and stderr is exact (`build/phase5-000795-mutant.log`).
 `phys_fn_000793` mutation detection: `stdout_delta=26`; `phys_fn_000795` mutation detection: `stdout_delta=14`; restored output is exact.
+
+
+### Dynamic mass-frame refresh (`phys_fn_000768`)
+
+The baseline and restored `NxPhysicsActorCMassTests` staged-pair runs are exact (`stdout_delta=0`, `stderr_exact=True`; `build/phase5-000768-baseline.log`, `build/phase5-000768-restored.log`). Adding 1.0f to the refreshed world-center X in `nxNpActorUpdateMassFrame` is caught with `stdout_delta=184`; both mutant processes exit 0 and stderr is exact (`build/phase5-000768-mutant.log`).
+`phys_fn_000768` mutation detection: `stdout_delta=184`; restored output is exact (`stdout_delta=0`, `stderr_exact=True`).
