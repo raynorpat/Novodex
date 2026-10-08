@@ -21,9 +21,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 98,
+    "differential_falsified": 99,
     "oracle_differential_falsified": 32,
-    "deferred_reconstructed_not_falsified": 74,
+    "deferred_reconstructed_not_falsified": 73,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -749,7 +749,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsActorShapeMutationTests",
       "falsification": {
-        "mutation": "Changed nxActorReleaseShape’s no-root report at source line 0x1a4 from NXE_INVALID_PARAMETER to NXE_INVALID_OPERATION; the t4_dy_release_empty case observes the report.",
+        "mutation": "Changed nxActorReleaseShapeâ€™s no-root report at source line 0x1a4 from NXE_INVALID_PARAMETER to NXE_INVALID_OPERATION; the t4_dy_release_empty case observes the report.",
         "detected": "stdout_delta=2"
       }
     },
@@ -759,7 +759,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsActorShapeMutationTests",
       "falsification": {
-        "mutation": "Changed nxActorCreateShape’s final return from the newly created shape pointer to null after the shape was installed in the actor.",
+        "mutation": "Changed nxActorCreateShapeâ€™s final return from the newly created shape pointer to null after the shape was installed in the actor.",
         "detected": "stdout_delta=359"
       }
     },
@@ -769,7 +769,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsBodyCreationTests",
       "falsification": {
-        "mutation": "Disabled nxActorBuildRecord’s all-zero inertia tensor path to nxActorComputeMassFromShapes by forcing its three-word zero test false.",
+        "mutation": "Disabled nxActorBuildRecordâ€™s all-zero inertia tensor path to nxActorComputeMassFromShapes by forcing its three-word zero test false.",
         "detected": "stdout_delta=18"
       }
     },
@@ -779,7 +779,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsActorCMassTests",
       "falsification": {
-        "mutation": "Changed NpActorVtable::getGlobalPoseReference’s z-position dword load from record+0x58 to record+0x54, so z takes the y word.",
+        "mutation": "Changed NpActorVtable::getGlobalPoseReferenceâ€™s z-position dword load from record+0x58 to record+0x54, so z takes the y word.",
         "detected": "stdout_delta=4"
       }
     },
@@ -789,7 +789,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsActorCMassTests",
       "falsification": {
-        "mutation": "Changed NpActorVtable::getCMassGlobalPoseVal’s matrix source from record+0x134 to record+0x138.",
+        "mutation": "Changed NpActorVtable::getCMassGlobalPoseValâ€™s matrix source from record+0x134 to record+0x138.",
         "detected": "stdout_delta=54"
       }
     },
@@ -849,7 +849,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsActorForceTests",
       "falsification": {
-        "mutation": "Changed the local-force rotation’s first-row local-y coefficient from m[1] to m[2].",
+        "mutation": "Changed the local-force rotationâ€™s first-row local-y coefficient from m[1] to m[2].",
         "detected": "stdout_delta=18"
       }
     },
@@ -859,7 +859,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsActorForceTests",
       "falsification": {
-        "mutation": "Changed the local-point transform’s first-row local-y coefficient from r[1] to r[2].",
+        "mutation": "Changed the local-point transformâ€™s first-row local-y coefficient from r[1] to r[2].",
         "detected": "stdout_delta=4"
       }
     },
@@ -899,7 +899,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsActorForceTests",
       "falsification": {
-        "mutation": "Changed addLocalForce’s nxNpActorAccumulateForce torque selector from false to true, routing its rotated force to the torque accumulator.",
+        "mutation": "Changed addLocalForceâ€™s nxNpActorAccumulateForce torque selector from false to true, routing its rotated force to the torque accumulator.",
         "detected": "stdout_delta=16"
       }
     },
@@ -909,7 +909,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsActorForceTests",
       "falsification": {
-        "mutation": "Changed addLocalTorque’s nxNpActorAccumulateForce torque selector from true to false, routing its rotated torque to the force accumulator.",
+        "mutation": "Changed addLocalTorqueâ€™s nxNpActorAccumulateForce torque selector from true to false, routing its rotated torque to the force accumulator.",
         "detected": "stdout_delta=16"
       }
     },
@@ -919,7 +919,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsActorDynamicSetterTests",
       "falsification": {
-        "mutation": "Changed setMass’s stored mass from the input to input + 1.0f.",
+        "mutation": "Changed setMassâ€™s stored mass from the input to input + 1.0f.",
         "detected": "stdout_delta=2"
       }
     },
@@ -939,7 +939,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsActorDynamicSetterTests",
       "falsification": {
-        "mutation": "Changed setLinearDamping’s stored value from the input to input + 1.0f.",
+        "mutation": "Changed setLinearDampingâ€™s stored value from the input to input + 1.0f.",
         "detected": "stdout_delta=2"
       }
     },
@@ -949,7 +949,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsActorDynamicSetterTests",
       "falsification": {
-        "mutation": "Changed setAngularDamping’s stored value from the input to input + 1.0f.",
+        "mutation": "Changed setAngularDampingâ€™s stored value from the input to input + 1.0f.",
         "detected": "stdout_delta=2"
       }
     },
@@ -959,7 +959,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsActorDynamicSetterTests",
       "falsification": {
-        "mutation": "Changed setLinearVelocity’s primary record destination from record+0x6c to record+0x70.",
+        "mutation": "Changed setLinearVelocityâ€™s primary record destination from record+0x6c to record+0x70.",
         "detected": "stdout_delta=6"
       }
     },
@@ -969,7 +969,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsActorDynamicSetterTests",
       "falsification": {
-        "mutation": "Changed setAngularVelocity’s primary record destination from record+0x78 to record+0x7c.",
+        "mutation": "Changed setAngularVelocityâ€™s primary record destination from record+0x78 to record+0x7c.",
         "detected": "stdout_delta=8"
       }
     },
@@ -1352,6 +1352,16 @@
         "mutation": "Changed the sphere descriptor-load radius store from r to r + 1.0f.",
         "detected": "mismatches=2"
       }
+    },
+    {
+      "id": "phys_fn_000784",
+      "rva": "0x000194b0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicsTests",
+      "falsification": {
+        "mutation": "Omitted the position-target flag OR (target+0xc |= 1) after the position copy in nxNpActorSetKinematicTarget.",
+        "detected": "stdout_delta=42"
+      }
     }
   ],
   "deferred": [
@@ -1359,15 +1369,6 @@
       "id": "phys_fn_000768",
       "rva": "0x00017f10",
       "size": 1164,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000784",
-      "rva": "0x000194b0",
-      "size": 368,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],

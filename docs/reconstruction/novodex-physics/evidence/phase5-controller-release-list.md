@@ -670,3 +670,9 @@ The registered DynamicSetter differential catches a source-line mutation in the 
 - `phys_fn_000989` radius-store mutation is caught by `NxPhysicsObjectLayoutTests`: `capload candidate ok=0`, `layout candidate mismatches=2`; restored run has zero mismatches.
 - `phys_fn_001353` radius-store mutation is caught by `NxPhysicsObjectLayoutTests`: `sphload candidate ok=0`, `layout candidate mismatches=2`; restored run has zero mismatches.
 - Full details and logs: `evidence/phase5-shape-load-000989-001353.md`.
+
+
+### Kinematic target writer (`phys_fn_000784`)
+
+`NxPhysicsActorDynamicsTests` compares the pinned oracle and restored candidate exactly (`stdout_delta=0`, `stderr_exact=True`; `build/phase5-000784-restored.log`). Temporarily omitting the position-target flag OR in `nxNpActorSetKinematicTarget` is caught by the same registered differential with `stdout_delta=42`; both mutant processes exit 0 and stderr is exact (`build/phase5-000784-mutant.log`). The row is now dynamically gated.
+`phys_fn_000784` mutation detection: `stdout_delta=42`; both mutant processes exited 0 with exact stderr. The restored candidate differential is exact (`stdout_delta=0`, `stderr_exact=True`).

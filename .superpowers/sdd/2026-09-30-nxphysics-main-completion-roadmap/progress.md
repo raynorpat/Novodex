@@ -203,3 +203,6 @@ Continuation 2026-10-08: closed Phase 5 rows `phys_fn_000989` and `phys_fn_00135
 Fresh Win32 Release Phase 5 passes all 18 staged targets and 2,311/2,311 assertions after the 000989/001353 closures (`build/phase5-shape-load-000989-001353-full-gate.log`).
 
 Approved Viewer all-scenes sweep on mainline commit 5cc6fbaa: ctest --test-dir build -C Release --output-on-failure -R '^ViewerSmokeScene_' completed 40/40 entries including the asset-preparation prerequisite; all 39 scene selections ran, 34 passed and five established pinned-oracle asset cases skipped, with zero failures. Public Physics headers unchanged.
+
+
+Task M2-000784: `nxNpActorSetKinematicTarget` now has a direct registered-gate mutation proof. Removing the position target flag OR changes the actor-dynamics differential (`stdout_delta=42`, both processes exit 0, exact stderr); restored candidate is exact (`stdout_delta=0`). Phase 5 closure is 132 closed / 73 deferred pending the fresh full gate. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md`.
