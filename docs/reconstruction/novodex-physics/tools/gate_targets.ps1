@@ -428,6 +428,7 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsShapeVtableTests' = @(
         'shape vtable oracle_digest=ed1294b6 cases=629 mismatches=0'
+        'shape vtable owner_notify oracle_slot=10 candidate_slot=10 oracle_calls=1 candidate_calls=1 owner_forwarded=1 box_forwarded=1 mismatches=0'
         'shape vtable base_stub slot4 oracle_false=1 candidate_false=1 output_preserved=1'
         'shape vtable base_stub slot5 oracle_null=1 candidate_null=1 esp_balanced=1'
         'shape vtable base_stub slot7 oracle_false=1 candidate_false=1 output_preserved=1'
@@ -5580,7 +5581,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2564  # exact registered Phase 5 coverage-line count; previously left one line unfloored
+    '5' = 2565  # exact registered Phase 5 coverage-line count
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths

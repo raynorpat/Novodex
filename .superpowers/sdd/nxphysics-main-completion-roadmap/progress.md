@@ -53,3 +53,10 @@ cases skip. Logs: `build/phase5-capsule-dtor-final-pass.log` and
 `build/viewer-all-scenes-approved-design-final.log`. Phase 5 still has 33
 reconstructed rows without mutation proof; full DLL reconstruction remains
 open.
+
+Task M2-owner-notify-001271: direct oracle/candidate adapter probe added. The
+slot-9 mutation is detected (`candidate_slot=9; mismatches=1`); restored output
+calls slot 10 once and forwards the same owner and AABB. Phase 5 is now 173
+closed / 32 deferred; the fresh full gate passes at 2,565/2,565 assertions.
+Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase5-owner-notify-001271.md`.

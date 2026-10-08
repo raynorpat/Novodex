@@ -86,6 +86,25 @@ static unsigned renderCount;
 static unsigned renderRows[12][16];
 static unsigned lineCount;
 static unsigned lineRows[8][7];
+struct OwnerNotifyObservation {
+    unsigned slot;
+    unsigned calls;
+    void* owner;
+    void* box;
+};
+static OwnerNotifyObservation ownerNotifyObservation;
+static void __fastcall ownerNotifySlot9(void* owner, void*, void* box) {
+    ownerNotifyObservation.slot = 9;
+    ++ownerNotifyObservation.calls;
+    ownerNotifyObservation.owner = owner;
+    ownerNotifyObservation.box = box;
+}
+static void __fastcall ownerNotifySlot10(void* owner, void*, void* box) {
+    ownerNotifyObservation.slot = 10;
+    ++ownerNotifyObservation.calls;
+    ownerNotifyObservation.owner = owner;
+    ownerNotifyObservation.box = box;
+}
 static unsigned foldOracle(unsigned digest, const void* data, size_t length) {
     const unsigned char* bytes = static_cast<const unsigned char*>(data);
     for(size_t i = 0; i < length; ++i)
@@ -523,6 +542,45 @@ int wmain(int argc, wchar_t** argv)
     memset(candidateBytes, 0xcd, sizeof(candidateBytes));
     reinterpret_cast<BoxCtor>(const_cast<unsigned char*>(base) + 0x21870)(oracleBytes, 0, 0);
     new(candidateBytes) BoxShape(0, 0);
+    {
+        // phys_fn_001271 is installed by ShapeBase construction and must
+        // forward the owner and AABB to owner vtable slot 10, not slot 9.
+        void* ownerVtable[11] = {};
+        ownerVtable[9] = reinterpret_cast<void*>(&ownerNotifySlot9);
+        ownerVtable[10] = reinterpret_cast<void*>(&ownerNotifySlot10);
+        struct FakeOwner { void** vtable; } owner = { ownerVtable };
+        AABB box;
+        memset(&box, 0, sizeof(box));
+        typedef void (__cdecl* OwnerNotifyAdapter)(void*, AABB*);
+        OwnerNotifyAdapter oracleNotify = reinterpret_cast<OwnerNotifyAdapter>(
+            *reinterpret_cast<void* const*>(base + 0x128474));
+        OwnerNotifyAdapter candidateNotify = gPrunableOwnerNotify;
+        OwnerNotifyObservation oracleObservation = {};
+        OwnerNotifyObservation candidateObservation = {};
+        if(oracleNotify && candidateNotify) {
+            memset(&ownerNotifyObservation, 0, sizeof(ownerNotifyObservation));
+            oracleNotify(&owner, &box);
+            oracleObservation = ownerNotifyObservation;
+            memset(&ownerNotifyObservation, 0, sizeof(ownerNotifyObservation));
+            candidateNotify(&owner, &box);
+            candidateObservation = ownerNotifyObservation;
+        }
+        const bool matches = oracleNotify && candidateNotify &&
+            oracleObservation.slot == 10 && oracleObservation.calls == 1 &&
+            oracleObservation.owner == &owner && oracleObservation.box == &box &&
+            candidateObservation.slot == oracleObservation.slot &&
+            candidateObservation.calls == oracleObservation.calls &&
+            candidateObservation.owner == oracleObservation.owner &&
+            candidateObservation.box == oracleObservation.box;
+        printf("shape vtable owner_notify oracle_slot=%u candidate_slot=%u "
+            "oracle_calls=%u candidate_calls=%u owner_forwarded=%u box_forwarded=%u mismatches=%u\n",
+            oracleObservation.slot, candidateObservation.slot,
+            oracleObservation.calls, candidateObservation.calls,
+            candidateObservation.owner == &owner,
+            candidateObservation.box == &box, matches ? 0u : 1u);
+        if(!matches)
+            ++failures;
+    }
     void** oracleTable = *reinterpret_cast<void***>(oracleBytes);
     void** candidateTable = *reinterpret_cast<void***>(candidateBytes);
     unsigned baseStubCases = 0, baseStubFailures = 0;
