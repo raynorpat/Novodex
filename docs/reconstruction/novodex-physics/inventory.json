@@ -24483,13 +24483,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/541",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3480",
       "static_proof": "BASE-level apply-group: group >= 0x20 reports (1, Shape.cpp, line 0xe0, 0, \"group ID must be < 32!\") through the guarded error-stream slot -- int3 when the flag word is zero -- then JOINS the valid path, skipping only the store; valid groups store at +0xd8; BOTH paths run the dirty-flag 0x04 helper 0x26c90 and rewrite the prunable unidentified dword mPrunable24 (abs +0xc8) as the group mask 1 << low-byte(group), shift count masked to five bits. Report arm and mask driven bitwise by the grouperr family",
-      "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests setgroup family on a fresh sphere with group 7: +0xd8 word 0007 equal candidate",
-      "notes": "",
+      "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests setgroup family on a fresh sphere with group 7: +0xd8 word 0007 equal candidate Mutation proof (2026-10-08): the registered NxPhysicsObjectLayoutTests pinned-oracle grouperr fixture drives invalid group 0xff then valid group 5 and compares captured report plus stored group/mask words. Baseline digest b6f879ec, candidate ok=1, mismatches=0. Replacing the prunable group-mask assignment with zero produces candidate digest b17097cc and mismatches=1. Restoring the shift returns to digest b6f879ec and mismatches=0. Evidence: evidence/phase5-apply-group-001329.md.",
+      "notes": " The prunable group-mask write is independently mutation-falsified by the existing report-and-state differential.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
