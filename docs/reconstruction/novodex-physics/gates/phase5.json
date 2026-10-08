@@ -25,7 +25,7 @@
     {
       "name": "build_and_phase_gate",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 5 -PairsRoot D:\\github\\Novodex\\build\\phase5-posecopy-committed-main-pairs",
-      "result": "Committed main at 0430e616 passes all 19 staged Phase 5 targets, registered static/oracle proofs, and 2,567/2,567 coverage assertions. Full output: build/phase5-posecopy-committed-main.log. Current Phase 5 remains pending at 195 closed / 10 deferred."
+      "result": "Committed main at 0430e616 passes all 19 staged Phase 5 targets, registered static/oracle proofs, and 2,567/2,567 coverage assertions. Full output: build/phase5-posecopy-committed-main.log. At commit 0430e616, Phase 5 remained pending at 195 closed / 10 deferred."
     },
     {
       "name": "viewer_all_scenes",
