@@ -872,3 +872,9 @@ Reversing the BOX hit-normal hint branch in `BoxShape::nxBoxRaycast` is caught b
 `phys_fn_001329` mutation detection: `mismatches=1`; replacing the prunable group-mask assignment with zero changes the digest from `b6f879ec` to `b17097cc`; the restored pinned-oracle differential returns to exact (`mismatches=0`). See `evidence/phase5-apply-group-001329.md`.
 
 `phys_fn_001347` mutation detection: `mismatches=1`; changing the descriptor +0x38 flags copy into shape+0xde to zero changes the row digest from `11e5e856` to `b866a954`; the restored differential returns exact. The Phase 5 gate pins this row and candidate result and evaluates 2,562 assertions against the 2,561 floor. See `evidence/phase5-apply-descriptor-001347.md`.
+
+## Actor shape collision-object helper: `phys_fn_000019`
+
+The pinned-oracle `NxPhysicsObjectLayoutTests` fixture covers the null-shape, ordinary-shape, and kind-5 mesh cases. Changing the mesh branch in `nxBodyCollisionObject` to return `shape+0x9c` instead of `*(shape+0xf0)` fails the actor shape assertion (`actorsm candidate ok=0 digest=81d5e7b9`) and produces `layout candidate mismatches=1`. Restoring the mesh collision-object pointer returns the digest to `1bdc2fa8` and the oracle comparison to zero mismatches. A separate null-arm mutant was also detected and restored. See `evidence/phase5-actor-collision-object-000019.md`.
+
+`phys_fn_000019` mutation detection: `mismatches=1`; the restored actor-shape digest and oracle differential are exact (`mismatches=0`).

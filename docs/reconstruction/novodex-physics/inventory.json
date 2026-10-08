@@ -408,12 +408,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/10",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/31",
       "static_proof": "body helper: collision-object pointer -- mesh hull at [+0xf0], else shape+0x9c -- closed indirectly through slot 16's bitwise drive",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsObjectLayoutTests pinned-oracle differential: changing the kind-5 branch in nxBodyCollisionObject to return shape+0x9c instead of *(shape+0xf0) produced actorsm candidate ok=0 digest=81d5e7b9 and layout candidate mismatches=1; after restore, actorsm candidate ok=1 digest=1bdc2fa8 and mismatches=0. The test loads pinned NxPhysics.dll sha256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c.",
       "notes": ""
     },
     {

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "phase": 5,
-  "note": "Phase 5 owns 205 function rows and 122 data objects. 108 function rows are closed by registered staged-pair mutations, 60 by oracle differentials, and one by a static mutation proof. 36 reconstructed function rows remain without mutation evidence; none remain unreconstructed. The 122 data objects remain separately classified in their inventory records. The ledger accounts for all 205 Phase 5 function rows. BoxHullFacade::supportFace (phys_fn_000957), supportFeature (phys_fn_000959), and BoxShape::nxBoxSweep (phys_fn_000951) are mutation-falsified by NxPhysicsShapeVtableTests (150, 145, and 60 mismatches under targeted mutants; restored transcripts exact; see evidence/phase5-box-support-face-000957.md, phase5-box-support-feature-000959.md, and phase5-box-sweep-000951.md).",
+  "note": "Phase 5 owns 205 function rows and 122 data objects. 108 function rows are closed by registered staged-pair mutations, 60 by oracle differentials, and one by a static mutation proof. 35 reconstructed function rows remain without mutation evidence; none remain unreconstructed. The 122 data objects remain separately classified in their inventory records. The ledger accounts for all 205 Phase 5 function rows. BoxHullFacade::supportFace (phys_fn_000957), supportFeature (phys_fn_000959), and BoxShape::nxBoxSweep (phys_fn_000951) are mutation-falsified by NxPhysicsShapeVtableTests (150, 145, and 60 mismatches under targeted mutants; restored transcripts exact; see evidence/phase5-box-support-face-000957.md, phase5-box-support-feature-000959.md, and phase5-box-sweep-000951.md).",
   "proof_kinds": {
     "differential_falsified": "A candidate mutation was caught by its registered staged-pair differential. The recorded nonzero stdout_delta, cases or digests count is measured from captured child output; the runner also requires exact stderr and equal exit codes for a passing differential, and compares exit codes so a crash mutant is rejected even when output is partial. The local force-at-position wrappers phys_fn_000154, phys_fn_000156, and phys_fn_000158 are independently caught by NxPhysicsActorForceTests. The local force and torque entry points phys_fn_000160 and phys_fn_000162 are independently caught by NxPhysicsActorForceTests. The actor mass, inertia, linear damping, and angular damping setters phys_fn_000166, phys_fn_000168, phys_fn_000170, and phys_fn_000172 are independently caught by NxPhysicsActorDynamicSetterTests. The actor velocity and momentum setters phys_fn_000174, phys_fn_000176, phys_fn_000178, phys_fn_000180, and phys_fn_000182 are independently caught by their registered DynamicSetter and Momentum differentials. The global actor pose setters phys_fn_000196, phys_fn_000198, phys_fn_000200, and phys_fn_000202, and CMass global pose setter phys_fn_000204, are independently caught by NxPhysicsActorCMassTests. The eight center-of-mass setters phys_fn_000206, 000208, 000210, 000212, 000214, 000218, 000220, and 000222 are independently caught by registered NxPhysicsActorCMassTests mutations at the setter stores; each mutant has equal zero exits and exact stderr, and the restored transcript is exact. The phys_fn_000216 orientation error-report tail is independently caught on NxPhysicsActorDynamicSetterTests with stdout_delta=4 and exact restored output. The sphere internal slot-15 radius getter phys_fn_001359 is caught by a direct vtable call in NxPhysicsActorDynamicSetterTests (stdout_delta=2; both child exits 0; exact stderr; restored output exact). The capsule slot-14 radius setter phys_fn_000995 is caught by NxPhysicsActorDynamicSetterTests after mutating its +0xe0 store to radius + 1.0f (stdout_delta=4; restored output exact). Sphere center-radius slot 10 phys_fn_001363, capsule center-radius slot 10 phys_fn_001001, and capsule local-AABB slot 8 phys_fn_001004 are independently caught by NxPhysicsActorDynamicSetterTests (each stdout_delta=2; equal zero exits and exact stderr; each restored output exact). Sphere mass-frame construction phys_fn_000851 and capsule mass-frame construction phys_fn_000853 are independently caught by NxPhysicsActorMassTests: radius + 1.0f mutations produce stdout_delta=16 and 18 respectively; each restored transcript is exact. The NxSceneInternal::releaseController row phys_fn_002330 is caught by NxPhysicsSimulationTests when its reentry guard remains set after release (stdout_delta=2; restored transcript exact). The BOX slot-5 raycast row phys_fn_000949 is caught by NxPhysicsSceneRaycastTests: reversing the hit-normal hint branch produces stdout_delta=508 with equal zero exits and exact stderr; restored output is exact (evidence/phase5-box-raycast-000949.md).",
     "static_proof_falsified": "The NxPhysicsRangeIterationTests mutation changed reverse stepping to forward stepping; its named checks caught the broken visitation order, callback result, and negative-stride behavior for phys_fn_000002.",
@@ -9,7 +9,7 @@
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction; no function rows remain here.",
-    "reconstructed_not_falsified": "The row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 40 rows, each needing one mutation and one measured detection.",
+    "reconstructed_not_falsified": "The row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 35 rows, each needing one mutation and one measured detection.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -24,19 +24,99 @@
   },
   "counts": {
     "differential_falsified": 108,
-    "oracle_differential_falsified": 60,
-    "deferred_reconstructed_not_falsified": 36,
+    "oracle_differential_falsified": 61,
+    "deferred_reconstructed_not_falsified": 35,
     "static_proof_falsified": 1
   },
   "closed": [
     {
-      "id": "phys_fn_002318",
-      "rva": "0x0005a170",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
+      "id": "phys_fn_000002",
+      "rva": "0x00001030",
+      "proof": "static_proof_falsified",
+      "gate": "NxPhysicsRangeIterationTests",
       "falsification": {
-        "mutation": "In an isolated git-archive copy, removed the predecessor-link assignment in NxSceneInternal::releaseController, leaving the released middle controller linked from the surviving head.",
+        "mutation": "Changed the loop update from address -= stride to address += stride, reversing the reverse-strided walk.",
+        "detected": "check_failed three values are visited in descending address order"
+      }
+    },
+    {
+      "id": "phys_fn_000004",
+      "rva": "0x00001070",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed the virtual forwarder to call slot +0x18 with a null argument instead of forwarding the original argument.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_000006",
+      "rva": "0x00001080",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "In an isolated git-archive copy, omitted nxActorRemoveRootFromScene's null-root early return, causing the candidate to continue into root removal with a null shape.",
+        "detected": "stdout_delta=155"
+      }
+    },
+    {
+      "id": "phys_fn_000008",
+      "rva": "0x000010a0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorMassTests",
+      "falsification": {
+        "mutation": "In an isolated archive, added 1.0 to the first density-scaled inertia component in nxActorComputeMassFromShapes.",
+        "detected": "stdout_delta=36"
+      }
+    },
+    {
+      "id": "phys_fn_000012",
+      "rva": "0x00001430",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed the freelist pop cursor update from cursor -= 4 to cursor += 4.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_000019",
+      "rva": "0x00001540",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed nxBodyCollisionObject kind-5 branch to return shape+0x9c instead of the mesh collision object at shape+0xf0.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_000024",
+      "rva": "0x00001860",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "Changed nxActorReleaseShapeâ€™s no-root report at source line 0x1a4 from NXE_INVALID_PARAMETER to NXE_INVALID_OPERATION; the t4_dy_release_empty case observes the report.",
         "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_000026",
+      "rva": "0x000019b0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsBodyCreationTests",
+      "falsification": {
+        "mutation": "Disabled nxActorBuildRecordâ€™s all-zero inertia tensor path to nxActorComputeMassFromShapes by forcing its three-word zero test false.",
+        "detected": "stdout_delta=18"
+      }
+    },
+    {
+      "id": "phys_fn_000028",
+      "rva": "0x00001b90",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed nxU32VectorPushBack growth from 2*size+2 to 2*size+1 dwords, reducing the observed final capacity from 14 to 15 after eight pushes.",
+        "detected": "mismatches=2"
       }
     },
     {
@@ -70,123 +150,23 @@
       }
     },
     {
-      "id": "phys_fn_002421",
-      "rva": "0x0005c160",
+      "id": "phys_fn_000036",
+      "rva": "0x00002250",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsBodyCreationTests",
+      "gate": "NxPhysicsActorShapeMutationTests",
       "falsification": {
-        "mutation": "Omitted the indexed record-pointer write in nxSceneAuxRegisterRecord while preserving ID allocation and active-list bookkeeping.",
+        "mutation": "Changed nxActorCreateShapeâ€™s final return from the newly created shape pointer to null after the shape was installed in the actor.",
+        "detected": "stdout_delta=359"
+      }
+    },
+    {
+      "id": "phys_fn_000046",
+      "rva": "0x000024c0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorLifecycleTests",
+      "falsification": {
+        "mutation": "Forced the successful saveBodyToDesc descriptor-gather result to false after writing the descriptor.",
         "detected": "stdout_delta=6"
-      }
-    },
-    {
-      "id": "phys_fn_001391",
-      "rva": "0x00027f00",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "In a throwaway git archive copy, changed BoxShape::nxBoxSelf from returning this to returning null; the Box slot-14 oracle/candidate identity check was the single failing case.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_000955",
-      "rva": "0x00020d30",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "Temporarily changed BoxHullFacade::vertices() from returning mVertices to mVertices + 1, shifting every vertex pointer read by the box hull rebuild/load path.",
-        "detected": "mismatches=30"
-      }
-    },
-    {
-      "id": "phys_fn_000961",
-      "rva": "0x000213c0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "Temporarily changed BoxHullFacade::faceCount() from returning six faces to returning five, shortening the hull rebuild/load face loops.",
-        "detected": "mismatches=44"
-      }
-    },
-    {
-      "id": "phys_fn_000963",
-      "rva": "0x000213d0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "Temporarily replaced BoxHullFacade::face(index) with a cyclic face lookup at (index + 1) % 6; the direct facade-slot assertions exercise all six indices.",
-        "detected": "mismatches=6"
-      }
-    },
-    {
-      "id": "phys_fn_000953",
-      "rva": "0x00020d20",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "Changed the getter to return kVertexCount - 1; the direct facade-slot assertion reported a vertex-count mismatch and the target exited 1.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_000967",
-      "rva": "0x000213f0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "Changed the getter to return gFaceCornerTable; the direct 24-word oracle/candidate table comparison reported edge-table mismatch and the target exited 1.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_000969",
-      "rva": "0x00021400",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "Changed the getter to return gEdgeTable; the direct table comparison reported a face-corner-table mismatch and the target exited 1.",
-        "detected": "mismatches=83"
-      }
-    },
-    {
-      "id": "phys_fn_000971",
-      "rva": "0x00021410",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "Changed the getter to return gEdgeTable; the direct table comparison reported an adjacency-table mismatch and the target exited 1.",
-        "detected": "mismatches=83"
-      }
-    },
-    {
-      "id": "phys_fn_000002",
-      "rva": "0x00001030",
-      "proof": "static_proof_falsified",
-      "gate": "NxPhysicsRangeIterationTests",
-      "falsification": {
-        "mutation": "Changed the loop update from address -= stride to address += stride, reversing the reverse-strided walk.",
-        "detected": "check_failed three values are visited in descending address order"
-      }
-    },
-    {
-      "id": "phys_fn_000004",
-      "rva": "0x00001070",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed the virtual forwarder to call slot +0x18 with a null argument instead of forwarding the original argument.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_000012",
-      "rva": "0x00001430",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed the freelist pop cursor update from cursor -= 4 to cursor += 4.",
-        "detected": "mismatches=1"
       }
     },
     {
@@ -212,48 +192,34 @@
       "note": "The pinned angular getter observation changed from 3f19999a to the linear damping value 3ecccccd under the wrong offset."
     },
     {
-      "id": "phys_fn_000066",
-      "rva": "0x000029e0",
+      "id": "phys_fn_000054",
+      "rva": "0x000026f0",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsActorDynamicSetterTests",
+      "gate": "NxPhysicsActorForceTests",
       "falsification": {
-        "mutation": "Changed NpActorVtable getter to read +0xd4 instead of body-record offset +0xd0 in an isolated mutation build.",
-        "detected": "stdout_delta=4"
-      },
-      "note": "The pinned getter observation changed to 0.5 instead of 0.25 under the wrong offset."
+        "mutation": "Swapped the force and position arguments passed to nxNpActorForceAtPos.",
+        "detected": "stdout_delta=18"
+      }
     },
     {
-      "id": "phys_fn_000068",
-      "rva": "0x00002a30",
+      "id": "phys_fn_000056",
+      "rva": "0x000027a0",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsActorDynamicSetterTests",
+      "gate": "NxPhysicsActorForceTests",
       "falsification": {
-        "mutation": "Changed NpActorVtable getter to read +0xd0 instead of body-record offset +0xd4 in an isolated mutation build.",
-        "detected": "stdout_delta=2"
-      },
-      "note": "The pinned getter observation changed to 0.25 instead of 0.5 under the wrong offset."
+        "mutation": "Changed nxNpActorAccumulateForce's torque selector from false to true, routing force into the torque accumulator.",
+        "detected": "stdout_delta=36"
+      }
     },
     {
-      "id": "phys_fn_000184",
-      "rva": "0x00008230",
+      "id": "phys_fn_000058",
+      "rva": "0x00002850",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsActorDynamicSetterTests",
+      "gate": "NxPhysicsActorForceTests",
       "falsification": {
-        "mutation": "Changed NpActorVtable sleep-threshold setter to write +0xd4 instead of body-record offset +0xd0 in an isolated mutation build.",
-        "detected": "stdout_delta=4"
-      },
-      "note": "the raw linear threshold became 0 while the angular slot contained the squared linear value"
-    },
-    {
-      "id": "phys_fn_000186",
-      "rva": "0x00008380",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorDynamicSetterTests",
-      "falsification": {
-        "mutation": "Changed NpActorVtable sleep-threshold setter to write +0xd0 instead of body-record offset +0xd4 in an isolated mutation build.",
-        "detected": "stdout_delta=2"
-      },
-      "note": "the raw angular threshold and both getters changed after the write landed in the linear slot"
+        "mutation": "Changed nxNpActorAccumulateForce's torque selector from true to false, routing torque into the force accumulator.",
+        "detected": "stdout_delta=30"
+      }
     },
     {
       "id": "phys_fn_000062",
@@ -278,59 +244,46 @@
       "note": "The individual sleeping results inverted for awake, asleep, and rewoken states."
     },
     {
-      "id": "phys_fn_000192",
-      "rva": "0x00008810",
+      "id": "phys_fn_000066",
+      "rva": "0x000029e0",
       "proof": "differential_falsified",
       "gate": "NxPhysicsActorDynamicSetterTests",
       "falsification": {
-        "mutation": "Changed the actor sleep/wake implementation so record + 0x80 replaced the oracle behavior at record + 0x84 in an isolated mutation build.",
-        "detected": "stdout_delta=10"
+        "mutation": "Changed NpActorVtable getter to read +0xd4 instead of body-record offset +0xd0 in an isolated mutation build.",
+        "detected": "stdout_delta=4"
       },
-      "note": "Wake counters and the negative wake counter were written to the adjacent velocity word."
+      "note": "The pinned getter observation changed to 0.5 instead of 0.25 under the wrong offset."
     },
     {
-      "id": "phys_fn_000194",
-      "rva": "0x00008990",
+      "id": "phys_fn_000068",
+      "rva": "0x00002a30",
       "proof": "differential_falsified",
       "gate": "NxPhysicsActorDynamicSetterTests",
       "falsification": {
-        "mutation": "Changed the actor sleep/wake implementation so record + 0x80 replaced the oracle behavior at record + 0x84 in an isolated mutation build.",
-        "detected": "stdout_delta=6"
+        "mutation": "Changed NpActorVtable getter to read +0xd0 instead of body-record offset +0xd4 in an isolated mutation build.",
+        "detected": "stdout_delta=2"
       },
-      "note": "Put-to-sleep left the wake counter nonzero and the actor/group awake."
+      "note": "The pinned getter observation changed to 0.25 instead of 0.5 under the wrong offset."
     },
     {
-      "id": "phys_fn_000188",
-      "rva": "0x000084d0",
+      "id": "phys_fn_000070",
+      "rva": "0x00002a80",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsActorBodyFlagTests",
+      "gate": "NxPhysicsActorDynamicSetterTests",
       "falsification": {
-        "mutation": "Changed NpActorVtable body-flag mutation from record + 0x10c |= flag to record + 0x10c &= ~flag in an isolated mutation build.",
-        "detected": "stdout_delta=16"
-      },
-      "note": "raised flags, record flags, manager flags, dirty-queue state, and kinematic transition state changed"
+        "mutation": "Changed NpActorVtable::createShape invalid-descriptor branch to return the actor pointer cast as NxShape* after emitting the normal diagnostic and releasing the lock.",
+        "detected": "stdout_delta=4"
+      }
     },
     {
-      "id": "phys_fn_000190",
-      "rva": "0x00008670",
+      "id": "phys_fn_000072",
+      "rva": "0x00002b40",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsActorBodyFlagTests",
+      "gate": "NxPhysicsActorReleaseShapeProbeTests",
       "falsification": {
-        "mutation": "Changed NpActorVtable body-flag mutation from record + 0x10c &= ~flag to record + 0x10c |= flag in an isolated mutation build.",
-        "detected": "stdout_delta=12"
-      },
-      "note": "clear left the kinematic flag and manager/body flags set"
-    },
-    {
-      "id": "phys_fn_000080",
-      "rva": "0x00002c90",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorBodyFlagTests",
-      "falsification": {
-        "mutation": "Inverted readBodyFlag's masked body-record flag predicate from != 0 to == 0 in an isolated mutation build.",
-        "detected": "stdout_delta=6"
-      },
-      "note": "The descriptor, raised, and cleared public read results all inverted under the wrong predicate."
+        "mutation": "In a temporary candidate build, replaced the NpActorVtable::releaseShape nxActorReleaseShape call with (void)shape; the isolated two-shape fixture releases one handle and then cleans up without a release-count loop.",
+        "detected": "stdout_delta=2"
+      }
     },
     {
       "id": "phys_fn_000074",
@@ -366,153 +319,24 @@
       "note": "descriptor, default, raised, and cleared public flag reads were inverted"
     },
     {
-      "id": "phys_fn_000112",
-      "rva": "0x000035b0",
+      "id": "phys_fn_000080",
+      "rva": "0x00002c90",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsActorMetadataTests",
+      "gate": "NxPhysicsActorBodyFlagTests",
       "falsification": {
-        "mutation": "Changed NpActorVtable::setGroup to write actor-body offset +0x18 instead of +0x1c in a mutation build.",
-        "detected": "stdout_delta=2"
-      }
-    },
-    {
-      "id": "phys_fn_000114",
-      "rva": "0x00003610",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorMetadataTests",
-      "falsification": {
-        "mutation": "Changed NpActorVtable::getGroup to read actor-body offset +0x18 instead of +0x1c in a mutation build.",
-        "detected": "stdout_delta=4"
-      }
-    },
-    {
-      "id": "phys_fn_000110",
-      "rva": "0x00003580",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorLifecycleTests",
-      "falsification": {
-        "mutation": "Reversed NpActorVtable::isDynamic body-record predicate from != 0 to == 0 in a mutation build.",
-        "detected": "stdout_delta=4"
-      }
-    },
-    {
-      "id": "phys_fn_000070",
-      "rva": "0x00002a80",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorDynamicSetterTests",
-      "falsification": {
-        "mutation": "Changed NpActorVtable::createShape invalid-descriptor branch to return the actor pointer cast as NxShape* after emitting the normal diagnostic and releasing the lock.",
-        "detected": "stdout_delta=4"
-      }
-    },
-    {
-      "id": "phys_fn_000072",
-      "rva": "0x00002b40",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorReleaseShapeProbeTests",
-      "falsification": {
-        "mutation": "In a temporary candidate build, replaced the NpActorVtable::releaseShape nxActorReleaseShape call with (void)shape; the isolated two-shape fixture releases one handle and then cleans up without a release-count loop.",
-        "detected": "stdout_delta=2"
-      }
-    },
-    {
-      "id": "phys_fn_000164",
-      "rva": "0x00006520",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorShapeMutationTests",
-      "falsification": {
-        "mutation": "Removed the first record-version increment at +0x198 in NpActorVtable::updateMassFromShapes, after writing the mass-frame translation and its dirty flag.",
-        "detected": "stdout_delta=80"
-      }
-    },
-    {
-      "id": "phys_fn_000122",
-      "rva": "0x00003840",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorShapeMutationTests",
-      "falsification": {
-        "mutation": "Disabled the final nxSceneAddShape(scene, shape, true) call after NpActorVtable::setDynamic converts a static actor with a shape into a dynamic body.",
-        "detected": "stdout_delta=36"
-      }
-    },
-    {
-      "id": "phys_fn_001035",
-      "rva": "0x00022dd0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "Changed ShapeBase::nxBaseSlot7 from false to true; the three plane final-vtable slot-7 cases compare the return value and preserved output word against the pinned oracle.",
-        "detected": "mismatches=3"
-      }
-    },
-    {
-      "id": "phys_fn_000120",
-      "rva": "0x00003690",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorLifecycleTests",
-      "falsification": {
-        "mutation": "Changed saveToDesc group source from body+0x1c to body+0x18; a second independent mutation changed density source from body+0x18 to body+0x14. The lifecycle fixture uses distinct static/dynamic groups 3 and 7.",
-        "detected": "stdout_delta=8"
-      }
-    },
-    {
-      "id": "phys_fn_000146",
-      "rva": "0x000058f0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorLifecycleTests",
-      "falsification": {
-        "mutation": "Changed the final world-Z accumulation in NpActorVtable::getPointVelocityVal from x87 fadd to fsub.",
-        "detected": "stdout_delta=38"
-      }
-    },
-    {
-      "id": "phys_fn_000148",
-      "rva": "0x00005b40",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorLifecycleTests",
-      "falsification": {
-        "mutation": "Changed the final local-Z accumulation in NpActorVtable::getLocalPointVelocityVal from x87 fadd to fsub.",
-        "detected": "stdout_delta=38"
-      }
-    },
-    {
-      "id": "phys_fn_000046",
-      "rva": "0x000024c0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorLifecycleTests",
-      "falsification": {
-        "mutation": "Forced the successful saveBodyToDesc descriptor-gather result to false after writing the descriptor.",
+        "mutation": "Inverted readBodyFlag's masked body-record flag predicate from != 0 to == 0 in an isolated mutation build.",
         "detected": "stdout_delta=6"
-      }
+      },
+      "note": "The descriptor, raised, and cleared public read results all inverted under the wrong predicate."
     },
     {
-      "id": "phys_fn_000054",
-      "rva": "0x000026f0",
+      "id": "phys_fn_000090",
+      "rva": "0x00002df0",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsActorForceTests",
+      "gate": "NxPhysicsActorDynamicsTests",
       "falsification": {
-        "mutation": "Swapped the force and position arguments passed to nxNpActorForceAtPos.",
-        "detected": "stdout_delta=18"
-      }
-    },
-    {
-      "id": "phys_fn_000056",
-      "rva": "0x000027a0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorForceTests",
-      "falsification": {
-        "mutation": "Changed nxNpActorAccumulateForce's torque selector from false to true, routing force into the torque accumulator.",
-        "detected": "stdout_delta=36"
-      }
-    },
-    {
-      "id": "phys_fn_000058",
-      "rva": "0x00002850",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorForceTests",
-      "falsification": {
-        "mutation": "Changed nxNpActorAccumulateForce's torque selector from true to false, routing torque into the force accumulator.",
-        "detected": "stdout_delta=30"
+        "mutation": "Changed NpActorVtable::moveGlobalPosition to subtract position.z from record[+0x108] instead of adding it.",
+        "detected": "stdout_delta=16"
       }
     },
     {
@@ -596,123 +420,53 @@
       }
     },
     {
-      "id": "phys_fn_000829",
-      "rva": "0x0001bd00",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "In an isolated git-archive copy of d2564d07, changed MassFrame::nxMassFrameBuildBox xx diagonal sum from zz+yy to zz-yy.",
-        "detected": "mismatches=8"
-      }
-    },
-    {
-      "id": "phys_fn_000849",
-      "rva": "0x0001c8c0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "In an isolated git-archive copy, omitted local.nxMassFrameScale(density) from BoxShape::nxBoxComputeMassFrame.",
-        "detected": "mismatches=12"
-      }
-    },
-    {
-      "id": "phys_fn_000831",
-      "rva": "0x0001bdc0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "In an isolated archive, changed the first nxMassFrameFoldPayload inertia store from s to s + 1.0.",
-        "detected": "mismatches=18"
-      }
-    },
-    {
-      "id": "phys_fn_000841",
-      "rva": "0x0001c720",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "In an isolated archive, changed the first nxMassFrameTranslateToCentre negation from -mOffset.x to mOffset.x.",
-        "detected": "mismatches=3"
-      }
-    },
-    {
-      "id": "phys_fn_000847",
-      "rva": "0x0001c880",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "In an isolated archive, changed the mass clear in nxMassFrameConditionalZero from 0.0f to 1.0f.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_000008",
-      "rva": "0x000010a0",
+      "id": "phys_fn_000110",
+      "rva": "0x00003580",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsActorMassTests",
+      "gate": "NxPhysicsActorLifecycleTests",
       "falsification": {
-        "mutation": "In an isolated archive, added 1.0 to the first density-scaled inertia component in nxActorComputeMassFromShapes.",
-        "detected": "stdout_delta=36"
+        "mutation": "Reversed NpActorVtable::isDynamic body-record predicate from != 0 to == 0 in a mutation build.",
+        "detected": "stdout_delta=4"
       }
     },
     {
-      "id": "phys_fn_000785",
-      "rva": "0x00019620",
+      "id": "phys_fn_000112",
+      "rva": "0x000035b0",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsActorBodyFlagTests",
+      "gate": "NxPhysicsActorMetadataTests",
       "falsification": {
-        "mutation": "In a temporary build, changed the kinematic-enable arm's inverse-mass write from 0.0f to 0.5f.",
+        "mutation": "Changed NpActorVtable::setGroup to write actor-body offset +0x18 instead of +0x1c in a mutation build.",
         "detected": "stdout_delta=2"
       }
     },
     {
-      "id": "phys_fn_000787",
-      "rva": "0x00019b50",
+      "id": "phys_fn_000114",
+      "rva": "0x00003610",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsActorBodyFlagTests",
+      "gate": "NxPhysicsActorMetadataTests",
       "falsification": {
-        "mutation": "In a temporary build, changed the kinematic-disable arm's inverse-mass reconstruction to 0.5f.",
-        "detected": "stdout_delta=2"
+        "mutation": "Changed NpActorVtable::getGroup to read actor-body offset +0x18 instead of +0x1c in a mutation build.",
+        "detected": "stdout_delta=4"
       }
     },
     {
-      "id": "phys_fn_001249",
-      "rva": "0x00024f70",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
+      "id": "phys_fn_000120",
+      "rva": "0x00003690",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorLifecycleTests",
       "falsification": {
-        "mutation": "return true from ShapeBase::nxBaseSlot4 in the candidate; the direct oracle/candidate base-stub check rejected the return mismatch.",
-        "detected": "mismatches=1"
+        "mutation": "Changed saveToDesc group source from body+0x1c to body+0x18; a second independent mutation changed density source from body+0x18 to body+0x14. The lifecycle fixture uses distinct static/dynamic groups 3 and 7.",
+        "detected": "stdout_delta=8"
       }
     },
     {
-      "id": "phys_fn_004812",
-      "rva": "0x000b4070",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "return a non-null pointer from ShapeBase::nxBaseSlot5 in the candidate; the direct oracle/candidate base-stub check rejected the return mismatch.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_000006",
-      "rva": "0x00001080",
+      "id": "phys_fn_000122",
+      "rva": "0x00003840",
       "proof": "differential_falsified",
       "gate": "NxPhysicsActorShapeMutationTests",
       "falsification": {
-        "mutation": "In an isolated git-archive copy, omitted nxActorRemoveRootFromScene's null-root early return, causing the candidate to continue into root removal with a null shape.",
-        "detected": "stdout_delta=155"
-      }
-    },
-    {
-      "id": "phys_fn_000090",
-      "rva": "0x00002df0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorDynamicsTests",
-      "falsification": {
-        "mutation": "Changed NpActorVtable::moveGlobalPosition to subtract position.z from record[+0x108] instead of adding it.",
-        "detected": "stdout_delta=16"
+        "mutation": "Disabled the final nxSceneAddShape(scene, shape, true) call after NpActorVtable::setDynamic converts a static actor with a shape into a dynamic body.",
+        "detected": "stdout_delta=36"
       }
     },
     {
@@ -733,46 +487,6 @@
       "falsification": {
         "mutation": "Added 1.0f to NpActorVtable::moveGlobalOrientation computed target X before writing the kinematic target.",
         "detected": "stdout_delta=16"
-      }
-    },
-    {
-      "id": "phys_fn_000028",
-      "rva": "0x00001b90",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed nxU32VectorPushBack growth from 2*size+2 to 2*size+1 dwords, reducing the observed final capacity from 14 to 15 after eight pushes.",
-        "detected": "mismatches=2"
-      }
-    },
-    {
-      "id": "phys_fn_000024",
-      "rva": "0x00001860",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorShapeMutationTests",
-      "falsification": {
-        "mutation": "Changed nxActorReleaseShapeâ€™s no-root report at source line 0x1a4 from NXE_INVALID_PARAMETER to NXE_INVALID_OPERATION; the t4_dy_release_empty case observes the report.",
-        "detected": "stdout_delta=2"
-      }
-    },
-    {
-      "id": "phys_fn_000036",
-      "rva": "0x00002250",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorShapeMutationTests",
-      "falsification": {
-        "mutation": "Changed nxActorCreateShapeâ€™s final return from the newly created shape pointer to null after the shape was installed in the actor.",
-        "detected": "stdout_delta=359"
-      }
-    },
-    {
-      "id": "phys_fn_000026",
-      "rva": "0x000019b0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsBodyCreationTests",
-      "falsification": {
-        "mutation": "Disabled nxActorBuildRecordâ€™s all-zero inertia tensor path to nxActorComputeMassFromShapes by forcing its three-word zero test false.",
-        "detected": "stdout_delta=18"
       }
     },
     {
@@ -846,6 +560,26 @@
       }
     },
     {
+      "id": "phys_fn_000146",
+      "rva": "0x000058f0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorLifecycleTests",
+      "falsification": {
+        "mutation": "Changed the final world-Z accumulation in NpActorVtable::getPointVelocityVal from x87 fadd to fsub.",
+        "detected": "stdout_delta=38"
+      }
+    },
+    {
+      "id": "phys_fn_000148",
+      "rva": "0x00005b40",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorLifecycleTests",
+      "falsification": {
+        "mutation": "Changed the final local-Z accumulation in NpActorVtable::getLocalPointVelocityVal from x87 fadd to fsub.",
+        "detected": "stdout_delta=38"
+      }
+    },
+    {
       "id": "phys_fn_000150",
       "rva": "0x00005e70",
       "proof": "differential_falsified",
@@ -913,6 +647,16 @@
       "falsification": {
         "mutation": "Changed addLocalTorqueâ€™s nxNpActorAccumulateForce torque selector from true to false, routing its rotated torque to the force accumulator.",
         "detected": "stdout_delta=16"
+      }
+    },
+    {
+      "id": "phys_fn_000164",
+      "rva": "0x00006520",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "Removed the first record-version increment at +0x198 in NpActorVtable::updateMassFromShapes, after writing the mass-frame translation and its dirty flag.",
+        "detected": "stdout_delta=80"
       }
     },
     {
@@ -1004,6 +748,72 @@
         "mutation": "Used inverse-inertia coefficient 2 instead of coefficient 1 for the first setAngularMomentum output component.",
         "detected": "stdout_delta=18"
       }
+    },
+    {
+      "id": "phys_fn_000184",
+      "rva": "0x00008230",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed NpActorVtable sleep-threshold setter to write +0xd4 instead of body-record offset +0xd0 in an isolated mutation build.",
+        "detected": "stdout_delta=4"
+      },
+      "note": "the raw linear threshold became 0 while the angular slot contained the squared linear value"
+    },
+    {
+      "id": "phys_fn_000186",
+      "rva": "0x00008380",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed NpActorVtable sleep-threshold setter to write +0xd0 instead of body-record offset +0xd4 in an isolated mutation build.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "the raw angular threshold and both getters changed after the write landed in the linear slot"
+    },
+    {
+      "id": "phys_fn_000188",
+      "rva": "0x000084d0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorBodyFlagTests",
+      "falsification": {
+        "mutation": "Changed NpActorVtable body-flag mutation from record + 0x10c |= flag to record + 0x10c &= ~flag in an isolated mutation build.",
+        "detected": "stdout_delta=16"
+      },
+      "note": "raised flags, record flags, manager flags, dirty-queue state, and kinematic transition state changed"
+    },
+    {
+      "id": "phys_fn_000190",
+      "rva": "0x00008670",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorBodyFlagTests",
+      "falsification": {
+        "mutation": "Changed NpActorVtable body-flag mutation from record + 0x10c &= ~flag to record + 0x10c |= flag in an isolated mutation build.",
+        "detected": "stdout_delta=12"
+      },
+      "note": "clear left the kinematic flag and manager/body flags set"
+    },
+    {
+      "id": "phys_fn_000192",
+      "rva": "0x00008810",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed the actor sleep/wake implementation so record + 0x80 replaced the oracle behavior at record + 0x84 in an isolated mutation build.",
+        "detected": "stdout_delta=10"
+      },
+      "note": "Wake counters and the negative wake counter were written to the adjacent velocity word."
+    },
+    {
+      "id": "phys_fn_000194",
+      "rva": "0x00008990",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed the actor sleep/wake implementation so record + 0x80 replaced the oracle behavior at record + 0x84 in an isolated mutation build.",
+        "detected": "stdout_delta=6"
+      },
+      "note": "Put-to-sleep left the wake counter nonzero and the actor/group awake."
     },
     {
       "id": "phys_fn_000196",
@@ -1106,6 +916,16 @@
       }
     },
     {
+      "id": "phys_fn_000216",
+      "rva": "0x0000a5d0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed only the setCMassOffsetLocalOrientation static/kinematic error-report source line from 0x39f to 0x39e; the mutation isolates the report arm in this tail row and leaves successful setter stores unchanged.",
+        "detected": "stdout_delta=4"
+      }
+    },
+    {
       "id": "phys_fn_000218",
       "rva": "0x0000a680",
       "proof": "differential_falsified",
@@ -1136,166 +956,6 @@
       }
     },
     {
-      "id": "phys_fn_000216",
-      "rva": "0x0000a5d0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorDynamicSetterTests",
-      "falsification": {
-        "mutation": "Changed only the setCMassOffsetLocalOrientation static/kinematic error-report source line from 0x39f to 0x39e; the mutation isolates the report arm in this tail row and leaves successful setter stores unchanged.",
-        "detected": "stdout_delta=4"
-      }
-    },
-    {
-      "id": "phys_fn_001359",
-      "rva": "0x00027920",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorDynamicSetterTests",
-      "falsification": {
-        "mutation": "In an isolated worktree, changed the SPHERE vtable slot-15 radius getter from returning [this+0xe0] to returning [this+0xe0] + 1.0f. The fixture directly calls internal slot 15 on a sphere with radius 1.0f.",
-        "detected": "stdout_delta=2"
-      }
-    },
-    {
-      "id": "phys_fn_000995",
-      "rva": "0x00021be0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorDynamicSetterTests",
-      "falsification": {
-        "mutation": "In an isolated worktree, changed CapsuleShape::nxCapsuleSetRadius to store radius + 1.0f at +0xe0. The registered DynamicSetter fixture calls the capsule slot-14 setter and prints its resulting dimensions and AABB.",
-        "detected": "stdout_delta=4"
-      }
-    },
-    {
-      "id": "phys_fn_001357",
-      "rva": "0x000278c0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed SphereShape::nxSphereSetRadius to store radius + 1.0f instead of radius. The ObjectLayout oracle differential directly calls slot 14 with 1.25f; candidate output becomes rad=0x40100000 rather than 0x3fa00000.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_001363",
-      "rva": "0x00027980",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorDynamicSetterTests",
-      "falsification": {
-        "mutation": "Changed SphereShape::nxSphereCenterRadius slot 10 to return zero for out[3] instead of the stored radius.",
-        "detected": "stdout_delta=2"
-      }
-    },
-    {
-      "id": "phys_fn_001001",
-      "rva": "0x00021c30",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorDynamicSetterTests",
-      "falsification": {
-        "mutation": "Changed CapsuleShape::nxCapsuleCenterRadius slot 10 to return the half-height alone instead of half-height plus radius.",
-        "detected": "stdout_delta=2"
-      }
-    },
-    {
-      "id": "phys_fn_001004",
-      "rva": "0x00021c80",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorDynamicSetterTests",
-      "falsification": {
-        "mutation": "Changed CapsuleShape::nxCapsuleLocalAABB slot 8 to use the half-height alone for vertical reach, omitting radius.",
-        "detected": "stdout_delta=2"
-      }
-    },
-    {
-      "id": "phys_fn_000927",
-      "rva": "0x00020450",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed BoxShape::nxBoxSaveState to save the first dimension as dimension + 1.0f.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_000935",
-      "rva": "0x000205a0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Added 1.0f to out[0] after BoxShape::nxBoxWorldAABB computes all six AABB bounds.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_000939",
-      "rva": "0x000206c0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed BoxShape::nxBoxZeroCenterAndDiagonal to write 1.0f to out[0] instead of zero.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_000941",
-      "rva": "0x00020700",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed BoxShape::nxBoxLocalAABB out[0] from negative x extent to positive x extent.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_000937",
-      "rva": "0x00020670",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "For the non-unit box-row fixture, omitted dy*dy from BoxShape::nxBoxCenterAndDiagonal while preserving default-dimension behavior.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_000947",
-      "rva": "0x00020850",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed BoxShape::nxBoxAccumulateMass to return false.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_000975",
-      "rva": "0x000217c0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Reversed BoxHullFacade::supportBounds minimum comparison from < to >.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_000945",
-      "rva": "0x000207e0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Reversed BoxShape::nxDebugRenderDispatch visualization guard from == 0.0f to != 0.0f.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_000748",
-      "rva": "0x00016f80",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsBodyCreationTests",
-      "falsification": {
-        "mutation": "Changed DynamicBody::markIslandDirty +0x1e4 update from |= 2 to |= 0.",
-        "detected": "stdout_delta=172"
-      }
-    },
-    {
       "id": "phys_fn_000742",
       "rva": "0x00016dd0",
       "proof": "oracle_differential_falsified",
@@ -1316,43 +976,23 @@
       }
     },
     {
-      "id": "phys_fn_000851",
-      "rva": "0x0001c930",
+      "id": "phys_fn_000748",
+      "rva": "0x00016f80",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsActorMassTests",
+      "gate": "NxPhysicsBodyCreationTests",
       "falsification": {
-        "mutation": "Changed the radius passed by SphereShape::nxSphereComputeMassFrame to radius + 1.0f.",
-        "detected": "stdout_delta=16"
+        "mutation": "Changed DynamicBody::markIslandDirty +0x1e4 update from |= 2 to |= 0.",
+        "detected": "stdout_delta=172"
       }
     },
     {
-      "id": "phys_fn_000853",
-      "rva": "0x0001c980",
+      "id": "phys_fn_000768",
+      "rva": "0x00017f10",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsActorMassTests",
+      "gate": "NxPhysicsActorCMassTests",
       "falsification": {
-        "mutation": "Changed the radius passed by CapsuleShape::nxCapsuleComputeMassFrame to radius + 1.0f.",
-        "detected": "stdout_delta=18"
-      }
-    },
-    {
-      "id": "phys_fn_000989",
-      "rva": "0x00021ad0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed the capsule descriptor-load radius store to add 1.0f after reading record+0x4c.",
-        "detected": "mismatches=2"
-      }
-    },
-    {
-      "id": "phys_fn_001353",
-      "rva": "0x00027850",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed the sphere descriptor-load radius store from r to r + 1.0f.",
-        "detected": "mismatches=2"
+        "mutation": "Added 1.0f to centre[0] in nxNpActorUpdateMassFrame before storing the world mass center at DynamicBody+0x158.",
+        "detected": "stdout_delta=184"
       }
     },
     {
@@ -1363,6 +1003,26 @@
       "falsification": {
         "mutation": "Omitted the position-target flag OR (target+0xc |= 1) after the position copy in nxNpActorSetKinematicTarget.",
         "detected": "stdout_delta=42"
+      }
+    },
+    {
+      "id": "phys_fn_000785",
+      "rva": "0x00019620",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorBodyFlagTests",
+      "falsification": {
+        "mutation": "In a temporary build, changed the kinematic-enable arm's inverse-mass write from 0.0f to 0.5f.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_000787",
+      "rva": "0x00019b50",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorBodyFlagTests",
+      "falsification": {
+        "mutation": "In a temporary build, changed the kinematic-disable arm's inverse-mass reconstruction to 0.5f.",
+        "detected": "stdout_delta=2"
       }
     },
     {
@@ -1396,16 +1056,6 @@
       }
     },
     {
-      "id": "phys_fn_000768",
-      "rva": "0x00017f10",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorCMassTests",
-      "falsification": {
-        "mutation": "Added 1.0f to centre[0] in nxNpActorUpdateMassFrame before storing the world mass center at DynamicBody+0x158.",
-        "detected": "stdout_delta=184"
-      }
-    },
-    {
       "id": "phys_fn_000797",
       "rva": "0x0001b5c0",
       "proof": "differential_falsified",
@@ -1426,32 +1076,262 @@
       }
     },
     {
-      "id": "phys_fn_001941",
-      "rva": "0x0004ba80",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorShapeMutationTests",
+      "id": "phys_fn_000829",
+      "rva": "0x0001bd00",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
       "falsification": {
-        "mutation": "Changed the kind byte written by nxPruningAddShape from 0 to 1 at shape+0xcf.",
-        "detected": "stdout_delta=58"
+        "mutation": "In an isolated git-archive copy of d2564d07, changed MassFrame::nxMassFrameBuildBox xx diagonal sum from zz+yy to zz-yy.",
+        "detected": "mismatches=8"
       }
     },
     {
-      "id": "phys_fn_001003",
-      "rva": "0x00021c60",
+      "id": "phys_fn_000831",
+      "rva": "0x0001bdc0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "In an isolated archive, changed the first nxMassFrameFoldPayload inertia store from s to s + 1.0.",
+        "detected": "mismatches=18"
+      }
+    },
+    {
+      "id": "phys_fn_000841",
+      "rva": "0x0001c720",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "In an isolated archive, changed the first nxMassFrameTranslateToCentre negation from -mOffset.x to mOffset.x.",
+        "detected": "mismatches=3"
+      }
+    },
+    {
+      "id": "phys_fn_000847",
+      "rva": "0x0001c880",
       "proof": "oracle_differential_falsified",
       "gate": "NxPhysicsObjectLayoutTests",
       "falsification": {
-        "mutation": "Changed CapsuleShape::nxCapsuleZeroCenterRadius first output store from 0.0f to 1.0f.",
+        "mutation": "In an isolated archive, changed the mass clear in nxMassFrameConditionalZero from 0.0f to 1.0f.",
         "detected": "mismatches=1"
       }
     },
     {
-      "id": "phys_fn_001257",
-      "rva": "0x000251d0",
+      "id": "phys_fn_000849",
+      "rva": "0x0001c8c0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "In an isolated git-archive copy, omitted local.nxMassFrameScale(density) from BoxShape::nxBoxComputeMassFrame.",
+        "detected": "mismatches=12"
+      }
+    },
+    {
+      "id": "phys_fn_000851",
+      "rva": "0x0001c930",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorMassTests",
+      "falsification": {
+        "mutation": "Changed the radius passed by SphereShape::nxSphereComputeMassFrame to radius + 1.0f.",
+        "detected": "stdout_delta=16"
+      }
+    },
+    {
+      "id": "phys_fn_000853",
+      "rva": "0x0001c980",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorMassTests",
+      "falsification": {
+        "mutation": "Changed the radius passed by CapsuleShape::nxCapsuleComputeMassFrame to radius + 1.0f.",
+        "detected": "stdout_delta=18"
+      }
+    },
+    {
+      "id": "phys_fn_000927",
+      "rva": "0x00020450",
       "proof": "oracle_differential_falsified",
       "gate": "NxPhysicsObjectLayoutTests",
       "falsification": {
-        "mutation": "Changed the +FLT_MAX extent word copied to out[3] by PlaneShape::nxPlaneExtentRow to zero.",
+        "mutation": "Changed BoxShape::nxBoxSaveState to save the first dimension as dimension + 1.0f.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_000935",
+      "rva": "0x000205a0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Added 1.0f to out[0] after BoxShape::nxBoxWorldAABB computes all six AABB bounds.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_000937",
+      "rva": "0x00020670",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "For the non-unit box-row fixture, omitted dy*dy from BoxShape::nxBoxCenterAndDiagonal while preserving default-dimension behavior.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_000939",
+      "rva": "0x000206c0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed BoxShape::nxBoxZeroCenterAndDiagonal to write 1.0f to out[0] instead of zero.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_000941",
+      "rva": "0x00020700",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed BoxShape::nxBoxLocalAABB out[0] from negative x extent to positive x extent.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_000945",
+      "rva": "0x000207e0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Reversed BoxShape::nxDebugRenderDispatch visualization guard from == 0.0f to != 0.0f.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_000947",
+      "rva": "0x00020850",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed BoxShape::nxBoxAccumulateMass to return false.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_000949",
+      "rva": "0x00020880",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneRaycastTests",
+      "falsification": {
+        "mutation": "Reversed BoxShape::nxBoxRaycast's flags&4 hit-normal hint branch to take the hint path when bit 2 is clear.",
+        "detected": "stdout_delta=508"
+      }
+    },
+    {
+      "id": "phys_fn_000951",
+      "rva": "0x00020b20",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Changed BoxShape::nxBoxSweep (phys_fn_000951) to return false after a successful NxSegmentSlabs hit.",
+        "detected": "mismatches=60"
+      }
+    },
+    {
+      "id": "phys_fn_000953",
+      "rva": "0x00020d20",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Changed the getter to return kVertexCount - 1; the direct facade-slot assertion reported a vertex-count mismatch and the target exited 1.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_000955",
+      "rva": "0x00020d30",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Temporarily changed BoxHullFacade::vertices() from returning mVertices to mVertices + 1, shifting every vertex pointer read by the box hull rebuild/load path.",
+        "detected": "mismatches=30"
+      }
+    },
+    {
+      "id": "phys_fn_000957",
+      "rva": "0x00020d40",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Changed BoxHullFacade::supportFace (phys_fn_000957) to return face 0 for every input, then rebuilt the registered oracle differential.",
+        "detected": "mismatches=150"
+      }
+    },
+    {
+      "id": "phys_fn_000959",
+      "rva": "0x00020f90",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Changed the no-edge arm of BoxHullFacade::supportFeature (phys_fn_000959) to report edgeWon=1 instead of 0.",
+        "detected": "mismatches=145"
+      }
+    },
+    {
+      "id": "phys_fn_000961",
+      "rva": "0x000213c0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Temporarily changed BoxHullFacade::faceCount() from returning six faces to returning five, shortening the hull rebuild/load face loops.",
+        "detected": "mismatches=44"
+      }
+    },
+    {
+      "id": "phys_fn_000963",
+      "rva": "0x000213d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Temporarily replaced BoxHullFacade::face(index) with a cyclic face lookup at (index + 1) % 6; the direct facade-slot assertions exercise all six indices.",
+        "detected": "mismatches=6"
+      }
+    },
+    {
+      "id": "phys_fn_000967",
+      "rva": "0x000213f0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Changed the getter to return gFaceCornerTable; the direct 24-word oracle/candidate table comparison reported edge-table mismatch and the target exited 1.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_000969",
+      "rva": "0x00021400",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Changed the getter to return gEdgeTable; the direct table comparison reported a face-corner-table mismatch and the target exited 1.",
+        "detected": "mismatches=83"
+      }
+    },
+    {
+      "id": "phys_fn_000971",
+      "rva": "0x00021410",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Changed the getter to return gEdgeTable; the direct table comparison reported an adjacency-table mismatch and the target exited 1.",
+        "detected": "mismatches=83"
+      }
+    },
+    {
+      "id": "phys_fn_000975",
+      "rva": "0x000217c0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Reversed BoxHullFacade::supportBounds minimum comparison from < to >.",
         "detected": "mismatches=1"
       }
     },
@@ -1466,52 +1346,22 @@
       }
     },
     {
-      "id": "phys_fn_001251",
-      "rva": "0x00024f80",
+      "id": "phys_fn_000981",
+      "rva": "0x00021990",
       "proof": "oracle_differential_falsified",
       "gate": "NxPhysicsObjectLayoutTests",
       "falsification": {
-        "mutation": "Removed the sign flip from PlaneShape::nxPlaneSaveState negative-distance computation, storing +0 instead of -0 for a zero plane distance.",
+        "mutation": "Changed the first box dimension read at +0x21998 from record+0x4c to record+0x50.",
         "detected": "mismatches=1"
       }
     },
     {
-      "id": "phys_fn_001355",
-      "rva": "0x000278a0",
+      "id": "phys_fn_000985",
+      "rva": "0x00021a10",
       "proof": "oracle_differential_falsified",
       "gate": "NxPhysicsObjectLayoutTests",
       "falsification": {
-        "mutation": "Changed SphereShape::nxSphereSaveState radius destination from record+0x4c to record+0x48.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_001365",
-      "rva": "0x000279b0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed the first output store in SphereShape::nxSphereZeroCenterRadius from 0.0f to 1.0f.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_001361",
-      "rva": "0x00027930",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Added 1.0f to the first world-AABB output in SphereShape::nxSphereWorldAABB.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_001367",
-      "rva": "0x000279d0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed the first local-AABB negative-radius store in SphereShape::nxSphereLocalAABB to positive radius.",
+        "mutation": "Changed BoxHullFacade::sharedHook from returning its stable zeroed block to returning nullptr.",
         "detected": "mismatches=1"
       }
     },
@@ -1526,6 +1376,86 @@
       }
     },
     {
+      "id": "phys_fn_000989",
+      "rva": "0x00021ad0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed the capsule descriptor-load radius store to add 1.0f after reading record+0x4c.",
+        "detected": "mismatches=2"
+      }
+    },
+    {
+      "id": "phys_fn_000991",
+      "rva": "0x00021b40",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed CapsuleShape::nxCapsuleSaveState's base-save tail-call result to false.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_000995",
+      "rva": "0x00021be0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "In an isolated worktree, changed CapsuleShape::nxCapsuleSetRadius to store radius + 1.0f at +0xe0. The registered DynamicSetter fixture calls the capsule slot-14 setter and prints its resulting dimensions and AABB.",
+        "detected": "stdout_delta=4"
+      }
+    },
+    {
+      "id": "phys_fn_001001",
+      "rva": "0x00021c30",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed CapsuleShape::nxCapsuleCenterRadius slot 10 to return the half-height alone instead of half-height plus radius.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_001003",
+      "rva": "0x00021c60",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed CapsuleShape::nxCapsuleZeroCenterRadius first output store from 0.0f to 1.0f.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_001004",
+      "rva": "0x00021c80",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed CapsuleShape::nxCapsuleLocalAABB slot 8 to use the half-height alone for vertical reach, omitting radius.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_001035",
+      "rva": "0x00022dd0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Changed ShapeBase::nxBaseSlot7 from false to true; the three plane final-vtable slot-7 cases compare the return value and preserved output word against the pinned oracle.",
+        "detected": "mismatches=3"
+      }
+    },
+    {
+      "id": "phys_fn_001075",
+      "rva": "0x00023580",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "In the box-family CollisionObject constructor path, replaced the +0x18 owner back-pointer store with null.",
+        "detected": "mismatches=6"
+      }
+    },
+    {
       "id": "phys_fn_001247",
       "rva": "0x00024ed0",
       "proof": "oracle_differential_falsified",
@@ -1536,22 +1466,32 @@
       }
     },
     {
-      "id": "phys_fn_001349",
-      "rva": "0x000277c0",
+      "id": "phys_fn_001249",
+      "rva": "0x00024f70",
       "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
+      "gate": "NxPhysicsShapeVtableTests",
       "falsification": {
-        "mutation": "Changed SphereShape constructor radius initializer at +0xe0 from 0.0f to 1.0f.",
-        "detected": "mismatches=4"
+        "mutation": "return true from ShapeBase::nxBaseSlot4 in the candidate; the direct oracle/candidate base-stub check rejected the return mismatch.",
+        "detected": "mismatches=1"
       }
     },
     {
-      "id": "phys_fn_000981",
-      "rva": "0x00021990",
+      "id": "phys_fn_001251",
+      "rva": "0x00024f80",
       "proof": "oracle_differential_falsified",
       "gate": "NxPhysicsObjectLayoutTests",
       "falsification": {
-        "mutation": "Changed the first box dimension read at +0x21998 from record+0x4c to record+0x50.",
+        "mutation": "Removed the sign flip from PlaneShape::nxPlaneSaveState negative-distance computation, storing +0 instead of -0 for a zero plane distance.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_001257",
+      "rva": "0x000251d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed the +FLT_MAX extent word copied to out[3] by PlaneShape::nxPlaneExtentRow to zero.",
         "detected": "mismatches=1"
       }
     },
@@ -1566,12 +1506,162 @@
       }
     },
     {
+      "id": "phys_fn_001273",
+      "rva": "0x00025530",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed ShapeBase::ShapeBase mHalfwordDE default from 8 to 9.",
+        "detected": "mismatches=15"
+      }
+    },
+    {
+      "id": "phys_fn_001277",
+      "rva": "0x000256f0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Replaced the +0xde halfword load with zero before writing descriptor record+0x38.",
+        "detected": "mismatches=6"
+      }
+    },
+    {
+      "id": "phys_fn_001329",
+      "rva": "0x00026d90",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Replaced ShapeBase::nxApplyGroup prunable mask assignment with zero.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_001347",
+      "rva": "0x00027740",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed the descriptor flags copy from +0x38 into shape+0xde to zero.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_001349",
+      "rva": "0x000277c0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed SphereShape constructor radius initializer at +0xe0 from 0.0f to 1.0f.",
+        "detected": "mismatches=4"
+      }
+    },
+    {
+      "id": "phys_fn_001353",
+      "rva": "0x00027850",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed the sphere descriptor-load radius store from r to r + 1.0f.",
+        "detected": "mismatches=2"
+      }
+    },
+    {
+      "id": "phys_fn_001355",
+      "rva": "0x000278a0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed SphereShape::nxSphereSaveState radius destination from record+0x4c to record+0x48.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_001357",
+      "rva": "0x000278c0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed SphereShape::nxSphereSetRadius to store radius + 1.0f instead of radius. The ObjectLayout oracle differential directly calls slot 14 with 1.25f; candidate output becomes rad=0x40100000 rather than 0x3fa00000.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_001359",
+      "rva": "0x00027920",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "In an isolated worktree, changed the SPHERE vtable slot-15 radius getter from returning [this+0xe0] to returning [this+0xe0] + 1.0f. The fixture directly calls internal slot 15 on a sphere with radius 1.0f.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_001361",
+      "rva": "0x00027930",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Added 1.0f to the first world-AABB output in SphereShape::nxSphereWorldAABB.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_001363",
+      "rva": "0x00027980",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed SphereShape::nxSphereCenterRadius slot 10 to return zero for out[3] instead of the stored radius.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_001365",
+      "rva": "0x000279b0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed the first output store in SphereShape::nxSphereZeroCenterRadius from 0.0f to 1.0f.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_001367",
+      "rva": "0x000279d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed the first local-AABB negative-radius store in SphereShape::nxSphereLocalAABB to positive radius.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
       "id": "phys_fn_001381",
       "rva": "0x00027e20",
       "proof": "oracle_differential_falsified",
       "gate": "NxPhysicsObjectLayoutTests",
       "falsification": {
         "mutation": "Changed MeshShape::nxMeshGetMeshWord from mesh+0xe4 to mesh+0xe0.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_001383",
+      "rva": "0x00027e30",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed the loaded mesh inner refcount increment from +1 to +2.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_001385",
+      "rva": "0x00027e60",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed MeshShape::nxMeshSaveState mesh-word source from mesh+0xe4 to mesh+0xe0.",
         "detected": "mismatches=1"
       }
     },
@@ -1596,23 +1686,33 @@
       }
     },
     {
-      "id": "phys_fn_001385",
-      "rva": "0x00027e60",
+      "id": "phys_fn_001391",
+      "rva": "0x00027f00",
       "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
+      "gate": "NxPhysicsShapeVtableTests",
       "falsification": {
-        "mutation": "Changed MeshShape::nxMeshSaveState mesh-word source from mesh+0xe4 to mesh+0xe0.",
+        "mutation": "In a throwaway git archive copy, changed BoxShape::nxBoxSelf from returning this to returning null; the Box slot-14 oracle/candidate identity check was the single failing case.",
         "detected": "mismatches=1"
       }
     },
     {
-      "id": "phys_fn_001383",
-      "rva": "0x00027e30",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
+      "id": "phys_fn_001941",
+      "rva": "0x0004ba80",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
       "falsification": {
-        "mutation": "Changed the loaded mesh inner refcount increment from +1 to +2.",
-        "detected": "mismatches=1"
+        "mutation": "Changed the kind byte written by nxPruningAddShape from 0 to 1 at shape+0xcf.",
+        "detected": "stdout_delta=58"
+      }
+    },
+    {
+      "id": "phys_fn_002318",
+      "rva": "0x0005a170",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In an isolated git-archive copy, removed the predecessor-link assignment in NxSceneInternal::releaseController, leaving the released middle controller linked from the surviving head.",
+        "detected": "stdout_delta=2"
       }
     },
     {
@@ -1626,141 +1726,31 @@
       }
     },
     {
-      "id": "phys_fn_000957",
-      "rva": "0x00020d40",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "Changed BoxHullFacade::supportFace (phys_fn_000957) to return face 0 for every input, then rebuilt the registered oracle differential.",
-        "detected": "mismatches=150"
-      }
-    },
-    {
-      "id": "phys_fn_000959",
-      "rva": "0x00020f90",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "Changed the no-edge arm of BoxHullFacade::supportFeature (phys_fn_000959) to report edgeWon=1 instead of 0.",
-        "detected": "mismatches=145"
-      }
-    },
-    {
-      "id": "phys_fn_000951",
-      "rva": "0x00020b20",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsShapeVtableTests",
-      "falsification": {
-        "mutation": "Changed BoxShape::nxBoxSweep (phys_fn_000951) to return false after a successful NxSegmentSlabs hit.",
-        "detected": "mismatches=60"
-      }
-    },
-    {
-      "id": "phys_fn_000949",
-      "rva": "0x00020880",
+      "id": "phys_fn_002421",
+      "rva": "0x0005c160",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsSceneRaycastTests",
+      "gate": "NxPhysicsBodyCreationTests",
       "falsification": {
-        "mutation": "Reversed BoxShape::nxBoxRaycast's flags&4 hit-normal hint branch to take the hint path when bit 2 is clear.",
-        "detected": "stdout_delta=508"
+        "mutation": "Omitted the indexed record-pointer write in nxSceneAuxRegisterRecord while preserving ID allocation and active-list bookkeeping.",
+        "detected": "stdout_delta=6"
       }
     },
     {
-      "id": "phys_fn_000985",
-      "rva": "0x00021a10",
+      "id": "phys_fn_004812",
+      "rva": "0x000b4070",
       "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
+      "gate": "NxPhysicsShapeVtableTests",
       "falsification": {
-        "mutation": "Changed BoxHullFacade::sharedHook from returning its stable zeroed block to returning nullptr.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_000991",
-      "rva": "0x00021b40",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed CapsuleShape::nxCapsuleSaveState's base-save tail-call result to false.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_001075",
-      "rva": "0x00023580",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "In the box-family CollisionObject constructor path, replaced the +0x18 owner back-pointer store with null.",
-        "detected": "mismatches=6"
-      }
-    },
-    {
-      "id": "phys_fn_001277",
-      "rva": "0x000256f0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Replaced the +0xde halfword load with zero before writing descriptor record+0x38.",
-        "detected": "mismatches=6"
-      }
-    },
-    {
-      "id": "phys_fn_001273",
-      "rva": "0x00025530",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed ShapeBase::ShapeBase mHalfwordDE default from 8 to 9.",
-        "detected": "mismatches=15"
-      }
-    },
-    {
-      "id": "phys_fn_001329",
-      "rva": "0x00026d90",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Replaced ShapeBase::nxApplyGroup prunable mask assignment with zero.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_001347",
-      "rva": "0x00027740",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed the descriptor flags copy from +0x38 into shape+0xde to zero.",
+        "mutation": "return a non-null pointer from ShapeBase::nxBaseSlot5 in the candidate; the direct oracle/candidate base-stub check rejected the return mismatch.",
         "detected": "mismatches=1"
       }
     }
   ],
   "deferred": [
     {
-      "id": "phys_fn_002324",
-      "rva": "0x0005a240",
-      "size": 500,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [
-        5
-      ],
-      "note": "The oracle vtable slot is NxBoxShapeDesc::isValid; its implementation is inline in Physics/include/NxBoxShapeDesc.h and is exercised through invalid-shape createShape cases. A row-targeted mutation has not yet been falsified."
-    },
-    {
       "id": "phys_fn_000010",
       "rva": "0x00001390",
       "size": 150,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000019",
-      "rva": "0x00001540",
-      "size": 32,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
@@ -1999,6 +1989,17 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_002324",
+      "rva": "0x0005a240",
+      "size": 500,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [
+        5
+      ],
+      "note": "The oracle vtable slot is NxBoxShapeDesc::isValid; its implementation is inline in Physics/include/NxBoxShapeDesc.h and is exercised through invalid-shape createShape cases. A row-targeted mutation has not yet been falsified."
     },
     {
       "id": "phys_fn_002326",
