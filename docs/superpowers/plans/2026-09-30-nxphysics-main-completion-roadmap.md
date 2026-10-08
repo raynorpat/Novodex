@@ -1,3 +1,15 @@
+### Continuation — controller release guard mutation closure (2026-10-08)
+
+Mutation-falsified Phase 5 row `phys_fn_002330` (`NxSceneInternal::releaseController`).
+Leaving the API reentry guard set after the first controller release makes the
+second release take the reentry-error path; the registered
+`NxPhysicsSimulationTests` differential failed on the mutant (`stdout_delta=2`,
+candidate exit 1). After restoring the guard reset and explicitly rebuilding
+`NxPhysics.dll`, the oracle/candidate differential returned to exact output
+(`stdout_delta=0`, both exit 0, exact stderr). Phase 5 now records 158 closed / 47
+deferred function rows; its 122 data rows remain undispositioned. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md`.
+
 ### Continuation — scene release deleting-destructor chain (2026-10-07)
 
 Added an allocator snapshot immediately after both public scene releases and

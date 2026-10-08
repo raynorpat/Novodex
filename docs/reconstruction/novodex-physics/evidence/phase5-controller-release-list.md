@@ -825,3 +825,13 @@ Changing the mesh-word source read from +0xe4 to +0xe0 yields `meshrows candidat
 
 Changing the inner mesh refcount increment from +1 to +2 produces `meshload candidate ok=0` and `layout candidate mismatches=1` (`build/phase5-001383-mutant.log`). Restoring +1 returns the expected mesh binding and refcount, zero mismatches, and differential-pass (`build/phase5-001383-restored.log`).
 `phys_fn_001383` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-mesh-load-001383.md`.
+
+
+### Controller release reentry-guard reset (`phys_fn_002330`)
+
+Changing the final `gNxApiReentry` reset in `NxSceneInternal::releaseController`
+to leave the guard set makes the second release take the reentry-error path.
+The registered `NxPhysicsSimulationTests` staged-pair differential detects the
+mutation (`phys_fn_002330`, `candidate_exit=1`, `stdout_delta=2`, exact stderr). Restoring the
+guard reset returns to `oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`,
+and exact stderr (`build/phase5-002330-restored.log`).

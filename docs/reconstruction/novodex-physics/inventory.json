@@ -42827,13 +42827,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp::NxSceneInternal::releaseController",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/867",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7299",
       "static_proof": "Ghidra RVA 0x0005a4b0 checks the Controller.cpp reentry guard, sets it, loads the embedded node from controller+4, calls phys_fn_002318 at 0x0005a170 to unlink the Scene list, dispatches the node deleting destructor when non-null, then clears the guard. NxSceneInternal::releaseController implements the same sequence; list unlink is inlined in the candidate method.",
-      "dynamic_proof": "NxPhysicsSimulationTests releases a non-head controller and then the remaining head, compares the oracle transcript, and checks the link is cleared with no error callbacks; stdout_delta=0 and stderr_exact=True.",
-      "notes": "The valid release path is dynamically exercised. Reentry and non-member error outcomes are supported by static evidence only; this row has not been independently falsified."
+      "dynamic_proof": "NxPhysicsSimulationTests releases a non-head controller and then the remaining head, compares the oracle transcript, and checks the link is cleared with no error callbacks; stdout_delta=0 and stderr_exact=True. NxPhysicsSimulationTests releases a non-head controller then the remaining head, verifies the controller list is unlinked, and compares exact oracle/candidate output. A mutation that leaves gNxApiReentry set after the first release is caught by the second release error path (candidate_exit=1, stdout_delta=2, stderr_exact=True); restoring the guard reset yields oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True (evidence/phase5-controller-release-list.md).",
+      "notes": "The valid release path and list unlink are differentially exercised. Leaving the reentry guard set after release is caught by the registered simulation differential (stdout_delta=2); see evidence/phase5-controller-release-list.md."
     },
     {
       "id": "phys_fn_002331",
