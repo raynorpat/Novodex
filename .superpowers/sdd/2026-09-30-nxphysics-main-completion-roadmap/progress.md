@@ -244,3 +244,8 @@ Fresh Win32 Release Phase 5 gate after closing `phys_fn_001355` and `phys_fn_001
 Task M2-001361/001367: closed the sphere world-AABB and local-AABB rows with the registered NxPhysicsObjectLayoutTests oracle differential. Adding 1.0f to the world-AABB minimum and reversing the local-AABB negative-radius sign each produce `mismatches=1`; both restored runs return baseline digests (`e2ba14a5`, `33c61825`) and zero mismatches. Phase 5 advances to 147 closed / 58 deferred. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-sphere-aabbs-001361-001367.md`.
 
 Fresh Win32 Release Phase 5 gate after closing `phys_fn_001361` and `phys_fn_001367` passed all 18 staged-pair targets, both oracle-differential targets, and 2,311/2,311 coverage assertions (`build/phase5-001361-001367-full-gate.log`). Inventory and both 80-file public-header roots validate.
+
+
+Task M2-000987/001247: closed the CapsuleShape and PlaneShape constructors with the registered NxPhysicsObjectLayoutTests oracle differential. Changing capsule half-height from 0.0f to 1.0f yields `mismatches=5`; changing plane distance from 0.0f to 1.0f yields `mismatches=3`. Both restored runs return their pinned digests and zero mismatches. Phase 5 advances to 149 closed / 56 deferred. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-shape-constructors-000987-001247.md`.
+
+Fresh Win32 Release Phase 5 gate after closing `phys_fn_000987` and `phys_fn_001247` passed all 18 staged-pair targets, both oracle-differential targets, and 2,311/2,311 coverage assertions (`build/phase5-000987-001247-full-gate.log`). Inventory and both 80-file public-header roots validate.

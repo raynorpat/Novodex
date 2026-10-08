@@ -762,3 +762,15 @@ The baseline `NxPhysicsObjectLayoutTests` oracle differential reports `aabbrows 
 
 The baseline `NxPhysicsObjectLayoutTests` oracle differential reports `sphlocal candidate ok=1`, digest `33c61825`, and zero layout mismatches (`build/phase5-001361-001367-baseline.log`). Changing the first negative-radius store to positive radius changes the digest to `f40ecfa5`, reports candidate ok=0 and `layout candidate mismatches=1`, and exits 1 (`build/phase5-001367-mutant.log`). Restoring the negation returns the baseline digest, zero mismatches, and differential-pass (`build/phase5-001367-restored.log`).
 `phys_fn_001367` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-sphere-aabbs-001361-001367.md`.
+
+
+### CapsuleShape constructor (`phys_fn_000987`)
+
+The baseline `NxPhysicsObjectLayoutTests` oracle differential reports capsule constructor digest `ba7317e3` and zero layout mismatches (`build/phase5-000987-001247-baseline.log`). Changing the half-height initializer at +0xe0 from 0.0f to 1.0f produces `layout candidate mismatches=5` and exits 1 (`build/phase5-000987-mutant.log`). Restoring zero returns the baseline digest, zero mismatches, and differential-pass (`build/phase5-000987-restored.log`).
+`phys_fn_000987` mutation detection: `mismatches=5`; restored output is exact (`mismatches=0`). See `evidence/phase5-shape-constructors-000987-001247.md`.
+
+
+### PlaneShape constructor (`phys_fn_001247`)
+
+The baseline `NxPhysicsObjectLayoutTests` oracle differential reports plane constructor digest `abed37e0`, zero distance, and zero layout mismatches (`build/phase5-000987-001247-baseline.log`). Changing the distance initializer at +0xec from 0.0f to 1.0f produces `layout candidate mismatches=3` and exits 1 (`build/phase5-001247-mutant.log`). Restoring zero returns the baseline digest, zero mismatches, and differential-pass (`build/phase5-001247-restored.log`).
+`phys_fn_001247` mutation detection: `mismatches=3`; restored output is exact (`mismatches=0`). See `evidence/phase5-shape-constructors-000987-001247.md`.
