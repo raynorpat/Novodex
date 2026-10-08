@@ -1419,3 +1419,8 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 
 - `phys_fn_000116` is mutation-falsified by the registered `NxPhysicsObjectLayoutTests` actorctor member-thunk call. Suppressing flags forwarding prevents the adjusted flag-1 free (`adjFreed=0; mismatches=1`); restoring flags returns lifecycle digest `19f4915a` with zero mismatches.
 - Phase 5 advances to 182 closed / 23 reconstructed-but-unfalsified rows. The fresh full Phase 5 gate passes all 19 targets and 2,565/2,565 assertions (`build/phase5-actor-dtor-thunk-final.log`). No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-actor-dtor-thunk-000116.md`.
+
+### Continuation — actor name binding mutation closures and approved Viewer selection (2026-10-08)
+
+- Oracle review confirmed `phys_fn_000086` and `phys_fn_000088` use the body-keyed SDK pointer-binding table under the read and write-try guards. The candidate source already matches; stale unit notes describing a missing lock and separate name map were corrected. A null-return getter mutation and a no-op setter mutation were each caught by `NxPhysicsActorNameTests` (`stdout_delta=8`); the restored differential is exact.
+- Phase 5 advances to 190 closed / 15 reconstructed-but-unfalsified rows. The full Phase 5 gate passes all 19 staged targets and 2,567/2,567 coverage assertions (`build/phase5-name-closure.log`). The approved Viewer selection remains an additional gate over all 39 checked-in scenes, with its five signature-verified pinned-oracle asset failures skipped; the latest recorded selection passed 48/48 cases. Public Physics headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-actor-name-000086-000088.md`.

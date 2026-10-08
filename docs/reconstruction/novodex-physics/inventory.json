@@ -1636,12 +1636,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/32",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/188",
       "static_proof": "guarded SDK pointer-binding lookup (phys_fn_000454) keyed on the body pointer",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsActorNameTests: changing NpActorVtable::getName to return null is caught by the staged-pair differential (stdout_delta=8); restored output is exact. See evidence/phase5-actor-name-000086-000088.md.",
       "notes": ""
     },
     {
@@ -1672,12 +1672,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/33",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/189",
       "static_proof": "guarded SDK pointer-binding WRITE keyed on the body pointer (phys_fn_000480) under the write guard; a failed upgrade reports kind 2 from NpActor.cpp line 0x1ff and skips without binding",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsActorNameTests: skipping NpActorVtable::setName pointer-binding write is caught by the staged-pair differential (stdout_delta=8); restored output is exact. See evidence/phase5-actor-name-000086-000088.md.",
       "notes": ""
     },
     {

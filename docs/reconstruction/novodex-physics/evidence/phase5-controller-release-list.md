@@ -932,3 +932,9 @@ The public `NxPhysicsBodyCreationTests` route verifies the Scene auxiliary recor
 `NxPhysicsActorShapeMutationTests` asserts the single-root public array address and kind-5 group public-array address. Mutating either return arm independently fails its exact pointer assertion (`stdout_delta=311` for single root, `stdout_delta=308` for group); the restored staged-pair differential is exact (`stdout_delta=0`, exact stderr). Details and hashes: `evidence/phase5-get-shapes-000084.md`.
 
 `phys_fn_000084` mutation detection: single-root `stdout_delta=311` and group-array `stdout_delta=308`; both mutants were rejected, and the restored public-DLL differential is exact.
+
+## Actor name getter and setter: `phys_fn_000086` and `phys_fn_000088`
+
+IDA confirms both rows use the SDK pointer-binding table keyed by `[actor+0x14]`: getter lookup at oracle RVA `0x0000df90`, setter binding at `0x0000edc0`. `NxPhysicsActorNameTests` caught an actor getter forced to return null and a setter changed to skip its binding write; each produced `stdout_delta=8` with equal zero exits and exact stderr. The restored candidate returned to `stdout_delta=0` with exact stderr. Details and DLL identity: `evidence/phase5-actor-name-000086-000088.md`.
+
+`phys_fn_000086` mutation detection: `stdout_delta=8`; restored differential is exact. `phys_fn_000088` mutation detection: `stdout_delta=8`; restored differential is exact.

@@ -3493,26 +3493,26 @@ void NpActorVtable::saveToDesc(NxActorDescBase& desc)
 	nxNpSceneGuardLeave(ctx);
 	}
 
-// Concrete actor slots 83/84 address the same body-keyed global name map as
-// Actor::loadFromDescInternal (oracle 0x2d90/0x2d60).
+// Concrete actor slots 83/84 address the same body-keyed SDK pointer-binding
+// table as Actor::loadFromDescInternal (oracle 0x2d90/0x2d60).
 // phys_fn_000088 (0x00002d90, 91 B)
-// Under the write lock (G1 line 0x1ff), as 0x2d90-0x2de1 are; which table
-// the name is bound in is a row-level defect of its own.
+// The oracle write-locks, binds the body/name pair, and unlocks. The lock
+// failure reports kind 2 at line 0x1ff and skips the binding.
 void NpActorVtable::setName(const char* name)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
 	if(!nxNpActorWriteTry(ctx, 0x1ff)) return;
 	unsigned char* body = *reinterpret_cast<unsigned char**>(
 		reinterpret_cast<unsigned char*>(this) + 0x14);
-	// 0x2dce-0x2dd7: the name table call (0x1000edc0) takes [actor+0x14]
+	// 0x2dce-0x2dd7: the binding-table call (0x1000edc0) takes [actor+0x14]
 	// with no null test.
 	nxShapeSetName(body, name);
 	nxNpSceneGuardLeave(ctx);
 	}
 
 // phys_fn_000086 (0x00002d60, 40 B)
-// Under the read lock (NG, Task 3); which table the name is looked up in is
-// the row's remaining defect.
+// The oracle read-locks, looks up the body pointer in the SDK pointer-binding
+// table, and unlocks.
 const char* NpActorVtable::getName() const
 	{
 	NxNpActorReadGuard guard(this);

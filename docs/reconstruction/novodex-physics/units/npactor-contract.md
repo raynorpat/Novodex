@@ -162,8 +162,8 @@ NxPhysicsDynamicFirstTests reaches only the 000118 counterpart.
 | 000080 | 0x00002c90 | 103 | reconstructed | slot 80 readBodyFlag | NpActor.cpp:2517 `readBodyFlag`; OM ObjectModel.cpp:3773 | implemented | faithful | 6: ActorBodyFlag 6 | NA: E1 0x1e3 reproduced by Task 2. OM faithful |
 | 000082 | 0x00002d00 | 36 | dynamically_gated | slot 15 getNbShapes | NpActor.cpp:1549 `getNbShapes`; OM ObjectModel.cpp:914 | implemented | faithful | 6: ActorLifecycle 3, ActorShapeMutation 3 | Row mutation in `NxPhysicsActorShapeMutationTests`: single-root return 1→2 rejected (`stdout_delta=313`); restored output exact. See `evidence/phase5-get-nb-shapes-000082.md`. |
 | 000084 | 0x00002d30 | 36 | dynamically_gated | slot 16 getShapes | NpActor.cpp:1566 `getShapes`; OM ObjectModel.cpp:926 | implemented | faithful | 14: ActorDynamicSetter 5, ActorLifecycle 5, ActorName 1, ActorShapeMutation 3 | Independent single-root and kind-5 public-array pointer mutations fail their `NxPhysicsActorShapeMutationTests` assertions (`stdout_delta=311` / `308`); restored output exact. See `evidence/phase5-get-shapes-000084.md`. |
-| 000086 | 0x00002d60 | 40 | reconstructed | slot 84 getName | NpActor.cpp:2580 `getName`; OM ObjectModel.cpp:939 | implemented | defect (X) | 5: ActorName 5 | NA: Task 3 added the read lock (NG). Open: reads gNxShapeNames, not 000454 binding table (candidate gPointerBindings). OM faithful |
-| 000088 | 0x00002d90 | 91 | reconstructed | slot 83 setName | NpActor.cpp:2573 `setName`; OM ObjectModel.cpp:1221 | implemented | defect (X) | 3: ActorName 3 | NA: Task 2: write-try, G1 0x1ff and unlock added. Open: writes gNxShapeNames not 000480's table. OM faithful |
+| 000086 | 0x00002d60 | 40 | dynamically_gated | slot 84 getName | NpActor.cpp:3516 `getName`; OM ObjectModel.cpp:939 | implemented | faithful | 5: ActorName 5 | Read lock and body-keyed SDK pointer-binding lookup match the oracle. Null-result mutation caught (`stdout_delta=8`); restored differential exact. See `evidence/phase5-actor-name-000086-000088.md`. |
+| 000088 | 0x00002d90 | 91 | dynamically_gated | slot 83 setName | NpActor.cpp:3501 `setName`; OM ObjectModel.cpp:1221 | implemented | faithful | 3: ActorName 3 | Write-try lock, G1 0x1ff failure report, body-keyed SDK pointer-binding write, and unlock match the oracle. No-op mutation caught (`stdout_delta=8`); restored differential exact. See `evidence/phase5-actor-name-000086-000088.md`. |
 | 000090 | 0x00002df0 | 211 | reconstructed (Task 7) | slot 11 moveGlobalPosition | NpActor.cpp:1147 `moveGlobalPosition` | implemented | faithful | 3: ActorDynamics 3 | Task 3: the target is the input plus the unrotated local mass position +0x100 (each sum rounded), written by 000784 (ORs 1, no null test) with its wake; G1 0x29e and E1 0x2a1 from Task 2 |
 | 000092 | 0x00002ed0 | 90 | reconstructed | slot 6 getGlobalPositionVal | NpActor.cpp:955 `getGlobalPositionVal`; OM ObjectModel.cpp:1240 | implemented | faithful | 22: ActorCMass 6, ActorDynamicSetter 8, ActorDynamics 3, ActorLifecycle 5 | NA: Task 3 added the read lock (NG) and dropped the body null test the oracle lacks. OM faithful |
 | 000094 | 0x00002f30 | 517 | reconstructed | slot 8 getGlobalOrientationQuatVal | NpActor.cpp:1082 `getGlobalOrientationQuatVal`; OM ObjectModel.cpp:3203 | implemented | faithful | 3: ActorLifecycle 3 | NA: Task 3 added the read lock (NG); the static arm uses the setter conversion (0x2f77-0x3109, (m11 + m22) spilled, z arm over float(s), x/y arms with the reciprocal spilled). OM: no guard, trace/case association, spills and NaN arm differ (the OM form, not the NA path) |
@@ -2247,25 +2247,20 @@ Additional cross-cutting tags used in this review:
 #### phys_fn_000086 (0x2d60, 40 B) -- getName (slot 84)
 - candidate:
   - OM `nxActorBoundTarget` ObjectModel.cpp:941, with `nxGetSdkPointerBinding` Physics/src/PhysicsInternal.cpp:184
-  - NA `NpActorVtable::getName` NpActor.cpp:2580, with `nxShapeGetName` NpActor.cpp:450
-- status: both implemented.
-- verdict: OM faithful; NA defect (NG, plus a different table).
-- blocks checked: 0x2d60-0x2d87. Read guard, 000454([this+0x14]) (cdecl, add esp 4), unguard.
-- defects (NA):
-  - 0x2d69/0x2d7e: no read guard.
-  - 0x2d72: the oracle looks the name up in 000454's SDK pointer-binding table (candidate `gPointerBindings`, the same table joint names use). NA reads a separate `gNxShapeNames` table.
-  - The lookup semantics (linear scan, miss gives 0) match.
+  - NA `NpActorVtable::getName` Physics/src/NpActor.cpp:3516, through `nxShapeGetName` and `nxGetSdkPointerBinding`
+- status: both implemented and dynamically gated.
+- verdict: OM and NA faithful.
+- blocks checked: 0x2d60-0x2d87. Read guard, 000454([this+0x14]) (cdecl, add esp 4), unguard. The body pointer is looked up in the same SDK pointer-binding table used for actor descriptor names, shape names, and joint names.
+- mutation: returning null instead of the binding lookup is caught by `NxPhysicsActorNameTests` (`stdout_delta=8`); restored output is exact. See `evidence/phase5-actor-name-000086-000088.md`.
 
 #### phys_fn_000088 (0x2d90, 91 B) -- setName (slot 83)
 - candidate:
   - OM `nxActorSetBoundTarget` ObjectModel.cpp:1224, with `nxSetSdkPointerBinding` PhysicsInternal.cpp:205
-  - NA `NpActorVtable::setName` NpActor.cpp:2573, with `nxShapeSetName` NpActor.cpp:392
-- status: both implemented.
-- verdict: OM faithful; NA defect.
-- blocks checked: 0x2d90-0x2dc7 write-try on [this+0xc], plus G1 report line 0x1ff; 0x2dca-0x2de8 000480(body, name), then unguard.
-- defects (NA):
-  - 0x2d96-0x2dc7 and 0x2de1: NA takes no write-try, makes no G1 report (line 0x1ff) and does no unlock.
-  - 0x2dd7: NA writes `gNxShapeNames`, not 000480's binding table. Table semantics match 000480: null value removes the entry, freeing the table on last removal; the table is created only for a non-null value; growth is 2n+2.
+  - NA `NpActorVtable::setName` Physics/src/NpActor.cpp:3501, through `nxShapeSetName` and `nxSetSdkPointerBinding`
+- status: both implemented and dynamically gated.
+- verdict: OM and NA faithful.
+- blocks checked: 0x2d90-0x2dc7 write-try on [this+0xc], plus G1 report line 0x1ff; 0x2dca-0x2de8 000480(body, name), then unguard. A null name removes the binding; the table is created only for a non-null value.
+- mutation: making the binding write a no-op is caught by `NxPhysicsActorNameTests` (`stdout_delta=8`); restored output is exact. See `evidence/phase5-actor-name-000086-000088.md`.
 
 #### phys_fn_000092 (0x2ed0, 90 B) -- getGlobalPositionVal (slot 6)
 - candidate:
