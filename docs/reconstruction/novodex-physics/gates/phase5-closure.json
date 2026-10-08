@@ -21,9 +21,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 103,
+    "differential_falsified": 104,
     "oracle_differential_falsified": 32,
-    "deferred_reconstructed_not_falsified": 69,
+    "deferred_reconstructed_not_falsified": 68,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -1402,18 +1402,19 @@
         "mutation": "Added 1.0f to centre[0] in nxNpActorUpdateMassFrame before storing the world mass center at DynamicBody+0x158.",
         "detected": "stdout_delta=184"
       }
-    }
-  ],
-  "deferred": [
+    },
     {
       "id": "phys_fn_000797",
       "rva": "0x0001b5c0",
-      "size": 402,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsBodyCreationTests",
+      "falsification": {
+        "mutation": "Added one word to the saved world-center copy at DynamicBody+0x230 in DynamicBody::construct.",
+        "detected": "stdout_delta=12"
+      }
+    }
+  ],
+  "deferred": [
     {
       "id": "phys_fn_000801",
       "rva": "0x0001b7a0",

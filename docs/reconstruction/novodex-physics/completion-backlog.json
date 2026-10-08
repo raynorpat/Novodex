@@ -89,10 +89,10 @@
       },
       "5": {
         "phase": 5,
-        "closed_rows": 136,
-        "deferred_rows": 69,
+        "closed_rows": 137,
+        "deferred_rows": 68,
         "deferred_reasons": {
-          "reconstructed_not_falsified": 69
+          "reconstructed_not_falsified": 68
         }
       },
       "6": {
@@ -160,8 +160,8 @@
         "rows_without_implementation_mapping": 58,
         "rows_with_unresolved_indirect_calls": 112,
         "by_state": {
-          "dynamically_gated": 135,
-          "reconstructed": 69,
+          "dynamically_gated": 136,
+          "reconstructed": 68,
           "statically_reviewed": 1
         }
       },
@@ -1320,7 +1320,7 @@
           {
             "id": "phys_fn_000797",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -34779,7 +34779,7 @@
       "size": 402,
       "phase": 5,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_000797",
       "implementation": {
         "path": "Physics/src/BodyCreation.cpp",
@@ -34794,7 +34794,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsBodyCreationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -34854,22 +34854,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 5,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsBodyCreationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000797",
         "rva": "0x0001b5c0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -230740,7 +230740,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "8f546da804c3acc6ca568dfec19efcabad245a8f33734c413e970d810a810988",
+    "inventory_sha256": "ca614c01e4988cb436a12fe7424936950600fb1f4fcc7d178cbf593252e5ca69",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "878138fee7926d27bc239170adb34e162288d7255a7cb4fffc0687ae8b231d60",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
@@ -230748,7 +230748,7 @@
       "docs/reconstruction/novodex-physics/gates/phase2-closure.json": "35d23d5095f7367fac9e0a2683b78a75708d3e9d3b4fa8821ea6a2f66721d4ad",
       "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "07216a93b627ff11ae142e2cdd6f82f7e2d77cc067b2c89e74d8393fcc388e3d",
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "da77e315cbe8ac0fb86f9954e65972d69e36769a907bb2abfa06af2fa3fb9775",
-      "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "36cfdbd62d13122ade9d579a435bcd988f1f00dd88e603684dc31d8a5149f5e9",
+      "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "85f1a6944be8b335a9f657d6df581f72faf8851313e48804258ebfd67b692e07",
       "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "8a7434ec2b092b85b9e8803935722832c9a2404f9f2437d671867625b0813e3c",
       "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "8bc47d5cb8963fd6746edd4ba8b0207b75670c6249e5371db7385ae648978aee"
     }

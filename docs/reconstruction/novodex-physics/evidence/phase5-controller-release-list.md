@@ -696,3 +696,9 @@ Baseline and restored `NxPhysicsBodyCreationTests` staged-pair runs are exact (`
 
 The baseline and restored `NxPhysicsActorCMassTests` staged-pair runs are exact (`stdout_delta=0`, `stderr_exact=True`; `build/phase5-000768-baseline.log`, `build/phase5-000768-restored.log`). Adding 1.0f to the refreshed world-center X in `nxNpActorUpdateMassFrame` is caught with `stdout_delta=184`; both mutant processes exit 0 and stderr is exact (`build/phase5-000768-mutant.log`).
 `phys_fn_000768` mutation detection: `stdout_delta=184`; restored output is exact (`stdout_delta=0`, `stderr_exact=True`).
+
+
+### Dynamic-body record constructor (`phys_fn_000797`)
+
+Baseline and restored `NxPhysicsBodyCreationTests` staged-pair runs are exact (`stdout_delta=0`, `stderr_exact=True`; `build/phase5-000797-baseline.log`, `build/phase5-000797-restored.log`). Adding one word to the saved world-center copy at +0x230 in `DynamicBody::construct` is caught with `stdout_delta=12`; both mutant processes exit 0 and stderr is exact (`build/phase5-000797-mutant.log`).
+`phys_fn_000797` mutation detection: `stdout_delta=12`; restored output is exact (`stdout_delta=0`, `stderr_exact=True`).
