@@ -25,7 +25,7 @@
     {
       "name": "build_and_phase_gate",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 5",
-      "result": "Pending fresh mainline gate after this evidence commit; prior full Phase 5 gate passed all 18 staged-pair targets and 2,308/2,308 coverage assertions at 116 closed / 89 deferred."
+      "result": "Fresh mainline Win32 Release Phase 5 gate passed all 18 staged-pair targets, static/oracle proofs, and 2,308/2,308 coverage assertions after closing phys_fn_000927. Closure is 117 closed / 88 deferred. Public headers remain unchanged."
     },
     {
       "name": "viewer_all_scenes",
