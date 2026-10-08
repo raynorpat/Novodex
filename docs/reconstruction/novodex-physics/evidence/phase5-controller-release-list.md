@@ -807,3 +807,9 @@ Changing the mesh-data read from +0xe4 to +0xe0 produces `morerows candidate okM
 
 Changing the source offset from mesh +0x5c to +0x60 yields `meshrows candidate ok=0` and `layout candidate mismatches=1` (`build/phase5-001387-mutant.log`). Restoring +0x5c returns the expected digest and words, zero mismatches, and differential-pass (`build/phase5-001387-restored.log`).
 `phys_fn_001387` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-mesh-words5c-001387.md`.
+
+
+### Mesh slot-8 six-word getter (`phys_fn_001389`)
+
+Changing the source offset from mesh +0x44 to +0x48 yields `meshwords44 candidate ok=0` and `layout candidate mismatches=1` (`build/phase5-001389-mutant.log`). Restoring +0x44 returns the expected digest and words, zero mismatches, and differential-pass (`build/phase5-001389-restored.log`).
+`phys_fn_001389` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-mesh-words44-001389.md`.
