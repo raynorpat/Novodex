@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "phase": 5,
-  "note": "Phase 5 owns 205 function rows and 122 data objects. 95 function rows are closed by registered staged-pair mutations, including the actor layout, lifecycle, force/momentum, pose, center-of-mass, and kinematic paths. Twenty-nine function rows are closed by oracle differentials for shape-vtable, object-layout, base-shape, and shape-growth behaviors; one range-iteration row is closed by a static mutation proof. The eight center-of-mass setters phys_fn_000206, 000208, 000210, 000212, 000214, 000218, 000220, and 000222 are independently caught by NxPhysicsActorCMassTests (evidence/phase5-cmass-setter-mutations-000206-000222.md). 55 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 Phase 5 function rows; the 122 data objects remain separately classified as described by their inventory records. The global actor pose setters phys_fn_000196, 000198, 000200, and 000202, and CMass global pose setter phys_fn_000204, were independently mutation-falsified by NxPhysicsActorCMassTests; restored output is exact. The separate 163-byte tail row phys_fn_000216 is mutation-falsified on the registered DynamicSetter error-report case (stdout_delta=4; evidence/phase5-cmass-orientation-tail-000216.md).",
+  "note": "Phase 5 owns 205 function rows and 122 data objects. 95 function rows are closed by registered staged-pair mutations, including the actor layout, lifecycle, force/momentum, pose, center-of-mass, and kinematic paths. Twenty-nine function rows are closed by oracle differentials for shape-vtable, object-layout, base-shape, and shape-growth behaviors; one range-iteration row is closed by a static mutation proof. The eight center-of-mass setters phys_fn_000206, 000208, 000210, 000212, 000214, 000218, 000220, and 000222 are independently caught by NxPhysicsActorCMassTests (evidence/phase5-cmass-setter-mutations-000206-000222.md). 54 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 Phase 5 function rows; the 122 data objects remain separately classified as described by their inventory records. The global actor pose setters phys_fn_000196, 000198, 000200, and 000202, and CMass global pose setter phys_fn_000204, were independently mutation-falsified by NxPhysicsActorCMassTests; restored output is exact. The separate 163-byte tail row phys_fn_000216 is mutation-falsified on the registered DynamicSetter error-report case (stdout_delta=4; evidence/phase5-cmass-orientation-tail-000216.md).",
   "proof_kinds": {
     "differential_falsified": "A candidate mutation was caught by its registered staged-pair differential. The recorded nonzero stdout_delta, cases or digests count is measured from captured child output; the runner also requires exact stderr and equal exit codes for a passing differential, and compares exit codes so a crash mutant is rejected even when output is partial. The local force-at-position wrappers phys_fn_000154, phys_fn_000156, and phys_fn_000158 are independently caught by NxPhysicsActorForceTests. The local force and torque entry points phys_fn_000160 and phys_fn_000162 are independently caught by NxPhysicsActorForceTests. The actor mass, inertia, linear damping, and angular damping setters phys_fn_000166, phys_fn_000168, phys_fn_000170, and phys_fn_000172 are independently caught by NxPhysicsActorDynamicSetterTests. The actor velocity and momentum setters phys_fn_000174, phys_fn_000176, phys_fn_000178, phys_fn_000180, and phys_fn_000182 are independently caught by their registered DynamicSetter and Momentum differentials. The global actor pose setters phys_fn_000196, phys_fn_000198, phys_fn_000200, and phys_fn_000202, and CMass global pose setter phys_fn_000204, are independently caught by NxPhysicsActorCMassTests. The eight center-of-mass setters phys_fn_000206, 000208, 000210, 000212, 000214, 000218, 000220, and 000222 are independently caught by registered NxPhysicsActorCMassTests mutations at the setter stores; each mutant has equal zero exits and exact stderr, and the restored transcript is exact. The phys_fn_000216 orientation error-report tail is independently caught on NxPhysicsActorDynamicSetterTests with stdout_delta=4 and exact restored output. The sphere internal slot-15 radius getter phys_fn_001359 is caught by a direct vtable call in NxPhysicsActorDynamicSetterTests (stdout_delta=2; both child exits 0; exact stderr; restored output exact). The capsule slot-14 radius setter phys_fn_000995 is caught by NxPhysicsActorDynamicSetterTests after mutating its +0xe0 store to radius + 1.0f (stdout_delta=4; restored output exact). Sphere center-radius slot 10 phys_fn_001363, capsule center-radius slot 10 phys_fn_001001, and capsule local-AABB slot 8 phys_fn_001004 are independently caught by NxPhysicsActorDynamicSetterTests (each stdout_delta=2; equal zero exits and exact stderr; each restored output exact). Sphere mass-frame construction phys_fn_000851 and capsule mass-frame construction phys_fn_000853 are independently caught by NxPhysicsActorMassTests: radius + 1.0f mutations produce stdout_delta=16 and 18 respectively; each restored transcript is exact.",
     "static_proof_falsified": "The NxPhysicsRangeIterationTests mutation changed reverse stepping to forward stepping; its named checks caught the broken visitation order, callback result, and negative-stride behavior for phys_fn_000002.",
@@ -22,8 +22,8 @@
   },
   "counts": {
     "differential_falsified": 106,
-    "oracle_differential_falsified": 43,
-    "deferred_reconstructed_not_falsified": 55,
+    "oracle_differential_falsified": 44,
+    "deferred_reconstructed_not_falsified": 54,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -1542,6 +1542,16 @@
         "mutation": "Changed SphereShape constructor radius initializer at +0xe0 from 0.0f to 1.0f.",
         "detected": "mismatches=4"
       }
+    },
+    {
+      "id": "phys_fn_000981",
+      "rva": "0x00021990",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed the first box dimension read at +0x21998 from record+0x4c to record+0x50.",
+        "detected": "mismatches=1"
+      }
     }
   ],
   "deferred": [
@@ -1762,15 +1772,6 @@
       "size": 69,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000981",
-      "rva": "0x00021990",
-      "size": 55,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },

@@ -207,7 +207,9 @@ p=base/'gates/phase5-closure.json'
 d=json.loads(p.read_text(encoding='utf-8'))
 d['deferred']=[r for r in d['deferred'] if r['id'] not in {'phys_fn_000112','phys_fn_000114'}]
 d['counts']['deferred_reconstructed_not_falsified']=len([r for r in d['deferred'] if r['reason']=='reconstructed_not_falsified'])
-p.write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n',encoding='utf-8',newline='\n')
+p.write_text(json.dumps(d,indent=2,ensure_ascii=False)+'
+',encoding='utf-8',newline='
+')
 PY
 @'
 - `phys_fn_000112`: wrong `setGroup` write offset caught with `stdout_delta=2`.
@@ -780,3 +782,10 @@ The baseline `NxPhysicsObjectLayoutTests` oracle differential reports plane cons
 
 The baseline `NxPhysicsObjectLayoutTests` oracle differential reports sphere constructor digest `37ea7205`, radius zero, and zero layout mismatches (`build/phase5-001349-baseline.log`). Changing the radius initializer at +0xe0 from 0.0f to 1.0f produces `layout candidate mismatches=4` and exits 1 (`build/phase5-001349-mutant.log`). Restoring zero returns the baseline digest, zero mismatches, and differential-pass (`build/phase5-001349-restored.log`).
 `phys_fn_001349` mutation detection: `mismatches=4`; restored output is exact (`mismatches=0`). See `evidence/phase5-sphere-constructor-001349.md`.
+
+
+### BoxShape descriptor load (`phys_fn_000981`)
+
+Changing the first dimension read at +0x21998 from descriptor +0x4c to +0x50 produces `boxload candidate ok=0` and `layout candidate mismatches=1` (`build/phase5-000981-mutant.log`). Restoring +0x4c returns `boxload candidate ok=1`, zero mismatches, and differential-pass (`build/phase5-000981-restored.log`).
+
+`phys_fn_000981` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-box-load-000981.md`.
