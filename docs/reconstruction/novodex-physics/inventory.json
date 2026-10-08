@@ -42655,12 +42655,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/864",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7287",
       "static_proof": "cached-list destroyer under no guard: walks the +0x5a8 cache chain via each node's +0x30 link, deleting through the node's own virtual slot 0 with argument 1; cache field nulled between iterations",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly compares two linked cached nodes against the pinned NxPhysics.dll; omitting the virtual slot-0 kill yields mismatches=1; restored digest 7a409e75.",
       "notes": ""
     },
     {

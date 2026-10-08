@@ -965,3 +965,10 @@ IDA confirms both rows use the SDK pointer-binding table keyed by `[actor+0x14]`
 `NxPhysicsBodyCreationTests` compares the public actor-creation record after copying a descriptor whose solver iteration count is seven. Shortening the copy from `0x78` to `0x74` bytes omits that field and is caught with `stdout_delta=2`, equal zero exits, and exact stderr; restored output is exact. See `evidence/phase5-actor-body-desc-copy-000010.md`.
 
 `phys_fn_000010` mutation detection: `stdout_delta=2`; restored public-DLL differential is exact (`stdout_delta=0`, exact stderr).
+
+
+## Cached-list destroyer `phys_fn_002320`
+
+The Phase 5 object-layout fixture now plants the second node at the actual `+0x30` link offset (word 12), on both oracle and candidate paths. The clean differential invokes the node destroy callback twice and matches at digest `7a409e75`. A deliberate omission of `nxDestroyCachedList`'s virtual slot-0 call for `phys_fn_002320` was rejected by `NxPhysicsObjectLayoutTests` (`slate11 candidate ok=0`, `layout candidate mismatches=1` / `mismatches=1`, exit 1); restoring the call returned the exact baseline (exit 0). IDA pseudocode at `0x1005a1e0` confirms the loop reads and clears the node link at `+0x30`, dispatches slot 0 with argument 1, and advances through the saved link.
+
+The fresh full Phase 5 gate passes all 19 staged targets, the registered static proof, and 2,567/2,567 coverage assertions (`build/phase5-cached-list-002320-full.log`). After building the Viewer targets, the approved all-scenes suite passes 48/48 selected CTests; it covers 39 available scene entrypoints and retains five known pinned-oracle asset skips (`build/viewer-all-scenes-cached-list-002320.log`). Inventory now records Phase 5 at 196 closed / 9 deferred, with all 6,338 functions and 5,138 data objects accounted for and zero unexplained bytes.

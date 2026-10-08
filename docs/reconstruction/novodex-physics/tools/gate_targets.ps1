@@ -5077,7 +5077,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # Slate 11: pool-class lifecycle rows -- chained dtor, its adjustor
         # thunk, and the CRT-free dtor; all on stack blocks with flags=0
         # (no allocator interaction).
-        'slate11 row=oracle digest=2a145f64',
+        'slate11 row=oracle digest=7a409e75',
         # phys_fn_002379: virtual slot-1 wrapper -- four drives over two
         # receivers with distinct vtables: slot-1 dispatch (slot 0 silent),
         # receiver identity, exactly-once, discarded callback result.
@@ -5099,7 +5099,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
         'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 applydesc=1',
         'applydesc row=phys_fn_001347 result=1 digest=11e5e856 flags=1234 group=5 material=5678',
-        'layout oracle digest=3e13e0a3',
+        'layout oracle digest=774d629d',
         'hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5',
         'hull sharedhook candidate ok=1 stable=1',
         'basesave candidate ok=1 digest=bc9dc964',
@@ -5146,7 +5146,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'actorsm7 candidate ok=1 digest=0b4b17e4'
         'miscsm candidate ok=1 digest=9460eb64'
         'miscsm2 candidate ok=1 digest=c4bc7155'
-        'slate11 candidate ok=1 digest=2a145f64'
+        'slate11 candidate ok=1 digest=7a409e75'
         'slot1wrapper candidate cases=4 failures=0 mismatches=0 digest=05167dcd'
         'addthunk candidate failures=0 mismatches=0 digest=f9aac08b'
         'shapeleaf candidate ok=1 digest=cb0e48f9'
