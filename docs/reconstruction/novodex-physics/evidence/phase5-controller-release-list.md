@@ -903,3 +903,11 @@ The `phys_fn_000044` actor-construction tail final-vtable mutation produces `mis
 The `phys_fn_000118` actor deleting-destructor final wall-vtable mutation breaks both direct and +8-adjustor observations (`mismatches=1`); restoring `0x101043d0` returns lifecycle digest `19f4915a`. See `evidence/phase5-actor-dtor-000118.md`.
 
 The `phys_fn_000116` -8 actor member adjustor's flags-forwarding mutation prevents the adjusted flag-1 free (`adjFreed=0; mismatches=1`); restored flags preserve digest `19f4915a`. See `evidence/phase5-actor-dtor-thunk-000116.md`.
+
+
+## Actor vtable wrappers: `phys_fn_000038` and `phys_fn_000040`
+
+`NxPhysicsObjectLayoutTests` independently falsifies both actor wrapper slot selections. Routing `nxActorVtThunk104` through slot `0x108` instead of `0x104` yields `mismatches=1`; routing `nxActorVtThunk108` through slot `0x104` instead of `0x108` also yields `mismatches=1`. The vtable fixture spans through slot `0x108`, and the restored direct oracle differential reports zero candidate failures and `layout result=differential-pass`.
+
+- `phys_fn_000038` mutation detection: routing the slot `0x104` wrapper through `0x108` is caught with `mismatches=1`; restored candidate failures are zero.
+- `phys_fn_000040` mutation detection: routing the slot `0x108` wrapper through `0x104` is caught with `mismatches=1`; restored candidate failures are zero.

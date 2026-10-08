@@ -5136,6 +5136,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'pairrm candidate ok=1 digest=f0bdae43',
         'actorsm candidate ok=1 digest=1bdc2fa8',
         'actorctor candidate ok=1 ct=1/1/1/1/1 dd=1/1/1 adj=1/1/1 w=1/1/1 digest=19f4915a',
+        'actorthunk candidate failures=0 rows=phys_fn_000038,phys_fn_000040',
         'actorsm2 candidate ok=1 energy=4240985d/4240985d digest=f3e3d65f',
         'actorsm3 candidate ok=1 lin=3eb33333 ang=3e000000 digest=5bc8156a'
         'actorsm4 candidate ok=1 digest=0ecc5ea9'
@@ -5581,7 +5582,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2565  # exact registered Phase 5 coverage-line count
+    '5' = 2566  # exact registered Phase 5 coverage-line count
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths

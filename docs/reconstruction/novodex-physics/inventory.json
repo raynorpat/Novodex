@@ -761,12 +761,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "actor vtable thunk, slot 0x104 (0x2400, ret 8)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/17",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/127",
       "static_proof": "calls [adapter_vtable+0x104] with two args and copies 3 dwords from the result to the caller buffer; __thiscall ret 8",
-      "dynamic_proof": "confirmed via actorthunk differential (3z121): slot 0x104 failures=0",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests independent slot mutation detected mismatches=1; restored differential pass (0x104)",
       "notes": ""
     },
     {
@@ -797,12 +797,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "actor vtable thunk, slot 0x108 (0x2430, ret 8)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/18",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/128",
       "static_proof": "calls [adapter_vtable+0x108] with two args and copies 3 dwords from the result to the caller buffer; __thiscall ret 8",
-      "dynamic_proof": "confirmed via actorthunk differential (3z121): slot 0x108 failures=0",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests independent slot mutation detected mismatches=1; restored differential pass (0x108)",
       "notes": ""
     },
     {
