@@ -3862,7 +3862,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'allocator after_release outstanding=14'
     )
     # The staged-pair mesh simulation records contact, back-face, edge, vertex,
-    # transformed-mesh, trigger, heightfield and solver-state results.
+    # transformed-mesh, trigger, heightfield, capsule-mesh and solver-state results.
     'NxPhysicsMeshSimulationTests' = @(
         'simulation mesh-contact calls=',
         'simulation mesh-backface calls=',
@@ -3874,7 +3874,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation mesh-heightfield-smooth calls=',
         'simulation mesh-heightfield-smooth-state position=',
         'simulation mesh-heightfield-smooth-transformed calls=',
-        'simulation mesh-heightfield-smooth-transformed-state position='
+        'simulation mesh-heightfield-smooth-transformed-state position=',
+        'simulation mesh-capsule-multinode initial_calls='
     )
     'NxFoundationTangentTests' = @(
         'tangent sweep unit=120000 threshold=60000 scaled=60000 digest=5db0093f',
@@ -5574,7 +5575,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 266  # previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2562  # exact registered Phase 5 coverage-line count; previously left one line unfloored
+    '5' = 2563  # exact registered Phase 5 coverage-line count; previously left one line unfloored
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths
@@ -5583,6 +5584,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # plus three-pair trigger reconciliation and queue growth
                # plus public trigger enter/stay/leave lifecycle
                # plus the grounded controller's short-probe simulation assertion
+               # plus public capsule contacts on both separated mesh patches
                # previous 2,248 plus dynamic getLinearDamping observation (phys_fn_000050)
                # previous 2,244 plus five mixed solver-kind interaction assertions
                # previous 2,241 plus three auxiliary shape registration checks
@@ -5596,7 +5598,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1066  # corrected to the count of registered Phase 6 coverage lines
+    '6' = 1067  # previous 1,066 plus capsule-mesh staged-pair coverage
                # plus both joint-break callback return paths
                # plus compound-trigger per-shape enter/stay/leave lifecycle
                # plus three-pair trigger reconciliation and queue growth
@@ -5605,7 +5607,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1387  # plus the shared simulation fluid-manager destructor and enabled-invalid validation lines
+    '7' = 1388  # previous 1,387 plus capsule-mesh staged-pair coverage
+               # plus the shared simulation fluid-manager destructor and enabled-invalid validation lines
                # plus both joint-break callback return paths
                # plus the bounded, ground-only and combined plane descriptor checks
                # plus two controller correction transcript assertions

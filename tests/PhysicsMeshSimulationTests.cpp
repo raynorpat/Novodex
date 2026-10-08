@@ -8,6 +8,7 @@
 #include "NxActor.h"
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
+#include "NxCapsuleShapeDesc.h"
 #include "NxSphereShapeDesc.h"
 #include "NxSimpleTriangleMesh.h"
 #include "NxTriangleMeshDesc.h"
@@ -546,9 +547,110 @@ int wmain(int argc, wchar_t** argv)
 	printf("simulation mesh-heightfield-smooth-transformed-state position=%08x.%08x.%08x velocity=%08x.%08x.%08x\n",
 		nxFloatBits(position.x), nxFloatBits(position.y), nxFloatBits(position.z),
 		nxFloatBits(velocity.x), nxFloatBits(velocity.y), nxFloatBits(velocity.z));
+
+	// Two separated, multi-node mesh patches ensure capsule/mesh contacts are
+	// rediscovered after the capsule moves away from its first contact.
+	NxPoint capsuleMeshVertices[50];
+	NxU32 capsuleMeshTriangles[192];
+	for(unsigned patch = 0; patch < 2; ++patch)
+		for(unsigned z = 0; z < 5; ++z)
+			for(unsigned x = 0; x < 5; ++x)
+				capsuleMeshVertices[patch * 25 + z * 5 + x] = NxPoint(
+					static_cast<NxReal>(static_cast<int>(patch * 10 + x) - 2), 0.0f,
+					static_cast<NxReal>(static_cast<int>(z) - 2));
+	unsigned capsuleTriangleCount = 0;
+	for(unsigned patch = 0; patch < 2; ++patch)
+		for(unsigned z = 0; z < 4; ++z)
+			for(unsigned x = 0; x < 4; ++x)
+				{
+				const NxU32 a = patch * 25 + z * 5 + x;
+				const NxU32 b = a + 1;
+				const NxU32 c = a + 5;
+				const NxU32 d = c + 1;
+				capsuleMeshTriangles[capsuleTriangleCount++] = a;
+				capsuleMeshTriangles[capsuleTriangleCount++] = c;
+				capsuleMeshTriangles[capsuleTriangleCount++] = b;
+				capsuleMeshTriangles[capsuleTriangleCount++] = b;
+				capsuleMeshTriangles[capsuleTriangleCount++] = c;
+				capsuleMeshTriangles[capsuleTriangleCount++] = d;
+				}
+	NxTriangleMeshDesc capsuleMeshDesc;
+	capsuleMeshDesc.numVertices = 50;
+	capsuleMeshDesc.numTriangles = capsuleTriangleCount / 3;
+	capsuleMeshDesc.pointStrideBytes = sizeof(NxPoint);
+	capsuleMeshDesc.triangleStrideBytes = 3 * sizeof(NxU32);
+	capsuleMeshDesc.points = capsuleMeshVertices;
+	capsuleMeshDesc.triangles = capsuleMeshTriangles;
+	NxTriangleMesh* const capsuleMesh = sdk->createTriangleMesh(capsuleMeshDesc);
+	if(!capsuleMesh)
+		return nxFail("capsule-mesh triangle-mesh creation failed");
+	NxSceneDesc capsuleSceneDesc;
+	capsuleSceneDesc.setToDefault();
+	capsuleSceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
+	NxScene* const capsuleScene = sdk->createScene(capsuleSceneDesc);
+	if(!capsuleScene)
+		return nxFail("capsule-mesh scene creation failed");
+	capsuleScene->setTiming(1.0f / 60.0f, 8, NX_TIMESTEP_FIXED);
+	NxTriangleMeshShapeDesc capsuleGroundShape;
+	capsuleGroundShape.meshData = capsuleMesh;
+	NxActorDesc capsuleGroundDesc;
+	capsuleGroundDesc.shapes.pushBack(&capsuleGroundShape);
+	NxActor* const capsuleGround = capsuleScene->createActor(capsuleGroundDesc);
+	NxCapsuleShapeDesc capsuleShape;
+	capsuleShape.radius = 0.5f;
+	capsuleShape.height = 1.0f;
+	NxBodyDesc capsuleBody;
+	NxActorDesc capsuleActorDesc;
+	capsuleActorDesc.body = &capsuleBody;
+	capsuleActorDesc.density = 1.0f;
+	capsuleActorDesc.globalPose.t = NxVec3(0.0f, 1.5f, 0.0f);
+	capsuleActorDesc.shapes.pushBack(&capsuleShape);
+	NxActor* const capsuleActor = capsuleScene->createActor(capsuleActorDesc);
+	if(!capsuleGround || !capsuleActor)
+		return nxFail("capsule-mesh actor creation failed");
+	capsuleGround->setGroup(7);
+	capsuleActor->setGroup(3);
+	sdk->setActorGroupPairFlags(7, 3, NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH);
+	NxMeshContactReport capsuleReport(capsuleGround, capsuleActor);
+	capsuleScene->setUserContactReport(&capsuleReport);
+	for(unsigned step = 0; step < 30; ++step)
+		{
+		capsuleScene->simulate(1.0f / 60.0f);
+		if(!capsuleScene->checkResults(NX_RIGID_BODY_FINISHED, true)
+			|| !capsuleScene->fetchResults(NX_RIGID_BODY_FINISHED, true))
+			return nxFail("capsule-mesh initial contact simulation failed");
+		}
+	const unsigned initialCapsuleContacts = capsuleReport.calls;
+	capsuleActor->setGlobalPosition(NxVec3(10.0f, 1.0f, 0.0f));
+	capsuleActor->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
+	capsuleReport.calls = 0;
+	capsuleReport.unexpectedCalls = 0;
+	capsuleReport.events = 0;
+	capsuleReport.patchCount = 0;
+	capsuleReport.firstPatchPoints = 0;
+	capsuleReport.pointCount = 0;
+	for(unsigned step = 0; step < 2; ++step)
+		{
+		capsuleScene->simulate(1.0f / 60.0f);
+		if(!capsuleScene->checkResults(NX_RIGID_BODY_FINISHED, true)
+			|| !capsuleScene->fetchResults(NX_RIGID_BODY_FINISHED, true))
+			return nxFail("capsule-mesh second-patch simulation failed");
+		}
+	capsuleActor->getGlobalPosition(position);
+	printf("simulation mesh-capsule-multinode initial_calls=%u second_calls=%u unexpected=%u events=%08x patches=%u points=%u y=%08x\n",
+		initialCapsuleContacts, capsuleReport.calls, capsuleReport.unexpectedCalls,
+		capsuleReport.events, capsuleReport.patchCount, capsuleReport.pointCount,
+		nxFloatBits(position.y));
+	if(initialCapsuleContacts == 0 || capsuleReport.calls == 0 || capsuleReport.unexpectedCalls != 0
+		|| capsuleReport.pointCount == 0)
+		return nxFail("capsule-mesh contact was not observed on both patches");
+	capsuleScene->releaseActor(*capsuleActor);
+	capsuleScene->releaseActor(*capsuleGround);
+	sdk->releaseScene(*capsuleScene);
 	fflush(stdout);
 
 	sdk->setActorGroupPairFlags(7, 3, 0);
+	sdk->releaseTriangleMesh(*capsuleMesh);
 	scene->releaseActor(*largeGround);
 	sdk->releaseTriangleMesh(*largeMesh);
 	scene->releaseActor(*smoothHeightfieldActor);

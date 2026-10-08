@@ -598,7 +598,10 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& source)
 	// building the OPCODE model. 002256 runs 002087 (MeshBuilder2 topology),
 	// which canonicalizes face order, removes zero-area faces, welds indexed
 	// geometry and produces the source-face remap used for material indices.
-	if(!nxInternalMeshBuildTopology(&mInternal) || !buildModel())
+	if(!nxInternalMeshBuildTopology(&mInternal))
+		return false;
+	nxInternalMeshBuildTriangleData(&mInternal);
+	if(!buildModel())
 		return false;
 	if(source.pmap && !loadPMap(*source.pmap))
 		return false;

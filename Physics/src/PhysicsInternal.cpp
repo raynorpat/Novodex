@@ -17,7 +17,9 @@
 #include <stdlib.h>
 
 void __cdecl NxContactSphereMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
+void __cdecl NxContactCapsuleMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
 bool __cdecl NxOverlapPlaneMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
+bool __cdecl NxOverlapCapsuleMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 
 // The heap block phys_fn_002358 allocates. The critical section starts at zero,
 // the interlocked owner flag is the word at +0x18 the constructor clears, and
@@ -124,6 +126,7 @@ ShapePairFunctionTable::ShapePairFunctionTable()
 	mFunction[0][2][2] = (void*) NxContactBoxBox;
 	mFunction[0][2][3] = (void*) NxContactBoxCapsule;
 	mFunction[0][3][3] = (void*) NxContactCapsuleCapsule;
+	mFunction[0][3][4] = (void*) NxContactCapsuleMesh;
 	// Trigger interactions use the second matrix. The sphere/mesh overlap row
 	// discovers mesh trigger pairs during simulation; plane/mesh uses the
 	// recovered boolean overlap kernel as well. Primitive pairs share the same
@@ -135,6 +138,7 @@ ShapePairFunctionTable::ShapePairFunctionTable()
 	mFunction[1][2][2] = (void*) NxOverlapBoxBox;
 	mFunction[1][2][3] = (void*) NxOverlapBoxCapsule;
 	mFunction[1][3][3] = (void*) NxOverlapCapsuleCapsule;
+	mFunction[1][3][4] = (void*) NxOverlapCapsuleMesh;
 	mFunction[1][0][4] = (void*) NxOverlapPlaneMesh;
 	mFunction[1][1][4] = (void*) NxOverlapSphereMesh;
 	}
