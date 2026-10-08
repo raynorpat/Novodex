@@ -65,10 +65,8 @@ class NpActorVtable : public NxActor
 	// The one virtual a reconstructed path calls. NxJointDesc::isValid() asks it;
 	// phys_fn_000110 reads the body marker through actor+0x14, body+0x08.
 	virtual bool isDynamic() const;
-	// NxActor declares setGlobalPose twice. A name-based duplicate filter dropped
-	// both, which is why this is written out rather than generated.
+	// Mirror the shipped NxActor interface; it declares one setGlobalPose slot.
 	virtual void setGlobalPose(const NxMat34&);
-	virtual void setGlobalPose(const NxVec3&, const NxMat33&);
 
 
 	// Declared in NxActor with an inline sibling that confused the generator;

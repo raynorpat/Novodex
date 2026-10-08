@@ -36,10 +36,10 @@ the gap unit `Actor.cpp..NpActor.cpp`, not of this unit. Word 87 of the table (0
 entry is the this-adjusting thunk to slot 0 (`sub ecx,8; jmp 000118`). The 88 words therefore
 are 87 NxActor slots plus that thunk. The candidate's own `??_7NpActorVtable@@6B@` follows the
 same declaration order (checked in the built DLL: slot 19 isDynamic, 63/64 the inline
-`NxActor::getPointVelocity`/`getLocalPointVelocity`, 86 getGroup) and has one extra word 87,
-`setGlobalPose(const NxVec3&, const NxMat33&)` (NpActor.cpp:2610, an empty body that is not an
-oracle row and that no NxActor slot reaches; it is the "setGlobalPose" the plan lists as
-unimplemented), where the oracle has the member table's thunk.
+`NxActor::getPointVelocity`/`getLocalPointVelocity`, 86 getGroup). The private reconstruction
+class now declares only the public `NxMat34` `setGlobalPose` overload; it must not add a
+candidate-only `setGlobalPose(const NxVec3&, const NxMat33&)` virtual because no such slot exists
+in the immutable public header or shipped actor table.
 
 Non-vtable rows: 000150 (0x5e70, called by 000156/000158/000160/000162) rotates a local vector
 by the body orientation; 000152 (0x5fa0, called by 000154/000158) maps a local point to world;

@@ -3544,7 +3544,4 @@ NxActorGroup NpActorVtable::getGroup() const
 	return out;
 	}
 
-// (unimplemented) setGlobalPose
-void NpActorVtable::setGlobalPose(const NxVec3&, const NxMat33&)
-	{
-	}
+\n
