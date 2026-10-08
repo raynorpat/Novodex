@@ -1414,3 +1414,8 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 
 - `phys_fn_000118` is mutation-falsified by the registered `NxPhysicsObjectLayoutTests` actorctor lifecycle case. Changing its final wall-vtable store to `0x101043d4` breaks direct and +8-adjustor destructor observations (`mismatches=1`); restoring `0x101043d0` returns digest `19f4915a` with zero mismatches.
 - Phase 5 advances to 181 closed / 24 reconstructed-but-unfalsified rows. The fresh full Phase 5 gate passes all 19 targets and 2,565/2,565 assertions on retry (`build/phase5-actor-dtor-final-retry.log`); the first attempt's oracle access violation in `NxPhysicsSceneRaycastTests` did not reproduce in the direct target rerun or full gate retry. No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-actor-dtor-000118.md`.
+
+### Continuation — actor deleting-destructor adjustor mutation closure (2026-10-08)
+
+- `phys_fn_000116` is mutation-falsified by the registered `NxPhysicsObjectLayoutTests` actorctor member-thunk call. Suppressing flags forwarding prevents the adjusted flag-1 free (`adjFreed=0; mismatches=1`); restoring flags returns lifecycle digest `19f4915a` with zero mismatches.
+- Phase 5 advances to 182 closed / 23 reconstructed-but-unfalsified rows. The fresh full Phase 5 gate passes all 19 targets and 2,565/2,565 assertions (`build/phase5-actor-dtor-thunk-final.log`). No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-actor-dtor-thunk-000116.md`.

@@ -2172,12 +2172,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/56",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/235",
       "static_proof": "member table this-adjustor thunk: sub ecx,8 onto the actor base, tail-call to the slot-0 deleting destructor",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsObjectLayoutTests actorctor differential: suppressing the flags argument forwarded by the -8 this-adjustor thunk leaves the adjusted vtable observations intact but prevents the flag-1 free (adjFreed=0), producing layout candidate mismatches=1; restoring flags returns actorctor digest 19f4915a and zero mismatches.",
       "notes": ""
     },
     {
