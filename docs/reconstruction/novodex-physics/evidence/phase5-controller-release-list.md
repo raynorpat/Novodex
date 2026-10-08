@@ -527,3 +527,12 @@ The registered Force differential catches each entry point’s wrong accumulator
 
 - `phys_fn_000160` mutation detection: `stdout_delta=16`. Full details: `evidence/phase5-force-torque-wrappers-000160-000162.md`.
 - `phys_fn_000162` mutation detection: `stdout_delta=16`. Full details: `evidence/phase5-force-torque-wrappers-000160-000162.md`.
+
+### Actor mass and damping setters (2026-10-08)
+
+The registered DynamicSetter differential catches each row-specific wrong-store mutation with `stdout_delta=2`; clean and restored output remains exact.
+
+- `phys_fn_000166` mutation detection: `stdout_delta=2`. Full details: `evidence/phase5-mass-damping-wrappers-000166-000168-000170-000172.md`.
+- `phys_fn_000168` mutation detection: `stdout_delta=2`. Full details: `evidence/phase5-mass-damping-wrappers-000166-000168-000170-000172.md`.
+- `phys_fn_000170` mutation detection: `stdout_delta=2`. Full details: `evidence/phase5-mass-damping-wrappers-000166-000168-000170-000172.md`.
+- `phys_fn_000172` mutation detection: `stdout_delta=2`. Full details: `evidence/phase5-mass-damping-wrappers-000166-000168-000170-000172.md`.
