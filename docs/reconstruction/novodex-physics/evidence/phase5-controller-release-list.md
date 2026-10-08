@@ -579,3 +579,8 @@ Full inputs, mutation descriptions, and restored logs: `evidence/phase5-cmass-se
 The registered DynamicSetter differential catches a source-line mutation in the static/kinematic error report contained in the tail row `phys_fn_000216`; both processes exit zero and stderr is exact.
 
 - `phys_fn_000216` mutation detection: `stdout_delta=4`. Full details: `evidence/phase5-cmass-orientation-tail-000216.md`.
+
+
+### Sphere slot-15 radius getter (2026-10-08)
+
+- `phys_fn_001359` mutation detection: `stdout_delta=2`. Full details: `evidence/phase5-sphere-get-radius-001359.md`.

@@ -1574,6 +1574,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'setter sphere_vtable=1.1.1.1',
         'setter sphere_public=1.1.1.0.0',
         'setter sphere_public_radius=3f800000',
+        'setter sphere_internal_get_radius=3f800000',
         'setter sphere_world_bounds=bf800000.bf800000.bf800000.3f800000.3f800000.3f800000',
         'setter sphere_changed=3fc00000.3fc00000.80002.1',
         'setter sphere_center=0.0.0.3f800000',
@@ -5565,7 +5566,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 264  # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2307  # plus the shared simulation fluid-manager destructor line
+    '5' = 2308  # plus the direct sphere slot-15 get-radius differential assertion
+               # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths
                # plus 36 actor mass-from-shapes lines, the added local-force-at-position case, and the two base-shape stub checks
                # plus compound-trigger per-shape enter/stay/leave lifecycle

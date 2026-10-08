@@ -84,6 +84,7 @@ int wmain(int argc, wchar_t** argv)
 	typedef void* (__thiscall* ShapeSelfFn)(void*);
 	typedef void (__thiscall* ShapeCenterFn)(void*, float*);
 	typedef void (__thiscall* ShapeAABBFn)(void*, float*);
+	typedef float (__thiscall* ShapeRadiusFn)(void*);
 	printf("setter initial_shape_vtable=%u", internalTable ? 1u : 0u);
 	for(unsigned slot = 14; slot <= 16; ++slot)
 		printf(".%u", internalTable &&
@@ -738,6 +739,10 @@ int wmain(int argc, wchar_t** argv)
 			printf("setter capsule_public_dimensions=%x.%x\n",
 				bits(static_cast<NxCapsuleShape*>(publicShape)->getRadius()),
 				bits(static_cast<NxCapsuleShape*>(publicShape)->getHeight()));
+		if(family == 0 && familyTable)
+			printf("setter sphere_internal_get_radius=%x\n", bits(
+				reinterpret_cast<ShapeRadiusFn>(familyTable[15])(
+					const_cast<unsigned char*>(familyShape))));
 		float familyCenter[4] = {};
 		if(familyTable)
 			reinterpret_cast<ShapeCenterFn>(familyTable[10])(
