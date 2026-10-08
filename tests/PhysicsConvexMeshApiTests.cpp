@@ -81,7 +81,24 @@ static bool runMeshCase(NxPhysicsSDK& sdk, const char* name, const NxTriangleMes
 			saved.numVertices, saved.numTriangles, saved.pointStrideBytes, saved.triangleStrideBytes,
 			saved.points && saved.numVertices ? hashBytes(saved.points, saved.numVertices * saved.pointStrideBytes) : 0,
 			saved.triangles && saved.numTriangles ? hashBytes(saved.triangles, saved.numTriangles * saved.triangleStrideBytes) : 0);
+		NxTriangleMesh* roundTrip = savedOk ? sdk.createTriangleMesh(saved) : 0;
+		if(!roundTrip)
+			{
+			sdk.releaseTriangleMesh(*mesh);
+			printf("mesh-roundtrip name=%s repeat=%u created=0\n", name, repeat);
+			return false;
+			}
 		sdk.releaseTriangleMesh(*mesh);
+		printf("mesh-roundtrip name=%s repeat=%u created=1 submeshes=%u",
+			name, repeat, roundTrip->getSubmeshCount());
+		reportArray("triangles", *roundTrip, NX_ARRAY_TRIANGLES);
+		reportArray("vertices", *roundTrip, NX_ARRAY_VERTICES);
+		reportArray("normals", *roundTrip, NX_ARRAY_NORMALS);
+		reportArray("hull_vertices", *roundTrip, NX_ARRAY_HULL_VERTICES);
+		reportArray("hull_polygons", *roundTrip, NX_ARRAY_HULL_POLYGONS);
+		reportMeshGeometry(*roundTrip);
+		printf("\n");
+		sdk.releaseTriangleMesh(*roundTrip);
 		}
 	return true;
 	}
