@@ -819,3 +819,9 @@ Changing the source offset from mesh +0x44 to +0x48 yields `meshwords44 candidat
 
 Changing the mesh-word source read from +0xe4 to +0xe0 yields `meshrows candidate ok=0` and `layout candidate mismatches=1` (`build/phase5-001385-mutant.log`). Restoring +0xe4 returns the expected record digest and words, zero mismatches, and differential-pass (`build/phase5-001385-restored.log`).
 `phys_fn_001385` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-mesh-save-001385.md`.
+
+
+### Mesh descriptor load (`phys_fn_001383`)
+
+Changing the inner mesh refcount increment from +1 to +2 produces `meshload candidate ok=0` and `layout candidate mismatches=1` (`build/phase5-001383-mutant.log`). Restoring +1 returns the expected mesh binding and refcount, zero mismatches, and differential-pass (`build/phase5-001383-restored.log`).
+`phys_fn_001383` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-mesh-load-001383.md`.

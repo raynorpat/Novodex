@@ -291,3 +291,9 @@ Task M2-001385: closed the mesh save-to-state row with the registered NxPhysicsO
 
 
 Fresh Win32 Release Phase 5 gate after closing `phys_fn_001385` passed all 18 staged-pair targets, both oracle-differential targets, and 2,311/2,311 coverage assertions (`build/phase5-001385-full-gate.log`). Inventory and both 80-file public-header roots validate.
+
+
+Task M2-001383: closed the mesh descriptor-load row with the registered NxPhysicsObjectLayoutTests oracle differential. Increasing the inner mesh refcount delta from +1 to +2 is caught (`meshload candidate ok=0`; mismatches=1); restoring +1 returns zero mismatches and differential-pass. Phase 5 advances to 157 closed / 48 deferred. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-mesh-load-001383.md`.
+
+
+Fresh Win32 Release Phase 5 gate after closing `phys_fn_001383` passed all 18 staged-pair targets, both oracle-differential targets, and 2,311/2,311 coverage assertions (`build/phase5-001383-full-gate.log`). Inventory and both 80-file public-header roots validate.
