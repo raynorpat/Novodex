@@ -959,3 +959,9 @@ IDA confirms both rows use the SDK pointer-binding table keyed by `[actor+0x14]`
 `NxPhysicsActorMassTests` exercises the public mass getter across its shape-derived mass cases. Returning `out + 1.0f` is caught with `stdout_delta=22`, equal zero exits, and exact stderr; the restored DLL differential is exact. See `evidence/phase5-actor-get-mass-000048.md`.
 
 `phys_fn_000048` mutation detection: `stdout_delta=22`; restored public-DLL differential is exact (`stdout_delta=0`, exact stderr).
+
+## NxBodyDesc copy: `phys_fn_000010`
+
+`NxPhysicsBodyCreationTests` compares the public actor-creation record after copying a descriptor whose solver iteration count is seven. Shortening the copy from `0x78` to `0x74` bytes omits that field and is caught with `stdout_delta=2`, equal zero exits, and exact stderr; restored output is exact. See `evidence/phase5-actor-body-desc-copy-000010.md`.
+
+`phys_fn_000010` mutation detection: `stdout_delta=2`; restored public-DLL differential is exact (`stdout_delta=0`, exact stderr).

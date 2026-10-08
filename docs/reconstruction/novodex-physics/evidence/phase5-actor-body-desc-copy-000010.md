@@ -1,0 +1,5 @@
+# NxBodyDesc copy row proof: `phys_fn_000010`
+
+`Row000010Fixture::row000010` in `Physics/src/Scene.cpp` performs the oracle's exact 0x78-byte `NxBodyDesc` copy, including the solver iteration count at `+0x74`; `nxActorBuildRecord` calls it before mass-from-shapes adjustment. The 8-byte destination tail beyond the descriptor remains untouched, as recorded by the direct oracle/candidate canary probe in `NxPhysicsObjectLayoutTests`.
+
+The public `NxPhysicsBodyCreationTests` fixture creates an actor from a descriptor with `solverIterationCount=7` and compares the full record transcript. A targeted `0x74`-byte copy mutation omitted that final dword and was rejected with `stdout_delta=2`, equal zero exits, and exact stderr (`build/phase5-posecopy-row-mutation.log`). The restored helper returned to `stdout_delta=0` and exact stderr (`build/phase5-posecopy-restored.log`). The full Phase 5 gate passes all 19 targets and 2,567/2,567 coverage assertions (`build/phase5-posecopy-full.log`). Public Physics headers were not changed.

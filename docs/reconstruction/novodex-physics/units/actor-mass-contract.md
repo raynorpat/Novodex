@@ -15,13 +15,17 @@ below were read straight from `oracle/capstone/manifest.json`.
         shapes: one -> shape factory 000032 (0x1de0); several -> malloc(0x110) + compound
                 ctor 001033 (0x22d60, table 0x10106c2c) + 001041 per child
         body -> 000026 (0x19b0, __thiscall ret 4, the body creation)
-          000010: copy 0x78 bytes of the NxBodyDesc
+          000010: Row000010Fixture copies exactly 0x78 bytes (including +0x74)
           if massSpaceInertia's three words are all integer zero (0x19d6..0x19e9):
             000008(density = [actor+0x18], &copy.mass, &copy.massLocalPose,
                    &copy.massSpaceInertia); non-zero -> return it (0x1a16)
           malloc(0x260), body ctor 000797, 000630
         result 1 -> report line 0xe5, 2 -> report line 0xe6 (Actor.cpp), return 0
       load failed -> Actor dtor 0x1c40, free, report line 0x228 (Scene.cpp), return 0
+
+## phys_fn_000010 (0x00001390, 150 B): NxBodyDesc copy
+
+`Row000010Fixture::row000010` in `Physics/src/Scene.cpp` copies exactly `0x78` bytes into the destination. The Phase 5 `NxPhysicsBodyCreationTests` mutation shortens the copy to `0x74`, dropping `solverIterationCount`, and is caught with `stdout_delta=2`; the restored staged-pair output is exact. See `evidence/phase5-actor-body-desc-copy-000010.md`.
 
 ## phys_fn_000008 (0x000010a0, 751 B): Actor::computeMass
 

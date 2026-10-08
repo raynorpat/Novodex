@@ -3484,6 +3484,20 @@ void nxSceneRemoveBody(NxSceneInternal* scene, unsigned char* record)
 // nxBodyRecordApplyDesc, nxBodyRecordDestroy) were folded into those at the
 // second merge of main into the scene-raycast block.
 
+// phys_fn_000010 (0x00001390, 150 B)
+// NxBodyDesc copy constructor: exact 0x78-byte copy, including the solver
+// count at +0x74. Keep the boundary explicit because phys_fn_000026 calls it
+// before it adjusts the copied mass properties.
+struct Row000010Fixture
+	{
+	void row000010(const NxBodyDesc* source);
+	};
+
+__declspec(noinline) void Row000010Fixture::row000010(const NxBodyDesc* source)
+	{
+	memcpy(this, source, 0x78);
+	}
+
 // phys_fn_000026 (0x000019b0, 465 B)
 // Actor.cpp's record build on the body (thiscall (desc), `ret 4`), shared by
 // the creation path (000034) and setDynamic (000122). The descriptor is
@@ -3500,7 +3514,8 @@ void nxSceneRemoveBody(NxSceneInternal* scene, unsigned char* record)
 // which nothing before a simulation step reads.
 int nxActorBuildRecord(unsigned char* body, const NxBodyDesc* desc)
 	{
-	NxBodyDesc local = *desc;
+	NxBodyDesc local;
+	reinterpret_cast<Row000010Fixture*>(&local)->row000010(desc);
 	const unsigned* tensor = reinterpret_cast<const unsigned*>(&desc->massSpaceInertia);
 	if(!tensor[0] && !tensor[1] && !tensor[2])
 		{
