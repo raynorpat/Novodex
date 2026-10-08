@@ -1584,60 +1584,6 @@ void* nxActorVtThunk104(void* self, void* arg1, unsigned* out)
 void* nxActorVtThunk108(void* self, void* arg1, unsigned* out)
 	{ return nxActorVtThunk(self, arg1, out, 0x108u); }
 
-// A generic model of the row at 0x7e560, superseded by QhullHost.cpp (phys_fn_003268,
-// QhullHost::facet, qhull-gap Task 4a), which is the row's source now. Kept only
-// because NxPhysicsObjectLayoutTests' batch3268 block still drives it. Batch
-// index/vertex append, ret 8. Bails when
-// [self+0x18] >= [self+0x1c]; accumulates (count-2) into [self+0x20]; records
-// the count in the [self+0x403c]/[self+0x4044] list when it has room; then for
-// each index below [self+0x10] copies the 3-dword vertex record through the
-// [self+8] map into the [self+0x4034]/[self+0x4038] output array (assigning a
-// fresh id when the map slot is zero) and appends id-1 to the aux list.
-void nxBatchAppend3268(void* self, unsigned count, const unsigned* indices)
-	{
-	unsigned char* p = reinterpret_cast<unsigned char*>(self);
-	if(*reinterpret_cast<unsigned*>(p + 0x18) >=
-		*reinterpret_cast<unsigned*>(p + 0x1c))
-		return;
-	unsigned auxCount = *reinterpret_cast<unsigned*>(p + 0x403c);
-	*reinterpret_cast<unsigned*>(p + 0x20) += (count - 2);
-	if(auxCount < *reinterpret_cast<unsigned*>(p + 0x4040))
-		{
-		reinterpret_cast<unsigned*>(
-			*reinterpret_cast<void**>(p + 0x4044))[auxCount] = count;
-		++*reinterpret_cast<unsigned*>(p + 0x403c);
-		}
-	for(unsigned i = 0; i < count; ++i)
-		{
-		const unsigned idx = indices[i];
-		if(idx >= *reinterpret_cast<unsigned*>(p + 0x10))
-			continue;
-		unsigned* map = *reinterpret_cast<unsigned**>(p + 8);
-		unsigned slot = map[idx];
-		if(slot == 0)
-			{
-			const unsigned* verts = *reinterpret_cast<const unsigned**>(p + 0xc);
-			unsigned* outArr = *reinterpret_cast<unsigned**>(p + 0x4038);
-			unsigned outCount = *reinterpret_cast<unsigned*>(p + 0x4034);
-			const unsigned* src = verts + idx * 3u;
-			unsigned* dst = outArr + outCount * 3u;
-			dst[0] = src[0]; dst[1] = src[1]; dst[2] = src[2];
-			++outCount;
-			*reinterpret_cast<unsigned*>(p + 0x4034) = outCount;
-			map[idx] = outCount;
-			slot = outCount;
-			}
-		unsigned c2 = *reinterpret_cast<unsigned*>(p + 0x403c);
-		if(c2 < *reinterpret_cast<unsigned*>(p + 0x4040))
-			{
-			reinterpret_cast<unsigned*>(
-				*reinterpret_cast<void**>(p + 0x4044))[c2] = slot - 1u;
-			++*reinterpret_cast<unsigned*>(p + 0x403c);
-			}
-		}
-	++*reinterpret_cast<unsigned*>(p + 0x18);
-	}
-
 namespace
 	{
 	// The shared quaternion -> 3x3 rotation expansion used by 000132 and
@@ -3433,32 +3379,6 @@ void nxAllocReleaseClear2342(void* self, void* alloc, NxSlotMfp1 slot)
 			memcpy(p + kBase[g] + 4u * k, &zero, 4);
 			}
 		}
-	}
-
-// A generic model of the row at 0x7d500, superseded by QhullHost.cpp (phys_fn_003238,
-// QhullHost::releaseArrays, qhull-gap Task 4a), which is the row's source now. Kept
-// only because NxPhysicsObjectLayoutTests' ownvtable3238 block still drives it: the
-// own-vtable four-field release.
-void nxOwnVtableRelease3238(void* self, NxSlotMfp1 slot)
-	{
-	unsigned char* p = reinterpret_cast<unsigned char*>(self);
-	static const unsigned kField[4] = { 0xcu, 0x8u, 0x4038u, 0x4044u };
-	static const unsigned kCompanion[4] = { 0u, 0u, 0x4034u, 0x403cu };
-	for(unsigned g = 0; g < 4u; ++g)
-		{
-		unsigned field;
-		memcpy(&field, p + kField[g], 4);
-		if(field != 0u)
-			{
-			(reinterpret_cast<NxSlotCtx*>(self)->*slot)(field);
-			const unsigned zero = 0u;
-			memcpy(p + kField[g], &zero, 4);
-			if(kCompanion[g] != 0u)
-				memcpy(p + kCompanion[g], &zero, 4);
-			}
-		}
-	const unsigned zero = 0u;
-	memcpy(p + 0x10, &zero, 4);
 	}
 
 // phys_fn_002060 (0x515d0): the release with per-field adjustments.

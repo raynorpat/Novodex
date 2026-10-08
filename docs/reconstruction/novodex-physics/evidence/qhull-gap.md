@@ -932,10 +932,10 @@ tail (4d); `002233` frees an uninitialised result's two words when `cleanupVerti
 - **The clusters' divergence is open.** `hull_*_qhull`'s clusters input differs inside
   `CreateConvexHull` under 0x027f but not in qhull alone (`hull_qhull_direct`); the cause is not
   shown (candidates: the driver's allocation pattern, `qh_gethash`'s address hashing).
-- **The generic models in `ObjectModel.cpp`.** `nxBatchAppend3268` and `nxOwnVtableRelease3238`,
-  the phase 8 shapes whose rows (`003268`, `003238`) are now `QhullHost.cpp`'s, are kept: the
-  Phase 5 NxPhysicsObjectLayoutTests' `batch3268` and `ownvtable3238` blocks still drive them.
-  Their comments now say they are superseded models, without the stable-ID line form.
+- **The old generic models in `ObjectModel.cpp`.** M1 removed `nxBatchAppend3268` and
+  `nxOwnVtableRelease3238` after replacing their provisional Phase 5 probes with direct oracle
+  comparisons of `QhullHost::facet` (`003268`) and `QhullHost::releaseArrays` (`003238`) in
+  `NxPhysicsThirdPartyTests`. Both registered transcripts match the pinned oracle exactly.
 
 **The rate** (timing table below). Part 1, Tasks 1-2 with their reviews: 2 h 58 min for 167
 rows / 61,010 bytes, about 20.6 KB an hour. Part 2, Task 3 and pieces 4a-4e: 2 h 29 min for

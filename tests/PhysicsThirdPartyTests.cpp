@@ -37,6 +37,7 @@
 
 #include "Opcode.h"
 #include "IcePrunable.h"
+#include "QhullHost.h"
 
 
 using namespace Opcode;
@@ -298,6 +299,9 @@ static unsigned gMismatches = 0;
 static unsigned gDriven = 0;
 static unsigned gDivergent = 0;
 static unsigned gWordsCompared = 0;
+
+static void nxReportTapes(const NxTape& oracle, const NxTape& candidate, const char* name,
+	const char* rva, const char* owner, const char* source, bool selfOnly, unsigned tolerance);
 
 // The distance in representable floats between two IEEE-754 single patterns.
 // Only meaningful for finite values of the same sign, which is what it is used
@@ -941,6 +945,194 @@ static void nxDriveQhullSets(const NxOracleRows& o, bool selfOnly)
 			}
 		}
 	nxReport("qh_set", "0x0007f2a0", "phys_fn_003308", "qset.c:561,765,861,1076", selfOnly);
+	}
+
+// QhullHost::facet is a NovodeX row interleaved with the qhull sources. Keep
+// its large host object in this small driver frame; the general object-layout
+// harness has a large stack frame of its own and was corrupting this fixture.
+static void nxDriveQhullFacet(const NxOracleRows& o, bool selfOnly)
+	{
+	typedef void (__thiscall* FacetFn)(void*, unsigned, const unsigned*);
+	FacetFn oracleFacet = (FacetFn) (o.base + 0x0007e560);
+	unsigned char oracleHost[0x5000];
+	memset(oracleHost, 0, sizeof(oracleHost));
+	unsigned oraclePointWords[12], candidatePointWords[12];
+	for(unsigned i = 0; i < 12; ++i)
+		oraclePointWords[i] = candidatePointWords[i] = 0x31000000u + i;
+	float* oraclePoints = (float*) oraclePointWords;
+	float* candidatePoints = (float*) candidatePointWords;
+	unsigned oracleMap[4] = {}, candidateMap[4] = {};
+	float oracleOutput[12] = {}, candidateOutput[12] = {};
+	unsigned oracleIndices[8] = {}, candidateIndices[8] = {};
+	const unsigned facetA[] = { 1, 2, 7 };
+	const unsigned facetB[] = { 0, 3, 0 };
+
+	// Supply identical object fields, while keeping each side's buffers on its
+	// own heap/stack addresses. The oracle row only reads these recorded offsets.
+	const unsigned numPoints = 4, numFacets = 2, indexCapacity = 8;
+	memcpy(oracleHost + 0x10, &numPoints, 4);
+	memcpy(oracleHost + 0x1c, &numFacets, 4);
+	memcpy(oracleHost + 0x4040, &indexCapacity, 4);
+	*(void**) (oracleHost + 0x08) = oracleMap;
+	*(void**) (oracleHost + 0x0c) = oraclePoints;
+	*(void**) (oracleHost + 0x4038) = oracleOutput;
+	*(void**) (oracleHost + 0x4044) = oracleIndices;
+	QhullHost candidate(0);
+	candidate.mRemap = candidateMap;
+	candidate.mPoints = candidatePoints;
+	candidate.mNumPoints = numPoints;
+	candidate.mNumFacets = numFacets;
+	candidate.mOutputVertices = candidateOutput;
+	candidate.mIndexCapacity = indexCapacity;
+	candidate.mIndices = candidateIndices;
+
+	oracleFacet(oracleHost, 3, facetA);
+	if(!selfOnly)
+		candidate.facet(3, facetA);
+	oracleFacet(oracleHost, 3, facetB);
+	if(!selfOnly)
+		candidate.facet(3, facetB);
+	// The third call must be ignored after the two-facet capacity is reached.
+	oracleFacet(oracleHost, 3, facetA);
+	if(!selfOnly)
+		candidate.facet(3, facetA);
+
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	const unsigned oracleCounts[] = {
+		*(unsigned*) (oracleHost + 0x18), *(unsigned*) (oracleHost + 0x20),
+		*(unsigned*) (oracleHost + 0x4034), *(unsigned*) (oracleHost + 0x403c)
+		};
+	const unsigned candidateCounts[] = {
+		candidate.mFacetCount, candidate.mTriangleCount,
+		candidate.mOutputCount, candidate.mIndexCount
+		};
+	for(unsigned i = 0; i < 4; ++i)
+		{
+		gOracleTape.push(oracleCounts[i]);
+		gCandidateTape.push(candidateCounts[i]);
+		}
+	for(unsigned i = 0; i < 4; ++i)
+		{
+		gOracleTape.push(oracleMap[i]);
+		gCandidateTape.push(candidateMap[i]);
+		}
+	for(unsigned i = 0; i < 12; ++i)
+		{
+		gOracleTape.pushFloat(oracleOutput[i]);
+		gCandidateTape.pushFloat(candidateOutput[i]);
+		}
+	for(unsigned i = 0; i < 8; ++i)
+		{
+		gOracleTape.push(oracleIndices[i]);
+		gCandidateTape.push(candidateIndices[i]);
+		}
+	nxReport("qhull_facet", "0x0007e560", "phys_fn_003268", "QhullHost.cpp", selfOnly, 0);
+
+	// The buffers are borrowed by this fixture, not owned by QhullHost.
+	candidate.mRemap = 0;
+	candidate.mPoints = 0;
+	candidate.mOutputVertices = 0;
+	candidate.mIndices = 0;
+	}
+
+static unsigned gQhullReleaseCalls;
+static unsigned gQhullReleaseValues[4];
+
+struct NxQhullReleaseRecorder
+	{
+	void record(unsigned value);
+	};
+
+void NxQhullReleaseRecorder::record(unsigned value)
+	{
+	if(gQhullReleaseCalls < 4)
+		gQhullReleaseValues[gQhullReleaseCalls] = value;
+	++gQhullReleaseCalls;
+	}
+
+// Drive the recovered releaseArrays row with a host whose own vtable points
+// at a recording free slot. The candidate is the real QhullHost class and
+// tracks its own allocations, so both sides exercise the same release order,
+// nulling and companion-count clearing behavior.
+static void nxDriveQhullReleaseArrays(const NxOracleRows& o, bool selfOnly)
+	{
+	typedef void (__thiscall* ReleaseArraysFn)(void*);
+	ReleaseArraysFn oracleRelease = (ReleaseArraysFn) (o.base + 0x0007d500);
+	typedef void (NxQhullReleaseRecorder::*RecordFn)(unsigned);
+	RecordFn recordFn = &NxQhullReleaseRecorder::record;
+	void* recordAddress = 0;
+	memcpy(&recordAddress, &recordFn, 4);
+	void* vtable[8] = {};
+	memcpy((unsigned char*) vtable + 0x18, &recordAddress, 4);
+	static const unsigned fields[4] = { 0x0c, 0x08, 0x4038, 0x4044 };
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	for(unsigned mask = 0; mask < 16; ++mask)
+		{
+		unsigned char oracleHost[0x4060];
+		unsigned char oracleBuffers[4][16];
+		memset(oracleHost, 0, sizeof(oracleHost));
+		memset(oracleBuffers, 0, sizeof(oracleBuffers));
+		*(void**) oracleHost = vtable;
+		*(unsigned*) (oracleHost + 0x10) = 4;
+		*(unsigned*) (oracleHost + 0x4034) = 0x12345678u;
+		*(unsigned*) (oracleHost + 0x403c) = 0x87654321u;
+		for(unsigned field = 0; field < 4; ++field)
+			if(mask & (1u << field))
+				*(void**) (oracleHost + fields[field]) = oracleBuffers[field];
+
+		QhullHost candidate(0);
+		candidate.mNumPoints = 4;
+		candidate.mOutputCount = 0x12345678u;
+		candidate.mIndexCount = 0x87654321u;
+		for(unsigned field = 0; field < 4; ++field)
+			if(mask & (1u << field))
+				{
+				void* allocation = candidate.trackedMalloc(field == 0 ? 48 : field == 1 ? 16 : field == 2 ? 48 : 32);
+				if(field == 0) candidate.mPoints = (NxReal*) allocation;
+				else if(field == 1) candidate.mRemap = (NxU32*) allocation;
+				else if(field == 2) candidate.mOutputVertices = (NxReal*) allocation;
+				else candidate.mIndices = (NxU32*) allocation;
+				}
+		const unsigned allocationsBefore = candidate.mLiveBlocks;
+		gQhullReleaseCalls = 0;
+		oracleRelease(oracleHost);
+		const unsigned oracleCalls = gQhullReleaseCalls;
+		if(!selfOnly)
+			candidate.releaseArrays();
+		const unsigned candidateCalls = allocationsBefore - candidate.mLiveBlocks;
+
+		for(unsigned field = 0; field < 4; ++field)
+			{
+			gOracleTape.push(*(void**) (oracleHost + fields[field]) ? 1u : 0u);
+			gCandidateTape.push(field == 0 ? (candidate.mPoints ? 1u : 0u)
+				: field == 1 ? (candidate.mRemap ? 1u : 0u)
+				: field == 2 ? (candidate.mOutputVertices ? 1u : 0u)
+				: (candidate.mIndices ? 1u : 0u));
+			}
+		gOracleTape.push(*(unsigned*) (oracleHost + 0x4034));
+		gCandidateTape.push(candidate.mOutputCount);
+		gOracleTape.push(*(unsigned*) (oracleHost + 0x403c));
+		gCandidateTape.push(candidate.mIndexCount);
+		gOracleTape.push(*(unsigned*) (oracleHost + 0x10));
+		gCandidateTape.push(candidate.mNumPoints);
+		gOracleTape.push(oracleCalls);
+		gCandidateTape.push(candidateCalls);
+		for(unsigned call = 0; call < oracleCalls; ++call)
+			{
+			unsigned identity = 0;
+			for(unsigned field = 0; field < 4; ++field)
+				if(gQhullReleaseValues[call] == (unsigned) (size_t) oracleBuffers[field])
+					identity = field + 1;
+			gOracleTape.push(identity);
+			}
+		for(unsigned field = 0; field < 4; ++field)
+			if(mask & (1u << field))
+				gCandidateTape.push(field + 1);
+		}
+	nxReport("qhull_release_arrays", "0x0007d500", "phys_fn_003238",
+		"QhullHost.cpp", selfOnly, 0);
 	}
 
 //////////////////////////////////////////////////////////////////////////////
@@ -11926,6 +12118,8 @@ int wmain(int argc, wchar_t** argv)
 
 	nxDriveQhullPure(o, selfOnly);
 	nxDriveQhullSets(o, selfOnly);
+	nxDriveQhullFacet(o, selfOnly);
+	nxDriveQhullReleaseArrays(o, selfOnly);
 	nxDriveContainer(o, selfOnly);
 	nxDriveContainerCopy(o, selfOnly);
 	nxDriveRadix(o, selfOnly);

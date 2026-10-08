@@ -922,13 +922,6 @@ void*					nxActorGetPoseWords(void* self, void* out);
 void*					nxActorVtThunk104(void* self, void* arg1, unsigned* out);
 void*					nxActorVtThunk108(void* self, void* arg1, unsigned* out);
 
-//! A generic model of the row at 0x7e560, superseded by QhullHost.cpp
-//! (phys_fn_003268; qhull-gap Task 4a) and kept for NxPhysicsObjectLayoutTests'
-//! batch3268 block: batch index/vertex append (ret 8) over the seven
-//! arrays at [self+8], +0xc, +0x10, +0x18, +0x1c, +0x20 and +0x4034..0x4044.
-void					nxBatchAppend3268(void* self, unsigned count,
-							const unsigned* indices);
-
 //! phys_fn_001030 (0x22bf0, ret 4): aggregates the local AABBs of the shape
 //! list at [self+0xe0]..[self+0xe4] into out[0..5] -- FLT_MAX/-FLT_MAX
 //! seeded, min on the low triple and max on the high triple, each shape
@@ -1438,14 +1431,6 @@ void					nxReleaseOwnedFields(void* self, const unsigned* offsets,
 //! slot +0x14 ONLY when it is non-null, but the three fields are cleared
 //! REGARDLESS. That unconditional clearing is what 3z219's diff showed at
 //! offsets 0xc and 0x1c on pans where nothing was released.
-//! The row at 0x7d500 (a generic model superseded by QhullHost.cpp, phys_fn_003238;
-//! qhull-gap Task 4a; kept for NxPhysicsObjectLayoutTests' ownvtable3238 block,
-//! nxOwnVtableRelease3238 below): releases FOUR owned fields -- [self+0xc], [self+8],
-//! [self+0x4038] and [self+0x4044] -- through the object's OWN vtable slot
-//! +0x18, each only when non-null, then clears the field and, for the two high
-//! groups, one companion field ([self+0x4034] and [self+0x403c]). It finishes
-//! by clearing [self+0x10] UNCONDITIONALLY. The slot pops its own argument, so
-//! a MEMBER-FUNCTION slot is the shape.
 //! phys_fn_002060 (0x515d0): releases FOUR owned fields -- [self+0x14],
 //! [self+0x10], [self+4] and [self+0xc] -- through 004803's singleton and ITS
 //! vtable slot +0xc, each only when non-null and each cleared afterwards. The
@@ -1455,7 +1440,6 @@ void					nxReleaseAdjusted2060(void* self, const unsigned* offsets,
 							const int* adjust, unsigned count, void* singleton,
 							NxSlotMfp1 slot);
 
-void					nxOwnVtableRelease3238(void* self, NxSlotMfp1 slot);
 
 void					nxAllocReleaseClear2342(void* self, void* alloc,
 							NxSlotMfp1 slot);

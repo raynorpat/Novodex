@@ -129,3 +129,7 @@ Earlier SDK checks (before Graphics reconstruction) found two oracle/candidate d
 Python suite ran 770 tests with four failures: the phase-4 unregistered-phase
 expectation and the plan-command checks for phases 4, 6 and 7. These SDK and gate
 failures remain outstanding.
+
+## Verification on 2026-10-08
+
+The Release CTest sweep ran all 39 checked-in `.pds.ods` viewer entrypoints from a disposable copy of `ViewerScenes`: 34 passed, and five were skipped only for their known baseline blockers (CowPile and PMapTest 8/10/12 cannot create a PMap; TruckDemo lacks `Material #960.mat.ods`). No other scene failed. `ViewerSceneTests`, `ViewerPhysicsStep`, and `ViewerPhysicsContact` also passed; the last two advance active physics in the viewer loop.

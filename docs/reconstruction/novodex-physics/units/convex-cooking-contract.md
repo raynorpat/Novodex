@@ -359,8 +359,10 @@ own `[vt+0x14]`, so they are tracked blocks. It ignores its fourth argument (`re
 - appends `remap[id]-1`.
 
 So the output vertices are qhull's point ids, compacted in first-use order. The
-`nxBatchAppend3268` shape in `ObjectModel.cpp` carries a "FAILING DIFFERENTIAL" note in its
-inventory proof; the product rewrite supersedes it.
+The old `nxBatchAppend3268` shape in `ObjectModel.cpp` carried a "FAILING DIFFERENTIAL" note
+because its Phase 5 fixture compared this Qhull row against a generic model. M1 replaced that
+fixture with a direct `QhullHost::facet` oracle comparison in `NxPhysicsThirdPartyTests` and
+removed the obsolete model.
 
 `buildResult` (`003270`) fails, returning false with the arrays released (`003238` at
 0x0007e7f7 on every path), if any of `+0x0c`, `+0x08`, `+0x4034` or `+0x403c` is zero.
@@ -827,11 +829,10 @@ As recorded before Task 4 (the first two items are replaced; see the "As written
   and the shape entries recorded as sources for `003257`, `003261`, `003265` and `003274`. Their
   inventory proofs were phase 8 shape drives, and `003268`'s carried a failing-differential note.
   They became the product class's members in Task 4a. **Decision (qhull-gap Task 5):** the
-  helpers `nxBatchAppend3268` and `nxOwnVtableRelease3238` are kept, because the Phase 5
-  NxPhysicsObjectLayoutTests' `batch3268` and `ownvtable3238` blocks still drive them; their
-  comments now call them models superseded by `QhullHost.cpp` and no longer carry the
-  `// phys_fn_` stable-ID line form. The rows' `source` is `QhullHost.cpp`. Whether the generic helpers are deleted or kept for
-  their drive is Task 4's call; the rows' `source` moves either way.
+  helpers `nxBatchAppend3268` and `nxOwnVtableRelease3238` were retained for provisional Phase 5
+  probes. M1 replaced those probes with direct oracle comparisons of `QhullHost::facet` and
+  `QhullHost::releaseArrays` in `NxPhysicsThirdPartyTests`; the obsolete models and probes are
+  removed. The rows' `source` is `QhullHost.cpp`.
 - `Physics/src/NpPhysicsSDK.cpp:109` `createTriangleMesh` returns 0 ("needs TriangleMesh,
   Phase 4"). It is unchanged in Task 4 under the split below.
 - `Physics/src/TriangleMesh.cpp`/`.h` model `TriangleMesh` without a C++ vtable ("the vtable
