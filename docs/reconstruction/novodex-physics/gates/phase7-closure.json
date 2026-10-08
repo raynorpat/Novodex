@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 20 functions are closed, 296 reconstructed functions remain unfalsified, 245 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are now independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 21 functions are closed, 296 reconstructed functions remain unfalsified, 244 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are now independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
@@ -19,9 +19,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 20,
+    "differential_falsified": 21,
     "deferred_reconstructed_not_falsified": 296,
-    "deferred_not_reconstructed_in_phase": 245
+    "deferred_not_reconstructed_in_phase": 244
   },
   "closed": [
     {
@@ -221,6 +221,16 @@
       "gate": "NxPhysicsSimulationTests",
       "falsification": {
         "mutation": "Omitted the unavailable-feature warning from NpScene::getImplicitMeshes in a throwaway git archive of HEAD. NxPhysicsSimulationTests caught the missing diagnostic; both exits=0, stdout_delta=2, stderr_exact=True.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_003637",
+      "rva": "0x00089d50",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Changed the disabled FluidManager actor-created warning line from 0x107 to 0x108 in a throwaway git archive of HEAD 6f92c085. The archive was freshly configured and built for Win32 Release; the registered NxPhysicsSimulationTests differential staged the pinned oracle and mutant candidate. Both processes exited 0 with exact stderr, while the mutant reported line 264 instead of oracle line 263. The target rejected the mutant with stdout_delta=2.",
         "detected": "stdout_delta=2"
       }
     }
@@ -2574,14 +2584,6 @@
     {
       "id": "phys_fn_003635",
       "rva": "0x00089ce0",
-      "size": 100,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_003637",
-      "rva": "0x00089d50",
       "size": 100,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",

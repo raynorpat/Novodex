@@ -5565,7 +5565,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 264  # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2306  # plus both joint-break callback return paths
+    '5' = 2307  # plus the shared simulation fluid-manager destructor line
+               # plus both joint-break callback return paths
                # plus 36 actor mass-from-shapes lines, the added local-force-at-position case, and the two base-shape stub checks
                # plus compound-trigger per-shape enter/stay/leave lifecycle
                # plus three-pair trigger reconciliation and queue growth
@@ -5584,7 +5585,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1064  # plus both joint-break callback return paths
+    '6' = 1065  # plus the shared simulation fluid-manager destructor line
+               # plus both joint-break callback return paths
                # plus compound-trigger per-shape enter/stay/leave lifecycle
                # plus three-pair trigger reconciliation and queue growth
                # plus public trigger enter/stay/leave lifecycle
@@ -5592,7 +5594,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1385  # plus both joint-break callback return paths
+    '7' = 1386  # plus the shared simulation fluid-manager destructor line
+               # plus both joint-break callback return paths
                # plus the bounded, ground-only and combined plane descriptor checks
                # plus two controller correction transcript assertions
                # plus compound-trigger per-shape enter/stay/leave lifecycle

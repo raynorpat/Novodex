@@ -21,3 +21,13 @@ after installing the disabled manager. Its paired differential matches exactly
 warning with the pinned manager's empty array; the nonempty-array conclusion
 comes from the pinned disassembly and the caller's ignored return value. No
 public Physics header changed.
+
+The row-specific falsification changed only the warning source line from
+`0x107` to `0x108` in a throwaway `git archive` of HEAD `6f92c085`, then freshly
+configured and built the archive for Win32 Release. The registered
+`NxPhysicsSimulationTests` differential staged the pinned oracle and mutant
+candidate: both exited 0 with exact stderr, and the mutant changed the reported
+line from 263 to 264 (`stdout_delta=2`). This confirms the gate detects the
+observable warning owned by `phys_fn_003637` while the return-only per-fluid
+loop remains covered by the static proof. Log:
+`build/FluidGate/actor-created-mutation-20261008/mutation-run.log`.

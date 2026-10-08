@@ -9368,3 +9368,7 @@ suppresses the callback-true release is caught by registered
 restoration and rebuild, the archive transcript is exact again. See
 `joint-break-events.md`; local archive logs are under
 `build/joint-break-archive-41cef17d/`.
+
+## Phase 7 closure measurement — actor-created fluid notification
+
+`phys_fn_003637` mutation detection: changing the line-263 warning source to line 264 was caught by `NxPhysicsSimulationTests` (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=2`, `stderr_exact=True`). The mutant target changes only the disabled FluidManager actor-created diagnostic. See `evidence/fluid-actor-created-noop.md` and `build/FluidGate/actor-created-mutation-20261008/mutation-run.log`.
