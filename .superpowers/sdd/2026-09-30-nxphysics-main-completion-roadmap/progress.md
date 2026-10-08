@@ -201,3 +201,5 @@ Fresh Win32 Release Phase 5 also passes all 18 staged targets and 2,311/2,311 as
 Continuation 2026-10-08: closed Phase 5 rows `phys_fn_000989` and `phys_fn_001353`, the capsule and sphere descriptor-load rows, using direct oracle comparisons in `NxPhysicsObjectLayoutTests`. Mutating each row's radius store is caught (`capload`/`sphload candidate ok=0`, two layout mismatches); both restored runs return exact digests with zero mismatches. Phase 5 now records 131 closed / 74 deferred functions. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-shape-load-000989-001353.md`.
 
 Fresh Win32 Release Phase 5 passes all 18 staged targets and 2,311/2,311 assertions after the 000989/001353 closures (`build/phase5-shape-load-000989-001353-full-gate.log`).
+
+Approved Viewer all-scenes sweep on mainline commit 5cc6fbaa: ctest --test-dir build -C Release --output-on-failure -R '^ViewerSmokeScene_' completed 40/40 entries including the asset-preparation prerequisite; all 39 scene selections ran, 34 passed and five established pinned-oracle asset cases skipped, with zero failures. Public Physics headers unchanged.
