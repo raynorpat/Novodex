@@ -60,3 +60,10 @@ calls slot 10 once and forwards the same owner and AABB. Phase 5 is now 173
 closed / 32 deferred; the fresh full gate passes at 2,565/2,565 assertions.
 Evidence:
 `docs/reconstruction/novodex-physics/evidence/phase5-owner-notify-001271.md`.
+
+Task M2-shape-dtors-001263-001375: targeted flag-1 self-free mutations for
+the plane and sphere destructors were independently detected by the existing
+oracle-backed allocator-delta cases. Both restored runs return the pinned
+shape-vtable digest with zero mismatches. Phase 5 advances to 175 closed / 30
+deferred; its fresh full gate passes at 2,565/2,565 assertions. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase5-plane-sphere-dtors.md`.

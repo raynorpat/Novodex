@@ -1379,3 +1379,8 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 ### Continuation — prunable owner-notify adapter mutation closure (2026-10-08)
 
 - `phys_fn_001271` is now mutation-falsified by the registered Phase 5 `NxPhysicsShapeVtableTests` oracle differential. A direct adapter probe proves the owner and AABB are forwarded to vtable slot 10 once; changing the candidate to slot 9 reports `candidate_slot=9; mismatches=1`, while the restored build reports slot 10 and zero mismatches. Phase 5 advances to 173 closed / 32 reconstructed rows without row-specific mutation proof. The fresh Phase 5 gate passes all 19 targets and 2,565/2,565 registered coverage assertions (`build/phase5-owner-notify-final.log`). No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-owner-notify-001271.md`.
+
+
+### Continuation — plane and sphere deleting destructor mutation closures (2026-10-08)
+
+- `phys_fn_001263` and `phys_fn_001375` are independently mutation-falsified by the registered `NxPhysicsShapeVtableTests` allocator-delta cases. Suppressing either flag-1 self-free produces one mismatch; restoring both returns the pinned 629-case digest with zero mismatches. Phase 5 advances to 175 closed / 30 reconstructed rows. The full Phase 5 gate passes all 19 targets at its 2,565 assertion floor (`build/phase5-shape-dtor-final.log`). No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-plane-sphere-dtors.md`.

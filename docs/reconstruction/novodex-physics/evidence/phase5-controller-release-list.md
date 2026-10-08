@@ -886,3 +886,4 @@ Changing `shapeOwnerWorldAABB` to dispatch owner vtable slot 8 instead of slot 9
 `phys_fn_001269` mutation detection: `stdout_delta=2783`; the candidate stack overflowed under the slot-8 mutant, and the restored transcript is exact.
 `phys_fn_001014` mutation detection: `mismatches=1`; the flag-1 self-free mutant is caught and the restored oracle differential returns to zero mismatches.
 `phys_fn_001271` mutation detection: `candidate_slot=9; mismatches=1`; the restored owner-notify adapter calls slot 10 once and forwards the original owner and AABB.
+`phys_fn_001263` and `phys_fn_001375` mutation detection: suppressing the plane and sphere flag-1 self-free independently produces `mismatches=1`; restoring each returns to the exact aggregate shape-vtable result.
