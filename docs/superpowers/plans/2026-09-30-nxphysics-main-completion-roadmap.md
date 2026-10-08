@@ -1346,3 +1346,9 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 
 - `phys_fn_000957` (`BoxHullFacade::supportFace`, BOX hull slot 9) is now mutation-falsified by the registered `NxPhysicsShapeVtableTests` oracle differential. The clean fixture compares 324 cases at digest `e0477220`; forcing face 0 produced 150 mismatches and exit 1; the restored build returned to zero mismatches. The existing required Phase 5 coverage line already pins the clean digest and case count.
 - The fresh current-main Phase 5 gate passes all 18 staged-pair targets, the range static proof, both oracle differentials, and 2,311/2,311 coverage assertions. Inventory and both 80-file public-header roots pass. Phase 5 advances to 159 closed / 46 reconstructed-but-unfalsified rows. No public headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-support-face-000957.md`.
+
+
+### Continuation — box hull support-feature mutation closure (2026-10-08)
+
+- `phys_fn_000959` (`BoxHullFacade::supportFeature`, BOX hull slot 10) is mutation-falsified by the registered `NxPhysicsShapeVtableTests` oracle differential. Changing the no-edge arm to report `edgeWon=1` produces 145 mismatches; the restored build returns to the exact 324-case digest `e0477220`.
+- Phase 5 advances to 160 closed / 45 reconstructed-but-unfalsified rows. No public headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-support-feature-000959.md`.
