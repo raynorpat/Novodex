@@ -714,3 +714,15 @@ Baseline and restored `NxPhysicsBodyCreationTests` staged-pair runs are exact (`
 
 The registered `NxPhysicsActorShapeMutationTests` staged-pair differential catches changing the kind byte written by `nxPruningAddShape` at `shape+0xcf` from 0 to 1 (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=58`, `stderr_exact=True`; `build/phase5-001941-mutant.log`). Restoring kind 0 returns an exact differential (`stdout_delta=0`, `stderr_exact=True`; `build/phase5-001941-restored.log`).
 `phys_fn_001941` mutation detection: `stdout_delta=58`; restored output is exact (`stdout_delta=0`, `stderr_exact=True`). See `evidence/phase5-pruning-add-shape-001941.md`.
+
+
+### Capsule zero-center/radius (`phys_fn_001003`)
+
+The baseline `NxPhysicsObjectLayoutTests` oracle differential reports `aabbrows candidate ok=1`, capsule digest `0b2ae445`, and `layout candidate mismatches=0` (`build/phase5-001003-baseline.log`). Changing the first output store in `CapsuleShape::nxCapsuleZeroCenterRadius` from 0.0f to 1.0f is caught with `aabbrows candidate ok=0` and `layout candidate mismatches=1`; the mutant exits 1 (`build/phase5-001003-mutant.log`). Restoring the store returns the baseline digest, zero mismatches, and `layout result=differential-pass` (`build/phase5-001003-restored.log`).
+`phys_fn_001003` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-capsule-zero-center-001003.md`.
+
+
+### Plane unbounded extent (`phys_fn_001257`)
+
+The baseline `NxPhysicsObjectLayoutTests` oracle differential reports `planeext candidate ok=1`, digest `517c20a1`, and zero layout mismatches (`build/phase5-001257-baseline.log`). Replacing the +FLT_MAX output word with zero is caught with digest `69691905`, `candidate ok=0`, and `layout candidate mismatches=1`; the mutant exits 1 (`build/phase5-001257-mutant.log`). Restoring +FLT_MAX returns the original digest, zero mismatches, and `layout result=differential-pass` (`build/phase5-001257-restored.log`).
+`phys_fn_001257` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-plane-extent-001257.md`.
