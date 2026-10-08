@@ -21,9 +21,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 104,
+    "differential_falsified": 105,
     "oracle_differential_falsified": 32,
-    "deferred_reconstructed_not_falsified": 68,
+    "deferred_reconstructed_not_falsified": 67,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -1412,18 +1412,19 @@
         "mutation": "Added one word to the saved world-center copy at DynamicBody+0x230 in DynamicBody::construct.",
         "detected": "stdout_delta=12"
       }
-    }
-  ],
-  "deferred": [
+    },
     {
       "id": "phys_fn_000801",
       "rva": "0x0001b7a0",
-      "size": 741,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsBodyCreationTests",
+      "falsification": {
+        "mutation": "Added one word to the copied pose X at DynamicBodyBase+0x38 in DynamicBodyBase::construct.",
+        "detected": "stdout_delta=12"
+      }
+    }
+  ],
+  "deferred": [
     {
       "id": "phys_fn_000949",
       "rva": "0x00020880",
