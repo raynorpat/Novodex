@@ -149,7 +149,7 @@ NxPhysicsDynamicFirstTests reaches only the 000118 counterpart.
 | 000054 | 0x000026f0 | 167 | reconstructed (Task 7) | slot 54 addForceAtPos | NpActor.cpp:1993 `addForceAtPos` | implemented | faithful | 1: ActorForce 1 | Task 3: 000791 (r.x kept in the register, r.y/r.z spilled, torque components rounded once, one 000782 call) and 000782 from the listing (x unrounded in modes 0/3, angular rows (I2z + I1y) + I0x with the listing spills, one wake after both arms, mode > 4 still wakes); G1 0x12a, E1 0x12b and H1 from Task 2 |
 | 000056 | 0x000027a0 | 165 | reconstructed (Task 7) | slot 58 addForce | NpActor.cpp:2094 `addForce` | implemented | faithful | 12: ActorForce 12 | Task 3: 000782 from the listing (see 000054); G1 0x14d, E1 0x14e and H1 from Task 2 |
 | 000058 | 0x00002850 | 165 | reconstructed (Task 7) | slot 60 addTorque | NpActor.cpp:2135 `addTorque` | implemented | faithful | 14: ActorForce 14 | Task 3: 000782 angular arm from the listing (see 000054); G1 0x160, E1 0x161 and H1 from Task 2 |
-| 000060 | 0x00002900 | 72 | reconstructed | slot 62 computeKineticEnergy | NpActor.cpp:2156 `computeKineticEnergy`; OM ObjectModel.cpp:1119 | implemented | faithful | 5: ActorMomentum 5 | Task 3: the 000742 order: I_k w_k in registers, (vz vz + vy vy) + vx vx times m, ((m v.v + I2 w2 w2) + I1 w1 w1) + I0 w0 w0 halved, rounded to float. OM faithful |
+| 000060 | 0x00002900 | 72 | dynamically_gated | slot 62 computeKineticEnergy | NpActor.cpp:3059 `computeKineticEnergy`; OM ObjectModel.cpp:1119 | implemented | faithful | 5: ActorMomentum 5 | Oracle and candidate sum the translational term first, then I2/I1/I0 spin terms and halve; candidate rounds to `NxReal` before unlock. Zeroing translation is caught by ActorMomentum (`stdout_delta=14`); restored differential exact. See `evidence/phase5-actor-kinetic-energy-000060.md`. |
 | 000062 | 0x00002950 | 60 | reconstructed | slot 67 isGroupSleeping | NpActor.cpp:2336 `isGroupSleeping`; OM ObjectModel.cpp:3429 | implemented | faithful | 14: ActorDynamicSetter 14 | NA and OM faithful |
 | 000064 | 0x00002990 | 73 | reconstructed | slot 68 isSleeping | NpActor.cpp:2360 `isSleeping`; OM ObjectModel.cpp:1136 | implemented | faithful | 6: ActorDynamicSetter 6 | NA and OM faithful |
 | 000066 | 0x000029e0 | 75 | reconstructed | slot 69 getSleepLinearVelocity | NpActor.cpp:2372 `getSleepLinearVelocity`; OM ObjectModel.cpp:839 | implemented | faithful | 4: ActorDynamicSetter 4 | NA and OM faithful (sqrtss == fsqrt+fstp) |
@@ -2137,18 +2137,15 @@ Additional cross-cutting tags used in this review:
 #### phys_fn_000060 (0x2900, 72 B) -- computeKineticEnergy (slot 62)
 - candidate:
   - OM `nxActorRecordEnergyWord` ObjectModel.cpp:1121, with `nxBodyRecordEnergyWord` ObjectModel.cpp:1044
-  - NA `NpActorVtable::computeKineticEnergy` NpActor.cpp:2156
-- status: both implemented.
-- verdict: OM faithful; NA defect (x87 order).
+  - NA `NpActorVtable::computeKineticEnergy` NpActor.cpp:3059; it inlines the oracle helper's arithmetic order under the actor read lock.
+- status: both implemented; NA dynamically gated.
+- verdict: both faithful.
 - blocks checked:
   - 0x2900-0x2917: guard/record.
   - 0x2919-0x2930: call 000742, fstp to float, unguard.
   - 0x2931-0x2947: null record returns 0.
   - 000742 at 0x16dd0-0x16e28: `(((((v74^2+v70^2)+v6c^2)*m188 + (I194*w80)*w80) + (I190*w7c)*w7c) + (I18c*w78)*w78) * 0.5`.
-- defects (NA):
-  - 000742 addition order. NA computes `((I0w0w0 + I1w1w1) + I2w2w2) + ((v6c^2+v70^2)+v74^2)*m`, then *0.5.
-  - The oracle adds the translational term first, then the angular terms in reverse order (I2, I1, I0). Its linear sum starts with v74.
-  - The results can differ in the last bit.
+- NA: the inlined translational and angular terms follow 000742's order. Zeroing the translational term is caught by `NxPhysicsActorMomentumTests` (`stdout_delta=14`); restored output is exact. See `evidence/phase5-actor-kinetic-energy-000060.md`.
 - notes: OM's `I*(w*w)` association is exactly equivalent to the oracle's `(I*w)*w` in double, because both inner products are exact. This assumes the 53-bit x87 precision-control default.
 
 #### phys_fn_000062 (0x2950, 60 B) -- isGroupSleeping (slot 67)
@@ -2530,7 +2527,7 @@ Additional cross-cutting tags used in this review:
 |---|---|---|---|
 | 000050 | impl / partial | faithful / defect | NA: no kind-1 report, line 0xd9 "Actor::setLinearDamping: Actor must be dynamic!" (E1) |
 | 000052 | impl / partial | faithful / defect | NA: no kind-1 report, line 0xe8 getAngularDamping (E1) |
-| 000060 | impl / impl | faithful / defect | NA: energy sum order differs from 000742, which adds linear*m first, then I2, I1, I0 terms (x87 order) |
+| 000060 | impl / impl | faithful / faithful | NA inlines 000742's linear-first, I2/I1/I0 accumulation and rounds before unlock; mutation-falsified by ActorMomentum (`stdout_delta=14`) |
 | 000062 | impl / impl | faithful / faithful | -- |
 | 000064 | impl / impl | faithful / faithful | -- |
 | 000066 | impl / impl | faithful / faithful | -- |

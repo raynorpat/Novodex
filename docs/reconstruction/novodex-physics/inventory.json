@@ -1162,12 +1162,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/28",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/157",
       "static_proof": "guarded accessor over the nested record: phys_fn_000742's energy word, exact float zero when the record is null",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsActorMomentumTests staged-pair differential: zeroing the translational kinetic-energy contribution is caught with stdout_delta=14; restored output is exact. See evidence/phase5-actor-kinetic-energy-000060.md.",
       "notes": ""
     },
     {
