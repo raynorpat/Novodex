@@ -459,6 +459,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsSceneAllocatorTests PRIVATE
 		Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsSceneAllocatorTests bcrypt)
+	add_executable(NxPhysicsPopulatedSceneTeardownTests tests/PhysicsPopulatedSceneTeardownTests.cpp)
+	target_include_directories(NxPhysicsPopulatedSceneTeardownTests PRIVATE
+		Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsPopulatedSceneTeardownTests bcrypt)
 	add_executable(NxPhysicsActorNameTests tests/PhysicsActorNameTests.cpp)
 	target_include_directories(NxPhysicsActorNameTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
