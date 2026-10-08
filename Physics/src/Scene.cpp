@@ -856,6 +856,10 @@ static void nxFluidManagerReleaseDisabledFluid(void* manager, void* fluidInterna
 		}
 	}
 
+// phys_fn_003637 (0x00089d50): the oracle walks the manager's primary fluid
+// array and calls a three-byte nullsub with `actor` for every entry. The call
+// has no side effects, and NxScene::createActor ignores this helper's result,
+// so warning-only behavior is equivalent for empty and populated valid arrays.
 static void nxFluidManagerNotifyActorCreatedDisabled(void* manager, NxActor* actor)
 	{
 	(void)actor;

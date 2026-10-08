@@ -1252,3 +1252,6 @@ Continuation 2026-10-06: compared the controller constructor's descriptor copies
 ### Continuation — CMass orientation error tail (2026-10-08)
 
 - The registered DynamicSetter differential catches the row `phys_fn_000216` report-line mutation (`0x39f` to `0x39e`) with `stdout_delta=4`, equal zero exits, and exact stderr; the restored source is exact. The fresh Phase 5 gate passes all 18 targets at 2,306/2,306. Phase 5 now records 110 closed / 95 deferred rows. This closes the tail report arm only; full DLL reconstruction remains active. See `docs/reconstruction/novodex-physics/evidence/phase5-cmass-orientation-tail-000216.md`.
+
+
+Continuation 2026-10-08: reconstructed `phys_fn_003637`'s complete observable actor-created notification. The pinned function emits the already-tested disabled-manager warning and then calls `nullsub_1` once per fluid entry; the callee has no side effects, and `Scene::createActor` ignores the result. `Physics/src/Scene.cpp` therefore matches the observable behavior without a timing-only loop. The exact public actor-creation differential remains green; static evidence establishes that valid array contents cannot change this row's output. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/fluid-actor-created-noop.md`.

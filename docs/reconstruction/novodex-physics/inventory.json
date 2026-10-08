@@ -67594,13 +67594,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
+      "implementation": "Physics/src/Scene.cpp",
       "source": "Physics/src/fluids/FluidManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1372",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12597",
-      "static_proof": "phys_fn_003637 (0x00089d50) reports NXE_DB_WARNING when manager +0x2b is zero, then walks the primary fluid array and calls nullsub_12 with the created actor wrapper.",
+      "static_proof": "phys_fn_003637 (0x00089d50) reports NXE_DB_WARNING when manager +0x2b is zero, then loops over the primary fluid-array count and calls nullsub_1 (0x000a0f60) with the created actor wrapper. nullsub_1 is a three-byte return-only function; the sole caller ignores the manager method result and returns the created actor. Therefore the loop has no observable effect for any valid array contents.",
       "dynamic_proof": "NxPhysicsSimulationTests creates a public sphere actor after creating the disabled FluidManager. Oracle and candidate report the exact NXE_DB_WARNING tuple at FluidManager.cpp line 263 (simulation fluid manager actor-created; stdout_delta=0, stderr_exact=True; build/FluidGate/fluid-actor-notify-green.log). The manager array is empty in this pinned backend.",
-      "notes": "The disabled-manager, empty-array contract is gated. Extension-backed fluid notification state is outside this tested path."
+      "notes": "The candidate reproduces the complete observable contract: the warning gate and the oracle's no-op per-fluid loop. The static no-op proof extends beyond the empty manager state exercised dynamically."
     },
     {
       "id": "phys_fn_003638",
