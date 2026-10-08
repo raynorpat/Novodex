@@ -497,3 +497,5 @@ The staged `NxPhysicsActorDynamicsTests` pair baseline and restored candidate ar
 - `phys_fn_000026` zero-inertia mass-build mutation detection: `stdout_delta=18`. Full details: `evidence/phase5-body-record-000026.md`.
 
 - `phys_fn_000128` global-pose-reference z-word mutation detection: `stdout_delta=4`. Full details: `evidence/phase5-global-pose-reference-000128.md`.
+
+- `phys_fn_000134` CMass global-pose matrix-offset mutation detection: `stdout_delta=54`. Full details: `evidence/phase5-cmass-global-pose-000134.md`.
