@@ -869,12 +869,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/20",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/131",
       "static_proof": "actor construction tail over {vptr@0, owner@4, member subobject at +8..+13, body ptr at +0x14}: wall vptr, owner zero, member init (third table plus two zeroed fields), one-slot member table 0x1010468c over +8, body pointer, then the dynamic final table 0x10104530; ret 4 with eax = this",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsObjectLayoutTests actorctor differential: changing the constructor final vtable store from 0x10104530 to 0x10104534 makes the first actor-construction check fail and produces layout candidate mismatches=1; restoring 0x10104530 returns actorctor digest 19f4915a and zero layout mismatches.",
       "notes": ""
     },
     {

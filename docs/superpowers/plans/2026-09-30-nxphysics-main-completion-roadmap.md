@@ -1404,3 +1404,8 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 
 - `phys_fn_000042` is mutation-falsified by the registered `NxPhysicsObjectLayoutTests` actorctor lifecycle case. Changing the interface-wall vtable store to `0x101043d4` produces `mismatches=1`; restoring `0x101043d0` returns the lifecycle digest `19f4915a` with zero mismatches.
 - Phase 5 advances to 179 closed / 26 reconstructed-but-unfalsified rows. The fresh full Phase 5 gate passes all 19 targets and 2,565/2,565 assertions (`build/phase5-wall-dtor-final.log`). No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-wall-dtor-000042.md`.
+
+### Continuation — actor construction tail mutation closure (2026-10-08)
+
+- `phys_fn_000044` is mutation-falsified by the registered `NxPhysicsObjectLayoutTests` actorctor lifecycle case. Changing its final actor-vtable store to `0x10104534` produces `mismatches=1`; restoring `0x10104530` returns lifecycle digest `19f4915a` with zero mismatches.
+- Phase 5 advances to 180 closed / 25 reconstructed-but-unfalsified rows. The fresh full Phase 5 gate passes all 19 targets and 2,565/2,565 assertions (`build/phase5-actor-ctor-final.log`). No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-actor-ctor-000044.md`.
