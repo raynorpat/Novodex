@@ -406,3 +406,26 @@ staged gate exited 1. Restoring the command and rebuilding returned the staged d
 For `phys_fn_002008`, the recorded falsification spends `mismatches=1`; resolution-64 and
 resolution-80 command widths remain uncovered, and public-DLL routing remains a separate
 reconstruction milestone.
+
+---
+
+## 13. 2026-10-08 follow-up: Segment::SquareDistance row mutation
+
+`phys_fn_005493` (`Segment::SquareDistance`, `0x000f0560`, 252 bytes) is now closed in the Phase 4 ledger with row-level detection `mismatches=40000`. The test target loads the pinned
+oracle `NxPhysics.dll` (SHA-256
+`4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`) and calls its function at
+the recorded RVA; the candidate implementation is linked directly into `NxPhysicsThirdPartyTests`
+from the same NxOpcode sources used to build the DLL. It runs the grid (60,000 words) and wide
+(40,000 words) families, with control oracle digest `7199b521`.
+
+In a throwaway `git archive` copy of main at `1f9b4fe6`, the row's final squared-distance return
+was mutated to add `1.0f`. The registered differential reported 40,000 mismatches in the grid
+family and 6 in the wide family; the oracle digest stayed `7199b521`, and the target exited 1.
+The grid family's 40,000 mismatches are the recorded row-level detection; the wide family also
+moved, confirming sensitivity across the separate large-coordinate fixture.
+
+After restoring the return and rebuilding, both families again reported zero mismatches and
+worst ULP 0, candidate mismatches were 0, layout failures were 0, the oracle digest remained
+`7199b521`, and the target exited 0. This falsifies the reconstructed source row. It does not
+establish that Unreal routes calls through the rebuilt DLL; map retention and DLL-level routing
+remain separate checks for the complete reconstruction.

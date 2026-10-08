@@ -5574,7 +5574,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 266  # previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2561  # previous 2,560 plus the row-targeted base descriptor-load fixture
+    '5' = 2562  # exact registered Phase 5 coverage-line count; previously left one line unfloored
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths
