@@ -185,12 +185,12 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "dynamically_gated": 52,
-    "reconstructed": 35
+    "dynamically_gated": 54,
+    "reconstructed": 33
    },
    "bytes": {
-    "dynamically_gated": 18309,
-    "reconstructed": 17706
+    "dynamically_gated": 18705,
+    "reconstructed": 17310
    },
    "phases": {
     "5": 87

@@ -520,3 +520,10 @@ The Force target now includes a rotated-actor, offset-mass-frame `addLocalForceA
 - `phys_fn_000154` mutation detection: `stdout_delta=10`. Full details: `evidence/phase5-force-wrappers-000154-000156-000158.md`.
 - `phys_fn_000156` mutation detection: `stdout_delta=6`. Full details: `evidence/phase5-force-wrappers-000154-000156-000158.md`.
 - `phys_fn_000158` mutation detection: `stdout_delta=4`. Full details: `evidence/phase5-force-wrappers-000154-000156-000158.md`.
+
+### Local force and torque entry points (2026-10-08)
+
+The registered Force differential catches each entry point’s wrong accumulator selector; clean/restored output remains exact.
+
+- `phys_fn_000160` mutation detection: `stdout_delta=16`. Full details: `evidence/phase5-force-torque-wrappers-000160-000162.md`.
+- `phys_fn_000162` mutation detection: `stdout_delta=16`. Full details: `evidence/phase5-force-torque-wrappers-000160-000162.md`.

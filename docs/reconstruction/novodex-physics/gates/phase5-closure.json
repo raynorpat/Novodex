@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "phase": 5,
-  "note": "Phase 5 owns 205 function rows and 122 data objects. Sixty-five function rows are closed by registered staged-pair mutations, including the null-guard behavior of phys_fn_000006, actor group accessors, isDynamic, createShape, releaseShape behavior, mass-from-shapes, the kinematic body-flag transition, and global kinematic moves phys_fn_000090, phys_fn_000124, and phys_fn_000126. One row, phys_fn_000002, is closed by the NxPhysicsRangeIterationTests static proof. Nineteen function rows are closed by oracle differentials: eight Box shape-vtable rows, phys_fn_000829, phys_fn_000831, phys_fn_000841, phys_fn_000847, phys_fn_000849, phys_fn_001035, phys_fn_001249, phys_fn_004812, phys_fn_000004, phys_fn_000012, and phys_fn_000028. 120 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 Phase 5 function rows; the 122 data objects remain separately classified as described by their inventory records. See evidence/shape-self-001391.md and evidence/phase5-controller-release-list.md.",
+  "note": "Phase 5 owns 205 function rows and 122 data objects. Sixty-seven function rows are closed by registered staged-pair mutations, including the null-guard behavior of phys_fn_000006, actor group accessors, isDynamic, createShape, releaseShape behavior, mass-from-shapes, the kinematic body-flag transition, and global kinematic moves phys_fn_000090, phys_fn_000124, and phys_fn_000126. One row, phys_fn_000002, is closed by the NxPhysicsRangeIterationTests static proof. Nineteen function rows are closed by oracle differentials: eight Box shape-vtable rows, phys_fn_000829, phys_fn_000831, phys_fn_000841, phys_fn_000847, phys_fn_000849, phys_fn_001035, phys_fn_001249, phys_fn_004812, phys_fn_000004, phys_fn_000012, and phys_fn_000028. 118 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 Phase 5 function rows; the 122 data objects remain separately classified as described by their inventory records. See evidence/shape-self-001391.md and evidence/phase5-controller-release-list.md.",
   "proof_kinds": {
-    "differential_falsified": "A candidate mutation was caught by its registered staged-pair differential. The recorded nonzero stdout_delta, cases or digests count is measured from captured child output; the runner also requires exact stderr and equal exit codes for a passing differential, and compares exit codes so a crash mutant is rejected even when output is partial. The local force-at-position wrappers phys_fn_000154, phys_fn_000156, and phys_fn_000158 are independently caught by NxPhysicsActorForceTests.",
+    "differential_falsified": "A candidate mutation was caught by its registered staged-pair differential. The recorded nonzero stdout_delta, cases or digests count is measured from captured child output; the runner also requires exact stderr and equal exit codes for a passing differential, and compares exit codes so a crash mutant is rejected even when output is partial. The local force-at-position wrappers phys_fn_000154, phys_fn_000156, and phys_fn_000158 are independently caught by NxPhysicsActorForceTests. The local force and torque entry points phys_fn_000160 and phys_fn_000162 are independently caught by NxPhysicsActorForceTests.",
     "static_proof_falsified": "The NxPhysicsRangeIterationTests mutation changed reverse stepping to forward stepping; its named checks caught the broken visitation order, callback result, and negative-stride behavior for phys_fn_000002.",
     "oracle_differential_falsified": "Mutations to phys_fn_001391, phys_fn_000829, phys_fn_000831, phys_fn_000841, and phys_fn_000849, phys_fn_000955, phys_fn_000961, phys_fn_000963, phys_fn_000953, phys_fn_000967, phys_fn_000969, phys_fn_000971, phys_fn_001035, phys_fn_001249, and phys_fn_004812 were caught by NxPhysicsShapeVtableTests; mutations to phys_fn_000004, phys_fn_000012, and phys_fn_000847 were caught by NxPhysicsObjectLayoutTests; phys_fn_000028 was caught by a growth-capacity mutation in the same target. Each non-zero mismatch count records the failed case."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction; no function rows remain here.",
-    "reconstructed_not_falsified": "The row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 120 rows, each needing one mutation and one measured detection.",
+    "reconstructed_not_falsified": "The row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 118 rows, each needing one mutation and one measured detection.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -19,9 +19,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 65,
+    "differential_falsified": 67,
     "oracle_differential_falsified": 19,
-    "deferred_reconstructed_not_falsified": 120,
+    "deferred_reconstructed_not_falsified": 118,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -890,27 +890,29 @@
         "mutation": "nxNpActorLocalPosition(record, pos) -> pos in addLocalForceAtLocalPos",
         "detected": "stdout_delta=4"
       }
-    }
-  ],
-  "deferred": [
+    },
     {
       "id": "phys_fn_000160",
       "rva": "0x00006380",
-      "size": 198,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorForceTests",
+      "falsification": {
+        "mutation": "Changed addLocalForce’s nxNpActorAccumulateForce torque selector from false to true, routing its rotated force to the torque accumulator.",
+        "detected": "stdout_delta=16"
+      }
     },
     {
       "id": "phys_fn_000162",
       "rva": "0x00006450",
-      "size": 198,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorForceTests",
+      "falsification": {
+        "mutation": "Changed addLocalTorque’s nxNpActorAccumulateForce torque selector from true to false, routing its rotated torque to the force accumulator.",
+        "detected": "stdout_delta=16"
+      }
+    }
+  ],
+  "deferred": [
     {
       "id": "phys_fn_000166",
       "rva": "0x00006c60",
