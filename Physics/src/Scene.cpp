@@ -2145,6 +2145,7 @@ namespace
 			const NxReal requestedUpMotion = displacement[upAxis];
 			const NxReal initialUpProbe = requestedUpMotion > 0.0f ? 0.0f : stepOffset;
 			NxVec3 finalProbeNormal(0.0f, 0.0f, 0.0f);
+			NxVec3 finalProbeSlopeNormal(0.0f, 0.0f, 0.0f);
 			NxVec3 finalProbeTriangle[3];
 			bool finalProbeHitTriangle = false;
 			NxVec3 motionPhases[3] = {
@@ -2174,6 +2175,7 @@ namespace
 					NxU32 hitAxis = 3;
 					bool hitTriangle = false;
 					NxVec3 triangleHitNormal(0.0f, 0.0f, 0.0f);
+					NxVec3 triangleHitSlopeNormal(0.0f, 0.0f, 0.0f);
 					NxVec3 triangleHitVertices[3];
 					if(scene)
 						{
@@ -2353,8 +2355,17 @@ namespace
 										fraction = meshFraction;
 										hitTriangle = true;
 										triangleHitNormal = meshNormal;
-						for(NxU32 vertex = 0; vertex != 3; ++vertex)
-							triangleHitVertices[vertex] = triangle[vertex];
+										// Preserve the actual face normal separately for slope
+										// classification; SAT still supplies response arithmetic.
+										triangleHitSlopeNormal = (triangle[1] - triangle[0]) ^
+											(triangle[2] - triangle[0]);
+										const NxReal triangleNormalLengthSquared =
+											triangleHitSlopeNormal.magnitudeSquared();
+										if(triangleNormalLengthSquared > 0.0f)
+											triangleHitSlopeNormal *= 1.0f / NxMath::sqrt(
+												triangleNormalLengthSquared);
+										for(NxU32 vertex = 0; vertex != 3; ++vertex)
+											triangleHitVertices[vertex] = triangle[vertex];
 									const bool horizontalOnlyYUp = upAxis == 1 && remaining.y == 0.0f &&
 										(remaining.x != 0.0f || remaining.z != 0.0f);
 									if(horizontalOnlyYUp)
@@ -2459,6 +2470,7 @@ namespace
 						{
 						finalProbeHitTriangle = true;
 						finalProbeNormal = triangleHitNormal;
+						finalProbeSlopeNormal = triangleHitSlopeNormal;
 						for(NxU32 vertex = 0; vertex != 3; ++vertex)
 							finalProbeTriangle[vertex] = triangleHitVertices[vertex];
 						}
@@ -2484,11 +2496,14 @@ namespace
 				*reinterpret_cast<const NxReal*>(bytes + 0x10);
 			if(stepProbeEnabled && finalProbeHitTriangle && requestedUpMotion < 0.0f)
 				{
-				const NxReal normalLengthSquared = finalProbeNormal.magnitudeSquared();
+				const NxReal normalLengthSquared = finalProbeSlopeNormal.magnitudeSquared();
 				if(normalLengthSquared > 0.0f)
 					{
-					finalProbeNormal *= 1.0f / NxMath::sqrt(normalLengthSquared);
-					const NxReal normalUp = finalProbeNormal[upAxis];
+					finalProbeSlopeNormal *= 1.0f / NxMath::sqrt(normalLengthSquared);
+					const NxReal responseNormalLengthSquared = finalProbeNormal.magnitudeSquared();
+					if(responseNormalLengthSquared > 0.0f)
+						finalProbeNormal *= 1.0f / NxMath::sqrt(responseNormalLengthSquared);
+					const NxReal normalUp = finalProbeSlopeNormal[upAxis];
 					if(normalUp >= 0.0f && normalUp < correctionSlopeThreshold)
 						{
 						NxVec3 correctionDirection(0.0f, 0.0f, 0.0f);
@@ -2532,8 +2547,10 @@ namespace
 										static_cast<NxReal>(static_cast<double>(tangent.x) * remainingDistance + position.x),
 										static_cast<NxReal>(static_cast<double>(tangent.y) * remainingDistance + position.y),
 										static_cast<NxReal>(static_cast<double>(tangent.z) * remainingDistance + position.z));
-								collisionFlags &= ~4u;
 								}
+							// A qualifying face correction consumes the final downward
+							// probe flag even when the corner-ray subquery has no hit.
+							collisionFlags &= ~4u;
 							}
 						}
 					}

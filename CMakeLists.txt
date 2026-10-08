@@ -446,6 +446,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsSceneConstructorTests PRIVATE
 		Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsSceneConstructorTests bcrypt)
+	add_executable(NxPhysicsControllerSweepFaceTests tests/PhysicsControllerSweepFaceTests.cpp)
+	target_include_directories(NxPhysicsControllerSweepFaceTests PRIVATE
+		Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsControllerSweepFaceTests bcrypt)
 	# A fresh process isolates actor/shape name-map behavior from the populated
 	# lifecycle fixture's intentionally stateful teardown sequence.
 	# Foundation created with one counting allocator, NxCreatePhysicsSDK given a

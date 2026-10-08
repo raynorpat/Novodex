@@ -15,7 +15,7 @@ $NxPhaseTestTargets = [ordered] @{
     '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests', 'NxPhysicsPMapResolution80Tests')
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsActorReleaseShapeProbeTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsSimulationTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsConvexMeshTests')
     '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsSimulationTests')
-    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneConstructorTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
+    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneConstructorTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
     '8' = @()
 }
 
@@ -1715,6 +1715,9 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsSceneConstructorTests' = @(
         'scene constructor internal_link=1'
+    )
+    'NxPhysicsControllerSweepFaceTests' = @(
+        'controller correction_face position=3f000000.3f8ccccd.3f000000 flags=00000000'
     )
     'NxPhysicsDynamicFirstTests' = @(
         'actor dynamic_first created=1 allocs=34 frees=6',
@@ -5602,6 +5605,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsDynamicFirstTests',
     'NxPhysicsEmptySceneTests',
     'NxPhysicsSceneConstructorTests',
+    'NxPhysicsControllerSweepFaceTests',
     'NxPhysicsEffectorTests',
     'NxPhysicsCoreDumpTests',
     'NxPhysicsConvexMeshTests',

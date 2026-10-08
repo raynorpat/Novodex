@@ -1207,3 +1207,10 @@ Continuation 2026-10-06: compared the controller constructor's descriptor copies
 
 - The registered `NxPhysicsActorBodyFlagTests` baseline is exact. Independent temporary mutations of `phys_fn_000785`'s enable inverse-mass write and `phys_fn_000787`'s disable inverse-mass reconstruction are each caught with `stdout_delta=2` (both processes exit zero; stderr exact). The restored source rebuild returns to `stdout_delta=0`.
 - Phase 5 closure advances from 61 closed / 144 deferred to 63 closed / 142 deferred. Public Physics headers remain unchanged; the full DLL reconstruction remains active. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-kinematic-transition-000785-000787.md`.
+
+
+### Continuation — controller face-overlap correction probe (2026-10-07)
+
+- Added the approved standalone triangle-face scene. Its baseline transcript was red only on collision flags: both DLLs stopped at `3f000000.3f8ccccd.3f000000`, while the oracle returned `0` and the candidate returned `4`. The candidate now separates the SAT response axis from the actual triangle face normal used for slope classification and consumes the final downward-probe flag for a qualifying correction even when the corner-ray subquery misses.
+- The focused controller target and existing simulation target match the oracle exactly. Phase 5 passes 18 staged targets at 2,302/2,302 assertions; Phase 7 passes 13 staged targets at 1,380/1,378. All 48 Viewer CTest selections complete over all 39 available scenes (43 pass; five existing signature-verified pinned-oracle asset skips). Inventory reports 6,338 functions / 5,138 data objects / zero unexplained, and all 80 public Physics headers remain unchanged.
+- This closes the observed Phase 5 red transcript and this focused correction case only. Broader face/edge callbacks, transformed sweeps, successful step-up behavior, and the full NxPhysics reconstruction remain open. Evidence: `docs/reconstruction/novodex-physics/evidence/controller-face-overlap-correction.md`.
