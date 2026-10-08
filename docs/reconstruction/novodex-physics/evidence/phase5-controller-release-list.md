@@ -463,3 +463,11 @@ The registered `NxPhysicsActorBodyFlagTests` baseline matches exactly. Changing 
 
 `phys_fn_000785` mutation detection: `stdout_delta=2`.
 `phys_fn_000787` mutation detection: `stdout_delta=2`. Full details: `evidence/phase5-kinematic-transition-000785-000787.md`.
+
+## Base shape slots 4 and 5: `phys_fn_001249` and `phys_fn_004812`
+
+The test directly calls the pinned oracle entries at `NxPhysics.dll+0x24f70` and `+0xb4070`, then calls the corresponding candidate `ShapeBase` methods. It checks that slot 4 returns false without changing the destination and slot 5 returns null. The registered `NxPhysicsShapeVtableTests` baseline prints `shape vtable base_stubs oracle_digest=6282208d cases=2 mismatches=0`; the overall vtable case count is now 628.
+
+Each check was validated with an isolated candidate source mutation. Changing slot 4 to return true caused `base shape slot 4 stub differs`, `mismatches=1`, and exit 1; writing zero through slot 4's destination while returning false was independently caught with `mismatches=1`. Changing slot 5 to return a non-null pointer caused the corresponding slot 5 failure, `mismatches=1`, and exit 1. Restoring each implementation returned the baseline to zero mismatches. The Phase 5 registered coverage floor now includes this additional oracle assertion. This closes only the two base return stubs and their tested x86 calling conventions; it does not establish every derived shape caller contract.
+phys_fn_001249 slot4 wrong-return mutation: mismatches=1.
+phys_fn_004812 slot5 wrong-return mutation: mismatches=1.

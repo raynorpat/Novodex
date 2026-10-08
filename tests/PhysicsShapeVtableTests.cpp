@@ -525,6 +525,57 @@ int wmain(int argc, wchar_t** argv)
     new(candidateBytes) BoxShape(0, 0);
     void** oracleTable = *reinterpret_cast<void***>(oracleBytes);
     void** candidateTable = *reinterpret_cast<void***>(candidateBytes);
+    unsigned baseStubCases = 0, baseStubFailures = 0;
+    unsigned baseStubDigest = 2166136261u;
+    {
+        // Base-shape slots 4 and 5 are inherited stubs. Exercise their exact
+        // entry points directly: final shape tables can replace these slots,
+        // so derived-table calls do not prove the base implementations.
+        typedef bool (__thiscall* BaseSlot4Fn)(void*, void*, float, unsigned);
+        typedef void* (__thiscall* BaseSlot5Fn)(void*, void*, void*, void*, void*);
+        unsigned outputSentinel = 0x6a5b4c3du;
+        unsigned oracleOutput = outputSentinel;
+        unsigned candidateOutput = outputSentinel;
+        void* const argument1 = &outputSentinel;
+        void* const argument2 = reinterpret_cast<void*>(0x12345678u);
+        void* const argument3 = reinterpret_cast<void*>(0x87654321u);
+        void* const argument4 = &baseStubCases;
+        BaseSlot4Fn oracleSlot4 = reinterpret_cast<BaseSlot4Fn>(
+            const_cast<unsigned char*>(base) + 0x24f70);
+        const bool oracleSlot4Result = oracleSlot4(oracleBytes, &oracleOutput,
+            2.5f, 0x13579bdfu);
+        const bool candidateSlot4Result =
+            reinterpret_cast<ShapeBase*>(candidateBytes)->nxBaseSlot4(
+                &candidateOutput, 2.5f, 0x13579bdfu);
+        const unsigned slot4OracleWord = oracleSlot4Result ? 1u : 0u;
+        baseStubDigest = foldOracle(baseStubDigest, &slot4OracleWord,
+            sizeof(slot4OracleWord));
+        baseStubDigest = foldOracle(baseStubDigest, &oracleOutput,
+            sizeof(oracleOutput));
+        if(oracleSlot4Result || oracleSlot4Result != candidateSlot4Result ||
+           oracleOutput != outputSentinel || candidateOutput != oracleOutput) {
+            fprintf(stderr, "base shape slot 4 stub differs\n");
+            ++baseStubFailures;
+        }
+        ++baseStubCases;
+
+        BaseSlot5Fn oracleSlot5 = reinterpret_cast<BaseSlot5Fn>(
+            const_cast<unsigned char*>(base) + 0xb4070);
+        void* const oracleSlot5Result = oracleSlot5(oracleBytes, argument1,
+            argument2, argument3, argument4);
+        void* const candidateSlot5Result =
+            reinterpret_cast<ShapeBase*>(candidateBytes)->nxBaseSlot5(
+                argument1, argument2, argument3, argument4);
+        const unsigned slot5OracleWord = oracleSlot5Result ? 1u : 0u;
+        baseStubDigest = foldOracle(baseStubDigest, &slot5OracleWord,
+            sizeof(slot5OracleWord));
+        if(oracleSlot5Result || oracleSlot5Result != candidateSlot5Result) {
+            fprintf(stderr, "base shape slot 5 stub differs\n");
+            ++baseStubFailures;
+        }
+        ++baseStubCases;
+        cases += baseStubCases;
+    }
     for(unsigned slot = 0; slot < 17; ++slot) {
         HMODULE owner = 0;
         BOOL ok = GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
@@ -2333,6 +2384,8 @@ int wmain(int argc, wchar_t** argv)
     nxSetSdkAllocatorBridge(0);
     printf("shape vtable oracle_digest=%08x cases=%u failures=%u\n",
         oracleDigest, cases, failures);
+    printf("shape vtable base_stubs oracle_digest=%08x cases=%u mismatches=%u\n",
+        baseStubDigest, baseStubCases, baseStubFailures);
     printf("shape vtable boxmass oracle_digest=%08x cases=%u failures=%u\n",
         boxMassDigest, boxMassCases, boxMassFailures);
     printf("shape vtable capsule_load_return oracle=%u candidate=%u\n",
@@ -2345,7 +2398,8 @@ int wmain(int argc, wchar_t** argv)
         sweepDigest, sweepCases, sweepFailures);
     printf("box hull oracle_digest=%08x cases=%u failures=%u\n",
         hull.digest, hull.cases, hull.failures);
-    if(capsuleLoadOracleReturn != capsuleLoadCandidateReturn || massFailures ||
+    if(capsuleLoadOracleReturn != capsuleLoadCandidateReturn || baseStubFailures ||
+       massFailures ||
        centreFailures ||
        boxMassFailures ||
        sweepFailures || hull.failures)

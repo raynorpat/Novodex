@@ -414,7 +414,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'release_shape count=1 remaining_first=1 remaining_released=0'
     )
     'NxPhysicsShapeVtableTests' = @(
-        'shape vtable oracle_digest=ed1294b6 cases=626 failures=0'
+        'shape vtable oracle_digest=ed1294b6 cases=628 failures=0'
+        'shape vtable base_stubs oracle_digest=6282208d cases=2 mismatches=0'
         # BOX slot 4 (phys_fn_000849) reaches the mass-frame builder with
         # descriptor dimensions, local pose, density scaling, and gated flags.
         'shape vtable boxmass oracle_digest=82843962 cases=24 failures=0'
@@ -5539,7 +5540,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 264  # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2302  # plus 36 actor mass-from-shapes oracle transcript lines
+    '5' = 2303  # plus 36 actor mass-from-shapes lines and the two base-shape stub checks
                # plus compound-trigger per-shape enter/stay/leave lifecycle
                # plus three-pair trigger reconciliation and queue growth
                # plus public trigger enter/stay/leave lifecycle
@@ -5564,7 +5565,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1378  # plus compound-trigger per-shape enter/stay/leave lifecycle
+    '7' = 1380  # plus two controller correction transcript assertions
+               # plus compound-trigger per-shape enter/stay/leave lifecycle
                # plus three-pair trigger reconciliation and queue growth
                # plus public trigger enter/stay/leave lifecycle
                # previous 1,374 plus the already-grounded short downward controller probe
