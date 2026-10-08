@@ -7,8 +7,8 @@
     "code_bytes": 938498,
     "open_code_rows": 2787,
     "terminally_closed_code_rows": 0,
-    "mapped_code_rows": 1670,
-    "source_correspondence_only_rows": 505,
+    "mapped_code_rows": 1672,
+    "source_correspondence_only_rows": 504,
     "directly_exported_code_rows": 41,
     "artifact_rows": 3551,
     "artifact_bytes": 116182,
@@ -181,12 +181,12 @@
         "rows": 561,
         "bytes": 114007,
         "open_rows": 561,
-        "rows_without_implementation_mapping": 408,
+        "rows_without_implementation_mapping": 406,
         "rows_with_unresolved_indirect_calls": 300,
         "by_state": {
-          "discovered": 233,
+          "discovered": 231,
           "dynamically_gated": 20,
-          "reconstructed": 308
+          "reconstructed": 310
         }
       }
     }
@@ -27105,7 +27105,7 @@
           {
             "id": "phys_fn_003637",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_005666",
@@ -154444,13 +154444,13 @@
       "size": 100,
       "phase": 7,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_003637",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
+        "path": "Physics/src/Scene.cpp",
+        "role": "reconstruction",
         "symbol": null,
-        "file_exists": null,
+        "file_exists": true,
         "oracle_source": "Physics/src/fluids/FluidManager.cpp",
         "source_correspondence_recorded": true,
         "candidate_map_reference_recorded": false,
@@ -154497,7 +154497,7 @@
       },
       "evidence": {
         "strength": "proof_text_recorded",
-        "inventory_state": "discovered",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 7,
@@ -154510,7 +154510,7 @@
         "owner_phase": 7,
         "row_id": "phys_fn_003637",
         "rva": "0x00089d50",
-        "action": "recover_contract_and_reconstruct",
+        "action": "add_row_specific_falsification",
         "ledger_reason": "not_reconstructed_in_phase",
         "driving_phases": [],
         "requires_dependency_review": true
@@ -154596,15 +154596,15 @@
       "size": 143,
       "phase": 7,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_003641",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
+        "path": "Physics/src/Scene.cpp",
+        "role": "reconstruction",
         "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
+        "file_exists": true,
+        "oracle_source": "Physics/src/fluids/FluidManager.cpp",
+        "source_correspondence_recorded": true,
         "candidate_map_reference_recorded": false,
         "candidate_map_reference_basis": null
       },
@@ -154657,14 +154657,14 @@
       },
       "applicable_contexts": {
         "four_digit_hex_literals": [],
-        "simulation_mentioned": false,
+        "simulation_mentioned": true,
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 7,
         "ledger_disposition": "deferred",
         "ledger_reason": "not_reconstructed_in_phase",
@@ -154675,7 +154675,7 @@
         "owner_phase": 7,
         "row_id": "phys_fn_003641",
         "rva": "0x00089e00",
-        "action": "recover_contract_and_reconstruct",
+        "action": "add_row_specific_falsification",
         "ledger_reason": "not_reconstructed_in_phase",
         "driving_phases": [],
         "requires_dependency_review": true
@@ -154878,7 +154878,7 @@
           {
             "id": "phys_fn_003641",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -230742,7 +230742,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "5e7f42fc56fd2638e70a53ab95fec0473904b2b0193315d3a53439a964167bee",
+    "inventory_sha256": "e465746df5dafbd02024c46a53f706e9f79a3503756b013f3a991df60b3a3f01",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "3695dd2e6b069def544c821b383613af92b49f565cb2603e57304436832ea622",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
