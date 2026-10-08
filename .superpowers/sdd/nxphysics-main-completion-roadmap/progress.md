@@ -81,3 +81,12 @@ correct and the restored target matches exactly. Phase 5 advances to 177
 closed / 28 deferred; the fresh full gate passes at 2,565/2,565 assertions.
 Evidence:
 `docs/reconstruction/novodex-physics/evidence/phase5-box-mesh-dtors.md`.
+
+Task M2-owner-notify-001271: complete (commit `0c388b28`; mutation target
+failed on slot 9 and restored target passed; Phase 5 passed 2,565/2,565).
+Task M2-shape-dtors-001263-001375: complete (commit `2db00eec`; both targeted
+mutations failed as expected, restored shape-vtable differential passed, and
+Phase 5 passed 2,565/2,565).
+Task M2-box-mesh-dtors-000979-001399: complete (commit `35ea4f56`; both
+targeted mutations failed as expected, restored destructor checks passed, and
+Phase 5 passed 2,565/2,565).
