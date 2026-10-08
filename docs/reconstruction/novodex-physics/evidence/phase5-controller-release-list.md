@@ -656,3 +656,10 @@ The registered DynamicSetter differential catches a source-line mutation in the 
 
 - `phys_fn_000744` changing the group-sleep comparison from `> 0.0f` to `>= 0.0f` is caught by `NxPhysicsObjectLayoutTests`: `actorsm5 candidate ok=0`, `mismatches=1`. The restored candidate returns digest `75b57124` with zero mismatches.
 - Full details: `evidence/phase5-chain-settled-000744.md`.
+
+
+### Sphere and capsule mass-frame builders (`phys_fn_000851`, `phys_fn_000853`)
+
+- `phys_fn_000851` sphere mass mutation detection: `stdout_delta=16`; both mutant processes exit 0 with exact stderr, and the restored candidate is exact.
+- `phys_fn_000853` capsule mass mutation detection: `stdout_delta=18`; both mutant processes exit 0 with exact stderr, and the restored candidate is exact.
+- Full details and logs: `evidence/phase5-shape-mass-000851-000853.md`.

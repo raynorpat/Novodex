@@ -191,3 +191,8 @@ Continuation 2026-10-08: closed Phase 5 row `phys_fn_000742` (the direct body-re
 Continuation 2026-10-08: closed Phase 5 row `phys_fn_000744`, the group-sleep chain helper, using the registered `NxPhysicsObjectLayoutTests` oracle differential. Changing the sleep comparison from `> 0.0f` to `>= 0.0f` makes zero-valued sleeping members report awake and is caught with `actorsm5 candidate ok=0` and `mismatches=1`; the restored baseline returns digest `75b57124`, zero mismatches, and an exact differential. Phase 5 now records 127 closed / 78 deferred functions. Public headers and production behavior are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-chain-settled-000744.md`.
 
 Fresh Win32 Release Phase 5 also passes all 18 staged targets and 2,311/2,311 coverage assertions after the 000744 closure (`build/phase5-chain-settled-000744-full-gate.log`).
+
+
+Continuation 2026-10-08: closed Phase 5 rows `phys_fn_000851` and `phys_fn_000853`, the sphere and capsule mass-frame builders, with separate mutations in the registered `NxPhysicsActorMassTests` target. Changing each builder's radius input to `radius + 1.0f` is caught with `stdout_delta=16` and `18`; both mutant pairs exit 0 with exact stderr, and both restored controls are exact. Phase 5 now records 129 closed / 76 deferred functions. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-shape-mass-000851-000853.md`.
+
+Fresh Win32 Release Phase 5 also passes all 18 staged targets and 2,311/2,311 assertions after rows 000851/000853 (`build/phase5-shape-mass-000851-000853-full-gate.log`).
