@@ -604,3 +604,9 @@ The registered DynamicSetter differential catches a source-line mutation in the 
 
 - phys_fn_000927 mutation detection: oxrow2 candidate ok=0 d13=ea972950, mismatches=1; restored run reports ok=1, mismatches=0.
 - Full details: vidence/phase5-box-save-state-000927.md.
+
+
+### Box world-AABB row (2026-10-08)
+
+- phys_fn_000935 mutation detection: oxrow3 candidate ok=0, mismatches=1; restored run reports ok=1, mismatches=0.
+- Full details: vidence/phase5-box-world-aabb-000935.md.
