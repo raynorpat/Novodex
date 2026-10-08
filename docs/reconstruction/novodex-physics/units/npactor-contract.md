@@ -185,7 +185,7 @@ NxPhysicsDynamicFirstTests reaches only the 000118 counterpart.
 | 000126 | 0x00003f80 | 1192 | reconstructed (Task 7) | slot 12 moveGlobalOrientation | NpActor.cpp:1164 `moveGlobalOrientation` | implemented | faithful | 3: ActorDynamics 3 | Task 3: composes inline under its own lock with its own orders (translation +0x50; M p row 0 in the register, rows 1-2 spilled; G = M F row by row), the 000801 conversion, 000784 and its wake; no longer delegates |
 | 000128 | 0x00004430 | 333 | reconstructed (Task 7) | slot 9 getGlobalPoseReference | NpActor.cpp:1100 `getGlobalPoseReference` | implemented | faithful | 2: ActorCMass 2 | all blocks incl. the one-shot 0xd0 warning (line 0x2c0) and the x87 quat-to-rows sequence; Task 2 made the report getInstance().error (the inline `cmp [instance],0; int3`); the Task 3 review moved position x/y through fld/fstp (SNaN quieted) and z as a dword, as 0x10004553-0x10004568 |
 | 000130 | 0x00004580 | 318 | dynamically_gated | slot 5 getGlobalPoseVal | NpActor.cpp:1116 `getGlobalPoseVal`; OM ObjectModel.cpp:1359 | implemented | faithful | 16: ActorCMass 6, ActorDynamicSetter 6, ActorLifecycle 4 | NA: one read lock around both inline sub-reads. Translation perturbation is caught by ActorLifecycle (`stdout_delta=8`); restored differential exact. OM retains its no-guard, double-precision quaternion conversion difference. See `evidence/phase5-actor-get-global-pose-000130.md`. |
-| 000132 | 0x000046c0 | 259 | reconstructed | slot 7 getGlobalOrientationVal | NpActor.cpp:1058 `getGlobalOrientationVal`; OM ObjectModel.cpp:3276 | implemented | faithful | 20: ActorCMass 6, ActorDynamicSetter 7, ActorLifecycle 7 | NA: Task 3 added the read lock (NG); x87 helper exact. OM: no guard, no spills (the OM form) |
+| 000132 | 0x000046c0 | 259 | dynamically_gated | slot 7 getGlobalOrientationVal | NpActor.cpp:1260 `getGlobalOrientationVal`; OM ObjectModel.cpp:3276 | implemented | faithful | 20: ActorCMass 6, ActorDynamicSetter 7, ActorLifecycle 7 | NA: one read lock spans the quaternion and cached-matrix arms; x87 helper exact. First-matrix-word +1 mutation is caught by ActorLifecycle (`stdout_delta=6`); restored differential exact. OM has no guard or x87 spills. See `evidence/phase5-actor-get-global-orientation-000132.md`. |
 | 000134 | 0x000047d0 | 907 | reconstructed (Task 7) | slot 32 getCMassGlobalPoseVal | NpActor.cpp:1644 `getCMassGlobalPoseVal` | implemented | faithful | 21: ActorCMass 21 | Task 3: W = R F in the 134 order ((a1f4 + a2f7) + a0f1, (a0f2 + a1f5) + a2f8 in columns 1 and 2; nxNpActorWorldMassRotation NX_RF_134); ROT and the position were already faithful; E1 0x30a from Task 2 |
 | 000136 | 0x00004b60 | 498 | reconstructed (Task 7) | slot 33 getCMassGlobalPositionVal | NpActor.cpp:1657 `getCMassGlobalPositionVal` | implemented | faithful | 21: ActorCMass 21 | E1 0x314 reproduced by Task 2; ROT and position arithmetic faithful |
 | 000138 | 0x00004d60 | 658 | reconstructed (Task 7) | slot 34 getCMassGlobalOrientationVal | NpActor.cpp:1669 `getCMassGlobalOrientationVal` | implemented | faithful | 21: ActorCMass 21 | E1 0x31d reproduced by Task 2; ROT and RF faithful (nxNpActorDerivedMassFrame) |
@@ -2469,16 +2469,16 @@ Additional cross-cutting tags used in this review:
 #### phys_fn_000132 (0x46c0, 259 B) -- getGlobalOrientationVal (slot 7)
 - candidate:
   - OM `nxQuatToMatrix0132` ObjectModel.cpp:3279
-  - NA `NpActorVtable::getGlobalOrientationVal` NpActor.cpp:1058, with the `__asm` helper :970
-- status: both implemented.
-- verdict: OM defect; NA defect (NG).
+  - NA `NpActorVtable::getGlobalOrientationVal` NpActor.cpp:1260, with the `__asm` helper :1150
+- status: both implemented; NA dynamically gated.
+- verdict: OM has no read guard and differs in quaternion precision; NA matches the oracle.
 - blocks checked:
   - 0x46c0-0x46d9: guard/record.
   - 0x46df-0x478c: x87 sequence writing straight into out, with spills yy, yz, xz, diagonal, xw.
   - 0x479e-0x47c0: static arm copies 9 words from body+0x20.
 - defects:
   - OM: no guard, and the same double/no-spill x87 difference as 000130.
-  - NA: 0x46cc/0x478f/0x47b2 have no read guard. The helper `__asm` matches 0x46df-0x478c exactly.
+  - NA: one read guard spans both the quaternion and cached-matrix arms. The helper `__asm` matches 0x46df-0x478c exactly. A +1.0f mutation to the first returned matrix word is caught by `NxPhysicsActorLifecycleTests` (`stdout_delta=6`); restored output is exact. See `evidence/phase5-actor-get-global-orientation-000132.md`.
 
 #### phys_fn_000146 (0x58f0, 579 B) -- getPointVelocityVal (slot 65)
 - candidate: NA `NpActorVtable::getPointVelocityVal` NpActor.cpp:728 (`__asm` path :745-821). There is no OM form.
@@ -2559,6 +2559,6 @@ Additional cross-cutting tags used in this review:
 | 000118 | impl / missing | defect / missing | OM: frees via nxGetSdkAllocator, not nxFoundationSDKAllocator (0x101041bc), and returns void. NA: no dtor; Scene.cpp:1369 frees the wrapper with no table stores |
 | 000120 | -- / impl | -- / faithful (G1 0x22) | -- |
 | 000130 | impl / impl | defect / faithful | OM: no guard; double quat-to-matrix without the oracle's float spills. NA: one read guard spans both sub-reads; mutation-falsified by ActorLifecycle (`stdout_delta=8`) |
-| 000132 | impl / impl | defect / defect | OM: no guard plus the double/no-spill x87 difference. NA: no read guard (x87 helper exact) |
+| 000132 | impl / impl | defect / faithful | OM: no guard plus the double/no-spill x87 difference. NA: one read guard spans both arms; mutation-falsified by ActorLifecycle (`stdout_delta=6`) |
 | 000146 | -- / impl | -- / faithful | -- |
 | 000148 | -- / impl | -- / faithful | -- |

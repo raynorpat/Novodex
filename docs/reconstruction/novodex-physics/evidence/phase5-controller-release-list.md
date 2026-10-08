@@ -943,3 +943,8 @@ IDA confirms both rows use the SDK pointer-binding table keyed by `[actor+0x14]`
 
 `NxPhysicsActorLifecycleTests` exercises the public actor full-pose getter for static, dynamic, rotated, and quarter-turn actors. Adding `1.0f` to the returned pose's Z translation produces a staged differential `stdout_delta=8` with equal zero exits and exact stderr; the restored differential is exact. See `evidence/phase5-actor-get-global-pose-000130.md`.
 `phys_fn_000130` mutation detection: `stdout_delta=8`; restored public-DLL differential is exact (`stdout_delta=0`, exact stderr).
+
+## Actor global-orientation getter: `phys_fn_000132`
+
+`NxPhysicsActorLifecycleTests` observes static, rotated, and quarter-turn public orientation values. Adding `1.0f` to the first returned matrix word produces a staged differential `stdout_delta=6` with equal zero exits and exact stderr; the restored differential is exact. See `evidence/phase5-actor-get-global-orientation-000132.md`.
+`phys_fn_000132` mutation detection: `stdout_delta=6`; restored public-DLL differential is exact (`stdout_delta=0`, exact stderr).

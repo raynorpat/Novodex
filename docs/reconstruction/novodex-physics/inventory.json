@@ -2473,12 +2473,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "actor_dynamic vtable slot: quaternion to 3x3 matrix (0x46c0, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/50",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/294",
       "static_proof": "writes the 3x3 rotation matrix for the quaternion at record+0x5c (x, y, z, w) into out[0..8], or copies the cached 36 bytes at [self+0x14]+0x20 when the record pointer is null; returns out either way",
-      "dynamic_proof": "confirmed via quatm0132 differential (3z135): null cached-matrix arm + quaternion arm failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
+      "dynamic_proof": "NxPhysicsActorLifecycleTests staged-pair differential: adding 1.0f to the first returned matrix word is caught with stdout_delta=6; restored output is exact. See evidence/phase5-actor-get-global-orientation-000132.md.",
       "notes": ""
     },
     {

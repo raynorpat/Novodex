@@ -1236,7 +1236,7 @@ static void nxNpActorRotationFromQuaternionGetter(const float* q, float* rows)
 
 // phys_fn_000132 at 0x000046c0, actor vtable slot 7. The dynamic arm
 // converts the quaternion in the nested record; the static arm copies the
-// outer body's matrix at +0x20. Lock behavior remains a separate dependency.
+// outer body's matrix at +0x20. One read guard spans both arms.
 static NxMat33 nxNpActorGlobalOrientation(const void* actor)
 	{
 	const unsigned char* body = nxNpActorBody(const_cast<void*>(actor));
