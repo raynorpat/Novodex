@@ -1316,3 +1316,7 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 
 - `phys_fn_000945` now has an independent mutation proof: reversing the live visualization parameter guard produces `mismatches=1`; the restored 64-case contract passes.
 - Phase 5 stands at 124 closed / 81 deferred; the 2,309 coverage assertions remain required.
+
+### Continuation — dynamic-body island dirty-bit closure (2026-10-08)
+
+- `phys_fn_000748` now has a direct isolated-record fixture for both island-present and island-absent behavior. Removing the `+0x1e4 |= 2` update is detected (`oracle=3.5`, mutant `1.5`); restoring it returns exact oracle output. Phase 5 advances to 125 closed / 80 deferred, with 2,310 coverage assertions. No public headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-mark-island-dirty-000748.md`.

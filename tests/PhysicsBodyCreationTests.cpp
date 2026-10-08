@@ -21,9 +21,72 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(
 	NxU32, NxUserAllocator*, NxUserOutputStream*);
+
+typedef void (__thiscall *MarkIslandDirtyFn)(void*);
+
+static unsigned word(const unsigned char* bytes, unsigned offset);
+
+static void writeWord(unsigned char* bytes, unsigned offset, unsigned value)
+{
+	memcpy(bytes + offset, &value, sizeof(value));
+}
+
+static unsigned markIslandDirtyRva(const wchar_t* pairDirectory)
+{
+	if(wcsstr(pairDirectory, L"oracle")) return 0x16f80;
+	char path[MAX_PATH] = {};
+	if(!GetModuleFileNameA(0, path, MAX_PATH)) return 0;
+	char* slash = strrchr(path, '\\');
+	if(!slash) return 0;
+	strcpy(slash + 1, "NxPhysics.map");
+	HANDLE file = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, 0,
+		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	if(file == INVALID_HANDLE_VALUE) return 0;
+	static char contents[65536];
+	DWORD bytesRead = 0;
+	const BOOL read = ReadFile(file, contents, sizeof(contents) - 1, &bytesRead, 0);
+	CloseHandle(file);
+	if(!read) return 0;
+	contents[bytesRead] = 0;
+	char* symbol = strstr(contents, "?markIslandDirty@DynamicBody@@QAEXXZ");
+	if(!symbol) return 0;
+	while(symbol > contents && symbol[-1] != '\n') --symbol;
+	unsigned section = 0, offset = 0, address = 0;
+	char name[128] = {};
+	if(sscanf(symbol, "%x:%x %127s %x", &section, &offset, name, &address) != 4 ||
+		strcmp(name, "?markIslandDirty@DynamicBody@@QAEXXZ")) return 0;
+	return address - 0x10000000u;
+}
+
+// Public actor creation calls this row before an island exists. Use a minimal
+// self-root record to exercise its non-null-island branch directly in each
+// staged DLL; the row reads only +0x1bc, +0x1e0, and +0x1e4 on this path.
+static bool testMarkIslandDirty(HMODULE physics, const wchar_t* pairDirectory)
+{
+	const unsigned rva = markIslandDirtyRva(pairDirectory);
+	if(!rva) return false;
+	MarkIslandDirtyFn mark = reinterpret_cast<MarkIslandDirtyFn>(
+		reinterpret_cast<unsigned char*>(physics) + rva);
+	if(!mark) return false;
+	unsigned char record[0x1e8] = {};
+	unsigned islandObject = 0;
+	writeWord(record, 0x1bc, reinterpret_cast<NxU32>(record));
+	writeWord(record, 0x1e0, reinterpret_cast<NxU32>(&islandObject));
+	writeWord(record, 0x1e4, 1);
+	mark(record);
+	const unsigned withIsland = word(record, 0x1e4);
+
+	writeWord(record, 0x1e0, 0);
+	writeWord(record, 0x1e4, 5);
+	mark(record);
+	const unsigned withoutIsland = word(record, 0x1e4);
+	printf("bodycreate mark_island_dirty=%x.%x\n", withIsland, withoutIsland);
+	return withIsland == 3 && withoutIsland == 5;
+}
 
 static NxPageGuardedAllocator gAllocator;
 
@@ -236,6 +299,8 @@ int wmain(int argc, wchar_t** argv)
 	sceneDesc.setToDefault();
 	NxScene* scene = sdk->createScene(sceneDesc);
 	if(!scene) return nxFail("scene creation failed");
+	if(!testMarkIslandDirty(physics, pairDirectory))
+		return nxFail("DynamicBody::markIslandDirty differential fixture failed");
 
 	NxMat34 identity;
 	identity.id();

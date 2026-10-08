@@ -2058,6 +2058,7 @@ $NxRequiredCoverageLines = [ordered] @{
     # descriptors (not the density bodies' tensor, which is 000008's), the record
     # ids and the release traffic (000799 frees the kinematic block).
     'NxPhysicsBodyCreationTests' = @(
+        'bodycreate mark_island_dirty=3.5',
         'bodycreate default_created=1',
         'bodycreate default_mass=41700000',
         'bodycreate default_inverse_mass=3d888889',
@@ -5563,11 +5564,12 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 4  # actor-group flags, scene creation/indexing, release/survivor lookup and destructor frees
-    '3' = 532  # previous 531 plus populated static-first Scene teardown
+    '3' = 533  # previous 532 plus DynamicBody::markIslandDirty's isolated state cases
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 264  # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2309  # includes the sphere slot-15 and BOX slot-4 oracle assertions
+    '5' = 2310  # previous 2309 plus DynamicBody::markIslandDirty's isolated state cases
+               # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths
                # plus 36 actor mass-from-shapes lines, the added local-force-at-position case, and the two base-shape stub checks

@@ -639,3 +639,9 @@ The registered DynamicSetter differential catches a source-line mutation in the 
 
 - `phys_fn_000945` is caught by reversing the live visualization guard (`slot3 mismatches=1`); restoring the guard passes the 64-case candidate contract and ordering check.
 - Phase 5 advances to 124 closed / 81 deferred functions. The 2,309 assertion floor is unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-debug-render-000945.md`.
+
+
+### DynamicBody island dirty bit (`phys_fn_000748`)
+
+- `phys_fn_000748` mutation detection: `stdout_delta=172`; oracle reports `bodycreate mark_island_dirty=3.5`, candidate mutant reports `1.5` and exits 1. The restored candidate differential is exact.
+- Full details: `evidence/phase5-mark-island-dirty-000748.md`.
