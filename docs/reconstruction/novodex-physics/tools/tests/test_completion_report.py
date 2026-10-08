@@ -1,4 +1,5 @@
 import json
+import hashlib
 import sys
 import tempfile
 import unittest
@@ -20,7 +21,7 @@ class CompletionReportTests(unittest.TestCase):
                  "kind": "code", "phase": 2, "state": "reconstructed",
                  "source": "src/a.cpp", "implementation": "src/a.cpp",
                  "implementation_symbol": "A::run", "static_proof": "listed",
-                 "dynamic_proof": "", "notes": ""},
+                 "dynamic_proof": "candidate symbol retained in NxPhysics.map", "notes": ""},
                 {"id": "phys_fn_000002", "rva": "0x2000", "size": 10,
                  "kind": "code", "phase": 2, "state": "discovered",
                  "source": None, "static_proof": None, "dynamic_proof": None,
@@ -61,6 +62,9 @@ class CompletionReportTests(unittest.TestCase):
             "closed_rows"], 1)
         first, second = report["rows"]
         self.assertEqual(first["reachability"]["status"], "direct_export")
+        self.assertTrue(first["implementation"]["candidate_map_reference_recorded"])
+        self.assertEqual(first["implementation"]["candidate_map_reference_basis"],
+                         "dynamic_proof")
         self.assertEqual(first["evidence"]["strength"], "row_specific_gate_falsification")
         self.assertEqual(first["dependencies"]["direct_rows"],
                          ["phys_fn_000002"])
@@ -87,6 +91,18 @@ class CompletionReportTests(unittest.TestCase):
                 self.assertTrue(row["implementation"]["file_exists"])
                 self.assertEqual(row["implementation"]["symbol"], expected_symbol)
                 self.assertNotEqual(row["next_packet"]["action"], "classified_artifact_review")
+
+        self.assertTrue(by_id["phys_fn_005493"]["implementation"][
+            "candidate_map_reference_recorded"])
+
+        target = REPO_DIR / "docs/reconstruction/novodex-physics/completion-backlog.json"
+        snapshot = json.loads(target.read_text(encoding="utf-8"))
+        gates = REPO_DIR / "docs/reconstruction/novodex-physics/gates"
+        expected_hashes = {
+            path.relative_to(REPO_DIR).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in sorted(gates.glob("phase*-closure.json"))
+        }
+        self.assertEqual(snapshot["source"]["closure_ledgers_sha256"], expected_hashes)
 
 
 def build_report_from_repo(repo_root):

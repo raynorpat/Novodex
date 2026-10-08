@@ -112,6 +112,8 @@ def _implementation(row, repo_root):
     exists = None
     if path and repo_root is not None:
         exists = (repo_root / path).is_file()
+    dynamic_text = row.get("dynamic_proof") or ""
+    candidate_map_reference = "NxPhysics.map" in dynamic_text
     return {
         "path": path,
         "role": "reconstruction" if path else "unmapped",
@@ -119,7 +121,8 @@ def _implementation(row, repo_root):
         "file_exists": exists,
         "oracle_source": row.get("source"),
         "source_correspondence_recorded": bool(row.get("source")),
-        "linkage_proven": False,
+        "candidate_map_reference_recorded": candidate_map_reference,
+        "candidate_map_reference_basis": "dynamic_proof" if candidate_map_reference else None,
     }
 
 
@@ -406,6 +409,10 @@ def main(argv=None):
         "capstone_sha256": _sha256(capstone_path),
         "generator_sha256": _sha256(Path(__file__).resolve()),
         "oracle_sha256": inventory.get("pins", {}).get("oracle", {}).get("sha256"),
+        "closure_ledgers_sha256": {
+            path.relative_to(root).as_posix(): _sha256(path)
+            for path in sorted(closure_dir.glob("phase*-closure.json"))
+        },
     }
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n",
