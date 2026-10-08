@@ -508,3 +508,7 @@ The staged `NxPhysicsActorDynamicsTests` pair baseline and restored candidate ar
 - `phys_fn_000142` CMass/inertia getter mutation detection: `stdout_delta=24`. Full details: `evidence/phase5-inertia-getters-000140-000142-000144.md`.
 
 - `phys_fn_000144` CMass/inertia getter mutation detection: `stdout_delta=24`. Full details: `evidence/phase5-inertia-getters-000140-000142-000144.md`.
+
+- `phys_fn_000150` force-helper mutation detection: `stdout_delta=18`. Full details: `evidence/phase5-force-helpers-000150-000152.md`.
+
+- `phys_fn_000152` force-helper mutation detection: `stdout_delta=4`. Full details: `evidence/phase5-force-helpers-000150-000152.md`.

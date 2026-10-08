@@ -2801,14 +2801,15 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/54",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/320",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, helper: rotate a local vector by the body orientation (thiscall on the record; callers 000156/000158/000160/000162); verdict faithful): Task 2: rewritten from the listing: ROT via nxNpActorRotationFromQuaternionGetter, rows (m1y+m2z)+m0x in x87 registers (double lifetimes, NpActor.cpp now /arch:IA32), one rounding at the store. Staged-pair cases: NxPhysicsActorForceTests.",
-      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxNpActorRotateLocalForce) in the candidate build (build/Release/NxPhysics.map) was hit 19 times (ActorForce 19) against build/pairs/candidate (NxPhysics.dll sha256 2f9815a105ac1fe5754ce2d69d7d1b2030a336eb8327fadeeb0f5388481c3dee, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1862/1862); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6, re-recorded for its final-review fixes and re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?nxNpActorRotateLocalForce@@YA?AVNxVec3@@PBEABV1@@Z hit 19 times (Force 19); equal to the oracle row's count on every target.",
+      "dynamic_proof": "NxPhysicsActorForceTests exercises nxNpActorRotateLocalForce through the local-force and local-position public actor paths. Clean and restored staged pairs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated candidate mutation Changed the local-force rotation’s first-row local-y coefficient from m[1] to m[2]. The registered Force differential rejects it with both processes exiting 0, stdout_delta=18, and exact stderr. Detailed runs: evidence/phase5-force-helpers-000150-000152.md.",
       "notes": "",
-      "implementation": "Physics/src/NpActor.cpp"
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "nxNpActorRotateLocalForce"
     },
     {
       "id": "phys_fn_000151",
@@ -2838,14 +2839,15 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/55",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/321",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, helper: local point to world (callers 000154/000158); verdict faithful): Task 2: rewritten from the listing: ROT, x = (R01y+R02z)+R00x kept in the register and added to t.x; y = (R11y+R12z)+R10x and z = (R22z+R20x)+R21y spilled to float before t.y/t.z are added. Staged-pair cases: NxPhysicsActorForceTests.",
-      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxNpActorLocalPosition) in the candidate build (build/Release/NxPhysics.map) was hit 4 times (ActorForce 4) against build/pairs/candidate (NxPhysics.dll sha256 2f9815a105ac1fe5754ce2d69d7d1b2030a336eb8327fadeeb0f5388481c3dee, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1862/1862); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6, re-recorded for its final-review fixes and re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?nxNpActorLocalPosition@@YA?AVNxVec3@@PBEABV1@@Z hit 4 times (Force 4); equal to the oracle row's count on every target.",
+      "dynamic_proof": "NxPhysicsActorForceTests exercises nxNpActorLocalPosition through the local-force and local-position public actor paths. Clean and restored staged pairs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated candidate mutation Changed the local-point transform’s first-row local-y coefficient from r[1] to r[2]. The registered Force differential rejects it with both processes exiting 0, stdout_delta=4, and exact stderr. Detailed runs: evidence/phase5-force-helpers-000150-000152.md.",
       "notes": "",
-      "implementation": "Physics/src/NpActor.cpp"
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "nxNpActorLocalPosition"
     },
     {
       "id": "phys_fn_000153",
