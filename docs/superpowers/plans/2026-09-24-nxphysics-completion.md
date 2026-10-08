@@ -321,3 +321,6 @@ The current runners hard-code the primary repository/build roots; M1 must parame
 
 
 **M2 follow-up — box-hull shared-hook accessor, 2026-10-08:** Closed `phys_fn_000985` (`BoxHullFacade::sharedHook`) through the pinned-oracle `NxPhysicsObjectLayoutTests` differential. Returning null instead of the stable three-word block produced `mismatches=1`; restoring the block returned to `mismatches=0`. Phase 5 now records 163 closed / 42 reconstructed-but-unfalsified rows, remains pending, and still has 122 data objects to disposition. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-sharedhook-000985.md`.
+
+
+**M2 follow-up — capsule save-to-state row, 2026-10-08:** Closed `phys_fn_000991` (`CapsuleShape::nxCapsuleSaveState`) using the pinned-oracle `NxPhysicsObjectLayoutTests` differential. Replacing the row's base-save return with false is caught (`morerows candidate okCap=0`, `mismatches=1`); restoring the tail call returns to `okCap=1`, `mismatches=0`. Its existing record fixture uses the default zero capsule fields, so non-default field values remain unproven. Phase 5 advances to 164 closed / 41 reconstructed-but-unfalsified rows; it remains pending. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-capsule-save-000991.md`.

@@ -856,3 +856,7 @@ Reversing the BOX hit-normal hint branch in `BoxShape::nxBoxRaycast` is caught b
 ## Box hull shared-hook accessor: `phys_fn_000985`
 
 `phys_fn_000985` mutation detection: `mismatches=1`; restoring the stable shared-block return restores the exact oracle differential (`mismatches=0`). See `evidence/phase5-box-sharedhook-000985.md`.
+
+## Capsule save-to-state row: `phys_fn_000991`
+
+`phys_fn_000991` mutation detection: `mismatches=1`; restoring the base-save tail call returns the complete capsule record differential to exact (`mismatches=0`). See `evidence/phase5-capsule-save-000991.md`.

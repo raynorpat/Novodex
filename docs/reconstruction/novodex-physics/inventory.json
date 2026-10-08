@@ -18353,13 +18353,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/484",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3053",
       "static_proof": "__thiscall: radius (+0xe0) to record+0x4c, TWICE the stored half-height (fld; fadd st(0),st(0) over +0xe4) to record+0x50, third word (+0xe8) raw to record+0x54, then TAIL-JUMPS to the BASE save-to-descriptor row 0x000256f0; CAPSULE vtable .rdata 0x106b20 slot 13",
-      "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests capsave family on a real constructed capsule: oracle record digest bf079f3c equals candidate bitwise over the poisoned 0x58-byte record",
-      "notes": "P5 Task 3: descriptor height is the FULL height -- the stored word is the half-height.",
+      "dynamic_proof": "The pinned-oracle NxPhysicsObjectLayoutTests differential drives the save row on a constructed capsule and compares its return plus the full poisoned 0x58-byte descriptor record. Baseline: oracle saved=1 digest=bf079f3c, candidate okCap=1, mismatches=0. Mutation: replacing the row's base-save tail-call return with false yields candidate okCap=0 and mismatches=1. Restored run: okCap=1, mismatches=0, differential-pass. Evidence: evidence/phase5-capsule-save-000991.md.",
+      "notes": "P5 Task 3: descriptor height is the FULL height -- the stored word is the half-height. The registered oracle differential catches a false save-result mutation and compares the full saved record; non-default capsule-field values remain unproven.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
