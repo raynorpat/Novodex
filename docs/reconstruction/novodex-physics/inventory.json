@@ -17373,13 +17373,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/457",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2965",
-      "static_proof": "__thiscall ret 4: writes pose-one translation (+0x30/+0x34/+0x38) to out[0..2] and sqrt(dx*dx+dy*dy+dz*dz) over the facade dims (+0xe4/e8/ec) to out[3]; BOX vtable .rdata 0x10106ab8 slot 10 (merged-run index 34)",
-      "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests boxrow family on a real constructed box with default dims: oracle words 00000000.00000000.00000000.3fddb3d7 equal candidate bitwise (sqrt(3) is association-exact at these inputs); general-dims x87 association left open in evidence",
-      "notes": "P5 Task 3: first BOX-final behavior row closed. Scene-raycast Task 2: the root is an fsqrt through the X87Sqrt.h helper x87FsqrtDot3 in the listing order ((dx dx + dy dy) + dz dz) instead of CRT sqrt.",
+      "static_proof": "IDA disassembly at 0x10020670: writes pose-one translation (+0x30/+0x34/+0x38) to out[0..2]; loads z,y,x, computes x*x then y*y, adds x²+y², computes z*z, adds it, executes fsqrt, and stores out[3]. This establishes sqrt((dx*dx + dy*dy) + dz*dz) and the x87 operation order; BOX vtable slot 10.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests boxrow uses dimensions 2.5, 3.75, 4.125 and translation (1.25,-2.5,0.75); oracle output 3fa00000.c0200000.3f400000.40c38275 equals candidate bitwise (digest 4e1a53cd). Omitting the dy*dy term is caught with mismatches=1; restored differential has zero mismatches.",
+      "notes": "P5 Task 3: BOX slot 10. IDA confirms the x87 association ((dx*dx + dy*dy) + dz*dz); a non-unit differential fixture covers the dimensions and translated center.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {

@@ -314,9 +314,11 @@ digest `4aa4d389`, coverage floor 24.
 out[0..2] and `sqrt(dx²+dy²+dz²)` over the facade dims to out[3]. Driven by
 a new `boxrow` family on a real constructed box: oracle words
 `00000000.00000000.00000000.3fddb3d7` (center = origin, diagonal = √3),
-candidate bitwise identical — at the constructor-default dims every x87
-association of the sum is exact, so the drive is valid while the
-general-dims association stays an explicitly open question in the header.
+candidate bitwise identical on the original constructor-default fixture. IDA
+confirms the x87 order `((dx*dx + dy*dy) + dz*dz)`; the registered fixture
+now also covers non-unit dimensions and a translated pose. The targeted
+missing-`dy*dy` mutation produces one mismatch. The general-dimensions
+question is closed by this disassembly and differential evidence.
 Registrations 25 lines, oracle digest `629e8ada`, coverage floor 25.
 
 Extended: slots 11 and 13 closed the same way. Slot 11 (`phys_fn_000939`)

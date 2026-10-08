@@ -465,10 +465,10 @@ class BoxShape
 	bool nxBoxSweep(void* out, const float* swept) const;
 
 	//! BOX-table slot 10, phys_fn_000937 (0x00020670): writes the pose-one
-	//! translation (+0x30/+0x34/+0x38) to out[0..2] and a sqrt-of-squared-
-	//! dims value to out[3]. The x87 association of the sum is unestablished
-	//! for general dims; for the constructor defaults (1,1,1) every
-	//! association yields the same bits, which is what the gate drives.
+	//! translation (+0x30/+0x34/+0x38) to out[0..2] and computes
+	//! sqrt((dx*dx + dy*dy) + dz*dz) to out[3]. Oracle instructions load and
+	//! multiply each dimension in that order, add dx²+dy², add dz², then
+	//! execute fsqrt. The differential fixture drives non-unit dimensions.
 	void				nxBoxCenterAndDiagonal(float* out) const;
 
 	//! phys_fn_001305 (0x00025960): conditional debug render, `ret 4`.

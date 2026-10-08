@@ -617,3 +617,9 @@ The registered DynamicSetter differential catches a source-line mutation in the 
 - `phys_fn_000939` mutation detection: `boxrow2 candidate ok=0`, `mismatches=1`; restored output matches exactly.
 - `phys_fn_000941` mutation detection: `boxrow3 candidate ok=0`, `mismatches=1`; restored output matches exactly.
 - Full details: `evidence/phase5-box-zero-center-000939.md` and `evidence/phase5-box-local-aabb-000941.md`.
+
+
+### Box slot-10 general-dimension row (2026-10-08)
+
+- `phys_fn_000937` matches the oracle with non-unit dimensions and a translated pose; omitting `dy*dy` is caught with `mismatches=1`, while the restored differential is exact.
+- IDA disassembly confirms `(dx*dx + dy*dy) + dz*dz` before `fsqrt`. Full details: `evidence/phase5-box-center-diagonal-000937.md`.

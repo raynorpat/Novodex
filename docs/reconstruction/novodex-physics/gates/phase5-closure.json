@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "phase": 5,
-  "note": "Phase 5 owns 205 function rows and 122 data objects. 95 function rows are closed by registered staged-pair mutations, including the actor layout, lifecycle, force/momentum, pose, center-of-mass, and kinematic paths. Twenty-four function rows are closed by oracle differentials for shape-vtable, object-layout, base-shape, and shape-growth behaviors; one range-iteration row is closed by a static mutation proof. The eight center-of-mass setters phys_fn_000206, 000208, 000210, 000212, 000214, 000218, 000220, and 000222 are independently caught by NxPhysicsActorCMassTests (evidence/phase5-cmass-setter-mutations-000206-000222.md). 85 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 Phase 5 function rows; the 122 data objects remain separately classified as described by their inventory records. The global actor pose setters phys_fn_000196, 000198, 000200, and 000202, and CMass global pose setter phys_fn_000204, were independently mutation-falsified by NxPhysicsActorCMassTests; restored output is exact. The separate 163-byte tail row phys_fn_000216 is mutation-falsified on the registered DynamicSetter error-report case (stdout_delta=4; evidence/phase5-cmass-orientation-tail-000216.md).",
+  "note": "Phase 5 owns 205 function rows and 122 data objects. 95 function rows are closed by registered staged-pair mutations, including the actor layout, lifecycle, force/momentum, pose, center-of-mass, and kinematic paths. Twenty-five function rows are closed by oracle differentials for shape-vtable, object-layout, base-shape, and shape-growth behaviors; one range-iteration row is closed by a static mutation proof. The eight center-of-mass setters phys_fn_000206, 000208, 000210, 000212, 000214, 000218, 000220, and 000222 are independently caught by NxPhysicsActorCMassTests (evidence/phase5-cmass-setter-mutations-000206-000222.md). 84 function rows remain reconstructed but not falsified, none remain unreconstructed, and no data object is dispositioned. The ledger accounts for all 205 Phase 5 function rows; the 122 data objects remain separately classified as described by their inventory records. The global actor pose setters phys_fn_000196, 000198, 000200, and 000202, and CMass global pose setter phys_fn_000204, were independently mutation-falsified by NxPhysicsActorCMassTests; restored output is exact. The separate 163-byte tail row phys_fn_000216 is mutation-falsified on the registered DynamicSetter error-report case (stdout_delta=4; evidence/phase5-cmass-orientation-tail-000216.md).",
   "proof_kinds": {
     "differential_falsified": "A candidate mutation was caught by its registered staged-pair differential. The recorded nonzero stdout_delta, cases or digests count is measured from captured child output; the runner also requires exact stderr and equal exit codes for a passing differential, and compares exit codes so a crash mutant is rejected even when output is partial. The local force-at-position wrappers phys_fn_000154, phys_fn_000156, and phys_fn_000158 are independently caught by NxPhysicsActorForceTests. The local force and torque entry points phys_fn_000160 and phys_fn_000162 are independently caught by NxPhysicsActorForceTests. The actor mass, inertia, linear damping, and angular damping setters phys_fn_000166, phys_fn_000168, phys_fn_000170, and phys_fn_000172 are independently caught by NxPhysicsActorDynamicSetterTests. The actor velocity and momentum setters phys_fn_000174, phys_fn_000176, phys_fn_000178, phys_fn_000180, and phys_fn_000182 are independently caught by their registered DynamicSetter and Momentum differentials. The global actor pose setters phys_fn_000196, phys_fn_000198, phys_fn_000200, and phys_fn_000202, and CMass global pose setter phys_fn_000204, are independently caught by NxPhysicsActorCMassTests. The eight center-of-mass setters phys_fn_000206, 000208, 000210, 000212, 000214, 000218, 000220, and 000222 are independently caught by registered NxPhysicsActorCMassTests mutations at the setter stores; each mutant has equal zero exits and exact stderr, and the restored transcript is exact. The phys_fn_000216 orientation error-report tail is independently caught on NxPhysicsActorDynamicSetterTests with stdout_delta=4 and exact restored output. The sphere internal slot-15 radius getter phys_fn_001359 is caught by a direct vtable call in NxPhysicsActorDynamicSetterTests (stdout_delta=2; both child exits 0; exact stderr; restored output exact). The capsule slot-14 radius setter phys_fn_000995 is caught by NxPhysicsActorDynamicSetterTests after mutating its +0xe0 store to radius + 1.0f (stdout_delta=4; restored output exact). Sphere center-radius slot 10 phys_fn_001363, capsule center-radius slot 10 phys_fn_001001, and capsule local-AABB slot 8 phys_fn_001004 are independently caught by NxPhysicsActorDynamicSetterTests (each stdout_delta=2; equal zero exits and exact stderr; each restored output exact).",
     "static_proof_falsified": "The NxPhysicsRangeIterationTests mutation changed reverse stepping to forward stepping; its named checks caught the broken visitation order, callback result, and negative-stride behavior for phys_fn_000002.",
-    "oracle_differential_falsified": "Mutations to phys_fn_001391, phys_fn_000829, phys_fn_000831, phys_fn_000841, and phys_fn_000849, phys_fn_000955, phys_fn_000961, phys_fn_000963, phys_fn_000953, phys_fn_000967, phys_fn_000969, phys_fn_000971, phys_fn_001035, phys_fn_001249, and phys_fn_004812 were caught by NxPhysicsShapeVtableTests; mutations to phys_fn_000004, phys_fn_000012, and phys_fn_000847 were caught by NxPhysicsObjectLayoutTests; phys_fn_000028 was caught by a growth-capacity mutation in the same target. Each non-zero mismatch count records the failed case. The sphere slot-14 set-radius row phys_fn_001357 is caught by NxPhysicsObjectLayoutTests after a +1.0f store mutation (mismatches=1; restored candidate mismatches=0). The box slot-13 save-state row phys_fn_000927 is caught by NxPhysicsObjectLayoutTests after changing the first saved dimension to +1.0f (candidate digest ea972950 vs oracle 853c971d; mismatches=1; restored mismatches=0). The box slot-9 world-AABB row phys_fn_000935 is caught by NxPhysicsObjectLayoutTests after adding 1.0f to out[0] (mismatches=1; restored mismatches=0). The box slot-11 zero-center row phys_fn_000939 is caught by NxPhysicsObjectLayoutTests after changing out[0] to 1.0f (mismatches=1; restored mismatches=0). The box slot-8 local-AABB row phys_fn_000941 is caught after changing out[0] from negative to positive extent (mismatches=1; restored mismatches=0)."
+    "oracle_differential_falsified": "Mutations to phys_fn_001391, phys_fn_000829, phys_fn_000831, phys_fn_000841, and phys_fn_000849, phys_fn_000955, phys_fn_000961, phys_fn_000963, phys_fn_000953, phys_fn_000967, phys_fn_000969, phys_fn_000971, phys_fn_001035, phys_fn_001249, and phys_fn_004812 were caught by NxPhysicsShapeVtableTests; mutations to phys_fn_000004, phys_fn_000012, and phys_fn_000847 were caught by NxPhysicsObjectLayoutTests; phys_fn_000028 was caught by a growth-capacity mutation in the same target. Each non-zero mismatch count records the failed case. The sphere slot-14 set-radius row phys_fn_001357 is caught by NxPhysicsObjectLayoutTests after a +1.0f store mutation (mismatches=1; restored candidate mismatches=0). The box slot-13 save-state row phys_fn_000927 is caught by NxPhysicsObjectLayoutTests after changing the first saved dimension to +1.0f (candidate digest ea972950 vs oracle 853c971d; mismatches=1; restored mismatches=0). The box slot-9 world-AABB row phys_fn_000935 is caught by NxPhysicsObjectLayoutTests after adding 1.0f to out[0] (mismatches=1; restored mismatches=0). The box slot-11 zero-center row phys_fn_000939 is caught by NxPhysicsObjectLayoutTests after changing out[0] to 1.0f (mismatches=1; restored mismatches=0). The box slot-8 local-AABB row phys_fn_000941 is caught after changing out[0] from negative to positive extent (mismatches=1; restored mismatches=0). The box slot-10 center-and-diagonal row phys_fn_000937 is caught by NxPhysicsObjectLayoutTests with non-unit dimensions and translated pose; omitting dy*dy yields mismatches=1, and the restored candidate matches the oracle exactly. IDA confirms the operation order ((dx*dx + dy*dy) + dz*dz) before fsqrt."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction; no function rows remain here.",
@@ -22,8 +22,8 @@
   },
   "counts": {
     "differential_falsified": 95,
-    "oracle_differential_falsified": 24,
-    "deferred_reconstructed_not_falsified": 85,
+    "oracle_differential_falsified": 25,
+    "deferred_reconstructed_not_falsified": 84,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -1242,6 +1242,16 @@
         "mutation": "Changed BoxShape::nxBoxLocalAABB out[0] from negative x extent to positive x extent.",
         "detected": "mismatches=1"
       }
+    },
+    {
+      "id": "phys_fn_000937",
+      "rva": "0x00020670",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "For the non-unit box-row fixture, omitted dy*dy from BoxShape::nxBoxCenterAndDiagonal while preserving default-dimension behavior.",
+        "detected": "mismatches=1"
+      }
     }
   ],
   "deferred": [
@@ -1579,15 +1589,6 @@
       "size": 115,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000937",
-      "rva": "0x00020670",
-      "size": 69,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
