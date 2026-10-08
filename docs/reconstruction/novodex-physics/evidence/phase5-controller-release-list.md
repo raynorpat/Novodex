@@ -953,3 +953,9 @@ IDA confirms both rows use the SDK pointer-binding table keyed by `[actor+0x14]`
 
 `NxPhysicsActorMomentumTests` includes three kinetic-energy inputs, including a midpoint chosen to distinguish accumulation order. Zeroing the translational contribution produces a staged differential `stdout_delta=14` with equal zero exits and exact stderr; the restored differential is exact. IDA confirms the oracle wrapper calls helper `phys_fn_000742` and rounds its returned value through a float local before unlocking. See `evidence/phase5-actor-kinetic-energy-000060.md`.
 `phys_fn_000060` mutation detection: `stdout_delta=14`; restored public-DLL differential is exact (`stdout_delta=0`, exact stderr).
+
+## Actor mass getter: `phys_fn_000048`
+
+`NxPhysicsActorMassTests` exercises the public mass getter across its shape-derived mass cases. Returning `out + 1.0f` is caught with `stdout_delta=22`, equal zero exits, and exact stderr; the restored DLL differential is exact. See `evidence/phase5-actor-get-mass-000048.md`.
+
+`phys_fn_000048` mutation detection: `stdout_delta=22`; restored public-DLL differential is exact (`stdout_delta=0`, exact stderr).

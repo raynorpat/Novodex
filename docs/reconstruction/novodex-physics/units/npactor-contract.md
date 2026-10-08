@@ -144,6 +144,7 @@ NxPhysicsDynamicFirstTests reaches only the 000118 counterpart.
 
 | Row | RVA | B | State | Slot / role | Candidate | Status | Verdict | Traced (hits: targets) | Summary |
 |---|---|---:|---|---|---|---|---|---|---|
+| 000048 | 0x000025c0 | 73 | dynamically_gated | slot 36 getMass | NpActor.cpp:2366 `getMass` | implemented | faithful | 1: ActorMass | `out + 1.0f` mutation caught by ActorMass (`stdout_delta=22`); restored staged differential exact. See `evidence/phase5-actor-get-mass-000048.md`. |
 | 000050 | 0x00002610 | 107 | reconstructed | slot 42 getLinearDamping | NpActor.cpp:1774 `getLinearDamping`; OM ObjectModel.cpp:1161 | implemented | faithful | 2: ActorDynamicSetter 1, ActorDynamics 1 | NA: E1 0xd9 (the setLinearDamping literal) reproduced by Task 2. OM faithful |
 | 000052 | 0x00002680 | 107 | reconstructed | slot 44 getAngularDamping | NpActor.cpp:1799 `getAngularDamping`; OM ObjectModel.cpp:1181 | implemented | faithful | 2: ActorDynamicSetter 1, ActorDynamics 1 | NA: E1 0xe8 reproduced by Task 2. OM faithful |
 | 000054 | 0x000026f0 | 167 | reconstructed (Task 7) | slot 54 addForceAtPos | NpActor.cpp:1993 `addForceAtPos` | implemented | faithful | 1: ActorForce 1 | Task 3: 000791 (r.x kept in the register, r.y/r.z spilled, torque components rounded once, one 000782 call) and 000782 from the listing (x unrounded in modes 0/3, angular rows (I2z + I1y) + I0x with the listing spills, one wake after both arms, mode > 4 still wakes); G1 0x12a, E1 0x12b and H1 from Task 2 |

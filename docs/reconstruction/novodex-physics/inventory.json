@@ -943,12 +943,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/22",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/134",
       "static_proof": "guarded accessor: float at nested record +0x188, exact float zero when the record is null (no report)",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsActorMassTests staged-pair differential: returning out + 1.0f is caught with stdout_delta=22; both processes exit zero and stderr is exact. Restored output is exact. See evidence/phase5-actor-get-mass-000048.md.",
       "notes": ""
     },
     {
