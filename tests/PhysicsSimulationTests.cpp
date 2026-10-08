@@ -28,6 +28,7 @@
 #include "NxSpringAndDamperEffector.h"
 #include "NxSpringAndDamperEffectorDesc.h"
 #include "NxJoint.h"
+#include "NxUserNotify.h"
 #include "NxMaterial.h"
 #include "NxSimpleTriangleMesh.h"
 #include "NxTriangleMeshDesc.h"
@@ -279,6 +280,28 @@ static unsigned nxFloatBits(NxReal value)
 	memcpy(&bits, &value, sizeof(bits));
 	return bits;
 	}
+
+class NxSimulationJointBreakNotify : public NxUserNotify
+	{
+	public:
+	NxSimulationJointBreakNotify(bool releaseJoint)
+		: releaseJoint(releaseJoint), expectedJoint(0), calls(0),
+		  forceBits(0), jointMatches(false), stateAtCallback(0) {}
+	virtual bool onJointBreak(NxReal force, NxJoint& joint)
+		{
+		++calls;
+		forceBits = nxFloatBits(force);
+		jointMatches = &joint == expectedJoint;
+		stateAtCallback = static_cast<unsigned>(joint.getState());
+		return releaseJoint;
+		}
+	bool releaseJoint;
+	NxJoint* expectedJoint;
+	unsigned calls;
+	unsigned forceBits;
+	bool jointMatches;
+	unsigned stateAtCallback;
+	};
 
 static void nxPrintActorState(const char* stage, NxActor& actor)
 	{
@@ -1484,6 +1507,62 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("simulation break-joint steps=4 ready=1 fetched=1\n");
 	sdk->releaseScene(*breakScene);
+
+	// Exercise both NxUserNotify::onJointBreak return paths. Returning true
+	// transfers release to fetchResults; returning false keeps the broken joint
+	// detached from its bodies and queryable until the caller releases it.
+	for(unsigned releaseJoint = 0; releaseJoint != 2; ++releaseJoint)
+		{
+		NxSimulationJointBreakNotify notify(releaseJoint != 0);
+		NxSceneDesc notifySceneDesc;
+		notifySceneDesc.setToDefault();
+		notifySceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
+		notifySceneDesc.userNotify = &notify;
+		NxScene* notifyScene = sdk->createScene(notifySceneDesc);
+		if(!notifyScene)
+			return nxFail("joint-break notify scene creation failed");
+		notifyScene->setTiming(0.02f, 1, NX_TIMESTEP_FIXED);
+		NxBodyDesc notifyBody;
+		NxActorDesc notifyActorDesc;
+		notifyActorDesc.body = &notifyBody;
+		notifyActorDesc.density = 1.0f;
+		notifyActorDesc.globalPose.t = NxVec3(8.0f + 2.0f * releaseJoint, 2.0f, 0.0f);
+		notifyActorDesc.shapes.pushBack(&forceSphere);
+		NxActor* notifyActor = notifyScene->createActor(notifyActorDesc);
+		if(!notifyActor)
+			return nxFail("joint-break notify actor creation failed");
+		NxFixedJointDesc notifyJointDesc;
+		notifyJointDesc.setToDefault();
+		notifyJointDesc.actor[0] = notifyActor;
+		notifyJointDesc.actor[1] = 0;
+		notifyJointDesc.maxForce = 0.001f;
+		setGlobalAnchor(notifyJointDesc, notifyActorDesc.globalPose.t);
+		setGlobalAxis(notifyJointDesc, NxVec3(0.0f, 0.0f, 1.0f));
+		NxJoint* notifyJoint = notifyScene->createJoint(notifyJointDesc);
+		if(!notifyJoint)
+			return nxFail("joint-break notify joint creation failed");
+		notify.expectedJoint = notifyJoint;
+		for(unsigned step = 0; step != 4 && notify.calls == 0; ++step)
+			{
+			notifyScene->simulate(0.02f);
+			const bool ready = notifyScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+			const bool fetched = notifyScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+			if(!ready || !fetched)
+				return nxFail("joint-break notify result was not ready and fetched");
+			char stage[32];
+			sprintf_s(stage, "breaknotify%u_%u", releaseJoint, step);
+			nxPrintActorState(stage, *notifyActor);
+			}
+		if(notify.calls != 1)
+			return nxFail("joint-break notify callback count was not one");
+		const unsigned retainedState = notify.releaseJoint ? 0
+			: static_cast<unsigned>(notifyJoint->getState());
+		printf("simulation break-notify result=%s calls=%u force=%08x joint_match=%u callback_state=%u retained_state=%u joints=%u\n",
+			notify.releaseJoint ? "release" : "retain", notify.calls, notify.forceBits,
+			notify.jointMatches, notify.stateAtCallback, retainedState,
+			static_cast<unsigned>(notifyScene->getNbJoints()));
+		sdk->releaseScene(*notifyScene);
+		}
 
 	// Retain the revolute pendulum differential that exposed a small but
 	// repeatable linear-velocity residual after the second solver step.
