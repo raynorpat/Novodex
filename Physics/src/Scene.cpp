@@ -86,6 +86,7 @@
 #include "SceneVisualize.h"
 #include "ContactPairManager.h"
 #include "NxScene.h"
+#include "fluids/NxFluidDesc.h"
 #include "opcode/IcePruner.h"
 #include "NxDebugRenderable.h"
 #include "NarrowPhase.h"
@@ -960,12 +961,20 @@ void NxSceneInternal::releaseFluid(void* fluidInternal)
 // unavailable; createFluid reports the shipped warning and returns null.
 NxFluid* NxSceneInternal::createFluid(const NxFluidDesc& desc)
 	{
-	(void)desc;
 	void*& manager = at<void*>(0x61c);
 	if(!manager)
 		manager = nxSceneCreateDisabledFluidManager(this);
 	if(!manager)
 		return 0;
+	// The enabled FluidManager validates the descriptor before allocating a
+	// fluid or entering the extension-backed creation path.
+	if(static_cast<unsigned char*>(manager)[0x2b] != 0 && !desc.isValid())
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\FluidManager.cpp",
+			0x8c, 0, "Supplied NxFluidDesc is not valid. createFluid returns NULL.");
+		return 0;
+		}
 	NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
 		"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\FluidManager.cpp",
 		0x8a, 0, "NxScene::createFluid(): Feature not available!");

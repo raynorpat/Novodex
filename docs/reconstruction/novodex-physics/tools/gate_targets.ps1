@@ -3282,6 +3282,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # creates its manager, reports NXE_DB_WARNING from FluidManager.cpp,
         # and returns null; the scene is released without stepping that manager.
         'simulation fluid unsupported create=0 manager=1 empty=0.0 created=0.0 errors=1 code=206 line=138 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=NxScene::createFluid(): Feature not available!'
+        'simulation fluid enabled-invalid result=0 errors=1 code=1 line=140 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=Supplied NxFluidDesc is not valid. createFluid returns NULL.'
         'simulation fluid unsupported release manager-cleared=1 errors=1 code=206 line=183 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=NxScene::releaseFluid(): Feature not available!'
         'simulation fluid contact-report-set errors=1 code=206 line=377 file=\Epic\Novodex\SDKs\Physics\src\NpScene.cpp message=NxFluid::setUserFluidContactReport(): Feature not available!'
         'simulation fluid contact-report-get stored=0 errors=1 code=206 line=383 file=\Epic\Novodex\SDKs\Physics\src\NpScene.cpp message=NxFluid::getUserFluidContactReport(): Feature not available!'
@@ -5568,7 +5569,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 264  # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2310  # previous 2309 plus DynamicBody::markIslandDirty's isolated state cases
+    '5' = 2311  # corrected to the count of registered Phase 5 coverage lines
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths
@@ -5590,7 +5591,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1065  # plus the shared simulation fluid-manager destructor line
+    '6' = 1066  # corrected to the count of registered Phase 6 coverage lines
                # plus both joint-break callback return paths
                # plus compound-trigger per-shape enter/stay/leave lifecycle
                # plus three-pair trigger reconciliation and queue growth
@@ -5599,7 +5600,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1386  # plus the shared simulation fluid-manager destructor line
+    '7' = 1387  # plus the shared simulation fluid-manager destructor and enabled-invalid validation lines
                # plus both joint-break callback return paths
                # plus the bounded, ground-only and combined plane descriptor checks
                # plus two controller correction transcript assertions

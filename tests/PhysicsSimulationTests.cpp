@@ -2551,6 +2551,23 @@ int wmain(int argc, wchar_t** argv)
 		simulationOutput.errors - fluidErrorsBefore,
 		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
 		simulationOutput.file, simulationOutput.message);
+	unsigned char* const enabledValidationFluidManager = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(fluidSceneInternal + 0x61c));
+	if(!enabledValidationFluidManager)
+		return nxFail("fluid descriptor validation manager was not created");
+	enabledValidationFluidManager[0x2b] = 1;
+	NxFluidDesc invalidFluidDesc;
+	invalidFluidDesc.setToDefault();
+	invalidFluidDesc.restDensity = 0.0f;
+	const unsigned fluidValidationErrorsBefore = simulationOutput.errors;
+	simulationOutput.resetLast();
+	NxFluid* const invalidFluid = fluidScene->createFluid(invalidFluidDesc);
+	enabledValidationFluidManager[0x2b] = 0;
+	printf("simulation fluid enabled-invalid result=%u errors=%u code=%u line=%d file=%s message=%s\n",
+		invalidFluid != 0,
+		simulationOutput.errors - fluidValidationErrorsBefore,
+		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
+		simulationOutput.file, simulationOutput.message);
 	unsigned char fluidStorage[0x40] = {};
 	unsigned char fluidIdentity = 0;
 	*reinterpret_cast<void**>(fluidStorage + 0x14) = &fluidIdentity;
