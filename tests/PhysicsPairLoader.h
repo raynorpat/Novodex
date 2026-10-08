@@ -185,6 +185,8 @@ static HMODULE nxLoadPhysics(const wchar_t* pairDirectory)
 
 // Loads the pair, audits the module set, and reports the absolute path and
 // SHA-256 the differential runner matches against the directory it staged.
+static int nxReportPairIdentity(const wchar_t* pairDirectory);
+
 static int nxOpenPair(int argc, wchar_t** argv, const char* usage, wchar_t* pairDirectory, HMODULE* physics)
 	{
 	if(argc != 2)
@@ -205,7 +207,7 @@ static int nxOpenPair(int argc, wchar_t** argv, const char* usage, wchar_t* pair
 		fprintf(stderr, "FAIL isolated LoadLibraryEx failed: %lu\n", GetLastError());
 		return 1;
 		}
-	return nxAuditModules(pairDirectory);
+	return nxReportPairIdentity(pairDirectory);
 	}
 
 static int nxReportPairIdentity(const wchar_t* pairDirectory)
@@ -233,6 +235,7 @@ static int nxReportPairIdentity(const wchar_t* pairDirectory)
 			return nxFail("pair module hash unavailable");
 		printf("loaded module=%S path=%S sha256=%s\n", names[i], path, hash);
 		}
+	fflush(stdout);
 	return 0;
 	}
 

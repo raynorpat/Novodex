@@ -471,3 +471,15 @@ The isolated `NxPhysicsShapeVtableTests` directly calls the pinned oracle entrie
 The slot 4 and slot 5 checks were validated with isolated candidate source mutations. Changing slot 4 to return true caused `base shape slot 4 stub differs`, `mismatches=1`, and exit 1; writing zero through slot 4's destination while returning false was independently caught with `mismatches=1`. Changing slot 5 to return a non-null pointer caused the corresponding slot 5 failure, `mismatches=1`, and exit 1. Restoring each implementation returned the baseline to zero mismatches. The Phase 5 registered coverage floor includes these direct oracle assertions. This closes only the three base return stubs and their tested x86 calling conventions; it does not establish every derived shape caller contract.
 phys_fn_001249 slot4 wrong-return mutation: mismatches=1.
 phys_fn_004812 slot5 wrong-return mutation: mismatches=1.
+
+## Root-shape cleanup guard — `phys_fn_000006`
+
+An isolated `git archive` mutant omitted the early null-root return in
+`nxActorRemoveRootFromScene`. `NxPhysicsActorShapeMutationTests` still reported
+the staged pair's loaded DLL paths and hashes before entering test code; the
+candidate then faulted in root removal while the oracle exited normally. The
+runner compared captured output and exit status and rejected the mutant with
+`oracle_exit=0 candidate_exit=-1073741819 stdout_delta=155 stderr_exact=True`.
+The clean staged-pair baseline is exact (`stdout_delta=0`, exact stderr). Full
+method, hashes and harness details: `evidence/root-shape-cleanup-guard-2026-10-07.md`.
+- `phys_fn_000006` closes its null-root guard mutation with `stdout_delta=155`; the mutant candidate exited with an access violation while the pinned oracle exited zero. Full details: `evidence/root-shape-cleanup-guard-2026-10-07.md`.

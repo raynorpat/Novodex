@@ -6,10 +6,10 @@
   "closure_ledger": "gates/phase5-closure.json",
   "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
   "evidence_commit": "6965e505f86ac15d1c35d2cd471f6544e42fb71d",
-  "note": "The full Phase 5 regression gate passes all 18 staged targets, static/oracle proofs, and 2,303/2,303 coverage assertions on the Win32 Release build. Actor accessors, mass-from-shapes, shape-vtable behavior, the box mass-frame builder, the box slot-4 density/local-pose wrapper, the mass-frame payload fold, mass-frame recentering, conditional mass-frame zeroing, and the kinematic body-flag transition, and both base-shape return stubs are independently mutation-falsified on registered tests; the current closure ledger is 65 closed / 140 deferred. The phase remains pending until all owned rows are closed.",
+  "note": "The full Phase 5 regression gate passes all 18 staged targets, static/oracle proofs, and 2,303/2,303 coverage assertions on the Win32 Release build. Actor accessors, mass-from-shapes, shape-vtable behavior, mass-frame behavior, kinematic flags, base-shape return stubs, and the phys_fn_000006 root null-guard are independently mutation-falsified on registered tests; the current closure ledger is 66 closed / 139 deferred. The differential loader reports and flushes staged DLL identity before test code and retains its final lifecycle audit. The phase remains pending until all owned rows are closed.",
   "counts": {
-    "closed": 65,
-    "deferred": 140
+    "closed": 66,
+    "deferred": 139
   },
   "gate_sequence": [
     {
@@ -20,17 +20,17 @@
     {
       "name": "validate_inventory",
       "command": "python -B docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json",
-      "result": "inventory=pass; Phase 5 closure 65 closed / 140 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0."
+      "result": "inventory=pass; Phase 5 closure 66 closed / 139 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0."
     },
     {
       "name": "build_and_phase_gate",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 5",
-      "result": "Fresh Win32 Release Phase 5 gate passed all 18 staged-pair targets and 2,303/2,303 coverage assertions after adding direct base-shape slot 4/5 checks; see build/base-shape-stubs-phase5-final2.log."
+      "result": "Fresh Win32 Release Phase 5 gate passed all 18 staged-pair targets and 2,303/2,303 coverage assertions; the actor root null-guard mutation is recorded as caught. See build/phase5-root-cleanup-gate.log."
     },
     {
       "name": "viewer_all_scenes",
       "command": "ctest --test-dir build -C Release -R '^Viewer' --output-on-failure",
-      "result": "Fresh Release Viewer CTest sweep on 2026-10-07 passed all 48 registered entries across all 39 available scenes: 43 passed, five established signature-verified pinned-oracle asset cases skipped, including the focused physics checks (build/Testing/viewer-scenes-all-20261007.log)."
+      "result": "Fresh Release Viewer CTest sweep passed all 48 registered entries across all 39 available scenes: 43 passed and five established signature-verified pinned-oracle asset cases skipped. Viewer setup, sound, scene, and physics checks all ran (build/viewer-all-scenes-final-pair-identity.log)."
     }
   ],
   "excluded_from_comparison": [
