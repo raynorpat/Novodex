@@ -21,9 +21,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 99,
+    "differential_falsified": 100,
     "oracle_differential_falsified": 32,
-    "deferred_reconstructed_not_falsified": 73,
+    "deferred_reconstructed_not_falsified": 72,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -1362,6 +1362,16 @@
         "mutation": "Omitted the position-target flag OR (target+0xc |= 1) after the position copy in nxNpActorSetKinematicTarget.",
         "detected": "stdout_delta=42"
       }
+    },
+    {
+      "id": "phys_fn_000789",
+      "rva": "0x00019d00",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorCMassTests",
+      "falsification": {
+        "mutation": "Added 1.0f to actorPosition[0] in nxNpActorApplyWorldMassPose before storing the dynamic actor pose.",
+        "detected": "stdout_delta=168"
+      }
     }
   ],
   "deferred": [
@@ -1369,15 +1379,6 @@
       "id": "phys_fn_000768",
       "rva": "0x00017f10",
       "size": 1164,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000789",
-      "rva": "0x00019d00",
-      "size": 1461,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],

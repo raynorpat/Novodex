@@ -676,3 +676,9 @@ The registered DynamicSetter differential catches a source-line mutation in the 
 
 `NxPhysicsActorDynamicsTests` compares the pinned oracle and restored candidate exactly (`stdout_delta=0`, `stderr_exact=True`; `build/phase5-000784-restored.log`). Temporarily omitting the position-target flag OR in `nxNpActorSetKinematicTarget` is caught by the same registered differential with `stdout_delta=42`; both mutant processes exit 0 and stderr is exact (`build/phase5-000784-mutant.log`). The row is now dynamically gated.
 `phys_fn_000784` mutation detection: `stdout_delta=42`; both mutant processes exited 0 with exact stderr. The restored candidate differential is exact (`stdout_delta=0`, `stderr_exact=True`).
+
+
+### World-mass-pose actor transform (`phys_fn_000789`)
+
+The baseline and restored `NxPhysicsActorCMassTests` staged-pair runs are exact (`stdout_delta=0`, `stderr_exact=True`; `build/phase5-000789-baseline.log`, `build/phase5-000789-restored.log`). The temporary `actorPosition[0] + 1.0f` mutation in `nxNpActorApplyWorldMassPose` is caught with `stdout_delta=168`; both mutant processes exit 0 and stderr is exact (`build/phase5-000789-mutant.log`).
+`phys_fn_000789` mutation detection: `stdout_delta=168`; restored candidate output is exact (`stdout_delta=0`, `stderr_exact=True`).

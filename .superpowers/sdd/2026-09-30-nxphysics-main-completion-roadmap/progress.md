@@ -206,3 +206,5 @@ Approved Viewer all-scenes sweep on mainline commit 5cc6fbaa: ctest --test-dir b
 
 
 Task M2-000784: `nxNpActorSetKinematicTarget` now has a direct registered-gate mutation proof. Removing the position target flag OR changes the actor-dynamics differential (`stdout_delta=42`, both processes exit 0, exact stderr); restored candidate is exact (`stdout_delta=0`). Phase 5 closure is 132 closed / 73 deferred pending the fresh full gate. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md`.
+
+Task M2-000789: `nxNpActorApplyWorldMassPose` is now independently mutation-falsified by the CMass staged-pair differential. Adding 1.0f to its computed actor X changes 168 output lines; restored output is exact. Phase 5 accounting is 133 closed / 72 deferred pending a fresh gate. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md`.
