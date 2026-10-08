@@ -1598,13 +1598,15 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/31",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/187",
-      "static_proof": "guarded wrapper around phys_fn_000019 applied to the body pointer",
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Oracle RVA 0x2d30 takes the actor read lock, passes the inner actor to helper RVA 0x1540, releases the lock, and returns the helper result. The helper returns null without a shape root, root+0x9c for a single root, and the pointer stored at root+0xf0 for kind-5 groups. Candidate NpActorVtable::getShapes follows those branches.",
+      "dynamic_proof": "NxPhysicsActorShapeMutationTests asserts the public single-root array pointer and the kind-5 group public-array pointer through the staged DLL. Mutating the single-root return to root+0xa0 fails its pointer assertion (oracle_exit=0, candidate_exit=1, stdout_delta=311); mutating the group return to root+0xe0 fails the group pointer assertion (oracle_exit=0, candidate_exit=1, stdout_delta=308). Restoring both branches gives both exits 0, stdout_delta=0, exact stderr. Evidence: evidence/phase5-get-shapes-000084.md.",
+      "notes": "NxPhysics.map resolves ?getShapes@NpActorVtable@@UBEPAPAVNxShape@@XZ to RVA 0x0002ffa0 in NpActor.obj. The registered test loads the candidate DLL by staged identity; oracle RVA 0x2d30 is not applied to the candidate.",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "?getShapes@NpActorVtable@@UBEPAPAVNxShape@@XZ"
     },
     {
       "id": "phys_fn_000085",

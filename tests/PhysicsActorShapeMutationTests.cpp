@@ -941,11 +941,16 @@ int wmain(int argc, wchar_t** argv)
 	NxActor* actor = scene->createActor(actorDesc);
 	printf("shape_mutation actor=%u\n", actor ? 1u : 0u);
 	if(!actor) return nxFail("actor creation failed");
-	NxShape* original = actor->getShapes()[0];
+	NxShape** singleRootShapes = actor->getShapes();
+	NxShape* original = singleRootShapes ? singleRootShapes[0] : 0;
 	printf("shape_mutation initial=%u.%u.%u\n", actor->getNbShapes(),
 		shapeRootType(actor), original ? 1u : 0u);
 	if(actor->getNbShapes() != 1)
 		return nxFail("single-shape actor count mismatch");
+	if(singleRootShapes != reinterpret_cast<NxShape**>(
+		const_cast<unsigned char*>(shapeRoot(actor)) + 0x9c) ||
+		!singleRootShapes || singleRootShapes[0] != original)
+		return nxFail("single-root public shape array mismatch");
 	NxBoxShapeDesc second;
 	second.dimensions = NxVec3(0.5f, 1.0f, 1.5f);
 	const unsigned beforeAddAlloc = allocator.allocations();
@@ -1023,8 +1028,15 @@ int wmain(int argc, wchar_t** argv)
 	if(!groupActor) return nxFail("group actor creation failed");
 	if(groupActor->getNbShapes() != 2)
 		return nxFail("group actor initial count mismatch");
-	NxShape* firstHandle = groupActor->getShapes()[0];
-	NxShape* secondHandle = groupActor->getShapes()[1];
+	NxShape** groupPublicShapes = groupActor->getShapes();
+	const unsigned char* groupShapeRoot = shapeRoot(groupActor);
+	NxShape** expectedGroupPublicShapes = *reinterpret_cast<NxShape***>(
+		const_cast<unsigned char*>(groupShapeRoot) + 0xf0);
+	if(groupPublicShapes != expectedGroupPublicShapes || !groupPublicShapes ||
+		!groupPublicShapes[0] || !groupPublicShapes[1])
+		return nxFail("group public shape array mismatch");
+	NxShape* firstHandle = groupPublicShapes[0];
+	NxShape* secondHandle = groupPublicShapes[1];
 	printGroupState("group_before_append", groupActor);
 	const unsigned beforeGroupAddAlloc = allocator.allocations();
 	const unsigned beforeGroupAddFree = allocator.frees();

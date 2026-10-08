@@ -926,3 +926,9 @@ The public `NxPhysicsBodyCreationTests` route verifies the Scene auxiliary recor
 `NxPhysicsActorShapeMutationTests` now asserts single-root and group-root counts through the public actor API across creation, append, and removal. Mutating the non-group return from 1 to 2 makes the explicit single-shape assertion fail (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=313`); restoring the return returns the staged differential to exact (`stdout_delta=0`, exact stderr). Details and hashes: `evidence/phase5-get-nb-shapes-000082.md`.
 
 `phys_fn_000082` mutation detection: `stdout_delta=313`; restored public-DLL differential is exact (`stdout_delta=0`).
+
+## Actor public-shape-array getter: `phys_fn_000084`
+
+`NxPhysicsActorShapeMutationTests` asserts the single-root public array address and kind-5 group public-array address. Mutating either return arm independently fails its exact pointer assertion (`stdout_delta=311` for single root, `stdout_delta=308` for group); the restored staged-pair differential is exact (`stdout_delta=0`, exact stderr). Details and hashes: `evidence/phase5-get-shapes-000084.md`.
+
+`phys_fn_000084` mutation detection: single-root `stdout_delta=311` and group-array `stdout_delta=308`; both mutants were rejected, and the restored public-DLL differential is exact.
