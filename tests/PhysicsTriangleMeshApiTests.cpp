@@ -504,13 +504,19 @@ static int nxTestInvalidDescriptor(NxPhysicsSDK* sdk)
 		0 : nxFail("invalid triangle-mesh descriptor did not report the oracle error");
 	}
 
-static float nxApiRange(unsigned& state, float low, float high)
+struct NxApiFloat
+	{
+	float value;
+	};
+
+static NxApiFloat nxApiRange(unsigned& state, float low, float high)
 	{
 	state ^= state << 13;
 	state ^= state >> 17;
 	state ^= state << 5;
 	const float unit = static_cast<float>(state >> 8) * (1.0f / 16777216.0f);
-	return low + (high - low) * unit;
+	NxApiFloat result = { low + (high - low) * unit };
+	return result;
 	}
 
 static unsigned long long nxPointCloudHash(const NxVec3* points, NxU32 count)
@@ -673,9 +679,9 @@ static int nxTestConvexCookingPointClouds(NxPhysicsSDK* sdk)
 	for(int i = 0; i < 400; ++i)
 		{
 		const int cluster = i % 5;
-		clusters[i].set(centers[cluster].x + nxApiRange(state, -0.01f, 0.01f),
-			centers[cluster].y + nxApiRange(state, -0.01f, 0.01f),
-			centers[cluster].z + nxApiRange(state, -0.01f, 0.01f));
+		clusters[i].set(centers[cluster].x + nxApiRange(state, -0.01f, 0.01f).value,
+			centers[cluster].y + nxApiRange(state, -0.01f, 0.01f).value,
+			centers[cluster].z + nxApiRange(state, -0.01f, 0.01f).value);
 		}
 	return nxTestConvexCookingCloud(sdk, "five_clusters", clusters, 400);
 	}

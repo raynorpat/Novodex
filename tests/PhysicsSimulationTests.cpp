@@ -3254,6 +3254,55 @@ int wmain(int argc, wchar_t** argv)
 		nxFloatBits(stepOverPosition.x), nxFloatBits(stepOverPosition.y),
 		nxFloatBits(stepOverPosition.z), obstacleCollisionFlags);
 	stepOverScene->releaseController(*stepOverController);
+	// Exercise the same grounded low-obstacle probe with +Z as the controller's
+	// up axis. This keeps the geometry isolated while checking that the resolver
+	// selects its probe axis from the descriptor rather than assuming +Y.
+	NxSceneDesc zUpStepSceneDesc;
+	zUpStepSceneDesc.setToDefault();
+	NxScene* const zUpStepScene = sdk->createScene(zUpStepSceneDesc);
+	if(!zUpStepScene)
+		return nxFail("Z-up step-probe scene creation failed");
+	NxBoxShapeDesc zUpFloorShape;
+	zUpFloorShape.dimensions = NxVec3(10.0f, 10.0f, 0.5f);
+	NxActorDesc zUpFloorActorDesc;
+	zUpFloorActorDesc.globalPose.t = NxVec3(0.0f, 0.0f, -0.5f);
+	zUpFloorActorDesc.shapes.pushBack(&zUpFloorShape);
+	NxActor* const zUpFloorActor = zUpStepScene->createActor(zUpFloorActorDesc);
+	NxBoxShapeDesc zUpObstacleShape;
+	zUpObstacleShape.dimensions = NxVec3(0.5f, 1.0f, 0.1f);
+	NxActorDesc zUpObstacleActorDesc;
+	zUpObstacleActorDesc.globalPose.t = NxVec3(1.5f, 0.0f, 0.1f);
+	zUpObstacleActorDesc.shapes.pushBack(&zUpObstacleShape);
+	NxActor* const zUpObstacleActor = zUpStepScene->createActor(zUpObstacleActorDesc);
+	alignas(4) unsigned char zUpStepControllerDescStorage[0x80] = {};
+	*reinterpret_cast<NxU32*>(zUpStepControllerDescStorage + 0x14) = nxFloatBits(0.8f);
+	*reinterpret_cast<NxU32*>(zUpStepControllerDescStorage + 0x18) = 2;
+	*reinterpret_cast<NxU32*>(zUpStepControllerDescStorage + 0x1c) = nxFloatBits(1.0f);
+	*reinterpret_cast<NxU32*>(zUpStepControllerDescStorage + 0x20) = 1;
+	*reinterpret_cast<NxU32*>(zUpStepControllerDescStorage + 0x24) = nxFloatBits(0.7f);
+	*reinterpret_cast<NxU32*>(zUpStepControllerDescStorage + 0x2c) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(zUpStepControllerDescStorage + 0x30) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(zUpStepControllerDescStorage + 0x34) = nxFloatBits(0.5f);
+	*reinterpret_cast<NxU32*>(zUpStepControllerDescStorage + 0x38) = nxFloatBits(0.5f);
+	NxController* const zUpStepController = zUpStepScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(zUpStepControllerDescStorage));
+	if(!zUpFloorActor || !zUpObstacleActor || !zUpStepController)
+		return nxFail("Z-up step-probe fixture setup failed");
+	obstacleCollisionFlags = 0xdeadbeef;
+	const NxVec3 zUpStepDisplacement(3.0f, 0.0f, -0.5f);
+	reinterpret_cast<NxControllerProbe*>(zUpStepController)->move(
+		zUpStepDisplacement, 0xffffffff, 0.001f, obstacleCollisionFlags);
+	const NxVec3& zUpStepPosition =
+		reinterpret_cast<NxControllerProbe*>(zUpStepController)->getPosition();
+	printf("simulation controller-grounded-zup-step-probe position=%08x.%08x.%08x flags=%08x\n",
+		nxFloatBits(zUpStepPosition.x), nxFloatBits(zUpStepPosition.y),
+		nxFloatBits(zUpStepPosition.z), obstacleCollisionFlags);
+	controllerCreateFailed = controllerCreateFailed ||
+		nxFloatBits(zUpStepPosition.x) != 0x40400000 ||
+		nxFloatBits(zUpStepPosition.y) != 0 ||
+		nxFloatBits(zUpStepPosition.z) != 0x3f000000 || obstacleCollisionFlags != 4;
+	zUpStepScene->releaseController(*zUpStepController);
+	sdk->releaseScene(*zUpStepScene);
 	// Raise the stored threshold above a unit contact-normal component to pin
 	// the high-threshold response after a downward sweep with step probing on.
 	// Keep this controller in its own scene so generated controller bodies do

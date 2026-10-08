@@ -3318,6 +3318,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation controller-obstacle step-offset move position=3fc00000.3f0ccccd.00000000 flags=00000004'
         'simulation controller-obstacle step-offset-disabled position=3f000000.3f000000.00000000 flags=00000005'
         'simulation controller-grounded-step-probe position=3f000000.3f000000.00000000 flags=00000005'
+        # The same grounded low-obstacle movement with +Z as up must use the
+        # descriptor-selected axis and pass over the block at the pinned pose.
+        'simulation controller-grounded-zup-step-probe position=40400000.00000000.3f000000 flags=00000004'
         'simulation controller-obstacle grounded-sweep position=3f000000.3f000000.00000000 flags=00000005'
         'simulation controller-grounded-short-step-probe position=3f000000.3f000000.00000000 flags=00000004'
         'simulation controller-obstacle trigger position=40f00000.00000000.00000000 flags=00000004'
@@ -5574,10 +5577,10 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 4  # actor-group flags, scene creation/indexing, release/survivor lookup and destructor frees
     '3' = 533  # previous 532 plus DynamicBody::markIslandDirty's isolated state cases
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 266  # previous 264 plus direct QhullHost::facet and releaseArrays differentials
+    '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2563  # exact registered Phase 5 coverage-line count; previously left one line unfloored
+    '5' = 2564  # exact registered Phase 5 coverage-line count; previously left one line unfloored
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths
@@ -5587,6 +5590,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # plus public trigger enter/stay/leave lifecycle
                # plus the grounded controller's short-probe simulation assertion
                # plus public capsule contacts on both separated mesh patches
+               # plus the grounded Z-up controller probe
                # previous 2,248 plus dynamic getLinearDamping observation (phys_fn_000050)
                # previous 2,244 plus five mixed solver-kind interaction assertions
                # previous 2,241 plus three auxiliary shape registration checks
@@ -5600,7 +5604,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1067  # previous 1,066 plus capsule-mesh staged-pair coverage
+    '6' = 1068  # previous 1,067 plus the grounded Z-up controller probe
+               # previous 1,066 plus capsule-mesh staged-pair coverage
                # plus both joint-break callback return paths
                # plus compound-trigger per-shape enter/stay/leave lifecycle
                # plus three-pair trigger reconciliation and queue growth
@@ -5609,7 +5614,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1388  # previous 1,387 plus capsule-mesh staged-pair coverage
+    '7' = 1389  # previous 1,388 plus the grounded Z-up controller probe
+               # previous 1,387 plus capsule-mesh staged-pair coverage
                # plus the shared simulation fluid-manager destructor and enabled-invalid validation lines
                # plus both joint-break callback return paths
                # plus the bounded, ground-only and combined plane descriptor checks

@@ -1358,3 +1358,9 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 
 - `phys_fn_000951` (`BoxShape::nxBoxSweep`, BOX slot 7) is mutation-falsified by the registered `NxPhysicsShapeVtableTests` oracle differential. Returning false after a successful slab hit produces 60 mismatches across 84 cases; the restored build returns to the exact `2c5d5c09` digest with zero failures.
 - Phase 5 advances to 161 closed / 44 reconstructed-but-unfalsified rows. No public headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-sweep-000951.md`.
+
+
+### Continuation — grounded controller Z-up probe (2026-10-08)
+
+- Added a grounded low-obstacle controller scene with `NX_Z` up and registered its exact output as required coverage. Oracle and candidate both end at `(3.0, 0.0, 0.5)` with collision flags `4`. A temporary forced-+Y resolver mutation is detected (candidate exit 1, 36-byte output delta); the restored build matches exactly.
+- Fresh Phases 4–6 passed. Phase 7 passed on retry with 1,389/1,389 coverage assertions; the first attempt's isolated oracle access violation did not reproduce in either the direct target rerun or full gate retry. Gate registry tests pass 37/37. This probe adds one focused Z-up case and does not close the resolver's remaining branches or the full DLL. No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/controller-zup-step-probe.md`.
