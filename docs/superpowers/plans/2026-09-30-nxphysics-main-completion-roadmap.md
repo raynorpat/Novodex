@@ -1369,3 +1369,8 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 ### Continuation — prunable owner world-AABB adapter mutation closure (2026-10-08)
 
 - `phys_fn_001269` is now mutation-falsified through the registered Phase 5 `NxPhysicsSceneRaycastTests` staged-pair target. Dispatching slot 8 instead of owner vtable slot 9 makes the candidate stack overflow (`oracle_exit=0`, candidate exit `-1073741571`, stdout delta 2,783); the restored and forcibly rebuilt candidate matches the oracle exactly. Phase 5 advances to 171 closed / 34 reconstructed rows without row-specific mutation proof. The adjacent notify adapter remains open. No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-owner-world-aabb-001269.md`.
+
+
+### Continuation — capsule scalar deleting destructor mutation closure (2026-10-08)
+
+- `phys_fn_001014` is now mutation-falsified by the registered Phase 5 `NxPhysicsShapeVtableTests` oracle differential. Suppressing the flag-1 self-free changes the 629-case result from `mismatches=0` to `mismatches=1`; restoring the destructor returns to the pinned digest and zero mismatches. Phase 5 advances to 172 closed / 33 reconstructed rows without row-specific mutation proof. The fresh full Phase 5 gate passes all 19 staged targets and 2,564/2,564 coverage assertions (`build/phase5-capsule-dtor-final-pass.log`). The approved Viewer design also passes its full 48-entry selection, exercising all 39 available scenes; 43 pass and five known signature-verified oracle asset cases skip (`build/viewer-all-scenes-approved-design-final.log`). No public Physics headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-capsule-dtor-001014.md`.

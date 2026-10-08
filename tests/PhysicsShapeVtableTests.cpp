@@ -2432,7 +2432,7 @@ int wmain(int argc, wchar_t** argv)
     }
     const BoxHullResult hull = runBoxHullCases(base);
     nxSetSdkAllocatorBridge(0);
-    printf("shape vtable oracle_digest=%08x cases=%u failures=%u\n",
+    printf("shape vtable oracle_digest=%08x cases=%u mismatches=%u\n",
         oracleDigest, cases, failures);
     printf("shape vtable base_stubs oracle_digest=%08x cases=%u mismatches=%u\n",
         baseStubDigest, baseStubCases, baseStubFailures);

@@ -884,3 +884,4 @@ The pinned-oracle `NxPhysicsObjectLayoutTests` fixture covers the null-shape, or
 
 Changing `shapeOwnerWorldAABB` to dispatch owner vtable slot 8 instead of slot 9 is caught by the registered `NxPhysicsSceneRaycastTests` staged-pair differential (`stdout_delta=2783`; oracle exit 0, candidate STATUS_STACK_OVERFLOW, stderr exact). The restored forced rebuild returns to an exact staged-pair match. See `evidence/phase5-owner-world-aabb-001269.md`.
 `phys_fn_001269` mutation detection: `stdout_delta=2783`; the candidate stack overflowed under the slot-8 mutant, and the restored transcript is exact.
+`phys_fn_001014` mutation detection: `mismatches=1`; the flag-1 self-free mutant is caught and the restored oracle differential returns to zero mismatches.
