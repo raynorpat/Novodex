@@ -20,17 +20,17 @@
     {
       "name": "validate_inventory",
       "command": "python -B docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json",
-      "result": "inventory=pass; Phase 5 closure 188 closed / 17 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0."
+      "result": "inventory=pass; Phase 5 closure 194 closed / 11 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0."
     },
     {
       "name": "build_and_phase_gate",
-      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 5 -PairsRoot D:\\github\\Novodex\\build\\phase5-actorthunk-final-pairs",
-      "result": "Fresh current-main Win32 Release Phase 5 gate passed all 19 staged targets, registered static/oracle proofs, and 2,567/2,567 coverage assertions. The public NxPhysicsBodyCreationTests path checks the dynamic-body auxiliary record slot before/after NxScene::releaseActor; omitting its clear is caught with stdout_delta=2 and restoring it returns stdout_delta=0. Current phase remains pending at 185 closed / 20 deferred. Full runner output: build/phase5-record-unregister-final.log."
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 5 -PairsRoot D:\\github\\Novodex\\build\\phase5-get-mass-main-pairs",
+      "result": "Committed main at 50d9104a passes all 19 staged Phase 5 targets, registered static/oracle proofs, and 2,567/2,567 coverage assertions. The actor mass getter mutation proof is recorded in the ledger; full output: build/phase5-get-mass-main.log. Current Phase 5 remains pending at 194 closed / 11 deferred."
     },
     {
       "name": "viewer_all_scenes",
       "command": "ctest --test-dir build -C Release --output-on-failure -R '^Viewer'",
-      "result": "Fresh committed-main Win32 Release Viewer sweep passed all 48 selected CTest entries, including every available scene and focused Viewer check: 43 passed, five established asset-dependent cases skipped, and zero failed. Log: build/viewer-all-scenes-post-thunk-commit.log."
+      "result": "Committed main at 50d9104a passes the full 48-entry Viewer CTest selection, including every available scene (39 scene entrypoints) and focused Viewer checks: 43 passed, five known pinned-oracle asset cases skipped, zero failed. Full output: build/viewer-all-scenes-get-mass-main.log."
     }
   ],
   "excluded_from_comparison": [
