@@ -738,3 +738,15 @@ The baseline `NxPhysicsObjectLayoutTests` oracle differential reports `boxshape 
 
 The baseline `NxPhysicsObjectLayoutTests` oracle differential reports saved-record digest `7629841d`, `neg_d=80000000`, and zero layout mismatches (`build/phase5-001251-baseline.log`). Replacing the negated plane distance with the raw distance loses the negative-zero sign and is caught with `layout candidate mismatches=1`; the mutant exits 1 (`build/phase5-001251-mutant.log`). Restoring the negation returns the oracle digest, negative-zero word, zero mismatches, and `layout result=differential-pass` (`build/phase5-001251-restored.log`).
 `phys_fn_001251` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-plane-save-001251.md`.
+
+
+### Sphere save-to-descriptor (`phys_fn_001355`)
+
+The baseline `NxPhysicsObjectLayoutTests` oracle differential reports sphere save digest `f9280a78` and zero layout mismatches (`build/phase5-001355-baseline.log`). Writing the radius at record+0x48 instead of record+0x4c is caught with candidate digest `bad266b8` and `layout candidate mismatches=1`; the mutant exits 1 (`build/phase5-001355-mutant.log`). Restoring the destination returns the baseline digest, zero mismatches, and differential-pass (`build/phase5-001355-restored.log`).
+`phys_fn_001355` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-sphere-save-001355.md`.
+
+
+### Sphere zero-center/radius (`phys_fn_001365`)
+
+The baseline `NxPhysicsObjectLayoutTests` oracle differential reports sphere digest `f9280a78`, `sphererows candidate ok=1`, and zero layout mismatches (`build/phase5-001365-baseline.log`). Changing the first zero-center output to 1.0f is caught with `sphererows candidate ok=0` and `layout candidate mismatches=1`; the mutant exits 1 (`build/phase5-001365-mutant.log`). Restoring zero returns the baseline digest, zero mismatches, and differential-pass (`build/phase5-001365-restored.log`).
+`phys_fn_001365` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-sphere-zero-center-001365.md`.

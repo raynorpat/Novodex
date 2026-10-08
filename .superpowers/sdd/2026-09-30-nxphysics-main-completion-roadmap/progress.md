@@ -234,3 +234,8 @@ Task M2-000977: closed the BoxShape constructor with the registered NxPhysicsObj
 Task M2-001251: closed the plane save-to-descriptor row with the registered NxPhysicsObjectLayoutTests oracle differential. Removing the sign flip from the zero distance removes the negative-zero sign bit and yields `mismatches=1`; restoring it returns saved digest `7629841d`, `neg_d=80000000`, and zero mismatches. Phase 5 advances to 143 closed / 62 deferred. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-plane-save-001251.md`.
 
 Fresh Win32 Release Phase 5 gate after closing `phys_fn_000977` and `phys_fn_001251` passed all 18 staged-pair targets, both oracle-differential targets, and 2,311/2,311 coverage assertions (`build/phase5-000977-001251-full-gate.log`). Inventory and both 80-file public-header roots validate.
+
+
+Task M2-001355/001365: closed the sphere save-state and zero-center/radius rows with the registered NxPhysicsObjectLayoutTests oracle differential. Changing the save destination from record+0x4c to +0x48 yields `mismatches=1`; changing a zero-center word to 1.0f also yields `mismatches=1`. Both restored runs return sphere digest `f9280a78` and zero mismatches. Phase 5 advances to 145 closed / 60 deferred. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-sphere-save-001355.md` and `phase5-sphere-zero-center-001365.md`.
+
+Fresh Win32 Release Phase 5 gate after closing `phys_fn_001355` and `phys_fn_001365` passed all 18 staged-pair targets, both oracle-differential targets, and 2,311/2,311 coverage assertions (`build/phase5-001355-001365-full-gate.log`). Inventory and both 80-file public-header roots validate.
