@@ -42691,12 +42691,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1132",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7291",
       "static_proof": "member-table adjustor thunk -- sub ecx,8 onto the pool base, tail-call to the chained deleting destructor (002328)",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly compares the adjustor thunk on a member-subobject pointer against the pinned NxPhysics.dll; omitting the -8 receiver adjustment yields mismatches=1; restored digest 7a409e75.",
       "notes": ""
     },
     {
