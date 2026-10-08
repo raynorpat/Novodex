@@ -1,3 +1,15 @@
+### Continuation — SDK scene wrapper gate sensitivity (2026-10-07)
+
+Registered the existing two-scene create/index/release/survivor fixture as
+required Phase 2 differential coverage and raised its assertion floor from one
+to three. Mutation checks against `NpPhysicsSDK::createScene` and
+`NpPhysicsSDK::releaseScene` each made `NxPhysicsSDKTests` fail (candidate exit
+1, stdout deltas 8 and 6); both mutations were restored. A fresh Phase 2 gate
+passes all three differentials, the 85-check internal static proof, and all
+three required coverage lines. These wrappers remain deferred in the closure
+ledger because their deeper Scene dependencies are tracked in later phases.
+Evidence: `docs/reconstruction/novodex-physics/evidence/sdk-scene-wrapper-gate-2026-10-07.md`.
+
 ### Continuation — sloped controller downward-contact flag (2026-10-07)
 
 Added a sloped-triangle controller differential that was red only on the

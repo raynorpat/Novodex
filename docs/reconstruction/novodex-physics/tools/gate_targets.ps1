@@ -95,6 +95,11 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsSDKTests' = @(
         # Public SDK-side sparse actor-group flag hash, queried in both key orders and cleared.
         'step=actor_group_pair_flags initial=0 forward=10 reverse=10 cleared=0'
+        # Public createScene/releaseScene wrapper rows 000234/000236: two
+        # returned wrappers are indexed in order, then the first release
+        # swap-removes it while preserving lookup of the surviving scene.
+        'step=scenes_created count=2 both=1 first_lookup=1 second_lookup=1'
+        'step=scene_released count=1 survivor_lookup=1'
     )
     'NxPhysicsActorShapeMutationTests' = @(
         # NpActor.cpp completion Task 4: createShape (000070 -> Actor.cpp 000036)
@@ -5535,7 +5540,7 @@ $NxRequiredCoverageLines = [ordered] @{
 # independently, so the two edits have to appear together in a diff.
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
-    '2' = 1  # one public actor-group pair-flag hash round-trip and clear
+    '2' = 3  # actor-group pair flags, scene-wrapper creation/indexing and release/survivor lookup
     '3' = 527  # previous 359 plus the 168 required body/shape manager assertions
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 264  # previous 263 plus invalid triangle-mesh descriptor diagnostics
