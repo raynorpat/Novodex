@@ -94,8 +94,21 @@ near the expected rest height after 60 fixed steps:
 ctest --test-dir build -C Release -R '^ViewerPhysicsContact$' --output-on-failure
 ```
 
-Missing assets produce console diagnostics in smoke mode. TruckDemo requires
-the absent `Material #960.mat.ods`; SimpleDemos requires the absent `city.chu`.
+CTest registers a `ViewerSmokeScene_*` test for every checked-in
+`ViewerScenes/**/*.pds.ods` demo and runs each from a disposable asset copy. The
+four CowPile/PMap scenes are skipped when the Viewer reports its known
+unsupported PMap creation path; TruckDemo is skipped when its absent
+`Material #960.mat.ods` is reported. Other scene failures remain test failures.
+
+## All-scene Viewer smoke run
+
+On 2026-10-08, the generated CTest inventory contained all 39 available demo
+scenes. The Viewer loaded 34 successfully; the five baseline cases above were
+reported as skipped. Run the complete scene inventory with:
+
+```powershell
+ctest --test-dir build -C Release -R '^(ViewerSceneSmokePrepareAssets|ViewerSmokeScene_.*)$' --output-on-failure
+```
 
 ## Verification on 2026-10-04
 
