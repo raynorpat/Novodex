@@ -6,10 +6,10 @@
   "closure_ledger": "gates/phase5-closure.json",
   "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
   "evidence_commit": "6965e505f86ac15d1c35d2cd471f6544e42fb71d",
-  "note": "The full Phase 5 regression gate passes all 18 staged targets, static/oracle proofs, and 2,303/2,303 coverage assertions on the Win32 Release build. Actor accessors, mass-from-shapes, shape-vtable behavior, mass-frame behavior, kinematic flags, base-shape return stubs, and the phys_fn_000006 root null-guard and phys_fn_000028 vector growth and phys_fn_000024 no-root release report and phys_fn_000036 create-shape return and phys_fn_000026 zero-inertia mass build and phys_fn_000128 global-pose reference and phys_fn_000134 CMass global pose plus phys_fn_000136 position and phys_fn_000138 orientation are independently mutation-falsified on registered tests; the current closure ledger is 77 closed / 128 deferred. The differential loader reports and flushes staged DLL identity before test code and retains its final lifecycle audit. The phase remains pending until all owned rows are closed.",
+  "note": "The full Phase 5 regression gate passes all 18 staged targets, static/oracle proofs, and 2,303/2,303 coverage assertions on the Win32 Release build. Actor accessors, mass-from-shapes, shape-vtable behavior, mass-frame behavior, kinematic flags, base-shape return stubs, and the phys_fn_000006 root null-guard and phys_fn_000028 vector growth and phys_fn_000024 no-root release report and phys_fn_000036 create-shape return and phys_fn_000026 zero-inertia mass build and phys_fn_000128 global-pose reference and phys_fn_000134 CMass global pose plus phys_fn_000136 position and phys_fn_000138 orientation plus phys_fn_000140 global inertia, phys_fn_000142 inverse inertia, and phys_fn_000144 angular momentum are independently mutation-falsified on registered tests; the current closure ledger is 80 closed / 125 deferred. The differential loader reports and flushes staged DLL identity before test code and retains its final lifecycle audit. The phase remains pending until all owned rows are closed.",
   "counts": {
-    "closed": 77,
-    "deferred": 128
+    "closed": 80,
+    "deferred": 125
   },
   "gate_sequence": [
     {
@@ -20,12 +20,12 @@
     {
       "name": "validate_inventory",
       "command": "python -B docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json",
-      "result": "inventory=pass; Phase 5 closure 77 closed / 128 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0."
+      "result": "inventory=pass; Phase 5 closure 80 closed / 125 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0."
     },
     {
       "name": "build_and_phase_gate",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 5",
-      "result": "Fresh Win32 Release Phase 5 gate passed all 18 staged-pair targets, the NxPhysicsRangeIterationTests static proof, the NxPhysicsObjectLayoutTests oracle differential, and 2,303/2,303 coverage assertions. Mutations for phys_fn_000028, phys_fn_000024, phys_fn_000036, phys_fn_000026, phys_fn_000128, phys_fn_000134, phys_fn_000136, and phys_fn_000138 were each rejected by registered targets; restored sources pass. See build/phase5-cmass-getters-000136-000138-gate.log. Public headers remain unchanged."
+      "result": "Fresh Win32 Release Phase 5 gate passed all 18 staged-pair targets, the NxPhysicsRangeIterationTests static proof, the NxPhysicsObjectLayoutTests oracle differential, and 2,303/2,303 coverage assertions. Mutations for phys_fn_000028, phys_fn_000024, phys_fn_000036, phys_fn_000026, phys_fn_000128, phys_fn_000134, phys_fn_000136, phys_fn_000138, phys_fn_000140, phys_fn_000142, and phys_fn_000144 were each rejected by registered targets; restored sources pass. See build/phase5-inertia-getters-000140-000142-000144-gate.log. Public headers remain unchanged."
     },
     {
       "name": "viewer_all_scenes",

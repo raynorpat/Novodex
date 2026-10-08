@@ -2615,14 +2615,15 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/68",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/306",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 39 getGlobalInertiaTensorVal; verdict faithful): Task 3: ROT, W = R F in the 140 order, then the 000746 model (nxNpActorWorldTensorRDRt) of diag(+0x18c); E1 0x32f from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests. Final review I1 (NpActor completion): the x87 dot products (nxNpActorX87Dot3) take their operands by reference, so each fld / fmul reads the float in place as the listing does instead of a quieted by-value copy.",
-      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable getGlobalInertiaTensorVal) in the candidate build (build/Release/NxPhysics.map) was hit 12 times (ActorDynamicSetter 1, ActorMomentum 11) against build/pairs/candidate (NxPhysics.dll sha256 2f9815a105ac1fe5754ce2d69d7d1b2030a336eb8327fadeeb0f5388481c3dee, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1862/1862); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6, re-recorded for its final-review fixes and re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?getGlobalInertiaTensorVal@NpActorVtable@@UBE?AVNxMat33@@XZ hit 12 times (DSet 1, Mom 11); equal to the oracle row's count on every target.",
+      "dynamic_proof": "NxPhysicsActorMomentumTests records NpActorVtable::getGlobalInertiaTensorVal across rotated dynamic actors. The clean and restored staged pair match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated candidate mutation Changed the world-inertia source from record+0x18c to record+0x190. The registered Momentum differential catches the changed getter result with both processes exiting 0, stdout_delta=20, and exact stderr. Detailed runs: evidence/phase5-inertia-getters-000140-000142-000144.md.",
       "notes": "",
-      "implementation": "Physics/src/NpActor.cpp"
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getGlobalInertiaTensorVal"
     },
     {
       "id": "phys_fn_000141",
@@ -2652,14 +2653,15 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/69",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/310",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 40 getGlobalInertiaTensorInverseVal; verdict faithful): Task 3: ROT, W in the 134 order, the 000746 model of diag(+0xc4); no lock (Task 2), E1 0x338. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests. Final review I1 (NpActor completion): the x87 dot products (nxNpActorX87Dot3) take their operands by reference, so each fld / fmul reads the float in place as the listing does instead of a quieted by-value copy.",
-      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable getGlobalInertiaTensorInverseVal) in the candidate build (build/Release/NxPhysics.map) was hit 15 times (ActorDynamicSetter 2, ActorMomentum 13) against build/pairs/candidate (NxPhysics.dll sha256 2f9815a105ac1fe5754ce2d69d7d1b2030a336eb8327fadeeb0f5388481c3dee, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1862/1862); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6, re-recorded for its final-review fixes and re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?getGlobalInertiaTensorInverseVal@NpActorVtable@@UBE?AVNxMat33@@XZ hit 15 times (DSet 2, Mom 13); equal to the oracle row's count on every target.",
+      "dynamic_proof": "NxPhysicsActorMomentumTests records NpActorVtable::getGlobalInertiaTensorInverseVal across rotated dynamic actors. The clean and restored staged pair match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated candidate mutation Changed the inverse-inertia source from record+0xc4 to record+0xc8. The registered Momentum differential catches the changed getter result with both processes exiting 0, stdout_delta=24, and exact stderr. Detailed runs: evidence/phase5-inertia-getters-000140-000142-000144.md.",
       "notes": "",
-      "implementation": "Physics/src/NpActor.cpp"
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getGlobalInertiaTensorInverseVal"
     },
     {
       "id": "phys_fn_000143",
@@ -2689,14 +2691,15 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/70",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/313",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 53 getAngularMomentumVal; verdict faithful): Task 3: ROT, W in the 144 order (row 0 column 2 as in 138), T = 000746 of diag(+0x18c), L rows (t1 wy + t2 wz) + t0 wx in x87, rounded once; E1 0x35a from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests. Final review I1 (NpActor completion): the x87 dot products (nxNpActorX87Dot3) take their operands by reference, so each fld / fmul reads the float in place as the listing does instead of a quieted by-value copy.",
-      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (NpActorVtable getAngularMomentumVal) in the candidate build (build/Release/NxPhysics.map) was hit 13 times (ActorDynamicSetter 1, ActorMomentum 12) against build/pairs/candidate (NxPhysics.dll sha256 2f9815a105ac1fe5754ce2d69d7d1b2030a336eb8327fadeeb0f5388481c3dee, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1862/1862); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6, re-recorded for its final-review fixes and re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?getAngularMomentumVal@NpActorVtable@@UBE?AVNxVec3@@XZ hit 13 times (DSet 1, Mom 12); equal to the oracle row's count on every target.",
+      "dynamic_proof": "NxPhysicsActorMomentumTests records NpActorVtable::getAngularMomentumVal across rotated dynamic actors. The clean and restored staged pair match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated candidate mutation Shifted the angular-momentum vector source from record+0x78 to record+0x7c. The registered Momentum differential catches the changed getter result with both processes exiting 0, stdout_delta=24, and exact stderr. Detailed runs: evidence/phase5-inertia-getters-000140-000142-000144.md.",
       "notes": "",
-      "implementation": "Physics/src/NpActor.cpp"
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getAngularMomentumVal"
     },
     {
       "id": "phys_fn_000145",
