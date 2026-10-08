@@ -971,7 +971,7 @@ IDA confirms both rows use the SDK pointer-binding table keyed by `[actor+0x14]`
 
 The Phase 5 object-layout fixture now plants the second node at the actual `+0x30` link offset (word 12), on both oracle and candidate paths. The clean differential invokes the node destroy callback twice and matches at digest `7a409e75`. A deliberate omission of `nxDestroyCachedList`'s virtual slot-0 call for `phys_fn_002320` was rejected by `NxPhysicsObjectLayoutTests` (`slate11 candidate ok=0`, `layout candidate mismatches=1` / `mismatches=1`, exit 1); restoring the call returned the exact baseline (exit 0). IDA pseudocode at `0x1005a1e0` confirms the loop reads and clears the node link at `+0x30`, dispatches slot 0 with argument 1, and advances through the saved link.
 
-The fresh full Phase 5 gate after the cached-list, adjustor-thunk, pool-destructor, and bound-pool destructor closures passes all 19 staged targets, the registered static proof, and 2,567/2,567 coverage assertions (`build/phase5-bound-dtor-002326-002340-full.log`). The post-merge all-scenes Viewer suite passes 48/48 selected CTests; it covers 39 available scene entrypoints and retains five known pinned-oracle asset skips (`build/viewer-all-scenes-cached-list-002320-main.log`). Inventory now records Phase 5 at 200 closed / 5 deferred, with all 6,338 functions and 5,138 data objects accounted for and zero unexplained bytes.
+The fresh full Phase 5 gate after the cached-list, adjustor-thunk, pool-destructor, bound-pool destructor, chained-destructor, slot-1 wrapper, and member-destructor closures passes all 19 staged targets, the registered static proof, and 2,567/2,567 coverage assertions (`build/phase5-object-model-002328-002379-002408-full.log`). The post-merge all-scenes Viewer suite passes 48/48 selected CTests; it covers 39 available scene entrypoints and retains five known pinned-oracle asset skips (`build/viewer-all-scenes-cached-list-002320-main.log`). Inventory now records Phase 5 at 203 closed / 2 deferred, with all 6,338 functions and 5,138 data objects accounted for and zero unexplained bytes.
 
 
 ## Chained-destructor adjustor thunk `phys_fn_002322`
@@ -987,3 +987,16 @@ The test calls the oracle row at RVA `0x5a080` and `nxPoolDeletingDtor78c` on se
 ## Bound-pool deleting destructors `phys_fn_002326` and `phys_fn_002340`
 
 The `miscsm2` oracle fixture allocates each four-word object from the emulated SDK arena, invokes the corresponding destructor with the deleting flag, and records the expected post-release primary vptr. Mutating `nxBoundDeletingDtor798` from `0x10108798` to `0x1010879c` for `phys_fn_002326` produces `miscsm2 candidate ok=0` and `layout candidate mismatches=1` (exit 1; `build/phase5-bound-dtor-002326-mutation.log`). Mutating `nxBoundDeletingDtor84c` from `0x1010884c` to `0x10108850` for `phys_fn_002340` is independently caught with the same mismatch count (exit 1; `build/phase5-bound-dtor-002340-mutation.log`). With both vptr stores restored, the oracle and candidate `miscsm2` digests match at `c4bc7155`, with zero candidate mismatches (exit 0; `build/phase5-bound-dtor-002326-restored.log` and `build/phase5-bound-dtor-002340-restored.log`). The static proofs continue to describe each allocator-release arm; these targeted mutations falsify the vptr stores.
+
+
+## Chained deleting destructor `phys_fn_002328`
+
+The slate-11 oracle differential calls `phys_fn_002328` on a poison-filled stack record with flags zero and folds both the primary and +8 member vptrs. Changing the candidate's final +8 vptr from `0x10108798` to `0x1010879c` produces `slate11 candidate ok=0` and `layout candidate mismatches=1` (exit 1; `build/phase5-chained-dtor-002328-mutation.log`). Restoring it returns digest `7a409e75`, zero candidate mismatches, and exit 0 (`build/phase5-chained-dtor-002328-restored.log`). The thunk probe also reaches this body through `phys_fn_002322`.
+
+## Slot-1 wrapper `phys_fn_002379`
+
+The four-case `slot1wrapper` probe targets `phys_fn_002379` with two receiver vtables and checks slot-1 dispatch, receiver identity, exactly-once calls, unchanged objects/tables, and the wrapper's discarded callback result. Changing the candidate return from false to true produces four candidate failures and `mismatches=4` (`build/phase5-slot1-wrapper-002379-mutation.log`, exit 1); the layout aggregate reports a mismatch. Restoring false yields zero failures and mismatches at digest `05167dcd`, with zero layout mismatches and exit 0 (`build/phase5-slot1-wrapper-002379-restored.log`).
+
+## Member-subobject deleting destructor `phys_fn_002408`
+
+The `miscsm2` candidate fixture invokes `nxMemberDeletingDtor` for `phys_fn_002408` on a poison-filled stack record with flags zero and folds whether the vptr becomes `0x101088b8`. Changing the installed vptr to `0x101088bc` yields `miscsm2 candidate ok=0` and `layout candidate mismatches=1` (exit 1; `build/phase5-member-dtor-002408-mutation.log`). Restoring the store returns the oracle digest `c4bc7155`, zero mismatches, and exit 0 (`build/phase5-member-dtor-002408-restored.log`).

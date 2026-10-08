@@ -42799,12 +42799,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/866",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7297",
       "static_proof": "chained deleting destructor: member vptr at +8 restored through two third tables (0x101087a8 then 0x10108798), primary vptr 0x1010878c installed, adapter release through slot +0x14 when flagged",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsObjectLayoutTests compares the chained deleting destructor against the pinned NxPhysics.dll; changing its final +8 vptr from 0x10108798 to 0x1010879c yields mismatches=1; restored digest 7a409e75.",
       "notes": ""
     },
     {
@@ -43721,12 +43721,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "layout_adjacency",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/890",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7421",
       "static_proof": "virtual slot-1 wrapper: loads the argument from [esp+4], reads the receiver's vtable, calls [vtable+4] (slot 1) with the receiver as this, discards the callee's return, and returns 0; ret 4, __stdcall",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsObjectLayoutTests drives the slot-1 wrapper over four receiver cases; changing its return from false to true yields mismatches=4; restored candidate has failures=0, mismatches=0, digest 05167dcd.",
       "notes": ""
     },
     {
@@ -44243,12 +44243,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "layout_adjacency",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1174",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7444",
       "static_proof": "the member subobject scalar-deleting destructor: third-table vptr 0x101088b8 installed, then linked-CRT release when flagged -- the CRT twin of phys_fn_000042's adapter release",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsObjectLayoutTests compares the member-subobject deleting destructor against the pinned NxPhysics.dll; changing its vptr from 0x101088b8 to 0x101088bc yields mismatches=1; restored miscsm2 digest c4bc7155.",
       "notes": ""
     },
     {
