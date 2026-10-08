@@ -1306,3 +1306,8 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 
 - `phys_fn_000947` now has an independent mutation proof: returning false fails at pose=0, low=0, density=0; restoring the true return passes all 64 existing boxslot4 cases. Its line is pinned in Phase 5 gate coverage.
 - Phase 5 stands at 122 closed / 83 deferred, with 2,309 required coverage assertions.
+
+### Continuation — box-hull support bounds closure (2026-10-08)
+
+- `phys_fn_000975` now has an independent mutation proof: reversing the minimum comparison produces `mismatches=1`; restoring the comparison passes the registered oracle fixture.
+- Phase 5 stands at 123 closed / 82 deferred; the 2,309 coverage assertions remain required.

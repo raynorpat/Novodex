@@ -629,3 +629,8 @@ The registered DynamicSetter differential catches a source-line mutation in the 
 
 - `phys_fn_000947` is caught by a return-false mutation on the first of 64 cases (`returns=1/0`, with `mismatches=1`); the restored implementation passes all 64.
 - Phase 5 advances to 122 closed / 83 deferred functions; the coverage floor rises to 2,309. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-slot4-000947.md`.
+
+### Continuation — box-hull support bounds closure (2026-10-08)
+
+- `phys_fn_000975` is caught by reversing the minimum comparison (`hull support candidate ok=0`; `mismatches=1`). Restoring the comparison yields exact oracle words and zero mismatches.
+- Phase 5 advances to 123 closed / 82 deferred functions. The 2,309 assertion floor is unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-hull-support-000975.md`.

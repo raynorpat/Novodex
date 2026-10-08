@@ -18057,13 +18057,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/476",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3032",
       "static_proof": null,
-      "dynamic_proof": "driven and gated: the transcript line 'hull support row=phys_fn_000975 min_bits=c19c0000 max_bits=4eada5a5', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
-      "notes": "P5: transcribed. Projects the eight vertices through a pose (column dots + translation) and folds them with a direction as A*dx + (C*dz + B*dy); min replaces strictly-less, max strictly-greater, NaN skips both (unordered sets C0 in both fnstsw masks). Frame: (this, a1 unread, a2=&min, a3=&max, a4=dir, a5=pose, a6 unread), ret 0x18. Driven by NxPhysicsObjectLayoutTests on twin buffers; bitwise match at oracle digest bfb698ec. Scene-raycast Task 2: the member now has the row's six-argument ABI (ret 0x18: unread, min, max, direction, pose, unread) and sits in slot 11 of the facade table.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests compares the eight-vertex support bounds against the oracle at min_bits=c19c0000 and max_bits=4eada5a5. Reversing the candidate minimum comparison (< to >) produces hull support candidate ok=0 and layout candidate mismatches=1 (exit 1); restored output matches with zero mismatches (exit 0).",
+      "notes": "P5 box hull supportBounds (facade slot 11). The existing differential pins the candidate support transcript and the oracle min/max values.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
