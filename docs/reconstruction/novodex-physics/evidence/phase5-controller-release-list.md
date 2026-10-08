@@ -726,3 +726,15 @@ The baseline `NxPhysicsObjectLayoutTests` oracle differential reports `aabbrows 
 
 The baseline `NxPhysicsObjectLayoutTests` oracle differential reports `planeext candidate ok=1`, digest `517c20a1`, and zero layout mismatches (`build/phase5-001257-baseline.log`). Replacing the +FLT_MAX output word with zero is caught with digest `69691905`, `candidate ok=0`, and `layout candidate mismatches=1`; the mutant exits 1 (`build/phase5-001257-mutant.log`). Restoring +FLT_MAX returns the original digest, zero mismatches, and `layout result=differential-pass` (`build/phase5-001257-restored.log`).
 `phys_fn_001257` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-plane-extent-001257.md`.
+
+
+### BoxShape constructor (`phys_fn_000977`)
+
+The baseline `NxPhysicsObjectLayoutTests` oracle differential reports `boxshape candidate ok=1`, digest `ac5ed12f`, and zero layout mismatches (`build/phase5-000977-baseline.log`). Changing the default X dimension at +0xe4 from 1.0f to 2.0f is caught with digest `6a79821e`, `boxshape candidate ok=0`, and `layout candidate mismatches=4`; the mutant exits 1 (`build/phase5-000977-mutant.log`). Restoring 1.0f returns the original digest, zero mismatches, and `layout result=differential-pass` (`build/phase5-000977-restored.log`).
+`phys_fn_000977` mutation detection: `mismatches=4`; restored output is exact (`mismatches=0`). See `evidence/phase5-box-constructor-000977.md`.
+
+
+### Plane save-to-descriptor (`phys_fn_001251`)
+
+The baseline `NxPhysicsObjectLayoutTests` oracle differential reports saved-record digest `7629841d`, `neg_d=80000000`, and zero layout mismatches (`build/phase5-001251-baseline.log`). Replacing the negated plane distance with the raw distance loses the negative-zero sign and is caught with `layout candidate mismatches=1`; the mutant exits 1 (`build/phase5-001251-mutant.log`). Restoring the negation returns the oracle digest, negative-zero word, zero mismatches, and `layout result=differential-pass` (`build/phase5-001251-restored.log`).
+`phys_fn_001251` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-plane-save-001251.md`.

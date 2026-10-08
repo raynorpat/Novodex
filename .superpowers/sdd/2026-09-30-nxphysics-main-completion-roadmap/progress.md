@@ -226,3 +226,11 @@ Task M2-001003: closed the capsule zero-center/radius row with the registered Nx
 Task M2-001257: closed the plane unbounded-extent row with the registered NxPhysicsObjectLayoutTests oracle differential. Replacing its +FLT_MAX output with zero changes the digest `517c20a1 -> 69691905`, reports candidate `ok=0` and `mismatches=1`, and exits 1. Restoring the row returns the baseline digest and zero mismatches. Together with the capsule slot-11 closure, Phase 5 now records 141 closed / 64 deferred. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-plane-extent-001257.md`.
 
 Fresh Win32 Release Phase 5 gate after the `phys_fn_001003` and `phys_fn_001257` closures passed all 18 staged-pair targets, both oracle-differential targets, and 2,311/2,311 coverage assertions (`build/phase5-001003-001257-full-gate.log`). Inventory and both 80-file public-header roots validate.
+
+
+Task M2-000977: closed the BoxShape constructor with the registered NxPhysicsObjectLayoutTests oracle differential. Changing its default X dimension at +0xe4 from 1.0f to 2.0f changes digest `ac5ed12f -> 6a79821e`, reports candidate `ok=0` and `mismatches=4`, and exits 1. Restoring the default returns the baseline digest and zero mismatches. Phase 5 advances to 142 closed / 63 deferred. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-constructor-000977.md`.
+
+
+Task M2-001251: closed the plane save-to-descriptor row with the registered NxPhysicsObjectLayoutTests oracle differential. Removing the sign flip from the zero distance removes the negative-zero sign bit and yields `mismatches=1`; restoring it returns saved digest `7629841d`, `neg_d=80000000`, and zero mismatches. Phase 5 advances to 143 closed / 62 deferred. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-plane-save-001251.md`.
+
+Fresh Win32 Release Phase 5 gate after closing `phys_fn_000977` and `phys_fn_001251` passed all 18 staged-pair targets, both oracle-differential targets, and 2,311/2,311 coverage assertions (`build/phase5-000977-001251-full-gate.log`). Inventory and both 80-file public-header roots validate.
