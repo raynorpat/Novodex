@@ -23544,13 +23544,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/516",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3414",
       "static_proof": "__thiscall ret 4: copies pose3 (12 words from +0x6c) to record+8, movzx halfword +0xde -> dword record+0x38, halfwords +0xd8/+0xda -> record+0x3c/0x3e, [colobj+4] -> record+0x40 UNCONDITIONALLY (no null test), returns al=1; BASE vtable .rdata 0x10107494 slot 2",
-      "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests basesave family on a real constructed sphere: oracle digest bc9dc964 equals candidate bitwise over the whole 0x48-byte record including untouched poison bytes",
-      "notes": "P5 Task 3: the differential caught a first-draft transcription bug ([colobj] read instead of [colobj+4]) before it could ship -- the gate is doing its job.",
+      "dynamic_proof": "The pinned-oracle NxPhysicsObjectLayoutTests differential exercises the base save row on a constructed sphere and compares its return plus the full poisoned 0x48-byte descriptor record. Baseline: oracle saved=1 digest=bc9dc964, candidate ok=1, mismatches=0. Mutation: replacing the +0xde halfword load with zero produces candidate digest 6e8a0c5c and mismatches=6. Restored run: candidate digest bc9dc964 and mismatches=0. Evidence: evidence/phase5-base-save-001277.md.",
+      "notes": "P5 Task 3: the differential caught a first-draft transcription bug ([colobj] read instead of [colobj+4]) before it could ship -- the gate is doing its job. The +0xde saved word is independently mutation-falsified; the existing fixture currently uses its default value 8.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {

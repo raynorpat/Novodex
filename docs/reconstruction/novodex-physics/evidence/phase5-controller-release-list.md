@@ -864,3 +864,5 @@ Reversing the BOX hit-normal hint branch in `BoxShape::nxBoxRaycast` is caught b
 ## Box-family collision-object constructor: `phys_fn_001075`
 
 `phys_fn_001075` mutation detection: `mismatches=6`; the box-specific candidate assertion fails with the null back-pointer mutant and the restored oracle differential is exact (`mismatches=0`). See `evidence/phase5-box-collision-object-ctor-001075.md`.
+
+`phys_fn_001277` mutation detection: `mismatches=6`; replacing the +0xde saved halfword with zero changes the serialized descriptor digest from `bc9dc964` to `6e8a0c5c`, while the restored pinned-oracle differential returns to exact (`mismatches=0`). See `evidence/phase5-base-save-001277.md`.
