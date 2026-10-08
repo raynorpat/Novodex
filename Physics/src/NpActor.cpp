@@ -254,6 +254,54 @@ void nxNpActorTransitionKinematic(unsigned char* record, bool enable)
 // every actor the reconstruction builds.
 static NpActorVtable gNpActorVtable;
 
+// NxActor's +0x08 member has its own one-slot deleting-destructor table. The
+// oracle's slot is a this-adjustor thunk: it backs up from the member to the
+// public actor, runs the actor destructor chain, then releases through the SDK
+// allocator when the deleting flag is set. Keep the table private to this
+// reconstruction; the public NxActor ABI remains untouched.
+static void __fastcall nxNpActorMemberBaseDtor(void* member, void*, unsigned flags);
+static void __fastcall nxNpActorDeletingDtorThunk(void* member, void*, unsigned flags);
+static void __fastcall nxNpActorInterfaceDtor(void* actor, void*, unsigned flags);
+
+static const void* gNpActorMemberBaseVtable[] = {
+	reinterpret_cast<const void*>(&nxNpActorMemberBaseDtor)
+};
+static const void* gNpActorMemberVtable[] = {
+	reinterpret_cast<const void*>(&nxNpActorDeletingDtorThunk)
+};
+static const void* gNpActorInterfaceVtable[] = {
+	reinterpret_cast<const void*>(&nxNpActorInterfaceDtor)
+};
+
+static void nxNpActorResetMember(void* member)
+	{
+	*reinterpret_cast<const void***>(member) = gNpActorMemberBaseVtable;
+	}
+
+static void __fastcall nxNpActorMemberBaseDtor(void* member, void*, unsigned)
+	{
+	nxNpActorResetMember(member);
+	}
+
+static void __fastcall nxNpActorInterfaceDtor(void* actor, void*, unsigned flags)
+	{
+	*reinterpret_cast<const void***>(actor) = gNpActorInterfaceVtable;
+	if(flags & 1u)
+		nxFoundationSDKAllocator->free(actor);
+	}
+
+static void __fastcall nxNpActorDeletingDtorThunk(void* member, void*, unsigned flags)
+	{
+	unsigned char* actor = static_cast<unsigned char*>(member) - 8;
+	// Mirror the final-class/member reset order of phys_fn_000118 and 002406.
+	*reinterpret_cast<void**>(actor) = *reinterpret_cast<void**>(&gNpActorVtable);
+	*reinterpret_cast<const void***>(actor + 8) = gNpActorMemberVtable;
+	nxNpActorResetMember(actor + 8);
+	*reinterpret_cast<const void***>(actor) = gNpActorInterfaceVtable;
+	if(flags & 1u)
+		nxFoundationSDKAllocator->free(actor);
+	}
+
 // The public 0x1c-byte box handle is separate from its 0x228-byte internal
 // shape. Its final table has 35 entries in the shipped x86 image; only the
 // measured entries below are reconstructed here. An unimplemented entry aborts
@@ -791,6 +839,15 @@ void* nxShapePublicVtable(unsigned type)
 void NpActorObject::installVtable()
 	{
 	*reinterpret_cast<void**>(mBytes) = *reinterpret_cast<void**>(&gNpActorVtable);
+	*reinterpret_cast<unsigned*>(mBytes + 4) = 0;
+	*reinterpret_cast<const void***>(mBytes + 8) = gNpActorMemberVtable;
+	*reinterpret_cast<unsigned*>(mBytes + 0xc) = 0;
+	*reinterpret_cast<unsigned*>(mBytes + 0x10) = 0;
+	}
+
+void NpActorObject::installSecondaryVtable()
+	{
+	*reinterpret_cast<const void***>(mBytes + 8) = gNpActorMemberVtable;
 	}
 
 

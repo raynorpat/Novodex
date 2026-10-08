@@ -75,8 +75,15 @@
       "layout_known_fields": {
         "+0x00": "vptr",
         "+0x04": "dword zeroed by ctor",
-        "+0x08": "secondary base subobject (vptr first)",
-        "+0x14": "ctor argument (unestablished meaning)"
+        "+0x08": "12-byte secondary base subobject; its final one-slot table dispatches an adjustor deleting-destructor thunk",
+        "+0x14": "pointer to the 0x50-byte internal actor allocated by phys_fn_000013"
+      },
+      "secondary_base": {
+        "final_vptr": "0x1010468c",
+        "base_vptr": "0x101088b8",
+        "slot0": "phys_fn_000116: subtract 8 from member this and tail to phys_fn_000118",
+        "destructor_flags_zero_state": "primary vptr becomes interface-wall table 0x101043d0; member vptr resets to base table 0x101088b8; +0x0c/+0x10 remain intact",
+        "candidate_differential": "NxPhysicsActorLifecycleTests subobject_dtor=1.1.1.1 for static and dynamic actors; oracle and candidate stdout identical"
       }
     },
     "box_shape": {
@@ -291,7 +298,7 @@
     "red_count": 1
   },
   "open_questions": [
-    "what the actor's +8 secondary base subobject IS (its interface has a one-slot table; ctor arg stored at actor+0x14 uninterpreted)",
+    "the source-language interface represented by the actor's +8 secondary base remains unidentified; its one-slot deleting-destructor thunk and reset state are reconstructed",
     "identity of TBL_87 implemented slots 63/64 (phys_fn_000038/_000040)",
     "the third pose's role (saved previous? sweep source?)",
     "which of the twelve small vtables phys_fn_000973 installs maps to which Nx*Desc type",

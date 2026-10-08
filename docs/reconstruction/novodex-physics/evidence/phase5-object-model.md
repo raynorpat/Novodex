@@ -8967,3 +8967,31 @@ No rows move. No gate, coverage-floor, or policy change.
 - Actor +8 subobject semantics, TBL_87 slots 63/64 identity, third-pose role,
   and the twelve-descriptor mapping are recorded as open questions in
   `object_model.json`.
+
+## 7. Actor secondary-base destructor differential
+
+The `NxActor` wrapper's 12-byte member at `+0x08` has a one-slot final table
+(`0x1010468c`). Slot 0 is `phys_fn_000116` at RVA `0x3640`, an adjustor thunk
+that subtracts eight from `this` and reaches the actor scalar-deleting
+destructor `phys_fn_000118` at RVA `0x3650`. With deleting flag zero, that chain
+leaves the primary pointer at the interface-wall table (`0x101043d0`) and
+restores the member pointer to its base table (`0x101088b8`); it does not free
+the wrapper. The source-language interface for this member remains unidentified.
+
+`NpActorObject::installVtable` now initializes the wrapper's private secondary
+member table, and the scene actor factory reinstalls it after the existing body
+initialization writes the member word. The candidate thunk mirrors the oracle's
+member-to-actor adjustment, destructor state transition, and SDK-allocator
+release when the deleting flag is set. `PhysicsActorLifecycleTests` now calls
+slot 0 on a byte-for-byte copy of each static and dynamic actor with deleting
+flag zero and compares normalized before/after vptr state. Before the change,
+the actor lifecycle differential was red (`subobject_dtor=1.1.1.1` in the
+oracle and `0.0.0.0` in the candidate). After the change, both actors report
+`1.1.1.1`; the full `NxPhysicsActorLifecycleTests` pair passes with
+`stdout_delta=0`, both exits zero, and exact stderr. This closes the tested
+secondary-base construction/destructor behavior only; it does not close the
+whole `phys_fn_000044` constructor or `phys_fn_000118` destructor rows. The
+fresh Phase 5 gate passes all 18 staged targets at 2,307/2,307 assertions. The
+Release Viewer CTest selection completes all 48 entries across the 39 available
+scenes: 43 pass and five scenes with unavailable oracle assets take their
+existing skips. All public Physics headers remain byte-identical.

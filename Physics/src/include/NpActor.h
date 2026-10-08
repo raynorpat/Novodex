@@ -42,6 +42,9 @@ struct NpActorObject
 	// The vtable word, at +0. Installing it is what makes the oracle's virtual calls
 	// dispatch instead of reading [0 + slot], which was the fault from round 4 to 11.
 	void installVtable();
+	// The actor-body transcription initializes the wrapper's adjacent words after
+	// allocation; reinstall the constructor's secondary-base vptr afterward.
+	void installSecondaryVtable();
 	};
 
 static_assert(sizeof(NpActorObject) == NpActorObject::SIZE,

@@ -1796,10 +1796,8 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 		return 0;
 		}
 
-	// phys_fn_00001450 constructs the public wrapper. It still has an incomplete
-	// vtable, but the slots driven by the actor and joint staged pairs are wired.
-	// The earlier 0x50-byte actor assumption was wrong: the guarded oracle probe
-	// measured 0x18 for this wrapper and 0x50 for its outer body.
+	// phys_fn_00001450 constructs the public wrapper. The 0x50-byte internal
+	// actor remains the storage behind its +0x14 pointer.
 	static_cast<NpActorObject*>(actorMemory)->installVtable();
 	NxActor* actor = static_cast<NxActor*>(nxSceneCreateActorBody(actorMemory, this));
 	if(!actor)
@@ -1808,6 +1806,7 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 		nxFoundationSDKAllocator->free(outerMemory);
 		return 0;
 		}
+	static_cast<NpActorObject*>(actorMemory)->installSecondaryVtable();
 	*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(actor) + 0x14) = outerMemory;
 
 	// phys_fn_00002010 (0x00002010): applies the descriptor to the actor. Its return

@@ -67,6 +67,29 @@ static void nxPrintPublicQuaternion(const char* label, const NxQuat& quaternion)
 		nxBits(quaternion.z), nxBits(quaternion.w));
 }
 
+static void nxPrintActorSubobjectVptrs(const char* label, NxActor* actor)
+{
+	const unsigned char* bytes = reinterpret_cast<const unsigned char*>(actor);
+	unsigned char copy[0x18];
+	memcpy(copy, bytes, sizeof(copy));
+	void** secondaryVtable = *reinterpret_cast<void***>(copy + 8);
+	typedef void (__thiscall *DeletingDtorFn)(void*, unsigned);
+	if(!secondaryVtable || !secondaryVtable[0])
+		{
+		printf("actor %s subobject_dtor=0.0.0.0\n", label);
+		return;
+		}
+	const void* originalPrimary = *reinterpret_cast<const void* const*>(bytes);
+	const void* originalSecondary = *reinterpret_cast<const void* const*>(bytes + 8);
+	const unsigned primaryBefore = *reinterpret_cast<void**>(copy) != 0 ? 1u : 0u;
+	const unsigned secondaryBefore = *reinterpret_cast<void**>(copy + 8) != 0 ? 1u : 0u;
+	reinterpret_cast<DeletingDtorFn>(secondaryVtable[0])(copy + 8, 0);
+	printf("actor %s subobject_dtor=%u.%u.%u.%u\n", label,
+		primaryBefore, secondaryBefore,
+		*reinterpret_cast<void**>(copy) != originalPrimary ? 1u : 0u,
+		*reinterpret_cast<void**>(copy + 8) != originalSecondary ? 1u : 0u);
+}
+
 static void nxPrintPose(const char* label, const NxMat34& pose)
 {
 	float rowMajor[9];
@@ -510,6 +533,7 @@ static void nxProbePublicShapes(const char* label, const NxActor* actor)
 
 int wmain(int argc, wchar_t** argv)
 {
+	setvbuf(stdout, 0, _IONBF, 0);
 	wchar_t pairDirectory[MAX_PATH];
 	HMODULE physics = 0;
 	int status = nxOpenPair(argc, argv, "NxPhysicsActorLifecycleTests", pairDirectory, &physics);
@@ -676,6 +700,7 @@ int wmain(int argc, wchar_t** argv)
 	nxPrintAuxStaticCounts("static", scene);
 	printf("actor static created=%u\n", staticActor ? 1u : 0u);
 	if(!staticActor) return nxFail("static actor creation failed");
+	nxPrintActorSubobjectVptrs("static", staticActor);
 	nxProbePublicShapes("static", staticActor);
 	printf("actor static dynamic=%u\n", staticActor->isDynamic() ? 1u : 0u);
 	nxPrintBodyLink("static", staticActor);
@@ -720,6 +745,7 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("actor dynamic created=%u\n", dynamicActor ? 1u : 0u);
 	if(!dynamicActor) return nxFail("dynamic actor creation failed");
+	nxPrintActorSubobjectVptrs("dynamic", dynamicActor);
 	nxProbePublicShapes("dynamic", dynamicActor);
 	printf("actor dynamic dynamic=%u\n", dynamicActor->isDynamic() ? 1u : 0u);
 	nxPrintBodyLink("dynamic", dynamicActor);
