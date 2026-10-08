@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "phase": 2,
-  "note": "Phase 2 closes what it can prove and defers the rest explicitly. Every Phase 2 function row in inventory.json appears exactly once below, and validate_inventory.py enforces that, recomputes the counts, checks every gate against the real target registry, and rejects a closure that claims a falsification it does not carry. There is one proof kind per gate and both require a mutation: the proof kinds that rested on a free-text observation were deleted, because a run can name a real step and still never enter the row, and every error review found was one of those rows. The 48 rows they carried were re-measured by a mutation probe; 5 of them could not produce a detection and were demoted here rather than kept. Where the guarantee ends: recomputed counts and a required non-zero mutation delta make the strongest claim the costly one, but they do not make a false one impossible. The probe transcripts are not committed artifacts, so a fabricated mutation string with a plausible delta beside it would pass this validator. What is checked is that a claim of the shape exists and is internally consistent; what is not checked is that the run behind it happened. Two further limits are in the numbers themselves. Most of these deltas come from an entry probe -- a print at the top of the row -- so what they establish is that the gate enters the row, which is what the deleted kind asserted without checking; they do not establish that the gate would notice the row computing the wrong answer. And a static_proof_falsified row has no oracle side at all: it is checked against expectations read out of the disassembly, so it is only as good as that reading. Two rows are closed by later phases: phys_fn_001690 was deferred homeless_shared_code with driving_phases [3, 4] because no Phase 2 entry point reaches it, and Phase 3's capsule/capsule entries are the reachability it lacked; phys_fn_002417 is discharged by Phase 3's body-creation differential after the shared helper was exercised through both body and shape registration. Both stay Phase 2 rows -- ownership is a census fact and the stray rule keeps one row owned by exactly one phase -- and what moved is the proof, so it is recorded here with discharged_by_phase rather than on their driving-phase ledgers. Three more rows were closed that way by the canonical line -- phys_fn_002410, phys_fn_002404 and phys_fn_002406, discharged_by_phase 5 on Phase 5's NxPhysicsObjectLayoutTests -- and all three were RE-DEFERRED at the port of the Phase 4 close: a discharge counts only once the discharging phase has passed, Phase 5 has not, and so no passing gate runs their proofs. They are blocked_on_later_phase with their mutations, counts, source commits and dirty-control readings in their notes, for a Phase 5 close to discharge. phys_fn_001690, discharged by Phase 3, which has passed, are later-phase closes here. P4 Task 1c removed 19 rows from this ledger because the census no longer gives them to Phase 2: 14 qhull rows, phys_fn_004886 of IcePrunable.cpp, and phys_fn_004836/004840/004846/004847, which the source correspondence map identifies as OPCODE Ice/IceContainer.cpp members. The last four were closed here on static proofs; those proofs measured real behaviour and are reproduced in gates/phase2.json as the third_party_container_rows_moved escalation, but the ledger entry that authorised their inventory state left with the row, so the four are back at 'reconstructed' and Phase 4 has to close them again. Every remaining number here is recomputed from the entries below. Scene release continuation (2026-10-07): phys_fn_000236 and phys_fn_000468 were dynamically falsified on NxPhysicsSDKTests and discharged by passing Phase 3, which closed phys_fn_001275; current ledger totals are 60 closed and 83 deferred function rows.",
+  "note": "Phase 2 closes what it can prove and defers the rest explicitly. Every Phase 2 function row in inventory.json appears exactly once below, and validate_inventory.py enforces that, recomputes the counts, checks every gate against the real target registry, and rejects a closure that claims a falsification it does not carry. There is one proof kind per gate and both require a mutation: the proof kinds that rested on a free-text observation were deleted, because a run can name a real step and still never enter the row, and every error review found was one of those rows. The 48 rows they carried were re-measured by a mutation probe; 5 of them could not produce a detection and were demoted here rather than kept. Where the guarantee ends: recomputed counts and a required non-zero mutation delta make the strongest claim the costly one, but they do not make a false one impossible. The probe transcripts are not committed artifacts, so a fabricated mutation string with a plausible delta beside it would pass this validator. What is checked is that a claim of the shape exists and is internally consistent; what is not checked is that the run behind it happened. Two further limits are in the numbers themselves. Most of these deltas come from an entry probe -- a print at the top of the row -- so what they establish is that the gate enters the row, which is what the deleted kind asserted without checking; they do not establish that the gate would notice the row computing the wrong answer. And a static_proof_falsified row has no oracle side at all: it is checked against expectations read out of the disassembly, so it is only as good as that reading. Two rows are closed by later phases: phys_fn_001690 was deferred homeless_shared_code with driving_phases [3, 4] because no Phase 2 entry point reaches it, and Phase 3's capsule/capsule entries are the reachability it lacked; phys_fn_002417 is discharged by Phase 3's body-creation differential after the shared helper was exercised through both body and shape registration. Both stay Phase 2 rows -- ownership is a census fact and the stray rule keeps one row owned by exactly one phase -- and what moved is the proof, so it is recorded here with discharged_by_phase rather than on their driving-phase ledgers. Three more rows were closed that way by the canonical line -- phys_fn_002410, phys_fn_002404 and phys_fn_002406, discharged_by_phase 5 on Phase 5's NxPhysicsObjectLayoutTests -- and all three were RE-DEFERRED at the port of the Phase 4 close: a discharge counts only once the discharging phase has passed, Phase 5 has not, and so no passing gate runs their proofs. They are blocked_on_later_phase with their mutations, counts, source commits and dirty-control readings in their notes, for a Phase 5 close to discharge. phys_fn_001690, discharged by Phase 3, which has passed, are later-phase closes here. P4 Task 1c removed 19 rows from this ledger because the census no longer gives them to Phase 2: 14 qhull rows, phys_fn_004886 of IcePrunable.cpp, and phys_fn_004836/004840/004846/004847, which the source correspondence map identifies as OPCODE Ice/IceContainer.cpp members. The last four were closed here on static proofs; those proofs measured real behaviour and are reproduced in gates/phase2.json as the third_party_container_rows_moved escalation, but the ledger entry that authorised their inventory state left with the row, so the four are back at 'reconstructed' and Phase 4 has to close them again. Every remaining number here is recomputed from the entries below. Scene release continuation (2026-10-07): phys_fn_000236 and phys_fn_000468 were dynamically falsified on NxPhysicsSDKTests and discharged by passing Phase 3, which closed phys_fn_001275. Vector constructor iterator phys_fn_000001 was independently falsified through the hull_leaf oracle differential and discharged by passing Phase 4; see evidence/phase2-vector-constructor-iterator-000001.md. Current ledger totals are 61 closed and 82 deferred function rows.",
   "proof_kinds": {
     "differential_falsified": "a mutation was aimed at this row's reconstruction in a throwaway tree, rebuilt, and run through every Phase 2 differential target; the recorded stdout_delta is the largest one produced and the gate is the target that produced it",
     "static_proof_falsified": "a mutation was aimed at this row and the static-proof gate failed the named check; there is no oracle side, so this is weaker than any differential",
@@ -60,14 +60,32 @@
   "counts": {
     "differential_falsified": 53,
     "static_proof_falsified": 6,
-    "oracle_differential_falsified": 1,
-    "deferred_homeless_shared_code": 23,
+    "oracle_differential_falsified": 2,
+    "deferred_homeless_shared_code": 22,
     "deferred_reconstructed_not_falsified": 39,
     "deferred_blocked_on_later_phase": 14,
     "deferred_unreachable_in_phase_2": 6,
     "deferred_not_independently_falsifiable": 1
   },
   "closed": [
+    {
+      "id": "phys_fn_000001",
+      "rva": "0x00001000",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "discharged_by_phase": 4,
+      "driving_phases": [
+        3,
+        4,
+        6,
+        7
+      ],
+      "falsification": {
+        "mutation": "Changed nxIceVectorConstruct element advancement from the supplied stride (add esi,ebp) to a fixed four bytes (add esi,4).",
+        "detected": "mismatches=30"
+      },
+      "note": "The restored direct-linked baseline reports hull_leaf mismatches=0 and whole-target candidate mismatches=0. The image links the same implementation at RVA 0x0001d3b0; see evidence/phase2-vector-constructor-iterator-000001.md."
+    },
     {
       "id": "phys_fn_000224",
       "rva": "0x0000b5b0",
@@ -117,6 +135,20 @@
         "mutation": "a print at the entry of NpPhysicsSDK::getParameter",
         "detected": "stdout_delta=25"
       }
+    },
+    {
+      "id": "phys_fn_000236",
+      "rva": "0x0000b790",
+      "driving_phases": [
+        3
+      ],
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSDKTests",
+      "falsification": {
+        "mutation": "Replace NpPhysicsSDK::releaseScene with a no-op in Physics/src/NpPhysicsSDK.cpp. The staged NxPhysicsSDKTests scene lifecycle fixture is the positive control.",
+        "detected": "stdout_delta=6"
+      },
+      "discharged_by_phase": 3
     },
     {
       "id": "phys_fn_000238",
@@ -400,6 +432,20 @@
       }
     },
     {
+      "id": "phys_fn_000468",
+      "rva": "0x0000e0b0",
+      "driving_phases": [
+        3
+      ],
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSDKTests",
+      "falsification": {
+        "mutation": "Replace PhysicsSDK::releaseScene with a no-op in Physics/src/PhysicsSDK.cpp. The staged NxPhysicsSDKTests scene lifecycle fixture is the positive control.",
+        "detected": "stdout_delta=8"
+      },
+      "discharged_by_phase": 3
+    },
+    {
       "id": "phys_fn_000472",
       "rva": "0x0000e1b0",
       "proof": "differential_falsified",
@@ -555,6 +601,21 @@
       }
     },
     {
+      "id": "phys_fn_002417",
+      "rva": "0x0005bc90",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsBodyCreationTests",
+      "discharged_by_phase": 3,
+      "driving_phases": [
+        3,
+        5
+      ],
+      "falsification": {
+        "mutation": "the body and shape registration paths no longer set their per-ID occupancy sentinel",
+        "detected": "stdout_delta=6"
+      }
+    },
+    {
       "id": "phys_fn_003907",
       "rva": "0x0008e840",
       "proof": "differential_falsified",
@@ -643,68 +704,9 @@
         "mutation": "the accessor hands back null instead of installing the built-in default",
         "detected": "check_failed accessor installs a default when nothing is registered"
       }
-    },
-    {
-      "id": "phys_fn_002417",
-      "rva": "0x0005bc90",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsBodyCreationTests",
-      "discharged_by_phase": 3,
-      "driving_phases": [
-        3,
-        5
-      ],
-      "falsification": {
-        "mutation": "the body and shape registration paths no longer set their per-ID occupancy sentinel",
-        "detected": "stdout_delta=6"
-      }
-    },
-    {
-      "id": "phys_fn_000236",
-      "rva": "0x0000b790",
-      "driving_phases": [
-        3
-      ],
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSDKTests",
-      "falsification": {
-        "mutation": "Replace NpPhysicsSDK::releaseScene with a no-op in Physics/src/NpPhysicsSDK.cpp. The staged NxPhysicsSDKTests scene lifecycle fixture is the positive control.",
-        "detected": "stdout_delta=6"
-      },
-      "discharged_by_phase": 3
-    },
-    {
-      "id": "phys_fn_000468",
-      "rva": "0x0000e0b0",
-      "driving_phases": [
-        3
-      ],
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSDKTests",
-      "falsification": {
-        "mutation": "Replace PhysicsSDK::releaseScene with a no-op in Physics/src/PhysicsSDK.cpp. The staged NxPhysicsSDKTests scene lifecycle fixture is the positive control.",
-        "detected": "stdout_delta=8"
-      },
-      "discharged_by_phase": 3
     }
   ],
   "deferred": [
-    {
-      "id": "phys_fn_000001",
-      "rva": "0x00001000",
-      "size": 48,
-      "reason": "homeless_shared_code",
-      "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "below Actor.cpp",
-      "reachability": "reachable_via_other_phase",
-      "driving_phases": [
-        3,
-        4,
-        6,
-        7
-      ],
-      "callers": 32
-    },
     {
       "id": "phys_fn_000015",
       "rva": "0x000014f0",

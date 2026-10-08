@@ -2982,6 +2982,13 @@
       "confidence": "semantic",
       "evidence": "oracle/capstone/manifest.json",
       "reason": "sets vtable to 0x101043d0 then frees this through allocator adapter when flags&1; __thiscall ret 4"
+    },
+    {
+      "id": "phys_fn_000001",
+      "label": "MSVC vector constructor iterator",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/0",
+      "reason": "IDA pseudocode and disassembly at RVA 0x1000 identify the __stdcall array constructor iterator: it calls the supplied __thiscall constructor count times and advances by the supplied element stride; direct oracle differential and stride mutation evidence are recorded in evidence/phase2-vector-constructor-iterator-000001.md"
     }
   ]
 }
