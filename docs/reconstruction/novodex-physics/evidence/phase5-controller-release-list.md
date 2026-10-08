@@ -663,3 +663,10 @@ The registered DynamicSetter differential catches a source-line mutation in the 
 - `phys_fn_000851` sphere mass mutation detection: `stdout_delta=16`; both mutant processes exit 0 with exact stderr, and the restored candidate is exact.
 - `phys_fn_000853` capsule mass mutation detection: `stdout_delta=18`; both mutant processes exit 0 with exact stderr, and the restored candidate is exact.
 - Full details and logs: `evidence/phase5-shape-mass-000851-000853.md`.
+
+
+### Capsule and sphere descriptor loads (`phys_fn_000989`, `phys_fn_001353`)
+
+- `phys_fn_000989` radius-store mutation is caught by `NxPhysicsObjectLayoutTests`: `capload candidate ok=0`, `layout candidate mismatches=2`; restored run has zero mismatches.
+- `phys_fn_001353` radius-store mutation is caught by `NxPhysicsObjectLayoutTests`: `sphload candidate ok=0`, `layout candidate mismatches=2`; restored run has zero mismatches.
+- Full details and logs: `evidence/phase5-shape-load-000989-001353.md`.

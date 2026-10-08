@@ -832,12 +832,12 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "dynamically_gated": 1,
-    "reconstructed": 4
+    "dynamically_gated": 2,
+    "reconstructed": 3
    },
    "bytes": {
-    "dynamically_gated": 23,
-    "reconstructed": 361
+    "dynamically_gated": 133,
+    "reconstructed": 251
    },
    "phases": {
     "3": 1,
@@ -1293,12 +1293,12 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "dynamically_gated": 1,
-    "reconstructed": 2
+    "dynamically_gated": 2,
+    "reconstructed": 1
    },
    "bytes": {
-    "dynamically_gated": 89,
-    "reconstructed": 101
+    "dynamically_gated": 168,
+    "reconstructed": 22
    },
    "phases": {
     "5": 3

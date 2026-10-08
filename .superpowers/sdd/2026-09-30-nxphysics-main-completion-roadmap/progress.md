@@ -196,3 +196,8 @@ Fresh Win32 Release Phase 5 also passes all 18 staged targets and 2,311/2,311 co
 Continuation 2026-10-08: closed Phase 5 rows `phys_fn_000851` and `phys_fn_000853`, the sphere and capsule mass-frame builders, with separate mutations in the registered `NxPhysicsActorMassTests` target. Changing each builder's radius input to `radius + 1.0f` is caught with `stdout_delta=16` and `18`; both mutant pairs exit 0 with exact stderr, and both restored controls are exact. Phase 5 now records 129 closed / 76 deferred functions. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-shape-mass-000851-000853.md`.
 
 Fresh Win32 Release Phase 5 also passes all 18 staged targets and 2,311/2,311 assertions after rows 000851/000853 (`build/phase5-shape-mass-000851-000853-full-gate.log`).
+
+
+Continuation 2026-10-08: closed Phase 5 rows `phys_fn_000989` and `phys_fn_001353`, the capsule and sphere descriptor-load rows, using direct oracle comparisons in `NxPhysicsObjectLayoutTests`. Mutating each row's radius store is caught (`capload`/`sphload candidate ok=0`, two layout mismatches); both restored runs return exact digests with zero mismatches. Phase 5 now records 131 closed / 74 deferred functions. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-shape-load-000989-001353.md`.
+
+Fresh Win32 Release Phase 5 passes all 18 staged targets and 2,311/2,311 assertions after the 000989/001353 closures (`build/phase5-shape-load-000989-001353-full-gate.log`).
