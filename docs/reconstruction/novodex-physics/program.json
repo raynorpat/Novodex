@@ -98,9 +98,9 @@
       "gate_artifact": "gates/phase5.json",
       "owned_functions": 205,
       "owned_data_objects": 122,
-      "closed_functions": 70,
+      "closed_functions": 71,
       "closed_data_objects": 0,
-      "remaining_functions": 135,
+      "remaining_functions": 134,
       "remaining_data_objects": 122
     },
     {

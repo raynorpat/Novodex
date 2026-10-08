@@ -6,10 +6,10 @@
   "closure_ledger": "gates/phase5-closure.json",
   "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
   "evidence_commit": "6965e505f86ac15d1c35d2cd471f6544e42fb71d",
-  "note": "The full Phase 5 regression gate passes all 18 staged targets, static/oracle proofs, and 2,303/2,303 coverage assertions on the Win32 Release build. Actor accessors, mass-from-shapes, shape-vtable behavior, mass-frame behavior, kinematic flags, base-shape return stubs, and the phys_fn_000006 root null-guard and phys_fn_000028 vector growth are independently mutation-falsified on registered tests; the current closure ledger is 70 closed / 135 deferred. The differential loader reports and flushes staged DLL identity before test code and retains its final lifecycle audit. The phase remains pending until all owned rows are closed.",
+  "note": "The full Phase 5 regression gate passes all 18 staged targets, static/oracle proofs, and 2,303/2,303 coverage assertions on the Win32 Release build. Actor accessors, mass-from-shapes, shape-vtable behavior, mass-frame behavior, kinematic flags, base-shape return stubs, and the phys_fn_000006 root null-guard and phys_fn_000028 vector growth and phys_fn_000024 no-root release report are independently mutation-falsified on registered tests; the current closure ledger is 71 closed / 134 deferred. The differential loader reports and flushes staged DLL identity before test code and retains its final lifecycle audit. The phase remains pending until all owned rows are closed.",
   "counts": {
-    "closed": 70,
-    "deferred": 135
+    "closed": 71,
+    "deferred": 134
   },
   "gate_sequence": [
     {
@@ -20,12 +20,12 @@
     {
       "name": "validate_inventory",
       "command": "python -B docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json",
-      "result": "inventory=pass; Phase 5 closure 70 closed / 135 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0."
+      "result": "inventory=pass; Phase 5 closure 71 closed / 134 deferred; 6,338 functions and 5,138 data objects accounted for; unexplained=0."
     },
     {
       "name": "build_and_phase_gate",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 5",
-      "result": "Fresh Win32 Release Phase 5 gate passed all 18 staged-pair targets, the NxPhysicsRangeIterationTests static proof, the NxPhysicsObjectLayoutTests oracle differential, and 2,303/2,303 coverage assertions. The phys_fn_000028 growth-capacity mutation was independently rejected with mismatches=2; restored source passes. Public headers remain unchanged."
+      "result": "Fresh Win32 Release Phase 5 gate passed all 18 staged-pair targets, the NxPhysicsRangeIterationTests static proof, the NxPhysicsObjectLayoutTests oracle differential, and 2,303/2,303 coverage assertions. Row mutations for phys_fn_000028 and phys_fn_000024 were both caught on registered targets; the restored source passes. See build/phase5-release-shape-000024-gate.log. Public headers remain unchanged."
     },
     {
       "name": "viewer_all_scenes",
