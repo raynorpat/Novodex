@@ -801,3 +801,9 @@ Shifting the normal input from descriptor +0x4c to +0x50 produces `planeload can
 
 Changing the mesh-data read from +0xe4 to +0xe0 produces `morerows candidate okMesh=0` and `layout candidate mismatches=1` (`build/phase5-001381-mutant.log`). Restoring +0xe4 returns `okMesh=1`, zero mismatches, and differential-pass (`build/phase5-001381-restored.log`).
 `phys_fn_001381` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-mesh-word-getter-001381.md`.
+
+
+### Mesh slot-11 four-word getter (`phys_fn_001387`)
+
+Changing the source offset from mesh +0x5c to +0x60 yields `meshrows candidate ok=0` and `layout candidate mismatches=1` (`build/phase5-001387-mutant.log`). Restoring +0x5c returns the expected digest and words, zero mismatches, and differential-pass (`build/phase5-001387-restored.log`).
+`phys_fn_001387` mutation detection: `mismatches=1`; restored output is exact (`mismatches=0`). See `evidence/phase5-mesh-words5c-001387.md`.
