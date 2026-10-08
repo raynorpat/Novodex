@@ -21,9 +21,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 100,
+    "differential_falsified": 102,
     "oracle_differential_falsified": 32,
-    "deferred_reconstructed_not_falsified": 72,
+    "deferred_reconstructed_not_falsified": 70,
     "static_proof_falsified": 1
   },
   "closed": [
@@ -1372,6 +1372,26 @@
         "mutation": "Added 1.0f to actorPosition[0] in nxNpActorApplyWorldMassPose before storing the dynamic actor pose.",
         "detected": "stdout_delta=168"
       }
+    },
+    {
+      "id": "phys_fn_000793",
+      "rva": "0x0001a350",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsBodyCreationTests",
+      "falsification": {
+        "mutation": "Omitted the body descriptor mass store at DynamicBody+0x188 by adding 1.0f in DynamicBody::loadFromBodyDesc.",
+        "detected": "stdout_delta=26"
+      }
+    },
+    {
+      "id": "phys_fn_000795",
+      "rva": "0x0001a9a0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsBodyCreationTests",
+      "falsification": {
+        "mutation": "Changed the first copied linear-velocity word at DynamicBody+0x6c by XORing its descriptor bits with 1.",
+        "detected": "stdout_delta=14"
+      }
     }
   ],
   "deferred": [
@@ -1379,24 +1399,6 @@
       "id": "phys_fn_000768",
       "rva": "0x00017f10",
       "size": 1164,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000793",
-      "rva": "0x0001a350",
-      "size": 1613,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000795",
-      "rva": "0x0001a9a0",
-      "size": 3090,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],

@@ -682,3 +682,11 @@ The registered DynamicSetter differential catches a source-line mutation in the 
 
 The baseline and restored `NxPhysicsActorCMassTests` staged-pair runs are exact (`stdout_delta=0`, `stderr_exact=True`; `build/phase5-000789-baseline.log`, `build/phase5-000789-restored.log`). The temporary `actorPosition[0] + 1.0f` mutation in `nxNpActorApplyWorldMassPose` is caught with `stdout_delta=168`; both mutant processes exit 0 and stderr is exact (`build/phase5-000789-mutant.log`).
 `phys_fn_000789` mutation detection: `stdout_delta=168`; restored candidate output is exact (`stdout_delta=0`, `stderr_exact=True`).
+
+
+### Body-descriptor loader (`phys_fn_000793`, `phys_fn_000795`)
+
+Baseline and restored `NxPhysicsBodyCreationTests` staged-pair runs are exact (`stdout_delta=0`, `stderr_exact=True`; `build/phase5-000793-000795-baseline.log`, `build/phase5-000793-000795-restored.log`). Both mutations run against the same shared loader implementation but alter distinct oracle-owned ranges.
+- `phys_fn_000793`: adding 1.0f to the stored mass at +0x188 is caught with `stdout_delta=26`; both mutant processes exit 0 and stderr is exact (`build/phase5-000793-mutant.log`).
+- `phys_fn_000795`: flipping bit 0 of the first copied linear-velocity word at +0x6c is caught with `stdout_delta=14`; both mutant processes exit 0 and stderr is exact (`build/phase5-000795-mutant.log`).
+`phys_fn_000793` mutation detection: `stdout_delta=26`; `phys_fn_000795` mutation detection: `stdout_delta=14`; restored output is exact.
