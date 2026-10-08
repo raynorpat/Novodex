@@ -536,3 +536,13 @@ The registered DynamicSetter differential catches each row-specific wrong-store 
 - `phys_fn_000168` mutation detection: `stdout_delta=2`. Full details: `evidence/phase5-mass-damping-wrappers-000166-000168-000170-000172.md`.
 - `phys_fn_000170` mutation detection: `stdout_delta=2`. Full details: `evidence/phase5-mass-damping-wrappers-000166-000168-000170-000172.md`.
 - `phys_fn_000172` mutation detection: `stdout_delta=2`. Full details: `evidence/phase5-mass-damping-wrappers-000166-000168-000170-000172.md`.
+
+### Actor velocity and momentum setters (2026-10-08)
+
+Registered DynamicSetter and Momentum differentials reject each row-specific mutation with equal zero exits and exact stderr; restored output matches exactly.
+
+- `phys_fn_000174` mutation detection: `stdout_delta=6`. Full details: `evidence/phase5-velocity-momentum-wrappers-000174-000176-000178-000180-000182.md`.
+- `phys_fn_000176` mutation detection: `stdout_delta=8`. Full details: `evidence/phase5-velocity-momentum-wrappers-000174-000176-000178-000180-000182.md`.
+- `phys_fn_000178` mutation detection: `stdout_delta=2`. Full details: `evidence/phase5-velocity-momentum-wrappers-000174-000176-000178-000180-000182.md`.
+- `phys_fn_000180` mutation detection: `stdout_delta=40`. Full details: `evidence/phase5-velocity-momentum-wrappers-000174-000176-000178-000180-000182.md`.
+- `phys_fn_000182` mutation detection: `stdout_delta=18`. Full details: `evidence/phase5-velocity-momentum-wrappers-000174-000176-000178-000180-000182.md`.
