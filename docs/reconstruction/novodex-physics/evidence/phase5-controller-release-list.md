@@ -598,3 +598,9 @@ The registered DynamicSetter differential catches a source-line mutation in the 
 - `phys_fn_001001` mutation detection: `stdout_delta=2`.
 - `phys_fn_001004` mutation detection: `stdout_delta=2`.
 - Full details and restored controls: `evidence/phase5-shape-accessors-001001-001004-001357-001363.md`.
+
+
+### Box slot-13 save-state row (2026-10-08)
+
+- phys_fn_000927 mutation detection: oxrow2 candidate ok=0 d13=ea972950, mismatches=1; restored run reports ok=1, mismatches=0.
+- Full details: vidence/phase5-box-save-state-000927.md.

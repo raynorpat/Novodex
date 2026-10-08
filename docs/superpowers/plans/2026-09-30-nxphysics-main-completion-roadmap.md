@@ -1276,3 +1276,9 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 
 - Closed four Phase 5 rows with existing fixtures. Sphere set-radius `phys_fn_001357` is caught by the ObjectLayout oracle differential (`mismatches=1`); sphere center-radius `phys_fn_001363`, capsule center-radius `phys_fn_001001`, and capsule local-AABB `phys_fn_001004` each fail their DynamicSetter differential with `stdout_delta=2`. Restored controls are exact.
 - Phase 5 advances to 116 closed / 89 deferred functions. The 2,308 assertion floor is unchanged. No public headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-shape-accessors-001001-001004-001357-001363.md`.
+
+
+### Continuation — box slot-13 save-state row falsification (2026-10-08)
+
+- phys_fn_000927 uses the registered ObjectLayout box-row fixture. Incrementing the first saved dimension by 1.0f changes the candidate digest from 853c971d to a972950; the oracle differential reports one mismatch and oxrow2 candidate ok=0. The restored run is exact.
+- Phase 5 advances to 117 closed / 88 deferred functions; the 2,308 assertion floor is unchanged. No public Physics headers or production behavior changed. Evidence: docs/reconstruction/novodex-physics/evidence/phase5-box-save-state-000927.md.
