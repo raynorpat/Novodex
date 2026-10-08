@@ -1280,11 +1280,17 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 
 ### Continuation — box slot-13 save-state row falsification (2026-10-08)
 
-- phys_fn_000927 uses the registered ObjectLayout box-row fixture. Incrementing the first saved dimension by 1.0f changes the candidate digest from 853c971d to a972950; the oracle differential reports one mismatch and oxrow2 candidate ok=0. The restored run is exact.
+- phys_fn_000927 uses the registered ObjectLayout box-row fixture. Incrementing the first saved dimension by 1.0f changes the candidate digest from 853c971d to ea972950; the oracle differential reports one mismatch and boxrow2 candidate ok=0. The restored run is exact.
 - Phase 5 advances to 117 closed / 88 deferred functions; the 2,308 assertion floor is unchanged. No public Physics headers or production behavior changed. Evidence: docs/reconstruction/novodex-physics/evidence/phase5-box-save-state-000927.md.
 
 
 ### Continuation — box world-AABB row falsification (2026-10-08)
 
-- phys_fn_000935 uses the registered ObjectLayout box-row fixture. Adding 1.0f to output x-min makes oxrow3 candidate ok=0 and yields mismatches=1; restoring the implementation returns the exact oracle digest with zero mismatches.
+- phys_fn_000935 uses the registered ObjectLayout box-row fixture. Adding 1.0f to output x-min makes boxrow3 candidate ok=0 and yields mismatches=1; restoring the implementation returns the exact oracle digest with zero mismatches.
 - Phase 5 advances to 118 closed / 87 deferred functions. The 2,308 assertion floor is unchanged. No public Physics headers or production behavior changed. Evidence: docs/reconstruction/novodex-physics/evidence/phase5-box-world-aabb-000935.md.
+
+
+### Continuation — box slots 11 and 8 falsification (2026-10-08)
+
+- `phys_fn_000939` is caught when slot 11 writes `1.0f` instead of zero to out[0] (`boxrow2 candidate ok=0`, `mismatches=1`). `phys_fn_000941` is caught when slot 8 writes a positive rather than negative x minimum (`boxrow3 candidate ok=0`, `mismatches=1`). Both restored runs match the oracle with zero mismatches.
+- Phase 5 advances to 120 closed / 85 deferred functions. The 2,308 assertion floor is unchanged. No public Physics headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-box-zero-center-000939.md` and `docs/reconstruction/novodex-physics/evidence/phase5-box-local-aabb-000941.md`.
