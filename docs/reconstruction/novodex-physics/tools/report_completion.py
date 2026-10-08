@@ -370,11 +370,11 @@ def build_report(inventory, closure_ledgers, capstone=None, repo_root=None):
 
 
 def _sha256(path):
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+    # These fingerprints cover checked-in text files. Git may materialize them
+    # with CRLF on Windows, so hash the canonical LF form for checkout-stable
+    # snapshots.
+    contents = path.read_bytes().replace(b"\r\n", b"\n")
+    return hashlib.sha256(contents).hexdigest()
 
 
 def main(argv=None):

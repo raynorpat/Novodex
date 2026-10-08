@@ -1,5 +1,4 @@
 import json
-import hashlib
 import sys
 import tempfile
 import unittest
@@ -10,10 +9,19 @@ TOOLS_DIR = Path(__file__).resolve().parents[1]
 REPO_DIR = Path(__file__).resolve().parents[5]
 sys.path.insert(0, str(TOOLS_DIR))
 
-from report_completion import build_report  # noqa: E402
+from report_completion import _sha256, build_report  # noqa: E402
 
 
 class CompletionReportTests(unittest.TestCase):
+    def test_sha256_normalizes_text_line_endings(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            lf_path = Path(temp_dir) / "lf.json"
+            crlf_path = Path(temp_dir) / "crlf.json"
+            lf_path.write_bytes(b'{\n  "phase": 5\n}\n')
+            crlf_path.write_bytes(b'{\r\n  "phase": 5\r\n}\r\n')
+
+            self.assertEqual(_sha256(lf_path), _sha256(crlf_path))
+
     def test_backlog_counts_code_bytes_and_artifacts_separately(self):
         inventory = {
             "functions": [
@@ -99,7 +107,7 @@ class CompletionReportTests(unittest.TestCase):
         snapshot = json.loads(target.read_text(encoding="utf-8"))
         gates = REPO_DIR / "docs/reconstruction/novodex-physics/gates"
         expected_hashes = {
-            path.relative_to(REPO_DIR).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+            path.relative_to(REPO_DIR).as_posix(): _sha256(path)
             for path in sorted(gates.glob("phase*-closure.json"))
         }
         self.assertEqual(snapshot["source"]["closure_ledgers_sha256"], expected_hashes)
