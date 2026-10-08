@@ -722,14 +722,15 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Actor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/19",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/116",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit Actor.cpp): nxActorCreateShape: reentry (code 2, 0x150; static-only), the factory, then by the root: none -> 000531; a group -> 001041, slot 6 with 1, 001941, 000503(001957 + 001960), 003628 with a fluid manager; a single -> 000535/000533, a 0x110-byte group through [0x101041bc] built by 001033 with a 000012 id, +8, 001041 old then new, 000531 (## Task 4). Staged-pair cases: the targets named in the dynamic proof.",
-      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxActorCreateShape) in the candidate build (build/Release/NxPhysics.map) was hit 16 times (ActorShapeMutation 16) against build/pairs/candidate (NxPhysics.dll sha256 2f9815a105ac1fe5754ce2d69d7d1b2030a336eb8327fadeeb0f5388481c3dee, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1862/1862); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6, re-recorded for its final-review fixes and re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?nxActorCreateShape@@YAPAEPAEPBVNxShapeDesc@@@Z hit 16 times (SMut 16); equal to the oracle row's count on every target.",
+      "dynamic_proof": "NxPhysicsActorShapeMutationTests directly creates shapes on single-root and grouped actors and records both creation success and returned-handle placement. Its clean staged-pair baseline and restored candidate match exactly (both exit 0, stdout_delta=0, stderr_exact=True). In an isolated candidate mutation, changed nxActorCreateShape to return null after the factory had created and installed the shape. The target records added=0 and group_added=0 on the candidate, then faults while validating the missing handle; the oracle exits 0, candidate exits -1073741819, and the runner rejects the result with stdout_delta=359 and exact stderr. Detailed runs: evidence/phase5-create-shape-000036.md.",
       "notes": "owning unit Actor.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp; Scene +0x61c (the fluid manager) is only ever zeroed in the candidate, so that arm is unreachable in the product today (the 003628 call)",
-      "implementation": "Physics/src/Scene.cpp"
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxActorCreateShape"
     },
     {
       "id": "phys_fn_000037",
