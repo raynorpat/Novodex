@@ -487,3 +487,5 @@ method, hashes and harness details: `evidence/root-shape-cleanup-guard-2026-10-0
 ### Kinematic global-move rows (2026-10-07)
 
 The staged `NxPhysicsActorDynamicsTests` pair baseline and restored candidate are exact. Each rebuilt mutant was detected with both children exiting zero and exact stderr: `phys_fn_000090` `stdout_delta=16`, `phys_fn_000124` `stdout_delta=14`, and `phys_fn_000126` `stdout_delta=16`. Detailed inputs, mutation descriptions, and DLL hashes are in `evidence/phase5-kinematic-move-mutations.md`.
+
+- `phys_fn_000028` vector-growth mutation detection: `mismatches=2`. Full details: `evidence/phase5-vector-pushback-000028.md`.

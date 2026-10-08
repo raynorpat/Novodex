@@ -574,13 +574,15 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/15",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/64",
       "static_proof": "dword-vector push_back over the VC9 {_Myproxy,+first,+last,+end} layout: fast-path store at the cursor when end < capEnd, otherwise growth to 2*size+2 dwords through the SDK allocator adapter (slot +8 malloc with flag word 0, dword-wise copy, slot +0x14 free) and cursor reseat; the proxy word is never read",
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsObjectLayoutTests oracle differential directly drives the candidate nxU32VectorPushBack through three growth allocations (8 dwords, final capacity 14) and a pre-reserved no-allocation push. Baseline and byte-restored candidate report vecgrow candidate ok=1, matching digests 6f1d9bd7/8eac5155, candidate mismatches=0, and exit 0. An isolated source mutation changes 2*size+2 to 2*size+1; it produces capacity 15, vecgrow candidate ok=0, candidate mismatches=2, and exit 1. Detailed runs: evidence/phase5-vector-pushback-000028.md.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxU32VectorPushBack"
     },
     {
       "id": "phys_fn_000029",
