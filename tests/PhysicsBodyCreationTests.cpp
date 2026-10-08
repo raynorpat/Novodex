@@ -399,9 +399,18 @@ int wmain(int argc, wchar_t** argv)
 	printf("bodycreate ids=%x.%x.%x.%x.%x\n", word(recordOf(a), 0x11c),
 		word(recordOf(b), 0x11c), word(recordOf(c), 0x11c), word(recordOf(d), 0x11c),
 		word(recordOf(e), 0x11c));
+	const unsigned char* releaseCRecord = recordOf(c);
+	const unsigned releaseCId = word(releaseCRecord, 0x11c);
+	const unsigned char* releaseCAux = reinterpret_cast<const unsigned char*>(
+		word(releaseCRecord, 0x120));
+	unsigned* releaseCRecords = *reinterpret_cast<unsigned* const*>(releaseCAux + 0x80);
+	const unsigned releaseCRegistered = releaseCRecords[releaseCId]
+		== reinterpret_cast<unsigned>(releaseCRecord + 0x18) ? 1u : 0u;
 	allocs = gAllocator.allocations();
 	frees = gAllocator.frees();
 	scene->releaseActor(*c);
+	printf("bodycreate release_c_record_slot=%u.%u\n", releaseCRegistered,
+		releaseCRecords[releaseCId] == 0 ? 1u : 0u);
 	printTraffic("release_traffic", allocs, frees);
 	NxBodyDesc again;
 	NxActor* f = createBox(scene, again, 1.0f, identity);

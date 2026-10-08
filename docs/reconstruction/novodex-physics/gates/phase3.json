@@ -76,6 +76,11 @@
       "name": "reclose:phys_fn_002423",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 3",
       "result": "RepoRoot D:\\github\\Novodex, Release build, pinned oracle D:\\FlamingEnt__\\Unreal_3, external pair root D:\\FlamingEnt__\\novodex-analysis\\pairs; phase_gate=3 status=pass at coverage_assertions_evaluated=527 floor=527; NxPhysicsBodyCreationTests differential stdout_delta=0 and stderr_exact=True; phys_fn_002423 archive mutation stdout_delta=6; inventory closure now 62 closed and 330 deferred."
+    },
+    {
+      "name": "current-main-public-record-unregister",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 3",
+      "result": "Fresh current-main Win32 Release Phase 3 gate passed: NxPhysicsBodyCreationTests reported the dynamic-body auxiliary record slot before/after public NxScene::releaseActor as 1.1 on both oracle and candidate; coverage_assertions_evaluated=534 floor=534; phase_gate=3 status=pass. Log: build/phase3-record-unregister-final.log."
     }
   ],
   "excluded_from_comparison": [

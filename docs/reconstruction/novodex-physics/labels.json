@@ -2989,6 +2989,13 @@
       "confidence": "semantic",
       "evidence": "oracle/ghidra/manifest.json#/functions/0",
       "reason": "IDA pseudocode and disassembly at RVA 0x1000 identify the __stdcall array constructor iterator: it calls the supplied __thiscall constructor count times and advances by the supplied element stride; direct oracle differential and stride mutation evidence are recorded in evidence/phase2-vector-constructor-iterator-000001.md"
+    },
+    {
+      "id": "phys_fn_002411",
+      "label": "Dynamic body auxiliary-record unregister",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/905",
+      "reason": "the 0x5bbb0 oracle routine releases the body id from the auxiliary pool and clears the record-table slot; NxPhysicsBodyCreationTests observes that slot before and after public NxScene::releaseActor"
     }
   ]
 }

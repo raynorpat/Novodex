@@ -911,3 +911,7 @@ The `phys_fn_000116` -8 actor member adjustor's flags-forwarding mutation preven
 
 - `phys_fn_000038` mutation detection: routing the slot `0x104` wrapper through `0x108` is caught with `mismatches=1`; restored candidate failures are zero.
 - `phys_fn_000040` mutation detection: routing the slot `0x108` wrapper through `0x104` is caught with `mismatches=1`; restored candidate failures are zero.
+## Dynamic-body auxiliary-record unregister: `phys_fn_002411`
+
+The public `NxPhysicsBodyCreationTests` route verifies the Scene auxiliary record-table slot before and after `NxScene::releaseActor`. Removing `records[slot]=0` from `nxSceneAuxUnregisterRecord` makes the staged candidate report a stale slot (`stdout_delta=2`, both exits 0, exact stderr); restoring the store returns `stdout_delta=0`. Full evidence: `evidence/phase5-dynamic-record-unregister-002411.md`.
+`phys_fn_002411` mutation detection: `stdout_delta=2`; restored public-DLL differential is exact (`stdout_delta=0`).

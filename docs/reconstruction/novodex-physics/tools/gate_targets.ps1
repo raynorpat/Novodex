@@ -2186,6 +2186,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'bodycreate kinematic_block=0',
         'bodycreate kinematic_flag=1',
         'bodycreate ids=0.1.2.3.4',
+		'bodycreate release_c_record_slot=1.1',
         'bodycreate release_traffic=3.5 a.20.8.8 f.10.18.260.1c.228',
         'bodycreate reused_created=1',
         'bodycreate reused_id=2',
@@ -5577,12 +5578,12 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 4  # actor-group flags, scene creation/indexing, release/survivor lookup and destructor frees
-    '3' = 533  # previous 532 plus DynamicBody::markIslandDirty's isolated state cases
+    '3' = 534  # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2566  # exact registered Phase 5 coverage-line count
+    '5' = 2567  # exact registered Phase 5 coverage-line count
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths
