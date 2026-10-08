@@ -30,7 +30,7 @@
     {
       "name": "viewer_all_scenes",
       "command": "ctest --test-dir build -C Release --output-on-failure -R '^Viewer'",
-      "result": "Fresh current-main Win32 Release Viewer sweep passed all 48 selected CTest entries, including all 39 available scene demos and focused Viewer checks: 43 passed and five established signature-verified pinned-oracle asset cases skipped, with zero failures. Log: build/viewer-all-scenes-approved-design-final.log."
+      "result": "Fresh committed-main Win32 Release Viewer sweep passed all 48 selected CTest entries, including every available scene and focused Viewer check: 43 passed, five established asset-dependent cases skipped, and zero failed. Log: build/viewer-all-scenes-post-thunk-commit.log."
     }
   ],
   "excluded_from_comparison": [
