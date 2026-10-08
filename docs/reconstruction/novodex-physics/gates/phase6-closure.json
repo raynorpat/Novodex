@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closes 4 of its 433 function rows and none of its 531 data objects. The two exported joint-descriptor rows, phys_fn_004397, and phys_fn_004403 are closed by mutations caught by registered staged-pair gates. The descriptor rows are caught by NxPhysicsJointStagedPairTests; the kind-1/2/3/6 bounded support row is caught by NxPhysicsSimulationTests; the support normal solver mutation is caught by NxPhysicsMeshSimulationTests. The deferred rows remain debt rather than an obstruction.",
+  "note": "Phase 6 closes 5 of its 433 function rows and none of its 531 data objects. The two exported joint-descriptor rows, phys_fn_004397, phys_fn_004403, and phys_fn_004113 are closed by mutations caught by registered staged-pair gates. The descriptor rows are caught by NxPhysicsJointStagedPairTests; kind-1/2/3/6 bounded support and both joint-break notify return paths are caught by NxPhysicsSimulationTests; the support normal solver mutation is caught by NxPhysicsMeshSimulationTests. The deferred rows remain debt rather than an obstruction.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
@@ -25,9 +25,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 4,
+    "differential_falsified": 5,
     "deferred_reconstructed_not_falsified": 403,
-    "deferred_not_reconstructed_in_phase": 26
+    "deferred_not_reconstructed_in_phase": 25
   },
   "closed": [
     {
@@ -68,6 +68,16 @@
       "falsification": {
         "mutation": "In a throwaway git archive of HEAD ceed0031 (D:/FlamingEnt__/novodex-analysis/mutation-004403-ceed0031), supportSolveNormal004403's body-zero Y/Z path was changed from projecting and rounding signedApplied before inverse-mass scaling to projecting after scaledImpulse. The archive rebuilt NxPhysics and NxPhysicsMeshSimulationTests and ran run_differential.ps1 -Targets NxPhysicsMeshSimulationTests through the registered Phase 6 staged-pair target. CAUGHT: oracle_exit=0, candidate_exit=0, stdout_delta=4, stderr_exact=True. The changed words were the Y/Z components in the smooth and transformed smooth-heightfield post-solver vectors. Restoring the source from the committed worktree, rebuilding, and rerunning returned stdout_delta=0 and stderr_exact=True. The original zero-velocity input did not distinguish the X order. With the smooth sphere starting at inward normal velocity (0.014, -0.046, 0.014), the ordinary state is pinned as position=3edf07a3.3f6916e5.3edf07a4 velocity=b87e8b63.b8180000.b87f0000. In a throwaway archive of HEAD 7b942a40 with the updated fixture and expected line overlaid (D:/FlamingEnt__/novodex-analysis/mutation-004403-xorder-7b942a40-clean), the body-zero X path was changed from its recovered double projection followed by inverse-mass scaling to a float-rounded projection before inverse-mass scaling. Rebuilt NxPhysics and NxPhysicsMeshSimulationTests and ran the registered target: CAUGHT, oracle_exit=0, candidate_exit=0, stdout_delta=4, stderr_exact=True; both ordinary and transformed post-solver state lines changed. Restoring the source from the worktree and rebuilding returned stdout_delta=0, stderr_exact=True.",
         "detected": "stdout_delta=4"
+      }
+    },
+    {
+      "id": "phys_fn_004113",
+      "rva": "0x00098050",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a throwaway git archive of committed source 41cef17d, mutated JointBreakEvent::row004113 in Scene.cpp from `if(handled)` to `if(false && handled)`, suppressing Scene::releaseJoint after NxUserNotify::onJointBreak returns true. The archive clean baseline matches NxPhysicsSimulationTests exactly. The registered staged-pair differential caught the mutation: oracle_exit=0, candidate_exit=0, stdout_delta=2, stderr_exact=True; the release case retained one joint instead of reporting scene joint count 0. Restored the archive source byte-for-byte to the committed Scene.cpp blob, rebuilt, and confirmed stdout_delta=0, stderr_exact=True.",
+        "detected": "stdout_delta=2"
       }
     }
   ],
@@ -673,14 +683,6 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004113",
-      "rva": "0x00098050",
-      "size": 81,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_004119",

@@ -9350,3 +9350,21 @@ Independent throwaway-archive mutations were caught by `NxPhysicsSimulationTests
 - `phys_fn_000406` mutation detection: `stdout_delta=2`.
 - `phys_fn_000408` mutation detection: `stdout_delta=2`.
 - `phys_fn_000410` mutation detection: `stdout_delta=2`.
+
+## Joint-break notify return contract (`phys_fn_004113`, 2026-10-08)
+
+`phys_fn_004113` mutation detection: `stdout_delta=2` (oracle and candidate
+exit 0; stderr exact).
+
+The public simulation fixture now drives `NxUserNotify::onJointBreak` returning
+false and true. The false result retains the detached broken joint (callback
+state 2, `getActors()` returns two null pointers, scene count 1); the true
+result releases it (callback state 2, scene count 0). The pinned oracle and
+candidate match both complete simulation transcripts exactly. The refreshed
+Phase 5, 6, and 7 gates pass at 2,306/2,306, 1,064/1,064, and 1,385/1,385.
+A mutation in a throwaway `git archive` of `41cef17d` that
+suppresses the callback-true release is caught by registered
+`NxPhysicsSimulationTests` with `stdout_delta=2` and exact stderr; after source
+restoration and rebuild, the archive transcript is exact again. See
+`joint-break-events.md`; local archive logs are under
+`build/joint-break-archive-41cef17d/`.

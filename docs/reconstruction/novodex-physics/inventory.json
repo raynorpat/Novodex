@@ -76278,12 +76278,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1547",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13615",
       "static_proof": "Transcribed from the Ghidra decompile at oracle/ghidra/manifest.json#/functions/1547: if Scene+0x6ac is null, call 004105; otherwise set API re-entry, invoke NxUserNotify::onJointBreak(breakForce, publicJoint), clear re-entry, release the joint when the callback returns true, or call 004105 when it returns false.",
-      "dynamic_proof": "Candidate breakpoint on JointBreakEvent::row004113 hits once in the default no-notify break fixture; the no-notify branch reaches Joint::handleBreakEvent and the resulting four-step transcript is exact. See evidence/joint-break-events.md. Callback-return outcomes need a dedicated fixture.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests now exercises both NxUserNotify::onJointBreak return outcomes through the public scene step/fetch path: false retains the detached broken joint (callback state 2, getActors() returns two null pointers, scene count 1); true releases it (callback state 2, scene count 0). Oracle and candidate transcripts match exactly; Phases 5, 6, and 7 pass at 2,306/2,306, 1,064/1,064, and 1,385/1,385. A throwaway-archive mutation of the callback-true release branch is caught with stdout_delta=2 and exact stderr; the restored archive returns to stdout_delta=0. See evidence/joint-break-events.md and evidence/phase6-joints.md; archive logs are local under build/joint-break-archive-41cef17d/.",
       "notes": "Event slot implementation is defined in Scene.cpp beside the Scene queue dispatcher so the shared API re-entry guard remains accessible."
     },
     {

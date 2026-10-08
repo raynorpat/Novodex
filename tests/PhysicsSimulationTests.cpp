@@ -1557,9 +1557,19 @@ int wmain(int argc, wchar_t** argv)
 			return nxFail("joint-break notify callback count was not one");
 		const unsigned retainedState = notify.releaseJoint ? 0
 			: static_cast<unsigned>(notifyJoint->getState());
-		printf("simulation break-notify result=%s calls=%u force=%08x joint_match=%u callback_state=%u retained_state=%u joints=%u\n",
+		NxActor* brokenActor0 = 0;
+		NxActor* brokenActor1 = 0;
+		unsigned detachedActors = 0;
+		if(!notify.releaseJoint)
+			{
+			notifyJoint->getActors(&brokenActor0, &brokenActor1);
+			detachedActors = !brokenActor0 && !brokenActor1;
+			if(!detachedActors)
+				return nxFail("retained broken joint actors were not detached");
+			}
+		printf("simulation break-notify result=%s calls=%u force=%08x joint_match=%u callback_state=%u retained_state=%u detached=%u joints=%u\n",
 			notify.releaseJoint ? "release" : "retain", notify.calls, notify.forceBits,
-			notify.jointMatches, notify.stateAtCallback, retainedState,
+			notify.jointMatches, notify.stateAtCallback, retainedState, detachedActors,
 			static_cast<unsigned>(notifyScene->getNbJoints()));
 		sdk->releaseScene(*notifyScene);
 		}

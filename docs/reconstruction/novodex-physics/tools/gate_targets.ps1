@@ -3248,8 +3248,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation break-joint steps=4 ready=1 fetched=1'
         # Returning false preserves the detached broken joint; returning true
         # releases it after the callback and removes it from the scene count.
-        'simulation break-notify result=retain calls=1 force=3aa6d79d joint_match=1 callback_state=2 retained_state=2 joints=1'
-        'simulation break-notify result=release calls=1 force=3a85c6fa joint_match=1 callback_state=2 retained_state=0 joints=0'
+        'simulation break-notify result=retain calls=1 force=3aa6d79d joint_match=1 callback_state=2 retained_state=2 detached=1 joints=1'
+        'simulation break-notify result=release calls=1 force=3a85c6fa joint_match=1 callback_state=2 retained_state=0 detached=0 joints=0'
         'simulation soak steps=1000 ready=1 fetched=1'
         'simulation stage=soak1000 position=00000000.3ee66666.00000000 velocity=00000000.00000000.00000000'
         'simulation stack=settled steps=1000 ready=1 fetched=1'
