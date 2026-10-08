@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. It owns 561 function rows and 502 data objects: 21 functions are closed, 296 reconstructed functions remain unfalsified, 244 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are now independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. The disabled FluidManager release path (phys_fn_003643) is now mutation-falsified through its seeded array-removal and deleting-dispatch fixture. It owns 561 function rows and 502 data objects: 22 functions are closed, 296 reconstructed functions remain unfalsified, 243 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are now independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
@@ -19,9 +19,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 21,
+    "differential_falsified": 22,
     "deferred_reconstructed_not_falsified": 296,
-    "deferred_not_reconstructed_in_phase": 244
+    "deferred_not_reconstructed_in_phase": 243
   },
   "closed": [
     {
@@ -231,6 +231,16 @@
       "gate": "NxPhysicsSimulationTests",
       "falsification": {
         "mutation": "Changed the disabled FluidManager actor-created warning line from 0x107 to 0x108 in a throwaway git archive of HEAD 6f92c085. The archive was freshly configured and built for Win32 Release; the registered NxPhysicsSimulationTests differential staged the pinned oracle and mutant candidate. Both processes exited 0 with exact stderr, while the mutant reported line 264 instead of oracle line 263. The target rejected the mutant with stdout_delta=2.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_003643",
+      "rva": "0x00089e90",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a freshly configured and built throwaway git archive of HEAD e6616f8b2c9cfa5f4d44f9e728d47a3d9378df79, changed only the scalar deleting flag for the removed fluid from 1 to 0 in the FluidManager release helper. The registered NxPhysicsSimulationTests staged-pair differential rejected the mutant: both processes exited 0, stderr matched exactly, and the seeded array-release line changed from flags=1 to flags=0. Restoring the exact Scene.cpp source and rebuilding returned to stdout_delta=0.",
         "detected": "stdout_delta=2"
       }
     }
@@ -2601,14 +2611,6 @@
       "id": "phys_fn_003641",
       "rva": "0x00089e00",
       "size": 143,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_003643",
-      "rva": "0x00089e90",
-      "size": 186,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []

@@ -67704,12 +67704,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/FluidManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1375",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12613",
       "static_proof": "phys_fn_003643 (0x00089e90) warns when manager +0x2b is zero, searches the primary pointer array, removes a matching entry by swapping the last element, and adjusts the parallel array before dispatching the removed fluid destructor.",
-      "dynamic_proof": "NxPhysicsSimulationTests first verifies the empty-list unsupported warning, then seeds two manager arrays with two fake fluid objects and releases the first through NxScene::releaseFluid. Oracle and candidate both swap-remove the same object from both arrays and call its first vtable slot with scalar-delete flag 1 (simulation fluid array-release ... target=1; stdout_delta=0, stderr_exact=True; build/FluidGate/fluid-array-target-final-differential.log; evidence/fluid-release-disabled.md).",
+      "dynamic_proof": "NxPhysicsSimulationTests first verifies the empty-list unsupported warning, then seeds two manager arrays with two fake fluid objects and releases the first through NxScene::releaseFluid. Oracle and candidate both swap-remove the same object from both arrays and call its first vtable slot with scalar-delete flag 1 (simulation fluid array-release ... target=1; stdout_delta=0, stderr_exact=True; build/FluidGate/fluid-array-target-final-differential.log; evidence/fluid-release-disabled.md). Phase 7 archived mutation proof: changing the scalar deleting flag from 1 to 0 is caught by the registered NxPhysicsSimulationTests staged-pair differential; both exits=0, stdout_delta=2, stderr_exact=True. Restoring Scene.cpp returns to stdout_delta=0. Evidence: evidence/phase7-fluid-release-003643.md.",
       "notes": "The manager warning, matching-entry removal, parallel-array swap, and deleting-dispatch behavior are covered with a test-seeded fake object. This does not execute a real NpFluid destructor body or extension-backed fluid lifecycle."
     },
     {

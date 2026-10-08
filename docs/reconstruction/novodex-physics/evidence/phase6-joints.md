@@ -9372,3 +9372,7 @@ restoration and rebuild, the archive transcript is exact again. See
 ## Phase 7 closure measurement — actor-created fluid notification
 
 `phys_fn_003637` mutation detection: changing the line-263 warning source to line 264 was caught by `NxPhysicsSimulationTests` (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=2`, `stderr_exact=True`). The mutant target changes only the disabled FluidManager actor-created diagnostic. See `evidence/fluid-actor-created-noop.md` and `build/FluidGate/actor-created-mutation-20261008/mutation-run.log`.
+
+## Phase 7 closure measurement — FluidManager release
+
+`phys_fn_003643` mutation detection: changing the removed fluid's scalar deleting flag from 1 to 0 in an isolated archive was caught by the registered `NxPhysicsSimulationTests` differential (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=2`, `stderr_exact=True`). The restored archived source returned to an exact transcript. See `evidence/phase7-fluid-release-003643.md`.

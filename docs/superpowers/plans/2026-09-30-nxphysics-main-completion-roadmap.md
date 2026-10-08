@@ -1320,3 +1320,7 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 ### Continuation — dynamic-body island dirty-bit closure (2026-10-08)
 
 - `phys_fn_000748` now has a direct isolated-record fixture for both island-present and island-absent behavior. Removing the `+0x1e4 |= 2` update is detected (`oracle=3.5`, mutant `1.5`); restoring it returns exact oracle output. Phase 5 advances to 125 closed / 80 deferred, with 2,310 coverage assertions. No public headers changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-mark-island-dirty-000748.md`.
+
+### Continuation — FluidManager release mutation closure (2026-10-08)
+
+- Closed Phase 7 row `phys_fn_003643` (`releaseFluid`) with a throwaway-archive mutation that changes the removed fluid's scalar deleting flag from 1 to 0. The registered simulation differential catches it with equal zero exits, exact stderr, and `stdout_delta=2`; restoring and rebuilding returns to `stdout_delta=0`. The full Phase 7 target selection passes all 14 staged-pair targets exactly. Phase 7 advances to 22 closed / 539 deferred; inventory validates at 6,338 functions / 5,138 data objects / zero unexplained. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-release-003643.md`. This covers the test-seeded manager removal and destructor dispatch; real `NpFluid` destruction and extension-backed lifecycle remain open. Public Physics headers are unchanged.
