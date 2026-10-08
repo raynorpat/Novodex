@@ -920,3 +920,9 @@ The public `NxPhysicsBodyCreationTests` route verifies the Scene auxiliary recor
 `NxPhysicsActorLifecycleTests` calls the public position and pose getters for static and dynamic actors through each staged DLL. Mutating `nxNpActorGlobalPosition` to read dynamic record+0x54 changes the candidate position while leaving the oracle at the record+0x50 value; the staged differential detects the mutation. The restored candidate returns exact output. Details and hashes: `evidence/phase5-global-position-000092.md`.
 
 `phys_fn_000092` mutation detection: `stdout_delta=8`; restored differential is exact (`stdout_delta=0`).
+
+## Actor shape-count getter: `phys_fn_000082`
+
+`NxPhysicsActorShapeMutationTests` now asserts single-root and group-root counts through the public actor API across creation, append, and removal. Mutating the non-group return from 1 to 2 makes the explicit single-shape assertion fail (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=313`); restoring the return returns the staged differential to exact (`stdout_delta=0`, exact stderr). Details and hashes: `evidence/phase5-get-nb-shapes-000082.md`.
+
+`phys_fn_000082` mutation detection: `stdout_delta=313`; restored public-DLL differential is exact (`stdout_delta=0`).

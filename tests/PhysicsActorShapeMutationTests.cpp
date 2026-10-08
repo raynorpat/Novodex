@@ -944,6 +944,8 @@ int wmain(int argc, wchar_t** argv)
 	NxShape* original = actor->getShapes()[0];
 	printf("shape_mutation initial=%u.%u.%u\n", actor->getNbShapes(),
 		shapeRootType(actor), original ? 1u : 0u);
+	if(actor->getNbShapes() != 1)
+		return nxFail("single-shape actor count mismatch");
 	NxBoxShapeDesc second;
 	second.dimensions = NxVec3(0.5f, 1.0f, 1.5f);
 	const unsigned beforeAddAlloc = allocator.allocations();
@@ -952,6 +954,8 @@ int wmain(int argc, wchar_t** argv)
 	printAllocations("add_memory", allocator, beforeAddAlloc, beforeAddFree);
 	const NxU32 countAfterAdd = actor->getNbShapes();
 	NxShape** handlesAfterAdd = actor->getShapes();
+	if(countAfterAdd != 2)
+		return nxFail("single-root actor append count mismatch");
 	printf("shape_mutation added=%u.%u.%u.%u.%u\n", added ? 1u : 0u,
 		countAfterAdd, shapeRootType(actor),
 		countAfterAdd > 0 && handlesAfterAdd[0] == original ? 1u : 0u,
@@ -1017,6 +1021,8 @@ int wmain(int argc, wchar_t** argv)
 	groupDesc.shapes.pushBack(&groupSecond);
 	NxActor* groupActor = scene->createActor(groupDesc);
 	if(!groupActor) return nxFail("group actor creation failed");
+	if(groupActor->getNbShapes() != 2)
+		return nxFail("group actor initial count mismatch");
 	NxShape* firstHandle = groupActor->getShapes()[0];
 	NxShape* secondHandle = groupActor->getShapes()[1];
 	printGroupState("group_before_append", groupActor);
@@ -1026,6 +1032,8 @@ int wmain(int argc, wchar_t** argv)
 	printAllocations("group_add_memory", allocator,
 		beforeGroupAddAlloc, beforeGroupAddFree);
 	NxShape** groupHandles = groupActor->getShapes();
+	if(groupActor->getNbShapes() != 3)
+		return nxFail("group actor append count mismatch");
 	printf("shape_mutation group_added=%u.%u.%u.%u.%u.%u\n",
 		thirdHandle ? 1u : 0u, groupActor->getNbShapes(),
 		shapeRootType(groupActor),
@@ -1041,6 +1049,8 @@ int wmain(int argc, wchar_t** argv)
 		printAllocations("group_remove_memory", allocator,
 			beforeGroupRemoveAlloc, beforeGroupRemoveFree);
 		groupHandles = groupActor->getShapes();
+		if(groupActor->getNbShapes() != 2)
+			return nxFail("group actor removal count mismatch");
 		printf("shape_mutation group_removed=%u.%u.%u.%u\n",
 			groupActor->getNbShapes(), shapeRootType(groupActor),
 			groupHandles[0] == firstHandle ? 1u : 0u,
