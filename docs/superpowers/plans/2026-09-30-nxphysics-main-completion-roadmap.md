@@ -1264,3 +1264,9 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 - The approved all-scenes Viewer selection passes all 48 tests on the current mainline build: 43 pass and five asset-baseline cases skip; all 39 available scene demos are represented, along with scene replacement and both focused Viewer physics tests. Command: `ctest --test-dir build/mainline-actor-secondary-vptr-20261008 -C Release -R '^Viewer' --output-on-failure` (56.36 sec).
 - Phase 5 row `phys_fn_001359` (sphere internal vtable slot-15 get-radius) now has a direct call from the DynamicSetter oracle fixture. A +1.0f mutation produces `stdout_delta=2` with equal zero exits and exact stderr; restoring the row returns the differential to `stdout_delta=0`. The Phase 5 floor rises to 2,308, with 91 mutation-closed functions and 94 reconstructed-but-unfalsified functions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-sphere-get-radius-001359.md`.
 - `phys_fn_000748` remains open: changing its island dirty-bit assignment was not detected because the current body-creation fixture has no island object before simulation. A reachable island-state fixture is required before that row can close.
+
+
+### Continuation — capsule radius setter row falsification (2026-10-08)
+
+- The existing DynamicSetter fixture exercises capsule vtable slot 14 through `setRadius(0.75f)` and observes resulting radius, dimensions, and AABB. Mutating the internal `+0xe0` store to `radius + 1.0f` produces `stdout_delta=4` with both processes exiting 0 and exact stderr; restoring returns the differential to exact.
+- Phase 5 closure advances to 112 closed / 93 deferred functions; its assertion floor remains 2,308 because this uses already-registered observations. No public Physics headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-capsule-set-radius-000995.md`.

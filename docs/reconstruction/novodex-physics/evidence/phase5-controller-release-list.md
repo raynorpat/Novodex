@@ -584,3 +584,8 @@ The registered DynamicSetter differential catches a source-line mutation in the 
 ### Sphere slot-15 radius getter (2026-10-08)
 
 - `phys_fn_001359` mutation detection: `stdout_delta=2`. Full details: `evidence/phase5-sphere-get-radius-001359.md`.
+
+
+### Capsule slot-14 set-radius (2026-10-08)
+
+- `phys_fn_000995` mutation detection: `stdout_delta=4`. Full details: `evidence/phase5-capsule-set-radius-000995.md`.
