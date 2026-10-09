@@ -32,6 +32,14 @@ bool __cdecl NxOverlapCapsuleMesh(const NxCollisionShape*, const NxCollisionShap
 	return false;
 	}
 
+// The shape-vtable harness constructs PhysicsInternal's complete dispatch
+// table, but does not execute mesh/mesh overlap. Keep this target link-only;
+// the production DLL and collision differential bind ContactMeshMesh.cpp.
+extern "C" bool __cdecl nxOverlapMeshMesh(const NxCollisionShape*, const NxCollisionShape*, void*)
+	{
+	return false;
+	}
+
 // PhysicsInternal.cpp keeps the complete trigger-overlap dispatch table in
 // dispatch-only harnesses, which intentionally do not compile NarrowPhase.cpp.
 // NxPhysicsInternalTests does compile that production unit, so leave its real
