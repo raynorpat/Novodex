@@ -99,14 +99,14 @@ extern "C" __declspec(naked) void __cdecl nxAbiSretWrongCleanupControl()
 	__asm { ret }
 }
 
-static void nxAccumulateActorSretCheck(NxActor* actor, unsigned slot,
+static void nxAccumulateActorSretCheck(void* object, unsigned slot,
 	const void* expected, unsigned bytes, unsigned* cases, unsigned* mismatches,
 	unsigned* flagsOr, const void* point = 0)
 {
 	unsigned char raw[sizeof(NxMat34)];
 	memset(raw, 0xcd, sizeof(raw));
-	void** vtable = *reinterpret_cast<void***>(actor);
-	const unsigned flags = nxAbiInvokeSretProbe(vtable[slot], actor, raw,
+	void** vtable = *reinterpret_cast<void***>(object);
+	const unsigned flags = nxAbiInvokeSretProbe(vtable[slot], object, raw,
 		const_cast<void*>(point));
 	const bool equal = memcmp(expected, raw, bytes) == 0;
 	++*cases;
@@ -848,73 +848,94 @@ int wmain(int argc, wchar_t** argv)
 		// slot 5 begins the zero-argument aggregate-return family. Exercise every
 		// such public method through both the normal C++ ABI and a raw hidden-sret
 		// call, comparing the independently written result bytes.
-		unsigned sretCases = 0, sretMismatches = 0, sretFlags = 0;
+		unsigned actorSretCases = 0, shapeSretCases = 0;
+		unsigned sretMismatches = 0, sretFlags = 0;
 		NxMat34 pose = dynamicActor->getGlobalPoseVal();
 		nxAccumulateActorSretCheck(dynamicActor, 5, &pose, sizeof(pose),
-			&sretCases, &sretMismatches, &sretFlags);
+			&actorSretCases, &sretMismatches, &sretFlags);
 		NxVec3 position = dynamicActor->getGlobalPositionVal();
 		nxAccumulateActorSretCheck(dynamicActor, 6, &position, sizeof(position),
-			&sretCases, &sretMismatches, &sretFlags);
+			&actorSretCases, &sretMismatches, &sretFlags);
 		NxMat33 orientation = dynamicActor->getGlobalOrientationVal();
 		nxAccumulateActorSretCheck(dynamicActor, 7, &orientation, sizeof(orientation),
-			&sretCases, &sretMismatches, &sretFlags);
+			&actorSretCases, &sretMismatches, &sretFlags);
 		NxQuat quaternion = dynamicActor->getGlobalOrientationQuatVal();
 		nxAccumulateActorSretCheck(dynamicActor, 8, &quaternion, sizeof(quaternion),
-			&sretCases, &sretMismatches, &sretFlags);
+			&actorSretCases, &sretMismatches, &sretFlags);
 		NxMat34 localPose = dynamicActor->getCMassLocalPoseVal();
 		nxAccumulateActorSretCheck(dynamicActor, 29, &localPose, sizeof(localPose),
-			&sretCases, &sretMismatches, &sretFlags);
+			&actorSretCases, &sretMismatches, &sretFlags);
 		NxVec3 localPosition = dynamicActor->getCMassLocalPositionVal();
 		nxAccumulateActorSretCheck(dynamicActor, 30, &localPosition, sizeof(localPosition),
-			&sretCases, &sretMismatches, &sretFlags);
+			&actorSretCases, &sretMismatches, &sretFlags);
 		NxMat33 localOrientation = dynamicActor->getCMassLocalOrientationVal();
 		nxAccumulateActorSretCheck(dynamicActor, 31, &localOrientation, sizeof(localOrientation),
-			&sretCases, &sretMismatches, &sretFlags);
+			&actorSretCases, &sretMismatches, &sretFlags);
 		NxMat34 globalCMassPose = dynamicActor->getCMassGlobalPoseVal();
 		nxAccumulateActorSretCheck(dynamicActor, 32, &globalCMassPose, sizeof(globalCMassPose),
-			&sretCases, &sretMismatches, &sretFlags);
+			&actorSretCases, &sretMismatches, &sretFlags);
 		NxVec3 globalCMassPosition = dynamicActor->getCMassGlobalPositionVal();
 		nxAccumulateActorSretCheck(dynamicActor, 33, &globalCMassPosition, sizeof(globalCMassPosition),
-			&sretCases, &sretMismatches, &sretFlags);
+			&actorSretCases, &sretMismatches, &sretFlags);
 		NxMat33 globalCMassOrientation = dynamicActor->getCMassGlobalOrientationVal();
 		nxAccumulateActorSretCheck(dynamicActor, 34, &globalCMassOrientation, sizeof(globalCMassOrientation),
-			&sretCases, &sretMismatches, &sretFlags);
+			&actorSretCases, &sretMismatches, &sretFlags);
 		NxVec3 massInertia = dynamicActor->getMassSpaceInertiaTensorVal();
 		nxAccumulateActorSretCheck(dynamicActor, 38, &massInertia, sizeof(massInertia),
-			&sretCases, &sretMismatches, &sretFlags);
+			&actorSretCases, &sretMismatches, &sretFlags);
 		NxMat33 globalInertia = dynamicActor->getGlobalInertiaTensorVal();
 		nxAccumulateActorSretCheck(dynamicActor, 39, &globalInertia, sizeof(globalInertia),
-			&sretCases, &sretMismatches, &sretFlags);
+			&actorSretCases, &sretMismatches, &sretFlags);
 		NxMat33 inverseInertia = dynamicActor->getGlobalInertiaTensorInverseVal();
 		nxAccumulateActorSretCheck(dynamicActor, 40, &inverseInertia, sizeof(inverseInertia),
-			&sretCases, &sretMismatches, &sretFlags);
+			&actorSretCases, &sretMismatches, &sretFlags);
 		NxVec3 linearVelocity = dynamicActor->getLinearVelocityVal();
 		nxAccumulateActorSretCheck(dynamicActor, 47, &linearVelocity, sizeof(linearVelocity),
-			&sretCases, &sretMismatches, &sretFlags);
+			&actorSretCases, &sretMismatches, &sretFlags);
 		NxVec3 angularVelocity = dynamicActor->getAngularVelocityVal();
 		nxAccumulateActorSretCheck(dynamicActor, 48, &angularVelocity, sizeof(angularVelocity),
-			&sretCases, &sretMismatches, &sretFlags);
+			&actorSretCases, &sretMismatches, &sretFlags);
 		NxVec3 linearMomentum = dynamicActor->getLinearMomentumVal();
 		nxAccumulateActorSretCheck(dynamicActor, 52, &linearMomentum, sizeof(linearMomentum),
-			&sretCases, &sretMismatches, &sretFlags);
+			&actorSretCases, &sretMismatches, &sretFlags);
 		NxVec3 angularMomentum = dynamicActor->getAngularMomentumVal();
 		nxAccumulateActorSretCheck(dynamicActor, 53, &angularMomentum, sizeof(angularMomentum),
-			&sretCases, &sretMismatches, &sretFlags);
+			&actorSretCases, &sretMismatches, &sretFlags);
 		NxVec3 point(1.25f, -2.5f, 0.75f);
 		NxVec3 pointVelocity = dynamicActor->getPointVelocityVal(point);
 		nxAccumulateActorSretCheck(dynamicActor, 65, &pointVelocity, sizeof(pointVelocity),
-			&sretCases, &sretMismatches, &sretFlags, &point);
+			&actorSretCases, &sretMismatches, &sretFlags, &point);
 		NxVec3 localPointVelocity = dynamicActor->getLocalPointVelocityVal(point);
 		nxAccumulateActorSretCheck(dynamicActor, 66, &localPointVelocity,
-			sizeof(localPointVelocity), &sretCases, &sretMismatches, &sretFlags, &point);
+				sizeof(localPointVelocity), &actorSretCases, &sretMismatches, &sretFlags, &point);
+		NxShape* dynamicShape = dynamicActor->getShapes()[0];
+		NxMat34 shapeLocalPose = dynamicShape->getLocalPoseVal();
+		nxAccumulateActorSretCheck(dynamicShape, 13, &shapeLocalPose,
+			sizeof(shapeLocalPose), &shapeSretCases, &sretMismatches, &sretFlags);
+		NxVec3 shapeLocalPosition = dynamicShape->getLocalPositionVal();
+		nxAccumulateActorSretCheck(dynamicShape, 14, &shapeLocalPosition,
+			sizeof(shapeLocalPosition), &shapeSretCases, &sretMismatches, &sretFlags);
+		NxMat33 shapeLocalOrientation = dynamicShape->getLocalOrientationVal();
+		nxAccumulateActorSretCheck(dynamicShape, 15, &shapeLocalOrientation,
+			sizeof(shapeLocalOrientation), &shapeSretCases, &sretMismatches, &sretFlags);
+		NxMat34 shapeGlobalPose = dynamicShape->getGlobalPoseVal();
+		nxAccumulateActorSretCheck(dynamicShape, 22, &shapeGlobalPose,
+			sizeof(shapeGlobalPose), &shapeSretCases, &sretMismatches, &sretFlags);
+		NxVec3 shapeGlobalPosition = dynamicShape->getGlobalPositionVal();
+		nxAccumulateActorSretCheck(dynamicShape, 23, &shapeGlobalPosition,
+			sizeof(shapeGlobalPosition), &shapeSretCases, &sretMismatches, &sretFlags);
+		NxMat33 shapeGlobalOrientation = dynamicShape->getGlobalOrientationVal();
+		nxAccumulateActorSretCheck(dynamicShape, 24, &shapeGlobalOrientation,
+			sizeof(shapeGlobalOrientation), &shapeSretCases, &sretMismatches, &sretFlags);
 		const unsigned wrongCleanupFlags = nxAbiInvokeSretProbe(
 			reinterpret_cast<void*>(&nxAbiSretWrongCleanupControl),
 			dynamicActor, &pose, 0);
-		printf("actor abi_sret cases=%u flags=%x mismatches=%u "
-			"wrong_cleanup_detected=%u\n", sretCases, sretFlags,
+		printf("actor abi_sret actor_cases=%u shape_cases=%u flags=%x mismatches=%u "
+			"wrong_cleanup_detected=%u\n", actorSretCases, shapeSretCases, sretFlags,
 			sretMismatches,
 			wrongCleanupFlags == 1u ? 1u : 0u);
-		if(sretCases != 19 || sretFlags || sretMismatches || wrongCleanupFlags != 1u)
+		if(actorSretCases != 19 || shapeSretCases != 6 || sretFlags ||
+			sretMismatches || wrongCleanupFlags != 1u)
 			return nxFail("public structure-return ABI mismatch");
 	}
 	nxPrintActorSubobjectVptrs("dynamic", dynamicActor);

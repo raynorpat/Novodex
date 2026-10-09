@@ -1877,7 +1877,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'actor dynamic pose_alloc=50 cached=1 cached_nested=1',
         'actor dynamic position=c0400000.40000000.3f800000',
         'actor dynamic pose=3f800000.00000000.00000000.00000000.3f800000.00000000.00000000.00000000.3f800000.c0400000.40000000.3f800000',
-        'actor abi_sret cases=19 flags=0 mismatches=0 wrong_cleanup_detected=1',
+        'actor abi_sret actor_cases=19 shape_cases=6 flags=0 mismatches=0 wrong_cleanup_detected=1',
         'actor saved_dynamic pose=3f800000.00000000.00000000.00000000.3f800000.00000000.00000000.00000000.3f800000.c0400000.40000000.3f800000',
         'actor saved_dynamic saved_metadata=3f800000.00000000.0007.1.1.1',
         'actor saved_dynamic body_saved=1.7bb36a35.42400000.00000100.00000004',
