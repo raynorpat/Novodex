@@ -78228,14 +78228,21 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/D6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1589",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13952",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both D6 cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 9 wired to core/D6Joint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 83/83 coverage); trace excerpt committed as evidence/joint-families-trace-d6.txt (joint-families Task 3i)",
-      "notes": "",
-      "implementation": "Physics/src/core/D6Joint.cpp"
+      "dynamic_proof": "NxPhysicsJointStagedPairTests staged-pair differential exercises D6Joint::row004204 through public non-default D6 descriptors. An immediate-return mutant leaves descriptor fields uncopied, changing internal state at +0x16c onward across the D6 cases; the gate detects stdout_delta=180 with both exits zero and exact stderr. Restored control passes with stdout_delta=0 and exact stderr. The candidate map resolves ?row004204@D6Joint@@QAEXABVNxD6JointDesc@@@Z from D6Joint.obj at RVA 0x000672c0. See evidence/phase6-d6-row004204-descriptor-load.md.",
+      "notes": "D6 descriptor-to-internal-state loader; public non-default descriptor creation and the staged differential prove candidate-DLL routing and row-specific mutation sensitivity.",
+      "implementation": "Physics/src/core/D6Joint.cpp",
+      "implementation_symbol": "?row004204@D6Joint@@QAEXABVNxD6JointDesc@@@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?row004204@D6Joint@@QAEXABVNxD6JointDesc@@@Z",
+        "address": "0x100682c0",
+        "object": "D6Joint.obj"
+      }
     },
     {
       "id": "phys_fn_004205",

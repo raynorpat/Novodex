@@ -9891,3 +9891,8 @@ The earlier xaccum discussion above incorrectly attributed a separate `nxAccumul
 ## Phase 6 closure measurement — joint break support-record flags (`phys_fn_004091`)
 
 For `phys_fn_004091`, the public four-step fixed-joint break case in `NxPhysicsSimulationTests` reaches this row. An immediate-return mutant leaves the break-state transitions intact but changes the step-1 X velocity (`0x3041c5ce` to `0x306eff6b`) and later break motion; the staged differential catches eight changed lines (`stdout_delta=8`) with both exits zero and exact stderr. The restored control is exact. See `evidence/phase6-joint-row004091-break-support-flags.md`.
+
+
+## Phase 6 closure measurement — D6 descriptor loading (`phys_fn_004204`)
+
+For `phys_fn_004204`, the public non-default D6 descriptor cases exercise the private-state load. An immediate-return mutant leaves descriptor values uncopied at `+0x16c` onward and is caught by the staged-pair differential (`stdout_delta=180`, both exits zero, exact stderr); the restored control is exact. See `evidence/phase6-d6-row004204-descriptor-load.md`.
