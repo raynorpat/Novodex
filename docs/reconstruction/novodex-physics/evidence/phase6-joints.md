@@ -9541,3 +9541,8 @@ For row `phys_fn_003972`, in a fresh throwaway git archive from the current comm
 ## Phase 6 closure measurement — effector apply (phys_fn_003979)
 
 For row `phys_fn_003979`, Row-specific falsification (Phase 6 closure packet, 2026-10-09): In a fresh throwaway git archive from the current commit, changed SpringAndDamperEffector::apply to a no-op and rebuilt NxPhysics.dll. The registered NxPhysicsSimulationTests staged-pair differential observes the public three-step effector simulation: the oracle reports second/third-step vx 3e8e38e3/3f0a9508, while the mutant reports 00000000/00000000 (stdout_delta=4); both processes exit 0 and stderr is exact. Restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003979-apply.md`.
+
+## Phase 6 closure measurement — scene dump pointer-name formatter (phys_fn_003994)
+
+The registered NxPhysicsCoreDumpTests differential caught a mutation changing sceneDumpPointerName's format from "%s__%I64x" to "%s_MUT__%I64x": both processes exited zero, stderr matched exactly, and stdout_delta=342. After restoring SceneDump.cpp byte-for-byte in the throwaway archive, rebuilding, and rerunning, stdout_delta=0 with both exits zero and exact stderr. Detailed evidence: `evidence/phase6-coredump-003994-pointer-name.md`.
+Evidence index: phys_fn_003994 mutation detected at stdout_delta=342; restored control stdout_delta=0.

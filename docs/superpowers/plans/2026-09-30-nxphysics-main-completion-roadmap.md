@@ -1475,3 +1475,8 @@ Continuation 2026-10-08: closed the observed actor-wrapper `+0x08` secondary-bas
 ### Continuation — effector simulation closure (2026-10-09)
 
 The public convex-mesh cooking differential is exact on current mainline (`NxPhysicsConvexMeshTests`, both processes exit 0, `stdout_delta=0`, exact stderr). The three-step public spring/damper fixture now closes Phase 6 row `phys_fn_003979`: a no-op `SpringAndDamperEffector::apply` mutation in a fresh archive changes the second/third-step velocity outputs (`stdout_delta=4`, both processes exit 0, exact stderr), and the restored staged-pair control is exact. Phase 6 records 38 closed / 395 deferred rows. Full Phase 5–8 and full-DLL acceptance remain open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-effector-003979-apply.md`.
+
+### Continuation — core-dump pointer-name mutation closure (2026-10-09)
+
+- `phys_fn_003994` (`sceneDumpPointerName`) is mutation-falsified through the registered `NxPhysicsCoreDumpTests` staged-pair differential. Adding `_MUT` to the serialized pointer-name format changes the transcript by 342 bytes; after restoring and rebuilding, the differential is exact again (both exits zero, exact stderr).
+- Phase 6 now has 39 closed function rows and 394 deferred function rows. No public Physics headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-coredump-003994-pointer-name.md`.
