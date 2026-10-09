@@ -76343,13 +76343,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1542",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13531",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
-      "dynamic_proof": null,
-      "notes": "previous source: Physics/src/Joint.cpp",
+      "dynamic_proof": "NxPhysicsJointStagedPairTests staged-pair matrix reaches Joint::setGlobalAxis during public joint construction and through the D6 setter/readback. Adding 1.0f to the normalized X axis before tangent construction changes the D6 readback and six registered output lines (stdout_delta=6), both exits zero and exact stderr; restored control is exact. See evidence/phase6-joint-row004101-global-axis.md.",
+      "notes": "previous source: Physics/src/Joint.cpp Reached by the rotated joint matrix and public D6 setter; row-specific axis mutation is detected.",
       "implementation": "Physics/src/core/Joint.cpp"
     },
     {

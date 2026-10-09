@@ -63,8 +63,8 @@
     ]
   },
   "counts": {
-    "differential_falsified": 85,
-    "deferred_reconstructed_not_falsified": 322,
+    "differential_falsified": 86,
+    "deferred_reconstructed_not_falsified": 321,
     "deferred_not_reconstructed_in_phase": 25,
     "oracle_differential_falsified": 1
   },
@@ -929,6 +929,16 @@
         "mutation": "Added a public D6 setGlobalAnchor/getGlobalAnchor case to the registered joint staged-pair fixture. With the fixture exact against the pinned oracle, temporarily added 1.0f to Joint::setGlobalAnchor after localizing each anchor and rebuilt NxPhysics.dll. The oracle and candidate both exited zero with exact stderr, while four registered output lines changed (stdout_delta=4). Restored Joint.cpp byte-for-byte and rebuilt; the same staged-pair differential returned to stdout_delta=0 with both exits zero and exact stderr. Mutation candidate SHA-256 c40ef93dda8cacd5513a6f757c49a5fe9dcf30e03f35e5734d43997eebfc6805; restored candidate SHA-256 8ac049a5ea6640ddfdba1685ca366903d59157c075ff8e058d42f269de1cd71a; pinned oracle SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c. The new oracle readback is 40100000.bfc00000.3f400000.",
         "detected": "stdout_delta=4"
       }
+    },
+    {
+      "id": "phys_fn_004101",
+      "rva": "0x00096750",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "The registered public joint staged-pair matrix reaches Joint::setGlobalAxis during construction and through the D6 setGlobalAxis/getGlobalAxis readback. Temporarily added 1.0f to the normalized X axis before tangent construction and rebuilt NxPhysics.dll. The registered differential caught the mutation with stdout_delta=6, both processes exiting zero, and exact stderr; the D6 replacement-axis readback changed from 3e9b28d0.bf4ee116.3f014cae to 3fa6ca34.bf4ee116.3f014cae. Restored Joint.cpp and rebuilt; the same differential returned to stdout_delta=0, both exits zero, and exact stderr. Mutation candidate SHA-256 6252542a01c3a710138db043492d278568e0f2eba3161e6ba5089e705b496b42; restored candidate SHA-256 77b5db149dfa86bd21b4ff72e3d23d0854696d02cf1dbc110c9904c7e5425498; pinned oracle SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c.",
+        "detected": "stdout_delta=6"
+      }
     }
   ],
   "deferred": [
@@ -1172,15 +1182,6 @@
       "size": 1699,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004101",
-      "rva": "0x00096750",
-      "size": 5302,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },

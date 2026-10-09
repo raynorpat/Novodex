@@ -9901,3 +9901,8 @@ For `phys_fn_004204`, the public non-default D6 descriptor cases exercise the pr
 ## Phase 6 closure measurement — shared joint global-anchor setter (`phys_fn_004099`)
 
 The public D6 staged-pair fixture now calls `setGlobalAnchor` after joint creation and records the world-space `getGlobalAnchor` result. Adding `1.0f` to the local X anchor in a temporary `Joint::setGlobalAnchor` mutation is caught for `phys_fn_004099` with `stdout_delta=4`, both exits zero, and exact stderr; the restored control is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-joint-row004099-global-anchor.md`.
+
+
+## Phase 6 closure measurement — shared joint global-axis setter (`phys_fn_004101`)
+
+The registered staged-pair matrix reaches `Joint::setGlobalAxis` through joint construction and the public D6 setter/readback. Adding `1.0f` to the normalized X axis before tangent construction is caught for `phys_fn_004101` with `stdout_delta=6`, both exits zero, and exact stderr; the restored control is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-joint-row004101-global-axis.md`.
