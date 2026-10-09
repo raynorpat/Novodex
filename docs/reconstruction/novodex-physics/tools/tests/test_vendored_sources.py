@@ -164,17 +164,47 @@ class TheLicenceObligations(VendoredTreeFixture):
         self.assertTrue(any("carries no licence text at all" in f for f in failures), failures)
 
 
+class TrackedUpstreamDiscovery(unittest.TestCase):
+    def test_clean_tree_uses_tracked_upstream_sources_without_analysis_snapshot(self):
+        root = pathlib.Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, root, True)
+        (root / "External/qhull/upstream/src").mkdir(parents=True)
+        (root / "External/opcode/upstream/Opcode").mkdir(parents=True)
+
+        pinned = vendored.find_pinned_sources(root / "docs/reconstruction/novodex-physics")
+
+        self.assertEqual(pinned.resolve(), root.resolve())
+
+
 class TheRealTrees(unittest.TestCase):
     """The checker against the actual repository, when both are on this disk."""
 
-    REPO = pathlib.Path(r"D:/github/Novodex")
+    REPO = pathlib.Path(__file__).resolve().parents[5]
 
     def test_the_vendored_trees_hold(self):
         pinned = vendored.find_pinned_sources(pathlib.Path(__file__).resolve().parent)
         if pinned is None or not self.REPO.is_dir():
-            self.skipTest("the implementation repository or the pinned archives are not staged")
+            self.fail("tracked upstream trees are required for a reproducible checkout")
         failures = vendored.check(self.REPO, pinned, io.StringIO())
         self.assertEqual(failures, [])
+
+    def test_the_tracked_manifest_rejects_a_changed_upstream_file(self):
+        root = pathlib.Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, root, True)
+        source = self.REPO / "External"
+        target = root / "External"
+        for library in vendored.UPSTREAM_MANIFEST_SHA256:
+            (target / library).mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source / library / "UPSTREAM-MANIFEST.sha256",
+                         target / library / "UPSTREAM-MANIFEST.sha256")
+            shutil.copytree(source / library / "upstream", target / library / "upstream")
+
+        self.assertEqual(vendored.verify_upstream_manifests(root), [])
+        changed = target / "opcode/upstream/Opcode/OPC_Settings.h"
+        changed.write_bytes(changed.read_bytes() + b"// altered\n")
+        failures = vendored.verify_upstream_manifests(root)
+        self.assertTrue(any("differs from pinned manifest" in failure for failure in failures),
+                        failures)
 
 
 if __name__ == "__main__":

@@ -396,16 +396,17 @@ THIRD_PARTY_MAP_COLUMNS = ("rva", "id", "grade")
 THIRD_PARTY_GRADES = ("mapped", "probable", "unmapped")
 CORRESPONDING_GRADES = ("mapped", "probable")
 # The pinned upstream trees, whose four archive digests Task 1d verified before
-# reading anything out of them. They are staged outside both repositories, so
-# the directory is searched for upwards from the evidence tree; that finds it
-# from a worktree as well as from the main checkout. Binding to them is what
-# stops a correspondence from naming a function no vendored tree supplies:
+# reading anything out of them. The upstream trees are committed under
+# External/ and each file is bound by its library's UPSTREAM-MANIFEST.sha256.
+# Searching upwards from the evidence tree supports clean checkouts and
+# worktrees. Binding to them stops a correspondence from naming a function no
+# vendored tree supplies:
 # without it the map is a free-text column that the census is made to agree
 # with, which is a gate checking a file against another file by the same hand.
-THIRD_PARTY_SOURCE_DIR = Path(".analysis/novodex-physics/thirdparty")
+THIRD_PARTY_SOURCE_DIR = Path("External")
 THIRD_PARTY_SOURCE_ROOTS = {
-    "qhull": "qhull-2003.1/src",
-    "opcode": "opcode13/Opcode",
+    "qhull": "qhull/upstream/src",
+    "opcode": "opcode/upstream/Opcode",
 }
 # MSVC's `scalar deleting destructor' is a compiler-generated thunk with no
 # source-level name of its own; what a vendored tree supplies is the class and
@@ -1025,11 +1026,12 @@ def validate_labels(inventory: dict, labels: dict) -> list[str]:
 
 
 def find_pinned_sources(evidence_root):
-    """The staged upstream trees, or None if they are not on this disk."""
+    """The tracked upstream trees, or None if this is not a complete checkout."""
     root = evidence_root.resolve()
     for base in [root] + list(root.parents):
         candidate = base / THIRD_PARTY_SOURCE_DIR
-        if candidate.is_dir():
+        if all((candidate / relative).is_dir()
+               for relative in THIRD_PARTY_SOURCE_ROOTS.values()):
             return candidate
     return None
 
@@ -1093,7 +1095,7 @@ def read_source_correspondence(evidence_root):
     entries, errors = {}, []
     sources = find_pinned_sources(evidence_root)
     if sources is None:
-        errors.append(f"the pinned upstream source trees are not staged at "
+        errors.append(f"the tracked upstream source trees are missing under "
                       f"{THIRD_PARTY_SOURCE_DIR.as_posix()} above {evidence_root}; no "
                       f"correspondence to an upstream source function can be checked without "
                       f"them")

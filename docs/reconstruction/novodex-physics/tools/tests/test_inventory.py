@@ -264,9 +264,9 @@ def write_correspondence_maps(root, maps):
 # same reason the maps themselves are written out: a correspondence checked
 # against a tree that is not there is not checked.
 PINNED_SOURCES = {
-    "qhull-2003.1/src/qhull.c": "void qh_qhull(void) {}\n",
-    "opcode13/Opcode/OPC_Model.cpp": "Model::~Model() {}\n",
-    "opcode13/Opcode/Ice/IceContainer.cpp": "Container::Container() {}\n",
+    "qhull/upstream/src/qhull.c": "void qh_qhull(void) {}\n",
+    "opcode/upstream/Opcode/OPC_Model.cpp": "Model::~Model() {}\n",
+    "opcode/upstream/Opcode/Ice/IceContainer.cpp": "Container::Container() {}\n",
 }
 
 
@@ -972,7 +972,7 @@ class PinnedSourceBindingTests(unittest.TestCase):
         # Same failure mode as an absent map: the check would pass because its
         # input is gone, which is how a gate stops being able to fail.
         self.assertRejects([map_row("phys_fn_000001", "0x00001000")],
-                           "pinned upstream source trees are not staged", sources=None)
+                       "tracked upstream source trees are missing", sources=None)
 
     def test_a_source_file_outside_the_pinned_tree_is_rejected(self):
         self.assertRejects([map_row("phys_fn_000001", "0x00001000", source_file="qh_made_up.c")],
