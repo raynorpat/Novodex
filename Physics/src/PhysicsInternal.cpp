@@ -17,6 +17,7 @@
 #include <stdlib.h>
 
 void __cdecl NxContactSphereMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
+void __cdecl NxContactMeshMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
 void __cdecl NxContactCapsuleMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
 bool __cdecl NxOverlapPlaneMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 extern "C" bool __cdecl nxOverlapMeshMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
@@ -128,6 +129,7 @@ ShapePairFunctionTable::ShapePairFunctionTable()
 	mFunction[0][2][3] = (void*) NxContactBoxCapsule;
 	mFunction[0][3][3] = (void*) NxContactCapsuleCapsule;
 	mFunction[0][3][4] = (void*) NxContactCapsuleMesh;
+	mFunction[0][4][4] = (void*) NxContactMeshMesh;
 	// Trigger interactions use the second matrix. The sphere/mesh overlap row
 	// discovers mesh trigger pairs during simulation; plane/mesh uses the
 	// recovered boolean overlap kernel as well. Primitive pairs share the same

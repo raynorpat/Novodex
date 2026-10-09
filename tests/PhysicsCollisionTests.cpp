@@ -3293,6 +3293,7 @@ void __cdecl NxContactBoxMesh(const NxCollisionShape*, const NxCollisionShape*, 
 bool __cdecl NxOverlapBoxMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 void __cdecl NxContactCapsuleMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
 extern "C" bool __cdecl nxOverlapMeshMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
+void __cdecl NxContactMeshMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
 bool __cdecl NxOverlapCapsuleMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 static unsigned nxDrivePlaneMesh(unsigned char* base);
 
@@ -12504,6 +12505,87 @@ static unsigned nxDriveTask2lMeshHeightfield(unsigned char* base, Nx2iSide* side
 	return mismatches;
 	}
 
+// Drive matrix-A mesh/mesh against the pinned oracle for contact and separated fixtures.
+static unsigned nxDriveTask2lMeshMeshContact(unsigned char* base, Nx2iSide* sides)
+	{
+	typedef void (__cdecl * EntryFn)(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
+	const EntryFn oracle = (EntryFn)(base + 0x00046ab0);
+	static unsigned char shapeStore[2][2][kShapeBytes];
+	static NxContactWorld world[2];
+	struct Fixture { unsigned mesh0, mesh1, orientation; float z; };
+	static const Fixture fixtures[] = {
+		{ 1, 1, 1, -2.0f },
+		{ 1, 3, 0, 0.0f },
+		{ 1, 4, 0, 0.0f },
+		{ 1, 1, 0, 0.0f },
+		{ 1, 1, 0, 12.0f }
+	};
+	if(!nx2iFoundationBegin())
+		return 1;
+	for(unsigned side = 0; side < 2; ++side)
+		nx2lCandidateAabbTreeColliderConstruct(sides[side].context + 0x32c);
+	unsigned mismatches = 0, oracleContacts = 0, oracleContactCases = 0, separatedCases = 0;
+	for(unsigned fixtureIndex = 0; fixtureIndex < sizeof(fixtures) / sizeof(fixtures[0]); ++fixtureIndex)
+		{
+		const Fixture& fixture = fixtures[fixtureIndex];
+		const unsigned meshIds[2] = { fixture.mesh0, fixture.mesh1 };
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			NxCollisionShape* shape0 = (NxCollisionShape*)shapeStore[side][0];
+			NxCollisionShape* shape1 = (NxCollisionShape*)shapeStore[side][1];
+			nxIdentity(shape0); nxIdentity(shape1);
+			shape0->type = shape1->type = 4;
+			shape0->translation[2] = fixture.z;
+			if(fixture.orientation)
+				{
+				shape1->rotation[0] = 0; shape1->rotation[2] = 1;
+				shape1->rotation[6] = -1; shape1->rotation[8] = 0;
+				}
+			for(unsigned slot = 0; slot < 2; ++slot)
+				{
+				Nx2iMeshSide& mesh = sides[side].meshes[meshIds[slot]];
+				*(unsigned**) (shapeStore[side][slot] + 0xe0) = mesh.image;
+				// 001876 reads InternalTriangleMesh's type and optional object fields.
+				mesh.image[0x7c / 4] = 0xff;
+				mesh.image[0x9c / 4] = 0;
+				mesh.image[0xa0 / 4] = 0;
+				}
+			nxResetWorld(&world[side]);
+			nxStageWorld(&world[side], shape0, shape1, true, true, 3, 5, false, false, false);
+			}
+		nxSetControl(kControlDefault);
+		oracle(world[0].plane, world[0].sphere, &world[0].sink, sides[0].context);
+		const unsigned contacts = world[0].sink.contactCount;
+		const unsigned candidates = *(unsigned*) (base + 0x00123d8c);
+		const unsigned oracleStreamCount = world[0].sink.streamCount;
+		nxSetControl(kControlDefault);
+		NxContactMeshMesh(world[1].plane, world[1].sphere, &world[1].sink, sides[1].context);
+		const unsigned caseMismatches = nxCompareStreams(&world[0], &world[1], 0) +
+			(world[1].sink.contactCount != contacts) +
+			(world[1].sink.streamCount != oracleStreamCount);
+		mismatches += caseMismatches;
+		oracleContacts += contacts;
+		oracleContactCases += contacts != 0;
+		separatedCases += contacts == 0;
+		NxDigest oracleDigest, candidateDigest;
+		nxDigestInit(&oracleDigest); nxDigestInit(&candidateDigest);
+		nxFoldStream(&oracleDigest, &world[0]); nxFoldStream(&candidateDigest, &world[1]);
+		if(caseMismatches)
+			for(unsigned word = 0; word < (oracleStreamCount > world[1].sink.streamCount
+				? oracleStreamCount : world[1].sink.streamCount); ++word)
+				printf("collision mesh_mesh_word fixture=%u index=%u oracle=%08x candidate=%08x\n", fixtureIndex, word,
+					word < oracleStreamCount ? world[0].stream[word] : 0xffffffffu,
+					word < world[1].sink.streamCount ? world[1].stream[word] : 0xffffffffu);
+		printf("collision name=contact_mesh_mesh fixture=%u pair=%u,%u orientation=%u z=%g checks=%u oracle=%016llx candidate=%016llx mismatches=%u oracle_contacts=%u candidate_contacts=%u oracle_stream=%u candidate_stream=%u candidates=%u\n",
+			fixtureIndex, fixture.mesh0, fixture.mesh1, fixture.orientation, fixture.z, oracleDigest.checks,
+			oracleDigest.state, candidateDigest.state, caseMismatches, contacts, world[1].sink.contactCount,
+			oracleStreamCount, world[1].sink.streamCount, candidates);
+		}
+	for(unsigned side = 0; side < 2; ++side)
+		nx2lCandidateAabbTreeColliderDestruct(sides[side].context + 0x32c);
+	nx2iFoundationEnd();
+	return mismatches || oracleContactCases < 1 || separatedCases < 1 || oracleContacts < 1;
+	}
 // Words of the height field's placement: translations (0..3 across, heights -1..1).
 static const unsigned kMeshPlace2i[8] =
 	{
@@ -13315,6 +13397,7 @@ static __declspec(noinline) unsigned nxDriveTask2i(unsigned char* base)
 	total += nxDriveTask2lMeshOverlap(base, sides);
 	// Exercise the mesh/height-field entry through its AABB callback and OBB pass.
 	total += nxDriveTask2lMeshHeightfield(base, sides);
+	total += nxDriveTask2lMeshMeshContact(base, sides);
 	unsigned edgeListsBuilt = 0;
 	buildMismatches += nx2iCompareEdgeLists(sides[0], sides[1], &edgeListsBuilt);
 	// The hulls' vertex normals 001461 built inside 001844, word for word.

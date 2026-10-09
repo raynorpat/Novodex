@@ -89,6 +89,9 @@ void __fastcall NxEmitContactThiscall(NxContactSink* sink, NxU32 edx,
 // phys_fn_001901 at 0x00048a70, matrix A slot [PLANE][SPHERE].
 void __cdecl NxContactPlaneSphere(const NxCollisionShape* plane,
 	const NxCollisionShape* sphere, NxContactSink* sink, void* context);
+// phys_fn_001876 (0x00046ab0), matrix A [MESH][MESH].
+void __cdecl NxContactMeshMesh(const NxCollisionShape* mesh0,
+	const NxCollisionShape* mesh1, NxContactSink* sink, void* context);
 
 // phys_fn_001261 at 0x00025350, slot 5 of the *plane* shape's vtable
 // (0x00107430 + 0x14). __thiscall on the shape, five stack arguments,
