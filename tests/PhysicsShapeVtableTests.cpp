@@ -713,6 +713,29 @@ int wmain(int argc, wchar_t** argv)
         collisionPrimaryDtorMismatches);
     printf("collision dtor families=5 mismatches=%u\n", collisionDtorMismatches);
 
+    // Mutation control for the retired member-only layout: install the plain
+    // EmbeddedHookBase deleting table at +0x0c, as that layout did. Calling
+    // its slot returns the member address instead of the complete-object root.
+    // The gate pins all five failures so loss of the secondary-base adjustment
+    // cannot silently become another symmetric pass.
+    EmbeddedHookBase memberOnlyModel;
+    void** memberOnlyVtable = *reinterpret_cast<void***>(&memberOnlyModel);
+    unsigned memberOnlyDtorMismatches = 0;
+    for(unsigned family = 0; family < 5; ++family) {
+        unsigned char memberOnlyObject[0x1c];
+        memset(memberOnlyObject, 0xcd, sizeof(memberOnlyObject));
+        *reinterpret_cast<void***>(memberOnlyObject + 0x0c) = memberOnlyVtable;
+        void** memberOnlySecondary = *reinterpret_cast<void***>(memberOnlyObject + 0x0c);
+        void* const returned = reinterpret_cast<AdjustorDeletingDtor>(
+            memberOnlySecondary[0])(memberOnlyObject + 0x0c, 0);
+        if(returned != memberOnlyObject)
+            ++memberOnlyDtorMismatches;
+    }
+    printf("collision dtor member-only mutant mismatches=%u\n",
+        memberOnlyDtorMismatches);
+    if(memberOnlyDtorMismatches != 5)
+        ++failures;
+
     memset(oracleBytes, 0xcd, sizeof(oracleBytes));
     memset(candidateBytes, 0xcd, sizeof(candidateBytes));
     reinterpret_cast<BoxCtor>(const_cast<unsigned char*>(base) + 0x21870)(oracleBytes, 0, 0);

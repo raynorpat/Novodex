@@ -2729,7 +2729,35 @@
       "label": "Box collision-object scalar deleting destructor",
       "confidence": "semantic",
       "evidence": "oracle/capstone/manifest.json#/entries/3186",
-      "reason": "BOX collision-object vtable slot 0 at 0x235d0; destroys its embedded hook and conditionally frees the collision object through SDK allocator slot +0x14. The box primary slot-0 differential checks the oracle and candidate free deltas for both deleting flags."
+      "reason": "BOX collision-object vtable slot 0 at RVA 0x235d0; the family deleting destructor restores the base tables and conditionally frees through SDK allocator slot +0x14. The secondary-vtable differential checks both flags and the complete-object pointer."
+    },
+    {
+      "id": "phys_fn_001127",
+      "label": "Capsule collision-object scalar deleting destructor",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json#/entries/3239",
+      "reason": "CAPSULE collision-object vtable slot 0; the family deleting destructor restores the base tables and conditionally frees through SDK allocator slot +0x14. The secondary-vtable differential checks both flags and the complete-object pointer."
+    },
+    {
+      "id": "phys_fn_001163",
+      "label": "Plane collision-object scalar deleting destructor",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json#/entries/3282",
+      "reason": "PLANE collision-object vtable slot 0; the family deleting destructor restores the base tables and conditionally frees through SDK allocator slot +0x14. The secondary-vtable differential checks both flags and the complete-object pointer."
+    },
+    {
+      "id": "phys_fn_001197",
+      "label": "Sphere collision-object scalar deleting destructor",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json#/entries/3324",
+      "reason": "SPHERE collision-object vtable slot 0; the family deleting destructor restores the base tables and conditionally frees through SDK allocator slot +0x14. The secondary-vtable differential checks both flags and the complete-object pointer."
+    },
+    {
+      "id": "phys_fn_001245",
+      "label": "Mesh collision-object scalar deleting destructor",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json#/entries/3372",
+      "reason": "MESH collision-object vtable slot 0; the family deleting destructor restores the base tables and conditionally frees through SDK allocator slot +0x14. The secondary-vtable differential checks both flags and the complete-object pointer."
     },
     {
       "id": "phys_fn_001263",

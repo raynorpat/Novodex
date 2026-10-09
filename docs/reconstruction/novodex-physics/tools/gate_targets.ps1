@@ -10,7 +10,7 @@
 
 $NxPhaseTestTargets = [ordered] @{
     '1' = @()
-    '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
+    '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests', 'NxPhysicsTriangleMeshReleaseLockTests')
     '3' = @('NxPhysicsBodyCreationTests', 'NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests', 'NxPhysicsSDKTests', 'NxPhysicsPopulatedSceneTeardownTests')
     '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests', 'NxPhysicsPMapResolution80Tests')
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsActorReleaseShapeProbeTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsSimulationTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsConvexMeshTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsControllerSweepFaceTests')
@@ -93,6 +93,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'triangle_mesh convex_cook case=welded_pair',
         'triangle_mesh convex_cook case=five_clusters',
         'triangle_mesh invalid_desc rejected=1'
+    )
+    'NxPhysicsTriangleMeshReleaseLockTests' = @(
+        'triangle_mesh_release locked returned_while_locked=1'
+        'triangle_mesh_release unlocked errors=0 released=1'
     )
     'NxPhysicsSDKTests' = @(
         # Public SDK-side sparse actor-group flag hash, queried in both key orders and cleared.
@@ -427,7 +431,13 @@ $NxRequiredCoverageLines = [ordered] @{
         'release_shape count=1 remaining_first=1 remaining_released=0'
     )
     'NxPhysicsShapeVtableTests' = @(
+        'collision dtor family=0 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0'
+        'collision dtor family=1 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0'
+        'collision dtor family=2 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0'
+        'collision dtor family=3 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0'
+        'collision dtor family=4 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0'
         'collision dtor families=5 mismatches=0'
+        'collision dtor member-only mutant mismatches=5'
         'collision primary dtor families=5 mismatches=0'
         'shape vtable oracle_digest=ed1294b6 cases=644 mismatches=0'
         'shape vtable owner_notify oracle_slot=10 candidate_slot=10 oracle_calls=1 candidate_calls=1 owner_forwarded=1 box_forwarded=1 mismatches=0'
@@ -5637,14 +5647,14 @@ $NxRequiredCoverageLines = [ordered] @{
 # independently, so the two edits have to appear together in a diff.
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
-    '2' = 4  # actor-group flags, scene creation/indexing, release/survivor lookup and destructor frees
+    '2' = 6  # previous 4 plus contended and successful triangle-mesh release assertions
     '3' = 537  # previous 534 plus the three contact_plane_mesh registered lines
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2597  # exact registered Phase 5 coverage-line count
+    '5' = 2605  # previous 2,604 plus the member-only destructor mutation control
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths
@@ -5749,6 +5759,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsCoreDumpTests',
     'NxPhysicsConvexMeshTests',
     'NxPhysicsTriangleMeshApiTests',
+    'NxPhysicsTriangleMeshReleaseLockTests',
     'NxPhysicsPMapResolution80Tests',
     'NxPhysicsCoreClusterTests',
     'NxFoundationTangentTests',

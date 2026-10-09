@@ -22,6 +22,9 @@ void __cdecl NxContactPlaneMesh(const NxCollisionShape*, const NxCollisionShape*
 void __cdecl NxContactCapsuleMesh(const NxCollisionShape*, const NxCollisionShape*,
 	NxContactSink*, void*) {}
 
+void __cdecl NxContactMeshMesh(const NxCollisionShape*, const NxCollisionShape*,
+	NxContactSink*, void*) {}
+
 bool __cdecl NxOverlapPlaneMesh(const NxCollisionShape*, const NxCollisionShape*, void*)
 	{
 	return false;

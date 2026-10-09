@@ -9015,10 +9015,13 @@ now instantiate the matching final class.
 scratch copies with flags 0 and heap-backed copies with flags 1. It verifies the
 returned complete-object address, both vptr transitions, stack balance, and
 allocator release count. A separate primary-slot pass covers flags 1 for all
-five families. The former member-only model was mutation-tested and failed all
-five secondary-vtable family rows; the final model reports zero mismatches in
-both destructor summaries, with the full oracle digest unchanged at
-`ed1294b6` and coverage expanded to 644 cases.
+five families. The retired member-only layout is now a registered negative
+control: the test installs the plain `EmbeddedHookBase` deleting table at
+`+0x0c` on five scratch objects, and all five calls return the member address
+instead of the complete object (`collision dtor member-only mutant
+mismatches=5`). Each family’s real secondary deleting-destructor call and the
+primary deleting-destructor pass match the oracle with zero mismatches. The
+full oracle digest remains `ed1294b6`, with coverage expanded to 644 cases.
 
 The first integration run exposed a runtime wrinkle the isolated fixture did
 not: by mesh-shape teardown the collision object's root vptr had changed from
