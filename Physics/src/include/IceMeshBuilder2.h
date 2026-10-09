@@ -189,8 +189,12 @@ class MeshBuilder2
 // a function of its own in the oracle, thiscall on the Container with `ret 4`;
 // here __fastcall with the Container in ecx and an unused edx, which gives the
 // same registers and the same callee-popped argument).
+#if NX_PHYSICS_USE_X87
 IceCore::Container&	__fastcall nxIceContainerAddPoint(IceCore::Container* container, NxU32 edx,
 						const NxU32* point);
+#else
+IceCore::Container& nxIceContainerAddPoint(IceCore::Container* container, const NxU32* point);
+#endif
 
 // 001595: a copy of a 12-byte-element stream (see the row).
 bool				nxMb2DuplicateStream(NxU32 nb, const IceMaths::Point* src, IceMaths::Point** dst,

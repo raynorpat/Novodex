@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "capture": "hull-domain-x87.nxpf",
+  "fixture_sha256": "f494da205ae93ba2ec663904193b6a9b6bb1b19b5514c72c7810d93a3decd2f3",
+  "provenance_kind": "reconstructed-reference",
+  "controller_approval": "2026-10-09 task5b measured finite domain; no extrapolation",
+  "observations": 9228,
+  "groups": 9,
+  "source_snapshots": {
+    "Physics/src/ConvexHull.cpp": {
+      "snapshot": "hull-domain-ConvexHull.cpp.gz",
+      "source_sha256": "44443ae3be95b5ada28ce38240ea0ef3380b9dec52036bc8f6093182c2b53fb3",
+      "snapshot_sha256": "6f633cf35ae34d88d9905e74bea2520e3411774eef8797c1628bb3ebb8b20d40"
+    },
+    "Physics/src/IceMeshTools.cpp": {
+      "snapshot": "hull-domain-IceMeshTools.cpp.gz",
+      "source_sha256": "9d0d4b9162cc7df9c565588dacdf452a7191b352d16453a29f5ee68cec329381",
+      "snapshot_sha256": "3d92704feda56f03de73ab3732584bc172335470a439dc20c18b5fba728026cf"
+    },
+    "Physics/src/IceMeshBuilder2.cpp": {
+      "snapshot": "hull-domain-IceMeshBuilder2.cpp.gz",
+      "source_sha256": "fc562c3427a833520bdd3f822b97a4e3e372d23c12f76cd02e1bb234ba586f18",
+      "snapshot_sha256": "4799b4c3ad57fac54031a4da1de49e467177655d41656b6e4a1e64c51a1d8103"
+    },
+    "Physics/src/EdgeList.cpp": {
+      "snapshot": "hull-domain-EdgeList.cpp.gz",
+      "source_sha256": "d69315cdbd38098a3e76f0769f576bce60ad156e78374bf406888a74f5d6d06c",
+      "snapshot_sha256": "8018558ed3dde1684ab3aa0b9464e034a75354f83d93c51422ff1ce8c86164ae"
+    },
+    "Physics/src/IceAdjacencies.cpp": {
+      "snapshot": "hull-domain-IceAdjacencies.cpp.gz",
+      "source_sha256": "18616f26b63ee98b2e849c0f615835fd58d64b1d56e7774cb19a1a8a0810f62f",
+      "snapshot_sha256": "c9d2bf2b3158edcfdb697e2a51f0b7af596e13edc4f42e19d644b94a88461b14"
+    },
+    "Physics/src/include/ConvexHull.h": {
+      "snapshot": "hull-domain-ConvexHull.h.gz",
+      "source_sha256": "b335c85044d8e7a9a1085d3ac2ce9d80126c6642353b10dfd7f359d28f7def79",
+      "snapshot_sha256": "5ea10e3ad0ae60e691bf0f75f28dfb4d8a5f5d75c7350f1e7c0924b078145464"
+    },
+    "Physics/src/include/IceMeshTools.h": {
+      "snapshot": "hull-domain-IceMeshTools.h.gz",
+      "source_sha256": "3bb49cd05de1f89c619f2deae4db2f81ee56bdd4530c22ca9cce97aa4718f214",
+      "snapshot_sha256": "4bd469dfa0bdbe03d7c7e899c3a0092f451750e37fd0769543d1ef9050c12d4e"
+    },
+    "Physics/src/include/IceMeshBuilder2.h": {
+      "snapshot": "hull-domain-IceMeshBuilder2.h.gz",
+      "source_sha256": "323f689d45a35fea70915b72ad24d9e53d32d7a344141e75b3557f061dfffb9f",
+      "snapshot_sha256": "eff8d90721772cae28a7baec4cdf353cb1f0b512e4cc341ac66822dac0785674"
+    },
+    "Physics/src/include/portable/NxConvexInterfaces.h": {
+      "snapshot": "hull-domain-NxConvexInterfaces.h.gz",
+      "source_sha256": "9955d19d7da7d58ae057486e628a8a7c5351ee334a9f1ec9f4542bccc78d08e2",
+      "snapshot_sha256": "71c82d50e73760869de137792150cba3468f29dacd2e4b082560d1a5bdf6d892"
+    },
+    "Physics/src/portable/ConvexHullScalar.inl": {
+      "snapshot": "hull-domain-ConvexHullScalar.inl.gz",
+      "source_sha256": "88d66cf4d6dd92efa26357dde7734b0d27f9f78291c683d60f6319f49f6a08dd",
+      "snapshot_sha256": "68e43ff627ab6a12edcc5a4b3fd3863a2d46eba0d1a10f23384031ed8f719269"
+    },
+    "Physics/src/portable/IceUniqueAxisScalar.inl": {
+      "snapshot": "hull-domain-IceUniqueAxisScalar.inl.gz",
+      "source_sha256": "ecb3aa277e26a60d08fe5c6815f2f709f59d48880c22809b89d02c6c14b330ba",
+      "snapshot_sha256": "4663c49aa9417f1bb5568ca0721b3c6d5ab9cce5f9105d34be7abac49ecbaa29"
+    },
+    "tests/portable/HullTests.cpp": {
+      "snapshot": "hull-domain-HullTests.cpp.gz",
+      "source_sha256": "62ec3f9b41c4fd1517e7449dfdb017b149776618f24461d12b90c188f30708ad",
+      "snapshot_sha256": "db6a6bef0ffa71f649da9b00287c1d07d2e83e493a141479d3b4289c490e48e2"
+    },
+    "tests/portable/HullTargets.cmake": {
+      "snapshot": "hull-domain-HullTargets.cmake.gz",
+      "source_sha256": "5ccdd693a3764e28524f8fdc188224b9a21b54372f074a8c44b6f9f0e9338a6b",
+      "snapshot_sha256": "3bfbb40e0b1ca73d59519a425630c6c6edb9ee80c0ba00270621cbce8a63dc62"
+    }
+  },
+  "budgets": {
+    "normal": {
+      "units": "dimensionless",
+      "absolute": 2e-07,
+      "relative": 2e-07,
+      "measured_maxabsolute": 5.960464477539063e-08,
+      "measured_maxrelative": 3.0445084298632787e-07
+    },
+    "length": {
+      "units": "length",
+      "absolute": 1e-06,
+      "relative": 2e-07,
+      "measured_maxabsolute": 2.384185791015625e-07,
+      "measured_maxrelative": 5.587937029761129e-07
+    },
+    "area": {
+      "units": "length squared",
+      "absolute": 2e-07,
+      "relative": 2e-07,
+      "measured_maxabsolute": 5.960464477539063e-08,
+      "measured_maxrelative": 1.1413467823550983e-07
+    },
+    "unit_normal_residual": {
+      "absolute": 2e-07,
+      "measured_maximum": 6.94569775028242e-08
+    }
+  },
+  "exact": [
+    "zero representation",
+    "signedzero",
+    "booleans",
+    "counts",
+    "indices",
+    "topology",
+    "support kind",
+    "visited stamps",
+    "unique-axis threshold decisions",
+    "constructor writes",
+    "allocator and output canaries"
+  ],
+  "domain": {
+    "coordinate_bound": [
+      -3,
+      6
+    ],
+    "meshes": "cube and tetrahedron with valid outward winding",
+    "transforms": "four checked-in binary32 affine transforms: identity, nonuniform scales/translation, shear/translation, decimal shear/translation",
+    "support_axes": 11,
+    "pose": "null or literal rigid quarter-turn with translation ignored by support callbacks",
+    "scratch": "repeated builds and stamp reuse with all starts, guarded production allocator and mark-allocation failure",
+    "leaves": "opposite face winding, collapsed triangle, empty/open hull, adjacent0.9999 threshold words, constructor exact write sets"
+  },
+  "unsupported": [
+    "reversed closed convex hull: actual EdgeList inactive creases merge all faces, documented unchecked empty nxIceEdgeLoop pair read; retained x87 crash reproduced before capture",
+    "zero-edge ComputeEdges unchecked first edge",
+    "out-of-range vertex references",
+    "nonfinite input domain",
+    "raw32 cookie/pointer layout on native64 (Task9)"
+  ],
+  "known_existing_behavior": "ComputeEdges rebuild abandons old edge-normal array; fixtures save it and free after observing current outputs. No production leak fix in this migration."
+}

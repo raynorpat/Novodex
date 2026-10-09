@@ -166,6 +166,7 @@ __declspec(noinline) bool nxIceEdgeLoop(IceCore::Container& loop, const IceCore:
 	return true;
 	}
 
+#if !defined(NX_PHYSICS_HULL_KERNEL_ONLY)
 // phys_fn_001645 (0x00031680, 29 B)
 // +0x04 = verts, +0x00 = nb_verts (the arguments in that order, `ret 8`), and
 // +0x08, +0x0c, +0x10 zeroed.
@@ -1291,6 +1292,8 @@ L323f8:
 		}
 	}
 
+#endif
+
 // phys_fn_001657 (0x00032460, 60 B)
 // Reverses an array of dwords in place (cdecl: count, array): false when either
 // is zero; else count/2 swaps from both ends, and true. 001472 (ConvexHull.cpp)
@@ -1326,6 +1329,7 @@ __declspec(noinline) bool nxIceReverseArray(NxU32 count, NxU32* array)
 // with the Container in ecx, an unused edx and the direction on the stack,
 // popped by the callee, because the vendored Container header is not changed.
 // The listing's instructions, naked (see the top of the file).
+#if NX_PHYSICS_USE_X87
 __declspec(naked) bool __fastcall nxIceAddUniqueAxis(IceCore::Container* /*axes*/, NxU32 /*edx*/,
 	const IceMaths::Point* /*axis*/)
 	{
@@ -1394,6 +1398,7 @@ L32582:
 		ret	4		// 0x00032588
 		}
 	}
+#endif
 
 // phys_fn_001663 (0x00032590, 19 B)
 Valencies::Valencies()
@@ -1495,3 +1500,7 @@ bool Valencies::Compute(const VALENCESCREATE& create)
 		}
 	return true;
 	}
+
+#if !NX_PHYSICS_USE_X87
+#include "portable/IceUniqueAxisScalar.inl"
+#endif

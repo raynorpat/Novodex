@@ -44,6 +44,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if !defined(NX_PHYSICS_HULL_KERNEL_ONLY)
 // .rdata 0x101041f0 (0.0f) and 0x101041ec (1.0f).
 static const float gMb2Zero = 0.0f;
 static const float gMb2One = 1.0f;
@@ -77,13 +78,19 @@ static inline void nxMb2DeleteArray(void* array)
 	nxMb2Free((NxU32*) array - 1);
 	}
 
+#endif
+
 // phys_fn_001591 (0x0002eb50, 141 B)
 // The oracle's is thiscall on the Container (`ret 4`): here __fastcall with the
 // Container in ecx, an unused edx and the point on the stack, popped by the
 // callee -- the same registers and the same `ret 4` -- since the vendored
 // Container header is not changed to give it the member.
+#if NX_PHYSICS_USE_X87
 __declspec(noinline) IceCore::Container& __fastcall nxIceContainerAddPoint(IceCore::Container* container,
 	NxU32 /*edx*/, const NxU32* point)
+#else
+IceCore::Container& nxIceContainerAddPoint(IceCore::Container* container, const NxU32* point)
+#endif
 	{
 	container->Add(point[0]);
 	container->Add(point[1]);
@@ -91,6 +98,7 @@ __declspec(noinline) IceCore::Container& __fastcall nxIceContainerAddPoint(IceCo
 	return *container;
 	}
 
+#if !defined(NX_PHYSICS_HULL_KERNEL_ONLY)
 // phys_fn_001593 (0x0002ebe0, 301 B)
 // The thirteen Containers (004836), then the dwords +0xd0..+0xfc, +0x108,
 // +0x10c, +0x110, +0x100, +0x114, +0x104 zeroed and the flag bytes cleared,
@@ -1310,3 +1318,5 @@ __declspec(noinline) bool MeshBuilder2::Build(MBRESULT& result)
 	result.FaceRemap = Identity ? 0 : mFaceRemap;
 	return true;
 	}
+
+#endif

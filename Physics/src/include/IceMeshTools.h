@@ -124,7 +124,11 @@ void __cdecl nxIcePosePair(IceMaths::Matrix4x4* relative0, IceMaths::Matrix4x4* 
 
 // 001661: add a direction to a Container of axes unless it is within 0.9999 of
 // one already there (the oracle's is thiscall on the Container, `ret 4`).
+#if NX_PHYSICS_USE_X87
 bool __fastcall nxIceAddUniqueAxis(IceCore::Container* axes, NxU32 edx, const IceMaths::Point* axis);
+#else
+bool nxIceAddUniqueAxis(IceCore::Container* axes, const IceMaths::Point* axis);
+#endif
 
 // 001657: reverse an array of dwords in place (cdecl: count, array; false when
 // either is zero). ConvexHull.cpp's 001472 calls it.
