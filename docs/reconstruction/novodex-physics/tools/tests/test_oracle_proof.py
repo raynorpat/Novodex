@@ -103,6 +103,64 @@ class OracleProofTests(unittest.TestCase):
                 failures, _ = self.verify(lines=lines)
                 self.assertTrue(any("exactly one" in failure for failure in failures), failures)
 
+    def joint_descriptor_baseline(self):
+        source_bytes = b"fixed joint descriptor cases"
+        source = self.root / "tests/PhysicsJointDescTests.cpp"
+        source.parent.mkdir(parents=True, exist_ok=True)
+        source.write_bytes(source_bytes)
+        lines = [
+            "case=0 actors a=null b=null in_anchor=3f800000.40000000.40400000 in_axis=3f000000.3f000000.3f000000",
+            "before localNormal0=00000000.00000000.00000000 flags=00000000",
+            "after_anchor localAnchor0=3f800000.40000000.40400000 flags=00000000",
+            "after_axis localAxis0=00000000.3f800000.00000000 flags=00000000",
+            "case=3 actors a=null b=null in_anchor=3f800000.00000000.00000000 in_axis=00000000.3f800000.00000000",
+            "before localNormal0=00000000.00000000.00000000 flags=00000000",
+            "after_anchor localAnchor0=3f800000.00000000.00000000 flags=00000000",
+            "after_axis localAxis0=00000000.3f800000.00000000 flags=00000000",
+        ]
+        manifest = {
+            "schema_version": 1,
+            "targets": {
+                "NxPhysicsJointDescTests": {
+                    "format": "joint_descriptor",
+                    "oracle_sha256": ORACLE_SHA,
+                    "fixture_source": SOURCE.replace("PhysicsJointSupportTests", "PhysicsJointDescTests"),
+                    "fixture_source_sha256": hashlib.sha256(source_bytes).hexdigest(),
+                    "cases": 2,
+                    "case_indices": [0, 3],
+                    "input_digest_sha256": "77dc2aee3a82fae3b6f6a800ac25a617dfa78727c0858a74a8c1a46bb4766d45",
+                    "oracle_output_digest_sha256": "bb6badb82de0eddb0cdbb227dcac6ca3582de7f65210e6d1b9b9fcd8ef82a331",
+                }
+            },
+        }
+        return manifest, lines
+
+    def test_joint_descriptor_proof_hashes_inputs_and_oracle_results(self):
+        manifest, lines = self.joint_descriptor_baseline()
+        failures, proof = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsJointDescTests", lines, ORACLE_SHA, self.root)
+        self.assertEqual(failures, [])
+        self.assertEqual(proof["cases"], 2)
+        self.assertEqual(proof["case_indices"], [0, 3])
+        self.assertEqual(proof["input_digest_sha256"],
+                         "77dc2aee3a82fae3b6f6a800ac25a617dfa78727c0858a74a8c1a46bb4766d45")
+        self.assertEqual(proof["oracle_output_digest_sha256"],
+                         "bb6badb82de0eddb0cdbb227dcac6ca3582de7f65210e6d1b9b9fcd8ef82a331")
+
+    def test_joint_descriptor_proof_rejects_a_changed_oracle_result(self):
+        manifest, lines = self.joint_descriptor_baseline()
+        lines[2] = lines[2].replace("40400000", "40800000")
+        failures, _ = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsJointDescTests", lines, ORACLE_SHA, self.root)
+        self.assertTrue(any("oracle output digest" in failure for failure in failures), failures)
+
+    def test_joint_descriptor_proof_rejects_changed_case_set(self):
+        manifest, lines = self.joint_descriptor_baseline()
+        lines[4] = lines[4].replace("case=3", "case=0")
+        failures, _ = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsJointDescTests", lines, ORACLE_SHA, self.root)
+        self.assertTrue(any("case indices" in failure for failure in failures), failures)
+
 
 class CheckedInOracleBaselineTests(unittest.TestCase):
     def test_baseline_is_registered_and_matches_the_oracle_coverage_contract(self):
@@ -118,33 +176,54 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
             self.assertEqual(len(phases), 1, "%s must belong to exactly one phase" % target)
             self.assertIn(target, registered)
             lines = coverage[target]
-            output_prefix = "joint_support kind5 cases=%d oracle=%s " % (
-                expected["cases"], expected["oracle_output_digest_fnv64"])
-            input_line = "joint_support inputs=%d digest=%s" % (
-                expected["cases"], expected["input_digest_fnv64"])
-            self.assertEqual(sum(line.startswith(output_prefix) for line in lines), 1)
-            self.assertEqual(sum(line == input_line for line in lines), 1)
+            if expected.get("format", "joint_support") == "joint_support":
+                output_prefix = "joint_support kind5 cases=%d oracle=%s " % (
+                    expected["cases"], expected["oracle_output_digest_fnv64"])
+                input_line = "joint_support inputs=%d digest=%s" % (
+                    expected["cases"], expected["input_digest_fnv64"])
+                self.assertEqual(sum(line.startswith(output_prefix) for line in lines), 1)
+                self.assertEqual(sum(line == input_line for line in lines), 1)
+            else:
+                self.assertEqual(expected["format"], "joint_descriptor")
+                self.assertEqual(expected["case_indices"], [0, 3])
+                self.assertEqual(len(expected["input_digest_sha256"]), 64)
+                self.assertEqual(len(expected["oracle_output_digest_sha256"]), 64)
+                self.assertEqual(expected["fixture_source"], "tests/PhysicsJointDescTests.cpp")
 
-    def test_retained_phase7_proof_is_self_hashed_and_bound_to_its_baseline(self):
+    def test_retained_oracle_proofs_are_self_hashed_and_bound_to_their_baselines(self):
         baseline_path = TOOLS.parent / "evidence" / "oracle-only-baselines.json"
-        proof_path = TOOLS.parent / "evidence" / "oracle-only-proofs" / "phase7-joint-support.json"
-        baseline_bytes = baseline_path.read_bytes()
-        baseline = json.loads(baseline_bytes)
-        proof = json.loads(proof_path.read_text(encoding="utf-8"))
-        expected_hash = proof.pop("proof_sha256")
-        actual_hash = hashlib.sha256(json.dumps(
-            proof, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+        proof_root = TOOLS.parent / "evidence" / "oracle-only-proofs"
+        baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+        proof_paths = sorted(proof_root.glob("*.json"))
+        self.assertEqual({json.loads(path.read_text(encoding="utf-8"))["target"]
+                          for path in proof_paths}, set(baseline["targets"]))
+        baseline_hash = hashlib.sha256(json.dumps(
+            baseline, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
 
-        self.assertEqual(actual_hash, expected_hash)
-        self.assertEqual(proof["baseline_sha256"], hashlib.sha256(
-            json.dumps(baseline, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest())
-        expected = baseline["targets"][proof["target"]]
-        self.assertEqual(proof["oracle_sha256"], expected["oracle_sha256"])
-        self.assertEqual(proof["fixture_source_sha256"], expected["fixture_source_sha256"])
-        self.assertEqual(proof["cases"], expected["cases"])
-        self.assertEqual(proof["input_digest_fnv64"], expected["input_digest_fnv64"])
-        self.assertEqual(proof["oracle_output_digest_fnv64"],
-                         expected["oracle_output_digest_fnv64"])
+        for proof_path in proof_paths:
+            with self.subTest(proof=proof_path.name):
+                proof = json.loads(proof_path.read_text(encoding="utf-8"))
+                expected_hash = proof.pop("proof_sha256")
+                actual_hash = hashlib.sha256(json.dumps(
+                    proof, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+                expected = baseline["targets"][proof["target"]]
+
+                self.assertEqual(actual_hash, expected_hash)
+                self.assertEqual(proof["baseline_sha256"], baseline_hash)
+                self.assertEqual(proof["oracle_sha256"], expected["oracle_sha256"])
+                self.assertEqual(proof["fixture_source_sha256"], expected["fixture_source_sha256"])
+                self.assertEqual(proof["cases"], expected["cases"])
+                self.assertEqual(proof["format"], expected.get("format", "joint_support"))
+                if proof["format"] == "joint_support":
+                    self.assertEqual(proof["input_digest_fnv64"], expected["input_digest_fnv64"])
+                    self.assertEqual(proof["oracle_output_digest_fnv64"],
+                                     expected["oracle_output_digest_fnv64"])
+                else:
+                    self.assertEqual(proof["case_indices"], expected["case_indices"])
+                    self.assertEqual(proof["input_digest_sha256"], expected["input_digest_sha256"])
+                    self.assertEqual(proof["oracle_output_digest_sha256"],
+                                     expected["oracle_output_digest_sha256"])
+
 
 
 if __name__ == "__main__":

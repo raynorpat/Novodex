@@ -1,13 +1,14 @@
 {
   "schema_version": 1,
   "target": "NxPhysicsJointSupportTests",
+  "format": "joint_support",
   "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
   "fixture_source": "tests/PhysicsJointSupportTests.cpp",
   "fixture_source_sha256": "e7996261d5c3659b5d93d094ba7af415c8bc8581493d4eea7fb5f8883e7c9971",
+  "proof_lines_sha256": "01d33a9a82e816a3a73afad61606687e7e4bbf4eec8b3e2c8bf79f801a4dd264",
+  "baseline_sha256": "6803f7d3208bcc5b639d73f33d8127cabca8734dc2ae5512cfbfdd1d4484223b",
   "cases": 2,
   "input_digest_fnv64": "85a7065a061c36cd",
   "oracle_output_digest_fnv64": "88b713b7bc0870c9",
-  "proof_lines_sha256": "01d33a9a82e816a3a73afad61606687e7e4bbf4eec8b3e2c8bf79f801a4dd264",
-  "baseline_sha256": "47eb366ac321e1546e1b68154a8ecb82cec1c76cd1c4c27ef948fe55373a3744",
-  "proof_sha256": "fb090027cfde413b546f6ba4671fb43b02b48bd9c0532ea30cea1b831885ebc6"
+  "proof_sha256": "44766a10a53963fe158597831ddb4a0a420aff0fd1c23da0b869de5133f5c3f5"
 }
