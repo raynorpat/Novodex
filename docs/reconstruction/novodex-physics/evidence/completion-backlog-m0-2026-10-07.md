@@ -21,3 +21,9 @@ The three OPCODE code rows `phys_fn_005493`, `phys_fn_005517`, and `phys_fn_0055
 ## Reproducibility dependency
 
 The validator and vendored-source verification still require the pinned third-party source snapshot under `.analysis/novodex-physics/thirdparty`. In this worktree, `.analysis` is an ignored junction to `D:\github\Novodex\.analysis`, so a clean checkout cannot reproduce those checks without arranging that snapshot. This M0 baseline records the dependency; portable acquisition or a documented setup remains open.
+
+## Refresh and data-structure audit — 2026-10-09
+
+Regenerated `completion-backlog.json` after the Phase 6 closure ledger changed. The refresh updated its recorded Phase 6 ledger digest; `test_completion_report.py` now passes all 11 tests, including the CLI snapshot check. `validate_inventory.py` passes with 6,338 function rows, 5,138 data objects, and zero unexplained rows. All 5,138 data objects are in the `classified` terminal state, each has a structural proof accepted by the validator's type-to-proof vocabulary, and the census contains 11 recognized data types. The recorded distribution is: code-addressed globals 2,367; Ghidra-typed data 1,308; strings 1,128; dispatch tables 131; import address table entries 110; pointer slots 43; switch tables 42; derived switch tables 6; and one each of ASCII blob, export directory, and relocation metadata. No classification inconsistency was found; reopen a row only with concrete contradictory evidence.
+
+The generated backlog was refreshed independently of gate state; all 2,787 code rows remain open. The ignored `.analysis` source-snapshot dependency above is still unresolved.

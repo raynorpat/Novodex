@@ -178,8 +178,8 @@ Use the existing project `D:\FlamingEnt__\novodex-analysis\novodex-physics\Physi
 - [ ] Reproduce the current gates, preserving failures and skips. Record them independently of historical `pass` fields.
 - [x] Build a machine-generated backlog for every code row: implementation/linkage, public reachability, unresolved dependencies, applicable contexts, evidence strength, and next packet. Count functions and bytes separately. Current snapshot: `docs/reconstruction/novodex-physics/completion-backlog.json`.
 - [x] Re-evaluate the three named artifact misclassifications against their recorded callers and source correspondence. Correct kind/ownership/proofs consistently; do not bulk-reclassify other artifacts by analogy. `phys_fn_005493` now also has a row-specific mutation proof; `phys_fn_005517` and `phys_fn_005523` retain per-row proof gaps.
-- [ ] Audit referenced data types, tables, and constants. Keep justified `classified` states; reopen a classification only with a concrete inconsistency.
-- [ ] Make reporting separate intermediate gate coverage, full code closure, artifact classification, and data classification. Add validator cases rejecting hidden deferrals and unsupported final promotion.
+- [x] Audit referenced data types, tables, and constants. All 5,138 data rows are classified under 11 recognized types with structurally validated proofs; no inconsistency was found. Reopen only with concrete contrary evidence. See `docs/reconstruction/novodex-physics/evidence/completion-backlog-m0-2026-10-07.md`.
+- [x] Make reporting separate intermediate gate coverage, full code closure, artifact classification, and data classification. The completion reporter publishes these as separate counters and the inventory/report suites reject hidden deferrals and unsupported promotion; refreshed-ledger snapshot tests pass. See `docs/reconstruction/novodex-physics/evidence/completion-backlog-m0-2026-10-07.md`.
 
 **Exit:** every remaining code row has an actionable packet; totals reconcile; the known classification errors are resolved from evidence; no historical partial pass is reported as completion.
 
