@@ -2754,7 +2754,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/65",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/296",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 32 getCMassGlobalPoseVal; verdict faithful): Task 3: W = R F in the 134 order ((a1f4 + a2f7) + a0f1, (a0f2 + a1f5) + a2f8 in columns 1 and 2; nxNpActorWorldMassRotation NX_RF_134); ROT and the position were already faithful; E1 0x30a from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorCMassTests. Final review I1 (NpActor completion): the listing's integer word copies (rep movsd / mov) are now bit copies (memcpy) in the candidate; under /arch:IA32 they had been fld/fstp pairs that quiet a signalling NaN; the x87 dot products (nxNpActorX87Dot3) take their operands by reference, so each fld / fmul reads the float in place as the listing does instead of a quieted by-value copy.",
-      "dynamic_proof": "NxPhysicsActorCMassTests directly reads getCMassGlobalPoseVal across single and grouped actors with rotated mass frames. The clean and restored staged pairs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). In an isolated source mutation, changed the row\u2019s mass-frame matrix copy from record+0x134 to record+0x138. The registered differential rejects the changed pose values with both processes exiting 0, stdout_delta=54, and exact stderr. Detailed runs: evidence/phase5-cmass-global-pose-000134.md.",
+      "dynamic_proof": "NxPhysicsActorCMassTests directly reads getCMassGlobalPoseVal across single and grouped actors with rotated mass frames. The clean and restored staged pairs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). In an isolated source mutation, changed the row’s mass-frame matrix copy from record+0x134 to record+0x138. The registered differential rejects the changed pose values with both processes exiting 0, stdout_delta=54, and exact stderr. Detailed runs: evidence/phase5-cmass-global-pose-000134.md.",
       "notes": "",
       "implementation": "Physics/src/NpActor.cpp",
       "implementation_symbol": "NpActorVtable::getCMassGlobalPoseVal"
@@ -3070,7 +3070,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/54",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/320",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, helper: rotate a local vector by the body orientation (thiscall on the record; callers 000156/000158/000160/000162); verdict faithful): Task 2: rewritten from the listing: ROT via nxNpActorRotationFromQuaternionGetter, rows (m1y+m2z)+m0x in x87 registers (double lifetimes, NpActor.cpp now /arch:IA32), one rounding at the store. Staged-pair cases: NxPhysicsActorForceTests.",
-      "dynamic_proof": "NxPhysicsActorForceTests exercises nxNpActorRotateLocalForce through the local-force and local-position public actor paths. Clean and restored staged pairs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated candidate mutation Changed the local-force rotation\u2019s first-row local-y coefficient from m[1] to m[2]. The registered Force differential rejects it with both processes exiting 0, stdout_delta=18, and exact stderr. Detailed runs: evidence/phase5-force-helpers-000150-000152.md.",
+      "dynamic_proof": "NxPhysicsActorForceTests exercises nxNpActorRotateLocalForce through the local-force and local-position public actor paths. Clean and restored staged pairs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated candidate mutation Changed the local-force rotation’s first-row local-y coefficient from m[1] to m[2]. The registered Force differential rejects it with both processes exiting 0, stdout_delta=18, and exact stderr. Detailed runs: evidence/phase5-force-helpers-000150-000152.md.",
       "notes": "",
       "implementation": "Physics/src/NpActor.cpp",
       "implementation_symbol": "nxNpActorRotateLocalForce"
@@ -3108,7 +3108,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/55",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/321",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, helper: local point to world (callers 000154/000158); verdict faithful): Task 2: rewritten from the listing: ROT, x = (R01y+R02z)+R00x kept in the register and added to t.x; y = (R11y+R12z)+R10x and z = (R22z+R20x)+R21y spilled to float before t.y/t.z are added. Staged-pair cases: NxPhysicsActorForceTests.",
-      "dynamic_proof": "NxPhysicsActorForceTests exercises nxNpActorLocalPosition through the local-force and local-position public actor paths. Clean and restored staged pairs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated candidate mutation Changed the local-point transform\u2019s first-row local-y coefficient from r[1] to r[2]. The registered Force differential rejects it with both processes exiting 0, stdout_delta=4, and exact stderr. Detailed runs: evidence/phase5-force-helpers-000150-000152.md.",
+      "dynamic_proof": "NxPhysicsActorForceTests exercises nxNpActorLocalPosition through the local-force and local-position public actor paths. Clean and restored staged pairs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated candidate mutation Changed the local-point transform’s first-row local-y coefficient from r[1] to r[2]. The registered Force differential rejects it with both processes exiting 0, stdout_delta=4, and exact stderr. Detailed runs: evidence/phase5-force-helpers-000150-000152.md.",
       "notes": "",
       "implementation": "Physics/src/NpActor.cpp",
       "implementation_symbol": "nxNpActorLocalPosition"
@@ -3257,7 +3257,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/59",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/337",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 59 addLocalForce; verdict faithful): Task 3: 000782 from the listing; G1 0x156, E1 0x157 and the 000150 helper from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorForceTests.",
-      "dynamic_proof": "NxPhysicsActorForceTests clean and restored staged-pair runs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated mutation (Changed addLocalForce\u2019s nxNpActorAccumulateForce torque selector from false to true, routing its rotated force to the torque accumulator.) is rejected by the registered differential with both processes exiting 0, stdout_delta=16, and exact stderr. Detailed runs: evidence/phase5-force-torque-wrappers-000160-000162.md.",
+      "dynamic_proof": "NxPhysicsActorForceTests clean and restored staged-pair runs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated mutation (Changed addLocalForce’s nxNpActorAccumulateForce torque selector from false to true, routing its rotated force to the torque accumulator.) is rejected by the registered differential with both processes exiting 0, stdout_delta=16, and exact stderr. Detailed runs: evidence/phase5-force-torque-wrappers-000160-000162.md.",
       "notes": "",
       "implementation": "Physics/src/NpActor.cpp"
     },
@@ -3294,7 +3294,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/60",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/342",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 61 addLocalTorque; verdict faithful): Task 3: 000782 from the listing; G1 0x169, E1 0x16a and the 000150 helper from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorForceTests.",
-      "dynamic_proof": "NxPhysicsActorForceTests clean and restored staged-pair runs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated mutation (Changed addLocalTorque\u2019s nxNpActorAccumulateForce torque selector from true to false, routing its rotated torque to the force accumulator.) is rejected by the registered differential with both processes exiting 0, stdout_delta=16, and exact stderr. Detailed runs: evidence/phase5-force-torque-wrappers-000160-000162.md.",
+      "dynamic_proof": "NxPhysicsActorForceTests clean and restored staged-pair runs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated mutation (Changed addLocalTorque’s nxNpActorAccumulateForce torque selector from true to false, routing its rotated torque to the force accumulator.) is rejected by the registered differential with both processes exiting 0, stdout_delta=16, and exact stderr. Detailed runs: evidence/phase5-force-torque-wrappers-000160-000162.md.",
       "notes": "",
       "implementation": "Physics/src/NpActor.cpp"
     },
@@ -3368,7 +3368,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/81",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/397",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 35 setMass; verdict faithful): E1 0xba and 0xbb (\"Body::setMass: mass is %f, should be positive!\", the mass passed as a double) reproduced by Task 2; record effects faithful. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests.",
-      "dynamic_proof": "NxPhysicsActorDynamicSetterTests clean and restored staged-pair runs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated mutation (Changed setMass\u2019s stored mass from the input to input + 1.0f.) is rejected by the registered differential with both processes exiting 0, stdout_delta=2, and exact stderr. Detailed runs: evidence/phase5-mass-damping-wrappers-000166-000168-000170-000172.md.",
+      "dynamic_proof": "NxPhysicsActorDynamicSetterTests clean and restored staged-pair runs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated mutation (Changed setMass’s stored mass from the input to input + 1.0f.) is rejected by the registered differential with both processes exiting 0, stdout_delta=2, and exact stderr. Detailed runs: evidence/phase5-mass-damping-wrappers-000166-000168-000170-000172.md.",
       "notes": "",
       "implementation": "Physics/src/NpActor.cpp"
     },
@@ -3442,7 +3442,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/83",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/426",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 41 setLinearDamping; verdict faithful): E1 0xd1 (value, checked before dynamic) and 0xd2 reproduced by Task 2; record effects faithful. Staged-pair cases: NxPhysicsActorBodyFlagTests, NxPhysicsActorDynamicSetterTests.",
-      "dynamic_proof": "NxPhysicsActorDynamicSetterTests clean and restored staged-pair runs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated mutation (Changed setLinearDamping\u2019s stored value from the input to input + 1.0f.) is rejected by the registered differential with both processes exiting 0, stdout_delta=2, and exact stderr. Detailed runs: evidence/phase5-mass-damping-wrappers-000166-000168-000170-000172.md.",
+      "dynamic_proof": "NxPhysicsActorDynamicSetterTests clean and restored staged-pair runs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated mutation (Changed setLinearDamping’s stored value from the input to input + 1.0f.) is rejected by the registered differential with both processes exiting 0, stdout_delta=2, and exact stderr. Detailed runs: evidence/phase5-mass-damping-wrappers-000166-000168-000170-000172.md.",
       "notes": "",
       "implementation": "Physics/src/NpActor.cpp"
     },
@@ -3479,7 +3479,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/84",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/441",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 43 setAngularDamping; verdict faithful): E1 0xe0 and 0xe1 reproduced by Task 2; record effects faithful. Staged-pair cases: NxPhysicsActorDynamicSetterTests.",
-      "dynamic_proof": "NxPhysicsActorDynamicSetterTests clean and restored staged-pair runs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated mutation (Changed setAngularDamping\u2019s stored value from the input to input + 1.0f.) is rejected by the registered differential with both processes exiting 0, stdout_delta=2, and exact stderr. Detailed runs: evidence/phase5-mass-damping-wrappers-000166-000168-000170-000172.md.",
+      "dynamic_proof": "NxPhysicsActorDynamicSetterTests clean and restored staged-pair runs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated mutation (Changed setAngularDamping’s stored value from the input to input + 1.0f.) is rejected by the registered differential with both processes exiting 0, stdout_delta=2, and exact stderr. Detailed runs: evidence/phase5-mass-damping-wrappers-000166-000168-000170-000172.md.",
       "notes": "",
       "implementation": "Physics/src/NpActor.cpp"
     },
@@ -3516,7 +3516,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/85",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/456",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 45 setLinearVelocity; verdict faithful): Task 3: the wake after the stores and the 4 mark: the input (y y + z z) + x x in the register against +0xd0 (below or unordered skips), then +0x114 & 0x100, the ordered < 0.39999998f and the 0x10 mark; G1 0xf3, E1 0xf4 and H1 from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorForceTests, NxPhysicsActorShapeMutationTests.",
-      "dynamic_proof": "NxPhysicsActorDynamicSetterTests clean and restored staged-pair runs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated mutation (Changed setLinearVelocity\u2019s primary record destination from record+0x6c to record+0x70.) is rejected by the registered differential with both processes exiting 0, stdout_delta=6, and exact stderr. Detailed runs: evidence/phase5-velocity-momentum-wrappers-000174-000176-000178-000180-000182.md.",
+      "dynamic_proof": "NxPhysicsActorDynamicSetterTests clean and restored staged-pair runs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated mutation (Changed setLinearVelocity’s primary record destination from record+0x6c to record+0x70.) is rejected by the registered differential with both processes exiting 0, stdout_delta=6, and exact stderr. Detailed runs: evidence/phase5-velocity-momentum-wrappers-000174-000176-000178-000180-000182.md.",
       "notes": "",
       "implementation": "Physics/src/NpActor.cpp"
     },
@@ -3553,7 +3553,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/62",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/476",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (## Rows, slot 46 setAngularVelocity; verdict faithful): Task 3: the wake as 000174 against +0xd4; G1 0xfc, E1 0xfd and H1 from Task 2. Staged-pair cases: NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorForceTests.",
-      "dynamic_proof": "NxPhysicsActorDynamicSetterTests clean and restored staged-pair runs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated mutation (Changed setAngularVelocity\u2019s primary record destination from record+0x78 to record+0x7c.) is rejected by the registered differential with both processes exiting 0, stdout_delta=8, and exact stderr. Detailed runs: evidence/phase5-velocity-momentum-wrappers-000174-000176-000178-000180-000182.md.",
+      "dynamic_proof": "NxPhysicsActorDynamicSetterTests clean and restored staged-pair runs match exactly (both exit 0, stdout_delta=0, stderr_exact=True). An isolated mutation (Changed setAngularVelocity’s primary record destination from record+0x78 to record+0x7c.) is rejected by the registered differential with both processes exiting 0, stdout_delta=8, and exact stderr. Detailed runs: evidence/phase5-velocity-momentum-wrappers-000174-000176-000178-000180-000182.md.",
       "notes": "",
       "implementation": "Physics/src/NpActor.cpp"
     },
@@ -7710,7 +7710,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1148",
       "static_proof": "phys_fn_000400 (0x0000d7c0): NpScene::createFluid takes the scene write lock, delegates to Scene::createFluid, releases the lock, and returns its result; the lock-failure branch reports the NpScene.cpp warning.",
       "dynamic_proof": "NxPhysicsSimulationTests on oracle and candidate: default createFluid returns null with identical empty-list state and one matching warning; transcript stdout_delta=0 and stderr_exact=True (evidence/fluid-disabled-create.md). Archived Phase 7 mutation audit: Replaced the NpScene::createFluid Scene::createFluid forwarding call with a null result in a throwaway git archive of HEAD. NxPhysicsSimulationTests caught the missing lazy manager and unavailable-feature diagnostic; oracle_exit=0, candidate_exit=1, stdout_delta=59, stderr_exact=False. Evidence: evidence/phase7-disabled-fluid-implicit-mesh-wrappers-2026-10-08.md.",
-      "notes": "The shipped backend is disabled; the wrapper\u2019s null result, lazy manager creation, warning, and lock-protected dispatch are covered by the registered mutation audit. Real-fluid behavior remains outside this build and open."
+      "notes": "The shipped backend is disabled; the wrapper’s null result, lazy manager creation, warning, and lock-protected dispatch are covered by the registered mutation audit. Real-fluid behavior remains outside this build and open."
     },
     {
       "id": "phys_fn_000401",
@@ -11650,12 +11650,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp::NxSceneInternal::row000615",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/237",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1559",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "Oracle listing at 0x000113c0: for each body in Scene+[0x56c,0x570), call phys_fn_000770(body, Scene+0x548), then phys_fn_000022(body+0x19c, 1); a second body pass conditionally calls phys_fn_004165(body+0x1e0) when non-null. This row follows phys_fn_000636 in the simulation substep.",
+      "dynamic_proof": "The registered Phase 7 NxPhysicsSimulationTests differential exercises the scene step. In a clean archive of implementation commit d4caaab9, replacing row000615 with a no-op produced oracle_exit=0, candidate_exit=0, stdout_delta=7232, stderr_exact=True. Restoring the row and rebuilding returned stdout_delta=0, stderr_exact=True; the Phase 7 gate passed with 1418/1418 coverage assertions.",
       "notes": ""
     },
     {
@@ -17642,7 +17642,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/457",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2965",
-      "static_proof": "IDA disassembly at 0x10020670: writes pose-one translation (+0x30/+0x34/+0x38) to out[0..2]; loads z,y,x, computes x*x then y*y, adds x\u00b2+y\u00b2, computes z*z, adds it, executes fsqrt, and stores out[3]. This establishes sqrt((dx*dx + dy*dy) + dz*dz) and the x87 operation order; BOX vtable slot 10.",
+      "static_proof": "IDA disassembly at 0x10020670: writes pose-one translation (+0x30/+0x34/+0x38) to out[0..2]; loads z,y,x, computes x*x then y*y, adds x²+y², computes z*z, adds it, executes fsqrt, and stores out[3]. This establishes sqrt((dx*dx + dy*dy) + dz*dz) and the x87 operation order; BOX vtable slot 10.",
       "dynamic_proof": "NxPhysicsObjectLayoutTests boxrow uses dimensions 2.5, 3.75, 4.125 and translation (1.25,-2.5,0.75); oracle output 3fa00000.c0200000.3f400000.40c38275 equals candidate bitwise (digest 4e1a53cd). Omitting the dy*dy term is caught with mismatches=1; restored differential has zero mismatches.",
       "notes": "P5 Task 3: BOX slot 10. IDA confirms the x87 association ((dx*dx + dy*dy) + dz*dz); a non-unit differential fixture covers the dimensions and translated center.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17956,7 +17956,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/466",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2982",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` \u00e2\u20ac\u201d the vertex array |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` â€” the vertex array |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": "NxPhysicsShapeVtableTests compares box hull rebuild/load output with the pinned oracle. Baseline: `box hull oracle_digest=e0477220 cases=314 failures=0` (build/Release/NxPhysicsShapeVtableTests.exe). A temporary mutation changed BoxHullFacade::vertices() from mVertices to mVertices + 1; the same oracle differential reported `box hull oracle_digest=e0477220 cases=314 failures=30` and exited 1. After restoring mVertices, the target again reported 314 cases and zero failures. Evidence: docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md.",
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -18104,7 +18104,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/470",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3019",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 4 | `phys_fn_000963` | `index*36 + this+0x70` \u00e2\u20ac\u201d face-record[k] |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 4 | `phys_fn_000963` | `index*36 + this+0x70` â€” face-record[k] |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": "NxPhysicsShapeVtableTests directly calls Box hull facade slot 4 for indices 0 through 5 and checks each returned record address against the corresponding in-object record. Baseline: `box hull oracle_digest=e0477220 cases=320 failures=0` (build/phase5-facegetter-clean.log). A temporary cyclic-index mutation in BoxHullFacade::face() produced six `box hull facade_face` mismatches, reported `box hull oracle_digest=e0477220 cases=320 failures=6`, and exited 1 (build/phase5-facegetter-mutation.log). After restoring direct indexing, the target again passed all 320 cases. Evidence: docs/reconstruction/novodex-physics/evidence/phase5-controller-release-list.md.",
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -73720,7 +73720,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1484",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13074",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/effector-coredump-contract.md (## Effector) (effector-and-coredump Task 2)",
-      "dynamic_proof": "executed under the effector staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 5 times in NxPhysicsEffectorTests against the staged candidate pair (NxPhysics.dll sha256 2f9815a105ac1fe5, identical to build/Release/NxPhysics.dll at the time of the trace), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 79/79 effector coverage lines); trace excerpt committed as evidence/effector-and-coredump-trace-effector.txt (effector-and-coredump Task 2; re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ??0SpringAndDamperEffector@@QAE@PAVNxSceneInternal@@@Z hit 6 times (Eff 5, Dump 1); equal to the oracle row's count on every target. Row-specific falsification (Phase 6 closure packet, 2026-10-09): In a throwaway git archive, changed the constructor\u2019s public-wrapper allocation request from 0x18 to 0x1c bytes. NxPhysicsEffectorTests observes allocation sizes and constructed state; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=78 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr.",
+      "dynamic_proof": "executed under the effector staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 5 times in NxPhysicsEffectorTests against the staged candidate pair (NxPhysics.dll sha256 2f9815a105ac1fe5, identical to build/Release/NxPhysics.dll at the time of the trace), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 79/79 effector coverage lines); trace excerpt committed as evidence/effector-and-coredump-trace-effector.txt (effector-and-coredump Task 2; re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ??0SpringAndDamperEffector@@QAE@PAVNxSceneInternal@@@Z hit 6 times (Eff 5, Dump 1); equal to the oracle row's count on every target. Row-specific falsification (Phase 6 closure packet, 2026-10-09): In a throwaway git archive, changed the constructor’s public-wrapper allocation request from 0x18 to 0x1c bytes. NxPhysicsEffectorTests observes allocation sizes and constructed state; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=78 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr.",
       "notes": "",
       "implementation": "Physics/src/core/SpringAndDamperEffector.cpp"
     },
@@ -77500,12 +77500,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "vector virtual-call loop (0x9ace0)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp::NxVectorVirtualLoop4165Ctx::run",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1573",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13829",
-      "static_proof": "static review of the recorded shape: vector virtual-call loop (0x9ace0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the vecloop4165 differential (3z212): failures=0 over three consecutive runs for vector lengths 0, 1, 2 and 3, comparing the hit count, the ordered sequence of elements actually visited and the whole object",
+      "static_proof": "Oracle listing at 0x0009ace0 is an ECX-only thiscall with no stack arguments. It walks the pointer vector at self+0x10/self+0x14, re-reads the range on each iteration, and invokes each element vtable slot +0x10 with the element in ECX and no stack arguments.",
+      "dynamic_proof": "The registered Phase 6 NxPhysicsObjectLayoutTests oracle differential calls the oracle and candidate through the same ECX-only thiscall member-function ABI for vector lengths 0..3 and checks hit count, order, and object bytes. Oracle/candidate both pass; a no-op mutation yields 3 failing lengths, detected by the exact required success-line assertion in the Phase 6 gate. The restored control reports vector failures=0 and layout candidate mismatches=0.",
       "notes": ""
     },
     {

@@ -2300,12 +2300,12 @@ Decompile (capstone disassembly):
 0x000113b9  ret
 ```
 
-## phys_fn_000615 (0x000113c0, 127 B, discovered)
+## phys_fn_000615 (0x000113c0, 127 B, dynamically_gated)
 
 - ambiguous: no
-- source: None
-- implementation: None
-- prototype: undefined __fastcall FUN_100113c0(int param_1)
+- source: Physics/src/Scene.cpp::NxSceneInternal::row000615
+- implementation: NxSceneInternal::row000615
+- prototype: thiscall(Scene*)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000655 (0x000137e0)
 - callees: phys_fn_000022 (0x00001840), phys_fn_000770 (0x000183a0), phys_fn_004165 (0x0009ace0)

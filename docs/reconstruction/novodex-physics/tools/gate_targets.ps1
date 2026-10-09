@@ -65,7 +65,7 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
     '3' = @('NxPhysicsCollisionTests')
     '4' = @('NxPhysicsAssetTests', 'NxPhysicsThirdPartyTests')
     '5' = @('NxPhysicsObjectLayoutTests', 'NxPhysicsShapeVtableTests')
-    '6' = @('NxPhysicsJointDescTests', 'NxPhysicsJointTests')
+    '6' = @('NxPhysicsJointDescTests', 'NxPhysicsJointTests', 'NxPhysicsObjectLayoutTests')
     '7' = @('NxPhysicsJointSupportTests')
     '8' = @()
 }
@@ -5194,6 +5194,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'slot1wrapper candidate cases=4 failures=0 mismatches=0 digest=05167dcd'
         'addthunk candidate failures=0 mismatches=0 digest=f9aac08b'
         'shapeleaf candidate ok=1 digest=cb0e48f9'
+        # phys_fn_004165: make the per-length ABI/dispatch checks a required
+        # oracle-gate assertion; the layout aggregate does not include them.
+        'vecloop4165 candidate failures=0 provisional=1'
     )
 
     # The vendored third-party differential. Phase 4 vendors qhull 2003.1 and
@@ -5627,7 +5630,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2596  # exact registered Phase 5 coverage-line count
+    '5' = 2597  # exact registered Phase 5 coverage-line count
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths
@@ -5652,7 +5655,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1098  # exact registered Phase 6 coverage-line count
+    '6' = 1227  # Phase 6 coverage plus 129 oracle-row checks from ObjectLayoutTests
                # previous 1,066 plus capsule-mesh staged-pair coverage
                # plus both joint-break callback return paths
                # plus compound-trigger per-shape enter/stay/leave lifecycle

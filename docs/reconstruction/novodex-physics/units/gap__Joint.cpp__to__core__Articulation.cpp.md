@@ -617,13 +617,13 @@ void __thiscall FUN_1009aca0(void *this,undefined4 param_1)
 
 ```
 
-## phys_fn_004165 (0x0009ace0, 47 B, reconstructed)
+## phys_fn_004165 (0x0009ace0, 47 B, dynamically_gated)
 
-- ambiguous: yes
-- source: vector virtual-call loop (0x9ace0)
-- implementation: None
-- prototype: undefined __fastcall FUN_1009ace0(int param_1)
-- calling convention: __fastcall, stack purge: 0
+- ambiguous: no
+- source: Physics/src/ObjectModel.cpp::NxVectorVirtualLoop4165Ctx::run
+- implementation: NxVectorVirtualLoop4165Ctx::run
+- prototype: thiscall(vector*)
+- calling convention: __thiscall, stack purge: 0
 - callers: phys_fn_000615 (0x000113c0)
 - callees: none
 - indirect calls: 0x0009acfb  call dword ptr [edx + 0x10]
