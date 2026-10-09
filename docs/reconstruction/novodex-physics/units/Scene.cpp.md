@@ -2129,7 +2129,7 @@ void __fastcall FUN_10011190(ushort *param_1)
 
 ```
 
-## phys_fn_000610 (0x00011210, 80 B, closed)
+## phys_fn_000610 (0x00011210, 80 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/Scene.cpp
@@ -2168,7 +2168,7 @@ void __fastcall FUN_10011210(int param_1)
 
 ```
 
-## phys_fn_000611 (0x00011260, 269 B, closed)
+## phys_fn_000611 (0x00011260, 269 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/Scene.cpp
@@ -2261,7 +2261,7 @@ void __fastcall FUN_10011260(void *param_1)
 
 ```
 
-## phys_fn_000613 (0x00011370, 74 B, closed; continuation of 000611)
+## phys_fn_000613 (0x00011370, 74 B, dynamically_gated; continuation of 000611)
 
 - ambiguous: no
 - source: None
@@ -3254,13 +3254,14 @@ void __fastcall FUN_100127e0(int param_1)
 
 ```
 
-## phys_fn_000636 (0x00012890, 75 B, discovered)
+## phys_fn_000636 (0x00012890, 75 B, dynamically_gated)
 
 - ambiguous: no
-- source: None
-- implementation: None
-- prototype: undefined __fastcall FUN_10012890(int param_1)
-- calling convention: __fastcall, stack purge: 0
+- source: Physics/src/Scene.cpp
+- implementation: NxSceneInternal::row000636
+- prototype: void NxSceneInternal::row000636()
+- reconstruction: walks every body, calls row000732 with Scene+0x548, then copies +0x57c to +0x580
+- ABI: private thiscall Scene member, no stack parameters
 - callers: phys_fn_000655 (0x000137e0)
 - callees: phys_fn_000732 (0x00016860)
 - indirect calls: none

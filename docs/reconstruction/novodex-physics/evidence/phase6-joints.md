@@ -9633,3 +9633,24 @@ directory `build/phase-step-rows/closure-archive-f3a6cc08/build-row/` as
 `mutation-000613-{build,diff}.log`. `archive-baseline-diff.log` and
 `archive-restored-diff.log` record the exact clean baseline. The implementation
 branch's source build is also captured under `build/phase-step-rows/`.
+
+
+## Phase 7 Scene-step closure — post-step body bookkeeping (`phys_fn_000636`)
+
+`NxSceneInternal::row000636` is now a private noinline Scene member in
+`Physics/src/Scene.cpp`. It visits every registered body, invokes `row000732`
+with Scene+0x548 and a zero second argument, then resets Scene+0x580 to the root
+array start at +0x57c. Its declaration is private in `Physics/src/include/Scene.h`;
+no public Physics headers changed. The x86 map retains the out-of-line symbol
+`?row000636@NxSceneInternal@@QAEXXZ`.
+
+The registered `NxPhysicsSimulationTests` gate matched the pinned oracle before
+and after the mutation. In a fresh archive of implementation commit `fb197743`,
+replacing the `row000732` dispatch with a no-op changed the transcript by
+7,062 bytes; both processes exited zero and stderr remained exact. Restoring the
+source returned to `stdout_delta=0`, `stderr_exact=True`. Logs are in
+`build/phase-step-rows/closure-archive-fb197743/build-row/`: `baseline-diff.log`,
+`mutation-build.log`, `mutation-diff.log`, `restored-build.log`, and
+`restored-diff.log`.
+
+Mutation measurement: `phys_fn_000636` detected `stdout_delta=7062`.

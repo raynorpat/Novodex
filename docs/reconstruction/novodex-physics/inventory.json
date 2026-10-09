@@ -12036,13 +12036,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/249",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1691",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "Archive mutation: replaced the post-step row000732 dispatch in NxSceneInternal::row000636 with a no-op; NxPhysicsSimulationTests detected stdout_delta=7062 with both exits zero and exact stderr.",
+      "notes": "Private noinline NxSceneInternal::row000636 refreshes each body through row000732 using Scene+0x548, then resets Scene+0x580 to +0x57c."
     },
     {
       "id": "phys_fn_000637",
