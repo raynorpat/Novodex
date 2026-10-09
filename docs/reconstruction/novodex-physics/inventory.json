@@ -1017,7 +1017,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/136",
       "static_proof": "getLinearDamping under the read guard: float at record +0xb8; a null record reports kind 1 from NpActor.cpp line 0xd9 (setLinearDamping literal) and returns the zero constant at 0x101041f0",
       "dynamic_proof": "NxPhysicsActorDynamicSetterTests pins dynamic linear and angular damping storage/getter values; the focused differential is exact. An isolated +0xb4 getter-offset mutation was caught with stdout_delta=2, both processes exit 0 and stderr is exact. Phase 5 requires the getter output line at coverage floor 2250. See evidence/phase5-get-linear-damping.md.",
-      "notes": "The static-actor null-return/error arm is also observed in NxPhysicsActorDynamicSetterTests; the row mutation targets the dynamic +0xb8 load."
+      "notes": "The static-actor null-return/error arm is also observed in NxPhysicsActorDynamicSetterTests; the row mutation targets the dynamic +0xb8 load.",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getLinearDamping",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getLinearDamping@NpActorVtable@@UBEMXZ",
+        "address": "0x1002f630",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000051",
@@ -1053,7 +1061,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/139",
       "static_proof": "getAngularDamping: same shape as getLinearDamping over record +0xbc with its own line 0xe8 and getAngularDamping literal",
       "dynamic_proof": "NxPhysicsActorDynamicSetterTests pins the public linear/angular damping getters in one required output line; the clean differential is exact. An isolated +0xb8 angular-getter mutation was caught with stdout_delta=2, both processes exit 0 and stderr is exact. The line is required by the Phase 5 gate at coverage floor 2250. See evidence/phase5-get-linear-damping.md.",
-      "notes": "The static-actor null-return/error arm is also observed in NxPhysicsActorDynamicSetterTests; the row mutation targets the dynamic +0xbc load."
+      "notes": "The static-actor null-return/error arm is also observed in NxPhysicsActorDynamicSetterTests; the row mutation targets the dynamic +0xbc load.",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getAngularDamping",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getAngularDamping@NpActorVtable@@UBEMXZ",
+        "address": "0x1002e860",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000053",
@@ -1236,7 +1252,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/159",
       "static_proof": "guarded group sleep test over the body's nested record via phys_fn_000744; true when the record itself is null",
       "dynamic_proof": "NxPhysicsActorDynamicSetterTests pins the sleep/wake result and state transitions in registered required output lines; the restored staged-pair differential is exact. An isolated mutation (> 0.0f instead of +0.0f) was caught with stdout_delta=4, both processes exited 0, and stderr was exact. The required lines are included in the Phase 5 gate at coverage floor 2250. See evidence/phase5-controller-release-list.md.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::isGroupSleeping",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?isGroupSleeping@NpActorVtable@@UBE_NXZ",
+        "address": "0x10030180",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000063",
@@ -1272,7 +1296,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/161",
       "static_proof": "guarded accessor: true when the nested record ([body+8]) is null OR its word at +0x84 reads zero",
       "dynamic_proof": "NxPhysicsActorDynamicSetterTests pins the sleep/wake result and state transitions in registered required output lines; the restored staged-pair differential is exact. An isolated mutation (!= 0 instead of == 0) was caught with stdout_delta=8, both processes exited 0, and stderr was exact. The required lines are included in the Phase 5 gate at coverage floor 2250. See evidence/phase5-controller-release-list.md.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::isSleeping",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?isSleeping@NpActorVtable@@UBE_NXZ",
+        "address": "0x10030230",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000065",
@@ -1308,7 +1340,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/163",
       "static_proof": "guarded accessor: [this+0x14] names the body, [body+8] a nested record; fsqrt of the float at record+0xd0, exact float zero when that record is null (the only guard -- a null body would fault)",
       "dynamic_proof": "NxPhysicsActorDynamicSetterTests pins the raw squared thresholds and both public getters in the required setter sleep_thresholds line; the restored staged-pair differential is exact. An isolated wrong-offset mutation (+0xd4 instead of +0xd0) was caught with stdout_delta=4, both processes exited 0, and stderr was exact. The line is required by the Phase 5 gate at coverage floor 2250. See evidence/phase5-controller-release-list.md.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getSleepLinearVelocity",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getSleepLinearVelocity@NpActorVtable@@UBEMXZ",
+        "address": "0x10030080",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000067",
@@ -1344,7 +1384,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/165",
       "static_proof": "same shape as 000066 over record+0xd4",
       "dynamic_proof": "NxPhysicsActorDynamicSetterTests pins the raw squared thresholds and both public getters in the required setter sleep_thresholds line; the restored staged-pair differential is exact. An isolated wrong-offset mutation (+0xd0 instead of +0xd4) was caught with stdout_delta=2, both processes exited 0, and stderr was exact. The line is required by the Phase 5 gate at coverage floor 2250. See evidence/phase5-controller-release-list.md.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getSleepAngularVelocity",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getSleepAngularVelocity@NpActorVtable@@UBEMXZ",
+        "address": "0x10030010",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000069",
@@ -1454,7 +1502,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/176",
       "static_proof": "flag RAISE under the write guard: 0x5b730 upgrade on the member field at +0xc; on a failed upgrade reports kind 2 from NpActor.cpp line 0x1bb ('WriteLock is still aquired...') and skips; else body+0x14 |= mask and leaves",
       "dynamic_proof": "NxPhysicsActorMetadataTests pins actor descriptor flags and public flag reads after raise/clear transitions. An isolated mutation replacing body + 0x14 |= flag with body + 0x14 &= ~flag was caught with stdout_delta=4; both processes exited 0 and stderr was exact. The restored staged-pair differential is exact. See evidence/phase5-controller-release-list.md.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::raiseActorFlag",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?raiseActorFlag@NpActorVtable@@UAEXW4NxActorFlag@@@Z",
+        "address": "0x100347d0",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000075",
@@ -1490,7 +1546,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/179",
       "static_proof": "flag CLEAR: same guard-and-report shape at line 0x1c1 with body+0x14 &= ~mask",
       "dynamic_proof": "NxPhysicsActorMetadataTests pins actor descriptor flags and public flag reads after raise/clear transitions. An isolated mutation replacing body + 0x14 &= ~flag with body + 0x14 |= flag was caught with stdout_delta=2; both processes exited 0 and stderr was exact. The restored staged-pair differential is exact. See evidence/phase5-controller-release-list.md.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::clearActorFlag",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?clearActorFlag@NpActorVtable@@UAEXW4NxActorFlag@@@Z",
+        "address": "0x1002e5d0",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000077",
@@ -1526,7 +1590,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/182",
       "static_proof": "guarded flag test: ([body+0x14] & mask) != 0, mask on the stack",
       "dynamic_proof": "NxPhysicsActorMetadataTests pins actor descriptor flags and public flag reads after raise/clear transitions. An isolated mutation replacing masked-bit predicate != 0 with masked-bit predicate == 0 was caught with stdout_delta=8; both processes exited 0 and stderr was exact. The restored staged-pair differential is exact. See evidence/phase5-controller-release-list.md.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::readActorFlag",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?readActorFlag@NpActorVtable@@UBE_NW4NxActorFlag@@@Z",
+        "address": "0x100348d0",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000079",
@@ -1562,7 +1634,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/183",
       "static_proof": "readBodyFlag under the read guard: ([record+0x10c] byte AND mask) != 0; a static actor reports kind 1 (readBodyFlag: Actor must be dynamic!) and returns false",
       "dynamic_proof": "NxPhysicsActorBodyFlagTests pins the public readBodyFlag result after descriptor initialization, raise, and clear transitions. An isolated mutation inverted the masked-bit predicate and was caught with stdout_delta=6; both processes exited 0 and stderr was exact. The restored staged-pair differential is exact. See evidence/phase5-controller-release-list.md.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::readBodyFlag",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?readBodyFlag@NpActorVtable@@UBE_NW4NxBodyFlag@@@Z",
+        "address": "0x10034940",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000081",
@@ -1674,7 +1754,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/188",
       "static_proof": "guarded SDK pointer-binding lookup (phys_fn_000454) keyed on the body pointer",
       "dynamic_proof": "NxPhysicsActorNameTests: changing NpActorVtable::getName to return null is caught by the staged-pair differential (stdout_delta=8); restored output is exact. See evidence/phase5-actor-name-000086-000088.md.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getName",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getName@NpActorVtable@@UBEPBDXZ",
+        "address": "0x1002fc40",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000087",
@@ -1710,7 +1798,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/189",
       "static_proof": "guarded SDK pointer-binding WRITE keyed on the body pointer (phys_fn_000480) under the write guard; a failed upgrade reports kind 2 from NpActor.cpp line 0x1ff and skips without binding",
       "dynamic_proof": "NxPhysicsActorNameTests: skipping NpActorVtable::setName pointer-binding write is caught by the staged-pair differential (stdout_delta=8); restored output is exact. See evidence/phase5-actor-name-000086-000088.md.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::setName",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?setName@NpActorVtable@@UAEXPBD@Z",
+        "address": "0x10036160",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000089",
@@ -2202,7 +2298,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/231",
       "static_proof": "setGroup under the write guard: word argument into body+0x1c (the same field slot 86 reads); line 0x3cd on a failed upgrade",
       "dynamic_proof": "Changed NpActorVtable::setGroup to write actor-body offset +0x18 instead of +0x1c in a mutation build; NxPhysicsActorMetadataTests changed metadata_raised and caught it with stdout_delta=2. The restored clean differential has oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::setGroup",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?setGroup@NpActorVtable@@UAEXG@Z",
+        "address": "0x10035ba0",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000113",
@@ -2346,7 +2450,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/238",
       "static_proof": "RVA 0x3690 copies the cached static pose or converts record+0x5c quaternion and copies record+0x50 translation; writes body+0x18 density, +0x14 flags, +0x1c group and actor+4 userData to the descriptor, preserving body/name/type",
       "dynamic_proof": "NxPhysicsActorLifecycleTests matches the pinned oracle for static, dynamic, rotated, and quarter-turn actors with distinct static/dynamic groups 3/7. Changing saveToDesc group source body+0x1c to +0x18 is caught with stdout_delta=8; changing density source body+0x18 to +0x14 is caught with stdout_delta=6. Both processes exit 0 with exact stderr. After byte-exact source restoration and rebuild, the clean differential is stdout_delta=0 and stderr_exact=True.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::saveToDesc",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?saveToDesc@NpActorVtable@@UAEXAAVNxActorDescBase@@@Z",
+        "address": "0x10034aa0",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000121",
@@ -2531,7 +2643,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/291",
       "static_proof": "writes the 0x30-byte pose to out: the quaternion matrix from record+0x5c (x,y,z,w) then the translation at record+0x50/0x54/0x58, or the cached pose at [self+0x14]+0x20 when the record pointer is null; returns out either way Final review I1 (NpActor completion): the listing's integer word copies (rep movsd / mov) are now bit copies (memcpy) in the candidate; under /arch:IA32 they had been fld/fstp pairs that quiet a signalling NaN. The ActorCMass signalling-NaN cases (cmass snan_*) show the words match the oracle.",
       "dynamic_proof": "NxPhysicsActorLifecycleTests staged-pair differential: adding 1.0f to the returned pose Z translation is caught with stdout_delta=8; restored output is exact. See evidence/phase5-actor-get-global-pose-000130.md.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getGlobalPoseVal",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getGlobalPoseVal@NpActorVtable@@UBE?AVNxMat34@@XZ",
+        "address": "0x1002f4c0",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000131",
@@ -2567,7 +2687,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/294",
       "static_proof": "writes the 3x3 rotation matrix for the quaternion at record+0x5c (x, y, z, w) into out[0..8], or copies the cached 36 bytes at [self+0x14]+0x20 when the record pointer is null; returns out either way",
       "dynamic_proof": "NxPhysicsActorLifecycleTests staged-pair differential: adding 1.0f to the first returned matrix word is caught with stdout_delta=6; restored output is exact. See evidence/phase5-actor-get-global-orientation-000132.md.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getGlobalOrientationVal",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getGlobalOrientationVal@NpActorVtable@@UBE?AVNxMat33@@XZ",
+        "address": "0x1002f2b0",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000133",

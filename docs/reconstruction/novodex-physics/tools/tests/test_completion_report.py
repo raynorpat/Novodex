@@ -105,6 +105,38 @@ class CompletionReportTests(unittest.TestCase):
                     "object": "NpActor.obj",
                 })
 
+    def test_actor_state_and_metadata_rows_have_candidate_map_symbols(self):
+        expected = {
+            "phys_fn_000050": ("getLinearDamping", "?getLinearDamping@NpActorVtable@@UBEMXZ", "0x1002f630"),
+            "phys_fn_000052": ("getAngularDamping", "?getAngularDamping@NpActorVtable@@UBEMXZ", "0x1002e860"),
+            "phys_fn_000062": ("isGroupSleeping", "?isGroupSleeping@NpActorVtable@@UBE_NXZ", "0x10030180"),
+            "phys_fn_000064": ("isSleeping", "?isSleeping@NpActorVtable@@UBE_NXZ", "0x10030230"),
+            "phys_fn_000066": ("getSleepLinearVelocity", "?getSleepLinearVelocity@NpActorVtable@@UBEMXZ", "0x10030080"),
+            "phys_fn_000068": ("getSleepAngularVelocity", "?getSleepAngularVelocity@NpActorVtable@@UBEMXZ", "0x10030010"),
+            "phys_fn_000074": ("raiseActorFlag", "?raiseActorFlag@NpActorVtable@@UAEXW4NxActorFlag@@@Z", "0x100347d0"),
+            "phys_fn_000076": ("clearActorFlag", "?clearActorFlag@NpActorVtable@@UAEXW4NxActorFlag@@@Z", "0x1002e5d0"),
+            "phys_fn_000078": ("readActorFlag", "?readActorFlag@NpActorVtable@@UBE_NW4NxActorFlag@@@Z", "0x100348d0"),
+            "phys_fn_000080": ("readBodyFlag", "?readBodyFlag@NpActorVtable@@UBE_NW4NxBodyFlag@@@Z", "0x10034940"),
+            "phys_fn_000086": ("getName", "?getName@NpActorVtable@@UBEPBDXZ", "0x1002fc40"),
+            "phys_fn_000088": ("setName", "?setName@NpActorVtable@@UAEXPBD@Z", "0x10036160"),
+            "phys_fn_000112": ("setGroup", "?setGroup@NpActorVtable@@UAEXG@Z", "0x10035ba0"),
+            "phys_fn_000120": ("saveToDesc", "?saveToDesc@NpActorVtable@@UAEXAAVNxActorDescBase@@@Z", "0x10034aa0"),
+            "phys_fn_000130": ("getGlobalPoseVal", "?getGlobalPoseVal@NpActorVtable@@UBE?AVNxMat34@@XZ", "0x1002f4c0"),
+            "phys_fn_000132": ("getGlobalOrientationVal", "?getGlobalOrientationVal@NpActorVtable@@UBE?AVNxMat33@@XZ", "0x1002f2b0"),
+        }
+        report = build_report_from_repo(REPO_DIR)
+        for row_id, (symbol, map_symbol, address) in expected.items():
+            with self.subTest(row=row_id):
+                row = next(row for row in report["rows"] if row["id"] == row_id)
+                self.assertEqual(row["implementation"]["path"], "Physics/src/NpActor.cpp")
+                self.assertEqual(row["implementation"]["symbol"], f"NpActorVtable::{symbol}")
+                self.assertEqual(row["implementation"]["candidate_map_reference"], {
+                    "path": "build/Release/NxPhysics.map",
+                    "symbol": map_symbol,
+                    "address": address,
+                    "object": "NpActor.obj",
+                })
+
     def test_generated_report_uses_lf_bytes_on_every_platform(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             output = Path(temp_dir) / "report.json"

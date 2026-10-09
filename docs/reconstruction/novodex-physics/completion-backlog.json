@@ -7,8 +7,8 @@
     "code_bytes": 938498,
     "open_code_rows": 2787,
     "terminally_closed_code_rows": 0,
-    "mapped_code_rows": 1690,
-    "source_correspondence_only_rows": 495,
+    "mapped_code_rows": 1706,
+    "source_correspondence_only_rows": 479,
     "directly_exported_code_rows": 41,
     "artifact_rows": 3551,
     "artifact_bytes": 116182,
@@ -155,7 +155,7 @@
         "rows": 205,
         "bytes": 60693,
         "open_rows": 205,
-        "rows_without_implementation_mapping": 41,
+        "rows_without_implementation_mapping": 25,
         "rows_with_unresolved_indirect_calls": 112,
         "by_state": {
           "dynamically_gated": 204,
@@ -2456,14 +2456,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000050",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::getLinearDamping",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getLinearDamping@NpActorVtable@@UBEMXZ",
+          "address": "0x1002f630",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -2523,10 +2529,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000050",
         "rva": "0x00002610",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -2541,14 +2547,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000052",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::getAngularDamping",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getAngularDamping@NpActorVtable@@UBEMXZ",
+          "address": "0x1002e860",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -2608,10 +2620,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000052",
         "rva": "0x00002680",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -2996,14 +3008,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000062",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::isGroupSleeping",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?isGroupSleeping@NpActorVtable@@UBE_NXZ",
+          "address": "0x10030180",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -3066,10 +3084,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000062",
         "rva": "0x00002950",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -3084,14 +3102,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000064",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::isSleeping",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?isSleeping@NpActorVtable@@UBE_NXZ",
+          "address": "0x10030230",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -3147,10 +3171,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000064",
         "rva": "0x00002990",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -3165,14 +3189,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000066",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::getSleepLinearVelocity",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getSleepLinearVelocity@NpActorVtable@@UBEMXZ",
+          "address": "0x10030080",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -3228,10 +3258,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000066",
         "rva": "0x000029e0",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -3246,14 +3276,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000068",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::getSleepAngularVelocity",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getSleepAngularVelocity@NpActorVtable@@UBEMXZ",
+          "address": "0x10030010",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -3309,10 +3345,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000068",
         "rva": "0x00002a30",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -3515,14 +3551,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000074",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::raiseActorFlag",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?raiseActorFlag@NpActorVtable@@UAEXW4NxActorFlag@@@Z",
+          "address": "0x100347d0",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -3582,10 +3624,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000074",
         "rva": "0x00002ba0",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -3600,14 +3642,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000076",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::clearActorFlag",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?clearActorFlag@NpActorVtable@@UAEXW4NxActorFlag@@@Z",
+          "address": "0x1002e5d0",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -3667,10 +3715,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000076",
         "rva": "0x00002c00",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -3685,14 +3733,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000078",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::readActorFlag",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?readActorFlag@NpActorVtable@@UBE_NW4NxActorFlag@@@Z",
+          "address": "0x100348d0",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -3748,10 +3802,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000078",
         "rva": "0x00002c60",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -3766,14 +3820,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000080",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::readBodyFlag",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?readBodyFlag@NpActorVtable@@UBE_NW4NxBodyFlag@@@Z",
+          "address": "0x10034940",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -3833,10 +3893,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000080",
         "rva": "0x00002c90",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -4033,14 +4093,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000086",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::getName",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getName@NpActorVtable@@UBEPBDXZ",
+          "address": "0x1002fc40",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -4103,10 +4169,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000086",
         "rva": "0x00002d60",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -4121,14 +4187,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000088",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::setName",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?setName@NpActorVtable@@UAEXPBD@Z",
+          "address": "0x10036160",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -4195,10 +4267,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000088",
         "rva": "0x00002d90",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -5189,14 +5261,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000112",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::setGroup",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?setGroup@NpActorVtable@@UAEXG@Z",
+          "address": "0x10035ba0",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -5256,10 +5334,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000112",
         "rva": "0x000035b0",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -5497,14 +5575,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000120",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::saveToDesc",
+        "file_exists": true,
         "oracle_source": "actor_dynamic vtable slot 82 saveToDesc (Physics/src/NpActor.cpp)",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?saveToDesc@NpActorVtable@@UAEXAAVNxActorDescBase@@@Z",
+          "address": "0x10034aa0",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -5566,10 +5650,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000120",
         "rva": "0x00003690",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -5994,14 +6078,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000130",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::getGlobalPoseVal",
+        "file_exists": true,
         "oracle_source": "actor_dynamic vtable slot: full pose from quaternion (0x4580, ret 4)",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getGlobalPoseVal@NpActorVtable@@UBE?AVNxMat34@@XZ",
+          "address": "0x1002f4c0",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -6057,10 +6147,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000130",
         "rva": "0x00004580",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -6075,14 +6165,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000132",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::getGlobalOrientationVal",
+        "file_exists": true,
         "oracle_source": "actor_dynamic vtable slot: quaternion to 3x3 matrix (0x46c0, ret 4)",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getGlobalOrientationVal@NpActorVtable@@UBE?AVNxMat33@@XZ",
+          "address": "0x1002f2b0",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -6138,10 +6234,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000132",
         "rva": "0x000046c0",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -230813,7 +230909,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "66a0df31d9933cf7181b43df4f08c151c92a431ea3a3bc0be377f4ca6b4a32a4",
+    "inventory_sha256": "18faffc55dbe579e6f7cbd3852868a28d472389486781f6541f54b6b6f43aad8",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
