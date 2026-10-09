@@ -297,3 +297,44 @@ InternalMesh's AddPoint consumers still need backend-correct arities; its
 nonnull PhysicsSDK parameter branch requires the real parameter owner. The
 null SDK default is distinct from nonnull SDK acceptance. No fake receiver,
 global, model or SDK stub closes those obligations. Full production guards stay.
+
+### Task5d1b2 genuine mesh/PMap/polygon integration
+
+The separately selected Win32 `NX_PORTABLE_TRIANGLE_MESH` gate compiles the true
+TriangleMesh constructor/destructor and wrapper, actual private convex owner,
+InternalTriangleMesh topology/model consumers, complete OPCODE model/tree/rays,
+all ordinary polygon callbacks, QhullHost/Quantizer with all twelve Qhull C TUs,
+MemoryStream, VolumeIntegration and genuine Foundation lifetime. Scalar table
+receivers are whole constructed TriangleMesh objects; backend1 retains the
+original mesh+4 receiver, table and instructions. The lazy normal wrapper
+consumer and old AddPoint consumers select backend-correct ordinary arguments.
+
+The mechanically shared actual SDK parameter storage/accessors/setter/default
+initializer retain their relationship to the real SDK constructor. This gate
+executes the supported null singleton default branch; nonnull genuine SDK query
+and lifecycle acceptance remain Task7. One named private convex owner type avoids
+cross-TU aliasing; actual Build/Destroy remain static and unchanged. Historical
+orphan edge allocations are observed after actual destruction before fixture
+cleanup. Nonnull A4/A8/AC opaque cleanup has no reconstructed producer and its
+legacy deleting-destructor ABI remains a later gate. No synthetic receiver,
+model, SDK globals or physics callback closes those branches.
+
+Immutable `triangle-mesh-domain-x87` records 563 groups/1,862,325 words for literal
+affine/nonuniform cubes and tetrahedra, both windings, every polygon table slot,
+lazy/repeated caches, actual graph+64 and kindC maps, poses/output ordering,
+scratch reuse/wrap/null/canaries, supported PMap densities32/64/80, seeded real
+model rays, grid indices and full serialization. PMap scalar expressions retain
+complete binary64 grouping before the original narrowing stores and comparisons;
+no clamp/epsilon/decision changes. Per-quantity budgets distinguish coordinates,
+plane normals, plane distances, polygon extents, edge axes and world projections
+(length times axis magnitude), while zero/sign/count/index/decision words remain
+exact. Current acceptance metadata records measured units/domains and budgets.
+
+The tested density set does not imply public API restrictions: an exploratory
+original density4 roundtrip reached the codec's zero coordinate-width branch
+and corrupted a guarded block. Alternate file/implicit-stream load arms and
+arbitrary malformed/truncated payloads remain classified; readers lack bounds
+checks. Real public mass-property numerical acceptance remains Tasks7/8 despite
+actual VolumeIntegration linkage. Full contact scratch owner/containers,
+fullfan and complete contact families remain later Task5 gates, native packed
+pointers/layout remain Task9, and full production migration guards stay active.

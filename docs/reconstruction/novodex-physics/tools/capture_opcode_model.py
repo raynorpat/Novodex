@@ -60,6 +60,34 @@ def capture(args, root, revision, compiler_version):
             raise SystemExit('effective vendor source differs from configured tree: ' + str(relative))
         effective[str(relative).replace('\\', '/')] = sha(source.read_bytes())
         sources.append(str(source.relative_to(root)).replace('\\', '/'))
+    if args.kind == 'triangle-mesh':
+        sources += ['tests/portable/' + name for name in
+                    ('TriangleMeshTests.cpp', 'TriangleMeshTargets.cmake', 'PhysicsSDKParametersKernel.cpp',
+                     'GenuineFoundationImportSlot.cpp')]
+        sources += ['Physics/src/' + name + '.cpp' for name in
+                    ('TriangleMesh', 'TriangleMeshPolygons', 'InternalTriangleMesh', 'PMap', 'MemoryStream',
+                     'TriangleMeshTopology', 'ConvexHull', 'IceSupportMaps', 'IceMeshTools', 'IceMeshBuilder2',
+                     'EdgeList', 'IceAdjacencies', 'SmoothNormals', 'QhullHost', 'Quantizer')]
+        sources.append('Foundation/src/VolumeIntegration.cpp')
+        sources += [str(path.relative_to(root)).replace('\\', '/')
+                    for directory in ('Physics/include', 'Physics/src/include')
+                    for path in sorted((root / directory).rglob('*'))
+                    if path.suffix in ('.h', '.inl')]
+        qhull = root / 'External/qhull'
+        qhull_merged = args.exporter.resolve().parent.parent / 'qhull-mesh-tree'
+        qhull_inputs = set(path.name for path in (qhull / 'upstream/src').glob('*.h'))
+        qhull_inputs.update(path.name for path in (qhull / 'novodex').glob('*.h'))
+        qhull_inputs.update(name + '.c' for name in
+                           ('geom', 'geom2', 'global', 'io', 'mem', 'merge', 'poly', 'poly2',
+                            'qhull', 'qset', 'stat', 'user'))
+        for name in sorted(qhull_inputs):
+            source = qhull / 'novodex' / name
+            if not source.exists():
+                source = qhull / 'upstream/src' / name
+            if source.read_bytes() != (qhull_merged / name).read_bytes():
+                raise SystemExit('effective qhull differs from configured tree: ' + name)
+            effective['qhull/' + name] = sha(source.read_bytes())
+            sources.append(str(source.relative_to(root)).replace('\\', '/'))
     sources = list(dict.fromkeys(sources))
     for source in sources:
         path = root / source
@@ -101,17 +129,28 @@ def capture(args, root, revision, compiler_version):
         'control_words': {'0x027f': '53-bit nearest'}, 'fixture_sha256': sha(output.read_bytes()),
         'record_width': 20, 'record_count': (output.stat().st_size - 16) // 20,
         'encoding': 'NXPF v1 LE u32 kind/group/observation-index/reserved/output-word',
-        'operation_ids': {'0': 'exact topology/count/index/decision/ownership',
+        'operation_ids': ({'0': 'exact topology/count/index/decision/ownership/grid/serialization',
+                           '1': 'source coordinates and plane distances in world length',
+                           '2': 'dimensionless normals and edge axes',
+                           '3': 'projection in world length times axis magnitude'}
+                          if args.kind == 'triangle-mesh' else {'0': 'exact topology/count/index/decision/ownership',
                           '1': 'bounds/quantization coefficients in source world units',
                           '2': 'ray parameter distance in world units for unit direction',
-                          '3': 'dimensionless triangle barycentrics'},
-        'domain': 'Eight literal binary32 cube/tetra meshes, vertex words [-3,6], affine scale/shear/'
+                          '3': 'dimensionless triangle barycentrics'}),
+        'domain': ('Genuine constructed mesh/wrapper/convex owner and graph+64, all twelve polygon '
+                   'slots, lazy/repeated caches, kind C and graph support, rigid poses, scratch '
+                   'wrap/null/opaque/visited canaries, literal cube/tetra affine/nonuniform meshes '
+                   'both windings, actual default null SDK model branch, PMap densities32/64/80 '
+                   'with seeded actual model rays, grid/index/serialization, supported empty and '
+                   'checked wrapper allocation failure. Unreconstructed nonnull opaque owner cleanup, '
+                   'alternate PMap load sources and unsupported densities excluded.'
+                   if args.kind == 'triangle-mesh' else 'Eight literal binary32 cube/tetra meshes, vertex words [-3,6], affine scale/shear/'
                   'translation, both windings, all four optimized variants, source and optimized walks, '
                   'reuse/refit, ray/segment/first/closest/cached queries, rigid translation, single/empty/'
                   'degenerate meshes, first checked allocation failure, five splitting rules on actual '
                   'vertex/AABB builders, extension/inflation/refit and source-tree ray queries. Direct '
                   'triangle epsilon/barycentric neighbors and axis/diagonal/parallel/zero directions; '
                   'eight cross-helper arguments independently exercised on equality/adjacent values, '
-                  'cancellation/signedzero/NaN/infinity. Save/Load unreconstructed paths excluded.',
+                  'cancellation/signedzero/NaN/infinity. Save/Load unreconstructed paths excluded.'),
     }, indent=2) + '\n')
     print('capture', output, 'sha256', sha(output.read_bytes()), 'snapshots', len(index))

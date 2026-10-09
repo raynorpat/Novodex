@@ -78,4 +78,30 @@ IceSupportMap* nxSupportMapHullDelete(IceSupportMap* map, NxU32 flags);
 IceSupportMap* nxSupportMapPlaneDelete(IceSupportMap* map, NxU32 flags);
 IceSupportMap* nxSupportMapVertexDelete(IceSupportMap* map, NxU32 flags);
 
+// Polygon table 002211..002249 uses the whole constructed TriangleMesh as
+// receiver. Legacy table still uses &mesh.mPolygonTable in ecx.
+class TriangleMesh;
+struct HullEdge;
+#include "NxPolygonScratch.h"
+NxU32 nxScratchStamp(NxPolygonScratch* scratch);
+const IceMaths::Point* nxMeshHullCentre(const TriangleMesh* mesh);
+NxU32 nxMeshHullVertexCount(const TriangleMesh* mesh);
+const IceMaths::Point* nxMeshHullVertices(const TriangleMesh* mesh);
+NxU32 nxMeshHullPolygonCount(const TriangleMesh* mesh);
+const HullPolygon* nxMeshHullPolygon(const TriangleMesh* mesh, NxU32 index);
+IceCore::Container* nxMeshHullEdgeAxes(const TriangleMesh* mesh);
+const HullEdge* nxMeshHullEdges(const TriangleMesh* mesh);
+const EdgeDesc* nxMeshHullEdgeToPolygons(const TriangleMesh* mesh);
+const NxU32* nxMeshHullEdgePolygons(const TriangleMesh* mesh);
+NxU32 nxMeshHullSupportPolygon(const TriangleMesh* mesh, const IceMaths::Point* direction,
+    const float* pose);
+NxU32 nxMeshHullSupportFace(const TriangleMesh* mesh, const IceMaths::Point* direction,
+    const float* pose, NxU32* kind);
+void nxMeshHullProject(const TriangleMesh* mesh, NxPolygonScratch* scratch, float* least,
+    float* greatest, const IceMaths::Point* direction, const float* pose, const IceSupportMap* map);
+// Borrowed arrays/outputs; slot4 and map indices are unchecked as originally.
+// Slot11 requires pose; map kind C consumes only byte min/max arrays. Without
+// map it takes actual owner graph and advances scratch stamp twice. Stamp wrap
+// clears count dwords when visited exists and restarts at count even if null.
+
 #endif

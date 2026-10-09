@@ -43,6 +43,13 @@ if(NX_PORTABLE_OPCODE_MODEL)
     endif()
     include(OpcodeModelTargets.cmake)
 endif()
+option(NX_PORTABLE_TRIANGLE_MESH "Build genuine mesh/PMap/polygon integration (Win32 layout)" OFF)
+if(NX_PORTABLE_TRIANGLE_MESH)
+    if(NOT DEFINED ICE_TREE)
+        include(IceTopologyTargets.cmake)
+    endif()
+    include(TriangleMeshTargets.cmake)
+endif()
 set(GEOMETRY_SCHEMA_TOOL "${CMAKE_CURRENT_SOURCE_DIR}/../../docs/reconstruction/novodex-physics/tools/geometry_fixture_schema.py")
 add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/GeometryFixtureRows.h"
     COMMAND "${Python3_EXECUTABLE}" "${GEOMETRY_SCHEMA_TOOL}" header

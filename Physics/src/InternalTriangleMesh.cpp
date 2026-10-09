@@ -233,8 +233,13 @@ bool nxInternalMeshBuildTopology(InternalTriangleMesh* mesh)
 				if(ordinal & 1) second[0] ^= perturbation;
 				if(ordinal & 2) second[1] ^= perturbation;
 				if(ordinal & 4) second[2] ^= perturbation;
-				nxIceContainerAddPoint(&splitPoints, 0, first);
-				nxIceContainerAddPoint(&splitPoints, 0, second);
+#if NX_PHYSICS_USE_X87
+                nxIceContainerAddPoint(&splitPoints, 0, first);
+                nxIceContainerAddPoint(&splitPoints, 0, second);
+#else
+                nxIceContainerAddPoint(&splitPoints, first);
+                nxIceContainerAddPoint(&splitPoints, second);
+#endif
 				}
 			for(NxU32 endpoint = 0; endpoint < 2; ++endpoint)
 				{

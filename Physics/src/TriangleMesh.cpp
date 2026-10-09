@@ -17,6 +17,7 @@
 #include "OPC_Model.h"
 #include "NxVolumeIntegration.h"
 #include "ConvexHull.h"
+#include "TriangleMeshConvexData.h"
 #include "IceMeshTools.h"
 
 #include <new>
@@ -59,23 +60,13 @@ static const NxU32 kTriangleMeshTag1 = 0x4d455348;	// cmp at 0x00055cd0, push at
 
 namespace
 	{
+    using NxTriangleMeshPrivate::TriangleMeshConvexData;
 	static NxU32* nxTriangleMeshVtableToken()
 		{
 		static const NxU32 token = 0x00108608;
 		return const_cast<NxU32*>(&token);
 		}
 
-	struct TriangleMeshConvexData : ConvexHull
-		{
-	float			mBounds[6];		// +0x4c, min xyz then max xyz (001411)
-	Valencies*		mVertexGraph;		// +0x64 (001411, 002249)
-	NxU32			mObjectWords[12];	// +0x68..+0x97 (001524)
-		};
-
-	static_assert(sizeof(ConvexHull) == 0x4c, "the convex hull base has the measured 0x4c layout");
-	static_assert(offsetof(TriangleMeshConvexData, mVertexGraph) == 0x64,
-		"the convex vertex graph is at +0x64");
-	static_assert(sizeof(TriangleMeshConvexData) == 0x98, "the convex mesh allocation is 0x98 bytes");
 
 	static void nxTriangleMeshDestroyConvexData(TriangleMeshConvexData* hull)
 		{
@@ -673,11 +664,15 @@ const void* TriangleMesh::getBase(NxInternalArray array) const
 		if(!mInternal.mVertexNormals)
 			{
 			InternalTriangleMesh* internal = const_cast<InternalTriangleMesh*>(&mInternal);
-			__asm
-				{
-				mov ecx, internal
-				call nxMeshComputeVertexNormals
-				}
+#if NX_PHYSICS_USE_X87
+            __asm
+                {
+                mov ecx, internal
+                call nxMeshComputeVertexNormals
+                }
+#else
+            nxMeshComputeVertexNormals(internal);
+#endif
 			}
 		return mInternal.mVertexNormals;
 		}
