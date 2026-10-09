@@ -9536,3 +9536,8 @@ For row `phys_fn_003977`, In a throwaway git archive, changed SpringAndDamperEff
 ## Phase 6 closure measurement — damper-force calculation (phys_fn_003972)
 
 For row `phys_fn_003972`, in a fresh throwaway git archive from the current commit, copied the approved three-step public simulation fixture and registered coverage marker, then changed SpringAndDamperEffector::damperForce to return zero. NxPhysicsSimulationTests reached the effector with nonzero relative velocity on its third simulation step; oracle third-step vx was 3f0a9508 and the mutant was 3f0de49b (stdout_delta=2), with both processes exiting 0 and exact stderr. Restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003972-damper-force.md`.
+
+
+## Phase 6 closure measurement — effector apply (phys_fn_003979)
+
+For row `phys_fn_003979`, Row-specific falsification (Phase 6 closure packet, 2026-10-09): In a fresh throwaway git archive from the current commit, changed SpringAndDamperEffector::apply to a no-op and rebuilt NxPhysics.dll. The registered NxPhysicsSimulationTests staged-pair differential observes the public three-step effector simulation: the oracle reports second/third-step vx 3e8e38e3/3f0a9508, while the mutant reports 00000000/00000000 (stdout_delta=4); both processes exit 0 and stderr is exact. Restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003979-apply.md`.
