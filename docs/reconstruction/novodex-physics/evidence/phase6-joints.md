@@ -9785,3 +9785,10 @@ In the isolated worktree at mainline commit cf83177c, added a public `getBreakab
 
 The mutation existed only in the isolated worktree and was restored before the exact control run. Detailed evidence: `evidence/phase6-joint-row004076-get-breakable.md`.
 Measurement index: `phys_fn_004076 stdout_delta=2`.
+
+
+## Phase 6 closure measurement — joint destructor (phys_fn_004095)
+
+The registered core-dump fixture releases three joints that own limit planes and reports the outstanding allocator count after scene release. In a clean isolated Win32 Release build at mainline commit `36ba492d`, omitting the `purgeLimitPlanes()` call in `Joint::~Joint` for `phys_fn_004095` changed the released-scene count from 14 to 17. `NxPhysicsCoreDumpTests` caught the destructor mutation with both processes exiting zero, `stdout_delta=2`, and exact stderr. Rebuilding the restored source returned the count to 14/14 and the staged differential to `stdout_delta=0`, both exits zero, and exact stderr.
+
+Detailed commands, DLL hashes, and raw log paths: `evidence/phase6-joint-row004095-destructor.md`.
