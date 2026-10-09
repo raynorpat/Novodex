@@ -9673,5 +9673,15 @@ start of that routine was rejected by the registered `NxPhysicsSimulationTests`
 staged-pair differential (`oracle_exit=0`, `candidate_exit=1`,
 `stdout_delta=3829`). Removing the mutation and rebuilding returned an exact
 control (`both exits=0`, `stdout_delta=0`, `stderr_exact=True`). Details:
-`evidence/phase7-scene-step-000655.md`.
+ `evidence/phase7-scene-step-000655.md`.
 Measurement index: `phys_fn_000655 stdout_delta=3829`.
+
+## Phase 6 effector tick thunk closure (`phys_fn_003924`)
+
+The registered three-step off-center spring/damper simulation reaches the
+`ActorPairEffector::tick` virtual slot-2 thunk at RVA `0x0008ed50`. Replacing
+the thunk body with a no-op in a throwaway archive changed the staged-pair
+transcript by four bytes (`stdout_delta=4`, both exits zero, exact stderr).
+Restoring and rebuilding returned the transcript to exact agreement.
+Measurement index: `phys_fn_003924 stdout_delta=4`. Details:
+`evidence/phase6-effector-003924-tick.md`.
