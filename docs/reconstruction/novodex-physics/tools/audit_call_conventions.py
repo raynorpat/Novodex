@@ -37,7 +37,7 @@ def row_cleanup(code, md, rva):
     for ins in md.disasm(code, 0x10000000 + rva):
         if ins.mnemonic == 'ret':
             return int(ins.op_str, 0) if ins.op_str else 0
-        if ins.mnemonic == 'jmp' and ins.op_str.startswith('0x'):
+        if ins.mnemonic == 'jmp':
             return None
     return None
 
