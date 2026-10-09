@@ -148,7 +148,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6",
       "static_proof": "sub-object virtual forwarder: [this+0x10] names a sub-object whose vtable slot +0x18 receives the call with the original stack argument; a null sub-object returns without touching anything observable",
       "dynamic_proof": "NxPhysicsObjectLayoutTests compares the `miscsm` object-layout fixture to the pinned oracle. The NxPhysicsObjectLayoutTests planted __thiscall sentinel reported its argument incorrectly: baseline `miscsm candidate ok=1 digest=9460eb64`, mutant `miscsm candidate ok=0 digest=bb22aa65`; the target exited 1 with one candidate mismatch.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxForwardSubobjectCall",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxForwardSubobjectCall@@YAIPAX0@Z",
+        "address": "0x1003e5f0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_000005",

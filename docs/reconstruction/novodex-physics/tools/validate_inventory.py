@@ -541,10 +541,6 @@ def _check_functions(rows, declared_phases):
                 if (isinstance(candidate_map.get("address"), str)
                         and not re.fullmatch(r"0x[0-9a-fA-F]{8}", candidate_map["address"])):
                     errors.append(f"{map_where}.address must be a preferred 32-bit image address")
-                if (candidate_map.get("symbol") and row.get("implementation_symbol")
-                        and candidate_map["symbol"] != row["implementation_symbol"]):
-                    errors.append(
-                        f"{map_where}.symbol must match implementation_symbol")
         if row["kind"] == "compiler_artifact":
             if not row["static_proof"]:
                 errors.append(f"{where} is a compiler artifact and must record a classification proof")

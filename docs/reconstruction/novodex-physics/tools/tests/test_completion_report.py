@@ -41,6 +41,19 @@ class CompletionReportTests(unittest.TestCase):
         self.assertEqual(implementation["candidate_map_reference_basis"], "inventory")
         self.assertEqual(implementation["candidate_map_reference"], candidate_map)
 
+    def test_subobject_forwarder_has_candidate_source_and_map_symbol(self):
+        report = build_report_from_repo(REPO_DIR)
+        row = next(row for row in report["rows"] if row["id"] == "phys_fn_000004")
+
+        self.assertEqual(row["implementation"]["path"], "Physics/src/ObjectModel.cpp")
+        self.assertEqual(row["implementation"]["symbol"], "nxForwardSubobjectCall")
+        self.assertEqual(row["implementation"]["candidate_map_reference"], {
+            "path": "build/Release/NxPhysics.map",
+            "symbol": "?nxForwardSubobjectCall@@YAIPAX0@Z",
+            "address": "0x1003e5f0",
+            "object": "ObjectModel.obj",
+        })
+
     def test_generated_report_uses_lf_bytes_on_every_platform(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             output = Path(temp_dir) / "report.json"

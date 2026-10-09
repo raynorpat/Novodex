@@ -310,10 +310,10 @@ class ValidateInventoryTests(unittest.TestCase):
         data = minimal_inventory()
         data["functions"][0].update({
             "implementation": "Physics/src/RecoveredRows.cpp",
-            "implementation_symbol": "_phys_fn_000001@16",
+            "implementation_symbol": "nxRangeIterator",
             "candidate_map_reference": {
                 "path": "build/Release/NxPhysics.map",
-                "symbol": "_phys_fn_000001@16",
+                "symbol": "?nxRangeIterator@@YAHHHH@Z",
                 "address": "0x1004e050",
                 "object": "RecoveredRows.obj",
             },
