@@ -9685,3 +9685,13 @@ transcript by four bytes (`stdout_delta=4`, both exits zero, exact stderr).
 Restoring and rebuilding returned the transcript to exact agreement.
 Measurement index: `phys_fn_003924 stdout_delta=4`. Details:
 `evidence/phase6-effector-003924-tick.md`.
+
+## Phase 6 effector body-removal notification closure (`phys_fn_003928`)
+
+The registered `NxPhysicsEffectorTests` lifecycle fixture releases an actor
+while two effectors observe its body record, then checks their surviving body
+pointers. Replacing `ActorPairEffector::event` with a no-op in a throwaway
+archive caused the candidate to access-violate (`stdout_delta=9`, oracle exit
+0, candidate exit `-1073741819`, exact stderr). Restoring the row returned an
+exact control. Measurement index: `phys_fn_003928 stdout_delta=9`. Details:
+`evidence/phase6-effector-003928-event.md`.
