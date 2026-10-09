@@ -9725,3 +9725,13 @@ In the clean isolated worktree at mainline commit 58f0d3a3, changed body 0’s t
 
 The mutation existed only in the isolated worktree and was restored before the exact control run. Detailed evidence: `evidence/phase6-joint-row004064-anchor-transform.md`.
 Measurement index: `phys_fn_004064 stdout_delta=250`.
+
+
+## Phase 6 closure measurement — joint base descriptor save (phys_fn_004066)
+
+`Joint::saveToDescBase` copies the base actor pointers, local frames, break thresholds, user data and joint flags into every family’s descriptor. The registered `NxPhysicsJointStagedPairTests` fixture saves descriptors for its rotated multi-family cases and prints the base force and torque thresholds.
+
+In the clean isolated worktree at mainline commit 3b87269f, changed Joint::saveToDescBase (phys_fn_004066) to write zero instead of mMaxForce into the saved descriptor. The registered NxPhysicsJointStagedPairTests staged-pair differential rejected the mutant: oracle_exit=0, candidate_exit=0, stdout_delta=216, stderr_exact=True. Restored Joint.cpp, rebuilt NxPhysics, and reran; the restored control had both exits 0, stdout_delta=0, and exact stderr.
+
+The mutation existed only in the isolated worktree and was restored before the exact control run. Detailed evidence: `evidence/phase6-joint-row004066-save-desc.md`.
+Measurement index: `phys_fn_004066 stdout_delta=216`.
