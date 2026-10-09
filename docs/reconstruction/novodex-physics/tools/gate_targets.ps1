@@ -1877,6 +1877,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'actor dynamic pose_alloc=50 cached=1 cached_nested=1',
         'actor dynamic position=c0400000.40000000.3f800000',
         'actor dynamic pose=3f800000.00000000.00000000.00000000.3f800000.00000000.00000000.00000000.3f800000.c0400000.40000000.3f800000',
+        'actor abi_sret cases=19 flags=0 mismatches=0 wrong_cleanup_detected=1',
         'actor saved_dynamic pose=3f800000.00000000.00000000.00000000.3f800000.00000000.00000000.00000000.3f800000.c0400000.40000000.3f800000',
         'actor saved_dynamic saved_metadata=3f800000.00000000.0007.1.1.1',
         'actor saved_dynamic body_saved=1.7bb36a35.42400000.00000100.00000004',
@@ -5659,7 +5660,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2607  # previous 2,605 plus the stack/register ABI probe and its negative controls
+    '5' = 2608  # previous 2,607 plus the public aggregate-return ABI probe and its negative control
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths

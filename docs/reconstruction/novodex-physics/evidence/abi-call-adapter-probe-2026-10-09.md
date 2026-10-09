@@ -22,6 +22,5 @@ run exits zero against the oracle with the pinned SHA-256 and reports
 
 This is a targeted calibration, not proof for all adapter rows. The remaining
 call adapters still need equivalent coverage or a sound static proof. Public
-aggregate-return methods such as `NxActor::getGlobalPoseVal` and
-`getGlobalOrientationVal` use separate C++ call paths; their hidden structure
-return ABI is not closed by this probe.
+aggregate-return ABI coverage is tracked separately in
+`abi-structure-return-probe-2026-10-09.md`.
