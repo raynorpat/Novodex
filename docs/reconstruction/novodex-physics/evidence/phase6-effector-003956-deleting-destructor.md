@@ -1,0 +1,9 @@
+# Phase 6 closure: spring/damper wrapper deleting destructor (`phys_fn_003956`)
+
+`phys_fn_003956` is the scalar deleting destructor for `NpSpringAndDamperEffector`. The recovered body resets the primary and hook-base vptrs, destroys `EmbeddedHookBase`, and, when the scalar-delete flag is set, calls the Foundation allocator's `free` slot with the wrapper address. The registered `NxPhysicsEffectorTests` lifecycle transcript records these frees during public `releaseEffector`, release/create cycles, and scene cleanup.
+
+In the isolated worktree at mainline `b70f564a`, built Win32 Release `NxPhysics` and `NxPhysicsEffectorTests` with CMake. Temporarily changed only `NpSpringAndDamperEffector::operator delete` in `Physics/src/include/core/NpSpringAndDamperEffector.h` to a no-op and rebuilt. The staged `NxPhysicsEffectorTests` differential rejected the mutation with both processes exiting 0, `stdout_delta=8`, and exact stderr: the public release changed from `frees=2 sizes=18,68` to `frees=1 sizes=68`; scene cleanup dropped from 55 to 53 frees. Mutant candidate DLL SHA-256: `f1c2155adb6c13f262f421750affddfad658c43649050dd1583c3a2ba5292af7`.
+
+Restored the header byte-for-byte, rebuilt, and reran the registered staged-pair differential. The candidate exited 0, matched the oracle with `stdout_delta=0`, and had exact stderr. Restored candidate DLL SHA-256: `6f463a14cdfc4f4ec21ad8a9077ef6ce0552049b84cc7f05f4068b69024d2ef5`; Foundation SHA-256: `d97c3f14eacc4c7953ae2d131c3366c163c3854d2c61247082d79b07600e724e`. The source header is unchanged from the committed mainline revision.
+
+Commands and raw mutation output are retained in the ignored `build/effector-hook-probe/` directory. This closes the 49-byte wrapper deleting-destructor row; the neighboring abstract-class destructor rows remain open.

@@ -9845,3 +9845,15 @@ The registered D6 staged-pair fixture catches `phys_fn_004469` (`NpD6Joint` cons
 `NxPhysicsEffectorTests` now calls the hook-base destructor slot through a scratch copy of the live wrapper, with deletion disabled. Removing the thunk's `-8` adjustment from the staged candidate changes the observed copied read-link word (`read_link_same=yes` to `no`); after normalizing loader paths, hashes, and loader-count noise, this is the only transcript difference. The registered differential catches `phys_fn_003954` with `stdout_delta=2`; both processes exit zero. The restored control has `stdout_delta=0` and exact stderr. The thunk's table and wrapper layouts are independently recorded in `units/effector-coredump-contract.md`.
 
 Detailed mutation, DLL identities, and restoration evidence: `evidence/phase6-effector-003954-adjustor-thunk.md`.
+
+## Phase 6 closure measurement — spring/damper wrapper deleting destructor (`phys_fn_003956`)
+
+The registered `NxPhysicsEffectorTests` public lifecycle cases record both wrapper frees during `releaseEffector`, release/create cycles, and scene cleanup. Changing only `NpSpringAndDamperEffector::operator delete` to a no-op removes each 0x18-byte wrapper free; the registered differential catches `phys_fn_003956` with `stdout_delta=8`, while both processes exit zero and stderr remains exact. Restoring the allocator call and rebuilding returns the differential to `stdout_delta=0` with exact stderr.
+
+Detailed mutation, DLL identities, and restoration evidence: `evidence/phase6-effector-003956-deleting-destructor.md`.
+
+## Phase 6 closure measurement — fixed-joint descriptor save (`phys_fn_004242`)
+
+The registered fixed-joint public case saves a live joint back to `NxFixedJointDesc` and records the base anchors, axes, normals, flags, and actors. Replacing `FixedJoint::saveToDesc`'s `saveToDescBase(desc)` call with an early return changes the first saved `anchor1` from `c0800000.00000000.00000000` to zero, along with other descriptor fields; the staged-pair differential catches `phys_fn_004242` with `stdout_delta=92`, both exits zero, and exact stderr. Restoring the base save returns the differential to `stdout_delta=0` and exact stderr.
+
+Detailed mutation, DLL identities, and restoration evidence: `evidence/phase6-fixed-joint-004242-save-to-desc.md`.
