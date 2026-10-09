@@ -44,6 +44,10 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "QhullHost.h"
+#include "NxPhysicsBackend.h"
+#if !NX_PHYSICS_USE_X87
+#include "portable/NxScalarMath.h"
+#endif
 
 #include <stdlib.h>
 #include <math.h>
@@ -116,7 +120,7 @@ static const NxReal gWu255 = 255.0f;
 // word, as X87Sqrt.h's helpers do for fsqrt (the same qword-argument caveat
 // applies: the one `double` operand, the x coordinate, is narrowed to 53 bits
 // at the pass under a 64-bit precision word only).
-#if defined(_MSC_VER) && defined(_M_IX86)
+#if NX_PHYSICS_USE_X87
 static __declspec(naked) NxI32 __cdecl wuFistp255(double /*x*/)
 	{
 	__asm
@@ -131,7 +135,9 @@ static __declspec(naked) NxI32 __cdecl wuFistp255(double /*x*/)
 #else
 static NxI32 wuFistp255(double x)
 	{
-	return (NxI32) llrint(x * gWu255);
+	// Nearest-even qword storage, then the original signed low word. Invalid
+	// qword inputs produce zero, before the existing caller's [0,255] clamp.
+	return nxScalarFistpLow32(x * (double) gWu255);
 	}
 #endif
 

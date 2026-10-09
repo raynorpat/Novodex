@@ -15,8 +15,13 @@
 // moved to a shared internal header before reuse). Not oracle rows. Include
 // only from the x87 (/arch:IA32) joint translation units.
 
+#include "NxPhysicsBackend.h"
+#if NX_PHYSICS_USE_X87
 #include "Nxp.h"
 #include "NxMath.h"
+#else
+#include "portable/NxScalarMath.h"
+#endif
 
 #include <math.h>
 
@@ -52,7 +57,7 @@
 // left to the caller is a register the compiler did not put there).
 static double jointCIacos(double x)
 	{
-#if defined(_MSC_VER) && defined(_M_IX86)
+#if NX_PHYSICS_USE_X87
 	double result;
 	NxU16 savedControlWord;
 	NxU16 coreControlWord;
@@ -81,7 +86,7 @@ static double jointCIacos(double x)
 		}
 	return result;
 #else
-	return atan2(sqrt((1.0 + x) * (1.0 - x)), x);
+	return nxScalarJointCIacos(x);
 #endif
 	}
 
@@ -92,13 +97,23 @@ static double jointCIacos(double x)
 // value): >= 1 -> 0, <= -1 -> the float pi (0x1011a1b0 in the revolute
 // unit), otherwise _CIacos of the float. The result is returned unrounded: 004352 and 004372 keep it on the
 // stack; 004330 rounds it where it stores it.
-static double jointAcos(NxReal f)
+static double jointAcos(
+#if NX_PHYSICS_USE_X87
+	NxReal f
+#else
+	float f
+#endif
+	)
 	{
+	#if NX_PHYSICS_USE_X87
 	if(f >= 1.0f)
 		return 0.0f;
 	if(f <= -1.0f)
 		return NxPiF32;
 	return jointCIacos(f);
+	#else
+	return nxScalarJointAcos(f);
+	#endif
 	}
 
 #endif

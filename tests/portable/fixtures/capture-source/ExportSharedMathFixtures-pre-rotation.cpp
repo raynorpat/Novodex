@@ -34,8 +34,7 @@ static double run(unsigned op, const double* a) {
 }
 int main(int argc, char** argv) {
     const bool physicsDomain=argc==3 && std::strcmp(argv[2],"--physics-domain")==0;
-    const bool rotationDomain=argc==3 && std::strcmp(argv[2],"--rotation-domain")==0;
-    if (argc!=2 && !physicsDomain && !rotationDomain) { std::fprintf(stderr,"usage: NxPortableExportSharedMath <new-output> [--physics-domain|--rotation-domain]\n"); return 2; }
+    if (argc!=2 && !physicsDomain) { std::fprintf(stderr,"usage: NxPortableExportSharedMath <new-output> [--physics-domain]\n"); return 2; }
     // Historical fixture is immutable, including when invoked outside its wrapper.
     if (std::strstr(argv[1],"shared-math-x87.nxpf")) {
         std::fprintf(stderr,"refusing to overwrite immutable Task 1 fixture\n"); return 2;
@@ -59,21 +58,10 @@ int main(int argc, char** argv) {
     for (unsigned cw=0; cw<2; ++cw) {
         unsigned short control=controls[cw];
         __asm fldcw control
-        for (unsigned op=0; op<18; ++op) for (unsigned c=0; c<(physicsDomain?130u:rotationDomain?32u:10u); ++c) {
+        for (unsigned op=0; op<18; ++op) for (unsigned c=0; c<(physicsDomain?130u:10u); ++c) {
             double args[8];
             word(payload,op,4); word(payload,control,4);
-            if (rotationDomain) {
-                static const std::uint32_t angles[]={0,0x3c800000,0x3f000000,0x3f800000,
-                    0x3fc90fda,0x3fc90fdb,0x3fc90fdc,0x40490fda,0x40490fdb,0x40490fdc,
-                    0x40c90fda,0x40c90fdb,0x40c90fdc,0xc0490fdb,0xc0c90fdb,0x80000000};
-                const std::uint32_t input=angles[c%16];float angle;std::memcpy(&angle,&input,4);
-                for(unsigned i=0;i<8;++i) args[i]=0.5;
-                if(op==11 || op==12) {
-                    args[0]=c<16?angle:((input&0x80000000)?-0.015625:0.015625);
-                    args[1]=0.5;args[2]=c<16?2.0:(angle<0?-angle:angle)*128.0;
-                    args[3]=args[4]=0.0;
-                }
-            } else if (!physicsDomain) {
+            if (!physicsDomain) {
                 for (unsigned i=0;i<8;++i) args[i]=fromBits(inputs[c][i]);
             } else if(c==128 || c==129) {
                 // Finite float inputs, finite double norm/angle, but FSIN/FCOS
@@ -113,6 +101,6 @@ int main(int argc, char** argv) {
     const int closed=std::fclose(file);
     if (!ok || closed) return 1;
     std::printf("shared_math records=%u width=80 provenance=reconstructed-reference domain=%s\n",
-        static_cast<unsigned>(payload.size()/80),physicsDomain?"physics-finite-and-fsin-limit-probes":rotationDomain?"rotation-endpoints-and-adjacent-floats":"task1-repeat");
+        static_cast<unsigned>(payload.size()/80),physicsDomain?"physics-finite-and-fsin-limit-probes":"task1-repeat");
     return 0;
 }

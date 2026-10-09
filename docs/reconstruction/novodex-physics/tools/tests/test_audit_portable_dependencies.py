@@ -7,6 +7,7 @@ import pathlib
 import runpy
 import tempfile
 import unittest
+from unittest.mock import patch
 
 SCANNER = pathlib.Path(__file__).resolve().parents[1] / "audit_portable_dependencies.py"
 
@@ -22,11 +23,15 @@ class PortableDependencyAuditTests(unittest.TestCase):
             previous = pathlib.Path.cwd()
             try:
                 os.chdir(root)
-                with contextlib.redirect_stdout(io.StringIO()):
+                with contextlib.redirect_stdout(io.StringIO()), patch('sys.argv', ['audit']):
                     runpy.run_path(str(SCANNER), run_name="__main__")
             finally:
                 os.chdir(previous)
-            return json.loads((root / "docs/reconstruction/novodex-physics/evidence/portable-scalar-dependencies.json").read_text())
+            result=json.loads((root / "build/portable-audit/portable-scalar-dependencies.json").read_text())
+            self.assertIsNone(result['revision'])
+            self.assertIsNone(result['working_tree_dirty'])
+            self.assertFalse((root / "docs/reconstruction/novodex-physics/evidence/portable-scalar-dependencies.json").exists())
+            return result
 
     def test_naked_annotation_keeps_symbol_instructions_edges_and_label(self):
         result = self.audit('''static __declspec(naked) double __cdecl sample(double x)

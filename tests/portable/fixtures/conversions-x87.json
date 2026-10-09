@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "capture_id": "conversions-x87",
+  "provenance_kind": "reconstructed-reference",
+  "source_revision": "715706add5e16e289e35a06d76864d4a36023669",
+  "working_tree_dirty": true,
+  "source_sha256": {
+    "Physics/src/Quantizer.cpp": "de5b368391435c7059379a0713b3ce4f21333d78824baf6bf66cc744e3a68c1b",
+    "Physics/src/core/SceneDump.cpp": "ee6c9dbceefd2041a9559404fdcab4226c818f80dae3563948022da41f2836b5"
+  },
+  "legacy_instruction_bodies_verified_against_revision": "715706add5e16e289e35a06d76864d4a36023669",
+  "exporter_path": "build\\portable-x87-export\\Release\\NxPortableExportConversions.exe",
+  "exporter_sha256": "a988ed1628e4855b7df25baeb3199e6ddd5a29f4ee663c0489f5fbbf536141ec",
+  "exporter_source_sha256": "7f082a02e16185ac310406167d2ddc0132cb7118fe9fca1944ab68586680a438",
+  "compiler": "MSVC 19.51.36260.0",
+  "configuration": "Release Win32",
+  "flags": [
+    "/arch:IA32",
+    "/fp:precise",
+    "/O2",
+    "NX_PHYSICS_USE_X87=1"
+  ],
+  "control_words": {
+    "0x027f": "53-bit nearest",
+    "0x0f7f": "64-bit chop; diagnostic only"
+  },
+  "fixture_sha256": "8227ea28e53a8a86e0c4074bc2b42aea4ed6357c260ca14e416e0d1cebb4a138",
+  "record_width": 20,
+  "record_count": 100,
+  "encoding": "NXPF v1 LE u32 op/u32 CW/binary64 input u64/signed output low32 u32",
+  "operation_ids": {
+    "0": "wuFistp255",
+    "1": "sceneDumpRound"
+  },
+  "domain": "literal half-integers, int32/qword limits and adjacent values, nonfinite, signedzero, subnormal, quantizer half-index values"
+}

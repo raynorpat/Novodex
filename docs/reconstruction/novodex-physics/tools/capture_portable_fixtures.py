@@ -1,6 +1,11 @@
-import pathlib,struct,hashlib,json,math
+import pathlib,struct,hashlib,json,math,subprocess
 from decimal import Decimal
 root=pathlib.Path.cwd(); fixtures=root/'tests/portable/fixtures'
+# Immutable Task 1 capture only: never stamp later source with this identity.
+reference_revision='a4838ddf282ee859471e1526145b616de5ddedb6'
+actual_revision=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+if actual_revision != reference_revision or subprocess.check_output(['git','status','--porcelain'],text=True).strip():
+    raise SystemExit('Task 1 capture requires clean reference revision '+reference_revision+'; use a new capture identity and destination for later evidence')
 ops=['x87Fsqrt','x87FsqrtSum2','x87FsqrtSum3','x87FsqrtSum4','x87FsqrtDiffSum','x87FsqrtDiag','x87FsqrtMulSub','x87FsqrtDot2','x87FsqrtDot3','x87FsqrtDot4','x87FsqrtQuotDot3','x87FsinHalfOverNorm3','x87FcosHalfNorm3','x87RateOverRoot','x87CIacos','x87AcosRateOverRoot','jointCIacos','jointAcos']
 raw=(fixtures/'shared-math-x87.nxpf').read_bytes()
 repeat=(root/'build/task1-evidence/shared-math-repeat.nxpf').read_bytes()

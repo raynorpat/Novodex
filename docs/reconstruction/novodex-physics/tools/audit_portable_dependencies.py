@@ -1,5 +1,16 @@
-import pathlib,re,json,hashlib
+import pathlib,re,json,hashlib,subprocess,argparse
 root=pathlib.Path.cwd()
+parser=argparse.ArgumentParser()
+parser.add_argument('--output-dir',type=pathlib.Path,default=root/'build/portable-audit')
+args=parser.parse_args()
+args.output_dir.mkdir(parents=True,exist_ok=True)
+try:
+    revision=subprocess.check_output(['git','rev-parse','HEAD'],text=True,stderr=subprocess.DEVNULL).strip()
+    dirty=bool(subprocess.check_output(['git','status','--porcelain'],text=True).strip())
+except subprocess.CalledProcessError:
+    # Synthetic test trees or unversioned archives have no source identity.
+    revision=None
+    dirty=None
 paths=sorted(p for base in ['Physics','Foundation','External'] for p in (root/base).rglob('*') if p.suffix in ('.h','.cpp','.c','.inl'))
 def mask(s):
     return re.sub(r'//[^\n]*|/\*.*?\*/|"(?:\\.|[^"\\])*"',lambda m:re.sub(r'[^\n]',' ',m[0]),s,flags=re.S)
@@ -91,13 +102,12 @@ for p,s in clean.items():
         if overlay.exists():active='shadowed by '+overlay.relative_to(root).as_posix()
         else:active='upstream effective tree (reachability follows External/CMakeLists.txt)'
     files.append({'path':p,'sha256':hashlib.sha256((root/p).read_bytes()).hexdigest(),'family':family(p),'selection':active,'entries':list(entries.values()),'conditional_lines':[{'line':i+1,'text':l.strip()} for i,l in enumerate(source[p].splitlines()) if re.match(r'\s*#\s*(if|else|elif)',l)]})
-out=root/'docs/reconstruction/novodex-physics/evidence/portable-scalar-dependencies.json'
+out=args.output_dir/'portable-scalar-dependencies.json'
 unresolved=[{'path':f['path'],'line':e['definition_line'],'sites':e['sites'],'reason':e['unresolved_reason']} for f in files for e in f['entries'] if e['resolution']!='function-body']
-out.write_text(json.dumps({'schema_version':1,'revision':'a4838ddf282ee859471e1526145b616de5ddedb6','method':'comment/string-masked whole-tree token census; annotations/preprocessor masked for signature matching; instruction/edge/label extraction limited to assembly spans; symbols and references are source observations, not a compiler call graph; indirect closure is governed by the accompanying inventory contracts','unresolved_candidates':unresolved,'files':files},indent=2)+'\n')
+out.write_text(json.dumps({'schema_version':1,'revision':revision,'working_tree_dirty':dirty,'method':'comment/string-masked whole-tree token census; annotations/preprocessor masked for signature matching; instruction/edge/label extraction limited to assembly spans; symbols and references are source observations, not a compiler call graph; indirect closure is governed by the accompanying inventory contracts','unresolved_candidates':unresolved,'files':files},indent=2)+'\n')
 table=['','## Exact source census','',f'{len(files)} files contain executable assembly, ABI declarations or FPU operations. The companion JSON retains every site, containing symbol, source references, assembly call/tail-jump targets, continuation labels and conditionals. Shadowed vendor files are explicitly marked; public headers are inventoried read-only.','', '| File | Owner / order | Symbols with dependencies |','|---|---|---|']
 for f in files:
     symbols=', '.join('`'+e['symbol']+'` L'+str(e['definition_line']) for e in f['entries'])
     table.append(f"| `{f['path']}` | {f['family']} | {symbols} |")
-(root/'build/task1-evidence').mkdir(parents=True,exist_ok=True)
-(root/'build/task1-evidence/census.md').write_text('\n'.join(table)+'\n')
+(args.output_dir/'census.md').write_text('\n'.join(table)+'\n')
 print('inventory_files',len(files),'entries',sum(len(f['entries']) for f in files),'unresolved_candidates',len(unresolved))

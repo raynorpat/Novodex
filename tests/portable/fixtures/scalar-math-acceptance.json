@@ -1,0 +1,1040 @@
+{
+  "schema_version": 1,
+  "approval": "Controller approved these budgets on 2026-10-09 after two-compiler baseline measurements and before rotation capture/final acceptance; no widening after failures",
+  "equation": "abs(actual-reference) <= absolute + relative*abs(reference)",
+  "practical_special_values": "NaN class, signed infinities and signed zero checked separately; float joint clamp endpoints exact",
+  "reference_control_word": "0x027f only; 0x0f7f records diagnostic, never treated as nearest acceptance",
+  "operations": [
+    {
+      "id": 0,
+      "name": "x87Fsqrt",
+      "units": "sqrt(input units)",
+      "absolute_budget": 0.0,
+      "relative_budget": 4e-16,
+      "tested_domain": "128 seeded finite binary32-expanded positive mantissas with exponents110..130 (roughly 2^-17..16); binary64 grouped sums/products. DiffSum/Diag set nonnegative grouped inputs; MulSub retains domain-error cases.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "x87FsqrtSum2",
+      "units": "sqrt(input units)",
+      "absolute_budget": 0.0,
+      "relative_budget": 4e-16,
+      "tested_domain": "128 seeded finite binary32-expanded positive mantissas with exponents110..130 (roughly 2^-17..16); binary64 grouped sums/products. DiffSum/Diag set nonnegative grouped inputs; MulSub retains domain-error cases.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "x87FsqrtSum3",
+      "units": "sqrt(input units)",
+      "absolute_budget": 0.0,
+      "relative_budget": 4e-16,
+      "tested_domain": "128 seeded finite binary32-expanded positive mantissas with exponents110..130 (roughly 2^-17..16); binary64 grouped sums/products. DiffSum/Diag set nonnegative grouped inputs; MulSub retains domain-error cases.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "x87FsqrtSum4",
+      "units": "sqrt(input units)",
+      "absolute_budget": 0.0,
+      "relative_budget": 4e-16,
+      "tested_domain": "128 seeded finite binary32-expanded positive mantissas with exponents110..130 (roughly 2^-17..16); binary64 grouped sums/products. DiffSum/Diag set nonnegative grouped inputs; MulSub retains domain-error cases.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "x87FsqrtDiffSum",
+      "units": "sqrt(input units)",
+      "absolute_budget": 0.0,
+      "relative_budget": 4e-16,
+      "tested_domain": "128 seeded finite binary32-expanded positive mantissas with exponents110..130 (roughly 2^-17..16); binary64 grouped sums/products. DiffSum/Diag set nonnegative grouped inputs; MulSub retains domain-error cases.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "x87FsqrtDiag",
+      "units": "sqrt(input units)",
+      "absolute_budget": 0.0,
+      "relative_budget": 4e-16,
+      "tested_domain": "128 seeded finite binary32-expanded positive mantissas with exponents110..130 (roughly 2^-17..16); binary64 grouped sums/products. DiffSum/Diag set nonnegative grouped inputs; MulSub retains domain-error cases.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "x87FsqrtMulSub",
+      "units": "sqrt(input units)",
+      "absolute_budget": 0.0,
+      "relative_budget": 4e-16,
+      "tested_domain": "128 seeded finite binary32-expanded positive mantissas with exponents110..130 (roughly 2^-17..16); binary64 grouped sums/products. DiffSum/Diag set nonnegative grouped inputs; MulSub retains domain-error cases.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 111,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 0,
+          "maximum_absolute_error": 0,
+          "maximum_relative_error": 0,
+          "worst_absolute_case": null,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 111,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 0,
+          "maximum_absolute_error": 0,
+          "maximum_relative_error": 0,
+          "worst_absolute_case": null,
+          "class_disagreement_cases": []
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "x87FsqrtDot2",
+      "units": "sqrt(product units)",
+      "absolute_budget": 0.0,
+      "relative_budget": 4e-16,
+      "tested_domain": "128 seeded finite binary32-expanded positive mantissas with exponents110..130 (roughly 2^-17..16); binary64 grouped sums/products. DiffSum/Diag set nonnegative grouped inputs; MulSub retains domain-error cases.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "x87FsqrtDot3",
+      "units": "sqrt(product units)",
+      "absolute_budget": 0.0,
+      "relative_budget": 4e-16,
+      "tested_domain": "128 seeded finite binary32-expanded positive mantissas with exponents110..130 (roughly 2^-17..16); binary64 grouped sums/products. DiffSum/Diag set nonnegative grouped inputs; MulSub retains domain-error cases.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "x87FsqrtDot4",
+      "units": "sqrt(product units)",
+      "absolute_budget": 0.0,
+      "relative_budget": 4e-16,
+      "tested_domain": "128 seeded finite binary32-expanded positive mantissas with exponents110..130 (roughly 2^-17..16); binary64 grouped sums/products. DiffSum/Diag set nonnegative grouped inputs; MulSub retains domain-error cases.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "x87FsqrtQuotDot3",
+      "units": "sqrt(numerator/dot units)",
+      "absolute_budget": 0.0,
+      "relative_budget": 6e-16,
+      "tested_domain": "128 finite positive binary32-expanded numerator and dot operands, exponents110..130; quotient root without float intermediate stores.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "x87FsinHalfOverNorm3",
+      "units": "inverse length",
+      "absolute_budget": 2e-16,
+      "relative_budget": 4e-16,
+      "tested_domain": "128 cases dt=1/64,half=1/2,finite binary32 vector exponents110..130; plus32 cases dt=adjacent float angles,L=2,half=1/2 and dt=+/-1/64,L=128*abs(adjacent float angle),half=1/2. Angles zero,0.015625,0.5,1,pi/2,pi,2pi and negative pi/2pi; range[-6.283186,6.283186]. Four hardware-trig probes checked separately against independent high-precision values.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 8.673617379884035e-19,
+          "maximum_relative_error": 1.1132548094802935e-16,
+          "worst_absolute_case": 6,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 30,
+          "maximum_absolute_error": 4.0498762790596235e-21,
+          "maximum_relative_error": 4.632518296589157e-14,
+          "worst_absolute_case": 10,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 8.673617379884035e-19,
+          "maximum_relative_error": 1.1132548094802935e-16,
+          "worst_absolute_case": 6,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 30,
+          "maximum_absolute_error": 4.0498762790596235e-21,
+          "maximum_relative_error": 4.632518296589157e-14,
+          "worst_absolute_case": 10,
+          "class_disagreement_cases": []
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "name": "x87FcosHalfNorm3",
+      "units": "dimensionless",
+      "absolute_budget": 2e-16,
+      "relative_budget": 4e-16,
+      "tested_domain": "128 cases dt=1/64,half=1/2,finite binary32 vector exponents110..130; plus32 cases dt=adjacent float angles,L=2,half=1/2 and dt=+/-1/64,L=128*abs(adjacent float angle),half=1/2. Angles zero,0.015625,0.5,1,pi/2,pi,2pi and negative pi/2pi; range[-6.283186,6.283186]. Four hardware-trig probes checked separately against independent high-precision values.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 2.0381730293306602e-21,
+          "maximum_relative_error": 4.632518296589153e-14,
+          "worst_absolute_case": 6,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 2.0381730293306602e-21,
+          "maximum_relative_error": 4.632518296589153e-14,
+          "worst_absolute_case": 6,
+          "class_disagreement_cases": []
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "name": "x87RateOverRoot",
+      "units": "radians/time",
+      "absolute_budget": 0.0,
+      "relative_budget": 6e-16,
+      "tested_domain": "128 finite binary32 angle/rate operands; w exact seeded integer/32768 in[-1,1). Singular endpoints classified separately.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "name": "x87CIacos",
+      "units": "radians",
+      "absolute_budget": 5e-16,
+      "relative_budget": 4e-16,
+      "tested_domain": "128 w values exact seeded integer/32768 in[-1,1), finite binary32 rate; endpoints +/-1, adjacent binary64/float endpoints, clamp/nonfinite checked explicitly. jointAcos float argument stored before clamp.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 4.440892098500626e-16,
+          "maximum_relative_error": 2.2059459390582257e-16,
+          "worst_absolute_case": 12,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 2.220446049250313e-16,
+          "maximum_relative_error": 2.1203697876423447e-16,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 4.440892098500626e-16,
+          "maximum_relative_error": 2.2059459390582257e-16,
+          "worst_absolute_case": 12,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 2.220446049250313e-16,
+          "maximum_relative_error": 2.1203697876423447e-16,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "name": "x87AcosRateOverRoot",
+      "units": "radians/time",
+      "absolute_budget": 0.0,
+      "relative_budget": 8e-16,
+      "tested_domain": "128 w values exact seeded integer/32768 in[-1,1), finite binary32 rate; endpoints +/-1, adjacent binary64/float endpoints, clamp/nonfinite checked explicitly. jointAcos float argument stored before clamp.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 7.105427357601002e-15,
+          "maximum_relative_error": 3.4630235709449685e-16,
+          "worst_absolute_case": 6,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 2.220446049250313e-16,
+          "maximum_relative_error": 1.836294101515286e-16,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 7.105427357601002e-15,
+          "maximum_relative_error": 3.4630235709449685e-16,
+          "worst_absolute_case": 6,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 2.220446049250313e-16,
+          "maximum_relative_error": 1.836294101515286e-16,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "name": "jointCIacos",
+      "units": "radians",
+      "absolute_budget": 5e-16,
+      "relative_budget": 4e-16,
+      "tested_domain": "128 w values exact seeded integer/32768 in[-1,1), finite binary32 rate; endpoints +/-1, adjacent binary64/float endpoints, clamp/nonfinite checked explicitly. jointAcos float argument stored before clamp.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "name": "jointAcos",
+      "units": "radians",
+      "absolute_budget": 5e-16,
+      "relative_budget": 4e-16,
+      "tested_domain": "128 w values exact seeded integer/32768 in[-1,1), finite binary32 rate; endpoints +/-1, adjacent binary64/float endpoints, clamp/nonfinite checked explicitly. jointAcos float argument stored before clamp.",
+      "measurements": [
+        {
+          "compiler": "msvc",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "msvc",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "physics",
+          "cases": 128,
+          "finite_pairs": 128,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        },
+        {
+          "compiler": "clang",
+          "fixture": "rotation",
+          "cases": 32,
+          "finite_pairs": 32,
+          "maximum_absolute_error": 0.0,
+          "maximum_relative_error": 0.0,
+          "worst_absolute_case": 0,
+          "class_disagreement_cases": []
+        }
+      ]
+    }
+  ],
+  "conversions": {
+    "budget": "exact integer outputs, zero mismatches allowed",
+    "fixture": "conversions-x87.nxpf",
+    "nearest_cases": 50,
+    "storage": "Wu multiply255 then nearest-even signed qword/low32; SceneDump input intentionally float then nearest-even signed qword/low32; qword invalid sentinel low32=0; preserve existing Wu clamp",
+    "Foundation": "private checked int32 chop/floor/ceil/nearest leaves output unchanged on nonfinite/out-of-range failure; portable exported NxInt* sentinel INT32_MIN (also a valid result). Legacy invalid behavior undefined; no invalid-input oracle equivalence claim."
+  },
+  "original_extreme_dispositions": [
+    {
+      "fixture": "shared-math-x87.nxpf",
+      "case": 6,
+      "operations": [
+        1,
+        2,
+        3,
+        6
+      ],
+      "expected_scalar": "positive infinity",
+      "reason": "binary64 sum/product overflows before sqrt; x87 extended exponent intermediate remains finite"
+    },
+    {
+      "fixture": "shared-math-x87.nxpf",
+      "case": 4,
+      "operations": [
+        7,
+        8,
+        9
+      ],
+      "expected_scalar": "positive zero",
+      "reason": "least binary64 subnormal products underflow before sqrt"
+    },
+    {
+      "fixture": "shared-math-x87.nxpf",
+      "case": 4,
+      "operations": [
+        10
+      ],
+      "expected_scalar": "positive infinity",
+      "reason": "least binary64 subnormal dot divisor underflows to zero"
+    },
+    {
+      "fixture": "shared-math-x87.nxpf",
+      "case": 6,
+      "operations": [
+        10
+      ],
+      "expected_scalar": "positive zero",
+      "reason": "maxbinary64 dot divisor overflows to infinity"
+    },
+    {
+      "fixture": "shared-math-x87.nxpf",
+      "case": 4,
+      "operations": [
+        11
+      ],
+      "expected_scalar": "NaN",
+      "reason": "binary64 norm underflow causes zero/zero"
+    },
+    {
+      "fixture": "shared-math-x87.nxpf",
+      "case": 6,
+      "operations": [
+        11,
+        12
+      ],
+      "expected_scalar": "NaN",
+      "reason": "binary64 norm/angle overflow feeds infinity to standard trig"
+    },
+    {
+      "fixture": "shared-math-x87.nxpf",
+      "case": 4,
+      "operations": [
+        15
+      ],
+      "expected_scalar_output_u64_hex": "0000000000000004",
+      "reference_output_u64_hex": "0000000000000003",
+      "reason": "each acos(min)*min binary64 product rounds to two least-subnormal units; addition produces four. x87 observes three only after combining extended-exponent products"
+    }
+  ],
+  "hardware_trig_dispositions": {
+    "fixture": "shared-math-physics-domain-x87.nxpf",
+    "operation_ids": [
+      11,
+      12
+    ],
+    "cases": [
+      128,
+      129
+    ],
+    "exact_angles": [
+      "2^63",
+      "2^62"
+    ],
+    "policy": "x64 and future native runners: mathematical abs2e-16/rel0 against independent mpmath1.3.0 100digit constants. Demonstrated Win32 UCRT out-of-line limitation: only these four probes require finite/bounded[-1,1], permitting an improved runtime; practical budgets unchanged.",
+    "sin_2p63": "0.9999303766734422296178565053935299895486696117342805081232526661785769370875337024437183886526629467",
+    "cos_2p63": "0.01180007651280023668442038506089820789501090893133153223394550714223653511065084258972789772467539646",
+    "sin_2p62": "-0.7029224436192088764153815578470238321788677707631076029953629163615165302813174101157518680423103407",
+    "cos_2p62": "-0.7112665029764863869469031515263402875670271996515984984106776783628347786694164025001122355366651922",
+    "win32_ucrt_runtime": {
+      "approval": "Controller ruling2026-10-09 after direct/volatile-pointer and /Oi- diagnostics; no exact incorrect-output acceptance expectation",
+      "compiler": "MSVC19.51.36260.0 Win32 /O2 /fp:strict; diagnostic with /MD and also /Oi-",
+      "runtime_module_reported": "C:/Windows/System32/ucrtbase.dll (Win32 redirection to physical SysWOW64)",
+      "physical_runtime_sha256": "60c5a497b52de80a3a0677564270dbea7e486086637debd567b4dffb28584c1b",
+      "runtime_file_version": "10.0.26100.9444",
+      "emitted_call_proof": "Compiler /FAs listing calls _sin/_cos and volatile indirect sin; /Oi- same values; SSE2 already enabled, explicit enable1 unchanged",
+      "observations": [
+        {
+          "angle": "2^63",
+          "sine": 0.9689307156169618,
+          "cosine": 0.2473323034583277,
+          "sine_absolute_reference_error": 0.030999661056480443,
+          "cosine_absolute_reference_error": 0.23553222694552747,
+          "status": "diagnostic observation only, not immutable correctness contract"
+        },
+        {
+          "angle": "2^62",
+          "sine": -0.7071329274527789,
+          "cosine": -0.7070806339534855,
+          "sine_absolute_reference_error": 0.004210483833570033,
+          "cosine_absolute_reference_error": 0.004185869023000888,
+          "status": "diagnostic observation only, not immutable correctness contract"
+        }
+      ]
+    }
+  },
+  "obligations": [
+    "NxMath::trunc public ordinary cast retains invalid-input API/platform audit obligation; no internal Physics/Foundation callers found",
+    "IceSupportMaps nxSupportMapComputeA fistp qword/low32 indices depend on recovered typed interface and cube-axis selection; Task5 owns full routine/capture",
+    "FPU environment remains Task7; scalar headers verify FE_TONEAREST and never change caller state; full Foundation/Physics migration guard retained",
+    "No GCC/native Linux/native macOS runner available; standalone Windows evidence does not establish full platform support"
+  ]
+}

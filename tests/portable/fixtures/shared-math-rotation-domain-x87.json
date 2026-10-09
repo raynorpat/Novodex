@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "capture_id": "shared-math-rotation-domain-x87",
+  "provenance_kind": "reconstructed-reference",
+  "source_revision": "715706add5e16e289e35a06d76864d4a36023669",
+  "working_tree_dirty": true,
+  "source_sha256": {
+    "Physics/src/include/X87Sqrt.h": "5e4a21886073e78638c5f20924c1d0920fe1a999b34dbebf0ee7117de530e622",
+    "Physics/src/include/core/JointAcos.h": "8245eec0f675233d9a5af6783e5c9f5ce39edb1b1074dc467ad879542ed4befb"
+  },
+  "legacy_instruction_bodies_verified_against_revision": "715706add5e16e289e35a06d76864d4a36023669",
+  "exporter_path": "build\\portable-x87-export\\Release\\NxPortableExportSharedMath.exe",
+  "exporter_sha256": "8d23431a6fc713340d6e9c21d986ea92244b81e2a971a494b02c380f6349e847",
+  "exporter_source_sha256": "59feffb7a839aa6f3c7d56dcefeae77ce42a573ef7ab0c314a433967c00cbab5",
+  "compiler": "MSVC 19.51.36260.0",
+  "configuration": "Release Win32",
+  "flags": [
+    "/arch:IA32",
+    "/fp:precise",
+    "/O2",
+    "NX_PHYSICS_USE_X87=1"
+  ],
+  "control_words": {
+    "0x027f": "53-bit nearest",
+    "0x0f7f": "64-bit chop; diagnostic only"
+  },
+  "fixture_sha256": "045a7745b4f491b14e98186a056567196e9ae77d8eb09a63342fe434da4c8a84",
+  "record_width": 80,
+  "record_count": 1152,
+  "encoding": "NXPF v1 LE u32 op/u32 CW/input and output IEEE binary64 words",
+  "operation_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17
+  ],
+  "domain": "32 cases per helper; trig rows cover signedzero, ordinary rotations, adjacent binary32 pi/2, pi, 2pi, negative pi/2pi; two dt/norm scales"
+}

@@ -171,7 +171,7 @@ static NX_INLINE NxU32 sceneDumpBits(NxReal value)
 // which would truncate.
 static int sceneDumpRound(NxReal value)
 	{
-#if defined(_MSC_VER) && defined(_M_IX86)
+#if NX_PHYSICS_USE_X87
 	__int64 result;
 	__asm
 		{
@@ -180,7 +180,9 @@ static int sceneDumpRound(NxReal value)
 		}
 	return (int)result;
 #else
-	return (int)(__int64)nearbyint((double)value);
+	// The text format observes the signed low word of a nearest-even qword,
+	// including zero for the invalid-qword sentinel; this is not saturation.
+	return nxScalarFistpLow32((double)value);
 #endif
 	}
 
