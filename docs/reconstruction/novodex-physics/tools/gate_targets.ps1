@@ -3439,6 +3439,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'effector create np words=physics.00000000.physics.wlink.rlink.eff',
         'effector create internal vt=physics observers=0 capacity=0 list=none',
         'effector create internal words=00000000.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000',
+        'effector hook_dtor primary_same=yes hook_changed=yes read_link_same=yes internal_same=yes',
         'effector create rec_a vt=physics observers=1 capacity=2 list=eff',
         'effector create rec_b vt=physics observers=1 capacity=2 list=eff',
         'effector create count=1 iterator=np',
@@ -5666,7 +5667,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1237  # previous 1234 plus three contended D6 drive write-lock reports
+    '6' = 1238  # previous 1237 plus the spring/damper hook-base adjustor probe
+               # previous 1234 plus three contended D6 drive write-lock reports
                # previous 1233 plus the D6 contended drive-position write-lock report
                # previous 1232 plus the D6 name setter readback
                # previous 1231 plus the D6 limit-plane refusal readback
@@ -5684,7 +5686,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1428  # previous 1425 plus three contended D6 drive write-lock reports
+    '7' = 1429  # previous 1428 plus the spring/damper hook-base adjustor probe
+               # previous 1425 plus three contended D6 drive write-lock reports
                # previous 1424 plus the D6 contended drive-position write-lock report
                # previous 1423 plus the D6 name setter readback
                # previous 1422 plus the D6 limit-plane refusal readback

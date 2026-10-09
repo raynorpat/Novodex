@@ -2,7 +2,7 @@
 //
 // A staged-pair target: the same code drives the oracle pair and the
 // candidate pair, and run_differential.ps1 compares the two transcripts. It
-// reaches the effector through the public API only -- NxScene's
+// reaches the effector through the public API -- NxScene's
 // createSpringAndDamperEffector, releaseEffector, getNbEffectors and the
 // effector iterator, every NxSpringAndDamperEffector method -- plus the
 // internal effector's own table, called BY SLOT INDEX through the object the
@@ -342,6 +342,29 @@ static NxSpringAndDamperEffector* nxCreate(const char* label, NxScene& scene, Nx
 	return e;
 	}
 
+// The hook base is the wrapper's secondary subobject (+8). Invoke its virtual
+// deleting-destructor slot on a byte-for-byte scratch copy of a live wrapper,
+// with deletion disabled. The destructor writes both vptrs but does not read
+// the internal pointer, so the copy isolates the thunk's this-adjustment and
+// leaves the scene-owned wrapper available for normal release.
+static void nxProbeHookAdjustor(NxSpringAndDamperEffector* e)
+	{
+	unsigned char copy[0x18];
+	memcpy(copy, e, sizeof(copy));
+	void** hookTable = *reinterpret_cast<void***>(copy + 8);
+	void* primaryBefore = reinterpret_cast<void*>(nxWordAt(copy, 0));
+	void* hookBefore = reinterpret_cast<void*>(nxWordAt(copy, 8));
+	void* readLinkBefore = reinterpret_cast<void*>(nxWordAt(copy, 0x10));
+	void* internalBefore = reinterpret_cast<void*>(nxWordAt(copy, 0x14));
+	typedef void* (__thiscall *DeletingDestructor)(void*, NxU32);
+	reinterpret_cast<DeletingDestructor>(hookTable[0])(copy + 8, 0);
+	printf("effector hook_dtor primary_same=%s hook_changed=%s read_link_same=%s internal_same=%s\n",
+		nxPointerAt(copy, 0) == primaryBefore ? "yes" : "no",
+		nxPointerAt(copy, 8) != hookBefore ? "yes" : "no",
+		nxPointerAt(copy, 0x10) == readLinkBefore ? "yes" : "no",
+		nxPointerAt(copy, 0x14) == internalBefore ? "yes" : "no");
+	}
+
 static void nxRelease(const char* label, NxScene& scene, NxSpringAndDamperEffector* e)
 	{
 	const NxWindow w = nxWindowOpen();
@@ -427,6 +450,7 @@ static void nxEffectorCases(NxPhysicsSDK& sdk, NxScene& scene)
 	NxSpringAndDamperEffector* e = nxCreate("create", scene, a, b);
 	if(!e)
 		return;
+	nxProbeHookAdjustor(e);
 	void* internal = nxPointerAt(e, 0x14);
 	nxPrintRecord("create", "rec_a", nxActorRecord(a));
 	nxPrintRecord("create", "rec_b", nxActorRecord(b));

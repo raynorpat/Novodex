@@ -9839,3 +9839,9 @@ The D6 staged-pair fixture now exercises `phys_fn_004461` (`NpD6Joint::setDriveP
 The D6 staged-pair fixture now exercises `phys_fn_004463`, `phys_fn_004465`, and `phys_fn_004467` while the scene write lock is marked as owned by another thread. Each public drive wrapper reports `NXE_INVALID_OPERATION` at its own source line (47, 54, and 61). Suppressing each row's report is caught by the registered differential at `stdout_delta=24`; the restored control is exact. Evidence: `evidence/phase6-joint-row004463-004467-d6-drive-locks.md`.
 
 The registered D6 staged-pair fixture catches `phys_fn_004469` (`NpD6Joint` constructor): initializing the shared-joint base with a null internal pointer causes a candidate access violation (exit `0xc0000005`, `stdout_delta=2916`). The restored control exits zero and is exact. Evidence: `evidence/phase6-joint-row004469-d6-constructor.md`.
+
+## Phase 6 closure measurement — spring/damper hook-base adjustor thunk (`phys_fn_003954`)
+
+`NxPhysicsEffectorTests` now calls the hook-base destructor slot through a scratch copy of the live wrapper, with deletion disabled. Removing the thunk's `-8` adjustment from the staged candidate changes the observed copied read-link word (`read_link_same=yes` to `no`); after normalizing loader paths, hashes, and loader-count noise, this is the only transcript difference. The registered differential catches `phys_fn_003954` with `stdout_delta=2`; both processes exit zero. The restored control has `stdout_delta=0` and exact stderr. The thunk's table and wrapper layouts are independently recorded in `units/effector-coredump-contract.md`.
+
+Detailed mutation, DLL identities, and restoration evidence: `evidence/phase6-effector-003954-adjustor-thunk.md`.

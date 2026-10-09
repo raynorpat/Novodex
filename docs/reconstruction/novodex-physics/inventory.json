@@ -73604,7 +73604,7 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/NpSpringAndDamperEffector.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1912",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13070",
