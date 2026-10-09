@@ -9926,3 +9926,8 @@ The registered `NxPhysicsJointSlotTests` case invokes `Joint::row004111` on a li
 ## Phase 6 closure measurement — shared joint base descriptor loader (`phys_fn_004121`)
 
 The ten-family public staged-pair matrix creates joints from non-default descriptors and records internal state and descriptor round-trips. An immediate return in `Joint::loadFromDescBase` is caught for `phys_fn_004121` with `stdout_delta=2806`, both exits zero, and exact stderr; the restored control is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-joint-row004121-load-desc.md`.
+
+
+## Phase 6 closure measurement — shared joint global-anchor getter (`phys_fn_004125`)
+
+The registered ten-family public staged-pair matrix exercises `Joint::getGlobalAnchor` through D6 global-anchor readback. Adding `1.0f` to the computed output X is caught for `phys_fn_004125` with `stdout_delta=246`, both exits zero, and exact stderr; the restored control is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-joint-row004125-global-anchor-getter.md`.
