@@ -19,6 +19,8 @@
 // through phys_fn_000429, so this unit reaches Phase 2's PhysicsSDK.
 #include "PhysicsSDK.h"
 #include "IcePrunable.h"
+#include "IceMeshTools.h"
+#include "BodyStep.h"
 
 #include "NxIntersectionRayPlane.h"
 #include "NxIntersectionRaySphere.h"
@@ -38,6 +40,8 @@ static_assert(offsetof(NxContactSink, lastObject1) == 0x20, "sink lastObject1 is
 static_assert(offsetof(NxContactSink, lastNormal) == 0x28, "sink lastNormal is at 0x28");
 static_assert(offsetof(NxContactSink, featurePairValid) == 0x34, "sink featurePairValid is at 0x34");
 static_assert(offsetof(NxContactSink, stream) == 0x40, "sink stream data is at 0x40");
+static_assert(offsetof(NxContactSink, ccdPreviousPosition) == 0xdc, "CCD previous position is at 0xdc");
+static_assert(offsetof(NxContactSink, continuousCdState) == 0xe9, "CCD state is at 0xe9");
 
 extern "C" void nxContactCallContainerResize();		// 004840, Container::Resize(udword)
 #pragma comment(linker, "/alternatename:_nxContactCallContainerResize=?Resize@Container@IceCore@@AAE_NI@Z")
@@ -1091,14 +1095,141 @@ bool __cdecl NxContinuousCdPair(const NxCollisionShape* moving,
 	if(continuous == 0.0f)
 		return true;
 
-	// phys_fn_002264 at 0x00055eb0 runs here in the oracle. It is a stop, not an
-	// omission: see the header for the three things it reads that nothing in
-	// this program establishes. Leaving the sink alone is the only safe thing,
-	// which is the same call this file already makes for the stream growth path.
-	(void) moving;
-	(void) fixed;
-	(void) sink;
-	return false;
+	// phys_fn_002264 at 0x00055eb0 keeps the moving shape's prior pose in the
+	// sink, expressed relative to the fixed shape. Its two pose pairs are the
+	// shape's previous (+0x3c) and current (+0x0c) transforms. 001653 supplies
+	// the inverse-relative products in the engine's exact matrix convention.
+	const auto makeMatrix = [](const NxCollisionShape* shape, size_t offset,
+		float (&matrix)[16])
+		{
+		const float* pose = reinterpret_cast<const float*>(
+			reinterpret_cast<const NxU8*>(shape) + offset);
+		memset(matrix, 0, sizeof(matrix));
+		matrix[0] = pose[0]; matrix[4] = pose[1]; matrix[8] = pose[2];
+		matrix[1] = pose[3]; matrix[5] = pose[4]; matrix[9] = pose[5];
+		matrix[2] = pose[6]; matrix[6] = pose[7]; matrix[10] = pose[8];
+		matrix[12] = pose[9]; matrix[13] = pose[10]; matrix[14] = pose[11];
+		matrix[15] = 1.0f;
+		};
+	float fixedPrevious[16], movingPrevious[16], fixedCurrent[16], movingCurrent[16];
+	float previousRelative[16], currentRelative[16];
+	makeMatrix(fixed, 0x3c, fixedPrevious);
+	makeMatrix(moving, 0x3c, movingPrevious);
+	makeMatrix(fixed, 0x0c, fixedCurrent);
+	makeMatrix(moving, 0x0c, movingCurrent);
+	nxIcePosePair(0, reinterpret_cast<IceMaths::Matrix4x4*>(previousRelative),
+		reinterpret_cast<const IceMaths::Matrix4x4*>(fixedPrevious),
+		reinterpret_cast<const IceMaths::Matrix4x4*>(movingPrevious));
+	nxIcePosePair(0, reinterpret_cast<IceMaths::Matrix4x4*>(currentRelative),
+		reinterpret_cast<const IceMaths::Matrix4x4*>(fixedCurrent),
+		reinterpret_cast<const IceMaths::Matrix4x4*>(movingCurrent));
+	const NxVec3 currentPosition(currentRelative[12], currentRelative[13], currentRelative[14]);
+	if(sink->continuousCdState == 0xff)
+		{
+		sink->ccdPreviousPosition[0] = previousRelative[12];
+		sink->ccdPreviousPosition[1] = previousRelative[13];
+		sink->ccdPreviousPosition[2] = previousRelative[14];
+		sink->continuousCdState = 1;
+		}
+	if(sink->continuousCdState == 1)
+		{
+		const double dx = double(currentPosition.x) - sink->ccdPreviousPosition[0];
+		const double dy = double(currentPosition.y) - sink->ccdPreviousPosition[1];
+		const double dz = double(currentPosition.z) - sink->ccdPreviousPosition[2];
+		const NxReal travel = static_cast<NxReal>(nxSqrt((dx * dx + dz * dz) + dy * dy));
+		if(travel <= 0.0f)
+			return true;
+
+		const double inverseTravel = 1.0 / travel;
+		const double localX = dx * inverseTravel;
+		const double localY = dy * inverseTravel;
+		const double localZ = dz * inverseTravel;
+		const NxReal* fixedRotation = fixed->rotation;
+		float worldDirection[3];
+		worldDirection[0] = static_cast<float>(localZ * fixedRotation[2] + localY * fixedRotation[1] + localX * fixedRotation[0]);
+		worldDirection[1] = static_cast<float>(localX * fixedRotation[3] + localZ * fixedRotation[5] + localY * fixedRotation[4]);
+		worldDirection[2] = static_cast<float>(localX * fixedRotation[6] + localZ * fixedRotation[8] + localY * fixedRotation[7]);
+		NxReal sweepDistance = 0.0f;
+		const NxShapeSweepFn sweep = reinterpret_cast<NxShapeSweepFn>(
+			(*(void***)(const_cast<NxCollisionShape*>(moving)))[7]);
+		if(sweep)
+			sweep(moving, &sweepDistance, worldDirection);
+		if(sweepDistance * 0.5f > travel)
+			{
+			sink->ccdPreviousPosition[0] = currentPosition.x;
+			sink->ccdPreviousPosition[1] = currentPosition.y;
+			sink->ccdPreviousPosition[2] = currentPosition.z;
+			return true;
+			}
+		sink->continuousCdState = 0;
+		}
+
+	const double dx = double(currentPosition.x) - sink->ccdPreviousPosition[0];
+	const double dy = double(currentPosition.y) - sink->ccdPreviousPosition[1];
+	const double dz = double(currentPosition.z) - sink->ccdPreviousPosition[2];
+	const NxReal travel = static_cast<NxReal>(nxSqrt((dx * dx + dz * dz) + dy * dy));
+	if(travel <= 0.0f)
+		return true;
+	const double inverseTravel = 1.0 / travel;
+	const double localX = dx * inverseTravel;
+	const double localY = dy * inverseTravel;
+	const double localZ = dz * inverseTravel;
+	const NxReal* fixedRotation = fixed->rotation;
+	float worldDirection[3];
+	worldDirection[0] = static_cast<float>(localZ * fixedRotation[2] + localY * fixedRotation[1] + localX * fixedRotation[0]);
+	worldDirection[1] = static_cast<float>(localX * fixedRotation[3] + localZ * fixedRotation[5] + localY * fixedRotation[4]);
+	worldDirection[2] = static_cast<float>(localX * fixedRotation[6] + localZ * fixedRotation[8] + localY * fixedRotation[7]);
+	NxVec3 rayOrigin(
+		static_cast<float>((double(sink->ccdPreviousPosition[2]) * fixedRotation[2] + double(sink->ccdPreviousPosition[1]) * fixedRotation[1]) + double(sink->ccdPreviousPosition[0]) * fixedRotation[0] + fixed->translation[0]),
+		static_cast<float>((double(sink->ccdPreviousPosition[0]) * fixedRotation[3] + double(sink->ccdPreviousPosition[2]) * fixedRotation[5]) + double(sink->ccdPreviousPosition[1]) * fixedRotation[4] + fixed->translation[1]),
+		static_cast<float>((double(sink->ccdPreviousPosition[0]) * fixedRotation[6] + double(sink->ccdPreviousPosition[2]) * fixedRotation[8]) + double(sink->ccdPreviousPosition[1]) * fixedRotation[7] + fixed->translation[2]));
+	NxRay ray;
+	ray.orig = rayOrigin;
+	ray.dir.set(static_cast<float>(worldDirection[0]), static_cast<float>(worldDirection[1]), static_cast<float>(worldDirection[2]));
+	NxRaycastHit hit;
+	memset(&hit, 0, sizeof(hit));
+	const NxShapeRaycastFn raycast = reinterpret_cast<NxShapeRaycastFn>(
+		(*(void***)(const_cast<NxCollisionShape*>(fixed)))[5]);
+	if(!raycast || !raycast(fixed, &ray, NX_MAX_F32, 0, 0xffffffffu, &hit) || hit.distance > travel)
+		{
+		sink->ccdPreviousPosition[0] = currentPosition.x;
+		sink->ccdPreviousPosition[1] = currentPosition.y;
+		sink->ccdPreviousPosition[2] = currentPosition.z;
+		sink->continuousCdState = 1;
+		return true;
+		}
+
+	NxReal sweepDistance = 0.0f;
+	const NxShapeSweepFn sweep = reinterpret_cast<NxShapeSweepFn>(
+		(*(void***)(const_cast<NxCollisionShape*>(moving)))[7]);
+	if(sweep)
+		sweep(moving, &sweepDistance, worldDirection);
+	double penetration = double(travel) - hit.distance + sweepDistance;
+	const NxVec3 contactPoint(
+		static_cast<float>((double(currentPosition.z) * fixedRotation[2] + double(currentPosition.y) * fixedRotation[1]) + double(currentPosition.x) * fixedRotation[0] + fixed->translation[0]),
+		static_cast<float>((double(currentPosition.x) * fixedRotation[3] + double(currentPosition.z) * fixedRotation[5]) + double(currentPosition.y) * fixedRotation[4] + fixed->translation[1]),
+		static_cast<float>((double(currentPosition.x) * fixedRotation[6] + double(currentPosition.z) * fixedRotation[8]) + double(currentPosition.y) * fixedRotation[7] + fixed->translation[2]));
+
+	const unsigned char* owner = static_cast<const unsigned char*>(moving->owner);
+	const unsigned char* body = *reinterpret_cast<const unsigned char* const*>(owner + 8);
+	const NxReal vx = *reinterpret_cast<const NxReal*>(body + 0x1a0);
+	const NxReal vy = *reinterpret_cast<const NxReal*>(body + 0x1a4);
+	const NxReal vz = *reinterpret_cast<const NxReal*>(body + 0x1a8);
+	const double speed = nxSqrt((double(vx) * vx + double(vy) * vy) + double(vz) * vz);
+	if(speed != 0.0)
+		{
+		const unsigned char* actor = *reinterpret_cast<const unsigned char* const*>(owner + 4);
+		const NxReal timestep = *reinterpret_cast<const NxReal*>(actor + 0x548);
+		NxReal toi = static_cast<NxReal>((double(travel) - penetration) / (speed * timestep));
+		if(toi < 0.0f)
+			toi = 0.0f;
+		reinterpret_cast<Row000774Fixture*>(const_cast<unsigned char*>(body))->row000774(toi);
+		penetration = 0.0f;
+		}
+	const NxVec3 normal(-worldDirection[0], -worldDirection[1], -worldDirection[2]);
+	NxEmitContactThiscall(sink, 0, moving->collisionObject, fixed->collisionObject,
+		nxBits(-penetration), &contactPoint, &normal, 0xffff, 0xffff);
+	return true;
 	}
 
 // phys_fn_001933 at 0x0004b860, matrix A slot [SPHERE][SPHERE]. 341 bytes.

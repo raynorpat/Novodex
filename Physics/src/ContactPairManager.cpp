@@ -2544,6 +2544,41 @@ static void cpmRefreshPairCandidate(NxU32 frame, Prunable*** objects,
 	node->at<NxU32>(0x104) = frame;
 	}
 
+// NX_CONTINUOUS_CD broadphase candidates use the dynamic object's bounds over
+// this step, not only its pose at the beginning of the step. The narrow-phase
+// CCD row then performs the shape sweep and raycast for the retained pair.
+static bool cpmExpandContinuousBounds(NxSceneInternal* scene, Prunable* prunable,
+	const AABB& current, bool enabled, AABB& swept)
+	{
+	if(!enabled || !prunable->mOwner)
+		return false;
+	const NxU8* const shape = static_cast<const NxU8*>(prunable->mOwner);
+	const NxU8* const owner = cpmAt<const NxU8*>(shape, 4);
+	const NxU8* const body = owner ? cpmAt<const NxU8*>(owner, 8) : 0;
+	if(!body)
+		return false;
+
+	const NxReal dt = scene->at<NxReal>(0x548);
+	const NxReal* const velocity = reinterpret_cast<const NxReal*>(body + 0x1a0);
+	Point minimum, maximum;
+	current.GetMin(minimum);
+	current.GetMax(maximum);
+	Point sweptMinimum = minimum;
+	Point sweptMaximum = maximum;
+	for(NxU32 axis = 0; axis != 3; ++axis)
+		{
+		const NxReal displacement = static_cast<NxReal>(double(velocity[axis]) * dt);
+		if(displacement > 0.0f)
+			sweptMinimum[axis] -= displacement;
+		else
+			sweptMaximum[axis] -= displacement;
+		}
+	// The refresh runs after integration. Sweep back to the prior pose so the
+	// current and previous AABBs both contribute to pair discovery.
+	swept.SetMinMax(sweptMinimum, sweptMaximum);
+	return true;
+	}
+
 void nxSceneRefreshPairs(NxSceneInternal* scene)
 	{
 	NxU8* engine = scene->bytes() + 0x624;
@@ -2561,6 +2596,8 @@ void nxSceneRefreshPairs(NxSceneInternal* scene)
 				objects[p] = pools[p]->mPool.mObjects;
 			}
 	const NxU32 total = counts[0] + counts[1];
+	const PhysicsSDK* const sdk = PhysicsSDK::instance;
+	const bool continuousCd = sdk && sdk->getParameter(NX_CONTINUOUS_CD) != 0.0f;
 	CpmPairHash* hash = reinterpret_cast<CpmPairHash*>(engine + 0x34);
 	NxPairList* list = reinterpret_cast<NxPairList*>(engine + 0x50);
 	const NxU32 frame = scene->at<NxU32>(0x540);
@@ -2569,6 +2606,7 @@ void nxSceneRefreshPairs(NxSceneInternal* scene)
 		const AABB** boxes[2] = { 0, 0 };
 		NxU32* poolIndices[2] = { 0, 0 };
 		NxU32 validCounts[2] = { 0, 0 };
+		AABB* sweptDynamic = continuousCd && counts[1] ? new AABB[counts[1]] : 0;
 		for(unsigned p = 0; p != 2; ++p)
 			if(counts[p])
 				{
@@ -2578,7 +2616,11 @@ void nxSceneRefreshPairs(NxSceneInternal* scene)
 					{
 					const AABB* bounds = objects[p][i]->GetUpdatedWorldAABB();
 					if(!bounds) continue;
-					boxes[p][validCounts[p]] = bounds;
+					if(p == 1 && continuousCd && cpmExpandContinuousBounds(scene, objects[p][i],
+						*bounds, continuousCd, sweptDynamic[validCounts[p]]))
+						boxes[p][validCounts[p]] = &sweptDynamic[validCounts[p]];
+					else
+						boxes[p][validCounts[p]] = bounds;
 					poolIndices[p][validCounts[p]++] = i;
 					}
 				}
@@ -2601,6 +2643,7 @@ void nxSceneRefreshPairs(NxSceneInternal* scene)
 		delete[] poolIndices[0];
 		delete[] boxes[1];
 		delete[] boxes[0];
+		delete[] sweptDynamic;
 		}
 	else if(engineMode == 3)
 		{
@@ -2610,12 +2653,17 @@ void nxSceneRefreshPairs(NxSceneInternal* scene)
 		unsigned char* poolKinds = maximum ? new unsigned char[maximum] : 0;
 		bool* dynamicFlags = maximum ? new bool[maximum] : 0;
 		NxU32 validCount = 0;
+		AABB* sweptBounds = continuousCd && maximum ? new AABB[maximum] : 0;
 		for(unsigned p = 0; p != 2; ++p)
 			for(NxU32 i = 0; i < counts[p]; ++i)
 				{
 				const AABB* bounds = objects[p][i]->GetUpdatedWorldAABB();
 				if(!bounds) continue;
-				boxes[validCount] = bounds;
+				if(p == 1 && continuousCd && cpmExpandContinuousBounds(scene, objects[p][i],
+					*bounds, continuousCd, sweptBounds[validCount]))
+					boxes[validCount] = &sweptBounds[validCount];
+				else
+					boxes[validCount] = bounds;
 				poolIndices[validCount] = i;
 				poolKinds[validCount] = (unsigned char)p;
 				dynamicFlags[validCount] = (p != 0);
@@ -2651,6 +2699,7 @@ void nxSceneRefreshPairs(NxSceneInternal* scene)
 		delete[] poolKinds;
 		delete[] poolIndices;
 		delete[] boxes;
+		delete[] sweptBounds;
 		}
 	else
 		for(NxU32 i = 0; i < total; ++i)
@@ -2668,7 +2717,15 @@ void nxSceneRefreshPairs(NxSceneInternal* scene)
 					if(poolI == 0 && poolJ == 0) continue;
 					const AABB* boundsI = objects[poolI][indexI]->GetUpdatedWorldAABB();
 					const AABB* boundsJ = objects[poolJ][indexJ]->GetUpdatedWorldAABB();
-					if(!boundsI || !boundsJ || !boundsI->Intersect(*boundsJ)) continue;
+					if(!boundsI || !boundsJ) continue;
+					AABB sweptI, sweptJ;
+					if(poolI == 1 && cpmExpandContinuousBounds(scene,
+						objects[poolI][indexI], *boundsI, continuousCd, sweptI))
+						boundsI = &sweptI;
+					if(poolJ == 1 && cpmExpandContinuousBounds(scene,
+						objects[poolJ][indexJ], *boundsJ, continuousCd, sweptJ))
+						boundsJ = &sweptJ;
+					if(!boundsI->Intersect(*boundsJ)) continue;
 					}
 				cpmRefreshPairCandidate(frame, objects, poolI, indexI, poolJ, indexJ, hash, list);
 				}

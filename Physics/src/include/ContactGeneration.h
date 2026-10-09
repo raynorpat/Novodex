@@ -56,7 +56,8 @@ struct NxContactSink
 	NxU32* stream;				// 0x40
 	// Everything between 0x44 and 0xe8 belongs to phases 5 and 7 and nothing in
 	// this component reads it. It is a gap rather than a guess.
-	NxU8   gap1[0xe8 - 0x44];
+	NxU8   gap1[0xdc - 0x44];
+	NxReal ccdPreviousPosition[3];	// 0xdc: previous moving pose, phys_fn_002264
 	// 0xe8: the box/box separating-axis warm start. The sink's own constructor
 	// writes 0xff here and at 0xe9 -- `mov cl,0xff` at 0x0001efc6 and the two
 	// stores at 0x0001efc8 and 0x0001efce, on an esi the call at 0x0001efa6
@@ -64,9 +65,9 @@ struct NxContactSink
 	// 0x10..0x43 and never clears it. So this byte carries ACROSS SIMULATION
 	// STEPS AND ACROSS SHAPE PAIRS: one cached axis for a whole sink.
 	NxU8   separatingAxis;
-	// 0xe9 is written 0xff beside it and read by phys_fn_002264, which is a
-	// stop. Named only as far as this component establishes it.
-	NxU8   tail[2];
+	// 0xe9: phys_fn_002264's previous-pose sentinel/state (0xff, 1, or 0).
+	NxU8   continuousCdState;
+	NxU8   tail;
 	};
 
 // phys_fn_002354 (0x0005b620): reset the sink state at +0x10 and reserve its
@@ -102,6 +103,7 @@ void __cdecl NxContactPlaneSphere(const NxCollisionShape* plane,
 // sphere's are reconstructed here.
 typedef const NxCollisionShape* (__thiscall* NxShapeRaycastFn)(const NxCollisionShape*,
 	const NxRay*, NxReal, NxU32, NxU32, NxRaycastHit*);
+typedef bool (__thiscall* NxShapeSweepFn)(const NxCollisionShape*, NxReal*, const float*);
 
 // MSVC rejects __thiscall on anything that is not a member function (C3865),
 // and this row has no class to be a member of -- Phase 5 owns the shape. The
