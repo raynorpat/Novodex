@@ -9419,3 +9419,7 @@ The registered NxPhysicsJointStagedPairTests rotated multi-family fixture catche
 ## Phase 6 closure measurement — spherical flags getter (phys_fn_004290)
 
 The registered NxPhysicsJointStagedPairTests differential records specialized flags in both spherical cases. An XOR-1 mutation of phys_fn_004290 is caught with stdout_delta=24 and both processes exiting zero; the restored control is exact. Details: evidence/phase6-spherical-getFlags-004290.md.
+
+## Phase 6 closure measurement — shared limit-plane iterator (phys_fn_004081, phys_fn_004083)
+
+The registered NxPhysicsCoreDumpTests differential serializes limit planes across several joint families. Clearing the iterator head in phys_fn_004081 and forcing phys_fn_004083 to report no remaining plane are each caught with stdout_delta=4189, both processes exiting zero, and exact stderr; restored controls are exact. Details: evidence/phase6-joint-004081-limit-iterator.md and evidence/phase6-joint-004083-limit-iterator.md.

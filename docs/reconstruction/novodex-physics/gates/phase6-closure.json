@@ -2,14 +2,14 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closes 8 of its 433 function rows and none of its 531 data objects. The two exported joint-descriptor rows, phys_fn_004397, phys_fn_004403, and phys_fn_004113 are closed by mutations caught by registered staged-pair gates. The descriptor rows are caught by NxPhysicsJointStagedPairTests; kind-1/2/3/6 bounded support and both joint-break notify return paths are caught by NxPhysicsSimulationTests; the support normal solver mutation is caught by NxPhysicsMeshSimulationTests. Prismatic solver row phys_fn_004386 is caught by the eight-step public prismatic joint simulation in NxPhysicsSimulationTests (the t1-to-t2 mutation is caught with stdout_delta=14 and restored output exact). Spherical solver row phys_fn_004296 is caught by the eight-step public pendulum simulation in NxPhysicsSimulationTests (negating the Y bias is caught with stdout_delta=24 and restored output exact). Shared joint frame refresh row phys_fn_004097 is caught by the rotated multi-family joint fixture in NxPhysicsJointStagedPairTests (the world-anchor X +1.0 mutation is caught with stdout_delta=404 and restored output exact). The deferred rows remain debt rather than an obstruction. Shared effector internal-pointer getter row phys_fn_003952 is caught by the registered NxPhysicsEffectorTests staged-pair differential: a +4-byte pointer mutation causes a changed transcript and candidate access violation (stdout_delta=49); the restored control is exact. Shared joint getters phys_fn_004070 and phys_fn_004078 are caught by the registered NxPhysicsJointStagedPairTests rotated multi-family fixture: the getType +1 mutation is caught with stdout_delta=3307 (candidate access violation), and the getState XOR-1 mutation with stdout_delta=244; the restored control is exact. Spherical specialized flag getter phys_fn_004290 is caught by the registered NxPhysicsJointStagedPairTests differential (XOR-1 mutation, stdout_delta=24; restored output exact).",
+  "note": "Phase 6 closes 8 of its 433 function rows and none of its 531 data objects. The two exported joint-descriptor rows, phys_fn_004397, phys_fn_004403, and phys_fn_004113 are closed by mutations caught by registered staged-pair gates. The descriptor rows are caught by NxPhysicsJointStagedPairTests; kind-1/2/3/6 bounded support and both joint-break notify return paths are caught by NxPhysicsSimulationTests; the support normal solver mutation is caught by NxPhysicsMeshSimulationTests. Prismatic solver row phys_fn_004386 is caught by the eight-step public prismatic joint simulation in NxPhysicsSimulationTests (the t1-to-t2 mutation is caught with stdout_delta=14 and restored output exact). Spherical solver row phys_fn_004296 is caught by the eight-step public pendulum simulation in NxPhysicsSimulationTests (negating the Y bias is caught with stdout_delta=24 and restored output exact). Shared joint frame refresh row phys_fn_004097 is caught by the rotated multi-family joint fixture in NxPhysicsJointStagedPairTests (the world-anchor X +1.0 mutation is caught with stdout_delta=404 and restored output exact). The deferred rows remain debt rather than an obstruction. Shared effector internal-pointer getter row phys_fn_003952 is caught by the registered NxPhysicsEffectorTests staged-pair differential: a +4-byte pointer mutation causes a changed transcript and candidate access violation (stdout_delta=49); the restored control is exact. Shared joint getters phys_fn_004070 and phys_fn_004078 are caught by the registered NxPhysicsJointStagedPairTests rotated multi-family fixture: the getType +1 mutation is caught with stdout_delta=3307 (candidate access violation), and the getState XOR-1 mutation with stdout_delta=244; the restored control is exact. Spherical specialized flag getter phys_fn_004290 is caught by the registered NxPhysicsJointStagedPairTests differential (XOR-1 mutation, stdout_delta=24; restored output exact). Shared joint limit-plane iterator rows phys_fn_004081 and phys_fn_004083 are caught by NxPhysicsCoreDumpTests: clearing the iterator head and forcing hasMoreLimitPlanes false each remove serialized limit planes (stdout_delta=4189); restored output is exact.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "Phase 6 did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction.",
-    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work Phase 6 has left: 396 rows, each needing one mutation and one measured detection.",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work Phase 6 has left: 394 rows, each needing one mutation and one measured detection.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -26,12 +26,14 @@
       "NxPhysicsEffectorTests, registered as a Phase 6 STAGED-PAIR differential: the spring-and-damper effector fixture reaches phys_fn_003952 while reading internal state; a +4-byte internal pointer mutation is rejected (candidate access violation, stdout_delta=49), and the restored control is exact.",
       "NxPhysicsJointStagedPairTests, registered as a Phase 6 STAGED-PAIR differential: the rotated multi-family joint fixture calls getType for each family; changing the returned type by +1 is rejected (candidate access violation, stdout_delta=3307), and the restored control is exact.",
       "NxPhysicsJointStagedPairTests, registered as a Phase 6 STAGED-PAIR differential: the rotated multi-family joint fixture records getState for every family; an XOR-1 state mutation is caught with stdout_delta=244, and the restored control is exact.",
-      "NxPhysicsJointStagedPairTests, registered as a Phase 6 STAGED-PAIR differential: its two spherical cases observe phys_fn_004290; the specialized-flag XOR-1 mutation is caught with stdout_delta=24, and the restored control is exact."
+      "NxPhysicsJointStagedPairTests, registered as a Phase 6 STAGED-PAIR differential: its two spherical cases observe phys_fn_004290; the specialized-flag XOR-1 mutation is caught with stdout_delta=24, and the restored control is exact.",
+      "NxPhysicsCoreDumpTests, registered as a Phase 6 STAGED-PAIR differential: its multi-family limit-plane fixture catches clearing phys_fn_004081's iterator head with stdout_delta=4189; restored control is exact.",
+      "NxPhysicsCoreDumpTests, registered as a Phase 6 STAGED-PAIR differential: its multi-family limit-plane fixture catches forcing phys_fn_004083 to return false with stdout_delta=4189; restored control is exact."
     ]
   },
   "counts": {
-    "differential_falsified": 12,
-    "deferred_reconstructed_not_falsified": 396,
+    "differential_falsified": 14,
+    "deferred_reconstructed_not_falsified": 394,
     "deferred_not_reconstructed_in_phase": 25
   },
   "closed": [
@@ -153,6 +155,26 @@
       "falsification": {
         "mutation": "In a throwaway git archive copy, changed SphericalJoint::getFlags to return mSphericalFlags XOR 1. Rebuilt NxPhysics and ran the registered NxPhysicsJointStagedPairTests Phase 6 staged-pair differential against the pinned oracle. The spherical fixture reports the specialized flags for both spherical cases. CAUGHT: oracle_exit=0, candidate_exit=0, stdout_delta=24, stderr_exact=True. The restored archive control passed exactly with both processes exiting 0, stdout_delta=0, and exact stderr. The mutation was isolated to the throwaway archive.",
         "detected": "stdout_delta=24"
+      }
+    },
+    {
+      "id": "phys_fn_004081",
+      "rva": "0x00095c90",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsCoreDumpTests",
+      "falsification": {
+        "mutation": "In a throwaway git archive copy, changed Joint::resetLimitPlaneIterator to store null instead of mLimitPlaneHead. Rebuilt NxPhysics and ran the registered NxPhysicsCoreDumpTests Phase 6 staged-pair differential against the pinned oracle. The core-dump fixture configures limit planes on several joint families; clearing the shared iterator prevents their serialization. CAUGHT: oracle_exit=0, candidate_exit=0, stdout_delta=4189, stderr_exact=True. The restored archive control passed exactly with both processes exiting 0, stdout_delta=0, and exact stderr.",
+        "detected": "stdout_delta=4189"
+      }
+    },
+    {
+      "id": "phys_fn_004083",
+      "rva": "0x00095ca0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsCoreDumpTests",
+      "falsification": {
+        "mutation": "In a throwaway git archive copy, changed Joint::hasMoreLimitPlanes to return false. Rebuilt NxPhysics and ran the registered NxPhysicsCoreDumpTests Phase 6 staged-pair differential against the pinned oracle. The core-dump fixture configures and serializes limit planes across multiple joint families; the false result suppresses those records. CAUGHT: oracle_exit=0, candidate_exit=0, stdout_delta=4189, stderr_exact=True. The restored archive control passed exactly with both processes exiting 0, stdout_delta=0, and exact stderr.",
+        "detected": "stdout_delta=4189"
       }
     }
   ],
@@ -2980,24 +3002,6 @@
       "id": "phys_fn_004076",
       "rva": "0x00095b90",
       "size": 21,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004081",
-      "rva": "0x00095c90",
-      "size": 9,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004083",
-      "rva": "0x00095ca0",
-      "size": 14,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
