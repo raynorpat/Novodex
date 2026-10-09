@@ -4905,7 +4905,8 @@ $NxRequiredCoverageLines = [ordered] @{
         # convex-mesh gap Task 2l: top-level 001876 mesh/height-field dispatch.
         'collision name=contact_mesh_mesh_heightfield_dispatch index=- rva=0x00046ab0 checks=112 oracle=02a1bea1e0d2343d',
         # convex-mesh gap Task 2l: mesh/mesh contact and separated-pair fixture matrix.
-        'collision coverage name=contact_mesh_mesh fixtures=15 contact_cases=3 separated_cases=12 contacts=3',
+        'collision name=contact_mesh_mesh fixture=16 pair=7,7 orientation=1 z=-1 checks=48 oracle=f1e2c663ca30c48c',
+        'collision coverage name=contact_mesh_mesh fixtures=23 contact_cases=4 separated_cases=19 contacts=4',
         # convex-mesh gap Task 2m: P-Sphere sink reset, preallocated and growth paths.
         'collision name=contact_sink_reset index=- rva=0x0005b620 checks=416 oracle=80effc8beac4d285',
         'collision coverage name=contact_sink_reset preallocated_cases=6 growth_cases=2 control_words=2',
@@ -5680,7 +5681,7 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 6  # previous 4 plus contended and successful triangle-mesh release assertions
-    '3' = 537  # previous 534 plus the three contact_plane_mesh registered lines
+    '3' = 540  # prior floor 537; the current registry also pins heightfield dispatch and fixture 16
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials

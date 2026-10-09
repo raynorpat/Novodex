@@ -1,0 +1,31 @@
+Phase 3 mesh/mesh traversal differential
+Run: NxPhysicsCollisionTests against D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+Oracle SHA-256: 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate executable exit: 0
+The 23-fixture matrix matched all contact streams; fixture 16 covers the rotated dense-mesh contact that the broad callback and the first leaf/box approximation missed.
+
+collision name=contact_mesh_mesh fixture=0 pair=1,1 orientation=1 z=-2 checks=48 oracle=a01bc27ea3d8f58d candidate=a01bc27ea3d8f58d mismatches=0 oracle_contacts=1 candidate_contacts=1 oracle_stream=12 candidate_stream=12 candidates=1
+collision name=contact_mesh_mesh fixture=1 pair=1,3 orientation=0 z=0 checks=48 oracle=41a9d592d40ad114 candidate=41a9d592d40ad114 mismatches=0 oracle_contacts=1 candidate_contacts=1 oracle_stream=12 candidate_stream=12 candidates=1
+collision name=contact_mesh_mesh fixture=2 pair=1,4 orientation=0 z=0 checks=48 oracle=2f6cd8f40a20fe9c candidate=2f6cd8f40a20fe9c mismatches=0 oracle_contacts=1 candidate_contacts=1 oracle_stream=12 candidate_stream=12 candidates=1
+collision name=contact_mesh_mesh fixture=3 pair=1,1 orientation=0 z=0 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=4 pair=1,1 orientation=0 z=12 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=5 pair=0,1 orientation=0 z=0 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=6 pair=1,0 orientation=0 z=0 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=7 pair=2,3 orientation=1 z=-1 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=8 pair=3,2 orientation=0 z=0 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=9 pair=4,5 orientation=0 z=0 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=10 pair=5,4 orientation=1 z=-1 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=11 pair=6,7 orientation=0 z=0 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=12 pair=7,6 orientation=1 z=0 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=13 pair=8,9 orientation=0 z=0 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=14 pair=9,8 orientation=1 z=-2 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=15 pair=0,7 orientation=0 z=0 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=16 pair=7,7 orientation=1 z=-1 checks=48 oracle=f1e2c663ca30c48c candidate=f1e2c663ca30c48c mismatches=0 oracle_contacts=1 candidate_contacts=1 oracle_stream=12 candidate_stream=12 candidates=1
+collision name=contact_mesh_mesh fixture=17 pair=0,7 orientation=0 z=-3 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=18 pair=0,7 orientation=0 z=-2 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=19 pair=0,7 orientation=0 z=-1 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=20 pair=0,7 orientation=0 z=1 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=21 pair=0,7 orientation=0 z=2 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision name=contact_mesh_mesh fixture=22 pair=0,7 orientation=0 z=3 checks=4 oracle=4d25767f9dce13f5 candidate=4d25767f9dce13f5 mismatches=0 oracle_contacts=0 candidate_contacts=0 oracle_stream=1 candidate_stream=1 candidates=0
+collision coverage name=contact_mesh_mesh fixtures=23 contact_cases=4 separated_cases=19 contacts=4
+collision matrix_wrong=0 index_wrong=0 mismatches=0

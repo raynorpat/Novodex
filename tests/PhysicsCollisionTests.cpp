@@ -12553,6 +12553,14 @@ static unsigned nxDriveTask2lMeshMeshContact(unsigned char* base, Nx2iSide* side
 		{ 7, 6, 1, 0.0f, 0.0f, 0.0f },
 		{ 8, 9, 0, 0.0f, 0.0f, 0.0f },
 		{ 9, 8, 1, 0.0f, 0.0f, -2.0f },
+		{ 0, 7, 0, 0.0f, 0.0f, 0.0f },
+		{ 7, 7, 1, 0.0f, 0.0f, -1.0f },
+		{ 0, 7, 0, 0.0f, 0.0f, -3.0f },
+		{ 0, 7, 0, 0.0f, 0.0f, -2.0f },
+		{ 0, 7, 0, 0.0f, 0.0f, -1.0f },
+		{ 0, 7, 0, 0.0f, 0.0f, 1.0f },
+		{ 0, 7, 0, 0.0f, 0.0f, 2.0f },
+		{ 0, 7, 0, 0.0f, 0.0f, 3.0f },
 	};
 	if(!nx2iFoundationBegin())
 		return 1;
