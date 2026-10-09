@@ -1165,6 +1165,9 @@ static void nxD6Case(NxScene& scene, NxActor* a, NxActor* b,
 				planeAdded ? 1u : 0u, planeRead ? 1u : 0u);
 			nxPrintVec("normal", planeNormalReadback);
 			printf(" d=%08x\n", nxU(planeD));
+
+			d6->setName("d6:phase6-setname");
+			printf("case=d6 index=%u name=%s\n", index, d6->getName() ? d6->getName() : "null");
 			}
 
 		NxD6JointDesc saved;

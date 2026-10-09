@@ -9825,3 +9825,9 @@ Measurement index: `phys_fn_004447 stdout_delta=2`.
 
 The public D6 staged-pair case calls `addLimitPlane` with a non-default normal and point, then resets and reads the iterator. The pinned DLL reports `added=0` and no next plane. Changing the reconstructed D6 wrapper to return true after forwarding the call changes the observed return word; the registered `NxPhysicsJointStagedPairTests` differential catches it with both processes exiting zero, `stdout_delta=2`, and exact stderr. The restored control returns to `stdout_delta=0` and exact stderr. Evidence: `evidence/phase6-joint-row004449-d6-limit-plane-refusal.md`.
 Measurement index: `phys_fn_004449 stdout_delta=2`.
+
+
+## Phase 6 closure measurement — D6 name setter (phys_fn_004453)
+
+The public D6 staged-pair case sets the name to `d6:phase6-setname` and reads it back through `getName`. A no-op mutation in `NpD6Joint::setName` leaves the name null; the registered `NxPhysicsJointStagedPairTests` differential catches the change with both processes exiting zero, `stdout_delta=2`, and exact stderr. The restored control returns to `stdout_delta=0` and exact stderr. Evidence: `evidence/phase6-joint-row004453-d6-set-name.md`.
+Measurement index: `phys_fn_004453 stdout_delta=2`.

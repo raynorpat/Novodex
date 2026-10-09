@@ -359,3 +359,5 @@ The current runners hard-code the primary repository/build roots; M1 must parame
 **M5 D6 limit-point setter follow-up, 2026-10-09:** Added a public D6 setLimitPoint/getLimitPoint readback. Forwarding a zero point is caught by the staged-pair differential (stdout_delta=2); the restored control is exact. Evidence: docs/reconstruction/novodex-physics/evidence/phase6-joint-row004447-d6-set-limit-point.md.
 
 **M5 D6 limit-plane follow-up, 2026-10-09:** The D6 public fixture observes the pinned SDK's ddLimitPlane refusal and empty iterator. A forced-true return mutation is caught; evidence records that this closes the refusal result for the exercised case, not successful D6 insertion. Evidence: docs/reconstruction/novodex-physics/evidence/phase6-joint-row004449-d6-limit-plane-refusal.md.
+
+**M5 D6 name setter follow-up, 2026-10-09:** Added a public D6 setName/getName check. A no-op setter mutation leaves a null name and is caught by the staged-pair differential (stdout_delta=2); the restored control is exact. Evidence: docs/reconstruction/novodex-physics/evidence/phase6-joint-row004453-d6-set-name.md.
