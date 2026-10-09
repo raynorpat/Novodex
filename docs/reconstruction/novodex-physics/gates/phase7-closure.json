@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. The disabled FluidManager release path (phys_fn_003643) is mutation-falsified through its seeded array-removal and deleting-dispatch fixture. The inert flushStream slot (phys_fn_000333) is mutation-falsified through a direct public-call fixture and an error-report mutation. Phase 7 owns 561 function rows and 502 data objects: 30 functions are closed, 294 reconstructed functions remain unfalsified, 237 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. Scene post-step row phys_fn_000615 is now mutation-falsified by NxPhysicsSimulationTests: replacing row000615 with a no-op changes the staged transcript by 7,232 bytes, and the restored control is exact. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. The disabled FluidManager release path (phys_fn_003643) is mutation-falsified through its seeded array-removal and deleting-dispatch fixture. The inert flushStream slot (phys_fn_000333) is mutation-falsified through a direct public-call fixture and an error-report mutation. Phase 7 owns 561 function rows and 502 data objects: 31 functions are closed, 293 reconstructed functions remain unfalsified, 237 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. Scene post-step row phys_fn_000615 is now mutation-falsified by NxPhysicsSimulationTests: replacing row000615 with a no-op changes the staged transcript by 7,232 bytes, and the restored control is exact. The ledger accounts for every owned row without treating transcript agreement alone as closure. Actor visualization row phys_fn_000020 is caught by NxPhysicsSceneVisualizeTests: a no-op changes the staged transcript by 916 bytes (both exits zero, exact stderr); the restored control is exact.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection. The direct flushStream mutation is tested by NxPhysicsSimulationTests and measured as stdout_delta=554 with candidate_exit=1.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
@@ -19,8 +19,8 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 30,
-    "deferred_reconstructed_not_falsified": 294,
+    "differential_falsified": 31,
+    "deferred_reconstructed_not_falsified": 293,
     "deferred_not_reconstructed_in_phase": 237
   },
   "closed": [
@@ -323,18 +323,19 @@
         "mutation": "In a clean git archive of mainline commit e3faa461, added an immediate return at the start of NxSceneInternal::simulateFrame (the 000655 per-substep body), rebuilt NxPhysics.dll and ran the registered Phase 7 staged-pair differential. The mutant was rejected: oracle_exit=0, candidate_exit=1, stdout_delta=3829, stderr_exact=False. Removing the mutation, rebuilding, and rerunning returned both exits=0, stdout_delta=0, stderr_exact=True.",
         "detected": "stdout_delta=3829"
       }
-    }
-  ],
-  "deferred": [
+    },
     {
       "id": "phys_fn_000020",
       "rva": "0x00001560",
-      "size": 731,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneVisualizeTests",
+      "falsification": {
+        "mutation": "In a throwaway archive of mainline 40a5ddcc, replaced NxActorVisualRecord::visualize (phys_fn_000020) with a no-op, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsSceneVisualizeTests staged-pair differential. The mutation was detected with oracle_exit=0, candidate_exit=0, stdout_delta=916, stderr_exact=True. Restoring and rebuilding returned both exits=0, stdout_delta=0, stderr_exact=True.",
+        "detected": "stdout_delta=916"
+      }
+    }
+  ],
+  "deferred": [
     {
       "id": "phys_fn_000283",
       "rva": "0x0000c2f0",

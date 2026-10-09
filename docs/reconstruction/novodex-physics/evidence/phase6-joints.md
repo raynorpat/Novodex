@@ -9705,3 +9705,13 @@ staged-pair transcript (`stdout_delta=10`, both exits zero, exact stderr).
 Restoring and rebuilding returns the exact control. Measurement index:
 `phys_fn_003964 stdout_delta=10`. Details:
 `evidence/phase6-effector-003964-getBodies.md`.
+
+## Phase 7 actor visualization closure (`phys_fn_000020`)
+
+The registered `NxPhysicsSceneVisualizeTests` Viewer-support fixture exercises
+actor-axis and body visualization across the staged parameter sets. Replacing
+`NxActorVisualRecord::visualize` with a no-op in a throwaway archive changes
+the staged-pair transcript by 916 bytes (`stdout_delta=916`, both exits zero,
+exact stderr). Restoring the row returns the exact control. Measurement index:
+`phys_fn_000020 stdout_delta=916`. Details:
+`evidence/phase7-scene-visualize-000020.md`.

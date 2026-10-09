@@ -21,13 +21,13 @@
     "phys_fn_000022"
    ],
    "rows": {
-    "dynamically_gated": 8,
-    "reconstructed": 4,
+    "dynamically_gated": 9,
+    "reconstructed": 3,
     "statically_reviewed": 1
    },
    "bytes": {
-    "dynamically_gated": 1215,
-    "reconstructed": 827,
+    "dynamically_gated": 1946,
+    "reconstructed": 96,
     "statically_reviewed": 49
    },
    "phases": {
