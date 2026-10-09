@@ -76147,14 +76147,21 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1537",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13504",
       "static_proof": "for i in [base, base+count), OR 0x20 into array[slot*0x50 + 0xc] where array = *[*[this+0x30] + 0x5b8]; base/count at +0x160/+0x164; transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
-      "dynamic_proof": "confirmed via markdeg drive (3z73): failures=0",
-      "notes": "previous source: mark-degenerate loop (0x95d60)",
-      "implementation": "Physics/src/core/Joint.cpp"
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair differential reaches Joint::row004091 through the public four-step fixed-joint break path. A candidate no-op removes the support-record 0x20 flag update and changes step-1 X velocity from 0x3041c5ce to 0x306eff6b, with additional break-notify trajectory changes; both processes exit 0, stderr is exact, stdout_delta=8. The restored candidate passes with stdout_delta=0 and exact stderr. The candidate map resolves ?row004091@Joint@@QAEXXZ from Joint.obj at RVA 0x0006de00. See evidence/phase6-joint-row004091-break-support-flags.md.",
+      "notes": "Joint base support-record flag updater called from the public joint-break path; candidate map and public simulation mutation establish the rebuilt-DLL route.",
+      "implementation": "Physics/src/core/Joint.cpp",
+      "implementation_symbol": "?row004091@Joint@@QAEXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?row004091@Joint@@QAEXXZ",
+        "address": "0x1006ee00",
+        "object": "Joint.obj"
+      }
     },
     {
       "id": "phys_fn_004092",

@@ -8,7 +8,7 @@
 
 **Tech stack:** CMake, MSVC Win32 Release, existing C++ public headers, reconstructed NxFoundation, pinned Ghidra 12.1.2 and Capstone 5.0.6, Python evidence tooling, PowerShell isolated-process runners. Use IDA or angr selectively when they answer a specific unresolved question.
 
-**Status, updated 2026-10-09:** Full-DLL reconstruction remains open. M0/M1 verification is underway in the isolated `codex/nxphysics-step-scene-rows` worktree from `c4de8262`; the fresh Win32 `completed` gate and standalone Phase 5 gate now pass. Their latest evidence and the `completed` coverage-floor accounting correction are recorded in `docs/reconstruction/novodex-physics/evidence/completed-gate-coverage-floor-2026-10-09.md`. Phases 6/7 remain intermediate gates with substantial deferred rows; no phase or full-DLL milestone is being promoted by these gate results.
+**Status, updated 2026-10-09:** Full-DLL reconstruction remains open. M0/M1 verification continues in the isolated `codex/nxphysics-step-scene-rows` worktree, now based at mainline commit `80f01169`; the fresh Win32 `completed` gate and standalone Phase 5 gate pass. Phase 6 has 84 closed and 349 deferred function rows (433 total), with the latest two public-DLL mutation closures covering joint accumulation (`phys_fn_004087`) and fixed-joint break support flags (`phys_fn_004091`). Phase 7 and full-DLL closure remain open; no partial phase gate promotes the whole DLL. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-joint-row004087-accumulated-vector.md` and `docs/reconstruction/novodex-physics/evidence/phase6-joint-row004091-break-support-flags.md`.
 
 **M2 actor-force follow-up, 2026-09-24:** Eight public force/torque variants now match the pinned DLL on 39 fresh-process assertions, including five modes, local and at-position transforms, rotated mass-local offsets, wake state, and kinematic no-ops. A linear-force mutation produced 30 mismatching lines and restoring it returned the staged differential to zero. The Phase 5 floor is 552 and still fails only at the explicit final-vtable marker; phases 2, 3, 4, 6, and 7 pass. See `docs/reconstruction/novodex-physics/evidence/phase5-public-actor-force.md`. Full reconstruction remains open.
 
@@ -389,3 +389,6 @@ Expanded the staged-pair contention case to cover D6 orientation, linear-velocit
 ### M5.11 — D6 wrapper constructor
 
 Closed `phys_fn_004469` using the existing staged-pair lifecycle fixture. A null internal-pointer mutation causes a candidate access violation (`stdout_delta=2916`); the restored differential is exact. No new coverage line was needed. See `docs/reconstruction/novodex-physics/evidence/phase6-joint-row004469-d6-constructor.md`.
+
+
+**M5.12 — Fixed-joint break support flags (`phys_fn_004091`):** The registered four-step public break simulation now falsifies the support-record flag loop with an immediate-return mutation (`stdout_delta=8`, both exits zero, exact stderr); its restored control is exact. Phase 6 advances to 84 closed / 349 deferred function rows. See `docs/reconstruction/novodex-physics/evidence/phase6-joint-row004091-break-support-flags.md`.

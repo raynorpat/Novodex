@@ -1,0 +1,9 @@
+# Phase 6 closure: joint break support-record flags (`phys_fn_004091`)
+
+`Joint::row004091` walks the support-record range recorded at `Joint+0x160/+0x164` and ORs `0x20` into each record's flags at `+0x0c`. The public fixed-joint break path calls this row before posting the break event. The candidate map resolves `?row004091@Joint@@QAEXXZ` in `Joint.obj` at RVA `0x0006de00`.
+
+The registered `NxPhysicsSimulationTests` staged-pair target includes a deterministic four-step fixed-joint break case and two break-notify cases. In the isolated worktree, I inserted an immediate return at the beginning of `Joint::row004091`, forced `Joint.cpp` to rebuild, and ran that target against the pinned oracle. The break-state transitions remain `0,2,2,2`, but the step-1 X velocity changes from `0x3041c5ce` to `0x306eff6b`; subsequent break motion and a break-notify trajectory also differ. Both processes exit zero, stderr matches exactly, and the runner reports `stdout_delta=8`. The mutant candidate DLL SHA-256 was `42709ce949d01e18a0642765b90a4de6e27fbcc1819e835646ed3a5bfb28b5d7`.
+
+After restoring `Joint.cpp` byte-for-byte, touching its timestamp to force recompilation, and rebuilding `NxPhysics.dll`, the same staged-pair target passes with both exits zero, `stdout_delta=0`, and exact stderr. The restored candidate DLL SHA-256 was `099bbbe2ecfa1c3c06dd91c6df5fc93460ae6d1bde7783d666ec1d90caa7a7b3`; the pinned oracle DLL SHA-256 was `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`.
+
+Command: `powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_differential.ps1 -Targets NxPhysicsSimulationTests -RepoRoot <worktree> -BuildRoot <worktree>/build/phase-step-rows -PairsRoot <worktree>/build/phase-step-rows/row-004091-pairs`. The target is registered in both Phase 6 and Phase 7. Logs: `build/phase-step-rows/row004091-mutant.log` and `build/phase-step-rows/row004091-restored-control.log`.

@@ -9886,3 +9886,8 @@ Detailed mutation, DLL identity, and restoration evidence: `evidence/phase6-0043
 ## Phase 6 closure measurement — joint accumulated vector (`phys_fn_004087`)
 
 The earlier xaccum discussion above incorrectly attributed a separate `nxAccumulateByKind0867` object-model helper to `phys_fn_004087`. That helper is not this candidate method. A new direct staged-pair probe calls the oracle at pinned RVA `0x00095cc0` and resolves the candidate by its own map symbol `?row004087@Joint@@UAEXMABVNxVec3@@M@Z`. An immediate-return mutant preserves the seeded `(0.5,0.5,0.5)` instead of producing `(3.5,5,6.5)`; the registered `NxPhysicsJointSlotTests` gate fails with `stdout_delta=1479`. The restored control is exact. Detailed evidence: `evidence/phase6-joint-row004087-accumulated-vector.md`.
+
+
+## Phase 6 closure measurement — joint break support-record flags (`phys_fn_004091`)
+
+For `phys_fn_004091`, the public four-step fixed-joint break case in `NxPhysicsSimulationTests` reaches this row. An immediate-return mutant leaves the break-state transitions intact but changes the step-1 X velocity (`0x3041c5ce` to `0x306eff6b`) and later break motion; the staged differential catches eight changed lines (`stdout_delta=8`) with both exits zero and exact stderr. The restored control is exact. See `evidence/phase6-joint-row004091-break-support-flags.md`.
