@@ -9486,3 +9486,18 @@ For row `phys_fn_003948`, In a throwaway git archive, omitted the internal getLi
 ## Phase 6 closure measurement — NpSpringAndDamperEffector::isSpringAndDamperEffector (phys_fn_003950)
 
 For row `phys_fn_003950`, In a throwaway git archive, changed NpSpringAndDamperEffector::isSpringAndDamperEffector to return null instead of this. NxPhysicsEffectorTests records the result alongside the wrapper identity; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=63 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003950-isSpringAndDamperEffector.md`.
+
+
+## Phase 6 closure measurement — NpSpringAndDamperEffector constructor (phys_fn_003958)
+
+For row `phys_fn_003958`, In a throwaway git archive, changed the constructor to store the internal effector pointer plus four bytes. NxPhysicsEffectorTests exercises the public factory and inspects the wrapper-to-internal link; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=76 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003958-wrapper-constructor.md`.
+
+
+## Phase 6 closure measurement — SpringAndDamperEffector constructor (phys_fn_003960)
+
+For row `phys_fn_003960`, In a throwaway git archive, changed the constructor’s public-wrapper allocation request from 0x18 to 0x1c bytes. NxPhysicsEffectorTests observes allocation sizes and constructed state; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=78 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003960-internal-constructor.md`.
+
+
+## Phase 6 closure measurement — SpringAndDamperEffector::setBodies (phys_fn_003962)
+
+For row `phys_fn_003962`, In a throwaway git archive, omitted the call to setBodyRecords from SpringAndDamperEffector::setBodies. NxPhysicsEffectorTests observes body pointers, observer lists, and anchor state; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=78 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003962-internal-set-bodies.md`.
