@@ -29,3 +29,12 @@ def test_row_cleanup_stops_at_indirect_tail_jump():
 def test_row_cleanup_stops_at_register_tail_jump():
     # jmp eax; ret. The ret is unreachable in this row.
     assert AUDIT.row_cleanup(b"\xff\xe0\xc3", MD, 0) is None
+
+
+def test_input_paths_follow_the_selected_repo_and_oracle_roots(tmp_path):
+    repo = tmp_path / "checkout"
+    oracle = tmp_path / "engine"
+    harness, dll, pe = AUDIT.input_paths(repo, oracle)
+    assert harness == repo / "tests" / "PhysicsObjectLayoutTests.cpp"
+    assert dll == oracle / "Binaries" / "NxPhysics.dll"
+    assert pe == repo / "docs" / "reconstruction" / "novodex-physics" / "oracle" / "pe.json"

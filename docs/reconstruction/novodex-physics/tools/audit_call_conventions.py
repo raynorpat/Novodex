@@ -16,15 +16,15 @@ typedef the harness writes. It is the instrument that found
 Scope: reads only. It never edits the harness.
 """
 
+import argparse
 import json
 import re
 import sys
+from pathlib import Path
 
 import capstone
 
-HARNESS = r'D:\github\Novodex\tests\PhysicsObjectLayoutTests.cpp'
-DLL = r'D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll'
-PE = r'D:\github\Novodex\docs\reconstruction\novodex-physics\oracle\pe.json'
+DEFAULT_ORACLE_ROOT = Path(r'D:\FlamingEnt__\Unreal_3')
 
 TD = re.compile(
     r'typedef\s+[\w\s\*]+\(\s*(__cdecl|__stdcall|__fastcall|__thiscall)\s*\*\s*(\w+)\s*\)'
@@ -42,10 +42,33 @@ def row_cleanup(code, md, rva):
     return None
 
 
-def main():
-    pe = json.load(open(PE))
+def input_paths(repo_root, oracle_root):
+    """Resolve the harness, oracle DLL, and PE map for selected checkouts."""
+    repo_root = Path(repo_root)
+    oracle_root = Path(oracle_root)
+    return (
+        repo_root / 'tests' / 'PhysicsObjectLayoutTests.cpp',
+        oracle_root / 'Binaries' / 'NxPhysics.dll',
+        repo_root / 'docs' / 'reconstruction' / 'novodex-physics' / 'oracle' / 'pe.json',
+    )
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '--repo-root', type=Path, default=Path(__file__).resolve().parents[4],
+        help='Novodex checkout to audit (default: inferred from this tool)',
+    )
+    parser.add_argument(
+        '--oracle-root', type=Path, default=DEFAULT_ORACLE_ROOT,
+        help='UE3 root containing Binaries/NxPhysics.dll',
+    )
+    args = parser.parse_args(argv)
+    harness_path, dll_path, pe_path = input_paths(args.repo_root, args.oracle_root)
+
+    pe = json.loads(pe_path.read_text(encoding='utf-8'))
     secs = pe['sections']
-    raw = open(DLL, 'rb').read()
+    raw = dll_path.read_bytes()
 
     def rva_to_off(rva):
         for s in secs:
@@ -58,7 +81,7 @@ def main():
     # The layout translation unit is committed as UTF-16LE with a BOM (it is the
     # only test source that is), so decode by its own BOM rather than assuming
     # UTF-8.
-    rawtext = open(HARNESS, 'rb').read()
+    rawtext = harness_path.read_bytes()
     if rawtext[:2] in (b'\xff\xfe', b'\xfe\xff'):
         text = rawtext.decode('utf-16')
     else:
