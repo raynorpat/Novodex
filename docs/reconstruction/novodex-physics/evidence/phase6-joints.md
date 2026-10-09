@@ -9745,3 +9745,13 @@ In the clean isolated worktree at mainline commit cea17aaa, changed Joint::getBo
 
 The mutation existed only in the isolated worktree and was restored before the exact control run. Detailed evidence: `evidence/phase6-joint-row004068-body-owners.md`.
 Measurement index: `phys_fn_004068 stdout_delta=128`.
+
+
+## Phase 6 closure measurement — shared joint type matcher (phys_fn_004072)
+
+`Joint::is` returns the internal joint only when its runtime type matches the requested family. The core-dump writer relies on this dispatch before reading family-specific state, and the named multi-family dump drives those typed branches.
+
+In the clean isolated worktree at mainline commit 379b75c6, changed Joint::is (phys_fn_004072) to return null for every requested type. The registered NxPhysicsCoreDumpTests staged-pair differential rejected the mutant: oracle_exit=0, candidate_exit=-1073741819, stdout_delta=2206, stderr_exact=True. Restored Joint.cpp, rebuilt NxPhysics, and reran; the restored control had both exits 0, stdout_delta=0, and exact stderr.
+
+The mutation existed only in the isolated worktree and was restored before the exact control run. Detailed evidence: `evidence/phase6-joint-row004072-type-match.md`.
+Measurement index: `phys_fn_004072 stdout_delta=2206`.
