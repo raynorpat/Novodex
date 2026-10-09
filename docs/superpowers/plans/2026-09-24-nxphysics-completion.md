@@ -371,3 +371,8 @@ Closed `phys_fn_004459` (`NpD6Joint::saveToDesc`) using the existing D6 staged-p
 ### M5.9 — D6 drive-position write-lock path
 
 Extended the existing staged-pair fixture to mark the scene lock as owned by another thread and observe `NpD6Joint::setDrivePosition` reporting `NXE_INVALID_OPERATION` at line 40. Suppressing the row's report was caught at `stdout_delta=24`; the restored differential is exact. Registered one additional coverage line in each of the Phase 6 and Phase 7 gates. See `docs/reconstruction/novodex-physics/evidence/phase6-joint-row004461-d6-drive-position-lock.md`.
+
+
+### M5.10 — D6 drive setter write-lock paths
+
+Expanded the staged-pair contention case to cover D6 orientation, linear-velocity, and angular-velocity wrappers. Mutating each callback report is caught at `stdout_delta=24`; the restored differential is exact. Three Phase 6/7 coverage lines were registered. See `docs/reconstruction/novodex-physics/evidence/phase6-joint-row004463-004467-d6-drive-locks.md`.

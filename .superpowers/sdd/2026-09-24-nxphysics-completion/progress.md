@@ -21,3 +21,7 @@ Closed `phys_fn_004459` (`NpD6Joint::saveToDesc`) from the existing public D6 de
 ### M5.9 — D6 drive-position write-lock path
 
 Closed `phys_fn_004461` with the registered staged-pair lock-contention fixture. Suppressing the expected invalid-operation callback is caught at `stdout_delta=24`; restored output is exact. One Phase 6/7 coverage line was added.
+
+### M5.10 — D6 drive setter write-lock paths
+
+Closed `phys_fn_004463`, `phys_fn_004465`, and `phys_fn_004467` with the staged-pair contention fixture. Each suppressed invalid-operation callback is caught at `stdout_delta=24`; restored output is exact. Three Phase 6/7 coverage lines were added.

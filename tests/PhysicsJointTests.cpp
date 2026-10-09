@@ -1238,12 +1238,27 @@ static void nxD6Case(NxScene& scene, NxActor* a, NxActor* b,
 		jointErrorStream.reset();
 		jointErrorStream.enabled = true;
 		d6->setDrivePosition(NxVec3(9.0f, 8.0f, 7.0f));
-		jointErrorStream.enabled = false;
-		lockState[0] = savedLockState[0];
-		lockState[1] = savedLockState[1];
 		printf("case=d6 index=%u drive_contended reports=%u code=%u line=%d\n", index,
 			jointErrorStream.reports, static_cast<unsigned>(jointErrorStream.lastCode),
 			jointErrorStream.lastLine);
+		jointErrorStream.reset();
+		d6->setDriveOrientation(orientation);
+		printf("case=d6 index=%u drive_orientation_contended reports=%u code=%u line=%d\n", index,
+			jointErrorStream.reports, static_cast<unsigned>(jointErrorStream.lastCode),
+			jointErrorStream.lastLine);
+		jointErrorStream.reset();
+		d6->setDriveLinearVelocity(NxVec3(-1.0f, -2.0f, -3.0f));
+		printf("case=d6 index=%u drive_linear_velocity_contended reports=%u code=%u line=%d\n", index,
+			jointErrorStream.reports, static_cast<unsigned>(jointErrorStream.lastCode),
+			jointErrorStream.lastLine);
+		jointErrorStream.reset();
+		d6->setDriveAngularVelocity(NxVec3(0.25f, 0.5f, 0.75f));
+		printf("case=d6 index=%u drive_angular_velocity_contended reports=%u code=%u line=%d\n", index,
+			jointErrorStream.reports, static_cast<unsigned>(jointErrorStream.lastCode),
+			jointErrorStream.lastLine);
+		jointErrorStream.enabled = false;
+		lockState[0] = savedLockState[0];
+		lockState[1] = savedLockState[1];
 		d6->setDrivePosition(NxVec3(7.0f, 8.0f, 9.0f));
 		d6->setDriveOrientation(orientation);
 		d6->setDriveLinearVelocity(NxVec3(-1.0f, -2.0f, -3.0f));
