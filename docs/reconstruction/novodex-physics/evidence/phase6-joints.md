@@ -9551,3 +9551,8 @@ Evidence index: phys_fn_003994 mutation detected at stdout_delta=342; restored c
 
 The registered NxPhysicsCoreDumpTests differential caught a mutation changing sceneDumpToken's binary token format from "%.4f$%x" to "%.3f$%x": both processes exited zero, stderr matched exactly, and stdout_delta=542. After restoring SceneDump.cpp byte-for-byte in the throwaway archive, rebuilding, and rerunning, stdout_delta=0 with both exits zero and exact stderr. Detailed evidence: `evidence/phase6-coredump-003995-float-token.md`.
 Evidence index: phys_fn_003995 mutation detected at stdout_delta=542; restored control stdout_delta=0.
+
+## Phase 6 closure measurement — scene-dump delimiter detection (phys_fn_004002)
+
+The registered NxPhysicsCoreDumpTests differential caught a mutation forcing SceneDump::hasDelimiter to return false. The named-joint fixture serialized `shoulder joint` without the required quotes; both processes exited zero, stderr matched exactly, and stdout_delta=124. After restoring SceneDump.cpp byte-for-byte in the throwaway archive, rebuilding, and rerunning, stdout_delta=0 with both exits zero and exact stderr. Detailed evidence: `evidence/phase6-coredump-004002-delimiter.md`.
+Evidence index: phys_fn_004002 mutation detected at stdout_delta=124; restored control stdout_delta=0.

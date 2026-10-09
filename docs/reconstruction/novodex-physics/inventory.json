@@ -74492,13 +74492,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1502",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13194",
       "static_proof": "returns 1 if the string via [esp+4] contains any delimiter char (space,quote,tab,comma,parens,=,[,],{,},#), else 0; ret 4; product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); reachable from the public API since effector-and-coredump Task 4 wired NpPhysicsSDK::coreDump (phys_fn_000267) (effector-and-coredump Task 3a)",
-      "dynamic_proof": "confirmed via delimscan drive (3z90): failures=0",
-      "notes": "Product row since effector-and-coredump Task 3a in Physics/src/core/SceneDump.cpp. Previous source: delimiter scan (0x90db0, ret 4).",
+      "dynamic_proof": "Mutation falsified by registered NxPhysicsCoreDumpTests staged-pair differential: forcing SceneDump::hasDelimiter to return false removes quotes from \"shoulder joint\"; detected stdout_delta=124, restored control exact. See evidence/phase6-coredump-004002-delimiter.md.",
+      "notes": "No public Physics headers changed; mutation was confined to a throwaway archive.",
       "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
