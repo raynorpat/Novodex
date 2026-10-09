@@ -20,16 +20,17 @@
   "measurements_all_three_configurations": {
     "groups": 921,
     "observations": 92990,
-    "normal_maxabs": 2.9802322387695312e-08,
-    "normal_maxrel": 8.856934643262158e-08,
-    "normal_differences": 32,
+    "normal_maxabs": 0,
+    "normal_maxrel": 0,
+    "normal_differences": 0,
     "length_maxabs": 0,
     "length_maxrel": 0,
     "length_differences": 0,
     "exact_differences": 0,
     "corner_angle_difference": 0,
-    "normal_angular_radians": 2.8064506570144754e-08,
-    "valid_unit_residual": 3.0112062621157065e-08
+    "normal_angular_radians": 0,
+    "valid_unit_residual": 3.0112062621157065e-08,
+    "builder_unit_residual": 3.0112062621157065e-08
   },
   "pre_vendor_fix": {
     "length_maxabs": 1.4901161637936866e-08,
@@ -79,8 +80,30 @@
     "native64 raw32 layouts",
     "second Build after failed AddFace"
   ],
-  "post_capture_consumer_change": "Only the derived unit metric was corrected to distinguish NbVerts0 weighted sums. Captured producer preserved; current exporter reproduces the entire protected binary exactly.",
-  "current_consumer_sha256": "d26e59ca0fc4aef9f166b443cf4a53ec1f50a93acc991e40db3dfdbee73c348b",
+  "post_capture_consumer_change": "Derived unit metric distinguishes unnormalized NbVerts0 sums, now measures every complete nonzero builder normal triple, and zero classification is exact whenever either operand is zero. Focused negative assertions restore observation and metric state; immutable observation words/order unchanged.",
+  "current_consumer_sha256": "b077d361609cde3357bb48b8b2c75d72a3d81c6dd327a0a1b531b3b234db3127",
   "post_capture_vendor_change": "Only overlay CRLF/EOF normalization for Git whitespace checks; complete captured source bytes remain immutable, original branch token parity checked.",
-  "current_vendor_sha256": "1ab46d4c5264620f3793009170e93e28ebd53df3497bd2f8fbe4c4ce31bcdc3f"
+  "current_vendor_sha256": "1ab46d4c5264620f3793009170e93e28ebd53df3497bd2f8fbe4c4ce31bcdc3f",
+  "pre_review1_measurements": {
+    "groups": 921,
+    "observations": 92990,
+    "normal_maxabs": 2.9802322387695312e-08,
+    "normal_maxrel": 8.856934643262158e-08,
+    "normal_differences": 32,
+    "length_maxabs": 0,
+    "length_maxrel": 0,
+    "length_differences": 0,
+    "exact_differences": 0,
+    "corner_angle_difference": 0,
+    "normal_angular_radians": 2.8064506570144754e-08,
+    "valid_unit_residual": 3.0112062621157065e-08
+  },
+  "current_builder_sha256": "c660144ee32907e312c9c363002efab35e9d274e4c714394c930bbb8d6b96d12",
+  "review1_correction": "Builder001627 now follows its own retained inline bz/cy/cz/length/angle spills, (cx*cx+float(cz)*float(cz))+float(cy)*float(cy) square and (by*ay+bx*ax)+float(bz)*az dot order. Existing immutable x87 producer unchanged.",
+  "review1_evidence": {
+    "red": "5 focused failures: three actual-zero versus tiny-reference cases and two absent builder metric measurements",
+    "green": "MSVC Win32 Release/Debug and clang-cl22.1.8 Win32,each1/1;921groups/92990observations exact",
+    "unit_residual_negative_probes": "actual Container four-ULP length excess rejected by the shared2e-7 gate; one-ULP length excess measured and accepted",
+    "zero_negative_probes": "actual+0/-0 versus tiny nonzero normal or length rejected; reverse-zero/sign cases exact"
+  }
 }

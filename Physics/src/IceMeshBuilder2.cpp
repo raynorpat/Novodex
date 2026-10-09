@@ -1130,24 +1130,37 @@ __declspec(noinline) NxU32 MeshBuilder2::OutputRun(const NxU32* faces, NxU32 nb_
 					fstp	dword ptr [esi + 8]
 					}
 #else
-				if(Weighted)
-				                    {
-				                        const NxU32 corners[3] = {mRefs[F->Ref[0]].VRef,
-				                            mRefs[F->Ref[1]].VRef, mRefs[F->Ref[2]].VRef};
-				                        const float angle = nxSmoothNormalsAngleAtVertex(VRef,
-				                            corners, reinterpret_cast<const NxVec3*>(mVertsCopy));
-				                        const double x = double(angle) * F->Normal[0];
-				                        const float y = float(double(angle) * F->Normal[1]);
-				                        const float z = float(double(angle) * F->Normal[2]);
-				                        S[0] = float(x + S[0]);
-				                        S[1] = float(double(y) + S[1]);
-				                        S[2] = float(double(z) + S[2]);
-				                    }
-				                    else
-				                    {
-				                        for(unsigned component = 0; component < 3; ++component)
-				                            S[component] = float(double(S[component]) + F->Normal[component]);
-				                    }
+                if(Weighted)
+                {
+                    //001627's own inline angle island: all six differences
+                    // stay extended; bz, cy, cz, length and angle are spilled.
+                    // Its square and dot orders differ from002144.
+                    const double ax = double(A->x) - C->x;
+                    const double ay = double(A->y) - C->y;
+                    const double az = double(A->z) - C->z;
+                    const double bx = double(B->x) - C->x;
+                    const double by = double(B->y) - C->y;
+                    const double bz = double(B->z) - C->z;
+                    const float storedBz = float(bz); //T58, non-popping fst
+                    const double cx = bz * ay - by * az;
+                    const float cy = float(az * bx - double(storedBz) * ax); //T48
+                    const float cz = float(by * ax - bx * ay); //T4c, fstp
+                    const float length = float(std::sqrt((cx * cx
+                        + double(cz) * cz) + double(cy) * cy)); //T20
+                    const double dot = (by * ay + bx * ax) + double(storedBz) * az;
+                    const float angle = float(std::atan2(double(length), dot)); //T20
+                    const double x = double(angle) * F->Normal[0];
+                    const float y = float(double(angle) * F->Normal[1]);
+                    const float z = float(double(angle) * F->Normal[2]);
+                    S[0] = float(x + S[0]);
+                    S[1] = float(double(y) + S[1]);
+                    S[2] = float(double(z) + S[2]);
+                }
+                else
+                {
+                    for(unsigned component = 0; component < 3; ++component)
+                        S[component] = float(double(S[component]) + F->Normal[component]);
+                }
 #endif
 
 				Count++;

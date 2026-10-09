@@ -106,6 +106,7 @@ struct Observation { unsigned kind, group, index, word; };
 static std::vector<Observation> observations;
 static unsigned group;
 static double unitResidual;
+static double builderUnitResidual;
 static float value(unsigned word)
 {
     float f;
@@ -122,16 +123,22 @@ static void number(unsigned kind, float f)
     std::memcpy(&word, &f, 4);
     observations.push_back({kind, group, unsigned(observations.size()), word});
 }
-static void normal(const IceMaths::Point& p)
+static double measureUnitNormal(const IceMaths::Point& p)
 {
-    number(1, p.x); number(1, p.y); number(1, p.z);
     const double square = (double(p.x) * p.x + double(p.y) * p.y) + double(p.z) * p.z;
     if(square)
     {
         const double residual = std::fabs(std::sqrt(square) - 1);
         if(residual > unitResidual)
             unitResidual = residual;
+        return residual;
     }
+    return 0;
+}
+static void normal(const IceMaths::Point& p)
+{
+    number(1, p.x); number(1, p.y); number(1, p.z);
+    measureUnitNormal(p);
 }
 static bool compute(MeshNormals& receiver, const MESHNORMALSCREATE& create)
 {
@@ -303,6 +310,65 @@ static void container(const IceCore::Container& values, unsigned kind)
         if(kind) number(kind, value(values.GetEntries()[i]));
         else exact(values.GetEntries()[i]);
     }
+    if(kind == 1)
+    {
+        check(values.GetNbEntries() % 3 == 0, "complete builder normal triples");
+        for(unsigned i = 0; i + 2 < values.GetNbEntries(); i += 3)
+        {
+            const IceMaths::Point vector(value(values.GetEntries()[i]),
+                value(values.GetEntries()[i+1]), value(values.GetEntries()[i+2]));
+            const double residual = measureUnitNormal(vector);
+            if(residual > builderUnitResidual)
+                builderUnitResidual = residual;
+        }
+    }
+}
+static bool acceptedObservation(unsigned kind, unsigned actual, unsigned reference)
+{
+    return kind == 0 || kind == 3 || value(actual) == 0 || value(reference) == 0
+        ? actual == reference
+        : nxWithinBudget(value(actual), value(reference),
+            kind == 2 ? nxMeshLengthAbsoluteBudget : nxMeshNormalAbsoluteBudget,
+            nxMeshRelativeBudget);
+}
+static bool acceptedUnitResidual(double residual)
+{
+    return residual <= nxMeshUnitResidualBudget;
+}
+static void negativeAcceptanceChecks()
+{
+    // The existing budget alone admits a zero collapse of this tiny value.
+    const float tiny = 1e-8f;
+    unsigned tinyWord;
+    std::memcpy(&tinyWord, &tiny, sizeof(tinyWord));
+    check(!acceptedObservation(1, 0, tinyWord), "reject actual positive zero versus tiny normal");
+    check(!acceptedObservation(1, 0x80000000u, tinyWord), "reject actual negative zero versus tiny normal");
+    check(!acceptedObservation(2, 0, tinyWord), "reject actual zero versus tiny length");
+    check(!acceptedObservation(1, tinyWord, 0), "reject tiny actual versus reference zero");
+    check(!acceptedObservation(1, 0, 0x80000000u), "reject opposite zero signs");
+    check(acceptedObservation(1, 0x80000000u, 0x80000000u), "accept matching negative zero");
+    // Reach the same actual Container path as both builder normal outputs.
+    const size_t savedCount = observations.size();
+    const double savedResidual = unitResidual;
+    const double savedBuilderResidual = builderUnitResidual;
+    unitResidual = 0;
+    {
+        IceCore::Container vectors;
+        vectors.Add(0x3f800004u); vectors.Add(0u); vectors.Add(0u);
+        container(vectors, 1);
+        check(!acceptedUnitResidual(unitResidual), "builder unit residual rejects four-ULP length excess");
+    }
+    unitResidual = 0;
+    {
+        IceCore::Container vectors;
+        vectors.Add(0x3f800001u); vectors.Add(0u); vectors.Add(0u);
+        container(vectors, 1);
+        check(unitResidual > 0 && acceptedUnitResidual(unitResidual),
+            "builder unit residual measures permitted one-ULP length excess");
+    }
+    observations.resize(savedCount);
+    unitResidual = savedResidual;
+    builderUnitResidual = savedBuilderResidual;
 }
 static void builderDomain()
 {
@@ -492,6 +558,9 @@ int main(int argc, char** argv)
     FoundationGuard foundation(allocator);
     nxSetSdkAllocatorBridge(&allocator);
     nxFoundationSDKAllocator = &foundation;
+#if !NX_PHYSICS_USE_X87
+    negativeAcceptanceChecks();
+#endif
     meshDomain(allocator);
     builderDomain();
     const unsigned poseObservationStart = unsigned(observations.size());
@@ -547,11 +616,7 @@ int main(int argc, char** argv)
                 if(r > relative[o.kind]) relative[o.kind] = r;
             }
             if(o.word != reference) ++differences[o.kind];
-            const bool accepted = o.kind == 0 || o.kind == 3 || value(reference) == 0
-                ? o.word == reference
-                : nxWithinBudget(value(o.word), value(reference),
-                    o.kind == 2 ? nxMeshLengthAbsoluteBudget : nxMeshNormalAbsoluteBudget,
-                    nxMeshRelativeBudget);
+            const bool accepted = acceptedObservation(o.kind, o.word, reference);
             if(!accepted)
             {
                 std::fprintf(stderr, "row=%u kind=%u group=%u actual=%08x reference=%08x\n",
@@ -561,10 +626,10 @@ int main(int argc, char** argv)
         }
     }
     check(normalAngularDifference <= nxMeshNormalAngularBudget, "approved normal angular difference");
-    check(unitResidual <= nxMeshUnitResidualBudget, "approved valid unit residual");
-    std::printf("MeshNormals groups=%u observations=%zu normal_maxabs=%.17g length_maxabs=%.17g normal_maxrel=%.17g length_maxrel=%.17g normal_diffs=%u length_diffs=%u exact_diffs=%u unit_residual=%.17g angle_maxabs=%.17g angle_maxrel=%.17g angular_difference=%.17g failures=%d\n",
+    check(acceptedUnitResidual(unitResidual), "approved valid unit residual");
+    std::printf("MeshNormals groups=%u observations=%zu normal_maxabs=%.17g length_maxabs=%.17g normal_maxrel=%.17g length_maxrel=%.17g normal_diffs=%u length_diffs=%u exact_diffs=%u unit_residual=%.17g angle_maxabs=%.17g angle_maxrel=%.17g angular_difference=%.17g builder_unit_residual=%.17g failures=%d\n",
         group, observations.size(), maxima[1], maxima[2], relative[1], relative[2],
-        differences[1], differences[2], differences[0], unitResidual, maxima[3], relative[3], normalAngularDifference, failures);
+        differences[1], differences[2], differences[0], unitResidual, maxima[3], relative[3], normalAngularDifference, builderUnitResidual, failures);
 #endif
     return failures ? 1 : 0;
 }
