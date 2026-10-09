@@ -366,3 +366,8 @@ The current runners hard-code the primary repository/build roots; M1 must parame
 ### M5.8 — D6 descriptor save row
 
 Closed `phys_fn_004459` (`NpD6Joint::saveToDesc`) using the existing D6 staged-pair save/readback fixture. The no-op mutation was detected at `stdout_delta=92`; the restored differential is exact. This adds no new fixture line or gate assertion. See `docs/reconstruction/novodex-physics/evidence/phase6-joint-row004459-d6-save-to-desc.md`.
+
+
+### M5.9 — D6 drive-position write-lock path
+
+Extended the existing staged-pair fixture to mark the scene lock as owned by another thread and observe `NpD6Joint::setDrivePosition` reporting `NXE_INVALID_OPERATION` at line 40. Suppressing the row's report was caught at `stdout_delta=24`; the restored differential is exact. Registered one additional coverage line in each of the Phase 6 and Phase 7 gates. See `docs/reconstruction/novodex-physics/evidence/phase6-joint-row004461-d6-drive-position-lock.md`.

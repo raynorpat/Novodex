@@ -17,3 +17,7 @@ Task M5.7: complete (D6 public setName row phys_fn_004453; staged-pair readback 
 ### M5.8 — D6 descriptor save row
 
 Closed `phys_fn_004459` (`NpD6Joint::saveToDesc`) from the existing public D6 descriptor-save fixture. A no-op mutation was caught by `NxPhysicsJointStagedPairTests` at `stdout_delta=92`; restored output is exact. No new coverage assertion was added.
+
+### M5.9 — D6 drive-position write-lock path
+
+Closed `phys_fn_004461` with the registered staged-pair lock-contention fixture. Suppressing the expected invalid-operation callback is caught at `stdout_delta=24`; restored output is exact. One Phase 6/7 coverage line was added.

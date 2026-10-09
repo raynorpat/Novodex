@@ -34,6 +34,7 @@
 #include <string.h>
 
 #include "NxPhysicsSDK.h"
+#include "NxUserOutputStream.h"
 #include "NxScene.h"
 #include "NxSceneDesc.h"
 #include "NxActorDesc.h"
@@ -87,6 +88,32 @@ static NxU32 nxU(NxReal value)
 static void nxPrintVec(const char* tag, const NxVec3& v)
 	{
 	printf("%s=%08x.%08x.%08x", tag, nxU(v.x), nxU(v.y), nxU(v.z));
+	}
+
+class NxJointErrorStream : public NxUserOutputStream
+	{
+	public:
+	NxJointErrorStream() : enabled(false), reports(0), lastCode(NXE_NO_ERROR), lastLine(0) {}
+	void reportError(NxErrorCode code, const char*, const char*, int line)
+		{ if(enabled) { ++reports; lastCode = code; lastLine = line; } }
+	NxAssertResponse reportAssertViolation(const char*, const char*, int)
+		{ return NX_AR_CONTINUE; }
+	void print(const char*) {}
+	void reset() { reports = 0; lastCode = NXE_NO_ERROR; lastLine = 0; }
+	bool enabled;
+	unsigned reports;
+	NxErrorCode lastCode;
+	int lastLine;
+	};
+
+static NxJointErrorStream jointErrorStream;
+
+static unsigned* nxSceneWriteLockState(NxScene& scene)
+	{
+	// Match the scene wrapper's +0x0c link and the lock words at block +0x18.
+	unsigned char* link = *reinterpret_cast<unsigned char**>(reinterpret_cast<unsigned char*>(&scene) + 0x0c);
+	unsigned char* block = *reinterpret_cast<unsigned char**>(link);
+	return reinterpret_cast<unsigned*>(block + 0x18);
 	}
 
 // Builds the two-actor fixture every joint case needs. The bodies are dynamic
@@ -1202,6 +1229,21 @@ static void nxD6Case(NxScene& scene, NxActor* a, NxActor* b,
 		orientation.y = 0.0f;
 		orientation.z = 0.6f;
 		orientation.w = 0.8f;
+		// The folded internal setter is empty; verify the wrapper's observable
+		// rejected-write path with the lock marked as owned by another thread.
+		unsigned* lockState = nxSceneWriteLockState(scene);
+		const unsigned savedLockState[2] = { lockState[0], lockState[1] };
+		lockState[0] = 1;
+		lockState[1] = 0;
+		jointErrorStream.reset();
+		jointErrorStream.enabled = true;
+		d6->setDrivePosition(NxVec3(9.0f, 8.0f, 7.0f));
+		jointErrorStream.enabled = false;
+		lockState[0] = savedLockState[0];
+		lockState[1] = savedLockState[1];
+		printf("case=d6 index=%u drive_contended reports=%u code=%u line=%d\n", index,
+			jointErrorStream.reports, static_cast<unsigned>(jointErrorStream.lastCode),
+			jointErrorStream.lastLine);
 		d6->setDrivePosition(NxVec3(7.0f, 8.0f, 9.0f));
 		d6->setDriveOrientation(orientation);
 		d6->setDriveLinearVelocity(NxVec3(-1.0f, -2.0f, -3.0f));
@@ -1703,7 +1745,7 @@ int wmain(int argc, wchar_t** argv)
 	// Every SDK allocation goes through a page-guarded allocator, so a write past
 	// the end of any block faults AT THE WRITE rather than corrupting a later one.
 	static NxPageGuardedAllocator guardedAllocator;
-	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, &guardedAllocator, 0);
+	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, &guardedAllocator, &jointErrorStream);
 	printf("sdk=%s\n", sdk ? "created" : "null");
 	if(!sdk)
 		{
