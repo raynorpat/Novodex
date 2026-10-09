@@ -3232,6 +3232,18 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation stage=distance10 position=40800000.3fffffff.00000000 velocity=00000000.2c400000.00000000'
         'simulation stage=distance11 position=40800000.3fffffff.00000000 velocity=00000000.2b800000.00000000'
         'simulation distance-joint steps=12 ready=1 fetched=1'
+        # A multistep public prismatic joint under transverse gravity exercises
+        # its kind-1 slide constraints and keeps the body on the constrained
+        # line. Exact state bits are captured at every step.
+        'simulation stage=prismatic0 position=41400000.40800000.00000000 velocity=00000000.00000000.00000000'
+        'simulation stage=prismatic1 position=41400000.407fffff.00000000 velocity=00000000.85800000.00000000'
+        'simulation stage=prismatic2 position=41400000.407fffff.00000000 velocity=00000000.2bfefae6.00000000'
+        'simulation stage=prismatic3 position=41400000.407fffff.00000000 velocity=00000000.2bfefae6.00000000'
+        'simulation stage=prismatic4 position=41400000.407fffff.00000000 velocity=00000000.2bfefae6.00000000'
+        'simulation stage=prismatic5 position=41400000.407fffff.00000000 velocity=00000000.2bfefae6.00000000'
+        'simulation stage=prismatic6 position=41400000.407fffff.00000000 velocity=00000000.2bfefae6.00000000'
+        'simulation stage=prismatic7 position=41400000.407fffff.00000000 velocity=00000000.2bfefae6.00000000'
+        'simulation prismatic-joint steps=8 ready=1 fetched=1'
         # Mixed fixed-kind-3 and distance-kind-1 rows share a public simulation island.
         'simulation stage=jointmix1_0 position=41800000.40bfdfdb.00000000 velocity=2cda6348.be48e4a1.00000000'
         'simulation stage=jointmix1_1 position=41900000.40bfdfda.00000000 velocity=00000000.be48e8a7.00000000'

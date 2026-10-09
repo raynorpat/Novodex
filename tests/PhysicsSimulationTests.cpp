@@ -23,6 +23,7 @@
 #include "NxFixedJointDesc.h"
 #include "NxSpringDesc.h"
 #include "NxDistanceJointDesc.h"
+#include "NxPrismaticJointDesc.h"
 #include "NxRevoluteJointDesc.h"
 #include "NxD6JointDesc.h"
 #include "NxSpringAndDamperEffector.h"
@@ -1656,6 +1657,47 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("simulation distance-joint steps=12 ready=1 fetched=1\n");
 	sdk->releaseScene(*distanceScene);
+
+	// Exercise the prismatic solver's transverse and angular rows over a
+	// multistep public-scene simulation. The joint permits motion along X while
+	// gravity loads the constrained Y direction.
+	NxSceneDesc prismaticSceneDesc;
+	prismaticSceneDesc.setToDefault();
+	prismaticSceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
+	NxScene* prismaticScene = sdk->createScene(prismaticSceneDesc);
+	if(!prismaticScene) return nxFail("prismatic-joint scene creation failed");
+	prismaticScene->setTiming(0.02f, 1, NX_TIMESTEP_FIXED);
+	NxSphereShapeDesc prismaticSphere;
+	prismaticSphere.radius = 0.1f;
+	NxBodyDesc prismaticBody;
+	NxActorDesc prismaticActorDesc;
+	prismaticActorDesc.body = &prismaticBody;
+	prismaticActorDesc.density = 1.0f;
+	prismaticActorDesc.globalPose.t = NxVec3(12.0f, 4.0f, 0.0f);
+	prismaticActorDesc.shapes.pushBack(&prismaticSphere);
+	NxActor* prismaticActor = prismaticScene->createActor(prismaticActorDesc);
+	if(!prismaticActor) return nxFail("prismatic-joint actor creation failed");
+	NxPrismaticJointDesc prismaticDesc;
+	prismaticDesc.setToDefault();
+	prismaticDesc.actor[0] = prismaticActor;
+	prismaticDesc.actor[1] = 0;
+	setGlobalAnchor(prismaticDesc, NxVec3(12.0f, 4.0f, 0.0f));
+	setGlobalAxis(prismaticDesc, NxVec3(1.0f, 0.0f, 0.0f));
+	if(!prismaticScene->createJoint(prismaticDesc))
+		return nxFail("prismatic-joint creation failed");
+	for(unsigned step = 0; step < 8; ++step)
+		{
+		prismaticScene->simulate(0.02f);
+		const bool ready = prismaticScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+		const bool fetched = prismaticScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		if(!ready || !fetched)
+			return nxFail("prismatic-joint simulation result was not ready and fetched");
+		char stage[24];
+		sprintf_s(stage, "prismatic%u", step);
+		nxPrintActorState(stage, *prismaticActor);
+		}
+	printf("simulation prismatic-joint steps=8 ready=1 fetched=1\n");
+	sdk->releaseScene(*prismaticScene);
 
 	// Reproduce the D6 swing-limit angular-impulse cancellation case. The
 	// actor begins 60 degrees off the world frame; one limited swing axis

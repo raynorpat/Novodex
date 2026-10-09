@@ -9393,3 +9393,9 @@ fixture: `phys_fn_000333` mutation detection was `stdout_delta=554`
 ## Phase 7 closure measurement — scene pair-count getter (`phys_fn_000523`)
 
 The registered `NxPhysicsPairFlagTests` staged-pair differential observes `getNbPairs()` after pair creation and release. A throwaway `+1` return mutation in `NxSceneInternal::getNbPairs` was caught: oracle counts were 1 and 0; mutant counts were 2 and 1, which also changed the pair-array result. Both processes exited 0 with exact stderr; `phys_fn_000523` detected `stdout_delta=6`. Rebuilding after restoring the exact source returned the differential to `stdout_delta=0`, exact stderr, and zero exits. See `evidence/phase7-get-nb-pairs-000523.md`.
+
+## Phase 6 closure measurement — prismatic solver (`phys_fn_004386`)
+
+The public eight-step prismatic joint simulation catches `phys_fn_004386`'s tangent dispatch mutation with `stdout_delta=14`; the restored DLL matches exactly.
+The fixture and full gate results are recorded in
+`evidence/phase6-prismatic-solver-004386.md`.

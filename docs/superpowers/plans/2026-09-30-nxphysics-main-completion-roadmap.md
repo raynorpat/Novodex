@@ -1,3 +1,18 @@
+### Continuation — prismatic solver public simulation and row closure (2026-10-08)
+
+Added an eight-step public-scene prismatic-joint fixture to
+`NxPhysicsSimulationTests`, with oracle-pinned actor position and velocity words
+required in the Phase 5/6/7 coverage registry. Under transverse gravity, the
+X-axis joint keeps the body on its constrained line; the clean oracle/candidate
+simulation differential is exact. A detached worktree mutation changing both
+linear-row tangent inputs in `phys_fn_004386` from `t1` to `t2` is caught by the
+same registered target (`stdout_delta=14`, equal zero exits, exact stderr). The
+restored source rebuilds to an exact differential. Phase 5, Phase 6, and Phase
+7 pass at 2,578/2,569, 1,077/1,068, and 1,399/1,390 coverage assertions.
+Phase 6 now has 6 mutation-closed functions and 427 remaining rows; the full
+joint and DLL reconstruction remain open. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase6-prismatic-solver-004386.md`.
+
 ### Continuation — controller release guard mutation closure (2026-10-08)
 
 Mutation-falsified Phase 5 row `phys_fn_002330` (`NxSceneInternal::releaseController`).
