@@ -125,11 +125,44 @@ private:
     NxU32 mCount;
 };
 
-NxVec3 polygonPosePoint(const float* m, const NxVec3& v)
+// Every pose call has its own original term order. Translation is added wide
+// before the final float store; no common reassociated dot product is valid here.
+NxVec3 polygonRelative01Point(const float* m, const NxVec3& v)
 {
-    return NxVec3(float(((double(v.x) * m[0] + double(m[4]) * v.y) + double(v.z) * m[8]) + m[12]),
-        float(((double(m[5]) * v.y + double(m[1]) * v.x) + double(v.z) * m[9]) + m[13]),
-        float(((double(m[10]) * v.z + double(m[2]) * v.x) + double(m[6]) * v.y) + m[14]));
+    // 0x4914f..0x4919f: x=(x+y)+z; y=(x+y)+z; z=(z+y)+x.
+    return NxVec3(float(((double(v.x)*m[0]+double(v.y)*m[4])+double(v.z)*m[8])+m[12]),
+        float(((double(v.x)*m[1]+double(v.y)*m[5])+double(v.z)*m[9])+m[13]),
+        float(((double(v.z)*m[10]+double(v.y)*m[6])+double(v.x)*m[2])+m[14]));
+}
+NxVec3 polygonEmitFirstPoint(const float* m, const NxVec3& v)
+{
+    // 0x499de..0x49a45: every coordinate=(z+y)+x.
+    return NxVec3(float(((double(v.z)*m[8]+double(v.y)*m[4])+double(v.x)*m[0])+m[12]),
+        float(((double(v.z)*m[9]+double(v.y)*m[5])+double(v.x)*m[1])+m[13]),
+        float(((double(v.z)*m[10]+double(v.y)*m[6])+double(v.x)*m[2])+m[14]));
+}
+NxVec3 polygonEmitSecondPoint(const float* m, const NxVec3& v)
+{
+    // 0x495b9..0x4961d: x=(z+x)+y; y=(z+y)+x; z=(z+x)+y.
+    return NxVec3(float(((double(v.z)*m[8]+double(v.x)*m[0])+double(v.y)*m[4])+m[12]),
+        float(((double(v.z)*m[9]+double(v.y)*m[5])+double(v.x)*m[1])+m[13]),
+        float(((double(v.z)*m[10]+double(v.x)*m[2])+double(v.y)*m[6])+m[14]));
+}
+NxVec3 polygonRelative10Point(const float* m, const NxVec3& v)
+{
+    // Unrolled 0x4969f..0x49855 and tail0x4988e..0x498f6 have identical
+    // stores: x=(x+y)+z; y=(y+x)+z; z=(z+x)+y.
+    return NxVec3(float(((double(v.x)*m[0]+double(v.y)*m[4])+double(v.z)*m[8])+m[12]),
+        float(((double(v.y)*m[5]+double(v.x)*m[1])+double(v.z)*m[9])+m[13]),
+        float(((double(v.z)*m[10]+double(v.x)*m[2])+double(v.y)*m[6])+m[14]));
+}
+NxVec3 polygonEmitEdgePoint(const float* m, const NxVec3& v)
+{
+    // 0x49bbd..0x49c39: every coordinate=(y+z)+x; retained wide y/z
+    // values are stored after x, with no intermediate float narrowing.
+    return NxVec3(float(((double(v.y)*m[4]+double(v.z)*m[8])+double(v.x)*m[0])+m[12]),
+        float(((double(v.y)*m[5]+double(v.z)*m[9])+double(v.x)*m[1])+m[13]),
+        float(((double(v.y)*m[6]+double(v.z)*m[10])+double(v.x)*m[2])+m[14]));
 }
 void polygonCompose(const float* r, const float* m, float (&c)[12])
 {
@@ -207,7 +240,7 @@ void NxConvexPolygonContacts(NxU32 count0, const NxVec3* vertices0, const NxU32*
     for(NxU32 i = 0; i < count0; ++i) {
         const NxVec3& vertex = vertices0[refs0[i]];
         if(!(polygonProjection(c + 8, vertex) < anchor1)) continue;
-        const NxVec3 inOther = polygonPosePoint(relative01, vertex);
+        const NxVec3 inOther = polygonRelative01Point(relative01, vertex);
         if(denominator > -1e-7 && denominator < 1e-7) continue;
         const float parameter = float(((double(inOther.z) * plane1->normal.z + double(inOther.x) * plane1->normal.x)
             + double(inOther.y) * plane1->normal.y + plane1->d) / denominator);
@@ -219,7 +252,7 @@ void NxConvexPolygonContacts(NxU32 count0, const NxVec3* vertices0, const NxU32*
         const float x = float((intersectionY * r[1] + intersectionZ * r[2]) + double(intersectionX) * r[0]);
         const float y = float((intersectionY * r[4] + intersectionZ * r[5]) + double(intersectionX) * r[3]);
         if(!nxPolygonContainsPoint(count1, projected, x, y)) continue;
-        const NxVec3 point = polygonPosePoint(pose0, vertex);
+        const NxVec3 point = polygonEmitFirstPoint(pose0, vertex);
         NxEmitContactFeatures(sink, 0, shape0->collisionObject, shape1->collisionObject, polygonFloatBits(parameter),
             &point, &emittedNormal, featureId0, featureId1, featureWord0, featureWord1);
     }
@@ -236,12 +269,12 @@ void NxConvexPolygonContacts(NxU32 count0, const NxVec3* vertices0, const NxU32*
         const float x = float(polygonProjection(c, vertex));
         const float y = float(polygonProjection(c + 4, vertex));
         if(!nxPolygonContainsPoint(count0, projected, x, y)) continue;
-        const NxVec3 point = polygonPosePoint(pose1, vertex);
+        const NxVec3 point = polygonEmitSecondPoint(pose1, vertex);
         const float separation = float(double(storedDepth) - anchor0);
         NxEmitContactFeatures(sink, 0, shape0->collisionObject, shape1->collisionObject, polygonFloatBits(separation),
             &point, &emittedNormal, featureId0, featureId1, featureWord0, featureWord1);
     }
-    for(NxU32 i = 0; i < count1; ++i) transformed[i] = polygonPosePoint(relative10, vertices1[refs1[i]]);
+    for(NxU32 i = 0; i < count1; ++i) transformed[i] = polygonRelative10Point(relative10, vertices1[refs1[i]]);
     for(NxU32 edge1 = 0; edge1 < count1; ++edge1) {
         const NxVec3& begin1 = transformed[edge1];
         const NxVec3& end1 = transformed[edge1 + 1 < count1 ? edge1 + 1 : 0];
@@ -261,7 +294,7 @@ void NxConvexPolygonContacts(NxU32 count0, const NxVec3* vertices0, const NxU32*
             const NxVec3& end0 = vertices0[refs0[edge0 + 1 < count0 ? edge0 + 1 : 0]];
             NxVec3 localPoint; float parameter;
             if(!nxClipEdgeToPolygonPlane(&begin0, edgePlane, &localPoint, &edge, &begin1, &end1, &plane0->normal, &end0, &parameter)) continue;
-            const NxVec3 point = polygonPosePoint(pose0, localPoint);
+            const NxVec3 point = polygonEmitEdgePoint(pose0, localPoint);
             NxEmitContactFeatures(sink, 0, shape0->collisionObject, shape1->collisionObject, polygonFloatBits(-parameter),
                 &point, &emittedNormal, featureId0, featureId1, featureWord0, featureWord1);
         }

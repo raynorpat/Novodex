@@ -68,7 +68,9 @@ struct World {
     unsigned head[4]; NxActorPair pair; unsigned tail[4];
     Holder holder[2]; Owner owner[2]; NxCollisionShape shape[2]; Object object[2];
     World() {
-        std::memset(this,0xcd,sizeof(*this));
+        std::memset(pair.mBytes,0xcd,sizeof(pair.mBytes));
+        std::memset(holder,0xcd,sizeof(holder)); std::memset(owner,0xcd,sizeof(owner));
+        std::memset(shape,0xcd,sizeof(shape)); std::memset(object,0xcd,sizeof(object));
         for(unsigned i=0;i<4;++i) head[i]=0x6a6a6a6a,tail[i]=0x7b7b7b7b;
         for(unsigned i=0;i<2;++i) {
             holder[i].material=i+2; owner[i].holder=&holder[i];
@@ -121,7 +123,7 @@ struct World {
 
 static unsigned contains(unsigned count,const NxVec3* vertices,float x,float y) {
 #if NX_PHYSICS_USE_X87
-    unsigned out;
+    unsigned resultWord;
     __asm {
         push y
         push x
@@ -129,9 +131,9 @@ static unsigned contains(unsigned count,const NxVec3* vertices,float x,float y) 
         mov ecx,vertices
         call nxPolygonContainsPoint
         add esp,8
-        mov out,eax
+        mov resultWord,eax
     }
-    return out;
+    return resultWord;
 #else
     return nxPolygonContainsPoint(count,vertices,x,y);
 #endif
@@ -139,7 +141,7 @@ static unsigned contains(unsigned count,const NxVec3* vertices,float x,float y) 
 static unsigned clip(const NxVec3* a,const float* plane,NxVec3* point,const NxVec3* displacement,
     const NxVec3* b,const NxVec3* b1,const NxVec3* normal,const NxVec3* a1,float* parameter) {
 #if NX_PHYSICS_USE_X87
-    unsigned out;
+    unsigned resultWord;
     __asm {
         push ebx
         push esi
@@ -156,9 +158,9 @@ static unsigned clip(const NxVec3* a,const float* plane,NxVec3* point,const NxVe
         add esp,0x14
         pop esi
         pop ebx
-        mov out,eax
+        mov resultWord,eax
     }
-    return out;
+    return resultWord;
 #else
     return nxClipEdgeToPolygonPlane(a,plane,point,displacement,b,b1,normal,a1,parameter);
 #endif
@@ -269,6 +271,34 @@ static void domain(GuardAllocator& allocator) {
     check(allocator.blocks.empty(),"supplement streams released");
 }
 
+// Round1 actual full-path tilted-pose regression; source has no helper arithmetic oracle.
+static void poseRegressionDomain(GuardAllocator& allocator) {
+    group=933; // Distinct source-domain identity; existing captured groups stay unchanged.
+    const NxVec3 square[]={{-2,-2,0},{2,-2,0},{2,2,0},{-2,2,0}};
+    const float sine=0.707106769084930419921875f;
+    const float ys[]={5.5511151231257827021181583404541015625e-17f,1e-5f};
+    for(unsigned crossing=0;crossing<2;++crossing) for(unsigned cancellation=0;cancellation<2;++cancellation)
+        for(unsigned order=0;order<2;++order) {
+            ++group;World w;
+            const float extent=crossing?3.0f:1.0f;
+            const NxVec3 triangle[]={{-extent,-1,-1},{extent,ys[cancellation],-1},{-extent,1,-1}};
+            float pose[]={0.5f,-sine,0.5f,0,sine,0,-sine,0,0.5f,sine,0.5f,0,0,0,0,1};
+            if(cancellation)pose[12]=-float(double(sine)*ys[cancellation]);
+            const NxPlane p0(0,0,1,0),p1(0,0,1,1);
+            const NxVec3 displacement(0.125f,0.25f*sine,0.125f),flipped=-displacement;
+            auto fn=reinterpret_cast<PolygonFn>(&NxConvexPolygonContacts);
+            for(unsigned repeat=0;repeat<2;++repeat) {
+                w.reset();
+                if(!order)fn(4,square,forward,pose,&p0,3,triangle,forward,pose,&p1,&displacement,identity,identity,
+                    &w.shape[0],&w.shape[1],w.sink(),repeat?0x11223344:0x55667788,repeat?0x99aabbcc:0xddeeff00,7,9,17,23);
+                else fn(3,triangle,forward,pose,&p1,4,square,forward,pose,&p0,&flipped,identity,identity,
+                    &w.shape[1],&w.shape[0],w.sink(),repeat?0x01020304:0x05060708,repeat?0x090a0b0c:0x0d0e0f00,9,7,23,17);
+                w.record();allocator.guard();
+            }
+        }
+    check(allocator.blocks.empty(),"tilted regression real streams released");
+}
+
 static bool exactFinite(unsigned actual,unsigned reference) {return actual==reference;}
 static bool exactPartial(unsigned actual,unsigned reference) {return reference==0xff800000 && actual==reference;}
 #if !NX_PHYSICS_USE_X87
@@ -307,7 +337,8 @@ static void scratchFailureDomain(GuardAllocator& allocator) {
 #endif
 
 int main(int argc,char** argv) {
-    if(argc!=2 && argc!=3) return 2;
+    if(argc!=2 && argc!=3 && argc!=4) return 2;
+    const bool poseRegression=argc>=3 && std::strcmp(argv[2],"--pose-regression")==0;
 #if NX_PHYSICS_USE_X87
     _control87(_PC_53|_RC_NEAR|_MCW_EM,_MCW_PC|_MCW_RC|_MCW_EM);
     unsigned short raw; __asm { fnstcw raw }
@@ -317,7 +348,8 @@ int main(int argc,char** argv) {
 #else
     check(std::fegetround()==FE_TONEAREST,"scalar nearest environment");
 #endif
-    GuardAllocator allocator; nxSetSdkAllocatorBridge(&allocator); domain(allocator);
+    GuardAllocator allocator; nxSetSdkAllocatorBridge(&allocator);
+    if(poseRegression)poseRegressionDomain(allocator);else domain(allocator);
 #if !NX_PHYSICS_USE_X87
     scratchFailureDomain(allocator);
 #endif
@@ -327,12 +359,12 @@ int main(int argc,char** argv) {
         !exactPartial(0x7fc00000,0xff800000) && !exactPartial(0xbf800000,0xff800000),"negative infinity/NaN/finite replacement controls");
     check(allocator.allocs==allocator.frees,"allocation/free balance"); nxSetSdkAllocatorBridge(nullptr);
 #if NX_PHYSICS_USE_X87
-    FILE* f=std::fopen(argv[1],"wb"); if(!f)return 2;
+    FILE* f=nullptr; if(fopen_s(&f,argv[1],"wb")!=0)return 2;
     const unsigned header[]={0x4650584e,1,unsigned(observations.size()*20),20};
     std::fwrite(header,16,1,f);std::fwrite(observations.data(),20,observations.size(),f);std::fclose(f);
 #else
-    if(argc==3) {
-        FILE* f=std::fopen(argv[2],"wb"); if(!f)return 2;
+    if((argc==3 && !poseRegression) || argc==4) {
+        FILE* f=nullptr; if(fopen_s(&f,argv[argc-1],"wb")!=0)return 2;
         const unsigned header[]={0x4650584e,1,unsigned(observations.size()*20),20};
         std::fwrite(header,16,1,f);std::fwrite(observations.data(),20,observations.size(),f);std::fclose(f);
     }
@@ -365,7 +397,7 @@ int main(int argc,char** argv) {
     }
     std::printf("discrete=%u\n",discrete);check(!discrete,"exact discrete decisions/writes/canaries");
     for(unsigned k=1;k<5;++k)std::printf("quantity=%u count=%u differences=%u min=%.17g max=%.17g max_abs=%.17g max_rel=%.17g\n",k,totals[k],differences[k],minimum[k],maximum[k],absolute[k],relative[k]);
-    check(nonfinite==8,"eight exact original nonfinite partial writes");
+    check(nonfinite==(poseRegression?0u:8u),"exact original nonfinite partial write count per domain");
 #endif
     std::printf("contact_polygon groups=%u observations=%zu allocations=%u releases=%u failures=%u\n",group,observations.size(),allocator.allocs,allocator.frees,failures);
     return failures?1:0;

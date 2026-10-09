@@ -1,0 +1,1442 @@
+[
+  {
+    "source": "CMakeLists.txt",
+    "source_sha256": "de59370e138e366d8e310cea956573dc0877525be4d4b2125922ddb433caf1d5",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-0-CMakeLists.txt.gz",
+    "snapshot_sha256": "de1a5d2b56b59329224f49c835610f8abc460e016e1dc194a03600283854e382"
+  },
+  {
+    "source": "cmake/NxPhysicsBackend.cmake",
+    "source_sha256": "883676e8fecae7983d7f2efe5eb87111cd92ee3585dcb66bca05794d3e8db52b",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-1-NxPhysicsBackend.cmake.gz",
+    "snapshot_sha256": "0077fa45430675b98c97aa4671898f3eda6b417b581fa4683e8c9c2daa22aa73"
+  },
+  {
+    "source": "tests/portable/CMakeLists.txt",
+    "source_sha256": "9262f9ee6280666fd9ee05b355e24130266fade4e316c41ee6f313aaae9126f3",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-2-CMakeLists.txt.gz",
+    "snapshot_sha256": "b4b523f22a64f4fb722edb2a826a2c1766c3a531aaa0b41b2bf2ef3eee267feb"
+  },
+  {
+    "source": "tests/portable/IceTopologyTargets.cmake",
+    "source_sha256": "5b4ae5fe1d1ec22aa4d447f298fb5cf00f134f465cfe2c5580bcb1289a36df37",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-3-IceTopologyTargets.cmake.gz",
+    "snapshot_sha256": "b99252d2f6bb66370fe75436702f9bb847f1f99b57dfc0d6ad2c3c5c51bab0ea"
+  },
+  {
+    "source": "tests/portable/ContactPolygonTargets.cmake",
+    "source_sha256": "bb7ad3deab0649728e436b7b91f05a05f00585010bb7c41f643d0e0813565d1c",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-4-ContactPolygonTargets.cmake.gz",
+    "snapshot_sha256": "e6dcc24becc3e2bc362599580b414bb7ff11552b245fbec614cebac92b8b8c62"
+  },
+  {
+    "source": "tests/portable/ConvexContactTests.cpp",
+    "source_sha256": "27aff810cf727219d6dd565dabbe6c5ef6dd24750d53895294cf9547813de4e3",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-5-ConvexContactTests.cpp.gz",
+    "snapshot_sha256": "0d066c50305fabda3592aa3f370b9c39d900d1f70421eca84b4cb366519ca271"
+  },
+  {
+    "source": "tests/portable/ContactPairEmitterKernel.cpp",
+    "source_sha256": "e6ce038d599b29cd3d66004f78e9679ef93b796c5fc7d6a1b6d0d5fc0f100b4a",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-6-ContactPairEmitterKernel.cpp.gz",
+    "snapshot_sha256": "65f7316b4acdae2eccc2606a45a304e548151396a3369231714e5d02abe3c1a3"
+  },
+  {
+    "source": "tests/portable/ContactPolygonImportSlot.cpp",
+    "source_sha256": "df31799c39017dd916c645d69c21acfa3269f957e41e5a5dd969f8aea438b786",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-7-ContactPolygonImportSlot.cpp.gz",
+    "snapshot_sha256": "0aab5906a98415cfd35ea70bc4971333db8e77e42332fcd9005eab56296ff373"
+  },
+  {
+    "source": "tests/portable/SdkAllocatorKernel.cpp",
+    "source_sha256": "9a37c78adb33ff1990f59fd1a7a2a1eef567f3c5578bdddfff359c7547dc7257",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-8-SdkAllocatorKernel.cpp.gz",
+    "snapshot_sha256": "adbfa62087c2c9da7efd6ae45b8f3a9dc0b462921f4f208c855edc8e4c34ec5d"
+  },
+  {
+    "source": "tests/portable/FixtureSupport.cpp",
+    "source_sha256": "a82e14334b142d396044310eb681711aca16f6d8d109ade257461bc46831cba9",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-9-FixtureSupport.cpp.gz",
+    "snapshot_sha256": "a2bcef71c35980bce1bda991969b62b5ec0460a1c338ff1992638d754d6842ad"
+  },
+  {
+    "source": "tests/portable/FixtureSupport.h",
+    "source_sha256": "e4243ec8d6c5089da14b3ba530894c6b9e5fec352f0d01c04f51a643d55bc691",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-10-FixtureSupport.h.gz",
+    "snapshot_sha256": "04e1386abf4a51d7e101ccb2f72df2002ca9b7debcabf01c23d4e4c0f0dfbdfe"
+  },
+  {
+    "source": "Physics/src/ContactPolygon.cpp",
+    "source_sha256": "d651c5497def1f56bc7803169a1eaac01ba3cb84d011fe0b03975e4f72210ef8",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-11-ContactPolygon.cpp.gz",
+    "snapshot_sha256": "acd7254110c13047e502280a6205729a509921f8df7a6b257671b5021b8d29e6"
+  },
+  {
+    "source": "Physics/src/ContactStream.cpp",
+    "source_sha256": "f98f1b49d67c7d79bc7e63a6cdf80c0e72cbc2e9035660c6f2113e317160d5c5",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-12-ContactStream.cpp.gz",
+    "snapshot_sha256": "baa78238c4351fb7cea21d62e4473afe6ae9971ad9d37588cfe75c5e9f0a4b54"
+  },
+  {
+    "source": "Physics/src/ContactGeneration.cpp",
+    "source_sha256": "1fc58f1594ea66883dd1530d382dd069451f22f5868f60970267984aaee991e2",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-13-ContactGeneration.cpp.gz",
+    "snapshot_sha256": "31fa0b77de007d5cff92f045d08f7d087c01155dcb11f55381fc72e39a02b0bd"
+  },
+  {
+    "source": "Physics/src/ContactPairManager.cpp",
+    "source_sha256": "782492a1849443338bfcc6118765d7b39092a6d99adeef8ee854f499bc7160ea",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-14-ContactPairManager.cpp.gz",
+    "snapshot_sha256": "d7349bd99cf35cf922173b9266eba5194e8f64c728e3a9fc80b9b9f439a7ac2b"
+  },
+  {
+    "source": "Physics/src/ObjectModel.cpp",
+    "source_sha256": "33da31065141a7ed291b957147e5660731ee9bb95eaa96f534f9239b0484ed47",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-15-ObjectModel.cpp.gz",
+    "snapshot_sha256": "a0a268985ffc47ceae71ca923cb802b4877abad8caa6c7e2b21f9502d1ff5ca5"
+  },
+  {
+    "source": "Physics/src/Containers.cpp",
+    "source_sha256": "bf704b64085f32f64fabe60d44cef0a10be1950843964824c46f26883393a1b3",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-16-Containers.cpp.gz",
+    "snapshot_sha256": "152b7ad638e21bf439199511a8d3e85ba807531c79e01c9b5efbb071b2d0d3e0"
+  },
+  {
+    "source": "Physics/src/ThirdPartyHost.cpp",
+    "source_sha256": "998c7ec7bbe16e0f992ddb9ba808e6a5e542c5282a4c0d25359b36a807e8babd",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-17-ThirdPartyHost.cpp.gz",
+    "snapshot_sha256": "061ec4eacd87abb8d8e5ae2e53c805e86c210a7a55e86225bc54bee8ab1bd7f7"
+  },
+  {
+    "source": "Physics/src/include/Containers.h",
+    "source_sha256": "344808dd01c5ccb0a05497384275330de0cf25a32dda4f3e3631d0235a18c888",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-18-Containers.h.gz",
+    "snapshot_sha256": "29f1ecc6fde03d3093f6339cf66ddc452891db8098cdea9e2f1ac98e997a8049"
+  },
+  {
+    "source": "Physics/src/include/PhysicsInternal.h",
+    "source_sha256": "0c7334106100f8ee47b25532f70c4421cb93046e57d34b45ff80eb97051587a9",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-19-PhysicsInternal.h.gz",
+    "snapshot_sha256": "26fc80271ba9c8797ab1e06342c47585797b1b100b4fdddda349eace1b09f061"
+  },
+  {
+    "source": "Physics/src/include/ContactGeneration.h",
+    "source_sha256": "3322543a761f6df91af0a19c4014da8fe4b90447aec8d1862b8bef767260b181",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-20-ContactGeneration.h.gz",
+    "snapshot_sha256": "efd7df466fe342e3408aa80f20d9d9b1dc5b5a5e56eb9b98bc644f358f36d777"
+  },
+  {
+    "source": "Physics/src/include/NarrowPhase.h",
+    "source_sha256": "2d0cb41f2254222833d62cfd83702b1fa284788a45f1e057faac02af868b2321",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-21-NarrowPhase.h.gz",
+    "snapshot_sha256": "77d57b449bf258130b341d0008567809b4b86a7e2fbe0450c11c553e5db1d073"
+  },
+  {
+    "source": "Physics/src/include/ContactPairManager.h",
+    "source_sha256": "7e42dc8902b0a35626dfca8681aec367c78438b8efb894632602c957a6bb5f0d",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-22-ContactPairManager.h.gz",
+    "snapshot_sha256": "1c4354420ecfce4969c4d5092fa9cedd5a9fdb93db8013379a02f9a4e260ddaa"
+  },
+  {
+    "source": "Physics/src/include/NxSdkAllocator.h",
+    "source_sha256": "97008f3779823f8905a713b0676119333fadfeb40ad4ba5d89b793672b4326a7",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-23-NxSdkAllocator.h.gz",
+    "snapshot_sha256": "34801c3962b88771de8d843f202af72b1a788955c29e063f2d6610dda816387e"
+  },
+  {
+    "source": "Physics/src/include/NxSdkAllocatorAccess.inl",
+    "source_sha256": "05fb01224de74a91f9448a21bc1779c4ea9f721942a4a92986f9273661cc8820",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-24-NxSdkAllocatorAccess.inl.gz",
+    "snapshot_sha256": "bd903942e4442f883cd047db5c610fdf70e1b07e7cae19c3916c7887e712e0b7"
+  },
+  {
+    "source": "Physics/src/include/ContactStreamLifecycle.inl",
+    "source_sha256": "87ff93dfb10f04862c2f966f1ab150c6fd4bdd28fadcf4c7e8f59da550b71032",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-25-ContactStreamLifecycle.inl.gz",
+    "snapshot_sha256": "b4131c86ae9f1f5a04a1b79e586fefa6631be452e84d3d8ee997976debfb3f24"
+  },
+  {
+    "source": "Physics/src/include/ContactStreamRelease.inl",
+    "source_sha256": "7b1761983501bf739880546752f2127c93c168ba372d607bf8d906f9ce834cc6",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-26-ContactStreamRelease.inl.gz",
+    "snapshot_sha256": "c167ec8461bb8f7367cc1f3b2bf0d293d37963e3b6ec4a1be9bbf4615b5f8f76"
+  },
+  {
+    "source": "Physics/src/include/ContactPairBytes.inl",
+    "source_sha256": "fd729fb4cbb1124c7737ff7d28f25c8d8cd21e73aa808afed9f4bf1902791e6b",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-27-ContactPairBytes.inl.gz",
+    "snapshot_sha256": "e77542fe23d54948c122ac7af7f843d724db862893ebb3142041e44bdb0ca05c"
+  },
+  {
+    "source": "Physics/src/include/ContactPairEmitter.inl",
+    "source_sha256": "222e53528e4e44ad76df1d5b24fa72960d08dba2c9d0f51b794cf2540114fc5a",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-28-ContactPairEmitter.inl.gz",
+    "snapshot_sha256": "2a7bf652566a73d39b84883f0f214ae1f2f3ca5553826dac93f408bf313f78b6"
+  },
+  {
+    "source": "Physics/src/include/portable/NxPolygonContactInterfaces.h",
+    "source_sha256": "a35c8b43473632f637790e028b38194506a78d5cf8401a85a294e9ac704d6bc4",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-29-NxPolygonContactInterfaces.h.gz",
+    "snapshot_sha256": "90cd1df801deffec5c5b5ddcc3f0874f15f9d0826230eb8b3562fa17b39037b8"
+  },
+  {
+    "source": "docs/reconstruction/novodex-physics/tools/capture_scalar_math.py",
+    "source_sha256": "72b7ad2da27dcd9eec550fdf0cd62ffd46762b9e9d2e835164fbc2ac4eaf26a4",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-30-capture_scalar_math.py.gz",
+    "snapshot_sha256": "f13ae96b40a095908ad5a42e227b89ec7fba5e3eecc51df7ac64241ad7323305"
+  },
+  {
+    "source": "docs/reconstruction/novodex-physics/tools/capture_contact_polygon.py",
+    "source_sha256": "4b7cac44bdb3389df73ca1abe0714c9a09e94e30e3edf72d83ff7bf13e00e6b7",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-31-capture_contact_polygon.py.gz",
+    "snapshot_sha256": "be01dbcfe3d9fb00f8226c33d030ef2b6c56a2202444ce6497e4ea3f0ab74ffa"
+  },
+  {
+    "source": "Physics/src/include/portable/ContactPolygonScalar.inl",
+    "source_sha256": "4ef36fbe21c8768be67344502300da9928bf5bdef7188a545eeed85e9dcb3863",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-32-ContactPolygonScalar.inl.gz",
+    "snapshot_sha256": "d3811d2f9b785e9ccb476c780208df7ca0fd6225e6c3f3ae8fca780c083a0415"
+  },
+  {
+    "source": "Physics/src/include/portable/ContactStreamScalar.inl",
+    "source_sha256": "b24a82bcf08500a79bd8b1410c7e6523f79ab3b87690bb64c20f7f3cb88ca3ac",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-33-ContactStreamScalar.inl.gz",
+    "snapshot_sha256": "e1cb6e9e1eb154fc7cceed1eb305c8fc2fc0c9c9aa3d88a6eef4ce2ecb3cb440"
+  },
+  {
+    "source": "Physics/include/NxActor.h",
+    "source_sha256": "8fe75fe4978c45480e2eb7154b50857908bef9d57241f8a977d0c518b7f4d721",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-34-NxActor.h.gz",
+    "snapshot_sha256": "1707bad4c3b63ea44de835e74ebe1ca0c67e1e1fc1086edb367c99c185178850"
+  },
+  {
+    "source": "Physics/include/NxActorDesc.h",
+    "source_sha256": "90ecad9b4735e70e09d68e8a6fd67108f2831dacbfb80817388acf15dcfde6c2",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-35-NxActorDesc.h.gz",
+    "snapshot_sha256": "df1e4b29a8896fe7a25c771d5b243bb892c369a4f08d7aa5168cdc1ae45be7da"
+  },
+  {
+    "source": "Physics/include/NxBodyDesc.h",
+    "source_sha256": "c9d2d7e9d0573e71a41e042f37a267d2ce9e654d15d3c07fc46f8c4bcbde159a",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-36-NxBodyDesc.h.gz",
+    "snapshot_sha256": "cab8d115836e2a9ae5f2418bebcd736e1bce921749cce124219035de4f9a164d"
+  },
+  {
+    "source": "Physics/include/NxBoxShape.h",
+    "source_sha256": "534ccf36619d87dc4aaea9f134b8a3df4b5704324dd26f3e895b6b7ba3f746c9",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-37-NxBoxShape.h.gz",
+    "snapshot_sha256": "36ec7ed47738f41fa6a3574892afa72a3eb5379374ae91b8a19192510da0cad9"
+  },
+  {
+    "source": "Physics/include/NxBoxShapeDesc.h",
+    "source_sha256": "4cc3466ae1a2e475d45ad62a1fbd484acd50d4c80f2ce5ded49ef67c92166dc4",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-38-NxBoxShapeDesc.h.gz",
+    "snapshot_sha256": "2fc12409fa7bc010a9bd92bf59edb6ab096ee5b6ba4636385f40240a94d001bf"
+  },
+  {
+    "source": "Physics/include/NxCapsuleShape.h",
+    "source_sha256": "591775a68906c6d3b6c4ee82b4e07c47b5af12c44e083fe3f0ff569d4a49080b",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-39-NxCapsuleShape.h.gz",
+    "snapshot_sha256": "80627b1aacc3dae52b926d1a2014ed7c8f9206452a71560ba3515d54a5587e7e"
+  },
+  {
+    "source": "Physics/include/NxCapsuleShapeDesc.h",
+    "source_sha256": "91f7efb7b77da5f89a362a665506f9f78329015d6727106d4f70e37ee3bef2da",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-40-NxCapsuleShapeDesc.h.gz",
+    "snapshot_sha256": "1bfa5f1cc6f8c1f136f39fe76ea88f7f8dbc2ea36004f34eec7a834fda34d45b"
+  },
+  {
+    "source": "Physics/include/NxContactStreamIterator.h",
+    "source_sha256": "25b10bb4111ee8de8e7888e7befd89af3a2f6cbceb681c30b441073ead5e532f",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-41-NxContactStreamIterator.h.gz",
+    "snapshot_sha256": "30df1c46e5e07649ac278ecb9816a85bd36e9ba0d66dad313beff5b39630c778"
+  },
+  {
+    "source": "Physics/include/NxConvexHull.h",
+    "source_sha256": "0fe23a17743b377619dc017b61d9f91604de2710978a3834a13bdb0336df51a0",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-42-NxConvexHull.h.gz",
+    "snapshot_sha256": "1c9a22b0f270f343252fc695a3f4b5c07a575548ae10f8fe478361753e109f8a"
+  },
+  {
+    "source": "Physics/include/NxCylindricalJoint.h",
+    "source_sha256": "9cb19bab130132381804ed7ab7480f6843e37918fe4d3d2aa0ca8badde8a9b19",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-43-NxCylindricalJoint.h.gz",
+    "snapshot_sha256": "a4b1bb01902ae749ad050331075f9baa67e1cfd3e4d76d99a8225fccfb15ad3b"
+  },
+  {
+    "source": "Physics/include/NxCylindricalJointDesc.h",
+    "source_sha256": "562cfa523a560b7a24919f1cb6413ead1e5f403bef31fe3e849e0d9d60ac8e73",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-44-NxCylindricalJointDesc.h.gz",
+    "snapshot_sha256": "b1d6709547a78e94ae17aa9f981ef1de162f7f1539440d5663ae44639a761835"
+  },
+  {
+    "source": "Physics/include/NxD6Joint.h",
+    "source_sha256": "e813146465e2ff5dd8eb8256807a61483dafeddd1f16bcd4100cb34c627d63ea",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-45-NxD6Joint.h.gz",
+    "snapshot_sha256": "7fd5a8a257758c517af13a5d706ce6af65e7e57ab1d78d9290198bcbd9f9c59e"
+  },
+  {
+    "source": "Physics/include/NxD6JointDesc.h",
+    "source_sha256": "e72b8f59b5304e9938561b1ed3a2fb83ae3ec3ef5be9991530a7f2d9c7d8741a",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-46-NxD6JointDesc.h.gz",
+    "snapshot_sha256": "9b36ac782afa40abc6f92a398a6d6e85d87ee1795ef5eae5afaccc3b57e305fe"
+  },
+  {
+    "source": "Physics/include/NxDistanceJoint.h",
+    "source_sha256": "a71e87e4344412c90641d2f7b4042ca4b279c44c401a8aa50e397309f25783af",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-47-NxDistanceJoint.h.gz",
+    "snapshot_sha256": "637f0657b78b5da54d85bbbb8a7f0da2f4b9df4689089b90dc8adef79faca538"
+  },
+  {
+    "source": "Physics/include/NxDistanceJointDesc.h",
+    "source_sha256": "271b5008637dc667aaefe27e339abb919c1d22ad3d70e91aa682885457f3728a",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-48-NxDistanceJointDesc.h.gz",
+    "snapshot_sha256": "06c36ceb824b5bc0a42712c0266599da74bf978ed13a320750b2daec0ed249bc"
+  },
+  {
+    "source": "Physics/include/NxDistanceTriangleTriangle.h",
+    "source_sha256": "d397df569705178047163fbdb6e645ddafd98cf0113d4b056b43cc00b2edc5d9",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-49-NxDistanceTriangleTriangle.h.gz",
+    "snapshot_sha256": "c9a442bc56239022f87d448992e8c2e4f7b4d467cf7c995ccaae73cc75217805"
+  },
+  {
+    "source": "Physics/include/NxEffector.h",
+    "source_sha256": "eaad7e1df663dda6d2b3a1264de7e14c057ccf43aabb0e5eaa79847c0ef6a165",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-50-NxEffector.h.gz",
+    "snapshot_sha256": "4153da0d2963b7926059f47b3f5e907c8b4c3e1e690637e7a4e54f8d45669795"
+  },
+  {
+    "source": "Physics/include/NxFixedJoint.h",
+    "source_sha256": "8ae7de135060a8dd5d5675573d921cf9176ab6e8de217ba87c697f02f77774e2",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-51-NxFixedJoint.h.gz",
+    "snapshot_sha256": "8bf8e768eaad5c5f60f69f66cfd6d675820af66561ff2b1dc8ad07e4c9751094"
+  },
+  {
+    "source": "Physics/include/NxFixedJointDesc.h",
+    "source_sha256": "0f4022870d00e9fc507e4e38d0eceeb6b6abb3cdf3a5e7162c3d13523e276f67",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-52-NxFixedJointDesc.h.gz",
+    "snapshot_sha256": "3a2c3b37b7639909f3eee53aeed26d4658e027e92060f43fa65321f817fae8e9"
+  },
+  {
+    "source": "Physics/include/NxInertiaTensor.h",
+    "source_sha256": "ea0f303753992b27f00164262a6e5de2432e25157d3203cacd63043886a69851",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-53-NxInertiaTensor.h.gz",
+    "snapshot_sha256": "7599c462daeb1cc731c9028546d56182d0d5d9c33dbc56a5ef98c10cc9a2c728"
+  },
+  {
+    "source": "Physics/include/NxIntersectionBoxBox.h",
+    "source_sha256": "f911404321122d8c17754271a746d99ed0106d3ec633bdea45332cd4f5b3a790",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-54-NxIntersectionBoxBox.h.gz",
+    "snapshot_sha256": "9dab997023da35fa37b74093bededf9d5ddd4be36bd7fa9af1e0ab02079f1853"
+  },
+  {
+    "source": "Physics/include/NxIntersectionPointTriangle.h",
+    "source_sha256": "5ca59f2eaa3e0b33e342968c44cad05baa91642784e621ca91fd6f8d8cd59ca7",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-55-NxIntersectionPointTriangle.h.gz",
+    "snapshot_sha256": "444c26164505920d0ac8341fc0ed23db23a7615c851c51910d399b589be65567"
+  },
+  {
+    "source": "Physics/include/NxIntersectionRayPlane.h",
+    "source_sha256": "fa425eccf68290ec567ce79dc4445a625f3cce38eb6a3c6033d89bc4d932b9a7",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-56-NxIntersectionRayPlane.h.gz",
+    "snapshot_sha256": "41e3f664ceb3293d3528ae4cd03e38e7a0704af606d8826f2336c912198e257d"
+  },
+  {
+    "source": "Physics/include/NxIntersectionRaySphere.h",
+    "source_sha256": "3b3a326b99841d8ef1ca1458ba5c683403f6f16cb9f60a8fb63e4ae585c90b0a",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-57-NxIntersectionRaySphere.h.gz",
+    "snapshot_sha256": "d7c48d1bcca8a238c35692d82a5a31187dae34e21535169c9db65dca2a3c7eb2"
+  },
+  {
+    "source": "Physics/include/NxIntersectionRayTriangle.h",
+    "source_sha256": "fffcb005acbe0e6656fe1ac7c4d40c6770fda4006bc3a2e4be3457e2537ce4b3",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-58-NxIntersectionRayTriangle.h.gz",
+    "snapshot_sha256": "0ac0a176ce06ac0c434b360ad17af4e97ac14a3353845a5cb1a3df9766dfdc86"
+  },
+  {
+    "source": "Physics/include/NxIntersectionSegmentBox.h",
+    "source_sha256": "6abfe23ad9fde40e22a95aea522698c0a315172613bc127186d5e093039a058a",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-59-NxIntersectionSegmentBox.h.gz",
+    "snapshot_sha256": "cccd09dd6e97ae5b403c8c57641066396417b5dc9d963eca40e2768a69f43eff"
+  },
+  {
+    "source": "Physics/include/NxIntersectionSegmentCapsule.h",
+    "source_sha256": "4fe362473a097dcac8ebf78ba461349c683b474e8f442cb9304a7b229d4bfb17",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-60-NxIntersectionSegmentCapsule.h.gz",
+    "snapshot_sha256": "f8f53bd1b853d96a2532aa3cc8e6089931a812557721d53e1faf030d42090a6f"
+  },
+  {
+    "source": "Physics/include/NxIntersectionSweptSpheres.h",
+    "source_sha256": "5b2f7aad62d5f38d35a122ce442c21a1a9da30192c30aa7132d32984cce9bc3c",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-61-NxIntersectionSweptSpheres.h.gz",
+    "snapshot_sha256": "966f0a534352a00dfe6ad58a0c9072d0092c1bba82c14354ae9dc7d4f2512a9e"
+  },
+  {
+    "source": "Physics/include/NxJoint.h",
+    "source_sha256": "44e712337886b36eac2dedef026fcd98a019b4417c1437bc651873226ea383a0",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-62-NxJoint.h.gz",
+    "snapshot_sha256": "cea12716203c9dacd7487d00b411a12ac34e325ead5340d1a2af7d42c2629029"
+  },
+  {
+    "source": "Physics/include/NxJointDesc.h",
+    "source_sha256": "462faa8e98510817cb6a91016fb927de355eccda45ec10e11c4d720ff926cf2c",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-63-NxJointDesc.h.gz",
+    "snapshot_sha256": "aff37fcd0be60085e8a7356c3a8e6a969b5e4f54e625aa233dd7f5f3738b4c45"
+  },
+  {
+    "source": "Physics/include/NxJointLimitDesc.h",
+    "source_sha256": "a1d17ef81e7d8cdf2e408fdb244d5b31d61454a48aea170740f2e7412ecf04db",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-64-NxJointLimitDesc.h.gz",
+    "snapshot_sha256": "e3d3c2175b9b323b19657ae9d29c3af051d8737cb25ffd80427e56f0688ac6cd"
+  },
+  {
+    "source": "Physics/include/NxJointLimitPairDesc.h",
+    "source_sha256": "acef6a0a2f6c326e4f668286580015e27bb5b17abdbeddc0ced02d27032dafe6",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-65-NxJointLimitPairDesc.h.gz",
+    "snapshot_sha256": "1cdb1acf2ff4b6d272aa244c13e87d1d5742e3cfaeca5dbf1ddb05785ee4dc44"
+  },
+  {
+    "source": "Physics/include/NxMaterial.h",
+    "source_sha256": "f7ae121a649ec68924bcc4c77c81e41e00c0fe32063d9b8be717ce97e480d5cc",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-66-NxMaterial.h.gz",
+    "snapshot_sha256": "09e5b522a4a7e27d77ed197c480ba7ff01828a0fa1dcc5aa3aeb4b1e7d71bad4"
+  },
+  {
+    "source": "Physics/include/NxMotorDesc.h",
+    "source_sha256": "fccab557a82dfd41640b2e307e9b711d5ef69c7c7a5251845bcbc9c1e2c101e3",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-67-NxMotorDesc.h.gz",
+    "snapshot_sha256": "0344929313e04856766d1a81dd32d642111432d23514e6e4ba05b8027e0dbfd7"
+  },
+  {
+    "source": "Physics/include/Nxp.h",
+    "source_sha256": "ab032b9cc2f1a10b48b6bde81430fac22b6f2a7f73e2e46d4bebba19e45a1743",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-68-Nxp.h.gz",
+    "snapshot_sha256": "26f88177c46887952514b3726883a4f5790e63c3ffa1fd24644b4f9b2caca3bf"
+  },
+  {
+    "source": "Physics/include/NxPhysics.h",
+    "source_sha256": "f18d53dda97d8e0b160ba31e6e5b8c9334bffe72aa4aa53f56c6515ddee6b048",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-69-NxPhysics.h.gz",
+    "snapshot_sha256": "bf2d97df079bbb73ac9ff47001b077de584ae5f416ebb8e74d530f93233a02ea"
+  },
+  {
+    "source": "Physics/include/NxPhysicsSDK.h",
+    "source_sha256": "5d0df9ec5fc246fbf5b5e32adf4147f77f58e96fc42a10f025ab7d9c7dc2a870",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-70-NxPhysicsSDK.h.gz",
+    "snapshot_sha256": "b45a5e45cf6184c197351508dad2d147ccb876030d83c0155552dc82545ab36b"
+  },
+  {
+    "source": "Physics/include/NxPlaneShape.h",
+    "source_sha256": "d33cc25d6b6449cce66128b927d92fc4d1e20d8c3d69758be5dcb1246454ca86",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-71-NxPlaneShape.h.gz",
+    "snapshot_sha256": "efa6dcedde6c7b847a13f288e161bef13d4aafe62c9d429798a8ab4517a95b75"
+  },
+  {
+    "source": "Physics/include/NxPlaneShapeDesc.h",
+    "source_sha256": "59ff38fd9b69995aa7340ee8777a0dd2a291be26d8e51e95fb7ade6febccb1ec",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-72-NxPlaneShapeDesc.h.gz",
+    "snapshot_sha256": "ba4a764fd0e93861068ba0169dcda14132e9a288d7fa745d15d0c1cfd6df9fe6"
+  },
+  {
+    "source": "Physics/include/NxPMap.h",
+    "source_sha256": "4c5fabf63e7f90a88366dcdc00ef15f862d579db618a59f4bce40da241fe627f",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-73-NxPMap.h.gz",
+    "snapshot_sha256": "fd29e46a133e128115f05d416f9197574827f8a25128843a44bef2f2a8964244"
+  },
+  {
+    "source": "Physics/include/NxPointInPlaneJoint.h",
+    "source_sha256": "4fb53a953726ae348282337dd0fbf82812b9751ae75af173f30b2b83726af7ec",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-74-NxPointInPlaneJoint.h.gz",
+    "snapshot_sha256": "5c360f5c4ccfe7dc2733206432530b7a353fbdb0e6e8c543d9c53e035e5fcea0"
+  },
+  {
+    "source": "Physics/include/NxPointInPlaneJointDesc.h",
+    "source_sha256": "12209dc6554d40541aac8125c63fe034c7e6828e47882580508990c626f31f9b",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-75-NxPointInPlaneJointDesc.h.gz",
+    "snapshot_sha256": "9a33556ee67df5e0f9da8c3faa1c04dc630ec1e5dc7ff6889d9d2819cdf68392"
+  },
+  {
+    "source": "Physics/include/NxPointOnLineJoint.h",
+    "source_sha256": "48944fa6ce9bff4918b40b7405303ff5ca47055c196530f87fc235588f318252",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-76-NxPointOnLineJoint.h.gz",
+    "snapshot_sha256": "1f8cda81d819d721e58a2625a590ec8432ca523a0687a6f3153718c5293d0fc8"
+  },
+  {
+    "source": "Physics/include/NxPointOnLineJointDesc.h",
+    "source_sha256": "0292d304f96d96a46c5b47d13f5be7ec4a28677790ccad5456132274deb5ebb3",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-77-NxPointOnLineJointDesc.h.gz",
+    "snapshot_sha256": "9704291ff96ebbb46d258e1f1289feef072e2cdac10366e0e108df925c3162d7"
+  },
+  {
+    "source": "Physics/include/NxPrismaticJoint.h",
+    "source_sha256": "0691c7948be27e387007566bc1a7684b86fd35d0ccb777d0df7e5c0537cac349",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-78-NxPrismaticJoint.h.gz",
+    "snapshot_sha256": "018d2e9999834c349ed8ac0ae62fea65a9f70a5e0806cc69715e40565ca4b5d8"
+  },
+  {
+    "source": "Physics/include/NxPrismaticJointDesc.h",
+    "source_sha256": "5d5fb669839cbe21527f7f2e932e66cbda6af39244abd1e8f7007ef010af48f6",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-79-NxPrismaticJointDesc.h.gz",
+    "snapshot_sha256": "fee7501d5da1548a1b30f29587cff1d43fb6f381e7728a978dbae5cced6e2ab1"
+  },
+  {
+    "source": "Physics/include/NxPulleyJoint.h",
+    "source_sha256": "29ef5bcfde5efdb36b3f84448c14236f51a4a44436173ac3d096683649d7bc68",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-80-NxPulleyJoint.h.gz",
+    "snapshot_sha256": "f8c35666781ab292e3aa140b6985ace2b1914edc4ad47acb26f0cbf88815b157"
+  },
+  {
+    "source": "Physics/include/NxPulleyJointDesc.h",
+    "source_sha256": "6e645cb5c9ccaed6387db9510316d61cd69d159c12bd71550e0be7cd5a85ec97",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-81-NxPulleyJointDesc.h.gz",
+    "snapshot_sha256": "f7c668df23645ec40bae6a56be6c40f3c7d76bdc73b5412376db87c3181ee61b"
+  },
+  {
+    "source": "Physics/include/NxRevoluteJoint.h",
+    "source_sha256": "26804ab910065a072b5e94ad72ae4d616d3b5c26bea15da6a55116ec7cb44352",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-82-NxRevoluteJoint.h.gz",
+    "snapshot_sha256": "0601dae1db5b08a595eef432b2953ff5be54f1587b1168d3f1e8f7ae50bb9948"
+  },
+  {
+    "source": "Physics/include/NxRevoluteJointDesc.h",
+    "source_sha256": "023acda7cb0c36256d94cf05954aa8bfed5037994b7cd4b8c52cfdf0c4325a0d",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-83-NxRevoluteJointDesc.h.gz",
+    "snapshot_sha256": "25a2fe97bd5b2c8029cf9959455fdaa17581dd4b390793a3464282601b8a595e"
+  },
+  {
+    "source": "Physics/include/NxScene.h",
+    "source_sha256": "fc7c01b709918cc5c6e1211d21ed51f8f243aa7cbd6412463c6e1b62dd005ece",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-84-NxScene.h.gz",
+    "snapshot_sha256": "e903426bb733647f8b5adae8bdd8e1330840f6af25a2ec926d50cfb99572b24e"
+  },
+  {
+    "source": "Physics/include/NxSceneDesc.h",
+    "source_sha256": "939fb49f74691c2c3560d41ba456efb9032fab0f79f96085f1263f2801c37913",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-85-NxSceneDesc.h.gz",
+    "snapshot_sha256": "ed0a9ab4d4adb1c365b7c10fb6cdaade7076d093902f5716bc89b2436acb831d"
+  },
+  {
+    "source": "Physics/include/NxSceneStats.h",
+    "source_sha256": "802ba469b560fa34a4142902327d978b62d2b3b065137011b1aee114d9862f3f",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-86-NxSceneStats.h.gz",
+    "snapshot_sha256": "2f1d2cc64207312c305cdd2bcb3202bb1c00000731f7ef86f3b8066ab745a8f6"
+  },
+  {
+    "source": "Physics/include/NxShape.h",
+    "source_sha256": "1446db87be924e21c0026ec188f9c805f69a1e8266af11ff317bbe5713e011aa",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-87-NxShape.h.gz",
+    "snapshot_sha256": "6e8f0faf5a1fe1cafc5de397f5217a09f97ee32dc95e66deb40ae85f11f3181f"
+  },
+  {
+    "source": "Physics/include/NxShapeDesc.h",
+    "source_sha256": "15202464a9ac5c239c593003e5a22ac26bad6cf8f4f3e06a771789028138264d",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-88-NxShapeDesc.h.gz",
+    "snapshot_sha256": "afc0ce85bfc75d39265b91507bd4cfda771594f0126421e53e11cdb1628399ac"
+  },
+  {
+    "source": "Physics/include/NxSmoothNormals.h",
+    "source_sha256": "b21e7769a43213abd188f8fbfb8e30369f8a2fe0ed565054ac846a6376b58f70",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-89-NxSmoothNormals.h.gz",
+    "snapshot_sha256": "7472078be58e364f062b48688ae42d821b41c1adff2044247b58c102626821a1"
+  },
+  {
+    "source": "Physics/include/NxSphereShape.h",
+    "source_sha256": "9bd0778d851b5ee194db22457c7413783d234a338d4458668d26a394864e1806",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-90-NxSphereShape.h.gz",
+    "snapshot_sha256": "221573d48412713e565d4194774193072b9b743a71cc8c6e5cc3c21f998c876c"
+  },
+  {
+    "source": "Physics/include/NxSphereShapeDesc.h",
+    "source_sha256": "54291ceb1a322584e8c189373a62cacae4594b5f8d5a86f14828c11598a8e8d4",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-91-NxSphereShapeDesc.h.gz",
+    "snapshot_sha256": "0d6e99c221876eb93d608c83ea3e6a9b166bc352e3f1c7c9a6f887f58ad8f53b"
+  },
+  {
+    "source": "Physics/include/NxSphericalJoint.h",
+    "source_sha256": "32138264b37e38c651d9ea4326c7ca0e30daf58b81d22b9c7f681880aa47a2c6",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-92-NxSphericalJoint.h.gz",
+    "snapshot_sha256": "11cf53c6aeb3349fa909ab087d793ab7669dbe5fd51c92cefd6a4efe33518a25"
+  },
+  {
+    "source": "Physics/include/NxSphericalJointDesc.h",
+    "source_sha256": "c4e8b7a48600d9c7cb459dbd4613b52a208859242f1e04b1c5acaeca31243e88",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-93-NxSphericalJointDesc.h.gz",
+    "snapshot_sha256": "081ae00ecbe46025526726c59f1cb2e7bad338a424492e78dd6f2042233a6d03"
+  },
+  {
+    "source": "Physics/include/NxSpringAndDamperEffector.h",
+    "source_sha256": "b7e3c5d39510e27cc172b2502ef0fa6ba189e4503b2e0fa422d00e2a103abf87",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-94-NxSpringAndDamperEffector.h.gz",
+    "snapshot_sha256": "409e2126cdc29ce43d5979480114b0eee6cb83c57322f5bb9f904b9911d1898c"
+  },
+  {
+    "source": "Physics/include/NxSpringAndDamperEffectorDesc.h",
+    "source_sha256": "ca83425d170761cd44a3cc1d9be66dc9384924f153137574a3047ebafbfd91a3",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-95-NxSpringAndDamperEffectorDesc.h.gz",
+    "snapshot_sha256": "187aea9e43dce44dbf8423fbb81cc98c0be1a48a9543fe89cb5a001aad891b5d"
+  },
+  {
+    "source": "Physics/include/NxSpringDesc.h",
+    "source_sha256": "7ac04bfbb79514556c1a88b5e7a7fa7be8e4f7f6c935e1739b4ccc3cfec55e36",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-96-NxSpringDesc.h.gz",
+    "snapshot_sha256": "1b4ba14194e9a7142b94147bb1a1d9eefb5be5cf66baa43ff5e68b9942276de6"
+  },
+  {
+    "source": "Physics/include/NxTriangle.h",
+    "source_sha256": "6736d61772841797624330d7215fda763d69096f89b5ce1f002fe2e50904de71",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-97-NxTriangle.h.gz",
+    "snapshot_sha256": "c54ca8d990ac75fd7da7c46006147707353bc661743f444eeb772c8dde39eab9"
+  },
+  {
+    "source": "Physics/include/NxTriangleMesh.h",
+    "source_sha256": "dcfc6270233680a70db793d4ff4e65a8e5b6404be2d11b346386b0709d0a0e88",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-98-NxTriangleMesh.h.gz",
+    "snapshot_sha256": "1237ed4e1b0cc2bba94d3ade87477e18476281353cfd236e2316fca3de4ab283"
+  },
+  {
+    "source": "Physics/include/NxTriangleMeshDesc.h",
+    "source_sha256": "56924dabd4d2d5bce6354556a7610f63acbd1f5056bc5db6d270355893a39bd7",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-99-NxTriangleMeshDesc.h.gz",
+    "snapshot_sha256": "23a6283fe29b832b1a4474de35630f6edf5230bf4db48dafc419f70f59ad96d6"
+  },
+  {
+    "source": "Physics/include/NxTriangleMeshShape.h",
+    "source_sha256": "bda8e3d49c0db8dad21f48ecb00aa17ffc4cc7c4356ff70ffa8dd5290632b54e",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-100-NxTriangleMeshShape.h.gz",
+    "snapshot_sha256": "1edcddb1cb51a69ee3eac2ec943eaeb5bb2c743d5234b1008ee2b33f652dda5d"
+  },
+  {
+    "source": "Physics/include/NxTriangleMeshShapeDesc.h",
+    "source_sha256": "f51df1fc06b8dc0bd7392711bc4fc08f9c65d90843583dc68a0a6ecac8a96d0a",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-101-NxTriangleMeshShapeDesc.h.gz",
+    "snapshot_sha256": "7b8c6d090bb49b2e34d8cc843a25be5a4ef01f3b29856f69156812c39d13e636"
+  },
+  {
+    "source": "Physics/include/NxUserContactReport.h",
+    "source_sha256": "d041d703babbac9a0e7fb6958c63fcb408f0537d8ba9a84c45c32217b1d0d3eb",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-102-NxUserContactReport.h.gz",
+    "snapshot_sha256": "6c0b38d58837d8bdb8f0c859b6ad1eb606b7050d30a6ebbeb6a6f4be89b08bdc"
+  },
+  {
+    "source": "Physics/include/NxUserEntityReport.h",
+    "source_sha256": "6294095b050983d97e845ad2e389a9d7d6ab1fc4077cb08302ec065ad6b2dbf9",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-103-NxUserEntityReport.h.gz",
+    "snapshot_sha256": "750ea120cd8046df5c69f4613a7123c2edcf42a3cda46fbbfb6cc4cc6401761e"
+  },
+  {
+    "source": "Physics/include/NxUserNotify.h",
+    "source_sha256": "d60aadf49bf589059cf499109dfd0af3d6e61d3cf7b13d8fbc74e3621ff83455",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-104-NxUserNotify.h.gz",
+    "snapshot_sha256": "cdf2d788d5b318ab706f0c225c4a084e71efac8f511e43e3aa06c33bb9585577"
+  },
+  {
+    "source": "Physics/include/NxUserRaycastReport.h",
+    "source_sha256": "015c8fdaae79435bb713bd42757954b3f4d1408a161040833e80a1c4e86ee1ec",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-105-NxUserRaycastReport.h.gz",
+    "snapshot_sha256": "678ff72c4622fa95171a4a05f5635ea843d001e2865c9040133aa5654fdedb89"
+  },
+  {
+    "source": "Foundation/include/Nx.h",
+    "source_sha256": "0f1411124c2b704e5bfb72ca476297840692f1c6c4df47daf1185530070464e4",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-106-Nx.h.gz",
+    "snapshot_sha256": "f73d6bbfce6391b624673d1e5887a58f521988f71c18716a0099fa0992021d44"
+  },
+  {
+    "source": "Foundation/include/Nx12F32.h",
+    "source_sha256": "ba4bbbf13aad6e32a7a9f82306d8a96b8c78311c8f5769c29d37ca5e93a38b96",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-107-Nx12F32.h.gz",
+    "snapshot_sha256": "c842f662b79270b107a399b9f8842f39afc78190e395e1508be3729fca7fb865"
+  },
+  {
+    "source": "Foundation/include/Nx16F32.h",
+    "source_sha256": "bb786b47861edeec6917b6fc7aaff97c93bae473fe9d9c92184298b2a75d4cd5",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-108-Nx16F32.h.gz",
+    "snapshot_sha256": "0ca421cb3c824ef5e908d871c52d77d68067f01283db205838af599d0183e6fb"
+  },
+  {
+    "source": "Foundation/include/Nx9F32.h",
+    "source_sha256": "7e5bf33f115fbb2e4203c11cd3b9f26bd4ab4d2732e8ae724436da298eed64c6",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-109-Nx9F32.h.gz",
+    "snapshot_sha256": "248303cb769f8e56fed81b7acd81cc9345799bc133e8768a70fd30a3dba48f1a"
+  },
+  {
+    "source": "Foundation/include/NxAllocateable.h",
+    "source_sha256": "dc5156a04e731c7a0574b89f583a244f91021b2decb187eb5bcfaec632beeab5",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-110-NxAllocateable.h.gz",
+    "snapshot_sha256": "77cf7d3c5e47ba6b5ea600a2818eba37469909e1686c4af548746bbe9096953f"
+  },
+  {
+    "source": "Foundation/include/NxAllocatorDefault.h",
+    "source_sha256": "f7af0e4db1d123ecdae6d412105d8666d939391da74216433b6d965c069509af",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-111-NxAllocatorDefault.h.gz",
+    "snapshot_sha256": "57ce3436f90132b03e340d09a8937591777bce28edea6c96496d9dac1c52b368"
+  },
+  {
+    "source": "Foundation/include/NxArray.h",
+    "source_sha256": "8a64f16ae54412c7087c35d4de0a161c4485e7bbc9a0c51ca947a3f2058b45f6",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-112-NxArray.h.gz",
+    "snapshot_sha256": "9c0df94a1d723ff282a42e826d4c9bdd91e0d524c3c8d38510ae4305fbff9e38"
+  },
+  {
+    "source": "Foundation/include/NxAssert.h",
+    "source_sha256": "8a144be9690039a11e9879d9a6c4151e33c326ffdce2598aa7f54c2536b1a825",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-113-NxAssert.h.gz",
+    "snapshot_sha256": "2a9fb4ad5cf14b07d6947489bd038626e16ea32fabecd39fd84438cbd5e5e371"
+  },
+  {
+    "source": "Foundation/include/NxBitField.h",
+    "source_sha256": "457f929e339ac136150af13c6a392ff5c077ac650c651c18962113455be835d1",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-114-NxBitField.h.gz",
+    "snapshot_sha256": "618270ed3b6b7bb50aa02c23d38a3dcdbfee78155017052bebe5c3888c1c5a18"
+  },
+  {
+    "source": "Foundation/include/NxBlank.h",
+    "source_sha256": "b2d6b42fad0dc95c525e0c4ff9ec53adf34f14b0a2a5ea9939f4a7bf424058d6",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-115-NxBlank.h.gz",
+    "snapshot_sha256": "69f57da16eacadd1cc166651fe022c6455c55c81582f7e3a940addceb2b5c506"
+  },
+  {
+    "source": "Foundation/include/NxBounds3.h",
+    "source_sha256": "c7763076cb80b44863fa2faf71d1710548e2b96323b6ebe6dc557b56efd86c42",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-116-NxBounds3.h.gz",
+    "snapshot_sha256": "b523f21d0047de202f90c1209bd99ff80c7bcb54dc81c284183c024a785d084f"
+  },
+  {
+    "source": "Foundation/include/NxBox.h",
+    "source_sha256": "453505eea6459281937094b4e5e4b7782bec48e817d19d2e586a7c7c2dbda4bf",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-117-NxBox.h.gz",
+    "snapshot_sha256": "30c1c16c8f9635a609cdd61f1c2fedb5f1bc838108ff540ac56ce5fa41475259"
+  },
+  {
+    "source": "Foundation/include/NxBuildNumber.h",
+    "source_sha256": "8bc6af66adb5adb9bfa8e402ee2bb4be23fc089b4c2835d174f41300aa0a028d",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-118-NxBuildNumber.h.gz",
+    "snapshot_sha256": "fcc9960df9daff7dee087147648775646640306e24c04142b4af42c728865bfb"
+  },
+  {
+    "source": "Foundation/include/NxCapsule.h",
+    "source_sha256": "b019a841676991483cd8cd306af298a07d09b07aac1014651e028157ce87cd90",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-119-NxCapsule.h.gz",
+    "snapshot_sha256": "f789ea8c82a922140b1403e406aa2f37c27b46f65063bd27299c003806f1ac2c"
+  },
+  {
+    "source": "Foundation/include/NxDebugRenderable.h",
+    "source_sha256": "bd05064e4c2363d39c137b2630dc23e62eaca09bfd62d88f056a69013fc2b2af",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-120-NxDebugRenderable.h.gz",
+    "snapshot_sha256": "ac310f4cc1305cc1615298cc9cead706f2e6bedea50a202869443f6c021efab8"
+  },
+  {
+    "source": "Foundation/include/NxException.h",
+    "source_sha256": "999cc86008a233615c16f6e772cf37c44e1e71dd1dc496ac8e2b36def4874f76",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-121-NxException.h.gz",
+    "snapshot_sha256": "b17e045693cd81a6d5987a5c44da71cc2ee8311f05eca73034724268d8431719"
+  },
+  {
+    "source": "Foundation/include/Nxf.h",
+    "source_sha256": "9303dc95fd07426f00bd803e7f024b2dc690da302b2487161624a893ffadbf38",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-122-Nxf.h.gz",
+    "snapshot_sha256": "86ddf37ddc0b3248775368c223a48860f3f834792890bcef5a949d2c8f38623e"
+  },
+  {
+    "source": "Foundation/include/NxFoundation.h",
+    "source_sha256": "bca036d356a428cc1d85620d0846ed672632d47963877f9e5f163551d8207cf5",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-123-NxFoundation.h.gz",
+    "snapshot_sha256": "56a3380a6a501a603059346a0aae73d28db0dba9a43ed9c10cfe88d508329c94"
+  },
+  {
+    "source": "Foundation/include/NxFoundationSDK.h",
+    "source_sha256": "31426e5966dbe0215b430daffe91ba8a7063b1853b1b51995f66e6850ecf6dbe",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-124-NxFoundationSDK.h.gz",
+    "snapshot_sha256": "755791eab3a3d9e4106aa37eed908e265705d53d76eca1a5ad7c9a048d31fd43"
+  },
+  {
+    "source": "Foundation/include/NxFPU.h",
+    "source_sha256": "6e70ea83197140f67451f4a690a7f8848cf17c4e3858721b0e2a254e8ba22995",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-125-NxFPU.h.gz",
+    "snapshot_sha256": "8b0bdbc192557967cc52fb9442beba6eb482273a18bad8b4c54bb2605645f16f"
+  },
+  {
+    "source": "Foundation/include/NxList.h",
+    "source_sha256": "c59f413d86d739af0408899233d41f53180da34e7804acc47df41a0f0c405ca8",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-126-NxList.h.gz",
+    "snapshot_sha256": "627a00b00b7b399f2b9a204c1b1ea0e805aa066752cede26a370a86e2e9ddf45"
+  },
+  {
+    "source": "Foundation/include/NxMat33.h",
+    "source_sha256": "20d47881227a4ac033a4a2c618d6fc3cb1bafd9b086d7b12e56c683b7bf08ea5",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-127-NxMat33.h.gz",
+    "snapshot_sha256": "bf24e1b1a63f48b3f3c8660c4384b441a829f7bf254e1b4707acd7142048a1e9"
+  },
+  {
+    "source": "Foundation/include/NxMat34.h",
+    "source_sha256": "26fb30b99d68209cb3fc45f91d18bb26503119263a04576997e39a079cb7faed",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-128-NxMat34.h.gz",
+    "snapshot_sha256": "0ca3b515e3739a736b18a4f9271d20cc6fe9155fc7227b1f30b67c51b83aaa22"
+  },
+  {
+    "source": "Foundation/include/NxMath.h",
+    "source_sha256": "93e85905e8515f33b2b6a55dc19cc90e9e3deb43d302bd7eaddc37ee52e74c20",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-129-NxMath.h.gz",
+    "snapshot_sha256": "bbb31c39da367080425ae2cd8832f9394aefe905250e059228c8ff6fad2e2024"
+  },
+  {
+    "source": "Foundation/include/NxPlane.h",
+    "source_sha256": "9ee607a71ab37b82c641cff4d1c026f2a24aa51c7ef33c1dc6acc5874a22f552",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-130-NxPlane.h.gz",
+    "snapshot_sha256": "bd6ab3aa6f08720c316724853bf1b051cbc17b4f62a21fdd05ddbedd47235148"
+  },
+  {
+    "source": "Foundation/include/NxPool.h",
+    "source_sha256": "94688d29641eaad9a16170e3470991c23266190c84732f8513bee8cbc1d3c251",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-131-NxPool.h.gz",
+    "snapshot_sha256": "acd4bc595a870adbd4b70c0c8f66fc285aa15f58fe39635043443124b713b8b0"
+  },
+  {
+    "source": "Foundation/include/NxProfiler.h",
+    "source_sha256": "203efe91b8a04e1459aab30545d4b424b6a7832e27d738e4ef88f238e9d7699d",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-132-NxProfiler.h.gz",
+    "snapshot_sha256": "757f8d19423dbaac841796e4e6c04d584d8bba79b36d80afa2d24adba4f0258b"
+  },
+  {
+    "source": "Foundation/include/NxQuat.h",
+    "source_sha256": "58fd4d399650ba087a5441315d4faeed0250be1d8a348c23006a450fd53bc18e",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-133-NxQuat.h.gz",
+    "snapshot_sha256": "c3a65fd51c58a41bb852fbec7e13851487e29902c64e9abc2e0d58fe76b670d4"
+  },
+  {
+    "source": "Foundation/include/NxQuickSort.h",
+    "source_sha256": "f582c562f1812ec9c63ea8553af258f54cca199b3e6b05993fbc417378133067",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-134-NxQuickSort.h.gz",
+    "snapshot_sha256": "065576d2906d458950a711a7adc41e5c9f78821e468442a1e35cfec208b2175a"
+  },
+  {
+    "source": "Foundation/include/NxRay.h",
+    "source_sha256": "e05ad1eca258d12ed08fedc8b03dbb88cd6bf1e1d7a35f10486f54c664cbab7e",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-135-NxRay.h.gz",
+    "snapshot_sha256": "0281551338e71d2dad6b02cb1ba340e5a8a29434669fa5ded168b68e7a8ea151"
+  },
+  {
+    "source": "Foundation/include/NxSegment.h",
+    "source_sha256": "268cb4d45d49a0f3d2eb4f692d43d97aa21d24db761014d242495e6e54a4008f",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-136-NxSegment.h.gz",
+    "snapshot_sha256": "75cd573c635983085593d60723a254c2d0d9746f8d8ac46d8361f979bc79a743"
+  },
+  {
+    "source": "Foundation/include/NxSimpleTriangleMesh.h",
+    "source_sha256": "c8b4dd640bbe297b29dab1a3521da3cf6444edd384f06f35f6a63ff58f667995",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-137-NxSimpleTriangleMesh.h.gz",
+    "snapshot_sha256": "4a5499f20b1ea1845aad22bfc8ac24e3baf82ed1744e55f9739fa065a664729e"
+  },
+  {
+    "source": "Foundation/include/NxSimpleTypes.h",
+    "source_sha256": "74f162f50a02d66d62144261c0044945ded354bb67efba21562ee9362c3ab203",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-138-NxSimpleTypes.h.gz",
+    "snapshot_sha256": "77a622f01eb1f89be644c1157efbccf5f41156e11b918ae37e96243ed5305554"
+  },
+  {
+    "source": "Foundation/include/NxSphere.h",
+    "source_sha256": "9d205a2d69fbfed1e27cf69bd7054cbbda07516d7e68fc54c33ffac899609970",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-139-NxSphere.h.gz",
+    "snapshot_sha256": "dbaf27cac697b886733f84d68f54f07512bff512644f98e3d9f7353b456dc4f1"
+  },
+  {
+    "source": "Foundation/include/NxStream.h",
+    "source_sha256": "406f5261e4dcec6a87c3a654e1c16bb05f23f362df45627193efaa159bdd6a12",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-140-NxStream.h.gz",
+    "snapshot_sha256": "38d89b0e2cefe1265abda48551bc171da9b858a90f39dd60415caeec7de0f966"
+  },
+  {
+    "source": "Foundation/include/NxUserAllocator.h",
+    "source_sha256": "d9a9099d220e18c854f4e1d856d4b4f3809951ba78ec85d1953cc610b5b8e039",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-141-NxUserAllocator.h.gz",
+    "snapshot_sha256": "db8c8075f595ed35d22a234a7badf4c4eac4f684263ce7d8448c531338809214"
+  },
+  {
+    "source": "Foundation/include/NxUserAllocatorAccess.h",
+    "source_sha256": "0cb14602986db655d7f7507de33033bf29601abb620ba0491dcdd1609ff86cbf",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-142-NxUserAllocatorAccess.h.gz",
+    "snapshot_sha256": "35f7ebd1cf98c43f4fc2b9c4abf904f93d16d2a3b476ecbdcd38e579dde62ceb"
+  },
+  {
+    "source": "Foundation/include/NxUserAllocatorDefault.h",
+    "source_sha256": "afe8cc95c7ad796e09f97b46e0ebe9a62d8c06afe25d422629dd842bf207fb53",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-143-NxUserAllocatorDefault.h.gz",
+    "snapshot_sha256": "573287934fc5e87860c3d0a1c38af7245a56421bc4e8b69d58fa1a1adb522d44"
+  },
+  {
+    "source": "Foundation/include/NxUserDebugRenderer.h",
+    "source_sha256": "1f1dd04c5be2abd80479aa755f53f028978869539e370000682289f10263baee",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-144-NxUserDebugRenderer.h.gz",
+    "snapshot_sha256": "e5ff70a76006a3c0ecf8a4770702d6e4c3139a0d002461f3a92381291043357f"
+  },
+  {
+    "source": "Foundation/include/NxUserOutputStream.h",
+    "source_sha256": "7f9f3b9b92a36c84acf166b5c2fd84db70733899caa1569e0784de4bfbb33965",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-145-NxUserOutputStream.h.gz",
+    "snapshot_sha256": "6e13061a4e9f455379cbc6a975eeacdeb3ce3c1ce5ecfdbedc370da0b99b58ff"
+  },
+  {
+    "source": "Foundation/include/NxUtilities.h",
+    "source_sha256": "ee639cb8ceb5edd2d770775232dfd1628eccdc3b7631689c6f082437e31910ee",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-146-NxUtilities.h.gz",
+    "snapshot_sha256": "fef7ac541bd948be7951b3f6e4a191b893eaa9aa0d62697699a0184611e454eb"
+  },
+  {
+    "source": "Foundation/include/NxVec3.h",
+    "source_sha256": "852a0e2dd0595a10bb993f1b202cf98d11218ab4edfff0931646e049fcc28629",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-147-NxVec3.h.gz",
+    "snapshot_sha256": "710bb9f75c7e1543bd48adae064d913b459c38595671175b6001f0c65cdc3b95"
+  },
+  {
+    "source": "Foundation/include/NxVersionNumber.h",
+    "source_sha256": "0b0ee61a53b886437e2a0ef7f5d9b123d4d8ccd178ebd6057eeddc3e552e3df1",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-148-NxVersionNumber.h.gz",
+    "snapshot_sha256": "c9a394108798c21516f33c17de4e5be944c77433f78de6e6d135172c9391b0c1"
+  },
+  {
+    "source": "Foundation/include/NxVolumeIntegration.h",
+    "source_sha256": "e748af935cd1d56999e65449fc95dc7230108f3bd5e51a4052926a287dd2cc72",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-149-NxVolumeIntegration.h.gz",
+    "snapshot_sha256": "3557ec2b8612f5f4cf49d2864af27156936677d58f30f23920e3ec1baac6b39c"
+  },
+  {
+    "source": "Foundation/include/NxXBOX.h",
+    "source_sha256": "964f1207a89b6563700eaee9d44fb4b03e9bac59f933f494f1a8e4339532f665",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-150-NxXBOX.h.gz",
+    "snapshot_sha256": "f14b6bd070772c86a0fd29db357c54ae86dc97e6f912ec1d7814dc6f27b60d52"
+  },
+  {
+    "source": "Foundation/src/include/CustomAssert.h",
+    "source_sha256": "9113f89412dffab8d6fc25e4ef0c460f47c59b4de4500fef15a5aceb18d70d7e",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-151-CustomAssert.h.gz",
+    "snapshot_sha256": "ec538f566d1131aa30e0d2bb268e02415230dbf12e570e0291c69645e8538390"
+  },
+  {
+    "source": "Foundation/src/include/DebugRenderable.h",
+    "source_sha256": "885b521125edbcdc582ca538efc7abc55278e5b2d73d2142905d8afb9246d6d3",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-152-DebugRenderable.h.gz",
+    "snapshot_sha256": "b48c93ab056ef969eb2928a542daf944b928010c0355549e5d0a1b894afc534f"
+  },
+  {
+    "source": "Foundation/src/include/DefaultAllocator.h",
+    "source_sha256": "f30ec36fd93661c1a83e221c89cfbd9755c6c163c19232c6d463297cc5cbbe35",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-153-DefaultAllocator.h.gz",
+    "snapshot_sha256": "59b9f2210af8fa58be7322fae207408ddb9854b866cf194a864dc9f8bbd53e81"
+  },
+  {
+    "source": "Foundation/src/include/DefaultTriangleMesh.h",
+    "source_sha256": "70ec2c6992c28c16f07421b3f0ad053a823f558323113926b8645851810b8f73",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-154-DefaultTriangleMesh.h.gz",
+    "snapshot_sha256": "855b34121d61f4ae004f3dfc46b8cb2c07828628b7061c6875a5d3aa98ff1d19"
+  },
+  {
+    "source": "Foundation/src/include/Exception.h",
+    "source_sha256": "b9691cc56ec76a52fb8ec6cf713c935f22cfdc93b96873d00651451a04ae7adc",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-155-Exception.h.gz",
+    "snapshot_sha256": "3bb2b401a6b9f58eb0d35d936b6e6b8beee6dd7442ebf27842914761bb21b945"
+  },
+  {
+    "source": "Foundation/src/include/FoundationSDK.h",
+    "source_sha256": "5c776faa94d694a1f36e4af3d2e1d0f7c02c5de8ffa1a8cf05b7f3dcf5b3d880",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-156-FoundationSDK.h.gz",
+    "snapshot_sha256": "0c27c888106d0d04e6a7c1a6f0836fe1df5b3fc6fd7f63f5fab537ff4f38a350"
+  },
+  {
+    "source": "Foundation/src/include/NxFoundationBreak.h",
+    "source_sha256": "e604df32ceda2a45894998ceb7c5a4686e2b95f7f307af3ac46b9904c05be315",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-157-NxFoundationBreak.h.gz",
+    "snapshot_sha256": "2424e6e8b2c722427ebe9cd90255e3b45aabf06a0c90a4461e14dbe9be577fae"
+  },
+  {
+    "source": "Foundation/src/include/NxScalarConversions.h",
+    "source_sha256": "71cfa2fcc7ac9556cfa700f714ae15af65a8053d16893fecd1b7b165ae6e2dd7",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-158-NxScalarConversions.h.gz",
+    "snapshot_sha256": "5f8332c7b87ae9a423212d3fa6318b490686d362cff1ace66ad22d1186be5c5a"
+  },
+  {
+    "source": "Foundation/src/include/NxTime.h",
+    "source_sha256": "027aa3ec7855d2308d7cd952bf59023d23b4ea4fc21b7b769f13ef03c78cd8e7",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-159-NxTime.h.gz",
+    "snapshot_sha256": "4366e592d86d90ea3f5142e38c6475d20ac5f9501bd70780709a14b80bd572a2"
+  },
+  {
+    "source": "Foundation/src/include/Observable.h",
+    "source_sha256": "a7d3a3f614786ca67b505188da3e109c6dbf967185d0be7e18660d4b219e207b",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-160-Observable.h.gz",
+    "snapshot_sha256": "7533079187ca5bfe72a382071e6c237c24d9e18fdb681571d48b893fa27ccce6"
+  },
+  {
+    "source": "Foundation/src/include/Profiler.h",
+    "source_sha256": "b479ad5001e98222240a4a0cb174e49678531cd52694c422fce21baaa6bd20ac",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-161-Profiler.h.gz",
+    "snapshot_sha256": "f005978b524940fb2a4053e92c1ce0975a40a72f7fb5c8069fdec4870e7f719a"
+  },
+  {
+    "source": "Foundation/src/include/STLAllocator.h",
+    "source_sha256": "037fa47c21a583fe64d22b22a0063e9d77ce46a6c2232b4dbaa4c9c87f35d1d7",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-162-STLAllocator.h.gz",
+    "snapshot_sha256": "4461940bd0503377664bff9dc58e81251d89461e82b241ad2a4fd8633a4aa292"
+  },
+  {
+    "source": "Foundation/src/FoundationSDK.cpp",
+    "source_sha256": "1fec0c6fc294a7b60b173c8edd30495a48d2db94dc52299db6b79b6a78b7a930",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-163-FoundationSDK.cpp.gz",
+    "snapshot_sha256": "62cecbb2e6e00658e39da8509c7b7304c36c3f9225b844c00f1670e4b1d14e36"
+  },
+  {
+    "source": "Foundation/src/Observable.cpp",
+    "source_sha256": "d75e313d71c76422e225f032c54754cd669692529e267d9975633f36855f9d98",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-164-Observable.cpp.gz",
+    "snapshot_sha256": "2cccbddbeef7f47db9b93604878a7f6f048da0cca9e0057d8ba019f550065c47"
+  },
+  {
+    "source": "Foundation/src/DebugRenderable.cpp",
+    "source_sha256": "4f985d13e3dd47ad7738653600dae86eef13799822492809dc1bbbcf51313003",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-165-DebugRenderable.cpp.gz",
+    "snapshot_sha256": "c4525337cd5aa64fa15a3b41e60f054dca8c277d4140a5364713e6f14da80fe5"
+  },
+  {
+    "source": "Foundation/src/Profiler.cpp",
+    "source_sha256": "b64ad0355259ff0b4029611650206ad9385c45ed49269440e5effaaa45d10348",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-166-Profiler.cpp.gz",
+    "snapshot_sha256": "779f8ffa85fffd99885d7ebd970bf6ec6f070fb6b1fc4bc7176891ae9742247d"
+  },
+  {
+    "source": "Foundation/src/Time.cpp",
+    "source_sha256": "5b97703ac8d465fa4c13b7308d696f2301117f6b409ed90655896558c0dce34f",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-167-Time.cpp.gz",
+    "snapshot_sha256": "fc5c102443d6827d2d3e3c5e2379d8e1a7d127599b52a8fa6ec176a352f1ccb9"
+  },
+  {
+    "source": "Foundation/src/Utilities.cpp",
+    "source_sha256": "5b0ddfc13ba0b01a7a6d3b00d19691b3d6b49a1099aa047913780cd824676b8e",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-168-Utilities.cpp.gz",
+    "snapshot_sha256": "e8e352c49493e9e27e48e320d7055723b311d7bed5992e87203b2de24702f0eb"
+  },
+  {
+    "source": "Foundation/src/Box.cpp",
+    "source_sha256": "0c0405686f372dbdfd707599f757834adbed64ae17d91b04a91f416c54f7f522",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-169-Box.cpp.gz",
+    "snapshot_sha256": "60ce23d347a92664d95ca7a72dc65ee12381c37d5db449fcf11e80f722e3ca16"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceContainer.cpp",
+    "source_sha256": "0a33ba4347791d0684cc25698213d65b3d10ca7881f74b108de5612046707bd8",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-170-IceContainer.cpp.gz",
+    "snapshot_sha256": "fd63c200073c5b0def456508456594d25e5c0f429acb435f181eb070cdbdcdb6"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceTriangle.cpp",
+    "source_sha256": "7e20d62b26baaab942f71e97b4669986355a6cd0ce16b950e9f2d31f608c9d00",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-171-IceTriangle.cpp.gz",
+    "snapshot_sha256": "2c624f90c5c2414b07b99897a9d1bc6ac75c18da2004701c2f83eafc84957f06"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePoint.cpp",
+    "source_sha256": "eea461ba47fbdd90d7e3f163615e26f087e801e1971548a8d375743a4da900c8",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-172-IcePoint.cpp.gz",
+    "snapshot_sha256": "d33152b8f04775ad66bbc910ad44433dac3a9000cd21c4110c7e8e88ca897be1"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePlane.cpp",
+    "source_sha256": "6f8479858e20f7776a10776f821880bced7278a223328d33ca5be563ae7ab05c",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-173-IcePlane.cpp.gz",
+    "snapshot_sha256": "bfade33948066c94e8c21663a11ee3e7b17b3b1ebe98f2d998ea064baeb52607"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceMatrix3x3.cpp",
+    "source_sha256": "b750996f2fa4dd74c89a64c55659bf1e845e95c8dc6893d70eb5e45f0c852571",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-174-IceMatrix3x3.cpp.gz",
+    "snapshot_sha256": "e382d2145483b41ead2167c789a75b6a8b86f2e879b27b759c7fa29761a00c71"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceMatrix4x4.cpp",
+    "source_sha256": "1ab46d4c5264620f3793009170e93e28ebd53df3497bd2f8fbe4c4ce31bcdc3f",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-175-IceMatrix4x4.cpp.gz",
+    "snapshot_sha256": "d42f5d18e3c1675747f4e47ce1b16e26b9122b1c0744d58a87fcc4d53eaa9474"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceHPoint.cpp",
+    "source_sha256": "1fd571664d5028d98f6d1a26d2e30750ce5bee9afb1227d3d3ee0a8866765677",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-176-IceHPoint.cpp.gz",
+    "snapshot_sha256": "9a0712d1994385510232d07f53612f7152d92072633e55912407ab01efd8db6f"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceIndexedTriangle.cpp",
+    "source_sha256": "9c57c7f39e6f0f0413dcff90bfa45c054543ca6bba5f8af226c6ebd1614bc51e",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-177-IceIndexedTriangle.cpp.gz",
+    "snapshot_sha256": "731245ca7b1dc6cb1fd83d9fc4d92483409fc07f75d81e65559e07703f1a225e"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceRandom.cpp",
+    "source_sha256": "b7e9ef779d6e24b01e848c8615bd3588b09638efd096f2f7858b68557952593b",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-178-IceRandom.cpp.gz",
+    "snapshot_sha256": "c2a233a045cdedc149d9eba1fba718964f838e2a0cf03fa53b70cbe3cd256d4e"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceUtils.cpp",
+    "source_sha256": "2c4a9b160fc4cec161b042c38feafc3882d9aaf03786a9d1d12c3c9f9c80d44c",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-179-IceUtils.cpp.gz",
+    "snapshot_sha256": "dfc11b0ac51296198c6bc73425b1036b2edaee12f0bc5c25c6e5f2bce289d9fc"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceAABB.h",
+    "source_sha256": "e90269be5e0647ea83ca1f4739748a41e9c2c27af5a3ecde6167eb4a611f4d23",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-180-IceAABB.h.gz",
+    "snapshot_sha256": "06864e307f29b23514a13444d82e264bff1959b0cf0139eb4837e5f7b47fc8b6"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceAxes.h",
+    "source_sha256": "f91e5f58ed564da5791e8675b294efd72c7a9e2b67696366aec5c153a87828b9",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-181-IceAxes.h.gz",
+    "snapshot_sha256": "b1196b68f9f3687f4fc2dd702aa20b2ae5d4973f7eda35c228fcbebbef66b23c"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceBoundingSphere.h",
+    "source_sha256": "0b380840bcbbdedfacf677019945100cb9a1b0b1f7c2d18e9406062aa1a91184",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-182-IceBoundingSphere.h.gz",
+    "snapshot_sha256": "802cfaed15d78c2cb4ba1166e806dd60feccf95c51c56e4665b6778ad96758e5"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceContainer.h",
+    "source_sha256": "cb92fff78bfa4e8c3f6cc135dc1e37be7c189668814b57aa6622c39e82dbcdf0",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-183-IceContainer.h.gz",
+    "snapshot_sha256": "a4c99cedc3629fc87c91eda75da803fc6a6192237dc4771313daca579b7ec1cf"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceFPU.h",
+    "source_sha256": "81639df2ff746de17f0fb075e82755e1dd48bae23a008926ab7ec4f4dc04f53d",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-184-IceFPU.h.gz",
+    "snapshot_sha256": "707eb0d36a8d4fb0895a15ed5dbccd405f61e788cb282b8d1f0de08101bea494"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceHPoint.h",
+    "source_sha256": "15fb208af9a2235c6474c0cd12d87e1e984737b060893e3d9bc919e0c0d67c40",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-185-IceHPoint.h.gz",
+    "snapshot_sha256": "fdbb068c12573a1a453b5a608b8c804c1f7663a1272ade7628195f1f3ac1d025"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceIndexedTriangle.h",
+    "source_sha256": "9409fb7336f35448ce3e829de137335c6b72974bbc0ab6c1a5291f38e336dff3",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-186-IceIndexedTriangle.h.gz",
+    "snapshot_sha256": "d4fe1a3b26e00206b7b4d165b282b9c305259f3c8ecccbf331597539057ee4fa"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceLSS.h",
+    "source_sha256": "7b15c5914abcfb8457c21c03409289abce1cea622030a8dc2175792783fc5905",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-187-IceLSS.h.gz",
+    "snapshot_sha256": "0f30a8e3b6226a6338536ca2d768bb14a5b953a9b3b9f36c2adf308f40aa6db6"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceMatrix3x3.h",
+    "source_sha256": "ca0cd2cbdf4f6c79c248855e33ac2911db67fe16ae1dcd08d7d7e896b945b786",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-188-IceMatrix3x3.h.gz",
+    "snapshot_sha256": "f18185c1838b76c414dc5643388c899d405539b435e37db0228dd152d36d4e90"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceMatrix4x4.h",
+    "source_sha256": "5706570c8153163ffc74a80801db5bd143b7c5d519d779232f668ab7422a0b46",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-189-IceMatrix4x4.h.gz",
+    "snapshot_sha256": "04b3da76659a876b1b7cb65de2c7ca52c57f360a46fc834ba6e5ddd0bc228691"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceMemoryMacros.h",
+    "source_sha256": "91a1390e1c5dd4c779549ab910a36a2c6506f3cbacf0d913d147ae81ef65814d",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-190-IceMemoryMacros.h.gz",
+    "snapshot_sha256": "75f44b9ab056f25b36fb761b65ccd09783cbd3c6399d51ee7654e18eded37fe5"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceOBB.h",
+    "source_sha256": "3e98df4d33b2145419c60eb4a580b38b85bf412e29b32ab2dc2a90297564d410",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-191-IceOBB.h.gz",
+    "snapshot_sha256": "fe51eacf5b2d98f251c9abb9424972c1a9cc14d64b3c211bff20d12e484fafa1"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePairs.h",
+    "source_sha256": "2d78fc19afb8d4b17d00c9c362ba958432bf672780addd8cfddef40fbaf085a6",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-192-IcePairs.h.gz",
+    "snapshot_sha256": "4dfeddb9aef4b18adb9a449b434f00f55bcea30c3c9aa5bd4e6842f382461ef5"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePlane.h",
+    "source_sha256": "c8a112b887a221e8205a1dcd259fb0f2d853296f132d2fa466e731beb0876f58",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-193-IcePlane.h.gz",
+    "snapshot_sha256": "59de541aca9f0f119631f40c35ad67f3045ee9cdea9168265806ce3250c90804"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePoint.h",
+    "source_sha256": "31c349e61b27e78a8f6dfb7c53c864b117a62cf5016226955ddefbaaf1daef0f",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-194-IcePoint.h.gz",
+    "snapshot_sha256": "e4c2d1485c0ac7b2da15db66db19bdad2896ca4e8b6361c1cb6a2e0ccd732b74"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePreprocessor.h",
+    "source_sha256": "ade706a5d9580d224ec37ac4b15673e9398b54191fbd49ad00bb45a2253a6dc9",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-195-IcePreprocessor.h.gz",
+    "snapshot_sha256": "bdb2063cc4388343d767287d44f9f8c6dc8a45dad1fcd7ab23aad813a238c2b6"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceRandom.h",
+    "source_sha256": "1252c285ed0eac480f54e583f213e33c3726d954e3cbaf55b3deaa46604c6759",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-196-IceRandom.h.gz",
+    "snapshot_sha256": "10c32f3bb6dcde23508bc4c79e84e83ce13fd2328138bc355f58b8e05bbb8857"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceRay.h",
+    "source_sha256": "bd986e6dea63f4d175327aeb0834838b5fe366f03f3ed0a93fde19d1996ad71b",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-197-IceRay.h.gz",
+    "snapshot_sha256": "96c521a185438aeb3c9cf71e1a40ef3aad58ccd01611607b0daa5e514bc09917"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceRevisitedRadix.h",
+    "source_sha256": "79f15580b128db80281254251eced48deffc0c4a99ca9d07f8bbc30d1b80fecc",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-198-IceRevisitedRadix.h.gz",
+    "snapshot_sha256": "4b5c24222bb48b6b52d835ad2779f731fd993b01816ca7fcfc09e36de6f8f1db"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceSegment.h",
+    "source_sha256": "bbdc125a6afe52d2e58e63f47c674297ac1e02a4f3369e45754de5880a4004ad",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-199-IceSegment.h.gz",
+    "snapshot_sha256": "7ce8e3c47e0f84468bb8ba61edae3ebc6e8894c84ba791e2c02ee8469e84d392"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceTriangle.h",
+    "source_sha256": "9bbdf17f123acb02b74f60d96fbe07b9fae2cb333f7bdc2dbe5d8d99e4da9e6a",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-200-IceTriangle.h.gz",
+    "snapshot_sha256": "445fcb2d5a046a09bf173ab8ee259007038a9dc8fd81e8cd7111939f9033dc9b"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceTrilist.h",
+    "source_sha256": "f29a97720238b8d9d733822214449e92c66088d2e29dfc79ae7a42b1d0a14f6b",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-201-IceTrilist.h.gz",
+    "snapshot_sha256": "76f20cdad1babe4ebac717da43daef39b9702e84d7c943bc966a6c09b452f812"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceTypes.h",
+    "source_sha256": "f1cf1087cf30086900a6e1a7f30c442e3d5256514aef6078e50f229b3665e7b1",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-202-IceTypes.h.gz",
+    "snapshot_sha256": "598931d4a31cdacaeca67ddaa4d74bee6acd0d3258b7942a1385db72ae805123"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceUtils.h",
+    "source_sha256": "804af2c7f1df2a517e086350e2b8028fa3074450c185da86a96d72ef49723ab8",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-203-IceUtils.h.gz",
+    "snapshot_sha256": "783644942746ea7ab364548f49169bfc236bc7449932bd4ab5447af4032b3ab4"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_AABBCollider.h",
+    "source_sha256": "f1ccfa7bb576450937f679592b9c811f62316897d56a1c208683940a44349180",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-204-OPC_AABBCollider.h.gz",
+    "snapshot_sha256": "15eb5337667418ce4e191293e8c0b4e6ef92704d42233658b9d77d9c00f14171"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_AABBTree.h",
+    "source_sha256": "4b8eef54b20b9d5195afa09bf067eb9022d02c1aa100478cb87f308e75717f11",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-205-OPC_AABBTree.h.gz",
+    "snapshot_sha256": "55d498e64ce1b0569234ce1e1fedce4e3ec3e9f530dd6dd39056e1446c7f8b93"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_BaseModel.h",
+    "source_sha256": "a1e6e52e1c93dfb262efcb7ed406e97aa9c9a2a58d136a8d5b175a92635f1e4d",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-206-OPC_BaseModel.h.gz",
+    "snapshot_sha256": "4ccf818cb998ce9efe4b9f51894292c0d70fbe288e7872d7e7558e1c599f00ef"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_BoxBoxOverlap.h",
+    "source_sha256": "30845dc8a5c4d96ebb3d42e62de87f5f3ec702dd5b92ae6958307758cc5be61f",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-207-OPC_BoxBoxOverlap.h.gz",
+    "snapshot_sha256": "18777243d3f475bafe168633b0231c23aaf81e12b6e40304635934c51e0dfc86"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_BoxPruning.h",
+    "source_sha256": "a0bb637b94bd5efcd2a72eb4c67daa282861e8373160fe38a0a3dfa4532d13a4",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-208-OPC_BoxPruning.h.gz",
+    "snapshot_sha256": "774a2a076dde7e0ef5890c427a9dda710aa8384bbe5943b0258b79a605dd9a25"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_Collider.h",
+    "source_sha256": "797e889935c22735094862834629a2b5b943fd2fef6f0ead7f1b5e4a8d854c78",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-209-OPC_Collider.h.gz",
+    "snapshot_sha256": "97e6a68abfcd94bca43c6959503ac5b344eebe2797cf05bc98b072d1986b5c99"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_Common.h",
+    "source_sha256": "05281ad0a752cfc21e8cad9b879eca880e5a168a63145d17704fd6a8e9c42e6c",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-210-OPC_Common.h.gz",
+    "snapshot_sha256": "cb84723f8e8672ba75f9a8a99981d31694d12dcd081c2c111088900d7bfe7c13"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_HybridModel.h",
+    "source_sha256": "5a9c2a24dedb2a25d8226e1f44227eee292fc605490f735ccd5d423542fe8c0e",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-211-OPC_HybridModel.h.gz",
+    "snapshot_sha256": "bef88f5d5a515fc8816011e42f91c07d7d5edcb6edd658ae61451617e5aab698"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_IceHook.h",
+    "source_sha256": "d6dc8178fe60660ec9bf3a0caa780b5c980c3169459b6f03c25f8493a80bab65",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-212-OPC_IceHook.h.gz",
+    "snapshot_sha256": "faaf51503cf6c6b375b7dff689114943ae3943b9f2657e5580211f57d155fab5"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_LSSAABBOverlap.h",
+    "source_sha256": "55e968b8382479262d678593a427646541268379f32a619b4bab446b1d01043c",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-213-OPC_LSSAABBOverlap.h.gz",
+    "snapshot_sha256": "11ac7660ac161a84c9c0b10576c039a508028fd42c1b72c390924428ff31200e"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_LSSCollider.h",
+    "source_sha256": "dc465a0aab2efab62577340fd589b03edefabddc262248e573de2f3c9b2c9720",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-214-OPC_LSSCollider.h.gz",
+    "snapshot_sha256": "24afe04255ee7f79db621bb6d953dba0e780631905cc57a8d3e418fbea91aac1"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_LSSTriOverlap.h",
+    "source_sha256": "7192dbd572757188106b6d46ab235d45d4829a8a8858a29fd6386e2a027add88",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-215-OPC_LSSTriOverlap.h.gz",
+    "snapshot_sha256": "12567ec594677d7ff4d8bef81c383ed3266774219cdabad3a5a03a1fe0d30a07"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_MeshInterface.h",
+    "source_sha256": "531b39c0576e6302292412948637a1ce40553db6d6b6d891b4b783f4dc9db837",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-216-OPC_MeshInterface.h.gz",
+    "snapshot_sha256": "057ba92db25d005ee8370e1f64774116c96377b591564c498b528f1cf0c3ddb8"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_Model.h",
+    "source_sha256": "075fcb7dba257f80e74fe411a33d79b517db56febe1c1dd813b8030be5f0b193",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-217-OPC_Model.h.gz",
+    "snapshot_sha256": "e34c14161310aee73a551a2e96dada5a902e3873e18c00a23d4e9231ae9353f6"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_OBBCollider.h",
+    "source_sha256": "2d7be435fccc22da53c2d1adf20eb3fee4524f4a497fe41e39a870568d94199c",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-218-OPC_OBBCollider.h.gz",
+    "snapshot_sha256": "005f78794aceef0215320e4bdf3ed8c7bf682a60d2782cf4865197c5baa76a48"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_OptimizedTree.h",
+    "source_sha256": "fac53aece931805e5de331054c67e317e1a35c769f196e4c21c8454fb46d32d0",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-219-OPC_OptimizedTree.h.gz",
+    "snapshot_sha256": "73ccc83e04d35a52b09dc0f66b99464549db67ee11d0588aba01f39493845ac3"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_Picking.h",
+    "source_sha256": "ac18e5e9c060f17a6e56aaa56e3f3c54a9fd577c6f64863a1bca8146ba02a51f",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-220-OPC_Picking.h.gz",
+    "snapshot_sha256": "9281b15361b4e70e5e492625395a3d35c1d30504652659eec976215b081d2d6b"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_PlanesAABBOverlap.h",
+    "source_sha256": "d25b984181a5c98798301a0e23f6a89e5caae665bbe32ae0e1a24db344ed2306",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-221-OPC_PlanesAABBOverlap.h.gz",
+    "snapshot_sha256": "9de93568849a88cb8ed0494e991a7faa71a78cf0f7a2b21722ef701afc70f460"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_PlanesCollider.h",
+    "source_sha256": "39fc524e3af1dfde159d6756e6b192f9002c791650bc874bb6fb99fabe5d7a0b",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-222-OPC_PlanesCollider.h.gz",
+    "snapshot_sha256": "95bf2e76f2eb8a9a2054a3f30f7b4dfa44668205fbf8fa28aa61d0ed86542226"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_PlanesTriOverlap.h",
+    "source_sha256": "caab1988d4af5ca13d9872e580c3ed18eaeb7f89a5bc62e8c04da64f434e5f30",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-223-OPC_PlanesTriOverlap.h.gz",
+    "snapshot_sha256": "6bfa9b1009b7aa0896a0342b7d69ba3ade0ed6518982ca0bd01b51f69529c0f7"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_RayAABBOverlap.h",
+    "source_sha256": "4a9ecc2bc316ba21461dc4e4b84b95d55d93c7882b7f748e92802908f18b0881",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-224-OPC_RayAABBOverlap.h.gz",
+    "snapshot_sha256": "ad4643b5c31dc70e58e0f01305b55dd197e898c1b90fe2ba90baf5e6a66fe518"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_RayCollider.h",
+    "source_sha256": "ec1670f4d973f98150ca08ea1496ac87b5b941312e521ff1b9281f8b376ec4c2",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-225-OPC_RayCollider.h.gz",
+    "snapshot_sha256": "bb5e58c8aec29b3acbbde6c56f36c1eb9a83bb82ec4c66d56dd66616493886dd"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_RayTriOverlap.h",
+    "source_sha256": "112980326c768455a1195c04bd7e5610ef2e908acbdd41f670f880cec098c917",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-226-OPC_RayTriOverlap.h.gz",
+    "snapshot_sha256": "7caef1bc0525c2e78f8e07aa35e32655c4c0ba038befe9a2dd234c932d1218b8"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_Settings.h",
+    "source_sha256": "76cc63c6e1b125562ef244904915b0b43d414e14176d092ddb01332a3817f607",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-227-OPC_Settings.h.gz",
+    "snapshot_sha256": "163b17a5177ab147cf02d4532b39dc31ac34d0ec3cdc21787ea3007af17e9f59"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_SphereAABBOverlap.h",
+    "source_sha256": "be27af7ff27fd1aca855fdb9e909d4d89ddd4f1ae03dd79e0ee23fe278733038",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-228-OPC_SphereAABBOverlap.h.gz",
+    "snapshot_sha256": "a15baa5179d2fce9610d37e00e65a3e672c37a98eb868d11a9cd130163b8053c"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_SphereCollider.h",
+    "source_sha256": "b8c0a840e426de0d71944d0f049dc5e0628c5f0d182ea57602dc29bfcaddf5b7",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-229-OPC_SphereCollider.h.gz",
+    "snapshot_sha256": "12e889e90500423489fbe08cab1cf82fc9cf20e4c69ca4ab6916ddf878351267"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_SphereTriOverlap.h",
+    "source_sha256": "2eef085926ae753f761316991b42fda7d38842960f44a4306db898b34d196a8b",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-230-OPC_SphereTriOverlap.h.gz",
+    "snapshot_sha256": "43a6db00c3d91ff8bf0a834f1ad10dc474f7b5c6e0afedd359c2fc5ce4bf20b3"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_SweepAndPrune.h",
+    "source_sha256": "34d7e11c0bc762e4c1d225924f8534635962bedfe8bcbe864ca49189b3b569cd",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-231-OPC_SweepAndPrune.h.gz",
+    "snapshot_sha256": "0e776f3ecee2716c5c6f23e6e25a4c6306c0fe2b1982574229c8369cec8e92e2"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_TreeBuilders.h",
+    "source_sha256": "1e19ead1103ea54886f2fdb676e1278967dfa58b7a721057cd30920c4b70fd7c",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-232-OPC_TreeBuilders.h.gz",
+    "snapshot_sha256": "de9dac2659c6d3457374699d0f4e42191e1e4228cfcf6b7bca0c1a4ce33c4194"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_TreeCollider.h",
+    "source_sha256": "12b7f7c84d3031692369cba13a821fc4de295deea8c546de3e8fdcac6fff2938",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-233-OPC_TreeCollider.h.gz",
+    "snapshot_sha256": "52f93129434ac1d24944d3773c08c7e01d324c1c29ce95db3b120fa652f54813"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_TriBoxOverlap.h",
+    "source_sha256": "ded1baf1e58531eae129509c7430badb055bde0695221e9c2d3e3a7ffef4d1d8",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-234-OPC_TriBoxOverlap.h.gz",
+    "snapshot_sha256": "c94193874b969be5c1da2bb34ab8f7067b9e6a99ed74ccc1177f903579f6e6d1"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_TriTriOverlap.h",
+    "source_sha256": "a120140f87d21f7556d6d32ac82496b62728683262ccf127ac67d0607d1c809d",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-235-OPC_TriTriOverlap.h.gz",
+    "snapshot_sha256": "bcde49396de190d2d6b6b1511bcb62f340d88286b12c3c6b2f5bb3a39a061456"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_VolumeCollider.h",
+    "source_sha256": "6a937cd17320e3a8989bf1221e13d5ff1262c574e96abaf8c098e217b4f50b67",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-236-OPC_VolumeCollider.h.gz",
+    "snapshot_sha256": "185d106b868ccf99d659e99cf5e060dac990dc298f44021e200ee6bc48f65ce1"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Opcode.h",
+    "source_sha256": "c5176bb2c17747dafd5a7800045d1c8d81ee1b7c0a84178f3aa98924edda6c2c",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-237-Opcode.h.gz",
+    "snapshot_sha256": "9f0ad491221fffe1497affd5035c910e3bbbb58816a9c4b4da790c1fe9852223"
+  },
+  {
+    "source": "External/opcode/novodex/OpcodeNovodeXHost.h",
+    "source_sha256": "741cadee0ca3e2667dd6e90ceeaefaa18f86764f3a028cacc0d97b6f10b28c95",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-238-OpcodeNovodeXHost.h.gz",
+    "snapshot_sha256": "be387770a615003068134d95db6a2a1b0b5031dd82409514b8ab727e658d859b"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/StdAfx.h",
+    "source_sha256": "5a51c0be826dd0118d18ca33064057d80d2f30617334dca04ee24a22a981987b",
+    "snapshot": "capture-source/contact-polygon-tilted-pose-round1-x87-239-StdAfx.h.gz",
+    "snapshot_sha256": "bdb92becf21569768e0fb3dd2cd5421daa90c1a8d25b03fcb2f544398f136193"
+  }
+]

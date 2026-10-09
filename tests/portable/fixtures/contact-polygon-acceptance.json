@@ -94,8 +94,8 @@
   },
   "portable_failure_disposition": "checked SDK temporary scratch overflow/null reports actual Foundation NXE_OUT_OF_MEMORY before sink mutation; actual allocation failure tests; historical x87 stack allocation unchanged",
   "final_source_sha256": {
-    "tests/portable/ConvexContactTests.cpp": "463c252bee8e810b0043f6e2e98d17b21adbf80cd9589b51588669e529996d06",
-    "Physics/src/include/portable/ContactPolygonScalar.inl": "4ef36fbe21c8768be67344502300da9928bf5bdef7188a545eeed85e9dcb3863",
+    "tests/portable/ConvexContactTests.cpp": "27aff810cf727219d6dd565dabbe6c5ef6dd24750d53895294cf9547813de4e3",
+    "Physics/src/include/portable/ContactPolygonScalar.inl": "81965646921d32a740e23a927c7d675af9ddbfb8aa1c80b8df3ffc768190ff71",
     "Physics/src/include/portable/ContactStreamScalar.inl": "b24a82bcf08500a79bd8b1410c7e6523f79ab3b87690bb64c20f7f3cb88ca3ac",
     "Physics/src/include/portable/NxPolygonContactInterfaces.h": "a35c8b43473632f637790e028b38194506a78d5cf8401a85a294e9ac704d6bc4"
   },
@@ -123,5 +123,58 @@
       "units": "mixed dimensionless first-pass t, length second-pass projected separation, length edge clip coefficient",
       "note": "Captured stream/group metadata does not retain internal emission-pass identity; no invented per-pass counts or universal physical-depth claim."
     }
+  },
+  "round1_supplement": {
+    "capture_id": "contact-polygon-tilted-pose-round1-x87",
+    "chronology": "post-implementation, pre-round1-fix original-source full-path supplement",
+    "base_revision": "c62ec741440a4f77ca8ce1ccfea643428b47c186",
+    "original_block_revision": "d907e2e6b912a3e01daaa129b324c457b72ab0b0",
+    "fixture_sha256": "7a3b9ef820c346834d5e50fe3065822b0df86467fa6d697c168a1df3852e4002",
+    "manifest_sha256": "14aeff2901d456504cb6ab7bef4461a7ef36ff84104e3df82bea6af8e28dde36",
+    "source_index_sha256": "dc9133a07a1660f9aa11a2a3675c20244c5323ee36cc577fa05ca9b567ec5e4f",
+    "snapshot_count": 240,
+    "pre_fix_scalar_source_sha256": "4ef36fbe21c8768be67344502300da9928bf5bdef7188a545eeed85e9dcb3863",
+    "group_ids": "934..941 (8 full polygon cases)",
+    "observations": 436,
+    "finite_quantities": [
+      {
+        "kind": 1,
+        "count": 120,
+        "range": [
+          -2.1213202476501465,
+          0.7071067690849304
+        ],
+        "units": "world length"
+      },
+      {
+        "kind": 3,
+        "count": 40,
+        "range": [
+          1,
+          4
+        ],
+        "units": "mixed original separation/coefficient slot semantics by source pass, not universal physical depth"
+      },
+      {
+        "kind": 4,
+        "count": 36,
+        "range": [
+          0.125,
+          0.1767766922712326
+        ],
+        "units": "source-scaled displacement normal length"
+      }
+    ],
+    "nonfinite_count": 0,
+    "discrete_word_count": 240,
+    "fixed_abs_budget": 0,
+    "fixed_rel_budget": 0,
+    "zero_sign_discrete_count_write_canary": "exact raw words",
+    "pre_fix_red": {
+      "coordinate_word_differences": 10,
+      "failures_including_exact_zero_sign": 16,
+      "discrete_or_metadata_differences": 0
+    },
+    "domain": "true tilted float rigid R rows(.5,s,.5),(-s,0,s),(.5,-s,.5); s=float(sqrt(.5)), contained/crossing triangle, y=2^-54 or1e-5, zero or cancellation x translation, both orders, real full22-word call, repeated constructed stream/reset and unread invariance"
   }
 }

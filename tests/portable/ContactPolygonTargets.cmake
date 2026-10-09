@@ -29,6 +29,8 @@ endfunction()
 nx_contact_polygon_target(NxPortableConvexContactTests 0)
 add_test(NAME Portable.ConvexContact.Polygon COMMAND NxPortableConvexContactTests
     "${CMAKE_CURRENT_SOURCE_DIR}/fixtures/contact-polygon-complete-x87.nxpf")
+add_test(NAME Portable.ConvexContact.PolygonPose COMMAND NxPortableConvexContactTests
+    "${CMAKE_CURRENT_SOURCE_DIR}/fixtures/contact-polygon-tilted-pose-round1-x87.nxpf" --pose-regression)
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     nx_contact_polygon_target(NxPortableExportConvexContact 1)
 endif()
