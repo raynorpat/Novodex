@@ -5523,6 +5523,29 @@ void NxSceneInternal::row000636()
 	at<void**>(0x580) = at<void**>(0x57c);
 	}
 
+// phys_fn_000615 (0x000113c0): advance every body pose and notify its actor,
+// then dispatch each body's optional island callback vector at +0x1e0.
+void NxSceneInternal::row000615()
+	{
+	void** bodies = at<void**>(0x56c);
+	void** bodiesEnd = at<void**>(0x570);
+	const NxReal timestep = at<NxReal>(0x548);
+	for(void** item = bodies; item && item != bodiesEnd; ++item)
+		{
+		unsigned char* body = static_cast<unsigned char*>(*item);
+		reinterpret_cast<Row000770Fixture*>(body)->row000770(timestep, 0.0f);
+		reinterpret_cast<Row000022Fixture*>(
+			*reinterpret_cast<void**>(body + 0x19c))->row000022(1);
+		}
+	for(void** item = bodies; item && item != bodiesEnd; ++item)
+		{
+		unsigned char* body = static_cast<unsigned char*>(*item);
+		void* callbacks = *reinterpret_cast<void**>(body + 0x1e0);
+		if(callbacks)
+			reinterpret_cast<NxVectorVirtualLoop4165Ctx*>(callbacks)->run();
+		}
+	}
+
 // phys_fn_000659 (0x00013c40): select fixed or variable stepping under the
 // oracle's x87 precision-64/round-toward-zero mode, run each requested body
 // substep, then restore the caller's control word. The scheduler fields are
@@ -5698,14 +5721,9 @@ void NxSceneInternal::simulateFrame()
 		// root range before 000615 advances each body's COM/quaternion.
 		row000636();
 
-		// 000615 also sends the public-pose notification after each body update.
-		for(void** item = bodies; item && item != bodiesEnd; ++item)
-			{
-				unsigned char* body = static_cast<unsigned char*>(*item);
-				reinterpret_cast<Row000770Fixture*>(body)->row000770(timestep, 0.0f);
-				reinterpret_cast<Row000022Fixture*>(
-					*reinterpret_cast<void**>(body + 0x19c))->row000022(1);
-			}
+		// 000615 advances poses, notifies actors, and dispatches optional island
+		// callback vectors after all of the active roots have been retired.
+		row000615();
 		// phys_fn_000655 calls 000917 once per completed substep. 000905 has
 		// stamped active contact-report records during the broadphase refresh;
 		// buffer their event flags and solved force totals for fetchResults.

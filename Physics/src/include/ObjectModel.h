@@ -1372,9 +1372,13 @@ void					nxGlobalCall4(void* self, unsigned objOff, unsigned extraOff,
 //! phys_fn_003413 (0x84800): takes the object from the global [0x10125080] and
 //! calls ITS vtable slot +0x20 with the row argument. The caller does not
 //! clean, so the slot pops the argument itself.
-//! phys_fn_004165 (0x9ace0): walks the pointer vector at [self+0x10]/[self+0x14]
-//! -- the pair 000448 counts -- and calls the vtable slot +0x10 of EVERY
-//! element with no stack arguments.
+//! phys_fn_004165 (0x9ace0): thiscall with the vector in ecx and no stack
+//! arguments. Walks [self+0x10]/[self+0x14] -- the pair 000448 counts -- and
+//! calls vtable slot +0x10 of EVERY element with no stack arguments.
+struct NxVectorVirtualLoop4165Ctx
+	{
+	__declspec(noinline) void run();
+	};
 //! A reusable MEMBER-FUNCTION slot host. This compiler rejects __thiscall on
 //! a free-function typedef (`C3865`) and __fastcall cannot put an argument on
 //! the stack, so a vtable slot that needs `this` in ecx AND stack arguments is
@@ -1470,9 +1474,6 @@ void					nxVectorVirtualLoop4163(void* self, unsigned arg,
 
 void					nxSlotCall1544(void* self, unsigned objOff, void* obj,
 							NxSlotMfp1 slot);
-
-void					nxVectorVirtualLoop4165(void* self,
-							void (__fastcall* fn)(void*));
 
 void					nxGlobalVirtualCall3413(unsigned arg,
 							void (__stdcall* fn)(unsigned));

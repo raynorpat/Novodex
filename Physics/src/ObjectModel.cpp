@@ -3194,20 +3194,28 @@ void nxGlobalVirtualCall3413(unsigned arg, void (__stdcall* fn)(unsigned))
 	fn(arg);
 	}
 
-// phys_fn_004165 (0x9ace0): the vector virtual-call loop.
-void nxVectorVirtualLoop4165(void* self, void (__fastcall* fn)(void*))
+
+// phys_fn_004165 (0x9ace0): thiscall vector walk; each element receives its
+// own vtable slot +0x10 call with this in ecx and no stack arguments.
+void NxVectorVirtualLoop4165Ctx::run()
 	{
-	unsigned char* p = reinterpret_cast<unsigned char*>(self);
-	unsigned begin, end;
-	memcpy(&begin, p + 0x10, 4);
-	memcpy(&end, p + 0x14, 4);
-	const int n = static_cast<int>(static_cast<signed>(end - begin)) >> 2;
-	for(int i = 0; i < n; ++i)
+	unsigned char* p = reinterpret_cast<unsigned char*>(this);
+	for(unsigned i = 0;; ++i)
 		{
+		unsigned begin, end;
+		memcpy(&begin, p + 0x10, 4);
+		memcpy(&end, p + 0x14, 4);
+		const int n = static_cast<int>(static_cast<signed>(end - begin)) >> 2;
+		if(i >= static_cast<unsigned>(n))
+			break;
 		unsigned elem;
-		memcpy(&elem, reinterpret_cast<unsigned char*>(static_cast<size_t>(begin))
-			+ 4u * static_cast<unsigned>(i), 4);
-		fn(reinterpret_cast<void*>(static_cast<size_t>(elem)));
+		memcpy(&elem, reinterpret_cast<unsigned char*>(static_cast<size_t>(begin)) + 4u * i, 4);
+		void* element = reinterpret_cast<void*>(static_cast<size_t>(elem));
+		void* vtable = 0;
+		void* slot = 0;
+		memcpy(&vtable, element, 4);
+		memcpy(&slot, reinterpret_cast<unsigned char*>(vtable) + 0x10, 4);
+		reinterpret_cast<void (__fastcall*)(void*)>(slot)(element);
 		}
 	}
 
