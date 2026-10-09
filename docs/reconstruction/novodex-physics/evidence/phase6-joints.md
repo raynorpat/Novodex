@@ -9735,3 +9735,13 @@ In the clean isolated worktree at mainline commit 3b87269f, changed Joint::saveT
 
 The mutation existed only in the isolated worktree and was restored before the exact control run. Detailed evidence: `evidence/phase6-joint-row004066-save-desc.md`.
 Measurement index: `phys_fn_004066 stdout_delta=216`.
+
+
+## Phase 6 closure measurement — joint body-owner reader (phys_fn_004068)
+
+The core-dump writer uses `Joint::getBodyOwners` to resolve the two internal body records to their public actor objects. The registered `NxPhysicsCoreDumpTests` fixture creates named actors and joints across multiple families and serializes those actor references.
+
+In the clean isolated worktree at mainline commit cea17aaa, changed Joint::getBodyOwners (phys_fn_004068) to return a null body-0 owner. The registered NxPhysicsCoreDumpTests staged-pair differential rejected the mutant: oracle_exit=0, candidate_exit=0, stdout_delta=128, stderr_exact=True. Restored Joint.cpp, rebuilt NxPhysics, and reran; the restored control had both exits 0, stdout_delta=0, and exact stderr.
+
+The mutation existed only in the isolated worktree and was restored before the exact control run. Detailed evidence: `evidence/phase6-joint-row004068-body-owners.md`.
+Measurement index: `phys_fn_004068 stdout_delta=128`.
