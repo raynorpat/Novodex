@@ -9765,3 +9765,13 @@ In the clean isolated worktree at mainline commit 70ed5f86, changed Joint::row00
 
 The mutation existed only in the isolated worktree and was restored before the exact control run. Detailed evidence: `evidence/phase6-joint-row004093-support-record.md`.
 Measurement index: `phys_fn_004093 stdout_delta=2918`.
+
+
+## Phase 6 closure measurement — joint break-threshold setter (phys_fn_004074)
+
+The cylindrical and fixed joint paths in the core-dump fixture set non-default break-force and break-torque thresholds. Scene serialization observes the stored values, providing a registered consumer for `Joint::setBreakable`.
+
+In the clean isolated worktree at mainline commit d0614344, changed Joint::setBreakable (phys_fn_004074) to store zero for mMaxForce. The registered NxPhysicsCoreDumpTests staged-pair differential rejected the mutant: oracle_exit=0, candidate_exit=0, stdout_delta=20, stderr_exact=True. Restored Joint.cpp, rebuilt NxPhysics, and reran; the restored control had both exits 0, stdout_delta=0, and exact stderr.
+
+The mutation existed only in the isolated worktree and was restored before the exact control run. Detailed evidence: `evidence/phase6-joint-row004074-breakable.md`.
+Measurement index: `phys_fn_004074 stdout_delta=20`.
