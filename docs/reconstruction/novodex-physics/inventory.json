@@ -35196,13 +35196,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/ContactPlaneMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/743",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5715",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00048760"
+      "dynamic_proof": "Covered by the direct contact differential for phys_fn_001895: the transformed-vertex tail is reached by all four plane/mesh fixtures under both x87 control words. Adding 1.0 to the candidate world-x transform is detected (54 mismatches); restored digest 3dc2d3277f3fc523. See evidence/phase3-contact-plane-mesh.md.",
+      "notes": "Continuation block of the 0x00048760 contact routine; IDA groups this extent with the parent function."
     },
     {
       "id": "phys_fn_001898",

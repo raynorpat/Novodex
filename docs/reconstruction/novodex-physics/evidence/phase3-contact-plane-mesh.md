@@ -8,4 +8,6 @@ The focused registered differential (`NxPhysicsCollisionTests.exe <oracle-direct
 
 Sensitivity check: a temporary mutation that forced the candidate OPCODE query to return false was detected by the same focused test: contact digest changed to `40d69e0cf0f65c45`, with 24 mismatches. The mutation was removed and the source rebuilt.
 
+The transformed-vertex continuation at `0x000488f0` (`phys_fn_001897`) is grouped with the parent contact routine by IDA and is exercised by the same fixture set. A temporary `+1.0` world-x mutation changed the contact digest to `1cdce4ea696f8aad` and was detected with 54 mismatches; the original arithmetic was restored.
+
 The complete collision harness also passed with zero total mismatches. The Phase 3 gate passed, including the immutable-header checks, inventory validation, Win32 Release build, all selected Phase 3 tests, the full collision oracle differential, and 537 of 534 registered coverage assertions. Public header manifests still cover 80 files at each root.
