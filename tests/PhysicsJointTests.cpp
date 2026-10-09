@@ -1158,6 +1158,14 @@ static void nxD6Case(NxScene& scene, NxActor* a, NxActor* b,
 		// differs from the descriptor input, then read back the resulting frame.
 		if(index == 3)
 			{
+			const NxVec3 replacementAnchor(2.25f, -1.5f, 0.75f);
+			d6->setGlobalAnchor(replacementAnchor);
+			NxVec3 replacementAnchorReadback(0.0f, 0.0f, 0.0f);
+			d6->getGlobalAnchor(replacementAnchorReadback);
+			printf("case=d6 index=%u set_anchor ", index);
+			nxPrintVec("out_anchor", replacementAnchorReadback);
+			printf("\n");
+
 			const NxVec3 replacementAxis(0.75f, -2.0f, 1.25f);
 			d6->setGlobalAxis(replacementAxis);
 			NxVec3 replacementAxisReadback(0.0f, 0.0f, 0.0f);

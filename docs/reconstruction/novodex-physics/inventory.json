@@ -76306,13 +76306,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1541",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13520",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
-      "dynamic_proof": null,
-      "notes": "previous source: Physics/src/Joint.cpp",
+      "dynamic_proof": "NxPhysicsJointStagedPairTests staged-pair differential now calls the public D6 setGlobalAnchor/getGlobalAnchor path after construction and records the world-space readback. Adding 1.0f to the localized X anchor in Joint::setGlobalAnchor changes four registered output lines (stdout_delta=4), with both processes exiting zero and exact stderr; restored control is exact. See evidence/phase6-joint-row004099-global-anchor.md.",
+      "notes": "previous source: Physics/src/Joint.cpp Public D6 setGlobalAnchor case reaches this shared transform and is mutation-sensitive in the registered staged-pair differential.",
       "implementation": "Physics/src/core/Joint.cpp"
     },
     {

@@ -2368,6 +2368,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=fixed index=3 saved anchor0=40000000.40800000.00000000 anchor1=c0000000.40800000.00000000',
         'case=d6 index=0 created=yes',
         'case=d6 index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
+        'case=d6 index=3 set_anchor out_anchor=40100000.bfc00000.3f400000',
         'case=d6 index=3 set_axis out_axis=3e9b28d0.bf4ee116.3f014cae',
         'case=d6 index=3 breakable force=418a0000 torque=42020000',
         'case=d6 index=3 limit_point present=0 point=bf400000.3fc00000.40100000',
@@ -5679,7 +5680,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1238  # previous 1237 plus the spring/damper hook-base adjustor probe
+    '6' = 1239  # previous 1238 plus the D6 public global-anchor readback
                # previous 1234 plus three contended D6 drive write-lock reports
                # previous 1233 plus the D6 contended drive-position write-lock report
                # previous 1232 plus the D6 name setter readback
@@ -5698,7 +5699,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1429  # previous 1428 plus the spring/damper hook-base adjustor probe
+    '7' = 1430  # previous 1429 plus the D6 public global-anchor readback
                # previous 1425 plus three contended D6 drive write-lock reports
                # previous 1424 plus the D6 contended drive-position write-lock report
                # previous 1423 plus the D6 name setter readback

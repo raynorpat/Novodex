@@ -26,7 +26,7 @@
       "format": "joint_matrix",
       "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
       "fixture_source": "tests/PhysicsJointTests.cpp",
-      "fixture_source_sha256": "0a8691416198df7d0cbdbe3f3c85cfd1e621001b5d6841faca356f9fb6d83eb0",
+      "fixture_source_sha256": "1ae10233bdf9f225f94619005edc976ebf4d4dba95972ea49ccff052ac10f27b",
       "cases": 122,
       "input_lines": 284,
       "case_family_counts": {
@@ -41,9 +41,9 @@
         "revolute": 14,
         "spherical": 12
       },
-      "oracle_output_lines": 2873,
+      "oracle_output_lines": 2874,
       "input_digest_sha256": "a35c701865c1044c912493ee63ffc759ceb70457ca779e086fd300b1da5f953e",
-      "oracle_output_digest_sha256": "c23e3cb084a4cdbf5ed10eabc9e459cc93a4b8df7428a08e73d05a645a6b57e0"
+      "oracle_output_digest_sha256": "67268f0d9cf2efa82436825b48bdedb56aa445267628f0c8c99fa41b91999b36"
     }
   }
 }
