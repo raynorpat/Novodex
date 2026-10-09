@@ -9576,3 +9576,13 @@ Evidence index: phys_fn_004009 mutation detected at stdout_delta=30; restored co
 
 The registered NxPhysicsCoreDumpTests differential caught a mutation adding `_MUT` to SceneDump::writeJointFrames' primary offset label: both processes exited zero, stderr matched exactly, and stdout_delta=98. After restoring SceneDump.cpp byte-for-byte in the throwaway archive, rebuilding, and rerunning, stdout_delta=0 with both exits zero and exact stderr. Detailed evidence: `evidence/phase6-coredump-004007-joint-frames.md`.
 Evidence index: phys_fn_004007 mutation detected at stdout_delta=98; restored control stdout_delta=0.
+
+## Phase 6 closure measurement — joint triple text (phys_fn_004011)
+
+NxPhysicsCoreDumpTests caught replacing SceneDump::tripleText output with a constant: both processes exited zero, stderr matched exactly, stdout_delta=30. The restored control returned stdout_delta=0. Detailed evidence: `evidence/phase6-coredump-004011-triple-text.md`.
+Evidence index: phys_fn_004011 mutation detected at stdout_delta=30; restored control stdout_delta=0.
+
+## Phase 6 closure measurement — joint motor text (phys_fn_004013)
+
+NxPhysicsCoreDumpTests caught replacing SceneDump::motorText output with a constant: both processes exited zero, stderr matched exactly, stdout_delta=20. The restored control returned stdout_delta=0. Detailed evidence: `evidence/phase6-coredump-004013-motor-text.md`.
+Evidence index: phys_fn_004013 mutation detected at stdout_delta=20; restored control stdout_delta=0.

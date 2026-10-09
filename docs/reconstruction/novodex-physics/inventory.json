@@ -74659,13 +74659,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1507",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13214",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); reachable from the public API since effector-and-coredump Task 4 wired NpPhysicsSDK::coreDump (phys_fn_000267) (effector-and-coredump Task 3a)",
-      "dynamic_proof": "executed under the core-dump staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 25 times in NxPhysicsCoreDumpTests against the staged candidate pair (NxPhysics.dll sha256 2f9815a105ac1fe5754ce2d69d7d1b2030a336eb8327fadeeb0f5388481c3dee, identical to build/Release/NxPhysics.dll at the time of the trace), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 374/374 core-dump coverage lines); trace excerpt committed as evidence/effector-and-coredump-trace-coredump.txt (effector-and-coredump Task 4; re-recorded on the merge of main into the NpActor.cpp completion branch: first recorded at sha256 0093a945 over seven coreDump calls, now nine with scene C) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?tripleText@SceneDump@@QAEPBDPBM_N@Z hit 25 times (Dump 25); equal to the oracle row's count on every target.",
-      "notes": "",
+      "dynamic_proof": "Mutation falsified by registered NxPhysicsCoreDumpTests staged-pair differential: replacing SceneDump::tripleText output with a constant changes serialized spring/limit values; detected stdout_delta=30, restored control exact. See evidence/phase6-coredump-004011-triple-text.md.",
+      "notes": "No public Physics headers changed; mutation was confined to a throwaway archive.",
       "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
@@ -74696,13 +74696,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/SceneDump.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1508",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13215",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json and units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md as a cross-check; format strings checked byte-for-byte against the image; contract units/effector-coredump-contract.md (## Core dump, ### Task 3a record); reachable from the public API since effector-and-coredump Task 4 wired NpPhysicsSDK::coreDump (phys_fn_000267) (effector-and-coredump Task 3a)",
-      "dynamic_proof": "executed under the core-dump staged-pair transcript: a cdb breakpoint at an instruction only this row executes (motor text, inlined in SceneDump::writeJoint (push of %s,%s,%s)) was hit 5 times in NxPhysicsCoreDumpTests against the staged candidate pair (NxPhysics.dll sha256 2f9815a105ac1fe5754ce2d69d7d1b2030a336eb8327fadeeb0f5388481c3dee, identical to build/Release/NxPhysics.dll at the time of the trace), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 374/374 core-dump coverage lines); trace excerpt committed as evidence/effector-and-coredump-trace-coredump.txt (effector-and-coredump Task 4; re-recorded on the merge of main into the NpActor.cpp completion branch: first recorded at sha256 0093a945 over seven coreDump calls, now nine with scene C) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?motorText@SceneDump@@QAEPBDABVNxMotorDesc@@_N@Z / ?writeJoint@SceneDump@@QAEXPAU_iobuf@@PAVJoint@@_N@Z+0x302 hit 5 times (Dump 5); equal to the oracle row's count on every target.",
-      "notes": "",
+      "dynamic_proof": "Mutation falsified by registered NxPhysicsCoreDumpTests staged-pair differential: replacing SceneDump::motorText output with a constant changes serialized motor settings; detected stdout_delta=20, restored control exact. See evidence/phase6-coredump-004013-motor-text.md.",
+      "notes": "No public Physics headers changed; mutation was confined to a throwaway archive.",
       "implementation": "Physics/src/core/SceneDump.cpp"
     },
     {
