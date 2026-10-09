@@ -8993,7 +8993,7 @@ oracle and `0.0.0.0` in the candidate). After the change, both actors report
 `stdout_delta=0`, both exits zero, and exact stderr. This closes the tested
 secondary-base construction/destructor behavior only; it does not close the
 whole `phys_fn_000044` constructor or `phys_fn_000118` destructor rows. The
-fresh Phase 5 gate passes all 18 staged targets at 2,599 assertions against a floor of 2,597. The
+fresh Phase 5 gate passes all 18 staged targets at 2,611 assertions against a floor of 2,611. The
 Release Viewer CTest selection completes all 48 entries across the 39 available
 scenes: 43 pass and five scenes with unavailable oracle assets take their
 existing skips. All public Physics headers remain byte-identical.
@@ -9021,7 +9021,7 @@ control: the test installs the plain `EmbeddedHookBase` deleting table at
 instead of the complete object (`collision dtor member-only mutant
 mismatches=5`). Each family’s real secondary deleting-destructor call and the
 primary deleting-destructor pass match the oracle with zero mismatches. The
-full oracle digest remains `ed1294b6`, with coverage expanded to 644 cases.
+full oracle digest remains `ed1294b6`, with coverage expanded to 645 cases.
 
 The first integration run exposed a runtime wrinkle the isolated fixture did
 not: by mesh-shape teardown the collision object's root vptr had changed from
@@ -9033,12 +9033,12 @@ avoiding dispatch through the overwritten root pointer.
 
 Validation on the fresh Release build:
 
-- Phase 5 gate: pass; all 18 staged targets, 2,599 coverage assertions
-  evaluated against the recorded floor of 2,597.
+- Phase 5 gate: pass; all 18 staged targets, 2,611 coverage assertions
+  evaluated against the recorded floor of 2,611.
 - `NxPhysicsSimulationTests`, `NxPhysicsMeshSimulationTests`, and
   `NxPhysicsSceneRaycastTests`: oracle and candidate exit 0 with exact stdout
   and stderr matches.
-- `NxPhysicsShapeVtableTests`: 644 oracle differential cases, zero mismatches;
+- `NxPhysicsShapeVtableTests`: 645 oracle differential cases, zero mismatches;
   all ten secondary-dtor calls and five primary deleting-dtor calls match.
 - `NxPhysicsObjectLayoutTests --self`: pass, zero candidate mismatches.
 - Public Physics headers remain byte-identical to the pinned tree.
