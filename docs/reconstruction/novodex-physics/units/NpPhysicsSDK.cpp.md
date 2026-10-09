@@ -135,11 +135,11 @@ float10 __thiscall FUN_1000b6e0(void *param_1,int param_2)
 
 ```
 
-## phys_fn_000234 (0x0000b770, 31 B, discovered)
+## phys_fn_000234 (0x0000b770, 31 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/NpPhysicsSDK.cpp
+- implementation: Physics/src/NpPhysicsSDK.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_000224 (0x0000b5b0)

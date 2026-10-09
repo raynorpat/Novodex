@@ -778,7 +778,7 @@
         6,
         7
       ],
-      "note": "createScene reaches 2 Phase 4, 51 Phase 5 and 11 Phase 7 rows"
+      "note": "createScene reaches 2 Phase 4, 51 Phase 5 and 11 Phase 7 rows. The NpPhysicsSDK::createScene wrapper itself is row-specific mutation-falsified by NxPhysicsSDKTests (evidence/phase2-create-scene-wrapper-000234.md); its transitive Scene dependencies remain deferred."
     },
     {
       "id": "phys_fn_000242",

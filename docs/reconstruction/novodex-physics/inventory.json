@@ -4626,14 +4626,15 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpPhysicsSDK.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/115",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/878",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "implementation": null
+      "static_proof": "Matches the 31-byte wrapper: read the NxSceneDesc argument; load the PhysicsSDK pointer from NpPhysicsSDK+4; call phys_fn_000476; if null return null; otherwise return the public NxScene wrapper at internal-scene+0x6cc.",
+      "dynamic_proof": "NxPhysicsSDKTests staged-pair differential exercises createScene twice, checks scene count and enumeration, releases the first scene, and verifies the survivor. In a throwaway archive, changing this wrapper to return null makes the candidate exit 1 with stdout_delta=10; the restored current-main control passes Phase 2 with oracle_exit=0, candidate_exit=0, stdout_delta=0, and exact stderr.",
+      "notes": "The public wrapper is implemented and row-specific mutation-falsified. The internal Scene constructor and its transitive dependencies remain deferred to their owning phases.",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp",
+      "implementation_symbol": "NpPhysicsSDK::createScene"
     },
     {
       "id": "phys_fn_000235",
@@ -220330,7 +220331,7 @@
     {
       "phase": 5,
       "name": "Objects",
-      "status": "pending"
+      "status": "closed"
     },
     {
       "phase": 6,

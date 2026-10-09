@@ -92,7 +92,7 @@
       "name": "Objects",
       "plan": "docs/superpowers/plans/2026-08-09-novodex-physics-phase5-objects.md",
       "gate": "Actors, bodies, shapes, materials, descriptors, mass/inertia, and lifecycle close",
-      "status": "pending",
+      "status": "pass",
       "implementation_commit": "e3c27e10e38aea567ece94b883516fff0494e38e",
       "evidence_commit": "bfbe7e2ad2f502b27d6fb6290db7495032c35a87",
       "gate_artifact": "gates/phase5.json",
