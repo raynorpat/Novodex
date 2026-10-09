@@ -9936,3 +9936,8 @@ The registered ten-family public staged-pair matrix exercises `Joint::getGlobalA
 ## Phase 6 closure measurement — joint limit-plane distance helper (`phys_fn_004131`)
 
 A zero-return mutation of `Joint::row004131` changes the registered core-dump limit-plane transcript and is caught for `phys_fn_004131` with `stdout_delta=4448`, both exits zero, and exact stderr; the restored control is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-joint-row004131-limit-plane-distance.md`.
+
+
+## Phase 6 closure measurement — shared joint global-axis getter (`phys_fn_004129`)
+
+Adding `1.0f` to the computed X result in `Joint::getGlobalAxis` is caught for `phys_fn_004129` with `stdout_delta=246`, both exits zero, and exact stderr; the restored control is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-joint-row004129-global-axis-getter.md`.
