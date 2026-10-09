@@ -3453,6 +3453,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'effector create internal vt=physics observers=0 capacity=0 list=none',
         'effector create internal words=00000000.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000',
         'effector hook_dtor primary_same=yes hook_changed=yes read_link_same=yes internal_same=yes',
+        'effector actorpair dtor flag=0 registered=1 observer_restore=1 returned=1 body_cleared=1 base_vptr=1 stack_balanced=1 frees=0 mismatches=0',
+        'effector actorpair dtor flag=1 registered=1 observer_restore=1 returned=1 body_cleared=1 base_vptr=1 stack_balanced=1 frees=1 mismatches=0',
         'effector create rec_a vt=physics observers=1 capacity=2 list=eff',
         'effector create rec_b vt=physics observers=1 capacity=2 list=eff',
         'effector create count=1 iterator=np',

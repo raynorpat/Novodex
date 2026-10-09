@@ -365,6 +365,136 @@ static void nxProbeHookAdjustor(NxSpringAndDamperEffector* e)
 		nxPointerAt(copy, 0x14) == internalBefore ? "yes" : "no");
 	}
 
+static void* nxMapSymbolAddress(HMODULE module, const wchar_t* pairDirectory,
+	const char* wanted)
+	{
+	wchar_t path[MAX_PATH];
+	if(swprintf_s(path, L"%s\\NxPhysics.map", pairDirectory) < 0)
+		return 0;
+	FILE* map = 0;
+	if(_wfopen_s(&map, path, L"rb") != 0 || !map)
+		return 0;
+	char line[2048];
+	void* address = 0;
+	unsigned long preferredBase = 0;
+	while(fgets(line, sizeof(line), map))
+		{
+		const char* preferred = strstr(line, "Preferred load address is ");
+		if(preferred)
+			{
+			preferred += strlen("Preferred load address is ");
+			preferredBase = strtoul(preferred, 0, 16);
+			continue;
+			}
+		const char* symbol = strstr(line, wanted);
+		if(!symbol)
+			continue;
+		const char* addressText = symbol + strlen(wanted);
+		while(*addressText == ' ' || *addressText == '\t')
+			++addressText;
+		char* addressEnd = 0;
+		const unsigned long mapAddress = strtoul(addressText, &addressEnd, 16);
+		if(addressEnd == addressText || !preferredBase || mapAddress < preferredBase)
+			continue;
+		const unsigned char* base = reinterpret_cast<const unsigned char*>(module);
+		address = const_cast<unsigned char*>(base + (mapAddress - preferredBase));
+		break;
+		}
+	fclose(map);
+	return address;
+	}
+
+static unsigned nxObservableCount(const void* object)
+	{
+	const unsigned first = static_cast<unsigned>(reinterpret_cast<size_t>(nxPointerAt(object, 4)));
+	const unsigned last = static_cast<unsigned>(reinterpret_cast<size_t>(nxPointerAt(object, 8)));
+	return first && last >= first ? (last - first) / 4 : 0;
+	}
+
+static unsigned gActorPairDtorFailures;
+
+// Probe the abstract base's scalar deleting destructor using the candidate's
+// linker-map symbol. The oracle uses its pinned row RVA. A scratch effector is
+// registered with two live actor records, so both observer removals and the
+// flag-controlled allocator free are visible without destroying the live one.
+static void nxProbeActorPairDeletingDestructor(HMODULE physics,
+	const wchar_t* pairDirectory, void* recordA, void* recordB)
+	{
+	wchar_t mapPath[MAX_PATH];
+	if(swprintf_s(mapPath, L"%s\\NxPhysics.map", pairDirectory) < 0)
+		{
+		++gActorPairDtorFailures;
+		return;
+		}
+	const bool hasCandidateMap = GetFileAttributesW(mapPath) != INVALID_FILE_ATTRIBUTES;
+	const unsigned char* base = gImageBase[0];
+	void* deletingAddress = hasCandidateMap
+		? nxMapSymbolAddress(physics, pairDirectory, "??_GActorPairEffector@@UAEPAXI@Z")
+		: const_cast<unsigned char*>(base + 0x8ee20);
+	void* setBodiesAddress = hasCandidateMap
+		? nxMapSymbolAddress(physics, pairDirectory,
+			"?setBodyRecords@ActorPairEffector@@QAEXPAVObservable@NxFoundation@@0@Z")
+		: const_cast<unsigned char*>(base + 0x8ed60);
+	void* vtable = hasCandidateMap
+		? nxMapSymbolAddress(physics, pairDirectory, "??_7ActorPairEffector@@6B@")
+		: const_cast<unsigned char*>(base + 0x1178f8);
+	if(!deletingAddress || !setBodiesAddress || !vtable)
+		{
+		fprintf(stderr, "FAIL ActorPairEffector map symbols missing\n");
+		++gActorPairDtorFailures;
+		return;
+		}
+	typedef void (__thiscall *SetBodyRecords)(void*, void*, void*);
+	typedef void* (__thiscall *DeletingDestructor)(void*, unsigned);
+	SetBodyRecords setBodyRecords = reinterpret_cast<SetBodyRecords>(setBodiesAddress);
+	DeletingDestructor deletingDestructor = reinterpret_cast<DeletingDestructor>(deletingAddress);
+	for(unsigned flags = 0; flags <= 1; ++flags)
+		{
+		const unsigned beforeA = nxObservableCount(recordA);
+		const unsigned beforeB = nxObservableCount(recordB);
+		unsigned char* object = static_cast<unsigned char*>(
+			gAllocator.malloc(0x2c, NX_MEMORY_PERSISTENT));
+		if(!object)
+			{
+			++gActorPairDtorFailures;
+			return;
+			}
+		memset(object, 0, 0x2c);
+		memcpy(object, &vtable, 4);
+		setBodyRecords(object, recordA, recordB);
+		const bool registered = nxObservableCount(recordA) == beforeA + 1
+			&& nxObservableCount(recordB) == beforeB + 1
+			&& nxPointerAt(object, 0x24) == recordA && nxPointerAt(object, 0x28) == recordB;
+		const unsigned freesBefore = gAllocator.frees();
+		unsigned espBefore = 0, espAfter = 0;
+		__asm mov espBefore, esp
+		void* returned = deletingDestructor(object, flags);
+		__asm mov espAfter, esp
+		const bool stackBalanced = espBefore == espAfter;
+		const bool restored = nxObservableCount(recordA) == beforeA
+			&& nxObservableCount(recordB) == beforeB;
+		const unsigned freed = gAllocator.frees() - freesBefore;
+		const bool returnedSelf = returned == object;
+		bool bodyCleared = true;
+		bool baseVptr = true;
+		if(flags == 0)
+			{
+			bodyCleared = nxPointerAt(object, 0x24) == 0 && nxPointerAt(object, 0x28) == 0;
+			baseVptr = nxPointerAt(object, 0) != vtable;
+			}
+		const unsigned mismatches = !registered || !restored || !stackBalanced
+			|| !returnedSelf || !bodyCleared || !baseVptr || freed != flags;
+		printf("effector actorpair dtor flag=%u registered=%u observer_restore=%u "
+			"returned=%u body_cleared=%u base_vptr=%u stack_balanced=%u frees=%u mismatches=%u\n",
+			flags, registered, restored, returnedSelf,
+			flags ? 1u : static_cast<unsigned>(bodyCleared),
+			flags ? 1u : static_cast<unsigned>(baseVptr), stackBalanced, freed, mismatches);
+		gActorPairDtorFailures += mismatches;
+		if(flags == 0)
+			gAllocator.free(object);
+		}
+	}
+
 static void nxRelease(const char* label, NxScene& scene, NxSpringAndDamperEffector* e)
 	{
 	const NxWindow w = nxWindowOpen();
@@ -424,7 +554,8 @@ static void nxSlotCalls(const char* label, void* internal, unsigned char* recA, 
 		}
 	}
 
-static void nxEffectorCases(NxPhysicsSDK& sdk, NxScene& scene)
+static void nxEffectorCases(NxPhysicsSDK& sdk, NxScene& scene, HMODULE physics,
+	const wchar_t* pairDirectory)
 	{
 	nxSymbolAdd(nxPointerAt(&scene, 0x24), "scene");
 	nxSymbolAdd(nxPointerAt(&scene, 0x0c), "wlink");
@@ -451,6 +582,8 @@ static void nxEffectorCases(NxPhysicsSDK& sdk, NxScene& scene)
 	if(!e)
 		return;
 	nxProbeHookAdjustor(e);
+	nxProbeActorPairDeletingDestructor(physics, pairDirectory,
+		nxActorRecord(a), nxActorRecord(b));
 	void* internal = nxPointerAt(e, 0x14);
 	nxPrintRecord("create", "rec_a", nxActorRecord(a));
 	nxPrintRecord("create", "rec_b", nxActorRecord(b));
@@ -591,10 +724,15 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("scene creation failed");
 		}
 
-	nxEffectorCases(*sdk, *scene);
+	nxEffectorCases(*sdk, *scene, physics, pairDirectory);
 	printf("scene=released\n");
 	sdk->release();
 	printf("sdk=released\n");
+	if(gActorPairDtorFailures)
+		{
+		FreeLibrary(physics);
+		return nxFail("ActorPairEffector deleting destructor probe failed");
+		}
 
 	status = nxReportPairIdentity(pairDirectory);
 	if(status)

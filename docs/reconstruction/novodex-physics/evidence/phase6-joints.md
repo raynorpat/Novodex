@@ -9941,3 +9941,8 @@ A zero-return mutation of `Joint::row004131` changes the registered core-dump li
 ## Phase 6 closure measurement — shared joint global-axis getter (`phys_fn_004129`)
 
 Adding `1.0f` to the computed X result in `Joint::getGlobalAxis` is caught for `phys_fn_004129` with `stdout_delta=246`, both exits zero, and exact stderr; the restored control is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-joint-row004129-global-axis-getter.md`.
+
+
+## Phase 6 closure measurement — ActorPairEffector scalar deleting destructor (`phys_fn_003932`)
+
+The registered `NxPhysicsEffectorTests` scratch probe calls the deleting destructor with flags 0 and 1 and checks observer removal, pointer clearing, base-vtable restoration, stack balance, and conditional freeing. Removing the second body-pointer clear is detected for `phys_fn_003932` (`body_cleared=0`, `mismatches=1`, candidate exit 1, `stdout_delta=2`); the restored oracle/candidate differential is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-effector-row003932-deleting-destructor.md`.
