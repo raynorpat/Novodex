@@ -9415,3 +9415,7 @@ The registered NxPhysicsEffectorTests staged-pair differential reaches phys_fn_0
 ## Phase 6 closure measurement — shared joint getters (phys_fn_004070, phys_fn_004078)
 
 The registered NxPhysicsJointStagedPairTests rotated multi-family fixture catches an mType + 1 mutation in phys_fn_004070 with stdout_delta=3307 and candidate access violation, and an XOR-1 state mutation in phys_fn_004078 with stdout_delta=244. Both restored controls pass exactly with both processes exiting zero. Details: evidence/phase6-joint-004070-getter.md and evidence/phase6-joint-004078-getter.md.
+
+## Phase 6 closure measurement — spherical flags getter (phys_fn_004290)
+
+The registered NxPhysicsJointStagedPairTests differential records specialized flags in both spherical cases. An XOR-1 mutation of phys_fn_004290 is caught with stdout_delta=24 and both processes exiting zero; the restored control is exact. Details: evidence/phase6-spherical-getFlags-004290.md.
