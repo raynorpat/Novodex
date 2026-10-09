@@ -9755,3 +9755,13 @@ In the clean isolated worktree at mainline commit 379b75c6, changed Joint::is (p
 
 The mutation existed only in the isolated worktree and was restored before the exact control run. Detailed evidence: `evidence/phase6-joint-row004072-type-match.md`.
 Measurement index: `phys_fn_004072 stdout_delta=2206`.
+
+
+## Phase 6 closure measurement — joint support-record allocator (phys_fn_004093)
+
+`Joint::row004093` reserves the next `JointSupportRecord` in the scene array, grows the array when needed, advances the count, and extends the joint’s contiguous record window. `NxPhysicsJointSlotTests` exercises this shared allocator across multiple joint families and inspects the resulting support records.
+
+In the clean isolated worktree at mainline commit 70ed5f86, changed Joint::row004093 (phys_fn_004093) to increment the scene support-record count by two instead of one. The registered NxPhysicsJointSlotTests staged-pair differential rejected the mutant: oracle_exit=0, candidate_exit=0, stdout_delta=2918, stderr_exact=True. Restored Joint.cpp, rebuilt NxPhysics, and reran; the restored control had both exits 0, stdout_delta=0, and exact stderr.
+
+The mutation existed only in the isolated worktree and was restored before the exact control run. Detailed evidence: `evidence/phase6-joint-row004093-support-record.md`.
+Measurement index: `phys_fn_004093 stdout_delta=2918`.
