@@ -2,14 +2,14 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closes 6 of its 433 function rows and none of its 531 data objects. The two exported joint-descriptor rows, phys_fn_004397, phys_fn_004403, and phys_fn_004113 are closed by mutations caught by registered staged-pair gates. The descriptor rows are caught by NxPhysicsJointStagedPairTests; kind-1/2/3/6 bounded support and both joint-break notify return paths are caught by NxPhysicsSimulationTests; the support normal solver mutation is caught by NxPhysicsMeshSimulationTests. Prismatic solver row phys_fn_004386 is caught by the eight-step public prismatic joint simulation in NxPhysicsSimulationTests (the t1-to-t2 mutation is caught with stdout_delta=14 and restored output exact). The deferred rows remain debt rather than an obstruction.",
+  "note": "Phase 6 closes 7 of its 433 function rows and none of its 531 data objects. The two exported joint-descriptor rows, phys_fn_004397, phys_fn_004403, and phys_fn_004113 are closed by mutations caught by registered staged-pair gates. The descriptor rows are caught by NxPhysicsJointStagedPairTests; kind-1/2/3/6 bounded support and both joint-break notify return paths are caught by NxPhysicsSimulationTests; the support normal solver mutation is caught by NxPhysicsMeshSimulationTests. Prismatic solver row phys_fn_004386 is caught by the eight-step public prismatic joint simulation in NxPhysicsSimulationTests (the t1-to-t2 mutation is caught with stdout_delta=14 and restored output exact). Spherical solver row phys_fn_004296 is caught by the eight-step public pendulum simulation in NxPhysicsSimulationTests (negating the Y bias is caught with stdout_delta=24 and restored output exact). The deferred rows remain debt rather than an obstruction.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "Phase 6 did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction.",
-    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work Phase 6 has left: 402 rows, each needing one mutation and one measured detection.",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work Phase 6 has left: 401 rows, each needing one mutation and one measured detection.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -25,8 +25,8 @@
     ]
   },
   "counts": {
-    "differential_falsified": 6,
-    "deferred_reconstructed_not_falsified": 402,
+    "differential_falsified": 7,
+    "deferred_reconstructed_not_falsified": 401,
     "deferred_not_reconstructed_in_phase": 25
   },
   "closed": [
@@ -88,6 +88,16 @@
       "falsification": {
         "mutation": "In a detached worktree at 99eb52a4, changed both t1 tangent inputs to t2 in PrismaticJoint::row_slot6 (Physics/src/core/PrismaticJoint.cpp). Rebuilt NxPhysics and ran the registered NxPhysicsSimulationTests staged-pair differential.",
         "detected": "stdout_delta=14"
+      }
+    },
+    {
+      "id": "phys_fn_004296",
+      "rva": "0x000a3090",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a detached worktree at 32578585, negated the Y bias component in SphericalJoint::row_slot6 (Physics/src/core/SphericalJoint.cpp). Rebuilt NxPhysics and ran the registered NxPhysicsSimulationTests staged-pair differential.",
+        "detected": "stdout_delta=24"
       }
     }
   ],
@@ -1370,15 +1380,6 @@
       "id": "phys_fn_004294",
       "rva": "0x000a2f80",
       "size": 269,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004296",
-      "rva": "0x000a3090",
-      "size": 5907,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],

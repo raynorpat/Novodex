@@ -25,6 +25,7 @@
 #include "NxDistanceJointDesc.h"
 #include "NxPrismaticJointDesc.h"
 #include "NxRevoluteJointDesc.h"
+#include "NxSphericalJointDesc.h"
 #include "NxD6JointDesc.h"
 #include "NxSpringAndDamperEffector.h"
 #include "NxSpringAndDamperEffectorDesc.h"
@@ -1698,6 +1699,53 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("simulation prismatic-joint steps=8 ready=1 fetched=1\n");
 	sdk->releaseScene(*prismaticScene);
+
+	// Exercise the spherical point constraint with a nonzero anchor lever arm.
+	// Gravity rotates the body around the world anchor while the joint keeps
+	// the anchored point fixed.
+	NxSceneDesc sphericalSceneDesc;
+	sphericalSceneDesc.setToDefault();
+	sphericalSceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
+	NxScene* sphericalScene = sdk->createScene(sphericalSceneDesc);
+	if(!sphericalScene) return nxFail("spherical-joint scene creation failed");
+	sphericalScene->setTiming(0.02f, 1, NX_TIMESTEP_FIXED);
+	NxSphereShapeDesc sphericalSphere;
+	sphericalSphere.radius = 0.1f;
+	NxBodyDesc sphericalBody;
+	NxActorDesc sphericalActorDesc;
+	sphericalActorDesc.body = &sphericalBody;
+	sphericalActorDesc.density = 1.0f;
+	sphericalActorDesc.globalPose.t = NxVec3(13.0f, 4.0f, 0.0f);
+	sphericalActorDesc.shapes.pushBack(&sphericalSphere);
+	NxActor* sphericalActor = sphericalScene->createActor(sphericalActorDesc);
+	if(!sphericalActor) return nxFail("spherical-joint actor creation failed");
+	NxSphericalJointDesc sphericalDesc;
+	sphericalDesc.setToDefault();
+	sphericalDesc.actor[0] = sphericalActor;
+	sphericalDesc.actor[1] = 0;
+	setGlobalAnchor(sphericalDesc, NxVec3(12.75f, 4.0f, 0.0f));
+	if(!sphericalScene->createJoint(sphericalDesc))
+		return nxFail("spherical-joint creation failed");
+	for(unsigned step = 0; step < 8; ++step)
+		{
+		sphericalScene->simulate(0.02f);
+		const bool ready = sphericalScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+		const bool fetched = sphericalScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		if(!ready || !fetched)
+			return nxFail("spherical-joint simulation result was not ready and fetched");
+		char stage[24];
+		sprintf_s(stage, "spherical%u", step);
+		nxPrintActorState(stage, *sphericalActor);
+		const NxQuat orientation = sphericalActor->getGlobalOrientationQuatVal();
+		const NxVec3 angularVelocity = sphericalActor->getAngularVelocityVal();
+		printf("simulation spherical-motion step=%u orientation=%08x.%08x.%08x.%08x angular=%08x.%08x.%08x\n",
+			step, nxFloatBits(orientation.x), nxFloatBits(orientation.y),
+			nxFloatBits(orientation.z), nxFloatBits(orientation.w),
+			nxFloatBits(angularVelocity.x), nxFloatBits(angularVelocity.y),
+			nxFloatBits(angularVelocity.z));
+		}
+	printf("simulation spherical-joint steps=8 ready=1 fetched=1\n");
+	sdk->releaseScene(*sphericalScene);
 
 	// Reproduce the D6 swing-limit angular-impulse cancellation case. The
 	// actor begins 60 degrees off the world frame; one limited swing axis

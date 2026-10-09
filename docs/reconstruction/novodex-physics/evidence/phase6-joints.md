@@ -9399,3 +9399,7 @@ The registered `NxPhysicsPairFlagTests` staged-pair differential observes `getNb
 The public eight-step prismatic joint simulation catches `phys_fn_004386`'s tangent dispatch mutation with `stdout_delta=14`; the restored DLL matches exactly.
 The fixture and full gate results are recorded in
 `evidence/phase6-prismatic-solver-004386.md`.
+
+## Phase 6 closure measurement — spherical solver (`phys_fn_004296`)
+
+The public eight-step spherical pendulum simulation catches `phys_fn_004296`'s Y-bias sign mutation with `stdout_delta=24`; the restored DLL matches exactly. The fixture and gate results are recorded in `evidence/phase6-spherical-solver-004296.md`.

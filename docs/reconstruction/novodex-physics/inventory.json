@@ -79662,13 +79662,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2076",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14401",
       "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Spherical)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "The registered NxPhysicsSimulationTests public-scene differential drives an eight-step spherical pendulum with nonzero anchor lever arm and pins actor position, velocity, orientation, and angular velocity. In a detached worktree at 32578585, negating the Y bias in SphericalJoint::row_slot6 was caught with oracle_exit=0, candidate_exit=0, stdout_delta=24, stderr_exact=True. Restoring and rebuilding returned stdout_delta=0 and exact stderr. See evidence/phase6-spherical-solver-004296.md.",
+      "notes": "Whole-row mutation falsification recorded in the Phase 6 closure ledger.",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {

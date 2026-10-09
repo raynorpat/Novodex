@@ -1,3 +1,16 @@
+### Continuation — spherical solver public pendulum and row closure (2026-10-08)
+
+Added an eight-step public spherical-joint pendulum fixture to
+`NxPhysicsSimulationTests`. Required Phase 5/6/7 coverage pins actor position,
+linear velocity, orientation, and angular velocity on each step. Negating the
+Y bias in `SphericalJoint::row_slot6` was caught by the registered staged-pair
+differential (`stdout_delta=24`, both processes exited 0, exact stderr); the
+restored build returned to an exact differential. Fresh Phase 5, Phase 6, and
+Phase 7 gates pass at 2,595/2,569, 1,094/1,068, and 1,416/1,390 assertions.
+Phase 6 now has 7 mutation-closed functions and 426 remaining rows; full joint
+and DLL reconstruction remain open. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase6-spherical-solver-004296.md`.
+
 ### Continuation — prismatic solver public simulation and row closure (2026-10-08)
 
 Added an eight-step public-scene prismatic-joint fixture to
