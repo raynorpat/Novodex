@@ -54,6 +54,32 @@ class CompletionReportTests(unittest.TestCase):
             "object": "ObjectModel.obj",
         })
 
+    def test_body_descriptor_copy_has_candidate_source_and_map_symbol(self):
+        report = build_report_from_repo(REPO_DIR)
+        row = next(row for row in report["rows"] if row["id"] == "phys_fn_000010")
+
+        self.assertEqual(row["implementation"]["path"], "Physics/src/Scene.cpp")
+        self.assertEqual(row["implementation"]["symbol"], "Row000010Fixture::row000010")
+        self.assertEqual(row["implementation"]["candidate_map_reference"], {
+            "path": "build/Release/NxPhysics.map",
+            "symbol": "?row000010@Row000010Fixture@@QAEXPBVNxBodyDesc@@@Z",
+            "address": "0x1005b9e0",
+            "object": "Scene.obj",
+        })
+
+    def test_id_allocator_has_candidate_source_and_map_symbol(self):
+        report = build_report_from_repo(REPO_DIR)
+        row = next(row for row in report["rows"] if row["id"] == "phys_fn_000012")
+
+        self.assertEqual(row["implementation"]["path"], "Physics/src/ObjectModel.cpp")
+        self.assertEqual(row["implementation"]["symbol"], "nxIdAllocNext")
+        self.assertEqual(row["implementation"]["candidate_map_reference"], {
+            "path": "build/Release/NxPhysics.map",
+            "symbol": "?nxIdAllocNext@@YAIPAX@Z",
+            "address": "0x1003e9e0",
+            "object": "ObjectModel.obj",
+        })
+
     def test_generated_report_uses_lf_bytes_on_every_platform(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             output = Path(temp_dir) / "report.json"

@@ -7,8 +7,8 @@
     "code_bytes": 938498,
     "open_code_rows": 2787,
     "terminally_closed_code_rows": 0,
-    "mapped_code_rows": 1679,
-    "source_correspondence_only_rows": 505,
+    "mapped_code_rows": 1681,
+    "source_correspondence_only_rows": 504,
     "directly_exported_code_rows": 41,
     "artifact_rows": 3551,
     "artifact_bytes": 116182,
@@ -155,7 +155,7 @@
         "rows": 205,
         "bytes": 60693,
         "open_rows": 205,
-        "rows_without_implementation_mapping": 52,
+        "rows_without_implementation_mapping": 50,
         "rows_with_unresolved_indirect_calls": 112,
         "by_state": {
           "dynamically_gated": 204,
@@ -600,14 +600,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000010",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/Scene.cpp",
+        "role": "reconstruction",
+        "symbol": "Row000010Fixture::row000010",
+        "file_exists": true,
         "oracle_source": "Physics/src/Scene.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?row000010@Row000010Fixture@@QAEXPBVNxBodyDesc@@@Z",
+          "address": "0x1005b9e0",
+          "object": "Scene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -646,10 +652,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000010",
         "rva": "0x00001390",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -664,14 +670,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000012",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/ObjectModel.cpp",
+        "role": "reconstruction",
+        "symbol": "nxIdAllocNext",
+        "file_exists": true,
         "oracle_source": null,
         "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxIdAllocNext@@YAIPAX@Z",
+          "address": "0x1003e9e0",
+          "object": "ObjectModel.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -710,10 +722,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000012",
         "rva": "0x00001430",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -230747,7 +230759,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "19ff173a265730070a0b81e1ef6da159c123b34bf470c19ede5e247224537b21",
+    "inventory_sha256": "b94142f29f12e93d92dd65fee419dd2e4b4ff7a5b6a7cc88ab2414bd5047e252",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
