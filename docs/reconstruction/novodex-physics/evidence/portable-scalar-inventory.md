@@ -264,3 +264,36 @@ nonvirtual-public-base debug owners remain documented historical boundaries.
 PMap/OPCODE/genuine TriangleMesh lifecycle integration is the next dependency
 gate; polygon dispatch/projection, fan and contact families remain pending.
 Full production migration guards and native layout obligations remain intact.
+
+### Task5d1b1 genuine OPCODE model/tree/ray prerequisite
+
+The real Model/BaseModel/AABBTree/builders/optimized-tree/Common/MeshInterface/
+Collider/RayCollider sources now have a separately selectable Win32 scalar
+gate, using the genuine Foundation singleton and allocator. Four optimized
+tree variants, source/optimized walks, reuse, supported refit, direct triangle
+boundaries, ray/segment/first/closest/cache queries, supported empty/degenerate
+inputs and checked allocation failure compare against the immutable original
+`opcode-model-domain-x87` capture. Numeric kinds are bounds (world length),
+dequantization coefficients (world length per quantized step), ray parameter
+(world length for unit direction), and dimensionless barycentrics. Exact
+topology/counts/indices/decisions/zeros/signs/canaries remain mandatory.
+
+The typed cross-axis helper has eight binary32 values and no hidden receiver,
+scratch or output. It compares `abs(a*b-c*d) > e*f+g*h`; equality and unordered
+comparisons continue the next axis. All eight arguments were exercised before
+translation. Scalar code preserves complete binary64 expressions versus each
+original binary32 store, without changing the retained x87 instructions.
+Clang's scalar profile must preserve null-return checked-new behavior using
+C++-only `-fcheck-new`; it is a full-engine compiler obligation.
+
+This prerequisite does not establish successful Model/tree Save/Load or
+Slot4 implementations: their existing unreconstructed classifications and
+the existing host error shim are unchanged. Native DWORD-packed pointers and
+layout remain Task9. PMap creation/serialization/rays and genuine TriangleMesh
+lifecycle/polygon callbacks remain the next integration gates. The actual mesh
+constructor's original polygon table calls legacy hull/map register contracts,
+requiring ordinary callback definitions together with its genuine receiver.
+InternalMesh's AddPoint consumers still need backend-correct arities; its
+nonnull PhysicsSDK parameter branch requires the real parameter owner. The
+null SDK default is distinct from nonnull SDK acceptance. No fake receiver,
+global, model or SDK stub closes those obligations. Full production guards stay.

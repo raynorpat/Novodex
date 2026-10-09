@@ -5,7 +5,7 @@ p = argparse.ArgumentParser()
 p.add_argument('--reference-revision', required=True)
 p.add_argument('--capture-id', required=True)
 p.add_argument('--exporter', type=pathlib.Path, required=True)
-p.add_argument('--kind', choices=['math','rotations','conversions','geometry','ice-topology','ice-hull','ice-mesh-normals','ice-support-maps','foundation-lifecycle','foundation-public-math'], required=True)
+p.add_argument('--kind', choices=['math','rotations','conversions','geometry','ice-topology','ice-hull','ice-mesh-normals','ice-support-maps','foundation-lifecycle','foundation-public-math','opcode-model'], required=True)
 p.add_argument('--output-dir', type=pathlib.Path, required=True)
 a = p.parse_args()
 revision = subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip()
@@ -24,6 +24,10 @@ compiler_text=compiler_files[0].read_text()
 version=re.search(r'set\(CMAKE_CXX_COMPILER_VERSION "([^"]+)"\)',compiler_text)
 if 'set(CMAKE_CXX_COMPILER_ID "MSVC")' not in compiler_text or 'set(CMAKE_CXX_SIZEOF_DATA_PTR "4")' not in compiler_text or not version:
     raise SystemExit('exporter toolchain must be MSVC with four-byte pointers')
+if a.kind == 'opcode-model':
+    from capture_opcode_model import capture
+    capture(a, root, revision, version[1])
+    raise SystemExit(0)
 if a.kind in ('foundation-lifecycle', 'foundation-public-math'):
     from capture_foundation_lifecycle import capture
     capture(a, root, revision, version[1])

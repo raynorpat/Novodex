@@ -112,6 +112,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Precompiled Header
 #include "Stdafx.h"
+#include "NxPhysicsBackend.h"
 
 using namespace Opcode;
 
@@ -261,9 +262,20 @@ bool AABBTreeNode::Subdivide(AABBTreeBuilder* builder)
 			float Cx = builder->GetSplittingValue(Index, 0);
 			float Cy = builder->GetSplittingValue(Index, 1);
 			float Cz = builder->GetSplittingValue(Index, 2);
+#if NX_PHYSICS_USE_X87
 			Vars.x += (Cx - Means.x)*(Cx - Means.x);
 			Vars.y += (Cy - Means.y)*(Cy - Means.y);
 			Vars.z += (Cz - Means.z)*(Cz - Means.z);
+#else
+            // Each variance assignment stores binary32; its subtraction,
+            // product and addition previously remained on the x87 stack.
+            const double dx = double(Cx) - Means.x;
+            const double dy = double(Cy) - Means.y;
+            const double dz = double(Cz) - Means.z;
+            Vars.x = float(double(Vars.x) + dx * dx);
+            Vars.y = float(double(Vars.y) + dy * dy);
+            Vars.z = float(double(Vars.z) + dz * dz);
+#endif
 		}
 		Vars/=float(mNbPrimitives-1);
 
