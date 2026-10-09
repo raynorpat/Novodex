@@ -55,6 +55,7 @@
 #undef ARRAYSIZE
 #include "ObjectModel.h"
 #pragma pop_macro("ARRAYSIZE")
+#include "PhysicsInternal.h"
 
 // convex-mesh gap Task 2m candidate dispatch entry, implemented in the
 // production narrow-phase dispatcher.
@@ -3453,6 +3454,19 @@ int wmain(int argc, wchar_t** argv)
 			}
 		}
 	printf("matrix slots=%u null=%u wrong=%u\n", matrixChecked, matrixNull, matrixWrong);
+	// The product constructor must route mesh/mesh trigger overlap through the
+	// already reconstructed matrix-B entry, just as the oracle constructor does.
+	// This assertion is separate from the oracle-address table above because the
+	// product is linked at a different image base.
+	{
+	ShapePairFunctionTable candidateMatrix;
+	const void* expected = (const void*) nxOverlapMeshMesh;
+	const void* actual = candidateMatrix.mFunction[1][4][4];
+	const unsigned mismatch = actual != expected;
+	printf("matrix candidate_entry half=B type0=4 type1=4 expected=%p actual=%p mismatches=%u\n",
+		expected, actual, mismatch);
+	matrixWrong += mismatch;
+	}
 	for(int half = 0; half < 2; ++half)
 		{
 		const NxMatrixEntry* recovered = half ? nxMatrixB : nxMatrixA;

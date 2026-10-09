@@ -315,3 +315,15 @@ Continuation checkpoint — 2026-10-09, current branch `codex/nxphysics-completi
 - Ruling: `sdd-workspace` cannot run through Git Bash in this Windows worktree because the `.git` pointer contains a Windows drive path that Bash resolves relative to `/mnt/c`; reused the existing `.superpowers/sdd/2026-09-30-nxphysics-main-completion-roadmap` workspace after verifying its `plan-path` marker matches this plan. No tracked or user-local files were changed by the failed invocation.
 - Next focus is M3/M2 substantive reconstruction rather than more bookkeeping-only closures. The current main contract for `ContactPlaneMesh.cpp` explicitly identifies an oracle OPCODE query path replaced by a candidate direct mesh walk; inspect the registered public mesh/contact tests and recover this path as a dependency-owned packet. Full DLL scope remains active.
 - Plane/mesh investigation and closure: the focused `Nx2iSide` fixture now constructs the exact plane collider/cache context at `+0x60/+0xa8`, avoiding the earlier oracle fault and exposing the real candidate mismatch. `ContactPlaneMesh.cpp` now queries `Opcode::PlanesCollider` and consumes its touched faces in order; contact vertex transforms and plane distances use the recovered x87 operation order. The new differential covers four fixtures under both x87 control words: 872 contact checks, 38 contacts, matching digest `3dc2d3277f3fc523`, and 8/8 overlap results. A temporary query-disable mutation was caught with 24 mismatches; a +1.0 world-x transform mutation on continuation row 001897 was caught with 54 mismatches. The complete collision executable and Phase 3 gate passed (537/534 coverage assertions). Inventory rows 001893, 001895, and 001897 now record the implementation and proof; detailed evidence is in `docs/reconstruction/novodex-physics/evidence/phase3-contact-plane-mesh.md`. The full DLL goal remains open.
+Continuation — mesh/mesh overlap matrix wiring (2026-10-09).
+
+Closed the candidate matrix-B `[MESH][MESH]` dispatch omission: the SDK's
+`ShapePairFunctionTable` now routes this slot to reconstructed
+`nxOverlapMeshMesh` (oracle `phys_fn_001870`, RVA `0x00046550`). Added a
+candidate-constructor assertion. The test failed before the wiring (candidate
+slot null, expected function pointer), then the full pinned collision harness
+passed after the fix (`matrix_wrong=0`, exit 0). Win32 Release builds pass for
+`NxPhysicsCollisionTests` and `NxPhysics`. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase3-mesh-mesh-overlap-dispatch.md`.
+This is a dispatch closure only; matrix-A contact entry `phys_fn_001876` and its
+dependent branches remain open. Public headers unchanged.

@@ -19,6 +19,7 @@
 void __cdecl NxContactSphereMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
 void __cdecl NxContactCapsuleMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
 bool __cdecl NxOverlapPlaneMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
+extern "C" bool __cdecl nxOverlapMeshMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 bool __cdecl NxOverlapCapsuleMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 
 // The heap block phys_fn_002358 allocates. The critical section starts at zero,
@@ -141,6 +142,7 @@ ShapePairFunctionTable::ShapePairFunctionTable()
 	mFunction[1][3][4] = (void*) NxOverlapCapsuleMesh;
 	mFunction[1][0][4] = (void*) NxOverlapPlaneMesh;
 	mFunction[1][1][4] = (void*) NxOverlapSphereMesh;
+	mFunction[1][4][4] = (void*) nxOverlapMeshMesh;
 	}
 
 ShapePairFunctionTable::~ShapePairFunctionTable()
