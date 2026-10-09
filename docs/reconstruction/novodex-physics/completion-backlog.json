@@ -7,8 +7,8 @@
     "code_bytes": 938498,
     "open_code_rows": 2787,
     "terminally_closed_code_rows": 0,
-    "mapped_code_rows": 1681,
-    "source_correspondence_only_rows": 504,
+    "mapped_code_rows": 1690,
+    "source_correspondence_only_rows": 495,
     "directly_exported_code_rows": 41,
     "artifact_rows": 3551,
     "artifact_bytes": 116182,
@@ -155,7 +155,7 @@
         "rows": 205,
         "bytes": 60693,
         "open_rows": 205,
-        "rows_without_implementation_mapping": 50,
+        "rows_without_implementation_mapping": 41,
         "rows_with_unresolved_indirect_calls": 112,
         "by_state": {
           "dynamically_gated": 204,
@@ -4471,14 +4471,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000096",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::getCMassLocalPoseVal",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getCMassLocalPoseVal@NpActorVtable@@UBE?AVNxMat34@@XZ",
+          "address": "0x1002eee0",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -4538,10 +4544,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000096",
         "rva": "0x00003140",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -4556,14 +4562,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000098",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::getCMassLocalPositionVal",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getCMassLocalPositionVal@NpActorVtable@@UBE?AVNxVec3@@XZ",
+          "address": "0x1002efd0",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -4623,10 +4635,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000098",
         "rva": "0x00003200",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -4641,14 +4653,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000100",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::getCMassLocalOrientationVal",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getCMassLocalOrientationVal@NpActorVtable@@UBE?AVNxMat33@@XZ",
+          "address": "0x1002ee20",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -4708,10 +4726,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000100",
         "rva": "0x000032a0",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -4726,14 +4744,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000102",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::getMassSpaceInertiaTensorVal",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getMassSpaceInertiaTensorVal@NpActorVtable@@UBE?AVNxVec3@@XZ",
+          "address": "0x1002fb80",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -4793,10 +4817,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000102",
         "rva": "0x00003310",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -4811,14 +4835,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000104",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::getLinearVelocityVal",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getLinearVelocityVal@NpActorVtable@@UBE?AVNxVec3@@XZ",
+          "address": "0x1002f780",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -4878,10 +4908,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000104",
         "rva": "0x000033b0",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -4896,14 +4926,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000106",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::getAngularVelocityVal",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getAngularVelocityVal@NpActorVtable@@UBE?AVNxVec3@@XZ",
+          "address": "0x1002eac0",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -4963,10 +4999,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000106",
         "rva": "0x00003440",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -4981,14 +5017,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000108",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::getLinearMomentumVal",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpActor.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getLinearMomentumVal@NpActorVtable@@UBE?AVNxVec3@@XZ",
+          "address": "0x1002f6d0",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -5048,10 +5090,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000108",
         "rva": "0x000034d0",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -6631,14 +6673,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000146",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::getPointVelocityVal",
+        "file_exists": true,
         "oracle_source": "actor_dynamic vtable slot 65 getPointVelocityVal (Physics/src/NpActor.cpp)",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getPointVelocityVal@NpActorVtable@@UBE?AVNxVec3@@ABV2@@Z",
+          "address": "0x1002fd80",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -6698,10 +6746,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000146",
         "rva": "0x000058f0",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -6716,14 +6764,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000148",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpActor.cpp",
+        "role": "reconstruction",
+        "symbol": "NpActorVtable::getLocalPointVelocityVal",
+        "file_exists": true,
         "oracle_source": "actor_dynamic vtable slot 66 getLocalPointVelocityVal (Physics/src/NpActor.cpp)",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getLocalPointVelocityVal@NpActorVtable@@UBE?AVNxVec3@@ABV2@@Z",
+          "address": "0x1002f860",
+          "object": "NpActor.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -6781,10 +6835,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 5,
+        "owner_phase": 8,
         "row_id": "phys_fn_000148",
         "rva": "0x00005b40",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -230759,7 +230813,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "b94142f29f12e93d92dd65fee419dd2e4b4ff7a5b6a7cc88ab2414bd5047e252",
+    "inventory_sha256": "66a0df31d9933cf7181b43df4f08c151c92a431ea3a3bc0be377f4ca6b4a32a4",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",

@@ -1857,7 +1857,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/208",
       "static_proof": "getCMassLocalPose under the read guard: twelve words into the out pointer -- nine rotation words from record+0xdc then translation from +0x100; a static actor (null record) reports kind 1 from NpActor.cpp line 0x2f2 and hands back identity plus zero translation Final review I1 (NpActor completion): the listing's integer word copies (rep movsd / mov) are now bit copies (memcpy) in the candidate; under /arch:IA32 they had been fld/fstp pairs that quiet a signalling NaN. The ActorCMass signalling-NaN cases (cmass snan_*) show the words match the oracle.",
       "dynamic_proof": "NxPhysicsActorCMassTests catches row-targeted mutation: Shifted getCMassLocalPoseVal rotation source from record+0xdc to +0xe0. Detected with stdout_delta=56; both processes exit 0 and stderr is exact. Byte-restored differential: stdout_delta=0, stderr_exact=True.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getCMassLocalPoseVal",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getCMassLocalPoseVal@NpActorVtable@@UBE?AVNxMat34@@XZ",
+        "address": "0x1002eee0",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000097",
@@ -1893,7 +1901,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/211",
       "static_proof": "getCMassLocalPosition under the read guard: [+0x100/104/108]; static actors report kind 1 (line 0x2fa) and copy the zero triple at .data 0x10123c1c",
       "dynamic_proof": "NxPhysicsActorCMassTests catches row-targeted mutation: Shifted getCMassLocalPositionVal source from +0x100 to +0x104. Detected with stdout_delta=56; both processes exit 0 and stderr is exact. Byte-restored differential: stdout_delta=0, stderr_exact=True.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getCMassLocalPositionVal",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getCMassLocalPositionVal@NpActorVtable@@UBE?AVNxVec3@@XZ",
+        "address": "0x1002efd0",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000099",
@@ -1929,7 +1945,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/214",
       "static_proof": "getCMassLocalOrientation: nine words from record+0xdc; static actors get the shipped identity table (.rdata 0x10122078) after the line-0x301 warning Final review I1 (NpActor completion): the listing's integer word copies (rep movsd / mov) are now bit copies (memcpy) in the candidate; under /arch:IA32 they had been fld/fstp pairs that quiet a signalling NaN. The ActorCMass signalling-NaN cases (cmass snan_*) show the words match the oracle.",
       "dynamic_proof": "NxPhysicsActorCMassTests catches row-targeted mutation: Shifted getCMassLocalOrientationVal source from +0xdc to +0xe0. Detected with stdout_delta=58; both processes exit 0 and stderr is exact. Byte-restored differential: stdout_delta=0, stderr_exact=True.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getCMassLocalOrientationVal",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getCMassLocalOrientationVal@NpActorVtable@@UBE?AVNxMat33@@XZ",
+        "address": "0x1002ee20",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000101",
@@ -1965,7 +1989,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/218",
       "static_proof": "getMassSpaceInertiaTensorVal: the inertia diagonal [+0x18c/190/194] under the read guard; static arm reports line 0x328 with the same zero triple",
       "dynamic_proof": "NxPhysicsConvexMeshTests catches row-targeted mutation: Shifted getMassSpaceInertiaTensorVal source from +0x18c to +0x190. Detected with stdout_delta=2; both processes exit 0 and stderr is exact. Byte-restored differential: stdout_delta=0, stderr_exact=True.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getMassSpaceInertiaTensorVal",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getMassSpaceInertiaTensorVal@NpActorVtable@@UBE?AVNxVec3@@XZ",
+        "address": "0x1002fb80",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000103",
@@ -2001,7 +2033,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/221",
       "static_proof": "getLinearVelocity under the read guard: [+0x6c/70/74] -- the same words the slate-2 energy term scales; static arm reports line 0x343 and writes inline zeros",
       "dynamic_proof": "NxPhysicsActorDynamicsTests catches row-targeted mutation: Shifted getLinearVelocityVal source from +0x6c to +0x70. Detected with stdout_delta=2; both processes exit 0 and stderr is exact. Byte-restored differential: stdout_delta=0, stderr_exact=True.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getLinearVelocityVal",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getLinearVelocityVal@NpActorVtable@@UBE?AVNxVec3@@XZ",
+        "address": "0x1002f780",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000105",
@@ -2037,7 +2077,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/224",
       "static_proof": "getAngularVelocity under the read guard: [+0x78/7c/80]; inline zeros on the static arm, line 0x34a",
       "dynamic_proof": "NxPhysicsActorDynamicsTests catches row-targeted mutation: Shifted getAngularVelocityVal source from +0x78 to +0x7c. Detected with stdout_delta=2; both processes exit 0 and stderr is exact. Byte-restored differential: stdout_delta=0, stderr_exact=True.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getAngularVelocityVal",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getAngularVelocityVal@NpActorVtable@@UBE?AVNxVec3@@XZ",
+        "address": "0x1002eac0",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000107",
@@ -2073,7 +2121,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/227",
       "static_proof": "getLinearMomentumVal: mass [+0x188] times velocity [+0x6c/70/74] in natural component order, full-precision multiply, one rounding; .data zeros on the static arm, line 0x353",
       "dynamic_proof": "NxPhysicsActorMomentumTests catches row-targeted mutation: Sourced getLinearMomentumVal mass from +0x18c instead of +0x188. Detected with stdout_delta=4; both processes exit 0 and stderr is exact. Byte-restored differential: stdout_delta=0, stderr_exact=True.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getLinearMomentumVal",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getLinearMomentumVal@NpActorVtable@@UBE?AVNxVec3@@XZ",
+        "address": "0x1002f6d0",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000109",
@@ -2775,7 +2831,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/316",
       "static_proof": "RVA 0x58f0 constructs rotation from record+0x5c, transforms the mass-frame offset at +0x100 and adds record+0x50 translation to find the world mass center, subtracts that center from the input world point, then adds angular velocity cross the radius to linear velocity. The no-record arm returns zero. Disassembly at 0x59d6..0x5ae9 identifies the exact x87 float spills: center X, row-one/two dot products, radius X/Y and cross X/Y.",
       "dynamic_proof": "NxPhysicsActorLifecycleTests matches the pinned oracle for static, identity, half-turn, and quarter-turn actors plus the 16-case quaternion/mass-offset/point/velocity grid. Changing the final Win32 x87 world-Z accumulation from fadd to fsub is caught with stdout_delta=38; both processes exit 0 and stderr is exact. After byte-exact source restoration and rebuild, the clean differential is stdout_delta=0 and stderr_exact=True.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getPointVelocityVal",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getPointVelocityVal@NpActorVtable@@UBE?AVNxVec3@@ABV2@@Z",
+        "address": "0x1002fd80",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000147",
@@ -2811,7 +2875,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/318",
       "static_proof": "RVA 0x5b40 takes the actor record from body+8, multiplies the body quaternion rotation by the mass-frame matrix at record+0xdc, transforms the local point, then adds angular velocity cross the transformed radius to linear velocity; the no-record arm returns zero. Combined matrix cells spill to float, local point products stay on x87, and only X/Y cross terms spill before adding linear velocity.",
       "dynamic_proof": "NxPhysicsActorLifecycleTests matches the pinned oracle for static, identity, half-turn, and quarter-turn actors plus the 16-case quaternion/frame/point/velocity grid. Changing the final Win32 x87 local-Z accumulation from fadd to fsub is caught with stdout_delta=38; both processes exit 0 and stderr is exact. After byte-exact source restoration and rebuild, the clean differential is stdout_delta=0 and stderr_exact=True.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "NpActorVtable::getLocalPointVelocityVal",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getLocalPointVelocityVal@NpActorVtable@@UBE?AVNxVec3@@ABV2@@Z",
+        "address": "0x1002f860",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_000149",

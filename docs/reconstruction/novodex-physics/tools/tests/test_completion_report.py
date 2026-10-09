@@ -80,6 +80,31 @@ class CompletionReportTests(unittest.TestCase):
             "object": "ObjectModel.obj",
         })
 
+    def test_actor_getters_have_candidate_source_and_map_symbols(self):
+        expected = {
+            "phys_fn_000096": ("getCMassLocalPoseVal", "?getCMassLocalPoseVal@NpActorVtable@@UBE?AVNxMat34@@XZ", "0x1002eee0"),
+            "phys_fn_000098": ("getCMassLocalPositionVal", "?getCMassLocalPositionVal@NpActorVtable@@UBE?AVNxVec3@@XZ", "0x1002efd0"),
+            "phys_fn_000100": ("getCMassLocalOrientationVal", "?getCMassLocalOrientationVal@NpActorVtable@@UBE?AVNxMat33@@XZ", "0x1002ee20"),
+            "phys_fn_000102": ("getMassSpaceInertiaTensorVal", "?getMassSpaceInertiaTensorVal@NpActorVtable@@UBE?AVNxVec3@@XZ", "0x1002fb80"),
+            "phys_fn_000104": ("getLinearVelocityVal", "?getLinearVelocityVal@NpActorVtable@@UBE?AVNxVec3@@XZ", "0x1002f780"),
+            "phys_fn_000106": ("getAngularVelocityVal", "?getAngularVelocityVal@NpActorVtable@@UBE?AVNxVec3@@XZ", "0x1002eac0"),
+            "phys_fn_000108": ("getLinearMomentumVal", "?getLinearMomentumVal@NpActorVtable@@UBE?AVNxVec3@@XZ", "0x1002f6d0"),
+            "phys_fn_000146": ("getPointVelocityVal", "?getPointVelocityVal@NpActorVtable@@UBE?AVNxVec3@@ABV2@@Z", "0x1002fd80"),
+            "phys_fn_000148": ("getLocalPointVelocityVal", "?getLocalPointVelocityVal@NpActorVtable@@UBE?AVNxVec3@@ABV2@@Z", "0x1002f860"),
+        }
+        report = build_report_from_repo(REPO_DIR)
+        for row_id, (symbol, map_symbol, address) in expected.items():
+            with self.subTest(row=row_id):
+                row = next(row for row in report["rows"] if row["id"] == row_id)
+                self.assertEqual(row["implementation"]["path"], "Physics/src/NpActor.cpp")
+                self.assertEqual(row["implementation"]["symbol"], f"NpActorVtable::{symbol}")
+                self.assertEqual(row["implementation"]["candidate_map_reference"], {
+                    "path": "build/Release/NxPhysics.map",
+                    "symbol": map_symbol,
+                    "address": address,
+                    "object": "NpActor.obj",
+                })
+
     def test_generated_report_uses_lf_bytes_on_every_platform(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             output = Path(temp_dir) / "report.json"
