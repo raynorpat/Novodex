@@ -1715,10 +1715,10 @@ static void* nxActorVtThunk(void* self, void* arg1, unsigned* out, unsigned slot
 	return out;
 	}
 
-void* nxActorVtThunk104(void* self, void* arg1, unsigned* out)
-	{ return nxActorVtThunk(self, arg1, out, 0x104u); }
-void* nxActorVtThunk108(void* self, void* arg1, unsigned* out)
-	{ return nxActorVtThunk(self, arg1, out, 0x108u); }
+void* nxActorGetPointVelocityVal(void* self, void* point, unsigned* out)
+	{ return nxActorVtThunk(self, point, out, 0x104u); }
+void* nxActorGetLocalPointVelocityVal(void* self, void* point, unsigned* out)
+	{ return nxActorVtThunk(self, point, out, 0x108u); }
 
 namespace
 	{

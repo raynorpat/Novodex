@@ -299,7 +299,6 @@
   },
   "open_questions": [
     "the source-language interface represented by the actor's +8 secondary base remains unidentified; its one-slot deleting-destructor thunk and reset state are reconstructed",
-    "identity of TBL_87 implemented slots 63/64 (phys_fn_000038/_000040)",
     "the third pose's role (saved previous? sweep source?)",
     "which of the twelve small vtables phys_fn_000973 installs maps to which Nx*Desc type",
     "whether Shape+0x150..+0x158 trio is box-specific or common"

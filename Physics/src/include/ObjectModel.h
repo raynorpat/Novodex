@@ -967,12 +967,12 @@ void					nxActorSetBoundTarget(void* self, void* value);
 //! the out pointer.
 void*					nxActorGetPoseWords(void* self, void* out);
 
-//! phys_fn_000038 (0x2400, ret 8) / phys_fn_000040 (0x2430, ret 8): the
-//! actor vtable thunks. Each dispatches through the object's own vtable
-//! slot +0x104 / +0x108 with (self, &local, arg1) and copies the first
-//! three words of the returned record to out.
-void*					nxActorVtThunk104(void* self, void* arg1, unsigned* out);
-void*					nxActorVtThunk108(void* self, void* arg1, unsigned* out);
+//! phys_fn_000038 (0x2400, ret 8) / phys_fn_000040 (0x2430, ret 8):
+//! NxActor::getPointVelocityVal / getLocalPointVelocityVal. Each dispatches
+//! through the object's own vtable slot +0x104 / +0x108 with (self, &local,
+//! point), then copies the returned NxVec3 words to out.
+void*					nxActorGetPointVelocityVal(void* self, void* point, unsigned* out);
+void*					nxActorGetLocalPointVelocityVal(void* self, void* point, unsigned* out);
 
 //! phys_fn_001030 (0x22bf0, ret 4): aggregates the local AABBs of the shape
 //! list at [self+0xe0]..[self+0xe4] into out[0..5] -- FLT_MAX/-FLT_MAX
