@@ -1480,3 +1480,8 @@ The public convex-mesh cooking differential is exact on current mainline (`NxPhy
 
 - `phys_fn_003994` (`sceneDumpPointerName`) is mutation-falsified through the registered `NxPhysicsCoreDumpTests` staged-pair differential. Adding `_MUT` to the serialized pointer-name format changes the transcript by 342 bytes; after restoring and rebuilding, the differential is exact again (both exits zero, exact stderr).
 - Phase 6 now has 39 closed function rows and 394 deferred function rows. No public Physics headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-coredump-003994-pointer-name.md`.
+
+### Continuation — core-dump float-token mutation closure (2026-10-09)
+
+- `phys_fn_003995` (`sceneDumpToken`) is mutation-falsified through the registered `NxPhysicsCoreDumpTests` staged-pair differential. Reducing binary float-token precision from four to three decimal places changes the transcript by 542 bytes; after restoring and rebuilding, the differential is exact again.
+- Phase 6 now has 40 closed function rows and 393 deferred function rows. No public Physics headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-coredump-003995-float-token.md`.

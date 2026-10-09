@@ -9546,3 +9546,8 @@ For row `phys_fn_003979`, Row-specific falsification (Phase 6 closure packet, 20
 
 The registered NxPhysicsCoreDumpTests differential caught a mutation changing sceneDumpPointerName's format from "%s__%I64x" to "%s_MUT__%I64x": both processes exited zero, stderr matched exactly, and stdout_delta=342. After restoring SceneDump.cpp byte-for-byte in the throwaway archive, rebuilding, and rerunning, stdout_delta=0 with both exits zero and exact stderr. Detailed evidence: `evidence/phase6-coredump-003994-pointer-name.md`.
 Evidence index: phys_fn_003994 mutation detected at stdout_delta=342; restored control stdout_delta=0.
+
+## Phase 6 closure measurement — scene dump float-token formatter (phys_fn_003995)
+
+The registered NxPhysicsCoreDumpTests differential caught a mutation changing sceneDumpToken's binary token format from "%.4f$%x" to "%.3f$%x": both processes exited zero, stderr matched exactly, and stdout_delta=542. After restoring SceneDump.cpp byte-for-byte in the throwaway archive, rebuilding, and rerunning, stdout_delta=0 with both exits zero and exact stderr. Detailed evidence: `evidence/phase6-coredump-003995-float-token.md`.
+Evidence index: phys_fn_003995 mutation detected at stdout_delta=542; restored control stdout_delta=0.
