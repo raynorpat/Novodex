@@ -76453,13 +76453,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1545",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13588",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointStagedPairTests staged-pair matrix creates public joints with actor records and observes actor identity, internal state, and release. An immediate-return mutation to Joint::row004107 causes candidate access violation (-1073741819; stdout_delta=3160), while the oracle exits zero with exact stderr; restored control is exact. See evidence/phase6-joint-row004107-actor-attachment.md.",
+      "notes": " The public ten-family matrix falsifies removal of this actor-body attachment path.",
       "implementation": "Physics/src/core/Joint.cpp"
     },
     {

@@ -9906,3 +9906,8 @@ The public D6 staged-pair fixture now calls `setGlobalAnchor` after joint creati
 ## Phase 6 closure measurement — shared joint global-axis setter (`phys_fn_004101`)
 
 The registered staged-pair matrix reaches `Joint::setGlobalAxis` through joint construction and the public D6 setter/readback. Adding `1.0f` to the normalized X axis before tangent construction is caught for `phys_fn_004101` with `stdout_delta=6`, both exits zero, and exact stderr; the restored control is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-joint-row004101-global-axis.md`.
+
+
+## Phase 6 closure measurement — joint actor attachment (`phys_fn_004107`)
+
+The ten-family public joint matrix creates joints with actor records and observes actor identity, internal state, and release. An immediate return in `Joint::row004107` causes candidate access violation for `phys_fn_004107` (`candidate_exit=-1073741819`, `stdout_delta=3160`) while the oracle exits zero; restoring the row returns the differential to exact. Detailed mutation and DLL identity evidence: `evidence/phase6-joint-row004107-actor-attachment.md`.
