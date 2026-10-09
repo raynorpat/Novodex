@@ -88,12 +88,23 @@ def capture(args, root, revision, compiler_version):
                 raise SystemExit('effective qhull differs from configured tree: ' + name)
             effective['qhull/' + name] = sha(source.read_bytes())
             sources.append(str(source.relative_to(root)).replace('\\', '/'))
+    if args.kind == 'scene-contact-members':
+        sources += ['tests/portable/SceneContactMemberTests.cpp',
+                    'tests/portable/SceneContactMemberTargets.cmake',
+                    'tests/portable/SceneContactMemberPlacementTests.py',
+                    'Physics/src/include/NxSceneContactMembers.h',
+                    'Physics/src/Scene.cpp', 'Physics/src/include/Scene.h',
+                    'Physics/src/Containers.cpp', 'Physics/src/include/Containers.h']
     sources = list(dict.fromkeys(sources))
     for source in sources:
         path = root / source
         present = subprocess.run(['git', 'cat-file', '-e', revision + ':' + source],
                                  stderr=subprocess.DEVNULL).returncode == 0
         original = subprocess.check_output(['git', 'show', revision + ':' + source]) if present else b''
+        if args.kind == 'scene-contact-members' and source == 'tests/portable/SceneContactMemberTests.cpp':
+            if assembly(path.read_bytes()) != ['{fnstcwraw}']:
+                raise SystemExit('member exporter contains arithmetic or a changed raw control probe')
+            original = path.read_bytes()  # new test: sole assembly is the audited raw hardware query
         if path.suffix in ('.h', '.cpp', '.inl') and assembly(original) != assembly(path.read_bytes()):
             raise SystemExit('legacy instruction body changed: ' + source)
         if path.stat().st_mtime > args.exporter.stat().st_mtime:
@@ -104,7 +115,17 @@ def capture(args, root, revision, compiler_version):
     if any(path.exists() for path in planned):
         raise SystemExit('source snapshot already exists; immutable capture refused')
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    subprocess.run([str(args.exporter.resolve()), str(output.resolve())], check=True)
+    run = subprocess.run([str(args.exporter.resolve()), str(output.resolve())], check=True,
+                         capture_output=True, text=True)
+    print(run.stdout, end='')
+    if run.stderr:
+        print(run.stderr, end='')
+    hardware_state = None
+    if args.kind == 'scene-contact-members':
+        measured = re.search(r'reference raw=([0-9a-f]+) crt=([0-9a-f]+) fenv=(\d+)', run.stdout)
+        if not measured or measured.groups() != ('027f', '0009001f', '0'):
+            raise SystemExit('exporter did not prove actual nearest53 raw/CRT/fenv state')
+        hardware_state = dict(zip(('raw_x87_control', 'crt_control', 'fenv_rounding'), measured.groups()))
     snapshots.mkdir(exist_ok=True)
     index = []
     for source, path in zip(sources, planned):
@@ -127,13 +148,15 @@ def capture(args, root, revision, compiler_version):
         'compiler': 'MSVC ' + compiler_version, 'configuration': 'Release Win32',
         'flags': ['/arch:IA32', '/fp:precise', '/Qfast_transcendentals', '/O2', 'NX_PHYSICS_USE_X87=1'],
         'control_words': {'0x027f': '53-bit nearest'}, 'fixture_sha256': sha(output.read_bytes()),
+        **({'measured_hardware_state': hardware_state} if hardware_state is not None else {}),
         'record_width': 20, 'record_count': (output.stat().st_size - 16) // 20,
         'encoding': 'NXPF v1 LE u32 kind/group/observation-index/reserved/output-word',
         'operation_ids': ({'0': 'exact topology/count/index/decision/ownership/grid/serialization',
                            '1': 'source coordinates and plane distances in world length',
                            '2': 'dimensionless normals and edge axes',
                            '3': 'projection in world length times axis magnitude'}
-                          if args.kind == 'triangle-mesh' else {'0': 'exact topology/count/index/decision/ownership',
+                          if args.kind == 'triangle-mesh' else {'0': 'exact initialized member words, constructor settings, ray hit/miss/face/distance/barycentrics and ownership'}
+                          if args.kind == 'scene-contact-members' else {'0': 'exact topology/count/index/decision/ownership',
                           '1': 'bounds/quantization coefficients in source world units',
                           '2': 'ray parameter distance in world units for unit direction',
                           '3': 'dimensionless triangle barycentrics'}),
@@ -144,7 +167,13 @@ def capture(args, root, revision, compiler_version):
                    'with seeded actual model rays, grid/index/serialization, supported empty and '
                    'checked wrapper allocation failure. Unreconstructed nonnull opaque owner cleanup, '
                    'alternate PMap load sources and unsupported densities excluded.'
-                   if args.kind == 'triangle-mesh' else 'Eight literal binary32 cube/tetra meshes, vertex words [-3,6], affine scale/shear/'
+                   if args.kind == 'triangle-mesh' else
+                   'Same actual private Scene member owner type on guarded aligned storage; real RayCollider and two SdkContainers; '
+                   'three lifetimes, literal triangle hit/miss/range/reuse, true growth/allocation failure, borrowed edge array, '
+                   'reverse cleanup and genuine Foundation allocator. Captured before scalar Scene lifetime integration. '
+                   'Existing backend1 Scene incomplete initialization/cleanup is preserved and is not this genuine member lifetime. '
+                   'Full Scene/SDK/prefix/actor/shape/body/CCD remains later.'
+                   if args.kind == 'scene-contact-members' else 'Eight literal binary32 cube/tetra meshes, vertex words [-3,6], affine scale/shear/'
                   'translation, both windings, all four optimized variants, source and optimized walks, '
                   'reuse/refit, ray/segment/first/closest/cached queries, rigid translation, single/empty/'
                   'degenerate meshes, first checked allocation failure, five splitting rules on actual '

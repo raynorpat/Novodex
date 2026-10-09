@@ -31,6 +31,7 @@
 // names are recovered -- only their offsets are.
 
 #include "Nxp.h"
+#include "NxPhysicsBackend.h"
 #include "PhysicsInternal.h"
 #include "NxUserRaycastReport.h"
 
@@ -258,6 +259,9 @@ class NxSceneInternal
 	void scalarDeletingDestructor(int flags);
 
 	private:
+#if !NX_PHYSICS_USE_X87
+	alignas(4)
+#endif
 	unsigned char mBytes[SIZE];
 	};
 
@@ -268,5 +272,8 @@ class NxSceneInternal
 // looks like from a distance.
 static_assert(sizeof(NxSceneInternal) == NxSceneInternal::SIZE,
               "the Scene object is 0x710 bytes in the oracle");
+#if !NX_PHYSICS_USE_X87
+static_assert(alignof(NxSceneInternal) >= 4, "scalar Scene storage aligns its actual members");
+#endif
 
 #endif

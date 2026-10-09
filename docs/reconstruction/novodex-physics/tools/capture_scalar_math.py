@@ -5,7 +5,7 @@ p = argparse.ArgumentParser()
 p.add_argument('--reference-revision', required=True)
 p.add_argument('--capture-id', required=True)
 p.add_argument('--exporter', type=pathlib.Path, required=True)
-p.add_argument('--kind', choices=['math','rotations','conversions','geometry','ice-topology','ice-hull','ice-mesh-normals','ice-support-maps','foundation-lifecycle','foundation-public-math','opcode-model','triangle-mesh','triangle-fan','contact-polygon','contact-polygon-pose'], required=True)
+p.add_argument('--kind', choices=['math','rotations','conversions','geometry','ice-topology','ice-hull','ice-mesh-normals','ice-support-maps','foundation-lifecycle','foundation-public-math','opcode-model','triangle-mesh','triangle-fan','contact-polygon','contact-polygon-pose','scene-contact-members'], required=True)
 p.add_argument('--output-dir', type=pathlib.Path, required=True)
 p.add_argument('--original-block-revision', help='Explicit immutable recovery revision for extracted original contact blocks')
 a = p.parse_args()
@@ -33,7 +33,7 @@ if a.kind == 'triangle-fan':
     from capture_triangle_fan import capture
     capture(a, root, revision, version[1])
     raise SystemExit(0)
-if a.kind in ('opcode-model', 'triangle-mesh'):
+if a.kind in ('opcode-model', 'triangle-mesh', 'scene-contact-members'):
     from capture_opcode_model import capture
     capture(a, root, revision, version[1])
     raise SystemExit(0)

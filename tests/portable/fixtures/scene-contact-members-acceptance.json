@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "scoped_gate": "Task5f2a actual Scene+450..+500 member lifetimes",
+  "capture": {
+    "id": "scene-contact-members-x87",
+    "fixture_sha256": "71e99531eeede689a84bc33cbffc6627ea1a50c2ff0d9677affd9b8cc9bdf89c",
+    "manifest_sha256": "19a8193c12abf423c2c3fabf9c604331b45a97834383fdf0db5a53aa52acaa72",
+    "source_index_sha256": "2b1b879c91b135d879c4963e724926d869763e3296b8c53023f70f933170ce4e",
+    "source_snapshot_count": 172,
+    "provenance": "actual reconstructed x87 vendor/member class source, captured before Scene scalar lifetime integration; not the inherited incomplete backend1 Scene member initialization"
+  },
+  "measurement": {
+    "groups": 18,
+    "observations": 155,
+    "finite_float_words": 30,
+    "discrete_semantic_words": 125,
+    "differences": 0
+  },
+  "budgets": [
+    {
+      "quantity": "constructor_distance_limit",
+      "count": 3,
+      "minimum": 3.4028234663852886e+38,
+      "maximum": 3.4028234663852886e+38,
+      "units": "length; FLT_MAX upper-limit sentinel",
+      "exact_word": "7f7fffff",
+      "absolute": 0,
+      "relative": 0,
+      "approval": "controller before final acceptance"
+    },
+    {
+      "quantity": "constructor_barycentric_margin",
+      "count": 3,
+      "minimum": 0.0,
+      "maximum": 0.0,
+      "units": "dimensionless",
+      "exact_word": "00000000",
+      "absolute": 0,
+      "relative": 0,
+      "approval": "controller before final acceptance"
+    },
+    {
+      "quantity": "constructor_growth_factor",
+      "count": 6,
+      "minimum": 2.0,
+      "maximum": 2.0,
+      "units": "dimensionless capacity multiplier",
+      "exact_word": "40000000",
+      "absolute": 0,
+      "relative": 0,
+      "approval": "controller before final acceptance"
+    },
+    {
+      "quantity": "ray_distance",
+      "count": 6,
+      "minimum": 1.0,
+      "maximum": 1.0,
+      "units": "length for literal unit ray direction",
+      "exact_word": "3f800000",
+      "absolute": 0,
+      "relative": 0,
+      "approval": "controller before final acceptance"
+    },
+    {
+      "quantity": "ray_u",
+      "count": 6,
+      "minimum": 0.25,
+      "maximum": 0.25,
+      "units": "dimensionless barycentric coordinate",
+      "exact_word": "3e800000",
+      "absolute": 0,
+      "relative": 0,
+      "approval": "controller before final acceptance"
+    },
+    {
+      "quantity": "ray_v",
+      "count": 6,
+      "minimum": 0.25,
+      "maximum": 0.25,
+      "units": "dimensionless barycentric coordinate",
+      "exact_word": "3e800000",
+      "absolute": 0,
+      "relative": 0,
+      "approval": "controller before final acceptance"
+    }
+  ],
+  "exact_gates": [
+    "all words",
+    "group/count/identity",
+    "zeros/signs",
+    "true ownership/free order",
+    "allocator/member guards",
+    "semantic null/vptr state; no relocated addresses or padding"
+  ],
+  "production_layout": {
+    "scene_size": 1808,
+    "legacy_scene_alignment": 1,
+    "scalar_scene_alignment": 4,
+    "member_offset": 1104,
+    "member_size": 176,
+    "member_alignment": 4,
+    "ray_relative_offset": 0,
+    "edges_relative_offsets": [
+      144,
+      160
+    ],
+    "native_pointer_layout": "hard assertion; remains Task9"
+  },
+  "domain": "Three actual typed member lifetimes over guarded aligned storage, actual literal triangle model/rays hit/miss/range/reuse; genuine Foundation plus SDK allocator; two grown edge arrays, forced resize allocation failure retaining old data, borrowed guarded external array; reverse destruction and reuse. Existing vendor arithmetic unchanged.",
+  "boundaries": [
+    "full public Scene/SDK lifecycle",
+    "visited prefix and000503",
+    "genuine actor/shape/body owners and774 notifications",
+    "missing full mesh slot5/001405",
+    "enabled full CCD002264",
+    "nonnull TriangleMesh+ac producer/receiver",
+    "complete SAT/manifold5f3",
+    "convexmesh/heightfield",
+    "Tasks6\u20139"
+  ],
+  "final_source_sha256": {
+    "Physics/src/Scene.cpp": "b209b7d5c74c7139e4f859ac68c8247283b438ca98bbb05492bc0fabadf093d3",
+    "Physics/src/include/Scene.h": "d3eb70741069a65bc5142bd9d36edd44f1ce4e7493c9f08130e0c3710dc6e849",
+    "Physics/src/include/NxSceneContactMembers.h": "82ba77d6c6e44c2eb2661c78c11578d60314162cabc0ef4c9e4c94369f4cf3fd",
+    "tests/portable/SceneContactMemberTests.cpp": "6d7b86c85a4f636fec17a1a74524b6596ccd54299980f5282cc2dd731d90b7d6",
+    "tests/portable/SceneContactMemberPlacementTests.py": "03ff0a9840e514b4ace21d09370d45fb6fbe939da17dd34cdd051473fe33c5d5",
+    "tests/portable/SceneContactMemberTargets.cmake": "75a243af55fa1d7c68b231b7eb461d51dc23a42de01c8383954624ab2590ed55",
+    "tests/portable/CMakeLists.txt": "26967daa1faae550bb15c928b388fec3de6e75710251a80cb13fdb288eb3b3a8",
+    "docs/reconstruction/novodex-physics/tools/capture_scalar_math.py": "9f9dd4921b301c048731d99a27ded5c2681bba98d7ecf62302644583b87a72ae",
+    "docs/reconstruction/novodex-physics/tools/capture_opcode_model.py": "633b608121a216487d04b1e45f0ac03146d3dc9cd3165f332c46c9dded7d6761"
+  }
+}

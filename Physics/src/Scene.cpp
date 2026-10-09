@@ -27,6 +27,10 @@
 #include "ContactPairManager.h"
 
 #include "Containers.h"
+#include "NxPhysicsBackend.h"
+#if !NX_PHYSICS_USE_X87
+#include "NxSceneContactMembers.h"
+#endif
 #include "NxSceneDesc.h"
 #include "NxSceneStats.h"
 #include "NxBounds3.h"
@@ -673,9 +677,13 @@ NxSceneInternal::NxSceneInternal()
 	nxDword(p, 0x44c) = 0;
 	nxDword(p, 0x440) = 0;
 	nxDword(p, 0x444) = 1;
+#if NX_PHYSICS_USE_X87
 	nxSceneMemberB5720(nxAt(p, 0x450));						// phys_fn_004899
 	new (nxAt(p, 0x4e0)) SdkContainer();					// phys_fn_004836
 	new (nxAt(p, 0x4f0)) SdkContainer();
+#else
+	nxSceneContactMembersConstruct(nxAt(p, 0x450));
+#endif
 	new (nxAt(p, 0x500)) SdkContainer();
 	new (nxAt(p, 0x510)) SdkContainer();
 
@@ -3263,6 +3271,11 @@ static void nxSceneDelete(void* self, int flags)
 			entries = 0;
 			}
 		}
+	// Scalar owns actual member lifetimes in the original +450..+500 window.
+#if !NX_PHYSICS_USE_X87
+	nxSceneContactMembersDestroy(
+		reinterpret_cast<NxSceneContactMembers*>(scene->bytes() + 0x450));
+#endif
 	if(flags & 1)
 		nxFoundationSDKAllocator->free(self);
 	}
