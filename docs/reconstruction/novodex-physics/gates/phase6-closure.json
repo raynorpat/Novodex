@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closes 20 of its 433 function rows and none of its 531 data objects. The two exported joint-descriptor rows, phys_fn_004397, phys_fn_004403, and phys_fn_004113 are closed by mutations caught by registered staged-pair gates. The descriptor rows are caught by NxPhysicsJointStagedPairTests; kind-1/2/3/6 bounded support and both joint-break notify return paths are caught by NxPhysicsSimulationTests; the support normal solver mutation is caught by NxPhysicsMeshSimulationTests. Prismatic solver row phys_fn_004386 is caught by the eight-step public prismatic joint simulation in NxPhysicsSimulationTests (the t1-to-t2 mutation is caught with stdout_delta=14 and restored output exact). Spherical solver row phys_fn_004296 is caught by the eight-step public pendulum simulation in NxPhysicsSimulationTests (negating the Y bias is caught with stdout_delta=24 and restored output exact). Shared joint frame refresh row phys_fn_004097 is caught by the rotated multi-family joint fixture in NxPhysicsJointStagedPairTests (the world-anchor X +1.0 mutation is caught with stdout_delta=404 and restored output exact). The deferred rows remain debt rather than an obstruction. Shared effector internal-pointer getter row phys_fn_003952 is caught by the registered NxPhysicsEffectorTests staged-pair differential: a +4-byte pointer mutation causes a changed transcript and candidate access violation (stdout_delta=49); the restored control is exact. Shared joint getters phys_fn_004070 and phys_fn_004078 are caught by the registered NxPhysicsJointStagedPairTests rotated multi-family fixture: the getType +1 mutation is caught with stdout_delta=3307 (candidate access violation), and the getState XOR-1 mutation with stdout_delta=244; the restored control is exact. Spherical specialized flag getter phys_fn_004290 is caught by the registered NxPhysicsJointStagedPairTests differential (XOR-1 mutation, stdout_delta=24; restored output exact). Shared joint limit-plane iterator rows phys_fn_004081 and phys_fn_004083 are caught by NxPhysicsCoreDumpTests: clearing the iterator head and forcing hasMoreLimitPlanes false each remove serialized limit planes (stdout_delta=4189); restored output is exact. Joint name registry lookup row phys_fn_004085 is caught by NxPhysicsCoreDumpTests: a null-return mutation removes the named joint labels (stdout_delta=80), with restored output exact. Joint limit-point transform row phys_fn_004080 is now observed directly through public getNextLimitPlane: the registered NxPhysicsCoreDumpTests fixture catches a -100 Y output mutation by flipping the hinge plane's in-front result (stdout_delta=2); restored output is exact. Joint::purgeLimitPlanes row phys_fn_004089 is caught by NxPhysicsCoreDumpTests: a no-free mutation leaves allocator count 17 versus oracle 14 (stdout_delta=2), and the restored control is exact. ActorPairEffector constructor row phys_fn_003922 is caught by NxPhysicsEffectorTests: initializing the first body pointer to address 1 causes a candidate access violation (stdout_delta=78), while the restored control is exact. ActorPairEffector rows phys_fn_003926 and phys_fn_003930 are caught by NxPhysicsEffectorTests: omitting old-record observer removal in setBodyRecords and the destructor produces candidate access violations (stdout_delta=29 and 19), while the restored control is exact.",
+  "note": "Phase 6 closes 22 of its 433 function rows and none of its 531 data objects. The two exported joint-descriptor rows, phys_fn_004397, phys_fn_004403, and phys_fn_004113 are closed by mutations caught by registered staged-pair gates. The descriptor rows are caught by NxPhysicsJointStagedPairTests; kind-1/2/3/6 bounded support and both joint-break notify return paths are caught by NxPhysicsSimulationTests; the support normal solver mutation is caught by NxPhysicsMeshSimulationTests. Prismatic solver row phys_fn_004386 is caught by the eight-step public prismatic joint simulation in NxPhysicsSimulationTests (the t1-to-t2 mutation is caught with stdout_delta=14 and restored output exact). Spherical solver row phys_fn_004296 is caught by the eight-step public pendulum simulation in NxPhysicsSimulationTests (negating the Y bias is caught with stdout_delta=24 and restored output exact). Shared joint frame refresh row phys_fn_004097 is caught by the rotated multi-family joint fixture in NxPhysicsJointStagedPairTests (the world-anchor X +1.0 mutation is caught with stdout_delta=404 and restored output exact). The deferred rows remain debt rather than an obstruction. Shared effector internal-pointer getter row phys_fn_003952 is caught by the registered NxPhysicsEffectorTests staged-pair differential: a +4-byte pointer mutation causes a changed transcript and candidate access violation (stdout_delta=49); the restored control is exact. Shared joint getters phys_fn_004070 and phys_fn_004078 are caught by the registered NxPhysicsJointStagedPairTests rotated multi-family fixture: the getType +1 mutation is caught with stdout_delta=3307 (candidate access violation), and the getState XOR-1 mutation with stdout_delta=244; the restored control is exact. Spherical specialized flag getter phys_fn_004290 is caught by the registered NxPhysicsJointStagedPairTests differential (XOR-1 mutation, stdout_delta=24; restored output exact). Shared joint limit-plane iterator rows phys_fn_004081 and phys_fn_004083 are caught by NxPhysicsCoreDumpTests: clearing the iterator head and forcing hasMoreLimitPlanes false each remove serialized limit planes (stdout_delta=4189); restored output is exact. Joint name registry lookup row phys_fn_004085 is caught by NxPhysicsCoreDumpTests: a null-return mutation removes the named joint labels (stdout_delta=80), with restored output exact. Joint limit-point transform row phys_fn_004080 is now observed directly through public getNextLimitPlane: the registered NxPhysicsCoreDumpTests fixture catches a -100 Y output mutation by flipping the hinge plane's in-front result (stdout_delta=2); restored output is exact. Joint::purgeLimitPlanes row phys_fn_004089 is caught by NxPhysicsCoreDumpTests: a no-free mutation leaves allocator count 17 versus oracle 14 (stdout_delta=2), and the restored control is exact. ActorPairEffector constructor row phys_fn_003922 is caught by NxPhysicsEffectorTests: initializing the first body pointer to address 1 causes a candidate access violation (stdout_delta=78), while the restored control is exact. ActorPairEffector rows phys_fn_003926 and phys_fn_003930 are caught by NxPhysicsEffectorTests: omitting old-record observer removal in setBodyRecords and the destructor produces candidate access violations (stdout_delta=29 and 19), while the restored control is exact. Effector rows phys_fn_003934 and phys_fn_003940 are caught by NxPhysicsEffectorTests: nulling the scene pointer in the base constructor and omitting the internal body update in the public setter each cause a candidate access violation (stdout_delta=61), while the restored control is exact.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
@@ -34,12 +34,14 @@
       "NxPhysicsCoreDumpTests, registered as a Phase 6 STAGED-PAIR differential: releasing the fixture scene exposes allocator balance after joint limit-plane cleanup; replacing the free with a no-op leaves 17 allocations versus oracle 14 (stdout_delta=2), and the restored control is exact.",
       "NxPhysicsEffectorTests, registered as a Phase 6 STAGED-PAIR differential: the public factory reaches ActorPairEffector construction with both bodies set; initializing mBody[0] to address 1 causes the candidate to access-violate after the oracle completes (stdout_delta=78), and the restored control is exact.",
       "NxPhysicsEffectorTests, registered as a Phase 6 STAGED-PAIR differential: a throwaway mutation to setBodyRecords in row phys_fn_003926 is caught (candidate access violation, stdout_delta=29); the restored control is exact.",
-      "NxPhysicsEffectorTests, registered as a Phase 6 STAGED-PAIR differential: a throwaway mutation to destructor in row phys_fn_003930 is caught (candidate access violation, stdout_delta=19); the restored control is exact."
+      "NxPhysicsEffectorTests, registered as a Phase 6 STAGED-PAIR differential: a throwaway mutation to destructor in row phys_fn_003930 is caught (candidate access violation, stdout_delta=19); the restored control is exact.",
+      "NxPhysicsEffectorTests, registered as a Phase 6 STAGED-PAIR differential: a throwaway mutation to Effector constructor in row phys_fn_003934 is caught (candidate access violation, stdout_delta=61); the restored control is exact.",
+      "NxPhysicsEffectorTests, registered as a Phase 6 STAGED-PAIR differential: a throwaway mutation to NpSpringAndDamperEffector::setBodies in row phys_fn_003940 is caught (candidate access violation, stdout_delta=61); the restored control is exact."
     ]
   },
   "counts": {
-    "differential_falsified": 20,
-    "deferred_reconstructed_not_falsified": 388,
+    "differential_falsified": 22,
+    "deferred_reconstructed_not_falsified": 386,
     "deferred_not_reconstructed_in_phase": 25
   },
   "closed": [
@@ -242,6 +244,26 @@
         "mutation": "In a throwaway git archive, skipped removing mBody[0] as an observer in ActorPairEffector::~ActorPairEffector. The registered NxPhysicsEffectorTests staged-pair differential exercised effector release; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=19 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr.",
         "detected": "stdout_delta=19"
       }
+    },
+    {
+      "id": "phys_fn_003934",
+      "rva": "0x0008ee80",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsEffectorTests",
+      "falsification": {
+        "mutation": "In a throwaway git archive, changed the Effector constructor to store a null scene pointer. The registered NxPhysicsEffectorTests staged-pair differential reached this base constructor through the public effector factory; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=61 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr.",
+        "detected": "stdout_delta=61"
+      }
+    },
+    {
+      "id": "phys_fn_003940",
+      "rva": "0x0008eef0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsEffectorTests",
+      "falsification": {
+        "mutation": "In a throwaway git archive, omitted the call from NpSpringAndDamperEffector::setBodies to the internal setBodies method. The registered NxPhysicsEffectorTests staged-pair differential reached the setter through the public API; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=61 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr.",
+        "detected": "stdout_delta=61"
+      }
     }
   ],
   "deferred": [
@@ -251,15 +273,6 @@
       "size": 84,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_003940",
-      "rva": "0x0008eef0",
-      "size": 121,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
@@ -2861,15 +2874,6 @@
       "id": "phys_fn_003928",
       "rva": "0x0008edb0",
       "size": 39,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_003934",
-      "rva": "0x0008ee80",
-      "size": 35,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],

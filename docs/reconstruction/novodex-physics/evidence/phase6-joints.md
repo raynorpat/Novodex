@@ -9451,3 +9451,13 @@ For row `phys_fn_003926`, In a throwaway git archive, skipped removing mBody[0] 
 ## Phase 6 closure measurement — ActorPairEffector destructor (phys_fn_003930)
 
 For row `phys_fn_003930`, In a throwaway git archive, skipped removing mBody[0] as an observer in ActorPairEffector::~ActorPairEffector. The registered NxPhysicsEffectorTests staged-pair differential exercised effector release; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=19 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003930-destructor.md`.
+
+
+## Phase 6 closure measurement — Effector constructor (phys_fn_003934)
+
+For row `phys_fn_003934`, In a throwaway git archive, changed the Effector constructor to store a null scene pointer. The registered NxPhysicsEffectorTests staged-pair differential reached this base constructor through the public effector factory; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=61 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003934-base-constructor.md`.
+
+
+## Phase 6 closure measurement — NpSpringAndDamperEffector::setBodies (phys_fn_003940)
+
+For row `phys_fn_003940`, In a throwaway git archive, omitted the call from NpSpringAndDamperEffector::setBodies to the internal setBodies method. The registered NxPhysicsEffectorTests staged-pair differential reached the setter through the public API; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=61 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003940-set-bodies.md`.
