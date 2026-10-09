@@ -1343,6 +1343,10 @@ int wmain(int argc, wchar_t** argv)
 	effectorStepDesc.springDistStretchSaturate = 4.0f;
 	effectorStepDesc.springMaxCompressForce = 100.0f;
 	effectorStepDesc.springMaxStretchForce = 100.0f;
+	effectorStepDesc.damperVelCompressSaturate = -2.5f;
+	effectorStepDesc.damperVelStretchSaturate = 1.75f;
+	effectorStepDesc.damperMaxCompressForce = 7.0f;
+	effectorStepDesc.damperMaxStretchForce = 9.5f;
 	NxSpringAndDamperEffector* const stepEffector =
 		effectorStepScene->createSpringAndDamperEffector(effectorStepDesc);
 	if(!stepEffector)
@@ -1350,12 +1354,16 @@ int wmain(int argc, wchar_t** argv)
 	NxReal effectorCompress, effectorRelaxed, effectorStretch, effectorMaxCompress, effectorMaxStretch;
 	stepEffector->getLinearSpring(effectorCompress, effectorRelaxed, effectorStretch,
 		effectorMaxCompress, effectorMaxStretch);
+	NxReal damperCompress, damperStretch, damperMaxCompress, damperMaxStretch;
+	stepEffector->getLinearDamper(damperCompress, damperStretch, damperMaxCompress, damperMaxStretch);
 	const NxVec3 effectorInitialPosition1 = effectorStepActor1->getGlobalPosition();
-	printf("simulation effector-step setup count=%u awake=%u pos=%08x spring=%08x.%08x.%08x.%08x.%08x\n",
+	printf("simulation effector-step setup count=%u awake=%u pos=%08x spring=%08x.%08x.%08x.%08x.%08x damper=%08x.%08x.%08x.%08x\n",
 		effectorStepScene->getNbEffectors(), effectorStepActor1->isSleeping() ? 0u : 1u,
 		nxFloatBits(effectorStepActor1->getGlobalPosition().x), nxFloatBits(effectorCompress),
 		nxFloatBits(effectorRelaxed), nxFloatBits(effectorStretch),
-		nxFloatBits(effectorMaxCompress), nxFloatBits(effectorMaxStretch));
+		nxFloatBits(effectorMaxCompress), nxFloatBits(effectorMaxStretch),
+		nxFloatBits(damperCompress), nxFloatBits(damperStretch),
+		nxFloatBits(damperMaxCompress), nxFloatBits(damperMaxStretch));
 	effectorStepActor1->wakeUp(1.0f);
 	effectorStepScene->simulate(1.0f / 60.0f);
 	const bool effectorStepReady = effectorStepScene->checkResults(NX_RIGID_BODY_FINISHED, true);
@@ -1375,6 +1383,15 @@ int wmain(int argc, wchar_t** argv)
 	effectorStepActor1->getLinearVelocity(effectorStepVelocity1);
 	printf("simulation effector-step second ready=%u fetched=%u vx=%08x\n",
 		effectorStepReady2 ? 1u : 0u, effectorStepFetched2 ? 1u : 0u,
+		nxFloatBits(effectorStepVelocity1.x));
+	effectorStepScene->simulate(1.0f / 60.0f);
+	const bool effectorStepReady3 = effectorStepScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+	const bool effectorStepFetched3 = effectorStepScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+	if(!effectorStepReady3 || !effectorStepFetched3)
+		return nxFail("third effector-step results were not ready and fetched");
+	effectorStepActor1->getLinearVelocity(effectorStepVelocity1);
+	printf("simulation effector-step third ready=%u fetched=%u vx=%08x\n",
+		effectorStepReady3 ? 1u : 0u, effectorStepFetched3 ? 1u : 0u,
 		nxFloatBits(effectorStepVelocity1.x));
 	effectorStepScene->releaseEffector(*stepEffector);
 	sdk->releaseScene(*effectorStepScene);

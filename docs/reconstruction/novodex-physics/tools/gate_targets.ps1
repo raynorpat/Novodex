@@ -3380,9 +3380,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation controller-rotated-initial-overlap escape position=3f800000.00000000.00000000 flags=00000000'
         'simulation controller-rotated-initial-overlap reverse position=bf800000.00000000.00000000 flags=00000000'
         'simulation controller-release actors-after-first=2 actors-after=2 stale-next-after-first=0 errors-after-first=0 errors-after-second=0'
-        'simulation effector-step setup count=1 awake=1 pos=00000000 spring=3f000000.3f800000.40800000.42c80000.42c80000'
+        'simulation effector-step setup count=1 awake=1 pos=00000000 spring=3f000000.3f800000.40800000.42c80000.42c80000 damper=c0200000.3fe00000.40e00000.41180000'
         'simulation effector-step ready=1 fetched=1 vx=00000000'
         'simulation effector-step second ready=1 fetched=1 vx=3e8e38e3'
+        'simulation effector-step third ready=1 fetched=1 vx=3f0a9508'
     )
     'NxPhysicsCcdSimulationTests' = @(
         'ccd step=0 x=40e00000 vx=100.000 ready=1 fetched=1'
@@ -5620,7 +5621,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2595  # exact registered Phase 5 coverage-line count
+    '5' = 2596  # exact registered Phase 5 coverage-line count
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths
@@ -5645,7 +5646,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1094  # exact registered Phase 6 coverage-line count
+    '6' = 1098  # exact registered Phase 6 coverage-line count
                # previous 1,066 plus capsule-mesh staged-pair coverage
                # plus both joint-break callback return paths
                # plus compound-trigger per-shape enter/stay/leave lifecycle
@@ -5655,7 +5656,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1416  # exact registered Phase 7 coverage-line count
+    '7' = 1418  # exact registered Phase 7 coverage-line count
                # previous 1,388 plus the grounded Z-up controller probe
                # previous 1,387 plus capsule-mesh staged-pair coverage
                # plus the shared simulation fluid-manager destructor and enabled-invalid validation lines
