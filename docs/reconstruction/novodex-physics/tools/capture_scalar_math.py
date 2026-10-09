@@ -5,7 +5,7 @@ p = argparse.ArgumentParser()
 p.add_argument('--reference-revision', required=True)
 p.add_argument('--capture-id', required=True)
 p.add_argument('--exporter', type=pathlib.Path, required=True)
-p.add_argument('--kind', choices=['math','rotations','conversions'], required=True)
+p.add_argument('--kind', choices=['math','rotations','conversions','geometry'], required=True)
 p.add_argument('--output-dir', type=pathlib.Path, required=True)
 a = p.parse_args()
 revision = subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip()
@@ -27,7 +27,8 @@ if 'set(CMAKE_CXX_COMPILER_ID "MSVC")' not in compiler_text or 'set(CMAKE_CXX_SI
 def assembly(source):
     source = re.sub(r'//[^\n]*|/\*.*?\*/', '', source, flags=re.S)
     return [re.sub(r'\s+','', b).lower() for b in re.findall(r'__asm\s*\{([^}]+)\}',source)]
-sources = (['Physics/src/include/X87Sqrt.h','Physics/src/include/core/JointAcos.h']
+sources = (['Physics/src/Geometry.cpp','Physics/src/Distance.cpp','Physics/src/SmoothNormals.cpp','Physics/src/ShapeRaycast.cpp','Physics/src/PMap.cpp'] if a.kind=='geometry' else
+           ['Physics/src/include/X87Sqrt.h','Physics/src/include/core/JointAcos.h']
            if a.kind != 'conversions' else ['Physics/src/Quantizer.cpp','Physics/src/core/SceneDump.cpp'])
 for source in sources:
     old = subprocess.check_output(['git','show',revision+':'+source], text=True)
@@ -36,7 +37,7 @@ for source in sources:
         raise SystemExit('legacy instruction body changed: '+source)
     if (root/source).stat().st_mtime > a.exporter.stat().st_mtime:
         raise SystemExit('exporter is older than source: rebuild before capture')
-exporter_source=root/('tests/portable/ExportSharedMathFixtures.cpp' if a.kind!='conversions' else 'tests/portable/ExportConversionFixtures.cpp')
+exporter_source=root/('tests/portable/GeometryDomain.cpp' if a.kind=='geometry' else 'tests/portable/ExportSharedMathFixtures.cpp' if a.kind!='conversions' else 'tests/portable/ExportConversionFixtures.cpp')
 if exporter_source.stat().st_mtime > a.exporter.stat().st_mtime:
     raise SystemExit('exporter source is newer than executable: rebuild before capture')
 if a.kind == 'conversions':
@@ -45,6 +46,27 @@ if a.kind == 'conversions':
     # Exporter adds independent fnstcw/fldcw lines, outside these blocks.
     if exported != expected:
         raise SystemExit('conversion exporter differs from production instruction bodies')
+if a.kind == 'geometry':
+    # The only copied reference island is PMap normalization. Ignore symbolic
+    # local-variable spelling, never operands, instructions or store order.
+    reference=assembly((root/'Physics/src/PMap.cpp').read_text())[0].replace('direction','input')
+    if assembly(exporter_source.read_text()) != [reference]:
+        raise SystemExit('PMap exporter instruction body differs from production')
+    old=subprocess.check_output(['git','show',revision+':Physics/src/NarrowPhase.cpp'],text=True)
+    if 'double __cdecl NxSegmentSegmentSquareDistance(' in old:
+        start=old.index('double __cdecl NxSegmentSegmentSquareDistance(')
+        end=old.index('\n// ---------------------------------------------------------------------------',start)
+        reference_body=old[start:end].strip()
+    else:
+        reference_body=subprocess.check_output(['git','show',revision+':Physics/src/include/NxSegmentSegmentDistance.inl'],text=True).split('\n',1)[1].strip()
+    extracted=(root/'Physics/src/include/NxSegmentSegmentDistance.inl').read_text().split('\n',1)[1].strip()
+    if reference_body!=extracted:
+        raise SystemExit('segment-distance mechanical extraction changed body')
+    sources+=['Physics/src/include/NxSegmentSegmentDistance.inl','tests/portable/GeometryDomainInputs.h',
+        'tests/portable/GeometryDomain.cpp','tests/portable/ExportGeometry.cpp','tests/portable/GeometrySdkHeaderSeam.h']
+    for source in sources:
+        if (root/source).stat().st_mtime > a.exporter.stat().st_mtime:
+            raise SystemExit('exporter older than relevant source: '+source)
 output = a.output_dir/(a.capture_id+'.nxpf')
 manifest = output.with_suffix('.json')
 if output.exists() or manifest.exists():
@@ -60,15 +82,15 @@ manifest.write_text(json.dumps({
     'source_sha256':{source:sha(root/source) for source in sources},
     'legacy_instruction_bodies_verified_against_revision':revision,
     'exporter_path':str(a.exporter),'exporter_sha256':sha(a.exporter),
-    'exporter_source_sha256':sha(root/('tests/portable/ExportSharedMathFixtures.cpp' if a.kind!='conversions' else 'tests/portable/ExportConversionFixtures.cpp')),
+    'exporter_source_sha256':sha(exporter_source),
     'compiler':'MSVC '+version[1],'configuration':'Release Win32',
     'flags':['/arch:IA32','/fp:precise','/O2','NX_PHYSICS_USE_X87=1'],
-    'control_words':{'0x027f':'53-bit nearest','0x0f7f':'64-bit chop; diagnostic only'},
-    'fixture_sha256':sha(output),'record_width':80 if a.kind!='conversions' else 20,
-    'record_count':(len(output.read_bytes())-16)//(80 if a.kind!='conversions' else 20),
-    'encoding':'NXPF v1 LE u32 op/u32 CW/input and output IEEE binary64 words' if a.kind!='conversions' else 'NXPF v1 LE u32 op/u32 CW/binary64 input u64/signed output low32 u32',
-    'operation_ids':list(range(18)) if a.kind!='conversions' else {'0':'wuFistp255','1':'sceneDumpRound'},
-    'domain':('128 seeded finite cases per helper; cases128/129 are explicit 2^63/2^62 FSIN/FCOS probes' if a.kind=='math' else
+    'control_words':{'0x027f':'53-bit nearest'} if a.kind=='geometry' else {'0x027f':'53-bit nearest','0x0f7f':'64-bit chop; diagnostic only'},
+    'fixture_sha256':sha(output),'record_width':272 if a.kind=='geometry' else 80 if a.kind!='conversions' else 20,
+    'record_count':(len(output.read_bytes())-16)//(272 if a.kind=='geometry' else 80 if a.kind!='conversions' else 20),
+    'encoding':'NXPF v1 LE u32 op/id, 32 binary32 input words, u32 discrete/count, sixteen binary64 outputs' if a.kind=='geometry' else 'NXPF v1 LE u32 op/u32 CW/input and output IEEE binary64 words' if a.kind!='conversions' else 'NXPF v1 LE u32 op/u32 CW/binary64 input u64/signed output low32 u32',
+    'operation_ids':list(range(11)) if a.kind=='geometry' else list(range(18)) if a.kind!='conversions' else {'0':'wuFistp255','1':'sceneDumpRound'},
+    'domain':('714 checked-in literal records, Python Random seed0x4e585034 materialized once, coordinates[-8,8] eighth-units; ten boundary reproducers; no full mesh/PMap integration' if a.kind=='geometry' else '128 seeded finite cases per helper; cases128/129 are explicit 2^63/2^62 FSIN/FCOS probes' if a.kind=='math' else
               '32 cases per helper; trig rows cover signedzero, ordinary rotations, adjacent binary32 pi/2, pi, 2pi, negative pi/2pi; two dt/norm scales' if a.kind=='rotations' else
               'literal half-integers, int32/qword limits and adjacent values, nonfinite, signedzero, subnormal, quantizer half-index values'),
 },indent=2)+'\n')

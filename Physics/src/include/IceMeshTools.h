@@ -132,7 +132,7 @@ bool nxIceReverseArray(NxU32 count, NxU32* array);
 
 // 002144 (SmoothNormals.cpp): the corner angle, register convention (eax the
 // vertex, edx the three indices, esi the vertices; st(0) the result). Called
-// only from assembly.
-void nxSmoothNormalsAngleAtVertex();
+// from legacy assembly; the portable declaration names ordinary typed inputs.
+#include "NxSmoothNormalsAngle.h"
 
 #endif

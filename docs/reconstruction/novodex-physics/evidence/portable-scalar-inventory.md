@@ -37,6 +37,82 @@ Task 3 target-specific extreme-angle disposition: independent 100-digit mathemat
 
 ## Generated arithmetic, fallbacks and build dependencies
 
+### Task 4 leaf conversion and integration obligations
+
+`Geometry.cpp` selects the retained three assembly bodies with `NX_PHYSICS_USE_X87`.
+The portable ray/triangle routine preserves the stored determinant/edges, wide
+versus stored z products, separate culled/non-culled v grouping, sign-bit tests,
+float reciprocal on the non-culled path, partial failure writes and output aliases.
+The preexisting scalar far-cap/swept radicand helpers are selected explicitly and
+covered by the shipped capsule/swept fixtures before acceptance. Exported declarations
+and every legacy instruction body remain unchanged. No geometric epsilon changed.
+
+Private contract: `NxSmoothNormalsAngle.h` retains parameterless naked
+`nxSmoothNormalsAngleAtVertex()` for backend1 (eax vertex, edx indices, esi
+vertices, float st(0)). Backend0 declares
+`NxReal nxSmoothNormalsAngleAtVertex(NxU32 vertex, const NxU32* index, const NxVec3* verts)`.
+It borrows valid arrays, performs no writes/allocation/index validation, and returns
+the deliberately narrowed interior angle in radians. Index selection and float
+stores of B.z, C.y/C.z, cross length and angle follow the listing. The direct
+`NxBuildSmoothNormals` caller is converted; Task5 must convert the three naked
+`nxMeshNormalsCompute` calls in `IceMeshTools.cpp` using this typed contract before
+claiming that consumer's portable closure. No register-parameter adapter or stub
+has been linked into a portable production path.
+
+`Distance.cpp` has a scalar arm for its sole assembly interior evaluator. Its
+segment/triangle edge paths depend on `NxSegmentSegmentSquareDistance`, now a
+mechanically unchanged single definition in `NxSegmentSegmentDistance.inl`,
+included once by production `NarrowPhase.cpp` and once by the isolated test TU.
+This extraction changes no algorithm or production compile flags; it does not
+convert NarrowPhase's other Task6 dependencies. `ShapeRaycast.cpp` has one
+scalar sqrt arm; the sphere/plane/capsule source closure reaches only the converted
+geometry leaves and standard math. Its private fastcall declarations and legacy
+layout stay intact; standalone tests use typed members of the real SDK classes.
+
+`PMap.cpp` retains its normalization instructions under backend1 and calls
+`portable/NxScalarGeometry.h::nxScalarNormalizeDirection3(float[3])` under backend0.
+The helper owns the exact-zero guard, z/y/x norm grouping, binary64 reciprocal,
+then x/y/z float stores; it borrows and writes exactly three components, preserves
+signed zeros on the zero path and caller rounding state. It has C11 and reference
+normalization tests. **Full PMap acceptance is deferred**: `InternalTriangleMesh`
+face/vertex accessors and Opcode AABBNoLeaf/AABBQuantizedNoLeaf traversal, model
+creation, `RayCollider::Collide`/intersection parity and the effective
+`External/opcode/novodex/OPC_RayAABBOverlap.h` overlay are required integration
+dependencies. The creation loop additionally has random-ray parity and nearbyint
+radius/index decisions whose full map behavior still needs seeded integration.
+Task5 owns required mesh/vendor numeric and callback migration; native dword
+node-pointer packing is a separate platform obligation. No upstream vendor edit.
+
+`NxRayInflatedTriangleFan` is excluded **only** by the standalone test target's
+`NX_PHYSICS_GEOMETRY_KERNEL_ONLY` seam; there is no replacement definition. The
+real production function still calls effective vendor `IceMaths::Triangle::Inflate`
+(upstream `IceTriangle.cpp`, using `Center` and Point arithmetic; `constant_border`
+is false here). Task5 must migrate/audit effective vendor source/math and validate
+the actual fan before geometry's complete TU/integration closure is claimed.
+MassProperties has no local assembly island; ordinary scalar source/API tests and
+generated arithmetic remain its integration obligation, with no unrelated refactor.
+
+Standalone header seam `tests/portable/GeometrySdkHeaderSeam.h` uses the real SDK
+types, skips parsing the unused public Foundation FPU assembly, only declares
+`NxSinCos` (no implementation or reference linked), and selects the existing
+standard NxMath sqrt arm while parsing public types. This is test isolation,
+**not production inline-header closure**; Task7 must select equivalent standard
+math/FPU behavior in the real portable headers before SDK integration. All full
+Foundation/vendor/Physics/direct-source migration guards remain. Kernel builds
+do not establish Linux/macOS or a full portable SDK.
+
+Evidence: `geometry-shipped-oracle-v2.json` losslessly discriminates the old299
+returns (28void) while preserving original input/output words and immutable v1.
+The actual-source suite consumes66 shipped records; the other233 records remain
+preserved/validated schema evidence, not converted-family acceptance claims.
+Separate reconstructed captures `geometry-domain-x87.nxpf` (714records) and
+`geometry-domain-expanded-x87.nxpf` (1089records) record nearest0x027f, exact literal
+inputs, toolchain/source/binary identities, non-grid binary32 inputs and adjacent
+threshold/edge reproducers. They are never labeled shipped-DLL oracle answers.
+`GeometryBudgets.h` pins controller-approved per-output units/budgets before
+acceptance; `geometry-acceptance.json` records measured errors and explicit scope.
+Capture scripts require explicit revision/id and reject existing destinations.
+
 The root CMake `/arch:IA32` list is a dependency even for assembly-free source: ContactPairManager, StepOnlyRows, Geometry, MassProperties, SmoothNormals, NarrowPhase, ContactGeneration, Distance, PMap, all six listed mesh contact units, EdgeList, InternalTriangleMesh, IceMeshTools/Builder2, ConvexHull, IceSupportMaps, TriangleMeshPolygons, both convex units, ShapeRaycast, NpActor, ObjectModel, Joint, Revolute, Prismatic, Cylindrical, Spherical, PointOnLine, PointInPlane, DistanceJoint, Pulley, Fixed, D6, JointSupport, BodyStep, Island, QhullHost, Quantizer, SpringAndDamperEffector, SceneDump, ActorMass; plus opcode/IcePruner and Foundation Utilities. Existing target-level architecture flags also cover legacy direct-link harnesses. Keep all retained backend flags.
 
 External/CMakeLists applies `/Qfast_transcendentals` unconditionally to **both** NxOpcode and NxQhull, and `/arch:IA32 /GR- /EHs-c-` under MSVC to both. These inline generated x87 transcendental instructions. Portable selection must guard them without weakening legacy behavior; GCC/Clang must not receive these MSVC flags. Vendor overlays are merged through configure_file, so audit the effective build tree as well as upstream sources.

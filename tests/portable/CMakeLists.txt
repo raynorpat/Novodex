@@ -6,6 +6,46 @@ add_executable(NxPortableFixtureTests FixtureSupportTests.cpp FixtureSupport.cpp
 target_compile_features(NxPortableFixtureTests PRIVATE cxx_std_11)
 target_compile_definitions(NxPortableFixtureTests PRIVATE NX_PHYSICS_USE_X87=0)
 novodex_portable_fp_options(NOVODEX_PORTABLE_FP_OPTIONS)
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+set(GEOMETRY_SCHEMA_TOOL "${CMAKE_CURRENT_SOURCE_DIR}/../../docs/reconstruction/novodex-physics/tools/geometry_fixture_schema.py")
+add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/GeometryFixtureRows.h"
+    COMMAND "${Python3_EXECUTABLE}" "${GEOMETRY_SCHEMA_TOOL}" header
+        --source "${CMAKE_CURRENT_SOURCE_DIR}/fixtures/geometry-shipped-oracle-v2.json"
+        --output "${CMAKE_CURRENT_BINARY_DIR}/GeometryFixtureRows.h"
+    DEPENDS "${GEOMETRY_SCHEMA_TOOL}" fixtures/geometry-shipped-oracle-v2.json VERBATIM)
+add_executable(NxPortableGeometryTests GeometryTests.cpp GeometryDomain.cpp FixtureSupport.cpp SegmentSegmentKernel.cpp
+    ../../Physics/src/Geometry.cpp ../../Physics/src/SmoothNormals.cpp
+    ../../Physics/src/Distance.cpp ../../Physics/src/ShapeRaycast.cpp
+    "${CMAKE_CURRENT_BINARY_DIR}/GeometryFixtureRows.h")
+target_include_directories(NxPortableGeometryTests PRIVATE . "${CMAKE_CURRENT_BINARY_DIR}" ../../Physics/src/include
+    ../../Physics/include ../../Foundation/include)
+target_compile_definitions(NxPortableGeometryTests PRIVATE NX_PHYSICS_USE_X87=0
+    NX_PHYSICS_GEOMETRY_KERNEL_ONLY=1 NXP_DLL_EXPORT= NXF_DLL_EXPORT=)
+if(WIN32)
+    # Ninja/clang++ does not inject the legacy SDK's non-underscored macro.
+    target_compile_definitions(NxPortableGeometryTests PRIVATE WIN32=1)
+endif()
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    target_compile_definitions(NxPortableGeometryTests PRIVATE NX64=1)
+else()
+    target_compile_definitions(NxPortableGeometryTests PRIVATE NX32=1)
+endif()
+target_compile_options(NxPortableGeometryTests PRIVATE ${NOVODEX_PORTABLE_FP_OPTIONS})
+if(MSVC)
+    target_compile_options(NxPortableGeometryTests PRIVATE /FIGeometrySdkHeaderSeam.h)
+else()
+    target_compile_options(NxPortableGeometryTests PRIVATE -include GeometrySdkHeaderSeam.h)
+endif()
+target_compile_features(NxPortableGeometryTests PRIVATE cxx_std_11)
+add_test(NAME Portable.Geometry COMMAND NxPortableGeometryTests
+    "${CMAKE_CURRENT_SOURCE_DIR}/fixtures/geometry-domain-expanded-x87.nxpf")
+add_test(NAME Portable.Geometry.Schema COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test_geometry_schema.py")
+add_executable(NxPortableGeometryHeaderCTests GeometryHeaderCTests.c)
+target_include_directories(NxPortableGeometryHeaderCTests PRIVATE ../../Physics/src/include)
+target_compile_definitions(NxPortableGeometryHeaderCTests PRIVATE NX_PHYSICS_USE_X87=0)
+target_compile_options(NxPortableGeometryHeaderCTests PRIVATE ${NOVODEX_PORTABLE_FP_OPTIONS})
+set_target_properties(NxPortableGeometryHeaderCTests PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+add_test(NAME Portable.Geometry.CHeader COMMAND NxPortableGeometryHeaderCTests)
 add_executable(NxPortableScalarMathTests ScalarMathTests.cpp FixtureSupport.cpp)
 target_include_directories(NxPortableScalarMathTests PRIVATE ../../Physics/src/include)
 target_compile_definitions(NxPortableScalarMathTests PRIVATE NX_PHYSICS_USE_X87=0)
@@ -46,6 +86,15 @@ set_tests_properties(Portable.FixtureSupport Portable.FixtureReference PROPERTIE
 # can still build the standalone scalar tests without the legacy exporter.
 if(WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND CMAKE_SIZEOF_VOID_P EQUAL 4)
     novodex_check_x87_compiler()
+    add_executable(NxPortableExportGeometry ExportGeometry.cpp GeometryDomain.cpp FixtureSupport.cpp SegmentSegmentKernel.cpp
+        ../../Physics/src/Geometry.cpp ../../Physics/src/SmoothNormals.cpp ../../Physics/src/Distance.cpp ../../Physics/src/ShapeRaycast.cpp)
+    target_include_directories(NxPortableExportGeometry PRIVATE . ../../Physics/src/include ../../Physics/include ../../Foundation/include)
+    target_compile_definitions(NxPortableExportGeometry PRIVATE NX_PHYSICS_USE_X87=1 NX_PHYSICS_GEOMETRY_KERNEL_ONLY=1
+        NXP_DLL_EXPORT= NXF_DLL_EXPORT= NX32=1)
+    target_compile_options(NxPortableExportGeometry PRIVATE /arch:IA32 /fp:precise /FIGeometrySdkHeaderSeam.h)
+    set_property(SOURCE GeometryDomain.cpp APPEND PROPERTY OBJECT_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../Physics/src/PMap.cpp")
+    target_compile_features(NxPortableExportGeometry PRIVATE cxx_std_11)
     add_executable(NxPortableExportSharedMath ExportSharedMathFixtures.cpp)
     target_compile_definitions(NxPortableExportSharedMath PRIVATE NX_PHYSICS_USE_X87=1)
     target_include_directories(NxPortableExportSharedMath PRIVATE

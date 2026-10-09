@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "capture_id": "geometry-domain-x87",
+  "provenance_kind": "reconstructed-reference",
+  "source_revision": "45db8e08fe4e9fbc9e4c91f6e51e9b6445304777",
+  "working_tree_dirty": true,
+  "source_sha256": {
+    "Physics/src/Geometry.cpp": "1cc4de628ad720e3461724871f3c1b83fca215d4da7a378c777c8279694dd5eb",
+    "Physics/src/Distance.cpp": "66d5fc83e4803feca0022a9de4699940c0130b931a3bc1c80af6e723fdd90033",
+    "Physics/src/SmoothNormals.cpp": "3e459520eba41a4523a89f112be38836c319d215536cbfea439a220b6aae119a",
+    "Physics/src/ShapeRaycast.cpp": "d0c0be4d0ebe041160ea299cd36c75827fcc5a57d23d68cee20a61c6e35a7e88",
+    "Physics/src/PMap.cpp": "b11e7b5694fdeb40c2c4f873a7af4f3fac0cd0f0bfe55f743eaa988b3ecb94a4",
+    "Physics/src/include/NxSegmentSegmentDistance.inl": "cc2f4b7058f92186bb33c46f048642023ec6a775e1c6fdeac0f9569d8d7cf34b",
+    "tests/portable/GeometryDomainInputs.h": "679f14360cebc6961affa8b3f0efc612e9ef9075b3b89aad656b142fb3bd0a93",
+    "tests/portable/GeometryDomain.cpp": "541515f893631a7521ef9f94228e344891eda6e8d31f29f83e99eb75b25fea52",
+    "tests/portable/ExportGeometry.cpp": "4b3c3d8e10a1e71eb57606feac443620fdb82b748fae53bb7403991e32f3a9aa",
+    "tests/portable/GeometrySdkHeaderSeam.h": "74640d0f6af1351ed90ead25a7990977e908a9bf16b4f844833172a60bd61403"
+  },
+  "legacy_instruction_bodies_verified_against_revision": "45db8e08fe4e9fbc9e4c91f6e51e9b6445304777",
+  "exporter_path": "build\\portable-x87-export\\Release\\NxPortableExportGeometry.exe",
+  "exporter_sha256": "252e50a2a863467544f908ad60bc634b6bb89df2554901a7e5accf729ee2a70d",
+  "exporter_source_sha256": "541515f893631a7521ef9f94228e344891eda6e8d31f29f83e99eb75b25fea52",
+  "compiler": "MSVC 19.51.36260.0",
+  "configuration": "Release Win32",
+  "flags": [
+    "/arch:IA32",
+    "/fp:precise",
+    "/O2",
+    "NX_PHYSICS_USE_X87=1"
+  ],
+  "control_words": {
+    "0x027f": "53-bit nearest"
+  },
+  "fixture_sha256": "793e2fc98e9ea5ea81aa5994dcb7dee7fd39b2d684519cb2ff9378d3ef832e56",
+  "record_width": 272,
+  "record_count": 714,
+  "encoding": "NXPF v1 LE u32 op/id, 32 binary32 input words, u32 discrete/count, sixteen binary64 outputs",
+  "operation_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "domain": "714 checked-in literal records, Python Random seed0x4e585034 materialized once, coordinates[-8,8] eighth-units; ten boundary reproducers; no full mesh/PMap integration"
+}

@@ -39,8 +39,11 @@
 #include "NxIntersectionSegmentCapsule.h"
 #include "NxIntersectionSweptSpheres.h"
 #include "X87Sqrt.h"
+#include "NxPhysicsBackend.h"
 #include "NxGeometryHelpers.h"
+#ifndef NX_PHYSICS_GEOMETRY_KERNEL_ONLY
 #include "Opcode.h"
+#endif
 
 #include <float.h>
 #include <math.h>
@@ -85,7 +88,7 @@ static const NxReal gSweptFour = 4.0f;
 // 64-bit round-to-nearest word that is a double rounding the oracle does not
 // do.
 
-#if defined(_MSC_VER) && defined(_M_IX86)
+#if NX_PHYSICS_USE_X87
 
 // NxRayCapsuleIntersect's far-cap radicand, 0x00038674-0x000386a6:
 //   b2 = b1 - length kdn (stored with `fst`, so the square is register times
@@ -340,6 +343,7 @@ static const float gRayTriOne = 1.0f;
 // ray_inflated_tris' pre-flight; 0 and 0 since. Naked, so the frame is the
 // listing's too: no prologue, the locals at [esp .. esp + 0x2c] after `sub esp,
 // 0x30`, the arguments above them.
+#if NX_PHYSICS_USE_X87
 __declspec(naked) bool NX_CALL_CONV NxRayTriIntersect(const NxVec3& /*orig*/,
 	const NxVec3& /*dir*/, const NxVec3& /*vert0*/, const NxVec3& /*vert1*/,
 	const NxVec3& /*vert2*/, float& /*t*/, float& /*u*/, float& /*v*/, bool /*cull*/)
@@ -590,6 +594,56 @@ returnFalse:
 		ret		// 0x0003725d
 		}
 	}
+#else
+bool NX_CALL_CONV NxRayTriIntersect(const NxVec3& orig, const NxVec3& dir,
+	const NxVec3& vert0, const NxVec3& vert1, const NxVec3& vert2,
+	float& t, float& u, float& v, bool cull)
+	{
+	const NxReal e1x = (NxReal) ((double) vert1.x - vert0.x);
+	const NxReal e1y = (NxReal) ((double) vert1.y - vert0.y);
+	const NxReal e1z = (NxReal) ((double) vert1.z - vert0.z);
+	const NxReal e2x = (NxReal) ((double) vert2.x - vert0.x);
+	const NxReal e2y = (NxReal) ((double) vert2.y - vert0.y);
+	const NxReal e2z = (NxReal) ((double) vert2.z - vert0.z);
+	const NxReal px = (NxReal) (e2z * (double) dir.y - e2y * (double) dir.z);
+	const NxReal py = (NxReal) (e2x * (double) dir.z - e2z * (double) dir.x);
+	const double pzRegister = e2y * (double) dir.x - e2x * (double) dir.y;
+	const NxReal pz = (NxReal) pzRegister;
+	const NxReal det = (NxReal) ((pzRegister * e1z + py * (double) e1y) + px * (double) e1x);
+	if(cull ? det < gRayTriEpsilon : (det > gRayTriNegativeEpsilon && det < gRayTriEpsilon))
+		return false;
+	// The non-culled reciprocal is a float slot; the culled one is wide.
+	const NxReal inverse = cull ? 0.0f : (NxReal) (1.0 / (double) det);
+	const NxReal ox = (NxReal) ((double) orig.x - vert0.x);
+	const NxReal oy = (NxReal) ((double) orig.y - vert0.y);
+	const double ozRegister = (double) orig.z - vert0.z;
+	const NxReal oz = (NxReal) ozRegister;
+	const double unscaledU = (ozRegister * pz + oy * (double) py) + ox * (double) px;
+	const double wideU = cull ? unscaledU : unscaledU * inverse;
+	u = (NxReal) wideU;
+	if(storedSignBitSet(u) || wideU > (cull ? det : gRayTriOne))
+		return false;
+	const NxReal qx = (NxReal) (oy * (double) e1z - oz * (double) e1y);
+	const NxReal qy = (NxReal) (oz * (double) e1x - e1z * (double) ox);
+	const NxReal qz = (NxReal) (ox * (double) e1y - oy * (double) e1x);
+	const double unscaledV = cull
+		? (qy * (double) dir.y + qz * (double) dir.z) + qx * (double) dir.x
+		: (qy * (double) dir.y + qx * (double) dir.x) + qz * (double) dir.z;
+	const double wideV = cull ? unscaledV : unscaledV * inverse;
+	v = (NxReal) wideV;
+	// u is reloaded after v is written: this intentionally preserves aliasing.
+	if(storedSignBitSet(v) || wideV + u > (cull ? det : gRayTriOne))
+		return false;
+	const double reciprocal = cull ? 1.0 / (double) det : inverse;
+	t = (NxReal) (((qz * (double) e2z + qy * (double) e2y) + qx * (double) e2x) * reciprocal);
+	if(cull)
+		{
+		u = (NxReal) (reciprocal * u);
+		v = (NxReal) (reciprocal * v);
+		}
+	return true;
+	}
+#endif
 
 // convex-mesh gap Task 2b (units/convex-mesh-gap-contract.md, sub-unit F): the
 // two not-started helpers among this file's exports.
@@ -603,6 +657,7 @@ returnFalse:
 // before the first compare only through `add ebp, -2; je` (0x00036d99), so a
 // count below 2 is an unsigned loop, as in the oracle. u and v land in the
 // caller's first two argument slots there; they are locals here.
+#ifndef NX_PHYSICS_GEOMETRY_KERNEL_ONLY
 bool __cdecl NxRayInflatedTriangleFan(NxU32 count, const NxVec3* vertices, const NxU32* indices,
 	const NxRay* ray, NxReal* t)
 	{
@@ -636,6 +691,7 @@ bool __cdecl NxRayInflatedTriangleFan(NxU32 count, const NxVec3* vertices, const
 	while(remaining != 0);
 	return false;
 	}
+#endif // standalone kernel subset excludes the real vendor Inflate dependency
 
 // phys_fn_001730 (0x00038050, 61 B)
 // phys_fn_001732 (0x00038090, 296 B)

@@ -1,0 +1,8668 @@
+{
+  "schema_version": 2,
+  "provenance_kind": "shipped-oracle",
+  "source_harness": "tests/PhysicsGeometryTests.cpp",
+  "word_encoding": "fixed-width 8-digit hexadecimal u32, IEEE binary32 for numeric words; no pointers/padding",
+  "records": [
+    {
+      "case": "NxComputeSphereMass.00",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "40860a92"
+      }
+    },
+    {
+      "case": "NxComputeSphereMass.01",
+      "input_u32_hex": [
+        "40000000",
+        "3f000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "41860a92"
+      }
+    },
+    {
+      "case": "NxComputeSphereMass.02",
+      "input_u32_hex": [
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeSphereMass.03",
+      "input_u32_hex": [
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeSphereMass.04",
+      "input_u32_hex": [
+        "bf800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "c0860a92"
+      }
+    },
+    {
+      "case": "NxComputeSphereMass.05",
+      "input_u32_hex": [
+        "7f7fffff",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeSphereMass.06",
+      "input_u32_hex": [
+        "00000001",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeSphereMass.07",
+      "input_u32_hex": [
+        "3f800000",
+        "7f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeSphereMass.08",
+      "input_u32_hex": [
+        "7fc00000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7fc00000"
+      }
+    },
+    {
+      "case": "NxComputeSphereDensity.00",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "3e747645"
+      }
+    },
+    {
+      "case": "NxComputeSphereDensity.01",
+      "input_u32_hex": [
+        "40000000",
+        "3f000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "3c747645"
+      }
+    },
+    {
+      "case": "NxComputeSphereDensity.02",
+      "input_u32_hex": [
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeSphereDensity.03",
+      "input_u32_hex": [
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeSphereDensity.04",
+      "input_u32_hex": [
+        "bf800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "be747645"
+      }
+    },
+    {
+      "case": "NxComputeSphereDensity.05",
+      "input_u32_hex": [
+        "7f7fffff",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeSphereDensity.06",
+      "input_u32_hex": [
+        "00000001",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeSphereDensity.07",
+      "input_u32_hex": [
+        "3f800000",
+        "7f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeSphereDensity.08",
+      "input_u32_hex": [
+        "7fc00000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7fc00000"
+      }
+    },
+    {
+      "case": "NxComputeBoxMass.00",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "3f800000"
+      }
+    },
+    {
+      "case": "NxComputeBoxMass.01",
+      "input_u32_hex": [
+        "40000000",
+        "40400000",
+        "40800000",
+        "3f000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "41400000"
+      }
+    },
+    {
+      "case": "NxComputeBoxMass.02",
+      "input_u32_hex": [
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "3f800000"
+      }
+    },
+    {
+      "case": "NxComputeBoxMass.03",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeBoxMass.04",
+      "input_u32_hex": [
+        "bf800000",
+        "40000000",
+        "40400000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "c0c00000"
+      }
+    },
+    {
+      "case": "NxComputeBoxMass.05",
+      "input_u32_hex": [
+        "7f7fffff",
+        "7f7fffff",
+        "7f7fffff",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeBoxMass.06",
+      "input_u32_hex": [
+        "00000001",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxComputeBoxMass.07",
+      "input_u32_hex": [
+        "7fc00000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7fc00000"
+      }
+    },
+    {
+      "case": "NxComputeBoxMass.08",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "7f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeBoxDensity.00",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "3f800000"
+      }
+    },
+    {
+      "case": "NxComputeBoxDensity.01",
+      "input_u32_hex": [
+        "40000000",
+        "40400000",
+        "40800000",
+        "3f000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "3caaaaab"
+      }
+    },
+    {
+      "case": "NxComputeBoxDensity.02",
+      "input_u32_hex": [
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "3f800000"
+      }
+    },
+    {
+      "case": "NxComputeBoxDensity.03",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeBoxDensity.04",
+      "input_u32_hex": [
+        "bf800000",
+        "40000000",
+        "40400000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "be2aaaab"
+      }
+    },
+    {
+      "case": "NxComputeBoxDensity.05",
+      "input_u32_hex": [
+        "7f7fffff",
+        "7f7fffff",
+        "7f7fffff",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeBoxDensity.06",
+      "input_u32_hex": [
+        "00000001",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeBoxDensity.07",
+      "input_u32_hex": [
+        "7fc00000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7fc00000"
+      }
+    },
+    {
+      "case": "NxComputeBoxDensity.08",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "7f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidMass.00",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "40860a92"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidMass.01",
+      "input_u32_hex": [
+        "40000000",
+        "40400000",
+        "40800000",
+        "3f000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "42490fdb"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidMass.02",
+      "input_u32_hex": [
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "40860a92"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidMass.03",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidMass.04",
+      "input_u32_hex": [
+        "bf800000",
+        "40000000",
+        "40400000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "c1c90fdb"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidMass.05",
+      "input_u32_hex": [
+        "7f7fffff",
+        "7f7fffff",
+        "7f7fffff",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidMass.06",
+      "input_u32_hex": [
+        "00000001",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000004"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidMass.07",
+      "input_u32_hex": [
+        "7fc00000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7fc00000"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidMass.08",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "7f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidDensity.00",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "3e747645"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidDensity.01",
+      "input_u32_hex": [
+        "40000000",
+        "40400000",
+        "40800000",
+        "3f000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "3ba2f983"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidDensity.02",
+      "input_u32_hex": [
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "3e747645"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidDensity.03",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidDensity.04",
+      "input_u32_hex": [
+        "bf800000",
+        "40000000",
+        "40400000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "bd22f983"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidDensity.05",
+      "input_u32_hex": [
+        "7f7fffff",
+        "7f7fffff",
+        "7f7fffff",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidDensity.06",
+      "input_u32_hex": [
+        "00000001",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidDensity.07",
+      "input_u32_hex": [
+        "7fc00000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7fc00000"
+      }
+    },
+    {
+      "case": "NxComputeEllipsoidDensity.08",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "7f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeCylinderMass.00",
+      "input_u32_hex": [
+        "3f800000",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "41490fdb"
+      }
+    },
+    {
+      "case": "NxComputeCylinderMass.01",
+      "input_u32_hex": [
+        "3f000000",
+        "40400000",
+        "40000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "4116cbe4"
+      }
+    },
+    {
+      "case": "NxComputeCylinderMass.02",
+      "input_u32_hex": [
+        "00000000",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeCylinderMass.03",
+      "input_u32_hex": [
+        "3f800000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeCylinderMass.04",
+      "input_u32_hex": [
+        "3f800000",
+        "40000000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeCylinderMass.05",
+      "input_u32_hex": [
+        "bf800000",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "41490fdb"
+      }
+    },
+    {
+      "case": "NxComputeCylinderMass.06",
+      "input_u32_hex": [
+        "7f7fffff",
+        "7f7fffff",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeCylinderMass.07",
+      "input_u32_hex": [
+        "7fc00000",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7fc00000"
+      }
+    },
+    {
+      "case": "NxComputeCylinderMass.08",
+      "input_u32_hex": [
+        "00000001",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeCylinderDensity.00",
+      "input_u32_hex": [
+        "3f800000",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "3da2f983"
+      }
+    },
+    {
+      "case": "NxComputeCylinderDensity.01",
+      "input_u32_hex": [
+        "3f000000",
+        "40400000",
+        "40000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "3ed94caf"
+      }
+    },
+    {
+      "case": "NxComputeCylinderDensity.02",
+      "input_u32_hex": [
+        "00000000",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeCylinderDensity.03",
+      "input_u32_hex": [
+        "3f800000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeCylinderDensity.04",
+      "input_u32_hex": [
+        "3f800000",
+        "40000000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeCylinderDensity.05",
+      "input_u32_hex": [
+        "bf800000",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "3da2f983"
+      }
+    },
+    {
+      "case": "NxComputeCylinderDensity.06",
+      "input_u32_hex": [
+        "7f7fffff",
+        "7f7fffff",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeCylinderDensity.07",
+      "input_u32_hex": [
+        "7fc00000",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7fc00000"
+      }
+    },
+    {
+      "case": "NxComputeCylinderDensity.08",
+      "input_u32_hex": [
+        "00000001",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeConeMass.00",
+      "input_u32_hex": [
+        "3f800000",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "40060a92"
+      }
+    },
+    {
+      "case": "NxComputeConeMass.01",
+      "input_u32_hex": [
+        "3f000000",
+        "40400000",
+        "40000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "3fc90fdb"
+      }
+    },
+    {
+      "case": "NxComputeConeMass.02",
+      "input_u32_hex": [
+        "00000000",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeConeMass.03",
+      "input_u32_hex": [
+        "3f800000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeConeMass.04",
+      "input_u32_hex": [
+        "3f800000",
+        "40000000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeConeMass.05",
+      "input_u32_hex": [
+        "bf800000",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "40060a92"
+      }
+    },
+    {
+      "case": "NxComputeConeMass.06",
+      "input_u32_hex": [
+        "7f7fffff",
+        "7f7fffff",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeConeMass.07",
+      "input_u32_hex": [
+        "7fc00000",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7fc00000"
+      }
+    },
+    {
+      "case": "NxComputeConeMass.08",
+      "input_u32_hex": [
+        "00000001",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeConeDensity.00",
+      "input_u32_hex": [
+        "3f800000",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "3ef47645"
+      }
+    },
+    {
+      "case": "NxComputeConeDensity.01",
+      "input_u32_hex": [
+        "3f000000",
+        "40400000",
+        "40000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "4022f983"
+      }
+    },
+    {
+      "case": "NxComputeConeDensity.02",
+      "input_u32_hex": [
+        "00000000",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeConeDensity.03",
+      "input_u32_hex": [
+        "3f800000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeConeDensity.04",
+      "input_u32_hex": [
+        "3f800000",
+        "40000000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeConeDensity.05",
+      "input_u32_hex": [
+        "bf800000",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "3ef47645"
+      }
+    },
+    {
+      "case": "NxComputeConeDensity.06",
+      "input_u32_hex": [
+        "7f7fffff",
+        "7f7fffff",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxComputeConeDensity.07",
+      "input_u32_hex": [
+        "7fc00000",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7fc00000"
+      }
+    },
+    {
+      "case": "NxComputeConeDensity.08",
+      "input_u32_hex": [
+        "00000001",
+        "40000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "7f800000"
+      }
+    },
+    {
+      "case": "NxComputeBoxInertiaTensor.00",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [
+        "3e2aaaab",
+        "3e2aaaab",
+        "3e2aaaab",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxComputeBoxInertiaTensor.01",
+      "input_u32_hex": [
+        "40200000",
+        "3f800000",
+        "40000000",
+        "40400000"
+      ],
+      "output_u32_hex": [
+        "402d5556",
+        "40055556",
+        "3f855556",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxComputeBoxInertiaTensor.02",
+      "input_u32_hex": [
+        "00000000",
+        "3f800000",
+        "40000000",
+        "40400000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxComputeBoxInertiaTensor.03",
+      "input_u32_hex": [
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxComputeBoxInertiaTensor.04",
+      "input_u32_hex": [
+        "3f800000",
+        "bf800000",
+        "40000000",
+        "40400000"
+      ],
+      "output_u32_hex": [
+        "3f8aaaab",
+        "3f555556",
+        "3ed55556",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxComputeBoxInertiaTensor.05",
+      "input_u32_hex": [
+        "7f7fffff",
+        "7f7fffff",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [
+        "7e2aaaaa",
+        "7f800000",
+        "7f800000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxComputeBoxInertiaTensor.06",
+      "input_u32_hex": [
+        "7fc00000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [
+        "7fc00000",
+        "7fc00000",
+        "7fc00000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxComputeBoxInertiaTensor.07",
+      "input_u32_hex": [
+        "3f800000",
+        "7f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [
+        "3e2aaaab",
+        "7f800000",
+        "7f800000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxComputeSphereInertiaTensor.00",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "3ecccccd",
+        "3ecccccd",
+        "3ecccccd",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxComputeSphereInertiaTensor.01",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [
+        "3f2aaaab",
+        "3f2aaaab",
+        "3f2aaaab",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxComputeSphereInertiaTensor.02",
+      "input_u32_hex": [
+        "40200000",
+        "3f000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "3e800000",
+        "3e800000",
+        "3e800000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxComputeSphereInertiaTensor.03",
+      "input_u32_hex": [
+        "40200000",
+        "3f000000",
+        "00000001"
+      ],
+      "output_u32_hex": [
+        "3ed55556",
+        "3ed55556",
+        "3ed55556",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxComputeSphereInertiaTensor.04",
+      "input_u32_hex": [
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxComputeSphereInertiaTensor.05",
+      "input_u32_hex": [
+        "3f800000",
+        "00000000",
+        "00000001"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxComputeSphereInertiaTensor.06",
+      "input_u32_hex": [
+        "3f800000",
+        "bf800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "3ecccccd",
+        "3ecccccd",
+        "3ecccccd",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxComputeSphereInertiaTensor.07",
+      "input_u32_hex": [
+        "7fc00000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [
+        "7fc00000",
+        "7fc00000",
+        "7fc00000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxComputeSphereInertiaTensor.08",
+      "input_u32_hex": [
+        "7f7fffff",
+        "7f7fffff",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "7f800000",
+        "7f800000",
+        "7f800000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxComputeSphereInertiaTensor.09",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "00000002"
+      ],
+      "output_u32_hex": [
+        "3f2aaaab",
+        "3f2aaaab",
+        "3f2aaaab",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxRayPlaneIntersect.00",
+      "input_u32_hex": [
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "41200000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayPlaneIntersect.01",
+      "input_u32_hex": [
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "c1200000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayPlaneIntersect.02",
+      "input_u32_hex": [
+        "00000000",
+        "41200000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0004",
+        "cdcd0005",
+        "cdcd0006",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayPlaneIntersect.03",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayPlaneIntersect.04",
+      "input_u32_hex": [
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "c0000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "41000000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "40000000",
+        "00000000",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayPlaneIntersect.05",
+      "input_u32_hex": [
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "c0000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "40a00000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayPlaneIntersect.06",
+      "input_u32_hex": [
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0004",
+        "cdcd0005",
+        "cdcd0006",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayPlaneIntersect.07",
+      "input_u32_hex": [
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "c0800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "41000000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "40000000",
+        "00000000",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayPlaneIntersect.08",
+      "input_u32_hex": [
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0004",
+        "cdcd0005",
+        "cdcd0006",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayPlaneIntersect.09",
+      "input_u32_hex": [
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "7fc00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "ffc00000",
+        "cdcd0001",
+        "cdcd0002",
+        "ffc00000",
+        "7fc00000",
+        "ffc00000",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayPlaneIntersect.10",
+      "input_u32_hex": [
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000001"
+      ],
+      "output_u32_hex": [
+        "41200000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "bf800000"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentPlaneIntersect.00",
+      "input_u32_hex": [
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "c1200000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "41200000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxSegmentPlaneIntersect.01",
+      "input_u32_hex": [
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "41200000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxSegmentPlaneIntersect.02",
+      "input_u32_hex": [
+        "00000000",
+        "41200000",
+        "00000000",
+        "41200000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "41200000",
+        "00000000",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxSegmentPlaneIntersect.03",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxSegmentPlaneIntersect.04",
+      "input_u32_hex": [
+        "00000000",
+        "c1200000",
+        "00000000",
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "41200000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxSegmentPlaneIntersect.05",
+      "input_u32_hex": [
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "41200000",
+        "00000000",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxSegmentPlaneIntersect.06",
+      "input_u32_hex": [
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "c1200000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "c0800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "41000000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "40000000",
+        "00000000",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxSegmentPlaneIntersect.07",
+      "input_u32_hex": [
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "c1200000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "41200000",
+        "00000000",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxSegmentPlaneIntersect.08",
+      "input_u32_hex": [
+        "00000000",
+        "7fc00000",
+        "00000000",
+        "00000000",
+        "c1200000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "ffc00000",
+        "cdcd0001",
+        "cdcd0002",
+        "7fc00000",
+        "7fc00000",
+        "7fc00000",
+        "cdcd0007",
+        "cdcd0008"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxSegmentPlaneIntersect.09",
+      "input_u32_hex": [
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "c1200000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000001"
+      ],
+      "output_u32_hex": [
+        "41200000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "c1200000"
+      ],
+      "return": {
+        "kind": "void"
+      }
+    },
+    {
+      "case": "NxRaySphereIntersect.00",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "bf800000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRaySphereIntersect.01",
+      "input_u32_hex": [
+        "00000000",
+        "40000000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRaySphereIntersect.02",
+      "input_u32_hex": [
+        "00000000",
+        "3f800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "3f800000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRaySphereIntersect.03",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "bf800000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRaySphereIntersect.04",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "bf800000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRaySphereIntersect.05",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRaySphereIntersect.06",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "bf800000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRaySphereIntersect.07",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "c01be0cd",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRaySphereIntersect.08",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRaySphereIntersect.09",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "3f800000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRaySphereIntersect.10",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRaySphereIntersect.11",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000002"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRaySphereIntersect.12",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "7fc00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "7fc00000",
+        "7fc00000",
+        "7fc00000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayTriIntersect.00",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000001",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "40a00000",
+        "cdcd0001",
+        "cdcd0002",
+        "3e800000",
+        "cdcd0005",
+        "cdcd0006",
+        "3e800000",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayTriIntersect.01",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000001",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0004",
+        "cdcd0005",
+        "cdcd0006",
+        "cdcd0008",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayTriIntersect.02",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "40a00000",
+        "cdcd0001",
+        "cdcd0002",
+        "3e800000",
+        "cdcd0005",
+        "cdcd0006",
+        "3e800000",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayTriIntersect.03",
+      "input_u32_hex": [
+        "41200000",
+        "41200000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000001",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "42200000",
+        "cdcd0005",
+        "cdcd0006",
+        "cdcd0008",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayTriIntersect.04",
+      "input_u32_hex": [
+        "00000000",
+        "40000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000001",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "40a00000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "cdcd0005",
+        "cdcd0006",
+        "3f000000",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayTriIntersect.05",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000001",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "40a00000",
+        "cdcd0001",
+        "cdcd0002",
+        "00000000",
+        "cdcd0005",
+        "cdcd0006",
+        "00000000",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayTriIntersect.06",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "40a00000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000001",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0004",
+        "cdcd0005",
+        "cdcd0006",
+        "cdcd0008",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayTriIntersect.07",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000001",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0004",
+        "cdcd0005",
+        "cdcd0006",
+        "cdcd0008",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayTriIntersect.08",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000001",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0004",
+        "cdcd0005",
+        "cdcd0006",
+        "cdcd0008",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayTriIntersect.09",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000001",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0004",
+        "cdcd0005",
+        "cdcd0006",
+        "cdcd0008",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayTriIntersect.10",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000001",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0004",
+        "cdcd0005",
+        "cdcd0006",
+        "cdcd0008",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayTriIntersect.11",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "c0000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000001",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "40200000",
+        "cdcd0001",
+        "cdcd0002",
+        "3e800000",
+        "cdcd0005",
+        "cdcd0006",
+        "3e800000",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayTriIntersect.12",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000002",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0004",
+        "cdcd0005",
+        "cdcd0006",
+        "cdcd0008",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayTriIntersect.13",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000001",
+        "00000001"
+      ],
+      "output_u32_hex": [
+        "3ea00000",
+        "cdcd0001",
+        "cdcd0002",
+        "3ea00000",
+        "cdcd0001",
+        "cdcd0002",
+        "3e800000",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayTriIntersect.14",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "7fc00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000001",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "7fc00000",
+        "cdcd0001",
+        "cdcd0002",
+        "7fc00000",
+        "cdcd0005",
+        "cdcd0006",
+        "7fc00000",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect.00",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "00000000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect.01",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect.02",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "41200000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "41200000",
+        "cdcd0002",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect.03",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "3f800000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "3f800000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect.04",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect.05",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect.06",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "3f800000",
+        "00000000",
+        "3f800000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect.07",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "00000000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect.08",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect.09",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect.10",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "c0a00000",
+        "c0a00000",
+        "3f13cd3a",
+        "3f13cd3a",
+        "3f13cd3a",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "bf7ffffe",
+        "bf7ffffe",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect.11",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "7fc00000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "7fc00000",
+        "7fc00000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect.12",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000001"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect2.00",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "00000000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004",
+        "40800000",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect2.01",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003",
+        "cdcd0004",
+        "cdcd0008",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect2.02",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "41200000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "41200000",
+        "cdcd0002",
+        "cdcd0003",
+        "cdcd0004",
+        "cdcd0008",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect2.03",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "3f800000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "3f800000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004",
+        "40800000",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect2.04",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "cdcd0003",
+        "cdcd0004",
+        "40800000",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect2.05",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "cdcd0003",
+        "cdcd0004",
+        "40c00000",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect2.06",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "3f800000",
+        "00000000",
+        "3f800000",
+        "cdcd0003",
+        "cdcd0004",
+        "cdcd0008",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect2.07",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "00000000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004",
+        "40000000",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect2.08",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003",
+        "cdcd0004",
+        "cdcd0008",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect2.09",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003",
+        "cdcd0004",
+        "cdcd0008",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect2.10",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "c0a00000",
+        "c0a00000",
+        "3f13cd3a",
+        "3f13cd3a",
+        "3f13cd3a",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "bf7ffffe",
+        "bf7ffffe",
+        "cdcd0003",
+        "cdcd0004",
+        "40ddb3d8",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect2.11",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "7fc00000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "7fc00000",
+        "7fc00000",
+        "cdcd0003",
+        "cdcd0004",
+        "7fc00000",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayAABBIntersect2.12",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000001"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "cdcd0009",
+        "cdcd000a"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentBoxIntersect.00",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "00000000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentBoxIntersect.01",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "c0400000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSegmentBoxIntersect.02",
+      "input_u32_hex": [
+        "c0a00000",
+        "41200000",
+        "00000000",
+        "40a00000",
+        "41200000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSegmentBoxIntersect.03",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentBoxIntersect.04",
+      "input_u32_hex": [
+        "bf000000",
+        "00000000",
+        "00000000",
+        "3f000000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf000000",
+        "00000000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentBoxIntersect.05",
+      "input_u32_hex": [
+        "c0a00000",
+        "3f800000",
+        "00000000",
+        "40a00000",
+        "3f800000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "3f800000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentBoxIntersect.06",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentBoxIntersect.07",
+      "input_u32_hex": [
+        "40a00000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSegmentBoxIntersect.08",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSegmentBoxIntersect.09",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSegmentBoxIntersect.10",
+      "input_u32_hex": [
+        "40a00000",
+        "00000000",
+        "00000000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "3f800000",
+        "00000000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentBoxIntersect.11",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "7fc00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "7fc00000",
+        "00000000",
+        "00000000",
+        "cdcd0003",
+        "cdcd0004"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentBoxIntersect.12",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentAABBIntersect.00",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentAABBIntersect.01",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "c0400000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSegmentAABBIntersect.02",
+      "input_u32_hex": [
+        "c0a00000",
+        "41200000",
+        "00000000",
+        "40a00000",
+        "41200000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSegmentAABBIntersect.03",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentAABBIntersect.04",
+      "input_u32_hex": [
+        "bf000000",
+        "00000000",
+        "00000000",
+        "3f000000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentAABBIntersect.05",
+      "input_u32_hex": [
+        "c0a00000",
+        "3f800000",
+        "00000000",
+        "40a00000",
+        "3f800000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentAABBIntersect.06",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentAABBIntersect.07",
+      "input_u32_hex": [
+        "40a00000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSegmentAABBIntersect.08",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "bf800000",
+        "bf800000",
+        "bf800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSegmentAABBIntersect.09",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSegmentAABBIntersect.10",
+      "input_u32_hex": [
+        "40a00000",
+        "00000000",
+        "00000000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentAABBIntersect.11",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "7fc00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayOBBIntersect.00",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayOBBIntersect.01",
+      "input_u32_hex": [
+        "c0a00000",
+        "41200000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayOBBIntersect.02",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f3504f3",
+        "bf3504f3",
+        "00000000",
+        "3f3504f3",
+        "3f3504f3",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayOBBIntersect.03",
+      "input_u32_hex": [
+        "c0a00000",
+        "3f800000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayOBBIntersect.04",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayOBBIntersect.05",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayOBBIntersect.06",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayOBBIntersect.07",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayOBBIntersect.08",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayOBBIntersect.09",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayOBBIntersect.10",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayOBBIntersect.11",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayOBBIntersect.12",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "7fc00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentOBBIntersect.00",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentOBBIntersect.01",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "c0400000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSegmentOBBIntersect.02",
+      "input_u32_hex": [
+        "c0a00000",
+        "41200000",
+        "00000000",
+        "40a00000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSegmentOBBIntersect.03",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f3504f3",
+        "bf3504f3",
+        "00000000",
+        "3f3504f3",
+        "3f3504f3",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentOBBIntersect.04",
+      "input_u32_hex": [
+        "c0a00000",
+        "3f800000",
+        "00000000",
+        "40a00000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentOBBIntersect.05",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentOBBIntersect.06",
+      "input_u32_hex": [
+        "40a00000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSegmentOBBIntersect.07",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentOBBIntersect.08",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSegmentOBBIntersect.09",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentOBBIntersect.10",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentOBBIntersect.11",
+      "input_u32_hex": [
+        "40a00000",
+        "00000000",
+        "00000000",
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSegmentOBBIntersect.12",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "7fc00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayCapsuleIntersect.00",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "c0000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "40800000",
+        "40c00000",
+        "cdcd0002",
+        "cdcd0003"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000002"
+      }
+    },
+    {
+      "case": "NxRayCapsuleIntersect.01",
+      "input_u32_hex": [
+        "c0a00000",
+        "3f800000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "c0000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "40800000",
+        "40c00000",
+        "cdcd0002",
+        "cdcd0003"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000002"
+      }
+    },
+    {
+      "case": "NxRayCapsuleIntersect.02",
+      "input_u32_hex": [
+        "c0a00000",
+        "41200000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "c0000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayCapsuleIntersect.03",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "c0000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "bf800000",
+        "3f800000",
+        "cdcd0002",
+        "cdcd0003"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000002"
+      }
+    },
+    {
+      "case": "NxRayCapsuleIntersect.04",
+      "input_u32_hex": [
+        "00000000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "c0000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "41000000",
+        "40000000",
+        "cdcd0002",
+        "cdcd0003"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000002"
+      }
+    },
+    {
+      "case": "NxRayCapsuleIntersect.05",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "c0000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "40a00000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxRayCapsuleIntersect.06",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayCapsuleIntersect.07",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "c0000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "c0c00000",
+        "c0800000",
+        "cdcd0002",
+        "cdcd0003"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000002"
+      }
+    },
+    {
+      "case": "NxRayCapsuleIntersect.08",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "c0000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayCapsuleIntersect.09",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "c0000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "40000000",
+        "40400000",
+        "cdcd0002",
+        "cdcd0003"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000002"
+      }
+    },
+    {
+      "case": "NxRayCapsuleIntersect.10",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "c0000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "bf800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "40800000",
+        "40c00000",
+        "cdcd0002",
+        "cdcd0003"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000002"
+      }
+    },
+    {
+      "case": "NxRayCapsuleIntersect.11",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "7fc00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "c0000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxRayCapsuleIntersect.12",
+      "input_u32_hex": [
+        "c0a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "c0000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [
+        "40800000",
+        "40c00000",
+        "00000000",
+        "3f800000"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000002"
+      }
+    },
+    {
+      "case": "NxSweptSpheresIntersect.00",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSweptSpheresIntersect.01",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "bf800000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSweptSpheresIntersect.02",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSweptSpheresIntersect.03",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSweptSpheresIntersect.04",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSweptSpheresIntersect.05",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSweptSpheresIntersect.06",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSweptSpheresIntersect.07",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "bf800000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSweptSpheresIntersect.08",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "41200000",
+        "41200000",
+        "00000000",
+        "3f800000",
+        "bf800000",
+        "bf800000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSweptSpheresIntersect.09",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3fc00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSweptSpheresIntersect.10",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "7fc00000",
+        "00000000",
+        "00000000",
+        "41200000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "bf800000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxBoxBoxIntersect.00",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBoxBoxIntersect.01",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxBoxBoxIntersect.02",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBoxBoxIntersect.03",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBoxBoxIntersect.04",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "4019999a",
+        "00000000",
+        "00000000",
+        "3f3504f3",
+        "bf3504f3",
+        "00000000",
+        "3f3504f3",
+        "3f3504f3",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBoxBoxIntersect.05",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "4019999a",
+        "00000000",
+        "00000000",
+        "3f3504f3",
+        "bf3504f3",
+        "00000000",
+        "3f3504f3",
+        "3f3504f3",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBoxBoxIntersect.06",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBoxBoxIntersect.07",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBoxBoxIntersect.08",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "40400000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxBoxBoxIntersect.09",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBoxBoxIntersect.10",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "7fc00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBoxBoxIntersect.11",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "4019999a",
+        "00000000",
+        "00000000",
+        "3f3504f3",
+        "bf3504f3",
+        "00000000",
+        "3f3504f3",
+        "3f3504f3",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000002"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSeparatingAxis.00",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000007"
+      }
+    },
+    {
+      "case": "NxSeparatingAxis.01",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "40a00000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSeparatingAxis.02",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSeparatingAxis.03",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000007"
+      }
+    },
+    {
+      "case": "NxSeparatingAxis.04",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "4019999a",
+        "00000000",
+        "00000000",
+        "3f3504f3",
+        "bf3504f3",
+        "00000000",
+        "3f3504f3",
+        "3f3504f3",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "0000000f"
+      }
+    },
+    {
+      "case": "NxSeparatingAxis.05",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "4019999a",
+        "00000000",
+        "00000000",
+        "3f3504f3",
+        "bf3504f3",
+        "00000000",
+        "3f3504f3",
+        "3f3504f3",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000009"
+      }
+    },
+    {
+      "case": "NxSeparatingAxis.06",
+      "input_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000007"
+      }
+    },
+    {
+      "case": "NxSeparatingAxis.07",
+      "input_u32_hex": [
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxSeparatingAxis.08",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "40400000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000004"
+      }
+    },
+    {
+      "case": "NxSeparatingAxis.09",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000007"
+      }
+    },
+    {
+      "case": "NxSeparatingAxis.10",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "7fc00000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000001"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxSeparatingAxis.11",
+      "input_u32_hex": [
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "4019999a",
+        "00000000",
+        "00000000",
+        "3f3504f3",
+        "bf3504f3",
+        "00000000",
+        "3f3504f3",
+        "3f3504f3",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000002"
+      ],
+      "output_u32_hex": [],
+      "return": {
+        "kind": "u32",
+        "word_hex": "0000000f"
+      }
+    },
+    {
+      "case": "NxBuildSmoothNormals.00",
+      "input_u32_hex": [
+        "00000001",
+        "00000003",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000001",
+        "00000002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "cdcd0009",
+        "cdcd000a",
+        "cdcd000b",
+        "cdcd000c",
+        "cdcd000d",
+        "cdcd000e",
+        "cdcd000f",
+        "cdcd0010",
+        "cdcd0011",
+        "cdcd0012",
+        "cdcd0013",
+        "cdcd0014",
+        "cdcd0015",
+        "cdcd0016",
+        "cdcd0017",
+        "cdcd0018",
+        "cdcd0019"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBuildSmoothNormals.01",
+      "input_u32_hex": [
+        "00000001",
+        "00000003",
+        "00000000",
+        "00000001",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000001",
+        "00000002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "cdcd0009",
+        "cdcd000a",
+        "cdcd000b",
+        "cdcd000c",
+        "cdcd000d",
+        "cdcd000e",
+        "cdcd000f",
+        "cdcd0010",
+        "cdcd0011",
+        "cdcd0012",
+        "cdcd0013",
+        "cdcd0014",
+        "cdcd0015",
+        "cdcd0016",
+        "cdcd0017",
+        "cdcd0018",
+        "cdcd0019"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBuildSmoothNormals.02",
+      "input_u32_hex": [
+        "00000001",
+        "00000003",
+        "00000001",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000001",
+        "00000002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "cdcd0009",
+        "cdcd000a",
+        "cdcd000b",
+        "cdcd000c",
+        "cdcd000d",
+        "cdcd000e",
+        "cdcd000f",
+        "cdcd0010",
+        "cdcd0011",
+        "cdcd0012",
+        "cdcd0013",
+        "cdcd0014",
+        "cdcd0015",
+        "cdcd0016",
+        "cdcd0017",
+        "cdcd0018",
+        "cdcd0019"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBuildSmoothNormals.03",
+      "input_u32_hex": [
+        "00000002",
+        "00000004",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000001",
+        "00000002",
+        "00000000",
+        "00000002",
+        "00000003",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "cdcd000c",
+        "cdcd000d",
+        "cdcd000e",
+        "cdcd000f",
+        "cdcd0010",
+        "cdcd0011",
+        "cdcd0012",
+        "cdcd0013",
+        "cdcd0014",
+        "cdcd0015",
+        "cdcd0016",
+        "cdcd0017",
+        "cdcd0018",
+        "cdcd0019"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBuildSmoothNormals.04",
+      "input_u32_hex": [
+        "0000000c",
+        "00000008",
+        "00000000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000002",
+        "00000001",
+        "00000000",
+        "00000003",
+        "00000002",
+        "00000004",
+        "00000005",
+        "00000006",
+        "00000004",
+        "00000006",
+        "00000007",
+        "00000000",
+        "00000001",
+        "00000005",
+        "00000000",
+        "00000005",
+        "00000004",
+        "00000002",
+        "00000003",
+        "00000007",
+        "00000002",
+        "00000007",
+        "00000006",
+        "00000000",
+        "00000004",
+        "00000007",
+        "00000000",
+        "00000007",
+        "00000003",
+        "00000001",
+        "00000002",
+        "00000006",
+        "00000001",
+        "00000006",
+        "00000005"
+      ],
+      "output_u32_hex": [
+        "3f13cd3a",
+        "3f13cd3a",
+        "3f13cd3a",
+        "bf13cd3a",
+        "3f13cd3a",
+        "3f13cd3a",
+        "bf13cd3a",
+        "bf13cd3a",
+        "3f13cd3a",
+        "3f13cd3a",
+        "bf13cd3a",
+        "3f13cd3a",
+        "3f13cd3a",
+        "3f13cd3a",
+        "bf13cd3a",
+        "bf13cd3a",
+        "3f13cd3a",
+        "bf13cd3a",
+        "bf13cd3a",
+        "bf13cd3a",
+        "bf13cd3a",
+        "3f13cd3a",
+        "bf13cd3a",
+        "bf13cd3a",
+        "cdcd0018",
+        "cdcd0019"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBuildSmoothNormals.05",
+      "input_u32_hex": [
+        "0000000c",
+        "00000008",
+        "00000001",
+        "00000001",
+        "00000000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "bf800000",
+        "bf800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "bf800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000002",
+        "00000001",
+        "00000000",
+        "00000003",
+        "00000002",
+        "00000004",
+        "00000005",
+        "00000006",
+        "00000004",
+        "00000006",
+        "00000007",
+        "00000000",
+        "00000001",
+        "00000005",
+        "00000000",
+        "00000005",
+        "00000004",
+        "00000002",
+        "00000003",
+        "00000007",
+        "00000002",
+        "00000007",
+        "00000006",
+        "00000000",
+        "00000004",
+        "00000007",
+        "00000000",
+        "00000007",
+        "00000003",
+        "00000001",
+        "00000002",
+        "00000006",
+        "00000001",
+        "00000006",
+        "00000005"
+      ],
+      "output_u32_hex": [
+        "bf13cd3a",
+        "bf13cd3a",
+        "bf13cd3a",
+        "3f13cd3a",
+        "bf13cd3a",
+        "bf13cd3a",
+        "3f13cd3a",
+        "3f13cd3a",
+        "bf13cd3a",
+        "bf13cd3a",
+        "3f13cd3a",
+        "bf13cd3a",
+        "bf13cd3a",
+        "bf13cd3a",
+        "3f13cd3a",
+        "3f13cd3a",
+        "bf13cd3a",
+        "3f13cd3a",
+        "3f13cd3a",
+        "3f13cd3a",
+        "3f13cd3a",
+        "bf13cd3a",
+        "3f13cd3a",
+        "3f13cd3a",
+        "cdcd0018",
+        "cdcd0019"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBuildSmoothNormals.06",
+      "input_u32_hex": [
+        "00000000",
+        "00000003",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000001",
+        "00000002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003",
+        "cdcd0004",
+        "cdcd0005",
+        "cdcd0006",
+        "cdcd0007",
+        "cdcd0008",
+        "cdcd0009",
+        "cdcd000a",
+        "cdcd000b",
+        "cdcd000c",
+        "cdcd000d",
+        "cdcd000e",
+        "cdcd000f",
+        "cdcd0010",
+        "cdcd0011",
+        "cdcd0012",
+        "cdcd0013",
+        "cdcd0014",
+        "cdcd0015",
+        "cdcd0016",
+        "cdcd0017",
+        "cdcd0018",
+        "cdcd0019"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxBuildSmoothNormals.07",
+      "input_u32_hex": [
+        "00000001",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000001",
+        "00000002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "cdcd0000",
+        "cdcd0001",
+        "cdcd0002",
+        "cdcd0003",
+        "cdcd0004",
+        "cdcd0005",
+        "cdcd0006",
+        "cdcd0007",
+        "cdcd0008",
+        "cdcd0009",
+        "cdcd000a",
+        "cdcd000b",
+        "cdcd000c",
+        "cdcd000d",
+        "cdcd000e",
+        "cdcd000f",
+        "cdcd0010",
+        "cdcd0011",
+        "cdcd0012",
+        "cdcd0013",
+        "cdcd0014",
+        "cdcd0015",
+        "cdcd0016",
+        "cdcd0017",
+        "cdcd0018",
+        "cdcd0019"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000000"
+      }
+    },
+    {
+      "case": "NxBuildSmoothNormals.08",
+      "input_u32_hex": [
+        "00000001",
+        "00000003",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000001",
+        "00000002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0009",
+        "cdcd000a",
+        "cdcd000b",
+        "cdcd000c",
+        "cdcd000d",
+        "cdcd000e",
+        "cdcd000f",
+        "cdcd0010",
+        "cdcd0011",
+        "cdcd0012",
+        "cdcd0013",
+        "cdcd0014",
+        "cdcd0015",
+        "cdcd0016",
+        "cdcd0017",
+        "cdcd0018",
+        "cdcd0019"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBuildSmoothNormals.09",
+      "input_u32_hex": [
+        "00000001",
+        "00000003",
+        "00000002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000001",
+        "00000002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "cdcd0009",
+        "cdcd000a",
+        "cdcd000b",
+        "cdcd000c",
+        "cdcd000d",
+        "cdcd000e",
+        "cdcd000f",
+        "cdcd0010",
+        "cdcd0011",
+        "cdcd0012",
+        "cdcd0013",
+        "cdcd0014",
+        "cdcd0015",
+        "cdcd0016",
+        "cdcd0017",
+        "cdcd0018",
+        "cdcd0019"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBuildSmoothNormals.10",
+      "input_u32_hex": [
+        "00000001",
+        "00000003",
+        "00000003",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000001",
+        "00000002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "cdcd0009",
+        "cdcd000a",
+        "cdcd000b",
+        "cdcd000c",
+        "cdcd000d",
+        "cdcd000e",
+        "cdcd000f",
+        "cdcd0010",
+        "cdcd0011",
+        "cdcd0012",
+        "cdcd0013",
+        "cdcd0014",
+        "cdcd0015",
+        "cdcd0016",
+        "cdcd0017",
+        "cdcd0018",
+        "cdcd0019"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBuildSmoothNormals.11",
+      "input_u32_hex": [
+        "00000001",
+        "00000003",
+        "00000000",
+        "00000000",
+        "00000001",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000001",
+        "00000002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0018",
+        "cdcd0019"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBuildSmoothNormals.12",
+      "input_u32_hex": [
+        "00000001",
+        "00000003",
+        "00000000",
+        "00000002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000001",
+        "00000002",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "cdcd0009",
+        "cdcd000a",
+        "cdcd000b",
+        "cdcd000c",
+        "cdcd000d",
+        "cdcd000e",
+        "cdcd000f",
+        "cdcd0010",
+        "cdcd0011",
+        "cdcd0012",
+        "cdcd0013",
+        "cdcd0014",
+        "cdcd0015",
+        "cdcd0016",
+        "cdcd0017",
+        "cdcd0018",
+        "cdcd0019"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBuildSmoothNormals.13",
+      "input_u32_hex": [
+        "00000002",
+        "00000006",
+        "00000002",
+        "00000001",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "40800000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "40800000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000001",
+        "00000002",
+        "00000003",
+        "00000004",
+        "00000005",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "cdcd0012",
+        "cdcd0013",
+        "cdcd0014",
+        "cdcd0015",
+        "cdcd0016",
+        "cdcd0017",
+        "cdcd0018",
+        "cdcd0019"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBuildSmoothNormals.14",
+      "input_u32_hex": [
+        "00000002",
+        "00000006",
+        "00000000",
+        "00000001",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "40800000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "40800000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000001",
+        "00000002",
+        "00000003",
+        "00000004",
+        "00000005",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "cdcd0012",
+        "cdcd0013",
+        "cdcd0014",
+        "cdcd0015",
+        "cdcd0016",
+        "cdcd0017",
+        "cdcd0018",
+        "cdcd0019"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBuildSmoothNormals.15",
+      "input_u32_hex": [
+        "00000002",
+        "00000005",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000001",
+        "00000002",
+        "00000000",
+        "00000003",
+        "00000004",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "3f3504f3",
+        "bf3504f3",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "cdcd000f",
+        "cdcd0010",
+        "cdcd0011",
+        "cdcd0012",
+        "cdcd0013",
+        "cdcd0014",
+        "cdcd0015",
+        "cdcd0016",
+        "cdcd0017",
+        "cdcd0018",
+        "cdcd0019"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    },
+    {
+      "case": "NxBuildSmoothNormals.16",
+      "input_u32_hex": [
+        "00000002",
+        "00000005",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000001",
+        "00000002",
+        "00000000",
+        "00000003",
+        "00000004",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "output_u32_hex": [
+        "00000000",
+        "3ee4f92e",
+        "bf64f92e",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "00000000",
+        "bf800000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "00000000",
+        "3f800000",
+        "00000000",
+        "cdcd000f",
+        "cdcd0010",
+        "cdcd0011",
+        "cdcd0012",
+        "cdcd0013",
+        "cdcd0014",
+        "cdcd0015",
+        "cdcd0016",
+        "cdcd0017",
+        "cdcd0018",
+        "cdcd0019"
+      ],
+      "return": {
+        "kind": "u32",
+        "word_hex": "00000001"
+      }
+    }
+  ],
+  "schema_adaptation": {
+    "capture_id": "geometry-shipped-discriminated-task4",
+    "adapter_revision": "45db8e08fe4e9fbc9e4c91f6e51e9b6445304777",
+    "adapter_dirty": true,
+    "original_fixture": "geometry-shipped-oracle.json",
+    "original_sha256": "3821e47aba7bb5be17ef9074d69e5059674fbc4898bec5acfa3a858112bc76b8",
+    "reference_revision": "a4838ddf282ee859471e1526145b616de5ddedb6",
+    "oracle_identity": {
+      "physics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+      "foundation_sha256": "7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990",
+      "source_root": "D:/FlamingEnt__/Unreal_3/Binaries"
+    },
+    "adapter_sha256": "9764c73164c6ad3dd661312a8417f755d509ee1ac83737771428c947e0ef08c7",
+    "meaning": "lossless return-discriminator adaptation; no production code executed; no new oracle answers"
+  }
+}

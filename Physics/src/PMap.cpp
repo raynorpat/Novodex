@@ -6,6 +6,10 @@
 |
 \*----------------------------------------------------------------------------*/
 #include "PMap.h"
+#include "NxPhysicsBackend.h"
+#if !NX_PHYSICS_USE_X87
+#include "portable/NxScalarGeometry.h"
+#endif
 
 #include "NxUserOutputStream.h"
 #include "TriangleMesh.h"
@@ -1203,6 +1207,7 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 							}
 						if(direction[0] != 0.0f || direction[1] != 0.0f || direction[2] != 0.0f)
 							{
+#if NX_PHYSICS_USE_X87
 							const NxF32 one = 1.0f;
 							// FUN_1004e5d0 sums z², y², then x² in extended x87
 							// precision, and keeps 1/sqrt(sum) extended while storing
@@ -1230,6 +1235,9 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 								fstp dword ptr [direction + 8]
 								fstp st(0)
 								}
+#else
+							nxScalarNormalizeDirection3(direction);
+#endif
 							}
 						const Ray ray(Point(point[0], point[1], point[2]),
 							Point(direction[0], direction[1], direction[2]));
