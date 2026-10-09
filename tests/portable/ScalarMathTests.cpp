@@ -112,17 +112,31 @@ static bool equivalent(double actual,double reference,unsigned op) {
     if(reference==0 && actual==0) return std::signbit(actual)==std::signbit(reference);
     return nxWithinBudget(actual,reference,nxScalarBudgets[op].absolute,nxScalarBudgets[op].relative);
 }
-static bool oldExtreme(unsigned op,unsigned c,double actual) {
-    if(c==6 && (op==1 || op==2 || op==3 || op==6)) return std::isinf(actual) && actual>0; // double intermediate overflow
-    if(c==4 && (op==7 || op==8 || op==9)) return actual==0 && !std::signbit(actual); // double product underflow
-    if(c==4 && op==10) return std::isinf(actual) && actual>0; // divisor underflows
-    if(c==6 && op==10) return actual==0 && !std::signbit(actual); // divisor overflows
-    if(c==4 && op==11) return std::isnan(actual); // norm underflows; zero divided by zero
-    if(c==6 && (op==11 || op==12)) return std::isnan(actual); // norm/angle overflow; standard trig infinity domain
+struct ExtremeDisposition { bool applies; bool accepted; };
+static ExtremeDisposition oldExtreme(unsigned op,unsigned c,double actual) {
+    if(c==6 && (op==1 || op==2 || op==3 || op==6)) return {true,std::isinf(actual) && actual>0}; // double intermediate overflow
+    if(c==4 && (op==7 || op==8 || op==9)) return {true,actual==0 && !std::signbit(actual)}; // double product underflow
+    if(c==4 && op==10) return {true,std::isinf(actual) && actual>0}; // divisor underflows
+    if(c==6 && op==10) return {true,actual==0 && !std::signbit(actual)}; // divisor overflows
+    if(c==4 && op==11) return {true,std::isnan(actual)}; // norm underflows; zero divided by zero
+    if(c==6 && (op==11 || op==12)) return {true,std::isnan(actual)}; // norm/angle overflow; standard trig infinity domain
     // acos(min)*min rounds each binary64 product to two subnormal units;
     // addition yields four units. x87 observes three units only at return.
-    if(c==4 && op==15) return actual==decode(4);
-    return false;
+    if(c==4 && op==15) return {true,actual==decode(4)};
+    return {false,false};
+}
+static bool oldFixtureAccepted(unsigned op,unsigned c,double actual,double reference) {
+    const ExtremeDisposition disposition=oldExtreme(op,c,actual);
+    if(disposition.applies) return disposition.accepted;
+    return equivalent(actual,reference,op);
+}
+static void dispositionContracts() {
+    const double legacyOverflow=decode(0x5ff6a09e667f3bccULL);
+    check(!oldFixtureAccepted(1,6,legacyOverflow,legacyOverflow),"overflow disposition rejects legacy finite result");
+    check(!oldFixtureAccepted(15,4,decode(3),decode(3)),"subnormal disposition rejects legacy three-unit result");
+    check(oldFixtureAccepted(1,6,std::numeric_limits<double>::infinity(),legacyOverflow),"overflow disposition accepts scalar infinity");
+    check(oldFixtureAccepted(15,4,decode(4),decode(3)),"subnormal disposition accepts scalar four-unit result");
+    check(oldFixtureAccepted(0,0,std::sqrt(0.5),std::sqrt(0.5)),"ordinary fixture budget still applies");
 }
 static void conversions(const char* path) {
     std::vector<unsigned char> data; std::string error;
@@ -139,6 +153,7 @@ static void conversions(const char* path) {
 int main(int argc,char** argv) {
     if (argc<2) return 2;
     contracts();
+    dispositionContracts();
     std::vector<unsigned char> payload; std::string error;
     if(!nxReadFixture(argv[1],payload,error)) { std::fprintf(stderr,"%s\n",error.c_str()); return 1; }
     const bool physicsDomain=payload.size()==4680*80,rotationDomain=payload.size()==1152*80;
@@ -161,7 +176,7 @@ int main(int argc,char** argv) {
                 const bool limit=i%cases==128;
                 const double mathematical=op==11?(limit?0.9999303766734422296:-0.7029224436192088764):(limit?0.01180007651280023668:-0.7112665029764863869);
                 ok=extremeTrigAccepted(actual,mathematical);
-            } else if(!physicsDomain && !rotationDomain && oldExtreme(op,i%cases,actual)) ok=true;
+            } else if(!physicsDomain && !rotationDomain) ok=oldFixtureAccepted(op,i%cases,actual,ref);
             else ok=equivalent(actual,ref,op);
             if(!ok) { std::fprintf(stderr,"op=%u case=%u ref=%.17g actual=%.17g\n",op,i%cases,ref,actual);check(false,"pinned helper budget/classes"); }
         }
