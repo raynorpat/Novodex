@@ -448,7 +448,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/31",
       "static_proof": "body helper: collision-object pointer -- mesh hull at [+0xf0], else shape+0x9c -- closed indirectly through slot 16's bitwise drive",
       "dynamic_proof": "NxPhysicsObjectLayoutTests pinned-oracle differential: changing the kind-5 branch in nxBodyCollisionObject to return shape+0x9c instead of *(shape+0xf0) produced actorsm candidate ok=0 digest=81d5e7b9 and layout candidate mismatches=1; after restore, actorsm candidate ok=1 digest=1bdc2fa8 and mismatches=0. The test loads pinned NxPhysics.dll sha256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c.",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxBodyCollisionObject",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxBodyCollisionObject@@YAPAXPAX@Z",
+        "address": "0x1003c430",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_000020",
@@ -654,7 +662,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/71",
       "static_proof": "IDA decompilation at 0x10001c40 (RVA 0x1c40, 403 bytes): releases the public actor wrapper, unregisters the body name, removes the actor root from the scene, copies the dynamic body's pose back to the body, removes and notifies the body record, calls DynamicBody::destruct and frees the record, recycles the actor ID, clears root-keyed pair records, then deletes the root. Scene.cpp nxActorDestroy follows that order; root-pair cleanup is performed by the root's base-shape destructor through NxSceneRemoveOwnerPairRecords.",
       "dynamic_proof": "NxPhysicsActorLifecycleTests, NxPhysicsActorShapeMutationTests, and NxPhysicsEffectorTests pass against the shipped pair; the root-delete mutation in nxActorDestroy was detected by NxPhysicsActorShapeMutationTests (stdout_delta=12, both processes exit 0, exact stderr; build/phase5-actor-destroy-root-mutation.log). NxPhysicsPairFlagTests additionally verifies actor-pair flags clear when a released actor's root ID is reused (old_id=1, new_id=1, flags=00000000; build/phase5-pair-cleanup-final-diff.log).",
-      "notes": "The existing helpers own the row's body-record, scene-registration, name, pair-hash and root-deletion suboperations; no public Physics header changed."
+      "notes": "The existing helpers own the row's body-record, scene-registration, name, pair-hash and root-deletion suboperations; no public Physics header changed.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxActorDestroy",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxActorDestroy@@YAXPAE@Z",
+        "address": "0x10055a80",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_000031",
@@ -690,7 +706,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/78",
       "static_proof": "IDA at RVA 0x1de0 has a five-case switch for shape types 0..4 with allocation sizes 0x10c, 0xe4, 0x228, 0xec and 0xe8; each family constructor installs its table and slot 12 loads the descriptor. Failed loads or missing public handles take slot 0 with delete flag 1 and recycle the allocated shape ID. Successful handles receive the NpScene lock links, shapes receive Scene+0x540-1, and the mesh arm increments Scene+0x10 and calls the Scene buffer reserve row for max(mesh+8, mesh+0xc). The candidate implements these arms through nxActorShapeFactory and nxRuntimeShapeLoad; type 5 and above follow the oracle default failure path.",
       "dynamic_proof": "The registered NxPhysicsMeshSimulationTests staged-pair differential covers ordinary, trigger, transformed, and heightfield mesh actors plus the factory side effects. The small-mesh case reports scene_meshes=1 and capacity=256; a 900-vertex mesh reports scene_meshes=2 and capacity=1024. Oracle and candidate transcripts match exactly after the row fix.",
-      "notes": "Whole-row mutation falsification is recorded in the Phase 5 closure ledger."
+      "notes": "Whole-row mutation falsification is recorded in the Phase 5 closure ledger.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxActorShapeFactory",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxActorShapeFactory@@YAPAEPBVNxShapeDesc@@PAE@Z",
+        "address": "0x10056200",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_000033",

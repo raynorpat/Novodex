@@ -137,6 +137,25 @@ class CompletionReportTests(unittest.TestCase):
                     "object": "NpActor.obj",
                 })
 
+    def test_body_shape_helpers_have_candidate_source_and_map_symbols(self):
+        expected = {
+            "phys_fn_000019": ("Physics/src/ObjectModel.cpp", "nxBodyCollisionObject", "?nxBodyCollisionObject@@YAPAXPAX@Z", "0x1003c430", "ObjectModel.obj"),
+            "phys_fn_000030": ("Physics/src/Scene.cpp", "nxActorDestroy", "?nxActorDestroy@@YAXPAE@Z", "0x10055a80", "Scene.obj"),
+            "phys_fn_000032": ("Physics/src/Scene.cpp", "nxActorShapeFactory", "?nxActorShapeFactory@@YAPAEPBVNxShapeDesc@@PAE@Z", "0x10056200", "Scene.obj"),
+        }
+        report = build_report_from_repo(REPO_DIR)
+        for row_id, (path, symbol, map_symbol, address, obj) in expected.items():
+            with self.subTest(row=row_id):
+                row = next(row for row in report["rows"] if row["id"] == row_id)
+                self.assertEqual(row["implementation"]["path"], path)
+                self.assertEqual(row["implementation"]["symbol"], symbol)
+                self.assertEqual(row["implementation"]["candidate_map_reference"], {
+                    "path": "build/Release/NxPhysics.map",
+                    "symbol": map_symbol,
+                    "address": address,
+                    "object": obj,
+                })
+
     def test_generated_report_uses_lf_bytes_on_every_platform(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             output = Path(temp_dir) / "report.json"
