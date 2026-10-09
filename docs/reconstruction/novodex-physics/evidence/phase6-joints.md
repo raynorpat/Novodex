@@ -9715,3 +9715,13 @@ the staged-pair transcript by 916 bytes (`stdout_delta=916`, both exits zero,
 exact stderr). Restoring the row returns the exact control. Measurement index:
 `phys_fn_000020 stdout_delta=916`. Details:
 `evidence/phase7-scene-visualize-000020.md`.
+
+
+## Phase 6 closure measurement — shared joint-anchor transform (phys_fn_004064)
+
+`Joint::row004064` transforms each joint anchor through its body pose and subtracts the world-space points. The registered `NxPhysicsJointSlotTests` fixture displaces a jointed body, then invokes projection slot 8 for every family under both the default and in-step x87 control words.
+
+In the clean isolated worktree at mainline commit 58f0d3a3, changed body 0’s transformed X anchor in Joint::row004064 by +1.0. The registered NxPhysicsJointSlotTests staged-pair differential rejected the mutant: oracle_exit=0, candidate_exit=0, stdout_delta=250, stderr_exact=True. Restored Joint.cpp, rebuilt NxPhysics, and reran the target; the restored control had both exits 0, stdout_delta=0, and exact stderr.
+
+The mutation existed only in the isolated worktree and was restored before the exact control run. Detailed evidence: `evidence/phase6-joint-row004064-anchor-transform.md`.
+Measurement index: `phys_fn_004064 stdout_delta=250`.
