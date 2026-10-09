@@ -8,7 +8,7 @@ Task 3 update: the companion census above is the immutable Task 1 snapshot. The 
 
 Task 3 numeric evidence is [scalar-math-acceptance.json](../../../../tests/portable/fixtures/scalar-math-acceptance.json), with fixed controller-approved per-operation units/budgets, MSVC/Clang measurements, input domains, explicit extreme-exponent and hardware-trig dispositions. Additional immutable reconstructed captures are `shared-math-physics-domain-x87.nxpf` (4680 records), `shared-math-rotation-domain-x87.nxpf` (1152 records) and `conversions-x87.nxpf` (100 records); each has a separate identity JSON. Nearest records alone drive scalar comparison; chop records remain diagnostic. Shared helper selection now follows `NX_PHYSICS_USE_X87`, preserving x87 source bodies. `wuFistp255` and `sceneDumpRound` portable adapters deliberately round nearest-even to signed qword then observe signed low32, with invalid qword sentinel low32 zero. The preexisting Wu clamp remains. Foundation portable `NxIntChop/Floor/Ceil` uses checked private int32 conversions; failure returns INT32_MIN (also a valid endpoint), explicitly a new portable convention where the old shifts/overflow are undefined. Internal checked forms preserve the output on failure.
 
-Task 3 remaining obligations: `IceSupportMaps.cpp::nxSupportMapComputeA` converts `(coordinate+1)*halfSubdivision` with live-CW qword stores and observes low32 for lookup indices; the typed routine, cube-axis decisions and integration fixture remain Task 5. `NxMath::trunc` ordinary public casts have no internal Physics/Foundation callers in this source census and remain an invalid-input API/platform audit obligation; no public-header rewrite is included. FPU environment APIs and public `NxSinCos` still block the full Foundation portable closure and belong Tasks 7/9. All full-engine migration guards remain installed; standalone C11/C++ tests do not establish full engine or operating-system support.
+Task 3 support-map obligation is closed by Task5c2: `IceSupportMaps.cpp::nxSupportMapLookup` (001556, not A compute slot001569) converts `(coordinate+1)*halfSubdivision` with live-CW qword stores and observes low32 for lookup indices; ordinary typed interfaces, exact cube-axis decisions and actual-table integration fixtures are now verified in the pinned Win32 domain below. `NxMath::trunc` ordinary public casts have no internal Physics/Foundation callers in this source census and remain an invalid-input API/platform audit obligation; no public-header rewrite is included. FPU environment APIs and public `NxSinCos` still block the full Foundation portable closure and belong Tasks 7/9. All full-engine migration guards remain installed; standalone C11/C++ tests do not establish full engine or operating-system support.
 
 Task 3 target-specific extreme-angle disposition: independent 100-digit mathematical sin/cos references at exact `2^62`/`2^63` remain enforced within absolute `2e-16` on x64/future native runners. MSVC Win32 UCRT ordinary out-of-line calls demonstrably have inaccurate range reduction there (volatile function-pointer calls and `/Oi-` give the same errors). Only those four Win32 test-environment probes require finite/bounded sine/cosine, allowing an improved runtime to pass; the current wrong outputs, errors and runtime identity are diagnostic fields in acceptance evidence, never exact correctness expectations. All practical/rotation budgets remain fixed, and production Win32 remains x87.
 
@@ -192,3 +192,41 @@ Two naked functions use `_emit` directives rather than mnemonic assembly: `Conta
 | `Physics/src/TriangleMesh.cpp` | geometry-ABI (Tasks 4/9) | 2 |
 | `Physics/src/TriangleMeshPolygons.cpp` | mesh-support-convex (Task 5) | 13 |
 | `Physics/src/TriangleMeshTopology.cpp` | geometry-ABI (Tasks 4/9) | 1 |
+
+### Task5c2 complete support-map family
+
+`IceSupportMaps.cpp` now selects ordinary scalar definitions through
+`portable/IceSupportMapsScalar.inl`; backend1 keeps the original entire body.
+Typed contracts and slot callback types are in `portable/NxConvexInterfaces.h`.
+Actual private `IceSupportMap`/`ConvexHull`/`HullPolygon`/`Valencies` receivers,
+real vendor/topology/hull methods and the production allocator accessor are used.
+The Win32 gate tests genuine A/B/C function tables, constructor/allocate/compute/
+finish/deletion, actual lazy hull producers, scratch stamps and map reuse.
+Full production guards remain; native layout migration is Task9.
+
+The qword conversion is lookup001556 (2e27c and2e286 `fistp qword`), whose
+low32 words are reloaded unsigned after2^32 corrections. It stores scaled u
+as binary32 and retains scaled v at53-bit precision. It uses the standard
+nearest-even qword/low32 helper with defined invalid low32 zero; no clamp or
+int32 truncation. A compute001569 instead calls real hull support001496 with
+(direction,null pose), storing the returned polygon index byte.
+
+Authoritative Capstone manifest (SHA256
+869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0)
+records001583 at2ea70 as one byte `c3`, `ret` with no stack argument.
+Init001558 loads ecx from its actual map receiver then calls table slot3 at2e533
+without pushes. The ordinary typed scalar no-op reads/writes nothing; the
+original raw byte remains in the backend1 body. It is not an assumed stub.
+Cube magnitudes compare unsigned words with strict y>x, then z>selected;
+all-axis ties choose x, y/z ties choose y; selected sign gives axis*2+sign.
+Init even faces use -1, odd faces +1 (do not reverse that based on lookup).
+B has separate live-direction facing and copied-direction denominator term
+orders, an open (-1e-7,+1e-7) exclusion and binary32 winning-distance stores.
+C has separate unrolled yx+z, xz+y, yz+x, yz+x and tail xz+y orders, strict
+winning comparisons against narrowed minima/negative maxima.
+
+No remaining direct dependency blocker exists in this family. Twelve polygon
+slots and their actual hull+64 graph owner/centroid/map integration, contacts,
+Geometry inflated-fan and PMap/OPCODE model/RayAABB acceptance remain later gates.
+Extreme/nonfinite subdivision probes calculate private lookup indices only;
+they establish neither allocation support nor safe sample-array dereferences.

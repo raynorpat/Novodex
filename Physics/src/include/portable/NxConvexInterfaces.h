@@ -48,4 +48,34 @@ void nxIceVectorConstruct(void* array, NxU32 size, NxU32 count, NxHullElementCon
 bool nxIceAddUniqueAxis(IceCore::Container* axes, const IceMaths::Point* axis);
 IceCore::Container& nxIceContainerAddPoint(IceCore::Container* container, const NxU32* words);
 
+// Support-map001550..001589. Actual table slots: deleting destructor,
+// allocate, compute(sample, direction), finish. No implicit scratch survives
+// a call; samples are owned SDK allocations, the hull/source is borrowed.
+struct IceSupportMap;
+typedef IceSupportMap* (*NxSupportMapDeleteSlot)(IceSupportMap*, NxU32 flags);
+typedef bool (*NxSupportMapAllocateSlot)(IceSupportMap*);
+typedef bool (*NxSupportMapComputeSlot)(IceSupportMap*, NxU32 sample, const IceMaths::Point* direction);
+typedef void (*NxSupportMapFinishSlot)(IceSupportMap*);
+NxU32 nxSupportMapCubeFace(const IceMaths::Point* direction, float* u, float* v);
+void* nxSupportMapBaseConstruct(IceSupportMap* map);
+void nxSupportMapBaseTable(IceSupportMap* map);
+NxU32 nxSupportMapLookup(const IceSupportMap* map, const IceMaths::Point* direction);
+bool nxSupportMapInit(IceSupportMap* map, NxU32 subdiv);
+IceSupportMap* nxSupportMapHullConstruct(IceSupportMap* map, ConvexHull* hull);
+IceSupportMap* nxSupportMapPlaneConstruct(IceSupportMap* map, ConvexHull* hull);
+IceSupportMap* nxSupportMapVertexConstruct(IceSupportMap* map, const ConvexHull* source);
+IceSupportMap* nxSupportMapBaseDelete(IceSupportMap* map, NxU32 flags);
+bool nxSupportMapHullAllocate(IceSupportMap* map);
+bool nxSupportMapHullCompute(IceSupportMap* map, NxU32 sample, const IceMaths::Point* direction);
+bool nxSupportMapPlaneCompute(IceSupportMap* map, NxU32 sample, const IceMaths::Point* direction);
+void nxSupportMapVertexRelease(IceSupportMap* map);
+bool nxSupportMapVertexAllocate(IceSupportMap* map);
+bool nxSupportMapVertexCompute(IceSupportMap* map, NxU32 sample, const IceMaths::Point* direction);
+// Capstone's authoritative2ea70 is one bytec3/ret; init calls slot3 with
+// receiver inecx and no stack arguments. It reads/writes no receiver state.
+void nxSupportMapNoop(IceSupportMap* map);
+IceSupportMap* nxSupportMapHullDelete(IceSupportMap* map, NxU32 flags);
+IceSupportMap* nxSupportMapPlaneDelete(IceSupportMap* map, NxU32 flags);
+IceSupportMap* nxSupportMapVertexDelete(IceSupportMap* map, NxU32 flags);
+
 #endif

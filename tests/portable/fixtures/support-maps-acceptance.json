@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "capture": "support-maps-domain-x87.nxpf",
+  "fixture_sha256": "b94cdff63a330273bdc8636100ae0017c93134087cbad53e9b0539bf477c2687",
+  "provenance_kind": "reconstructed-reference",
+  "reference_revision": "e4c798188ac00de0498192c374951d0ca5af7c23",
+  "controller_approval": "2026-10-09 controller explicitly approved absolute0/relative0 exact outputs after final249group measurement",
+  "observations": 42376,
+  "groups": 249,
+  "source_snapshots": "support-maps-domain-x87-snapshots.json",
+  "current_consumer_sha256": "41ce9040000842aacbf7d78f317632bcc885f38f4676500bf69c80bca8c81899",
+  "budgets": {
+    "cube_coordinate": {
+      "units": "dimensionless ratios",
+      "absolute": 0,
+      "relative": 0,
+      "measured_maxabsolute": 0,
+      "measured_maxrelative": 0,
+      "word_equality": true
+    },
+    "map_outputs": {
+      "units": "integer indices/counts/boolean/ownership/table/allocator canaries",
+      "word_equality": true
+    }
+  },
+  "nonfinite_auxiliary": {
+    "units": "binary32 cube coordinate words",
+    "current_Win32_word_equality": true,
+    "semantic_classes_checked_independently": true,
+    "future_C_standard_NaN_payload_guarantee": false
+  },
+  "integer_conversion": {
+    "inputs": "20 literal binary64 words",
+    "policy": "nearest-even qword then signed low32; invalid0",
+    "expected_words_independently_checked": true
+  },
+  "integrated_domain": {
+    "meshes": "8 literal correctly oriented cube/tetra hulls; identity/nonuniform2:.5:1.5/shear/decimal shear plus translation",
+    "coordinate_bound": [
+      -3,
+      6
+    ],
+    "subdivisions": [
+      0,
+      1,
+      2,
+      3,
+      5,
+      8
+    ],
+    "source_types": "actual ConvexHull/HullPolygon/Valencies/IceSupportMap",
+    "tables": [
+      "A",
+      "B",
+      "C"
+    ],
+    "coverage": "actual lazy A allocate/B compute, genuine function-pointer slots, constructors/noop/ownership/flags0,1,2,3, first/second allocation failure, repeated overwritten allocations, source-count256 rejection, graph every start/increasing stamps/canaries"
+  },
+  "direct_vertex_domain": {
+    "counts": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      255
+    ],
+    "coordinate_bound": [
+      -16777216,
+      16777216
+    ],
+    "inputs": "literal cancellation cloud/decimals/collinear/coincident/signedzero, literal direction words, sample-canaries; over255 allocation failure without vertex reads"
+  },
+  "private_cube_lookup_domain": {
+    "directions": 43,
+    "inputs": "literal axes/sign/ties/adjacentface/samplehalfindices/decimal/signedzero/s-qNaN/inf/subnormal/extrema",
+    "subdivision_words": [
+      "00000000",
+      "00000001",
+      "00000002",
+      "00000003",
+      "00000004",
+      "00000005",
+      "00000008",
+      "00000011",
+      "7fffffff",
+      "80000000",
+      "ffffffff"
+    ],
+    "no_extreme_or_nonfinite_sample_array_dereference": true,
+    "does_not_establish_full_allocation_support": true
+  },
+  "closure": "complete IceSupportMaps001550..001589 including001560; real hull/topology/vendor/allocator/graph dependencies; no direct blocker",
+  "compute_false_branch": "unreachable with actual A/B/C compute slots, which always return true; no substitute callback",
+  "remaining": "12polygon slots and actual hull+64 graph owner/centroid, contacts, inflated fan, PMap/OPCODE model/RayAABB, SDK/FPU and native64 layout",
+  "toolchain_scope": "Win32 MSVC19.51 Release/Debug and compatible clang-cl22.1.8; no native64/otherOS/performance claim",
+  "measurements": {
+    "exact_differences": 0,
+    "coordinate_differences": 0,
+    "coordinate_max_absolute": 0,
+    "coordinate_max_relative": 0,
+    "failures": 0
+  },
+  "current_source_sha256": {
+    "Physics/src/IceSupportMaps.cpp": "4387cd9cf6c06f59e2eb93b61e07505f5d74a2752b6c9c24c4e3a75be0ea0745",
+    "Physics/src/portable/IceSupportMapsScalar.inl": "ed3486f45aff2be32e04902e96d984f2f4d84d9f934c0afe6fb10bf519bc179b",
+    "Physics/src/include/IceSupportMaps.h": "7aed8fea804a14cd3085efbc65d38f7bcf5f27434a764bdd97430bc1405489a1",
+    "Physics/src/include/portable/NxConvexInterfaces.h": "ed0586115cf334c4b3e60eeae76951cd158e266d4e2d574587d3255508baa74f",
+    "tests/portable/SupportMapTests.cpp": "41ce9040000842aacbf7d78f317632bcc885f38f4676500bf69c80bca8c81899",
+    "tests/portable/SupportMapDomainInputs.h": "20e7cf461956a5048d0a6014a622a7ff5d015dbd2fcf387f9a162d57d31d88a1",
+    "tests/portable/SupportMapTargets.cmake": "80093648b34563fa9e55a11b346824d5cb96b963d247ccb6a2841324dbea91b4"
+  },
+  "verification": {
+    "Win32 MSVC Release": "15/15 standalone; supportmaps exact249groups/42376words",
+    "Win32 MSVC Debug": "1/1 focused; all map outputs exact",
+    "Win32 clang-cl22.1.8 Release": "1/1 focused; all map outputs exact",
+    "legacy": "116families/2615055words/47layouts,0candidate mismatches/0layoutfailures,digest e2a266c1; Collision0mismatches",
+    "source": "retained backend1 source/header and4tables exact; upstream/prior captures untouched;22snapshots exact",
+    "guard": "full migration expected rejection"
+  },
+  "capture_consumer_difference": "After protected capture, current consumer adds independent semantic nonfinite/zero-conversion/noop assertions and conventional formatting; no emitted observation changed. Current reference reproduces complete fixture bytes."
+}
