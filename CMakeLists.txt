@@ -870,11 +870,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_compile_definitions(NxPhysicsInternalTests PRIVATE NX_PHYSICS_DLL=1 NX_TEST_REAL_NARROW_PHASE=1)
 	target_link_libraries(NxPhysicsInternalTests NxFoundation NxOpcode NxQhull)
 
-	# The Phase 5 object-layout gate. RED on purpose until Tasks 2 and 3
-	# transcribe the object-model classes: it pins vtable identity, the
-	# collision-object constructor bytes and the owner accessor against the
-	# pinned DLL so the layouts Tasks 2 and 3 write already have something
-	# failing for them. See evidence/phase5-object-model.md.
+	# Phase 5 object-layout and shape-vtable differentials. They pin the
+	# reconstructed object families, constructor bytes, owner accessors, and
+	# deleting-destructor behavior against the shipped DLL. See
+	# evidence/phase5-object-model.md.
 	add_executable(NxPhysicsObjectLayoutTests tests/PhysicsObjectLayoutTests.cpp
 		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/Containers.cpp
 		tests/PhysicsObjectModelSceneStubs.cpp
