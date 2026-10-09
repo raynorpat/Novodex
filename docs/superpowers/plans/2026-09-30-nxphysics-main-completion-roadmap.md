@@ -1515,3 +1515,8 @@ The public convex-mesh cooking differential is exact on current mainline (`NxPhy
 
 - `phys_fn_004011` (`SceneDump::tripleText`) and `phys_fn_004013` (`SceneDump::motorText`) are independently mutation-falsified through the registered `NxPhysicsCoreDumpTests` staged-pair differential. Constant-return mutants change the transcript by 30 and 20 bytes, respectively; each restored differential is exact.
 - Phase 6 now has 47 closed function rows and 386 deferred function rows. No public Physics headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-coredump-004011-triple-text.md` and `docs/reconstruction/novodex-physics/evidence/phase6-coredump-004013-motor-text.md`.
+
+### Continuation — core-dump joint-line writer mutation closure (2026-10-09)
+
+- `phys_fn_004015` (`SceneDump::writeJointLine`) is mutation-falsified through the registered `NxPhysicsCoreDumpTests` staged-pair differential. Replacing the function with a no-op changes the transcript by 3,922 bytes; the restored differential is exact.
+- Phase 6 now has 48 closed function rows and 385 deferred function rows. No public Physics headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-coredump-004015-write-joint-line.md`.

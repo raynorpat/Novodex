@@ -9586,3 +9586,8 @@ Evidence index: phys_fn_004011 mutation detected at stdout_delta=30; restored co
 
 NxPhysicsCoreDumpTests caught replacing SceneDump::motorText output with a constant: both processes exited zero, stderr matched exactly, stdout_delta=20. The restored control returned stdout_delta=0. Detailed evidence: `evidence/phase6-coredump-004013-motor-text.md`.
 Evidence index: phys_fn_004013 mutation detected at stdout_delta=20; restored control stdout_delta=0.
+
+## Phase 6 closure measurement — joint-line writer (phys_fn_004015)
+
+The registered NxPhysicsCoreDumpTests differential caught replacing SceneDump::writeJointLine with a no-op: both processes exited zero, stderr matched exactly, and stdout_delta=3922. The restored control returned stdout_delta=0. Detailed evidence: `evidence/phase6-coredump-004015-write-joint-line.md`.
+Evidence index: phys_fn_004015 no-op mutation detected at stdout_delta=3922; restored control stdout_delta=0.
