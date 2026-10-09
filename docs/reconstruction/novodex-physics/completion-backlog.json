@@ -95,11 +95,11 @@
       },
       "6": {
         "phase": 6,
-        "closed_rows": 35,
-        "deferred_rows": 398,
+        "closed_rows": 36,
+        "deferred_rows": 397,
         "deferred_reasons": {
           "not_reconstructed_in_phase": 25,
-          "reconstructed_not_falsified": 373
+          "reconstructed_not_falsified": 372
         }
       },
       "7": {
@@ -170,8 +170,8 @@
         "rows_with_unresolved_indirect_calls": 247,
         "by_state": {
           "discovered": 21,
-          "dynamically_gated": 35,
-          "reconstructed": 377
+          "dynamically_gated": 36,
+          "reconstructed": 376
         }
       },
       "7": {
@@ -168962,7 +168962,7 @@
       "size": 59,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_003977",
       "implementation": {
         "path": "Physics/src/core/SpringAndDamperEffector.cpp",
@@ -168977,7 +168977,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsEffectorTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -169016,22 +169016,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsEffectorTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_003977",
         "rva": "0x0008f6c0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -230927,7 +230927,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "35c7e6d35cc72d16dde15a273139a9db7ae941306e9122e3205aa3fc25a986b0",
+    "inventory_sha256": "8688162dff79c823d51c36c9998db4c9c6b66ed3c546f95b62c229dd0a71355c",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
@@ -230936,7 +230936,7 @@
       "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "07216a93b627ff11ae142e2cdd6f82f7e2d77cc067b2c89e74d8393fcc388e3d",
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "054f225782b71480caf597e24b5975c27ed39cb26a7309680284aa94119da440",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "cf95bb578c2e17a06652396b19a693e69124b663f8d70db68e4828a9713731f5",
-      "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "06c857ab80bda45c1b3de3e521485c516725c30baf89d23a0f4cd120c1ba3ade",
+      "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "344255737a548f60f1105d57f19855845d062c6ee677c8a47a8f7b8295a00558",
       "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "41495a440a88de6a23ce6ff9ddb32e03cb19f9e23949f1bd3282cea436d173ad"
     }
   }

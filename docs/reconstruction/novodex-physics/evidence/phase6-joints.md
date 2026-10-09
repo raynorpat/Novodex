@@ -9526,3 +9526,8 @@ For row `phys_fn_003975`, In a throwaway git archive, changed SpringAndDamperEff
 ## Phase 6 closure measurement — spring-force calculation (phys_fn_003970)
 
 For row `phys_fn_003970`, In a throwaway git archive, changed SpringAndDamperEffector::springForce to return zero for every distance. The registered NxPhysicsSimulationTests staged-pair differential exercises the public effector over two real simulation steps; its setup has a world anchor 2.0 units from the body and a nonzero spring force. The oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=3702 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003970-spring-force.md`.
+
+
+## Phase 6 closure measurement — SpringAndDamperEffector destructor (phys_fn_003977)
+
+For row `phys_fn_003977`, In a throwaway git archive, changed SpringAndDamperEffector::~SpringAndDamperEffector to skip deleting its public Np wrapper. The registered NxPhysicsEffectorTests staged-pair differential exercises effector release, release/create cycles, and scene cleanup; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=76 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003977-destructor.md`.
