@@ -16,15 +16,16 @@ typedef the harness writes. It is the instrument that found
 Scope: reads only. It never edits the harness.
 """
 
+import argparse
 import json
 import re
 import sys
+from pathlib import Path
 
 import capstone
 
-HARNESS = r'D:\github\Novodex\tests\PhysicsObjectLayoutTests.cpp'
-DLL = r'D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll'
-PE = r'D:\github\Novodex\docs\reconstruction\novodex-physics\oracle\pe.json'
+DEFAULT_REPO_ROOT = Path(__file__).resolve().parents[4]
+DEFAULT_ORACLE_ROOT = Path(r'D:\FlamingEnt__\Unreal_3\Binaries')
 
 TD = re.compile(
     r'typedef\s+[\w\s\*]+\(\s*(__cdecl|__stdcall|__fastcall|__thiscall)\s*\*\s*(\w+)\s*\)'
@@ -32,20 +33,164 @@ TD = re.compile(
 CAST = re.compile(r'reinterpret_cast<(\w+)>\s*\(\s*base\s*\+\s*(0x[0-9a-fA-F]+)\s*\)')
 
 
-def row_cleanup(code, md, rva):
-    """Bytes the row's own terminating `ret` pops, or None if not decidable."""
-    for ins in md.disasm(code, 0x10000000 + rva):
-        if ins.mnemonic == 'ret':
-            return int(ins.op_str, 0) if ins.op_str else 0
-        if ins.mnemonic == 'jmp':
+def bounded_switch_targets(ins, code, md, rva, raw, sections, image_base):
+    """Resolve a simple absolute x86 switch only when its index is bounded.
+
+    Accepted shape: `cmp index, limit; ja default; jmp [index*4 + VA]`.
+    This proves the table has exactly limit+1 reachable entries. Every entry
+    must point back into this function row; all other indirect jumps are left
+    undecidable.
+    """
+    start = 0x10000000 + rva
+    end = start + len(code)
+    instructions = list(md.disasm(code, start))
+    position = next((i for i, item in enumerate(instructions)
+                     if item.address == ins.address), None)
+    if position is None or position < 2:
+        return None
+    compare, bound = instructions[position - 2:position]
+    if (compare.mnemonic != 'cmp' or bound.mnemonic != 'ja' or
+            len(compare.operands) != 2 or len(bound.operands) != 1 or
+            compare.operands[0].type != capstone.x86.X86_OP_REG or
+            compare.operands[1].type != capstone.x86.X86_OP_IMM or
+            bound.operands[0].type != capstone.x86.X86_OP_IMM or
+            bound.address + bound.size != ins.address):
+        return None
+
+    operand = ins.operands[0] if ins.operands else None
+    if (operand is None or operand.type != capstone.x86.X86_OP_MEM or
+            operand.mem.base != capstone.x86.X86_REG_INVALID or
+            operand.mem.index != compare.operands[0].reg or
+            operand.mem.scale != 4):
+        return None
+    count = compare.operands[1].imm + 1
+    if count <= 0 or count > 256:
+        return None
+    table_va = operand.mem.disp
+    table_rva = table_va - image_base
+    table_offset = None
+    for section in sections:
+        if (section['rva'] <= table_rva and
+                table_rva + count * 4 <= section['rva'] + section['raw_size']):
+            table_offset = section['raw_offset'] + table_rva - section['rva']
+            break
+    if table_offset is None or table_offset + count * 4 > len(raw):
+        return None
+    targets = []
+    for index in range(count):
+        target_va = int.from_bytes(raw[table_offset + index * 4:
+                                       table_offset + index * 4 + 4], 'little')
+        target = 0x10000000 + target_va - image_base
+        if not start <= target < end:
             return None
-    return None
+        targets.append(target)
+    return targets
 
 
-def main():
-    pe = json.load(open(PE))
+def row_cleanup(code, md, rva, function_size=None, jump_table_reader=None):
+    """Return a row's common callee cleanup across reachable return paths.
+
+    The byte range must be bounded to the inventory's exact function size.
+    Direct branches are followed only while their targets remain inside that
+    range. Indirect branches and external tail calls remain undecidable.
+    """
+    if function_size is not None:
+        code = code[:function_size]
+    md.detail = True
+    start = 0x10000000 + rva
+    end = start + len(code)
+    pending = [start]
+    visited = set()
+    cleanups = set()
+    while pending:
+        address = pending.pop()
+        if address in visited:
+            continue
+        if address < start or address >= end:
+            return None
+        offset = address - start
+        ins = next(md.disasm(code[offset:], address, count=1), None)
+        if ins is None or ins.address != address:
+            return None
+        visited.add(address)
+        next_address = address + ins.size
+
+        if ins.mnemonic in ('ret', 'retf'):
+            cleanups.add(int(ins.op_str, 0) if ins.op_str else 0)
+            continue
+        if ins.mnemonic == 'jmp':
+            if ins.operands and ins.operands[0].type == capstone.x86.X86_OP_IMM:
+                target = ins.operands[0].imm
+                if not start <= target < end:
+                    return None
+                pending.append(target)
+                continue
+            targets = jump_table_reader(ins) if jump_table_reader else None
+            if not targets or any(not start <= target < end for target in targets):
+                return None
+            pending.extend(targets)
+            continue
+        if ins.group(capstone.CS_GRP_JUMP):
+            if not ins.operands or ins.operands[0].type != capstone.x86.X86_OP_IMM:
+                return None
+            target = ins.operands[0].imm
+            if not start <= target < end or next_address >= end:
+                return None
+            pending.extend((target, next_address))
+            continue
+        if ins.mnemonic in ('int3', 'ud2', 'hlt'):
+            continue
+        if next_address >= end:
+            return None
+        pending.append(next_address)
+
+    if not cleanups or len(cleanups) != 1:
+        return None
+    return cleanups.pop()
+
+
+def expected_cleanup(conv, nargs):
+    """Argument bytes popped by the callee for a 32-bit function pointer.
+
+    `nargs` counts the parameters written in the typedef, including an
+    explicit `this` placeholder for `__thiscall` and register placeholders
+    for `__fastcall`. The first two fastcall arguments use ECX and EDX.
+    """
+    if conv == '__cdecl':
+        return 0
+    if conv == '__stdcall':
+        return 4 * nargs
+    if conv == '__fastcall':
+        return 4 * max(nargs - 2, 0)
+    if conv == '__thiscall':
+        return 4 * max(nargs - 1, 0)
+    raise ValueError('unsupported x86 calling convention: %s' % conv)
+
+
+def resolve_inputs(repo_root=None, oracle_root=None):
+    repo = Path(repo_root) if repo_root is not None else DEFAULT_REPO_ROOT
+    oracle = Path(oracle_root) if oracle_root is not None else DEFAULT_ORACLE_ROOT
+    return (
+        repo / 'tests' / 'PhysicsObjectLayoutTests.cpp',
+        oracle / 'NxPhysics.dll',
+        repo / 'docs' / 'reconstruction' / 'novodex-physics' / 'oracle' / 'pe.json',
+    )
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--repo-root', type=Path, default=DEFAULT_REPO_ROOT)
+    parser.add_argument('--oracle-root', type=Path, default=DEFAULT_ORACLE_ROOT)
+    args = parser.parse_args(argv)
+    harness, dll, pe_path = resolve_inputs(args.repo_root, args.oracle_root)
+
+    pe = json.load(open(pe_path))
     secs = pe['sections']
-    raw = open(DLL, 'rb').read()
+    raw = open(dll, 'rb').read()
+    inventory_path = args.repo_root / 'docs' / 'reconstruction' / 'novodex-physics' / 'inventory.json'
+    inventory = json.load(open(inventory_path, encoding='utf-8'))
+    function_sizes = {int(row['rva'], 16): row['size']
+                      for row in inventory['functions']}
 
     def rva_to_off(rva):
         for s in secs:
@@ -54,11 +199,12 @@ def main():
         return None
 
     md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
+    image_base = pe['image']['image_base']
 
     # The layout translation unit is committed as UTF-16LE with a BOM (it is the
     # only test source that is), so decode by its own BOM rather than assuming
     # UTF-8.
-    rawtext = open(HARNESS, 'rb').read()
+    rawtext = open(harness, 'rb').read()
     if rawtext[:2] in (b'\xff\xfe', b'\xfe\xff'):
         text = rawtext.decode('utf-16')
     else:
@@ -108,16 +254,19 @@ def main():
             if off is None:
                 undecided.append((name, rva, uline, 'no section'))
                 continue
-            pops = row_cleanup(raw[off:off + 0x1200], md, rva)
+            function_size = function_sizes.get(rva)
+            if function_size is None:
+                undecided.append((name, rva, uline, 'no inventory row'))
+                continue
+            code = raw[off:off + function_size]
+            table_reader = lambda ins: bounded_switch_targets(
+                ins, code, md, rva, raw, secs, image_base)
+            pops = row_cleanup(code, md, rva, function_size=function_size,
+                               jump_table_reader=table_reader)
             if pops is None:
                 undecided.append((name, rva, uline, 'row not decidable'))
                 continue
-            if conv in ('__cdecl', '__fastcall'):
-                expected = 0
-            elif conv == '__stdcall':
-                expected = 4 * nargs
-            else:  # __thiscall: the receiver travels in ECX
-                expected = 4 * max(nargs - 1, 0)
+            expected = expected_cleanup(conv, nargs)
             if pops != expected:
                 mismatches.append((name, rva, conv, pops, expected, gov[0], uline))
 

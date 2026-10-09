@@ -29,7 +29,7 @@ COMMAND_PATTERN = re.compile(
 # What each phase in the plans must resolve to from gate_targets.ps1. A phase
 # with nothing registered resolves to the empty list and skips.
 PHASE_TARGETS = {
-    "2": "NxPhysicsExportTests,NxPhysicsSDKTests,NxPhysicsCoreClusterTests",
+    "2": "NxPhysicsExportTests,NxPhysicsSDKTests,NxPhysicsCoreClusterTests,NxPhysicsTriangleMeshReleaseLockTests",
     "3": "NxPhysicsBodyCreationTests,NxPhysicsGeometryTests,NxPhysicsKernelFuzzTests,NxPhysicsSDKTests,NxPhysicsPopulatedSceneTeardownTests",
     "4": "NxPhysicsConvexMeshTests,NxPhysicsTriangleMeshApiTests,NxPhysicsPMapResolution80Tests",
     "5": "NxPhysicsActorLifecycleTests,NxPhysicsDynamicFirstTests,NxPhysicsEmptySceneTests,NxPhysicsActorNameTests,NxPhysicsActorMetadataTests,NxPhysicsActorBodyFlagTests,NxPhysicsActorDynamicsTests,NxPhysicsActorDynamicSetterTests,NxPhysicsActorMomentumTests,NxPhysicsActorForceTests,NxPhysicsActorCMassTests,NxPhysicsActorMassTests,NxPhysicsActorShapeMutationTests,NxPhysicsActorReleaseShapeProbeTests,NxPhysicsBodyCreationTests,NxPhysicsSimulationTests,NxPhysicsMeshSimulationTests,NxPhysicsConvexMeshTests,NxPhysicsSceneRaycastTests,NxPhysicsControllerSweepFaceTests",
