@@ -4013,10 +4013,12 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "reconstructed": 17
+    "dynamically_gated": 2,
+    "reconstructed": 15
    },
    "bytes": {
-    "reconstructed": 1297
+    "dynamically_gated": 78,
+    "reconstructed": 1219
    },
    "phases": {
     "6": 17

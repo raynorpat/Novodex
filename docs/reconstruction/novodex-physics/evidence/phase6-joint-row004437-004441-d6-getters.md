@@ -1,0 +1,11 @@
+# Phase 6 closures: D6 global joint getters (`phys_fn_004437`, `phys_fn_004441`)
+
+`phys_fn_004437` at RVA `0x000b0670` is the D6 `getGlobalAnchor` wrapper; `phys_fn_004441` at RVA `0x000b0700` is the D6 `getGlobalAxis` wrapper. Both are implemented by the shared `NpJointShared` template and exercised through the D6 public interface in the registered `NxPhysicsJointStagedPairTests` target.
+
+From source revision `7aa82194`, the isolated Win32 Release candidate at `D:\github\Novodex\build\phase6-joint-004095-20261009` first passed the D6 fixture exactly. Its index-3 anchor was `40000000.40800000.00000000`, and its axis was `3f13cd3a.3f13cd3a.3f13cd3a`; the complete target reported both exits zero, `stdout_delta=0`, and exact stderr. The baseline candidate DLL SHA-256 was `513ef5f352a01d967ea72ffbee840eae1c203dbf27b5b2a821bce0e1f8cf60e2`.
+
+For `phys_fn_004437`, a temporary mutation added `1.0f` to the returned X anchor only when the internal joint type was D6. The D6 output changed from `40000000` to `40400000`; the staged-pair target rejected the mutant with both exits zero, `stdout_delta=24`, and exact stderr. Mutation DLL SHA-256: `eae33d930762a5193f2b82820ac933451995573b22d44ae8191a231dc87389b6`. After restoring the source and rebuilding, the full target returned to `stdout_delta=0`, both exits zero, and exact stderr; restored DLL SHA-256: `e47af91a50a6e2312ed10d90e163139e549e53fd5f5fb32fe4df31450b39c125`.
+
+For `phys_fn_004441`, the same isolated mutation was applied to the D6 global-axis X output. It changed from `3f13cd3a` to `3fc9e69d`; the staged-pair target rejected the mutant with both exits zero, `stdout_delta=24`, and exact stderr. Mutation DLL SHA-256: `ffa9c1c71b5f146a0358f093797a887324ad53c098ddea03d1ba5cbaba798945`. After restoring the source and rebuilding, the target returned to `stdout_delta=0`, both exits zero, and exact stderr; restored DLL SHA-256: `a2de6fd7200368f116cdda3568217e569741b787bbf351012f9c1e00b720633a`.
+
+All five runner logs are retained outside the repository under `D:\github\Novodex\build\phase6-joint-004095-20261009`: `joint-staged-baseline.log`, `joint-004437-mutation.log`, `joint-004437-restored.log`, `joint-004441-mutation.log`, and `joint-004441-restored.log`. Both mutations were removed before their restored control builds.

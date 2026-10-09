@@ -9792,3 +9792,12 @@ Measurement index: `phys_fn_004076 stdout_delta=2`.
 The registered core-dump fixture releases three joints that own limit planes and reports the outstanding allocator count after scene release. In a clean isolated Win32 Release build at mainline commit `36ba492d`, omitting the `purgeLimitPlanes()` call in `Joint::~Joint` for `phys_fn_004095` changed the released-scene count from 14 to 17. `NxPhysicsCoreDumpTests` caught the destructor mutation with both processes exiting zero, `stdout_delta=2`, and exact stderr. Rebuilding the restored source returned the count to 14/14 and the staged differential to `stdout_delta=0`, both exits zero, and exact stderr.
 
 Detailed commands, DLL hashes, and raw log paths: `evidence/phase6-joint-row004095-destructor.md`.
+
+
+## Phase 6 closure measurements — D6 global getters (phys_fn_004437, phys_fn_004441)
+
+The registered `NxPhysicsJointStagedPairTests` public D6 case independently reads the global anchor and axis. Adding 1.0 to D6 anchor X in `phys_fn_004437` changed its word from `40000000` to `40400000`; the candidate was caught with both exits zero, `stdout_delta=24`, and exact stderr. The restored control was exact (`stdout_delta=0`).
+
+Adding 1.0 to D6 axis X in `phys_fn_004441` changed its word from `3f13cd3a` to `3fc9e69d`; the candidate was caught with both exits zero, `stdout_delta=24`, and exact stderr. The restored control was exact (`stdout_delta=0`).
+
+Detailed DLL hashes and raw log paths: `evidence/phase6-joint-row004437-004441-d6-getters.md`.
