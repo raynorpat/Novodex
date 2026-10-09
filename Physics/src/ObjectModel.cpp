@@ -4959,14 +4959,10 @@ void PlaneShape::nxPlaneSetEquation(const float* normal, float distance)
 //   array at +0x78 (grown through 0x100b4de0); then +0xdc |= 2; then, when
 //   the prunable (+0xa4) has a handle (+0x28 != 0xffff) and a pruning type
 //   (+0x2a) below 4, its +8 loses bit 2 and the scene's pruner for that type
-//   ([scene+0x640 + 4 type]) gets slot 3 with the prunable. The candidate
-//   makes that call (Pruner::UpdateObject, scene-raycast Task 3). The +0xa0 array
-//   append is not reproduced: since NpActor.cpp completion Task 4 every
-//   Scene root carries the pruning collection at +0xa0 (001943), but no
-//   candidate path reaches the arm -- +0xdc starts at 6 (001273) and every
-//   call with a nonzero argument sets bit 2, and nothing in the candidate
-//   clears it -- and the add paths (000531, 000036) run slot 6 before the
-//   prunable is inserted, so they do not reach the slot-3 call either.
+//   ([scene+0x640 + 4 type]) gets slot 3 with the prunable. When +0xdc bit 1
+//   is clear and +0xa0 names the pruning collection, append this shape to its
+//   SdkContainer at +0x78 (growing through 004840 when full), then set bit 1.
+//   The owned list/update arm is directly exercised by the object-layout gate.
 // phys_fn_001315 stores its owner-composed rotation through x87 fstp. During
 // simulateFrame the oracle sets x87 to chop; SSE2 double-to-float casts follow
 // MXCSR instead. Keep this conversion local to the owner-update implementation
@@ -5080,7 +5076,19 @@ void ShapeBase::nxApplyOwnerUpdate(unsigned flags)
 		}
 	if(flags & 0xffu)
 		{
-		mHalfwordDC |= 2u;
+		// 0x26a36-0x26a6f: a pruning collection owns a root list at +0x78.
+		// Append this shape only while its +0xdc bit 1 is clear, then set it.
+		// If the collection pointer is null the listing skips both operations.
+		if((mHalfwordDC & 2u) == 0 && mWordA0 != 0)
+			{
+			SdkContainer* list = reinterpret_cast<SdkContainer*>(
+				reinterpret_cast<unsigned char*>(static_cast<size_t>(mWordA0)) + 0x78);
+			if(list->mCount == list->mCapacity)
+				list->resize(1);
+			list->mEntries[list->mCount] = reinterpret_cast<NxU32>(this);
+			++list->mCount;
+			mHalfwordDC |= 2u;
+			}
 		if(scene && mPrunable.mHandle != 0xffffu &&
 			mPrunable.mPruningType < 4u)
 			{

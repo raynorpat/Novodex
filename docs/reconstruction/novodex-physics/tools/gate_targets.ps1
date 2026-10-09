@@ -5099,6 +5099,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'dtors2 plane=phys_fn_001263 digest=7ac6fe28 mesh=phys_fn_001399 digest=b3c6ab70',
         'meshwords44 row=phys_fn_001389 out=deadbeef.cafebabe.12345678.00000000.00000000.00000000',
         'ownerupd row=phys_fn_001315 noop=1',
+        'ownerupd pruning oracle_ok=1 candidate_ok=1 oracle_list=1/00315a51 candidate_list=1/00315a51 oracle_update=1/00315a51/00000000 candidate_update=1/00315a51/00000000 mismatches=0',
         'capload row=phys_fn_000989 rad=3fc00000',
         'planeload row=phys_fn_001265 ny=3f800000',
         'meshload row=phys_fn_001383 bound=1',
@@ -5679,7 +5680,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2611  # previous 2,608 plus the three audited indirect-tail ABI probes
+    '5' = 2612  # previous 2,611 plus the owner-update pruning differential
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths
@@ -5704,7 +5705,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1260  # previous 1,254 plus the six prismatic allocator lifecycle assertions
+    '6' = 1261  # registered Phase 6 coverage assertion count
                # previous 1238 plus the D6 public global-anchor readback
                # previous 1234 plus three contended D6 drive write-lock reports
                # previous 1233 plus the D6 contended drive-position write-lock report

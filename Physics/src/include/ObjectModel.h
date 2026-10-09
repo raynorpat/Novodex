@@ -345,7 +345,9 @@ class ShapeBase
 
 	//! BASE-table slot 6, phys_fn_001315 (0x000266a0): owner update.
 	//! For a detached shape (owner == null) this is a proven no-op that
-	//! returns immediately through the early exit at 0x00026abb.
+	//! returns immediately through the early exit at 0x00026abb. An owned update
+	//! composes the world pose and, when the pruning-list flag is clear, appends
+	//! this shape to its +0xa0 collection before dispatching Pruner slot 3.
 	void				nxApplyOwnerUpdate(unsigned flags);
 
 	//! The base dtor's owner arms (0x26bd0 body, 0x00026be1..0x00026c35):

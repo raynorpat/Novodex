@@ -24500,13 +24500,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/535",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3451",
-      "static_proof": "BASE slot 6 owner update: detached no-op, owned static/dynamic pose composition from body pose and shape+0x6c local pose, scene timestamp snapshot at +0x540, flag-4 pose mirror, flag-2 setting and pruner generation increment are transcribed. The optional +0xa0 list and other pruner paths remain open.",
-      "dynamic_proof": "Public setGlobalPosition probes match box world translation and a quarter-turn actor with a rotated/translated local shape pose, plus static and two-child group calls; row remains discovered for the untested owned branches.",
-      "notes": "Owned arms are partially reconstructed; do not close this row until optional list and pruner cases are driven."
+      "static_proof": "BASE slot 6 listing 0x266a0: detached owner exits; owned static and dynamic body poses are composed with shape+0x6c local pose; scene stamp, pose mirror, +0xa0 pruning-list append and +0xdc bit, prunable flag clear, and type-selected pruner slot-3 dispatch are transcribed in instruction order.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests differentially drives a crafted owned shape through the oracle entry and candidate method: both append shape ID 00315a51 once to the collection +0x78 list, set +0xdc to 2, clear Prunable flags to zero, and call pruner slot 3 once with the same shape and flags. Omitting the append/count increment yields oracle_list=1 and candidate_list=0; the registered Phase 5 gate requires the exact positive transcript. Public actor-pose fixtures also cover transformed poses and group-child updates. See evidence/phase3-owner-update-pruning-001315.md.",
+      "notes": "The owned pruning-list and pruner-update arm is now directly differentially driven and mutation-checked; allocator growth remains covered by the separately reconstructed SdkContainer resize row."
     },
     {
       "id": "phys_fn_001316",
