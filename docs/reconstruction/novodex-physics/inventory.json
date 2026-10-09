@@ -76710,13 +76710,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1551",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13638",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result) Trace taken on the pre-dc11888 build; see the header of evidence/unit-pilot-revolute-trace.txt.",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointStagedPairTests staged-pair matrix constructs all ten joint families from non-default descriptors and observes internal state and round-trips. An immediate-return mutation to Joint::loadFromDescBase removes base descriptor state and is caught with stdout_delta=2806, both exits zero and exact stderr; restored control is exact. See evidence/phase6-joint-row004121-load-desc.md.",
+      "notes": " The shared base descriptor loader is mutation-sensitive across the registered family matrix.",
       "implementation": "Physics/src/core/Joint.cpp"
     },
     {

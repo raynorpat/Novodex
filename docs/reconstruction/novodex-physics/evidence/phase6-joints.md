@@ -9921,3 +9921,8 @@ The public D6 staged-pair case observes the stored point returned by `setLimitPo
 ## Phase 6 closure measurement — joint break-event slot (`phys_fn_004111`)
 
 The registered `NxPhysicsJointSlotTests` case invokes `Joint::row004111` on a live support record and observes joint state and support flags. An immediate return is caught for `phys_fn_004111` with `stdout_delta=4`, both exits zero, and exact stderr; the restored control is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-joint-row004111-break-event.md`.
+
+
+## Phase 6 closure measurement — shared joint base descriptor loader (`phys_fn_004121`)
+
+The ten-family public staged-pair matrix creates joints from non-default descriptors and records internal state and descriptor round-trips. An immediate return in `Joint::loadFromDescBase` is caught for `phys_fn_004121` with `stdout_delta=2806`, both exits zero, and exact stderr; the restored control is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-joint-row004121-load-desc.md`.
