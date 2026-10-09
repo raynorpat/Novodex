@@ -9501,3 +9501,23 @@ For row `phys_fn_003960`, In a throwaway git archive, changed the constructor’
 ## Phase 6 closure measurement — SpringAndDamperEffector::setBodies (phys_fn_003962)
 
 For row `phys_fn_003962`, In a throwaway git archive, omitted the call to setBodyRecords from SpringAndDamperEffector::setBodies. NxPhysicsEffectorTests observes body pointers, observer lists, and anchor state; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=78 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003962-internal-set-bodies.md`.
+
+
+## Phase 6 closure measurement — SpringAndDamperEffector::setLinearSpring (phys_fn_003966)
+
+For row `phys_fn_003966`, In a throwaway git archive, changed SpringAndDamperEffector::setLinearSpring to store zero for mDistRelaxed. NxPhysicsEffectorTests observes internal spring parameters and then exercises the effector; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=76 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003966-set-linear-spring.md`.
+
+
+## Phase 6 closure measurement — SpringAndDamperEffector::setLinearDamper (phys_fn_003968)
+
+For row `phys_fn_003968`, In a throwaway git archive, changed SpringAndDamperEffector::setLinearDamper to store zero for mVelStretchSaturate. NxPhysicsEffectorTests observes internal damper parameters and then exercises the effector; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=76 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003968-set-linear-damper.md`.
+
+
+## Phase 6 closure measurement — SpringAndDamperEffector::getLinearSpring (phys_fn_003974)
+
+For row `phys_fn_003974`, In a throwaway git archive, changed SpringAndDamperEffector::getLinearSpring to return zero for distRelaxed. NxPhysicsEffectorTests observes the public spring getter outputs and exercises the effector; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=76 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003974-get-linear-spring.md`.
+
+
+## Phase 6 closure measurement — SpringAndDamperEffector::getLinearDamper (phys_fn_003975)
+
+For row `phys_fn_003975`, In a throwaway git archive, changed SpringAndDamperEffector::getLinearDamper to return zero for velStretchSaturate. NxPhysicsEffectorTests observes the public damper getter outputs and exercises the effector; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=76 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003975-get-linear-damper.md`.
