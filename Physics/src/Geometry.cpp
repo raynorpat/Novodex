@@ -646,7 +646,7 @@ bool NX_CALL_CONV NxRayTriIntersect(const NxVec3& orig, const NxVec3& dir,
 #endif
 
 // convex-mesh gap Task 2b (units/convex-mesh-gap-contract.md, sub-unit F): the
-// two not-started helpers among this file's exports.
+// private fan and slab helpers beside this file's exported kernels.
 
 // phys_fn_001708 (0x00036d90, 227 B)
 // A ray against a triangle fan given as `count` vertex indices: vertex 0 is the
@@ -658,6 +658,7 @@ bool NX_CALL_CONV NxRayTriIntersect(const NxVec3& orig, const NxVec3& dir,
 // count below 2 is an unsigned loop, as in the oracle. u and v land in the
 // caller's first two argument slots there; they are locals here.
 #ifndef NX_PHYSICS_GEOMETRY_KERNEL_ONLY
+#if NX_PHYSICS_USE_X87
 bool __cdecl NxRayInflatedTriangleFan(NxU32 count, const NxVec3* vertices, const NxU32* indices,
 	const NxRay* ray, NxReal* t)
 	{
@@ -691,6 +692,40 @@ bool __cdecl NxRayInflatedTriangleFan(NxU32 count, const NxVec3* vertices, const
 	while(remaining != 0);
 	return false;
 	}
+#else
+bool __cdecl NxRayInflatedTriangleFan(NxU32 count, const NxVec3* vertices, const NxU32* indices,
+    const NxRay* ray, NxReal* t)
+{
+    NxU32 remaining = count - 2;
+    if (remaining == 0)
+        return false;
+    const NxVec3& hub = vertices[indices[0]];
+    do
+    {
+        // The retained backend1 block above preserves its historical frame.
+        // Scalar code owns a real Triangle and transfers its Point coordinates
+        // through typed objects before calling the ordinary Geometry kernel.
+        IceMaths::Triangle triangle;
+        triangle.mVerts[0].Set(hub.x, hub.y, hub.z);
+        const NxVec3& second = vertices[indices[1]];
+        ++indices;
+        triangle.mVerts[1].Set(second.x, second.y, second.z);
+        const NxVec3& third = vertices[indices[1]];
+        triangle.mVerts[2].Set(third.x, third.y, third.z);
+        --remaining;
+        triangle.Inflate(0.02f, false);
+        const NxVec3 firstCorner(triangle.mVerts[0].x, triangle.mVerts[0].y, triangle.mVerts[0].z);
+        const NxVec3 secondCorner(triangle.mVerts[1].x, triangle.mVerts[1].y, triangle.mVerts[1].z);
+        const NxVec3 thirdCorner(triangle.mVerts[2].x, triangle.mVerts[2].y, triangle.mVerts[2].z);
+        float u;
+        float v;
+        if (NxRayTriIntersect(ray->orig, ray->dir, firstCorner, secondCorner, thirdCorner, *t, u, v, false))
+            return true;
+    }
+    while (remaining != 0);
+    return false;
+}
+#endif
 #endif // standalone kernel subset excludes the real vendor Inflate dependency
 
 // phys_fn_001730 (0x00038050, 61 B)

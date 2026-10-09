@@ -1,0 +1,1682 @@
+[
+  {
+    "source": "tests/portable/TriangleFanTests.cpp",
+    "source_sha256": "e55bf9fd9742b2bff05934a184ef4ae064a0fb617b371ef455a5b08eb32528bd",
+    "snapshot": "capture-source/triangle-fan-domain-x87-0-TriangleFanTests.cpp.gz",
+    "snapshot_sha256": "8bb8bcda675b625fb491af3cf749372c89baa5d1d423d48835cc921d6156146a"
+  },
+  {
+    "source": "tests/portable/TriangleFanDomainInputs.h",
+    "source_sha256": "b73d012c8f4c3e9d30e34ccfc345711131f3c287bd8ee90d72dcd6f4d3cd0152",
+    "snapshot": "capture-source/triangle-fan-domain-x87-1-TriangleFanDomainInputs.h.gz",
+    "snapshot_sha256": "2138f054e6a2a9a5838445fb5e605df3697942798938fd0e0dee92dd80289c66"
+  },
+  {
+    "source": "tests/portable/TriangleFanTargets.cmake",
+    "source_sha256": "52e16c6766d1e1db21eb76af270a2ac28a8a7567bf5254eb635533b831138599",
+    "snapshot": "capture-source/triangle-fan-domain-x87-2-TriangleFanTargets.cmake.gz",
+    "snapshot_sha256": "119ad9529b417cb165b9689250b3341e16ef83f656aafc9b32f7608051d3d3df"
+  },
+  {
+    "source": "tests/portable/CMakeLists.txt",
+    "source_sha256": "a2194732818fea15ce9d844b3ee9266f03ee06dcdf90b720dfb4a64016ea21d6",
+    "snapshot": "capture-source/triangle-fan-domain-x87-3-CMakeLists.txt.gz",
+    "snapshot_sha256": "7c87336dc3e65bd06a3d4b4daf0b048f596016c03c104fa8c334e8e1995d6b51"
+  },
+  {
+    "source": "tests/portable/IceTopologyTargets.cmake",
+    "source_sha256": "5b4ae5fe1d1ec22aa4d447f298fb5cf00f134f465cfe2c5580bcb1289a36df37",
+    "snapshot": "capture-source/triangle-fan-domain-x87-4-IceTopologyTargets.cmake.gz",
+    "snapshot_sha256": "b99252d2f6bb66370fe75436702f9bb847f1f99b57dfc0d6ad2c3c5c51bab0ea"
+  },
+  {
+    "source": "tests/portable/FixtureSupport.cpp",
+    "source_sha256": "a82e14334b142d396044310eb681711aca16f6d8d109ade257461bc46831cba9",
+    "snapshot": "capture-source/triangle-fan-domain-x87-5-FixtureSupport.cpp.gz",
+    "snapshot_sha256": "a2bcef71c35980bce1bda991969b62b5ec0460a1c338ff1992638d754d6842ad"
+  },
+  {
+    "source": "tests/portable/FixtureSupport.h",
+    "source_sha256": "e4243ec8d6c5089da14b3ba530894c6b9e5fec352f0d01c04f51a643d55bc691",
+    "snapshot": "capture-source/triangle-fan-domain-x87-6-FixtureSupport.h.gz",
+    "snapshot_sha256": "04e1386abf4a51d7e101ccb2f72df2002ca9b7debcabf01c23d4e4c0f0dfbdfe"
+  },
+  {
+    "source": "Physics/src/Geometry.cpp",
+    "source_sha256": "1cc4de628ad720e3461724871f3c1b83fca215d4da7a378c777c8279694dd5eb",
+    "snapshot": "capture-source/triangle-fan-domain-x87-7-Geometry.cpp.gz",
+    "snapshot_sha256": "4e7263aa1111d8d3d199b38c98c0412f8baf4226c385765a88f865faa6a4f487"
+  },
+  {
+    "source": "cmake/NxPhysicsBackend.cmake",
+    "source_sha256": "883676e8fecae7983d7f2efe5eb87111cd92ee3585dcb66bca05794d3e8db52b",
+    "snapshot": "capture-source/triangle-fan-domain-x87-8-NxPhysicsBackend.cmake.gz",
+    "snapshot_sha256": "0077fa45430675b98c97aa4671898f3eda6b417b581fa4683e8c9c2daa22aa73"
+  },
+  {
+    "source": "docs/reconstruction/novodex-physics/tools/capture_scalar_math.py",
+    "source_sha256": "3f1298c4b1294d1db6fb85f2cd26aadc5f3550ae9045641ea1185ba96919fe99",
+    "snapshot": "capture-source/triangle-fan-domain-x87-9-capture_scalar_math.py.gz",
+    "snapshot_sha256": "5b806908fcade136d9aa3fe65483e345a089357e0ba27ffeeb695dd638717119"
+  },
+  {
+    "source": "docs/reconstruction/novodex-physics/tools/capture_triangle_fan.py",
+    "source_sha256": "daee2f9e8fdb9179209284e9d29dc9a9a782eef89563b41194316b6dafb0f4df",
+    "snapshot": "capture-source/triangle-fan-domain-x87-10-capture_triangle_fan.py.gz",
+    "snapshot_sha256": "9be18aa29da8e688ff051a42cf721ffecb91838ad7bdfe9bd935d7d7ee0ab217"
+  },
+  {
+    "source": "docs/reconstruction/novodex-physics/tools/capture_opcode_model.py",
+    "source_sha256": "61de1c31376bb9b0b8de92c4f81bc3a00a6fe3617b75a15cecc8628c0563d366",
+    "snapshot": "capture-source/triangle-fan-domain-x87-11-capture_opcode_model.py.gz",
+    "snapshot_sha256": "5bb92fed6d74a6424ed03eafdaec89b40636f0fd3aea0526681c426081a0fbd8"
+  },
+  {
+    "source": "Physics/include/fluids/NxFluid.h",
+    "source_sha256": "ed347257024ce04c2affd4748cb89ea7236eec883730d3a6352fdfbda6076511",
+    "snapshot": "capture-source/triangle-fan-domain-x87-12-NxFluid.h.gz",
+    "snapshot_sha256": "a49f3712489908efb35f08f03de4f496ea32ad16850dbe7b05b4919e603488a8"
+  },
+  {
+    "source": "Physics/include/fluids/NxFluidDesc.h",
+    "source_sha256": "cebe34c355bfab8f381288dc044e9193635d644dac30e80aa049cd9338468a4f",
+    "snapshot": "capture-source/triangle-fan-domain-x87-13-NxFluidDesc.h.gz",
+    "snapshot_sha256": "648a1702ee581f4968eca84bdee3429017fd0a7c8cbcf86043905b574959c5e7"
+  },
+  {
+    "source": "Physics/include/fluids/NxFluidEmitter.h",
+    "source_sha256": "ba1226cc10681fec7c996a388eba30f3250dd06444a333f9a3423e50edb6ec7c",
+    "snapshot": "capture-source/triangle-fan-domain-x87-14-NxFluidEmitter.h.gz",
+    "snapshot_sha256": "dab90ad8e98d250c88bc5598efa6e51aa37951c273726e2a4a211932421de6fc"
+  },
+  {
+    "source": "Physics/include/fluids/NxFluidEmitterDesc.h",
+    "source_sha256": "242719c32b8b557eefc51aeddae8c513f16bae4b7b887998ff2236711b08c43c",
+    "snapshot": "capture-source/triangle-fan-domain-x87-15-NxFluidEmitterDesc.h.gz",
+    "snapshot_sha256": "841fc602cfce2eb41f557d8e8123a91151057ebb6c78c7687da183e0764ee164"
+  },
+  {
+    "source": "Physics/include/fluids/NxImplicitMesh.h",
+    "source_sha256": "55d0f8afa4387b1593fe40c968a46969fa779dc574368d8e0e0f6c0cd34989a0",
+    "snapshot": "capture-source/triangle-fan-domain-x87-16-NxImplicitMesh.h.gz",
+    "snapshot_sha256": "a7e838f56bea59246d6c36c4cebbfb5ad87292a4cbb3a026ccf09991bbafad39"
+  },
+  {
+    "source": "Physics/include/fluids/NxImplicitMeshDesc.h",
+    "source_sha256": "85e6b3577f0d91cce4087c0e4bd77d2b11f01374ccc0fa2c70678e819b14164e",
+    "snapshot": "capture-source/triangle-fan-domain-x87-17-NxImplicitMeshDesc.h.gz",
+    "snapshot_sha256": "6863e5fdc707beb42da926dabc8124eafdafcfb5237be4748d75d3add071c8ac"
+  },
+  {
+    "source": "Physics/include/fluids/NxMeshData.h",
+    "source_sha256": "e9d2fd29499f2b3348c7f242ad41a578d15a6355457f97ded44a1f36705bf9bd",
+    "snapshot": "capture-source/triangle-fan-domain-x87-18-NxMeshData.h.gz",
+    "snapshot_sha256": "b07d183dffc697074de6482d7eb3f4f6c985b66554f789ad3c2e8365e582d91a"
+  },
+  {
+    "source": "Physics/include/fluids/NxParticleData.h",
+    "source_sha256": "41345a476703be43ab74741733cbe1369b4c0bbea203ae99ff938b8ef860e39c",
+    "snapshot": "capture-source/triangle-fan-domain-x87-19-NxParticleData.h.gz",
+    "snapshot_sha256": "2327def7163d6b5c8c83321ba6279f25543e7d63a076ca60408e470c00fa7b8b"
+  },
+  {
+    "source": "Physics/include/NxActor.h",
+    "source_sha256": "8fe75fe4978c45480e2eb7154b50857908bef9d57241f8a977d0c518b7f4d721",
+    "snapshot": "capture-source/triangle-fan-domain-x87-20-NxActor.h.gz",
+    "snapshot_sha256": "1707bad4c3b63ea44de835e74ebe1ca0c67e1e1fc1086edb367c99c185178850"
+  },
+  {
+    "source": "Physics/include/NxActorDesc.h",
+    "source_sha256": "90ecad9b4735e70e09d68e8a6fd67108f2831dacbfb80817388acf15dcfde6c2",
+    "snapshot": "capture-source/triangle-fan-domain-x87-21-NxActorDesc.h.gz",
+    "snapshot_sha256": "df1e4b29a8896fe7a25c771d5b243bb892c369a4f08d7aa5168cdc1ae45be7da"
+  },
+  {
+    "source": "Physics/include/NxBodyDesc.h",
+    "source_sha256": "c9d2d7e9d0573e71a41e042f37a267d2ce9e654d15d3c07fc46f8c4bcbde159a",
+    "snapshot": "capture-source/triangle-fan-domain-x87-22-NxBodyDesc.h.gz",
+    "snapshot_sha256": "cab8d115836e2a9ae5f2418bebcd736e1bce921749cce124219035de4f9a164d"
+  },
+  {
+    "source": "Physics/include/NxBoxShape.h",
+    "source_sha256": "534ccf36619d87dc4aaea9f134b8a3df4b5704324dd26f3e895b6b7ba3f746c9",
+    "snapshot": "capture-source/triangle-fan-domain-x87-23-NxBoxShape.h.gz",
+    "snapshot_sha256": "36ec7ed47738f41fa6a3574892afa72a3eb5379374ae91b8a19192510da0cad9"
+  },
+  {
+    "source": "Physics/include/NxBoxShapeDesc.h",
+    "source_sha256": "4cc3466ae1a2e475d45ad62a1fbd484acd50d4c80f2ce5ded49ef67c92166dc4",
+    "snapshot": "capture-source/triangle-fan-domain-x87-24-NxBoxShapeDesc.h.gz",
+    "snapshot_sha256": "2fc12409fa7bc010a9bd92bf59edb6ab096ee5b6ba4636385f40240a94d001bf"
+  },
+  {
+    "source": "Physics/include/NxCapsuleShape.h",
+    "source_sha256": "591775a68906c6d3b6c4ee82b4e07c47b5af12c44e083fe3f0ff569d4a49080b",
+    "snapshot": "capture-source/triangle-fan-domain-x87-25-NxCapsuleShape.h.gz",
+    "snapshot_sha256": "80627b1aacc3dae52b926d1a2014ed7c8f9206452a71560ba3515d54a5587e7e"
+  },
+  {
+    "source": "Physics/include/NxCapsuleShapeDesc.h",
+    "source_sha256": "91f7efb7b77da5f89a362a665506f9f78329015d6727106d4f70e37ee3bef2da",
+    "snapshot": "capture-source/triangle-fan-domain-x87-26-NxCapsuleShapeDesc.h.gz",
+    "snapshot_sha256": "1bfa5f1cc6f8c1f136f39fe76ea88f7f8dbc2ea36004f34eec7a834fda34d45b"
+  },
+  {
+    "source": "Physics/include/NxContactStreamIterator.h",
+    "source_sha256": "25b10bb4111ee8de8e7888e7befd89af3a2f6cbceb681c30b441073ead5e532f",
+    "snapshot": "capture-source/triangle-fan-domain-x87-27-NxContactStreamIterator.h.gz",
+    "snapshot_sha256": "30df1c46e5e07649ac278ecb9816a85bd36e9ba0d66dad313beff5b39630c778"
+  },
+  {
+    "source": "Physics/include/NxConvexHull.h",
+    "source_sha256": "0fe23a17743b377619dc017b61d9f91604de2710978a3834a13bdb0336df51a0",
+    "snapshot": "capture-source/triangle-fan-domain-x87-28-NxConvexHull.h.gz",
+    "snapshot_sha256": "1c9a22b0f270f343252fc695a3f4b5c07a575548ae10f8fe478361753e109f8a"
+  },
+  {
+    "source": "Physics/include/NxCylindricalJoint.h",
+    "source_sha256": "9cb19bab130132381804ed7ab7480f6843e37918fe4d3d2aa0ca8badde8a9b19",
+    "snapshot": "capture-source/triangle-fan-domain-x87-29-NxCylindricalJoint.h.gz",
+    "snapshot_sha256": "a4b1bb01902ae749ad050331075f9baa67e1cfd3e4d76d99a8225fccfb15ad3b"
+  },
+  {
+    "source": "Physics/include/NxCylindricalJointDesc.h",
+    "source_sha256": "562cfa523a560b7a24919f1cb6413ead1e5f403bef31fe3e849e0d9d60ac8e73",
+    "snapshot": "capture-source/triangle-fan-domain-x87-30-NxCylindricalJointDesc.h.gz",
+    "snapshot_sha256": "b1d6709547a78e94ae17aa9f981ef1de162f7f1539440d5663ae44639a761835"
+  },
+  {
+    "source": "Physics/include/NxD6Joint.h",
+    "source_sha256": "e813146465e2ff5dd8eb8256807a61483dafeddd1f16bcd4100cb34c627d63ea",
+    "snapshot": "capture-source/triangle-fan-domain-x87-31-NxD6Joint.h.gz",
+    "snapshot_sha256": "7fd5a8a257758c517af13a5d706ce6af65e7e57ab1d78d9290198bcbd9f9c59e"
+  },
+  {
+    "source": "Physics/include/NxD6JointDesc.h",
+    "source_sha256": "e72b8f59b5304e9938561b1ed3a2fb83ae3ec3ef5be9991530a7f2d9c7d8741a",
+    "snapshot": "capture-source/triangle-fan-domain-x87-32-NxD6JointDesc.h.gz",
+    "snapshot_sha256": "9b36ac782afa40abc6f92a398a6d6e85d87ee1795ef5eae5afaccc3b57e305fe"
+  },
+  {
+    "source": "Physics/include/NxDistanceJoint.h",
+    "source_sha256": "a71e87e4344412c90641d2f7b4042ca4b279c44c401a8aa50e397309f25783af",
+    "snapshot": "capture-source/triangle-fan-domain-x87-33-NxDistanceJoint.h.gz",
+    "snapshot_sha256": "637f0657b78b5da54d85bbbb8a7f0da2f4b9df4689089b90dc8adef79faca538"
+  },
+  {
+    "source": "Physics/include/NxDistanceJointDesc.h",
+    "source_sha256": "271b5008637dc667aaefe27e339abb919c1d22ad3d70e91aa682885457f3728a",
+    "snapshot": "capture-source/triangle-fan-domain-x87-34-NxDistanceJointDesc.h.gz",
+    "snapshot_sha256": "06c36ceb824b5bc0a42712c0266599da74bf978ed13a320750b2daec0ed249bc"
+  },
+  {
+    "source": "Physics/include/NxDistanceTriangleTriangle.h",
+    "source_sha256": "d397df569705178047163fbdb6e645ddafd98cf0113d4b056b43cc00b2edc5d9",
+    "snapshot": "capture-source/triangle-fan-domain-x87-35-NxDistanceTriangleTriangle.h.gz",
+    "snapshot_sha256": "c9a442bc56239022f87d448992e8c2e4f7b4d467cf7c995ccaae73cc75217805"
+  },
+  {
+    "source": "Physics/include/NxEffector.h",
+    "source_sha256": "eaad7e1df663dda6d2b3a1264de7e14c057ccf43aabb0e5eaa79847c0ef6a165",
+    "snapshot": "capture-source/triangle-fan-domain-x87-36-NxEffector.h.gz",
+    "snapshot_sha256": "4153da0d2963b7926059f47b3f5e907c8b4c3e1e690637e7a4e54f8d45669795"
+  },
+  {
+    "source": "Physics/include/NxFixedJoint.h",
+    "source_sha256": "8ae7de135060a8dd5d5675573d921cf9176ab6e8de217ba87c697f02f77774e2",
+    "snapshot": "capture-source/triangle-fan-domain-x87-37-NxFixedJoint.h.gz",
+    "snapshot_sha256": "8bf8e768eaad5c5f60f69f66cfd6d675820af66561ff2b1dc8ad07e4c9751094"
+  },
+  {
+    "source": "Physics/include/NxFixedJointDesc.h",
+    "source_sha256": "0f4022870d00e9fc507e4e38d0eceeb6b6abb3cdf3a5e7162c3d13523e276f67",
+    "snapshot": "capture-source/triangle-fan-domain-x87-38-NxFixedJointDesc.h.gz",
+    "snapshot_sha256": "3a2c3b37b7639909f3eee53aeed26d4658e027e92060f43fa65321f817fae8e9"
+  },
+  {
+    "source": "Physics/include/NxInertiaTensor.h",
+    "source_sha256": "ea0f303753992b27f00164262a6e5de2432e25157d3203cacd63043886a69851",
+    "snapshot": "capture-source/triangle-fan-domain-x87-39-NxInertiaTensor.h.gz",
+    "snapshot_sha256": "7599c462daeb1cc731c9028546d56182d0d5d9c33dbc56a5ef98c10cc9a2c728"
+  },
+  {
+    "source": "Physics/include/NxIntersectionBoxBox.h",
+    "source_sha256": "f911404321122d8c17754271a746d99ed0106d3ec633bdea45332cd4f5b3a790",
+    "snapshot": "capture-source/triangle-fan-domain-x87-40-NxIntersectionBoxBox.h.gz",
+    "snapshot_sha256": "9dab997023da35fa37b74093bededf9d5ddd4be36bd7fa9af1e0ab02079f1853"
+  },
+  {
+    "source": "Physics/include/NxIntersectionPointTriangle.h",
+    "source_sha256": "5ca59f2eaa3e0b33e342968c44cad05baa91642784e621ca91fd6f8d8cd59ca7",
+    "snapshot": "capture-source/triangle-fan-domain-x87-41-NxIntersectionPointTriangle.h.gz",
+    "snapshot_sha256": "444c26164505920d0ac8341fc0ed23db23a7615c851c51910d399b589be65567"
+  },
+  {
+    "source": "Physics/include/NxIntersectionRayPlane.h",
+    "source_sha256": "fa425eccf68290ec567ce79dc4445a625f3cce38eb6a3c6033d89bc4d932b9a7",
+    "snapshot": "capture-source/triangle-fan-domain-x87-42-NxIntersectionRayPlane.h.gz",
+    "snapshot_sha256": "41e3f664ceb3293d3528ae4cd03e38e7a0704af606d8826f2336c912198e257d"
+  },
+  {
+    "source": "Physics/include/NxIntersectionRaySphere.h",
+    "source_sha256": "3b3a326b99841d8ef1ca1458ba5c683403f6f16cb9f60a8fb63e4ae585c90b0a",
+    "snapshot": "capture-source/triangle-fan-domain-x87-43-NxIntersectionRaySphere.h.gz",
+    "snapshot_sha256": "d7c48d1bcca8a238c35692d82a5a31187dae34e21535169c9db65dca2a3c7eb2"
+  },
+  {
+    "source": "Physics/include/NxIntersectionRayTriangle.h",
+    "source_sha256": "fffcb005acbe0e6656fe1ac7c4d40c6770fda4006bc3a2e4be3457e2537ce4b3",
+    "snapshot": "capture-source/triangle-fan-domain-x87-44-NxIntersectionRayTriangle.h.gz",
+    "snapshot_sha256": "0ac0a176ce06ac0c434b360ad17af4e97ac14a3353845a5cb1a3df9766dfdc86"
+  },
+  {
+    "source": "Physics/include/NxIntersectionSegmentBox.h",
+    "source_sha256": "6abfe23ad9fde40e22a95aea522698c0a315172613bc127186d5e093039a058a",
+    "snapshot": "capture-source/triangle-fan-domain-x87-45-NxIntersectionSegmentBox.h.gz",
+    "snapshot_sha256": "cccd09dd6e97ae5b403c8c57641066396417b5dc9d963eca40e2768a69f43eff"
+  },
+  {
+    "source": "Physics/include/NxIntersectionSegmentCapsule.h",
+    "source_sha256": "4fe362473a097dcac8ebf78ba461349c683b474e8f442cb9304a7b229d4bfb17",
+    "snapshot": "capture-source/triangle-fan-domain-x87-46-NxIntersectionSegmentCapsule.h.gz",
+    "snapshot_sha256": "f8f53bd1b853d96a2532aa3cc8e6089931a812557721d53e1faf030d42090a6f"
+  },
+  {
+    "source": "Physics/include/NxIntersectionSweptSpheres.h",
+    "source_sha256": "5b2f7aad62d5f38d35a122ce442c21a1a9da30192c30aa7132d32984cce9bc3c",
+    "snapshot": "capture-source/triangle-fan-domain-x87-47-NxIntersectionSweptSpheres.h.gz",
+    "snapshot_sha256": "966f0a534352a00dfe6ad58a0c9072d0092c1bba82c14354ae9dc7d4f2512a9e"
+  },
+  {
+    "source": "Physics/include/NxJoint.h",
+    "source_sha256": "44e712337886b36eac2dedef026fcd98a019b4417c1437bc651873226ea383a0",
+    "snapshot": "capture-source/triangle-fan-domain-x87-48-NxJoint.h.gz",
+    "snapshot_sha256": "cea12716203c9dacd7487d00b411a12ac34e325ead5340d1a2af7d42c2629029"
+  },
+  {
+    "source": "Physics/include/NxJointDesc.h",
+    "source_sha256": "462faa8e98510817cb6a91016fb927de355eccda45ec10e11c4d720ff926cf2c",
+    "snapshot": "capture-source/triangle-fan-domain-x87-49-NxJointDesc.h.gz",
+    "snapshot_sha256": "aff37fcd0be60085e8a7356c3a8e6a969b5e4f54e625aa233dd7f5f3738b4c45"
+  },
+  {
+    "source": "Physics/include/NxJointLimitDesc.h",
+    "source_sha256": "a1d17ef81e7d8cdf2e408fdb244d5b31d61454a48aea170740f2e7412ecf04db",
+    "snapshot": "capture-source/triangle-fan-domain-x87-50-NxJointLimitDesc.h.gz",
+    "snapshot_sha256": "e3d3c2175b9b323b19657ae9d29c3af051d8737cb25ffd80427e56f0688ac6cd"
+  },
+  {
+    "source": "Physics/include/NxJointLimitPairDesc.h",
+    "source_sha256": "acef6a0a2f6c326e4f668286580015e27bb5b17abdbeddc0ced02d27032dafe6",
+    "snapshot": "capture-source/triangle-fan-domain-x87-51-NxJointLimitPairDesc.h.gz",
+    "snapshot_sha256": "1cdb1acf2ff4b6d272aa244c13e87d1d5742e3cfaeca5dbf1ddb05785ee4dc44"
+  },
+  {
+    "source": "Physics/include/NxMaterial.h",
+    "source_sha256": "f7ae121a649ec68924bcc4c77c81e41e00c0fe32063d9b8be717ce97e480d5cc",
+    "snapshot": "capture-source/triangle-fan-domain-x87-52-NxMaterial.h.gz",
+    "snapshot_sha256": "09e5b522a4a7e27d77ed197c480ba7ff01828a0fa1dcc5aa3aeb4b1e7d71bad4"
+  },
+  {
+    "source": "Physics/include/NxMotorDesc.h",
+    "source_sha256": "fccab557a82dfd41640b2e307e9b711d5ef69c7c7a5251845bcbc9c1e2c101e3",
+    "snapshot": "capture-source/triangle-fan-domain-x87-53-NxMotorDesc.h.gz",
+    "snapshot_sha256": "0344929313e04856766d1a81dd32d642111432d23514e6e4ba05b8027e0dbfd7"
+  },
+  {
+    "source": "Physics/include/Nxp.h",
+    "source_sha256": "ab032b9cc2f1a10b48b6bde81430fac22b6f2a7f73e2e46d4bebba19e45a1743",
+    "snapshot": "capture-source/triangle-fan-domain-x87-54-Nxp.h.gz",
+    "snapshot_sha256": "26f88177c46887952514b3726883a4f5790e63c3ffa1fd24644b4f9b2caca3bf"
+  },
+  {
+    "source": "Physics/include/NxPhysics.h",
+    "source_sha256": "f18d53dda97d8e0b160ba31e6e5b8c9334bffe72aa4aa53f56c6515ddee6b048",
+    "snapshot": "capture-source/triangle-fan-domain-x87-55-NxPhysics.h.gz",
+    "snapshot_sha256": "bf2d97df079bbb73ac9ff47001b077de584ae5f416ebb8e74d530f93233a02ea"
+  },
+  {
+    "source": "Physics/include/NxPhysicsSDK.h",
+    "source_sha256": "5d0df9ec5fc246fbf5b5e32adf4147f77f58e96fc42a10f025ab7d9c7dc2a870",
+    "snapshot": "capture-source/triangle-fan-domain-x87-56-NxPhysicsSDK.h.gz",
+    "snapshot_sha256": "b45a5e45cf6184c197351508dad2d147ccb876030d83c0155552dc82545ab36b"
+  },
+  {
+    "source": "Physics/include/NxPlaneShape.h",
+    "source_sha256": "d33cc25d6b6449cce66128b927d92fc4d1e20d8c3d69758be5dcb1246454ca86",
+    "snapshot": "capture-source/triangle-fan-domain-x87-57-NxPlaneShape.h.gz",
+    "snapshot_sha256": "efa6dcedde6c7b847a13f288e161bef13d4aafe62c9d429798a8ab4517a95b75"
+  },
+  {
+    "source": "Physics/include/NxPlaneShapeDesc.h",
+    "source_sha256": "59ff38fd9b69995aa7340ee8777a0dd2a291be26d8e51e95fb7ade6febccb1ec",
+    "snapshot": "capture-source/triangle-fan-domain-x87-58-NxPlaneShapeDesc.h.gz",
+    "snapshot_sha256": "ba4a764fd0e93861068ba0169dcda14132e9a288d7fa745d15d0c1cfd6df9fe6"
+  },
+  {
+    "source": "Physics/include/NxPMap.h",
+    "source_sha256": "4c5fabf63e7f90a88366dcdc00ef15f862d579db618a59f4bce40da241fe627f",
+    "snapshot": "capture-source/triangle-fan-domain-x87-59-NxPMap.h.gz",
+    "snapshot_sha256": "fd29e46a133e128115f05d416f9197574827f8a25128843a44bef2f2a8964244"
+  },
+  {
+    "source": "Physics/include/NxPointInPlaneJoint.h",
+    "source_sha256": "4fb53a953726ae348282337dd0fbf82812b9751ae75af173f30b2b83726af7ec",
+    "snapshot": "capture-source/triangle-fan-domain-x87-60-NxPointInPlaneJoint.h.gz",
+    "snapshot_sha256": "5c360f5c4ccfe7dc2733206432530b7a353fbdb0e6e8c543d9c53e035e5fcea0"
+  },
+  {
+    "source": "Physics/include/NxPointInPlaneJointDesc.h",
+    "source_sha256": "12209dc6554d40541aac8125c63fe034c7e6828e47882580508990c626f31f9b",
+    "snapshot": "capture-source/triangle-fan-domain-x87-61-NxPointInPlaneJointDesc.h.gz",
+    "snapshot_sha256": "9a33556ee67df5e0f9da8c3faa1c04dc630ec1e5dc7ff6889d9d2819cdf68392"
+  },
+  {
+    "source": "Physics/include/NxPointOnLineJoint.h",
+    "source_sha256": "48944fa6ce9bff4918b40b7405303ff5ca47055c196530f87fc235588f318252",
+    "snapshot": "capture-source/triangle-fan-domain-x87-62-NxPointOnLineJoint.h.gz",
+    "snapshot_sha256": "1f8cda81d819d721e58a2625a590ec8432ca523a0687a6f3153718c5293d0fc8"
+  },
+  {
+    "source": "Physics/include/NxPointOnLineJointDesc.h",
+    "source_sha256": "0292d304f96d96a46c5b47d13f5be7ec4a28677790ccad5456132274deb5ebb3",
+    "snapshot": "capture-source/triangle-fan-domain-x87-63-NxPointOnLineJointDesc.h.gz",
+    "snapshot_sha256": "9704291ff96ebbb46d258e1f1289feef072e2cdac10366e0e108df925c3162d7"
+  },
+  {
+    "source": "Physics/include/NxPrismaticJoint.h",
+    "source_sha256": "0691c7948be27e387007566bc1a7684b86fd35d0ccb777d0df7e5c0537cac349",
+    "snapshot": "capture-source/triangle-fan-domain-x87-64-NxPrismaticJoint.h.gz",
+    "snapshot_sha256": "018d2e9999834c349ed8ac0ae62fea65a9f70a5e0806cc69715e40565ca4b5d8"
+  },
+  {
+    "source": "Physics/include/NxPrismaticJointDesc.h",
+    "source_sha256": "5d5fb669839cbe21527f7f2e932e66cbda6af39244abd1e8f7007ef010af48f6",
+    "snapshot": "capture-source/triangle-fan-domain-x87-65-NxPrismaticJointDesc.h.gz",
+    "snapshot_sha256": "fee7501d5da1548a1b30f29587cff1d43fb6f381e7728a978dbae5cced6e2ab1"
+  },
+  {
+    "source": "Physics/include/NxPulleyJoint.h",
+    "source_sha256": "29ef5bcfde5efdb36b3f84448c14236f51a4a44436173ac3d096683649d7bc68",
+    "snapshot": "capture-source/triangle-fan-domain-x87-66-NxPulleyJoint.h.gz",
+    "snapshot_sha256": "f8c35666781ab292e3aa140b6985ace2b1914edc4ad47acb26f0cbf88815b157"
+  },
+  {
+    "source": "Physics/include/NxPulleyJointDesc.h",
+    "source_sha256": "6e645cb5c9ccaed6387db9510316d61cd69d159c12bd71550e0be7cd5a85ec97",
+    "snapshot": "capture-source/triangle-fan-domain-x87-67-NxPulleyJointDesc.h.gz",
+    "snapshot_sha256": "f7c668df23645ec40bae6a56be6c40f3c7d76bdc73b5412376db87c3181ee61b"
+  },
+  {
+    "source": "Physics/include/NxRevoluteJoint.h",
+    "source_sha256": "26804ab910065a072b5e94ad72ae4d616d3b5c26bea15da6a55116ec7cb44352",
+    "snapshot": "capture-source/triangle-fan-domain-x87-68-NxRevoluteJoint.h.gz",
+    "snapshot_sha256": "0601dae1db5b08a595eef432b2953ff5be54f1587b1168d3f1e8f7ae50bb9948"
+  },
+  {
+    "source": "Physics/include/NxRevoluteJointDesc.h",
+    "source_sha256": "023acda7cb0c36256d94cf05954aa8bfed5037994b7cd4b8c52cfdf0c4325a0d",
+    "snapshot": "capture-source/triangle-fan-domain-x87-69-NxRevoluteJointDesc.h.gz",
+    "snapshot_sha256": "25a2fe97bd5b2c8029cf9959455fdaa17581dd4b390793a3464282601b8a595e"
+  },
+  {
+    "source": "Physics/include/NxScene.h",
+    "source_sha256": "fc7c01b709918cc5c6e1211d21ed51f8f243aa7cbd6412463c6e1b62dd005ece",
+    "snapshot": "capture-source/triangle-fan-domain-x87-70-NxScene.h.gz",
+    "snapshot_sha256": "e903426bb733647f8b5adae8bdd8e1330840f6af25a2ec926d50cfb99572b24e"
+  },
+  {
+    "source": "Physics/include/NxSceneDesc.h",
+    "source_sha256": "939fb49f74691c2c3560d41ba456efb9032fab0f79f96085f1263f2801c37913",
+    "snapshot": "capture-source/triangle-fan-domain-x87-71-NxSceneDesc.h.gz",
+    "snapshot_sha256": "ed0a9ab4d4adb1c365b7c10fb6cdaade7076d093902f5716bc89b2436acb831d"
+  },
+  {
+    "source": "Physics/include/NxSceneStats.h",
+    "source_sha256": "802ba469b560fa34a4142902327d978b62d2b3b065137011b1aee114d9862f3f",
+    "snapshot": "capture-source/triangle-fan-domain-x87-72-NxSceneStats.h.gz",
+    "snapshot_sha256": "2f1d2cc64207312c305cdd2bcb3202bb1c00000731f7ef86f3b8066ab745a8f6"
+  },
+  {
+    "source": "Physics/include/NxShape.h",
+    "source_sha256": "1446db87be924e21c0026ec188f9c805f69a1e8266af11ff317bbe5713e011aa",
+    "snapshot": "capture-source/triangle-fan-domain-x87-73-NxShape.h.gz",
+    "snapshot_sha256": "6e8f0faf5a1fe1cafc5de397f5217a09f97ee32dc95e66deb40ae85f11f3181f"
+  },
+  {
+    "source": "Physics/include/NxShapeDesc.h",
+    "source_sha256": "15202464a9ac5c239c593003e5a22ac26bad6cf8f4f3e06a771789028138264d",
+    "snapshot": "capture-source/triangle-fan-domain-x87-74-NxShapeDesc.h.gz",
+    "snapshot_sha256": "afc0ce85bfc75d39265b91507bd4cfda771594f0126421e53e11cdb1628399ac"
+  },
+  {
+    "source": "Physics/include/NxSmoothNormals.h",
+    "source_sha256": "b21e7769a43213abd188f8fbfb8e30369f8a2fe0ed565054ac846a6376b58f70",
+    "snapshot": "capture-source/triangle-fan-domain-x87-75-NxSmoothNormals.h.gz",
+    "snapshot_sha256": "7472078be58e364f062b48688ae42d821b41c1adff2044247b58c102626821a1"
+  },
+  {
+    "source": "Physics/include/NxSphereShape.h",
+    "source_sha256": "9bd0778d851b5ee194db22457c7413783d234a338d4458668d26a394864e1806",
+    "snapshot": "capture-source/triangle-fan-domain-x87-76-NxSphereShape.h.gz",
+    "snapshot_sha256": "221573d48412713e565d4194774193072b9b743a71cc8c6e5cc3c21f998c876c"
+  },
+  {
+    "source": "Physics/include/NxSphereShapeDesc.h",
+    "source_sha256": "54291ceb1a322584e8c189373a62cacae4594b5f8d5a86f14828c11598a8e8d4",
+    "snapshot": "capture-source/triangle-fan-domain-x87-77-NxSphereShapeDesc.h.gz",
+    "snapshot_sha256": "0d6e99c221876eb93d608c83ea3e6a9b166bc352e3f1c7c9a6f887f58ad8f53b"
+  },
+  {
+    "source": "Physics/include/NxSphericalJoint.h",
+    "source_sha256": "32138264b37e38c651d9ea4326c7ca0e30daf58b81d22b9c7f681880aa47a2c6",
+    "snapshot": "capture-source/triangle-fan-domain-x87-78-NxSphericalJoint.h.gz",
+    "snapshot_sha256": "11cf53c6aeb3349fa909ab087d793ab7669dbe5fd51c92cefd6a4efe33518a25"
+  },
+  {
+    "source": "Physics/include/NxSphericalJointDesc.h",
+    "source_sha256": "c4e8b7a48600d9c7cb459dbd4613b52a208859242f1e04b1c5acaeca31243e88",
+    "snapshot": "capture-source/triangle-fan-domain-x87-79-NxSphericalJointDesc.h.gz",
+    "snapshot_sha256": "081ae00ecbe46025526726c59f1cb2e7bad338a424492e78dd6f2042233a6d03"
+  },
+  {
+    "source": "Physics/include/NxSpringAndDamperEffector.h",
+    "source_sha256": "b7e3c5d39510e27cc172b2502ef0fa6ba189e4503b2e0fa422d00e2a103abf87",
+    "snapshot": "capture-source/triangle-fan-domain-x87-80-NxSpringAndDamperEffector.h.gz",
+    "snapshot_sha256": "409e2126cdc29ce43d5979480114b0eee6cb83c57322f5bb9f904b9911d1898c"
+  },
+  {
+    "source": "Physics/include/NxSpringAndDamperEffectorDesc.h",
+    "source_sha256": "ca83425d170761cd44a3cc1d9be66dc9384924f153137574a3047ebafbfd91a3",
+    "snapshot": "capture-source/triangle-fan-domain-x87-81-NxSpringAndDamperEffectorDesc.h.gz",
+    "snapshot_sha256": "187aea9e43dce44dbf8423fbb81cc98c0be1a48a9543fe89cb5a001aad891b5d"
+  },
+  {
+    "source": "Physics/include/NxSpringDesc.h",
+    "source_sha256": "7ac04bfbb79514556c1a88b5e7a7fa7be8e4f7f6c935e1739b4ccc3cfec55e36",
+    "snapshot": "capture-source/triangle-fan-domain-x87-82-NxSpringDesc.h.gz",
+    "snapshot_sha256": "1b4ba14194e9a7142b94147bb1a1d9eefb5be5cf66baa43ff5e68b9942276de6"
+  },
+  {
+    "source": "Physics/include/NxTriangle.h",
+    "source_sha256": "6736d61772841797624330d7215fda763d69096f89b5ce1f002fe2e50904de71",
+    "snapshot": "capture-source/triangle-fan-domain-x87-83-NxTriangle.h.gz",
+    "snapshot_sha256": "c54ca8d990ac75fd7da7c46006147707353bc661743f444eeb772c8dde39eab9"
+  },
+  {
+    "source": "Physics/include/NxTriangleMesh.h",
+    "source_sha256": "dcfc6270233680a70db793d4ff4e65a8e5b6404be2d11b346386b0709d0a0e88",
+    "snapshot": "capture-source/triangle-fan-domain-x87-84-NxTriangleMesh.h.gz",
+    "snapshot_sha256": "1237ed4e1b0cc2bba94d3ade87477e18476281353cfd236e2316fca3de4ab283"
+  },
+  {
+    "source": "Physics/include/NxTriangleMeshDesc.h",
+    "source_sha256": "56924dabd4d2d5bce6354556a7610f63acbd1f5056bc5db6d270355893a39bd7",
+    "snapshot": "capture-source/triangle-fan-domain-x87-85-NxTriangleMeshDesc.h.gz",
+    "snapshot_sha256": "23a6283fe29b832b1a4474de35630f6edf5230bf4db48dafc419f70f59ad96d6"
+  },
+  {
+    "source": "Physics/include/NxTriangleMeshShape.h",
+    "source_sha256": "bda8e3d49c0db8dad21f48ecb00aa17ffc4cc7c4356ff70ffa8dd5290632b54e",
+    "snapshot": "capture-source/triangle-fan-domain-x87-86-NxTriangleMeshShape.h.gz",
+    "snapshot_sha256": "1edcddb1cb51a69ee3eac2ec943eaeb5bb2c743d5234b1008ee2b33f652dda5d"
+  },
+  {
+    "source": "Physics/include/NxTriangleMeshShapeDesc.h",
+    "source_sha256": "f51df1fc06b8dc0bd7392711bc4fc08f9c65d90843583dc68a0a6ecac8a96d0a",
+    "snapshot": "capture-source/triangle-fan-domain-x87-87-NxTriangleMeshShapeDesc.h.gz",
+    "snapshot_sha256": "7b8c6d090bb49b2e34d8cc843a25be5a4ef01f3b29856f69156812c39d13e636"
+  },
+  {
+    "source": "Physics/include/NxUserContactReport.h",
+    "source_sha256": "d041d703babbac9a0e7fb6958c63fcb408f0537d8ba9a84c45c32217b1d0d3eb",
+    "snapshot": "capture-source/triangle-fan-domain-x87-88-NxUserContactReport.h.gz",
+    "snapshot_sha256": "6c0b38d58837d8bdb8f0c859b6ad1eb606b7050d30a6ebbeb6a6f4be89b08bdc"
+  },
+  {
+    "source": "Physics/include/NxUserEntityReport.h",
+    "source_sha256": "6294095b050983d97e845ad2e389a9d7d6ab1fc4077cb08302ec065ad6b2dbf9",
+    "snapshot": "capture-source/triangle-fan-domain-x87-89-NxUserEntityReport.h.gz",
+    "snapshot_sha256": "750ea120cd8046df5c69f4613a7123c2edcf42a3cda46fbbfb6cc4cc6401761e"
+  },
+  {
+    "source": "Physics/include/NxUserNotify.h",
+    "source_sha256": "d60aadf49bf589059cf499109dfd0af3d6e61d3cf7b13d8fbc74e3621ff83455",
+    "snapshot": "capture-source/triangle-fan-domain-x87-90-NxUserNotify.h.gz",
+    "snapshot_sha256": "cdf2d788d5b318ab706f0c225c4a084e71efac8f511e43e3aa06c33bb9585577"
+  },
+  {
+    "source": "Physics/include/NxUserRaycastReport.h",
+    "source_sha256": "015c8fdaae79435bb713bd42757954b3f4d1408a161040833e80a1c4e86ee1ec",
+    "snapshot": "capture-source/triangle-fan-domain-x87-91-NxUserRaycastReport.h.gz",
+    "snapshot_sha256": "678ff72c4622fa95171a4a05f5635ea843d001e2865c9040133aa5654fdedb89"
+  },
+  {
+    "source": "Physics/src/include/BodyCreation.h",
+    "source_sha256": "1d90ba39100948d2ad28d02f04d212f1ae2e348993260fd84b8af8006cc84c95",
+    "snapshot": "capture-source/triangle-fan-domain-x87-92-BodyCreation.h.gz",
+    "snapshot_sha256": "e460f437bce803744185f101339c25b7394b88ee54d04a6d6e602e7e12081007"
+  },
+  {
+    "source": "Physics/src/include/BodyStep.h",
+    "source_sha256": "bc8220e16fd161776f8760502c4be7d6ed1668fce83c49cd63dcdb0eade2705d",
+    "snapshot": "capture-source/triangle-fan-domain-x87-93-BodyStep.h.gz",
+    "snapshot_sha256": "c2ebe751898c2f3523cfdc934d8bb6a5eaccdb4a7530758241089b1f2733fd86"
+  },
+  {
+    "source": "Physics/src/include/ContactGeneration.h",
+    "source_sha256": "d74d4eb4af07a0d78425f57cd1ae0f00c471a280e8786cf8455f674316c22160",
+    "snapshot": "capture-source/triangle-fan-domain-x87-94-ContactGeneration.h.gz",
+    "snapshot_sha256": "bd73aa73799d01cc5bdb5ba937ca4d86c29ec676c6e98ebc14296a89a6370383"
+  },
+  {
+    "source": "Physics/src/include/ContactPairManager.h",
+    "source_sha256": "7e42dc8902b0a35626dfca8681aec367c78438b8efb894632602c957a6bb5f0d",
+    "snapshot": "capture-source/triangle-fan-domain-x87-95-ContactPairManager.h.gz",
+    "snapshot_sha256": "1c4354420ecfce4969c4d5092fa9cedd5a9fdb93db8013379a02f9a4e260ddaa"
+  },
+  {
+    "source": "Physics/src/include/Containers.h",
+    "source_sha256": "344808dd01c5ccb0a05497384275330de0cf25a32dda4f3e3631d0235a18c888",
+    "snapshot": "capture-source/triangle-fan-domain-x87-96-Containers.h.gz",
+    "snapshot_sha256": "29f1ecc6fde03d3093f6339cf66ddc452891db8098cdea9e2f1ac98e997a8049"
+  },
+  {
+    "source": "Physics/src/include/ConvexHull.h",
+    "source_sha256": "b335c85044d8e7a9a1085d3ac2ce9d80126c6642353b10dfd7f359d28f7def79",
+    "snapshot": "capture-source/triangle-fan-domain-x87-97-ConvexHull.h.gz",
+    "snapshot_sha256": "5ea10e3ad0ae60e691bf0f75f28dfb4d8a5f5d75c7350f1e7c0924b078145464"
+  },
+  {
+    "source": "Physics/src/include/core/ActorMass.h",
+    "source_sha256": "e632d2abf31da9f915c883584f5a193ab692254a8fbf88bef3efddfef2e8fa27",
+    "snapshot": "capture-source/triangle-fan-domain-x87-98-ActorMass.h.gz",
+    "snapshot_sha256": "9fd0590a536e4f6a25c4a8752597fe9f2fdd84a86b8e24ed2a30770f14dabb55"
+  },
+  {
+    "source": "Physics/src/include/core/CylindricalJoint.h",
+    "source_sha256": "918d4a3c30b5492263a51e1b362a7778280060c0e920e3be4f1ab1a4db757a35",
+    "snapshot": "capture-source/triangle-fan-domain-x87-99-CylindricalJoint.h.gz",
+    "snapshot_sha256": "97c7104cd4fb1561d1c3e4fe167a5d93cfeb23b0eafd75e99d59a555da96921b"
+  },
+  {
+    "source": "Physics/src/include/core/D6Joint.h",
+    "source_sha256": "9ea3c754d580c21057f5b2c931573fdba8b140df2028cf74f776e7fc203abc99",
+    "snapshot": "capture-source/triangle-fan-domain-x87-100-D6Joint.h.gz",
+    "snapshot_sha256": "f81f82ab5b2e1bb673666793b83f47f58aebdcfba8a1ae608c4e13171301075b"
+  },
+  {
+    "source": "Physics/src/include/core/DistanceJoint.h",
+    "source_sha256": "4ac8c0a6117c202e52543c0acf5d70cca22c9716cec15ac2b6afc552fc2b1ba0",
+    "snapshot": "capture-source/triangle-fan-domain-x87-101-DistanceJoint.h.gz",
+    "snapshot_sha256": "47557a248058e173ce3d81b59e28dbe2cd6a3f2020f761100a735e812bde2ba9"
+  },
+  {
+    "source": "Physics/src/include/core/FixedJoint.h",
+    "source_sha256": "cd067b83e6c86dc3454e4bfcb03996eb3142d71bdad5e5cac774af2f392d1d72",
+    "snapshot": "capture-source/triangle-fan-domain-x87-102-FixedJoint.h.gz",
+    "snapshot_sha256": "eb73ccc943029432af501dafd9828db49036ec5265c98718038148cedb1bba55"
+  },
+  {
+    "source": "Physics/src/include/core/Joint.h",
+    "source_sha256": "797b1415f3d15979e172ea72fc0b5ac49a161e2e28a6f270eacacc1689a51cd7",
+    "snapshot": "capture-source/triangle-fan-domain-x87-103-Joint.h.gz",
+    "snapshot_sha256": "61966324c2f3ce4ab3a4a95c04f025ee87f2588496fee48c4c7cd58e5ac7daef"
+  },
+  {
+    "source": "Physics/src/include/core/JointAcos.h",
+    "source_sha256": "8245eec0f675233d9a5af6783e5c9f5ce39edb1b1074dc467ad879542ed4befb",
+    "snapshot": "capture-source/triangle-fan-domain-x87-104-JointAcos.h.gz",
+    "snapshot_sha256": "69b03d676cb06f50fd5823d3c8c4ebce12a9930aa711689eb61534aa5444cd27"
+  },
+  {
+    "source": "Physics/src/include/core/JointLinearRecords.h",
+    "source_sha256": "ed692a16ef52a72146659173b76b879842477155b69da9be8b0d3aca2aef0293",
+    "snapshot": "capture-source/triangle-fan-domain-x87-105-JointLinearRecords.h.gz",
+    "snapshot_sha256": "0dbea9d0a0885e3a8afec09f023a299455b4eb8cdb883332d88a417d0e10ccc7"
+  },
+  {
+    "source": "Physics/src/include/core/JointSupport.h",
+    "source_sha256": "86fcfd4f14581bfa126e92c181fc07816bddc21fdf7dee0024a866b09cd861da",
+    "snapshot": "capture-source/triangle-fan-domain-x87-106-JointSupport.h.gz",
+    "snapshot_sha256": "67e1da2a5080156d57a4f697f2b4c4200b35dd6306a58aed0db1558627daefb0"
+  },
+  {
+    "source": "Physics/src/include/core/NpCylindricalJoint.h",
+    "source_sha256": "fb0f18884db77040a4313b83e88cd72eade34d9eedb99c6496d09370de94f43d",
+    "snapshot": "capture-source/triangle-fan-domain-x87-107-NpCylindricalJoint.h.gz",
+    "snapshot_sha256": "caaf74ff4d4626ca489fca5d42874654c2182d6993f32d4b34c08523f6fdf26f"
+  },
+  {
+    "source": "Physics/src/include/core/NpD6Joint.h",
+    "source_sha256": "ec1306f83f20e37c34454fa5203cf86d737fce573b7a2a3904aa520c55eb26da",
+    "snapshot": "capture-source/triangle-fan-domain-x87-108-NpD6Joint.h.gz",
+    "snapshot_sha256": "7c37d1ca64ed4d6ef2672ad101f4d59e05db73509196581d5de8b24415983ed4"
+  },
+  {
+    "source": "Physics/src/include/core/NpDistanceJoint.h",
+    "source_sha256": "208f61509827c8d763b553649d82bab89344b4f514dcfd079659fe07bf8cfdb9",
+    "snapshot": "capture-source/triangle-fan-domain-x87-109-NpDistanceJoint.h.gz",
+    "snapshot_sha256": "2d66f6c4ce97a6d1b36c20bd63529800f3e748de86845b4b480ebb0719902edd"
+  },
+  {
+    "source": "Physics/src/include/core/NpFixedJoint.h",
+    "source_sha256": "42db0c3ea96217fe23b9e631d36db415dd78dd450eeb692b79d8b06fc77258a1",
+    "snapshot": "capture-source/triangle-fan-domain-x87-110-NpFixedJoint.h.gz",
+    "snapshot_sha256": "bd1b56e4cf128b7edad67f74dec10219e76a57c2d4d7e0a6c228d6d38f035023"
+  },
+  {
+    "source": "Physics/src/include/core/NpJointShared.h",
+    "source_sha256": "184ee2f9b6d38fae1354aeaaffe7441ad6059e0d1c1bd10d9d67737e24404983",
+    "snapshot": "capture-source/triangle-fan-domain-x87-111-NpJointShared.h.gz",
+    "snapshot_sha256": "2677cbe3a5673282a7ccda05d505cf7417de7adeeb40bc700424a4695811c37c"
+  },
+  {
+    "source": "Physics/src/include/core/NpPointInPlaneJoint.h",
+    "source_sha256": "0cb11973bc62f445d247176abdd5334f65b38d68953f983c211a508adf268cdd",
+    "snapshot": "capture-source/triangle-fan-domain-x87-112-NpPointInPlaneJoint.h.gz",
+    "snapshot_sha256": "68f9ea67f67f382a428ac44f4d6ea997f7cdb28181a7caebb67784a90e4a2668"
+  },
+  {
+    "source": "Physics/src/include/core/NpPointOnLineJoint.h",
+    "source_sha256": "8cc10f579fd6c38a6a04cd6dec20022d588ccb8ea0b600efccd82a7589b6e18b",
+    "snapshot": "capture-source/triangle-fan-domain-x87-113-NpPointOnLineJoint.h.gz",
+    "snapshot_sha256": "a7dbd27070d57774a8d313dc3305dad5f596a54d58ee5688785d5abc32023ada"
+  },
+  {
+    "source": "Physics/src/include/core/NpPrismaticJoint.h",
+    "source_sha256": "57d7059483b35d7dbd588f1797f1810385dcfdcfb54f4d576247e33cdbbbc487",
+    "snapshot": "capture-source/triangle-fan-domain-x87-114-NpPrismaticJoint.h.gz",
+    "snapshot_sha256": "a396ada4e14028cb54cff0198425451edd189bdb9cd87c9160fe758534efd076"
+  },
+  {
+    "source": "Physics/src/include/core/NpPulleyJoint.h",
+    "source_sha256": "f11e6b3ae3199afddd29de01a253f5290e6b5e8d5ad6ffcb134b4d957a74b905",
+    "snapshot": "capture-source/triangle-fan-domain-x87-115-NpPulleyJoint.h.gz",
+    "snapshot_sha256": "21c04aa6244ea3e8efaf03801b27ecf6bd5dd046c669c5358d86ecbefcccbc89"
+  },
+  {
+    "source": "Physics/src/include/core/NpRevoluteJoint.h",
+    "source_sha256": "4228291f76815c78f5956c825feba434cd9e2f36a0b33f27d0fd74a97e77f53d",
+    "snapshot": "capture-source/triangle-fan-domain-x87-116-NpRevoluteJoint.h.gz",
+    "snapshot_sha256": "a431c7b2b5b058373b6e5afae5e1c539ee8d6e9f9a42c8ad643f1b341246e58f"
+  },
+  {
+    "source": "Physics/src/include/core/NpSphericalJoint.h",
+    "source_sha256": "f9bac10b80fabb3112119173f8b4342f2ef559f1ac6dd1edd5c13f49d2d4b238",
+    "snapshot": "capture-source/triangle-fan-domain-x87-117-NpSphericalJoint.h.gz",
+    "snapshot_sha256": "8774805e694f0b328329c8691ff06b9763ee51a0c21ac2ecb0b49f2700cfa7f1"
+  },
+  {
+    "source": "Physics/src/include/core/NpSpringAndDamperEffector.h",
+    "source_sha256": "269faa8334536c116d0afececf4a35585f0ea2a27dd3866f6605f79c6f5817e6",
+    "snapshot": "capture-source/triangle-fan-domain-x87-118-NpSpringAndDamperEffector.h.gz",
+    "snapshot_sha256": "6ac62832671ccc72b585f65c0e882285b5fa2f052feb72d9095689822eb5f35d"
+  },
+  {
+    "source": "Physics/src/include/core/PointInPlaneJoint.h",
+    "source_sha256": "b2c033bf54c036e0dca4932076314a253e575b7f68ccefe6472cd2798fd9e680",
+    "snapshot": "capture-source/triangle-fan-domain-x87-119-PointInPlaneJoint.h.gz",
+    "snapshot_sha256": "fe010a663b4f6635f24e5c1c05870142475a9e25506c2c23a2f9be9dd8ec92fe"
+  },
+  {
+    "source": "Physics/src/include/core/PointOnLineJoint.h",
+    "source_sha256": "0325a50dccb5ae19d8e55e59fa294932c61ff604a488be3542dc527ed0870381",
+    "snapshot": "capture-source/triangle-fan-domain-x87-120-PointOnLineJoint.h.gz",
+    "snapshot_sha256": "61332cdad3694bf0f3d1dbd73dc2e189a39619b5529af47cd5008811f2b11379"
+  },
+  {
+    "source": "Physics/src/include/core/PrismaticJoint.h",
+    "source_sha256": "a32451364df5e03dc65c18918d2f11425d4afd8bdafbb4edfa5b88c1eabc5902",
+    "snapshot": "capture-source/triangle-fan-domain-x87-121-PrismaticJoint.h.gz",
+    "snapshot_sha256": "fdf088a8245040ee115a7bcd7a549cffa4650d9b594f6c2f4cf111af0b3340b1"
+  },
+  {
+    "source": "Physics/src/include/core/PulleyJoint.h",
+    "source_sha256": "40e1435b73147c388f1a28ae390a13f5118f23a71603221f958517fb1c3f392a",
+    "snapshot": "capture-source/triangle-fan-domain-x87-122-PulleyJoint.h.gz",
+    "snapshot_sha256": "4ef4c66ae662d0e16ea5c66c7425130613133a1b19100ebf5b9cb4799df9a267"
+  },
+  {
+    "source": "Physics/src/include/core/RevoluteJoint.h",
+    "source_sha256": "71308a9b5e59697c00ad433f1385b28e17cf2d34532fe102c8dbbfcc769830e0",
+    "snapshot": "capture-source/triangle-fan-domain-x87-123-RevoluteJoint.h.gz",
+    "snapshot_sha256": "74b1f4b873ccb762e058827f4d9524427edd580f53fbcd2ec7af47631d20d37f"
+  },
+  {
+    "source": "Physics/src/include/core/SceneDump.h",
+    "source_sha256": "d81ba67909c5dba21a02e14954a497ed2911c935c6cb305104b6c84f856c30d5",
+    "snapshot": "capture-source/triangle-fan-domain-x87-124-SceneDump.h.gz",
+    "snapshot_sha256": "5bccc290c39afe852e0ed1eb359e9aeac6cd7dbfa19f90f4a8be1e710fb4605f"
+  },
+  {
+    "source": "Physics/src/include/core/SphericalJoint.h",
+    "source_sha256": "3b9343adb8e9b42d9fd2bfa98c9f8c6930c2c9218fbab46d578c3aa34b0aeea5",
+    "snapshot": "capture-source/triangle-fan-domain-x87-125-SphericalJoint.h.gz",
+    "snapshot_sha256": "5f16b5ceec267ac4c0acbb337267cf81a5958fb334e44ec9b4861a368365b9b9"
+  },
+  {
+    "source": "Physics/src/include/core/SpringAndDamperEffector.h",
+    "source_sha256": "430402841307af1efa59549b5200b371accd47162424bf66483548a7c0ba1afb",
+    "snapshot": "capture-source/triangle-fan-domain-x87-126-SpringAndDamperEffector.h.gz",
+    "snapshot_sha256": "ce3b1b5cedd573daa897d1a45d99db0bcdc5d96b6ea1f268fdc844b2578f5df4"
+  },
+  {
+    "source": "Physics/src/include/EdgeList.h",
+    "source_sha256": "71b40f9398935c4bd72703d9b789164a5528090ec59ae840adcc617cb93f7327",
+    "snapshot": "capture-source/triangle-fan-domain-x87-127-EdgeList.h.gz",
+    "snapshot_sha256": "7de1b1537a6c498fa65f736a87c129d3709aeb163f2b9b5e5c89fdbce1eb431c"
+  },
+  {
+    "source": "Physics/src/include/IceAdjacencies.h",
+    "source_sha256": "f1a8d4c2cc355698c5945ef06b2bbf1d4f5b7a044d5d4bc5cb3d68f1435aea51",
+    "snapshot": "capture-source/triangle-fan-domain-x87-128-IceAdjacencies.h.gz",
+    "snapshot_sha256": "84fb06304dd181744f9af1555107e0cbbb7e3d8cfa96d27354f6b45563423020"
+  },
+  {
+    "source": "Physics/src/include/IceMeshBuilder2.h",
+    "source_sha256": "323f689d45a35fea70915b72ad24d9e53d32d7a344141e75b3557f061dfffb9f",
+    "snapshot": "capture-source/triangle-fan-domain-x87-129-IceMeshBuilder2.h.gz",
+    "snapshot_sha256": "eff8d90721772cae28a7baec4cdf353cb1f0b512e4cc341ac66822dac0785674"
+  },
+  {
+    "source": "Physics/src/include/IceMeshTools.h",
+    "source_sha256": "16d0c7785f43529648aa0f055f922d32a99c11b078da51d0d66edcd6b5b2566a",
+    "snapshot": "capture-source/triangle-fan-domain-x87-130-IceMeshTools.h.gz",
+    "snapshot_sha256": "aa4c9c8494a67767dc1b18773643f2690f035f89d79df049500a183ffc2ee063"
+  },
+  {
+    "source": "Physics/src/include/IceSupportMaps.h",
+    "source_sha256": "7aed8fea804a14cd3085efbc65d38f7bcf5f27434a764bdd97430bc1405489a1",
+    "snapshot": "capture-source/triangle-fan-domain-x87-131-IceSupportMaps.h.gz",
+    "snapshot_sha256": "09551a9be2a3188157c05ac7d2d7ebd3cc4321b927d67f7137f1c8441ebddc2e"
+  },
+  {
+    "source": "Physics/src/include/MemoryStream.h",
+    "source_sha256": "a7c648f592d05fbcd785634ed18c5425e02a84910b9d782f853b043f6b5ae187",
+    "snapshot": "capture-source/triangle-fan-domain-x87-132-MemoryStream.h.gz",
+    "snapshot_sha256": "a2415e990365ad895815522e7820d2b3a3251a93a2f06d30e710bd570427e4ef"
+  },
+  {
+    "source": "Physics/src/include/NarrowPhase.h",
+    "source_sha256": "2d0cb41f2254222833d62cfd83702b1fa284788a45f1e057faac02af868b2321",
+    "snapshot": "capture-source/triangle-fan-domain-x87-133-NarrowPhase.h.gz",
+    "snapshot_sha256": "77d57b449bf258130b341d0008567809b4b86a7e2fbe0450c11c553e5db1d073"
+  },
+  {
+    "source": "Physics/src/include/NpActor.h",
+    "source_sha256": "47000094b915e99a9a024da4b371c49884a34a5da53f24e6784454e65951a0b8",
+    "snapshot": "capture-source/triangle-fan-domain-x87-134-NpActor.h.gz",
+    "snapshot_sha256": "6df025f8e58f134882baee71737c427964d5d8628040442d778e9c94723e4a86"
+  },
+  {
+    "source": "Physics/src/include/NpActorDynamicMath.h",
+    "source_sha256": "4336f3c9cc9ca5d530d74f3bc2ab1cf668a78d836c608665871d20dad64b1e97",
+    "snapshot": "capture-source/triangle-fan-domain-x87-135-NpActorDynamicMath.h.gz",
+    "snapshot_sha256": "3f28e6d72df53adba16491bc8b84b9fa299624688faba6286273dc4e22e74e0c"
+  },
+  {
+    "source": "Physics/src/include/NpPhysicsSDK.h",
+    "source_sha256": "8ca3bc6d0be3a37c9879639a71c0ef48c567469aaa9e1627813888da9922fdf8",
+    "snapshot": "capture-source/triangle-fan-domain-x87-136-NpPhysicsSDK.h.gz",
+    "snapshot_sha256": "0c1d946b155446d78548ea8f45d6262a92af0c08cb2da50b92e9c540bc67c24e"
+  },
+  {
+    "source": "Physics/src/include/NpScene.h",
+    "source_sha256": "d226b9b4c85a67cc87bb7ce7361f9d92ac1ee22c590f97685597ce8c7393649c",
+    "snapshot": "capture-source/triangle-fan-domain-x87-137-NpScene.h.gz",
+    "snapshot_sha256": "b9a58114982f671d38921522f82fe5aa0afec41916f98cdc1b58f21f459e15ce"
+  },
+  {
+    "source": "Physics/src/include/NpSceneGuard.h",
+    "source_sha256": "b671631457d55c7604fb7344625ad7846c9a0ad86aac7fbb0974541cc1b06974",
+    "snapshot": "capture-source/triangle-fan-domain-x87-138-NpSceneGuard.h.gz",
+    "snapshot_sha256": "045c643b40acb75d5b8430acf990614d356cece82f738fa7732553e6e307524a"
+  },
+  {
+    "source": "Physics/src/include/NxBoxDistance.h",
+    "source_sha256": "fa8ae632258cfcf9942ae50581a4a5ed4f3bc1a04201a17f87fe27ffa0dcdaef",
+    "snapshot": "capture-source/triangle-fan-domain-x87-139-NxBoxDistance.h.gz",
+    "snapshot_sha256": "e69ebdf8dba3e2443a70df09c78a5212e8406d83382dc509f1532dfa76b26dec"
+  },
+  {
+    "source": "Physics/src/include/NxGeometryHelpers.h",
+    "source_sha256": "501cb2b00d29b0424eff08882ae51ed4da903efd870ca9d0611cc38d03358996",
+    "snapshot": "capture-source/triangle-fan-domain-x87-140-NxGeometryHelpers.h.gz",
+    "snapshot_sha256": "4da92aeb16c81075e6783e7c3e2b53b3a13c330857c6917d3d5b7853a298f6f0"
+  },
+  {
+    "source": "Physics/src/include/NxInternalTriangleMesh.h",
+    "source_sha256": "3c399f9a14f540e06e36aca0ff1bb01a9760e6fc523834eb631d8c5ca035b7c8",
+    "snapshot": "capture-source/triangle-fan-domain-x87-141-NxInternalTriangleMesh.h.gz",
+    "snapshot_sha256": "da5acad325f088043230f1fc939a9c4d590fc3a3abb3d39e8d141df7889002aa"
+  },
+  {
+    "source": "Physics/src/include/NxMeshContactHelpers.h",
+    "source_sha256": "fc357f8eec28df8f97fb7c2bed87b93ff43c552f39e8898eaaca84f76cd2e2c9",
+    "snapshot": "capture-source/triangle-fan-domain-x87-142-NxMeshContactHelpers.h.gz",
+    "snapshot_sha256": "1a85586034e8c4661ae1de5c90e5c022434ad8bcb3d775c319149bdd4f30a5a8"
+  },
+  {
+    "source": "Physics/src/include/NxPhysicsBackend.h",
+    "source_sha256": "b309061c66c035e73cf11c83abc50a822cdb4ed3a42567ae79ac7c6bedaac2b9",
+    "snapshot": "capture-source/triangle-fan-domain-x87-143-NxPhysicsBackend.h.gz",
+    "snapshot_sha256": "3f03e63edf7a8197bca6e4d5ff37ee66c09e2bcfa977eab381e32dcd8178c303"
+  },
+  {
+    "source": "Physics/src/include/NxPolygonScratch.h",
+    "source_sha256": "f21a3762043d86f8c2696dea44874e869d2511de890deac54b59b15620b51c0e",
+    "snapshot": "capture-source/triangle-fan-domain-x87-144-NxPolygonScratch.h.gz",
+    "snapshot_sha256": "ee6138066ddda05e55550a629adc3993a9b1b50fbed373f447ec73a7e99eb7be"
+  },
+  {
+    "source": "Physics/src/include/NxSdkAllocator.h",
+    "source_sha256": "97008f3779823f8905a713b0676119333fadfeb40ad4ba5d89b793672b4326a7",
+    "snapshot": "capture-source/triangle-fan-domain-x87-145-NxSdkAllocator.h.gz",
+    "snapshot_sha256": "34801c3962b88771de8d843f202af72b1a788955c29e063f2d6610dda816387e"
+  },
+  {
+    "source": "Physics/src/include/NxSdkAllocatorAccess.inl",
+    "source_sha256": "05fb01224de74a91f9448a21bc1779c4ea9f721942a4a92986f9273661cc8820",
+    "snapshot": "capture-source/triangle-fan-domain-x87-146-NxSdkAllocatorAccess.inl.gz",
+    "snapshot_sha256": "bd903942e4442f883cd047db5c610fdf70e1b07e7cae19c3916c7887e712e0b7"
+  },
+  {
+    "source": "Physics/src/include/NxSegmentSegmentDistance.inl",
+    "source_sha256": "962ad54d6dd8446b5187d1d96c370bc92e6cbd4a2f1d1dde3ae895beeb4c0d48",
+    "snapshot": "capture-source/triangle-fan-domain-x87-147-NxSegmentSegmentDistance.inl.gz",
+    "snapshot_sha256": "aaa01149167c30a49d5e0be1a43d310e73bd48fd4a5476f3ee090f705eee7b0c"
+  },
+  {
+    "source": "Physics/src/include/NxSmoothNormalsAngle.h",
+    "source_sha256": "0db86b7da2e5142d4d55a800c100ede71c6ced92bf653c9e1ac1c2e177d6f432",
+    "snapshot": "capture-source/triangle-fan-domain-x87-148-NxSmoothNormalsAngle.h.gz",
+    "snapshot_sha256": "01cfb4297d58b5a43cd44addeea2f0aeb37650ba59e960fb8479a4da52541f3f"
+  },
+  {
+    "source": "Physics/src/include/NxTriangleDistance.h",
+    "source_sha256": "330ef0706f02271af2ddb9f006fdce7d06cfb3341a7a822672426e6b40300299",
+    "snapshot": "capture-source/triangle-fan-domain-x87-149-NxTriangleDistance.h.gz",
+    "snapshot_sha256": "aa53c291e8030573e2fe809b76b8e5c5589851f76cd10e70b3cf62f3f4e34c4e"
+  },
+  {
+    "source": "Physics/src/include/ObjectModel.h",
+    "source_sha256": "8625499b107eb9b0b21a7743e1a17297cc1cee86614c9a8e7b1fb4e369a31f41",
+    "snapshot": "capture-source/triangle-fan-domain-x87-150-ObjectModel.h.gz",
+    "snapshot_sha256": "aba0102427171928c968068f8fd029695e70186f8ec1b96a8b3ffa9bcf1357ef"
+  },
+  {
+    "source": "Physics/src/include/PhysicsInternal.h",
+    "source_sha256": "0c7334106100f8ee47b25532f70c4421cb93046e57d34b45ff80eb97051587a9",
+    "snapshot": "capture-source/triangle-fan-domain-x87-151-PhysicsInternal.h.gz",
+    "snapshot_sha256": "26fc80271ba9c8797ab1e06342c47585797b1b100b4fdddda349eace1b09f061"
+  },
+  {
+    "source": "Physics/src/include/PhysicsSDK.h",
+    "source_sha256": "715a79a78ef1944ae63bd800de4ed9b6563a2e85a7f139defedf6ade3e086711",
+    "snapshot": "capture-source/triangle-fan-domain-x87-152-PhysicsSDK.h.gz",
+    "snapshot_sha256": "cd47d980bbe31a9807cb212283f87652116719668c2ddd94ed45a81e5fbe3a23"
+  },
+  {
+    "source": "Physics/src/include/PhysicsSDKParameters.inl",
+    "source_sha256": "929e2ba2c92e04ad35eb0780fc007ac0babc4a9db48eb8742abf05e07fac4712",
+    "snapshot": "capture-source/triangle-fan-domain-x87-153-PhysicsSDKParameters.inl.gz",
+    "snapshot_sha256": "9765e22620f7591dd1f837e54e34a4835eda2050104e706fb43ccceb977151ff"
+  },
+  {
+    "source": "Physics/src/include/PMap.h",
+    "source_sha256": "52cb1f697950ecce7c779d1c328f4eaf37e00bf02d49ff2f43a34580989f1659",
+    "snapshot": "capture-source/triangle-fan-domain-x87-154-PMap.h.gz",
+    "snapshot_sha256": "22d677ca9be71d346568d7040e4880169e7d93b8361ff68a22a5ca8fcde46242"
+  },
+  {
+    "source": "Physics/src/include/portable/NxConvexInterfaces.h",
+    "source_sha256": "31cf1c70d0381fd56105f77cffd73047305f59d29c011045d0742fa187d719a0",
+    "snapshot": "capture-source/triangle-fan-domain-x87-155-NxConvexInterfaces.h.gz",
+    "snapshot_sha256": "0be67cfca3b0553ef0787445faf87d0d564b221845ceae6a6fd184559b7b4de0"
+  },
+  {
+    "source": "Physics/src/include/portable/NxScalarGeometry.h",
+    "source_sha256": "ad6a754cbf2396299569772e3de0ec62fcb037c8f697450d53e90077a6f77f53",
+    "snapshot": "capture-source/triangle-fan-domain-x87-156-NxScalarGeometry.h.gz",
+    "snapshot_sha256": "888f3e0495caf6ecd40ea280fb3bbeab13d3e471c08d018b1d7c10e5d2fd6c96"
+  },
+  {
+    "source": "Physics/src/include/portable/NxScalarMath.h",
+    "source_sha256": "82f2a74c9ca2142e812bb58a15d4156db0b50f562985e56c397a549c5dcfe11f",
+    "snapshot": "capture-source/triangle-fan-domain-x87-157-NxScalarMath.h.gz",
+    "snapshot_sha256": "3536059602a75302f60c5255b5784e482b859ea27105553db3fdcb9e37badba7"
+  },
+  {
+    "source": "Physics/src/include/portable/TriangleMeshPolygonsScalar.inl",
+    "source_sha256": "fc40d79b70974eff78e729a01e6dc40b6b337416fa10de5784df7e98194c3cfa",
+    "snapshot": "capture-source/triangle-fan-domain-x87-158-TriangleMeshPolygonsScalar.inl.gz",
+    "snapshot_sha256": "177a6a4a203d74373d8ed4ccf490cce03057a0ebb8febe0192c71eae3ed32d59"
+  },
+  {
+    "source": "Physics/src/include/QhullHost.h",
+    "source_sha256": "b38bd52122ddc0475aeb3eec3035e8d9df729315c1c2cc5a77b02ca0fd4c1880",
+    "snapshot": "capture-source/triangle-fan-domain-x87-159-QhullHost.h.gz",
+    "snapshot_sha256": "28d2b8c2b8d8b84474042e44028105cc7211d7f12450b11197c41853d1fb065d"
+  },
+  {
+    "source": "Physics/src/include/Scene.h",
+    "source_sha256": "ef5ac447f64772282a491d6174f9bfe4a39d65510fe563dbf8d3e5039a5b017c",
+    "snapshot": "capture-source/triangle-fan-domain-x87-160-Scene.h.gz",
+    "snapshot_sha256": "8034cebd143551b4b0d333da7ab44410f863d626ddf9197f36ff1e062b09bec2"
+  },
+  {
+    "source": "Physics/src/include/SceneVisualize.h",
+    "source_sha256": "0ef70cfe62d0f4034b63950f5eee375a84a942ff2d9c6202302c6d1a95e73874",
+    "snapshot": "capture-source/triangle-fan-domain-x87-161-SceneVisualize.h.gz",
+    "snapshot_sha256": "7f1a794da8334a47374f7fa051f7c37cf6f63b343be62f1917e2b3a9adafd974"
+  },
+  {
+    "source": "Physics/src/include/TriangleMesh.h",
+    "source_sha256": "29a32af54ec3f8764d974b470e5234e4c04d071902258a4f67caa5ae77f01e2c",
+    "snapshot": "capture-source/triangle-fan-domain-x87-162-TriangleMesh.h.gz",
+    "snapshot_sha256": "a827255809e819a76be25ea51d374bf3543d6a0a4403fe6bc1f17115334d7045"
+  },
+  {
+    "source": "Physics/src/include/TriangleMeshConvexData.h",
+    "source_sha256": "c193df8ebdaede74c389966405b1dffd051f665f91df92be8736c43bcb8ba033",
+    "snapshot": "capture-source/triangle-fan-domain-x87-163-TriangleMeshConvexData.h.gz",
+    "snapshot_sha256": "67ae0feea5cd94b59e52b87a26baab53a633305da0770a45e7b37c953785485a"
+  },
+  {
+    "source": "Physics/src/include/TriangleMeshPolygons.h",
+    "source_sha256": "80ad299f64c9f14e5047e43d34db49cc0ea8375f86bfea4471ef4a9f74e87001",
+    "snapshot": "capture-source/triangle-fan-domain-x87-164-TriangleMeshPolygons.h.gz",
+    "snapshot_sha256": "76c4c1ef768da96d1ab1684d4286553d14a1b7cb17336bfa8062dc34fc45bed6"
+  },
+  {
+    "source": "Physics/src/include/X87Sqrt.h",
+    "source_sha256": "5e4a21886073e78638c5f20924c1d0920fe1a999b34dbebf0ee7117de530e622",
+    "snapshot": "capture-source/triangle-fan-domain-x87-165-X87Sqrt.h.gz",
+    "snapshot_sha256": "c059c26cecc1c4688a46cf9a6215834e14887baeb318ee831c2a29c0c0610335"
+  },
+  {
+    "source": "Foundation/include/Nx.h",
+    "source_sha256": "0f1411124c2b704e5bfb72ca476297840692f1c6c4df47daf1185530070464e4",
+    "snapshot": "capture-source/triangle-fan-domain-x87-166-Nx.h.gz",
+    "snapshot_sha256": "f73d6bbfce6391b624673d1e5887a58f521988f71c18716a0099fa0992021d44"
+  },
+  {
+    "source": "Foundation/include/Nx12F32.h",
+    "source_sha256": "ba4bbbf13aad6e32a7a9f82306d8a96b8c78311c8f5769c29d37ca5e93a38b96",
+    "snapshot": "capture-source/triangle-fan-domain-x87-167-Nx12F32.h.gz",
+    "snapshot_sha256": "c842f662b79270b107a399b9f8842f39afc78190e395e1508be3729fca7fb865"
+  },
+  {
+    "source": "Foundation/include/Nx16F32.h",
+    "source_sha256": "bb786b47861edeec6917b6fc7aaff97c93bae473fe9d9c92184298b2a75d4cd5",
+    "snapshot": "capture-source/triangle-fan-domain-x87-168-Nx16F32.h.gz",
+    "snapshot_sha256": "0ca421cb3c824ef5e908d871c52d77d68067f01283db205838af599d0183e6fb"
+  },
+  {
+    "source": "Foundation/include/Nx9F32.h",
+    "source_sha256": "7e5bf33f115fbb2e4203c11cd3b9f26bd4ab4d2732e8ae724436da298eed64c6",
+    "snapshot": "capture-source/triangle-fan-domain-x87-169-Nx9F32.h.gz",
+    "snapshot_sha256": "248303cb769f8e56fed81b7acd81cc9345799bc133e8768a70fd30a3dba48f1a"
+  },
+  {
+    "source": "Foundation/include/NxAllocateable.h",
+    "source_sha256": "dc5156a04e731c7a0574b89f583a244f91021b2decb187eb5bcfaec632beeab5",
+    "snapshot": "capture-source/triangle-fan-domain-x87-170-NxAllocateable.h.gz",
+    "snapshot_sha256": "77cf7d3c5e47ba6b5ea600a2818eba37469909e1686c4af548746bbe9096953f"
+  },
+  {
+    "source": "Foundation/include/NxAllocatorDefault.h",
+    "source_sha256": "f7af0e4db1d123ecdae6d412105d8666d939391da74216433b6d965c069509af",
+    "snapshot": "capture-source/triangle-fan-domain-x87-171-NxAllocatorDefault.h.gz",
+    "snapshot_sha256": "57ce3436f90132b03e340d09a8937591777bce28edea6c96496d9dac1c52b368"
+  },
+  {
+    "source": "Foundation/include/NxArray.h",
+    "source_sha256": "8a64f16ae54412c7087c35d4de0a161c4485e7bbc9a0c51ca947a3f2058b45f6",
+    "snapshot": "capture-source/triangle-fan-domain-x87-172-NxArray.h.gz",
+    "snapshot_sha256": "9c0df94a1d723ff282a42e826d4c9bdd91e0d524c3c8d38510ae4305fbff9e38"
+  },
+  {
+    "source": "Foundation/include/NxAssert.h",
+    "source_sha256": "8a144be9690039a11e9879d9a6c4151e33c326ffdce2598aa7f54c2536b1a825",
+    "snapshot": "capture-source/triangle-fan-domain-x87-173-NxAssert.h.gz",
+    "snapshot_sha256": "2a9fb4ad5cf14b07d6947489bd038626e16ea32fabecd39fd84438cbd5e5e371"
+  },
+  {
+    "source": "Foundation/include/NxBitField.h",
+    "source_sha256": "457f929e339ac136150af13c6a392ff5c077ac650c651c18962113455be835d1",
+    "snapshot": "capture-source/triangle-fan-domain-x87-174-NxBitField.h.gz",
+    "snapshot_sha256": "618270ed3b6b7bb50aa02c23d38a3dcdbfee78155017052bebe5c3888c1c5a18"
+  },
+  {
+    "source": "Foundation/include/NxBlank.h",
+    "source_sha256": "b2d6b42fad0dc95c525e0c4ff9ec53adf34f14b0a2a5ea9939f4a7bf424058d6",
+    "snapshot": "capture-source/triangle-fan-domain-x87-175-NxBlank.h.gz",
+    "snapshot_sha256": "69f57da16eacadd1cc166651fe022c6455c55c81582f7e3a940addceb2b5c506"
+  },
+  {
+    "source": "Foundation/include/NxBounds3.h",
+    "source_sha256": "c7763076cb80b44863fa2faf71d1710548e2b96323b6ebe6dc557b56efd86c42",
+    "snapshot": "capture-source/triangle-fan-domain-x87-176-NxBounds3.h.gz",
+    "snapshot_sha256": "b523f21d0047de202f90c1209bd99ff80c7bcb54dc81c284183c024a785d084f"
+  },
+  {
+    "source": "Foundation/include/NxBox.h",
+    "source_sha256": "453505eea6459281937094b4e5e4b7782bec48e817d19d2e586a7c7c2dbda4bf",
+    "snapshot": "capture-source/triangle-fan-domain-x87-177-NxBox.h.gz",
+    "snapshot_sha256": "30c1c16c8f9635a609cdd61f1c2fedb5f1bc838108ff540ac56ce5fa41475259"
+  },
+  {
+    "source": "Foundation/include/NxBuildNumber.h",
+    "source_sha256": "8bc6af66adb5adb9bfa8e402ee2bb4be23fc089b4c2835d174f41300aa0a028d",
+    "snapshot": "capture-source/triangle-fan-domain-x87-178-NxBuildNumber.h.gz",
+    "snapshot_sha256": "fcc9960df9daff7dee087147648775646640306e24c04142b4af42c728865bfb"
+  },
+  {
+    "source": "Foundation/include/NxCapsule.h",
+    "source_sha256": "b019a841676991483cd8cd306af298a07d09b07aac1014651e028157ce87cd90",
+    "snapshot": "capture-source/triangle-fan-domain-x87-179-NxCapsule.h.gz",
+    "snapshot_sha256": "f789ea8c82a922140b1403e406aa2f37c27b46f65063bd27299c003806f1ac2c"
+  },
+  {
+    "source": "Foundation/include/NxDebugRenderable.h",
+    "source_sha256": "bd05064e4c2363d39c137b2630dc23e62eaca09bfd62d88f056a69013fc2b2af",
+    "snapshot": "capture-source/triangle-fan-domain-x87-180-NxDebugRenderable.h.gz",
+    "snapshot_sha256": "ac310f4cc1305cc1615298cc9cead706f2e6bedea50a202869443f6c021efab8"
+  },
+  {
+    "source": "Foundation/include/NxException.h",
+    "source_sha256": "999cc86008a233615c16f6e772cf37c44e1e71dd1dc496ac8e2b36def4874f76",
+    "snapshot": "capture-source/triangle-fan-domain-x87-181-NxException.h.gz",
+    "snapshot_sha256": "b17e045693cd81a6d5987a5c44da71cc2ee8311f05eca73034724268d8431719"
+  },
+  {
+    "source": "Foundation/include/Nxf.h",
+    "source_sha256": "9303dc95fd07426f00bd803e7f024b2dc690da302b2487161624a893ffadbf38",
+    "snapshot": "capture-source/triangle-fan-domain-x87-182-Nxf.h.gz",
+    "snapshot_sha256": "86ddf37ddc0b3248775368c223a48860f3f834792890bcef5a949d2c8f38623e"
+  },
+  {
+    "source": "Foundation/include/NxFoundation.h",
+    "source_sha256": "bca036d356a428cc1d85620d0846ed672632d47963877f9e5f163551d8207cf5",
+    "snapshot": "capture-source/triangle-fan-domain-x87-183-NxFoundation.h.gz",
+    "snapshot_sha256": "56a3380a6a501a603059346a0aae73d28db0dba9a43ed9c10cfe88d508329c94"
+  },
+  {
+    "source": "Foundation/include/NxFoundationSDK.h",
+    "source_sha256": "31426e5966dbe0215b430daffe91ba8a7063b1853b1b51995f66e6850ecf6dbe",
+    "snapshot": "capture-source/triangle-fan-domain-x87-184-NxFoundationSDK.h.gz",
+    "snapshot_sha256": "755791eab3a3d9e4106aa37eed908e265705d53d76eca1a5ad7c9a048d31fd43"
+  },
+  {
+    "source": "Foundation/include/NxFPU.h",
+    "source_sha256": "6e70ea83197140f67451f4a690a7f8848cf17c4e3858721b0e2a254e8ba22995",
+    "snapshot": "capture-source/triangle-fan-domain-x87-185-NxFPU.h.gz",
+    "snapshot_sha256": "8b0bdbc192557967cc52fb9442beba6eb482273a18bad8b4c54bb2605645f16f"
+  },
+  {
+    "source": "Foundation/include/NxList.h",
+    "source_sha256": "c59f413d86d739af0408899233d41f53180da34e7804acc47df41a0f0c405ca8",
+    "snapshot": "capture-source/triangle-fan-domain-x87-186-NxList.h.gz",
+    "snapshot_sha256": "627a00b00b7b399f2b9a204c1b1ea0e805aa066752cede26a370a86e2e9ddf45"
+  },
+  {
+    "source": "Foundation/include/NxMat33.h",
+    "source_sha256": "20d47881227a4ac033a4a2c618d6fc3cb1bafd9b086d7b12e56c683b7bf08ea5",
+    "snapshot": "capture-source/triangle-fan-domain-x87-187-NxMat33.h.gz",
+    "snapshot_sha256": "bf24e1b1a63f48b3f3c8660c4384b441a829f7bf254e1b4707acd7142048a1e9"
+  },
+  {
+    "source": "Foundation/include/NxMat34.h",
+    "source_sha256": "26fb30b99d68209cb3fc45f91d18bb26503119263a04576997e39a079cb7faed",
+    "snapshot": "capture-source/triangle-fan-domain-x87-188-NxMat34.h.gz",
+    "snapshot_sha256": "0ca3b515e3739a736b18a4f9271d20cc6fe9155fc7227b1f30b67c51b83aaa22"
+  },
+  {
+    "source": "Foundation/include/NxMath.h",
+    "source_sha256": "93e85905e8515f33b2b6a55dc19cc90e9e3deb43d302bd7eaddc37ee52e74c20",
+    "snapshot": "capture-source/triangle-fan-domain-x87-189-NxMath.h.gz",
+    "snapshot_sha256": "bbb31c39da367080425ae2cd8832f9394aefe905250e059228c8ff6fad2e2024"
+  },
+  {
+    "source": "Foundation/include/NxPlane.h",
+    "source_sha256": "9ee607a71ab37b82c641cff4d1c026f2a24aa51c7ef33c1dc6acc5874a22f552",
+    "snapshot": "capture-source/triangle-fan-domain-x87-190-NxPlane.h.gz",
+    "snapshot_sha256": "bd6ab3aa6f08720c316724853bf1b051cbc17b4f62a21fdd05ddbedd47235148"
+  },
+  {
+    "source": "Foundation/include/NxPool.h",
+    "source_sha256": "94688d29641eaad9a16170e3470991c23266190c84732f8513bee8cbc1d3c251",
+    "snapshot": "capture-source/triangle-fan-domain-x87-191-NxPool.h.gz",
+    "snapshot_sha256": "acd4bc595a870adbd4b70c0c8f66fc285aa15f58fe39635043443124b713b8b0"
+  },
+  {
+    "source": "Foundation/include/NxProfiler.h",
+    "source_sha256": "203efe91b8a04e1459aab30545d4b424b6a7832e27d738e4ef88f238e9d7699d",
+    "snapshot": "capture-source/triangle-fan-domain-x87-192-NxProfiler.h.gz",
+    "snapshot_sha256": "757f8d19423dbaac841796e4e6c04d584d8bba79b36d80afa2d24adba4f0258b"
+  },
+  {
+    "source": "Foundation/include/NxQuat.h",
+    "source_sha256": "58fd4d399650ba087a5441315d4faeed0250be1d8a348c23006a450fd53bc18e",
+    "snapshot": "capture-source/triangle-fan-domain-x87-193-NxQuat.h.gz",
+    "snapshot_sha256": "c3a65fd51c58a41bb852fbec7e13851487e29902c64e9abc2e0d58fe76b670d4"
+  },
+  {
+    "source": "Foundation/include/NxQuickSort.h",
+    "source_sha256": "f582c562f1812ec9c63ea8553af258f54cca199b3e6b05993fbc417378133067",
+    "snapshot": "capture-source/triangle-fan-domain-x87-194-NxQuickSort.h.gz",
+    "snapshot_sha256": "065576d2906d458950a711a7adc41e5c9f78821e468442a1e35cfec208b2175a"
+  },
+  {
+    "source": "Foundation/include/NxRay.h",
+    "source_sha256": "e05ad1eca258d12ed08fedc8b03dbb88cd6bf1e1d7a35f10486f54c664cbab7e",
+    "snapshot": "capture-source/triangle-fan-domain-x87-195-NxRay.h.gz",
+    "snapshot_sha256": "0281551338e71d2dad6b02cb1ba340e5a8a29434669fa5ded168b68e7a8ea151"
+  },
+  {
+    "source": "Foundation/include/NxSegment.h",
+    "source_sha256": "268cb4d45d49a0f3d2eb4f692d43d97aa21d24db761014d242495e6e54a4008f",
+    "snapshot": "capture-source/triangle-fan-domain-x87-196-NxSegment.h.gz",
+    "snapshot_sha256": "75cd573c635983085593d60723a254c2d0d9746f8d8ac46d8361f979bc79a743"
+  },
+  {
+    "source": "Foundation/include/NxSimpleTriangleMesh.h",
+    "source_sha256": "c8b4dd640bbe297b29dab1a3521da3cf6444edd384f06f35f6a63ff58f667995",
+    "snapshot": "capture-source/triangle-fan-domain-x87-197-NxSimpleTriangleMesh.h.gz",
+    "snapshot_sha256": "4a5499f20b1ea1845aad22bfc8ac24e3baf82ed1744e55f9739fa065a664729e"
+  },
+  {
+    "source": "Foundation/include/NxSimpleTypes.h",
+    "source_sha256": "74f162f50a02d66d62144261c0044945ded354bb67efba21562ee9362c3ab203",
+    "snapshot": "capture-source/triangle-fan-domain-x87-198-NxSimpleTypes.h.gz",
+    "snapshot_sha256": "77a622f01eb1f89be644c1157efbccf5f41156e11b918ae37e96243ed5305554"
+  },
+  {
+    "source": "Foundation/include/NxSphere.h",
+    "source_sha256": "9d205a2d69fbfed1e27cf69bd7054cbbda07516d7e68fc54c33ffac899609970",
+    "snapshot": "capture-source/triangle-fan-domain-x87-199-NxSphere.h.gz",
+    "snapshot_sha256": "dbaf27cac697b886733f84d68f54f07512bff512644f98e3d9f7353b456dc4f1"
+  },
+  {
+    "source": "Foundation/include/NxStream.h",
+    "source_sha256": "406f5261e4dcec6a87c3a654e1c16bb05f23f362df45627193efaa159bdd6a12",
+    "snapshot": "capture-source/triangle-fan-domain-x87-200-NxStream.h.gz",
+    "snapshot_sha256": "38d89b0e2cefe1265abda48551bc171da9b858a90f39dd60415caeec7de0f966"
+  },
+  {
+    "source": "Foundation/include/NxUserAllocator.h",
+    "source_sha256": "d9a9099d220e18c854f4e1d856d4b4f3809951ba78ec85d1953cc610b5b8e039",
+    "snapshot": "capture-source/triangle-fan-domain-x87-201-NxUserAllocator.h.gz",
+    "snapshot_sha256": "db8c8075f595ed35d22a234a7badf4c4eac4f684263ce7d8448c531338809214"
+  },
+  {
+    "source": "Foundation/include/NxUserAllocatorAccess.h",
+    "source_sha256": "0cb14602986db655d7f7507de33033bf29601abb620ba0491dcdd1609ff86cbf",
+    "snapshot": "capture-source/triangle-fan-domain-x87-202-NxUserAllocatorAccess.h.gz",
+    "snapshot_sha256": "35f7ebd1cf98c43f4fc2b9c4abf904f93d16d2a3b476ecbdcd38e579dde62ceb"
+  },
+  {
+    "source": "Foundation/include/NxUserAllocatorDefault.h",
+    "source_sha256": "afe8cc95c7ad796e09f97b46e0ebe9a62d8c06afe25d422629dd842bf207fb53",
+    "snapshot": "capture-source/triangle-fan-domain-x87-203-NxUserAllocatorDefault.h.gz",
+    "snapshot_sha256": "573287934fc5e87860c3d0a1c38af7245a56421bc4e8b69d58fa1a1adb522d44"
+  },
+  {
+    "source": "Foundation/include/NxUserDebugRenderer.h",
+    "source_sha256": "1f1dd04c5be2abd80479aa755f53f028978869539e370000682289f10263baee",
+    "snapshot": "capture-source/triangle-fan-domain-x87-204-NxUserDebugRenderer.h.gz",
+    "snapshot_sha256": "e5ff70a76006a3c0ecf8a4770702d6e4c3139a0d002461f3a92381291043357f"
+  },
+  {
+    "source": "Foundation/include/NxUserOutputStream.h",
+    "source_sha256": "7f9f3b9b92a36c84acf166b5c2fd84db70733899caa1569e0784de4bfbb33965",
+    "snapshot": "capture-source/triangle-fan-domain-x87-205-NxUserOutputStream.h.gz",
+    "snapshot_sha256": "6e13061a4e9f455379cbc6a975eeacdeb3ce3c1ce5ecfdbedc370da0b99b58ff"
+  },
+  {
+    "source": "Foundation/include/NxUtilities.h",
+    "source_sha256": "ee639cb8ceb5edd2d770775232dfd1628eccdc3b7631689c6f082437e31910ee",
+    "snapshot": "capture-source/triangle-fan-domain-x87-206-NxUtilities.h.gz",
+    "snapshot_sha256": "fef7ac541bd948be7951b3f6e4a191b893eaa9aa0d62697699a0184611e454eb"
+  },
+  {
+    "source": "Foundation/include/NxVec3.h",
+    "source_sha256": "852a0e2dd0595a10bb993f1b202cf98d11218ab4edfff0931646e049fcc28629",
+    "snapshot": "capture-source/triangle-fan-domain-x87-207-NxVec3.h.gz",
+    "snapshot_sha256": "710bb9f75c7e1543bd48adae064d913b459c38595671175b6001f0c65cdc3b95"
+  },
+  {
+    "source": "Foundation/include/NxVersionNumber.h",
+    "source_sha256": "0b0ee61a53b886437e2a0ef7f5d9b123d4d8ccd178ebd6057eeddc3e552e3df1",
+    "snapshot": "capture-source/triangle-fan-domain-x87-208-NxVersionNumber.h.gz",
+    "snapshot_sha256": "c9a394108798c21516f33c17de4e5be944c77433f78de6e6d135172c9391b0c1"
+  },
+  {
+    "source": "Foundation/include/NxVolumeIntegration.h",
+    "source_sha256": "e748af935cd1d56999e65449fc95dc7230108f3bd5e51a4052926a287dd2cc72",
+    "snapshot": "capture-source/triangle-fan-domain-x87-209-NxVolumeIntegration.h.gz",
+    "snapshot_sha256": "3557ec2b8612f5f4cf49d2864af27156936677d58f30f23920e3ec1baac6b39c"
+  },
+  {
+    "source": "Foundation/include/NxXBOX.h",
+    "source_sha256": "964f1207a89b6563700eaee9d44fb4b03e9bac59f933f494f1a8e4339532f665",
+    "snapshot": "capture-source/triangle-fan-domain-x87-210-NxXBOX.h.gz",
+    "snapshot_sha256": "f14b6bd070772c86a0fd29db357c54ae86dc97e6f912ec1d7814dc6f27b60d52"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceAABB.h",
+    "source_sha256": "e90269be5e0647ea83ca1f4739748a41e9c2c27af5a3ecde6167eb4a611f4d23",
+    "snapshot": "capture-source/triangle-fan-domain-x87-211-IceAABB.h.gz",
+    "snapshot_sha256": "06864e307f29b23514a13444d82e264bff1959b0cf0139eb4837e5f7b47fc8b6"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceAxes.h",
+    "source_sha256": "f91e5f58ed564da5791e8675b294efd72c7a9e2b67696366aec5c153a87828b9",
+    "snapshot": "capture-source/triangle-fan-domain-x87-212-IceAxes.h.gz",
+    "snapshot_sha256": "b1196b68f9f3687f4fc2dd702aa20b2ae5d4973f7eda35c228fcbebbef66b23c"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceBoundingSphere.h",
+    "source_sha256": "0b380840bcbbdedfacf677019945100cb9a1b0b1f7c2d18e9406062aa1a91184",
+    "snapshot": "capture-source/triangle-fan-domain-x87-213-IceBoundingSphere.h.gz",
+    "snapshot_sha256": "802cfaed15d78c2cb4ba1166e806dd60feccf95c51c56e4665b6778ad96758e5"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceContainer.h",
+    "source_sha256": "cb92fff78bfa4e8c3f6cc135dc1e37be7c189668814b57aa6622c39e82dbcdf0",
+    "snapshot": "capture-source/triangle-fan-domain-x87-214-IceContainer.h.gz",
+    "snapshot_sha256": "a4c99cedc3629fc87c91eda75da803fc6a6192237dc4771313daca579b7ec1cf"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceFPU.h",
+    "source_sha256": "81639df2ff746de17f0fb075e82755e1dd48bae23a008926ab7ec4f4dc04f53d",
+    "snapshot": "capture-source/triangle-fan-domain-x87-215-IceFPU.h.gz",
+    "snapshot_sha256": "707eb0d36a8d4fb0895a15ed5dbccd405f61e788cb282b8d1f0de08101bea494"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceHPoint.cpp",
+    "source_sha256": "1fd571664d5028d98f6d1a26d2e30750ce5bee9afb1227d3d3ee0a8866765677",
+    "snapshot": "capture-source/triangle-fan-domain-x87-216-IceHPoint.cpp.gz",
+    "snapshot_sha256": "9a0712d1994385510232d07f53612f7152d92072633e55912407ab01efd8db6f"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceHPoint.h",
+    "source_sha256": "15fb208af9a2235c6474c0cd12d87e1e984737b060893e3d9bc919e0c0d67c40",
+    "snapshot": "capture-source/triangle-fan-domain-x87-217-IceHPoint.h.gz",
+    "snapshot_sha256": "fdbb068c12573a1a453b5a608b8c804c1f7663a1272ade7628195f1f3ac1d025"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceIndexedTriangle.cpp",
+    "source_sha256": "9c57c7f39e6f0f0413dcff90bfa45c054543ca6bba5f8af226c6ebd1614bc51e",
+    "snapshot": "capture-source/triangle-fan-domain-x87-218-IceIndexedTriangle.cpp.gz",
+    "snapshot_sha256": "731245ca7b1dc6cb1fd83d9fc4d92483409fc07f75d81e65559e07703f1a225e"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceIndexedTriangle.h",
+    "source_sha256": "9409fb7336f35448ce3e829de137335c6b72974bbc0ab6c1a5291f38e336dff3",
+    "snapshot": "capture-source/triangle-fan-domain-x87-219-IceIndexedTriangle.h.gz",
+    "snapshot_sha256": "d4fe1a3b26e00206b7b4d165b282b9c305259f3c8ecccbf331597539057ee4fa"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceLSS.h",
+    "source_sha256": "7b15c5914abcfb8457c21c03409289abce1cea622030a8dc2175792783fc5905",
+    "snapshot": "capture-source/triangle-fan-domain-x87-220-IceLSS.h.gz",
+    "snapshot_sha256": "0f30a8e3b6226a6338536ca2d768bb14a5b953a9b3b9f36c2adf308f40aa6db6"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceMatrix3x3.cpp",
+    "source_sha256": "b750996f2fa4dd74c89a64c55659bf1e845e95c8dc6893d70eb5e45f0c852571",
+    "snapshot": "capture-source/triangle-fan-domain-x87-221-IceMatrix3x3.cpp.gz",
+    "snapshot_sha256": "e382d2145483b41ead2167c789a75b6a8b86f2e879b27b759c7fa29761a00c71"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceMatrix3x3.h",
+    "source_sha256": "ca0cd2cbdf4f6c79c248855e33ac2911db67fe16ae1dcd08d7d7e896b945b786",
+    "snapshot": "capture-source/triangle-fan-domain-x87-222-IceMatrix3x3.h.gz",
+    "snapshot_sha256": "f18185c1838b76c414dc5643388c899d405539b435e37db0228dd152d36d4e90"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceMatrix4x4.cpp",
+    "source_sha256": "1ab46d4c5264620f3793009170e93e28ebd53df3497bd2f8fbe4c4ce31bcdc3f",
+    "snapshot": "capture-source/triangle-fan-domain-x87-223-IceMatrix4x4.cpp.gz",
+    "snapshot_sha256": "d42f5d18e3c1675747f4e47ce1b16e26b9122b1c0744d58a87fcc4d53eaa9474"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceMatrix4x4.h",
+    "source_sha256": "5706570c8153163ffc74a80801db5bd143b7c5d519d779232f668ab7422a0b46",
+    "snapshot": "capture-source/triangle-fan-domain-x87-224-IceMatrix4x4.h.gz",
+    "snapshot_sha256": "04b3da76659a876b1b7cb65de2c7ca52c57f360a46fc834ba6e5ddd0bc228691"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceMemoryMacros.h",
+    "source_sha256": "91a1390e1c5dd4c779549ab910a36a2c6506f3cbacf0d913d147ae81ef65814d",
+    "snapshot": "capture-source/triangle-fan-domain-x87-225-IceMemoryMacros.h.gz",
+    "snapshot_sha256": "75f44b9ab056f25b36fb761b65ccd09783cbd3c6399d51ee7654e18eded37fe5"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceOBB.h",
+    "source_sha256": "3e98df4d33b2145419c60eb4a580b38b85bf412e29b32ab2dc2a90297564d410",
+    "snapshot": "capture-source/triangle-fan-domain-x87-226-IceOBB.h.gz",
+    "snapshot_sha256": "fe51eacf5b2d98f251c9abb9424972c1a9cc14d64b3c211bff20d12e484fafa1"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePairs.h",
+    "source_sha256": "2d78fc19afb8d4b17d00c9c362ba958432bf672780addd8cfddef40fbaf085a6",
+    "snapshot": "capture-source/triangle-fan-domain-x87-227-IcePairs.h.gz",
+    "snapshot_sha256": "4dfeddb9aef4b18adb9a449b434f00f55bcea30c3c9aa5bd4e6842f382461ef5"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePlane.cpp",
+    "source_sha256": "6f8479858e20f7776a10776f821880bced7278a223328d33ca5be563ae7ab05c",
+    "snapshot": "capture-source/triangle-fan-domain-x87-228-IcePlane.cpp.gz",
+    "snapshot_sha256": "bfade33948066c94e8c21663a11ee3e7b17b3b1ebe98f2d998ea064baeb52607"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePlane.h",
+    "source_sha256": "c8a112b887a221e8205a1dcd259fb0f2d853296f132d2fa466e731beb0876f58",
+    "snapshot": "capture-source/triangle-fan-domain-x87-229-IcePlane.h.gz",
+    "snapshot_sha256": "59de541aca9f0f119631f40c35ad67f3045ee9cdea9168265806ce3250c90804"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePoint.cpp",
+    "source_sha256": "eea461ba47fbdd90d7e3f163615e26f087e801e1971548a8d375743a4da900c8",
+    "snapshot": "capture-source/triangle-fan-domain-x87-230-IcePoint.cpp.gz",
+    "snapshot_sha256": "d33152b8f04775ad66bbc910ad44433dac3a9000cd21c4110c7e8e88ca897be1"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePoint.h",
+    "source_sha256": "31c349e61b27e78a8f6dfb7c53c864b117a62cf5016226955ddefbaaf1daef0f",
+    "snapshot": "capture-source/triangle-fan-domain-x87-231-IcePoint.h.gz",
+    "snapshot_sha256": "e4c2d1485c0ac7b2da15db66db19bdad2896ca4e8b6361c1cb6a2e0ccd732b74"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePreprocessor.h",
+    "source_sha256": "ade706a5d9580d224ec37ac4b15673e9398b54191fbd49ad00bb45a2253a6dc9",
+    "snapshot": "capture-source/triangle-fan-domain-x87-232-IcePreprocessor.h.gz",
+    "snapshot_sha256": "bdb2063cc4388343d767287d44f9f8c6dc8a45dad1fcd7ab23aad813a238c2b6"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceRandom.cpp",
+    "source_sha256": "b7e9ef779d6e24b01e848c8615bd3588b09638efd096f2f7858b68557952593b",
+    "snapshot": "capture-source/triangle-fan-domain-x87-233-IceRandom.cpp.gz",
+    "snapshot_sha256": "c2a233a045cdedc149d9eba1fba718964f838e2a0cf03fa53b70cbe3cd256d4e"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceRandom.h",
+    "source_sha256": "1252c285ed0eac480f54e583f213e33c3726d954e3cbaf55b3deaa46604c6759",
+    "snapshot": "capture-source/triangle-fan-domain-x87-234-IceRandom.h.gz",
+    "snapshot_sha256": "10c32f3bb6dcde23508bc4c79e84e83ce13fd2328138bc355f58b8e05bbb8857"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceRay.h",
+    "source_sha256": "bd986e6dea63f4d175327aeb0834838b5fe366f03f3ed0a93fde19d1996ad71b",
+    "snapshot": "capture-source/triangle-fan-domain-x87-235-IceRay.h.gz",
+    "snapshot_sha256": "96c521a185438aeb3c9cf71e1a40ef3aad58ccd01611607b0daa5e514bc09917"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceRevisitedRadix.h",
+    "source_sha256": "79f15580b128db80281254251eced48deffc0c4a99ca9d07f8bbc30d1b80fecc",
+    "snapshot": "capture-source/triangle-fan-domain-x87-236-IceRevisitedRadix.h.gz",
+    "snapshot_sha256": "4b5c24222bb48b6b52d835ad2779f731fd993b01816ca7fcfc09e36de6f8f1db"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceSegment.h",
+    "source_sha256": "bbdc125a6afe52d2e58e63f47c674297ac1e02a4f3369e45754de5880a4004ad",
+    "snapshot": "capture-source/triangle-fan-domain-x87-237-IceSegment.h.gz",
+    "snapshot_sha256": "7ce8e3c47e0f84468bb8ba61edae3ebc6e8894c84ba791e2c02ee8469e84d392"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceTriangle.cpp",
+    "source_sha256": "7e20d62b26baaab942f71e97b4669986355a6cd0ce16b950e9f2d31f608c9d00",
+    "snapshot": "capture-source/triangle-fan-domain-x87-238-IceTriangle.cpp.gz",
+    "snapshot_sha256": "2c624f90c5c2414b07b99897a9d1bc6ac75c18da2004701c2f83eafc84957f06"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceTriangle.h",
+    "source_sha256": "9bbdf17f123acb02b74f60d96fbe07b9fae2cb333f7bdc2dbe5d8d99e4da9e6a",
+    "snapshot": "capture-source/triangle-fan-domain-x87-239-IceTriangle.h.gz",
+    "snapshot_sha256": "445fcb2d5a046a09bf173ab8ee259007038a9dc8fd81e8cd7111939f9033dc9b"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceTrilist.h",
+    "source_sha256": "f29a97720238b8d9d733822214449e92c66088d2e29dfc79ae7a42b1d0a14f6b",
+    "snapshot": "capture-source/triangle-fan-domain-x87-240-IceTrilist.h.gz",
+    "snapshot_sha256": "76f20cdad1babe4ebac717da43daef39b9702e84d7c943bc966a6c09b452f812"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceTypes.h",
+    "source_sha256": "f1cf1087cf30086900a6e1a7f30c442e3d5256514aef6078e50f229b3665e7b1",
+    "snapshot": "capture-source/triangle-fan-domain-x87-241-IceTypes.h.gz",
+    "snapshot_sha256": "598931d4a31cdacaeca67ddaa4d74bee6acd0d3258b7942a1385db72ae805123"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceUtils.cpp",
+    "source_sha256": "2c4a9b160fc4cec161b042c38feafc3882d9aaf03786a9d1d12c3c9f9c80d44c",
+    "snapshot": "capture-source/triangle-fan-domain-x87-242-IceUtils.cpp.gz",
+    "snapshot_sha256": "dfc11b0ac51296198c6bc73425b1036b2edaee12f0bc5c25c6e5f2bce289d9fc"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceUtils.h",
+    "source_sha256": "804af2c7f1df2a517e086350e2b8028fa3074450c185da86a96d72ef49723ab8",
+    "snapshot": "capture-source/triangle-fan-domain-x87-243-IceUtils.h.gz",
+    "snapshot_sha256": "783644942746ea7ab364548f49169bfc236bc7449932bd4ab5447af4032b3ab4"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_AABBCollider.h",
+    "source_sha256": "f1ccfa7bb576450937f679592b9c811f62316897d56a1c208683940a44349180",
+    "snapshot": "capture-source/triangle-fan-domain-x87-244-OPC_AABBCollider.h.gz",
+    "snapshot_sha256": "15eb5337667418ce4e191293e8c0b4e6ef92704d42233658b9d77d9c00f14171"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_AABBTree.h",
+    "source_sha256": "4b8eef54b20b9d5195afa09bf067eb9022d02c1aa100478cb87f308e75717f11",
+    "snapshot": "capture-source/triangle-fan-domain-x87-245-OPC_AABBTree.h.gz",
+    "snapshot_sha256": "55d498e64ce1b0569234ce1e1fedce4e3ec3e9f530dd6dd39056e1446c7f8b93"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_BaseModel.h",
+    "source_sha256": "a1e6e52e1c93dfb262efcb7ed406e97aa9c9a2a58d136a8d5b175a92635f1e4d",
+    "snapshot": "capture-source/triangle-fan-domain-x87-246-OPC_BaseModel.h.gz",
+    "snapshot_sha256": "4ccf818cb998ce9efe4b9f51894292c0d70fbe288e7872d7e7558e1c599f00ef"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_BoxBoxOverlap.h",
+    "source_sha256": "30845dc8a5c4d96ebb3d42e62de87f5f3ec702dd5b92ae6958307758cc5be61f",
+    "snapshot": "capture-source/triangle-fan-domain-x87-247-OPC_BoxBoxOverlap.h.gz",
+    "snapshot_sha256": "18777243d3f475bafe168633b0231c23aaf81e12b6e40304635934c51e0dfc86"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_BoxPruning.h",
+    "source_sha256": "a0bb637b94bd5efcd2a72eb4c67daa282861e8373160fe38a0a3dfa4532d13a4",
+    "snapshot": "capture-source/triangle-fan-domain-x87-248-OPC_BoxPruning.h.gz",
+    "snapshot_sha256": "774a2a076dde7e0ef5890c427a9dda710aa8384bbe5943b0258b79a605dd9a25"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_Collider.h",
+    "source_sha256": "797e889935c22735094862834629a2b5b943fd2fef6f0ead7f1b5e4a8d854c78",
+    "snapshot": "capture-source/triangle-fan-domain-x87-249-OPC_Collider.h.gz",
+    "snapshot_sha256": "97e6a68abfcd94bca43c6959503ac5b344eebe2797cf05bc98b072d1986b5c99"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_Common.h",
+    "source_sha256": "05281ad0a752cfc21e8cad9b879eca880e5a168a63145d17704fd6a8e9c42e6c",
+    "snapshot": "capture-source/triangle-fan-domain-x87-250-OPC_Common.h.gz",
+    "snapshot_sha256": "cb84723f8e8672ba75f9a8a99981d31694d12dcd081c2c111088900d7bfe7c13"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_HybridModel.h",
+    "source_sha256": "5a9c2a24dedb2a25d8226e1f44227eee292fc605490f735ccd5d423542fe8c0e",
+    "snapshot": "capture-source/triangle-fan-domain-x87-251-OPC_HybridModel.h.gz",
+    "snapshot_sha256": "bef88f5d5a515fc8816011e42f91c07d7d5edcb6edd658ae61451617e5aab698"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_IceHook.h",
+    "source_sha256": "d6dc8178fe60660ec9bf3a0caa780b5c980c3169459b6f03c25f8493a80bab65",
+    "snapshot": "capture-source/triangle-fan-domain-x87-252-OPC_IceHook.h.gz",
+    "snapshot_sha256": "faaf51503cf6c6b375b7dff689114943ae3943b9f2657e5580211f57d155fab5"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_LSSAABBOverlap.h",
+    "source_sha256": "55e968b8382479262d678593a427646541268379f32a619b4bab446b1d01043c",
+    "snapshot": "capture-source/triangle-fan-domain-x87-253-OPC_LSSAABBOverlap.h.gz",
+    "snapshot_sha256": "11ac7660ac161a84c9c0b10576c039a508028fd42c1b72c390924428ff31200e"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_LSSCollider.h",
+    "source_sha256": "dc465a0aab2efab62577340fd589b03edefabddc262248e573de2f3c9b2c9720",
+    "snapshot": "capture-source/triangle-fan-domain-x87-254-OPC_LSSCollider.h.gz",
+    "snapshot_sha256": "24afe04255ee7f79db621bb6d953dba0e780631905cc57a8d3e418fbea91aac1"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_LSSTriOverlap.h",
+    "source_sha256": "7192dbd572757188106b6d46ab235d45d4829a8a8858a29fd6386e2a027add88",
+    "snapshot": "capture-source/triangle-fan-domain-x87-255-OPC_LSSTriOverlap.h.gz",
+    "snapshot_sha256": "12567ec594677d7ff4d8bef81c383ed3266774219cdabad3a5a03a1fe0d30a07"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_MeshInterface.h",
+    "source_sha256": "531b39c0576e6302292412948637a1ce40553db6d6b6d891b4b783f4dc9db837",
+    "snapshot": "capture-source/triangle-fan-domain-x87-256-OPC_MeshInterface.h.gz",
+    "snapshot_sha256": "057ba92db25d005ee8370e1f64774116c96377b591564c498b528f1cf0c3ddb8"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_Model.h",
+    "source_sha256": "075fcb7dba257f80e74fe411a33d79b517db56febe1c1dd813b8030be5f0b193",
+    "snapshot": "capture-source/triangle-fan-domain-x87-257-OPC_Model.h.gz",
+    "snapshot_sha256": "e34c14161310aee73a551a2e96dada5a902e3873e18c00a23d4e9231ae9353f6"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_OBBCollider.h",
+    "source_sha256": "2d7be435fccc22da53c2d1adf20eb3fee4524f4a497fe41e39a870568d94199c",
+    "snapshot": "capture-source/triangle-fan-domain-x87-258-OPC_OBBCollider.h.gz",
+    "snapshot_sha256": "005f78794aceef0215320e4bdf3ed8c7bf682a60d2782cf4865197c5baa76a48"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_OptimizedTree.h",
+    "source_sha256": "fac53aece931805e5de331054c67e317e1a35c769f196e4c21c8454fb46d32d0",
+    "snapshot": "capture-source/triangle-fan-domain-x87-259-OPC_OptimizedTree.h.gz",
+    "snapshot_sha256": "73ccc83e04d35a52b09dc0f66b99464549db67ee11d0588aba01f39493845ac3"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_Picking.h",
+    "source_sha256": "ac18e5e9c060f17a6e56aaa56e3f3c54a9fd577c6f64863a1bca8146ba02a51f",
+    "snapshot": "capture-source/triangle-fan-domain-x87-260-OPC_Picking.h.gz",
+    "snapshot_sha256": "9281b15361b4e70e5e492625395a3d35c1d30504652659eec976215b081d2d6b"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_PlanesAABBOverlap.h",
+    "source_sha256": "d25b984181a5c98798301a0e23f6a89e5caae665bbe32ae0e1a24db344ed2306",
+    "snapshot": "capture-source/triangle-fan-domain-x87-261-OPC_PlanesAABBOverlap.h.gz",
+    "snapshot_sha256": "9de93568849a88cb8ed0494e991a7faa71a78cf0f7a2b21722ef701afc70f460"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_PlanesCollider.h",
+    "source_sha256": "39fc524e3af1dfde159d6756e6b192f9002c791650bc874bb6fb99fabe5d7a0b",
+    "snapshot": "capture-source/triangle-fan-domain-x87-262-OPC_PlanesCollider.h.gz",
+    "snapshot_sha256": "95bf2e76f2eb8a9a2054a3f30f7b4dfa44668205fbf8fa28aa61d0ed86542226"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_PlanesTriOverlap.h",
+    "source_sha256": "caab1988d4af5ca13d9872e580c3ed18eaeb7f89a5bc62e8c04da64f434e5f30",
+    "snapshot": "capture-source/triangle-fan-domain-x87-263-OPC_PlanesTriOverlap.h.gz",
+    "snapshot_sha256": "6bfa9b1009b7aa0896a0342b7d69ba3ade0ed6518982ca0bd01b51f69529c0f7"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_RayAABBOverlap.h",
+    "source_sha256": "4a9ecc2bc316ba21461dc4e4b84b95d55d93c7882b7f748e92802908f18b0881",
+    "snapshot": "capture-source/triangle-fan-domain-x87-264-OPC_RayAABBOverlap.h.gz",
+    "snapshot_sha256": "ad4643b5c31dc70e58e0f01305b55dd197e898c1b90fe2ba90baf5e6a66fe518"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_RayCollider.h",
+    "source_sha256": "ec1670f4d973f98150ca08ea1496ac87b5b941312e521ff1b9281f8b376ec4c2",
+    "snapshot": "capture-source/triangle-fan-domain-x87-265-OPC_RayCollider.h.gz",
+    "snapshot_sha256": "bb5e58c8aec29b3acbbde6c56f36c1eb9a83bb82ec4c66d56dd66616493886dd"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_RayTriOverlap.h",
+    "source_sha256": "112980326c768455a1195c04bd7e5610ef2e908acbdd41f670f880cec098c917",
+    "snapshot": "capture-source/triangle-fan-domain-x87-266-OPC_RayTriOverlap.h.gz",
+    "snapshot_sha256": "7caef1bc0525c2e78f8e07aa35e32655c4c0ba038befe9a2dd234c932d1218b8"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_Settings.h",
+    "source_sha256": "76cc63c6e1b125562ef244904915b0b43d414e14176d092ddb01332a3817f607",
+    "snapshot": "capture-source/triangle-fan-domain-x87-267-OPC_Settings.h.gz",
+    "snapshot_sha256": "163b17a5177ab147cf02d4532b39dc31ac34d0ec3cdc21787ea3007af17e9f59"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_SphereAABBOverlap.h",
+    "source_sha256": "be27af7ff27fd1aca855fdb9e909d4d89ddd4f1ae03dd79e0ee23fe278733038",
+    "snapshot": "capture-source/triangle-fan-domain-x87-268-OPC_SphereAABBOverlap.h.gz",
+    "snapshot_sha256": "a15baa5179d2fce9610d37e00e65a3e672c37a98eb868d11a9cd130163b8053c"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_SphereCollider.h",
+    "source_sha256": "b8c0a840e426de0d71944d0f049dc5e0628c5f0d182ea57602dc29bfcaddf5b7",
+    "snapshot": "capture-source/triangle-fan-domain-x87-269-OPC_SphereCollider.h.gz",
+    "snapshot_sha256": "12e889e90500423489fbe08cab1cf82fc9cf20e4c69ca4ab6916ddf878351267"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_SphereTriOverlap.h",
+    "source_sha256": "2eef085926ae753f761316991b42fda7d38842960f44a4306db898b34d196a8b",
+    "snapshot": "capture-source/triangle-fan-domain-x87-270-OPC_SphereTriOverlap.h.gz",
+    "snapshot_sha256": "43a6db00c3d91ff8bf0a834f1ad10dc474f7b5c6e0afedd359c2fc5ce4bf20b3"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_SweepAndPrune.h",
+    "source_sha256": "34d7e11c0bc762e4c1d225924f8534635962bedfe8bcbe864ca49189b3b569cd",
+    "snapshot": "capture-source/triangle-fan-domain-x87-271-OPC_SweepAndPrune.h.gz",
+    "snapshot_sha256": "0e776f3ecee2716c5c6f23e6e25a4c6306c0fe2b1982574229c8369cec8e92e2"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_TreeBuilders.h",
+    "source_sha256": "1e19ead1103ea54886f2fdb676e1278967dfa58b7a721057cd30920c4b70fd7c",
+    "snapshot": "capture-source/triangle-fan-domain-x87-272-OPC_TreeBuilders.h.gz",
+    "snapshot_sha256": "de9dac2659c6d3457374699d0f4e42191e1e4228cfcf6b7bca0c1a4ce33c4194"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_TreeCollider.h",
+    "source_sha256": "12b7f7c84d3031692369cba13a821fc4de295deea8c546de3e8fdcac6fff2938",
+    "snapshot": "capture-source/triangle-fan-domain-x87-273-OPC_TreeCollider.h.gz",
+    "snapshot_sha256": "52f93129434ac1d24944d3773c08c7e01d324c1c29ce95db3b120fa652f54813"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_TriBoxOverlap.h",
+    "source_sha256": "ded1baf1e58531eae129509c7430badb055bde0695221e9c2d3e3a7ffef4d1d8",
+    "snapshot": "capture-source/triangle-fan-domain-x87-274-OPC_TriBoxOverlap.h.gz",
+    "snapshot_sha256": "c94193874b969be5c1da2bb34ab8f7067b9e6a99ed74ccc1177f903579f6e6d1"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_TriTriOverlap.h",
+    "source_sha256": "a120140f87d21f7556d6d32ac82496b62728683262ccf127ac67d0607d1c809d",
+    "snapshot": "capture-source/triangle-fan-domain-x87-275-OPC_TriTriOverlap.h.gz",
+    "snapshot_sha256": "bcde49396de190d2d6b6b1511bcb62f340d88286b12c3c6b2f5bb3a39a061456"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_VolumeCollider.h",
+    "source_sha256": "6a937cd17320e3a8989bf1221e13d5ff1262c574e96abaf8c098e217b4f50b67",
+    "snapshot": "capture-source/triangle-fan-domain-x87-276-OPC_VolumeCollider.h.gz",
+    "snapshot_sha256": "185d106b868ccf99d659e99cf5e060dac990dc298f44021e200ee6bc48f65ce1"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Opcode.h",
+    "source_sha256": "c5176bb2c17747dafd5a7800045d1c8d81ee1b7c0a84178f3aa98924edda6c2c",
+    "snapshot": "capture-source/triangle-fan-domain-x87-277-Opcode.h.gz",
+    "snapshot_sha256": "9f0ad491221fffe1497affd5035c910e3bbbb58816a9c4b4da790c1fe9852223"
+  },
+  {
+    "source": "External/opcode/novodex/OpcodeNovodeXHost.h",
+    "source_sha256": "741cadee0ca3e2667dd6e90ceeaefaa18f86764f3a028cacc0d97b6f10b28c95",
+    "snapshot": "capture-source/triangle-fan-domain-x87-278-OpcodeNovodeXHost.h.gz",
+    "snapshot_sha256": "be387770a615003068134d95db6a2a1b0b5031dd82409514b8ab727e658d859b"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/StdAfx.h",
+    "source_sha256": "5a51c0be826dd0118d18ca33064057d80d2f30617334dca04ee24a22a981987b",
+    "snapshot": "capture-source/triangle-fan-domain-x87-279-StdAfx.h.gz",
+    "snapshot_sha256": "bdb92becf21569768e0fb3dd2cd5421daa90c1a8d25b03fcb2f544398f136193"
+  }
+]

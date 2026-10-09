@@ -27,3 +27,8 @@ External/** -text
 *.chi -text
 *.chm -text
 *.pdf -text
+
+# Immutable triangle-fan control proof hashes pin these exact log/patch bytes.
+# CRLF records and the patch's empty context-line prefix are intentional.
+tests/portable/fixtures/capture-source/triangle-fan-*.txt -text whitespace=cr-at-eol
+tests/portable/fixtures/capture-source/triangle-fan-*.patch -text whitespace=cr-at-eol,-blank-at-eol

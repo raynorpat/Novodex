@@ -50,6 +50,13 @@ if(NX_PORTABLE_TRIANGLE_MESH)
     endif()
     include(TriangleMeshTargets.cmake)
 endif()
+option(NX_PORTABLE_TRIANGLE_FAN "Build full inflated triangle fan geometry closure" OFF)
+if(NX_PORTABLE_TRIANGLE_FAN)
+    if(NOT DEFINED ICE_TREE)
+        include(IceTopologyTargets.cmake)
+    endif()
+    include(TriangleFanTargets.cmake)
+endif()
 set(GEOMETRY_SCHEMA_TOOL "${CMAKE_CURRENT_SOURCE_DIR}/../../docs/reconstruction/novodex-physics/tools/geometry_fixture_schema.py")
 add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/GeometryFixtureRows.h"
     COMMAND "${Python3_EXECUTABLE}" "${GEOMETRY_SCHEMA_TOOL}" header

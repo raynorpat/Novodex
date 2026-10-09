@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "capture_id": "triangle-fan-nearest-x87",
+  "provenance_kind": "reconstructed-reference-control-proof",
+  "original_fixture_sha256": "beec155adcc4425e0bca5cb9d0b794ea36ed91495b4ab526830411770d04ff89",
+  "verified_original_output_sha256": "beec155adcc4425e0bca5cb9d0b794ea36ed91495b4ab526830411770d04ff89",
+  "hardware_proof_before_product_edits": true,
+  "source_snapshot": "capture-source/triangle-fan-control-proof-TriangleFanTests.cpp.gz",
+  "source_sha256": "28364d34669e1a7cf4834e83473931060d61bf123e0d1ae30fd586e320c49636",
+  "snapshot_sha256": "2f411ee195fece512031ca21be58135112dcd59754cebee44ae702a87aca81b4",
+  "source_recovery": "Exact original nearest capture test source plus known hardware-instrumentation patch, independently equal to current test source with only later canary and diagnostic-label edits reversed. No product edits were made before hardware proof.",
+  "corrected_crt_value": "_PC_53|_RC_NEAR|_MCW_EM",
+  "corrected_crt_mask": "_MCW_PC|_MCW_RC|_MCW_EM",
+  "actual_raw_control_word": "0x027f",
+  "actual_crt_control_word": "0x0009001f",
+  "actual_c_fegetround": 0,
+  "logs": [
+    {
+      "snapshot": "capture-source/triangle-fan-task5e-old-hardware-control.log.txt",
+      "sha256": "b36c5982324d02d207e7f61af9a1f696215bcbe5f5ecbf2b43aa54c8a6dc470c"
+    },
+    {
+      "snapshot": "capture-source/triangle-fan-task5e-hardware-control.log.txt",
+      "sha256": "b67e32bf4cdce820577f2350293c462ba88151af7801da92195f3a5991d39d36"
+    }
+  ]
+}

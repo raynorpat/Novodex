@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "provenance_kind": "derived-source-control-proof",
+  "derived_source_disposition": "Mechanically reconstructed AFTER the run from a protected original snapshot and explicit instrumentation patch; not an independently archived historical producer source.",
+  "original_source_snapshot": "capture-source/triangle-fan-nearest-x87-0-TriangleFanTests.cpp.gz",
+  "original_source_sha256": "50c2736926c3dc4d51341ef27e67d6dd6a6050d9754d07322884039df5dfeeb6",
+  "original_compressed_snapshot_sha256": "1aa174a3daa5d7e07c587e3a7499f38e451827e37c0bd3cf274f0103970a25f9",
+  "derivation_patch": "capture-source/triangle-fan-control-proof-derivation.patch",
+  "derivation_patch_sha256": "e5bf0f6e4af2803297e79449fd494eefb08f67e61e2d2ad7f9d387004e9cadd4",
+  "derived_source_snapshot": "capture-source/triangle-fan-control-proof-TriangleFanTests.cpp.gz",
+  "derived_source_sha256": "28364d34669e1a7cf4834e83473931060d61bf123e0d1ae30fd586e320c49636",
+  "original_nearest_producer_binary_sha256": "c00ef7983932b1a292aef2ce397133dbcc9fdb5634ee31e44de23f23885f8d98",
+  "original_nearest_capture_has_correct_abstract_state_checks": true,
+  "hardware_instrumented_preproduct_executable_identity": "No separate historical executable hash was archived; no claim of executable byte identity.",
+  "hardware_verified_preproduct_output_binary_sha256": "beec155adcc4425e0bca5cb9d0b794ea36ed91495b4ab526830411770d04ff89",
+  "output_equals_protected_nearest_fixture": true,
+  "hardware_log_evidence": "triangle-fan-control-proof.json",
+  "raw_reference_control_word": "0x027f",
+  "crt_reference_control_word": "0x0009001f",
+  "c_fenv_rounding": "FE_TONEAREST"
+}
