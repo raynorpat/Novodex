@@ -9660,3 +9660,6 @@ Mutation measurement: `phys_fn_000636` detected `stdout_delta=7062`.
 
 - `phys_fn_004165` (0x0009ace0), vector virtual-call loop: the native entry is an ECX-only thiscall with no stack args; lengths 0..3 are compared against the pinned oracle through that same ABI. On an immediate-return mutant, lengths 1, 2, and 3 fail (mismatches=3); the Phase 6 gate rejects the absent required success line. The restored control reports `vecloop4165 candidate failures=0` and `layout candidate mismatches=0`. See `evidence/scene-poststep-000615-vector-dispatch.md`.
 - `phys_fn_000615` (0x000113c0), scene post-step pose/notify and optional callback dispatch: an immediate-return mutant changes the registered simulation transcript by 7,232 bytes (`stdout_delta=7232`); both programs exit 0 with exact stderr. The restored control is exact (`stdout_delta=0`) and Phase 7 passes with 1,418/1,418 coverage assertions. See `evidence/scene-poststep-000615-vector-dispatch.md`.
+
+
+Post-merge verification at c9080352: fresh mainline runs of Phase 5, Phase 6 and Phase 7 passed at 2597/2597, 1227/1227 and 1418/1418 coverage assertions, respectively (build/phase-step-main/row004165-phase5-main.log, row004165-phase6-main.log and row000615-phase7-main.log).

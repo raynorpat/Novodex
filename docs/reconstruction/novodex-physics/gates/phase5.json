@@ -25,7 +25,7 @@
     {
       "name": "build_and_phase_gate",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 5 -RepoRoot <worktree> -BuildRoot <worktree>\\build -OracleRoot D:\\FlamingEnt__\\Unreal_3 -PairsRoot <worktree>\\build\\pairs",
-      "result": "Fresh rerun on implementation commit d4caaab9: all 20 staged Phase 5 targets and registered static/oracle checks passed, including the new phys_fn_004165 assertion; coverage_assertions_evaluated=2597 floor=2597. Full output: build/phase-step-rows/row004165-phase5-final.log."
+      "result": "Post-merge fresh mainline rerun at c9080352: all 20 staged Phase 5 targets and registered static/oracle checks passed; coverage_assertions_evaluated=2597 floor=2597, including the phys_fn_004165 required assertion. Full output: build/phase-step-main/row004165-phase5-main.log."
     },
     {
       "name": "viewer_all_scenes",

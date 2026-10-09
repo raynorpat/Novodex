@@ -11,3 +11,5 @@ The `004165` mutation probe inserted an immediate return in the helper in a clea
 For `000615`, an immediate return in `NxSceneInternal::row000615` was built in a separate clean archive and run through the registered `NxPhysicsSimulationTests` staged-pair differential. Both processes exited zero with exact stderr, but stdout differed by 7,232 bytes. Restoring `row000615` and rebuilding returned `stdout_delta=0` and exact stderr. The Phase 7 gate passed with 1,418/1,418 coverage assertions.
 
 Recorded build and gate transcripts (generated under `build/phase-step-rows/`): `row004165-abi-green-oracle.log`, `row004165-phase5-final.log`, `row004165-phase6-abs.log`, `row004165-phase6-mutation.log`, `row004165-gateassert-red.log`, `row000615-mutation-diff.log`, and `row000615-restored-diff.log`.
+
+Post-merge mainline verification at `c9080352` passed Phase 5 (2,597/2,597), Phase 6 (1,227/1,227), and Phase 7 (1,418/1,418) in the fresh `build/phase-step-main` tree.
