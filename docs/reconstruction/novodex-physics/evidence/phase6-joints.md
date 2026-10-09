@@ -9423,3 +9423,7 @@ The registered NxPhysicsJointStagedPairTests differential records specialized fl
 ## Phase 6 closure measurement — shared limit-plane iterator (phys_fn_004081, phys_fn_004083)
 
 The registered NxPhysicsCoreDumpTests differential serializes limit planes across several joint families. Clearing the iterator head in phys_fn_004081 and forcing phys_fn_004083 to report no remaining plane are each caught with stdout_delta=4189, both processes exiting zero, and exact stderr; restored controls are exact. Details: evidence/phase6-joint-004081-limit-iterator.md and evidence/phase6-joint-004083-limit-iterator.md.
+
+## Phase 6 closure measurement — joint name lookup (phys_fn_004085)
+
+The registered NxPhysicsCoreDumpTests differential serializes several named joints. Returning null from phys_fn_004085 is caught with stdout_delta=80, both processes exiting zero, and exact stderr; the restored control is exact. Details: evidence/phase6-joint-004085-get-name.md.
