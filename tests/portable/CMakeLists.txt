@@ -18,6 +18,13 @@ if(NX_PORTABLE_HULL)
     endif()
     include(HullTargets.cmake)
 endif()
+option(NX_PORTABLE_MESH_NORMALS "Build actual mesh-normal/helper closure (Win32 layout)" OFF)
+if(NX_PORTABLE_MESH_NORMALS)
+    if(NOT NX_PORTABLE_HULL AND NOT NX_PORTABLE_ICE_TOPOLOGY)
+        include(IceTopologyTargets.cmake)
+    endif()
+    include(MeshNormalsTargets.cmake)
+endif()
 set(GEOMETRY_SCHEMA_TOOL "${CMAKE_CURRENT_SOURCE_DIR}/../../docs/reconstruction/novodex-physics/tools/geometry_fixture_schema.py")
 add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/GeometryFixtureRows.h"
     COMMAND "${Python3_EXECUTABLE}" "${GEOMETRY_SCHEMA_TOOL}" header

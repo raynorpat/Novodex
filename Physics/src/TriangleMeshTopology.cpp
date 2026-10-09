@@ -29,6 +29,10 @@
 // normals on demand, which also sits in TriangleMesh's span; naked, integer
 // code (it allocates through the Foundation allocator and calls 002146).
 
+#if defined(NX_PHYSICS_MESH_NORMALS_KERNEL_ONLY)
+#include "NxInternalTriangleMesh.h"
+#include "NxUserAllocator.h"
+#else
 #include "TriangleMesh.h"
 #include "IceAdjacencies.h"
 
@@ -102,6 +106,8 @@ __declspec(noinline) void TriangleMesh::createEdgeList()
 		}
 	}
 
+#endif // standalone normal closure excludes unchanged TriangleMesh topology methods
+
 // phys_fn_002081 (0x00052240, 59 B)
 // The internal mesh's vertex normals, built on demand (thiscall on the
 // InternalTriangleMesh, TriangleMesh +0x08; 001844 calls it when +0x18 is null):
@@ -112,6 +118,7 @@ __declspec(noinline) void TriangleMesh::createEdgeList()
 // 16-bit triangles, the block, 1) (002146, cdecl). Neither the block nor the
 // result is tested, as in the listing. The listing's instructions, naked (the
 // allocator slot is read through its import, as the listing reads it).
+#if NX_PHYSICS_USE_X87
 extern "C" void* nxTriangleMeshFoundationAllocatorSlot;	// the import slot 0x101041bc
 #pragma comment(linker, "/alternatename:_nxTriangleMeshFoundationAllocatorSlot=__imp_?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A")
 extern "C" void nxTriangleMeshCallBuildSmoothNormals();		// 002146, NxBuildSmoothNormals
@@ -150,3 +157,16 @@ __declspec(naked) void nxMeshComputeVertexNormals()
 		ret		// 0x0005227a
 		}
 	}
+
+#else
+#include "NxSmoothNormals.h"
+void nxMeshComputeVertexNormals(InternalTriangleMesh* mesh)
+{
+    mesh->mVertexNormals = nxFoundationSDKAllocator->malloc(
+        mesh->mVertexCount * 12u, NX_MEMORY_PERSISTENT);
+    NxBuildSmoothNormals(mesh->mTriangleCount, mesh->mVertexCount,
+        static_cast<const NxVec3*>(mesh->mVertices),
+        static_cast<const NxU32*>(mesh->mTriangles), 0,
+        static_cast<NxVec3*>(mesh->mVertexNormals), true);
+}
+#endif

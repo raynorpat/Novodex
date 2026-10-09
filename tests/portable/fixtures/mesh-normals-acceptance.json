@@ -1,0 +1,86 @@
+{
+  "capture": "mesh-normals-final-x87.json",
+  "fixture_sha256": "75c7bf1ddc25f9f4311faec8863496deb3ba3b7f9d4ff35d8ba49ea000ce1af7",
+  "provenance": "actual reconstructed-source x87; shipped DLL exact verification is separate",
+  "controller_approval": "2026-10-09 after finite-domain measurement; no budget widening",
+  "budgets": {
+    "normal_rotation_dimensionless": {
+      "abs": 2e-07,
+      "rel": 2e-07
+    },
+    "coordinate_pose_translation_length": {
+      "abs": 1e-06,
+      "rel": 2e-07
+    },
+    "valid_unit_normal_residual": 2e-07,
+    "normal_angular_radians": 2e-06,
+    "direct_corner_angle": "exact words",
+    "zeros_signedzeros_discrete_ownership_canaries": "exact"
+  },
+  "measurements_all_three_configurations": {
+    "groups": 921,
+    "observations": 92990,
+    "normal_maxabs": 2.9802322387695312e-08,
+    "normal_maxrel": 8.856934643262158e-08,
+    "normal_differences": 32,
+    "length_maxabs": 0,
+    "length_maxrel": 0,
+    "length_differences": 0,
+    "exact_differences": 0,
+    "corner_angle_difference": 0,
+    "normal_angular_radians": 2.8064506570144754e-08,
+    "valid_unit_residual": 3.0112062621157065e-08
+  },
+  "pre_vendor_fix": {
+    "length_maxabs": 1.4901161637936866e-08,
+    "length_maxrel": 2.5000000372529025,
+    "exact_zero_failures": 4,
+    "cause": "actual vendor InvertPRMatrix prematurely rounded dot-product intermediates; scalar overlay retains extended groups then original output stores"
+  },
+  "domain": {
+    "literal_input_source": "captured MeshNormalsTests.cpp",
+    "mesh_count": 8,
+    "vertex_bounds": [
+      -2,
+      4.5
+    ],
+    "modes": [
+      "equal-unit-face",
+      "corner-angle"
+    ],
+    "area_weighted_mode": "not provided by actual create block: every face normal is normalized first",
+    "nonuniform_vertex_scale": [
+      2,
+      0.5,
+      1.5
+    ],
+    "index_winding_output_cache": "two windings,four index choices,four owned/borrowed output choices,two cached normal calls,two hull rebuilds",
+    "builder": "32 flag combinations,fresh receiver repetitions,actual retained counters after re-Init",
+    "poses": "null,translated identity,quarter-turn,0.6/0.8 PR rotations;translation[-3,3];four retained output choices",
+    "degeneracies": "coincident,collinear,repeated reference,isolated vertices,zero faces,zero vertex count with sufficiently sized borrowed outputs"
+  },
+  "unit_residual_scope": "nonzero normalized actual outputs only; NbVerts0 still accumulates weighted sums but skips final normalize, so those outputs are tested as dimensionless sums",
+  "failure_semantics": [
+    "missing vertices false/untouched",
+    "first allocation false/empty ownership",
+    "second allocation false/first abandoned unstored; bookkeeping frees only after observation",
+    "empty faces borrowed vertex output zeroed",
+    "empty hull false",
+    "hull allocation false",
+    "Foundation allocation failure stores null before smooth false path",
+    "builder Init retains counts; full AddFace false; second Build excluded after traced reference crash on uninitialized fresh records"
+  ],
+  "exclusions": [
+    "nonfinite",
+    "denormal/extreme coordinates",
+    "allocation-size overflow",
+    "OOB references",
+    "scaled/non-PR poses",
+    "native64 raw32 layouts",
+    "second Build after failed AddFace"
+  ],
+  "post_capture_consumer_change": "Only the derived unit metric was corrected to distinguish NbVerts0 weighted sums. Captured producer preserved; current exporter reproduces the entire protected binary exactly.",
+  "current_consumer_sha256": "d26e59ca0fc4aef9f166b443cf4a53ec1f50a93acc991e40db3dfdbee73c348b",
+  "post_capture_vendor_change": "Only overlay CRLF/EOF normalization for Git whitespace checks; complete captured source bytes remain immutable, original branch token parity checked.",
+  "current_vendor_sha256": "1ab46d4c5264620f3793009170e93e28ebd53df3497bd2f8fbe4c4ce31bcdc3f"
+}

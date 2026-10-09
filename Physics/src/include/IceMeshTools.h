@@ -109,7 +109,13 @@ class MeshNormals
 // naked code cannot be a member, so it is __fastcall with the object in ecx, an
 // unused edx and the create block on the stack, popped by the callee: the same
 // registers and the same `ret 4`.
+#if NX_PHYSICS_USE_X87
 bool __fastcall nxMeshNormalsCompute(MeshNormals* normals, NxU32 edx, const MESHNORMALSCREATE* create);
+#else
+// Receiver owns only arrays allocated by this call. Borrowed output arrays are
+// never retained. A failed second allocation historically abandons the first.
+bool nxMeshNormalsCompute(MeshNormals* normals, const MESHNORMALSCREATE* create);
+#endif
 
 // 001639: the function-static identity pair (a 3x3 identity at +0x00, a 4x4
 // identity at +0x24; 100 bytes), initialised once behind a guard byte.

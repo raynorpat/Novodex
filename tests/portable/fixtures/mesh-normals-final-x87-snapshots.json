@@ -1,0 +1,65 @@
+{
+  "capture": "mesh-normals-final-x87.json",
+  "snapshots": {
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-final-x87-NxInternalTriangleMesh.h.gz": {
+      "source": "Physics/src/include/NxInternalTriangleMesh.h",
+      "source_sha256": "3c399f9a14f540e06e36aca0ff1bb01a9760e6fc523834eb631d8c5ca035b7c8"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-final-x87-TriangleMesh.h.gz": {
+      "source": "Physics/src/include/TriangleMesh.h",
+      "source_sha256": "29a32af54ec3f8764d974b470e5234e4c04d071902258a4f67caa5ae77f01e2c"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-final-x87-TriangleMeshTopology.cpp.gz": {
+      "source": "Physics/src/TriangleMeshTopology.cpp",
+      "source_sha256": "0831e75dbdbfbbe1df55e3051acb36c57acb8dbdff0b545aa4867993507f24f4"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-final-x87-MeshNormalsTests.cpp.gz": {
+      "source": "tests/portable/MeshNormalsTests.cpp",
+      "source_sha256": "5b24c2a7da051739981e3e499f5593b4783dabfd9b0b53a5c897878a5e84c42a"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-final-x87-MeshNormalsTargets.cmake.gz": {
+      "source": "tests/portable/MeshNormalsTargets.cmake",
+      "source_sha256": "f05c91de9e4b88a29afeb2c34cdba15daf3d3125ed72691bc8e5a5e4ee98bde6"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-final-x87-ConvexHull.cpp.gz": {
+      "source": "Physics/src/ConvexHull.cpp",
+      "source_sha256": "696a606fa3d4ccf75e62035a48345f5974311c8ccb465d472a61ad70ecda0d7a"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-final-x87-IceMeshTools.cpp.gz": {
+      "source": "Physics/src/IceMeshTools.cpp",
+      "source_sha256": "73abae54b134f4e55d0dd4d596f51e4f04c48f4ec27288532062fb98298a718d"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-final-x87-IceMeshBuilder2.cpp.gz": {
+      "source": "Physics/src/IceMeshBuilder2.cpp",
+      "source_sha256": "53233960a76ee7f411ca4c9af7f385e53f34c192b117cf7d70d9d5f69de60bf9"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-final-x87-IceMeshTools.h.gz": {
+      "source": "Physics/src/include/IceMeshTools.h",
+      "source_sha256": "16d0c7785f43529648aa0f055f922d32a99c11b078da51d0d66edcd6b5b2566a"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-final-x87-IceMeshToolsScalar.inl.gz": {
+      "source": "Physics/src/portable/IceMeshToolsScalar.inl",
+      "source_sha256": "3942f63c64e350cce05809ebbc1b19f4a552d7369885bf19b13f059db5924941"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-final-x87-FoundationSDK.cpp.gz": {
+      "source": "Foundation/src/FoundationSDK.cpp",
+      "source_sha256": "1fec0c6fc294a7b60b173c8edd30495a48d2db94dc52299db6b79b6a78b7a930"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-final-x87-NxFoundationAllocatorAccess.inl.gz": {
+      "source": "Foundation/src/include/NxFoundationAllocatorAccess.inl",
+      "source_sha256": "39607e10906a09c75910e7a994f9f0748bb76492522dca1903384aed06b239b9"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-final-x87-IceMatrix4x4.cpp.gz": {
+      "source": "External/opcode/novodex/Ice/IceMatrix4x4.cpp",
+      "source_sha256": "24a155034b78b50f1b9617c98310ef2ade91eccf1cd8237c82c2f3194707ad2e"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-final-x87-FoundationAllocatorKernel.cpp.gz": {
+      "source": "tests/portable/FoundationAllocatorKernel.cpp",
+      "source_sha256": "8cf0a2097b676e02080486bf855cbe0ce5b642810ff99b6de00d9a8ec5eb2359"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-final-x87-MeshNormalsBudgets.h.gz": {
+      "source": "tests/portable/MeshNormalsBudgets.h",
+      "source_sha256": "e8f2a0d08ccd759ec292f2289af057f3feea846aa9160482c637dde18469be4d"
+    }
+  }
+}

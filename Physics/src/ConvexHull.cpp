@@ -2822,7 +2822,11 @@ __declspec(noinline) bool ConvexHull::ComputeVertexNormals()
 	create.VertexNormals = mVertexNormals;
 
 	MeshNormals normals;
+	#if NX_PHYSICS_USE_X87
 	const bool status = nxMeshNormalsCompute(&normals, 0, &create);
+#else
+	const bool status = nxMeshNormalsCompute(&normals, &create);
+#endif
 	return status;
 	}
 #endif

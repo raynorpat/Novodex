@@ -43,6 +43,10 @@
 #include <new>
 #include <stdlib.h>
 #include <string.h>
+#if !NX_PHYSICS_USE_X87
+#include <cmath>
+#include <cstring>
+#endif
 
 #if !defined(NX_PHYSICS_HULL_KERNEL_ONLY)
 // .rdata 0x101041f0 (0.0f) and 0x101041ec (1.0f).
@@ -186,6 +190,7 @@ __declspec(noinline) bool MeshBuilder2::AddFace(const MBFACEINFO& face)
 		const IceMaths::Point* Verts = mVertsCopy;
 		float T10, T14, T1c, T20;
 		bool Zero;
+#if NX_PHYSICS_USE_X87
 		__asm
 			{
 			mov		esi, VRefs
@@ -247,6 +252,21 @@ __declspec(noinline) bool MeshBuilder2::AddFace(const MBFACEINFO& face)
 			test	ah, 0x44
 			setnp	Zero
 			}
+#else
+		const IceMaths::Point& p0 = Verts[VRefs[0]];
+		            const IceMaths::Point& p1 = Verts[VRefs[1]];
+		            const IceMaths::Point& p2 = Verts[VRefs[2]];
+		            const double ax = double(p0.x) - p2.x;
+		            const double ay = double(p0.y) - p2.y;
+		            const double az = double(p0.z) - p2.z;
+		            const float bx = float(double(p0.x) - p1.x);
+		            const float by = float(double(p0.y) - p1.y);
+		            const double bz = double(p0.z) - p1.z;
+		            const float x = float(double(by) * az - bz * ay);
+		            const float y = float(bz * ax - double(bx) * az);
+		            const double z = double(bx) * ay - double(by) * ax;
+		            Zero = ((z * z + double(y) * y) + double(x) * x) == 0.0;
+#endif
 		if(Zero)
 			return true;
 		}
@@ -316,9 +336,21 @@ __declspec(noinline) bool MeshBuilder2::ComputeUnsharedVertices()
 			continue;
 		if(!mIsSkin)
 			{
+			#if NX_PHYSICS_USE_X87
 			nxIceContainerAddPoint(&Unshared, 0, (const NxU32*) &mVertsCopy[mRefs[F.Ref[0]].VRef]);
+			#else
+			nxIceContainerAddPoint(&Unshared, (const NxU32*) &mVertsCopy[mRefs[F.Ref[0]].VRef]);
+			#endif
+			#if NX_PHYSICS_USE_X87
 			nxIceContainerAddPoint(&Unshared, 0, (const NxU32*) &mVertsCopy[mRefs[F.Ref[1]].VRef]);
+			#else
+			nxIceContainerAddPoint(&Unshared, (const NxU32*) &mVertsCopy[mRefs[F.Ref[1]].VRef]);
+			#endif
+			#if NX_PHYSICS_USE_X87
 			nxIceContainerAddPoint(&Unshared, 0, (const NxU32*) &mVertsCopy[mRefs[F.Ref[2]].VRef]);
+			#else
+			nxIceContainerAddPoint(&Unshared, (const NxU32*) &mVertsCopy[mRefs[F.Ref[2]].VRef]);
+			#endif
 			mRefs[F.Ref[0]].VRef = NewIndex++;
 			mRefs[F.Ref[1]].VRef = NewIndex++;
 			mRefs[F.Ref[2]].VRef = NewIndex++;
@@ -405,6 +437,7 @@ __declspec(noinline) bool MeshBuilder2::ComputeNormals()
 
 		// 0x0002f661..0x0002f734.
 		float T14, T18, T20, T24, T28;
+#if NX_PHYSICS_USE_X87
 		__asm
 			{
 			mov		eax, P1
@@ -485,9 +518,32 @@ __declspec(noinline) bool MeshBuilder2::ComputeNormals()
 			fstp	st(0)
 		Done:
 			}
+#else
+		const double ax = double(P2->x) - P1->x;
+		            const double ay = double(P2->y) - P1->y;
+		            const double az = double(P2->z) - P1->z;
+		            const float bx = float(double(P0->x) - P1->x);
+		            const float by = float(double(P0->y) - P1->y);
+		            const double bz = double(P0->z) - P1->z;
+		            N[0] = float(bz * ay - double(by) * az);
+		            N[1] = float(az * double(bx) - bz * ax);
+		            N[2] = float(double(by) * ax - ay * double(bx));
+		            const double square = (double(N[0]) * N[0] + double(N[1]) * N[1])
+		                + double(N[2]) * N[2];
+		            if(square != 0.0)
+		            {
+		                const double inverse = 1.0 / std::sqrt(square);
+		                for(unsigned component = 0; component < 3; ++component)
+		                    N[component] = float(inverse * N[component]);
+		            }
+#endif
 
 		if(mComputeFNormals)
+			#if NX_PHYSICS_USE_X87
 			nxIceContainerAddPoint(&mFaceNormals, 0, (const NxU32*) N);
+			#else
+			nxIceContainerAddPoint(&mFaceNormals, (const NxU32*) N);
+			#endif
 		}
 
 	mVertFaceCount = (NxU32*) nxMb2New(mNbVerts * 4);
@@ -536,12 +592,18 @@ __declspec(noinline) bool MeshBuilder2::ComputeNormals()
 static NxU32 nxMb2X87Word(const float* p)
 	{
 	NxU32 Bits;
+#if NX_PHYSICS_USE_X87
 	__asm
 		{
 		mov		eax, p
 		fld		dword ptr [eax]
 		fstp	Bits
 		}
+#else
+	// Finite input domain: ordinary float load/store preserves the word.
+	    const float value = *p;
+	    std::memcpy(&Bits, &value, sizeof(Bits));
+#endif
 	return Bits;
 	}
 
@@ -553,7 +615,11 @@ __declspec(noinline) bool MeshBuilder2::SaveStreams()
 	{
 	if(mVertsCopy && mIndexedGeo)
 		for(NxU32 i = 0; i < mNbVerts; i++)
+			#if NX_PHYSICS_USE_X87
 			nxIceContainerAddPoint(&mVerts, 0, (const NxU32*) &mVertsCopy[i]);
+			#else
+			nxIceContainerAddPoint(&mVerts, (const NxU32*) &mVertsCopy[i]);
+			#endif
 
 	if(mTVertsCopy && mIndexedUVW)
 		for(NxU32 i = 0; i < mNbTVerts; i++)
@@ -567,7 +633,11 @@ __declspec(noinline) bool MeshBuilder2::SaveStreams()
 
 	if(mCVertsCopy && mIndexedColors)
 		for(NxU32 i = 0; i < mNbCVerts; i++)
+			#if NX_PHYSICS_USE_X87
 			nxIceContainerAddPoint(&mCVerts, 0, (const NxU32*) &mCVertsCopy[i]);
+			#else
+			nxIceContainerAddPoint(&mCVerts, (const NxU32*) &mCVertsCopy[i]);
+			#endif
 	return true;
 	}
 
@@ -908,7 +978,11 @@ __declspec(noinline) NxU32 MeshBuilder2::OutputRun(const NxU32* faces, NxU32 nb_
 			if(mIndexedColors)
 				mCRefs.Add(CRef);
 			else
+				#if NX_PHYSICS_USE_X87
 				nxIceContainerAddPoint(&mCVerts, 0, (const NxU32*) &mCVertsCopy[CRef]);
+				#else
+				nxIceContainerAddPoint(&mCVerts, (const NxU32*) &mCVertsCopy[CRef]);
+				#endif
 			}
 
 		if(mComputeVNormals)
@@ -961,6 +1035,7 @@ __declspec(noinline) NxU32 MeshBuilder2::OutputRun(const NxU32* faces, NxU32 nb_
 				// Weighted, 0x0003097c..0x00030a57; plain, 0x00030a59..0x00030a73;
 				// the z store they share at 0x00030a7d.
 				float T20, T48, T4c, T58, T60, T64;
+#if NX_PHYSICS_USE_X87
 				__asm
 					{
 					mov		eax, F
@@ -1054,6 +1129,26 @@ __declspec(noinline) NxU32 MeshBuilder2::OutputRun(const NxU32* faces, NxU32 nb_
 				SumTail:
 					fstp	dword ptr [esi + 8]
 					}
+#else
+				if(Weighted)
+				                    {
+				                        const NxU32 corners[3] = {mRefs[F->Ref[0]].VRef,
+				                            mRefs[F->Ref[1]].VRef, mRefs[F->Ref[2]].VRef};
+				                        const float angle = nxSmoothNormalsAngleAtVertex(VRef,
+				                            corners, reinterpret_cast<const NxVec3*>(mVertsCopy));
+				                        const double x = double(angle) * F->Normal[0];
+				                        const float y = float(double(angle) * F->Normal[1]);
+				                        const float z = float(double(angle) * F->Normal[2]);
+				                        S[0] = float(x + S[0]);
+				                        S[1] = float(double(y) + S[1]);
+				                        S[2] = float(double(z) + S[2]);
+				                    }
+				                    else
+				                    {
+				                        for(unsigned component = 0; component < 3; ++component)
+				                            S[component] = float(double(S[component]) + F->Normal[component]);
+				                    }
+#endif
 
 				Count++;
 				if(mComputeNormInfo)
@@ -1069,6 +1164,7 @@ __declspec(noinline) NxU32 MeshBuilder2::OutputRun(const NxU32* faces, NxU32 nb_
 			// 0x00030b06..0x00030b5d: (z*z + y*y) + x*x; unless 0, each
 			// component times 1.0f / sqrt, the component loaded first.
 			float* S = Sum;
+#if NX_PHYSICS_USE_X87
 			__asm
 				{
 				mov		esi, S
@@ -1100,7 +1196,21 @@ __declspec(noinline) NxU32 MeshBuilder2::OutputRun(const NxU32* faces, NxU32 nb_
 			SkipNormalize:
 				fstp	st(0)
 				}
+#else
+			const double square = (double(S[2]) * S[2] + double(S[1]) * S[1])
+			                + double(S[0]) * S[0];
+			            if(square != 0.0)
+			            {
+			                const double inverse = 1.0 / std::sqrt(square);
+			                for(unsigned component = 0; component < 3; ++component)
+			                    S[component] = float(double(S[component]) * inverse);
+			            }
+#endif
+			#if NX_PHYSICS_USE_X87
 			nxIceContainerAddPoint(&mNormals, 0, (const NxU32*) Sum);
+			#else
+			nxIceContainerAddPoint(&mNormals, (const NxU32*) Sum);
+			#endif
 			}
 
 		if(mVertsCopy)
@@ -1108,7 +1218,11 @@ __declspec(noinline) NxU32 MeshBuilder2::OutputRun(const NxU32* faces, NxU32 nb_
 			if(mIndexedGeo)
 				mVRefs.Add(VRef);
 			else
+				#if NX_PHYSICS_USE_X87
 				nxIceContainerAddPoint(&mVerts, 0, (const NxU32*) &mVertsCopy[VRef]);
+				#else
+				nxIceContainerAddPoint(&mVerts, (const NxU32*) &mVertsCopy[VRef]);
+				#endif
 			}
 		}
 

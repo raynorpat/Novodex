@@ -308,6 +308,7 @@ MeshNormals::~MeshNormals()
 //     register and y and z narrowed first; without it, the plain sums;
 //   * every vertex normal normalised as the face normals were.
 // True. The listing's instructions, naked (see the top of the file).
+#if NX_PHYSICS_USE_X87
 __declspec(naked) bool __fastcall nxMeshNormalsCompute(MeshNormals* /*normals*/, NxU32 /*edx*/,
 	const MESHNORMALSCREATE* /*create*/)
 	{
@@ -809,6 +810,8 @@ L31d9c:
 		}
 	}
 
+#endif
+
 // phys_fn_001653 (0x00031db0, 1618 B)
 // The relative poses of two frames, as 4x4 matrices. M0 = pose0 ? pose0^-1 :
 // identity and M1 = pose1 ? pose1^-1 : identity (the vendored
@@ -820,6 +823,7 @@ L31d9c:
 // and stored as a float into a 16-float local that is then copied out (rep
 // movsd). The listing also zeroes one local dword it never reads (0x00031dc2).
 // The listing's instructions, naked (see the top of the file).
+#if NX_PHYSICS_USE_X87
 __declspec(naked) void __cdecl nxIcePosePair(IceMaths::Matrix4x4* /*relative0*/,
 	IceMaths::Matrix4x4* /*relative1*/, const IceMaths::Matrix4x4* /*pose0*/,
 	const IceMaths::Matrix4x4* /*pose1*/)
@@ -1291,6 +1295,12 @@ L323f8:
 		ret		// 0x00032401
 		}
 	}
+
+#endif // legacy pose
+
+#if !NX_PHYSICS_USE_X87
+#include "portable/IceMeshToolsScalar.inl"
+#endif
 
 #endif
 

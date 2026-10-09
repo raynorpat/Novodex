@@ -181,3 +181,8 @@ correspondence claims. Upstream bytes and legacy compiler options are retained.
 The vendor target publishes the canonical private backend-header include path.
 Unused native node-pointer packing, enum-forward declarations, compiler messages
 and include-path casing still require their owning platform work.
+
+Task5c1: Ice/IceMatrix4x4.cpp preserves the upstream source and x87 branch.
+Scalar InvertPRMatrix groups the translation dot products in double before
+the original float output store, preserving x87 zero/cancellation outcomes.
+The overlay is selected by the existing vendor staging, upstream is untouched.

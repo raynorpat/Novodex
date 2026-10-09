@@ -18,7 +18,7 @@
 #include <string.h>
 #endif
 
-NXF_DLL_EXPORT NxUserAllocator * nxFoundationSDKAllocator = 0;
+#include "NxFoundationAllocatorAccess.inl"
 
 
 namespace NxFoundation
