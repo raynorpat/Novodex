@@ -9561,3 +9561,8 @@ Evidence index: phys_fn_004002 mutation detected at stdout_delta=124; restored c
 
 The registered NxPhysicsCoreDumpTests differential caught a mutation replacing SceneDump::jointName's output with `"$__mutation"`: both processes exited zero, stderr matched exactly, and stdout_delta=400. After restoring SceneDump.cpp byte-for-byte in the throwaway archive, rebuilding, and rerunning, stdout_delta=0 with both exits zero and exact stderr. Detailed evidence: `evidence/phase6-coredump-004004-joint-name.md`.
 Evidence index: phys_fn_004004 mutation detected at stdout_delta=400; restored control stdout_delta=0.
+
+## Phase 6 closure measurement — scene-dump actor-name serializer (phys_fn_004006)
+
+The registered NxPhysicsCoreDumpTests differential caught a mutation forcing SceneDump::actorName to emit `"@mutation"` for every body: both processes exited zero, stderr matched exactly, and stdout_delta=368. After restoring SceneDump.cpp byte-for-byte in the throwaway archive, rebuilding, and rerunning, stdout_delta=0 with both exits zero and exact stderr. Detailed evidence: `evidence/phase6-coredump-004006-actor-name.md`.
+Evidence index: phys_fn_004006 mutation detected at stdout_delta=368; restored control stdout_delta=0.
