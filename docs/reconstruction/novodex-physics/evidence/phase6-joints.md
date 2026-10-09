@@ -9521,3 +9521,8 @@ For row `phys_fn_003974`, In a throwaway git archive, changed SpringAndDamperEff
 ## Phase 6 closure measurement — SpringAndDamperEffector::getLinearDamper (phys_fn_003975)
 
 For row `phys_fn_003975`, In a throwaway git archive, changed SpringAndDamperEffector::getLinearDamper to return zero for velStretchSaturate. NxPhysicsEffectorTests observes the public damper getter outputs and exercises the effector; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=76 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003975-get-linear-damper.md`.
+
+
+## Phase 6 closure measurement — spring-force calculation (phys_fn_003970)
+
+For row `phys_fn_003970`, In a throwaway git archive, changed SpringAndDamperEffector::springForce to return zero for every distance. The registered NxPhysicsSimulationTests staged-pair differential exercises the public effector over two real simulation steps; its setup has a world anchor 2.0 units from the body and a nonzero spring force. The oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=3702 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003970-spring-force.md`.
