@@ -3550,6 +3550,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'scene joint spherical_world=created',
         'scene joint point_on_line=created',
         'scene joint point_in_plane=created',
+        'joint_limit_probe name=hinge index=0 in_front=yes normal=b2fa4576.3f800000.b3309d79 d=40400001',
         'scene joint distance=created',
         'scene joint pulley=created',
         'scene joint fixed=created',

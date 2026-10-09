@@ -141,6 +141,23 @@ static NxU32 nxU(NxReal value)
 	return bits;
 	}
 
+static void nxProbeLimitPlaneIteration(const char* name, NxJoint& joint)
+	{
+	joint.resetLimitPlaneIterator();
+	NxU32 index = 0;
+	while(joint.hasMoreLimitPlanes())
+		{
+		NxVec3 normal;
+		NxReal d = 0.0f;
+		const bool inFront = joint.getNextLimitPlane(normal, d);
+		printf("joint_limit_probe name=%s index=%u in_front=%s normal=%08x.%08x.%08x d=%08x\n", name, index,
+			inFront ? "yes" : "no", static_cast<unsigned>(nxU(normal.x)), static_cast<unsigned>(nxU(normal.y)),
+			static_cast<unsigned>(nxU(normal.z)), static_cast<unsigned>(nxU(d)));
+		index++;
+		}
+	joint.resetLimitPlaneIterator();
+	}
+
 // Row-major matrix of the unit quaternion (x, y, z, w) / |q|.
 static NxMat33 nxQuatMatrix(NxReal x, NxReal y, NxReal z, NxReal w)
 	{
@@ -531,6 +548,7 @@ static void nxBuildSceneA(NxScene& scene)
 		hinge->setLimitPoint(NxVec3(2.0f, 0.5f, -0.5f), true);
 		hinge->addLimitPlane(NxVec3(0.0f, 1.0f, 0.0f), NxVec3(0.0f, -3.0f, 0.0f));
 		hinge->addLimitPlane(NxVec3(1.0f, 0.0f, 0.0f), NxVec3(2.5f, 0.0f, 0.0f));
+		nxProbeLimitPlaneIteration("hinge", *hinge);
 		}
 
 	NxRevoluteJointDesc plainRevolute;

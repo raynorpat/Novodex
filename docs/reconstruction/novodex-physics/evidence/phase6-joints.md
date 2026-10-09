@@ -9427,3 +9427,7 @@ The registered NxPhysicsCoreDumpTests differential serializes limit planes acros
 ## Phase 6 closure measurement — joint name lookup (phys_fn_004085)
 
 The registered NxPhysicsCoreDumpTests differential serializes several named joints. Returning null from phys_fn_004085 is caught with stdout_delta=80, both processes exiting zero, and exact stderr; the restored control is exact. Details: evidence/phase6-joint-004085-get-name.md.
+
+## Phase 6 closure measurement — limit-point transform (phys_fn_004080)
+
+The core-dump fixture directly records the public getNextLimitPlane in-front result. A -100 Y mutation to phys_fn_004080 flips the hinge result from yes to no and is caught with stdout_delta=2, both processes exiting zero, and exact stderr; the restored control is exact. Details: evidence/phase6-joint-004080-limit-point.md.
