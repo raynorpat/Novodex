@@ -12,6 +12,8 @@ restored source rebuilds to an exact differential. Phase 5, Phase 6, and Phase
 Phase 6 now has 6 mutation-closed functions and 427 remaining rows; the full
 joint and DLL reconstruction remain open. Evidence:
 `docs/reconstruction/novodex-physics/evidence/phase6-prismatic-solver-004386.md`.
+Post-merge main verification at `282a8d92` reran the complete Phase 6 gate and
+passed at 1,077/1,068 (`build/phase6-prismatic-committed-main.log`).
 
 ### Continuation — controller release guard mutation closure (2026-10-08)
 
