@@ -9663,3 +9663,15 @@ Mutation measurement: `phys_fn_000636` detected `stdout_delta=7062`.
 
 
 Post-merge verification at c9080352: fresh mainline runs of Phase 5, Phase 6 and Phase 7 passed at 2597/2597, 1227/1227 and 1418/1418 coverage assertions, respectively (build/phase-step-main/row004165-phase5-main.log, row004165-phase6-main.log and row000615-phase7-main.log).
+
+## Phase 7 per-substep scene step closure (`phys_fn_000655`)
+
+The approved three-step off-center spring/damper fixture reaches
+`NxSceneInternal::simulateFrame`, row `phys_fn_000655` at RVA `0x000137e0`.
+In a clean archive of mainline `e3faa461`, adding an immediate return at the
+start of that routine was rejected by the registered `NxPhysicsSimulationTests`
+staged-pair differential (`oracle_exit=0`, `candidate_exit=1`,
+`stdout_delta=3829`). Removing the mutation and rebuilding returned an exact
+control (`both exits=0`, `stdout_delta=0`, `stderr_exact=True`). Details:
+`evidence/phase7-scene-step-000655.md`.
+Measurement index: `phys_fn_000655 stdout_delta=3829`.

@@ -12384,13 +12384,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/257",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1753",
       "static_proof": "phys_fn_000655 (0x000137e0): the active-step body translates the nonzero-timestep guard, frame counter and wrap, 000635/000608 prepass, awake self-root collection and allocator growth, effector list at Scene+0x5a4 with vtable slot 2, then the 000610/000611/000636/000615/002350/000917 sequence. The 475-byte row is implemented in NxSceneInternal::simulateFrame; Ghidra control-flow and indirect-call targets were checked against the source.",
-      "dynamic_proof": "The public spring/damper fixture reaches the effector dispatch and matches both fixed substeps exactly; second-step x velocity is 0x3e8e38e3 (evidence/effector-step-integration.md; build/FluidGate/effector-tick-green.log). The current full NxPhysicsSimulationTests paired differential also passes in Phase 7 (build/FluidGate/phase7-fluid-step.log).",
-      "notes": "Whole-row mutation falsification remains open; branch coverage is limited to the recorded simulation corpus."
+      "dynamic_proof": "The public spring/damper fixture reaches the effector dispatch and matches both fixed substeps exactly; second-step x velocity is 0x3e8e38e3 (evidence/effector-step-integration.md; build/FluidGate/effector-tick-green.log). The current full NxPhysicsSimulationTests paired differential also passes in Phase 7 (build/FluidGate/phase7-fluid-step.log). Whole-row falsification: an immediate-return mutation of NxSceneInternal::simulateFrame in a clean archive of mainline e3faa461 was rejected by the registered Phase 7 NxPhysicsSimulationTests staged-pair differential (oracle_exit=0, candidate_exit=1, stdout_delta=3829); the restored control was exact (both exits=0, stdout_delta=0, stderr_exact=True). See evidence/phase7-scene-step-000655.md.",
+      "notes": "The registered three-step off-center spring/damper simulation observes this per-substep routine. A whole-row immediate-return mutation changes the staged differential and fails candidate assertions; the restored control is exact."
     },
     {
       "id": "phys_fn_000656",
