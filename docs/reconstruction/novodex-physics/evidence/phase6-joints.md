@@ -9947,4 +9947,11 @@ Adding `1.0f` to the computed X result in `Joint::getGlobalAxis` is caught for `
 
 The registered `NxPhysicsEffectorTests` scratch probe calls the deleting destructor with flags 0 and 1 and checks observer removal, pointer clearing, base-vtable restoration, stack balance, and conditional freeing. Removing the second body-pointer clear is detected for `phys_fn_003932` (`body_cleared=0`, `mismatches=1`, candidate exit 1, `stdout_delta=2`); the restored oracle/candidate differential is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-effector-row003932-deleting-destructor.md`.
 
+
+## Phase 6 closure measurement — prismatic joint destructor (`phys_fn_004382`)
+
+The registered `NxPhysicsJointAllocatorTests` allocator-A/B fixture creates and releases a prismatic joint. Omitting its public-wrapper delete drops the Foundation allocator release count from two to one; the differential catches `phys_fn_004382` with `stdout_delta=2`, both processes exiting zero and exact stderr. The restored destructor returns the transcript to exact equality. Detailed mutation and DLL identity evidence: `evidence/phase6-prismatic-destructor-004382.md`.
+
+## Phase 6 closure measurement — island-object teardown (`phys_fn_004167`)
+
 Island-object teardown row `phys_fn_004167` is reconstructed in `Physics/src/core/JointSupport.cpp` and directly compared with the pinned oracle by `NxPhysicsJointSupportTests` (registered as an oracle differential in Phases 6 and 7). The baseline releases three elements in order 103, 101, 102 with flag 1, frees both array blocks, clears both array triples, preserves the `+0x0c` dword, and reports `mismatches=0`. An immediate-return mutant is caught with `mismatches=4` and candidate exit 1. Detailed fixture and mutation record: `evidence/phase6-joint-row004167-island-teardown.md`.

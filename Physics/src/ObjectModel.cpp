@@ -706,7 +706,7 @@ ShapeBase::ShapeBase(void* owner, unsigned argument)
 	identity.mRotation[8] = one;
 	mPose0C = identity;						// 0x00025555..0x000255cd
 	mPose3C = identity;						// second instruction run, +0x3c
-	mPose6C = identity;						// third instruction run, +0x6c
+	mLocalPose = identity;						// third instruction run, +0x6c
 	// The image runs the identical pose stores a SECOND time (0x0002564f..
 	// 0x000256cd) after the hook stores; both passes write the same bytes, so
 	// the transcription writes them once.
@@ -1715,10 +1715,10 @@ static void* nxActorVtThunk(void* self, void* arg1, unsigned* out, unsigned slot
 	return out;
 	}
 
-void* nxActorVtThunk104(void* self, void* arg1, unsigned* out)
-	{ return nxActorVtThunk(self, arg1, out, 0x104u); }
-void* nxActorVtThunk108(void* self, void* arg1, unsigned* out)
-	{ return nxActorVtThunk(self, arg1, out, 0x108u); }
+void* nxActorGetPointVelocityVal(void* self, void* point, unsigned* out)
+	{ return nxActorVtThunk(self, point, out, 0x104u); }
+void* nxActorGetLocalPointVelocityVal(void* self, void* point, unsigned* out)
+	{ return nxActorVtThunk(self, point, out, 0x108u); }
 
 namespace
 	{
@@ -3044,10 +3044,20 @@ void nxMutexLinkAdvance(void* self, unsigned objOff, unsigned srcOff,
 	memcpy(obj + dstOff, &v, 4);
 	}
 
-// phys_fn_004387 (0xaf2c4): the six-byte global trampoline.
-void nxTrampoline4387(void (*fn)(void))
+// phys_fn_004387 (0xaf2c4): tail-jumps to Observable::event(this, event,
+// observer), forwarding ECX and both stack arguments to the import.
+void nxTrampoline4387(void* self, unsigned event, void* observer,
+	NxObservableEventFn fn)
 	{
-	fn();
+	fn(self, event, observer);
+	}
+
+// phys_fn_003509 (0x863f0): tail-jumps through the dynamically loaded
+// StaticCollisionDestroy cdecl pointer and forwards its single collision arg.
+int nxStaticCollisionDestroyTrampoline(void* collision,
+	NxStaticCollisionDestroyFn fn)
+	{
+	return fn(collision);
 	}
 
 // The report-once float rows.
@@ -3280,7 +3290,7 @@ float nxLockedThunkFloat2(void* self, unsigned lockOff, unsigned objOff,
 
 // phys_fn_003936 (0x8eeb0): the vtable store plus the global tail jump.
 // Product row: Physics/src/core/SpringAndDamperEffector.cpp.
-void nxDtorTrampoline3936(void* self, void (*fn)(void*))
+void nxDtorTrampoline3936(void* self, NxObservableDestructorFn fn)
 	{
 	unsigned vtable = 0x10117920u;
 	memcpy(self, &vtable, 4);
@@ -4949,14 +4959,10 @@ void PlaneShape::nxPlaneSetEquation(const float* normal, float distance)
 //   array at +0x78 (grown through 0x100b4de0); then +0xdc |= 2; then, when
 //   the prunable (+0xa4) has a handle (+0x28 != 0xffff) and a pruning type
 //   (+0x2a) below 4, its +8 loses bit 2 and the scene's pruner for that type
-//   ([scene+0x640 + 4 type]) gets slot 3 with the prunable. The candidate
-//   makes that call (Pruner::UpdateObject, scene-raycast Task 3). The +0xa0 array
-//   append is not reproduced: since NpActor.cpp completion Task 4 every
-//   Scene root carries the pruning collection at +0xa0 (001943), but no
-//   candidate path reaches the arm -- +0xdc starts at 6 (001273) and every
-//   call with a nonzero argument sets bit 2, and nothing in the candidate
-//   clears it -- and the add paths (000531, 000036) run slot 6 before the
-//   prunable is inserted, so they do not reach the slot-3 call either.
+//   ([scene+0x640 + 4 type]) gets slot 3 with the prunable. When +0xdc bit 1
+//   is clear and +0xa0 names the pruning collection, append this shape to its
+//   SdkContainer at +0x78 (growing through 004840 when full), then set bit 1.
+//   The owned list/update arm is directly exercised by the object-layout gate.
 // phys_fn_001315 stores its owner-composed rotation through x87 fstp. During
 // simulateFrame the oracle sets x87 to chop; SSE2 double-to-float casts follow
 // MXCSR instead. Keep this conversion local to the owner-update implementation
@@ -5040,8 +5046,8 @@ void ShapeBase::nxApplyOwnerUpdate(unsigned flags)
 		memcpy(r, body + 0x20, sizeof(r));
 		memcpy(t, body + 0x44, sizeof(t));
 		}
-	const float* l = reinterpret_cast<const float*>(mPose6C.mRotation);
-	const float* lt = mPose6C.mTranslation;
+	const float* l = reinterpret_cast<const float*>(mLocalPose.mRotation);
+	const float* lt = mLocalPose.mTranslation;
 	float* w = reinterpret_cast<float*>(mPose0C.mRotation);
 	#define NX_RL(a, b) (static_cast<double>(r[a]) * l[b])
 	const double c0 = (static_cast<double>(r[0]) * lt[0] + static_cast<double>(r[1]) * lt[1]) +
@@ -5070,7 +5076,19 @@ void ShapeBase::nxApplyOwnerUpdate(unsigned flags)
 		}
 	if(flags & 0xffu)
 		{
-		mHalfwordDC |= 2u;
+		// 0x26a36-0x26a6f: a pruning collection owns a root list at +0x78.
+		// Append this shape only while its +0xdc bit 1 is clear, then set it.
+		// If the collection pointer is null the listing skips both operations.
+		if((mHalfwordDC & 2u) == 0 && mWordA0 != 0)
+			{
+			SdkContainer* list = reinterpret_cast<SdkContainer*>(
+				reinterpret_cast<unsigned char*>(static_cast<size_t>(mWordA0)) + 0x78);
+			if(list->mCount == list->mCapacity)
+				list->resize(1);
+			list->mEntries[list->mCount] = reinterpret_cast<NxU32>(this);
+			++list->mCount;
+			mHalfwordDC |= 2u;
+			}
 		if(scene && mPrunable.mHandle != 0xffffu &&
 			mPrunable.mPruningType < 4u)
 			{
@@ -5224,7 +5242,7 @@ bool ShapeBase::nxShapeNameRegistry(void* shape, void* name)
 bool ShapeBase::nxApplyDescriptor(const void* record)
 	{
 	const unsigned char* rec = static_cast<const unsigned char*>(record);
-	memcpy(&mPose6C, rec + 8, sizeof(mPose6C));			// rep movsd 9 + three words
+	memcpy(&mLocalPose, rec + 8, sizeof(mLocalPose));			// rep movsd 9 + three words
 	NxU16 flagsLo = 0;
 	memcpy(&flagsLo, rec + 0x38, 2);					// movzx word [ebp+0x38]
 	mHalfwordDE = flagsLo;								// mov [ebx+0xde],cx
@@ -5773,7 +5791,7 @@ bool BoxShape::nxBoxAccumulateMass(MassFrame* destination, float density, unsign
 	{
 	(void) reserved;
 	if(!mBase.nxFlagBitsDE(7))
-		nxBoxComputeMassFrame(destination, density, mHull.mDims04, &mBase.mPose6C);
+		nxBoxComputeMassFrame(destination, density, mHull.mDims04, &mBase.mLocalPose);
 	return true;
 	}
 
@@ -6497,8 +6515,8 @@ void ShapeBase::nxShapeGlobalPose(float* out) const
 		src = reinterpret_cast<const float*>(owner + 0x20);
 
 	const float* R = src;
-	const float* L = reinterpret_cast<const float*>(mPose6C.mRotation);	// +0x6c
-	const float* lt = mPose6C.mTranslation;								// +0x90
+	const float* L = reinterpret_cast<const float*>(mLocalPose.mRotation);	// +0x6c
+	const float* lt = mLocalPose.mTranslation;								// +0x90
 	const double tx = src[9];											// fld [edx+0x24]
 	const double a = (static_cast<double>(R[0]) * lt[0] +
 		static_cast<double>(R[1]) * lt[1]) + static_cast<double>(R[2]) * lt[2];
@@ -6999,7 +7017,7 @@ bool MeshShape::nxMeshAccumulateMassCached(MassFrame* destination,
 	memcpy(&local.mOffset, mesh + 0xd8, 12);
 	local.mMass = cachedMass;
 	const unsigned char* pose =
-		reinterpret_cast<const unsigned char*>(&mBase.mPose6C);
+		reinterpret_cast<const unsigned char*>(&mBase.mLocalPose);
 	local.nxMassFrameFoldPayload(pose);
 	local.nxMassFrameTranslate(pose + 0x24);
 	destination->nxMassFrameMerge(local);
@@ -7096,7 +7114,7 @@ bool ShapeBase::nxBaseSlot7(unsigned* /*out*/, const void* /*swept*/)
 bool ShapeBase::nxBaseSaveState(void* record)
 	{
 	unsigned char* rec = static_cast<unsigned char*>(record);
-	memcpy(rec + 8, &mPose6C, sizeof(mPose6C));		// rep movsd 9 + three words
+	memcpy(rec + 8, &mLocalPose, sizeof(mLocalPose));		// rep movsd 9 + three words
 	unsigned int de = mHalfwordDE;
 	memcpy(rec + 0x38, &de, sizeof(de));			// movzx + dword store
 	memcpy(rec + 0x3c, &mHalfwordD8, sizeof(mHalfwordD8));

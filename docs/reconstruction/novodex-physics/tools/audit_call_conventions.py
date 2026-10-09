@@ -17,6 +17,7 @@ Scope: reads only. It never edits the harness.
 """
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -24,7 +25,21 @@ from pathlib import Path
 
 import capstone
 
-DEFAULT_ORACLE_ROOT = Path(r'D:\FlamingEnt__\Unreal_3')
+DEFAULT_REPO_ROOT = Path(__file__).resolve().parents[4]
+DEFAULT_ORACLE_ROOT = Path(r'D:\FlamingEnt__\Unreal_3\Binaries')
+PINNED_ORACLE_SHA256 = '4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c'
+
+# These exact rows end in indirect tail jumps, so their `ret N` lives in the
+# selected callback. The target ABI is established independently from the
+# pinned image: 003509's GetProcAddress result is typed cdecl(void*) and its
+# caller pushes one pointer; 003936 imports the zero-argument Observable
+# destructor; 004387 imports Observable::event(uint, Observable&). Exact bytes
+# make the exceptions fail closed if the pinned oracle or inventory changes.
+AUDITED_INDIRECT_TAILS = {
+    0x863f0: (bytes.fromhex('ff2594641210'), 0),
+    0x8eeb0: (bytes.fromhex('c70120791110ff2594411010'), 0),
+    0xaf2c4: (bytes.fromhex('ff2598411010'), 8),
+}
 
 TD = re.compile(
     r'typedef\s+[\w\s\*]+\(\s*(__cdecl|__stdcall|__fastcall|__thiscall)\s*\*\s*(\w+)\s*\)'
@@ -32,43 +47,179 @@ TD = re.compile(
 CAST = re.compile(r'reinterpret_cast<(\w+)>\s*\(\s*base\s*\+\s*(0x[0-9a-fA-F]+)\s*\)')
 
 
-def row_cleanup(code, md, rva):
-    """Bytes the row's own terminating `ret` pops, or None if not decidable."""
-    for ins in md.disasm(code, 0x10000000 + rva):
-        if ins.mnemonic == 'ret':
-            return int(ins.op_str, 0) if ins.op_str else 0
-        if ins.mnemonic == 'jmp':
+def bounded_switch_targets(ins, code, md, rva, raw, sections, image_base):
+    """Resolve a simple absolute x86 switch only when its index is bounded.
+
+    Accepted shape: `cmp index, limit; ja default; jmp [index*4 + VA]`.
+    This proves the table has exactly limit+1 reachable entries. Every entry
+    must point back into this function row; all other indirect jumps are left
+    undecidable.
+    """
+    start = 0x10000000 + rva
+    end = start + len(code)
+    instructions = list(md.disasm(code, start))
+    position = next((i for i, item in enumerate(instructions)
+                     if item.address == ins.address), None)
+    if position is None or position < 2:
+        return None
+    compare, bound = instructions[position - 2:position]
+    if (compare.mnemonic != 'cmp' or bound.mnemonic != 'ja' or
+            len(compare.operands) != 2 or len(bound.operands) != 1 or
+            compare.operands[0].type != capstone.x86.X86_OP_REG or
+            compare.operands[1].type != capstone.x86.X86_OP_IMM or
+            bound.operands[0].type != capstone.x86.X86_OP_IMM or
+            bound.address + bound.size != ins.address):
+        return None
+
+    operand = ins.operands[0] if ins.operands else None
+    if (operand is None or operand.type != capstone.x86.X86_OP_MEM or
+            operand.mem.base != capstone.x86.X86_REG_INVALID or
+            operand.mem.index != compare.operands[0].reg or
+            operand.mem.scale != 4):
+        return None
+    count = compare.operands[1].imm + 1
+    if count <= 0 or count > 256:
+        return None
+    table_va = operand.mem.disp
+    table_rva = table_va - image_base
+    table_offset = None
+    for section in sections:
+        if (section['rva'] <= table_rva and
+                table_rva + count * 4 <= section['rva'] + section['raw_size']):
+            table_offset = section['raw_offset'] + table_rva - section['rva']
+            break
+    if table_offset is None or table_offset + count * 4 > len(raw):
+        return None
+    targets = []
+    for index in range(count):
+        target_va = int.from_bytes(raw[table_offset + index * 4:
+                                       table_offset + index * 4 + 4], 'little')
+        target = 0x10000000 + target_va - image_base
+        if not start <= target < end:
             return None
-    return None
+        targets.append(target)
+    return targets
 
 
-def input_paths(repo_root, oracle_root):
-    """Resolve the harness, oracle DLL, and PE map for selected checkouts."""
-    repo_root = Path(repo_root)
-    oracle_root = Path(oracle_root)
+def row_cleanup(code, md, rva, function_size=None, jump_table_reader=None):
+    """Return a row's common callee cleanup across reachable return paths.
+
+    The byte range must be bounded to the inventory's exact function size.
+    Direct branches are followed only while their targets remain inside that
+    range. Indirect branches and external tail calls remain undecidable.
+    """
+    if function_size is not None:
+        code = code[:function_size]
+    md.detail = True
+    start = 0x10000000 + rva
+    end = start + len(code)
+    pending = [start]
+    visited = set()
+    cleanups = set()
+    while pending:
+        address = pending.pop()
+        if address in visited:
+            continue
+        if address < start or address >= end:
+            return None
+        offset = address - start
+        ins = next(md.disasm(code[offset:], address, count=1), None)
+        if ins is None or ins.address != address:
+            return None
+        visited.add(address)
+        next_address = address + ins.size
+
+        if ins.mnemonic in ('ret', 'retf'):
+            cleanups.add(int(ins.op_str, 0) if ins.op_str else 0)
+            continue
+        if ins.mnemonic == 'jmp':
+            if ins.operands and ins.operands[0].type == capstone.x86.X86_OP_IMM:
+                target = ins.operands[0].imm
+                if not start <= target < end:
+                    return None
+                pending.append(target)
+                continue
+            targets = jump_table_reader(ins) if jump_table_reader else None
+            if not targets or any(not start <= target < end for target in targets):
+                return None
+            pending.extend(targets)
+            continue
+        if ins.group(capstone.CS_GRP_JUMP):
+            if not ins.operands or ins.operands[0].type != capstone.x86.X86_OP_IMM:
+                return None
+            target = ins.operands[0].imm
+            if not start <= target < end or next_address >= end:
+                return None
+            pending.extend((target, next_address))
+            continue
+        if ins.mnemonic in ('int3', 'ud2', 'hlt'):
+            continue
+        if next_address >= end:
+            return None
+        pending.append(next_address)
+
+    if not cleanups or len(cleanups) != 1:
+        return None
+    return cleanups.pop()
+
+
+def audited_indirect_tail_cleanup(code, rva, function_size=None):
+    """Resolve only exact, manually audited indirect-tail rows in the pinned DLL."""
+    record = AUDITED_INDIRECT_TAILS.get(rva)
+    if record is None:
+        return None
+    expected_bytes, cleanup = record
+    bounded = code[:function_size] if function_size is not None else code
+    return cleanup if bounded == expected_bytes else None
+
+
+def expected_cleanup(conv, nargs):
+    """Argument bytes popped by the callee for a 32-bit function pointer.
+
+    `nargs` counts the parameters written in the typedef, including an
+    explicit `this` placeholder for `__thiscall` and register placeholders
+    for `__fastcall`. The first two fastcall arguments use ECX and EDX.
+    """
+    if conv == '__cdecl':
+        return 0
+    if conv == '__stdcall':
+        return 4 * nargs
+    if conv == '__fastcall':
+        return 4 * max(nargs - 2, 0)
+    if conv == '__thiscall':
+        return 4 * max(nargs - 1, 0)
+    raise ValueError('unsupported x86 calling convention: %s' % conv)
+
+
+def resolve_inputs(repo_root=None, oracle_root=None):
+    repo = Path(repo_root) if repo_root is not None else DEFAULT_REPO_ROOT
+    oracle = Path(oracle_root) if oracle_root is not None else DEFAULT_ORACLE_ROOT
     return (
-        repo_root / 'tests' / 'PhysicsObjectLayoutTests.cpp',
-        oracle_root / 'Binaries' / 'NxPhysics.dll',
-        repo_root / 'docs' / 'reconstruction' / 'novodex-physics' / 'oracle' / 'pe.json',
+        repo / 'tests' / 'PhysicsObjectLayoutTests.cpp',
+        oracle / 'NxPhysics.dll',
+        repo / 'docs' / 'reconstruction' / 'novodex-physics' / 'oracle' / 'pe.json',
     )
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '--repo-root', type=Path, default=Path(__file__).resolve().parents[4],
-        help='Novodex checkout to audit (default: inferred from this tool)',
-    )
-    parser.add_argument(
-        '--oracle-root', type=Path, default=DEFAULT_ORACLE_ROOT,
-        help='UE3 root containing Binaries/NxPhysics.dll',
-    )
+    parser.add_argument('--repo-root', type=Path, default=DEFAULT_REPO_ROOT)
+    parser.add_argument('--oracle-root', type=Path, default=DEFAULT_ORACLE_ROOT)
     args = parser.parse_args(argv)
-    harness_path, dll_path, pe_path = input_paths(args.repo_root, args.oracle_root)
+    harness, dll, pe_path = resolve_inputs(args.repo_root, args.oracle_root)
 
-    pe = json.loads(pe_path.read_text(encoding='utf-8'))
+    pe = json.load(open(pe_path))
     secs = pe['sections']
-    raw = dll_path.read_bytes()
+    raw = open(dll, 'rb').read()
+    oracle_sha256 = hashlib.sha256(raw).hexdigest()
+    if oracle_sha256 != PINNED_ORACLE_SHA256:
+        print('oracle SHA-256 mismatch: expected %s, got %s' %
+              (PINNED_ORACLE_SHA256, oracle_sha256), file=sys.stderr)
+        return 2
+    inventory_path = args.repo_root / 'docs' / 'reconstruction' / 'novodex-physics' / 'inventory.json'
+    inventory = json.load(open(inventory_path, encoding='utf-8'))
+    function_sizes = {int(row['rva'], 16): row['size']
+                      for row in inventory['functions']}
 
     def rva_to_off(rva):
         for s in secs:
@@ -77,11 +228,12 @@ def main(argv=None):
         return None
 
     md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
+    image_base = pe['image']['image_base']
 
     # The layout translation unit is committed as UTF-16LE with a BOM (it is the
     # only test source that is), so decode by its own BOM rather than assuming
     # UTF-8.
-    rawtext = harness_path.read_bytes()
+    rawtext = open(harness, 'rb').read()
     if rawtext[:2] in (b'\xff\xfe', b'\xfe\xff'):
         text = rawtext.decode('utf-16')
     else:
@@ -131,20 +283,28 @@ def main(argv=None):
             if off is None:
                 undecided.append((name, rva, uline, 'no section'))
                 continue
-            pops = row_cleanup(raw[off:off + 0x1200], md, rva)
+            function_size = function_sizes.get(rva)
+            if function_size is None:
+                undecided.append((name, rva, uline, 'no inventory row'))
+                continue
+            code = raw[off:off + function_size]
+            table_reader = lambda ins: bounded_switch_targets(
+                ins, code, md, rva, raw, secs, image_base)
+            pops = row_cleanup(code, md, rva, function_size=function_size,
+                               jump_table_reader=table_reader)
+            if pops is None:
+                pops = audited_indirect_tail_cleanup(
+                    code, rva, function_size=function_size)
             if pops is None:
                 undecided.append((name, rva, uline, 'row not decidable'))
                 continue
-            if conv in ('__cdecl', '__fastcall'):
-                expected = 0
-            elif conv == '__stdcall':
-                expected = 4 * nargs
-            else:  # __thiscall: the receiver travels in ECX
-                expected = 4 * max(nargs - 1, 0)
+            expected = expected_cleanup(conv, nargs)
             if pops != expected:
                 mismatches.append((name, rva, conv, pops, expected, gov[0], uline))
 
     print('typedefs=%d  cast sites=%d' % (len(typedefs), sum(len(v) for v in casts.values())))
+    print('cleanup sites resolved=%d unresolved=%d' %
+          (sum(len(v) for v in casts.values()) - len(undecided), len(undecided)))
     print('--- calling-convention mismatches ---')
     for name, rva, conv, pops, expected, tline, uline in mismatches:
         print('  %-20s rva=0x%-7x %-11s row pops %-3d convention implies %-3d '

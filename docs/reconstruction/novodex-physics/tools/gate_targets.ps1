@@ -431,6 +431,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'release_shape count=1 remaining_first=1 remaining_released=0'
     )
     'NxPhysicsShapeVtableTests' = @(
+        'abi probe applygroup oracle_flags=0 candidate_flags=0 state_equal=1 mismatches=0'
+        'abi probe negative_controls register_flags=1e stack_flags=1'
         'collision dtor family=0 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0'
         'collision dtor family=1 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0'
         'collision dtor family=2 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0'
@@ -439,7 +441,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision dtor families=5 mismatches=0'
         'collision dtor member-only mutant mismatches=5'
         'collision primary dtor families=5 mismatches=0'
-        'shape vtable oracle_digest=ed1294b6 cases=644 mismatches=0'
+        'shape vtable oracle_digest=ed1294b6 cases=645 mismatches=0'
         'shape vtable owner_notify oracle_slot=10 candidate_slot=10 oracle_calls=1 candidate_calls=1 owner_forwarded=1 box_forwarded=1 mismatches=0'
         'shape vtable base_stub slot4 oracle_false=1 candidate_false=1 output_preserved=1'
         'shape vtable base_stub slot5 oracle_null=1 candidate_null=1 esp_balanced=1'
@@ -1875,6 +1877,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'actor dynamic pose_alloc=50 cached=1 cached_nested=1',
         'actor dynamic position=c0400000.40000000.3f800000',
         'actor dynamic pose=3f800000.00000000.00000000.00000000.3f800000.00000000.00000000.00000000.3f800000.c0400000.40000000.3f800000',
+        'actor abi_sret actor_cases=19 shape_cases=6 flags=0 mismatches=0 wrong_cleanup_detected=1',
         'actor saved_dynamic pose=3f800000.00000000.00000000.00000000.3f800000.00000000.00000000.00000000.3f800000.c0400000.40000000.3f800000',
         'actor saved_dynamic saved_metadata=3f800000.00000000.0007.1.1.1',
         'actor saved_dynamic body_saved=1.7bb36a35.42400000.00000100.00000004',
@@ -2485,7 +2488,13 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=allocator family=distance window=create allocator=physics mallocs=0 frees=0 reallocs=0 sizes=none',
         'case=allocator family=distance released=yes',
         'case=allocator family=distance window=release allocator=foundation mallocs=0 frees=2 reallocs=0 sizes=none',
-        'case=allocator family=distance window=release allocator=physics mallocs=0 frees=0 reallocs=0 sizes=none'
+        'case=allocator family=distance window=release allocator=physics mallocs=0 frees=0 reallocs=0 sizes=none',
+        'case=allocator family=prismatic created=yes',
+        'case=allocator family=prismatic window=create allocator=foundation mallocs=2 frees=0 reallocs=0 sizes=17c,1c',
+        'case=allocator family=prismatic window=create allocator=physics mallocs=0 frees=0 reallocs=0 sizes=none',
+        'case=allocator family=prismatic released=yes',
+        'case=allocator family=prismatic window=release allocator=foundation mallocs=0 frees=2 reallocs=0 sizes=none',
+        'case=allocator family=prismatic window=release allocator=physics mallocs=0 frees=0 reallocs=0 sizes=none'
     )
     # Task 6 review adds 12: the control word read back inside two step
     # windows per mode, and D6JointDump.txt read back after the pair is
@@ -3958,42 +3967,52 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsJointTests' = @(
         'case=revolute index=0 created=yes',
+        'case=revolute index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=3f800000.00000000.00000000 state=0',
         'case=revolute index=0 actors a=match b=match',
         'case=revolute index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=prismatic index=0 created=yes',
+        'case=prismatic index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=prismatic index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=prismatic index=3 type=0 is_prismatic=yes is_revolute=no',
         'case=prismatic index=3 saved anchor0=40000000.40800000.00000000 anchor1=c0000000.40800000.00000000',
         'case=cylindrical index=0 created=yes',
+        'case=cylindrical index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=cylindrical index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=cylindrical index=3 type=2 is_cylindrical=yes is_prismatic=no',
         'case=cylindrical index=3 saved normal0=bed105ec.bed105ec.3f5105ec normal1=bed105ec.bed105ec.3f5105ec',
         'case=spherical index=0 created=yes',
+        'case=spherical index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=spherical index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=spherical index=3 flags=00000009 projection_mode=1',
         'case=spherical index=3 saved twist_limit=bf000000.3e800000.3f800000.3f400000.00000000.3f000000 swing_limit=3f200000.3f000000.3f400000',
         'case=point_on_line index=0 created=yes',
+        'case=point_on_line index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=point_on_line index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=point_on_line index=3 type=4 is_point_on_line=yes is_revolute=no',
         'case=point_on_line index=3 saved anchor0=40000000.40800000.00000000 anchor1=c0000000.40800000.00000000',
         'case=point_in_plane index=0 created=yes',
+        'case=point_in_plane index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=point_in_plane index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=point_in_plane index=3 type=5 is_point_in_plane=yes is_revolute=no',
         'case=point_in_plane index=3 saved anchor0=40000000.40800000.00000000 anchor1=c0000000.40800000.00000000',
         'case=distance index=0 created=yes',
+        'case=distance index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=distance index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=distance index=3 type=6 is_distance=yes is_revolute=no',
         'case=distance index=0 saved max_distance=40200000 min_distance=3f000000 spring=41200000.3f000000.3e800000 flags=00000007',
         'case=pulley index=0 created=yes',
+        'case=pulley index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=pulley index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=pulley index=3 type=7 is_pulley=yes is_distance=no',
         'case=pulley index=0 saved distance=40c00000 stiffness=3f400000 ratio=3fc00000 flags=00000001',
         'case=fixed index=0 created=yes',
+        'case=fixed index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=fixed index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=fixed index=3 type=8 is_fixed=yes is_pulley=no',
         'case=fixed index=3 saved anchor0=40000000.40800000.00000000 anchor1=c0000000.40800000.00000000',
         'case=d6 index=0 created=yes',
+        'case=d6 index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=d6 index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=d6 index=3 type=9 is_d6=yes is_fixed=no',
         'case=d6 index=0 saved motions=2.0.2.0.2.0',
@@ -5040,6 +5059,9 @@ $NxRequiredCoverageLines = [ordered] @{
     #     byte for byte by the oracle's own constructor;
     #   * `owner`, the four-byte accessor phys_fn_001281 reading +0x04.
     'NxPhysicsObjectLayoutTests' = @(
+        'tailabi row=004387 cleanup=8 oracle=1 candidate=1 args=match',
+        'tailabi row=003509 cleanup=0 oracle=1 candidate=1 arg=match return=3509',
+        'tailabi row=003936 cleanup=0 oracle=1 candidate=1 this=match',
         'vt name=actor_interface slots=87 digest=62936499',
         'vt name=actor_dynamic slots=88 digest=cdd44a90',
         'vt name=shape_base slots=12 digest=650a3f61',
@@ -5079,6 +5101,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'dtors2 plane=phys_fn_001263 digest=7ac6fe28 mesh=phys_fn_001399 digest=b3c6ab70',
         'meshwords44 row=phys_fn_001389 out=deadbeef.cafebabe.12345678.00000000.00000000.00000000',
         'ownerupd row=phys_fn_001315 noop=1',
+        'ownerupd pruning oracle_ok=1 candidate_ok=1 oracle_list=1/00315a51 candidate_list=1/00315a51 oracle_update=1/00315a51/00000000 candidate_update=1/00315a51/00000000 mismatches=0',
         'capload row=phys_fn_000989 rad=3fc00000',
         'planeload row=phys_fn_001265 ny=3f800000',
         'meshload row=phys_fn_001383 bound=1',
@@ -5659,7 +5682,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2605  # previous 2,604 plus the member-only destructor mutation control
+    '5' = 2612  # previous 2,611 plus the owner-update pruning differential
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths
@@ -5684,7 +5707,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1245  # previous 1241 plus island-object teardown oracle and coverage assertions
+    '6' = 1265  # registered Phase 6 coverage assertion count
+               # previous 1238 plus the D6 public global-anchor readback
                # previous 1234 plus three contended D6 drive write-lock reports
                # previous 1233 plus the D6 contended drive-position write-lock report
                # previous 1232 plus the D6 name setter readback
@@ -5703,7 +5727,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1434  # previous 1430 plus island-object teardown oracle and coverage assertions
+    '7' = 1440  # registered Phase 7 coverage assertion count
+               # previous 1429 plus the D6 public global-anchor readback
                # previous 1425 plus three contended D6 drive write-lock reports
                # previous 1424 plus the D6 contended drive-position write-lock report
                # previous 1423 plus the D6 name setter readback

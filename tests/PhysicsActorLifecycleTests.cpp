@@ -16,6 +16,104 @@
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
+extern "C" unsigned __cdecl nxAbiInvokeSretProbe(
+	void* target, void* self, void* result, void* point);
+extern "C" void nxAbiSretWrongCleanupControl();
+
+extern "C" {
+volatile unsigned nxAbiSretProbeFlags = 0;
+volatile unsigned nxAbiSretProbeBaseline = 0;
+void* volatile nxAbiSretProbeTarget = 0;
+void* volatile nxAbiSretProbeThis = 0;
+void* volatile nxAbiSretProbeResult = 0;
+void* volatile nxAbiSretProbePoint = 0;
+}
+
+// A raw x86 __thiscall call for a large aggregate return: ECX carries `this`,
+// the hidden result pointer is the first stack argument, and an optional
+// visible pointer argument follows it. The callee must pop four or eight bytes.
+// Recovery state lets the probe detect bad cleanup or a nonvolatile-register
+// clobber without corrupting its own caller's frame.
+extern "C" __declspec(naked) unsigned __cdecl nxAbiInvokeSretProbe(
+	void*, void*, void*, void*)
+{
+	__asm {
+		push ebp
+		mov ebp, esp
+		push ebx
+		push esi
+		push edi
+		mov dword ptr [nxAbiSretProbeBaseline], esp
+		mov eax, dword ptr [ebp + 8]
+		mov dword ptr [nxAbiSretProbeTarget], eax
+		mov eax, dword ptr [ebp + 12]
+		mov dword ptr [nxAbiSretProbeThis], eax
+		mov eax, dword ptr [ebp + 16]
+		mov dword ptr [nxAbiSretProbeResult], eax
+		mov eax, dword ptr [ebp + 20]
+		mov dword ptr [nxAbiSretProbePoint], eax
+		mov dword ptr [nxAbiSretProbeFlags], 0
+		mov ebx, 0x6b13579b
+		mov esi, 0x6c2468ac
+		mov edi, 0x6d3579bd
+		mov ebp, 0x6e468ace
+		cmp dword ptr [nxAbiSretProbePoint], 0
+		je abi_sret_no_visible_arg
+		push dword ptr [nxAbiSretProbePoint]
+	abi_sret_no_visible_arg:
+		push dword ptr [nxAbiSretProbeResult]
+		mov ecx, dword ptr [nxAbiSretProbeThis]
+		call dword ptr [nxAbiSretProbeTarget]
+		cmp esp, dword ptr [nxAbiSretProbeBaseline]
+		je abi_sret_stack_ok
+		or dword ptr [nxAbiSretProbeFlags], 1
+	abi_sret_stack_ok:
+		cmp ebx, 0x6b13579b
+		je abi_sret_ebx_ok
+		or dword ptr [nxAbiSretProbeFlags], 2
+	abi_sret_ebx_ok:
+		cmp esi, 0x6c2468ac
+		je abi_sret_esi_ok
+		or dword ptr [nxAbiSretProbeFlags], 4
+	abi_sret_esi_ok:
+		cmp edi, 0x6d3579bd
+		je abi_sret_edi_ok
+		or dword ptr [nxAbiSretProbeFlags], 8
+	abi_sret_edi_ok:
+		cmp ebp, 0x6e468ace
+		je abi_sret_ebp_ok
+		or dword ptr [nxAbiSretProbeFlags], 16
+	abi_sret_ebp_ok:
+		mov esp, dword ptr [nxAbiSretProbeBaseline]
+		pop edi
+		pop esi
+		pop ebx
+		pop ebp
+		mov eax, dword ptr [nxAbiSretProbeFlags]
+		ret
+	}
+}
+
+extern "C" __declspec(naked) void __cdecl nxAbiSretWrongCleanupControl()
+{
+	__asm { ret }
+}
+
+static void nxAccumulateActorSretCheck(void* object, unsigned slot,
+	const void* expected, unsigned bytes, unsigned* cases, unsigned* mismatches,
+	unsigned* flagsOr, const void* point = 0)
+{
+	unsigned char raw[sizeof(NxMat34)];
+	memset(raw, 0xcd, sizeof(raw));
+	void** vtable = *reinterpret_cast<void***>(object);
+	const unsigned flags = nxAbiInvokeSretProbe(vtable[slot], object, raw,
+		const_cast<void*>(point));
+	const bool equal = memcmp(expected, raw, bytes) == 0;
+	++*cases;
+	*flagsOr |= flags;
+	if(flags || !equal) ++*mismatches;
+}
+
 static unsigned nxBits(float value)
 {
 	unsigned bits = 0;
@@ -745,6 +843,101 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("actor dynamic created=%u\n", dynamicActor ? 1u : 0u);
 	if(!dynamicActor) return nxFail("dynamic actor creation failed");
+	{
+		// NxActor slot 0 is its deleting destructor; four setters follow, so
+		// slot 5 begins the zero-argument aggregate-return family. Exercise every
+		// such public method through both the normal C++ ABI and a raw hidden-sret
+		// call, comparing the independently written result bytes.
+		unsigned actorSretCases = 0, shapeSretCases = 0;
+		unsigned sretMismatches = 0, sretFlags = 0;
+		NxMat34 pose = dynamicActor->getGlobalPoseVal();
+		nxAccumulateActorSretCheck(dynamicActor, 5, &pose, sizeof(pose),
+			&actorSretCases, &sretMismatches, &sretFlags);
+		NxVec3 position = dynamicActor->getGlobalPositionVal();
+		nxAccumulateActorSretCheck(dynamicActor, 6, &position, sizeof(position),
+			&actorSretCases, &sretMismatches, &sretFlags);
+		NxMat33 orientation = dynamicActor->getGlobalOrientationVal();
+		nxAccumulateActorSretCheck(dynamicActor, 7, &orientation, sizeof(orientation),
+			&actorSretCases, &sretMismatches, &sretFlags);
+		NxQuat quaternion = dynamicActor->getGlobalOrientationQuatVal();
+		nxAccumulateActorSretCheck(dynamicActor, 8, &quaternion, sizeof(quaternion),
+			&actorSretCases, &sretMismatches, &sretFlags);
+		NxMat34 localPose = dynamicActor->getCMassLocalPoseVal();
+		nxAccumulateActorSretCheck(dynamicActor, 29, &localPose, sizeof(localPose),
+			&actorSretCases, &sretMismatches, &sretFlags);
+		NxVec3 localPosition = dynamicActor->getCMassLocalPositionVal();
+		nxAccumulateActorSretCheck(dynamicActor, 30, &localPosition, sizeof(localPosition),
+			&actorSretCases, &sretMismatches, &sretFlags);
+		NxMat33 localOrientation = dynamicActor->getCMassLocalOrientationVal();
+		nxAccumulateActorSretCheck(dynamicActor, 31, &localOrientation, sizeof(localOrientation),
+			&actorSretCases, &sretMismatches, &sretFlags);
+		NxMat34 globalCMassPose = dynamicActor->getCMassGlobalPoseVal();
+		nxAccumulateActorSretCheck(dynamicActor, 32, &globalCMassPose, sizeof(globalCMassPose),
+			&actorSretCases, &sretMismatches, &sretFlags);
+		NxVec3 globalCMassPosition = dynamicActor->getCMassGlobalPositionVal();
+		nxAccumulateActorSretCheck(dynamicActor, 33, &globalCMassPosition, sizeof(globalCMassPosition),
+			&actorSretCases, &sretMismatches, &sretFlags);
+		NxMat33 globalCMassOrientation = dynamicActor->getCMassGlobalOrientationVal();
+		nxAccumulateActorSretCheck(dynamicActor, 34, &globalCMassOrientation, sizeof(globalCMassOrientation),
+			&actorSretCases, &sretMismatches, &sretFlags);
+		NxVec3 massInertia = dynamicActor->getMassSpaceInertiaTensorVal();
+		nxAccumulateActorSretCheck(dynamicActor, 38, &massInertia, sizeof(massInertia),
+			&actorSretCases, &sretMismatches, &sretFlags);
+		NxMat33 globalInertia = dynamicActor->getGlobalInertiaTensorVal();
+		nxAccumulateActorSretCheck(dynamicActor, 39, &globalInertia, sizeof(globalInertia),
+			&actorSretCases, &sretMismatches, &sretFlags);
+		NxMat33 inverseInertia = dynamicActor->getGlobalInertiaTensorInverseVal();
+		nxAccumulateActorSretCheck(dynamicActor, 40, &inverseInertia, sizeof(inverseInertia),
+			&actorSretCases, &sretMismatches, &sretFlags);
+		NxVec3 linearVelocity = dynamicActor->getLinearVelocityVal();
+		nxAccumulateActorSretCheck(dynamicActor, 47, &linearVelocity, sizeof(linearVelocity),
+			&actorSretCases, &sretMismatches, &sretFlags);
+		NxVec3 angularVelocity = dynamicActor->getAngularVelocityVal();
+		nxAccumulateActorSretCheck(dynamicActor, 48, &angularVelocity, sizeof(angularVelocity),
+			&actorSretCases, &sretMismatches, &sretFlags);
+		NxVec3 linearMomentum = dynamicActor->getLinearMomentumVal();
+		nxAccumulateActorSretCheck(dynamicActor, 52, &linearMomentum, sizeof(linearMomentum),
+			&actorSretCases, &sretMismatches, &sretFlags);
+		NxVec3 angularMomentum = dynamicActor->getAngularMomentumVal();
+		nxAccumulateActorSretCheck(dynamicActor, 53, &angularMomentum, sizeof(angularMomentum),
+			&actorSretCases, &sretMismatches, &sretFlags);
+		NxVec3 point(1.25f, -2.5f, 0.75f);
+		NxVec3 pointVelocity = dynamicActor->getPointVelocityVal(point);
+		nxAccumulateActorSretCheck(dynamicActor, 65, &pointVelocity, sizeof(pointVelocity),
+			&actorSretCases, &sretMismatches, &sretFlags, &point);
+		NxVec3 localPointVelocity = dynamicActor->getLocalPointVelocityVal(point);
+		nxAccumulateActorSretCheck(dynamicActor, 66, &localPointVelocity,
+				sizeof(localPointVelocity), &actorSretCases, &sretMismatches, &sretFlags, &point);
+		NxShape* dynamicShape = dynamicActor->getShapes()[0];
+		NxMat34 shapeLocalPose = dynamicShape->getLocalPoseVal();
+		nxAccumulateActorSretCheck(dynamicShape, 13, &shapeLocalPose,
+			sizeof(shapeLocalPose), &shapeSretCases, &sretMismatches, &sretFlags);
+		NxVec3 shapeLocalPosition = dynamicShape->getLocalPositionVal();
+		nxAccumulateActorSretCheck(dynamicShape, 14, &shapeLocalPosition,
+			sizeof(shapeLocalPosition), &shapeSretCases, &sretMismatches, &sretFlags);
+		NxMat33 shapeLocalOrientation = dynamicShape->getLocalOrientationVal();
+		nxAccumulateActorSretCheck(dynamicShape, 15, &shapeLocalOrientation,
+			sizeof(shapeLocalOrientation), &shapeSretCases, &sretMismatches, &sretFlags);
+		NxMat34 shapeGlobalPose = dynamicShape->getGlobalPoseVal();
+		nxAccumulateActorSretCheck(dynamicShape, 22, &shapeGlobalPose,
+			sizeof(shapeGlobalPose), &shapeSretCases, &sretMismatches, &sretFlags);
+		NxVec3 shapeGlobalPosition = dynamicShape->getGlobalPositionVal();
+		nxAccumulateActorSretCheck(dynamicShape, 23, &shapeGlobalPosition,
+			sizeof(shapeGlobalPosition), &shapeSretCases, &sretMismatches, &sretFlags);
+		NxMat33 shapeGlobalOrientation = dynamicShape->getGlobalOrientationVal();
+		nxAccumulateActorSretCheck(dynamicShape, 24, &shapeGlobalOrientation,
+			sizeof(shapeGlobalOrientation), &shapeSretCases, &sretMismatches, &sretFlags);
+		const unsigned wrongCleanupFlags = nxAbiInvokeSretProbe(
+			reinterpret_cast<void*>(&nxAbiSretWrongCleanupControl),
+			dynamicActor, &pose, 0);
+		printf("actor abi_sret actor_cases=%u shape_cases=%u flags=%x mismatches=%u "
+			"wrong_cleanup_detected=%u\n", actorSretCases, shapeSretCases, sretFlags,
+			sretMismatches,
+			wrongCleanupFlags == 1u ? 1u : 0u);
+		if(actorSretCases != 19 || shapeSretCases != 6 || sretFlags ||
+			sretMismatches || wrongCleanupFlags != 1u)
+			return nxFail("public structure-return ABI mismatch");
+	}
 	nxPrintActorSubobjectVptrs("dynamic", dynamicActor);
 	nxProbePublicShapes("dynamic", dynamicActor);
 	printf("actor dynamic dynamic=%u\n", dynamicActor->isDynamic() ? 1u : 0u);

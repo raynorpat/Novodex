@@ -8,6 +8,95 @@
 #include "ObjectModel.h"
 #include "ContactGeneration.h"
 
+extern "C" unsigned __cdecl nxAbiInvokeThiscallProbe(
+    void* target, void* self, unsigned argument);
+extern "C" void nxAbiClobberNonvolatileControl();
+extern "C" void nxAbiWrongCleanupControl();
+
+extern "C" {
+volatile unsigned nxAbiProbeFlags = 0;
+volatile unsigned nxAbiProbeBaseline = 0;
+void* volatile nxAbiProbeTarget = 0;
+void* volatile nxAbiProbeThis = 0;
+volatile unsigned nxAbiProbeArgument = 0;
+}
+
+// A raw x86 call probe: ECX carries `self`, one word is pushed, and the callee
+// must return with ESP restored by `ret 4`. All four nonvolatile GPRs receive
+// sentinels. Global recovery state lets the probe safely detect even an EBP
+// clobber or incorrect stack pop before restoring its own caller's frame.
+extern "C" __declspec(naked) unsigned __cdecl nxAbiInvokeThiscallProbe(
+    void*, void*, unsigned)
+{
+    __asm {
+        push ebp
+        mov ebp, esp
+        push ebx
+        push esi
+        push edi
+        mov dword ptr [nxAbiProbeBaseline], esp
+        mov eax, dword ptr [ebp + 8]
+        mov dword ptr [nxAbiProbeTarget], eax
+        mov eax, dword ptr [ebp + 12]
+        mov dword ptr [nxAbiProbeThis], eax
+        mov eax, dword ptr [ebp + 16]
+        mov dword ptr [nxAbiProbeArgument], eax
+        mov dword ptr [nxAbiProbeFlags], 0
+        mov ebx, 0x6b13579b
+        mov esi, 0x6c2468ac
+        mov edi, 0x6d3579bd
+        mov ebp, 0x6e468ace
+        push dword ptr [nxAbiProbeArgument]
+        mov ecx, dword ptr [nxAbiProbeThis]
+        call dword ptr [nxAbiProbeTarget]
+        cmp esp, dword ptr [nxAbiProbeBaseline]
+        je abi_stack_ok
+        or dword ptr [nxAbiProbeFlags], 1
+    abi_stack_ok:
+        cmp ebx, 0x6b13579b
+        je abi_ebx_ok
+        or dword ptr [nxAbiProbeFlags], 2
+    abi_ebx_ok:
+        cmp esi, 0x6c2468ac
+        je abi_esi_ok
+        or dword ptr [nxAbiProbeFlags], 4
+    abi_esi_ok:
+        cmp edi, 0x6d3579bd
+        je abi_edi_ok
+        or dword ptr [nxAbiProbeFlags], 8
+    abi_edi_ok:
+        cmp ebp, 0x6e468ace
+        je abi_ebp_ok
+        or dword ptr [nxAbiProbeFlags], 16
+    abi_ebp_ok:
+        mov esp, dword ptr [nxAbiProbeBaseline]
+        pop edi
+        pop esi
+        pop ebx
+        pop ebp
+        mov eax, dword ptr [nxAbiProbeFlags]
+        ret
+    }
+}
+
+// Mutation controls validate that the probe flags each ABI violation before
+// it restores the caller's frame and saved registers.
+extern "C" __declspec(naked) void nxAbiClobberNonvolatileControl()
+{
+    __asm {
+        mov ebx, 0x01020304
+        mov esi, 0x11121314
+        mov edi, 0x21222324
+        mov ebp, 0x31323334
+        ret 4
+    }
+}
+
+extern "C" __declspec(naked) void nxAbiWrongCleanupControl()
+{
+    __asm { ret }
+}
+
 static unsigned oracleFreeCount;
 struct OracleAllocator {
     static void* __fastcall release(void*, void*, void* p) {
@@ -531,12 +620,46 @@ int wmain(int argc, wchar_t** argv)
     if(!installAllocator(base)) return 2;
     CandidateAllocator candidateAllocator;
     nxSetSdkAllocatorBridge(&candidateAllocator);
+    unsigned failures = 0, cases = 0;
+    // Calibrate stack and nonvolatile-register checks against phys_fn_001329,
+    // a real __thiscall row that saves ESI and returns with `ret 4`.
+    {
+        typedef void (ShapeBase::*ApplyGroupMember)(unsigned short);
+        ApplyGroupMember candidateMember = &ShapeBase::nxApplyGroup;
+        void* candidateTarget = 0;
+        static_assert(sizeof(candidateMember) == sizeof(candidateTarget),
+            "the 32-bit single-inheritance member pointer must be one code address");
+        memcpy(&candidateTarget, &candidateMember, sizeof(candidateTarget));
+        unsigned char oracleObject[0xe0], candidateObject[0xe0];
+        memset(oracleObject, 0, sizeof(oracleObject));
+        memset(candidateObject, 0, sizeof(candidateObject));
+        const unsigned oracleFlags = nxAbiInvokeThiscallProbe(
+            const_cast<unsigned char*>(base) + 0x26d90, oracleObject, 3);
+        const unsigned candidateFlags = nxAbiInvokeThiscallProbe(
+            candidateTarget, candidateObject, 3);
+        const bool stateEqual = memcmp(oracleObject, candidateObject,
+            sizeof(oracleObject)) == 0;
+        const unsigned registerControl = nxAbiInvokeThiscallProbe(
+            reinterpret_cast<void*>(&nxAbiClobberNonvolatileControl),
+            candidateObject, 3);
+        const unsigned cleanupControl = nxAbiInvokeThiscallProbe(
+            reinterpret_cast<void*>(&nxAbiWrongCleanupControl),
+            candidateObject, 3);
+        const bool matched = oracleFlags == 0 && candidateFlags == 0 &&
+            stateEqual && registerControl == 0x1eu && cleanupControl == 1u;
+        printf("abi probe applygroup oracle_flags=%u candidate_flags=%u "
+            "state_equal=%u mismatches=%u\n", oracleFlags, candidateFlags,
+            stateEqual ? 1u : 0u, matched ? 0u : 1u);
+        printf("abi probe negative_controls register_flags=%x stack_flags=%x\n",
+            registerControl, cleanupControl);
+        if(!matched) ++failures;
+        ++cases;
+    }
     typedef void (__thiscall* BoxCtor)(void*, void*, unsigned);
     typedef void* (__thiscall* CollisionObjectCtor)(void*, void*);
     typedef void* (__thiscall* AdjustorDeletingDtor)(void*, unsigned);
     typedef void (__thiscall* BoundsSlot)(void*, float*);
     typedef void* (__thiscall* SelfSlot)(void*);
-    unsigned failures = 0, cases = 0;
     unsigned boxMassCases = 0, boxMassFailures = 0;
     unsigned boxMassDigest = 2166136261u;
     unsigned char oracleBytes[0x228], candidateBytes[0x228];

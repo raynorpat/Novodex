@@ -76,17 +76,27 @@ Consequences:
 
 1. **Phase 3's "+0x3c..+0x68 second pose, unestablished" is established**: it
    is a real pose, identity-initialised by the constructor.
-2. **There is a third pose at +0x6c..+0x98** that no earlier evidence named.
-   Its role (saved previous? sweep source?) is open.
+2. **The third pose at +0x6c..+0x98 is the shape's local pose.** The base
+   apply-from-descriptor row `phys_fn_001347` copies the descriptor's
+   `localPose` words at `+0x08..+0x38` into this field. The owner-update row
+   `phys_fn_001315` reads this matrix as its local operand and composes
+   `ownerWorld * localPose` into pose one at `+0x0c`; save-to-descriptor row
+   `phys_fn_001277` copies the same field back to the descriptor. The second
+   pose at `+0x3c` remains a separate stamped/cached pose.
+   After naming the field `mLocalPose`, the rebuilt candidate
+   (`NxPhysics.dll` SHA-256 `18cc0e01aaa30b9e990b59c3c39a18cd95c717325ad5fddca4ba2b07e72f4d64`)
+   passed the registered `NxPhysicsActorShapeMutationTests` pair exactly:
+   both exits zero, `stdout_delta=0`, and exact stderr, including its rotated
+   nonidentity shape-local-pose cases.
 3. The sphere ctor confirms `+0x9c` end to end: allocates **exactly 0x1c
    bytes** through the SDK allocator (`[0x101041bc]` slot +8 with (size,0)),
    constructs them with `phys_fn_001193` (0x247c0), stores at **+0x9c**
    (0x27805); also initialises `+0xd0 = 1`.
-4. `+0xe0` is a secondary-base vptr where a desc mix-in exists (box: base
-   table `A @0x106a58` replaced by `B @0x106a88`, both 12 slots; sphere:
-   NULLed). With geometry floats following at `+0xe4..+0xec`, this is
-   consistent with Phase 3's box-half-extents/capsule-radius reads and
-   refines rather than contradicts them.
+4. `+0xe0` is part of the shape-family tail, not a descriptor mix-in. BOX
+   installs an abstract 12-slot BoxHullFacade table (`A @0x106a58`) and then
+   its final table (`B @0x106a88`); SPHERE stores its radius scalar there.
+   Other shape families use their own tail fields. This refines Phase 3's
+   per-family geometry reads.
 
 ## 3a. phys_fn_001273 transcribed: the +0xa4 subobject is a Prunable, and the shape owns it
 
@@ -8966,9 +8976,9 @@ No rows move. No gate, coverage-floor, or policy change.
 
 - No behavioural reconstruction: every row here stays `discovered` until a
   differential drives it.
-- Actor +8 subobject semantics, TBL_87 slots 63/64 identity, third-pose role,
-  and the twelve-descriptor mapping are recorded as open questions in
-  `object_model.json`.
+- Actor +8 subobject semantics and the twelve-descriptor mapping remain open in
+  `object_model.json`. The actor point-velocity slots and shape local-pose role
+  have since been resolved in their row-specific evidence.
 
 ## 7. Actor secondary-base destructor differential
 
@@ -8993,7 +9003,7 @@ oracle and `0.0.0.0` in the candidate). After the change, both actors report
 `stdout_delta=0`, both exits zero, and exact stderr. This closes the tested
 secondary-base construction/destructor behavior only; it does not close the
 whole `phys_fn_000044` constructor or `phys_fn_000118` destructor rows. The
-fresh Phase 5 gate passes all 18 staged targets at 2,599 assertions against a floor of 2,597. The
+fresh Phase 5 gate passes all 18 staged targets at 2,611 assertions against a floor of 2,611. The
 Release Viewer CTest selection completes all 48 entries across the 39 available
 scenes: 43 pass and five scenes with unavailable oracle assets take their
 existing skips. All public Physics headers remain byte-identical.
@@ -9021,7 +9031,7 @@ control: the test installs the plain `EmbeddedHookBase` deleting table at
 instead of the complete object (`collision dtor member-only mutant
 mismatches=5`). Each family’s real secondary deleting-destructor call and the
 primary deleting-destructor pass match the oracle with zero mismatches. The
-full oracle digest remains `ed1294b6`, with coverage expanded to 644 cases.
+full oracle digest remains `ed1294b6`, with coverage expanded to 645 cases.
 
 The first integration run exposed a runtime wrinkle the isolated fixture did
 not: by mesh-shape teardown the collision object's root vptr had changed from
@@ -9033,12 +9043,12 @@ avoiding dispatch through the overwritten root pointer.
 
 Validation on the fresh Release build:
 
-- Phase 5 gate: pass; all 18 staged targets, 2,599 coverage assertions
-  evaluated against the recorded floor of 2,597.
+- Phase 5 gate: pass; all 18 staged targets, 2,611 coverage assertions
+  evaluated against the recorded floor of 2,611.
 - `NxPhysicsSimulationTests`, `NxPhysicsMeshSimulationTests`, and
   `NxPhysicsSceneRaycastTests`: oracle and candidate exit 0 with exact stdout
   and stderr matches.
-- `NxPhysicsShapeVtableTests`: 644 oracle differential cases, zero mismatches;
+- `NxPhysicsShapeVtableTests`: 645 oracle differential cases, zero mismatches;
   all ten secondary-dtor calls and five primary deleting-dtor calls match.
 - `NxPhysicsObjectLayoutTests --self`: pass, zero candidate mismatches.
 - Public Physics headers remain byte-identical to the pinned tree.

@@ -345,7 +345,9 @@ class ShapeBase
 
 	//! BASE-table slot 6, phys_fn_001315 (0x000266a0): owner update.
 	//! For a detached shape (owner == null) this is a proven no-op that
-	//! returns immediately through the early exit at 0x00026abb.
+	//! returns immediately through the early exit at 0x00026abb. An owned update
+	//! composes the world pose and, when the pruning-list flag is clear, appends
+	//! this shape to its +0xa0 collection before dispatching Pruner slot 3.
 	void				nxApplyOwnerUpdate(unsigned flags);
 
 	//! The base dtor's owner arms (0x26bd0 body, 0x00026be1..0x00026c35):
@@ -381,10 +383,10 @@ class ShapeBase
 	void*				mOwner04;
 	//! +0x08, zeroed.
 	NxU32				mWord08;
-	//! +0x0c, +0x3c, +0x6c: three identity poses.
+	//! +0x0c world pose, +0x3c stamped pose, +0x6c local pose; all begin as identity.
 	ShapePose			mPose0C;
 	ShapePose			mPose3C;
-	ShapePose			mPose6C;
+	ShapePose			mLocalPose;	//!< Descriptor-local pose copied at +0x27740 and composed by owner update.
 	//! +0x9c, zeroed.
 	NxU32				mWord9C;
 	//! +0xa0, zeroed; read as a pointer by the 0x00025760 helper.
@@ -408,7 +410,7 @@ static_assert(sizeof(ShapeBase) == 0xe0, "the base shape spans to where the hull
 static_assert(offsetof(ShapeBase, mOwner04) == 0x04, "the owner sits at +0x04, as nxShapeOwner reads it");
 static_assert(offsetof(ShapeBase, mPose0C) == 0x0c, "the first pose is at +0x0c");
 static_assert(offsetof(ShapeBase, mPose3C) == 0x3c, "the second pose is at +0x3c");
-static_assert(offsetof(ShapeBase, mPose6C) == 0x6c, "the third pose is at +0x6c");
+static_assert(offsetof(ShapeBase, mLocalPose) == 0x6c, "the local pose is at +0x6c");
 static_assert(offsetof(ShapeBase, mWord9C) == 0x9c, "+0x9c is zeroed");
 static_assert(offsetof(ShapeBase, mPrunable) == 0xa4, "the prunable is at +0xa4");
 static_assert(offsetof(ShapeBase, mSentinelD0) == 0xd0, "the sentinel is at +0xd0");
@@ -967,12 +969,12 @@ void					nxActorSetBoundTarget(void* self, void* value);
 //! the out pointer.
 void*					nxActorGetPoseWords(void* self, void* out);
 
-//! phys_fn_000038 (0x2400, ret 8) / phys_fn_000040 (0x2430, ret 8): the
-//! actor vtable thunks. Each dispatches through the object's own vtable
-//! slot +0x104 / +0x108 with (self, &local, arg1) and copies the first
-//! three words of the returned record to out.
-void*					nxActorVtThunk104(void* self, void* arg1, unsigned* out);
-void*					nxActorVtThunk108(void* self, void* arg1, unsigned* out);
+//! phys_fn_000038 (0x2400, ret 8) / phys_fn_000040 (0x2430, ret 8):
+//! NxActor::getPointVelocityVal / getLocalPointVelocityVal. Each dispatches
+//! through the object's own vtable slot +0x104 / +0x108 with (self, &local,
+//! point), then copies the returned NxVec3 words to out.
+void*					nxActorGetPointVelocityVal(void* self, void* point, unsigned* out);
+void*					nxActorGetLocalPointVelocityVal(void* self, void* point, unsigned* out);
 
 //! phys_fn_001030 (0x22bf0, ret 4): aggregates the local AABBs of the shape
 //! list at [self+0xe0]..[self+0xe4] into out[0..5] -- FLT_MAX/-FLT_MAX
@@ -1327,8 +1329,16 @@ void*					nxDtorOwnedThenFree1589(void* self, unsigned flags);
 unsigned				nxMutexGlobalStore(void* self, unsigned code, unsigned file,
 							unsigned line, unsigned expression);
 //! phys_fn_004387 (0xaf2c4): a six-byte trampoline -- `jmp [0x10104198]` -- so
-//! the whole row IS the global call, passing its own `this` and stack through.
-void					nxTrampoline4387(void (*fn)(void));
+//! the whole row IS Observable::event(this, event, observer), forwarding ECX
+//! and both stack arguments unchanged.
+typedef void (__thiscall* NxObservableEventFn)(void*, unsigned, void*);
+void					nxTrampoline4387(void* self, unsigned event, void* observer,
+						NxObservableEventFn fn);
+//! phys_fn_003509 (0x863f0): tail-jumps through the dynamically resolved
+//! StaticCollisionDestroy pointer, a cdecl function taking one collision ptr.
+typedef int (__cdecl* NxStaticCollisionDestroyFn)(void*);
+int						nxStaticCollisionDestroyTrampoline(void* collision,
+						NxStaticCollisionDestroyFn fn);
 
 //! The report-once float rows: 003716 (0x8b610), 003720 (0x8b760) and 003770
 //! (0x8c080) each test the gate byte [0x101263ad]; when it is clear they
@@ -1408,7 +1418,8 @@ unsigned char			nxReportRow2160(unsigned a, unsigned b, unsigned c);
 //! phys_fn_003936 (0x8eeb0): stores the vtable 0x10117920 at [self] and
 //! TAIL-JUMPS into the global [0x10104194], forwarding `this` and the caller
 //! stack unchanged.
-void					nxDtorTrampoline3936(void* self, void (*fn)(void*));
+typedef void (__thiscall* NxObservableDestructorFn)(void*);
+void					nxDtorTrampoline3936(void* self, NxObservableDestructorFn fn);
 
 //! phys_fn_003902 (0x8d850): reads the cached word [0x10126654], calls the
 //! global [0x1010403c] with it, CLEARS the cache, and returns whether the call
