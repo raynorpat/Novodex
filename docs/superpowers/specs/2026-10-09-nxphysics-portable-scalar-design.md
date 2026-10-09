@@ -1,7 +1,7 @@
 # NxPhysics portable scalar conversion
 
 Date: 2026-10-09
-Status: Approved in-chat design; written specification awaiting review.
+Status: Approved by the user, with permanent Win32 32-bit x87 retention added on 2026-10-09.
 
 ## Intent and compatibility target
 
@@ -23,13 +23,15 @@ Success means equivalent useful physics behavior, explicit numeric assumptions, 
 
 ## Selected approach
 
-Migrate incrementally, retaining the current Win32 x87 configuration as a temporary reference. Provide an explicit portable build selection usable on Windows before requiring a new operating system. A portable selection must never silently choose legacy assembly or placeholder implementations.
+Migrate incrementally, permanently retaining the existing x87 implementation for Win32 32-bit builds. Win32 32-bit production builds continue to select x87; other targets select portable scalar code. Provide a separate developer/test override to exercise portable code on a compatible Win32 toolchain before requiring a new operating system. A portable selection must never silently choose legacy assembly or placeholder implementations. A Win32 compiler unable to compile the retained implementation must fail configuration clearly, not silently switch production backends.
 
-Do not create a permanent software x87 emulator or promise permanent maintenance of two implementations. Keep the legacy reference until the portable validation gates pass; record its source revision and fixtures before retiring it. Do not rewrite unrelated engine architecture as part of numeric conversion.
+Maintain both backends and their respective validation suites. Preserve Win32 x87 instructions, calling conventions, control-word behavior, and relevant compiler options. Do not create a software x87 emulator. Do not rewrite unrelated engine architecture as part of numeric conversion.
 
 The portable math layer holds shared operations, explicit integer conversions, and documented storage boundaries. Keep algorithm-specific geometry and solver operations with their current subsystems. Replace implicit register parameters with typed internal parameters and ordinary calls, preserving external API signatures.
 
 ## Numeric contract
+
+This contract applies to the portable backend. The retained Win32 x87 backend continues to obey its existing reconstruction and exact-oracle requirements.
 
 1. Use existing float-facing storage and double intermediates where the recovered algorithm benefits from them. Preserve operation grouping and intentional float stores; do not replace every intermediate with float or rely on `long double` for consistent precision.
 2. Use standard math functions for square root and trigonometry, including reviewed existing scalar fallbacks. Preserve domain handling and observable error paths where those are defined by the API.
@@ -71,11 +73,11 @@ Convert remaining actor/body arithmetic, joint math, and scene-step dependencies
 
 Gate: portable simulation runs through the actual collision and solver paths, with no hidden assembly dependency or test-only substitute.
 
-### 5. Physics acceptance and default transition
+### 5. Physics acceptance and permanent backend selection
 
-Run kernel and multistep acceptance tests, record differences and performance, and make the portable path the default after the gates below pass. Preserve a reproducible legacy reference revision and fixtures. Remove temporary duplicated implementations only after portable coverage replaces their reference role.
+Run kernel and multistep acceptance tests and record differences and performance. Keep x87 as the Win32 32-bit production backend permanently; use portable code on other targets. Preserve a reproducible x87 reference revision and fixtures, and continue exact-oracle regression coverage of the maintained x87 code. Do not remove retained assembly when portable acceptance passes.
 
-Gate: approved numeric budgets pass, discrete discrepancies are explained, and no supported production path requires x87.
+Gate: approved numeric budgets pass, discrete discrepancies are explained, no portable production path requires x87, and Win32 32-bit still selects and validates the retained x87 implementation.
 
 ### 6. Separate platform-enablement work
 
@@ -107,8 +109,8 @@ Record for each conversion: fixture identity, legacy/reference revision, compile
 - Measured acceptance report with fixed per-family numeric budgets.
 - Separate platform-blocker inventory and follow-on scope for full Linux/macOS support.
 
-The assembly-conversion milestone is complete when supported NxPhysics production paths use portable source and pass the behavior contract. The future-platform milestone additionally requires dependency, native-layout, and platform integration work plus execution on each target. Neither milestone requires a C-only SDK, original-DLL ABI compatibility on new architectures, or cross-platform bitwise determinism.
+The assembly-conversion milestone is complete when the portable backend covers supported NxPhysics production paths and passes the behavior contract, while Win32 32-bit continues to build and pass its existing x87 checks. The future-platform milestone additionally requires dependency, native-layout, and platform integration work plus execution on each target. Neither milestone requires a C-only SDK, original-DLL ABI compatibility on new architectures, or cross-platform bitwise determinism.
 
 ## Review and next step
 
-This specification captures the in-chat approved approach. After review of this written artifact, produce a detailed implementation plan with concrete files, dependency-ordered tasks, verification commands, and explicit separation between numeric conversion and native-platform enablement. No product implementation is authorized by this document alone.
+The user approved this specification with the Win32 retention amendment. Produce a detailed implementation plan with concrete files, dependency-ordered tasks, verification commands, and explicit separation between numeric conversion and native-platform enablement. Review of that plan and selection of execution method precede product implementation.
