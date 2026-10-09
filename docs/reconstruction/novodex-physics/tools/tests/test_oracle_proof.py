@@ -169,6 +169,74 @@ class OracleProofTests(unittest.TestCase):
         self.assertTrue(any("case indices" in failure for failure in failures), failures)
 
 
+    def joint_matrix_baseline(self):
+        source_bytes = b"fixed joint matrix fixture\n"
+        source = self.root / "tests/PhysicsJointTests.cpp"
+        source.parent.mkdir(parents=True, exist_ok=True)
+        source.write_bytes(source_bytes)
+        lines = [
+            "pair_directory=C:\\oracle-a",
+            "modules pair=2 trusted_system=10 rejected=0",
+            "export=NxCreatePhysicsSDK present=yes",
+            "case=hinge index=0 in_anchor=00000000.00000000.00000000 in_axis=3f800000.00000000.00000000",
+            "case=d6 index=0 in motions=0.1.2.1.1.2",
+            "case=pulley index=0 in_pulley0=00000000.40a00000.00000000 in_pulley1=40800000.40a00000.00000000 distance=40c00000 stiffness=3f400000 ratio=3fc00000 flags=00000001",
+            "case=hinge index=0 created=yes",
+            "rotated_fixture input=a row0=00000000.00000000.3f800000",
+            "rotated_fixture actor=a t=00000000.00000000.00000000",
+            "scene=released",
+            "loaded module=NxPhysics.dll path=C:\\oracle-a\\NxPhysics.dll sha256=" + ORACLE_SHA,
+        ]
+        manifest = {
+            "schema_version": 1,
+            "targets": {
+                "NxPhysicsJointTests": {
+                    "format": "joint_matrix",
+                    "oracle_sha256": ORACLE_SHA,
+                    "fixture_source": "tests/PhysicsJointTests.cpp",
+                    "fixture_source_sha256": hashlib.sha256(source_bytes).hexdigest(),
+                    "cases": 1,
+                    "input_lines": 4,
+                    "case_family_counts": {"hinge": 1},
+                    "oracle_output_lines": 4,
+                    "input_digest_sha256": "7b5836f4001caaeb5642cf2fd81c1dc4e19c865035987d2916a8cfc65d07ff25",
+                    "oracle_output_digest_sha256": "f6ead72f4dd8d072ddc0c29fc8f2c56c7b6797d995494506ac7c1603be7938ec",
+                }
+            },
+        }
+        return manifest, lines
+
+    def test_joint_matrix_proof_hashes_fixed_inputs_and_oracle_outputs(self):
+        manifest, lines = self.joint_matrix_baseline()
+        failures, proof = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsJointTests", lines, ORACLE_SHA, self.root)
+        self.assertEqual(failures, [])
+        self.assertEqual(proof["cases"], 1)
+        self.assertEqual(proof["input_lines"], 4)
+        self.assertEqual(proof["case_family_counts"], {"hinge": 1})
+        self.assertEqual(proof["oracle_output_lines"], 4)
+
+    def test_joint_matrix_proof_ignores_loader_paths_but_rejects_changed_outputs(self):
+        manifest, lines = self.joint_matrix_baseline()
+        lines[0] = "pair_directory=Z:\\different-machine"
+        lines[-1] = "loaded module=NxPhysics.dll path=Z:\\different-machine\\NxPhysics.dll sha256=" + ORACLE_SHA
+        failures, _ = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsJointTests", lines, ORACLE_SHA, self.root)
+        self.assertEqual(failures, [])
+        lines[6] = lines[6].replace("created=yes", "created=no")
+        failures, _ = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsJointTests", lines, ORACLE_SHA, self.root)
+        self.assertTrue(any("oracle output digest" in failure for failure in failures), failures)
+
+    def test_joint_matrix_proof_rejects_missing_input_case(self):
+        manifest, lines = self.joint_matrix_baseline()
+        lines.remove("case=hinge index=0 in_anchor=00000000.00000000.00000000 in_axis=3f800000.00000000.00000000")
+        failures, _ = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsJointTests", lines, ORACLE_SHA, self.root)
+        self.assertTrue(any("input line count" in failure for failure in failures), failures)
+
+
+
 class CheckedInOracleBaselineTests(unittest.TestCase):
     def test_baseline_is_registered_and_matches_the_oracle_coverage_contract(self):
         baseline_path = TOOLS.parent / "evidence" / "oracle-only-baselines.json"
@@ -193,12 +261,20 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                     expected["cases"], expected["input_digest_fnv64"])
                 self.assertEqual(sum(line.startswith(output_prefix) for line in lines), 1)
                 self.assertEqual(sum(line == input_line for line in lines), 1)
-            else:
-                self.assertEqual(expected["format"], "joint_descriptor")
+            elif expected["format"] == "joint_descriptor":
                 self.assertEqual(expected["case_indices"], [0, 3])
                 self.assertEqual(len(expected["input_digest_sha256"]), 64)
                 self.assertEqual(len(expected["oracle_output_digest_sha256"]), 64)
                 self.assertEqual(expected["fixture_source"], "tests/PhysicsJointDescTests.cpp")
+            else:
+                self.assertEqual(expected["format"], "joint_matrix")
+                self.assertEqual(expected["cases"], 122)
+                self.assertEqual(expected["input_lines"], 284)
+                self.assertEqual(sum(expected["case_family_counts"].values()), 122)
+                self.assertEqual(expected["oracle_output_lines"], 2873)
+                self.assertEqual(expected["fixture_source"], "tests/PhysicsJointTests.cpp")
+                self.assertEqual(len(expected["input_digest_sha256"]), 64)
+                self.assertEqual(len(expected["oracle_output_digest_sha256"]), 64)
 
     def test_retained_oracle_proofs_are_self_hashed_and_bound_to_their_baselines(self):
         baseline_path = TOOLS.parent / "evidence" / "oracle-only-baselines.json"
@@ -228,8 +304,15 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                     self.assertEqual(proof["input_digest_fnv64"], expected["input_digest_fnv64"])
                     self.assertEqual(proof["oracle_output_digest_fnv64"],
                                      expected["oracle_output_digest_fnv64"])
-                else:
+                elif proof["format"] == "joint_descriptor":
                     self.assertEqual(proof["case_indices"], expected["case_indices"])
+                    self.assertEqual(proof["input_digest_sha256"], expected["input_digest_sha256"])
+                    self.assertEqual(proof["oracle_output_digest_sha256"],
+                                     expected["oracle_output_digest_sha256"])
+                else:
+                    self.assertEqual(proof["input_lines"], expected["input_lines"])
+                    self.assertEqual(proof["case_family_counts"], expected["case_family_counts"])
+                    self.assertEqual(proof["oracle_output_lines"], expected["oracle_output_lines"])
                     self.assertEqual(proof["input_digest_sha256"], expected["input_digest_sha256"])
                     self.assertEqual(proof["oracle_output_digest_sha256"],
                                      expected["oracle_output_digest_sha256"])

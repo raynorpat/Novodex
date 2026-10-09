@@ -15,6 +15,10 @@ KIND5_LINE = re.compile(
 INPUT_LINE = re.compile(r"^joint_support inputs=(\d+) digest=([0-9a-f]{16})$")
 JOINT_DESC_CASE = re.compile(r"^case=(\d+) actors .+ in_anchor=[0-9a-f]{8}(?:\.[0-9a-f]{8}){2} in_axis=[0-9a-f]{8}(?:\.[0-9a-f]{8}){2}$")
 JOINT_DESC_OUTPUT_PREFIXES = ("before ", "after_anchor ", "after_axis ")
+JOINT_MATRIX_INPUT_CASE = re.compile(
+    r"^case=([a-z0-9_]+) index=(\d+) .*?\bin_anchor=")
+JOINT_MATRIX_SUPPLEMENTAL_INPUT = re.compile(r"^case=(?:pulley index=\d+ in_pulley0=|d6 index=\d+ in )")
+JOINT_MATRIX_MACHINE_PREFIXES = ("pair_directory=", "modules pair=", "loaded module=")
 
 
 def sha256(data):
@@ -114,6 +118,55 @@ def _verify_joint_descriptor(expected, lines):
     }
 
 
+def _verify_joint_matrix(expected, lines):
+    failures = []
+    selected_lines = [line for line in lines
+                      if not line.startswith(JOINT_MATRIX_MACHINE_PREFIXES)]
+    input_lines = []
+    case_input_lines = []
+    case_family_counts = {}
+    for line in selected_lines:
+        match = JOINT_MATRIX_INPUT_CASE.match(line)
+        if match:
+            input_lines.append(line)
+            case_input_lines.append(line)
+            family = match.group(1)
+            case_family_counts[family] = case_family_counts.get(family, 0) + 1
+        elif JOINT_MATRIX_SUPPLEMENTAL_INPUT.match(line):
+            input_lines.append(line)
+        elif line.startswith("rotated_fixture input=") or (
+                line.startswith("posed_fixture=") and " input=" in line):
+            input_lines.append(line)
+
+    output_lines = [line for line in selected_lines if line not in input_lines]
+    if len(case_input_lines) != expected.get("cases"):
+        failures.append("joint matrix case count differs from the pinned baseline")
+    if len(input_lines) != expected.get("input_lines"):
+        failures.append("joint matrix input line count differs from the pinned baseline")
+    if case_family_counts != expected.get("case_family_counts"):
+        failures.append("joint matrix case-family counts differ from the pinned baseline")
+    if len(output_lines) != expected.get("oracle_output_lines"):
+        failures.append("joint matrix oracle output line count differs from the pinned baseline")
+
+    input_digest = sha256(("\n".join(input_lines) + "\n").encode("ascii")) if input_lines else None
+    oracle_output_digest = sha256(("\n".join(output_lines) + "\n").encode("ascii")) if output_lines else None
+    if input_digest != expected.get("input_digest_sha256"):
+        failures.append("input digest differs from the pinned baseline")
+    if oracle_output_digest != expected.get("oracle_output_digest_sha256"):
+        failures.append("oracle output digest differs from the pinned baseline")
+    if failures:
+        return failures, None
+    return failures, {
+        "cases": len(case_input_lines),
+        "input_lines": len(input_lines),
+        "case_family_counts": case_family_counts,
+        "oracle_output_lines": len(output_lines),
+        "input_digest_sha256": input_digest,
+        "oracle_output_digest_sha256": oracle_output_digest,
+        "selected_lines": selected_lines,
+    }
+
+
 def verify_oracle_transcript(manifest, target, transcript_lines, oracle_sha256,
                              repo_root):
     """Return (failures, proof); candidate-only values are intentionally ignored."""
@@ -147,6 +200,8 @@ def verify_oracle_transcript(manifest, target, transcript_lines, oracle_sha256,
         failures_for_format, measurements = _verify_joint_support(expected, lines)
     elif proof_format == "joint_descriptor":
         failures_for_format, measurements = _verify_joint_descriptor(expected, lines)
+    elif proof_format == "joint_matrix":
+        failures_for_format, measurements = _verify_joint_matrix(expected, lines)
     else:
         failures_for_format, measurements = ["unsupported oracle proof format: %s"
                                                % proof_format], None
