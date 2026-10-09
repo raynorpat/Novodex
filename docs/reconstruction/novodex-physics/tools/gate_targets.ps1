@@ -4826,6 +4826,12 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision input name=contact_capsule_mesh words=440 input=2488b42d3079cbfb',
         'collision coverage name=overlap_capsule_mesh meshes=6 cases=18 true=8 false=10',
         'collision coverage name=contact_capsule_mesh meshes=6 cases=18 inside=6 resting=6 straddling=6 oracle_contacts=16',
+        # Plane/mesh Task: exercise the runtime's PlanesCollider/PlanesCache
+        # context, compare full ordered contacts plus overlap state, and run
+        # under both x87 control words.
+        'collision name=contact_plane_mesh index=4 rva=0x00048760 owner=phys_fn_001895 checks=872 oracle=3dc2d3277f3fc523',
+        'collision coverage name=contact_plane_mesh cases=4 control_words=2',
+        'collision input name=contact_plane_mesh words=214 input=56da60596c2f7b34',
         # convex-mesh gap Task 2l: exercise the mesh contact accumulator directly
         # through both the pinned oracle and the reconstructed stdcall callback.
         'collision name=mesh_contact_accumulator index=- rva=0x000466e0 checks=40 oracle=6299a0c8f1109f5a',
