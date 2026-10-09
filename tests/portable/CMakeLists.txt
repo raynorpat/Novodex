@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.16)
+project(NxPortableKernels LANGUAGES CXX)
+enable_testing()
+add_executable(NxPortableFixtureTests FixtureSupportTests.cpp FixtureSupport.cpp)
+target_compile_features(NxPortableFixtureTests PRIVATE cxx_std_11)
+add_test(NAME Portable.FixtureSupport COMMAND NxPortableFixtureTests)
+add_test(NAME Portable.FixtureReference COMMAND NxPortableFixtureTests
+    "${CMAKE_CURRENT_SOURCE_DIR}/fixtures/shared-math-x87.nxpf")
+set_tests_properties(Portable.FixtureSupport Portable.FixtureReference PROPERTIES RUN_SERIAL TRUE)
+if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+    add_executable(NxPortableExportSharedMath ExportSharedMathFixtures.cpp)
+    target_include_directories(NxPortableExportSharedMath PRIVATE
+        ../../Physics/src/include ../../Physics/include ../../Foundation/include)
+    target_compile_options(NxPortableExportSharedMath PRIVATE /arch:IA32 /fp:precise)
+endif()
