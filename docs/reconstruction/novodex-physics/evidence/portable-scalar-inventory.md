@@ -43,7 +43,11 @@ Shared-math captures are immutable binary64 observations under two recorded CWs.
 
 ## Source dependency census
 
-57 files, 527 grouped candidate entries (including declarations, conditional/inactive branches and vendor headers). Full exact sites, source lines and observed references are in the JSON; grouping is a scanner aid, not a recovered ABI claim.
+57 files, 414 grouped candidate entries after annotation-aware signature matching (including conditional/inactive branches and vendor headers). All 106 groups with naked annotations resolve to named function bodies. Body records retain assembly instruction families, explicit call/jump operands, continuation labels and source references; instructions come from assembly spans, including instructions after same-line labels. Raw-emission bodies are distinguished below.
+
+The JSON explicitly lists 99 unresolved candidates with exact source sites and reasons: 98 ABI declaration/callback/alias sites without a parsed body, and Foundation/src/include/CustomAssert.h:53, a GNU `asm("int $3")` macro in the LINUX debug-assert branch. The macro has no function signature and remains owned by Foundation/platform work; its raw source site preserves the instruction. No naked annotation, MSVC assembly marker or FPU-instruction site remains without a parsed enclosing body. This is source coverage, not compiler reachability or full typed ABI recovery.
+
+Two naked functions use `_emit` directives rather than mnemonic assembly: `ContactBoxMeshICE.cpp::nxBoxMeshTransformTriangle` L184 emits 386 bytes, and `IceSupportMaps.cpp::nxSupportMapNoop` L927 emits one byte (0xc3, the documented ret). Their JSON records retain literal emitted bytes, source references and `raw_byte_decode_required=true`. Empty textual call/jump/label lists for these wrappers do **not** establish an absence of executable dependencies. Task 5 must reconcile the bytes with the authoritative listing and recover instruction/edge/register contracts before translation; the noop byte may be classified as ret only after that reconciliation.
 
 | File | Owner / order | Candidate groups |
 |---|---|---|
@@ -57,16 +61,16 @@ Shared-math captures are immutable binary64 observations under two recorded CWs.
 | `Foundation/src/include/FoundationSDK.h` | foundation-platform (Tasks 7/9) | 1 |
 | `Foundation/src/Profiler.cpp` | foundation-platform (Tasks 7/9) | 1 |
 | `Foundation/src/Utilities.cpp` | foundation-platform (Tasks 7/9) | 1 |
-| `Physics/src/ContactBoxMeshICE.cpp` | contact-dispatch (Task 6) | 16 |
-| `Physics/src/ContactCapsuleMesh.cpp` | contact-dispatch (Task 6) | 4 |
-| `Physics/src/ContactConvexConvex.cpp` | mesh-support-convex (Task 5) | 18 |
-| `Physics/src/ContactConvexHeightfield.cpp` | mesh-support-convex (Task 5) | 32 |
-| `Physics/src/ContactGeneration.cpp` | contact-dispatch (Task 6) | 13 |
-| `Physics/src/ContactMeshHeightfield.cpp` | contact-dispatch (Task 6) | 13 |
-| `Physics/src/ContactMeshMesh.cpp` | contact-dispatch (Task 6) | 4 |
+| `Physics/src/ContactBoxMeshICE.cpp` | contact-dispatch (Task 6) | 8 |
+| `Physics/src/ContactCapsuleMesh.cpp` | contact-dispatch (Task 6) | 3 |
+| `Physics/src/ContactConvexConvex.cpp` | mesh-support-convex (Task 5) | 9 |
+| `Physics/src/ContactConvexHeightfield.cpp` | mesh-support-convex (Task 5) | 16 |
+| `Physics/src/ContactGeneration.cpp` | contact-dispatch (Task 6) | 9 |
+| `Physics/src/ContactMeshHeightfield.cpp` | contact-dispatch (Task 6) | 7 |
+| `Physics/src/ContactMeshMesh.cpp` | contact-dispatch (Task 6) | 3 |
 | `Physics/src/ContactPairManager.cpp` | contact-dispatch (Task 6) | 12 |
 | `Physics/src/ContactSphereMesh.cpp` | contact-dispatch (Task 6) | 3 |
-| `Physics/src/ConvexHull.cpp` | mesh-support-convex (Task 5) | 29 |
+| `Physics/src/ConvexHull.cpp` | mesh-support-convex (Task 5) | 14 |
 | `Physics/src/core/D6Joint.cpp` | dynamics-environment (Task 7) | 2 |
 | `Physics/src/core/JointSupport.cpp` | dynamics-environment (Task 7) | 4 |
 | `Physics/src/core/RevoluteJoint.cpp` | dynamics-environment (Task 7) | 3 |
@@ -74,10 +78,10 @@ Shared-math captures are immutable binary64 observations under two recorded CWs.
 | `Physics/src/core/SphericalJoint.cpp` | dynamics-environment (Task 7) | 5 |
 | `Physics/src/Distance.cpp` | geometry-ABI (Tasks 4/9) | 1 |
 | `Physics/src/EdgeList.cpp` | mesh-support-convex (Task 5) | 1 |
-| `Physics/src/Geometry.cpp` | geometry-ABI (Tasks 4/9) | 6 |
-| `Physics/src/IceMeshBuilder2.cpp` | mesh-support-convex (Task 5) | 6 |
-| `Physics/src/IceMeshTools.cpp` | mesh-support-convex (Task 5) | 6 |
-| `Physics/src/IceSupportMaps.cpp` | mesh-support-convex (Task 5) | 27 |
+| `Physics/src/Geometry.cpp` | geometry-ABI (Tasks 4/9) | 3 |
+| `Physics/src/IceMeshBuilder2.cpp` | mesh-support-convex (Task 5) | 5 |
+| `Physics/src/IceMeshTools.cpp` | mesh-support-convex (Task 5) | 3 |
+| `Physics/src/IceSupportMaps.cpp` | mesh-support-convex (Task 5) | 19 |
 | `Physics/src/include/ContactGeneration.h` | contact-dispatch (Task 6) | 10 |
 | `Physics/src/include/ContactPairManager.h` | contact-dispatch (Task 6) | 8 |
 | `Physics/src/include/ConvexHull.h` | mesh-support-convex (Task 5) | 12 |
@@ -88,19 +92,19 @@ Shared-math captures are immutable binary64 observations under two recorded CWs.
 | `Physics/src/include/NxMeshContactHelpers.h` | contact-dispatch (Task 6) | 1 |
 | `Physics/src/include/ObjectModel.h` | geometry-ABI (Tasks 4/9) | 10 |
 | `Physics/src/include/TriangleMeshPolygons.h` | mesh-support-convex (Task 5) | 13 |
-| `Physics/src/include/X87Sqrt.h` | shared-math (Task 3) | 35 |
-| `Physics/src/NpActor.cpp` | dynamics-environment (Task 7) | 62 |
+| `Physics/src/include/X87Sqrt.h` | shared-math (Task 3) | 16 |
+| `Physics/src/NpActor.cpp` | dynamics-environment (Task 7) | 61 |
 | `Physics/src/ObjectModel.cpp` | geometry-ABI (Tasks 4/9) | 54 |
 | `Physics/src/opcode/IcePrunable.cpp` | geometry-ABI (Tasks 4/9) | 2 |
 | `Physics/src/opcode/IcePruner.cpp` | geometry-ABI (Tasks 4/9) | 1 |
 | `Physics/src/PMap.cpp` | geometry-ABI (Tasks 4/9) | 1 |
-| `Physics/src/Quantizer.cpp` | conversion (Task 3/5) | 3 |
+| `Physics/src/Quantizer.cpp` | conversion (Task 3/5) | 1 |
 | `Physics/src/RecoveredRows.cpp` | geometry-ABI (Tasks 4/9) | 1 |
 | `Physics/src/Scene.cpp` | dynamics-environment (Task 7) | 25 |
 | `Physics/src/SceneRaycast.cpp` | geometry-ABI (Tasks 4/9) | 1 |
-| `Physics/src/SceneVisualize.cpp` | geometry-ABI (Tasks 4/9) | 3 |
+| `Physics/src/SceneVisualize.cpp` | geometry-ABI (Tasks 4/9) | 1 |
 | `Physics/src/ShapeRaycast.cpp` | geometry-ABI (Tasks 4/9) | 4 |
-| `Physics/src/SmoothNormals.cpp` | geometry-ABI (Tasks 4/9) | 4 |
+| `Physics/src/SmoothNormals.cpp` | geometry-ABI (Tasks 4/9) | 3 |
 | `Physics/src/TriangleMesh.cpp` | geometry-ABI (Tasks 4/9) | 2 |
-| `Physics/src/TriangleMeshPolygons.cpp` | mesh-support-convex (Task 5) | 26 |
+| `Physics/src/TriangleMeshPolygons.cpp` | mesh-support-convex (Task 5) | 13 |
 | `Physics/src/TriangleMeshTopology.cpp` | geometry-ABI (Tasks 4/9) | 1 |

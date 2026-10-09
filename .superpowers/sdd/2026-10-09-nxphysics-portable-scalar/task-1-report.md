@@ -86,3 +86,30 @@ Checked the exact brief interfaces; dependencies/fixtures encoded with fixed wid
 Task 1 bootstraps audit/fixture infrastructure; it does not perform algorithm translation, recover every massive naked routine's full typed register contract, establish all portable acceptance budgets, build the full portable engine, or claim Linux/macOS support. Future acceptance must measure each listed unit/family rather than treat repeat-zero or cross-CW sensitivity as a portable error budget. The source scanner remains heuristic and overinclusive; authoritative per-family ABI reconstruction must verify calls/aliases/continuations before conversion. Broader x87-family baselines must run when their owning conversion begins.
 
 Commit: recorded in agent final after commit creation. Report is intentionally force-added from the normally ignored .superpowers directory.
+
+## Task 1 review fix round 1 — scanner naked-function coverage
+
+The Important finding in task-1-review.md was reproduced before the fix: `__declspec(naked)` consumed the signature as an annotation-named match, losing the real function body. Applied receiving-code-review, TDD and verification guidance. No production source, fixture, baseline binary or historical assertions changed in this round; the 803-test suite and legacy binaries were not rerun, as instructed by the controller. Minor findings are deferred to owning tasks/ledger.
+
+Added focused scanner tests executing the real script in temporary source trees. Initial two tests failed with assertion failures: naked `sample` was absent, and extern-C `bridge` appeared as unresolved file scope. After masking annotations/preprocessor directives only for signature matching, preserving source offsets and multiline declaration starts, both tests passed. They verify actual naked/extern-C/ordinary-inline symbols, fld/fsqrt/call/jmp/ret families, bridge and continuation operands, same-line continuation labels, and source references. Instruction extraction now uses assembly spans so ordinary C++ statements are excluded.
+
+Full snapshot verification additionally identified two raw `_emit` naked bodies. A third focused test first failed because emitted-byte records were absent, then passed after preserving the literal bytes and `raw_byte_decode_required` obligation. The human inventory names `nxBoxMeshTransformTriangle` (386 bytes) and `nxSupportMapNoop` (one byte, 0xc3). Their absence of textual call/jump operands is explicitly not interpreted as absence of executable dependencies; decoded instruction/edge/register contracts remain Task 5 obligations.
+
+Focused commands and recorded evidence:
+
+```powershell
+python -m unittest discover -s docs/reconstruction/novodex-physics/tools/tests -p test_audit_portable_dependencies.py
+python docs/reconstruction/novodex-physics/tools/audit_portable_dependencies.py
+$censusBefore = (Get-FileHash docs/reconstruction/novodex-physics/evidence/portable-scalar-dependencies.json).Hash
+python docs/reconstruction/novodex-physics/tools/audit_portable_dependencies.py
+$censusAfter = (Get-FileHash docs/reconstruction/novodex-physics/evidence/portable-scalar-dependencies.json).Hash
+if ($censusBefore -cne $censusAfter) { throw 'census regeneration changed bytes' }
+python build/task1-evidence/verify_census.py
+git diff --check
+```
+
+Red evidence: scanner-red.log (2 expected failures), scanner-raw-red.log (1 expected raw-emission failure). Final focused suite: **3 tests, OK, exit 0** (scanner-green.log; fresh final focused invocation also passed). Regenerated snapshot: **57 files, 414 grouped candidates, 106/106 naked groups with named body records**, including 16/16 X87Sqrt, 9/9 convex/convex and 16/16 convex/heightfield groups. Every naked body has instruction/directive, call/jump, continuation-label and source-reference fields. Coverage check confirms raw-byte sizes 386 and 1, with explicit decode flags.
+
+Current 99 unresolved candidates are individually listed with exact source sites/reasons in the JSON: 98 ABI declarations/callback/alias sites without parsed bodies plus the non-function GNU debug-assert macro `asm("int $3")` at Foundation/src/include/CustomAssert.h:53. No naked annotation, MSVC assembly or FPU-instruction site remains without a parsed body. The macro's platform branch and source instruction remain explicit Foundation/platform obligations. Source grouping remains heuristic rather than compiled reachability or full typed ABI recovery.
+
+Final census SHA-256: `9d8162789b2219402e619ada9b0178596a311cfc73e685fc08a68f815683c826`; two final exports matched byte-for-byte, `identical=True`, exit 0. The independent snapshot coverage check also exited 0. Scoped self-review confirms fixed annotation handling, source-location preservation, complete named naked coverage, separately recorded raw byte bodies/macro obligations, and no unrelated changes. Scanner/census/human inventory/tests and this existing report are the only scoped changes.
