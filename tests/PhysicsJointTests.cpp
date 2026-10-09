@@ -1138,6 +1138,13 @@ static void nxD6Case(NxScene& scene, NxActor* a, NxActor* b,
 			printf("case=d6 index=%u set_axis ", index);
 			nxPrintVec("out_axis", replacementAxisReadback);
 			printf("\n");
+
+			d6->setBreakable(17.25f, 32.5f);
+			NxReal breakForce = 0.0f;
+			NxReal breakTorque = 0.0f;
+			d6->getBreakable(breakForce, breakTorque);
+			printf("case=d6 index=%u breakable force=%08x torque=%08x\n", index,
+				nxU(breakForce), nxU(breakTorque));
 			}
 
 		NxD6JointDesc saved;

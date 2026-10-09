@@ -2357,6 +2357,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=d6 index=0 created=yes',
         'case=d6 index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=d6 index=3 set_axis out_axis=3e9b28d0.bf4ee116.3f014cae',
+        'case=d6 index=3 breakable force=418a0000 torque=42020000',
         'case=d6 index=3 type=9 is_d6=yes is_fixed=no',
         'case=d6 index=0 saved motions=2.0.2.0.2.0',
         'case=revolute index=0 scene_joints when=before_release count=1 enumerated=1 order=1 self=yes end=null',
@@ -5658,7 +5659,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1229  # previous 1228 plus the D6 setGlobalAxis readback
+    '6' = 1230  # previous 1229 plus the D6 breakability setter readback
+               # previous 1228 plus the D6 setGlobalAxis readback
                # previous 1227 plus the cylindrical-joint breakable getter assertion
                # Phase 6 coverage plus 129 oracle-row checks from ObjectLayoutTests
                # previous 1,066 plus capsule-mesh staged-pair coverage
@@ -5670,7 +5672,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1420  # previous 1419 plus the D6 setGlobalAxis readback
+    '7' = 1421  # previous 1420 plus the D6 breakability setter readback
+               # previous 1419 plus the D6 setGlobalAxis readback
                # previous 1,388 plus the grounded Z-up controller probe
                # previous 1,387 plus capsule-mesh staged-pair coverage
                # plus the shared simulation fluid-manager destructor and enabled-invalid validation lines

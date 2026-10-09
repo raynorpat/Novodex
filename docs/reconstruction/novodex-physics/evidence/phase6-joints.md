@@ -9807,3 +9807,9 @@ Detailed DLL hashes and raw log paths: `evidence/phase6-joint-row004437-004441-d
 
 The D6 staged-pair case now calls the public `NxD6Joint::setGlobalAxis` with a non-default replacement vector, then reads the world-space axis back and records its three words. Replacing the setter's forwarded axis with `(0, 1, 0)` changes the readback from `3e9b28d0.bf4ee116.3f014cae` to `00000000.3f800000.00000000`; oracle and candidate both exit zero, `stdout_delta=6`, and stderr is exact. The restored differential returns to `stdout_delta=0` with exact stderr. Detailed evidence: `evidence/phase6-joint-row004439-d6-set-global-axis.md`.
 Measurement index: `phys_fn_004439 stdout_delta=6`.
+
+
+## Phase 6 closure measurement — D6 breakability setter (phys_fn_004445)
+
+The public D6 staged-pair case now sets break force and torque to non-default values and reads them back. Forwarding zero for maxForce in `NpD6Joint::setBreakable` changes the force word from `418a0000` to `00000000`; the registered `NxPhysicsJointStagedPairTests` differential catches the mutation with both processes exiting zero, `stdout_delta=4`, and exact stderr. The restored control returns to `stdout_delta=0` and exact stderr. Detailed evidence: `evidence/phase6-joint-row004445-d6-set-breakable.md`.
+Measurement index: `phys_fn_004445 stdout_delta=4`.
