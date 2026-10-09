@@ -76,8 +76,18 @@ Consequences:
 
 1. **Phase 3's "+0x3c..+0x68 second pose, unestablished" is established**: it
    is a real pose, identity-initialised by the constructor.
-2. **There is a third pose at +0x6c..+0x98** that no earlier evidence named.
-   Its role (saved previous? sweep source?) is open.
+2. **The third pose at +0x6c..+0x98 is the shape's local pose.** The base
+   apply-from-descriptor row `phys_fn_001347` copies the descriptor's
+   `localPose` words at `+0x08..+0x38` into this field. The owner-update row
+   `phys_fn_001315` reads this matrix as its local operand and composes
+   `ownerWorld * localPose` into pose one at `+0x0c`; save-to-descriptor row
+   `phys_fn_001277` copies the same field back to the descriptor. The second
+   pose at `+0x3c` remains a separate stamped/cached pose.
+   After naming the field `mLocalPose`, the rebuilt candidate
+   (`NxPhysics.dll` SHA-256 `18cc0e01aaa30b9e990b59c3c39a18cd95c717325ad5fddca4ba2b07e72f4d64`)
+   passed the registered `NxPhysicsActorShapeMutationTests` pair exactly:
+   both exits zero, `stdout_delta=0`, and exact stderr, including its rotated
+   nonidentity shape-local-pose cases.
 3. The sphere ctor confirms `+0x9c` end to end: allocates **exactly 0x1c
    bytes** through the SDK allocator (`[0x101041bc]` slot +8 with (size,0)),
    constructs them with `phys_fn_001193` (0x247c0), stores at **+0x9c**
@@ -8966,9 +8976,9 @@ No rows move. No gate, coverage-floor, or policy change.
 
 - No behavioural reconstruction: every row here stays `discovered` until a
   differential drives it.
-- Actor +8 subobject semantics, TBL_87 slots 63/64 identity, third-pose role,
-  and the twelve-descriptor mapping are recorded as open questions in
-  `object_model.json`.
+- Actor +8 subobject semantics and the twelve-descriptor mapping remain open in
+  `object_model.json`. The actor point-velocity slots and shape local-pose role
+  have since been resolved in their row-specific evidence.
 
 ## 7. Actor secondary-base destructor differential
 

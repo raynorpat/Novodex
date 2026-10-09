@@ -177,9 +177,9 @@
         "status": "Phase 3 called this UNESTABLISHED; the constructor establishes it as an identity-initialised second pose"
       },
       "+0x6c..+0x98": {
-        "meaning": "pose #3, ctor writes identity/zero",
-        "established_by": "diagonals at 0x6c/0x7c/0x8c, t at 0x90..0x98",
-        "status": "NEW -- a third pose neither Phase 3 nor the escalation named"
+        "meaning": "local shape pose relative to its owner",
+        "established_by": "phys_fn_001347 copies descriptor localPose into +0x6c; phys_fn_001315 composes owner world pose with this local matrix into +0x0c; phys_fn_001277 saves this field back to the descriptor",
+        "initial_value": "identity rotation and zero translation"
       },
       "+0x9c": {
         "meaning": "pointer to the 0x1c-byte collision object",
@@ -299,7 +299,6 @@
   },
   "open_questions": [
     "the source-language interface represented by the actor's +8 secondary base remains unidentified; its one-slot deleting-destructor thunk and reset state are reconstructed",
-    "the third pose's role (saved previous? sweep source?)",
     "which of the twelve small vtables phys_fn_000973 installs maps to which Nx*Desc type",
     "whether Shape+0x150..+0x158 trio is box-specific or common"
   ],

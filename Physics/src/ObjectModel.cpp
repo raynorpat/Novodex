@@ -706,7 +706,7 @@ ShapeBase::ShapeBase(void* owner, unsigned argument)
 	identity.mRotation[8] = one;
 	mPose0C = identity;						// 0x00025555..0x000255cd
 	mPose3C = identity;						// second instruction run, +0x3c
-	mPose6C = identity;						// third instruction run, +0x6c
+	mLocalPose = identity;						// third instruction run, +0x6c
 	// The image runs the identical pose stores a SECOND time (0x0002564f..
 	// 0x000256cd) after the hook stores; both passes write the same bytes, so
 	// the transcription writes them once.
@@ -5050,8 +5050,8 @@ void ShapeBase::nxApplyOwnerUpdate(unsigned flags)
 		memcpy(r, body + 0x20, sizeof(r));
 		memcpy(t, body + 0x44, sizeof(t));
 		}
-	const float* l = reinterpret_cast<const float*>(mPose6C.mRotation);
-	const float* lt = mPose6C.mTranslation;
+	const float* l = reinterpret_cast<const float*>(mLocalPose.mRotation);
+	const float* lt = mLocalPose.mTranslation;
 	float* w = reinterpret_cast<float*>(mPose0C.mRotation);
 	#define NX_RL(a, b) (static_cast<double>(r[a]) * l[b])
 	const double c0 = (static_cast<double>(r[0]) * lt[0] + static_cast<double>(r[1]) * lt[1]) +
@@ -5234,7 +5234,7 @@ bool ShapeBase::nxShapeNameRegistry(void* shape, void* name)
 bool ShapeBase::nxApplyDescriptor(const void* record)
 	{
 	const unsigned char* rec = static_cast<const unsigned char*>(record);
-	memcpy(&mPose6C, rec + 8, sizeof(mPose6C));			// rep movsd 9 + three words
+	memcpy(&mLocalPose, rec + 8, sizeof(mLocalPose));			// rep movsd 9 + three words
 	NxU16 flagsLo = 0;
 	memcpy(&flagsLo, rec + 0x38, 2);					// movzx word [ebp+0x38]
 	mHalfwordDE = flagsLo;								// mov [ebx+0xde],cx
@@ -5783,7 +5783,7 @@ bool BoxShape::nxBoxAccumulateMass(MassFrame* destination, float density, unsign
 	{
 	(void) reserved;
 	if(!mBase.nxFlagBitsDE(7))
-		nxBoxComputeMassFrame(destination, density, mHull.mDims04, &mBase.mPose6C);
+		nxBoxComputeMassFrame(destination, density, mHull.mDims04, &mBase.mLocalPose);
 	return true;
 	}
 
@@ -6507,8 +6507,8 @@ void ShapeBase::nxShapeGlobalPose(float* out) const
 		src = reinterpret_cast<const float*>(owner + 0x20);
 
 	const float* R = src;
-	const float* L = reinterpret_cast<const float*>(mPose6C.mRotation);	// +0x6c
-	const float* lt = mPose6C.mTranslation;								// +0x90
+	const float* L = reinterpret_cast<const float*>(mLocalPose.mRotation);	// +0x6c
+	const float* lt = mLocalPose.mTranslation;								// +0x90
 	const double tx = src[9];											// fld [edx+0x24]
 	const double a = (static_cast<double>(R[0]) * lt[0] +
 		static_cast<double>(R[1]) * lt[1]) + static_cast<double>(R[2]) * lt[2];
@@ -7009,7 +7009,7 @@ bool MeshShape::nxMeshAccumulateMassCached(MassFrame* destination,
 	memcpy(&local.mOffset, mesh + 0xd8, 12);
 	local.mMass = cachedMass;
 	const unsigned char* pose =
-		reinterpret_cast<const unsigned char*>(&mBase.mPose6C);
+		reinterpret_cast<const unsigned char*>(&mBase.mLocalPose);
 	local.nxMassFrameFoldPayload(pose);
 	local.nxMassFrameTranslate(pose + 0x24);
 	destination->nxMassFrameMerge(local);
@@ -7106,7 +7106,7 @@ bool ShapeBase::nxBaseSlot7(unsigned* /*out*/, const void* /*swept*/)
 bool ShapeBase::nxBaseSaveState(void* record)
 	{
 	unsigned char* rec = static_cast<unsigned char*>(record);
-	memcpy(rec + 8, &mPose6C, sizeof(mPose6C));		// rep movsd 9 + three words
+	memcpy(rec + 8, &mLocalPose, sizeof(mLocalPose));		// rep movsd 9 + three words
 	unsigned int de = mHalfwordDE;
 	memcpy(rec + 0x38, &de, sizeof(de));			// movzx + dword store
 	memcpy(rec + 0x3c, &mHalfwordD8, sizeof(mHalfwordD8));

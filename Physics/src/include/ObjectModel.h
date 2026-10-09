@@ -381,10 +381,10 @@ class ShapeBase
 	void*				mOwner04;
 	//! +0x08, zeroed.
 	NxU32				mWord08;
-	//! +0x0c, +0x3c, +0x6c: three identity poses.
+	//! +0x0c world pose, +0x3c stamped pose, +0x6c local pose; all begin as identity.
 	ShapePose			mPose0C;
 	ShapePose			mPose3C;
-	ShapePose			mPose6C;
+	ShapePose			mLocalPose;	//!< Descriptor-local pose copied at +0x27740 and composed by owner update.
 	//! +0x9c, zeroed.
 	NxU32				mWord9C;
 	//! +0xa0, zeroed; read as a pointer by the 0x00025760 helper.
@@ -408,7 +408,7 @@ static_assert(sizeof(ShapeBase) == 0xe0, "the base shape spans to where the hull
 static_assert(offsetof(ShapeBase, mOwner04) == 0x04, "the owner sits at +0x04, as nxShapeOwner reads it");
 static_assert(offsetof(ShapeBase, mPose0C) == 0x0c, "the first pose is at +0x0c");
 static_assert(offsetof(ShapeBase, mPose3C) == 0x3c, "the second pose is at +0x3c");
-static_assert(offsetof(ShapeBase, mPose6C) == 0x6c, "the third pose is at +0x6c");
+static_assert(offsetof(ShapeBase, mLocalPose) == 0x6c, "the local pose is at +0x6c");
 static_assert(offsetof(ShapeBase, mWord9C) == 0x9c, "+0x9c is zeroed");
 static_assert(offsetof(ShapeBase, mPrunable) == 0xa4, "the prunable is at +0xa4");
 static_assert(offsetof(ShapeBase, mSentinelD0) == 0xd0, "the sentinel is at +0xd0");
