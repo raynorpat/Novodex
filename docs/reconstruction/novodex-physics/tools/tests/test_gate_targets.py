@@ -18,6 +18,7 @@ coverage must be registered.
 """
 
 import collections
+import json
 import re
 import shutil
 import subprocess
@@ -536,6 +537,34 @@ class CoverageFloor(unittest.TestCase):
             self.assertIn(target, lists,
                 "%s registers coverage lines but is on no phase's target list, so none of them "
                 "is ever evaluated" % target)
+
+    def test_completed_floor_deduplicates_shared_target_lines(self):
+        """The aggregate gate runs shared target assertions once, like its union."""
+        program = json.loads((REPO_ROOT / "docs/reconstruction/novodex-physics/program.json")
+                             .read_text(encoding="utf-8"))
+        passing = [phase["phase"] for phase in program["phases"]
+                   if phase["status"] == "pass"]
+        highest = max(passing)
+        phases = [str(phase) for phase in range(1, highest + 1)]
+        staged = phase_lists("NxPhaseTestTargets")
+        oracle = phase_lists("NxPhaseOracleDifferentialTargets")
+        registry = registered_lines()
+
+        per_phase = sum(coverage_floor()[phase] for phase in phases)
+        evaluated_once = set()
+        for phase in phases:
+            for category, targets in (("staged", staged), ("oracle", oracle)):
+                for target in targets.get(phase, []):
+                    for line in registry.get(target, []):
+                        evaluated_once.add((category, target, line))
+        overlap = per_phase - len(evaluated_once)
+        self.assertGreater(overlap, 0,
+                           "the current completed target union must include shared gates")
+
+        runner = (TOOLS_DIR / "run_phase_gate.ps1").read_text(encoding="utf-8")
+        self.assertIn("$floor -= $coverageOverlap", runner,
+                      "completed sums per-phase floors but runs shared target lines once")
+        self.assertEqual(per_phase - overlap, len(evaluated_once))
 
 
 def collision_driven_names():

@@ -376,6 +376,29 @@ foreach ($differentialPhase in $differentialPhases) {
         $floor += [int] $NxPhaseCoverageFloor[$differentialPhase]
     }
 }
+# The numeric phase floors are independent and each target's assertion is
+# checked once per phase. 'completed' runs the union of targets only once, so
+# shared target assertions appear once in its transcript rather than once for
+# every phase that references that target. Keep the pinned per-phase sum above,
+# then subtract only those known shared registrations for the selected phase
+# set; deleting a phase's registration does not reduce this correction.
+$coverageKeys = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+$coverageOverlap = 0
+foreach ($differentialPhase in $differentialPhases) {
+    foreach ($target in $NxPhaseTestTargets[$differentialPhase]) {
+        if (-not $NxRequiredCoverageLines.Contains($target)) { continue }
+        foreach ($required in $NxRequiredCoverageLines[$target]) {
+            if (-not $coverageKeys.Add("staged|$target|$required")) { $coverageOverlap++ }
+        }
+    }
+    foreach ($target in $NxPhaseOracleDifferentialTargets[$differentialPhase]) {
+        if (-not $NxRequiredCoverageLines.Contains($target)) { continue }
+        foreach ($required in $NxRequiredCoverageLines[$target]) {
+            if (-not $coverageKeys.Add("oracle|$target|$required")) { $coverageOverlap++ }
+        }
+    }
+}
+$floor -= $coverageOverlap
 Write-Host "coverage_assertions_evaluated=$coverageEvaluated floor=$floor"
 Assert-True ($coverageEvaluated -ge $floor) "at least the recorded number of coverage assertions ran ($coverageEvaluated of $floor); a target list that has been emptied evaluates none of them"
 
