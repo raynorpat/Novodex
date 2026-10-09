@@ -1153,6 +1153,18 @@ static void nxD6Case(NxScene& scene, NxActor* a, NxActor* b,
 			printf("case=d6 index=%u limit_point present=%u ", index, hasLimitPoint ? 1u : 0u);
 			nxPrintVec("point", limitPointReadback);
 			printf("\n");
+
+			const NxVec3 planeNormal(0.6f, -0.8f, 0.25f);
+			const NxVec3 planePoint(1.25f, -0.5f, 2.0f);
+			const bool planeAdded = d6->addLimitPlane(planeNormal, planePoint);
+			d6->resetLimitPlaneIterator();
+			NxVec3 planeNormalReadback(0.0f, 0.0f, 0.0f);
+			NxReal planeD = 0.0f;
+			const bool planeRead = d6->getNextLimitPlane(planeNormalReadback, planeD);
+			printf("case=d6 index=%u limit_plane added=%u read=%u ", index,
+				planeAdded ? 1u : 0u, planeRead ? 1u : 0u);
+			nxPrintVec("normal", planeNormalReadback);
+			printf(" d=%08x\n", nxU(planeD));
 			}
 
 		NxD6JointDesc saved;
