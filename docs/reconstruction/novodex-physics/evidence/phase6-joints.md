@@ -9461,3 +9461,28 @@ For row `phys_fn_003934`, In a throwaway git archive, changed the Effector const
 ## Phase 6 closure measurement — NpSpringAndDamperEffector::setBodies (phys_fn_003940)
 
 For row `phys_fn_003940`, In a throwaway git archive, omitted the call from NpSpringAndDamperEffector::setBodies to the internal setBodies method. The registered NxPhysicsEffectorTests staged-pair differential reached the setter through the public API; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=61 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003940-set-bodies.md`.
+
+
+## Phase 6 closure measurement — NpSpringAndDamperEffector::setLinearSpring (phys_fn_003942)
+
+For row `phys_fn_003942`, In a throwaway git archive, omitted the internal setLinearSpring call from the public NpSpringAndDamperEffector::setLinearSpring wrapper. NxPhysicsEffectorTests exercises the public setter and observes its state; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=63 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003942-setLinearSpring.md`.
+
+
+## Phase 6 closure measurement — NpSpringAndDamperEffector::setLinearDamper (phys_fn_003944)
+
+For row `phys_fn_003944`, In a throwaway git archive, omitted the internal setLinearDamper call from the public NpSpringAndDamperEffector::setLinearDamper wrapper. NxPhysicsEffectorTests exercises the public setter and observes its state; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=63 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003944-setLinearDamper.md`.
+
+
+## Phase 6 closure measurement — NpSpringAndDamperEffector::getLinearSpring (phys_fn_003946)
+
+For row `phys_fn_003946`, In a throwaway git archive, omitted the internal getLinearSpring call from the public NpSpringAndDamperEffector::getLinearSpring wrapper. NxPhysicsEffectorTests observes the getter outputs; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=65 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003946-getLinearSpring.md`.
+
+
+## Phase 6 closure measurement — NpSpringAndDamperEffector::getLinearDamper (phys_fn_003948)
+
+For row `phys_fn_003948`, In a throwaway git archive, omitted the internal getLinearDamper call from the public NpSpringAndDamperEffector::getLinearDamper wrapper. NxPhysicsEffectorTests observes the getter outputs; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=65 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003948-getLinearDamper.md`.
+
+
+## Phase 6 closure measurement — NpSpringAndDamperEffector::isSpringAndDamperEffector (phys_fn_003950)
+
+For row `phys_fn_003950`, In a throwaway git archive, changed NpSpringAndDamperEffector::isSpringAndDamperEffector to return null instead of this. NxPhysicsEffectorTests records the result alongside the wrapper identity; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=63 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003950-isSpringAndDamperEffector.md`.
