@@ -26,6 +26,14 @@ def test_row_cleanup_stops_at_indirect_tail_jump():
     assert AUDIT.row_cleanup(code, MD, 0) is None
 
 
+def test_audited_indirect_tail_rows_require_exact_pinned_bytes():
+    for rva, (expected, cleanup) in AUDIT.AUDITED_INDIRECT_TAILS.items():
+        assert AUDIT.audited_indirect_tail_cleanup(expected, rva, len(expected)) == cleanup
+        mutated = bytes([expected[0] ^ 1]) + expected[1:]
+        assert AUDIT.audited_indirect_tail_cleanup(mutated, rva, len(mutated)) is None
+    assert AUDIT.audited_indirect_tail_cleanup(b"\xff\x25\x00\x00\x00\x00", 0x12345) is None
+
+
 def test_row_cleanup_stops_at_register_tail_jump():
     # jmp eax; ret. The ret is unreachable in this row.
     assert AUDIT.row_cleanup(b"\xff\xe0\xc3", MD, 0) is None

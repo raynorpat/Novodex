@@ -3044,10 +3044,20 @@ void nxMutexLinkAdvance(void* self, unsigned objOff, unsigned srcOff,
 	memcpy(obj + dstOff, &v, 4);
 	}
 
-// phys_fn_004387 (0xaf2c4): the six-byte global trampoline.
-void nxTrampoline4387(void (*fn)(void))
+// phys_fn_004387 (0xaf2c4): tail-jumps to Observable::event(this, event,
+// observer), forwarding ECX and both stack arguments to the import.
+void nxTrampoline4387(void* self, unsigned event, void* observer,
+	NxObservableEventFn fn)
 	{
-	fn();
+	fn(self, event, observer);
+	}
+
+// phys_fn_003509 (0x863f0): tail-jumps through the dynamically loaded
+// StaticCollisionDestroy cdecl pointer and forwards its single collision arg.
+int nxStaticCollisionDestroyTrampoline(void* collision,
+	NxStaticCollisionDestroyFn fn)
+	{
+	return fn(collision);
 	}
 
 // The report-once float rows.
@@ -3280,7 +3290,7 @@ float nxLockedThunkFloat2(void* self, unsigned lockOff, unsigned objOff,
 
 // phys_fn_003936 (0x8eeb0): the vtable store plus the global tail jump.
 // Product row: Physics/src/core/SpringAndDamperEffector.cpp.
-void nxDtorTrampoline3936(void* self, void (*fn)(void*))
+void nxDtorTrampoline3936(void* self, NxObservableDestructorFn fn)
 	{
 	unsigned vtable = 0x10117920u;
 	memcpy(self, &vtable, 4);

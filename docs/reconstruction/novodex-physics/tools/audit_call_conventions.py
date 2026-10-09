@@ -17,6 +17,7 @@ Scope: reads only. It never edits the harness.
 """
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -26,6 +27,19 @@ import capstone
 
 DEFAULT_REPO_ROOT = Path(__file__).resolve().parents[4]
 DEFAULT_ORACLE_ROOT = Path(r'D:\FlamingEnt__\Unreal_3\Binaries')
+PINNED_ORACLE_SHA256 = '4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c'
+
+# These exact rows end in indirect tail jumps, so their `ret N` lives in the
+# selected callback. The target ABI is established independently from the
+# pinned image: 003509's GetProcAddress result is typed cdecl(void*) and its
+# caller pushes one pointer; 003936 imports the zero-argument Observable
+# destructor; 004387 imports Observable::event(uint, Observable&). Exact bytes
+# make the exceptions fail closed if the pinned oracle or inventory changes.
+AUDITED_INDIRECT_TAILS = {
+    0x863f0: (bytes.fromhex('ff2594641210'), 0),
+    0x8eeb0: (bytes.fromhex('c70120791110ff2594411010'), 0),
+    0xaf2c4: (bytes.fromhex('ff2598411010'), 8),
+}
 
 TD = re.compile(
     r'typedef\s+[\w\s\*]+\(\s*(__cdecl|__stdcall|__fastcall|__thiscall)\s*\*\s*(\w+)\s*\)'
@@ -149,6 +163,16 @@ def row_cleanup(code, md, rva, function_size=None, jump_table_reader=None):
     return cleanups.pop()
 
 
+def audited_indirect_tail_cleanup(code, rva, function_size=None):
+    """Resolve only exact, manually audited indirect-tail rows in the pinned DLL."""
+    record = AUDITED_INDIRECT_TAILS.get(rva)
+    if record is None:
+        return None
+    expected_bytes, cleanup = record
+    bounded = code[:function_size] if function_size is not None else code
+    return cleanup if bounded == expected_bytes else None
+
+
 def expected_cleanup(conv, nargs):
     """Argument bytes popped by the callee for a 32-bit function pointer.
 
@@ -187,6 +211,11 @@ def main(argv=None):
     pe = json.load(open(pe_path))
     secs = pe['sections']
     raw = open(dll, 'rb').read()
+    oracle_sha256 = hashlib.sha256(raw).hexdigest()
+    if oracle_sha256 != PINNED_ORACLE_SHA256:
+        print('oracle SHA-256 mismatch: expected %s, got %s' %
+              (PINNED_ORACLE_SHA256, oracle_sha256), file=sys.stderr)
+        return 2
     inventory_path = args.repo_root / 'docs' / 'reconstruction' / 'novodex-physics' / 'inventory.json'
     inventory = json.load(open(inventory_path, encoding='utf-8'))
     function_sizes = {int(row['rva'], 16): row['size']
@@ -264,6 +293,9 @@ def main(argv=None):
             pops = row_cleanup(code, md, rva, function_size=function_size,
                                jump_table_reader=table_reader)
             if pops is None:
+                pops = audited_indirect_tail_cleanup(
+                    code, rva, function_size=function_size)
+            if pops is None:
                 undecided.append((name, rva, uline, 'row not decidable'))
                 continue
             expected = expected_cleanup(conv, nargs)
@@ -271,6 +303,8 @@ def main(argv=None):
                 mismatches.append((name, rva, conv, pops, expected, gov[0], uline))
 
     print('typedefs=%d  cast sites=%d' % (len(typedefs), sum(len(v) for v in casts.values())))
+    print('cleanup sites resolved=%d unresolved=%d' %
+          (sum(len(v) for v in casts.values()) - len(undecided), len(undecided)))
     print('--- calling-convention mismatches ---')
     for name, rva, conv, pops, expected, tline, uline in mismatches:
         print('  %-20s rva=0x%-7x %-11s row pops %-3d convention implies %-3d '

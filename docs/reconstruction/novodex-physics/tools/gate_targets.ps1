@@ -5051,6 +5051,9 @@ $NxRequiredCoverageLines = [ordered] @{
     #     byte for byte by the oracle's own constructor;
     #   * `owner`, the four-byte accessor phys_fn_001281 reading +0x04.
     'NxPhysicsObjectLayoutTests' = @(
+        'tailabi row=004387 cleanup=8 oracle=1 candidate=1 args=match',
+        'tailabi row=003509 cleanup=0 oracle=1 candidate=1 arg=match return=3509',
+        'tailabi row=003936 cleanup=0 oracle=1 candidate=1 this=match',
         'vt name=actor_interface slots=87 digest=62936499',
         'vt name=actor_dynamic slots=88 digest=cdd44a90',
         'vt name=shape_base slots=12 digest=650a3f61',
@@ -5670,7 +5673,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2608  # previous 2,607 plus the public aggregate-return ABI probe and its negative control
+    '5' = 2611  # previous 2,608 plus the three audited indirect-tail ABI probes
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths
@@ -5695,7 +5698,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1251  # previous 1241 plus ten joint-family structure-return checks
+    '6' = 1254  # previous 1,251 plus the three audited indirect-tail ABI probes
                # previous 1238 plus the D6 public global-anchor readback
                # previous 1234 plus three contended D6 drive write-lock reports
                # previous 1233 plus the D6 contended drive-position write-lock report

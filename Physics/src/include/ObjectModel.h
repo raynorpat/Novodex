@@ -1327,8 +1327,16 @@ void*					nxDtorOwnedThenFree1589(void* self, unsigned flags);
 unsigned				nxMutexGlobalStore(void* self, unsigned code, unsigned file,
 							unsigned line, unsigned expression);
 //! phys_fn_004387 (0xaf2c4): a six-byte trampoline -- `jmp [0x10104198]` -- so
-//! the whole row IS the global call, passing its own `this` and stack through.
-void					nxTrampoline4387(void (*fn)(void));
+//! the whole row IS Observable::event(this, event, observer), forwarding ECX
+//! and both stack arguments unchanged.
+typedef void (__thiscall* NxObservableEventFn)(void*, unsigned, void*);
+void					nxTrampoline4387(void* self, unsigned event, void* observer,
+						NxObservableEventFn fn);
+//! phys_fn_003509 (0x863f0): tail-jumps through the dynamically resolved
+//! StaticCollisionDestroy pointer, a cdecl function taking one collision ptr.
+typedef int (__cdecl* NxStaticCollisionDestroyFn)(void*);
+int						nxStaticCollisionDestroyTrampoline(void* collision,
+						NxStaticCollisionDestroyFn fn);
 
 //! The report-once float rows: 003716 (0x8b610), 003720 (0x8b760) and 003770
 //! (0x8c080) each test the gate byte [0x101263ad]; when it is clear they
@@ -1408,7 +1416,8 @@ unsigned char			nxReportRow2160(unsigned a, unsigned b, unsigned c);
 //! phys_fn_003936 (0x8eeb0): stores the vtable 0x10117920 at [self] and
 //! TAIL-JUMPS into the global [0x10104194], forwarding `this` and the caller
 //! stack unchanged.
-void					nxDtorTrampoline3936(void* self, void (*fn)(void*));
+typedef void (__thiscall* NxObservableDestructorFn)(void*);
+void					nxDtorTrampoline3936(void* self, NxObservableDestructorFn fn);
 
 //! phys_fn_003902 (0x8d850): reads the cached word [0x10126654], calls the
 //! global [0x1010403c] with it, CLEARS the cache, and returns whether the call
