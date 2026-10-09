@@ -31,6 +31,18 @@ This file is not called Assert.h to avoid conflict with standard assert.h header
 			//! ASSERT(condition && "error text")
 			
 			
+			#if defined(NX_PHYSICS_USE_X87) && !NX_PHYSICS_USE_X87
+			#include "NxFoundationBreak.h"
+			#define NX_ASSERT(exp) \
+			{ \
+				static bool NX_ASSERT_ignore = false; \
+				if(!(exp) && !NX_ASSERT_ignore) \
+				{ \
+					if(NxFoundation::FoundationSDK::dbAssert(NXE_ASSERTION, __FILE__, __LINE__, &NX_ASSERT_ignore, #exp)) \
+						nxFoundationBreak(); \
+				} \
+			}
+			#else
 			#ifdef WIN32
 			#define NX_ASSERT(exp)																	\
 			{																						\
@@ -55,6 +67,7 @@ This file is not called Assert.h to avoid conflict with standard assert.h header
 					}						\
 				}
 			#endif						
+			#endif
 		#else
 			//! Leave the {} so that you can write this kind of things safely in release mode:
 			//!	if(condition)	NX_ASSERT()

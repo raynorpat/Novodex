@@ -390,7 +390,7 @@ NX_INLINE NxI32 NxMath::clamp(NxI32 v, NxI32 hi, NxI32 low)
 // precision and the return converts once, which is what the oracle's own stream
 // does, so the result is the same 32-bit word rather than a differently rounded
 // one.
-#if defined(_M_IX86) && defined(_MSC_VER)
+#if defined(_M_IX86) && defined(_MSC_VER) && (!defined(NX_PHYSICS_USE_X87) || NX_PHYSICS_USE_X87)
 #define NX_MATH_SQRT_USES_FSQRT 1
 #endif
 

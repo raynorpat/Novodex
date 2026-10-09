@@ -10,6 +10,14 @@
 #include "NxProfiler.h"
 #include "NxTime.h"
 #include "FoundationSDK.h"
+#if defined(NX_PHYSICS_USE_X87) && !NX_PHYSICS_USE_X87
+#include <cstring>
+#if defined(_WIN32) && defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_X64))
+#include <intrin.h>
+#else
+#error Scalar profiler counter implementation for this platform belongs to Task9
+#endif
+#endif
 /**
 This profiler is a modified version of the "low level" portion of the code
 published with the article "Interactive Profiling" in the Dec 2002 GDMag.
@@ -450,6 +458,10 @@ void NxProfiler::History_Scalar::eternity_set(double new_value)
 
 inline void NxProfiler::getTime(NxI64 *result) 
 	{
+#if defined(NX_PHYSICS_USE_X87) && !NX_PHYSICS_USE_X87
+    const NxU64 ticks = __rdtsc();
+    std::memcpy(result, &ticks, sizeof(ticks));
+#else
     int *dest = (int *)(result);
 #ifdef WIN32
     __asm {
@@ -465,6 +477,7 @@ inline void NxProfiler::getTime(NxI64 *result)
 	);
 #else
 #error Unknown platform!
+#endif
 #endif
 	}
 /*

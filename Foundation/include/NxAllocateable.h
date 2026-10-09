@@ -10,7 +10,8 @@
 #include "NxUserAllocator.h"
 #include "NxFoundationSDK.h"
 
-NX_C_EXPORT NXF_DLL_EXPORT NxUserAllocator * nxFoundationSDKAllocator;	//the SDK defines this.
+// The existing allocator export has C++ linkage, as declared in NxUserAllocator.h.
+extern NXF_DLL_EXPORT NxUserAllocator * nxFoundationSDKAllocator;	//the SDK defines this.
 
 /**
 Subclasses of this base class automatically take part in user memory management

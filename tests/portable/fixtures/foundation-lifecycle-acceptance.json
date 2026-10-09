@@ -1,0 +1,82 @@
+{
+  "provenance": "actual reconstructed-source x87; shipped DLL evidence is separate",
+  "controller_approval": "2026-10-09 after initial actual-source scalar measurements, before final acceptance",
+  "captures": {
+    "foundation-lifecycle-x87": {
+      "sha256": "5a68eb4b78f302d958244ddf59ff4a528d838c00010503fbb48a79067d232972",
+      "observations": 95,
+      "snapshots": 73
+    },
+    "foundation-public-math-x87": {
+      "sha256": "bdd93999ff2a3a7c7e87310035f1b3256c2a0bdc420a11a01e3e7d67ce56d1c4",
+      "observations": 52,
+      "snapshots": 74
+    }
+  },
+  "budgets": {
+    "state_discrete_ownership_basic_payload": {
+      "absolute": 0,
+      "relative": 0,
+      "words": "exact"
+    },
+    "public_sincos_dimensionless_26_literal_binary32_radian_inputs": {
+      "absolute": 0,
+      "relative": 0,
+      "words": "exact"
+    },
+    "zeros_signs_canaries": "exact"
+  },
+  "measurements_msvc_release_debug_clang_win32": {
+    "lifecycle_observations": 95,
+    "lifecycle_differences": 0,
+    "public_angles": 26,
+    "public_output_words": 52,
+    "public_differences": 0,
+    "max_absolute": 0,
+    "max_relative": 0
+  },
+  "contracts": {
+    "public_allocator_export": "?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A",
+    "receiver_size_win32": 56,
+    "getInstance_scalar_windows": "real EXCEPTION_BREAKPOINT; abort if debugger resumes",
+    "getInstance_other_hosts": "abort",
+    "profiler_counter_windows": "__rdtsc raw8byte output, same counter units, no deterministic numeric fixture"
+  },
+  "domain": "actual factory/version/singleton/sticky custom/default allocator/error stream, real formatted error/print/all assertion responses/first-last reset, observer hold/reacquire/last-remove deletion, actual basic debug payload ownership and profiler zone lifecycle; short formatting<=159chars. Public SinCos binary32 signedzero,tiny,pi/2,pi,2pi adjacent words/negatives,pi/4,+/-1; input radians[-next2pi,+next2pi],outputs dimensionless.",
+  "current_supplemental_tests": "Debug actual NX_ASSERT per-site ignore/repeated continue/location/breakpoint; scalar resumption advances Windows one-byte INT3 and verifies SIGABRT exit74; original95observations remain unchanged",
+  "boundaries": [
+    "nonterminated160char and longer formatting: original _vsnprintf/realloc(stackBuffer)/ownership paths unchanged",
+    "retained debug objects in SDK destructor: public NxDebugRenderable lacks virtual destructor/custom-delete inheritance; guarded-offset custom allocator fixture exited STATUS_HEAP_CORRUPTION, default-allocator crash not claimed; supported fixture explicitly releases concrete owners",
+    "allocators must honor original nonnull allocation contract; unchecked factory allocation failure not driven",
+    "no viewer/graphics numeric acceptance",
+    "no general SinCos large/nonfinite argument claim or binary64 overload",
+    "other-platform profiler timing remains Task9",
+    "FPU environment exports remain Task7",
+    "PMap/vendor/TriangleMesh/polygon/fan/contacts/full-engine/native closure remains"
+  ],
+  "current_source_sha256": {
+    "Foundation/include/NxAllocateable.h": "dc5156a04e731c7a0574b89f583a244f91021b2decb187eb5bcfaec632beeab5",
+    "Foundation/include/NxMath.h": "93e85905e8515f33b2b6a55dc19cc90e9e3deb43d302bd7eaddc37ee52e74c20",
+    "Foundation/include/NxFPU.h": "6e70ea83197140f67451f4a690a7f8848cf17c4e3858721b0e2a254e8ba22995",
+    "Foundation/src/DebugRenderable.cpp": "4f985d13e3dd47ad7738653600dae86eef13799822492809dc1bbbcf51313003",
+    "Foundation/src/Profiler.cpp": "b64ad0355259ff0b4029611650206ad9385c45ed49269440e5effaaa45d10348",
+    "Foundation/src/Utilities.cpp": "5b0ddfc13ba0b01a7a6d3b00d19691b3d6b49a1099aa047913780cd824676b8e",
+    "Foundation/src/include/CustomAssert.h": "9113f89412dffab8d6fc25e4ef0c460f47c59b4de4500fef15a5aceb18d70d7e",
+    "Foundation/src/include/FoundationSDK.h": "5c776faa94d694a1f36e4af3d2e1d0f7c02c5de8ffa1a8cf05b7f3dcf5b3d880",
+    "Foundation/src/include/NxFoundationBreak.h": "e604df32ceda2a45894998ceb7c5a4686e2b95f7f307af3ac46b9904c05be315",
+    "tests/portable/FoundationLifecycleTests.cpp": "028db3bb1d3c7f16bd1cbfa6f9e694c1a6a0b503713f8ebdc66aab6a5b7a0606",
+    "tests/portable/FoundationPublicMathTests.cpp": "a4a83c36b37db470874037780cedcc0eea7d0446eacd04863b6712e2e4880edc",
+    "tests/portable/FoundationLifecycleTargets.cmake": "f069364b3c7195ab47292ca7b051fd148c8b5ea5f8e7c7a09bffe7ad7d99cba8",
+    "docs/reconstruction/novodex-physics/tools/capture_foundation_lifecycle.py": "decc10b78d93c3af02081a1f58587983404c8e3feb463d44a22dee8779db6c88"
+  },
+  "evidence": {
+    "red": "build/task5d1a-clang-red.log",
+    "full_standalone": "build/task5d1a-full-tests.log:17/17",
+    "debug": "build/task5d1a-final-debug-tests.log",
+    "clang": "build/task5d1a-last-clang-tests.log",
+    "parity": "build/task5d1a-parity.log",
+    "legacy": "build/task5d1a-legacy-foundation-parity.log",
+    "migration_guard": "build/task5d1a-full-guard.log:expected rejection"
+  },
+  "post_capture_formatting": "Only new scalar helper and tests formatted conventionally; include order, actual protected observations and input words unchanged. Covering focused tests follow."
+}

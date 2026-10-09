@@ -230,3 +230,37 @@ slots and their actual hull+64 graph owner/centroid/map integration, contacts,
 Geometry inflated-fan and PMap/OPCODE model/RayAABB acceptance remain later gates.
 Extreme/nonfinite subdivision probes calculate private lookup indices only;
 they establish neither allocation support nor safe sample-array dereferences.
+
+### Task5d1a genuine Foundation lifecycle prerequisite
+
+The real FoundationSDK/Observable singleton, observer and error bodies now
+compile with their genuine DebugRenderable/Profiler/Time/Utilities/Box
+dependencies in the standalone Win32 scalar gate. No lifecycle/report method
+is substituted. NxAllocateable's contradictory C allocator redeclaration now
+matches NxUserAllocator's existing C++ declaration and the shipped export
+`?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A`; compiler diagnostics and
+candidate/oracle export checks establish this correction.
+
+Public NxMath/NxFPU and existing Utilities/DebugRenderable scalar branches
+honor backend0. Untagged public consumers keep their original selection;
+backend1 keeps all original instruction bodies. Profiler's scalar Windows
+counter uses the actual RDTSC intrinsic and writes the same eight counter bits.
+Other-platform counter implementation remains an explicit Task9 boundary.
+Scalar missing-instance access raises a real Windows breakpoint and terminates
+if resumed; other hosts terminate with abort. Debug assertion ignore/continue/
+break effects are tested with the real Foundation owner. Original x87 traps
+and all Foundation lifecycle/error/observer source bodies remain unchanged.
+
+Protected actual-source captures pin95 exact state/ownership/basic-payload
+observations and52 dimensionless SinCos words for26 literal binary32 radian
+inputs bounded by the neighbours of plus/minus2pi. Both approved budgets are
+absolute0/relative0 with exact signs and zeros. Profiler live ticks are
+nondeterministic and have no fixture-valued numeric output. The basic debug
+ownership gate does not establish scalar viewer/graphics numeric equivalence.
+
+Defined short formatting is limited to terminated messages of at most159
+characters. Existing longer formatting and SDK destruction with retained
+nonvirtual-public-base debug owners remain documented historical boundaries.
+PMap/OPCODE/genuine TriangleMesh lifecycle integration is the next dependency
+gate; polygon dispatch/projection, fan and contact families remain pending.
+Full production migration guards and native layout obligations remain intact.
