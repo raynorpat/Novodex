@@ -5511,6 +5511,18 @@ void NxSceneInternal::row000611()
 	at<NxU32>(0x70c) &= ~4u;
 	}
 
+// phys_fn_000636 (0x00012890): refresh each body's post-step velocity record,
+// then reset the active-root range for the next substep.
+void NxSceneInternal::row000636()
+	{
+	void** bodies = at<void**>(0x56c);
+	void** bodiesEnd = at<void**>(0x570);
+	const NxReal timestep = at<NxReal>(0x548);
+	for(void** item = bodies; item && item != bodiesEnd; ++item)
+		reinterpret_cast<Row000732Fixture*>(*item)->row000732(timestep, 0.0f);
+	at<void**>(0x580) = at<void**>(0x57c);
+	}
+
 // phys_fn_000659 (0x00013c40): select fixed or variable stepping under the
 // oracle's x87 precision-64/round-toward-zero mode, run each requested body
 // substep, then restore the caller's control word. The scheduler fields are
@@ -5684,9 +5696,7 @@ void NxSceneInternal::simulateFrame()
 
 		// 000636 performs post-step velocity bookkeeping and clears the active
 		// root range before 000615 advances each body's COM/quaternion.
-		for(void** item = bodies; item && item != bodiesEnd; ++item)
-			reinterpret_cast<Row000732Fixture*>(*item)->row000732(timestep, 0.0f);
-		rootLast = rootFirst;
+		row000636();
 
 		// 000615 also sends the public-pose notification after each body update.
 		for(void** item = bodies; item && item != bodiesEnd; ++item)

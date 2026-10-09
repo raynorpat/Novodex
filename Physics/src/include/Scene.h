@@ -206,6 +206,9 @@ class NxSceneInternal
 	// phys_fn_000611 (0x00011260), including continuation block 000613:
 	// prepare each active island's support records, solve them, then copy back.
 	__declspec(noinline) void row000611();
+	// phys_fn_000636 (0x00012890): refresh post-step body records and retire
+	// the active-root range after every body has been processed.
+	__declspec(noinline) void row000636();
 	// phys_fn_000619: fetch-side body gravity refresh and pose snapshot.
 	void finishSimulation();
 	// phys_fn_000523 (0x00010400). The pair-flag count at +0x3c.
