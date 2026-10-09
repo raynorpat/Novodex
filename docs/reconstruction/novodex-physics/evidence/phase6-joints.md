@@ -9801,3 +9801,9 @@ The registered `NxPhysicsJointStagedPairTests` public D6 case independently read
 Adding 1.0 to D6 axis X in `phys_fn_004441` changed its word from `3f13cd3a` to `3fc9e69d`; the candidate was caught with both exits zero, `stdout_delta=24`, and exact stderr. The restored control was exact (`stdout_delta=0`).
 
 Detailed DLL hashes and raw log paths: `evidence/phase6-joint-row004437-004441-d6-getters.md`.
+
+
+## Phase 6 closure measurement — D6 global-axis setter (phys_fn_004439)
+
+The D6 staged-pair case now calls the public `NxD6Joint::setGlobalAxis` with a non-default replacement vector, then reads the world-space axis back and records its three words. Replacing the setter's forwarded axis with `(0, 1, 0)` changes the readback from `3e9b28d0.bf4ee116.3f014cae` to `00000000.3f800000.00000000`; oracle and candidate both exit zero, `stdout_delta=6`, and stderr is exact. The restored differential returns to `stdout_delta=0` with exact stderr. Detailed evidence: `evidence/phase6-joint-row004439-d6-set-global-axis.md`.
+Measurement index: `phys_fn_004439 stdout_delta=6`.

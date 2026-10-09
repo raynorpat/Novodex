@@ -1127,6 +1127,19 @@ static void nxD6Case(NxScene& scene, NxActor* a, NxActor* b,
 		joint->isFixedJoint() ? "yes" : "no");
 	if(d6)
 		{
+		// Exercise the D6 public wrapper's setGlobalAxis row with a value that
+		// differs from the descriptor input, then read back the resulting frame.
+		if(index == 3)
+			{
+			const NxVec3 replacementAxis(0.75f, -2.0f, 1.25f);
+			d6->setGlobalAxis(replacementAxis);
+			NxVec3 replacementAxisReadback(0.0f, 0.0f, 0.0f);
+			d6->getGlobalAxis(replacementAxisReadback);
+			printf("case=d6 index=%u set_axis ", index);
+			nxPrintVec("out_axis", replacementAxisReadback);
+			printf("\n");
+			}
+
 		NxD6JointDesc saved;
 		nxD6Fill(saved, sentinel);
 		d6->saveToDesc(saved);

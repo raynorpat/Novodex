@@ -3,3 +3,5 @@
 Task M5.1: complete (commit HEAD; tests: baseline NxPhysicsCoreDumpTests exact; destructor purge mutation caught at stdout_delta=2 with 14/17 allocations; restored control exact; tools suite 784/784; inventory=pass; public_headers=pass 80 files).
 
 Task M5.2: complete (D6 global-anchor/global-axis rows phys_fn_004437 and phys_fn_004441 dynamically gated; each isolated getter mutation changed its staged-pair output and produced stdout_delta=24; restored controls exact; inventory=pass; public_headers=pass 80 files; validator=pass; completion report tests 11/11; work-unit tests 12/12).
+
+Task M5.3: complete (D6 public setGlobalAxis row phys_fn_004439; staged-pair public setter/readback fixture exact at baseline/restored, forced-axis mutation caught with stdout_delta=6; Phase 6/7 registration floors updated; full gate-target tests 37/37; inventory and public-header validation pass (6,338 functions, 5,138 data objects, 0 unexplained; 80 headers unchanged)).
