@@ -5610,6 +5610,13 @@ void NxSceneInternal::simulateFrame()
 				*rootLast++ = body;
 			}
 
+		// phys_fn_000655 applies effectors after active roots are collected but
+		// before phys_fn_000610 integrates their bodies. The spring impulse must
+		// enter angular velocity before 000726 applies angular damping.
+		for(Effector* effector = at<Effector*>(0x5a4); effector;
+			effector = effector->mNext)
+			effector->tick();
+
 		// phys_fn_000610 walks active island roots (+0x57c) and each root's
 		// sleep-group chain (+0x1fc); inactive bodies must not be integrated.
 		void** roots = at<void**>(0x57c);
@@ -5659,14 +5666,6 @@ void NxSceneInternal::simulateFrame()
 			at<NxU32>(0x5bc) = 0;
 			}
 		at<NxU32>(0x70c) &= ~4u;
-
-		// phys_fn_000655 walks the scene's effector list after island contact
-		// solving and before 00012890 performs post-step body velocity updates.
-		// Slot 2 is ActorPairEffector::tick, which applies the spring/damper
-		// force for this substep.
-		for(Effector* effector = at<Effector*>(0x5a4); effector;
-			effector = effector->mNext)
-			effector->tick();
 
 		// 000636 performs post-step velocity bookkeeping and clears the active
 		// root range before 000615 advances each body's COM/quaternion.

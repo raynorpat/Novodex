@@ -1337,6 +1337,7 @@ int wmain(int argc, wchar_t** argv)
 	NxSpringAndDamperEffectorDesc effectorStepDesc;
 	effectorStepDesc.setToDefault();
 	effectorStepDesc.body1 = effectorStepActor1;
+	effectorStepDesc.pos1 = NxVec3(0.0f, 0.5f, 0.0f);
 	effectorStepDesc.pos2 = NxVec3(2.0f, 0.0f, 0.0f);
 	effectorStepDesc.springDistCompressSaturate = 0.5f;
 	effectorStepDesc.springDistRelaxed = 1.0f;
@@ -1357,9 +1358,16 @@ int wmain(int argc, wchar_t** argv)
 	NxReal damperCompress, damperStretch, damperMaxCompress, damperMaxStretch;
 	stepEffector->getLinearDamper(damperCompress, damperStretch, damperMaxCompress, damperMaxStretch);
 	const NxVec3 effectorInitialPosition1 = effectorStepActor1->getGlobalPosition();
-	printf("simulation effector-step setup count=%u awake=%u pos=%08x spring=%08x.%08x.%08x.%08x.%08x damper=%08x.%08x.%08x.%08x\n",
+	NxVec3 effectorStepCMass;
+	effectorStepActor1->getCMassGlobalPosition(effectorStepCMass);
+	NxVec3 effectorStepInertia;
+	effectorStepActor1->getMassSpaceInertiaTensor(effectorStepInertia);
+	printf("simulation effector-step setup count=%u awake=%u pos=%08x cmass=%08x.%08x.%08x inertia=%08x.%08x.%08x spring=%08x.%08x.%08x.%08x.%08x damper=%08x.%08x.%08x.%08x\n",
 		effectorStepScene->getNbEffectors(), effectorStepActor1->isSleeping() ? 0u : 1u,
-		nxFloatBits(effectorStepActor1->getGlobalPosition().x), nxFloatBits(effectorCompress),
+		nxFloatBits(effectorStepActor1->getGlobalPosition().x),
+		nxFloatBits(effectorStepCMass.x), nxFloatBits(effectorStepCMass.y), nxFloatBits(effectorStepCMass.z),
+		nxFloatBits(effectorStepInertia.x), nxFloatBits(effectorStepInertia.y), nxFloatBits(effectorStepInertia.z),
+		nxFloatBits(effectorCompress),
 		nxFloatBits(effectorRelaxed), nxFloatBits(effectorStretch),
 		nxFloatBits(effectorMaxCompress), nxFloatBits(effectorMaxStretch),
 		nxFloatBits(damperCompress), nxFloatBits(damperStretch),
@@ -1370,31 +1378,126 @@ int wmain(int argc, wchar_t** argv)
 	const bool effectorStepFetched = effectorStepScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
 	if(!effectorStepReady || !effectorStepFetched)
 		return nxFail("effector-step results were not ready and fetched");
-	NxVec3 effectorStepVelocity1;
+	NxVec3 effectorStepVelocity1, effectorStepAngular1;
+	NxQuat effectorStepOrientation1;
 	effectorStepActor1->getLinearVelocity(effectorStepVelocity1);
-	printf("simulation effector-step ready=%u fetched=%u vx=%08x\n",
+	effectorStepActor1->getAngularVelocity(effectorStepAngular1);
+	effectorStepActor1->getGlobalOrientationQuat(effectorStepOrientation1);
+	printf("simulation effector-step ready=%u fetched=%u v=%08x.%08x.%08x w=%08x.%08x.%08x q=%08x.%08x.%08x.%08x\n",
 		effectorStepReady ? 1u : 0u, effectorStepFetched ? 1u : 0u,
-		nxFloatBits(effectorStepVelocity1.x));
+		nxFloatBits(effectorStepVelocity1.x), nxFloatBits(effectorStepVelocity1.y),
+		nxFloatBits(effectorStepVelocity1.z), nxFloatBits(effectorStepAngular1.x),
+		nxFloatBits(effectorStepAngular1.y), nxFloatBits(effectorStepAngular1.z),
+		nxFloatBits(effectorStepOrientation1.x), nxFloatBits(effectorStepOrientation1.y),
+		nxFloatBits(effectorStepOrientation1.z), nxFloatBits(effectorStepOrientation1.w));
 	effectorStepScene->simulate(1.0f / 60.0f);
 	const bool effectorStepReady2 = effectorStepScene->checkResults(NX_RIGID_BODY_FINISHED, true);
 	const bool effectorStepFetched2 = effectorStepScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
 	if(!effectorStepReady2 || !effectorStepFetched2)
 		return nxFail("second effector-step results were not ready and fetched");
 	effectorStepActor1->getLinearVelocity(effectorStepVelocity1);
-	printf("simulation effector-step second ready=%u fetched=%u vx=%08x\n",
+	effectorStepActor1->getAngularVelocity(effectorStepAngular1);
+	effectorStepActor1->getGlobalOrientationQuat(effectorStepOrientation1);
+	printf("simulation effector-step second ready=%u fetched=%u v=%08x.%08x.%08x w=%08x.%08x.%08x q=%08x.%08x.%08x.%08x\n",
 		effectorStepReady2 ? 1u : 0u, effectorStepFetched2 ? 1u : 0u,
-		nxFloatBits(effectorStepVelocity1.x));
+		nxFloatBits(effectorStepVelocity1.x), nxFloatBits(effectorStepVelocity1.y),
+		nxFloatBits(effectorStepVelocity1.z), nxFloatBits(effectorStepAngular1.x),
+		nxFloatBits(effectorStepAngular1.y), nxFloatBits(effectorStepAngular1.z),
+		nxFloatBits(effectorStepOrientation1.x), nxFloatBits(effectorStepOrientation1.y),
+		nxFloatBits(effectorStepOrientation1.z), nxFloatBits(effectorStepOrientation1.w));
 	effectorStepScene->simulate(1.0f / 60.0f);
 	const bool effectorStepReady3 = effectorStepScene->checkResults(NX_RIGID_BODY_FINISHED, true);
 	const bool effectorStepFetched3 = effectorStepScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
 	if(!effectorStepReady3 || !effectorStepFetched3)
 		return nxFail("third effector-step results were not ready and fetched");
 	effectorStepActor1->getLinearVelocity(effectorStepVelocity1);
-	printf("simulation effector-step third ready=%u fetched=%u vx=%08x\n",
+	effectorStepActor1->getAngularVelocity(effectorStepAngular1);
+	effectorStepActor1->getGlobalOrientationQuat(effectorStepOrientation1);
+	printf("simulation effector-step third ready=%u fetched=%u v=%08x.%08x.%08x w=%08x.%08x.%08x q=%08x.%08x.%08x.%08x\n",
 		effectorStepReady3 ? 1u : 0u, effectorStepFetched3 ? 1u : 0u,
-		nxFloatBits(effectorStepVelocity1.x));
+		nxFloatBits(effectorStepVelocity1.x), nxFloatBits(effectorStepVelocity1.y),
+		nxFloatBits(effectorStepVelocity1.z), nxFloatBits(effectorStepAngular1.x),
+		nxFloatBits(effectorStepAngular1.y), nxFloatBits(effectorStepAngular1.z),
+		nxFloatBits(effectorStepOrientation1.x), nxFloatBits(effectorStepOrientation1.y),
+		nxFloatBits(effectorStepOrientation1.z), nxFloatBits(effectorStepOrientation1.w));
 	effectorStepScene->releaseEffector(*stepEffector);
 	sdk->releaseScene(*effectorStepScene);
+
+	// Isolate quaternion integration from effectors and solver impulses: the
+	// body starts with angular velocity and advances through the public step.
+	NxSceneDesc angularStepSceneDesc;
+	angularStepSceneDesc.setToDefault();
+	angularStepSceneDesc.gravity = NxVec3(0.0f, 0.0f, 0.0f);
+	NxScene* const angularStepScene = sdk->createScene(angularStepSceneDesc);
+	if(!angularStepScene)
+		return nxFail("angular-step scene creation failed");
+	angularStepScene->setTiming(1.0f / 60.0f, 1, NX_TIMESTEP_FIXED);
+	NxBodyDesc angularStepBody;
+	angularStepBody.setToDefault();
+	angularStepBody.angularVelocity = NxVec3(0.0f, 0.0f, -0.85749924f);
+	NxActorDesc angularStepActorDesc;
+	angularStepActorDesc.setToDefault();
+	angularStepActorDesc.body = &angularStepBody;
+	angularStepActorDesc.density = 2.0f;
+	angularStepActorDesc.shapes.pushBack(&effectorStepShape);
+	NxActor* const angularStepActor = angularStepScene->createActor(angularStepActorDesc);
+	if(!angularStepActor)
+		return nxFail("angular-step actor creation failed");
+	for(unsigned step = 0; step < 3; ++step)
+		{
+		angularStepScene->simulate(1.0f / 60.0f);
+		const bool ready = angularStepScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+		const bool fetched = angularStepScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		if(!ready || !fetched)
+			return nxFail("angular-step results were not ready and fetched");
+		NxQuat orientation;
+		NxVec3 angularVelocity;
+		angularStepActor->getGlobalOrientationQuat(orientation);
+		angularStepActor->getAngularVelocity(angularVelocity);
+		printf("simulation angular-step step=%u q=%08x.%08x.%08x.%08x w=%08x.%08x.%08x\n",
+			step, nxFloatBits(orientation.x), nxFloatBits(orientation.y),
+			nxFloatBits(orientation.z), nxFloatBits(orientation.w),
+			nxFloatBits(angularVelocity.x), nxFloatBits(angularVelocity.y),
+			nxFloatBits(angularVelocity.z));
+		}
+	sdk->releaseScene(*angularStepScene);
+
+	// Exercise the public off-centre impulse path with a known pure torque.
+	NxSceneDesc forceAtPosSceneDesc;
+	forceAtPosSceneDesc.setToDefault();
+	forceAtPosSceneDesc.gravity = NxVec3(0.0f, 0.0f, 0.0f);
+	NxScene* const forceAtPosScene = sdk->createScene(forceAtPosSceneDesc);
+	if(!forceAtPosScene)
+		return nxFail("force-at-position scene creation failed");
+	forceAtPosScene->setTiming(1.0f / 60.0f, 1, NX_TIMESTEP_FIXED);
+	NxBodyDesc forceAtPosBody;
+	forceAtPosBody.setToDefault();
+	NxActorDesc forceAtPosActorDesc;
+	forceAtPosActorDesc.setToDefault();
+	forceAtPosActorDesc.body = &forceAtPosBody;
+	forceAtPosActorDesc.density = 2.0f;
+	forceAtPosActorDesc.shapes.pushBack(&effectorStepShape);
+	NxActor* const forceAtPosActor = forceAtPosScene->createActor(forceAtPosActorDesc);
+	if(!forceAtPosActor)
+		return nxFail("force-at-position actor creation failed");
+	forceAtPosActor->addLocalForceAtPos(NxVec3(1.0f, -0.25f, 0.5f),
+		NxVec3(0.25f, 0.5f, 0.125f), NX_IMPULSE);
+	forceAtPosScene->simulate(1.0f / 60.0f);
+	const bool forceAtPosReady = forceAtPosScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+	const bool forceAtPosFetched = forceAtPosScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+	if(!forceAtPosReady || !forceAtPosFetched)
+		return nxFail("force-at-position results were not ready and fetched");
+	NxQuat forceAtPosOrientation;
+	NxVec3 forceAtPosAngularVelocity;
+	forceAtPosActor->getGlobalOrientationQuat(forceAtPosOrientation);
+	forceAtPosActor->getAngularVelocity(forceAtPosAngularVelocity);
+	printf("simulation force-at-position impulse ready=%u fetched=%u q=%08x.%08x.%08x.%08x w=%08x.%08x.%08x\n",
+		forceAtPosReady ? 1u : 0u, forceAtPosFetched ? 1u : 0u,
+		nxFloatBits(forceAtPosOrientation.x), nxFloatBits(forceAtPosOrientation.y),
+		nxFloatBits(forceAtPosOrientation.z), nxFloatBits(forceAtPosOrientation.w),
+		nxFloatBits(forceAtPosAngularVelocity.x), nxFloatBits(forceAtPosAngularVelocity.y),
+		nxFloatBits(forceAtPosAngularVelocity.z));
+	sdk->releaseScene(*forceAtPosScene);
 
 	// Exercise a three-body contact island settling through the public solver
 	// path, beyond the single impact pair.

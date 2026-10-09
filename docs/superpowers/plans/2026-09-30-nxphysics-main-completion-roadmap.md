@@ -1,3 +1,16 @@
+### Continuation — effector tick order and angular damping (2026-10-09)
+
+The approved off-center spring/damper fixture showed matching linear velocity
+but divergent angular velocity. IDA review of `phys_fn_000655` (`0x137e0`)
+confirmed that the oracle dispatches effector slot 2 after active-root
+collection and before `phys_fn_000610` integrates bodies. The candidate had
+dispatched effectors after integration, so its impulse missed `000726`'s angular
+damping for that substep. Moving the dispatch to the oracle position restores
+bit-exact linear velocity, angular velocity, and quaternion outputs with
+default damping. Registered Phase 5, 6, and 7 gates all pass (20, 9, and 14
+targets; zero stdout delta and exact stderr). Evidence:
+`docs/reconstruction/novodex-physics/evidence/effector-step-order-angular-damping-2026-10-09.md`.
+
 ### Continuation — spherical solver public pendulum and row closure (2026-10-08)
 
 Added an eight-step public spherical-joint pendulum fixture to
