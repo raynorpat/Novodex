@@ -13,3 +13,7 @@ Task M5.5: complete (D6 public setLimitPoint row phys_fn_004447; staged-pair rea
 Task M5.6: complete (D6 addLimitPlane refusal row phys_fn_004449; public return/iterator output exact at baseline/restored, forced-true return mutation caught with stdout_delta=2; registered Phase 6/7 assertion added; coverage-floor and registry tests pass; completion-report tests 11/11; work-unit tests 12/12; inventory pass (6,338 functions, 5,138 data objects, 0 unexplained); 80 public headers unchanged).
 
 Task M5.7: complete (D6 public setName row phys_fn_004453; staged-pair readback exact at baseline/restored, no-op mutation caught with stdout_delta=2; registered Phase 6/7 assertion added; coverage-floor and registry tests pass; completion-report tests 11/11; work-unit tests 12/12; inventory pass (6,338 functions, 5,138 data objects, 0 unexplained); 80 public headers unchanged).
+
+### M5.8 — D6 descriptor save row
+
+Closed `phys_fn_004459` (`NpD6Joint::saveToDesc`) from the existing public D6 descriptor-save fixture. A no-op mutation was caught by `NxPhysicsJointStagedPairTests` at `stdout_delta=92`; restored output is exact. No new coverage assertion was added.

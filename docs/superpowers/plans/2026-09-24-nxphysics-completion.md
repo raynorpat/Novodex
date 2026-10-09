@@ -361,3 +361,8 @@ The current runners hard-code the primary repository/build roots; M1 must parame
 **M5 D6 limit-plane follow-up, 2026-10-09:** The D6 public fixture observes the pinned SDK's ddLimitPlane refusal and empty iterator. A forced-true return mutation is caught; evidence records that this closes the refusal result for the exercised case, not successful D6 insertion. Evidence: docs/reconstruction/novodex-physics/evidence/phase6-joint-row004449-d6-limit-plane-refusal.md.
 
 **M5 D6 name setter follow-up, 2026-10-09:** Added a public D6 setName/getName check. A no-op setter mutation leaves a null name and is caught by the staged-pair differential (stdout_delta=2); the restored control is exact. Evidence: docs/reconstruction/novodex-physics/evidence/phase6-joint-row004453-d6-set-name.md.
+
+
+### M5.8 — D6 descriptor save row
+
+Closed `phys_fn_004459` (`NpD6Joint::saveToDesc`) using the existing D6 staged-pair save/readback fixture. The no-op mutation was detected at `stdout_delta=92`; the restored differential is exact. This adds no new fixture line or gate assertion. See `docs/reconstruction/novodex-physics/evidence/phase6-joint-row004459-d6-save-to-desc.md`.

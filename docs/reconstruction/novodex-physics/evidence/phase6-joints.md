@@ -9831,3 +9831,5 @@ Measurement index: `phys_fn_004449 stdout_delta=2`.
 
 The public D6 staged-pair case sets the name to `d6:phase6-setname` and reads it back through `getName`. A no-op mutation in `NpD6Joint::setName` leaves the name null; the registered `NxPhysicsJointStagedPairTests` differential catches the change with both processes exiting zero, `stdout_delta=2`, and exact stderr. The restored control returns to `stdout_delta=0` and exact stderr. Evidence: `evidence/phase6-joint-row004453-d6-set-name.md`.
 Measurement index: `phys_fn_004453 stdout_delta=2`.
+
+The public D6 staged-pair case closes `phys_fn_004459` (`NpD6Joint::saveToDesc`): it saves its descriptor and records the saved anchors. Replacing `NpD6Joint::saveToDesc` with a no-op changes the anchor fields to zero; the registered `NxPhysicsJointStagedPairTests` differential catches it with both processes exiting zero, `stdout_delta=92`, and exact stderr. The restored control is exact (`stdout_delta=0`). Evidence: `evidence/phase6-joint-row004459-d6-save-to-desc.md`.
