@@ -248,7 +248,11 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
 
         for target, expected in manifest["targets"].items():
             phases = [phase for phase, targets in phase_targets.items() if target in targets]
-            self.assertEqual(len(phases), 1, "%s must belong to exactly one phase" % target)
+            if target == "NxPhysicsJointSupportTests":
+                self.assertEqual(phases, ["6", "7"],
+                    "the shared joint-support oracle differential closes Phase 6 and remains in Phase 7")
+            else:
+                self.assertEqual(len(phases), 1, "%s must belong to exactly one phase" % target)
             self.assertIn(target, registered)
             lines = coverage[target]
             source_path = TOOLS.parents[3] / expected["fixture_source"]

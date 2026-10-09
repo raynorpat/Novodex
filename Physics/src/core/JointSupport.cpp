@@ -25,8 +25,8 @@
 // are the core dump's (effector-and-coredump Task 3b, units/effector-
 // coredump-contract.md "### Readers and whether the candidate has them"); they
 // are members of the body view JointActorBody (core/Joint.h). 000754 is now
-// written below (Task 6, 21b275d);
-// 004167 remains a deferred stub. 000713 (written by effector-and-coredump
+// written below (Task 6, 21b275d); 004167 is written below as the island-object
+// teardown row. 000713 (written by effector-and-coredump
 // Task 2) and 000791 (written from the listing in scene-raycast Task 4, the one
 // definition since the second merge of main; it calls NpActor.cpp's 000782)
 // are the spring-and-damper solver slot's, and 000722 the body constructor's
@@ -1091,8 +1091,38 @@ void Row000778Fixture::row000778(void* joint, void** jointArray)
 	}
 
 // phys_fn_004167 (0x0009ad10, 156 B)
-// (deferred: owner gap Joint.cpp..D6Joint.cpp)
+static void nxReleaseIslandObjectElement(void* element)
+	{
+	typedef void (__thiscall *ReleaseFn)(void*, NxU32);
+	void** vtable = *reinterpret_cast<void***>(element);
+	reinterpret_cast<ReleaseFn>(vtable[0])(element, 1);
+	}
+
 void Row004167Fixture::row004167()
 	{
-	NX_ASSERT(0);
+	void** cursor = mSecondBegin;
+	while(cursor != mSecondEnd)
+		{
+		void* element = *cursor++;
+		if(element)
+			nxReleaseIslandObjectElement(element);
+		}
+	if(mSecondBegin)
+		nxFoundationSDKAllocator->free(mSecondBegin);
+	mSecondBegin = 0;
+	mSecondEnd = 0;
+	mSecondCapacity = 0;
+
+	cursor = mFirstBegin;
+	while(cursor != mFirstEnd)
+		{
+		void* element = *cursor++;
+		if(element)
+			nxReleaseIslandObjectElement(element);
+		}
+	if(mFirstBegin)
+		nxFoundationSDKAllocator->free(mFirstBegin);
+	mFirstBegin = 0;
+	mFirstEnd = 0;
+	mFirstCapacity = 0;
 	}

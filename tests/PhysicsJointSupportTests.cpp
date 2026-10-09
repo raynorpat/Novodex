@@ -14,6 +14,7 @@
 #include "core/JointSupport.h"
 #include "Scene.h"
 #include "NxUserAllocator.h"
+#include "NxFoundationSDK.h"
 
 // Unused JointSupport.cpp helper rows reference these host functions. The
 // fixture drives only 004399, which has no Foundation allocator or actor-force
@@ -190,6 +191,141 @@ static unsigned nxRunCase(unsigned char* oracleBase, NxReal maxForce,
 	return nxCompareFixture(oracle, candidate, oracleDigest, candidateDigest);
 	}
 
+class JointSupportAllocator : public NxUserAllocator
+	{
+	public:
+	JointSupportAllocator(): frees(0) {}
+	void* mallocDEBUG(size_t size, const char*, int) { return ::malloc(size); }
+	void* malloc(size_t size) { return ::malloc(size); }
+	void* realloc(void* memory, size_t size) { return ::realloc(memory, size); }
+	void free(void* memory)
+		{
+		++frees;
+		::free(memory);
+		}
+	unsigned frees;
+	};
+
+static unsigned gIslandObjectCalls;
+static unsigned gIslandObjectBadFlags;
+static unsigned gIslandObjectOrder;
+
+class IslandObjectDeleteProbe
+	{
+	public:
+	IslandObjectDeleteProbe(unsigned id): mId(id) {}
+	virtual void release(unsigned flags)
+		{
+		++gIslandObjectCalls;
+		gIslandObjectBadFlags += flags != 1u;
+		gIslandObjectOrder = gIslandObjectOrder * 33u + mId;
+		}
+	unsigned mId;
+	};
+
+struct IslandObjectRaw
+	{
+	void** mFirstBegin;
+	void** mFirstEnd;
+	void** mFirstCapacity;
+	NxU32 mUnknown00c;
+	void** mSecondBegin;
+	void** mSecondEnd;
+	void** mSecondCapacity;
+	};
+
+typedef NxFoundationSDK* (NX_CALL_CONV *CreateFoundationSDKFn)(NxU32,
+	NxUserOutputStream*, NxUserAllocator*);
+typedef void (__thiscall *OracleIslandObjectReleaseFn)(void*);
+
+static void nxInitIslandObject(IslandObjectRaw& object, NxUserAllocator& allocator,
+	IslandObjectDeleteProbe& first, IslandObjectDeleteProbe& second,
+	IslandObjectDeleteProbe& third)
+	{
+	void** firstArray = static_cast<void**>(allocator.malloc(3 * sizeof(void*), NX_MEMORY_PERSISTENT));
+	void** secondArray = static_cast<void**>(allocator.malloc(2 * sizeof(void*), NX_MEMORY_PERSISTENT));
+	firstArray[0] = &first;
+	firstArray[1] = 0;
+	firstArray[2] = &second;
+	secondArray[0] = &third;
+	secondArray[1] = 0;
+	object.mFirstBegin = firstArray;
+	object.mFirstEnd = firstArray + 3;
+	object.mFirstCapacity = firstArray + 3;
+	object.mUnknown00c = 0xfeedbeefu;
+	object.mSecondBegin = secondArray;
+	object.mSecondEnd = secondArray + 2;
+	object.mSecondCapacity = secondArray + 2;
+	}
+
+static bool nxIslandObjectCleared(const IslandObjectRaw& object)
+	{
+	return !object.mFirstBegin && !object.mFirstEnd && !object.mFirstCapacity
+		&& object.mUnknown00c == 0xfeedbeefu
+		&& !object.mSecondBegin && !object.mSecondEnd && !object.mSecondCapacity;
+	}
+
+static int nxRunIslandObjectTeardown(unsigned char* oracleBase)
+	{
+	HMODULE foundationModule = GetModuleHandleW(L"NxFoundation.dll");
+	CreateFoundationSDKFn createFoundation = foundationModule ?
+		reinterpret_cast<CreateFoundationSDKFn>(GetProcAddress(foundationModule,
+			"NxCreateFoundationSDK")) : 0;
+	if(!createFoundation)
+		return nxFail("NxCreateFoundationSDK missing for island-object teardown differential");
+	JointSupportAllocator allocator;
+	NxFoundationSDK* foundation = createFoundation(NX_FOUNDATION_SDK_VERSION, 0, &allocator);
+	if(!foundation)
+		return nxFail("NxCreateFoundationSDK failed for island-object teardown differential");
+	nxFoundationSDKAllocator = &allocator;
+
+	IslandObjectRaw oracle = {};
+	IslandObjectRaw candidate = {};
+	IslandObjectDeleteProbe oracleFirst(101), oracleSecond(102), oracleThird(103);
+	IslandObjectDeleteProbe candidateFirst(101), candidateSecond(102), candidateThird(103);
+	nxInitIslandObject(oracle, foundation->getAllocator(), oracleFirst, oracleSecond, oracleThird);
+	unsigned oracleFreesBefore = allocator.frees;
+	gIslandObjectCalls = gIslandObjectBadFlags = gIslandObjectOrder = 0;
+	reinterpret_cast<OracleIslandObjectReleaseFn>(oracleBase + 0x0009ad10)(&oracle);
+	const unsigned oracleCalls = gIslandObjectCalls;
+	const unsigned oracleBadFlags = gIslandObjectBadFlags;
+	const unsigned oracleOrder = gIslandObjectOrder;
+	const unsigned oracleFrees = allocator.frees - oracleFreesBefore;
+	const bool oracleCleared = nxIslandObjectCleared(oracle);
+
+	nxInitIslandObject(candidate, allocator, candidateFirst, candidateSecond, candidateThird);
+	unsigned candidateFreesBefore = allocator.frees;
+	gIslandObjectCalls = gIslandObjectBadFlags = gIslandObjectOrder = 0;
+	reinterpret_cast<Row004167Fixture*>(&candidate)->row004167();
+	const unsigned candidateCalls = gIslandObjectCalls;
+	const unsigned candidateBadFlags = gIslandObjectBadFlags;
+	const unsigned candidateOrder = gIslandObjectOrder;
+	const unsigned candidateFrees = allocator.frees - candidateFreesBefore;
+	const bool candidateCleared = nxIslandObjectCleared(candidate);
+
+	unsigned mismatches = 0;
+	mismatches += oracleCalls != candidateCalls;
+	mismatches += oracleBadFlags != candidateBadFlags;
+	mismatches += oracleOrder != candidateOrder;
+	mismatches += oracleFrees != candidateFrees;
+	mismatches += oracleCleared != candidateCleared;
+	const bool oracleOk = oracleCalls == 3 && oracleBadFlags == 0
+		&& oracleFrees == 2 && oracleCleared;
+	printf("joint_support island_teardown oracle=%u/%u/%08x/%u candidate=%u/%u/%08x/%u oracle_cleared=%u candidate_cleared=%u mismatches=%u\n",
+		oracleCalls, oracleBadFlags, oracleOrder, oracleFrees,
+		candidateCalls, candidateBadFlags, candidateOrder, candidateFrees,
+		oracleCleared ? 1u : 0u, candidateCleared ? 1u : 0u, mismatches);
+
+	nxFoundationSDKAllocator = 0;
+	foundation->release();
+	if(!oracleOk)
+		return nxFail("oracle island-object teardown fixture did not exercise the expected contract");
+	if(mismatches)
+		return nxFail("candidate island-object teardown differs from the oracle");
+	printf("joint_support coverage name=island_object_teardown calls=3 frees=2 cleared=1\n");
+	return 0;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	wchar_t pairDirectory[MAX_PATH];
@@ -222,6 +358,9 @@ int wmain(int argc, wchar_t** argv)
 		oracleDigest, candidateDigest, mismatches);
 	printf("joint_support inputs=2 digest=%016llx\n", inputDigest);
 	printf("joint_support coverage name=kind5_solver cases=2 passes=1,final callback=slot3\n");
+	int islandStatus = nxRunIslandObjectTeardown(base);
+	if(islandStatus)
+		return islandStatus;
 	if(nxReportPairIdentity(pairDirectory))
 		return 1;
 	return mismatches ? 1 : 0;

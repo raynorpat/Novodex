@@ -54,7 +54,7 @@ switch is reachable from the public API with a valid descriptor), but the rows k
 | 000758 | 0x17630 | 214 | 2 | body +0x124 quaternion (x, y, z, w) to the +0x134 3x3 | +0x134..+0x154 | revolute 004356 (0xa9f2a), 000770 (0x1840c), 000772 (0x18514) | write, `Row000758Fixture::row000758` (x87: spills 2yy, 2xz, 2yw, 2yz, 1 - 2xx) |
 | 000022 | 0x1840 | 27 | 2 | refresh an actor body after a pose change | 000754 on +0x08; then the +0x10 object's slot 6 with the argument (tail jump) when set | revolute 004356 (0xa9f3d), spherical 004298, D6 004207, 000615 (0x11402), 000774 (0x18559) | write, `Row000022Fixture::row000022` |
 | 000754 | 0x17010 | 1027 | 7 | body pose from the mass pose (x87) | - | 000022 | write, `Row000754Fixture::row000754` (written by Task 6, 21b275d) |
-| 004167 | 0x9ad10 | 156 | 6 | island-object teardown | - | 000760 | defer: `NX_ASSERT(0)` stub `Row004167Fixture::row004167` (a silent no-op in Release) |
+| 004167 | 0x9ad10 | 156 | 6 | island-object teardown | - | 000760 | write, `Physics/src/core/JointSupport.cpp`; direct oracle differential and no-op mutation evidence in `evidence/phase6-joint-row004167-island-teardown.md` |
 | 000604 / 000606 | 0x110b0 / 0x110f0 | 57 / 158 | 7 | Scene destructor helper: 000760 over +0x56c, then destroy both joint lists | - | 000663 | not claimed; the joint-list loops are reproduced inside the candidate's `nxSceneDelete` |
 
 The joint side's fixtures `Row000571Fixture`, `Row000598Fixture` and `Row000633Fixture` are

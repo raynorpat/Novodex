@@ -4,7 +4,7 @@
     "NxPhysicsJointSupportTests": {
       "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
       "fixture_source": "tests/PhysicsJointSupportTests.cpp",
-      "fixture_source_sha256": "e73e42f391e36851c1823299eb03b8ba68ebbc77305f27ef6ef7ff2b63d5f544",
+      "fixture_source_sha256": "304d4d7ed3894b3a20221e1af8d9487032f04f9cb20be3c5d97abe20e0626fd0",
       "cases": 2,
       "input_digest_fnv64": "85a7065a061c36cd",
       "oracle_output_digest_fnv64": "88b713b7bc0870c9"

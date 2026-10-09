@@ -71,11 +71,11 @@ Numbers are those of `joint-families.md` `## Open items carried forward`.
   000633) is not the public one: 000633 runs first and clears `mScene`, so 004095 skips it.
 - **2. Deferred Scene rows.** Closed by Task 2 for 000022, 000571, 000598, 000633 and 000758:
   all five have product bodies (000571/000598/000633 as `NxSceneInternal` members in
-  Scene.cpp, 000022/000758 in core/JointSupport.cpp). 000022's first callee, 000754 (1,027 B,
-  x87), is still a deferred `NX_ASSERT(0)` stub (a silent no-op in Release), as is 004167 behind
-  000760's island-object arm. 000571, 000598 and 000758 did not run in the trace (no step, break
-  or projection); 000022's breakpoint was not hit either, and its callers (004207, 004298,
-  004356) have no dynamic proof.
+  Scene.cpp, 000022/000758 in core/JointSupport.cpp). 000022's first callee, 000754 (1,027 B, x87) remains a deferred `NX_ASSERT(0)` stub (a silent no-op in Release).
+  Island-object teardown row 004167 was subsequently reconstructed and directly mutation-falsified;
+  see `evidence/phase6-joint-row004167-island-teardown.md`. 000571, 000598 and 000758 did not
+  run in the trace (no step, break or projection); 000022's breakpoint was not hit either, and its
+  callers (004207, 004298, 004356) have no dynamic proof.
 - **9. `Joint::mScene` (+0x30) is never written.** Closed by Task 2. 000661 writes it last on
   every registration (27 in the trace), 000633 and the scene teardown clear it.
 - **8. Body +0x204 is unbuilt.** Closed by Task 3 as far as the candidate's paths reach. The
@@ -240,7 +240,7 @@ none still open.
 | # | Item | Disposition | Evidence |
 |---|---|---|---|
 | 1 | Release is unwired | Closed | Task 2 (4458316): 000299 -> 000653 -> 000633 wired; all 25 releases and every family's deleting destructors in `evidence/joint-open-items-trace-release.txt`. |
-| 2 | Deferred Scene rows 000022, 000571, 000598, 000633, 000758 | Closed | Task 2 (4458316) wrote all five; 000022's callee 000754 written by Task 6 (21b275d). 000022, 000571, 000598 and 000758 ran in the Task 6 trace. Left: 004167 (000760's island-object arm), still an `NX_ASSERT(0)` stub, listed below. |
+| 2 | Deferred Scene rows 000022, 000571, 000598, 000633, 000758 | Closed | Task 2 (4458316) wrote all five; 000022's callee 000754 written by Task 6 (21b275d). 000022, 000571, 000598 and 000758 ran in the Task 6 trace. The remaining 000754 stub is tracked separately. |
 | 3 | Rotated-body conventions untested | Closed | Task 4 (19251a2, 686cce0, 6da86f1): every family over the rotated and posed fixtures matches; the joint rows' conventions were right; four creation-side and three setter-side candidate defects fixed. Residuals (000164, setCMassGlobal*) listed below. |
 | 4 | No simulation-path execution | Partly closed | Task 6 (a7635da, 39b40ff): the solver, impulse, projection and visualization slots of every family, D6's dump rows and the shared rows run in both DLLs and match. Still open: 004133 (only the step's 000728 calls it), 004087 (slot 3, not driven), and the step itself (000600, 000611, 000613, 000708, 004174, 004176, 000728), which the candidate does not have. |
 | 5 | PC64 narrowing at the naked x87 helpers | Partly closed | Task 6: every step, impulse and projection call re-run under 0x0f7f over the 14 joints, the row of every listed operand included; no difference. The mechanism remains, so an input on a rounding boundary could still show it; no registered case does. |
@@ -266,7 +266,7 @@ Items found during the plan:
 | setCMassGlobalPose/Position/Orientation not tested on rotated bodies | Open | Task 4: they do not call 000768, and `NxPhysicsActorCMassTests` does not drive them rotated. |
 | 004133 and slot 3 (004087) not driven | Open | Task 6: no table call reaches 004133 (only 000728 does); the harness does not call slot 3. Part of item 4's remainder. |
 | Pulley's two-dynamic-body 004228 path not exercised | Open | Task 6: pulley's body 0 is the world, so the path that reads the uninitialised lever (joint-families `## Oracle quirks reproduced`) does not run. |
-| 004167 (000760's island-object arm) still an `NX_ASSERT(0)` stub | Open | Task 2; silent in Release (see "Deferred stubs are silent in Release" above). |
+| 004167 (000760's island-object arm) | Closed | Reconstructed in `Physics/src/core/JointSupport.cpp`; direct oracle differential and no-op mutation are recorded in `evidence/phase6-joint-row004167-island-teardown.md`. |
 | Scene teardown free order (+0x5b8, +0x58c) | Open | Task 2 review; no gate observes it; belongs with a faithful 000663. |
 | Throwaway mutation copy `D:/FlamingEnt__/novodex-analysis/t4mut` (Task 4 closure re-measurement, ~131 MB) is still on disk | Open | Needs deleting by the user; the subagent's deletion was denied. |
 | SSE2 `double`/CRT sqrt in JointDesc.cpp, the Scene.cpp creation path and NpActorDynamicMath.h | Open (unreachable under 0x0f7f) | Task 4 review: exact at 0x027f, the only word these rows run under in the candidate. |

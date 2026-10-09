@@ -65,7 +65,7 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
     '3' = @('NxPhysicsCollisionTests')
     '4' = @('NxPhysicsAssetTests', 'NxPhysicsThirdPartyTests')
     '5' = @('NxPhysicsObjectLayoutTests', 'NxPhysicsShapeVtableTests')
-    '6' = @('NxPhysicsJointDescTests', 'NxPhysicsJointTests', 'NxPhysicsObjectLayoutTests')
+    '6' = @('NxPhysicsJointDescTests', 'NxPhysicsJointTests', 'NxPhysicsObjectLayoutTests', 'NxPhysicsJointSupportTests')
     '7' = @('NxPhysicsJointSupportTests')
     '8' = @()
 }
@@ -4150,7 +4150,9 @@ $NxRequiredCoverageLines = [ordered] @{
     # the gate fails naming them.
     'NxPhysicsJointSupportTests' = @(
         'joint_support kind5 cases=2 oracle=88b713b7bc0870c9 candidate=88b713b7bc0870c9 mismatches=0',
-        'joint_support inputs=2 digest=85a7065a061c36cd'
+        'joint_support inputs=2 digest=85a7065a061c36cd',
+        'joint_support island_teardown oracle=3/0/0001c392/2 candidate=3/0/0001c392/2 oracle_cleared=1 candidate_cleared=1 mismatches=0',
+        'joint_support coverage name=island_object_teardown calls=3 frees=2 cleared=1'
     )
     'NxPhysicsCollisionTests' = @(
         'collision generator=xorshift32 pair_iterations=60000 aimed_iterations=60000',
@@ -5682,7 +5684,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1239  # previous 1238 plus the D6 public global-anchor readback
+    '6' = 1245  # previous 1241 plus island-object teardown oracle and coverage assertions
                # previous 1234 plus three contended D6 drive write-lock reports
                # previous 1233 plus the D6 contended drive-position write-lock report
                # previous 1232 plus the D6 name setter readback
@@ -5701,7 +5703,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1430  # previous 1429 plus the D6 public global-anchor readback
+    '7' = 1434  # previous 1430 plus island-object teardown oracle and coverage assertions
                # previous 1425 plus three contended D6 drive write-lock reports
                # previous 1424 plus the D6 contended drive-position write-lock report
                # previous 1423 plus the D6 name setter readback

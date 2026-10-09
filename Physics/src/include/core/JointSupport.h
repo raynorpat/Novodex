@@ -13,7 +13,7 @@
 // 004389/004393 decision notes), and the body-record rows from the gap units
 // the joint code reaches (000022, 000712, 000758, 000760, 000778, written by
 // joint-open-items Task 2; 000754 is also written below, by Task 6 (21b275d),
-// with 004167 still deferred). The Scene
+// and 004167 by the island-object teardown continuation). The Scene
 // rows the joint code calls (000571, 000598, 000633, 000661) are NxSceneInternal
 // members in Physics/src/Scene.cpp (units/joint-open-items-contract.md
 // "## Scene joint rows"). Every name below is by offset or row ID: the listing
@@ -249,12 +249,20 @@ struct Row000778Fixture
 	void row000778(void* joint, void** jointArray);
 	};
 
-// phys_fn_004167 (0x0009ad10, 156 B; owner gap Joint.cpp..D6Joint.cpp;
-// deferred). Thiscall on the island object at body record +0x1e0, no stack
-// arguments; phys_fn_000760 calls it before freeing the object. Its stub
-// is NX_ASSERT(0): a silent no-op in Release (/DNDEBUG).
+// phys_fn_004167 (0x0009ad10, 156 B; owner gap Joint.cpp..D6Joint.cpp).
+// Thiscall on the 0x1c-byte island object at body record +0x1e0, no stack
+// arguments; phys_fn_000760 calls it before freeing the object. It releases
+// each element in the two pointer arrays, frees their storage, and clears the
+// array triples while preserving the intervening dword.
 struct Row004167Fixture
 	{
+	void** mFirstBegin;
+	void** mFirstEnd;
+	void** mFirstCapacity;
+	NxU32 mUnknown00c;
+	void** mSecondBegin;
+	void** mSecondEnd;
+	void** mSecondCapacity;
 	void row004167();
 	};
 

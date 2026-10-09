@@ -4,11 +4,11 @@
   "format": "joint_support",
   "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
   "fixture_source": "tests/PhysicsJointSupportTests.cpp",
-  "fixture_source_sha256": "e73e42f391e36851c1823299eb03b8ba68ebbc77305f27ef6ef7ff2b63d5f544",
+  "fixture_source_sha256": "304d4d7ed3894b3a20221e1af8d9487032f04f9cb20be3c5d97abe20e0626fd0",
   "proof_lines_sha256": "01d33a9a82e816a3a73afad61606687e7e4bbf4eec8b3e2c8bf79f801a4dd264",
-  "baseline_sha256": "03b0ea7187b0a7358e060cd177717d56147f717ea0e3405c319ecbe04f282432",
+  "baseline_sha256": "78b0c8432e615ffc0f9c96879986efcbeb5986b8f96e25b9095d7a8d5eb00eeb",
   "cases": 2,
   "input_digest_fnv64": "85a7065a061c36cd",
   "oracle_output_digest_fnv64": "88b713b7bc0870c9",
-  "proof_sha256": "d935cbef4dc478c0596ef5cbb1bd6c3ab1ee2db8cfc4443c6214e6eda22f3ed2"
+  "proof_sha256": "200e6202d3cdbba7a913cb588cdcfb37b9c2f3991ccb164e625cf90db9cef281"
 }

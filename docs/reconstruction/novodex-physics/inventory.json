@@ -14337,7 +14337,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2140",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 25 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2); also executed on the body-construction path (then Scene.cpp nxActorComputeMass, now DynamicBody::construct, 000797's order) under the effector staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 16 times in NxPhysicsEffectorTests (4 at body construction, 12 in the actor releases through 000632/000778 and 000776) against the staged candidate pair (NxPhysics.dll sha256 2f9815a105ac1fe5, identical to build/Release/NxPhysics.dll at the time of the trace), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 79/79 effector coverage lines); trace excerpt committed as evidence/effector-and-coredump-trace-effector.txt (effector-and-coredump Task 2; re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?row000760@Row000760Fixture@@QAEXXZ hit 1037 times (Life 24, DynF 4, BFlag 36, Dyn 20, DSet 32, Mom 48, Force 124, CMass 100, SMut 208, BodyC 28, JSP 157, JAll 10, JSlot 122, SRay 28, SVis 20, Eff 16, Dump 60); equal to the oracle row's count on every target.",
-      "notes": "The island-object arm (+0x1e0 non-null) calls phys_fn_004167, still a deferred `NX_ASSERT(0)` stub, which is a silent no-op in Release (NX_ASSERT is `assert`, and Release builds with /DNDEBUG); no body before a simulation step has an island object.",
+      "notes": "The island-object arm (+0x1e0 non-null) calls phys_fn_004167, reconstructed as the two-array island teardown in Physics/src/core/JointSupport.cpp and directly differentially tested by NxPhysicsJointSupportTests. This arm is not reached by the current public simulation path.",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
@@ -14372,7 +14372,7 @@
       "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/309",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2144",
-      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x177c0-0x17922: thiscall ret 4; the joint+8 test with the wake raise on the record itself (twice on the two-body path, both reading esi), the 000712 finds, the island-object release through 004167 and the Foundation allocator's free, root+0x1c4 increment, the +0x11c (jae) choice of the +0x1d8/+0x34 and +0x1dc/+0x38 lists, the 000716 merge and the single-body +0x1e4 |= 2 are reproduced by Island.cpp Row000762Fixture::row000762 (004167 is the existing deferred stub). Reachable only from the simulation step (000635); no public path while NpScene::simulate is a stub. Integration review: 0x177d1-0x177ec and 0x17856-0x17871 both read esi, so the record itself is woken twice on the two-body path (the contract row's 'wakes body1' is corrected). units/scene-raycast-contract.md",
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x177c0-0x17922: thiscall ret 4; the joint+8 test with the wake raise on the record itself (twice on the two-body path, both reading esi), the 000712 finds, the island-object release through 004167 and the Foundation allocator's free, root+0x1c4 increment, the +0x11c (jae) choice of the +0x1d8/+0x34 and +0x1dc/+0x38 lists, the 000716 merge and the single-body +0x1e4 |= 2 are reproduced by Island.cpp Row000762Fixture::row000762 (004167 is reconstructed in core/JointSupport.cpp and directly differentially tested). Reachable only from the simulation step (000635); no public path while NpScene::simulate is a stub. Integration review: 0x177d1-0x177ec and 0x17856-0x17871 both read esi, so the record itself is woken twice on the two-body path (the contract row's 'wakes body1' is corrected). units/scene-raycast-contract.md",
       "dynamic_proof": null,
       "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
       "implementation": "Physics/src/Island.cpp"
@@ -14409,7 +14409,7 @@
       "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/310",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2157",
-      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x17930-0x1798f: record in ecx, plain ret; the 000712 find, the +0x1e4 bit-1 test releasing the island object (004167, allocator free, +0x1e0=0) and calling 004172 cdecl, then 000722 on the record (a tail jmp in the oracle, a call here) are reproduced by Island.cpp Row000764Fixture::row000764; 000722 is core/JointSupport.cpp Row000722Fixture::row000722 (reconstructed, body-creation), 004172 the open stand-in nxBodyIslandRebuild004172Open (not reconstructed, no candidate anywhere). Reachable only from the simulation step (000635); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x17930-0x1798f: record in ecx, plain ret; the 000712 find, the +0x1e4 bit-1 test releasing the island object (004167, allocator free, +0x1e0=0; direct differential in NxPhysicsJointSupportTests) and calling 004172 cdecl, then 000722 on the record (a tail jmp in the oracle, a call here) are reproduced by Island.cpp Row000764Fixture::row000764; 000722 is core/JointSupport.cpp Row000722Fixture::row000722 (reconstructed, body-creation), 004172 the open stand-in nxBodyIslandRebuild004172Open (not reconstructed, no candidate anywhere). Reachable only from the simulation step (000635); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
       "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
       "implementation": "Physics/src/Island.cpp"
@@ -77553,13 +77553,15 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1574",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13832",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Thiscall, no stack arguments. Releases the non-null pointers in the array triple at +0x10 first, then the triple at +0x00; calls each element vtable slot 0 with flag 1; frees each non-null array begin pointer through nxFoundationSDKAllocator; clears each triple and preserves +0x0c.",
+      "dynamic_proof": "NxPhysicsJointSupportTests directly calls the pinned oracle RVA 0x0009ad10 and the candidate fixture over identical scratch objects. Baseline: oracle and candidate each release 3 elements in order 103,101,102 with flag 1, free 2 arrays, preserve +0x0c and clear both array triples; mismatches=0. A no-op candidate mutation emits candidate=0/0/00000000/0, candidate_cleared=0, mismatches=4 and exits 1. The gate pins the oracle and coverage lines.",
+      "notes": "Island-object layout is 0x1c bytes; the intervening +0x0c dword is preserved. Direct scratch-object probe exercises the destructor without requiring the unfinished simulation path.",
+      "implementation": "Physics/src/core/JointSupport.cpp",
+      "implementation_symbol": "?row004167@Row004167Fixture@@QAEXXZ"
     },
     {
       "id": "phys_fn_004168",
