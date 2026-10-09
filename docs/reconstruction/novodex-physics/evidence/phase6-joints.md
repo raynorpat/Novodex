@@ -9403,3 +9403,15 @@ The fixture and full gate results are recorded in
 ## Phase 6 closure measurement — spherical solver (`phys_fn_004296`)
 
 The public eight-step spherical pendulum simulation catches `phys_fn_004296`'s Y-bias sign mutation with `stdout_delta=24`; the restored DLL matches exactly. The fixture and gate results are recorded in `evidence/phase6-spherical-solver-004296.md`.
+
+## Phase 6 closure measurement — shared joint frame refresh (phys_fn_004097)
+
+The shared Joint::refreshBodyFrame implementation for phys_fn_004097 (RVA 0x00095e50) is exercised by the rotated multi-family fixture in the registered NxPhysicsJointStagedPairTests staged-pair differential. In a throwaway git archive copy, adding 1.0 to the refreshed world-anchor X assignment was caught with stdout_delta=404 while both processes exited 0 and stderr remained exact. The restored clean build passed with stdout_delta=0 and exact stderr. Detailed run notes: evidence/phase6-joint-frame-refresh-004097.md.
+
+## Phase 6 closure measurement — effector internal getter (phys_fn_003952)
+
+The registered NxPhysicsEffectorTests staged-pair differential reaches phys_fn_003952 while observing internal effector state. In a throwaway archive, changing the returned pointer by +4 bytes is caught with stdout_delta=49 (oracle exit 0; candidate access violation). The restored control is exact with stdout_delta=0 and both processes exiting 0. Detailed evidence: evidence/phase6-effector-getInternal-003952.md.
+
+## Phase 6 closure measurement — shared joint getters (phys_fn_004070, phys_fn_004078)
+
+The registered NxPhysicsJointStagedPairTests rotated multi-family fixture catches an mType + 1 mutation in phys_fn_004070 with stdout_delta=3307 and candidate access violation, and an XOR-1 state mutation in phys_fn_004078 with stdout_delta=244. Both restored controls pass exactly with both processes exiting zero. Details: evidence/phase6-joint-004070-getter.md and evidence/phase6-joint-004078-getter.md.
