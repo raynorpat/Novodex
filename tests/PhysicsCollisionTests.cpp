@@ -12405,6 +12405,7 @@ static unsigned nxDriveTask2lMeshHeightfield(unsigned char* base, Nx2iSide* side
 	{
 	typedef void (__cdecl * EntryFn)(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
 	const EntryFn oracle = (EntryFn)(base + 0x00046510);
+	const EntryFn dispatcher = (EntryFn)(base + 0x00046ab0);
 	if(!nx2iFoundationBegin())
 		return 1;
 	static unsigned char shapeStore[2][2][kShapeBytes];
@@ -12494,6 +12495,29 @@ static unsigned nxDriveTask2lMeshHeightfield(unsigned char* base, Nx2iSide* side
 		if(world[0].sink.contactCount) ++withContacts;
 		++cases;
 		}
+	// Exercise the top-level mesh/mesh dispatcher after the leaf-entry matrix
+	// so its shared cache and global contact state cannot alter those baselines.
+	for(unsigned side = 0; side < 2; ++side)
+		{
+		nxResetWorld(&world[side]);
+		NxCollisionShape* meshShape = (NxCollisionShape*) shapeStore[side][0];
+		NxCollisionShape* heightfieldShape = (NxCollisionShape*) shapeStore[side][1];
+		nxStageWorld(&world[side], meshShape, heightfieldShape, true, true, 3, 5, false, false, false);
+		}
+	nxSetControl(kControlDefault);
+	dispatcher(world[0].plane, world[0].sphere, &world[0].sink, sides[0].context);
+	nxSetControl(kControlDefault);
+	NxContactMeshMesh(world[1].plane, world[1].sphere, &world[1].sink, sides[1].context);
+	NxDigest dispatchedOracle, dispatchedCandidate;
+	nxDigestInit(&dispatchedOracle); nxDigestInit(&dispatchedCandidate);
+	nxFoldStream(&dispatchedOracle, &world[0]);
+	nxFoldStream(&dispatchedCandidate, &world[1]);
+	const unsigned dispatchMismatches = nxCompareStreams(&world[0], &world[1], 0) +
+		(world[0].sink.contactCount != world[1].sink.contactCount) +
+		(world[0].sink.streamCount != world[1].sink.streamCount);
+	mismatches += dispatchMismatches;
+	printf("collision name=contact_mesh_mesh_heightfield_dispatch index=- rva=0x00046ab0 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		dispatchedOracle.checks, dispatchedOracle.state, dispatchedCandidate.state, dispatchMismatches);
 	printf("collision name=contact_mesh_heightfield index=- rva=0x00046510 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
 	printf("collision coverage name=contact_mesh_heightfield pairs=%u cases=%u control_words=2 cases_with_contacts=%u\n",
@@ -12512,13 +12536,23 @@ static unsigned nxDriveTask2lMeshMeshContact(unsigned char* base, Nx2iSide* side
 	const EntryFn oracle = (EntryFn)(base + 0x00046ab0);
 	static unsigned char shapeStore[2][2][kShapeBytes];
 	static NxContactWorld world[2];
-	struct Fixture { unsigned mesh0, mesh1, orientation; float z; };
+	struct Fixture { unsigned mesh0, mesh1, orientation; float x, y, z; };
 	static const Fixture fixtures[] = {
-		{ 1, 1, 1, -2.0f },
-		{ 1, 3, 0, 0.0f },
-		{ 1, 4, 0, 0.0f },
-		{ 1, 1, 0, 0.0f },
-		{ 1, 1, 0, 12.0f }
+		{ 1, 1, 1, 0.0f, 0.0f, -2.0f },
+		{ 1, 3, 0, 0.0f, 0.0f, 0.0f },
+		{ 1, 4, 0, 0.0f, 0.0f, 0.0f },
+		{ 1, 1, 0, 0.0f, 0.0f, 0.0f },
+		{ 1, 1, 0, 0.0f, 0.0f, 12.0f },
+		{ 0, 1, 0, 0.0f, 0.0f, 0.0f },
+		{ 1, 0, 0, 0.0f, 0.0f, 0.0f },
+		{ 2, 3, 1, 0.0f, 0.0f, -1.0f },
+		{ 3, 2, 0, 0.5f, -0.5f, 0.0f },
+		{ 4, 5, 0, -0.5f, 0.5f, 0.0f },
+		{ 5, 4, 1, 0.0f, 0.0f, -1.0f },
+		{ 6, 7, 0, 0.0f, 0.0f, 0.0f },
+		{ 7, 6, 1, 0.0f, 0.0f, 0.0f },
+		{ 8, 9, 0, 0.0f, 0.0f, 0.0f },
+		{ 9, 8, 1, 0.0f, 0.0f, -2.0f },
 	};
 	if(!nx2iFoundationBegin())
 		return 1;
@@ -12535,6 +12569,8 @@ static unsigned nxDriveTask2lMeshMeshContact(unsigned char* base, Nx2iSide* side
 			NxCollisionShape* shape1 = (NxCollisionShape*)shapeStore[side][1];
 			nxIdentity(shape0); nxIdentity(shape1);
 			shape0->type = shape1->type = 4;
+			shape0->translation[0] = fixture.x;
+			shape0->translation[1] = fixture.y;
 			shape0->translation[2] = fixture.z;
 			if(fixture.orientation)
 				{
@@ -12581,6 +12617,8 @@ static unsigned nxDriveTask2lMeshMeshContact(unsigned char* base, Nx2iSide* side
 			oracleDigest.state, candidateDigest.state, caseMismatches, contacts, world[1].sink.contactCount,
 			oracleStreamCount, world[1].sink.streamCount, candidates);
 		}
+	printf("collision coverage name=contact_mesh_mesh fixtures=%u contact_cases=%u separated_cases=%u contacts=%u\n",
+			(unsigned) (sizeof(fixtures) / sizeof(fixtures[0])), oracleContactCases, separatedCases, oracleContacts);
 	for(unsigned side = 0; side < 2; ++side)
 		nx2lCandidateAabbTreeColliderDestruct(sides[side].context + 0x32c);
 	nx2iFoundationEnd();

@@ -2,6 +2,9 @@
 
 #include "NxPhysicsSDK.h"
 #include "ContactGeneration.h"
+
+extern "C" void __cdecl nxMeshHeightfieldContact(const NxCollisionShape*,
+	const NxCollisionShape*, NxContactSink*, void*);
 #include "NxMeshContactHelpers.h"
 #include "NxUtilities.h"
 #include "Opcode.h"
@@ -540,6 +543,39 @@ void __cdecl NxContactMeshMesh(const NxCollisionShape* shape0,
 	const unsigned char* image1 = *(const unsigned char* const*) &shape1->geometry[0];
 	if(!image0 || !image1)
 		return;
+	const bool convex0 = *(const void* const*) (image0 + 0xa0) != 0;
+	const bool convex1 = *(const void* const*) (image1 + 0xa0) != 0;
+	const bool terrain0 = *(const unsigned*) (image0 + 0x7c) != 0xff;
+	const bool terrain1 = *(const unsigned*) (image1 + 0x7c) != 0xff;
+	if(convex0 && convex1)
+		{
+		NxContactConvexConvex(shape0, shape1, sink, context);
+		return;
+		}
+	if(terrain0 || terrain1)
+		{
+		if(terrain0)
+			{
+			if(convex1) NxContactConvexHeightfield(shape1, shape0, sink, context);
+			else nxMeshHeightfieldContact(shape1, shape0, sink, context);
+			}
+		else
+			{
+			if(convex0) NxContactConvexHeightfield(shape0, shape1, sink, context);
+			else nxMeshHeightfieldContact(shape0, shape1, sink, context);
+			}
+		return;
+		}
+	if(convex0)
+		{
+		NxContactConvexMesh(shape0, shape1, sink, context);
+		return;
+		}
+	if(convex1)
+		{
+		NxContactConvexMesh(shape1, shape0, sink, context);
+		return;
+		}
 	const Opcode::Model* model0 = *(const Opcode::Model* const*) (image0 + 0x28);
 	const Opcode::Model* model1 = *(const Opcode::Model* const*) (image1 + 0x28);
 	if(!model0 || !model1 || !model0->GetMeshInterface() || !model1->GetMeshInterface())

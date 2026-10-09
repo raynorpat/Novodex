@@ -4902,6 +4902,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision name=contact_mesh_heightfield index=- rva=0x00046510 checks=528 oracle=9c87a6d409f98333',
         'collision coverage name=contact_mesh_heightfield pairs=3 cases=6 control_words=2 cases_with_contacts=2',
         'collision input name=contact_mesh_heightfield words=6690 input=27d2e99a4f0f02fc',
+        # convex-mesh gap Task 2l: top-level 001876 mesh/height-field dispatch.
+        'collision name=contact_mesh_mesh_heightfield_dispatch index=- rva=0x00046ab0 checks=112 oracle=02a1bea1e0d2343d',
+        # convex-mesh gap Task 2l: mesh/mesh contact and separated-pair fixture matrix.
+        'collision coverage name=contact_mesh_mesh fixtures=15 contact_cases=3 separated_cases=12 contacts=3',
         # convex-mesh gap Task 2m: P-Sphere sink reset, preallocated and growth paths.
         'collision name=contact_sink_reset index=- rva=0x0005b620 checks=416 oracle=80effc8beac4d285',
         'collision coverage name=contact_sink_reset preallocated_cases=6 growth_cases=2 control_words=2',
