@@ -559,7 +559,12 @@ static void nxBuildSceneA(NxScene& scene)
 	NxJoint* slider = nxJoint(scene, "cylindrical", cylindrical, compound, ball, NxVec3(2.0f, 1.5f, 1.5f),
 		NxVec3(0.0f, 1.0f, 0.0f));
 	if(slider)
+		{
 		slider->setBreakable(100.0f, 250.5f);
+		NxReal maxForce, maxTorque;
+		slider->getBreakable(maxForce, maxTorque);
+		printf("scene joint breakable cylindrical=%08x.%08x\n", nxU(maxForce), nxU(maxTorque));
+		}
 
 	NxSphericalJointDesc spherical;
 	spherical.twistLimit.low.value = -0.5f;

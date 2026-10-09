@@ -77,6 +77,7 @@ COLLISION_DIRECT_BLOCKS = ("box_corner", "sphere_box_data",
                            "mesh_contact_accumulator", "mesh_adjacent_normal",
                            "overlap_mesh_mesh", "contact_mesh_mesh_sphere_callback",
                            "contact_mesh_heightfield", "contact_sink_reset",
+                           "contact_plane_mesh",
                            # convex-mesh gap P-Sphere closure
                            "scene_owner_pair_remove", "scene_owner_pair_records", "scene_pruner_node_remove",
                            "scene_pruner_node_destroy", "scene_pruner_shape_remove",
@@ -499,7 +500,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"2": 4, "3": 533, "4": 260, "5": 2596, "6": 1098, "7": 1418}
+    MINIMUM = {"2": 4, "3": 537, "4": 260, "5": 2596, "6": 1098, "7": 1419}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()

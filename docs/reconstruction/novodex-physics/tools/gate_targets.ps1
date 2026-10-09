@@ -3547,6 +3547,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'scene joint revolute=created',
         'scene joint revolute_plain=created',
         'scene joint cylindrical=created',
+        'scene joint breakable cylindrical=42c80000.437a8000',
         'scene joint spherical=created',
         'scene joint spherical_world=created',
         'scene joint point_on_line=created',
@@ -5625,7 +5626,8 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 4  # actor-group flags, scene creation/indexing, release/survivor lookup and destructor frees
-    '3' = 534  # previous 533 plus public dynamic-body record-slot release assertion
+    '3' = 537  # previous 534 plus the three contact_plane_mesh registered lines
+               # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
@@ -5655,7 +5657,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1227  # Phase 6 coverage plus 129 oracle-row checks from ObjectLayoutTests
+    '6' = 1228  # previous 1227 plus the cylindrical-joint breakable getter assertion
+               # Phase 6 coverage plus 129 oracle-row checks from ObjectLayoutTests
                # previous 1,066 plus capsule-mesh staged-pair coverage
                # plus both joint-break callback return paths
                # plus compound-trigger per-shape enter/stay/leave lifecycle
@@ -5665,7 +5668,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1418  # exact registered Phase 7 coverage-line count
+    '7' = 1419  # exact registered Phase 7 coverage-line count
                # previous 1,388 plus the grounded Z-up controller probe
                # previous 1,387 plus capsule-mesh staged-pair coverage
                # plus the shared simulation fluid-manager destructor and enabled-invalid validation lines

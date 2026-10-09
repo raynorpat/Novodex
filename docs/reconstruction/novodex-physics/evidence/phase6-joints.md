@@ -9775,3 +9775,13 @@ In the clean isolated worktree at mainline commit d0614344, changed Joint::setBr
 
 The mutation existed only in the isolated worktree and was restored before the exact control run. Detailed evidence: `evidence/phase6-joint-row004074-breakable.md`.
 Measurement index: `phys_fn_004074 stdout_delta=20`.
+
+
+## Phase 6 closure measurement — joint break-threshold getter (phys_fn_004076)
+
+The cylindrical joint core-dump fixture now reads the configured break force and torque back through the public `NxJoint::getBreakable` method and prints the exact float words. The expected values are `42c80000` and `437a8000`.
+
+In the isolated worktree at mainline commit cf83177c, added a public `getBreakable` readback to the cylindrical joint core-dump fixture, then changed Joint::getBreakable (phys_fn_004076) to return zero for maxForce. The registered NxPhysicsCoreDumpTests staged-pair differential rejected the mutant: oracle_exit=0, candidate_exit=0, stdout_delta=2, stderr_exact=True. Restored Joint.cpp, rebuilt NxPhysics, and reran; the restored control had both exits 0, stdout_delta=0, and exact stderr.
+
+The mutation existed only in the isolated worktree and was restored before the exact control run. Detailed evidence: `evidence/phase6-joint-row004076-get-breakable.md`.
+Measurement index: `phys_fn_004076 stdout_delta=2`.
