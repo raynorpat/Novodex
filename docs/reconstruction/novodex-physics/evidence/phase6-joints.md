@@ -9436,3 +9436,18 @@ The core-dump fixture directly records the public getNextLimitPlane in-front res
 ## Phase 6 closure measurement — limit-plane cleanup (phys_fn_004089)
 
 The registered `NxPhysicsCoreDumpTests` staged-pair differential observes allocator balance after scene release. For row `phys_fn_004089`, replacing the free in `Joint::purgeLimitPlanes` with a no-op in a throwaway archive leaves 17 allocations versus the oracle's 14 and is caught with `stdout_delta=2`; both processes exit zero and stderr is exact. The restored control is exact with matching allocator counts. Detailed evidence: `evidence/phase6-joint-004089-purge-limit-planes.md`.
+
+
+## Phase 6 closure measurement — actor-pair effector constructor (phys_fn_003922)
+
+For row `phys_fn_003922`, initializing `ActorPairEffector::mBody[0]` to address 1 in a throwaway archive is caught by the registered `NxPhysicsEffectorTests` staged-pair differential: the oracle exits 0, the candidate access-violates, and `stdout_delta=78` with exact stderr. The restored worktree control passes exactly (`stdout_delta=0`, both exits zero). Detailed evidence: `evidence/phase6-effector-003922-actor-pair-constructor.md`.
+
+
+## Phase 6 closure measurement — ActorPairEffector setBodyRecords (phys_fn_003926)
+
+For row `phys_fn_003926`, In a throwaway git archive, skipped removing mBody[0] as an observer in ActorPairEffector::setBodyRecords. The registered NxPhysicsEffectorTests staged-pair differential exercised the body swap; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=29 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003926-setBodyRecords.md`.
+
+
+## Phase 6 closure measurement — ActorPairEffector destructor (phys_fn_003930)
+
+For row `phys_fn_003930`, In a throwaway git archive, skipped removing mBody[0] as an observer in ActorPairEffector::~ActorPairEffector. The registered NxPhysicsEffectorTests staged-pair differential exercised effector release; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=19 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr. Detailed evidence: `evidence/phase6-effector-003930-destructor.md`.
