@@ -9813,3 +9813,9 @@ Measurement index: `phys_fn_004439 stdout_delta=6`.
 
 The public D6 staged-pair case now sets break force and torque to non-default values and reads them back. Forwarding zero for maxForce in `NpD6Joint::setBreakable` changes the force word from `418a0000` to `00000000`; the registered `NxPhysicsJointStagedPairTests` differential catches the mutation with both processes exiting zero, `stdout_delta=4`, and exact stderr. The restored control returns to `stdout_delta=0` and exact stderr. Detailed evidence: `evidence/phase6-joint-row004445-d6-set-breakable.md`.
 Measurement index: `phys_fn_004445 stdout_delta=4`.
+
+
+## Phase 6 closure measurement — D6 limit-point setter (phys_fn_004447)
+
+The public D6 staged-pair case sets a non-default limit point and records the public getter result and point words. Forwarding a zero vector in `NpD6Joint::setLimitPoint` changes the observed point from `bf400000.3fc00000.40100000` to zero; the registered `NxPhysicsJointStagedPairTests` differential catches the mutation with both processes exiting zero, `stdout_delta=2`, and exact stderr. The restored control returns to `stdout_delta=0` and exact stderr. Detailed evidence: `evidence/phase6-joint-row004447-d6-set-limit-point.md`.
+Measurement index: `phys_fn_004447 stdout_delta=2`.

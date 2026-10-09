@@ -1145,6 +1145,14 @@ static void nxD6Case(NxScene& scene, NxActor* a, NxActor* b,
 			d6->getBreakable(breakForce, breakTorque);
 			printf("case=d6 index=%u breakable force=%08x torque=%08x\n", index,
 				nxU(breakForce), nxU(breakTorque));
+
+			const NxVec3 replacementLimitPoint(-0.75f, 1.5f, 2.25f);
+			d6->setLimitPoint(replacementLimitPoint, false);
+			NxVec3 limitPointReadback(0.0f, 0.0f, 0.0f);
+			const bool hasLimitPoint = d6->getLimitPoint(limitPointReadback);
+			printf("case=d6 index=%u limit_point present=%u ", index, hasLimitPoint ? 1u : 0u);
+			nxPrintVec("point", limitPointReadback);
+			printf("\n");
 			}
 
 		NxD6JointDesc saved;
