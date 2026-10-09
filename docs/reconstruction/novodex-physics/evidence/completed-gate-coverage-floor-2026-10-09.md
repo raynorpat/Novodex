@@ -11,3 +11,5 @@ Validation on 2026-10-09:
 - Focused regression: `python docs/reconstruction/novodex-physics/tools/tests/test_gate_targets.py CoverageFloor.test_completed_floor_deduplicates_shared_target_lines` — passes.
 
 Full logs are in the local build tree at `D:\github\Novodex\build\m0-current-main-clean\completed-main-after-coverage-fix.log` and `D:\github\Novodex\build\m0-current-main-clean\phase5-standalone-main-20261009.log`. They are build outputs, not repository evidence inputs. At test time the worktree branch was `codex/nxphysics-step-scene-rows`, based on `c4de8262`, with only the runner, regression test, and this evidence/plan update intended for the change. The aggregate and Phase 5 passes establish gate consistency for this build; they do not establish full-DLL closure or certify Phases 6–8.
+
+After fast-forwarding commit `e6f85a15` to `main`, the aggregate gate was rerun from `D:\github\Novodex` and passed again with 3,224/3,224 assertions. Log: `D:\github\Novodex\build\m0-current-main-clean\completed-main-postmerge.log`.
