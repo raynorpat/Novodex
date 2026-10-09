@@ -63,8 +63,8 @@
     ]
   },
   "counts": {
-    "differential_falsified": 87,
-    "deferred_reconstructed_not_falsified": 320,
+    "differential_falsified": 88,
+    "deferred_reconstructed_not_falsified": 319,
     "deferred_not_reconstructed_in_phase": 25,
     "oracle_differential_falsified": 1
   },
@@ -949,6 +949,16 @@
         "mutation": "The registered ten-family public joint matrix creates joints with actors and observes actor identity, internal state, and release. An immediate return at the start of Joint::row004107 causes the candidate to access-violate during joint construction while the oracle exits zero; stdout_delta=3160 and stderr is exact. Restored Joint.cpp and rebuilt; the staged differential returned to stdout_delta=0 with both exits zero and exact stderr. Mutation candidate SHA-256 40693a0a15001121bf0e9cbfb64f3e747787efcf2f112664cc870374d2e79a7b; restored candidate SHA-256 39afd985fadd888f7769891fa05c5be725a1546cdbe3182e6ac4f5f2fbc33917; pinned oracle SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c.",
         "detected": "stdout_delta=3160"
       }
+    },
+    {
+      "id": "phys_fn_004109",
+      "rva": "0x00097e60",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "The registered public D6 joint case calls setLimitPoint and records the returned point despite the feature-availability result being false. Temporarily added 1.0f to Joint::setLimitPoint local X storage and rebuilt NxPhysics.dll. The oracle and candidate both exited zero with exact stderr; the returned point changed from bf400000.3fc00000.40100000 to 3e800000.3fc00000.40100000 and the differential caught stdout_delta=2. Restored Joint.cpp and rebuilt; the same staged-pair differential returned to stdout_delta=0 with both exits zero and exact stderr. Mutation candidate SHA-256 15c496dadf774335b169ab3e5fe4b94c1af38bc2e6ce992fb0ae3ee96363f828; restored candidate SHA-256 40bebcff33df2e1eb5822f4e770bc623bfd777e9275d1908c82d3406b097bd20; pinned oracle SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c.",
+        "detected": "stdout_delta=2"
+      }
     }
   ],
   "deferred": [
@@ -1211,15 +1221,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_004109",
-      "rva": "0x00097e60",
-      "size": 366,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_004111",

@@ -76490,13 +76490,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1546",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13602",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 14 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "previous source: Physics/src/Joint.cpp",
+      "dynamic_proof": "NxPhysicsJointStagedPairTests staged-pair matrix calls the public D6 setLimitPoint path and records the resulting point. Adding 1.0f to Joint::setLimitPoint local X storage changes the readback and is caught with stdout_delta=2, both exits zero and exact stderr; restored control is exact. See evidence/phase6-joint-row004109-limit-point.md.",
+      "notes": "previous source: Physics/src/Joint.cpp The public D6 case observes the stored point even though the optional feature reports unavailable; a row-specific storage mutation is detected.",
       "implementation": "Physics/src/core/Joint.cpp"
     },
     {

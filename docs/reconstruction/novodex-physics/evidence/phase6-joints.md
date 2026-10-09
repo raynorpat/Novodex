@@ -9911,3 +9911,8 @@ The registered staged-pair matrix reaches `Joint::setGlobalAxis` through joint c
 ## Phase 6 closure measurement — joint actor attachment (`phys_fn_004107`)
 
 The ten-family public joint matrix creates joints with actor records and observes actor identity, internal state, and release. An immediate return in `Joint::row004107` causes candidate access violation for `phys_fn_004107` (`candidate_exit=-1073741819`, `stdout_delta=3160`) while the oracle exits zero; restoring the row returns the differential to exact. Detailed mutation and DLL identity evidence: `evidence/phase6-joint-row004107-actor-attachment.md`.
+
+
+## Phase 6 closure measurement — joint limit-point setter (`phys_fn_004109`)
+
+The public D6 staged-pair case observes the stored point returned by `setLimitPoint`, even though the feature-availability result is false. Adding `1.0f` to the local X storage is caught for `phys_fn_004109` with `stdout_delta=2`, both exits zero, and exact stderr; the restored control is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-joint-row004109-limit-point.md`.
