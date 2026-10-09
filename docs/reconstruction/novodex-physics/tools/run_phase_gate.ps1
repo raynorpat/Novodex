@@ -26,6 +26,8 @@ $evidenceRoot = Split-Path -Parent $toolsRoot
 $programPath = Join-Path $evidenceRoot 'program.json'
 $inventoryPath = Join-Path $evidenceRoot 'inventory.json'
 $headerManifestPath = Join-Path $evidenceRoot 'public_header_hashes.json'
+$oracleProofManifestPath = Join-Path $evidenceRoot 'evidence\oracle-only-baselines.json'
+$oracleProofVerifier = Join-Path $toolsRoot 'oracle_proof.py'
 $novodexRepo = $RepoRoot
 if (-not $BuildRoot) { $BuildRoot = Join-Path $novodexRepo 'build' }
 $buildRoot = $BuildRoot
@@ -69,7 +71,10 @@ function Invoke-Gate([string] $Name, [string] $Executable, [string[]] $Arguments
 }
 
 Assert-True (Test-Path -LiteralPath $programPath -PathType Leaf) "program pin file exists: $programPath"
+Assert-True (Test-Path -LiteralPath $oracleProofManifestPath -PathType Leaf) "oracle-only proof baseline exists: $oracleProofManifestPath"
 $program = Get-Content -Raw -LiteralPath $programPath | ConvertFrom-Json
+$oracleProofManifest = Get-Content -Raw -LiteralPath $oracleProofManifestPath | ConvertFrom-Json
+Assert-True ($oracleProofManifest.schema_version -eq 1) 'oracle-only proof baseline uses schema version 1'
 
 $configureGate = @($program.global_gates | Where-Object { $_.name -ceq 'build_configure' })
 Assert-True ($configureGate.Count -eq 1) 'program.json registers exactly one build_configure gate'
@@ -130,6 +135,17 @@ foreach ($target in $oracleDifferentialTargets) {
     Assert-True ($target -cin $NxRegisteredOracleDifferentialTargets) "selected oracle-differential target is registered: $target"
     Assert-True ($target -cnotin $NxRegisteredTestTargets) "an oracle-differential target is not also a staged-pair differential: $target"
     Assert-True ($target -cnotin $NxRegisteredStaticProofTargets) "an oracle-differential target is not also a static proof: $target"
+}
+foreach ($property in $oracleProofManifest.targets.PSObject.Properties) {
+    $proofTarget = $property.Name
+    Assert-True ($proofTarget -cin $NxRegisteredOracleDifferentialTargets) "oracle proof target is registered: $proofTarget"
+    $registeredPhases = @($NxPhaseOracleDifferentialTargets.GetEnumerator() |
+        Where-Object { $_.Value -ccontains $proofTarget } |
+        ForEach-Object { [string] $_.Key })
+    Assert-True ($registeredPhases.Count -gt 0) "oracle proof target belongs to a phase: $proofTarget"
+    if (@($registeredPhases | Where-Object { $_ -cin $differentialPhases }).Count -gt 0) {
+        Assert-True ($proofTarget -cin $oracleDifferentialTargets) "selected phase includes its oracle proof target: $proofTarget"
+    }
 }
 Write-Host "selected_oracle_differential_targets=$($oracleDifferentialTargets -join ',')"
 
@@ -206,6 +222,7 @@ if ($staticProofTargets.Count -gt 0) {
 # to run if it is not the pinned file, which is what makes the recorded internal
 # addresses mean anything.
 $oracleTranscript = [Collections.Generic.List[string]]::new()
+$oracleTargetTranscripts = @{}
 # Declared here rather than relied on springing into existence at the `+=`,
 # because PowerShell would happily create it there and then leave the throw at
 # the end of this file reading a variable nobody had written.
@@ -221,6 +238,7 @@ if ($oracleDifferentialTargets.Count -gt 0) {
     Write-Host ''
     Write-Host '=== oracle differential (one run, not one per pair) ==='
     foreach ($target in $oracleDifferentialTargets) {
+        $targetOracleTranscript = [Collections.Generic.List[string]]::new()
         $exe = Join-Path $releaseRoot "$target.exe"
         Write-Host "gate=oracle_differential:$target command=`"$exe`" `"$oracleDirectory`" $oracleHash"
         $global:LASTEXITCODE = 0
@@ -238,6 +256,7 @@ if ($oracleDifferentialTargets.Count -gt 0) {
         & $exe $oracleDirectory $oracleHash 2>&1 | ForEach-Object {
             $text = [string] $_
             [void] $oracleTranscript.Add($text)
+            [void] $targetOracleTranscript.Add($text)
             Write-Host $text
         }
         $exit = $LASTEXITCODE
@@ -256,6 +275,37 @@ if ($oracleDifferentialTargets.Count -gt 0) {
         if ($exit -ne 0) {
             $oracleDifferentialFailures += "oracle_differential:$target exited $exit"
         }
+        $oracleTargetTranscripts[$target] = $targetOracleTranscript.ToArray()
+    }
+}
+
+# Persist structured proof data for oracle-only measurements whose expected
+# inputs and outputs are independently pinned. The candidate digest remains
+# outside this proof; staged-pair equality and the target's exit status check it.
+if ($oracleTargetTranscripts.Count -gt 0 -and
+    (Test-Path -LiteralPath $oracleProofManifestPath -PathType Leaf)) {
+    $oracleProofManifest = Get-Content -Raw -LiteralPath $oracleProofManifestPath | ConvertFrom-Json
+    foreach ($property in $oracleProofManifest.targets.PSObject.Properties) {
+        $target = $property.Name
+        if (-not $oracleTargetTranscripts.ContainsKey($target)) {
+            continue
+        }
+        $proofRoot = Join-Path $buildRoot 'oracle-proofs'
+        New-Item -ItemType Directory -Path $proofRoot -Force | Out-Null
+        $transcriptPath = Join-Path $proofRoot "$target.stdout.txt"
+        $evidencePath = Join-Path $proofRoot "$target.json"
+        [System.IO.File]::WriteAllLines(
+            $transcriptPath,
+            [string[]] $oracleTargetTranscripts[$target],
+            [System.Text.UTF8Encoding]::new($false))
+        Invoke-Gate "oracle_proof:$target" 'python.exe' @(
+            '-B', $oracleProofVerifier,
+            '--manifest', $oracleProofManifestPath,
+            '--target', $target,
+            '--transcript', $transcriptPath,
+            '--oracle-sha256', $program.oracle.sha256,
+            '--repo-root', $novodexRepo,
+            '--evidence-output', $evidencePath)
     }
 }
 

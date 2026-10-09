@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "targets": {
+    "NxPhysicsJointSupportTests": {
+      "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+      "fixture_source": "tests/PhysicsJointSupportTests.cpp",
+      "fixture_source_sha256": "e7996261d5c3659b5d93d094ba7af415c8bc8581493d4eea7fb5f8883e7c9971",
+      "cases": 2,
+      "input_digest_fnv64": "85a7065a061c36cd",
+      "oracle_output_digest_fnv64": "88b713b7bc0870c9"
+    }
+  }
+}
