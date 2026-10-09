@@ -97,7 +97,7 @@
       ],
       "ctor_listing_evidence": {
         "base_shape_ctor_call": "0x10025530 (phys_fn_001273) at 0x00021880",
-        "desc_mixin_vptr_at_plus_e0": "A=0x10106a58 then B=0x10106a88 (12-slot tables each), stores at 0x00021885/0x00021895",
+        "hull_facade_tables_at_plus_e0": "abstract A=0x10106a58 then final BoxHullFacade B=0x10106a88 (12 slots each), stores at 0x00021885/0x00021895",
         "zeroed_trio": "+0x150..+0x158"
       },
       "slot_5_raycast": "phys_fn_000949 (phase 3 recorded)",
@@ -115,7 +115,7 @@
         "collision_object_ctor": "phys_fn_001193 (0x000247c0, 57 bytes, phase 3)",
         "stored_at": "+0x9c at 0x00027805 -- CONFIRMS the borrowed Phase 3 claim from the constructor side",
         "plus_d0_init": "+0xd0 = 1 at 0x0002780b",
-        "plus_e0": "nulled (no desc mixin pointer for spheres)"
+        "plus_e0": "sphere radius scalar; no BoxHullFacade vptr"
       },
       "slot_5_raycast": "phys_fn_001377",
       "slot_7_sweep_dispatch": "phys_fn_001373"
@@ -210,8 +210,8 @@
         "established_by": "stores 0x0002562b..0x0002563f"
       },
       "+0xe0": {
-        "meaning": "secondary-base vptr for desc-mixin types (box: A/B tables); NULL for sphere",
-        "established_by": "0x00021885/0x00021895 (box), 0x000277da (sphere)"
+        "meaning": "shape-family-specific tail: BoxHullFacade vptr for BOX; radius scalar for SPHERE; other shape families use their own fields",
+        "established_by": "BOX abstract/final facade table stores at 0x00021885/0x00021895; SPHERE radius field at +0xe0"
       },
       "+0xe4..+0xec": {
         "meaning": "per-type geometry area; Phase 3 read box half extents as three floats here (0x0003ae31/0x0003ae26) and capsule radius/halfHeight/swept",
@@ -299,7 +299,7 @@
   },
   "open_questions": [
     "the source-language interface represented by the actor's +8 secondary base remains unidentified; its one-slot deleting-destructor thunk and reset state are reconstructed",
-    "which of the twelve small vtables phys_fn_000973 installs maps to which Nx*Desc type",
+    "the consumer and exact bounds of BoxHullFacade's second per-face index family at Shape+0x150",
     "whether Shape+0x150..+0x158 trio is box-specific or common"
   ],
   "shape_final_slot_maps": {

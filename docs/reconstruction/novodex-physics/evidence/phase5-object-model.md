@@ -92,11 +92,11 @@ Consequences:
    bytes** through the SDK allocator (`[0x101041bc]` slot +8 with (size,0)),
    constructs them with `phys_fn_001193` (0x247c0), stores at **+0x9c**
    (0x27805); also initialises `+0xd0 = 1`.
-4. `+0xe0` is a secondary-base vptr where a desc mix-in exists (box: base
-   table `A @0x106a58` replaced by `B @0x106a88`, both 12 slots; sphere:
-   NULLed). With geometry floats following at `+0xe4..+0xec`, this is
-   consistent with Phase 3's box-half-extents/capsule-radius reads and
-   refines rather than contradicts them.
+4. `+0xe0` is part of the shape-family tail, not a descriptor mix-in. BOX
+   installs an abstract 12-slot BoxHullFacade table (`A @0x106a58`) and then
+   its final table (`B @0x106a88`); SPHERE stores its radius scalar there.
+   Other shape families use their own tail fields. This refines Phase 3's
+   per-family geometry reads.
 
 ## 3a. phys_fn_001273 transcribed: the +0xa4 subobject is a Prunable, and the shape owns it
 
