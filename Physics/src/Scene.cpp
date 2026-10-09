@@ -5451,6 +5451,66 @@ void nxSceneProcessTriggerPairs(NxSceneInternal* scene)
 	oldPrevious->end = oldPrevious->begin;
 	}
 
+// phys_fn_000610 (0x00011210): integrate the active sleep groups. The original
+// thiscall receives only Scene in ecx; the scene carries dt/invDt at +0x548/+0x54c.
+void NxSceneInternal::row000610()
+	{
+	void** roots = at<void**>(0x57c);
+	void** rootsEnd = at<void**>(0x580);
+	const NxReal timestep = at<NxReal>(0x548);
+	const NxReal inverseTimestep = at<NxReal>(0x54c);
+	for(void** root = roots; root && root != rootsEnd; ++root)
+		for(unsigned char* body = static_cast<unsigned char*>(*root); body;
+			body = *reinterpret_cast<unsigned char**>(body + 0x1fc))
+			reinterpret_cast<Row000726Fixture*>(body)->row000726(timestep, inverseTimestep);
+	}
+
+// phys_fn_000611 (0x00011260): prepare and solve each active island. Its final
+// 74-byte continuation starts at 000613/0x11370 and copies solved records back.
+void NxSceneInternal::row000611()
+	{
+	void** roots = at<void**>(0x57c);
+	void** rootsEnd = at<void**>(0x580);
+	const NxReal timestep = at<NxReal>(0x548);
+	const NxReal inverseTimestep = at<NxReal>(0x54c);
+	at<NxU32>(0x70c) |= 4u;
+	for(void** root = roots; root && root != rootsEnd; ++root)
+		{
+		unsigned char* island = static_cast<unsigned char*>(*root);
+		if(*reinterpret_cast<NxU32*>(island + 0x1f0) == 0)
+			continue;
+		const NxU32 bodyCount = *reinterpret_cast<NxU32*>(island + 0x1f4);
+		nxSceneEnsureStepBodies(this, bodyCount);
+		JointSupportBody* records = at<JointSupportBody*>(0x5ac);
+		for(unsigned char* body = island; body;
+			body = *reinterpret_cast<unsigned char**>(body + 0x1fc))
+			{
+			JointSupportBody* record = records++;
+			memcpy(&record->mUnknown000, body + 0x34, sizeof(NxVec3));
+			memcpy(&record->mUnknown00c, body + 0xc0, sizeof(NxReal));
+			memcpy(&record->mUnknown010, body + 0x40, sizeof(NxVec3));
+			record->mUnknown01c = body;
+			memcpy(record->mUnknown020, body + 0x164, sizeof(record->mUnknown020));
+			memcpy(&record->mUnknown05c, body + 0x110, sizeof(NxU32));
+			*reinterpret_cast<JointSupportBody**>(body + 0x204) = record;
+			if(nxSceneMaximumStepBodies < record->mUnknown05c)
+				nxSceneMaximumStepBodies = record->mUnknown05c;
+			}
+		reinterpret_cast<Row000730Fixture*>(island)->row000730(timestep, inverseTimestep);
+		if(at<NxU32>(0x5bc))
+			{
+			cpmSolveSceneContactRecords(this, nxSceneMaximumStepBodies);
+			nxSolveJointSupportRecords(this, timestep, nxSceneMaximumStepBodies, false);
+			nxSceneMaximumStepBodies = 0;
+			}
+		for(unsigned char* body = island; body;
+			body = *reinterpret_cast<unsigned char**>(body + 0x1fc))
+			reinterpret_cast<Row000708Fixture*>(body)->row000708();
+		at<NxU32>(0x5bc) = 0;
+		}
+	at<NxU32>(0x70c) &= ~4u;
+	}
+
 // phys_fn_000659 (0x00013c40): select fixed or variable stepping under the
 // oracle's x87 precision-64/round-toward-zero mode, run each requested body
 // substep, then restore the caller's control word. The scheduler fields are
@@ -5619,53 +5679,8 @@ void NxSceneInternal::simulateFrame()
 
 		// phys_fn_000610 walks active island roots (+0x57c) and each root's
 		// sleep-group chain (+0x1fc); inactive bodies must not be integrated.
-		void** roots = at<void**>(0x57c);
-		void** rootsEnd = at<void**>(0x580);
-		for(void** root = roots; root && root != rootsEnd; ++root)
-			for(unsigned char* body = static_cast<unsigned char*>(*root); body;
-				body = *reinterpret_cast<unsigned char**>(body + 0x1fc))
-				reinterpret_cast<Row000726Fixture*>(body)->row000726(timestep, inverseTimestep);
-
-		// phys_fn_000611 (0x11260): build the per-island JointSupportBody view
-		// and run the island contact rows (000730 -> 000728/000897).
-		at<NxU32>(0x70c) |= 4u;
-		for(void** root = roots; root && root != rootsEnd; ++root)
-			{
-			unsigned char* island = static_cast<unsigned char*>(*root);
-			if(*reinterpret_cast<NxU32*>(island + 0x1f0) == 0)
-				continue;
-			const NxU32 bodyCount = *reinterpret_cast<NxU32*>(island + 0x1f4);
-			nxSceneEnsureStepBodies(this, bodyCount);
-			JointSupportBody* records = at<JointSupportBody*>(0x5ac);
-			for(unsigned char* body = island; body;
-				body = *reinterpret_cast<unsigned char**>(body + 0x1fc))
-				{
-				JointSupportBody* record = records++;
-				memcpy(&record->mUnknown000, body + 0x34, sizeof(NxVec3));
-				memcpy(&record->mUnknown00c, body + 0xc0, sizeof(NxReal));
-				memcpy(&record->mUnknown010, body + 0x40, sizeof(NxVec3));
-				record->mUnknown01c = body;
-				memcpy(record->mUnknown020, body + 0x164, sizeof(record->mUnknown020));
-				memcpy(&record->mUnknown05c, body + 0x110, sizeof(NxU32));
-				*reinterpret_cast<JointSupportBody**>(body + 0x204) = record;
-				if(nxSceneMaximumStepBodies < record->mUnknown05c)
-					nxSceneMaximumStepBodies = record->mUnknown05c;
-				}
-			reinterpret_cast<Row000730Fixture*>(island)->row000730(timestep, inverseTimestep);
-			if(at<NxU32>(0x5bc))
-				{
-				// Keep contact rows on their oracle-matched path, then solve the
-				// joint rows 000728 appended to this same island record array.
-				cpmSolveSceneContactRecords(this, nxSceneMaximumStepBodies);
-				nxSolveJointSupportRecords(this, timestep, nxSceneMaximumStepBodies, false);
-				nxSceneMaximumStepBodies = 0;
-				}
-			for(unsigned char* body = island; body;
-				body = *reinterpret_cast<unsigned char**>(body + 0x1fc))
-				reinterpret_cast<Row000708Fixture*>(body)->row000708();
-			at<NxU32>(0x5bc) = 0;
-			}
-		at<NxU32>(0x70c) &= ~4u;
+		row000610();
+		row000611();
 
 		// 000636 performs post-step velocity bookkeeping and clears the active
 		// root range before 000615 advances each body's COM/quaternion.

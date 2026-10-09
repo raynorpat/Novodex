@@ -200,6 +200,12 @@ class NxSceneInternal
 	// phys_fn_000659's fixed/variable timestep scheduler. Called by NpScene's
 	// worker after simulate() stores the elapsed time at +0x544.
 	void simulateFrame();
+	// phys_fn_000610 (0x00011210): integrate bodies reached from the active
+	// sleep-group roots at +0x57c/+0x580.
+	__declspec(noinline) void row000610();
+	// phys_fn_000611 (0x00011260), including continuation block 000613:
+	// prepare each active island's support records, solve them, then copy back.
+	__declspec(noinline) void row000611();
 	// phys_fn_000619: fetch-side body gravity refresh and pose snapshot.
 	void finishSimulation();
 	// phys_fn_000523 (0x00010400). The pair-flag count at +0x3c.
