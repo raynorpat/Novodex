@@ -1,3 +1,13 @@
+### Continuation — fresh Phase 7 registered-gate validation (2026-10-09)
+
+Re-ran the current-worktree Phase 7 gate against the pinned oracle. All 14
+registered oracle/candidate pairs match exactly (`stdout_delta=0`, exact
+stderr); the gate evaluates `1,440/1,440` registered assertions and reports
+`phase_gate=7 status=pass`. The simulation pair reconfirms the oracle's
+feature-unavailable `createFluid()` result. Phase 7 remains pending in
+`program.json`, with 530 function rows and 502 data rows still open. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase7-registered-refresh-2026-10-09.md`.
+
 ### Continuation — effector tick order and angular damping (2026-10-09)
 
 The approved off-center spring/damper fixture showed matching linear velocity
