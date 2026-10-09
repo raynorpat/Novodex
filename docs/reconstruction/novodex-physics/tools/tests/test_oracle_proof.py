@@ -97,6 +97,13 @@ class OracleProofTests(unittest.TestCase):
         failures, _ = self.verify()
         self.assertTrue(any("fixture source SHA-256" in failure for failure in failures), failures)
 
+    def test_fixture_source_hash_normalizes_crlf(self):
+        source = self.root / SOURCE
+        source.write_bytes(b"line one\nline two\n")
+        lf_hash = oracle_proof.file_sha256(source)
+        source.write_bytes(b"line one\r\nline two\r\n")
+        self.assertEqual(oracle_proof.file_sha256(source), lf_hash)
+
     def test_rejects_missing_or_duplicate_proof_lines(self):
         for lines in (self.transcript[:1], self.transcript + [self.transcript[0]]):
             with self.subTest(lines=lines):
@@ -176,6 +183,9 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
             self.assertEqual(len(phases), 1, "%s must belong to exactly one phase" % target)
             self.assertIn(target, registered)
             lines = coverage[target]
+            source_path = TOOLS.parents[3] / expected["fixture_source"]
+            self.assertEqual(oracle_proof.file_sha256(source_path),
+                             expected["fixture_source_sha256"])
             if expected.get("format", "joint_support") == "joint_support":
                 output_prefix = "joint_support kind5 cases=%d oracle=%s " % (
                     expected["cases"], expected["oracle_output_digest_fnv64"])

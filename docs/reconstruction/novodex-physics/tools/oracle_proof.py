@@ -22,7 +22,9 @@ def sha256(data):
 
 
 def file_sha256(path):
-    return sha256(pathlib.Path(path).read_bytes())
+    # Fixture source is text and checkouts may materialize LF or CRLF. Pin the
+    # logical source bytes so a proof remains valid across those worktrees.
+    return sha256(pathlib.Path(path).read_bytes().replace(b"\r\n", b"\n"))
 
 
 def _verify_joint_support(expected, lines):
