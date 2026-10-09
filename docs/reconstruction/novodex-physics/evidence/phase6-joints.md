@@ -9857,3 +9857,27 @@ Detailed mutation, DLL identities, and restoration evidence: `evidence/phase6-ef
 The registered fixed-joint public case saves a live joint back to `NxFixedJointDesc` and records the base anchors, axes, normals, flags, and actors. Replacing `FixedJoint::saveToDesc`'s `saveToDescBase(desc)` call with an early return changes the first saved `anchor1` from `c0800000.00000000.00000000` to zero, along with other descriptor fields; the staged-pair differential catches `phys_fn_004242` with `stdout_delta=92`, both exits zero, and exact stderr. Restoring the base save returns the differential to `stdout_delta=0` and exact stderr.
 
 Detailed mutation, DLL identities, and restoration evidence: `evidence/phase6-fixed-joint-004242-save-to-desc.md`.
+
+## Phase 6 closure measurement — PointInPlaneJoint::saveToDesc (`phys_fn_004256`)
+
+The registered `NxPhysicsJointStagedPairTests` public case saves a `PointInPlaneJoint` descriptor and records its base anchors, axes, normals, flags, and actors. Replacing only this row's `saveToDescBase(desc)` call with an early return changes the first saved `anchor1` from `c0800000.00000000.00000000` to zero, along with other descriptor fields; the staged-pair differential catches `phys_fn_004256` with `stdout_delta=92`, both exits zero, and exact stderr. Restoring the call returns the differential to `stdout_delta=0` and exact stderr.
+
+Detailed mutation, DLL identity, and restoration evidence: `evidence/phase6-004256-save-to-desc.md`.
+
+## Phase 6 closure measurement — PointOnLineJoint::saveToDesc (`phys_fn_004268`)
+
+The registered `NxPhysicsJointStagedPairTests` public case saves a `PointOnLineJoint` descriptor and records its base anchors, axes, normals, flags, and actors. Replacing only this row's `saveToDescBase(desc)` call with an early return changes the first saved `anchor1` from `c0800000.00000000.00000000` to zero, along with other descriptor fields; the staged-pair differential catches `phys_fn_004268` with `stdout_delta=92`, both exits zero, and exact stderr. Restoring the call returns the differential to `stdout_delta=0` and exact stderr.
+
+Detailed mutation, DLL identity, and restoration evidence: `evidence/phase6-004268-save-to-desc.md`.
+
+## Phase 6 closure measurement — CylindricalJoint::saveToDesc (`phys_fn_004316`)
+
+The registered `NxPhysicsJointStagedPairTests` public case saves a `CylindricalJoint` descriptor and records its base anchors, axes, normals, flags, and actors. Replacing only this row's `saveToDescBase(desc)` call with an early return changes the first saved `anchor1` from `c0800000.00000000.00000000` to zero, along with other descriptor fields; the staged-pair differential catches `phys_fn_004316` with `stdout_delta=92`, both exits zero, and exact stderr. Restoring the call returns the differential to `stdout_delta=0` and exact stderr.
+
+Detailed mutation, DLL identity, and restoration evidence: `evidence/phase6-004316-save-to-desc.md`.
+
+## Phase 6 closure measurement — PrismaticJoint::saveToDesc (`phys_fn_004376`)
+
+The registered `NxPhysicsJointStagedPairTests` public case saves a `PrismaticJoint` descriptor and records its base anchors, axes, normals, flags, and actors. Replacing only this row's `saveToDescBase(desc)` call with an early return changes the first saved `anchor1` from `c0800000.00000000.00000000` to zero, along with other descriptor fields; the staged-pair differential catches `phys_fn_004376` with `stdout_delta=92`, both exits zero, and exact stderr. Restoring the call returns the differential to `stdout_delta=0` and exact stderr.
+
+Detailed mutation, DLL identity, and restoration evidence: `evidence/phase6-004376-save-to-desc.md`.
