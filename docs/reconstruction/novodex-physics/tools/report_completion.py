@@ -113,17 +113,24 @@ def _implementation(row, repo_root):
     if path and repo_root is not None:
         exists = (repo_root / path).is_file()
     dynamic_text = row.get("dynamic_proof") or ""
-    candidate_map_reference = "NxPhysics.map" in dynamic_text
-    return {
+    candidate_map_reference = row.get("candidate_map_reference")
+    candidate_map_basis = "inventory" if candidate_map_reference else None
+    if not candidate_map_reference and "NxPhysics.map" in dynamic_text:
+        candidate_map_reference = True
+        candidate_map_basis = "dynamic_proof"
+    implementation = {
         "path": path,
         "role": "reconstruction" if path else "unmapped",
         "symbol": row.get("implementation_symbol"),
         "file_exists": exists,
         "oracle_source": row.get("source"),
         "source_correspondence_recorded": bool(row.get("source")),
-        "candidate_map_reference_recorded": candidate_map_reference,
-        "candidate_map_reference_basis": "dynamic_proof" if candidate_map_reference else None,
+        "candidate_map_reference_recorded": bool(candidate_map_reference),
+        "candidate_map_reference_basis": candidate_map_basis,
     }
+    if isinstance(candidate_map_reference, dict):
+        implementation["candidate_map_reference"] = candidate_map_reference
+    return implementation
 
 
 def _evidence(row, ledger_entry):

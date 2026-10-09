@@ -306,6 +306,20 @@ class ValidateInventoryTests(unittest.TestCase):
         data["functions"][0]["third_party"] = "qhull"
         self.assertEqual(validate_inventory.validate_inventory(data), [])
 
+    def test_accepts_a_structured_candidate_map_reference(self):
+        data = minimal_inventory()
+        data["functions"][0].update({
+            "implementation": "Physics/src/RecoveredRows.cpp",
+            "implementation_symbol": "_phys_fn_000001@16",
+            "candidate_map_reference": {
+                "path": "build/Release/NxPhysics.map",
+                "symbol": "_phys_fn_000001@16",
+                "address": "0x1004e050",
+                "object": "RecoveredRows.obj",
+            },
+        })
+        self.assertEqual(validate_inventory.validate_inventory(data), [])
+
     def test_a_data_object_may_not_carry_the_third_party_field(self):
         # There is no per-object correspondence map, so the column would be an
         # unfalsifiable claim on the data half of the census.

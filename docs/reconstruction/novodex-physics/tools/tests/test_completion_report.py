@@ -13,6 +13,34 @@ from report_completion import _sha256, build_report, write_report  # noqa: E402
 
 
 class CompletionReportTests(unittest.TestCase):
+    def test_static_candidate_map_reference_is_reported_without_dynamic_proof(self):
+        candidate_map = {
+            "path": "build/Release/NxPhysics.map",
+            "symbol": "_phys_fn_000002@16",
+            "address": "0x1004e050",
+            "object": "RecoveredRows.obj",
+        }
+        inventory = {
+            "functions": [{
+                "id": "phys_fn_000002", "rva": "0x1030", "size": 49,
+                "kind": "code", "phase": 5, "state": "statically_reviewed",
+                "source": "Physics/src/RecoveredRows.cpp",
+                "implementation": "Physics/src/RecoveredRows.cpp",
+                "implementation_symbol": "_phys_fn_000002@16",
+                "candidate_map_reference": candidate_map,
+                "static_proof": "NxPhysicsRangeIterationTests exercises the row.",
+                "dynamic_proof": None,
+            }],
+            "exports": [],
+        }
+
+        report = build_report(inventory, [], {})
+
+        implementation = report["rows"][0]["implementation"]
+        self.assertTrue(implementation["candidate_map_reference_recorded"])
+        self.assertEqual(implementation["candidate_map_reference_basis"], "inventory")
+        self.assertEqual(implementation["candidate_map_reference"], candidate_map)
+
     def test_generated_report_uses_lf_bytes_on_every_platform(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             output = Path(temp_dir) / "report.json"

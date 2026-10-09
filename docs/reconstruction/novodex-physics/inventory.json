@@ -104,7 +104,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3",
       "static_proof": "NxPhysicsRangeIterationTests checks reverse strided address order, negative stride, zero-count no-callback behavior, and the returned last callback result against the IDA body at RVA 0x1030.",
       "dynamic_proof": null,
-      "notes": "The helper computes first + count * stride, decrements by stride before each __thiscall callback, and returns the final callback result; count <= 0 returns count - 1 without invoking the callback."
+      "notes": "The helper computes first + count * stride, decrements by stride before each __thiscall callback, and returns the final callback result; count <= 0 returns count - 1 without invoking the callback.",
+      "implementation": "Physics/src/RecoveredRows.cpp",
+      "implementation_symbol": "_phys_fn_000002@16",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_phys_fn_000002@16",
+        "address": "0x1004e050",
+        "object": "RecoveredRows.obj"
+      }
     },
     {
       "id": "phys_fn_000003",

@@ -15,7 +15,10 @@ the reconstructed helper directly rather than claiming an oracle differential.
 Verification:
 
 - The focused test passes in Release. The candidate linker map retains
-  `_phys_fn_000002@16` from `RecoveredRows.obj`.
+  `_phys_fn_000002@16` from `RecoveredRows.obj` at preferred address
+  `0x1004e050` (`NxPhysics.dll` RVA `0x0004e050`). The row now records the
+  source path, symbol, and map reference in `inventory.json`; this is static
+  implementation mapping, not an oracle runtime differential.
 - The full Phase 5 gate passes with its new static proof and all
   `2,226/2,226` registered coverage assertions
   (`build/phase5-range-iteration-final.log`).
@@ -35,3 +38,16 @@ checks: descending visitation, final callback result, and negative stride. The
 restored candidate passes `NxPhysicsRangeIterationTests`; this falsifies
 `phys_fn_000002` under the disassembly-based static proof and does not claim an
 oracle differential.
+
+## Candidate map and current gate follow-up (2026-10-08)
+
+The inventory now maps this row to `Physics/src/RecoveredRows.cpp` and records
+the candidate symbol `_phys_fn_000002@16` at preferred address `0x1004e050` in
+`build/Release/NxPhysics.map`. The completion report carries this static map
+reference separately from dynamic proof. Regenerating `work_units.json` also
+restored agreement between the checked-in ownership census and its generator.
+
+The full reconstruction tooling suite passes (778 tests). Phase 5, 6, and 7
+gates pass at their current registered coverage counts: 2,595, 1,094, and
+1,416 respectively. Their phase completion statuses remain pending because
+these counts validate the registered coverage, not full phase closure.

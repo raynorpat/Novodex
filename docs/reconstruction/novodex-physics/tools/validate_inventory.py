@@ -79,7 +79,8 @@ FUNCTION_KEYS = (
 # symbol the harness names -- its dispatch tables carry the row's oracle RVA and its
 # abbreviated stable ID, and one drive names the candidate function outright.
 FUNCTION_OPTIONAL_KEYS = ("third_party", "implementation",
-                         "implementation_symbol")
+                         "implementation_symbol", "candidate_map_reference")
+CANDIDATE_MAP_REFERENCE_KEYS = ("path", "symbol", "address", "object")
 DATA_KEYS = (
     "id",
     "rva",
@@ -527,6 +528,23 @@ def _check_functions(rows, declared_phases):
         for reference in ("ghidra_ref", "capstone_ref"):
             if not row[reference]:
                 errors.append(f"{where} must record {reference}")
+        candidate_map = row.get("candidate_map_reference")
+        if candidate_map is not None:
+            map_where = f"{where} candidate_map_reference"
+            errors += _check_keys(map_where, candidate_map,
+                                  CANDIDATE_MAP_REFERENCE_KEYS)
+            if isinstance(candidate_map, dict):
+                for key in CANDIDATE_MAP_REFERENCE_KEYS:
+                    if key in candidate_map and (not isinstance(candidate_map[key], str)
+                                                  or not candidate_map[key]):
+                        errors.append(f"{map_where}.{key} must be a nonempty string")
+                if (isinstance(candidate_map.get("address"), str)
+                        and not re.fullmatch(r"0x[0-9a-fA-F]{8}", candidate_map["address"])):
+                    errors.append(f"{map_where}.address must be a preferred 32-bit image address")
+                if (candidate_map.get("symbol") and row.get("implementation_symbol")
+                        and candidate_map["symbol"] != row["implementation_symbol"]):
+                    errors.append(
+                        f"{map_where}.symbol must match implementation_symbol")
         if row["kind"] == "compiler_artifact":
             if not row["static_proof"]:
                 errors.append(f"{where} is a compiler artifact and must record a classification proof")
