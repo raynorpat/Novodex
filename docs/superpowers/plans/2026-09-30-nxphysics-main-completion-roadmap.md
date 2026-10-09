@@ -10,6 +10,13 @@ bit-exact linear velocity, angular velocity, and quaternion outputs with
 default damping. Registered Phase 5, 6, and 7 gates all pass (20, 9, and 14
 targets; zero stdout delta and exact stderr). Evidence:
 `docs/reconstruction/novodex-physics/evidence/effector-step-order-angular-damping-2026-10-09.md`.
+The approved Viewer all-scenes selection also passes 48/48 registered tests
+(43 pass, five known pinned-oracle asset-signature skips) across all 39 scene
+entrypoints; Viewer support tests are included. Evidence:
+`docs/reconstruction/novodex-physics/evidence/viewer-all-scenes-effector-order-2026-10-09.md`.
+The post-fix staged DemoGame rerun is pending a host with a usable D3D device;
+this runner failed viewport creation with `D3DERR_NOTAVAILABLE` after loading
+the map.
 
 ### Continuation — spherical solver public pendulum and row closure (2026-10-08)
 
