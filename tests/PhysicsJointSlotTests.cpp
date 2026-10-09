@@ -140,6 +140,98 @@ static NxU32 nxWordAt(const void* base, unsigned offset)
 	return word;
 	}
 
+// phys_fn_004087 is not exported. The oracle side is reached at its pinned
+// RVA; the candidate side must be resolved from the staged candidate DLL's
+// own linker map so this probe never applies an oracle address to the rebuild.
+static bool nxJointAccumulationRva(HMODULE physics, const wchar_t* pairDirectory,
+	NxU32& rva)
+	{
+	const wchar_t* leaf = wcsrchr(pairDirectory, L'\\');
+	if(leaf && _wcsicmp(leaf + 1, L"oracle") == 0)
+		{
+		rva = 0x00095cc0;
+		return true;
+		}
+
+	wchar_t modulePath[MAX_PATH];
+	if(!GetModuleFileNameW(physics, modulePath, MAX_PATH))
+		return false;
+	wchar_t* slash = wcsrchr(modulePath, L'\\');
+	if(!slash)
+		return false;
+	wcscpy_s(slash + 1, MAX_PATH - (slash + 1 - modulePath), L"NxPhysics.map");
+	FILE* map = _wfopen(modulePath, L"r");
+	if(!map)
+		{
+		fprintf(stderr, "FAIL phys_fn_004087 map open path=%S error=%lu\n", modulePath, GetLastError());
+		return false;
+		}
+	static const char symbol[] = "?row004087@Joint@@UAEXMABVNxVec3@@M@Z";
+	char line[1024];
+	unsigned address = 0, imageBase = 0;
+	bool found = false;
+	while(fgets(line, sizeof(line), map))
+		{
+		unsigned parsedBase = 0;
+		if(sscanf_s(line, " Preferred load address is %x", &parsedBase) == 1)
+			imageBase = parsedBase;
+		unsigned section = 0, offset = 0;
+		char name[256] = {};
+		if(sscanf_s(line, "%x:%x %255s %x", &section, &offset, name,
+			sizeof(name), &address) == 4 && strcmp(name, symbol) == 0)
+			{
+			found = true;
+			break;
+			}
+		}
+	fclose(map);
+	if(!found || imageBase == 0 || address < imageBase)
+		{
+		fprintf(stderr, "FAIL phys_fn_004087 map symbol/base missing path=%S\n", modulePath);
+		return false;
+		}
+	rva = address - imageBase;
+	MEMORY_BASIC_INFORMATION region;
+	if(!VirtualQuery(reinterpret_cast<const unsigned char*>(physics) + rva,
+		&region, sizeof(region)) || region.AllocationBase != physics
+		|| !(region.Protect & (PAGE_EXECUTE | PAGE_EXECUTE_READ
+			| PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY)))
+		{
+		fprintf(stderr, "FAIL phys_fn_004087 resolved address is outside executable candidate image rva=%08x\n",
+			rva);
+		return false;
+		}
+	return true;
+	}
+
+static bool nxTestJointAccumulation(HMODULE physics, const wchar_t* pairDirectory)
+	{
+	NxU32 rva = 0;
+	if(!nxJointAccumulationRva(physics, pairDirectory, rva))
+		{
+		nxFail("phys_fn_004087 candidate symbol is missing from NxPhysics.map");
+		return false;
+		}
+	typedef void (__thiscall *NxJointAccumulation)(void*, NxReal, const NxVec3&, NxReal);
+	NxJointAccumulation accumulate = reinterpret_cast<NxJointAccumulation>(
+		reinterpret_cast<unsigned char*>(physics) + rva);
+	unsigned char object[0x180] = {};
+	const NxVec3 input(2.0f, 3.0f, 4.0f);
+	const NxVec3 seed(0.5f, 0.5f, 0.5f);
+	memcpy(object + 0x154, &seed, sizeof(seed));
+	accumulate(object, 1.5f, input, 1.0f);
+	const NxVec3 result = *reinterpret_cast<const NxVec3*>(object + 0x154);
+	printf("joint-accum row=phys_fn_004087 value=%08x.%08x.%08x\n",
+		nxU(result.x), nxU(result.y), nxU(result.z));
+	if(nxU(result.x) != nxU(3.5f) || nxU(result.y) != nxU(5.0f)
+		|| nxU(result.z) != nxU(6.5f))
+		{
+		nxFail("phys_fn_004087 accumulated-vector result changed");
+		return false;
+		}
+	return true;
+	}
+
 // ---------------------------------------------------------------------------
 // Pointer names. A word equal to one of these is printed as its name.
 
@@ -933,6 +1025,11 @@ int wmain(int argc, wchar_t** argv)
 		return status;
 	// Unbuffered, so a fault leaves the lines before it.
 	setvbuf(stdout, 0, _IONBF, 0);
+	if(!nxTestJointAccumulation(physics, pairDirectory))
+		{
+		FreeLibrary(physics);
+		return 1;
+		}
 
 	CreatePhysicsSDKFn createSDK =
 		reinterpret_cast<CreatePhysicsSDKFn>(GetProcAddress(physics, "NxCreatePhysicsSDK"));

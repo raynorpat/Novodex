@@ -86,6 +86,18 @@ function New-Pair([string] $Name, [string] $PhysicsSource, [string] $FoundationS
         $staged[$entry.Name] = $stagedHash
     }
 
+    # Some internal rows are not exported. Staged-pair probes resolve those
+    # candidate methods by symbol from the map emitted beside the exact DLL.
+    # Keep the oracle side pinned to its known shipped RVA; never copy a
+    # candidate map into that pair.
+    if ($Name -ceq 'candidate') {
+        $mapSource = Join-Path (Split-Path -Parent $PhysicsSource) 'NxPhysics.map'
+        Assert-True (Test-Path -LiteralPath $mapSource -PathType Leaf) "candidate NxPhysics linker map exists: $mapSource"
+        $mapTarget = Join-Path $directory 'NxPhysics.map'
+        Copy-Item -LiteralPath $mapSource -Destination $mapTarget
+        Write-Host "staged candidate map source=$mapSource staged=$mapTarget"
+    }
+
     return [pscustomobject]@{
         Name = $Name
         Directory = $directory

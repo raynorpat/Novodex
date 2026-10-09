@@ -9881,3 +9881,8 @@ Detailed mutation, DLL identity, and restoration evidence: `evidence/phase6-0043
 The registered `NxPhysicsJointStagedPairTests` public case saves a `PrismaticJoint` descriptor and records its base anchors, axes, normals, flags, and actors. Replacing only this row's `saveToDescBase(desc)` call with an early return changes the first saved `anchor1` from `c0800000.00000000.00000000` to zero, along with other descriptor fields; the staged-pair differential catches `phys_fn_004376` with `stdout_delta=92`, both exits zero, and exact stderr. Restoring the call returns the differential to `stdout_delta=0` and exact stderr.
 
 Detailed mutation, DLL identity, and restoration evidence: `evidence/phase6-004376-save-to-desc.md`.
+
+
+## Phase 6 closure measurement — joint accumulated vector (`phys_fn_004087`)
+
+The earlier xaccum discussion above incorrectly attributed a separate `nxAccumulateByKind0867` object-model helper to `phys_fn_004087`. That helper is not this candidate method. A new direct staged-pair probe calls the oracle at pinned RVA `0x00095cc0` and resolves the candidate by its own map symbol `?row004087@Joint@@UAEXMABVNxVec3@@M@Z`. An immediate-return mutant preserves the seeded `(0.5,0.5,0.5)` instead of producing `(3.5,5,6.5)`; the registered `NxPhysicsJointSlotTests` gate fails with `stdout_delta=1479`. The restored control is exact. Detailed evidence: `evidence/phase6-joint-row004087-accumulated-vector.md`.
