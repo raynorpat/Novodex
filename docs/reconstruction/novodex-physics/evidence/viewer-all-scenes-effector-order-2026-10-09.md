@@ -26,3 +26,6 @@ the map and initialized its actors, then failed to create a D3D viewport with
 failure before the benchmark completed; no post-fix candidate DemoGame result
 is claimed. The earlier two-root smoke remains documented in
 `demogame-phystest-smoke-2026-10-08.md`.
+
+
+After the scene post-step reconstruction was merged to mainline at `c9080352`, rebuilt the Viewer targets in the fresh `build/phase-step-main` tree and reran the same all-scenes selection. All 48 registered Viewer tests completed with zero failures: 43 passed and the same five known pinned-oracle scenes were skipped. This includes all 39 scene entrypoints plus `ViewerPhysicsStep` and `ViewerPhysicsContact`. Full output: `build/phase-step-main/viewer-all-scenes-main.log`. The approved off-center spring/damper fixture remains covered by the passing Phase 7 `NxPhysicsSimulationTests` differential.
