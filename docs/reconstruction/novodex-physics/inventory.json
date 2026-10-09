@@ -9713,13 +9713,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/193",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1420",
-      "static_proof": "mov eax,[ecx+0x3c]; ret; product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/effector-coredump-contract.md (## Core dump, ### Task 3b record); reachable from the public API since effector-and-coredump Task 4 wired NpPhysicsSDK::coreDump (phys_fn_000267) (effector-and-coredump Task 3b); NxSceneInternal::getNbPairs",
-      "dynamic_proof": "confirmed via batchgetters drive (3z47): failures=0",
-      "notes": "Product row since effector-and-coredump Task 3b in Physics/src/Scene.cpp. Previous source: field getter [this+0x3c] (0x10400).",
+      "static_proof": "mov eax,[ecx+0x3c]; ret; NxSceneInternal::getNbPairs returns the scene pair counter.",
+      "dynamic_proof": "NxPhysicsPairFlagTests differential observes getNbPairs for compound actor-pair creation and release. Baseline oracle/candidate stdout_delta=0. A throwaway +1 return mutation rebuilt into candidate NxPhysics.dll (SHA-256 bebda85ad447e378d30f3182c582fef820eabefe94266756472cfa57764ecda5) changes counts 1->2 and 0->1; both exit 0, stderr exact, stdout_delta=6. Restored-source DLL SHA-256 04a269e9c3577431e6124f937576803590b3a59d16227437b1aa5a7cc81b5e92 returns stdout_delta=0.",
+      "notes": "Public pair-flag tests exercise this getter; NxSceneInternal::getPairFlagArray also consumes its count. See evidence/phase7-get-nb-pairs-000523.md.",
       "implementation": "Physics/src/Scene.cpp"
     },
     {

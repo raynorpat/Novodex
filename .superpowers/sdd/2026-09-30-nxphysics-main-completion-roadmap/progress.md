@@ -297,3 +297,12 @@ Task M2-001383: closed the mesh descriptor-load row with the registered NxPhysic
 
 
 Fresh Win32 Release Phase 5 gate after closing `phys_fn_001383` passed all 18 staged-pair targets, both oracle-differential targets, and 2,311/2,311 coverage assertions (`build/phase5-001383-full-gate.log`). Inventory and both 80-file public-header roots validate.
+
+Task start — `phys_fn_000523` (`NxSceneInternal::getNbPairs`), base `e6cf77bafa93c736dc44f5ea444e1731237620ca`.
+- Existing public pair-flag differential records `getNbPairs()` output and pair-array behavior for compound actors, same-shape rejection, and actor release cleanup.
+- Plan: run the clean target first; apply a throwaway +1 return mutation to prove that the registered differential detects this row; restore exactly; record evidence and close only this row; run relevant registry checks and full Phase 7 gate.
+- Scope ruling: this is a bounded Phase 7 proof task under the roadmap's mutation-closure requirement. It does not imply broader simulation or full-DLL completion.
+
+Task completion — `phys_fn_000523` (`NxSceneInternal::getNbPairs`). The registered pair-flag differential was exact before and after the restored implementation; a rebuilt +1 mutation was detected with `stdout_delta=6`, exact stderr, and successful process exits. The source getter remains the `+0x3c` load; only its stale comment changed. Public headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-get-nb-pairs-000523.md`.
+
+Validation: Phase 7 passed its 1,390/1,390 coverage floor; Phase 5 passed 2,569/2,569. The approved Viewer selection passed 48/48 CTest entries across all 39 scene entrypoints: 43 passed, five established pinned-oracle asset cases skipped, zero failed. Tooling suite passed 776/776; inventory validation reports zero unexplained bytes. Full DLL reconstruction remains open.

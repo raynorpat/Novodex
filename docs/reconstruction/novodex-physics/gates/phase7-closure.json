@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. The disabled FluidManager release path (phys_fn_003643) is mutation-falsified through its seeded array-removal and deleting-dispatch fixture. The inert flushStream slot (phys_fn_000333) is mutation-falsified through a direct public-call fixture and an error-report mutation. Phase 7 owns 561 function rows and 502 data objects: 23 functions are closed, 296 reconstructed functions remain unfalsified, 242 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. The disabled FluidManager release path (phys_fn_003643) is mutation-falsified through its seeded array-removal and deleting-dispatch fixture. The inert flushStream slot (phys_fn_000333) is mutation-falsified through a direct public-call fixture and an error-report mutation. Phase 7 owns 561 function rows and 502 data objects: 24 functions are closed, 295 reconstructed functions remain unfalsified, 242 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection. The direct flushStream mutation is tested by NxPhysicsSimulationTests and measured as stdout_delta=554 with candidate_exit=1.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
@@ -19,8 +19,8 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 23,
-    "deferred_reconstructed_not_falsified": 296,
+    "differential_falsified": 24,
+    "deferred_reconstructed_not_falsified": 295,
     "deferred_not_reconstructed_in_phase": 242
   },
   "closed": [
@@ -252,6 +252,16 @@
       "falsification": {
         "mutation": "In NpScene::flushStream, add an NXE_DB_WARNING report; the direct public fixture must still observe zero errors.",
         "detected": "stdout_delta=554"
+      }
+    },
+    {
+      "id": "phys_fn_000523",
+      "rva": "0x00010400",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsPairFlagTests",
+      "falsification": {
+        "mutation": "Changed NxSceneInternal::getNbPairs from returning the pair counter at +0x3c to returning that counter + 1 in a throwaway source mutation; rebuilt NxPhysics.dll and ran the registered NxPhysicsPairFlagTests differential against the pinned pair.",
+        "detected": "stdout_delta=6"
       }
     }
   ],
@@ -3494,15 +3504,6 @@
       "size": 33,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000523",
-      "rva": "0x00010400",
-      "size": 4,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },

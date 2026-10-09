@@ -5721,9 +5721,8 @@ void NxSceneInternal::finishSimulation()
 		}
 	}
 
-// phys_fn_000523 (0x00010400, 4 B, phase 7): the pair-flag count at +0x3c.
-// The candidate never raises a pair flag, so it stays 0 and the core dump
-// never reaches getPairFlagArray.
+// phys_fn_000523 (0x00010400, 4 B, phase 7): return the pair-flag count at +0x3c.
+// The public pair-flag API and Scene::getPairFlagArray both consume this count.
 NxU32 NxSceneInternal::getNbPairs() const
 	{
 	return at<NxU32>(0x3c);

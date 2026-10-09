@@ -104,11 +104,11 @@
       },
       "7": {
         "phase": 7,
-        "closed_rows": 23,
-        "deferred_rows": 538,
+        "closed_rows": 24,
+        "deferred_rows": 537,
         "deferred_reasons": {
           "not_reconstructed_in_phase": 242,
-          "reconstructed_not_falsified": 296
+          "reconstructed_not_falsified": 295
         }
       }
     },
@@ -182,8 +182,8 @@
         "rows_with_unresolved_indirect_calls": 300,
         "by_state": {
           "discovered": 230,
-          "dynamically_gated": 23,
-          "reconstructed": 308
+          "dynamically_gated": 24,
+          "reconstructed": 307
         }
       }
     }
@@ -14648,7 +14648,7 @@
           {
             "id": "phys_fn_000523",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_002362",
@@ -23034,7 +23034,7 @@
       "size": 4,
       "phase": 7,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_000523",
       "implementation": {
         "path": "Physics/src/Scene.cpp",
@@ -23049,7 +23049,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsPairFlagTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -23072,22 +23072,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 7,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsPairFlagTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_000523",
         "rva": "0x00010400",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -172165,7 +172165,7 @@
           {
             "id": "phys_fn_000523",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_000525",
@@ -230735,7 +230735,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "f7ec4744c5e82c66c88825bb1bc3dbe7eef460ccba123976ac301abe8b9b20c2",
+    "inventory_sha256": "149e5441d4d232962b7b27a52f1f20f427d0ef88d41751374197cebe1dcbeca4",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "878138fee7926d27bc239170adb34e162288d7255a7cb4fffc0687ae8b231d60",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
@@ -230745,7 +230745,7 @@
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "054f225782b71480caf597e24b5975c27ed39cb26a7309680284aa94119da440",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "cf95bb578c2e17a06652396b19a693e69124b663f8d70db68e4828a9713731f5",
       "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "8a7434ec2b092b85b9e8803935722832c9a2404f9f2437d671867625b0813e3c",
-      "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "e6b475ab959fd07577428806a1165a575ce0fc3b64cd3eaf76f3b2b584996b91"
+      "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "41495a440a88de6a23ce6ff9ddb32e03cb19f9e23949f1bd3282cea436d173ad"
     }
   }
 }

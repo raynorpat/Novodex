@@ -9388,3 +9388,8 @@ fixture: `phys_fn_000333` mutation detection was `stdout_delta=554`
 (`candidate_exit=1`); the restored target is exact
 (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`, `stderr_exact=True`;
 `build/phase7-flushStream-restored.log`).
+
+
+## Phase 7 closure measurement — scene pair-count getter (`phys_fn_000523`)
+
+The registered `NxPhysicsPairFlagTests` staged-pair differential observes `getNbPairs()` after pair creation and release. A throwaway `+1` return mutation in `NxSceneInternal::getNbPairs` was caught: oracle counts were 1 and 0; mutant counts were 2 and 1, which also changed the pair-array result. Both processes exited 0 with exact stderr; `phys_fn_000523` detected `stdout_delta=6`. Rebuilding after restoring the exact source returned the differential to `stdout_delta=0`, exact stderr, and zero exits. See `evidence/phase7-get-nb-pairs-000523.md`.
