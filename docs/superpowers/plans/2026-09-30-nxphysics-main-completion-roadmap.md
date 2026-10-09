@@ -1500,3 +1500,13 @@ The public convex-mesh cooking differential is exact on current mainline (`NxPhy
 
 - `phys_fn_004006` (`SceneDump::actorName`) is mutation-falsified through the registered `NxPhysicsCoreDumpTests` staged-pair differential. Replacing actor-body labels with a constant changes the transcript by 368 bytes; the restored differential is exact again.
 - Phase 6 now has 43 closed function rows and 390 deferred function rows. No public Physics headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-coredump-004006-actor-name.md`.
+
+### Continuation — core-dump joint-limit-pair text mutation closure (2026-10-09)
+
+- `phys_fn_004009` (`SceneDump::limitPairText`) is mutation-falsified through the registered `NxPhysicsCoreDumpTests` staged-pair differential. Replacing the formatted limit pair with a constant changes the transcript by 30 bytes; the restored differential is exact again.
+- Phase 6 now has 45 closed function rows and 388 deferred function rows. No public Physics headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-coredump-004009-limit-pair.md`.
+
+### Continuation — core-dump joint-frame mutation closure (2026-10-09)
+
+- `phys_fn_004007` (`SceneDump::writeJointFrames`) is mutation-falsified through the registered `NxPhysicsCoreDumpTests` staged-pair differential. Changing a primary offset label changes the transcript by 98 bytes; the restored differential is exact again.
+- With the adjacent `phys_fn_004009` limit-pair formatter closure, Phase 6 now has 45 closed function rows and 388 deferred function rows. No public Physics headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-coredump-004007-joint-frames.md` and `docs/reconstruction/novodex-physics/evidence/phase6-coredump-004009-limit-pair.md`.

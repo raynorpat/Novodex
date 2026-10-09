@@ -9566,3 +9566,13 @@ Evidence index: phys_fn_004004 mutation detected at stdout_delta=400; restored c
 
 The registered NxPhysicsCoreDumpTests differential caught a mutation forcing SceneDump::actorName to emit `"@mutation"` for every body: both processes exited zero, stderr matched exactly, and stdout_delta=368. After restoring SceneDump.cpp byte-for-byte in the throwaway archive, rebuilding, and rerunning, stdout_delta=0 with both exits zero and exact stderr. Detailed evidence: `evidence/phase6-coredump-004006-actor-name.md`.
 Evidence index: phys_fn_004006 mutation detected at stdout_delta=368; restored control stdout_delta=0.
+
+## Phase 6 closure measurement — joint limit-pair text (phys_fn_004009)
+
+The registered NxPhysicsCoreDumpTests differential caught a mutation replacing SceneDump::limitPairText's output with `"mutation"`: both processes exited zero, stderr matched exactly, and stdout_delta=30. After restoring SceneDump.cpp byte-for-byte in the throwaway archive, rebuilding, and rerunning, stdout_delta=0 with both exits zero and exact stderr. Detailed evidence: `evidence/phase6-coredump-004009-limit-pair.md`.
+Evidence index: phys_fn_004009 mutation detected at stdout_delta=30; restored control stdout_delta=0.
+
+## Phase 6 closure measurement — joint-frame serializer (phys_fn_004007)
+
+The registered NxPhysicsCoreDumpTests differential caught a mutation adding `_MUT` to SceneDump::writeJointFrames' primary offset label: both processes exited zero, stderr matched exactly, and stdout_delta=98. After restoring SceneDump.cpp byte-for-byte in the throwaway archive, rebuilding, and rerunning, stdout_delta=0 with both exits zero and exact stderr. Detailed evidence: `evidence/phase6-coredump-004007-joint-frames.md`.
+Evidence index: phys_fn_004007 mutation detected at stdout_delta=98; restored control stdout_delta=0.
