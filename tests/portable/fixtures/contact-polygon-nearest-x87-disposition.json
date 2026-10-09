@@ -1,0 +1,6 @@
+{
+  "capture_id": "contact-polygon-nearest-x87",
+  "fixture_sha256": "ac0936160149d90f03ed027b0cf01070e61f2f6d6f24dccdc916f568f4e2f86a",
+  "status": "diagnostic-excluded",
+  "reason": "Initial22argument fixture incorrectly passed undersized NxVec3 instead of full NxPlane at arguments5/10. Original continuation0x49938 reads plane+0c; numerical evidence is invalid and excluded. Artifact and capture-time input/source snapshots preserved unchanged. No scalar arithmetic edit preceded correction."
+}

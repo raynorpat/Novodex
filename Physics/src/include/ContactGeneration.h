@@ -10,6 +10,7 @@
 // Row 000873, which owns the stream format.
 
 #include "NarrowPhase.h"
+#include "NxPhysicsBackend.h"
 #include "NxRay.h"
 #include "NxUserRaycastReport.h"
 
@@ -388,6 +389,7 @@ void __fastcall NxEmitContactFeatures(NxContactSink* sink, NxU32 edx, void* obje
 	NxU32 separationBits, const NxVec3* point, const NxVec3* normal, NxU32 featureId0, NxU32 featureId1,
 	NxU32 featureWord0, NxU32 featureWord1);
 
+#if NX_PHYSICS_USE_X87
 // 001903 at 0x00048b30: eax the count, ecx the vertices; caller cleans.
 NxU32 nxPolygonContainsPoint(float x, float y);
 
@@ -396,6 +398,10 @@ NxU32 nxClipEdgeToPolygonPlane();
 
 // 001909 at 0x00048e30: cdecl, 22 arguments (see the definition).
 void NxConvexPolygonContacts();
+
+#else
+#include "portable/NxPolygonContactInterfaces.h"
+#endif
 
 // 001820 at 0x000411a0: the convex/convex entry, matrix-A signature.
 void NxContactConvexConvex(const NxCollisionShape* shape0, const NxCollisionShape* shape1,

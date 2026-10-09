@@ -57,6 +57,13 @@ if(NX_PORTABLE_TRIANGLE_FAN)
     endif()
     include(TriangleFanTargets.cmake)
 endif()
+option(NX_PORTABLE_CONTACT_POLYGON "Build genuine contact stream and complete polygon contacts" OFF)
+if(NX_PORTABLE_CONTACT_POLYGON)
+    if(NOT DEFINED ICE_TREE)
+        include(IceTopologyTargets.cmake)
+    endif()
+    include(ContactPolygonTargets.cmake)
+endif()
 set(GEOMETRY_SCHEMA_TOOL "${CMAKE_CURRENT_SOURCE_DIR}/../../docs/reconstruction/novodex-physics/tools/geometry_fixture_schema.py")
 add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/GeometryFixtureRows.h"
     COMMAND "${Python3_EXECUTABLE}" "${GEOMETRY_SCHEMA_TOOL}" header

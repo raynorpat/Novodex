@@ -3990,11 +3990,7 @@ void nxDestroyCachedList(void* self)
 // phys_fn_000004. The first spelling hard-coded the oracle's absolute
 // 0x100b4f50: in the candidate process that is oracle code reached with
 // ecx invalid -- the differential caught it as c0000005 at 0xb4f53.
-void nxContainerAddThunk(void* innerThis)
-	{
-	reinterpret_cast<SdkContainer*>(
-		reinterpret_cast<unsigned>(innerThis) + 0x28)->empty();
-	}
+#include "ContactStreamRelease.inl"
 
 // phys_fn_002379 (0x5b860): virtual slot-1 wrapper -- invokes arg's own
 // virtual slot 1 and always returns false.

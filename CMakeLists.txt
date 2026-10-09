@@ -231,7 +231,7 @@ if(NX_PHYSICS_USE_X87)
 		Physics/src/MassProperties.cpp
 		Physics/src/SmoothNormals.cpp
 		Physics/src/NarrowPhase.cpp
-		Physics/src/ContactGeneration.cpp
+		Physics/src/ContactGeneration.cpp Physics/src/ContactPolygon.cpp Physics/src/ContactStream.cpp
 		Physics/src/Distance.cpp
 		Physics/src/PMap.cpp
 		Physics/src/ContactBoxMeshICE.cpp
@@ -882,7 +882,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
 		Physics/src/opcode/NovodexBoxPruning.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
-		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp Physics/src/Distance.cpp
+		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp Physics/src/ContactPolygon.cpp Physics/src/ContactStream.cpp Physics/src/Distance.cpp
 		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp
 		${PHYSICS_CORE_SOURCES})
 	target_include_directories(NxPhysicsInternalTests PRIVATE
@@ -987,7 +987,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# side's OPCODE models, OBBCollider and the Foundation SDK the Task 2i
 	# families need, apart from Opcode.h's pragmas (see PhysicsCollisionInflate.cpp).
 	add_executable(NxPhysicsCollisionTests tests/PhysicsCollisionTests.cpp tests/PhysicsCollisionInflate.cpp tests/PhysicsCollisionOpcode.cpp
-		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp
+		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp Physics/src/ContactPolygon.cpp Physics/src/ContactStream.cpp
 		Physics/src/Distance.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp
 		Physics/src/ContactBoxMeshICE.cpp Physics/src/ContactCapsuleMesh.cpp Physics/src/ContactMeshHeightfield.cpp Physics/src/ContactMeshMesh.cpp Physics/src/ContactPlaneMesh.cpp
