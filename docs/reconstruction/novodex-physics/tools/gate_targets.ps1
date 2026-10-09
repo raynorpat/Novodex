@@ -431,6 +431,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'release_shape count=1 remaining_first=1 remaining_released=0'
     )
     'NxPhysicsShapeVtableTests' = @(
+        'abi probe applygroup oracle_flags=0 candidate_flags=0 state_equal=1 mismatches=0'
+        'abi probe negative_controls register_flags=1e stack_flags=1'
         'collision dtor family=0 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0'
         'collision dtor family=1 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0'
         'collision dtor family=2 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0'
@@ -439,7 +441,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision dtor families=5 mismatches=0'
         'collision dtor member-only mutant mismatches=5'
         'collision primary dtor families=5 mismatches=0'
-        'shape vtable oracle_digest=ed1294b6 cases=644 mismatches=0'
+        'shape vtable oracle_digest=ed1294b6 cases=645 mismatches=0'
         'shape vtable owner_notify oracle_slot=10 candidate_slot=10 oracle_calls=1 candidate_calls=1 owner_forwarded=1 box_forwarded=1 mismatches=0'
         'shape vtable base_stub slot4 oracle_false=1 candidate_false=1 output_preserved=1'
         'shape vtable base_stub slot5 oracle_null=1 candidate_null=1 esp_balanced=1'
@@ -5657,7 +5659,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2605  # previous 2,604 plus the member-only destructor mutation control
+    '5' = 2607  # previous 2,605 plus the stack/register ABI probe and its negative controls
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths
