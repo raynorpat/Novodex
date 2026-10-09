@@ -9591,3 +9591,8 @@ Evidence index: phys_fn_004013 mutation detected at stdout_delta=20; restored co
 
 The registered NxPhysicsCoreDumpTests differential caught replacing SceneDump::writeJointLine with a no-op: both processes exited zero, stderr matched exactly, and stdout_delta=3922. The restored control returned stdout_delta=0. Detailed evidence: `evidence/phase6-coredump-004015-write-joint-line.md`.
 Evidence index: phys_fn_004015 no-op mutation detected at stdout_delta=3922; restored control stdout_delta=0.
+
+## Phase 6 closure measurement — trigger-flag writer (phys_fn_004017)
+
+The registered NxPhysicsCoreDumpTests differential caught replacing SceneDump::writeTriggerFlags with a no-op: both processes exited zero, stderr matched exactly, and stdout_delta=46. The restored control returned stdout_delta=0. Detailed evidence: `evidence/phase6-coredump-004017-trigger-flags.md`.
+Evidence index: phys_fn_004017 no-op mutation detected at stdout_delta=46; restored control stdout_delta=0.
