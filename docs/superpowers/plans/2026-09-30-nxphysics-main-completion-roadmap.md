@@ -1490,3 +1490,8 @@ The public convex-mesh cooking differential is exact on current mainline (`NxPhy
 
 - `phys_fn_004002` (`SceneDump::hasDelimiter`) is mutation-falsified through the registered `NxPhysicsCoreDumpTests` staged-pair differential. Forcing the function to report no delimiters removes quotes around the fixture's `shoulder joint` label and changes the transcript by 124 bytes; the restored differential is exact again.
 - Phase 6 now has 41 closed function rows and 392 deferred function rows. No public Physics headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-coredump-004002-delimiter.md`.
+
+### Continuation — core-dump joint-name mutation closure (2026-10-09)
+
+- `phys_fn_004004` (`SceneDump::jointName`) is mutation-falsified through the registered `NxPhysicsCoreDumpTests` staged-pair differential. Replacing the joint label with a constant changes the transcript by 400 bytes; the restored differential is exact again.
+- Phase 6 now has 42 closed function rows and 391 deferred function rows. No public Physics headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-coredump-004004-joint-name.md`.
