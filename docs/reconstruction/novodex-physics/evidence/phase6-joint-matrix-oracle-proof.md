@@ -5,14 +5,14 @@ all ten joint families, including D6, fixed, and pulley cases, then prints the
 resulting object state, saved descriptors, scene enumeration and cleanup
 observations. The retained proof pins 284 explicit input lines (including the
 D6 and pulley-specific descriptor fields and six transformed-fixture inputs)
-and 2,874 oracle-output lines. It filters only the pair-directory, module
+and 2,996 oracle-output lines. It filters only the pair-directory, module
 count and loaded-module path records, whose values are machine-dependent; the
 oracle and source hashes remain pinned separately.
 
 The canonical input SHA-256 is
 `a35c701865c1044c912493ee63ffc759ceb70457ca779e086fd300b1da5f953e`; the
 oracle-output SHA-256 is
-`67268f0d9cf2efa82436825b48bdedb56aa445267628f0c8c99fa41b91999b36`. The
+`0b6b1ddc34cbc7bb87c90db41da48e9f94dd6858f67860745eedd38e5b64a395`. The
 case-family counts and self-hashed proof are recorded in
 `oracle-only-baselines.json` and
 `oracle-only-proofs/phase6-joint-matrix.json`.

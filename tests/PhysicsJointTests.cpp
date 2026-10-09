@@ -66,6 +66,92 @@
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
+extern "C" unsigned __cdecl nxJointAbiInvokeSretProbe(void* target,
+	void* self, void* result);
+
+extern "C" {
+volatile unsigned nxJointAbiSretBaseline = 0;
+volatile unsigned nxJointAbiSretFlags = 0;
+void* volatile nxJointAbiSretTarget = 0;
+void* volatile nxJointAbiSretThis = 0;
+void* volatile nxJointAbiSretResult = 0;
+}
+
+// Raw x86 __thiscall call for an NxVec3 return: ECX carries `this`, the hidden
+// result pointer is the sole stack argument, and the callee must pop four bytes.
+extern "C" __declspec(naked) unsigned __cdecl nxJointAbiInvokeSretProbe(
+	void*, void*, void*)
+	{
+	__asm {
+		push ebp
+		mov ebp, esp
+		push ebx
+		push esi
+		push edi
+		mov dword ptr [nxJointAbiSretBaseline], esp
+		mov eax, dword ptr [ebp + 8]
+		mov dword ptr [nxJointAbiSretTarget], eax
+		mov eax, dword ptr [ebp + 12]
+		mov dword ptr [nxJointAbiSretThis], eax
+		mov eax, dword ptr [ebp + 16]
+		mov dword ptr [nxJointAbiSretResult], eax
+		mov dword ptr [nxJointAbiSretFlags], 0
+		mov ebx, 0x6b13579b
+		mov esi, 0x6c2468ac
+		mov edi, 0x6d3579bd
+		mov ebp, 0x6e468ace
+		push dword ptr [nxJointAbiSretResult]
+		mov ecx, dword ptr [nxJointAbiSretThis]
+		call dword ptr [nxJointAbiSretTarget]
+		cmp esp, dword ptr [nxJointAbiSretBaseline]
+		je joint_sret_stack_ok
+		or dword ptr [nxJointAbiSretFlags], 1
+	joint_sret_stack_ok:
+		cmp ebx, 0x6b13579b
+		je joint_sret_ebx_ok
+		or dword ptr [nxJointAbiSretFlags], 2
+	joint_sret_ebx_ok:
+		cmp esi, 0x6c2468ac
+		je joint_sret_esi_ok
+		or dword ptr [nxJointAbiSretFlags], 4
+	joint_sret_esi_ok:
+		cmp edi, 0x6d3579bd
+		je joint_sret_edi_ok
+		or dword ptr [nxJointAbiSretFlags], 8
+	joint_sret_edi_ok:
+		cmp ebp, 0x6e468ace
+		je joint_sret_ebp_ok
+		or dword ptr [nxJointAbiSretFlags], 16
+	joint_sret_ebp_ok:
+		mov esp, dword ptr [nxJointAbiSretBaseline]
+		pop edi
+		pop esi
+		pop ebx
+		pop ebp
+		mov eax, dword ptr [nxJointAbiSretFlags]
+		ret
+	}
+}
+
+static void nxProbeJointSret(const char* family, unsigned index, const NxJoint* joint)
+	{
+	const NxVec3 expectedAnchor = joint->getGlobalAnchorVal();
+	const NxVec3 expectedAxis = joint->getGlobalAxisVal();
+	NxVec3 rawAnchor, rawAxis;
+	memset(&rawAnchor, 0xcd, sizeof(rawAnchor));
+	memset(&rawAxis, 0xcd, sizeof(rawAxis));
+	void** vtable = *reinterpret_cast<void***>(const_cast<NxJoint*>(joint));
+	const unsigned anchorFlags = nxJointAbiInvokeSretProbe(vtable[6],
+		const_cast<NxJoint*>(joint), &rawAnchor);
+	const unsigned axisFlags = nxJointAbiInvokeSretProbe(vtable[7],
+		const_cast<NxJoint*>(joint), &rawAxis);
+	const unsigned flags = anchorFlags | axisFlags;
+	const unsigned mismatches = memcmp(&expectedAnchor, &rawAnchor, sizeof(NxVec3)) != 0 ||
+		memcmp(&expectedAxis, &rawAxis, sizeof(NxVec3)) != 0;
+	printf("case=%s index=%u abi_sret cases=2 flags=%x mismatches=%u\n",
+		family, index, flags, mismatches);
+	}
+
 // NxJointDesc::setGlobalAnchor and setGlobalAxis are inline and call these two
 // exported rows, so using the inline methods would add an import for them. This
 // harness loads the pair by LoadLibraryEx and must not link against either side's
@@ -198,6 +284,7 @@ static bool nxPrintInternal = false;
 
 static void nxPrintInternalWords(const char* family, unsigned index, const NxJoint* joint)
 	{
+	nxProbeJointSret(family, index, joint);
 	if(!nxPrintInternal)
 		return;
 	const unsigned char* np = reinterpret_cast<const unsigned char*>(joint);

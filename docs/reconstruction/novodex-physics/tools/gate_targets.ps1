@@ -3961,42 +3961,52 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsJointTests' = @(
         'case=revolute index=0 created=yes',
+        'case=revolute index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=3f800000.00000000.00000000 state=0',
         'case=revolute index=0 actors a=match b=match',
         'case=revolute index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=prismatic index=0 created=yes',
+        'case=prismatic index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=prismatic index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=prismatic index=3 type=0 is_prismatic=yes is_revolute=no',
         'case=prismatic index=3 saved anchor0=40000000.40800000.00000000 anchor1=c0000000.40800000.00000000',
         'case=cylindrical index=0 created=yes',
+        'case=cylindrical index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=cylindrical index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=cylindrical index=3 type=2 is_cylindrical=yes is_prismatic=no',
         'case=cylindrical index=3 saved normal0=bed105ec.bed105ec.3f5105ec normal1=bed105ec.bed105ec.3f5105ec',
         'case=spherical index=0 created=yes',
+        'case=spherical index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=spherical index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=spherical index=3 flags=00000009 projection_mode=1',
         'case=spherical index=3 saved twist_limit=bf000000.3e800000.3f800000.3f400000.00000000.3f000000 swing_limit=3f200000.3f000000.3f400000',
         'case=point_on_line index=0 created=yes',
+        'case=point_on_line index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=point_on_line index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=point_on_line index=3 type=4 is_point_on_line=yes is_revolute=no',
         'case=point_on_line index=3 saved anchor0=40000000.40800000.00000000 anchor1=c0000000.40800000.00000000',
         'case=point_in_plane index=0 created=yes',
+        'case=point_in_plane index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=point_in_plane index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=point_in_plane index=3 type=5 is_point_in_plane=yes is_revolute=no',
         'case=point_in_plane index=3 saved anchor0=40000000.40800000.00000000 anchor1=c0000000.40800000.00000000',
         'case=distance index=0 created=yes',
+        'case=distance index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=distance index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=distance index=3 type=6 is_distance=yes is_revolute=no',
         'case=distance index=0 saved max_distance=40200000 min_distance=3f000000 spring=41200000.3f000000.3e800000 flags=00000007',
         'case=pulley index=0 created=yes',
+        'case=pulley index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=pulley index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=pulley index=3 type=7 is_pulley=yes is_distance=no',
         'case=pulley index=0 saved distance=40c00000 stiffness=3f400000 ratio=3fc00000 flags=00000001',
         'case=fixed index=0 created=yes',
+        'case=fixed index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=fixed index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=fixed index=3 type=8 is_fixed=yes is_pulley=no',
         'case=fixed index=3 saved anchor0=40000000.40800000.00000000 anchor1=c0000000.40800000.00000000',
         'case=d6 index=0 created=yes',
+        'case=d6 index=0 abi_sret cases=2 flags=0 mismatches=0',
         'case=d6 index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=d6 index=3 type=9 is_d6=yes is_fixed=no',
         'case=d6 index=0 saved motions=2.0.2.0.2.0',
@@ -5685,7 +5695,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1241  # previous 1239 plus the two ActorPairEffector deleting-destructor checks
+    '6' = 1251  # previous 1241 plus ten joint-family structure-return checks
                # previous 1238 plus the D6 public global-anchor readback
                # previous 1234 plus three contended D6 drive write-lock reports
                # previous 1233 plus the D6 contended drive-position write-lock report

@@ -29,4 +29,8 @@ actor abi_sret actor_cases=19 shape_cases=6 flags=0 mismatches=0 wrong_cleanup_d
 The negative control omits the required callee stack cleanup and is detected.
 Phase 5 registers this output as a required assertion and raises its coverage
 floor by one. This closes the `NxActor` aggregate-return ABI surface; aggregate
-returns on joint and fluid interfaces remain to be audited.
+returns on the `NxJoint` interface are checked by the Phase 6 joint-family
+probe; the fluid-emitter interface remains to be audited. The available
+candidate tree currently implements low-level `NxFluid*` C exports but no
+fluid-emitter class implementation. Joint evidence:
+`phase6-joint-structure-return-abi.md`.
