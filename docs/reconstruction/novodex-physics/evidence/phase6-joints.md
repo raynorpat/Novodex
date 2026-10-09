@@ -9955,3 +9955,14 @@ The registered `NxPhysicsJointAllocatorTests` allocator-A/B fixture creates and 
 ## Phase 6 closure measurement — island-object teardown (`phys_fn_004167`)
 
 Island-object teardown row `phys_fn_004167` is reconstructed in `Physics/src/core/JointSupport.cpp` and directly compared with the pinned oracle by `NxPhysicsJointSupportTests` (registered as an oracle differential in Phases 6 and 7). The baseline releases three elements in order 103, 101, 102 with flag 1, frees both array blocks, clears both array triples, preserves the `+0x0c` dword, and reports `mismatches=0`. An immediate-return mutant is caught with `mismatches=4` and candidate exit 1. Detailed fixture and mutation record: `evidence/phase6-joint-row004167-island-teardown.md`.
+# Fluid-emitter ABI rows continued in Phase 7
+
+`phys_fn_003792`, `phys_fn_003804`, `phys_fn_003806`, `phys_fn_003808`, `phys_fn_003816`, `phys_fn_003818`, and `phys_fn_003820` are closed by the pinned-oracle ABI probe. The row-specific constructor and getter mutations, detected mismatch counts, and the restored zero-mismatch control are recorded in [fluid-emitter-aggregate-abi-2026-10-09.md](fluid-emitter-aggregate-abi-2026-10-09.md).
+
+- `phys_fn_003792`: changing the cleared +0x0c secondary-base word was caught, `mismatches=1`.
+- `phys_fn_003804`: changing the global-pose source offset was caught, `mismatches=2`.
+- `phys_fn_003806`: changing the global-position source offset was caught, `mismatches=2`.
+- `phys_fn_003808`: changing the global-orientation source offset was caught, `mismatches=2`.
+- `phys_fn_003816`: changing the local-pose source offset was caught, `mismatches=2`.
+- `phys_fn_003818`: changing the local-position source offset was caught, `mismatches=2`.
+- `phys_fn_003820`: changing the local-orientation source offset was caught, `mismatches=2`.

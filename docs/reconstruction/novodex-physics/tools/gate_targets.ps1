@@ -64,9 +64,9 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
     '2' = @()
     '3' = @('NxPhysicsCollisionTests')
     '4' = @('NxPhysicsAssetTests', 'NxPhysicsThirdPartyTests')
-    '5' = @('NxPhysicsObjectLayoutTests', 'NxPhysicsShapeVtableTests')
+    '5' = @('NxPhysicsObjectLayoutTests', 'NxPhysicsShapeVtableTests', 'NxPhysicsFluidEmitterAbiTests')
     '6' = @('NxPhysicsJointDescTests', 'NxPhysicsJointTests', 'NxPhysicsObjectLayoutTests', 'NxPhysicsJointSupportTests')
-    '7' = @('NxPhysicsJointSupportTests')
+    '7' = @('NxPhysicsJointSupportTests', 'NxPhysicsFluidEmitterAbiTests')
     '8' = @()
 }
 
@@ -86,6 +86,11 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from 89978 to 3521 and leaves stdout_delta at 0, and this is what turns that
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
+    'NxPhysicsFluidEmitterAbiTests' = @(
+        'fluid emitter ctor size=24 secondary_vptr_nonnull=1 internal=1 mismatches=0'
+        'fluid emitter raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
+        'fluid emitter aggregate cases=6 mismatches=0'
+    )
     'NxPhysicsTriangleMeshApiTests' = @(
         'triangle_mesh case=descriptor16 created=1',
         'triangle_mesh case=implicit_indices created=1',
@@ -5821,6 +5826,7 @@ $NxRegisteredStaticProofTargets = @(
 $NxRegisteredOracleDifferentialTargets = @(
     'NxPhysicsAssetTests',
     'NxPhysicsCollisionTests',
+	'NxPhysicsFluidEmitterAbiTests',
     'NxPhysicsJointDescTests',
     'NxPhysicsJointTests',
 	'NxPhysicsJointSupportTests',

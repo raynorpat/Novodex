@@ -2,10 +2,11 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. The disabled FluidManager release path (phys_fn_003643) is mutation-falsified through its seeded array-removal and deleting-dispatch fixture. The inert flushStream slot (phys_fn_000333) is mutation-falsified through a direct public-call fixture and an error-report mutation. Phase 7 owns 561 function rows and 502 data objects: 31 functions are closed, 293 reconstructed functions remain unfalsified, 237 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. Scene post-step row phys_fn_000615 is now mutation-falsified by NxPhysicsSimulationTests: replacing row000615 with a no-op changes the staged transcript by 7,232 bytes, and the restored control is exact. The ledger accounts for every owned row without treating transcript agreement alone as closure. Actor visualization row phys_fn_000020 is caught by NxPhysicsSceneVisualizeTests: a no-op changes the staged transcript by 916 bytes (both exits zero, exact stderr); the restored control is exact.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. The disabled FluidManager release path (phys_fn_003643) is mutation-falsified through its seeded array-removal and deleting-dispatch fixture. The inert flushStream slot (phys_fn_000333) is mutation-falsified through a direct public-call fixture and an error-report mutation. Phase 7 owns 561 function rows and 502 data objects: 31 functions are closed, 293 reconstructed functions remain unfalsified, 237 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. Scene post-step row phys_fn_000615 is now mutation-falsified by NxPhysicsSimulationTests: replacing row000615 with a no-op changes the staged transcript by 7,232 bytes, and the restored control is exact. The ledger accounts for every owned row without treating transcript agreement alone as closure. Actor visualization row phys_fn_000020 is caught by NxPhysicsSceneVisualizeTests: a no-op changes the staged transcript by 916 bytes (both exits zero, exact stderr); the restored control is exact. Fluid emitter ABI continuation (2026-10-09): rows phys_fn_003792 and 003804/003806/003808/003816/003818/003820 are mutation-falsified by NxPhysicsFluidEmitterAbiTests, registered to Phase 7 and also exercised by Phase 5. The constructor mutation changed its cleared secondary-base word and was detected with mismatches=1; each of the six aggregate getter copy-offset mutations was detected with mismatches=2. Restored oracle control reports zero constructor, raw ABI, and aggregate mismatches; see evidence/fluid-emitter-aggregate-abi-2026-10-09.md.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection. The direct flushStream mutation is tested by NxPhysicsSimulationTests and measured as stdout_delta=554 with candidate_exit=1.",
-    "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
+    "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none.",
+    "oracle_differential_falsified": "a row-specific mutation was rebuilt in the candidate wrapper and caught by the pinned-oracle NxPhysicsFluidEmitterAbiTests probe registered to this phase; mismatches is the measured nonzero probe count, and the restored control matched all six aggregate-return values and x86 call conventions."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction.",
@@ -20,8 +21,9 @@
   },
   "counts": {
     "differential_falsified": 31,
-    "deferred_reconstructed_not_falsified": 293,
-    "deferred_not_reconstructed_in_phase": 237
+    "oracle_differential_falsified": 7,
+    "deferred_reconstructed_not_falsified": 287,
+    "deferred_not_reconstructed_in_phase": 236
   },
   "closed": [
     {
@@ -333,6 +335,83 @@
         "mutation": "In a throwaway archive of mainline 40a5ddcc, replaced NxActorVisualRecord::visualize (phys_fn_000020) with a no-op, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsSceneVisualizeTests staged-pair differential. The mutation was detected with oracle_exit=0, candidate_exit=0, stdout_delta=916, stderr_exact=True. Restoring and rebuilding returned both exits=0, stdout_delta=0, stderr_exact=True.",
         "detected": "stdout_delta=916"
       }
+    },
+    {
+      "id": "phys_fn_003792",
+      "rva": "0x0008c2d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the candidate implementation for phys_fn_003792: constructor secondary-base word +0x0c: mUnknown0c(0) -> reinterpret_cast<void*>(1). Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=1. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
+        "detected": "mismatches=1"
+      },
+      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
+    },
+    {
+      "id": "phys_fn_003804",
+      "rva": "0x0008c590",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the candidate implementation for phys_fn_003804: global pose copy source +0x48 -> +0x4c. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
+        "detected": "mismatches=2"
+      },
+      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
+    },
+    {
+      "id": "phys_fn_003806",
+      "rva": "0x0008c5e0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the candidate implementation for phys_fn_003806: global position copy source +0x6c -> +0x68. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
+        "detected": "mismatches=2"
+      },
+      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
+    },
+    {
+      "id": "phys_fn_003808",
+      "rva": "0x0008c620",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the candidate implementation for phys_fn_003808: global orientation copy source +0x48 -> +0x4c. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
+        "detected": "mismatches=2"
+      },
+      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
+    },
+    {
+      "id": "phys_fn_003816",
+      "rva": "0x0008c870",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the candidate implementation for phys_fn_003816: local pose copy source +0x18 -> +0x1c. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
+        "detected": "mismatches=2"
+      },
+      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
+    },
+    {
+      "id": "phys_fn_003818",
+      "rva": "0x0008c8a0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the candidate implementation for phys_fn_003818: local position copy source +0x3c -> +0x38. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
+        "detected": "mismatches=2"
+      },
+      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
+    },
+    {
+      "id": "phys_fn_003820",
+      "rva": "0x0008c8d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the candidate implementation for phys_fn_003820: local orientation copy source +0x18 -> +0x1c. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
+        "detected": "mismatches=2"
+      },
+      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
     }
   ],
   "deferred": [
@@ -2896,14 +2975,6 @@
       "driving_phases": []
     },
     {
-      "id": "phys_fn_003792",
-      "rva": "0x0008c2d0",
-      "size": 53,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
       "id": "phys_fn_003794",
       "rva": "0x0008c310",
       "size": 51,
@@ -4612,60 +4683,6 @@
       "id": "phys_fn_003784",
       "rva": "0x0008c210",
       "size": 39,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_003804",
-      "rva": "0x0008c590",
-      "size": 71,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_003806",
-      "rva": "0x0008c5e0",
-      "size": 55,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_003808",
-      "rva": "0x0008c620",
-      "size": 51,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_003816",
-      "rva": "0x0008c870",
-      "size": 43,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_003818",
-      "rva": "0x0008c8a0",
-      "size": 43,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_003820",
-      "rva": "0x0008c8d0",
-      "size": 43,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],

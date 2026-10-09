@@ -70662,13 +70662,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1416",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12872",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA constructor at 0x8c2d0 builds a 0x18-byte wrapper: primary NxFluidEmitter base at +0, secondary 0x0c-byte read-lock base at +8, zeroed words at +4/+0c/+10, and internal pointer at +14.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests in passing Phase 7 oracle gate: direct call through the pinned NxFluidEmitter vtable and candidate NpFluidEmitter wrapper matched all six aggregate values; raw x86 calls returned the hidden output pointer in EAX and balanced ESP. Temporary mutation constructor secondary-base word +0x0c: mUnknown0c(0) -> reinterpret_cast<void*>(1) was detected (mismatches=1); restored run reports ctor mismatches=0, raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0, aggregate cases=6 mismatches=0.",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::NpFluidEmitter(void*)"
     },
     {
       "id": "phys_fn_003793",
@@ -70878,13 +70880,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "locked pose-copy accessor (0x8c590, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1422",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12891",
       "static_proof": "static review of the recorded shape: locked pose-copy accessor (0x8c590, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via lockacc8 differential (3z152): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests in passing Phase 7 oracle gate: direct call through the pinned NxFluidEmitter vtable and candidate NpFluidEmitter wrapper matched all six aggregate values; raw x86 calls returned the hidden output pointer in EAX and balanced ESP. Temporary mutation global pose copy source +0x48 -> +0x4c was detected (mismatches=2); restored run reports ctor mismatches=0, raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0, aggregate cases=6 mismatches=0.",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::getGlobalPoseVal() const"
     },
     {
       "id": "phys_fn_003805",
@@ -70914,13 +70918,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "locked three-dword copy accessor (0x8c5e0, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1423",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12892",
       "static_proof": "locks [self+0x10], copies three dwords from [field+0x6c] (field from [self+0x14]) into the out argument, unlocks and returns out; ret 4",
-      "dynamic_proof": "confirmed via lockacc7 differential (3z151): failures=0, with the Foundation lock API bound to __stdcall no-op stubs; the earlier instability was a test overrun fixed in 3z151, not a property of these rows",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests in passing Phase 7 oracle gate: direct call through the pinned NxFluidEmitter vtable and candidate NpFluidEmitter wrapper matched all six aggregate values; raw x86 calls returned the hidden output pointer in EAX and balanced ESP. Temporary mutation global position copy source +0x6c -> +0x68 was detected (mismatches=2); restored run reports ctor mismatches=0, raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0, aggregate cases=6 mismatches=0.",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::getGlobalPositionVal() const"
     },
     {
       "id": "phys_fn_003807",
@@ -70950,13 +70956,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "locked nine-dword copy accessor (0x8c620, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1424",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12893",
       "static_proof": "locks [self+0x10], copies nine dwords from [field+0x48] (field from [self+0x14]) into the out argument, unlocks and returns out; ret 4",
-      "dynamic_proof": "confirmed via lockacc7 differential (3z151): failures=0, with the Foundation lock API bound to __stdcall no-op stubs; the earlier instability was a test overrun fixed in 3z151, not a property of these rows",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests in passing Phase 7 oracle gate: direct call through the pinned NxFluidEmitter vtable and candidate NpFluidEmitter wrapper matched all six aggregate values; raw x86 calls returned the hidden output pointer in EAX and balanced ESP. Temporary mutation global orientation copy source +0x48 -> +0x4c was detected (mismatches=2); restored run reports ctor mismatches=0, raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0, aggregate cases=6 mismatches=0.",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::getGlobalOrientationVal() const"
     },
     {
       "id": "phys_fn_003809",
@@ -71094,15 +71102,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "locked pose copy from +0x18 (0x8c870, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1428",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12909",
       "static_proof": "locks [self+0x10], calls the copy helper 003563 on [self+0x14] to write the 12-dword pose at [field+0x18] into the out argument, then unlocks; ret 4",
-      "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests in passing Phase 7 oracle gate: direct call through the pinned NxFluidEmitter vtable and candidate NpFluidEmitter wrapper matched all six aggregate values; raw x86 calls returned the hidden output pointer in EAX and balanced ESP. Temporary mutation local pose copy source +0x18 -> +0x1c was detected (mismatches=2); restored run reports ctor mismatches=0, raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0, aggregate cases=6 mismatches=0.",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
-      "implementation_symbol": "phys_fn_003816 (harness dispatch table)"
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::getLocalPoseVal() const"
     },
     {
       "id": "phys_fn_003817",
@@ -71132,13 +71140,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "locked copy accessor returning out (0x8c8a0, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1429",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12910",
       "static_proof": "locks [self+0x10], calls helper 003565 on [self+0x14] to write three dwords from [field+0x3c] into the out argument, unlocks and returns out; ret 4",
-      "dynamic_proof": "confirmed via lockacc3 differential (3z143): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests in passing Phase 7 oracle gate: direct call through the pinned NxFluidEmitter vtable and candidate NpFluidEmitter wrapper matched all six aggregate values; raw x86 calls returned the hidden output pointer in EAX and balanced ESP. Temporary mutation local position copy source +0x3c -> +0x38 was detected (mismatches=2); restored run reports ctor mismatches=0, raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0, aggregate cases=6 mismatches=0.",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::getLocalPositionVal() const"
     },
     {
       "id": "phys_fn_003819",
@@ -71168,15 +71178,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "locked copy accessor, 9 dwords from +0x18 (0x8c8d0, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1430",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12911",
       "static_proof": "locks [self+0x10], calls the copy helper 003567 on [self+0x14] to write nine dwords from [field+0x18] into the out argument, then unlocks; ret 4",
-      "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests in passing Phase 7 oracle gate: direct call through the pinned NxFluidEmitter vtable and candidate NpFluidEmitter wrapper matched all six aggregate values; raw x86 calls returned the hidden output pointer in EAX and balanced ESP. Temporary mutation local orientation copy source +0x18 -> +0x1c was detected (mismatches=2); restored run reports ctor mismatches=0, raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0, aggregate cases=6 mismatches=0.",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
-      "implementation_symbol": "phys_fn_003820 (harness dispatch table)"
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::getLocalOrientationVal() const"
     },
     {
       "id": "phys_fn_003821",

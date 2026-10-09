@@ -870,6 +870,18 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_compile_definitions(NxPhysicsInternalTests PRIVATE NX_PHYSICS_DLL=1 NX_TEST_REAL_NARROW_PHASE=1)
 	target_link_libraries(NxPhysicsInternalTests NxFoundation NxOpcode NxQhull)
 
+	# Public NxFluidEmitter aggregate-return ABI probe. It drives the six
+	# public-interface getters against the pinned oracle and the candidate
+	# wrapper compiled into this harness.
+	add_executable(NxPhysicsFluidEmitterAbiTests tests/PhysicsFluidEmitterAbiTests.cpp
+		Physics/src/NpFluidEmitter.cpp)
+	target_include_directories(NxPhysicsFluidEmitterAbiTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include Physics/src/include)
+	target_link_libraries(NxPhysicsFluidEmitterAbiTests NxFoundation bcrypt)
+	if(MSVC)
+		target_compile_options(NxPhysicsFluidEmitterAbiTests PRIVATE /arch:IA32)
+	endif()
+
 	# Phase 5 object-layout and shape-vtable differentials. They pin the
 	# reconstructed object families, constructor bytes, owner accessors, and
 	# deleting-destructor behavior against the shipped DLL. See
