@@ -174,9 +174,10 @@ a `sizeof == 0x60` assert; field names stay by offset.
 - **Teardown.** Actor release needs nothing: the oracle's body destructor does not touch +0x204.
   `nxSceneDelete` now frees `[+0x5ac]-4` when +0x5ac is non-null (000663's 0x14019-0x14034) and
   clears it. In the candidate +0x5ac is always null, because only the step grows it.
-- **Not written:** 000600, 000611, 000613 and 000708. All four are reachable only from the
-  simulation step (002400 -> 000659 -> 000655), which the candidate does not have
-  (`NpScene::simulate` is empty). They belong with the step.
+- **Written in the step path:** 000611 now prepares and solves active islands in
+  `NxSceneInternal::row000611`; its 000613 continuation copies solved records back through
+  `row000708`. Both are mutation-falsified through `NxPhysicsSimulationTests`. The separate
+  000600/000708 behavior outside this continuation remains tracked with the simulation-step rows.
 - **No public observable.** Before the first simulate, both DLLs hold +0x204 = 0 on every
   body. No public call reads +0x204 without a step.
 

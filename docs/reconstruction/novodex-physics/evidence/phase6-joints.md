@@ -9601,3 +9601,35 @@ Evidence index: phys_fn_004017 no-op mutation detected at stdout_delta=46; resto
 
 The registered NxPhysicsCoreDumpTests differential caught changing SceneDump::writeAsset's `PsShape Shape%d` label to a constant: both processes exited zero, stderr matched exactly, and stdout_delta=58. The restored control returned stdout_delta=0. Detailed evidence: `evidence/phase6-coredump-004057-asset-shape-label.md`.
 Evidence index: phys_fn_004057 shape-label mutation detected at stdout_delta=58; restored control stdout_delta=0.
+
+## Phase 7 Scene-step closure — active integration rows (`phys_fn_000610`, `000611`, `000613`)
+
+The simulation path now has explicit private `NxSceneInternal::row000610` and
+`row000611` implementations in `Physics/src/Scene.cpp`. `row000610` integrates the
+active root and sleep-group bodies using the Scene timestep fields. `row000611`
+prepares records for each active island, runs integration and the contact/joint
+solve path, and copies the solved body records back. The 74-byte `000613` region is
+the continuation of `000611`, not an independent ABI entry; its copy-back loop is
+represented inside `row000611`. Private declarations live in
+`Physics/src/include/Scene.h`; no public headers changed.
+
+A clean `git archive` of implementation commit `f3a6cc08` was configured and built
+as Win32 Release, including `NxPhysicsSimulationTests`. Its restored candidate
+matched the pinned oracle (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`,
+`stderr_exact=True`). Three separate behavior mutations were rebuilt and run with
+the registered staged-pair `NxPhysicsSimulationTests` gate:
+
+| Census row | Mutation | Gate result |
+| --- | --- | --- |
+| `phys_fn_000610` (`0x11210`) | Replaced the `row000726` integration dispatch with a no-op. | Rejected; candidate exit 1, stdout delta 6,718. |
+| `phys_fn_000611` (`0x11260`) | Returned before active-island preparation, solving, copy-back, and cleanup. | Rejected; candidate exit 1, stdout delta 6,676. |
+| `phys_fn_000613` (`0x11370`, continuation) | Replaced its `row000708` copy-back dispatch with a no-op. | Rejected; both exits 0, stderr exact, stdout delta 6,740. |
+
+Mutation measurements: `phys_fn_000610` detected `stdout_delta=6718`; `phys_fn_000611` detected `stdout_delta=6676`; `phys_fn_000613` detected `stdout_delta=6740`.
+
+Each mutation build and transcript is recorded in the ignored clean-archive build
+directory `build/phase-step-rows/closure-archive-f3a6cc08/build-row/` as
+`mutation-000610-{build,diff}.log`, `mutation-000611-{build,diff}.log`, and
+`mutation-000613-{build,diff}.log`. `archive-baseline-diff.log` and
+`archive-restored-diff.log` record the exact clean baseline. The implementation
+branch's source build is also captured under `build/phase-step-rows/`.

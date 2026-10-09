@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. The disabled FluidManager release path (phys_fn_003643) is mutation-falsified through its seeded array-removal and deleting-dispatch fixture. The inert flushStream slot (phys_fn_000333) is mutation-falsified through a direct public-call fixture and an error-report mutation. Phase 7 owns 561 function rows and 502 data objects: 24 functions are closed, 295 reconstructed functions remain unfalsified, 242 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. The disabled FluidManager release path (phys_fn_003643) is mutation-falsified through its seeded array-removal and deleting-dispatch fixture. The inert flushStream slot (phys_fn_000333) is mutation-falsified through a direct public-call fixture and an error-report mutation. Phase 7 owns 561 function rows and 502 data objects: 27 functions are closed, 295 reconstructed functions remain unfalsified, 239 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. The ledger accounts for every owned row without treating transcript agreement alone as closure.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection. The direct flushStream mutation is tested by NxPhysicsSimulationTests and measured as stdout_delta=554 with candidate_exit=1.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
@@ -19,9 +19,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 24,
+    "differential_falsified": 27,
     "deferred_reconstructed_not_falsified": 295,
-    "deferred_not_reconstructed_in_phase": 242
+    "deferred_not_reconstructed_in_phase": 239
   },
   "closed": [
     {
@@ -262,6 +262,36 @@
       "falsification": {
         "mutation": "Changed NxSceneInternal::getNbPairs from returning the pair counter at +0x3c to returning that counter + 1 in a throwaway source mutation; rebuilt NxPhysics.dll and ran the registered NxPhysicsPairFlagTests differential against the pinned pair.",
         "detected": "stdout_delta=6"
+      }
+    },
+    {
+      "id": "phys_fn_000610",
+      "rva": "0x00011210",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a fresh git archive of implementation commit f3a6cc08, replaced row000610\u2019s call to Row000726Fixture::row000726(timestep, inverseTimestep) with a no-op, rebuilt NxPhysics.dll, and ran the registered staged-pair NxPhysicsSimulationTests differential against the pinned oracle. The gate rejected the mutant; candidate_exit=1, oracle_exit=0, stderr_exact=False, stdout_delta=6718. The restored archive matched exactly (both exits=0, stderr_exact=True, stdout_delta=0).",
+        "detected": "stdout_delta=6718"
+      }
+    },
+    {
+      "id": "phys_fn_000611",
+      "rva": "0x00011260",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a fresh git archive of implementation commit f3a6cc08, returned immediately from row000611 after loading the active-root pointer, suppressing island record preparation, solve, copy-back, and cleanup; rebuilt and ran the registered staged-pair NxPhysicsSimulationTests differential. The gate rejected the mutant; candidate_exit=1, oracle_exit=0, stderr_exact=False, stdout_delta=6676. The restored archive matched exactly (both exits=0, stderr_exact=True, stdout_delta=0).",
+        "detected": "stdout_delta=6676"
+      }
+    },
+    {
+      "id": "phys_fn_000613",
+      "rva": "0x00011370",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a fresh git archive of implementation commit f3a6cc08, replaced row000611\u2019s row000708 copy-back dispatch\u2014the code corresponding to the 000613 continuation\u2014with a no-op, rebuilt and ran the registered staged-pair NxPhysicsSimulationTests differential. The gate rejected the mutant; both exits=0, stderr_exact=True, stdout_delta=6740. The restored archive matched exactly (both exits=0, stderr_exact=True, stdout_delta=0).",
+        "detected": "stdout_delta=6740"
       }
     }
   ],
@@ -801,30 +831,6 @@
       "id": "phys_fn_000608",
       "rva": "0x00011190",
       "size": 124,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000610",
-      "rva": "0x00011210",
-      "size": 80,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000611",
-      "rva": "0x00011260",
-      "size": 269,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000613",
-      "rva": "0x00011370",
-      "size": 74,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []

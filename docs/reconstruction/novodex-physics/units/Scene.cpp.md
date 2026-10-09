@@ -420,10 +420,10 @@ bool __thiscall FUN_10010410(void *this,undefined4 *param_1,int param_2)
 ## phys_fn_000527 (0x00010450, 284 B, discovered)
 
 - ambiguous: no
-- source: None
-- implementation: None
-- prototype: None
-- calling convention: None, stack purge: None
+- source: Physics/src/Scene.cpp (continuation inside NxSceneInternal::row000611)
+- implementation: per-body row000708 copy-back and cleanup loop
+- prototype: continuation block; not an independent ABI entry
+- calling convention: inherited from phys_fn_000611 (thiscall Scene, no stack parameters)
 - callers: none
 - callees: none
 - indirect calls: none
@@ -2129,12 +2129,14 @@ void __fastcall FUN_10011190(ushort *param_1)
 
 ```
 
-## phys_fn_000610 (0x00011210, 80 B, discovered)
+## phys_fn_000610 (0x00011210, 80 B, closed)
 
 - ambiguous: no
-- source: None
-- implementation: None
-- prototype: undefined __fastcall FUN_10011210(int param_1)
+- source: Physics/src/Scene.cpp
+- implementation: NxSceneInternal::row000610
+- prototype: void NxSceneInternal::row000610()
+- reconstruction: walks active roots and sleep-group chains, calling row000726 with Scene timestep fields
+- ABI: private thiscall Scene member, no stack parameters
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000655 (0x000137e0)
 - callees: phys_fn_000726 (0x00016260)
@@ -2166,12 +2168,14 @@ void __fastcall FUN_10011210(int param_1)
 
 ```
 
-## phys_fn_000611 (0x00011260, 269 B, discovered)
+## phys_fn_000611 (0x00011260, 269 B, closed)
 
 - ambiguous: no
-- source: None
-- implementation: None
-- prototype: undefined __fastcall FUN_10011260(void * param_1)
+- source: Physics/src/Scene.cpp
+- implementation: NxSceneInternal::row000611
+- prototype: void NxSceneInternal::row000611()
+- reconstruction: prepares active-island records, runs row000730 and contact/joint solves, performs the 000613 copy-back continuation, then clears the step flag
+- ABI: private thiscall Scene member, no stack parameters
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000655 (0x000137e0)
 - callees: phys_fn_000600 (0x00010fe0), phys_fn_000708 (0x00015c20), phys_fn_000730 (0x00016830), phys_fn_004176 (0x0009b240)
@@ -2257,7 +2261,7 @@ void __fastcall FUN_10011260(void *param_1)
 
 ```
 
-## phys_fn_000613 (0x00011370, 74 B, discovered)
+## phys_fn_000613 (0x00011370, 74 B, closed; continuation of 000611)
 
 - ambiguous: no
 - source: None

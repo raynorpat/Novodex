@@ -3380,10 +3380,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation controller-rotated-initial-overlap escape position=3f800000.00000000.00000000 flags=00000000'
         'simulation controller-rotated-initial-overlap reverse position=bf800000.00000000.00000000 flags=00000000'
         'simulation controller-release actors-after-first=2 actors-after=2 stale-next-after-first=0 errors-after-first=0 errors-after-second=0'
-        'simulation effector-step setup count=1 awake=1 pos=00000000 spring=3f000000.3f800000.40800000.42c80000.42c80000 damper=c0200000.3fe00000.40e00000.41180000'
-        'simulation effector-step ready=1 fetched=1 vx=00000000'
-        'simulation effector-step second ready=1 fetched=1 vx=3e8e38e3'
-        'simulation effector-step third ready=1 fetched=1 vx=3f0a9508'
+        'simulation effector-step setup count=1 awake=1 pos=00000000 cmass=00000000.00000000.00000000 inertia=3eaaaaab.3eaaaaab.3eaaaaab spring=3f000000.3f800000.40800000.42c80000.42c80000 damper=c0200000.3fe00000.40e00000.41180000'
+        'simulation effector-step ready=1 fetched=1 v=00000000'
+        'simulation effector-step second ready=1 fetched=1 v=3e9277f6'
+        'simulation effector-step third ready=1 fetched=1 v=3f092d93'
     )
     'NxPhysicsCcdSimulationTests' = @(
         'ccd step=0 x=40e00000 vx=100.000 ready=1 fetched=1'

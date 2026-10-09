@@ -11560,13 +11560,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/235",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1544",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "Archive mutation: replaced NxSceneInternal::row000610 body integration dispatch to phys_fn_000726 with a no-op; NxPhysicsSimulationTests caught changed joint-break callback/transcript (candidate_exit=1, stdout_delta=6718).",
+      "notes": "ABI entry implemented as private NxSceneInternal::row000610; called from simulateFrame after effectors and before island solve. Oracle thiscall Scene-only entry; matched with candidate Scene member ABI."
     },
     {
       "id": "phys_fn_000611",
@@ -11578,13 +11578,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/236",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1549",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "Archive mutation: returned from NxSceneInternal::row000611 before island preparation/solve/copy-back; NxPhysicsSimulationTests caught changed joint-break callback/transcript (candidate_exit=1, stdout_delta=6676).",
+      "notes": "ABI entry implemented as private NxSceneInternal::row000611; prepares records, solves active islands, and invokes the 000613 continuation. Oracle thiscall Scene-only entry; matched with candidate Scene member ABI."
     },
     {
       "id": "phys_fn_000612",
@@ -11614,13 +11614,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/236",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1554",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00011260"
+      "dynamic_proof": "Archive mutation: replaced the 000613 continuation copy-back dispatch (row000708) inside NxSceneInternal::row000611 with a no-op; NxPhysicsSimulationTests caught changed simulation transcript (both exits=0, stderr_exact=True, stdout_delta=6740).",
+      "notes": "74-byte continuation of phys_fn_000611, not an independent ABI entry; implemented in row000611 as per-body row000708 copy-back and step-bit cleanup."
     },
     {
       "id": "phys_fn_000614",
