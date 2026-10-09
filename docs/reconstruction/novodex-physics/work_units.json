@@ -3468,12 +3468,12 @@
     "phys_fn_004072"
    ],
    "rows": {
-    "dynamically_gated": 28,
-    "reconstructed": 37
+    "dynamically_gated": 29,
+    "reconstructed": 36
    },
    "bytes": {
-    "dynamically_gated": 4956,
-    "reconstructed": 21614
+    "dynamically_gated": 5299,
+    "reconstructed": 21271
    },
    "phases": {
     "6": 65

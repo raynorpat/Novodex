@@ -9695,3 +9695,13 @@ archive caused the candidate to access-violate (`stdout_delta=9`, oracle exit
 0, candidate exit `-1073741819`, exact stderr). Restoring the row returned an
 exact control. Measurement index: `phys_fn_003928 stdout_delta=9`. Details:
 `evidence/phase6-effector-003928-event.md`.
+
+## Phase 6 effector world-anchor reader closure (`phys_fn_003964`)
+
+The registered `NxPhysicsCoreDumpTests` fixture serializes the world-space
+anchors returned by `SpringAndDamperEffector::getBodies`. Adding `1.0` to the
+first returned anchor's X coordinate in a throwaway archive changes the
+staged-pair transcript (`stdout_delta=10`, both exits zero, exact stderr).
+Restoring and rebuilding returns the exact control. Measurement index:
+`phys_fn_003964 stdout_delta=10`. Details:
+`evidence/phase6-effector-003964-getBodies.md`.
