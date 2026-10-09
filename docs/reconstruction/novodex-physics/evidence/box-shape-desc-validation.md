@@ -14,8 +14,17 @@ requires all three box dimensions to be finite and nonnegative. This matches
 the existing inline implementation in `Physics/include/NxShapeDesc.h` and
 `Physics/include/NxBoxShapeDesc.h`; public headers remain unchanged.
 
-The negative-dimension path is present through `NxActor::createShape` in the
-registered `NxPhysicsActorDynamicSetterTests` and
-`NxPhysicsActorShapeMutationTests` targets. The inventory now records the
-function as reconstructed, while Phase 5 retains it as unfalsified until a
-row-targeted mutation is caught by the staged gate.
+`NxPhysicsControllerSweepFaceTests` now records and asserts the Scene actor
+count after creating its box controller. With the pinned oracle and the
+restored candidate, the fixture reports two actors (the triangle-mesh obstacle
+and controller actor). A row-targeted mutation changed the temporary
+`Physics/src/NxBoxShapeDesc.h` copy from rejecting negative X dimensions to
+rejecting nonnegative X dimensions; it left the public header untouched. The
+candidate then reported one actor and exited 1, while the oracle reported two
+and exited 0. The staged pair rejected the mutant with `stdout_delta=5`.
+
+After removing the temporary header, the focused controller differential
+passed with exact output, and `NxPhysicsSimulationTests` also passed with exact
+output. Captured logs: `build/phase5-boxdesc-002324-focused-mutation.log`,
+`build/phase5-boxdesc-002324-restored-controller.log`, and
+`build/phase5-boxdesc-002324-restored-simulation.log`.

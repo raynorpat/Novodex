@@ -91,6 +91,10 @@ int wmain(int argc, wchar_t** argv)
 		*reinterpret_cast<const NxControllerDesc*>(controllerStorage));
 	if(!obstacle || !controller)
 		return nxFail("controller face fixture setup failed");
+	const NxU32 actorsAfterControllerCreate = scene->getNbActors();
+	printf("controller correction_face actors=%u\n", actorsAfterControllerCreate);
+	if(actorsAfterControllerCreate != 2)
+		return nxFail("box controller actor was not accepted");
 	NxU32 collisionFlags = 0xdeadbeef;
 	reinterpret_cast<NxControllerProbe*>(controller)->move(
 		NxVec3(0.0f, -3.0f, 0.0f), 0xffffffff, 0.001f, collisionFlags);
