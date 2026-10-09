@@ -376,3 +376,8 @@ Extended the existing staged-pair fixture to mark the scene lock as owned by ano
 ### M5.10 — D6 drive setter write-lock paths
 
 Expanded the staged-pair contention case to cover D6 orientation, linear-velocity, and angular-velocity wrappers. Mutating each callback report is caught at `stdout_delta=24`; the restored differential is exact. Three Phase 6/7 coverage lines were registered. See `docs/reconstruction/novodex-physics/evidence/phase6-joint-row004463-004467-d6-drive-locks.md`.
+
+
+### M5.11 — D6 wrapper constructor
+
+Closed `phys_fn_004469` using the existing staged-pair lifecycle fixture. A null internal-pointer mutation causes a candidate access violation (`stdout_delta=2916`); the restored differential is exact. No new coverage line was needed. See `docs/reconstruction/novodex-physics/evidence/phase6-joint-row004469-d6-constructor.md`.

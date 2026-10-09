@@ -25,3 +25,7 @@ Closed `phys_fn_004461` with the registered staged-pair lock-contention fixture.
 ### M5.10 — D6 drive setter write-lock paths
 
 Closed `phys_fn_004463`, `phys_fn_004465`, and `phys_fn_004467` with the staged-pair contention fixture. Each suppressed invalid-operation callback is caught at `stdout_delta=24`; restored output is exact. Three Phase 6/7 coverage lines were added.
+
+### M5.11 — D6 wrapper constructor
+
+Closed `phys_fn_004469`. Nulling its internal D6 pointer is caught by the staged-pair fixture as a candidate access violation (`stdout_delta=2916`); restored output is exact.
