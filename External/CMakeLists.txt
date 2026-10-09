@@ -105,7 +105,7 @@ add_library(NxOpcode STATIC
 	${OPCODE_TREE}/Ice/IceSegment.cpp
 	${OPCODE_TREE}/Ice/IceTriangle.cpp
 	${OPCODE_TREE}/Ice/IceUtils.cpp)
-target_include_directories(NxOpcode PUBLIC ${OPCODE_TREE})
+target_include_directories(NxOpcode PUBLIC ${OPCODE_TREE} "${CMAKE_CURRENT_SOURCE_DIR}/../Physics/src/include")
 # ICE_NO_DLL makes OPCODE_API and ICECORE_API empty -- this is a static library
 # inside NxPhysics.dll and exports nothing of its own, which is also what the
 # oracle's export table says. OPCODE_EXPORTS additionally suppresses Opcode.h's

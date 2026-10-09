@@ -28,6 +28,9 @@
 #include "EdgeList.h"
 
 #include <string.h>
+#if !NX_PHYSICS_USE_X87
+#include <cmath>
+#endif
 
 // .rdata 0x101080cc.
 static const char gEdgeListFile[] = "\\Epic\\Novodex\\SDKs\\Physics\\src\\EdgeList.cpp";
@@ -347,6 +350,7 @@ bool EdgeList::ComputeActiveEdges(NxU32 nb_faces, const NxU32* dfaces, const NxU
 			// (n.y p.y + n.z p.z) + n.x p.x + d, compared below zero.
 			const float* opposite = &verts[Op].x;
 			bool below;
+#if NX_PHYSICS_USE_X87
 			__asm
 				{
 				lea		ecx, PL
@@ -365,6 +369,10 @@ bool EdgeList::ComputeActiveEdges(NxU32 nb_faces, const NxU32* dfaces, const NxU
 				test	ah, 5
 				setnp	below
 				}
+#else
+			const double distance=((double(PL[1])*opposite[1]+double(PL[2])*opposite[2])+double(PL[0])*opposite[0])+PL[3];
+			below=distance<double(gEdgeListZero);
+#endif
 
 			if(below)
 				{
@@ -386,6 +394,7 @@ bool EdgeList::ComputeActiveEdges(NxU32 nb_faces, const NxU32* dfaces, const NxU
 				// product's length ((x^2 + z^2) + y^2) square-rooted and kept on
 				// the stack, the dot product ((x + z) + y), then |angle| > 0.1f.
 				bool wide;
+#if NX_PHYSICS_USE_X87
 				__asm
 					{
 					lea		ecx, N0
@@ -432,6 +441,14 @@ bool EdgeList::ComputeActiveEdges(NxU32 nb_faces, const NxU32* dfaces, const NxU
 					test	ah, 0x41
 					sete	wide
 					}
+#else
+				const double crossX=double(N1[2])*N0[1]-double(N0[2])*N1[1];
+				const double crossY=double(N0[2])*N1[0]-double(N1[2])*N0[0];
+				const double crossZ=double(N1[1])*N0[0]-double(N0[1])*N1[0];
+				const double length=std::sqrt((crossX*crossX+crossZ*crossZ)+crossY*crossY);
+				const double dot=(double(N1[0])*N0[0]+double(N1[2])*N0[2])+double(N1[1])*N0[1];
+				wide=std::fabs(std::atan2(length,dot))>double(gEdgeListActiveAngle);
+#endif
 				if(wide)
 					Active = true;
 				}

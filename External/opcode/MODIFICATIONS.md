@@ -166,3 +166,18 @@ its first min/max direct-field drive differed when both sides received a
 centre/extents object, then matched exactly after `USE_MINMAX` was propagated.
 This changes all Opcode AABBs, so other object and asset gates still require
 regression checks; the single helper's exact result is not proof of them.
+
+
+### Portable ICE topology gate (2026-10-09)
+
+`Ice/IceFPU.h` and `Ice/IceMemoryMacros.h` now have overlays retaining every
+original Win32 x87 definition behind `NX_PHYSICS_USE_X87`. Ordinary scalar arms
+implement the bitwise FastSqrt approximation, the four FCOMI/FCMOV min/max
+helpers, and StoreDwords. Min/max selects the operand representation explicitly
+so SSE MIN/MAX instruction selection cannot change equal signed-zero results.
+These are portability selections, separately measured by the actual-source
+`Portable.ConvexContact.IceTopology` gate; they are not additional shipped-source
+correspondence claims. Upstream bytes and legacy compiler options are retained.
+The vendor target publishes the canonical private backend-header include path.
+Unused native node-pointer packing, enum-forward declarations, compiler messages
+and include-path casing still require their owning platform work.

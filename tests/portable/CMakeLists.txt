@@ -7,6 +7,10 @@ target_compile_features(NxPortableFixtureTests PRIVATE cxx_std_11)
 target_compile_definitions(NxPortableFixtureTests PRIVATE NX_PHYSICS_USE_X87=0)
 novodex_portable_fp_options(NOVODEX_PORTABLE_FP_OPTIONS)
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
+option(NX_PORTABLE_ICE_TOPOLOGY "Build the actual ICE topology dependency gate" OFF)
+if(NX_PORTABLE_ICE_TOPOLOGY)
+    include(IceTopologyTargets.cmake)
+endif()
 set(GEOMETRY_SCHEMA_TOOL "${CMAKE_CURRENT_SOURCE_DIR}/../../docs/reconstruction/novodex-physics/tools/geometry_fixture_schema.py")
 add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/GeometryFixtureRows.h"
     COMMAND "${Python3_EXECUTABLE}" "${GEOMETRY_SCHEMA_TOOL}" header
