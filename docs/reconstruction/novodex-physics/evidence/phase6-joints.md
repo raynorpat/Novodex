@@ -9916,3 +9916,8 @@ The ten-family public joint matrix creates joints with actor records and observe
 ## Phase 6 closure measurement — joint limit-point setter (`phys_fn_004109`)
 
 The public D6 staged-pair case observes the stored point returned by `setLimitPoint`, even though the feature-availability result is false. Adding `1.0f` to the local X storage is caught for `phys_fn_004109` with `stdout_delta=2`, both exits zero, and exact stderr; the restored control is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-joint-row004109-limit-point.md`.
+
+
+## Phase 6 closure measurement — joint break-event slot (`phys_fn_004111`)
+
+The registered `NxPhysicsJointSlotTests` case invokes `Joint::row004111` on a live support record and observes joint state and support flags. An immediate return is caught for `phys_fn_004111` with `stdout_delta=4`, both exits zero, and exact stderr; the restored control is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-joint-row004111-break-event.md`.
