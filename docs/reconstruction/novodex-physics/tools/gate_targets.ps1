@@ -2488,7 +2488,13 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=allocator family=distance window=create allocator=physics mallocs=0 frees=0 reallocs=0 sizes=none',
         'case=allocator family=distance released=yes',
         'case=allocator family=distance window=release allocator=foundation mallocs=0 frees=2 reallocs=0 sizes=none',
-        'case=allocator family=distance window=release allocator=physics mallocs=0 frees=0 reallocs=0 sizes=none'
+        'case=allocator family=distance window=release allocator=physics mallocs=0 frees=0 reallocs=0 sizes=none',
+        'case=allocator family=prismatic created=yes',
+        'case=allocator family=prismatic window=create allocator=foundation mallocs=2 frees=0 reallocs=0 sizes=17c,1c',
+        'case=allocator family=prismatic window=create allocator=physics mallocs=0 frees=0 reallocs=0 sizes=none',
+        'case=allocator family=prismatic released=yes',
+        'case=allocator family=prismatic window=release allocator=foundation mallocs=0 frees=2 reallocs=0 sizes=none',
+        'case=allocator family=prismatic window=release allocator=physics mallocs=0 frees=0 reallocs=0 sizes=none'
     )
     # Task 6 review adds 12: the control word read back inside two step
     # windows per mode, and D6JointDump.txt read back after the pair is
@@ -5698,7 +5704,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1254  # previous 1,251 plus the three audited indirect-tail ABI probes
+    '6' = 1260  # previous 1,254 plus the six prismatic allocator lifecycle assertions
                # previous 1238 plus the D6 public global-anchor readback
                # previous 1234 plus three contended D6 drive write-lock reports
                # previous 1233 plus the D6 contended drive-position write-lock report
@@ -5718,7 +5724,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1432  # previous 1430 plus the two ActorPairEffector deleting-destructor checks
+    '7' = 1438  # previous 1,432 plus the six prismatic allocator lifecycle assertions
                # previous 1429 plus the D6 public global-anchor readback
                # previous 1425 plus three contended D6 drive write-lock reports
                # previous 1424 plus the D6 contended drive-position write-lock report

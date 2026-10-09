@@ -1796,6 +1796,8 @@ static int nxAllocatorCase(HMODULE physics, CreatePhysicsSDKFn createSDK, const 
 	nxAllocatorJoint(*scene, revoluteDesc, a, b, "revolute", foundationAllocator, physicsAllocator);
 	NxDistanceJointDesc distanceDesc;
 	nxAllocatorJoint(*scene, distanceDesc, a, b, "distance", foundationAllocator, physicsAllocator);
+	NxPrismaticJointDesc prismaticDesc;
+	nxAllocatorJoint(*scene, prismaticDesc, a, b, "prismatic", foundationAllocator, physicsAllocator);
 
 	sdk->releaseScene(*scene);
 	printf("scene=released\n");

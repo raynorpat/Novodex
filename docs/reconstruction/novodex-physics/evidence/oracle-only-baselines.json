@@ -26,7 +26,7 @@
       "format": "joint_matrix",
       "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
       "fixture_source": "tests/PhysicsJointTests.cpp",
-      "fixture_source_sha256": "d14f31cfe51ed40c1807b5187f249941ab401a2451e3b7f8987aa8e7404cb70a",
+      "fixture_source_sha256": "9d9d4b68015d71745877089209397d9c11699094003dd1fbb5a5d01e83ed873b",
       "cases": 122,
       "input_lines": 284,
       "case_family_counts": {

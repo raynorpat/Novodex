@@ -9946,3 +9946,8 @@ Adding `1.0f` to the computed X result in `Joint::getGlobalAxis` is caught for `
 ## Phase 6 closure measurement — ActorPairEffector scalar deleting destructor (`phys_fn_003932`)
 
 The registered `NxPhysicsEffectorTests` scratch probe calls the deleting destructor with flags 0 and 1 and checks observer removal, pointer clearing, base-vtable restoration, stack balance, and conditional freeing. Removing the second body-pointer clear is detected for `phys_fn_003932` (`body_cleared=0`, `mismatches=1`, candidate exit 1, `stdout_delta=2`); the restored oracle/candidate differential is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-effector-row003932-deleting-destructor.md`.
+
+
+## Phase 6 closure measurement — prismatic joint destructor (`phys_fn_004382`)
+
+The registered `NxPhysicsJointAllocatorTests` allocator-A/B fixture creates and releases a prismatic joint. Omitting its public-wrapper delete drops the Foundation allocator release count from two to one; the differential catches `phys_fn_004382` with `stdout_delta=2`, both processes exiting zero and exact stderr. The restored destructor returns the transcript to exact equality. Detailed mutation and DLL identity evidence: `evidence/phase6-prismatic-destructor-004382.md`.
