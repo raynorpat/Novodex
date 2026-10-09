@@ -9431,3 +9431,8 @@ The registered NxPhysicsCoreDumpTests differential serializes several named join
 ## Phase 6 closure measurement — limit-point transform (phys_fn_004080)
 
 The core-dump fixture directly records the public getNextLimitPlane in-front result. A -100 Y mutation to phys_fn_004080 flips the hinge result from yes to no and is caught with stdout_delta=2, both processes exiting zero, and exact stderr; the restored control is exact. Details: evidence/phase6-joint-004080-limit-point.md.
+
+
+## Phase 6 closure measurement — limit-plane cleanup (phys_fn_004089)
+
+The registered `NxPhysicsCoreDumpTests` staged-pair differential observes allocator balance after scene release. For row `phys_fn_004089`, replacing the free in `Joint::purgeLimitPlanes` with a no-op in a throwaway archive leaves 17 allocations versus the oracle's 14 and is caught with `stdout_delta=2`; both processes exit zero and stderr is exact. The restored control is exact with matching allocator counts. Detailed evidence: `evidence/phase6-joint-004089-purge-limit-planes.md`.
