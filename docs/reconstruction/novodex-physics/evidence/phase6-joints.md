@@ -9931,3 +9931,8 @@ The ten-family public staged-pair matrix creates joints from non-default descrip
 ## Phase 6 closure measurement — shared joint global-anchor getter (`phys_fn_004125`)
 
 The registered ten-family public staged-pair matrix exercises `Joint::getGlobalAnchor` through D6 global-anchor readback. Adding `1.0f` to the computed output X is caught for `phys_fn_004125` with `stdout_delta=246`, both exits zero, and exact stderr; the restored control is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-joint-row004125-global-anchor-getter.md`.
+
+
+## Phase 6 closure measurement — joint limit-plane distance helper (`phys_fn_004131`)
+
+A zero-return mutation of `Joint::row004131` changes the registered core-dump limit-plane transcript and is caught for `phys_fn_004131` with `stdout_delta=4448`, both exits zero, and exact stderr; the restored control is exact. Detailed mutation and DLL identity evidence: `evidence/phase6-joint-row004131-limit-plane-distance.md`.
