@@ -1525,3 +1525,8 @@ The public convex-mesh cooking differential is exact on current mainline (`NxPhy
 
 - `phys_fn_004017` (`SceneDump::writeTriggerFlags`) is mutation-falsified through the registered `NxPhysicsCoreDumpTests` staged-pair differential. Replacing the function with a no-op changes the transcript by 46 bytes; the restored differential is exact.
 - Phase 6 now has 49 closed function rows and 384 deferred function rows. No public Physics headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-coredump-004017-trigger-flags.md`.
+
+### Continuation — core-dump actor shape-label mutation closure (2026-10-09)
+
+- `phys_fn_004057` (`SceneDump::writeAsset` actor shape-label continuation) is mutation-falsified through the registered `NxPhysicsCoreDumpTests` staged-pair differential. Changing the `PsShape Shape%d` label to a constant changes the transcript by 58 bytes; the restored differential is exact.
+- Phase 6 now has 50 closed function rows and 383 deferred function rows. No public Physics headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-coredump-004057-asset-shape-label.md`.

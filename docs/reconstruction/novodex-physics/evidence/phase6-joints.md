@@ -9596,3 +9596,8 @@ Evidence index: phys_fn_004015 no-op mutation detected at stdout_delta=3922; res
 
 The registered NxPhysicsCoreDumpTests differential caught replacing SceneDump::writeTriggerFlags with a no-op: both processes exited zero, stderr matched exactly, and stdout_delta=46. The restored control returned stdout_delta=0. Detailed evidence: `evidence/phase6-coredump-004017-trigger-flags.md`.
 Evidence index: phys_fn_004017 no-op mutation detected at stdout_delta=46; restored control stdout_delta=0.
+
+## Phase 6 closure measurement — actor shape label (phys_fn_004057)
+
+The registered NxPhysicsCoreDumpTests differential caught changing SceneDump::writeAsset's `PsShape Shape%d` label to a constant: both processes exited zero, stderr matched exactly, and stdout_delta=58. The restored control returned stdout_delta=0. Detailed evidence: `evidence/phase6-coredump-004057-asset-shape-label.md`.
+Evidence index: phys_fn_004057 shape-label mutation detected at stdout_delta=58; restored control stdout_delta=0.
