@@ -8993,7 +8993,49 @@ oracle and `0.0.0.0` in the candidate). After the change, both actors report
 `stdout_delta=0`, both exits zero, and exact stderr. This closes the tested
 secondary-base construction/destructor behavior only; it does not close the
 whole `phys_fn_000044` constructor or `phys_fn_000118` destructor rows. The
-fresh Phase 5 gate passes all 18 staged targets at 2,307/2,307 assertions. The
+fresh Phase 5 gate passes all 18 staged targets at 2,599 assertions against a floor of 2,597. The
 Release Viewer CTest selection completes all 48 entries across the 39 available
 scenes: 43 pass and five scenes with unavailable oracle assets take their
 existing skips. All public Physics headers remain byte-identical.
+
+
+## 8. Collision-object family constructors and destructors closed
+
+The five shape-owned collision objects are separate complete types with the
+primary interface at `+0x00`, `EmbeddedHookBase` as a secondary base at
+`+0x0c`, and the duplicated shape pointer at `+0x18`. Their final size is
+`0x1c`. The five constructor rows are `phys_fn_001075` (BOX, RVA `0x23580`),
+`phys_fn_001123` (CAPSULE, `0x23cb0`), `phys_fn_001159` (PLANE, `0x24250`),
+`phys_fn_001193` (SPHERE, `0x247c0`), and `phys_fn_001241` (MESH, `0x24e40`).
+Each final class gives MSVC enough layout information to emit its own secondary
+vtable and the `-0x0c` deleting-destructor adjustor thunk. The shape factories
+now instantiate the matching final class.
+
+`NxPhysicsShapeVtableTests` invokes each oracle and candidate secondary slot on
+scratch copies with flags 0 and heap-backed copies with flags 1. It verifies the
+returned complete-object address, both vptr transitions, stack balance, and
+allocator release count. A separate primary-slot pass covers flags 1 for all
+five families. The former member-only model was mutation-tested and failed all
+five secondary-vtable family rows; the final model reports zero mismatches in
+both destructor summaries, with the full oracle digest unchanged at
+`ed1294b6` and coverage expanded to 644 cases.
+
+The first integration run exposed a runtime wrinkle the isolated fixture did
+not: by mesh-shape teardown the collision object's root vptr had changed from
+its family table to the mesh shape's public table, making a generic virtual
+delete dispatch into an abort thunk. The five shape teardown paths now call the
+matching known-family complete-object destructor, then release through the same
+Foundation allocator. This retains the observed destructor transition while
+avoiding dispatch through the overwritten root pointer.
+
+Validation on the fresh Release build:
+
+- Phase 5 gate: pass; all 18 staged targets, 2,599 coverage assertions
+  evaluated against the recorded floor of 2,597.
+- `NxPhysicsSimulationTests`, `NxPhysicsMeshSimulationTests`, and
+  `NxPhysicsSceneRaycastTests`: oracle and candidate exit 0 with exact stdout
+  and stderr matches.
+- `NxPhysicsShapeVtableTests`: 644 oracle differential cases, zero mismatches;
+  all ten secondary-dtor calls and five primary deleting-dtor calls match.
+- `NxPhysicsObjectLayoutTests --self`: pass, zero candidate mismatches.
+- Public Physics headers remain byte-identical to the pinned tree.

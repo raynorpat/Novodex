@@ -24,67 +24,119 @@ docs/reconstruction/novodex-physics/evidence/phase5-object-model.md.
 /**
 The embedded member three containers share. Its base constructor
 phys_fn_002404 (0x0005ba70) installs vptr 0x101088b8 and zeroes two words;
-every container overwrites the vptr with its own one-slot table -- the actor
-at +8 uses 0x1010468c, the collision object at +0xc uses 0x101072a0 -- so the
-member's dynamic type differs per container while its shape stays twelve
-bytes: one virtual slot plus two words. What the single virtual MEANS is not
-established; the class has no recovered name.
+the actor and the five collision-object families then install their own
+secondary-base tables. The subobject is twelve bytes: one virtual slot plus
+two words. What the single virtual MEANS is not established; the class has
+no recovered name.
 */
 struct EmbeddedHookBase
 	{
+	EmbeddedHookBase() : mWord04(0), mWord08(0) {}
 	virtual ~EmbeddedHookBase() {}
 	NxU32				mWord04;
 	NxU32				mWord08;
 	};
 
 /**
-The 0x1c-byte collision object. Constructor phys_fn_001193 (0x000247c0,
-57 bytes):
-
-	+0x00	vptr			final table 0x10107218, store 0x000247ed
-	+0x04	zeroed			store 0x000247cb
-	+0x08	first argument	store 0x000247e9 -- ALSO written to +0x18
-	+0x0c	embedded member	final vptr 0x101072a0 at 0x000247e0, member ctor
-	                        phys_fn_002404 called at 0x000247d7
-	+0x18	same argument	store 0x000247e6
-
-The listing shows MSVC's chained-construction dance (an intermediate base
-vptr 0x10107158 at 0x000247d1, replaced before the constructor returns).
-Those intermediates are never observable after construction returns, so the
-transcription writes the final state once rather than replaying them; the
-layout gate compares post-construction bytes.
+The 0x1c-byte collision object has a four-slot primary interface at +0x00,
+EmbeddedHookBase as its secondary base at +0x0c, and a duplicated shape
+pointer at +0x18. Each final shape family installs a distinct primary and
+secondary table. Its secondary deleting-destructor thunk adjusts `this` back
+by 0x0c before running the complete-object destructor.
 */
 class CollisionObject
 	{
 	public:
-	//! phys_fn_001193 (0x000247c0). The argument is stored twice (+8/+0x18)
-	//! and handed nowhere else; what it means is unestablished.
-	explicit			CollisionObject(void* argument);
-	//! phys_fn_001079 (0x000235d0), the box-family slot-0 deleting row;
-	//! the generic collision object at 0x24810 has the same teardown:
-	//! destroys the embedded hook, then frees this through the Foundation allocator
-	//! when flags&1. The member's final vptr is an intermediate destructor
-	//! detail; callers observe the allocator operation.
+	virtual				~CollisionObject();
+	//! Primary slot 1 (phys_fn_001201): returns the first word of the shape's
+	//! owner while holding the secondary hook's read lock at +0x14.
+	virtual void*		nxOwnerValue();
+	//! Primary slot 2: forwards the shape-family group update through its
+	//! write-lock helper.
+	virtual void		nxSetGroup(unsigned group);
+	//! Primary slot 3 (phys_fn_001207): returns the shape group word under the
+	//! same read lock.
+	virtual NxU16		nxGetGroup();
+	//! Calls the primary scalar-deleting-destructor slot. Kept as a named
+	//! internal helper for the shape teardown paths that previously invoked the
+	//! recovered function directly.
 	void				nxScalarDeletingDtor(unsigned flags);
 
-	//! +0x00, the vtable slot, carried opaque like TriangleMesh's.
-	void*				mVptrSlot;
 	//! +0x04, zeroed by the constructor.
 	NxU32				mWord04;
 	//! +0x08, first copy of the constructor argument.
 	void*				mArgument08;
-	//! +0x0c, the embedded member.
-	EmbeddedHookBase	mMember;
+	static void		operator delete(void* memory) noexcept;
+	static void		operator delete(void* memory, size_t) noexcept;
 
-	private:
-	//! +0x18, second copy of the constructor argument.
-	void*				mArgument18;
+	protected:
+	//! The primary polymorphic subobject occupies +0x00..+0x0b.
+	explicit			CollisionObject(void* argument);
 	};
 
-static_assert(sizeof(CollisionObject) == 0x1c, "the collision object is twenty-eight bytes");
+/**
+The final collision-object shapes use two polymorphic bases. The recovered
+primary interface occupies +0x00..+0x0b; EmbeddedHookBase is the secondary
+base at +0x0c; the duplicated shape argument follows at +0x18. MSVC emits a
+family-specific secondary deleting-destructor thunk that adjusts `this` by
+-0x0c before entering that family's complete-object destructor.
+
+The other three primary slots are tracked separately in the reconstruction
+census; this packet closes the five constructor/secondary-destructor pairs.
+*/
+class CollisionObjectBox final : public CollisionObject, public EmbeddedHookBase
+	{
+	public:
+		explicit CollisionObjectBox(void* argument);
+		~CollisionObjectBox() override;
+	private:
+		void* mArgument18;
+	};
+
+class CollisionObjectCapsule final : public CollisionObject, public EmbeddedHookBase
+	{
+	public:
+		explicit CollisionObjectCapsule(void* argument);
+		~CollisionObjectCapsule() override;
+	private:
+		void* mArgument18;
+	};
+
+class CollisionObjectPlane final : public CollisionObject, public EmbeddedHookBase
+	{
+	public:
+		explicit CollisionObjectPlane(void* argument);
+		~CollisionObjectPlane() override;
+	private:
+		void* mArgument18;
+	};
+
+class CollisionObjectSphere final : public CollisionObject, public EmbeddedHookBase
+	{
+	public:
+		explicit CollisionObjectSphere(void* argument);
+		~CollisionObjectSphere() override;
+	private:
+		void* mArgument18;
+	};
+
+class CollisionObjectMesh final : public CollisionObject, public EmbeddedHookBase
+	{
+	public:
+		explicit CollisionObjectMesh(void* argument);
+		~CollisionObjectMesh() override;
+	private:
+		void* mArgument18;
+	};
+
+static_assert(sizeof(CollisionObject) == 0x0c, "the primary interface occupies twelve bytes");
 static_assert(offsetof(CollisionObject, mWord04) == 0x04, "+0x04 is zeroed");
 static_assert(offsetof(CollisionObject, mArgument08) == 0x08, "the argument lands at +0x08");
-static_assert(offsetof(CollisionObject, mMember) == 0x0c, "the member is at +0x0c");
+static_assert(sizeof(CollisionObjectBox) == 0x1c, "the box collision object is twenty-eight bytes");
+static_assert(sizeof(CollisionObjectCapsule) == 0x1c, "the capsule collision object is twenty-eight bytes");
+static_assert(sizeof(CollisionObjectPlane) == 0x1c, "the plane collision object is twenty-eight bytes");
+static_assert(sizeof(CollisionObjectSphere) == 0x1c, "the sphere collision object is twenty-eight bytes");
+static_assert(sizeof(CollisionObjectMesh) == 0x1c, "the mesh collision object is twenty-eight bytes");
 
 /**
 phys_fn_001281 (0x000257a0): mov eax,[ecx+4]; ret. Four bytes. Phase 3

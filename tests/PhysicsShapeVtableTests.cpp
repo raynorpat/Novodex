@@ -532,12 +532,187 @@ int wmain(int argc, wchar_t** argv)
     CandidateAllocator candidateAllocator;
     nxSetSdkAllocatorBridge(&candidateAllocator);
     typedef void (__thiscall* BoxCtor)(void*, void*, unsigned);
+    typedef void* (__thiscall* CollisionObjectCtor)(void*, void*);
+    typedef void* (__thiscall* AdjustorDeletingDtor)(void*, unsigned);
     typedef void (__thiscall* BoundsSlot)(void*, float*);
     typedef void* (__thiscall* SelfSlot)(void*);
     unsigned failures = 0, cases = 0;
     unsigned boxMassCases = 0, boxMassFailures = 0;
     unsigned boxMassDigest = 2166136261u;
     unsigned char oracleBytes[0x228], candidateBytes[0x228];
+
+    // The five family constructors install distinct primary and secondary
+    // collision-object tables. Call each secondary-vtable destructor on a
+    // scratch object and verify the compiler-generated this adjustment,
+    // returned complete-object pointer, state transition, and stack cleanup.
+    // This differential rejects the former member-only model because its
+    // EmbeddedHookBase vtable has no connection to the enclosing object.
+    const unsigned collisionCtorRvas[] = {
+        0x23580, 0x23cb0, 0x24250, 0x247c0, 0x24e40
+    };
+    unsigned collisionDtorMismatches = 0;
+    for(unsigned family = 0; family < 5; ++family) {
+        unsigned char oracleObject[0x1c], candidateObject[0x1c];
+        memset(oracleObject, 0xcd, sizeof(oracleObject));
+        memset(candidateObject, 0xcd, sizeof(candidateObject));
+        void* const argument = &candidateAllocator;
+        reinterpret_cast<CollisionObjectCtor>(
+            const_cast<unsigned char*>(base) + collisionCtorRvas[family])(
+                oracleObject, argument);
+        switch(family) {
+        case 0: new(candidateObject) CollisionObjectBox(argument); break;
+        case 1: new(candidateObject) CollisionObjectCapsule(argument); break;
+        case 2: new(candidateObject) CollisionObjectPlane(argument); break;
+        case 3: new(candidateObject) CollisionObjectSphere(argument); break;
+        default: new(candidateObject) CollisionObjectMesh(argument); break;
+        }
+        void** oracleSecondary = *reinterpret_cast<void***>(oracleObject + 0x0c);
+        void** candidateSecondary = *reinterpret_cast<void***>(candidateObject + 0x0c);
+        void* const oraclePrimaryBefore = *reinterpret_cast<void**>(oracleObject);
+        void* const candidatePrimaryBefore = *reinterpret_cast<void**>(candidateObject);
+        void* const oracleSecondaryBefore =
+            *reinterpret_cast<void**>(oracleObject + 0x0c);
+        void* const candidateSecondaryBefore =
+            *reinterpret_cast<void**>(candidateObject + 0x0c);
+        const unsigned oracleFreesBefore = oracleFreeCount;
+        const unsigned candidateFreesBefore = candidateAllocator.freeCount;
+        unsigned oracleEspBefore = 0, oracleEspAfter = 0;
+        unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+        __asm mov oracleEspBefore, esp
+        void* const oracleReturned = reinterpret_cast<AdjustorDeletingDtor>(
+            oracleSecondary[0])(oracleObject + 0x0c, 0);
+        __asm mov oracleEspAfter, esp
+        __asm mov candidateEspBefore, esp
+        void* const candidateReturned = reinterpret_cast<AdjustorDeletingDtor>(
+            candidateSecondary[0])(candidateObject + 0x0c, 0);
+        __asm mov candidateEspAfter, esp
+        const bool matched = oracleReturned == oracleObject &&
+            candidateReturned == candidateObject &&
+            oraclePrimaryBefore != *reinterpret_cast<void**>(oracleObject) &&
+            candidatePrimaryBefore != *reinterpret_cast<void**>(candidateObject) &&
+            oracleSecondaryBefore != *reinterpret_cast<void**>(oracleObject + 0x0c) &&
+            candidateSecondaryBefore != *reinterpret_cast<void**>(candidateObject + 0x0c) &&
+            oracleEspBefore == oracleEspAfter &&
+            candidateEspBefore == candidateEspAfter &&
+            oracleFreeCount == oracleFreesBefore &&
+            candidateAllocator.freeCount == candidateFreesBefore &&
+            memcmp(oracleObject + 4, candidateObject + 4, 8) == 0 &&
+            memcmp(oracleObject + 0x10, candidateObject + 0x10, 8) == 0;
+        printf("collision dtor family=%u oracle_root_return=%u candidate_root_return=%u "
+            "primary_transition=%u stack_balanced=%u frees=%u mismatches=%u\n",
+            family, oracleReturned == oracleObject,
+            candidateReturned == candidateObject,
+            *reinterpret_cast<void**>(oracleObject) != oraclePrimaryBefore &&
+                *reinterpret_cast<void**>(candidateObject) != candidatePrimaryBefore &&
+                *reinterpret_cast<void**>(oracleObject + 0x0c) != oracleSecondaryBefore &&
+                *reinterpret_cast<void**>(candidateObject + 0x0c) != candidateSecondaryBefore,
+            oracleEspBefore == oracleEspAfter && candidateEspBefore == candidateEspAfter,
+            oracleFreeCount == oracleFreesBefore &&
+                candidateAllocator.freeCount == candidateFreesBefore,
+            matched ? 0u : 1u);
+        if(!matched) {
+            ++collisionDtorMismatches;
+            ++failures;
+        }
+        ++cases;
+
+        unsigned char* oracleHeap = static_cast<unsigned char*>(malloc(0x1c));
+        unsigned char* candidateHeap = static_cast<unsigned char*>(malloc(0x1c));
+        if(!oracleHeap || !candidateHeap) return 2;
+        reinterpret_cast<CollisionObjectCtor>(
+            const_cast<unsigned char*>(base) + collisionCtorRvas[family])(
+                oracleHeap, argument);
+        switch(family) {
+        case 0: new(candidateHeap) CollisionObjectBox(argument); break;
+        case 1: new(candidateHeap) CollisionObjectCapsule(argument); break;
+        case 2: new(candidateHeap) CollisionObjectPlane(argument); break;
+        case 3: new(candidateHeap) CollisionObjectSphere(argument); break;
+        default: new(candidateHeap) CollisionObjectMesh(argument); break;
+        }
+        oracleSecondary = *reinterpret_cast<void***>(oracleHeap + 0x0c);
+        candidateSecondary = *reinterpret_cast<void***>(candidateHeap + 0x0c);
+        const unsigned oracleHeapFreeBefore = oracleFreeCount;
+        const unsigned candidateHeapFreeBefore = candidateAllocator.freeCount;
+        __asm mov oracleEspBefore, esp
+        void* const oracleFreedReturn = reinterpret_cast<AdjustorDeletingDtor>(
+            oracleSecondary[0])(oracleHeap + 0x0c, 1);
+        __asm mov oracleEspAfter, esp
+        const unsigned oracleHeapFreeDelta = oracleFreeCount - oracleHeapFreeBefore;
+        const unsigned candidateHolderFreeBefore = oracleFreeCount;
+        __asm mov candidateEspBefore, esp
+        void* const candidateFreedReturn = reinterpret_cast<AdjustorDeletingDtor>(
+            candidateSecondary[0])(candidateHeap + 0x0c, 1);
+        __asm mov candidateEspAfter, esp
+        const unsigned candidateFreeDelta =
+            candidateFreesSince(candidateAllocator, candidateHeapFreeBefore,
+                candidateHolderFreeBefore);
+        const bool freedMatched = oracleFreedReturn == oracleHeap &&
+            candidateFreedReturn == candidateHeap &&
+            oracleHeapFreeDelta == 1 &&
+            candidateFreeDelta == 1 && oracleEspBefore == oracleEspAfter &&
+            candidateEspBefore == candidateEspAfter;
+        printf("collision deleting dtor family=%u oracle_root_return=%u "
+            "candidate_root_return=%u oracle_frees=%u candidate_frees=%u "
+            "stack_balanced=%u mismatches=%u\n", family,
+            oracleFreedReturn == oracleHeap,
+            candidateFreedReturn == candidateHeap,
+            oracleHeapFreeDelta, candidateFreeDelta,
+            oracleEspBefore == oracleEspAfter && candidateEspBefore == candidateEspAfter,
+            freedMatched ? 0u : 1u);
+        if(!freedMatched) {
+            ++collisionDtorMismatches;
+            ++failures;
+        }
+        ++cases;
+    }
+    // Production shape teardown calls the primary vtable slot. Pin that path
+    // independently from the secondary adjustor thunk tested above.
+    unsigned collisionPrimaryDtorMismatches = 0;
+    for(unsigned family = 0; family < 5; ++family) {
+        unsigned char* oracleHeap = static_cast<unsigned char*>(malloc(0x1c));
+        unsigned char* candidateHeap = static_cast<unsigned char*>(malloc(0x1c));
+        if(!oracleHeap || !candidateHeap) return 2;
+        memset(oracleHeap, 0xcd, 0x1c);
+        memset(candidateHeap, 0xcd, 0x1c);
+        reinterpret_cast<CollisionObjectCtor>(
+            const_cast<unsigned char*>(base) + collisionCtorRvas[family])(
+                oracleHeap, &candidateAllocator);
+        switch(family) {
+        case 0: new(candidateHeap) CollisionObjectBox(&candidateAllocator); break;
+        case 1: new(candidateHeap) CollisionObjectCapsule(&candidateAllocator); break;
+        case 2: new(candidateHeap) CollisionObjectPlane(&candidateAllocator); break;
+        case 3: new(candidateHeap) CollisionObjectSphere(&candidateAllocator); break;
+        default: new(candidateHeap) CollisionObjectMesh(&candidateAllocator); break;
+        }
+        void** oraclePrimary = *reinterpret_cast<void***>(oracleHeap);
+        void** candidatePrimary = *reinterpret_cast<void***>(candidateHeap);
+        const unsigned oracleFreeBefore = oracleFreeCount;
+        void* const oracleReturned = reinterpret_cast<AdjustorDeletingDtor>(
+            oraclePrimary[0])(oracleHeap, 1);
+        const unsigned oracleFreeDelta = oracleFreeCount - oracleFreeBefore;
+        const unsigned candidateHolderFreeBefore = oracleFreeCount;
+        const unsigned candidateFreeBefore = candidateAllocator.freeCount;
+        void* const candidateReturned = reinterpret_cast<AdjustorDeletingDtor>(
+            candidatePrimary[0])(candidateHeap, 1);
+        const unsigned candidateFreeDelta = candidateFreesSince(candidateAllocator,
+            candidateFreeBefore, candidateHolderFreeBefore);
+        const bool matched = oracleReturned == oracleHeap &&
+            candidateReturned == candidateHeap && oracleFreeDelta == 1 &&
+            candidateFreeDelta == 1;
+        printf("collision primary deleting dtor family=%u oracle_root_return=%u "
+            "candidate_root_return=%u oracle_frees=%u candidate_frees=%u mismatches=%u\n",
+            family, oracleReturned == oracleHeap, candidateReturned == candidateHeap,
+            oracleFreeDelta, candidateFreeDelta, matched ? 0u : 1u);
+        if(!matched) {
+            ++collisionPrimaryDtorMismatches;
+            ++failures;
+        }
+        ++cases;
+    }
+    printf("collision primary dtor families=5 mismatches=%u\n",
+        collisionPrimaryDtorMismatches);
+    printf("collision dtor families=5 mismatches=%u\n", collisionDtorMismatches);
+
     memset(oracleBytes, 0xcd, sizeof(oracleBytes));
     memset(candidateBytes, 0xcd, sizeof(candidateBytes));
     reinterpret_cast<BoxCtor>(const_cast<unsigned char*>(base) + 0x21870)(oracleBytes, 0, 0);

@@ -76,31 +76,167 @@ bool nxSceneAuxEnsureShapeSlot(void* container, NxU32 slot)
 	}
 
 
-// phys_fn_002404 (0x0005ba70) is the shared member constructor; the oracle's
-// collision-object ctor calls it at 0x000247d7 and then overwrites the vptr
-// with the container's final table. The transcription constructs the member
-// directly and lets C++ install this container's vptr for +0x00, which lands
-// in the same post-construction state without replaying the intermediate
-// base-vtable stores.
+// The five recovered constructors share this complete-object layout. C++
+// installs the primary and secondary vptrs for each final family type, and
+// EmbeddedHookBase's constructor reproduces phys_fn_002404's zeroed words.
 CollisionObject::CollisionObject(void* argument)
+	: mWord04(0), mArgument08(argument)
 	{
-	mWord04 = 0;							// 0x000247cb
-	mArgument08 = argument;					// 0x000247e9
-	mArgument18 = argument;					// 0x000247e6
 	}
 
-// phys_fn_001079 (0x000235d0): the box-family collision-object deleting
-// row. The embedded hook teardown at 0x5ba90 changes only its vptr, then
-// flag bit zero selects the +0x14 free operation of the imported Foundation
-// allocator [0x101041bc] (0x100235f4). Every shape constructor allocates its
-// collision object from that allocator, so the pair stays on one allocator.
+static void* __fastcall nxCollisionOwnerThunk(void* self, void*)
+	{
+	return static_cast<CollisionObject*>(self)->CollisionObject::nxOwnerValue();
+	}
+static void __fastcall nxCollisionSetGroupThunk(void* self, void*, unsigned group)
+	{
+	static_cast<CollisionObject*>(self)->CollisionObject::nxSetGroup(group);
+	}
+static NxU16 __fastcall nxCollisionGetGroupThunk(void* self, void*)
+	{
+	return static_cast<CollisionObject*>(self)->CollisionObject::nxGetGroup();
+	}
+#define NX_COLLISION_DELETE_THUNK(Name, Type) \
+static void* __fastcall Name(void* self, void*, unsigned flags) \
+	{ \
+	static_cast<Type*>(self)->~Type(); \
+	if(flags & 1u) CollisionObject::operator delete(self); \
+	return self; \
+	}
+NX_COLLISION_DELETE_THUNK(nxCollisionBoxDeleteThunk, CollisionObjectBox)
+NX_COLLISION_DELETE_THUNK(nxCollisionCapsuleDeleteThunk, CollisionObjectCapsule)
+NX_COLLISION_DELETE_THUNK(nxCollisionPlaneDeleteThunk, CollisionObjectPlane)
+NX_COLLISION_DELETE_THUNK(nxCollisionSphereDeleteThunk, CollisionObjectSphere)
+NX_COLLISION_DELETE_THUNK(nxCollisionMeshDeleteThunk, CollisionObjectMesh)
+#undef NX_COLLISION_DELETE_THUNK
+static void* nxCollisionBoxPrimaryTable[] = {
+	reinterpret_cast<void*>(&nxCollisionBoxDeleteThunk),
+	reinterpret_cast<void*>(&nxCollisionOwnerThunk),
+	reinterpret_cast<void*>(&nxCollisionSetGroupThunk),
+	reinterpret_cast<void*>(&nxCollisionGetGroupThunk) };
+static void* nxCollisionCapsulePrimaryTable[] = {
+	reinterpret_cast<void*>(&nxCollisionCapsuleDeleteThunk),
+	reinterpret_cast<void*>(&nxCollisionOwnerThunk),
+	reinterpret_cast<void*>(&nxCollisionSetGroupThunk),
+	reinterpret_cast<void*>(&nxCollisionGetGroupThunk) };
+static void* nxCollisionPlanePrimaryTable[] = {
+	reinterpret_cast<void*>(&nxCollisionPlaneDeleteThunk),
+	reinterpret_cast<void*>(&nxCollisionOwnerThunk),
+	reinterpret_cast<void*>(&nxCollisionSetGroupThunk),
+	reinterpret_cast<void*>(&nxCollisionGetGroupThunk) };
+static void* nxCollisionSpherePrimaryTable[] = {
+	reinterpret_cast<void*>(&nxCollisionSphereDeleteThunk),
+	reinterpret_cast<void*>(&nxCollisionOwnerThunk),
+	reinterpret_cast<void*>(&nxCollisionSetGroupThunk),
+	reinterpret_cast<void*>(&nxCollisionGetGroupThunk) };
+static void* nxCollisionMeshPrimaryTable[] = {
+	reinterpret_cast<void*>(&nxCollisionMeshDeleteThunk),
+	reinterpret_cast<void*>(&nxCollisionOwnerThunk),
+	reinterpret_cast<void*>(&nxCollisionSetGroupThunk),
+	reinterpret_cast<void*>(&nxCollisionGetGroupThunk) };
+CollisionObjectBox::CollisionObjectBox(void* argument)
+	: CollisionObject(argument), EmbeddedHookBase(), mArgument18(argument)
+	{
+	*reinterpret_cast<void**>(this) = nxCollisionBoxPrimaryTable;
+	}
+
+CollisionObjectCapsule::CollisionObjectCapsule(void* argument)
+	: CollisionObject(argument), EmbeddedHookBase(), mArgument18(argument)
+	{
+	*reinterpret_cast<void**>(this) = nxCollisionCapsulePrimaryTable;
+	}
+
+CollisionObjectPlane::CollisionObjectPlane(void* argument)
+	: CollisionObject(argument), EmbeddedHookBase(), mArgument18(argument)
+	{
+	*reinterpret_cast<void**>(this) = nxCollisionPlanePrimaryTable;
+	}
+
+CollisionObjectSphere::CollisionObjectSphere(void* argument)
+	: CollisionObject(argument), EmbeddedHookBase(), mArgument18(argument)
+	{
+	*reinterpret_cast<void**>(this) = nxCollisionSpherePrimaryTable;
+	}
+
+CollisionObjectMesh::CollisionObjectMesh(void* argument)
+	: CollisionObject(argument), EmbeddedHookBase(), mArgument18(argument)
+	{
+	*reinterpret_cast<void**>(this) = nxCollisionMeshPrimaryTable;
+	}
+
+// Family-complete destructor bodies: phys_fn_001079, phys_fn_001127,
+// phys_fn_001163, phys_fn_001197, and phys_fn_001245. Each leaves its own
+// primary/secondary base tables installed before applying the free flag.
+CollisionObjectBox::~CollisionObjectBox() {}
+CollisionObjectCapsule::~CollisionObjectCapsule() {}
+CollisionObjectPlane::~CollisionObjectPlane() {}
+CollisionObjectSphere::~CollisionObjectSphere() {}
+CollisionObjectMesh::~CollisionObjectMesh() {}
+
+CollisionObject::~CollisionObject()
+	{
+	}
+
+void* CollisionObject::nxOwnerValue()
+	{
+	unsigned char* bytes = reinterpret_cast<unsigned char*>(this);
+	void* lock = *reinterpret_cast<void**>(bytes + 0x14);
+	nxSceneGuardEnter(lock);
+	const void* shape = *reinterpret_cast<void**>(bytes + 0x18);
+	const void* owner = nxShapeOwner(shape);
+	void* value = *reinterpret_cast<void* const*>(owner);
+	nxSceneGuardLeave(lock);
+	return value;
+	}
+
+void CollisionObject::nxSetGroup(unsigned group)
+	{
+	// The five family slot-2 rows share the same guarded call into
+	// ShapeBase::nxApplyGroup. Their per-family report constants remain in the
+	// function census; the normal valid-group path is common.
+	nxMutexApplyGroupEx(this, group, 2, 0, 0, 0);
+	}
+
+NxU16 CollisionObject::nxGetGroup()
+	{
+	unsigned char* bytes = reinterpret_cast<unsigned char*>(this);
+	void* lock = *reinterpret_cast<void**>(bytes + 0x14);
+	nxSceneGuardEnter(lock);
+	const unsigned char* shape = *reinterpret_cast<const unsigned char**>(bytes + 0x18);
+	NxU16 value;
+	memcpy(&value, shape + 0xd8, sizeof(value));
+	nxSceneGuardLeave(lock);
+	return value;
+	}
+
+void CollisionObject::operator delete(void* memory) noexcept
+	{
+	if(memory)
+		nxFoundationSDKAllocator->free(memory);
+	}
+
+void CollisionObject::operator delete(void* memory, size_t) noexcept
+	{
+	CollisionObject::operator delete(memory);
+	}
+
+template <typename CollisionFamily>
+static void nxCollisionFamilyScalarDeletingDtor(CollisionObject* object, unsigned flags)
+	{
+	static_cast<CollisionFamily*>(object)->~CollisionFamily();
+	if(flags & 1u)
+		CollisionObject::operator delete(object);
+	}
+
+// The five primary scalar-deleting-destructor rows share the same allocator
+// and flags contract. Calling the virtual slot lets MSVC select the final
+// family destructor; its secondary table carries the -0x0c adjustor thunk.
 void CollisionObject::nxScalarDeletingDtor(unsigned flags)
 	{
-	mMember.~EmbeddedHookBase();
-	if(flags & 1u)
-		nxFoundationSDKAllocator->free(this);
+	typedef void* (__thiscall* ScalarDeletingDtor)(void*, unsigned);
+	void** table = *reinterpret_cast<void***>(this);
+	reinterpret_cast<ScalarDeletingDtor>(table[0])(this, flags);
 	}
-
 // phys_fn_001281 (0x000257a0): mov eax,[ecx+4]; ret. The whole row -- note
 // the offset is FOUR bytes past the shape's vptr.
 const void* nxShapeOwner(const void* shape)
@@ -4370,7 +4506,7 @@ BoxShape::BoxShape(void* owner, unsigned argument)
 	// box-family tables and which stores the box at BOTH +0x08 and +0x18.
 	void* memory = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	CollisionObject* object = memory
-		? new(memory) CollisionObject(this)
+		? new(memory) CollisionObjectBox(this)
 		: 0;								// null arm: 0x0002190f
 	mBase.mWord9C = reinterpret_cast<NxU32>(object);	// 0x00021911
 
@@ -4399,7 +4535,7 @@ SphereShape::SphereShape(void* owner, unsigned argument)
 	// the sphere stored at BOTH +0x08 and +0x18.
 	void* memory = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	CollisionObject* object = memory
-		? new(memory) CollisionObject(this)
+		? new(memory) CollisionObjectSphere(this)
 		: 0;								// null arm: 0x00027803
 	mBase.mWord9C = reinterpret_cast<NxU32>(object);	// 0x00027805
 
@@ -4594,7 +4730,8 @@ void SphereShape::nxSphereCallbackDtor(void)
 	{
 	mBase.mVptrSlot = nxSphereShapeInternalVtable();
 	if(mBase.mWord9C != 0)
-		reinterpret_cast<CollisionObject*>(mBase.mWord9C)->nxScalarDeletingDtor(1);
+		nxCollisionFamilyScalarDeletingDtor<CollisionObjectSphere>(
+			reinterpret_cast<CollisionObject*>(mBase.mWord9C), 1);
 	mBase.nxBaseDtorOwnerArms();
 	mBase.mPrunable.~Prunable();
 	}
@@ -5114,7 +5251,8 @@ void PlaneShape::nxPlaneScalarDeletingDtor(unsigned flags)
 	if(mBase.mWord9C)
 		{
 		// plane collision-object deleting entry, flag 1.
-		reinterpret_cast<CollisionObject*>(mBase.mWord9C)->nxScalarDeletingDtor(1);
+		nxCollisionFamilyScalarDeletingDtor<CollisionObjectPlane>(
+			reinterpret_cast<CollisionObject*>(mBase.mWord9C), 1);
 		}
 	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
@@ -5128,7 +5266,8 @@ void SphereShape::nxSphereScalarDeletingDtor(unsigned flags)
 	if(mBase.mWord9C)
 		{
 		// generic collision-object deleting row at 0x24810, flag 1.
-		reinterpret_cast<CollisionObject*>(mBase.mWord9C)->nxScalarDeletingDtor(1);
+		nxCollisionFamilyScalarDeletingDtor<CollisionObjectSphere>(
+			reinterpret_cast<CollisionObject*>(mBase.mWord9C), 1);
 		}
 	mBase.nxBaseDtorOwnerArms();			// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
@@ -5964,7 +6103,7 @@ CapsuleShape::CapsuleShape(void* owner, unsigned argument)
 	// stored at BOTH +0x08 and +0x18.
 	void* memory = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	CollisionObject* object = memory
-		? new(memory) CollisionObject(this)
+		? new(memory) CollisionObjectCapsule(this)
 		: 0;								// null arm: 0x00021aad
 	mBase.mWord9C = reinterpret_cast<NxU32>(object);	// 0x00021aaf
 
@@ -6007,7 +6146,8 @@ void CapsuleShape::nxCapsuleScalarDeletingDtor(unsigned flags)
 	if(mBase.mWord9C)
 		{
 		// phys_fn_001123's collision-object deleting row, flag 1.
-		reinterpret_cast<CollisionObject*>(mBase.mWord9C)->nxScalarDeletingDtor(1);
+		nxCollisionFamilyScalarDeletingDtor<CollisionObjectCapsule>(
+			reinterpret_cast<CollisionObject*>(mBase.mWord9C), 1);
 		}
 	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
@@ -6422,7 +6562,8 @@ void BoxShape::nxBoxScalarDeletingDtor(unsigned flags)
 	if(mBase.mWord9C)
 		{
 		// mov ecx,[esi+0x9c]; test; push 1; call [eax] at 0x0002195b..61.
-		reinterpret_cast<CollisionObject*>(mBase.mWord9C)->nxScalarDeletingDtor(1);
+		nxCollisionFamilyScalarDeletingDtor<CollisionObjectBox>(
+			reinterpret_cast<CollisionObject*>(mBase.mWord9C), 1);
 		}
 	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of 0x00026bd0: jmp 0xb5640
@@ -6435,8 +6576,8 @@ void MeshShape::nxMeshScalarDeletingDtor(unsigned flags)
 	{
 	if(mBase.mWord9C)
 		{
-		reinterpret_cast<CollisionObject*>(mBase.mWord9C)->
-			nxScalarDeletingDtor(1);		// 0x00028e93..97
+		nxCollisionFamilyScalarDeletingDtor<CollisionObjectMesh>(
+			reinterpret_cast<CollisionObject*>(mBase.mWord9C), 1);
 		}
 	if(mWordE0)
 		{
@@ -6461,7 +6602,7 @@ PlaneShape::PlaneShape(void* owner, unsigned argument)
 	// stored at BOTH +0x08 and +0x18.
 	void* memory = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	CollisionObject* object = memory
-		? new(memory) CollisionObject(this)
+		? new(memory) CollisionObjectPlane(this)
 		: 0;								// null arm: 0x00024f09
 	mBase.mWord9C = reinterpret_cast<NxU32>(object);	// 0x00024f0b
 
@@ -6616,7 +6757,7 @@ MeshShape::MeshShape(void* owner, unsigned argument)
 	// shape stored at BOTH +0x08 and +0x18.
 	void* memory = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	CollisionObject* object = memory
-		? new(memory) CollisionObject(this)
+		? new(memory) CollisionObjectMesh(this)
 		: 0;								// null arm: 0x00027dfd
 	mBase.mWord9C = reinterpret_cast<NxU32>(object);	// 0x00027dff
 
@@ -6628,7 +6769,7 @@ MeshShape::MeshShape(void* owner, unsigned argument)
 // the scene unit assigns the public shape-handle table.
 void* nxShapeFactoryConstructMeshHandle(void* memory, void* shape)
 	{
-	return ::new(memory) CollisionObject(shape);
+	return ::new(memory) CollisionObjectMesh(shape);
 	}
 
 // phys_fn_001385 (0x00027e60), MESH-table slot 13.

@@ -427,7 +427,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'release_shape count=1 remaining_first=1 remaining_released=0'
     )
     'NxPhysicsShapeVtableTests' = @(
-        'shape vtable oracle_digest=ed1294b6 cases=629 mismatches=0'
+        'collision dtor families=5 mismatches=0'
+        'collision primary dtor families=5 mismatches=0'
+        'shape vtable oracle_digest=ed1294b6 cases=644 mismatches=0'
         'shape vtable owner_notify oracle_slot=10 candidate_slot=10 oracle_calls=1 candidate_calls=1 owner_forwarded=1 box_forwarded=1 mismatches=0'
         'shape vtable base_stub slot4 oracle_false=1 candidate_false=1 output_preserved=1'
         'shape vtable base_stub slot5 oracle_null=1 candidate_null=1 esp_balanced=1'
