@@ -23,7 +23,7 @@ NxUserAllocator* nxFoundationSDKAllocator = 0;
 void nxNpActorApplyForce(unsigned char*, const NxVec3*, const NxVec3*, unsigned, bool)
 	{}
 
-static const unsigned kOracleSolverRva = 0x0009b120;
+static const unsigned kOracleSolverWrapperRva = 0x0009b240;
 static const unsigned kOracleIterationsRva = 0x0012718c;
 static const unsigned kOracleStepCounterRva = 0x00127184;
 static const unsigned short kSimulateControl = 0x0f7f;
@@ -50,6 +50,8 @@ struct JointSupportFixture
 	JointSupportBody body;
 	JointSupportRecord record;
 	JointCapture joint;
+	NxU32 iterations;
+	NxU32 stepCounter;
 	__declspec(align(16)) unsigned char scene[0x710];
 	};
 
@@ -85,6 +87,8 @@ static void nxInitFixture(JointSupportFixture& fixture, NxReal maxForce)
 	fixture.joint.force = 0.0f;
 	fixture.joint.axis = NxVec3(0.0f, 0.0f, 0.0f);
 	fixture.joint.step = 0.0f;
+	fixture.iterations = 1;
+	fixture.stepCounter = 0x13579bdfu;
 
 	fixture.body.mUnknown000 = NxVec3(2.0f, 0.0f, 0.0f);
 	fixture.body.mUnknown00c = 1.0f;
@@ -120,7 +124,7 @@ static unsigned nxCompareFixture(const JointSupportFixture& oracle,
 		nxFloatBits(oracle.body.mUnknown050.y), nxFloatBits(oracle.body.mUnknown050.z), oracle.joint.calls,
 		nxFloatBits(oracle.joint.force), nxFloatBits(oracle.joint.axis.x),
 		nxFloatBits(oracle.joint.axis.y), nxFloatBits(oracle.joint.axis.z),
-		nxFloatBits(oracle.joint.step)
+		nxFloatBits(oracle.joint.step), oracle.iterations, oracle.stepCounter
 		};
 	const unsigned candidateWords[] = {
 		candidate.record.mFlags, nxFloatBits(candidate.record.mUnknown034),
@@ -134,7 +138,7 @@ static unsigned nxCompareFixture(const JointSupportFixture& oracle,
 		nxFloatBits(candidate.body.mUnknown050.y), nxFloatBits(candidate.body.mUnknown050.z), candidate.joint.calls,
 		nxFloatBits(candidate.joint.force), nxFloatBits(candidate.joint.axis.x),
 		nxFloatBits(candidate.joint.axis.y), nxFloatBits(candidate.joint.axis.z),
-		nxFloatBits(candidate.joint.step)
+		nxFloatBits(candidate.joint.step), candidate.iterations, candidate.stepCounter
 		};
 	for(unsigned i = 0; i != sizeof(oracleWords) / sizeof(oracleWords[0]); ++i)
 		{
@@ -154,7 +158,7 @@ static unsigned nxRunCase(unsigned char* oracleBase, NxReal maxForce,
 	nxInitFixture(candidate, maxForce);
 	const unsigned inputWords[] = {
 		oracle.record.mFlags, oracle.record.mBody[1] ? 1u : 0u,
-		1u, nxFloatBits(1.0f / 60.0f),
+		oracle.iterations, oracle.stepCounter, nxFloatBits(1.0f / 60.0f),
 		nxFloatBits(oracle.body.mUnknown000.x), nxFloatBits(oracle.body.mUnknown000.y),
 		nxFloatBits(oracle.body.mUnknown000.z), nxFloatBits(oracle.body.mUnknown00c),
 		nxFloatBits(oracle.body.mUnknown010.x), nxFloatBits(oracle.body.mUnknown010.y),
@@ -178,15 +182,19 @@ static unsigned nxRunCase(unsigned char* oracleBase, NxReal maxForce,
 	for(unsigned i = 0; i != sizeof(inputWords) / sizeof(inputWords[0]); ++i)
 		inputDigest = nxFold(inputDigest, inputWords[i]);
 
-	// The shipped per-island wrapper reads its iteration count and step counter
-	// from these globals. The candidate accepts the same count as an argument.
-	*reinterpret_cast<NxU32*>(oracleBase + kOracleIterationsRva) = 1;
-	*reinterpret_cast<NxU32*>(oracleBase + kOracleStepCounterRva) = 0;
+	// The shipped row reads its iteration count, clears the step counter, runs
+	// the solver, then clears the iteration count. Seed both globals so the
+	// wrapper's output state is observable alongside the record mutations.
+	*reinterpret_cast<NxU32*>(oracleBase + kOracleIterationsRva) = oracle.iterations;
+	*reinterpret_cast<NxU32*>(oracleBase + kOracleStepCounterRva) = oracle.stepCounter;
 	nxSetControl(kSimulateControl);
-	reinterpret_cast<OracleSolveFn>(oracleBase + kOracleSolverRva)(oracle.scene, 1.0f / 60.0f);
+	reinterpret_cast<OracleSolveFn>(oracleBase + kOracleSolverWrapperRva)(oracle.scene, 1.0f / 60.0f);
 	nxSetControl(kSimulateControl);
-	nxSolveJointSupportRecords(reinterpret_cast<NxSceneInternal*>(candidate.scene),
-		1.0f / 60.0f, 1, true);
+	oracle.iterations = *reinterpret_cast<NxU32*>(oracleBase + kOracleIterationsRva);
+	oracle.stepCounter = *reinterpret_cast<NxU32*>(oracleBase + kOracleStepCounterRva);
+
+	nxSolveJointSupportIslandRecords(reinterpret_cast<NxSceneInternal*>(candidate.scene),
+		1.0f / 60.0f, candidate.iterations, candidate.stepCounter, true);
 
 	return nxCompareFixture(oracle, candidate, oracleDigest, candidateDigest);
 	}

@@ -77754,12 +77754,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1578",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13894",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "IDA/Capstone contract at RVA 0x0009b240 (33-byte row): clear the per-island step counter, call the 004174 support solver with the current maximum iteration count, then clear that maximum. The candidate map resolves nxSolveJointSupportIslandRecords in JointSupport.obj.",
+      "dynamic_proof": "The registered NxPhysicsJointSupportTests oracle differential calls the pinned 004176 wrapper with nonzero iteration and step-counter sentinels, then compares solver record/body/callback effects and both globals with nxSolveJointSupportIslandRecords. Omitting either reset independently is detected (mismatches=2); the restored control reports oracle=candidate=b496eeea186d3dc9 and mismatches=0. Evidence: evidence/phase6-joint-support-island-wrapper-004176.md.",
+      "implementation": "Physics/src/core/JointSupport.cpp",
+      "implementation_symbol": "?nxSolveJointSupportIslandRecords@@YAXPAVNxSceneInternal@@MAAI1_N@Z",
       "notes": ""
     },
     {

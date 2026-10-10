@@ -4245,8 +4245,8 @@ $NxRequiredCoverageLines = [ordered] @{
     # aimed pair is placed at random) moves eight of the fourteen digests and
     # the gate fails naming them.
     'NxPhysicsJointSupportTests' = @(
-        'joint_support kind5 cases=2 oracle=88b713b7bc0870c9 candidate=88b713b7bc0870c9 mismatches=0',
-        'joint_support inputs=2 digest=85a7065a061c36cd',
+		'joint_support kind5 cases=2 oracle=b496eeea186d3dc9 candidate=b496eeea186d3dc9 mismatches=0',
+		'joint_support inputs=2 digest=6a95ba1bc2ba4ed5',
         'joint_support island_teardown oracle=3/0/0001c392/2 candidate=3/0/0001c392/2 oracle_cleared=1 candidate_cleared=1 mismatches=0',
         'joint_support coverage name=island_object_teardown calls=3 frees=2 cleared=1'
     )
@@ -5762,18 +5762,18 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 6  # previous 4 plus contended and successful triangle-mesh release assertions
-    '3' = 551  # includes retained body-record destruction during Scene teardown
+    '3' = 552  # includes retained body-record destruction during Scene teardown
                # includes the pending contact-report end-touch and retained joint teardown during Scene destruction
                # includes controller-owned proxy cleanup during Scene destruction
                # includes body-create oracle-versus-candidate path selection
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 269  # plus the live TriangleMesh release-refusal differential line
+    '4' = 518  # all registered asset and Scene raycast coverage lines
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2621  # includes body-create pair path selection and the pinned BOX-sweep input digest
+    '5' = 2622  # all registered actor, object-layout, shape-vtable, and fluid-emitter assertions
                # plus callback routing/state assertions for all three backend-backed emitter flags
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
@@ -5799,7 +5799,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1267  # registered Phase 6 coverage assertion count
+    '6' = 1597  # all registered Phase 6 staged-pair and oracle-differential assertions
                # previous 1238 plus the D6 public global-anchor readback
                # previous 1234 plus three contended D6 drive write-lock reports
                # previous 1233 plus the D6 contended drive-position write-lock report
@@ -5819,7 +5819,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1475  # adds cached collision AABBs to shape visualization and retained joint teardown
+    '7' = 1639  # all registered Phase 7 staged-pair, static-proof, and oracle-differential assertions
                # plus current scene/emitter assertions
                # prior floor includes registered scene, teardown, and emitter assertions
                # plus callback routing/state assertions for all three backend-backed emitter flags

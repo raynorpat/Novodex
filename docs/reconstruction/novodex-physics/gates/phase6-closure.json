@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 152 rows are closed (2 oracle differentials, 150 mutation-falsified); 281 rows remain open. Full DLL reconstruction remains pending. The per-island joint-support solver wrapper phys_fn_004174 is mutation-falsified through NxPhysicsSimulationTests: an immediate return and a skipped solver-pass loop each change the transcript by 835 bytes; the restored Phase 6 gate passes. See evidence/phase6-joint-support-solver-wrapper-004174.md.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 153 rows are closed (3 oracle differentials, 150 mutation-falsified); 280 rows remain open. Full DLL reconstruction remains pending. The 004174 support solver and adjacent 004176 island wrapper are independently falsified through NxPhysicsSimulationTests and NxPhysicsJointSupportTests. The wrapper differential observes and mutation-tests both global resets; see evidence/phase6-joint-support-island-wrapper-004176.md.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
@@ -65,9 +65,9 @@
   },
   "counts": {
     "differential_falsified": 150,
-    "oracle_differential_falsified": 2,
+    "oracle_differential_falsified": 3,
     "deferred_reconstructed_not_falsified": 260,
-    "deferred_not_reconstructed_in_phase": 21
+    "deferred_not_reconstructed_in_phase": 20
   },
   "closed": [
     {
@@ -1592,6 +1592,17 @@
         "detected": "stdout_delta=835"
       },
       "note": "The registered staged simulation rejects both missing iterative solving and the full wrapper no-op (candidate_exit=1). Restored controls and the complete Phase 6 gate pass; see evidence/phase6-joint-support-solver-wrapper-004174.md."
+    },
+    {
+      "id": "phys_fn_004176",
+      "rva": "0x0009b240",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsJointSupportTests",
+      "falsification": {
+        "mutation": "The registered oracle-only joint-support differential calls the pinned RVA 0x0009b240 with nonzero global sentinels. Omitting the candidate maximum-iteration reset or step-counter reset independently produced mismatches=2 and a nonzero test exit. The restored candidate matched the solver output digests and reset both values to zero.",
+        "detected": "mismatches=2"
+      },
+      "note": "Direct 004176 wrapper differential with two independent reset mutations; see evidence/phase6-joint-support-island-wrapper-004176.md."
     }
   ],
   "deferred": [
@@ -2015,14 +2026,6 @@
       "id": "phys_fn_004171",
       "rva": "0x0009ae50",
       "size": 640,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_004176",
-      "rva": "0x0009b240",
-      "size": 33,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []

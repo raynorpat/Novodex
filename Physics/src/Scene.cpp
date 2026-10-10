@@ -111,6 +111,7 @@ void nxAggregateAABB1030(void* self, float* out);
 // the joint-record solver. The original global remains zero until a live
 // island contributes bodies.
 static NxU32 nxSceneMaximumStepBodies = 0;
+static NxU32 nxSceneSupportStepCounter = 0;
 
 static void nxSceneEnsureStepBodies(NxSceneInternal* scene, NxU32 count)
 	{
@@ -5639,8 +5640,8 @@ void NxSceneInternal::row000611()
 		if(at<NxU32>(0x5bc))
 			{
 			cpmSolveSceneContactRecords(this, nxSceneMaximumStepBodies);
-			nxSolveJointSupportRecords(this, timestep, nxSceneMaximumStepBodies, false);
-			nxSceneMaximumStepBodies = 0;
+			nxSolveJointSupportIslandRecords(this, timestep, nxSceneMaximumStepBodies,
+				nxSceneSupportStepCounter, false);
 			}
 		for(unsigned char* body = island; body;
 			body = *reinterpret_cast<unsigned char**>(body + 0x1fc))

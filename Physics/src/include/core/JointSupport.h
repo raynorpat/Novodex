@@ -113,6 +113,11 @@ class NxSceneInternal;
 void nxSolveJointSupportRecords(NxSceneInternal* scene, NxReal step, NxU32 iterations,
 	bool includeContactRows = true);
 
+// phys_fn_004176 (0x0009b240): clear the per-island step counter, run the
+// 004174 support solver using the shared maximum, then clear that maximum.
+void nxSolveJointSupportIslandRecords(NxSceneInternal* scene, NxReal step,
+	NxU32& iterations, NxU32& stepCounter, bool includeContactRows = true);
+
 static_assert(offsetof(JointSupportRecord, mFlags) == 0x0c, "flags at +0x0c");
 static_assert(offsetof(JointSupportRecord, mBody) == 0x10, "body pointers at +0x10");
 static_assert(offsetof(JointSupportRecord, mUnknown018) == 0x18, "vector at +0x18");

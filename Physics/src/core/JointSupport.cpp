@@ -504,7 +504,7 @@ void nxSolveJointSupportRecords(NxSceneInternal* scene, NxReal step, NxU32 itera
 			record->mUnknown034 = 0.0f;
 		if(kind == 6)
 			{
-			// phys_fn_004176 clears the custom row's target and dispatches
+			// phys_fn_004174 clears the custom row's target and dispatches
 			// joint slot 1 before its final slot-0 solve (0x9b1fc-0x9b210).
 			void* const joint = record->mUnknown030;
 			void** const vtable = *reinterpret_cast<void***>(joint);
@@ -520,6 +520,16 @@ void nxSolveJointSupportRecords(NxSceneInternal* scene, NxReal step, NxU32 itera
 		else if(kind == 5)
 			supportSolveJoint004399(step, 0xffffffffu, record);
 		}
+	}
+
+// phys_fn_004176 (0x0009b240): reset the shared step counter, call the
+// per-island solver, and clear the shared maximum iteration count.
+void nxSolveJointSupportIslandRecords(NxSceneInternal* scene, NxReal step,
+	NxU32& iterations, NxU32& stepCounter, bool includeContactRows)
+	{
+	stepCounter = 0;
+	nxSolveJointSupportRecords(scene, step, iterations, includeContactRows);
+	iterations = 0;
 	}
 
 // phys_fn_004389 (0x000af2d0, 227 B)

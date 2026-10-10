@@ -354,7 +354,7 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                 self.assertEqual(expected["cases"], 122)
                 self.assertEqual(expected["input_lines"], 284)
                 self.assertEqual(sum(expected["case_family_counts"].values()), 122)
-                self.assertEqual(expected["oracle_output_lines"], 2996)
+                self.assertEqual(expected["oracle_output_lines"], 3233)
                 self.assertEqual(expected["fixture_source"], "tests/PhysicsJointTests.cpp")
                 self.assertEqual(len(expected["input_digest_sha256"]), 64)
                 self.assertEqual(len(expected["oracle_output_digest_sha256"]), 64)

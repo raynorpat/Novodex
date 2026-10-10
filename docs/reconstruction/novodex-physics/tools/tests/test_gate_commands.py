@@ -31,14 +31,14 @@ COMMAND_PATTERN = re.compile(
 PHASE_TARGETS = {
     "2": "NxPhysicsExportTests,NxPhysicsSDKTests,NxPhysicsCoreClusterTests,NxPhysicsTriangleMeshReleaseLockTests",
     "3": "NxPhysicsBodyCreationTests,NxPhysicsGeometryTests,NxPhysicsKernelFuzzTests,NxPhysicsSDKTests,NxPhysicsPopulatedSceneTeardownTests",
-    "4": "NxPhysicsConvexMeshTests,NxPhysicsTriangleMeshApiTests,NxPhysicsPMapResolution80Tests",
+    "4": "NxPhysicsConvexMeshTests,NxPhysicsTriangleMeshApiTests,NxPhysicsPMapResolution80Tests,NxPhysicsSceneRaycastTests",
     "5": "NxPhysicsActorLifecycleTests,NxPhysicsDynamicFirstTests,NxPhysicsEmptySceneTests,NxPhysicsActorNameTests,NxPhysicsActorMetadataTests,NxPhysicsActorBodyFlagTests,NxPhysicsActorDynamicsTests,NxPhysicsActorDynamicSetterTests,NxPhysicsActorMomentumTests,NxPhysicsActorForceTests,NxPhysicsActorCMassTests,NxPhysicsActorMassTests,NxPhysicsActorShapeMutationTests,NxPhysicsActorReleaseShapeProbeTests,NxPhysicsBodyCreationTests,NxPhysicsSimulationTests,NxPhysicsMeshSimulationTests,NxPhysicsConvexMeshTests,NxPhysicsSceneRaycastTests,NxPhysicsControllerSweepFaceTests",
     # Phase 6 has a registered STAGED-PAIR target: a closure is a mutation to a row's
     # implementation, and only a staged-pair target loads the rebuilt module, so the
     # closure schema needs one (evidence 11l).
     # NxFoundationTangentTests joined it when NxNormalToTangents, which
     # NxJointDesc::setGlobalAxis calls, was brought to the oracle's words.
-    "6": "NxPhysicsJointStagedPairTests,NxFoundationTangentTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests,NxPhysicsMeshSimulationTests,NxPhysicsSimulationTests,NxPhysicsCcdSimulationTests",
+    "6": "NxPhysicsActorShapeMutationTests,NxPhysicsJointStagedPairTests,NxFoundationTangentTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests,NxPhysicsMeshSimulationTests,NxPhysicsSimulationTests,NxPhysicsCcdSimulationTests",
     # Phase 7 also runs scene simulation, mesh, and trigger targets end to end.
     "7": "NxPhysicsJointStagedPairTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsSceneConstructorTests,NxPhysicsSceneBoundsPlanesTests,NxPhysicsControllerSweepFaceTests,NxPhysicsSceneRaycastTests,NxPhysicsSceneVisualizeTests,NxPhysicsSimulationTests,NxPhysicsPairFlagTests,NxPhysicsMeshSimulationTests,NxPhysicsTriggerSimulationTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests,NxPhysicsPopulatedSceneTeardownTests",
 }

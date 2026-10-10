@@ -4,9 +4,9 @@
   "format": "joint_matrix",
   "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
   "fixture_source": "tests/PhysicsJointTests.cpp",
-  "fixture_source_sha256": "c6f882b3dd64a78b3447a97260c6f092a3856551b2d75d9367d4e7fb54e6f342",
-  "proof_lines_sha256": "71945e9587f075c921c7ee558ea1e763eee4defa935d7dd8e1a778564fc05f28",
-  "baseline_sha256": "653c860601bb45b2e8df4eb7f420a1b49339043ec48345f30711dd9b57bb4f2b",
+  "fixture_source_sha256": "dd394438da373c2dbae9f0df04220e8cabf3ef82e1035accc1c9114a7a1c349e",
+  "proof_lines_sha256": "707ffc7ad280f0512afd5a8e46833506f127507664651049b556c2e0fa8b294e",
+  "baseline_sha256": "91627d3bb34ccaa07f2270929dd58fd433186a78dd3331e2581bab775c50ed80",
   "cases": 122,
   "input_lines": 284,
   "case_family_counts": {
@@ -21,8 +21,8 @@
     "fixed": 12,
     "d6": 12
   },
-  "oracle_output_lines": 3118,
+  "oracle_output_lines": 3233,
   "input_digest_sha256": "a35c701865c1044c912493ee63ffc759ceb70457ca779e086fd300b1da5f953e",
-  "oracle_output_digest_sha256": "cc1b2f4d29dca5ad696eefdf31043bebd192430029073c814a4b560811d2dce0",
-  "proof_sha256": "e25107757dd7e8c480d821f7ec513c9c5b603c47c82e02771d2e189b275ab8b0"
+  "oracle_output_digest_sha256": "ebb13c0e366b7dbe57a9232b7116d989706e7bc38b275a19872e3fb2105392f2",
+  "proof_sha256": "0fd0597558fa6c4b55b2e15f48e2efc9ae2f225d9e63b8696bc186e845d13da5"
 }
