@@ -10,6 +10,7 @@
 #include "NxSceneDesc.h"
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
+#include "NxFixedJointDesc.h"
 #include "NxBoxShapeDesc.h"
 #include "NxPlaneShapeDesc.h"
 #include "NxSphereShapeDesc.h"
@@ -323,6 +324,24 @@ int wmain(int argc, wchar_t** argv)
 		reportCallbacksBeforeRelease, teardownReport.calls, teardownReport.events);
 	if(teardownReport.calls == reportCallbacksBeforeRelease)
 		return nxFail("scene teardown did not deliver its pending contact report");
+
+	// Keep a registered joint alive until Scene destruction. phys_fn_000606
+	// walks both joint lists and deletes any joints still registered after the
+	// actor teardown path.
+	NxScene* jointScene = sdk->createScene(sceneDesc);
+	if(!jointScene) return nxFail("joint-list teardown scene creation failed");
+	NxActor* jointActor = jointScene->createActor(dynamicDesc);
+	if(!jointActor) return nxFail("joint-list teardown dynamic actor failed");
+	NxFixedJointDesc fixedDesc;
+	fixedDesc.setToDefault();
+	fixedDesc.actor[0] = jointActor;
+	NxJoint* retainedJoint = jointScene->createJoint(fixedDesc);
+	if(!retainedJoint) return nxFail("joint-list teardown fixed joint failed");
+	const unsigned jointBlocksBefore = allocator.outstanding();
+	sdk->releaseScene(*jointScene);
+	const unsigned jointBlocksAfter = allocator.outstanding();
+	printf("teardown joint_owner joint_created=1 release_delta=%d\n",
+		static_cast<int>(jointBlocksAfter) - static_cast<int>(jointBlocksBefore));
 
 	sdk->release();
 	foundationSDK->release();

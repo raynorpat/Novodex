@@ -11488,13 +11488,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/233",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1532",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000110b0"
+      "dynamic_proof": "The registered Phase 7 NxPhysicsPopulatedSceneTeardownTests differential keeps a fixed joint registered through releaseScene. Oracle and restored candidate both free 35 tracked blocks (release_delta=-35; stdout_delta=0, stderr_exact=True). Disabling the joint-list loop leaves release_delta=-33 and is caught with stdout_delta=2. See evidence/phase7-scene-joint-list-teardown-000606.md.",
+      "notes": "phys_fn_000606 is transcribed in nxSceneDelete: after body-record reset it walks Scene joint-list heads +0x59c and +0x5a0, clears each joint link/scene/flag state, deletes it through its vtable with flag 1, then advances to the saved link. This closes the list-cleanup row only; phys_fn_000663 remains open for additional Scene destructor ownership paths."
     },
     {
       "id": "phys_fn_000607",

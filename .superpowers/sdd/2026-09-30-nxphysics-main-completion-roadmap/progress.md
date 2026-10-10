@@ -374,3 +374,18 @@ and Phase 7 passes 1455/1455. All 810 tooling tests pass; `git diff --check`
 passes, inventory validation reports zero unexplained entries, and all 80
 public Physics headers remain unchanged. `phys_fn_000663` remains open for its
 other ownership paths; full DLL reconstruction remains active.
+
+Continuation — Scene retained-joint list teardown (phys_fn_000606,
+2026-10-10).
+
+Extended the registered populated-scene teardown differential to retain a
+fixed joint through `releaseScene`. The pinned oracle and restored candidate
+both free 35 tracked blocks during Scene release. Temporarily disabling the
+two-list cleanup loop changes the candidate release delta from -35 to -33 and
+is rejected (`stdout_delta=2`, both exits zero, exact stderr); the restored
+pair is exact. Phase 3 passes 550/550 and Phase 7 passes 1456/1456. All 810
+tooling tests pass, inventory validates at 50 Phase 7 rows closed / 511
+deferred with zero unexplained rows, and all 80 public Physics headers match
+their manifest. This closes `phys_fn_000606` only; `phys_fn_000663` remains
+open for its other Scene destructor ownership paths. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase7-scene-joint-list-teardown-000606.md`.
