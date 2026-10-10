@@ -449,6 +449,17 @@ static void nxRevoluteCase(NxScene& scene, NxActor* a, NxActor* b,
 		NxRevoluteJointDesc saved;
 		revolute->saveToDesc(saved);
 		nxPrintSavedFrames("revolute", index, saved);
+		printf("case=revolute index=%u saved limits=%08x.%08x.%08x.%08x.%08x.%08x motor=%08x.%08x.%08x\n",
+			index, nxU(saved.limit.low.value), nxU(saved.limit.low.restitution),
+			nxU(saved.limit.low.hardness), nxU(saved.limit.high.value),
+			nxU(saved.limit.high.restitution), nxU(saved.limit.high.hardness),
+			nxU(saved.motor.velTarget), nxU(saved.motor.maxForce),
+			static_cast<unsigned>(saved.motor.freeSpin));
+		printf("case=revolute index=%u saved spring=%08x.%08x.%08x projection=%08x.%08x mode=%u flags=%08x\n",
+			index, nxU(saved.spring.spring), nxU(saved.spring.damper),
+			nxU(saved.spring.targetValue), nxU(saved.projectionDistance),
+			nxU(saved.projectionAngle), static_cast<unsigned>(saved.projectionMode),
+			static_cast<unsigned>(saved.flags));
 		}
 
 	nxPrintSceneJoints(scene, "revolute", index, "before_release", joint);

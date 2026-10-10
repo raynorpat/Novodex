@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 114 rows are closed (2 oracle differentials, 112 mutation-falsified); 319 rows remain open. Full DLL reconstruction remains pending.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 115 rows are closed (2 oracle differentials, 113 mutation-falsified); 318 rows remain open. Full DLL reconstruction remains pending.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
@@ -64,9 +64,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 112,
+    "differential_falsified": 113,
     "oracle_differential_falsified": 2,
-    "deferred_reconstructed_not_falsified": 296,
+    "deferred_reconstructed_not_falsified": 295,
     "deferred_not_reconstructed_in_phase": 23
   },
   "closed": [
@@ -1211,6 +1211,16 @@
         "mutation": "Row-specific falsification (source revision in this worktree): omitted the wrapper dispatch to the internal flag setter in `NpRevoluteJoint::setFlags`. Setting the public flags from 00000007 to 00000005 left the result at 00000007; oracle/candidate exit 0, stdout_delta=2, stderr_exact=True. Restored control: stdout_delta=0, exact stderr. Mutant candidate SHA-256 a5327e662cc1652c929291180c1e2edc756c50a18a7c9db52579eac645d09c86; restored candidate SHA-256 a3049afbca1ba46437559f8202085f7eb9d53be69f7af54e9a29bcad705bead0. Evidence: evidence/phase6-joint-revolute-flags-setters-004334-004703.md.",
         "detected": "stdout_delta=2"
       }
+    },
+    {
+      "id": "phys_fn_004330",
+      "rva": "0x000a8d40",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision in this worktree): omitted only `desc.limit = mLimit` in `RevoluteJoint::saveToDesc`. The public descriptor returned default limits instead of the values set by the fixture; oracle/candidate exit 0, stdout_delta=2, stderr_exact=True. Restored differential exact. Mutant candidate SHA-256 008e29668d5a8e61270fa37a2ff315ed5bad286eaad0e85d04352e01778fba13; restored candidate SHA-256 267bf324ce4728b406a922a1456a0f621dae1c73a4283342f90841f2f81aa963. Evidence: evidence/phase6-joint-revolute-save-to-desc-004330.md.",
+        "detected": "stdout_delta=2"
+      }
     }
   ],
   "deferred": [
@@ -2289,15 +2299,6 @@
       "size": 21,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004330",
-      "rva": "0x000a8d40",
-      "size": 281,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },

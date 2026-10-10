@@ -80595,13 +80595,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1625",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14706",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
-      "notes": "",
+      "dynamic_proof": "The registered NxPhysicsJointStagedPairTests transcript prints all revolute saveToDesc fields after distinct setter values are set. Omitting desc.limit = mLimit returned defaults (both exits 0, stdout_delta=2, exact stderr); restored differential exact. Mutant SHA-256 008e29668d5a8e61270fa37a2ff315ed5bad286eaad0e85d04352e01778fba13; restored SHA-256 267bf324ce4728b406a922a1456a0f621dae1c73a4283342f90841f2f81aa963. Evidence: evidence/phase6-joint-revolute-save-to-desc-004330.md.",
+      "notes": "Revolute saveToDesc field copy mutation-falsified by the staged-pair getter transcript.",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
