@@ -2364,6 +2364,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=revolute index=0 updated spring enabled=1 values=41200000.3f000000.be800000',
         'case=revolute index=0 updated flags=00000007',
         'case=revolute index=0 projection_mode=1',
+        'case=revolute index=0 explicit_flags=00000005',
         'case=revolute index=0 actors a=match b=match',
         'case=revolute index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=prismatic index=0 created=yes',

@@ -10104,3 +10104,10 @@ The pinned oracle matrix proof now records fixture source SHA-256 `5a848a7b06211
 The index-0 staged-pair case calls `setProjectionMode(NX_JPM_POINT_MINDIST)` and serializes the `getProjectionMode()` result. For `phys_fn_004338`, omitting the projection-mode store changed the result to zero and the differential reported `stdout_delta=2`; the restored result matched with `stdout_delta=0`. See [phase6-joint-revolute-projection-mode-004338.md](phase6-joint-revolute-projection-mode-004338.md).
 
 The pinned oracle matrix proof now records fixture source SHA-256 `9ed9958488e3c580110ea08a82406ce512bc3116d0262017b3533fbeb19d7120`, 3,179 output lines, and digest `0f6bb75c89e6d90f63b51b7c8c3cad302bcb91600feb008c9bcb38e4957f8ad8`. The full Phase 6 gate passed with 1,573 assertions run (minimum required: 1,267). Phase 6 now has 112 closed rows (110 mutation-falsified plus 2 oracle differentials) and 321 deferred rows; 23 in-phase rows remain unreconstructed.
+
+
+## Phase 6 closure measurement — revolute flag setters (`phys_fn_004334`, `004703`)
+
+The index-0 case now sets the flags from `0x07` to `0x05` through the public joint and prints the readback. For `phys_fn_004334`, omitting the internal flag store produced `stdout_delta=2`; for `phys_fn_004703`, omitting wrapper dispatch produced `stdout_delta=2`. Restoring both yielded exact output. See [phase6-joint-revolute-flags-setters-004334-004703.md](phase6-joint-revolute-flags-setters-004334-004703.md).
+
+The pinned oracle matrix proof now records fixture source SHA-256 `cec98560b773f76b3760b37b10962ea1c4a596b819afc61ceb364646c7201b67`, 3,180 output lines, and digest `a1b7e8b2286835b5323a20b03542670e05ce5157b067b3a57eeadff6e7a952a3`. The full Phase 6 gate passed with 1,574 assertions run (minimum required: 1,267). Phase 6 now has 114 closed rows (112 mutation-falsified plus 2 oracle differentials) and 319 deferred rows; 23 in-phase rows remain unreconstructed.
