@@ -12028,7 +12028,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1680",
       "static_proof": "RVA 0x000127e0 (176 bytes), sole direct caller phys_fn_000659: when the Scene joint list is nonempty, traverse it once to call phys_fn_000762 on each joint with a selected body at +0x08 or +0x0c, traverse again to call phys_fn_000720 on the selected body, reset Scene+0x590 to +0x58c, then call phys_fn_000764 on every record in [Scene+0x56c, Scene+0x570).",
       "dynamic_proof": "Registered NxPhysicsSimulationTests staged-pair differential rejects a no-op of the joint/body island-reset passes while retaining the Scene cursor assignment: oracle_exit=0, candidate_exit=-1073741819, stdout_delta=3728. Restoring and rebuilding returns both exits to 0, stdout_delta=0, stderr_exact=True. The broadphase fixture catches the body-reset portion before joint trajectories. See evidence/phase7-scene-joint-island-reset-000635.md.",
-      "notes": "The downstream island rebuild helper phys_fn_004172 remains open and is not discharged by this row.",
+      "notes": "The downstream articulation island rebuild phys_fn_004172 is independently mutation-falsified through NxPhysicsSimulationTests; see evidence/phase6-island-rebuild-004172.md.",
       "implementation": "Physics/src/Scene.cpp",
       "implementation_symbol": "NxSceneInternal::simulateFrame (substep island reset)"
     },
@@ -13601,9 +13601,9 @@
       "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/289",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2040",
-      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x16100-0x1612d: thiscall, plain ret; the inlined 000712 find and the +0x1e4 bit-1 test calling 004172 cdecl on the root are reproduced by Island.cpp Row000720Fixture::row000720; 004172 itself is not reconstructed and has no candidate anywhere (open stand-in nxBodyIslandRebuild004172Open, a no-op, no stable-ID line). Reachable only from the simulation step (000635); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x16100-0x1612d: thiscall, plain ret; the inlined 000712 find and the +0x1e4 bit-1 test calling 004172 cdecl on the root are reproduced by Island.cpp Row000720Fixture::row000720; 004172 is implemented in core/Articulation.cpp and its no-op mutation is rejected by the registered NxPhysicsSimulationTests differential (stdout_delta=226); see evidence/phase6-island-rebuild-004172.md. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "notes": "Scene-raycast Task 4 island helper; its call to 004172 is now reached by the registered deterministic simulation path and the callee is mutation-falsified.",
       "implementation": "Physics/src/Island.cpp"
     },
     {
@@ -14415,9 +14415,9 @@
       "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/310",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2157",
-      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x17930-0x1798f: record in ecx, plain ret; the 000712 find, the +0x1e4 bit-1 test releasing the island object (004167, allocator free, +0x1e0=0; direct differential in NxPhysicsJointSupportTests) and calling 004172 cdecl, then 000722 on the record (a tail jmp in the oracle, a call here) are reproduced by Island.cpp Row000764Fixture::row000764; 000722 is core/JointSupport.cpp Row000722Fixture::row000722 (reconstructed, body-creation), 004172 the open stand-in nxBodyIslandRebuild004172Open (not reconstructed, no candidate anywhere). Reachable only from the simulation step (000635); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x17930-0x1798f: record in ecx, plain ret; the 000712 find, the +0x1e4 bit-1 test releasing the island object (004167, allocator free, +0x1e0=0; direct differential in NxPhysicsJointSupportTests) and calling 004172 cdecl, then 000722 on the record (a tail jmp in the oracle, a call here) are reproduced by Island.cpp Row000764Fixture::row000764; 000722 is core/JointSupport.cpp Row000722Fixture::row000722 (reconstructed, body-creation), 004172 is implemented and mutation-falsified through NxPhysicsSimulationTests (stdout_delta=226); see evidence/phase6-island-rebuild-004172.md. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "notes": "Scene-raycast Task 4 island helper; its call to 004172 is reached by the registered deterministic simulation path and the callee is mutation-falsified.",
       "implementation": "Physics/src/Island.cpp"
     },
     {
@@ -77666,13 +77666,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/Articulation.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1576",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13878",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Reconstructed from the Ghidra decompile and Capstone listing: clears root dirty bit 1, rebuilds the articulation island through 004169, reports the exact no-group warning on null, otherwise stores the returned island pointer at +0x1e0.",
+      "dynamic_proof": "NxPhysicsSimulationTests registered staged-pair differential: replacing phys_fn_004172 with a no-op changed the deterministic scene simulation transcript (stdout_delta=226; both exits 0; stderr exact). Mutant candidate SHA-256 c29ed3245f78c7ab2507c7df1ba2bf33f27a2e61dc90a8da67a4f0d50d4ab6c5; restored candidate SHA-256 57f328a441ff5f677e8f0359b6bd1f09e428632c7858e8745c574ca4e899387c; restored control stdout_delta=0. See evidence/phase6-island-rebuild-004172.md.",
+      "notes": "The existing concrete implementation is reached by the registered simulation path through the island-reset/active-root chain; this closes the prior discovered-only census entry.",
+      "implementation": "Physics/src/core/Articulation.cpp"
     },
     {
       "id": "phys_fn_004173",

@@ -10,11 +10,11 @@ Evidenced span: ['0x0009b0d0', '0x0009b0d0']. Rows: 1 (0 ambiguous). Generated b
 
 - gap:Joint.cpp..core\Articulation.cpp: phys_fn_004169
 
-## phys_fn_004172 (0x0009b0d0, 69 B, discovered)
+## phys_fn_004172 (0x0009b0d0, 69 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/core/Articulation.cpp
-- implementation: None
+- implementation: Physics/src/core/Articulation.cpp
 - prototype: undefined __cdecl FUN_1009b0d0(void * param_1)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_000720 (0x00016100), phys_fn_000764 (0x00017930)

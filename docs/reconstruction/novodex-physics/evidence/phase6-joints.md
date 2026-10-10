@@ -10031,7 +10031,7 @@ For `phys_fn_000600`, the registered `NxPhysicsSimulationTests` staged-pair diff
 
 ## Phase 7 Scene substep island-reset row `phys_fn_000635`
 
-For `phys_fn_000635`, the registered `NxPhysicsSimulationTests` staged-pair differential rejects omission of the joint/body island-reset passes (`candidate_exit=-1073741819`, `stdout_delta=3728`; oracle exits 0). Restoring the row returns both exits to 0 with `stdout_delta=0` and exact stderr. See [phase7-scene-joint-island-reset-000635.md](phase7-scene-joint-island-reset-000635.md). The downstream `phys_fn_004172` remains open.
+For `phys_fn_000635`, the registered `NxPhysicsSimulationTests` staged-pair differential rejects omission of the joint/body island-reset passes (`candidate_exit=-1073741819`, `stdout_delta=3728`; oracle exits 0). Restoring the row returns both exits to 0 with `stdout_delta=0` and exact stderr. See [phase7-scene-joint-island-reset-000635.md](phase7-scene-joint-island-reset-000635.md). The downstream `phys_fn_004172` has since been mutation-falsified through `NxPhysicsSimulationTests`; see [phase6-island-rebuild-004172.md](phase6-island-rebuild-004172.md).
 
 ## Phase 6 closure measurement — retained joint break detach (`phys_fn_004105`)
 
@@ -10207,3 +10207,13 @@ phys_fn_004695 purgeLimitPlanes stdout_delta=2; restored stdout_delta=0.
 ## Phase 6 verification — Revolute wrapper batch
 
 The full Phase 6 gate passed with 1,596 coverage assertions evaluated (minimum required: 1,267). Phase 6 now has 150 closed rows (148 mutation-falsified plus 2 oracle differentials) and 283 deferred rows: 260 reconstructed rows still need individual mutations, and 23 in-phase rows remain unreconstructed.
+
+## Phase 6 closure measurement — articulation island rebuild (`phys_fn_004172`)
+
+The registered deterministic `NxPhysicsSimulationTests` staged-pair path reaches the articulation island rebuild. Replacing `phys_fn_004172` with a no-op changed the transcript with `stdout_delta=226`; both processes exited 0 and stderr matched exactly. The restored control returned `stdout_delta=0` and exact stderr. See [phase6-island-rebuild-004172.md](phase6-island-rebuild-004172.md).
+
+phys_fn_004172 articulation island rebuild stdout_delta=226; restored stdout_delta=0.
+
+## Phase 6 updated closure ledger — 2026-10-10
+
+After adding `phys_fn_004172`, Phase 6 records 151 closed rows (149 mutation-falsified and two oracle differentials) and 282 deferred rows: 260 reconstructed rows remain without an individual mutation, and 22 in-phase rows remain unreconstructed. A fresh Phase 6 gate evaluated 1,596 coverage assertions against the 1,267 floor and passed.

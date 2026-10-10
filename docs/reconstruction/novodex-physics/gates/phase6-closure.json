@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 150 rows are closed (2 oracle differentials, 148 mutation-falsified); 283 rows remain open. Full DLL reconstruction remains pending.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 151 rows are closed (2 oracle differentials, 149 mutation-falsified); 282 rows remain open. Full DLL reconstruction remains pending.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
@@ -64,10 +64,10 @@
     ]
   },
   "counts": {
-    "differential_falsified": 148,
+    "differential_falsified": 149,
     "oracle_differential_falsified": 2,
     "deferred_reconstructed_not_falsified": 260,
-    "deferred_not_reconstructed_in_phase": 23
+    "deferred_not_reconstructed_in_phase": 22
   },
   "closed": [
     {
@@ -1571,6 +1571,16 @@
         "mutation": "Row-specific source mutation: omitted the public purgeLimitPlanes wrapper call. The registered staged-pair differential reported stdout_delta=2; both exits were zero and stderr was exact. Restored clean control returned stdout_delta=0 with both exits zero and exact stderr. Mutant candidate SHA-256 7ad7b6afdb72e98d21fa42afaefbcb6434e6687e2d426ae3e35ee9c44c51446b; restored candidate SHA-256 523175f602a88a46fda3acd4c590afbc43ea4dfd4fdb6f949b761ebfcb214ec5. Evidence: evidence/phase6-joint-revolute-base-setters-004681-004695.md.",
         "detected": "stdout_delta=2"
       }
+    },
+    {
+      "id": "phys_fn_004172",
+      "rva": "0x0009b0d0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Row-specific source mutation: replaced phys_fn_004172 with a no-op. The registered staged-pair deterministic simulation differential reported stdout_delta=226; both exits were zero and stderr was exact. Restored control returned stdout_delta=0 with both exits zero and exact stderr. Mutant candidate SHA-256 c29ed3245f78c7ab2507c7df1ba2bf33f27a2e61dc90a8da67a4f0d50d4ab6c5; restored candidate SHA-256 57f328a441ff5f677e8f0359b6bd1f09e428632c7858e8745c574ca4e899387c. Evidence: evidence/phase6-island-rebuild-004172.md.",
+        "detected": "stdout_delta=226"
+      }
     }
   ],
   "deferred": [
@@ -1994,14 +2004,6 @@
       "id": "phys_fn_004171",
       "rva": "0x0009ae50",
       "size": 640,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_004172",
-      "rva": "0x0009b0d0",
-      "size": 69,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
