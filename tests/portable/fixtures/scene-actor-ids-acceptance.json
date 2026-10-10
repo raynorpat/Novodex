@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "source_revision_before_translation": "924cc8ed696eda6e5b2487b07a76fc171b6d832f",
+  "capture_id": "scene-actor-ids-x87",
+  "fixture_sha256": "aab0340118ebb79f19a8ebdd78ee058a0e034025659752a561a56549b06a3279",
+  "manifest_sha256": "183b944fd2086982c5d3d002e5efb4dff61e212b0ab3e54db95a8100d19983b8",
+  "source_index_sha256": "764098b35c911b5f659f89d16b2d9689439acb3eebd8b2ac9e5cad8a6d38e8c0",
+  "snapshot_count": 135,
+  "current_source_sha256": {
+    "CMakeLists.txt": "e8c700639ef5d23bb74705e437662f2328b861615c292adc6ade6298fc267a02",
+    "Physics/src/SceneActorIdPool.cpp": "5aa90ebb724ba0807b08b7fbdc0f1918622f20053c3fbd5257b10d079224c1a4",
+    "Physics/src/include/NxSceneActorIdPool.h": "43924bd6ecd90f16b3104610a0592ecff6a3a71b7f07a0b759f409e4fa9a0b29",
+    "Physics/src/Scene.cpp": "df45f49bd920c765eb097b3240d155c73ab65422e2f92b1703c342734ac8b0ac",
+    "tests/portable/CMakeLists.txt": "a32c52377758d11c8c612f48b21e10d2c13ae3cf9e243eefd98f79341e9e1815",
+    "tests/portable/SceneActorIdTargets.cmake": "de9e3d115de88fba9152f4c5541d8f5d9ab48775fdd05cbf9618161153e1c417",
+    "tests/portable/SceneActorIdTests.cpp": "90f9523f7643c2dcf3d8db7109c4d0babcfff0424508c996f08d16561fa903ac",
+    "tests/portable/SceneActorIdDomain.h": "611378c82e18f0b93cfd3e000d59ea647b98c7a09aa976a2aee2f0e753030794",
+    "tests/portable/ExportShippedSceneActorIds.cpp": "f3821c3e4c66dbaba1b3ced990f3da45637870737673711350d116f285d43130",
+    "tests/portable/SceneActorIdPlacementTests.py": "385a4d6e0364049459a84603793cb409a06f43333ca76b101ee46158dedcc2b8",
+    "docs/reconstruction/novodex-physics/tools/capture_scene_actor_ids.py": "26eeae7defc6b294e562d12177d27094bbb516689874620e9e82b475dea52d2a"
+  },
+  "backend": "scalar fixed32 member; Win32 production retains x87",
+  "groups": 180,
+  "observations": 1731,
+  "quantity_counts": {
+    "next": 177,
+    "count": 177,
+    "capacity": 177,
+    "domain_allocations": 177,
+    "domain_releases": 177,
+    "returned_id": 114,
+    "live_array": 723,
+    "cleanup": 9
+  },
+  "units": "all discrete/unitless",
+  "budget": {
+    "raw_word_exact": true,
+    "absolute": 0,
+    "relative": 0,
+    "measured_max_word_difference": 0
+  },
+  "approved_by_controller_before_final_acceptance": true,
+  "domain": "177 snapshots, next0..16/fffffffe/ffffffff, count0..15, capacity0/2/6/14/30, domain allocations0..4/releases0..3; exact all returned IDs/live array words/metadata; 9 cleanup booleans1",
+  "supported_general_domain": "successful coherent buffers and nonoverflow capacity/byte allocation; unchecked OOM/size overflow unsupported",
+  "supplement_scope": "unsigned next wrap and arbitrary duplicate recycled words only helper semantics, no actor uniqueness or validity; genuine empty original Scene seeded/drained/restored before release",
+  "scalar_components": "actual ordinary actor-ID class/typed array/shared production placement helpers/real Foundation allocator; actual Scene TU object compilation and source placement proof. Full scalar Scene/Actor/NpScene/body/shape/solver remain later gates",
+  "original_boundary": "real shipped SDK-created empty Scene, direct typed1430 take and1b90 return, real Scene/SDK cleanup",
+  "original_allocations": 60,
+  "original_releases": 60,
+  "scalar_allocations": 15,
+  "scalar_releases": 15,
+  "configurations": [
+    "MSVC Release",
+    "MSVC Debug",
+    "Clang22.1.8 Release"
+  ],
+  "production_migration_guard": "unchanged expected rejection",
+  "full_suite": {
+    "passed": 31,
+    "total": 31,
+    "seconds": 54.79
+  },
+  "legacy": {
+    "families": 116,
+    "words": 2615055,
+    "layouts": 47,
+    "mismatches": 0,
+    "layout_failures": 0,
+    "divergent_classifications": 26,
+    "digest": "e2a266c1",
+    "collision": "pass"
+  }
+}

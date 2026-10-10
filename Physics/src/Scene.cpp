@@ -31,6 +31,7 @@
 #if !NX_PHYSICS_USE_X87
 #include "NxSceneContactMembers.h"
 #include "NxSceneVisitedBuffers.h"
+#include "NxSceneActorIdPool.h"
 #endif
 #include "NxSceneDesc.h"
 #include "NxSceneStats.h"
@@ -617,6 +618,14 @@ static inline unsigned char* nxAt(unsigned* p, unsigned byteOffset)
 	{
 	return reinterpret_cast<unsigned char*>(p) + byteOffset;
 	}
+#if !NX_PHYSICS_USE_X87
+NxSceneActorIdPool& nxSceneActorIds(NxSceneInternal& scene)
+	{
+	static_assert(0x6d0 % alignof(NxSceneActorIdPool) == 0,
+		"Scene actor-ID member storage alignment");
+	return *reinterpret_cast<NxSceneActorIdPool*>(scene.bytes() + 0x6d0);
+	}
+#endif
 
 // phys_fn_000647 (0x00012c10). Every store below is the listing's, at the byte
 // offset the listing names, in the listing's order; the listing address of the
@@ -732,8 +741,14 @@ NxSceneInternal::NxSceneInternal()
 	nxDword(p, 0x620) = 0;
 	nxSceneMember4CA30(nxAt(p, 0x624));						// phys_fn_001980
 
+#if NX_PHYSICS_USE_X87
 	for(unsigned offset = 0x6ac; offset <= 0x6dc; offset += 4)	// 0x12ee5
 		nxDword(p, offset) = 0;
+#else
+	for(unsigned offset = 0x6ac; offset <= 0x6cc; offset += 4)
+		nxDword(p, offset) = 0;
+	nxSceneActorIdPoolConstruct(nxAt(p, 0x6d0));
+#endif
 	nxDword(p, 0x6e4) = 0;							// next shape ID
 	nxDword(p, 0x6e8) = 0;							// shape-ID recycle array
 	nxDword(p, 0x6ec) = 0;
@@ -1088,12 +1103,16 @@ void nxSceneRecycleShapeId(NxSceneInternal* scene, unsigned id)
 
 void nxSceneRecycleActorId(NxSceneInternal* scene, unsigned id)
 	{
+#if NX_PHYSICS_USE_X87
 	unsigned char* header = scene->bytes() + 0x6d4;
 	nxSceneArrayReserve(header, 1);
 	unsigned* last = scene->at<unsigned*>(0x6d8);
 	if(!last) return;
 	*last = id;
 	scene->at<unsigned*>(0x6d8) = last + 1;
+#else
+	nxSceneActorIds(*scene).returnId(id);
+#endif
 	}
 
 // Dynamic-record IDs use the same LIFO vector layout at Scene+0x6fc, with the
@@ -1752,6 +1771,7 @@ void* nxSceneCreateActorBody(void* memory, void* scene)
 
 	// The scene hands out a slot id: either the counter at +0x6d0 is incremented, or
 	// the free list at +0x6d4..+0x6d8 is popped.
+#if NX_PHYSICS_USE_X87
 	unsigned slot;
 	const unsigned freeCount = (s[0x6d8 / 4] - s[0x6d4 / 4]) >> 2;
 	if(freeCount == 0)
@@ -1764,6 +1784,9 @@ void* nxSceneCreateActorBody(void* memory, void* scene)
 		slot = *reinterpret_cast<unsigned*>(s[0x6d4 / 4] + (freeCount - 1) * 4);
 		s[0x6d8 / 4] = s[0x6d8 / 4] - 4;
 		}
+#else
+	const unsigned slot = nxSceneActorIds(*static_cast<NxSceneInternal*>(scene)).take();
+#endif
 	a[0xc / 4] = slot;
 
 	// The 0x18-byte sub-object the oracle allocates next. Reproduction hole.
@@ -3260,6 +3283,7 @@ static void nxSceneDelete(void* self, int flags)
 	// shape array at +0x6a4 (+0x624's +0x78) grows through phys_fn_004840,
 	// which uses phys_fn_004803. Each block goes back to the allocator it
 	// came from.
+#if NX_PHYSICS_USE_X87
 	const unsigned arrayOffsets[] = {0x6fc, 0x6e8, 0x6d4, 0x6a4};
 	for(unsigned offset : arrayOffsets)
 		{
@@ -3274,6 +3298,19 @@ static void nxSceneDelete(void* self, int flags)
 			entries = 0;
 			}
 		}
+#else
+	const unsigned otherIdArrayOffsets[] = {0x6fc, 0x6e8};
+	for(unsigned offset : otherIdArrayOffsets)
+		{
+		void*& entries = *reinterpret_cast<void**>(static_cast<unsigned char*>(self) + offset);
+		if(entries) nxFoundationSDKAllocator->free(entries);
+		entries = 0;
+		}
+	nxSceneActorIdPoolDestroy(&nxSceneActorIds(*scene));
+	void*& pendingShapes = scene->at<void*>(0x6a4);
+	if(pendingShapes) nxGetSdkAllocator()->free(pendingShapes);
+	pendingShapes = 0;
+#endif
 	// The pruning engine's pruners: each one's tree (static), its world boxes
 	// and objects, then its storage (opcode/IcePruner.cpp).
 	nxSceneEngineDestroyPruners(static_cast<unsigned char*>(self) + 0x624);
@@ -3634,7 +3671,11 @@ void nxActorDestroy(unsigned char* body)
 		reinterpret_cast<DynamicBody*>(record)->destruct();
 		nxFoundationSDKAllocator->free(record);
 		}
+#if NX_PHYSICS_USE_X87
 	nxU32VectorPushBack(scene->bytes() + 0x6d0, *reinterpret_cast<unsigned*>(body + 0xc));
+#else
+	nxSceneActorIds(*scene).returnId(*reinterpret_cast<unsigned*>(body + 0xc));
+#endif
 	unsigned char* root = *reinterpret_cast<unsigned char**>(body + 0x10);
 	if(root)
 		nxRuntimeShapeDeleteRoot(root);

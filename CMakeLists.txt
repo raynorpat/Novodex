@@ -109,6 +109,7 @@ source_group("Header Files" FILES ${PHYSICS_HEADERS})
 file(GLOB PHYSICS_SOURCES Physics/src/*.cpp Physics/src/core/*.cpp Physics/src/opcode/*.cpp)
 if(NX_PHYSICS_USE_X87)
     list(REMOVE_ITEM PHYSICS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Physics/src/PrunerRegistration.cpp")
+    list(REMOVE_ITEM PHYSICS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Physics/src/SceneActorIdPool.cpp")
 endif()
 # The joint families on their own, for the test targets that link Scene.cpp: its
 # createJoint constructs every family, so they need the whole directory at link time.
