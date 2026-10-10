@@ -82543,13 +82543,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/NpD6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1655",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15139",
       "static_proof": "transcribed from units/core__NpD6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": null,
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointStagedPairTests mutation differential: omitted only `NpD6Joint::setGlobalAnchor` forwarding; the public post-set anchor readback changed. Oracle/candidate exits 0, stdout_delta=4, exact stderr. Restored clean control: stdout_delta=0, exact stderr. Mutant candidate SHA-256 9ade2bdeb1c3937efc7bef40a561b9c945b29c1117d5c16c8ccd969687804d96; restored candidate SHA-256 e654381efff414238cb72965b4fecc3b3b4f70374521ef03c0b57494668c2e8b. Evidence: evidence/phase6-joint-d6-anchor-load-desc-004435-004457.md.",
+      "notes": "Phase 6 closure: evidence/phase6-joint-d6-anchor-load-desc-004435-004457.md",
       "implementation": "Physics/src/core/NpD6Joint.cpp"
     },
     {
@@ -82951,13 +82951,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/NpD6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1666",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15166",
       "static_proof": "transcribed from units/core__NpD6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointStagedPairTests mutation differential: omitted only `NpD6Joint::loadFromDesc` forwarding; the reloaded local anchors and axes stayed at their previous values. Oracle/candidate exits 0, stdout_delta=2, exact stderr. Restored clean control: stdout_delta=0, exact stderr. Mutant candidate SHA-256 7d8fb11972266ddcd40579fb695ee1a9f83749ee219b09ede6aa7a82b52b8b0c; restored candidate SHA-256 df7afbf6512cddf46d1151dd3d2009f9f47525422f91b332bfbcce155ac1922b. Evidence: evidence/phase6-joint-d6-anchor-load-desc-004435-004457.md.",
+      "notes": "Phase 6 closure: evidence/phase6-joint-d6-anchor-load-desc-004435-004457.md",
       "implementation": "Physics/src/core/NpD6Joint.cpp"
     },
     {

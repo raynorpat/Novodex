@@ -1472,6 +1472,30 @@ static void nxD6Case(NxScene& scene, NxActor* a, NxActor* b,
 		nxD6Fill(again, sentinel);
 		d6->saveToDesc(again);
 		nxD6PrintFields(index, "resaved", again);
+		if(index == 3)
+			{
+			NxD6JointDesc incoming;
+			incoming.setToDefault();
+			incoming.actor[0] = a;
+			incoming.actor[1] = b;
+			incoming.localAnchor[0] = NxVec3(1.25f, -3.5f, 2.75f);
+			incoming.localAnchor[1] = NxVec3(-0.75f, 5.25f, 0.125f);
+			incoming.localAxis[0] = NxVec3(0.25f, 0.5f, -0.75f);
+			incoming.localAxis[1] = NxVec3(1.5f, -2.25f, 3.125f);
+			d6->loadFromDesc(incoming);
+			NxD6JointDesc reloaded;
+			reloaded.setToDefault();
+			d6->saveToDesc(reloaded);
+			printf("case=d6 index=%u reloaded ", index);
+			nxPrintVec("anchor0", reloaded.localAnchor[0]);
+			printf(" ");
+			nxPrintVec("anchor1", reloaded.localAnchor[1]);
+			printf(" ");
+			nxPrintVec("axis0", reloaded.localAxis[0]);
+			printf(" ");
+			nxPrintVec("axis1", reloaded.localAxis[1]);
+			printf("\n");
+			}
 		}
 
 	nxPrintSceneJoints(scene, "d6", index, "before_release", joint);

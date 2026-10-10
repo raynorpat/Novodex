@@ -2420,6 +2420,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=d6 index=3 limit_point present=0 point=bf400000.3fc00000.40100000',
         'case=d6 index=3 limit_plane added=0 read=0 normal=00000000.00000000.00000000 d=00000000',
         'case=d6 index=3 name=d6:phase6-setname',
+        'case=d6 index=3 reloaded anchor0=3fa00000.c0600000.40300000 anchor1=bf400000.40a80000.3e000000 axis0=3e800000.3f000000.bf400000 axis1=3fc00000.c0100000.40480000',
         'case=d6 index=23 drive_contended reports=1 code=2 line=40',
         'case=d6 index=23 drive_orientation_contended reports=1 code=2 line=47',
         'case=d6 index=23 drive_linear_velocity_contended reports=1 code=2 line=54',

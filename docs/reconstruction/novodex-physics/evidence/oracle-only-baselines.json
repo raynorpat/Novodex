@@ -35,24 +35,24 @@
       "format": "joint_matrix",
       "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
       "fixture_source": "tests/PhysicsJointTests.cpp",
-      "fixture_source_sha256": "b539c9fddc267f1a84638de7a7e900c96d8b9fde51e371ab3231ae477a41f396",
+      "fixture_source_sha256": "2899daa73224cda3c25539e299ef723d18288e669575d64b610cbde87de94732",
       "cases": 122,
       "input_lines": 284,
       "case_family_counts": {
-        "cylindrical": 12,
-        "d6": 12,
-        "distance": 12,
-        "fixed": 12,
-        "point_in_plane": 12,
-        "point_on_line": 12,
-        "prismatic": 12,
-        "pulley": 12,
         "revolute": 14,
-        "spherical": 12
+        "prismatic": 12,
+        "cylindrical": 12,
+        "spherical": 12,
+        "point_on_line": 12,
+        "point_in_plane": 12,
+        "distance": 12,
+        "pulley": 12,
+        "fixed": 12,
+        "d6": 12
       },
-      "oracle_output_lines": 3210,
+      "oracle_output_lines": 3211,
       "input_digest_sha256": "a35c701865c1044c912493ee63ffc759ceb70457ca779e086fd300b1da5f953e",
-      "oracle_output_digest_sha256": "8c64933e66074eedb0a9a73c35a60df0abbd0ad9a97c8ed0428ec60c58a4c281"
+      "oracle_output_digest_sha256": "08da657ab872db1b8289db8df8466ede624ec03d58f9f18e847263fc85ba357f"
     }
   }
 }
