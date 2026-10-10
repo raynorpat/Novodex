@@ -125,7 +125,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'teardown contact_pair pairs_before=1 outstanding_after=15',
         'teardown contact_pair hash_storage buckets=8 links=8 entries=16',
         'teardown pruner_owner static_calls=1 dynamic_calls=1 flags=1/1 selected=2 outstanding_after=15',
-        'teardown controller_owner actors_before=1 outstanding_before=49 outstanding_after=15 delta=-34'
+        'teardown controller_owner actors_before=1 outstanding_before=49 outstanding_after=15 delta=-34',
+        'teardown contact_report before_release=6 after_release=7 events=0000000e'
     )
     'NxPhysicsActorShapeMutationTests' = @(
         # NpActor.cpp completion Task 4: createShape (000070 -> Actor.cpp 000036)
@@ -5702,7 +5703,8 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 6  # previous 4 plus contended and successful triangle-mesh release assertions
-    '3' = 548  # includes controller-owned proxy cleanup during Scene destruction
+    '3' = 549  # includes the pending contact-report end-touch during Scene destruction
+               # includes controller-owned proxy cleanup during Scene destruction
                # includes body-create oracle-versus-candidate path selection
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
@@ -5757,7 +5759,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1454  # includes all currently registered scene, teardown, and emitter assertions
+    '7' = 1455  # includes pending contact-report teardown and current scene/emitter assertions
+               # prior floor includes registered scene, teardown, and emitter assertions
                # plus callback routing/state assertions for all three backend-backed emitter flags
                # previous 1429 plus the D6 public global-anchor readback
                # previous 1425 plus three contended D6 drive write-lock reports

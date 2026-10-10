@@ -3178,6 +3178,12 @@ static void nxSceneDelete(void* self, int flags)
 	// simulation step is stale now; unlink and free it before destroying roots.
 	++scene->at<NxU32>(0x540);
 	cpmRetireStaleScenePairs(scene);
+	// phys_fn_000663 calls phys_fn_000913 immediately after stale-pair
+	// retirement and before actor teardown. This delivers the final end-touch
+	// event from each retained contact record while both actor wrappers live.
+	if(NxUserContactReport* report = scene->at<NxUserContactReport*>(0x6b4))
+		cpmFireContactReports0913(scene, report,
+			reinterpret_cast<CpmPairHash*>(scene->bytes() + 0x2c));
 	// phys_fn_000596 walks the actor range as it existed at entry. This is not
 	// the public releaseActor path: it does not swap-remove actor pointers or
 	// notify the optional fluid manager. Each body destructor removes its own

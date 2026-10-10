@@ -123,7 +123,8 @@ class PhaseResolutionTests(unittest.TestCase):
     def test_unknown_phase_is_rejected(self):
         result = run_powershell("-File", str(RUNNER), "-Phase", "9")
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("does not belong to the set", result.stdout + result.stderr)
+        output = re.sub(r"\s+", " ", result.stdout + result.stderr)
+        self.assertIn("does not belong to the set", output)
 
     def test_unregistered_target_is_rejected(self):
         result = run_powershell("-File", str(RUNNER), "-Targets", "NxBogusTests")

@@ -13,6 +13,7 @@
 #include "NxBoxShapeDesc.h"
 #include "NxPlaneShapeDesc.h"
 #include "NxSphereShapeDesc.h"
+#include "NxUserContactReport.h"
 #include "NxUserAllocator.h"
 
 typedef NxFoundationSDK* (NX_CALL_CONV *CreateFoundationSDKFn)(NxU32,
@@ -105,6 +106,21 @@ class PrunerOwnerProbe
 		if(index < 2) ++gPrunerOwnerFlags[index];
 		}
 	unsigned mIndex;
+	};
+
+class TeardownContactReport : public NxUserContactReport
+	{
+	public:
+	TeardownContactReport() : calls(0), events(0) {}
+	virtual void onContactNotify(NxContactPair&, NxU32 eventFlags)
+		{
+		++calls;
+		events |= eventFlags;
+		printf("teardown contact_report callback=%u events=%08x\n",
+			calls, eventFlags);
+		}
+	unsigned calls;
+	unsigned events;
 	};
 
 int wmain(int argc, wchar_t** argv)
@@ -282,6 +298,31 @@ int wmain(int argc, wchar_t** argv)
 		static_cast<int>(controllerBlocksAfter) - static_cast<int>(controllerBlocksBefore));
 	if(controllerActorsBefore != 1)
 		return nxFail("controller-owner teardown did not retain its generated actor");
+
+	// Keep a user callback installed while a touching pair is destroyed with
+	// the Scene. The oracle fires its outstanding report records from the
+	// Scene deleting destructor before it tears down the actors.
+	TeardownContactReport teardownReport;
+	NxSceneDesc reportSceneDesc;
+	reportSceneDesc.setToDefault();
+	reportSceneDesc.userContactReport = &teardownReport;
+	NxScene* reportScene = sdk->createScene(reportSceneDesc);
+	if(!reportScene) return nxFail("contact-report teardown scene creation failed");
+	NxActor* reportStatic = reportScene->createActor(contactStaticDesc);
+	NxActor* reportDynamic = reportScene->createActor(contactDynamicDesc);
+	if(!reportStatic || !reportDynamic)
+		return nxFail("contact-report teardown actors failed to create");
+	reportScene->setActorPairFlags(*reportStatic, *reportDynamic,
+		NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH | NX_NOTIFY_ON_END_TOUCH);
+	reportScene->simulate(0.125f);
+	if(!reportScene->fetchResults(NX_RIGID_BODY_FINISHED, true))
+		return nxFail("contact-report teardown simulation did not fetch");
+	const unsigned reportCallbacksBeforeRelease = teardownReport.calls;
+	sdk->releaseScene(*reportScene);
+	printf("teardown contact_report before_release=%u after_release=%u events=%08x\n",
+		reportCallbacksBeforeRelease, teardownReport.calls, teardownReport.events);
+	if(teardownReport.calls == reportCallbacksBeforeRelease)
+		return nxFail("scene teardown did not deliver its pending contact report");
 
 	sdk->release();
 	foundationSDK->release();

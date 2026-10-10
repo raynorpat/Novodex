@@ -343,3 +343,21 @@ Phase 3 passes (548 assertions) and Phase 7 passes (1,454 assertions). The
 Scene destructor phys_fn_000663 remains open for its other ownership paths.
 All 810 reconstruction tooling tests pass; inventory unexplained=0. Local main
 was fast-forwarded to d884677f. Public Physics headers remain unchanged.
+
+Continuation — Scene pending contact-report teardown (2026-10-10).
+
+The public populated-scene teardown fixture now retains a touching plane/sphere
+pair with start/touch/end notifications through `releaseScene`. Before the
+implementation, the oracle emitted a final `NX_NOTIFY_ON_END_TOUCH` callback
+(`before_release=6 after_release=7 events=0000000e`) while the candidate exited
+with only six callbacks (`stdout_delta=5`). IDA's `phys_fn_000663` order
+confirms the conditional `phys_fn_000913` dispatch after stale-pair retirement
+and before actor teardown. `nxSceneDelete` now calls the already reconstructed
+`cpmFireContactReports0913` at that point. Omitting the dispatch is caught by
+the registered differential; restored output is exact. Phase 3 passes 549/549,
+Phase 5 passes 2621/2621 and Phase 7 passes 1455/1455. The Viewer all-scenes
+selection passes 48/48 across all 39 scene entrypoints, with five existing
+pinned-oracle asset skips; ViewerPhysicsStep and ViewerPhysicsContact pass.
+All 810 tooling tests pass, inventory unexplained=0, and all 80 public Physics
+headers match their manifest. No public Physics headers changed.
+`phys_fn_000663` remains open for the destructor's remaining ownership paths.
