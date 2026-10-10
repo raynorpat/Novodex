@@ -131,6 +131,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'teardown contact_report_buffer bytes=264 freed=1',
         'teardown trigger_buffer bytes=72 freed=1 callbacks=20',
         'teardown active_root_buffer bytes=8 freed=1',
+        'teardown recycled_id_buffers shape_bytes=8 shape_freed=1 actor_bytes=8 actor_freed=1 body_bytes=8 body_freed=1',
         'teardown joint_owner joint_created=1 release_delta=-35', # phys_fn_000606 destroys retained joint list entries
         'teardown retained_body_record bytes=608 freed=1' # phys_fn_000602 destroys orphaned body records
     )
@@ -5767,10 +5768,11 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 6  # previous 4 plus contended and successful triangle-mesh release assertions
-    '3' = 555  # includes retained body-record destruction during Scene teardown
+    '3' = 556  # includes retained body-record destruction during Scene teardown
                # includes the pending contact-report end-touch and retained joint teardown during Scene destruction
                # includes controller-owned proxy cleanup during Scene destruction
                # plus the three retained event/root buffer release assertions
+               # plus the three recycled-ID array teardown assertion
                # includes body-create oracle-versus-candidate path selection
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
@@ -5825,9 +5827,10 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1644  # all registered Phase 7 staged-pair, static-proof, and oracle-differential assertions
+    '7' = 1645  # all registered Phase 7 staged-pair, static-proof, and oracle-differential assertions
                # plus current scene/emitter assertions
                # plus retained contact, trigger, and active-root buffer teardown
+               # plus recycled shape, actor, and body ID buffer teardown
                # prior floor includes registered scene, teardown, and emitter assertions
                # plus callback routing/state assertions for all three backend-backed emitter flags
                # previous 1429 plus the D6 public global-anchor readback

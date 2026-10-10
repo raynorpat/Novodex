@@ -170,7 +170,36 @@ int wmain(int argc, wchar_t** argv)
 	dynamicDesc.body = &body;
 	dynamicDesc.density = 1.0f;
 	dynamicDesc.shapes.pushBack(&box);
-	if(!scene->createActor(staticDesc) || !scene->createActor(dynamicDesc))
+	// Releasing one dynamic actor returns its shape, actor, and dynamic-record
+	// IDs to three Scene-owned LIFO arrays. Keep the Scene until its deleting
+	// destructor so all three backing allocations are live at teardown.
+	NxScene* recycledIdScene = sdk->createScene(sceneDesc);
+	if(!recycledIdScene) return nxFail("recycled-ID teardown scene creation failed");
+	NxActor* recycledIdActor = recycledIdScene->createActor(dynamicDesc);
+	if(!recycledIdActor) return nxFail("recycled-ID teardown actor creation failed");
+	unsigned char* recycledIdInternal = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(recycledIdScene) + 0x24);
+	recycledIdScene->releaseActor(*recycledIdActor);
+	void* recycledShapeIds = *reinterpret_cast<void**>(recycledIdInternal + 0x6e8);
+	void* recycledActorIds = *reinterpret_cast<void**>(recycledIdInternal + 0x6d4);
+	void* recycledBodyIds = *reinterpret_cast<void**>(recycledIdInternal + 0x6fc);
+	const size_t recycledShapeBytes = allocator.allocationSize(recycledShapeIds);
+	const size_t recycledActorBytes = allocator.allocationSize(recycledActorIds);
+	const size_t recycledBodyBytes = allocator.allocationSize(recycledBodyIds);
+	if(!recycledShapeBytes || !recycledActorBytes || !recycledBodyBytes)
+		return nxFail("released actor did not retain all three recycled-ID arrays");
+	sdk->releaseScene(*recycledIdScene);
+	const bool recycledShapeFreed = allocator.allocationSize(recycledShapeIds) == 0;
+	const bool recycledActorFreed = allocator.allocationSize(recycledActorIds) == 0;
+	const bool recycledBodyFreed = allocator.allocationSize(recycledBodyIds) == 0;
+	printf("teardown recycled_id_buffers shape_bytes=%u shape_freed=%u "
+		"actor_bytes=%u actor_freed=%u body_bytes=%u body_freed=%u\n",
+		static_cast<unsigned>(recycledShapeBytes), recycledShapeFreed ? 1u : 0u,
+		static_cast<unsigned>(recycledActorBytes), recycledActorFreed ? 1u : 0u,
+		static_cast<unsigned>(recycledBodyBytes), recycledBodyFreed ? 1u : 0u);
+	if(!recycledShapeFreed || !recycledActorFreed || !recycledBodyFreed)
+		return nxFail("scene teardown did not free its recycled-ID arrays");
+	if(!scene->createActor(staticDesc) || !scene->createActor(dynamicDesc))
 		return nxFail("static-first populated actor fixture failed");
 
 	const unsigned beforeScene = allocator.outstanding();
@@ -413,6 +442,7 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("trigger teardown fixture did not deliver a trigger callback");
 	if(!triggerBufferFreed || !activeRootBufferFreed)
 		return nxFail("scene teardown did not free its trigger and active-root buffers");
+
 
 	// Keep a registered joint alive until Scene destruction. phys_fn_000606
 	// walks both joint lists and deletes any joints still registered after the
