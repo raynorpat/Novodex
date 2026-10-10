@@ -1,0 +1,7 @@
+# Phase 6 closure: revolute limit, motor, and spring getters
+
+The revolute cases in `NxPhysicsJointStagedPairTests` now print the complete returned `NxJointLimitPairDesc`, `NxMotorDesc`, and `NxSpringDesc` values and each getter's enabled result. The Phase 6 coverage registry requires the index-0 defaults.
+
+Built the Win32 Release staged-pair target and compared it to the pinned UE3 oracle. Each row was then mutated independently in `Physics/src/core/RevoluteJoint.cpp` by inverting only its returned enabled bit. `phys_fn_004342` (`getLimits`) changed `enabled=0` to `enabled=1`; `phys_fn_004346` (`getMotor`) changed `enabled=0` to `enabled=1`; and `phys_fn_004350` (`getSpring`) changed `enabled=0` to `enabled=1`. Each registered differential rejected its mutant with equal zero exits, `stdout_delta=28`, and exact stderr. Mutant candidate SHA-256 values were respectively `f3e0782abcfc509e52b3adaf474f3a103c2255f6a0e389cde258fcb1f0ef6f06`, `fe74012d63dec8741c6a91502030c1dafc390e4b93934dcc91b044dfbcc7bbb6`, and `eaffc39a2e46b6741326aba0f36ca64a29709a3d9e1e768efaa3ed75f181c4d4`.
+
+After restoring all three rows, the candidate printed the same default descriptor words as the oracle. The restored differential passed with both exits 0, `stdout_delta=0`, and exact stderr; restored candidate SHA-256: `57dbc353a1a3064a260b0b446512dcad090d3a44c342c713a68bb68b6e776bc2`. Mutation, build, and restored-control transcripts are retained in the ignored `build/phase6-00{4342,4346,4350}-*` logs and `build/phase6-revolute-getters-*` logs.

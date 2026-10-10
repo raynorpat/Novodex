@@ -10079,3 +10079,12 @@ The full Phase 6 gate after adding these ten value-return assertions passed with
 The revolute staged-pair fixture now prints `NxRevoluteJoint::getFlags()` and the gate registry requires the default index-0 result. For `phys_fn_004336`, the mutation changed the transcript with `stdout_delta=28`; both processes exited 0 with exact stderr. A clean restored build returned the differential to exact. See [phase6-joint-revolute-get-flags-004336.md](phase6-joint-revolute-get-flags-004336.md).
 
 The refreshed oracle-only `NxPhysicsJointTests` proof pins the updated source SHA-256 `5c5160a5027d8e85d61074dd7310ef8166532daea020047b245ad453c47d7554` and 3,132 oracle output lines (digest `0ffa84123dd30fb98e9a97996984e737c60eb04df526f524b21b530a82c34bfe`). The full Phase 6 gate passed with 1,565 assertions run (minimum required: 1,267); all staged-pair differentials and oracle proofs pass. Phase 6 now has 105 closed rows (103 mutation-falsified plus 2 oracle differentials) and 328 deferred rows; 23 in-phase rows remain unreconstructed.
+
+
+## Phase 6 closure measurement — revolute descriptor getters (`phys_fn_004342`, `004346`, `004350`)
+
+The revolute staged-pair fixture now serializes limit, motor, and spring getter results and the Phase 6 coverage registry requires their index-0 defaults. Each enabled-bit inversion was independently caught with `stdout_delta=28`, equal zero exits, and exact stderr; each restored control returned to `stdout_delta=0`. See [phase6-joint-revolute-getters-004342-004346-004350.md](phase6-joint-revolute-getters-004342-004346-004350.md).
+
+For `phys_fn_004342`, the limit-getter inversion produced `stdout_delta=28`; for `phys_fn_004346`, the motor-getter inversion produced `stdout_delta=28`; and for `phys_fn_004350`, the spring-getter inversion produced `stdout_delta=28`. Each restored differential returned to `stdout_delta=0`.
+
+The oracle-only joint matrix proof was refreshed from the pinned oracle pair: source SHA-256 `6d3fdd596d2c2f700de43f7a2d30d4fa8b83f31757130bfd9d01dc6116f40d4c`, 3,174 output lines, digest `bb56dbdf98f44134ed833b273dff2245a7db5fb07b8c065b1a3d772061535ded`. The full Phase 6 gate passed with 1,568 coverage assertions run (minimum required: 1,267). Phase 6 now has 108 closed rows (106 mutation-falsified plus 2 oracle differentials) and 325 deferred rows; 23 in-phase rows remain unreconstructed.

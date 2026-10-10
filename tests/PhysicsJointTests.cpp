@@ -389,6 +389,22 @@ static void nxRevoluteCase(NxScene& scene, NxActor* a, NxActor* b,
 		{
 		printf("case=revolute index=%u flags=%08x\n", index,
 			static_cast<unsigned>(revolute->getFlags()));
+		NxJointLimitPairDesc limits;
+		const bool limitsEnabled = revolute->getLimits(limits);
+		printf("case=revolute index=%u limits enabled=%u low=%08x.%08x.%08x high=%08x.%08x.%08x\n",
+			index, limitsEnabled ? 1u : 0u, nxU(limits.low.value),
+			nxU(limits.low.restitution), nxU(limits.low.hardness),
+			nxU(limits.high.value), nxU(limits.high.restitution), nxU(limits.high.hardness));
+		NxMotorDesc motor;
+		const bool motorEnabled = revolute->getMotor(motor);
+		printf("case=revolute index=%u motor enabled=%u values=%08x.%08x.%08x\n",
+			index, motorEnabled ? 1u : 0u, nxU(motor.velTarget), nxU(motor.maxForce),
+			static_cast<unsigned>(motor.freeSpin));
+		NxSpringDesc spring;
+		const bool springEnabled = revolute->getSpring(spring);
+		printf("case=revolute index=%u spring enabled=%u values=%08x.%08x.%08x\n",
+			index, springEnabled ? 1u : 0u, nxU(spring.spring), nxU(spring.damper),
+			nxU(spring.targetValue));
 		NxRevoluteJointDesc saved;
 		revolute->saveToDesc(saved);
 		nxPrintSavedFrames("revolute", index, saved);

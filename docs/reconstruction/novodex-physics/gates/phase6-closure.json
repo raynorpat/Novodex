@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 105 rows are closed (2 oracle differentials, 103 mutation-falsified); 328 rows remain open. Full DLL reconstruction remains pending.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 108 rows are closed (2 oracle differentials, 106 mutation-falsified); 325 rows remain open. Full DLL reconstruction remains pending.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
@@ -64,9 +64,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 103,
+    "differential_falsified": 106,
     "oracle_differential_falsified": 2,
-    "deferred_reconstructed_not_falsified": 305,
+    "deferred_reconstructed_not_falsified": 302,
     "deferred_not_reconstructed_in_phase": 23
   },
   "closed": [
@@ -1119,6 +1119,36 @@
       "gate": "NxPhysicsJointStagedPairTests",
       "falsification": {
         "mutation": "Row-specific falsification (source revision in this worktree): changed only `RevoluteJoint::getFlags` to return `mRevoluteFlags + 1`. The revolute index-0 public getter transcript changed from flags=00000000 to flags=00000001; oracle/candidate exit 0, stdout_delta=28, stderr_exact=True. Restored clean Release build: stdout_delta=0, exact stderr. Mutant candidate SHA-256 6c9f6a9188a97a3410ff8e663f6fb46df9ebab04cb148eb8a5b34db126263d15; restored candidate SHA-256 69c471776465bc8dad7fa7ed88df9c44bb0773350a55658f4b0e4bc60c4aaf13. Evidence: evidence/phase6-joint-revolute-get-flags-004336.md.",
+        "detected": "stdout_delta=28"
+      }
+    },
+    {
+      "id": "phys_fn_004342",
+      "rva": "0x000a90c0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision in this worktree): inverted only the enabled-bit result in `RevoluteJoint::getLimits`. The public getter transcript changed enabled=0 to enabled=1; oracle/candidate exit 0, stdout_delta=28, stderr_exact=True. Restored clean differential: stdout_delta=0, exact stderr. Mutant candidate SHA-256 f3e0782abcfc509e52b3adaf474f3a103c2255f6a0e389cde258fcb1f0ef6f06; restored candidate SHA-256 57dbc353a1a3064a260b0b446512dcad090d3a44c342c713a68bb68b6e776bc2. Evidence: evidence/phase6-joint-revolute-getters-004342-004346-004350.md.",
+        "detected": "stdout_delta=28"
+      }
+    },
+    {
+      "id": "phys_fn_004346",
+      "rva": "0x000a91b0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision in this worktree): inverted only the enabled-bit result in `RevoluteJoint::getMotor`. The public getter transcript changed enabled=0 to enabled=1; oracle/candidate exit 0, stdout_delta=28, stderr_exact=True. Restored clean differential: stdout_delta=0, exact stderr. Mutant candidate SHA-256 fe74012d63dec8741c6a91502030c1dafc390e4b93934dcc91b044dfbcc7bbb6; restored candidate SHA-256 57dbc353a1a3064a260b0b446512dcad090d3a44c342c713a68bb68b6e776bc2. Evidence: evidence/phase6-joint-revolute-getters-004342-004346-004350.md.",
+        "detected": "stdout_delta=28"
+      }
+    },
+    {
+      "id": "phys_fn_004350",
+      "rva": "0x000a9290",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision in this worktree): inverted only the enabled-bit result in `RevoluteJoint::getSpring`. The public getter transcript changed enabled=0 to enabled=1; oracle/candidate exit 0, stdout_delta=28, stderr_exact=True. Restored clean differential: stdout_delta=0, exact stderr. Mutant candidate SHA-256 eaffc39a2e46b6741326aba0f36ca64a29709a3d9e1e768efaa3ed75f181c4d4; restored candidate SHA-256 57dbc353a1a3064a260b0b446512dcad090d3a44c342c713a68bb68b6e776bc2. Evidence: evidence/phase6-joint-revolute-getters-004342-004346-004350.md.",
         "detected": "stdout_delta=28"
       }
     }
@@ -2248,15 +2278,6 @@
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_004342",
-      "rva": "0x000a90c0",
-      "size": 58,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
       "id": "phys_fn_004344",
       "rva": "0x000a9100",
       "size": 171,
@@ -2266,27 +2287,9 @@
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_004346",
-      "rva": "0x000a91b0",
-      "size": 42,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
       "id": "phys_fn_004348",
       "rva": "0x000a91e0",
       "size": 171,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004350",
-      "rva": "0x000a9290",
-      "size": 43,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
