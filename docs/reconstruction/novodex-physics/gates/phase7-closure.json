@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes nothing without a registered mutation falsification. The disabled FluidManager release path (phys_fn_003643) is mutation-falsified through its seeded array-removal and deleting-dispatch fixture. The inert flushStream slot (phys_fn_000333) is mutation-falsified through a direct public-call fixture and an error-report mutation. Phase 7 owns 561 function rows and 502 data objects: 41 functions are closed, 286 reconstructed functions remain unfalsified, 234 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. Scene post-step row phys_fn_000615 is now mutation-falsified by NxPhysicsSimulationTests: replacing row000615 with a no-op changes the staged transcript by 7,232 bytes, and the restored control is exact. The ledger accounts for every owned row without treating transcript agreement alone as closure. Actor visualization row phys_fn_000020 is caught by NxPhysicsSceneVisualizeTests: a no-op changes the staged transcript by 916 bytes (both exits zero, exact stderr); the restored control is exact. Fluid emitter ABI continuation (2026-10-09): rows phys_fn_003792 and 003804/003806/003808/003816/003818/003820 are mutation-falsified by NxPhysicsFluidEmitterAbiTests, registered to Phase 7 and also exercised by Phase 5. The constructor mutation changed its cleared secondary-base word and was detected with mismatches=1; each of the six aggregate getter copy-offset mutations was detected with mismatches=2. Restored oracle control reports zero constructor, raw ABI, and aggregate mismatches; see evidence/fluid-emitter-aggregate-abi-2026-10-09.md. The fluid-emitter getFlag row phys_fn_003852 is independently mutation-falsified: shifting its mask read from internal+0x10 to +0x14 is caught by NxPhysicsFluidEmitterAbiTests with mismatches=1; restored output is exact. See evidence/fluid-emitter-get-flag-003852.md. Fluid emitter backend flag setter continuation (2026-10-09): phys_fn_003593 and public wrapper phys_fn_003850 are mutation-falsified by the registered NxPhysicsFluidEmitterAbiTests candidate-DLL probe. A wrong mask-4 callback export is caught with callback_mismatches=2; a no-op wrapper is caught with 11 total mismatches. Restored controls match all six backend set/clear calls and non-backend flag state; see evidence/fluid-emitter-set-flag-backend-003593-003850.md. M1.5 continuation (2026-10-09): the six aggregate getters are now also dispatched through a wrapper constructed by the candidate DLL; the restored probe matches all six values and x86 return/stack checks, and a DLL-only local-position offset mutation is rejected. See evidence/fluid-emitter-candidate-dll-aggregate-abi-2026-10-09.md.",
+  "note": "Phase 7 closes nothing without a registered mutation falsification. The disabled FluidManager release path (phys_fn_003643) is mutation-falsified through its seeded array-removal and deleting-dispatch fixture. The inert flushStream slot (phys_fn_000333) is mutation-falsified through a direct public-call fixture and an error-report mutation. Phase 7 owns 561 function rows and 502 data objects: 42 functions are closed, 285 reconstructed functions remain unfalsified, 234 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. Scene post-step row phys_fn_000615 is now mutation-falsified by NxPhysicsSimulationTests: replacing row000615 with a no-op changes the staged transcript by 7,232 bytes, and the restored control is exact. The ledger accounts for every owned row without treating transcript agreement alone as closure. Actor visualization row phys_fn_000020 is caught by NxPhysicsSceneVisualizeTests: a no-op changes the staged transcript by 916 bytes (both exits zero, exact stderr); the restored control is exact. Fluid emitter ABI continuation (2026-10-09): rows phys_fn_003792 and 003804/003806/003808/003816/003818/003820 are mutation-falsified by NxPhysicsFluidEmitterAbiTests, registered to Phase 7 and also exercised by Phase 5. The constructor mutation changed its cleared secondary-base word and was detected with mismatches=1; each of the six aggregate getter copy-offset mutations was detected with mismatches=2. Restored oracle control reports zero constructor, raw ABI, and aggregate mismatches; see evidence/fluid-emitter-aggregate-abi-2026-10-09.md. The fluid-emitter getFlag row phys_fn_003852 is independently mutation-falsified: shifting its mask read from internal+0x10 to +0x14 is caught by NxPhysicsFluidEmitterAbiTests with mismatches=1; restored output is exact. See evidence/fluid-emitter-get-flag-003852.md. Fluid emitter backend flag setter continuation (2026-10-09): phys_fn_003593 and public wrapper phys_fn_003850 are mutation-falsified by the registered NxPhysicsFluidEmitterAbiTests candidate-DLL probe. A wrong mask-4 callback export is caught with callback_mismatches=2; a no-op wrapper is caught with 11 total mismatches. Restored controls match all six backend set/clear calls and non-backend flag state; see evidence/fluid-emitter-set-flag-backend-003593-003850.md. M1.5 continuation (2026-10-09): the six aggregate getters are now also dispatched through a wrapper constructed by the candidate DLL; the restored probe matches all six values and x86 return/stack checks, and a DLL-only local-position offset mutation is rejected. See evidence/fluid-emitter-candidate-dll-aggregate-abi-2026-10-09.md. Scheduler row phys_fn_000659 is now mutation-falsified by NxPhysicsSimulationTests: an immediate-return mutant exits 1 with stdout_delta=3829, and the restored control is exact (stdout_delta=0, stderr_exact=True); see evidence/phase7-scene-scheduler-000659-mutation.md.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection. The direct flushStream mutation is tested by NxPhysicsSimulationTests and measured as stdout_delta=554 with candidate_exit=1.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none.",
@@ -20,9 +20,9 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 31,
+    "differential_falsified": 32,
     "oracle_differential_falsified": 10,
-    "deferred_reconstructed_not_falsified": 286,
+    "deferred_reconstructed_not_falsified": 285,
     "deferred_not_reconstructed_in_phase": 234
   },
   "closed": [
@@ -445,6 +445,16 @@
         "detected": "mismatches=11"
       },
       "note": "Direct candidate-DLL write-lock wrapper and backend dispatch coverage; see evidence/fluid-emitter-set-flag-backend-003593-003850.md."
+    },
+    {
+      "id": "phys_fn_000659",
+      "rva": "0x00013c40",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Inserted an immediate return at the start of NxSceneInternal::simulateFrame, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsSimulationTests staged-pair differential against the pinned oracle.",
+        "detected": "stdout_delta=3829"
+      }
     }
   ],
   "deferred": [
@@ -1126,15 +1136,6 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000659",
-      "rva": "0x00013c40",
-      "size": 447,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Scheduler plus disabled-fluid manager calls are now implemented and staged; whole-row mutation falsification remains open."
     },
     {
       "id": "phys_fn_000661",

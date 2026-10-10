@@ -9971,3 +9971,8 @@ The Phase 7 `NxPhysicsFluidEmitterAbiTests` probe also closes `phys_fn_003852`: 
 
 
 Phase 7 fluid emitter backend setter rows `phys_fn_003593` and `phys_fn_003850` are now mutation-falsified by the registered direct candidate-DLL `NxPhysicsFluidEmitterAbiTests` probe. The mask-4 callback-name mutation is detected at `mismatches=2` (`callback_mismatches=2`); the no-op wrapper-call mutation is detected at `mismatches=11`. Both restored controls match the pinned oracle. See [fluid-emitter-set-flag-backend-003593-003850.md](fluid-emitter-set-flag-backend-003593-003850.md).
+
+
+## Scene scheduler row `phys_fn_000659`
+
+The `phys_fn_000659` immediate-return mutation at the start of `NxSceneInternal::simulateFrame` was rejected from a throwaway `git archive` by the registered `NxPhysicsSimulationTests` Phase 7 staged-pair differential (`stdout_delta=3829`; oracle exit 0, candidate exit 1). The restored control was exact (`stdout_delta=0`, both exits 0, stderr exact). Full build and SHA details: `evidence/phase7-scene-scheduler-000659-mutation.md`.

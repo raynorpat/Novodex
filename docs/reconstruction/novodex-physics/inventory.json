@@ -12457,13 +12457,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/259",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1782",
       "static_proof": "phys_fn_000659 (0x00013c40): saves the FP control state, selects variable or fixed timestep scheduling, computes and caps fixed-step iteration count, initializes scheduler fields, calls 000655 for each substep, calls 003630 after each substep when Scene+0x61c has a manager, clamps residual time, calls 003632 once after the frame, then restores FP control state. Implemented by NxSceneInternal::simulateFrame; the Ghidra branches, field offsets, and direct-call order are reflected in source.",
-      "dynamic_proof": "The public simulation corpus matches oracle and candidate in the full Phase 7 differential. A disabled-manager fixture executes two fixed frames and verifies three warnings (one step warning per frame and one surface-mesh warning after stepping), with exact text/output and successful check/fetch (build/FluidGate/fluid-step-green.log).",
-      "notes": "Whole-row mutation falsification remains open. The called 003630/003632 extension-backed and nonempty-fluid branches are separately tracked as partial."
+      "dynamic_proof": "The public simulation corpus matches oracle and candidate in the full Phase 7 differential. A disabled-manager fixture executes two fixed frames and verifies three warnings (one step warning per frame and one surface-mesh warning after stepping), with exact text/output and successful check/fetch (build/FluidGate/fluid-step-green.log). Whole-row mutation falsification: an immediate-return mutation in a throwaway git archive of cc1118dc was rejected by the registered Phase 7 NxPhysicsSimulationTests staged-pair differential (oracle_exit=0, candidate_exit=1, stdout_delta=3829, stderr_exact=False); after restoring and rebuilding, the control was exact (both exits=0, stdout_delta=0, stderr_exact=True). See evidence/phase7-scene-scheduler-000659-mutation.md.",
+      "notes": "Whole-row mutation falsification is recorded. The called phys_fn_003630/phys_fn_003632 extension-backed and nonempty-fluid branches remain separately tracked as partial."
     },
     {
       "id": "phys_fn_000660",

@@ -82,6 +82,10 @@ Task M7.1: Ruling: the completion plan defines M0–M8 checklists but no numeric
 
 Task M7.1: complete (phys_fn_003593 internal backend-flag dispatch and phys_fn_003850 public write-lock wrapper; direct candidate-DLL setter resolved from NxPhysics.map; pinned-oracle callback differential covers six backend set/clear transitions and one non-backend flag; wrong callback mutation caught at callback_mismatches=2; no-op wrapper mutation caught at 11 total mismatches; restored runs exact; Phase 5/7 coverage floors 2617/1445; evidence: docs/reconstruction/novodex-physics/evidence/fluid-emitter-set-flag-backend-003593-003850.md).
 
+Task M6.1 ruling: the plan specifies the M0–M8 milestone sequence but no packet-level task IDs, so this bounded task brief extracts the next central M6 scheduler contract for `phys_fn_000659`. It follows the established milestone evidence loop and does not close M6; the downstream solver, queues, callbacks, and extension rows remain independently tracked.
+
+Task M6.1: complete (`phys_fn_000659`, `NxSceneInternal::simulateFrame`; whole-row immediate-return mutation rejected by the registered `NxPhysicsSimulationTests` Phase 7 staged-pair differential at `stdout_delta=3829`, restored control exact; Phase 7 gate passes 1,447/1,447 coverage assertions; inventory passes with 6,338 functions, 5,138 data objects, zero unexplained; focused tools tests pass: inventory 251, completion 11, work units 12, gate targets 39; public headers unchanged). Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-scheduler-000659-mutation.md`.
+
 
 Verification update for Task M7.1: final candidate DLL rebuild/probe passed with zero constructor, raw ABI, flag, backend callback, state, and aggregate mismatches; Phase 5 and Phase 7 passed at 2,617/2,617 and 1,445/1,445; inventory validation passed (6,338 functions, 5,138 data objects, zero unexplained); focused inventory/gate/completion tests passed 251/251, 39/39, and 11/11; public headers passed 80/80. The fixture drives the successful write-lock path; lock-contention reporting is disassembly-backed but not separately exercised.
 
