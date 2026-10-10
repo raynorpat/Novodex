@@ -1,0 +1,1034 @@
+[
+  {
+    "source": "tests/portable/OpcodeModelTests.cpp",
+    "source_sha256": "1040d6c1ba8740a0711733b8c50271aad4f24b72cd6724c5132df9e6a863b00a",
+    "snapshot": "capture-source/scene-contact-members-x87-0-OpcodeModelTests.cpp.gz",
+    "snapshot_sha256": "0debc418ad4b12a9edb121aed76e156cfcbba63a0ed6dea5f438009d902f6693"
+  },
+  {
+    "source": "tests/portable/OpcodeModelTargets.cmake",
+    "source_sha256": "beba2e8c9416290e76df37b353b24da6983cab897d0c369aabac8e5cc9b93fc0",
+    "snapshot": "capture-source/scene-contact-members-x87-1-OpcodeModelTargets.cmake.gz",
+    "snapshot_sha256": "0cd7773dfd70d8a955d6e25b38675ecc0ed9513a6081e889f43cbba06378e5c5"
+  },
+  {
+    "source": "tests/portable/SupportMapDomainInputs.h",
+    "source_sha256": "20e7cf461956a5048d0a6014a622a7ff5d015dbd2fcf387f9a162d57d31d88a1",
+    "snapshot": "capture-source/scene-contact-members-x87-2-SupportMapDomainInputs.h.gz",
+    "snapshot_sha256": "c392afbfd9312585aa38d980e2199036996b6b2e56b85bba8d0df2d0a67b00d9"
+  },
+  {
+    "source": "tests/portable/SdkAllocatorKernel.cpp",
+    "source_sha256": "9a37c78adb33ff1990f59fd1a7a2a1eef567f3c5578bdddfff359c7547dc7257",
+    "snapshot": "capture-source/scene-contact-members-x87-3-SdkAllocatorKernel.cpp.gz",
+    "snapshot_sha256": "adbfa62087c2c9da7efd6ae45b8f3a9dc0b462921f4f208c855edc8e4c34ec5d"
+  },
+  {
+    "source": "tests/portable/FixtureSupport.cpp",
+    "source_sha256": "a82e14334b142d396044310eb681711aca16f6d8d109ade257461bc46831cba9",
+    "snapshot": "capture-source/scene-contact-members-x87-4-FixtureSupport.cpp.gz",
+    "snapshot_sha256": "a2bcef71c35980bce1bda991969b62b5ec0460a1c338ff1992638d754d6842ad"
+  },
+  {
+    "source": "tests/portable/FixtureSupport.h",
+    "source_sha256": "e4243ec8d6c5089da14b3ba530894c6b9e5fec352f0d01c04f51a643d55bc691",
+    "snapshot": "capture-source/scene-contact-members-x87-5-FixtureSupport.h.gz",
+    "snapshot_sha256": "04e1386abf4a51d7e101ccb2f72df2002ca9b7debcabf01c23d4e4c0f0dfbdfe"
+  },
+  {
+    "source": "tests/portable/CMakeLists.txt",
+    "source_sha256": "26967daa1faae550bb15c928b388fec3de6e75710251a80cb13fdb288eb3b3a8",
+    "snapshot": "capture-source/scene-contact-members-x87-6-CMakeLists.txt.gz",
+    "snapshot_sha256": "6d29a2713c66d9fd9bc1d96f7a4c789ec061c78170b7af71d4a9dcee7f059a2a"
+  },
+  {
+    "source": "tests/portable/IceTopologyTargets.cmake",
+    "source_sha256": "5b4ae5fe1d1ec22aa4d447f298fb5cf00f134f465cfe2c5580bcb1289a36df37",
+    "snapshot": "capture-source/scene-contact-members-x87-7-IceTopologyTargets.cmake.gz",
+    "snapshot_sha256": "b99252d2f6bb66370fe75436702f9bb847f1f99b57dfc0d6ad2c3c5c51bab0ea"
+  },
+  {
+    "source": "Physics/src/ThirdPartyHost.cpp",
+    "source_sha256": "998c7ec7bbe16e0f992ddb9ba808e6a5e542c5282a4c0d25359b36a807e8babd",
+    "snapshot": "capture-source/scene-contact-members-x87-8-ThirdPartyHost.cpp.gz",
+    "snapshot_sha256": "061ec4eacd87abb8d8e5ae2e53c805e86c210a7a55e86225bc54bee8ab1bd7f7"
+  },
+  {
+    "source": "Physics/src/include/PhysicsInternal.h",
+    "source_sha256": "0c7334106100f8ee47b25532f70c4421cb93046e57d34b45ff80eb97051587a9",
+    "snapshot": "capture-source/scene-contact-members-x87-9-PhysicsInternal.h.gz",
+    "snapshot_sha256": "26fc80271ba9c8797ab1e06342c47585797b1b100b4fdddda349eace1b09f061"
+  },
+  {
+    "source": "Physics/src/include/NxSdkAllocator.h",
+    "source_sha256": "97008f3779823f8905a713b0676119333fadfeb40ad4ba5d89b793672b4326a7",
+    "snapshot": "capture-source/scene-contact-members-x87-10-NxSdkAllocator.h.gz",
+    "snapshot_sha256": "34801c3962b88771de8d843f202af72b1a788955c29e063f2d6610dda816387e"
+  },
+  {
+    "source": "Physics/src/include/NxSdkAllocatorAccess.inl",
+    "source_sha256": "05fb01224de74a91f9448a21bc1779c4ea9f721942a4a92986f9273661cc8820",
+    "snapshot": "capture-source/scene-contact-members-x87-11-NxSdkAllocatorAccess.inl.gz",
+    "snapshot_sha256": "bd903942e4442f883cd047db5c610fdf70e1b07e7cae19c3916c7887e712e0b7"
+  },
+  {
+    "source": "cmake/NxPhysicsBackend.cmake",
+    "source_sha256": "883676e8fecae7983d7f2efe5eb87111cd92ee3585dcb66bca05794d3e8db52b",
+    "snapshot": "capture-source/scene-contact-members-x87-12-NxPhysicsBackend.cmake.gz",
+    "snapshot_sha256": "0077fa45430675b98c97aa4671898f3eda6b417b581fa4683e8c9c2daa22aa73"
+  },
+  {
+    "source": "Physics/src/include/NxPhysicsBackend.h",
+    "source_sha256": "b309061c66c035e73cf11c83abc50a822cdb4ed3a42567ae79ac7c6bedaac2b9",
+    "snapshot": "capture-source/scene-contact-members-x87-13-NxPhysicsBackend.h.gz",
+    "snapshot_sha256": "3f03e63edf7a8197bca6e4d5ff37ee66c09e2bcfa977eab381e32dcd8178c303"
+  },
+  {
+    "source": "docs/reconstruction/novodex-physics/tools/capture_scalar_math.py",
+    "source_sha256": "9f9dd4921b301c048731d99a27ded5c2681bba98d7ecf62302644583b87a72ae",
+    "snapshot": "capture-source/scene-contact-members-x87-14-capture_scalar_math.py.gz",
+    "snapshot_sha256": "3755174fdf80551b5609f88d153a89a2d2f541b94e0184a50a4d799636f2cf44"
+  },
+  {
+    "source": "docs/reconstruction/novodex-physics/tools/capture_opcode_model.py",
+    "source_sha256": "633b608121a216487d04b1e45f0ac03146d3dc9cd3165f332c46c9dded7d6761",
+    "snapshot": "capture-source/scene-contact-members-x87-15-capture_opcode_model.py.gz",
+    "snapshot_sha256": "593a966d5e995d1a48a7cbef9e7d815cfe4c1202f07b84782a613ead446f289a"
+  },
+  {
+    "source": "Foundation/src/include/NxFoundationAllocatorAccess.inl",
+    "source_sha256": "39607e10906a09c75910e7a994f9f0748bb76492522dca1903384aed06b239b9",
+    "snapshot": "capture-source/scene-contact-members-x87-16-NxFoundationAllocatorAccess.inl.gz",
+    "snapshot_sha256": "1b3115a219b87ad7aaeb1db8cd3adef980fadc11e49fd196ac22f59ab315efe3"
+  },
+  {
+    "source": "Foundation/src/FoundationSDK.cpp",
+    "source_sha256": "1fec0c6fc294a7b60b173c8edd30495a48d2db94dc52299db6b79b6a78b7a930",
+    "snapshot": "capture-source/scene-contact-members-x87-17-FoundationSDK.cpp.gz",
+    "snapshot_sha256": "62cecbb2e6e00658e39da8509c7b7304c36c3f9225b844c00f1670e4b1d14e36"
+  },
+  {
+    "source": "Foundation/src/Observable.cpp",
+    "source_sha256": "d75e313d71c76422e225f032c54754cd669692529e267d9975633f36855f9d98",
+    "snapshot": "capture-source/scene-contact-members-x87-18-Observable.cpp.gz",
+    "snapshot_sha256": "2cccbddbeef7f47db9b93604878a7f6f048da0cca9e0057d8ba019f550065c47"
+  },
+  {
+    "source": "Foundation/src/DebugRenderable.cpp",
+    "source_sha256": "4f985d13e3dd47ad7738653600dae86eef13799822492809dc1bbbcf51313003",
+    "snapshot": "capture-source/scene-contact-members-x87-19-DebugRenderable.cpp.gz",
+    "snapshot_sha256": "c4525337cd5aa64fa15a3b41e60f054dca8c277d4140a5364713e6f14da80fe5"
+  },
+  {
+    "source": "Foundation/src/Profiler.cpp",
+    "source_sha256": "b64ad0355259ff0b4029611650206ad9385c45ed49269440e5effaaa45d10348",
+    "snapshot": "capture-source/scene-contact-members-x87-20-Profiler.cpp.gz",
+    "snapshot_sha256": "779f8ffa85fffd99885d7ebd970bf6ec6f070fb6b1fc4bc7176891ae9742247d"
+  },
+  {
+    "source": "Foundation/src/Time.cpp",
+    "source_sha256": "5b97703ac8d465fa4c13b7308d696f2301117f6b409ed90655896558c0dce34f",
+    "snapshot": "capture-source/scene-contact-members-x87-21-Time.cpp.gz",
+    "snapshot_sha256": "fc5c102443d6827d2d3e3c5e2379d8e1a7d127599b52a8fa6ec176a352f1ccb9"
+  },
+  {
+    "source": "Foundation/src/Utilities.cpp",
+    "source_sha256": "5b0ddfc13ba0b01a7a6d3b00d19691b3d6b49a1099aa047913780cd824676b8e",
+    "snapshot": "capture-source/scene-contact-members-x87-22-Utilities.cpp.gz",
+    "snapshot_sha256": "e8e352c49493e9e27e48e320d7055723b311d7bed5992e87203b2de24702f0eb"
+  },
+  {
+    "source": "Foundation/src/Box.cpp",
+    "source_sha256": "0c0405686f372dbdfd707599f757834adbed64ae17d91b04a91f416c54f7f522",
+    "snapshot": "capture-source/scene-contact-members-x87-23-Box.cpp.gz",
+    "snapshot_sha256": "60ce23d347a92664d95ca7a72dc65ee12381c37d5db449fcf11e80f722e3ca16"
+  },
+  {
+    "source": "Foundation/include/Nx.h",
+    "source_sha256": "0f1411124c2b704e5bfb72ca476297840692f1c6c4df47daf1185530070464e4",
+    "snapshot": "capture-source/scene-contact-members-x87-24-Nx.h.gz",
+    "snapshot_sha256": "f73d6bbfce6391b624673d1e5887a58f521988f71c18716a0099fa0992021d44"
+  },
+  {
+    "source": "Foundation/include/Nx12F32.h",
+    "source_sha256": "ba4bbbf13aad6e32a7a9f82306d8a96b8c78311c8f5769c29d37ca5e93a38b96",
+    "snapshot": "capture-source/scene-contact-members-x87-25-Nx12F32.h.gz",
+    "snapshot_sha256": "c842f662b79270b107a399b9f8842f39afc78190e395e1508be3729fca7fb865"
+  },
+  {
+    "source": "Foundation/include/Nx16F32.h",
+    "source_sha256": "bb786b47861edeec6917b6fc7aaff97c93bae473fe9d9c92184298b2a75d4cd5",
+    "snapshot": "capture-source/scene-contact-members-x87-26-Nx16F32.h.gz",
+    "snapshot_sha256": "0ca421cb3c824ef5e908d871c52d77d68067f01283db205838af599d0183e6fb"
+  },
+  {
+    "source": "Foundation/include/Nx9F32.h",
+    "source_sha256": "7e5bf33f115fbb2e4203c11cd3b9f26bd4ab4d2732e8ae724436da298eed64c6",
+    "snapshot": "capture-source/scene-contact-members-x87-27-Nx9F32.h.gz",
+    "snapshot_sha256": "248303cb769f8e56fed81b7acd81cc9345799bc133e8768a70fd30a3dba48f1a"
+  },
+  {
+    "source": "Foundation/include/NxAllocateable.h",
+    "source_sha256": "dc5156a04e731c7a0574b89f583a244f91021b2decb187eb5bcfaec632beeab5",
+    "snapshot": "capture-source/scene-contact-members-x87-28-NxAllocateable.h.gz",
+    "snapshot_sha256": "77cf7d3c5e47ba6b5ea600a2818eba37469909e1686c4af548746bbe9096953f"
+  },
+  {
+    "source": "Foundation/include/NxAllocatorDefault.h",
+    "source_sha256": "f7af0e4db1d123ecdae6d412105d8666d939391da74216433b6d965c069509af",
+    "snapshot": "capture-source/scene-contact-members-x87-29-NxAllocatorDefault.h.gz",
+    "snapshot_sha256": "57ce3436f90132b03e340d09a8937591777bce28edea6c96496d9dac1c52b368"
+  },
+  {
+    "source": "Foundation/include/NxArray.h",
+    "source_sha256": "8a64f16ae54412c7087c35d4de0a161c4485e7bbc9a0c51ca947a3f2058b45f6",
+    "snapshot": "capture-source/scene-contact-members-x87-30-NxArray.h.gz",
+    "snapshot_sha256": "9c0df94a1d723ff282a42e826d4c9bdd91e0d524c3c8d38510ae4305fbff9e38"
+  },
+  {
+    "source": "Foundation/include/NxAssert.h",
+    "source_sha256": "8a144be9690039a11e9879d9a6c4151e33c326ffdce2598aa7f54c2536b1a825",
+    "snapshot": "capture-source/scene-contact-members-x87-31-NxAssert.h.gz",
+    "snapshot_sha256": "2a9fb4ad5cf14b07d6947489bd038626e16ea32fabecd39fd84438cbd5e5e371"
+  },
+  {
+    "source": "Foundation/include/NxBitField.h",
+    "source_sha256": "457f929e339ac136150af13c6a392ff5c077ac650c651c18962113455be835d1",
+    "snapshot": "capture-source/scene-contact-members-x87-32-NxBitField.h.gz",
+    "snapshot_sha256": "618270ed3b6b7bb50aa02c23d38a3dcdbfee78155017052bebe5c3888c1c5a18"
+  },
+  {
+    "source": "Foundation/include/NxBlank.h",
+    "source_sha256": "b2d6b42fad0dc95c525e0c4ff9ec53adf34f14b0a2a5ea9939f4a7bf424058d6",
+    "snapshot": "capture-source/scene-contact-members-x87-33-NxBlank.h.gz",
+    "snapshot_sha256": "69f57da16eacadd1cc166651fe022c6455c55c81582f7e3a940addceb2b5c506"
+  },
+  {
+    "source": "Foundation/include/NxBounds3.h",
+    "source_sha256": "c7763076cb80b44863fa2faf71d1710548e2b96323b6ebe6dc557b56efd86c42",
+    "snapshot": "capture-source/scene-contact-members-x87-34-NxBounds3.h.gz",
+    "snapshot_sha256": "b523f21d0047de202f90c1209bd99ff80c7bcb54dc81c284183c024a785d084f"
+  },
+  {
+    "source": "Foundation/include/NxBox.h",
+    "source_sha256": "453505eea6459281937094b4e5e4b7782bec48e817d19d2e586a7c7c2dbda4bf",
+    "snapshot": "capture-source/scene-contact-members-x87-35-NxBox.h.gz",
+    "snapshot_sha256": "30c1c16c8f9635a609cdd61f1c2fedb5f1bc838108ff540ac56ce5fa41475259"
+  },
+  {
+    "source": "Foundation/include/NxBuildNumber.h",
+    "source_sha256": "8bc6af66adb5adb9bfa8e402ee2bb4be23fc089b4c2835d174f41300aa0a028d",
+    "snapshot": "capture-source/scene-contact-members-x87-36-NxBuildNumber.h.gz",
+    "snapshot_sha256": "fcc9960df9daff7dee087147648775646640306e24c04142b4af42c728865bfb"
+  },
+  {
+    "source": "Foundation/include/NxCapsule.h",
+    "source_sha256": "b019a841676991483cd8cd306af298a07d09b07aac1014651e028157ce87cd90",
+    "snapshot": "capture-source/scene-contact-members-x87-37-NxCapsule.h.gz",
+    "snapshot_sha256": "f789ea8c82a922140b1403e406aa2f37c27b46f65063bd27299c003806f1ac2c"
+  },
+  {
+    "source": "Foundation/include/NxDebugRenderable.h",
+    "source_sha256": "bd05064e4c2363d39c137b2630dc23e62eaca09bfd62d88f056a69013fc2b2af",
+    "snapshot": "capture-source/scene-contact-members-x87-38-NxDebugRenderable.h.gz",
+    "snapshot_sha256": "ac310f4cc1305cc1615298cc9cead706f2e6bedea50a202869443f6c021efab8"
+  },
+  {
+    "source": "Foundation/include/NxException.h",
+    "source_sha256": "999cc86008a233615c16f6e772cf37c44e1e71dd1dc496ac8e2b36def4874f76",
+    "snapshot": "capture-source/scene-contact-members-x87-39-NxException.h.gz",
+    "snapshot_sha256": "b17e045693cd81a6d5987a5c44da71cc2ee8311f05eca73034724268d8431719"
+  },
+  {
+    "source": "Foundation/include/Nxf.h",
+    "source_sha256": "9303dc95fd07426f00bd803e7f024b2dc690da302b2487161624a893ffadbf38",
+    "snapshot": "capture-source/scene-contact-members-x87-40-Nxf.h.gz",
+    "snapshot_sha256": "86ddf37ddc0b3248775368c223a48860f3f834792890bcef5a949d2c8f38623e"
+  },
+  {
+    "source": "Foundation/include/NxFoundation.h",
+    "source_sha256": "bca036d356a428cc1d85620d0846ed672632d47963877f9e5f163551d8207cf5",
+    "snapshot": "capture-source/scene-contact-members-x87-41-NxFoundation.h.gz",
+    "snapshot_sha256": "56a3380a6a501a603059346a0aae73d28db0dba9a43ed9c10cfe88d508329c94"
+  },
+  {
+    "source": "Foundation/include/NxFoundationSDK.h",
+    "source_sha256": "31426e5966dbe0215b430daffe91ba8a7063b1853b1b51995f66e6850ecf6dbe",
+    "snapshot": "capture-source/scene-contact-members-x87-42-NxFoundationSDK.h.gz",
+    "snapshot_sha256": "755791eab3a3d9e4106aa37eed908e265705d53d76eca1a5ad7c9a048d31fd43"
+  },
+  {
+    "source": "Foundation/include/NxFPU.h",
+    "source_sha256": "6e70ea83197140f67451f4a690a7f8848cf17c4e3858721b0e2a254e8ba22995",
+    "snapshot": "capture-source/scene-contact-members-x87-43-NxFPU.h.gz",
+    "snapshot_sha256": "8b0bdbc192557967cc52fb9442beba6eb482273a18bad8b4c54bb2605645f16f"
+  },
+  {
+    "source": "Foundation/include/NxList.h",
+    "source_sha256": "c59f413d86d739af0408899233d41f53180da34e7804acc47df41a0f0c405ca8",
+    "snapshot": "capture-source/scene-contact-members-x87-44-NxList.h.gz",
+    "snapshot_sha256": "627a00b00b7b399f2b9a204c1b1ea0e805aa066752cede26a370a86e2e9ddf45"
+  },
+  {
+    "source": "Foundation/include/NxMat33.h",
+    "source_sha256": "20d47881227a4ac033a4a2c618d6fc3cb1bafd9b086d7b12e56c683b7bf08ea5",
+    "snapshot": "capture-source/scene-contact-members-x87-45-NxMat33.h.gz",
+    "snapshot_sha256": "bf24e1b1a63f48b3f3c8660c4384b441a829f7bf254e1b4707acd7142048a1e9"
+  },
+  {
+    "source": "Foundation/include/NxMat34.h",
+    "source_sha256": "26fb30b99d68209cb3fc45f91d18bb26503119263a04576997e39a079cb7faed",
+    "snapshot": "capture-source/scene-contact-members-x87-46-NxMat34.h.gz",
+    "snapshot_sha256": "0ca3b515e3739a736b18a4f9271d20cc6fe9155fc7227b1f30b67c51b83aaa22"
+  },
+  {
+    "source": "Foundation/include/NxMath.h",
+    "source_sha256": "93e85905e8515f33b2b6a55dc19cc90e9e3deb43d302bd7eaddc37ee52e74c20",
+    "snapshot": "capture-source/scene-contact-members-x87-47-NxMath.h.gz",
+    "snapshot_sha256": "bbb31c39da367080425ae2cd8832f9394aefe905250e059228c8ff6fad2e2024"
+  },
+  {
+    "source": "Foundation/include/NxPlane.h",
+    "source_sha256": "9ee607a71ab37b82c641cff4d1c026f2a24aa51c7ef33c1dc6acc5874a22f552",
+    "snapshot": "capture-source/scene-contact-members-x87-48-NxPlane.h.gz",
+    "snapshot_sha256": "bd6ab3aa6f08720c316724853bf1b051cbc17b4f62a21fdd05ddbedd47235148"
+  },
+  {
+    "source": "Foundation/include/NxPool.h",
+    "source_sha256": "94688d29641eaad9a16170e3470991c23266190c84732f8513bee8cbc1d3c251",
+    "snapshot": "capture-source/scene-contact-members-x87-49-NxPool.h.gz",
+    "snapshot_sha256": "acd4bc595a870adbd4b70c0c8f66fc285aa15f58fe39635043443124b713b8b0"
+  },
+  {
+    "source": "Foundation/include/NxProfiler.h",
+    "source_sha256": "203efe91b8a04e1459aab30545d4b424b6a7832e27d738e4ef88f238e9d7699d",
+    "snapshot": "capture-source/scene-contact-members-x87-50-NxProfiler.h.gz",
+    "snapshot_sha256": "757f8d19423dbaac841796e4e6c04d584d8bba79b36d80afa2d24adba4f0258b"
+  },
+  {
+    "source": "Foundation/include/NxQuat.h",
+    "source_sha256": "58fd4d399650ba087a5441315d4faeed0250be1d8a348c23006a450fd53bc18e",
+    "snapshot": "capture-source/scene-contact-members-x87-51-NxQuat.h.gz",
+    "snapshot_sha256": "c3a65fd51c58a41bb852fbec7e13851487e29902c64e9abc2e0d58fe76b670d4"
+  },
+  {
+    "source": "Foundation/include/NxQuickSort.h",
+    "source_sha256": "f582c562f1812ec9c63ea8553af258f54cca199b3e6b05993fbc417378133067",
+    "snapshot": "capture-source/scene-contact-members-x87-52-NxQuickSort.h.gz",
+    "snapshot_sha256": "065576d2906d458950a711a7adc41e5c9f78821e468442a1e35cfec208b2175a"
+  },
+  {
+    "source": "Foundation/include/NxRay.h",
+    "source_sha256": "e05ad1eca258d12ed08fedc8b03dbb88cd6bf1e1d7a35f10486f54c664cbab7e",
+    "snapshot": "capture-source/scene-contact-members-x87-53-NxRay.h.gz",
+    "snapshot_sha256": "0281551338e71d2dad6b02cb1ba340e5a8a29434669fa5ded168b68e7a8ea151"
+  },
+  {
+    "source": "Foundation/include/NxSegment.h",
+    "source_sha256": "268cb4d45d49a0f3d2eb4f692d43d97aa21d24db761014d242495e6e54a4008f",
+    "snapshot": "capture-source/scene-contact-members-x87-54-NxSegment.h.gz",
+    "snapshot_sha256": "75cd573c635983085593d60723a254c2d0d9746f8d8ac46d8361f979bc79a743"
+  },
+  {
+    "source": "Foundation/include/NxSimpleTriangleMesh.h",
+    "source_sha256": "c8b4dd640bbe297b29dab1a3521da3cf6444edd384f06f35f6a63ff58f667995",
+    "snapshot": "capture-source/scene-contact-members-x87-55-NxSimpleTriangleMesh.h.gz",
+    "snapshot_sha256": "4a5499f20b1ea1845aad22bfc8ac24e3baf82ed1744e55f9739fa065a664729e"
+  },
+  {
+    "source": "Foundation/include/NxSimpleTypes.h",
+    "source_sha256": "74f162f50a02d66d62144261c0044945ded354bb67efba21562ee9362c3ab203",
+    "snapshot": "capture-source/scene-contact-members-x87-56-NxSimpleTypes.h.gz",
+    "snapshot_sha256": "77a622f01eb1f89be644c1157efbccf5f41156e11b918ae37e96243ed5305554"
+  },
+  {
+    "source": "Foundation/include/NxSphere.h",
+    "source_sha256": "9d205a2d69fbfed1e27cf69bd7054cbbda07516d7e68fc54c33ffac899609970",
+    "snapshot": "capture-source/scene-contact-members-x87-57-NxSphere.h.gz",
+    "snapshot_sha256": "dbaf27cac697b886733f84d68f54f07512bff512644f98e3d9f7353b456dc4f1"
+  },
+  {
+    "source": "Foundation/include/NxStream.h",
+    "source_sha256": "406f5261e4dcec6a87c3a654e1c16bb05f23f362df45627193efaa159bdd6a12",
+    "snapshot": "capture-source/scene-contact-members-x87-58-NxStream.h.gz",
+    "snapshot_sha256": "38d89b0e2cefe1265abda48551bc171da9b858a90f39dd60415caeec7de0f966"
+  },
+  {
+    "source": "Foundation/include/NxUserAllocator.h",
+    "source_sha256": "d9a9099d220e18c854f4e1d856d4b4f3809951ba78ec85d1953cc610b5b8e039",
+    "snapshot": "capture-source/scene-contact-members-x87-59-NxUserAllocator.h.gz",
+    "snapshot_sha256": "db8c8075f595ed35d22a234a7badf4c4eac4f684263ce7d8448c531338809214"
+  },
+  {
+    "source": "Foundation/include/NxUserAllocatorAccess.h",
+    "source_sha256": "0cb14602986db655d7f7507de33033bf29601abb620ba0491dcdd1609ff86cbf",
+    "snapshot": "capture-source/scene-contact-members-x87-60-NxUserAllocatorAccess.h.gz",
+    "snapshot_sha256": "35f7ebd1cf98c43f4fc2b9c4abf904f93d16d2a3b476ecbdcd38e579dde62ceb"
+  },
+  {
+    "source": "Foundation/include/NxUserAllocatorDefault.h",
+    "source_sha256": "afe8cc95c7ad796e09f97b46e0ebe9a62d8c06afe25d422629dd842bf207fb53",
+    "snapshot": "capture-source/scene-contact-members-x87-61-NxUserAllocatorDefault.h.gz",
+    "snapshot_sha256": "573287934fc5e87860c3d0a1c38af7245a56421bc4e8b69d58fa1a1adb522d44"
+  },
+  {
+    "source": "Foundation/include/NxUserDebugRenderer.h",
+    "source_sha256": "1f1dd04c5be2abd80479aa755f53f028978869539e370000682289f10263baee",
+    "snapshot": "capture-source/scene-contact-members-x87-62-NxUserDebugRenderer.h.gz",
+    "snapshot_sha256": "e5ff70a76006a3c0ecf8a4770702d6e4c3139a0d002461f3a92381291043357f"
+  },
+  {
+    "source": "Foundation/include/NxUserOutputStream.h",
+    "source_sha256": "7f9f3b9b92a36c84acf166b5c2fd84db70733899caa1569e0784de4bfbb33965",
+    "snapshot": "capture-source/scene-contact-members-x87-63-NxUserOutputStream.h.gz",
+    "snapshot_sha256": "6e13061a4e9f455379cbc6a975eeacdeb3ce3c1ce5ecfdbedc370da0b99b58ff"
+  },
+  {
+    "source": "Foundation/include/NxUtilities.h",
+    "source_sha256": "ee639cb8ceb5edd2d770775232dfd1628eccdc3b7631689c6f082437e31910ee",
+    "snapshot": "capture-source/scene-contact-members-x87-64-NxUtilities.h.gz",
+    "snapshot_sha256": "fef7ac541bd948be7951b3f6e4a191b893eaa9aa0d62697699a0184611e454eb"
+  },
+  {
+    "source": "Foundation/include/NxVec3.h",
+    "source_sha256": "852a0e2dd0595a10bb993f1b202cf98d11218ab4edfff0931646e049fcc28629",
+    "snapshot": "capture-source/scene-contact-members-x87-65-NxVec3.h.gz",
+    "snapshot_sha256": "710bb9f75c7e1543bd48adae064d913b459c38595671175b6001f0c65cdc3b95"
+  },
+  {
+    "source": "Foundation/include/NxVersionNumber.h",
+    "source_sha256": "0b0ee61a53b886437e2a0ef7f5d9b123d4d8ccd178ebd6057eeddc3e552e3df1",
+    "snapshot": "capture-source/scene-contact-members-x87-66-NxVersionNumber.h.gz",
+    "snapshot_sha256": "c9a394108798c21516f33c17de4e5be944c77433f78de6e6d135172c9391b0c1"
+  },
+  {
+    "source": "Foundation/include/NxVolumeIntegration.h",
+    "source_sha256": "e748af935cd1d56999e65449fc95dc7230108f3bd5e51a4052926a287dd2cc72",
+    "snapshot": "capture-source/scene-contact-members-x87-67-NxVolumeIntegration.h.gz",
+    "snapshot_sha256": "3557ec2b8612f5f4cf49d2864af27156936677d58f30f23920e3ec1baac6b39c"
+  },
+  {
+    "source": "Foundation/include/NxXBOX.h",
+    "source_sha256": "964f1207a89b6563700eaee9d44fb4b03e9bac59f933f494f1a8e4339532f665",
+    "snapshot": "capture-source/scene-contact-members-x87-68-NxXBOX.h.gz",
+    "snapshot_sha256": "f14b6bd070772c86a0fd29db357c54ae86dc97e6f912ec1d7814dc6f27b60d52"
+  },
+  {
+    "source": "Foundation/src/include/CustomAssert.h",
+    "source_sha256": "9113f89412dffab8d6fc25e4ef0c460f47c59b4de4500fef15a5aceb18d70d7e",
+    "snapshot": "capture-source/scene-contact-members-x87-69-CustomAssert.h.gz",
+    "snapshot_sha256": "ec538f566d1131aa30e0d2bb268e02415230dbf12e570e0291c69645e8538390"
+  },
+  {
+    "source": "Foundation/src/include/DebugRenderable.h",
+    "source_sha256": "885b521125edbcdc582ca538efc7abc55278e5b2d73d2142905d8afb9246d6d3",
+    "snapshot": "capture-source/scene-contact-members-x87-70-DebugRenderable.h.gz",
+    "snapshot_sha256": "b48c93ab056ef969eb2928a542daf944b928010c0355549e5d0a1b894afc534f"
+  },
+  {
+    "source": "Foundation/src/include/DefaultAllocator.h",
+    "source_sha256": "f30ec36fd93661c1a83e221c89cfbd9755c6c163c19232c6d463297cc5cbbe35",
+    "snapshot": "capture-source/scene-contact-members-x87-71-DefaultAllocator.h.gz",
+    "snapshot_sha256": "59b9f2210af8fa58be7322fae207408ddb9854b866cf194a864dc9f8bbd53e81"
+  },
+  {
+    "source": "Foundation/src/include/DefaultTriangleMesh.h",
+    "source_sha256": "70ec2c6992c28c16f07421b3f0ad053a823f558323113926b8645851810b8f73",
+    "snapshot": "capture-source/scene-contact-members-x87-72-DefaultTriangleMesh.h.gz",
+    "snapshot_sha256": "855b34121d61f4ae004f3dfc46b8cb2c07828628b7061c6875a5d3aa98ff1d19"
+  },
+  {
+    "source": "Foundation/src/include/Exception.h",
+    "source_sha256": "b9691cc56ec76a52fb8ec6cf713c935f22cfdc93b96873d00651451a04ae7adc",
+    "snapshot": "capture-source/scene-contact-members-x87-73-Exception.h.gz",
+    "snapshot_sha256": "3bb2b401a6b9f58eb0d35d936b6e6b8beee6dd7442ebf27842914761bb21b945"
+  },
+  {
+    "source": "Foundation/src/include/FoundationSDK.h",
+    "source_sha256": "5c776faa94d694a1f36e4af3d2e1d0f7c02c5de8ffa1a8cf05b7f3dcf5b3d880",
+    "snapshot": "capture-source/scene-contact-members-x87-74-FoundationSDK.h.gz",
+    "snapshot_sha256": "0c27c888106d0d04e6a7c1a6f0836fe1df5b3fc6fd7f63f5fab537ff4f38a350"
+  },
+  {
+    "source": "Foundation/src/include/NxFoundationBreak.h",
+    "source_sha256": "e604df32ceda2a45894998ceb7c5a4686e2b95f7f307af3ac46b9904c05be315",
+    "snapshot": "capture-source/scene-contact-members-x87-75-NxFoundationBreak.h.gz",
+    "snapshot_sha256": "2424e6e8b2c722427ebe9cd90255e3b45aabf06a0c90a4461e14dbe9be577fae"
+  },
+  {
+    "source": "Foundation/src/include/NxScalarConversions.h",
+    "source_sha256": "71cfa2fcc7ac9556cfa700f714ae15af65a8053d16893fecd1b7b165ae6e2dd7",
+    "snapshot": "capture-source/scene-contact-members-x87-76-NxScalarConversions.h.gz",
+    "snapshot_sha256": "5f8332c7b87ae9a423212d3fa6318b490686d362cff1ace66ad22d1186be5c5a"
+  },
+  {
+    "source": "Foundation/src/include/NxTime.h",
+    "source_sha256": "027aa3ec7855d2308d7cd952bf59023d23b4ea4fc21b7b769f13ef03c78cd8e7",
+    "snapshot": "capture-source/scene-contact-members-x87-77-NxTime.h.gz",
+    "snapshot_sha256": "4366e592d86d90ea3f5142e38c6475d20ac5f9501bd70780709a14b80bd572a2"
+  },
+  {
+    "source": "Foundation/src/include/Observable.h",
+    "source_sha256": "a7d3a3f614786ca67b505188da3e109c6dbf967185d0be7e18660d4b219e207b",
+    "snapshot": "capture-source/scene-contact-members-x87-78-Observable.h.gz",
+    "snapshot_sha256": "7533079187ca5bfe72a382071e6c237c24d9e18fdb681571d48b893fa27ccce6"
+  },
+  {
+    "source": "Foundation/src/include/Profiler.h",
+    "source_sha256": "b479ad5001e98222240a4a0cb174e49678531cd52694c422fce21baaa6bd20ac",
+    "snapshot": "capture-source/scene-contact-members-x87-79-Profiler.h.gz",
+    "snapshot_sha256": "f005978b524940fb2a4053e92c1ce0975a40a72f7fb5c8069fdec4870e7f719a"
+  },
+  {
+    "source": "Foundation/src/include/STLAllocator.h",
+    "source_sha256": "037fa47c21a583fe64d22b22a0063e9d77ce46a6c2232b4dbaa4c9c87f35d1d7",
+    "snapshot": "capture-source/scene-contact-members-x87-80-STLAllocator.h.gz",
+    "snapshot_sha256": "4461940bd0503377664bff9dc58e81251d89461e82b241ad2a4fd8633a4aa292"
+  },
+  {
+    "source": "Foundation/src/include/win32/time.h",
+    "source_sha256": "0d6021eec0c9beb1492f5f622c3d73d33f8d79a3e84fa6706acaf0a109ebf010",
+    "snapshot": "capture-source/scene-contact-members-x87-81-time.h.gz",
+    "snapshot_sha256": "329bdd1494f0ed4a4a7d2a0c212506313268ec32c0964397a602ccd3f158a4c1"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceAABB.cpp",
+    "source_sha256": "7a3c0929c8bfad5007c9725bfea0a3cef58c18619bd626cd00c696561e127d9b",
+    "snapshot": "capture-source/scene-contact-members-x87-82-IceAABB.cpp.gz",
+    "snapshot_sha256": "02947b227c1acf1ef821d69e2ccc4ac6b9edc8aabe5c226884524186ff6d7a7a"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceAABB.h",
+    "source_sha256": "e90269be5e0647ea83ca1f4739748a41e9c2c27af5a3ecde6167eb4a611f4d23",
+    "snapshot": "capture-source/scene-contact-members-x87-83-IceAABB.h.gz",
+    "snapshot_sha256": "06864e307f29b23514a13444d82e264bff1959b0cf0139eb4837e5f7b47fc8b6"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceAxes.h",
+    "source_sha256": "f91e5f58ed564da5791e8675b294efd72c7a9e2b67696366aec5c153a87828b9",
+    "snapshot": "capture-source/scene-contact-members-x87-84-IceAxes.h.gz",
+    "snapshot_sha256": "b1196b68f9f3687f4fc2dd702aa20b2ae5d4973f7eda35c228fcbebbef66b23c"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceBoundingSphere.h",
+    "source_sha256": "0b380840bcbbdedfacf677019945100cb9a1b0b1f7c2d18e9406062aa1a91184",
+    "snapshot": "capture-source/scene-contact-members-x87-85-IceBoundingSphere.h.gz",
+    "snapshot_sha256": "802cfaed15d78c2cb4ba1166e806dd60feccf95c51c56e4665b6778ad96758e5"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceContainer.cpp",
+    "source_sha256": "0a33ba4347791d0684cc25698213d65b3d10ca7881f74b108de5612046707bd8",
+    "snapshot": "capture-source/scene-contact-members-x87-86-IceContainer.cpp.gz",
+    "snapshot_sha256": "fd63c200073c5b0def456508456594d25e5c0f429acb435f181eb070cdbdcdb6"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceContainer.h",
+    "source_sha256": "cb92fff78bfa4e8c3f6cc135dc1e37be7c189668814b57aa6622c39e82dbcdf0",
+    "snapshot": "capture-source/scene-contact-members-x87-87-IceContainer.h.gz",
+    "snapshot_sha256": "a4c99cedc3629fc87c91eda75da803fc6a6192237dc4771313daca579b7ec1cf"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceFPU.h",
+    "source_sha256": "81639df2ff746de17f0fb075e82755e1dd48bae23a008926ab7ec4f4dc04f53d",
+    "snapshot": "capture-source/scene-contact-members-x87-88-IceFPU.h.gz",
+    "snapshot_sha256": "707eb0d36a8d4fb0895a15ed5dbccd405f61e788cb282b8d1f0de08101bea494"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceHPoint.cpp",
+    "source_sha256": "1fd571664d5028d98f6d1a26d2e30750ce5bee9afb1227d3d3ee0a8866765677",
+    "snapshot": "capture-source/scene-contact-members-x87-89-IceHPoint.cpp.gz",
+    "snapshot_sha256": "9a0712d1994385510232d07f53612f7152d92072633e55912407ab01efd8db6f"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceHPoint.h",
+    "source_sha256": "15fb208af9a2235c6474c0cd12d87e1e984737b060893e3d9bc919e0c0d67c40",
+    "snapshot": "capture-source/scene-contact-members-x87-90-IceHPoint.h.gz",
+    "snapshot_sha256": "fdbb068c12573a1a453b5a608b8c804c1f7663a1272ade7628195f1f3ac1d025"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceIndexedTriangle.cpp",
+    "source_sha256": "9c57c7f39e6f0f0413dcff90bfa45c054543ca6bba5f8af226c6ebd1614bc51e",
+    "snapshot": "capture-source/scene-contact-members-x87-91-IceIndexedTriangle.cpp.gz",
+    "snapshot_sha256": "731245ca7b1dc6cb1fd83d9fc4d92483409fc07f75d81e65559e07703f1a225e"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceIndexedTriangle.h",
+    "source_sha256": "9409fb7336f35448ce3e829de137335c6b72974bbc0ab6c1a5291f38e336dff3",
+    "snapshot": "capture-source/scene-contact-members-x87-92-IceIndexedTriangle.h.gz",
+    "snapshot_sha256": "d4fe1a3b26e00206b7b4d165b282b9c305259f3c8ecccbf331597539057ee4fa"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceLSS.h",
+    "source_sha256": "7b15c5914abcfb8457c21c03409289abce1cea622030a8dc2175792783fc5905",
+    "snapshot": "capture-source/scene-contact-members-x87-93-IceLSS.h.gz",
+    "snapshot_sha256": "0f30a8e3b6226a6338536ca2d768bb14a5b953a9b3b9f36c2adf308f40aa6db6"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceMatrix3x3.cpp",
+    "source_sha256": "b750996f2fa4dd74c89a64c55659bf1e845e95c8dc6893d70eb5e45f0c852571",
+    "snapshot": "capture-source/scene-contact-members-x87-94-IceMatrix3x3.cpp.gz",
+    "snapshot_sha256": "e382d2145483b41ead2167c789a75b6a8b86f2e879b27b759c7fa29761a00c71"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceMatrix3x3.h",
+    "source_sha256": "ca0cd2cbdf4f6c79c248855e33ac2911db67fe16ae1dcd08d7d7e896b945b786",
+    "snapshot": "capture-source/scene-contact-members-x87-95-IceMatrix3x3.h.gz",
+    "snapshot_sha256": "f18185c1838b76c414dc5643388c899d405539b435e37db0228dd152d36d4e90"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceMatrix4x4.cpp",
+    "source_sha256": "1ab46d4c5264620f3793009170e93e28ebd53df3497bd2f8fbe4c4ce31bcdc3f",
+    "snapshot": "capture-source/scene-contact-members-x87-96-IceMatrix4x4.cpp.gz",
+    "snapshot_sha256": "d42f5d18e3c1675747f4e47ce1b16e26b9122b1c0744d58a87fcc4d53eaa9474"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceMatrix4x4.h",
+    "source_sha256": "5706570c8153163ffc74a80801db5bd143b7c5d519d779232f668ab7422a0b46",
+    "snapshot": "capture-source/scene-contact-members-x87-97-IceMatrix4x4.h.gz",
+    "snapshot_sha256": "04b3da76659a876b1b7cb65de2c7ca52c57f360a46fc834ba6e5ddd0bc228691"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceMemoryMacros.h",
+    "source_sha256": "91a1390e1c5dd4c779549ab910a36a2c6506f3cbacf0d913d147ae81ef65814d",
+    "snapshot": "capture-source/scene-contact-members-x87-98-IceMemoryMacros.h.gz",
+    "snapshot_sha256": "75f44b9ab056f25b36fb761b65ccd09783cbd3c6399d51ee7654e18eded37fe5"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceOBB.h",
+    "source_sha256": "3e98df4d33b2145419c60eb4a580b38b85bf412e29b32ab2dc2a90297564d410",
+    "snapshot": "capture-source/scene-contact-members-x87-99-IceOBB.h.gz",
+    "snapshot_sha256": "fe51eacf5b2d98f251c9abb9424972c1a9cc14d64b3c211bff20d12e484fafa1"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePairs.h",
+    "source_sha256": "2d78fc19afb8d4b17d00c9c362ba958432bf672780addd8cfddef40fbaf085a6",
+    "snapshot": "capture-source/scene-contact-members-x87-100-IcePairs.h.gz",
+    "snapshot_sha256": "4dfeddb9aef4b18adb9a449b434f00f55bcea30c3c9aa5bd4e6842f382461ef5"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePlane.cpp",
+    "source_sha256": "6f8479858e20f7776a10776f821880bced7278a223328d33ca5be563ae7ab05c",
+    "snapshot": "capture-source/scene-contact-members-x87-101-IcePlane.cpp.gz",
+    "snapshot_sha256": "bfade33948066c94e8c21663a11ee3e7b17b3b1ebe98f2d998ea064baeb52607"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePlane.h",
+    "source_sha256": "c8a112b887a221e8205a1dcd259fb0f2d853296f132d2fa466e731beb0876f58",
+    "snapshot": "capture-source/scene-contact-members-x87-102-IcePlane.h.gz",
+    "snapshot_sha256": "59de541aca9f0f119631f40c35ad67f3045ee9cdea9168265806ce3250c90804"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePoint.cpp",
+    "source_sha256": "eea461ba47fbdd90d7e3f163615e26f087e801e1971548a8d375743a4da900c8",
+    "snapshot": "capture-source/scene-contact-members-x87-103-IcePoint.cpp.gz",
+    "snapshot_sha256": "d33152b8f04775ad66bbc910ad44433dac3a9000cd21c4110c7e8e88ca897be1"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePoint.h",
+    "source_sha256": "31c349e61b27e78a8f6dfb7c53c864b117a62cf5016226955ddefbaaf1daef0f",
+    "snapshot": "capture-source/scene-contact-members-x87-104-IcePoint.h.gz",
+    "snapshot_sha256": "e4c2d1485c0ac7b2da15db66db19bdad2896ca4e8b6361c1cb6a2e0ccd732b74"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IcePreprocessor.h",
+    "source_sha256": "ade706a5d9580d224ec37ac4b15673e9398b54191fbd49ad00bb45a2253a6dc9",
+    "snapshot": "capture-source/scene-contact-members-x87-105-IcePreprocessor.h.gz",
+    "snapshot_sha256": "bdb2063cc4388343d767287d44f9f8c6dc8a45dad1fcd7ab23aad813a238c2b6"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceRandom.cpp",
+    "source_sha256": "b7e9ef779d6e24b01e848c8615bd3588b09638efd096f2f7858b68557952593b",
+    "snapshot": "capture-source/scene-contact-members-x87-106-IceRandom.cpp.gz",
+    "snapshot_sha256": "c2a233a045cdedc149d9eba1fba718964f838e2a0cf03fa53b70cbe3cd256d4e"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceRandom.h",
+    "source_sha256": "1252c285ed0eac480f54e583f213e33c3726d954e3cbaf55b3deaa46604c6759",
+    "snapshot": "capture-source/scene-contact-members-x87-107-IceRandom.h.gz",
+    "snapshot_sha256": "10c32f3bb6dcde23508bc4c79e84e83ce13fd2328138bc355f58b8e05bbb8857"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceRay.cpp",
+    "source_sha256": "ec9375efbef2755745236d03a83bb883195c4f094c73baab648c4b6a01eb4548",
+    "snapshot": "capture-source/scene-contact-members-x87-108-IceRay.cpp.gz",
+    "snapshot_sha256": "8bdb957d6afe9ab772456e177dd8d1eddb2178a9b4a964175aab83ac44bd759d"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceRay.h",
+    "source_sha256": "bd986e6dea63f4d175327aeb0834838b5fe366f03f3ed0a93fde19d1996ad71b",
+    "snapshot": "capture-source/scene-contact-members-x87-109-IceRay.h.gz",
+    "snapshot_sha256": "96c521a185438aeb3c9cf71e1a40ef3aad58ccd01611607b0daa5e514bc09917"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceRevisitedRadix.cpp",
+    "source_sha256": "6e7e3cc08a6dad55a5fadc09d281b6d6360e09f02991be7a18e0d24f80e37992",
+    "snapshot": "capture-source/scene-contact-members-x87-110-IceRevisitedRadix.cpp.gz",
+    "snapshot_sha256": "6185bca37692be0e9b480bd959dcdf1d957a5a7bc8ff51abbfca3007f5c606f8"
+  },
+  {
+    "source": "External/opcode/novodex/Ice/IceRevisitedRadix.h",
+    "source_sha256": "79f15580b128db80281254251eced48deffc0c4a99ca9d07f8bbc30d1b80fecc",
+    "snapshot": "capture-source/scene-contact-members-x87-111-IceRevisitedRadix.h.gz",
+    "snapshot_sha256": "4b5c24222bb48b6b52d835ad2779f731fd993b01816ca7fcfc09e36de6f8f1db"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceSegment.h",
+    "source_sha256": "bbdc125a6afe52d2e58e63f47c674297ac1e02a4f3369e45754de5880a4004ad",
+    "snapshot": "capture-source/scene-contact-members-x87-112-IceSegment.h.gz",
+    "snapshot_sha256": "7ce8e3c47e0f84468bb8ba61edae3ebc6e8894c84ba791e2c02ee8469e84d392"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceTriangle.cpp",
+    "source_sha256": "7e20d62b26baaab942f71e97b4669986355a6cd0ce16b950e9f2d31f608c9d00",
+    "snapshot": "capture-source/scene-contact-members-x87-113-IceTriangle.cpp.gz",
+    "snapshot_sha256": "2c624f90c5c2414b07b99897a9d1bc6ac75c18da2004701c2f83eafc84957f06"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceTriangle.h",
+    "source_sha256": "9bbdf17f123acb02b74f60d96fbe07b9fae2cb333f7bdc2dbe5d8d99e4da9e6a",
+    "snapshot": "capture-source/scene-contact-members-x87-114-IceTriangle.h.gz",
+    "snapshot_sha256": "445fcb2d5a046a09bf173ab8ee259007038a9dc8fd81e8cd7111939f9033dc9b"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceTrilist.h",
+    "source_sha256": "f29a97720238b8d9d733822214449e92c66088d2e29dfc79ae7a42b1d0a14f6b",
+    "snapshot": "capture-source/scene-contact-members-x87-115-IceTrilist.h.gz",
+    "snapshot_sha256": "76f20cdad1babe4ebac717da43daef39b9702e84d7c943bc966a6c09b452f812"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceTypes.h",
+    "source_sha256": "f1cf1087cf30086900a6e1a7f30c442e3d5256514aef6078e50f229b3665e7b1",
+    "snapshot": "capture-source/scene-contact-members-x87-116-IceTypes.h.gz",
+    "snapshot_sha256": "598931d4a31cdacaeca67ddaa4d74bee6acd0d3258b7942a1385db72ae805123"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceUtils.cpp",
+    "source_sha256": "2c4a9b160fc4cec161b042c38feafc3882d9aaf03786a9d1d12c3c9f9c80d44c",
+    "snapshot": "capture-source/scene-contact-members-x87-117-IceUtils.cpp.gz",
+    "snapshot_sha256": "dfc11b0ac51296198c6bc73425b1036b2edaee12f0bc5c25c6e5f2bce289d9fc"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Ice/IceUtils.h",
+    "source_sha256": "804af2c7f1df2a517e086350e2b8028fa3074450c185da86a96d72ef49723ab8",
+    "snapshot": "capture-source/scene-contact-members-x87-118-IceUtils.h.gz",
+    "snapshot_sha256": "783644942746ea7ab364548f49169bfc236bc7449932bd4ab5447af4032b3ab4"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_AABBCollider.h",
+    "source_sha256": "f1ccfa7bb576450937f679592b9c811f62316897d56a1c208683940a44349180",
+    "snapshot": "capture-source/scene-contact-members-x87-119-OPC_AABBCollider.h.gz",
+    "snapshot_sha256": "15eb5337667418ce4e191293e8c0b4e6ef92704d42233658b9d77d9c00f14171"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_AABBTree.cpp",
+    "source_sha256": "ed0782a45d5490618c8fe107aadc88f4e4d42f1d4ceb33970e56da19f41e8464",
+    "snapshot": "capture-source/scene-contact-members-x87-120-OPC_AABBTree.cpp.gz",
+    "snapshot_sha256": "84bccf938ff00069702e0d8ebc7e52e8a4b3d73e95fbcb15822bd06a84f757ed"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_AABBTree.h",
+    "source_sha256": "4b8eef54b20b9d5195afa09bf067eb9022d02c1aa100478cb87f308e75717f11",
+    "snapshot": "capture-source/scene-contact-members-x87-121-OPC_AABBTree.h.gz",
+    "snapshot_sha256": "55d498e64ce1b0569234ce1e1fedce4e3ec3e9f530dd6dd39056e1446c7f8b93"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_BaseModel.cpp",
+    "source_sha256": "7faef6a6eabd45363e11f81636a40f45db14da892fc851fda13a9d5c1d2fc4b3",
+    "snapshot": "capture-source/scene-contact-members-x87-122-OPC_BaseModel.cpp.gz",
+    "snapshot_sha256": "d79331147109d01d702a64af07ac77188340cf79fa9acc8bc540bd15c5551aca"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_BaseModel.h",
+    "source_sha256": "a1e6e52e1c93dfb262efcb7ed406e97aa9c9a2a58d136a8d5b175a92635f1e4d",
+    "snapshot": "capture-source/scene-contact-members-x87-123-OPC_BaseModel.h.gz",
+    "snapshot_sha256": "4ccf818cb998ce9efe4b9f51894292c0d70fbe288e7872d7e7558e1c599f00ef"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_BoxBoxOverlap.h",
+    "source_sha256": "30845dc8a5c4d96ebb3d42e62de87f5f3ec702dd5b92ae6958307758cc5be61f",
+    "snapshot": "capture-source/scene-contact-members-x87-124-OPC_BoxBoxOverlap.h.gz",
+    "snapshot_sha256": "18777243d3f475bafe168633b0231c23aaf81e12b6e40304635934c51e0dfc86"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_BoxPruning.h",
+    "source_sha256": "a0bb637b94bd5efcd2a72eb4c67daa282861e8373160fe38a0a3dfa4532d13a4",
+    "snapshot": "capture-source/scene-contact-members-x87-125-OPC_BoxPruning.h.gz",
+    "snapshot_sha256": "774a2a076dde7e0ef5890c427a9dda710aa8384bbe5943b0258b79a605dd9a25"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_Collider.cpp",
+    "source_sha256": "871400d8cfa1926c2640bcd8b555d472cca7ce6cfa58052a1755ddaf79270063",
+    "snapshot": "capture-source/scene-contact-members-x87-126-OPC_Collider.cpp.gz",
+    "snapshot_sha256": "acc8088044f992d051587742da4c0919047ef4c7caf51b58bf349c856f69a7aa"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_Collider.h",
+    "source_sha256": "797e889935c22735094862834629a2b5b943fd2fef6f0ead7f1b5e4a8d854c78",
+    "snapshot": "capture-source/scene-contact-members-x87-127-OPC_Collider.h.gz",
+    "snapshot_sha256": "97e6a68abfcd94bca43c6959503ac5b344eebe2797cf05bc98b072d1986b5c99"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_Common.cpp",
+    "source_sha256": "31e43a33ead1e480c63df0da9cd66227b79054ae12a7e23b200a904147729fda",
+    "snapshot": "capture-source/scene-contact-members-x87-128-OPC_Common.cpp.gz",
+    "snapshot_sha256": "f4974e57d0b0acd9c66019b7268513749a2dfa661755a473666c16e552409961"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_Common.h",
+    "source_sha256": "05281ad0a752cfc21e8cad9b879eca880e5a168a63145d17704fd6a8e9c42e6c",
+    "snapshot": "capture-source/scene-contact-members-x87-129-OPC_Common.h.gz",
+    "snapshot_sha256": "cb84723f8e8672ba75f9a8a99981d31694d12dcd081c2c111088900d7bfe7c13"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_HybridModel.h",
+    "source_sha256": "5a9c2a24dedb2a25d8226e1f44227eee292fc605490f735ccd5d423542fe8c0e",
+    "snapshot": "capture-source/scene-contact-members-x87-130-OPC_HybridModel.h.gz",
+    "snapshot_sha256": "bef88f5d5a515fc8816011e42f91c07d7d5edcb6edd658ae61451617e5aab698"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_IceHook.h",
+    "source_sha256": "d6dc8178fe60660ec9bf3a0caa780b5c980c3169459b6f03c25f8493a80bab65",
+    "snapshot": "capture-source/scene-contact-members-x87-131-OPC_IceHook.h.gz",
+    "snapshot_sha256": "faaf51503cf6c6b375b7dff689114943ae3943b9f2657e5580211f57d155fab5"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_LSSAABBOverlap.h",
+    "source_sha256": "55e968b8382479262d678593a427646541268379f32a619b4bab446b1d01043c",
+    "snapshot": "capture-source/scene-contact-members-x87-132-OPC_LSSAABBOverlap.h.gz",
+    "snapshot_sha256": "11ac7660ac161a84c9c0b10576c039a508028fd42c1b72c390924428ff31200e"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_LSSCollider.h",
+    "source_sha256": "dc465a0aab2efab62577340fd589b03edefabddc262248e573de2f3c9b2c9720",
+    "snapshot": "capture-source/scene-contact-members-x87-133-OPC_LSSCollider.h.gz",
+    "snapshot_sha256": "24afe04255ee7f79db621bb6d953dba0e780631905cc57a8d3e418fbea91aac1"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_LSSTriOverlap.h",
+    "source_sha256": "7192dbd572757188106b6d46ab235d45d4829a8a8858a29fd6386e2a027add88",
+    "snapshot": "capture-source/scene-contact-members-x87-134-OPC_LSSTriOverlap.h.gz",
+    "snapshot_sha256": "12567ec594677d7ff4d8bef81c383ed3266774219cdabad3a5a03a1fe0d30a07"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_MeshInterface.cpp",
+    "source_sha256": "c1bbf49a00fd1a18c896b81b25587602c58769f25d4900cd8f3de6d45163204d",
+    "snapshot": "capture-source/scene-contact-members-x87-135-OPC_MeshInterface.cpp.gz",
+    "snapshot_sha256": "749c9f3ab2db4d9dd743cae0655723f1422c281ac4367da489e71b758bdc70f8"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_MeshInterface.h",
+    "source_sha256": "531b39c0576e6302292412948637a1ce40553db6d6b6d891b4b783f4dc9db837",
+    "snapshot": "capture-source/scene-contact-members-x87-136-OPC_MeshInterface.h.gz",
+    "snapshot_sha256": "057ba92db25d005ee8370e1f64774116c96377b591564c498b528f1cf0c3ddb8"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_Model.cpp",
+    "source_sha256": "36a70009bcbbbec6b13c308bf63b8fbc080bcf9f9a594ea6d7e3bd414ed2b30f",
+    "snapshot": "capture-source/scene-contact-members-x87-137-OPC_Model.cpp.gz",
+    "snapshot_sha256": "7a044f061d94857415c0da92628b75d2e813a31f334b844c345d78e30a6a807a"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_Model.h",
+    "source_sha256": "075fcb7dba257f80e74fe411a33d79b517db56febe1c1dd813b8030be5f0b193",
+    "snapshot": "capture-source/scene-contact-members-x87-138-OPC_Model.h.gz",
+    "snapshot_sha256": "e34c14161310aee73a551a2e96dada5a902e3873e18c00a23d4e9231ae9353f6"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_OBBCollider.h",
+    "source_sha256": "2d7be435fccc22da53c2d1adf20eb3fee4524f4a497fe41e39a870568d94199c",
+    "snapshot": "capture-source/scene-contact-members-x87-139-OPC_OBBCollider.h.gz",
+    "snapshot_sha256": "005f78794aceef0215320e4bdf3ed8c7bf682a60d2782cf4865197c5baa76a48"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_OptimizedTree.cpp",
+    "source_sha256": "3f499d745d07b1531cf271c554fee1e3c1a3dc5f8cf3bcda63dcd7c7292d9978",
+    "snapshot": "capture-source/scene-contact-members-x87-140-OPC_OptimizedTree.cpp.gz",
+    "snapshot_sha256": "81b08438b49cafbcfa225220ab8c8ac7ffa542113db9247d95886a630681316f"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_OptimizedTree.h",
+    "source_sha256": "fac53aece931805e5de331054c67e317e1a35c769f196e4c21c8454fb46d32d0",
+    "snapshot": "capture-source/scene-contact-members-x87-141-OPC_OptimizedTree.h.gz",
+    "snapshot_sha256": "73ccc83e04d35a52b09dc0f66b99464549db67ee11d0588aba01f39493845ac3"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_Picking.h",
+    "source_sha256": "ac18e5e9c060f17a6e56aaa56e3f3c54a9fd577c6f64863a1bca8146ba02a51f",
+    "snapshot": "capture-source/scene-contact-members-x87-142-OPC_Picking.h.gz",
+    "snapshot_sha256": "9281b15361b4e70e5e492625395a3d35c1d30504652659eec976215b081d2d6b"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_PlanesAABBOverlap.h",
+    "source_sha256": "d25b984181a5c98798301a0e23f6a89e5caae665bbe32ae0e1a24db344ed2306",
+    "snapshot": "capture-source/scene-contact-members-x87-143-OPC_PlanesAABBOverlap.h.gz",
+    "snapshot_sha256": "9de93568849a88cb8ed0494e991a7faa71a78cf0f7a2b21722ef701afc70f460"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_PlanesCollider.h",
+    "source_sha256": "39fc524e3af1dfde159d6756e6b192f9002c791650bc874bb6fb99fabe5d7a0b",
+    "snapshot": "capture-source/scene-contact-members-x87-144-OPC_PlanesCollider.h.gz",
+    "snapshot_sha256": "95bf2e76f2eb8a9a2054a3f30f7b4dfa44668205fbf8fa28aa61d0ed86542226"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_PlanesTriOverlap.h",
+    "source_sha256": "caab1988d4af5ca13d9872e580c3ed18eaeb7f89a5bc62e8c04da64f434e5f30",
+    "snapshot": "capture-source/scene-contact-members-x87-145-OPC_PlanesTriOverlap.h.gz",
+    "snapshot_sha256": "6bfa9b1009b7aa0896a0342b7d69ba3ade0ed6518982ca0bd01b51f69529c0f7"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_RayAABBOverlap.h",
+    "source_sha256": "4a9ecc2bc316ba21461dc4e4b84b95d55d93c7882b7f748e92802908f18b0881",
+    "snapshot": "capture-source/scene-contact-members-x87-146-OPC_RayAABBOverlap.h.gz",
+    "snapshot_sha256": "ad4643b5c31dc70e58e0f01305b55dd197e898c1b90fe2ba90baf5e6a66fe518"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_RayCollider.cpp",
+    "source_sha256": "71deab65e69a2e4bc0978328989f685dcad728a476adab349dccbc759501dbec",
+    "snapshot": "capture-source/scene-contact-members-x87-147-OPC_RayCollider.cpp.gz",
+    "snapshot_sha256": "a02e553576f7bf8269c56148d7aaaa317858841586315ba82ae096284f67c250"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_RayCollider.h",
+    "source_sha256": "ec1670f4d973f98150ca08ea1496ac87b5b941312e521ff1b9281f8b376ec4c2",
+    "snapshot": "capture-source/scene-contact-members-x87-148-OPC_RayCollider.h.gz",
+    "snapshot_sha256": "bb5e58c8aec29b3acbbde6c56f36c1eb9a83bb82ec4c66d56dd66616493886dd"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_RayTriOverlap.h",
+    "source_sha256": "112980326c768455a1195c04bd7e5610ef2e908acbdd41f670f880cec098c917",
+    "snapshot": "capture-source/scene-contact-members-x87-149-OPC_RayTriOverlap.h.gz",
+    "snapshot_sha256": "7caef1bc0525c2e78f8e07aa35e32655c4c0ba038befe9a2dd234c932d1218b8"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_Settings.h",
+    "source_sha256": "76cc63c6e1b125562ef244904915b0b43d414e14176d092ddb01332a3817f607",
+    "snapshot": "capture-source/scene-contact-members-x87-150-OPC_Settings.h.gz",
+    "snapshot_sha256": "163b17a5177ab147cf02d4532b39dc31ac34d0ec3cdc21787ea3007af17e9f59"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_SphereAABBOverlap.h",
+    "source_sha256": "be27af7ff27fd1aca855fdb9e909d4d89ddd4f1ae03dd79e0ee23fe278733038",
+    "snapshot": "capture-source/scene-contact-members-x87-151-OPC_SphereAABBOverlap.h.gz",
+    "snapshot_sha256": "a15baa5179d2fce9610d37e00e65a3e672c37a98eb868d11a9cd130163b8053c"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_SphereCollider.h",
+    "source_sha256": "b8c0a840e426de0d71944d0f049dc5e0628c5f0d182ea57602dc29bfcaddf5b7",
+    "snapshot": "capture-source/scene-contact-members-x87-152-OPC_SphereCollider.h.gz",
+    "snapshot_sha256": "12e889e90500423489fbe08cab1cf82fc9cf20e4c69ca4ab6916ddf878351267"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_SphereTriOverlap.h",
+    "source_sha256": "2eef085926ae753f761316991b42fda7d38842960f44a4306db898b34d196a8b",
+    "snapshot": "capture-source/scene-contact-members-x87-153-OPC_SphereTriOverlap.h.gz",
+    "snapshot_sha256": "43a6db00c3d91ff8bf0a834f1ad10dc474f7b5c6e0afedd359c2fc5ce4bf20b3"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_SweepAndPrune.h",
+    "source_sha256": "34d7e11c0bc762e4c1d225924f8534635962bedfe8bcbe864ca49189b3b569cd",
+    "snapshot": "capture-source/scene-contact-members-x87-154-OPC_SweepAndPrune.h.gz",
+    "snapshot_sha256": "0e776f3ecee2716c5c6f23e6e25a4c6306c0fe2b1982574229c8369cec8e92e2"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_TreeBuilders.cpp",
+    "source_sha256": "6ad78e4324c2dde64016f39a7eb64822914109525cc232de9b963b27e0a11319",
+    "snapshot": "capture-source/scene-contact-members-x87-155-OPC_TreeBuilders.cpp.gz",
+    "snapshot_sha256": "658a258ff2f51dc387b089fef793356f3a252e714d3ce137ff1cde37ad2c2dc7"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_TreeBuilders.h",
+    "source_sha256": "1e19ead1103ea54886f2fdb676e1278967dfa58b7a721057cd30920c4b70fd7c",
+    "snapshot": "capture-source/scene-contact-members-x87-156-OPC_TreeBuilders.h.gz",
+    "snapshot_sha256": "de9dac2659c6d3457374699d0f4e42191e1e4228cfcf6b7bca0c1a4ce33c4194"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_TreeCollider.h",
+    "source_sha256": "12b7f7c84d3031692369cba13a821fc4de295deea8c546de3e8fdcac6fff2938",
+    "snapshot": "capture-source/scene-contact-members-x87-157-OPC_TreeCollider.h.gz",
+    "snapshot_sha256": "52f93129434ac1d24944d3773c08c7e01d324c1c29ce95db3b120fa652f54813"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_TriBoxOverlap.h",
+    "source_sha256": "ded1baf1e58531eae129509c7430badb055bde0695221e9c2d3e3a7ffef4d1d8",
+    "snapshot": "capture-source/scene-contact-members-x87-158-OPC_TriBoxOverlap.h.gz",
+    "snapshot_sha256": "c94193874b969be5c1da2bb34ab8f7067b9e6a99ed74ccc1177f903579f6e6d1"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/OPC_TriTriOverlap.h",
+    "source_sha256": "a120140f87d21f7556d6d32ac82496b62728683262ccf127ac67d0607d1c809d",
+    "snapshot": "capture-source/scene-contact-members-x87-159-OPC_TriTriOverlap.h.gz",
+    "snapshot_sha256": "bcde49396de190d2d6b6b1511bcb62f340d88286b12c3c6b2f5bb3a39a061456"
+  },
+  {
+    "source": "External/opcode/novodex/OPC_VolumeCollider.h",
+    "source_sha256": "6a937cd17320e3a8989bf1221e13d5ff1262c574e96abaf8c098e217b4f50b67",
+    "snapshot": "capture-source/scene-contact-members-x87-160-OPC_VolumeCollider.h.gz",
+    "snapshot_sha256": "185d106b868ccf99d659e99cf5e060dac990dc298f44021e200ee6bc48f65ce1"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/Opcode.h",
+    "source_sha256": "c5176bb2c17747dafd5a7800045d1c8d81ee1b7c0a84178f3aa98924edda6c2c",
+    "snapshot": "capture-source/scene-contact-members-x87-161-Opcode.h.gz",
+    "snapshot_sha256": "9f0ad491221fffe1497affd5035c910e3bbbb58816a9c4b4da790c1fe9852223"
+  },
+  {
+    "source": "External/opcode/novodex/OpcodeNovodeXHost.h",
+    "source_sha256": "741cadee0ca3e2667dd6e90ceeaefaa18f86764f3a028cacc0d97b6f10b28c95",
+    "snapshot": "capture-source/scene-contact-members-x87-162-OpcodeNovodeXHost.h.gz",
+    "snapshot_sha256": "be387770a615003068134d95db6a2a1b0b5031dd82409514b8ab727e658d859b"
+  },
+  {
+    "source": "External/opcode/upstream/Opcode/StdAfx.h",
+    "source_sha256": "5a51c0be826dd0118d18ca33064057d80d2f30617334dca04ee24a22a981987b",
+    "snapshot": "capture-source/scene-contact-members-x87-163-StdAfx.h.gz",
+    "snapshot_sha256": "bdb92becf21569768e0fb3dd2cd5421daa90c1a8d25b03fcb2f544398f136193"
+  },
+  {
+    "source": "tests/portable/SceneContactMemberTests.cpp",
+    "source_sha256": "ee6d3aeb3589b5aac7f8b8cbdd01c2b27b4200fb3474e57f53950d50aed7ccab",
+    "snapshot": "capture-source/scene-contact-members-x87-164-SceneContactMemberTests.cpp.gz",
+    "snapshot_sha256": "ecb5c78b9298d915a380233d029926c533885437133792fb2ebf04e509d70619"
+  },
+  {
+    "source": "tests/portable/SceneContactMemberTargets.cmake",
+    "source_sha256": "75a243af55fa1d7c68b231b7eb461d51dc23a42de01c8383954624ab2590ed55",
+    "snapshot": "capture-source/scene-contact-members-x87-165-SceneContactMemberTargets.cmake.gz",
+    "snapshot_sha256": "c6e5a21033419f1f9bf4a192a8452519cccaeac3427ebaf4592c7113ffc89549"
+  },
+  {
+    "source": "tests/portable/SceneContactMemberPlacementTests.py",
+    "source_sha256": "03ff0a9840e514b4ace21d09370d45fb6fbe939da17dd34cdd051473fe33c5d5",
+    "snapshot": "capture-source/scene-contact-members-x87-166-SceneContactMemberPlacementTests.py.gz",
+    "snapshot_sha256": "bc5cbe097ef307c13d153b990ee30acd2bbaf45856e95638326731878a9e2add"
+  },
+  {
+    "source": "Physics/src/include/NxSceneContactMembers.h",
+    "source_sha256": "82ba77d6c6e44c2eb2661c78c11578d60314162cabc0ef4c9e4c94369f4cf3fd",
+    "snapshot": "capture-source/scene-contact-members-x87-167-NxSceneContactMembers.h.gz",
+    "snapshot_sha256": "5b340b747d8c6510ce99c8a3c63f59e18b054fe84c4a711d8b22b56152a0016e"
+  },
+  {
+    "source": "Physics/src/Scene.cpp",
+    "source_sha256": "f37dfa1a8aa221367666930c5e0291404a3286f03c44613eeaf7bde03a0a4fdf",
+    "snapshot": "capture-source/scene-contact-members-x87-168-Scene.cpp.gz",
+    "snapshot_sha256": "792e39fa887b774b8cfa8094f6702c10f19bc75d8b824868e42de14ec30f6ba8"
+  },
+  {
+    "source": "Physics/src/include/Scene.h",
+    "source_sha256": "ef5ac447f64772282a491d6174f9bfe4a39d65510fe563dbf8d3e5039a5b017c",
+    "snapshot": "capture-source/scene-contact-members-x87-169-Scene.h.gz",
+    "snapshot_sha256": "8034cebd143551b4b0d333da7ab44410f863d626ddf9197f36ff1e062b09bec2"
+  },
+  {
+    "source": "Physics/src/Containers.cpp",
+    "source_sha256": "bf704b64085f32f64fabe60d44cef0a10be1950843964824c46f26883393a1b3",
+    "snapshot": "capture-source/scene-contact-members-x87-170-Containers.cpp.gz",
+    "snapshot_sha256": "152b7ad638e21bf439199511a8d3e85ba807531c79e01c9b5efbb071b2d0d3e0"
+  },
+  {
+    "source": "Physics/src/include/Containers.h",
+    "source_sha256": "344808dd01c5ccb0a05497384275330de0cf25a32dda4f3e3631d0235a18c888",
+    "snapshot": "capture-source/scene-contact-members-x87-171-Containers.h.gz",
+    "snapshot_sha256": "29f1ecc6fde03d3093f6339cf66ddc452891db8098cdea9e2f1ac98e997a8049"
+  }
+]

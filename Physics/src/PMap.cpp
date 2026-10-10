@@ -6,6 +6,10 @@
 |
 \*----------------------------------------------------------------------------*/
 #include "PMap.h"
+#include "NxPhysicsBackend.h"
+#if !NX_PHYSICS_USE_X87
+#include "portable/NxScalarGeometry.h"
+#endif
 
 #include "NxUserOutputStream.h"
 #include "TriangleMesh.h"
@@ -557,7 +561,11 @@ static void nxPMapNearestFace(const InternalTriangleMesh& mesh, const NxF32 poin
 static __declspec(noinline) NxF32 nxPMapCellCoordinate(NxU32 index, NxF32 unitsPerCell,
 	NxF32 halfExtent, NxF32 centre)
 	{
-	return (static_cast<NxF32>(index) * unitsPerCell - halfExtent) + centre;
+#if NX_PHYSICS_USE_X87
+    return (static_cast<NxF32>(index) * unitsPerCell - halfExtent) + centre;
+#else
+    return static_cast<NxF32>((static_cast<NxF32>(index) * double(unitsPerCell) - halfExtent) + centre);
+#endif
 	}
 
 // ---------------------------------------------------------------------------
@@ -645,8 +653,13 @@ bool PenetrationMap::setup(NxU32 resolution, const NxF32* bounds)
 
 	for(int axis = 0; axis < 3; ++axis)
 		{
-		mCentre[axis] = (mMax[axis] + mMin[axis]) * 0.5f;
-		mHalfExtents[axis] = (mMax[axis] - mMin[axis]) * 0.5f;
+#if NX_PHYSICS_USE_X87
+        mCentre[axis] = (mMax[axis] + mMin[axis]) * 0.5f;
+        mHalfExtents[axis] = (mMax[axis] - mMin[axis]) * 0.5f;
+#else
+        mCentre[axis] = static_cast<NxF32>((double(mMax[axis]) + mMin[axis]) * 0.5);
+        mHalfExtents[axis] = static_cast<NxF32>((double(mMax[axis]) - mMin[axis]) * 0.5);
+#endif
 		mExtents[axis] = mMax[axis] - mMin[axis];
 		}
 	for(int axis = 0; axis < 3; ++axis)
@@ -656,7 +669,11 @@ bool PenetrationMap::setup(NxU32 resolution, const NxF32* bounds)
 		// the float-rounded mInvLastIndex stored at +0x68. Keeping the reciprocal
 		// in the x87 register through the multiply avoids a one-ULP grid-scale
 		// difference on resolutions such as 64.
-		mUnitsPerCell[axis] = (1.0f / mLastIndex) * mExtents[axis];
+#if NX_PHYSICS_USE_X87
+        mUnitsPerCell[axis] = (1.0f / mLastIndex) * mExtents[axis];
+#else
+        mUnitsPerCell[axis] = static_cast<NxF32>((1.0 / mLastIndex) * mExtents[axis]);
+#endif
 		}
 
 	// `imul edi,ecx` at 0x000500b6 makes the third power out of the square, and
@@ -1203,6 +1220,7 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 							}
 						if(direction[0] != 0.0f || direction[1] != 0.0f || direction[2] != 0.0f)
 							{
+#if NX_PHYSICS_USE_X87
 							const NxF32 one = 1.0f;
 							// FUN_1004e5d0 sums z², y², then x² in extended x87
 							// precision, and keeps 1/sqrt(sum) extended while storing
@@ -1230,6 +1248,9 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 								fstp dword ptr [direction + 8]
 								fstp st(0)
 								}
+#else
+							nxScalarNormalizeDirection3(direction);
+#endif
 							}
 						const Ray ray(Point(point[0], point[1], point[2]),
 							Point(direction[0], direction[1], direction[2]));
@@ -1242,11 +1263,19 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 				if(inside)
 					mGrid[index] = nearestFace;
 
-				const NxI32 radius[3] = {
-					static_cast<NxI32>(nearbyint(distance * mCellsPerUnit[0])),
-					static_cast<NxI32>(nearbyint(distance * mCellsPerUnit[1])),
-					static_cast<NxI32>(nearbyint(distance * mCellsPerUnit[2]))
-					};
+#if NX_PHYSICS_USE_X87
+                const NxI32 radius[3] = {
+                    static_cast<NxI32>(nearbyint(distance * mCellsPerUnit[0])),
+                    static_cast<NxI32>(nearbyint(distance * mCellsPerUnit[1])),
+                    static_cast<NxI32>(nearbyint(distance * mCellsPerUnit[2]))
+                    };
+#else
+                const NxI32 radius[3] = {
+                    static_cast<NxI32>(nearbyint(double(distance) * mCellsPerUnit[0])),
+                    static_cast<NxI32>(nearbyint(double(distance) * mCellsPerUnit[1])),
+                    static_cast<NxI32>(nearbyint(double(distance) * mCellsPerUnit[2]))
+                };
+#endif
 				const NxI32 low[3] = {
 					static_cast<NxI32>(x) - radius[0], static_cast<NxI32>(y) - radius[1],
 					static_cast<NxI32>(z) - radius[2]
@@ -1270,7 +1299,11 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 								mUnitsPerCell[2], mHalfExtents[2], mCentre[2]) - point[2];
 							// FUN_10050640 tests z, then y, then x; reversing the sum can
 							// change a propagated classification at the surface threshold.
-							if((dz * dz + dy * dy) + dx * dx < distance * distance)
+#if NX_PHYSICS_USE_X87
+                            if((dz * dz + dy * dy) + dx * dx < distance * distance)
+#else
+                            if((double(dz) * dz + double(dy) * dy) + double(dx) * dx < double(distance) * distance)
+#endif
 								classified[neighbor] = static_cast<NxU8>(inside ? 2 : 1);
 							}
 				}
@@ -1312,11 +1345,19 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 					const NxU32 cx = corner % mResolution;
 					const NxU32 cy = (corner / mResolution) % mResolution;
 					const NxU32 cz = corner / mResolutionSquared;
-					const NxF32 point[3] = {
-						(static_cast<NxF32>(cx) * mUnitsPerCell[0] - mHalfExtents[0]) + mCentre[0],
-						(static_cast<NxF32>(cy) * mUnitsPerCell[1] - mHalfExtents[1]) + mCentre[1],
-						(static_cast<NxF32>(cz) * mUnitsPerCell[2] - mHalfExtents[2]) + mCentre[2]
-						};
+#if NX_PHYSICS_USE_X87
+                    const NxF32 point[3] = {
+                        (static_cast<NxF32>(cx) * mUnitsPerCell[0] - mHalfExtents[0]) + mCentre[0],
+                        (static_cast<NxF32>(cy) * mUnitsPerCell[1] - mHalfExtents[1]) + mCentre[1],
+                        (static_cast<NxF32>(cz) * mUnitsPerCell[2] - mHalfExtents[2]) + mCentre[2]
+                        };
+#else
+                    const NxF32 point[3] = {
+                        nxPMapCellCoordinate(cx, mUnitsPerCell[0], mHalfExtents[0], mCentre[0]),
+                        nxPMapCellCoordinate(cy, mUnitsPerCell[1], mHalfExtents[1], mCentre[1]),
+                        nxPMapCellCoordinate(cz, mUnitsPerCell[2], mHalfExtents[2], mCentre[2])
+                    };
+#endif
 					NxU32 face;
 					NxF32 distanceSquared;
 						nxPMapNearestFace(*source, point, pmapModel, faceOrder, face, distanceSquared);

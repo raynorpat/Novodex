@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "scope": "Task5e full actual Geometry/vendor inflated triangle fan; no full engine/contact/native/fenv claim",
+  "reference_capture": "triangle-fan-nearest-x87.json",
+  "reference_fixture_sha256": "beec155adcc4425e0bca5cb9d0b794ea36ed91495b4ab526830411770d04ff89",
+  "reference_revision": "3adefb1da427e79d13bd90bad6cf481e986551b1",
+  "control_proof": "triangle-fan-control-proof.json",
+  "control_proof_derivation": "triangle-fan-control-proof-derivation.json",
+  "excluded_diagnostic": "triangle-fan-domain-x87-disposition.json",
+  "typed_contract": {
+    "declaration": "bool __cdecl NxRayInflatedTriangleFan(NxU32 count,const NxVec3* vertices,const NxU32* indices,const NxRay* ray,NxReal* t)",
+    "original_producer": "ContactConvexHeightfield.cpp original001822 RVA41581..415a7 pushes t/ray/indices/vertices/count and cleans20 bytes",
+    "count2": "false before all pointer reads/output writes, unused null pointers exercised",
+    "count3plus": "count-2 triangles with retained hub indices[0], sequential index pairs, actual Inflate(.02f,false), actual nonculled RayTri; first hit including negative t; misses leave t untouched",
+    "storage": "genuine automatic IceMaths::Triangle under backend0 with actual Point fields and genuine NxVec3 output corner objects; entire backend1 function exact"
+  },
+  "domain": {
+    "groups": 3072,
+    "observations": 197888,
+    "meshes": 8,
+    "vertex_words": 192,
+    "vertex_coordinate_range": [
+      -3.0,
+      4.0
+    ],
+    "vertex_shapes": [
+      "unit square",
+      "translated square",
+      "nonuniform4:.125 scale",
+      "tilted z=x+.5y",
+      "literal decimal shear/translation",
+      "noncoplanar overlapping fan",
+      "collinear",
+      "coincident"
+    ],
+    "index_inputs": 12,
+    "counts": [
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "windings": "both; repeated hub/adjacent/repeated triangle indices and nonzero index hub",
+    "rays_per_mesh": 32,
+    "ray_origin_range": [
+      -3.0,
+      8.0
+    ],
+    "direction_component_range": [
+      -2.0,
+      2.0
+    ],
+    "ray_classes": [
+      "vertex/rim/interior/outside",
+      "first triangle miss then later hit",
+      "first hit precedes a nearer hit",
+      "adjacent binary32 inflation-edge neighbors",
+      "adjacent tiny direction/epsilon probes",
+      "zero/parallel/signedzero/subnormal components",
+      "positive and negative parameters",
+      "nonunit direction scales"
+    ],
+    "all_inputs": "literal checked-in binary32 words; no runtime random or transforms",
+    "output_reuse": "two distinct finite initial sentinels, same borrowed arrays/ray/output location",
+    "trace": "actual per-triangle Center/Inflate/RayTri outputs and changed-word masks; actual fan first identity/boolean/parameter; guarded RayTri and fan output/input arrays"
+  },
+  "quantities": [
+    {
+      "id": 1,
+      "unit": "world length",
+      "values": "vendor Center and inflated coordinates",
+      "count": 70656,
+      "observed_range": [
+        -3.013333320617676,
+        4.053333282470703
+      ],
+      "absolute_budget": 0,
+      "relative_budget": 0
+    },
+    {
+      "id": 2,
+      "unit": "ray parameter: world length per direction coordinate unit; no unit direction assumption",
+      "values": "successful fan and direct RayTri t",
+      "count": 4464,
+      "observed_range": [
+        -3.750000238418579,
+        3750000.25
+      ],
+      "absolute_budget": 0,
+      "relative_budget": 0
+    },
+    {
+      "id": 3,
+      "unit": "dimensionless barycentric",
+      "values": "direct RayTri u/v, including defined partial miss writes that need not lie within0..1",
+      "count": 5348,
+      "observed_range": [
+        -119.8464126586914,
+        75.9869384765625
+      ],
+      "absolute_budget": 0,
+      "relative_budget": 0
+    }
+  ],
+  "approval": "Controller explicitly approved exact abs0/rel0 words and independent exact decisions/zeros/signs/write masks/canaries after corrected nearest pretranslation measurements; no budget widening",
+  "configurations": {
+    "release": {
+      "groups": 3072,
+      "observations": 197888,
+      "hits": 1289,
+      "misses": 1783,
+      "later_hits": 417,
+      "first_before_nearest": 77,
+      "discrete_differences": 0,
+      "numeric_word_differences": [
+        0,
+        0,
+        0
+      ],
+      "maximum_absolute_errors": [
+        0,
+        0,
+        0
+      ],
+      "maximum_relative_errors": [
+        0,
+        0,
+        0
+      ],
+      "failures": 0,
+      "measurement_log_sha256": "8a1bb3b2ddc49e24b7f80838b8af4f058f966608480636dacccb228c07abab51"
+    },
+    "debug": {
+      "groups": 3072,
+      "observations": 197888,
+      "hits": 1289,
+      "misses": 1783,
+      "later_hits": 417,
+      "first_before_nearest": 77,
+      "discrete_differences": 0,
+      "numeric_word_differences": [
+        0,
+        0,
+        0
+      ],
+      "maximum_absolute_errors": [
+        0,
+        0,
+        0
+      ],
+      "maximum_relative_errors": [
+        0,
+        0,
+        0
+      ],
+      "failures": 0,
+      "measurement_log_sha256": "8a1bb3b2ddc49e24b7f80838b8af4f058f966608480636dacccb228c07abab51"
+    },
+    "clang": {
+      "groups": 3072,
+      "observations": 197888,
+      "hits": 1289,
+      "misses": 1783,
+      "later_hits": 417,
+      "first_before_nearest": 77,
+      "discrete_differences": 0,
+      "numeric_word_differences": [
+        0,
+        0,
+        0
+      ],
+      "maximum_absolute_errors": [
+        0,
+        0,
+        0
+      ],
+      "maximum_relative_errors": [
+        0,
+        0,
+        0
+      ],
+      "failures": 0,
+      "measurement_log_sha256": "8a1bb3b2ddc49e24b7f80838b8af4f058f966608480636dacccb228c07abab51"
+    }
+  },
+  "source_sha256": {
+    "Physics/src/Geometry.cpp": "255e5e65e2ae4a8af2e729bd104af731350b4db3affab8d3fff336ae279cf1ef",
+    "Physics/src/include/NxGeometryHelpers.h": "b3c5683c29d4373bcb96a8ba373a9d82968884c9abf8a24d451896bb34f0d898",
+    "tests/portable/TriangleFanTests.cpp": "a81393f8e6d3b296b85a621d6eb17d9cafcd54b38541827a811d65c877e29f02",
+    "tests/portable/TriangleFanDomainInputs.h": "b73d012c8f4c3e9d30e34ccfc345711131f3c287bd8ee90d72dcd6f4d3cd0152",
+    "tests/portable/TriangleFanTargets.cmake": "19c84dd4ae6c29ff738c0aff8fa5fa7c0a4379bf69e34277fbf0ff867c6d4a4e",
+    "tests/portable/test_triangle_fan_lifetime.py": "d92f83a835a32de3a247b9b54f56f83a743ffff9fa66c3f481d881c80aefe194",
+    "tests/portable/CMakeLists.txt": "a2194732818fea15ce9d844b3ee9266f03ee06dcdf90b720dfb4a64016ea21d6",
+    "docs/reconstruction/novodex-physics/tools/capture_triangle_fan.py": "bb35e9b8eed58a0bc6909d73f8430798e5b71700d1a8c98803a97d98b2e77d42",
+    "docs/reconstruction/novodex-physics/tools/capture_scalar_math.py": "3f1298c4b1294d1db6fb85f2cd26aadc5f3550ae9045641ea1185ba96919fe99",
+    "cmake/NxPhysicsBackend.cmake": "883676e8fecae7983d7f2efe5eb87111cd92ee3585dcb66bca05794d3e8db52b"
+  },
+  "exclusions": {
+    "historical_undefined": "count<2 unsigned loop/OOB; out-of-range indices; active null ray/output/vertex/index pointers",
+    "unmeasured_private_numeric": "nonfinite NaN payload/sign propagation and infinities; finite extreme coordinates/directions causing overflow are not valid full-geometry claims",
+    "not_excluded": "bounded finite repeated/coincident/collinear triangles, count2, zero/parallel/tiny/subnormal directions and negative parameters are covered",
+    "later_owning_gates": [
+      "complete convex/contact functions and full scratch lifecycle",
+      "full production SDK and genuine nonnull SDK integration",
+      "full fenv/precision64/chop policy",
+      "native pointer/layout/platform integration"
+    ]
+  },
+  "verification": {
+    "focused": "MSVC Win32 Release2/2,Debug2/2; Clang22.1.8Win32Release2/2",
+    "full_relevant_standalone": "21/21 Release,70.17sec",
+    "legacy": "Geometry staged oracle/candidate exit0/stdoutdelta0/stderrexact; Collision matrix_wrong0/index_wrong0/mismatches0; ThirdParty116families2615055words47layouts/mismatch0/layoutfailures0,existing26divergent classifications retained",
+    "source_lifetime_red": "Compiler-preprocessed actual backend0 source rejects historical unrelated-storage Triangle method cast; numeric pretranslation output already exact and not claimed as failing RED",
+    "source_lifetime_green": "Compiler-preprocessed actual backend0 source lacks historical cast; true Triangle lifetime manually audited and actual full-source fixtures execute it",
+    "wrong_rounding_red_claim": false,
+    "guard": "root NxPhysicsPortableMigrationGuard remains and fails as expected; immutable destination recapture refused",
+    "current_reference": "byte-identical nearest fixture and retained original full fan body/3Geometry asm blocks/vendor input/source profiles verified"
+  }
+}

@@ -48,6 +48,7 @@
 
 #include "NxBoxDistance.h"
 #include "NxTriangleDistance.h"
+#include "NxPhysicsBackend.h"
 
 #include <math.h>
 
@@ -1344,6 +1345,7 @@ static __declspec(noinline) int nxSegmentTriangleRegion(const NxSegmentTriangleT
 // [esp+0x14] (before t is stored over it), cof01 [esp+0x30], cof12 [esp+0xac].
 static __declspec(noinline) NxReal nxSegmentTriangleInterior(const NxSegmentTriangleTerms* k)
 	{
+#if NX_PHYSICS_USE_X87
 	NxReal squared;
 	__asm
 		{
@@ -1417,6 +1419,20 @@ static __declspec(noinline) NxReal nxSegmentTriangleInterior(const NxSegmentTria
 		fstp	st(0)
 		}
 	return squared;
+#else
+	// The interior s remains wide; it is reconstructed from the stored terms,
+	// rather than reloading the separately rounded output parameter.
+	const double s = (((k->a22 * (double) k->a00 - k->a02 * (double) k->a02) * k->rhs1
+		+ k->rhs2 * (double) k->cof12) + k->rhs0 * (double) k->cof01);
+	const double tTerm = (((k->t * (double) k->a22 + s * k->a12) + k->r * (double) k->a02)
+		+ (k->b2 + (double) k->b2)) * k->t;
+	const double sTerm = (((k->t * (double) k->a12 + s * k->a11) + k->r * (double) k->a01)
+		+ (k->b1 + (double) k->b1)) * s;
+	const double rTerm = (((k->t * (double) k->a02 + s * k->a01) + k->r * (double) k->a00)
+		+ (k->b0 + (double) k->b0)) * k->r;
+	return (NxReal) ((((tTerm + sTerm) + rTerm) + k->diff[2] * (double) k->diff[2]
+		+ k->diff[1] * (double) k->diff[1]) + k->diff[0] * (double) k->diff[0]);
+#endif
 	}
 
 // (origin, origin + edge), the far end narrowed per component.

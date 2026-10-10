@@ -1,0 +1,812 @@
+[
+  {
+    "source": "tests/portable/ExportShippedSceneActorIds.cpp",
+    "source_sha256": "f3821c3e4c66dbaba1b3ced990f3da45637870737673711350d116f285d43130",
+    "snapshot": "capture-source/scene-actor-ids-x87-0-ExportShippedSceneActorIds.cpp.gz",
+    "snapshot_sha256": "f7517c1695eb672f892d21527b57093a5a27d6f0d9c2bb1f57959fe18dfc1256"
+  },
+  {
+    "source": "tests/portable/SceneActorIdDomain.h",
+    "source_sha256": "611378c82e18f0b93cfd3e000d59ea647b98c7a09aa976a2aee2f0e753030794",
+    "snapshot": "capture-source/scene-actor-ids-x87-1-SceneActorIdDomain.h.gz",
+    "snapshot_sha256": "cec9beba0d3d75f545a9920750e1b1be416e4b3f67e119752efc84e1432f4ec9"
+  },
+  {
+    "source": "tests/portable/SceneVisitedGuardAllocator.h",
+    "source_sha256": "89ea57bec8e6a83f512075c95f5e63baf8159d4051c149538a90ba4d815a4f5c",
+    "snapshot": "capture-source/scene-actor-ids-x87-2-SceneVisitedGuardAllocator.h.gz",
+    "snapshot_sha256": "6441cae37ff6ff40ce7d2a76f80068fb9bcd9bf35df51abdf06ad40d8327e82b"
+  },
+  {
+    "source": "tests/PhysicsPairLoader.h",
+    "source_sha256": "c75a957e4854e17a069cdfab1bf2546d02d7b43a139bebd2cf48bb6bf85ba581",
+    "snapshot": "capture-source/scene-actor-ids-x87-3-PhysicsPairLoader.h.gz",
+    "snapshot_sha256": "a641da8c1ea7c83f877c0a49d7627d9909e8c0ec2f8f5fc5dc9c29e1bf9ce528"
+  },
+  {
+    "source": "tests/portable/SceneActorIdPlacementTests.py",
+    "source_sha256": "385a4d6e0364049459a84603793cb409a06f43333ca76b101ee46158dedcc2b8",
+    "snapshot": "capture-source/scene-actor-ids-x87-4-SceneActorIdPlacementTests.py.gz",
+    "snapshot_sha256": "ca52136097977a46d5c03d79a0b1025a7bed19c40f57bce4101e2f0b800cb966"
+  },
+  {
+    "source": "tests/portable/SceneActorIdTargets.cmake",
+    "source_sha256": "1a0a3091f0248a9a0192b72744fe37f413f96ae01880ae7602210fbff58cc05e",
+    "snapshot": "capture-source/scene-actor-ids-x87-5-SceneActorIdTargets.cmake.gz",
+    "snapshot_sha256": "590821445434199cc60a066cc2eaec70e7a5423f08a657801d7aad13aa8d90c1"
+  },
+  {
+    "source": "tests/portable/CMakeLists.txt",
+    "source_sha256": "a32c52377758d11c8c612f48b21e10d2c13ae3cf9e243eefd98f79341e9e1815",
+    "snapshot": "capture-source/scene-actor-ids-x87-6-CMakeLists.txt.gz",
+    "snapshot_sha256": "885fae033cc95cd8dc15152520c3a0146d4f52dc416e318806cca94f3a02edec"
+  },
+  {
+    "source": "Physics/src/Scene.cpp",
+    "source_sha256": "6305f3c7841834e6bd689923c9f8b749c71a9c5d9fbbcee1ccee0c1c6efdb3cc",
+    "snapshot": "capture-source/scene-actor-ids-x87-7-Scene.cpp.gz",
+    "snapshot_sha256": "3b9f7503cdb74b4028503e33994ed8bfa46266c1e2df7d9b06733a4d46f9a7ae"
+  },
+  {
+    "source": "Physics/src/include/Scene.h",
+    "source_sha256": "d3eb70741069a65bc5142bd9d36edd44f1ce4e7493c9f08130e0c3710dc6e849",
+    "snapshot": "capture-source/scene-actor-ids-x87-8-Scene.h.gz",
+    "snapshot_sha256": "d72283a6529d5e7d24c2755af6b806cdef7299aff4a7a4d238a2d844b577017d"
+  },
+  {
+    "source": "Physics/src/ObjectModel.cpp",
+    "source_sha256": "33da31065141a7ed291b957147e5660731ee9bb95eaa96f534f9239b0484ed47",
+    "snapshot": "capture-source/scene-actor-ids-x87-9-ObjectModel.cpp.gz",
+    "snapshot_sha256": "a0a268985ffc47ceae71ca923cb802b4877abad8caa6c7e2b21f9502d1ff5ca5"
+  },
+  {
+    "source": "Physics/src/NpActor.cpp",
+    "source_sha256": "3d9415ab62b8757fd89ed6f780c57d33b6aa06c89fd5957c4f17b00adbea29d6",
+    "snapshot": "capture-source/scene-actor-ids-x87-10-NpActor.cpp.gz",
+    "snapshot_sha256": "3835ef792204f96f23ebbc46a557ccbde1cb8499b5a32a22d3213e25de2f3a9c"
+  },
+  {
+    "source": "Physics/src/include/NpActor.h",
+    "source_sha256": "47000094b915e99a9a024da4b371c49884a34a5da53f24e6784454e65951a0b8",
+    "snapshot": "capture-source/scene-actor-ids-x87-11-NpActor.h.gz",
+    "snapshot_sha256": "6df025f8e58f134882baee71737c427964d5d8628040442d778e9c94723e4a86"
+  },
+  {
+    "source": "Physics/src/NpScene.cpp",
+    "source_sha256": "ead9fec0991436df6b8116a5346a792752eebd3ad5dee8159fcb8d7e0ec5c20b",
+    "snapshot": "capture-source/scene-actor-ids-x87-12-NpScene.cpp.gz",
+    "snapshot_sha256": "9a095ec9a76783fa6fa973ed5ea0cce624fc0282c6664f25e74adb084851e6b9"
+  },
+  {
+    "source": "Physics/src/include/NpScene.h",
+    "source_sha256": "d226b9b4c85a67cc87bb7ce7361f9d92ac1ee22c590f97685597ce8c7393649c",
+    "snapshot": "capture-source/scene-actor-ids-x87-13-NpScene.h.gz",
+    "snapshot_sha256": "b9a58114982f671d38921522f82fe5aa0afec41916f98cdc1b58f21f459e15ce"
+  },
+  {
+    "source": "docs/reconstruction/novodex-physics/tools/capture_scene_actor_ids.py",
+    "source_sha256": "26eeae7defc6b294e562d12177d27094bbb516689874620e9e82b475dea52d2a",
+    "snapshot": "capture-source/scene-actor-ids-x87-14-capture_scene_actor_ids.py.gz",
+    "snapshot_sha256": "f6354e9aa9842b2f5f17fec1cace16d167e4d73fb0a05f334dd278ac00bf3310"
+  },
+  {
+    "source": ".superpowers/sdd/2026-10-09-nxphysics-portable-scalar/task-5f2t-authoritative-actor.json",
+    "source_sha256": "b99a7df7ac68bad899affa7d5da876a8474e5551e4d08ee6be4e1714a40cc783",
+    "snapshot": "capture-source/scene-actor-ids-x87-15-task-5f2t-authoritative-actor.json.gz",
+    "snapshot_sha256": "b9ef023581d0e512d3cca01467388bdf24396736b1ae033e184cb84abb576f48"
+  },
+  {
+    "source": ".superpowers/sdd/2026-10-09-nxphysics-portable-scalar/task-5f2t-authoritative-actor-id-pool.json",
+    "source_sha256": "fd8db45f1b6a0c154dfdb3936f3e54469d8853cce2b51dc504d31613ff3494a0",
+    "snapshot": "capture-source/scene-actor-ids-x87-16-task-5f2t-authoritative-actor-id-pool.json.gz",
+    "snapshot_sha256": "acfa47177407e0de56102d7c81610bb100c038e31086e9396a54dbe980368447"
+  },
+  {
+    "source": ".superpowers/sdd/2026-10-09-nxphysics-portable-scalar/task-5f2t-scoped-brief.md",
+    "source_sha256": "ba4b188c50646f0bb62a17c9dc9117755ec7b7a1e6f3e6cd60eea64d0628523b",
+    "snapshot": "capture-source/scene-actor-ids-x87-17-task-5f2t-scoped-brief.md.gz",
+    "snapshot_sha256": "333ec19f8ab0113c68d10c02a5be5bee02485ed5c2a95fb265430c8e59df1eb1"
+  },
+  {
+    "source": "Physics/include/NxActor.h",
+    "source_sha256": "8fe75fe4978c45480e2eb7154b50857908bef9d57241f8a977d0c518b7f4d721",
+    "snapshot": "capture-source/scene-actor-ids-x87-18-NxActor.h.gz",
+    "snapshot_sha256": "1707bad4c3b63ea44de835e74ebe1ca0c67e1e1fc1086edb367c99c185178850"
+  },
+  {
+    "source": "Physics/include/NxActorDesc.h",
+    "source_sha256": "90ecad9b4735e70e09d68e8a6fd67108f2831dacbfb80817388acf15dcfde6c2",
+    "snapshot": "capture-source/scene-actor-ids-x87-19-NxActorDesc.h.gz",
+    "snapshot_sha256": "df1e4b29a8896fe7a25c771d5b243bb892c369a4f08d7aa5168cdc1ae45be7da"
+  },
+  {
+    "source": "Physics/include/NxBodyDesc.h",
+    "source_sha256": "c9d2d7e9d0573e71a41e042f37a267d2ce9e654d15d3c07fc46f8c4bcbde159a",
+    "snapshot": "capture-source/scene-actor-ids-x87-20-NxBodyDesc.h.gz",
+    "snapshot_sha256": "cab8d115836e2a9ae5f2418bebcd736e1bce921749cce124219035de4f9a164d"
+  },
+  {
+    "source": "Physics/include/NxBoxShape.h",
+    "source_sha256": "534ccf36619d87dc4aaea9f134b8a3df4b5704324dd26f3e895b6b7ba3f746c9",
+    "snapshot": "capture-source/scene-actor-ids-x87-21-NxBoxShape.h.gz",
+    "snapshot_sha256": "36ec7ed47738f41fa6a3574892afa72a3eb5379374ae91b8a19192510da0cad9"
+  },
+  {
+    "source": "Physics/include/NxBoxShapeDesc.h",
+    "source_sha256": "4cc3466ae1a2e475d45ad62a1fbd484acd50d4c80f2ce5ded49ef67c92166dc4",
+    "snapshot": "capture-source/scene-actor-ids-x87-22-NxBoxShapeDesc.h.gz",
+    "snapshot_sha256": "2fc12409fa7bc010a9bd92bf59edb6ab096ee5b6ba4636385f40240a94d001bf"
+  },
+  {
+    "source": "Physics/include/NxCapsuleShape.h",
+    "source_sha256": "591775a68906c6d3b6c4ee82b4e07c47b5af12c44e083fe3f0ff569d4a49080b",
+    "snapshot": "capture-source/scene-actor-ids-x87-23-NxCapsuleShape.h.gz",
+    "snapshot_sha256": "80627b1aacc3dae52b926d1a2014ed7c8f9206452a71560ba3515d54a5587e7e"
+  },
+  {
+    "source": "Physics/include/NxCapsuleShapeDesc.h",
+    "source_sha256": "91f7efb7b77da5f89a362a665506f9f78329015d6727106d4f70e37ee3bef2da",
+    "snapshot": "capture-source/scene-actor-ids-x87-24-NxCapsuleShapeDesc.h.gz",
+    "snapshot_sha256": "1bfa5f1cc6f8c1f136f39fe76ea88f7f8dbc2ea36004f34eec7a834fda34d45b"
+  },
+  {
+    "source": "Physics/include/NxContactStreamIterator.h",
+    "source_sha256": "25b10bb4111ee8de8e7888e7befd89af3a2f6cbceb681c30b441073ead5e532f",
+    "snapshot": "capture-source/scene-actor-ids-x87-25-NxContactStreamIterator.h.gz",
+    "snapshot_sha256": "30df1c46e5e07649ac278ecb9816a85bd36e9ba0d66dad313beff5b39630c778"
+  },
+  {
+    "source": "Physics/include/NxConvexHull.h",
+    "source_sha256": "0fe23a17743b377619dc017b61d9f91604de2710978a3834a13bdb0336df51a0",
+    "snapshot": "capture-source/scene-actor-ids-x87-26-NxConvexHull.h.gz",
+    "snapshot_sha256": "1c9a22b0f270f343252fc695a3f4b5c07a575548ae10f8fe478361753e109f8a"
+  },
+  {
+    "source": "Physics/include/NxCylindricalJoint.h",
+    "source_sha256": "9cb19bab130132381804ed7ab7480f6843e37918fe4d3d2aa0ca8badde8a9b19",
+    "snapshot": "capture-source/scene-actor-ids-x87-27-NxCylindricalJoint.h.gz",
+    "snapshot_sha256": "a4b1bb01902ae749ad050331075f9baa67e1cfd3e4d76d99a8225fccfb15ad3b"
+  },
+  {
+    "source": "Physics/include/NxCylindricalJointDesc.h",
+    "source_sha256": "562cfa523a560b7a24919f1cb6413ead1e5f403bef31fe3e849e0d9d60ac8e73",
+    "snapshot": "capture-source/scene-actor-ids-x87-28-NxCylindricalJointDesc.h.gz",
+    "snapshot_sha256": "b1d6709547a78e94ae17aa9f981ef1de162f7f1539440d5663ae44639a761835"
+  },
+  {
+    "source": "Physics/include/NxD6Joint.h",
+    "source_sha256": "e813146465e2ff5dd8eb8256807a61483dafeddd1f16bcd4100cb34c627d63ea",
+    "snapshot": "capture-source/scene-actor-ids-x87-29-NxD6Joint.h.gz",
+    "snapshot_sha256": "7fd5a8a257758c517af13a5d706ce6af65e7e57ab1d78d9290198bcbd9f9c59e"
+  },
+  {
+    "source": "Physics/include/NxD6JointDesc.h",
+    "source_sha256": "e72b8f59b5304e9938561b1ed3a2fb83ae3ec3ef5be9991530a7f2d9c7d8741a",
+    "snapshot": "capture-source/scene-actor-ids-x87-30-NxD6JointDesc.h.gz",
+    "snapshot_sha256": "9b36ac782afa40abc6f92a398a6d6e85d87ee1795ef5eae5afaccc3b57e305fe"
+  },
+  {
+    "source": "Physics/include/NxDistanceJoint.h",
+    "source_sha256": "a71e87e4344412c90641d2f7b4042ca4b279c44c401a8aa50e397309f25783af",
+    "snapshot": "capture-source/scene-actor-ids-x87-31-NxDistanceJoint.h.gz",
+    "snapshot_sha256": "637f0657b78b5da54d85bbbb8a7f0da2f4b9df4689089b90dc8adef79faca538"
+  },
+  {
+    "source": "Physics/include/NxDistanceJointDesc.h",
+    "source_sha256": "271b5008637dc667aaefe27e339abb919c1d22ad3d70e91aa682885457f3728a",
+    "snapshot": "capture-source/scene-actor-ids-x87-32-NxDistanceJointDesc.h.gz",
+    "snapshot_sha256": "06c36ceb824b5bc0a42712c0266599da74bf978ed13a320750b2daec0ed249bc"
+  },
+  {
+    "source": "Physics/include/NxDistanceTriangleTriangle.h",
+    "source_sha256": "d397df569705178047163fbdb6e645ddafd98cf0113d4b056b43cc00b2edc5d9",
+    "snapshot": "capture-source/scene-actor-ids-x87-33-NxDistanceTriangleTriangle.h.gz",
+    "snapshot_sha256": "c9a442bc56239022f87d448992e8c2e4f7b4d467cf7c995ccaae73cc75217805"
+  },
+  {
+    "source": "Physics/include/NxEffector.h",
+    "source_sha256": "eaad7e1df663dda6d2b3a1264de7e14c057ccf43aabb0e5eaa79847c0ef6a165",
+    "snapshot": "capture-source/scene-actor-ids-x87-34-NxEffector.h.gz",
+    "snapshot_sha256": "4153da0d2963b7926059f47b3f5e907c8b4c3e1e690637e7a4e54f8d45669795"
+  },
+  {
+    "source": "Physics/include/NxFixedJoint.h",
+    "source_sha256": "8ae7de135060a8dd5d5675573d921cf9176ab6e8de217ba87c697f02f77774e2",
+    "snapshot": "capture-source/scene-actor-ids-x87-35-NxFixedJoint.h.gz",
+    "snapshot_sha256": "8bf8e768eaad5c5f60f69f66cfd6d675820af66561ff2b1dc8ad07e4c9751094"
+  },
+  {
+    "source": "Physics/include/NxFixedJointDesc.h",
+    "source_sha256": "0f4022870d00e9fc507e4e38d0eceeb6b6abb3cdf3a5e7162c3d13523e276f67",
+    "snapshot": "capture-source/scene-actor-ids-x87-36-NxFixedJointDesc.h.gz",
+    "snapshot_sha256": "3a2c3b37b7639909f3eee53aeed26d4658e027e92060f43fa65321f817fae8e9"
+  },
+  {
+    "source": "Physics/include/NxInertiaTensor.h",
+    "source_sha256": "ea0f303753992b27f00164262a6e5de2432e25157d3203cacd63043886a69851",
+    "snapshot": "capture-source/scene-actor-ids-x87-37-NxInertiaTensor.h.gz",
+    "snapshot_sha256": "7599c462daeb1cc731c9028546d56182d0d5d9c33dbc56a5ef98c10cc9a2c728"
+  },
+  {
+    "source": "Physics/include/NxIntersectionBoxBox.h",
+    "source_sha256": "f911404321122d8c17754271a746d99ed0106d3ec633bdea45332cd4f5b3a790",
+    "snapshot": "capture-source/scene-actor-ids-x87-38-NxIntersectionBoxBox.h.gz",
+    "snapshot_sha256": "9dab997023da35fa37b74093bededf9d5ddd4be36bd7fa9af1e0ab02079f1853"
+  },
+  {
+    "source": "Physics/include/NxIntersectionPointTriangle.h",
+    "source_sha256": "5ca59f2eaa3e0b33e342968c44cad05baa91642784e621ca91fd6f8d8cd59ca7",
+    "snapshot": "capture-source/scene-actor-ids-x87-39-NxIntersectionPointTriangle.h.gz",
+    "snapshot_sha256": "444c26164505920d0ac8341fc0ed23db23a7615c851c51910d399b589be65567"
+  },
+  {
+    "source": "Physics/include/NxIntersectionRayPlane.h",
+    "source_sha256": "fa425eccf68290ec567ce79dc4445a625f3cce38eb6a3c6033d89bc4d932b9a7",
+    "snapshot": "capture-source/scene-actor-ids-x87-40-NxIntersectionRayPlane.h.gz",
+    "snapshot_sha256": "41e3f664ceb3293d3528ae4cd03e38e7a0704af606d8826f2336c912198e257d"
+  },
+  {
+    "source": "Physics/include/NxIntersectionRaySphere.h",
+    "source_sha256": "3b3a326b99841d8ef1ca1458ba5c683403f6f16cb9f60a8fb63e4ae585c90b0a",
+    "snapshot": "capture-source/scene-actor-ids-x87-41-NxIntersectionRaySphere.h.gz",
+    "snapshot_sha256": "d7c48d1bcca8a238c35692d82a5a31187dae34e21535169c9db65dca2a3c7eb2"
+  },
+  {
+    "source": "Physics/include/NxIntersectionRayTriangle.h",
+    "source_sha256": "fffcb005acbe0e6656fe1ac7c4d40c6770fda4006bc3a2e4be3457e2537ce4b3",
+    "snapshot": "capture-source/scene-actor-ids-x87-42-NxIntersectionRayTriangle.h.gz",
+    "snapshot_sha256": "0ac0a176ce06ac0c434b360ad17af4e97ac14a3353845a5cb1a3df9766dfdc86"
+  },
+  {
+    "source": "Physics/include/NxIntersectionSegmentBox.h",
+    "source_sha256": "6abfe23ad9fde40e22a95aea522698c0a315172613bc127186d5e093039a058a",
+    "snapshot": "capture-source/scene-actor-ids-x87-43-NxIntersectionSegmentBox.h.gz",
+    "snapshot_sha256": "cccd09dd6e97ae5b403c8c57641066396417b5dc9d963eca40e2768a69f43eff"
+  },
+  {
+    "source": "Physics/include/NxIntersectionSegmentCapsule.h",
+    "source_sha256": "4fe362473a097dcac8ebf78ba461349c683b474e8f442cb9304a7b229d4bfb17",
+    "snapshot": "capture-source/scene-actor-ids-x87-44-NxIntersectionSegmentCapsule.h.gz",
+    "snapshot_sha256": "f8f53bd1b853d96a2532aa3cc8e6089931a812557721d53e1faf030d42090a6f"
+  },
+  {
+    "source": "Physics/include/NxIntersectionSweptSpheres.h",
+    "source_sha256": "5b2f7aad62d5f38d35a122ce442c21a1a9da30192c30aa7132d32984cce9bc3c",
+    "snapshot": "capture-source/scene-actor-ids-x87-45-NxIntersectionSweptSpheres.h.gz",
+    "snapshot_sha256": "966f0a534352a00dfe6ad58a0c9072d0092c1bba82c14354ae9dc7d4f2512a9e"
+  },
+  {
+    "source": "Physics/include/NxJoint.h",
+    "source_sha256": "44e712337886b36eac2dedef026fcd98a019b4417c1437bc651873226ea383a0",
+    "snapshot": "capture-source/scene-actor-ids-x87-46-NxJoint.h.gz",
+    "snapshot_sha256": "cea12716203c9dacd7487d00b411a12ac34e325ead5340d1a2af7d42c2629029"
+  },
+  {
+    "source": "Physics/include/NxJointDesc.h",
+    "source_sha256": "462faa8e98510817cb6a91016fb927de355eccda45ec10e11c4d720ff926cf2c",
+    "snapshot": "capture-source/scene-actor-ids-x87-47-NxJointDesc.h.gz",
+    "snapshot_sha256": "aff37fcd0be60085e8a7356c3a8e6a969b5e4f54e625aa233dd7f5f3738b4c45"
+  },
+  {
+    "source": "Physics/include/NxJointLimitDesc.h",
+    "source_sha256": "a1d17ef81e7d8cdf2e408fdb244d5b31d61454a48aea170740f2e7412ecf04db",
+    "snapshot": "capture-source/scene-actor-ids-x87-48-NxJointLimitDesc.h.gz",
+    "snapshot_sha256": "e3d3c2175b9b323b19657ae9d29c3af051d8737cb25ffd80427e56f0688ac6cd"
+  },
+  {
+    "source": "Physics/include/NxJointLimitPairDesc.h",
+    "source_sha256": "acef6a0a2f6c326e4f668286580015e27bb5b17abdbeddc0ced02d27032dafe6",
+    "snapshot": "capture-source/scene-actor-ids-x87-49-NxJointLimitPairDesc.h.gz",
+    "snapshot_sha256": "1cdb1acf2ff4b6d272aa244c13e87d1d5742e3cfaeca5dbf1ddb05785ee4dc44"
+  },
+  {
+    "source": "Physics/include/NxMaterial.h",
+    "source_sha256": "f7ae121a649ec68924bcc4c77c81e41e00c0fe32063d9b8be717ce97e480d5cc",
+    "snapshot": "capture-source/scene-actor-ids-x87-50-NxMaterial.h.gz",
+    "snapshot_sha256": "09e5b522a4a7e27d77ed197c480ba7ff01828a0fa1dcc5aa3aeb4b1e7d71bad4"
+  },
+  {
+    "source": "Physics/include/NxMotorDesc.h",
+    "source_sha256": "fccab557a82dfd41640b2e307e9b711d5ef69c7c7a5251845bcbc9c1e2c101e3",
+    "snapshot": "capture-source/scene-actor-ids-x87-51-NxMotorDesc.h.gz",
+    "snapshot_sha256": "0344929313e04856766d1a81dd32d642111432d23514e6e4ba05b8027e0dbfd7"
+  },
+  {
+    "source": "Physics/include/Nxp.h",
+    "source_sha256": "ab032b9cc2f1a10b48b6bde81430fac22b6f2a7f73e2e46d4bebba19e45a1743",
+    "snapshot": "capture-source/scene-actor-ids-x87-52-Nxp.h.gz",
+    "snapshot_sha256": "26f88177c46887952514b3726883a4f5790e63c3ffa1fd24644b4f9b2caca3bf"
+  },
+  {
+    "source": "Physics/include/NxPhysics.h",
+    "source_sha256": "f18d53dda97d8e0b160ba31e6e5b8c9334bffe72aa4aa53f56c6515ddee6b048",
+    "snapshot": "capture-source/scene-actor-ids-x87-53-NxPhysics.h.gz",
+    "snapshot_sha256": "bf2d97df079bbb73ac9ff47001b077de584ae5f416ebb8e74d530f93233a02ea"
+  },
+  {
+    "source": "Physics/include/NxPhysicsSDK.h",
+    "source_sha256": "5d0df9ec5fc246fbf5b5e32adf4147f77f58e96fc42a10f025ab7d9c7dc2a870",
+    "snapshot": "capture-source/scene-actor-ids-x87-54-NxPhysicsSDK.h.gz",
+    "snapshot_sha256": "b45a5e45cf6184c197351508dad2d147ccb876030d83c0155552dc82545ab36b"
+  },
+  {
+    "source": "Physics/include/NxPlaneShape.h",
+    "source_sha256": "d33cc25d6b6449cce66128b927d92fc4d1e20d8c3d69758be5dcb1246454ca86",
+    "snapshot": "capture-source/scene-actor-ids-x87-55-NxPlaneShape.h.gz",
+    "snapshot_sha256": "efa6dcedde6c7b847a13f288e161bef13d4aafe62c9d429798a8ab4517a95b75"
+  },
+  {
+    "source": "Physics/include/NxPlaneShapeDesc.h",
+    "source_sha256": "59ff38fd9b69995aa7340ee8777a0dd2a291be26d8e51e95fb7ade6febccb1ec",
+    "snapshot": "capture-source/scene-actor-ids-x87-56-NxPlaneShapeDesc.h.gz",
+    "snapshot_sha256": "ba4a764fd0e93861068ba0169dcda14132e9a288d7fa745d15d0c1cfd6df9fe6"
+  },
+  {
+    "source": "Physics/include/NxPMap.h",
+    "source_sha256": "4c5fabf63e7f90a88366dcdc00ef15f862d579db618a59f4bce40da241fe627f",
+    "snapshot": "capture-source/scene-actor-ids-x87-57-NxPMap.h.gz",
+    "snapshot_sha256": "fd29e46a133e128115f05d416f9197574827f8a25128843a44bef2f2a8964244"
+  },
+  {
+    "source": "Physics/include/NxPointInPlaneJoint.h",
+    "source_sha256": "4fb53a953726ae348282337dd0fbf82812b9751ae75af173f30b2b83726af7ec",
+    "snapshot": "capture-source/scene-actor-ids-x87-58-NxPointInPlaneJoint.h.gz",
+    "snapshot_sha256": "5c360f5c4ccfe7dc2733206432530b7a353fbdb0e6e8c543d9c53e035e5fcea0"
+  },
+  {
+    "source": "Physics/include/NxPointInPlaneJointDesc.h",
+    "source_sha256": "12209dc6554d40541aac8125c63fe034c7e6828e47882580508990c626f31f9b",
+    "snapshot": "capture-source/scene-actor-ids-x87-59-NxPointInPlaneJointDesc.h.gz",
+    "snapshot_sha256": "9a33556ee67df5e0f9da8c3faa1c04dc630ec1e5dc7ff6889d9d2819cdf68392"
+  },
+  {
+    "source": "Physics/include/NxPointOnLineJoint.h",
+    "source_sha256": "48944fa6ce9bff4918b40b7405303ff5ca47055c196530f87fc235588f318252",
+    "snapshot": "capture-source/scene-actor-ids-x87-60-NxPointOnLineJoint.h.gz",
+    "snapshot_sha256": "1f8cda81d819d721e58a2625a590ec8432ca523a0687a6f3153718c5293d0fc8"
+  },
+  {
+    "source": "Physics/include/NxPointOnLineJointDesc.h",
+    "source_sha256": "0292d304f96d96a46c5b47d13f5be7ec4a28677790ccad5456132274deb5ebb3",
+    "snapshot": "capture-source/scene-actor-ids-x87-61-NxPointOnLineJointDesc.h.gz",
+    "snapshot_sha256": "9704291ff96ebbb46d258e1f1289feef072e2cdac10366e0e108df925c3162d7"
+  },
+  {
+    "source": "Physics/include/NxPrismaticJoint.h",
+    "source_sha256": "0691c7948be27e387007566bc1a7684b86fd35d0ccb777d0df7e5c0537cac349",
+    "snapshot": "capture-source/scene-actor-ids-x87-62-NxPrismaticJoint.h.gz",
+    "snapshot_sha256": "018d2e9999834c349ed8ac0ae62fea65a9f70a5e0806cc69715e40565ca4b5d8"
+  },
+  {
+    "source": "Physics/include/NxPrismaticJointDesc.h",
+    "source_sha256": "5d5fb669839cbe21527f7f2e932e66cbda6af39244abd1e8f7007ef010af48f6",
+    "snapshot": "capture-source/scene-actor-ids-x87-63-NxPrismaticJointDesc.h.gz",
+    "snapshot_sha256": "fee7501d5da1548a1b30f29587cff1d43fb6f381e7728a978dbae5cced6e2ab1"
+  },
+  {
+    "source": "Physics/include/NxPulleyJoint.h",
+    "source_sha256": "29ef5bcfde5efdb36b3f84448c14236f51a4a44436173ac3d096683649d7bc68",
+    "snapshot": "capture-source/scene-actor-ids-x87-64-NxPulleyJoint.h.gz",
+    "snapshot_sha256": "f8c35666781ab292e3aa140b6985ace2b1914edc4ad47acb26f0cbf88815b157"
+  },
+  {
+    "source": "Physics/include/NxPulleyJointDesc.h",
+    "source_sha256": "6e645cb5c9ccaed6387db9510316d61cd69d159c12bd71550e0be7cd5a85ec97",
+    "snapshot": "capture-source/scene-actor-ids-x87-65-NxPulleyJointDesc.h.gz",
+    "snapshot_sha256": "f7c668df23645ec40bae6a56be6c40f3c7d76bdc73b5412376db87c3181ee61b"
+  },
+  {
+    "source": "Physics/include/NxRevoluteJoint.h",
+    "source_sha256": "26804ab910065a072b5e94ad72ae4d616d3b5c26bea15da6a55116ec7cb44352",
+    "snapshot": "capture-source/scene-actor-ids-x87-66-NxRevoluteJoint.h.gz",
+    "snapshot_sha256": "0601dae1db5b08a595eef432b2953ff5be54f1587b1168d3f1e8f7ae50bb9948"
+  },
+  {
+    "source": "Physics/include/NxRevoluteJointDesc.h",
+    "source_sha256": "023acda7cb0c36256d94cf05954aa8bfed5037994b7cd4b8c52cfdf0c4325a0d",
+    "snapshot": "capture-source/scene-actor-ids-x87-67-NxRevoluteJointDesc.h.gz",
+    "snapshot_sha256": "25a2fe97bd5b2c8029cf9959455fdaa17581dd4b390793a3464282601b8a595e"
+  },
+  {
+    "source": "Physics/include/NxScene.h",
+    "source_sha256": "fc7c01b709918cc5c6e1211d21ed51f8f243aa7cbd6412463c6e1b62dd005ece",
+    "snapshot": "capture-source/scene-actor-ids-x87-68-NxScene.h.gz",
+    "snapshot_sha256": "e903426bb733647f8b5adae8bdd8e1330840f6af25a2ec926d50cfb99572b24e"
+  },
+  {
+    "source": "Physics/include/NxSceneDesc.h",
+    "source_sha256": "939fb49f74691c2c3560d41ba456efb9032fab0f79f96085f1263f2801c37913",
+    "snapshot": "capture-source/scene-actor-ids-x87-69-NxSceneDesc.h.gz",
+    "snapshot_sha256": "ed0a9ab4d4adb1c365b7c10fb6cdaade7076d093902f5716bc89b2436acb831d"
+  },
+  {
+    "source": "Physics/include/NxSceneStats.h",
+    "source_sha256": "802ba469b560fa34a4142902327d978b62d2b3b065137011b1aee114d9862f3f",
+    "snapshot": "capture-source/scene-actor-ids-x87-70-NxSceneStats.h.gz",
+    "snapshot_sha256": "2f1d2cc64207312c305cdd2bcb3202bb1c00000731f7ef86f3b8066ab745a8f6"
+  },
+  {
+    "source": "Physics/include/NxShape.h",
+    "source_sha256": "1446db87be924e21c0026ec188f9c805f69a1e8266af11ff317bbe5713e011aa",
+    "snapshot": "capture-source/scene-actor-ids-x87-71-NxShape.h.gz",
+    "snapshot_sha256": "6e8f0faf5a1fe1cafc5de397f5217a09f97ee32dc95e66deb40ae85f11f3181f"
+  },
+  {
+    "source": "Physics/include/NxShapeDesc.h",
+    "source_sha256": "15202464a9ac5c239c593003e5a22ac26bad6cf8f4f3e06a771789028138264d",
+    "snapshot": "capture-source/scene-actor-ids-x87-72-NxShapeDesc.h.gz",
+    "snapshot_sha256": "afc0ce85bfc75d39265b91507bd4cfda771594f0126421e53e11cdb1628399ac"
+  },
+  {
+    "source": "Physics/include/NxSmoothNormals.h",
+    "source_sha256": "b21e7769a43213abd188f8fbfb8e30369f8a2fe0ed565054ac846a6376b58f70",
+    "snapshot": "capture-source/scene-actor-ids-x87-73-NxSmoothNormals.h.gz",
+    "snapshot_sha256": "7472078be58e364f062b48688ae42d821b41c1adff2044247b58c102626821a1"
+  },
+  {
+    "source": "Physics/include/NxSphereShape.h",
+    "source_sha256": "9bd0778d851b5ee194db22457c7413783d234a338d4458668d26a394864e1806",
+    "snapshot": "capture-source/scene-actor-ids-x87-74-NxSphereShape.h.gz",
+    "snapshot_sha256": "221573d48412713e565d4194774193072b9b743a71cc8c6e5cc3c21f998c876c"
+  },
+  {
+    "source": "Physics/include/NxSphereShapeDesc.h",
+    "source_sha256": "54291ceb1a322584e8c189373a62cacae4594b5f8d5a86f14828c11598a8e8d4",
+    "snapshot": "capture-source/scene-actor-ids-x87-75-NxSphereShapeDesc.h.gz",
+    "snapshot_sha256": "0d6e99c221876eb93d608c83ea3e6a9b166bc352e3f1c7c9a6f887f58ad8f53b"
+  },
+  {
+    "source": "Physics/include/NxSphericalJoint.h",
+    "source_sha256": "32138264b37e38c651d9ea4326c7ca0e30daf58b81d22b9c7f681880aa47a2c6",
+    "snapshot": "capture-source/scene-actor-ids-x87-76-NxSphericalJoint.h.gz",
+    "snapshot_sha256": "11cf53c6aeb3349fa909ab087d793ab7669dbe5fd51c92cefd6a4efe33518a25"
+  },
+  {
+    "source": "Physics/include/NxSphericalJointDesc.h",
+    "source_sha256": "c4e8b7a48600d9c7cb459dbd4613b52a208859242f1e04b1c5acaeca31243e88",
+    "snapshot": "capture-source/scene-actor-ids-x87-77-NxSphericalJointDesc.h.gz",
+    "snapshot_sha256": "081ae00ecbe46025526726c59f1cb2e7bad338a424492e78dd6f2042233a6d03"
+  },
+  {
+    "source": "Physics/include/NxSpringAndDamperEffector.h",
+    "source_sha256": "b7e3c5d39510e27cc172b2502ef0fa6ba189e4503b2e0fa422d00e2a103abf87",
+    "snapshot": "capture-source/scene-actor-ids-x87-78-NxSpringAndDamperEffector.h.gz",
+    "snapshot_sha256": "409e2126cdc29ce43d5979480114b0eee6cb83c57322f5bb9f904b9911d1898c"
+  },
+  {
+    "source": "Physics/include/NxSpringAndDamperEffectorDesc.h",
+    "source_sha256": "ca83425d170761cd44a3cc1d9be66dc9384924f153137574a3047ebafbfd91a3",
+    "snapshot": "capture-source/scene-actor-ids-x87-79-NxSpringAndDamperEffectorDesc.h.gz",
+    "snapshot_sha256": "187aea9e43dce44dbf8423fbb81cc98c0be1a48a9543fe89cb5a001aad891b5d"
+  },
+  {
+    "source": "Physics/include/NxSpringDesc.h",
+    "source_sha256": "7ac04bfbb79514556c1a88b5e7a7fa7be8e4f7f6c935e1739b4ccc3cfec55e36",
+    "snapshot": "capture-source/scene-actor-ids-x87-80-NxSpringDesc.h.gz",
+    "snapshot_sha256": "1b4ba14194e9a7142b94147bb1a1d9eefb5be5cf66baa43ff5e68b9942276de6"
+  },
+  {
+    "source": "Physics/include/NxTriangle.h",
+    "source_sha256": "6736d61772841797624330d7215fda763d69096f89b5ce1f002fe2e50904de71",
+    "snapshot": "capture-source/scene-actor-ids-x87-81-NxTriangle.h.gz",
+    "snapshot_sha256": "c54ca8d990ac75fd7da7c46006147707353bc661743f444eeb772c8dde39eab9"
+  },
+  {
+    "source": "Physics/include/NxTriangleMesh.h",
+    "source_sha256": "dcfc6270233680a70db793d4ff4e65a8e5b6404be2d11b346386b0709d0a0e88",
+    "snapshot": "capture-source/scene-actor-ids-x87-82-NxTriangleMesh.h.gz",
+    "snapshot_sha256": "1237ed4e1b0cc2bba94d3ade87477e18476281353cfd236e2316fca3de4ab283"
+  },
+  {
+    "source": "Physics/include/NxTriangleMeshDesc.h",
+    "source_sha256": "56924dabd4d2d5bce6354556a7610f63acbd1f5056bc5db6d270355893a39bd7",
+    "snapshot": "capture-source/scene-actor-ids-x87-83-NxTriangleMeshDesc.h.gz",
+    "snapshot_sha256": "23a6283fe29b832b1a4474de35630f6edf5230bf4db48dafc419f70f59ad96d6"
+  },
+  {
+    "source": "Physics/include/NxTriangleMeshShape.h",
+    "source_sha256": "bda8e3d49c0db8dad21f48ecb00aa17ffc4cc7c4356ff70ffa8dd5290632b54e",
+    "snapshot": "capture-source/scene-actor-ids-x87-84-NxTriangleMeshShape.h.gz",
+    "snapshot_sha256": "1edcddb1cb51a69ee3eac2ec943eaeb5bb2c743d5234b1008ee2b33f652dda5d"
+  },
+  {
+    "source": "Physics/include/NxTriangleMeshShapeDesc.h",
+    "source_sha256": "f51df1fc06b8dc0bd7392711bc4fc08f9c65d90843583dc68a0a6ecac8a96d0a",
+    "snapshot": "capture-source/scene-actor-ids-x87-85-NxTriangleMeshShapeDesc.h.gz",
+    "snapshot_sha256": "7b8c6d090bb49b2e34d8cc843a25be5a4ef01f3b29856f69156812c39d13e636"
+  },
+  {
+    "source": "Physics/include/NxUserContactReport.h",
+    "source_sha256": "d041d703babbac9a0e7fb6958c63fcb408f0537d8ba9a84c45c32217b1d0d3eb",
+    "snapshot": "capture-source/scene-actor-ids-x87-86-NxUserContactReport.h.gz",
+    "snapshot_sha256": "6c0b38d58837d8bdb8f0c859b6ad1eb606b7050d30a6ebbeb6a6f4be89b08bdc"
+  },
+  {
+    "source": "Physics/include/NxUserEntityReport.h",
+    "source_sha256": "6294095b050983d97e845ad2e389a9d7d6ab1fc4077cb08302ec065ad6b2dbf9",
+    "snapshot": "capture-source/scene-actor-ids-x87-87-NxUserEntityReport.h.gz",
+    "snapshot_sha256": "750ea120cd8046df5c69f4613a7123c2edcf42a3cda46fbbfb6cc4cc6401761e"
+  },
+  {
+    "source": "Physics/include/NxUserNotify.h",
+    "source_sha256": "d60aadf49bf589059cf499109dfd0af3d6e61d3cf7b13d8fbc74e3621ff83455",
+    "snapshot": "capture-source/scene-actor-ids-x87-88-NxUserNotify.h.gz",
+    "snapshot_sha256": "cdf2d788d5b318ab706f0c225c4a084e71efac8f511e43e3aa06c33bb9585577"
+  },
+  {
+    "source": "Physics/include/NxUserRaycastReport.h",
+    "source_sha256": "015c8fdaae79435bb713bd42757954b3f4d1408a161040833e80a1c4e86ee1ec",
+    "snapshot": "capture-source/scene-actor-ids-x87-89-NxUserRaycastReport.h.gz",
+    "snapshot_sha256": "678ff72c4622fa95171a4a05f5635ea843d001e2865c9040133aa5654fdedb89"
+  },
+  {
+    "source": "Foundation/include/Nx.h",
+    "source_sha256": "0f1411124c2b704e5bfb72ca476297840692f1c6c4df47daf1185530070464e4",
+    "snapshot": "capture-source/scene-actor-ids-x87-90-Nx.h.gz",
+    "snapshot_sha256": "f73d6bbfce6391b624673d1e5887a58f521988f71c18716a0099fa0992021d44"
+  },
+  {
+    "source": "Foundation/include/Nx12F32.h",
+    "source_sha256": "ba4bbbf13aad6e32a7a9f82306d8a96b8c78311c8f5769c29d37ca5e93a38b96",
+    "snapshot": "capture-source/scene-actor-ids-x87-91-Nx12F32.h.gz",
+    "snapshot_sha256": "c842f662b79270b107a399b9f8842f39afc78190e395e1508be3729fca7fb865"
+  },
+  {
+    "source": "Foundation/include/Nx16F32.h",
+    "source_sha256": "bb786b47861edeec6917b6fc7aaff97c93bae473fe9d9c92184298b2a75d4cd5",
+    "snapshot": "capture-source/scene-actor-ids-x87-92-Nx16F32.h.gz",
+    "snapshot_sha256": "0ca421cb3c824ef5e908d871c52d77d68067f01283db205838af599d0183e6fb"
+  },
+  {
+    "source": "Foundation/include/Nx9F32.h",
+    "source_sha256": "7e5bf33f115fbb2e4203c11cd3b9f26bd4ab4d2732e8ae724436da298eed64c6",
+    "snapshot": "capture-source/scene-actor-ids-x87-93-Nx9F32.h.gz",
+    "snapshot_sha256": "248303cb769f8e56fed81b7acd81cc9345799bc133e8768a70fd30a3dba48f1a"
+  },
+  {
+    "source": "Foundation/include/NxAllocateable.h",
+    "source_sha256": "dc5156a04e731c7a0574b89f583a244f91021b2decb187eb5bcfaec632beeab5",
+    "snapshot": "capture-source/scene-actor-ids-x87-94-NxAllocateable.h.gz",
+    "snapshot_sha256": "77cf7d3c5e47ba6b5ea600a2818eba37469909e1686c4af548746bbe9096953f"
+  },
+  {
+    "source": "Foundation/include/NxAllocatorDefault.h",
+    "source_sha256": "f7af0e4db1d123ecdae6d412105d8666d939391da74216433b6d965c069509af",
+    "snapshot": "capture-source/scene-actor-ids-x87-95-NxAllocatorDefault.h.gz",
+    "snapshot_sha256": "57ce3436f90132b03e340d09a8937591777bce28edea6c96496d9dac1c52b368"
+  },
+  {
+    "source": "Foundation/include/NxArray.h",
+    "source_sha256": "8a64f16ae54412c7087c35d4de0a161c4485e7bbc9a0c51ca947a3f2058b45f6",
+    "snapshot": "capture-source/scene-actor-ids-x87-96-NxArray.h.gz",
+    "snapshot_sha256": "9c0df94a1d723ff282a42e826d4c9bdd91e0d524c3c8d38510ae4305fbff9e38"
+  },
+  {
+    "source": "Foundation/include/NxAssert.h",
+    "source_sha256": "8a144be9690039a11e9879d9a6c4151e33c326ffdce2598aa7f54c2536b1a825",
+    "snapshot": "capture-source/scene-actor-ids-x87-97-NxAssert.h.gz",
+    "snapshot_sha256": "2a9fb4ad5cf14b07d6947489bd038626e16ea32fabecd39fd84438cbd5e5e371"
+  },
+  {
+    "source": "Foundation/include/NxBitField.h",
+    "source_sha256": "457f929e339ac136150af13c6a392ff5c077ac650c651c18962113455be835d1",
+    "snapshot": "capture-source/scene-actor-ids-x87-98-NxBitField.h.gz",
+    "snapshot_sha256": "618270ed3b6b7bb50aa02c23d38a3dcdbfee78155017052bebe5c3888c1c5a18"
+  },
+  {
+    "source": "Foundation/include/NxBlank.h",
+    "source_sha256": "b2d6b42fad0dc95c525e0c4ff9ec53adf34f14b0a2a5ea9939f4a7bf424058d6",
+    "snapshot": "capture-source/scene-actor-ids-x87-99-NxBlank.h.gz",
+    "snapshot_sha256": "69f57da16eacadd1cc166651fe022c6455c55c81582f7e3a940addceb2b5c506"
+  },
+  {
+    "source": "Foundation/include/NxBounds3.h",
+    "source_sha256": "c7763076cb80b44863fa2faf71d1710548e2b96323b6ebe6dc557b56efd86c42",
+    "snapshot": "capture-source/scene-actor-ids-x87-100-NxBounds3.h.gz",
+    "snapshot_sha256": "b523f21d0047de202f90c1209bd99ff80c7bcb54dc81c284183c024a785d084f"
+  },
+  {
+    "source": "Foundation/include/NxBox.h",
+    "source_sha256": "453505eea6459281937094b4e5e4b7782bec48e817d19d2e586a7c7c2dbda4bf",
+    "snapshot": "capture-source/scene-actor-ids-x87-101-NxBox.h.gz",
+    "snapshot_sha256": "30c1c16c8f9635a609cdd61f1c2fedb5f1bc838108ff540ac56ce5fa41475259"
+  },
+  {
+    "source": "Foundation/include/NxBuildNumber.h",
+    "source_sha256": "8bc6af66adb5adb9bfa8e402ee2bb4be23fc089b4c2835d174f41300aa0a028d",
+    "snapshot": "capture-source/scene-actor-ids-x87-102-NxBuildNumber.h.gz",
+    "snapshot_sha256": "fcc9960df9daff7dee087147648775646640306e24c04142b4af42c728865bfb"
+  },
+  {
+    "source": "Foundation/include/NxCapsule.h",
+    "source_sha256": "b019a841676991483cd8cd306af298a07d09b07aac1014651e028157ce87cd90",
+    "snapshot": "capture-source/scene-actor-ids-x87-103-NxCapsule.h.gz",
+    "snapshot_sha256": "f789ea8c82a922140b1403e406aa2f37c27b46f65063bd27299c003806f1ac2c"
+  },
+  {
+    "source": "Foundation/include/NxDebugRenderable.h",
+    "source_sha256": "bd05064e4c2363d39c137b2630dc23e62eaca09bfd62d88f056a69013fc2b2af",
+    "snapshot": "capture-source/scene-actor-ids-x87-104-NxDebugRenderable.h.gz",
+    "snapshot_sha256": "ac310f4cc1305cc1615298cc9cead706f2e6bedea50a202869443f6c021efab8"
+  },
+  {
+    "source": "Foundation/include/NxException.h",
+    "source_sha256": "999cc86008a233615c16f6e772cf37c44e1e71dd1dc496ac8e2b36def4874f76",
+    "snapshot": "capture-source/scene-actor-ids-x87-105-NxException.h.gz",
+    "snapshot_sha256": "b17e045693cd81a6d5987a5c44da71cc2ee8311f05eca73034724268d8431719"
+  },
+  {
+    "source": "Foundation/include/Nxf.h",
+    "source_sha256": "9303dc95fd07426f00bd803e7f024b2dc690da302b2487161624a893ffadbf38",
+    "snapshot": "capture-source/scene-actor-ids-x87-106-Nxf.h.gz",
+    "snapshot_sha256": "86ddf37ddc0b3248775368c223a48860f3f834792890bcef5a949d2c8f38623e"
+  },
+  {
+    "source": "Foundation/include/NxFoundation.h",
+    "source_sha256": "bca036d356a428cc1d85620d0846ed672632d47963877f9e5f163551d8207cf5",
+    "snapshot": "capture-source/scene-actor-ids-x87-107-NxFoundation.h.gz",
+    "snapshot_sha256": "56a3380a6a501a603059346a0aae73d28db0dba9a43ed9c10cfe88d508329c94"
+  },
+  {
+    "source": "Foundation/include/NxFoundationSDK.h",
+    "source_sha256": "31426e5966dbe0215b430daffe91ba8a7063b1853b1b51995f66e6850ecf6dbe",
+    "snapshot": "capture-source/scene-actor-ids-x87-108-NxFoundationSDK.h.gz",
+    "snapshot_sha256": "755791eab3a3d9e4106aa37eed908e265705d53d76eca1a5ad7c9a048d31fd43"
+  },
+  {
+    "source": "Foundation/include/NxFPU.h",
+    "source_sha256": "6e70ea83197140f67451f4a690a7f8848cf17c4e3858721b0e2a254e8ba22995",
+    "snapshot": "capture-source/scene-actor-ids-x87-109-NxFPU.h.gz",
+    "snapshot_sha256": "8b0bdbc192557967cc52fb9442beba6eb482273a18bad8b4c54bb2605645f16f"
+  },
+  {
+    "source": "Foundation/include/NxList.h",
+    "source_sha256": "c59f413d86d739af0408899233d41f53180da34e7804acc47df41a0f0c405ca8",
+    "snapshot": "capture-source/scene-actor-ids-x87-110-NxList.h.gz",
+    "snapshot_sha256": "627a00b00b7b399f2b9a204c1b1ea0e805aa066752cede26a370a86e2e9ddf45"
+  },
+  {
+    "source": "Foundation/include/NxMat33.h",
+    "source_sha256": "20d47881227a4ac033a4a2c618d6fc3cb1bafd9b086d7b12e56c683b7bf08ea5",
+    "snapshot": "capture-source/scene-actor-ids-x87-111-NxMat33.h.gz",
+    "snapshot_sha256": "bf24e1b1a63f48b3f3c8660c4384b441a829f7bf254e1b4707acd7142048a1e9"
+  },
+  {
+    "source": "Foundation/include/NxMat34.h",
+    "source_sha256": "26fb30b99d68209cb3fc45f91d18bb26503119263a04576997e39a079cb7faed",
+    "snapshot": "capture-source/scene-actor-ids-x87-112-NxMat34.h.gz",
+    "snapshot_sha256": "0ca3b515e3739a736b18a4f9271d20cc6fe9155fc7227b1f30b67c51b83aaa22"
+  },
+  {
+    "source": "Foundation/include/NxMath.h",
+    "source_sha256": "93e85905e8515f33b2b6a55dc19cc90e9e3deb43d302bd7eaddc37ee52e74c20",
+    "snapshot": "capture-source/scene-actor-ids-x87-113-NxMath.h.gz",
+    "snapshot_sha256": "bbb31c39da367080425ae2cd8832f9394aefe905250e059228c8ff6fad2e2024"
+  },
+  {
+    "source": "Foundation/include/NxPlane.h",
+    "source_sha256": "9ee607a71ab37b82c641cff4d1c026f2a24aa51c7ef33c1dc6acc5874a22f552",
+    "snapshot": "capture-source/scene-actor-ids-x87-114-NxPlane.h.gz",
+    "snapshot_sha256": "bd6ab3aa6f08720c316724853bf1b051cbc17b4f62a21fdd05ddbedd47235148"
+  },
+  {
+    "source": "Foundation/include/NxPool.h",
+    "source_sha256": "94688d29641eaad9a16170e3470991c23266190c84732f8513bee8cbc1d3c251",
+    "snapshot": "capture-source/scene-actor-ids-x87-115-NxPool.h.gz",
+    "snapshot_sha256": "acd4bc595a870adbd4b70c0c8f66fc285aa15f58fe39635043443124b713b8b0"
+  },
+  {
+    "source": "Foundation/include/NxProfiler.h",
+    "source_sha256": "203efe91b8a04e1459aab30545d4b424b6a7832e27d738e4ef88f238e9d7699d",
+    "snapshot": "capture-source/scene-actor-ids-x87-116-NxProfiler.h.gz",
+    "snapshot_sha256": "757f8d19423dbaac841796e4e6c04d584d8bba79b36d80afa2d24adba4f0258b"
+  },
+  {
+    "source": "Foundation/include/NxQuat.h",
+    "source_sha256": "58fd4d399650ba087a5441315d4faeed0250be1d8a348c23006a450fd53bc18e",
+    "snapshot": "capture-source/scene-actor-ids-x87-117-NxQuat.h.gz",
+    "snapshot_sha256": "c3a65fd51c58a41bb852fbec7e13851487e29902c64e9abc2e0d58fe76b670d4"
+  },
+  {
+    "source": "Foundation/include/NxQuickSort.h",
+    "source_sha256": "f582c562f1812ec9c63ea8553af258f54cca199b3e6b05993fbc417378133067",
+    "snapshot": "capture-source/scene-actor-ids-x87-118-NxQuickSort.h.gz",
+    "snapshot_sha256": "065576d2906d458950a711a7adc41e5c9f78821e468442a1e35cfec208b2175a"
+  },
+  {
+    "source": "Foundation/include/NxRay.h",
+    "source_sha256": "e05ad1eca258d12ed08fedc8b03dbb88cd6bf1e1d7a35f10486f54c664cbab7e",
+    "snapshot": "capture-source/scene-actor-ids-x87-119-NxRay.h.gz",
+    "snapshot_sha256": "0281551338e71d2dad6b02cb1ba340e5a8a29434669fa5ded168b68e7a8ea151"
+  },
+  {
+    "source": "Foundation/include/NxSegment.h",
+    "source_sha256": "268cb4d45d49a0f3d2eb4f692d43d97aa21d24db761014d242495e6e54a4008f",
+    "snapshot": "capture-source/scene-actor-ids-x87-120-NxSegment.h.gz",
+    "snapshot_sha256": "75cd573c635983085593d60723a254c2d0d9746f8d8ac46d8361f979bc79a743"
+  },
+  {
+    "source": "Foundation/include/NxSimpleTriangleMesh.h",
+    "source_sha256": "c8b4dd640bbe297b29dab1a3521da3cf6444edd384f06f35f6a63ff58f667995",
+    "snapshot": "capture-source/scene-actor-ids-x87-121-NxSimpleTriangleMesh.h.gz",
+    "snapshot_sha256": "4a5499f20b1ea1845aad22bfc8ac24e3baf82ed1744e55f9739fa065a664729e"
+  },
+  {
+    "source": "Foundation/include/NxSimpleTypes.h",
+    "source_sha256": "74f162f50a02d66d62144261c0044945ded354bb67efba21562ee9362c3ab203",
+    "snapshot": "capture-source/scene-actor-ids-x87-122-NxSimpleTypes.h.gz",
+    "snapshot_sha256": "77a622f01eb1f89be644c1157efbccf5f41156e11b918ae37e96243ed5305554"
+  },
+  {
+    "source": "Foundation/include/NxSphere.h",
+    "source_sha256": "9d205a2d69fbfed1e27cf69bd7054cbbda07516d7e68fc54c33ffac899609970",
+    "snapshot": "capture-source/scene-actor-ids-x87-123-NxSphere.h.gz",
+    "snapshot_sha256": "dbaf27cac697b886733f84d68f54f07512bff512644f98e3d9f7353b456dc4f1"
+  },
+  {
+    "source": "Foundation/include/NxStream.h",
+    "source_sha256": "406f5261e4dcec6a87c3a654e1c16bb05f23f362df45627193efaa159bdd6a12",
+    "snapshot": "capture-source/scene-actor-ids-x87-124-NxStream.h.gz",
+    "snapshot_sha256": "38d89b0e2cefe1265abda48551bc171da9b858a90f39dd60415caeec7de0f966"
+  },
+  {
+    "source": "Foundation/include/NxUserAllocator.h",
+    "source_sha256": "d9a9099d220e18c854f4e1d856d4b4f3809951ba78ec85d1953cc610b5b8e039",
+    "snapshot": "capture-source/scene-actor-ids-x87-125-NxUserAllocator.h.gz",
+    "snapshot_sha256": "db8c8075f595ed35d22a234a7badf4c4eac4f684263ce7d8448c531338809214"
+  },
+  {
+    "source": "Foundation/include/NxUserAllocatorAccess.h",
+    "source_sha256": "0cb14602986db655d7f7507de33033bf29601abb620ba0491dcdd1609ff86cbf",
+    "snapshot": "capture-source/scene-actor-ids-x87-126-NxUserAllocatorAccess.h.gz",
+    "snapshot_sha256": "35f7ebd1cf98c43f4fc2b9c4abf904f93d16d2a3b476ecbdcd38e579dde62ceb"
+  },
+  {
+    "source": "Foundation/include/NxUserAllocatorDefault.h",
+    "source_sha256": "afe8cc95c7ad796e09f97b46e0ebe9a62d8c06afe25d422629dd842bf207fb53",
+    "snapshot": "capture-source/scene-actor-ids-x87-127-NxUserAllocatorDefault.h.gz",
+    "snapshot_sha256": "573287934fc5e87860c3d0a1c38af7245a56421bc4e8b69d58fa1a1adb522d44"
+  },
+  {
+    "source": "Foundation/include/NxUserDebugRenderer.h",
+    "source_sha256": "1f1dd04c5be2abd80479aa755f53f028978869539e370000682289f10263baee",
+    "snapshot": "capture-source/scene-actor-ids-x87-128-NxUserDebugRenderer.h.gz",
+    "snapshot_sha256": "e5ff70a76006a3c0ecf8a4770702d6e4c3139a0d002461f3a92381291043357f"
+  },
+  {
+    "source": "Foundation/include/NxUserOutputStream.h",
+    "source_sha256": "7f9f3b9b92a36c84acf166b5c2fd84db70733899caa1569e0784de4bfbb33965",
+    "snapshot": "capture-source/scene-actor-ids-x87-129-NxUserOutputStream.h.gz",
+    "snapshot_sha256": "6e13061a4e9f455379cbc6a975eeacdeb3ce3c1ce5ecfdbedc370da0b99b58ff"
+  },
+  {
+    "source": "Foundation/include/NxUtilities.h",
+    "source_sha256": "ee639cb8ceb5edd2d770775232dfd1628eccdc3b7631689c6f082437e31910ee",
+    "snapshot": "capture-source/scene-actor-ids-x87-130-NxUtilities.h.gz",
+    "snapshot_sha256": "fef7ac541bd948be7951b3f6e4a191b893eaa9aa0d62697699a0184611e454eb"
+  },
+  {
+    "source": "Foundation/include/NxVec3.h",
+    "source_sha256": "852a0e2dd0595a10bb993f1b202cf98d11218ab4edfff0931646e049fcc28629",
+    "snapshot": "capture-source/scene-actor-ids-x87-131-NxVec3.h.gz",
+    "snapshot_sha256": "710bb9f75c7e1543bd48adae064d913b459c38595671175b6001f0c65cdc3b95"
+  },
+  {
+    "source": "Foundation/include/NxVersionNumber.h",
+    "source_sha256": "0b0ee61a53b886437e2a0ef7f5d9b123d4d8ccd178ebd6057eeddc3e552e3df1",
+    "snapshot": "capture-source/scene-actor-ids-x87-132-NxVersionNumber.h.gz",
+    "snapshot_sha256": "c9a394108798c21516f33c17de4e5be944c77433f78de6e6d135172c9391b0c1"
+  },
+  {
+    "source": "Foundation/include/NxVolumeIntegration.h",
+    "source_sha256": "e748af935cd1d56999e65449fc95dc7230108f3bd5e51a4052926a287dd2cc72",
+    "snapshot": "capture-source/scene-actor-ids-x87-133-NxVolumeIntegration.h.gz",
+    "snapshot_sha256": "3557ec2b8612f5f4cf49d2864af27156936677d58f30f23920e3ec1baac6b39c"
+  },
+  {
+    "source": "Foundation/include/NxXBOX.h",
+    "source_sha256": "964f1207a89b6563700eaee9d44fb4b03e9bac59f933f494f1a8e4339532f665",
+    "snapshot": "capture-source/scene-actor-ids-x87-134-NxXBOX.h.gz",
+    "snapshot_sha256": "f14b6bd070772c86a0fd29db357c54ae86dc97e6f912ec1d7814dc6f27b60d52"
+  }
+]

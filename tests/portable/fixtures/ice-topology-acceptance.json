@@ -1,0 +1,503 @@
+{
+  "schema_version": 1,
+  "status": "scoped dependency gate accepted; polygon table pending",
+  "provenance_kind": "reconstructed-reference",
+  "fixture": "tests/portable/fixtures/ice-topology-domain-x87.nxpf",
+  "fixture_sha256": "1653fea91b6cc67ca941e44578597d498f9b08aa661f69ff1e860b7ca84359fd",
+  "record_count": 11292,
+  "record_kind_counts": {
+    "0": 9603,
+    "1": 1440,
+    "2": 240,
+    "3": 9
+  },
+  "mesh_count": 15,
+  "fixture_groups": 241,
+  "domain": {
+    "coordinates": [
+      -3,
+      6
+    ],
+    "index_widths": [
+      16,
+      32
+    ],
+    "windings": 2,
+    "retention_flag_combinations": 4,
+    "adjacent_crease_z_bits": [
+      "3d914cd3",
+      "3d914cd4",
+      "3d914cd5",
+      "3d914cd6",
+      "3d914cd7"
+    ],
+    "included": [
+      "parallel shared face",
+      "both crease signs",
+      "translated tilted planes",
+      "coordinate nonuniform scale",
+      "collapsed finite mesh",
+      "nonmanifold face topology",
+      "supported empty/null inputs",
+      "no-vertex optional path",
+      "null allocation outputs/scratch",
+      "signed zeros/store canaries"
+    ],
+    "excluded": [
+      "out-of-range indices",
+      "empty CreateDatabase (unchecked first rank)",
+      "nonfinite numeric inputs",
+      "full hull/support-map/polygon/contact integration",
+      "native node pointer packing"
+    ]
+  },
+  "budgets": {
+    "normal_component": {
+      "unit": "dimensionless",
+      "absolute": 2e-07,
+      "relative": 2e-07
+    },
+    "normal_norm_residual": {
+      "unit": "dimensionless",
+      "absolute": 2e-07
+    },
+    "plane_distance": {
+      "unit": "length",
+      "absolute": 1e-06,
+      "relative": 2e-07
+    },
+    "discrete_zeros_signedzero_helpers_canaries_thresholds": "exact"
+  },
+  "controller_approval": "2026-10-09 after Win32 scalar domain measurement; no widening",
+  "measurements": {
+    "msvc-win32-release": {
+      "fixtures": 241.0,
+      "observations": 11292.0,
+      "normal_maxabs": 0.0,
+      "distance_maxabs": 1.1920928955078125e-07,
+      "norm_residual": 7.02654852080542e-08,
+      "max_relative": 1.8209519827708808e-07,
+      "failures": 0.0
+    },
+    "msvc-win32-debug": {
+      "fixtures": 241.0,
+      "observations": 11292.0,
+      "normal_maxabs": 0.0,
+      "distance_maxabs": 1.1920928955078125e-07,
+      "norm_residual": 7.02654852080542e-08,
+      "max_relative": 1.8209519827708808e-07,
+      "failures": 0.0
+    },
+    "msvc-x64-release": {
+      "fixtures": 241.0,
+      "observations": 11292.0,
+      "normal_maxabs": 0.0,
+      "distance_maxabs": 1.1920928955078125e-07,
+      "norm_residual": 7.02654852080542e-08,
+      "max_relative": 1.8209519827708808e-07,
+      "failures": 0.0
+    },
+    "msvc-x64-debug": {
+      "fixtures": 241.0,
+      "observations": 11292.0,
+      "normal_maxabs": 0.0,
+      "distance_maxabs": 1.1920928955078125e-07,
+      "norm_residual": 7.02654852080542e-08,
+      "max_relative": 1.8209519827708808e-07,
+      "failures": 0.0
+    },
+    "clang22-x64-release": {
+      "fixtures": 241.0,
+      "observations": 11292.0,
+      "normal_maxabs": 0.0,
+      "distance_maxabs": 1.1920928955078125e-07,
+      "norm_residual": 7.02654852080542e-08,
+      "max_relative": 1.8209519827708808e-07,
+      "failures": 0.0
+    }
+  },
+  "adjacent_crease_dispositions": {
+    "3d914cd3": {
+      "reverse_0": [
+        {
+          "refs": [
+            0,
+            1
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            0,
+            2
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            1,
+            2
+          ],
+          "active_flag": 0
+        },
+        {
+          "refs": [
+            1,
+            3
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            2,
+            3
+          ],
+          "active_flag": 1
+        }
+      ],
+      "reverse_1": [
+        {
+          "refs": [
+            0,
+            1
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            0,
+            2
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            1,
+            2
+          ],
+          "active_flag": 0
+        },
+        {
+          "refs": [
+            1,
+            3
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            2,
+            3
+          ],
+          "active_flag": 1
+        }
+      ]
+    },
+    "3d914cd4": {
+      "reverse_0": [
+        {
+          "refs": [
+            0,
+            1
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            0,
+            2
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            1,
+            2
+          ],
+          "active_flag": 0
+        },
+        {
+          "refs": [
+            1,
+            3
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            2,
+            3
+          ],
+          "active_flag": 1
+        }
+      ],
+      "reverse_1": [
+        {
+          "refs": [
+            0,
+            1
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            0,
+            2
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            1,
+            2
+          ],
+          "active_flag": 0
+        },
+        {
+          "refs": [
+            1,
+            3
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            2,
+            3
+          ],
+          "active_flag": 1
+        }
+      ]
+    },
+    "3d914cd5": {
+      "reverse_0": [
+        {
+          "refs": [
+            0,
+            1
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            0,
+            2
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            1,
+            2
+          ],
+          "active_flag": 0
+        },
+        {
+          "refs": [
+            1,
+            3
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            2,
+            3
+          ],
+          "active_flag": 1
+        }
+      ],
+      "reverse_1": [
+        {
+          "refs": [
+            0,
+            1
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            0,
+            2
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            1,
+            2
+          ],
+          "active_flag": 0
+        },
+        {
+          "refs": [
+            1,
+            3
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            2,
+            3
+          ],
+          "active_flag": 1
+        }
+      ]
+    },
+    "3d914cd6": {
+      "reverse_0": [
+        {
+          "refs": [
+            0,
+            1
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            0,
+            2
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            1,
+            2
+          ],
+          "active_flag": 0
+        },
+        {
+          "refs": [
+            1,
+            3
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            2,
+            3
+          ],
+          "active_flag": 1
+        }
+      ],
+      "reverse_1": [
+        {
+          "refs": [
+            0,
+            1
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            0,
+            2
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            1,
+            2
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            1,
+            3
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            2,
+            3
+          ],
+          "active_flag": 1
+        }
+      ]
+    },
+    "3d914cd7": {
+      "reverse_0": [
+        {
+          "refs": [
+            0,
+            1
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            0,
+            2
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            1,
+            2
+          ],
+          "active_flag": 0
+        },
+        {
+          "refs": [
+            1,
+            3
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            2,
+            3
+          ],
+          "active_flag": 1
+        }
+      ],
+      "reverse_1": [
+        {
+          "refs": [
+            0,
+            1
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            0,
+            2
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            1,
+            2
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            1,
+            3
+          ],
+          "active_flag": 1
+        },
+        {
+          "refs": [
+            2,
+            3
+          ],
+          "active_flag": 1
+        }
+      ]
+    }
+  },
+  "legacy_splits": "Retained existing classified plane_divergent families; not portable tolerance acceptance",
+  "remaining_production_error_boundary": "opcNovodeXSetIceError is still no-report linkage shim; tests capture declared host callback; reconstructed002160 not claimed"
+}

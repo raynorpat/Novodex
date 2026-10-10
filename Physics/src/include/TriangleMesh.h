@@ -91,20 +91,7 @@ are still opaque. The embedded MeshInterface begins at +0x24; its first four
 words are initialized by the constructor at 0x000e8fa0. The remaining bytes are
 carried as opaque storage.
 */
-struct InternalTriangleMesh
-	{
-	NxU32					mVertexCount;		//!< +0x00
-	NxU32					mTriangleCount;		//!< +0x04
-	void*					mVertices;			//!< +0x08, 12 bytes each
-	void*					mTriangles;			//!< +0x0c, 12 bytes each, 32-bit indices
-	NxU16*					mMaterialIndices;	//!< +0x10, 2 bytes each, optional
-	NxU32*					mFaceRemap;			//!< +0x14, 4 bytes each, optional
-	void*					mVertexNormals;		//!< +0x18, 12 bytes each
-	void*					mTriangleData;		//!< +0x1c, 16 bytes per triangle, allocated by 002079 and released by 002067
-	Opcode::BaseModel*		mModel;				//!< +0x20
-	Opcode::MeshInterface	mMeshInterface;	//!< +0x24, OPCODE's four-word mesh interface
-	void*					mInterfaceAllocation;	//!< +0x34; the TriangleMesh destructor frees it through the Foundation allocator
-	};
+#include "NxInternalTriangleMesh.h"
 
 // InternalTriangleMesh rows recovered from the allocation/teardown paths in
 // gap__EdgeList.cpp__to__InternalTriangleMesh.cpp. Kept as explicit rows so
@@ -306,9 +293,5 @@ class TriangleMeshHullAllocator : public HullAllocator
 	//! CreateConvexHull fails.
 	bool					computeHull(const NxTriangleMeshDesc& desc, NxTriangleMeshDesc& out);
 	};
-//! The internal mesh's vertex normals (phys_fn_002081, 0x00052240), built on
-//! demand (TriangleMeshTopology.cpp, convex-mesh gap Task 2i). Thiscall on the
-//! InternalTriangleMesh with no argument; naked, so declared without parameters
-//! and called from naked code (001844) or through a register thunk.
-void nxMeshComputeVertexNormals();
+
 #endif

@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "capture_id": "triangle-mesh-domain-x87",
+  "capture_sha256": "6005acd8cbfa8745856bd317ebca21bd2e4c7096171156865d1ddd29f17e66fe",
+  "protected_capture_record_count": 1862325,
+  "protected_group_count": 563,
+  "exact_discrete_word_count": 1858629,
+  "current_x87_export_reproduces_capture": true,
+  "controller_budget_approved_before_final_gates": true,
+  "quantity_labels_by_actual_fixture_call_not_capture_format_change": true,
+  "quantities": {
+    "1": "coordinates/bounds/centroid, world length",
+    "2": "plane normal components, dimensionless",
+    "3": "plane d, world length",
+    "4": "polygon min/max, world length",
+    "5": "edge axes, dimensionless",
+    "6": "world projection, world length times axis magnitude"
+  },
+  "numeric_budgets": {
+    "1": {
+      "absolute": 0,
+      "relative": 0,
+      "both_bounds_required": true,
+      "exact_words": true
+    },
+    "2": {
+      "absolute": 1.862645149230957e-09,
+      "relative": 1e-07,
+      "both_bounds_required": true,
+      "exact_words": false
+    },
+    "3": {
+      "absolute": 2.384185791015625e-07,
+      "relative": 1.2e-07,
+      "both_bounds_required": true,
+      "exact_words": false
+    },
+    "4": {
+      "absolute": 2.9802322387695312e-08,
+      "relative": 1e-07,
+      "both_bounds_required": true,
+      "exact_words": false
+    },
+    "5": {
+      "absolute": 0,
+      "relative": 0,
+      "both_bounds_required": true,
+      "exact_words": true
+    },
+    "6": {
+      "absolute": 0,
+      "relative": 0,
+      "both_bounds_required": true,
+      "exact_words": true
+    }
+  },
+  "discrete_zero_sign_count_index_decision_canary_budget": "exact words and supported-state assertions",
+  "measurements": {
+    "release": {
+      "1": {
+        "count": 192,
+        "differences": 0,
+        "min": -3.0,
+        "max": 4.5,
+        "max_abs": 0.0,
+        "max_rel": 0.0
+      },
+      "2": {
+        "count": 480,
+        "differences": 16,
+        "min": -1.0,
+        "max": 1.0,
+        "max_abs": 1.862645149230957e-09,
+        "max_rel": 9.361530512878938e-08
+      },
+      "3": {
+        "count": 160,
+        "differences": 16,
+        "min": -4.5,
+        "max": 3.0,
+        "max_abs": 2.384185791015625e-07,
+        "max_rel": 1.149672400849378e-07
+      },
+      "4": {
+        "count": 320,
+        "differences": 4,
+        "min": -4.5,
+        "max": 4.5,
+        "max_abs": 2.9802322387695312e-08,
+        "max_rel": 9.217505665539857e-08
+      },
+      "5": {
+        "count": 432,
+        "differences": 0,
+        "min": -1.0,
+        "max": 1.0,
+        "max_abs": 0.0,
+        "max_rel": 0.0
+      },
+      "6": {
+        "count": 2112,
+        "differences": 0,
+        "min": -25.25,
+        "max": 16.149999618530273,
+        "max_abs": 0.0,
+        "max_rel": 0.0
+      }
+    },
+    "debug": {
+      "1": {
+        "count": 192,
+        "differences": 0,
+        "min": -3.0,
+        "max": 4.5,
+        "max_abs": 0.0,
+        "max_rel": 0.0
+      },
+      "2": {
+        "count": 480,
+        "differences": 16,
+        "min": -1.0,
+        "max": 1.0,
+        "max_abs": 1.862645149230957e-09,
+        "max_rel": 9.361530512878938e-08
+      },
+      "3": {
+        "count": 160,
+        "differences": 16,
+        "min": -4.5,
+        "max": 3.0,
+        "max_abs": 2.384185791015625e-07,
+        "max_rel": 1.149672400849378e-07
+      },
+      "4": {
+        "count": 320,
+        "differences": 4,
+        "min": -4.5,
+        "max": 4.5,
+        "max_abs": 2.9802322387695312e-08,
+        "max_rel": 9.217505665539857e-08
+      },
+      "5": {
+        "count": 432,
+        "differences": 0,
+        "min": -1.0,
+        "max": 1.0,
+        "max_abs": 0.0,
+        "max_rel": 0.0
+      },
+      "6": {
+        "count": 2112,
+        "differences": 0,
+        "min": -25.25,
+        "max": 16.149999618530273,
+        "max_abs": 0.0,
+        "max_rel": 0.0
+      }
+    },
+    "clang": {
+      "1": {
+        "count": 192,
+        "differences": 0,
+        "min": -3.0,
+        "max": 4.5,
+        "max_abs": 0.0,
+        "max_rel": 0.0
+      },
+      "2": {
+        "count": 480,
+        "differences": 16,
+        "min": -1.0,
+        "max": 1.0,
+        "max_abs": 1.862645149230957e-09,
+        "max_rel": 9.361530512878938e-08
+      },
+      "3": {
+        "count": 160,
+        "differences": 16,
+        "min": -4.5,
+        "max": 3.0,
+        "max_abs": 2.384185791015625e-07,
+        "max_rel": 1.149672400849378e-07
+      },
+      "4": {
+        "count": 320,
+        "differences": 4,
+        "min": -4.5,
+        "max": 4.5,
+        "max_abs": 2.9802322387695312e-08,
+        "max_rel": 9.217505665539857e-08
+      },
+      "5": {
+        "count": 432,
+        "differences": 0,
+        "min": -1.0,
+        "max": 1.0,
+        "max_abs": 0.0,
+        "max_rel": 0.0
+      },
+      "6": {
+        "count": 2112,
+        "differences": 0,
+        "min": -25.25,
+        "max": 16.149999618530273,
+        "max_abs": 0.0,
+        "max_rel": 0.0
+      }
+    }
+  },
+  "derived_plane_normal_checks": {
+    "nondegenerate_closed_domain_only": true,
+    "vector_l2_budget": 1.862645149230957e-09,
+    "normalized_atan2_angle_radians_budget": 2e-09,
+    "unit_length_error_budget": 1e-07,
+    "observed_vector_l2_max": 1.862645149230957e-09,
+    "observed_normalized_angle_radians_max": 1.8622764348639226e-09,
+    "observed_actual_unit_length_error_max": 6.94569775028242e-08
+  },
+  "input_domain": "Eight literal binary32 cube/tetra final vertex arrays [-3,4.5], affine/nonuniform scale/shear/translation, both windings; literal axes/diagonal/ties/decimal/cancellation/signedzero directions; three rigid poses; kindC subdiv4 and actual graph+64; PMap32 all16 mesh/winding cases, PMap64/80 base cube only, seeded rand123+winding; supported empty descriptor/mesh and first checked wrapper allocation failure. All acceptance nearest rounding, initial Win32 layouts.",
+  "limits": [
+    "public mass-property numeric output Tasks7/8",
+    "nonnull genuine SDK lifecycle/query Task7",
+    "nonnull A4/A8/AC unreconstructed producer/cleanup ABI later gates",
+    "PMap alternate file/implicit-stream sources and malformed/truncated payloads excluded",
+    "exploratory density4 original roundtrip canary failure; tested32/64/80 set not a public API restriction",
+    "historical orphan lazy edge allocations observed after real destructor then fixture reclaimed",
+    "full contact scratch owner/containers, fullfan, contact families laterTask5",
+    "native packed pointers/layout Task9; full production guards remain"
+  ],
+  "current_source_sha256": {
+    "Physics/src/TriangleMesh.cpp": "3a5be261eff763a0be668182c504e261dbe7ae661a94dc4932fd8f821bc2656b",
+    "Physics/src/TriangleMeshPolygons.cpp": "7cd7928af4d91443f410b4446d058a8491cf6a95ec120feb0bdb30882fa6f6b6",
+    "Physics/src/InternalTriangleMesh.cpp": "fcfed42ff762a312c98edb671f82cbf63bac961ab032e0eb95315223e7568d9e",
+    "Physics/src/PMap.cpp": "532451f0896f4c25dbbaf155e6753b680ca2f44dd9b5f450d960d10f4f3bc293",
+    "Physics/src/PhysicsSDK.cpp": "6266348f24fb7c1cf4bededdd061eb94b61e18ddcf26f0d76fd0056bd5b86861",
+    "Physics/src/include/PhysicsSDKParameters.inl": "929e2ba2c92e04ad35eb0780fc007ac0babc4a9db48eb8742abf05e07fac4712",
+    "Physics/src/include/TriangleMeshConvexData.h": "c193df8ebdaede74c389966405b1dffd051f665f91df92be8736c43bcb8ba033",
+    "Physics/src/include/NxPolygonScratch.h": "f21a3762043d86f8c2696dea44874e869d2511de890deac54b59b15620b51c0e",
+    "Physics/src/include/TriangleMeshPolygons.h": "80ad299f64c9f14e5047e43d34db49cc0ea8375f86bfea4471ef4a9f74e87001",
+    "Physics/src/include/portable/NxConvexInterfaces.h": "31cf1c70d0381fd56105f77cffd73047305f59d29c011045d0742fa187d719a0",
+    "Physics/src/include/portable/TriangleMeshPolygonsScalar.inl": "fc40d79b70974eff78e729a01e6dc40b6b337416fa10de5784df7e98194c3cfa",
+    "tests/portable/TriangleMeshTests.cpp": "ee34c55e7b86af8838fe1756e201ee2d6ac31a9c2816552b0b81f0d9cb453fd5",
+    "tests/portable/TriangleMeshTargets.cmake": "273e3031ea23f952849f4f8b8cfea722835dc6a9722b752d603e08a8161e8aec",
+    "tests/portable/PhysicsSDKParametersKernel.cpp": "166f5a68316ce7d75c88f8b0beff398b5833cc0428bf6082bccfad44e87946fb",
+    "tests/portable/GenuineFoundationImportSlot.cpp": "99f91f77944ce433a107de7b4931a583a53636af5eb040995cbac9705795b329",
+    "tests/portable/CMakeLists.txt": "e7aa877ce13070cf7568fc44a74d839098148988b2e911d989ea344ebaec6407",
+    "cmake/NxPhysicsBackend.cmake": "883676e8fecae7983d7f2efe5eb87111cd92ee3585dcb66bca05794d3e8db52b",
+    "Physics/src/portable/ConvexHullScalar.inl": "88d66cf4d6dd92efa26357dde7734b0d27f9f78291c683d60f6319f49f6a08dd",
+    "Physics/src/portable/IceSupportMapsScalar.inl": "ed3486f45aff2be32e04902e96d984f2f4d84d9f934c0afe6fb10bf519bc179b"
+  }
+}

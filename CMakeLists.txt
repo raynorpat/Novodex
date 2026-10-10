@@ -5,6 +5,23 @@ project(Novodex VERSION 2.1.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 11)
 enable_testing()
 
+include(cmake/NxPhysicsBackend.cmake)
+option(NOVODEX_TEST_PORTABLE_WIN32 "Exercise scalar backend in Windows 32-bit test builds" OFF)
+novodex_resolve_physics_backend(NX_PHYSICS_USE_X87 "${CMAKE_SYSTEM_NAME}"
+    "${CMAKE_SIZEOF_VOID_P}" "${NOVODEX_TEST_PORTABLE_WIN32}"
+    "${CMAKE_CXX_COMPILER_ID}" "${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}")
+if(NX_PHYSICS_USE_X87)
+    novodex_check_x87_compiler()
+else()
+    novodex_portable_fp_options(NOVODEX_PORTABLE_FP_OPTIONS)
+    add_compile_options(${NOVODEX_PORTABLE_FP_OPTIONS})
+endif()
+add_compile_definitions(NX_PHYSICS_USE_X87=${NX_PHYSICS_USE_X87})
+message(STATUS "NxPhysics backend: NX_PHYSICS_USE_X87=${NX_PHYSICS_USE_X87}")
+add_test(NAME Portable.BackendSelection COMMAND "${CMAKE_COMMAND}"
+    "-DTEST_WORK_DIR=${CMAKE_CURRENT_BINARY_DIR}/backend-selection-tests"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/portable/BackendSelectionTests.cmake")
+
 # Graphics is reconstructed separately from the shipped VC6 archive.
 if(WIN32)
 	add_subdirectory(Graphics)
@@ -46,7 +63,7 @@ target_compile_definitions(NxFoundation PRIVATE NX_FOUNDATION_DLL=1 FOUNDATIONDL
 # Measured: with the default architecture ten of that differential's cases --
 # the zero axis, the infinite and NaN axes, the two-payload inputs -- came out
 # with the other NaN sign or payload, and with this flag none did.
-if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+if(NX_PHYSICS_USE_X87)
 	set_source_files_properties(
 		Foundation/src/Utilities.cpp
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
@@ -90,6 +107,11 @@ source_group("Header Files" FILES ${PHYSICS_HEADERS})
 # this directory has a counterpart in either pinned OPCODE 1.3 tree. Vendored
 # OPCODE is External/opcode/ and nowhere else.
 file(GLOB PHYSICS_SOURCES Physics/src/*.cpp Physics/src/core/*.cpp Physics/src/opcode/*.cpp)
+if(NX_PHYSICS_USE_X87)
+    list(REMOVE_ITEM PHYSICS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Physics/src/PrunerRegistration.cpp")
+    list(REMOVE_ITEM PHYSICS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Physics/src/SceneActorIdPool.cpp")
+    list(REMOVE_ITEM PHYSICS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Physics/src/ReadWriteLockScalar.cpp")
+endif()
 # The joint families on their own, for the test targets that link Scene.cpp: its
 # createJoint constructs every family, so they need the whole directory at link time.
 file(GLOB PHYSICS_CORE_SOURCES Physics/src/core/*.cpp)
@@ -101,6 +123,18 @@ if(WIN32)
 endif()
 
 add_library(NxPhysics SHARED ${PHYSICS_HEADERS} ${PHYSICS_SOURCES} ${PHYSICS_RESOURCES})
+if(NOT NX_PHYSICS_USE_X87)
+    # Always runs before compilation, including on MSVC x86 where unconverted
+    # assembly would otherwise compile and silently produce a mixed backend.
+    add_custom_target(NxPhysicsPortableMigrationGuard
+        COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/NxPhysicsPortableBuildGuard.cmake"
+        VERBATIM)
+    # Dependencies also contain retained assembly (Foundation and OPCODE).
+    # Do not publish a portable dependency binary before its migration audit.
+    foreach(nx_production_target NxPhysics NxFoundation NxOpcode NxQhull)
+        add_dependencies(${nx_production_target} NxPhysicsPortableMigrationGuard)
+    endforeach()
+endif()
 # Emit a linker map for the rebuilt module, the same way the layout harness publishes its own. The
 # harnesses that drive this library bind ORACLE RVAs by addition -- `base + kSomeRva` -- which is
 # correct only when the loaded module IS the shipped one. Reading the candidate's own symbol names is
@@ -124,7 +158,7 @@ target_link_libraries(NxPhysics NxFoundation NxQhull NxOpcode)
 # step's word 0x0f7f (round toward zero), where the two gave different last
 # digits (joint-open-items Task 6). The linker option object restores the
 # legacy rounding for NxPhysics.dll's own printf calls only.
-if(MSVC)
+if(NX_PHYSICS_USE_X87)
 	target_link_options(NxPhysics PRIVATE legacy_stdio_float_rounding.obj)
 endif()
 set_target_properties(NxPhysics PROPERTIES LINKER_LANGUAGE CXX)
@@ -194,7 +228,7 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # control word, and its asset writer converts poses to quaternions with fsqrt.
 # core/ActorMass.cpp (actor-mass Task 1) is the actor's mass from shapes,
 # phys_fn_000008: x87 compares, scaling and the NxDiagonalizeInertiaTensor call.
-if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+if(NX_PHYSICS_USE_X87)
 	set_source_files_properties(
 		Physics/src/ContactPairManager.cpp
 		Physics/src/StepOnlyRows.cpp
@@ -202,7 +236,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/MassProperties.cpp
 		Physics/src/SmoothNormals.cpp
 		Physics/src/NarrowPhase.cpp
-		Physics/src/ContactGeneration.cpp
+		Physics/src/ContactGeneration.cpp Physics/src/ContactPolygon.cpp Physics/src/ContactStream.cpp
 		Physics/src/Distance.cpp
 		Physics/src/PMap.cpp
 		Physics/src/ContactBoxMeshICE.cpp
@@ -811,7 +845,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# a source property: the source-property rule above names Physics/src files
 	# and a second one naming the same files would silently override it.
 	if(MSVC)
-		target_compile_options(NxPhysicsThirdPartyTests PRIVATE /arch:IA32 /GR- /wd4996)
+		if(NX_PHYSICS_USE_X87)
+			target_compile_options(NxPhysicsThirdPartyTests PRIVATE /arch:IA32)
+		endif()
+		target_compile_options(NxPhysicsThirdPartyTests PRIVATE /GR- /wd4996)
 		# The map the vendored-correspondence trace resolves breakpoints from; see
 		# NxPhysicsAssetTests above.
 		target_link_options(NxPhysicsThirdPartyTests PRIVATE /MAP)
@@ -820,7 +857,9 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		# too (see legacy_stdio_float_rounding.obj above): without it a "%2.2g" of
 		# an exact tie such as -3.25 prints -3.2 where the oracle's 2003 CRT, and
 		# the shipped candidate DLL, print -3.3 (qhull-gap Task 1).
-		target_link_options(NxPhysicsThirdPartyTests PRIVATE legacy_stdio_float_rounding.obj)
+		if(NX_PHYSICS_USE_X87)
+			target_link_options(NxPhysicsThirdPartyTests PRIVATE legacy_stdio_float_rounding.obj)
+		endif()
 	endif()
 
 	# ObjectModel.cpp's MESH slot 7 (the 001407 model) calls the support-map
@@ -852,7 +891,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
 		Physics/src/opcode/NovodexBoxPruning.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
-		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp Physics/src/Distance.cpp
+		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp Physics/src/ContactPolygon.cpp Physics/src/ContactStream.cpp Physics/src/Distance.cpp
 		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp
 		${PHYSICS_CORE_SOURCES})
 	target_include_directories(NxPhysicsInternalTests PRIVATE
@@ -910,7 +949,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/opcode)
 	target_link_libraries(NxPhysicsObjectLayoutTests NxFoundation NxOpcode bcrypt)
 	if(MSVC)
-		target_compile_options(NxPhysicsObjectLayoutTests PRIVATE /arch:IA32 /GR- /wd4996)
+		if(NX_PHYSICS_USE_X87)
+			target_compile_options(NxPhysicsObjectLayoutTests PRIVATE /arch:IA32)
+		endif()
+		target_compile_options(NxPhysicsObjectLayoutTests PRIVATE /GR- /wd4996)
 		# Emit a linker map so that a fault offset reported by the OS -- the
 		# 0xC0000409 aborts this harness produces -- can be resolved to a
 		# function instead of being guessed at from the source. The PDB is what
@@ -947,7 +989,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/opcode)
 	target_link_libraries(NxPhysicsShapeVtableTests NxFoundation NxOpcode bcrypt)
 	if(MSVC)
-		target_compile_options(NxPhysicsShapeVtableTests PRIVATE /arch:IA32 /GR- /wd4996)
+		if(NX_PHYSICS_USE_X87)
+			target_compile_options(NxPhysicsShapeVtableTests PRIVATE /arch:IA32)
+		endif()
+		target_compile_options(NxPhysicsShapeVtableTests PRIVATE /GR- /wd4996)
 		# A linker map, so a cdb trace can break on the candidate functions
 		# linked into this exe by name (evidence/scene-raycast-trace-task4-
 		# shape.txt). /MAP writes a file beside the exe and changes nothing in it.
@@ -972,7 +1017,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# side's OPCODE models, OBBCollider and the Foundation SDK the Task 2i
 	# families need, apart from Opcode.h's pragmas (see PhysicsCollisionInflate.cpp).
 	add_executable(NxPhysicsCollisionTests tests/PhysicsCollisionTests.cpp tests/PhysicsCollisionInflate.cpp tests/PhysicsCollisionOpcode.cpp
-		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp
+		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp Physics/src/ContactPolygon.cpp Physics/src/ContactStream.cpp
 		Physics/src/Distance.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp
 		Physics/src/ContactBoxMeshICE.cpp Physics/src/ContactCapsuleMesh.cpp Physics/src/ContactMeshHeightfield.cpp Physics/src/ContactMeshMesh.cpp Physics/src/ContactPlaneMesh.cpp
@@ -1023,6 +1068,36 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 endif()
 
 #### VIEWER ####
+if(NOT NX_PHYSICS_USE_X87)
+    # Direct-source harnesses must not exercise retained assembly under a scalar
+    # definition. Standalone portable kernels have their own independent project.
+    get_property(nx_root_targets DIRECTORY PROPERTY BUILDSYSTEM_TARGETS)
+    foreach(nx_target IN LISTS nx_root_targets)
+        get_target_property(nx_sources ${nx_target} SOURCES)
+        # Scalar methods were extracted from PhysicsInternal.cpp; direct-source
+        # harnesses compiling that unit need the same production implementation.
+        set(nx_has_lock_scalar FALSE)
+        set(nx_has_physics_internal FALSE)
+        foreach(nx_source IN LISTS nx_sources)
+            if(nx_source MATCHES "(^|/)Physics/src/PhysicsInternal[.]cpp$")
+                set(nx_has_physics_internal TRUE)
+            endif()
+            if(nx_source MATCHES "(^|/)Physics/src/ReadWriteLockScalar[.]cpp$")
+                set(nx_has_lock_scalar TRUE)
+            endif()
+        endforeach()
+        if(nx_has_physics_internal AND NOT nx_has_lock_scalar)
+            target_sources(${nx_target} PRIVATE Physics/src/ReadWriteLockScalar.cpp)
+        endif()
+        foreach(nx_source IN LISTS nx_sources)
+            if(nx_source MATCHES "(^|/)Physics/src/")
+                add_dependencies(${nx_target} NxPhysicsPortableMigrationGuard)
+                break()
+            endif()
+        endforeach()
+    endforeach()
+endif()
+
 set(NOVODEX_INSTALL_TARGETS NxFoundation NxPhysics)
 if(NOVODEX_BUILD_VIEWER)
     add_subdirectory(Viewer)

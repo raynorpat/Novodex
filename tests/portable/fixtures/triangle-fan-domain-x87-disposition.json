@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "capture_id": "triangle-fan-domain-x87",
+  "disposition": "diagnostic-only; excluded from scalar numerical acceptance",
+  "fixture_sha256": "3eca173e83b3cb284f1ccefca6f0c72d3cea2d3e3f67f7c2b001862be8caa324",
+  "immutable_manifest_sha256": "ec1cc61707cfb89542d3f2840cdde5d75ab3fb3683aaa2f397c3e6719d6ed321",
+  "metadata_correction": "Original immutable manifest incorrectly labels nearest0x027f. Original fixture actually ran upward rounding; the manifest is preserved and this explicit separate correction controls its disposition.",
+  "old_crt_value": "0x027f",
+  "old_crt_mask": "0xffff",
+  "actual_raw_control_word": "0x0a7f",
+  "actual_crt_control_word": "0x0009021f",
+  "actual_c_fegetround": 512,
+  "precision": "53 bits inherited; old abstract mask excluded PC bits",
+  "accepted_capture": "triangle-fan-nearest-x87",
+  "control_proof": "triangle-fan-control-proof.json",
+  "production_red_claim": false
+}

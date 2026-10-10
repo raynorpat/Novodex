@@ -37,8 +37,13 @@
 // named by their oracle RVA). x87: on the /arch:IA32 list; /EHs-c- with the
 // other ICE-shaped files.
 
+#include "NxPhysicsBackend.h"
+#if !NX_PHYSICS_USE_X87
+#include "TriangleMesh.h"
+#endif
 #include "TriangleMeshPolygons.h"
 
+#if NX_PHYSICS_USE_X87
 // phys_fn_000505 (0x00010190, 50 B)
 // The scratch record's next stamp (thiscall, no argument): +0x14 incremented;
 // when it wraps to zero the visited array (+0x08, when non-null) is cleared
@@ -452,6 +457,10 @@ L55483:
 		ret	0x18		// 0x00055488
 		}
 	}
+
+#else
+#include "portable/TriangleMeshPolygonsScalar.inl"
+#endif
 
 // The table at 0x101085d4, in its order.
 const void* const gTriangleMeshPolygonTable[12] =

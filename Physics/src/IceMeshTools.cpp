@@ -166,6 +166,7 @@ __declspec(noinline) bool nxIceEdgeLoop(IceCore::Container& loop, const IceCore:
 	return true;
 	}
 
+#if !defined(NX_PHYSICS_HULL_KERNEL_ONLY)
 // phys_fn_001645 (0x00031680, 29 B)
 // +0x04 = verts, +0x00 = nb_verts (the arguments in that order, `ret 8`), and
 // +0x08, +0x0c, +0x10 zeroed.
@@ -307,6 +308,7 @@ MeshNormals::~MeshNormals()
 //     register and y and z narrowed first; without it, the plain sums;
 //   * every vertex normal normalised as the face normals were.
 // True. The listing's instructions, naked (see the top of the file).
+#if NX_PHYSICS_USE_X87
 __declspec(naked) bool __fastcall nxMeshNormalsCompute(MeshNormals* /*normals*/, NxU32 /*edx*/,
 	const MESHNORMALSCREATE* /*create*/)
 	{
@@ -808,6 +810,8 @@ L31d9c:
 		}
 	}
 
+#endif
+
 // phys_fn_001653 (0x00031db0, 1618 B)
 // The relative poses of two frames, as 4x4 matrices. M0 = pose0 ? pose0^-1 :
 // identity and M1 = pose1 ? pose1^-1 : identity (the vendored
@@ -819,6 +823,7 @@ L31d9c:
 // and stored as a float into a 16-float local that is then copied out (rep
 // movsd). The listing also zeroes one local dword it never reads (0x00031dc2).
 // The listing's instructions, naked (see the top of the file).
+#if NX_PHYSICS_USE_X87
 __declspec(naked) void __cdecl nxIcePosePair(IceMaths::Matrix4x4* /*relative0*/,
 	IceMaths::Matrix4x4* /*relative1*/, const IceMaths::Matrix4x4* /*pose0*/,
 	const IceMaths::Matrix4x4* /*pose1*/)
@@ -1291,6 +1296,14 @@ L323f8:
 		}
 	}
 
+#endif // legacy pose
+
+#if !NX_PHYSICS_USE_X87
+#include "portable/IceMeshToolsScalar.inl"
+#endif
+
+#endif
+
 // phys_fn_001657 (0x00032460, 60 B)
 // Reverses an array of dwords in place (cdecl: count, array): false when either
 // is zero; else count/2 swaps from both ends, and true. 001472 (ConvexHull.cpp)
@@ -1326,6 +1339,7 @@ __declspec(noinline) bool nxIceReverseArray(NxU32 count, NxU32* array)
 // with the Container in ecx, an unused edx and the direction on the stack,
 // popped by the callee, because the vendored Container header is not changed.
 // The listing's instructions, naked (see the top of the file).
+#if NX_PHYSICS_USE_X87
 __declspec(naked) bool __fastcall nxIceAddUniqueAxis(IceCore::Container* /*axes*/, NxU32 /*edx*/,
 	const IceMaths::Point* /*axis*/)
 	{
@@ -1394,6 +1408,7 @@ L32582:
 		ret	4		// 0x00032588
 		}
 	}
+#endif
 
 // phys_fn_001663 (0x00032590, 19 B)
 Valencies::Valencies()
@@ -1495,3 +1510,7 @@ bool Valencies::Compute(const VALENCESCREATE& create)
 		}
 	return true;
 	}
+
+#if !NX_PHYSICS_USE_X87
+#include "portable/IceUniqueAxisScalar.inl"
+#endif

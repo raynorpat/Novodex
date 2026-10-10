@@ -46,6 +46,8 @@
  *	\return		true on overlap. mStabbedFace is filled with relevant info.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#include "NxPhysicsBackend.h"
+#if NX_PHYSICS_USE_X87
 inline_ BOOL RayCollider::RayTriOverlap(const Point& vert0, const Point& vert1, const Point& vert2)
 {
 	// Stats
@@ -127,3 +129,7 @@ inline_ BOOL RayCollider::RayTriOverlap(const Point& vert0, const Point& vert1, 
 	}
 	return TRUE;
 }
+
+#else
+#include "OPC_RayTriOverlapScalar.inl"
+#endif

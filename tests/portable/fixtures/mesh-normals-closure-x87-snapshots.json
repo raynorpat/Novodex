@@ -1,0 +1,25 @@
+{
+  "capture": "mesh-normals-closure-x87.json",
+  "snapshots": {
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-closure-x87-NxInternalTriangleMesh.h.gz": {
+      "source": "Physics/src/include/NxInternalTriangleMesh.h",
+      "source_sha256": "3c399f9a14f540e06e36aca0ff1bb01a9760e6fc523834eb631d8c5ca035b7c8"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-closure-x87-TriangleMesh.h.gz": {
+      "source": "Physics/src/include/TriangleMesh.h",
+      "source_sha256": "29a32af54ec3f8764d974b470e5234e4c04d071902258a4f67caa5ae77f01e2c"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-closure-x87-TriangleMeshTopology.cpp.gz": {
+      "source": "Physics/src/TriangleMeshTopology.cpp",
+      "source_sha256": "0831e75dbdbfbbe1df55e3051acb36c57acb8dbdff0b545aa4867993507f24f4"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-closure-x87-MeshNormalsTests.cpp.gz": {
+      "source": "tests/portable/MeshNormalsTests.cpp",
+      "source_sha256": "7192173077ea736ce56f1e064d85a2fc137c62e80cc65dc910275f051ea11588"
+    },
+    "tests\\portable\\fixtures\\capture-source\\mesh-normals-closure-x87-MeshNormalsTargets.cmake.gz": {
+      "source": "tests/portable/MeshNormalsTargets.cmake",
+      "source_sha256": "8b5e769b9b9c04b7d1a78bd9bc032448b662324fbbc9810b4c92c41d4c22532d"
+    }
+  }
+}

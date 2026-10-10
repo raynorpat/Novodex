@@ -34,6 +34,7 @@
 
 #include "IceSupportMaps.h"
 
+#if NX_PHYSICS_USE_X87
 #include <stdlib.h>
 
 extern "C" int __cdecl _purecall(void);
@@ -981,3 +982,7 @@ __declspec(noinline) IceSupportMap* __fastcall nxSupportMapVertexDelete(IceSuppo
 		nxSupportMapFree(map);
 	return map;
 	}
+
+#else
+#include "portable/IceSupportMapsScalar.inl"
+#endif

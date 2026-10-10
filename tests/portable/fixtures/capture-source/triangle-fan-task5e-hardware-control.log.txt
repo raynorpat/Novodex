@@ -1,0 +1,2 @@
+raw_control=027f crt_control=0009001f fe_round=0
+triangle_fan groups=3072 observations=197888 hits=1289 misses=1783 later_hits=417 first_before_nearest=77 failures=0

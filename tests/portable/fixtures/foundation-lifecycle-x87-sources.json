@@ -1,0 +1,440 @@
+[
+  {
+    "source": "Foundation/src/FoundationSDK.cpp",
+    "source_sha256": "1fec0c6fc294a7b60b173c8edd30495a48d2db94dc52299db6b79b6a78b7a930",
+    "snapshot": "capture-source/foundation-lifecycle-x87-0-FoundationSDK.cpp.gz",
+    "snapshot_sha256": "62cecbb2e6e00658e39da8509c7b7304c36c3f9225b844c00f1670e4b1d14e36"
+  },
+  {
+    "source": "Foundation/src/Observable.cpp",
+    "source_sha256": "d75e313d71c76422e225f032c54754cd669692529e267d9975633f36855f9d98",
+    "snapshot": "capture-source/foundation-lifecycle-x87-1-Observable.cpp.gz",
+    "snapshot_sha256": "2cccbddbeef7f47db9b93604878a7f6f048da0cca9e0057d8ba019f550065c47"
+  },
+  {
+    "source": "Foundation/src/DebugRenderable.cpp",
+    "source_sha256": "07a5a7163a43357627c5c2dbfb3b9445099a6ee0c1d2f113ad1c143de2af989a",
+    "snapshot": "capture-source/foundation-lifecycle-x87-2-DebugRenderable.cpp.gz",
+    "snapshot_sha256": "754aeca531aa8a3a714332d171b3a1ff9984f8784237d2eb96a821b6a0192598"
+  },
+  {
+    "source": "Foundation/src/Profiler.cpp",
+    "source_sha256": "e384a13d4f26cd3fbef87fc25e8afed464c3145acbf86b3b79bf395665a2fdc5",
+    "snapshot": "capture-source/foundation-lifecycle-x87-3-Profiler.cpp.gz",
+    "snapshot_sha256": "05da004989caa29409ab64cee975d5ff7162fc8dbc95352bc5040dd67ef7c0bb"
+  },
+  {
+    "source": "Foundation/src/Time.cpp",
+    "source_sha256": "5b97703ac8d465fa4c13b7308d696f2301117f6b409ed90655896558c0dce34f",
+    "snapshot": "capture-source/foundation-lifecycle-x87-4-Time.cpp.gz",
+    "snapshot_sha256": "fc5c102443d6827d2d3e3c5e2379d8e1a7d127599b52a8fa6ec176a352f1ccb9"
+  },
+  {
+    "source": "Foundation/src/Utilities.cpp",
+    "source_sha256": "11dc7610c6719e217d072d6db3085bbb42db0ac7636cbed43a303d0198dd8f8d",
+    "snapshot": "capture-source/foundation-lifecycle-x87-5-Utilities.cpp.gz",
+    "snapshot_sha256": "c1a428ba75b8f6e3aab4d42cff8861188992c497c8457f8fcc5c6931c2970fd3"
+  },
+  {
+    "source": "Foundation/src/Box.cpp",
+    "source_sha256": "0c0405686f372dbdfd707599f757834adbed64ae17d91b04a91f416c54f7f522",
+    "snapshot": "capture-source/foundation-lifecycle-x87-6-Box.cpp.gz",
+    "snapshot_sha256": "60ce23d347a92664d95ca7a72dc65ee12381c37d5db449fcf11e80f722e3ca16"
+  },
+  {
+    "source": "Foundation/src/include/NxFoundationAllocatorAccess.inl",
+    "source_sha256": "39607e10906a09c75910e7a994f9f0748bb76492522dca1903384aed06b239b9",
+    "snapshot": "capture-source/foundation-lifecycle-x87-7-NxFoundationAllocatorAccess.inl.gz",
+    "snapshot_sha256": "1b3115a219b87ad7aaeb1db8cd3adef980fadc11e49fd196ac22f59ab315efe3"
+  },
+  {
+    "source": "tests/portable/FoundationLifecycleTests.cpp",
+    "source_sha256": "95c6f42c6532f7af3d50147293aba5d0f24a74f94a5a03b4d16bfe9af2743877",
+    "snapshot": "capture-source/foundation-lifecycle-x87-8-FoundationLifecycleTests.cpp.gz",
+    "snapshot_sha256": "a356e243eecd1cda57235eb7f2fb68e7d258a7c6e25865f63cb9e1ab3dd38b7b"
+  },
+  {
+    "source": "tests/portable/FoundationLifecycleTargets.cmake",
+    "source_sha256": "e19a0104e10a272ad1230ef0858c8d163f033974d20774aae81935f326ff0158",
+    "snapshot": "capture-source/foundation-lifecycle-x87-9-FoundationLifecycleTargets.cmake.gz",
+    "snapshot_sha256": "ed7f61c8d102afa64f05d24ab48b768b8176882dabaf66715ab11045fff1f65d"
+  },
+  {
+    "source": "tests/portable/CMakeLists.txt",
+    "source_sha256": "01f0a36afcabe393c99f007f0e63ec5caa3d426743879b7db78eac58f46d7945",
+    "snapshot": "capture-source/foundation-lifecycle-x87-10-CMakeLists.txt.gz",
+    "snapshot_sha256": "feaadd6e7a2d5f7ba4ee11206f3c24198be92d47c0df551788053351bee61bc7"
+  },
+  {
+    "source": "tests/portable/FixtureSupport.cpp",
+    "source_sha256": "a82e14334b142d396044310eb681711aca16f6d8d109ade257461bc46831cba9",
+    "snapshot": "capture-source/foundation-lifecycle-x87-11-FixtureSupport.cpp.gz",
+    "snapshot_sha256": "a2bcef71c35980bce1bda991969b62b5ec0460a1c338ff1992638d754d6842ad"
+  },
+  {
+    "source": "tests/portable/FixtureSupport.h",
+    "source_sha256": "e4243ec8d6c5089da14b3ba530894c6b9e5fec352f0d01c04f51a643d55bc691",
+    "snapshot": "capture-source/foundation-lifecycle-x87-12-FixtureSupport.h.gz",
+    "snapshot_sha256": "04e1386abf4a51d7e101ccb2f72df2002ca9b7debcabf01c23d4e4c0f0dfbdfe"
+  },
+  {
+    "source": "cmake/NxPhysicsBackend.cmake",
+    "source_sha256": "44763d30bf64dd95f1e5671ff7416f027a80495fc6a5fc754f359af018124178",
+    "snapshot": "capture-source/foundation-lifecycle-x87-13-NxPhysicsBackend.cmake.gz",
+    "snapshot_sha256": "b09ca2bd5e8d382df1a565f2b0547fb8dafe9f77119a93e59d59e58a43f41461"
+  },
+  {
+    "source": "docs/reconstruction/novodex-physics/tools/capture_scalar_math.py",
+    "source_sha256": "ddd9415fbe9b4c67094e63c0812df70a95e276861686d889fca2daa7d9dda13f",
+    "snapshot": "capture-source/foundation-lifecycle-x87-14-capture_scalar_math.py.gz",
+    "snapshot_sha256": "40c02888e9fd303c15cd4f201a4b18afc4d6105a36ba949057a87160f733a506"
+  },
+  {
+    "source": "docs/reconstruction/novodex-physics/tools/capture_foundation_lifecycle.py",
+    "source_sha256": "149dc9876c47ec7e4f47c5a3a0f152362b1ddb4a0f2284e3377f3f01aebce7b4",
+    "snapshot": "capture-source/foundation-lifecycle-x87-15-capture_foundation_lifecycle.py.gz",
+    "snapshot_sha256": "bf6ecbcd54bb59ef48733f0d3e284844cac2869c003a9ea155639a30246eefad"
+  },
+  {
+    "source": "Foundation/include/Nx.h",
+    "source_sha256": "0f1411124c2b704e5bfb72ca476297840692f1c6c4df47daf1185530070464e4",
+    "snapshot": "capture-source/foundation-lifecycle-x87-16-Nx.h.gz",
+    "snapshot_sha256": "f73d6bbfce6391b624673d1e5887a58f521988f71c18716a0099fa0992021d44"
+  },
+  {
+    "source": "Foundation/include/Nx12F32.h",
+    "source_sha256": "ba4bbbf13aad6e32a7a9f82306d8a96b8c78311c8f5769c29d37ca5e93a38b96",
+    "snapshot": "capture-source/foundation-lifecycle-x87-17-Nx12F32.h.gz",
+    "snapshot_sha256": "c842f662b79270b107a399b9f8842f39afc78190e395e1508be3729fca7fb865"
+  },
+  {
+    "source": "Foundation/include/Nx16F32.h",
+    "source_sha256": "bb786b47861edeec6917b6fc7aaff97c93bae473fe9d9c92184298b2a75d4cd5",
+    "snapshot": "capture-source/foundation-lifecycle-x87-18-Nx16F32.h.gz",
+    "snapshot_sha256": "0ca421cb3c824ef5e908d871c52d77d68067f01283db205838af599d0183e6fb"
+  },
+  {
+    "source": "Foundation/include/Nx9F32.h",
+    "source_sha256": "7e5bf33f115fbb2e4203c11cd3b9f26bd4ab4d2732e8ae724436da298eed64c6",
+    "snapshot": "capture-source/foundation-lifecycle-x87-19-Nx9F32.h.gz",
+    "snapshot_sha256": "248303cb769f8e56fed81b7acd81cc9345799bc133e8768a70fd30a3dba48f1a"
+  },
+  {
+    "source": "Foundation/include/NxAllocateable.h",
+    "source_sha256": "b86d9bd9b50bcf630cd7f33702c7f057892770b35f2a64c13dbe02499fee3686",
+    "snapshot": "capture-source/foundation-lifecycle-x87-20-NxAllocateable.h.gz",
+    "snapshot_sha256": "68a303aaf31b860c3e413bfdfa4db8e39385d65e4f41695554cf511074b0c2de"
+  },
+  {
+    "source": "Foundation/include/NxAllocatorDefault.h",
+    "source_sha256": "f7af0e4db1d123ecdae6d412105d8666d939391da74216433b6d965c069509af",
+    "snapshot": "capture-source/foundation-lifecycle-x87-21-NxAllocatorDefault.h.gz",
+    "snapshot_sha256": "57ce3436f90132b03e340d09a8937591777bce28edea6c96496d9dac1c52b368"
+  },
+  {
+    "source": "Foundation/include/NxArray.h",
+    "source_sha256": "8a64f16ae54412c7087c35d4de0a161c4485e7bbc9a0c51ca947a3f2058b45f6",
+    "snapshot": "capture-source/foundation-lifecycle-x87-22-NxArray.h.gz",
+    "snapshot_sha256": "9c0df94a1d723ff282a42e826d4c9bdd91e0d524c3c8d38510ae4305fbff9e38"
+  },
+  {
+    "source": "Foundation/include/NxAssert.h",
+    "source_sha256": "8a144be9690039a11e9879d9a6c4151e33c326ffdce2598aa7f54c2536b1a825",
+    "snapshot": "capture-source/foundation-lifecycle-x87-23-NxAssert.h.gz",
+    "snapshot_sha256": "2a9fb4ad5cf14b07d6947489bd038626e16ea32fabecd39fd84438cbd5e5e371"
+  },
+  {
+    "source": "Foundation/include/NxBitField.h",
+    "source_sha256": "457f929e339ac136150af13c6a392ff5c077ac650c651c18962113455be835d1",
+    "snapshot": "capture-source/foundation-lifecycle-x87-24-NxBitField.h.gz",
+    "snapshot_sha256": "618270ed3b6b7bb50aa02c23d38a3dcdbfee78155017052bebe5c3888c1c5a18"
+  },
+  {
+    "source": "Foundation/include/NxBlank.h",
+    "source_sha256": "b2d6b42fad0dc95c525e0c4ff9ec53adf34f14b0a2a5ea9939f4a7bf424058d6",
+    "snapshot": "capture-source/foundation-lifecycle-x87-25-NxBlank.h.gz",
+    "snapshot_sha256": "69f57da16eacadd1cc166651fe022c6455c55c81582f7e3a940addceb2b5c506"
+  },
+  {
+    "source": "Foundation/include/NxBounds3.h",
+    "source_sha256": "c7763076cb80b44863fa2faf71d1710548e2b96323b6ebe6dc557b56efd86c42",
+    "snapshot": "capture-source/foundation-lifecycle-x87-26-NxBounds3.h.gz",
+    "snapshot_sha256": "b523f21d0047de202f90c1209bd99ff80c7bcb54dc81c284183c024a785d084f"
+  },
+  {
+    "source": "Foundation/include/NxBox.h",
+    "source_sha256": "453505eea6459281937094b4e5e4b7782bec48e817d19d2e586a7c7c2dbda4bf",
+    "snapshot": "capture-source/foundation-lifecycle-x87-27-NxBox.h.gz",
+    "snapshot_sha256": "30c1c16c8f9635a609cdd61f1c2fedb5f1bc838108ff540ac56ce5fa41475259"
+  },
+  {
+    "source": "Foundation/include/NxBuildNumber.h",
+    "source_sha256": "8bc6af66adb5adb9bfa8e402ee2bb4be23fc089b4c2835d174f41300aa0a028d",
+    "snapshot": "capture-source/foundation-lifecycle-x87-28-NxBuildNumber.h.gz",
+    "snapshot_sha256": "fcc9960df9daff7dee087147648775646640306e24c04142b4af42c728865bfb"
+  },
+  {
+    "source": "Foundation/include/NxCapsule.h",
+    "source_sha256": "b019a841676991483cd8cd306af298a07d09b07aac1014651e028157ce87cd90",
+    "snapshot": "capture-source/foundation-lifecycle-x87-29-NxCapsule.h.gz",
+    "snapshot_sha256": "f789ea8c82a922140b1403e406aa2f37c27b46f65063bd27299c003806f1ac2c"
+  },
+  {
+    "source": "Foundation/include/NxDebugRenderable.h",
+    "source_sha256": "bd05064e4c2363d39c137b2630dc23e62eaca09bfd62d88f056a69013fc2b2af",
+    "snapshot": "capture-source/foundation-lifecycle-x87-30-NxDebugRenderable.h.gz",
+    "snapshot_sha256": "ac310f4cc1305cc1615298cc9cead706f2e6bedea50a202869443f6c021efab8"
+  },
+  {
+    "source": "Foundation/include/NxException.h",
+    "source_sha256": "999cc86008a233615c16f6e772cf37c44e1e71dd1dc496ac8e2b36def4874f76",
+    "snapshot": "capture-source/foundation-lifecycle-x87-31-NxException.h.gz",
+    "snapshot_sha256": "b17e045693cd81a6d5987a5c44da71cc2ee8311f05eca73034724268d8431719"
+  },
+  {
+    "source": "Foundation/include/Nxf.h",
+    "source_sha256": "9303dc95fd07426f00bd803e7f024b2dc690da302b2487161624a893ffadbf38",
+    "snapshot": "capture-source/foundation-lifecycle-x87-32-Nxf.h.gz",
+    "snapshot_sha256": "86ddf37ddc0b3248775368c223a48860f3f834792890bcef5a949d2c8f38623e"
+  },
+  {
+    "source": "Foundation/include/NxFoundation.h",
+    "source_sha256": "bca036d356a428cc1d85620d0846ed672632d47963877f9e5f163551d8207cf5",
+    "snapshot": "capture-source/foundation-lifecycle-x87-33-NxFoundation.h.gz",
+    "snapshot_sha256": "56a3380a6a501a603059346a0aae73d28db0dba9a43ed9c10cfe88d508329c94"
+  },
+  {
+    "source": "Foundation/include/NxFoundationSDK.h",
+    "source_sha256": "31426e5966dbe0215b430daffe91ba8a7063b1853b1b51995f66e6850ecf6dbe",
+    "snapshot": "capture-source/foundation-lifecycle-x87-34-NxFoundationSDK.h.gz",
+    "snapshot_sha256": "755791eab3a3d9e4106aa37eed908e265705d53d76eca1a5ad7c9a048d31fd43"
+  },
+  {
+    "source": "Foundation/include/NxFPU.h",
+    "source_sha256": "437e2a2fd24336e7a1bc93af292593992a2b0b80bf045629c414475b91090db9",
+    "snapshot": "capture-source/foundation-lifecycle-x87-35-NxFPU.h.gz",
+    "snapshot_sha256": "dc5e8e6f4097612a05fa4027e2908a9bbcb905e0873ec9685ea50243dd52a79a"
+  },
+  {
+    "source": "Foundation/include/NxList.h",
+    "source_sha256": "c59f413d86d739af0408899233d41f53180da34e7804acc47df41a0f0c405ca8",
+    "snapshot": "capture-source/foundation-lifecycle-x87-36-NxList.h.gz",
+    "snapshot_sha256": "627a00b00b7b399f2b9a204c1b1ea0e805aa066752cede26a370a86e2e9ddf45"
+  },
+  {
+    "source": "Foundation/include/NxMat33.h",
+    "source_sha256": "20d47881227a4ac033a4a2c618d6fc3cb1bafd9b086d7b12e56c683b7bf08ea5",
+    "snapshot": "capture-source/foundation-lifecycle-x87-37-NxMat33.h.gz",
+    "snapshot_sha256": "bf24e1b1a63f48b3f3c8660c4384b441a829f7bf254e1b4707acd7142048a1e9"
+  },
+  {
+    "source": "Foundation/include/NxMat34.h",
+    "source_sha256": "26fb30b99d68209cb3fc45f91d18bb26503119263a04576997e39a079cb7faed",
+    "snapshot": "capture-source/foundation-lifecycle-x87-38-NxMat34.h.gz",
+    "snapshot_sha256": "0ca3b515e3739a736b18a4f9271d20cc6fe9155fc7227b1f30b67c51b83aaa22"
+  },
+  {
+    "source": "Foundation/include/NxMath.h",
+    "source_sha256": "bb136395e11024828d38983ace9621d6ab58d7dc7b4ee495dd63a989ce90bd4f",
+    "snapshot": "capture-source/foundation-lifecycle-x87-39-NxMath.h.gz",
+    "snapshot_sha256": "8cb0c147a4a0dd3b3ec984e009b0ec10c7366c7abe3a87d5dfd8aea8c8ade2b9"
+  },
+  {
+    "source": "Foundation/include/NxPlane.h",
+    "source_sha256": "9ee607a71ab37b82c641cff4d1c026f2a24aa51c7ef33c1dc6acc5874a22f552",
+    "snapshot": "capture-source/foundation-lifecycle-x87-40-NxPlane.h.gz",
+    "snapshot_sha256": "bd6ab3aa6f08720c316724853bf1b051cbc17b4f62a21fdd05ddbedd47235148"
+  },
+  {
+    "source": "Foundation/include/NxPool.h",
+    "source_sha256": "94688d29641eaad9a16170e3470991c23266190c84732f8513bee8cbc1d3c251",
+    "snapshot": "capture-source/foundation-lifecycle-x87-41-NxPool.h.gz",
+    "snapshot_sha256": "acd4bc595a870adbd4b70c0c8f66fc285aa15f58fe39635043443124b713b8b0"
+  },
+  {
+    "source": "Foundation/include/NxProfiler.h",
+    "source_sha256": "203efe91b8a04e1459aab30545d4b424b6a7832e27d738e4ef88f238e9d7699d",
+    "snapshot": "capture-source/foundation-lifecycle-x87-42-NxProfiler.h.gz",
+    "snapshot_sha256": "757f8d19423dbaac841796e4e6c04d584d8bba79b36d80afa2d24adba4f0258b"
+  },
+  {
+    "source": "Foundation/include/NxQuat.h",
+    "source_sha256": "58fd4d399650ba087a5441315d4faeed0250be1d8a348c23006a450fd53bc18e",
+    "snapshot": "capture-source/foundation-lifecycle-x87-43-NxQuat.h.gz",
+    "snapshot_sha256": "c3a65fd51c58a41bb852fbec7e13851487e29902c64e9abc2e0d58fe76b670d4"
+  },
+  {
+    "source": "Foundation/include/NxQuickSort.h",
+    "source_sha256": "f582c562f1812ec9c63ea8553af258f54cca199b3e6b05993fbc417378133067",
+    "snapshot": "capture-source/foundation-lifecycle-x87-44-NxQuickSort.h.gz",
+    "snapshot_sha256": "065576d2906d458950a711a7adc41e5c9f78821e468442a1e35cfec208b2175a"
+  },
+  {
+    "source": "Foundation/include/NxRay.h",
+    "source_sha256": "e05ad1eca258d12ed08fedc8b03dbb88cd6bf1e1d7a35f10486f54c664cbab7e",
+    "snapshot": "capture-source/foundation-lifecycle-x87-45-NxRay.h.gz",
+    "snapshot_sha256": "0281551338e71d2dad6b02cb1ba340e5a8a29434669fa5ded168b68e7a8ea151"
+  },
+  {
+    "source": "Foundation/include/NxSegment.h",
+    "source_sha256": "268cb4d45d49a0f3d2eb4f692d43d97aa21d24db761014d242495e6e54a4008f",
+    "snapshot": "capture-source/foundation-lifecycle-x87-46-NxSegment.h.gz",
+    "snapshot_sha256": "75cd573c635983085593d60723a254c2d0d9746f8d8ac46d8361f979bc79a743"
+  },
+  {
+    "source": "Foundation/include/NxSimpleTriangleMesh.h",
+    "source_sha256": "c8b4dd640bbe297b29dab1a3521da3cf6444edd384f06f35f6a63ff58f667995",
+    "snapshot": "capture-source/foundation-lifecycle-x87-47-NxSimpleTriangleMesh.h.gz",
+    "snapshot_sha256": "4a5499f20b1ea1845aad22bfc8ac24e3baf82ed1744e55f9739fa065a664729e"
+  },
+  {
+    "source": "Foundation/include/NxSimpleTypes.h",
+    "source_sha256": "74f162f50a02d66d62144261c0044945ded354bb67efba21562ee9362c3ab203",
+    "snapshot": "capture-source/foundation-lifecycle-x87-48-NxSimpleTypes.h.gz",
+    "snapshot_sha256": "77a622f01eb1f89be644c1157efbccf5f41156e11b918ae37e96243ed5305554"
+  },
+  {
+    "source": "Foundation/include/NxSphere.h",
+    "source_sha256": "9d205a2d69fbfed1e27cf69bd7054cbbda07516d7e68fc54c33ffac899609970",
+    "snapshot": "capture-source/foundation-lifecycle-x87-49-NxSphere.h.gz",
+    "snapshot_sha256": "dbaf27cac697b886733f84d68f54f07512bff512644f98e3d9f7353b456dc4f1"
+  },
+  {
+    "source": "Foundation/include/NxStream.h",
+    "source_sha256": "406f5261e4dcec6a87c3a654e1c16bb05f23f362df45627193efaa159bdd6a12",
+    "snapshot": "capture-source/foundation-lifecycle-x87-50-NxStream.h.gz",
+    "snapshot_sha256": "38d89b0e2cefe1265abda48551bc171da9b858a90f39dd60415caeec7de0f966"
+  },
+  {
+    "source": "Foundation/include/NxUserAllocator.h",
+    "source_sha256": "d9a9099d220e18c854f4e1d856d4b4f3809951ba78ec85d1953cc610b5b8e039",
+    "snapshot": "capture-source/foundation-lifecycle-x87-51-NxUserAllocator.h.gz",
+    "snapshot_sha256": "db8c8075f595ed35d22a234a7badf4c4eac4f684263ce7d8448c531338809214"
+  },
+  {
+    "source": "Foundation/include/NxUserAllocatorAccess.h",
+    "source_sha256": "0cb14602986db655d7f7507de33033bf29601abb620ba0491dcdd1609ff86cbf",
+    "snapshot": "capture-source/foundation-lifecycle-x87-52-NxUserAllocatorAccess.h.gz",
+    "snapshot_sha256": "35f7ebd1cf98c43f4fc2b9c4abf904f93d16d2a3b476ecbdcd38e579dde62ceb"
+  },
+  {
+    "source": "Foundation/include/NxUserAllocatorDefault.h",
+    "source_sha256": "afe8cc95c7ad796e09f97b46e0ebe9a62d8c06afe25d422629dd842bf207fb53",
+    "snapshot": "capture-source/foundation-lifecycle-x87-53-NxUserAllocatorDefault.h.gz",
+    "snapshot_sha256": "573287934fc5e87860c3d0a1c38af7245a56421bc4e8b69d58fa1a1adb522d44"
+  },
+  {
+    "source": "Foundation/include/NxUserDebugRenderer.h",
+    "source_sha256": "1f1dd04c5be2abd80479aa755f53f028978869539e370000682289f10263baee",
+    "snapshot": "capture-source/foundation-lifecycle-x87-54-NxUserDebugRenderer.h.gz",
+    "snapshot_sha256": "e5ff70a76006a3c0ecf8a4770702d6e4c3139a0d002461f3a92381291043357f"
+  },
+  {
+    "source": "Foundation/include/NxUserOutputStream.h",
+    "source_sha256": "7f9f3b9b92a36c84acf166b5c2fd84db70733899caa1569e0784de4bfbb33965",
+    "snapshot": "capture-source/foundation-lifecycle-x87-55-NxUserOutputStream.h.gz",
+    "snapshot_sha256": "6e13061a4e9f455379cbc6a975eeacdeb3ce3c1ce5ecfdbedc370da0b99b58ff"
+  },
+  {
+    "source": "Foundation/include/NxUtilities.h",
+    "source_sha256": "ee639cb8ceb5edd2d770775232dfd1628eccdc3b7631689c6f082437e31910ee",
+    "snapshot": "capture-source/foundation-lifecycle-x87-56-NxUtilities.h.gz",
+    "snapshot_sha256": "fef7ac541bd948be7951b3f6e4a191b893eaa9aa0d62697699a0184611e454eb"
+  },
+  {
+    "source": "Foundation/include/NxVec3.h",
+    "source_sha256": "852a0e2dd0595a10bb993f1b202cf98d11218ab4edfff0931646e049fcc28629",
+    "snapshot": "capture-source/foundation-lifecycle-x87-57-NxVec3.h.gz",
+    "snapshot_sha256": "710bb9f75c7e1543bd48adae064d913b459c38595671175b6001f0c65cdc3b95"
+  },
+  {
+    "source": "Foundation/include/NxVersionNumber.h",
+    "source_sha256": "0b0ee61a53b886437e2a0ef7f5d9b123d4d8ccd178ebd6057eeddc3e552e3df1",
+    "snapshot": "capture-source/foundation-lifecycle-x87-58-NxVersionNumber.h.gz",
+    "snapshot_sha256": "c9a394108798c21516f33c17de4e5be944c77433f78de6e6d135172c9391b0c1"
+  },
+  {
+    "source": "Foundation/include/NxVolumeIntegration.h",
+    "source_sha256": "e748af935cd1d56999e65449fc95dc7230108f3bd5e51a4052926a287dd2cc72",
+    "snapshot": "capture-source/foundation-lifecycle-x87-59-NxVolumeIntegration.h.gz",
+    "snapshot_sha256": "3557ec2b8612f5f4cf49d2864af27156936677d58f30f23920e3ec1baac6b39c"
+  },
+  {
+    "source": "Foundation/include/NxXBOX.h",
+    "source_sha256": "964f1207a89b6563700eaee9d44fb4b03e9bac59f933f494f1a8e4339532f665",
+    "snapshot": "capture-source/foundation-lifecycle-x87-60-NxXBOX.h.gz",
+    "snapshot_sha256": "f14b6bd070772c86a0fd29db357c54ae86dc97e6f912ec1d7814dc6f27b60d52"
+  },
+  {
+    "source": "Foundation/src/include/CustomAssert.h",
+    "source_sha256": "4ac83d62c7e36c5bfd729718ada91b76d2eccbac3993e5d6a914bc1883626bc9",
+    "snapshot": "capture-source/foundation-lifecycle-x87-61-CustomAssert.h.gz",
+    "snapshot_sha256": "0972a24115f61fcb311919eb292f7410b092e4d79b6bd0a42ca024ba99e3b523"
+  },
+  {
+    "source": "Foundation/src/include/DebugRenderable.h",
+    "source_sha256": "885b521125edbcdc582ca538efc7abc55278e5b2d73d2142905d8afb9246d6d3",
+    "snapshot": "capture-source/foundation-lifecycle-x87-62-DebugRenderable.h.gz",
+    "snapshot_sha256": "b48c93ab056ef969eb2928a542daf944b928010c0355549e5d0a1b894afc534f"
+  },
+  {
+    "source": "Foundation/src/include/DefaultAllocator.h",
+    "source_sha256": "f30ec36fd93661c1a83e221c89cfbd9755c6c163c19232c6d463297cc5cbbe35",
+    "snapshot": "capture-source/foundation-lifecycle-x87-63-DefaultAllocator.h.gz",
+    "snapshot_sha256": "59b9f2210af8fa58be7322fae207408ddb9854b866cf194a864dc9f8bbd53e81"
+  },
+  {
+    "source": "Foundation/src/include/DefaultTriangleMesh.h",
+    "source_sha256": "70ec2c6992c28c16f07421b3f0ad053a823f558323113926b8645851810b8f73",
+    "snapshot": "capture-source/foundation-lifecycle-x87-64-DefaultTriangleMesh.h.gz",
+    "snapshot_sha256": "855b34121d61f4ae004f3dfc46b8cb2c07828628b7061c6875a5d3aa98ff1d19"
+  },
+  {
+    "source": "Foundation/src/include/Exception.h",
+    "source_sha256": "b9691cc56ec76a52fb8ec6cf713c935f22cfdc93b96873d00651451a04ae7adc",
+    "snapshot": "capture-source/foundation-lifecycle-x87-65-Exception.h.gz",
+    "snapshot_sha256": "3bb2b401a6b9f58eb0d35d936b6e6b8beee6dd7442ebf27842914761bb21b945"
+  },
+  {
+    "source": "Foundation/src/include/FoundationSDK.h",
+    "source_sha256": "eba6099021bcecc897789ee4fb2bbe47dbd1bb6e50f5a69e6cda70b7f3317391",
+    "snapshot": "capture-source/foundation-lifecycle-x87-66-FoundationSDK.h.gz",
+    "snapshot_sha256": "73915892f07813d2b2b477d923487e138195240a9345eac00000f4db8c119d49"
+  },
+  {
+    "source": "Foundation/src/include/NxScalarConversions.h",
+    "source_sha256": "71cfa2fcc7ac9556cfa700f714ae15af65a8053d16893fecd1b7b165ae6e2dd7",
+    "snapshot": "capture-source/foundation-lifecycle-x87-67-NxScalarConversions.h.gz",
+    "snapshot_sha256": "5f8332c7b87ae9a423212d3fa6318b490686d362cff1ace66ad22d1186be5c5a"
+  },
+  {
+    "source": "Foundation/src/include/NxTime.h",
+    "source_sha256": "027aa3ec7855d2308d7cd952bf59023d23b4ea4fc21b7b769f13ef03c78cd8e7",
+    "snapshot": "capture-source/foundation-lifecycle-x87-68-NxTime.h.gz",
+    "snapshot_sha256": "4366e592d86d90ea3f5142e38c6475d20ac5f9501bd70780709a14b80bd572a2"
+  },
+  {
+    "source": "Foundation/src/include/Observable.h",
+    "source_sha256": "a7d3a3f614786ca67b505188da3e109c6dbf967185d0be7e18660d4b219e207b",
+    "snapshot": "capture-source/foundation-lifecycle-x87-69-Observable.h.gz",
+    "snapshot_sha256": "7533079187ca5bfe72a382071e6c237c24d9e18fdb681571d48b893fa27ccce6"
+  },
+  {
+    "source": "Foundation/src/include/Profiler.h",
+    "source_sha256": "b479ad5001e98222240a4a0cb174e49678531cd52694c422fce21baaa6bd20ac",
+    "snapshot": "capture-source/foundation-lifecycle-x87-70-Profiler.h.gz",
+    "snapshot_sha256": "f005978b524940fb2a4053e92c1ce0975a40a72f7fb5c8069fdec4870e7f719a"
+  },
+  {
+    "source": "Foundation/src/include/STLAllocator.h",
+    "source_sha256": "037fa47c21a583fe64d22b22a0063e9d77ce46a6c2232b4dbaa4c9c87f35d1d7",
+    "snapshot": "capture-source/foundation-lifecycle-x87-71-STLAllocator.h.gz",
+    "snapshot_sha256": "4461940bd0503377664bff9dc58e81251d89461e82b241ad2a4fd8633a4aa292"
+  },
+  {
+    "source": "Foundation/src/include/win32/time.h",
+    "source_sha256": "0d6021eec0c9beb1492f5f622c3d73d33f8d79a3e84fa6706acaf0a109ebf010",
+    "snapshot": "capture-source/foundation-lifecycle-x87-72-time.h.gz",
+    "snapshot_sha256": "329bdd1494f0ed4a4a7d2a0c212506313268ec32c0964397a602ccd3f158a4c1"
+  }
+]

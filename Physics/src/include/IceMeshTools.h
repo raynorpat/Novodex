@@ -109,7 +109,13 @@ class MeshNormals
 // naked code cannot be a member, so it is __fastcall with the object in ecx, an
 // unused edx and the create block on the stack, popped by the callee: the same
 // registers and the same `ret 4`.
+#if NX_PHYSICS_USE_X87
 bool __fastcall nxMeshNormalsCompute(MeshNormals* normals, NxU32 edx, const MESHNORMALSCREATE* create);
+#else
+// Receiver owns only arrays allocated by this call. Borrowed output arrays are
+// never retained. A failed second allocation historically abandons the first.
+bool nxMeshNormalsCompute(MeshNormals* normals, const MESHNORMALSCREATE* create);
+#endif
 
 // 001639: the function-static identity pair (a 3x3 identity at +0x00, a 4x4
 // identity at +0x24; 100 bytes), initialised once behind a guard byte.
@@ -124,7 +130,11 @@ void __cdecl nxIcePosePair(IceMaths::Matrix4x4* relative0, IceMaths::Matrix4x4* 
 
 // 001661: add a direction to a Container of axes unless it is within 0.9999 of
 // one already there (the oracle's is thiscall on the Container, `ret 4`).
+#if NX_PHYSICS_USE_X87
 bool __fastcall nxIceAddUniqueAxis(IceCore::Container* axes, NxU32 edx, const IceMaths::Point* axis);
+#else
+bool nxIceAddUniqueAxis(IceCore::Container* axes, const IceMaths::Point* axis);
+#endif
 
 // 001657: reverse an array of dwords in place (cdecl: count, array; false when
 // either is zero). ConvexHull.cpp's 001472 calls it.
@@ -132,7 +142,7 @@ bool nxIceReverseArray(NxU32 count, NxU32* array);
 
 // 002144 (SmoothNormals.cpp): the corner angle, register convention (eax the
 // vertex, edx the three indices, esi the vertices; st(0) the result). Called
-// only from assembly.
-void nxSmoothNormalsAngleAtVertex();
+// from legacy assembly; the portable declaration names ordinary typed inputs.
+#include "NxSmoothNormalsAngle.h"
 
 #endif

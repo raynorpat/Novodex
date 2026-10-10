@@ -105,7 +105,7 @@ add_library(NxOpcode STATIC
 	${OPCODE_TREE}/Ice/IceSegment.cpp
 	${OPCODE_TREE}/Ice/IceTriangle.cpp
 	${OPCODE_TREE}/Ice/IceUtils.cpp)
-target_include_directories(NxOpcode PUBLIC ${OPCODE_TREE})
+target_include_directories(NxOpcode PUBLIC ${OPCODE_TREE} "${CMAKE_CURRENT_SOURCE_DIR}/../Physics/src/include")
 # ICE_NO_DLL makes OPCODE_API and ICECORE_API empty -- this is a static library
 # inside NxPhysics.dll and exports nothing of its own, which is also what the
 # oracle's export table says. OPCODE_EXPORTS additionally suppresses Opcode.h's
@@ -125,7 +125,9 @@ target_compile_definitions(NxOpcode PUBLIC ICE_NO_DLL OPCODE_EXPORTS USE_MINMAX)
 # reassociation. qhull runs only under the 0x027f control word (phase4-third-
 # party.md section 4), where fsqrt and __CIsqrt round identically, so this is a
 # code-shape correction, not a numeric one.
-target_compile_options(NxQhull PRIVATE /Qfast_transcendentals)
+if(NX_PHYSICS_USE_X87)
+	target_compile_options(NxQhull PRIVATE /Qfast_transcendentals)
+endif()
 
 # OPCODE likewise: every square root in the image's OPCODE span is an inline
 # `fsqrt` (Plane::Set at 0x000e3274 among ten) and none calls the CRT, where a
@@ -138,7 +140,9 @@ target_compile_options(NxQhull PRIVATE /Qfast_transcendentals)
 # The switch covers every transcendental, not only sqrt: any sin, cos, log, exp or
 # pow added to NxOpcode later is inlined as an x87 instruction too, so check its
 # oracle listing before relying on the CRT's rounding.
-target_compile_options(NxOpcode PRIVATE /Qfast_transcendentals)
+if(NX_PHYSICS_USE_X87)
+	target_compile_options(NxOpcode PRIVATE /Qfast_transcendentals)
+endif()
 
 #### BUILD FLAGS FOR BOTH ####
 
@@ -165,7 +169,10 @@ if(MSVC)
 		# the root CMakeLists is per source file and per directory, and a second
 		# set_source_files_properties naming the same files silently overrode it
 		# once. A target property cannot collide with it.
-		target_compile_options(${vendored} PRIVATE /arch:IA32 /GR-)
+		if(NX_PHYSICS_USE_X87)
+			target_compile_options(${vendored} PRIVATE /arch:IA32)
+		endif()
+		target_compile_options(${vendored} PRIVATE /GR-)
 		# CMake puts /EHsc in CMAKE_CXX_FLAGS. /EHs-c- after it is what turns it
 		# off; D9025 says so out loud, which is better than a silent default.
 		target_compile_options(${vendored} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/EHs-c->)

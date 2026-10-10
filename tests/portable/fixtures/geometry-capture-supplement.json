@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "provenance_kind": "capture-supplement",
+  "reference_revision": "45db8e08fe4e9fbc9e4c91f6e51e9b6445304777",
+  "captures": [
+    "geometry-domain-x87",
+    "geometry-domain-expanded-x87"
+  ],
+  "additional_source_sha256": {
+    "Physics/src/include/X87Sqrt.h": "5e4a21886073e78638c5f20924c1d0920fe1a999b34dbebf0ee7117de530e622",
+    "Physics/src/include/portable/NxScalarMath.h": "82f2a74c9ca2142e812bb58a15d4156db0b50f562985e56c397a549c5dcfe11f",
+    "Physics/src/include/NxPhysicsBackend.h": "b309061c66c035e73cf11c83abc50a822cdb4ed3a42567ae79ac7c6bedaac2b9",
+    "Physics/src/include/portable/NxScalarGeometry.h": "ad6a754cbf2396299569772e3de0ec62fcb037c8f697450d53e90077a6f77f53",
+    "tests/portable/GeometryBudgets.h": "aa3e543608164c054271aa49763da0b6e0a7dc59b705d10c5a4944d50dbb79b6",
+    "tests/portable/CMakeLists.txt": "7f2d2df3f61ce188acbb16c790d6e4ae58d3878524a4fcc73f1b678c6585e094"
+  },
+  "note": "No reference answers or existing capture manifests replaced. First three shared headers match recorded base with line endings normalized. Other hashes describe dirty Task4 sources. Primary algorithm/known private shared/test sources identified, not complete SDK/header platform closure. Snapshots preserve initial/expanded exporter source and input headers.",
+  "reviewed_consumer_sha256": {
+    "tests/portable/GeometryDomain.cpp": "800c2314ce0145c6a0800177c3ed6e17f2526fc225b1f312109b6badde022512",
+    "tests/portable/GeometryTests.cpp": "6b3e4b9bb51b7bfd97c02830c6b87b81aa8ca06f550b0335904c8edc0ab226bf",
+    "tests/portable/GeometryBudgets.h": "611b25711e0b90a1473ffd95621b93e9262411c289bc75dd1c1e369c28fd9950"
+  },
+  "reviewed_consumer_note": "Final test-only byte-view initialization and exact endpoint negative regression tightened consumer after immutable capture. Captured exporter snapshots/metadata and all reference answers preserved."
+}

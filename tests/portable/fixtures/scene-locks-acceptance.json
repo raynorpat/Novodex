@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "capture_id": "scene-locks-x87",
+  "source_revision_before_state_link_integration": "4099ad528247d69457f1e48f42659ba4006f3980",
+  "existing_algorithms_preexist_capture": true,
+  "fixture_sha256": "d530b48f482e36866f3a47d86116773bf2795ad9d791c1e328245b4b0729f864",
+  "manifest_sha256": "33b5af719d804afe5e5951b32a5e1964a479a6ac2bded5ae54e0ea64dfdf4b2a",
+  "source_index_sha256": "6674e1a5916fbdcb1aaf556e28d9c277cf46251dd527f2dd37b563c9aff335a3",
+  "snapshot_count": 137,
+  "current_source_sha256": {
+    "CMakeLists.txt": "0499037bbc67c8ee9d8d6ceb3d3f5301727cbbc82b47b073b63961e6838ee1f8",
+    "Physics/src/ReadWriteLockScalar.cpp": "37ba1a179e66b794ca8cd35939452127fcac50fa6df7d71167f2a05bfe4d0e93",
+    "Physics/src/include/ReadWriteLockLifetime.h": "0259915c1c9c701db034c5caa9bad25d0bf617a48e4606ec3889f9287be423cc",
+    "Physics/src/include/ReadWriteLockMethods.inl": "03fed7f4048c3662c7bbf995f36675da0eb0989915942ffcb7fef1db76f2547d",
+    "Physics/src/PhysicsInternal.cpp": "f7326d88ee9ddbe123d852fab807c5113a7ba6d9c1e2e045be522576b9a2ef8b",
+    "Physics/src/NpScene.cpp": "46e36419b12318be79aeea3f0403720bb35df31be0e1ee89f5382e7425f40e89",
+    "Physics/src/include/NpSceneGuard.h": "6d1f7ad9aa238e23d3a84d27cb2b1b9310c3f1b00c8ff3faac331ab86d7251c2",
+    "tests/portable/CMakeLists.txt": "c063ab12b3f24e446ef11d24da4c572af60a23ba1a770092753287dc75be4662",
+    "tests/portable/SceneLockTargets.cmake": "74fd5642c74718410065c4ab92ff826040b3874f9aeebdd7d2630462ab268d56",
+    "tests/portable/SceneLockTests.cpp": "791062e5e26cc9bd613323799993bab6c41aac230b0abbe0d81a9875028f2121",
+    "tests/portable/SceneLockDomain.h": "dfbe3d9556dbc5960bcb9a469a0f3cc662432dd940dafceb559fb5a10dabe55b",
+    "tests/portable/SceneLockPlacementTests.py": "eab874e95983eeea91375bc42d72885d5449b5854b79783df7a5fc1b576770a9",
+    "tests/portable/ExportShippedSceneLocks.cpp": "6f920c4cc40cea719b13e41cb2a9777bb93eef84534e475134d0a8334c2c7122",
+    "docs/reconstruction/novodex-physics/tools/capture_scene_locks.py": "ded3da6b8c6098a438999b966e5d6cd137ebd1116dd80366934dc7d0de3a4521"
+  },
+  "groups": 207,
+  "observations": 570,
+  "quantity_counts": {
+    "link_bytes": 6,
+    "state_bytes": 6,
+    "owned": 102,
+    "initialized_owner_role": 102,
+    "windows_cs_recursion": 102,
+    "windows_cs_lockcount": 102,
+    "method_boolean": 126,
+    "blocked_timeout_boolean": 12,
+    "cleanup_boolean": 12
+  },
+  "domains": {
+    "link_bytes": [
+      4
+    ],
+    "state_bytes": [
+      32
+    ],
+    "owned": [
+      0,
+      1
+    ],
+    "initialized_owner_role": [
+      0,
+      1,
+      2
+    ],
+    "windows_cs_recursion": [
+      0,
+      1,
+      2
+    ],
+    "windows_cs_lockcount": [
+      4294967290,
+      4294967294,
+      4294967295
+    ],
+    "method_boolean": [
+      0,
+      1
+    ],
+    "blocked_timeout_boolean": [
+      1
+    ],
+    "cleanup_boolean": [
+      1
+    ]
+  },
+  "units": "link/state sizes bytes; others discrete/unitless; CS counters measured fixed32 Win32 runtime encodings only",
+  "budget": {
+    "raw_word_exact": true,
+    "absolute": 0,
+    "relative": 0,
+    "measured_max_word_difference": 0
+  },
+  "approved_by_controller_before_final_acceptance": true,
+  "original_allocations": 48,
+  "original_releases": 48,
+  "scalar_allocations": 16,
+  "scalar_releases": 16,
+  "configurations": [
+    "MSVC Release",
+    "MSVC Debug",
+    "Clang22.1.8 Release"
+  ],
+  "domain": "successful allocations and OS initialization; balanced ownership; no initial owner read; coordinated Win32 threads; quiescent unlocked destruction",
+  "scope": "actual ReadWriteLock class/state and shared producer; legal guard methods; actual NpScene TU/source placement proof only; full scalar SDK/Scene/actor/native remain later",
+  "original_boundary": "actual shipped SDK-created empty Scene attached write/read links plus separate genuine SDK member8 provenance supplement",
+  "production_migration_guard": "unchanged expected rejection",
+  "scalar_source_consumers": {
+    "NxPhysics": 1,
+    "NxPhysicsAssetTests": 1,
+    "NxPhysicsCollisionTests": 1,
+    "NxPhysicsInternalTests": 1,
+    "NxPhysicsObjectLayoutTests": 1,
+    "NxPhysicsShapeVtableTests": 1,
+    "NxPhysicsThirdPartyTests": 1
+  },
+  "external_header_assembly": {
+    "source": "Microsoft Windows Kits 10.0.26100.0/um/winnt.h1055ff",
+    "functions": [
+      "ULONGLONG __stdcall Int64ShllMod32(ULONGLONG,DWORD)",
+      "LONGLONG __stdcall Int64ShraMod32(LONGLONG,DWORD)",
+      "ULONGLONG __stdcall Int64ShrlMod32(ULONGLONG,DWORD)"
+    ],
+    "definitions": 3,
+    "production_lock_calls": 0,
+    "compiler_lock_listing_definitions_or_references": 0,
+    "classification": "unused external Win32 SDK inline definitions; native OS/toolchain/full-engine audit remains Task9"
+  },
+  "full_suite": {
+    "passed": 33,
+    "total": 33,
+    "seconds": 67.05,
+    "scope": "final after approved shared source extraction; pre-extraction33/33 run separately logged86.00s"
+  },
+  "legacy": {
+    "families": 116,
+    "words": 2615055,
+    "layouts": 47,
+    "mismatches": 0,
+    "layout_failures": 0,
+    "divergent_classifications": 26,
+    "digest": "e2a266c1",
+    "collision": "pass"
+  }
+}

@@ -51,6 +51,7 @@ extern const void* const gIceSupportMapVertexTable[4];
 // 001550: the cube face of a direction (dominant |component| by the bits, ties
 // to the lower axis) as axis*2 + sign bit, and the two other components divided
 // by the dominant one's magnitude (cdecl).
+#if NX_PHYSICS_USE_X87
 NxU32 nxSupportMapCubeFace(const IceMaths::Point* dir, float* u, float* v);
 
 // 001552 / 001554: the base constructor and the base table store.
@@ -84,5 +85,8 @@ void __fastcall nxSupportMapNoop(IceSupportMap* map);												// 001583
 IceSupportMap* __fastcall nxSupportMapHullDelete(IceSupportMap* map, NxU32 edx, NxU32 flags);		// 001585 (A)
 IceSupportMap* __fastcall nxSupportMapPlaneDelete(IceSupportMap* map, NxU32 edx, NxU32 flags);	// 001587 (B)
 IceSupportMap* __fastcall nxSupportMapVertexDelete(IceSupportMap* map, NxU32 edx, NxU32 flags);	// 001589 (C)
+#else
+#include "portable/NxConvexInterfaces.h"
+#endif
 
 #endif

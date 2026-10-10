@@ -56,7 +56,7 @@ void NxComputeBounds(NxVec3& min, NxVec3& max, NxU32 nbVerts, const NxVec3* vert
 // SSE divide differs on a degenerate input's NaN sign.
 static NxF64 nxDivideOne(NxF64 x)
 	{
-#if defined(_M_IX86) && defined(_MSC_VER)
+#if defined(_M_IX86) && defined(_MSC_VER) && (!defined(NX_PHYSICS_USE_X87) || NX_PHYSICS_USE_X87)
 	NxF64 value = x;
 	__asm
 		{

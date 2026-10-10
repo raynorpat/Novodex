@@ -10,7 +10,7 @@
 
 #include "Nx.h"
 
-#ifndef WIN32
+#if !defined(WIN32) || (defined(NX_PHYSICS_USE_X87) && !NX_PHYSICS_USE_X87)
 #include "math.h"
 #endif
 
@@ -43,7 +43,7 @@
 	// Calling fsincos instead of fsin+fcos
 	NX_INLINE void NxSinCos(NxF32& c, NxF32& s, NxF32 f)
 	{
-#ifdef WIN32
+#if defined(WIN32) && (!defined(NX_PHYSICS_USE_X87) || NX_PHYSICS_USE_X87)
 		NxF32 localCos, localSin;
 		NxF32 local = f;
 		_asm	fld		local

@@ -43,6 +43,7 @@
 #include <malloc.h>
 #include <string.h>
 
+#if NX_PHYSICS_USE_X87
 // The vendored members the naked rows call, by their decorated names.
 extern "C" void nxIceCallContainerCtor();		// 004836, Container::Container()
 extern "C" void nxIceCallContainerDtor();		// 004846, Container::~Container()
@@ -68,6 +69,8 @@ extern "C" void nxIceCallCrtFree();				// 005668, the static CRT's free (a direc
 #pragma comment(linker, "/alternatename:_nxIceCallCrtFree=_free")
 
 
+#endif
+
 // The constants the float rows read: 0.0f (0x101041f0), 1.0f (0x101041ec), 0.5f
 // (0x101043cc) and 1/3 (0x101068ec, the bits 0x3eaaaaab).
 static const float kIceHullZero = 0.0f;
@@ -84,6 +87,7 @@ static const char gConvexHullFile[] = "\\Epic\\Novodex\\SDKs\\Physics\\src\\Conv
 // array, the element size, the count, the constructor): the constructor is
 // called with ecx on each element in turn, nothing when the count is not
 // positive. Written for the `new[]` sites of 001472 and 001502, which call it.
+#if NX_PHYSICS_USE_X87
 __declspec(naked) void __stdcall nxIceVectorConstruct(void* /*array*/, NxU32 /*size*/, NxU32 /*count*/,
 	void* (__fastcall* /*ctor*/)(void*))
 	{
@@ -120,10 +124,12 @@ L0102d:
 		ret	0x10		// 0x0000102d
 		}
 	}
+#endif
 
 // phys_fn_000925 (0x00020440, 13 B)
 // The polygon's constructor: +0x00, +0x04 and +0x08 zeroed, this returned.
 // (The row is also modelled in ObjectModel.cpp; this is its product form.)
+#if NX_PHYSICS_USE_X87
 __declspec(naked) void* __fastcall nxHullPolygonConstruct(void* /*polygon*/)
 	{
 	__asm
@@ -136,11 +142,13 @@ __declspec(naked) void* __fastcall nxHullPolygonConstruct(void* /*polygon*/)
 		ret		// 0x0002044c
 		}
 	}
+#endif
 
 // phys_fn_001391 (0x00027f00, 3 B)
 // The identity constructor 001502's edges are built with: this returned.
 // (Its product form for the shape tables is in ObjectModel.cpp; this is the one
 // the `new[]` site pushes.)
+#if NX_PHYSICS_USE_X87
 __declspec(naked) void* __fastcall nxIceIdentityConstruct(void* /*object*/)
 	{
 	__asm
@@ -149,10 +157,12 @@ __declspec(naked) void* __fastcall nxIceIdentityConstruct(void* /*object*/)
 		ret		// 0x00027f02
 		}
 	}
+#endif
 
 // phys_fn_001439 (0x0002a610, 15 B)
 // EdgeDesc's constructor: the two words and the dword zeroed, this returned.
 // (Also modelled in ObjectModel.cpp; EdgeList.cpp zeroes its EdgeDescs inline.)
+#if NX_PHYSICS_USE_X87
 __declspec(naked) void* __fastcall nxEdgeDescConstruct(void* /*desc*/)
 	{
 	__asm
@@ -165,6 +175,7 @@ __declspec(naked) void* __fastcall nxEdgeDescConstruct(void* /*desc*/)
 		ret		// 0x0002a61e
 		}
 	}
+#endif
 
 // phys_fn_001441 (0x0002a620, 178 B)
 // IndexedTriangle::Area over 16-bit references (thiscall on the triangle, `ret
@@ -172,6 +183,7 @@ __declspec(naked) void* __fastcall nxEdgeDescConstruct(void* /*desc*/)
 // the first edge kept on the stack, the second's x and y stored, the cross
 // product's x and y stored and its z squared wide, the root of
 // ((z^2 + y^2) + x^2) scaled by 0.5f. The listing's instructions, naked.
+#if NX_PHYSICS_USE_X87
 __declspec(naked) float __fastcall nxHullTriangleArea(const NxU16* /*triangle*/, NxU32 /*edx*/,
 	const IceMaths::Point* /*verts*/)
 	{
@@ -243,12 +255,14 @@ L2a639:
 		ret	4		// 0x0002a6cf
 		}
 	}
+#endif
 
 // phys_fn_001445 (0x0002a790, 146 B)
 // IndexedTriangle::Center over 16-bit references (thiscall, `ret 8`): nothing
 // when the vertices are null; else ((p1 + p0) + p2) * (1/3) per component, the
 // z and x sums stored before they are scaled and the results stored through a
 // local and copied as integers. The listing's instructions, naked.
+#if NX_PHYSICS_USE_X87
 __declspec(naked) void __fastcall nxHullTriangleCenter(const NxU16* /*triangle*/, NxU32 /*edx*/,
 	const IceMaths::Point* /*verts*/, IceMaths::Point* /*center*/)
 	{
@@ -302,6 +316,7 @@ L2a81b:
 		ret	8		// 0x0002a81f
 		}
 	}
+#endif
 
 // phys_fn_001449 (0x0002a900, 156 B)
 // Gathers one polygon's faces: from `face`, every face reached across an edge
@@ -337,6 +352,7 @@ __declspec(noinline) void nxHullGatherFaces(IceCore::Container* faces, const Adj
 // (stored narrow) weights 001445's centre, added component by component, and
 // summed; the output is then scaled by 1 / (sum of areas) -- with no faces,
 // 1 / 0 times zero. The listing's instructions, naked.
+#if NX_PHYSICS_USE_X87
 __declspec(naked) bool __fastcall nxHullComputeCentroid(const ConvexHull* /*hull*/, NxU32 /*edx*/,
 	IceMaths::Point* /*center*/)
 	{
@@ -429,6 +445,7 @@ L2ae48:
 		ret	4		// 0x0002ae4e
 		}
 	}
+#endif
 
 // phys_fn_001463 (0x0002af30, 337 B)
 // A polygon's plane (cdecl): false when there is no reference, no reference
@@ -438,6 +455,7 @@ L2ae48:
 // (`test ah, 0x41`: an equal or NaN area does not replace, and the best starts
 // at -FLT_MAX). Plane::Set (005155) then builds the plane through that
 // triangle. The listing's instructions, naked.
+#if NX_PHYSICS_USE_X87
 __declspec(naked) bool nxHullPolygonPlane(IceMaths::Plane* /*plane*/, NxU32 /*nbVerts*/,
 	const NxU32* /*vrefs*/, const IceMaths::Point* /*verts*/)
 	{
@@ -565,6 +583,7 @@ L2b077:
 		ret		// 0x0002b080
 		}
 	}
+#endif
 
 // phys_fn_001465 (0x0002b090, 791 B)
 // The polygons of the hull's 16-bit faces. An Adjacencies over them (001536,
@@ -604,7 +623,17 @@ __declspec(noinline) bool nxHullExtractPolygons(NxU32* nbPolygons, IceCore::Cont
 	if(!adj.Init(create) || adj.ComputeNbBoundaryEdges())
 		return false;
 
+	#if NX_PHYSICS_USE_X87
 	NxU8* marks = (NxU8*) _alloca((nbFaces + 3) & ~3u);
+#else
+	struct MarksOwner {
+		NxU8* pointer;
+		explicit MarksOwner(NxU32 count):pointer(static_cast<NxU8*>(nxIceAlloc(count,NX_MEMORY_TEMP))) {}
+		~MarksOwner(){if(pointer)nxIceFree(pointer);}
+		private: MarksOwner(const MarksOwner&);MarksOwner& operator=(const MarksOwner&);
+	} owner((nbFaces+3)&~3u);
+	NxU8* marks=owner.pointer;
+#endif
 	if(!marks)
 		return false;
 	memset(marks, 0, nbFaces);
@@ -672,6 +701,7 @@ __declspec(noinline) bool nxHullExtractPolygons(NxU32* nbPolygons, IceCore::Cont
 // a NaN projection replaces neither.
 // A failed allocation returns false with what was built left in place. The
 // listing's instructions, naked.
+#if NX_PHYSICS_USE_X87
 __declspec(naked) bool __fastcall nxHullComputePolygons(ConvexHull* /*hull*/)
 	{
 	__asm
@@ -935,6 +965,7 @@ L2b975:
 		ret		// 0x0002b987
 		}
 	}
+#endif
 
 // phys_fn_001496 (0x0002c8f0, 296 B)
 // phys_fn_001498 (0x0002ca20, 217 B)
@@ -949,6 +980,7 @@ L2b975:
 // strictly greater (`test ah, 0x41`: equal and NaN do not), four at a time
 // while at least four remain and then one at a time. The index is returned.
 // The listing's instructions, naked.
+#if NX_PHYSICS_USE_X87
 __declspec(naked) NxU32 __fastcall nxHullSupportPolygon(ConvexHull* /*hull*/, NxU32 /*edx*/,
 	const IceMaths::Point* /*dir*/, const float* /*pose*/)
 	{
@@ -1176,6 +1208,7 @@ L2cb35:
 		ret	8		// 0x0002cb3f
 		}
 	}
+#endif
 
 // phys_fn_001502 (0x0002cb50, 298 B)
 // phys_fn_001504 (0x0002cc80, 749 B)
@@ -1204,6 +1237,7 @@ L2cb35:
 // (`fucompp; test ah, 0x44; jnp`: a NaN length normalises), stored as integers
 // through a local. False when an allocation fails, the sorter released; the
 // arrays built so far are left. The listing's instructions, naked.
+#if NX_PHYSICS_USE_X87
 __declspec(naked) bool __fastcall nxHullComputeEdges(ConvexHull* /*hull*/)
 	{
 	__asm
@@ -1934,6 +1968,7 @@ L2d2c0:
 		ret		// 0x0002d2d2
 		}
 	}
+#endif
 
 // phys_fn_001514 (0x0002d2e0, 441 B)
 // The hull's edge axes (thiscall, no argument; convex-mesh gap Task 2g, P-Mesh):
@@ -1955,6 +1990,7 @@ L2d2c0:
 // nothrow `operator new` (reached as nxIceCallCrtNew; the listing pushes only
 // the size, and the nothrow tag slot is the caller's word, which MSVC's
 // implementation never reads) and `free`. The listing's instructions, naked.
+#if NX_PHYSICS_USE_X87
 __declspec(naked) bool __fastcall nxHullComputeEdgeAxes(ConvexHull* /*hull*/)
 	{
 	__asm
@@ -2129,6 +2165,7 @@ L2d483:
 		ret		// 0x0002d498
 		}
 	}
+#endif
 
 // phys_fn_001516 (0x0002d4a0, 298 B)
 // phys_fn_001518 (0x0002d5d0, 234 B)
@@ -2151,6 +2188,7 @@ L2d483:
 // of +0x3c, +0x44, +0x48 still null), the first is returned when its normal is
 // at least as far along the direction as the second's (`fcompp; test ah, 5;
 // jp`: a NaN picks the second). The listing's instructions, naked.
+#if NX_PHYSICS_USE_X87
 __declspec(naked) NxU32 __fastcall nxHullSupportFace(ConvexHull* /*hull*/, NxU32 /*edx*/,
 	const IceMaths::Point* /*dir*/, const float* /*pose*/, NxU32* /*kind*/)
 	{
@@ -2600,6 +2638,7 @@ L2d92c:
 		ret	0xc		// 0x0002d937
 		}
 	}
+#endif
 
 // phys_fn_001530 (0x0002d9b0, 153 B)
 // phys_fn_001532 (0x0002da50, 29 B)
@@ -2616,6 +2655,7 @@ L2d92c:
 // do not); the climb moves to the winner and repeats until a pass keeps the
 // current vertex, whose index is left in *index; true. The listing's
 // instructions, naked.
+#if NX_PHYSICS_USE_X87
 __declspec(naked) bool nxHullClimbSupportVertex(NxU32* /*index*/, const IceMaths::Point* /*dir*/,
 	const IceMaths::Point* /*verts*/, const void* /*graph*/, NxU32 /*stamp*/, NxU32* /*visited*/)
 	{
@@ -2744,6 +2784,7 @@ L2dad6:
 		ret		// 0x0002dadc
 		}
 	}
+#endif
 
 // phys_fn_001461 (0x0002ae60, 194 B)
 // The hull's vertex normals, angle-weighted. The previous array (+0x14) is
@@ -2755,6 +2796,7 @@ L2dad6:
 // weight by angle, face normals allocated by the object, the vertex normals
 // given}; the object is released (001649, which frees the face normals) and
 // 001651's result returned.
+#if !defined(NX_PHYSICS_HULL_KERNEL_ONLY)
 __declspec(noinline) bool ConvexHull::ComputeVertexNormals()
 	{
 	if(mVertexNormals)
@@ -2780,6 +2822,15 @@ __declspec(noinline) bool ConvexHull::ComputeVertexNormals()
 	create.VertexNormals = mVertexNormals;
 
 	MeshNormals normals;
+	#if NX_PHYSICS_USE_X87
 	const bool status = nxMeshNormalsCompute(&normals, 0, &create);
+#else
+	const bool status = nxMeshNormalsCompute(&normals, &create);
+#endif
 	return status;
 	}
+#endif
+
+#if !NX_PHYSICS_USE_X87
+#include "portable/ConvexHullScalar.inl"
+#endif

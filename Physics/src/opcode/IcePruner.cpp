@@ -61,6 +61,10 @@ AABBTreeBuilder::GetSplittingValue, 002150, rounded its result to float).
 */
 
 #include "IcePruner.h"
+#include "NxPhysicsBackend.h"
+#if !NX_PHYSICS_USE_X87
+#include "NxIceContainerExternalBuffer.h"
+#endif
 #include "OPC_AABBCollider.h"
 #include "OPC_SphereCollider.h"
 
@@ -79,6 +83,10 @@ static_assert(sizeof(Pruner) == 0x3c, "the base pruner is 0x3c bytes");
 static_assert(sizeof(StaticPruner) == 0x90, "the static pruner is 0x90 bytes (0x000b50e7)");
 static_assert(sizeof(DynamicPruner) == 0x3c, "the dynamic pruner is 0x3c bytes (0x000b50ad)");
 static_assert(sizeof(Prunable) == 0x2c, "a prunable is 0x2c bytes");
+#if !NX_PHYSICS_USE_X87
+static_assert(alignof(Pruner)==4 && offsetof(Pruner,mRegistration)==0x34,
+    "actual scalar registration occupies Pruner+34..3c");
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // The pool.
@@ -247,8 +255,12 @@ __declspec(noinline) void PruningPool::RemoveObject(Prunable* object)
 // (0x00053810).
 Pruner::Pruner()
 {
+#if NX_PHYSICS_USE_X87
 	mTimestamp	= 0;
 	mPruner34	= 0;
+#else
+    nxPrunerRegister(mRegistration);
+#endif
 	mBounds.SetEmpty();
 }
 
@@ -256,6 +268,9 @@ Pruner::Pruner()
 // them; the +0x34 unregistration is not reproduced.
 Pruner::~Pruner()
 {
+#if !NX_PHYSICS_USE_X87
+    nxPrunerUnregister(mRegistration);
+#endif
 	if(mPool.mWorldBoxes)	{ opcNovodeXFree(mPool.mWorldBoxes);	mPool.mWorldBoxes = null;	}
 	if(mPool.mObjects)		{ opcNovodeXFree(mPool.mObjects);		mPool.mObjects = null;		}
 }
@@ -269,7 +284,11 @@ bool Pruner::AddObject(Prunable* object)
 // phys_fn_005210 (0x000e50d0, 21 B)
 bool Pruner::RemoveObject(Prunable* object)
 {
+#if NX_PHYSICS_USE_X87
 	mTimestamp++;
+#else
+    mRegistration.mTimestamp++;
+#endif
 	mPool.RemoveObject(object);
 	return true;
 }
@@ -277,7 +296,11 @@ bool Pruner::RemoveObject(Prunable* object)
 // 0x000e50f0 (phys_fn_005212, recorded elsewhere).
 bool Pruner::UpdateObject(Prunable* /*object*/)
 {
+#if NX_PHYSICS_USE_X87
 	mTimestamp++;
+#else
+    mRegistration.mTimestamp++;
+#endif
 	return true;
 }
 
@@ -366,7 +389,11 @@ bool StaticPruner::RemoveObject(Prunable* object)
 		delete mTree;
 		mTree = null;
 	}
+#if NX_PHYSICS_USE_X87
 	mTimestamp++;
+#else
+    mRegistration.mTimestamp++;
+#endif
 	mPool.RemoveObject(object);
 	return true;
 }
@@ -379,7 +406,11 @@ bool StaticPruner::UpdateObject(Prunable* /*object*/)
 		delete mTree;
 		mTree = null;
 	}
+#if NX_PHYSICS_USE_X87
 	mTimestamp++;
+#else
+    mRegistration.mTimestamp++;
+#endif
 	return true;
 }
 
@@ -387,7 +418,11 @@ bool StaticPruner::UpdateObject(Prunable* /*object*/)
 // The touched container borrows the buffer (0x000b4f90, phys_fn_004847).
 void StaticPruner::SetExternalBuffer(udword max_nb, udword* entries)
 {
+#if NX_PHYSICS_USE_X87
 	nxSdkContainerSetExternalBuffer(&mTouched, max_nb, entries);
+#else
+	nxIceContainerSetExternalBuffer(mTouched, max_nb, entries);
+#endif
 }
 
 // phys_fn_005216 (0x000e5110, 250 B)

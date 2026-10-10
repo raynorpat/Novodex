@@ -8,6 +8,12 @@
 #include "Nxf.h"
 #include "NxFPU.h"
 #include "NxVec3.h"
+#if !defined(NX_PHYSICS_USE_X87) || (NX_PHYSICS_USE_X87 != 0 && NX_PHYSICS_USE_X87 != 1)
+#error "FPU.cpp requires the build-defined NxPhysics backend predicate"
+#endif
+#if !NX_PHYSICS_USE_X87
+#include "include/NxScalarConversions.h"
+#endif
 
 #ifdef WIN32
 static void setX87ControlWord(unsigned short value, unsigned short mask)
@@ -83,6 +89,7 @@ void NxSetFPUExceptions(bool exOn)
 #define INT32	NxI32
 #define UINT32	NxU32
 
+#if NX_PHYSICS_USE_X87
 int NxIntChop(const NxF32& f)
 { 
 	INT32 a			= *reinterpret_cast<const INT32*>(&f);			// take bit pattern of float into a register
@@ -120,4 +127,12 @@ int NxIntCeil(const NxF32& f)
 	r = ((r & expsign) ^ (sign)) + ((!((mantissa<<8)&imask)&(expsign^((a-1)>>31)))&sign);	// if (fabs(value)<1.0) value = 0; copy sign; if (value < 0 && value==(int)(value)) value++; 
 	return -r;
 }
+#else
+// Portable invalid/nonfinite inputs return INT32_MIN. The old bit routines
+// have undefined shifts/overflow there; no legacy invalid-result equivalence
+// is claimed. Valid callers needing a separate status use nxScalarInt32.
+int NxIntChop(const NxF32& f) { return nxScalarInt32OrIndefinite((double)f, NX_SCALAR_CHOP); }
+int NxIntFloor(const NxF32& f) { return nxScalarInt32OrIndefinite((double)f, NX_SCALAR_FLOOR); }
+int NxIntCeil(const NxF32& f) { return nxScalarInt32OrIndefinite((double)f, NX_SCALAR_CEIL); }
+#endif
 

@@ -23,6 +23,7 @@ bool __cdecl NxOverlapPlaneMesh(const NxCollisionShape*, const NxCollisionShape*
 extern "C" bool __cdecl nxOverlapMeshMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 bool __cdecl NxOverlapCapsuleMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 
+#if NX_PHYSICS_USE_X87
 // The heap block phys_fn_002358 allocates. The critical section starts at zero,
 // the interlocked owner flag is the word at +0x18 the constructor clears, and
 // the owning thread id is the word at +0x1c that only the lock entry points
@@ -57,45 +58,8 @@ ReadWriteLock::~ReadWriteLock()
 	NX_FREE(mData);
 	}
 
-// phys_fn_002362 (0x0005b700). The critical section is entered and not left --
-// unlock is what leaves it -- and the interlocked exchange at 0x0005b716 claims
-// the flag only if it was clear. Returns a literal true at 0x0005b727.
-bool ReadWriteLock::lock()
-	{
-	ReadWriteLockData* data = static_cast<ReadWriteLockData*>(mData);
-	EnterCriticalSection(&data->mCriticalSection);
-	InterlockedCompareExchange(&data->mOwned, 1, 0);
-	data->mOwnerThreadId = GetCurrentThreadId();
-	return true;
-	}
-
-// phys_fn_002364 (0x0005b730). 0x0005b745 claims the flag; if it was already
-// claimed, 0x0005b755 compares the recorded owner against this thread and only
-// then falls through to the acquire at 0x0005b760. So it is reentrant on the
-// owning thread and fails, at 0x0005b75c, only for another thread.
-bool ReadWriteLock::tryLock()
-	{
-	ReadWriteLockData* data = static_cast<ReadWriteLockData*>(mData);
-	if(InterlockedCompareExchange(&data->mOwned, 1, 0) != 0
-		&& data->mOwnerThreadId != GetCurrentThreadId())
-		return false;
-
-	EnterCriticalSection(&data->mCriticalSection);
-	InterlockedCompareExchange(&data->mOwned, 1, 0);
-	data->mOwnerThreadId = GetCurrentThreadId();
-	return true;
-	}
-
-// phys_fn_002366 (0x0005b790). Releases the flag and leaves the critical
-// section, in that order, and checks nothing: unlocking a lock this thread does
-// not hold is not refused here.
-bool ReadWriteLock::unlock()
-	{
-	ReadWriteLockData* data = static_cast<ReadWriteLockData*>(mData);
-	InterlockedCompareExchange(&data->mOwned, 0, 1);
-	LeaveCriticalSection(&data->mCriticalSection);
-	return true;
-	}
+#include "ReadWriteLockMethods.inl"
+#endif
 
 // 0x0000e733 (in the SDK constructor) pushes 0x124 as the allocation size, and
 // phys_fn_002338 writes words 1..0x48 of the block.
@@ -176,46 +140,7 @@ void SdkAllocatorBridge::free(void* memory)
 	mAllocator->free(memory);
 	}
 
-// The four slots of the built-in fallback. Their bodies belong to Phases 6 and 3
-// (see the header); they are here so phys_fn_004803 has an object to install.
-void* SdkDefaultAllocator::malloc(size_t size, NxMemoryType)
-	{
-	return ::malloc(size);
-	}
-
-void* SdkDefaultAllocator::mallocDEBUG(size_t size, const char*, int, const char*, NxMemoryType)
-	{
-	return ::malloc(size);
-	}
-
-void* SdkDefaultAllocator::realloc(void* memory, size_t size)
-	{
-	return ::realloc(memory, size);
-	}
-
-void SdkDefaultAllocator::free(void* memory)
-	{
-	::free(memory);
-	}
-
-// .data 0x0012845c and .data 0x00122368.
-static SdkAllocator* gSdkAllocator = 0;
-static SdkDefaultAllocator gSdkDefaultAllocator;
-
-bool nxSetSdkAllocatorBridge(SdkAllocator* allocator)
-	{
-	gSdkAllocator = allocator;
-	return true;
-	}
-
-// phys_fn_004803 (0x000b4000). The install at 0x000b400e is a store, not just a
-// return, so the second call reads back what the first one wrote.
-SdkAllocator* nxGetSdkAllocator()
-	{
-	if(!gSdkAllocator)
-		gSdkAllocator = &gSdkDefaultAllocator;
-	return gSdkAllocator;
-	}
+#include "NxSdkAllocatorAccess.inl"
 
 // .data 0x00123c0c. The oracle allocates 0x10 bytes and clears three words,
 // which is exactly what NX_NEW of an NxArraySDK does, and releases it with the

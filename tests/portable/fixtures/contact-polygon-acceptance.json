@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "scope": "5f1 genuine contact stream and complete P-Plane; full convex contact matrix remains gated",
+  "base_revision": "d907e2e6b912a3e01daaa129b324c457b72ab0b0",
+  "captures": {
+    "contact-polygon-nearest-x87": {
+      "disposition": "excluded undersized NxVec3 planes diagnostic",
+      "fixture_sha256": "ac0936160149d90f03ed027b0cf01070e61f2f6d6f24dccdc916f568f4e2f86a",
+      "manifest_sha256": "2b3e2138cc051845afd7002710957fc6340f6aa1bc1401bea6f12dd6e81e618b",
+      "source_index_sha256": "eb158fd8ea99b721f6df6b6efa361fb23a176c28b2b9a646bed20d14b00bd171",
+      "snapshot_count": 238
+    },
+    "contact-polygon-planes-x87": {
+      "disposition": "corrected original pre-arithmetic",
+      "fixture_sha256": "551e4e23bfd196a6ab36a1ddf50ba311c1aa386464cb75539b00b5db1cfeba95",
+      "manifest_sha256": "ccefa793ba26e2df13efd2d48b0ca4a01ca3520db3a27676fb533f431053f305",
+      "source_index_sha256": "dde9d31ef15200aaa349aee1ce8446f19cedd59343754076e636a34a3bc6709c",
+      "snapshot_count": 238
+    },
+    "contact-polygon-complete-x87": {
+      "disposition": "post-implementation original-source domain supplement",
+      "fixture_sha256": "7ba604657383bb8b21ff1d11d53cdb75a254ecd164e0a872306c4657b54b8e11",
+      "manifest_sha256": "6bef921bb833bb269c3ab2fbbdd3308610af5864a85b9653736d489a325ff058",
+      "source_index_sha256": "946e5968a5cee306aa492f9e6ef70f3c0fec02f2ae661aac9db415b2ff654839",
+      "snapshot_count": 238
+    }
+  },
+  "exact_finite_abs_budget": 0,
+  "exact_finite_rel_budget": 0,
+  "quantities": [
+    {
+      "kind": 1,
+      "quantity": "coordinates",
+      "units": "length",
+      "count": 8691,
+      "min": -2,
+      "max": 19
+    },
+    {
+      "kind": 2,
+      "quantity": "direct emitter normal components",
+      "units": "dimensionless",
+      "count": 360,
+      "min": -0.800000011920929,
+      "max": 0.800000011920929
+    },
+    {
+      "kind": 3,
+      "quantity": "mixed recovered separation/coefficient slots",
+      "units": "source dependent: first polygon pass t dimensionless; second pass projected vertex-plane separation length; edge/direct clip coefficient length for supplied dimensionless normal0; direct emitter supplied length; untouched sentinel23",
+      "count": 2889,
+      "min": -0.5,
+      "max": 23
+    },
+    {
+      "kind": 4,
+      "quantity": "source-scaled displacement normal components",
+      "units": "length",
+      "count": 3078,
+      "min": 0,
+      "max": 0.5
+    }
+  ],
+  "untouched_output_sentinels": {
+    "clip_point": [
+      17,
+      18,
+      19
+    ],
+    "clip_parameter": 23
+  },
+  "nonfinite_exception": {
+    "word": "ff800000",
+    "count": 8,
+    "groups": "201..210",
+    "kind": 3,
+    "condition": "finite input zero projected 2D divisor, original failed-result partial parameter writes",
+    "gate": "exact class and sign; reject positive infinity, NaN and finite replacements"
+  },
+  "zero_sign_discrete_gate": "exact words; metadata/group/count hard failure",
+  "domain": {
+    "groups": 933,
+    "observations": 36433,
+    "direct_emitter_groups": "1..120",
+    "contains_groups": "121..200",
+    "partial_clip_groups": "201..210",
+    "initial_full_polygon_groups": "211..910",
+    "additional_direct_clip_groups": "911..925",
+    "additional_full_polygon_groups": "926..933",
+    "polygon_counts": "3..6 literal triangle/quadrilateral/pentagon/hexagon/tilted plane; both valid windings and shape orders",
+    "poses": "seven initial translations; supplementary literal rigid poses, planes d=-2/-1 and nonuniform vertices",
+    "unread_words17_18": "varied between reset/reuse calls; unchanged original output",
+    "contact_order": "fixture reproduces current stream order; no public contact-order invariant claimed"
+  },
+  "portable_failure_disposition": "checked SDK temporary scratch overflow/null reports actual Foundation NXE_OUT_OF_MEMORY before sink mutation; actual allocation failure tests; historical x87 stack allocation unchanged",
+  "final_source_sha256": {
+    "tests/portable/ConvexContactTests.cpp": "27aff810cf727219d6dd565dabbe6c5ef6dd24750d53895294cf9547813de4e3",
+    "Physics/src/include/portable/ContactPolygonScalar.inl": "81965646921d32a740e23a927c7d675af9ddbfb8aa1c80b8df3ffc768190ff71",
+    "Physics/src/include/portable/ContactStreamScalar.inl": "b24a82bcf08500a79bd8b1410c7e6523f79ab3b87690bb64c20f7f3cb88ca3ac",
+    "Physics/src/include/portable/NxPolygonContactInterfaces.h": "a35c8b43473632f637790e028b38194506a78d5cf8401a85a294e9ac704d6bc4"
+  },
+  "kind3_semantic_partition": {
+    "direct_emitter": {
+      "finite_count": 360,
+      "range": [
+        0.25,
+        0.25
+      ],
+      "units": "supplied length"
+    },
+    "direct_clip": {
+      "finite_count": 17,
+      "range": [
+        -0.5,
+        23
+      ],
+      "units": "length coefficient for supplied dimensionless normal0",
+      "untouched_parameter_sentinel_count": 5,
+      "nonfinite_exact_partial_count": 8
+    },
+    "full_polygon": {
+      "finite_count": 2512,
+      "units": "mixed dimensionless first-pass t, length second-pass projected separation, length edge clip coefficient",
+      "note": "Captured stream/group metadata does not retain internal emission-pass identity; no invented per-pass counts or universal physical-depth claim."
+    }
+  },
+  "round1_supplement": {
+    "capture_id": "contact-polygon-tilted-pose-round1-x87",
+    "chronology": "post-implementation, pre-round1-fix original-source full-path supplement",
+    "base_revision": "c62ec741440a4f77ca8ce1ccfea643428b47c186",
+    "original_block_revision": "d907e2e6b912a3e01daaa129b324c457b72ab0b0",
+    "fixture_sha256": "7a3b9ef820c346834d5e50fe3065822b0df86467fa6d697c168a1df3852e4002",
+    "manifest_sha256": "14aeff2901d456504cb6ab7bef4461a7ef36ff84104e3df82bea6af8e28dde36",
+    "source_index_sha256": "dc9133a07a1660f9aa11a2a3675c20244c5323ee36cc577fa05ca9b567ec5e4f",
+    "snapshot_count": 240,
+    "pre_fix_scalar_source_sha256": "4ef36fbe21c8768be67344502300da9928bf5bdef7188a545eeed85e9dcb3863",
+    "group_ids": "934..941 (8 full polygon cases)",
+    "observations": 436,
+    "finite_quantities": [
+      {
+        "kind": 1,
+        "count": 120,
+        "range": [
+          -2.1213202476501465,
+          0.7071067690849304
+        ],
+        "units": "world length"
+      },
+      {
+        "kind": 3,
+        "count": 40,
+        "range": [
+          1,
+          4
+        ],
+        "units": "mixed original separation/coefficient slot semantics by source pass, not universal physical depth"
+      },
+      {
+        "kind": 4,
+        "count": 36,
+        "range": [
+          0.125,
+          0.1767766922712326
+        ],
+        "units": "source-scaled displacement normal length"
+      }
+    ],
+    "nonfinite_count": 0,
+    "discrete_word_count": 240,
+    "fixed_abs_budget": 0,
+    "fixed_rel_budget": 0,
+    "zero_sign_discrete_count_write_canary": "exact raw words",
+    "pre_fix_red": {
+      "coordinate_word_differences": 10,
+      "failures_including_exact_zero_sign": 16,
+      "discrete_or_metadata_differences": 0
+    },
+    "domain": "true tilted float rigid R rows(.5,s,.5),(-s,0,s),(.5,-s,.5); s=float(sqrt(.5)), contained/crossing triangle, y=2^-54 or1e-5, zero or cancellation x translation, both orders, real full22-word call, repeated constructed stream/reset and unread invariance"
+  }
+}

@@ -19,7 +19,12 @@
 // type), slot 3 to release -- and none through the imported
 // nxFoundationSDKAllocator or the CRT.
 
+#include "NxPhysicsBackend.h"
+#if NX_PHYSICS_USE_X87
 #include "PhysicsInternal.h"
+#else
+#include "NxSdkAllocator.h"
+#endif
 #include "Opcode.h"
 
 // The allocator singleton's slot 0 and slot 3 (0x000b4000 -> [vtable+0x00] and

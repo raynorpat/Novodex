@@ -1,0 +1,40 @@
+--- capture-source/triangle-fan-nearest-x87-0-TriangleFanTests.cpp.gz
++++ derived-preproduct-control-instrumentation-TriangleFanTests.cpp
+@@ -1,5 +1,6 @@
+ #include <algorithm>
+ #include <cmath>
++#include <cfenv>
+ #include <cstdio>
+ #include <cstring>
+ #include <string>
+@@ -202,13 +203,30 @@
+ 
+ int main(int argc, char **argv)
+ {
++#if NX_PHYSICS_USE_X87
++    if (argc == 2 && !std::strcmp(argv[1], "--diagnose-control"))
++    {
++        _control87(0x027f, 0xffff);
++        unsigned short rawControl;
++        __asm fnstcw rawControl
++        std::printf("diagnostic old_api_value=027f old_api_mask=ffff raw_control=%04x crt_control=%08x fe_round=%d\n",
++                    rawControl, _control87(0, 0), std::fegetround());
++        return 0;
++    }
++#endif
+     if (argc != 2)
+         return 2;
+ #if NX_PHYSICS_USE_X87
+     _control87(_PC_53 | _RC_NEAR | _MCW_EM, _MCW_PC | _MCW_RC | _MCW_EM);
+     check((_control87(0, 0) & (_MCW_PC | _MCW_RC)) == (_PC_53 | _RC_NEAR),
+           "reference uses abstract CRT precision53 and nearest flags");
++    unsigned short rawControl;
++    __asm fnstcw rawControl
++    check(rawControl == 0x027f, "actual reference hardware word is precision53 nearest masked");
++    std::printf("raw_control=%04x crt_control=%08x fe_round=%d\n", rawControl, _control87(0, 0),
++                std::fegetround());
+ #endif
++    check(std::fegetround() == FE_TONEAREST, "actual C fenv nearest rounding");
+     float untouched = value(0x42f68000);
+     check(!NxRayInflatedTriangleFan(2, nullptr, nullptr, nullptr, &untouched) && bits(untouched) == 0x42f68000,
+           "count2 returns before borrowed pointer reads or writes");

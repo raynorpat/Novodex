@@ -22,6 +22,19 @@
 #include "IceAdjacencies.h"
 
 #include <malloc.h>
+#include "NxPhysicsBackend.h"
+#if !NX_PHYSICS_USE_X87
+// The production allocator owns typed scratch; boolean APIs propagate failure.
+class NxAdjacencyScratchWords {
+public:
+    explicit NxAdjacencyScratchWords(NxU32 count) : data(static_cast<NxU32*>(nxIceAlloc(count*4u,NX_MEMORY_TEMP))) {}
+    ~NxAdjacencyScratchWords() { if(data)nxIceFree(data); }
+    NxU32* data;
+private:
+    NxAdjacencyScratchWords(const NxAdjacencyScratchWords&);
+    NxAdjacencyScratchWords& operator=(const NxAdjacencyScratchWords&);
+};
+#endif
 
 // .rdata 0x101077cc.
 static const char gIceAdjacenciesFile[] = "\\Epic\\Novodex\\SDKs\\Physics\\src\\IceAdjacencies.cpp";
@@ -114,7 +127,13 @@ __declspec(noinline) bool nxAdjacenciesCreateDatabase(NxU32 nb, AdjTriangle* fac
 	{
 	IceCore::RadixSort Core;
 
+#if NX_PHYSICS_USE_X87
 	NxU32* FaceNb = (NxU32*) _alloca(nb * 4);
+#else
+	// Typed scratch ownership replaces the legacy dynamic stack probe.
+	NxAdjacencyScratchWords faceStorage(nb);
+	NxU32* FaceNb = faceStorage.data;
+#endif
 	if(!FaceNb)
 		return false;
 

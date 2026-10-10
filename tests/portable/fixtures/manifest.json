@@ -1,0 +1,448 @@
+{
+  "schema_version": 1,
+  "reference_revision": "a4838ddf282ee859471e1526145b616de5ddedb6",
+  "compiler": "MSVC 19.51.36260.0 (VS18 2026)",
+  "configuration": "Release Win32",
+  "shared_helper_flags": [
+    "/arch:IA32",
+    "/fp:precise",
+    "/O2"
+  ],
+  "oracle": {
+    "physics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+    "foundation_sha256": "7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990",
+    "source_root": "D:/FlamingEnt__/Unreal_3/Binaries"
+  },
+  "reconstructed_dll": {
+    "physics_sha256": "583ecd4faaca65eb9d548d2dfd905024f5f01907b5ebb1bf1e35b9ce0fd114ed",
+    "foundation_sha256": "c8d572e1f994f13672ec4378a3746c2ba69d3bbfa1bfe42ff646f944466b62a4"
+  },
+  "fixtures": [
+    {
+      "path": "shared-math-x87.nxpf",
+      "sha256": "974c39747d605651c4898378acbe91bb1096daeebb2c612f3478546f9458a2d9",
+      "provenance_kind": "reconstructed-reference",
+      "source": [
+        "Physics/src/include/X87Sqrt.h",
+        "Physics/src/include/core/JointAcos.h"
+      ],
+      "exporter": "tests/portable/ExportSharedMathFixtures.cpp",
+      "record_count": 360,
+      "record_width": 80,
+      "encoding": "NXPF v1 LE: u32 op, u32 CW, eight IEEE binary64 input u64 words, binary64 output u64 word; output explicitly stored to double",
+      "control_words": {
+        "0x027f": "53-bit nearest API reference",
+        "0x0f7f": "64-bit chop simulation reference; not portable nearest acceptance baseline"
+      },
+      "repeat_sha256": "974c39747d605651c4898378acbe91bb1096daeebb2c612f3478546f9458a2d9",
+      "repeat_exact_budget": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "input_cases": [
+        "finite fractions",
+        "ones",
+        "positive zero",
+        "negative zero",
+        "least binary64 subnormal",
+        "adjacent-to-one and tiny addends",
+        "max finite",
+        "negative/domain/acos clamp",
+        "literal infinity",
+        "two literal quiet NaN payloads"
+      ],
+      "boundary_policy": "special result classes handled separately; no NaN payload acceptance requirement; signed-zero/domain/clamp branches require explicit Task 3 classification",
+      "sensitivity": [
+        {
+          "operation_id": 0,
+          "operation": "x87Fsqrt",
+          "output_units": "sqrt(input units)",
+          "finite_pairs": 7,
+          "bitwise_cw_differences": 1,
+          "max_nearest_vs_simulation_absolute_difference": "1.110223024625156540423631668E-16",
+          "worst_case_index": 0,
+          "class_disagreements": [],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        },
+        {
+          "operation_id": 1,
+          "operation": "x87FsqrtSum2",
+          "output_units": "sqrt(input units)",
+          "finite_pairs": 8,
+          "bitwise_cw_differences": 3,
+          "max_nearest_vs_simulation_absolute_difference": "2.220446049250313080847263336E-16",
+          "worst_case_index": 5,
+          "class_disagreements": [],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        },
+        {
+          "operation_id": 2,
+          "operation": "x87FsqrtSum3",
+          "output_units": "sqrt(input units)",
+          "finite_pairs": 8,
+          "bitwise_cw_differences": 3,
+          "max_nearest_vs_simulation_absolute_difference": "2.220446049250313080847263336E-16",
+          "worst_case_index": 5,
+          "class_disagreements": [],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        },
+        {
+          "operation_id": 3,
+          "operation": "x87FsqrtSum4",
+          "output_units": "sqrt(input units)",
+          "finite_pairs": 8,
+          "bitwise_cw_differences": 1,
+          "max_nearest_vs_simulation_absolute_difference": "1.110223024625156540423631668E-16",
+          "worst_case_index": 7,
+          "class_disagreements": [],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        },
+        {
+          "operation_id": 4,
+          "operation": "x87FsqrtDiffSum",
+          "output_units": "sqrt(input units)",
+          "finite_pairs": 7,
+          "bitwise_cw_differences": 0,
+          "max_nearest_vs_simulation_absolute_difference": "0",
+          "worst_case_index": 6,
+          "class_disagreements": [],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        },
+        {
+          "operation_id": 5,
+          "operation": "x87FsqrtDiag",
+          "output_units": "sqrt(input units)",
+          "finite_pairs": 6,
+          "bitwise_cw_differences": 2,
+          "max_nearest_vs_simulation_absolute_difference": "2.220446049250313080847263336E-16",
+          "worst_case_index": 5,
+          "class_disagreements": [],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        },
+        {
+          "operation_id": 6,
+          "operation": "x87FsqrtMulSub",
+          "output_units": "sqrt(input units)",
+          "finite_pairs": 6,
+          "bitwise_cw_differences": 2,
+          "max_nearest_vs_simulation_absolute_difference": "1.995840309534719811656372713E+292",
+          "worst_case_index": 6,
+          "class_disagreements": [],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        },
+        {
+          "operation_id": 7,
+          "operation": "x87FsqrtDot2",
+          "output_units": "sqrt(product units)",
+          "finite_pairs": 6,
+          "bitwise_cw_differences": 4,
+          "max_nearest_vs_simulation_absolute_difference": "2.220446049250313080847263336E-16",
+          "worst_case_index": 1,
+          "class_disagreements": [
+            {
+              "case": 6,
+              "nearest_class": "infinity",
+              "simulation_class": "finite"
+            }
+          ],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        },
+        {
+          "operation_id": 8,
+          "operation": "x87FsqrtDot3",
+          "output_units": "sqrt(product units)",
+          "finite_pairs": 6,
+          "bitwise_cw_differences": 3,
+          "max_nearest_vs_simulation_absolute_difference": "1.654361225106055349742817384E-24",
+          "worst_case_index": 5,
+          "class_disagreements": [
+            {
+              "case": 6,
+              "nearest_class": "infinity",
+              "simulation_class": "finite"
+            }
+          ],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        },
+        {
+          "operation_id": 9,
+          "operation": "x87FsqrtDot4",
+          "output_units": "sqrt(product units)",
+          "finite_pairs": 6,
+          "bitwise_cw_differences": 2,
+          "max_nearest_vs_simulation_absolute_difference": "1.110223024625156540423631668E-16",
+          "worst_case_index": 0,
+          "class_disagreements": [
+            {
+              "case": 6,
+              "nearest_class": "infinity",
+              "simulation_class": "finite"
+            }
+          ],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        },
+        {
+          "operation_id": 10,
+          "operation": "x87FsqrtQuotDot3",
+          "output_units": "sqrt(numerator/dot units)",
+          "finite_pairs": 5,
+          "bitwise_cw_differences": 3,
+          "max_nearest_vs_simulation_absolute_difference": "1",
+          "worst_case_index": 5,
+          "class_disagreements": [],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        },
+        {
+          "operation_id": 11,
+          "operation": "x87FsinHalfOverNorm3",
+          "output_units": "inverse length",
+          "finite_pairs": 5,
+          "bitwise_cw_differences": 4,
+          "max_nearest_vs_simulation_absolute_difference": "1.110223024625156540423631668E-16",
+          "worst_case_index": 7,
+          "class_disagreements": [
+            {
+              "case": 6,
+              "nearest_class": "infinity",
+              "simulation_class": "finite"
+            }
+          ],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        },
+        {
+          "operation_id": 12,
+          "operation": "x87FcosHalfNorm3",
+          "output_units": "dimensionless",
+          "finite_pairs": 7,
+          "bitwise_cw_differences": 5,
+          "max_nearest_vs_simulation_absolute_difference": "1.110223024625156540423631668E-16",
+          "worst_case_index": 7,
+          "class_disagreements": [
+            {
+              "case": 6,
+              "nearest_class": "infinity",
+              "simulation_class": "finite"
+            }
+          ],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        },
+        {
+          "operation_id": 13,
+          "operation": "x87RateOverRoot",
+          "output_units": "radians/time",
+          "finite_pairs": 6,
+          "bitwise_cw_differences": 1,
+          "max_nearest_vs_simulation_absolute_difference": "4.440892098500626161694526672E-16",
+          "worst_case_index": 7,
+          "class_disagreements": [],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        },
+        {
+          "operation_id": 14,
+          "operation": "x87CIacos",
+          "output_units": "radians",
+          "finite_pairs": 6,
+          "bitwise_cw_differences": 0,
+          "max_nearest_vs_simulation_absolute_difference": "0E-48",
+          "worst_case_index": 7,
+          "class_disagreements": [],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        },
+        {
+          "operation_id": 15,
+          "operation": "x87AcosRateOverRoot",
+          "output_units": "radians/time",
+          "finite_pairs": 4,
+          "bitwise_cw_differences": 0,
+          "max_nearest_vs_simulation_absolute_difference": "0E-1074",
+          "worst_case_index": 4,
+          "class_disagreements": [],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        },
+        {
+          "operation_id": 16,
+          "operation": "jointCIacos",
+          "output_units": "radians",
+          "finite_pairs": 6,
+          "bitwise_cw_differences": 1,
+          "max_nearest_vs_simulation_absolute_difference": "2.220446049250313080847263336E-16",
+          "worst_case_index": 0,
+          "class_disagreements": [],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        },
+        {
+          "operation_id": 17,
+          "operation": "jointAcos",
+          "output_units": "radians",
+          "finite_pairs": 9,
+          "bitwise_cw_differences": 1,
+          "max_nearest_vs_simulation_absolute_difference": "2.220446049250313080847263336E-16",
+          "worst_case_index": 0,
+          "class_disagreements": [],
+          "portable_acceptance_budget": null,
+          "budget_gate": "Task 3 must measure scalar nearest against nearest x87 per operation; CW sensitivity is not an acceptance tolerance"
+        }
+      ]
+    },
+    {
+      "path": "geometry-shipped-oracle.json",
+      "sha256": "3821e47aba7bb5be17ef9074d69e5059674fbc4898bec5acfa3a858112bc76b8",
+      "provenance_kind": "shipped-oracle",
+      "source_harness": "tests/PhysicsGeometryTests.cpp",
+      "record_count": 299,
+      "repeat_export": "same 299 semantic records on second oracle run; target transcript equality with worktree-built candidate also verified",
+      "portable_acceptance_budget": null,
+      "budget_gate": "Task 4 measures geometry per output unit, boundary class and discrete outcome before acceptance"
+    }
+  ],
+  "family_obligations": [
+    {
+      "family": "conversion",
+      "owner_task": 3,
+      "units": [
+        "integer/index exact",
+        "text integer encoding"
+      ],
+      "portable_acceptance_budget": null,
+      "status": "capture and measure before owning conversion acceptance",
+      "required_evidence": [
+        "fixed input bytes with seed/reference provenance",
+        "Debug/optimized baselines",
+        "worst numeric errors per unit/scale",
+        "discrete disagreements and boundary reproducer dispositions",
+        "real production path integration"
+      ]
+    },
+    {
+      "family": "geometry",
+      "owner_task": 4,
+      "units": [
+        "length",
+        "length squared",
+        "unitless parameter",
+        "angle"
+      ],
+      "portable_acceptance_budget": null,
+      "status": "capture and measure before owning conversion acceptance",
+      "required_evidence": [
+        "fixed input bytes with seed/reference provenance",
+        "Debug/optimized baselines",
+        "worst numeric errors per unit/scale",
+        "discrete disagreements and boundary reproducer dispositions",
+        "real production path integration"
+      ]
+    },
+    {
+      "family": "support-topology-convex",
+      "owner_task": 5,
+      "units": [
+        "projection length",
+        "angle",
+        "topology/index exact"
+      ],
+      "portable_acceptance_budget": null,
+      "status": "capture and measure before owning conversion acceptance",
+      "required_evidence": [
+        "fixed input bytes with seed/reference provenance",
+        "Debug/optimized baselines",
+        "worst numeric errors per unit/scale",
+        "discrete disagreements and boundary reproducer dispositions",
+        "real production path integration"
+      ]
+    },
+    {
+      "family": "contacts",
+      "owner_task": 6,
+      "units": [
+        "penetration length",
+        "normal angle",
+        "hit/contact presence exact away from ambiguity"
+      ],
+      "portable_acceptance_budget": null,
+      "status": "capture and measure before owning conversion acceptance",
+      "required_evidence": [
+        "fixed input bytes with seed/reference provenance",
+        "Debug/optimized baselines",
+        "worst numeric errors per unit/scale",
+        "discrete disagreements and boundary reproducer dispositions",
+        "real production path integration"
+      ]
+    },
+    {
+      "family": "dynamics-environment",
+      "owner_task": 7,
+      "units": [
+        "pose length",
+        "velocity length/time",
+        "angle",
+        "constraint residual",
+        "sleep/wake exact"
+      ],
+      "portable_acceptance_budget": null,
+      "status": "capture and measure before owning conversion acceptance",
+      "required_evidence": [
+        "fixed input bytes with seed/reference provenance",
+        "Debug/optimized baselines",
+        "worst numeric errors per unit/scale",
+        "discrete disagreements and boundary reproducer dispositions",
+        "real production path integration"
+      ]
+    },
+    {
+      "family": "multistep-integration",
+      "owner_task": 8,
+      "units": [
+        "constraint residual",
+        "penetration",
+        "drift",
+        "energy accounting",
+        "timing"
+      ],
+      "portable_acceptance_budget": null,
+      "status": "capture and measure before owning conversion acceptance",
+      "required_evidence": [
+        "fixed input bytes with seed/reference provenance",
+        "Debug/optimized baselines",
+        "worst numeric errors per unit/scale",
+        "discrete disagreements and boundary reproducer dispositions",
+        "real production path integration"
+      ]
+    },
+    {
+      "family": "foundation-vendor-native",
+      "owner_task": 9,
+      "units": [
+        "layout/ABI exact per target",
+        "distance",
+        "BVH decisions"
+      ],
+      "portable_acceptance_budget": null,
+      "status": "capture and measure before owning conversion acceptance",
+      "required_evidence": [
+        "fixed input bytes with seed/reference provenance",
+        "Debug/optimized baselines",
+        "worst numeric errors per unit/scale",
+        "discrete disagreements and boundary reproducer dispositions",
+        "real production path integration"
+      ]
+    }
+  ],
+  "acceptance_policy": "No null/unmeasured budget can pass acceptance. Repeat identity budgets are not portable numeric budgets. No portable family translated by Task 1."
+}

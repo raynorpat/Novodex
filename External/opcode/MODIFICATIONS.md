@@ -166,3 +166,49 @@ its first min/max direct-field drive differed when both sides received a
 centre/extents object, then matched exactly after `USE_MINMAX` was propagated.
 This changes all Opcode AABBs, so other object and asset gates still require
 regression checks; the single helper's exact result is not proof of them.
+
+
+### Portable ICE topology gate (2026-10-09)
+
+`Ice/IceFPU.h` and `Ice/IceMemoryMacros.h` now have overlays retaining every
+original Win32 x87 definition behind `NX_PHYSICS_USE_X87`. Ordinary scalar arms
+implement the bitwise FastSqrt approximation, the four FCOMI/FCMOV min/max
+helpers, and StoreDwords. Min/max selects the operand representation explicitly
+so SSE MIN/MAX instruction selection cannot change equal signed-zero results.
+These are portability selections, separately measured by the actual-source
+`Portable.ConvexContact.IceTopology` gate; they are not additional shipped-source
+correspondence claims. Upstream bytes and legacy compiler options are retained.
+The vendor target publishes the canonical private backend-header include path.
+Unused native node-pointer packing, enum-forward declarations, compiler messages
+and include-path casing still require their owning platform work.
+
+Task5c1: Ice/IceMatrix4x4.cpp preserves the upstream source and x87 branch.
+Scalar InvertPRMatrix groups the translation dot products in double before
+the original float output store, preserving x87 zero/cancellation outcomes.
+The overlay is selected by the existing vendor staging, upstream is untouched.
+
+### Portable model/tree/ray prerequisite (Task5d1b1, 2026-10-09)
+
+`OPC_AABBTree.cpp` retains binary32 variance assignments after binary64
+subtraction/product/addition. New `OPC_TreeBuilders.cpp` and
+`OPC_OptimizedTree.cpp` overlays retain triangle-center sums, quantization
+products before integer conversion, and wide quantization containment
+comparisons. Their complete original backend1 expressions remain selected.
+
+`OPC_RayAABBOverlap.h` selects the ordinary typed eight-value cross comparison
+and preserves SegmentAABB's binary32 cross store versus binary64 radius sums.
+`OPC_RayTriOverlapScalar.inl`, selected by the existing RayTri header, retains
+complete cross/dot expressions before Point/result stores, the existing culling
+tolerance, V's double lifetime, and the non-culling U+V comparison precision.
+No epsilon, clamp, public signature, upstream byte, layout assertion or
+production x87 option changed.
+
+These selections are measured against a protected reconstructed x87 source
+capture on actual Foundation-backed Model/MeshInterface/OPCODECREATE/tree/ray
+objects. They do not repair or newly claim shipped-source correspondence:
+the existing Save/Load/Slot4 and host error-shim classifications remain.
+The scalar Clang compiler profile now uses C++-only `-fcheck-new` because the
+genuine vendor allocators can return null and the existing callers check it;
+assuming throwing-new success removed that required failure branch.
+Native packed-node pointers, PMap and the full mesh/contact integration remain
+separate gates.

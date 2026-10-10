@@ -107,11 +107,16 @@
 // and naked because which operands its listing loads (quieting a signalling NaN)
 // and which it uses from memory decides the NaN it propagates.
 
+#include "NxPhysicsBackend.h"
+#if NX_PHYSICS_USE_X87
 #include "Nxp.h"
+#else
+#include "portable/NxScalarMath.h"
+#endif
 
 #include <math.h>
 
-#if defined(_MSC_VER) && defined(_M_IX86)
+#if NX_PHYSICS_USE_X87
 
 // Arguments start at [esp + 4] (the return address is at [esp]), one qword
 // each.
@@ -465,87 +470,84 @@ static __declspec(naked) double __cdecl x87AcosRateOverRoot(double /*w*/, double
 
 #else
 
-static NX_INLINE double x87Fsqrt(double x)
+static inline double x87Fsqrt(double x)
 	{
-	return sqrt(x);
+	return nxScalarSqrt(x);
 	}
 
-static NX_INLINE double x87FsqrtSum2(double a, double b)
+static inline double x87FsqrtSum2(double a, double b)
 	{
-	return sqrt(a + b);
+	return nxScalarSqrtSum2(a,b);
 	}
 
-static NX_INLINE double x87FsqrtSum3(double a, double b, double c)
+static inline double x87FsqrtSum3(double a, double b, double c)
 	{
-	return sqrt((a + b) + c);
+	return nxScalarSqrtSum3(a,b,c);
 	}
 
-static NX_INLINE double x87FsqrtDiffSum(double a, double b, double c)
+static inline double x87FsqrtDiffSum(double a, double b, double c)
 	{
-	return sqrt((a - b) + c);
+	return nxScalarSqrtDiffSum(a,b,c);
 	}
 
-static NX_INLINE double x87FsqrtSum4(double a, double b, double c, double d)
+static inline double x87FsqrtSum4(double a, double b, double c, double d)
 	{
-	return sqrt(((a + b) + c) + d);
+	return nxScalarSqrtSum4(a,b,c,d);
 	}
 
-static NX_INLINE double x87FsqrtDiag(double a, double b, double c)
+static inline double x87FsqrtDiag(double a, double b, double c)
 	{
-	return sqrt((a - (b + c)) + 1.0);
+	return nxScalarSqrtDiag(a,b,c);
 	}
 
-static NX_INLINE double x87FsqrtMulSub(double a, double b, double c)
+static inline double x87FsqrtMulSub(double a, double b, double c)
 	{
-	return sqrt(a * b - c);
+	return nxScalarSqrtMulSub(a,b,c);
 	}
 
-static NX_INLINE double x87FsqrtDot2(double a0, double b0, double a1, double b1)
+static inline double x87FsqrtDot2(double a0, double b0, double a1, double b1)
 	{
-	return sqrt(a0 * b0 + a1 * b1);
+	return nxScalarSqrtDot2(a0,b0,a1,b1);
 	}
 
-static NX_INLINE double x87FsqrtDot3(double a0, double b0, double a1, double b1, double a2, double b2)
+static inline double x87FsqrtDot3(double a0, double b0, double a1, double b1, double a2, double b2)
 	{
-	return sqrt((a0 * b0 + a1 * b1) + a2 * b2);
+	return nxScalarSqrtDot3(a0,b0,a1,b1,a2,b2);
 	}
 
-static NX_INLINE double x87FsqrtDot4(double a0, double b0, double a1, double b1, double a2, double b2,
-	double a3, double b3)
+static inline double x87FsqrtDot4(double a0, double b0, double a1, double b1, double a2, double b2, double a3, double b3)
 	{
-	return sqrt(((a0 * b0 + a1 * b1) + a2 * b2) + a3 * b3);
+	return nxScalarSqrtDot4(a0,b0,a1,b1,a2,b2,a3,b3);
 	}
 
-static NX_INLINE double x87FsqrtQuotDot3(double n, double a0, double b0, double a1, double b1, double a2, double b2)
+static inline double x87FsqrtQuotDot3(double n, double a0, double b0, double a1, double b1, double a2, double b2)
 	{
-	return sqrt(n / ((a0 * b0 + a1 * b1) + a2 * b2));
+	return nxScalarSqrtQuotDot3(n,a0,b0,a1,b1,a2,b2);
 	}
 
-static NX_INLINE double x87FsinHalfOverNorm3(double dt, double half, double x, double y, double z)
+static inline double x87FsinHalfOverNorm3(double dt, double half, double x, double y, double z)
 	{
-	const double length = sqrt((x * x + y * y) + z * z);
-	return sin((dt * length) * half) / length;
+	return nxScalarSinHalfOverNorm3(dt,half,x,y,z);
 	}
 
-static NX_INLINE double x87FcosHalfNorm3(double dt, double half, double x, double y, double z)
+static inline double x87FcosHalfNorm3(double dt, double half, double x, double y, double z)
 	{
-	const double length = sqrt((x * x + y * y) + z * z);
-	return cos((dt * length) * half);
+	return nxScalarCosHalfNorm3(dt,half,x,y,z);
 	}
 
-static NX_INLINE double x87RateOverRoot(double angle, double invDt, double w)
+static inline double x87RateOverRoot(double angle, double invDt, double w)
 	{
-	return (angle * invDt + angle * invDt) / sqrt(1.0 - w * w);
+	return nxScalarRateOverRoot(angle,invDt,w);
 	}
 
-static NX_INLINE double x87CIacos(double x)
+static inline double x87CIacos(double x)
 	{
-	return acos(x);
+	return nxScalarAcos(x);
 	}
 
-static NX_INLINE double x87AcosRateOverRoot(double w, double invDt)
+static inline double x87AcosRateOverRoot(double w, double invDt)
 	{
-	return x87RateOverRoot(acos(w), invDt, w);
+	return nxScalarAcosRateOverRoot(w,invDt);
 	}
 
 #endif

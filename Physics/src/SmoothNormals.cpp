@@ -27,6 +27,7 @@
 #include "Nxp.h"
 #include "NxVec3.h"
 #include "NxSmoothNormals.h"
+#include "NxSmoothNormalsAngle.h"
 
 #include <math.h>
 #include <string.h>
@@ -52,6 +53,7 @@
 // which moved an *oracle-side* digest once already.
 static double nxSqrt(double value)
 	{
+#if NX_PHYSICS_USE_X87
 	double result;
 	__asm
 		{
@@ -60,6 +62,9 @@ static double nxSqrt(double value)
 		fstp result
 		}
 	return result;
+#else
+	return sqrt(value);
+#endif
 	}
 
 // phys_fn_002144 (0x000532e0, 217 B)
@@ -90,6 +95,7 @@ static double nxSqrt(double value)
 // modelled it with the same groupings in C++ and agreed with the oracle on
 // every quiet input (step_smooth_normals); it now calls this row
 // (angleAtVertex below).
+#if NX_PHYSICS_USE_X87
 __declspec(naked) void nxSmoothNormalsAngleAtVertex()
 	{
 	__asm
@@ -203,6 +209,32 @@ static NxReal angleAtVertex(NxU32 vertex, const NxU32* index, const NxVec3* vert
 		}
 	return angle;
 	}
+#else
+NxReal nxSmoothNormalsAngleAtVertex(NxU32 vertex, const NxU32* index, const NxVec3* verts)
+	{
+	NxU32 first = 0, second = 0;
+	if(vertex == index[0]) { first = 2; second = 1; }
+	else if(vertex == index[1]) { first = 2; }
+	else if(vertex == index[2]) { second = 1; }
+	const NxVec3& at = verts[vertex];
+	const NxVec3& a = verts[index[first]];
+	const NxVec3& b = verts[index[second]];
+	const double ax = (double) a.x - at.x, ay = (double) a.y - at.y, az = (double) a.z - at.z;
+	const double bx = (double) b.x - at.x, by = (double) b.y - at.y, bz = (double) b.z - at.z;
+	const NxReal storedBz = (NxReal) bz;
+	const double cx = bz * ay - by * az;
+	const NxReal cy = (NxReal) (az * bx - storedBz * ax);
+	const double cz = by * ax - bx * ay;
+	const NxReal storedCz = (NxReal) cz;
+	const NxReal length = (NxReal) sqrt((cz * storedCz + cy * (double) cy) + cx * cx);
+	const double dot = (storedBz * az + by * ay) + bx * ax;
+	return (NxReal) atan2((double) length, dot);
+	}
+static NxReal angleAtVertex(NxU32 vertex, const NxU32* index, const NxVec3* verts)
+	{
+	return nxSmoothNormalsAngleAtVertex(vertex, index, verts);
+	}
+#endif
 
 // 0x000533c0. Three passes: unit face normals into a scratch array, an
 // angle-weighted accumulation into the caller's array, then a per-vertex

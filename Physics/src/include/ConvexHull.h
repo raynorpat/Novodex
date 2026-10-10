@@ -66,6 +66,7 @@ class ConvexHull
 	NxU32*				mEdgePolygons;		// +0x48, 0x0002d0e3
 	};
 
+#if NX_PHYSICS_USE_X87
 // The P-Hull rows other than 001461, in ConvexHull.cpp. The oracle's methods are
 // thiscall; the float rows are the listing's instructions, naked, and a naked
 // function cannot be a member, so those are __fastcall with the object in ecx
@@ -131,5 +132,9 @@ void* __fastcall nxEdgeDescConstruct(void* desc);			// 001439
 // 000001: the `vector constructor iterator` MSVC generates for `new[]` of a
 // class with a constructor (stdcall: array, element size, count, constructor).
 void __stdcall nxIceVectorConstruct(void* array, NxU32 size, NxU32 count, void* (__fastcall* ctor)(void*));
+
+#else
+#include "portable/NxConvexInterfaces.h"
+#endif
 
 #endif

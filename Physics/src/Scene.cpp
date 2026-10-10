@@ -27,6 +27,12 @@
 #include "ContactPairManager.h"
 
 #include "Containers.h"
+#include "NxPhysicsBackend.h"
+#if !NX_PHYSICS_USE_X87
+#include "NxSceneContactMembers.h"
+#include "NxSceneVisitedBuffers.h"
+#include "NxSceneActorIdPool.h"
+#endif
 #include "NxSceneDesc.h"
 #include "NxSceneStats.h"
 #include "NxBounds3.h"
@@ -446,10 +452,14 @@ void nxSceneMember4CA30(void* self)
 	{
 	unsigned* p = static_cast<unsigned*>(self);
 	nxDword(p, 0x00) = 0;
+#if NX_PHYSICS_USE_X87
 	nxDword(p, 0x1c) = 0;
 	nxDword(p, 0x20) = 0;
 	nxDword(p, 0x24) = 0;
 	nxDword(p, 0x28) = 0;
+#else
+	nxScenePrunerCollectionConstruct(nxAt(p, 0x1c));
+#endif
 	nxDword(p, 0x04) = 0x7f7fffffu;
 	nxDword(p, 0x08) = 0x7f7fffffu;
 	nxDword(p, 0x0c) = 0x7f7fffffu;
@@ -608,6 +618,14 @@ static inline unsigned char* nxAt(unsigned* p, unsigned byteOffset)
 	{
 	return reinterpret_cast<unsigned char*>(p) + byteOffset;
 	}
+#if !NX_PHYSICS_USE_X87
+NxSceneActorIdPool& nxSceneActorIds(NxSceneInternal& scene)
+	{
+	static_assert(0x6d0 % alignof(NxSceneActorIdPool) == 0,
+		"Scene actor-ID member storage alignment");
+	return *reinterpret_cast<NxSceneActorIdPool*>(scene.bytes() + 0x6d0);
+	}
+#endif
 
 // phys_fn_000647 (0x00012c10). Every store below is the listing's, at the byte
 // offset the listing names, in the listing's order; the listing address of the
@@ -618,11 +636,17 @@ NxSceneInternal::NxSceneInternal()
 	const unsigned base = reinterpret_cast<unsigned>(this);
 
 	// 0x12c18: the vtable the oracle installs.
+#if NX_PHYSICS_USE_X87
 	nxDword(p, 0x000) = reinterpret_cast<unsigned>(vtable());
 
 	// 0x12c21: +0x04..+0x28 zeroed.
 	for(unsigned offset = 0x04; offset <= 0x28; offset += 4)
 		nxDword(p, offset) = 0;
+#else
+	nxSceneScratchConstruct(nxAt(p, 0x000), reinterpret_cast<NxU32>(vtable()));
+	for(unsigned offset = 0x18; offset <= 0x28; offset += 4)
+		nxDword(p, offset) = 0;
+#endif
 
 	nxSceneArrayHeaderInit(nxAt(p, 0x02c));					// phys_fn_004147
 	new (nxAt(p, 0x050)) SdkContainer();					// phys_fn_004836
@@ -673,9 +697,13 @@ NxSceneInternal::NxSceneInternal()
 	nxDword(p, 0x44c) = 0;
 	nxDword(p, 0x440) = 0;
 	nxDword(p, 0x444) = 1;
+#if NX_PHYSICS_USE_X87
 	nxSceneMemberB5720(nxAt(p, 0x450));						// phys_fn_004899
 	new (nxAt(p, 0x4e0)) SdkContainer();					// phys_fn_004836
 	new (nxAt(p, 0x4f0)) SdkContainer();
+#else
+	nxSceneContactMembersConstruct(nxAt(p, 0x450));
+#endif
 	new (nxAt(p, 0x500)) SdkContainer();
 	new (nxAt(p, 0x510)) SdkContainer();
 
@@ -713,8 +741,14 @@ NxSceneInternal::NxSceneInternal()
 	nxDword(p, 0x620) = 0;
 	nxSceneMember4CA30(nxAt(p, 0x624));						// phys_fn_001980
 
+#if NX_PHYSICS_USE_X87
 	for(unsigned offset = 0x6ac; offset <= 0x6dc; offset += 4)	// 0x12ee5
 		nxDword(p, offset) = 0;
+#else
+	for(unsigned offset = 0x6ac; offset <= 0x6cc; offset += 4)
+		nxDword(p, offset) = 0;
+	nxSceneActorIdPoolConstruct(nxAt(p, 0x6d0));
+#endif
 	nxDword(p, 0x6e4) = 0;							// next shape ID
 	nxDword(p, 0x6e8) = 0;							// shape-ID recycle array
 	nxDword(p, 0x6ec) = 0;
@@ -1069,12 +1103,16 @@ void nxSceneRecycleShapeId(NxSceneInternal* scene, unsigned id)
 
 void nxSceneRecycleActorId(NxSceneInternal* scene, unsigned id)
 	{
+#if NX_PHYSICS_USE_X87
 	unsigned char* header = scene->bytes() + 0x6d4;
 	nxSceneArrayReserve(header, 1);
 	unsigned* last = scene->at<unsigned*>(0x6d8);
 	if(!last) return;
 	*last = id;
 	scene->at<unsigned*>(0x6d8) = last + 1;
+#else
+	nxSceneActorIds(*scene).returnId(id);
+#endif
 	}
 
 // Dynamic-record IDs use the same LIFO vector layout at Scene+0x6fc, with the
@@ -1401,6 +1439,7 @@ void nxSceneAuxUnregisterRecord(void* auxPointer, void* recordPointer)
 // dynamic. Its process-wide header owns four initial buffers. Unlike the Scene
 // rows, the pool (0x000b4cc0) and its buffers (0x000ef270) allocate through
 // phys_fn_004803, so this helper keeps nxGetSdkAllocator.
+#if NX_PHYSICS_USE_X87
 static unsigned char* gNxOpcodePool = 0;
 
 bool nxOpcodeEnsurePool()
@@ -1441,6 +1480,7 @@ void nxOpcodeReleasePool()
 	gNxOpcodePool = 0;
 	}
 
+#endif
 // The pending-shape array at Scene+0x69c..0x6a4 is +0x624's +0x78 header, which
 // 0x0004bb9c grows through phys_fn_004840 -- a phys_fn_004803 container -- so it
 // stays on nxGetSdkAllocator, as do the 0x3c/0x90 pruners built by 0x000b5090 and
@@ -1731,6 +1771,7 @@ void* nxSceneCreateActorBody(void* memory, void* scene)
 
 	// The scene hands out a slot id: either the counter at +0x6d0 is incremented, or
 	// the free list at +0x6d4..+0x6d8 is popped.
+#if NX_PHYSICS_USE_X87
 	unsigned slot;
 	const unsigned freeCount = (s[0x6d8 / 4] - s[0x6d4 / 4]) >> 2;
 	if(freeCount == 0)
@@ -1743,6 +1784,9 @@ void* nxSceneCreateActorBody(void* memory, void* scene)
 		slot = *reinterpret_cast<unsigned*>(s[0x6d4 / 4] + (freeCount - 1) * 4);
 		s[0x6d8 / 4] = s[0x6d8 / 4] - 4;
 		}
+#else
+	const unsigned slot = nxSceneActorIds(*static_cast<NxSceneInternal*>(scene)).take();
+#endif
 	a[0xc / 4] = slot;
 
 	// The 0x18-byte sub-object the oracle allocates next. Reproduction hole.
@@ -3207,6 +3251,7 @@ static void nxSceneDelete(void* self, int flags)
 		nxSceneReleaseDisabledFluidManager(fluids);
 		scene->at<void*>(0x61c) = 0;
 		}
+#if NX_PHYSICS_USE_X87
 	for(unsigned offset = 8; offset <= 0xc; offset += 4)
 		{
 		void*& entries = *reinterpret_cast<void**>(
@@ -3217,6 +3262,9 @@ static void nxSceneDelete(void* self, int flags)
 			entries = 0;
 			}
 		}
+#else
+	nxSceneScratchReleaseBuffers(*reinterpret_cast<NxPolygonScratch*>(scene->bytes()));
+#endif
 	if(p[0x12])
 		{
 		unsigned char* aux = reinterpret_cast<unsigned char*>(p[0x12]);
@@ -3235,6 +3283,7 @@ static void nxSceneDelete(void* self, int flags)
 	// shape array at +0x6a4 (+0x624's +0x78) grows through phys_fn_004840,
 	// which uses phys_fn_004803. Each block goes back to the allocator it
 	// came from.
+#if NX_PHYSICS_USE_X87
 	const unsigned arrayOffsets[] = {0x6fc, 0x6e8, 0x6d4, 0x6a4};
 	for(unsigned offset : arrayOffsets)
 		{
@@ -3249,6 +3298,19 @@ static void nxSceneDelete(void* self, int flags)
 			entries = 0;
 			}
 		}
+#else
+	const unsigned otherIdArrayOffsets[] = {0x6fc, 0x6e8};
+	for(unsigned offset : otherIdArrayOffsets)
+		{
+		void*& entries = *reinterpret_cast<void**>(static_cast<unsigned char*>(self) + offset);
+		if(entries) nxFoundationSDKAllocator->free(entries);
+		entries = 0;
+		}
+	nxSceneActorIdPoolDestroy(&nxSceneActorIds(*scene));
+	void*& pendingShapes = scene->at<void*>(0x6a4);
+	if(pendingShapes) nxGetSdkAllocator()->free(pendingShapes);
+	pendingShapes = 0;
+#endif
 	// The pruning engine's pruners: each one's tree (static), its world boxes
 	// and objects, then its storage (opcode/IcePruner.cpp).
 	nxSceneEngineDestroyPruners(static_cast<unsigned char*>(self) + 0x624);
@@ -3263,6 +3325,13 @@ static void nxSceneDelete(void* self, int flags)
 			entries = 0;
 			}
 		}
+	// Scalar owns actual member lifetimes in the original +450..+500 window.
+#if !NX_PHYSICS_USE_X87
+	nxSceneContactMembersDestroy(
+		reinterpret_cast<NxSceneContactMembers*>(scene->bytes() + 0x450));
+	reinterpret_cast<NxScenePrunerCollection*>(scene->bytes() + 0x640)->~NxScenePrunerCollection();
+	nxSceneScratchDestroy(reinterpret_cast<NxPolygonScratch*>(scene->bytes()));
+#endif
 	if(flags & 1)
 		nxFoundationSDKAllocator->free(self);
 	}
@@ -3303,6 +3372,7 @@ void* nxSceneActorInitialise(NxActor* actor, const void* desc)
 // candidate's pruners (the model above) have no table.
 void nxSceneUpdateActorCount(void* scene, unsigned count)
 	{
+#if NX_PHYSICS_USE_X87
 	unsigned char* bytes = static_cast<unsigned char*>(scene);
 	unsigned& capacity = *reinterpret_cast<unsigned*>(bytes + 4);
 	if(capacity >= count) return;
@@ -3332,6 +3402,14 @@ void nxSceneUpdateActorCount(void* scene, unsigned count)
 	reinterpret_cast<SdkContainer*>(bytes + 0x500)->setExternalBuffer(capacity, buffer);
 	reinterpret_cast<SdkContainer*>(bytes + 0x510)->setExternalBuffer(capacity, buffer);
 	nxSceneEngineSetExternalBuffer(bytes + 0x624, capacity, buffer);
+#else
+	unsigned char* bytes = static_cast<unsigned char*>(scene);
+	nxSceneVisitedBuffersUpdate(*reinterpret_cast<NxPolygonScratch*>(bytes),
+		*reinterpret_cast<SdkContainer*>(bytes + 0x50),
+		*reinterpret_cast<SdkContainer*>(bytes + 0x500),
+		*reinterpret_cast<SdkContainer*>(bytes + 0x510),
+		*reinterpret_cast<NxScenePrunerCollection*>(bytes + 0x640), count);
+#endif
 	}
 
 void nxSceneNotifyActorCreated(void* hook, NxActor* actor)
@@ -3593,7 +3671,11 @@ void nxActorDestroy(unsigned char* body)
 		reinterpret_cast<DynamicBody*>(record)->destruct();
 		nxFoundationSDKAllocator->free(record);
 		}
+#if NX_PHYSICS_USE_X87
 	nxU32VectorPushBack(scene->bytes() + 0x6d0, *reinterpret_cast<unsigned*>(body + 0xc));
+#else
+	nxSceneActorIds(*scene).returnId(*reinterpret_cast<unsigned*>(body + 0xc));
+#endif
 	unsigned char* root = *reinterpret_cast<unsigned char**>(body + 0x10);
 	if(root)
 		nxRuntimeShapeDeleteRoot(root);

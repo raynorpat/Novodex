@@ -17,6 +17,9 @@ A define for DLL export tagging.  This is to go only in DLL-side code.
 #include "CustomAssert.h"
 #include <stdio.h>
 #include <stdarg.h>
+#if defined(NX_PHYSICS_USE_X87) && !NX_PHYSICS_USE_X87
+#include "NxFoundationBreak.h"
+#endif
 //#include <varargs.h>
 //#include "Assert.h"
 
@@ -82,10 +85,14 @@ NX_INLINE FoundationSDK & FoundationSDK::getInstance()
 	//we can't really fail an assert here because if there is no instance then we can't report an error.
 	if (!instance)
 		{
+		#if defined(NX_PHYSICS_USE_X87) && !NX_PHYSICS_USE_X87
+		nxFoundationMissingInstance();
+		#else
 		#ifdef WIN32
 		_asm { int 3 }
 		#elif LINUX
 		asm ( "int $3");
+		#endif
 		#endif
 		}
 	return *instance;

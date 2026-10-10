@@ -1,0 +1,1 @@
+diagnostic old_api_value=027f old_api_mask=ffff raw_control=0a7f crt_control=0009021f fe_round=512

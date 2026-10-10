@@ -10,11 +10,14 @@
 #include "NxIntersectionSegmentCapsule.h"
 #include "NxIntersectionRayPlane.h"
 #include "NxPlane.h"
+#include "NxPhysicsBackend.h"
+#include <math.h>
 
 // The original row executes x87 fsqrt. Its result must follow the live
 // control word, including the simulation step's 0x0f7f setting.
 static double nxSqrt(double value)
 	{
+#if NX_PHYSICS_USE_X87
 	double result;
 	__asm
 		{
@@ -23,6 +26,9 @@ static double nxSqrt(double value)
 		fstp result
 		}
 	return result;
+#else
+	return sqrt(value);
+#endif
 	}
 
 // phys_fn_001377 at 0x00027c70: what a SPHERE shape puts in vtable slot 5.

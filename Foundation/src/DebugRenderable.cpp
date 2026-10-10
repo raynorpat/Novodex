@@ -15,7 +15,7 @@ namespace NxFoundation
 
 	static void computeScaledCircleSinCos(NxU32 index, NxF32 step, NxF32 radius, NxF32& sine, NxF32& cosine)
 		{
-#if defined(_MSC_VER) && defined(_M_IX86)
+#if defined(_MSC_VER) && defined(_M_IX86) && (!defined(NX_PHYSICS_USE_X87) || NX_PHYSICS_USE_X87)
 		NxI32 signedIndex = NxI32(index);
 		__asm
 			{
@@ -40,7 +40,7 @@ namespace NxFoundation
 
 	static void computeScaledCircleSinCosRounded(NxU32 index, NxF32 step, NxF32 radius, NxF32& sine, NxF32& cosine)
 		{
-#if defined(_MSC_VER) && defined(_M_IX86)
+#if defined(_MSC_VER) && defined(_M_IX86) && (!defined(NX_PHYSICS_USE_X87) || NX_PHYSICS_USE_X87)
 		NxI32 signedIndex = NxI32(index);
 		NxF32 angle;
 		__asm

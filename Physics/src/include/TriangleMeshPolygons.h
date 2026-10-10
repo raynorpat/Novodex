@@ -16,6 +16,7 @@
 #include "ConvexHull.h"
 #include "IceSupportMaps.h"
 
+#if NX_PHYSICS_USE_X87
 NxU32 __fastcall nxScratchStamp(void* scratch);																	// 000505
 const IceMaths::Point* __fastcall nxMeshHullCentre(const void* iface);											// 002211, slot 0
 NxU32 __fastcall nxMeshHullVertexCount(const void* iface);														// 002213, slot 1
@@ -32,6 +33,10 @@ NxU32 __fastcall nxMeshHullSupportFace(const void* iface, NxU32 edx, const IceMa
 	const float* pose, NxU32* kind);																			// 002219, slot 10
 void __fastcall nxMeshHullProject(const void* iface, NxU32 edx, void* scratch, float* least, float* greatest,
 	const IceMaths::Point* dir, const float* pose, const IceSupportMap* map);									// 002249, slot 11
+
+#else
+#include "portable/NxConvexInterfaces.h"
+#endif
 
 // The table at 0x101085d4: the twelve slots above in the image's order.
 extern const void* const gTriangleMeshPolygonTable[12];
