@@ -80632,13 +80632,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1626",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14712",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result) Trace taken on the pre-dc11888 build; see the header of evidence/unit-pilot-revolute-trace.txt.",
-      "notes": "",
+      "dynamic_proof": "The registered NxPhysicsJointStagedPairTests loads a second descriptor with distinct revolute fields and prints public readback. Omitting mLimit = desc.limit left prior values: stdout_delta=2, oracle/candidate exits 0 with exact stderr; restored output exact. Mutant SHA-256 1f2de15ddb67a60814b08b85aff95d27ee1f07e17bc9be3bfb3c7308ecf0c215; restored SHA-256 7d4b9d621957a4691ade6ec232cbf082d68d9301f1acef8aa5b0bc6464d72e5e. Evidence: evidence/phase6-joint-revolute-load-from-desc-004332-004370.md.",
+      "notes": "Revolute descriptor load mutation-falsified by distinct-field public readback.",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
@@ -81337,13 +81337,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1639",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14900",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
-      "notes": "",
+      "dynamic_proof": "The registered NxPhysicsJointStagedPairTests loads a second descriptor with distinct revolute fields and prints public readback. Omitting row004332(desc) left prior values: stdout_delta=4, oracle/candidate exits 0 with exact stderr; restored output exact. Mutant SHA-256 5e03249ebb70c414a9f0ddaef711c9b5657e9d29c76da67859bb12970f7641c6; restored SHA-256 7d4b9d621957a4691ade6ec232cbf082d68d9301f1acef8aa5b0bc6464d72e5e. Evidence: evidence/phase6-joint-revolute-load-from-desc-004332-004370.md.",
+      "notes": "Revolute descriptor load mutation-falsified by distinct-field public readback.",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {

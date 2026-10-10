@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 115 rows are closed (2 oracle differentials, 113 mutation-falsified); 318 rows remain open. Full DLL reconstruction remains pending.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 117 rows are closed (2 oracle differentials, 115 mutation-falsified); 316 rows remain open. Full DLL reconstruction remains pending.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
@@ -64,9 +64,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 113,
+    "differential_falsified": 115,
     "oracle_differential_falsified": 2,
-    "deferred_reconstructed_not_falsified": 295,
+    "deferred_reconstructed_not_falsified": 293,
     "deferred_not_reconstructed_in_phase": 23
   },
   "closed": [
@@ -1221,6 +1221,26 @@
         "mutation": "Row-specific falsification (source revision in this worktree): omitted only `desc.limit = mLimit` in `RevoluteJoint::saveToDesc`. The public descriptor returned default limits instead of the values set by the fixture; oracle/candidate exit 0, stdout_delta=2, stderr_exact=True. Restored differential exact. Mutant candidate SHA-256 008e29668d5a8e61270fa37a2ff315ed5bad286eaad0e85d04352e01778fba13; restored candidate SHA-256 267bf324ce4728b406a922a1456a0f621dae1c73a4283342f90841f2f81aa963. Evidence: evidence/phase6-joint-revolute-save-to-desc-004330.md.",
         "detected": "stdout_delta=2"
       }
+    },
+    {
+      "id": "phys_fn_004332",
+      "rva": "0x000a8e60",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision in this worktree): omitted `mLimit = desc.limit` from the revolute descriptor load path. The public readback retained earlier values; oracle/candidate exit 0, stdout_delta=2, stderr_exact=True. Restored control: stdout_delta=0, exact stderr. Mutant candidate SHA-256 1f2de15ddb67a60814b08b85aff95d27ee1f07e17bc9be3bfb3c7308ecf0c215; restored candidate SHA-256 7d4b9d621957a4691ade6ec232cbf082d68d9301f1acef8aa5b0bc6464d72e5e. Evidence: evidence/phase6-joint-revolute-load-from-desc-004332-004370.md.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_004370",
+      "rva": "0x000ac630",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision in this worktree): omitted `row004332(desc)` from the revolute descriptor load path. The public readback retained earlier values; oracle/candidate exit 0, stdout_delta=4, stderr_exact=True. Restored control: stdout_delta=0, exact stderr. Mutant candidate SHA-256 5e03249ebb70c414a9f0ddaef711c9b5657e9d29c76da67859bb12970f7641c6; restored candidate SHA-256 7d4b9d621957a4691ade6ec232cbf082d68d9301f1acef8aa5b0bc6464d72e5e. Evidence: evidence/phase6-joint-revolute-load-from-desc-004332-004370.md.",
+        "detected": "stdout_delta=4"
+      }
     }
   ],
   "deferred": [
@@ -2303,15 +2323,6 @@
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_004332",
-      "rva": "0x000a8e60",
-      "size": 171,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
       "id": "phys_fn_004352",
       "rva": "0x000a92c0",
       "size": 694,
@@ -2387,15 +2398,6 @@
       "id": "phys_fn_004368",
       "rva": "0x000ac5f0",
       "size": 56,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004370",
-      "rva": "0x000ac630",
-      "size": 202,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],

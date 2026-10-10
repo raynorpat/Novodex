@@ -10118,3 +10118,10 @@ The pinned oracle matrix proof now records fixture source SHA-256 `cec98560b773f
 The revolute staged-pair case now prints the saved limit, motor, spring, projection, and flag fields after assigning distinct descriptor values. For `phys_fn_004330`, omitting the saved limit copy returned defaults and the registered differential reported `stdout_delta=2`; restoring the copy returned exact output. See [phase6-joint-revolute-save-to-desc-004330.md](phase6-joint-revolute-save-to-desc-004330.md).
 
 The pinned oracle matrix proof now records fixture source SHA-256 `db37c54d47a1f8210d045641bfe8bb191e34daadd69e7ecd779d03b3eb9cccd4`, 3,208 output lines, and digest `ea355d1ddb07104d8f5e1d0abe6e45d8b031f3452729d8db8b744677fc824365`. The full Phase 6 gate passed with 1,576 assertions run (minimum required: 1,267). Phase 6 now has 115 closed rows (113 mutation-falsified plus 2 oracle differentials) and 318 deferred rows; 23 in-phase rows remain unreconstructed.
+
+
+## Phase 6 closure measurement — revolute descriptor load (`phys_fn_004332`, `004370`)
+
+The index-0 public fixture now loads a second revolute descriptor containing distinct fields and checks the saved readback. For `phys_fn_004332`, omitting the limit copy produced `stdout_delta=2`; for `phys_fn_004370`, omitting the family-field loader call produced `stdout_delta=4`. Restoring both rows returned exact output. See [phase6-joint-revolute-load-from-desc-004332-004370.md](phase6-joint-revolute-load-from-desc-004332-004370.md).
+
+The pinned oracle matrix proof now records fixture source SHA-256 `b539c9fddc267f1a84638de7a7e900c96d8b9fde51e371ab3231ae477a41f396`, 3,210 output lines, and digest `8c64933e66074eedb0a9a73c35a60df0abbd0ad9a97c8ed0428ec60c58a4c281`. The full Phase 6 gate passed with 1,578 assertions run (minimum required: 1,267). Phase 6 now has 117 closed rows (115 mutation-falsified plus 2 oracle differentials) and 316 deferred rows; 23 in-phase rows remain unreconstructed.

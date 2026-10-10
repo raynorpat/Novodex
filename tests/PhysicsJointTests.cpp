@@ -460,6 +460,40 @@ static void nxRevoluteCase(NxScene& scene, NxActor* a, NxActor* b,
 			nxU(saved.spring.targetValue), nxU(saved.projectionDistance),
 			nxU(saved.projectionAngle), static_cast<unsigned>(saved.projectionMode),
 			static_cast<unsigned>(saved.flags));
+		if(index == 0)
+			{
+			NxRevoluteJointDesc incoming;
+			incoming.setToDefault();
+			incoming.actor[0] = a;
+			incoming.actor[1] = b;
+			incoming.limit.low.value = -1.0f;
+			incoming.limit.low.restitution = 0.125f;
+			incoming.limit.low.hardness = 0.5f;
+			incoming.limit.high.value = 1.5f;
+			incoming.limit.high.restitution = 0.25f;
+			incoming.limit.high.hardness = 0.75f;
+			incoming.motor = NxMotorDesc(-1.25f, 8.0f, true);
+			incoming.spring = NxSpringDesc(6.0f, 0.75f, 0.5f);
+			incoming.projectionDistance = 2.0f;
+			incoming.projectionAngle = 0.5f;
+			incoming.flags = 0x02;
+			incoming.projectionMode = NX_JPM_NONE;
+			revolute->loadFromDesc(incoming);
+			NxRevoluteJointDesc reloaded;
+			reloaded.setToDefault();
+			revolute->saveToDesc(reloaded);
+			printf("case=revolute index=0 reloaded limits=%08x.%08x.%08x.%08x.%08x.%08x motor=%08x.%08x.%08x\n",
+				nxU(reloaded.limit.low.value), nxU(reloaded.limit.low.restitution),
+				nxU(reloaded.limit.low.hardness), nxU(reloaded.limit.high.value),
+				nxU(reloaded.limit.high.restitution), nxU(reloaded.limit.high.hardness),
+				nxU(reloaded.motor.velTarget), nxU(reloaded.motor.maxForce),
+				static_cast<unsigned>(reloaded.motor.freeSpin));
+			printf("case=revolute index=0 reloaded spring=%08x.%08x.%08x projection=%08x.%08x mode=%u flags=%08x\n",
+				nxU(reloaded.spring.spring), nxU(reloaded.spring.damper),
+				nxU(reloaded.spring.targetValue), nxU(reloaded.projectionDistance),
+				nxU(reloaded.projectionAngle), static_cast<unsigned>(reloaded.projectionMode),
+				static_cast<unsigned>(reloaded.flags));
+			}
 		}
 
 	nxPrintSceneJoints(scene, "revolute", index, "before_release", joint);
