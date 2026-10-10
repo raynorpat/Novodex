@@ -1,0 +1,15 @@
+=== oracle child ===
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\phase7-row617-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+simulation scene-stats phase=active selector=0 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3
+simulation scene-stats phase=active selector=1 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3
+simulation scene-stats phase=active selector=2 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3
+=== oracle child ===
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\phase7-row617-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+=== candidate child ===
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\phase7-row617-pairs\candidate\NxPhysics.dll sha256=7b71ce64bba2733f28d00418c5f70069ceb37c1424f177dab2d1c9e0b799c632
+simulation scene-stats phase=active selector=0 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3
+simulation scene-stats phase=active selector=1 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3
+simulation scene-stats phase=active selector=2 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3
+=== candidate child ===
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\phase7-row617-pairs\candidate\NxPhysics.dll sha256=7b71ce64bba2733f28d00418c5f70069ceb37c1424f177dab2d1c9e0b799c632
+differential target=NxPhysicsSimulationTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True

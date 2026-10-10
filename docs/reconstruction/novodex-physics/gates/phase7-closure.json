@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes a function only with a registered, measured mutation falsification. The disabled FluidManager release path (phys_fn_003643) is mutation-falsified through its seeded array-removal and deleting-dispatch fixture. The inert flushStream slot (phys_fn_000333) is mutation-falsified through a direct public-call fixture and an error-report mutation. Phase 7 owns 561 function rows and 502 data objects: 67 functions are closed, 274 reconstructed functions remain unfalsified, 220 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. Scene post-step row phys_fn_000615 is now mutation-falsified by NxPhysicsSimulationTests: replacing row000615 with a no-op changes the staged transcript by 7,232 bytes, and the restored control is exact. The ledger accounts for every owned row without treating transcript agreement alone as closure. Actor visualization row phys_fn_000020 is caught by NxPhysicsSceneVisualizeTests: a no-op changes the staged transcript by 916 bytes (both exits zero, exact stderr); the restored control is exact. Fluid emitter ABI continuation (2026-10-09): rows phys_fn_003792 and 003804/003806/003808/003816/003818/003820 are mutation-falsified by NxPhysicsFluidEmitterAbiTests, registered to Phase 7 and also exercised by Phase 5. The constructor mutation changed its cleared secondary-base word and was detected with mismatches=1; each of the six aggregate getter copy-offset mutations was detected with mismatches=2. Restored oracle control reports zero constructor, raw ABI, and aggregate mismatches; see evidence/fluid-emitter-aggregate-abi-2026-10-09.md. The fluid-emitter getFlag row phys_fn_003852 is independently mutation-falsified: shifting its mask read from internal+0x10 to +0x14 is caught by NxPhysicsFluidEmitterAbiTests with mismatches=1; restored output is exact. See evidence/fluid-emitter-get-flag-003852.md. Fluid emitter backend flag setter continuation (2026-10-09): phys_fn_003593 and public wrapper phys_fn_003850 are mutation-falsified by the registered NxPhysicsFluidEmitterAbiTests candidate-DLL probe. A wrong mask-4 callback export is caught with callback_mismatches=2; a no-op wrapper is caught with 11 total mismatches. Restored controls match all six backend set/clear calls and non-backend flag state; see evidence/fluid-emitter-set-flag-backend-003593-003850.md. M1.5 continuation (2026-10-09): the six aggregate getters are now also dispatched through a wrapper constructed by the candidate DLL; the restored probe matches all six values and x86 return/stack checks, and a DLL-only local-position offset mutation is rejected. See evidence/fluid-emitter-candidate-dll-aggregate-abi-2026-10-09.md. Scheduler row phys_fn_000659 is now mutation-falsified by NxPhysicsSimulationTests: an immediate-return mutant exits 1 with stdout_delta=3829, and the restored control is exact (stdout_delta=0, stderr_exact=True); see evidence/phase7-scene-scheduler-000659-mutation.md. Scene release row phys_fn_000653 is now mutation-falsified by NxPhysicsJointStagedPairTests: an immediate-return mutant changes the staged output by 494 bytes (both exits zero, exact stderr); the restored control is exact. See evidence/phase7-scene-release-joint-000653-mutation.md. Scene insertion row phys_fn_000661 is now mutation-falsified by NxPhysicsJointStagedPairTests: an immediate-return mutant access-violates with stdout_delta=3282 (oracle exit 0, exact stderr); the restored control is exact. See evidence/phase7-scene-add-joint-000661-mutation.md. Actor-array teardown helper phys_fn_000596 is now mutation-falsified by NxPhysicsCoreDumpTests: restoring the swap-removing releaseActor loop changes the allocator event prefix (228-byte oracle free becomes 552 bytes) and is rejected with stdout_delta=2; the restored snapshot/destructor implementation is exact (stdout_delta=0, stderr_exact=True). See evidence/phase7-scene-actor-teardown-000596.md. The enclosing Scene destructor phys_fn_000663 is now mutation-falsified through NxPhysicsPopulatedSceneTeardownTests; see evidence/phase7-scene-destructor-000663.md. Pruning stale-pair retirement row phys_fn_001953 is now mutation-falsified by NxPhysicsPopulatedSceneTeardownTests: disabling the Scene destructor sweep leaves 17 rather than 15 tracked allocator blocks and is rejected (stdout_delta=2, candidate_exit=1); the restored control matches exactly. See evidence/phase7-pruning-stale-pair-release-001953.md. Pruning-engine storage teardown row phys_fn_001982 is now mutation-falsified by NxPhysicsPopulatedSceneTeardownTests: disabling the pair-storage release leaves 18 rather than 15 allocator blocks and is rejected (stdout_delta=2, candidate_exit=1); the restored control is exact. Pruner owner cleanup row phys_fn_001963 is mutation-falsified by NxPhysicsPopulatedSceneTeardownTests, which seeds static and selected-dynamic owner sections and catches deletion-dispatch omission (stdout_delta=2); restored controls match the oracle. See evidence/phase7-pruner-owner-cleanup-001963.md. Active-root collection row phys_fn_000608 is now mutation-falsified through NxPhysicsSimulationTests: omitting every active root changes the staged transcript by 6,726 bytes and breaks the joint-break notification assertion; the restored control is exact. See evidence/phase7-scene-active-root-collection-000608.md. Scene joint-count getter phys_fn_000559 is mutation-falsified through NxPhysicsJointStagedPairTests: reading +0x6c4 instead of +0x6c8 changes the joint-count transcript (stdout_delta=296); restored control is exact. See evidence/phase7-scene-joint-count-000559.md. Scene effector-count getter phys_fn_000561 is mutation-falsified through NxPhysicsEffectorTests: reading +0x6c8 instead of +0x6c4 changes the effector-count transcript (stdout_delta=14); restored control is exact. See evidence/phase7-scene-effector-count-000561.md. Scene effector iterator reset phys_fn_000565 is mutation-falsified through NxPhysicsEffectorTests: clearing the cursor instead of copying the +0x5a4 list head changes the iterator transcript (stdout_delta=14); restored control is exact. See evidence/phase7-scene-effector-iterator-000565.md. Scene get-next-effector row phys_fn_000569 is mutation-falsified through NxPhysicsEffectorTests: returning null for a non-null cursor changes the iterator transcript (stdout_delta=14); restored control is exact. See evidence/phase7-scene-effector-next-000569.md. Scene remove-effector row phys_fn_000573 is mutation-falsified through NxPhysicsEffectorTests: a no-op leaves the released effector in the Scene list and crashes the candidate (candidate_exit=-1073741819, stdout_delta=48); restored control is exact. See evidence/phase7-scene-remove-effector-000573.md. Scene releaseEffectors row phys_fn_000575 is mutation-falsified through NxPhysicsEffectorTests: omitting the whole destructor walk produces four fewer scene-release frees and stdout_delta=2; the restored control is exact. See evidence/phase7-scene-release-effectors-000575.md. Scene joint-break event processing row phys_fn_000577 is mutation-falsified through NxPhysicsSimulationTests: an immediate-return mutant suppresses both retain/release notifications and fails the callback-count assertion (stdout_delta=801, candidate_exit=1); the restored control is exact. See evidence/phase7-scene-joint-break-events-000577.md. Scene debug-renderable row phys_fn_000579 is mutation-falsified through NxPhysicsSceneVisualizeTests: a null-return mutant crashes while visualization consumes the renderable (stdout_delta=869, candidate_exit=-1073741819); the restored control is exact. See evidence/phase7-scene-debug-renderable-000579.md. Scene releaseEffector row phys_fn_000594 is mutation-falsified through NxPhysicsEffectorTests: an immediate-return mutant leaves the count at 1, iterator at np, and performs no frees (stdout_delta=48); the restored control is exact. See evidence/phase7-scene-release-effector-000594.md. Scene createSpringAndDamperEffector row phys_fn_000587 is mutation-falsified through NxPhysicsEffectorTests: a null-return mutant changes creation from yes to no (stdout_delta=85); the restored control is exact. See evidence/phase7-scene-create-effector-000587.md. Scene collision-shape pruner traversal rows phys_fn_000581 and phys_fn_000583 are now mutation-falsified by NxPhysicsSceneVisualizeTests: removing the static or selected dynamic pruner loop changes the transcript by 1,382 or 1,322 bytes, respectively; the restored control is exact. See evidence/phase7-scene-collision-shape-pruners-000581-000583.md.",
+  "note": "Phase 7 closes a function only with a registered, measured mutation falsification. The disabled FluidManager release path (phys_fn_003643) is mutation-falsified through its seeded array-removal and deleting-dispatch fixture. The inert flushStream slot (phys_fn_000333) is mutation-falsified through a direct public-call fixture and an error-report mutation. Phase 7 owns 561 function rows and 502 data objects: 67 functions are closed, 274 reconstructed functions remain unfalsified, 220 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. Scene post-step row phys_fn_000615 is now mutation-falsified by NxPhysicsSimulationTests: replacing row000615 with a no-op changes the staged transcript by 7,232 bytes, and the restored control is exact. The ledger accounts for every owned row without treating transcript agreement alone as closure. Actor visualization row phys_fn_000020 is caught by NxPhysicsSceneVisualizeTests: a no-op changes the staged transcript by 916 bytes (both exits zero, exact stderr); the restored control is exact. Fluid emitter ABI continuation (2026-10-09): rows phys_fn_003792 and 003804/003806/003808/003816/003818/003820 are mutation-falsified by NxPhysicsFluidEmitterAbiTests, registered to Phase 7 and also exercised by Phase 5. The constructor mutation changed its cleared secondary-base word and was detected with mismatches=1; each of the six aggregate getter copy-offset mutations was detected with mismatches=2. Restored oracle control reports zero constructor, raw ABI, and aggregate mismatches; see evidence/fluid-emitter-aggregate-abi-2026-10-09.md. The fluid-emitter getFlag row phys_fn_003852 is independently mutation-falsified: shifting its mask read from internal+0x10 to +0x14 is caught by NxPhysicsFluidEmitterAbiTests with mismatches=1; restored output is exact. See evidence/fluid-emitter-get-flag-003852.md. Fluid emitter backend flag setter continuation (2026-10-09): phys_fn_003593 and public wrapper phys_fn_003850 are mutation-falsified by the registered NxPhysicsFluidEmitterAbiTests candidate-DLL probe. A wrong mask-4 callback export is caught with callback_mismatches=2; a no-op wrapper is caught with 11 total mismatches. Restored controls match all six backend set/clear calls and non-backend flag state; see evidence/fluid-emitter-set-flag-backend-003593-003850.md. M1.5 continuation (2026-10-09): the six aggregate getters are now also dispatched through a wrapper constructed by the candidate DLL; the restored probe matches all six values and x86 return/stack checks, and a DLL-only local-position offset mutation is rejected. See evidence/fluid-emitter-candidate-dll-aggregate-abi-2026-10-09.md. Scheduler row phys_fn_000659 is now mutation-falsified by NxPhysicsSimulationTests: an immediate-return mutant exits 1 with stdout_delta=3829, and the restored control is exact (stdout_delta=0, stderr_exact=True); see evidence/phase7-scene-scheduler-000659-mutation.md. Scene release row phys_fn_000653 is now mutation-falsified by NxPhysicsJointStagedPairTests: an immediate-return mutant changes the staged output by 494 bytes (both exits zero, exact stderr); the restored control is exact. See evidence/phase7-scene-release-joint-000653-mutation.md. Scene insertion row phys_fn_000661 is now mutation-falsified by NxPhysicsJointStagedPairTests: an immediate-return mutant access-violates with stdout_delta=3282 (oracle exit 0, exact stderr); the restored control is exact. See evidence/phase7-scene-add-joint-000661-mutation.md. Actor-array teardown helper phys_fn_000596 is now mutation-falsified by NxPhysicsCoreDumpTests: restoring the swap-removing releaseActor loop changes the allocator event prefix (228-byte oracle free becomes 552 bytes) and is rejected with stdout_delta=2; the restored snapshot/destructor implementation is exact (stdout_delta=0, stderr_exact=True). See evidence/phase7-scene-actor-teardown-000596.md. The enclosing Scene destructor phys_fn_000663 is now mutation-falsified through NxPhysicsPopulatedSceneTeardownTests; see evidence/phase7-scene-destructor-000663.md. Pruning stale-pair retirement row phys_fn_001953 is now mutation-falsified by NxPhysicsPopulatedSceneTeardownTests: disabling the Scene destructor sweep leaves 17 rather than 15 tracked allocator blocks and is rejected (stdout_delta=2, candidate_exit=1); the restored control matches exactly. See evidence/phase7-pruning-stale-pair-release-001953.md. Pruning-engine storage teardown row phys_fn_001982 is now mutation-falsified by NxPhysicsPopulatedSceneTeardownTests: disabling the pair-storage release leaves 18 rather than 15 allocator blocks and is rejected (stdout_delta=2, candidate_exit=1); the restored control is exact. Pruner owner cleanup row phys_fn_001963 is mutation-falsified by NxPhysicsPopulatedSceneTeardownTests, which seeds static and selected-dynamic owner sections and catches deletion-dispatch omission (stdout_delta=2); restored controls match the oracle. See evidence/phase7-pruner-owner-cleanup-001963.md. Active-root collection row phys_fn_000608 is now mutation-falsified through NxPhysicsSimulationTests: omitting every active root changes the staged transcript by 6,726 bytes and breaks the joint-break notification assertion; the restored control is exact. See evidence/phase7-scene-active-root-collection-000608.md. Scene joint-count getter phys_fn_000559 is mutation-falsified through NxPhysicsJointStagedPairTests: reading +0x6c4 instead of +0x6c8 changes the joint-count transcript (stdout_delta=296); restored control is exact. See evidence/phase7-scene-joint-count-000559.md. Scene effector-count getter phys_fn_000561 is mutation-falsified through NxPhysicsEffectorTests: reading +0x6c8 instead of +0x6c4 changes the effector-count transcript (stdout_delta=14); restored control is exact. See evidence/phase7-scene-effector-count-000561.md. Scene effector iterator reset phys_fn_000565 is mutation-falsified through NxPhysicsEffectorTests: clearing the cursor instead of copying the +0x5a4 list head changes the iterator transcript (stdout_delta=14); restored control is exact. See evidence/phase7-scene-effector-iterator-000565.md. Scene get-next-effector row phys_fn_000569 is mutation-falsified through NxPhysicsEffectorTests: returning null for a non-null cursor changes the iterator transcript (stdout_delta=14); restored control is exact. See evidence/phase7-scene-effector-next-000569.md. Scene remove-effector row phys_fn_000573 is mutation-falsified through NxPhysicsEffectorTests: a no-op leaves the released effector in the Scene list and crashes the candidate (candidate_exit=-1073741819, stdout_delta=48); restored control is exact. See evidence/phase7-scene-remove-effector-000573.md. Scene releaseEffectors row phys_fn_000575 is mutation-falsified through NxPhysicsEffectorTests: omitting the whole destructor walk produces four fewer scene-release frees and stdout_delta=2; the restored control is exact. See evidence/phase7-scene-release-effectors-000575.md. Scene joint-break event processing row phys_fn_000577 is mutation-falsified through NxPhysicsSimulationTests: an immediate-return mutant suppresses both retain/release notifications and fails the callback-count assertion (stdout_delta=801, candidate_exit=1); the restored control is exact. See evidence/phase7-scene-joint-break-events-000577.md. Scene debug-renderable row phys_fn_000579 is mutation-falsified through NxPhysicsSceneVisualizeTests: a null-return mutant crashes while visualization consumes the renderable (stdout_delta=869, candidate_exit=-1073741819); the restored control is exact. See evidence/phase7-scene-debug-renderable-000579.md. Scene releaseEffector row phys_fn_000594 is mutation-falsified through NxPhysicsEffectorTests: an immediate-return mutant leaves the count at 1, iterator at np, and performs no frees (stdout_delta=48); the restored control is exact. See evidence/phase7-scene-release-effector-000594.md. Scene createSpringAndDamperEffector row phys_fn_000587 is mutation-falsified through NxPhysicsEffectorTests: a null-return mutant changes creation from yes to no (stdout_delta=85); the restored control is exact. See evidence/phase7-scene-create-effector-000587.md. Scene collision-shape pruner traversal rows phys_fn_000581 and phys_fn_000583 are now mutation-falsified by NxPhysicsSceneVisualizeTests: removing the static or selected dynamic pruner loop changes the transcript by 1,382 or 1,322 bytes, respectively; the restored control is exact. See evidence/phase7-scene-collision-shape-pruners-000581-000583.md. Scene stats continuation (2026-10-10): phys_fn_000617 is mutation-falsified through NxPhysicsSimulationTests. Adding one to the populated actor count changes the staged transcript by 8 bytes; restored output is exact. Current totals are 68 closed and 493 deferred.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection. The direct flushStream mutation is tested by NxPhysicsSimulationTests and measured as stdout_delta=554 with candidate_exit=1.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. phys_fn_000604 is the Phase 7 static-proof case: NxPhysicsInternalTests detects a no-op body-record reset before joint teardown.",
@@ -20,43 +20,13 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 56,
+    "differential_falsified": 57,
     "oracle_differential_falsified": 10,
+    "static_proof_falsified": 1,
     "deferred_reconstructed_not_falsified": 274,
-    "deferred_not_reconstructed_in_phase": 220,
-    "static_proof_falsified": 1
+    "deferred_not_reconstructed_in_phase": 219
   },
   "closed": [
-    {
-      "id": "phys_fn_000626",
-      "rva": "0x00011730",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsJointStagedPairTests",
-      "falsification": {
-        "mutation": "the actor-validity guard was inverted in a throwaway `git archive` copy of HEAD: `if(!desc.isValid())` became `if(desc.isValid())`, so every valid descriptor took the failure path and `createActor` returned 0. The copy was rebuilt with NxFoundation, NxPhysics and NxPhysicsJointTests, and the harness was run against the rebuilt pair with the pinned oracle transcript as the baseline. CAUGHT, measured as stdout_delta=27: the mutant exit=1 with a 7-line transcript against the oracle's 29, and the lines it loses are `fixture=a,created b,created` and all four cases' `created=yes`, `out_anchor`, `actors` and `released` lines -- so the mutation is caught by the registered assertion `case=revolute index=0 created=yes` as well as by the diff.",
-        "detected": "stdout_delta=27"
-      }
-    },
-    {
-      "id": "phys_fn_000665",
-      "rva": "0x000142c0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsJointStagedPairTests",
-      "falsification": {
-        "mutation": "the dynamics guard was inverted in a throwaway `git archive` copy of HEAD: `if(!mark0 && !mark1)` became `if(mark0 && mark1)`, so a pair of actors that ARE dynamic was reported as having none and `createJoint` returned null. The copy was rebuilt with NxFoundation, NxPhysics and NxPhysicsJointTests, and the harness was run against the rebuilt pair with the pinned oracle transcript as the baseline. CAUGHT, measured as stdout_delta=30: the mutant exit=0 with a 21-line transcript against the oracle's 29, and every case loses its `created=yes`, `out_anchor`, `actors` and `released` lines while gaining the row's OWN error text -- \"PhysicsSDK::createJoint: at least one of the two actors must be dynamic!\". That the failure is reported by the row under test, and that the transcript loses the lines the row produces, is what makes this a falsification of this row rather than of the descriptor rows it drives.",
-        "detected": "stdout_delta=30"
-      }
-    },
-    {
-      "id": "phys_fn_000651",
-      "rva": "0x00013070",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsJointStagedPairTests",
-      "falsification": {
-        "mutation": "the initialiser was made to refuse every descriptor in a throwaway `git archive` copy of HEAD: `return true;` at the end of `NxSceneInternal::initialise` became `return false;`, so `createScene` destroyed the object it had just built and returned 0. The copy was rebuilt with NxFoundation, NxPhysics and NxPhysicsJointTests, and the harness was run against the rebuilt pair with the pinned oracle transcript as the baseline. CAUGHT, measured as stdout_delta=28: the mutant exit=1 with a 6-line transcript against the oracle's 29, and the lines it loses are `scene=created` and everything after it -- the fixture, all four cases' created/out_anchor/actors/released lines, and both release lines.",
-        "detected": "stdout_delta=28"
-      }
-    },
     {
       "id": "phys_fn_000013",
       "rva": "0x00001450",
@@ -68,32 +38,22 @@
       }
     },
     {
-      "id": "phys_fn_000394",
-      "rva": "0x0000d680",
+      "id": "phys_fn_000020",
+      "rva": "0x00001560",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
+      "gate": "NxPhysicsSceneVisualizeTests",
       "falsification": {
-        "mutation": "In a throwaway git-archive copy of committed HEAD, changed the row's Scene+0x544 store from `elapsedTime` to `elapsedTime + 0.125f`, rebuilt NxPhysics and NxPhysicsSimulationTests, and ran the registered Phase 7 differential against the pinned oracle. The fixture's expected submitted dt `3e000000` became `3e800000`; the mutated candidate still exited 0 but diverged across the simulation transcript.",
-        "detected": "stdout_delta=1064"
+        "mutation": "In a throwaway archive of mainline 40a5ddcc, replaced NxActorVisualRecord::visualize (phys_fn_000020) with a no-op, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsSceneVisualizeTests staged-pair differential. The mutation was detected with oracle_exit=0, candidate_exit=0, stdout_delta=916, stderr_exact=True. Restoring and rebuilding returned both exits=0, stdout_delta=0, stderr_exact=True.",
+        "detected": "stdout_delta=916"
       }
     },
     {
-      "id": "phys_fn_000313",
-      "rva": "0x0000c7f0",
+      "id": "phys_fn_000285",
+      "rva": "0x0000c310",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsPairFlagTests",
+      "gate": "NxPhysicsSceneConstructorTests",
       "falsification": {
-        "mutation": "In a throwaway source mutation, changed the reconstructed contended-write diagnostic source line in NpScene::setShapePairFlags from 0xb8 to 0xb9, rebuilt NxPhysics and NxPhysicsPairFlagTests, and reran the registered Phase 7 staged-pair differential. The focused test observes the error line and the unchanged pair-table result.",
-        "detected": "stdout_delta=2"
-      }
-    },
-    {
-      "id": "phys_fn_000309",
-      "rva": "0x0000c740",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsPairFlagTests",
-      "falsification": {
-        "mutation": "In a throwaway source mutation, changed the reconstructed contended-write diagnostic source line in NpScene::setActorPairFlags from 0xab to 0xac, rebuilt NxPhysics and NxPhysicsPairFlagTests, and reran the registered Phase 7 staged-pair differential. The fixture observes the diagnostic while verifying the pre-existing actor-pair flags remain unchanged.",
+        "mutation": "In a throwaway source mutation of NpScene::NpScene, replaced `mScene = scene` with `mScene = 0`, rebuilt NxPhysics, and ran the registered Phase 7 staged-pair differential against the pinned DLL. The oracle reported `scene constructor internal_link=1`; the mutant reported `internal_link=0`, exited 1, and emitted its staged module identities. After restoring the source byte for byte and rebuilding, oracle and candidate both reported `internal_link=1`, exited 0, and matched exactly.",
         "detected": "stdout_delta=2"
       }
     },
@@ -128,13 +88,43 @@
       }
     },
     {
-      "id": "phys_fn_000640",
-      "rva": "0x00012a90",
+      "id": "phys_fn_000309",
+      "rva": "0x0000c740",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsPairFlagTests",
+      "falsification": {
+        "mutation": "In a throwaway source mutation, changed the reconstructed contended-write diagnostic source line in NpScene::setActorPairFlags from 0xab to 0xac, rebuilt NxPhysics and NxPhysicsPairFlagTests, and reran the registered Phase 7 staged-pair differential. The fixture observes the diagnostic while verifying the pre-existing actor-pair flags remain unchanged.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_000313",
+      "rva": "0x0000c7f0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsPairFlagTests",
+      "falsification": {
+        "mutation": "In a throwaway source mutation, changed the reconstructed contended-write diagnostic source line in NpScene::setShapePairFlags from 0xb8 to 0xb9, rebuilt NxPhysics and NxPhysicsPairFlagTests, and reran the registered Phase 7 staged-pair differential. The focused test observes the error line and the unchanged pair-table result.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_000333",
+      "rva": "0x0000ca30",
       "proof": "differential_falsified",
       "gate": "NxPhysicsSimulationTests",
       "falsification": {
-        "mutation": "In a throwaway git-archive copy of HEAD 0ac9f256, replaced NxSceneInternal::processSimulationCallbacks' `contactReport->onContactNotify(pair, events)` call with a no-op, rebuilt NxPhysics and NxPhysicsSimulationTests, and ran the registered Phase 7 staged-pair differential. Both processes exited 0 and stderr matched exactly; the candidate omitted the buffered actor-contact notifications exercised by the real contact simulation and the paired fetch callback fixture.",
-        "detected": "stdout_delta=937"
+        "mutation": "In NpScene::flushStream, add an NXE_DB_WARNING report; the direct public fixture must still observe zero errors.",
+        "detected": "stdout_delta=554"
+      }
+    },
+    {
+      "id": "phys_fn_000394",
+      "rva": "0x0000d680",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a throwaway git-archive copy of committed HEAD, changed the row's Scene+0x544 store from `elapsedTime` to `elapsedTime + 0.125f`, rebuilt NxPhysics and NxPhysicsSimulationTests, and ran the registered Phase 7 differential against the pinned oracle. The fixture's expected submitted dt `3e000000` became `3e800000`; the mutated candidate still exited 0 but diverged across the simulation transcript.",
+        "detected": "stdout_delta=1064"
       }
     },
     {
@@ -145,26 +135,6 @@
       "falsification": {
         "mutation": "In a throwaway git-archive copy of HEAD 1bb2955d, replaced NpScene::fetchResults' `mScene->processSimulationCallbacks()` call with a no-op, rebuilt NxPhysics and NxPhysicsSimulationTests, and ran the registered Phase 7 staged-pair differential. The deferred-contact fixture reported the queued record retained but never delivered; its assertion set candidate_exit=1 while oracle_exit=0. The candidate still emitted its staged module identities and stderr matched exactly.",
         "detected": "stdout_delta=944"
-      }
-    },
-    {
-      "id": "phys_fn_000544",
-      "rva": "0x00010750",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "In a throwaway git-archive copy of committed HEAD 34ecced5, changed the coherent public broad-phase selector mapping in nxSceneApplyDescriptorFlags from engine mode 3 to 2, rebuilt NxPhysics and NxPhysicsSimulationTests, then ran the registered Phase 7 staged-pair differential against the pinned oracle. The oracle reported selector=2 mode=3 while the mutant reported mode=2; both exited 0 and stderr matched exactly.",
-        "detected": "stdout_delta=2"
-      }
-    },
-    {
-      "id": "phys_fn_000285",
-      "rva": "0x0000c310",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSceneConstructorTests",
-      "falsification": {
-        "mutation": "In a throwaway source mutation of NpScene::NpScene, replaced `mScene = scene` with `mScene = 0`, rebuilt NxPhysics, and ran the registered Phase 7 staged-pair differential against the pinned DLL. The oracle reported `scene constructor internal_link=1`; the mutant reported `internal_link=0`, exited 1, and emitted its staged module identities. After restoring the source byte for byte and rebuilding, oracle and candidate both reported `internal_link=1`, exited 0, and matched exactly.",
-        "detected": "stdout_delta=2"
       }
     },
     {
@@ -228,36 +198,6 @@
       }
     },
     {
-      "id": "phys_fn_003637",
-      "rva": "0x00089d50",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "Changed the disabled FluidManager actor-created warning line from 0x107 to 0x108 in a throwaway git archive of HEAD 6f92c085. The archive was freshly configured and built for Win32 Release; the registered NxPhysicsSimulationTests differential staged the pinned oracle and mutant candidate. Both processes exited 0 with exact stderr, while the mutant reported line 264 instead of oracle line 263. The target rejected the mutant with stdout_delta=2.",
-        "detected": "stdout_delta=2"
-      }
-    },
-    {
-      "id": "phys_fn_003643",
-      "rva": "0x00089e90",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "In a freshly configured and built throwaway git archive of HEAD e6616f8b2c9cfa5f4d44f9e728d47a3d9378df79, changed only the scalar deleting flag for the removed fluid from 1 to 0 in the FluidManager release helper. The registered NxPhysicsSimulationTests staged-pair differential rejected the mutant: both processes exited 0, stderr matched exactly, and the seeded array-release line changed from flags=1 to flags=0. Restoring the exact Scene.cpp source and rebuilding returned to stdout_delta=0.",
-        "detected": "stdout_delta=2"
-      }
-    },
-    {
-      "id": "phys_fn_000333",
-      "rva": "0x0000ca30",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "In NpScene::flushStream, add an NXE_DB_WARNING report; the direct public fixture must still observe zero errors.",
-        "detected": "stdout_delta=554"
-      }
-    },
-    {
       "id": "phys_fn_000523",
       "rva": "0x00010400",
       "proof": "differential_falsified",
@@ -268,327 +208,14 @@
       }
     },
     {
-      "id": "phys_fn_000610",
-      "rva": "0x00011210",
+      "id": "phys_fn_000544",
+      "rva": "0x00010750",
       "proof": "differential_falsified",
       "gate": "NxPhysicsSimulationTests",
       "falsification": {
-        "mutation": "In a fresh git archive of implementation commit f3a6cc08, replaced row000610’s call to Row000726Fixture::row000726(timestep, inverseTimestep) with a no-op, rebuilt NxPhysics.dll, and ran the registered staged-pair NxPhysicsSimulationTests differential against the pinned oracle. The gate rejected the mutant; candidate_exit=1, oracle_exit=0, stderr_exact=False, stdout_delta=6718. The restored archive matched exactly (both exits=0, stderr_exact=True, stdout_delta=0).",
-        "detected": "stdout_delta=6718"
-      }
-    },
-    {
-      "id": "phys_fn_000611",
-      "rva": "0x00011260",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "In a fresh git archive of implementation commit f3a6cc08, returned immediately from row000611 after loading the active-root pointer, suppressing island record preparation, solve, copy-back, and cleanup; rebuilt and ran the registered staged-pair NxPhysicsSimulationTests differential. The gate rejected the mutant; candidate_exit=1, oracle_exit=0, stderr_exact=False, stdout_delta=6676. The restored archive matched exactly (both exits=0, stderr_exact=True, stdout_delta=0).",
-        "detected": "stdout_delta=6676"
-      }
-    },
-    {
-      "id": "phys_fn_000613",
-      "rva": "0x00011370",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "In a fresh git archive of implementation commit f3a6cc08, replaced row000611’s row000708 copy-back dispatch—the code corresponding to the 000613 continuation—with a no-op, rebuilt and ran the registered staged-pair NxPhysicsSimulationTests differential. The gate rejected the mutant; both exits=0, stderr_exact=True, stdout_delta=6740. The restored archive matched exactly (both exits=0, stderr_exact=True, stdout_delta=0).",
-        "detected": "stdout_delta=6740"
-      }
-    },
-    {
-      "id": "phys_fn_000636",
-      "rva": "0x00012890",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "In a fresh git archive of implementation commit fb197743, replaced NxSceneInternal::row000636’s call to Row000732Fixture::row000732(timestep, 0.0f) with a no-op, rebuilt NxPhysics.dll, and ran the registered staged-pair NxPhysicsSimulationTests differential against the pinned oracle. The gate rejected the mutant; both exits=0, stderr_exact=True, stdout_delta=7062. Restoring the exact source returned to both exits=0, stderr_exact=True, stdout_delta=0.",
-        "detected": "stdout_delta=7062"
-      }
-    },
-    {
-      "id": "phys_fn_000615",
-      "rva": "0x000113c0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "In a clean git archive of implementation commit d4caaab9, replaced NxSceneInternal::row000615 with an immediate return, rebuilt NxPhysics, then ran the registered NxPhysicsSimulationTests staged-pair differential.",
-        "detected": "stdout_delta=7232"
-      }
-    },
-    {
-      "id": "phys_fn_000655",
-      "rva": "0x000137e0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "In a clean git archive of mainline commit e3faa461, added an immediate return at the start of NxSceneInternal::simulateFrame (the 000655 per-substep body), rebuilt NxPhysics.dll and ran the registered Phase 7 staged-pair differential. The mutant was rejected: oracle_exit=0, candidate_exit=1, stdout_delta=3829, stderr_exact=False. Removing the mutation, rebuilding, and rerunning returned both exits=0, stdout_delta=0, stderr_exact=True.",
-        "detected": "stdout_delta=3829"
-      }
-    },
-    {
-      "id": "phys_fn_000020",
-      "rva": "0x00001560",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSceneVisualizeTests",
-      "falsification": {
-        "mutation": "In a throwaway archive of mainline 40a5ddcc, replaced NxActorVisualRecord::visualize (phys_fn_000020) with a no-op, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsSceneVisualizeTests staged-pair differential. The mutation was detected with oracle_exit=0, candidate_exit=0, stdout_delta=916, stderr_exact=True. Restoring and rebuilding returned both exits=0, stdout_delta=0, stderr_exact=True.",
-        "detected": "stdout_delta=916"
-      }
-    },
-    {
-      "id": "phys_fn_003792",
-      "rva": "0x0008c2d0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily changed the candidate implementation for phys_fn_003792: constructor secondary-base word +0x0c: mUnknown0c(0) -> reinterpret_cast<void*>(1). Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=1. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
-        "detected": "mismatches=1"
-      },
-      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
-    },
-    {
-      "id": "phys_fn_003804",
-      "rva": "0x0008c590",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily changed the candidate implementation for phys_fn_003804: global pose copy source +0x48 -> +0x4c. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
-        "detected": "mismatches=2"
-      },
-      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
-    },
-    {
-      "id": "phys_fn_003806",
-      "rva": "0x0008c5e0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily changed the candidate implementation for phys_fn_003806: global position copy source +0x6c -> +0x68. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
-        "detected": "mismatches=2"
-      },
-      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
-    },
-    {
-      "id": "phys_fn_003808",
-      "rva": "0x0008c620",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily changed the candidate implementation for phys_fn_003808: global orientation copy source +0x48 -> +0x4c. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
-        "detected": "mismatches=2"
-      },
-      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
-    },
-    {
-      "id": "phys_fn_003816",
-      "rva": "0x0008c870",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily changed the candidate implementation for phys_fn_003816: local pose copy source +0x18 -> +0x1c. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
-        "detected": "mismatches=2"
-      },
-      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
-    },
-    {
-      "id": "phys_fn_003818",
-      "rva": "0x0008c8a0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily changed the candidate implementation for phys_fn_003818: local position copy source +0x3c -> +0x38. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
-        "detected": "mismatches=2"
-      },
-      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
-    },
-    {
-      "id": "phys_fn_003820",
-      "rva": "0x0008c8d0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily changed the candidate implementation for phys_fn_003820: local orientation copy source +0x18 -> +0x1c. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
-        "detected": "mismatches=2"
-      },
-      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
-    },
-    {
-      "id": "phys_fn_003852",
-      "rva": "0x0008cf20",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "In a detached throwaway checkout at c326054a, changed only phys_fn_003852 so the candidate reads the flag mask at mInternal+0x14 instead of +0x10; freshly configured and built NxPhysicsFluidEmitterAbiTests, then ran it against pinned NxPhysics.dll. The registered two-transition visualization-bit probe reported mismatches=1 and exited nonzero. The restored candidate control reports mismatches=0.",
-        "detected": "mismatches=1"
-      },
-      "note": "Direct public NxFluidEmitter flag getter coverage; details in evidence/fluid-emitter-get-flag-003852.md."
-    },
-    {
-      "id": "phys_fn_003593",
-      "rva": "0x00088090",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Changed only the mask-4 callback export in nxFluidEmitterSetInternalFlag from EmitterSetBodyRepulsionFlag to EmitterSetAddBodyVelocityFlag, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests with CMake Win32 Release, and ran the actual candidate DLL entry against the pinned oracle. The six backend set/clear cases reported callback_mismatches=2 and the probe exited nonzero. Restoring the dispatch produced callback_mismatches=0, state_mismatches=0, and exit 0.",
-        "detected": "mismatches=2"
-      },
-      "note": "Direct candidate-DLL callback dispatch and flag state coverage; see evidence/fluid-emitter-set-flag-backend-003593-003850.md."
-    },
-    {
-      "id": "phys_fn_003850",
-      "rva": "0x0008cec0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Replaced only the wrapper call to nxFluidEmitterSetInternalFlag(mInternal, flag, enabled) with a no-op while retaining the write-try lock and unlock, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests with CMake Win32 Release, and ran the actual candidate DLL entry against the pinned oracle. The probe reported flags mismatches=1, backend callback_mismatches=6 and state_mismatches=4 (aggregate mismatches=11), then exited nonzero. Restoring the wrapper call returned every mismatch count to zero and the probe exited 0.",
-        "detected": "mismatches=11"
-      },
-      "note": "Direct candidate-DLL write-lock wrapper and backend dispatch coverage; see evidence/fluid-emitter-set-flag-backend-003593-003850.md."
-    },
-    {
-      "id": "phys_fn_000659",
-      "rva": "0x00013c40",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "Inserted an immediate return at the start of NxSceneInternal::simulateFrame, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsSimulationTests staged-pair differential against the pinned oracle.",
-        "detected": "stdout_delta=3829"
-      }
-    },
-    {
-      "id": "phys_fn_000653",
-      "rva": "0x00013760",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsJointStagedPairTests",
-      "falsification": {
-        "mutation": "Inserted an immediate return at the start of NxSceneInternal::releaseJoint in a throwaway git archive, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsJointStagedPairTests staged-pair differential against the pinned oracle.",
-        "detected": "stdout_delta=494"
-      }
-    },
-    {
-      "id": "phys_fn_000661",
-      "rva": "0x00013e00",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsJointStagedPairTests",
-      "falsification": {
-        "mutation": "Inserted an immediate return at the start of NxSceneInternal::addJoint in a disposable archive of 5b563775, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsJointStagedPairTests staged-pair differential against the pinned oracle.",
-        "detected": "stdout_delta=3282"
-      }
-    },
-    {
-      "id": "phys_fn_000596",
-      "rva": "0x00010f00",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsCoreDumpTests",
-      "falsification": {
-        "mutation": "Restored the prior swap-removing Scene::releaseActor loop for actor teardown and rebuilt NxPhysics.dll, then ran the registered Phase 7 NxPhysicsCoreDumpTests differential against the pinned shipped oracle. The candidate still exited 0, but this path changes the 15th Scene B release free from 228 bytes to 552 bytes and changes the next free from 80 to 28 bytes.",
+        "mutation": "In a throwaway git-archive copy of committed HEAD 34ecced5, changed the coherent public broad-phase selector mapping in nxSceneApplyDescriptorFlags from engine mode 3 to 2, rebuilt NxPhysics and NxPhysicsSimulationTests, then ran the registered Phase 7 staged-pair differential against the pinned oracle. The oracle reported selector=2 mode=3 while the mutant reported mode=2; both exited 0 and stderr matched exactly.",
         "detected": "stdout_delta=2"
       }
-    },
-    {
-      "id": "phys_fn_001953",
-      "rva": "0x0004bd80",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsPopulatedSceneTeardownTests",
-      "falsification": {
-        "mutation": "Temporarily disabled the cpmRetireStaleScenePairs(scene) call in Scene::nxSceneDelete, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsPopulatedSceneTeardownTests staged-pair differential against the pinned shipped oracle. The contact-pair fixture retained one pair on both sides; candidate teardown left 17 allocator blocks versus the oracle 15 and exited 1.",
-        "detected": "stdout_delta=2"
-      }
-    },
-    {
-      "id": "phys_fn_001982",
-      "rva": "0x0004ca90",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsPopulatedSceneTeardownTests",
-      "falsification": {
-        "mutation": "Temporarily disabled cpmDestroyScenePairStorage(scene) in Scene::nxSceneDelete, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsPopulatedSceneTeardownTests staged-pair differential against the pinned shipped oracle. The fixture retained one contact pair; candidate teardown left 18 allocator blocks versus the oracle 15 and exited 1.",
-        "detected": "stdout_delta=2"
-      }
-    },
-    {
-      "id": "phys_fn_001963",
-      "rva": "0x0004bf10",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsPopulatedSceneTeardownTests",
-      "falsification": {
-        "mutation": "Omitted the owner vtable slot-0 deleting-destructor dispatch in the reconstructed pruning-engine cleanup, rebuilt NxPhysics, and ran the registered Phase 7 staged-pair gate. The oracle passed; the candidate failed the two owner callback/deleting-flag assertions (both counts 0 instead of 1).",
-        "detected": "stdout_delta=2"
-      }
-    },
-    {
-      "id": "phys_fn_000604",
-      "rva": "0x000110b0",
-      "proof": "static_proof_falsified",
-      "gate": "NxPhysicsInternalTests",
-      "falsification": {
-        "mutation": "Temporarily replaced nxSceneResetBodyRecords with an immediate return, rebuilt NxPhysicsInternalTests, and ran the Phase 7 static-proof target. The three synthetic body records retained their original state instead of receiving phys_fn_000760.",
-        "detected": "check_failed 000604 applies 000760 to each unsuppressed remaining body record; mutant exit 1."
-      }
-    },
-    {
-      "id": "phys_fn_000606",
-      "rva": "0x000110f0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsPopulatedSceneTeardownTests",
-      "falsification": {
-        "mutation": "Temporarily disabled the joint-list loop in Scene::nxSceneDelete by making its range condition false, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsPopulatedSceneTeardownTests staged-pair differential against the pinned shipped oracle. The live-joint Scene fixture then freed 33 rather than 35 tracked blocks (release_delta=-33).",
-        "detected": "stdout_delta=2"
-      }
-    },
-    {
-      "id": "phys_fn_000602",
-      "rva": "0x00011060",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsPopulatedSceneTeardownTests",
-      "falsification": {
-        "mutation": "Temporarily replaced nxSceneDestroyBodyRecords with an immediate return, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsPopulatedSceneTeardownTests staged-pair differential against the pinned oracle. The retained-body-record fixture reported bytes=608 freed=0 and the candidate exited 1; restoring the helper reported freed=1 and exact output.",
-        "detected": "stdout_delta=2"
-      },
-      "note": "The fixture detaches a live dynamic body record from its actor pose, lets normal actor/root teardown run, and observes phys_fn_000602 freeing the retained record after the joint lists. See evidence/phase7-scene-body-record-destroy-000602.md."
-    },
-    {
-      "id": "phys_fn_000608",
-      "rva": "0x00011190",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "Changed the active-root retention condition in NxSceneInternal::simulateFrame to always continue, so no awake self-parented root is appended to Scene+[0x57c,0x580). Rebuilt NxPhysics.dll and ran the registered Phase 7 staged-pair simulation differential against the pinned shipped oracle.",
-        "detected": "stdout_delta=6726"
-      },
-      "note": "Restoring the active-root collection returns the differential to both exits zero, stdout_delta=0, and exact stderr. See evidence/phase7-scene-active-root-collection-000608.md."
-    },
-    {
-      "id": "phys_fn_000600",
-      "rva": "0x00010fe0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "Temporarily replaced nxSceneEnsureStepBodies with a used-count-only body, omitting the count-prefixed allocation, published payload, and capacity update; rebuilt NxPhysics.dll and ran the registered Phase 7 staged-pair simulation differential against the pinned shipped oracle.",
-        "detected": "stdout_delta=3731"
-      }
-    },
-    {
-      "id": "phys_fn_000635",
-      "rva": "0x000127e0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "Temporarily omitted both joint-island passes and the per-body island-reset pass in the phys_fn_000635 Scene substep prepass, while retaining the Scene joint-list cursor reset; rebuilt NxPhysics.dll and ran the registered Phase 7 staged-pair simulation differential against the pinned shipped oracle.",
-        "detected": "stdout_delta=3728"
-      }
-    },
-    {
-      "id": "phys_fn_000663",
-      "rva": "0x00013f30",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsPopulatedSceneTeardownTests",
-      "falsification": {
-        "mutation": "Replaced NxSceneInternal::scalarDeletingDestructor with a no-op, rebuilt NxPhysics.dll, and ran the registered Phase 7 staged-pair teardown differential against the pinned oracle. The first static-first scene release retained all 51 tracked blocks instead of releasing 39; the mutant candidate exited 1 while the oracle exited 0. Mutant candidate SHA-256 9c857ff74ca222ffd6b61cce69b7e4607386cab27a095d9d0f2cfb413c815bf0; restored candidate SHA-256 1b421182452ce1bd6478e4da322c345341ae6a13a7faf17bc8a0ec75596277c9.",
-        "detected": "stdout_delta=18"
-      },
-      "note": "Restored control: both exits zero, stdout_delta=0, and exact stderr. See evidence/phase7-scene-destructor-000663.md."
     },
     {
       "id": "phys_fn_000559",
@@ -679,28 +306,6 @@
       "note": "The candidate crashes while visualization consumes the null renderable (candidate_exit=-1073741819); oracle exits 0 and stderr remains exact. The restored control matches exactly. See evidence/phase7-scene-debug-renderable-000579.md."
     },
     {
-      "id": "phys_fn_000594",
-      "rva": "0x00010e80",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsEffectorTests",
-      "falsification": {
-        "mutation": "Inserted an immediate return at the entry to NxSceneInternal::releaseEffector, skipping its re-entry guard, effector unlink/destructor, count decrement, iterator reset, and re-entry cleanup; rebuilt NxPhysics.dll and ran the registered Phase 7 effector staged-pair differential.",
-        "detected": "stdout_delta=48"
-      },
-      "note": "The candidate leaves the effector count at 1 and iterator at np, and performs no release frees; the oracle reaches zero/none and frees the effector. Both processes exit 0 and stderr remains exact. Restored control matches exactly. See evidence/phase7-scene-release-effector-000594.md."
-    },
-    {
-      "id": "phys_fn_000587",
-      "rva": "0x00010c90",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsEffectorTests",
-      "falsification": {
-        "mutation": "Inserted an immediate null return at the entry to NxSceneInternal::createSpringAndDamperEffector, preventing effector allocation, construction, list insertion, count/cursor updates, and descriptor initialization; rebuilt NxPhysics.dll and ran the registered Phase 7 effector staged-pair differential.",
-        "detected": "stdout_delta=85"
-      },
-      "note": "The fixture changes effector creation from yes to no; oracle and candidate both exit 0 and stderr remains exact. Restored control matches exactly. See evidence/phase7-scene-create-effector-000587.md."
-    },
-    {
       "id": "phys_fn_000581",
       "rva": "0x00010a50",
       "proof": "differential_falsified",
@@ -721,6 +326,411 @@
         "detected": "stdout_delta=1322"
       },
       "note": "Oracle and candidate processes both exit 0 with exact stderr. Restoring the loop yields an exact control. See evidence/phase7-scene-collision-shape-pruners-000581-000583.md."
+    },
+    {
+      "id": "phys_fn_000587",
+      "rva": "0x00010c90",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsEffectorTests",
+      "falsification": {
+        "mutation": "Inserted an immediate null return at the entry to NxSceneInternal::createSpringAndDamperEffector, preventing effector allocation, construction, list insertion, count/cursor updates, and descriptor initialization; rebuilt NxPhysics.dll and ran the registered Phase 7 effector staged-pair differential.",
+        "detected": "stdout_delta=85"
+      },
+      "note": "The fixture changes effector creation from yes to no; oracle and candidate both exit 0 and stderr remains exact. Restored control matches exactly. See evidence/phase7-scene-create-effector-000587.md."
+    },
+    {
+      "id": "phys_fn_000594",
+      "rva": "0x00010e80",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsEffectorTests",
+      "falsification": {
+        "mutation": "Inserted an immediate return at the entry to NxSceneInternal::releaseEffector, skipping its re-entry guard, effector unlink/destructor, count decrement, iterator reset, and re-entry cleanup; rebuilt NxPhysics.dll and ran the registered Phase 7 effector staged-pair differential.",
+        "detected": "stdout_delta=48"
+      },
+      "note": "The candidate leaves the effector count at 1 and iterator at np, and performs no release frees; the oracle reaches zero/none and frees the effector. Both processes exit 0 and stderr remains exact. Restored control matches exactly. See evidence/phase7-scene-release-effector-000594.md."
+    },
+    {
+      "id": "phys_fn_000596",
+      "rva": "0x00010f00",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsCoreDumpTests",
+      "falsification": {
+        "mutation": "Restored the prior swap-removing Scene::releaseActor loop for actor teardown and rebuilt NxPhysics.dll, then ran the registered Phase 7 NxPhysicsCoreDumpTests differential against the pinned shipped oracle. The candidate still exited 0, but this path changes the 15th Scene B release free from 228 bytes to 552 bytes and changes the next free from 80 to 28 bytes.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_000600",
+      "rva": "0x00010fe0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Temporarily replaced nxSceneEnsureStepBodies with a used-count-only body, omitting the count-prefixed allocation, published payload, and capacity update; rebuilt NxPhysics.dll and ran the registered Phase 7 staged-pair simulation differential against the pinned shipped oracle.",
+        "detected": "stdout_delta=3731"
+      }
+    },
+    {
+      "id": "phys_fn_000602",
+      "rva": "0x00011060",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsPopulatedSceneTeardownTests",
+      "falsification": {
+        "mutation": "Temporarily replaced nxSceneDestroyBodyRecords with an immediate return, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsPopulatedSceneTeardownTests staged-pair differential against the pinned oracle. The retained-body-record fixture reported bytes=608 freed=0 and the candidate exited 1; restoring the helper reported freed=1 and exact output.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The fixture detaches a live dynamic body record from its actor pose, lets normal actor/root teardown run, and observes phys_fn_000602 freeing the retained record after the joint lists. See evidence/phase7-scene-body-record-destroy-000602.md."
+    },
+    {
+      "id": "phys_fn_000604",
+      "rva": "0x000110b0",
+      "proof": "static_proof_falsified",
+      "gate": "NxPhysicsInternalTests",
+      "falsification": {
+        "mutation": "Temporarily replaced nxSceneResetBodyRecords with an immediate return, rebuilt NxPhysicsInternalTests, and ran the Phase 7 static-proof target. The three synthetic body records retained their original state instead of receiving phys_fn_000760.",
+        "detected": "check_failed 000604 applies 000760 to each unsuppressed remaining body record; mutant exit 1."
+      }
+    },
+    {
+      "id": "phys_fn_000606",
+      "rva": "0x000110f0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsPopulatedSceneTeardownTests",
+      "falsification": {
+        "mutation": "Temporarily disabled the joint-list loop in Scene::nxSceneDelete by making its range condition false, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsPopulatedSceneTeardownTests staged-pair differential against the pinned shipped oracle. The live-joint Scene fixture then freed 33 rather than 35 tracked blocks (release_delta=-33).",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_000608",
+      "rva": "0x00011190",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Changed the active-root retention condition in NxSceneInternal::simulateFrame to always continue, so no awake self-parented root is appended to Scene+[0x57c,0x580). Rebuilt NxPhysics.dll and ran the registered Phase 7 staged-pair simulation differential against the pinned shipped oracle.",
+        "detected": "stdout_delta=6726"
+      },
+      "note": "Restoring the active-root collection returns the differential to both exits zero, stdout_delta=0, and exact stderr. See evidence/phase7-scene-active-root-collection-000608.md."
+    },
+    {
+      "id": "phys_fn_000610",
+      "rva": "0x00011210",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a fresh git archive of implementation commit f3a6cc08, replaced row000610’s call to Row000726Fixture::row000726(timestep, inverseTimestep) with a no-op, rebuilt NxPhysics.dll, and ran the registered staged-pair NxPhysicsSimulationTests differential against the pinned oracle. The gate rejected the mutant; candidate_exit=1, oracle_exit=0, stderr_exact=False, stdout_delta=6718. The restored archive matched exactly (both exits=0, stderr_exact=True, stdout_delta=0).",
+        "detected": "stdout_delta=6718"
+      }
+    },
+    {
+      "id": "phys_fn_000611",
+      "rva": "0x00011260",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a fresh git archive of implementation commit f3a6cc08, returned immediately from row000611 after loading the active-root pointer, suppressing island record preparation, solve, copy-back, and cleanup; rebuilt and ran the registered staged-pair NxPhysicsSimulationTests differential. The gate rejected the mutant; candidate_exit=1, oracle_exit=0, stderr_exact=False, stdout_delta=6676. The restored archive matched exactly (both exits=0, stderr_exact=True, stdout_delta=0).",
+        "detected": "stdout_delta=6676"
+      }
+    },
+    {
+      "id": "phys_fn_000613",
+      "rva": "0x00011370",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a fresh git archive of implementation commit f3a6cc08, replaced row000611’s row000708 copy-back dispatch—the code corresponding to the 000613 continuation—with a no-op, rebuilt and ran the registered staged-pair NxPhysicsSimulationTests differential. The gate rejected the mutant; both exits=0, stderr_exact=True, stdout_delta=6740. The restored archive matched exactly (both exits=0, stderr_exact=True, stdout_delta=0).",
+        "detected": "stdout_delta=6740"
+      }
+    },
+    {
+      "id": "phys_fn_000615",
+      "rva": "0x000113c0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a clean git archive of implementation commit d4caaab9, replaced NxSceneInternal::row000615 with an immediate return, rebuilt NxPhysics, then ran the registered NxPhysicsSimulationTests staged-pair differential.",
+        "detected": "stdout_delta=7232"
+      }
+    },
+    {
+      "id": "phys_fn_000617",
+      "rva": "0x00011440",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In an isolated git archive of b3029cf0, changed NxSceneInternal::getSceneStats from actorEnd - actorBegin to actorEnd - actorBegin + 1; see evidence/phase7-scene-stats-000617/phys_fn_000617.patch and mutant.log.",
+        "detected": "stdout_delta=8"
+      }
+    },
+    {
+      "id": "phys_fn_000626",
+      "rva": "0x00011730",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "the actor-validity guard was inverted in a throwaway `git archive` copy of HEAD: `if(!desc.isValid())` became `if(desc.isValid())`, so every valid descriptor took the failure path and `createActor` returned 0. The copy was rebuilt with NxFoundation, NxPhysics and NxPhysicsJointTests, and the harness was run against the rebuilt pair with the pinned oracle transcript as the baseline. CAUGHT, measured as stdout_delta=27: the mutant exit=1 with a 7-line transcript against the oracle's 29, and the lines it loses are `fixture=a,created b,created` and all four cases' `created=yes`, `out_anchor`, `actors` and `released` lines -- so the mutation is caught by the registered assertion `case=revolute index=0 created=yes` as well as by the diff.",
+        "detected": "stdout_delta=27"
+      }
+    },
+    {
+      "id": "phys_fn_000635",
+      "rva": "0x000127e0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Temporarily omitted both joint-island passes and the per-body island-reset pass in the phys_fn_000635 Scene substep prepass, while retaining the Scene joint-list cursor reset; rebuilt NxPhysics.dll and ran the registered Phase 7 staged-pair simulation differential against the pinned shipped oracle.",
+        "detected": "stdout_delta=3728"
+      }
+    },
+    {
+      "id": "phys_fn_000636",
+      "rva": "0x00012890",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a fresh git archive of implementation commit fb197743, replaced NxSceneInternal::row000636’s call to Row000732Fixture::row000732(timestep, 0.0f) with a no-op, rebuilt NxPhysics.dll, and ran the registered staged-pair NxPhysicsSimulationTests differential against the pinned oracle. The gate rejected the mutant; both exits=0, stderr_exact=True, stdout_delta=7062. Restoring the exact source returned to both exits=0, stderr_exact=True, stdout_delta=0.",
+        "detected": "stdout_delta=7062"
+      }
+    },
+    {
+      "id": "phys_fn_000640",
+      "rva": "0x00012a90",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a throwaway git-archive copy of HEAD 0ac9f256, replaced NxSceneInternal::processSimulationCallbacks' `contactReport->onContactNotify(pair, events)` call with a no-op, rebuilt NxPhysics and NxPhysicsSimulationTests, and ran the registered Phase 7 staged-pair differential. Both processes exited 0 and stderr matched exactly; the candidate omitted the buffered actor-contact notifications exercised by the real contact simulation and the paired fetch callback fixture.",
+        "detected": "stdout_delta=937"
+      }
+    },
+    {
+      "id": "phys_fn_000651",
+      "rva": "0x00013070",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "the initialiser was made to refuse every descriptor in a throwaway `git archive` copy of HEAD: `return true;` at the end of `NxSceneInternal::initialise` became `return false;`, so `createScene` destroyed the object it had just built and returned 0. The copy was rebuilt with NxFoundation, NxPhysics and NxPhysicsJointTests, and the harness was run against the rebuilt pair with the pinned oracle transcript as the baseline. CAUGHT, measured as stdout_delta=28: the mutant exit=1 with a 6-line transcript against the oracle's 29, and the lines it loses are `scene=created` and everything after it -- the fixture, all four cases' created/out_anchor/actors/released lines, and both release lines.",
+        "detected": "stdout_delta=28"
+      }
+    },
+    {
+      "id": "phys_fn_000653",
+      "rva": "0x00013760",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Inserted an immediate return at the start of NxSceneInternal::releaseJoint in a throwaway git archive, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsJointStagedPairTests staged-pair differential against the pinned oracle.",
+        "detected": "stdout_delta=494"
+      }
+    },
+    {
+      "id": "phys_fn_000655",
+      "rva": "0x000137e0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a clean git archive of mainline commit e3faa461, added an immediate return at the start of NxSceneInternal::simulateFrame (the 000655 per-substep body), rebuilt NxPhysics.dll and ran the registered Phase 7 staged-pair differential. The mutant was rejected: oracle_exit=0, candidate_exit=1, stdout_delta=3829, stderr_exact=False. Removing the mutation, rebuilding, and rerunning returned both exits=0, stdout_delta=0, stderr_exact=True.",
+        "detected": "stdout_delta=3829"
+      }
+    },
+    {
+      "id": "phys_fn_000659",
+      "rva": "0x00013c40",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Inserted an immediate return at the start of NxSceneInternal::simulateFrame, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsSimulationTests staged-pair differential against the pinned oracle.",
+        "detected": "stdout_delta=3829"
+      }
+    },
+    {
+      "id": "phys_fn_000661",
+      "rva": "0x00013e00",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Inserted an immediate return at the start of NxSceneInternal::addJoint in a disposable archive of 5b563775, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsJointStagedPairTests staged-pair differential against the pinned oracle.",
+        "detected": "stdout_delta=3282"
+      }
+    },
+    {
+      "id": "phys_fn_000663",
+      "rva": "0x00013f30",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsPopulatedSceneTeardownTests",
+      "falsification": {
+        "mutation": "Replaced NxSceneInternal::scalarDeletingDestructor with a no-op, rebuilt NxPhysics.dll, and ran the registered Phase 7 staged-pair teardown differential against the pinned oracle. The first static-first scene release retained all 51 tracked blocks instead of releasing 39; the mutant candidate exited 1 while the oracle exited 0. Mutant candidate SHA-256 9c857ff74ca222ffd6b61cce69b7e4607386cab27a095d9d0f2cfb413c815bf0; restored candidate SHA-256 1b421182452ce1bd6478e4da322c345341ae6a13a7faf17bc8a0ec75596277c9.",
+        "detected": "stdout_delta=18"
+      },
+      "note": "Restored control: both exits zero, stdout_delta=0, and exact stderr. See evidence/phase7-scene-destructor-000663.md."
+    },
+    {
+      "id": "phys_fn_000665",
+      "rva": "0x000142c0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "the dynamics guard was inverted in a throwaway `git archive` copy of HEAD: `if(!mark0 && !mark1)` became `if(mark0 && mark1)`, so a pair of actors that ARE dynamic was reported as having none and `createJoint` returned null. The copy was rebuilt with NxFoundation, NxPhysics and NxPhysicsJointTests, and the harness was run against the rebuilt pair with the pinned oracle transcript as the baseline. CAUGHT, measured as stdout_delta=30: the mutant exit=0 with a 21-line transcript against the oracle's 29, and every case loses its `created=yes`, `out_anchor`, `actors` and `released` lines while gaining the row's OWN error text -- \"PhysicsSDK::createJoint: at least one of the two actors must be dynamic!\". That the failure is reported by the row under test, and that the transcript loses the lines the row produces, is what makes this a falsification of this row rather than of the descriptor rows it drives.",
+        "detected": "stdout_delta=30"
+      }
+    },
+    {
+      "id": "phys_fn_001953",
+      "rva": "0x0004bd80",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsPopulatedSceneTeardownTests",
+      "falsification": {
+        "mutation": "Temporarily disabled the cpmRetireStaleScenePairs(scene) call in Scene::nxSceneDelete, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsPopulatedSceneTeardownTests staged-pair differential against the pinned shipped oracle. The contact-pair fixture retained one pair on both sides; candidate teardown left 17 allocator blocks versus the oracle 15 and exited 1.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_001963",
+      "rva": "0x0004bf10",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsPopulatedSceneTeardownTests",
+      "falsification": {
+        "mutation": "Omitted the owner vtable slot-0 deleting-destructor dispatch in the reconstructed pruning-engine cleanup, rebuilt NxPhysics, and ran the registered Phase 7 staged-pair gate. The oracle passed; the candidate failed the two owner callback/deleting-flag assertions (both counts 0 instead of 1).",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_001982",
+      "rva": "0x0004ca90",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsPopulatedSceneTeardownTests",
+      "falsification": {
+        "mutation": "Temporarily disabled cpmDestroyScenePairStorage(scene) in Scene::nxSceneDelete, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsPopulatedSceneTeardownTests staged-pair differential against the pinned shipped oracle. The fixture retained one contact pair; candidate teardown left 18 allocator blocks versus the oracle 15 and exited 1.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_003593",
+      "rva": "0x00088090",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Changed only the mask-4 callback export in nxFluidEmitterSetInternalFlag from EmitterSetBodyRepulsionFlag to EmitterSetAddBodyVelocityFlag, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests with CMake Win32 Release, and ran the actual candidate DLL entry against the pinned oracle. The six backend set/clear cases reported callback_mismatches=2 and the probe exited nonzero. Restoring the dispatch produced callback_mismatches=0, state_mismatches=0, and exit 0.",
+        "detected": "mismatches=2"
+      },
+      "note": "Direct candidate-DLL callback dispatch and flag state coverage; see evidence/fluid-emitter-set-flag-backend-003593-003850.md."
+    },
+    {
+      "id": "phys_fn_003637",
+      "rva": "0x00089d50",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Changed the disabled FluidManager actor-created warning line from 0x107 to 0x108 in a throwaway git archive of HEAD 6f92c085. The archive was freshly configured and built for Win32 Release; the registered NxPhysicsSimulationTests differential staged the pinned oracle and mutant candidate. Both processes exited 0 with exact stderr, while the mutant reported line 264 instead of oracle line 263. The target rejected the mutant with stdout_delta=2.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_003643",
+      "rva": "0x00089e90",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a freshly configured and built throwaway git archive of HEAD e6616f8b2c9cfa5f4d44f9e728d47a3d9378df79, changed only the scalar deleting flag for the removed fluid from 1 to 0 in the FluidManager release helper. The registered NxPhysicsSimulationTests staged-pair differential rejected the mutant: both processes exited 0, stderr matched exactly, and the seeded array-release line changed from flags=1 to flags=0. Restoring the exact Scene.cpp source and rebuilding returned to stdout_delta=0.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_003792",
+      "rva": "0x0008c2d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the candidate implementation for phys_fn_003792: constructor secondary-base word +0x0c: mUnknown0c(0) -> reinterpret_cast<void*>(1). Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=1. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
+        "detected": "mismatches=1"
+      },
+      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
+    },
+    {
+      "id": "phys_fn_003804",
+      "rva": "0x0008c590",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the candidate implementation for phys_fn_003804: global pose copy source +0x48 -> +0x4c. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
+        "detected": "mismatches=2"
+      },
+      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
+    },
+    {
+      "id": "phys_fn_003806",
+      "rva": "0x0008c5e0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the candidate implementation for phys_fn_003806: global position copy source +0x6c -> +0x68. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
+        "detected": "mismatches=2"
+      },
+      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
+    },
+    {
+      "id": "phys_fn_003808",
+      "rva": "0x0008c620",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the candidate implementation for phys_fn_003808: global orientation copy source +0x48 -> +0x4c. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
+        "detected": "mismatches=2"
+      },
+      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
+    },
+    {
+      "id": "phys_fn_003816",
+      "rva": "0x0008c870",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the candidate implementation for phys_fn_003816: local pose copy source +0x18 -> +0x1c. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
+        "detected": "mismatches=2"
+      },
+      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
+    },
+    {
+      "id": "phys_fn_003818",
+      "rva": "0x0008c8a0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the candidate implementation for phys_fn_003818: local position copy source +0x3c -> +0x38. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
+        "detected": "mismatches=2"
+      },
+      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
+    },
+    {
+      "id": "phys_fn_003820",
+      "rva": "0x0008c8d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the candidate implementation for phys_fn_003820: local orientation copy source +0x18 -> +0x1c. Rebuilt NxPhysicsFluidEmitterAbiTests and ran it against the pinned NxPhysics.dll; the public interface probe exited nonzero and reported mismatches=2. Restoring the source returned all six raw ABI and aggregate comparisons to zero mismatches.",
+        "detected": "mismatches=2"
+      },
+      "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
+    },
+    {
+      "id": "phys_fn_003850",
+      "rva": "0x0008cec0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Replaced only the wrapper call to nxFluidEmitterSetInternalFlag(mInternal, flag, enabled) with a no-op while retaining the write-try lock and unlock, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests with CMake Win32 Release, and ran the actual candidate DLL entry against the pinned oracle. The probe reported flags mismatches=1, backend callback_mismatches=6 and state_mismatches=4 (aggregate mismatches=11), then exited nonzero. Restoring the wrapper call returned every mismatch count to zero and the probe exited 0.",
+        "detected": "mismatches=11"
+      },
+      "note": "Direct candidate-DLL write-lock wrapper and backend dispatch coverage; see evidence/fluid-emitter-set-flag-backend-003593-003850.md."
+    },
+    {
+      "id": "phys_fn_003852",
+      "rva": "0x0008cf20",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "In a detached throwaway checkout at c326054a, changed only phys_fn_003852 so the candidate reads the flag mask at mInternal+0x14 instead of +0x10; freshly configured and built NxPhysicsFluidEmitterAbiTests, then ran it against pinned NxPhysics.dll. The registered two-transition visualization-bit probe reported mismatches=1 and exited nonzero. The restored candidate control reports mismatches=0.",
+        "detected": "mismatches=1"
+      },
+      "note": "Direct public NxFluidEmitter flag getter coverage; details in evidence/fluid-emitter-get-flag-003852.md."
     }
   ],
   "deferred": [
@@ -1136,14 +1146,6 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000617",
-      "rva": "0x00011440",
-      "size": 100,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_000619",

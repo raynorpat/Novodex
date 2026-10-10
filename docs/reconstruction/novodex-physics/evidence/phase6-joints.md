@@ -10275,3 +10275,8 @@ The registered `NxPhysicsEffectorTests` fixture observes effector creation and s
 ## Phase 7 Scene collision-shape pruner rows `phys_fn_000581` and `phys_fn_000583`
 
 The registered `NxPhysicsSceneVisualizeTests` collision-shapes stage falsifies the static and selected dynamic pruner loops independently. The static loop `phys_fn_000581` mutation is rejected with `stdout_delta=1382`; both exits are zero and stderr is exact. The selected dynamic loop `phys_fn_000583` mutation is rejected with `stdout_delta=1322`; both exits are zero and stderr is exact. Restoring both loops returns an exact staged-pair differential. See [phase7-scene-collision-shape-pruners-000581-000583.md](phase7-scene-collision-shape-pruners-000581-000583.md).
+
+
+## Phase 7 Scene stats row `phys_fn_000617` — `stdout_delta=8`
+
+The registered `NxPhysicsSimulationTests` scene-stats fixture exercises empty and populated scenes under all three broadphase selectors. In an isolated archive, changing the active actor count from `actorEnd - actorBegin` to `actorEnd - actorBegin + 1` reports 9 instead of 8 actors on all three selectors. The staged-pair differential catches the mutation (`stdout_delta=8`, both exits zero, exact stderr). Restoring the row returns to an exact differential. See [phase7-scene-stats-000617/README.md](phase7-scene-stats-000617/README.md).

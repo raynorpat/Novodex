@@ -1,0 +1,7 @@
+--- a/Physics/src/Scene.cpp
++++ b/Physics/src/Scene.cpp
+@@ -5091,2 +5091,2 @@
+-		? static_cast<NxI32>(actorEnd - actorBegin)
+-		: 0;
++		? static_cast<NxI32>(actorEnd - actorBegin + 1)
++		: 0; // mutation for phys_fn_000617
