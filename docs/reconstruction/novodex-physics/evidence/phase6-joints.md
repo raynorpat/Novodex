@@ -10229,3 +10229,9 @@ phys_fn_000663 whole-row no-op mutation: retained blocks 51 (expected release 39
 The `NxPhysicsJointStagedPairTests` oracle and restored candidate match exactly. Reading Scene+0x6c4 instead of +0x6c8 is caught while the fixture reports `count=0` and `enumerated=1` (`stdout_delta=296`, both exits zero, exact stderr); restoring the +0x6c8 joint-count read returns `stdout_delta=0`. See [phase7-scene-joint-count-000559.md](phase7-scene-joint-count-000559.md).
 
 phys_fn_000559 wrong-offset mutation (+0x6c8 -> +0x6c4) stdout_delta=296; restored stdout_delta=0.
+
+## Phase 7 Scene effector-count getter row `phys_fn_000561` — `stdout_delta=14`
+
+`NxPhysicsEffectorTests` observes `getNbEffectors` through zero, one, and two live-effectors states, including releases and actor teardown. Baseline oracle/candidate transcripts matched exactly. Changing the getter from `Scene + 0x6c4` to the adjacent joint-count field at `+0x6c8` is caught by the registered Phase 7 differential: lifecycle counts become zero, both processes exit zero, stderr remains exact, and `stdout_delta=14`. The mutant DLL hash was `84318d8d343642a96906dd0feb2730620548ef7dbca8677cd7fb8877cf3bbfc1`.
+
+The source was restored byte-for-byte (`Scene.cpp` SHA-256 `5806d9cb903e2c11d863ee69ae6202d3c6c7ce481b0937e73c99080383bd7cf9` before and after), and the rebuilt control reports both exits zero, `stdout_delta=0`, and exact stderr. The restored DLL hash was `8b7a93a8c459c1d0567258d62309ed017d14c3e04838719f62404745d70968bd`. See [phase7-scene-effector-count-000561.md](phase7-scene-effector-count-000561.md).
