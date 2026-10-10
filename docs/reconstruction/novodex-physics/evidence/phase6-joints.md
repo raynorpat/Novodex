@@ -10028,3 +10028,7 @@ For `phys_fn_000608`, the registered `NxPhysicsSimulationTests` staged-pair diff
 ## Phase 7 Scene step-body array row `phys_fn_000600`
 
 For `phys_fn_000600`, the registered `NxPhysicsSimulationTests` staged-pair differential rejects a used-count-only mutation that omits the count-prefixed 0x60-byte record allocation (`candidate_exit=-1073741819`, `stdout_delta=3731`; oracle exits 0). Rebuilding the restored helper returns both exits to 0 with `stdout_delta=0` and exact stderr. See [phase7-scene-step-body-array-000600.md](phase7-scene-step-body-array-000600.md).
+
+## Phase 7 Scene substep island-reset row `phys_fn_000635`
+
+For `phys_fn_000635`, the registered `NxPhysicsSimulationTests` staged-pair differential rejects omission of the joint/body island-reset passes (`candidate_exit=-1073741819`, `stdout_delta=3728`; oracle exits 0). Restoring the row returns both exits to 0 with `stdout_delta=0` and exact stderr. See [phase7-scene-joint-island-reset-000635.md](phase7-scene-joint-island-reset-000635.md). The downstream `phys_fn_004172` remains open.

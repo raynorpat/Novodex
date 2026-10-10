@@ -12022,13 +12022,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/248",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1680",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "RVA 0x000127e0 (176 bytes), sole direct caller phys_fn_000659: when the Scene joint list is nonempty, traverse it once to call phys_fn_000762 on each joint with a selected body at +0x08 or +0x0c, traverse again to call phys_fn_000720 on the selected body, reset Scene+0x590 to +0x58c, then call phys_fn_000764 on every record in [Scene+0x56c, Scene+0x570).",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests staged-pair differential rejects a no-op of the joint/body island-reset passes while retaining the Scene cursor assignment: oracle_exit=0, candidate_exit=-1073741819, stdout_delta=3728. Restoring and rebuilding returns both exits to 0, stdout_delta=0, stderr_exact=True. The broadphase fixture catches the body-reset portion before joint trajectories. See evidence/phase7-scene-joint-island-reset-000635.md.",
+      "notes": "The downstream island rebuild helper phys_fn_004172 remains open and is not discharged by this row.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "NxSceneInternal::simulateFrame (substep island reset)"
     },
     {
       "id": "phys_fn_000636",
