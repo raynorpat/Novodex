@@ -1,0 +1,6 @@
+diff --git a/Physics/src/core/Joint.cpp b/Physics/src/core/Joint.cpp
+--- a/Physics/src/core/Joint.cpp
++++ b/Physics/src/core/Joint.cpp
+@@ -1080,1 +1080,1 @@
+-	scene->pushJointWithoutBodies(this);
++	// mutation: omit no-body joint registration

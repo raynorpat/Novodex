@@ -1,3 +1,7 @@
+### Continuation — actor-change joint detach row closure (2026-10-10)
+
+Closed Phase 6 row `phys_fn_004103` (`Joint::row004103`) with the existing jointed-actor `setDynamic` case in `NxPhysicsActorShapeMutationTests`. Omitting the no-body-list registration made a later joint release report that the joint was not in the scene (`stdout_delta=75`, both exits 0, exact stderr); restored control matched exactly. Full mutation and restored logs plus patch are retained in `docs/reconstruction/novodex-physics/evidence/phase6-joint-actor-detach-004103*`. Phase 6 now has 99 closed and 334 open function rows and remains pending.
+
 ### Continuation — retained broken-joint detach row closure (2026-10-10)
 
 Closed Phase 6 row `phys_fn_004105` (`Joint::handleBreakEvent`) using the registered retained-break case in `NxPhysicsSimulationTests`. Omitting the `mBody[0] = 0` store made the candidate fail the detached-actors assertion (oracle exit 0, candidate exit 1, `stdout_delta=796`). The clean restored control returned to an exact staged differential. The full Phase 6 gate passes at 1,267/1,267 registered coverage assertions; inventory validation passes with 98 closed and 335 remaining Phase 6 function rows. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-joint-handle-break-event-004105.md`.
