@@ -10280,3 +10280,8 @@ The registered `NxPhysicsSceneVisualizeTests` collision-shapes stage falsifies t
 ## Phase 7 Scene stats row `phys_fn_000617` — `stdout_delta=8`
 
 The registered `NxPhysicsSimulationTests` scene-stats fixture exercises empty and populated scenes under all three broadphase selectors. In an isolated archive, changing the active actor count from `actorEnd - actorBegin` to `actorEnd - actorBegin + 1` reports 9 instead of 8 actors on all three selectors. The staged-pair differential catches the mutation (`stdout_delta=8`, both exits zero, exact stderr). Restoring the row returns to an exact differential. See [phase7-scene-stats-000617/README.md](phase7-scene-stats-000617/README.md).
+
+
+## Phase 7 Scene limits row `phys_fn_000621` — `stdout_delta=8`
+
+The registered `NxPhysicsSimulationTests` scene-limits fixture exercises active scene limits under broadphase selectors 0, 1, and 2. In a byte-preserving isolated archive, changing the actor count from `actorEnd - actorBegin` to `actorEnd - actorBegin + 1` reports 9 instead of 8 for all three selectors; the staged-pair differential catches it (`stdout_delta=8`, both exits zero, exact stderr). Restoring the exact source and rebuilding returns an exact differential. See [phase7-scene-limits-000621/README.md](phase7-scene-limits-000621/README.md).

@@ -1,0 +1,5 @@
+--- a/Physics/src/Scene.cpp
++++ b/Physics/src/Scene.cpp
+@@ -5105 +5105 @@
+-	limits.maxNbActors = actorBegin ? static_cast<NxU32>(actorEnd - actorBegin) : 0;
++	limits.maxNbActors = actorBegin ? static_cast<NxU32>(actorEnd - actorBegin + 1) : 0;

@@ -1596,3 +1596,8 @@ The approved five-family collision-object model is already present on main: each
 ### Continuation — scene stats row mutation closure (2026-10-10)
 
 Phase 7 row `phys_fn_000617` (`NxSceneInternal::getSceneStats`) is now mutation-falsified through the registered `NxPhysicsSimulationTests` staged-pair differential. The fixture observes empty and populated scenes under broadphase selectors 0, 1, and 2; adding 1 to the active actor count changes three output lines and is caught (`stdout_delta=8`, both exits 0, exact stderr). Restoring the source returns to an exact differential. Phase 7 accounting advances to 68 closed / 493 deferred; the full gate passes 1,504/1,475 registered assertions. Inventory validation passes with zero unexplained rows and all public Physics headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-stats-000617/README.md`.
+
+
+### Continuation — scene limits row mutation closure (2026-10-10)
+
+Phase 7 row `phys_fn_000621` (`NxSceneInternal::getLimits`) is now mutation-falsified through the registered `NxPhysicsSimulationTests` differential. The actor-count +1 mutation changes the active scene-limits transcript from 8 to 9 actors for selectors 0/1/2 and is caught (`stdout_delta=8`, both exits zero, exact stderr); the restored control is exact. Phase 7 accounting advances to 69 closed / 492 deferred. The full gate passes at 1,504/1,475 assertions; inventory validates with zero unexplained rows and all 80 public Physics headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-limits-000621/README.md`.

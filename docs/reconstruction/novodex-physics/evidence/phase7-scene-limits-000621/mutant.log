@@ -1,0 +1,10 @@
+child target=NxPhysicsSimulationTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\mutant-getlimits-000621\build\Release\NxPhysicsSimulationTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\pairs-getlimits-mutant\oracle" exit=0
+simulation scene-limits phase=active selector=0 actors=8 bodies=5 static_shapes=3 dynamic_shapes=5 joints=0
+simulation scene-limits phase=active selector=1 actors=8 bodies=5 static_shapes=3 dynamic_shapes=5 joints=0
+simulation scene-limits phase=active selector=2 actors=8 bodies=5 static_shapes=3 dynamic_shapes=5 joints=0
+child target=NxPhysicsSimulationTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\mutant-getlimits-000621\build\Release\NxPhysicsSimulationTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\pairs-getlimits-mutant\candidate" exit=0
+simulation scene-limits phase=active selector=0 actors=9 bodies=5 static_shapes=3 dynamic_shapes=5 joints=0
+simulation scene-limits phase=active selector=1 actors=9 bodies=5 static_shapes=3 dynamic_shapes=5 joints=0
+simulation scene-limits phase=active selector=2 actors=9 bodies=5 static_shapes=3 dynamic_shapes=5 joints=0
+differential target=NxPhysicsSimulationTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=8 stderr_exact=True
+GATE FAILED: requirement not met: every requested target produces identical oracle and candidate results
