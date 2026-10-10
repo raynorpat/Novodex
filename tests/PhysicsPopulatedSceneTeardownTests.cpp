@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <new>
 
 #include "NxFoundationSDK.h"
 #include "NxPhysicsSDK.h"
@@ -84,6 +85,26 @@ class TrackingAllocator : public NxUserAllocator
 	unsigned mAllocationCount;
 	void* mPointers[8192];
 	size_t mSizes[8192];
+	};
+
+static unsigned gPrunerOwnerCalls[2] = {0, 0};
+static unsigned gPrunerOwnerFlags[2] = {0, 0};
+
+class PrunerOwnerProbe
+	{
+	public:
+	explicit PrunerOwnerProbe(unsigned index) : mIndex(index) {}
+	virtual ~PrunerOwnerProbe()
+		{
+		if(mIndex < 2) ++gPrunerOwnerCalls[mIndex];
+		}
+	static void operator delete(void* memory)
+		{
+		const unsigned index = *reinterpret_cast<unsigned*>(
+			static_cast<unsigned char*>(memory) + sizeof(void*));
+		if(index < 2) ++gPrunerOwnerFlags[index];
+		}
+	unsigned mIndex;
 	};
 
 int wmain(int argc, wchar_t** argv)
@@ -182,9 +203,63 @@ int wmain(int argc, wchar_t** argv)
 	printf("teardown contact_pair pairs_before=%u outstanding_after=%u\n",
 		contactPairs, afterContactScene);
 
-	sdk->release();
-	foundationSDK->release();
 	if(afterContactScene != 15)
 		return nxFail("contact-pair teardown did not return to the oracle's 15 outstanding blocks");
+
+	// Seed one static and one selected-dynamic pruner section with synthetic
+	// owner objects after releasing real actors. Their deleting-destructor
+	// callback records phys_fn_001963's dispatch without running shape teardown
+	// a second time or relying on private shape-owner side effects.
+	NxScene* ownerScene = sdk->createScene(sceneDesc);
+	if(!ownerScene) return nxFail("pruner-owner teardown scene creation failed");
+	NxActor* ownerStatic = ownerScene->createActor(staticDesc);
+	NxActor* ownerDynamic = ownerScene->createActor(dynamicDesc);
+	if(!ownerStatic || !ownerDynamic)
+		return nxFail("pruner-owner static/dynamic actor creation failed");
+	ownerScene->releaseActor(*ownerStatic);
+	ownerScene->releaseActor(*ownerDynamic);
+	unsigned char* ownerWrapper = reinterpret_cast<unsigned char*>(ownerScene);
+	unsigned char* ownerInternal = *reinterpret_cast<unsigned char**>(ownerWrapper + 0x24);
+	unsigned char* ownerEngine = ownerInternal + 0x624;
+	unsigned char* staticPruner = *reinterpret_cast<unsigned char**>(ownerEngine + 0x1c);
+	unsigned char* dynamicPruner = *reinterpret_cast<unsigned char**>(ownerEngine + 0x24);
+	if(!staticPruner) return nxFail("pruner-owner fixture did not create a static pruner");
+	if(!dynamicPruner) return nxFail("pruner-owner fixture did not create a dynamic pruner");
+	unsigned char* ownerPruners[2] = {staticPruner, dynamicPruner};
+	unsigned char fakePrunables[2][0x2c];
+	unsigned char ownerStorage[2][sizeof(PrunerOwnerProbe)];
+	memset(fakePrunables, 0, sizeof(fakePrunables));
+	for(unsigned i = 0; i < 2; ++i)
+		{
+		PrunerOwnerProbe* owner = new(ownerStorage[i]) PrunerOwnerProbe(i);
+		*reinterpret_cast<void**>(fakePrunables[i] + 4) = owner;
+		unsigned char* const pruner = ownerPruners[i];
+		unsigned* const sections = reinterpret_cast<unsigned*>(pruner + 4);
+		void** const objects = *reinterpret_cast<void***>(pruner + 0x18);
+		if(!objects || sections[0] || sections[1] || sections[2] ||
+			*reinterpret_cast<unsigned short*>(pruner + 0x10) != 0)
+			return nxFail("pruner-owner pool was not empty with retained storage");
+		objects[0] = fakePrunables[i];
+		sections[1] = i == 0 ? 1 : 0;
+		sections[2] = i == 1 ? 1 : 0;
+		*reinterpret_cast<unsigned short*>(pruner + 0x10) = 1;
+		*reinterpret_cast<unsigned short*>(pruner + 0x12) = 4;
+		}
+	const unsigned selectedPruner = *reinterpret_cast<unsigned*>(ownerEngine + 0x70);
+	if(selectedPruner != 2)
+		return nxFail("pruner-owner fixture selected dynamic pruner type changed");
+	sdk->releaseScene(*ownerScene);
+	const unsigned afterOwnerScene = allocator.outstanding();
+	printf("teardown pruner_owner static_calls=%u dynamic_calls=%u flags=%u/%u selected=%u outstanding_after=%u\n",
+		gPrunerOwnerCalls[0], gPrunerOwnerCalls[1],
+		gPrunerOwnerFlags[0], gPrunerOwnerFlags[1], selectedPruner, afterOwnerScene);
+	if(gPrunerOwnerCalls[0] != 1 || gPrunerOwnerCalls[1] != 1 ||
+		gPrunerOwnerFlags[0] != 1 || gPrunerOwnerFlags[1] != 1)
+		return nxFail("pruner-owner teardown did not dispatch both deleting destructors");
+	if(afterOwnerScene != afterContactScene)
+		return nxFail("pruner-owner teardown did not release scene allocations");
+
+	sdk->release();
+	foundationSDK->release();
 	return nxReportPairIdentity(pairDirectory);
 	}

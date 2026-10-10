@@ -36400,12 +36400,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/opcode/IcePruningEngine.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/769",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5927",
-      "static_proof": "The helper snapshots section-1/2 owner pointers from pruner slot 0 and the Scene-selected pruner, then invokes each owner vtable deleting destructor with flag 1. The Scene destructor calls it before releasing the coherent cache, matching the 0x4bf10 body and its 0x13f30 call position. It is not yet independently mutation-falsified.",
-      "dynamic_proof": null,
+      "static_proof": "The helper snapshots section-1/2 owner pointers from pruner slot 0 and the Scene-selected pruner, then invokes each owner vtable slot-0 deleting destructor with flag 1. The Scene destructor calls it before releasing the coherent cache, matching the 0x4bf10 body and its 0x13f30 call position.",
+      "dynamic_proof": "Driven by NxPhysicsPopulatedSceneTeardownTests on both the pinned oracle and candidate. The fixture seeds a synthetic owner into section 1 of the static pruner and section 2 of the selected dynamic pruner, then releases the Scene. Both report static_calls=1 dynamic_calls=1 flags=1/1 selected=2 outstanding_after=15. Omitting the slot-0 deleting-destructor dispatch in the candidate is caught by the registered Phase 7 staged-pair differential (stdout_delta=2, candidate_exit=1); restored control matches. See evidence/phase7-pruner-owner-cleanup-001963.md.",
       "notes": ""
     },
     {

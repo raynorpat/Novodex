@@ -210,7 +210,10 @@ static void nxSceneEngineDestroyPrunerOwners(Pruner* pruner)
 		{
 		void* owner = owners[i];
 		if(owner)
-			reinterpret_cast<DeletingDestructor>(*reinterpret_cast<void**>(owner))(owner, 1);
+			{
+			void** const vtable = *reinterpret_cast<void***>(owner);
+			reinterpret_cast<DeletingDestructor>(vtable[0])(owner, 1);
+			}
 		}
 }
 
