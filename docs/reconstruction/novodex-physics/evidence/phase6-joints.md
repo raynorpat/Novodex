@@ -9966,3 +9966,5 @@ Island-object teardown row `phys_fn_004167` is reconstructed in `Physics/src/cor
 - `phys_fn_003816`: changing the local-pose source offset was caught, `mismatches=2`.
 - `phys_fn_003818`: changing the local-position source offset was caught, `mismatches=2`.
 - `phys_fn_003820`: changing the local-orientation source offset was caught, `mismatches=2`.
+
+The Phase 7 `NxPhysicsFluidEmitterAbiTests` probe also closes `phys_fn_003852`: changing its flag-mask source from `mInternal+0x10` to `+0x14` was caught with `mismatches=1`; the restored control reports zero mismatches. Details: [fluid-emitter-get-flag-003852.md](fluid-emitter-get-flag-003852.md).

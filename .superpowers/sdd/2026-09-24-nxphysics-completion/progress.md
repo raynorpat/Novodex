@@ -71,3 +71,8 @@ Task M5.22: complete (commit a7ca8aba; phys_fn_004129; +1 computed-X mutation ca
 ### M1.4 - Initial call-cleanup ABI audit
 
 Corrected 15 mismatched layout-harness call typedefs/argument counts against the pinned DLL rows, and fixed the Capstone cleanup parser to stop on direct, indirect, and register tail jumps. The new parser tests pass (3/3), the audit reports zero decidable mismatches, the rebuilt `NxPhysicsObjectLayoutTests --self` passes with zero candidate mismatches, and Phase 5 passes 2,605/2,605 coverage assertions. Nonvolatile-register and structure-return ABI checks remain open.
+
+
+### M5.24 — Fluid emitter flag accessors and collision input coverage
+
+Committed the local flag mask setter/getter implementation and registered its public-interface probe (`c326054a`). `phys_fn_003852` is closed after a fresh throwaway CMake mutation shifted the getter read from `mInternal+0x10` to `+0x14`; the flag probe caught it with `mismatches=1`, and restored control is exact. `phys_fn_003850` remains open for backend callbacks on masks 4, 8, and 16. The follow-up gate-registry audit found missing input and coverage registrations for direct mesh/mesh collision probes; added semantic input digests and a dispatcher coverage line. Phase 3 passes 543/543, Phase 5 passes 2,616/2,616, and Phase 7 passes 1,444/1,444. The five-family collision-object destructor differential was rebuilt and re-run: all five secondary and five primary deleting paths match, and the member-only negative control reports five mismatches. The focused inventory/floor assertions pass; the repository-wide Python module remains uncompleted because its source-wide scan did not finish in a bounded wait.

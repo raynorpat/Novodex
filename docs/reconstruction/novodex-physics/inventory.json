@@ -71756,12 +71756,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "locked mask accessor (0x8cf20, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1440",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12955",
       "static_proof": "locks [self+0x10], calls helper 003595 on [self+0x14] which returns [field+0x10] & arg, then unlocks and returns it; ret 4",
-      "dynamic_proof": "confirmed via lockacc3 differential (3z143): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests checks the visualization-bit set/clear transition and preserves unrelated mask bits. A throwaway getter mutation moved the mask read from mInternal+0x10 to +0x14; the registered oracle probe reported fluid emitter flags cases=2 mismatches=1 and exited nonzero. The restored candidate reports zero mismatches. See evidence/fluid-emitter-get-flag-003852.md.",
       "notes": ""
     },
     {

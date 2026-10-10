@@ -9052,3 +9052,10 @@ Validation on the fresh Release build:
   all ten secondary-dtor calls and five primary deleting-dtor calls match.
 - `NxPhysicsObjectLayoutTests --self`: pass, zero candidate mismatches.
 - Public Physics headers remain byte-identical to the pinned tree.
+
+The fresh 2026-10-09 rerun after registering the fluid-emitter flag getter and
+the new collision input/dispatcher coverage passes all 20 Phase 5 targets at
+2,616/2,616 required assertions. The five collision-object family destructor
+rows still report zero oracle mismatches, and the member-only negative control
+reports five. Phase 3 and Phase 7 were also rerun from the same candidate and
+passed at 543/543 and 1,444/1,444 assertions respectively.

@@ -12497,6 +12497,8 @@ static unsigned nxDriveTask2lMeshHeightfield(unsigned char* base, Nx2iSide* side
 		}
 	// Exercise the top-level mesh/mesh dispatcher after the leaf-entry matrix
 	// so its shared cache and global contact state cannot alter those baselines.
+	NxDigest dispatchInput;
+	nxDigestInit(&dispatchInput);
 	for(unsigned side = 0; side < 2; ++side)
 		{
 		nxResetWorld(&world[side]);
@@ -12504,6 +12506,18 @@ static unsigned nxDriveTask2lMeshHeightfield(unsigned char* base, Nx2iSide* side
 		NxCollisionShape* heightfieldShape = (NxCollisionShape*) shapeStore[side][1];
 		nxStageWorld(&world[side], meshShape, heightfieldShape, true, true, 3, 5, false, false, false);
 		}
+	const unsigned dispatchPair[2] = { pairList[2][0], pairList[2][1] };
+	const unsigned dispatchImageFields[6] = { 2, 2, 0x40400000u, 2, 2, 0x40400000u };
+	nxFoldInput(&dispatchInput, dispatchPair, sizeof(dispatchPair));
+	nxFoldInput(&dispatchInput, dispatchImageFields, sizeof(dispatchImageFields));
+	const Nx2hMesh& dispatchMesh0 = nx2iMesh(dispatchPair[0]);
+	const Nx2hMesh& dispatchMesh1 = nx2iMesh(dispatchPair[1]);
+	nxFoldInput(&dispatchInput, dispatchMesh0.verts, 12 * dispatchMesh0.nbVerts);
+	nxFoldInput(&dispatchInput, dispatchMesh0.tris, 12 * dispatchMesh0.nbTris);
+	nxFoldInput(&dispatchInput, dispatchMesh1.verts, 12 * dispatchMesh1.nbVerts);
+	nxFoldInput(&dispatchInput, dispatchMesh1.tris, 12 * dispatchMesh1.nbTris);
+	nx2lFoldMeshShape(&dispatchInput, (const NxCollisionShape*) shapeStore[0][0]);
+	nx2lFoldMeshShape(&dispatchInput, (const NxCollisionShape*) shapeStore[0][1]);
 	nxSetControl(kControlDefault);
 	dispatcher(world[0].plane, world[0].sphere, &world[0].sink, sides[0].context);
 	nxSetControl(kControlDefault);
@@ -12518,6 +12532,9 @@ static unsigned nxDriveTask2lMeshHeightfield(unsigned char* base, Nx2iSide* side
 	mismatches += dispatchMismatches;
 	printf("collision name=contact_mesh_mesh_heightfield_dispatch index=- rva=0x00046ab0 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		dispatchedOracle.checks, dispatchedOracle.state, dispatchedCandidate.state, dispatchMismatches);
+	printf("collision coverage name=contact_mesh_mesh_heightfield_dispatch cases=1 oracle_contacts=%u candidate_contacts=%u mismatches=%u\n",
+		world[0].sink.contactCount, world[1].sink.contactCount, dispatchMismatches);
+	nxPrintInput("contact_mesh_mesh_heightfield_dispatch", &dispatchInput);
 	printf("collision name=contact_mesh_heightfield index=- rva=0x00046510 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
 	printf("collision coverage name=contact_mesh_heightfield pairs=%u cases=%u control_words=2 cases_with_contacts=%u\n",
@@ -12567,6 +12584,8 @@ static unsigned nxDriveTask2lMeshMeshContact(unsigned char* base, Nx2iSide* side
 	for(unsigned side = 0; side < 2; ++side)
 		nx2lCandidateAabbTreeColliderConstruct(sides[side].context + 0x32c);
 	unsigned mismatches = 0, oracleContacts = 0, oracleContactCases = 0, separatedCases = 0;
+	NxDigest inputDigest;
+	nxDigestInit(&inputDigest);
 	for(unsigned fixtureIndex = 0; fixtureIndex < sizeof(fixtures) / sizeof(fixtures[0]); ++fixtureIndex)
 		{
 		const Fixture& fixture = fixtures[fixtureIndex];
@@ -12597,6 +12616,19 @@ static unsigned nxDriveTask2lMeshMeshContact(unsigned char* base, Nx2iSide* side
 			nxResetWorld(&world[side]);
 			nxStageWorld(&world[side], shape0, shape1, true, true, 3, 5, false, false, false);
 			}
+		const unsigned selectors[3] = { fixture.mesh0, fixture.mesh1, fixture.orientation };
+		nxFoldInput(&inputDigest, selectors, sizeof(selectors));
+		nxFoldInput(&inputDigest, &fixture.x, sizeof(fixture.x));
+		nxFoldInput(&inputDigest, &fixture.y, sizeof(fixture.y));
+		nxFoldInput(&inputDigest, &fixture.z, sizeof(fixture.z));
+		const Nx2hMesh& inputMesh0 = nx2iMesh(fixture.mesh0);
+		const Nx2hMesh& inputMesh1 = nx2iMesh(fixture.mesh1);
+		nxFoldInput(&inputDigest, inputMesh0.verts, 12 * inputMesh0.nbVerts);
+		nxFoldInput(&inputDigest, inputMesh0.tris, 12 * inputMesh0.nbTris);
+		nxFoldInput(&inputDigest, inputMesh1.verts, 12 * inputMesh1.nbVerts);
+		nxFoldInput(&inputDigest, inputMesh1.tris, 12 * inputMesh1.nbTris);
+		nx2lFoldMeshShape(&inputDigest, (const NxCollisionShape*) shapeStore[0][0]);
+		nx2lFoldMeshShape(&inputDigest, (const NxCollisionShape*) shapeStore[0][1]);
 		nxSetControl(kControlDefault);
 		oracle(world[0].plane, world[0].sphere, &world[0].sink, sides[0].context);
 		const unsigned contacts = world[0].sink.contactCount;
@@ -12627,6 +12659,7 @@ static unsigned nxDriveTask2lMeshMeshContact(unsigned char* base, Nx2iSide* side
 		}
 	printf("collision coverage name=contact_mesh_mesh fixtures=%u contact_cases=%u separated_cases=%u contacts=%u\n",
 			(unsigned) (sizeof(fixtures) / sizeof(fixtures[0])), oracleContactCases, separatedCases, oracleContacts);
+	nxPrintInput("contact_mesh_mesh", &inputDigest);
 	for(unsigned side = 0; side < 2; ++side)
 		nx2lCandidateAabbTreeColliderDestruct(sides[side].context + 0x32c);
 	nx2iFoundationEnd();

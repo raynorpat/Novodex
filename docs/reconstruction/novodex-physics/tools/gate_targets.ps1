@@ -4910,9 +4910,12 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision input name=contact_mesh_heightfield words=6690 input=27d2e99a4f0f02fc',
         # convex-mesh gap Task 2l: top-level 001876 mesh/height-field dispatch.
         'collision name=contact_mesh_mesh_heightfield_dispatch index=- rva=0x00046ab0 checks=112 oracle=02a1bea1e0d2343d',
+        'collision coverage name=contact_mesh_mesh_heightfield_dispatch cases=1'
+        'collision input name=contact_mesh_mesh_heightfield_dispatch words=3147 input=c1ba9790af4eb6e5',
         # convex-mesh gap Task 2l: mesh/mesh contact and separated-pair fixture matrix.
         'collision name=contact_mesh_mesh fixture=16 pair=7,7 orientation=1 z=-1 checks=48 oracle=f1e2c663ca30c48c',
         'collision coverage name=contact_mesh_mesh fixtures=23 contact_cases=4 separated_cases=19 contacts=4',
+        'collision input name=contact_mesh_mesh words=11237 input=95d40c348b59f0a5',
         # convex-mesh gap Task 2m: P-Sphere sink reset, preallocated and growth paths.
         'collision name=contact_sink_reset index=- rva=0x0005b620 checks=416 oracle=80effc8beac4d285',
         'collision coverage name=contact_sink_reset preallocated_cases=6 growth_cases=2 control_words=2',
@@ -5687,13 +5690,13 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 6  # previous 4 plus contended and successful triangle-mesh release assertions
-    '3' = 540  # prior floor 537; the current registry also pins heightfield dispatch and fixture 16
+    '3' = 543  # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2612  # previous 2,611 plus the owner-update pruning differential
+    '5' = 2616  # corrected to current registry count, including the fluid-emitter flag line
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths
@@ -5738,7 +5741,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1440  # registered Phase 7 coverage assertion count
+    '7' = 1444  # corrected to current registry count, including the fluid-emitter flag line
                # previous 1429 plus the D6 public global-anchor readback
                # previous 1425 plus three contended D6 drive write-lock reports
                # previous 1424 plus the D6 contended drive-position write-lock report
