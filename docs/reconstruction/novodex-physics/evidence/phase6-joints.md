@@ -10325,3 +10325,8 @@ The registered `NxPhysicsJointStagedPairTests` differential exercises Scene join
 ## Phase 7 Scene get-next-joint `phys_fn_000567` — `stdout_delta=90`
 
 The registered `NxPhysicsJointStagedPairTests` differential exercises joint iterator order and termination. Clearing the cursor instead of advancing through `Joint + 0x10` changes the transcript by 90 bytes (both processes exit zero, exact stderr). The restored focused differential is exact, and the full Phase 7 gate passes at 1,639 assertions against a 1,475 floor. Details: [phase7-scene-get-next-joint-000567.md](phase7-scene-get-next-joint-000567.md).
+
+
+## Phase 7 joint-break event insertion `phys_fn_000571` — `stdout_delta=801`
+
+The registered `NxPhysicsSimulationTests` broken-joint fixture reaches the event producer. Clearing the Scene event-list head suppresses the expected joint-break callbacks and fails the candidate callback-count assertion (`candidate_exit=1`, `stdout_delta=801`). The restored candidate and all Phase 7 targets are exact. Details: [phase7-scene-add-joint-break-event-000571.md](phase7-scene-add-joint-break-event-000571.md).

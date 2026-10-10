@@ -10846,13 +10846,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/217",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1466",
-      "static_proof": "mov edx,[ecx+0x620]; mov eax,[esp+4]; mov [eax+4],edx; mov [ecx+0x620],eax; ret 4; product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": "confirmed via zmix drive (3z54): failures=0",
-      "notes": "Product row since joint-open-items Task 2: NxSceneInternal::addJointBreakEvent in Physics/src/Scene.cpp (the deferred NX_ASSERT(0) stub in core/JointSupport.cpp is removed). The parameterised model in Physics/src/ObjectModel.cpp stays. Previous source: link-insert: [arg+4]=old head, [this+0x620]=arg (0x108e0, ret 4).",
+      "static_proof": "IDA/Capstone contract at RVA 0x000108e0: set JointBreakEvent+4 to the previous Scene event head at +0x620, store the new event as the head, and return; 22-byte row. Candidate map resolves NxSceneInternal::addJointBreakEvent in Scene.obj.",
+      "dynamic_proof": "Registered Phase 7 NxPhysicsSimulationTests baseline matched the pinned oracle. Mutating the head insertion to clear Scene+0x620 was detected at the joint-break callback assertion (candidate_exit=1, stdout_delta=801, stderr differs due to the expected assertion). Restored source and full Phase 7 gate pass; see evidence/phase7-scene-add-joint-break-event-000571.md.",
+      "notes": "NxSceneInternal::addJointBreakEvent in Physics/src/Scene.cpp. Mutation falsification covers the event producer independently from processJointBreakEvents.",
       "implementation": "Physics/src/Scene.cpp"
     },
     {
