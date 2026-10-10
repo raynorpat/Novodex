@@ -3764,15 +3764,17 @@ undefined4 * __fastcall FUN_10012c10(undefined4 *param_1)
 
 ```
 
-## phys_fn_000649 (0x00013000, 107 B, discovered)
+## phys_fn_000649 (0x00013000, 107 B, dynamically_gated)
 
 - ambiguous: no
 - source: None
-- implementation: None
-- prototype: undefined __fastcall FUN_10013000(int * param_1)
-- calling convention: __fastcall, stack purge: 0
+- implementation: Physics/src/SceneAuxiliary.cpp
+- implementation_symbol: nxSceneAuxDestroy
+- prototype: void __cdecl nxSceneAuxDestroy(void * auxiliary)
+- calling convention: __thiscall oracle receiver; private candidate helper is called directly from Scene teardown
 - callers: phys_fn_000663 (0x00013f30)
-- callees: phys_fn_000624 (0x000116b0)
+- callees: phys_fn_000624 (0x000116b0), reproduced by the candidate's ten-array cleanup loop
+- dynamic proof: Phase 7 NxPhysicsObjectLayoutTests differential and free/metadata mutations; see evidence/phase7-scene-auxiliary-dtor-000649.md
 - indirect calls: 0x0001301b  call dword ptr [edx + 0x14]; 0x00013045  call dword ptr [edx + 0x14]
 - strings: none
 

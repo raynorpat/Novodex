@@ -66,7 +66,7 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
     '4' = @('NxPhysicsAssetTests', 'NxPhysicsThirdPartyTests')
     '5' = @('NxPhysicsObjectLayoutTests', 'NxPhysicsShapeVtableTests', 'NxPhysicsFluidEmitterAbiTests')
     '6' = @('NxPhysicsJointDescTests', 'NxPhysicsJointTests', 'NxPhysicsObjectLayoutTests', 'NxPhysicsJointSupportTests')
-    '7' = @('NxPhysicsJointSupportTests', 'NxPhysicsFluidEmitterAbiTests')
+    '7' = @('NxPhysicsJointSupportTests', 'NxPhysicsFluidEmitterAbiTests', 'NxPhysicsObjectLayoutTests')
     '8' = @()
 }
 
@@ -5156,6 +5156,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'vt name=mesh slots=12 digest=cef7ce84',
         'colobj ctor=phys_fn_001193 size=28 digest=e1df25e5 vptr_final=10107218 zero04=00000000 arg_at_8=a5a5a5a5 vptr_member=101072a0 arg_at_18=a5a5a5a5',
         'owner accessor=phys_fn_001281 mark=13579bdf returned=13579bdf',
+        'sceneaux row=phys_fn_000649 arrays=10 oracle_frees=10 candidate_frees=10 mismatches=0',
         'hull row=phys_fn_000953..71 vertexCount=8 faceCount=6 zero=0 face2_offset=0xb8 vertices_offset=0x10',
         'hull static tables digest=f835c8c3',
         'hull support row=phys_fn_000975 min_bits=c19c0000 max_bits=4eada5a5',

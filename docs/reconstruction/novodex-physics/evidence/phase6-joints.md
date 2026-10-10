@@ -10307,3 +10307,9 @@ The registered `NxPhysicsSimulationTests` differential now directly sets and rea
 `phys_fn_000358` mutant `stdout_delta=1053`; restored control `stdout_delta=0`.
 
 `phys_fn_000360` mutant `stdout_delta=2`; restored control `stdout_delta=0`.
+
+## Phase 7 Scene auxiliary manager destructor `phys_fn_000649` — `mismatches=1`
+
+The `NxPhysicsObjectLayoutTests` oracle differential now drives the destructor at RVA `0x13000` and the candidate `nxSceneAuxDestroy` on twin 0xa8-byte managers. All ten first-word array pointers are separately allocated through a test `NxUserAllocator`; the probe checks ten frees per side, all 30 array words cleared, and the four-byte gaps preserved.
+
+A candidate mutant that omitted the allocator free reported `oracle_frees=10`, `candidate_frees=0`, and `layout candidate mismatches=1` (exit 1). A second mutant that preserved each array's +4 metadata word reported 29 differing bytes and exited 1. Restoring the implementation reports `oracle_frees=10`, `candidate_frees=10`, `mismatches=0` and `layout candidate mismatches=0`. The Phase 7 gate now registers `NxPhysicsObjectLayoutTests` as an oracle differential. Detailed probe design and verification are in [phase7-scene-auxiliary-dtor-000649.md](phase7-scene-auxiliary-dtor-000649.md).

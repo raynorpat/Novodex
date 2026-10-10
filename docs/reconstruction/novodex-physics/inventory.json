@@ -12282,13 +12282,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/254",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1721",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "Registered Phase 7 oracle differential in NxPhysicsObjectLayoutTests: all ten populated array slots are freed through the allocator, all 30 array words clear, and inter-array padding is preserved. Omitting the allocator frees yields candidate_frees=0 and mismatches=1; preserving a metadata word yields 29 byte mismatches. See evidence/phase7-scene-auxiliary-dtor-000649.md.",
+      "notes": "",
+      "implementation": "Physics/src/SceneAuxiliary.cpp",
+      "implementation_symbol": "nxSceneAuxDestroy"
     },
     {
       "id": "phys_fn_000650",

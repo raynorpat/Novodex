@@ -24,6 +24,7 @@
 //     not model.
 
 #include "Scene.h"
+#include "SceneAuxiliary.h"
 #include "ContactPairManager.h"
 
 #include "Containers.h"
@@ -3299,16 +3300,8 @@ static void nxSceneDelete(void* self, int flags)
 #endif
 	if(p[0x12])
 		{
-		unsigned char* aux = reinterpret_cast<unsigned char*>(p[0x12]);
-		for(int offset = 0x90; offset >= 0; offset -= 0x10)
-			{
-			void*& entries = *reinterpret_cast<void**>(aux + offset);
-			if(entries)
-				{
-				nxFoundationSDKAllocator->free(entries);
-				entries = 0;
-				}
-			}
+		void* aux = reinterpret_cast<void*>(p[0x12]);
+		nxSceneAuxDestroy(aux);
 		nxFoundationSDKAllocator->free(aux);
 		}
 	// The three ID arrays grow through the Foundation allocator; the pending
