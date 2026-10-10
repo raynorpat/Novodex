@@ -1622,3 +1622,7 @@ A dynamic body connected by a fixed joint and simulated for one step grows three
 ### Continuation — Scene tracked-shape array teardown (2026-10-10)
 
 The static-first fixture now captures the 8-byte tracked-shape array at Scene `+0x6a4` before deletion and verifies that its SDK-allocator block is freed. The candidate and oracle match exactly; a no-op mutation of this destructor free reports `freed=0` and fails only the candidate. Phase 3 and Phase 7 gates pass at 559/559 and 1,648/1,648, with all 810 tooling tests passing. This closes one further allocation path only; the destructor and full DLL remain open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-tracked-shape-array-teardown-000663.md`.
+
+### Continuation — Scene debug-renderable teardown (2026-10-10)
+
+The teardown fixture enables visualization to create the Foundation-owned debug renderable at Scene `+0x6b8`, then checks its 52-byte allocation after Scene deletion. Oracle and candidate both release it with exact output; replacing the `releaseDebugRenderable` call with a no-op is caught (`freed=0`, candidate exit 1, oracle exit 0). Phase 3 and Phase 7 gates pass at 560/560 and 1,649/1,649, with all 810 tooling tests passing. This closes only the renderable release; the destructor and DLL remain open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-debug-renderable-teardown-000663.md`.

@@ -266,6 +266,28 @@ int wmain(int argc, wchar_t** argv)
 	if(!trackedShapeArrayFreed)
 		return nxFail("Scene teardown did not free its tracked-shape array");
 
+	// Scene::visualize lazily creates the Foundation-owned renderable when the
+	// visualization scale is nonzero. Reset the global parameter but retain the
+	// object until Scene deletion so the destructor's release path is observable.
+	NxScene* debugScene = sdk->createScene(sceneDesc);
+	if(!debugScene) return nxFail("debug-renderable teardown scene creation failed");
+	if(!sdk->setParameter(NX_VISUALIZATION_SCALE, 1.0f))
+		return nxFail("debug-renderable visualization scale could not be enabled");
+	debugScene->visualize();
+	sdk->setParameter(NX_VISUALIZATION_SCALE, 0.0f);
+	unsigned char* debugInternal = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(debugScene) + 0x24);
+	void* debugRenderable = *reinterpret_cast<void**>(debugInternal + 0x6b8);
+	const size_t debugRenderableBytes = allocator.allocationSize(debugRenderable);
+	if(!debugRenderable || !debugRenderableBytes)
+		return nxFail("Scene::visualize did not retain a tracked debug renderable");
+	sdk->releaseScene(*debugScene);
+	const bool debugRenderableFreed = allocator.allocationSize(debugRenderable) == 0;
+	printf("teardown debug_renderable bytes=%u freed=%u\n",
+		static_cast<unsigned>(debugRenderableBytes), debugRenderableFreed ? 1u : 0u);
+	if(!debugRenderableFreed)
+		return nxFail("Scene teardown did not release its debug renderable");
+
 	// Leave a live broadphase pair in the pruning engine, then release the
 	// scene before another simulation step can retire it. phys_fn_001953 must
 	// advance the scene stamp and delete this stale pair node during teardown.
