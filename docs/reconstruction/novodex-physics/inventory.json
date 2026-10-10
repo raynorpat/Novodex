@@ -83358,13 +83358,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1676",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15194",
       "static_proof": "locks [self+0x14], reads [field+0x168] with field from [self+0x18], unlocks and returns SELF when the argument equals that word, else zero; transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpPulleyJoint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
-      "dynamic_proof": "confirmed via lockedget2 differential (3z140): equal and unequal arms failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointStagedPairTests mutation differential: changed only `NpJointShared::is` to return null for every requested type. Oracle/candidate exits 0, stdout_delta=5961, exact stderr. Restored clean control: stdout_delta=0, exact stderr. Mutant candidate SHA-256 c189f4fc65c5e7801360a5759f95f15102a296fbfec5c089030d4ba89688e93a; restored candidate SHA-256 7311f3dc9dc1a2ba632830331363fcad45d18813318bd56c24f0f9bef8dc1460. Evidence: evidence/phase6-joint-shared-is-get-state-004479-004483.md.",
+      "notes": "Phase 6 closure: evidence/phase6-joint-shared-is-get-state-004479-004483.md",
       "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {
@@ -83432,13 +83432,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1678",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15198",
       "static_proof": "locks [self+0x14], calls helper 004078 on [self+0x18] which returns ([field+0x2c]>>3)&3, unlocks and returns it; transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpPulleyJoint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
-      "dynamic_proof": "confirmed via lockacc4 differential (3z144): four field values failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointStagedPairTests mutation differential: changed only `NpJointShared::getState` to report `NX_JS_BROKEN`. Oracle/candidate exits 0, stdout_delta=244, exact stderr. Restored clean control: stdout_delta=0, exact stderr. Mutant candidate SHA-256 e4d006ff4d9a1e2e995a00e9b7740fa15c24ddc76592bb3eeacf65363a8199e0; restored candidate SHA-256 57f1c67e54d79a695454fcc7196782831d689b24015e9d62104fa907bba400c2. Evidence: evidence/phase6-joint-shared-is-get-state-004479-004483.md.",
+      "notes": "Phase 6 closure: evidence/phase6-joint-shared-is-get-state-004479-004483.md",
       "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {

@@ -10148,3 +10148,10 @@ The full Phase 6 gate passed with 1,578 coverage assertions run (minimum require
 The D6 staged-pair fixture now reloads distinct local anchors and axes through `NxD6Joint::loadFromDesc` and prints the saved readback. For `phys_fn_004435`, omitting public setGlobalAnchor forwarding changed the staged transcript with `stdout_delta=4`; for `phys_fn_004457`, omitting public loadFromDesc forwarding changed it with `stdout_delta=2`. Both mutations were caught with equal zero exits and exact stderr. Both restored controls returned `stdout_delta=0` and exact stderr. See [phase6-joint-d6-anchor-load-desc-004435-004457.md](phase6-joint-d6-anchor-load-desc-004435-004457.md).
 
 The oracle-only joint matrix proof now pins fixture source SHA-256 `2899daa73224cda3c25539e299ef723d18288e669575d64b610cbde87de94732`, 3,211 output lines, and digest `08da657ab872db1b8289db8df8466ede624ec03d58f9f18e847263fc85ba357f`. The full Phase 6 gate passed with 1,579 coverage assertions run (minimum required: 1,267). Phase 6 now has 129 closed rows (127 mutation-falsified plus 2 oracle differentials) and 304 deferred rows; 23 in-phase rows remain unreconstructed.
+
+
+## Phase 6 closure measurement — shared joint type and state wrappers (`phys_fn_004479`, `004483`)
+
+The staged family matrix observes `NxJoint::is` and `getState`. Returning null from `phys_fn_004479` changed the transcript with `stdout_delta=5961`; reporting `NX_JS_BROKEN` from `phys_fn_004483` changed it with `stdout_delta=244`. Both mutations were caught with equal zero exits and exact stderr, and both restored controls were exact (`stdout_delta=0`). See [phase6-joint-shared-is-get-state-004479-004483.md](phase6-joint-shared-is-get-state-004479-004483.md).
+
+The full Phase 6 gate passed with 1,579 coverage assertions run (minimum required: 1,267). Phase 6 now has 131 closed rows (129 mutation-falsified plus 2 oracle differentials) and 302 deferred rows; 23 in-phase rows remain unreconstructed.
