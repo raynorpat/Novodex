@@ -12536,7 +12536,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1803",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Partial controller-cache teardown slice is implemented after effector release and before joint-list cleanup; the Scene destructor row remains open. Oracle differential and call-omission mutation evidence: evidence/phase7-scene-controller-cache-teardown-000663.md."
     },
     {
       "id": "phys_fn_000664",

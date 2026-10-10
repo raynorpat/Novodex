@@ -3201,6 +3201,11 @@ static void nxSceneDelete(void* self, int flags)
 	// joint lists). The actor loop above has already nulled every record
 	// pointer an effector held (the 0x100 notify in releaseActor).
 	scene->releaseEffectors();
+	// phys_fn_002320 destroys the controller cache rooted at Scene+0x5a8.
+	// Controllers remain attached when a caller releases a Scene directly, so
+	// this list owns proxy allocations their actor teardown does not free. The
+	// oracle clears the cache after effectors and before the joint lists.
+	nxDestroyCachedList(self);
 	// The joints still registered (phys_fn_000606, the continuation of
 	// phys_fn_000604 that the oracle's Scene destructor phys_fn_000663 calls at
 	// 0x13f9e, after the actors): for each list, +0x59c then +0x5a0, the head

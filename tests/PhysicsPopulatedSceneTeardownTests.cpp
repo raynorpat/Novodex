@@ -259,6 +259,30 @@ int wmain(int argc, wchar_t** argv)
 	if(afterOwnerScene != afterContactScene)
 		return nxFail("pruner-owner teardown did not release scene allocations");
 
+	// Destroy a Scene while its controller and generated kinematic actor are
+	// still attached. This exercises the public controller-list teardown path
+	// that explicit releaseController calls do not cover.
+	NxScene* controllerScene = sdk->createScene(sceneDesc);
+	if(!controllerScene)
+		return nxFail("controller-owner teardown scene creation failed");
+	alignas(4) unsigned char controllerDescStorage[0x80] = {};
+	*reinterpret_cast<unsigned*>(controllerDescStorage + 0x30) = 0x3f000000;
+	*reinterpret_cast<unsigned*>(controllerDescStorage + 0x34) = 0x3f800000;
+	*reinterpret_cast<unsigned*>(controllerDescStorage + 0x38) = 0x3f000000;
+	NxController* controller = controllerScene->createController(
+		*reinterpret_cast<const NxControllerDesc*>(controllerDescStorage));
+	if(!controller)
+		return nxFail("controller-owner teardown controller creation failed");
+	const unsigned controllerActorsBefore = controllerScene->getNbActors();
+	const unsigned controllerBlocksBefore = allocator.outstanding();
+	sdk->releaseScene(*controllerScene);
+	const unsigned controllerBlocksAfter = allocator.outstanding();
+	printf("teardown controller_owner actors_before=%u outstanding_before=%u outstanding_after=%u delta=%d\n",
+		controllerActorsBefore, controllerBlocksBefore, controllerBlocksAfter,
+		static_cast<int>(controllerBlocksAfter) - static_cast<int>(controllerBlocksBefore));
+	if(controllerActorsBefore != 1)
+		return nxFail("controller-owner teardown did not retain its generated actor");
+
 	sdk->release();
 	foundationSDK->release();
 	return nxReportPairIdentity(pairDirectory);

@@ -9990,7 +9990,7 @@ The `phys_fn_000661` immediate-return mutation to `NxSceneInternal::addJoint` wa
 
 ## Phase 7 Scene actor-array teardown row `phys_fn_000596`
 
-For `phys_fn_000596`, the registered `NxPhysicsCoreDumpTests` gate rejects the prior swap-removing actor teardown (`stdout_delta=2`; the Scene B free prefix diverges at 228 versus 552 bytes) and the restored snapshot/destructor implementation matches the pinned oracle (`stdout_delta=0`, exact stderr). See [phase7-scene-actor-teardown-000596.md](phase7-scene-actor-teardown-000596.md). The enclosing Scene destructor `phys_fn_000663` remains open.
+For `phys_fn_000596`, the registered `NxPhysicsCoreDumpTests` gate rejects the prior swap-removing actor teardown (`stdout_delta=2`; the Scene B free prefix diverges at 228 versus 552 bytes) and the restored snapshot/destructor implementation matches the pinned oracle (`stdout_delta=0`, exact stderr). See [phase7-scene-actor-teardown-000596.md](phase7-scene-actor-teardown-000596.md). The enclosing Scene destructor `phys_fn_000663` remains open; the controller-cache cleanup slice is separately covered by [phase7-scene-controller-cache-teardown-000663.md](phase7-scene-controller-cache-teardown-000663.md).
 
 
 ## Phase 7 stale contact-pair release row `phys_fn_001953`
