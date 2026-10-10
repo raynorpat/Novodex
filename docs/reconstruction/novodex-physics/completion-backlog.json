@@ -104,11 +104,11 @@
       },
       "7": {
         "phase": 7,
-        "closed_rows": 63,
-        "deferred_rows": 498,
+        "closed_rows": 64,
+        "deferred_rows": 497,
         "deferred_reasons": {
           "not_reconstructed_in_phase": 222,
-          "reconstructed_not_falsified": 276
+          "reconstructed_not_falsified": 275
         }
       }
     },
@@ -182,8 +182,8 @@
         "rows_with_unresolved_indirect_calls": 300,
         "by_state": {
           "discovered": 211,
-          "dynamically_gated": 62,
-          "reconstructed": 287,
+          "dynamically_gated": 63,
+          "reconstructed": 286,
           "statically_reviewed": 1
         }
       }
@@ -14163,7 +14163,7 @@
           {
             "id": "phys_fn_000594",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_002364",
@@ -14257,7 +14257,7 @@
           {
             "id": "phys_fn_000594",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_002364",
@@ -25903,7 +25903,7 @@
       "size": 126,
       "phase": 7,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_000594",
       "implementation": {
         "path": "Physics/src/Scene.cpp",
@@ -25918,7 +25918,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsEffectorTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -25957,22 +25957,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 7,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsEffectorTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_000594",
         "rva": "0x00010e80",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -230966,7 +230966,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "82a568fcd9d94626f180b1a71f3a19d5e13164f556df0433cc275d6c5836ecbb",
+    "inventory_sha256": "807eb9c1f31d27a1ef83f9e59d489bc7549556adc28912ba9b7a54cc6d4290c3",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
@@ -230976,7 +230976,7 @@
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "0644d3701ea278cb6b6db06ad68e9b27bf68fb28e6c79af49ecdfae3235f7221",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "cf95bb578c2e17a06652396b19a693e69124b663f8d70db68e4828a9713731f5",
       "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "2029ad015aa57c0c1d09c8b2d580102946ee71882ac8fe9b27b908d2776eac77",
-      "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "f6786a9fc50632c1eb3f2a0a361b2ec533230302f2cc2c06b4f3216eb34e6a74"
+      "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "205fc12e8264402178230a3d4bc95202adec39c9e8847df0d69b6432b00864f6"
     }
   }
 }
