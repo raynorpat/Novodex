@@ -103611,13 +103611,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2137",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/19143",
-      "static_proof": "reached: phys_fn_005564 calls it at 0x000f207e. The earlier proof -- no product translation unit reaches these bytes -- is false; P4 Task 3 re-derived it.",
-      "dynamic_proof": null,
-      "notes": "P4 Task 3: retyped from compiler_artifact; see evidence/phase4-artifact-retype.csv."
+      "static_proof": "IDA row 0x000f1df0 (605 bytes) is the bounded dynamic-pruner recursive overlap walker: it tests node bounds, filters objects by mask and valid handle, emits fully contained subtree objects before recursing, and visits child slots 1 through 8 in order. Candidate implementation is BoundedDynamicPruner::OverlapQuery with nxBoundedTreeQueryNode in Physics/src/opcode/IcePruner.cpp; the recursive helper is folded into the mapped method.",
+      "dynamic_proof": "NxPhysicsSceneRaycastTests staged oracle differential covers bounded_tree all (12 ordered results), octants, moved objects, expanded bounds and sphere query. A throwaway source mutation changed the contained-subtree child loop from child <= 8 to child < 8; the candidate omitted child-8 results and the registered differential detected stdout_delta=8 while oracle_exit=0 and candidate_exit=0. Restored source rebuilt and passed the full Phase 4 gate; see evidence/phase4-bounded-tree-walk-005562.md.",
+      "notes": "Recursive octree traversal and child order are required for the bounded dynamic pruner query; the boundary mutation specifically proves child slot 8 is included. Public-DLL routing remains a separate full-reconstruction milestone.",
+      "implementation": "Physics/src/opcode/IcePruner.cpp",
+      "implementation_symbol": "BoundedDynamicPruner::OverlapQuery"
     },
     {
       "id": "phys_fn_005563",

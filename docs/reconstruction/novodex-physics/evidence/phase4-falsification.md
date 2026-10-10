@@ -443,3 +443,10 @@ restored-control, and binary hashes are in
 [`phase4-row-002258-release-guard-mutation-2026-10-09.md`](phase4-row-002258-release-guard-mutation-2026-10-09.md).
 This closes the guard branch only; the cleanup rows on the successful-release
 path remain independent work.
+
+
+---
+
+## 15. 2026-10-10 follow-up: bounded octree query traversal
+
+`phys_fn_005562` (`0x000f1df0`, 605 bytes) is closed through the registered staged-pair `NxPhysicsSceneRaycastTests` differential. The tree-backed fixture checks exact result ordering across full, partial, moved, expanded-bound and sphere queries. A throwaway mutation changed only the contained-subtree recursive child bound from `<= 8` to `< 8`; candidate output lost child-slot-8 results and the staged differential reported `stdout_delta=8` with both child processes exiting zero. Restoring the bound returned exact output, and the complete Phase 4 gate passed at 518/269 coverage assertions. Full setup, baseline transcript, mutation output, restored build and gate result are recorded in [phase4-bounded-tree-walk-005562.md](phase4-bounded-tree-walk-005562.md).
