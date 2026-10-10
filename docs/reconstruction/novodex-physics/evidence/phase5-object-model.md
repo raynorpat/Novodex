@@ -9059,3 +9059,11 @@ the new collision input/dispatcher coverage passes all 20 Phase 5 targets at
 rows still report zero oracle mismatches, and the member-only negative control
 reports five. Phase 3 and Phase 7 were also rerun from the same candidate and
 passed at 543/543 and 1,444/1,444 assertions respectively.
+
+Fresh Release rerun on 2026-10-10: the Phase 5 gate passes at 2,621/2,621
+coverage assertions. The five scratch-copy secondary-vtable calls each return
+the complete-object address, restore both vptrs, preserve stack balance, and
+match the oracle with zero mismatches; the heap-backed flag-1 secondary calls
+and primary deleting-destructor calls also match for all five families. The
+member-only negative control still reports five mismatches. Candidate
+`NxPhysics.dll` SHA-256: `1b421182452ce1bd6478e4da322c345341ae6a13a7faf17bc8a0ec75596277c9`.
