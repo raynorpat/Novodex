@@ -77101,13 +77101,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1561",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13724",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result) Trace taken on the pre-dc11888 build; see the header of evidence/unit-pilot-revolute-trace.txt.",
-      "notes": "",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result) Trace taken on the pre-dc11888 build; see the header of evidence/unit-pilot-revolute-trace.txt. Row-specific mutation closure (2026-10-10, source revision 2d5db9d1): changed type bit 0x200 from NX_JOINT_FIXED to NX_JOINT_DISTANCE; registered NxPhysicsJointStagedPairTests caught the mismatch (both exits 0, stdout_delta=6006, stderr exact). Restored clean differential exact; restored SHA-256 40eff15c1448bd0d594020fcaa5fd0744cc89eae42c1bec90026b39659542efd. Evidence: evidence/phase6-joint-constructor-type-004141.md.",
+      "notes": "common joint constructor family-type mapping mutation-falsified by staged-pair family matrix; public headers unchanged",
       "implementation": "Physics/src/core/Joint.cpp"
     },
     {

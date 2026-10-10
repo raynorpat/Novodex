@@ -1,0 +1,6 @@
+diff --git a/Physics/src/core/Joint.cpp b/Physics/src/core/Joint.cpp
+--- a/Physics/src/core/Joint.cpp
++++ b/Physics/src/core/Joint.cpp
+@@ -336,1 +336,1 @@
+-		case 0x200:		mType = NX_JOINT_FIXED;				break;
++		case 0x200:		mType = NX_JOINT_DISTANCE;				break;

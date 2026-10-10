@@ -10049,3 +10049,9 @@ The complete Phase 6 gate was rerun after registering the actor-shape mutation t
 
 The registered `NxPhysicsCoreDumpTests` joint-family fixture catches a `1.0f` mutation to `plane->d` through serialized limit-plane observations (`stdout_delta=4452`, equal zero exits, exact stderr); the restored clean build is exact. See [phase6-joint-add-limit-plane-004143.md](phase6-joint-add-limit-plane-004143.md). The full Phase 6 gate passed at 1,554 assertions run (minimum required: 1,267); Phase 6 remains pending with 100 closed and 333 deferred functions.
 For `phys_fn_004143`, the registered NxPhysicsCoreDumpTests differential caught the plane-distance mutation with stdout_delta=4452; the restored clean control is exact.
+
+
+## Phase 6 closure measurement — common joint constructor map (`phys_fn_004141`)
+
+Changing the fixed-family type mapping to distance was caught by the registered `NxPhysicsJointStagedPairTests` matrix (`stdout_delta=6006`, both exits 0, exact stderr); the restored clean control is exact. See [phase6-joint-constructor-type-004141.md](phase6-joint-constructor-type-004141.md).
+For phys_fn_004141, the staged-pair fixed-family type mutation was caught with stdout_delta=6006 and exact stderr; the restored control is exact.
