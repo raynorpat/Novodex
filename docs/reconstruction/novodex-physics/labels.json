@@ -3031,6 +3031,34 @@
       "confidence": "semantic",
       "evidence": "oracle/ghidra/manifest.json#/functions/35",
       "reason": "the oracle actor vtable slot-6 method copies the nested record translation or the static body translation under the actor read lock; the public actor lifecycle differential observes both branches"
+    },
+    {
+      "id": "phys_fn_001123",
+      "label": "CollisionObject::CollisionObject (capsule variant)",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json#/entries/3237",
+      "reason": "57-byte family constructor initializes the capsule primary interface and EmbeddedHookBase secondary subobject, copies the shape argument at +0x08/+0x18, and installs the capsule tables; the secondary deleting-destructor differential exercises it."
+    },
+    {
+      "id": "phys_fn_001159",
+      "label": "CollisionObject::CollisionObject (plane variant)",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json#/entries/3280",
+      "reason": "57-byte family constructor initializes the plane primary interface and EmbeddedHookBase secondary subobject, copies the shape argument at +0x08/+0x18, and installs the plane tables; the secondary deleting-destructor differential exercises it."
+    },
+    {
+      "id": "phys_fn_001193",
+      "label": "CollisionObject::CollisionObject (sphere variant)",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json#/entries/3322",
+      "reason": "57-byte family constructor initializes the sphere primary interface and EmbeddedHookBase secondary subobject, copies the shape argument at +0x08/+0x18, and installs the sphere tables; the secondary deleting-destructor differential exercises it."
+    },
+    {
+      "id": "phys_fn_001241",
+      "label": "CollisionObject::CollisionObject (mesh variant)",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json#/entries/3370",
+      "reason": "57-byte family constructor initializes the mesh primary interface and EmbeddedHookBase secondary subobject, copies the shape argument at +0x08/+0x18, and installs the mesh tables; the secondary deleting-destructor differential exercises it."
     }
   ]
 }

@@ -54,8 +54,8 @@
   },
   "counts": {
     "differential_falsified": 33,
-    "oracle_differential_falsified": 36,
-    "deferred_not_reconstructed_in_phase": 214,
+    "oracle_differential_falsified": 40,
+    "deferred_not_reconstructed_in_phase": 210,
     "deferred_reconstructed_not_falsified": 101,
     "deferred_blocked_on_later_phase": 8
   },
@@ -226,6 +226,21 @@
       "note": "Phase 5 exercises the box secondary deleting destructor, including the member-only negative control."
     },
     {
+      "id": "phys_fn_001123",
+      "rva": "0x00023cb0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Replaced the family constructor's EmbeddedHookBase secondary vtable with the unadjusted member-only table on scratch copies before invoking slot 0.",
+        "detected": "mismatches=5"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "note": "Phase 5 invokes the capsule family constructor, calls its secondary deleting-destructor slot on non-deleting and deleting copies, and includes the member-only negative control."
+    },
+    {
       "id": "phys_fn_001127",
       "rva": "0x00023d00",
       "proof": "oracle_differential_falsified",
@@ -239,6 +254,21 @@
         5
       ],
       "note": "Phase 5 exercises the capsule secondary deleting destructor, including the member-only negative control."
+    },
+    {
+      "id": "phys_fn_001159",
+      "rva": "0x00024250",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Replaced the family constructor's EmbeddedHookBase secondary vtable with the unadjusted member-only table on scratch copies before invoking slot 0.",
+        "detected": "mismatches=5"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "note": "Phase 5 invokes the plane family constructor, calls its secondary deleting-destructor slot on non-deleting and deleting copies, and includes the member-only negative control."
     },
     {
       "id": "phys_fn_001163",
@@ -256,6 +286,21 @@
       "note": "Phase 5 exercises the plane secondary deleting destructor, including the member-only negative control."
     },
     {
+      "id": "phys_fn_001193",
+      "rva": "0x000247c0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Replaced the family constructor's EmbeddedHookBase secondary vtable with the unadjusted member-only table on scratch copies before invoking slot 0.",
+        "detected": "mismatches=5"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "note": "Phase 5 invokes the sphere family constructor, calls its secondary deleting-destructor slot on non-deleting and deleting copies, and includes the member-only negative control."
+    },
+    {
       "id": "phys_fn_001197",
       "rva": "0x00024810",
       "proof": "oracle_differential_falsified",
@@ -269,6 +314,21 @@
         5
       ],
       "note": "Phase 5 exercises the sphere secondary deleting destructor, including the member-only negative control."
+    },
+    {
+      "id": "phys_fn_001241",
+      "rva": "0x00024e40",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Replaced the family constructor's EmbeddedHookBase secondary vtable with the unadjusted member-only table on scratch copies before invoking slot 0.",
+        "detected": "mismatches=5"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "note": "Phase 5 invokes the mesh family constructor, calls its secondary deleting-destructor slot on non-deleting and deleting copies, and includes the member-only negative control."
     },
     {
       "id": "phys_fn_001245",
@@ -1383,14 +1443,6 @@
       "driving_phases": []
     },
     {
-      "id": "phys_fn_001123",
-      "rva": "0x00023cb0",
-      "size": 57,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
       "id": "phys_fn_001125",
       "rva": "0x00023cf0",
       "size": 8,
@@ -1519,14 +1571,6 @@
       "driving_phases": []
     },
     {
-      "id": "phys_fn_001159",
-      "rva": "0x00024250",
-      "size": 57,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
       "id": "phys_fn_001161",
       "rva": "0x00024290",
       "size": 8,
@@ -1644,14 +1688,6 @@
       "size": 84,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001193",
-      "rva": "0x000247c0",
-      "size": 57,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
     },
     {
@@ -1828,14 +1864,6 @@
       "size": 92,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001241",
-      "rva": "0x00024e40",
-      "size": 57,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
     },
     {
