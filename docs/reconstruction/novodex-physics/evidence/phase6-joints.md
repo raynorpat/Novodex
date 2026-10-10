@@ -10315,3 +10315,8 @@ The `NxPhysicsObjectLayoutTests` oracle differential now drives the destructor a
 A candidate mutant that omitted the allocator free reported `oracle_frees=10`, `candidate_frees=0`, and `layout candidate mismatches=1` (exit 1). A second mutant that preserved each array's +4 metadata word reported 29 differing bytes and exited 1. Restoring the implementation reports `oracle_frees=10`, `candidate_frees=10`, `mismatches=0` and `layout candidate mismatches=0`. The Phase 7 gate now registers `NxPhysicsObjectLayoutTests` as an oracle differential. Detailed probe design and verification are in [phase7-scene-auxiliary-dtor-000649.md](phase7-scene-auxiliary-dtor-000649.md).
 
 Phase 7 coherent-pruner cache row `phys_fn_001974`: the coherent Scene fixture reports a 44-byte cache freed on release. A no-op cleanup mutant leaves 22 allocator blocks versus the oracle's 15 and is rejected (`stdout_delta=17`, candidate exit 1); restored staged differential is exact. See [phase7-coherent-pruner-cache-001974.md](phase7-coherent-pruner-cache-001974.md).
+
+
+## Phase 7 Scene joint iterator reset `phys_fn_000563` — `stdout_delta=296`
+
+The registered `NxPhysicsJointStagedPairTests` differential exercises Scene joint enumeration. Clearing the reset cursor instead of copying the list head from `Scene + 0x59c` changes the transcript by 296 bytes (both processes exit zero, exact stderr). The restored focused differential is exact, and the full Phase 7 gate passes at 1,639 assertions against a 1,475 floor. Details: [phase7-scene-joint-iterator-000563.md](phase7-scene-joint-iterator-000563.md).

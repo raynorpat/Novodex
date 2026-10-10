@@ -10698,13 +10698,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/213",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1460",
-      "static_proof": "mov eax,[ecx+0x59c]; mov [ecx+0x6bc],eax; ret; product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": "confirmed via setget3 drive (3z50): failures=0; executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 51 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Product row since joint-open-items Task 2: NxSceneInternal::resetJointIterator in Physics/src/Scene.cpp. The parameterised model in Physics/src/ObjectModel.cpp stays. Previous source: copy [this+0x59c] -> [this+0x6bc] (0x10880).",
+      "static_proof": "IDA/Capstone contract at RVA 0x00010880: load the Scene joint-list head from +0x59c, store it in the joint iteration cursor at +0x6bc, and return; 13-byte row. Candidate map resolves NxSceneInternal::resetJointIterator in Scene.obj.",
+      "dynamic_proof": "Registered Phase 7 NxPhysicsJointStagedPairTests baseline matched the pinned oracle. Candidate map build/Release/NxPhysics.map resolves NxSceneInternal::resetJointIterator in Scene.obj. Mutating the cursor assignment to null was detected with stdout_delta=296 (both exits zero, exact stderr). Restored focused differential and full Phase 7 gate pass; see evidence/phase7-scene-joint-iterator-000563.md.",
+      "notes": "NxSceneInternal::resetJointIterator in Physics/src/Scene.cpp. Mutation falsification covers the Scene joint iterator reset behavior through public joint enumeration.",
       "implementation": "Physics/src/Scene.cpp"
     },
     {
