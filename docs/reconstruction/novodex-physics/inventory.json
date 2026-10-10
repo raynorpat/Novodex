@@ -36609,13 +36609,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/774",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5965",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at 0x1004c260 confirms: read engine+0x2c; if non-null, call SweepAndPrune::~SweepAndPrune (phys_fn_005291), fetch the SDK allocator (phys_fn_004803), free the cache through vtable slot +0x0c, then clear engine+0x2c. nxSceneEngineReleaseCoherent in Physics/src/opcode/IcePruningEngine.cpp performs this sequence; Scene::nxSceneDelete passes Scene+0x624.",
+      "dynamic_proof": "Phase 7 NxPhysicsPopulatedSceneTeardownTests tracks a non-null coherent cache allocation (44 bytes) through public coherent Scene creation, simulate/fetch, and release; it reports bytes=44 freed=1. A temporary no-op cleanup mutation was rejected by the staged oracle/candidate differential: candidate teardown retained 22 allocator blocks versus oracle 15 and exited 1 (stdout_delta=17). Restored control: oracle_exit=0, candidate_exit=0, stdout_delta=0, exact stderr.",
+      "notes": "Phase 7 oracle differential falsification; see evidence/phase7-coherent-pruner-cache-001974.md.",
+      "implementation": "Physics/src/opcode/IcePruningEngine.cpp",
+      "implementation_symbol": "?nxSceneEngineReleaseCoherent@@YAXPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxSceneEngineReleaseCoherent@@YAXPAX@Z",
+        "address": "0x1009e190",
+        "object": "IcePruningEngine.obj"
+      }
     },
     {
       "id": "phys_fn_001975",

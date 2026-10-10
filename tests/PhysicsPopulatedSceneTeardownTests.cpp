@@ -383,6 +383,34 @@ int wmain(int argc, wchar_t** argv)
 	if(retainedBodyRecordAfter != 0)
 		return nxFail("Scene teardown retained its orphaned dynamic body record");
 
+	// Coherent broad-phase queries lazily allocate the SweepAndPrune cache at
+	// Scene+0x650. phys_fn_001974 destroys that cache and returns its storage
+	// through the SDK allocator during the Scene deleting-destructor chain.
+	NxSceneDesc coherentSceneDesc;
+	coherentSceneDesc.setToDefault();
+	coherentSceneDesc.broadPhase = NX_BROADPHASE_COHERENT;
+	NxScene* coherentScene = sdk->createScene(coherentSceneDesc);
+	if(!coherentScene) return nxFail("coherent teardown scene creation failed");
+	NxActor* coherentStatic = coherentScene->createActor(contactStaticDesc);
+	NxActor* coherentDynamic = coherentScene->createActor(contactDynamicDesc);
+	if(!coherentStatic || !coherentDynamic)
+		return nxFail("coherent teardown actors failed to create");
+	coherentScene->simulate(0.125f);
+	if(!coherentScene->fetchResults(NX_RIGID_BODY_FINISHED, true))
+		return nxFail("coherent teardown simulation did not fetch");
+	unsigned char* coherentWrapper = reinterpret_cast<unsigned char*>(coherentScene);
+	unsigned char* coherentInternal = *reinterpret_cast<unsigned char**>(coherentWrapper + 0x24);
+	void* coherentCache = *reinterpret_cast<void**>(coherentInternal + 0x650);
+	const size_t coherentCacheBytes = allocator.allocationSize(coherentCache);
+	if(!coherentCache || !coherentCacheBytes)
+		return nxFail("coherent teardown fixture did not retain a tracked cache");
+	sdk->releaseScene(*coherentScene);
+	const size_t coherentCacheBytesAfterRelease = allocator.allocationSize(coherentCache);
+	printf("teardown coherent_cache bytes=%u freed=%u\n",
+		static_cast<unsigned>(coherentCacheBytes), coherentCacheBytesAfterRelease ? 0u : 1u);
+	if(coherentCacheBytesAfterRelease != 0)
+		return nxFail("coherent cache teardown did not free the retained SweepAndPrune object");
+
 	sdk->release();
 	foundationSDK->release();
 	return nxReportPairIdentity(pairDirectory);

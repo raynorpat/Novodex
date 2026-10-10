@@ -122,6 +122,7 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsPopulatedSceneTeardownTests' = @(
         'teardown static_first outstanding_before=51 outstanding_after=12 delta=-39',
+        'teardown coherent_cache bytes=44 freed=1',
         'teardown contact_pair pairs_before=1 outstanding_after=15',
         'teardown contact_pair hash_storage buckets=8 links=8 entries=16',
         'teardown pruner_owner static_calls=1 dynamic_calls=1 flags=1/1 selected=2 outstanding_after=15',
