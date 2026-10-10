@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 142 rows are closed (2 oracle differentials, 140 mutation-falsified); 291 rows remain open. Full DLL reconstruction remains pending.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 150 rows are closed (2 oracle differentials, 148 mutation-falsified); 283 rows remain open. Full DLL reconstruction remains pending.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
@@ -64,9 +64,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 140,
+    "differential_falsified": 148,
     "oracle_differential_falsified": 2,
-    "deferred_reconstructed_not_falsified": 268,
+    "deferred_reconstructed_not_falsified": 260,
     "deferred_not_reconstructed_in_phase": 23
   },
   "closed": [
@@ -1490,6 +1490,86 @@
       "falsification": {
         "mutation": "Row-specific source mutation: added +1.0f to getVelocity. The registered staged-pair differential reported stdout_delta=28; both exits were zero and stderr was exact. Restored clean control returned stdout_delta=0 with both exits zero and exact stderr. Mutant candidate SHA-256 0d688ee07862367c6cb3712c272c91830e05efb0095cf8bbc1b0549035f2c92f; restored candidate SHA-256 e55d3d9dfe616e268f04ca6132a66c559e24ba2d805313074effc08067cda7bb. Evidence: evidence/phase6-joint-revolute-angle-velocity-004721-004723.md.",
         "detected": "stdout_delta=28"
+      }
+    },
+    {
+      "id": "phys_fn_004681",
+      "rva": "0x000b2d10",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific source mutation: omitted the public setGlobalAnchor wrapper call. The registered staged-pair differential reported stdout_delta=2; both exits were zero and stderr was exact. Restored clean control returned stdout_delta=0 with both exits zero and exact stderr. Mutant candidate SHA-256 eb6ff4bbc7aade057d1abb2295f426871e9490ff4ed75e7bd4162f82dbe62066; restored candidate SHA-256 68078ff51d86ec7d6e609a58f9d85423e34a83fc012e79b7ac437554b27a060d. Evidence: evidence/phase6-joint-revolute-base-setters-004681-004695.md.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_004683",
+      "rva": "0x000b2d70",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific source mutation: omitted the public setGlobalAxis wrapper call. The registered staged-pair differential reported stdout_delta=2; both exits were zero and stderr was exact. Restored clean control returned stdout_delta=0 with both exits zero and exact stderr. Mutant candidate SHA-256 ec78034d62e6aa8f5437967a78d442ce2ebb15425c3a44c9fad5d1e1c6eb08fc; restored candidate SHA-256 dfaee7b8cb83fa760d06cd34960c96ba8bf2f70c8635e0c12f0ebb5c1fb1858f. Evidence: evidence/phase6-joint-revolute-base-setters-004681-004695.md.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_004685",
+      "rva": "0x000b2dd0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific source mutation: omitted the public setBreakable wrapper call. The registered staged-pair differential reported stdout_delta=2; both exits were zero and stderr was exact. Restored clean control returned stdout_delta=0 with both exits zero and exact stderr. Mutant candidate SHA-256 e345e033bd670f329865e6a53e4e5947e89f392ab2e6562696fe24946e0ecc59; restored candidate SHA-256 fdbb0df2a0460e00296ea1b8c9a0715d885cf3d8381dc33a4657255c8b3ed003. Evidence: evidence/phase6-joint-revolute-base-setters-004681-004695.md.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_004687",
+      "rva": "0x000b2e30",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific source mutation: omitted the public setLimitPoint wrapper call. The registered staged-pair differential reported stdout_delta=2; both exits were zero and stderr was exact. Restored clean control returned stdout_delta=0 with both exits zero and exact stderr. Mutant candidate SHA-256 6c5115667fa7a9723765ef5c1ec78e20e7f3f40287c62e97c18fd7733498463b; restored candidate SHA-256 30d4957c5cb63063392836678628d8c8e1f2fc8349a22fdc2ece87c384d0488f. Evidence: evidence/phase6-joint-revolute-base-setters-004681-004695.md.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_004689",
+      "rva": "0x000b2e90",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific source mutation: omitted the public addLimitPlane wrapper call. The registered staged-pair differential reported stdout_delta=2; both exits were zero and stderr was exact. Restored clean control returned stdout_delta=0 with both exits zero and exact stderr. Mutant candidate SHA-256 05d39980291f065744c6adf77d5ea36dc6cbc854179afc0e5946f485ea6fdca9; restored candidate SHA-256 08510039b894f1467aec0b4a03adb3badfc8bc5a67efdc9dc3654b3f693ad83a. Evidence: evidence/phase6-joint-revolute-base-setters-004681-004695.md.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_004691",
+      "rva": "0x000b2f00",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific source mutation: omitted the public resetLimitPlaneIterator wrapper call. The registered staged-pair differential reported stdout_delta=2; both exits were zero and stderr was exact. Restored clean control returned stdout_delta=0 with both exits zero and exact stderr. Mutant candidate SHA-256 28da348f28b07d723fafb8e05fbe4ed3233906651d442f8d013cd56b2fdbe89e; restored candidate SHA-256 51e0b33d659cc37d21b726ce4c55a8032876a2255b780ecb83ada7cf800ff7c5. Evidence: evidence/phase6-joint-revolute-base-setters-004681-004695.md.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_004693",
+      "rva": "0x000b2f50",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific source mutation: omitted the public setName wrapper call. The registered staged-pair differential reported stdout_delta=2; both exits were zero and stderr was exact. Restored clean control returned stdout_delta=0 with both exits zero and exact stderr. Mutant candidate SHA-256 0700be3f2bf99b3a437133a6f956dda73bb0d65c28c0ac84d135ad911708ce58; restored candidate SHA-256 1a9279a3c5ff14ca6f37c63e799c380cb9103cf1b9002fe52841d709b5361fa6. Evidence: evidence/phase6-joint-revolute-base-setters-004681-004695.md.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_004695",
+      "rva": "0x000b2fb0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific source mutation: omitted the public purgeLimitPlanes wrapper call. The registered staged-pair differential reported stdout_delta=2; both exits were zero and stderr was exact. Restored clean control returned stdout_delta=0 with both exits zero and exact stderr. Mutant candidate SHA-256 7ad7b6afdb72e98d21fa42afaefbcb6434e6687e2d426ae3e35ee9c44c51446b; restored candidate SHA-256 523175f602a88a46fda3acd4c590afbc43ea4dfd4fdb6f949b761ebfcb214ec5. Evidence: evidence/phase6-joint-revolute-base-setters-004681-004695.md.",
+        "detected": "stdout_delta=2"
       }
     }
   ],
@@ -3769,78 +3849,6 @@
       "size": 55,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004681",
-      "rva": "0x000b2d10",
-      "size": 84,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004683",
-      "rva": "0x000b2d70",
-      "size": 84,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004685",
-      "rva": "0x000b2dd0",
-      "size": 89,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004687",
-      "rva": "0x000b2e30",
-      "size": 89,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004689",
-      "rva": "0x000b2e90",
-      "size": 97,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004691",
-      "rva": "0x000b2f00",
-      "size": 74,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004693",
-      "rva": "0x000b2f50",
-      "size": 88,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004695",
-      "rva": "0x000b2fb0",
-      "size": 74,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },

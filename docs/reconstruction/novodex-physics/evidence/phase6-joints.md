@@ -10190,3 +10190,20 @@ The refreshed oracle-only joint matrix pins fixture source SHA-256 `65cdb2c3e1e4
 The four-case staged Revolute fixture now reads both getters. Adding `+1.0f` to `phys_fn_004721` (`getAngle`) changed the transcript with `stdout_delta=28`; the same mutation to `phys_fn_004723` (`getVelocity`) also produced `stdout_delta=28`. Both mutations were caught with zero exits and exact stderr; both restored controls returned `stdout_delta=0` and exact stderr. See [phase6-joint-revolute-angle-velocity-004721-004723.md](phase6-joint-revolute-angle-velocity-004721-004723.md).
 
 The full Phase 6 gate passed with 1,582 coverage assertions evaluated (minimum required: 1,267). Phase 6 now has 142 closed rows (140 mutation-falsified plus 2 oracle differentials) and 291 deferred rows: 268 reconstructed rows still need individual mutations, and 23 in-phase rows remain unreconstructed.
+
+## Phase 6 closure measurement — Revolute joint-level setters (`phys_fn_004681`, `004683`, `004685`, `004687`, `004689`, `004691`, `004693`, `004695`)
+
+The staged Revolute fixture now directly exercises all eight wrappers. Omitting each call in turn was caught with `stdout_delta=2`; restored controls were exact. See [phase6-joint-revolute-base-setters-004681-004695.md](phase6-joint-revolute-base-setters-004681-004695.md).
+
+phys_fn_004681 setGlobalAnchor stdout_delta=2; restored stdout_delta=0.
+phys_fn_004683 setGlobalAxis stdout_delta=2; restored stdout_delta=0.
+phys_fn_004685 setBreakable stdout_delta=2; restored stdout_delta=0.
+phys_fn_004687 setLimitPoint stdout_delta=2; restored stdout_delta=0.
+phys_fn_004689 addLimitPlane stdout_delta=2; restored stdout_delta=0.
+phys_fn_004691 resetLimitPlaneIterator stdout_delta=2; restored stdout_delta=0.
+phys_fn_004693 setName stdout_delta=2; restored stdout_delta=0.
+phys_fn_004695 purgeLimitPlanes stdout_delta=2; restored stdout_delta=0.
+
+## Phase 6 verification — Revolute wrapper batch
+
+The full Phase 6 gate passed with 1,596 coverage assertions evaluated (minimum required: 1,267). Phase 6 now has 150 closed rows (148 mutation-falsified plus 2 oracle differentials) and 283 deferred rows: 260 reconstructed rows still need individual mutations, and 23 in-phase rows remain unreconstructed.

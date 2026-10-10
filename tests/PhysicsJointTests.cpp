@@ -497,6 +497,58 @@ static void nxRevoluteCase(NxScene& scene, NxActor* a, NxActor* b,
 				nxU(reloaded.spring.targetValue), nxU(reloaded.projectionDistance),
 				nxU(reloaded.projectionAngle), static_cast<unsigned>(reloaded.projectionMode),
 				static_cast<unsigned>(reloaded.flags));
+
+			const NxVec3 wrapperAnchor(2.25f, -1.5f, 0.75f);
+			revolute->setGlobalAnchor(wrapperAnchor);
+			NxVec3 wrapperAnchorReadback(0.0f, 0.0f, 0.0f);
+			joint->getGlobalAnchor(wrapperAnchorReadback);
+			printf("case=revolute index=0 wrapper_anchor=");
+			nxPrintVec("value", wrapperAnchorReadback);
+			printf("\n");
+
+			const NxVec3 wrapperAxis(0.75f, -2.0f, 1.25f);
+			revolute->setGlobalAxis(wrapperAxis);
+			NxVec3 wrapperAxisReadback(0.0f, 0.0f, 0.0f);
+			joint->getGlobalAxis(wrapperAxisReadback);
+			printf("case=revolute index=0 wrapper_axis=");
+			nxPrintVec("value", wrapperAxisReadback);
+			printf("\n");
+
+			revolute->setBreakable(17.25f, 32.5f);
+			NxReal wrapperBreakForce = 0.0f;
+			NxReal wrapperBreakTorque = 0.0f;
+			joint->getBreakable(wrapperBreakForce, wrapperBreakTorque);
+			printf("case=revolute index=0 wrapper_breakable force=%08x torque=%08x\n",
+				nxU(wrapperBreakForce), nxU(wrapperBreakTorque));
+
+			const NxVec3 wrapperLimitPoint(-0.75f, 1.5f, 2.25f);
+			revolute->setLimitPoint(wrapperLimitPoint, true);
+			NxVec3 wrapperLimitPointReadback(0.0f, 0.0f, 0.0f);
+			const bool wrapperHasLimitPoint = joint->getLimitPoint(wrapperLimitPointReadback);
+			printf("case=revolute index=0 wrapper_limit_point present=%u ",
+				wrapperHasLimitPoint ? 1u : 0u);
+			nxPrintVec("value", wrapperLimitPointReadback);
+			printf("\n");
+
+			const NxVec3 wrapperPlaneNormal(1.0f, 0.0f, 0.0f);
+			const NxVec3 wrapperPlanePoint(-100.0f, 0.0f, 0.0f);
+			const bool wrapperPlaneAdded = revolute->addLimitPlane(wrapperPlaneNormal, wrapperPlanePoint);
+			revolute->resetLimitPlaneIterator();
+			NxVec3 wrapperPlaneReadback(0.0f, 0.0f, 0.0f);
+			NxReal wrapperPlaneD = 0.0f;
+			const bool wrapperPlaneRead = joint->getNextLimitPlane(wrapperPlaneReadback, wrapperPlaneD);
+			printf("case=revolute index=0 wrapper_limit_plane added=%u read=%u ",
+				wrapperPlaneAdded ? 1u : 0u, wrapperPlaneRead ? 1u : 0u);
+			nxPrintVec("normal", wrapperPlaneReadback);
+			printf(" d=%08x\n", nxU(wrapperPlaneD));
+			revolute->purgeLimitPlanes();
+			revolute->resetLimitPlaneIterator();
+			printf("case=revolute index=0 wrapper_limit_plane purged_has_more=%u\n",
+				joint->hasMoreLimitPlanes() ? 1u : 0u);
+
+			revolute->setName("revolute:phase6-setname");
+			printf("case=revolute index=0 wrapper_name=%s\n",
+				joint->getName() ? joint->getName() : "null");
 			}
 		}
 
