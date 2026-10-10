@@ -10183,3 +10183,10 @@ The full Phase 6 gate passed with 1,579 coverage assertions run (minimum require
 For `phys_fn_004491`, inverting the shared `hasMoreLimitPlanes` result in the empty-plane D6 case changed the staged transcript with `stdout_delta=2`; both processes exited 0 and stderr matched exactly. The restored control returned `stdout_delta=0` with exact stderr. See [phase6-joint-shared-has-more-limit-planes-004491.md](phase6-joint-shared-has-more-limit-planes-004491.md).
 
 The refreshed oracle-only joint matrix pins fixture source SHA-256 `65cdb2c3e1e48e1d613abd84e9e46c1dc2f95307f4bf84d5052798df3c72ae31`, 3,212 output lines, and digest `d76e5bba1788c27ead7ffd3e9e16334cca5d26ec25442c6e4983a2eaf2017c6b`. The full Phase 6 gate passed with 1,580 coverage assertions run (minimum required: 1,267). Phase 6 now has 140 closed rows (138 mutation-falsified plus 2 oracle differentials) and 293 deferred rows; 23 in-phase rows remain unreconstructed.
+
+
+## Phase 6 closure measurement — Revolute angle and velocity getters (`phys_fn_004721`, `phys_fn_004723`)
+
+The four-case staged Revolute fixture now reads both getters. Adding `+1.0f` to `phys_fn_004721` (`getAngle`) changed the transcript with `stdout_delta=28`; the same mutation to `phys_fn_004723` (`getVelocity`) also produced `stdout_delta=28`. Both mutations were caught with zero exits and exact stderr; both restored controls returned `stdout_delta=0` and exact stderr. See [phase6-joint-revolute-angle-velocity-004721-004723.md](phase6-joint-revolute-angle-velocity-004721-004723.md).
+
+The full Phase 6 gate passed with 1,582 coverage assertions evaluated (minimum required: 1,267). Phase 6 now has 142 closed rows (140 mutation-falsified plus 2 oracle differentials) and 291 deferred rows: 268 reconstructed rows still need individual mutations, and 23 in-phase rows remain unreconstructed.

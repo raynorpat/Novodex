@@ -87842,13 +87842,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2288",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15494",
       "static_proof": "transcribed from oracle/ghidra/supplement.json (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointStagedPairTests direct Revolute getter differential: a +1.0f mutation to getAngle changed the transcript (stdout_delta=28; both exits 0; stderr exact). Mutant candidate SHA-256 ecb1654de6b5d73c8f548f53b6e6c8e9ae80e73ebed0c0346fcd02e9d423dd29; restored clean candidate SHA-256 e55d3d9dfe616e268f04ca6132a66c559e24ba2d805313074effc08067cda7bb; restored control stdout_delta=0. See evidence/phase6-joint-revolute-angle-velocity-004721-004723.md.",
+      "notes": "Direct readback added to the four-case Revolute fixture; getAngle is independently mutation-falsified.",
       "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
@@ -87879,13 +87879,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2289",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15495",
       "static_proof": "transcribed from oracle/ghidra/supplement.json (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointStagedPairTests direct Revolute getter differential: a +1.0f mutation to getVelocity changed the transcript (stdout_delta=28; both exits 0; stderr exact). Mutant candidate SHA-256 0d688ee07862367c6cb3712c272c91830e05efb0095cf8bbc1b0549035f2c92f; restored clean candidate SHA-256 e55d3d9dfe616e268f04ca6132a66c559e24ba2d805313074effc08067cda7bb; restored control stdout_delta=0. See evidence/phase6-joint-revolute-angle-velocity-004721-004723.md.",
+      "notes": "Direct readback added to the four-case Revolute fixture; getVelocity is independently mutation-falsified.",
       "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {

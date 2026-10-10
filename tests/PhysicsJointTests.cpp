@@ -387,6 +387,10 @@ static void nxRevoluteCase(NxScene& scene, NxActor* a, NxActor* b,
 	NxRevoluteJoint* revolute = joint->isRevoluteJoint();
 	if(revolute)
 		{
+		const NxReal angle = revolute->getAngle();
+		const NxReal velocity = revolute->getVelocity();
+		printf("case=revolute index=%u angle=%08x velocity=%08x\n", index,
+			nxU(angle), nxU(velocity));
 		printf("case=revolute index=%u flags=%08x\n", index,
 			static_cast<unsigned>(revolute->getFlags()));
 		NxJointLimitPairDesc limits;
